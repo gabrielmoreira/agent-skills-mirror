@@ -70,6 +70,7 @@ Follow ai-development-guide skill "Quality Check Workflow" section:
 - Basic checks (lint, format, build)
 - Tests (unit, integration)
 - Final gate (all must pass)
+- **Structural gate (changed files only)**: For functions at 50+ lines, nesting deeper than 3 levels, or files over 500 lines, apply coding-principles' decomposition review. Approval requires either a split or one concise retention reason satisfying its criteria
 - Substance check (applies only when a test run is cited as evidence for the task's intended behavior): the run counts as `passed` only when at least one executed assertion ran against that behavior. Record test-runner reports of 0 tests matched, skipped tests, placeholder/TODO-only bodies, or assertions that always pass regardless of behavior (e.g., `expect(true).toBe(true)`, `expect(arr.length).toBeGreaterThanOrEqual(0)`) as non-substantive. Tests verifying intentional absence (e.g., empty result, null return) are substantive when absence is the task's expectation. To recover: remove `skip`/`only` markers, widen test selectors, or run additional related test files; if substance still cannot be confirmed, return `blocked`. Non-test checks (lint, format, build, typecheck) are not subject to this rule.
 
 ### Step 4: Fix Errors

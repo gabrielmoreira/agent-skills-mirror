@@ -13,14 +13,7 @@ The base /check skill runs as always-on. Specialist reviewers are additive.
 **Agent file:** `agents/reviewer-security.md`
 **Activate at:** Standard or Deep depth
 
-Activate when the diff touches:
-- Authentication or authorization logic (middleware, guards, JWT handling, session management)
-- Cryptographic operations (hashing, signing, encryption)
-- Input handling at trust boundaries (form fields, API request bodies, URL parameters)
-- File system operations on user-controlled paths
-- Shell or subprocess execution
-- Third-party credential or API key handling
-- SQL queries or raw database access
+Activate when the diff changes code an attacker could reach or influence: trust-boundary input, auth or crypto, credentials, or query/shell/path construction.
 
 **Do not activate** for: pure UI changes, config file updates, test-only changes, documentation.
 
@@ -29,21 +22,15 @@ Activate when the diff touches:
 **Agent file:** `agents/reviewer-architecture.md`
 **Activate at:** Standard or Deep depth
 
-Activate when the diff:
-- Adds a new module, package, or service boundary
-- Changes a public API, exported type, or function signature
-- Introduces a cross-module import that did not exist before
-- Modifies more than 10 files across different directories
-- Adds or removes a major dependency
-- Restructures how components call each other
+Activate when the diff changes how modules relate: boundaries, public APIs or signatures, cross-module dependencies, or a major dependency, rather than logic inside one module.
 
 **Do not activate** for: single-file bug fixes, test additions, style changes, documentation updates.
 
 ## Adversarial Pass (Deep only)
 
-No separate agent. The orchestrator runs this as an extra reasoning pass after all findings are collected.
+No dedicated agent file. When the environment has an agent facility, the orchestrator runs the four angles as parallel agents, each blind to the others' findings; otherwise it runs them as an extra reasoning pass after all findings are collected.
 
-**Activate at:** Deep depth only (500+ lines changed, or explicit high-risk signals: auth, payments, data mutation, external API integration).
+**Activate at:** Deep depth only; the Deep criteria live in SKILL.md's Scope table.
 
 Adversarial pass asks: "If I wanted to break this system through this specific diff, what would I do?"
 
@@ -53,4 +40,4 @@ Four attack angles:
 3. **Cascade construction** -- What sequence of valid operations leads to an invalid state?
 4. **Abuse cases** -- What happens on the 1000th request, during a deployment, with two users editing the same resource simultaneously?
 
-Report adversarial findings with confidence score. Suppress findings below 0.60.
+Report adversarial findings with confidence score; the suppression threshold lives in SKILL.md's Adversarial Pass section.

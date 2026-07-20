@@ -22,7 +22,7 @@
 | 触发 | 技能 |
 |------|------|
 | 实现完成 / 合并前 / "review 一下" / "看看这段代码" / release gate / 生成产物检查 / safety sink 审查 / `code-review` | `skills/check/SKILL.md` |
-| release / publish / push / release reaction / 发布 / 提交 / 关闭 issue / 发布前检查 / 发布表情 / registry/appcast/asset 检查 | `skills/check/SKILL.md` (Ship / Release Follow-through) |
+| release / publish / push / release reaction / 发布 / 提交 / 关闭 issue / 发布前检查 / "值得发布了吗" / 发布表情 / registry/appcast/asset 检查 | `skills/check/SKILL.md` (Ship / Release Follow-through) |
 | review issue / review PR / triage / 批量处理 / "看看有没有 issue" / close issue | `skills/check/SKILL.md` (Triage Mode) |
 | 项目体检 / project audit / 项目评分 / 给项目打分 / 深入分析项目代码 / 评估项目质量 / 代码质量评分 / scorecard / linus 风格 review / rate this codebase / score this project | `skills/check/SKILL.md` (Project Audit Mode) |
 

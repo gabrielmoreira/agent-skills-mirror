@@ -35,8 +35,10 @@ Identify the fundamental purpose beyond surface-level work:
 | Large | 6+ | Cross-cutting concerns, architecture impact |
 
 **Scale affects skill priority:**
-- Scale >= Large → include documentation-criteria and implementation-approach in selectedSkills with priority high
-- Scale = Small → limit selectedSkills to task-type essential skills only (max 3)
+- Scale >= Large → include documentation-criteria with priority high, preserving the repository's 6+ file planning contract
+- Scale >= Large and the task changes executable system behavior or requires dependency/phase strategy → also include implementation-approach with priority high
+- Scale >= Large but the task is research, documentation-only, or mechanical → include implementation-approach only when an implementation strategy decision is actually required
+- Scale = Small → select task-type essential skills only and target a maximum of 3; exceed 3 when another skill directly governs a named risk, language, or output contract
 
 ### 3. Identify Task Type
 
@@ -98,6 +100,8 @@ selectedSkills:
 
 **Note**: Section selection (choosing which sections are relevant) is done after reading the actual SKILL.md files.
 
+**Consumer mapping**: `rule-advisor` consumes this intermediate shape and owns the final schema transformation: `type` → `taskType` (`quality` → `quality-improvement`; other values unchanged), `tags` → `extractedTags`, and `selectedSkills` → `selectedRules` after it reads and extracts the selected skill sections. Preserve `metaCognitiveQuestions` as a separate final field generated from the question design below.
+
 ## Skill Selection Priority
 
 1. **Essential** - Directly related to task type
@@ -107,7 +111,7 @@ selectedSkills:
 
 ## Metacognitive Question Design
 
-Generate 3-5 questions according to task nature:
+Generate up to 5 questions whose answers can change skill selection, verification, or escalation. Return no questions when none would change those decisions.
 
 | Task Type | Question Focus |
 |-----------|----------------|

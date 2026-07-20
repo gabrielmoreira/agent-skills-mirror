@@ -352,6 +352,9 @@ SECRET_PLACEHOLDER_VALUES = {
     "sample",
     "secret-token",
     "test-auth-token",
+    "test-key",
+    "test-secret",
+    "test-token",
     "test-token-placeholder",
     "token-oversized",
     "clawrouter-e2e-secret",
@@ -552,6 +555,9 @@ SOURCE_CODE_REFERENCE_VALUES = {
     "driverAccount.accessToken",
     "driverAccount.password",
     "driverPassword",
+    "data.session?.access_token",
+    "providerConfig.api_key",
+    "providerConfig.api_secret",
     "recoveryDevice.accessToken",
     "recoveryDevice.password",
     "resolution.value",
@@ -4887,6 +4893,36 @@ def call_arguments_risk(
     return False
 
 
+def truncated_call_arguments_risk(
+    arguments: str,
+    call_target: str,
+    *,
+    javascript_dialect: str | None = None,
+) -> bool:
+    if call_arguments_risk(
+        arguments,
+        call_target,
+        javascript_dialect=javascript_dialect,
+    ):
+        return True
+    for argument in split_top_level_call_arguments(arguments):
+        match = SECRET_FALLBACK_UNQUOTED_PATTERN.fullmatch(argument.strip())
+        if match is None:
+            continue
+        value = match.group("value")
+        if value.casefold() in SECRET_PLACEHOLDER_VALUES or any(
+            pattern.fullmatch(value)
+            for pattern in UNQUOTED_SECRET_REFERENCE_PATTERNS
+        ):
+            continue
+        if len(value) >= 7 and (
+            any(character.isdigit() for character in value)
+            or re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]*", value) is None
+        ):
+            return True
+    return False
+
+
 def balanced_delimiter_end(
     text: str,
     start: int,
@@ -4981,9 +5017,9 @@ def safe_secret_call_suffix(
                     pattern.search(visible_arguments)
                     for pattern in SECRET_FALLBACK_LITERAL_PATTERNS
                 )
-                or fallback_secret_risk(
+                or truncated_call_arguments_risk(
                     visible_arguments,
-                    minimum_length=12,
+                    target,
                     javascript_dialect=javascript_dialect,
                 )
                 else visible_end
@@ -5913,6 +5949,7 @@ def assignment_fallback_literal_spans(
         text,
         expression_start,
         expression_end,
+        include_nested=True,
     )
 
 
@@ -5993,6 +6030,8 @@ def top_level_fallback_value_spans(
     text: str,
     start: int,
     end: int,
+    *,
+    include_nested: bool = False,
 ) -> list[tuple[int, int]]:
     spans: list[tuple[int, int]] = []
     stack: list[str] = []
@@ -6031,7 +6070,20 @@ def top_level_fallback_value_spans(
                 elif current == "\\":
                     escaped = True
                 elif current == quote:
-                    if not stack and cursor > value_start:
+                    value = text[value_start:cursor]
+                    repeatable_nested_value = (
+                        include_nested
+                        and value.casefold() not in SECRET_PLACEHOLDER_VALUES
+                        and len(value) >= 7
+                        and any(character.isdigit() for character in value)
+                        and not any(
+                            pattern.fullmatch(value)
+                            for pattern in QUOTED_SECRET_REFERENCE_PATTERNS
+                        )
+                    )
+                    if cursor > value_start and (
+                        not stack or repeatable_nested_value
+                    ):
                         spans.append((value_start, cursor))
                     cursor += 1
                     break
@@ -6736,6 +6788,9 @@ def unified_diff_metadata(patch: str) -> str:
 
 
 REVIEW_SECRET_REDACTION = "[secret-like diff hunk redacted]"
+REVIEW_SECURITY_REDACTION = (
+    "[security-sensitive review material omitted before model review]"
+)
 
 
 def private_key_markers_balanced(text: str) -> bool:
@@ -6898,6 +6953,7 @@ def redact_secret_like_hunk_headers(
     )
     fragment_pattern = known_secret_fragment_pattern(ordered_secret_fragments)
     redacted: list[str] = []
+    omit_section = False
     for line in literal_lf_lines(section):
         body = line.rstrip("\r\n")
         ending = line[len(body) :]
@@ -6919,18 +6975,17 @@ def redact_secret_like_hunk_headers(
             marker_spans
             + known_secret_fragment_spans(raw_header_section, fragment_pattern),
         )
-        # Never replace a still-risky header wholesale: doing so can hide an
-        # unextracted value that repeats in otherwise innocuous diff content.
-        for dialect in dialects:
-            require_no_secret_values(
-                "review diff hunk header",
-                header_section,
-                javascript_dialect=dialect,
-            )
+        if any(
+            secret_text_risk(header_section, javascript_dialect=dialect)
+            for dialect in dialects
+        ):
+            omit_section = True
         redacted.append(
             f"{header_match.group('marker')} {header_match.group('ranges')} "
             f"{header_match.group('marker')}{header_section}{ending}"
         )
+    if omit_section:
+        return REVIEW_SECURITY_REDACTION + "\n"
     return "".join(redacted)
 
 
@@ -7024,10 +7079,7 @@ def redact_secret_like_diff_section(
             )
         )
     if len(secret_fragments) > MAX_REVIEW_SECRET_FRAGMENTS:
-        raise SystemExit(
-            "refusing review bundle with too many distinct secret-like values "
-            f"({len(secret_fragments)}; limit {MAX_REVIEW_SECRET_FRAGMENTS})"
-        )
+        return REVIEW_SECURITY_REDACTION + "\n"
     ordered_secret_fragments = sorted(
         secret_fragments,
         key=lambda fragment: (-len(fragment), fragment),
@@ -7100,6 +7152,23 @@ def redact_secret_like_diff_section(
                 new_spans, new_pem = pem_line_body_spans(content, new_pem)
                 spans.extend(new_spans)
             redacted_content = redact_review_spans(content, spans)
+            line_still_risky = (
+                old_line
+                and old_risk
+                and secret_text_risk(
+                    redacted_content,
+                    javascript_dialect=old_dialect,
+                )
+            ) or (
+                new_line
+                and new_risk
+                and secret_text_risk(
+                    redacted_content,
+                    javascript_dialect=new_dialect,
+                )
+            )
+            if line_still_risky:
+                redacted_content = REVIEW_SECRET_REDACTION
             redacted.append(f"{prefix}{redacted_content}{ending}")
         index = hunk_end
     return "".join(redacted)
@@ -7124,6 +7193,7 @@ def sensitive_repo_path_risk(rel: str) -> str | None:
     if (
         any(pattern.search(normalized) for pattern in SENSITIVE_NAME_PATTERNS)
         and not design_token_artifact_path(path, SENSITIVE_NAME_PATTERNS)
+        and not github_workflow_path(path)
     ):
         return "sensitive filename"
     return None
@@ -7157,6 +7227,14 @@ def design_token_artifact_path(
         part.lower() not in allowed_design_token_dirs
         and any(pattern.search(part) for pattern in sensitive_patterns)
         for part in path.parts[:-1]
+    )
+
+
+def github_workflow_path(path: Path) -> bool:
+    return (
+        path.parts[:2] == (".github", "workflows")
+        and len(path.parts) == 3
+        and path.suffix in {".yml", ".yaml"}
     )
 
 
@@ -7218,6 +7296,7 @@ def tracked_sensitive_repo_path_risk(rel: str) -> str | None:
     if (
         any(pattern.search(normalized) for pattern in TRACKED_SENSITIVE_NAME_PATTERNS)
         and not design_token_artifact_path(path, TRACKED_SENSITIVE_NAME_PATTERNS)
+        and not github_workflow_path(path)
     ):
         return "sensitive filename"
     return None
@@ -7299,46 +7378,111 @@ def diff_section_paths(section: str) -> tuple[str | None, str | None]:
     return old_path, new_path
 
 
+def tracked_sensitive_paths(paths: list[str]) -> set[str]:
+    return {
+        rel
+        for rel in paths
+        if tracked_sensitive_repo_path_risk(rel) is not None
+    }
+
+
+def omit_tracked_sensitive_diff_units(
+    patch: str,
+    paths: list[str],
+    blocked_paths: set[str],
+) -> str:
+    if not blocked_paths:
+        return patch
+    units = review_bundle_units(patch)
+    diff_indexes = [
+        index for index, unit in enumerate(units) if unit.startswith("diff --git ")
+    ]
+    if len(diff_indexes) != len(paths):
+        return REVIEW_SECURITY_REDACTION + "\n"
+    path_by_unit = dict(zip(diff_indexes, paths, strict=True))
+    retained = [
+        unit
+        for index, unit in enumerate(units)
+        if path_by_unit.get(index) not in blocked_paths
+    ]
+    retained.insert(0, REVIEW_SECURITY_REDACTION + "\n")
+    return "".join(retained)
+
+
+def redact_residual_review_unit(
+    unit: str,
+    expected_paths: set[str],
+    known_secret_fragments: set[str],
+) -> str:
+    if any(fragment and fragment in unit for fragment in known_secret_fragments):
+        return REVIEW_SECURITY_REDACTION + "\n"
+    if not unit.startswith("diff --git "):
+        if secret_text_risk(unified_diff_metadata(unit)):
+            return REVIEW_SECURITY_REDACTION + "\n"
+        if any(line.startswith("@@") for line in unit.splitlines()):
+            old_content, new_content = unified_diff_contents(unit)
+            return (
+                REVIEW_SECURITY_REDACTION + "\n"
+                if any(
+                    secret_text_risk(content)
+                    for content in (old_content, new_content)
+                )
+                else unit
+            )
+        return (
+            REVIEW_SECURITY_REDACTION + "\n"
+            if secret_text_risk(unit)
+            else unit
+        )
+    if secret_text_risk(unified_diff_metadata(unit)):
+        return REVIEW_SECURITY_REDACTION + "\n"
+    old_path, new_path = diff_section_paths(unit)
+    old_content, new_content = unified_diff_contents(unit)
+    for rel, content in ((old_path, old_content), (new_path, new_content)):
+        dialect = (
+            javascript_review_dialect(rel)
+            if rel is not None and rel in expected_paths
+            else None
+        )
+        if secret_text_risk(content, javascript_dialect=dialect):
+            return REVIEW_SECURITY_REDACTION + "\n"
+    return unit
+
+
 def validate_review_patch(
     label: str,
     paths: list[str],
     patch: str,
     limit: int | None = None,
 ) -> str:
-    blocked = [
-        f"{display_escape(rel, 500)} ({risk})"
-        for rel in paths
-        if (risk := tracked_sensitive_repo_path_risk(rel)) is not None
-    ]
-    if blocked:
-        details = "\n".join(f"- {item}" for item in blocked[:20])
-        more = f"\n... {len(blocked) - 20} more" if len(blocked) > 20 else ""
-        raise SystemExit(
-            f"refusing to include tracked sensitive paths in {label}:\n"
-            f"{details}{more}"
-        )
     patch_bytes = len(patch.encode("utf-8"))
     if limit is not None and patch_bytes > limit:
         raise SystemExit(
             f"{label} is too large to review safely "
             f"({patch_bytes} bytes; limit {limit}); split the change into smaller review targets"
         )
-    expected_paths = set(paths)
+    blocked_paths = tracked_sensitive_paths(paths)
+    patch = omit_tracked_sensitive_diff_units(patch, paths, blocked_paths)
+    expected_paths = set(paths) - blocked_paths
     units = review_bundle_units(patch)
     redacted_units: list[str] = []
     known_secret_fragments: set[str] = set()
     for unit in units:
         if unit.startswith("diff --git "):
-            unit, fragments = redact_unbalanced_private_key_hunks(unit)
-            known_secret_fragments.update(fragments)
+            try:
+                unit, fragments = redact_unbalanced_private_key_hunks(unit)
+                known_secret_fragments.update(fragments)
+            except SystemExit:
+                unit = REVIEW_SECURITY_REDACTION + "\n"
         redacted_units.append(unit)
     units = redacted_units
     patch = "".join(units)
-    for unit in units:
+    for unit_index, unit in enumerate(units):
         if not unit.startswith("diff --git "):
             continue
         old_path, new_path = diff_section_paths(unit)
         old_content, new_content = unified_diff_contents(unit)
+        omit_unit = False
         for rel, content in (
             (old_path, old_content),
             (new_path, new_content),
@@ -7348,19 +7492,26 @@ def validate_review_patch(
                 if rel is not None and rel in expected_paths
                 else None
             )
-            all_fragments = review_secret_fragments(
-                content,
-                javascript_dialect=javascript_dialect,
+            try:
+                all_fragments = review_secret_fragments(
+                    content,
+                    javascript_dialect=javascript_dialect,
+                )
+                known_secret_fragments.update(all_fragments)
+            except SystemExit:
+                omit_unit = True
+                break
+        if omit_unit:
+            units[unit_index] = REVIEW_SECURITY_REDACTION + "\n"
+            continue
+        try:
+            known_secret_fragments.update(
+                review_hunk_header_secret_fragments(unit, expected_paths)
             )
-            known_secret_fragments.update(all_fragments)
-        known_secret_fragments.update(
-            review_hunk_header_secret_fragments(unit, expected_paths)
-        )
+        except SystemExit:
+            units[unit_index] = REVIEW_SECURITY_REDACTION + "\n"
     if len(known_secret_fragments) > MAX_REVIEW_SECRET_FRAGMENTS:
-        raise SystemExit(
-            "refusing review bundle with too many distinct secret-like values "
-            f"({len(known_secret_fragments)}; limit {MAX_REVIEW_SECRET_FRAGMENTS})"
-        )
+        return REVIEW_SECURITY_REDACTION + "\n"
     patch = "".join(
         redact_secret_like_hunk_headers(
             unit,
@@ -7371,7 +7522,6 @@ def validate_review_patch(
         else unit
         for unit in units
     )
-    require_no_secret_values(label, unified_diff_metadata(patch))
     units = review_bundle_units(patch)
     patch = "".join(
         redact_secret_like_diff_section(
@@ -7383,35 +7533,16 @@ def validate_review_patch(
         else unit
         for unit in units
     )
-    require_no_known_secret_fragments(label, patch, known_secret_fragments)
+    patch = "".join(
+        redact_residual_review_unit(unit, expected_paths, known_secret_fragments)
+        for unit in review_bundle_units(patch)
+    )
     patch_bytes = len(patch.encode("utf-8"))
     if limit is not None and patch_bytes > limit:
         raise SystemExit(
             f"{label} is too large to review safely after redaction "
             f"({patch_bytes} bytes; limit {limit}); split the change into smaller review targets"
         )
-    sections = [unit for unit in review_bundle_units(patch) if unit.startswith("diff --git ")]
-    if sections:
-        for section in sections:
-            old_path, new_path = diff_section_paths(section)
-            old_content, new_content = unified_diff_contents(section)
-            for rel, content in (
-                (old_path, old_content),
-                (new_path, new_content),
-            ):
-                javascript_dialect = (
-                    javascript_review_dialect(rel)
-                    if rel is not None and rel in expected_paths
-                    else None
-                )
-                require_no_secret_values(
-                    f"{label} {rel or '<unknown>'}",
-                    content,
-                    javascript_dialect=javascript_dialect,
-                )
-    else:
-        for content in unified_diff_contents(patch):
-            require_no_secret_values(label, content)
     return patch
 
 
@@ -7528,7 +7659,9 @@ def file_bundle_snapshot(
     return text, False, None
 
 
-def safe_untracked_file_snapshots(repo: Path) -> list[tuple[str, str, bool]]:
+def collect_untracked_file_snapshots(
+    repo: Path,
+) -> tuple[list[tuple[str, str, bool]], int]:
     files = git_path_list(
         repo,
         *global_excludes_git_args(repo),
@@ -7537,7 +7670,7 @@ def safe_untracked_file_snapshots(repo: Path) -> list[tuple[str, str, bool]]:
         "--exclude-standard",
         "-z",
     )
-    blocked: list[str] = []
+    omitted = 0
     included: list[tuple[str, str, bool]] = []
     for rel in files:
         content, truncated, risk = file_bundle_snapshot(
@@ -7547,29 +7680,46 @@ def safe_untracked_file_snapshots(repo: Path) -> list[tuple[str, str, bool]]:
             allow_binary_omission=True,
         )
         if risk:
-            blocked.append(f"{display_escape(rel, 500)} ({risk})")
+            if (
+                sensitive_repo_path_risk(rel) is not None
+                or risk
+                in {
+                    "secret-like content",
+                    "symlink",
+                    "path outside repository",
+                }
+            ):
+                omitted += 1
+            else:
+                raise SystemExit(
+                    "cannot safely include untracked file "
+                    f"{display_escape(rel, 500)}: {risk}"
+                )
         else:
             included.append((rel, content, truncated))
-    if blocked:
-        details = "\n".join(f"- {item}" for item in blocked[:20])
-        more = f"\n... {len(blocked) - 20} more" if len(blocked) > 20 else ""
-        raise SystemExit(
-            "refusing to include untracked sensitive files in review bundle; "
-            "stage, ignore, remove, or redact them before running autoreview:\n"
-            f"{details}{more}"
-        )
-    return included
+    return included, omitted
+
+
+def safe_untracked_file_snapshots(repo: Path) -> list[tuple[str, str, bool]]:
+    snapshots, _omitted = collect_untracked_file_snapshots(repo)
+    return snapshots
 
 
 def safe_untracked_files(repo: Path) -> list[str]:
     return [rel for rel, _content, _truncated in safe_untracked_file_snapshots(repo)]
 
 
-def local_status(repo: Path, untracked: list[str]) -> str:
+def local_status(repo: Path, untracked: list[str], *, redact: bool = False) -> str:
+    if redact:
+        return REVIEW_SECURITY_REDACTION
     status = git(repo, "status", "--short", "--untracked-files=no").rstrip()
     lines = [status] if status else []
     lines.extend(f"?? {rel}" for rel in untracked)
     return "\n".join(lines)
+
+
+def redact_secret_like_review_metadata(text: str) -> str:
+    return REVIEW_SECURITY_REDACTION if secret_text_risk(text) else text
 
 
 def local_bundle(repo: Path) -> tuple[str, bool]:
@@ -7606,22 +7756,57 @@ def local_bundle(repo: Path) -> tuple[str, bool]:
         "--name-only",
         "-z",
     )
-    untracked_snapshots = safe_untracked_file_snapshots(repo)
+    untracked_snapshots, omitted_untracked = collect_untracked_file_snapshots(repo)
     untracked = [rel for rel, _content, _truncated in untracked_snapshots]
-    if not staged_patch.strip() and not unstaged_patch.strip() and not untracked:
+    omitted_tracked = len(
+        tracked_sensitive_paths(staged_paths) | tracked_sensitive_paths(unstaged_paths)
+    )
+    if (
+        not staged_patch.strip()
+        and not unstaged_patch.strip()
+        and not untracked
+        and not omitted_untracked
+    ):
         raise SystemExit("no local changes to review")
     staged_patch = validate_review_patch("local staged diff", staged_paths, staged_patch)
     unstaged_patch = validate_review_patch("local unstaged diff", unstaged_paths, unstaged_patch)
     parts = [
         "# Git Status",
-        local_status(repo, untracked),
+        redact_secret_like_review_metadata(
+            local_status(
+                repo,
+                untracked,
+                redact=bool(omitted_tracked or omitted_untracked),
+            )
+        ),
         "# Staged Diff",
-        git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--stat"),
+        (
+            REVIEW_SECURITY_REDACTION
+            if tracked_sensitive_paths(staged_paths)
+            else redact_secret_like_review_metadata(
+                git(repo, "diff", *SAFE_DIFF_FLAGS, "--cached", "--stat")
+            )
+        ),
         staged_patch,
         "# Unstaged Diff",
-        git(repo, "diff", *SAFE_DIFF_FLAGS, "--stat"),
+        (
+            REVIEW_SECURITY_REDACTION
+            if tracked_sensitive_paths(unstaged_paths)
+            else redact_secret_like_review_metadata(
+                git(repo, "diff", *SAFE_DIFF_FLAGS, "--stat")
+            )
+        ),
         unstaged_patch,
     ]
+    if omitted_tracked or omitted_untracked:
+        parts[0:0] = [
+            "# Review Input Redactions",
+            REVIEW_SECURITY_REDACTION,
+            (
+                f"Omitted tracked changes: {omitted_tracked}; "
+                f"omitted untracked files: {omitted_untracked}."
+            ),
+        ]
     input_truncated = False
     if untracked:
         parts.append("# Untracked Files")
@@ -7834,18 +8019,29 @@ def branch_bundle(repo: Path, base_ref: str) -> tuple[str, bool]:
             diff_range,
         ),
     )
+    omitted_tracked = bool(tracked_sensitive_paths(branch_paths))
     branch_patch = validate_review_patch("branch diff", branch_paths, branch_patch)
     return "\n\n".join(
         [
             "# Branch Diff",
-            f"base: {base_ref}",
-            git(
-                repo,
-                "diff",
-                *SAFE_DIFF_FLAGS,
-                "--stat",
-                "--end-of-options",
-                diff_range,
+            (
+                REVIEW_SECURITY_REDACTION
+                if secret_text_risk(base_ref)
+                else f"base: {base_ref}"
+            ),
+            (
+                REVIEW_SECURITY_REDACTION
+                if omitted_tracked
+                else redact_secret_like_review_metadata(
+                    git(
+                        repo,
+                        "diff",
+                        *SAFE_DIFF_FLAGS,
+                        "--stat",
+                        "--end-of-options",
+                        diff_range,
+                    )
+                )
             ),
             branch_patch,
         ]
@@ -7905,20 +8101,28 @@ def commit_bundle(repo: Path, commit_ref: str) -> tuple[str, bool]:
             commit_ref,
         ),
     )
+    omitted_tracked = bool(tracked_sensitive_paths(commit_paths))
     commit_patch = validate_review_patch("commit diff", commit_paths, commit_patch)
+    commit_summary = git(
+        repo,
+        "show",
+        *SAFE_DIFF_FLAGS,
+        "--stat",
+        "--format=fuller",
+        "--end-of-options",
+        commit_ref,
+    )
+    if omitted_tracked or secret_text_risk(commit_summary):
+        commit_summary = REVIEW_SECURITY_REDACTION
     return "\n\n".join(
         [
             "# Commit Diff",
-            f"commit: {commit_ref}",
-            git(
-                repo,
-                "show",
-                *SAFE_DIFF_FLAGS,
-                "--stat",
-                "--format=fuller",
-                "--end-of-options",
-                commit_ref,
+            (
+                REVIEW_SECURITY_REDACTION
+                if secret_text_risk(commit_ref)
+                else f"commit: {commit_ref}"
             ),
+            commit_summary,
             commit_patch,
         ]
     ), False
@@ -8384,11 +8588,15 @@ def render_review_prompt(
     datasets: str,
     chunk_position: tuple[int, int] | None = None,
 ) -> str:
-    target_line = f"{target} {target_ref}" if target_ref else target
+    safe_target_ref = (
+        REVIEW_SECURITY_REDACTION
+        if target_ref and secret_text_risk(target_ref)
+        else target_ref
+    )
+    target_line = f"{target} {safe_target_ref}" if safe_target_ref else target
     branch = current_branch(repo)
-    require_no_secret_values("current branch", branch)
-    if target_ref:
-        require_no_secret_values("review target ref", target_ref)
+    if secret_text_risk(branch):
+        branch = REVIEW_SECURITY_REDACTION
     scope_policy = review_scope_policy()
     chunk_policy = ""
     if chunk_position:
@@ -8425,6 +8633,7 @@ def render_review_prompt(
         - Before returning, sweep the bundle once more for independent defects in other files or failure modes that you may have stopped scanning for after an earlier find.
         - Include security findings: injection, secret leaks, authz/authn bypass, path traversal, unsafe deserialization, unsafe filesystem or shell use, privacy leaks, and credential handling.
         - Do not reject legitimate functionality merely because it touches shell, filesystem, network, auth, or sensitive data. Report a security finding only when the patch creates a concrete exploitable risk, removes an important safety check, or lacks validation at a trust boundary.
+        - Security-sensitive bundle material may be redacted or omitted before review. Continue reviewing the material that is present. A redaction notice is not itself a defect and does not prove either safety or vulnerability in the omitted material.
         - For each finding, use the smallest file/line location that demonstrates the issue.
         - If there are no actionable findings, return an empty findings array and mark the patch correct.
 

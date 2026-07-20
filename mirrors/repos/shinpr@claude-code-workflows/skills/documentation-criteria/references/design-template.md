@@ -107,12 +107,14 @@ Keywords determine test type and reduce ambiguity.
 
 **Format**: `[Keyword] <trigger/condition>, the system shall <expected behavior>`
 
+The rows below demonstrate EARS syntax only. Replace their domain, values, messages, and thresholds with requirements from the PRD or accepted requirement analysis; none is a default product requirement.
+
 ### [Functional Requirement 1]
 
-- [ ] **When** user clicks login button with valid credentials, the system shall authenticate and redirect to dashboard
-- [ ] **If** credentials are invalid, **then** the system shall display error message "Invalid credentials"
-- [ ] **While** user is logged in, the system shall maintain the session for configured timeout period
-- [ ] (ubiquitous, no keyword) The system shall display the data list with pagination of 10 items per page
+- [ ] **When** [accepted trigger occurs], the system shall [observable result]
+- [ ] **If** [accepted condition holds], **then** the system shall [observable conditional result]
+- [ ] **While** [accepted state holds], the system shall [observable state-dependent result]
+- [ ] (ubiquitous, no keyword) The system shall [observable invariant]
 
 ## Existing Codebase Analysis
 

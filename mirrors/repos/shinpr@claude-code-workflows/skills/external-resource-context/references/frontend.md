@@ -55,8 +55,6 @@ How rendered output is confirmed during implementation.
 
 **Follow-up (when not N/A)**: What is the entry command or URL? Examples — CLI invocation, dev-server URL, Storybook port, MCP name.
 
-## Self-Declaration
+## Domain Completion
 
-After the four structured axes, ask once: "Are there any other frontend external resources this work depends on that the structured questions did not cover?" Record any free-form answer under "Additional resources" in the storage file.
-
-Examples of resources that may surface only via self-declaration: brand asset CDNs, font hosting services, icon library subscriptions, A/B testing dashboards that gate visual variants, analytics dashboards used for visual KPIs.
+After these axes, return to the parent skill. The parent asks one integrated self-declaration question after all selected domains are complete. Frontend-specific resources such as asset/font hosting, icon libraries, experiment dashboards, or analytics dashboards can be captured in that answer.

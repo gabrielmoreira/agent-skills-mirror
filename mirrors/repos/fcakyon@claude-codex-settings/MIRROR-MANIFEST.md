@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed patterns, 63 file(s) materialized.
+Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 63 |
+| Files         | 64 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -113,15 +113,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 52 | ✓ | [`plugins/react-skills/skills/react-native-skills/SKILL.md`](plugins/react-skills/skills/react-native-skills/SKILL.md) |
 | 53 | ✓ | [`plugins/react-skills/skills/react-view-transitions/SKILL.md`](plugins/react-skills/skills/react-view-transitions/SKILL.md) |
 | 54 | ✓ | [`plugins/react-skills/skills/web-design-guidelines/SKILL.md`](plugins/react-skills/skills/web-design-guidelines/SKILL.md) |
-| 55 | ✓ | [`plugins/stripe-skills/skills/stripe-best-practices/SKILL.md`](plugins/stripe-skills/skills/stripe-best-practices/SKILL.md) |
-| 56 | ✓ | [`plugins/stripe-skills/skills/stripe-projects/SKILL.md`](plugins/stripe-skills/skills/stripe-projects/SKILL.md) |
-| 57 | ✓ | [`plugins/stripe-skills/skills/upgrade-stripe/SKILL.md`](plugins/stripe-skills/skills/upgrade-stripe/SKILL.md) |
-| 58 | ✓ | [`plugins/supabase-skills/skills/supabase-cli/SKILL.md`](plugins/supabase-skills/skills/supabase-cli/SKILL.md) |
-| 59 | ✓ | [`plugins/supabase-skills/skills/supabase-js/SKILL.md`](plugins/supabase-skills/skills/supabase-js/SKILL.md) |
-| 60 | ✓ | [`plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md`](plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md) |
-| 61 | ✓ | [`plugins/tavily-tools/skills/setup/SKILL.md`](plugins/tavily-tools/skills/setup/SKILL.md) |
-| 62 | ✓ | [`plugins/tavily-tools/skills/tavily-usage/SKILL.md`](plugins/tavily-tools/skills/tavily-usage/SKILL.md) |
-| 63 | ✓ | [`plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md`](plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md) |
+| 55 | ✓ | [`plugins/simplify/skills/simplify/SKILL.md`](plugins/simplify/skills/simplify/SKILL.md) |
+| 56 | ✓ | [`plugins/stripe-skills/skills/stripe-best-practices/SKILL.md`](plugins/stripe-skills/skills/stripe-best-practices/SKILL.md) |
+| 57 | ✓ | [`plugins/stripe-skills/skills/stripe-projects/SKILL.md`](plugins/stripe-skills/skills/stripe-projects/SKILL.md) |
+| 58 | ✓ | [`plugins/stripe-skills/skills/upgrade-stripe/SKILL.md`](plugins/stripe-skills/skills/upgrade-stripe/SKILL.md) |
+| 59 | ✓ | [`plugins/supabase-skills/skills/supabase-cli/SKILL.md`](plugins/supabase-skills/skills/supabase-cli/SKILL.md) |
+| 60 | ✓ | [`plugins/supabase-skills/skills/supabase-js/SKILL.md`](plugins/supabase-skills/skills/supabase-js/SKILL.md) |
+| 61 | ✓ | [`plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md`](plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md) |
+| 62 | ✓ | [`plugins/tavily-tools/skills/setup/SKILL.md`](plugins/tavily-tools/skills/setup/SKILL.md) |
+| 63 | ✓ | [`plugins/tavily-tools/skills/tavily-usage/SKILL.md`](plugins/tavily-tools/skills/tavily-usage/SKILL.md) |
+| 64 | ✓ | [`plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md`](plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md) |
 
 ---
 

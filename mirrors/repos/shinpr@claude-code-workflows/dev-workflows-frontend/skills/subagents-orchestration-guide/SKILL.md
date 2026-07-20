@@ -20,7 +20,7 @@ When receiving a new task, pass user requirements directly to requirement-analyz
 - Additions of constraints/conditions (data volume limits, permission controls, etc.)
 - Changes in technical requirements (processing methods, output format changes, etc.)
 
-**When any signal is detected → Restart from requirement-analyzer with integrated requirements**
+**When any signal is detected → Re-run requirement-analyzer with integrated requirements, identify which approved artifacts or task boundaries the change invalidates, and resume from the earliest invalidated gate. Preserve earlier outputs that remain valid.**
 
 ## Available Subagents
 
@@ -238,7 +238,7 @@ Rules:
 - Fullstack layer sequencing is defined only in `references/monorepo-flow.md`
 - `design-sync` is required whenever multiple Design Docs exist
 - `task-decomposer` begins only after work plan review (document-reviewer, doc_type WorkPlan; Medium/Large) and batch approval
-- Work plan review self-heals: on `verdict.decision` `needs_revision`, route back to work-planner (update) and re-review until `approved`/`approved_with_conditions`; `rejected` escalates to the user. The work plan is a derivation of the Design Doc, so plan-fidelity findings need no user adjudication
+- Work plan review self-heals: on `verdict.decision` `needs_revision`, route back to work-planner (update) and re-review until `approved`/`approved_with_conditions`; `rejected` escalates to the user. If re-review returns the same blocking finding and the update adds no new evidence or contract change, stop the loop and escalate that finding. The work plan is a derivation of the Design Doc, so plan-fidelity findings need no user adjudication while the loop is making observable progress
 
 ## Autonomous Execution Mode
 
@@ -290,7 +290,7 @@ graph TD
     VRESULT -->|All passed| REPORT[Completion report]
     VRESULT -->|Any failed| VFIX[task-executor: Verification fixes]
     VFIX --> QF2[quality-fixer: Quality check]
-    QF2 --> REVERIFY[Re-run failed verifiers only]
+    QF2 --> REVERIFY[Re-run both verifiers]
     REVERIFY --> VRESULT
     VRESULT -->|blocked| USERESC
 
@@ -309,7 +309,7 @@ graph TD
 | code-verifier | `status` is `consistent` or `mostly_consistent` | `status` is `needs_review` or `inconsistent` | — |
 | security-reviewer | `status` is `approved` or `approved_with_notes` | `status` is `needs_revision` | `status` is `blocked` → Escalate to user |
 
-**Re-run rule**: After fix cycle, re-run only verifiers that returned **fail**. Verifiers that passed on the previous run are not re-run.
+**Re-run rule**: After any post-implementation verification fix cycle, re-run both code-verifier and security-reviewer before accepting the result.
 
 ### Conditions for Stopping Autonomous Execution
 Stop autonomous execution and escalate to user in the following cases:
@@ -321,10 +321,11 @@ Stop autonomous execution and escalate to user in the following cases:
 2. **When requirement change detected**
    - Any match in requirement change detection checklist
    - Stop autonomous execution and re-analyze with integrated requirements in requirement-analyzer
+   - Mark affected PRD/UI Spec/ADR/Design Doc/Work Plan/task outputs invalid and resume from the earliest invalidated approval gate; preserve outputs outside the changed requirement's impact
 
 3. **When work-planner update restriction is violated**
-   - Requirement changes after task-decomposer starts require overall redesign
-   - Restart entire flow from requirement-analyzer
+   - Requirement changes after task-decomposer starts require requirement re-analysis and task invalidation
+   - Restart document design only when the re-analysis shows that an approved requirement, contract, data flow, verification strategy, or task boundary changed
 
 4. **When user explicitly stops**
    - Direct stop instruction or interruption

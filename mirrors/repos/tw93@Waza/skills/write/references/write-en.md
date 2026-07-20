@@ -8,7 +8,7 @@ Eliminate predictable AI writing patterns. Write like a human: varied, imperfect
 
 1. **Cut filler phrases.** Remove throat-clearing openers, emphasis crutches, and adverbs that only signal emphasis. Keep adverbs that carry real meaning.
 2. **Break formulaic structures.** Avoid binary contrasts, negative listings, dramatic fragmentation, rhetorical setups, false agency.
-3. **Use active voice.** Every sentence needs a human subject doing something. No inanimate objects performing human actions ("the complaint becomes a fix").
+3. **Use active voice.** Every sentence needs a human subject doing something. No inanimate objects performing human actions (see False agency below).
 4. **Be specific.** No vague declaratives ("The reasons are structural"). Name the specific thing. No lazy extremes ("every," "always," "never") doing vague work.
 5. **Put the reader in the room.** No narrator-from-a-distance voice. "You" beats "People." Specifics beat abstractions.
 6. **Vary rhythm.** Mix sentence lengths. Two items beat three. End paragraphs differently. No em dashes.
@@ -177,22 +177,6 @@ Examples, not exhaustive -- any construction that performs insight rather than d
 
 **Re-anchoring after cutting recaps (long-form articles):**
 After removing table re-reads and structural repetition, scan the remaining prose for places where a general explanation can be tied back to the author's concrete project or experience already mentioned in the piece. This is one of the strongest ways to restore human voice in technical long-form writing.
-
-### Quick Checks Before Delivering Prose
-
-- Any adverb only adding emphasis? Cut it. (Meaning-bearing adverbs stay.)
-- Any passive voice? Find the actor, make them the subject.
-- Inanimate thing doing a human verb? Name the person.
-- Sentence starts with "Here's"? Cut to the point.
-- Any "not X, it's Y" contrasts? State Y directly.
-- Three consecutive sentences match length? Break one.
-- Paragraph ends with punchy one-liner? Vary it.
-- Em-dash anywhere? Remove it.
-- Vague declarative ("The implications are significant")? Name the specific implication.
-- Meta-joiners ("The rest of this essay...")? Delete. Exception: a single TL;DR closing sentence that orients readers to the structure ahead is navigation, not filler. Keep it.
-- Any bullet starting with bold label? Reconsider the format.
-- Any "In conclusion" or "To sum up"? Cut it.
-- Any emoji? Remove it.
 
 ---
 

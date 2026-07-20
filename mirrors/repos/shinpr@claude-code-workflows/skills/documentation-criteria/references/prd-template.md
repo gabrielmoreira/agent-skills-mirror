@@ -84,7 +84,7 @@ C4Context
 - [Considerations for future scaling]
 
 ### Accessibility (when feature includes UI)
-- Compliance standard: [Default: WCAG 2.1 AA (use organization standard if available)]
+- Compliance standard: [Use the organization standard when defined; otherwise default to WCAG 2.2 AA]
 - Target assistive technologies: [Screen reader, keyboard operation, voice control, etc.]
 - Platform requirements: [e.g., app store review requirements]
 - Known constraints: [e.g., external library limitations]

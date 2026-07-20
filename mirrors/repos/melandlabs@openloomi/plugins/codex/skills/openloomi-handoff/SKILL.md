@@ -23,14 +23,23 @@ node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" setup-status
 ```
 
 If `ready: false`, follow the reported `nextAction` before attempting handoff.
-When `ready: true`, wrap the handoff request with the `taskPromptPrefix`
-returned by `workflow-guidance`, then pass that runtime-safe prompt over stdin:
+When `ready: true`, use the documented OpenLoomi handoff or scheduling API for
+the requested action. The generic `loomi-bridge run` command no longer exists.
+Include enough task context for OpenLoomi to create a follow-up, but do not
+include secrets. OpenLoomi runtime owns handoff persistence and notification
+routing.
 
-```bash
-printf "%s" "<taskPromptPrefix>\n\nOriginal user request: <handoff request>" | node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" run
-```
+---
 
-Do not send wording that asks the inner runtime to invoke Codex plugins,
-OpenLoomi plugins, skills, shell commands, or `loomi-bridge`. Include enough
-task context for OpenLoomi to create a follow-up, but do not include secrets.
-OpenLoomi runtime owns handoff persistence and notification routing.
+## Sandbox and network
+
+If `setup-status`, `workflow-guidance`, or any handoff/scheduling API call
+fails with a network error (`ECONNREFUSED`, `ETIMEDOUT`, "unreachable"),
+check whether Codex is running inside a sandbox before concluding OpenLoomi
+is stopped. Codex network sandboxing can block loopback access to the
+host's `localhost` (e.g. `http://localhost:3414`) and outbound traffic to
+the scheduling/notification channels OpenLoomi uses for follow-up delivery.
+Request approval and retry the same command outside the sandbox. If the
+outside-sandbox retry succeeds, treat the in-sandbox failure as a sandbox
+artifact and continue. See `openloomi` for the canonical
+`loopbackAccess.verification.commands` probe.

@@ -55,8 +55,6 @@ How asynchronous work is dispatched and observed.
 
 **Follow-up (when not N/A)**: Record the queue or scheduler name and how to enqueue / inspect jobs.
 
-## Self-Declaration
+## Domain Completion
 
-After the structured axes, ask once: "Are there any other backend external resources this work depends on that the structured questions did not cover?"
-
-Examples that may surface only via self-declaration: third-party SaaS APIs (payment, email, search index), distributed cache services (Redis, Memcached), object storage (S3, GCS), feature flag services consumed server-side, observability platforms (logs, traces, metrics).
+After these axes, return to the parent skill. The parent asks one integrated self-declaration question after all selected domains are complete. Backend-specific resources such as third-party services, distributed caches, object storage, feature flags, or observability platforms can be captured in that answer.

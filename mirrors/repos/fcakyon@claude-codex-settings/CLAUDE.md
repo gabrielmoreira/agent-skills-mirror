@@ -202,7 +202,7 @@ Path: `hooks/hooks.json`
 }
 ```
 
-Events: PreToolUse, PostToolUse, Stop, SubagentStop, SessionStart, SessionEnd, UserPromptSubmit, PreCompact, Notification.
+Events: PreToolUse, PostToolUse, Stop, SubagentStart, SubagentStop, SessionStart, SessionEnd, UserPromptSubmit, PreCompact, Notification.
 
 Hook types:
 
@@ -239,7 +239,7 @@ Commands are Claude Code only. Gemini CLI uses TOML commands. Other tools use sk
 
 ```
 Claude Code: /plugin marketplace add fcakyon/claude-codex-settings
-Codex CLI:   use .agents/plugins/marketplace.json or ~/.agents/plugins/marketplace.json, restart Codex, then install from /plugins
+Codex CLI:   codex plugin marketplace add fcakyon/claude-codex-settings, then codex plugin add <name>@claude-settings
 Cursor:      import marketplace or /add-plugin
 Gemini CLI:  gemini extensions install --path ./plugins/<name>
 ```
@@ -319,6 +319,8 @@ The `description` field in `plugin.json` and marketplace entries faces non-techn
 See `### Description handling` (Marketplace Plugin Conventions) for the list of files to update.
 
 ## Commit and PR Writing Style
+
+**Run the `/simplify` skill on the staged diff before every commit, then apply its findings. Docs-only diffs are a no-op.**
 
 This repo contains config files (JSON settings, allowlist rules, hooks) rather than application code. Commit messages and PR descriptions should be written in plain language that anyone can understand, not just Claude Code plugin developers.
 

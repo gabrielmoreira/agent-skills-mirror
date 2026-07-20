@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `tigicion/dao-code` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `tigicion/dao-code` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tigicion/dao-code` — 26 default patterns, 0 followed patterns, 3 fi
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 1 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/terminal-bench-debug-evolve/SKILL.md`](.claude/skills/terminal-bench-debug-evolve/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/terminal-bench-iterate/SKILL.md`](.claude/skills/terminal-bench-iterate/SKILL.md) |
-| 3 | ✓ | [`docs/harness/skills.md`](docs/harness/skills.md) |
+| 1 | ✓ | [`docs/harness/skills.md`](docs/harness/skills.md) |
 
 ---
 

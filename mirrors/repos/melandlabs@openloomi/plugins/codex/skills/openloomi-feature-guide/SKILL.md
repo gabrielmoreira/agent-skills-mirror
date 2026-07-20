@@ -1,6 +1,6 @@
 ---
 name: openloomi-feature-guide
-description: "Use this when users ask about openloomi features, capabilities, or how to use it. Examples: 'openloomi 怎么用', '你能做什么', 'What can you do?', 'How does openloomi work?', 'Tell me about openloomi features', 'What platforms does openloomi support?', 'How do I use scheduled tasks?', 'What is Insights system?', 'How do I connect Telegram?', 'How do I create automation?', '什么是 openloomi 事件?'"
+description: "Use this when users ask about openloomi features, capabilities, or how to use it. Examples: 'openloomi 怎么用', '你能做什么', 'What can you do?', 'How does openloomi work?', 'Tell me about openloomi features', 'What platforms does openloomi support?', 'How do I use scheduled tasks?', 'What is Insights system?', 'How do I connect Telegram?', 'How to create automation?', '什么是 openloomi 事件?'"
 ---
 
 > **Note:** If you haven't downloaded or installed openloomi yet, please refer to [Getting Started](https://openloomi.ai/docs/getting-started) for installation instructions.
@@ -661,8 +661,7 @@ A: Automatically extracted important information from your conversations, includ
 
 A: When OpenLoomi is used from Codex, the Codex runtime is the recommended
 desktop runtime. It lets OpenLoomi reuse the user's existing Codex CLI runtime
-instead of requiring a separate OpenLoomi AI provider key for the first plugin
-workflow.
+for the first plugin workflow.
 
 ```bash
 node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" codex-runtime-info
@@ -1027,3 +1026,16 @@ Step 4/4: What You'll Receive
 
 - openloomi website: https://openloomi.ai
 - openloomi documents: https://openloomi.ai/docs
+
+---
+
+## Sandbox and network
+
+Codex plugins run inside a sandbox that can block loopback access to the
+OpenLoomi desktop API and outbound traffic to release/integration endpoints.
+If a related `openloomi` command fails with a network error
+(`ECONNREFUSED`, `ETIMEDOUT`, "unreachable"), request approval and retry
+the same command outside the sandbox before concluding that openloomi is
+unavailable or that the install is broken. See `openloomi` and
+`openloomi-install` for the canonical sandbox handling rules and the
+`loopbackAccess.verification.commands` probe.

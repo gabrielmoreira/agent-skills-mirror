@@ -314,7 +314,7 @@ When conversion is required, clearly specify wrapper implementation or migration
 
 - Execute file output immediately (considered approved at execution).
 - ADR includes decisions, rationale, and principled guidelines (e.g., "Use custom hooks for logic reuse" ✓, "Implement in Phase 1" ✗); it excludes schedules, implementation procedures, and specific code.
-- Test derivation is a downstream agent responsibility.
+- Test derivation is outside this output.
 - Implementation samples MUST follow the loaded `typescript-rules` and `frontend-ai-guide` skills; include a sample only when it clarifies a contract or edge case prose cannot convey.
 
 ## Diagram Creation (using mermaid notation)
@@ -361,7 +361,7 @@ Draft each AC value-first, then expand it across requirement boundaries before a
 - Accessibility (keyboard navigation, screen reader support)
 
 **Exclude** (Low ROI in LLM/CI/CD environment):
-- External API real connections → Use MSW for API mocking instead
+- External API real connections → Use the repository's configured network mock layer (MSW when configured)
 - Performance metrics → Non-deterministic in CI environment
 - Implementation details → Focus on user-observable behavior
 - Exact pixel-perfect layout → Focus on content availability, not exact positioning

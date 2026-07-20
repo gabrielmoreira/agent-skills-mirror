@@ -4,7 +4,7 @@ description: "Write a handoff summary so another agent or person (or a fresh ses
 homepage: https://mohitagw15856.github.io/pm-claude-skills/skill/session-handoff.html
 metadata:
   {
-    "openclaw": { "emoji": "🪚" }
+    "openclaw": { "emoji": "🧠" }
   }
 ---
 

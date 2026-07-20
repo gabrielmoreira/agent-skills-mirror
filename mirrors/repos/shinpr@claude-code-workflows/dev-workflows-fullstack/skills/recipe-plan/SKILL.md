@@ -66,7 +66,7 @@ Invoke document-reviewer to review the work plan:
 - `subagent_type`: "dev-workflows-fullstack:document-reviewer"
 - `description`: "Work plan review"
 - `prompt`: "doc_type: WorkPlan target: docs/plans/[plan-name].md. Review semantic traceability to the Design Doc, early verification placement, real-boundary verification coverage, Failure Mode Checklist, and Review Scope."
-- The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input. Branch on the reviewer's `verdict.decision`: on `needs_revision`, re-invoke work-planner in update mode with the findings and re-review, repeating until `approved` or `approved_with_conditions`. On `rejected`, escalate to the user.
+- The work plan is a derivation of the Design Doc, so plan-fidelity findings are resolved without user input while the revision loop makes observable progress. Branch on the reviewer's `verdict.decision`: on `needs_revision`, re-invoke work-planner in update mode with the findings and re-review, repeating until `approved` or `approved_with_conditions`; if the same blocking finding repeats without new evidence or a contract change, stop and escalate it. On `rejected`, escalate to the user.
 
 ### Step 5: Present for Approval
 - Present the reviewed work plan to the user for batch approval. If the user requests changes, re-invoke work-planner with revised parameters and re-run Step 4.
@@ -89,4 +89,3 @@ When the approved plan includes E2E test skeletons or references commands/interf
 ```
 Optional preflight: `/recipe-prepare-implementation docs/plans/[plan-name].md` verifies these are implementable before build (exits no-op if all resolve).
 ```
-

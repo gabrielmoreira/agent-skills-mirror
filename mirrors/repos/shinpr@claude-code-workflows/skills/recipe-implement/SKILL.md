@@ -128,7 +128,7 @@ After all task cycles finish, run verification agents **in parallel** before the
 3. **Fix cycle** (when any verifier failed):
    - Consolidate all actionable findings into a single task file
    - Execute task-executor with consolidated fixes → quality-fixer
-   - Re-run only the failed verifiers (by the criteria in step 2)
+   - Re-run both code-verifier and security-reviewer
    - Repeat until all pass or `blocked` → Escalate to user
 
 4. **All passed** → Proceed to Final Cleanup

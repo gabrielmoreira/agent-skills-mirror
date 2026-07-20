@@ -1,7 +1,7 @@
 ---
 name: check
 description: "Reviews code diffs, PRs, issue queues, release readiness, commits, pushes, publishing, and project audits. Use when users ask in any language for code review, issue or PR triage, release gates, publishing follow-through, or project audits. Not for debugging root causes or prose review."
-when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 继续优化, 优化代码, 看看issue, 看看PR, release, publish, push, release reaction, GitHub reaction, 发布, 提交, 关闭issue, 发布表情, release表情, close issue, issue close, review my code, check changes, before merge, before release, code review, code-review, audit, project audit, 项目体检, 项目评分, 给项目打分, 深入分析项目代码, 评估项目质量, 代码质量评分, scorecard, linus review, rate this codebase, score this project"
+when_to_use: "review, 看看代码, 检查一下, 有没有问题, 是否需要优化, 合并前, 继续优化, 优化代码, 看看issue, 看看PR, release, publish, push, release reaction, GitHub reaction, 发布, 提交, 关闭issue, 发布表情, release表情, close issue, issue close, review my code, check changes, before merge, before release, 值得发布, ready to release, code review, code-review, audit, project audit, 项目体检, 项目评分, 给项目打分, 深入分析项目代码, 评估项目质量, 代码质量评分, scorecard, linus review, rate this codebase, score this project"
 dispatch_intent: "Code review, before merge, release gates, generated artifacts, safety sinks, publish/push/reaction follow-through, triage issues/PRs, project-wide code-quality audit scorecard"
 ---
 
@@ -20,7 +20,7 @@ Read the diff, find the problems, fix what can be fixed safely, ask about the re
 - Outcome: a review, release decision, or maintainer action grounded in the current diff, project context, and live evidence.
 - Done when: findings, fixes, shipped state, or blockers are stated with the commands, artifacts, or remote state that prove them.
 - Evidence: worktree status, diff, public project docs, manifests, CI, package contents, release or registry state, and current command output.
-- Output: concise findings first, then verification and shipped-state summary when applicable.
+- Output: concise findings first, then verification and shipped-state summary when applicable. Multi-step or ship-action runs close with a completion ledger (done / not applicable / remaining), never a narrative that leaves the user asking "is everything done".
 
 ## Worktree Safety Preflight
 
@@ -86,9 +86,8 @@ In this mode, do not run a code review. Instead:
 
 1. State which plan is being executed (first heading or summary line).
 2. Check for obvious repo drift: run `git status --short --branch -uall` and skim any changed files that contradict the plan. If drift makes the plan unsafe, name the specific conflict and stop.
-3. Work through each plan item as a to-do. Mark each complete as you go.
-4. After all items are done, run the project's verification command.
-5. Transition automatically into Ship mode if the project context or current thread indicates review-then-ship.
+3. After all items are done, run the project's verification command.
+4. Transition automatically into Ship mode if the project context or current thread indicates review-then-ship.
 
 ## Default Continuation (review-then-ship)
 
@@ -108,7 +107,7 @@ Activate when the user mentions: issue, PR, "review all", triage, "batch", or "�
 
 **Status answer order:** For "都解决了吗", "is this fixed", "is this ready", or similar status checks, answer in this order: code or commit state, branch or CI state, release artifact or registry state, then public issue or PR state. Do not collapse fixed-on-main, available in pre-release, next stable release, and already shipped.
 
-**Flow:** First identify the project's issue/PR host from public context. For GitHub projects, pull open items with `gh issue list -R <repo> --state open --limit 20` and `gh pr list -R <repo> --state open`. For non-GitHub projects, use the platform CLI/API named by the project docs or user request; if none exists, stop and report the missing integration instead of pretending GitHub commands apply. For each item, check current state with the project's release boundary: latest public release, main branch, preview/nightly/beta channel, registry/appcast, and target issue/PR status. If the fix is already in the current public release or documented pre-release channel, close with that exact upgrade path. If fixed on `main` but unreleased, reply "已修复，等下一个版本 release" and close only when project convention or the current user request allows fixed-on-main closure; otherwise leave it open with the next-release note. If no fix exists, analyze and act. Fix now if possible (`fix: closes #N` commit); for valid-but-unreleased items acknowledge and leave open; for invalid items give one-two sentence reason and close.
+**Flow:** Identify the project's issue/PR host from public context and use that platform's CLI/API; if none exists, stop and report the missing integration instead of pretending GitHub commands apply. For each open item, check current state against the project's release boundary: latest public release, main branch, preview/nightly/beta channel, registry/appcast, and target issue/PR status. Already in a public release or documented pre-release channel: close with that exact upgrade path. Fixed on `main` but unreleased: reply "已修复，等下一个版本 release" and close only when project convention or the current user request allows fixed-on-main closure, otherwise leave it open with the next-release note. No fix yet: analyze and act. Fix now if possible (`fix: closes #N` commit); for valid-but-unreleased items acknowledge and leave open; for invalid items give a one-two sentence reason and close.
 
 Before final conclusions in a live queue, refresh the issue/PR list once more and re-read any item that changed during the run. If evidence is incomplete, hold the item instead of closing it on a guess.
 
@@ -125,14 +124,14 @@ triage:           N reviewed, N closed, N deferred
 
 Activate when the user asks "深入分析 X 是不是值得发新版本", "is this worth a new release", "值不值得发版", or similar.
 
-1. Run `git log <last-tag>..HEAD --oneline` (find last tag with `git tag --sort=-version:refname | head -1`).
-2. Count and classify commits: feat (new feature), fix (bug fix), chore/docs/refactor (internal).
-3. Output:
-   - **Commit summary**: N feat, N fix, N chore since last release
-   - **Verdict**: release / skip (one line)
-   - **Recommended version bump**: patch (fixes only), minor (feat present), major (breaking change)
-   - **Key risk**: one sentence on the biggest risk in this batch
-4. If verdict is "release", offer to transition into Ship mode.
+Classify every commit since the last published tag (the tag is the baseline, not a local VERSION file), then output:
+
+- **Commit summary**: N feat, N fix, N chore since last release
+- **Verdict**: release / skip (one line)
+- **Recommended version bump**: patch (fixes only), minor (feat present), major (breaking change)
+- **Key risk**: one sentence on the biggest risk in this batch
+
+If the verdict is "release", offer to transition into Ship mode.
 
 ## Ship / Release Follow-through
 
@@ -141,7 +140,7 @@ Activate when the user asks to commit, tag, release, publish, push, reply on an 
 This mode extends review; it does not skip review. Before any public or irreversible action:
 
 1. Extract release rules from public project context: README, manifests, CI workflows, release notes, package scripts, changelogs, and explicit user instructions in the current thread.
-2. Fill the Release Gate 2.0 matrix from `references/project-context.md`: review base, dirty/staged/untracked state, latest tag, origin sync, version fields, generated artifacts, package/archive contents, release assets, registry/appcast/CI, and public issue/PR state.
+2. Fill the Release Gate 2.0 matrix from `references/project-context.md`. Seed the deterministic rows with `python3 <skill-base-dir>/scripts/release_gate.py --root <project>` (worktree state, remote sync, tag baseline, version field sync, changelog mention) and paste its status lines as evidence; the remaining rows (generated artifacts, package/archive contents, release assets, registry/appcast/CI, public issue/PR state) stay judgment calls with their own evidence.
 3. Verify generated or bundled outputs, version fields, release notes, package contents, and required artifacts are in sync. Prefer dry-run commands when the ecosystem provides them. When drafting release notes or update-feed copy, follow `/write` Release Note Template Mode; for Chinese copy, load its zh release-notes rules before the first draft, not after a tone complaint -- translation-flavored Chinese notes are a defect, not a polish item.
    Before drafting release notes, read the repo's previous published release (`gh release view` the latest tag) and treat its title convention, item count, per-item length, and language layout as the hard template; replace content only, never invent a new format.
    Generated deliverables include tracked archives, ignored dist files, appcasts, site/download copy, registry packages, checksums, and release assets. If project docs require them, regenerate, inspect, and stage or upload them explicitly even when they are ignored by git; do not infer readiness from source-only tests. For remote assets, prefer downloading or reading back the published artifact and comparing entries, checksums, or manifest contents; release page text, file size, or workflow success alone is not artifact proof.
@@ -157,7 +156,7 @@ This mode extends review; it does not skip review. Before any public or irrevers
 
 Activate this gate when a release candidate was cancelled, a preview or beta had repeated bug-fix churn, or the user asks whether a delayed release is finally safe. Load `references/release-surfaces.md` (Reworked Or Cancelled Release Gate): review from the last public stable tag through `HEAD` by shipped risk surface, and output two decisions, whether the preview keeps taking user testing and whether stable release prep can start.
 
-End with the concrete shipped state: commit hash, tag, release URL, registry/version result, pushed branch, release asset state, release reaction state, issue/PR state, and any remaining blockers. Omit fields that do not apply.
+Lead the verdict with an explicit go / no-go (ship, or the named blockers), then the concrete shipped state: commit hash, tag, release URL, registry/version result, pushed branch, release asset state, release reaction state, issue/PR state, and any remaining blockers. Omit fields that do not apply.
 
 ## Project Audit Mode
 
@@ -167,9 +166,9 @@ Activate when the user asks for a project-wide code-quality scorecard: "audit", 
 
 1. Run `python3 <skill-base-dir>/scripts/audit_signals.py --root <project>` from the target repo, with `<skill-base-dir>` replaced by this skill's base directory. The script emits labelled blocks (`=== FILE SIZE HOTSPOTS ===` ... `=== DENYLIST IN BUILD ===`) each ending with `status: PASS|WARN|FAIL|N/A`.
 2. Skim the largest source files surfaced by `FILE SIZE HOTSPOTS` (typically 3-5; stop sooner if the architecture is already clear).
-3. Read `CLAUDE.md` / `AGENTS.md` / `README.md` to learn the project's own stated conventions before judging it against generic ones.
+3. Read `CLAUDE.md` / `AGENTS.md` / `README.md` to learn the project's own stated conventions before judging it against generic ones. The repo's agent guidance itself is part of the audited surface: verify its commands and paths still exist, and report stale, conflicting, or deletable rules as findings.
 4. Apply the four-axis rubric below. Each axis is independently scored 0-10. Overall = arithmetic mean.
-5. Surface 3-7 concrete findings per axis. Each finding: file:line citation when possible, severity (CRIT/STRUCT/INCR), one-line fix.
+5. Report every finding that moves an axis score, each with file:line citation when possible, severity (CRIT/STRUCT/INCR), and a one-line fix. Zero findings on an axis is a valid result; do not pad to a quota.
 6. Output to **terminal only**. Do not create files in the target repo. If the user follows up with "save it", offer `./docs/<project>-audit.md` then; default is ephemeral.
 
 **Rubric**
@@ -327,11 +326,11 @@ If found, either apply the doc update as `safe_auto` (when the invariant is clea
 
 ## Specialist Review (Standard and Deep only)
 
-Load `references/persona-catalog.md` to determine which specialists activate. Launch all activated specialists in parallel via the environment's agent or sub-agent facility when available, passing the full diff. If no parallel reviewer facility exists, run the specialist passes sequentially in the same session.
+Load `references/persona-catalog.md` to determine which specialists activate. When the environment has an agent or sub-agent facility, launch all activated specialists in parallel, each with the full diff and its own persona brief. If no parallel reviewer facility exists, run the specialist passes sequentially in the same session.
 
 Merge findings: when two specialists flag the same code location, keep the higher severity and note cross-reviewer agreement. Findings on different code locations are never duplicates even if they share a theme.
 
-Treat each specialist finding as a claim to verify, not a fact to act on. Before routing a finding to Autofix or sign-off, re-read the cited code this turn and confirm it is real and live: not already handled elsewhere, not consistent-by-design, not a latent-only risk labeled as a live bug. Parallel reviewers over-report from name-based inference and partial context; drop or downgrade what dissolves on direct read, and cite the verification path.
+Every specialist finding is a claim to verify, not a fact to act on. For HIGH and CRITICAL claims, when the agent facility allows it, spawn one independent skeptic per finding whose only brief is to refute it against the actual code; a finding the skeptic refutes on direct read is dropped or downgraded regardless of which persona raised it. Without the facility, run the skeptic pass yourself: re-read the cited code this turn and confirm the claim is real and live, not already handled elsewhere, not consistent-by-design, not a latent-only risk labeled as a live bug. Parallel reviewers over-report from name-based inference and partial context; drop what dissolves on direct read, and cite the verification path before routing anything to Autofix or sign-off.
 
 ## Autofix Routing
 
@@ -346,7 +345,7 @@ Apply all `safe_auto` fixes before surfacing the `gated_auto` confirmation block
 
 ## Adversarial Pass (Deep only)
 
-"If I were trying to break this system through this specific diff, what would I exploit?" Four angles (see `references/persona-catalog.md`): assumption violation, composition failures, cascade construction, abuse cases. Suppress findings below 0.60 confidence.
+"If I were trying to break this system through this specific diff, what would I exploit?" Four angles (see `references/persona-catalog.md`): assumption violation, composition failures, cascade construction, abuse cases. When the agent facility exists, run the four angles as parallel agents, each blind to the others' findings: convergence from independent angles raises confidence, and singleton findings face the same per-finding skeptic verification as specialist claims. Suppress findings below 0.60 confidence.
 
 ## Platform Operations
 

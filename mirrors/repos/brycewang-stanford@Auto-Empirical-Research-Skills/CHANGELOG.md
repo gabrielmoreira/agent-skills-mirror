@@ -5,6 +5,20 @@ This is the project's narrative changelog. `README.md` keeps only a short
 
 ## Unreleased
 
+- Hardened the whole-repo skill encapsulation. The root router
+  [`SKILL.md`](SKILL.md) now declares its `license` in frontmatter, warns
+  that the two catalog JSON files are ~1 MB each and shows a copy-paste
+  query one-liner instead of inviting a full read, and adds ten
+  previously-unrouted method rows to the routing table (matching/propensity
+  scores, structural estimation, time series, text-as-data/NLP, spatial/GIS,
+  RCT design, survey design, open science, grant proposals, and conference
+  posters — each verified against `catalog/skills.json`). A new
+  `validate_root_skill_stats` check in `scripts/validate-repo.py` (wired
+  into `make validate`) keeps the router's hardcoded numbers honest: the
+  "N skills across M vendored collections" line, the duplicate bare-name
+  count, and the legacy-collections list are now all cross-checked against
+  the committed catalog, so a catalog refresh can no longer strand the
+  router with stale stats.
 - Added a generated **rigor coverage badge** (shields.io endpoint JSON at
   [`docs/badges/rigor-coverage.json`](docs/badges/rigor-coverage.json), built
   by `scripts/build-release-notes.py` and freshness-checked in `make

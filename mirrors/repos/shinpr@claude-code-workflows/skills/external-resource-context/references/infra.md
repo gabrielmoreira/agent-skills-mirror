@@ -55,8 +55,6 @@ How infrastructure and application changes reach environments.
 
 **Follow-up (when not N/A)**: Record the pipeline name or platform and the branch / tag convention that triggers each environment.
 
-## Self-Declaration
+## Domain Completion
 
-After the structured axes, ask once: "Are there any other infrastructure external resources this work depends on that the structured questions did not cover?"
-
-Examples that may surface only via self-declaration: state-storage backend for IaC tools, runbook documents for incident response, on-call rotation, observability dashboards, cost monitoring tools, compliance / audit logging targets.
+After these axes, return to the parent skill. The parent asks one integrated self-declaration question after all selected domains are complete. Infrastructure-specific resources such as IaC state storage, runbooks, on-call information, observability/cost dashboards, or compliance logging targets can be captured in that answer.

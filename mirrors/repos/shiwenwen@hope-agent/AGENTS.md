@@ -13,6 +13,12 @@ pnpm dev:browser-host  # 仅重建 debug 版 ha-browser-host 并落到 dev 路�
 pnpm tauri build       # 构建生产包
 pnpm sync:version      # 以 package.json 为单一来源，同步各 Cargo.toml / tauri.conf.json / Cargo.lock 版本
 pnpm release:verify    # 校验 package.json / src-tauri 版本一致；可附 -- --tag vX.Y.Z
+cargo run -p ha-eval --locked -- validate  # 校验专项评测 schema / policy / suite / fixture
+cargo run -p ha-eval --locked -- model validate  # 校验真实模型 Campaign 资产（不调用模型）
+cargo run -p ha-eval --locked -- model smoke --server-bin target/debug/hope-agent-server --output target/eval-smoke/trial.json  # fake Provider 黑盒 smoke（零费用）
+cargo run -p ha-eval --locked -- model app-smoke --sidecar target/debug/hope-agent-eval --server-bin target/debug/hope-agent-server  # App/Sidecar 全链 fake smoke（零费用）
+pnpm prepare:eval-sidecar  # 为当前 Tauri target 构建并准备 release 版评测 Sidecar
+node scripts/verify-eval-version-lock.mjs --base <base-sha>  # 校验专项评测版本锁只追加、不覆写
 pnpm typecheck         # 前端类型检查（tsc -b）
 pnpm lint              # Lint
 pnpm test              # Vitest（一次性跑完）
@@ -46,6 +52,9 @@ pnpm test                                                                    # C
 ```
 
 - **clippy / test 只覆盖 `ha-core` + `ha-server`**（CI 也是如此）；`src-tauri` 不在钩子内，tauri-specific 问题用 `cargo {clippy,test} --workspace` 自查
+- **完整能力评测不进 PR / pre-push**：Coding / Domain / Dreaming / Memory Retrieval 整包走独立 `hope-agent-eval` 与 `Capability Evals` workflow（weekly + 发版前精确 SHA）；默认 Cargo test 只保留快速契约测试。详见 [`capability-eval.md`](docs/architecture/capability-eval.md)
+- **PR 只跑零费用评测基础设施 smoke**：Linux Rust job 会以本地 fake Provider 驱动真实 Hope Server，校验模型/tool/Goal/Loop 归因与 trial schema；它不使用真实 API Key、不衡量模型能力，也不替代 nightly/weekly/release Campaign
+- **真实模型 Campaign 同样不进 PR / pre-push**：`hope-agent-eval model` 只有显式本地运行或 `Live Model Campaign`（nightly / weekly / pre-release / monthly）才调用 Provider；Dashboard“能力评测”可通过签名 Sidecar 显式运行 Hope Core Quick/Standard/Reliability/Custom，Coding / Domain 原入口与历史继续兼容。App 只传模型/凭据引用，owner 后端解析 Key；已登录 Codex 仅在 App 本机 diagnostic 可选，owner 必须先确保 token 剩余寿命覆盖 `maxWallSeconds + margin`（不足则 owner 内刷新、失败 fail-fast），只向隔离进程传短期 access token + account id + expires-at，禁止传 OAuth 文件/refresh token，受保护 Runner 必须拒绝此凭据类型。本地 source 永远是 diagnostic，不得晋升，发布只接受受保护 Runner 的 clean exact-SHA evidence。详见 [`live-model-evaluation.md`](docs/architecture/live-model-evaluation.md)
 - **Rust 版本**由 [`rust-toolchain.toml`](rust-toolchain.toml) 固定，本地 / CI 共用
 - **应急开关**：`HA_SKIP_PREPUSH=1`（整段跳过，仅限纯 `.md` / 弱网紧急）/ `HA_SKIP_PREPUSH_TEST=1`（只跳 cargo test）。**禁止 `--no-verify`**——会绕过 GPG 等其它钩子
 
@@ -76,13 +85,17 @@ pnpm test                                                                    # C
 - 两个必跑 workflow 必须监听 `merge_group` 的 `checks_requested`，确保 Merge Queue 能在临时合并提交上产出全部 required checks
 - GitHub ruleset `main-branch-protection` 的 `conditions.ref_name.include` 覆盖 `~DEFAULT_BRANCH` + `refs/heads/release/**`：必须 PR、必跑 8 项 status check、禁 force push、禁删分支、`enforce_admins: true`
 - 修改 workflow 的 job 名或 matrix 时需同步通过 `gh api` 更新 ruleset 的 `required_status_checks` context 列表
+- `capability-eval.yml` 不属于 required check；release policy 初始 advisory，达到稳定性条件后只通过配置 PR 切 enforce。发版 evidence 必须来自 GitHub、`dirty=false` 且 SHA/digest 精确匹配；本地结果不得替代
+- `model-campaign.yml` 也不属于 required check；真实模型 evidence 与 deterministic evidence 物理分离、互不替代。隔离 `config.json` 禁止保存 Provider Key，Key 只能通过受保护 `model-eval` environment 的 `MODEL_EVAL_PROVIDER_SECRETS_B64` 注入 Hope Server 内存；Server/Supervisor token 必须独立。只允许评测专用账号、合成/授权脱敏数据及 Provider/suite allowlist 出网，禁止个人生产账号、真实用户数据和不受约束的公网访问。受保护 Runner 必须通过 Bubblewrap mount/PID namespace 只暴露合成数据目录，checkout 禁止持久化 GitHub 凭据，Supervisor 必须回收完整后代树；缺少隔离能力时 fail closed。签名 registry 尚未配置时保留普通 evidence、跳过 bundle 签名；registry 存在后签名链任一错误 fail closed，导入信任刷新必须同时匹配 key id 与公钥 SHA-256。Headless Server 只接受显式绝对 `HA_EVAL_TRUST_REGISTRY_PATH`，禁止 cwd/exe ancestor 搜索。模型轨道转 enforce 只能通过 `evals/live/policy/release.json` 配置 PR
 
 ## 项目结构
 
 ```
-Cargo.toml              Workspace 根（members: crates/ha-core, crates/ha-server, crates/ha-browser-host, src-tauri）
+Cargo.toml              Workspace 根（含产品 crates + ha-eval-spec / ha-eval）
 crates/
   ha-core/              核心业务逻辑（零 Tauri 依赖，纯 Rust 库）
+  ha-eval-spec/         专项评测 manifest / policy / evidence 协议（不依赖 ha-core）
+  ha-eval/              独立确定性专项评测 + 真实模型 Campaign 控制面 CLI
   ha-server/            HTTP/WS 服务器（axum，REST API + WebSocket 流式推送）
   ha-browser-host/      浏览器后端辅助进程（native messaging broker / CDP host）
 src-tauri/              Tauri 桌面 Shell（薄壳，调用 ha-core）
@@ -90,11 +103,12 @@ src/                    前端（React + TypeScript）
   components/           chat/ settings/ dashboard/ cron/ common/ ui/ 等
   lib/                  Transport 抽象层：transport.ts + transport-tauri.ts + transport-http.ts
   i18n/locales/         多语言翻译文件（语言集见 src/i18n/locales/）
+evals/live/             真实模型 scenario/suite/policy/App profile/schema/trust 资产
 skills/                 内置技能（meta / 编程方法论 vendor / 办公方法论原创）
 docs/architecture/      子系统设计文档（跨 PR 必读单一真相源）
 ```
 
-ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `knowledge/` `skills/` `tools/` `channel/` `subagent/` `team/` `cron/` `acp/` `dashboard/` `recap/` `awareness/` `config/` `session/` `project/` `plan/` `goal/` `workflow/` `loop_control.rs` `worktree.rs` `lsp.rs` `review.rs` `verification.rs` `context_retrieval.rs` `coding_eval.rs` `coding_improvement.rs` `domain_workflow.rs` `domain_quality.rs` `domain_eval.rs` `ask_user/` `async_jobs/` `wakeup/` `failover/` `platform/` `security/` `logging/` `local_llm/`。Vendor skill 来源记录在 `THIRD_PARTY_NOTICES.md`。
+ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `knowledge/` `skills/` `tools/` `channel/` `subagent/` `team/` `cron/` `acp/` `dashboard/` `evaluation/` `recap/` `awareness/` `config/` `session/` `project/` `plan/` `goal/` `workflow/` `loop_control.rs` `worktree.rs` `lsp.rs` `review.rs` `verification.rs` `context_retrieval.rs` `coding_eval.rs` `coding_improvement.rs` `domain_workflow.rs` `domain_quality.rs` `domain_eval.rs` `ask_user/` `async_jobs/` `wakeup/` `failover/` `platform/` `security/` `logging/` `local_llm/`。Vendor skill 来源记录在 `THIRD_PARTY_NOTICES.md`。
 
 ## 技术栈
 
@@ -147,7 +161,7 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `kno
 - **三 Crate 架构**：业务逻辑全进 `ha-core`（**零 Tauri 依赖**），`ha-server` 与 `src-tauri` 只做适配薄壳
 - **EventBus + 共享状态**：核心层用 `ha-core::EventBus` 替代 Tauri `APP_HANDLE`；Tauri 用 `State<AppState>`，server 用 `State<Arc<AppContext>>`
 - **Transport 抽象**：前端走 [`src/lib/transport.ts`](src/lib/transport.ts)，**新 invoke 必须同时实现 Tauri + HTTP 两套适配**
-- **桌面 release 单一来源**：`package.json`，`pnpm version` 钩子（[`scripts/sync-version.mjs`](scripts/sync-version.mjs)）同步 `src-tauri/Cargo.toml` / `tauri.conf.json` / `crates/ha-server/Cargo.toml` / `crates/ha-core/Cargo.toml`。`ha-server` 承载 Docker headless bin `hope-agent-server` 的 `CARGO_PKG_VERSION`，必须随桌面版本同步——`--version` 与 `app_update` `current_version` 都读它；`ha-core` 不发布也不是 user-facing binary，但作为 workspace 共享 crate 跟着 bump 让整个产品版本一致。CI tag 构建前跑 `pnpm release:verify -- --tag vX.Y.Z` 校验上面五个来源 + `Cargo.lock` 一致。Updater 私钥严禁入仓
+- **桌面 release 单一来源**：`package.json`，`pnpm version` 钩子（[`scripts/sync-version.mjs`](scripts/sync-version.mjs)）同步 `src-tauri/Cargo.toml` / `tauri.conf.json` / `crates/ha-server/Cargo.toml` / `crates/ha-core/Cargo.toml` / `crates/ha-eval/Cargo.toml`。`ha-server` 承载 Docker headless bin `hope-agent-server` 的 `CARGO_PKG_VERSION`，必须随桌面版本同步——`--version` 与 `app_update` `current_version` 都读它；`ha-core` 与 `ha-eval` 不发布给用户，但跟着 bump 让产品版本和 release evidence 一致。CI tag 构建前跑 `pnpm release:verify -- --tag vX.Y.Z` 校验全部来源 + `Cargo.lock` 一致。Updater 私钥严禁入仓
 - **API Key 鉴权**：HTTP/WS 走 Bearer Token（[`ha-server/middleware.rs`](crates/ha-server/src/middleware.rs)），`/api/health` 免鉴权；浏览器 WS 用 `?token=` 兼容
 - **运行模式 getter**：`ha_core::runtime_role()` / `is_desktop()`，避免给共享函数加 mode 参数
 
@@ -193,7 +207,9 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `kno
 - **Deep Resolver 自动裁决红线**：Light 后可跑确定性过期 + 有界 graph-first LLM sweep（默认组数见 `default_auto_resolve_max_groups`）。已知多值谓词先 graph-noop；自动冲突仅在高置信时写 `needs_review`，**永不自动 supersede**；自动 near-duplicate merge 除高置信外还必须有 alias 图边或词法阈值二次佐证。低置信 / 未知 relation / LLM 失败均 no-op。claim / 图谱文本进 prompt 前 sanitize，rationale 落库前脱敏限长；改动分组 / 基数规则 / 自动决策映射时必须更新 `auto_resolver_graph_planning` fixture 或保既有绿
 - **Memory UX v2 自动召回**：全局 `memory.recall.enabled` 默认关；关闭时只自动使用 Core，但模型仍可按需调用 Memory tools。用户显式开启后运行零 LLM 的 Fast Recall，`memory.recall.includeClaims`（默认 true）决定是否纳入 effective-active claims，过期 / superseded / archived / needs_review 不回灌；Deep Recall 独立默认关。旧 `ActiveMemoryConfig.enabled/include_claims` 只保留一个 minor 的 per-agent 兼容 / V1 rollback 语义，不得迁移成全局同意；incognito 全链归零
 - **Lucid Review 用户纠错闭环**：唯一编排入口 `claims::review`——`update_claim`（PATCH 语义：edit / status / move scope / pin-unpin）+ `forget_claim`（archive / permanent）；decision-type 由 `resolve_update` 纯函数从 diff 派生。**红线**：① 每个用户操作落 `dreaming::record_user_action`（完成态 run + 单 decision）；② approve/edit/reject/expire/move_scope 写最高权重 `manual_correction` evidence，pin/unpin/flag 不写；③ content 变更后 `reembed_claim` 使下一轮召回反映新文本；④ forget archive 翻 `archived` + link 转 `managed` + 仅独管的 memory `pinned=0`，permanent 删 claim 图谱 + 仅独管的 orphan memory；⑤ 发 `memory:claim_changed`。owner 平面 `claim_update` / `claim_forget`（对齐 HTTP `PATCH /api/claims/{id}` / `POST /api/claims/{id}/forget`，本机 / API key 信任）**无 agent 工具面**——claim 纠错只对用户开放，模型不能自改
-- **确定性评测**：`memory/dreaming/eval.rs` golden-fixture + `tests/fixtures/dreaming/*.json` + `tests/dreaming_eval.rs`（**无 LLM**，只测安全红线：作用域隔离 / 过期抑制 / 证据可追溯 / 冲突进待审 / legacy-sync 隐藏 / 证据 fail-closed）。**契约**：改动 claim 读路径 / effective-status / hidden-set / scope 过滤 / evidence 授权时，须加 fixture case 或保既有 fixture 绿
+- **确定性评测**：`memory/dreaming/eval.rs` + `evals/suites/memory-dreaming/fixtures/*.json` 由独立 `hope-agent-eval` 运行（**无 LLM、不进默认 Cargo test**），只测安全红线：作用域隔离 / 过期抑制 / 证据可追溯 / 冲突进待审 / legacy-sync 隐藏 / 证据 fail-closed。**契约**：改动 claim 读路径 / effective-status / hidden-set / scope 过滤 / evidence 授权时，须加 fixture case、提升 suite version，并保专项评测绿
+- **专项评测版本与网络边界**：`evals/version-lock.json` 已有 `id@version` 只许保留原 digest，新内容必须提升版本并追加 key；PR 的 Rust fmt job 对比 base SHA 强制 append-only。GitHub capability eval 的 case 必须在仅 loopback 的 Linux network namespace 中运行，单设环境变量不能作为 `networkPolicy=deny` 证据；App 晋升 `eval_candidate` 必须同时登记 manifest、提升 suite patch version 并追加 lock，任一步失败不得标记 `promoted`
+- **真实模型评测边界**：`evals/live/version-lock.json` 同样 append-only；manifest 只允许注册 adapter / verifier / fault 枚举，禁止 shell。`EvalRunContext` 只在 `HA_MODEL_EVAL_MODE=1` 接受，新增 Goal / Workflow / Async / Agent 执行边界必须传播身份并关闭 guard。专用 Runner 的 Provider-only 外部防火墙才是网络边界，环境变量只能作为部署证明
 - **Retrieval Planner source fusion v2**：`role=injected/selected` 是既成 prompt 事实，跨源排序只能 canonical-dedup / 裁剪 `candidate/considered`，不得重排或丢弃已注入 ref。候选按 Project > Agent > Global、query intent、来源内 rank、score/confidence/salience 排序，origin/kind/id 稳定 tie-break；`memory.retrievalPlanner` 的 `maxTraceRefs` / `maxCandidatesPerOrigin`（钳值见 `RetrievalPlannerConfig::clamped`）只约束 trace 候选预算，不是权限或 prompt token 边界
 - **混合检索规模红线**：legacy / claim 共用 `adaptive_lexical_rrf_weights`，稀疏精确词法命中不得被默认高权重向量挤出 Top-K；CJK / identifier 中段走可重建 trigram shadow，只有短 query / shadow 不可用才 bounded LIKE。claim FTS 必须让虚拟表作为 JOIN 驱动（当前 `CROSS JOIN`），禁止 broad status-first 计划；vec0 先 bounded KNN overfetch 后过滤，不足时保留 prefiltered correctness fallback。改动这些路径须跑 `pnpm memory:benchmark`，需要硬延迟门禁时加 `HA_MEMORY_BENCH_ENFORCE=1`
 - **会话级无痕（`sessions.incognito`）**：单一真相源；不注入 Memory / Active Memory / Awareness、跳过自动提取；**关闭即焚**（不进侧边栏 / 全局 FTS / Dashboard 统计）；**与 Project / IM Channel 互斥**。四旁路守卫红线（Epic E，全貌见 [`session.md`](docs/architecture/session.md#四旁路守卫epic-e)）：`is_session_incognito` fail-closed 三态；大工具结果落盘走内存、异步任务 **占位不 spool**；AllowAlways 经 `choose_scope` 强制内存 `Session` scope 绝不落盘；`session:purged` 焚盘 `tool_results/` + job 行/spool；异步注入与在途回合在会话已删/已焚时跳过
@@ -307,6 +323,7 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `kno
 详见 [`skill-system.md`](docs/architecture/skill-system.md)。
 
 - **优先级**：bundled < extra < managed < project
+- **内置技能编译嵌入二进制**（`skills/embedded.rs`，运行期按内容 hash 解压到 `~/.hope-agent/bundled-skills/`）：桌面 / Docker / bare binary 统一携带；**禁止再往构建产物单独拷贝 `skills/`**（Tauri `bundle.resources` / Dockerfile runtime COPY+env / exe 旁目录探测均已退役）
 - **激活入口**：`skill({name, args?})` 工具（`internal + always_load`）；斜杠 `/skillname args` 内联走 `[SYSTEM: ...]` + `display_text`（**当前未应用 `allowed-tools` / `check_requirements`**）；输入框 `@skill` 提及（markdown 链接 token `[@标签](#skill:<name>)`）由后端 send-time 注入到 `extra_system_context`（与 `[[note]]` 平行）
 - **`@skill` 固定 allowlist + 链接 token（红线）**：`@skill` 只对**内置、固定**技能开放，非通用注入入口——`skills/mention.rs::AT_MENTIONABLE_SKILLS`（office 三件套 + `ha-browser` + `ha-mac-control`，后者 macOS-only）；`resolve_inline_skill_mentions` 扫 `[@…](#skill:<name>)` 链接 href、过 allowlist ∩ invocable ∩ OS，越界名静默跳过留原文。token 用 **markdown 链接**（标签本地化 + `#skill:` fragment href，不用 `skill://`——Streamdown 固定 sanitize 会剥自定义 scheme），输入框与历史**同一 token 渲染同一玫瑰粉 chip**（历史经 `MarkdownLink` 按 `#skill:` 派发 `SkillMentionChip`）。菜单走 `list_mentionable_skills`（Tauri / HTTP `GET /api/skills/mentionable`）；`enableSkillMention` 默认关、主对话 opt-in
 - **SKILL.md 字段**：`context: fork` 起子 session（可带 `agent:` / `effort:`）；`allowed-tools:` 白名单工具；`paths:` 条件激活默认不进 catalog；`status: active|draft|archived`，面向模型路径跳过非 active
@@ -429,7 +446,7 @@ ha-core 主要领域：`agent/` `chat_engine/` `context_compact/` `memory/` `kno
 - **Minisign pubkey 单一真相源**：[`ha-core/updater/keys.rs::MINISIGN_PUBKEY_BASE64`](crates/ha-core/src/updater/keys.rs) 与 `src-tauri/tauri.conf.json#plugins.updater.pubkey` 必须字符串相等。三重防线：启动期 `keys::assert_pubkey_matches_tauri_conf` panic / CI `lint.yml` 跑 `scripts/verify-updater-pubkey.mjs` / 本地 `.husky/pre-push` 同脚本拦截
 - **`app_update` 工具**（`tools::app_update`，`async_capable=true`）：4 个 action `check | install | status | rollback`；`install` / `rollback` 工具内用 `ask_user_question` 弹结构化 Yes/No 确认
 - **UpdaterBridge trait**（[`updater::UpdaterBridge`](crates/ha-core/src/updater/mod.rs)）由 src-tauri 注册、ha-core 经 `OnceLock` 反向调用，**严禁 ha-core 直接依赖 tauri-plugin-updater**
-- **Bare-binary release artifact**：`release.yml` 每平台用同一 Minisign 私钥签 `tar.gz`(Unix)/`zip`(Windows)，`patch-manifest` job 合并写回 `latest.json`
+- **Bare-binary release artifact**：`release.yml` 每平台把主二进制 + `ha-browser-host` 打进同一 `tar.gz`(Unix)/`zip`(Windows) 用同一 Minisign 私钥签，`patch-manifest` job 合并写回 `latest.json`（entry 带 `extra_binaries`）；`install` 主二进制自检通过后 best-effort swap sibling，**失败不阻断不回滚主升级**
 - **Binary swap 必须走 [`platform::atomic_replace_binary`](crates/ha-core/src/platform/mod.rs)**（Unix `rename(2)` / Windows `MoveFileExW` rename-aside）——**禁止 `fs::write` 直接覆盖运行中 binary**
 - **自动更新统一配置 `AppConfig.auto_update`**（[`updater::AutoUpdateConfig`](crates/ha-core/src/updater/config.rs)，`ha-settings` 归 **HIGH**）：桌面与 headless 共享开关；后台只做**检查 + 静默预下载 + 校验**到 staging，**绝不自行 swap/restart**——安装走 `app_update install`（headless 审批）或桌面二选一，**桌面绝不无条件自动 relaunch**
 - **下载健壮性红线**：下载走 [`download::download_to`](crates/ha-core/src/updater/download.rs)（重试 + `Range` 续传）；`self_contained::install` swap 后**先 `--version` 冷烟自检、失败自动回滚**再重启

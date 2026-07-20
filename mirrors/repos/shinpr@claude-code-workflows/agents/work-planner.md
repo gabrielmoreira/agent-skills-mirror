@@ -38,7 +38,7 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 **Common rules (all approaches)**:
 - **Include Verification Strategy summary in work plan header** for downstream task reference
 - **Include adopted Quality Assurance Mechanisms in work plan header** for downstream task reference — list each adopted mechanism with tool name, what it enforces, configuration path, and covered files (file paths/patterns from Design Doc, or "project-wide" if not scoped to specific files)
-- **Include a Proof Strategy in the work plan header** (see plan template) — name the proof obligation source (test skeleton annotations when skeletons are provided, otherwise each AC's primary failure mode) and state that every claim-implementing task records Proof Obligations for downstream review
+- **Include a Proof Strategy in the work plan header** (see plan template) — name the proof source for each applicable verification mode and state that every task with a claim or verifiable deliverable records Proof Obligations for downstream review
 - **Record the Review Scope in the work plan header** — for a fresh pre-implementation plan, the planned-files scope derived from the Design Doc and task target files; for a revision plan over existing work, the base branch and diff range — so the work plan review and downstream verification share one scope
 - **Include a Failure Mode Checklist in the work plan** (see plan template) — enumerate all nine domain-independent failure categories (same-value, no-op, empty input, invalid option, missing config, unavailable boundary, shared-state dependency, rollback-only visibility, missing-sort-key ordering), mark which apply, and map each applicable one to its covering task(s), keeping entries free of project-specific names
 - Include verification tasks in the phase corresponding to Verification Strategy's verification timing
@@ -47,7 +47,7 @@ Choose Strategy A (TDD) if test skeletons are provided, Strategy B (implementati
 - Final phase is always Quality Assurance
 
 **E2E Gap Check (all strategies)**:
-After determining which test skeletons are available, check the two E2E lanes (fixture-e2e, service-integration-e2e — see integration-e2e-testing skill) independently. A multi-step user journey exists when: (1) 2+ distinct interaction boundaries are traversed in sequence, (2) state carries across steps, and (3) the journey has a completion point. A journey is **user-facing** when a human user directly triggers and observes the steps (via UI, CLI, or direct API interaction), as opposed to service-internal pipelines.
+After determining which test skeletons are available, check the two E2E lanes (fixture-e2e and service-integration-e2e) independently. A multi-step user journey exists when: (1) 2+ distinct interaction boundaries are traversed in sequence, (2) state carries across steps, and (3) the journey has a completion point. A journey is **user-facing** when a human user directly triggers and observes the steps (via UI, CLI, or direct API interaction), as opposed to service-internal pipelines.
 
 ```
 fixture-e2e gap:
@@ -76,7 +76,7 @@ service-integration-e2e gap:
     Detected boundaries: [list crossings and AC references]
 ```
 
-The "was not communicated" branch covers the scenario where the upstream planning flow skipped test skeleton generation entirely — in that case the absence reason field is not even passed to work-planner, so the gap check still runs.
+When an absence reason was not communicated, run the gap check; missing input does not indicate intentional absence.
 
 When an `e2eAbsenceReason` for a lane carries a value (e.g., `no_multi_step_journey`, `below_threshold_user_confirmed`, `no_real_service_dependency`), absence in that lane is intentional — skip the gap check for that lane.
 
@@ -208,10 +208,10 @@ Include completion conditions in task names (e.g., "Service implementation and u
 ### Strategy A: Test-Driven Development (when test design information provided)
 
 #### Phase 0: Test Preparation (Unit Tests Only)
-Create Red state tests based on unit test definitions provided from previous process.
+For new/changed behavior, create Red-state tests from the provided unit definitions. For behavior-preserving refactors, identify the existing or characterization tests that establish the passing baseline.
 
 **Test Implementation Timing and Placement**:
-- Unit tests: Phase 0 Red → Green during implementation
+- Unit tests: New/changed behavior uses Phase 0 Red → Green; behavior-preserving refactors use Baseline → Refactor → Verify
 - Integration tests: Create and execute at completion of relevant feature implementation (include in phase tasks like "[Feature name] implementation with integration test creation")
 - fixture-e2e tests: Create and execute alongside the UI feature phase (include in phase tasks like "[Feature name] UI implementation with fixture-e2e creation"). These run in CI without infrastructure setup
 - service-integration-e2e tests: Execute only in the final phase (these depend on local stack and tend to be too slow/heavy for per-task cycles)
@@ -279,7 +279,7 @@ Place all environment setup tasks in Phase 0 (before any implementation tasks). 
 
 **Test Classification**:
 - Setup items (Mock preparation, measurement tools, Helpers, etc.) → Prioritize in Phase 1
-- Unit tests (individual functions) → Start from Phase 0 with Red-Green-Refactor
+- Unit tests (individual functions) → Use Red-Green-Refactor for new/changed behavior, or Baseline-Refactor-Verify for behavior-preserving refactors
 - Integration tests → Place as create/execute tasks when relevant feature implementation is complete
 - fixture-e2e tests → Place as create/execute tasks alongside the relevant UI feature implementation
 - service-integration-e2e tests → Place as execute-only tasks in final phase

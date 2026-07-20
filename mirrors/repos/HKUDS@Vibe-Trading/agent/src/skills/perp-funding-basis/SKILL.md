@@ -24,11 +24,17 @@ If perp price < spot price → funding rate negative → shorts pay longs
 
 **Annualized funding rate:**
 ```python
-# OKX funding rate is per 8-hour period
-# Annualized = rate × 3 (per day) × 365
-funding_rate_8h = 0.01  # 0.01% per 8h
-annualized = funding_rate_8h * 3 * 365  # = 10.95% annualized
+# Funding rate is a per-8h DECIMAL, exactly as OKX/Binance return it
+# (the API sends "0.0001" for 0.01%). 3 funding windows/day → × 3 × 365.
+funding_rate_8h = 0.0001                  # 0.01% per 8h, as a decimal
+annualized = funding_rate_8h * 3 * 365    # 0.1095 → 10.95% annualized
 ```
+
+> **Units convention (whole skill):** all *code* treats the funding rate as a
+> per-8h **decimal** (`0.0001` = 0.01%), matching the raw OKX/Binance API value.
+> The tables below show the equivalent **percentages** for readability — divide
+> a table's `%` by 100 to get the decimal a comparison expects
+> (`+0.05%` → `0.0005`).
 
 ### 2. Funding Rate Signal Framework
 
@@ -49,13 +55,13 @@ def funding_regime(rates_7d):
     consecutive_positive = all(r > 0 for r in rates_7d[-3:])
     consecutive_negative = all(r < 0 for r in rates_7d[-3:])
 
-    if avg > 0.03 and consecutive_positive:
+    if avg > 0.0003 and consecutive_positive:       # > +0.03% per 8h
         return "overheated_long"       # High risk of long squeeze
-    elif avg > 0.01 and consecutive_positive:
+    elif avg > 0.0001 and consecutive_positive:     # > +0.01% per 8h
         return "bullish_carry"          # Good carry trade environment
-    elif avg < -0.02 and consecutive_negative:
+    elif avg < -0.0002 and consecutive_negative:    # < -0.02% per 8h
         return "overheated_short"       # High risk of short squeeze
-    elif avg < -0.005 and consecutive_negative:
+    elif avg < -0.00005 and consecutive_negative:   # < -0.005% per 8h
         return "bearish_carry"          # Inverse carry trade
     else:
         return "neutral"
@@ -108,8 +114,8 @@ def carry_trade_pnl(spot_entry, funding_rates, position_size):
 
     return total_funding_collected
 
-# Example: $100,000 position, avg funding +0.015% per 8h, 30 days
-# Revenue: 0.015% × 3 × 30 × $100,000 = $1,350 (16.2% annualized)
+# Example: $100,000 position, avg funding +0.015% (0.00015 decimal) per 8h, 30 days
+# Revenue: 0.00015 × 3 × 30 × $100,000 = $1,350 (16.4% annualized)
 ```
 
 **Carry trade execution on OKX:**
@@ -131,15 +137,15 @@ Different exchanges have different funding rates for the same asset. Arbitrage t
 
 ```python
 # Example: BTC-USDT perpetual funding rates
-exchange_rates = {
-    "OKX": 0.015,       # +0.015% per 8h
-    "Binance": 0.020,   # +0.020% per 8h
-    "Bybit": 0.025,     # +0.025% per 8h
+exchange_rates = {          # per-8h decimals (API-native)
+    "OKX": 0.00015,     # +0.015% per 8h
+    "Binance": 0.00020, # +0.020% per 8h
+    "Bybit": 0.00025,   # +0.025% per 8h
 }
 
 # Strategy: short on highest funding (Bybit) + long on lowest funding (OKX)
-# Net carry = 0.025% - 0.015% = 0.010% per 8h
-# Annualized: 0.010% × 3 × 365 = 10.95%
+# Net carry = 0.00025 - 0.00015 = 0.00010 per 8h  (0.010%)
+# Annualized: 0.00010 × 3 × 365 = 0.1095 → 10.95%
 # Risk: execution cost + potential for rates to converge/flip
 ```
 
@@ -164,15 +170,15 @@ exchange_rates = {
 ```python
 # Combined OI + Funding signal
 def oi_funding_matrix(oi_change_24h_pct, funding_rate):
-    if oi_change_24h_pct > 5 and funding_rate > 0.03:
+    if oi_change_24h_pct > 5 and funding_rate > 0.0003:       # funding > +0.03%
         return "leveraged_long_buildup"    # High risk, squeeze potential
-    elif oi_change_24h_pct > 5 and funding_rate < -0.01:
+    elif oi_change_24h_pct > 5 and funding_rate < -0.0001:    # funding < -0.01%
         return "leveraged_short_buildup"   # Short squeeze potential
     elif oi_change_24h_pct < -5 and funding_rate > 0:
         return "long_liquidation"          # Forced long closing
     elif oi_change_24h_pct < -5 and funding_rate < 0:
         return "short_liquidation"         # Forced short closing
-    elif abs(oi_change_24h_pct) < 2 and abs(funding_rate) < 0.005:
+    elif abs(oi_change_24h_pct) < 2 and abs(funding_rate) < 0.00005:  # |funding| < 0.005%
         return "quiet_market"              # Low conviction, wait
     else:
         return "mixed"

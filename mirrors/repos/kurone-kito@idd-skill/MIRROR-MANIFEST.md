@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kurone-kito/idd-skill` — 26 default patterns, 2 followed patterns, 43 file(s) materialized.
+Mirror of `kurone-kito/idd-skill` — 26 default patterns, 2 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kurone-kito/idd-skill` — 26 default patterns, 2 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 43 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,28 +81,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 19 | ✓ | [`.github/instructions/idd-roadmap-audit.instructions.md`](.github/instructions/idd-roadmap-audit.instructions.md) |
 | 20 | ✓ | [`.github/instructions/idd-suitability.instructions.md`](.github/instructions/idd-suitability.instructions.md) |
 | 21 | ✓ | [`.github/instructions/idd-work.instructions.md`](.github/instructions/idd-work.instructions.md) |
-| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 23 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 24 | ✓ | [`docs/customization.md`](docs/customization.md) |
-| 25 | ✓ | [`docs/idd-comment-minimization.md`](docs/idd-comment-minimization.md) |
-| 26 | ✓ | [`docs/idd-helper-scripts.md`](docs/idd-helper-scripts.md) |
-| 27 | ✓ | [`docs/idd-review-policy-profiles.md`](docs/idd-review-policy-profiles.md) |
-| 28 | ✓ | [`docs/policy-constants.md`](docs/policy-constants.md) |
-| 29 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 30 | ✓ | [`idd-template/.github/instructions/idd-pre-merge.instructions.md`](idd-template/.github/instructions/idd-pre-merge.instructions.md) |
-| 31 | ✓ | [`idd-template/.github/instructions/idd-suitability.instructions.md`](idd-template/.github/instructions/idd-suitability.instructions.md) |
-| 32 | ✓ | [`idd-template/docs/customization.md`](idd-template/docs/customization.md) |
-| 33 | ✓ | [`idd-template/docs/idd-comment-minimization.md`](idd-template/docs/idd-comment-minimization.md) |
-| 34 | ✓ | [`idd-template/docs/idd-helper-scripts.md`](idd-template/docs/idd-helper-scripts.md) |
-| 35 | ✓ | [`idd-template/docs/idd-review-policy-profiles.md`](idd-template/docs/idd-review-policy-profiles.md) |
-| 36 | ✓ | [`idd-template/docs/policy-constants.md`](idd-template/docs/policy-constants.md) |
-| 37 | ✓ | [`skills/issue-authoring/agents/openai.yaml`](skills/issue-authoring/agents/openai.yaml) |
-| 38 | ✓ | [`skills/issue-authoring/references/contract.md`](skills/issue-authoring/references/contract.md) |
-| 39 | ✓ | [`skills/issue-authoring/references/draft-patterns.md`](skills/issue-authoring/references/draft-patterns.md) |
-| 40 | ✓ | [`skills/issue-authoring/references/workflow-boundary.md`](skills/issue-authoring/references/workflow-boundary.md) |
-| 41 | ✓ | [`skills/issue-authoring/SKILL.md`](skills/issue-authoring/SKILL.md) |
-| 42 | → | [`docs/idd-workflow.md`](docs/idd-workflow.md) |
-| 43 | → | [`docs/typescript-sources.md`](docs/typescript-sources.md) |
+| 22 | ✓ | [`.github/instructions/lite/idd-resume-lite.instructions.md`](.github/instructions/lite/idd-resume-lite.instructions.md) |
+| 23 | ✓ | [`.github/instructions/lite/idd-resume-stall-lite.instructions.md`](.github/instructions/lite/idd-resume-stall-lite.instructions.md) |
+| 24 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 25 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 26 | ✓ | [`docs/customization.md`](docs/customization.md) |
+| 27 | ✓ | [`docs/idd-comment-minimization.md`](docs/idd-comment-minimization.md) |
+| 28 | ✓ | [`docs/idd-helper-scripts.md`](docs/idd-helper-scripts.md) |
+| 29 | ✓ | [`docs/idd-review-policy-profiles.md`](docs/idd-review-policy-profiles.md) |
+| 30 | ✓ | [`docs/policy-constants.md`](docs/policy-constants.md) |
+| 31 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 32 | ✓ | [`idd-template/.github/instructions/idd-pre-merge.instructions.md`](idd-template/.github/instructions/idd-pre-merge.instructions.md) |
+| 33 | ✓ | [`idd-template/.github/instructions/idd-suitability.instructions.md`](idd-template/.github/instructions/idd-suitability.instructions.md) |
+| 34 | ✓ | [`idd-template/docs/customization.md`](idd-template/docs/customization.md) |
+| 35 | ✓ | [`idd-template/docs/idd-comment-minimization.md`](idd-template/docs/idd-comment-minimization.md) |
+| 36 | ✓ | [`idd-template/docs/idd-helper-scripts.md`](idd-template/docs/idd-helper-scripts.md) |
+| 37 | ✓ | [`idd-template/docs/idd-review-policy-profiles.md`](idd-template/docs/idd-review-policy-profiles.md) |
+| 38 | ✓ | [`idd-template/docs/policy-constants.md`](idd-template/docs/policy-constants.md) |
+| 39 | ✓ | [`skills/issue-authoring/agents/openai.yaml`](skills/issue-authoring/agents/openai.yaml) |
+| 40 | ✓ | [`skills/issue-authoring/references/contract.md`](skills/issue-authoring/references/contract.md) |
+| 41 | ✓ | [`skills/issue-authoring/references/draft-patterns.md`](skills/issue-authoring/references/draft-patterns.md) |
+| 42 | ✓ | [`skills/issue-authoring/references/workflow-boundary.md`](skills/issue-authoring/references/workflow-boundary.md) |
+| 43 | ✓ | [`skills/issue-authoring/SKILL.md`](skills/issue-authoring/SKILL.md) |
+| 44 | → | [`docs/idd-workflow.md`](docs/idd-workflow.md) |
+| 45 | → | [`docs/typescript-sources.md`](docs/typescript-sources.md) |
 
 ---
 

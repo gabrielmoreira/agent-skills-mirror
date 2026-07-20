@@ -9,7 +9,7 @@ E2E tests in this workflow split into two lanes (see parent skill Test Type Defi
 | Lane | When | ROI gate | Cost |
 |------|------|----------|------|
 | **fixture-e2e** | UI journey verification with deterministic fixtures (mocked backend / fixture data) | ROI ≥ 20 (beyond reserved slot); selected by ranking within MAX 3 budget | Comparable to integration; runs in CI without infrastructure setup |
-| **service-integration-e2e** | Journey correctness depends on real cross-service behavior (data persistence, transactional consistency, external contracts) | ROI > 50 (beyond reserved slot) | 3-10× higher than integration; reserved for what cannot be faked safely |
+| **service-integration-e2e** | Journey correctness depends on real cross-service behavior (data persistence, transactional consistency, external contracts) | ROI > 50 (beyond reserved slot) | Higher setup, state-cleanup, and diagnosis cost; reserved for what cannot be faked safely |
 
 Both lanes typically use Playwright; the difference is whether the backend is mocked / fixture-driven or running for real.
 
@@ -67,9 +67,9 @@ E2E ROI Score: [calculated score]
 
 ## Playwright Test Architecture
 
-### Page Object Pattern
+### Page Object Decision
 
-Organize browser interactions through page objects for maintainability:
+Use the repository's existing browser abstraction. When establishing a new Playwright structure, introduce a page object when one page/workflow interaction is reused across 3+ tests or when a coherent interaction sequence would otherwise be duplicated. Keep direct accessible locators in a small test when a page object would only add indirection.
 
 ```
 tests/
@@ -96,11 +96,12 @@ When UI Spec defines responsive behavior, test critical breakpoints:
 |-----------|-------|-------------|
 | Mobile | 375px | If UI Spec defines mobile-specific interactions |
 | Tablet | 768px | If UI Spec defines tablet layout differences |
-| Desktop | 1280px | Default — always test |
+| Desktop | 1280px | Use when the UI Spec or project browser matrix defines this viewport; otherwise use the harness/project default |
 
 ## Budget Enforcement
 
-Hard limits per feature (same as parent skill):
+Standard budgets per input Design Doc (same as parent skill):
 - **fixture-e2e**: MAX 3 tests, ROI ≥ 20 beyond the reserved slot (selected by ranking)
 - **service-integration-e2e**: MAX 1-2 tests, ROI > 50 beyond the reserved slot
 - Prefer fewer, comprehensive journey tests over many granular tests in both lanes
+- Exceed a standard budget only for an accepted requirement or distinct uncovered failure mode, and record why the selected tests cannot be consolidated

@@ -1,13 +1,13 @@
 ---
 name: ai-development-guide
-description: Technical decision criteria, anti-pattern detection, debugging techniques, and quality check workflow. Use when making technical decisions, detecting code smells, or performing quality assurance.
+description: Applies language-agnostic and backend technical decision criteria, anti-pattern detection, debugging, and quality gates. Use when reviewing general/backend implementation choices, code smells, failures, or implementation completeness.
 ---
 
 # AI Developer Guide - Technical Decision Criteria and Anti-pattern Collection
 
 ## Technical Anti-patterns (Red Flag Patterns)
 
-Immediately stop and reconsider design when detecting the following patterns:
+Pause the affected decision and review the design when detecting the following patterns:
 
 ### Code Quality Anti-patterns
 1. **Writing similar code 3 or more times** - Violates Rule of Three
@@ -33,39 +33,42 @@ Make all errors visible and traceable with full context. Prioritize primary code
 ### Implementation Guidelines
 
 #### Default Approach
-- **Propagate all errors explicitly** unless a Design Doc specifies a fallback
+- **Give every failure an explicit outcome**: propagate it, translate it to the boundary's error contract, or recover through an accepted fallback
 - **Make failures explicit**: Errors should be visible and traceable
 - **Preserve error context**: Include original error information when re-throwing
 
 #### When Fallbacks Are Acceptable
-- **Only with explicit Design Doc approval**: Document why fallback is necessary
+- **Accepted recovery contract**: A requirement, Design Doc, existing boundary contract, or project policy defines why degraded behavior is preferable to failure
 - **Business-critical continuity**: When partial functionality is better than none
 - **Graceful degradation paths**: Clearly defined degraded service levels
 
 #### Layer Responsibilities
 - **Infrastructure Layer**:
-  - Always throw errors upward
-  - No business logic decisions
-  - Provide detailed error context
+  - Preserve the original cause and operational context
+  - Propagate, translate, or return the failure in the form required by the caller's boundary contract
+  - Perform infrastructure-owned cleanup or retry only when that boundary owns it; business recovery decisions remain in the application layer
 
 - **Application Layer**:
   - Make business-driven error handling decisions
-  - Implement fallbacks only when specified in requirements
-  - Log all fallback activations for monitoring
+  - Implement fallbacks only when an accepted recovery contract defines the degraded outcome
+  - Make fallback activation observable through the project's established logging, metrics, or user-visible state when diagnosis or recovery requires it
 
 ### Error Masking Detection
 
 **Review Triggers** (require design review):
-- Writing 3rd error handler in the same feature
-- Multiple error handling blocks in single function/method
-- Nested error handling structures
+- Writing the 3rd error handler in the same feature; review whether recovery ownership is fragmented before adding it
+- The same failure is caught at multiple layers without a single recovery owner
+- Nested handlers obscure which state is committed, rolled back, or exposed
+- A handler converts a failure to success/default output without an observable degraded-state contract
 - Error handlers that return default values without logging
 
+The third handler may remain when it covers a distinct failure mode with a documented recovery owner, state outcome, and observable signal.
+
 **Before Implementing Any Fallback**:
-1. Verify Design Doc explicitly defines this fallback
+1. Identify the accepted requirement, boundary contract, project policy, or Design Doc entry that defines this fallback
 2. Document the business justification
-3. Ensure error is logged with full context
-4. Add monitoring/alerting for fallback activation
+3. Make activation observable at the boundary that owns diagnosis or recovery through one existing UI, log, or metric channel; when logging is that channel, log once with sensitive data redacted
+4. Add new monitoring or alerting only when an operational requirement or project policy requires it
 
 ### Implementation Pattern
 
@@ -76,7 +79,8 @@ AVOID: Silent fallback that hides errors
 
 PREFERRED: Explicit failure with context
     <handle error>:
-        log_error('Operation failed', context, error)
+        <attach operation context>
+        IF this boundary owns diagnosis: <log once>
         <propagate error>  // Re-throw exception, return Error, return error tuple
 ```
 
@@ -121,7 +125,7 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 ### Pattern 3: Implementation Without Sufficient Testing
 **Symptom**: Many bugs after implementation
 **Cause**: Ignoring Red-Green-Refactor process
-**Avoidance**: Always start with failing tests
+**Avoidance**: Start implementation with a failing test that proves the intended behavior
 
 ### Pattern 4: Ignoring Technical Uncertainty
 **Symptom**: Frequent unexpected errors when introducing new technology
@@ -140,7 +144,7 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 **Cause**: Insufficient understanding of existing code before implementation; referencing only nearby files without verifying representativeness
 **Avoidance Methods**:
 - Before implementation, always search for similar functionality (using domain, responsibility, configuration patterns as keywords)
-- Similar functionality found → Use that implementation (do not create new implementation)
+- Similar functionality found → Verify that its contract, lifecycle, and repository usage are representative; reuse or extend it when compatible, otherwise record why it is not a valid model
 - Similar functionality is technical debt → Create ADR improvement proposal before implementation
 - No similar functionality exists → Implement new functionality following existing design philosophy
 - Record all decisions and rationale in "Existing Codebase Analysis" section of Design Doc
@@ -192,10 +196,9 @@ Universal quality assurance phases applicable to all languages:
 3. **Resource Validation**: Check configuration files, assets are valid
 
 ### Phase 3: Testing
-1. **Unit Tests**: Run all unit tests
-2. **Integration Tests**: Run integration tests
-3. **Test Coverage**: Measure and verify coverage meets standards
-4. **E2E Tests**: Run end-to-end tests
+1. **Implementation Feedback**: During implementation, run the smallest configured tests that exercise the changed behavior
+2. **Completion Tests**: Before completion, run the repository's configured test commands; include integration or E2E suites when the change crosses their boundary, test skeletons require them, or the project quality gate includes them
+3. **Test Coverage**: Use coverage as a gap signal and satisfy any project-configured threshold
 
 ### Phase 4: Final Quality Gate
 All checks must pass before proceeding:
@@ -207,9 +210,9 @@ All checks must pass before proceeding:
 ### Quality Check Pattern (Language-Agnostic)
 ```
 Workflow:
-1. Format check → 2. Lint/Style → 3. Static analysis →
-4. Build/Compile → 5. Unit tests → 6. Coverage check →
-7. Integration tests → 8. Final gate
+1. Discover applicable project checks → 2. Run fast affected checks →
+3. Run configured build/static gates → 4. Run boundary-relevant broader tests →
+5. Run the project's final required gate
 
 Auto-fix capabilities (when available):
 - Format auto-fix
@@ -244,9 +247,9 @@ Auto-fix capabilities (when available):
 
 ## Implementation Completeness Assurance
 
-### Impact Analysis: Mandatory 3-Stage Process
+### Impact Analysis: Risk-Scaled 3-Stage Process
 
-Complete these stages sequentially before any implementation:
+Complete these stages sequentially before implementation. For an isolated change with no public contract, data-flow, integration, or configuration impact, concise notes or search evidence are sufficient. Use the structured report for cross-boundary, high-risk, or multi-consumer changes.
 
 **1. Discovery** - Identify all affected code:
 - Implementation references (imports, calls, instantiations)
@@ -261,7 +264,7 @@ Complete these stages sequentially before any implementation:
 - Data flow (origin → transformations → destination)
 - Coupling strength
 
-**3. Identification** - Produce structured report:
+**3. Identification** - Record the affected units, risks, and implementation order at the depth required by the change. For expanded analysis, use:
 ```
 ## Impact Analysis
 ### Direct Impact
@@ -283,20 +286,21 @@ Complete these stages sequentially before any implementation:
 2. [...]
 ```
 
-**Critical**: Do not implement until all 3 stages are documented
+Proceed when discovery and understanding cover the files and behaviors named by the user or current task/design artifact, and the identified risks have an implementation or escalation path.
 
 ### Unused Code Deletion
 
-When unused code is detected:
-- Will it be used in this work? Yes → Implement now | No → Delete now (Git preserves)
-- Applies to: Code, tests, docs, configs, assets
+When an artifact made obsolete by the requested change is detected:
+- Delete it in the same change when its callers and generated/operational uses are checked
+- Preserve and report it when obsolescence is uncertain or deletion would expand beyond the files and behaviors named by the user or current task/design artifact
+- Do not implement unrelated dormant code merely because it was discovered
 
 ### Existing Code Modification
 
 ```
-In use? No → Delete
-       Yes → Working? No → Delete + Reimplement
-                     Yes → Fix/Extend
+Required by the requested change? No → Preserve unless the change proves it obsolete
+                               Yes → Working and compatible? Yes → Fix/Extend
+                                                             No → Repair or replace with migration/rollback evidence
 ```
 
 **Principle**: Prefer clean implementation over patching broken code

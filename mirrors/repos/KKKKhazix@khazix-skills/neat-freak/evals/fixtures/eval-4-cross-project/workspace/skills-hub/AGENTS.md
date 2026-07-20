@@ -1,0 +1,1 @@
+cache/repos/github.com/KKKKhazix@khazix-skills/neat-freak/evals/fixtures/eval-4-cross-project/workspace/skills-hub/CLAUDE.md

@@ -45,7 +45,10 @@ Each row is a DD-derived observable contract the implementation in this task mus
 ## Investigation Notes
 (Implementation observations are appended here before implementation begins. When Binding Decisions exist, record the planned implementation approach and each Compliance Check result here.)
 
-## Implementation Steps (TDD: Red-Green-Refactor)
+## Implementation Steps
+
+Tasks that add or change executable behavior, fix a reproducible bug, or change runtime/build configuration MUST use the Red-Green-Refactor steps below. A behavior-preserving refactor replaces all three phases with `Baseline → Refactor → Verify`: confirm existing tests pass or add passing characterization tests, refactor, then rerun the same evidence. A bug that cannot be reproduced executably uses `Evidence-First Steps`: record why reproduction is impossible, name the static/contract/environment evidence, apply the fix, then verify that evidence. A non-executable deliverable uses the same steps with its acceptance evidence and named sources.
+
 ### 1. Red Phase
 - [ ] Read all Investigation Targets and record key observations
 - [ ] (When Change Category is set) Sweep the adjacent cases sharing the same path/contract/state/boundary for the same class of defect; fold any found within scope into the failing tests
@@ -74,18 +77,20 @@ Each row is a DD-derived observable contract the implementation in this task mus
 - **Verification level**: [L1: Functional operation as end-user feature / L2: New tests added and passing / L3: Code builds without errors]
 
 ## Proof Obligations
-(One entry per AC, claim, or applicable Failure Mode Checklist category this task covers. Derived from test skeleton annotations when present, otherwise from the AC's primary failure mode or the mapped Failure Mode category. Each test must prove its claim, not merely run.)
-- **Claim**: [the AC behavior, claim, or failure-mode condition this task must prove]
-- **Primary failure mode**: [the regression the test turns red on]
-- **Boundary to exercise**: [public/integration boundary the test traverses, or "in-process unit"]
+(One entry per AC, claim, deliverable claim, or applicable Failure Mode Checklist category this task covers. Select one verification mode: `red-test`, `characterization`, `alternate-evidence`, or `artifact-evidence`.)
+- **Claim**: [the AC behavior, executable claim, deliverable claim, or failure-mode condition this task must prove]
+- **Verification mode**: [red-test / characterization / alternate-evidence / artifact-evidence]
+- **Primary failure mode**: [required for red-test: the regression the test turns red on; "N/A" otherwise]
+- **Evidence requirement**: [red-test: test and failure signal / characterization: same passing evidence before and after / alternate-evidence: reproduction blocker plus static, contract, or environment evidence / artifact-evidence: named source plus artifact verification]
+- **Boundary to exercise**: [public/integration boundary the evidence exercises, "in-process unit", or "N/A"]
 - **State assertion**: [observable state before → action → after for state-changing claims; "N/A" otherwise]
 - **Mock boundary rationale**: [which boundaries may be mocked and why; "none" when all real]
 - **Residual**: [what this proof leaves unestablished, if any]
 
 ## Completion Criteria
-- [ ] All added tests pass
+- [ ] All required tests, validators, or evidence checks for this task pass
 - [ ] Operation verified per Operation Verification Methods above
-- [ ] Each Proof Obligation is met: the test turns red under its primary failure mode and exercises the stated boundary
+- [ ] Each Proof Obligation satisfies its Verification mode, Evidence requirement, and applicable boundary/state assertions
 - [ ] Deliverables created (for research/design tasks)
 - [ ] (When Binding Decisions exist) Every Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (file:line, test result, or command output)
 - [ ] (When Reference Contracts exist) Every Reference Contract Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes

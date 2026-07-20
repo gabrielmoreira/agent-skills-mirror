@@ -96,14 +96,7 @@ Do not single-pass rewrite a 40k-character article: it silently overwrites the a
 
 Activate when: mixed Chinese/English, "Chinese copywriting", "bilingual consistency", "release notes"
 
-**Chinese rules** (from https://github.com/mzlogin/chinese-copywriting-guidelines):
-- Space between Chinese and English characters (CN文字EN → CN 文字 EN)
-- No mixing of punctuation (Chinese uses 、。？！；：, not commas/periods)
-- Consistent terminology across all instances
-
-**English in Chinese documents**: Flag unexplained English, suggest translation or add context.
-
-**Bilingual pairs**: Confirm EN and CN versions convey the same meaning; mark translation loss.
+Load `references/write-zh-bilingual.md`. Character-level spacing and punctuation belong to the Punctuation Gate script; this mode owns the judgment half: terminology consistency across all instances, unexplained English left untranslated in Chinese documents, and EN/CN pairs that drift in meaning (mark translation loss instead of silently rewriting one side).
 
 ## Product Localization Review Mode
 
@@ -123,13 +116,7 @@ Default workflow:
 
 Activate when: "release", "changelog", "version", "release notes"
 
-Generate from commit messages:
-- **Breaking Changes**
-- **New Features**
-- **Fixes & Improvements**
-- **Deprecations**
-
-Format: target-project style by default. If no project style is available, use numbered items with bold labels, one sentence on user effect, and bilingual output only when the project already uses bilingual release notes.
+Format: target-project style by default. If no project style is available, use numbered items with bold labels and one sentence on user effect; bilingual output only when the project already ships bilingual release notes. Call out breaking changes and deprecations explicitly when present.
 
 ### Release Notes Pre-flight
 
@@ -166,6 +153,8 @@ The reply is the final user-facing text, not an agent log. Do not write "刚才�
 Before posting, re-read the live issue / PR with `gh issue view <num>` or `gh pr view <num>`. Do not reply from memory; titles, states, and author languages change between sessions.
 
 For paid / subscribed users, acknowledge the purchase relationship and the inconvenience in one phrase, then state the boundary. Do not over-explain. When the current product cannot support their setup, suggest the safest practical path (upgrade macOS, wait for the next release, provide logs, refund route) without arguing.
+
+For private support channels (DM, in-app reply, support email), drop the report register entirely: short colloquial sentences in the maintainer's own voice, lead with what the user gets rather than how it works, and fewer full stops than documentation would carry.
 
 Closing rule: when closing as `completed`, the comment must independently explain what was fixed and the expected release. When closing as `not planned`, the comment must independently explain the current boundary and an alternative path. Do not rely on prior thread context as the explanation.
 

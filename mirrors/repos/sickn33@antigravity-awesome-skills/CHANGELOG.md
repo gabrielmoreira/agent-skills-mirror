@@ -9,11 +9,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [15.1.0] - 2026-07-19 - "Agent-Owned Selection and Audit Evidence"
+
+> AAS Core now leaves semantic skill selection to the coding agent, validates the exact chosen stack, and emits durable evidence that can be reviewed without exposing project content.
+
+Start here:
+
+- Install: `npx agentic-awesome-skills`
+- [Choose your tool](https://github.com/sickn33/agentic-awesome-skills#choose-your-tool)
+- [Best skills by tool](https://github.com/sickn33/agentic-awesome-skills#best-skills-by-tool)
+- [Bundles](https://github.com/sickn33/agentic-awesome-skills/blob/main/docs/users/bundles.md)
+- [Workflows](https://github.com/sickn33/agentic-awesome-skills/blob/main/docs/users/workflows.md)
+
+### Added
+
+- Added the canonical `aas-selection-evidence.json` sidecar, with a server-owned MCP process trace, agent-declared ten-dimension capability ledger, path-safe project fingerprint, catalog and manifest binding, and structural-only inspection through `export_selection_evidence` and `inspect_selection_evidence`.
+- Added an audit-enabled CLI artifact-directory path that validates and publishes `aas-stack.json` and `aas-selection-evidence.json` together with a single durable directory rename, while preserving the existing manifest-only command.
+- Added the official `markstream-install` skill for integrating streaming Markdown renderers across Vue, React, Svelte, Angular, Nuxt, Next.js, and Vue 2 applications (PR #940).
+
 ### Changed
 
-- Make AAS Core recommendations domain-first for browser-extension projects: project profile evidence now promotes Manifest V3 architecture, permissions, and cross-context messaging to critical goals, backed by a reviewed Chrome-extension specialist rather than generic QA-only coverage.
-- Expanded natural AAS Core goals such as `build`, `test`, `security`, and `release` into versioned capability lanes before deterministic ranking, so real project profiles produce reviewable multi-skill stacks instead of empty or single-skill recommendations.
-- Clarified the MCP recommendation contract for natural goals and the `0.8`–`1.0` non-critical coverage ratio, and added a bundled VibePalette regression proving a five-to-eight-skill project stack remains available without weakening policy gates.
+- Added an MCP session-level capability coverage contract for Codex and Claude: agents must enumerate primary project capabilities, search and compare candidates for each, cover every capability or report a catalog gap, and avoid smallest-stack optimization before `compose_stack`. Core imposes no semantic small-stack policy; each manifest retains an explicit technical maximum of 128 skills.
+- Moved semantic skill selection fully to Codex and Claude: agents inspect the project, search and read the complete local catalog, and choose exact skill IDs using their own judgment; AAS Core no longer ranks or recommends skills.
+- Replaced the recommendation workflow with read-only `compose_stack`, which validates and returns the agent-owned manifest in memory; clients or the CLI persist `aas-stack.json` for inspection, validation, and immutable plan preview.
+- Removed Core selection policy and metadata eligibility gates. Every canonical skill is searchable, readable, selectable, and usable; risk, source, setup, compatibility, review, and evidence metadata are informational only.
+- Made `search_skills` retrieval neutral: matching results preserve stable catalog order and no longer expose relevance scores or ranking while exact-ID lookup and complete pagination remain deterministic.
+- Updated the public product narrative, host guides, Workbench-facing copy sources, package metadata, and maintainer workflow to describe the agent-owned selection boundary. Released entries below remain historical descriptions of their releases.
+
+### Fixed
+
+- Preserved bounded, path-safe schema diagnostics across Core and MCP errors so invalid profiles identify the logical field, validation keyword, and applicable limit without echoing input values, unknown property names, schema internals, or filesystem paths.
+- Corrected current public Core examples to use manifest schema 2 with `profile` and exact agent-selected IDs, with a regression test spanning English, Chinese, Vietnamese, integration, and hosted-app copy.
+- Marked all five local MCP tools explicitly read-only, non-destructive, idempotent, and closed-world so isolated non-interactive Codex clients can invoke the catalog workflow without treating the calls as approval-gated mutations.
+- Restored and protected CLI topic-page SEO metadata so generated titles, descriptions, and catalog routes retain their topic-specific contract.
+
+### Validation
+
+- Passed the protected repository CI and all CodeQL analyzers on the final pre-release `main` commit, including the packed Core preview and dynamic catalog enumeration regressions.
+
+### Credits
+
+- **[@Simon-He95](https://github.com/Simon-He95)** and **[Simon-He95/markstream-vue](https://github.com/Simon-He95/markstream-vue)** for the official `markstream-install` skill (PR #940).
 
 ## [15.0.0] - 2026-07-18 - "AAS Core: Local Composition and Reviewable Plans"
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shiwenwen/hope-agent` — 26 default patterns, 50 followed patterns, 172 file(s) materialized.
+Mirror of `shiwenwen/hope-agent` — 26 default patterns, 52 followed patterns, 174 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 50 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 50 |
-| Files         | 172 |
+| Followed pats | 52 |
+| Files         | 174 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,8 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 50 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/architecture/capability-eval.md`
+- `docs/architecture/live-model-evaluation.md`
 - `docs/release-process.md`
 - `docs/architecture/ui-interaction-system.md`
 - `docs/architecture/process-model.md`
@@ -238,48 +240,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 128 | → | [`docs/architecture/background-jobs.md`](docs/architecture/background-jobs.md) |
 | 129 | → | [`docs/architecture/behavior-awareness.md`](docs/architecture/behavior-awareness.md) |
 | 130 | → | [`docs/architecture/browser.md`](docs/architecture/browser.md) |
-| 131 | → | [`docs/architecture/chat-engine.md`](docs/architecture/chat-engine.md) |
-| 132 | → | [`docs/architecture/config-system.md`](docs/architecture/config-system.md) |
-| 133 | → | [`docs/architecture/context-compact.md`](docs/architecture/context-compact.md) |
-| 134 | → | [`docs/architecture/context-retrieval.md`](docs/architecture/context-retrieval.md) |
-| 135 | → | [`docs/architecture/cron.md`](docs/architecture/cron.md) |
-| 136 | → | [`docs/architecture/dashboard.md`](docs/architecture/dashboard.md) |
-| 137 | → | [`docs/architecture/design-space.md`](docs/architecture/design-space.md) |
-| 138 | → | [`docs/architecture/domain-eval.md`](docs/architecture/domain-eval.md) |
-| 139 | → | [`docs/architecture/domain-quality.md`](docs/architecture/domain-quality.md) |
-| 140 | → | [`docs/architecture/domain-workflow.md`](docs/architecture/domain-workflow.md) |
-| 141 | → | [`docs/architecture/dreaming.md`](docs/architecture/dreaming.md) |
-| 142 | → | [`docs/architecture/failover.md`](docs/architecture/failover.md) |
-| 143 | → | [`docs/architecture/file-operations.md`](docs/architecture/file-operations.md) |
-| 144 | → | [`docs/architecture/goal.md`](docs/architecture/goal.md) |
-| 145 | → | [`docs/architecture/hooks.md`](docs/architecture/hooks.md) |
-| 146 | → | [`docs/architecture/im-channel.md`](docs/architecture/im-channel.md) |
-| 147 | → | [`docs/architecture/knowledge-base.md`](docs/architecture/knowledge-base.md) |
-| 148 | → | [`docs/architecture/local-model-loading.md`](docs/architecture/local-model-loading.md) |
-| 149 | → | [`docs/architecture/loop.md`](docs/architecture/loop.md) |
-| 150 | → | [`docs/architecture/mcp-server.md`](docs/architecture/mcp-server.md) |
-| 151 | → | [`docs/architecture/mcp.md`](docs/architecture/mcp.md) |
-| 152 | → | [`docs/architecture/media-generation.md`](docs/architecture/media-generation.md) |
-| 153 | → | [`docs/architecture/memory.md`](docs/architecture/memory.md) |
-| 154 | → | [`docs/architecture/permission-system.md`](docs/architecture/permission-system.md) |
-| 155 | → | [`docs/architecture/plan-mode.md`](docs/architecture/plan-mode.md) |
-| 156 | → | [`docs/architecture/process-model.md`](docs/architecture/process-model.md) |
-| 157 | → | [`docs/architecture/project.md`](docs/architecture/project.md) |
-| 158 | → | [`docs/architecture/prompt-system.md`](docs/architecture/prompt-system.md) |
-| 159 | → | [`docs/architecture/provider-system.md`](docs/architecture/provider-system.md) |
-| 160 | → | [`docs/architecture/recap.md`](docs/architecture/recap.md) |
-| 161 | → | [`docs/architecture/sandbox.md`](docs/architecture/sandbox.md) |
-| 162 | → | [`docs/architecture/self-update.md`](docs/architecture/self-update.md) |
-| 163 | → | [`docs/architecture/session.md`](docs/architecture/session.md) |
-| 164 | → | [`docs/architecture/side-query.md`](docs/architecture/side-query.md) |
-| 165 | → | [`docs/architecture/skill-system.md`](docs/architecture/skill-system.md) |
-| 166 | → | [`docs/architecture/subagent.md`](docs/architecture/subagent.md) |
-| 167 | → | [`docs/architecture/tool-system.md`](docs/architecture/tool-system.md) |
-| 168 | → | [`docs/architecture/transport-modes.md`](docs/architecture/transport-modes.md) |
-| 169 | → | [`docs/architecture/ui-interaction-system.md`](docs/architecture/ui-interaction-system.md) |
-| 170 | → | [`docs/architecture/workflow.md`](docs/architecture/workflow.md) |
-| 171 | → | [`docs/README.md`](docs/README.md) |
-| 172 | → | [`docs/release-process.md`](docs/release-process.md) |
+| 131 | → | [`docs/architecture/capability-eval.md`](docs/architecture/capability-eval.md) |
+| 132 | → | [`docs/architecture/chat-engine.md`](docs/architecture/chat-engine.md) |
+| 133 | → | [`docs/architecture/config-system.md`](docs/architecture/config-system.md) |
+| 134 | → | [`docs/architecture/context-compact.md`](docs/architecture/context-compact.md) |
+| 135 | → | [`docs/architecture/context-retrieval.md`](docs/architecture/context-retrieval.md) |
+| 136 | → | [`docs/architecture/cron.md`](docs/architecture/cron.md) |
+| 137 | → | [`docs/architecture/dashboard.md`](docs/architecture/dashboard.md) |
+| 138 | → | [`docs/architecture/design-space.md`](docs/architecture/design-space.md) |
+| 139 | → | [`docs/architecture/domain-eval.md`](docs/architecture/domain-eval.md) |
+| 140 | → | [`docs/architecture/domain-quality.md`](docs/architecture/domain-quality.md) |
+| 141 | → | [`docs/architecture/domain-workflow.md`](docs/architecture/domain-workflow.md) |
+| 142 | → | [`docs/architecture/dreaming.md`](docs/architecture/dreaming.md) |
+| 143 | → | [`docs/architecture/failover.md`](docs/architecture/failover.md) |
+| 144 | → | [`docs/architecture/file-operations.md`](docs/architecture/file-operations.md) |
+| 145 | → | [`docs/architecture/goal.md`](docs/architecture/goal.md) |
+| 146 | → | [`docs/architecture/hooks.md`](docs/architecture/hooks.md) |
+| 147 | → | [`docs/architecture/im-channel.md`](docs/architecture/im-channel.md) |
+| 148 | → | [`docs/architecture/knowledge-base.md`](docs/architecture/knowledge-base.md) |
+| 149 | → | [`docs/architecture/live-model-evaluation.md`](docs/architecture/live-model-evaluation.md) |
+| 150 | → | [`docs/architecture/local-model-loading.md`](docs/architecture/local-model-loading.md) |
+| 151 | → | [`docs/architecture/loop.md`](docs/architecture/loop.md) |
+| 152 | → | [`docs/architecture/mcp-server.md`](docs/architecture/mcp-server.md) |
+| 153 | → | [`docs/architecture/mcp.md`](docs/architecture/mcp.md) |
+| 154 | → | [`docs/architecture/media-generation.md`](docs/architecture/media-generation.md) |
+| 155 | → | [`docs/architecture/memory.md`](docs/architecture/memory.md) |
+| 156 | → | [`docs/architecture/permission-system.md`](docs/architecture/permission-system.md) |
+| 157 | → | [`docs/architecture/plan-mode.md`](docs/architecture/plan-mode.md) |
+| 158 | → | [`docs/architecture/process-model.md`](docs/architecture/process-model.md) |
+| 159 | → | [`docs/architecture/project.md`](docs/architecture/project.md) |
+| 160 | → | [`docs/architecture/prompt-system.md`](docs/architecture/prompt-system.md) |
+| 161 | → | [`docs/architecture/provider-system.md`](docs/architecture/provider-system.md) |
+| 162 | → | [`docs/architecture/recap.md`](docs/architecture/recap.md) |
+| 163 | → | [`docs/architecture/sandbox.md`](docs/architecture/sandbox.md) |
+| 164 | → | [`docs/architecture/self-update.md`](docs/architecture/self-update.md) |
+| 165 | → | [`docs/architecture/session.md`](docs/architecture/session.md) |
+| 166 | → | [`docs/architecture/side-query.md`](docs/architecture/side-query.md) |
+| 167 | → | [`docs/architecture/skill-system.md`](docs/architecture/skill-system.md) |
+| 168 | → | [`docs/architecture/subagent.md`](docs/architecture/subagent.md) |
+| 169 | → | [`docs/architecture/tool-system.md`](docs/architecture/tool-system.md) |
+| 170 | → | [`docs/architecture/transport-modes.md`](docs/architecture/transport-modes.md) |
+| 171 | → | [`docs/architecture/ui-interaction-system.md`](docs/architecture/ui-interaction-system.md) |
+| 172 | → | [`docs/architecture/workflow.md`](docs/architecture/workflow.md) |
+| 173 | → | [`docs/README.md`](docs/README.md) |
+| 174 | → | [`docs/release-process.md`](docs/release-process.md) |
 
 ---
 

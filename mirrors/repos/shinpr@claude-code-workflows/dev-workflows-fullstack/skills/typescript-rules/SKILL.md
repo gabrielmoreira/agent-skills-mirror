@@ -17,7 +17,7 @@ Code first: names and types carry meaning; a comment must add what code cannot, 
 
 ## Type Safety
 
-**Absolute Rule**: Replace every `any` with `unknown`, generics, or union types. `any` disables type checking and causes runtime errors.
+**Default Rule**: Prefer `unknown`, generics, or union types over `any`. Retain `any` only when an existing external, generated, or legacy public signature requires it, or when replacing it prevents the project type check from expressing a safe generic relationship. Record the declaration path or type-check result that proves the constraint. When a local adapter can preserve compatibility and expose a safer type within the user request or current task/design artifact, implement the adapter; otherwise confine `any` to the smallest adapter or public-signature boundary, document the reason, and validate untrusted data before it enters typed application code.
 
 **any Type Alternatives (Priority Order)**
 1. **unknown Type + Type Guards**: Use for validating external input (API responses, localStorage, URL parameters)
@@ -40,16 +40,19 @@ function isUser(value: unknown): value is User {
 
 **Type Safety in Frontend Implementation**
 - **React Props/State**: TypeScript manages types, unknown unnecessary
-- **External API Responses**: Always receive as `unknown`, validate with type guards
-- **localStorage/sessionStorage**: Treat as `unknown`, validate
-- **URL Parameters**: Treat as `unknown`, validate
+- **External API Responses**: Treat unvalidated payloads as `unknown` and validate at the boundary. A generated client may retain its declared type when it also enforces the contract at runtime
+- **localStorage/sessionStorage**: Handle `string | null` at the browser boundary; treat parsed data as `unknown` until validated
+- **URL Parameters**: Handle the router or platform's `string | null` shape, then parse and validate before converting to a domain type
 - **Form Input (Controlled Components)**: Type-safe with React synthetic events
 
 **Type Safety in Data Flow**
 - **Frontend → Backend**: Props/State (Type Guaranteed) → API Request (Serialization)
 - **Backend → Frontend**: API Response (`unknown`) → Type Guard → State (Type Guaranteed)
 
-**Type Complexity Management**
+**Type Complexity Review Signals**
+
+Use the following as prompts to review a design, not as pass/fail thresholds. Existing project conventions and a component's actual responsibility take precedence.
+
 - **Props Design**:
   - Props count: 3-7 props ideal (consider component splitting if exceeds 10)
   - Optional Props: 50% or less (consider default values or Context if excessive)
@@ -60,10 +63,10 @@ function isUser(value: unknown): value is User {
 ## Coding Conventions
 
 **Component Design Criteria**
-- **Function components only**: Official React recommendation, optimizable by modern tooling (Exception: Error Boundary requires class component)
+- **Function components for new code**: Prefer function components and Hooks. Preserve working class components unless the user request or current task/design artifact requires migration; a class component remains valid when implementing an Error Boundary directly
 - **Custom Hooks**: Standard pattern for logic reuse and dependency injection
 - **Component Hierarchy**: Use the project's adopted component architecture. When the project uses Atomic Design: Atoms → Molecules → Organisms → Templates → Pages. When the project uses Feature-based, Container-Presenter, or another structure: follow that structure consistently and document the chosen layering in the project README or design doc
-- **Co-location**: Place tests, styles, and related files alongside components
+- **File placement**: Follow the repository's existing component, test, and style layout. Co-locate related files only when that is the established convention or an approved new structure
 
 **Server/Client Boundary (RSC frameworks only — e.g., Next.js App Router)**
 - Default to server components for data fetching and rendering; isolate interactivity behind a `"use client"` boundary at the smallest scope that needs it
@@ -74,7 +77,7 @@ function isUser(value: unknown): value is User {
 - **Local State**: `useState` for component-specific state
 - **Context API**: For sharing state across component tree (theme, auth, etc.)
 - **Custom Hooks**: Encapsulate state logic and side effects
-- **Server State**: React Query or SWR for API data caching
+- **Server State**: Follow the project's existing server-state layer; React Query and SWR are common options when already adopted
 
 **Data Flow Principles**
 - **Single Source of Truth**: Each piece of state has one authoritative source
@@ -87,28 +90,31 @@ setUsers(prev => [...prev, newUser])
 ```
 
 **Function Design**
-- **0-2 parameters maximum**: Use object for 3+ parameters
+- Prefer 0-2 parameters. For 3+ related values, use an object when it clarifies names or represents one domain input; preserve a positional signature when the repository convention or external API requires it
   ```typescript
   function createUser({ name, email, role }: CreateUserParams) {}
   ```
 
 **Props Design (Props-driven Approach)**
 - Props are the interface: Define all necessary information as props
-- Pass all data dependencies as props; use Context only for cross-cutting concerns (theme, auth, locale)
+- Declare data dependencies through props, hooks, Context, or injected modules according to the project's established state and dependency boundaries
 - Type-safe: Always define Props type explicitly
 
 **Environment Variables**
 - **Use the build tool's env accessor**: read client-side env through the bundler's exposed accessor — Vite via `import.meta.env`, Next.js/CRA via prefixed `process.env`. Raw, unprefixed access is `undefined` in the browser bundle
 - **Only prefixed vars reach the client**: build tools expose only vars carrying their public prefix; an unprefixed var is `undefined` in the browser. The prefix differs per tool — match the project's bundler (Vite `VITE_`, Next.js public `NEXT_PUBLIC_`, CRA `REACT_APP_`)
-- Centrally manage env through a typed config object with a default for every variable
+- Centrally validate env through a typed config layer. Fail fast for missing required values; provide defaults only for optional values or an explicitly defined local-development mode
 
 ```typescript
-// Client-exposed env must carry the bundler's public prefix, or it is undefined in the browser.
-// Vite:    import.meta.env.VITE_API_URL
-// Next.js: process.env.NEXT_PUBLIC_API_URL
+// Vite example. Use the project's existing schema validator when one is configured.
+const apiUrl = import.meta.env.VITE_API_URL
+if (!apiUrl) {
+  throw new Error('Missing required client environment variable: VITE_API_URL')
+}
+
 const config = {
-  apiUrl: import.meta.env.VITE_API_URL || 'http://localhost:3000', // adjust accessor + prefix to the project's bundler
-  appName: import.meta.env.VITE_APP_NAME || 'My App'
+  apiUrl,
+  appName: import.meta.env.VITE_APP_NAME ?? 'My App' // optional: intentional product default
 }
 ```
 
@@ -127,15 +133,15 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 - **Custom Hooks for dependency injection**: Ensure testability and modularity
 
 **Asynchronous Processing**
-- Promise Handling: Always use `async/await`
-- Error Handling: Always handle with `try-catch` or Error Boundary
-- Type Definition: Explicitly define return value types (e.g., `Promise<Result>`)
+- Promise Handling: Follow the repository's established style; prefer `async`/`await` when it makes sequencing and error propagation clearer
+- Error Handling: Handle event-handler and asynchronous failures with `try-catch`, a typed `Result`, or user-visible error state. Error Boundaries cover rendering failures in descendant components, not event handlers or ordinary asynchronous callbacks
+- Type Definition: Explicitly define return types at exported APIs and important boundaries (e.g., `Promise<Result>`); allow inference for local implementations when the contract remains clear
 - Effect race/cleanup: guard `useEffect` data fetches against out-of-order responses and post-unmount state updates — abort or ignore stale results (`AbortController` or a mounted flag), or use a server-state library (React Query/SWR) that cancels and dedupes. `try-catch` alone does not cover this
 
 **Format Rules**
-- Semicolon omission (follow Biome settings)
+- Semicolon usage follows the project's formatter settings
 - Types in `PascalCase`, variables/functions in `camelCase`
-- Imports use absolute paths (`src/`)
+- Imports follow the repository's existing TypeScript, bundler, and package-boundary configuration. Use aliases only when the project config resolves them; do not invent a `src/` alias
 
 **Clean Code Principles**
 - Delete unused code immediately
@@ -145,7 +151,7 @@ const response = await fetch('/api/data') // Backend handles API key authenticat
 
 ## Error Handling
 
-**Absolute Rule**: Every caught error must be logged with context and either re-thrown to Error Boundary, returned as a Result error variant, or displayed as user-facing error state.
+**Handling Rule**: Every caught error must be intentionally propagated, converted to a typed error result, or represented as user-facing error state. Log it once at the boundary that owns diagnosis or recovery, with sensitive data redacted; avoid duplicate logging while propagating the same failure.
 
 **Fail-Fast Principle**: Fail quickly on errors to prevent continued processing in invalid states
 ```typescript
@@ -178,7 +184,7 @@ export class AppError extends Error {
 ```
 
 **Layer-Specific Error Handling (React)**
-- Error Boundary: Catch React component errors, display fallback UI
+- Error Boundary: Place at meaningful UI recovery boundaries to catch descendant rendering errors and display fallback UI
 - Custom Hook: Detect business rule violations, propagate AppError as-is
 - API Layer: Convert fetch errors to domain errors
 
@@ -186,9 +192,9 @@ export class AppError extends Error {
 Redact sensitive fields (password, token, apiKey, secret, creditCard) before logging
 
 **Asynchronous Error Handling in React**
-- Error Boundary setup mandatory: Catch rendering errors
-- Use try-catch with all async/await in event handlers
-- Always log and re-throw errors or display error state
+- Add an Error Boundary where a rendering failure needs localized recovery; use the application's top-level boundary when localized recovery adds no value
+- Handle expected failures in event handlers and async workflows with `try-catch`, typed results, or rejected-promise propagation to the owning layer
+- Preserve the failure context and choose one observable outcome: propagate it, return an error variant, or display error state
 
 ## Refactoring Techniques
 
@@ -210,5 +216,5 @@ Redact sensitive fields (password, token, apiKey, secret, creditCard) before log
 
 ## Non-functional Requirements
 
-- **Browser Compatibility**: Chrome/Firefox/Safari/Edge (latest 2 versions)
-- **Rendering Time**: Within 5 seconds for major pages
+- **Browser Compatibility**: Implement against the support policy in the PRD, Design Doc, Browserslist, or build configuration. When none is defined, preserve the repository's current transpilation/polyfill baseline and surface any new browser-dependent API as an unresolved compatibility decision
+- **Performance**: Verify against project-defined budgets and the metric that represents the affected experience (for example Web Vitals, interaction latency, bundle size, or a profiler trace). When no budget exists, measure the changed path and report the observed result instead of inventing a threshold

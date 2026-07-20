@@ -327,7 +327,7 @@ When conversion is required, clearly specify adapter implementation or migration
 
 - Execute file output immediately (considered approved at execution).
 - ADR includes decisions, rationale, and principled guidelines (e.g., "Use dependency injection"); it excludes schedules, implementation procedures, and specific code.
-- Test derivation is a downstream agent responsibility.
+- Test derivation is outside this output.
 - Implementation samples MUST follow the loaded `coding-principles` and `testing-principles` skills; include a sample only when it clarifies a contract or edge case prose cannot convey.
 
 ## Diagram Creation (using mermaid notation)

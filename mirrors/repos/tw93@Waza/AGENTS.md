@@ -8,7 +8,7 @@ Waza is a skill collection for engineering workflows. The repository contains ei
 
 ## Repository Map
 
-- `VERSION` - single source of truth for the lock-step version. Every `SKILL.md` frontmatter, marketplace entry, README install URL, and installer `WAZA_REF` default must agree with this file.
+- `VERSION` - single source of truth for the lock-step version. Marketplace entries, README install URLs, and installer `WAZA_REF` defaults must agree with this file (codegen-enforced). Per-skill frontmatter carries no version field; the verifier rejects a stale `metadata.version`.
 - `skills/RESOLVER.md` - trigger and routing table for the skill set.
 - `skills/*/SKILL.md` - individual skill entrypoints.
 - `skills/*/agents/` - specialist reviewer or inspector prompts.
@@ -21,16 +21,16 @@ Waza is a skill collection for engineering workflows. The repository contains ei
 - `packaging.allowlist` - default-deny list of paths that ship in `waza.zip`. New shippable assets must be added here explicitly; everything else is excluded.
 - `.github/workflows/` - public test and release automation. `release.yml` runs `make test` before `make package` so the tagged commit is gated by the same suite as PRs.
 - `scripts/build_metadata.py` - codegen for Claude and Codex marketplace metadata, README install URLs, Codex plugin mirror files, skill-local shared assets (update checkers, durable-context copies), installer-script `WAZA_REF` defaults, and update-checker `LOCAL_VERSION`. Run via `make regenerate`; CI checks drift via `make verify-generated`.
-- `scripts/verify_skills.py` - the only validator entrypoint. Covers frontmatter, references, marketplace, resolver, links, table pipes, trigger overlap, rule-file presence, README install string, English coaching guard, AI-attribution leak detection, the canonical update-check line (SKILL.md files and the dispatcher template), portable command invocations, and skill-local durable-context copies.
+- `scripts/verify_skills.py` - the only validator entrypoint; a driver over the check inventory in `scripts/skill_checks.py` (content, distribution, and routing checks). The facade's import list is the canonical inventory; do not re-enumerate it here.
 - `scripts/package-skill.sh` + `scripts/packaging_filter.py` - build `dist/waza.zip` from `packaging.allowlist`.
 - `scripts/setup-rule.sh` + `scripts/setup-statusline.sh` - public install helpers; `WAZA_REF` defaults are codegen-pinned to the current release tag.
 - `Makefile` - smoke discovery and packaging entrypoints. Adding a `tests/test_<name>.sh` file is enough to create a `smoke-<name>` target automatically.
-- `tests/test_*.sh` - one smoke per surface; sources `tests/test_helpers.sh` for tmpdir / repo-copy / stub-curl factories.
+- `tests/test_*.sh` - one smoke per surface; sources `tests/test_helpers.sh` for tmpdir / repo-copy / stub-curl / instruction-file fixture factories. `tests/python/` holds the pytest unit layer (`make verify-unit`).
 
 ## Commands
 
 ```bash
-make test             # verify-docs + verify-generated + verify-routing + verify-scripts + all smokes
+make test             # verify-docs + verify-generated + verify-routing + verify-scripts + verify-unit + all smokes
 make regenerate       # rewrite marketplace.json, README install URLs, update checker copies
 make verify-generated # drift check used by CI; non-zero if regenerate would change anything
 make package          # build dist/waza.zip from packaging.allowlist
@@ -67,14 +67,13 @@ Examples: `verify_skills.py` is a script; `rules/english.md` and `rules/chinese.
 - Treat `code-review` as an invocation alias for Waza `check`, not as a separate generic skill.
 - Waza `check` must remain project-aware without depending on unpublished local files. It extracts commands, generated artifacts, risk areas, and release rules from the target diff, public docs, manifests, CI config, and user-provided context.
 - Keep distribution files self-contained for Claude Desktop and plugin installs. The release ZIP may inline sub-skill bodies into a generated root `SKILL.md`; source-of-truth skill content remains under `skills/*/SKILL.md`.
-- If a `templates/` directory is added, keep reusable public scaffolds there and include it in packaging/validation rules deliberately.
 - Keep the README short: a new reader should understand Waza in 30 seconds. Detailed rules belong in `skills/<name>/SKILL.md`, `rules/*.md`, or this file. Do not stack promotional sections at the top.
 
 ## Adding Or Changing A Skill
 
 Use this path for any new skill or meaningful behavior change:
 
-1. Create or update `skills/<name>/SKILL.md`; keep the description concrete, triggerable, and include a `Not for ...` exclusion. Frontmatter `metadata.version` must match the top-level `VERSION` file.
+1. Create or update `skills/<name>/SKILL.md`; keep the description concrete, triggerable, and include a `Not for ...` exclusion. Do not add a version field to frontmatter; `VERSION` is the single source of truth and the verifier rejects `metadata.version`.
 2. Update `skills/RESOLVER.md` routing rows so the new skill or changed scope is reachable; never hand-edit `.claude-plugin/marketplace.json` (run `make regenerate` instead).
 3. Keep Waza public: extract project-specific details from public repo context at runtime instead of hardcoding private paths, credentials, or one-machine workflow.
 4. Put deterministic enforcement in `scripts/` or `rules/`; keep only adaptive judgment in the skill body.
@@ -87,7 +86,7 @@ Use this path for any new skill or meaningful behavior change:
 - Keep executable programs as real files, not heredocs inside shell scripts or Makefile recipes. Shell wrappers may delegate to Python helpers, but large logic belongs in importable `.py` files with `py_compile` coverage.
 - Keep smoke tests in `tests/test_*.sh`; `Makefile` should discover and run them, not embed large test bodies.
 - Avoid hidden runtime dependencies. If a script needs a non-stdlib Python package, external CLI, or network resolver, declare it in CI/docs and add a smoke test that fails without it.
-- Shipped skill scripts (`skills/*/scripts/`) stay self-contained: they import only the standard library and run from an arbitrary target project. Do not extract their shared-looking helpers (file walks, parsers) into a root `scripts/` module. That module is dev/CI-only and not on `packaging.allowlist`, so importing it would couple a standalone shipped tool to the install layout and can break `npx skills add` installs. Benign duplication across two shipped scripts is the correct trade; if drift matters, align the copies in place rather than sharing a module.
+- Shipped skill scripts (`skills/*/scripts/`) stay self-contained: they import only the standard library and run from an arbitrary target project. Do not extract their shared-looking helpers (file walks, parsers) into a root `scripts/` module. That module is dev/CI-only and not on `packaging.allowlist`, so importing it would couple a standalone shipped tool to the install layout and can break `npx skills add` installs. Benign duplication across two shipped scripts is the correct trade; if drift matters, align the copies in place rather than sharing a module. Mechanical definitions copied across shipped auditors (excluded dirs, source extensions, marker regexes) are pinned equal by `tests/python/test_auditor_alignment.py`; extend that test when a new definition gets copied, and keep thresholds per-product.
 - Installer scripts that fetch remote content must default to a release tag. Use `WAZA_REF=main` only as an explicit bleeding-edge override.
 - One-off review reports, scorecards, or diagnostic snapshots do not belong in durable docs. Extract the stable rule into `AGENTS.md`, `CLAUDE.md`, `rules/`, `skills/*/references/`, or a verifier script, then drop the report.
 - Project case studies are inputs, not Waza policy. Only promote the transferable workflow rule; keep project-specific commands, paths, release rituals, and safety constraints in that project's public context.
@@ -99,7 +98,7 @@ Use this path for any new skill or meaningful behavior change:
 
 ## Distribution Rules
 
-- `.claude-plugin/marketplace.json`, `.agents/plugins/marketplace.json`, `plugins/waza/.codex-plugin/plugin.json`, `skills/RESOLVER.md`, and every `skills/*/SKILL.md` must agree on skill names, descriptions, versions, and source paths.
+- `.claude-plugin/marketplace.json`, `.agents/plugins/marketplace.json`, `plugins/waza/.codex-plugin/plugin.json`, `skills/RESOLVER.md`, and every `skills/*/SKILL.md` must agree on skill names, descriptions, and source paths; versions march in lock-step with `VERSION` through the generated metadata.
 - `npx skills add tw93/Waza` should install the eight direct coding skills by default. Do not add a source-root `SKILL.md`; it prevents nested skill discovery.
 - Codex marketplace entries must resolve to `plugins/waza`, not the repository root. After Codex marketplace, plugin manifest, or plugin mirror changes, verify an isolated install flow rather than only checking JSON shape.
 - Plugin mirror generation must filter local cache and noise files in both generator and verifier paths, including `__pycache__`, `*.pyc`, `.pytest_cache`, `.ruff_cache`, `.mypy_cache`, and `.DS_Store`.

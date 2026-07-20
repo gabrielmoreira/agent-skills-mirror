@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AI-Builder-Club/skills` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `AI-Builder-Club/skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AI-Builder-Club/skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,15 +73,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`skills/new-loop/references/KNOWLEDGE_SETUP.md`](skills/new-loop/references/KNOWLEDGE_SETUP.md) |
 | 13 | ✓ | [`skills/new-loop/references/LOG.md`](skills/new-loop/references/LOG.md) |
 | 14 | ✓ | [`skills/new-loop/SKILL.md`](skills/new-loop/SKILL.md) |
-| 15 | ✓ | [`skills/setup-codebase-harness/SKILL.md`](skills/setup-codebase-harness/SKILL.md) |
-| 16 | ✓ | [`skills/verifier-setup/assets/verify.template.md`](skills/verifier-setup/assets/verify.template.md) |
-| 17 | ✓ | [`skills/verifier-setup/SKILL.md`](skills/verifier-setup/SKILL.md) |
-| 18 | ✓ | [`skills/visual-flow-gif/assets/dark-spec.json`](skills/visual-flow-gif/assets/dark-spec.json) |
-| 19 | ✓ | [`skills/visual-flow-gif/assets/default-spec.json`](skills/visual-flow-gif/assets/default-spec.json) |
-| 20 | ✓ | [`skills/visual-flow-gif/references/spec-format.md`](skills/visual-flow-gif/references/spec-format.md) |
-| 21 | ✓ | [`skills/visual-flow-gif/requirements.txt`](skills/visual-flow-gif/requirements.txt) |
-| 22 | ✓ | [`skills/visual-flow-gif/scripts/render_animated_gif.py`](skills/visual-flow-gif/scripts/render_animated_gif.py) |
-| 23 | ✓ | [`skills/visual-flow-gif/SKILL.md`](skills/visual-flow-gif/SKILL.md) |
+| 15 | ✓ | [`skills/open-agent-teams/references/CLAUDE.delegation-template.md`](skills/open-agent-teams/references/CLAUDE.delegation-template.md) |
+| 16 | ✓ | [`skills/open-agent-teams/scripts/tdel`](skills/open-agent-teams/scripts/tdel) |
+| 17 | ✓ | [`skills/open-agent-teams/SKILL.md`](skills/open-agent-teams/SKILL.md) |
+| 18 | ✓ | [`skills/setup-codebase-harness/SKILL.md`](skills/setup-codebase-harness/SKILL.md) |
+| 19 | ✓ | [`skills/verifier-setup/assets/verify.template.md`](skills/verifier-setup/assets/verify.template.md) |
+| 20 | ✓ | [`skills/verifier-setup/SKILL.md`](skills/verifier-setup/SKILL.md) |
+| 21 | ✓ | [`skills/visual-flow-gif/assets/dark-spec.json`](skills/visual-flow-gif/assets/dark-spec.json) |
+| 22 | ✓ | [`skills/visual-flow-gif/assets/default-spec.json`](skills/visual-flow-gif/assets/default-spec.json) |
+| 23 | ✓ | [`skills/visual-flow-gif/references/spec-format.md`](skills/visual-flow-gif/references/spec-format.md) |
+| 24 | ✓ | [`skills/visual-flow-gif/requirements.txt`](skills/visual-flow-gif/requirements.txt) |
+| 25 | ✓ | [`skills/visual-flow-gif/scripts/render_animated_gif.py`](skills/visual-flow-gif/scripts/render_animated_gif.py) |
+| 26 | ✓ | [`skills/visual-flow-gif/SKILL.md`](skills/visual-flow-gif/SKILL.md) |
 
 ---
 

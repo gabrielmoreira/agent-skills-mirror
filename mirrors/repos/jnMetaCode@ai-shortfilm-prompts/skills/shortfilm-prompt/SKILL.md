@@ -79,6 +79,13 @@ genre-specific phrasing. Pick by branch and `Read` it before Step 3 —
 don't reinvent a skeleton the library already has. Paths are relative to
 the plugin/repo root.
 
+**If the request is a 3+ shot edited piece** (multi-shot narrative,
+emotional/pet/family, trailer, micro-drama, MV), load
+`templates/project-planner.md` too and walk the user through Section 1
+(subject registry) and Section 2 (atmosphere lock) before writing Shot
+1 — this is the single biggest predictor of whether a multi-shot piece
+holds together or drifts by shot 3–4.
+
 | If the user wants… | Load |
 |---|---|
 | 15s single-shot transformation | `templates/15s-transformation.md` |
@@ -102,6 +109,7 @@ the plugin/repo root.
 | **Hard sci-fi space / zero-G** (weightless physics; vacuum silence) | `templates/sci-fi-space.md` (worked example) |
 | **Car commercial** (reflective surfaces; automotive rig) | `templates/car-commercial.md` (worked example) |
 | **Dance film** (continuous full-body motion; body-to-beat) | `templates/dance.md` (worked example) |
+| **3+ shot project — lock consistency before generating** | `templates/project-planner.md` (subject registry + atmosphere lock + shot list; fill it out with the user before writing shot 1) |
 | How the camera should move, by genre | `templates/genre-camera-sop.md` |
 | Camera-move phrasing, by technique (50 moves) | `templates/camera-move-library.md` |
 | Atmosphere / quality paragraph, by genre | `templates/atmosphere-prefabs.md` |

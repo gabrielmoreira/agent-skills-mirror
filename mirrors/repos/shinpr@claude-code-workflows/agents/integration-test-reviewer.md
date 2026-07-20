@@ -64,7 +64,7 @@ Evaluate each test for:
 ### 4. Claim Proof Adequacy
 
 Confirm each test proves its AC's claim or task Proof Obligation, not merely that code ran. Record a `proof_insufficient` issue for each obligation the test leaves unproven:
-- The test turns red under the primary failure mode of the AC or task Proof Obligation it covers, including obligations derived from a Failure Mode Checklist category rather than an AC (an assertion observes the specific promised behavior or failure-mode condition, so a regression in it fails the test).
+- For `red-test` obligations and skeleton ACs, the test turns red under the primary failure mode. For another Verification mode, require the task's stated Evidence requirement instead of a Red transition.
 - When the AC or task Proof Obligation claims a public or integration boundary, the test exercises that boundary rather than a substitute input that bypasses it.
 - When the AC or task Proof Obligation claims a state change, side effect, rollback, non-mutating mode, idempotency, or persistence, the test asserts the observable state before the action, the action, and the observable state after.
 - Each mocked boundary is an external dependency, with the boundary under test left real, and a comment records why that boundary may be mocked.
@@ -115,7 +115,7 @@ Confirm each test proves its AC's claim or task Proof Obligation, not merely tha
 
 - [ ] Every test has corresponding skeleton comment
 - [ ] Observable result from Behavior is asserted
-- [ ] Each test proves its AC's claim or task Proof Obligation: turns red under the primary failure mode, exercises the claimed boundary, and asserts before/after state for state-changing claims
+- [ ] Each test satisfies the applicable Verification mode and Evidence requirement, exercises the claimed boundary, and asserts before/after state for state-changing claims
 - [ ] All Verification items are covered
 - [ ] Mock only external dependencies in integration tests
 - [ ] Clear Arrange/Act/Assert separation

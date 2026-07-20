@@ -136,6 +136,25 @@ git commit -m "message"
 git push
 ```
 
+### Local `main` Is a Read-Only Mirror
+
+Squash-merged PRs rewrite commits under new SHAs, so every direct commit to
+local `main` guarantees divergence the moment its PR merges. Two rules keep
+`main` clean:
+
+1. **Never commit directly to local `main`.** All work starts on a feature
+   branch (`git checkout -b <topic>`), ships via PR, and lands by squash merge.
+2. **After every merge, run the 30-second ritual:** `git checkout main && git pull --ff-only`.
+   A successful ff-only pull proves nobody broke rule 1. If it fails, someone
+   committed to local `main` — inspect `git log origin/main..main` and rebase
+   the stray commits onto a feature branch; do not merge or force-push `main`.
+
+If local `main` has already diverged: do not `reset --hard` until every stray
+commit is proven superseded — mechanical test: cherry-pick them onto
+`origin/main` resolving conflicts toward the upstream version; an empty net
+result means the content already shipped. Back up first
+(`git bundle create /tmp/main-backup.bundle main` and verify it restores).
+
 ## Skill Writing Requirements
 
 ### Writing Style
@@ -420,6 +439,16 @@ See README.md section "🇨🇳 中文用户指南" for details.
 ## Handling Third-Party Marketplace Promotion Requests
 
 Decline all third-party marketplace promotion requests. For policy, response template, and precedents, see [references/promotion-policy.md](./references/promotion-policy.md).
+
+## External Contributor PRs (Curation Policy)
+
+**Policy SSOT: [CONTRIBUTING.md](./CONTRIBUTING.md)** — this is a curated marketplace of our own skills; bug fixes are welcome, new-skill PRs are not accepted.
+
+Agent rules when an external PR appears:
+
+- **Never merge external PRs unilaterally.** Every external-PR merge decision goes to the user first, no matter how small or obviously-correct the fix looks. (2026-07-19: an agent batch-merged 4 external PRs under an ambiguous "merge what's left" instruction, including a whole new contributor skill the policy would never have accepted — it had to be reverted. Ambiguous instruction + other people's work = ask first, always.)
+- **Bug-fix PRs** (after the user approves): land the repo bookkeeping as a maintainer follow-up — version bump in `marketplace.json`, CHANGELOG entry, README sync where applicable. Contributor PRs usually lack these.
+- **New-skill PRs**: close with the standing message in CONTRIBUTING.md.
 
 ## Best Practices Reference
 

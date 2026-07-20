@@ -10,7 +10,7 @@ This reference defines the orchestration flow for projects spanning multiple lay
 
 ## Design Phase
 
-### Large Scale Fullstack (6+ Files) - 16 Steps
+### Large Scale Fullstack (6+ Files) - 17 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
@@ -29,9 +29,10 @@ This reference defines the orchestration flow for projects spanning multiple lay
 | 13 | document-reviewer ×2 | Review each Design Doc (with code-verifier results as `code_verification`) | Reviews |
 | 14 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
 | 15 | acceptance-test-generator | Integration + fixture-e2e + service-integration-e2e test skeletons from cross-layer contracts (per-lane) | Test skeletons |
-| 16 | work-planner | Work plan from all Design Docs **[Stop: Batch approval]** | Work plan |
+| 16 | work-planner | Work plan from all Design Docs | Work plan |
+| 17 | document-reviewer | Work Plan review (`doc_type: WorkPlan`); return `needs_revision` to work-planner update and re-review **[Stop: Batch approval after approval]** | Approved Work Plan review |
 
-### Medium Scale Fullstack (3-5 Files) - 14 Steps
+### Medium Scale Fullstack (3-5 Files) - 15 Steps
 
 | Step | Agent | Purpose | Output |
 |------|-------|---------|--------|
@@ -48,7 +49,8 @@ This reference defines the orchestration flow for projects spanning multiple lay
 | 11 | document-reviewer ×2 | Review each Design Doc (with code-verifier results as `code_verification`) | Reviews |
 | 12 | design-sync | Cross-layer consistency verification (source: frontend Design Doc) **[Stop]** | Sync status |
 | 13 | acceptance-test-generator | Integration + fixture-e2e + service-integration-e2e test skeletons from cross-layer contracts (per-lane) | Test skeletons |
-| 14 | work-planner | Work plan from all Design Docs **[Stop: Batch approval]** | Work plan |
+| 14 | work-planner | Work plan from all Design Docs | Work plan |
+| 15 | document-reviewer | Work Plan review (`doc_type: WorkPlan`); return `needs_revision` to work-planner update and re-review **[Stop: Batch approval after approval]** | Approved Work Plan review |
 
 ### Parallelization in Multi-Agent Steps
 
@@ -114,6 +116,8 @@ verification per phase.
 ```
 
 work-planner's existing Integration Complete criteria naturally covers cross-layer verification when given multiple Design Docs.
+
+For Medium and Large flows, pass the resulting Work Plan to document-reviewer with `doc_type: WorkPlan`. On `needs_revision`, route the findings to work-planner in update mode and re-review. If the same blocking finding repeats and the update supplies no new evidence or contract change, stop and escalate instead of repeating the loop. Request batch approval only after the review is `approved` or `approved_with_conditions`; escalate `rejected` to the user.
 
 ## Task Decomposition Phase
 

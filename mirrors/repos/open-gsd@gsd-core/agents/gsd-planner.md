@@ -66,7 +66,7 @@ The orchestrator provides user decisions in `<user_decisions>` tags from `/gsd:d
 **Self-check before returning:** For each plan, verify:
 - [ ] Every locked decision (D-01, D-02, etc.) has a task implementing it
 - [ ] Task actions reference the decision ID they implement (e.g., "per D-03")
-      (The decision-coverage gate `check.decision-coverage-plan` reads D-NN citations from `<objective>`, `<tasks>`, `<task>`, and `<action>` tag bodies, as well as markdown headings and front-matter `must_haves`/`truths`/`objective` keys — citing D-NN in any of these locations counts toward coverage.)
+      (The decision-coverage gate `check.decision-coverage-plan` reads D-NN citations from `<objective>`, `<tasks>`, `<task>`, `<action>`, `<read_first>`, `<behavior>`, `<verify>`, `<acceptance_criteria>`, and `<done>` tag bodies, as well as `## must_haves`/`truths`/`tasks`/`objective` markdown headings and front-matter `must_haves`/`truths`/`objective` keys — citing D-NN in any of these locations counts toward coverage.)
 - [ ] No task implements a deferred idea
 - [ ] Discretion areas are handled reasonably
 
@@ -193,22 +193,18 @@ Every task has four required fields:
 **Grep gate hygiene:** `grep -c` counts comments, so header prose can be self-invalidating. Use `grep -v '^#' | grep -c token`. Bare `== 0` gates on unfiltered files are forbidden.
 
 <comment_text_discipline>
-**Comment-text discipline (HARD GATE, #429):** A literal an acceptance criterion negative-greps for (`grep -c 'LIT' file == 0`) must NOT appear verbatim in any `<action>` body — JSDoc samples, head-comment references, or "what NOT to do" snippets echo into the written file and trip the executor's commit-time gate. `validate_plan` (`verify.plan-structure`) fails plan creation on violation. Rephrase the literal by concept, or — when it must legitimately appear — add an allowlist marker on its own line:
-
-`<!-- planner-discipline-allow: LIT -->`
-
-Full rules + worked examples: @gsd-core/references/planner-antipatterns.md ("Comment-Text Discipline").
+**Comment-text discipline (HARD GATE, #429):** A literal an acceptance criterion negative-greps for must NOT appear verbatim in any `<action>` body. Full rules + `<!-- planner-discipline-allow: LIT -->` allowlist + worked examples: @gsd-core/references/planner-antipatterns.md ("Comment-Text Discipline").
 </comment_text_discipline>
 
 <region_scoped_negative_gate>
-**Region-scoped negative gates (WARN, #968):** Region-scope a file-wide negative grep when a sibling task needs that construct elsewhere in the same file; `validate_plan` WARNS. See: @gsd-core/references/planner-antipatterns.md ("Region-Scoped Negative Gates").
-
-**Verify-gate hygiene (#1478/#1479):** See @gsd-core/references/planner-antipatterns.md.
+**Region-scoped negative gates (WARN, #968)** and **Verify-gate hygiene (#1478/#1479):** @gsd-core/references/planner-antipatterns.md.
 </region_scoped_negative_gate>
 
 **<done>:** Acceptance criteria - measurable state of completion.
 - Good: "Valid credentials return 200 + JWT cookie, invalid credentials return 401"
 - Bad: "Authentication is complete"
+
+**<precondition>** (optional, one prose line): a runnable/checkable fact the task assumes that plan ordering does not guarantee — external setup (`user_setup`), a prior-phase artifact, or an env var. The executor asserts it before running the task and halts on unmet. Emission rules + the contract triad (precondition ↔ `<verify>`/`<done>` ↔ `must_haves.truths`): @~/.claude/gsd-core/references/planner-preconditions.md.
 
 See @~/.claude/gsd-core/references/planner-guidance.md for Task Types table, Task Sizing rules, Interface-First Task Ordering, and Specificity guidance.
 

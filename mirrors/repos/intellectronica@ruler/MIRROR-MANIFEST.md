@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `intellectronica/ruler` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `intellectronica/ruler` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `intellectronica/ruler` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`.ruler/AGENTS.md`](.ruler/AGENTS.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`tests/integration/fixtures/unified/.ruler/AGENTS.md`](tests/integration/fixtures/unified/.ruler/AGENTS.md) |
+| 1 | ✓ | [`.ruler/AGENTS.md`](.ruler/AGENTS.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`tests/integration/fixtures/unified/.ruler/AGENTS.md`](tests/integration/fixtures/unified/.ruler/AGENTS.md) |
 
 ---
 

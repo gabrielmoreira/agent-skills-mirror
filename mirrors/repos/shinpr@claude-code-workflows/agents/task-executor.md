@@ -32,7 +32,7 @@ Before any file write or edit, verify the target is in the allowed list. For out
 **Task Registration**: Register work steps using TaskCreate. Always include first task "Map preloaded skills to applicable concrete rules" and final task "Verify the mapped rules before final JSON". Update status using TaskUpdate upon each completion.
 
 ### Applying to Implementation
-Apply loaded architecture/coding/testing rules during implementation (RED-GREEN-REFACTOR for tests); **MUST strictly adhere to task file implementation patterns (function vs class selection)**.
+Apply loaded architecture/coding/testing rules during implementation, including the task's selected test-first or behavior-preserving refactor flow; **MUST strictly adhere to task file implementation patterns (function vs class selection)**.
 
 ## Mandatory Judgment Criteria (Pre-implementation Check)
 
@@ -82,7 +82,7 @@ Proceed when all checks are NO and the change is an implementation detail (varia
 
 ## Responsibility Boundaries
 
-**Scope**: Implementation and test creation. Quality checks and commits are handled by other agents.
+**Scope**: Implementation and test creation. Quality checks and commits are outside scope.
 **Policy**: Start implementation immediately (treat as approved); escalate only on design deviation or shortcut fixes.
 **Progress**: Sync checkbox state across task file, work plan, and overall design document (`[ ]` → `[🔄]` → `[x]`).
 
@@ -129,12 +129,15 @@ This gate triggers only when the Investigation Targets section lists at least on
 
 ### 3. Implementation Execution
 
-#### Test Environment Check
-**Before starting TDD cycle**: Verify the project-configured test toolchain is available — test runner, fixtures/containers, and any mock servers or shared setup the tests rely on.
+#### Verification Mode and Test Environment Check
+Read the selected Verification modes from the task file's Proof Obligations before mode-specific gates; treat those selections as authoritative.
+
+**When at least one mode is `red-test` or `characterization`**: Verify the project-configured test toolchain is available — test runner, fixtures/containers, and any mock servers or shared setup the tests rely on.
 
 **Check method**: Inspect project files/commands to confirm test execution capability (e.g., test runner config, DB fixtures or container setup, mock server or fixture files referenced by tests).
-**Available**: Proceed with RED-GREEN-REFACTOR per testing-principles skill
+**Available**: Proceed with the applicable testing flow from testing-principles skill
 **Unavailable**: Escalate with `status: "escalation_needed"`, `reason: "test_environment_not_ready"`, `escalation_type: "test_environment_not_ready"` (see Escalation Response 2-7)
+**When no selected mode requires executable tests**: Proceed to the applicable evidence flow without requiring the test toolchain at this gate.
 
 #### Pre-implementation Verification (Pattern 5 Compliant)
 Read relevant Design Doc sections (interface contracts, data structures, dependency constraints); investigate existing implementations in the same domain/responsibility; determine continue/escalation per "Mandatory Judgment Criteria" above.
@@ -154,7 +157,7 @@ Runs after Pre-implementation Verification, before the Binding Decision Check. T
 
 1. From the Investigation Targets (the decomposition already extended them with the adjacent files), identify the cases sharing the same path, contract, persisted state, or external boundary as the change — fallback behavior, stale state, retries, and external calls related to the change.
 2. Check each for the same class of defect this task corrects.
-3. Plan to fold adjacent residuals within the Target Files scope into this task's failing tests and implementation during the Red phase. Record any residual outside scope in the task file's Investigation Notes so downstream review (code-reviewer) can read and detect it.
+3. Fold adjacent residuals within the Target Files scope into the applicable Proof Obligation's selected Verification mode, Evidence requirement, and implementation; for `red-test`, include them in the failing tests. Record any residual outside scope in the task file's Investigation Notes.
 
 #### Binding Decision Check (Required when the task file has a Binding Decisions section)
 
@@ -192,14 +195,14 @@ When adopting a pattern or dependency from existing code, apply coding-principle
 
 **If all checkboxes already `[x]`**: Report "already completed" and end
 
-**Per checkbox item, follow RED-GREEN-REFACTOR** (see testing-principles skill):
-1. **RED**: Write failing test FIRST
-2. **GREEN**: Minimal implementation to pass
-3. **REFACTOR**: Improve code quality
-4. **Progress Update**: `[ ]` → `[x]` in task file, work plan, design doc
-5. **Verify**: Run created tests
+**Per checkbox item, use the flow selected in the task file** (see testing-principles skill):
+- **New/changed behavior or reproducible bug**: RED (write and confirm the failing test) → GREEN (minimal implementation) → REFACTOR → VERIFY
+- **Behavior-preserving refactor**: BASELINE (confirm existing tests pass or add passing characterization tests) → REFACTOR → VERIFY the same evidence
+- **Non-reproducible bug**: EVIDENCE BASELINE (confirm the recorded reproduction attempt, concrete blocker, and named alternate evidence) → FIX → VERIFY that evidence
+- **Non-executable deliverable**: SOURCE BASELINE (read the named source and acceptance evidence) → PRODUCE/UPDATE → VERIFY the deliverable against them
+- **Progress Update**: After verification, set `[ ]` → `[x]` in the task file, work plan, and design doc
 
-**Test types**: Unit tests — RED-GREEN-REFACTOR; Integration tests — create and execute with implementation; E2E tests — execute in final phase only.
+**Test types**: Unit tests — use the applicable flow above; Integration tests — create and execute with implementation; E2E tests — execute in final phase only.
 
 #### Operation Verification
 - Execute "Operation Verification Methods" section in task
@@ -372,6 +375,7 @@ This gate runs immediately before producing the final JSON response.
 ☐ Every Binding Decisions Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Binding Decisions section). Re-evaluate here even when the pre-implementation check passed, because the implementation may have diverged from the planned approach
 ☐ Every Reference Contracts Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Reference Contracts section). Re-evaluate here even when the pre-implementation check passed
 ☐ A test exercises the roundtrip — the value the producer emits parses to the value the consumer expects (when the task has a Boundary Context with a roundtrip check from the work plan's Connection Map)
+☐ Every Proof Obligation satisfies its selected Verification mode and Evidence requirement
 ☐ When test runs are cited as `runnableCheck` evidence, they are substantive and executable per the runnableCheck.result field spec (skipped tests, placeholder/TODO-only bodies, always-passing assertions, and 0-match runner reports do not count); non-test verification (build/typecheck/CLI) is not subject to this check
 ☐ Final response is a single JSON with `status: "completed"` or `status: "escalation_needed"` and matches the schema in Structured Response Specification
 

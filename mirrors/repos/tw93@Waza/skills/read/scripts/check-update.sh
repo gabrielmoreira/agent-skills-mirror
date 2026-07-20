@@ -11,7 +11,7 @@ set -u
 SKILL="waza"
 REPO="tw93/Waza"
 UPDATE_CMD="npx skills update -g -y"
-LOCAL_VERSION="${LOCAL_VERSION:-v3.31.2}"
+LOCAL_VERSION="${LOCAL_VERSION:-v3.32.0}"
 # WAZA_UPDATE_URL overrides the source (used by tests); defaults to the public VERSION.
 REMOTE_URL="${WAZA_UPDATE_URL:-https://raw.githubusercontent.com/${REPO}/main/VERSION}"
 

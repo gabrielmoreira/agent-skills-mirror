@@ -1,13 +1,13 @@
 ---
 name: frontend-ai-guide
-description: Frontend-specific technical decision criteria, anti-patterns, debugging techniques, and quality check workflow. Use when making frontend technical decisions or performing quality assurance.
+description: Applies React/TypeScript-specific technical decision criteria, anti-pattern detection, debugging, and frontend quality gates. Use when reviewing components, hooks, browser behavior, or frontend implementation completeness.
 ---
 
 # AI Developer Guide - Technical Decision Criteria and Anti-pattern Collection (Frontend)
 
 ## Technical Anti-patterns (Red Flag Patterns)
 
-Immediately stop and reconsider design when detecting the following patterns:
+Pause the affected decision and review the design when detecting the following patterns:
 
 ### Code Quality Anti-patterns
 1. **Writing similar code 3 or more times** - Violates Rule of Three
@@ -17,8 +17,8 @@ Immediately stop and reconsider design when detecting the following patterns:
 5. **Disabling code with comments** - Should use version control
 6. **Error suppression** - Hiding problems creates technical debt
 7. **Excessive use of type assertions (as)** - Abandoning type safety
-8. **Prop drilling through 3+ levels** - Should use Context API or state management
-9. **Massive components (300+ lines)** - Split into smaller components
+8. **Prop drilling through 3+ levels** - Mandatory ownership review. Use composition, Context, or the project's state layer when intermediate components only forward the value; retain explicit props only when they keep ownership clearer and avoid broader shared state
+9. **Components at 300+ lines** - Mandatory decomposition review. Split by default when rendering, state/data ownership, or reusable/testable behavior forms an independent responsibility; retain only when the component is cohesive and splitting would add avoidable prop/state synchronization
 
 ### Design Anti-patterns
 - **"Make it work for now" thinking** - Accumulation of technical debt
@@ -33,15 +33,16 @@ Immediately stop and reconsider design when detecting the following patterns:
 Design philosophy that prioritizes improving primary code reliability over fallback implementations.
 
 ### Criteria for Fallback Implementation
-- **Fallback rule**: Implement fallbacks only when explicitly defined in Design Doc
+- **Fallback rule**: Implement a fallback when an accepted requirement, boundary contract, project policy, or Design Doc defines the degraded outcome and recovery owner
 - **Layer Responsibilities**:
-  - Component Layer: Use Error Boundary for error handling
-  - Hook Layer: Implement decisions based on business requirements
+  - Rendering failure in a child component subtree, including a hook that throws during render: Use the project's Error Boundary
+  - Event handlers, ordinary async callbacks, SSR, and hook/API operations outside rendering: Handle them at the owning event, hook, API, or server boundary using its error contract
 
 ### Detection of Excessive Fallbacks
-- Require design review when writing the 3rd catch statement in the same feature
-- Verify Design Doc definition before implementing fallbacks
-- Properly log errors and make failures explicit
+- Require design review when writing the 3rd catch statement in the same feature; retain it only for a distinct failure mode with a documented recovery owner and visible UI outcome
+- Require design review when the same failure is caught at multiple component/hook/API layers without one recovery owner, or when nested handlers obscure the visible UI state
+- Identify the accepted recovery contract before implementing a fallback
+- Make fallback activation observable through one existing UI, log, or metric channel at the boundary that owns diagnosis or recovery; add a new channel only when an operational requirement or project policy requires it
 
 ## Rule of Three - Criteria for Code Duplication
 
@@ -93,7 +94,7 @@ function EmailInput({ context }: { context: 'user' | 'contact' | 'admin' }) { /*
 ### Pattern 3: Implementation Without Sufficient Testing
 **Symptom**: Many bugs after implementation
 **Cause**: Ignoring Red-Green-Refactor process
-**Avoidance**: Always start with failing tests
+**Avoidance**: Start new or changed behavior and reproducible bug fixes with a failing test. For behavior-preserving refactors, confirm existing or characterization tests pass before and after the change
 
 ### Pattern 4: Ignoring Technical Uncertainty
 **Symptom**: Frequent unexpected errors when introducing new technology
@@ -112,7 +113,7 @@ function EmailInput({ context }: { context: 'user' | 'contact' | 'admin' }) { /*
 **Cause**: Insufficient understanding of existing code before implementation
 **Avoidance Methods**:
 - Before implementation, always search for similar functionality (using domain, responsibility, component patterns as keywords)
-- Similar functionality found → Use that implementation (do not create new implementation)
+- Similar functionality found → Verify that its props, lifecycle, design-system role, and repository usage are representative; reuse or extend it when compatible, otherwise record why it is not a valid model
 - Similar functionality is technical debt → Create ADR improvement proposal before implementation
 - No similar functionality exists → Implement new functionality following existing design philosophy
 - Record all decisions and rationale in "Existing Codebase Analysis" section of Design Doc
@@ -142,7 +143,7 @@ To isolate problems, attempt reproduction with minimal code:
 - Use React DevTools to inspect component tree
 
 ### 4. Debug Log Output (temporary)
-Add structured debug logs to isolate the issue, then remove them before commit (per "Delete debug `console.log()`" in typescript-rules):
+Add structured debug logs to isolate the issue, then remove temporary logs before commit:
 ```typescript
 console.log('DEBUG:', {
   context: 'user-form-submission',
@@ -176,7 +177,7 @@ Read `package.json` scripts and run them with the project's package manager (`pa
 - Prioritize current simplicity over future extensibility
 
 ### Performance vs Readability
-- Prioritize readability unless React DevTools Profiler identifies a measurable bottleneck (e.g., render time exceeding 16ms, unnecessary re-renders)
+- Prioritize readability unless the project's performance budget or a React DevTools Profiler comparison identifies a meaningful bottleneck in the affected interaction
 - Measure before optimizing with React DevTools Profiler
 - Document reason with comments when optimizing
 
@@ -187,9 +188,9 @@ Read `package.json` scripts and run them with the project's package manager (`pa
 
 ## Implementation Completeness Assurance
 
-### Required Procedure for Impact Analysis
+### Risk-Scaled Procedure for Impact Analysis
 
-**Completion Criteria**: Complete all 3 stages
+**Completion Criteria**: Complete all 3 stages. Concise search/inspection notes are sufficient for an isolated component change with no shared contract, routing, state-ownership, or build/config impact; use the structured report for cross-component or high-risk changes.
 
 #### 1. Discovery
 ```bash
@@ -199,13 +200,13 @@ Grep -n "propsType\|StateType" -o content
 ```
 
 #### 2. Understanding
-**Mandatory**: Read all discovered files and include necessary parts in context:
+Read the discovered files needed to establish:
 - Caller's purpose and context
 - Component hierarchy
 - Data flow: Props → State → Event handlers → Callbacks
 
 #### 3. Identification
-Structured impact report (mandatory):
+For cross-component or high-risk changes, produce a structured impact report:
 ```
 ## Impact Analysis
 ### Direct Impact: ComponentA, ComponentB (with reasons)
@@ -213,20 +214,16 @@ Structured impact report (mandatory):
 ### Processing Flow: Props → Render → Events → Callbacks
 ```
 
-**Important**: Execute all 3 stages to completion
+Proceed when the user-requested or task-defined scope, consumers, state flow, and required checks are identified.
 
 ### Unused Code Deletion Rule
 
-When unused code is detected → Will it be used?
-- Yes → Implement immediately (no deferral allowed)
-- No → Delete immediately (remains in Git history)
-
-Target: Components, hooks, utilities, documentation, configuration files
+When the requested change makes a component, hook, utility, document, or configuration entry obsolete, delete it after checking its consumers and generated/operational use. Preserve and report uncertain or out-of-scope cleanup; do not implement unrelated dormant code merely because it was discovered.
 
 ### Existing Code Deletion Decision Flow
 
 ```
-In use? No → Delete immediately (remains in Git history)
-       Yes → Working? No → Delete + Reimplement
-                     Yes → Fix
+Required by the requested change? No → Preserve unless the change proves it obsolete
+                               Yes → Working and compatible? Yes → Fix/extend
+                                                             No → Repair or replace with migration/rollback evidence
 ```

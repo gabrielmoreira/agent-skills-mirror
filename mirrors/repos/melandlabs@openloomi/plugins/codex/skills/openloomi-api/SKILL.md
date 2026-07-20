@@ -9,7 +9,7 @@ description: "openloomi API documentation and reference. Use when working with o
 
 ## API Modules
 
-All auth routes resolve against the local SQLite database. There is **no cloud dependency** — openloomi is fully self-contained. The `remote-auth` prefix is historical (the routes once proxied to a cloud server); today they are the canonical local endpoints, and the Claude/Codex plugin bridge uses `/api/remote-auth/user` as a port-discovery + auth-handshake probe.
+All auth routes resolve against the local SQLite database. There is **no cloud dependency** — openloomi is fully self-contained. The `remote-auth` prefix is historical (the routes once proxied to a cloud server); today they are the canonical local endpoints, and the Codex plugin bridge uses `/api/remote-auth/user` as a port-discovery + auth-handshake probe.
 
 This reference covers **131 route handlers** under 36 top-level `/api/*` modules (auto-surveyed from `apps/web/app/api/`).
 
@@ -269,6 +269,26 @@ Each integration platform has its own `/api/<platform>/*` module:
 
 ---
 
+## Sandbox and network
+
+If `curl` calls, the OpenLoomi CLI, or `setup-status` fail with network errors
+(e.g. `ECONNREFUSED`, `ETIMEDOUT`, "unreachable"), check whether Codex is
+running inside a sandbox before concluding the OpenLoomi desktop API is stopped.
+Codex network sandboxing can block:
+
+- Loopback access to the host's `localhost` (e.g. `http://localhost:3414` /
+  `http://localhost:3515`).
+- Outbound traffic to GitHub or other release endpoints used by install /
+  update flows.
+
+Request approval and retry the same call outside the sandbox. If the
+outside-sandbox retry succeeds, treat the in-sandbox failure as a sandbox
+artifact — not a real product problem. Do not recommend restarting OpenLoomi
+until the outside-sandbox checks also fail. See `openloomi` for the canonical
+`loopbackAccess.verification.commands` probe.
+
+---
+
 ## Error Handling
 
 ### Error Response Format
@@ -330,7 +350,7 @@ TOKEN=$(cat ~/.openloomi/token | base64 -d)
 # 1. Check AI API status (no auth required)
 curl http://localhost:3414/api/ai/chat
 
-# 2. Get current user info (also used by Claude/Codex plugin as a port-discovery probe)
+# 2. Get current user info (also used by Codex plugin as a port-discovery probe)
 TOKEN=$(cat ~/.openloomi/token | base64 -d)
 curl http://localhost:3414/api/remote-auth/user \
   -H "Authorization: Bearer $TOKEN"

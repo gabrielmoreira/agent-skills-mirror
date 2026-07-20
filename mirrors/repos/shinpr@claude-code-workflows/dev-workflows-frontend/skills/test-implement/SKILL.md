@@ -1,6 +1,6 @@
 ---
 name: test-implement
-description: Test implementation patterns and conventions. Use when implementing unit tests, integration tests, or E2E tests, including RTL+Vitest+MSW component testing and Playwright E2E testing.
+description: Implements React/TypeScript unit, integration, and browser E2E tests with the repository's configured runner, mocks, setup, and browser harness. Use when creating or completing frontend tests and generated test skeletons.
 ---
 
 # Test Implementation Patterns
@@ -9,8 +9,8 @@ description: Test implementation patterns and conventions. Use when implementing
 
 | Test Type | Reference | When to Use |
 |-----------|-----------|-------------|
-| **Unit / Integration** | [references/frontend.md](references/frontend.md) | Implementing React component tests with RTL + Vitest + MSW |
-| **E2E** | [references/e2e.md](references/e2e.md) | Implementing browser-level E2E tests with Playwright |
+| **Unit / Integration** | [references/frontend.md](references/frontend.md) | Implementing React component tests with the repository's configured runner and network mocking layer |
+| **E2E** | [references/e2e.md](references/e2e.md) | Implementing browser-level E2E tests in the existing harness, or Playwright when the approved work introduces a harness |
 
 ## Common Principles
 

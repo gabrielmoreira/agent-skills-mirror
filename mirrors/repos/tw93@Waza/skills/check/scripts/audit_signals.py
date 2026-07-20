@@ -29,10 +29,13 @@ EXCLUDED_DIRS = {
     ".ruff_cache", "Pods", "Carthage", ".swiftpm", ".gradle",
 }
 
+# Kept identical with skills/health/scripts/check_maintainability.py by
+# tests/python/test_auditor_alignment.py (thresholds stay per-product).
 SOURCE_EXTS = {
-    ".py", ".swift", ".rs", ".go", ".ts", ".tsx", ".js", ".jsx", ".sh",
-    ".bash", ".zsh", ".rb", ".java", ".kt", ".m", ".mm", ".vue", ".c",
-    ".cc", ".cpp", ".h", ".hpp", ".cs",
+    ".bash", ".c", ".cc", ".cpp", ".cs", ".css", ".go", ".h", ".hpp",
+    ".html", ".java", ".js", ".jsx", ".kt", ".lua", ".m", ".mjs", ".mm",
+    ".md", ".php", ".py", ".rb", ".rs", ".scss", ".sh", ".swift", ".ts",
+    ".tsx", ".vue", ".yaml", ".yml", ".zsh",
 }
 
 HOTSPOT_LINES = 500
@@ -42,7 +45,7 @@ DRIFT_WARN = 50
 DRIFT_FAIL = 150
 DUP_JACCARD = 0.70
 
-MARKER_RE = re.compile(r"\b(TODO|FIXME|HACK|XXX)\b")
+MARKER_RE = re.compile(r"\b(TODO|FIXME|HACK|XXX)\b", re.IGNORECASE)
 HEREDOC_OPEN_RE = re.compile(
     r"(python3?|node|ruby|perl|php)\b[^|\n]*?<<-?\s*['\"]?(\w+)['\"]?"
 )
@@ -164,7 +167,7 @@ def status(label: str) -> None:
 
 def block_hotspots(files: list[Path], root: Path) -> None:
     header("FILE SIZE HOTSPOTS")
-    sized = ((p, line_count(p)) for p in files if p.suffix in SOURCE_EXTS)
+    sized = ((p, line_count(p)) for p in files if p.suffix.lower() in SOURCE_EXTS)
     big = sorted(
         (item for item in sized if item[1] >= HOTSPOT_LINES),
         key=lambda x: -x[1],
@@ -182,7 +185,7 @@ def block_heredoc(files: list[Path], root: Path) -> None:
     header("HEREDOC BLOAT")
     hits: list[tuple[str, int, str, int]] = []
     for path in files:
-        if path.suffix not in {".sh", ".bash", ".zsh"}:
+        if path.suffix.lower() not in {".sh", ".bash", ".zsh"}:
             continue
         text = read_text(path)
         if not text:
@@ -216,10 +219,10 @@ def block_test_ci(files: list[Path], root: Path) -> None:
     header("TEST AND CI SURFACE")
     test_files = [
         p for p in files
-        if p.suffix in SOURCE_EXTS
+        if p.suffix.lower() in SOURCE_EXTS
         and (("test" in p.name.lower()) or ("spec" in p.name.lower()))
     ]
-    src_files = [p for p in files if p.suffix in SOURCE_EXTS]
+    src_files = [p for p in files if p.suffix.lower() in SOURCE_EXTS]
     wf_dir = root / ".github" / "workflows"
     workflows = []
     if wf_dir.is_dir():
@@ -556,12 +559,12 @@ def block_drift_markers(files: list[Path], root: Path) -> None:
     counts: list[tuple[str, int]] = []
     total = 0
     for path in files:
-        if path.suffix not in SOURCE_EXTS:
+        if path.suffix.lower() not in SOURCE_EXTS:
             continue
         text = read_text(path, 200_000)
         if not text:
             continue
-        n = len(MARKER_RE.findall(text))
+        n = sum(1 for line in text.splitlines() if MARKER_RE.search(line))
         if n:
             counts.append((rel(path, root), n))
             total += n

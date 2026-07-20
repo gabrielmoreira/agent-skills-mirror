@@ -61,7 +61,7 @@ Name the few strengths and risks that actually determine the bottom line; do not
 
 ## Approach-set position contract
 
-An approach-set POV judges only the options the user or conversation supplied; generating a new option field belongs to `ce-ideate` or `ce-brainstorm`. Lead with a plain-language **Position**, then state:
+An approach-set POV judges only the options the user or conversation supplied; generating a new option field belongs to `ce-ideate` or `ce-brainstorm`. Lead with a plain-language **Position**. Name each supplied approach by a short distinguishing gloss on first mention in the Position and Tradeoffs — never a bare label like "Option A" that only the original list defines — so the block stands alone for a reader who never saw that list. Then state:
 
 `Why` · `Tradeoffs by supplied approach` · `Verified facts (project + load-bearing external claims, kept distinct)` · `Conversation hypotheses (unverified — warm only)` · `Conditions` · `Handoff (optional separate continuation)`
 

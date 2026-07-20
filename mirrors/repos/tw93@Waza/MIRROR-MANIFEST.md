@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 77 file(s) materialized.
+Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 75 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 77 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 77 |
+| Files         | 75 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,18 +68,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`plugins/waza/skills/learn/SKILL.md`](plugins/waza/skills/learn/SKILL.md) |
 | 8 | ✓ | [`plugins/waza/skills/read/SKILL.md`](plugins/waza/skills/read/SKILL.md) |
 | 9 | ✓ | [`plugins/waza/skills/think/SKILL.md`](plugins/waza/skills/think/SKILL.md) |
-| 10 | ✓ | [`plugins/waza/skills/ui/references/design-reference.md`](plugins/waza/skills/ui/references/design-reference.md) |
-| 11 | ✓ | [`plugins/waza/skills/ui/SKILL.md`](plugins/waza/skills/ui/SKILL.md) |
-| 12 | ✓ | [`plugins/waza/skills/write/SKILL.md`](plugins/waza/skills/write/SKILL.md) |
-| 13 | ✓ | [`skills/check/agents/reviewer-architecture.md`](skills/check/agents/reviewer-architecture.md) |
-| 14 | ✓ | [`skills/check/agents/reviewer-security.md`](skills/check/agents/reviewer-security.md) |
-| 15 | ✓ | [`skills/check/references/durable-context.md`](skills/check/references/durable-context.md) |
-| 16 | ✓ | [`skills/check/references/persona-catalog.md`](skills/check/references/persona-catalog.md) |
-| 17 | ✓ | [`skills/check/references/project-context.md`](skills/check/references/project-context.md) |
-| 18 | ✓ | [`skills/check/references/public-reply.md`](skills/check/references/public-reply.md) |
-| 19 | ✓ | [`skills/check/references/release-surfaces.md`](skills/check/references/release-surfaces.md) |
-| 20 | ✓ | [`skills/check/scripts/audit_signals.py`](skills/check/scripts/audit_signals.py) |
-| 21 | ✓ | [`skills/check/scripts/check-update.sh`](skills/check/scripts/check-update.sh) |
+| 10 | ✓ | [`plugins/waza/skills/ui/SKILL.md`](plugins/waza/skills/ui/SKILL.md) |
+| 11 | ✓ | [`plugins/waza/skills/write/SKILL.md`](plugins/waza/skills/write/SKILL.md) |
+| 12 | ✓ | [`skills/check/agents/reviewer-architecture.md`](skills/check/agents/reviewer-architecture.md) |
+| 13 | ✓ | [`skills/check/agents/reviewer-security.md`](skills/check/agents/reviewer-security.md) |
+| 14 | ✓ | [`skills/check/references/durable-context.md`](skills/check/references/durable-context.md) |
+| 15 | ✓ | [`skills/check/references/persona-catalog.md`](skills/check/references/persona-catalog.md) |
+| 16 | ✓ | [`skills/check/references/project-context.md`](skills/check/references/project-context.md) |
+| 17 | ✓ | [`skills/check/references/public-reply.md`](skills/check/references/public-reply.md) |
+| 18 | ✓ | [`skills/check/references/release-surfaces.md`](skills/check/references/release-surfaces.md) |
+| 19 | ✓ | [`skills/check/scripts/audit_signals.py`](skills/check/scripts/audit_signals.py) |
+| 20 | ✓ | [`skills/check/scripts/check-update.sh`](skills/check/scripts/check-update.sh) |
+| 21 | ✓ | [`skills/check/scripts/release_gate.py`](skills/check/scripts/release_gate.py) |
 | 22 | ✓ | [`skills/check/scripts/run-tests.sh`](skills/check/scripts/run-tests.sh) |
 | 23 | ✓ | [`skills/check/SKILL.md`](skills/check/SKILL.md) |
 | 24 | ✓ | [`skills/health/agents/inspector-context.md`](skills/health/agents/inspector-context.md) |
@@ -120,22 +120,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | ✓ | [`skills/ui/references/design-aesthetic-quality.md`](skills/ui/references/design-aesthetic-quality.md) |
 | 60 | ✓ | [`skills/ui/references/design-data-viz.md`](skills/ui/references/design-data-viz.md) |
 | 61 | ✓ | [`skills/ui/references/design-reference.md`](skills/ui/references/design-reference.md) |
-| 62 | ✓ | [`skills/ui/references/design-tokens.md`](skills/ui/references/design-tokens.md) |
-| 63 | ✓ | [`skills/ui/references/design-traps.md`](skills/ui/references/design-traps.md) |
-| 64 | ✓ | [`skills/ui/references/durable-context.md`](skills/ui/references/durable-context.md) |
-| 65 | ✓ | [`skills/ui/scripts/check-update.sh`](skills/ui/scripts/check-update.sh) |
-| 66 | ✓ | [`skills/ui/SKILL.md`](skills/ui/SKILL.md) |
-| 67 | ✓ | [`skills/write/references/durable-context.md`](skills/write/references/durable-context.md) |
-| 68 | ✓ | [`skills/write/references/write-en.md`](skills/write/references/write-en.md) |
-| 69 | ✓ | [`skills/write/references/write-product-localization.md`](skills/write/references/write-product-localization.md) |
-| 70 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
-| 71 | ✓ | [`skills/write/references/write-zh-prose.md`](skills/write/references/write-zh-prose.md) |
-| 72 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
-| 73 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
-| 74 | ✓ | [`skills/write/scripts/check_punctuation.py`](skills/write/scripts/check_punctuation.py) |
-| 75 | ✓ | [`skills/write/scripts/check-punctuation.sh`](skills/write/scripts/check-punctuation.sh) |
-| 76 | ✓ | [`skills/write/scripts/check-update.sh`](skills/write/scripts/check-update.sh) |
-| 77 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
+| 62 | ✓ | [`skills/ui/references/durable-context.md`](skills/ui/references/durable-context.md) |
+| 63 | ✓ | [`skills/ui/scripts/check-update.sh`](skills/ui/scripts/check-update.sh) |
+| 64 | ✓ | [`skills/ui/SKILL.md`](skills/ui/SKILL.md) |
+| 65 | ✓ | [`skills/write/references/durable-context.md`](skills/write/references/durable-context.md) |
+| 66 | ✓ | [`skills/write/references/write-en.md`](skills/write/references/write-en.md) |
+| 67 | ✓ | [`skills/write/references/write-product-localization.md`](skills/write/references/write-product-localization.md) |
+| 68 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
+| 69 | ✓ | [`skills/write/references/write-zh-prose.md`](skills/write/references/write-zh-prose.md) |
+| 70 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
+| 71 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
+| 72 | ✓ | [`skills/write/scripts/check_punctuation.py`](skills/write/scripts/check_punctuation.py) |
+| 73 | ✓ | [`skills/write/scripts/check-punctuation.sh`](skills/write/scripts/check-punctuation.sh) |
+| 74 | ✓ | [`skills/write/scripts/check-update.sh`](skills/write/scripts/check-update.sh) |
+| 75 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
 
 ---
 

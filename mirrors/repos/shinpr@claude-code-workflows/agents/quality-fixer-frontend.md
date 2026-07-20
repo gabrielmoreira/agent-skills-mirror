@@ -111,7 +111,7 @@ Prefer repository-local component patterns over generic React advice; when patte
 - **Query selection**: Prefer role/name queries for user-visible elements; use async queries (`findBy*`, `waitFor`) for async appearance and `queryBy*`/`queryAllBy*` only when asserting intentional absence
 
 ### Build Quality
-- **Zero Type Errors**: TypeScript build must succeed without errors; Props and State have explicit type definitions (not `any` or implicit)
+- **Zero Type Errors**: TypeScript build must succeed without errors; Props and State have explicit type definitions. Permit `any` only at an evidence-backed, narrowly bounded exception that satisfies typescript-rules
 - **Bundle / code-splitting fixes**: Apply only when the project has a configured bundle-size signal or the changed import clearly adds a large dependency; follow the repository's existing lazy-loading pattern
 
 ## Status Determination Criteria
@@ -259,7 +259,7 @@ Between tool calls, briefly report: which phase is running, the command executed
 - **Clear Type Error Fixes**
   - Add import statements (when types not found)
   - Add type annotations for Props/State (when inference impossible)
-  - Replace any type with unknown type (for external API responses)
+  - Replace `any` with `unknown` plus validation for untyped external API responses; preserve only the documented, bounded exceptions allowed by typescript-rules
   - Add optional chaining
 - **Clear Code Quality Issues**
   - Remove unused variables/functions/components
@@ -282,7 +282,7 @@ Between tool calls, briefly report: which phase is running, the command executed
   - Optimize images and assets
 - **Structural Issues**
   - Resolve circular dependencies (extract to common modules)
-  - Split large components (300+ lines → smaller components)
+  - For components at 300+ lines, perform the mandatory decomposition review: split independent rendering/state/data/test responsibilities by default; retain a cohesive component only when splitting would add avoidable prop/state synchronization, and record that evidence
   - Refactor deeply nested conditionals
 - **Type Error Fixes**
   - Handle external API responses with unknown type and type guards
@@ -301,7 +301,7 @@ Between tool calls, briefly report: which phase is running, the command executed
 - **Component not rendering**: Check for missing providers (Context, Router, etc.)
 - **Async operations**: Use `waitFor`, `findBy*` queries for async assertions
 - **User interactions**: Use `@testing-library/user-event` for realistic interactions
-- **MSW handlers**: Verify Mock Service Worker handlers match API contracts
+- **Network mock handlers**: Verify the configured network mocking layer's handlers (MSW when configured) match API contracts
 - **Cleanup**: Ensure proper cleanup with `cleanup()` after each test
 
 ### Build Errors
@@ -321,7 +321,7 @@ All fixes must satisfy these criteria:
 |----------|------------|
 | Test integrity | Tests remain executable and active (no `it.skip`, no deletion for convenience) |
 | Assertion quality | Every test contains meaningful assertions that verify behavior (not `expect(true).toBe(true)`) |
-| Type safety | Use explicit types (unknown, generics, union types) instead of `any` or `@ts-ignore` |
+| Type safety | Prefer explicit types (`unknown`, generics, unions); permit only documented, bounded `any` exceptions from typescript-rules and justified project-configured suppressions |
 | Error handling | Handle errors with context (log, propagate, or recover with specific handling) |
 | Environment separation | Keep test-specific branches (e.g. `import.meta.env.MODE` checks) outside production code |
 | ESLint compliance | Preserve ESLint rules (add justification comments when override is necessary) |
@@ -329,4 +329,3 @@ All fixes must satisfy these criteria:
 ## Fix Determination Flow
 
 Detect error → execute Specification Confirmation Process → fix per frontend project rules → proceed to next check. When the specification stays unclear after exhausting Design Doc / PRD / ADR / similar-component confirmations, return `blocked` for user decision.
-

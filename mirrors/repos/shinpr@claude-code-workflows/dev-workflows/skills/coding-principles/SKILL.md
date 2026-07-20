@@ -16,10 +16,10 @@ description: Language-agnostic coding principles for maintainability, readabilit
 ## Code Quality
 
 ### Continuous Improvement
-- Refactor related code within each change set — address style, naming, or structure issues in the files being modified
+- Refactor related code named by the user or current task/design artifact when it reduces the change's risk or maintenance cost
 - Improve code structure incrementally
 - Keep the codebase lean and focused
-- Delete unused code immediately
+- Delete code proven obsolete by the requested change after checking its callers; report uncertain or out-of-scope cleanup separately
 
 ### Readability
 - Use meaningful, descriptive names drawn from the problem domain
@@ -31,17 +31,13 @@ description: Language-agnostic coding principles for maintainability, readabilit
 ## Function Design
 
 ### Parameter Management
-- **Recommended**: 0-2 parameters per function
-- **For 3+ parameters**: Use objects, structs, or dictionaries to group related parameters
-- **Example** (conceptual):
-  ```
-  // Instead of: createUser(name, email, age, city, country)
-  // Use: createUser(userData)
-  ```
+- **Recommended**: 0-2 positional parameters per function
+- **At 3+ parameters**: Group related values into an object, struct, or dictionary by default. Retain positional parameters only when their order is conventional and the call remains clear, or an external/public signature requires them
+- Preserve external/public signatures unless the user request or current task/design artifact includes their migration
 
 ### Single Responsibility
 - Each function should do one thing well
-- Keep functions small and focused (typically < 50 lines)
+- Keep functions under 50 lines by default. At 50+ lines, perform a mandatory extraction review; retain the function only when it remains one cohesive behavior and extraction would obscure the domain flow or create artificial coupling
 - Extract complex logic into separate, well-named functions
 - Functions should have a single level of abstraction
 
@@ -49,7 +45,7 @@ description: Language-agnostic coding principles for maintainability, readabilit
 - Pure functions when possible (no side effects)
 - Separate data transformation from side effects
 - Use early returns to reduce nesting
-- Keep nesting to a maximum of 3 levels; use early returns or extracted functions to flatten deeper nesting
+- Keep nesting to a maximum of 3 levels by default. At deeper nesting, use early returns or extraction unless the nested form maps the domain decision more clearly; record that reason when retaining it
 
 ## Error Handling
 
@@ -110,7 +106,7 @@ Nearby code is a starting point for investigation, not a sufficient basis for ad
 - One primary responsibility per file
 - Logical grouping of related functions/classes
 - Clear folder structure reflecting architecture
-- Avoid "god files" (files > 500 lines)
+- Treat files over 500 lines as a mandatory decomposition review. Split when the file contains independently changing responsibilities; retain it only when it is cohesive and the proposed split would add avoidable coupling or navigation cost
 
 ## Commenting Principles
 
@@ -146,7 +142,7 @@ One comment per decision. If a comment restates what the names and control flow 
 
 ### Refactoring Triggers
 - Code duplication (DRY principle)
-- Functions > 50 lines
+- Functions over 50 lines, especially when they contain independently changing responsibilities or obscured control flow
 - Complex conditional logic
 - Unclear naming or structure
 
@@ -182,10 +178,10 @@ One comment per decision. If a comment restates what the names and control flow 
 - Apply authentication to all entry points that handle user data or trigger state changes
 - Verify authorization for each resource access, not only at the entry point
 - Grant only the permissions required for the operation (files, database connections, API scopes)
+- For changes involving identity or protected resources, prioritize authentication and per-resource authorization review
 
 ### Knowledge Cutoff Supplement (2026-03)
 - OWASP Top 10:2025 shifted from symptoms to root causes; added "Software Supply Chain Failures" (A03) and "Mishandling of Exceptional Conditions" (A10)
-- Recent research indicates AI-generated code shows elevated rates of access control gaps — treat authentication and authorization as high-priority review targets
 - OpenSSF published "Security-Focused Guide for AI Code Assistant Instructions" — recommends language-specific, actionable constraints over generic advice
 - For detailed detection patterns, see `references/security-checks.md`
 
@@ -226,4 +222,3 @@ While these principles are language-agnostic, adapt them to your specific progra
 - **OOP languages**: Apply SOLID principles
 - **Functional languages**: Prefer pure functions and immutability
 - **Concurrency**: Follow language-specific patterns for thread safety
-

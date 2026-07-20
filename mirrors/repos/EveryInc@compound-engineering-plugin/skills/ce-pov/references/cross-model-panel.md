@@ -299,6 +299,18 @@ A peer never blocks a POV. Mid-round failure drops only that voice; an
 oversized canonical payload drops routes that cannot accept the identical
 payload; no surviving peer yields the solo POV plus the availability note.
 
+Distinguish a route-level failure from a dispatch-infrastructure failure. A
+route that runs and returns no usable artifact is dropped as above. But if the
+dispatch scripts themselves fail unexpectedly — a crash, a non-zero exit before
+any job starts, an unresolved script path — do not drop the leg on the first
+error. Attempt the same resolved route by hand, holding the selected target and
+model, the normalized read scope, and the round's independence rules fixed.
+Keep attempting only while each failure is a new, plausibly recoverable one and
+the panel's aggregate deadline has not passed; stop and fall to the solo POV
+once a failure repeats or the deadline is spent. A hand recovery may not
+substitute a different target, widen read scope, or include a withheld
+position — those make the recovered leg untrustworthy, not merely unavailable.
+
 ## 8. Cleanup
 
 Remove every consumed job directory, round output directory, payload, raw log,

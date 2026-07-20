@@ -41,14 +41,14 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - **Prioritize verifiability** (follow priority defined in implementation-approach skill)
    - Ensure each task is independently executable (minimize interdependencies)
    - Clarify order when dependencies exist
-   - Design implementation tasks in TDD format: Practice Red-Green-Refactor cycle in each task
-   - Scope of responsibility: Up to "Failing test creation + Minimal implementation + Refactoring + Added tests passing" (overall quality is separate process)
+   - Select the task's verification flow: Red-Green-Refactor for new/changed behavior or reproducible bugs; Baseline-Refactor-Verify only when no AC, public contract, or observable outcome changes; Evidence-First when a recorded executable reproduction attempt identifies a concrete blocker, or for non-executable deliverables
+   - Scope of responsibility: Complete the selected verification flow and its Proof Obligations; overall quality remains a separate process
 
 3. **Task File Generation**
    - Create individual task files in `docs/plans/tasks/`
    - Document concrete executable procedures
    - **Always include operation verification methods**
-   - Define clear completion criteria (within executor's scope of responsibility)
+   - Define clear completion criteria within the task scope
 
 ## Task Size Criteria
 - **Small (Recommended)**: 1-2 files
@@ -97,7 +97,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    Include the following in each task file:
    - Task overview
    - Target files
-   - **Investigation Targets** (what the executor must read and understand before implementing)
+   - **Investigation Targets** (required pre-implementation reading)
    - **Change Category** (when the task is a bug fix / regression / state-change / boundary-change — see Change Category Classification below)
    - Concrete implementation steps
    - **Quality Assurance Mechanisms** (derived from work plan header — see Quality Assurance Mechanism Propagation below)
@@ -106,7 +106,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
    - Completion criteria
 
 6. **Investigation Targets Determination**
-   For each task, determine what the executor needs to read based on the task's nature:
+   For each task, determine the required reading from the task's nature:
 
    | Task Nature | Investigation Targets |
    |---|---|
@@ -124,7 +124,7 @@ Decompose tasks based on implementation strategy patterns determined in implemen
 
    **Principles**:
    - Every task must have at least one Investigation Target (even if just the Design Doc)
-   - Investigation Targets are **file paths** that the executor will Read — not actions to take
+   - Investigation Targets are **file paths** to read — not actions to take
    - Be specific with file paths: `src/orders/checkout`, `docs/design/payment.md` — not "the order module" or "related code"
    - When the target is a section within a file, write the file path and add a search hint: `docs/design/payment.md (§ Payment Flow)` or `src/orders/checkout (processOrder function)`
    - When test skeletons exist for the task, always include them as Investigation Targets
@@ -154,19 +154,20 @@ When the work plan includes a Verification Strategy, derive each task's Operatio
 
 ## Proof Obligation Propagation
 
-Each task that implements a claim carries Proof Obligations (see task template) so downstream review can judge whether the tests prove the claim, not merely run:
+Each task that implements a claim or verifiable deliverable carries Proof Obligations (see task template) so its evidence proves the claim rather than merely existing or running:
 
-1. **Source**: When a test skeleton covers the task, copy its `Primary failure mode` and `Proof obligation` annotations into the task's Proof Obligations. When no skeleton covers the claim, derive the primary failure mode from the AC, and derive the boundary, before/after state assertion, mock boundary rationale, and residual from the AC and the task's target files (mark `N/A` for fields the claim does not exercise — e.g., no state assertion for a non-state-changing claim). A Failure Mode Checklist category mapped to this task is a further source — see Failure Mode Propagation below.
-2. **Per claim**: Record one entry per AC, claim, or mapped Failure Mode category, populating all Proof Obligations fields defined in the task template.
-3. **Apply when claims exist**: Tasks with neither a behavioral claim nor a mapped Failure Mode Checklist category (e.g., pure config or scaffolding) omit the section.
+1. **Verification mode**: Use `red-test` for skeleton-backed or other new/changed behavior; `characterization` only when no AC, public contract, or observable outcome changes; `alternate-evidence` only when a recorded executable reproduction attempt identifies a concrete blocker; `artifact-evidence` for non-executable deliverable claims.
+2. **Source**: For `red-test`, copy a covering skeleton's `Primary failure mode` and `Proof obligation`, or derive them from the AC. For other modes, state the mode-specific Evidence requirement from the task's baseline, reproduction blocker, acceptance evidence, and named sources. Derive boundary, state assertion, mock rationale, and residual where applicable; otherwise use `N/A`.
+3. **Per claim**: Record one entry per AC, claim, deliverable claim, or mapped Failure Mode category, populating all Proof Obligations fields defined in the task template.
+4. **Apply when claims exist**: Tasks with no behavioral, deliverable, or mapped Failure Mode claim (e.g., unverified scaffolding) omit the section.
 
 ## Failure Mode Propagation
 
-When the work plan contains a Failure Mode Checklist, propagate each applicable category to the task(s) it maps to, so the failure mode reaches the executor as a provable obligation rather than a plan-only declaration:
+When the work plan contains a Failure Mode Checklist, propagate each applicable category to the task(s) it maps to as a provable obligation rather than a plan-only declaration:
 
 1. **Lookup by task ID**: For each Checklist row marked `Applies? = yes`, locate the task(s) listed in the "Covered By Task(s)" column.
-2. **Add a Proof Obligation per category**: Ensure each matched task carries a Proof Obligation whose `Primary failure mode` is that category, instantiated for the task's target (e.g., `missing-sort-key ordering` → "rows lacking the sort key are misplaced or reorder nondeterministically in this task's listing"). Populate the remaining Proof Obligations fields from the AC and target files per Proof Obligation Propagation above. When no AC covers the category, set `Claim` to the failure-mode condition the task must prevent and `State assertion` to `N/A` unless the task changes state.
-3. **Merge into the existing entry**: When an AC-derived Proof Obligation already covers the same failure mode for that task, keep the single entry rather than adding a parallel one.
+2. **Add a Proof Obligation per category**: Add or merge one entry for each matched category. For a new entry, select `Verification mode` using Proof Obligation Propagation above. Use `red-test` when the failure condition is executable and reproducible, instantiating the category as `Primary failure mode` for the task (e.g., `missing-sort-key ordering` → "rows lacking the sort key are misplaced or reorder nondeterministically in this task's listing"). For other modes, set `Primary failure mode` to `N/A`, keep the failure-mode condition in `Claim`, and use the mode-specific `Evidence requirement`. Populate remaining fields from the AC and target files; without a covering AC, use the failure-mode condition as `Claim` and `N/A` for `State assertion` unless the task changes state.
+3. **Merge into the existing entry**: When an AC-derived Proof Obligation already covers the same failure mode, preserve its selected `Verification mode` and merge the category into that entry rather than adding a parallel one.
 4. **Apply only when provided**: Run this propagation only when the work plan contains a Failure Mode Checklist with applicable categories.
 
 ## Quality Assurance Mechanism Propagation
@@ -198,7 +199,7 @@ When the work plan contains a Connection Map table, propagate boundary context t
 
 1. **Lookup by task ID**: For each row in the Connection Map, locate the task(s) listed in the "Covered By Task(s)" column
 2. **Append to Investigation Targets**: Add the boundary's owner module file paths on both sides to each matched task's Investigation Targets
-3. **Add a "Boundary Context" note in the task body**: Record the boundary identifier and expected signal verbatim from the Connection Map row, so the executor knows what observable evidence the implementation must produce. When the row carries a **Serialized Format** and **Consumer Parse Rule** (a serialized in-runtime boundary), copy both verbatim into the note and state the roundtrip check the task must satisfy: the value the producer emits parses to the value the consumer expects.
+3. **Add a "Boundary Context" note in the task body**: Record the boundary identifier and expected signal verbatim from the Connection Map row, making the required observable evidence explicit. When the row carries a **Serialized Format** and **Consumer Parse Rule** (a serialized in-runtime boundary), copy both verbatim into the note and state the roundtrip check the task must satisfy: the value the producer emits parses to the value the consumer expects.
 4. **Skip when not provided**: If the work plan has no Connection Map, skip this propagation step
 
 ## ADR Binding Propagation
@@ -231,7 +232,7 @@ When the work plan contains a Design-to-Plan Traceability table, propagate the m
 
 ## Reference Contract Propagation
 
-When the work plan contains a **Reference Contract Values** table, propagate each binding observable value to the task(s) it covers, so the executor is checked against the exact value rather than a back-pointer it must re-derive:
+When the work plan contains a **Reference Contract Values** table, propagate each binding observable value to the task(s) it covers, enforcing the exact value rather than a back-pointer that requires re-derivation:
 
 1. **Lookup by task ID**: For each row, locate the task(s) listed in "Covered By Task(s)"
 2. **Append to Investigation Targets**: Add the row's `Design Doc (§ Section)` to each matched task (deduplicate against Design Traceability Propagation entries)
@@ -244,7 +245,7 @@ When the work plan contains a **Reference Contract Values** table, propagate eac
 
 ## Change Category Classification
 
-When a task corrects observed behavior or alters how state or a boundary behaves, classify it so the executor and downstream reviewers run a scoped adjacent-case sweep from the field value, rather than re-inferring the task's intent:
+When a task corrects observed behavior or alters how state or a boundary behaves, classify it to trigger a scoped adjacent-case sweep from the field value rather than re-inferring the task's intent:
 
 1. **Classify from the work plan and Design Doc**. A task can match more than one category (e.g., a regression fix that changes a persisted-state boundary); record every value that applies:
    - `bug-fix`: corrects observed incorrect behavior
@@ -252,7 +253,7 @@ When a task corrects observed behavior or alters how state or a boundary behaves
    - `state-change`: alters how state is written, transitioned, or persisted
    - `boundary-change`: changes a published or consumed contract at an external, cross-package, or persisted boundary
 2. **Populate the task's `Change Category` field** with all matched values, comma-separated (see task template).
-3. **Extend Investigation Targets with the adjacent cases**. For every matched category, add the files sharing the same path, contract, persisted state, or external boundary as the change — including the owner module on both sides of an affected boundary — so the executor can sweep them for the same class of defect. Union the targets across all matched categories.
+3. **Extend Investigation Targets with the adjacent cases**. For every matched category, add the files sharing the same path, contract, persisted state, or external boundary as the change — including the owner module on both sides of an affected boundary — to enable a sweep for the same class of defect. Union the targets across all matched categories.
 4. **Apply only on a match**. Purely additive, config, or scaffolding tasks default to no `Change Category` field and skip this propagation.
 
 This is distinct from per-AC boundary-path proof (which proves a boundary path *within* an AC): Change Category drives a sweep of cases that sit *outside* the task's ACs but share its path, contract, state, or boundary.
@@ -355,7 +356,7 @@ Please execute decomposed tasks according to the order.
 - [ ] Impact scope and boundaries definition for each task
 - [ ] Appropriate granularity (1-5 files/task)
 - [ ] Investigation Targets specified for every task (specific file paths, not vague categories)
-- [ ] Proof Obligations recorded for each claim-implementing task (primary failure mode + boundary to exercise)
+- [ ] Proof Obligations recorded for each claim or verifiable deliverable with Verification mode, Evidence requirement, and applicable boundary/state assertions
 - [ ] Change Category set for bug-fix / regression / state-change / boundary-change tasks, with adjacent path/boundary owners added to Investigation Targets
 - [ ] Quality Assurance Mechanisms from work plan header propagated to relevant tasks
 - [ ] UI Spec Component → Task Mapping rows propagated to matching tasks (when work plan has the table)
@@ -380,6 +381,6 @@ Run each item below before producing the final JSON. When any item is unsatisfie
 - [ ] All inter-task dependencies are explicitly stated
 - [ ] Every generated task resolves alternatives/optional behavior to an explicit choice, deterministic decision rule, or blocking unresolved item
 - [ ] Placeholder behavior states the exact temporary output, allowed dependency use, and verification expectation
-- [ ] Target Files and Investigation Targets are concrete enough for the executor to read without guessing
+- [ ] Target Files and Investigation Targets are concrete enough to read without guessing
 - [ ] Each task is compile/runtime viable at its own commit boundary, or the dependency that makes it viable is explicit
 - [ ] Generated task files, overview, and phase completion files preserve the same decisions from the work plan and referenced Design Doc/UI Spec/ADR rows

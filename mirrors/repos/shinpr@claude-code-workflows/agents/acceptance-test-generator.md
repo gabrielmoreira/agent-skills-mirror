@@ -88,10 +88,7 @@ For each valid AC from Phase 1:
    - E2E test candidate (complete user journey)
 
 3. **Annotate metadata**:
-   - Business value: 0-10 (revenue impact)
-   - User frequency: 0-10 (% of users)
-   - Legal requirement: true/false
-   - Defect detection rate: 0-10 (likelihood of catching bugs)
+   - Score Business Value, User Frequency, Legal Requirement, and Defect Detection using the exact input scales defined in the preloaded integration-e2e-testing skill
 
 **Output**: Candidate pool with ROI metadata
 
@@ -119,15 +116,15 @@ ROI calculation formula and cost table are defined in **integration-e2e-testing 
      - A downstream service receives a real event/message (e.g., topic publish, queue enqueue, webhook call)
      - An external service receives a real API call with the expected payload
      - Transactional consistency across services (e.g., two-phase commit, saga compensation)
-5. **Sort by ROI** within each lane (descending) — this is the single ranking step; Phase 4 budget enforcement consumes this ranked list directly without re-sorting.
+5. **Sort by ROI** within each lane using the score and tie-break order from integration-e2e-testing skill — this is the single ranking step; Phase 4 budget enforcement consumes this ranked list directly without re-sorting.
 
 **Output**: Ranked, deduplicated candidate list with lane assigned per E2E candidate.
 
 ### Phase 4: Budget Enforcement
 
-**Hard Limits per Feature**:
+**Standard Budgets per Input Design Doc**:
 - **Integration Tests**: MAX 3 tests
-- **fixture-e2e**: MAX 3 tests; additional slots require ROI ≥ 20. When the feature contains a **user-facing** multi-step user journey, the highest-ROI journey candidate is reserved (emitted regardless of ROI)
+- **fixture-e2e**: MAX 3 tests; additional slots require ROI ≥ 20. When the input Design Doc contains a **user-facing** multi-step user journey, the highest-ROI journey candidate is reserved (emitted regardless of ROI)
 - **service-integration-e2e**: MAX 1-2 tests, composed of:
   - 1 reserved slot (emitted regardless of ROI) when the journey's correctness depends on real cross-service behavior that fixture-e2e cannot verify
   - Up to 1 additional slot requiring ROI > 50
@@ -136,7 +133,7 @@ ROI calculation formula and cost table are defined in **integration-e2e-testing 
 
 ```
 1. Reserve fixture-e2e slot:
-   IF feature contains user-facing multi-step user journey
+   IF the input Design Doc contains a user-facing multi-step user journey
    THEN reserve 1 fixture-e2e slot for the highest-ROI journey candidate
 
 2. Reserve service-integration-e2e slot (only if needed):
@@ -154,15 +151,20 @@ ROI calculation formula and cost table are defined in **integration-e2e-testing 
    - service-integration-e2e (additional beyond reserved): Pick up to 1 more IF ROI > 50
 
    Leave budget intentionally unfilled when no remaining candidate clears the lane's threshold.
+
+4. **Exception review**:
+   - Exceed a standard budget only when an accepted requirement or a distinct failure mode remains unproved by the selected set
+   - For each exception, record the requirement/failure mode and why an existing selected test cannot absorb it without obscuring its proof obligation
+   - A lower score alone is not an exception; below-threshold selection needs the same requirement/failure-mode evidence
 ```
 
-**Output**: Final test set
+**Output**: Final test set with any threshold/budget exceptions identified
 
 ## Output Format
 
 ### Test Skeleton Shape
 
-Use the project's comment syntax (`//`, `#`, etc.). Preserve AC text (or user journey description for E2E), ROI breakdown, lane, dependency, complexity, verification points, expected results, pass criteria, primary failure mode, and proof obligation.
+Use the project's comment syntax (`//`, `#`, etc.). Preserve AC text (or user journey description for E2E), ROI breakdown, lane, dependency, complexity, verification points, expected results, pass criteria, primary failure mode, and proof obligation. When selection exceeds a standard budget or threshold, add `Selection exception:` with the accepted requirement or distinct uncovered failure mode and the non-consolidation reason.
 
 A skeleton is committed before its implementation exists, so its committed form contains **only comments**: no import of a not-yet-existing module and no test-runner syntax (e.g. `describe`/`it`) that the project's static gates evaluate. This keeps a freshly committed skeleton green under the project's standard static gates (typecheck, lint, build), so they do not fail on a reference to not-yet-implemented code. The implementing task adds the executable imports, runner blocks, and assertions alongside the implementation, keeping the Red→Green transition within a single task/commit.
 
@@ -171,7 +173,7 @@ A skeleton is committed before its implementation exists, so its committed form 
 // Generated: [date] | Budget Used: [integration], [fixture-e2e], [service-e2e]
 //
 // AC1: "After successful payment, order is created and persisted"
-// ROI: 98 (BV:10 × Freq:9 + Legal:0 + Defect:8)
+// ROI: 120 (BV:10 × Freq:10 + Legal:true×10 + Defect:10)
 // Behavior: User completes payment → Order created in DB + Payment recorded
 // @category: core-functionality
 // @lane: integration
@@ -242,15 +244,15 @@ Each test case MUST have the following standard annotations for test implementat
 - **@dependency**: none | [component names] | full-ui (mocked backend) | full-system
 - **@complexity**: low | medium | high
 - **Primary failure mode**: the specific regression that turns this test red — the behavior the AC promises and would break
-- **Proof obligation**: what the implemented test must assert to prove the claim — the boundary to traverse, the observable state before/after for state-changing ACs, and which boundaries may be mocked and why. For behavior-changing ACs, name the boundary path (branch, state, input class, lifecycle step, or fallback) the test must traverse when the main path alone would stay green through the regression. Phrase it as design intent describing what to assert; the implementer writes the executable assertions and mock setup
+- **Proof obligation**: what the implemented test must assert to prove the claim — the boundary to traverse, the observable state before/after for state-changing ACs, and which boundaries may be mocked and why. For behavior-changing ACs, name the boundary path (branch, state, input class, lifecycle step, or fallback) the test must traverse when the main path alone would stay green through the regression. Phrase it as design intent describing what to assert; executable assertions and mock setup are outside this output
 
-These annotations are used when planning and prioritizing test implementation. The `@lane` annotation is the source of truth for budget accounting and CI gating. The primary failure mode and proof obligation carry the proof contract to the test implementer and to integration-test-reviewer.
+These annotations drive test planning and prioritization. The `@lane` annotation is the source of truth for budget accounting and CI gating. The primary failure mode and proof obligation preserve the proof contract in the skeleton for implementation and review.
 
 ## Constraints and Quality Standards
 
 **Mandatory Compliance**:
 - Output test skeletons only: verification points, expected results, pass criteria, primary failure mode, and proof obligation.
-  Background: implementation code, assertions, and mock setup must not be included — downstream consumers treat skeletons as comment-based design information, not executable code.
+  Background: Skeletons are comment-based design information, not executable code.
 - Clearly state verification points, expected results, and pass criteria for each test
 - Preserve original AC statements in comments (ensure traceability)
 - Stay within test budget; report if budget insufficient for critical tests
@@ -266,13 +268,13 @@ These annotations are used when planning and prioritizing test implementation. T
 
 ### Auto-processable
 - **Directory Absent**: Auto-create appropriate directory following detected test structure
-- **No High-ROI Integration Tests**: Valid outcome - report "All ACs below ROI threshold or covered by existing tests"
+- **No Integration Candidates**: Valid outcome - report "No Integration candidates remained after Phase 1 filtering, deduplication, and push-down analysis"
 - **No E2E Tests (no multi-step journey)**: Valid outcome - report "No multi-step user journey detected; E2E tests not applicable"
 - **Budget Exceeded by Critical Test**: Report to user
 
 ### Escalation Required
 1. **Critical**: AC absent, Design Doc absent → Error termination
-2. **High**: No E2E test emitted after budget enforcement, but feature contains user-facing multi-step user journey → Escalate with message: "Feature includes user-facing multi-step journey but no E2E test was emitted. Journey candidates evaluated: [list with ROI scores]. Confirm whether to proceed without E2E." (Note: this escalation fires only when the reserved slot in Phase 4 did not apply — e.g., no journey candidate passed Phase 1-3 filtering. When a reserved slot candidate exists, it is emitted and this escalation does not fire.)
+2. **High**: No E2E test emitted after budget enforcement, but the input Design Doc contains a user-facing multi-step journey → Escalate with message: "The Design Doc includes a user-facing multi-step journey but no E2E test was emitted. Journey candidates evaluated: [list with ROI scores]. Confirm whether to proceed without E2E." (Note: this escalation fires only when the reserved slot in Phase 4 did not apply — e.g., no journey candidate passed Phase 1-3 filtering. When a reserved slot candidate exists, it is emitted and this escalation does not fire.)
 3. **High**: All ACs filtered out but feature is business-critical → User confirmation needed
 4. **Medium**: Budget insufficient for critical user journey (ROI > 90) → Present options
 5. **Low**: Multiple interpretations possible but minor impact → Adopt interpretation + note in report

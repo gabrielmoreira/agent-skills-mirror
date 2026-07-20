@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patterns, 97 file(s) materialized.
+Mirror of `daymade/claude-code-skills` — 26 default patterns, 7 followed patterns, 98 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patte
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 97 |
+| Followed pats | 7 |
+| Files         | 98 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -55,6 +55,7 @@ Mirror of `daymade/claude-code-skills` — 26 default patterns, 6 followed patte
 - `youtube-downloader/references/internal-sop.md`
 - `references/new-skill-guide.md`
 - `references/promotion-policy.md`
+- `CONTRIBUTING.md`
 - `references/plugin-architecture.md`
 - `references/plugin-troubleshooting.md`
 
@@ -155,12 +156,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 89 | ✓ | [`windows-remote-desktop-connection-doctor/SKILL.md`](windows-remote-desktop-connection-doctor/SKILL.md) |
 | 90 | ✓ | [`wps-doc-scraper/SKILL.md`](wps-doc-scraper/SKILL.md) |
 | 91 | ✓ | [`youtube-downloader/SKILL.md`](youtube-downloader/SKILL.md) |
-| 92 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
-| 93 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
-| 94 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
-| 95 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
-| 96 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
-| 97 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
+| 92 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 93 | → | [`daymade-skill/skill-creator/references/sanitization_checklist.md`](daymade-skill/skill-creator/references/sanitization_checklist.md) |
+| 94 | → | [`references/new-skill-guide.md`](references/new-skill-guide.md) |
+| 95 | → | [`references/plugin-architecture.md`](references/plugin-architecture.md) |
+| 96 | → | [`references/plugin-troubleshooting.md`](references/plugin-troubleshooting.md) |
+| 97 | → | [`references/promotion-policy.md`](references/promotion-policy.md) |
+| 98 | → | [`youtube-downloader/references/internal-sop.md`](youtube-downloader/references/internal-sop.md) |
 
 ---
 

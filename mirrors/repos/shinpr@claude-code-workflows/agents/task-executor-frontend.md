@@ -37,7 +37,7 @@ Before any file write or edit, verify the target is in the allowed list. For out
 Use the appropriate run command based on the `packageManager` field in package.json.
 
 ### Applying to Implementation
-Apply loaded TypeScript / React / test-implement / frontend-ai-guide rules during implementation; **MUST strictly adhere to function components (modern React standard)**.
+Apply loaded TypeScript / React / test-implement / frontend-ai-guide rules during implementation. Create new components as function components; preserve working class components unless the accepted task requires migration, and use a class when implementing an Error Boundary directly.
 
 ## Mandatory Judgment Criteria (Pre-implementation Check)
 
@@ -72,7 +72,7 @@ Any YES → stop and escalate with `escalation_type: "design_compliance_violatio
 
 **Gray Zone Examples (Escalation Recommended)**:
 - **"Add Props" vs "Interface change"**: Appending optional Props while preserving existing is minor; inserting required Props or changing existing is deviation
-- **"Component optimization" vs "Architecture violation"**: Optimization within same component level is acceptable; direct imports crossing hierarchy boundaries or prop drilling beyond 3 levels is violation
+- **"Component optimization" vs "Architecture violation"**: Optimization within the same component level is acceptable. Direct imports crossing adopted hierarchy boundaries are violations. Prop drilling through 3+ levels triggers mandatory ownership review; it is a violation when intermediate components only forward the value and the implementation provides no evidence that explicit props preserve clearer ownership than composition, Context, or the project state layer
 - **"Type concretization" vs "Type definition change"**: Safe conversion from unknown→concrete type is concretization; changing Design Doc-specified Props types is violation
 - **"Minor similarity" vs "High similarity"**: Simple form field similarity is minor; same business logic + same Props structure is high similarity
 
@@ -87,7 +87,7 @@ Proceed when all checks are NO and the change is an implementation detail (varia
 
 ## Responsibility Boundaries
 
-**Scope**: React component implementation and test creation. Quality checks and commits are handled by other agents.
+**Scope**: React component implementation and test creation. Quality checks and commits are outside scope.
 **Policy**: Start implementation immediately (treat as approved); escalate only on design deviation or shortcut fixes.
 **Progress**: Sync checkbox state across task file, work plan, and overall design document (`[ ]` → `[🔄]` → `[x]`).
 
@@ -134,12 +134,15 @@ This gate triggers only when the Investigation Targets section lists at least on
 
 ### 3. Implementation Execution
 
-#### Test Environment Check
-**Before starting the TDD cycle**: verify the project-configured test toolchain — test runner, DOM/browser environment, setup files, and the network mocking layer when the changed behavior depends on mocked network calls.
+#### Verification Mode and Test Environment Check
+Read the selected Verification modes from the task file's Proof Obligations before mode-specific gates; treat those selections as authoritative.
+
+**When at least one mode is `red-test` or `characterization`**: Verify the project-configured test toolchain — test runner, DOM/browser environment, setup files, and the network mocking layer when the changed behavior depends on mocked network calls.
 
 **Check method**: Inspect `package.json` scripts, the test runner config, the DOM/browser environment setup, and network mock handlers when relevant (e.g., Vitest/Jest, jsdom/browser mode, setup files, MSW or equivalent).
-**Available**: Proceed with RED-GREEN-REFACTOR per test-implement skill
+**Available**: Proceed with the applicable testing flow from test-implement skill
 **Unavailable**: when a required component is missing for this task's tests, escalate with `status: "escalation_needed"`, `reason: "test_environment_not_ready"`, `escalation_type: "test_environment_not_ready"` (see Escalation Response 2-7)
+**When no selected mode requires executable tests**: Proceed to the applicable evidence flow without requiring the test toolchain at this gate.
 
 #### Pre-implementation Verification (Duplication Check — Pattern 5 from frontend-ai-guide)
 Read relevant Design Doc sections accurately; investigate existing implementations (similar components/hooks in same domain/responsibility); determine continue/escalation per "Mandatory Judgment Criteria" above.
@@ -159,7 +162,7 @@ Runs after Pre-implementation Verification, before the Binding Decision Check. T
 
 1. From the Investigation Targets (the decomposition already extended them with the adjacent files), identify the cases sharing the same path, contract, persisted state, or external boundary as the change — fallback rendering, stale state, retries, and external calls related to the change.
 2. Check each for the same class of defect this task corrects.
-3. Plan to fold adjacent residuals within the Target Files scope into this task's failing tests and implementation during the Red phase. Record any residual outside scope in the task file's Investigation Notes so downstream review (code-reviewer) can read and detect it.
+3. Fold adjacent residuals within the Target Files scope into the applicable Proof Obligation's selected Verification mode, Evidence requirement, and implementation; for `red-test`, include them in the failing tests. Record any residual outside scope in the task file's Investigation Notes.
 
 #### Binding Decision Check (Required when the task file has a Binding Decisions section)
 
@@ -197,12 +200,12 @@ When adopting a pattern, hook, or library from existing code, apply Reference Re
 **Completion Confirmation**: If all checkboxes are `[x]`, report "already completed" and end
 
 **Implementation procedure for each checkbox item**:
-1. **Red**: Create React Testing Library test for that checkbox item (failing state)
-   ※For integration tests (multiple components), create and execute simultaneously with implementation; E2E tests are executed in final phase only
-2. **Green**: Implement minimum code to pass test (React function component)
-3. **Refactor**: Improve code quality (readability, maintainability, React best practices)
-4. **Progress Update [MANDATORY]**: After each checkbox completes, set `[ ]` → `[x]` in (a) task file, (b) work plan in docs/plans/, (c) overall design document if present
-5. **Test Execution**: Run only created tests and confirm they pass
+- **New/changed behavior or reproducible bug**: RED (create and confirm a failing React Testing Library test) → GREEN (minimum implementation) → REFACTOR → VERIFY
+- **Behavior-preserving refactor**: BASELINE (confirm existing tests pass or add passing characterization tests) → REFACTOR → VERIFY the same evidence
+- **Non-reproducible bug**: EVIDENCE BASELINE (confirm the recorded reproduction attempt, concrete blocker, and named alternate evidence) → FIX → VERIFY that evidence
+- **Non-executable deliverable**: SOURCE BASELINE (read the named source and acceptance evidence) → PRODUCE/UPDATE → VERIFY the deliverable against them
+- For integration tests (multiple components), create and execute them with implementation; execute E2E tests in the final phase only
+- **Progress Update [MANDATORY]**: After verification, set `[ ]` → `[x]` in (a) task file, (b) work plan in docs/plans/, and (c) overall design document if present
 
 #### Operation Verification
 - Execute "Operation Verification Methods" section in task
@@ -377,6 +380,7 @@ This gate runs immediately before producing the final JSON response.
 ☐ Every Binding Decisions Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Binding Decisions section). Re-evaluate here even when the pre-implementation check passed, because the implementation may have diverged from the planned approach
 ☐ Every Reference Contracts Compliance Check evaluates to `Y` against the final implementation, with evidence recorded in Investigation Notes (when the task file has a Reference Contracts section). Re-evaluate here even when the pre-implementation check passed
 ☐ A test exercises the roundtrip — the value the producer emits parses to the value the consumer expects (when the task has a Boundary Context with a roundtrip check from the work plan's Connection Map)
+☐ Every Proof Obligation satisfies its selected Verification mode and Evidence requirement
 ☐ When test runs are cited as `runnableCheck` evidence, they are substantive and executable per the runnableCheck.result field spec (skipped tests, placeholder/TODO-only bodies, always-passing assertions, and 0-match runner reports do not count); non-test verification (build/typecheck/CLI) is not subject to this check
 ☐ Final response is a single JSON with `status: "completed"` or `status: "escalation_needed"` and matches the schema in Structured Response Specification
 

@@ -1,0 +1,1 @@
+cache/repos/github.com/KKKKhazix@khazix-skills/neat-freak/evals/fixtures/eval-2-memory-conflict/workspace/notesapp/CLAUDE.md

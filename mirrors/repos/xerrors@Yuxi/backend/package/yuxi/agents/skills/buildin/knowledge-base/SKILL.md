@@ -16,6 +16,7 @@ description: "使用 Yuxi 知识库进行检索、打开文档、文档内定位
 - `find_kb_document`：在已知文档内用关键词或正则定位段落。
 - `get_mindmap`：查看知识库思维导图结构。
 - `search_file`：按文件名关键词搜索知识库中的文件，支持指定知识库或跨知识库，返回文件列表与分页信息。
+- `download_kb_file`：按 `kb_id` 和 `file_id` 下载知识库原始二进制（pdf/docx/xlsx 等）到沙盒 `outputs` 目录，返回沙盒内可见的 `virtual_path`。当后续需要用代码读取原始文件结构（如 `openpyxl` 读 xlsx 单元格、`pdfplumber` 重新解析版面）时使用；`query_kb`/`open_kb_document` 只返回文本切片，无法满足需要文件对象的场景。
 
 ## 操作流程
 

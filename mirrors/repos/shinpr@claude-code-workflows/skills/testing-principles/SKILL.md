@@ -9,7 +9,7 @@ description: Language-agnostic testing principles including TDD, test quality, c
 
 ### The RED-GREEN-REFACTOR Cycle
 
-**Always follow this cycle:**
+Use this cycle for new or changed executable behavior and reproducible bug fixes. For a behavior-preserving refactor, first confirm existing tests pass or add passing characterization tests, then refactor and rerun the same regression evidence.
 
 1. **RED**: Write a failing test first
    - Write the test before implementation
@@ -45,7 +45,7 @@ All tests must be:
 
 - **Independent**: No dependencies between tests (see Test Independence Verification for detailed criteria)
 - **Reproducible**: Same input always produces same output
-- **Fast**: Unit tests < 100ms each, integration tests < 1s each, full suite < 10 minutes
+- **Fast**: Use project-configured budgets when present. Otherwise treat unit tests ≥ 100ms, integration tests ≥ 1s, or a full suite ≥ 10 minutes as mandatory slow-test review triggers; retain slower tests only when their boundary/value requires it and record the reason
 - **Self-checking**: Clear pass/fail without manual verification
 - **Timely**: Written close to the code they test
 
@@ -153,7 +153,7 @@ test("should throw exception when file not found")
 - Mock at boundaries, not internally
 - Keep mocks simple and focused
 - Verify mock expectations when relevant
-- Wrap external libraries/frameworks behind adapters and mock the adapter
+- Use an existing application-owned adapter as the mock boundary. Introduce an adapter when the external library owns I/O, unstable contracts, or substitution that application tests must control; direct use is acceptable for stable pure libraries when a wrapper adds no contract value
 
 ## Data Layer Testing
 
@@ -242,8 +242,9 @@ These criteria ensure reliable, maintainable tests.
 
 ### Literal Expected Values
 
-- Use hardcoded literal values in assertions
+- Use hardcoded literal values in assertions by default
 - Calculate expected values independently from the implementation
+- Use an independently derived property, approved snapshot, or fixture expectation when it expresses the oracle more clearly than a literal
 - If the implementation has a bug, the test catches it through independent verification
 - If expected value equals mock return value unchanged, the test verifies nothing (no transformation occurred)
 
@@ -301,15 +302,15 @@ Each test must:
 - **Clear naming conventions**: Follow project's test file patterns
   - Examples: `UserService.test.*`, `user_service_test.*`, `test_user_service.*`, `UserServiceTests.*`
 - **Logical grouping**: Group related tests together
-- **Separate test types**: Unit, integration, e2e in separate directories
+- **Separate test types**: Follow the repository's established layout. When establishing a new convention, separate integration/E2E tests when their setup, runner routing, or environment differs from unit tests
 
 ## Performance Considerations
 
 ### Test Speed
 
-- **Unit tests**: < 100ms each
-- **Integration tests**: < 1s each
-- **Full suite**: Should run frequently (< 10 minutes)
+- **Unit tests**: Review at ≥ 100ms each unless the project defines another budget
+- **Integration tests**: Review at ≥ 1s each unless the project defines another budget
+- **Full suite**: Review at ≥ 10 minutes unless the project defines another budget
 
 ### Optimization Strategies
 
@@ -343,7 +344,7 @@ Each test must:
 - Create its own test data and clean up its own state
 - Pass when run in any order and in isolation
 - Test observable behavior through public interfaces
-- Keep test logic simple (no branching, no loops)
+- Keep each test body's expected outcome unconditional: no branches that allow multiple pass paths. Table-driven or property-based iteration is allowed when the framework reports each case clearly and the oracle remains independent
 - Mock only external I/O boundaries, use real implementations for internal logic
 
 ### Flaky Test Resolution
@@ -357,7 +358,7 @@ Each test must:
 
 ### Prevent Regressions
 
-- Add test for every bug fix
+- Add a regression test for every reproducible behavior bug fix. When executable reproduction is impossible, record the reason and the alternative static, contract, or environment evidence that prevents recurrence
 - Maintain comprehensive test suite
 - Run full suite regularly
 - Keep all tests unless the tested functionality is removed

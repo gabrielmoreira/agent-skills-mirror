@@ -5,6 +5,18 @@
   },
   "plugins": [
     {
+      "name": "simplify",
+      "source": {
+        "source": "local",
+        "path": "./plugins/simplify"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "developer-tools"
+    },
+    {
       "name": "fable-advisor",
       "source": {
         "source": "local",
@@ -327,6 +339,18 @@
         "authentication": "ON_INSTALL"
       },
       "category": "research"
+    },
+    {
+      "name": "adhd-output-style",
+      "source": {
+        "source": "local",
+        "path": "./plugins/adhd-output-style"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "developer-tools"
     }
   ]
 }

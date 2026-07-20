@@ -53,3 +53,29 @@ composio init
 ```
 
 > Full reference: [Building with Composio](rules/building-with-composio.md)
+
+---
+
+## Sandbox and network
+
+Composio operations are network-heavy: CLI install, OAuth login, tool search,
+tool execution, and trigger subscriptions all make outbound calls. If any of
+these fail with a network error (`ECONNREFUSED`, `ETIMEDOUT`, "unreachable",
+or a hung login), check whether Codex is running inside a sandbox before
+declaring the install or login broken. Codex sandboxing can block:
+
+- `curl -fsSL https://composio.dev/install | bash` (and the post-install
+  binary download from Composio's CDN).
+- `composio login` (OAuth redirect, browser handoff, and token exchange).
+- `composio execute`, `composio search`, and `composio listen` (calls to
+  Composio's tool-router and the 1000+ external app APIs).
+- `mcp__composio__*` MCP tool calls and `COMPOSIO_REMOTE_BASH_TOOL` /
+  `COMPOSIO_REMOTE_WORKBENCH` if outbound network is sandboxed.
+
+Request approval and retry the same command outside the sandbox. If the
+outside-sandbox retry succeeds, treat the in-sandbox failure as a sandbox
+artifact and continue. Do not report that the install URL is invalid, the
+auth flow is broken, or a remote app is unreachable until the outside-sandbox
+retry also fails. For agents without direct browser access, `composio login
+--no-wait | jq` is the recommended handoff — make sure that pattern is not
+swallowed by the sandbox.

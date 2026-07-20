@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nextlevelbuilder/ui-ux-pro-max-skill` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `nextlevelbuilder/ui-ux-pro-max-skill` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nextlevelbuilder/ui-ux-pro-max-skill` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,6 +73,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`cli/assets/skills/design/SKILL.md`](cli/assets/skills/design/SKILL.md) |
 | 13 | ✓ | [`cli/assets/skills/slides/SKILL.md`](cli/assets/skills/slides/SKILL.md) |
 | 14 | ✓ | [`cli/assets/skills/ui-styling/SKILL.md`](cli/assets/skills/ui-styling/SKILL.md) |
+| 15 | ✓ | [`stack/CLAUDE.md`](stack/CLAUDE.md) |
 
 ---
 

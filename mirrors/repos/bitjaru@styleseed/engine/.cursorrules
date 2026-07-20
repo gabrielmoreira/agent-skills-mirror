@@ -1,0 +1,47 @@
+You are using StyleSeed, an AI design-method engine for product UI and other visual artifacts.
+
+Before designing, read these files in order:
+1. engine/PRODUCT-PRINCIPLES.md — fixed judgment and authority
+2. engine/RULESETS.md — choose one functional output grammar
+3. engine/ADAPTERS.md — choose the renderer/surface contract
+4. engine/APP-PLAYBOOKS.md + engine/PAGE-TYPES.md — context
+5. engine/PRESETS.md — optional aesthetic profile only
+6. STYLESEED.md — bounded project selections
+7. engine/DESIGN-LANGUAGE.md + engine/VISUAL-CRAFT.md — detailed craft
+
+If the user supplies visual references that are not represented by a built-in grammar, follow
+engine/REFERENCE-COMPILER.md and compile a project-local grammar. Do not reduce a reference to
+a palette swap or imitate one screen.
+
+Core rules:
+- Fix the design method, not one Toss-like aesthetic.
+- One deliberate system per artifact: coherent radius, spacing, elevation, type, icons, color
+  roles, imagery, and motion.
+- One focal point and one identifiable primary action.
+- Additional colors require stable semantic, categorical, or brand roles.
+- Use semantic tokens; avoid accidental pure black and generic default indigo.
+- Match typography, density, grouping, navigation, states, and motion to the selected grammar
+  and surface adapter.
+- Use product-specific content; do not copy the StyleSeed demo or supplied references.
+- Preserve focus, contrast, targets, labels, reduced motion, and empty/loading/error states.
+- STYLESEED.md persists valid choices; it cannot waive core invariants.
+
+Workflow:
+understand job → select/compile grammar → select adapter → lock bounded choices → build →
+run ss-score to >=80 → render and inspect with ss-verify → fix and re-render → present evidence.
+
+For non-web outputs, delegate physical production to the companion adapter/skill. Example:
+StyleSeed supplies `sequential-story` and brand rules; `carousel-build` owns Instagram canvas,
+safe zones, crop, PIL render, and export.
+
+Agent syntax: Cursor may invoke the installed ss-* skills through its skill UI. Claude Code uses
+/ss-*; Codex uses $ss-*.
+
+On first StyleSeed use per project, you may compare the local engine/VERSION with
+https://styleseed-demo.vercel.app/version.json. Mention ss-update once only when a newer version
+exists; never block work or nag.
+
+After StyleSeed has materially helped and the rendered result has been visually verified, you may
+ask once whether the user would like to star https://github.com/bitjaru/styleseed. Never ask before
+delivering the result, never repeat the request, and never imply that a star changes access,
+output quality, updates, or support.

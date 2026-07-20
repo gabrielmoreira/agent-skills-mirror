@@ -1,4 +1,11 @@
-# E2E Test Implementation with Playwright
+# E2E Test Implementation
+
+## Browser Harness Resolution
+
+1. Inspect the repository's E2E scripts, configuration, imports, fixtures, support files, and neighboring tests.
+2. When a browser harness already exists, preserve its runner, directory layout, locator/query conventions, network interception, fixtures, retries, and reporting. Translate the lane rules below into that harness.
+3. When no harness exists and the approved Work Plan includes E2E harness setup, use Playwright as this workflow's default and apply the Playwright-specific patterns in this reference.
+4. When no harness exists and setup is not approved, stop and report the missing environment decision instead of adding a dependency implicitly.
 
 ## Lane Selection
 
@@ -6,18 +13,22 @@ E2E tests in this workflow split into two lanes:
 
 | Lane | Backend setup | Use these patterns |
 |------|---------------|-------------------|
-| **fixture-e2e** | Mocked via `page.route()` or fixture loaders; no live services | Page Object Pattern, Locator Strategy, Assertions, the **Fixture-Based Backend** section below |
+| **fixture-e2e** | Mocked via the harness's route interception or fixture loaders; no live services | Reusable screen/page helpers, accessible locator strategy, assertions, the **Fixture-Based Backend** section below |
 | **service-integration-e2e** | Live local stack with real services | All patterns above PLUS the **E2E Environment Prerequisites** section (seed data, auth fixture against real auth flow) |
 
 The skeleton's `@lane:` annotation declares which lane the test belongs to. Choose implementation patterns to match.
 
-## Test Framework
+## Playwright Mapping (when Playwright is configured or approved)
+
 - **Playwright Test**: `@playwright/test`
 - Test imports: `import { test, expect } from '@playwright/test'`
 
-## Test Structure
+## Playwright Test Structure
 
 ### Directory Layout
+
+Preserve the existing harness layout resolved above. Use this layout only when the approved work establishes a new Playwright harness and the repository has no convention:
+
 ```
 tests/
 └── e2e/
@@ -33,15 +44,16 @@ tests/
 ```
 
 ### Naming Conventions
-- fixture-e2e files: `{FeatureName}.fixture.e2e.test.ts`
-- service-integration-e2e files: `{FeatureName}.service.e2e.test.ts`
-- Page objects: `{PageName}.page.ts`
-- Fixtures: `{Purpose}.fixture.ts`
-- Static fixture data: `{scenario}.fixture.json`
+- Preserve existing harness naming. For an approved new Playwright harness, default to:
+  - fixture-e2e files: `{FeatureName}.fixture.e2e.test.ts`
+  - service-integration-e2e files: `{FeatureName}.service.e2e.test.ts`
+  - Page objects: `{PageName}.page.ts`
+  - Fixtures: `{Purpose}.fixture.ts`
+  - Static fixture data: `{scenario}.fixture.json`
 
 ## Page Object Pattern
 
-Encapsulate page interactions for reusability and maintainability:
+Use the repository's existing browser abstraction. When establishing new Playwright tests, introduce a page object when one page/workflow interaction is reused across 3+ tests or a coherent interaction sequence would otherwise be duplicated. Keep direct accessible locators in a small test when an object would only add indirection.
 
 ```typescript
 import { type Page, type Locator } from '@playwright/test'
@@ -122,7 +134,7 @@ export const test = base.extend<{ authenticatedPage: Page }>({
 
 fixture-e2e tests run a real browser against deterministic fixtures — no live backend, no DB, no external services. Use one of these patterns to fake the network:
 
-### Pattern A: page.route() interception
+### Pattern A: Browser-harness route interception (`page.route()` in Playwright)
 
 ```typescript
 test('Dismiss-then-Undo restores card', async ({ page }) => {
@@ -185,10 +197,10 @@ export const test = base.extend<{ seededData: SeedResult }>({
 ```
 
 **Principles**:
-- Use the application's existing seeding mechanism if present; create new seed endpoints only when no alternative exists
+- Use the application's existing deterministic seeding mechanism if present (for example a fixture loader, CLI, API, or database seeder); create a new seed interface only when the approved design requires it
 - Seed data setup belongs to test fixtures, not to a separate manual step
 - Each test must be self-contained: create its own data, clean up after
-- Seed data via API endpoints or direct DB access only
+- Keep seeding within the repository's supported test boundary; do not bypass production invariants unless the test environment explicitly defines that mechanism
 
 ### Authentication Fixture
 
@@ -211,8 +223,8 @@ export const test = base.extend<{ playerPage: Page }>({
 ```
 
 **Principles**:
-- Use the application's existing authentication flow; auth fixtures must follow the same path that real users use
-- Use the application's production authentication flow for E2E auth (the same endpoints real users hit)
+- Use the application's real authentication contract in an isolated test or local environment; fixtures should exercise the same endpoints and session behavior as real users unless the fixture-e2e lane intentionally supplies a documented auth double
+- Never run E2E fixtures against the production environment or production credentials
 - Store test credentials in environment variables only (`E2E_*` prefixed)
 - If the auth flow requires specific user records, seed them in the fixture
 
@@ -225,7 +237,7 @@ Before service-integration-e2e tests can pass, verify:
 - [ ] Environment variables are set (`E2E_*` prefixed)
 - [ ] External services are either available or stubbed
 
-When the work plan includes dedicated environment setup tasks (Phase 0; see the work plan's E2E Environment Prerequisites section), follow those tasks. When no setup tasks exist in the plan, address missing prerequisites as part of the test implementation task itself, OR consider whether the verification could move to fixture-e2e instead.
+When the work plan includes dedicated environment setup tasks, follow those tasks. When a required prerequisite is missing from both the repository and approved plan, stop and report the exact missing environment decision instead of expanding scope implicitly. Move verification to fixture-e2e only when the same proof obligation can be established without the real service; record that lane change in the task/work-plan evidence.
 
 ## Locator Strategy
 

@@ -58,6 +58,11 @@ description: 生成 AI 短片提示词（Seedance 2.0 / 小云雀 / Sora / 可�
 本仓库 `templates/` 目录里有更完整的骨架和分类话术。按分支挑一个，在第 3 步
 之前用 `Read` 读它 —— 别重复造一个模板库里已有的骨架。路径相对插件/仓库根目录。
 
+**如果需求是 3 镜以上的剪辑成片**（多分镜叙事、情感/萌宠/亲情、预告片、
+竖屏短剧、MV），额外加载 `templates/project-planner.md`，在写镜 1 之前
+先带用户过完第 1 节（主体登记表）和第 2 节（氛围锁）—— 多镜片到镜 3–4
+会不会「漂移散架」，最大的预测因子就是这一步做没做。
+
 | 用户想做… | 加载 |
 |---|---|
 | 15 秒单镜头变身 | `templates/15s-transformation.md` |
@@ -81,6 +86,7 @@ description: 生成 AI 短片提示词（Seedance 2.0 / 小云雀 / Sora / 可�
 | **科幻太空 / 失重**（失重物理；真空静音） | `templates/sci-fi-space.md`（范例） |
 | **汽车广告**（反光车身；汽车摄影机位） | `templates/car-commercial.md`（范例） |
 | **舞蹈编舞**（全身连续运动；身体卡拍） | `templates/dance.md`（范例） |
+| **3 镜以上项目 —— 生成前先锁一致性** | `templates/project-planner.md`（主体登记表 + 氛围锁 + 分镜清单；和用户一起填完再写镜 1） |
 | 按类型片决定怎么运镜 | `templates/genre-camera-sop.md` |
 | 按技法查运镜话术（50 式） | `templates/camera-move-library.md` |
 | 按类型查氛围/画质段落 | `templates/atmosphere-prefabs.md` |

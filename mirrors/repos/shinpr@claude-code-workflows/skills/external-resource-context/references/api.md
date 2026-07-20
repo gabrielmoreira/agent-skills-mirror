@@ -55,8 +55,6 @@ How breaking and non-breaking schema changes are reviewed and rolled out.
 
 **Follow-up (when not N/A)**: Record the document path or the version negotiation rule.
 
-## Self-Declaration
+## Domain Completion
 
-After the structured axes, ask once: "Are there any other API external resources this work depends on that the structured questions did not cover?"
-
-Examples that may surface only via self-declaration: rate-limit configuration, gateway / proxy in front of the API, contract test suite (e.g., Pact broker URL), API gateway management consoles, third-party API documentation that is not directly imported but consulted during design.
+After these axes, return to the parent skill. The parent asks one integrated self-declaration question after all selected domains are complete. API-specific resources such as rate-limit configuration, gateways, contract-test infrastructure, management consoles, or third-party API documentation can be captured in that answer.

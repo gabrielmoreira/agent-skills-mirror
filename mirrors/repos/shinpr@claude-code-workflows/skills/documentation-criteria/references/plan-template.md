@@ -27,8 +27,8 @@ Review Scope: [planned-files scope derived from Design Doc and task targets; for
 - **Failure response**: [extracted from Design Doc]
 
 ### Proof Strategy
-- **Proof obligation source**: [test skeleton annotations (primary failure mode, proof obligation) when skeletons exist; otherwise each AC's primary failure mode]
-- **Per-task propagation**: every task that implements a claim records Proof Obligations (see task template) so downstream review can judge whether the tests prove the claim, not merely run
+- **Proof obligation source**: [test skeleton annotations for red-test; otherwise the claim's characterization baseline, reproduction blocker and alternate evidence, or named artifact sources]
+- **Per-task propagation**: every task with a claim or verifiable deliverable records Proof Obligations (see task template) so downstream review can judge whether the selected evidence proves it
 
 ## Quality Assurance Mechanisms (from Design Doc)
 
@@ -221,7 +221,7 @@ This phase is required for ALL implementation approaches.
 - [ ] Security review: Verify security considerations from Design Doc are implemented
 - [ ] Quality checks (types, lint, format)
 - [ ] Execute all tests (including integration/E2E from test skeletons, when provided)
-- [ ] Coverage 70%+
+- [ ] Project-configured coverage threshold passes; when none is configured, review the coverage report and add tests for uncovered changed behavior or record why another verification method is sufficient
 - [ ] Document updates
 
 ### Quality Assurance

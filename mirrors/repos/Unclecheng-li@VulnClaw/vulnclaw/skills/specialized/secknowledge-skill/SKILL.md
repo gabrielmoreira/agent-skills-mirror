@@ -153,7 +153,7 @@ routing:
 
 | 场景 | reference |
 |------|----------|
-| SQL 注入（含 SQLMap 速查）| `references/web-sqli.md` |
+| SQL 注入（基础检测/完整利用链/SQLMap）| `references/web-sqli.md` + `references/web-sqli-fushuling-one-pass.md` |
 | XSS 跨站脚本 | `references/web-xss.md` |
 | 命令执行（RCE）| `references/web-rce.md` |
 | XXE（XML 外部实体）| `references/web-xxe.md` |
@@ -203,7 +203,7 @@ routing:
 
 | 场景 | reference |
 |------|----------|
-| SQL 注入 Payload | `references/web-sqli.md` |
+| SQL 注入 Payload / SQLMap / WAF 绕过 | `references/web-sqli.md` + `references/web-sqli-fushuling-one-pass.md` |
 | XSS Payload | `references/web-xss.md` |
 | RCE / 命令执行 Payload | `references/web-rce.md` |
 | 反序列化 / XXE Payload | `references/web-deser.md` / `references/web-xxe.md` |

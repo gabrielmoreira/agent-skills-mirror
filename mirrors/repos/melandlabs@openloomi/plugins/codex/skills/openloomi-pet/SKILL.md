@@ -1,25 +1,16 @@
 ---
 name: openloomi-pet
-description: "OpenLoomi Pet sprite & state helper for Codex. Use when the user wants to change their Loomi Pet state, switch theme, drop in a custom character, override individual sprites, or ask Codex to mirror its lifecycle onto the pet. Triggers: pet state, set pet, loomi pet, pet to happy, pet to working, pet to thinking, fox sprite, capybara sprite, custom pet theme, pet-custom, pet-config, override pet sprite."
-allowed-tools: Bash(node ${CODEX_PLUGIN_ROOT}/scripts/loomi-bridge.mjs *)
+description: "OpenLoomi Pet sprite and state helper for Codex. Use for pet state, themes, custom characters, and sprite overrides."
+allowed-tools: Bash(node $SKILL_DIR/../../scripts/loomi-bridge.mjs *)
 ---
 
-# OpenLoomi Pet Sub-skill (Codex)
+# OpenLoomi Pet Sub-skill
 
-> **Codex parity note:** this skill ships only in the Claude plugin today. The
-> Codex plugin's `loomi-bridge.mjs` already exposes the same `pet <state>`
-> command and lifecycle hooks (see
-> [`plugins/codex/README.md` § Codex Pet lifecycle hooks](#)), and the file-based
-> theme system is runtime-side, identical across both plugins. The Codex
-> plugin does not yet have its own `openloomi-pet` SKILL.md — this stub mirrors
-> the Claude one so users on either surface get the same guidance.
->
-> When Codex's `pet <state>` behaviour diverges from Claude's, this file is the
-> authoritative Codex-side reference.
-
-The Loomi Pet has 9 universal state names. The runtime's `map_state_to_pet`
-watcher renders the matching sprite for whichever theme is active (fox,
-capybara, or any folder under `~/.openloomi/pet-custom/`). State set:
+The Loomi Pet has 9 universal state names. The plugin ships the fox
+(`loomi-*`) sprite set for branding; the OpenLoomi runtime's
+`map_state_to_pet` watcher renders the matching sprite for whichever
+theme you have active (fox or capybara, or any folder under
+`~/.openloomi/pet-custom/`). State set:
 
 | State | When to use |
 |---|---|
@@ -35,40 +26,23 @@ capybara, or any folder under `~/.openloomi/pet-custom/`). State set:
 
 ## Available commands
 
-- `node ${CODEX_PLUGIN_ROOT}/scripts/loomi-bridge.mjs pet <state>` — synchronous, returns JSON; use only when the user explicitly asks.
-- Hooks call `state <name> --event <event>` automatically (fire-and-forget, 2s timeout).
+- `node $SKILL_DIR/../../scripts/loomi-bridge.mjs pet <state>` — synchronous, returns JSON; use only when the user explicitly asks.
+- Hooks call `state <name>` automatically (fire-and-forget, 2s timeout).
 
-The Codex bridge mirrors the Claude bridge's `cmdPet`. Invalid state names
-are rejected client-side before any HTTP call. The endpoint
-`POST /api/pet/state` may not exist in the target runtime; the bridge
-falls back to a polite "endpoint pending" notice without raising an error.
-
-```bash
-node plugins/codex/scripts/loomi-bridge.mjs pet happy
-node plugins/codex/scripts/loomi-bridge.mjs pet working
-```
-
-Failure modes (all return structured JSON, never throw):
-
-| Code               | Cause                                                                      |
-| ------------------ | -------------------------------------------------------------------------- |
-| `MISSING_STATE`    | No positional state argument                                                |
-| `INVALID_STATE`    | State not in the 9-state vocabulary; response includes `validStates`        |
-| `TOKEN_MISSING`    | `~/.openloomi/token` does not exist or is unreadable — run `setup` first    |
-| `ENDPOINT_MISSING` | Runtime answered 404 — non-blocking; bridge retries automatically later     |
-| `API_UNREACHABLE`  | No local API responded on 3414 / 3515; `attempts` lists every URL tried     |
-| `PET_FAILED`       | Runtime answered but with a non-success status code (e.g. 400 invalid_state for `sleeping` / `sweeping`) |
-| `PET_STATE_SET`    | Success — runtime accepted the state                                        |
+Sprite set is hardcoded in the bridge — invalid state names are rejected
+before any HTTP call. The endpoint `POST /api/pet/state` may not yet exist
+in the target OpenLoomi runtime; the bridge falls back to "would have set
+state to X — pending OpenLoomi endpoint" without raising an error.
 
 ---
 
 ## Help the user customize their pet's appearance
 
-The Codex bridge only drives the **state** — sprite overrides and theme
-folders are file-based and live outside the plugin. When the user asks to
-"change the pet's look" or "add a custom character", walk them through the
-file system. **Do not** try to write `pet-config.json` from the bridge;
-the bridge has no such command and the runtime's file watcher does the work.
+The bridge only drives the **state** — sprite overrides and theme folders
+are file-based and live outside the plugin. When the user asks to "change
+the pet's look" or "add a custom character", walk them through the file
+system. **Do not** try to write `pet-config.json` from the bridge; the
+bridge has no such command and the runtime's file watcher does the work.
 
 ### Decision tree
 
@@ -81,7 +55,7 @@ the bridge has no such command and the runtime's file watcher does the work.
 
 | User intent                                | Bridge role                                                                |
 | ------------------------------------------ | -------------------------------------------------------------------------- |
-| Flip to `happy` mid-task                   | `pet happy` — yes                                                          |
+| Flip to `happy` mid-task                   | ``pet happy`` — yes                                               |
 | Switch fox ↔ capybara                      | **No** — that's a menu action or `pet-config.json` edit; do not try the bridge |
 | Add a custom character                     | **No** — direct them to `~/.openloomi/pet-custom/<name>/` and the file watcher |
 | Override a single sprite                   | **No** — direct them to `~/.openloomi/pet-config.json`'s `overrides` map    |
@@ -121,20 +95,7 @@ Absolute paths only — the runtime routes them through `tauri::convertFileSrc`,
 - **The folder doesn't show up** — usually a missing or mis-named state PNG. Run them through the [filename convention table](https://github.com/melandlabs/openloomi/blob/main/apps/marketing/content/pet.mdx#filename-conventions).
 - **Override doesn't apply** — host log line `[loomi-pet/theme] failed to parse ~/.openloomi/pet-config.json` means the JSON itself is malformed and defaults loaded. Host log line `[loomi-pet/theme] failed to read <path>: <io error>` means the path doesn't resolve.
 - **Theme menu tick is wrong / stuck** — almost always a camelCase vs snake_case wire-format mismatch. The widget reads `activeTheme`, not `active_theme`.
-- **`sleeping` / `sweeping` rejected by `/api/pet/state`** — those are watcher-only vocabulary; the runtime returns `400 invalid_state`. The Codex bridge surfaces this as `PET_FAILED` (not `INVALID_STATE`) — distinguish it from a typo before reporting.
-
----
-
-## Codex-specific deltas vs the Claude plugin
-
-| Behaviour                              | Claude                                                       | Codex                                                                                          |
-| -------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| Slash command surface                  | `/openloomi:pet <state>`                                     | None — users drive `node plugins/codex/scripts/loomi-bridge.mjs pet <state>` directly          |
-| Lifecycle hooks                        | Opt-in via `/openloomi:hooks install`                        | Declared in `plugins/codex/hooks/hooks.json`; bundled by default                               |
-| Hook state-name source tag             | `source: "claude-plugin"`                                    | `source: "codex-plugin"`                                                                       |
-| Failure surfacing on rejected states   | `INVALID_STATE` for typos, `PET_FAILED` for runtime rejects  | Same — `INVALID_STATE` client-side, `PET_FAILED` with status 400 for runtime rejects           |
-| Fallback when runtime lacks the API    | Bridge returns "would have set state to X — pending endpoint" | Same polite notice, plus an `ENDPOINT_MISSING` code if the runtime returns 404                |
-| Pet theme / override file ownership    | None — runtime watcher                                       | None — runtime watcher (the Codex plugin never writes `pet-config.json` either)                |
+- **`sleeping` / `sweeping` rejected by `/api/pet/state`** — those are watcher-only vocabulary; the runtime returns `400 invalid_state`. Do not POST them from your tool.
 
 ---
 
@@ -154,4 +115,21 @@ Absolute paths only — the runtime routes them through `tauri::convertFileSrc`,
 - [Pet API](https://github.com/melandlabs/openloomi/blob/main/apps/marketing/content/pet-api.mdx) — `POST /api/pet/state` for external tools
 - [Attention Agent](https://github.com/melandlabs/openloomi/blob/main/apps/marketing/content/attention-agent.mdx) — the desktop pet as a whole
 - The runtime source: `apps/web/src-tauri/src/pet/theme.rs` (custom themes + overrides), `apps/web/src-tauri/src/pet/watcher.rs::map_state_to_pet` (state resolution)
-- Claude-side counterpart: [`plugins/claude/skills/openloomi-pet/SKILL.md`](../../claude/skills/openloomi-pet/SKILL.md)
+
+---
+
+## Sandbox and network
+
+If `node ... loomi-bridge.mjs pet <state>` or `POST /api/pet/state` fails
+with a network error (`ECONNREFUSED`, `ETIMEDOUT`, "unreachable"), check
+whether Codex is running inside a sandbox before concluding the OpenLoomi
+desktop API is stopped. Codex network sandboxing can block loopback access
+to the host's `localhost` (e.g. `http://localhost:3414`). The bridge's
+"would have set state to X — pending OpenLoomi endpoint" fallback hides
+this in many cases, but a genuine `ECONNREFUSED` still surfaces.
+
+Request approval and retry the same command outside the sandbox. If the
+outside-sandbox retry succeeds, treat the in-sandbox failure as a sandbox
+artifact. Do not tell the user the pet API is broken until the
+outside-sandbox retry also fails. See `openloomi` for the canonical
+`loopbackAccess.verification.commands` probe.

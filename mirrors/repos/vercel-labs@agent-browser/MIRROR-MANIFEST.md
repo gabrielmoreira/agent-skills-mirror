@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel-labs/agent-browser` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,11 +64,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`examples/eve/CLAUDE.md`](examples/eve/CLAUDE.md) |
 | 4 | ✓ | [`skill-data/agentcore/SKILL.md`](skill-data/agentcore/SKILL.md) |
 | 5 | ✓ | [`skill-data/core/SKILL.md`](skill-data/core/SKILL.md) |
-| 6 | ✓ | [`skill-data/dogfood/SKILL.md`](skill-data/dogfood/SKILL.md) |
-| 7 | ✓ | [`skill-data/electron/SKILL.md`](skill-data/electron/SKILL.md) |
-| 8 | ✓ | [`skill-data/slack/SKILL.md`](skill-data/slack/SKILL.md) |
-| 9 | ✓ | [`skill-data/vercel-sandbox/SKILL.md`](skill-data/vercel-sandbox/SKILL.md) |
-| 10 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
+| 6 | ✓ | [`skill-data/derive-client/SKILL.md`](skill-data/derive-client/SKILL.md) |
+| 7 | ✓ | [`skill-data/dogfood/SKILL.md`](skill-data/dogfood/SKILL.md) |
+| 8 | ✓ | [`skill-data/electron/SKILL.md`](skill-data/electron/SKILL.md) |
+| 9 | ✓ | [`skill-data/slack/SKILL.md`](skill-data/slack/SKILL.md) |
+| 10 | ✓ | [`skill-data/vercel-sandbox/SKILL.md`](skill-data/vercel-sandbox/SKILL.md) |
+| 11 | ✓ | [`skills/agent-browser/SKILL.md`](skills/agent-browser/SKILL.md) |
 
 ---
 
