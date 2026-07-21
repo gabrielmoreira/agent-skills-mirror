@@ -6,32 +6,6 @@
 
 ---
 
-## 活动规划
-
-当前正在评审的[真实模型与复杂任务评测计划](plan/README.md)覆盖外部 benchmark / Harness 调研、双轨证据完整设计、Goal / Loop / Workflow / 异步任务 / 多 Agent 场景目录和分阶段实施 Roadmap。该目录描述目标方案，不代表已实现的运行时事实；完成的契约仍须迁入 `docs/architecture/`。
-
----
-
-## 规划归档
-
-Memory UX v2 的调研、实施路线与原始召回截图已在 2026-07-13 按任务归档；最终运行时、迁移、Prompt Cache、学习/召回边界和验收契约已沉淀到 [记忆系统架构](architecture/memory.md#memory-ux-v2-最终运行时契约)，并同步更新 Prompt、Project、Agent Config 与 Tool System 文档：
-
-```text
-/Users/shiwenwen/Library/Mobile Documents/com~apple~CloudDocs/HopeAI/Hope Agent/Plans/2026-07-13-memory-ux-v2
-```
-
-历史调研、RFC、计划方案、roadmap、review packet 和原始参考材料已按任务归档到本机 iCloud：
-
-```text
-/Users/shiwenwen/Library/Mobile Documents/com~apple~CloudDocs/HopeAI/Hope Agent/Plans/hope-agent-control-plane-plans-2026-07-05
-```
-
-仓库内 `docs/architecture/` 只保留已经实现并稳定下来的最终技术架构；`docs/plan/` 仅保留仍在评审或实施且需要跨 PR 协作的活动方案。重要设计决策最终沉淀到对应 architecture 文档的实现契约、非目标或后续边界中；完成后的历史规划材料、阶段 roadmap、review packet 和原始参考材料进入外部 Plans 归档。
-
-截至 2026-07-09，Agent Control Plane V3 的 strict proof evidence 也已归档到同一 Plans 目录下的 `11-agent-control-plane-v3-claude-parity/`：5 个 required strict proof 全部 passed，最终 audit `14/14 passed`。后续若继续扩展 Goal / Loop / Workflow，应继续遵循“过程资料进入 Plans，稳定实现事实进入 architecture”的边界。
-
----
-
 ## 系统架构
 
 
@@ -94,13 +68,14 @@ Memory UX v2 的调研、实施路线与原始召回截图已在 2026-07-13 按�
 | [Smart Verification 控制平面](architecture/verification-engine.md) | Durable 智能验证选择：基于 diff/项目规则推荐最小检查、后台执行低风险 step、Goal validation evidence、Workspace 验证区块 | `verification.rs`, `components/chat/workspace/` |
 | [Context Retrieval v2](architecture/context-retrieval.md) | 任务感知上下文推荐与行动入口：聚合 Git diff、历史 artifacts、LSP diagnostics/symbols、Review findings、Verification steps、Goal evidence、Tasks、Workflow ops、IDE/ACP context、file search v2、URL 来源与 Phase 7.3 domain context，并在候选行触发 focused review / verification 或展示领域动作 | `context_retrieval.rs`, `lsp.rs`, `components/chat/workspace/` |
 | [Coding Eval 控制面评测](architecture/coding-eval.md) | Phase 3.7-6.1 确定性 fixture harness + agent execution runner + task-level scorer + Gold Task Pack 全量自动化 + strategy effect evaluator + release/generalization gates + Benchmark Run Center：临时 git repo + 真实 session/goal/task/workflow/IDE context/improvement state，回归 Review / Smart Verification / Context Retrieval / Improvement Loop 协同质量，并可从 task prompt 执行 agent 后评估候选 diff 与策略改动效果 | `coding_eval.rs`, `coding_improvement.rs`, `evals/suites/coding-control-plane/` |
-| [专项能力评测基础设施](architecture/capability-eval.md) | 独立确定性 Runner、suite/policy/schema、稳定分片、GitHub evidence、发版 advisory/enforce 与受审计 waiver；完整评测不进入 PR 默认单测 | `ha-eval-spec`, `ha-eval`, `evals/`, `capability-eval.yml` |
-| [真实模型与复杂任务评测](architecture/live-model-evaluation.md) | 与确定性证据物理分轨的真实 Provider Campaign：桌面 Evaluation Center、不可变计划、任务完成/工具/耗时/Token/费用指标、Goal/Workflow/Async/Subagent 归因、对比趋势、签名基线、专用受保护 Runner 与 release preflight | `ha-core::evaluation`, `ha-eval-spec::model`, `hope-agent-eval model`, `evals/live/`, `model-campaign.yml` |
+| [专项能力评测基础设施](architecture/capability-eval.md) | 本地独立确定性 Runner、suite/policy/schema、稳定分片与诊断 evidence；完整评测不进入 PR、pre-push、GitHub Actions 或发布门禁 | `ha-eval-spec`, `ha-eval`, `evals/` |
+| [真实模型与复杂任务评测](architecture/live-model-evaluation.md) | 本地真实 Provider Campaign：桌面 Evaluation Center、不可变计划、任务完成/工具/耗时/Token/费用指标、Goal/Workflow/Async/Subagent 归因、对比趋势与本地历史；远端 Runner 和发布门禁当前暂停 | `ha-core::evaluation`, `ha-eval-spec::model`, `hope-agent-eval model`, `evals/live/` |
 | [Coding Improvement Loop](architecture/coding-improvement-loop.md) | Phase 4.4-7.5 质量趋势与学习闭环：基于 durable Goal/Workflow/Review/Verification/Eval/transcript/Domain Quality 数据生成 trend report、workflow retro、transcript distillation、failure feedback 与 proposal 队列，可预览/应用/晋升 eval、workflow、guidance、skill、domain workflow、domain guidance、domain review profile、domain eval case 与 connector pattern 草稿，并在 Dashboard Learning 中提供 Benchmark Run Center、release/generalization gates 和全局 / 项目级学习视图 | `coding_improvement.rs`, `dashboard/coding_improvement.rs`, `coding_eval.rs`, `domain_quality.rs`, `components/chat/workspace/`, `components/dashboard/learning/` |
 | [权限/审批系统](architecture/permission-system.md) | 统一规则引擎 + Default/Smart/Yolo 三模式、Plan 正交、保护路径/危险命令/编辑命令三 list、Smart judge_model + self_confidence、审批弹窗倒计时 | `permission/`, `tools/approval.rs` |
 | [Hooks 系统](architecture/hooks.md)          | 事件 → 可拔插处理器，字段级对齐 Claude Code 协议；28 事件（24 触发 + 4 保留）+ 5 种 handler（command/http/mcp_tool/prompt/agent）+ user/managed/project/local 四 scope UNION + 配置热重载 + JSONL transcript 镜像 | `hooks/`, `agent/preflight.rs` |
 | [Ask User](architecture/ask-user.md)        | 通用结构化问答工具、preview 并排对比、超时回退、IM 渠道集成    | `tools/ask_user_question.rs`, `plan/questions.rs`, `channel/worker/ask_user.rs` |
 | [技能系统](architecture/skill-system.md)        | SKILL.md 发现、懒加载、工具隔离、Fork 模式      | `skills/`             |
+| [内置用户手册（帮助中心）](architecture/help-center.md) | `docs/user-guide/` rust-embed 单一来源；GUI 独立窗口（bundle/search 命令）+ agent 镜像路径（`ha-manual` skill）；slug 三方一致契约、指纹 marker 镜像、双语 parity 守卫 | `manual/`, `src/components/help/`, `skills/ha-manual/` |
 | [子 Agent 系统](architecture/subagent.md)      | spawn + 结果注入、Mailbox 实时引导、深度/并发控制 | `subagent/`           |
 | [后台任务（Background Jobs）](architecture/background-jobs.md) | 统一后台任务模型（Tool/Subagent/Group）：`JobManager` 门面、两层并发硬配额 + 公平调度、重试、后台 exec 审批 park、output_tail、完成合并注入、owner 面板与端点、`AsyncToolsConfig` | `async_jobs/`, `runtime_tasks.rs` |
 | [Agent Team](architecture/agent-team.md)     | 多 Agent 协作团队、双向通信、Kanban 任务看板、用户自定义模板（内置模板已移除） | `team/`               |

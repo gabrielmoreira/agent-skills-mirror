@@ -16,62 +16,88 @@
   <sub>Free desktop app for AI agent teams. Start with a free model with no auth - no signup, API key, or card - or connect Claude Code, Codex, OpenCode, Cursor, SuperGrok, GitHub Copilot, Z.AI, MiniMax, Kiro, and many more. For coding and broader project work.</sub>
 </p>
 
+<p align="center">
+  <a href="docs/screenshots/overview.jpg">
+    <img src="docs/screenshots/previews/overview.webp" alt="Agent Teams AI workspace overview" width="100%" />
+  </a>
+</p>
+
 <table>
 <tr>
 <td width="50%">
-  <img src="docs/screenshots/task-detail-animated.gif" alt="Agent Teams AI product demo" width="100%" />
+  <a href="docs/screenshots/task-detail-animated.gif">
+    <img src="docs/screenshots/previews/task-detail-animated.gif" alt="Agent Teams AI product demo" width="100%" loading="lazy" />
+  </a>
 </td>
 <td width="50%">
-  <!-- <img width="2560" height="1552" alt="telegram-cloud-photo-size-2-5384488731521259756-w" src="https://github.com/user-attachments/assets/276fb24c-478c-4900-826c-476a5aa9e572" /> -->
-  <img width="1311" height="828" alt="Select models/providers" src="https://github.com/user-attachments/assets/2037cc88-64b2-4b4e-a648-e000e7bbb7af" />
-</td>
-</tr>
-<tr>
-<td width="50%">
-  <img src="https://i.imgur.com/2avkEET.jpeg" alt="Agent Teams AI screenshot" width="100%" />
-</td>
-<td width="50%">
-  <img src="https://i.imgur.com/cBTjmYU.png" alt="Agent Teams AI screenshot" width="100%" />
+  <a href="docs/screenshots/15.png">
+    <img src="docs/screenshots/previews/15.webp" alt="Select AI providers and models" width="100%" loading="lazy" />
+  </a>
 </td>
 </tr>
 <tr>
 <td width="50%">
-  <img src="docs/screenshots/8.png" alt="Task details, attachments, and execution logs" width="100%" />
+  <a href="docs/screenshots/13.jpg">
+    <img src="docs/screenshots/previews/13.webp" alt="Connected AI coding providers and subscription limits" width="100%" loading="lazy" />
+  </a>
 </td>
 <td width="50%">
-  <img src="docs/screenshots/9.png" alt="Agent execution log with tool calls" width="100%" />
-</td>
-</tr>
-<tr>
-<td width="50%">
-  <!-- <img src="docs/screenshots/7.png" alt="Code review with hunk-level controls" width="100%" /> -->
-  <img width="1312" height="824" alt="image" src="https://github.com/user-attachments/assets/74f4c6fe-9a0e-4631-a283-b894ed9a0263" />
-
-</td>
-<td width="50%">
-  <!--
-  <img src="docs/screenshots/4.jpg" alt="Create an AI team with roles and models" width="100%" />
-  -->
-  <img width="1312" height="824" alt="image" src="https://github.com/user-attachments/assets/e090c576-0ee7-4f3c-996e-95ee7e97b070" />
+  <a href="docs/screenshots/14.png">
+    <img src="docs/screenshots/previews/14.webp" alt="Token usage, costs, runs, and budget analytics" width="100%" loading="lazy" />
+  </a>
 </td>
 </tr>
 <tr>
 <td width="50%">
-  <img src="docs/screenshots/1.jpg" alt="Kanban board with agent tasks" width="100%" />
+  <a href="docs/screenshots/8.png">
+    <img src="docs/screenshots/previews/8.webp" alt="Task details, attachments, and execution logs" width="100%" loading="lazy" />
+  </a>
 </td>
 <td width="50%">
-  <img width="1312" height="820" alt="image" src="https://github.com/user-attachments/assets/e78c2229-5d40-4615-bbee-79b0bc611d51" />
+  <a href="docs/screenshots/9.png">
+    <img src="docs/screenshots/previews/9.webp" alt="Agent execution log with tool calls" width="100%" loading="lazy" />
+  </a>
 </td>
 </tr>
 <tr>
 <td width="50%">
-  <img src="docs/screenshots/2.png" alt="Organization hierarchy with teams, agents, and active tasks" width="100%" />
+  <a href="docs/screenshots/7.png">
+    <img src="docs/screenshots/previews/7.webp" alt="Code review with file-level and hunk-level controls" width="100%" loading="lazy" />
+  </a>
 </td>
 <td width="50%">
-  <img src="docs/screenshots/12.jpg" alt="Organization structure map with team and task details" width="100%" />
+  <a href="docs/screenshots/4.png">
+    <img src="docs/screenshots/previews/4.webp" alt="Team members with roles, runtimes, and models" width="100%" loading="lazy" />
+  </a>
+</td>
+</tr>
+<tr>
+<td width="50%">
+  <a href="docs/screenshots/1.jpg">
+    <img src="docs/screenshots/previews/1.webp" alt="Kanban board with agent tasks" width="100%" loading="lazy" />
+  </a>
+</td>
+<td width="50%">
+  <a href="docs/screenshots/6.png">
+    <img src="docs/screenshots/previews/6.webp" alt="Team notification settings and built-in triggers" width="100%" loading="lazy" />
+  </a>
+</td>
+</tr>
+<tr>
+<td width="50%">
+  <a href="docs/screenshots/2.png">
+    <img src="docs/screenshots/previews/2.webp" alt="Organization hierarchy with teams, agents, and active tasks" width="100%" loading="lazy" />
+  </a>
+</td>
+<td width="50%">
+  <a href="docs/screenshots/12.jpg">
+    <img src="docs/screenshots/previews/12.webp" alt="Organization structure map with team and task details" width="100%" loading="lazy" />
+  </a>
 </td>
 </tr>
 </table>
+
+<p align="center"><sub>Click any preview to open the full-size image.</sub></p>
 
 <!--
 <img width="1304" height="820" alt="image" src="https://github.com/user-attachments/assets/dea53a01-68b3-4c36-bcf6-e4d1ad4cdb31" />
@@ -276,7 +302,7 @@ Agent Teams product evidence checked in local source on July 11, 2026: [organiza
 3. **Create a team** — Pick a project, define roles, write a provisioning prompt
 4. **Watch** — Agents spawn, create tasks, and work. You see it all on the kanban board
 
-Use the desktop app as the primary product. The browser/web path is not needed for normal use and does not provide the full desktop runtime, IPC, terminal, provider auth, or team lifecycle behavior.
+The desktop app is the main product. The web version is currently in active development.
 
 
 ---

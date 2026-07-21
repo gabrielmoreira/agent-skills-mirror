@@ -12,14 +12,21 @@ or executes anything outside the plugin's own scripts.
 
 ## Quick workflow
 
-1. `node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" setup-status`
-2. Based on `nextAction` / `reason`:
+1. **Always run `setup` (and the loopback checks below) outside the Codex
+   sandbox** — the install + launch path needs writes to `/Applications`,
+   desktop GUI launch, and `http://localhost:3414`. Default `read-only` /
+   `workspace-write` modes will silently fail. Ask the user to drop
+   `sandbox=workspace-write` (or move to `danger-full-access`) before
+   invoking the bridge.
+2. `node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" setup-status`
+3. Based on `nextAction` / `reason`:
 
 | Reason / nextAction | Action |
 |---|---|
-| `install_openloomi` / `INSTALL_REQUIRED` | OpenLoomi Desktop is not on this machine. Call `install-instructions` to show the platform plan. Only call `install-openloomi --confirm` after the user explicitly approves installation. |
+| `install_openloomi` / `INSTALL_REQUIRED` | OpenLoomi Desktop is not on this machine. **Call `setup --yes` to run the end-to-end wizard in one invocation**: resolve → download → install → set `OPENLOOMI_AGENT_PROVIDER=codex` → launch the desktop app → wait for the local API → mint a guest session token. Invoking this skill counts as explicit approval to pass `--yes`. For offline / corporate-proxy installs, point the user at the restricted-network guide (link below) and call `install-instructions` first. |
 | `SOURCE_FOUND_APP_NOT_BUILT` | A source checkout is present but the OpenLoomi Desktop GUI app has not been built yet. Recommend either building the source per the OpenLoomi repo's `apps/web/src-tauri/README.md` or installing the packaged Desktop release. |
 | `open_openloomi` / `OPENLOOMI_API_UNREACHABLE` / `SESSION_INITIALIZATION_REQUIRED` | OpenLoomi is installed but the local API or guest/session token is not ready. Ask the user to open OpenLoomi Desktop once, or run `setup` so the bridge can launch/init through OpenLoomi-owned surfaces. |
+| `inspect_codex_runtime` | OpenLoomi is up but the native Codex provider is not the active default agent. Have the user confirm the Codex CLI is installed (`codex --version`) and rerun `setup` so the runtime env + LaunchAgent get re-applied. |
 
 Before applying the API-unreachable row, inspect `loopbackAccessAmbiguous`.
 When it is `true`, the result is inconclusive because the current Codex sandbox
@@ -59,4 +66,4 @@ node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" codex-runtime-info
 - The bridge never reads AI provider env vars and never reports provider readiness from `/api/preferences/ai` — it only checks whether the native Codex runtime is active via `/api/native/providers`. Provider configuration is the OpenLoomi runtime's job, surfaced through the desktop app's own settings UI.
 - If the user pastes a key into chat, redact it: do NOT echo it back, and tell them to remove it from chat history.
 - Never pass `--api-key` as an argv flag. The bridge has no such flag, by design.
-- The bridge does not auto-install. Always require an explicit user confirmation before calling `install-openloomi --confirm`.
+- The bridge's end-to-end wizard is `setup --yes` (one-shot: install + set codex provider + launch desktop + mint guest session token). Invoke it from this skill when the user asks to install or finalize OpenLoomi. **Do not call `install-openloomi --confirm` by itself** — that only installs and leaves the desktop app unlaunched and the session token unminted. Use `install-openloomi --confirm` only when the user explicitly asks to install without launching (rare).

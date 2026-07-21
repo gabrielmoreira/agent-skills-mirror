@@ -17,7 +17,7 @@ or executes anything outside the plugin's own scripts.
 
 | Reason / nextAction | Action |
 |---|---|
-| `OPENLOOMI_NOT_INSTALLED` | Run `loomi-bridge install [--yes]` after explicit y/N — OpenLoomi Desktop is not on this machine. |
+| `OPENLOOMI_NOT_INSTALLED` | Run `loomi-bridge install [--yes]` after explicit y/N — OpenLoomi Desktop is not on this machine. For offline / corporate-proxy installs, point the user at the restricted-network guide (link below). |
 | `OPENLOOMI_NOT_FINALIZED` / `launch_openloomi_to_finalize` | OpenLoomi.app is installed (`desktopMarker` set) but the helper binary isn't on disk yet. Tell the user to launch OpenLoomi once (macOS: `open -a "<desktopMarker>"`) so it lays down the helper, then re-run `/openloomi:setup`. **Do NOT install.** |
 | `LOGIN_REQUIRED` | Ask user to open OpenLoomi Desktop to sign in. Run `setup-status` again afterwards. |
 | `AI_PROVIDER_REQUIRED` | OpenLoomi has no authenticated Claude runtime and no per-user provider row. Point the user at running `claude auth login` (then re-run `/openloomi:setup`), or at OpenLoomi Desktop → API Settings for a custom endpoint. |

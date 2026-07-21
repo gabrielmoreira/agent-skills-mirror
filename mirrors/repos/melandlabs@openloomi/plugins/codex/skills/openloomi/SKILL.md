@@ -1,6 +1,6 @@
 ---
 name: openloomi
-description: "Use local OpenLoomi from Codex. Triggers: Loomi, OpenLoomi, personal assistant, memory, workspace context, setup."
+description: "Use local OpenLoomi from Codex. Triggers: Loomi, OpenLoomi, personal assistant, memory, workspace context, setup, install openloomi, setup openloomi, 一键装好并跑起来, finalize openloomi, fix openloomi."
 allowed-tools: "Bash(node $SKILL_DIR/../../scripts/loomi-bridge.mjs *)"
 ---
 
@@ -24,10 +24,21 @@ auth tokens into Codex chat.
 
 When `setup-status` returns `loopbackAccessAmbiguous: true`, do not conclude
 that OpenLoomi is stopped. Codex network sandboxing can block access to the
-host's `localhost` even while the desktop API is listening. Request approval
-to run the commands in `loopbackAccess.verification.commands` outside the
-sandbox. If an outside-sandbox request reaches `/api/native/providers`, report
-OpenLoomi as running and identify the sandbox probe as a false negative.
+host's `localhost` even while the desktop API is listening. Prefer the
+bridge's own auto-recovery path over manual `lsof` / `curl` paste: invoke
+
+```bash
+node $SKILL_DIR/../../scripts/loomi-bridge.mjs run-host-probe
+```
+
+from a Codex shell where loopback is allowed. The command probes
+`/api/native/providers` outside the sandbox, writes the result to
+`~/.openloomi/codex-host-probe-cache.json` (5 minute TTL), and the very next
+`setup-status` call rebuilds its readiness decision from that cache
+(`ready: true`, `reason: "READY_VIA_HOST_PROBE_CACHE"`). When `setup-status`
+returns `nextAction: "run_host_probe"`, run this command yourself instead of
+asking the user to paste anything. Fall back to the manual
+`loopbackAccess.verification.commands` only if the host probe itself fails.
 
 OpenLoomi guest sessions are supported. A missing token is not a request for
 account registration or manual token entry. When the bridge reports
@@ -44,11 +55,13 @@ For installation guidance, call:
 node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" install-instructions
 ```
 
-If the user asks to install OpenLoomi or explicitly approves installation, call:
+If the user asks to install OpenLoomi or explicitly approves installation, run the end-to-end wizard in one invocation:
 
 ```bash
-node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" install-openloomi --confirm
+node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" setup --yes
 ```
+
+That walks the whole state machine: resolve the official release → download → install → set `OPENLOOMI_AGENT_PROVIDER=codex` in the GUI launchd / environment.d → launch the OpenLoomi desktop app → wait for the local API on `http://localhost:3414` → mint a guest session token into `~/.openloomi/token`. Invoking this skill (or the user saying "install" / "install and run" / "一键装好并跑起来") counts as explicit approval to pass `--yes`. Sandbox prompts for network / install to `/Applications` / launching the GUI will appear — that's expected; approve them and the wizard continues.
 
 The bridge resolves the official GitHub release artifact for the current
 platform and architecture automatically, downloads it, and installs it with the
@@ -101,5 +114,10 @@ or diagnostics show that the desktop runtime is not using Codex, call:
 node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" codex-runtime-info
 ```
 
-Show the returned platform-specific guidance, then ask the user to restart
-OpenLoomi and verify `/api/native/providers` reports `defaultAgent: "codex"`.
+Show the returned platform-specific guidance. The `/openloomi:setup`
+wizard auto-restarts the desktop app after writing the env var, so if
+setup was used end-to-end the new env is already in effect — just verify
+`/api/native/providers` reports `defaultAgent: "codex"`. If instead the
+env was written via a direct `set-codex-runtime-env` invocation, ask the
+user to Quit+Reopen OpenLoomi Desktop so the freshly forked web server
+inherits the new value, then verify the same endpoint.

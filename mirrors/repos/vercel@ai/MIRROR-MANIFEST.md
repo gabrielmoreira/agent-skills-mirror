@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vercel/ai` — 26 default patterns, 1 followed patterns, 31 file(s) materialized.
+Mirror of `vercel/ai` — 26 default patterns, 1 followed patterns, 32 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/ai` — 26 default patterns, 1 followed patterns, 31 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 31 |
+| Files         | 32 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,9 +87,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`skills/list-npm-package-content/SKILL.md`](skills/list-npm-package-content/SKILL.md) |
 | 27 | ✓ | [`skills/major-version-mode/SKILL.md`](skills/major-version-mode/SKILL.md) |
 | 28 | ✓ | [`skills/migrate-ai-sdk-v6-to-v7/SKILL.md`](skills/migrate-ai-sdk-v6-to-v7/SKILL.md) |
-| 29 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
-| 30 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
-| 31 | → | [`contributing/secure-url-handling.md`](contributing/secure-url-handling.md) |
+| 29 | ✓ | [`skills/update-harness-dependencies/SKILL.md`](skills/update-harness-dependencies/SKILL.md) |
+| 30 | ✓ | [`skills/update-provider-models/SKILL.md`](skills/update-provider-models/SKILL.md) |
+| 31 | ✓ | [`skills/use-ai-sdk/SKILL.md`](skills/use-ai-sdk/SKILL.md) |
+| 32 | → | [`contributing/secure-url-handling.md`](contributing/secure-url-handling.md) |
 
 ---
 

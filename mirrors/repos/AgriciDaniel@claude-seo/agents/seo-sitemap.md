@@ -10,12 +10,14 @@ You are a Sitemap Architecture specialist.
 
 When working with sitemaps:
 
-1. Validate XML format and URL status codes
-2. Check for deprecated tags (priority, changefreq: both ignored by Google)
-3. Verify lastmod accuracy
-4. Compare crawled pages vs sitemap coverage
-5. Enforce the 50,000 URL per-file limit
-6. Apply location page quality gates
+1. Discover candidates with `claude-seo run sitemap_discovery.py <url> --json`.
+   Use only validated `found` entries and retain declared failures as findings.
+2. Validate XML format and URL status codes
+3. Check for deprecated tags (priority, changefreq: both ignored by Google)
+4. Verify lastmod accuracy (valid W3C Datetime; reflects last *significant* change, not boilerplate)
+5. Compare crawled pages vs sitemap coverage
+6. Enforce the per-file limit: ≤50,000 URLs AND ≤50MB uncompressed (whichever first); for `news:` sitemaps the cap is 1,000 URLs
+7. Apply location page quality gates
 
 ## Quality Gates
 

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 46 file(s) materialized.
+Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dannote/dot-pi` — 26 default patterns, 0 followed patterns, 46 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 46 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,22 +89,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`skills/keyboard-layout-decoder/decoder.ts`](skills/keyboard-layout-decoder/decoder.ts) |
 | 29 | ✓ | [`skills/keyboard-layout-decoder/package.json`](skills/keyboard-layout-decoder/package.json) |
 | 30 | ✓ | [`skills/keyboard-layout-decoder/SKILL.md`](skills/keyboard-layout-decoder/SKILL.md) |
-| 31 | ✓ | [`skills/session-reflect/package.json`](skills/session-reflect/package.json) |
-| 32 | ✓ | [`skills/session-reflect/references/intervention-events.md`](skills/session-reflect/references/intervention-events.md) |
-| 33 | ✓ | [`skills/session-reflect/references/query-cookbook.md`](skills/session-reflect/references/query-cookbook.md) |
-| 34 | ✓ | [`skills/session-reflect/references/reflection-protocol.md`](skills/session-reflect/references/reflection-protocol.md) |
-| 35 | ✓ | [`skills/session-reflect/scripts/output.ts`](skills/session-reflect/scripts/output.ts) |
-| 36 | ✓ | [`skills/session-reflect/scripts/session-db.ts`](skills/session-reflect/scripts/session-db.ts) |
-| 37 | ✓ | [`skills/session-reflect/scripts/sql.ts`](skills/session-reflect/scripts/sql.ts) |
-| 38 | ✓ | [`skills/session-reflect/SKILL.md`](skills/session-reflect/SKILL.md) |
-| 39 | ✓ | [`skills/session-reflect/tests/output.test.ts`](skills/session-reflect/tests/output.test.ts) |
-| 40 | ✓ | [`skills/session-reflect/tests/session-db.integration.ts`](skills/session-reflect/tests/session-db.integration.ts) |
-| 41 | ✓ | [`skills/session-reflect/tests/sql.test.ts`](skills/session-reflect/tests/sql.test.ts) |
-| 42 | ✓ | [`skills/session-reflect/tsconfig.json`](skills/session-reflect/tsconfig.json) |
-| 43 | ✓ | [`skills/session-reflect/types/session-reflect-deps.d.ts`](skills/session-reflect/types/session-reflect-deps.d.ts) |
-| 44 | ✓ | [`skills/skill-discovery/SKILL.md`](skills/skill-discovery/SKILL.md) |
-| 45 | ✓ | [`skills/twitter-thread-style/SKILL.md`](skills/twitter-thread-style/SKILL.md) |
-| 46 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
+| 31 | ✓ | [`skills/package-release/SKILL.md`](skills/package-release/SKILL.md) |
+| 32 | ✓ | [`skills/session-reflect/package.json`](skills/session-reflect/package.json) |
+| 33 | ✓ | [`skills/session-reflect/references/intervention-events.md`](skills/session-reflect/references/intervention-events.md) |
+| 34 | ✓ | [`skills/session-reflect/references/query-cookbook.md`](skills/session-reflect/references/query-cookbook.md) |
+| 35 | ✓ | [`skills/session-reflect/references/reflection-protocol.md`](skills/session-reflect/references/reflection-protocol.md) |
+| 36 | ✓ | [`skills/session-reflect/scripts/output.ts`](skills/session-reflect/scripts/output.ts) |
+| 37 | ✓ | [`skills/session-reflect/scripts/session-db.ts`](skills/session-reflect/scripts/session-db.ts) |
+| 38 | ✓ | [`skills/session-reflect/scripts/sql.ts`](skills/session-reflect/scripts/sql.ts) |
+| 39 | ✓ | [`skills/session-reflect/SKILL.md`](skills/session-reflect/SKILL.md) |
+| 40 | ✓ | [`skills/session-reflect/tests/output.test.ts`](skills/session-reflect/tests/output.test.ts) |
+| 41 | ✓ | [`skills/session-reflect/tests/session-db.integration.ts`](skills/session-reflect/tests/session-db.integration.ts) |
+| 42 | ✓ | [`skills/session-reflect/tests/sql.test.ts`](skills/session-reflect/tests/sql.test.ts) |
+| 43 | ✓ | [`skills/session-reflect/tsconfig.json`](skills/session-reflect/tsconfig.json) |
+| 44 | ✓ | [`skills/session-reflect/types/session-reflect-deps.d.ts`](skills/session-reflect/types/session-reflect-deps.d.ts) |
+| 45 | ✓ | [`skills/skill-discovery/SKILL.md`](skills/skill-discovery/SKILL.md) |
+| 46 | ✓ | [`skills/twitter-thread-style/SKILL.md`](skills/twitter-thread-style/SKILL.md) |
+| 47 | ✓ | [`skills/vibe-merge/SKILL.md`](skills/vibe-merge/SKILL.md) |
 
 ---
 

@@ -70,6 +70,15 @@ Turn the parsed content into structured artifact definitions.
 
 4. **Register the artifact**: call `sdm_register(artifact_type, name, universe, ...)` to persist the extracted definition with status "extracted".
 
+### OCR Quality Check
+
+After ingesting a paper via `read_document`, check the `ocr_quality` field in the response:
+
+- `quality_flag == "good"`: proceed with extraction
+- `quality_flag == "degraded"`: warn user that some pages could not be OCR'd, suggest manual review
+- `quality_flag == "no_ocr_engine"`: suggest installing an OCR engine — `pip install rapidocr_onnxruntime` for local, or set `VIBE_TRADING_OCR_ENGINE=llm-vision` to use a vision-capable LLM model (GPT-4o, Qwen-VL, etc.) via your existing provider config
+- `text_density < 100`: flag as potentially low-quality extraction, suggest verifying formulas manually
+
 ### Phase 3: IMPLEMENT
 
 Build the SignalEngine, run the backtest, and link results.

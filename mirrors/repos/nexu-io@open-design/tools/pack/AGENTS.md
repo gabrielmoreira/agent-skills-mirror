@@ -40,9 +40,9 @@ Read this section before changing packaged auto-update behavior. The updater cro
 
 - `apps/desktop/src/main/updater.ts` owns updater state, release metadata parsing, artifact selection, checksum verification, download-store ownership, progress events, and opening the downloaded installer. It is pure main-process logic and is tested under `apps/desktop/tests/main/updater.test.ts`.
 - `apps/desktop/src/main/runtime.ts` exposes updater IPC to the renderer through `od:update:status|check|download|install|quit` and emits `od:update:status-changed`. Keep installer launch separate from process shutdown; quit is an explicit post-installer action.
-- `apps/desktop/src/main/index.ts` wires the scheduler. Native menu update actions are intentionally not the user-facing surface; the web updater UI owns discovery and action prompts.
+- `apps/desktop/src/main/index.ts` wires the scheduler and the packaged macOS app-menu update item. The native item mirrors updater state and opens the renderer-owned update dialog; it must not create a second updater or a native result dialog. Windows and Linux menus do not expose update actions.
 - `apps/web/src/lib/updater.ts` normalizes host updater snapshots into UI-ready state.
-- `apps/web/src/components/UpdaterPopup.tsx` is the visible updater surface in the left rail. All visible copy must go through `apps/web/src/i18n`.
+- `apps/web/src/components/UpdaterPopup.tsx` remains the ready-update surface in the left rail. `apps/web/src/components/UpdateDialog.tsx` owns the explicit macOS app-menu check flow. All visible copy and native menu labels must go through `apps/web/src/i18n`.
 - `packages/launcher-proto` owns launcher pointer, attempt, and desktop-handoff journal shapes plus payload selection. `runtime.json` together with `attempt.json` is the only payload-version state machine.
 - `apps/packaged/src/index.ts` delegates to the selected payload desktop before initializing the outer Electron runtime, then passes packaged `appVersion` and namespace-scoped `updateRoot` into desktop main only when the outer itself must run.
 - `apps/daemon/src/sidecar/payload-desktop-handoff.ts` is the isolated compatibility bridge for historical outers that cannot delegate. It rearms the selected payload with the real previous pointer, launches that payload's desktop after the old outer exits, and persists a small desktop-binding journal for later shortcut cold starts. The journal is not a second version selector.
@@ -127,7 +127,7 @@ C:\odtp-beta-release-fixed\out\win\namespaces\release-beta-win\builder\Open Desi
 - User launches `Open Design Beta`.
 - App auto-checks the real beta feed and selects the latest Windows launcher payload when the package-launcher context is valid. The installer is the fallback path when the payload artifact or launcher context is unavailable.
 - For the payload path, the app downloads `platforms.win.artifacts.payload`, verifies sha256, prepares the payload under `%APPDATA%\Open Design\launcher\channels\beta\namespaces\release-beta-win\versions\<version>\payload`, and shows the web updater popup.
-- The native File menu must not expose update actions.
+- The native Windows File menu must not expose update actions. On macOS, the app menu exposes the state-aware update item and opens the renderer update dialog without making background checks intrusive.
 - The updater popup uses i18n strings and download progress must not flash to 100% before real bytes arrive.
 - Applying the payload update should quit and relaunch the exact executable under the prepared version's `payload` directory, then mark launcher `active` and `lastSuccessful` to that version and clear `attempt.json`.
 - A historical outer may first create a mixed generation. Its daemon-sidecar compatibility handoff must replace the historical desktop with the exact payload desktop executable, preserve the true previous pointer for recovery, and leave the handoff journal either absent or `confirmed`—never stranded in `prepared` or `armed`.

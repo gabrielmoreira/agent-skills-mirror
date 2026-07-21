@@ -25,7 +25,6 @@ and AI agent governance. All instructions below are binding for Claude Code sess
 @instructions/observability.instructions.md
 @instructions/cross-team-artifact-write.instructions.md
 @instructions/cross-team-communication-tiers.instructions.md
-@instructions/resource-tier-portability.instructions.md
 @instructions/credential-prompt-guard.instructions.md
 @instructions/worktree-tool-boundary.instructions.md
 
@@ -34,12 +33,15 @@ and AI agent governance. All instructions below are binding for Claude Code sess
 These remain in `instructions/` and are loaded on demand (via the read-router / `Read`) only when the
 relevant work occurs — they carry no always-on binding rule, so keeping them resident every turn wastes
 tokens (G3). Classifier: `scripts/global/instructions-split-classifier.js` (fail-open: any binding
-signal or core-identity → resident).
+signal or core-identity → resident). Resident-load budget + **fail-closed** on-demand loading (a
+migrated rule that cannot load when its operation needs it BLOCKS/warns — no silent rule-loss):
+`scripts/global/resident-load-budget.js` (Epic #3807 C4, #3812).
 
 - `instructions/visual-qa-governance.instructions.md` — load when modifying HTML/CSS/JS or releasing a web surface.
 - `instructions/playwright-mcp-low-resource.instructions.md` — load for Playwright / browser automation.
 - `instructions/owasp-agentic-mapping.instructions.md` — reference table; load for security-mapping work.
 - `instructions/repo-health-onboarding.instructions.md` — load for new-repo onboarding / health audits.
+- `instructions/resource-tier-portability.instructions.md` — resource-tier *taxonomy* (tiers 0–5); load when declaring/choosing a feature's resource tier or its baseline-absent fallback (#3812; migrated resident→on-demand — its binding G5 partner `harness-goals.instructions.md` was already on-demand). Loader operation key: `resource-tier-selection`.
 
 ## Runtime Context
 

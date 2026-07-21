@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `imagineVid/Awesome-seedream-5-pro-prompts-and-skills` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `imagineVid/Awesome-seedream-5-pro-prompts-and-skills` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `imagineVid/Awesome-seedream-5-pro-prompts-and-skills` — 26 default 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`data/AGENTS.md`](data/AGENTS.md) |
+| 1 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
+| 2 | ✓ | [`.github/ISSUE_TEMPLATE/AGENTS.md`](.github/ISSUE_TEMPLATE/AGENTS.md) |
+| 3 | ✓ | [`.github/workflows/AGENTS.md`](.github/workflows/AGENTS.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`data/AGENTS.md`](data/AGENTS.md) |
 
 ---
 

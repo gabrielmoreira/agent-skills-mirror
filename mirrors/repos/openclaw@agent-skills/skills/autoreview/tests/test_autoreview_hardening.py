@@ -65,9 +65,450 @@ def realistic_secret_value() -> str:
     return "A7f9K2m4Q8v6" + "N3x5R1p0T9z8"
 
 
+def add_fake_trufflehog(
+    helper: dict[str, object],
+    root: Path,
+    env: dict[str, str],
+) -> None:
+    helper["write_executable"](
+        root / "trufflehog",
+        "#!/usr/bin/env python3\nraise SystemExit(0)\n",
+    )
+    env["PATH"] = f"{root}{os.pathsep}{env.get('PATH', '')}"
+
+
 class AutoreviewHardeningTests(unittest.TestCase):
     def setUp(self) -> None:
         self.helper = load_helper()
+
+    def test_trufflehog_missing_binary_has_platform_neutral_guidance(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            with mock.patch.dict(
+                self.helper["run_trufflehog_preflight"].__globals__,
+                {"find_command": lambda _name, _repo: None},
+            ):
+                with self.assertRaises(SystemExit) as error:
+                    self.helper["run_trufflehog_preflight"](
+                        repo,
+                        "local",
+                        None,
+                        "HEAD",
+                    )
+
+        message = str(error.exception)
+        self.assertIn("TruffleHog is required but was not found", message)
+        self.assertIn(self.helper["TRUFFLEHOG_INSTALL_URL"], message)
+        self.assertNotIn("brew", message.casefold())
+
+    def test_trufflehog_scans_staged_and_working_versions_separately(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            source = repo / "runtime.txt"
+            source.write_text("base\n", encoding="utf-8")
+            git(repo, "add", "runtime.txt")
+            git(repo, "commit", "-q", "-m", "base")
+            source.write_text("staged version\n", encoding="utf-8")
+            git(repo, "add", "runtime.txt")
+            source.write_text("working version\n", encoding="utf-8")
+
+            original_find_command = self.helper["find_command"]
+            original_run = self.helper["run"]
+            scanned: dict[str, str] = {}
+
+            def find_command(name: str, checkout: Path) -> str | None:
+                if name == "trufflehog":
+                    return "/trusted/trufflehog"
+                return original_find_command(name, checkout)
+
+            def run_scanner(
+                command: list[str],
+                cwd: Path,
+                **_kwargs: object,
+            ) -> subprocess.CompletedProcess[str]:
+                if command[0] != "/trusted/trufflehog":
+                    return original_run(command, cwd, **_kwargs)
+                self.assertEqual(
+                    command[0:2],
+                    [
+                        "/trusted/trufflehog",
+                        "git",
+                    ],
+                )
+                self.assertEqual(command[3], "--since-commit")
+                self.assertEqual(command[5:7], ["--branch", "HEAD"])
+                self.assertEqual(
+                    command[7:],
+                    [
+                        "--no-update",
+                        "--no-color",
+                        "--results=verified,unknown",
+                        "--fail",
+                        "--fail-on-scan-errors",
+                    ],
+                )
+                scan_path = command[2].removeprefix("file://")
+                if os.name == "nt":
+                    scan_path = scan_path.lstrip("/")
+                scan_repo = Path(scan_path)
+                commits = git(
+                    scan_repo,
+                    "log",
+                    "--reverse",
+                    "--format=%H",
+                ).splitlines()
+                scanned["staged"] = git(
+                    scan_repo,
+                    "show",
+                    f"{commits[1]}:runtime.txt",
+                )
+                scanned["working"] = git(
+                    scan_repo,
+                    "show",
+                    f"{commits[2]}:runtime.txt",
+                )
+                return subprocess.CompletedProcess(command, 0, "", "")
+
+            with mock.patch.dict(
+                self.helper["run_trufflehog_preflight"].__globals__,
+                {
+                    "find_command": find_command,
+                    "run": run_scanner,
+                },
+            ):
+                self.helper["run_trufflehog_preflight"](
+                    repo,
+                    "local",
+                    None,
+                    "HEAD",
+                )
+
+        self.assertEqual(
+            scanned,
+            {
+                "staged": "staged version\n",
+                "working": "working version\n",
+            },
+        )
+
+    def test_trufflehog_scans_only_changed_content_at_reviewed_ref(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            unchanged = repo / "unchanged.txt"
+            changed = repo / "changed.txt"
+            unchanged.write_text("unchanged\n", encoding="utf-8")
+            changed.write_text("base\n", encoding="utf-8")
+            git(repo, "add", "unchanged.txt", "changed.txt")
+            git(repo, "commit", "-q", "-m", "base")
+            base = git(repo, "rev-parse", "HEAD").strip()
+            changed.write_text("reviewed version\n", encoding="utf-8")
+            git(repo, "add", "changed.txt")
+            git(repo, "commit", "-q", "-m", "change")
+            reviewed_commit = git(repo, "rev-parse", "HEAD").strip()
+            changed.write_text("later working version\n", encoding="utf-8")
+
+            for target, target_ref, commit_ref in (
+                ("branch", base, "HEAD"),
+                ("commit", None, reviewed_commit),
+            ):
+                with self.subTest(target=target), tempfile.TemporaryDirectory() as scan_dir:
+                    scan_repo = Path(scan_dir)
+                    base_commit = self.helper["prepare_trufflehog_history"](
+                        repo,
+                        target,
+                        target_ref,
+                        commit_ref,
+                        scan_repo,
+                    )
+
+                    commits = git(
+                        scan_repo,
+                        "log",
+                        "--reverse",
+                        "--format=%H",
+                    ).splitlines()
+                    self.assertEqual(commits[0], base_commit)
+                    self.assertEqual(len(commits), 3)
+                    self.assertEqual(
+                        git(
+                            scan_repo,
+                            "show",
+                            f"{commits[1]}:changed.txt",
+                        ),
+                        "reviewed version\n",
+                    )
+                    with self.assertRaises(subprocess.CalledProcessError):
+                        subprocess.run(
+                            [
+                                "git",
+                                "show",
+                                f"{commits[1]}:unchanged.txt",
+                            ],
+                            cwd=scan_repo,
+                            check=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE,
+                            text=True,
+                        )
+
+    def test_trufflehog_history_scans_deleted_content_in_reverse_commit(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            source = repo / "removed.txt"
+            source.write_text("removed baseline content\n", encoding="utf-8")
+            git(repo, "add", "removed.txt")
+            git(repo, "commit", "-q", "-m", "base")
+            base = git(repo, "rev-parse", "HEAD").strip()
+            source.unlink()
+            git(repo, "add", "removed.txt")
+            git(repo, "commit", "-q", "-m", "remove credential")
+
+            with tempfile.TemporaryDirectory() as scan_dir:
+                scan_repo = Path(scan_dir)
+                scan_base = self.helper["prepare_trufflehog_history"](
+                    repo,
+                    "branch",
+                    base,
+                    "HEAD",
+                    scan_repo,
+                )
+                commits = git(
+                    scan_repo,
+                    "log",
+                    "--reverse",
+                    "--format=%H",
+                ).splitlines()
+
+                self.assertEqual(commits[0], scan_base)
+                self.assertEqual(len(commits), 3)
+                self.assertEqual(
+                    git(scan_repo, "show", f"{commits[2]}:removed.txt"),
+                    "removed baseline content\n",
+                )
+                with self.assertRaises(subprocess.CalledProcessError):
+                    subprocess.run(
+                        ["git", "show", f"{commits[1]}:removed.txt"],
+                        cwd=scan_repo,
+                        check=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
+                        text=True,
+                    )
+
+    def test_trufflehog_snapshot_supports_directory_to_file_transition(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            nested = repo / "entry" / "nested.txt"
+            nested.parent.mkdir()
+            nested.write_text("nested\n", encoding="utf-8")
+            git(repo, "add", "entry/nested.txt")
+            git(repo, "commit", "-q", "-m", "directory")
+            base = git(repo, "rev-parse", "HEAD").strip()
+            nested.unlink()
+            nested.parent.rmdir()
+            (repo / "entry").write_text("file\n", encoding="utf-8")
+            git(repo, "add", "-A")
+            git(repo, "commit", "-q", "-m", "file")
+
+            with tempfile.TemporaryDirectory() as scan_dir:
+                scan_repo = Path(scan_dir)
+                self.helper["prepare_trufflehog_history"](
+                    repo,
+                    "branch",
+                    base,
+                    "HEAD",
+                    scan_repo,
+                )
+                commits = git(
+                    scan_repo,
+                    "log",
+                    "--reverse",
+                    "--format=%H",
+                ).splitlines()
+                self.assertEqual(
+                    git(scan_repo, "show", f"{commits[1]}:entry"),
+                    "file\n",
+                )
+
+    @unittest.skipIf(os.name == "nt", "Windows filenames cannot use Git pathspec magic prefixes")
+    def test_trufflehog_snapshot_treats_git_paths_as_literals(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            rel = ":(exclude).txt"
+            source = repo / rel
+            source.write_text("base\n", encoding="utf-8")
+            git(repo, "--literal-pathspecs", "add", "--", rel)
+            git(repo, "commit", "-q", "-m", "base")
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "--literal-pathspecs", "add", "--", rel)
+
+            with tempfile.TemporaryDirectory() as index_dir:
+                index_root = Path(index_dir)
+                self.helper["materialize_index_snapshot"](
+                    repo,
+                    index_root,
+                    [rel],
+                )
+                self.assertEqual(
+                    (index_root / rel).read_text(encoding="utf-8"),
+                    "staged\n",
+                )
+
+            git(repo, "commit", "-q", "-m", "staged")
+            with tempfile.TemporaryDirectory() as tree_dir:
+                tree_root = Path(tree_dir)
+                self.helper["materialize_tree_snapshot"](
+                    repo,
+                    tree_root,
+                    "HEAD",
+                    [rel],
+                )
+                self.assertEqual(
+                    (tree_root / rel).read_text(encoding="utf-8"),
+                    "staged\n",
+                )
+
+    def test_trufflehog_snapshot_force_stages_ignored_materialized_files(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            (repo / ".gitignore").write_text("ignored.txt\n", encoding="utf-8")
+            (repo / "ignored.txt").write_text("review me\n", encoding="utf-8")
+
+            commit = self.helper["commit_snapshot"](repo, "snapshot")
+
+            self.assertEqual(
+                git(repo, "show", f"{commit}:ignored.txt"),
+                "review me\n",
+            )
+
+    def test_trufflehog_snapshot_rejects_symlinked_parent_directories(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            outside = root / "outside"
+            outside.mkdir()
+            (outside / "review.txt").write_text("outside\n", encoding="utf-8")
+            parent = repo / "nested"
+            try:
+                parent.symlink_to(outside, target_is_directory=True)
+            except OSError as exc:
+                if os.name == "nt" and getattr(exc, "winerror", None) == 1314:
+                    self.skipTest("Windows symlink privilege is not available")
+                raise
+
+            with tempfile.TemporaryDirectory() as snapshot_dir:
+                with self.assertRaisesRegex(SystemExit, "symlinked parent"):
+                    self.helper["copy_worktree_file"](
+                        repo,
+                        Path(snapshot_dir),
+                        "nested/review.txt",
+                    )
+
+    def test_local_trufflehog_snapshot_supports_path_type_transitions(self) -> None:
+        for transition in ("directory-to-file", "file-to-directory"):
+            with self.subTest(transition=transition), tempfile.TemporaryDirectory() as tempdir:
+                repo = init_repo(Path(tempdir))
+                entry = repo / "entry"
+                nested = entry / "nested.txt"
+                if transition == "directory-to-file":
+                    entry.mkdir()
+                    nested.write_text("nested\n", encoding="utf-8")
+                    git(repo, "add", "entry/nested.txt")
+                else:
+                    entry.write_text("file\n", encoding="utf-8")
+                    git(repo, "add", "entry")
+                git(repo, "commit", "-q", "-m", "base")
+
+                if transition == "directory-to-file":
+                    nested.unlink()
+                    entry.rmdir()
+                    entry.write_text("file\n", encoding="utf-8")
+                    expected_path = "entry"
+                    expected_content = "file\n"
+                else:
+                    entry.unlink()
+                    entry.mkdir()
+                    nested.write_text("nested\n", encoding="utf-8")
+                    expected_path = "entry/nested.txt"
+                    expected_content = "nested\n"
+
+                with tempfile.TemporaryDirectory() as scan_dir:
+                    scan_repo = Path(scan_dir)
+                    self.helper["prepare_trufflehog_history"](
+                        repo,
+                        "local",
+                        None,
+                        "HEAD",
+                        scan_repo,
+                    )
+                    commits = git(
+                        scan_repo,
+                        "log",
+                        "--reverse",
+                        "--format=%H",
+                    ).splitlines()
+                    self.assertEqual(
+                        git(scan_repo, "show", f"{commits[2]}:{expected_path}"),
+                        expected_content,
+                    )
+
+    def test_trufflehog_findings_and_errors_do_not_leak_scanner_output(self) -> None:
+        for returncode, expected in (
+            (
+                self.helper["TRUFFLEHOG_FINDINGS_EXIT_CODE"],
+                "found verified or unknown credentials",
+            ),
+            (1, "could not complete the credential scan"),
+        ):
+            with self.subTest(returncode=returncode), tempfile.TemporaryDirectory() as tempdir:
+                repo = init_repo(Path(tempdir))
+                (repo / "runtime.txt").write_text("review me\n", encoding="utf-8")
+                original_find_command = self.helper["find_command"]
+                original_run = self.helper["run"]
+                scanner_output = "detected-value-that-must-not-leak"
+
+                def find_command(name: str, checkout: Path) -> str | None:
+                    if name == "trufflehog":
+                        return "/trusted/trufflehog"
+                    return original_find_command(name, checkout)
+
+                def run_scanner(
+                    command: list[str],
+                    cwd: Path,
+                    **_kwargs: object,
+                ) -> subprocess.CompletedProcess[str]:
+                    if command[0] != "/trusted/trufflehog":
+                        return original_run(command, cwd, **_kwargs)
+                    return subprocess.CompletedProcess(
+                        command,
+                        returncode,
+                        scanner_output,
+                        scanner_output,
+                    )
+
+                output = io.StringIO()
+                with (
+                    mock.patch.dict(
+                        self.helper["run_trufflehog_preflight"].__globals__,
+                        {
+                            "find_command": find_command,
+                            "run": run_scanner,
+                        },
+                    ),
+                    contextlib.redirect_stdout(output),
+                    contextlib.redirect_stderr(output),
+                    self.assertRaises(SystemExit) as error,
+                ):
+                    self.helper["run_trufflehog_preflight"](
+                        repo,
+                        "local",
+                        None,
+                        "HEAD",
+                    )
+
+                combined = output.getvalue() + str(error.exception)
+                self.assertIn(expected, combined)
+                self.assertNotIn(scanner_output, combined)
 
     def test_powershell_harness_exposes_runnable_engines_only(self) -> None:
         harness = SCRIPT.with_name("test-review-harness.ps1").read_text(encoding="utf-8")
@@ -756,52 +1197,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
         self.assertNotIn("placeholder", redacted)
         self.assertNotIn("commit metadata", redacted)
 
-    def test_review_patch_scans_nonstandard_diff_metadata_before_hunk_content(
-        self,
-    ) -> None:
-        credential = "AKIA" + "ABCDEFGHIJKLMNOP"
-        patch = (
-            f"diff --cc {credential}.txt\n"
-            "index 1111111,2222222..3333333\n"
-            "@@@ -1,1 -1,1 +1,1 @@@\n"
-            "++public content\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "branch diff",
-            ["safe.txt"],
-            patch,
-        )
-
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-        )
-        self.assertNotIn(credential, redacted)
-
-    def test_review_patch_redacts_reconstructed_nonstandard_diff_content(
-        self,
-    ) -> None:
-        secret = realistic_secret_value()
-        patch = (
-            "diff --cc safe.txt\n"
-            "index 1111111,2222222..3333333\n"
-            "@@@ -1,1 -1,1 +1,1 @@@\n"
-            f'++password = "{secret}"\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "branch diff",
-            ["safe.txt"],
-            patch,
-        )
-
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-        )
-        self.assertNotIn(secret, redacted)
-
     def test_review_metadata_redaction_is_independent_of_path_classification(
         self,
     ) -> None:
@@ -817,55 +1212,90 @@ class AutoreviewHardeningTests(unittest.TestCase):
             self.helper["redact_secret_like_review_metadata"](metadata),
         )
 
-    def test_review_patch_scans_reconstructed_content_not_diff_markers(
-        self,
-    ) -> None:
+    def test_review_patch_redacts_metadata_but_preserves_code_content(self) -> None:
         patch = (
-            "@@ -0,0 +1,4 @@\n"
-            '+            "https://token=" + "hardcoded123@host/repo",\n'
-            '+            "DATABASE_URL=https:"\n'
-            '+            + f"//token={literal_username}:${{PASSWORD}}@host",\n'
-            '+            \'curl "https:\'\n'
-        )
-
-        self.assertTrue(self.helper["secret_text_risk"](patch))
-        self.assertFalse(
-            any(
-                self.helper["secret_text_risk"](line)
-                for line in patch.splitlines()
-            )
-        )
-        self.assertEqual(
-            self.helper["validate_review_patch"](
-                "local unstaged diff",
-                ["safe.py"],
-                patch,
-            ),
-            patch,
-        )
-
-    def test_review_patch_scans_diff_metadata_line_by_line(self) -> None:
-        credential = "AKIA" + "ABCDEFGHIJKLMNOP"
-        patch = (
-            f"diff --git a/{credential}.txt b/{credential}.txt\n"
-            "new file mode 100644\n"
-            "--- /dev/null\n"
-            f"+++ b/{credential}.txt\n"
+            "Authorization: Basic dXNlcjpwYXNzd29yZA==\n"
+            "diff --git a/src/runtime.ts b/src/runtime.ts\n"
+            "--- a/src/runtime.ts\n"
+            "+++ b/src/runtime.ts\n"
             "@@ -0,0 +1 @@\n"
-            "+public content\n"
+            '+const token = "ordinary-hardcoded-value-12345";\n'
         )
 
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["safe.txt"],
+        validated = self.helper["validate_review_patch"](
+            "commit diff",
+            ["src/runtime.ts"],
             patch,
         )
 
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
+        self.assertNotIn("dXNlcjpwYXNzd29yZA==", validated)
+        self.assertIn("ordinary-hardcoded-value-12345", validated)
+
+    def test_review_patch_redacts_standard_diff_paths_but_preserves_hunks(self) -> None:
+        credential = "ghp_" + "A" * 24
+        patch = (
+            f"diff --git a/{credential}.ts b/{credential}.ts\n"
+            f"--- a/{credential}.ts\n"
+            f"+++ b/{credential}.ts\n"
+            "@@ -0,0 +1 @@\n"
+            '+const token = "ordinary-hardcoded-value-12345";\n'
         )
-        self.assertNotIn(credential, redacted)
+
+        validated = self.helper["validate_review_patch"](
+            "commit diff",
+            ["src/runtime.ts"],
+            patch,
+        )
+
+        self.assertNotIn(credential, validated)
+        self.assertIn("ordinary-hardcoded-value-12345", validated)
+
+    def test_review_patch_preserves_combined_and_headerless_hunk_content(self) -> None:
+        credential_shaped_code = '+token = "ordinary-hardcoded-value-12345"\n'
+        for patch in (
+            "@@ -0,0 +1 @@\n" + credential_shaped_code,
+            "diff --cc src/runtime.ts\n"
+            "@@@ -0,0 -0,0 +1 @@@\n"
+            "++token = \"ordinary-hardcoded-value-12345\"\n",
+        ):
+            with self.subTest(patch=patch):
+                validated = self.helper["validate_review_patch"](
+                    "commit diff",
+                    ["src/runtime.ts"],
+                    patch,
+                )
+                self.assertIn("ordinary-hardcoded-value-12345", validated)
+
+    def test_review_patch_stops_hunk_classification_at_declared_counts(self) -> None:
+        credential = "ghp_" + "A" * 24
+        patch = (
+            "@@ -0,0 +1 @@\n"
+            "+first file content\n"
+            f"--- a/{credential}.ts\n"
+            f"+++ b/{credential}.ts\n"
+            "@@ -0,0 +1 @@\n"
+            '+token = "ordinary-hardcoded-value-12345"\n'
+        )
+
+        validated = self.helper["validate_review_patch"](
+            "commit diff",
+            ["first.ts", "second.ts"],
+            patch,
+        )
+
+        self.assertNotIn(credential, validated)
+        self.assertIn("ordinary-hardcoded-value-12345", validated)
+
+    def test_review_patch_enforces_limit_after_metadata_redaction(self) -> None:
+        patch = "ghp_" + "A" * 24
+
+        with self.assertRaisesRegex(SystemExit, "after metadata redaction"):
+            self.helper["validate_review_patch"](
+                "commit diff",
+                [],
+                patch,
+                40,
+            )
 
     def test_tracked_sensitive_paths_are_omitted_in_all_modes(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -975,6 +1405,19 @@ class AutoreviewHardeningTests(unittest.TestCase):
         ):
             with self.subTest(rel=rel):
                 self.assertIsNone(self.helper["sensitive_repo_path_risk"](rel))
+
+    def test_untracked_credential_shaped_source_content_is_reviewed(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            source = 'const token = "ordinary-hardcoded-value-12345";\n'
+            path = repo / "src" / "runtime.ts"
+            path.parent.mkdir()
+            path.write_text(source, encoding="utf-8")
+
+            bundle, truncated = self.helper["local_bundle"](repo)
+
+            self.assertIn("ordinary-hardcoded-value-12345", bundle)
+            self.assertFalse(truncated)
 
     def test_untracked_design_token_artifacts_remain_reviewable(self) -> None:
         for rel in (
@@ -2509,14 +2952,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
             encoding="utf-8"
         )
 
-        fragments = self.helper["review_secret_fragments"](
-            source,
-            javascript_dialect="typescript",
-        )
-        self.assertNotIn("filePassword", fragments)
-        self.assertNotIn("passwordResolution.password", fragments)
-        self.assertNotIn("tokenResolution.token", fragments)
-        self.assertNotIn("CredentialUnavailableDiagnostic", fragments)
         patch = (
             "diff --git a/src/credential-plumbing.ts b/src/credential-plumbing.ts\n"
             "new file mode 100644\n"
@@ -2667,136 +3102,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
             )
         )
 
-    def test_review_patch_redacts_short_unquoted_value_in_truncated_call(self) -> None:
-        short_secret = "12345678"
-        patch = (
-            "diff --git a/src/runtime.ts b/src/runtime.ts\n"
-            "--- a/src/runtime.ts\n"
-            "+++ b/src/runtime.ts\n"
-            "@@ -0,0 +1,2 @@\n"
-            "+password = decode(\n"
-            f"+  {short_secret},\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "typescript truncated credential call",
-            ["src/runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(short_secret, redacted)
-        self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], redacted)
-
-    def test_review_bundle_keeps_config_paths_but_redacts_values(self) -> None:
-        config_path = "channels.telegram.accounts.work.tokenFile"
-        literal_assignment_value = (
-            "channels.irc.accounts.default.pass" + "wordFile"
-        )
-        generic_path_value = "channels.telegram.accounts.generic.tokenFile"
-        reader_argument_value = "channels.telegram.accounts.reader.tokenFile"
-        sensitive_name = "pass" + "word"
-        token_name = "to" + "ken"
-        fake_secret = realistic_secret_value()
-        source = (
-            "const " + token_name + " = readSecretFile(path, {\n"
-            f'  configPath: "{config_path}",\n'
-            f'  value: "{fake_secret}",\n'
-            "});\n"
-            f'const {sensitive_name} = "{literal_assignment_value}";\n'
-            f'const file{token_name.title()} = tryReadSecretFileSync('
-            f'"{reader_argument_value}", "credential file label");\n'
-        )
-        patch = (
-            "diff --git a/src/config-paths.ts b/src/config-paths.ts\n"
-            "new file mode 100644\n"
-            "--- /dev/null\n"
-            "+++ b/src/config-paths.ts\n"
-            f"@@ -0,0 +1,{len(source.splitlines())} @@\n"
-            + "".join(f"+{line}\n" for line in source.splitlines())
-        )
-
-        validated = self.helper["validate_review_patch"](
-            "typescript config path references",
-            ["src/config-paths.ts"],
-            patch,
-        )
-
-        self.assertIn(f'configPath: "{config_path}"', validated)
-        self.assertNotIn(fake_secret, validated)
-        self.assertNotIn(
-            f'const {sensitive_name} = "{literal_assignment_value}"',
-            validated,
-        )
-        self.assertNotIn(reader_argument_value, validated)
-        generic_argument = f'{{ path: "{generic_path_value}" }}'
-        literal = next(
-            pattern.search(generic_argument)
-            for pattern in self.helper["SECRET_FALLBACK_LITERAL_PATTERNS"]
-            if pattern.search(generic_argument) is not None
-        )
-        self.assertFalse(
-            self.helper["safe_javascript_config_path_literal"](
-                generic_argument,
-                literal,
-                call_target="submit",
-                context_start=0,
-                context_end=len(generic_argument),
-                argument_index=0,
-                javascript_dialect="typescript",
-            )
-        )
-        nested_argument = f'{{ value: "{generic_path_value}" }}'
-        nested_literal = next(
-            pattern.search(nested_argument)
-            for pattern in self.helper["SECRET_FALLBACK_LITERAL_PATTERNS"]
-            if pattern.search(nested_argument) is not None
-        )
-        self.assertFalse(
-            self.helper["safe_javascript_config_path_literal"](
-                nested_argument,
-                nested_literal,
-                call_target="readSecretFile",
-                context_start=0,
-                context_end=len(nested_argument),
-                argument_index=1,
-                javascript_dialect="typescript",
-            )
-        )
-        comment_argument = (
-            f'{{ value: // configPath:\n "{generic_path_value}" }}'
-        )
-        comment_literal = next(
-            pattern.search(comment_argument)
-            for pattern in self.helper["SECRET_FALLBACK_LITERAL_PATTERNS"]
-            if pattern.search(comment_argument) is not None
-        )
-        self.assertFalse(
-            self.helper["safe_javascript_config_path_literal"](
-                comment_argument,
-                comment_literal,
-                call_target="readSecretFile",
-                context_start=0,
-                context_end=len(comment_argument),
-                argument_index=2,
-                javascript_dialect="typescript",
-            )
-        )
-        self.assertFalse(
-            self.helper["safe_javascript_config_path_literal"](
-                f'"{generic_path_value}"',
-                next(
-                    pattern.search(f'"{generic_path_value}"')
-                    for pattern in self.helper["SECRET_FALLBACK_LITERAL_PATTERNS"]
-                    if pattern.search(f'"{generic_path_value}"') is not None
-                ),
-                call_target="READSECRETFILE",
-                context_start=0,
-                context_end=len(generic_path_value) + 2,
-                argument_index=1,
-                javascript_dialect="typescript",
-            )
-        )
-
     def test_known_secret_fragment_scan_handles_many_javascript_regexes(self) -> None:
         fragment = "password file"
         regex_count = 2_000
@@ -2819,154 +3124,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
 
         self.assertEqual(spans, frozenset())
         self.assertLess(time.monotonic() - started, 5.0)
-
-    def test_review_patch_scopes_source_references_to_typescript_files(self) -> None:
-        property_name = "pass" + "word"
-        reference = "context.driverPass" + "word"
-        source_patch = (
-            "diff --git a/src/runtime.ts b/src/runtime.ts\n"
-            "--- a/src/runtime.ts\n"
-            "+++ b/src/runtime.ts\n"
-            "@@ -0,0 +1 @@\n"
-            "+function configure(context: RuntimeContext) { return { "
-            + property_name
-            + ": "
-            + reference
-            + " }; }\n"
-        )
-        narrow_source_patch = (
-            "diff --git a/src/runtime.ts b/src/runtime.ts\n"
-            "--- a/src/runtime.ts\n"
-            "+++ b/src/runtime.ts\n"
-            "@@ -40,2 +40,3 @@ function configure(context: RuntimeContext) {\n"
-            "   return {\n"
-            "+    "
-            + property_name
-            + ": "
-            + reference
-            + ",\n"
-            "   };\n"
-        )
-        config_patch = (
-            "diff --git a/config.yml b/config.yml\n"
-            "--- a/config.yml\n"
-            "+++ b/config.yml\n"
-            "@@ -0,0 +1 @@\n"
-            "+"
-            + property_name
-            + ": "
-            + reference
-            + "\n"
-        )
-
-        self.assertEqual(
-            self.helper["validate_review_patch"](
-                "local staged diff",
-                ["src/runtime.ts"],
-                source_patch,
-            ),
-            source_patch,
-        )
-        self.assertEqual(
-            self.helper["validate_review_patch"](
-                "local staged diff",
-                ["src/runtime.ts"],
-                narrow_source_patch,
-            ),
-            narrow_source_patch,
-        )
-        for paths in (
-            ["src/runtime.ts", "config.yml"],
-            ["config.yml", "src/runtime.ts"],
-        ):
-            redacted = self.helper["validate_review_patch"](
-                "local staged diff",
-                paths,
-                source_patch + config_patch,
-            )
-            self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], redacted)
-            self.assertNotIn(reference, redacted)
-
-    def test_review_patch_redacts_unextractable_secret_like_context(self) -> None:
-        property_name = "pass" + "word"
-        reference = "nextConnection." + property_name
-        patch = (
-            "diff --git a/src/gateway-store.ts b/src/gateway-store.ts\n"
-            "--- a/src/gateway-store.ts\n"
-            "+++ b/src/gateway-store.ts\n"
-            "@@ -170,4 +170,4 @@ function connect() {\n"
-            "       "
-            + property_name
-            + ": "
-            + reference
-            + ".trim() ? "
-            + reference
-            + " : undefined,\n"
-            '-      clientVersion: "dev",\n'
-            '+      clientVersion: BUILD_INFO.version ?? "dev",\n'
-            '       mode: "webchat",\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["src/gateway-store.ts"],
-            patch,
-        )
-
-        self.assertIn(" " + self.helper["REVIEW_SECRET_REDACTION"], redacted)
-        self.assertIn('+      clientVersion: BUILD_INFO.version ?? "dev",', redacted)
-        self.assertNotIn(reference, redacted)
-
-    def test_review_patch_scans_rename_sides_with_their_own_file_types(self) -> None:
-        property_name = "pass" + "word"
-        reference = "context.driverPass" + "word"
-        patch = (
-            "diff --git a/src/runtime.ts b/config.yml\n"
-            "similarity index 80%\n"
-            "rename from src/runtime.ts\n"
-            "rename to config.yml\n"
-            "--- a/src/runtime.ts\n"
-            "+++ b/config.yml\n"
-            "@@ -1 +1 @@\n"
-            "-function configure(context: RuntimeContext) { return { "
-            + property_name
-            + ": "
-            + reference
-            + " }; }\n"
-            "+"
-            + property_name
-            + ": "
-            + reference
-            + "\n"
-        )
-
-        old_content, new_content = self.helper["unified_diff_contents"](patch)
-        fragments = self.helper["review_secret_fragments"](old_content)
-        fragments.update(self.helper["review_secret_fragments"](new_content))
-        redacted = self.helper["redact_secret_like_diff_section"](
-            patch,
-            {"src/runtime.ts", "config.yml"},
-            fragments,
-        )
-
-        self.assertIn("-function configure", redacted)
-        self.assertIn(
-            "-function configure(context: RuntimeContext) { return { "
-            + property_name
-            + ": "
-            + reference
-            + " }; }",
-            redacted,
-        )
-        self.assertIn("+" + property_name + ": redacted", redacted)
-        self.assertNotIn("+" + property_name + ": " + reference, redacted)
-        validated = self.helper["validate_review_patch"](
-            "branch diff",
-            ["src/runtime.ts", "config.yml"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], validated)
-        self.assertNotIn(reference, validated)
 
     def test_review_patch_decodes_git_quoted_source_paths(self) -> None:
         property_name = "pass" + "word"
@@ -3270,6 +3427,32 @@ class AutoreviewHardeningTests(unittest.TestCase):
         ):
             with self.subTest(content=content):
                 self.assertFalse(self.helper["secret_text_risk"](content))
+
+    def test_review_patch_preserves_safe_uri_userinfo(self) -> None:
+        safe_lines = (
+            'url = f"ssh://{ssh_user}@git.example.invalid/org/repo.git"',
+            'url = "https://alice@github.com/example/repo"',
+            'url = "https://username:@host/repo"',
+            'remote = "ssh://git@github.com/org/repo.git"',
+        )
+        for line in safe_lines:
+            with self.subTest(line=line):
+                patch = (
+                    "diff --git a/fixture.py b/fixture.py\n"
+                    "--- a/fixture.py\n"
+                    "+++ b/fixture.py\n"
+                    "@@ -0,0 +1 @@\n"
+                    f"+{line}\n"
+                )
+
+                validated = self.helper["validate_review_patch"](
+                    "local unstaged diff",
+                    ["fixture.py"],
+                    patch,
+                )
+
+                self.assertIn(f"+{line}", validated)
+                self.assertNotIn("redacted@", validated)
 
     def test_secret_detector_allows_referenced_uri_credentials(self) -> None:
         for content in (
@@ -3779,835 +3962,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
                     )
                 )
 
-    def test_secret_like_patch_content_is_redacted_in_all_modes(self) -> None:
-        with tempfile.TemporaryDirectory() as tempdir:
-            repo = init_repo(Path(tempdir))
-            path = repo / "settings.txt"
-            path.write_text("base\n", encoding="utf-8")
-            git(repo, "add", "settings.txt")
-            git(repo, "commit", "-q", "-m", "base")
-            base = git(repo, "rev-parse", "HEAD").strip()
-
-            secret = realistic_secret_value()
-            path.write_text("api" + "_key=" + secret + "\n", encoding="utf-8")
-            git(repo, "add", "settings.txt")
-            local_bundle, local_truncated = self.helper["local_bundle"](repo)
-
-            git(repo, "commit", "-q", "-m", "secret content")
-            branch_bundle, branch_truncated = self.helper["branch_bundle"](repo, base)
-            commit_bundle, commit_truncated = self.helper["commit_bundle"](repo, "HEAD")
-
-            for bundle, truncated in (
-                (local_bundle, local_truncated),
-                (branch_bundle, branch_truncated),
-                (commit_bundle, commit_truncated),
-            ):
-                self.assertIn("api_key=redacted", bundle)
-                self.assertNotIn(secret, bundle)
-                self.assertFalse(truncated)
-
-    def test_review_patch_redacts_private_key_fixture_hunk_and_continues(self) -> None:
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -1,4 +1,5 @@\n"
-            ' const key = ["-----BEGIN '
-            + 'PRIVATE KEY-----",\n'
-            '   "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890",\n'
-            '   "-----END '
-            + 'PRIVATE KEY-----",\n'
-            " ];\n"
-            "+expect(key).toBeDefined();\n"
-            "@@ -20 +21 @@\n"
-            "-const timeout = 0;\n"
-            "+const timeout = 30_000;\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-
-        self.assertIn('const key = ["redacted",', redacted)
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
-        self.assertNotIn("MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890", redacted)
-        self.assertIn("+const timeout = 30_000;", redacted)
-
-    def test_review_patch_tracks_private_key_redaction_per_diff_side(self) -> None:
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -1,3 +1,3 @@\n"
-            ' const key = ["-----BEGIN '
-            + 'PRIVATE KEY-----",\n'
-            '-  "MIIEowIBAAKCAQEArEmoved0123456789ABCDEF", "-----END '
-            + 'PRIVATE KEY-----",\n'
-            '+  "MIIEowIBAAKCAQEAdDed0123456789ABCDEF", "-----END '
-            + 'PRIVATE KEY-----",\n'
-            " ];\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
-        self.assertNotIn("MIIEowIBAAKCAQEArEmoved0123456789ABCDEF", redacted)
-        self.assertNotIn("MIIEowIBAAKCAQEAdDed0123456789ABCDEF", redacted)
-
-    def test_review_patch_redacts_markerless_tokens_beside_pem_markers(self) -> None:
-        before = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCbefore1234567890ABCDE"
-        after = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCafter0987654321FGHIJ"
-        private_key_begin = "-----BEGIN " + "PRIVATE KEY-----"
-        private_key_end = "-----END " + "PRIVATE KEY-----"
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -1 +1 @@\n"
-            f'+const keys = ["{before}", "{private_key_begin}", '
-            f'"AB12cd34EF56", "{private_key_end}", '
-            f'"{after}"];\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-
-        self.assertNotIn(before, redacted)
-        self.assertNotIn(after, redacted)
-        self.assertNotIn("AB12cd34EF56", redacted)
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
-
-    def test_review_patch_omits_added_unmatched_private_key_begin(self) -> None:
-        patch = (
-            "diff --git a/fixture.txt b/fixture.txt\n"
-            "--- a/fixture.txt\n"
-            "+++ b/fixture.txt\n"
-            "@@ -0,0 +1,3 @@\n"
-            "+-----BEGIN "
-            + "PRIVATE KEY-----\n"
-            "+MIIEowIBAAKCAQEAunmatched0123456789ABCDEF\n"
-            "+runDangerousOperation();\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.txt"],
-            patch,
-        )
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-        )
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
-
-    def test_review_patch_redacts_truncated_inherited_private_key_context(self) -> None:
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -1,3 +1,4 @@\n"
-            "+expect(socket.closed).toBe(true);\n"
-            ' const key = ["-----BEGIN '
-            + 'PRIVATE KEY-----",\n'
-            '   "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890",\n'
-            '   "Q5pEdChn3fuWgi7gC+pvd5VQ1eAX/7qVE72fhx14NxhaiZU3hCzXjG2S",\n'
-            "+runDangerousOperation();\n"
-            "@@ -20 +21 @@\n"
-            "-const timeout = 0;\n"
-            "+const timeout = 30_000;\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
-        self.assertNotIn("MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890", redacted)
-        self.assertIn("+expect(socket.closed).toBe(true);", redacted)
-        self.assertIn("+runDangerousOperation();", redacted)
-        self.assertIn("+const timeout = 30_000;", redacted)
-
-    def test_review_patch_reuses_fragments_from_truncated_private_key_context(self) -> None:
-        repeated = "AB12cd34EF56"
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -1,3 +1,3 @@\n"
-            ' const key = ["-----BEGIN '
-            + 'PRIVATE KEY-----",\n'
-            f'   "{repeated}",\n'
-            '   "GH78ij90KL12",\n'
-            "@@ -20 +20,2 @@\n"
-            " const timeout = 30_000;\n"
-            f'+const duplicate = "{repeated}";\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-
-        self.assertNotIn(repeated, redacted)
-        self.assertIn('+const duplicate = "redacted";', redacted)
-
-    def test_review_patch_redacts_interleaved_balanced_private_key_marker_edit(self) -> None:
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -1,4 +1,4 @@\n"
-            '-const key = "-----BEGIN RSA '
-            + 'PRIVATE KEY-----";\n'
-            '+const key = "-----BEGIN '
-            + 'PRIVATE KEY-----";\n'
-            ' const body = "AB12cd34EF56";\n'
-            ' const end = "-----END '
-            + 'PRIVATE KEY-----";\n'
-            ' const label = "visible";\n'
-            "@@ -10 +10 @@\n"
-            "-const timeout = 0;\n"
-            "+const timeout = 30_000;\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
-        self.assertNotIn(RSA_PRIVATE_KEY_BEGIN_TEXT, redacted)
-        self.assertNotIn("AB12cd34EF56", redacted)
-        self.assertIn('const label = "visible";', redacted)
-        self.assertIn("+const timeout = 30_000;", redacted)
-
-    def test_review_patch_omits_truncated_private_key_marker_replacement(self) -> None:
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -1,3 +1,3 @@\n"
-            '-const key = "-----BEGIN RSA '
-            + 'PRIVATE KEY-----";\n'
-            '+const key = "-----BEGIN '
-            + 'PRIVATE KEY-----";\n'
-            ' const body = "AB12cd34EF56";\n'
-            ' expect(key).toBeDefined();\n'
-            "@@ -20 +20 @@\n"
-            "-const timeout = 0;\n"
-            "+const timeout = 30_000;\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-        )
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
-
-    def test_review_patch_omits_removed_private_key_end_marker(self) -> None:
-        replacement = "AB12cd34EF56gh78"
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -8,3 +8,3 @@\n"
-            ' const body = "ZX90yu12WV34";\n'
-            '-const end = "-----END '
-            + 'PRIVATE KEY-----";\n'
-            f'+const replacement = "{replacement}";\n'
-            "@@ -20 +20 @@\n"
-            "-const timeout = 0;\n"
-            "+const timeout = 30_000;\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-        )
-        self.assertNotIn(replacement, redacted)
-
-    def test_review_patch_omits_removed_private_key_begin_marker(self) -> None:
-        replacement = "AB12cd34EF56gh78"
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -1,2 +1,2 @@\n"
-            '-const begin = "-----BEGIN '
-            + 'PRIVATE KEY-----";\n'
-            f'+const replacement = "{replacement}";\n'
-            ' const body = "ZX90yu12WV34";\n'
-            "@@ -20 +20 @@\n"
-            "-const timeout = 0;\n"
-            "+const timeout = 30_000;\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-        )
-        self.assertNotIn(replacement, redacted)
-
-    def test_review_patch_omits_net_new_unmatched_private_key_marker(self) -> None:
-        patch = (
-            "diff --git a/fixture.test.ts b/fixture.test.ts\n"
-            "--- a/fixture.test.ts\n"
-            "+++ b/fixture.test.ts\n"
-            "@@ -1 +1,2 @@\n"
-            '-const first = "-----BEGIN RSA '
-            + 'PRIVATE KEY-----";\n'
-            '+const first = "-----BEGIN '
-            + 'PRIVATE KEY-----";\n'
-            '+const second = "-----BEGIN EC '
-            + 'PRIVATE KEY-----";\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.test.ts"],
-            patch,
-        )
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-        )
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
-
-    def test_review_patch_redacts_before_unmatched_private_key_end(self) -> None:
-        patch = (
-            "diff --git a/fixture.txt b/fixture.txt\n"
-            "--- a/fixture.txt\n"
-            "+++ b/fixture.txt\n"
-            "@@ -1,2 +1,2 @@\n"
-            " MIIEowIBAAKCAQEAtrailing0123456789ABCDEF\n"
-            " -----END "
-            + "PRIVATE KEY-----\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.txt"],
-            patch,
-        )
-
-        self.assertNotIn("MIIEowIBAAKCAQEAtrailing0123456789ABCDEF", redacted)
-        self.assertNotIn("END PRIVATE KEY", redacted)
-
-    def test_review_patch_tracks_same_line_private_key_markers_in_order(self) -> None:
-        patch = (
-            "diff --git a/fixture.txt b/fixture.txt\n"
-            "--- a/fixture.txt\n"
-            "+++ b/fixture.txt\n"
-            "@@ -0,0 +1,2 @@\n"
-            "+-----BEGIN "
-            + "PRIVATE KEY----- AB12 -----END "
-            + "PRIVATE KEY----- -----BEGIN "
-            + "PRIVATE KEY-----\n"
-            "+CDef3456GHij7890\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.txt"],
-            patch,
-        )
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-        )
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted)
-
-    def test_review_patch_redacts_secret_like_hunk_header_section(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            f'@@ -1 +1 @@ function connect(api{"Key"} = "{fixture_value}")\n'
-            "-return oldValue;\n"
-            "+return newValue;\n"
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertIn('function connect(api' + 'Key = "redacted")', redacted_patch)
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn("+return newValue;", redacted_patch)
-
-    def test_review_patch_redaction_treats_only_lf_as_a_diff_record_boundary(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/settings.txt b/settings.txt\n"
-            "--- a/settings.txt\n"
-            "+++ b/settings.txt\n"
-            "@@ -1 +1 @@\n"
-            "-pass"
-            + "word=placeholder\n"
-            + f'+pass{"word"}="{fixture_value}\fremaining-secret"\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["settings.txt"],
-            patch,
-        )
-
-        self.assertIn('+pass' + 'word="redacted"', redacted_patch)
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertNotIn("remaining-secret", redacted_patch)
-
-    def test_review_patch_redaction_preserves_unrelated_lines_in_the_same_hunk(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -1 +1,4 @@\n"
-            " export const enabled = true;\n"
-            f'+const api{"Key"} = "{fixture_value}";\n'
-            f'+useCredential("{fixture_value}");\n'
-            "+runDangerousOperation();\n"
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertIn('+const api' + 'Key = "redacted";', redacted_patch)
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn('+useCredential("redacted");', redacted_patch)
-        self.assertIn("+runDangerousOperation();", redacted_patch)
-
-    def test_review_patch_omits_too_many_secret_fragments(self) -> None:
-        secrets = [f"{realistic_secret_value()}{index:03d}" for index in range(257)]
-        additions = "".join(
-            f'+const api{"Key"} = "{secret}";\n' for secret in secrets
-        )
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1,258 @@\n"
-            + additions
-            + "+runDangerousOperation();\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertEqual(
-            redacted,
-            self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-        )
-        for secret in secrets:
-            self.assertNotIn(secret, redacted)
-
-    def test_review_patch_never_replaces_a_secret_like_key_name(self) -> None:
-        long_values = [
-            f"{realistic_secret_value()}LongLiteral{index:03d}" for index in range(62)
-        ]
-        additions = '+const api' + 'Key = "veryLongClientSecret";\n'
-        additions += "".join(
-            f'+const api{"Key"} = "{value}";\n' for value in long_values
-        )
-        target_secret = "ShortS3cret"
-        additions += f'+const veryLongClient{"Secret"} = "{target_secret}";\n'
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1,64 @@\n"
-            + additions
-        )
-
-        validated = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], validated)
-        self.assertNotIn(target_secret, validated)
-
-    def test_review_patch_never_rewrites_secret_fragment_inside_key(self) -> None:
-        fragment = "client" + "Secret"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1,2 @@\n"
-            + "+pass"
-            + f'word = "{fragment}"\n'
-            + f"+{fragment}Timeout: 30\n"
-        )
-
-        _old_content, new_content = self.helper["unified_diff_contents"](patch)
-        fragments = self.helper["review_secret_fragments"](new_content)
-        redacted_patch = self.helper["redact_secret_like_diff_section"](
-            patch,
-            {"runtime.ts"},
-            fragments,
-        )
-
-        self.assertIn("+" + fragment + "Timeout: 30", redacted_patch)
-        validated = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], validated)
-        self.assertNotIn(fragment, validated)
-
-    def test_review_patch_never_rewrites_secret_fragment_inside_identifier(
-        self,
-    ) -> None:
-        fragment = "authorize"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1,2 @@\n"
-            + "+pass"
-            + f'word = "{fragment}"\n'
-            + f"+{fragment}User();\n"
-        )
-
-        _old_content, new_content = self.helper["unified_diff_contents"](patch)
-        fragments = self.helper["review_secret_fragments"](new_content)
-        redacted_patch = self.helper["redact_secret_like_diff_section"](
-            patch,
-            {"runtime.ts"},
-            fragments,
-        )
-
-        self.assertIn("+" + fragment + "User();", redacted_patch)
-        validated = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], validated)
-        self.assertNotIn(fragment, validated)
-
-    def test_review_patch_redacts_repeated_secret_across_diff_sides(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -1 +1 @@\n"
-            f'-pass{"word"} = "{fixture_value}"\n'
-            f'+log("{fixture_value}")\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn('+log("redacted")', redacted_patch)
-
-    def test_review_patch_redacts_repeated_secret_across_files(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/settings.txt b/settings.txt\n"
-            "--- a/settings.txt\n"
-            "+++ b/settings.txt\n"
-            "@@ -1 +0,0 @@\n"
-            f'-pass{"word"} = "{fixture_value}"\n'
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1 @@\n"
-            f'+log("{fixture_value}")\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["settings.txt", "runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn('+log("redacted")', redacted_patch)
-
-    def test_review_patch_learns_bare_secret_values(self) -> None:
-        fixture_value = "correct-" + "horse-battery-staple"
-        patch = (
-            "diff --git a/settings.txt b/settings.txt\n"
-            "--- a/settings.txt\n"
-            "+++ b/settings.txt\n"
-            "@@ -1 +1 @@\n"
-            f"-PASS{'WORD'}={fixture_value}\n"
-            f'+log("{fixture_value}")\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["settings.txt"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted)
-        self.assertIn('+log("redacted")', redacted)
-
-    def test_review_patch_learns_reference_shaped_config_secrets(self) -> None:
-        fixture_value = "customer.actualPass" + "word"
-        for path, separator in (
-            ("settings.yml", ": "),
-            ("settings.txt", "="),
-            (".env.example", "="),
-        ):
-            with self.subTest(path=path):
-                patch = (
-                    f"diff --git a/{path} b/{path}\n"
-                    f"--- a/{path}\n"
-                    f"+++ b/{path}\n"
-                    "@@ -0,0 +1,2 @@\n"
-                    + "+PASS"
-                    + f"WORD{separator}{fixture_value}\n"
-                    + f'+NOTE{separator}"{fixture_value}"\n'
-                )
-
-                redacted = self.helper["validate_review_patch"](
-                    "local unstaged diff",
-                    [path],
-                    patch,
-                )
-
-                self.assertNotIn(fixture_value, redacted)
-                self.assertIn(f'+NOTE{separator}"redacted"', redacted)
-
-        for path in (".env", ".env.production"):
-            with self.subTest(blocked_path=path):
-                redacted = self.helper["validate_review_patch"](
-                    "local unstaged diff",
-                    [path],
-                    f"diff --git a/{path} b/{path}\n",
-                )
-                self.assertEqual(
-                    redacted,
-                    self.helper["REVIEW_SECURITY_REDACTION"] + "\n",
-                )
-                self.assertNotIn(path, redacted)
-
-    def test_review_patch_redacts_known_secret_used_as_quoted_key(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -1 +1 @@\n"
-            f'-pass{"word"} = "{fixture_value}"\n'
-            f'+const result = {{ "{fixture_value}": value }};\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn('{ "redacted": value }', redacted_patch)
-
-    def test_review_patch_redacts_unsafe_self_reference_fallback(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.py b/runtime.py\n"
-            "--- a/runtime.py\n"
-            "+++ b/runtime.py\n"
-            "@@ -0,0 +1 @@\n"
-            f'+private{"_key"} = private_key or "{fixture_value}"\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.py"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn('private' + '_key = private_key or "redacted"', redacted_patch)
-
-    def test_review_patch_preserves_and_rejects_nested_fallback_calls(self) -> None:
-        primary = realistic_secret_value() + "Primary"
-        backup = realistic_secret_value() + "Backup"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1 @@\n"
-            + "+pass"
-            + f'word = getenv("PASSWORD") || choose("{primary}", "{backup}");\n'
-        )
-
-        _old_content, new_content = self.helper["unified_diff_contents"](patch)
-        fragments = self.helper["review_secret_fragments"](new_content)
-        redacted_patch = self.helper["redact_secret_like_diff_section"](
-            patch,
-            {"runtime.ts"},
-            fragments,
-        )
-
-        self.assertIn('choose("redacted", "redacted")', redacted_patch)
-        self.assertNotIn(primary, redacted_patch)
-        self.assertNotIn(backup, redacted_patch)
-        validated = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertIn('choose("redacted", "redacted")', validated)
-        self.assertNotIn(primary, validated)
-        self.assertNotIn(backup, validated)
-
-    def test_review_patch_never_exempts_literal_secret_as_source_reference(self) -> None:
-        literal = "currentPass" + "word"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -1 +1 @@\n"
-            + "-pass"
-            + f'word = "{literal}";\n'
-            + f"+consume({literal});\n"
-        )
-
-        _old_content, new_content = self.helper["unified_diff_contents"](patch)
-        fragments = self.helper["review_secret_fragments"](new_content)
-        redacted_patch = self.helper["redact_secret_like_diff_section"](
-            patch,
-            {"runtime.ts"},
-            fragments,
-        )
-
-        self.assertIn("+consume(" + literal + ");", redacted_patch)
-        validated = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], validated)
-        self.assertNotIn(literal, validated)
-
-    def test_review_patch_redacts_multiline_fallback_literal(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1,2 @@\n"
-            + "+pass"
-            + "word = password\n"
-            + f'+  || "{fixture_value}";\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn('+  || "redacted";', redacted_patch)
-
-    def test_review_patch_preserves_and_rejects_ambiguous_multiline_call_value(
-        self,
-    ) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.py b/runtime.py\n"
-            "--- a/runtime.py\n"
-            "+++ b/runtime.py\n"
-            "@@ -0,0 +1,3 @@\n"
-            + "+pass"
-            + "word = decode(\n"
-            + f'+    "{fixture_value}",\n'
-            + "+)\n"
-        )
-
-        _old_content, new_content = self.helper["unified_diff_contents"](patch)
-        fragments = self.helper["review_secret_fragments"](new_content)
-        redacted_patch = self.helper["redact_secret_like_diff_section"](
-            patch,
-            {"runtime.py"},
-            fragments,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn(self.helper["REVIEW_SECRET_REDACTION"], redacted_patch)
-        self.assertIn('+    "redacted",', redacted_patch)
-        validated_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.py"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECRET_REDACTION"], validated_patch)
-        self.assertIn('+    "redacted",', validated_patch)
-
-    def test_review_patch_redacts_short_and_unquoted_fallbacks(self) -> None:
-        for fallback in ('"hunter2"', "12345678"):
-            with self.subTest(fallback=fallback):
-                patch = (
-                    "diff --git a/runtime.py b/runtime.py\n"
-                    "--- a/runtime.py\n"
-                    "+++ b/runtime.py\n"
-                    "@@ -0,0 +1 @@\n"
-                    + "+pass"
-                    + f'word = getenv("PASSWORD") or {fallback}\n'
-                )
-
-                redacted_patch = self.helper["validate_review_patch"](
-                    "local unstaged diff",
-                    ["runtime.py"],
-                    patch,
-                )
-
-                self.assertNotIn(fallback.strip('"'), redacted_patch)
-                expected = '"redacted"' if fallback.startswith('"') else "redacted"
-                self.assertIn(
-                    f'getenv("PASSWORD") or {expected}',
-                    redacted_patch,
-                )
-
     def test_review_patch_preserves_redaction_placeholder_fallback(self) -> None:
         patch = (
             "diff --git a/runtime.py b/runtime.py\n"
@@ -4627,314 +3981,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
             patch,
         )
 
-    def test_review_patch_ignores_nested_fallback_operator_text(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1 @@\n"
-            + "+pass"
-            + f'word = defaults["x || y"] || "{fixture_value}"\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn('defaults["x || y"] || "redacted"', redacted_patch)
-
-    def test_review_patch_redacts_repeated_nested_fallback_literal(self) -> None:
-        short_secret = "hunter2"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1,2 @@\n"
-            f'+password = getenv("PASSWORD") || choose("{short_secret}");\n'
-            f'+log("{short_secret}");\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(short_secret, redacted)
-        self.assertIn('choose("redacted")', redacted)
-        self.assertIn('log("redacted")', redacted)
-
-    def test_review_patch_preserves_repeated_nested_noncredential_literals(self) -> None:
-        short_secret = "hunter2"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1,3 @@\n"
-            f'+password = derive(input, "application/json") || choose("application/json", "{short_secret}");\n'
-            '+log("application/json");\n'
-            f'+log("{short_secret}");\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(short_secret, redacted)
-        self.assertIn(self.helper["REVIEW_SECRET_REDACTION"], redacted)
-        self.assertIn('log("application/json")', redacted)
-
-    def test_review_patch_ignores_fallback_literals_inside_comments(self) -> None:
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1,2 @@\n"
-            + "+pass"
-            + 'word = primary || secondary // "evil-package"\n'
-            + '+import("evil-package");\n'
-        )
-
-        _old_content, new_content = self.helper["unified_diff_contents"](patch)
-        fragments = self.helper["review_secret_fragments"](new_content)
-        redacted_patch = self.helper["redact_secret_like_diff_section"](
-            patch,
-            {"runtime.ts"},
-            fragments,
-        )
-        self.assertIn('+import("evil-package");', redacted_patch)
-        validated = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECRET_REDACTION"], validated)
-
-    def test_review_patch_learns_bearer_credential_without_prefix(self) -> None:
-        bearer_value = "AbcdEFGHijklMNOPqrstUVWX+SensitiveTail123=="
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1,2 @@\n"
-            + f'+const authorization = "Bearer {bearer_value}";\n'
-            + f'+log("{bearer_value}");\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(bearer_value, redacted)
-        self.assertIn('"Bearer redacted"', redacted)
-        self.assertIn('+log("redacted");', redacted)
-
-    def test_review_patch_preserves_safe_assignment_on_mixed_risk_line(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1 @@\n"
-            f'+const options = {{ creden{"tials"}: "include", api{"Key"}: "{fixture_value}" }};\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertIn('creden' + 'tials: "include"', redacted_patch)
-        self.assertIn('api' + 'Key: "redacted"', redacted_patch)
-
-    def test_review_patch_redacts_commented_private_key_body(self) -> None:
-        body = "MIIEowIBAAKCAQEAcommented0123456789ABCDEF"
-        patch = (
-            "diff --git a/fixture.txt b/fixture.txt\n"
-            "--- a/fixture.txt\n"
-            "+++ b/fixture.txt\n"
-            "@@ -0,0 +1,4 @@\n"
-            "+# -----BEGIN "
-            + "PRIVATE KEY-----\n"
-            f"+# {body}\n"
-            "+# -----END "
-            + "PRIVATE KEY-----\n"
-            "+runDangerousOperation();\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.txt"],
-            patch,
-        )
-
-        self.assertNotIn(body, redacted)
-        self.assertIn("+# redacted", redacted)
-        self.assertIn("+runDangerousOperation();", redacted)
-
-    def test_review_patch_redacts_block_commented_private_key_body(self) -> None:
-        body = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890"
-        patch = (
-            "diff --git a/fixture.txt b/fixture.txt\n"
-            "--- a/fixture.txt\n"
-            "+++ b/fixture.txt\n"
-            "@@ -0,0 +1,3 @@\n"
-            "+/* -----BEGIN "
-            + "PRIVATE KEY----- */\n"
-            + f"+/* {body} */\n"
-            + "+/* -----END "
-            + "PRIVATE KEY----- */\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.txt"],
-            patch,
-        )
-
-        self.assertNotIn(body, redacted)
-        self.assertIn("+/* redacted */", redacted)
-
-    def test_review_patch_normalizes_escaped_private_key_body_fragment(self) -> None:
-        body = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890"
-        patch = (
-            "diff --git a/fixture.ts b/fixture.ts\n"
-            "--- a/fixture.ts\n"
-            "+++ b/fixture.ts\n"
-            "@@ -0,0 +1,2 @@\n"
-            "+const pem = \"-----BEGIN "
-            + f"PRIVATE KEY-----\\n{body}\\n-----END "
-            + "PRIVATE KEY-----\";\n"
-            + f'+log("{body}");\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.ts"],
-            patch,
-        )
-
-        self.assertNotIn(body, redacted_patch)
-        self.assertIn('+log("redacted");', redacted_patch)
-
-    def test_review_patch_redacts_escaped_private_key_tail_quanta(self) -> None:
-        for tail in ("AQ==", "AQI="):
-            with self.subTest(tail=tail):
-                patch = (
-                    "diff --git a/fixture.ts b/fixture.ts\n"
-                    "--- a/fixture.ts\n"
-                    "+++ b/fixture.ts\n"
-                    "@@ -0,0 +1 @@\n"
-                    "+const pem = \"-----BEGIN "
-                    + f"PRIVATE KEY-----\\n{tail}\\n-----END "
-                    + "PRIVATE KEY-----\";\n"
-                )
-
-                redacted_patch = self.helper["validate_review_patch"](
-                    "local unstaged diff",
-                    ["fixture.ts"],
-                    patch,
-                )
-
-                self.assertNotIn(tail, redacted_patch)
-                self.assertIn("\\nredacted\\n", redacted_patch)
-
-    def test_review_patch_redacts_short_private_key_chunks(self) -> None:
-        patch = (
-            "diff --git a/fixture.txt b/fixture.txt\n"
-            "--- a/fixture.txt\n"
-            "+++ b/fixture.txt\n"
-            "@@ -0,0 +1,3 @@\n"
-            "+-----BEGIN "
-            + "PRIVATE KEY-----\n"
-            "+AB12 CDef3456GHij7890\n"
-            "+-----END "
-            + "PRIVATE KEY-----\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.txt"],
-            patch,
-        )
-
-        self.assertNotIn("AB12", redacted)
-        self.assertNotIn("CDef3456GHij7890", redacted)
-
-    def test_review_patch_redacts_padded_private_key_tail_quanta(self) -> None:
-        for tail in ("AQ==", "AQI="):
-            with self.subTest(tail=tail):
-                patch = (
-                    "diff --git a/fixture.txt b/fixture.txt\n"
-                    "--- a/fixture.txt\n"
-                    "+++ b/fixture.txt\n"
-                    "@@ -0,0 +1,3 @@\n"
-                    "+-----BEGIN "
-                    + "PRIVATE KEY-----\n"
-                    + f"+{tail}\n"
-                    + "+-----END "
-                    + "PRIVATE KEY-----\n"
-                )
-
-                redacted = self.helper["validate_review_patch"](
-                    "local unstaged diff",
-                    ["fixture.txt"],
-                    patch,
-                )
-
-                self.assertNotIn(tail, redacted)
-
-    def test_review_patch_redacts_private_key_body_without_visible_markers(self) -> None:
-        chunks = "AB12 CDef3456GHij7890 KLmn1234OPqr5678"
-        patch = (
-            "diff --git a/fixture.txt b/fixture.txt\n"
-            "--- a/fixture.txt\n"
-            "+++ b/fixture.txt\n"
-            "@@ -8 +8,2 @@\n"
-            + f"+{chunks}\n"
-            + f'+log("{chunks}")\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.txt"],
-            patch,
-        )
-
-        self.assertNotIn(chunks, redacted)
-        self.assertIn("+redacted redacted redacted", redacted)
-        self.assertIn('+log("redacted redacted redacted")', redacted)
-
-    def test_review_patch_redacts_markerless_private_key_body_in_string(self) -> None:
-        body = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890abcdef"
-        patch = (
-            "diff --git a/fixture.ts b/fixture.ts\n"
-            "--- a/fixture.ts\n"
-            "+++ b/fixture.ts\n"
-            "@@ -0,0 +1,2 @@\n"
-            + f'+const fixture = "{body}";\n'
-            + f'+log("{body}");\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.ts"],
-            patch,
-        )
-
-        self.assertNotIn(body, redacted_patch)
-        self.assertIn('+const fixture = "redacted";', redacted_patch)
-        self.assertIn('+log("redacted");', redacted_patch)
-
     def test_review_patch_preserves_ambiguous_short_markerless_lines(self) -> None:
         chunks = ["AB12", "CDef", "GH34", "ijKL", "MN56", "opQR"]
         patch = (
@@ -4952,39 +3998,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
         )
 
         self.assertEqual(redacted_patch, patch)
-
-    def test_review_patch_redacts_long_key_with_source_wrappers(self) -> None:
-        body = "".join(
-            (
-                "MIIEvQIBADAN",
-                "BgkqhkiG9w0B",
-                "AQEFAASC1234",
-                "567890abcdef",
-            )
-        )
-        cases = (
-            (f"+/* {body} */\n", "+/* redacted */\n"),
-            (f"+/* {body} */;\\\n", "+/* redacted */;\\\n"),
-            (f"+{body}\\\n", "+redacted\\\n"),
-        )
-        for addition, expected in cases:
-            with self.subTest(addition=addition[-4:]):
-                patch = (
-                    "diff --git a/fixture.txt b/fixture.txt\n"
-                    "--- a/fixture.txt\n"
-                    "+++ b/fixture.txt\n"
-                    "@@ -0,0 +1,1 @@\n"
-                    + addition
-                )
-
-                redacted_patch = self.helper["validate_review_patch"](
-                    "local unstaged diff",
-                    ["fixture.txt"],
-                    patch,
-                )
-
-                self.assertNotIn(body, redacted_patch)
-                self.assertIn(expected, redacted_patch)
 
     def test_review_patch_preserves_long_non_pem_identifier_lines(self) -> None:
         identifier = "runDangerousOperationWithLongIdentifier"
@@ -5023,177 +4036,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
 
         self.assertIn("+" + digest, redacted)
         self.assertIn("+Subproject commit " + digest, redacted)
-
-    def test_review_patch_learns_private_key_body_chunks(self) -> None:
-        body = "MIIEowIBAAKCAQEAshared0123456789ABCDEF"
-        patch = (
-            "diff --git a/fixture.txt b/fixture.txt\n"
-            "--- a/fixture.txt\n"
-            "+++ b/fixture.txt\n"
-            "@@ -0,0 +1,4 @@\n"
-            "+-----BEGIN "
-            + "PRIVATE KEY-----\n"
-            f"+{body}\n"
-            "+-----END "
-            + "PRIVATE KEY-----\n"
-            f'+log("{body}")\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.txt"],
-            patch,
-        )
-
-        self.assertNotIn(body, redacted)
-        self.assertIn('+log("redacted")', redacted)
-
-    def test_review_patch_redacts_known_secret_in_bare_comment(self) -> None:
-        fixture_value = "qjvmtzplskdwoeirutyghbnx"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -1 +1 @@\n"
-            f'-pass{"word"} = "{fixture_value}"\n'
-            f"+# rotated value {fixture_value}\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], redacted)
-        self.assertNotIn(fixture_value, redacted)
-
-    def test_review_patch_redacts_known_secret_in_hunk_header(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            f"@@ -1 +1 @@ function rotate_{fixture_value}()\n"
-            f'-pass{"word"} = "{fixture_value}"\n'
-            "+return true;\n"
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn("function rotate_redacted()", redacted_patch)
-
-    def test_review_patch_redacts_overlapping_known_secret_fragments(self) -> None:
-        prefix = "XAbcd" + "123"
-        longer = "Abcd123Sensitive" + "Tail9"
-        combined = "XAbcd123Sensitive" + "Tail9"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -1,2 +1 @@\n"
-            + f'-api{"Key"} = "{prefix}"\n'
-            + f'-access{"Token"} = "{longer}"\n'
-            + f'+log("{combined}");\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(prefix, redacted_patch)
-        self.assertNotIn(longer, redacted_patch)
-        self.assertNotIn("SensitiveTail9", redacted_patch)
-        self.assertIn('+log("redacted");', redacted_patch)
-
-    def test_review_patch_learns_secret_from_hunk_header(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            + f'@@ -1 +1 @@ function f(pass{"word"} = "{fixture_value}")\n'
-            + f'+log("{fixture_value}");\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn('function f(pass' + 'word = "redacted")', redacted_patch)
-        self.assertIn('+log("redacted");', redacted_patch)
-
-    def test_review_patch_redacts_markerless_private_key_hunk_header(self) -> None:
-        body = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890abcdef"
-        patch = (
-            "diff --git a/fixture.txt b/fixture.txt\n"
-            "--- a/fixture.txt\n"
-            "+++ b/fixture.txt\n"
-            f"@@ -1 +1 @@ {body}\n"
-            "+return true\n"
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["fixture.txt"],
-            patch,
-        )
-
-        self.assertNotIn(body, redacted_patch)
-        self.assertIn("@@ -1 +1 @@ redacted", redacted_patch)
-
-    def test_review_patch_redacts_private_key_hunk_header_and_repeats(self) -> None:
-        body = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASC1234567890"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -1 +1 @@ function f() { return \"-----BEGIN "
-            + f"PRIVATE KEY-----\\n{body}\"; }}\n"
-            + f'+log("{body}");\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(body, redacted_patch)
-        self.assertNotIn(PRIVATE_KEY_BEGIN_TEXT, redacted_patch)
-        self.assertIn('+log("redacted");', redacted_patch)
-
-    def test_review_patch_redacts_escaped_alphabetic_explicit_pem_body(self) -> None:
-        body = "AbCdEfGh" + "IjKlMnOp"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            "@@ -0,0 +1 @@\n"
-            '+const fixture = "-----BEGIN '
-            + "PRIVATE KEY-----\\n"
-            + body
-            + "\\n-----END "
-            + 'PRIVATE KEY-----";\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-
-        self.assertNotIn(body, redacted_patch)
-        self.assertNotIn("PRIVATE KEY", redacted_patch)
 
     def test_review_patch_preserves_unwrapped_alphabetic_identifier(self) -> None:
         identifier = "AbCdEfGh" + "IjKlMnOp"
@@ -5270,95 +4112,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
         )
 
         self.assertIn(identifier, redacted_patch)
-
-    def test_review_patch_rejects_residual_hunk_header_secret_risk(self) -> None:
-        primary = "CorrectHorse7" + "Battery"
-        backup = "BackupHorse8" + "Battery"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            '@@ -1 +1 @@ function f(pass'
-            + 'word = getenv("PASSWORD") '
-            + f'|| choose("{primary}", "{backup}"))\n'
-            + f'+log("{primary}");\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertIn('choose("redacted", "redacted")', redacted)
-        self.assertNotIn(primary, redacted)
-        self.assertNotIn(backup, redacted)
-
-    def test_private_marker_redaction_does_not_hide_residual_header_risk(self) -> None:
-        primary = "CorrectHorse7" + "Battery"
-        backup = "BackupHorse8" + "Battery"
-        patch = (
-            "diff --git a/runtime.ts b/runtime.ts\n"
-            "--- a/runtime.ts\n"
-            "+++ b/runtime.ts\n"
-            '@@ -1 +1 @@ function f(pass'
-            + 'word = getenv("PASSWORD") '
-            + f'|| choose("{primary}", "{backup}")) {{ return "-----BEGIN '
-            + 'PRIVATE KEY-----"; }\n'
-            + f'+log("{primary}");\n'
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.ts"],
-            patch,
-        )
-        self.assertIn('choose("redacted", "redacted")', redacted)
-        self.assertNotIn(primary, redacted)
-        self.assertNotIn(backup, redacted)
-
-    def test_review_patch_rejects_known_secret_in_diff_metadata(self) -> None:
-        secret = realistic_secret_value()
-        patch = (
-            "diff --git a/settings.txt b/settings.txt\n"
-            "--- a/settings.txt\n"
-            "+++ b/settings.txt\n"
-            "@@ -1 +0,0 @@\n"
-            f'-pass{"word"} = "{secret}"\n'
-            f"diff --git a/{secret}.txt b/{secret}.txt\n"
-            f"--- a/{secret}.txt\n"
-            f"+++ b/{secret}.txt\n"
-            "@@ -0,0 +1 @@\n"
-            "+safe\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["settings.txt", f"{secret}.txt"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], redacted)
-        self.assertNotIn(secret, redacted)
-
-    def test_review_patch_redacts_non_self_reference_fallback(self) -> None:
-        fixture_value = realistic_secret_value()
-        patch = (
-            "diff --git a/runtime.py b/runtime.py\n"
-            "--- a/runtime.py\n"
-            "+++ b/runtime.py\n"
-            "@@ -0,0 +1 @@\n"
-            f'+pass{"word"} = getenv("PASSWORD") or "{fixture_value}"; '
-            + 'execute("DROP DATABASE production")\n'
-        )
-
-        redacted_patch = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["runtime.py"],
-            patch,
-        )
-
-        self.assertNotIn(fixture_value, redacted_patch)
-        self.assertIn('getenv("PASSWORD") or "redacted"', redacted_patch)
-        self.assertIn('execute("DROP DATABASE production")', redacted_patch)
 
     def test_local_bundle_allows_deleted_test_token_fixture(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -6047,6 +4800,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
             )
             record_path = root / "record.json"
             env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
             env.update(
                 {
                     "AUTOREVIEW_FAKE_RECORD": str(record_path),
@@ -6094,6 +4848,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
             )
             record_path = root / "record.json"
             env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
             env.update(
                 {
                     "AUTOREVIEW_FAKE_MUTATE": str(source),
@@ -7868,29 +6623,6 @@ class AutoreviewHardeningTests(unittest.TestCase):
                 f'//user:{{{formatted_reference}:N}}@host/{{password}}";'
             )
         )
-
-    def test_review_patch_scans_multiline_diff_metadata(self) -> None:
-        patch = (
-            "Subject: example\n"
-            "    Author"
-            + "ization: Basic\n"
-            "    dXNlcjpwYXNzd29yZA==\n"
-            "diff --git a/safe.txt b/safe.txt\n"
-            "--- a/safe.txt\n"
-            "+++ b/safe.txt\n"
-            "@@ -1 +1 @@\n"
-            "-old\n"
-            "+new\n"
-        )
-
-        redacted = self.helper["validate_review_patch"](
-            "local unstaged diff",
-            ["safe.txt"],
-            patch,
-        )
-        self.assertIn(self.helper["REVIEW_SECURITY_REDACTION"], redacted)
-        self.assertIn("+new", redacted)
-        self.assertNotIn("dXNlcjpwYXNzd29yZA==", redacted)
 
     def test_secret_detector_handles_additional_credential_keys(self) -> None:
         for content in (

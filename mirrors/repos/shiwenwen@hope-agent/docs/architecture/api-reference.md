@@ -808,12 +808,10 @@ Loop owner API 管理 session-scoped recurring triggers。`create_loop_schedule`
 | `delete_provider` | `DELETE /api/providers/{providerId}` | ✅ |
 | `reorder_providers` | `POST /api/providers/reorder` | ✅ |
 | `test_provider` | `POST /api/providers/test` | ✅ |
-| `test_embedding` | `POST /api/providers/test-embedding` | ✅ |
 | `test_model` | `POST /api/providers/test-model` | ✅ |
 | `test_proxy` | `POST /api/config/proxy/test` | ✅ |
 | `has_providers` | `GET /api/providers/has-any` | ✅ |
 | `get_system_timezone` | `GET /api/system/timezone` | ✅ |
-| `list_local_embedding_models` | `GET /api/memory/local-embedding-models` | ✅ |
 | `check_auth_status` | `GET /api/auth/codex/status` | ✅ |
 | `logout_codex` | `POST /api/auth/codex/logout` | ✅ |
 | `try_restore_session` | `POST /api/auth/session/restore` | ✅ |
@@ -1365,6 +1363,13 @@ Agent 执行准入采用两层 guard：Desktop / HTTP / Channel / Cron 等调用
 | `local_model_alert_silence_session` | `POST /api/local-model/alert/silence-session` | ✅ |
 | `local_model_auto_maintenance_disable` | `POST /api/local-model/auto-maintenance/disable` | ✅ |
 | `local_model_auto_maintenance_trigger` | `POST /api/local-model/auto-maintenance/trigger` | ✅ |
+
+### 内置用户手册（帮助中心）
+
+| Tauri Command | HTTP | 状态 |
+|---|---|---|
+| `get_manual_bundle` | `GET /api/manual/bundle?lang=` | ✅ |
+| `search_manual` | `GET /api/manual/search?lang=&query=` | ✅ |
 
 ### Skills
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `cLin-c/paper-skill` — 26 default patterns, 22 followed patterns, 25 file(s) materialized.
+Mirror of `cLin-c/paper-skill` — 26 default patterns, 23 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `cLin-c/paper-skill` — 26 default patterns, 22 followed patterns, 25
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 22 |
-| Files         | 25 |
+| Followed pats | 23 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,6 +64,7 @@ Mirror of `cLin-c/paper-skill` — 26 default patterns, 22 followed patterns, 25
 - `workflows/submission-package.md`
 - `references/reporting-guidelines.md`
 - `workflows/full-verification.md`
+- `references/venues/ieee-tro.md`
 - `references/prompt-bank.md`
 - `references/section-guides/paragraph-architecture.md`
 - `references/section-guides/abstract.md`
@@ -99,12 +100,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | → | [`references/section-guides/method.md`](references/section-guides/method.md) |
 | 18 | → | [`references/section-guides/paragraph-architecture.md`](references/section-guides/paragraph-architecture.md) |
 | 19 | → | [`references/section-guides/related-work.md`](references/section-guides/related-work.md) |
-| 20 | → | [`references/verification-policy.md`](references/verification-policy.md) |
-| 21 | → | [`workflows/figure-audit.md`](workflows/figure-audit.md) |
-| 22 | → | [`workflows/full-verification.md`](workflows/full-verification.md) |
-| 23 | → | [`workflows/literature-review.md`](workflows/literature-review.md) |
-| 24 | → | [`workflows/reference-tools.md`](workflows/reference-tools.md) |
-| 25 | → | [`workflows/submission-package.md`](workflows/submission-package.md) |
+| 20 | → | [`references/venues/ieee-tro.md`](references/venues/ieee-tro.md) |
+| 21 | → | [`references/verification-policy.md`](references/verification-policy.md) |
+| 22 | → | [`workflows/figure-audit.md`](workflows/figure-audit.md) |
+| 23 | → | [`workflows/full-verification.md`](workflows/full-verification.md) |
+| 24 | → | [`workflows/literature-review.md`](workflows/literature-review.md) |
+| 25 | → | [`workflows/reference-tools.md`](workflows/reference-tools.md) |
+| 26 | → | [`workflows/submission-package.md`](workflows/submission-package.md) |
 
 ---
 

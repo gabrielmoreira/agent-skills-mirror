@@ -13,7 +13,7 @@ Read this when spawning `worker_threads` or `utilityProcess` children, moving he
 ## utilityProcess conversion checklist
 
 - `ELECTRON_RUN_AS_NODE` fork is **not** available in this app: the `RunAsNode` fuse is disabled in `forge.config.ts`. Use `utilityProcess.fork` (available only after app ready).
-- No build-config changes are needed for worker entrypoints: the forge VitePlugin already emits worker files (e.g. `tsc_worker.js`, `code_explorer_worker.js`) next to `main.js`, and `path.join(__dirname, "<worker>.js")` resolves both in dev and inside `app.asar`.
+- Worker entrypoints must be listed in the forge VitePlugin build config. It emits files such as `code_explorer_worker.js` next to `main.js`, and `path.join(__dirname, "<worker>.js")` resolves both in dev and inside `app.asar`.
 - Worker side: use `process.parentPort`; messages arrive as a `MessageEvent` — read `event.data`, not the raw argument. The `workers/` tsconfig has no Electron typings; declare a minimal local `UtilityProcessParentPort` interface instead of importing `electron`.
 - Send only after `spawn`: calling `child.postMessage()` before the `spawn` event relies on undocumented buffering. Construct the input and post it inside `child.on("spawn", ...)`.
 - Settle-once discipline: exactly one of message/error/exit/timeout may settle a request. Reject on **any** pre-reply exit, including exit code 0 (a clean early exit otherwise hangs the caller forever). Always `child.kill()` on every settle path, and add a hard timeout.
@@ -23,6 +23,11 @@ Read this when spawning `worker_threads` or `utilityProcess` children, moving he
 - Electron 40's `utilityProcess.fork` delivers `execArgv` to `process.execArgv` but does **not apply V8 flags from it**: `--expose-gc` and `--max-old-space-size` are no-ops, and `NODE_OPTIONS` via `env` is ignored too. To get `gc()` inside the child, acquire it at runtime — `v8.setFlagsFromString("--expose-gc")` then `vm.runInNewContext("gc")` — and degrade gracefully (measure without forced GC) if that ever stops working.
 - Give children a `serviceName` so they are identifiable in `app.getAppMetrics()` and Activity Monitor.
 - Unit-test the child lifecycle with a file-scoped `vi.mock("electron")` whose `utilityProcess.fork` returns an EventEmitter-backed fake child (emit spawn/message/error/exit; spy on postMessage/kill). The shared inert mock in `src/testing/electron_mock.ts` cannot emit events, and the AGENTS.md test mandate applies: cover the timeout, pre-reply-exit, fatal-error, and settle-once paths, not just the happy path.
+
+## External worker runtime dependencies
+
+- When a worker keeps a scoped runtime package external to its Vite bundle, Forge's `ignore` filter must allow the scope directory (for example `/node_modules/@typescript`) as well as the exact package directories. Electron Packager prunes the parent before visiting allowed descendants otherwise. Verify the built ASAR contains both the worker and every external package entrypoint.
+- npm alias dependencies can expose a transitive `bin` at the root `.bin` directory and replace another package's same-named shim. Build/type-check scripts that require a particular package version should invoke that package's JavaScript entrypoint directly instead of relying on the shared shim.
 
 ## Measuring memory honestly
 

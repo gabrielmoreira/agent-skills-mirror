@@ -1,6 +1,6 @@
 ---
 name: openloomi-loop
-description: "openloomi's Loop — the proactive execution brain. Loop runs inside the main web app (apps/web/lib/loop/) and is reached through its HTTP API. Use this skill to inspect state, run a tick, schedule / cancel decision actions, tune preferences, and extend Loop with user-defined decision types, Composio-backed signal channels, or deterministic classifier rules. Triggers: 'openloomi loop', 'loop tick', 'loop schedule', 'loop inbox', 'loop run', 'proactive decisions', 'signal → decision → execute', 'pull signals', 'decision queue', 'register loop type', 'add loop decision type', 'register custom channel', 'add composio channel', 'add loop rule', 'register classifier rule', 'force loop type', 'dry-run loop rule', 'list my loop extensions', 'remove loop type', 'delete loop channel'"
+description: "openloomi's Loop — the proactive execution brain. Loop runs inside the main web app (apps/web/lib/loop/) and is reached through its HTTP API. Use this skill to inspect state, force-refresh connector health, run a tick, schedule / cancel decision actions, tune preferences, and extend Loop with user-defined decision types, Composio-backed signal channels, or deterministic classifier rules. Triggers: 'openloomi loop', 'loop tick', 'loop schedule', 'loop inbox', 'loop run', 'loop refresh', 'refresh connectors', 'force refresh connectors', 'check connections', 'check loop connectors', 'connector health', 'proactive decisions', 'signal → decision → execute', 'pull signals', 'decision queue', 'register loop type', 'add loop decision type', 'register custom channel', 'add composio channel', 'add loop rule', 'register classifier rule', 'force loop type', 'dry-run loop rule', 'list my loop extensions', 'remove loop type', 'delete loop channel'"
 allowed-tools: "Bash(curl *), Bash(jq *), Bash(cat ~/.openloomi/token *), Bash(base64 -d *), Bash(ls ~/.openloomi/loop/*)"
 ---
 
@@ -176,6 +176,66 @@ curl -sS -X POST "$BASE/api/loop/classifier-rules/dry-run" \
   -H "content-type: application/json" \
   -d '{"signal":{"type":"contact_birthday","payload":{"daysUntilNext":0}}}'
 ```
+
+---
+
+## Force-refresh connector probes
+
+The dashboard reads a cached connector snapshot
+(`~/.openloomi/loop/connectors.json`), written by the agent's last
+probe. When the cache is stale — every connector reports
+`connected: false` with `lastError: "no composio surface reachable"`
+even though `composio connections list` shows the toolkits active —
+`GET /api/loop/connectors?refresh=1` forces a fresh probe now and
+persists the result. This is **read-only**: nothing is created,
+scheduled, sent, or deleted.
+
+```bash
+curl -sS "$BASE/api/loop/connectors?refresh=1" \
+  -H "Authorization: Bearer $TOKEN" | jq .
+```
+
+Response shape: `{items: ConnectorHealth[], lastProbeError?: string | {kind, message, at}}`.
+Each `ConnectorHealth`:
+
+| Field        | Meaning                                                            |
+| ------------ | ------------------------------------------------------------------ |
+| `id`         | stable connector id (e.g. `gmail`, `slack`, `linear`)              |
+| `label`      | human-readable name                                                |
+| `connected`  | `true` iff the most recent probe succeeded                         |
+| `lastError`  | string when probe failed (`null`/`undefined` on success)           |
+| `fetchedAt`  | ISO timestamp of the **most recent** probe — proves refresh fired  |
+| `probed`     | `true` if at least one probe has ever run for this connector       |
+| `accountCount` | number of connected accounts at probe time                       |
+
+After the call:
+
+1. **Confirm the refresh actually fired.** Every `fetchedAt` should
+   share the same timestamp from "just now" (within ~30s). If they're
+   empty (`""`) or older, the cache wasn't invalidated — re-check the
+   URL ends in `?refresh=1` (not `?refresh=true`). On a 401 inside
+   `lastProbeError`, the route fired correctly but the server-side
+   agent failed to call its own backend — the refresh endpoint itself
+   worked; the bug is downstream.
+2. **Summarize.** One line per connector: `gmail ✅` / `slack ❌
+   lastError=...`. Group healthy ones first.
+3. **Surface `lastError` verbatim** when something is still red. Do
+   not invent reasons — quote what the API returned.
+4. **The refreshed snapshot is now the cache.** Subsequent
+   `/api/loop/state` calls read the new state without further action.
+
+### Refresh failure modes
+
+| Symptom                                       | What to surface                                                                                                                                  |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Connection refused on `:3414` and `:3515`     | Loop isn't running. Re-run `/openloomi:setup` / check `/openloomi:status` first.                                                                 |
+| `401 Unauthorized`                            | Token is stale or missing. Re-run `/openloomi:setup` to mint a fresh guest bearer.                                                              |
+| `404` on `/api/loop/connectors`               | Runtime is older than Loop. Update OpenLoomi Desktop — the route ships in the desktop bundle.                                                   |
+| Probe ran but every connector still red       | Real probe failure. Cross-check `composio connections list`; if those are healthy but Loop still fails, surface the gap.                        |
+| `fetchedAt` stayed empty / old                | The `?refresh=1` query didn't reach the route. Re-run with the exact URL above; flag as a regression.                                            |
+| `lastProbeError.kind == "agent_http_error"`   | The server agent itself failed reaching its own backend. Read `kind` and `message`; surface the 401/5xx verbatim — refresh endpoint is fine.    |
+
+---
 
 ## How a tick flows
 

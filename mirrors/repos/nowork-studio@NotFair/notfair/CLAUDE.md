@@ -6,7 +6,8 @@ Project conventions and notes for AI assistants working on NotFair.
 
 A local, single-user, goal-driven agent runner. The user states a goal; NotFair
 provisions an anonymous agent for it (agent = goal, 1:1), the agent defines a
-platform-verifiable metric + target in chat, the user clicks START, and a
+platform-verifiable metric + target in chat, the user confirms the plan (which
+starts the loop on the spot), and a
 heartbeat loop ("checks") measures the metric and lets the agent act — with
 observation windows, a spend envelope, and per-goal memory as the controls.
 No approvals, no tasks, no orchestration layer: goals are the only unit.
@@ -29,7 +30,7 @@ This repo carries no migrations or legacy/compat code. Verification is:
    assignment points the suite at the developer's live `~/.notfair`.
 3. `pnpm build` — must be clean.
 4. Live smoke: `pnpm dev` (port 3326), then walk the affected flow in the
-   browser (goal index → goal page → chat / START / checks).
+   browser (goal index → goal page → chat / confirm / checks).
 
 Prompt-affecting changes (`src/server/goals/identity.ts`, tick briefs in
 `src/server/goals/tick.ts`, tool descriptions in

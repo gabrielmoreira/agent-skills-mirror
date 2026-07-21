@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 269 file(s) materialized.
+Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 282 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 269 |
+| Files         | 282 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -312,22 +312,35 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 251 | ✓ | [`skills/ce-test-browser/SKILL.md`](skills/ce-test-browser/SKILL.md) |
 | 252 | ✓ | [`skills/ce-test-xcode/SKILL.md`](skills/ce-test-xcode/SKILL.md) |
 | 253 | ✓ | [`skills/ce-work/references/agents/figma-design-sync.md`](skills/ce-work/references/agents/figma-design-sync.md) |
-| 254 | ✓ | [`skills/ce-work/references/execution-engines.md`](skills/ce-work/references/execution-engines.md) |
-| 255 | ✓ | [`skills/ce-work/references/non-code-execution.md`](skills/ce-work/references/non-code-execution.md) |
-| 256 | ✓ | [`skills/ce-work/references/review-findings-followup.md`](skills/ce-work/references/review-findings-followup.md) |
-| 257 | ✓ | [`skills/ce-work/references/shipping-workflow.md`](skills/ce-work/references/shipping-workflow.md) |
-| 258 | ✓ | [`skills/ce-work/references/tracker-defer.md`](skills/ce-work/references/tracker-defer.md) |
-| 259 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
-| 260 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
-| 261 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
-| 262 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
-| 263 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
-| 264 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
-| 265 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
-| 266 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
-| 267 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
-| 268 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
-| 269 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
+| 254 | ✓ | [`skills/ce-work/references/agents/implementation-worker.md`](skills/ce-work/references/agents/implementation-worker.md) |
+| 255 | ✓ | [`skills/ce-work/references/cross-model-execution.md`](skills/ce-work/references/cross-model-execution.md) |
+| 256 | ✓ | [`skills/ce-work/references/cross-model-work-eval.md`](skills/ce-work/references/cross-model-work-eval.md) |
+| 257 | ✓ | [`skills/ce-work/references/execution-engines.md`](skills/ce-work/references/execution-engines.md) |
+| 258 | ✓ | [`skills/ce-work/references/implementation-loop.md`](skills/ce-work/references/implementation-loop.md) |
+| 259 | ✓ | [`skills/ce-work/references/implementation-result-schema.json`](skills/ce-work/references/implementation-result-schema.json) |
+| 260 | ✓ | [`skills/ce-work/references/non-code-execution.md`](skills/ce-work/references/non-code-execution.md) |
+| 261 | ✓ | [`skills/ce-work/references/review-findings-followup.md`](skills/ce-work/references/review-findings-followup.md) |
+| 262 | ✓ | [`skills/ce-work/references/shipping-workflow.md`](skills/ce-work/references/shipping-workflow.md) |
+| 263 | ✓ | [`skills/ce-work/references/tracker-defer.md`](skills/ce-work/references/tracker-defer.md) |
+| 264 | ✓ | [`skills/ce-work/scripts/cross-model-work.sh`](skills/ce-work/scripts/cross-model-work.sh) |
+| 265 | ✓ | [`skills/ce-work/scripts/peer-job-runner.py`](skills/ce-work/scripts/peer-job-runner.py) |
+| 266 | ✓ | [`skills/ce-work/scripts/unit_workspace_integration.py`](skills/ce-work/scripts/unit_workspace_integration.py) |
+| 267 | ✓ | [`skills/ce-work/scripts/unit_workspace_jobs.py`](skills/ce-work/scripts/unit_workspace_jobs.py) |
+| 268 | ✓ | [`skills/ce-work/scripts/unit_workspace_lifecycle.py`](skills/ce-work/scripts/unit_workspace_lifecycle.py) |
+| 269 | ✓ | [`skills/ce-work/scripts/unit_workspace_state.py`](skills/ce-work/scripts/unit_workspace_state.py) |
+| 270 | ✓ | [`skills/ce-work/scripts/unit_workspace_transaction.py`](skills/ce-work/scripts/unit_workspace_transaction.py) |
+| 271 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
+| 272 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
+| 273 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
+| 274 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
+| 275 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
+| 276 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
+| 277 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
+| 278 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
+| 279 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
+| 280 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
+| 281 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
+| 282 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
 
 ---
 

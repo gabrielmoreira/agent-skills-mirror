@@ -66,7 +66,7 @@ Format-specific extra fields:
 
 | Format | Extra keys |
 |---|---|
-| `pdf` | `total_pages`, `pages_read`, `ocr_pages` |
+| `pdf` | `total_pages`, `pages_read`, `ocr_pages`, `ocr_engine`, `ocr_quality`, `skipped_pages` |
 | `docx` | `paragraphs`, `tables` |
 | `excel` | `sheets` (array of `{name, rows, cols}`) |
 | `pptx` | `slides` |
@@ -102,12 +102,56 @@ parameter to read slices.
 2. If OCR returns empty, tell the user; don't fabricate.
 ```
 
+## OCR Configuration
+
+The `read_document` tool automatically uses OCR for PDF pages with insufficient extractable text.
+
+### OCR Threshold
+
+Use `min_text_per_page` to control when OCR is triggered (default: 50 characters):
+
+```python
+read_document("scanned_report.pdf", min_text_per_page=10)  # More aggressive OCR
+read_document("mixed_pdf.pdf", min_text_per_page=100)       # Less aggressive OCR
+```
+
+### OCR Engine Configuration
+
+Two OCR engines are built in — no extra packages needed beyond the engine SDK:
+
+| Engine | Type | Requires | Install |
+|--------|------|----------|---------|
+| `rapid` | Local (offline) | `rapidocr_onnxruntime` | `pip install rapidocr_onnxruntime` |
+| `llm-vision` | Cloud | A vision-capable LLM model + API key | No extra install — uses your existing LLM provider config |
+
+The `llm-vision` engine works with **any OpenAI-compatible vision model** (GPT-4o, Qwen-VL, Gemini, Claude, GLM-4V, etc.). It reuses your existing `LANGCHAIN_PROVIDER` / `LANGCHAIN_MODEL_NAME` / API key configuration — no separate provider mapping needed. If you explicitly set `VIBE_TRADING_OCR_ENGINE=llm-vision`, your model choice is trusted; a real API error from the provider is clearer feedback than a heuristic guess.
+
+To override the model used for OCR (without changing your agent's main model):
+```
+VIBE_TRADING_OCR_LLM_MODEL=qwen3.7-plus
+```
+
+Set `VIBE_TRADING_OCR_ENGINE` to select the engine:
+- `auto` (default): use local engines only, never cloud (privacy: document pages never leave the machine)
+- `rapid`: force RapidOCR (local, ONNX)
+- `llm-vision`: force LLM vision OCR (cloud — pages are sent to your configured LLM provider)
+- `none`: disable OCR entirely
+
+### Response Fields
+
+PDF responses include OCR metadata:
+- `ocr_engine`: name of the OCR engine used (e.g. "rapid", "llm-vision") or `null`
+- `ocr_pages`: number of pages processed via OCR
+- `skipped_pages`: number of pages skipped (no OCR engine available)
+- `ocr_quality`: object with `quality_flag` (`good`/`degraded`/`no_ocr_engine`/`no_ocr_needed`), `ocr_pages`, and `text_density` (chars per page)
+
 ## Notes
 
 - **Encoding fallback** order for text: utf-8 → utf-8-sig → gbk → gb2312 → big5 → latin-1.
-- **OCR** uses RapidOCR; if the package is missing, image/scanned files
-  return empty `text` with a `note` field — tell the user to install
-  `rapidocr-onnxruntime`.
+- **OCR** uses the configured engine (RapidOCR for local, or LLM vision for
+  cloud). If no engine is available, image/scanned files return empty `text`
+  with a `note` field — tell the user to install `rapidocr-onnxruntime` or
+  set `VIBE_TRADING_OCR_ENGINE=llm-vision` with a vision-capable model.
 - **Excel previews** are limited to 100 rows per sheet to stay in budget.
   If the user needs full data (e.g. trade journals), call
   `analyze_trade_journal` instead.

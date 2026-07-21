@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
+Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `different-ai/openwork` — 26 default patterns, 0 followed patterns, 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 27 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,31 +61,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.opencode/skills/agent-first-screenshots/SKILL.md`](.opencode/skills/agent-first-screenshots/SKILL.md) |
 | 2 | ✓ | [`.opencode/skills/browser-automation/SKILL.md`](.opencode/skills/browser-automation/SKILL.md) |
-| 3 | ✓ | [`.opencode/skills/create-plugin/SKILL.md`](.opencode/skills/create-plugin/SKILL.md) |
-| 4 | ✓ | [`.opencode/skills/daytona-chrome-cdp/SKILL.md`](.opencode/skills/daytona-chrome-cdp/SKILL.md) |
-| 5 | ✓ | [`.opencode/skills/daytona-cloud-instance/SKILL.md`](.opencode/skills/daytona-cloud-instance/SKILL.md) |
-| 6 | ✓ | [`.opencode/skills/daytona-cloud-server/SKILL.md`](.opencode/skills/daytona-cloud-server/SKILL.md) |
-| 7 | ✓ | [`.opencode/skills/daytona-dev/SKILL.md`](.opencode/skills/daytona-dev/SKILL.md) |
-| 8 | ✓ | [`.opencode/skills/daytona-electron-den/SKILL.md`](.opencode/skills/daytona-electron-den/SKILL.md) |
-| 9 | ✓ | [`.opencode/skills/daytona-electron-test/SKILL.md`](.opencode/skills/daytona-electron-test/SKILL.md) |
-| 10 | ✓ | [`.opencode/skills/daytona-flow-validator/SKILL.md`](.opencode/skills/daytona-flow-validator/SKILL.md) |
-| 11 | ✓ | [`.opencode/skills/daytona-recording-artifacts/SKILL.md`](.opencode/skills/daytona-recording-artifacts/SKILL.md) |
-| 12 | ✓ | [`.opencode/skills/daytona-secrets-volume/SKILL.md`](.opencode/skills/daytona-secrets-volume/SKILL.md) |
-| 13 | ✓ | [`.opencode/skills/daytona-seeded-cloud-demo/SKILL.md`](.opencode/skills/daytona-seeded-cloud-demo/SKILL.md) |
-| 14 | ✓ | [`.opencode/skills/daytona-windows-cert/SKILL.md`](.opencode/skills/daytona-windows-cert/SKILL.md) |
-| 15 | ✓ | [`.opencode/skills/fraimz/SKILL.md`](.opencode/skills/fraimz/SKILL.md) |
-| 16 | ✓ | [`.opencode/skills/get-env-var/SKILL.md`](.opencode/skills/get-env-var/SKILL.md) |
-| 17 | ✓ | [`.opencode/skills/openwork-models/SKILL.md`](.opencode/skills/openwork-models/SKILL.md) |
-| 18 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
-| 19 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
-| 20 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
-| 21 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
-| 22 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
-| 23 | ✓ | [`.opencode/skills/upload-photo/SKILL.md`](.opencode/skills/upload-photo/SKILL.md) |
-| 24 | ✓ | [`.opencode/skills/voiceover/SKILL.md`](.opencode/skills/voiceover/SKILL.md) |
-| 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 26 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
-| 27 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
+| 3 | ✓ | [`.opencode/skills/cloud-dashboard-walkthrough/SKILL.md`](.opencode/skills/cloud-dashboard-walkthrough/SKILL.md) |
+| 4 | ✓ | [`.opencode/skills/create-plugin/SKILL.md`](.opencode/skills/create-plugin/SKILL.md) |
+| 5 | ✓ | [`.opencode/skills/daytona-chrome-cdp/SKILL.md`](.opencode/skills/daytona-chrome-cdp/SKILL.md) |
+| 6 | ✓ | [`.opencode/skills/daytona-cloud-instance/SKILL.md`](.opencode/skills/daytona-cloud-instance/SKILL.md) |
+| 7 | ✓ | [`.opencode/skills/daytona-cloud-server/SKILL.md`](.opencode/skills/daytona-cloud-server/SKILL.md) |
+| 8 | ✓ | [`.opencode/skills/daytona-dev/SKILL.md`](.opencode/skills/daytona-dev/SKILL.md) |
+| 9 | ✓ | [`.opencode/skills/daytona-electron-den/SKILL.md`](.opencode/skills/daytona-electron-den/SKILL.md) |
+| 10 | ✓ | [`.opencode/skills/daytona-electron-test/SKILL.md`](.opencode/skills/daytona-electron-test/SKILL.md) |
+| 11 | ✓ | [`.opencode/skills/daytona-flow-validator/SKILL.md`](.opencode/skills/daytona-flow-validator/SKILL.md) |
+| 12 | ✓ | [`.opencode/skills/daytona-recording-artifacts/SKILL.md`](.opencode/skills/daytona-recording-artifacts/SKILL.md) |
+| 13 | ✓ | [`.opencode/skills/daytona-secrets-volume/SKILL.md`](.opencode/skills/daytona-secrets-volume/SKILL.md) |
+| 14 | ✓ | [`.opencode/skills/daytona-seeded-cloud-demo/SKILL.md`](.opencode/skills/daytona-seeded-cloud-demo/SKILL.md) |
+| 15 | ✓ | [`.opencode/skills/daytona-windows-cert/SKILL.md`](.opencode/skills/daytona-windows-cert/SKILL.md) |
+| 16 | ✓ | [`.opencode/skills/fraimz/SKILL.md`](.opencode/skills/fraimz/SKILL.md) |
+| 17 | ✓ | [`.opencode/skills/get-env-var/SKILL.md`](.opencode/skills/get-env-var/SKILL.md) |
+| 18 | ✓ | [`.opencode/skills/openwork-models/SKILL.md`](.opencode/skills/openwork-models/SKILL.md) |
+| 19 | ✓ | [`.opencode/skills/product-tutorial-pipeline/SKILL.md`](.opencode/skills/product-tutorial-pipeline/SKILL.md) |
+| 20 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
+| 21 | ✓ | [`.opencode/skills/run-evals/SKILL.md`](.opencode/skills/run-evals/SKILL.md) |
+| 22 | ✓ | [`.opencode/skills/shadcn/cli.md`](.opencode/skills/shadcn/cli.md) |
+| 23 | ✓ | [`.opencode/skills/shadcn/customization.md`](.opencode/skills/shadcn/customization.md) |
+| 24 | ✓ | [`.opencode/skills/shadcn/SKILL.md`](.opencode/skills/shadcn/SKILL.md) |
+| 25 | ✓ | [`.opencode/skills/upload-photo/SKILL.md`](.opencode/skills/upload-photo/SKILL.md) |
+| 26 | ✓ | [`.opencode/skills/voiceover/SKILL.md`](.opencode/skills/voiceover/SKILL.md) |
+| 27 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 28 | ✓ | [`ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md`](ee/apps/landing/public/.well-known/agent-skills/workspace-guide/SKILL.md) |
+| 29 | ✓ | [`ee/apps/landing/public/llms.txt`](ee/apps/landing/public/llms.txt) |
 
 ---
 

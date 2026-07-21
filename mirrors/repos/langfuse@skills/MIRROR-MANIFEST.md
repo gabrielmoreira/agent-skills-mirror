@@ -73,9 +73,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`skills/langfuse/references/judge-calibration.md`](skills/langfuse/references/judge-calibration.md) |
 | 13 | ✓ | [`skills/langfuse/references/prompt-engineering.md`](skills/langfuse/references/prompt-engineering.md) |
 | 14 | ✓ | [`skills/langfuse/references/prompt-migration.md`](skills/langfuse/references/prompt-migration.md) |
-| 15 | ✓ | [`skills/langfuse/references/sdk-upgrade.md`](skills/langfuse/references/sdk-upgrade.md) |
-| 16 | ✓ | [`skills/langfuse/references/skill-feedback.md`](skills/langfuse/references/skill-feedback.md) |
-| 17 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
+| 15 | ✓ | [`skills/langfuse/references/skill-feedback.md`](skills/langfuse/references/skill-feedback.md) |
+| 16 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
+| 17 | ✓ | [`skills/langfuse/references/v4-project-migration.md`](skills/langfuse/references/v4-project-migration.md) |
 | 18 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
 
 ---

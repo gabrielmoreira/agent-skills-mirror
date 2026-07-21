@@ -6,7 +6,7 @@ user-invocable: false
 
 # Crit CLI Reference
 
-> If a plan was just written and the user said "crit" or "review", use the `$crit` skill instead — it covers the full review loop. This skill covers CLI operations like `crit comment`, `crit pull/push`, and `crit share`.
+> If the user invokes Crit by name (for example, "use Crit" or `/crit`), use the `/crit` skill instead — it covers the full review loop. This skill covers CLI operations like `crit comment`, `crit pull/push`, and `crit share`.
 
 Comments have three scopes:
 

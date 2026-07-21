@@ -280,3 +280,12 @@ reuse across many scripts, create a reusable **Photo Avatar** once instead
 (`heygen avatar create`). Ledger the result with
 `resolve --from <downloaded.mp4> --type video`. Docs:
 <https://developers.heygen.com/image-to-video>.
+
+## HEVC / H.265 sources
+
+HEVC/H.265 sources need no conversion for **render** (FFmpeg pre-decodes all
+input video) or for **preview** (auto-proxy transcodes and caches an H.264
+copy on first use, disable with `--no-proxy` or `media.autoProxy: false` in
+hyperframes.json). A manual H.264 proxy via `ffmpeg -i in.mp4 -c:v libx264
+-crf 18 proxy.mp4`, registered with `resolve --from`, remains available for
+edge cases (e.g. auto-proxy disabled, or ffmpeg unavailable at preview time).

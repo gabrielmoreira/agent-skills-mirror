@@ -4,6 +4,27 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.216](https://github.com/Piebald-AI/claude-code-system-prompts/commit/c003789)
+
+_+31,503 tokens_
+
+- **NEW:** Data: /auto-mode-setup usage — Documents proposal and reviewed-apply command syntax, canonical request IDs for correlating concurrent commands, and SHA-256 verification of user-reviewed proposal files.
+- **NEW:** Data: Code change published event schema and Data: VCS state changed event schema — Add best-effort harness events for associating sessions with published pull or merge requests and invalidating repository-state caches after foreground Git mutations, with provenance, trust-boundary, idempotency, and coverage limitations.
+- **NEW:** Data: Rewind files skippedLinks field — Documents link-safety refusals during real file rewinds, distinguishes the field from dry-run previews, and excludes other per-file failures from its count.
+- **NEW:** Data: Sandbox filesystem disabled setting — Explains unrestricted host-filesystem access for sandboxed commands while retaining network confinement, independent Bash prompting, and environment-credential protection, and notes the filesystem read protections this setting disables.
+- **NEW:** Data: Workshop artifact HTML template and Skill: Artifact workshop — Add an interactive Markdown decision-workshop workflow with validated decision blocks, reader-submitted choices, safe and idempotent apply-and-republish iterations, stale-decision handling, and explicit finalization.
+- **NEW:** System Prompt: Action safety and truthful reporting — Restores confirmation for hard-to-reverse or outward-facing actions, target inspection before destructive changes, and plain reporting of failed, skipped, and verified outcomes.
+- **NEW:** System Prompt: Saving skills via file delivery — Treats on-disk account skills as a read-only cache and directs requested skill changes to be delivered as `.skill` or `SKILL.md` files without claiming they were saved to the account.
+- **NEW:** System Reminder: AskUserQuestion minimum options validation — On rejected single-option questions, forbids retrying with a filler choice, directs the agent to proceed with the sole path, and permits re-asking only independently valid multi-option questions.
+- **NEW:** Tool Description: Artifact supporting files guidance and Tool Description: Artifact supporting files summary — Document multi-file Artifact publication through explicit published-path-to-source mappings, optional content types and source roots, working-directory confinement, and supporting-file counts.
+- **REMOVED:** Tool Description: Skill — Removes the main-conversation Skill tool instructions for mandatory matching-skill invocation, slash-command mapping, scoped skill selection, and available-skill validation.
+- Agent Prompt: /code-review low-effort modes and ReportFindings output format; Skill: Code Review low-effort expanded-findings mode and findings JSON output — Route eligible low-effort review results through a single structured `ReportFindings` call when available, preserve text or JSON contracts in other modes, and prohibit duplicate text reports or review Artifacts.
+- Agent Prompt: Security monitor for autonomous agent actions (second part) — Expands unverifiable recursive-deletion blocking to multi-variable paths where any component can collapse the target upward, requiring the exact literal path in the retried command rather than relying on unseen diagnostic output.
+- Data: Data visualization choosing a form and Data: Data visualization reference palette — Reorders the categorical palette to open with blue, orange, and aqua; lowers the all-pairs chart cap from four series to three while retaining four-series adjacent-form guidance; updates safety measurements, ordering rationale, sequential-color defaults, and status-collision examples.
+- Skill: Artifact PR review — Adds an optional connector-backed staleness signal that anchors a briefing to its reviewed head SHA, validates a fixed JSON island and baked script, requires an observed read-only PR call and informed audience choice, and falls back to a static briefing when the live gate fails.
+- Skill: /doctor slash command — Excludes interrupted and cancelled tool calls from denial aggregation while retaining CLI-stamped denial kinds and the restricted legacy text fallback.
+- Tool Description: Artifact publishing and update guidance — Adds session-local watches for Artifact republishes, including automatic subscription after publishing, explicit watch/status/unwatch actions, reconnect behavior, `/tasks` visibility, and requirements not to claim an unconfirmed watch.
+
 # [2.1.215](https://github.com/Piebald-AI/claude-code-system-prompts/commit/c998138)
 
 _+645 tokens_

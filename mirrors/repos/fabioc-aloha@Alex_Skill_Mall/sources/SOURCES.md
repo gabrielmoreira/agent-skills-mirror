@@ -8,16 +8,16 @@
 | [agency-agents](../catalog/stores/agency-agents.md) | [msitarzewski/agency-agents](https://github.com/msitarzewski/agency-agents) | `.` | community | false | - | 3 |
 | [agent-skills-context-engineering](../catalog/stores/agent-skills-context-engineering.md) | [muratcankoylan/Agent-Skills-for-Context-Engineering](https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering) | `skills` | community-curated | false | - | 17 |
 | [ai-research-skills](../catalog/stores/ai-research-skills.md) | [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-Research-SKILLs) | `.` | community-curated | false | - | 100 |
-| [alirezarezvani-claude-skills](../catalog/stores/alirezarezvani-claude-skills.md) | [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | `.` | community-curated | false | - | 34 |
+| [alirezarezvani-claude-skills](../catalog/stores/alirezarezvani-claude-skills.md) | [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | `.` | community-curated | false | - | 38 |
 | [antfu-skills](../catalog/stores/antfu-skills.md) | [antfu/skills](https://github.com/antfu/skills) | `skills` | community-curated | false | - | 19 |
-| [antigravity-awesome-skills](../catalog/stores/antigravity-awesome-skills.md) | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | `skills` | community-curated | false | - | 1862 |
+| [antigravity-awesome-skills](../catalog/stores/antigravity-awesome-skills.md) | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | `skills` | community-curated | false | - | 1882 |
 | [awesome-claude-code](../catalog/stores/awesome-claude-code.md) | [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | `.` | community-curated | false | - | 0 |
 | [awesome-claude-code-toolkit](../catalog/stores/awesome-claude-code-toolkit.md) | [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) | `.` | community-curated | false | - | 43 |
-| [awesome-copilot](../catalog/stores/awesome-copilot.md) | [github/awesome-copilot](https://github.com/github/awesome-copilot) | `.` | github-community | false | - | 459 |
+| [awesome-copilot](../catalog/stores/awesome-copilot.md) | [github/awesome-copilot](https://github.com/github/awesome-copilot) | `.` | github-community | false | - | 466 |
 | [awesome-copilot-agents](../catalog/stores/awesome-copilot-agents.md) | [Code-and-Sorts/awesome-copilot-agents](https://github.com/Code-and-Sorts/awesome-copilot-agents) | `.` | community-curated | false | - | 2 |
 | [awesome-design-skills](../catalog/stores/awesome-design-skills.md) | [bergside/awesome-design-skills](https://github.com/bergside/awesome-design-skills) | `skills` | domain | false | - | 67 |
 | [awesome-mcp-servers](../catalog/stores/awesome-mcp-servers.md) | [punkpeye/awesome-mcp-servers](https://github.com/punkpeye/awesome-mcp-servers) | `.` | community-registry | false | - | 0 |
-| [buildwithclaude](../catalog/stores/buildwithclaude.md) | [davepoon/buildwithclaude](https://github.com/davepoon/buildwithclaude) | `plugins` | community-curated | false | - | 109 |
+| [buildwithclaude](../catalog/stores/buildwithclaude.md) | [davepoon/buildwithclaude](https://github.com/davepoon/buildwithclaude) | `plugins` | community-curated | false | - | 110 |
 | [claude-code-best-practice](../catalog/stores/claude-code-best-practice.md) | [shanraisshan/claude-code-best-practice](https://github.com/shanraisshan/claude-code-best-practice) | `.` | community-curated | false | - | 2 |
 | [claude-code-plugins-plus-skills](../catalog/stores/claude-code-plugins-plus-skills.md) | [jeremylongshore/claude-code-plugins-plus-skills](https://github.com/jeremylongshore/claude-code-plugins-plus-skills) | `.` | community-curated | false | - | 24 |
 | [claude-skills](../catalog/stores/claude-skills.md) | [anthropics/skills](https://github.com/anthropics/skills) | `.` | community | false | - | 18 |
@@ -25,7 +25,7 @@
 | [context-engineering-kit](../catalog/stores/context-engineering-kit.md) | [NeoLabHQ/context-engineering-kit](https://github.com/NeoLabHQ/context-engineering-kit) | `plugins` | community-curated | false | - | 13 |
 | [copilot-agents-dojo](../catalog/stores/copilot-agents-dojo.md) | [andreaswasita/copilot-agents-dojo](https://github.com/andreaswasita/copilot-agents-dojo) | `skills` | domain | false | - | 28 |
 | [copilot-collections](../catalog/stores/copilot-collections.md) | [canonical/copilot-collections](https://github.com/canonical/copilot-collections) | `skills` | official | false | - | 13 |
-| [daymade-claude-code-skills](../catalog/stores/daymade-claude-code-skills.md) | [daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) | `.` | community-curated | false | - | 88 |
+| [daymade-claude-code-skills](../catalog/stores/daymade-claude-code-skills.md) | [daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) | `.` | community-curated | false | - | 90 |
 | [everything-claude-code](../catalog/stores/everything-claude-code.md) | [WorldFlowAI/everything-claude-code](https://github.com/WorldFlowAI/everything-claude-code) | `.` | community | false | - | 15 |
 | [flutter-ai-rules](../catalog/stores/flutter-ai-rules.md) | [evanca/flutter-ai-rules](https://github.com/evanca/flutter-ai-rules) | `skills` | domain | false | MIT | 34 |
 | [game-studios](../catalog/stores/game-studios.md) | [Donchitos/Claude-Code-Game-Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) | `.` | domain | false | - | 3 |
@@ -48,11 +48,11 @@
 | [robotics-agent-skills](../catalog/stores/robotics-agent-skills.md) | [arpitg1304/robotics-agent-skills](https://github.com/arpitg1304/robotics-agent-skills) | `skills` | domain | false | Apache-2.0 | 10 |
 | [rust-skills](../catalog/stores/rust-skills.md) | [leonardomso/rust-skills](https://github.com/leonardomso/rust-skills) | `.` | domain | false | - | 1 |
 | [spec-kit](../catalog/stores/spec-kit.md) | [github/spec-kit](https://github.com/github/spec-kit) | `.` | github-official | false | - | 6 |
-| [styleseed](../catalog/stores/styleseed.md) | [bitjaru/styleseed](https://github.com/bitjaru/styleseed) | `engine/.claude/skills` | domain | false | MIT | 19 |
+| [styleseed](../catalog/stores/styleseed.md) | [bitjaru/styleseed](https://github.com/bitjaru/styleseed) | `engine/.claude/skills` | domain | false | MIT | 20 |
 | [superclaude-framework](../catalog/stores/superclaude-framework.md) | [SuperClaude-Org/SuperClaude_Framework](https://github.com/SuperClaude-Org/SuperClaude_Framework) | `skills` | community-curated | false | - | 1 |
 | [vercel-agent-skills](../catalog/stores/vercel-agent-skills.md) | [vercel-labs/agent-skills](https://github.com/vercel-labs/agent-skills) | `skills` | vercel-official | false | - | 9 |
 | [vercel-skills](../catalog/stores/vercel-skills.md) | [vercel-labs/skills](https://github.com/vercel-labs/skills) | `skills` | vercel-official | false | - | 1 |
-| [wshobson-agents](../catalog/stores/wshobson-agents.md) | [wshobson/agents](https://github.com/wshobson/agents) | `.` | community-quality | false | - | 88 |
+| [wshobson-agents](../catalog/stores/wshobson-agents.md) | [wshobson/agents](https://github.com/wshobson/agents) | `.` | community-quality | false | - | 91 |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-07-13T13:15:52.059Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-07-20T13:02:43.172Z*

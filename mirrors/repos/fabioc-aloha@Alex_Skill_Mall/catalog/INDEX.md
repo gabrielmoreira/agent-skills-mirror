@@ -1,6 +1,6 @@
 # Plugin Mall Catalog
 
-Search index across **3823 plugins** in **49 stores**. Plugins are ranked by trust score; first-party Mall-curated entries (🏆) rank highest because they earn the highest signals — provenance (+50 for editorial adaptation) plus maintenance, adoption, license clarity, frontmatter completeness, and README presence.
+Search index across **3861 plugins** in **49 stores**. Plugins are ranked by trust score; first-party Mall-curated entries (🏆) rank highest because they earn the highest signals — provenance (+50 for editorial adaptation) plus maintenance, adoption, license clarity, frontmatter completeness, and README presence.
 
 - See [README.md](../README.md) for the storefront and store rankings.
 - See [categories/](categories/) for per-category browse.
@@ -70,51 +70,51 @@ Search index across **3823 plugins** in **49 stores**. Plugins are ranked by tru
 | 35 | [addyosmani-agent-skills](stores/addyosmani-agent-skills.md) | 26 | third-party |
 | 35 | [agency-agents](stores/agency-agents.md) | 3 | third-party |
 | 35 | [agent-skills-context-engineering](stores/agent-skills-context-engineering.md) | 17 | third-party |
-| 35 | [ai-research-skills](stores/ai-research-skills.md) | 100 | third-party |
-| 35 | [alirezarezvani-claude-skills](stores/alirezarezvani-claude-skills.md) | 34 | third-party |
+| 35 | [alirezarezvani-claude-skills](stores/alirezarezvani-claude-skills.md) | 38 | third-party |
 | 35 | [antfu-skills](stores/antfu-skills.md) | 19 | third-party |
-| 35 | [antigravity-awesome-skills](stores/antigravity-awesome-skills.md) | 1862 | third-party |
-| 35 | [awesome-copilot](stores/awesome-copilot.md) | 459 | third-party |
+| 35 | [antigravity-awesome-skills](stores/antigravity-awesome-skills.md) | 1882 | third-party |
+| 35 | [awesome-copilot](stores/awesome-copilot.md) | 466 | third-party |
 | 35 | [awesome-mcp-servers](stores/awesome-mcp-servers.md) | 0 | third-party |
-| 35 | [buildwithclaude](stores/buildwithclaude.md) | 109 | third-party |
+| 35 | [buildwithclaude](stores/buildwithclaude.md) | 110 | third-party |
 | 35 | [claude-code-best-practice](stores/claude-code-best-practice.md) | 2 | third-party |
 | 35 | [claude-code-plugins-plus-skills](stores/claude-code-plugins-plus-skills.md) | 24 | third-party |
 | 35 | [context-engineering-kit](stores/context-engineering-kit.md) | 13 | third-party |
-| 35 | [daymade-claude-code-skills](stores/daymade-claude-code-skills.md) | 88 | third-party |
+| 35 | [daymade-claude-code-skills](stores/daymade-claude-code-skills.md) | 90 | third-party |
 | 35 | [k-dense-scientific-agent-skills](stores/k-dense-scientific-agent-skills.md) | 149 | third-party |
 | 35 | [marketingskills](stores/marketingskills.md) | 49 | third-party |
 | 35 | [planning-with-files](stores/planning-with-files.md) | 6 | third-party |
 | 35 | [spec-kit](stores/spec-kit.md) | 6 | third-party |
-| 35 | [superclaude-framework](stores/superclaude-framework.md) | 1 | third-party |
-| 35 | [wshobson-agents](stores/wshobson-agents.md) | 88 | third-party |
+| 35 | [wshobson-agents](stores/wshobson-agents.md) | 91 | third-party |
+| 32 | [ai-research-skills](stores/ai-research-skills.md) | 100 | third-party |
 | 32 | [awesome-claude-code-toolkit](stores/awesome-claude-code-toolkit.md) | 43 | third-party |
 | 32 | [garden-skills](stores/garden-skills.md) | 5 | third-party |
 | 32 | [github-copilot-plugins](stores/github-copilot-plugins.md) | 1 | third-party |
 | 32 | [microsoft-copilot-studio-skills](stores/microsoft-copilot-studio-skills.md) | 31 | third-party |
 | 32 | [microsoft-win-dev-skills](stores/microsoft-win-dev-skills.md) | 8 | third-party |
+| 32 | [n-skills](stores/n-skills.md) | 5 | third-party |
+| 32 | [superclaude-framework](stores/superclaude-framework.md) | 1 | third-party |
 | 30 | [copilot-agents-dojo](stores/copilot-agents-dojo.md) | 28 | third-party |
-| 30 | [styleseed](stores/styleseed.md) | 19 | third-party |
+| 30 | [styleseed](stores/styleseed.md) | 20 | third-party |
 | 29 | [moiz-ai-agent-skills](stores/moiz-ai-agent-skills.md) | 17 | third-party |
-| 29 | [n-skills](stores/n-skills.md) | 5 | third-party |
 | 28 | [awesome-design-skills](stores/awesome-design-skills.md) | 67 | third-party |
 | 28 | [copilot-collections](stores/copilot-collections.md) | 13 | third-party |
 | 28 | [flutter-ai-rules](stores/flutter-ai-rules.md) | 34 | third-party |
 | 28 | [healthcare-agents](stores/healthcare-agents.md) | 0 | third-party |
-| 28 | [rust-skills](stores/rust-skills.md) | 1 | third-party |
 | 27 | [robotics-agent-skills](stores/robotics-agent-skills.md) | 10 | third-party |
 | 25 | [awesome-claude-code](stores/awesome-claude-code.md) | 0 | third-party |
 | 25 | [claude-skills](stores/claude-skills.md) | 18 | third-party |
 | 25 | [game-studios](stores/game-studios.md) | 3 | third-party |
 | 25 | [imbad-academic-research-skills](stores/imbad-academic-research-skills.md) | 10 | third-party |
 | 25 | [mcp-servers](stores/mcp-servers.md) | 7 | third-party |
+| 25 | [rust-skills](stores/rust-skills.md) | 1 | third-party |
 | 25 | [vercel-agent-skills](stores/vercel-agent-skills.md) | 9 | third-party |
 | 25 | [vercel-skills](stores/vercel-skills.md) | 1 | third-party |
 | 24 | [awesome-copilot-agents](stores/awesome-copilot-agents.md) | 2 | third-party |
 | 22 | [composio-awesome-claude-plugins](stores/composio-awesome-claude-plugins.md) | 16 | third-party |
 | 22 | [hoodini-ai-agents-skills](stores/hoodini-ai-agents-skills.md) | 39 | third-party |
-| 22 | [karpathy-skills](stores/karpathy-skills.md) | 1 | third-party |
+| 19 | [karpathy-skills](stores/karpathy-skills.md) | 1 | third-party |
 | 16 | [everything-claude-code](stores/everything-claude-code.md) | 15 | third-party |
 | 12 | [libukai-awesome-agent-skills](stores/libukai-awesome-agent-skills.md) | 1 | third-party |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-07-13T13:15:52.059Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-07-20T13:02:43.172Z*

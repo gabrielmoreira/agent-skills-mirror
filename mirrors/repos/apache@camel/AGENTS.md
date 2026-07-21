@@ -71,6 +71,14 @@ marked ready for review.
 - Request review from **at least 2 relevant committers** using `gh pr edit --add-reviewer`.
 - When all comments on the Pull Request are addressed (by providing a fix or providing more explanation) and the PR checks are green, re-request review on existing reviewers so that they are aware that the new changeset is ready to be reviewed.
 
+### Doing a review
+
+When an AI agent is doing a review:
+
+- Wait until PR checks are green as they will already catch most trivial issues using less resources
+- It must challenge the code and ensure that it respects all conventions
+- For Dependabot PRs, either do not review them or be able to do a real review: check for deprecated APIs, removed features, or breaking changes in the changelog
+
 ### Merge Requirements
 
 - An agent MUST NOT merge a PR if there are any **unresolved review conversations**.
@@ -147,6 +155,37 @@ When merging a PR, an agent MUST perform the following steps **in order**:
   - Top OWASP vulnerabilities and security flows
   - Avoid usage of deprecated code
 - Changes should aim to preserve or improve overall code quality.
+
+### Assertions: Use AssertJ When Possible
+
+Prefer [AssertJ](https://assertj.github.io/doc/) assertions over JUnit assertions in test code.
+AssertJ is already available as a test dependency in the project and provides more readable,
+fluent assertions with better failure messages.
+
+**Examples:**
+
+```java
+// Preferred — AssertJ:
+assertThat(result).isEqualTo("expected");
+assertThat(list).hasSize(3).contains("a", "b");
+assertThat(exception).isInstanceOf(IOException.class).hasMessageContaining("timeout");
+assertThat(exchange.getIn().getBody(String.class)).startsWith("Hello");
+
+// Avoid — JUnit:
+assertEquals("expected", result);
+assertEquals(3, list.size());
+assertTrue(list.contains("a"));
+```
+
+**Rules:**
+
+- New test code SHOULD use AssertJ assertions (`assertThat(...)`) instead of JUnit assertions
+  (`assertEquals`, `assertTrue`, `assertFalse`, `assertNotNull`, etc.).
+- When modifying existing test code that uses JUnit assertions, migrate touched assertions to
+  AssertJ where it improves readability. No need to migrate the entire file.
+- Do NOT mix AssertJ and JUnit assertions in the same test method — pick one style per method.
+- `MockEndpoint.assertIsSatisfied()` and other Camel-specific assertion methods are NOT JUnit
+  assertions — keep using them as-is.
 
 ### Asynchronous Testing: Use Awaitility Instead of Thread.sleep
 

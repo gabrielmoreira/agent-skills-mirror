@@ -175,11 +175,13 @@ model_preset: antigravity
 #     model: anthropic/claude-sonnet-4-6
 
 # Inline custom model slugs (optional; replaces the legacy models.yaml file).
+# `cli_model` must be the exact id the CLI itself accepts — for antigravity that
+# is an `agy models` display name, not a slug (`gemini-3.5-flash` is rejected).
 # Example:
 # models:
 #   my-fast:
 #     cli: antigravity
-#     cli_model: gemini-3.5-flash
+#     cli_model: "Gemini 3.5 Flash (Medium)"
 #     supports:
 #       native_dispatch_from: [antigravity]
 
