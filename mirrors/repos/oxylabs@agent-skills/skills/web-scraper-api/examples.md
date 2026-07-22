@@ -228,18 +228,6 @@ curl -X POST 'https://realtime.oxylabs.io/v1/queries' \
   }'
 ```
 
-## YouTube Transcript
-
-**Request:**
-```bash
-curl -X POST 'https://realtime.oxylabs.io/v1/queries' \
-  -u "$OXY_WSA_USERNAME:$OXY_WSA_PASSWORD" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "source": "youtube_transcript",
-    "query": "dQw4w9WgXcQ"
-  }'
-```
 
 ## Walmart Product
 

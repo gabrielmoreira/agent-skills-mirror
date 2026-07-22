@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dyad-sh/dyad` — 26 default patterns, 25 followed patterns, 53 file(s) materialized.
+Mirror of `dyad-sh/dyad` — 26 default patterns, 28 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 25 followed patterns, 53 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 25 |
-| Files         | 53 |
+| Followed pats | 28 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,6 +76,9 @@ Mirror of `dyad-sh/dyad` — 26 default patterns, 25 followed patterns, 53 file(
 - `rules/safe-storage.md`
 - `rules/electron-workers.md`
 - `rules/app-naming.md`
+- `rules/state-machines.md`
+- `rules/windows-spawn.md`
+- `rules/i18n.md`
 
 ## File Index
 
@@ -125,17 +128,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 40 | → | [`rules/electron-workers.md`](rules/electron-workers.md) |
 | 41 | → | [`rules/git-workflow.md`](rules/git-workflow.md) |
 | 42 | → | [`rules/hybrid-testing.md`](rules/hybrid-testing.md) |
-| 43 | → | [`rules/jotai-state.md`](rules/jotai-state.md) |
-| 44 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
-| 45 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
-| 46 | → | [`rules/native-modules.md`](rules/native-modules.md) |
-| 47 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
-| 48 | → | [`rules/product-principles.md`](rules/product-principles.md) |
-| 49 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
-| 50 | → | [`rules/safe-storage.md`](rules/safe-storage.md) |
-| 51 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
-| 52 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
-| 53 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
+| 43 | → | [`rules/i18n.md`](rules/i18n.md) |
+| 44 | → | [`rules/jotai-state.md`](rules/jotai-state.md) |
+| 45 | → | [`rules/jotai-testing.md`](rules/jotai-testing.md) |
+| 46 | → | [`rules/local-agent-tools.md`](rules/local-agent-tools.md) |
+| 47 | → | [`rules/native-modules.md`](rules/native-modules.md) |
+| 48 | → | [`rules/openai-reasoning-models.md`](rules/openai-reasoning-models.md) |
+| 49 | → | [`rules/product-principles.md`](rules/product-principles.md) |
+| 50 | → | [`rules/prompt-guides.md`](rules/prompt-guides.md) |
+| 51 | → | [`rules/safe-storage.md`](rules/safe-storage.md) |
+| 52 | → | [`rules/state-machines.md`](rules/state-machines.md) |
+| 53 | → | [`rules/supabase-functions.md`](rules/supabase-functions.md) |
+| 54 | → | [`rules/typescript-strict-mode.md`](rules/typescript-strict-mode.md) |
+| 55 | → | [`rules/ui-styling.md`](rules/ui-styling.md) |
+| 56 | → | [`rules/windows-spawn.md`](rules/windows-spawn.md) |
 
 ---
 

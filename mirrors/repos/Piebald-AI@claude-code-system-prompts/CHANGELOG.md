@@ -4,6 +4,20 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.217](https://github.com/Piebald-AI/claude-code-system-prompts/commit/21a42bc)
+
+_+13,476 tokens_
+
+- **NEW:** Skill: /explain-usage slash command — Analyzes the current session transcript into cost-weighted token-usage groups, charts effective usage across the instruction and tool list, Claude in Chrome, connectors, web research, file operations, subagents, and remaining activity, and notes when compaction limits the measured history.
+- **NEW:** System Prompt: Correction restraint — Limits user-facing corrections to consequential errors, avoids apologies and repeated self-auditing, and requires evaluating other agents’ corrections before adopting them.
+- **NEW:** System Prompt: Delivering work at full scope and System Prompt: Scope fidelity — Require completing the user’s intended scope under reasonable assumptions, continuing through non-blocking uncertainty or disagreement, reporting genuinely incomplete parts plainly, and reserving blocking questions or refusals for necessary cases without overriding destructive-action confirmation.
+- Agent Prompt: Coordinator worker instructions; Agent Prompt: Background job agent instructions; Tool Description: Grep; and Tool Description: Workflow — Recategorize the coordinator worker instructions from a system prompt to an agent prompt, make worker fan-out conditional on remaining spawn depth and Agent-tool availability, and qualify subagent search or orchestration guidance when the Agent tool is unavailable.
+- Agent Prompt: Dream memory consolidation — Adds team-memory-specific context when available and streamlines consolidation by removing the optional post-gather and additional dream-guidance injection points.
+- Data: /auto-mode-setup usage — Adds an optional `--apply-target <user|project>` save choice, validates it against the proposal scope while continuing to write user settings, and clarifies flag ordering and `--apply-file` path parsing.
+- Data: Workshop artifact HTML template and Skill: Artifact workshop — Let writers record decisions by republishing the Artifact through its self-update capability, treat the published page as the durable offline-first decision record, preserve consent and writer-access gates, and reconcile concurrent choices through version conflicts without force-publishing; also keep user-facing updates focused on the workshop experience and remove the requirement to publish the local source path.
+- Skill: Artifact PR review — Adds self-updating “Needs your call” decisions with capability, sharing, writer-access, and human-in-the-loop gates; validates decisions against private, session-authored mappings; checks authenticated markers before posting GitHub decision comments; and requires explicit user confirmation before submitting native review verdicts.
+- System Prompt: REPL tool usage and scripting conventions and Tool Description: REPL — Document that enabled MCP calls throw on failure while built-in tools return error results, require uncaught MCP failures to abort scripts unless recovery is genuine, and prevent caught failures from being treated as success.
+
 # [2.1.216](https://github.com/Piebald-AI/claude-code-system-prompts/commit/c003789)
 
 _+31,503 tokens_

@@ -27,10 +27,26 @@ Base UI dropdown actions have `role="menuitem"`, while
 dropdown tests, query the open menu with `within(...).getByRole("menuitem")`
 unless the harness helper has been expanded to support both roles.
 
+`HybridChatHarness` keeps its mounted Jotai store private. When a regression
+test must seed or inspect atom state, add a narrow domain helper to the harness
+instead of assuming a public `harness.store` property.
+
 Default to the node chat-flow harness when assertions are about files, git, db
 rows, IPC events, or LLM request dumps. Use the renderer+IPC hybrid harness only
 when assertions are about rendered UI or a flow that must be driven through a
 real UI event in the mounted React tree.
+
+When production UI gains a required root-scoped provider, mount that provider
+explicitly in `hybrid_chat_harness.tsx` with harness-owned dependencies. Do not
+add a module-global fallback just to keep hybrid tests working; it bypasses the
+same ownership and disposal semantics the test should exercise.
+
+Do not drive overlapping `chat:stream` calls for the same chat through the
+chat-flow or hybrid harness. Both invocations read and write the same persisted
+conversation, so one stream's user/tool messages can change the other stream's
+fake-fixture routing or turn count and make timing-based tests hang. Cover
+per-invocation tracking with a focused unit test, and use separate chats for
+integration coverage of app-wide cancellation.
 
 When a renderer+IPC hybrid or chat-flow harness test passes `engine: true`,
 production code must read Dyad Engine/Gateway URLs at call time. If a test still
@@ -80,16 +96,22 @@ loaded Windows CI runners. Keep the large fixture when it proves bounded-memory
 behavior; raising that individual test's timeout is preferable to weakening the
 streaming regression coverage or raising the timeout suite-wide.
 
-If a hybrid suite fails before test logic with
-`better_sqlite3.node was compiled against a different Node.js version` and a
-`NODE_MODULE_VERSION` mismatch, run `npm rebuild better-sqlite3` in the worktree
-before debugging the suite.
+If the unsandboxed rerun reaches the harness but fails loading
+`better-sqlite3` with a `NODE_MODULE_VERSION` mismatch, follow the
+`npm rebuild better-sqlite3` recovery in `rules/native-modules.md` (single
+source of truth for native-module rebuild guidance) before debugging tests.
 
 When a hybrid test needs `IS_TEST_BUILD` behavior from modules that capture
 `process.env.E2E_TEST_BUILD` at import time, set it in a `vi.hoisted()` block
 before app imports. `setupHybridChatHarness({ testBuild: true })` sets the flag
 before dynamic IPC registration, but it cannot fix static imports that already
 loaded modules such as the Neon management client.
+
+The shared Electron mock's `utilityProcess.fork()` is intentionally inert and
+never emits `spawn`, `message`, or `exit`. If a hybrid flow reaches a packaged
+utility-process boundary, mock that processor in `hybrid.setup.ts` with a
+deterministic fallback; otherwise the handler waits for its production timeout
+and teardown reports a misleading pending `chat:stream`.
 
 If a chat-flow or hybrid harness suite passes all tests but fails during
 `dispose()` with `ENOTEMPTY` for a `dyad-chat-flow-*` temp directory, look for a

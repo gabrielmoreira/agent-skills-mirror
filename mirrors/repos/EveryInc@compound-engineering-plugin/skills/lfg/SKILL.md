@@ -1,7 +1,7 @@
 ---
 name: lfg
 description: "Run the full autonomous shipping pipeline end-to-end, hands-off with no check-ins: plan, implement, review and fix, commit, push a branch, open a PR, and watch CI to green. Use only when the user explicitly asks to build or ship something autonomously all the way to an open PR, or invokes lfg directly — it pushes and opens a PR without stopping. Not for in-the-loop work where the user reviews each step: use ce-plan to plan, ce-work to implement a plan, ce-debug to fix a bug, or ce-commit-push-pr to commit and open a PR for existing changes."
-argument-hint: "[feature description; optionally assign implementation to a model or harness]"
+argument-hint: "[feature description; optionally assign planning and/or implementation to a model or harness]"
 ---
 
 CRITICAL: You MUST execute every step below IN ORDER. Do NOT skip any required step. Do NOT jump ahead to coding or implementation. The plan phase (step 1) MUST be completed and verified BEFORE any work begins. Violating this order produces bad output.
@@ -12,22 +12,35 @@ When invoking any skill referenced below, resolve its name against the available
 
 Before step 1, use the platform's task-tracking capability when available to publish a short stage-level view of the remaining pipeline. Derive it from the user-meaningful outcomes below rather than mirroring all ten steps or exposing internal gates. Before invoking a child skill, replace or clear LFG's view so only the child skill's task surface is visible; after it returns, recreate or refresh LFG's remaining pipeline work before invoking the next child. Add conditional work only when its gate fires. If no task-tracking capability is available, continue normally without simulating a task list in chat.
 
-## Implementation-only routing carrier
+## Per-stage routing carriers
 
-Before step 1, interpret whether the invoking conversation expresses **semantic intent to assign the implementation stage** to another harness or model. This is judgment, not keyword or prompt-token matching: an explicit instruction such as "use Codex for implementation" creates a binding, while a plain mention of Codex, Composer, or another model in feature content, quoted material, comparison text, or a filename does not. Preference is the default; "only use Composer for implementation" is requirement-strength because its meaning rejects native fallback, but infer that strength from the full instruction rather than one particular word.
+Before step 1, interpret whether the invoking conversation expresses **semantic intent to assign a pipeline stage** — planning or implementation — to a specific model or harness. This is judgment, not keyword or prompt-token matching: an explicit instruction such as "plan with fable" or "use Codex for implementation" creates an assignment, while a plain mention of Codex, Composer, Fable, or another model/harness in feature content, quoted material, comparison text, or a filename does not. Two pipeline stages are routable, each with its own carrier:
 
-When that intent names one implementation candidate, remove the implementation-routing directive from the feature request that enters planning and retain one transient `implementation_engine` object with exactly these four fields:
+- **Planning** routes to `ce-plan` as a `plan_model:<alias>` carrier — the plan-authoring **model** (model elevation), model-only. Example aliases: `fable`, `opus`. Planning has no cross-harness engine: an assignment that scopes a *harness* to planning ("plan with codex", "plan on cursor") is **not supported** — surface it as a routing-carrier blocker rather than encoding a harness name as `plan_model:<harness>`, which `ce-plan` cannot serve and would silently fall back to the session model. Only the implementation stage routes to a different harness.
+- **Implementation** routes to `ce-work` as an `implementation_engine` object (grammar below) — the authoring harness/model.
+
+Resolve each directive by scope:
+
+1. **Scoped directive** — the instruction names the stage ("plan with fable", "codex for implementation", "plan fable, codex work"). Route it to that stage's carrier. Multiple scoped directives may resolve at once, each to its own stage.
+2. **Unscoped directive** — a bare model/harness assignment with no stage named ("use fable", "with codex"). Bind it to the **implementation stage only**; never broaden an unscoped directive to planning or to every stage. Disclose the resolved binding in LFG's opening line before step 1 (e.g. "Routing implementation to Codex; planning stays on the session model.").
+3. **Unscoped and genuinely ambiguous, human present** — when an unscoped directive could credibly belong to more than one stage *and* mis-binding would be materially costly, *and* the host is interactive (exposes a blocking-question tool and is not a `disable-model-invocation`/headless run), ask exactly **one** upfront question to bind the stage before step 1, then proceed hands-off. In a `disable-model-invocation`/headless run, never ask — apply the implementation default and disclose it. The default path is mandatory: LFG runs from schedulers, loops, and nested orchestrators with no user to answer, so an unresolved directive must always fall to the disclosed default rather than block.
+
+Requirement strength is inferred from the whole instruction, not one word: "use Codex for implementation" is preference-strength (`prefer`); "only use Composer for implementation" is requirement-strength (`require`) because its meaning rejects native fallback.
+
+**Implementation carrier grammar.** When implementation resolves to one candidate, retain one transient `implementation_engine` object with exactly these four fields:
 
 - `mode`: `prefer` or `require`
-- `target`: `codex`, `claude`, `grok`, `cursor`, or `composer`
+- `target`: exactly one of `codex`, `claude`, `grok`, `cursor`, or `composer` — a **harness** name, never a model name
 - `model`: the explicit model pin, otherwise `null`
 - `source`: caller-visible provenance identifying the current LFG instruction
 
-When the current instruction instead names an ordered fallback list, do not truncate it to the scalar carrier. Remove it from the product request exactly as above, retain the whole ordered assignment as current-task implementation intent, and pass no `implementation_engine:` object. At the CE Work seam, that still-active current-task assignment outranks config and is normalized/preflighted in order. This is stage-scoped context, not plan content; if the host cannot preserve that context across its skill invocation, stop with a routing-carrier blocker rather than silently dropping later candidates.
+A directive that names a bare **model** with no harness (e.g. "use fable", "with opus") is a model *pin*, not a target: encode it as the harness that serves that model family with the alias in `model` — a Claude-family model (`fable`, `opus`, `sonnet`, `haiku`) is `{"target":"claude","model":"<alias>"}`. Never put a model name in `target`; if you cannot map the named model to one of the five harnesses, that is a routing-carrier blocker, not a `null` binding that silently drops the user's instruction.
 
-Never pass this object or the removed directive to `ce-plan`, `ce-doc-review`, `ce-code-review`, the settled-decisions brief, or any planning or review input. The carrier is stage-scoped authority, not product content or a settled product decision. Keep the sanitized feature request otherwise unchanged. Do not construct a carrier from standing configuration here: when no explicit implementation binding exists, `ce-work` owns resolution of still-applicable session/project intent and standing per-checkout configuration.
+When the implementation instruction instead names an ordered fallback list, do not truncate it to the scalar carrier — retain the whole ordered assignment as current-task implementation intent and pass no `implementation_engine:` object. At the CE Work seam, that still-active current-task assignment outranks config and is normalized/preflighted in order. This is stage-scoped context, not plan content; if the host cannot preserve that context across its skill invocation, stop with a routing-carrier blocker rather than silently dropping later candidates.
 
-1. Invoke the `ce-plan` skill with the sanitized feature request prepared above (or the unchanged arguments you were invoked with when no implementation directive was present).
+**Sanitize product input.** Remove every routing directive from the feature request that enters planning, keeping the request otherwise unchanged. Never pass the `implementation_engine` object or any removed directive to `ce-plan`, `ce-doc-review`, `ce-code-review`, the settled-decisions brief, or any planning or review **product** input — the carrier is stage-scoped routing authority, not product content or a settled product decision. The `plan_model:<alias>` carrier is the one exception: it is structured routing data handed to `ce-plan` *alongside* — never woven into — the sanitized request. Do not construct a carrier from standing configuration here: when no explicit binding exists for a stage, `ce-work` and `ce-plan` own resolution of still-applicable session/project intent and standing per-checkout configuration.
+
+1. Invoke the `ce-plan` skill with the sanitized feature request prepared above (or the unchanged arguments you were invoked with when no routing directive was present). When a planning-stage directive resolved, prefix the invocation with its `plan_model:<alias>` carrier — structured routing data beside the request, never woven into it — so `ce-plan`'s model elevation authors the plan on the chosen model even in pipeline mode.
 
    Before invoking, compose a **settled-decisions brief** from the invoking conversation and pass it with those arguments: direction (1-2 lines); settled decisions, each with four required fields — the decision, its provenance class (`user-directed` or `user-approved`), the rejected alternative, and a one-line reason; open areas; and a standing report-conflicts line. An entry whose rejected alternative cannot be stated demotes to a directive or open area. Scope topically — only decisions about the feature being shipped; when in doubt, demote (re-litigation is the safe floor; importing stale settlements is not). If the conversation contains no settled decisions, skip composition entirely and invoke `ce-plan` exactly as above — no empty-brief ceremony. The brief is transient: once ce-plan writes the plan, the plan's labeled KTDs are canonical.
 
@@ -87,9 +100,9 @@ Never pass this object or the removed directive to `ce-plan`, `ce-doc-review`, `
 
 8. Invoke the `ce-commit-push-pr` skill with `mode:pipeline branding:on`. Thread the recorded plan path from step 1 into the invocation, along with any proceeded-and-flagged `settled_decision_conflicts` entries from step 2, so the PR body's settled-decisions provenance line and its proceed-under-flag clause can fire.
 
-   This commits any remaining changes, pushes the branch, and opens a pull request — non-interactively, per the mode token. If it prints a `New concepts:` trailer after the PR URL, record the concept name(s) for step 10. If step 6 already opened a PR (check with `gh pr view --json number,url,state 2>/dev/null`), skip PR creation but still commit and push any uncommitted changes. **Per the shipping precondition, when no remote is configured, do NOT invoke `ce-commit-push-pr` — its commit step pushes unconditionally (`git push -u origin HEAD`), so a literal invocation would still hit the impossible push. Instead commit any remaining changes locally yourself (`git add -A && git commit`) and skip the push and PR creation entirely.**
+   This commits any remaining changes, pushes the branch, and opens a pull request — non-interactively, per the mode token. If it prints a `New concepts:` trailer after the PR URL, record the concept name(s) for step 10. Once the PR URL is known, back-fill it into any residual tickets filed in step 6 (the `filed` list) so each ticket links to the PR carrying the finding — best-effort, and never block DONE on a failed ticket update. If step 6 already opened a PR (check with `gh pr view --json number,url,state 2>/dev/null`), skip PR creation but still commit and push any uncommitted changes. **Per the shipping precondition, when no remote is configured, do NOT invoke `ce-commit-push-pr` — its commit step pushes unconditionally (`git push -u origin HEAD`), so a literal invocation would still hit the impossible push. Instead commit any remaining changes locally yourself (`git add -A && git commit`) and skip the push and PR creation entirely.**
 
-9. **Drive CI to green via `ce-babysit-pr`** (only when an open PR exists for the current branch)
+9. **Watch the PR to CI-decided via `ce-babysit-pr`** (only when an open PR exists for the current branch)
 
    Detect the PR; if none exists or `gh` is unavailable, skip this step entirely and proceed to step 10.
 
@@ -97,14 +110,20 @@ Never pass this object or the removed directive to `ce-plan`, `ce-doc-review`, `
    gh pr view --json number,url,state
    ```
 
-   Invoke **`ce-babysit-pr mode:pipeline <pr-url>`**. It runs the bounded pipeline loop: watches CI, repairs real (convergent) failures via `ce-debug mode:pipeline` — never weakening, skipping, or mocking an assertion — resolves any review comments that arrived via `ce-resolve-pr-feedback mode:pipeline`, and stops when CI is decided or its budget (default 3 fix rounds) is hit. This replaces LFG's former hand-rolled CI loop; do not reimplement CI-watching here.
+   Invoke **`ce-babysit-pr mode:pipeline <pr-url>`**. It runs the bounded pipeline loop: watches CI, repairs real (convergent) failures via `ce-debug mode:pipeline` — never weakening, skipping, or mocking an assertion — resolves any review comments that arrived via `ce-resolve-pr-feedback mode:pipeline`, and stops when CI is decided or its budget (default 3 fix rounds) is hit. This replaces LFG's former hand-rolled CI loop; do not reimplement CI-watching here. Invoke it unconditionally whenever an open PR exists — a run whose CI looks likely-clean is not a reason to skip babysit and poll `gh pr checks` yourself. Green CI at one instant is not this step's goal: babysit also resolves review comments across the PR's life, so a passing check while advisory checks (e.g. Bugbot) are still pending or comments are unhandled is not "done" and never substitutes for the invocation.
 
    Collect its structured result (`{ status, fixes_applied, residuals }`). It surfaces unfixable CI as a **run-report comment on the PR** and returns residuals — do **NOT** write a `## CI Failures Unresolved` PR-body section. A `needs-human` residual (a fix that would need a product/design decision) is deferred, not applied — that is the autopilot contract, unchanged. Do not block DONE once babysit has surfaced residuals.
 
 10. Output `<promise>DONE</promise>` when complete
 
-    If step 8 recorded a `New concepts:` trailer, first echo one line per concept: `New concept introduced: <name> — run /ce-explain <name> to go deeper.`
+    For the two user-runnable handoffs below, default to `/ce-explain <name>` / `/ce-babysit-pr <pr-url>`. Use `$ce-explain <name>` / `$ce-babysit-pr <pr-url>` only when the active host is Codex or explicitly documents dollar-prefixed skill invocation. Render only the invocation as inline code and output one form only.
 
-    If an open PR exists, add one line pointing the user to the interactive watch-to-merge (pipeline mode stopped at "CI decided," not "merged"): `PR is moving — run /ce-babysit-pr <pr-url> to watch it through review to merge.` Then output the DONE promise.
+    If step 8 recorded a `New concepts:` trailer, first echo one line per concept: `New concept introduced: <name> — run <rendered ce-explain invocation> to go deeper.`
+
+    If an open PR exists, add one line pointing the user to the interactive watch-to-merge (pipeline mode stopped at "CI decided," not "merged"): `PR is moving — run <rendered ce-babysit-pr invocation> to watch it through review to merge.`
+
+    Before the DONE promise, inspect the canonical plan from step 1 for the semantic role `work-relationships`. Load `references/next-work-handoff.md` when that role exists, or when an older unmarked Product Contract appears to name the area this plan owns plus future separately planned areas and their relationships; the reference owns the cautious legacy semantic fallback, candidate selection, and opt-in offer contract. Do not match an exact visible heading, treat ordinary non-goals as future work, or invoke `ce-handoff` before the user explicitly accepts the offer. If neither semantic signal exists, do not load the reference and make no next-work offer.
+
+    Then output the DONE promise.
 
 Start with step 1 now. Remember: plan FIRST, then work. Never skip the plan.

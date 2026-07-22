@@ -25,6 +25,12 @@ ENTITY_STOPWORDS = frozenset({
 })
 
 
+def has_anchor_signal(word: str) -> bool:
+    """True when a word carries an anchor signal: leading capital, all-caps,
+    or any digit (product/person/version anchors)."""
+    return word[0].isupper() or word.isupper() or any(char.isdigit() for char in word)
+
+
 def extract_text_entities(text: str) -> set[str]:
     """Extract significant words used by clustering and eval scoring."""
     words = re.sub(r"[^\w\s]", " ", text).split()
@@ -33,7 +39,7 @@ def extract_text_entities(text: str) -> set[str]:
         lower = word.lower()
         if lower in ENTITY_STOPWORDS or len(word) <= 2:
             continue
-        if word[0].isupper() or word.isupper() or any(char.isdigit() for char in word) or len(word) >= 4:
+        if has_anchor_signal(word) or len(word) >= 4:
             entities.add(lower)
     return entities
 

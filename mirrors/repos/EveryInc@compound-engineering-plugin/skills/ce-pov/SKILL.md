@@ -57,11 +57,11 @@ Dispatch is tiered by task shape, never hardcoded to a model name:
 
    State the tier in the verdict and let the user override. The tier sizes the rest of the run (Phase 1 scout count, Phase 2 depth, Phase 3 reversal trigger): Tier 1 stays a one-screen verdict off a single combined grounding pass; Tier 2 adds the full scout fleet and an alternatives pass; Tier 3 adds deep external research, a precedent search, and a durable-record offer. Do not run a Tier-3 workup on a trivially reversible `npm i`, or hand a security-surface decision the moderate Tier-2 treatment.
 
-### Phase 1: Ground (dispatch scouts, never inline)
+### Phase 1: Ground (dispatch scouts by default; bounded inline reads when facts are pre-located)
 
 Grounding searches code, git, the issue tracker, PRs, and docs — noisy work that would flood this context and crowd out the verdict reasoning. Dispatch it to scout sub-agents that search in their own context and return only a dossier path plus a short gist; read a dossier on demand, never inline the raw search.
 
-Use the project's active instructions already in context. Send scouts directly to candidate-specific current evidence. If the candidate cannot be scoped from the frame and existing context, allow one targeted root or workspace probe.
+Use the project's active instructions already in context. Send scouts directly to candidate-specific current evidence. If the candidate cannot be scoped from the frame and existing context, allow one targeted root or workspace probe. When the load-bearing facts are already located in the current context — a warm invocation or a Tier-1 subject often points straight at the file, symbol, or record — you may confirm them yourself with bounded reads of the authoritative source (code, git, tracker, docs) instead of dispatching scouts; unscoped or noisy grounding still dispatches. A conversation claim is a pointer to check, never self-verifying: an unverified assertion still requires the bounded read or a scout before it counts. The Tier-1 prior-decision scan (`docs/solutions/`, ADRs, design docs) stays mandatory on either path.
 
 Create the scratch dir once, and reuse the echoed path for every scout this run:
 
@@ -86,11 +86,11 @@ echo "$SCRATCH_DIR";
 
 **Capability gating is two-level:** skip only a scout (or scout-portion) with **no reachable surface at all** — the project-grounding scout and the precedent scout's local-doc pass are file reads and always run; the tracker/PR reads and the external researcher are tool-gated and degrade. Let a scout that loses a tool mid-run self-report "unavailable." Never block on a missing surface — record it and let it lower the verdict's stated confidence, or trip the external floor (Phase 2) when the external leg is entirely absent.
 
-**Populate the provenance buckets** from the returned dossiers, keeping them separate for Phase 2: *observed-project-facts* and *verified-external-facts* (these count as grounding) vs. *conversation-claims* and *unconfirmed-assumptions* from a warm invocation (these do not count until a scout corroborates them). Read dossiers from their paths on demand; do not pull their bulk into this context.
+**Populate the provenance buckets** from the returned dossiers and your own bounded inline-read observations, keeping them separate for Phase 2: *observed-project-facts* and *verified-external-facts* (these count as grounding) vs. *conversation-claims* and *unconfirmed-assumptions* from a warm invocation (these do not count until a scout or a bounded inline read of the authoritative source corroborates them). Read dossiers from their paths on demand; do not pull their bulk into this context.
 
 ### Phase 2: Verify Grounding
 
-**Read `references/method.md` now**, before reasoning about the POV — it defines the Verify and POV steps, the skeptic stance and reversibility tiering as cross-cutting properties, and the subject-aware grounding gate. Apply that gate as a pass/fail checklist over the dossiers: on an external-adoption subject a failed floor forbids Adopt/Reject and returns the matching Hold subtype; on a document or approach set it returns the matching explicit Blocked result. Do this reasoning on the clean context — read a dossier on demand, never pull its bulk in.
+**Read `references/method.md` now**, before reasoning about the POV — it defines the Verify and POV steps, the skeptic stance and reversibility tiering as cross-cutting properties, and the subject-aware grounding gate. Apply that gate as a pass/fail checklist over the grounded evidence (scout dossiers and recorded bounded inline-read observations): on an external-adoption subject a failed floor forbids Adopt/Reject and returns the matching Hold subtype; on a document or approach set it returns the matching explicit Blocked result. Do this reasoning on the clean context — read a dossier on demand, never pull its bulk in.
 
 ### Phase 3: Point of View
 
@@ -98,8 +98,9 @@ First form ce-pov's own independent POV under the active subject-shape contract 
 
 When a panel is named or summoned, or when a cold POV may qualify for a proactive offer, read
 `references/cross-model-panel.md` before resolving participation or deciding whether to offer.
+A summons is detected by reasoning over the invocation context — the user's wording or a calling skill's args — so a caller's paraphrase in one channel never cancels a summons still present in another; only a summons erased from every readable channel upstream is unrecoverable here.
 Invoking a named peer, an explicit cross-check, or `oracle` authorizes the panel protocol's normal read-only consultation against this project. Announce the selected peers before dispatch; ask only when a retry adds an unexpected recipient or intermediary, or an active instruction requires separate approval. Peers inspect the shared working tree directly and cannot edit it. The panel protocol preserves an unbiased initial round, bounds evidence-based reconciliation while honoring user-supplied pass limits, and attributes only receipt-supported independence.
-Resolve and finish the panel branch, including any fold-in or reconciliation, before composing the user-facing result. If no panel runs, keep the solo result unchanged.
+Resolve and finish the panel branch, including any fold-in or reconciliation, before composing the user-facing result. Any POV delivered after a summons states which peers ran, or that none did and the observed reason; if no panel runs after a summons, keep the verdict content unchanged but add that panel-status line rather than shipping a bare solo verdict. A POV with no summons keeps the solo result unchanged with no panel note.
 
 Only then emit the final contract for the active subject shape. For an external-adoption question, the existing grade vocabulary, schema fields, tier sizing, and output economy apply unchanged. A document take or approach-set position follows its own explicit contract. Every shape is a **compact chat block, not a research report**: lead with the grade, bottom line, or position named by its contract; keep each field terse; and never reprint scout dossiers or raw search output.
 

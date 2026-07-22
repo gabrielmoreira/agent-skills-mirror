@@ -10,8 +10,9 @@ import sqlite3
 import sys
 import threading
 import time
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from shutil import which
@@ -39,6 +40,7 @@ from . import (
     linkedin,
     library,
     library_index,
+    log,
     normalize,
     permission_preflight,
     perplexity,
@@ -59,6 +61,7 @@ from . import (
     techmeme,
     threads,
     tiktok,
+    topic_shape,
     truthsocial,
     trustpilot,
     xai_x,
@@ -475,41 +478,6 @@ def _fetch_discovery_source(
     raise ValueError(f"Unsupported discovery source: {source}")
 
 
-def discovery_topic_name(
-    cluster: schema.Cluster,
-    candidates: dict[str, schema.Candidate],
-    domain: str,
-) -> str:
-    """Turn a story cluster into a concise, reusable research topic."""
-    members = [candidates[cid] for cid in cluster.candidate_ids if cid in candidates]
-    leader = candidates.get(cluster.representative_ids[0]) if cluster.representative_ids else None
-    leader = leader or (members[0] if members else None)
-    if leader is None:
-        return domain
-    title = re.sub(r"^(?:show|ask|tell|launch) hn:\s*", "", leader.title, flags=re.I)
-    title = re.sub(r"^digg cluster (?:about|on)\s+", "", title, flags=re.I)
-    title = re.sub(r"\s*(?::|-)?\s*(?:discussion thread|gains momentum)$", "", title, flags=re.I)
-
-    if len(members) > 1:
-        entity_sets = [
-            entity_extract.extract_text_entities(f"{member.title} {member.snippet}")
-            for member in members
-        ]
-        shared = set.intersection(*entity_sets) if entity_sets else set()
-        shared_words = [
-            word.strip(".,:;!?()[]{}\"'")
-            for word in title.split()
-            if word.strip(".,:;!?()[]{}\"'").lower() in shared
-        ]
-        if 2 <= len(shared_words) <= 7:
-            title = " ".join(shared_words)
-
-    title = " ".join(title.split()).strip(" -:;,.\"'")
-    if len(title) > 96:
-        title = title[:93].rsplit(" ", 1)[0] + "..."
-    return title or domain
-
-
 def _discovery_engagement(
     items: list[schema.SourceItem],
 ) -> dict[str, dict[str, float | int]]:
@@ -628,32 +596,146 @@ def nominate_candidates(
 class Nomination:
     """A named candidate topic produced by the nominate stage.
 
-    ``seed_score`` is the cheap pre-enrichment velocity rank - enough to decide
-    WHICH candidates deserve a full pipeline pass, but not the final ranking
-    signal (that comes from enriched evidence downstream).
+    ``seed_score`` is the cheap pre-enrichment rank - seed velocity on the
+    nominate stage, blended with the HOST judge's content-worthiness on the
+    protocol resume leg (see ``rerank.judge_blended_score``). Enough to
+    decide WHICH candidates deserve a full pipeline pass, but not the final
+    ranking signal (that comes from enriched evidence downstream).
+    ``junk_shape`` flags help-me/beginner/musing shapes that should not
+    become content topics; ``worthiness`` is the host judge's 0-100 content
+    score, None on the heuristic path.
     """
 
     name: str
     seed_score: float
     items: list[schema.SourceItem] = field(default_factory=list)
     summary: str = ""
+    junk_shape: bool = False
+    worthiness: float | None = None
 
 
-def nominate_topics(
+def _cluster_entity_counts(
+    cluster: schema.Cluster,
+    candidate_map: dict[str, schema.Candidate],
+) -> Counter:
+    """Entity-token frequencies across a cluster's members (title + snippet)."""
+    counts: Counter = Counter()
+    for candidate_id in cluster.candidate_ids:
+        candidate = candidate_map.get(candidate_id)
+        if candidate:
+            counts.update(entity_extract.extract_text_entities(
+                f"{candidate.title} {candidate.snippet}"
+            ))
+    return counts
+
+
+# Bound on how many distinguishing entity tokens a colliding cluster may try
+# before it is treated as indistinguishable from the earlier story. Keeps a
+# pathological cluster (dozens of unique tokens, every resulting name already
+# taken) from scanning its whole vocabulary.
+_DISAMBIGUATION_TOKEN_LIMIT = 5
+
+
+def _disambiguated_topic_name(
+    name: str,
+    cluster: schema.Cluster,
+    earlier_cluster: schema.Cluster,
+    candidate_map: dict[str, schema.Candidate],
+    entity_counts_cache: dict[str, Counter],
+    taken_names: dict[str, schema.Cluster],
+) -> str | None:
+    """Disambiguate a colliding topic name by appending the later cluster's
+    strongest entity token that the earlier cluster does not share.
+
+    Distinguishing tokens are tried in descending strength order (bounded at
+    ``_DISAMBIGUATION_TOKEN_LIMIT``) and the first resulting name not already
+    present in ``taken_names`` (casefolded keys) wins: a first-choice suffix
+    colliding with an already-taken name must not drop a distinct story while
+    another distinguishing token remains.
+
+    ``entity_counts_cache`` (keyed by cluster id, owned by the caller) memoizes
+    per-cluster entity counts so repeated collisions against the same cluster
+    never recompute them.
+
+    Returns None when no distinguishing entity yields an unused name - the
+    clusters cannot be told apart by content, so the caller treats them as the
+    same story.
+    """
+    def cached_counts(target: schema.Cluster) -> Counter:
+        counts = entity_counts_cache.get(target.cluster_id)
+        if counts is None:
+            counts = _cluster_entity_counts(target, candidate_map)
+            entity_counts_cache[target.cluster_id] = counts
+        return counts
+
+    later_counts = cached_counts(cluster)
+    earlier_entities = set(cached_counts(earlier_cluster))
+    name_tokens = {token.casefold() for token in name.split()}
+    choices = [
+        (count, token) for token, count in later_counts.items()
+        if token not in earlier_entities and token.casefold() not in name_tokens
+    ]
+    # Strongest first = most frequent across the cluster; alphabetical
+    # tie-break keeps the result deterministic.
+    ranked = sorted(choices, key=lambda entry: (-entry[0], entry[1]))
+    for _, token in ranked[:_DISAMBIGUATION_TOKEN_LIMIT]:
+        display = token
+        for candidate_id in cluster.candidate_ids:
+            candidate = candidate_map.get(candidate_id)
+            if candidate is None:
+                continue
+            match = next(
+                (
+                    word.strip("\"'`()[]{}.,:;!?")
+                    for word in f"{candidate.title} {candidate.snippet}".split()
+                    if word.strip("\"'`()[]{}.,:;!?").lower() == token
+                ),
+                None,
+            )
+            if match:
+                display = match
+                break
+        resolved = f"{name} {display}"
+        if resolved.casefold() not in taken_names:
+            return resolved
+    return None
+
+
+def nominate_topic_pool(
     bundle: schema.RetrievalBundle,
     query_plan: schema.QueryPlan,
     plan: schema.DiscoveryPlan,
     *,
     to_date: str,
     limit: int,
-) -> list[Nomination]:
+) -> list[tuple[Nomination, str]]:
     """Stage 1b of discovery: cluster nominated items into named candidate
-    topics and rank them by seed velocity.
+    topics, rank them, and pair each with its source cluster id.
 
-    Names are deduped casefold so the same story surfacing under two clusters
-    yields one nomination. Returns at most ``limit`` nominations, never padded -
-    fewer clusters than ``limit`` means a shorter list, and the confidence
-    floor downstream decides whether what survived is worth showing.
+    This is the shared core behind ``nominate_topics`` (the one-shot path,
+    which drops the cluster ids) and the leg-1 nominate-only sweep (which
+    keys nominations-bundle rows on them, see ``run_discover_nominate``).
+
+    Naming and junk classification are the deterministic ``topic_shape``
+    heuristics and ranking is velocity-only - the engine runs no LLM here.
+    Reasoning-model judgment lives in the host-judged protocol: the host
+    renames, junk-filters, and worthiness-scores this pool from the leg-1
+    bundle, and ``run_discover_resume`` applies those verdicts. The one-shot
+    path ships the heuristic names as-is.
+
+    Casefold name collisions are disambiguated (the later cluster's strongest
+    non-shared entity token is appended, trying successive tokens when the
+    first-choice suffix is itself already taken) rather than blindly dropped:
+    short distilled names collide far more often than raw 96-char titles, and
+    a silent drop hides a distinct story. A colliding cluster is dropped only
+    when it shares a representative candidate with the earlier one (the same
+    story surfacing twice) or when no distinguishing entity token yields an
+    unused name.
+
+    Returns at most ``limit`` ``(nomination, cluster_id)`` pairs, never
+    padded - fewer clusters than ``limit`` means a shorter list, and the
+    confidence floor downstream decides whether what survived is worth
+    showing.
     """
     candidates = weighted_rrf(bundle.items_by_source_and_query, query_plan, pool_limit=80)
     for candidate in candidates:
@@ -676,25 +758,65 @@ def nominate_topics(
         ranked_clusters.append((score, cluster, cluster_items))
     ranked_clusters.sort(key=lambda entry: (-entry[0], entry[1].title.lower()))
 
-    nominations: list[Nomination] = []
-    seen_topic_names: set[str] = set()
+    # Heuristic naming from each cluster's leader text (title + snippet).
+    named: list[tuple[float, schema.Cluster, list[schema.SourceItem], str, bool]] = []
     for score, cluster, cluster_items in ranked_clusters:
-        name = discovery_topic_name(cluster, candidate_map, plan.domain)
+        leader = candidate_map.get(cluster.representative_ids[0]) if cluster.representative_ids else None
+        title = (leader.title if leader else cluster.title) or ""
+        snip = (leader.snippet if leader else "") or ""
+        name = topic_shape.distill_topic_name(title, snip) or plan.domain or title
+        junk_shape = topic_shape.is_junk_shape(title, snip)
+        named.append((score, cluster, cluster_items, name, junk_shape))
+    named.sort(key=lambda entry: (-entry[0], entry[3].lower()))
+
+    pool: list[tuple[Nomination, str]] = []
+    taken_names: dict[str, schema.Cluster] = {}
+    entity_counts_cache: dict[str, Counter] = {}
+    for score, cluster, cluster_items, name, junk_shape in named:
         name_key = name.casefold()
-        if name_key in seen_topic_names:
-            continue
-        seen_topic_names.add(name_key)
+        if name_key in taken_names:
+            earlier_cluster = taken_names[name_key]
+            if set(cluster.representative_ids) & set(earlier_cluster.representative_ids):
+                continue  # same story surfacing twice
+            resolved = _disambiguated_topic_name(
+                name, cluster, earlier_cluster, candidate_map, entity_counts_cache,
+                taken_names,
+            )
+            if resolved is None:
+                continue  # indistinguishable by content: treat as the same story
+            name = resolved
+            name_key = name.casefold()
+        taken_names[name_key] = cluster
         leader = candidate_map.get(cluster.representative_ids[0]) if cluster.representative_ids else None
         summary = (leader.snippet if leader else "") or (leader.title if leader else name)
-        nominations.append(Nomination(
+        pool.append((Nomination(
             name=name,
             seed_score=score,
             items=cluster_items,
             summary=summary,
-        ))
-        if len(nominations) >= limit:
+            junk_shape=junk_shape,
+        ), cluster.cluster_id))
+        if len(pool) >= limit:
             break
-    return nominations
+    return pool
+
+
+def nominate_topics(
+    bundle: schema.RetrievalBundle,
+    query_plan: schema.QueryPlan,
+    plan: schema.DiscoveryPlan,
+    *,
+    to_date: str,
+    limit: int,
+) -> list[Nomination]:
+    """``nominate_topic_pool`` without the cluster ids: the one-shot
+    discovery path's contract (see that function for the full semantics)."""
+    return [
+        nomination
+        for nomination, _cluster_id in nominate_topic_pool(
+            bundle, query_plan, plan, to_date=to_date, limit=limit,
+        )
+    ]
 
 
 # Enrichment fan-out bounds. Sub-runs hit the same upstream APIs as a normal
@@ -875,29 +997,38 @@ def _best_community_comment(items: list[schema.SourceItem]) -> str | None:
     return f'"{body}"{attribution}{votes}'
 
 
-def run_discover(
+@dataclass(frozen=True)
+class _DiscoverySweep:
+    """The shared front half of both discovery entry points: the resolved
+    plan and window, the swept listing bundle, and finalized per-source
+    status. Everything downstream (judging, enrichment, floor, queue)
+    belongs to the caller's leg."""
+
+    plan: schema.DiscoveryPlan
+    query_plan: schema.QueryPlan
+    from_date: str
+    to_date: str
+    bundle: schema.RetrievalBundle
+    source_status: dict[str, schema.SourceOutcome]
+
+
+def _discovery_sweep(
     *,
     domain: str,
     config: dict[str, Any],
-    depth: str = "default",
-    requested_sources: list[str] | None = None,
-    mock: bool = False,
-    subreddits: list[str] | None = None,
-    lookback_days: int = 30,
-    as_of_date: str | None = None,
-    limit: int = 10,
-    enrich: bool = False,
-    enrich_requested_sources: list[str] | None = None,
-) -> schema.DiscoveryReport:
-    """Sweep category listings and rank the topics gaining velocity.
+    depth: str,
+    requested_sources: list[str] | None,
+    mock: bool,
+    subreddits: list[str] | None,
+    lookback_days: int,
+    as_of_date: str | None,
+) -> _DiscoverySweep:
+    """Resolve the momentum window, validate/bound the listing sources, build
+    the discovery plan, sweep the river feeds, and finalize source status.
 
-    ``requested_sources`` bounds the listing sweep (discovery-capable feeds
-    only). ``enrich_requested_sources`` bounds the per-topic research passes:
-    None means every available source - which is what lets Techmeme, arXiv,
-    YouTube, Polymarket, and community comments reach discovery despite having
-    no river feed of their own. Pass the user's original --search list here so
-    an explicit source boundary holds through enrichment too.
-    """
+    Shared verbatim by ``run_discover`` (one-shot) and
+    ``run_discover_nominate`` (protocol leg 1) so the two paths can never
+    drift on what a sweep means."""
     from_date, to_date = dates.get_date_range(lookback_days, as_of_date=as_of_date)
     requested = normalize_requested_sources(requested_sources)
     unsupported = sorted(set(requested or []) - set(DISCOVERY_SOURCES))
@@ -920,7 +1051,6 @@ def run_discover(
 
     global_mode = not plan.domain
     domain_label = plan.domain or "everything"
-    source_status: dict[str, schema.SourceOutcome] = {}
     query_plan = schema.QueryPlan(
         intent="breaking_news",
         freshness_mode="breaking",
@@ -949,6 +1079,7 @@ def run_discover(
         keyword_gate=not global_mode,
     )
 
+    source_status: dict[str, schema.SourceOutcome] = {}
     for source in DISCOVERY_SOURCES:
         if source in bundle.source_status:
             continue
@@ -963,10 +1094,347 @@ def run_discover(
             fix_hint="doctor",
         )
     source_status.update(_finalize_source_status(bundle.source_status, bundle.items_by_source))
+    return _DiscoverySweep(
+        plan=plan,
+        query_plan=query_plan,
+        from_date=from_date,
+        to_date=to_date,
+        bundle=bundle,
+        source_status=source_status,
+    )
+
+
+def _degraded_discovery_sources(
+    source_status: dict[str, schema.SourceOutcome],
+) -> list[str]:
+    """Sources whose outcome is neither clean nor an expected skip."""
+    return [
+        source for source, outcome_state in source_status.items()
+        if outcome_state.state not in {health.OK, schema.NO_RESULTS, schema.SKIPPED_UNCONFIGURED}
+    ]
+
+
+@dataclass(frozen=True)
+class DiscoverNominateResult:
+    """Leg 1 output of the host-judged discovery protocol: the ranked judge
+    pool as ``(nomination, cluster_id)`` pairs plus the sweep context the CLI
+    needs to write the nominations bundle - or to render the nothing-solid
+    brief when the pool is empty."""
+
+    plan: schema.DiscoveryPlan
+    from_date: str
+    to_date: str
+    source_status: dict[str, schema.SourceOutcome]
+    pool: list[tuple[Nomination, str]]
+
+
+def run_discover_nominate(
+    *,
+    domain: str,
+    config: dict[str, Any],
+    depth: str = "default",
+    requested_sources: list[str] | None = None,
+    mock: bool = False,
+    subreddits: list[str] | None = None,
+    lookback_days: int = 30,
+    as_of_date: str | None = None,
+) -> DiscoverNominateResult:
+    """Protocol leg 1: sweep the listings and build the FULL judge pool.
+
+    Same sweep and clustering as ``run_discover``, but the pool is cut at
+    ``rerank.JUDGE_POOL_LIMIT`` (not the enrichment limit). Like every
+    discovery path it is deterministic-heuristic: no provider is ever
+    resolved, so names and junk flags are the ``topic_shape`` baselines the
+    host judges against. No enrichment, no confidence floor, no queue
+    writes - those belong to legs 2 and 3.
+    """
+    sweep = _discovery_sweep(
+        domain=domain,
+        config=config,
+        depth=depth,
+        requested_sources=requested_sources,
+        mock=mock,
+        subreddits=subreddits,
+        lookback_days=lookback_days,
+        as_of_date=as_of_date,
+    )
+    pool = nominate_topic_pool(
+        sweep.bundle, sweep.query_plan, sweep.plan,
+        to_date=sweep.to_date,
+        limit=rerank.JUDGE_POOL_LIMIT,
+    )
+    return DiscoverNominateResult(
+        plan=sweep.plan,
+        from_date=sweep.from_date,
+        to_date=sweep.to_date,
+        source_status=sweep.source_status,
+        pool=pool,
+    )
+
+
+def nominate_nothing_solid_report(result: DiscoverNominateResult) -> schema.DiscoveryReport:
+    """The honest-empty leg-1 report: a zero-nomination sweep renders the
+    same nothing-solid brief a one-shot run would (and writes no bundle)."""
+    warnings = [
+        "The listing sweep nominated no topics this window; reporting "
+        "nothing solid instead of ranked noise."
+    ]
+    failed = _degraded_discovery_sources(result.source_status)
+    if failed:
+        warnings.append(f"Some discovery sources degraded: {', '.join(sorted(failed))}.")
+    return schema.DiscoveryReport(
+        domain=result.plan.domain,
+        range_from=result.from_date,
+        range_to=result.to_date,
+        generated_at=datetime.now(timezone.utc).isoformat(),
+        plan=result.plan,
+        topics=[],
+        source_status=result.source_status,
+        warnings=warnings,
+        outcome="nothing-solid",
+        weak_signal=None,
+    )
+
+
+def _floor_survivor_records(
+    enriched_entries: list[EnrichedTopic],
+    *,
+    to_date: str,
+    topic_limit: int,
+) -> tuple[
+    list[dict[str, Any]],
+    tuple[float, str] | None,
+    tuple[float, str] | None,
+]:
+    """Apply the discovery confidence floor to enriched entries in order,
+    returning the survivor records plus the strongest non-junk and junk weak
+    signals among the failures.
+
+    Shared verbatim by ``run_discover`` (one-shot) and ``run_discover_resume``
+    (protocol leg 2) so floor semantics can never drift between the paths.
+    """
+    survivors: list[dict[str, Any]] = []
+    weak_signal: tuple[float, str] | None = None
+    junk_weak_signal: tuple[float, str] | None = None
+    for entry in enriched_entries:
+        nomination = entry.nomination
+        evidence_items = _enriched_evidence_items(entry)
+        sources = sorted({item.source for item in evidence_items})
+        native_total = sum(
+            rerank.discovery_engagement_total(item) for item in evidence_items
+        )
+        score = rerank.discovery_velocity_score(evidence_items, as_of_date=to_date)
+        if not rerank.passes_discovery_floor(
+            source_count=len(sources),
+            engagement_total=native_total,
+            item_count=len(evidence_items),
+            junk_shape=nomination.junk_shape,
+            # Junk corroboration counts distinct SEED listing sources, never
+            # the enriched corpus - a successful enrichment pass is
+            # multi-source for almost any topic, so it would never bind.
+            seed_source_count=len({item.source for item in nomination.items}),
+        ):
+            # Sub-floor evidence never ranks; remember what came closest so a
+            # nothing-solid brief can still name the strongest weak signal.
+            # Junk-shaped failures are tracked separately: the brief prefers
+            # the strongest NON-junk failure and names a junk one only when
+            # every failure is junk-shaped (never empty when failures exist).
+            if nomination.junk_shape:
+                if junk_weak_signal is None or score > junk_weak_signal[0]:
+                    junk_weak_signal = (score, nomination.name)
+            elif weak_signal is None or score > weak_signal[0]:
+                weak_signal = (score, nomination.name)
+            continue
+        if len(survivors) >= topic_limit:
+            break
+        source_phrase = ", ".join(sources[:-1]) + (
+            f" and {sources[-1]}" if len(sources) > 1 else (sources[0] if sources else "the listings")
+        )
+        noun = "evidence item" if entry.report is not None else "listing item"
+        why = (
+            f"{len(evidence_items)} {noun}{'s' if len(evidence_items) != 1 else ''} on "
+            f"{source_phrase} generated {native_total:,.0f} native interactions. "
+            f"{nomination.summary[:220]}"
+        )
+        top_comment = _best_community_comment(evidence_items) if entry.report is not None else None
+        # Stage-2 angle input: the survivor's strongest evidence, enriched
+        # corpus when the pipeline pass succeeded, seed items otherwise
+        # (evidence_items already resolves that).
+        top_titles = [
+            item.title.strip()
+            for item in sorted(
+                evidence_items,
+                key=rerank.discovery_engagement_total,
+                reverse=True,
+            )
+            if item.title and item.title.strip()
+        ][:3]
+        survivors.append({
+            "name": nomination.name,
+            "why": why,
+            "momentum": _discovery_momentum(evidence_items, to_date),
+            "velocity_score": round(score, 2),
+            "sources": sources,
+            "engagement_by_source": _discovery_engagement(evidence_items),
+            "evidence_urls": list(dict.fromkeys(item.url for item in evidence_items if item.url))[:5],
+            "top_comment": top_comment,
+            "titles": "; ".join(top_titles),
+            "engagement_phrase": f"{native_total:,.0f} native interactions across {source_phrase}",
+        })
+    return survivors, weak_signal, junk_weak_signal
+
+
+def _fold_same_story_records(survivors: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Same-story fold + velocity ordering over floor-survivor records.
+
+    Floor survivors that share enriched evidence are the SAME story wearing
+    two judged names (the real-run failure: two topics quoting the identical
+    1,635-vote comment). Duplicates = identical non-None top comment OR >= 2
+    shared evidence URLs; the lower-velocity twin is dropped, and a winning
+    replacement re-scans the kept list to a fixpoint so chained overlap
+    (A~C~B) still collapses to one survivor. Selection stays seed-ordered
+    upstream; this only prunes, then sorts by displayed velocity (stable) so
+    rank 1 is the highest velocity_score.
+    """
+    def _same_story(a: dict[str, Any], b: dict[str, Any]) -> bool:
+        if a["top_comment"] is not None and a["top_comment"] == b["top_comment"]:
+            return True
+        return len(set(a["evidence_urls"]) & set(b["evidence_urls"])) >= 2
+
+    folded: list[dict[str, Any]] = []
+    for record in survivors:
+        # Fold to a fixpoint: when the incoming record REPLACES a kept one,
+        # the replacement may share evidence with entries the dropped record
+        # never matched (three-way chains: A kept, C shares the comment with
+        # A and URLs with B). The winner re-scans the remaining kept entries
+        # until nothing matches, so one story always yields one survivor.
+        incoming: dict[str, Any] | None = record
+        while incoming is not None:
+            dup_index = next(
+                (index for index, kept in enumerate(folded) if _same_story(incoming, kept)),
+                None,
+            )
+            if dup_index is None:
+                folded.append(incoming)
+                break
+            kept = folded[dup_index]
+            if incoming["velocity_score"] > kept["velocity_score"]:
+                folded.pop(dup_index)
+                dropped_name, kept_name = kept["name"], incoming["name"]
+            else:
+                dropped_name, kept_name = incoming["name"], kept["name"]
+                incoming = None  # dropped; the kept entry stays in place
+            log.source_log(
+                "Discover",
+                f"folded duplicate story {dropped_name!r} into {kept_name!r} (shared evidence)",
+                tty_only=False,
+            )
+
+    folded.sort(key=lambda record: record["velocity_score"], reverse=True)
+    return folded
+
+
+def _records_to_discovery_topics(
+    folded: list[dict[str, Any]],
+) -> list[schema.DiscoveryTopic]:
+    """Folded survivor records to ranked topics (ranks = 1-based positions)."""
+    return [
+        schema.DiscoveryTopic(
+            rank=position,
+            name=record["name"],
+            why_spiking=record["why"],
+            momentum=record["momentum"],
+            velocity_score=record["velocity_score"],
+            sources=record["sources"],
+            engagement_by_source=record["engagement_by_source"],
+            command=f'/last30days "{record["name"].replace(chr(34), chr(39))}"',
+            evidence_urls=record["evidence_urls"],
+            top_comment=record["top_comment"],
+            corroboration_count=len(record["sources"]),
+        )
+        for position, record in enumerate(folded, start=1)
+    ]
+
+
+def _discovery_report_warnings(
+    topics: list[schema.DiscoveryTopic],
+    outcome: str,
+    source_status: dict[str, schema.SourceOutcome],
+) -> list[str]:
+    """Coverage warnings shared by the one-shot and resume discovery paths.
+    The resume leg never re-sweeps: it passes the bundle's RESTORED leg-1
+    sweep status, so a degraded feed from the sweep still reaches the leg-2
+    report exactly as the one-shot reports it."""
+    warnings: list[str] = []
+    if outcome == "nothing-solid":
+        warnings.append(
+            "No topic cleared the discovery confidence floor this window; "
+            "reporting nothing solid instead of ranked noise."
+        )
+    elif len(topics) < 5:
+        warnings.append("Fewer than five topic clusters cleared the confidence floor this window.")
+    if topics and all(len(topic.sources) == 1 for topic in topics):
+        warnings.append("Discovery evidence is single-source; configure Digg for broader confirmation.")
+    failed = _degraded_discovery_sources(source_status)
+    if failed:
+        warnings.append(f"Some discovery sources degraded: {', '.join(sorted(failed))}.")
+    return warnings
+
+
+def run_discover(
+    *,
+    domain: str,
+    config: dict[str, Any],
+    depth: str = "default",
+    requested_sources: list[str] | None = None,
+    mock: bool = False,
+    subreddits: list[str] | None = None,
+    lookback_days: int = 30,
+    as_of_date: str | None = None,
+    limit: int = 10,
+    enrich: bool = False,
+    enrich_requested_sources: list[str] | None = None,
+) -> schema.DiscoveryReport:
+    """Sweep category listings and rank the topics gaining velocity.
+
+    ``requested_sources`` bounds the listing sweep (discovery-capable feeds
+    only). ``enrich_requested_sources`` bounds the per-topic research passes:
+    None means every available source - which is what lets Techmeme, arXiv,
+    YouTube, Polymarket, and community comments reach discovery despite having
+    no river feed of their own. Pass the user's original --search list here so
+    an explicit source boundary holds through enrichment too.
+    """
+    sweep = _discovery_sweep(
+        domain=domain,
+        config=config,
+        depth=depth,
+        requested_sources=requested_sources,
+        mock=mock,
+        subreddits=subreddits,
+        lookback_days=lookback_days,
+        as_of_date=as_of_date,
+    )
+    plan = sweep.plan
+    from_date, to_date = sweep.from_date, sweep.to_date
+    source_status = sweep.source_status
+
+    # The engine never names or angles topics with an LLM: the one-shot path
+    # is deterministic-heuristic by design, and reasoning-model judgment
+    # lives in the host-judged SKILL.md protocol. Say so loudly once per live
+    # run; --mock stays silent (a deliberate mock run is not a degraded run).
+    if not mock:
+        log.source_log(
+            "Discover",
+            "one-shot run: topic names use deterministic heuristics and no "
+            "content angles are generated - a reasoning-model host running "
+            "the SKILL.md discovery protocol gets host-judged names, junk "
+            "filtering, and podcast/X angles",
+            tty_only=False,
+        )
 
     topic_limit = max(5, min(10, limit))
     nominations = nominate_topics(
-        bundle, query_plan, plan,
+        sweep.bundle, sweep.query_plan, plan,
         to_date=to_date,
         limit=ENRICH_LIMIT if enrich else topic_limit,
     )
@@ -985,69 +1453,19 @@ def run_discover(
             EnrichedTopic(nomination=nomination) for nomination in nominations
         ]
 
-    topics: list[schema.DiscoveryTopic] = []
-    weak_signal: tuple[float, str] | None = None
-    for entry in enriched_entries:
-        evidence_items = _enriched_evidence_items(entry)
-        sources = sorted({item.source for item in evidence_items})
-        native_total = sum(
-            rerank.discovery_engagement_total(item) for item in evidence_items
-        )
-        score = rerank.discovery_velocity_score(evidence_items, as_of_date=to_date)
-        if not rerank.passes_discovery_floor(
-            source_count=len(sources),
-            engagement_total=native_total,
-            item_count=len(evidence_items),
-        ):
-            # Sub-floor evidence never ranks; remember what came closest so a
-            # nothing-solid brief can still name the strongest weak signal.
-            if weak_signal is None or score > weak_signal[0]:
-                weak_signal = (score, entry.nomination.name)
-            continue
-        if len(topics) >= topic_limit:
-            break
-        nomination = entry.nomination
-        source_phrase = ", ".join(sources[:-1]) + (
-            f" and {sources[-1]}" if len(sources) > 1 else (sources[0] if sources else "the listings")
-        )
-        noun = "evidence item" if entry.report is not None else "listing item"
-        why = (
-            f"{len(evidence_items)} {noun}{'s' if len(evidence_items) != 1 else ''} on "
-            f"{source_phrase} generated {native_total:,.0f} native interactions. "
-            f"{nomination.summary[:220]}"
-        )
-        topics.append(schema.DiscoveryTopic(
-            rank=len(topics) + 1,
-            name=nomination.name,
-            why_spiking=why,
-            momentum=_discovery_momentum(evidence_items, to_date),
-            velocity_score=round(score, 2),
-            sources=sources,
-            engagement_by_source=_discovery_engagement(evidence_items),
-            command=f'/last30days "{nomination.name.replace(chr(34), chr(39))}"',
-            evidence_urls=list(dict.fromkeys(item.url for item in evidence_items if item.url))[:5],
-            top_comment=_best_community_comment(evidence_items) if entry.report is not None else None,
-            corroboration_count=len(sources),
-        ))
+    survivors, weak_signal, junk_weak_signal = _floor_survivor_records(
+        enriched_entries, to_date=to_date, topic_limit=topic_limit,
+    )
+    folded = _fold_same_story_records(survivors)
+    # One-shot topics ship without angles (podcast_angle / x_article_angle
+    # stay None and the renderer omits those lines): content angles are a
+    # host-judged protocol deliverable, written on the finalize leg.
+    topics = _records_to_discovery_topics(folded)
+
+    if weak_signal is None:
+        weak_signal = junk_weak_signal
 
     outcome = "ok" if topics else "nothing-solid"
-
-    warnings: list[str] = []
-    if outcome == "nothing-solid":
-        warnings.append(
-            "No topic cleared the discovery confidence floor this window; "
-            "reporting nothing solid instead of ranked noise."
-        )
-    elif len(topics) < 5:
-        warnings.append("Fewer than five topic clusters cleared the confidence floor this window.")
-    if topics and all(len(topic.sources) == 1 for topic in topics):
-        warnings.append("Discovery evidence is single-source; configure Digg for broader confirmation.")
-    failed = [
-        source for source, outcome_state in source_status.items()
-        if outcome_state.state not in {health.OK, schema.NO_RESULTS, schema.SKIPPED_UNCONFIGURED}
-    ]
-    if failed:
-        warnings.append(f"Some discovery sources degraded: {', '.join(sorted(failed))}.")
 
     return schema.DiscoveryReport(
         domain=plan.domain,
@@ -1057,10 +1475,226 @@ def run_discover(
         plan=plan,
         topics=topics,
         source_status=source_status,
-        warnings=warnings,
+        warnings=_discovery_report_warnings(topics, outcome, source_status),
         outcome=outcome,
         weak_signal=weak_signal[1] if weak_signal and not topics else None,
     )
+
+
+# Protocol leg 2 (resume) deep-tier enrichment bounds. The module-level
+# ENRICH_* constants above stay the one-shot --discover contract (quick depth,
+# 240s budget, 3 workers); a deep-tier bundle upgrades its per-topic sub-runs
+# to the default research depth with a wider wall-clock budget and one more
+# worker, because leg 2 is the protocol's only research pass. Shallow-tier
+# bundles keep the one-shot quick constants. Both tiers flow through
+# enrich_nominations' PARAMETERS - the constants themselves are never edited,
+# so neither tier can leak into the other path.
+RESUME_DEEP_ENRICH_DEPTH = "default"
+RESUME_DEEP_ENRICH_MAX_WORKERS = 4
+RESUME_DEEP_ENRICH_BUDGET_SECONDS = 450.0
+
+
+def _resume_enrich_budget_seconds(config: dict[str, Any]) -> float:
+    """Deep-tier batch budget: LAST30DAYS_ENRICH_BUDGET_SECONDS from the
+    RESOLVED config dict only (env.get_config already layers the process env
+    over the .env files) - never read from bare os.environ. Blank,
+    non-numeric, or non-positive values fall back to the 450s default."""
+    raw = config.get("LAST30DAYS_ENRICH_BUDGET_SECONDS")
+    if raw is None or str(raw).strip() == "":
+        return RESUME_DEEP_ENRICH_BUDGET_SECONDS
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return RESUME_DEEP_ENRICH_BUDGET_SECONDS
+    return value if value > 0 else RESUME_DEEP_ENRICH_BUDGET_SECONDS
+
+
+@dataclass(frozen=True)
+class DiscoverResumeResult:
+    """Leg 2 output of the host-judged discovery protocol: the floored,
+    folded, velocity-ranked report plus the per-topic angle inputs (keyed by
+    surviving nomination id) that the host writes leg-3 angles from.
+    ``report.source_status`` is the bundle's restored leg-1 sweep status -
+    leg 2 never re-sweeps the listing feeds, so the sweep's degraded-coverage
+    signal must survive the handoff instead of reading as clean."""
+
+    report: schema.DiscoveryReport
+    angle_inputs: dict[str, dict[str, str]]
+
+
+def run_discover_resume(
+    bundle: Any,
+    judgments: dict[str, Any],
+    *,
+    config: dict[str, Any],
+    mock: bool = False,
+) -> DiscoverResumeResult:
+    """Protocol leg 2: apply host judgments to the leg-1 bundle, enrich the
+    slot winners, and floor/fold/rank on the same code path as the one-shot
+    run.
+
+    ``bundle`` is a ``discovery_handoff.NominationsBundle`` and ``judgments``
+    the mapping ``discovery_handoff.read_judgments`` returns (annotated
+    loosely because discovery_handoff imports this module at load time).
+
+    Judgment application is per field: an absent host name falls back to the
+    bundle's heuristic name, an absent junk flag to the heuristic junk flag,
+    and absent worthiness to the neutral blend default (None -> 50 inside
+    ``rerank.judge_blended_score`` - the same treatment the judge-absent path
+    always used). Applied names are collision-resolved over the whole pool
+    before anything keys on them, and the applied name IS the enrichment
+    sub-run topic.
+
+    Slot selection: host-junk rows never contend for enrichment slots, and a
+    heuristic-junk fallback row with fewer than ``rerank.FLOOR_MIN_SOURCES``
+    distinct seed sources is skipped pre-enrichment (it structurally cannot
+    pass the floor's seed-corroboration rule). Both stay eligible to be the
+    junk-tracked weak signal of a nothing-solid brief, and the brief prefers
+    a non-junk weak signal exactly like the one-shot path. At the floor,
+    host-judged rows pass ``junk_shape=False`` (host-junk never earned a
+    slot) while heuristic-fallback rows keep their heuristic flag with the
+    existing seed-source corroboration.
+
+    Velocity, momentum, and the enrichment window all score against the
+    bundle's momentum window (from_date/to_date), never the resume-time
+    clock: the host may judge up to the handoff TTL after the sweep, and the
+    numbers must describe the window the sweep captured.
+    """
+    # Runtime-only import: discovery_handoff imports pipeline at module load,
+    # so the reverse import must happen at call time (no import-time cycle).
+    from . import discovery_handoff
+
+    to_date = bundle.to_date
+    verdicts = [
+        discovery_handoff.judgment_for(judgments, entry.nomination_id)
+        for entry in bundle.nominations
+    ]
+    applied_names = discovery_handoff.resolve_name_collisions([
+        (
+            entry.nomination,
+            verdict.name or entry.heuristic_name or entry.nomination.name,
+        )
+        for entry, verdict in zip(bundle.nominations, verdicts)
+    ])
+
+    ranked: list[tuple[float, str, Nomination]] = []
+    junk_weak_signal: tuple[float, str] | None = None
+    for entry, verdict, name in zip(bundle.nominations, verdicts, applied_names):
+        items = entry.nomination.items
+        velocity = rerank.discovery_velocity_score(items, as_of_date=to_date)
+        seed_source_count = len({item.source for item in items})
+        host_junk = verdict.junk is True
+        fallback_junk = verdict.junk is None and entry.heuristic_junk
+        if host_junk or (
+            fallback_junk and seed_source_count < rerank.FLOOR_MIN_SOURCES
+        ):
+            if junk_weak_signal is None or velocity > junk_weak_signal[0]:
+                junk_weak_signal = (velocity, name)
+            continue
+        worthiness = (
+            float(verdict.worthiness) if verdict.worthiness is not None else None
+        )
+        blended = rerank.judge_blended_score(velocity, worthiness)
+        ranked.append((
+            blended,
+            entry.nomination_id,
+            replace(
+                entry.nomination,
+                name=name,
+                seed_score=blended,
+                junk_shape=(
+                    False if verdict.junk is not None else entry.heuristic_junk
+                ),
+                worthiness=worthiness,
+            ),
+        ))
+
+    ranked.sort(key=lambda row: (-row[0], row[2].name.lower()))
+    selected = ranked[:ENRICH_LIMIT]
+    nominations = [nomination for _blended, _nomination_id, nomination in selected]
+
+    if bundle.tier == "shallow":
+        depth, max_workers, budget_seconds = (
+            ENRICH_DEPTH, ENRICH_MAX_WORKERS, ENRICH_BUDGET_SECONDS,
+        )
+    else:
+        depth = RESUME_DEEP_ENRICH_DEPTH
+        max_workers = RESUME_DEEP_ENRICH_MAX_WORKERS
+        budget_seconds = _resume_enrich_budget_seconds(config)
+
+    enriched_entries = enrich_nominations(
+        nominations,
+        config=config,
+        requested_sources=bundle.enrichment_source_boundary,
+        mock=mock,
+        depth=depth,
+        lookback_days=bundle.lookback_days,
+        as_of_date=to_date,
+        max_workers=max_workers,
+        budget_seconds=budget_seconds,
+    ) if nominations else []
+
+    # topic_limit mirrors the one-shot default cap (limit=10); the slot cut
+    # above already bounds the pool at ENRICH_LIMIT.
+    survivors, weak_signal, floor_junk_weak_signal = _floor_survivor_records(
+        enriched_entries, to_date=to_date, topic_limit=10,
+    )
+    if floor_junk_weak_signal is not None and (
+        junk_weak_signal is None
+        or floor_junk_weak_signal[0] > junk_weak_signal[0]
+    ):
+        junk_weak_signal = floor_junk_weak_signal
+    folded = _fold_same_story_records(survivors)
+    topics = _records_to_discovery_topics(folded)
+
+    nomination_id_by_name = {
+        nomination.name: nomination_id
+        for _blended, nomination_id, nomination in selected
+    }
+    angle_inputs = {
+        nomination_id_by_name[record["name"]]: {
+            "name": record["name"],
+            "titles": record["titles"],
+            "top_comment": record["top_comment"] or "",
+            "engagement": record["engagement_phrase"],
+        }
+        for record in folded
+    }
+
+    if weak_signal is None:
+        weak_signal = junk_weak_signal
+    outcome = "ok" if topics else "nothing-solid"
+    plan = schema.DiscoveryPlan(
+        domain=bundle.domain,
+        category=None,
+        subreddits=[],
+        sources=(
+            list(bundle.requested_sources)
+            if bundle.requested_sources
+            else sorted({
+                item.source
+                for entry in bundle.nominations
+                for item in entry.nomination.items
+            })
+        ),
+    )
+    # The bundle's restored leg-1 sweep status (empty for pre-field bundles):
+    # degraded sweep coverage must reach this report's status map and its
+    # degraded-sources warning exactly as the one-shot reports it.
+    source_status = dict(getattr(bundle, "source_status", None) or {})
+    report = schema.DiscoveryReport(
+        domain=bundle.domain,
+        range_from=bundle.from_date,
+        range_to=to_date,
+        generated_at=datetime.now(timezone.utc).isoformat(),
+        plan=plan,
+        topics=topics,
+        source_status=source_status,
+        warnings=_discovery_report_warnings(topics, outcome, source_status),
+        outcome=outcome,
+        weak_signal=weak_signal[1] if weak_signal and not topics else None,
+    )
+    return DiscoverResumeResult(report=report, angle_inputs=angle_inputs)
 
 
 def diagnose(
@@ -3319,17 +3953,22 @@ def _google_key(config: dict[str, Any]) -> str | None:
 
 
 def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[dict], dict]:
+    # Namespace URLs and the canned comment by topic: real runs never hand two
+    # distinct stories byte-identical evidence, and discovery's same-story fold
+    # (correctly) collapses topics that share it. Mock enrichment sub-runs feed
+    # this fixture one topic per subquery, so the slug keeps them distinct.
+    slug = re.sub(r"[^a-z0-9]+", "-", subquery.search_query.lower()).strip("-") or "topic"
     payloads = {
         "reddit": [
             {
                 "id": "R1",
                 "title": f"{subquery.search_query} discussion thread",
-                "url": "https://reddit.com/r/example/comments/1",
+                "url": f"https://reddit.com/r/example/comments/{slug}-1",
                 "subreddit": "example",
                 "date": dates.get_date_range(5)[0],
                 "engagement": {"score": 120, "num_comments": 48, "upvote_ratio": 0.91},
                 "selftext": f"Community discussion about {subquery.search_query}.",
-                "top_comments": [{"excerpt": "Strong firsthand feedback from users."}],
+                "top_comments": [{"excerpt": f"Strong firsthand feedback from {subquery.search_query} users."}],
                 "relevance": 0.82,
                 "why_relevant": "Mock Reddit result",
             }
@@ -3338,7 +3977,7 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
             {
                 "id": "X1",
                 "text": f"People on X are discussing {subquery.search_query} right now.",
-                "url": "https://x.com/example/status/1",
+                "url": f"https://x.com/example/status/{slug}-1",
                 "author_handle": "example",
                 "date": dates.get_date_range(2)[0],
                 "engagement": {"likes": 200, "reposts": 35, "replies": 18, "quotes": 4},
@@ -3350,7 +3989,7 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
             {
                 "id": "WB1",
                 "title": f"{subquery.search_query} article",
-                "url": "https://example.com/article",
+                "url": f"https://example.com/article/{slug}",
                 "source_domain": "example.com",
                 "snippet": f"Recent web reporting about {subquery.search_query}.",
                 "date": dates.get_date_range(7)[0],
@@ -3362,7 +4001,7 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
             {
                 "id": "mock1abc",
                 "title": f"Digg cluster about {subquery.search_query}",
-                "url": "https://di.gg/ai/mock1abc",
+                "url": f"https://di.gg/ai/mock1abc-{slug}",
                 "tldr": f"Curated cluster summarizing recent {subquery.search_query} discussion across the AI 1000.",
                 "author": "",
                 "date": dates.get_date_range(3)[0],
@@ -3386,7 +4025,7 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
             {
                 "id": "mock2def",
                 "title": f"Second Digg cluster on {subquery.search_query}",
-                "url": "https://di.gg/ai/mock2def",
+                "url": f"https://di.gg/ai/mock2def-{slug}",
                 "tldr": f"Another angle on {subquery.search_query}.",
                 "author": "",
                 "date": dates.get_date_range(8)[0],
@@ -3399,9 +4038,9 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
         ],
         "arxiv": [
             {
-                "id": "http://arxiv.org/abs/2606.00001v1",
+                "id": f"http://arxiv.org/abs/2606.00001v1-{slug}",
                 "title": f"A Survey of {subquery.search_query}",
-                "url": "https://arxiv.org/abs/2606.00001v1",
+                "url": f"https://arxiv.org/abs/2606.00001v1-{slug}",
                 "summary": f"We present a comprehensive study of {subquery.search_query} and its recent advances.",
                 "author": "Ada Lovelace et al.",
                 "authors": ["Ada Lovelace", "Alan Turing"],
@@ -3413,9 +4052,9 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
         ],
         "techmeme": [
             {
-                "id": "https://www.techmeme.com/260627/p1",
+                "id": f"https://www.techmeme.com/260627/p1-{slug}",
                 "title": f"Major development in {subquery.search_query} reshapes the industry",
-                "url": "https://www.techmeme.com/260627/p1",
+                "url": f"https://www.techmeme.com/260627/p1-{slug}",
                 "source_name": "techcrunch.com",
                 "date": dates.get_date_range(1)[0],
                 "engagement": {},
@@ -3427,7 +4066,7 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
             {
                 "id": "DS1",
                 "title": f"Deep dive: {subquery.search_query} from a paid newsletter",
-                "url": "https://newsletter.example.com/deep-dive",
+                "url": f"https://newsletter.example.com/deep-dive-{slug}",
                 "author": "newsletter.example.com",
                 "date": dates.get_date_range(3)[0],
                 "engagement": {},
@@ -3446,7 +4085,7 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
             {
                 "id": "example.com",
                 "title": f"{subquery.search_query}: TrustScore 3.4",
-                "url": "https://www.trustpilot.com/review/example.com",
+                "url": f"https://www.trustpilot.com/review/{slug}.example.com",
                 "summary": f"Across recent reviews, customers were split on {subquery.search_query}: some praised support, others cited delays.",
                 "name": subquery.search_query,
                 "trustScore": 3.4,
@@ -3461,7 +4100,7 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
             {
                 "id": "J1",
                 "title": "Founding Enterprise Solutions Engineer",
-                "url": "https://boards.greenhouse.io/example/jobs/1",
+                "url": f"https://boards.greenhouse.io/example/jobs/{slug}-1",
                 "description": (
                     f"Work with enterprise customers on SSO, SOC 2, security, "
                     f"and procurement workflows for {subquery.search_query}."
@@ -3476,7 +4115,7 @@ def _mock_stream_results(source: str, subquery: schema.SubQuery) -> tuple[list[d
             {
                 "id": "J2",
                 "title": "Security Platform Engineer",
-                "url": "https://boards.greenhouse.io/example/jobs/2",
+                "url": f"https://boards.greenhouse.io/example/jobs/{slug}-2",
                 "description": "Build enterprise security, audit, and admin workflows.",
                 "department": "Engineering",
                 "location": "Remote",

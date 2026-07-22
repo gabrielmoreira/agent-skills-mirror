@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `intuitem/ciso-assistant-community` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `intuitem/ciso-assistant-community` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `intuitem/ciso-assistant-community` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,10 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/ciso-assistant-basic-risk-assessment/SKILL.md`](.claude/skills/ciso-assistant-basic-risk-assessment/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/ciso-assistant-bootstrap/SKILL.md`](.claude/skills/ciso-assistant-bootstrap/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/mapping-builder/SKILL.md`](.claude/skills/mapping-builder/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/reference-controls-enricher/SKILL.md`](.claude/skills/reference-controls-enricher/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/cis-benchmark-framework/SKILL.md`](.claude/skills/cis-benchmark-framework/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/ciso-assistant-basic-risk-assessment/SKILL.md`](.claude/skills/ciso-assistant-basic-risk-assessment/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/ciso-assistant-bootstrap/SKILL.md`](.claude/skills/ciso-assistant-bootstrap/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/mapping-builder/SKILL.md`](.claude/skills/mapping-builder/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/reference-controls-enricher/SKILL.md`](.claude/skills/reference-controls-enricher/SKILL.md) |
 
 ---
 

@@ -8,7 +8,7 @@ allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/scripts/loomi-bridge.mjs *)
 
 The Loomi Pet has 9 universal state names. The plugin ships the fox
 (`loomi-*`) sprite set for branding; the OpenLoomi runtime's
-`map_state_to_pet` watcher renders the matching sprite for whichever
+state-resolution watcher renders the matching sprite for whichever
 theme you have active (fox or capybara, or any folder under
 `~/.openloomi/pet-custom/`). State set:
 
@@ -73,7 +73,7 @@ When guiding the user through a custom theme, surface these conventions up-front
 
 ### Override JSON shape to communicate
 
-The `overrides` map is camelCase on the wire — `activeTheme`, `customThemesDir`. Snake_case keys silently no-op the assignment (the unit test at `apps/web/src-tauri/src/pet/theme.rs:499` pins the contract). Use the exact shape:
+The `overrides` map is camelCase on the wire — `activeTheme`, `customThemesDir`. Snake_case keys silently no-op the assignment (a unit test in the runtime pins the contract). Use the exact shape:
 
 ```json
 {
@@ -114,4 +114,3 @@ Absolute paths only — the runtime routes them through `tauri::convertFileSrc`,
 - [Customize your Loomi Pet (user docs)](https://github.com/melandlabs/openloomi/blob/main/apps/marketing/content/pet.mdx) — full guide to themes, custom folders, overrides, troubleshooting
 - [Pet API](https://github.com/melandlabs/openloomi/blob/main/apps/marketing/content/pet-api.mdx) — `POST /api/pet/state` for external tools
 - [Attention Agent](https://github.com/melandlabs/openloomi/blob/main/apps/marketing/content/attention-agent.mdx) — the desktop pet as a whole
-- The runtime source: `apps/web/src-tauri/src/pet/theme.rs` (custom themes + overrides), `apps/web/src-tauri/src/pet/watcher.rs::map_state_to_pet` (state resolution)

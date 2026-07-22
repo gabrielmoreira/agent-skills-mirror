@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
+Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 39 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -96,8 +96,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
 | 36 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
 | 37 | ✓ | [`mcp/ccb-role-command/server.py`](mcp/ccb-role-command/server.py) |
-| 38 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
-| 39 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
+| 38 | ✓ | [`test/fixtures/claude-plugin-marketplace/plugins/ccb-fixture-plugin/skills/ccb-fixture-skill/SKILL.md`](test/fixtures/claude-plugin-marketplace/plugins/ccb-fixture-plugin/skills/ccb-fixture-skill/SKILL.md) |
+| 39 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
+| 40 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
 
 ---
 

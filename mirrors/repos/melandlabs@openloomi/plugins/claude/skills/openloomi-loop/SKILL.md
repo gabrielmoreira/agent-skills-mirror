@@ -1,6 +1,6 @@
 ---
 name: openloomi-loop
-description: "openloomi's Loop — the proactive execution brain. Loop runs inside the main web app (apps/web/lib/loop/) and is reached through its HTTP API. Use this skill to inspect state, run a tick, schedule / cancel decision actions, tune preferences, and extend Loop with user-defined decision types, Composio-backed signal channels, or deterministic classifier rules. Triggers: 'openloomi loop', 'loop tick', 'loop schedule', 'loop inbox', 'loop run', 'proactive decisions', 'signal → decision → execute', 'pull signals', 'decision queue', 'register loop type', 'add loop decision type', 'register custom channel', 'add composio channel', 'add loop rule', 'register classifier rule', 'force loop type', 'dry-run loop rule', 'list my loop extensions', 'remove loop type', 'delete loop channel'"
+description: "openloomi's Loop — the proactive execution brain that runs inside the OpenLoomi desktop app. Use this skill to inspect state, run a tick, schedule / cancel decision actions, tune preferences, and extend Loop with user-defined decision types, Composio-backed signal channels, or deterministic classifier rules. Triggers: 'openloomi loop', 'loop tick', 'loop schedule', 'loop inbox', 'loop run', 'proactive decisions', 'signal → decision → execute', 'pull signals', 'decision queue', 'register loop type', 'add loop decision type', 'register custom channel', 'add composio channel', 'add loop rule', 'register classifier rule', 'force loop type', 'dry-run loop rule', 'list my loop extensions', 'remove loop type', 'delete loop channel'"
 allowed-tools: Bash(curl *), Bash(jq *), Bash(cat ~/.openloomi/token *), Bash(base64 -d *), Bash(ls ~/.openloomi/loop/*), Read(~/.openloomi/loop/custom-types.json), Read(~/.openloomi/loop/custom-channels.json), Read(~/.openloomi/loop/classifier-rules.json)
 ---
 
@@ -10,18 +10,18 @@ allowed-tools: Bash(curl *), Bash(jq *), Bash(cat ~/.openloomi/token *), Bash(ba
 
 Loop pulls signals from connected integrations, classifies them into
 typed decisions, and lets the user approve execution from the pet or
-the web UI. All business logic lives in `apps/web/lib/loop/`; this
-skill is a thin Claude-side wrapper around the Loop's HTTP API.
+the web UI. This skill is a thin Claude-side wrapper around Loop's
+HTTP API.
 
 ## Where things live
 
 | Concern | Location |
 |---|---|
-| Business logic | `apps/web/lib/loop/` |
-| HTTP API | `apps/web/app/api/loop/{state,decisions,decision/[id],card/[id],connectors,brief,wrap,tick,preferences,action/*,types,types/[id],channels,channels/[id],classifier-rules,classifier-rules/[id],classifier-rules/dry-run}/route.ts` |
+| Business logic | Loop's TypeScript core (closed `DecisionType` + classifier + scheduler) |
+| HTTP API | `/api/loop/*` — `state`, `decisions`, `decision/[id]`, `card/[id]`, `connectors`, `brief`, `wrap`, `tick`, `preferences`, `action/*`, `types`, `types/[id]`, `channels`, `channels/[id]`, `classifier-rules`, `classifier-rules/[id]`, `classifier-rules/dry-run` |
 | Persistence | `~/.openloomi/loop/{signals.jsonl,decisions.json,status.json,connectors.json,config.json}` |
-| Scheduler | `lib/loop/scheduler.ts` registers 3 `ScheduledJob` rows (`loop.tick` / `loop.brief` / `loop.wrap`) driven by `lib/cron/local-scheduler` |
-| Pet surface | Tauri Rust thread `loomi-pet-decision-watcher` (`apps/web/src-tauri/src/pet/watcher.rs`) polls `decisions.json` mtime every 2s and emits `loop:state` / `loop:decision` to bubble + card webviews. The widget (`apps/web/public/loomi-widget.html`) supports two built-in themes (`fox`, `capybara`) and a `presenting` state surfaced when a decision moves to `done` before the user has reviewed it — click the bubble to flip back to `happy`. User-editable theme config lives at `~/.openloomi/pet-config.json`; see `apps/web/src-tauri/src/pet/theme.rs` and `config_watcher.rs`. |
+| Scheduler | Three `ScheduledJob` rows: `loop.tick`, `loop.brief`, `loop.wrap` (registered by the loop scheduler) |
+| Pet surface | Tauri Rust thread `loomi-pet-decision-watcher` polls `decisions.json` mtime every 2s and emits `loop:state` / `loop:decision` to bubble + card webviews. The widget supports two built-in themes (`fox`, `capybara`) and a `presenting` state surfaced when a decision moves to `done` before the user has reviewed it — click the bubble to flip back to `happy`. User-editable theme config lives at `~/.openloomi/pet-config.json`. |
 
 ## Base URL
 
@@ -157,15 +157,15 @@ curl -sS -X POST "$BASE/api/loop/classifier-rules/dry-run" \
 
 ## How a tick flows
 
-1. `lib/cron/local-scheduler` ticks every minute. For any
-   `ScheduledJob` whose handler is `loop.tick` and `next_run_at <= now`,
-   it dispatches `lib/loop/handlers.ts::tickHandler`.
-2. Handler invokes `lib/loop/tick.ts::run()` which reads the last 2
-   hours of `signals.jsonl`, runs hard-skip rules + the classifier,
-   and persists surviving candidates via `decisions.add()`.
-3. `apps/web/src-tauri/src/pet/watcher.rs` polls `decisions.json`
-   mtime every 2s; on change it emits `loop:state` /
-   `loop:decision` to the bubble + card webviews.
+1. The local cron ticks every minute. For any `ScheduledJob` whose
+   handler is `loop.tick` and `next_run_at <= now`, it dispatches the
+   tick handler.
+2. The handler reads the last 2 hours of `signals.jsonl`, runs
+   hard-skip rules + the classifier, and persists surviving
+   candidates via `decisions.add()`.
+3. The Tauri pet watcher polls `decisions.json` mtime every 2s; on
+   change it emits `loop:state` / `loop:decision` to the bubble +
+   card webviews.
 4. The user clicks Run / Dry / Dismiss / Promote in the pet. The pet
    POSTs `/api/loop/action/schedule`; cron handler `loop.action`
    fires the underlying `applyDecisionAction` ~30s later.

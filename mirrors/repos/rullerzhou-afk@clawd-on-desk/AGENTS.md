@@ -62,6 +62,7 @@ bash test-oneshot-gate.sh [state] [seconds]
 ```
 
 新安装默认只把 Claude Code 和 Codex 标记为已安装并启用；其他 agent 默认未安装、未启用。正常启动时，Clawd 只会为 `integrationInstalled=true` 且 `enabled=true` 的 agent 自动同步 Claude / Codex / Copilot / Gemini / Antigravity / Cursor / CodeBuddy / WorkBuddy / Kiro / Kimi / Qwen / CodeWhale / Qoder / QoderWork / Reasonix hooks、opencode / MiMo Code / OpenClaw / Hermes plugins 和 Pi extension。Settings Agent 页的 Install 会安装并启用该集成；Uninstall 会卸载 Clawd 管理的 hook/plugin/extension，并同时把该 agent 设为未安装、未启用。单独关闭 enabled 只会跳过启动同步并屏蔽事件/权限入口，不卸载用户已有 hooks / plugins / extensions；重新启用未安装 agent 只打开事件入口，不会写本机集成文件。手动安装命令主要用于调试、重装或远程部署。
+Settings 注册的自定义 HTTP Agent 是独立模型：`customApplications` 是注册真相，对应 `agents[customId]` 必须显式保持 `integrationInstalled=false`。注册只分配 ID 和状态入口，不安装 hook、不观察进程；v1 仅允许已注册且启用的 ID 向 `/state` 上报，`/permission` 永远不提供决定。删除或伪造的 `custom-` ID 必须直接拒绝，不能降级成 Claude Code subagent。
 Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-based 增量合并只接管含 `copilot-hook.js` 标记的条目，用户其他 entry / 其他 `hooks/*.json` 文件原样保留；hooks.json 或 `settings.json` 顶层 `disableAllHooks: true` 时 doctor 报 warning（不挂 Fix 按钮）。详见 `docs/guides/copilot-setup.md`。
 
 ## Read These Docs
@@ -75,6 +76,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - `docs/guides/state-mapping.md`：状态 → 动画权威表
 - `docs/guides/guide-theme-creation.md`：主题作者指南
 - `docs/guides/setup-guide.md`：安装、远程 SSH、各 agent 接入
+- `docs/guides/custom-agent-http.md`：自定义 HTTP Agent 的 state-only 接入合约和动态端口发现
 - `docs/guides/known-limitations.md`：用户向已知限制
 - `docs/guides/codex-wsl-clarification.md`：Codex / WSL 路径与 Node 说明
 
@@ -152,6 +154,8 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - Qwen Code 通过 `~/.qwen/settings.json` 做 hook-only 集成（SessionStart / SessionEnd / UserPromptSubmit / PreToolUse / PostToolUse / Stop / Notification / PermissionRequest），支持状态与阻塞式 `PermissionRequest` 权限气泡；`disableAllHooks: true` 时注册条目不会触发。
 - Qoder 通过 `~/.qoder/settings.json` 做 **state-only** hook 集成（Phase 1：SessionStart / UserPromptSubmit / PreToolUse / PostToolUse / PostToolUseFailure / Stop / Notification / PermissionRequest / PermissionDenied / SessionEnd）。Clawd 只把 `PermissionRequest` / `PermissionDenied` 当 notification 观察，**不替 Qoder 做权限决策**，hook stdout 恒为 `{}`，由 Qoder 原生权限流程接管；`agents/qoder.js` 的 `capabilities.permissionApproval` / `interactiveBubble` 均为 false。Windows 命令走 bash/cmd 通用的 portable 形态（`windowsWrapper:"portable"`，不带引号的正斜杠 node token + 双引号参数）：Qoder CLI 在 Windows 通过 Git Bash 执行 command hook，旧 PowerShell `-EncodedCommand` 形态会被 bash 吃掉反斜杠、exit 127 全灭（#597）；旧 encoded 条目在重装/升级时原地迁移。session id 命名空间是 `qoder:<raw>`；启动恢复只认 CLI 进程 `qodercli` / `qoder-cli`，不认 IDE 进程 `qoder.exe`。真实 Qoder CLI smoke 已完成（1.0.38，#597 遥测 127→0）；IDE（QoderWork）smoke 尚未完成。
 - HTTP 服务端口范围固定为 `127.0.0.1:23333-23337`；运行时端口写入 `~/.clawd/runtime.json`
+- 自定义 HTTP Agent 的 sender 必须读取 `~/.clawd/runtime.json`，不能把 23333 写死；注册不等于已连接。custom v1 只支持 `/state`，不支持 `/permission`
+- CodeBuddy PermissionRequest hook 的所有权只认本机 managed URL 或 marker `clawd-on-desk.permission.v1`；纯 `name:"clawd"` 不能触发改写/删除。裸 CLI 和 WSL 默认 preserve，Settings/startup/repair 必须显式传 local/custom permission target
 - Remote SSH 的远端 Node 探测要求 Node >= 14；`scripts/remote-deploy.sh` 与 `src/remote-ssh-node.js` 的 probe 顺序、候选路径、版本判断和输出字段必须保持行为对齐
 - 注册 Claude Code hook 时只能追加，不能覆盖用户已有 hook 数组
 - Copilot CLI hooks 走按需自动同步：`hooks/copilot-install.js` 在本地启动仅当 Copilot CLI 已安装且已启用时调用；`scripts/remote-deploy.sh --remote` 仍会在远端部署路径里调用。路径解析尊重 `COPILOT_HOME` env（trimmed 非空才生效，否则 fallback 到 `~/.copilot`）；`hooks/copilot-hook.js` 的 session-state resolver 同样走 env

@@ -9,6 +9,7 @@
 """
 
 import json
+import re
 import sys
 import os
 from pathlib import Path
@@ -69,18 +70,74 @@ def normalize_path(project_path: str) -> str:
     return p
 
 
+def _claude_sanitize(path_str: str) -> str:
+    """Claude Code's project-dir name: every character outside [A-Za-z0-9_-]
+    becomes '-'; underscores and the leading dash of POSIX absolute paths are
+    KEPT (real stores look like -home-user-proj and C--Users-x-My_Repo)."""
+    return re.sub(r'[^A-Za-z0-9_-]', '-', path_str)
+
+
+def _newest_session_cwd_matches(project_dir: Path, normalized: str) -> bool:
+    """True when a recent session in project_dir records normalized as its cwd."""
+    for session in get_sessions_sorted(project_dir)[:3]:
+        try:
+            with open(session, 'r', encoding='utf-8', errors='replace') as f:
+                for _ in range(50):
+                    line = f.readline()
+                    if not line:
+                        break
+                    match = re.search(r'"cwd"\s*:\s*"((?:[^"\\]|\\.)*)"', line)
+                    if not match:
+                        continue
+                    try:
+                        cwd = json.loads('"' + match.group(1) + '"')
+                    except ValueError:
+                        cwd = match.group(1)
+                    a = cwd.replace('\\', '/').rstrip('/')
+                    b = normalized.replace('\\', '/').rstrip('/')
+                    if os.name == 'nt':
+                        a, b = a.lower(), b.lower()
+                    return a == b
+        except OSError:
+            continue
+    return False
+
+
 def get_claude_project_dir(project_path: str) -> Path:
-    """Resolve Claude Code's project-specific session storage path."""
+    """Resolve Claude Code's project-specific session storage path.
+
+    Claude Code keeps underscores and the leading dash of POSIX absolute
+    paths when it names ~/.claude/projects/ entries. Earlier versions of
+    this script guessed a single name with '_' replaced by '-' and the
+    leading dash stripped, which silently missed the real store on every
+    macOS/Linux install and on any project path containing an underscore.
+    The legacy spellings are still probed so stores created under them keep
+    working, and ambiguity is settled by the cwd recorded in the newest
+    session file.
+    """
     normalized = normalize_path(project_path)
+    projects_root = Path.home() / '.claude' / 'projects'
 
-    # Claude Code's sanitization: replace path separators and : with -
-    sanitized = normalized.replace('\\', '-').replace('/', '-').replace(':', '-')
-    sanitized = sanitized.replace('_', '-')
-    # Strip leading dash if present (Unix absolute paths start with /)
-    if sanitized.startswith('-'):
-        sanitized = sanitized[1:]
+    primary = _claude_sanitize(normalized)
+    candidates = [primary]
+    legacy_underscore = primary.replace('_', '-')
+    if legacy_underscore not in candidates:
+        candidates.append(legacy_underscore)
+    for cand in list(candidates):
+        stripped = cand[1:] if cand.startswith('-') else cand
+        if stripped and stripped not in candidates:
+            candidates.append(stripped)
 
-    return Path.home() / '.claude' / 'projects' / sanitized
+    existing = [projects_root / c for c in candidates
+                if (projects_root / c).is_dir()]
+    if not existing:
+        return projects_root / primary
+    if len(existing) == 1:
+        return existing[0]
+    for directory in existing:
+        if _newest_session_cwd_matches(directory, normalized):
+            return directory
+    return existing[0]
 
 
 def get_sessions_sorted(project_dir: Path) -> List[Path]:

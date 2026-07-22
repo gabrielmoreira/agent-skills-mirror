@@ -90,5 +90,5 @@ Scan date: 2026-05-31.
 | [`66-zheng-siyao-empirical-research-skills`](../skills/66-zheng-siyao-empirical-research-skills/) | [source](https://github.com/SiyaoZheng/ai4ss-skills) | high | GPL-3.0 | share-alike | manual vendor snapshot |
 | [`67-econfin-workflow-toolkit`](../skills/67-econfin-workflow-toolkit/) | [source](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/22) | medium | Mixed (per-skill; see folder) | unknown | manual vendor snapshot |
 | [`68-research-productivity-skills`](../skills/68-research-productivity-skills/) | [source](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/21) | medium | Mixed (per-skill; see folder) | unknown | manual vendor snapshot |
-| [`69-Paper-WorkFlow`](../skills/69-Paper-WorkFlow/) | [source](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) | medium | MIT | allowed | manual vendor snapshot |
+| [`69-Paper-WorkFlow`](../skills/69-Paper-WorkFlow/) | [source](https://github.com/brycewang-stanford/Paper-WorkFlow) | medium | MIT | allowed | manual vendor snapshot |
 | [`70-ssci-polish`](../skills/70-ssci-polish/) | [source](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) | high | CC-BY-SA-4.0 (repository default) | share-alike | manual |

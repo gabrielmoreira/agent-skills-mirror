@@ -26,17 +26,6 @@ curl -X POST 'https://realtime.oxylabs.io/v1/queries' \
   }'
 ```
 
-**Get video transcript:**
-```bash
-curl -X POST 'https://realtime.oxylabs.io/v1/queries' \
-  -u "$OXY_WSA_USERNAME:$OXY_WSA_PASSWORD" \
-  -H 'Content-Type: application/json' \
-  -d '{
-    "source": "youtube_transcript",
-    "query": "dQw4w9WgXcQ"
-  }'
-```
-
 **Get subtitles:**
 ```bash
 curl -X POST 'https://realtime.oxylabs.io/v1/queries' \
@@ -111,28 +100,6 @@ for video in results.get("videos", []):
     print("---")
 ```
 
-**Get transcript:**
-```python
-import requests
-import os
-
-username = os.environ["OXY_WSA_USERNAME"]
-password = os.environ["OXY_WSA_PASSWORD"]
-
-response = requests.post(
-    "https://realtime.oxylabs.io/v1/queries",
-    auth=(username, password),
-    json={
-        "source": "youtube_transcript",
-        "query": "dQw4w9WgXcQ"
-    }
-)
-
-data = response.json()
-transcript = data["results"][0]["content"]
-print(transcript)
-```
-
 ### Node.js
 
 **Video metadata:**
@@ -160,53 +127,6 @@ async function getVideoMetadata(videoId) {
 getVideoMetadata("dQw4w9WgXcQ")
   .then(metadata => console.log(metadata))
   .catch(err => console.error(err));
-```
-
-**Search and get transcripts:**
-```javascript
-const axios = require("axios");
-
-const username = process.env.OXY_WSA_USERNAME;
-const password = process.env.OXY_WSA_PASSWORD;
-
-async function searchYouTube(query) {
-  const response = await axios.post(
-    "https://realtime.oxylabs.io/v1/queries",
-    {
-      source: "youtube_search",
-      query: query
-    },
-    {
-      auth: { username, password }
-    }
-  );
-
-  return response.data.results[0].content;
-}
-
-async function getTranscript(videoId) {
-  const response = await axios.post(
-    "https://realtime.oxylabs.io/v1/queries",
-    {
-      source: "youtube_transcript",
-      query: videoId
-    },
-    {
-      auth: { username, password }
-    }
-  );
-
-  return response.data.results[0].content;
-}
-
-// Example usage
-(async () => {
-  const results = await searchYouTube("nodejs tutorial");
-  console.log("Search results:", results);
-
-  const transcript = await getTranscript("VIDEO_ID");
-  console.log("Transcript:", transcript);
-})();
 ```
 
 ---

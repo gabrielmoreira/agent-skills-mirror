@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `breaking-brake/cc-wf-studio` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `breaking-brake/cc-wf-studio` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `breaking-brake/cc-wf-studio` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,14 +60,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/jira-driven-planning/SKILL.md`](.claude/skills/jira-driven-planning/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/pr-review-analysis/SKILL.md`](.claude/skills/pr-review-analysis/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/pr-to-main-cleanup/SKILL.md`](.claude/skills/pr-to-main-cleanup/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/pr-to-main/SKILL.md`](.claude/skills/pr-to-main/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/workflow-schema-tuning/SKILL.md`](.claude/skills/workflow-schema-tuning/SKILL.md) |
-| 6 | ✓ | [`.github/skills/cc-workflow-ai-editor/SKILL.md`](.github/skills/cc-workflow-ai-editor/SKILL.md) |
-| 7 | ✓ | [`.roo/skills/cc-workflow-ai-editor/SKILL.md`](.roo/skills/cc-workflow-ai-editor/SKILL.md) |
-| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 9 | ✓ | [`packages/cli/skills/ccwf-cli/SKILL.md`](packages/cli/skills/ccwf-cli/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/next-task/SKILL.md`](.claude/skills/next-task/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/pr-review-analysis/SKILL.md`](.claude/skills/pr-review-analysis/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/pr-to-main-cleanup/SKILL.md`](.claude/skills/pr-to-main-cleanup/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/pr-to-main/SKILL.md`](.claude/skills/pr-to-main/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/workflow-schema-tuning/SKILL.md`](.claude/skills/workflow-schema-tuning/SKILL.md) |
+| 7 | ✓ | [`.github/skills/cc-workflow-ai-editor/SKILL.md`](.github/skills/cc-workflow-ai-editor/SKILL.md) |
+| 8 | ✓ | [`.roo/skills/cc-workflow-ai-editor/SKILL.md`](.roo/skills/cc-workflow-ai-editor/SKILL.md) |
+| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 10 | ✓ | [`packages/cli/skills/ccwf-cli/SKILL.md`](packages/cli/skills/ccwf-cli/SKILL.md) |
 
 ---
 

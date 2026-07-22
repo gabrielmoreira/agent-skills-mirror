@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nowork-studio/toprank` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `nowork-studio/toprank` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nowork-studio/toprank` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,16 +70,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`meta-ads/manage/SKILL.md`](meta-ads/manage/SKILL.md) |
 | 10 | ✓ | [`notfair-upgrade-skill/SKILL.md`](notfair-upgrade-skill/SKILL.md) |
 | 11 | ✓ | [`notfair/CLAUDE.md`](notfair/CLAUDE.md) |
-| 12 | ✓ | [`seo/broken-link-checker/SKILL.md`](seo/broken-link-checker/SKILL.md) |
-| 13 | ✓ | [`seo/content-planner/SKILL.md`](seo/content-planner/SKILL.md) |
-| 14 | ✓ | [`seo/content-writer/SKILL.md`](seo/content-writer/SKILL.md) |
-| 15 | ✓ | [`seo/geo-optimizer/SKILL.md`](seo/geo-optimizer/SKILL.md) |
-| 16 | ✓ | [`seo/keyword-research/SKILL.md`](seo/keyword-research/SKILL.md) |
-| 17 | ✓ | [`seo/meta-tags-optimizer/SKILL.md`](seo/meta-tags-optimizer/SKILL.md) |
-| 18 | ✓ | [`seo/schema-markup-generator/SKILL.md`](seo/schema-markup-generator/SKILL.md) |
-| 19 | ✓ | [`seo/seo-analysis/SKILL.md`](seo/seo-analysis/SKILL.md) |
-| 20 | ✓ | [`seo/seo-page/SKILL.md`](seo/seo-page/SKILL.md) |
-| 21 | ✓ | [`seo/setup-cms/SKILL.md`](seo/setup-cms/SKILL.md) |
+| 12 | ✓ | [`seo/backlink-audit/SKILL.md`](seo/backlink-audit/SKILL.md) |
+| 13 | ✓ | [`seo/broken-link-checker/SKILL.md`](seo/broken-link-checker/SKILL.md) |
+| 14 | ✓ | [`seo/competitor-pages/SKILL.md`](seo/competitor-pages/SKILL.md) |
+| 15 | ✓ | [`seo/content-planner/SKILL.md`](seo/content-planner/SKILL.md) |
+| 16 | ✓ | [`seo/content-writer/SKILL.md`](seo/content-writer/SKILL.md) |
+| 17 | ✓ | [`seo/ecommerce-seo/SKILL.md`](seo/ecommerce-seo/SKILL.md) |
+| 18 | ✓ | [`seo/geo-optimizer/SKILL.md`](seo/geo-optimizer/SKILL.md) |
+| 19 | ✓ | [`seo/hreflang-international/SKILL.md`](seo/hreflang-international/SKILL.md) |
+| 20 | ✓ | [`seo/image-seo/SKILL.md`](seo/image-seo/SKILL.md) |
+| 21 | ✓ | [`seo/keyword-research/SKILL.md`](seo/keyword-research/SKILL.md) |
+| 22 | ✓ | [`seo/local-seo/SKILL.md`](seo/local-seo/SKILL.md) |
+| 23 | ✓ | [`seo/meta-tags-optimizer/SKILL.md`](seo/meta-tags-optimizer/SKILL.md) |
+| 24 | ✓ | [`seo/programmatic-seo/SKILL.md`](seo/programmatic-seo/SKILL.md) |
+| 25 | ✓ | [`seo/schema-markup-generator/SKILL.md`](seo/schema-markup-generator/SKILL.md) |
+| 26 | ✓ | [`seo/seo-analysis/SKILL.md`](seo/seo-analysis/SKILL.md) |
+| 27 | ✓ | [`seo/seo-drift/SKILL.md`](seo/seo-drift/SKILL.md) |
+| 28 | ✓ | [`seo/seo-page/SKILL.md`](seo/seo-page/SKILL.md) |
+| 29 | ✓ | [`seo/setup-cms/SKILL.md`](seo/setup-cms/SKILL.md) |
+| 30 | ✓ | [`seo/sitemap-audit/SKILL.md`](seo/sitemap-audit/SKILL.md) |
+| 31 | ✓ | [`seo/sxo/SKILL.md`](seo/sxo/SKILL.md) |
 
 ---
 

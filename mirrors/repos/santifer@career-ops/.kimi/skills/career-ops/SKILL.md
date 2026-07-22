@@ -1,1 +1,1 @@
-../../../.agents/skills/career-ops/SKILL.md
+cache/repos/github.com/santifer@career-ops/.kimi/skills/career-ops/../../../.agents/skills/career-ops/SKILL.md

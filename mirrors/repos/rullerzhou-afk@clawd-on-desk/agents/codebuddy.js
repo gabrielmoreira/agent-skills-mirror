@@ -26,6 +26,7 @@ module.exports = {
   },
   capabilities: {
     httpHook: true,
+    customPermissionUrl: true,
     permissionApproval: true,
     notificationHook: true,
     sessionEnd: true,

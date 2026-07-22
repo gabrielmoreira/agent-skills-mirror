@@ -67,7 +67,6 @@ Options use `Options.text()`, `Options.boolean()`, `Options.choice()`, `Options.
 | `ComposioToolkitsRepository`       | API client — fetches toolkits, tools, trigger types; validates versions      |
 | `ComposioToolkitsRepositoryCached` | Decorator over base repository with file-based caching and graceful fallback |
 | `NodeOs`                           | OS abstraction (`homedir`, `platform`, `arch`)                               |
-| `EnvLangDetector`                  | Detects project language (TS/Python) from config / lock files                |
 | `JsPackageManagerDetector`         | Detects npm/pnpm/yarn/bun for install instructions                           |
 | `UpgradeBinary`                    | Fetches latest release from GitHub, downloads and replaces binary            |
 
@@ -135,6 +134,38 @@ Effect.gen(function* () {
 ```
 
 Key patterns: `Effect.all([...], { concurrency: 'unbounded' })` for parallel work, `Layer.provide()` for dependency composition, `Effect.mapError()` / `Effect.catchTag()` for typed errors, `Effect.scoped` for resource cleanup.
+
+### Effect safety and migration seams
+
+- Never branch on an Effect value's internal tag field directly. Use the owning module's public refinement or matcher (`Option`, `Either`, `Exit`, `Cause`, `ValidationError`), `Match.valueTags` for exhaustive unions, or `Predicate.isTagged` for a single narrowing guard.
+- Do not wrap a plain `Error` in `Effect.fail` for expected failures. Give the failure a meaningful `Data.TaggedError` type with structured fields and a preserved cause, then recover with `catchTag` / `catchTags`. Reserve `Effect.die` and `Effect.dieMessage` for impossible invariants.
+- Treat `unknown`, JSON, persisted state, and API payloads as trust boundaries. Decode them with `Schema` or narrow them with `Predicate`; an `as` assertion is not validation.
+- Do not inspect private `@effect/cli` descriptor shapes. Use public `CommandDescriptor` operations or keep declarative command metadata that can move to Effect v4's public command tree.
+- Prefer `Effect.mapError`, `Effect.matchEffect`, and typed recovery over `catchAll` blocks that flatten distinct failures into one message-only error.
+
+### Effect Boundary Policy
+
+All platform access goes through Effect services. `node:path`, `node:fs`, `node:os`, `node:child_process`, `process.env`, and `try`/`catch` are eslint-banned in `src/`. Use the sanctioned equivalents:
+
+| Need                                                          | Use                                                                                                                                    |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Path arithmetic (join/resolve/dirname/…)                      | `Path` service from `@effect/platform` (`const path = yield* Path.Path`)                                                               |
+| Filesystem I/O                                                | `FileSystem` service from `@effect/platform`                                                                                           |
+| homedir / tmpdir / platform / arch                            | `NodeOs` service (`src/services/node-os.ts`, the sole `node:os` boundary)                                                              |
+| Subprocesses                                                  | `Command` from `@effect/platform`; children that outlive the CLI via `src/services/detached-process.ts` (sole detached-spawn boundary) |
+| Environment reads                                             | `effect/Config`                                                                                                                        |
+| Sync fallible ops (`JSON.parse`, `new URL`, `JSON.stringify`) | `Either.try` with a `Data.TaggedError`; JSON records via `parseJsonRecord` (`src/utils/parse-json.ts`)                                 |
+
+Conversion patterns, in order of preference:
+
+1. Yield the service inside existing Effect code.
+2. Convert a plain helper into an Effect when its callers are Effect-hosted (`Either` is a subtype of `Effect`, so both compose with `yield*`).
+3. Pass the resolved service instance (e.g. `Path.Path`, `FileSystem.FileSystem`) as a plain parameter into sync callbacks or promise pipelines that cannot become Effects (see `tool-permissions.ts`, `generation/typescript/virtual-compiler-host.ts`).
+4. Modules that self-provide layers add `Path.layer` / `BunFileSystem.layer` / `NodeOs.Default` to their stack instead of reaching for Node builtins.
+
+The only code allowed to bypass services sits at declared runtime boundaries: the `bin.ts` bootstrap, the child-process companion runtime (`run-helpers-runtime.ts`, `run-subagent-*` — bundled into `.mjs` files that run in the user's spawned process), import-time UI setup (`ui/colors.ts`, `ui/redact.ts`), environment **writes** and whole-environment enumeration (which `effect/Config` cannot express), and spawn-time env handshakes between parent and child `composio run` processes. Every such boundary is an inline `// eslint-disable-next-line <rule> -- <reason>` comment registered in `eslint-boundaries.json`.
+
+**Enforcement**: `pnpm run validate:boundaries` (part of `pnpm test`, CI-blocking) fails when any eslint-disable in `src/` is missing from the manifest, lacks a `-- reason`, or uses a file-wide form. Do not add new disables — thread the service instead. If code genuinely cannot run inside the Effect runtime, that is a new boundary: regenerate the manifest with `pnpm run validate:boundaries -- --update` and justify the boundary in the PR. Never add entries to `eslint-suppressions.json`.
 
 ## Vendor Reference Sources
 

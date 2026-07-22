@@ -100,6 +100,32 @@ The SHA-256 fallback is deterministic but not reversible. Logical resource
 identity remains owned by AI resource metadata. `save`, `get`, and `delete` must
 apply exactly the same physical mappings.
 
+### Agent Logical Coordinate
+
+For `type=agent`, the Agent domain constructs this logical Nacos Config
+coordinate before handing the provider an opaque `StorageKey`:
+
+```text
+group  = agent-version
+dataId = agent__<rad-ascii-v1(agentName)>__<version>.json
+```
+
+`rad-ascii-v1` and the complete Agent Version storage contract are defined by
+the [Agent Storage Spec](../ai/agent-storage-spec.md). This coordinate is a
+logical provider input, not a physical Config identity exposed to callers.
+
+The built-in provider must pass both logical segments through the common
+`NacosAiConfigKeyCodec`; it must not bypass that codec because the Agent domain
+already encoded `agentName`. A safe value within the physical limit remains
+identical to the logical value. The common codec owns all length and
+reserved-shape handling: an overlong candidate uses its deterministic SHA-256
+fallback, and that physical result is not reversible.
+
+Upper layers may persist the logical key format and content digest, but must not
+parse a physical Config key, require it to be reversible, or reconstruct Agent
+identity from it. `save`, `get`, and `delete` always recompute the physical
+coordinate through the same codec.
+
 The provider does not dual-read coordinates produced by an earlier physical
 mapping. Existing affected `nacos_config` rows must therefore be migrated in a
 coordinated maintenance window before nodes using only the new mapping start.
@@ -123,10 +149,23 @@ The following properties select a provider for an AI resource domain:
 nacos.ai.prompt.storage.provider=nacos_config
 nacos.ai.skill.storage.provider=nacos_config
 nacos.ai.agentspec.storage.provider=nacos_config
+nacos.ai.agent.storage.provider=nacos_config
 ```
 
 They are domain routing policy, not private configuration definitions owned by
 `ai-storage:nacos_config`.
+
+When the AI module is active, all providers selected independently for Prompt, Skill, and AgentSpec
+are required implementations of this critical routed type. The same provider may satisfy multiple
+domains. Before startup succeeds, every distinct selected provider must be discovered and enabled;
+a different available provider is not a valid fallback. When the AI module is disabled by function
+mode or `nacos.extension.ai.enabled=false`, AI storage is inactive and does not impose a startup
+requirement.
+
+AI storage implementations are built from Spring-managed services during context refresh, so this
+type does not participate in pre-refresh critical validation. The unified plugin manager performs
+the same provider-specific validation immediately after the storage builders register their
+instances and before Nacos reports startup success.
 
 The built-in provider has no private configuration, does not implement
 `PluginConfigSpec`, and is exposed as `configurable=false`. A built

@@ -65,13 +65,13 @@ https://github.com/user-attachments/assets/eb12d3bc-371c-467f-904d-91b61f339ed7
 
 A backend = a chat / exec target (e.g. `openai_chat`, `claude_chat`,
 `qwen_chat`, `minimax_chat`, `openai_compatible`, `codex_exec`,
-`claude_code_exec`). If a provider implements the OpenAI Chat Completions
+`claude_code_exec`, `cursor_exec`). If a provider implements the OpenAI Chat Completions
 protocol, try the built-in `openai_compatible` backend before adding code. See
 [`docs/guide/new-backend.md`](docs/guide/new-backend.md) for the full
-contract; in short you add a `skillopt/model/<name>_backend.py` module,
-register it in `skillopt/model/common.py` + `backend_config.py`, and wire
-it through the router in `skillopt/model/__init__.py`. `qwen_backend.py`
-and `minimax_backend.py` are good templates.
+contract. Chat backends add a `skillopt/model/<name>_backend.py` module;
+target-only exec backends use the shared harness in `codex_harness.py`.
+Both register through `common.py`, `backend_config.py`, and
+`skillopt/model/__init__.py`.
 
 ### Adding a new benchmark
 

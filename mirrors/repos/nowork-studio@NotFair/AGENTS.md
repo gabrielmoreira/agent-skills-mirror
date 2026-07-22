@@ -29,6 +29,16 @@ Skills under `seo/`, `google-ads/`, `meta-ads/`, `gemini/`, and `notfair-upgrade
 | JSON-LD / structured data (FAQ, Product, HowTo, etc.) | `schema-markup-generator` | `seo/schema-markup-generator/SKILL.md` |
 | Broken-link / 404 / site-health crawl | `broken-link-checker` | `seo/broken-link-checker/SKILL.md` |
 | Rank in ChatGPT / Perplexity / AI Overviews (GEO / AEO) | `geo-optimizer` | `seo/geo-optimizer/SKILL.md` |
+| Local pack / Google Business Profile / Maps / NAP / "near me" | `local-seo` | `seo/local-seo/SKILL.md` |
+| Hreflang, international / multilingual, multi-region targeting | `hreflang-international` | `seo/hreflang-international/SKILL.md` |
+| XML sitemap audit, sitemap errors, crawl-coverage | `sitemap-audit` | `seo/sitemap-audit/SKILL.md` |
+| Image SEO, alt text, Google Images, WebP, image schema | `image-seo` | `seo/image-seo/SKILL.md` |
+| E-commerce SEO, product/category pages, faceted nav, product schema | `ecommerce-seo` | `seo/ecommerce-seo/SKILL.md` |
+| Programmatic / templated pages at scale (pSEO) | `programmatic-seo` | `seo/programmatic-seo/SKILL.md` |
+| Competitor page gap analysis, "why do they outrank me", SERP brief | `competitor-pages` | `seo/competitor-pages/SKILL.md` |
+| Search Experience Optimization (SXO), CTR + on-page conversion | `sxo` | `seo/sxo/SKILL.md` |
+| SEO drift / regression monitoring, baseline & compare over time | `seo-drift` | `seo/seo-drift/SKILL.md` |
+| Backlink / off-page audit, anchor text, referring domains, disavow | `backlink-audit` | `seo/backlink-audit/SKILL.md` |
 | Connect WordPress, Strapi, Contentful, or Ghost | `setup-cms` | `seo/setup-cms/SKILL.md` |
 
 ## Google Ads

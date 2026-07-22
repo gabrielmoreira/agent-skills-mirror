@@ -21,7 +21,7 @@ or executes anything outside the plugin's own scripts.
 | `OPENLOOMI_NOT_FINALIZED` / `launch_openloomi_to_finalize` | OpenLoomi.app is installed (`desktopMarker` set) but the helper binary isn't on disk yet. Tell the user to launch OpenLoomi once (macOS: `open -a "<desktopMarker>"`) so it lays down the helper, then re-run `/openloomi:setup`. **Do NOT install.** |
 | `LOGIN_REQUIRED` | Ask user to open OpenLoomi Desktop to sign in. Run `setup-status` again afterwards. |
 | `AI_PROVIDER_REQUIRED` | OpenLoomi has no authenticated Claude runtime and no per-user provider row. Point the user at running `claude auth login` (then re-run `/openloomi:setup`), or at OpenLoomi Desktop → API Settings for a custom endpoint. |
-| `SOURCE_FOUND_CLI_NOT_BUILT` | Show the build instructions from the OpenLoomi repo's `apps/web/src-tauri/README.md` or recommend running the bundled installer instead. |
+| `SOURCE_FOUND_CLI_NOT_BUILT` | Show the build instructions from the OpenLoomi repo's Tauri build docs (or run `loomi-bridge install-instructions`) or recommend running the bundled installer instead. |
 | `READY` | Nothing to do. |
 
 ## Reminder: secrets contract

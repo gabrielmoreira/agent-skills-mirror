@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 11
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 11 |
+| Followed pats | 1 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `home-assistant/core` — 26 default patterns, 0 followed patterns, 11
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `AI_POLICY.md`
 
 ## File Index
 
@@ -70,6 +70,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
 | 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 12 | → | [`AI_POLICY.md`](AI_POLICY.md) |
 
 ---
 

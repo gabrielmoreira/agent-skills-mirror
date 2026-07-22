@@ -34,6 +34,7 @@ The catalog holds **1,151 skills across 70 vendored collections**. Never read th
 
 Match the user's identification strategy or task to a starting collection, then confirm against `catalog/skills.json`:
 
+| Full paper pipeline (orchestrator) | `skills/69-Paper-WorkFlow/` |
 | Task / method | Start here |
 |---|---|
 | DiD / staggered DiD / event study | `skills/50-brycewang-aer-skills/`, `skills/10-Jill0099-causal-inference-mixtape/`, `skills/13-scunning1975-MixtapeTools/` |
@@ -66,6 +67,21 @@ Match the user's identification strategy or task to a starting collection, then 
 | Open science / reproducibility | `skills/54-scdenney-open-science-skills/`, `skills/29-quarcs-lab-project20XXy/` |
 | Grant proposals / funding | `skills/42-wanshuiyin-ARIS/`, `skills/43-wentorai-research-plugins/` |
 | Conference posters / post-acceptance | `skills/42-wanshuiyin-ARIS/`, `skills/33-Galaxy-Dawn-claude-scholar/` |
+
+## Full-pipeline trigger
+
+If the user is asking for a complete empirical paper from idea to submission, route to `skills/69-Paper-WorkFlow/`. The orchestrator loads the right skill at the right stage and stops for human decisions at the two hard gates (Method Gate after Stage 3, Draft Quality Gate after Stage 7).
+
+Trigger phrases (any one is enough to dispatch to the orchestrator):
+
+- `/paper-workflow`
+- "帮我写一篇实证论文"
+- "从选题到投稿"
+- "end-to-end empirical paper"
+- "完整复现"
+- "from proposal to submission"
+
+The orchestrator is **not** the right entry point for a single-task ask (e.g. "fit a DiD", "recode this variable", "write a referee report") — those are listed in the Method → where to start table below.
 
 ## Coverage Notes
 

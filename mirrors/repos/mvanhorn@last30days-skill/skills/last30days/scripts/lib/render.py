@@ -62,6 +62,15 @@ def _render_badge() -> list[str]:
     ]
 
 
+def _ordinal(count: int) -> str:
+    """1 -> 1st, 2 -> 2nd, 3 -> 3rd, 11-13 -> th (Pipeline card line)."""
+    if 10 <= count % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(count % 10, "th")
+    return f"{count}{suffix}"
+
+
 def _format_discovery_engagement(
     engagement: dict[str, dict[str, float | int]],
 ) -> str:
@@ -129,6 +138,32 @@ def render_discovery(report: schema.DiscoveryReport) -> str:
         if topic.top_comment:
             lines.extend([
                 f"**Community voice:** {topic.top_comment}",
+                "",
+            ])
+        if topic.podcast_angle:
+            lines.extend([
+                f"**Podcast angle:** {topic.podcast_angle}",
+                "",
+            ])
+        if topic.x_article_angle:
+            lines.extend([
+                f"**X article angle:** {topic.x_article_angle}",
+                "",
+            ])
+        pipeline_notes: list[str] = []
+        if topic.previously_surfaced_count > 0:
+            # previously_surfaced_count is PRIOR appearances, so this
+            # appearance is the (count + 1)-th. The queue is all-time.
+            pipeline_notes.append(
+                f"surfaced {_ordinal(topic.previously_surfaced_count + 1)} time"
+            )
+        if topic.covered:
+            # last_surfaced is the last surfacing date, not the covered date,
+            # so no date is rendered here.
+            pipeline_notes.append("marked covered")
+        if pipeline_notes:
+            lines.extend([
+                f"**Pipeline:** {', '.join(pipeline_notes)}",
                 "",
             ])
         lines.extend([

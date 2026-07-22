@@ -43,10 +43,23 @@ Before every ask, decide:
 - Plain nested `ask` from an active CCB task is rejected; use `--chain` or `--silence`.
 - In `A --silence -> B`, B still runs an active job. B-to-C depends on whether B needs C's result.
 - In task chains, each needed-result hop uses `--chain`; CCB then propagates continuations.
+- Finish an inbound CCB task in its current turn.
+- If the original caller is a registered CCB agent, CCB routes that turn's
+  terminal result through the existing lineage; do not open a new `ask` to
+  report completion to the original caller.
+- Direct CLI submitters read terminal results from control output such as
+  `watch` or `trace`.
 - If the current task is a CCB result-chain continuation, answer the current task
   directly with the final result. Do not use `ask`, `--chain`, or
   `--silence` to send that final result to the original caller; CCB routes the
   continuation completion upstream.
+- `--silence` is not an active-job correction channel. Use
+  `ccb followup <active_job_id> --message "<correction>"` only when the target
+  provider supports exact active-turn injection; only `injected` is success.
+  On `rejected`, `too_late`, or `terminal`, cancel and resubmit the complete
+  corrected task instead of queueing a correction as ordinary work.
+- A `completed` CCB job means provider execution ended normally; it does not by
+  itself prove business acceptance.
 - `ask get`, `pend`, `watch`, and `ping` are diagnostics-only commands for
   explicit debugging requests, not normal ask workflow tools.
 - Do not manually append output-policy text; `ask` injects reply guidance.

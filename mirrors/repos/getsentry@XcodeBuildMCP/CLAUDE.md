@@ -7,7 +7,9 @@
 - NEVER remove or downgrade code to fix type errors from outdated dependencies; upgrade the dependency instead
 - Always ask before removing functionality or code that appears to be intentional
 - Do not add fallback behavior by default. If required context, configuration, runtime state, or dependencies are missing, fail loudly and fix the caller/setup instead of silently switching to an alternate path. Add a fallback only when explicitly requested or when it is a documented product requirement.
-- Follow TypeScript best practices
+- Review the complete merge-base diff and trace changed or reused helper contracts, including error and sentinel returns, through callers, consumers, tests, and operational configuration.
+- Verify standard quality commands include every changed path and exercise exact entry points and argument variants; validate explicitly when they do not.
+- For asynchronous, workflow, or process-boundary changes, enumerate lifecycle states, retries, supersession, and race transitions; test terminal outcomes and missing or optional metadata.
 
 ## Test Conventions
 - Snapshot tests (`*.snapshot.test.ts`) must only assert generated tool output against fixtures. Move helper, parser, schema, setup, or behavior assertions to non-snapshot unit/integration tests.
@@ -25,6 +27,7 @@ When reading issues:
 - CLI design note: do not rely on CLI session-default writes. CLI is intentionally deterministic for CI/scripting and should use explicit command arguments as the primary input surface.
 - When working on skill sources in `skills/`, use the `skill-creator` skill workflow.
 - After modifying any skill source, run `npx skill-check <skill-directory>` and address all errors/warnings before handoff.
+- Before handoff, run the matching manual Warden review for high-risk changes: runtime/CLI/daemon boundaries → `xcodebuildmcp-runtime-boundary-review`; test infrastructure or harnesses → `xcodebuildmcp-test-boundary-review`; tool manifests, schemas, or contracts → `xcodebuildmcp-tool-contract-review`. Invoke only applicable skills with `warden --skill <name>`.
 -
 ## Multi-process filesystem state
 - XcodeBuildMCP explicitly supports multiple concurrent MCP server, daemon, CLI, test, and helper processes for the same or different workspaces.

@@ -57,6 +57,33 @@ Sarah at [[People/Sarah Chen]] decided to ship the [[Projects/Dashboard Refactor
 
 If a linked note doesn't exist, create a stub (per `references/write-rules.md` § Stub Notes).
 
+**Typed edges (optional, for relationships that carry meaning).** A plain `[[wikilink]]` says two notes are related; it does not say *how*. When the relationship is one future-Claude will need to reason over - a decision that replaces another, a project that depends on a system, an incident that caused an outage - record it as a typed edge in a `relations:` frontmatter block instead of (or in addition to) an inline link:
+
+```yaml
+relations:
+  supersedes: ["[[Knowledge/ADR-006 - Use Redis]]"]
+  depends_on:
+    - "[[Projects/Tide Gateway]]"
+  caused_by: ["[[Incidents/Redis outage 2026-03]]"]
+```
+
+Known relation types (each has an inverse so the graph reads both ways):
+
+| Type | Inverse | Use for |
+|---|---|---|
+| `supersedes` | `superseded_by` | this note replaces an older decision/claim |
+| `depends_on` | `required_by` | this note needs the target to hold |
+| `caused` | `caused_by` | causal chains (incident to outcome) |
+| `decided_by` | `decides` | a decision and who/what made it |
+| `relates_to` | `relates_to` | generic, symmetric (only when nothing sharper fits) |
+| `contradicts` | `contradicts` | this note conflicts with the target |
+
+Rules for typed edges:
+- The target is a `[[wikilink]]`, same resolution as any other link - a typed edge to a note that does not exist is a lint error, not a stub prompt.
+- The legacy top-level `supersedes: "[[...]]"` scalar (used by the `type: adr` schema and the search freshness rerank) is exactly equivalent to `relations.supersedes` - keep writing it, or move it under `relations:`; the graph reads both.
+- Only the types above are valid. `/obsidian-health` runs the typed-edge lint (`scripts/link_graph.py --lint`), which flags unknown types, dangling targets, self-edges, `supersedes`/`supersedes` contradiction cycles, and (as info) missing inverse edges.
+- Do not invent a relationship that was not stated. A typed edge is a claim; the anti-fabrication rule applies to it exactly as to prose.
+
 ### 7. Confidence levels
 Where applicable, mark claims with confidence:
 - `stated` - directly quoted or claimed by a source
@@ -254,9 +281,10 @@ tags: [adr, decision]
 decision: ""                  # one-line summary
 status: proposed | accepted | superseded
 related-projects: ["[[Projects/...]]", ...]
-supersedes: "[[Knowledge/ADR-...]]"   # optional
+supersedes: "[[Knowledge/ADR-...]]"   # optional; equivalent to relations.supersedes (Rule 6)
 ai-first: true
 ```
+For richer decision graphs, use the `relations:` block (Rule 6, § Typed edges) instead of the bare `supersedes:` scalar - e.g. `depends_on`, `caused_by`, `decided_by` alongside `supersedes`.
 
 ### `type: brainstorm`
 

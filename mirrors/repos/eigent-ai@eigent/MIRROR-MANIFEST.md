@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `eigent-ai/eigent` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `eigent-ai/eigent` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `eigent-ai/eigent` — 26 default patterns, 0 followed patterns, 9 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,15 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/core/models/gemini.md`](docs/core/models/gemini.md) |
-| 2 | ✓ | [`resources/example-skills/docx/SKILL.md`](resources/example-skills/docx/SKILL.md) |
-| 3 | ✓ | [`resources/example-skills/pdf/SKILL.md`](resources/example-skills/pdf/SKILL.md) |
-| 4 | ✓ | [`resources/example-skills/pptx/editing.md`](resources/example-skills/pptx/editing.md) |
-| 5 | ✓ | [`resources/example-skills/pptx/pptxgenjs.md`](resources/example-skills/pptx/pptxgenjs.md) |
-| 6 | ✓ | [`resources/example-skills/pptx/SKILL.md`](resources/example-skills/pptx/SKILL.md) |
-| 7 | ✓ | [`resources/example-skills/skill-creator/SKILL.md`](resources/example-skills/skill-creator/SKILL.md) |
-| 8 | ✓ | [`resources/example-skills/skill-security-auditor/SKILL.md`](resources/example-skills/skill-security-auditor/SKILL.md) |
-| 9 | ✓ | [`resources/example-skills/xlsx/SKILL.md`](resources/example-skills/xlsx/SKILL.md) |
+| 1 | ✓ | [`resources/example-skills/docx/SKILL.md`](resources/example-skills/docx/SKILL.md) |
+| 2 | ✓ | [`resources/example-skills/pdf/SKILL.md`](resources/example-skills/pdf/SKILL.md) |
+| 3 | ✓ | [`resources/example-skills/pptx/editing.md`](resources/example-skills/pptx/editing.md) |
+| 4 | ✓ | [`resources/example-skills/pptx/pptxgenjs.md`](resources/example-skills/pptx/pptxgenjs.md) |
+| 5 | ✓ | [`resources/example-skills/pptx/SKILL.md`](resources/example-skills/pptx/SKILL.md) |
+| 6 | ✓ | [`resources/example-skills/skill-creator/SKILL.md`](resources/example-skills/skill-creator/SKILL.md) |
+| 7 | ✓ | [`resources/example-skills/skill-security-auditor/SKILL.md`](resources/example-skills/skill-security-auditor/SKILL.md) |
+| 8 | ✓ | [`resources/example-skills/xlsx/SKILL.md`](resources/example-skills/xlsx/SKILL.md) |
 
 ---
 

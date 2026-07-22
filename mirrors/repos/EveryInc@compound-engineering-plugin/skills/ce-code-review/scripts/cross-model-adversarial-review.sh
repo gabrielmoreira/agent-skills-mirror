@@ -70,7 +70,7 @@ skip() { log "$*"; exit 0; }   # non-blocking: announce reason, exit clean, no o
 # ONE editorial model/reasoning mapping per provider. Concrete IDs are the CURRENT
 # instance of the tier principle and the single maintenance point when families change.
 # Keep these in sync with ce-doc-review's script (parity-tested in CI).
-M_CODEX="gpt-5.6-sol"          # codex CLI            (-c model_reasoning_effort="medium")
+M_CODEX="gpt-5.6-luna"         # codex CLI            (-c model_reasoning_effort="xhigh")
 M_CLAUDE="opus"                # claude CLI, Opus 4.8 (--effort high)
 M_GROK="grok-4.5"              # grok CLI             (--effort high)
 M_GROK_CURSOR="cursor-grok-4.5-high"  # fixed cursor-agent Grok route (current id)
@@ -78,7 +78,7 @@ M_COMPOSER="composer-2.5-fast" # cursor-agent composer (no high tier; -fast is t
 
 route_effort() {
   case "$1" in
-    codex) printf 'medium' ;;
+    codex) printf 'xhigh' ;;
     claude|grok-cli) printf 'high' ;;
     grok-cursor) printf 'model-implied-high' ;;
     composer) printf 'fast' ;;
@@ -184,7 +184,7 @@ extract_model_receipt() {   # <route>; reads the envelope in $PEERLOG, sets MODE
 }
 
 # --- adapter argv (single source of truth for route flags) -----------------
-# Emits the CLI + flags NUL-delimited. Read-only / no-prompt (codex medium, others high).
+# Emits the CLI + flags NUL-delimited. Read-only / no-prompt (codex xhigh, others high).
 # Code-review isolation is IN-TREE (repo root), not empty-scratch tool-less:
 # peers may Read surrounding code. PEER_WORKDIR is the repo root; RAW_OUT lives
 # outside the repo (temp) and is published to RUN_DIR only after normalize.
@@ -194,7 +194,7 @@ adapter_argv() {
   case "$1" in
     codex)
       printf '%s\0' codex exec - -C "$PEER_WORKDIR" --skip-git-repo-check -s read-only --json \
-        -o "$RAW_OUT" -m "$(route_model codex)" -c 'model_reasoning_effort="medium"' -c 'hide_agent_reasoning=false'
+        -o "$RAW_OUT" -m "$(route_model codex)" -c 'model_reasoning_effort="xhigh"' -c 'hide_agent_reasoning=false'
       ;;
     claude)
       # Read allowed for surrounding context; mutators / shell / subagents / MCP /
@@ -369,7 +369,7 @@ BASE_PROMPT="$(mktemp "${TMPDIR:-/tmp}/xmodel-base-XXXXXX")"
 PROMPT_FILE="$(mktemp "${TMPDIR:-/tmp}/xmodel-prompt-XXXXXX")"
 PEERLOG="$(mktemp "${TMPDIR:-/tmp}/xmodel-log-XXXXXX")"
 # Peer stderr goes to its own file, NOT merged into PEERLOG: PEERLOG must stay
-# clean stdout for the findings brace-match and the receipt jq-parse. An
+# clean stdout for the findings raw_decode scan and the receipt jq-parse. An
 # auth/quota/rate-limit message often lands on stderr, so capture it separately
 # and surface it in the skip evidence (grok's 402 is on stdout, others on stderr).
 PEERERR="$(mktemp "${TMPDIR:-/tmp}/xmodel-err-XXXXXX")"
@@ -382,6 +382,10 @@ DIFF_SOURCE="$RAW_DIR/review.diff"
 git -C "$REPO_ROOT" diff --no-ext-diff --no-color "$BASE" -- > "$DIFF_SOURCE" 2>/dev/null || skip "cannot stage reviewed diff; skipping"
 chmod 600 "$DIFF_SOURCE" || skip "cannot secure staged diff; skipping"
 DIFF_BYTES="$(wc -c < "$DIFF_SOURCE" 2>/dev/null || echo 0)"
+# An empty diff (valid base, no changes) still composes a structurally valid
+# prompt with an empty diff region, which invites confabulated findings. The
+# staging guard above already fail-closes an unresolvable base ref or diff error.
+[ "$DIFF_BYTES" -gt 0 ] || skip "no changes between '$BASE' and the working tree; nothing to review; skipping"
 DIFF_FILES="$(awk '/^diff --git / { n += 1 } END { print n + 0 }' "$DIFF_SOURCE")"
 ESTIMATED_DIFF_TOKENS=$(( (DIFF_BYTES + 1) / 2 ))
 
@@ -430,7 +434,10 @@ if [ "$ESTIMATED_DIFF_TOKENS" -gt "$INLINE_MAX_TOKENS" ] || [ "$DIFF_FILES" -gt 
 fi
 
 # --- run machinery ---------------------------------------------------------
-IDLE_SECS="${CROSS_MODEL_IDLE_SECS:-180}"
+# Idle cap must exceed the peer's worst-case silent turn: Codex --json is
+# event-line (not token) output, so a slow xhigh reasoning turn (Luna p95 ~242s,
+# max ~419s) can go quiet past a low cap and be reaped before turn.completed.
+IDLE_SECS="${CROSS_MODEL_IDLE_SECS:-480}"
 HARD_SECS="${CROSS_MODEL_HARD_SECS:-600}"
 TO_BIN="$(command -v gtimeout || command -v timeout || true)"
 
@@ -590,23 +597,29 @@ run_timeout_cmd() {
   ACTIVE_PEER_PID=""
 }
 
-recover_findings_json() {
+# Decode each {...} object in raw stdout via raw_decode (string/escape-aware,
+# unlike brace counting) and keep the last one shaped like findings.
+recover_findings_json() {   # <logfile> <outfile>
   command -v python3 >/dev/null 2>&1 || return 1
   python3 - "$1" "$2" <<'PY' 2>/dev/null
 import sys, json
 txt = open(sys.argv[1], encoding="utf-8", errors="replace").read()
-best, depth, start = None, 0, None
-for i, ch in enumerate(txt):
-    if ch == '{':
-        if depth == 0: start = i
-        depth += 1
-    elif ch == '}' and depth > 0:
-        depth -= 1
-        if depth == 0 and start is not None:
-            try:
-                obj = json.loads(txt[start:i+1])
-                if isinstance(obj, dict) and "findings" in obj: best = obj
-            except Exception: pass
+# Any selectable object carries a literal `"findings"` key; if the raw text has
+# none, there is nothing to recover. Skip the scan — raw_decode probing every
+# `{` is O(n^2) on brace-dense non-findings stdout (error/crash dumps).
+if '"findings"' not in txt: sys.exit(0)
+dec = json.JSONDecoder()
+best, i = None, 0
+while True:
+    j = txt.find('{', i)
+    if j < 0: break
+    try:
+        obj, end = dec.raw_decode(txt, j)
+    except Exception:
+        i = j + 1
+        continue
+    if isinstance(obj, dict) and isinstance(obj.get("findings"), list): best = obj
+    i = end
 if best is not None: open(sys.argv[2], "w").write(json.dumps(best))
 PY
   [ -s "$2" ]
@@ -625,7 +638,7 @@ attempt_route() {
   : > "$PEERLOG"; : > "$PEERERR"; rm -f "$RAW_OUT"
   build_cmd "$route"
   case "$route" in
-    codex)                  note="$(route_model "$route") (effort medium)" ;;
+    codex)                  note="$(route_model "$route") (effort xhigh)" ;;
     claude|grok-cli)        note="$(route_model "$route") (effort high)" ;;
     grok-cursor|composer)  note="$(route_model "$route")" ;;
     cursor)                note="auto (serving model unverified)" ;;

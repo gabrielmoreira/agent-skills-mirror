@@ -1,5 +1,77 @@
 # Release Guide
 
+## Draft: v2.11.0 (2026-07-21)
+
+Target branch: `dev`.
+
+Runtime gate:
+
+- Agent Teams runtime: `v0.0.71`.
+- Terminal Platform runtime: `v0.3.2`.
+
+Draft body source for GitHub release:
+
+<!-- RELEASE_BODY_START v2.11.0 -->
+This release focuses on fixes and stability.
+
+### Fixes and Stability
+
+- Fixed image attachments for Kimi, MiniMax, GLM, Grok, GitHub Copilot, and MiMo models.
+- Fixed team launches continuing after provider checks fail.
+- Fixed Anthropic models being blocked when live model discovery temporarily falls back.
+- Fixed slow Codex startup affecting account status, model lists, and recent projects.
+- Fixed malformed tool output and provider errors breaking or obscuring chat messages.
+- Kept the current model list visible while providers refresh.
+- Made large pull request reviews less likely to time out.
+- Prevented delayed or duplicate follow-up messages during teammate recovery.
+- Fixed runtime setup on fresh installations.
+
+### Other Changes
+
+- Added reasoning effort selection for supported OpenCode models.
+- Added configurable reviews for draft pull requests, including conflicted drafts.
+
+### Downloads
+
+<table>
+<tr>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.11.0/Agent.Teams.AI-2.11.0-arm64.dmg">
+    <img src="https://img.shields.io/badge/macOS_Apple_Silicon-.dmg-000000?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Apple Silicon" />
+  </a>
+  <br />
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.11.0/Agent.Teams.AI-2.11.0-x64.dmg">
+    <img src="https://img.shields.io/badge/macOS_Intel-.dmg-434343?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Intel" />
+  </a>
+</td>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.11.0/Agent.Teams.AI.Setup.2.11.0.exe">
+    <img src="https://img.shields.io/badge/Windows-Download_.exe-0078D4?style=for-the-badge&logo=windows&logoColor=white" alt="Windows" />
+  </a>
+  <br />
+  <sub>May trigger SmartScreen - click "More info" then "Run anyway"</sub>
+  <br />
+  <sub>Run normally. Administrator mode may be needed only if the app reports a specific OpenCode symlink or permission error.</sub>
+</td>
+<td align="center">
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.11.0/Agent.Teams.AI-2.11.0.AppImage">
+    <img src="https://img.shields.io/badge/Linux-Download_.AppImage-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux AppImage" />
+  </a>
+  <br />
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.11.0/agent-teams-ai_2.11.0_amd64.deb">
+    <img src="https://img.shields.io/badge/.deb-E95420?style=flat-square&logo=ubuntu&logoColor=white" alt=".deb" />
+  </a>&nbsp;
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.11.0/agent-teams-ai-2.11.0.x86_64.rpm">
+    <img src="https://img.shields.io/badge/.rpm-294172?style=flat-square&logo=redhat&logoColor=white" alt=".rpm" />
+  </a>&nbsp;
+  <a href="https://github.com/777genius/agent-teams-ai/releases/download/v2.11.0/agent-teams-ai-2.11.0.pacman">
+    <img src="https://img.shields.io/badge/.pacman-1793D1?style=flat-square&logo=archlinux&logoColor=white" alt=".pacman" />
+  </a>
+</td>
+</tr>
+</table>
+<!-- RELEASE_BODY_END v2.11.0 -->
+
 ## Published: v2.10.0 (2026-07-20)
 
 GitHub release: [v2.10.0](https://github.com/777genius/agent-teams-ai/releases/tag/v2.10.0).
@@ -909,6 +981,15 @@ Before opening the app:
 - Mount the DMG read-only and confirm the app bundle version equals the exact
   requested version.
 - Verify the macOS signature and notarization before launching the app.
+- Unless the user explicitly asks to run directly from the DMG, reproduce the
+  normal installed-user flow: quit the currently running app, keep any existing
+  `/Applications/Agent Teams AI.app` copy recoverable, install the verified app
+  bundle into `/Applications`, and launch it with `open` without `-n`.
+- Do not set an alternate `--user-data-dir`, temporary profile, sandbox profile,
+  or release-test environment overrides. Confirm the launched process runs from
+  `/Applications/Agent Teams AI.app` and uses the standard
+  `~/Library/Application Support/agent-teams-ai` profile.
+- Eject the DMG after the installed app starts successfully.
 
 Never report that the requested build was launched based only on its filename.
 The GitHub digest and bundle version must both match.

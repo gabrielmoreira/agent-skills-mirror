@@ -1,6 +1,6 @@
 ---
 name: openloomi-memory
-description: "openloomi Memory tools - search memory files, knowledge base, and chat insights. Triggers: memory search, knowledge base, documents, insights"
+description: "openloomi Memory tools - search and manage the holistic context (people, projects, decisions, knowledge base, chat insights). Triggers: memory search, knowledge base, search documents, list insights, who is John, what did we decide about X, tiered memory, knowledge graph, people/projects/decisions, search-all, conversation memory"
 allowed-tools: Bash(node $SKILL_DIR/scripts/openloomi-memory.cjs *)
 ---
 
@@ -8,41 +8,32 @@ allowed-tools: Bash(node $SKILL_DIR/scripts/openloomi-memory.cjs *)
 
 # OpenLoomi Memory Skill
 
-OpenLoomi Memory is a personal knowledge management tool that searches and manages three types of information:
+OpenLoomi Memory is the **long-lived context layer of OpenLoomi** — a tiered, locally-stored knowledge graph that grows on its own from your Connectors, chats, and Screen Capture. Memory is what makes Chat grounded and what Loop reads before it produces a Decision. It is always on your machine (local-first), always visible, and always auditable — see [Memory](https://openloomi.ai/docs/memory) for the full model.
 
-| Type | Description | Data Location |
-|------|-------------|--------------|
-| **Memory Files** | Personal memory files (markdown/json) | `~/.openloomi/data/memory/` |
-| **Knowledge Base** | Uploaded documents via RAG/embeddings | openloomi server |
-| **Insights** | Structured info extracted from chat history, with usage tracking and automatic maintenance | openloomi server |
+This skill exposes three searchable surfaces over that context:
+
+| Surface | What it is | Where it lives |
+|---|---|---|
+| **Memory files** | People, projects, notes, strategy — your hand-edited knowledge graph | `~/.openloomi/data/memory/` |
+| **Knowledge Base** | Documents you uploaded (PDF, DOCX, TXT, MD, slides, sheets, images) chunked + embedded via RAG | openloomi server |
+| **Insights** | AI-extracted records (decisions, action items, preferences, relationships, events) derived from chats and source messages, with usage analytics + automatic maintenance | openloomi server |
+
+Use `search-all` whenever the user asks a general memory question — it covers all three surfaces in one call.
 
 ---
 
 ## Overview
 
-openloomi Memory is built on a unique architectural principle: instead of treating memory as an afterthought, it's the foundation.
+**Tiered model.** OpenLoomi Memory spans four tiers that OpenLoomi reasons across simultaneously:
 
-**How it works with Connectors:** Before memory can search your data, you need to connect your platforms using the `openloomi-connectors` skill. Connectors handles OAuth authentication and integration setup for 26 platforms (Telegram, WhatsApp, Slack, Discord, Gmail, Outlook, Twitter/X, WeChat, and more). Once connected, openloomi continuously syncs everything with your permission—raw messages, meetings, emails, tweets, calendar events, voice calls, and any notes or ideas you've captured. This aggregated data becomes the single source of truth that powers openloomi's brain.
+- **Raw information** — original messages, files, transcripts synced from your Connectors and Screen Capture.
+- **Insights** — extracted entities, decisions, key events from chats and source messages. Each insight carries usage analytics (view frequency, sources, value score) and a maintenance cycle (daily analytics refresh, weekly compaction) that surfaces the most relevant records and prevents context decay.
+- **Contextual memory** — recent conversation state, screen captures, and short-term references for the current task.
+- **Knowledge-base memory** — the long-term people / projects / decisions / preferences graph that survives months of activity.
 
-**The memory is layered:**
+Together these let Chat ground answers in both immediate context and deep history at once. Loop reads the relevant slice before producing each Decision; the result of every approved Action is written back into Memory so the next judgement has sharper context.
 
-- **Raw information:** Original messages, files, transcripts
-- **Information insights:** Extracted entities, decisions, key events
-- **Contextual memory:** Recent conversation state
-- **Knowledge-base memory:** Long-term people/projects/preferences knowledge graph
-
-This enables reasoning across both immediate context and deep historical knowledge simultaneously. When you create custom agent roles to handle tasks, this memory acts as the orchestrator—dramatically improving execution quality.
-
-Inside openloomi, memory is layered into multiple levels:
-
-- **Raw information:** Original messages, files, transcripts
-- **Information insights:** Extracted entities, decisions, key events
-- **Contextual memory:** Recent conversation state
-- **Knowledge-base memory:** Long-term people/projects/preferences knowledge graph
-
-This enables reasoning across both immediate context and deep historical knowledge simultaneously.
-
-Insights include automatic usage tracking—recording view frequency, sources, and calculating value scores to surface the most relevant information. A periodic maintenance system (daily analytics refresh, weekly compaction) keeps insight retrieval accurate and prevents context decay by archiving or removing stale, low-value content.
+**How it works with Connectors.** Memory is auto-built from the platforms you've authorized. Connectors handle the OAuth / app-credential / QR / interactive flows — see `openloomi-connectors` for the native 7 messaging apps and the Composio OAuth layer (1000+ apps including Slack, Discord, X, Gmail, Outlook, Google Calendar/Drive/Docs, GitHub, Notion, Linear, HubSpot, LinkedIn, Jira, Asana). Once connected, Memory continuously syncs raw messages, meetings, emails, tweets, calendar events, voice calls, and any notes or screen captures you've made.
 
 ---
 

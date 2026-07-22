@@ -12,7 +12,7 @@ GitHub's modern code search (the one that indexes private repos) is web-only; `g
 Find the bundled sync script (works for plugin installs and manual symlinks):
 
 ```bash
-find ~/.claude -name "private-github-search-sync.sh" 2>/dev/null | sort -V | tail -1
+find ~/.claude ~/.codex -name "private-github-search-sync.sh" 2>/dev/null | sort -V | tail -1
 ```
 
 Always refresh first - it exits instantly if the mirror was synced within the last hour, and takes ~15s otherwise (`--force` syncs regardless of age):

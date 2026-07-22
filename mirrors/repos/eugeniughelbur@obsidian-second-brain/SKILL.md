@@ -559,10 +559,11 @@ Steps:
    - **Concept gaps agent**: find terms mentioned 3+ times without a dedicated page
    - **Stale claims agent**: flag Knowledge/ notes older than 6 months on fast-moving topics
    - **Freshness agent**: run `python scripts/freshness_lint.py --path <vault> --json` - enforces `references/freshness-policy.md` (every stored fact must be timeless, dated, or a pointer; fast facts carry an `as of` stamp or link to their home system)
+   - **Typed-edge lint agent**: run `python scripts/link_graph.py --path <vault> --lint` - validates the `relations:` typed-edge graph (Rule 6 § Typed edges in `references/ai-first-rules.md`): contradiction cycles (critical), unknown types / dangling targets / self-edges (warning), missing inverse edges (info). Returns zero findings on vaults that use no typed edges yet
 4. Merge agent results and group by severity:
-   - 🔴 Critical: broken links, unfilled template syntax, contradictions
-   - 🟡 Warning: duplicates, stale tasks, missing frontmatter, stale claims, concept gaps
-   - ⚪ Info: orphaned notes, empty folders
+   - 🔴 Critical: broken links, unfilled template syntax, contradictions, typed-edge contradiction cycles
+   - 🟡 Warning: duplicates, stale tasks, missing frontmatter, stale claims, concept gaps, typed-edge problems (unknown type, dangling target, self-edge)
+   - ⚪ Info: orphaned notes, empty folders, missing inverse edges
 5. Present a clean summary with counts per category
 6. For safe fixes (missing frontmatter, obvious duplicates, creating pages for concept gaps), offer to fix them automatically
 7. For destructive fixes (archiving, merging, resolving contradictions), list them and ask for explicit confirmation before touching anything
@@ -647,7 +648,9 @@ Hybrid command: `scripts/architect_scan.py` does a deterministic scan (stack, mo
 
 **Generates a JSON Canvas map of the vault's knowledge graph, openable in Obsidian's native canvas viewer.**
 
-Backed by `scripts/link_graph.py` (deterministic link extraction - no whole-vault read). Optional scope: a project, entity, topic, or `full` (default). Builds nodes and edges from `[[wikilinks]]`, clusters by type (entities, projects, concepts, daily, sources) with color and size keyed to centrality, flags orphans with a red border, and writes `atlas.canvas` (or `atlas-<topic>.canvas`) to the vault root. Also emits a text summary: hub nodes by degree centrality, bridge nodes, stale orphans, clusters, and any centrality skew (a single navigation point of failure). Appends a one-line entry to the operation log.
+Backed by `scripts/link_graph.py` (deterministic link extraction - no whole-vault read). Optional scope: a project, entity, topic, or `full` (default). Builds nodes and edges from `[[wikilinks]]`, clusters by type (entities, projects, concepts, daily, sources) with color and size keyed to centrality, flags orphans with a red border, and writes `atlas.canvas` (or `atlas-<topic>.canvas`) to the vault root. Also emits a text summary: hub nodes by degree centrality, bridge nodes, stale orphans, clusters, and any centrality skew (a single navigation point of failure). Reads the `typed_edges` overlay (from `relations:` frontmatter) to label canvas edges with their relation type and surface the longest `supersedes`/`depends_on`/`caused` reasoning chains. Appends a one-line entry to the operation log.
+
+**Typed edges (graph engineering).** Beyond untyped `[[wikilinks]]`, notes can record *typed* relationships in a `relations:` frontmatter block - `supersedes`, `depends_on`, `caused`, `decided_by`, `relates_to`, `contradicts` (each with an inverse). This makes the graph traversable by meaning, not just adjacency. `scripts/link_graph.py` extracts them as a semantic overlay and `--lint` validates them (unknown types, dangling targets, contradiction cycles, missing inverses); `/obsidian-health` runs that lint. The full spec is Rule 6 § Typed edges in `references/ai-first-rules.md`. The overlay is always reconstructed from frontmatter on demand - plain markdown, no separate graph store.
 
 ---
 

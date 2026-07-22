@@ -2,6 +2,30 @@
 
 Use Jotai for client-only state, not as a second cache for IPC data.
 
+## No root Provider: production uses the default store
+
+The renderer mounts no root Jotai `<Provider>`, so production components and
+`useStore()` resolve to jotai's default store, while tests wrap components in
+`<Provider store={createStore()}>`. Module-scope services that read/write
+atoms outside React (e.g. the version preview command adapter in
+`src/version_preview/commands.ts`) must receive the store from `useStore()`
+at initialization instead of importing `getDefaultStore()`, or test stores
+will silently diverge from the store the service writes to.
+
+## Version preview state is machine-owned
+
+Git preview orchestration and its ephemeral presentation selection live in
+the app-keyed state machine under `src/version_preview/`. Never add a parallel
+Jotai atom for the selected version, diff file, return branch, or mutation
+status; read the machine snapshot and send events through
+`useVersionPreview(appId)`. The command adapter is the only renderer caller of
+version-mutation IPC (see `plans/better-state-machine.md`).
+
+Derive UI visibility and action availability from the lifecycle state as well
+as retained session fields. Returning/recovery states may intentionally retain
+historical session data, but must hide stale presentation and consistently
+block events that those states reject.
+
 ## Ownership
 
 - React Query owns server/IPC-backed data such as apps, chats, versions,
@@ -64,3 +88,15 @@ Components should usually read `currentPreviewErrorAtom` rather than repeat
 When deleting an entity, prune any keyed Jotai state for that entity. Chat
 state already uses helper atoms such as `removeChatIdFromAllTrackingAtom`; app
 scoped runtime state should follow the same pattern.
+
+For provider-owned disposable services, keep constructors side-effect-free and
+start external subscriptions only after the provider commits. React StrictMode
+replays effect setup/cleanup while retaining hook state, so cleanup must not
+permanently dispose an instance that the replayed setup will reuse.
+
+## App run-state event identity
+
+Proxy-ready output does not carry an operation generation. Stamping it with the
+current run epoch does not prove it belongs to that run, so never use a buffered
+proxy URL to override a failed destructive restart or reapply a potentially dead
+proxy; require producer-side identity before treating it as current-run evidence.

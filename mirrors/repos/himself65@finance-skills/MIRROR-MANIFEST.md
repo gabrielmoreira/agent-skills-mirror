@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `himself65/finance-skills` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `himself65/finance-skills` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `himself65/finance-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,30 +61,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 2 | ✓ | [`plugins/data-providers/skills/finance-sentiment/SKILL.md`](plugins/data-providers/skills/finance-sentiment/SKILL.md) |
-| 3 | ✓ | [`plugins/data-providers/skills/funda-data/SKILL.md`](plugins/data-providers/skills/funda-data/SKILL.md) |
-| 4 | ✓ | [`plugins/data-providers/skills/hormuz-strait/SKILL.md`](plugins/data-providers/skills/hormuz-strait/SKILL.md) |
-| 5 | ✓ | [`plugins/data-providers/skills/hyperliquid-reader/SKILL.md`](plugins/data-providers/skills/hyperliquid-reader/SKILL.md) |
-| 6 | ✓ | [`plugins/data-providers/skills/tradingview-reader/SKILL.md`](plugins/data-providers/skills/tradingview-reader/SKILL.md) |
-| 7 | ✓ | [`plugins/market-analysis/skills/company-valuation/SKILL.md`](plugins/market-analysis/skills/company-valuation/SKILL.md) |
-| 8 | ✓ | [`plugins/market-analysis/skills/earnings-preview/SKILL.md`](plugins/market-analysis/skills/earnings-preview/SKILL.md) |
-| 9 | ✓ | [`plugins/market-analysis/skills/earnings-recap/SKILL.md`](plugins/market-analysis/skills/earnings-recap/SKILL.md) |
-| 10 | ✓ | [`plugins/market-analysis/skills/estimate-analysis/SKILL.md`](plugins/market-analysis/skills/estimate-analysis/SKILL.md) |
-| 11 | ✓ | [`plugins/market-analysis/skills/etf-premium/SKILL.md`](plugins/market-analysis/skills/etf-premium/SKILL.md) |
-| 12 | ✓ | [`plugins/market-analysis/skills/options-payoff/SKILL.md`](plugins/market-analysis/skills/options-payoff/SKILL.md) |
-| 13 | ✓ | [`plugins/market-analysis/skills/saas-valuation-compression/SKILL.md`](plugins/market-analysis/skills/saas-valuation-compression/SKILL.md) |
-| 14 | ✓ | [`plugins/market-analysis/skills/sepa-strategy/SKILL.md`](plugins/market-analysis/skills/sepa-strategy/SKILL.md) |
-| 15 | ✓ | [`plugins/market-analysis/skills/stock-correlation/SKILL.md`](plugins/market-analysis/skills/stock-correlation/SKILL.md) |
-| 16 | ✓ | [`plugins/market-analysis/skills/stock-liquidity/SKILL.md`](plugins/market-analysis/skills/stock-liquidity/SKILL.md) |
-| 17 | ✓ | [`plugins/market-analysis/skills/yfinance-data/SKILL.md`](plugins/market-analysis/skills/yfinance-data/SKILL.md) |
-| 18 | ✓ | [`plugins/skill-creator/skills/skill-creator/SKILL.md`](plugins/skill-creator/skills/skill-creator/SKILL.md) |
-| 19 | ✓ | [`plugins/social-readers/skills/discord-reader/SKILL.md`](plugins/social-readers/skills/discord-reader/SKILL.md) |
-| 20 | ✓ | [`plugins/social-readers/skills/linkedin-reader/SKILL.md`](plugins/social-readers/skills/linkedin-reader/SKILL.md) |
-| 21 | ✓ | [`plugins/social-readers/skills/opencli-reader/SKILL.md`](plugins/social-readers/skills/opencli-reader/SKILL.md) |
-| 22 | ✓ | [`plugins/social-readers/skills/telegram-reader/SKILL.md`](plugins/social-readers/skills/telegram-reader/SKILL.md) |
-| 23 | ✓ | [`plugins/social-readers/skills/twitter-reader/SKILL.md`](plugins/social-readers/skills/twitter-reader/SKILL.md) |
-| 24 | ✓ | [`plugins/social-readers/skills/yc-reader/SKILL.md`](plugins/social-readers/skills/yc-reader/SKILL.md) |
-| 25 | ✓ | [`plugins/startup-tools/skills/startup-analysis/SKILL.md`](plugins/startup-tools/skills/startup-analysis/SKILL.md) |
-| 26 | ✓ | [`plugins/ui-tools/skills/generative-ui/SKILL.md`](plugins/ui-tools/skills/generative-ui/SKILL.md) |
+| 3 | ✓ | [`plugins/data-providers/skills/fintel-data/SKILL.md`](plugins/data-providers/skills/fintel-data/SKILL.md) |
+| 4 | ✓ | [`plugins/data-providers/skills/funda-data/SKILL.md`](plugins/data-providers/skills/funda-data/SKILL.md) |
+| 5 | ✓ | [`plugins/data-providers/skills/hormuz-strait/SKILL.md`](plugins/data-providers/skills/hormuz-strait/SKILL.md) |
+| 6 | ✓ | [`plugins/data-providers/skills/hyperliquid-reader/SKILL.md`](plugins/data-providers/skills/hyperliquid-reader/SKILL.md) |
+| 7 | ✓ | [`plugins/data-providers/skills/tradingview-reader/SKILL.md`](plugins/data-providers/skills/tradingview-reader/SKILL.md) |
+| 8 | ✓ | [`plugins/market-analysis/skills/company-valuation/SKILL.md`](plugins/market-analysis/skills/company-valuation/SKILL.md) |
+| 9 | ✓ | [`plugins/market-analysis/skills/earnings-preview/SKILL.md`](plugins/market-analysis/skills/earnings-preview/SKILL.md) |
+| 10 | ✓ | [`plugins/market-analysis/skills/earnings-recap/SKILL.md`](plugins/market-analysis/skills/earnings-recap/SKILL.md) |
+| 11 | ✓ | [`plugins/market-analysis/skills/estimate-analysis/SKILL.md`](plugins/market-analysis/skills/estimate-analysis/SKILL.md) |
+| 12 | ✓ | [`plugins/market-analysis/skills/etf-premium/SKILL.md`](plugins/market-analysis/skills/etf-premium/SKILL.md) |
+| 13 | ✓ | [`plugins/market-analysis/skills/options-payoff/SKILL.md`](plugins/market-analysis/skills/options-payoff/SKILL.md) |
+| 14 | ✓ | [`plugins/market-analysis/skills/saas-valuation-compression/SKILL.md`](plugins/market-analysis/skills/saas-valuation-compression/SKILL.md) |
+| 15 | ✓ | [`plugins/market-analysis/skills/sepa-strategy/SKILL.md`](plugins/market-analysis/skills/sepa-strategy/SKILL.md) |
+| 16 | ✓ | [`plugins/market-analysis/skills/stock-correlation/SKILL.md`](plugins/market-analysis/skills/stock-correlation/SKILL.md) |
+| 17 | ✓ | [`plugins/market-analysis/skills/stock-liquidity/SKILL.md`](plugins/market-analysis/skills/stock-liquidity/SKILL.md) |
+| 18 | ✓ | [`plugins/market-analysis/skills/yfinance-data/SKILL.md`](plugins/market-analysis/skills/yfinance-data/SKILL.md) |
+| 19 | ✓ | [`plugins/skill-creator/skills/skill-creator/SKILL.md`](plugins/skill-creator/skills/skill-creator/SKILL.md) |
+| 20 | ✓ | [`plugins/social-readers/skills/discord-reader/SKILL.md`](plugins/social-readers/skills/discord-reader/SKILL.md) |
+| 21 | ✓ | [`plugins/social-readers/skills/linkedin-reader/SKILL.md`](plugins/social-readers/skills/linkedin-reader/SKILL.md) |
+| 22 | ✓ | [`plugins/social-readers/skills/opencli-reader/SKILL.md`](plugins/social-readers/skills/opencli-reader/SKILL.md) |
+| 23 | ✓ | [`plugins/social-readers/skills/telegram-reader/SKILL.md`](plugins/social-readers/skills/telegram-reader/SKILL.md) |
+| 24 | ✓ | [`plugins/social-readers/skills/twitter-reader/SKILL.md`](plugins/social-readers/skills/twitter-reader/SKILL.md) |
+| 25 | ✓ | [`plugins/social-readers/skills/yc-reader/SKILL.md`](plugins/social-readers/skills/yc-reader/SKILL.md) |
+| 26 | ✓ | [`plugins/startup-tools/skills/startup-analysis/SKILL.md`](plugins/startup-tools/skills/startup-analysis/SKILL.md) |
+| 27 | ✓ | [`plugins/ui-tools/skills/generative-ui/SKILL.md`](plugins/ui-tools/skills/generative-ui/SKILL.md) |
 
 ---
 

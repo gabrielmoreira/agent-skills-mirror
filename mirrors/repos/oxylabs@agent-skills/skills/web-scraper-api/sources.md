@@ -134,7 +134,6 @@
 |--------|----------|
 | `youtube_search` | Video search results |
 | `youtube_metadata` | Video metadata |
-| `youtube_transcript` | Video transcripts |
 | `youtube_subtitles` | Closed captions |
 | `youtube_channel` | Channel data |
 

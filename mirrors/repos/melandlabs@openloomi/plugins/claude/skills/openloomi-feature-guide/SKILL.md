@@ -1,1011 +1,242 @@
 ---
 name: openloomi-feature-guide
-description: "Use this when users ask about openloomi features, capabilities, or how to use it. Examples: 'openloomi 怎么用', '你能做什么', 'What can you do?', 'How does openloomi work?', 'Tell me about openloomi features', 'What platforms does openloomi support?', 'How do I use scheduled tasks?', 'What is Insights system?', 'How do I connect Telegram?', 'How to create automation?', '什么是 openloomi 事件?'"
+description: "Use this when users ask about openloomi features, capabilities, or how to use it. Examples: 'openloomi 怎么用', '你能做什么', 'What can you do?', 'How does openloomi work?', 'Tell me about openloomi features', 'What platforms does openloomi support?', 'How do I use scheduled tasks?', 'What is Loop?', 'How does the attention agent work?', 'What is a Decision Card?', 'How do connectors work?', 'How do I extend Loop with custom types?', 'What is a classifier rule?', 'How do I plug openloomi into Claude Code / Codex?'"
 ---
 
 > **Note:** If you haven't downloaded or installed openloomi yet, please refer to [Getting Started](https://openloomi.ai/docs/getting-started) for installation instructions.
 
 # OpenLoomi Product Features
 
-Use this skill when users ask about openloomi features, usage, or capabilities. Provide accurate and easy-to-understand feature introductions and operation guides.
+Use this skill when users ask about openloomi features, usage, or capabilities. Provide accurate and easy-to-understand feature introductions and operation guides. The terms used here (Loop, Signal, Decision, Card, ActionKind, Attention Agent, Connector, Memory, Audit Log, Plugin, Agent Runtime, Composio, etc.) are defined in the **Glossary** below — read it first if a user asks anything conceptual.
 
 ---
 
 ## What is OpenLoomi
 
-openloomi is a **Proactive AI Workspace** that understands your intent, orchestrates execution, and gets things done. It's not just another AI assistant—it's an innovative AI product that **senses business signals**, **orchestrates tasks autonomously**, and **tracks and validates results end-to-end**.
+OpenLoomi is an **open-source AI coworker, driven by an attention agent**. It connects your authorized work tools and screen content, builds a **holistic context** of your people, projects, and decisions, and tells you what happened, why it matters, what to do next — and surfaces daily summaries — saving your attention for what matters.
 
-### Core Value Proposition
+Use it standalone, or plug any Agent framework into the same resident desktop: **Claude Code, Codex, OpenCode, Hermes, and OpenClaw** all work. The desktop attention agent (a small fox named **Loomi**) lives on top of your screen and surfaces the day's decisions as gentle bubbles you can approve in one tap.
 
-openloomi transforms how individuals and SMB teams work by:
-- **Proactive Awareness** — Monitors signals across platforms and alerts you before you ask
-- **Long-Term Memory** — Remembers context across months, never forgets commitments
-- **Autonomous Execution** — Not just telling you what to do, but doing it
-- **Builtin Skills** — Rich execution capabilities for every work scenario
+---
+
+## Glossary
+
+OpenLoomi is best read as a single **chain from input to action**, not as one big chat window. Connectors bring events in, Memory holds context, Loop decides what matters and turns each signal into a Decision card, the Attention Agent (Loomi) shows the card on your desktop, you tap Approve, and an Action Runner executes through a Connector — then the outcome is written back to Memory and recorded in the Audit Log.
+
+This page exists to make that chain legible. It first walks the chain end-to-end, then defines every concept you're likely to meet in other pages, and finishes with a short table of distinctions that get confused in practice. Every cross-reference links to an existing page; nothing here duplicates their full setup or configuration.
+
+### How the concepts fit together
+
+OpenLoomi is one pipeline. The same pieces appear on every page, just framed differently.
+
+Two parallel input paths feed the same context layer. The main one is real-time and runs through Loop; the side one is screen-based and lands in Memory without going through Signals.
+
+![OpenLoomi concept map — Inputs (Connectors and Screen Capture) feed Signals into the Judgement & Store pillar (Loop and Memory), which produces Decisions; the Surface & Action pillar renders Cards in the Attention Agent, waits for user Approve, and runs Actions through Connectors; everything writes back to Memory and the Audit Log.](https://openloomi.ai/img/openloomi/glossary/concepts.svg)
+
+A short reading guide for the figure:
+
+- **Connectors** are the real-time input path: they pull raw events from external platforms and turn them into **Signals**, which **Loop** polls on its tick. Everything that becomes a Decision card comes in this way.
+- **Screen Capture** (macOS only) is the side input path: pressing the global capture shortcut summarises the frontmost window and the result is stored directly as a **Memory** record. Screen memories show up alongside messages, summaries, and insights inside Memory; they do **not** flow through Signals and Loop won't tick on them.
+- **Memory** is the long-lived context layer: people, projects, prior decisions, summaries, insights, screen memories, and Knowledge Base chunks. **Loop** reads the relevant slice before it judges; **Chat** reads Memory through retriever skills; the result of every approved action is written back into Memory.
+- **Loop** is the only thing that produces **Decisions**. A Decision is the typed judgement ("this email needs a reply", "this PR needs a review"), and a **Card** is how that judgement looks in the UI.
+- The **Attention Agent** (also called **Loomi**, the **pet**, or the **fox**) is the messenger. It surfaces cards on the desktop. It does no judging of its own.
+- You always tap **Approve** before anything runs. After approval, an **Action Runner** calls a **Connector** to actually send mail / post the comment / update the ticket.
+- The result lands back in **Memory** (so the next Loop tick has sharper context) and in the **Audit Log** (so you can see who did what and when).
+
+#### Worked example — "An email needs a reply"
+
+> 9:12 AM. Sarah writes: "Hi — I tweaked tomorrow's Q2 review agenda, can you take a look? Also, I'd like to move our Wednesday 1:1 to Thursday same time — works for you?"
+
+Step by step through the chain:
+
+| Step          | Where it happens                                               | What is produced                                                               |
+| ------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 1. Ingest     | Gmail **Connector**                                            | A raw **Signal** — a new email event                                           |
+| 2. Enrich     | **Memory** + **Screen Capture** (if you had related tabs open) | A context slice: who Sarah is, the Q2 project note, last thread summary        |
+| 3. Judge      | **Loop** tick                                                  | A typed **Decision** — `email_reply`, confidence `0.85`                        |
+| 4. Surface    | **Attention Agent** bubble, main-window queue, pet card        | A **Card** with subject, sender, draft preview, the four-button tray           |
+| 5. Approve    | You tap **Approve**                                            | The **Action Runner** for `email_reply` is invoked                             |
+| 6. Execute    | Gmail **Connector** (send)                                     | The reply is sent                                                              |
+| 7. Write back | **Memory** + **Audit Log**                                     | Sarah's profile, the thread cluster, and the day's audit entry are all updated |
+
+### Core concepts
+
+These are the terms that anchor every other page.
+
+#### Connector
+
+A **Connector** is the integration boundary between OpenLoomi and an external platform — Gmail, Outlook, Telegram, WhatsApp, iMessage, Slack, GitHub, Linear, Calendar, Notion, and so on. Connectors handle both directions: pulling raw events out of the platform so the rest of the system can see them, and pushing actions back in once you approve them. See [Connectors](https://openloomi.ai/docs/connectors).
+
+#### Signal
+
+A **Signal** is one raw event produced by a **Connector** — "email arrived", "calendar invite received", "@mention on Telegram", "PR review requested". Signals are unopinionated: they carry the payload from the source platform and a shape so the rest of OpenLoomi can reason about them. They are the only thing Loop consumes. (Screen Capture is a separate input — see [Memory](#memory).)
+
+#### Memory
+
+**Memory** is OpenLoomi's long-lived context layer — people, projects, prior decisions, summaries, insights, uploaded documents, and **Screen Capture** memories — held locally on your machine. Both **Chat** and **Loop** read from Memory to ground their answers in your history, and approved Actions write back into Memory so the next judgement has sharper context. See [Memory](https://openloomi.ai/docs/memory).
+
+#### Loop
+
+**Loop** is OpenLoomi's proactive judgement engine. On a regular tick it pulls **Signals** from connected sources, reads the matching slice of **Memory**, and turns the ones that need you into typed **Decisions**. Loop never executes anything itself — it only "sees, thinks, and queues a card". Default cadence is every 10 minutes; tune it via `PUT /api/loop/preferences`. See [Loop](https://openloomi.ai/docs/loop).
+
+#### Decision
+
+A **Decision** is the smallest unit Loop produces — one signal becomes one structured judgement. A Decision carries a typed action (for example `email_reply`, `rsvp`, `review_pr`, `im_reply`, `todo`), a confidence score, a short preview of the proposed action, and any sender / subject / memory slice that's relevant.
+
+#### Card
+
+A **Card** is what a **Decision** looks like in the UI. A Card has the typed action, the confidence score, a preview body, the four-button tray (**Approve / Edit Draft / Later / Skip**), and — for any outbound action — a red "⚠ OUTBOUND" warning. Cards surface in three places at once: the main OpenLoomi window, the Attention Agent bubble, and the pet card. See [Loop — Approvals and dry-run](https://openloomi.ai/docs/loop#approvals-and-dry-run).
+
+#### Action / ActionKind
+
+An **Action** is the actual side effect that runs after you Approve a Card. The shape of an Action is fixed by an **`ActionKind`** literal — `email_reply`, `im_reply`, `calendar_rsvp`, `github_review`, `linear_review`, `todo`, `deadline_notify`, and a small set of others. Custom decision types register a label + icon, but always route to one of the built-in `ActionKind` runners.
+
+#### Attention Agent / Loomi / Pet
+
+The **Attention Agent** is the desktop companion — a 168×168, always-on-top, transparent little fox that lives on your desktop and shows Card bubbles when Loop queues something for you. **Loomi** is the fox's name; **Pet** is a generic nickname. The Attention Agent is **the messenger, not the judge**. See [Attention Agent](https://openloomi.ai/docs/attention-agent).
+
+#### Audit Log
+
+The **Audit Log** records the consequential moments of OpenLoomi's day: every Memory read/write, every Loop judgement, every Approve / Edit / Skip, every outbound Action invocation and its result, and every Connector authorization change. See [Privacy & Security — Audit Logs](https://openloomi.ai/docs/privacy-security#audit-logs).
+
+### Supporting concepts
+
+These are the surfaces and side capabilities that show up across the product.
+
+#### Chat
+
+**Chat** is the conversational entry point in the main OpenLoomi window. It solves "I have a question, a request, or a draft to write". It does **not** watch your day or queue cards — that's Loop's job. Chat reads Memory to ground answers and, when you tap **Edit Draft** on a Decision Card, you land here with the draft already loaded so you can refine it with the AI before Approving. See [Chat](https://openloomi.ai/docs/chat).
+
+#### Automation
+
+An **Automation** (also called a **Task** or **Scheduled Job**) is a prompt and schedule that **you** have defined in advance — "every weekday at 9 AM, summarise my unread inbox". Loop, by contrast, **discovers** Signals on its own and **judges** whether to surface them; Automation is the executor that runs whatever you told it to run. Both share the same scheduled-jobs runtime; Loop's own brief (9 AM) and wrap (6 PM) are themselves scheduled jobs. See [Automation](https://openloomi.ai/docs/automation).
+
+#### Library / Knowledge Base
+
+The **Library** is the user-facing surface; the **Knowledge Base** is what's behind it — the set of uploaded documents (PDF, DOCX, TXT, Markdown, spreadsheets, slides, images) that you want OpenLoomi to reason over. Library is **explicit, user-uploaded context** and is **not** the whole of Memory. See [Library](https://openloomi.ai/docs/library).
+
+#### Skills
+
+**Skills** are reusable capabilities the agent can call when it needs to do something specific — code generation, PDF creation, data analysis, browser automation, search, image generation, and many more. Inside a Skill, OpenLoomi runs through its **Agent Runtime**; Skills are how those runtimes are reached from Chat, Loop, or Automation. See [Skills](https://openloomi.ai/docs/skills).
+
+#### Agent Runtime
+
+An **Agent Runtime** is the underlying execution environment OpenLoomi uses when it needs a model that can act — Claude Agent SDK (the default), Codex CLI, OpenCode, Hermes, or OpenClaw. Runtime selection is deployment configuration. Agent Runtime powers Skills; **Plugins** (below) are the inverse bridge that lets those runtimes call OpenLoomi. See [Agent Runtimes](https://openloomi.ai/docs/reference/agent-runtimes).
+
+#### Plugin
+
+A **Plugin** is a thin bridge in the opposite direction: it lets an external agent shell (Claude Code, Codex CLI) call **into** the local OpenLoomi runtime. Once installed, Memory, Connectors, scheduled jobs, and the Pet become reachable as slash commands, skills, or `@OpenLoomi` prompts inside your existing shell. A Plugin does not run OpenLoomi's models — it just exposes OpenLoomi to the shell you already live in. See [Plugins](https://openloomi.ai/docs/plugins).
+
+#### Composio / Loop channel
+
+**Composio** is the hosted OAuth broker that authorizes several Connector flows behind the scenes (Google Calendar / Docs / Drive, GitHub, Notion, Linear, HubSpot, Jira, Asana, Outlook Calendar, and similar). A **Loop channel** is the per-source subscription that tells Loop which platform to poll on which cadence and what shape the Signal should take. Composio handles **"is this user authorised?"**; Loop channels handle **"how often does Loop look, and what does each record look like?"**. Custom Loop channels today wrap a Composio toolkit + tool slug.
+
+### Common distinctions
+
+These are the pairs and triplets that get mixed up in conversation.
+
+#### Connector vs Signal vs Loop channel
+
+| Term             | What it is                                                                                                                        |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| **Connector**    | The integration with a platform — pull raw events in, push Actions out.                                                           |
+| **Signal**       | One raw event emitted by a Connector and consumed by Loop. Screen Capture does **not** emit Signals; it lands in Memory directly. |
+| **Loop channel** | Loop's per-source subscription record — cadence, `signalType`, `payloadShape`, throttled per channel.                             |
+
+#### Memory vs Knowledge Base vs Insight
+
+| Term               | Where it comes from                                                               | What it stores                                                                |
+| ------------------ | --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **Memory**         | Built automatically by OpenLoomi from your Connectors, chats, and Screen Capture. | People, projects, prior decisions, summaries — long-lived context.            |
+| **Knowledge Base** | Documents **you** upload through the Library surface.                             | Uploaded PDFs / docs / slides / sheets, chunked and embedded for retrieval.   |
+| **Insight**        | AI-extracted structured records derived from chats and source messages.           | High-level facts, events, decisions — with their own weighting and lifecycle. |
+
+All three are searchable and feed Chat and Loop; only Memory is built automatically without an explicit upload step.
+
+#### Decision vs Card vs ActionKind
+
+| Term           | What it is                                                                                             |
+| -------------- | ------------------------------------------------------------------------------------------------------ |
+| **Decision**   | The structured judgement Loop produces — typed action + confidence + preview.                          |
+| **Card**       | The UI rendering of a Decision — the bubble, the queue entry, the four-button tray.                    |
+| **ActionKind** | The fixed runner literal — `email_reply`, `im_reply`, `calendar_rsvp`, etc. — that runs after Approve. |
+
+In short: Loop emits **Decisions**, the UI shows **Cards**, and the runner that executes uses an **`ActionKind`**.
+
+#### Loop vs Automation
+
+| Term           | When it runs                                                | What decides the action                                                |
+| -------------- | ----------------------------------------------------------- | ---------------------------------------------------------------------- |
+| **Loop**       | Continuously, on a tick (default every 10 minutes).         | The agent judges Signals against Memory and proposes a typed Decision. |
+| **Automation** | On a fixed schedule you wrote — cron / interval / one-shot. | The exact prompt and parameters you saved in advance.                  |
+
+Loop is the **discovery + judgement** layer; Automation is the **executor** for work you already know you want done.
+
+#### Attention Agent vs Loop
+
+| Term                | Role                                                                      |
+| ------------------- | ------------------------------------------------------------------------- |
+| **Loop**            | The judgement engine — it produces Decisions.                             |
+| **Attention Agent** | The desktop messenger — it surfaces Cards that Loop has already produced. |
+
+The mnemonic used elsewhere in these docs: **Loop is the brain; Loomi is the bubble.** If you see a notification, Loop decided you should.
+
+#### Plugin vs Agent Runtime
+
+| Term              | Direction                                                                       |
+| ----------------- | ------------------------------------------------------------------------------- |
+| **Plugin**        | External agent shells (Claude Code, Codex CLI) **call into** OpenLoomi.         |
+| **Agent Runtime** | OpenLoomi **calls into** an external runtime to execute Skills and Agent tasks. |
+
+They look similar because they share the word "agent", but they point in opposite directions.
+
+#### Loomi / Pet / Fox and the Attention Agent
+
+| Term                | Meaning                                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| **Attention Agent** | The product-level name for the desktop layer that surfaces Decision Cards.                                          |
+| **Loomi**           | The default fox sprite's name; by extension, used as a nickname for the whole surface.                              |
+| **Pet**             | Generic nickname for the same companion — used in the UI's right-click "Pause reminders" menu and similar surfaces. |
+| **Fox**             | The default theme name; OpenLoomi also ships a `capybara` theme and supports custom themes.                         |
+
+All four refer to the same desktop messenger — just different names a user might meet on different pages.
 
 ---
 
 ## Core Capabilities
 
-### 🧠 Long-Term Memory
-Clear recollection, never forgotten. openloomi builds persistent knowledge graphs that remember all important people, events, decisions, and context across sessions and time. Six months later, it still knows your commitments and preferences.
-
-### 🎯 Noise Filtering
-Tells you what you should act on. With hundreds of daily messages, openloomi replaces "information overload" with "priority signals." Filters 95% of noise, focusing your attention on the 5% that truly matters.
-
-### ⚡ Powerful Engine
-Intent understanding, automatic orchestration. When you say "Help me prepare an investor pitch," openloomi automatically understands intent, breaks it into multiple sub-tasks, invokes appropriate Skills, and chains execution.
-
-### 🔐 Security & Privacy
-Your data, your sovereignty. Local-first architecture—your raw data never leaves your device. End-to-end AES-256 encryption, zero-data-training commitment, SOC 2 compliance audit.
-
-### 🛠️ Builtin Skills
-Builtin Skills covering every work scenario, continuously expanding:
-- 📊 Data Analysis
-- 💻 Code Generation
-- 📄 Document Creation
-- 🌐 Web Automation
-- 🎨 Image Generation
-- 📧 Email Writing
-- 🔍 Deep Research
-- 📊 PPT Creation
-- more skills...
+|     | Capability                                                                          | What it does                                                                                                                                                                                                                                                                                                  |
+| --- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 🐾  | **[Attention Agent](https://openloomi.ai/docs/attention-agent)**                     | An always-on desktop companion (Loomi) that surfaces pre-decided reminders — 9 AM to-do, 6 PM recap, overdue replies — as small bubbles, without fighting for your focus.                                                                                                                                     |
+| 🧠  | **[Holistic Context](https://openloomi.ai/docs/memory)**                             | Short → mid → long-term memory that grows on its own — visible, auditable, and always remembering your people, projects, and decisions across months.                                                                                                                                                         |
+| 🔌  | **[Platform Connectors](https://openloomi.ai/docs/connectors)**                      | **[Auto-fetch background sync](https://openloomi.ai/docs/what-is-openloomi#a-complete-intelligence-loop-from-perception-to-action)** pulls commits, issues, emails, and docs proactively into your context graph. **[Messaging apps](https://openloomi.ai/docs/messaging-apps)** — Telegram, WhatsApp, iMessage, QQ, Lark/Feishu — let you chat with AI directly inside your existing conversations. |
+| ⏰  | **[Proactive Tasks](https://openloomi.ai/docs/automation)**                          | Schedule recurring work — daily digests, weekly reports, reminders — that run automatically on your desktop.                                                                                                                                                                                                  |
+| 🖥️  | **[Security & Local-First](https://openloomi.ai/docs/privacy-security)**             | Native app for Windows, macOS, Linux — **works out of the box**, minutes to set up; local-first storage, AES-256 encryption, no data leaves your machine, auditable access logs.                                                                                                                              |
+| 🧩  | **[Any Agent Integration](https://openloomi.ai/docs/reference/agent-runtimes)**      | OpenLoomi's context, memory, connectors, attention agent, and Loop engine are all delivered as open-source [Skills](https://openloomi.ai/docs/skills) and [Plugins](https://openloomi.ai/docs/plugins). Use OpenLoomi Desktop directly, or plug into your existing Agent — Claude, Codex, OpenCode, Hermes, or OpenClaw. |
 
 ---
 
-## Use Cases
+## Capability Highlights
 
-### 🌍 Global Managers
-Never miss a critical signal across time zones. Business runs 24/7 globally. openloomi filters time zone and language noise, capturing high-value opportunities while you sleep—wake up to a refined action list.
+### 🐾 Attention Agent
 
-### 🧑‍💻 Engineers & Product Teams
-Team memory that never decays. Transform discussions scattered across Slack, Jira, and documents into structured knowledge. Auto-generate weekly reports, sync missed context, eliminate "context rot."
+Loomi is a 168×168, always-on-top, transparent little fox that lives on your desktop. Every morning at 9 AM it slides today's to-do into view; every evening at 6 PM it shows what was handled for you during the day. It only nudges you in the moments that matter (an email past its reply window, a calendar invite past its RSVP window, a decision Loop queued for you) — and you always **Approve** before anything runs. Close the main OpenLoomi window and Loomi retreats to the system tray, still watching the door.
 
-### 🚀 Founders & Sales
-One person does the work of many, at scale. openloomi learns your communication style, automatically maintains hundreds of client relationships, follows up on leads, generates personalized proposals—never burns out.
+### 🧠 Holistic Context
 
----
+OpenLoomi builds a persistent knowledge graph of people, projects, and decisions — short-, mid-, and long-term tiers that grow on their own. Six months later it still remembers the Q3 partnership direction confirmed with Sarah or the demo feedback from six weeks ago. Today when Sarah emails, the right slice is automatically pulled and a reply is drafted. You can always see and audit exactly what OpenLoomi remembers about you. See [Memory tiers and forgetting engine](https://openloomi.ai/docs/memory).
 
-## Quick Start
+### 🔌 Platform Connectors
 
-### 1. Sign Up / Sign In
+A continuous background sync pulls raw events from your authorized tools into the context graph: Email (Gmail, Outlook), IM (Telegram, WhatsApp, iMessage, QQ, Lark/Feishu, DingTalk), code review (GitHub, Linear), calendar (Google, Outlook), and more via the [Composio](https://openloomi.ai/docs/glossary#composio--loop-channel) OAuth broker. Connectors handle both directions — pulling Signals in, pushing approved Actions back out. See the [full list and per-platform setup flows](https://openloomi.ai/docs/connectors).
 
-- Sign up with email and password
-- Or sign in directly with your **Google** or **GitHub** account
+### ⏰ Proactive Tasks
 
-### 2. Onboarding
+Have AI run work on a schedule you write. Define a Task with a name, prompt, and schedule (cron / interval / one-shot) — Loop's own morning brief (9 AM) and evening wrap (6 PM) are themselves scheduled jobs. Enable/disable tasks, run them now, inspect execution history. See [Automation](https://openloomi.ai/docs/automation).
 
-First-time users will go through an onboarding flow:
-1. Select your role and focus areas
-2. Tell openloomi what you'd like it to help with
-3. Connect platforms to unlock deeper insights
-4. Name your AI assistant
+### 🧩 Any Agent Integration
 
-### 3. Connect Communication Platforms
-
-Click **[Connect platform]** to complete authorization.
-
-**Supported platforms:**
-- **Messaging**: Slack, Telegram, Discord, WhatsApp, Weixin, iMessage, QQ, Feishu, DingTalk
-- **Email**: Gmail, Outlook
-- **Social Media**: X (Twitter) — for marketing and content automation
-- **Other**: RSS
-- **Coming Soon**: Google Drive, Microsoft Teams, Notion, HubSpot, Google Calendar
-
----
-
-## Platform Connection Steps
-
-### WhatsApp
-
-1. Click **[Connect WhatsApp]**
-2. Complete authorization via **QR code scan** or **phone pair code**
-3. Once authorized, openloomi will automatically read your WhatsApp messages to generate long-term events. You can send messages in **"Starred Messages"** and AI will:
-
-- Read and understand your message content
-- Generate smart insights in openloomi
-- You can converse with AI about these messages in openloomi
-
-> 💡 How to use: Open "Starred Messages" in WhatsApp, send a message to yourself, and AI will automatically read and understand it.
-
-### Weixin
-
-1. Click **[Connect Weixin]**
-2. Complete authorization via **QR code scan**
-
-### Telegram
-
-1. Click **[Connect Telegram]** to enter the authorization page in the source settings.
-2. Choose a login method:
-   - **Phone verification**: Enter phone number → receive verification code → enter 2FA password if enabled
-   - **QR code**: Scan QR code with Telegram → enter 2FA password if enabled
-   - **Quick login**: If you have the official Telegram desktop app installed locally, you can use your existing session to log in without phone number or verification code
-3. Once authorized, openloomi will automatically read your Telegram messages to generate long-term events on the Today page. You can send messages in **"Saved Messages"** and AI will:
-
-- Read and understand your message content
-- Generate smart insights in openloomi
-- You can converse with AI about these messages in openloomi
-
-> 💡 How to use: Open "Saved Messages" in Telegram, send a message to your saved messages, and AI will automatically read and understand it.
-
-### Slack
-
-1. Click **[Connect Slack]** in the integration settings
-2. Click **[Install openloomi]** on the authorization page to add to your workspace
-3. Note: Currently only workspace owners can install
-
-### Discord
-
-1. Click **[Connect Discord]** in the integration settings
-2. Select the Discord server to install
-3. Grant openloomi bot message permissions
-4. Note: Only server admins can install
-
-### Gmail
-
-1. Click **[Connect Gmail]** in the integration settings
-2. Enter the email address and app password to authorize
-
-### RSS
-
-1. Click **[RSS]** button to enter the RSS integration page
-2. Enter a single RSS link, or upload an OPML file for batch import
-
-### Feishu
-
-1. Click **[Connect Feishu]**
-2. Enter your Feishu App ID and App Secret
-3. Click connect
-
-**How to get credentials:**
-1. Go to [Feishu Open Platform](https://open.feishu.cn/)
-2. Create an enterprise self-built app
-3. Enable bot capability
-4. Select "Use long connection to receive events"
-5. Subscribe to `im.message.receive_v1`
-6. Get App ID and App Secret from the app settings
-
-**Required permissions (scopes):**
-
-```json
-{
-  "scopes": {
-    "tenant": [
-      "aily:file:read",
-      "aily:file:write",
-      "application:application.app_message_stats.overview:readonly",
-      "application:application:self_manage",
-      "application:bot.menu:write",
-      "cardkit:card:write",
-      "contact:user.employee_id:readonly",
-      "corehr:file:download",
-      "docs:document.content:read",
-      "event:ip_list",
-      "im:chat",
-      "im:chat.access_event.bot_p2p_chat:read",
-      "im:chat.members:bot_access",
-      "im:message",
-      "im:message.group_at_msg:readonly",
-      "im:message.group_msg",
-      "im:message.p2p_msg:readonly",
-      "im:message:readonly",
-      "im:message:send_as_bot",
-      "im:resource",
-      "sheets:spreadsheet",
-      "wiki:wiki:readonly"
-    ],
-    "user": [
-      "aily:file:read",
-      "aily:file:write",
-      "im:chat.access_event.bot_p2p_chat:read",
-      "im:chat:read",
-      "im:chat:readonly"
-    ]
-  }
-}
-```
-
-### X (Twitter)
-
-Connect X (Twitter) to enable marketing automation features.
-
-1. Click **[Connect X]** to authorize via OAuth
-
-### Outlook
-
-1. Click **[Connect Gmail]** in the integration settings
-2. Enter the email address and app password to authorize
-
-### Microsoft Teams
-
-Coming soon!
-
-### QQBot
-
-1. Click **[Connect QQ]**
-2. Enter your QQ App ID and App Secret
-3. Click connect
-
-**How to get credentials:**
-1. Go to [QQ Open Platform](https://q.qq.com/)
-2. Create a bot
-3. Get App ID and App Secret from the bot settings
-
-### DingTalk
-
-DingTalk integration uses a **Stream mode bot** — a long-lived WebSocket connection with no public IP or domain required.
-
-**Before you start — create a DingTalk app:**
-
-1. Go to [DingTalk Open Platform](https://open.dingtalk.com/) and sign in
-2. Create an **enterprise internal app**
-3. Add the **Bot** capability and choose **Stream mode** (long connection)
-4. Copy your **Client ID (AppKey)** and **Client Secret (AppSecret)**
-
-**Connect in openloomi:**
-
-1. Click **[Connect DingTalk]**
-2. Enter your **Client ID (AppKey)** and **Client Secret (AppSecret)**
-3. Click **Connect**
-
-> 💡 Stream mode means openloomi connects directly via WebSocket — no server or domain setup needed.
-
-### iMessage
-
-iMessage integration is **only available on macOS**.
-
-1. Click **[Connect iMessage]**
-2. Grant the required permissions:
-   - **Full Disk Access** - Required to read iMessage database
-   - **Automation Permission** - Required to send messages
-3. Enter a display name for your iMessage account
-4. Click connect
-
-**How to grant permissions:**
-- Go to **System Settings > Privacy & Security > Full Disk Access**
-- Add the running app (Terminal, Node, or openloomi)
-- Restart the app after granting permissions
-
-> 💡 Your message data stays on your local device. openloomi only reads recent messages when you use it to generate insights.
-
----
-
-## Desktop App
-
-openloomi also offers a **desktop app** (macOS, Linux, and Windows) that provides a native local experience.
-
-### Download & Install
-
-**Windows:**
-
-1. Download the latest `.exe` installer from [GitHub Releases](https://github.com/melandlabs/openloomi/releases/latest)
-2. Run the installer — if Windows SmartScreen shows a warning, click **"More info"** then **"Run anyway"**. This is normal for new applications without a long code-signing reputation; openloomi is open-source and the code is publicly verifiable
-3. After the first run, SmartScreen typically bypasses automatically on subsequent updates
-
-**Winget (Coming Soon):**
-
-```
-winget install openloomi.openloomi
-```
-
-> 💡 You only need to complete the SmartScreen step once per machine.
-
-**macOS:**
-
-Download the latest `.dmg` from [GitHub Releases](https://github.com/melandlabs/openloomi/releases/latest) and drag openloomi to your Applications folder.
-
-**Linux:**
-
-Download the latest `.AppImage` or `.deb` from [GitHub Releases](https://github.com/melandlabs/openloomi/releases/latest).
-
-| Platform | Status | Installer |
-|----------|--------|----------|
-| macOS | ✅ Available | `.dmg` |
-| Linux | ✅ Available | `.AppImage`, `.deb` |
-| Windows | ✅ Available | `.exe` (Installer) |
-| Winget | Coming Soon | — |
-
-### Important: App Must Be Running
-
-To use **MessageApp conversations** and **scheduled automation tasks** in the desktop app:
-- The app must be **open and running**
-- The computer must be **turned on and not in sleep mode**
-
-If the desktop app is closed or the computer is asleep, conversations and scheduled tasks will **not** execute.
-
-### Local Data Storage
-
-All data in the desktop app — including messages, conversations, scheduled tasks, and settings — is stored **locally** on your device via SQLite. No app data is sent to or stored on cloud servers.
-
----
-
-## Permissions
-
-When you first launch openloomi, the system may ask for a few permissions. Each one has a specific purpose — and **you can decline any of them**. openloomi will continue to work; you'll just lose the feature that requires that permission.
-
-### macOS
-
-| Permission | What it lets openloomi do | Can I decline? |
-|---|---|---|
-| **Full Disk Access** | Read your iMessage history from the local database so openloomi can surface important conversations in your Event feed | Yes — iMessage sync will be skipped |
-| **Automation** | Send iMessages on your behalf when you ask openloomi to reply or notify someone | Yes — you'll receive drafts instead of automatic sends |
-| **Notifications** | Push alerts when important events are detected (urgent emails, mentions, deadlines) | Yes — check the app manually instead |
-
-**How to grant or revoke:**
-
-1. Open **System Settings → Privacy & Security**
-2. Find the permission category (e.g., **Full Disk Access**, **Automation**, **Notifications**)
-3. Toggle openloomi on or off
-
-You can revisit these settings at any time.
-
-### Windows
-
-| Permission | What it lets openloomi do | Can I decline? |
-|---|---|---|
-| **Notifications** | Push alerts when important events are detected (urgent emails, mentions, deadlines) | Yes — check the app manually instead |
-
-Windows SmartScreen may also show a one-time warning when running the installer. Click **"More info"** then **"Run anyway"** — this is normal for open-source software. You only need to do this once per machine.
-
-### Linux
-
-No special permissions are required on Linux. openloomi uses the standard desktop notification system (libnotify) to send alerts — if you have granted notification permissions to other apps, openloomi will use them automatically.
-
----
-
-## Conversation Features
-
-Just type your questions or requests in the chat box, and openloomi will help you find answers.
-
-### Example Questions
-
-```
-• "What is openloomi"
-• "How to use openloomi"
-• "Summarize yesterday's to-dos"
-• "Today's important news"
-• "What are my contacts"
-• "Randomly send 'Hello' to 3 contacts on Gmail"
-• "What progress have we made with the XX project this past week?"
-```
-
-### Features
-
-- **Project collaboration queries** - Ask about project progress
-- **Weekly report generation** - Request weekly reports on all project progress
-- **Web browsing** - Have openloomi browse for latest product info
-- **New conversation creation** - Start new conversations around specific topics
-- **History** - View conversation history
-- **Source References** - See exactly which messages/conversations openloomi's answers come from, who was involved, and when they occurred
-- **Artifacts** - openloomi can generate visual artifacts: mind maps, flowcharts, charts, roadmaps, surveys, and documents. Preview and interact with them directly in chat
-- **File Analysis** - Upload files (PDF, images, etc.) in chat and ask openloomi to analyze, summarize, or extract information
-- **Deep Dive** - For certain topics, continue exploring with follow-up questions, detail requests, or scope narrowing
-- **Topic-Based Chats** - Create new conversations around specific topics, review past discussions, build persistent context over time
-
-### Chat via Messaging Apps
-
-You can also interact with openloomi directly through your connected messaging apps. Once connected, openloomi becomes your AI assistant within those platforms.
-
-| Platform  | Status    | Features                    |
-| --------- | --------- | --------------------------- |
-| Telegram  | Available | Chat, reminders             |
-| WhatsApp  | Available | Chat, reminders, notifications |
-| Weixin    | Available | Chat                        |
-| iMessage  | Available | Chat, reminders, notifications |
-| QQ        | Available | Chat, commands, automation  |
-| Feishu    | Available | Enterprise workflow, commands |
-| DingTalk  | Available | Chat, enterprise workflow    |
-
-After connecting (e.g., Telegram), just send a message to **Saved Messages** and openloomi will respond naturally.
-
----
-
-## Action Features
-
-openloomi can generate action items for various scenarios.
-
-### How to View
-
-1. Click the **Action** button in the event details
-2. Or view in the unified **Action panel**
-
-### Features
-
-- **To-do display** - Show TODOs in the unified panel
-- **Quick action suggestions** - openloomi suggests clickable quick actions
-- **Detailed information** - Fill in sender, recipient, content and attachments
-- **AI content generation/translation** - Auto-generate or translate content
-- **Message replies** - Click reply button in understanding detail view, openloomi will generate a reply
-
----
-
-## Smart Insights
-
-openloomi automatically analyzes your conversations to extract valuable information.
-
-### Automatically Extracted Content
-
-- ✅ **To-dos** - Tasks to complete, deadlines
-- 📈 **Project progress** - Status updates, milestones
-- 🎯 **Important decisions** - Meeting decisions, key choices
-- ⚠️ **Risk alerts** - Issues to watch out for
-- 📅 **Timeline** - Event development脉络
-
-### How to Use
-
-1. **View** - Click on an event in the left menu
-2. **Categorize** - Mark as: Urgent, Important, Monitor, Archive
-3. **Add to-do** - Add tasks directly in the details
-4. **Timeline** - View event development timeline
-
-### Event Management
-
-Events are automatically organized into groups based on their status:
-
-- **Opportunities** - New events that need attention
-- **In Progress** - Events you're currently working on
-- **Waiting on Others** - Events pending response
-- **Done** - Completed events
-
-You can **drag and drop** events between groups to manually categorize them. You can also **multi-select** multiple events for bulk operations (Mark as Done, Archive, Delete).
-
-### Event Detail
-
-Click on any event card to open its detail view:
-- **Event title and description** - Full context of the event
-- **Related messages** - All conversation threads involved
-- **Participants** - Everyone included in the event
-- **Timeline** - Chronological activity log
-- **Notes** - Add personal text notes for reference
-- **Attachments** - Upload documents, PDFs, images to keep related materials in one place
-
-### Event Conversation
-
-You can **chat directly with any event** to ask questions and get AI insights within that context.
-
-**Sample questions:**
-- "What is this event about?"
-- "Who are the key people involved?"
-- "What decisions were made?"
-
-### Event Actions
-
-- **Source Reply** - Reply directly to messages within an event. Use **AI suggestions** to generate a reply based on conversation context, or use **AI Translation** to translate to English or Chinese
-- **AI Polishing** - Improve grammar, wording, and tone (formal, casual, friendly)
-- **Send to Platform** - Send your reply directly to the original platform (Telegram, Discord, etc.)
-
-### Common Queries
-
-```
-"What's on my to-do list today?"
-"How is the XX project progressing?"
-"What important messages were there last week?"
-```
-
----
-
-## Settings
-
-> **How to access**: Click the settings button in the profile panel
-
-### Soul
-
-Define your AI assistant's personality and communication style.
-
-### Description
-
-Customize how your AI assistant describes itself to others.
-
-### Contexts
-
-Configure which data sources and contexts your AI assistant can access. Context types include:
-- **System** - System notifications and status updates
-- **Event** - Grouped communications and projects
-- **Scheduled Task** - Time-based tasks and reminders
-- **Knowledge** - Uploaded documents and reference materials
-
-You can also create **custom context tabs** with your own name, description, icon, color, and priority. Use keywords to enable automatic categorization.
-
-### Interests
-
-Customize what to follow — specific people or topics/projects. For each, you can set:
-- **Notification Level**: All messages, Only @me, or Nothing
-- **AI Summary**: Enable AI-generated summaries of their messages
-- **Auto-archive**: Automatically archive related messages
-
-### Connectors
-
-Manage all your connected platforms and services in one place.
-
-### Disconnect / Revoke Access
-
-If you no longer want openloomi to access a connected platform, you can disconnect it at any time:
-
-1. Go to **Settings → Connectors**
-2. Find the platform you want to disconnect
-3. Click **[Disconnect]** or the remove (×) button
-4. Confirm the action
-
-Once disconnected:
-- openloomi will immediately stop reading new messages from that platform
-- Previously synced data is retained until manually deleted
-- You can reconnect at any time by repeating the connection steps
-
-> 💡 **Tip**: Before disconnecting, you may want to review what data has been synced in the **Privacy & Security** settings.
-
-### Language
-
-Change the language used in openloomi.
-
-### Search
-
-Search across all your messages, files, and conversations to find exactly what you need.
-
----
-
-## Scheduled Tasks
-
-Have AI automatically execute tasks at specified times.
-
-### How to Create
-
-1. Go to **Agent/Automation** page
-2. Click **"New Task"**
-3. Fill in task information:
-
-| Field | Description | Example |
-|-------|-------------|---------|
-| Task Name | Give the task a name | "Daily News Summary" |
-| Task Description | Tell AI what to do | "Search latest AI news, summarize and send to me" |
-| Schedule Type | Cron/Interval/Once | `0 9 * * *` = 9am daily |
-| Timezone | Time reference | "Asia/Shanghai" |
-
-### Schedule Types
-
-- **Cron Expression** — Flexible scheduling with cron syntax (e.g., `0 9 * * *` = every day at 9am, `0 9 * * 1` = every Monday at 9am)
-- **Interval** — Run every X minutes/hours (e.g., every 30 minutes, every 2 hours)
-- **One-Time** — Run once at a specific date and time
-
-### Manage Tasks
-
-- **Enable/Disable** — Turn tasks on or off
-- **Run Now** — Execute immediately without waiting for the scheduled time
-- **View History** — See past execution results, success/failure status, and output logs
-- **Edit** — Modify task configuration
-- **Delete** — Remove a task
-
-### Example Use Cases
-
-- **Daily News Summary**: "Search latest AI news, summarize top 5 stories and email to me" — every morning at 8am
-- **Weekly Report**: "Generate weekly report on all project progress" — every Friday at 5pm
-- **Periodic Reminder**: "Check calendar for upcoming meetings, remind me 15 minutes before" — every 30 minutes
-
----
-
-## Knowledge Base
-
-After uploading documents, you can ask AI questions about them directly.
-
-### How to Use
-
-1. **Upload documents** - Upload PDF, Word, text, etc. in settings
-2. **Ask questions** - Ask AI "What's in the document about XXX?"
-3. **Get full content** - View the complete document when needed
-
-### Privacy Policy
-
-Your privacy matters. Our Privacy Policy explains in detail how we collect, use, store, and protect your data — including what data we access, how it's encrypted, how long we retain it, and your rights to access, export, or delete it at any time.
-
-### Privacy & Security
-
-Your data, your sovereignty. openloomi puts privacy and control first—you never need to trade data sovereignty for intelligence.
-
-### 🔐 Our Privacy Principles
-
-#### Local-First Architecture
-Your original messages and files **stay on your device**. openloomi only accesses the minimum data needed to complete tasks—no unnecessary uploads.
-- Raw data never leaves your local environment
-- Only processed results are transmitted when needed
-- Complete control over what data openloomi can access
-
-#### End-to-End Encryption
-All authorized data is encrypted with **AES-256** industry standard, processed in hardware-isolated trusted execution environments.
-- AES-256 encryption for all stored data
-- Hardware-isolated trusted execution environments
-- Zero visibility into your raw data
-
-#### Zero Training Commitment
-**Your data will never be used to train public AI models**—now or ever. In writing, legally guaranteed.
-- Explicit legal commitment in our terms of service
-- No use of your data for model training
-- Full transparency on data usage
-
-#### Auditable Compliance
-All critical operations are logged in **tamper-proof audit logs**. SOC 2 compliance certification in progress.
-- Complete audit trail of all data access
-- SOC 2 compliance certification
-- Enterprise-grade security standards
-
-### 🔑 Your Data, Your Control
-
-openloomi gives you complete control over your data:
-- **Access Controls**: Choose exactly which platforms and data openloomi can access
-- **Data Retention**: Configure how long openloomi retains processed data
-- **Delete Anytime**: Delete all your data at any time with one click
-- **Export**: Export all your data in standard formats
-
-We believe **privacy and intelligence aren't mutually exclusive**. You should never have to choose between powerful AI capabilities and data control. openloomi delivers both.
-
----
-
-## FAQ
-
-### Q: How do I use openloomi?
-
-A: It's simple!
-1. Start a conversation in openloomi
-2. Describe your needs directly
-3. AI will understand and execute
-
-### Q: How do I connect Telegram?
-
-A:
-1. Click **[Connect Telegram]**
-2. Choose phone verification or QR code login
-
-### Q: What are Insights?
-
-A: Automatically extracted important information from your conversations, including to-dos, project progress, decision records, etc.
-
-### Q: How do I create automation tasks?
-
-A:
-
-1. Go to Agent/Automation page
-2. Click "New Task"
-3. Fill in task name and description
-4. Set execution time
-5. Save
-
----
-
-## Showcase: openloomi in Action
-
-Real-world examples showing how openloomi works across different use cases.
-
-### Chat Scenarios
-
-#### Office: Smart Meeting Coordination
-
-**Scenario**: A team needs to schedule a cross-timezone meeting.
-
-```
-User: Hey, find a time this week when everyone is available in the afternoon
-
-openloomi:
-📅 Found available slots for 5 team members:
-
-| Time (PT) | Wed | Thu | Fri |
-|-----------|-----|-----|-----|
-| 2-3pm     | ✅  | ✅  | ❌ |
-| 3-4pm     | ✅  | ✅  | ✅ |
-| 4-5pm     | ❌  | ✅  | ✅ |
-
-Recommended: Thursday 3-4pm (everyone available)
-→ Want me to create a Google Calendar meeting?
-```
-
-**What it shows**: Google Calendar integration, multi-account availability lookup, natural language scheduling
-
----
-
-#### R&D: Code Review Context
-
-**Scenario**: A developer gets PR feedback and needs full context.
-
-```
-User: What's the status of PR #247?
-
-openloomi:
-📋 PR #247 Review Summary:
-
-🔍 Related Discussion:
-- @john: Suggested refactoring auth logic (comment #3)
-- @sarah: Requested additional unit tests
-- @mike: Approved with "LGTM"
-
-📎 Linked Slack Threads:
-#engineering: "Auth module refactoring plan" (3 messages)
-
-📝 Extracted Tasks:
-- [ ] Add auth test cases
-- [ ] Update API documentation
-- Due: This Friday
-
-→ Want me to generate suggested changes?
-```
-
-**What it shows**: Cross-platform context aggregation, task extraction, timeline tracking
-
----
-
-#### Marketing: Campaign Coordination
-
-**Scenario**: Marketing team coordinating a product launch.
-
-```
-User: Is our Wednesday product launch ready?
-
-openloomi:
-🚀 Product Launch Status:
-
-| Item | Status | Owner |
-|------|--------|-------|
-| Website update | ✅ Done | @marketing |
-| Social posts | 🔄 In Progress | @social |
-| Email blast | ⏳ Pending | @email |
-| KOL outreach | ❌ Blocked | @partnerships |
-
-⚠️ Blockers:
-- KOL partnership awaiting legal approval
-- Waiting for final product documentation
-
-→ Want me to remind the team?
-```
-
-**What it shows**: Task status tracking, cross-team coordination, blocker identification
-
----
-
-#### Collaboration: Project Kickoff
-
-**Scenario**: Starting a new project with rapid setup.
-
-```
-User: Create a new client project called Acme Corp
-
-openloomi:
-✅ Project Acme Corp created!
-
-Auto-completed:
-📁 Google Drive folders
-  - /Acme Corp/Contracts
-  - /Acme Corp/Meeting Notes
-  - /Acme Corp/Requirements
-
-💬 Slack channels
-  - #acme-general (project overview)
-  - #acme-dev (technical)
-  - #acme-support (client support)
-
-📅 Shared calendar
-  - Kickoff meeting (tomorrow 10am)
-  - Weekly standup (Fridays 3pm)
-
-👥 Team invitations sent
-```
-
-**What it shows**: Multi-platform automation, workflow orchestration
-
----
-
-### Tracking Scenarios
-
-#### Proactive: High-Priority Alerts
-
-**Scenario**: System proactively identifies items needing attention.
-
-```
-📊 Today's Insights - March 12, 2026
-
-🔥 Urgent (3)
-├── PR #251 needs review - waiting 4 hours
-├── Support tickets piling up - 12 unprocessed
-└── Server alert - CPU at 95%
-
-⭐ Important (5)
-├── Q1 budget approval - due tomorrow
-├── Acme contract renewal - 30 days left
-└── ...
-
-📋 Todo Tasks (8)
-├── Reply to John's technical question - due today
-├── Approve 3 team PTO requests
-└── ...
-
-→ View All | Mark Read | Remind Later
-```
-
-**What it shows**: Importance/urgency ranking, unreplied tracking, deadline reminders
-
----
-
-#### Auto-Managed: Scheduled Refresh
-
-**Scenario**: System automatically keeps information up to date.
-
-```
-⏰ Scheduled jobs running...
-
-✅ RSS Feeds Updated
-├── Tech News (5 new articles)
-├── Product Management (2 new articles)
-└── Competitor Updates (8 new articles)
-
-✅ Insights Refreshed
-├── Refresh interval: 30 minutes (high activity)
-├── New insights: 6
-└── Archived: 2
-
-✅ Email Automation Triggered
-├── User signed up 7 days ago → onboarding email
-├── Free quota running low → upgrade reminder
-└── Inactive 30 days → re-engagement email
-```
-
-**What it shows**: Scheduled RSS fetching, automated insight refresh, user lifecycle automation
-
----
-
-### IM Platform Scenarios
-
-#### Feishu: Enterprise Workflow
-
-**Scenario**: Enterprise workflow automation.
-
-```
-Feishu Group:
-User: Requesting PTO March 20-22
-
-openloomi:
-📝 PTO Request
-
-| Field | Content |
-|-------|---------|
-| Applicant | @john |
-| Dates | March 20-22 (3 days) |
-| Type | Annual Leave |
-| End Date | N/A |
-
-Approver: @manager
-
-[Approve] [Reject] [Request Info]
-```
-
-**What it shows**: Approval workflows, message handling, document integration
-
----
-
-#### WhatsApp: Personal Assistant
-
-**Scenario**: Managing personal tasks via WhatsApp.
-
-```
-WhatsApp conversation:
-User: Set a reminder for tomorrow at 2pm
-
-openloomi: ✅ Reminder set
-
-⏰ Tomorrow 2:00pm
-📌 Reminder: Call with John
-📋 Context: Discussing Q1 proposal
-   Client: john@acme.com
-   Budget: $50,000
-```
-
-**What it shows**: QR pairing, status polling, reminder management
-
----
-
-#### Discord: Community Management
-
-**Scenario**: Automated community operations.
-
-```
-New member joins Discord server
-
-openloomi Welcome Bot:
-👋 Welcome @newuser!
-
-I'm openloomi, your community assistant:
-
-📚 Resources
-- #announcements - Latest updates
-- #help - Get support
-- #showcase - Share projects
-
-⚡ Quick Start
-- [Introduce Yourself] Share your background
-- [Set Up Profile] Customize your info
-- [Browse Channels] Explore the community
-
-Ask me anything!
-```
-
-**What it shows**: New member onboarding, FAQ automation, message handling
-
----
-
-#### 🚀 Industry Intelligence Automation
-
-**Scenario**: Automated AI product news monitoring with daily briefings.
-
-```
-User: Help me set up an industry intelligence automation
-
-openloomi:
-✅ Setting up your AI Product Daily Digest Assistant!
-
-Step 1/4: Create Scheduled Task
-────────────────────────────────
-Task Name: AI Product Daily Digest
-Schedule: Daily at 9 AM (Cron: 0 9 * * *)
-Description:
-1. Scrape X, Reddit, Product Hunt for AI product news
-2. Summarize top 10 stories
-3. Record to timeline as "AI Product Daily Updates"
-4. Send briefing via Telegram
-
-Step 2/4: Connect Data Sources
-────────────────────────────────
-✅ X (Twitter) - Connected
-✅ Reddit - Connected
-✅ Product Hunt - Connected
-✅ Telegram - Connected
-
-Step 3/4: Task Created
-────────────────────────────────
-🎉 Your automation is now active!
-
-Next run: Tomorrow at 9:00 AM
-
-Step 4/4: What You'll Receive
-────────────────────────────────
-☀️ Daily Telegram Briefing:
-• Top AI product launches
-• Trending discussions
-• Engagement metrics
-
-📰 Timeline Event:
-• "AI 产品要闻每日更新"
-• Full context for follow-up questions
-
-🔮 Coming Soon:
-• Visual dashboards
-• Team sharing to Slack
-```
-
-**What it shows**: Scheduled tasks, multi-platform scraping, automated briefings, timeline recording
-
----
-
-### Example: Daily Briefing Output
-
-```
-☀️ AI Product Daily Digest - March 15, 2026
-
-🔥 Top 5 AI Product Launches Today:
-
-1. 🎨 Claude Art (Product Hunt)
-   AI image generation with style transfer
-   247 upvotes
-
-2. 💻 Devin 2.0 (X)
-   AI coding assistant v2.0
-   1.2K retweets
-
-3. 🔧 LangChain v1.0 (Reddit)
-   Major agent framework update
-   89 upvotes
-
-📈 Trend Summary:
-- Image Generation: 🔥 Hot
-- AI Coding: 📈 Growing
-
-[View Full] [Create Follow-up] [Share]
-```
-
-**What it shows**: Multi-source aggregation, smart summarization, actionable outputs
+OpenLoomi's runtime surfaces as open-source **Skills** (called from Chat, Loop, or Automation through an Agent Runtime) and **Plugins** (exposed to Claude Code / Codex CLI as `/openloomi:` slash commands and `@OpenLoomi` skills). Use OpenLoomi Desktop directly, or plug it into the agent shell you already live in — Claude Code, Codex, OpenCode, Hermes, or OpenClaw. See [Agent Runtimes](https://openloomi.ai/docs/reference/agent-runtimes) and [Plugins](https://openloomi.ai/docs/plugins).
 
 ---
 
@@ -1013,3 +244,13 @@ Step 4/4: What You'll Receive
 
 - openloomi website: https://openloomi.ai
 - openloomi documents: https://openloomi.ai/docs
+- openloomi glossary: https://openloomi.ai/docs/glossary
+- openloomi changelog: https://openloomi.ai/docs/changelog
+
+## Community
+
+- X: https://x.com/AlloomiAI
+- Discord: https://discord.gg/xkJaJyWcsv
+- GitHub: https://github.com/melandlabs/openloomi
+- LinkedIn: https://www.linkedin.com/company/AlloomiAI
+- YouTube: https://www.youtube.com/@Melandlabs

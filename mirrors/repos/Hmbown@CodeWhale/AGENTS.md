@@ -44,7 +44,8 @@
   the model-facing sub-agent surface is **`agent` only** — the
   `agent_open`/`agent_eval`/`agent_close`/`delegate_to_agent` variants,
   capacity/coherence/runtime-tag systems, lifecycle tools, and runtime prompt/tag
-  injection were all removed. `constitution.md` is the sole base prompt.
+  injection were all removed. The constitution (`BASE_PROMPT` in
+  `tui/src/prompts/text.rs`) is the sole base prompt.
 - Configurable sub-agent depth stays. Add a new limit only when it's clearly
   needed, and explain why.
 - **Do-not-delete guardrail** (salvaged from the 0.8.68 handoff; these were

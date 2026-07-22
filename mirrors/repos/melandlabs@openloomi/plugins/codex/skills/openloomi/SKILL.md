@@ -92,12 +92,11 @@ For workflow-specific guidance, call:
 node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" workflow-guidance --workflow openloomi-loop
 node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" workflow-guidance --workflow openloomi-memory
 node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" workflow-guidance --workflow openloomi-connectors
-node "$SKILL_DIR/../../scripts/loomi-bridge.mjs" workflow-guidance --workflow openloomi-handoff
 ```
 
 Use the thin wrapper skills when the user specifically asks for loop, memory,
-connector readiness, or handoff workflows. The plugin must not copy OpenLoomi
-connector, memory, loop, scheduling, or handoff persistence logic into Codex.
+or connector readiness workflows. The plugin must not copy OpenLoomi
+connector, memory, or loop logic into Codex.
 
 ---
 

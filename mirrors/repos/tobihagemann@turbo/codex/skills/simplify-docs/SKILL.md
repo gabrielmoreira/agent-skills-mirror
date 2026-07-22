@@ -17,7 +17,7 @@ Determine what to review:
 
 ## Step 2: Launch Two Review Agents in Parallel
 
-Launch both agents below in a single assistant message so they run concurrently. Pass the scope from Step 1 to each agent.
+Launch both agents below with `spawn_agent` / `wait_agent` using inherited model defaults so they run concurrently. Pass the scope from Step 1 to each agent.
 
 ### Agent 1: Code Comments Review
 
@@ -56,4 +56,4 @@ Wait for both agents to complete. Aggregate their findings, then apply each fix 
 
 When done, briefly summarize what was removed or rewritten (or confirm the docs were already clean).
 
-Then update or check the active plan and proceed to any remaining task.
+Then call `update_plan` to mark this step completed and continue with the next step of the active workflow.

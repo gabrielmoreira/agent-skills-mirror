@@ -108,6 +108,9 @@ Add `#skip-bugbot` to the PR description for trivial PRs that won't affect end-u
 
 ## Cross-repo PR workflows (forks)
 
+- Base new feature branches on `upstream/main`, not `origin/main`. The fork's
+  `main` can lag far behind and lack files that exist upstream; cherry-picks
+  then fail with modify/delete conflicts and can push an empty tip.
 - `git fetch --all` can return nonzero after successfully refreshing
   `upstream/main` when unrelated collaborator remotes have clashing historical
   tags (`would clobber existing tag`). Verify the base ref was updated, then
@@ -231,6 +234,8 @@ The stashed changes will be automatically merged back after the rebase completes
 - **Tests pinning specific prose**: A test that asserts on exact wording added by your branch (e.g., `expect(contents).toContain("REQUIRED")` for a phrase introduced in your AI rules patcher) will silently start asserting against text that was rebased away when upstream reworded the same section. After resolving the prose conflict, search for tests that reference the removed phrase (`grep "REQUIRED" *.test.ts`) and either delete the now-redundant assertion or update it to match the merged wording — the rebase itself does not surface this.
 - **Inverse of refactoring conflicts (incoming commit adds a feature in the old structure)**: When your branch extracted a helper (e.g., moved Nitro setup into `src/ipc/utils/nitro_setup.ts`) and an upstream commit later added a new step to the inline code (e.g., `addNitroToViteConfig` patching `vite.config.ts` from `enable_nitro.ts`), don't just take "ours" for the conflict. Port upstream's new step into your helper so the new feature still runs — otherwise the rebase silently drops upstream's feature for every caller of the helper.
 - **Auto-merged region can silently drop a definition needed by a conflict region**: A conflict may surface only at a symbol's _use_ site while its _definition_ site auto-merges to the side that lacks it. Example: upstream added `const PRO_AGENT_ONLY_TOOLS = new Set()` plus its use in `shouldIncludeTool`; only the use site conflicted, and the declaration block auto-merged to the branch's version (no definition), causing `TS2304: Cannot find name 'PRO_AGENT_ONLY_TOOLS'`. **Always run `npm run ts` after every conflict resolution** — grep-checking the conflict markers alone won't catch a dropped definition in a cleanly auto-merged hunk; restore it from `git show upstream/main:<file>`.
+- **Native-git migration conflicts (`git_utils.ts`)**: `git_utils.ts` no longer has the `settings.enableNativeGit` dual-path — upstream is native-git-only (no `readSettings`/`enableNativeGit`, no `isomorphic-git` import or `git.statusMatrix`/`git.readBlob` calls). When an older branch conflicts here, take the native path and drop the whole `if (settings.enableNativeGit) {...} else {...isomorphic...}` gate (de-indent the native body). Preserve any semantic refinements your branch made to the native path (e.g. a boolean return via `hasStagedChanges`, rename-aware porcelain parsing). Then fix `git_utils.test.ts`: remove `vi.mocked(readSettings)` calls and tests that exercise isomorphic behavior, or they fail with `ReferenceError: readSettings is not defined`.
+- **Auto-merged test files need a real test run, not just `npm run ts`**: A rebased `*.test.ts` can typecheck yet fail at runtime — stale mocks of a now-removed module, or a test auto-merged into the _wrong_ `describe` block (so it references a `let repoDir`/`afterEach` that only exists in a sibling block) throwing `ReferenceError`. After resolving conflicts, run the affected test files (`npx vitest run <file>`), not only the typechecker.
 
 ## Rebasing with uncommitted changes
 

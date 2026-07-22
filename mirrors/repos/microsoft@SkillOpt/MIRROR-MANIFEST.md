@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 20 file(s) materialized.
+Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/SkillOpt` — 26 default patterns, 5 followed patterns, 20 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 20 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,16 +73,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`plugins/codex/skills/skillopt-sleep/SKILL.md`](plugins/codex/skills/skillopt-sleep/SKILL.md) |
 | 9 | ✓ | [`plugins/copilot/README.md`](plugins/copilot/README.md) |
 | 10 | ✓ | [`plugins/copilot/skillopt/README.md`](plugins/copilot/skillopt/README.md) |
-| 11 | ✓ | [`plugins/devin/README.md`](plugins/devin/README.md) |
-| 12 | ✓ | [`plugins/openclaw/README.md`](plugins/openclaw/README.md) |
-| 13 | ✓ | [`plugins/openclaw/SKILL.md`](plugins/openclaw/SKILL.md) |
-| 14 | ✓ | [`plugins/README.md`](plugins/README.md) |
-| 15 | ✓ | [`skillopt/envs/_template/README.md`](skillopt/envs/_template/README.md) |
-| 16 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 17 | → | [`docs/guide/new-backend.md`](docs/guide/new-backend.md) |
-| 18 | → | [`docs/guide/new-benchmark.md`](docs/guide/new-benchmark.md) |
-| 19 | → | [`docs/sleep/README.md`](docs/sleep/README.md) |
-| 20 | → | [`README.md`](README.md) |
+| 11 | ✓ | [`plugins/cursor/README.md`](plugins/cursor/README.md) |
+| 12 | ✓ | [`plugins/cursor/skills/skillopt-sleep/SKILL.md`](plugins/cursor/skills/skillopt-sleep/SKILL.md) |
+| 13 | ✓ | [`plugins/devin/README.md`](plugins/devin/README.md) |
+| 14 | ✓ | [`plugins/openclaw/README.md`](plugins/openclaw/README.md) |
+| 15 | ✓ | [`plugins/openclaw/SKILL.md`](plugins/openclaw/SKILL.md) |
+| 16 | ✓ | [`plugins/README.md`](plugins/README.md) |
+| 17 | ✓ | [`skillopt/envs/_template/README.md`](skillopt/envs/_template/README.md) |
+| 18 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 19 | → | [`docs/guide/new-backend.md`](docs/guide/new-backend.md) |
+| 20 | → | [`docs/guide/new-benchmark.md`](docs/guide/new-benchmark.md) |
+| 21 | → | [`docs/sleep/README.md`](docs/sleep/README.md) |
+| 22 | → | [`README.md`](README.md) |
 
 ---
 

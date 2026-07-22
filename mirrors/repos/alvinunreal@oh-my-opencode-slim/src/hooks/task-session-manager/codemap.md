@@ -2,13 +2,15 @@
 
 ## Responsibility
 
-Manages V2 background job-board state for task execution and injected completion messages, enabling the orchestrator to track active jobs and reuse only completed, reconciled child sessions by short aliases (e.g., `exp-1`, `ora-2`). This module was recently split into three focused submodules to improve separation of concerns and maintainability.
+Manages V2 background job-board state for task execution and injected completion messages, enabling the orchestrator to track active jobs and reuse only completed, reconciled child sessions by short aliases (e.g., `exp-1`, `ora-2`). The implementation is split into focused submodules to improve separation of concerns and maintainability.
 
 ## Design
 
-The directory follows a **Facade + Strategy** pattern where `index.ts` acts as the facade that composes and orchestrates behavior across three specialized strategy modules:
+The directory follows a **Facade + Strategy** pattern where `index.ts` acts as the facade that composes and orchestrates behavior across specialized strategy modules:
 
-- **index.ts**: Main facade that wires hooks into OpenCode's lifecycle and coordinates between the job board, pending calls, and task context tracking. Implements the plugin hook interface (`tool.execute.before`, `tool.execute.after`, `experimental.chat.messages.transform`, `event`).
+- **index.ts**: Main facade that wires hooks into OpenCode's lifecycle and coordinates between the job board, pending calls, task context tracking, and explicit user waits. Implements the plugin hook interface (`tool.execute.before`, `tool.execute.after`, `experimental.chat.messages.transform`, `event`) and exposes `beginUserWait()` to the `wait_for_user` tool.
+- **input-wait-tracker.ts**: Provides the single `hasInputWait()` seam used by idle reconciliation and continuation evaluation. It combines local question/permission waits with the process-global explicit user-wait latch.
+- **continuation-attempt-gate.ts**: Owns process-global continuation epochs, reservations, and explicit user waits across hook recreation. The wait is encoded as an `attempts` sentinel so pre-upgrade #856 hooks sharing the store also fail closed. Distinct external user-message identity rearms both states.
 - **pending-call-tracker.ts**: Tracks in-flight task calls using a capped ordered map (`MAX_PENDING_TASK_CALLS`) to correlate launch output safely. Provides call ID generation, storage, retrieval, and cleanup for pending task invocations.
 - **task-context-tracker.ts**: Manages read context from child sessions with line-count and file caps. Stores context per task ID and provides pruning to prevent unbounded growth.
 
@@ -19,6 +21,7 @@ All modules depend on `BackgroundJobBoard` from `src/utils/background-job-board.
 - **BackgroundJobBoard**: Central state store for task sessions (active, reusable, terminal unreconciled).
 - **PendingTaskCall**: Tracks in-flight task invocations with call ID, parent session ID, agent type, label, and optional resumed task ID.
 - **ContextFile**: Represents read context from child sessions with path, line numbers, and last-read timestamp.
+- **User wait**: Explicit text-only HITL latch armed by `wait_for_user` and released by a distinct real external user message.
 
 ## Flow
 
@@ -54,6 +57,12 @@ All modules depend on `BackgroundJobBoard` from `src/utils/background-job-board.
    - `session.idle` / `session.status` (idle): Reconciles injected terminal jobs for the parent session
    - `session.status` (busy): Marks sessions as running from live session state
    - `session.deleted`: Clears job state, child jobs, and pending call records for the session
+
+6. **Human-in-the-loop Waits**
+   - `wait_for_user` calls the facade's `beginUserWait()` only after tool validation
+   - The shared latch cancels pending continuation timers/reservations
+   - Foreground-fallback replay provenance and shared fallback teardown state preserve the latch across plugin-manager recreation
+   - Idle continuation remains suppressed until a distinct real user message arrives
 
 ### Data & Control Flow
 

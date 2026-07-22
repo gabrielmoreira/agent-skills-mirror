@@ -31,6 +31,7 @@ from acmg_engine import (
     VariantEvidence,
     classify_variant,
 )
+from self_audit import ABSTAIN_LABEL, audit_classified, expected_from_record
 
 DISCLAIMER = (
     "ClawBio is a research and educational tool. It is not a medical device "
@@ -210,7 +211,11 @@ def _extract_evidence_from_vep(vep_result: dict, record: VcfRecord) -> VariantEv
             sigs = cv.get("clin_sig", "")
             if sigs and not clinvar_sig:
                 clinvar_sig = sigs
-                clinvar_stars = cv.get("clin_sig_allele", {}).get("review_status_stars", 0)
+                # VEP returns clin_sig_allele as a dict for some variants and a
+                # string (e.g. "T:pathogenic") for others; only read stars from a dict.
+                clin_sig_allele = cv.get("clin_sig_allele", {})
+                if isinstance(clin_sig_allele, dict):
+                    clinvar_stars = clin_sig_allele.get("review_status_stars", 0)
 
         freq_data = cv.get("frequencies", {})
         if freq_data:
@@ -338,7 +343,20 @@ def run_classification(
     if gene_filter:
         evidence_list = [e for e in evidence_list if e.gene in gene_filter]
 
-    return [classify_variant(ev) for ev in evidence_list]
+    # Fail-closed self-audit: hard-abstain any variant that violates a deterministic
+    # invariant (wrong-variant identity, contradictory evidence, missing provenance)
+    # rather than emit a confident, possibly-wrong classification.
+    record_by_key = {f"{r.chrom}:{r.pos}:{r.ref}:{r.alt}": r for r in records}
+    classified: list[ClassifiedVariant] = []
+    for ev in evidence_list:
+        cv = classify_variant(ev)
+        rec = record_by_key.get(f"{ev.chrom}:{ev.pos}:{ev.ref}:{ev.alt}")
+        audit = audit_classified(cv, expected_from_record(rec))
+        cv.audit_violations = audit.violations
+        if not audit.passed:
+            cv.classification = ABSTAIN_LABEL
+        classified.append(cv)
+    return classified
 
 
 # ---------------------------------------------------------------------------
@@ -585,6 +603,11 @@ def _write_result_json(
                 "gene": cv.evidence.gene,
                 "consequence": cv.evidence.consequence,
                 "classification": cv.classification,
+                "abstained": cv.classification == ABSTAIN_LABEL,
+                "audit_violations": [
+                    {"code": v.code, "detail": v.detail}
+                    for v in getattr(cv, "audit_violations", [])
+                ],
                 "is_secondary_finding": cv.is_secondary_finding,
                 "triggered_criteria": cv.triggered_codes,
                 "evidence_summary": cv.evidence_summary,

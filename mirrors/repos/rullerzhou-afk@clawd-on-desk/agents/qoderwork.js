@@ -16,6 +16,7 @@
 module.exports = {
   id: "qoderwork",
   name: "QoderWork",
+  category: "work",
   // QoderWork is a standalone Electron IDE. Its backend CLI `qodercli` is
   // shared with Qoder IDE, so we deliberately exclude it from processNames
   // to avoid mis-attributing a Qoder-IDE-spawned qodercli to QoderWork.

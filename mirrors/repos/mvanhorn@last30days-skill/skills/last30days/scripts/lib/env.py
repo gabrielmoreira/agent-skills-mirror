@@ -477,6 +477,15 @@ def get_config(policy: ConfigLoadPolicy | None = None) -> dict[str, Any]:
         ('LAST30DAYS_DOCTOR_PROBE_TIMEOUT', None),
         ('LAST30DAYS_REDDIT_SC_MIN_ITEMS', None),
         ('LAST30DAYS_STORE', None),
+        # Discovery topic queue (podcast/X-article pipeline memory). Default
+        # ON; the literal value "off" disables queue writes and annotations.
+        ('LAST30DAYS_DISCOVERY_QUEUE', None),
+        # Wall-clock budget (seconds) for the deep-tier enrichment batch on
+        # the discovery resume leg (--discover --judgments). Read from the
+        # resolved config only (pipeline._resume_enrich_budget_seconds);
+        # unset/invalid falls back to 450s. The one-shot --discover path
+        # keeps its fixed 240s quick budget regardless.
+        ('LAST30DAYS_ENRICH_BUDGET_SECONDS', None),
         # Opt-in strict exit: truthy -> CLI exits 3 when any source outcome is
         # degraded (neither ok, no-results, nor skipped-unconfigured). #384.
         ('LAST30DAYS_STRICT_EXIT', None),

@@ -73,9 +73,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`.claude/skills/playwright-triage/SKILL.md`](.claude/skills/playwright-triage/SKILL.md) |
 | 10 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`packages/playwright-core/src/tools/cli-client/skill/SKILL.md`](packages/playwright-core/src/tools/cli-client/skill/SKILL.md) |
-| 13 | ✓ | [`packages/playwright-core/src/tools/trace/SKILL.md`](packages/playwright-core/src/tools/trace/SKILL.md) |
-| 14 | ✓ | [`packages/skills/component-testing/SKILL.md`](packages/skills/component-testing/SKILL.md) |
+| 12 | ✓ | [`packages/playwright-core/src/tools/skills/playwright-cli/SKILL.md`](packages/playwright-core/src/tools/skills/playwright-cli/SKILL.md) |
+| 13 | ✓ | [`packages/playwright-core/src/tools/skills/playwright-component-testing/SKILL.md`](packages/playwright-core/src/tools/skills/playwright-component-testing/SKILL.md) |
+| 14 | ✓ | [`packages/playwright-core/src/tools/skills/playwright-trace/SKILL.md`](packages/playwright-core/src/tools/skills/playwright-trace/SKILL.md) |
 | 15 | → | [`.claude/skills/playwright-dev/api.md`](.claude/skills/playwright-dev/api.md) |
 | 16 | → | [`.claude/skills/playwright-dev/library.md`](.claude/skills/playwright-dev/library.md) |
 | 17 | → | [`.claude/skills/playwright-dev/tools.md`](.claude/skills/playwright-dev/tools.md) |

@@ -31,8 +31,9 @@ claude-settings/
       gemini-extension.json              # Gemini CLI manifest
       skills/<skill>/SKILL.md            # universal across all tools
       agents/<agent>.md                  # Claude Code + Gemini + Cursor
-      hooks/hooks.json + scripts/        # Claude Code + Gemini only
+      hooks/hooks.json + scripts/        # Claude Code + Codex CLI + Gemini
       commands/<cmd>.md                  # Claude Code only
+      output-styles/<style>.md           # Claude Code only
 ```
 
 ## Cross-Tool Plugin Format Reference
@@ -52,6 +53,7 @@ Docs:
 
 - Claude Code: https://code.claude.com/docs/en/plugins-reference
 - Codex CLI: https://developers.openai.com/codex/plugins/build/
+- Codex CLI hooks: https://learn.chatgpt.com/docs/hooks
 - Cursor: https://cursor.com/docs/reference/plugins
 - Gemini CLI: https://geminicli.com/docs/extensions/reference/
 - AGENTS.md spec: https://agents.md/
@@ -169,6 +171,11 @@ color: blue
 - `tools`: array of allowed tool names
 - `skills`: optional, skill name(s) to load
 
+If an agent selects a Claude-only model, keep it outside the shared `agents/`
+directory and point to it with the Claude manifest's `agents` field. Cursor only
+accepts `name` and `description` for plugin agents, while Gemini agent models
+must be Gemini models. Give other tools a skill that calls the provider CLI.
+
 ### Hooks Format
 
 Path: `hooks/hooks.json`
@@ -202,12 +209,16 @@ Path: `hooks/hooks.json`
 }
 ```
 
-Events: PreToolUse, PostToolUse, Stop, SubagentStart, SubagentStop, SessionStart, SessionEnd, UserPromptSubmit, PreCompact, Notification.
+Codex events: PreToolUse, PermissionRequest, PostToolUse, PreCompact, PostCompact, UserPromptSubmit,
+SubagentStart, SubagentStop, Stop, and SessionStart. Other tools may support additional events.
 
 Hook types:
 
-- `command`: runs a script. Script reads JSON from stdin, exit 0 = pass, exit 2 = block.
-- `prompt`: injects a prompt into the conversation.
+- `command`: runs a script that reads JSON from stdin.
+- `prompt`: supported by Claude Code and Gemini. Codex parses it but skips it.
+- `agent`: Codex parses it but skips it.
+
+Blocking and rewrite responses are tool-specific. Follow each tool's hook response schema.
 
 Use `${CLAUDE_PLUGIN_ROOT}` for script paths. `matcher` matches tool names (e.g., "Edit", "Bash", "mcp**tavily**tavily_search").
 
@@ -232,8 +243,9 @@ Commands are Claude Code only. Gemini CLI uses TOML commands. Other tools use sk
 | --------------------------------- | ----------- | ----------- | ----------- | ------- |
 | Skills (`skills/<name>/SKILL.md`) | native      | native      | native      | native  |
 | Agents (`agents/<name>.md`)       | native      | config.toml | preview     | native  |
-| Hooks (`hooks/hooks.json`)        | native      | no          | native      | partial |
+| Hooks (`hooks/hooks.json`)        | native      | native      | native      | partial |
 | Commands (`commands/<name>.md`)   | native (MD) | no          | TOML format | no      |
+| Output styles (`output-styles/`)  | native      | no          | no          | no      |
 
 ### Installation
 
@@ -243,6 +255,12 @@ Codex CLI:   codex plugin marketplace add fcakyon/claude-codex-settings, then co
 Cursor:      import marketplace or /add-plugin
 Gemini CLI:  gemini extensions install --path ./plugins/<name>
 ```
+
+### Updating
+
+- Claude Code: `claude plugin marketplace update`, then `claude plugin update <name>@claude-settings` per plugin (no bulk flag), then restart to apply
+- Codex CLI: `codex plugin marketplace upgrade` updates installed plugins directly since they read the git snapshot, no per-plugin step
+- Same-version edits will not ship, so bump the plugin `version` first (see Version alignment)
 
 ## Adding a New Plugin
 

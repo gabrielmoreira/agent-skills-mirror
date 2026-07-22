@@ -27,7 +27,7 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 | Tool Family | Purpose | Key Components |
 |------------|---------|----------------|
 | **Council** | Multi-LLM consensus synthesis (orchestrator dispatches councillors as subagents) | `agents/council.ts`, `agents/index.ts` |
-| **Task Management** | Background task lifecycle control | `cancel-task.ts`, `background-job-board.ts` |
+| **Task Management** | Background task lifecycle and HITL continuation control | `cancel-task.ts`, `wait-for-user.ts`, `background-job-board.ts` |
 | **ACP Integration** | External agent protocol execution | `acp-run.ts`, ACP client implementation |
 | **Code Intelligence** | AST-based code manipulation | `ast-grep/` directory, `tools.ts` |
 | **Web Fetching** | Intelligent web content retrieval | `smartfetch/` directory, `tool.ts` |
@@ -43,7 +43,7 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
 ### State Management
 
 - **Runtime Presets**: Preset state persists across plugin reloads via `runtime-preset.ts`
-- **TUI Integration**: Preset changes update the terminal UI snapshot for immediate feedback
+- **TUI Integration**: Preset changes persist to the config file only; the sidebar is NOT refreshed mid-session (the agent registry is unchanged until reload) — hot-swapping the agent tree during an active conversation risks context truncation, drifted prior turns, and stale subagent references
 - **Background Jobs**: Task cancellation uses a centralized job board for tracking and cleanup
 
 ## Flow
@@ -78,6 +78,17 @@ Each tool is implemented as a factory function that returns a `ToolDefinition` r
    ├─> Verifies session stopped via status polling
    ├─> Marks job as cancelled in BackgroundJobBoard
    └─> Returns cancellation confirmation
+```
+
+### Explicit User-Wait Flow
+
+```
+1. Orchestrator gives the user concrete manual steps
+   └─> Invokes wait_for_user as its final tool action
+       ├─> Validates session ID, agent identity, and managed-session ownership
+       ├─> Arms task-session-manager.beginUserWait()
+       ├─> Revokes pending automatic-continuation reservations
+       └─> Returns the versioned waiting_for_user protocol marker
 ```
 
 ### ACP Agent Execution Flow
@@ -193,6 +204,7 @@ export { ast_grep_replace, ast_grep_search } from './ast-grep';
 
 // Task management
 export { createCancelTaskTool } from './cancel-task';
+export { createWaitForUserTool } from './wait-for-user';
 
 // Preset management
 export type { PresetManager } from './preset-manager';

@@ -253,6 +253,9 @@ Input type detected:
              → read from disk, rendered as plain text exactly like .txt (.env itself is
                deliberately excluded — it commonly holds secrets and annotate history
                copies file contents; source-code extensions stay with code review)
+             All single-file annotate reads and /api/doc document serves are capped at
+             2MB (`MAX_ANNOTATABLE_FILE_BYTES` in `packages/core/annotatable.ts`) —
+             larger files get a clear "File too large to annotate (max 2MB)" error.
   .html/.htm → file read, rendered as raw HTML by default (or converted to markdown with --markdown)
   https://   → fetched via Jina Reader (default) or fetch+Turndown (--no-jina)
   folder/    → file browser opened, files converted on demand

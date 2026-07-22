@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `astral-sh/uv` — 26 default patterns, 0 followed patterns, 20 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,19 +66,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`agents/hooks/post-edit-format.py.lock`](agents/hooks/post-edit-format.py.lock) |
 | 6 | ✓ | [`agents/hooks/session-start-web.sh`](agents/hooks/session-start-web.sh) |
 | 7 | ✓ | [`agents/hooks/session-start.sh`](agents/hooks/session-start.sh) |
-| 8 | ✓ | [`agents/prompts/editorialize-changelog.md`](agents/prompts/editorialize-changelog.md) |
-| 9 | ✓ | [`agents/prompts/pull-request-security-review.md`](agents/prompts/pull-request-security-review.md) |
-| 10 | ✓ | [`agents/prompts/rebase-pull-request.md`](agents/prompts/rebase-pull-request.md) |
-| 11 | ✓ | [`agents/prompts/reproduce-bug.md`](agents/prompts/reproduce-bug.md) |
-| 12 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
-| 13 | ✓ | [`agents/references/threat-model.md`](agents/references/threat-model.md) |
-| 14 | ✓ | [`agents/schemas/issue-triage-bug.json`](agents/schemas/issue-triage-bug.json) |
-| 15 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
-| 16 | ✓ | [`agents/schemas/pull-request-security-review.json`](agents/schemas/pull-request-security-review.json) |
-| 17 | ✓ | [`agents/scripts/agent-review-to-github-comments.py`](agents/scripts/agent-review-to-github-comments.py) |
-| 18 | ✓ | [`agents/scripts/agent-review-to-github-comments.py.lock`](agents/scripts/agent-review-to-github-comments.py.lock) |
-| 19 | ✓ | [`agents/scripts/install-codex-security.sh`](agents/scripts/install-codex-security.sh) |
-| 20 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`agents/prompts/create-bug-test.md`](agents/prompts/create-bug-test.md) |
+| 9 | ✓ | [`agents/prompts/diagnose-workflow-failure.md`](agents/prompts/diagnose-workflow-failure.md) |
+| 10 | ✓ | [`agents/prompts/editorialize-changelog.md`](agents/prompts/editorialize-changelog.md) |
+| 11 | ✓ | [`agents/prompts/pull-request-security-review.md`](agents/prompts/pull-request-security-review.md) |
+| 12 | ✓ | [`agents/prompts/rebase-pull-request.md`](agents/prompts/rebase-pull-request.md) |
+| 13 | ✓ | [`agents/prompts/reproduce-bug.md`](agents/prompts/reproduce-bug.md) |
+| 14 | ✓ | [`agents/prompts/triage-issue.md`](agents/prompts/triage-issue.md) |
+| 15 | ✓ | [`agents/references/threat-model.md`](agents/references/threat-model.md) |
+| 16 | ✓ | [`agents/schemas/create-bug-test.json`](agents/schemas/create-bug-test.json) |
+| 17 | ✓ | [`agents/schemas/issue-triage-bug.json`](agents/schemas/issue-triage-bug.json) |
+| 18 | ✓ | [`agents/schemas/issue-triage.json`](agents/schemas/issue-triage.json) |
+| 19 | ✓ | [`agents/schemas/pull-request-security-review.json`](agents/schemas/pull-request-security-review.json) |
+| 20 | ✓ | [`agents/schemas/workflow-failure.json`](agents/schemas/workflow-failure.json) |
+| 21 | ✓ | [`agents/scripts/agent-review-to-github-comments.py`](agents/scripts/agent-review-to-github-comments.py) |
+| 22 | ✓ | [`agents/scripts/agent-review-to-github-comments.py.lock`](agents/scripts/agent-review-to-github-comments.py.lock) |
+| 23 | ✓ | [`agents/scripts/install-codex-security.sh`](agents/scripts/install-codex-security.sh) |
+| 24 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 129 file(s) materialized.
+Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 132 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 129 |
+| Files         | 132 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -161,33 +161,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 100 | ✓ | [`.agents/skills/piece-builder/SKILL.md`](.agents/skills/piece-builder/SKILL.md) |
 | 101 | ✓ | [`.agents/skills/piece-builder/trigger-patterns.md`](.agents/skills/piece-builder/trigger-patterns.md) |
 | 102 | ✓ | [`.agents/skills/piece-builder/ux-guidelines.md`](.agents/skills/piece-builder/ux-guidelines.md) |
-| 103 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
-| 104 | ✓ | [`.agents/skills/review-logging-patterns/references/code-review.md`](.agents/skills/review-logging-patterns/references/code-review.md) |
-| 105 | ✓ | [`.agents/skills/review-logging-patterns/references/drain-pipeline.md`](.agents/skills/review-logging-patterns/references/drain-pipeline.md) |
-| 106 | ✓ | [`.agents/skills/review-logging-patterns/references/structured-errors.md`](.agents/skills/review-logging-patterns/references/structured-errors.md) |
-| 107 | ✓ | [`.agents/skills/review-logging-patterns/references/wide-events.md`](.agents/skills/review-logging-patterns/references/wide-events.md) |
-| 108 | ✓ | [`.agents/skills/review-logging-patterns/SKILL.md`](.agents/skills/review-logging-patterns/SKILL.md) |
-| 109 | ✓ | [`.agents/skills/triage-dependabot-alerts/SKILL.md`](.agents/skills/triage-dependabot-alerts/SKILL.md) |
-| 110 | ✓ | [`.agents/skills/triage-image-cves/SKILL.md`](.agents/skills/triage-image-cves/SKILL.md) |
-| 111 | ✓ | [`.agents/skills/triage-security-advisories/SKILL.md`](.agents/skills/triage-security-advisories/SKILL.md) |
-| 112 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
-| 113 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 114 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 115 | ✓ | [`packages/core/execution/AGENTS.md`](packages/core/execution/AGENTS.md) |
-| 116 | ✓ | [`packages/core/execution/CLAUDE.md`](packages/core/execution/CLAUDE.md) |
-| 117 | ✓ | [`packages/core/formula/AGENTS.md`](packages/core/formula/AGENTS.md) |
-| 118 | ✓ | [`packages/core/formula/CLAUDE.md`](packages/core/formula/CLAUDE.md) |
-| 119 | ✓ | [`packages/core/piece-types/AGENTS.md`](packages/core/piece-types/AGENTS.md) |
-| 120 | ✓ | [`packages/core/piece-types/CLAUDE.md`](packages/core/piece-types/CLAUDE.md) |
-| 121 | ✓ | [`packages/core/shared/CLAUDE.md`](packages/core/shared/CLAUDE.md) |
-| 122 | ✓ | [`packages/core/utils/AGENTS.md`](packages/core/utils/AGENTS.md) |
-| 123 | ✓ | [`packages/core/utils/CLAUDE.md`](packages/core/utils/CLAUDE.md) |
-| 124 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
-| 125 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 126 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 127 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
-| 128 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 129 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
+| 103 | ✓ | [`.agents/skills/piece-output-schema/capture-recipes.md`](.agents/skills/piece-output-schema/capture-recipes.md) |
+| 104 | ✓ | [`.agents/skills/piece-output-schema/schema-reference.md`](.agents/skills/piece-output-schema/schema-reference.md) |
+| 105 | ✓ | [`.agents/skills/piece-output-schema/SKILL.md`](.agents/skills/piece-output-schema/SKILL.md) |
+| 106 | ✓ | [`.agents/skills/playwright-e2e-testing/SKILL.md`](.agents/skills/playwright-e2e-testing/SKILL.md) |
+| 107 | ✓ | [`.agents/skills/review-logging-patterns/references/code-review.md`](.agents/skills/review-logging-patterns/references/code-review.md) |
+| 108 | ✓ | [`.agents/skills/review-logging-patterns/references/drain-pipeline.md`](.agents/skills/review-logging-patterns/references/drain-pipeline.md) |
+| 109 | ✓ | [`.agents/skills/review-logging-patterns/references/structured-errors.md`](.agents/skills/review-logging-patterns/references/structured-errors.md) |
+| 110 | ✓ | [`.agents/skills/review-logging-patterns/references/wide-events.md`](.agents/skills/review-logging-patterns/references/wide-events.md) |
+| 111 | ✓ | [`.agents/skills/review-logging-patterns/SKILL.md`](.agents/skills/review-logging-patterns/SKILL.md) |
+| 112 | ✓ | [`.agents/skills/triage-dependabot-alerts/SKILL.md`](.agents/skills/triage-dependabot-alerts/SKILL.md) |
+| 113 | ✓ | [`.agents/skills/triage-image-cves/SKILL.md`](.agents/skills/triage-image-cves/SKILL.md) |
+| 114 | ✓ | [`.agents/skills/triage-security-advisories/SKILL.md`](.agents/skills/triage-security-advisories/SKILL.md) |
+| 115 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
+| 116 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 117 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 118 | ✓ | [`packages/core/execution/AGENTS.md`](packages/core/execution/AGENTS.md) |
+| 119 | ✓ | [`packages/core/execution/CLAUDE.md`](packages/core/execution/CLAUDE.md) |
+| 120 | ✓ | [`packages/core/formula/AGENTS.md`](packages/core/formula/AGENTS.md) |
+| 121 | ✓ | [`packages/core/formula/CLAUDE.md`](packages/core/formula/CLAUDE.md) |
+| 122 | ✓ | [`packages/core/piece-types/AGENTS.md`](packages/core/piece-types/AGENTS.md) |
+| 123 | ✓ | [`packages/core/piece-types/CLAUDE.md`](packages/core/piece-types/CLAUDE.md) |
+| 124 | ✓ | [`packages/core/shared/CLAUDE.md`](packages/core/shared/CLAUDE.md) |
+| 125 | ✓ | [`packages/core/utils/AGENTS.md`](packages/core/utils/AGENTS.md) |
+| 126 | ✓ | [`packages/core/utils/CLAUDE.md`](packages/core/utils/CLAUDE.md) |
+| 127 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
+| 128 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 129 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 130 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
+| 131 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 132 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
 
 ---
 

@@ -48,9 +48,13 @@ ipc.chatStream.start(params, { onChunk, onEnd, onError });
 
 ## Stream client notes
 
-- `createStreamClient(...).start()` returns `void`, not a cleanup/unsubscribe function. You cannot capture a handle to abort or clean up an active stream from the caller side.
-- To guard against duplicate streams, use a module-level `Set` (like `pendingStreamChatIds` in `useStreamChat.ts`) or a React state/ref-based lock, not the return value.
-- **Never gate global-state cleanup in `onEnd`/`onError` on a local `isMountedRef`.** Stream callbacks outlive the component that started them. If the user navigates away mid-stream, an unmount-guarded `onEnd` skips `setIsStreamingByIdAtom(false)` and `syncChatFromDb`, leaving the chat permanently `isStreaming=true` — `ChatPanel.fetchChatMessages` then skips IPC fetches forever and only a page refresh recovers. Always run global Jotai state writes and DB syncs unconditionally; only guard UI-only side effects (toasts, console logs, local React state) on mount. See `useStreamChat.ts` for the no-guard pattern.
+- `createStreamClient(...).start(input, callbacks, opts?)` returns a monotonic `streamId` (number) identifying that `start()` call. It is an operation-identity token, not an abort handle — aborting still goes through the domain channel (e.g. `chat:cancel`).
+- Each key holds at most one entry; a new `start()` for the same key replaces the previous entry, so events can never reach a replaced entry's callbacks (structural stale-event rejection).
+- Terminal stream callbacks may synchronously start a replacement stream with the same key. Cleanup after `onEnd`/`onError` (including invoke rejection) must delete the entry only when the map still points to the generation that ended; an unconditional keyed delete can orphan the replacement stream.
+- By default the entry is removed when the end/error event arrives (`autoRelease: true`). Pass `{ autoRelease: false }` to keep receiving events after a terminal event, and call `release(key, streamId)` when done — the chat stream machine uses this to keep entry ownership with its controller until finalization side effects complete (`release` with a stale `streamId` is a no-op).
+- Chat streams: do NOT guard against duplicate streams with ad-hoc flags. The per-chat state machine in `src/chat_stream/` is the single source of truth for the chat stream lifecycle — submit through it (`useStreamChat().streamMessage`) and it serializes/queues by construction. If you must start a chat stream outside the machine (see `startImplementationStream` in `src/plan_handoff/commands.ts`), your terminal handlers must clear `isStreamingByIdAtom` yourself AND poke the machine (`ensureController(chatId).send({ type: "queue-poked" })`) so queued prompts drain.
+- If a legacy UI path appends directly to `queuedMessagesByIdAtom` instead of submitting through the machine, poke the chat controller immediately after the synchronous atom write. The render that chose the queue path may be stale after finalization's one automatic dispatch, otherwise leaving the new item without a driver.
+- **Never gate global-state cleanup in `onEnd`/`onError` on a local `isMountedRef`.** Stream callbacks outlive the component that started them. If the user navigates away mid-stream, an unmount-guarded `onEnd` skips `setIsStreamingByIdAtom(false)` and `syncChatFromDb`, leaving the chat permanently `isStreaming=true` — `ChatPanel.fetchChatMessages` then skips IPC fetches forever and only a page refresh recovers. Always run global Jotai state writes and DB syncs unconditionally; only guard UI-only side effects (toasts, console logs, local React state) on mount. See `src/chat_stream/commands.ts` for the no-guard pattern.
 
 ## Settings write safety (`writeSettings`)
 
@@ -68,6 +72,8 @@ writeSettings({
 ```
 
 **Stale-read race condition:** If you call `readSettings()` before an async operation (network call, file I/O), then use the snapshot to construct the write, any concurrent settings changes during the async gap will be silently overwritten. Always call `readSettings()` immediately before `writeSettings()` — never across an `await` boundary.
+
+**Stream-admission barrier atomicity:** In `chat_stream_handlers.ts`, a stream's final admission-block check (`streamAdmissionBlockCounts`) and its `admissionPendingStreams.delete(controller)` "start" transition must run in the **same synchronous frame — no `await` between them**. `cancelActiveStreamsForApp` (used by restore-to-message) deliberately skips controllers still in `admissionPendingStreams`, so a restore that installs its `blockNewStreamsForApp` barrier in a gap between the check and the marker removal would neither cancel the stream nor make it re-observe the new barrier — letting it start mid-restore and dirty the freshly reverted tree. Adding any `await` in that window silently reintroduces this race.
 
 **Electron readiness:** `readSettings()` and `writeSettings()` may decrypt/encrypt secrets through Electron `safeStorage`, which throws `safeStorage cannot be used before app is ready` before `app.whenReady()`. Queue pre-ready entry points like deep links (`open-url`, `second-instance`) until the app/window is ready before calling OAuth/settings handlers.
 
@@ -169,6 +175,10 @@ When creating hooks/components that call IPC handlers:
 - Wrap writes in `useMutation`; validate inputs locally, call the domain client, and invalidate related queries on success. Use shared utilities (e.g., toast helpers) in `onError`.
 - When a mutation changes fields exposed by both `apps.detail(...)` and `apps.all` (for example linking or unlinking a GitHub repository), invalidate both query families. Refreshing only the detail query can leave parent pages that derive conditional UI from the apps list stale.
 - Synchronize TanStack Query data with any global state (like Jotai atoms) via `useEffect` only if required.
+- Treat `queryClient.getQueryData(...)` as an optional cache peek. When a
+  mutation post-effect must inspect IPC-backed data to decide correctness-critical
+  work (such as restarting a runtime), use `fetchQuery`/`ensureQueryData` with
+  the canonical query key and query function so cache eviction cannot skip it.
 - For renderer launch telemetry that needs first-run state, do not infer it from `settings.hasRunBefore` after startup. `onFirstRunMaybe` flips that setting before `createWindow()`, so expose the pre-write value through an IPC/query context instead.
 - Renderer-side `isProviderSetup()` env-var detection only sees env vars whitelisted by the `get-env-vars` handler in `src/ipc/handlers/app_handlers.ts`, which returns one `envVarName` per provider. Providers needing extra env vars (e.g. Azure's `AZURE_RESOURCE_NAME`) must have those keys added to the handler explicitly, or the renderer reports the provider as not set up even though the main process can use it.
 

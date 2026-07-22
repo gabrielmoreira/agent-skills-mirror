@@ -146,9 +146,9 @@ Provider-specific configuration helpers and `count_tokens()` are optional, but
 their state must be safe to update while calls may run concurrently. Keep
 credentials out of logs and persisted artifacts.
 
-Exec-style targets do not implement this chat contract. They are target-only
-and are integrated through `codex_harness.py` plus environment-specific rollout
-code.
+Exec-style targets such as `claude_code_exec` and `cursor_exec` do not
+implement this chat contract. They are target-only and are integrated through
+`codex_harness.py` plus environment-specific rollout code.
 
 ## Step 2: register and route the backend
 

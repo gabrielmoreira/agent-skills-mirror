@@ -22,8 +22,10 @@ This repo carries no migrations or legacy/compat code. Verification is:
    node; component tests opt into a DOM with a leading
    `// @vitest-environment jsdom` pragma and use `@testing-library/react`.
    Mock at the server-action / db-module boundary (`vi.mock`), not deeper.
-   Test pure logic and user-visible component behavior — don't unit-test
-   Next.js pages or route handlers; the live smoke covers those.
+   Test pure logic and user-visible component behavior. Prefer testing below
+   the page boundary, but use a focused page regression test when the bug is
+   in server-page wiring that lower-level tests cannot observe. Route handlers
+   normally stay covered by the live smoke.
    SQLite tests use the real better-sqlite3 against a tmpdir — and the
    `NOTFAIR_DATA_DIR` override MUST be set inside `vi.hoisted(...)`:
    static imports evaluate before module-level statements, so a plain

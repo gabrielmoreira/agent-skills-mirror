@@ -11,12 +11,12 @@ Runtime model fallback system for foreground (interactive) agent sessions. When 
 ## Design
 
 ### Core Abstraction
-- **ForegroundFallbackManager**: Singleton class instantiated at plugin initialization
+- **ForegroundFallbackManager**: Class instantiated at plugin initialization; process-local fallback progress is shared across replacement instances
 - Maintains per-session state tracking:
   - `sessionModel`: Maps sessionID → current model string ("providerID/modelID")
   - `sessionAgent`: Maps sessionID → agent name
   - `sessionTried`: Maps sessionID → Set of models already attempted
-  - `inProgress`: Set of sessions with active fallback in flight
+  - `inProgress`: Process-global Set of sessions with active fallback in flight, shared via `globalThis` + `Symbol.for`
   - `lastTrigger`: Maps sessionID → timestamp for deduplication
 
 ### Fallback Chain Resolution
@@ -37,7 +37,7 @@ Runtime model fallback system for foreground (interactive) agent sessions. When 
 ### State Management
 - **Deduplication window**: 5-second cooldown (`DEDUP_WINDOW_MS`) to prevent multiple triggers for same rate-limit event
 - **Session cleanup**: `session.deleted` event handler removes all per-session state to prevent memory leaks
-- **In-progress tracking**: Prevents concurrent fallback attempts on same session
+- **In-progress tracking**: Prevents concurrent fallback attempts on the same session across plugin-manager recreation
 
 ## Flow
 
@@ -68,7 +68,7 @@ Log fallback event
 1. **Abort with timeout**: `abortSessionWithTimeout()` sends Ctrl+C to pane then kills it after 250ms delay
 2. **Message retrieval**: Queries session messages via `client.session.messages()` and finds last user message
 3. **Model switching**: Uses `parseModelReference()` to extract providerID/modelID from chain entry
-4. **Re-prompting**: Calls `promptAsync()` which queues prompt and returns immediately (non-blocking)
+4. **Re-prompting**: Calls `promptAsync()` which queues prompt and returns immediately (non-blocking); appends trusted internal-initiator provenance so the replay is not mistaken for new external user input
 
 ## Integration
 

@@ -1,6 +1,6 @@
 ---
 name: openloomi-api
-description: "openloomi API documentation and reference. Use when working with openloomi backend APIs, AI, authentication, characters, messages, files, integrations, billing, or any server-side functionality. Triggers: API endpoints, backend routes, authentication, local API, integrations"
+description: "openloomi HTTP API reference (local-first, served from the OpenLoomi Desktop app at http://localhost:3414). Use when working with openloomi backend routes — auth, AI, files, integrations, RAG, memory, Loop, pet, workspace, platform callbacks. Triggers: API endpoints, backend routes, /api/*, local API, port 3414, integrations REST, OAuth start, RAG search, loop state, memory search, pet state, audit logs"
 ---
 
 > **Note:** If you haven't downloaded or installed openloomi yet, please refer to [Getting Started](https://openloomi.ai/docs/getting-started) for installation instructions.
@@ -9,9 +9,11 @@ description: "openloomi API documentation and reference. Use when working with o
 
 ## API Modules
 
-All auth routes resolve against the local SQLite database. There is **no cloud dependency** — openloomi is fully self-contained. The `remote-auth` prefix is historical (the routes once proxied to a cloud server); today they are the canonical local endpoints, and the Claude/Codex plugin bridge uses `/api/remote-auth/user` as a port-discovery + auth-handshake probe.
+OpenLoomi ships a **local-first** HTTP API served from the desktop app (port `3414`, fallback `3515`). All auth, Memory, AI, RAG, Loop, and Audit data live in a local SQLite database — your data stays on your machine and the OpenLoomi app is the source of truth. The only externally-routed auth path is the **Composio OAuth broker** that backs the Slack, GitHub, Google, Notion, Linear, HubSpot, LinkedIn, Jira, and Asana Connectors (see `openloomi-connectors`).
 
-This reference covers **131 route handlers** under 36 top-level `/api/*` modules (auto-surveyed from `apps/web/app/api/`).
+The `remote-auth` prefix is historical — those routes once proxied to a cloud server; today they are the canonical local endpoints, and the Claude/Codex plugin bridge uses `/api/remote-auth/user` as a port-discovery + auth-handshake probe.
+
+This reference covers **131 route handlers** under 36 top-level `/api/*` modules. Pair it with `openloomi-loop` (Loop state, decisions, channels, classifier rules, brief/wrap) and `openloomi-memory` (Memory search, KB, insights, entities, living connections) for the runtime surfaces used by Chat and Loop.
 
 ### Functional Modules
 
@@ -377,12 +379,13 @@ curl -X POST http://localhost:3414/api/remote-feedback \
 ## Summary
 
 - **131 route handlers** across 22 functional modules + 12 platform callback modules + 2 cross-cutting modules (`proxy`, `db`)
-- **Fully self-contained**: all auth, data, AI, and sync run locally — no cloud dependency
-- **Dual authentication**: Session cookies (web) and Bearer tokens (Tauri)
+- **Local-first**: auth, Memory, AI, RAG, Loop, and Audit data live in a local SQLite database; the only externally-routed path is the Composio OAuth broker
+- **Dual authentication**: Session cookies (web) and Bearer tokens (Tauri / CLI)
 - **RESTful JSON APIs** with Zod validation
 - **SWR utilities** for client-side data fetching
 - **OAuth support** for Slack, Discord, X, HubSpot, LinkedIn, Notion
-- **RAG** for document retrieval and search
+- **RAG** for Knowledge Base document upload + retrieval (`openloomi-memory` owns the user-facing surface)
 - **AI** endpoints for chat, images, audio
-- **Loop** for attention loop, decisions, channels, classifier rules
+- **Loop** for the proactive judgement engine — signals, decisions, cards, channels, classifier rules (see `openloomi-loop`)
+- **Memory** search + raw-message access (full surface in `openloomi-memory`)
 - **Pet** state mirror (read/write `/api/pet/state`)
