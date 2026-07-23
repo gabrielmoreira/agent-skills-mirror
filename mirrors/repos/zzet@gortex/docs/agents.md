@@ -2,7 +2,7 @@
 
 `gortex install` (once per machine) and `gortex init` (once per repo)
 auto-configure Gortex for every AI coding assistant detected on your
-machine. Eighteen adapters ship today.
+machine. Nineteen adapters ship today.
 
 - `gortex install` writes user-level machinery: `~/.claude.json` MCP,
   `~/.claude/skills/gortex-*`, `~/.claude/commands/gortex-*.md`,
@@ -364,17 +364,15 @@ under `mcp.servers.<name>`.
 **Pi has no MCP support — by design**, so instead of an `mcpServers`
 stanza this adapter ships a self-contained TypeScript extension at
 `.pi/extensions/gortex/index.ts` (project) or
-`~/.pi/agent/extensions/gortex/index.ts` (global). It registers the same fixed
-21 public tools natively through exact `gortex call` request forwarding and
-re-creates the same read-discipline enforcement the other clients get (skip it
-with `--no-hooks`). It does not expose legacy discovery or depend on dynamic
-tool promotion.
-
-The read-discipline rules are injected by the extension at runtime.
+`~/.pi/agent/extensions/gortex/index.ts` (global). The extension is a
+thin MCP client of its own: it spawns one persistent `gortex mcp`
+child per session, registers the daemon's tool surface natively, 
+and re-creates the same read-discipline enforcement the other
+agents get.
 
 **Project-local extensions require a one-time trust confirmation** the
-first time Pi opens the repo — nothing the installer can do beyond writing
-the file.
+first time Pi opens the repo — nothing the installer can do beyond
+writing the file.
 
 ### vscode
 

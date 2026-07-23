@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sponsor Catalog"
+  short_description: "Maintain sponsor catalogs and documentation safely"
+  default_prompt: "Use $sponsor-catalog to add or update a sponsor across the application, catalogs, assets, and documentation."

@@ -1,6 +1,6 @@
 ---
 name: openloomi-setup
-description: "Run OpenLoomi one-time setup — auto-chains install → set Codex provider → launch → wait API → mint guest session token → ready in one call. Mirrors Claude's `/openloomi:setup`. Triggers: setup openloomi, install openloomi, install and run, 一键装好并跑起来, fix openloomi, finalize openloomi, install_required, awaiting_user_action, session_initialization_required, ai_provider_required, install_failed, api_not_ready."
+description: "Run OpenLoomi one-time setup — auto-chains install → set Codex provider → launch → wait API → mint guest session token → ready in one call. Mirrors Claude's `/openloomi:setup`. Triggers: setup openloomi, install openloomi, install and run, 一键装好并跑起来, fix openloomi, finalize openloomi, install_required, awaiting_user_action, session_initialization_required, ai_provider_required, install_failed, api_not_ready, what now, what next, first time, what can i do."
 allowed-tools: "Bash(node $SKILL_DIR/../../scripts/loomi-bridge.mjs setup *)"
 ---
 
@@ -144,11 +144,91 @@ survives reboot; on Linux the bridge edits `~/.config/environment.d/`; on
 Windows the user must set the variable manually. `codex-runtime-info`
 always reports the current effective value.
 
-## Post-`ready` guidance
+## Post-`ready` walkthrough
 
-When `setup: ready` fires, the wizard is done. Do **not** improvise a
-"Next: run X" hint — pick from the closed list below, or say nothing
-beyond the audit table.
+When `setup: ready` fires, the wizard is done. Print the canonical
+post-setup hand-off so the user knows what they just installed and what
+to try next. The bridge JSON above is for machines; this section is the
+human-facing surface and supersedes the earlier "do not improvise" rule
+with a richer, scripted intro + tour. Print all four parts on the very
+first `setup: ready` emission. On later re-runs you may abbreviate to
+the audit table plus "where to go next" line, but never skip the intro.
+
+### 1. One-paragraph intro
+
+> OpenLoomi is your **local-first AI coworker**. It runs as a desktop
+> app on your Mac, connects to the tools you authorise (Gmail, Slack,
+> GitHub, Google Calendar, Notion, Linear, etc. via Composio, plus
+> native bots for Telegram / WhatsApp / iMessage / Feishu / DingTalk /
+> QQ / WeChat), watches the signals that come in, and surfaces daily
+> decisions as cards on the desktop pet (Loomi the fox). You tap
+> **Approve** and the action runs through the same connector — the
+> result is written back into Memory so the next judgement is sharper.
+> Nothing leaves your machine unless you opt in to a Connector.
+
+### 2. Where things live (orientation)
+
+| Surface | Where |
+| --- | --- |
+| Desktop app | `/Applications/OpenLoomi.app` |
+| Local HTTP API | `http://localhost:3414` (fallback `3515`) |
+| Guest bearer token | `~/.openloomi/token` (base64-encoded JWT) |
+| Codex runtime env | `OPENLOOMI_AGENT_PROVIDER=codex` (LaunchAgent, survives reboot) |
+| Memory files | `~/.openloomi/data/memory/{people,projects,notes,strategy,chats,channels}/` |
+| Knowledge Base | `GET /api/rag/documents` |
+| Audit log | `GET /api/audit/...` |
+| Pet widget | Watcher polls `~/.openloomi/loop/decisions.json` every 2s |
+
+### 3. The five-step first tour
+
+After `setup: ready`, suggest this exact sequence. Each step is a
+single shell call plus a one-line description of what the user will
+see. Skip steps the user has already done — but always emit step 1
+(health check) so the user knows what "still ready" looks like.
+
+| # | What | Command | What you'll see |
+| --- | --- | --- | --- |
+| 1 | **Health check** | `node "$PLUGIN/scripts/loomi-bridge.mjs" setup-status` | Same audit table you just got. Confirms Codex runtime is still the active default agent. |
+| 2 | **Pet reacts** | `node "$PLUGIN/scripts/loomi-bridge.mjs" pet happy` | Loomi the fox flips to the happy sprite. Try `thinking`, `working`, `juggling` to see the rest of the 9-state set. |
+| 3 | **Connect a tool** | Native: `node "$PLUGIN/skills/openloomi-connectors/scripts/openloomi-connectors.cjs" connect telegram` *or* OAuth: `composio link gmail` | A QR scan or browser OAuth opens; once you approve, the account shows in `list-accounts`. |
+| 4 | **Run one Loop tick** | `TOKEN=$(cat ~/.openloomi/token \| base64 -d); curl -X POST http://localhost:3414/api/loop/tick -H "Authorization: Bearer $TOKEN"` | Loop pulls signals, classifies them, and enqueues decisions. Then `GET /api/loop/decisions?status=pending` to see the cards. Approve with `POST /api/loop/action/schedule`. |
+| 5 | **Seed Memory** | `node "$PLUGIN/skills/openloomi-memory/scripts/openloomi-memory.cjs" add-memory "About me: ..." --file=people/me.md` | A real `.md` shows up in `~/.openloomi/data/memory/people/`. Future Loop ticks have grounding context. |
+
+Optional extensions after step 4 (skip if the user is new):
+
+- **Custom Loop channel** — register your own signal source
+  (`PUT /api/loop/channels` with `toolkit` + `toolSlug`).
+- **Classifier rule** — deterministic overrides for known signal
+  patterns (`PUT /api/loop/classifier-rules`).
+- **Custom decision type** — your own `DecisionType` icon + label
+  (`PUT /api/loop/types`).
+
+If the user asks for a hands-on walkthrough rather than just a
+recommendation, hand off to the `openloomi-tour` skill — it runs the
+same five steps with live probes and stops between each one for the
+user to react.
+
+### 4. Quick reference card
+
+End with this closed list so the user doesn't have to memorise URLs.
+
+| Want to… | Run |
+| --- | --- |
+| See health | `setup-status` |
+| Flip the pet | `pet <state>` |
+| Re-confirm Codex runtime | `codex-runtime-info` |
+| List connectors | `openloomi-connectors list-accounts` |
+| Search memory | `openloomi-memory search-all "<query>"` |
+| Run a Loop tick | `POST /api/loop/tick` |
+| See pending decisions | `GET /api/loop/decisions?status=pending` |
+| Approve a decision | `POST /api/loop/action/schedule {decision_id, action:"run"}` |
+| Archive old data | `archive` |
+
+### 5. Hand-off
+
+Finish with: "Run `openloomi-tour` from this Codex session for a
+guided walkthrough, or pick a number above and I'll run that step for
+you."
 
 ## After `api_not_ready`
 

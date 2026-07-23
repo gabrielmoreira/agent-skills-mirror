@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `elementalsouls/Claude-BugHunter` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
+Mirror of `elementalsouls/Claude-BugHunter` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elementalsouls/Claude-BugHunter` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 94 |
+| Files         | 105 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,84 +75,95 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`skills/hunt-brute-force/SKILL.md`](skills/hunt-brute-force/SKILL.md) |
 | 15 | ✓ | [`skills/hunt-business-logic/SKILL.md`](skills/hunt-business-logic/SKILL.md) |
 | 16 | ✓ | [`skills/hunt-cache-poison/SKILL.md`](skills/hunt-cache-poison/SKILL.md) |
-| 17 | ✓ | [`skills/hunt-cicd/SKILL.md`](skills/hunt-cicd/SKILL.md) |
-| 18 | ✓ | [`skills/hunt-cloud-misconfig/SKILL.md`](skills/hunt-cloud-misconfig/SKILL.md) |
-| 19 | ✓ | [`skills/hunt-cors/SKILL.md`](skills/hunt-cors/SKILL.md) |
-| 20 | ✓ | [`skills/hunt-csrf/SKILL.md`](skills/hunt-csrf/SKILL.md) |
-| 21 | ✓ | [`skills/hunt-deserialization/SKILL.md`](skills/hunt-deserialization/SKILL.md) |
-| 22 | ✓ | [`skills/hunt-dispatch/SKILL.md`](skills/hunt-dispatch/SKILL.md) |
-| 23 | ✓ | [`skills/hunt-dom/SKILL.md`](skills/hunt-dom/SKILL.md) |
-| 24 | ✓ | [`skills/hunt-file-upload/SKILL.md`](skills/hunt-file-upload/SKILL.md) |
-| 25 | ✓ | [`skills/hunt-graphql/SKILL.md`](skills/hunt-graphql/SKILL.md) |
-| 26 | ✓ | [`skills/hunt-grpc/SKILL.md`](skills/hunt-grpc/SKILL.md) |
-| 27 | ✓ | [`skills/hunt-host-header/SKILL.md`](skills/hunt-host-header/SKILL.md) |
-| 28 | ✓ | [`skills/hunt-http-smuggling/SKILL.md`](skills/hunt-http-smuggling/SKILL.md) |
-| 29 | ✓ | [`skills/hunt-idor/SKILL.md`](skills/hunt-idor/SKILL.md) |
-| 30 | ✓ | [`skills/hunt-k8s/SKILL.md`](skills/hunt-k8s/SKILL.md) |
-| 31 | ✓ | [`skills/hunt-laravel/SKILL.md`](skills/hunt-laravel/SKILL.md) |
-| 32 | ✓ | [`skills/hunt-ldap/SKILL.md`](skills/hunt-ldap/SKILL.md) |
-| 33 | ✓ | [`skills/hunt-lfi/SKILL.md`](skills/hunt-lfi/SKILL.md) |
-| 34 | ✓ | [`skills/hunt-llm-ai/SKILL.md`](skills/hunt-llm-ai/SKILL.md) |
-| 35 | ✓ | [`skills/hunt-mfa-bypass/SKILL.md`](skills/hunt-mfa-bypass/SKILL.md) |
-| 36 | ✓ | [`skills/hunt-misc/SKILL.md`](skills/hunt-misc/SKILL.md) |
-| 37 | ✓ | [`skills/hunt-nextjs/SKILL.md`](skills/hunt-nextjs/SKILL.md) |
-| 38 | ✓ | [`skills/hunt-nodejs/SKILL.md`](skills/hunt-nodejs/SKILL.md) |
-| 39 | ✓ | [`skills/hunt-nosqli/SKILL.md`](skills/hunt-nosqli/SKILL.md) |
-| 40 | ✓ | [`skills/hunt-ntlm-info/SKILL.md`](skills/hunt-ntlm-info/SKILL.md) |
-| 41 | ✓ | [`skills/hunt-oauth/SKILL.md`](skills/hunt-oauth/SKILL.md) |
-| 42 | ✓ | [`skills/hunt-open-redirect/SKILL.md`](skills/hunt-open-redirect/SKILL.md) |
-| 43 | ✓ | [`skills/hunt-race-condition/SKILL.md`](skills/hunt-race-condition/SKILL.md) |
-| 44 | ✓ | [`skills/hunt-rce/SKILL.md`](skills/hunt-rce/SKILL.md) |
-| 45 | ✓ | [`skills/hunt-saml/SKILL.md`](skills/hunt-saml/SKILL.md) |
-| 46 | ✓ | [`skills/hunt-session/SKILL.md`](skills/hunt-session/SKILL.md) |
-| 47 | ✓ | [`skills/hunt-sharepoint/SKILL.md`](skills/hunt-sharepoint/SKILL.md) |
-| 48 | ✓ | [`skills/hunt-source-leak/SKILL.md`](skills/hunt-source-leak/SKILL.md) |
-| 49 | ✓ | [`skills/hunt-springboot/SKILL.md`](skills/hunt-springboot/SKILL.md) |
-| 50 | ✓ | [`skills/hunt-sqli/SKILL.md`](skills/hunt-sqli/SKILL.md) |
-| 51 | ✓ | [`skills/hunt-ssrf/SKILL.md`](skills/hunt-ssrf/SKILL.md) |
-| 52 | ✓ | [`skills/hunt-ssti/SKILL.md`](skills/hunt-ssti/SKILL.md) |
-| 53 | ✓ | [`skills/hunt-subdomain/SKILL.md`](skills/hunt-subdomain/SKILL.md) |
-| 54 | ✓ | [`skills/hunt-tls-network/SKILL.md`](skills/hunt-tls-network/SKILL.md) |
-| 55 | ✓ | [`skills/hunt-websocket/SKILL.md`](skills/hunt-websocket/SKILL.md) |
-| 56 | ✓ | [`skills/hunt-xss/SKILL.md`](skills/hunt-xss/SKILL.md) |
-| 57 | ✓ | [`skills/hunt-xxe/SKILL.md`](skills/hunt-xxe/SKILL.md) |
-| 58 | ✓ | [`skills/m365-entra-attack/SKILL.md`](skills/m365-entra-attack/SKILL.md) |
-| 59 | ✓ | [`skills/meme-coin-audit/SKILL.md`](skills/meme-coin-audit/SKILL.md) |
-| 60 | ✓ | [`skills/mid-engagement-ir-detection/SKILL.md`](skills/mid-engagement-ir-detection/SKILL.md) |
-| 61 | ✓ | [`skills/offensive-osint/README.md`](skills/offensive-osint/README.md) |
-| 62 | ✓ | [`skills/offensive-osint/references/breach-and-credentials.md`](skills/offensive-osint/references/breach-and-credentials.md) |
-| 63 | ✓ | [`skills/offensive-osint/references/dork-corpus.md`](skills/offensive-osint/references/dork-corpus.md) |
-| 64 | ✓ | [`skills/offensive-osint/references/helpers-and-automation.md`](skills/offensive-osint/references/helpers-and-automation.md) |
-| 65 | ✓ | [`skills/offensive-osint/references/identity-fabric.md`](skills/offensive-osint/references/identity-fabric.md) |
-| 66 | ✓ | [`skills/offensive-osint/references/people-osint.md`](skills/offensive-osint/references/people-osint.md) |
-| 67 | ✓ | [`skills/offensive-osint/references/probes-and-wordlists.md`](skills/offensive-osint/references/probes-and-wordlists.md) |
-| 68 | ✓ | [`skills/offensive-osint/references/recon-stack.md`](skills/offensive-osint/references/recon-stack.md) |
-| 69 | ✓ | [`skills/offensive-osint/references/recon-techniques.md`](skills/offensive-osint/references/recon-techniques.md) |
-| 70 | ✓ | [`skills/offensive-osint/references/saas-public-surfaces.md`](skills/offensive-osint/references/saas-public-surfaces.md) |
-| 71 | ✓ | [`skills/offensive-osint/references/secret-patterns.md`](skills/offensive-osint/references/secret-patterns.md) |
-| 72 | ✓ | [`skills/offensive-osint/references/secret-validators.md`](skills/offensive-osint/references/secret-validators.md) |
-| 73 | ✓ | [`skills/offensive-osint/references/sector-notes.md`](skills/offensive-osint/references/sector-notes.md) |
-| 74 | ✓ | [`skills/offensive-osint/references/severity-matrix.md`](skills/offensive-osint/references/severity-matrix.md) |
-| 75 | ✓ | [`skills/offensive-osint/references/specialized-osint.md`](skills/offensive-osint/references/specialized-osint.md) |
-| 76 | ✓ | [`skills/offensive-osint/references/tooling-install.md`](skills/offensive-osint/references/tooling-install.md) |
-| 77 | ✓ | [`skills/offensive-osint/scripts/assets/archivo-black.woff2`](skills/offensive-osint/scripts/assets/archivo-black.woff2) |
-| 78 | ✓ | [`skills/offensive-osint/scripts/assets/FONT-LICENSE.txt`](skills/offensive-osint/scripts/assets/FONT-LICENSE.txt) |
-| 79 | ✓ | [`skills/offensive-osint/scripts/dashboard.py`](skills/offensive-osint/scripts/dashboard.py) |
-| 80 | ✓ | [`skills/offensive-osint/scripts/h1_reference.py`](skills/offensive-osint/scripts/h1_reference.py) |
-| 81 | ✓ | [`skills/offensive-osint/scripts/secret_scan.py`](skills/offensive-osint/scripts/secret_scan.py) |
-| 82 | ✓ | [`skills/offensive-osint/SKILL.md`](skills/offensive-osint/SKILL.md) |
-| 83 | ✓ | [`skills/okta-attack/SKILL.md`](skills/okta-attack/SKILL.md) |
-| 84 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
-| 85 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
-| 86 | ✓ | [`skills/redteam-mindset/SKILL.md`](skills/redteam-mindset/SKILL.md) |
-| 87 | ✓ | [`skills/redteam-report-template/SKILL.md`](skills/redteam-report-template/SKILL.md) |
-| 88 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
-| 89 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
-| 90 | ✓ | [`skills/supply-chain-attack-recon/SKILL.md`](skills/supply-chain-attack-recon/SKILL.md) |
-| 91 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
-| 92 | ✓ | [`skills/vmware-vcenter-attack/SKILL.md`](skills/vmware-vcenter-attack/SKILL.md) |
-| 93 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
-| 94 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
+| 17 | ✓ | [`skills/hunt-captcha-bypass/SKILL.md`](skills/hunt-captcha-bypass/SKILL.md) |
+| 18 | ✓ | [`skills/hunt-cicd/SKILL.md`](skills/hunt-cicd/SKILL.md) |
+| 19 | ✓ | [`skills/hunt-clickjacking/SKILL.md`](skills/hunt-clickjacking/SKILL.md) |
+| 20 | ✓ | [`skills/hunt-cloud-misconfig/SKILL.md`](skills/hunt-cloud-misconfig/SKILL.md) |
+| 21 | ✓ | [`skills/hunt-cors/SKILL.md`](skills/hunt-cors/SKILL.md) |
+| 22 | ✓ | [`skills/hunt-csrf/SKILL.md`](skills/hunt-csrf/SKILL.md) |
+| 23 | ✓ | [`skills/hunt-deserialization/SKILL.md`](skills/hunt-deserialization/SKILL.md) |
+| 24 | ✓ | [`skills/hunt-dispatch/SKILL.md`](skills/hunt-dispatch/SKILL.md) |
+| 25 | ✓ | [`skills/hunt-dom/SKILL.md`](skills/hunt-dom/SKILL.md) |
+| 26 | ✓ | [`skills/hunt-exceptional-conditions/SKILL.md`](skills/hunt-exceptional-conditions/SKILL.md) |
+| 27 | ✓ | [`skills/hunt-file-upload/SKILL.md`](skills/hunt-file-upload/SKILL.md) |
+| 28 | ✓ | [`skills/hunt-forgot-password/SKILL.md`](skills/hunt-forgot-password/SKILL.md) |
+| 29 | ✓ | [`skills/hunt-graphql/SKILL.md`](skills/hunt-graphql/SKILL.md) |
+| 30 | ✓ | [`skills/hunt-grpc/SKILL.md`](skills/hunt-grpc/SKILL.md) |
+| 31 | ✓ | [`skills/hunt-host-header/SKILL.md`](skills/hunt-host-header/SKILL.md) |
+| 32 | ✓ | [`skills/hunt-html-injection/SKILL.md`](skills/hunt-html-injection/SKILL.md) |
+| 33 | ✓ | [`skills/hunt-http-smuggling/SKILL.md`](skills/hunt-http-smuggling/SKILL.md) |
+| 34 | ✓ | [`skills/hunt-idor/SKILL.md`](skills/hunt-idor/SKILL.md) |
+| 35 | ✓ | [`skills/hunt-jwt-crypto/SKILL.md`](skills/hunt-jwt-crypto/SKILL.md) |
+| 36 | ✓ | [`skills/hunt-k8s/SKILL.md`](skills/hunt-k8s/SKILL.md) |
+| 37 | ✓ | [`skills/hunt-laravel/SKILL.md`](skills/hunt-laravel/SKILL.md) |
+| 38 | ✓ | [`skills/hunt-ldap/SKILL.md`](skills/hunt-ldap/SKILL.md) |
+| 39 | ✓ | [`skills/hunt-lfi/SKILL.md`](skills/hunt-lfi/SKILL.md) |
+| 40 | ✓ | [`skills/hunt-llm-ai/SKILL.md`](skills/hunt-llm-ai/SKILL.md) |
+| 41 | ✓ | [`skills/hunt-mfa-bypass/SKILL.md`](skills/hunt-mfa-bypass/SKILL.md) |
+| 42 | ✓ | [`skills/hunt-misc/SKILL.md`](skills/hunt-misc/SKILL.md) |
+| 43 | ✓ | [`skills/hunt-nextjs/SKILL.md`](skills/hunt-nextjs/SKILL.md) |
+| 44 | ✓ | [`skills/hunt-nodejs/SKILL.md`](skills/hunt-nodejs/SKILL.md) |
+| 45 | ✓ | [`skills/hunt-nosqli/SKILL.md`](skills/hunt-nosqli/SKILL.md) |
+| 46 | ✓ | [`skills/hunt-ntlm-info/SKILL.md`](skills/hunt-ntlm-info/SKILL.md) |
+| 47 | ✓ | [`skills/hunt-oauth/SKILL.md`](skills/hunt-oauth/SKILL.md) |
+| 48 | ✓ | [`skills/hunt-open-redirect/SKILL.md`](skills/hunt-open-redirect/SKILL.md) |
+| 49 | ✓ | [`skills/hunt-race-condition/SKILL.md`](skills/hunt-race-condition/SKILL.md) |
+| 50 | ✓ | [`skills/hunt-rag-vector/SKILL.md`](skills/hunt-rag-vector/SKILL.md) |
+| 51 | ✓ | [`skills/hunt-rce/SKILL.md`](skills/hunt-rce/SKILL.md) |
+| 52 | ✓ | [`skills/hunt-saml/SKILL.md`](skills/hunt-saml/SKILL.md) |
+| 53 | ✓ | [`skills/hunt-session/SKILL.md`](skills/hunt-session/SKILL.md) |
+| 54 | ✓ | [`skills/hunt-shadow-api/SKILL.md`](skills/hunt-shadow-api/SKILL.md) |
+| 55 | ✓ | [`skills/hunt-sharepoint/SKILL.md`](skills/hunt-sharepoint/SKILL.md) |
+| 56 | ✓ | [`skills/hunt-source-leak/SKILL.md`](skills/hunt-source-leak/SKILL.md) |
+| 57 | ✓ | [`skills/hunt-spa-api/SKILL.md`](skills/hunt-spa-api/SKILL.md) |
+| 58 | ✓ | [`skills/hunt-springboot/SKILL.md`](skills/hunt-springboot/SKILL.md) |
+| 59 | ✓ | [`skills/hunt-sqli/SKILL.md`](skills/hunt-sqli/SKILL.md) |
+| 60 | ✓ | [`skills/hunt-ssrf/SKILL.md`](skills/hunt-ssrf/SKILL.md) |
+| 61 | ✓ | [`skills/hunt-ssti/SKILL.md`](skills/hunt-ssti/SKILL.md) |
+| 62 | ✓ | [`skills/hunt-subdomain/SKILL.md`](skills/hunt-subdomain/SKILL.md) |
+| 63 | ✓ | [`skills/hunt-tls-network/SKILL.md`](skills/hunt-tls-network/SKILL.md) |
+| 64 | ✓ | [`skills/hunt-websocket/SKILL.md`](skills/hunt-websocket/SKILL.md) |
+| 65 | ✓ | [`skills/hunt-xss/SKILL.md`](skills/hunt-xss/SKILL.md) |
+| 66 | ✓ | [`skills/hunt-xxe/SKILL.md`](skills/hunt-xxe/SKILL.md) |
+| 67 | ✓ | [`skills/ios-redteam-pipeline/SKILL.md`](skills/ios-redteam-pipeline/SKILL.md) |
+| 68 | ✓ | [`skills/m365-entra-attack/SKILL.md`](skills/m365-entra-attack/SKILL.md) |
+| 69 | ✓ | [`skills/meme-coin-audit/SKILL.md`](skills/meme-coin-audit/SKILL.md) |
+| 70 | ✓ | [`skills/mid-engagement-ir-detection/SKILL.md`](skills/mid-engagement-ir-detection/SKILL.md) |
+| 71 | ✓ | [`skills/offensive-osint/README.md`](skills/offensive-osint/README.md) |
+| 72 | ✓ | [`skills/offensive-osint/references/breach-and-credentials.md`](skills/offensive-osint/references/breach-and-credentials.md) |
+| 73 | ✓ | [`skills/offensive-osint/references/dork-corpus.md`](skills/offensive-osint/references/dork-corpus.md) |
+| 74 | ✓ | [`skills/offensive-osint/references/helpers-and-automation.md`](skills/offensive-osint/references/helpers-and-automation.md) |
+| 75 | ✓ | [`skills/offensive-osint/references/identity-fabric.md`](skills/offensive-osint/references/identity-fabric.md) |
+| 76 | ✓ | [`skills/offensive-osint/references/people-osint.md`](skills/offensive-osint/references/people-osint.md) |
+| 77 | ✓ | [`skills/offensive-osint/references/probes-and-wordlists.md`](skills/offensive-osint/references/probes-and-wordlists.md) |
+| 78 | ✓ | [`skills/offensive-osint/references/recon-stack.md`](skills/offensive-osint/references/recon-stack.md) |
+| 79 | ✓ | [`skills/offensive-osint/references/recon-techniques.md`](skills/offensive-osint/references/recon-techniques.md) |
+| 80 | ✓ | [`skills/offensive-osint/references/saas-public-surfaces.md`](skills/offensive-osint/references/saas-public-surfaces.md) |
+| 81 | ✓ | [`skills/offensive-osint/references/secret-patterns.md`](skills/offensive-osint/references/secret-patterns.md) |
+| 82 | ✓ | [`skills/offensive-osint/references/secret-validators.md`](skills/offensive-osint/references/secret-validators.md) |
+| 83 | ✓ | [`skills/offensive-osint/references/sector-notes.md`](skills/offensive-osint/references/sector-notes.md) |
+| 84 | ✓ | [`skills/offensive-osint/references/severity-matrix.md`](skills/offensive-osint/references/severity-matrix.md) |
+| 85 | ✓ | [`skills/offensive-osint/references/specialized-osint.md`](skills/offensive-osint/references/specialized-osint.md) |
+| 86 | ✓ | [`skills/offensive-osint/references/tooling-install.md`](skills/offensive-osint/references/tooling-install.md) |
+| 87 | ✓ | [`skills/offensive-osint/scripts/assets/archivo-black.woff2`](skills/offensive-osint/scripts/assets/archivo-black.woff2) |
+| 88 | ✓ | [`skills/offensive-osint/scripts/assets/FONT-LICENSE.txt`](skills/offensive-osint/scripts/assets/FONT-LICENSE.txt) |
+| 89 | ✓ | [`skills/offensive-osint/scripts/dashboard.py`](skills/offensive-osint/scripts/dashboard.py) |
+| 90 | ✓ | [`skills/offensive-osint/scripts/h1_reference.py`](skills/offensive-osint/scripts/h1_reference.py) |
+| 91 | ✓ | [`skills/offensive-osint/scripts/secret_scan.py`](skills/offensive-osint/scripts/secret_scan.py) |
+| 92 | ✓ | [`skills/offensive-osint/SKILL.md`](skills/offensive-osint/SKILL.md) |
+| 93 | ✓ | [`skills/okta-attack/SKILL.md`](skills/okta-attack/SKILL.md) |
+| 94 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
+| 95 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
+| 96 | ✓ | [`skills/recon-scope-triage/SKILL.md`](skills/recon-scope-triage/SKILL.md) |
+| 97 | ✓ | [`skills/redteam-mindset/SKILL.md`](skills/redteam-mindset/SKILL.md) |
+| 98 | ✓ | [`skills/redteam-report-template/SKILL.md`](skills/redteam-report-template/SKILL.md) |
+| 99 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
+| 100 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
+| 101 | ✓ | [`skills/supply-chain-attack-recon/SKILL.md`](skills/supply-chain-attack-recon/SKILL.md) |
+| 102 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
+| 103 | ✓ | [`skills/vmware-vcenter-attack/SKILL.md`](skills/vmware-vcenter-attack/SKILL.md) |
+| 104 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
+| 105 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
 
 ---
 

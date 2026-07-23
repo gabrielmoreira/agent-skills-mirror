@@ -81,6 +81,61 @@ This per-run channel is distinct from `ObservabilityResource`: use resource
 fields for instance-level facts such as service, release, and deployment
 environment; use run metadata for dimensions that may change on every call.
 
+## Execution receipts
+
+`buildExecutionReceipt(result, trace?)` derives a compact record of what the
+runtime actually executed. It accepts an `AgentRunResult` or `TeamRunResult`
+and optional legacy `TraceEvent[]` data, performs no I/O, and never throws when
+execution fields are missing:
+
+```typescript
+import { buildExecutionReceipt, OpenMultiAgent, type TraceEvent } from '@open-multi-agent/core'
+
+const trace: TraceEvent[] = []
+const tracedOrchestrator = new OpenMultiAgent({
+  onTrace: (event) => trace.push(event),
+})
+const result = await tracedOrchestrator.runTeam(team, goal)
+const receipt = buildExecutionReceipt(result, trace)
+```
+
+The receipt reports `mode`, distinct `rolesExecuted`, start-time-based
+`executionOrder`, cross-role `dependencyEdges`, `independentRolesCount`, token
+usage, duration, and whether the record is `partial`. `independentReviewOccurred`
+is true only when at least two different worker roles executed and at least one
+task dependency connects two different roles. Parallel roles with no dependency
+edge do not count as an independent review chain. Coordinator planning entries
+(`coordinator` and `coordinator:*`) are excluded.
+
+Governance decisions must use these execution facts, not labels, claims, or
+review markers in model answer text. The builder never inspects answer text.
+For a standalone `AgentRunResult`, the optional trace supplies the agent name
+and run duration because those facts are not fields on that result type. When
+the available result or trace cannot establish a fact, the builder returns an
+empty array or `null` for that field and sets `partial: true`.
+
+### Post-execution governance conclusion
+
+Every OMA-produced `TeamRunResult` carries `governanceConclusion`:
+
+- `satisfied` — a `governanceIntent: 'required'` run executed every declared
+  role, every adjacent `requiredOrder` pair appears in the observed execution
+  order and is connected by a dependency path, and declarations with two or
+  more roles produced `independentReviewOccurred: true`;
+- `unsatisfied` — at least one of those required execution facts is absent;
+- `not-applicable` — governance was omitted, `none`, or `preferred`.
+
+The conclusion is computed by passing the result through
+`buildExecutionReceipt()` and then `evaluateGovernance()`. It is therefore a
+post-execution topology verdict, not a judgment about answer wording or quality.
+Review labels or approval markers in model output cannot satisfy the gate.
+
+`success` is intentionally independent: it continues to mean that the run
+finished without runtime errors. A run can be `success: true` and
+`governanceConclusion: 'unsatisfied'`; applications that require governance
+must gate on the latter field. In particular, multiple required roles without
+a dependency-backed review chain do not count as independent review.
+
 ## TraceRecord schema v2
 
 The core package exports the `TraceRecord` schema used by the internal

@@ -1,6 +1,6 @@
 ---
 name: openloomi
-description: "OpenLoomi runtime integration for Claude Code. Use when the user mentions OpenLoomi, wants to install/configure it, query their local memory via the Loomi runtime, change the Loomi Pet state, view LLM usage, run a one-shot task through the local runtime, or install the optional hooks that mirror Claude Code's lifecycle onto the Loomi Pet and auto-archive every Stop into OpenLoomi memory. Triggers: openloomi, loomi, /openloomi:*, local memory, RAG search, insights, loop, pet state."
+description: "OpenLoomi runtime integration for Claude Code. Use when the user mentions OpenLoomi, wants to install/configure it, query their local memory via the Loomi runtime, change the Loomi Pet state, view LLM usage, run a one-shot task through the local runtime, or install the optional hooks that mirror Claude Code's lifecycle onto the Loomi Pet and auto-archive every Stop into OpenLoomi memory. Triggers: openloomi, loomi, /openloomi:*, local memory, RAG search, insights, loop, pet state, openloomi tour, guided tour, walk me through openloomi, show me everything, 一条龙, 体验一下, 带我看一下."
 allowed-tools: Bash(node ${CLAUDE_PLUGIN_ROOT}/scripts/loomi-bridge.mjs *)
 ---
 

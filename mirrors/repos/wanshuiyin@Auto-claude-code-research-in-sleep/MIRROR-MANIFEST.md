@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default patterns, 0 followed patterns, 326 file(s) materialized.
+Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default patterns, 0 followed patterns, 328 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wanshuiyin/Auto-claude-code-research-in-sleep` — 26 default pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 326 |
+| Files         | 328 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -376,15 +376,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 315 | ✓ | [`skills/skills-codex/system-profile/SKILL.md`](skills/skills-codex/system-profile/SKILL.md) |
 | 316 | ✓ | [`skills/skills-codex/training-check/SKILL.md`](skills/skills-codex/training-check/SKILL.md) |
 | 317 | ✓ | [`skills/skills-codex/vast-gpu/SKILL.md`](skills/skills-codex/vast-gpu/SKILL.md) |
-| 318 | ✓ | [`skills/skills-codex/wiki-enrich/SKILL.md`](skills/skills-codex/wiki-enrich/SKILL.md) |
-| 319 | ✓ | [`skills/skills-codex/writing-systems-papers/SKILL.md`](skills/skills-codex/writing-systems-papers/SKILL.md) |
-| 320 | ✓ | [`skills/slides-polish/SKILL.md`](skills/slides-polish/SKILL.md) |
-| 321 | ✓ | [`skills/specification-writing/SKILL.md`](skills/specification-writing/SKILL.md) |
-| 322 | ✓ | [`skills/system-profile/SKILL.md`](skills/system-profile/SKILL.md) |
-| 323 | ✓ | [`skills/training-check/SKILL.md`](skills/training-check/SKILL.md) |
-| 324 | ✓ | [`skills/vast-gpu/SKILL.md`](skills/vast-gpu/SKILL.md) |
-| 325 | ✓ | [`skills/wiki-enrich/SKILL.md`](skills/wiki-enrich/SKILL.md) |
-| 326 | ✓ | [`skills/writing-systems-papers/SKILL.md`](skills/writing-systems-papers/SKILL.md) |
+| 318 | ✓ | [`skills/skills-codex/web-debug-search/SKILL.md`](skills/skills-codex/web-debug-search/SKILL.md) |
+| 319 | ✓ | [`skills/skills-codex/wiki-enrich/SKILL.md`](skills/skills-codex/wiki-enrich/SKILL.md) |
+| 320 | ✓ | [`skills/skills-codex/writing-systems-papers/SKILL.md`](skills/skills-codex/writing-systems-papers/SKILL.md) |
+| 321 | ✓ | [`skills/slides-polish/SKILL.md`](skills/slides-polish/SKILL.md) |
+| 322 | ✓ | [`skills/specification-writing/SKILL.md`](skills/specification-writing/SKILL.md) |
+| 323 | ✓ | [`skills/system-profile/SKILL.md`](skills/system-profile/SKILL.md) |
+| 324 | ✓ | [`skills/training-check/SKILL.md`](skills/training-check/SKILL.md) |
+| 325 | ✓ | [`skills/vast-gpu/SKILL.md`](skills/vast-gpu/SKILL.md) |
+| 326 | ✓ | [`skills/web-debug-search/SKILL.md`](skills/web-debug-search/SKILL.md) |
+| 327 | ✓ | [`skills/wiki-enrich/SKILL.md`](skills/wiki-enrich/SKILL.md) |
+| 328 | ✓ | [`skills/writing-systems-papers/SKILL.md`](skills/writing-systems-papers/SKILL.md) |
 
 ---
 

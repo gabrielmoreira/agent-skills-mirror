@@ -1,6 +1,6 @@
 # AERS — README-zh-CN (DEPRECATED · 2026-07-19)
 
-> **本文件已弃用。** 自 2026-07-19 起，中文 README 内容（含 **73 行核心 Skills 总表**、**"从 idea 到论文"完整流水线叙事**、⭐ 7 个 Stanford REAP × CoPaper.AI 自研 skill 主干）已并入 GitHub 默认入口 [**`README.md`**](README.md)。
+> **本文件已弃用。** 自 2026-07-19 起，中文 README 内容（含 **74 行核心 Skills 总表**、**"从 idea 到论文"完整流水线叙事**、⭐ 7 个 Stanford REAP × CoPaper.AI 自研 skill 主干）已并入 GitHub 默认入口 [**`README.md`**](README.md)。
 >
 > 本文件仅保留为**向后兼容的占位** —— GitHub 会自动重定向访问 `#README-zh-CN` 的旧链接，但读者会看到这个弃用提示。
 
@@ -13,7 +13,7 @@
 | 繁體中文 | [`README-zh-TW.md`](README-zh-TW.md) |
 | 日本語 | [`README-ja.md`](README-ja.md) |
 | 한국어 | [`README-ko.md`](README-ko.md) |
-| 🌟 **中文默认 README**（含 73 行总表 + 端到端流水线） | [**`README.md`**](README.md) |
+| 🌟 **中文默认 README**（含 74 行总表 + 端到端流水线） | [**`README.md`**](README.md) |
 | 📘 中文详细正文（按用途分组 / 旗舰流水线 / 信任面 / 浏览全景 / 引用） | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
 | 🇬🇧 English | [`README-en.md`](README-en.md) |
 | 🇹🇼 繁體中文 | [`README-zh-TW.md`](README-zh-TW.md) |
@@ -56,13 +56,13 @@
 </div>
 
 > ### 🇨🇳 **请阅读 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) 获取完整中文 README。**
-> ### 🚀 Open the **[Skill Search →](docs/search.html)** to filter all 1,151 skills. The 5-minute tour (`make quickstart`) prints the same picture in your terminal.
+> ### 🚀 Open the **[Skill Search →](docs/search.html)** to filter all 1,094 skills. The 5-minute tour (`make quickstart`) prints the same picture in your terminal.
 
 ---
 
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 [![Validate catalog](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml/badge.svg)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml)
-[![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
+[![Security audit: baseline 52/52 CLEAN](https://img.shields.io/badge/security%20audit-baseline%2052%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
 [![Rigor coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrycewang-stanford%2FAuto-Empirical-Research-Skills%2Fmain%2Fdocs%2Fbadges%2Frigor-coverage.json)](docs/RIGOR_COVERAGE.md)
 
 ---

@@ -119,21 +119,26 @@ nacos.plugin.visibility.enabled=true
 ```
 
 该开关是最外层运行时 gate。值为 `false` 时，无论统一插件 state 为何，任何 visibility
-实现都不得执行。核心插件管理器不会把该总开关转换为实现级 state。实现的初始 state 先由
-兼容选择配置 `nacos.plugin.visibility.type` 决定，再由标准实现开关
+实现都不得执行。核心插件管理器不会把该总开关转换为实现级 state。该开关在启动时为 false
+还会延迟 visibility 实现发现；后续服务配置刷新将其改为 true 时，
+必须先完成一次性 discovery、持久化 state 恢复和统一配置 apply，再提供 visibility service。
+实现完成 discovery 后再次关闭总开关不会卸载实例，仍由最外层 gate 阻止执行。
+
+实现的初始 state 先由兼容选择配置 `nacos.plugin.visibility.type` 决定，再由标准实现开关
 `nacos.plugin.visibility.{serviceName}.enabled` 覆盖；持久化 state 优先于二者，但不能绕过
 插件族总开关。实现级运行时变更通过插件管理 API 完成。
 
-内置 `visibility:nacos` 没有私有配置，不实现 `PluginConfigSpec`，并以
-`configurable=false` 暴露。外部实现可以拥有以下前缀的配置：
+`VisibilityService` 统一继承 `PluginConfigSpec`。内置 `visibility:nacos` 没有私有配置、
+不声明 definitions，并以 `configurable=false` 暴露。外部实现可以拥有以下前缀的配置：
 
 ```properties
 nacos.plugin.visibility.{serviceName}.{itemKey}
 ```
 
-未实现 `PluginConfigSpec` 的历史实现仍通过 `VisibilityService.init(Properties)` 一次性接收
-实现本地属性。使用非空历史属性时，服务端记录迁移告警，但不得打印配置值。对于实现了
-`PluginConfigSpec` 的实现，Visibility manager 不得再调用历史回调；核心插件管理器统一的
+按旧版 SPI 编译的历史实现，以及没有声明 definitions 的实现，仍通过
+`VisibilityService.init(Properties)` 一次性接收实现本地属性。使用非空历史属性时，服务端
+记录迁移告警，但不得打印配置值。对于返回 `isConfigurable()=true` 的实现，Visibility
+manager 不得再调用历史回调；核心插件管理器统一的
 `applyConfig` 生命周期是唯一配置应用入口。此类实现应声明自身 definitions，并获得统一的
 source、元数据、脱敏和更新语义。
 

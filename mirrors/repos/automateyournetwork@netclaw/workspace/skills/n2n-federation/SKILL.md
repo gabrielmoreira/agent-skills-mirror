@@ -134,6 +134,38 @@ owning peer must have granted your claw access to the collection (the grant is t
 human-in-the-loop control point). Advertise/hide your own collections with
 `n2n_set_visibility(item_type="knowledge", item_name="<collection>", ...)`.
 
+## Knowledge replication — copy a peer's corpus into your own RAG (feature 065)
+
+This is a **different, heavier action from knowledge query above** — query never
+moves content (only the answer travels); replication copies the actual vectors,
+chunk text, and metadata into your own local Chroma store, with no re-embedding.
+Only reach for it when the operator actually wants a standing local/offline copy
+(e.g. "replicate John's book so I can answer about it without calling out every
+time") — for a one-off question, use `n2n_knowledge_query` instead.
+
+1. Check the peer's card for the collection's `embedding_model` (feature 065
+   extends the `knowledge` array with this field) and confirm it matches your
+   own RAG's configured embedder — a mismatch means replication would produce
+   garbage vectors and is refused before any transfer anyway.
+2. Replication requires a **`knowledge_replica` grant**, distinct from and in
+   addition to the `knowledge` (query-only) grant — holding one does not grant
+   the other. The peer operator grants it explicitly
+   (`n2n_grant(peer, "knowledge_replica", collection_id)`).
+3. `n2n_replicate(peer, collection_id)` triggers the copy and returns a
+   `task_id` **immediately** — it does not block. Poll with the existing
+   `n2n_task_status(task_id)` / fetch with `n2n_task_result(task_id)`, same as
+   any other delegated task, until `state` is `completed` or `failed`.
+4. Once complete, the replica is queryable through your own local RAG exactly
+   like a locally-authored collection — no further federated round trip
+   needed. It is visibly marked with its source peer/collection/timestamp in
+   `rag_list(kind="replicas")`, and is never re-advertised as your own
+   knowledge or replicated onward to a third peer.
+5. If the source collection changes later, `n2n_replicate_resync(peer,
+   collection_id)` refreshes it (full replace, same async polling pattern).
+   `n2n_replicate_delete(peer, collection_id)` removes a replica you no longer
+   want — revoking the grant only blocks *future* replication/re-sync, it does
+   not delete data already copied.
+
 ## iN2N — internal federation, a "risk" of claws (feature 056)
 
 Everything above is **eN2N** (external N2N): federating with *other operators'*
@@ -174,6 +206,33 @@ Profiles are derived from the installed catalog by `scripts/in2n-profiles.py`
 (cml, pyats, ipfabric, forward, itential, viz, security). A member repeatedly
 failing auth/health is **auto-quarantined** and surfaced to the operator.
 
+## NetClaw Mobile — an edge node in the risk (feature 066)
+
+A phone is a member of the risk too, but of a distinct **`node_type='edge'`**
+— it carries no agent runtime, no skills, and cannot reach BGP/eN2N/inventory
+methods at all (a dedicated, narrower WebSocket transport and handler map).
+This spec's slice is enrollment + Border-to-phone push only; asking the
+Border something *from* the phone is feature 067's command channel, and
+camera/mic/biometric capture is feature 068 — don't reach for those here.
+
+1. **Enroll**: on the Border, `netclaw risk token --edge [label]` renders a
+   scannable QR (no MCP tool for this — it's an operator/CLI action). The
+   phone scans it, verifies the Border's certified domain matches before
+   dialing at all, and completes the same possession-proof handshake agent
+   members use — just over `wss://` instead of raw TCP.
+2. **Push**: `n2n_notify_phone(peer, content, kind="text"|"voice"|"image")` is
+   the ONLY way content reaches the phone — reachable identically from Slack,
+   the TUI, the HUD, or your own reasoning. Never mirror ordinary channel
+   traffic to a phone; only call this when the operator explicitly wants
+   something delivered there. If the device is disconnected, delivery falls
+   back to a platform push notification automatically.
+3. **Health**: the phone satisfies the same member-health guarantee agent
+   members get from `member_heartbeat`, via a different, built-in mechanism
+   (periodic heartbeat + on-demand self-status) — nothing to call for this,
+   it's automatic once enrolled.
+4. **Revoke**: the existing `n2n_member_remove(member_id)` unenrolls a phone
+   exactly like any other member — no separate mechanism.
+
 ## Tools used
 
 US1 capability: `n2n_status`, `n2n_consent`, `n2n_kill`, `n2n_peer_capabilities`,
@@ -185,6 +244,8 @@ US1 capability: `n2n_status`, `n2n_consent`, `n2n_kill`, `n2n_peer_capabilities`
 056 iN2N (risk): `n2n_risk_status`, `n2n_member_list`, `n2n_member_health`,
 `n2n_member_add`, `n2n_enroll_token`, `n2n_member_remove`, `n2n_route`.
 057 production posture: `n2n_posture`, `n2n_faults`.
+066 NetClaw Mobile edge node: `n2n_notify_phone` (enrollment itself is
+`netclaw risk token --edge`, a CLI action, not an MCP tool).
 
 ## Operator heartbeat — fault isolation (057)
 

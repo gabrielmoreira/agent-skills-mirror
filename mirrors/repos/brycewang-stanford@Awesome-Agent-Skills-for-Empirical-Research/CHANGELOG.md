@@ -149,7 +149,7 @@ files were removed from `demo-notebooks/`.
   ([`docs/tools-search.html`](docs/tools-search.html)).
 - Every entry was verified against its upstream repo/CRAN/SSC page (license + activity
   snapshot). No third-party executable code is vendored — `tools/` is a metadata index.
-- Curation notes, method, and backlog: [`docs/EMPIRICAL_TOOLS_2026-06.md`](docs/EMPIRICAL_TOOLS_2026-06.md).
+- Curation notes, method, and backlog: [`docs/archive/EMPIRICAL_TOOLS_2026-06.md`](docs/archive/EMPIRICAL_TOOLS_2026-06.md).
 - Linked the module from both READMEs (numbers table + a dedicated "Browse the
   landscape" subsection).
 

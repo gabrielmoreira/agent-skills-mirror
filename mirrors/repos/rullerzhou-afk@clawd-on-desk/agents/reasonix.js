@@ -7,6 +7,7 @@ module.exports = {
   id: "reasonix",
   name: "Reasonix",
   processNames: { win: ["reasonix.exe"], mac: ["reasonix"], linux: ["reasonix"] },
+  startupRecoveryProcessNames: { win: ["reasonix.exe"], mac: ["reasonix"], linux: ["reasonix"] },
   eventSource: "hook",
   eventMap: {
     SessionStart: "idle",

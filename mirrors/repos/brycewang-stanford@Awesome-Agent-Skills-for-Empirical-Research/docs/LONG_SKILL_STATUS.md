@@ -1,6 +1,6 @@
 <!-- Generated companion to LONG_SKILL_SPLIT_PLAN.md. Source of truth is the
 catalog generator; this file is hand-curated. Run `make catalog` and
-re-run `python3 scripts/build-skill-status.py` (if installed) or copy the
+re-run `make catalog` and read `summary.oversized_skill_files_over_500_lines` in `catalog/skills.json` (there is no dedicated build-skill-status script), or copy the
 output of the snippet in §1 to refresh. -->
 
 # Long-Skill Status
@@ -21,7 +21,7 @@ file adds the **operational** column (what is being done about it).
 
 ## 0. Decision log
 
-**2026-07-08 — Confirmed: no mass in-repo split.** An audit re-examined all 91
+**2026-07-08 — Confirmed: no mass in-repo split.** An audit re-examined all 91 (83 as of 2026-07-22, after the ARIS codex-port catalog exclusion)
 `SKILL.md` files over 500 lines against provenance:
 
 - **24** already ship a `references/` directory (progressive disclosure) and are

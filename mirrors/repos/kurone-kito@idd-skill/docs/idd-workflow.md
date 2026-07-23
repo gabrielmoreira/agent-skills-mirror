@@ -233,28 +233,139 @@ classification above does not warn against on its own:
 These are adopter-facing model-selection and prompting heuristics, not
 a new requirement on this repository's own instructions or tooling.
 
+### Lite instruction profile opt-in
+
+The guardrails above assume a session already knows to look for a
+condensed instruction bundle. This subsection records how a
+repository declares that opt-in and how a session resolves it, so the
+convention reads as part of the tier guidance above rather than a
+parallel mechanism.
+
+**Opt-in signal (recorded convention).** A repository declares its
+lite-profile choice with an `.github/idd/config.json` policy field,
+`instructionProfile`, following the same repository-local
+policy-field pattern as `mergePolicy`, `reviewPolicy`, and the other
+fields in
+[Repository-local IDD policy](customization.md#repository-local-idd-policy):
+
+- `"standard"` (default; equivalent to the field being absent) —
+  every phase uses its standard
+  `.github/instructions/idd-*.instructions.md` file, unconditionally.
+- `"lite"` — a lightweight-tier session prefers the condensed
+  `.github/instructions/lite/idd-*-lite.instructions.md` bundle for
+  any phase that has shipped one, and falls back to the standard file
+  for every phase that has not (see the mapping and fallback below).
+
+A machine-readable config field is a better fit than a routing note
+folded into `CLAUDE.md` / `AGENTS.md` / `GEMINI.md` prose. It matches
+the lite-profile design's
+[content principle 4](weak-model-lite-profile-design.md#content-principles):
+mechanical, fail-closed control surfaces carry the safety weight for
+this tier, not prose judgment. A prose routing note is itself a
+cross-file reference a weak-adherence session could drop — exactly
+the failure mode the lite profile exists to route around.
+
+**Recorded convention, not yet wired.** `instructionProfile` is not
+yet part of the published policy schema
+(<https://kurone-kito.github.io/idd-skill/schemas/policy.schema.json>,
+whose root object rejects unknown properties), and no phase file or
+the routing table in `idd-overview-core.instructions.md` reads it
+today. This subsection records the intended shape for a future issue
+to add the schema field and the routing read against. **Do not set the
+field yet**: `.github/idd/config.json` is already validated against
+that schema by `idd-doctor` (`node scripts/idd-doctor.mjs`), and the
+schema's root object's `additionalProperties: false` means adding
+`instructionProfile` today fails that validation outright — it is not
+merely inert. Until the schema follow-up lands, point a lite-tier
+session at the right files with an explicit operator instruction, or
+have it open the phase files below manually.
+
+**Phase → lite file mapping** (live as of this writing — re-check
+`.github/instructions/lite/` before trusting this table to stay
+current):
+
+| Phase                    | Standard file                       | Lite file                                     |
+| ------------------------ | ----------------------------------- | --------------------------------------------- |
+| A5 Claim                 | `idd-claim.instructions.md`         | `lite/idd-claim-lite.instructions.md`         |
+| B1-C6 Work               | `idd-work.instructions.md`          | `lite/idd-work-lite.instructions.md`          |
+| D1-D4 PR-submit          | `idd-pr-submit.instructions.md`     | `lite/idd-pr-submit-lite.instructions.md`     |
+| E9-E15 Review-fix        | `idd-review-fix.instructions.md`    | `lite/idd-review-fix-lite.instructions.md`    |
+| F1-F2 helper-read subset | `idd-pre-merge.instructions.md`     | `lite/idd-pre-merge-lite.instructions.md`     |
+| F2.5 handoff-stop        | `idd-merge-handoff.instructions.md` | `lite/idd-merge-handoff-lite.instructions.md` |
+| Resume                   | `idd-resume.instructions.md`        | `lite/idd-resume-lite.instructions.md`        |
+| Resume-stall             | `idd-resume-stall.instructions.md`  | `lite/idd-resume-stall-lite.instructions.md`  |
+
+The F1-F2 and F2.5 rows cover a **partial** slice of their standard
+files only, per the design's phase scoping: the lite F1-F2 file
+covers just F1's read-only branch check and reading the
+`pre-merge-readiness` helper verdict, never the standard file's
+written prose fallback; the lite F2.5 file covers just the
+handoff-stop outcome, never autonomous-merge routing. Neither falls
+back to the standard file for its excluded sub-case within the same
+phase — both instead treat that sub-case as a stop-and-ask condition
+(a broken/missing helper for F1-F2; anything but the handoff-stop
+outcome for F2.5) — a nuance the table above cannot show by itself.
+
+`idd-ci.instructions.md` and `idd-advisory-wait.instructions.md` are
+shared helper files, not phases of their own, so they never appear as
+a row in the table above.
+[#1657](https://github.com/kurone-kito/idd-skill/issues/1657) shipped
+a standalone lite sibling for each instead —
+`lite/idd-ci-lite.instructions.md` and
+`lite/idd-advisory-wait-lite.instructions.md` — that a lite caller
+references one hop away (content principle 3), replacing the earlier
+plan to restate every load-bearing rule from the full-size file
+inline, which is content principle 1's default for a lite file with
+no in-scope sibling to reference. The advisory-wait lite sibling
+covers only the
+**E14-caller subset**: F2's prose fallback and F3's merge-time call
+site stay excluded, matching the design's split-by-caller scoping for
+this file in
+[Phase scoping](weak-model-lite-profile-design.md#phase-scoping).
+
+**Explicit fallback.** Every phase without a row above falls back to
+its standard instruction file — this is the documented default, not
+an implied gap. Two different reasons a phase can lack a lite file:
+
+- **In scope per design, not yet tracked**: E1-E3 review-snapshot is
+  listed in scope in `docs/weak-model-lite-profile-design.md`'s
+  [phase scoping](weak-model-lite-profile-design.md#phase-scoping),
+  but the lite-execution-profile roadmap's (#1539) decomposition list
+  has no corresponding follow-up issue for it as of this writing.
+- **Permanently excluded by design**: A0-A4 Discover, A4.5
+  Suitability, E4-E8 Review-triage, and F3-F5 Merge stay on the
+  standard file always — the design's
+  [non-goals](weak-model-lite-profile-design.md#target-model-class-and-non-goals)
+  and phase-scoping table exclude open-ended selection, judgment-heavy
+  classification, and autonomous merge from the condensed profile
+  entirely, regardless of roadmap progress.
+
+A lite-opted-in session encountering any of these cases reads the
+standard file the same way a standard-tier session would.
+
 ## IDD file map
 
-| File                                                       | Role                                                                                                            |
-| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `.github/instructions/idd-overview-core.instructions.md`   | Shared definitions, command sets, routing table, critique-pass mapping                                          |
-| `.github/instructions/idd-discover.instructions.md`        | A0-T–A4.5: find a viable issue, classify roadmap vs. leaf nodes during traversal, run suitability, and hand off |
-| `.github/instructions/idd-roadmap-audit.instructions.md`   | A1.5: audit roadmap completion, including bottom-up recursive roadmap closure, before A2                        |
-| `.github/instructions/idd-claim.instructions.md`           | A5: run claim pre-checks and claim verification                                                                 |
-| `.github/instructions/idd-work.instructions.md`            | B1-B3 + C1-C6: create worktree, plan, implement, and self-review                                                |
-| `.github/instructions/idd-pr-submit.instructions.md`       | D1-D4: rebase, validate, push, open PR, and wait for CI                                                         |
-| `.github/instructions/idd-ci.instructions.md`              | D4/E15 helper: shared CI polling helper used by later phases                                                    |
-| `.github/instructions/idd-advisory-wait.instructions.md`   | AW1-AW5 helper: shared Copilot advisory-wait protocol (E14, F2, F3)                                             |
-| `.github/instructions/idd-review-snapshot.instructions.md` | E1–E3: fetch activity snapshot, run critique, check if ReviewItems_snapshot is empty                            |
-| `.github/instructions/idd-review-triage.instructions.md`   | E4–E8: classify items, score, record dispositions, and run E-phase branch-sync check before F-phase             |
-| `.github/instructions/idd-review-fix.instructions.md`      | E9-E15: fix accepted review items and push follow-up commits (merge-from-main, not rebase)                      |
-| `.github/instructions/idd-pre-merge.instructions.md`       | F1: final read-only branch-state check; F2: verify all pre-merge conditions                                     |
-| `.github/instructions/idd-merge-handoff.instructions.md`   | F2.5: resolve merge-policy handoff vs autonomous merge routing                                                  |
-| `.github/instructions/idd-merge.instructions.md`           | F3–F5: execute the merge, clean up, and loop back to discover                                                   |
-| `.github/instructions/idd-resume.instructions.md`          | Resume Step 0-3: route crash, stalled, stale-takeover, or clean continuation                                    |
-| `.github/instructions/idd-resume-stall.instructions.md`    | Resume S1-S5: handle stalled-session recovery with a dedicated safety gate                                      |
-| `docs/idd-review-policy-profiles.md`                       | PR review policy profiles and customization surfaces                                                            |
-| `docs/idd-comment-minimization.md`                         | Live status digest contract and post-merge comment minimization policy                                          |
+| File                                                       | Role                                                                                                                                                                                            |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.github/instructions/idd-overview-core.instructions.md`   | Shared definitions, command sets, routing table, critique-pass mapping                                                                                                                          |
+| `.github/instructions/idd-discover.instructions.md`        | A0-T–A4.5: find a viable issue, classify roadmap vs. leaf nodes during traversal, run suitability, and hand off                                                                                 |
+| `.github/instructions/idd-roadmap-audit.instructions.md`   | A1.5: audit roadmap completion, including bottom-up recursive roadmap closure, before A2                                                                                                        |
+| `.github/instructions/idd-claim.instructions.md`           | A5: run claim pre-checks and claim verification                                                                                                                                                 |
+| `.github/instructions/idd-work.instructions.md`            | B1-B3 + C1-C6: create worktree, plan, implement, and self-review                                                                                                                                |
+| `.github/instructions/idd-pr-submit.instructions.md`       | D1-D4: rebase, validate, push, open PR, and wait for CI                                                                                                                                         |
+| `.github/instructions/idd-ci.instructions.md`              | D4/E15 helper: shared CI polling helper used by later phases                                                                                                                                    |
+| `.github/instructions/idd-advisory-wait.instructions.md`   | AW1-AW5 helper: shared Copilot advisory-wait protocol (E14, F2, F3)                                                                                                                             |
+| `.github/instructions/idd-review-snapshot.instructions.md` | E1–E3: fetch activity snapshot, run critique, check if ReviewItems_snapshot is empty                                                                                                            |
+| `.github/instructions/idd-review-triage.instructions.md`   | E4–E8: classify items, score, record dispositions, and run E-phase branch-sync check before F-phase                                                                                             |
+| `.github/instructions/idd-review-fix.instructions.md`      | E9-E15: fix accepted review items and push follow-up commits (merge-from-main, not rebase)                                                                                                      |
+| `.github/instructions/idd-pre-merge.instructions.md`       | F1: final read-only branch-state check; F2: verify all pre-merge conditions                                                                                                                     |
+| `.github/instructions/idd-merge-handoff.instructions.md`   | F2.5: resolve merge-policy handoff vs autonomous merge routing                                                                                                                                  |
+| `.github/instructions/idd-merge.instructions.md`           | F3–F5: execute the merge, clean up, and loop back to discover                                                                                                                                   |
+| `.github/instructions/idd-resume.instructions.md`          | Resume Step 0-3: route crash, stalled, stale-takeover, or clean continuation                                                                                                                    |
+| `.github/instructions/idd-resume-stall.instructions.md`    | Resume S1-S5: handle stalled-session recovery with a dedicated safety gate                                                                                                                      |
+| `.github/instructions/lite/idd-*-lite.instructions.md`     | Condensed weak-model-tier phase files for phases with a shipped lite bundle; see [Lite instruction profile opt-in](#lite-instruction-profile-opt-in) for the mapping and standard-file fallback |
+| `docs/idd-review-policy-profiles.md`                       | PR review policy profiles and customization surfaces                                                                                                                                            |
+| `docs/idd-comment-minimization.md`                         | Live status digest contract and post-merge comment minimization policy                                                                                                                          |
 
 ## ReviewItems_snapshot lifecycle
 
@@ -508,6 +619,22 @@ Running this variant safely requires:
   never as something to trust or silently discard; then delegate a fresh
   subagent with a resume-specific briefing rather than resuming the dead
   worker's own context.
+- **Independently verify a worker's reported terminal outcome before
+  trusting it.** A worker's final-turn text describes what it
+  _attempted_, not proof of what actually landed on the forge. Before
+  dispatching the next worker or otherwise acting on a reported "merged"
+  outcome, confirm live GitHub state directly — for example
+  `gh pr view <n> --json state,mergedAt` and
+  `gh issue view <n> --json state,closedAt` — rather than trusting the
+  worker's own narrative.
+- **Check for dangling or broken state after an ambiguous worker
+  dispatch.** When a worker's turn ends without a clean final report
+  (stalled, killed, timed out) — especially if its last visible action
+  was a mutating step such as an F3 merge-execution command — check for
+  a PR left in a failed-merge-attempt state (e.g.
+  `gh pr view <n> --json mergeable,mergeStateStatus`) or an orphaned
+  claim before dispatching further workers, rather than assuming success
+  or failure either way.
 
 ## Live Status Digests
 
@@ -776,3 +903,25 @@ subagent-capable ones — rather than being conditioned on a runtime
 self-classifying as "no-subagent". Uniform application keeps the gate
 deterministic and avoids relying on fragile runtime self-detection that
 a weak model could get wrong.
+
+### Mutation / write-side helper lens
+
+When the diff under critique implements a helper that **mutates GitHub
+state, mutates git state, or performs a merge** (read-only helpers are
+out of scope), also apply this lens — each check below targets a gap
+class that a clean general critique repeatedly missed and that later
+review then surfaced one finding per round:
+
+- **Fail-closed inputs**: guards use strict checks (`=== true`, explicit
+  pattern/enum validation) so a non-boolean, empty, missing, or malformed
+  value blocks the mutation rather than passing it.
+- **Validate/execute scope parity**: the repo, identity, and HEAD the
+  gate validates are the same ones the mutation runs against — no split
+  between a read-side collector's scope and the executed `gh` / git
+  command; reject ambiguous partial scoping.
+- **Unsafe-output suppression**: a not-ready or invalid verdict never
+  emits a copy-pasteable command bound to an unvalidated value.
+- **Schema strictness parity**: output schemas match the values the
+  helper actually produces and mirror sibling-helper strictness (SHA
+  patterns, enums), so the published contract is no looser than the
+  runtime.

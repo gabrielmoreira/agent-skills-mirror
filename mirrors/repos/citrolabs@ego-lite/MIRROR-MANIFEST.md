@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `citrolabs/ego-lite` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `citrolabs/ego-lite` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `citrolabs/ego-lite` — 26 default patterns, 0 followed patterns, 17 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,8 +74,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills/ego-browser/learnings/x-com/tools/search-users.js`](skills/ego-browser/learnings/x-com/tools/search-users.js) |
 | 14 | ✓ | [`skills/ego-browser/learnings/x-com/tools/timeline.js`](skills/ego-browser/learnings/x-com/tools/timeline.js) |
 | 15 | ✓ | [`skills/ego-browser/references/install.md`](skills/ego-browser/references/install.md) |
-| 16 | ✓ | [`skills/ego-browser/scripts/install.sh`](skills/ego-browser/scripts/install.sh) |
-| 17 | ✓ | [`skills/ego-browser/SKILL.md`](skills/ego-browser/SKILL.md) |
+| 16 | ✓ | [`skills/ego-browser/references/video.md`](skills/ego-browser/references/video.md) |
+| 17 | ✓ | [`skills/ego-browser/scripts/install.sh`](skills/ego-browser/scripts/install.sh) |
+| 18 | ✓ | [`skills/ego-browser/SKILL.md`](skills/ego-browser/SKILL.md) |
 
 ---
 

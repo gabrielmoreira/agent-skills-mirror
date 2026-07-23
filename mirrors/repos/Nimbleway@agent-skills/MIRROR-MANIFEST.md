@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Nimbleway/agent-skills` — 26 default patterns, 0 followed patterns, 131 file(s) materialized.
+Mirror of `Nimbleway/agent-skills` — 26 default patterns, 0 followed patterns, 122 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Nimbleway/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 131 |
+| Files         | 122 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -161,35 +161,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 100 | ✓ | [`skills/seo/seo-intel/references/wf-rank-tracker.md`](skills/seo/seo-intel/references/wf-rank-tracker.md) |
 | 101 | ✓ | [`skills/seo/seo-intel/references/wf-site-audit.md`](skills/seo/seo-intel/references/wf-site-audit.md) |
 | 102 | ✓ | [`skills/seo/seo-intel/SKILL.md`](skills/seo/seo-intel/SKILL.md) |
-| 103 | ✓ | [`skills/web-search-tools/nimble-agent-builder/README.md`](skills/web-search-tools/nimble-agent-builder/README.md) |
-| 104 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/agent-api-reference.md`](skills/web-search-tools/nimble-agent-builder/references/agent-api-reference.md) |
-| 105 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/batch-patterns.md`](skills/web-search-tools/nimble-agent-builder/references/batch-patterns.md) |
-| 106 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/error-recovery.md`](skills/web-search-tools/nimble-agent-builder/references/error-recovery.md) |
-| 107 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/generate-update-and-publish.md`](skills/web-search-tools/nimble-agent-builder/references/generate-update-and-publish.md) |
-| 108 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/rest-api-patterns.md`](skills/web-search-tools/nimble-agent-builder/references/rest-api-patterns.md) |
-| 109 | ✓ | [`skills/web-search-tools/nimble-agent-builder/references/sdk-patterns.md`](skills/web-search-tools/nimble-agent-builder/references/sdk-patterns.md) |
-| 110 | ✓ | [`skills/web-search-tools/nimble-agent-builder/rules/nimble-agent-builder.mdc`](skills/web-search-tools/nimble-agent-builder/rules/nimble-agent-builder.mdc) |
-| 111 | ✓ | [`skills/web-search-tools/nimble-agent-builder/rules/setup.md`](skills/web-search-tools/nimble-agent-builder/rules/setup.md) |
-| 112 | ✓ | [`skills/web-search-tools/nimble-agent-builder/SKILL.md`](skills/web-search-tools/nimble-agent-builder/SKILL.md) |
-| 113 | ✓ | [`skills/web-search-tools/nimble-web-expert/README.md`](skills/web-search-tools/nimble-web-expert/README.md) |
-| 114 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/batch-patterns.md`](skills/web-search-tools/nimble-web-expert/references/batch-patterns.md) |
-| 115 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/error-handling.md`](skills/web-search-tools/nimble-web-expert/references/error-handling.md) |
-| 116 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-agents/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-agents/SKILL.md) |
-| 117 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-crawl/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-crawl/SKILL.md) |
-| 118 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-actions.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-actions.md) |
-| 119 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-investigation.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-investigation.md) |
-| 120 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/network-capture.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/network-capture.md) |
-| 121 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/parsing-schema.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/parsing-schema.md) |
-| 122 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/SKILL.md) |
-| 123 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-map/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-map/SKILL.md) |
-| 124 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-search/search-focus-modes.md`](skills/web-search-tools/nimble-web-expert/references/nimble-search/search-focus-modes.md) |
-| 125 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-search/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-search/SKILL.md) |
-| 126 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-tasks/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-tasks/SKILL.md) |
-| 127 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/recipes.md`](skills/web-search-tools/nimble-web-expert/references/recipes.md) |
-| 128 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/nimble-web-expert.mdc`](skills/web-search-tools/nimble-web-expert/rules/nimble-web-expert.mdc) |
-| 129 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/output.md`](skills/web-search-tools/nimble-web-expert/rules/output.md) |
-| 130 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/setup.md`](skills/web-search-tools/nimble-web-expert/rules/setup.md) |
-| 131 | ✓ | [`skills/web-search-tools/nimble-web-expert/SKILL.md`](skills/web-search-tools/nimble-web-expert/SKILL.md) |
+| 103 | ✓ | [`skills/web-search-tools/nimble-web-expert/README.md`](skills/web-search-tools/nimble-web-expert/README.md) |
+| 104 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/batch-patterns.md`](skills/web-search-tools/nimble-web-expert/references/batch-patterns.md) |
+| 105 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/error-handling.md`](skills/web-search-tools/nimble-web-expert/references/error-handling.md) |
+| 106 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-agents/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-agents/SKILL.md) |
+| 107 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-crawl/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-crawl/SKILL.md) |
+| 108 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract-templates/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract-templates/SKILL.md) |
+| 109 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-actions.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-actions.md) |
+| 110 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-investigation.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/browser-investigation.md) |
+| 111 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/network-capture.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/network-capture.md) |
+| 112 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/parsing-schema.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/parsing-schema.md) |
+| 113 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-extract/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-extract/SKILL.md) |
+| 114 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-map/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-map/SKILL.md) |
+| 115 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-search/search-focus-modes.md`](skills/web-search-tools/nimble-web-expert/references/nimble-search/search-focus-modes.md) |
+| 116 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-search/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-search/SKILL.md) |
+| 117 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/nimble-tasks/SKILL.md`](skills/web-search-tools/nimble-web-expert/references/nimble-tasks/SKILL.md) |
+| 118 | ✓ | [`skills/web-search-tools/nimble-web-expert/references/recipes.md`](skills/web-search-tools/nimble-web-expert/references/recipes.md) |
+| 119 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/nimble-web-expert.mdc`](skills/web-search-tools/nimble-web-expert/rules/nimble-web-expert.mdc) |
+| 120 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/output.md`](skills/web-search-tools/nimble-web-expert/rules/output.md) |
+| 121 | ✓ | [`skills/web-search-tools/nimble-web-expert/rules/setup.md`](skills/web-search-tools/nimble-web-expert/rules/setup.md) |
+| 122 | ✓ | [`skills/web-search-tools/nimble-web-expert/SKILL.md`](skills/web-search-tools/nimble-web-expert/SKILL.md) |
 
 ---
 

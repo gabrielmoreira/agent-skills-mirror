@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gosom/google-maps-scraper` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `gosom/google-maps-scraper` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gosom/google-maps-scraper` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`skills/google-maps-scraper/SKILL.md`](skills/google-maps-scraper/SKILL.md) |
+| 2 | ✓ | [`skills/google-maps-scraper/references/advanced-coverage.md`](skills/google-maps-scraper/references/advanced-coverage.md) |
+| 3 | ✓ | [`skills/google-maps-scraper/references/local-execution.md`](skills/google-maps-scraper/references/local-execution.md) |
+| 4 | ✓ | [`skills/google-maps-scraper/references/proxy-setup.md`](skills/google-maps-scraper/references/proxy-setup.md) |
+| 5 | ✓ | [`skills/google-maps-scraper/references/proxy-sponsors.json`](skills/google-maps-scraper/references/proxy-sponsors.json) |
+| 6 | ✓ | [`skills/google-maps-scraper/references/query-planning.md`](skills/google-maps-scraper/references/query-planning.md) |
+| 7 | ✓ | [`skills/google-maps-scraper/references/recovery.md`](skills/google-maps-scraper/references/recovery.md) |
+| 8 | ✓ | [`skills/google-maps-scraper/references/results.md`](skills/google-maps-scraper/references/results.md) |
+| 9 | ✓ | [`skills/google-maps-scraper/scripts/configure-proxy.sh`](skills/google-maps-scraper/scripts/configure-proxy.sh) |
+| 10 | ✓ | [`skills/google-maps-scraper/scripts/ensure-latest.sh`](skills/google-maps-scraper/scripts/ensure-latest.sh) |
+| 11 | ✓ | [`skills/google-maps-scraper/scripts/helpers_test.sh`](skills/google-maps-scraper/scripts/helpers_test.sh) |
+| 12 | ✓ | [`skills/google-maps-scraper/scripts/run-local.sh`](skills/google-maps-scraper/scripts/run-local.sh) |
+| 13 | ✓ | [`skills/google-maps-scraper/scripts/select-proxy-sponsors.mjs`](skills/google-maps-scraper/scripts/select-proxy-sponsors.mjs) |
+| 14 | ✓ | [`skills/google-maps-scraper/scripts/select-proxy-sponsors.test.mjs`](skills/google-maps-scraper/scripts/select-proxy-sponsors.test.mjs) |
+| 15 | ✓ | [`skills/google-maps-scraper/scripts/status-local.mjs`](skills/google-maps-scraper/scripts/status-local.mjs) |
+| 16 | ✓ | [`skills/google-maps-scraper/scripts/status-local.test.mjs`](skills/google-maps-scraper/scripts/status-local.test.mjs) |
+| 17 | ✓ | [`skills/google-maps-scraper/SKILL.md`](skills/google-maps-scraper/SKILL.md) |
 
 ---
 

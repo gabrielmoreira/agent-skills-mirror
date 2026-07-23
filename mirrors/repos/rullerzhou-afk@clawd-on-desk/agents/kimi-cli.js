@@ -12,6 +12,7 @@ module.exports = {
   // caught by command-line matching in the hook's pid resolver and the
   // startup-recovery process scan, not by these names.
   processNames: { mac: ["kimi", "Kimi Code"], linux: ["kimi"], win: ["kimi.exe"] },
+  startupRecoveryProcessNames: { mac: ["kimi", "Kimi Code"], linux: ["kimi", "Kimi Code"], win: ["kimi.exe"] },
   eventSource: "hook",
   // PascalCase event names — identical stdin shape across both generations.
   eventMap: {

@@ -8,15 +8,12 @@ module.exports = {
   name: "WorkBuddy",
   processNames: {
     // NOTE on process names — WorkBuddy is a GUI Electron app, not a bare CLI
-    // like `claude`/`codebuddy`. Hooks fire from inside the app, so this list
-    // only feeds src/state.js zero-session startup recovery (it never creates
-    // or reaps tracked sessions). Verified on macOS: the app bundle ships
-    // Current 5.2.3 ships "WorkBuddy AI Helper" variants; older builds shipped
-    // "WorkBuddy Helper" variants. The main
+    // like `claude`/`codebuddy`. Verified on macOS: current 5.2.3 ships "WorkBuddy AI
+    // Helper" variants; older builds shipped "WorkBuddy Helper" variants. The main
     // executable is the bare "Electron" binary, which we deliberately DO NOT
     // list — matching it would false-positive on dev-mode Clawd and other
-    // unrenamed Electron apps. Windows/Linux names are best-guess assumptions
-    // pending real-device confirmation (tasklist / ps).
+    // unrenamed Electron apps. These remain general process metadata; the
+    // startup keep-awake surface below is intentionally empty.
     win: ["WorkBuddy.exe", "workbuddy.exe"],
     mac: [
       "WorkBuddy AI Helper",
@@ -26,6 +23,9 @@ module.exports = {
     ],
     linux: ["workbuddy", "WorkBuddy"],
   },
+  // WorkBuddy is a long-lived desktop app; hooks remain authoritative for
+  // whether an agent turn is active.
+  startupRecoveryProcessNames: { win: [], mac: [], linux: [] },
   eventSource: "hook",
   // PascalCase event names — identical to Claude Code hook system.
   // NOTE: no PermissionRequest entry. Desktop WorkBuddy resolves the entire

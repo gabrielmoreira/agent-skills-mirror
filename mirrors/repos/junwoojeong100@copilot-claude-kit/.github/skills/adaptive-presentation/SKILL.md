@@ -114,16 +114,19 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 
 ### 1단계 — 데이터 수집과 Fact Ledger
 
-1. 외부 사실이 있는 발표자료는 매 요청마다 `google-web-search`와 공식 도구로 실시간 조사한다.
+1. 외부 사실이 있는 발표자료는 매 요청마다 `web-search`와 공식 도구로 실시간 조사한다. 먼저 GitHub
+   Copilot의 general search 또는 Research capability를 확인하며, 없으면 공개 SERP를 직접 조회하지 말고
+   사용자 source URL을 요청한다.
 2. 독립적인 조사 축을 **먼저 모두 정한 뒤 한 번의 병렬 tool call 배치**로 동시에 실행한다(왕복 최소화). 결과를 본 뒤 꼭 필요할 때만 축을 추가한다.
 3. 1차 출처를 우선하고, 숫자·날짜·제품 상태·규제·고객 성과에는 URL과 확인일을 기록한다.
 4. 메인 에이전트가 결과를 하나의 Fact Ledger(`fact-ledger.md`)로 합친다.
 
-| Claim | Evidence | Source | Date/status | Slide candidate |
-|---|---|---|---|---|
+| ID | Type | Claim | Evidence | Source | Publisher | Published/updated | Accessed | Scope/status | Confidence | Slide candidate |
+|---|---|---|---|---|---|---|---|---|---|---|
 
-5. 상충하는 사실은 공식 최신 출처를 우선하고, 해결되지 않으면 슬라이드에서 불확실성을 표시한다.
-6. Preview·가정·시연 데이터·추정치는 눈에 띄게 라벨링한다.
+5. 공통 열의 값·날짜 형식·confidence 등급·원문 locator는 `web-search`의 Fact Ledger 계약을 따른다.
+6. 상충하는 사실은 공식 최신 출처를 우선하고, 해결되지 않으면 슬라이드에서 불확실성을 표시한다.
+7. Preview·가정·시연 데이터·추정치는 눈에 띄게 라벨링한다.
 
 ### 2단계 — 스토리라인 설계
 
@@ -204,7 +207,9 @@ grid_table)를 import해 보일러플레이트를 줄인다 — 색·레이아�
 1. 구조 감사와 최초 전체 렌더를 같은 immutable PPTX에 대해 병렬 실행한다.
    (`soffice` → PDF → PyMuPDF 소형 JPEG contact sheet) 구조 감사는 text/text·shape/shape·
    text/container 교차와 본문 title row의 font-size 편차를 찾고, 렌더 감사는 PDF text span의 frame
-   이탈과 서로 다른 text frame 간 충돌을 찾는다.
+   이탈과 서로 다른 text frame 간 충돌을 찾는다. Storyline에서 외부 사실을 사용하는 슬라이드 번호를
+   모아 `verify_deck.py --strict --require-sources <slides>`로 전달하며, 해당 슬라이드의
+   `Source:`/`출처:` footer가 없으면 완료할 수 없다.
 2. 30장 단위 compact contact sheet 1장을 확인하고, 위험 슬라이드만 `--reuse-pdf`로 개별 확인한다.
 3. 겹침·잘림·낮은 대비·고아 문장·경계 이탈·과도한 색상 분산 결함을 모두 기록한다. 텍스트가 도형,
    연결선, 다른 텍스트 상자 아래로 들어가거나 컨테이너 밖으로 나오는지, 긴 제목이 제목 행을 넘어
@@ -243,6 +248,7 @@ grid_table)를 import해 보일러플레이트를 줄인다 — 색·레이아�
 - 브랜드가 없는 임원 자료는 3~4개 색상 계열 안에서 일관되고, 구조 요소마다 다른 색을 쓰지 않는다.
 - 같은 구조를 기계적으로 반복하지 않고 정보 유형에 맞게 다양하게 구성했다.
 - 숫자·기능 상태·고객 성과에 출처가 있다.
+- 외부 사실을 사용하는 모든 슬라이드가 `--require-sources` 검사에 포함되고 footer 출처가 확인됐다.
 - Preview·가정·시연 데이터가 명확히 표시된다.
 - PPTX가 열리고 `unzip -t` 압축 구조 오류가 없다.
 - 저장소와 최종 출력 폴더에는 요청한 PPTX/PDF 외에 `.py`, `.pyc`, `__pycache__`, QA 이미지가 남지 않는다.

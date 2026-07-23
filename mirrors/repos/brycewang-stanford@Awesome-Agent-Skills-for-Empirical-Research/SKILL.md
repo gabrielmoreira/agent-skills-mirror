@@ -8,7 +8,7 @@ license: CC-BY-SA-4.0
 
 Use this root skill when the full AERS repository has been installed as a single skill folder. Treat it as a router and catalog, not as a request to load every vendored `SKILL.md`.
 
-The catalog holds **1,151 skills across 70 vendored collections**. Never read them all — route to one, then load only that skill's `SKILL.md`.
+The catalog holds **1,094 skills across 74 vendored collections**. Never read them all — route to one, then load only that skill's `SKILL.md`.
 
 ## Workflow
 
@@ -34,9 +34,9 @@ The catalog holds **1,151 skills across 70 vendored collections**. Never read th
 
 Match the user's identification strategy or task to a starting collection, then confirm against `catalog/skills.json`:
 
-| Full paper pipeline (orchestrator) | `skills/69-Paper-WorkFlow/` |
 | Task / method | Start here |
 |---|---|
+| Full paper pipeline (orchestrator) | `skills/69-Paper-WorkFlow/` |
 | DiD / staggered DiD / event study | `skills/50-brycewang-aer-skills/`, `skills/10-Jill0099-causal-inference-mixtape/`, `skills/13-scunning1975-MixtapeTools/` |
 | Instrumental variables (IV) | `skills/50-brycewang-aer-skills/`, `skills/40-py-econometrics-pyfixest/` |
 | Regression discontinuity (RDD) | `skills/50-brycewang-aer-skills/`, `skills/10-Jill0099-causal-inference-mixtape/` |
@@ -81,19 +81,19 @@ Trigger phrases (any one is enough to dispatch to the orchestrator):
 - "完整复现"
 - "from proposal to submission"
 
-The orchestrator is **not** the right entry point for a single-task ask (e.g. "fit a DiD", "recode this variable", "write a referee report") — those are listed in the Method → where to start table below.
+The orchestrator is **not** the right entry point for a single-task ask (e.g. "fit a DiD", "recode this variable", "write a referee report") — those are listed in the Method → where to start table above.
 
 ## Coverage Notes
 
 - `skills/69-Paper-WorkFlow/` is a **git submodule**. If its folder is empty, the copy or clone skipped submodules (`git submodule update --init` fixes a clone); fall back to the `skills/00.*` flagship pipeline skills, which are vendored directly.
-- Four legacy collections store skills as plain `.md` files instead of standard `SKILL.md` files, so they do **not** appear in `catalog/skills.json`. Browse them directly when relevant: `skills/19-CuellarC05-vera-economic-intelligence/` (policy briefs, research direction), `skills/21-claesbackman-AI-research-feedback/` (paper, code, and grant review), `skills/30-zirui-song-claude-skills/` (referee responses, robustness, data docs), `skills/37-IlanStrauss-ai-skills/` (economist data workflows).
+- The vendored ARIS collection (`skills/42-wanshuiyin-ARIS/`) also ships its skill set as OpenAI Codex CLI runtime ports (`skills-codex*` subtrees). Those stay on disk but are excluded from `catalog/skills.json` (see `scripts/skill_discovery.py`) — route Claude agents to the primary `skills/` tree only.
 
 ## Install Notes
 
 - Whole-repo imports are supported by this root `SKILL.md` as a lightweight compatibility entry point.
 - Individual skill installs are still preferred when a runtime expects one folder per skill. Copy the folder that directly contains the target `SKILL.md`.
 - Do not copy the repository root into a runtime and expect every child skill to become individually registered unless that runtime explicitly supports recursive skill discovery.
-- **Name collisions:** the catalog contains 92 bare `name`s shared across collections (e.g. `data-analysis`, `lit-review`, `proofread`). When a runtime registers skills by flat name, install one collection at a time, or disambiguate with the globally-unique `qualified_name` field in `catalog/skills.json` (`<collection>::<name>`, e.g. `12-pedrohcgs-claude-code-my-workflow::data-analysis`), or the full `skills/<collection>/.../SKILL.md` path.
+- **Name collisions:** the catalog contains 47 bare `name`s shared across collections (e.g. `data-analysis`, `lit-review`, `proofread`). When a runtime registers skills by flat name, install one collection at a time, or disambiguate with the globally-unique `qualified_name` field in `catalog/skills.json` (`<collection>::<name>`, e.g. `12-pedrohcgs-claude-code-my-workflow::data-analysis`), or the full `skills/<collection>/.../SKILL.md` path.
 
 ## Key Files
 

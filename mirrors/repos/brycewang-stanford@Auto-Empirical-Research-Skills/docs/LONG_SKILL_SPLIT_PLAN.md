@@ -1,6 +1,6 @@
 # Long-Skill Split Plan
 
-The repo audit flags **75 SKILL.md files over 500 lines**; the enrichment layer
+The repo audit flags **83 SKILL.md files over 500 lines** (as of 2026-07-22; live count in `catalog/skills.json` → `summary.oversized_skill_files_over_500_lines`); the enrichment layer
 flags **56 as "long without a `references/` directory."** Agent-skill best
 practice is a lean spine (~< 500 lines) plus a `references/` directory the agent
 loads on demand. This document says *which* files to split, *how*, and — crucially

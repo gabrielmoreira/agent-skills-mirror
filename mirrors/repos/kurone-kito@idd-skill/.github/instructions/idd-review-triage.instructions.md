@@ -529,6 +529,23 @@ Route based on `branchState` from the helper (or `mergeable` /
    commits).
 6. Return to `idd-review-snapshot.instructions.md` (E1).
 
+## Merge-main livelock under fast-moving `main`
+
+Under heavy concurrent-session load, `main` can advance before one
+{sync path → E1 → F1/F2} cycle finishes, re-triggering
+`behind-no-conflict`; naive repetition livelocks, never reaching F3
+while `main` keeps moving (observed 2026-07-22, PR #1612).
+
+**Rule**: post the watermark as the **last** action before F3's
+`idd-merge-execute.mjs --apply`, every pass — anything after (a CI
+rerun settling, a new disposition reply, another `main` advance)
+stales it, failing `--apply` closed on `review-currency` regardless
+of CI color; re-post before retrying. Same precondition as E1 Step
+2 — easy to satisfy early, forgotten by `--apply` time. A stale
+`idd-advisory-convergence` rollup: rerun via
+`scripts/rerun-advisory-convergence.mjs`
+([rerun mechanics](idd-ci.instructions.md#rerun-mechanics)).
+
 ## Zero-Accepted-PATH-A advisory re-review gate
 
 Applies only from the E-phase branch-sync check's no-sync-required
@@ -626,10 +643,9 @@ override the `return-to-e1` and proceed on the current HEAD SHA (see
 non-ack blocking cause makes it `false`, so the backstop still holds for every
 other case.
 
-The narrower, informational-only `inPlaceEditOnly` /
-`soleCauseInPlaceEditOnly` sibling is documented in
-`idd-pre-merge.instructions.md` F2 (#1313) — it is not a second override
-path.
+The narrower `inPlaceEditOnly` / `soleCauseInPlaceEditOnly` sibling
+(#1313, `summarizeDispositionEvidenceForGate`) is a strict subset of
+`soleCauseAckOnlyPostDisposition`, not an override path.
 
 ## Review item classes
 

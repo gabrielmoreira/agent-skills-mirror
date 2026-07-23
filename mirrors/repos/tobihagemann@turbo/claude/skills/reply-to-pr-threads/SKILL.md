@@ -7,11 +7,7 @@ description: "Draft, confirm, and post replies to GitHub PR review threads. Hand
 
 Draft replies for a processed review-thread list, confirm with the user, and post the surviving drafts.
 
-## Step 1: Run `/github-voice` Skill
-
-Run the `/github-voice` skill to load voice rules and the insider-vs-outsider detection.
-
-## Step 2: Re-fetch Thread State
+## Step 1: Re-fetch Thread State
 
 Auto-detect owner, repo, and PR number from the current branch if not provided, then query the current resolution state:
 
@@ -30,6 +26,10 @@ query($owner: String!, $repo: String!, $pr: Int!) {
 
 Drop threads whose `isResolved` is now true. Reviewers or bots such as CodeRabbit may resolve threads after the original fetch, and drafting replies for them is wasted work.
 
+## Step 2: Run `/github-voice` Skill
+
+Run the `/github-voice` skill to load voice rules and the insider-vs-outsider detection.
+
 ## Step 3: Draft Replies
 
 Use the processed-thread list from conversation context. Each entry has: thread id, file path, line, category (`fix`, `skip`, `answer`, or `clarify`), and per-category payload.
@@ -46,7 +46,7 @@ Only add a brief sentence after the SHA when the fix meaningfully diverges from 
 
 **skip**: payload is the skip reasoning. State the reasoning directly. Do not apologize or hedge.
 
-**answer**: payload is raw answer text from `/answer-reviewer-questions`. Tighten to one or two sentences and apply `/github-voice` rules (no em dashes, natural tone). Do not cite transcripts or mention Claude. The reply reads as the implementer's own explanation.
+**answer**: payload is raw answer text from `/answer-reviewer-questions`. Tighten to one or two sentences and apply `/github-voice` rules. Do not cite transcripts or mention Claude. The reply reads as the implementer's own explanation.
 
 **clarify**: payload is a user-directed question. Draft it as directed.
 

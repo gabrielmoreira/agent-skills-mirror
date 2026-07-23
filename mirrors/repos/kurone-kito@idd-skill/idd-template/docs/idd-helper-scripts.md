@@ -957,6 +957,19 @@ Interpretation rules:
 - No explicit release verb: the lock lives inside the worktree's own
   private git-admin directory (`git rev-parse --absolute-git-dir`), so
   `git worktree remove` at F4 deletes it together with the worktree
+- **`instructions-only` helper-free fallback** (no helper runtime
+  available): resolve the private admin directory with
+  `git -C <worktree> rev-parse --absolute-git-dir`, then atomically
+  create an `idd-claim.lock` file there with an exclusive file-create
+  API (`open(..., O_CREAT|O_EXCL)` on POSIX, or the PowerShell
+  `FileMode.CreateNew` equivalent), writing the same JSON holder shape
+  (`agentId`, `claimId`, `acquiredAt`). A path that already exists is a
+  collision; a matching holder may re-acquire, and a missing,
+  malformed, or unreadable holder is also a collision. Never delete or
+  override a different holder — enable a helper runtime for an
+  authorized takeover instead. Both profiles share the `idd-claim.lock`
+  namespace, so a helper-runtime session and an instructions-only
+  session see the same lock.
 
 ### Canonical branch name
 
@@ -1106,6 +1119,16 @@ Interpretation rules:
   `pendingWindowMinutes`, `settledWindowMinutes`,
   `pollIntervalMinutes`, `capExhaustedRoute`, and
   `trustedMarkerSummary`
+- Optional `--claim-id <id> --agent-id <id>` (kurone-kito/idd-skill#1572):
+  when both are supplied, binds two independent, claim/HEAD-scoped
+  evidence objects to the active claim: `copilotRecovery` (the terminal
+  `COPILOT_UNAVAILABLE` stall-recovery state) and `staleRequestRecovery`
+  (kurone-kito/idd-skill#1571; `AW3-S`'s bounded stale-request recovery
+  eligibility — `attempt` / `cap-exhausted` / `not-applicable`). Omitting
+  either flag leaves `copilotRecovery.state` at `NOT_TERMINAL` and makes
+  the recovery-cycle budget read as the full un-decremented cap — always
+  pass both when consulting `staleRequestRecovery` for a mutation
+  decision (see `idd-advisory-wait.instructions.md`'s `AW3-S`).
 
 ### CI wait policy resolution
 
@@ -1210,7 +1233,11 @@ Interpretation rules:
   unreplied-comment gates are unaffected
 - Readiness command: `node scripts/pre-merge-readiness.mjs`
   with `--pr <pr-number>`, `--claim-issue <issue-number>`,
-  `--claim-id <claim-id>`, and
+  `--claim-id <claim-id>`, optional `--nonce <token>` (this session's own
+  locally-recorded activation-nonce from claim time;
+  kurone-kito/idd-skill#1522, kurone-kito/idd-skill#1528 — omit when no
+  nonce was recorded for the active claim, which stays backward
+  compatible), and
   `--trusted-marker-logins "<trusted-login-1>,<trusted-login-2>"`
 - Stable contract:
   [`pre-merge-readiness.schema.json`][pre-merge-readiness-schema]
@@ -1270,6 +1297,18 @@ Interpretation rules:
   eligible set otherwise looks: a transient lookup failure for a
   genuinely eligible non-author codeowner must never be silently
   treated the same as that codeowner having no write access at all.
+- `advisoryWait.copilotUnavailable` / `advisoryWait.copilotUnavailableWaived`
+  (kurone-kito/idd-skill#1570): a caller-precomputed terminal
+  `COPILOT_UNAVAILABLE` verdict (kurone-kito/idd-skill#1572's
+  `buildCopilotRecoverySummary`) and whether a valid maintainer
+  `idd-advisory-convergence` external-check waiver clears it. `f3Outcome`
+  is unchanged by these fields; instead, `copilotUnavailable: true` with
+  `copilotUnavailableWaived: false` adds a dedicated
+  `copilot-terminal-unavailable` entry to `blockers[]`, additive to the
+  existing `advisory-wait` blocker. Observed incident:
+  kurone-kito/idd-skill#1562 (a Copilot review request that never proved
+  it covered current HEAD). See `idd-advisory-wait.instructions.md`'s
+  Terminal routing section.
 - `reviewCurrency.comparisonRoute` remains advisory evidence only. Agents
   must still apply written instruction checks against live GitHub state.
 - Fail closed: if helper execution fails, output is invalid JSON,
@@ -1397,6 +1436,18 @@ Interpretation rules:
   `idd-advisory-convergence` registered under
   `ciGate.externalChecks.waivable` — enabling waiver mode for some other
   external check never silently makes this gate waivable too.
+- **Terminal Copilot unavailability (`#1570`)**: the verdict also reports
+  a `terminal` field (kurone-kito/idd-skill#1572's
+  `CopilotRecoverySummary` shape — cap/window/clock evidence and
+  `state: "NOT_TERMINAL" | "COPILOT_UNAVAILABLE"`), reported separately
+  from `deadline`. When `terminal.state` is `COPILOT_UNAVAILABLE`, the
+  SAME waiver escape hatch above also opens — independent of whether the
+  ordinary deadline has passed — but `ready` still requires a valid
+  waiver in addition (`ready = converged || ((deadline.passed ||
+  terminal.state == "COPILOT_UNAVAILABLE") && waived)`); the terminal
+  state alone never sets `ready: true`. Observed incident:
+  kurone-kito/idd-skill#1562. See `idd-advisory-wait.instructions.md`'s
+  Terminal routing section for the full hold/rerun sequence.
 - Reuses the existing evidence modules — `isCopilotReviewerLogin` /
   `readAdvisoryPrimaryBotLogin`, `resolveAdvisoryBotLogins`,
   `resolveTrustedMarkerActors`, `summarizeDispositionEvidenceForGate`,

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `matlab/simulink-agentic-toolkit` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,10 +74,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`skills-catalog/model-based-design-core/testing-simulink-models/SKILL.md`](skills-catalog/model-based-design-core/testing-simulink-models/SKILL.md) |
 | 14 | ✓ | [`skills-catalog/model-based-system-engineering/building-architecture-models/SKILL.md`](skills-catalog/model-based-system-engineering/building-architecture-models/SKILL.md) |
 | 15 | ✓ | [`skills-catalog/simulink-simulation/authoring-simulink-inputs/SKILL.md`](skills-catalog/simulink-simulation/authoring-simulink-inputs/SKILL.md) |
-| 16 | ✓ | [`skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md`](skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md) |
-| 17 | ✓ | [`skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md`](skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md) |
-| 18 | ✓ | [`skills-catalog/verification-validation-and-test/inject-faults/SKILL.md`](skills-catalog/verification-validation-and-test/inject-faults/SKILL.md) |
-| 19 | ✓ | [`skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md`](skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md) |
+| 16 | ✓ | [`skills-catalog/simulink-simulation/create-sdi-run/SKILL.md`](skills-catalog/simulink-simulation/create-sdi-run/SKILL.md) |
+| 17 | ✓ | [`skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md`](skills-catalog/verification-validation-and-test/author-modeladvisor-checks/SKILL.md) |
+| 18 | ✓ | [`skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md`](skills-catalog/verification-validation-and-test/checking-model-compliance/SKILL.md) |
+| 19 | ✓ | [`skills-catalog/verification-validation-and-test/inject-faults/SKILL.md`](skills-catalog/verification-validation-and-test/inject-faults/SKILL.md) |
+| 20 | ✓ | [`skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md`](skills-catalog/verification-validation-and-test/manage-safety-analysis/SKILL.md) |
 
 ---
 

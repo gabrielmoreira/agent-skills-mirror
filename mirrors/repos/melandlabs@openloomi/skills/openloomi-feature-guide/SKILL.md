@@ -2,7 +2,7 @@
 name: openloomi-feature-guide
 description: "Use this when users ask about openloomi features, capabilities, or how to use it. Examples: 'openloomi 怎么用', '你能做什么', 'What can you do?', 'How does openloomi work?', 'Tell me about openloomi features', 'What platforms does openloomi support?', 'How do I use scheduled tasks?', 'What is Loop?', 'How does the attention agent work?', 'What is a Decision Card?', 'How do connectors work?', 'How do I extend Loop with custom types?', 'What is a classifier rule?', 'How do I plug openloomi into Claude Code / Codex?'"
 metadata:
-  version: 0.8.6
+  version: 0.8.7
 ---
 
 > **Note:** If you haven't downloaded or installed openloomi yet, please refer to [Getting Started](https://openloomi.ai/docs/getting-started) for installation instructions.

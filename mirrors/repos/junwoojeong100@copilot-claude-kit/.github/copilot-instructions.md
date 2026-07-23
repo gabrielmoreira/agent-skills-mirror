@@ -33,6 +33,6 @@ Advanced Security) · Azure Kubernetes Service(AKS) · Azure Container Apps(ACA)
 변동 정보(가격·기능·규제)는 답변 시점의 공식 1차 출처로 확인하고, 확인하지 못한 내용을 최신 사실처럼 단정하지 않는다.
 
 ## 스킬
-- google-web-search: 실시간 웹·공식 문서 검색
+- web-search: 실시간 웹·공식 문서 검색
 - ai-platform-demo: 고객·산업별 인터랙티브 AI·App Platform 운영 데모
 - adaptive-presentation: Straightforward한 결론·스토리라인 중심 PPTX 제작(고정 템플릿 없이 python-pptx 자유 생성)

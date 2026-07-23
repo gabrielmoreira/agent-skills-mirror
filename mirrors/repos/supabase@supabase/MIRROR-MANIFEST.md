@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 48 file(s) materialized.
+Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `supabase/supabase` — 26 default patterns, 0 followed patterns, 48 f
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 48 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,7 +106,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`.github/instructions/studio-telemetry.instructions.md`](.github/instructions/studio-telemetry.instructions.md) |
 | 46 | ✓ | [`.github/instructions/studio-testing.instructions.md`](.github/instructions/studio-testing.instructions.md) |
 | 47 | ✓ | [`apps/learn/public/llms.txt`](apps/learn/public/llms.txt) |
-| 48 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
+| 48 | ✓ | [`apps/studio/CLAUDE.md`](apps/studio/CLAUDE.md) |
+| 49 | ✓ | [`apps/www/app/llms.txt/route.ts`](apps/www/app/llms.txt/route.ts) |
 
 ---
 

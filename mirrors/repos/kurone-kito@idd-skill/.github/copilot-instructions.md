@@ -33,6 +33,9 @@ layout.
 - Avoid hard-coded repository file counts in docs unless the number is
   mechanically maintained. If count-based wording is necessary, update
   every mirrored reference in the same commit.
+- When documentation or instruction text names an anti-pattern or
+  failure mode, cite the observed incident per
+  [docs/idd-design-rationale.md](../docs/idd-design-rationale.md#cite-the-observed-incident).
 - If uncertainties, concerns, or other implementation issues arise while
   running in Agent mode, promptly switch to Plan mode and ask the user
   questions. In such cases, provide one or more recommended response
@@ -67,9 +70,11 @@ through a pull request.
   already-pushed branch needs synchronization or conflict resolution,
   merge `main` into the PR branch and send that follow-up through the
   normal CI and review gates. Do not rebase or force-push merely
-  because the PR is `BEHIND`. Treat this as the branch-policy contract;
-  later-phase instruction and helper alignment may land separately
-  before the runtime default is fully active end to end.
+  because the PR is `BEHIND`. This is the active branch-policy
+  contract, enforced end to end by
+  `idd-review-triage.instructions.md`'s E-phase branch-sync check
+  (`Esync`), which uses the `branch-conflict-state` helper when
+  helper runtime is enabled.
 - **Force-push exceptions stay narrow** — use rebase and
   `--force-with-lease` after publication only when repository policy
   explicitly permits it and merge-based recovery cannot safely fix the

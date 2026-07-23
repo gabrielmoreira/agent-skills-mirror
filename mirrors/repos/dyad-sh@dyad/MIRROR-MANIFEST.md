@@ -99,7 +99,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`.claude/skills/fix-issue/SKILL.md`](.claude/skills/fix-issue/SKILL.md) |
 | 12 | ✓ | [`.claude/skills/multi-pr-review/SKILL.md`](.claude/skills/multi-pr-review/SKILL.md) |
 | 13 | ✓ | [`.claude/skills/plan-to-issue/SKILL.md`](.claude/skills/plan-to-issue/SKILL.md) |
-| 14 | ✓ | [`.claude/skills/pr-fix-actions/SKILL.md`](.claude/skills/pr-fix-actions/SKILL.md) |
+| 14 | ✓ | [`.claude/skills/pr-fix-ci/SKILL.md`](.claude/skills/pr-fix-ci/SKILL.md) |
 | 15 | ✓ | [`.claude/skills/pr-fix-comments/SKILL.md`](.claude/skills/pr-fix-comments/SKILL.md) |
 | 16 | ✓ | [`.claude/skills/pr-fix/SKILL.md`](.claude/skills/pr-fix/SKILL.md) |
 | 17 | ✓ | [`.claude/skills/pr-push/SKILL.md`](.claude/skills/pr-push/SKILL.md) |

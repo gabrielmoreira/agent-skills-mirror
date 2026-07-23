@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ykdojo/claude-code-tips` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `ykdojo/claude-code-tips` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ykdojo/claude-code-tips` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,9 +66,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`skills/hn-summarize/SKILL.md`](skills/hn-summarize/SKILL.md) |
 | 6 | ✓ | [`skills/private-github-search/private-github-search-sync.sh`](skills/private-github-search/private-github-search-sync.sh) |
 | 7 | ✓ | [`skills/private-github-search/SKILL.md`](skills/private-github-search/SKILL.md) |
-| 8 | ✓ | [`skills/reddit-fetch/SKILL.md`](skills/reddit-fetch/SKILL.md) |
-| 9 | ✓ | [`skills/review-claudemd/SKILL.md`](skills/review-claudemd/SKILL.md) |
-| 10 | ✓ | [`skills/version-check/SKILL.md`](skills/version-check/SKILL.md) |
+| 8 | ✓ | [`skills/quarter-clone/SKILL.md`](skills/quarter-clone/SKILL.md) |
+| 9 | ✓ | [`skills/reddit-fetch/SKILL.md`](skills/reddit-fetch/SKILL.md) |
+| 10 | ✓ | [`skills/review-claudemd/SKILL.md`](skills/review-claudemd/SKILL.md) |
+| 11 | ✓ | [`skills/version-check/SKILL.md`](skills/version-check/SKILL.md) |
 
 ---
 

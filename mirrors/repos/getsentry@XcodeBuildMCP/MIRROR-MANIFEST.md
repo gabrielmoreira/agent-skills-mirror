@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns, 39 file(s) materialized.
+Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `getsentry/XcodeBuildMCP` — 26 default patterns, 2 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 39 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,8 +97,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`example_projects/Weather/README.md`](example_projects/Weather/README.md) |
 | 36 | ✓ | [`skills/xcodebuildmcp-cli/SKILL.md`](skills/xcodebuildmcp-cli/SKILL.md) |
 | 37 | ✓ | [`skills/xcodebuildmcp/SKILL.md`](skills/xcodebuildmcp/SKILL.md) |
-| 38 | → | [`README.md`](README.md) |
-| 39 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
+| 38 | ✓ | [`src/utils/__tests__/fixtures/xcodemake/README.md`](src/utils/__tests__/fixtures/xcodemake/README.md) |
+| 39 | → | [`README.md`](README.md) |
+| 40 | → | [`THIRD_PARTY_PACKAGE_LICENSES.md`](THIRD_PARTY_PACKAGE_LICENSES.md) |
 
 ---
 

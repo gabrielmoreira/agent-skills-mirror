@@ -1,6 +1,6 @@
 ---
 name: openloomi
-description: "Use local OpenLoomi from Codex. Triggers: Loomi, OpenLoomi, personal assistant, memory, workspace context, setup, install openloomi, setup openloomi, 一键装好并跑起来, finalize openloomi, fix openloomi."
+description: "Use local OpenLoomi from Codex. Triggers: Loomi, OpenLoomi, personal assistant, memory, workspace context, setup, install openloomi, setup openloomi, 一键装好并跑起来, finalize openloomi, fix openloomi, openloomi tour, guided tour, walk me through openloomi, show me everything, 一条龙, 体验一下, 带我看一下."
 allowed-tools: "Bash(node $SKILL_DIR/../../scripts/loomi-bridge.mjs *)"
 ---
 

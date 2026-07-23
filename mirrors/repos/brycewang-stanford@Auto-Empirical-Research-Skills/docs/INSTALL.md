@@ -21,6 +21,10 @@ skill by looking for a top-level `SKILL.md`. The AERS repository root has one:
 named `auto-empirical-research-skills`; it does not recursively register every
 vendored child skill as a separate IDE skill.
 
+> **Note:** `skills/69-Paper-WorkFlow/` is a git submodule. Clone with
+> `git clone --recurse-submodules` (or run `git submodule update --init`)
+> before copying, or the orchestrator folder will be empty.
+
 For a local Codex-style install:
 
 ```bash

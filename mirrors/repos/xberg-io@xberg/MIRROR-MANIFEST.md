@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xberg-io/xberg` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `xberg-io/xberg` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xberg-io/xberg` — 26 default patterns, 0 followed patterns, 5 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.ai-rulez/skills/api-server-mcp/SKILL.md`](.ai-rulez/skills/api-server-mcp/SKILL.md) |
-| 2 | ✓ | [`.ai-rulez/skills/chunking-embeddings/SKILL.md`](.ai-rulez/skills/chunking-embeddings/SKILL.md) |
-| 3 | ✓ | [`.ai-rulez/skills/extraction-pipeline-patterns/SKILL.md`](.ai-rulez/skills/extraction-pipeline-patterns/SKILL.md) |
-| 4 | ✓ | [`.ai-rulez/skills/format-specific-extraction/SKILL.md`](.ai-rulez/skills/format-specific-extraction/SKILL.md) |
-| 5 | ✓ | [`.ai-rulez/skills/plugin-architecture-patterns/SKILL.md`](.ai-rulez/skills/plugin-architecture-patterns/SKILL.md) |
+| 1 | ✓ | [`.ai-rulez/skills/alef-generated-bindings/SKILL.md`](.ai-rulez/skills/alef-generated-bindings/SKILL.md) |
+| 2 | ✓ | [`.ai-rulez/skills/api-server-mcp/SKILL.md`](.ai-rulez/skills/api-server-mcp/SKILL.md) |
+| 3 | ✓ | [`.ai-rulez/skills/chunking-embeddings/SKILL.md`](.ai-rulez/skills/chunking-embeddings/SKILL.md) |
+| 4 | ✓ | [`.ai-rulez/skills/config-loading-precedence/SKILL.md`](.ai-rulez/skills/config-loading-precedence/SKILL.md) |
+| 5 | ✓ | [`.ai-rulez/skills/crate-structure/SKILL.md`](.ai-rulez/skills/crate-structure/SKILL.md) |
+| 6 | ✓ | [`.ai-rulez/skills/extraction-pipeline-patterns/SKILL.md`](.ai-rulez/skills/extraction-pipeline-patterns/SKILL.md) |
+| 7 | ✓ | [`.ai-rulez/skills/feature-flag-policy/SKILL.md`](.ai-rulez/skills/feature-flag-policy/SKILL.md) |
+| 8 | ✓ | [`.ai-rulez/skills/format-specific-extraction/SKILL.md`](.ai-rulez/skills/format-specific-extraction/SKILL.md) |
+| 9 | ✓ | [`.ai-rulez/skills/mime-detection-routing/SKILL.md`](.ai-rulez/skills/mime-detection-routing/SKILL.md) |
+| 10 | ✓ | [`.ai-rulez/skills/plugin-architecture-patterns/SKILL.md`](.ai-rulez/skills/plugin-architecture-patterns/SKILL.md) |
+| 11 | ✓ | [`.ai-rulez/skills/wasm-constraints/SKILL.md`](.ai-rulez/skills/wasm-constraints/SKILL.md) |
 
 ---
 

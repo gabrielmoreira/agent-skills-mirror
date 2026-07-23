@@ -2,7 +2,11 @@
 
 This roadmap is scoped to making AERS a high-quality, high-trust GitHub project rather than just a large link collection.
 
-> **Current monthly execution plan:** [`PLAN-2026-08.md`](PLAN-2026-08.md) — August 2026: end-to-end Card–Krueger replication scorecard, public benchmark scoreboard, bunching method family, link-triage automation. (July: [`PLAN-2026-07.md`](PLAN-2026-07.md), 13/15 complete.)
+> **Execution plans (status as of 2026-07-22):** the `PLAN-2026-MM` files are sprint plans whose calendar labels drifted — all three were authored 2026-07-01…04 and largely executed immediately.
+>
+> - [`PLAN-2026-07.md`](PLAN-2026-07.md) — **closed**, 14/15 done (the external AERS-vs-Econometrics-Agent comparison remains open, tracked in [`SCOREBOARD.md`](SCOREBOARD.md) / [`INTEROP.md`](INTEROP.md) Recipe C).
+> - [`PLAN-2026-08.md`](PLAN-2026-08.md) — headline deliverables **shipped** (Card–Krueger end-to-end replication, public benchmark scoreboard, bunching family, link-triage automation); see its status note.
+> - [`PLAN-2026-09.md`](PLAN-2026-09.md) — **current / not started**: opening the evidence chain to external agents.
 
 ## Now
 

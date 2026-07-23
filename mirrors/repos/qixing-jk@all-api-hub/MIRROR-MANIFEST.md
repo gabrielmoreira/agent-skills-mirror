@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `qixing-jk/all-api-hub` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`.agents/skills/sponsor-catalog/agents/openai.yaml`](.agents/skills/sponsor-catalog/agents/openai.yaml) |
+| 2 | ✓ | [`.agents/skills/sponsor-catalog/references/catalog-compatibility.md`](.agents/skills/sponsor-catalog/references/catalog-compatibility.md) |
+| 3 | ✓ | [`.agents/skills/sponsor-catalog/SKILL.md`](.agents/skills/sponsor-catalog/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

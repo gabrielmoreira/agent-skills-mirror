@@ -106,9 +106,9 @@ the mode consistently.
 Execution mode and criticality are plugin-type capabilities rather than properties of a particular
 built-in implementation. The shared `PluginType` must expose `executionMode` and `critical`.
 The existing `exclusive` information remains derived from `executionMode == EXCLUSIVE` for API
-compatibility. Whether an implementation is configurable is derived from whether that instance
-implements `PluginConfigSpec`; configurable and zero-config implementations may coexist under the
-same plugin type.
+compatibility. Whether an implementation is configurable is derived from
+`PluginConfigSpec.isConfigurable()`; configurable and zero-config implementations may coexist under
+the same plugin type.
 
 ## SPI Layers
 
@@ -120,8 +120,13 @@ Nacos plugins have two related SPI layers:
    plugin manager for listing, status management, configuration, and
    observability.
 
-A plugin that needs dynamic configuration implements `PluginConfigSpec`. A
-plugin category that supports enable or disable checks must use
+Unified domain plugin SPIs extend `PluginConfigSpec`. Its compatibility defaults expose no
+definitions, an empty current map, and a no-op apply callback, so an implementation compiled against
+an older domain SPI and a new zero-config implementation both remain `configurable=false`. A plugin
+that declares at least one `ConfigItemDefinition` is configurable and must implement the current-map
+and apply callbacks. `environment` and `control` remain bootstrap exceptions until their unified
+configuration lifecycle is designed; `ai-resource-import` remains outside unified management until
+its redesign. A plugin category that supports enable or disable checks must use
 `PluginStateCheckerHolder` rather than keeping an independent status source.
 
 `PluginConfigDefinitionSpec` is the definition-only parent contract for a factory
@@ -136,12 +141,25 @@ Plugin implementations are discovered with the Nacos SPI loader. Deployments may
 provide plugins from the classpath or from the server plugin directory. The
 plugin implementation must be loadable without changing Nacos server code.
 
-After the Spring context is refreshed, the core `PluginManager` discovers
-`PluginProvider` implementations, loads state, resolves configuration, and invokes
-`applyConfig` before Nacos is marked as started. `ApplicationReadyEvent` is only an
-idempotent fallback for non-standard embedded startup paths. Domain managers may
-construct their services earlier through SPI, but their final configuration and
-runtime participation must follow the unified result before the server becomes available.
+After the Spring context is refreshed, the core `PluginManager` discovers lightweight
+`PluginProvider` implementations. It invokes `getAllPlugins` immediately only for plugin types
+whose domain policy enables loading. Active critical types always load regardless of the optional
+loading predicate. For a deferred non-critical type, a later server configuration refresh that
+enables loading must discover its implementations, restore persisted implementation state,
+resolve effective configuration, and invoke `applyConfig` before those implementations are
+exposed for execution. A loaded type is retained when its loading predicate later becomes false;
+the owning domain entry switch continues to gate execution.
+
+The loading predicate does not replace implementation state. Its default is `true` for binary
+compatibility and a domain should override it only when it owns a type-wide module or capability
+switch. A deferred type is enabled through that static or domain switch rather than by addressing
+an implementation that has not yet been discovered through the plugin API.
+
+`ApplicationReadyEvent` is only an idempotent fallback for non-standard embedded startup paths.
+Domain managers may construct their services earlier through SPI, but a type that opts into
+deferred loading must not independently instantiate its implementations while its loading
+predicate is false. Final configuration and runtime participation must follow the unified result
+before the server becomes available.
 
 Plugin startup must be deterministic:
 
@@ -167,6 +185,7 @@ Each managed plugin type may provide one internal `PluginTypePolicy`. The policy
 domain module rather than by the core plugin manager, and defines:
 
 - whether the domain currently requires the plugin type;
+- whether implementation loading is currently enabled for a non-critical type;
 - the initial enabled state of each discovered implementation;
 - the concrete implementation names required while a critical type is active;
 - the selection property and activation reason used in diagnostics.
@@ -199,6 +218,25 @@ and after server configuration refresh changes whether a policy is active. A fai
 keeps the proposed plugin state unapplied. `critical` in plugin detail describes whether that
 specific enabled implementation is currently required, not merely whether its type can ever be
 critical.
+
+An accepted persisted state change follows validate-persist-apply order. The complete candidate
+state is validated before storage is touched, the durable state projection must succeed before the
+manager mutates its in-memory state, and a persistence failure leaves the previous in-memory state
+unchanged and retryable. A `localOnly` state change intentionally skips persistence and applies only
+to the current node.
+
+The `plugin_state` consensus group may restore a snapshot while the Spring context is still being
+created, before the unified manager has discovered implementations. In that phase, the manager
+must validate the snapshot value format and stage or persist the complete state without treating
+an empty registry as a missing critical implementation. Unified startup then discovers providers,
+merges the staged state, and performs the same strict critical validation before Nacos reports
+startup success. Snapshot restoration after manager initialization continues to validate the
+candidate final state before applying it. The snapshot `states` map is the complete persisted
+override map rather than a patch: restoration replaces the local persisted map as a whole, entries
+absent from the snapshot remove stale local overrides, and loaded non-exclusive implementations
+without an override return to their startup policy default. Entries for implementations that are
+not loaded yet remain persisted and are applied if their plugin type is loaded later. Exclusive
+implementation selection remains controlled by its restart-required selection property.
 
 Built-in switches audited during the unified-state migration are classified as follows:
 
@@ -268,10 +306,10 @@ currently be disabled by itself, so it may change as peer implementation states 
 detail responses add `typeCritical` and `executionMode`; the existing `exclusive` field remains and
 is derived from the execution mode.
 
-Plugins with `PluginConfigSpec` expose config definitions, current config, and
-config application behavior. Cluster-wide status or config changes must be
-synchronized through the plugin state operation path unless the request is
-explicitly local only.
+Plugins for which `PluginConfigSpec.isConfigurable()` returns `true` expose config definitions,
+current config, and config application behavior. Its default implementation returns `true` only
+when `getConfigDefinitions()` is non-null and non-empty. Cluster-wide status or config changes must
+be synchronized through the plugin state operation path unless the request is explicitly local only.
 
 ### Configuration Definition
 
@@ -325,6 +363,14 @@ only when the same key has multiple non-default sources.
 Runtime persisted config and local-only config store only values by
 `pluginId + itemKey`. They do not store normalized full keys, alias keys,
 source, or version information.
+
+The runtime persisted source resolver owns its persistence lifecycle. It loads
+the complete source before plugin config initialization, persists a normalized
+complete map before replacing one plugin source, exports the in-memory terminal
+map for consensus snapshots, and replaces the complete persisted source before
+applying a restored snapshot. Plugin orchestration does not directly read or
+write `plugin-configs.json`. Persisted plugin enabled state remains owned by the
+state-management path.
 
 Every internal source resolver must expose its canonical item-key map through
 `getConfig(PluginInfo)`. Reading is independent from update capability:
@@ -399,8 +445,8 @@ only `pluginId`, item key, and target source, and must not log the value.
 Startup and runtime updates use the same source resolver and effective config
 calculation:
 
-1. Startup loads all `plugin-configs.json` entries into the runtime persisted
-   source before applying any plugin config.
+1. The runtime persisted source resolver loads all `plugin-configs.json`
+   entries before any plugin config is applied.
 2. Every loaded configurable plugin is then resolved and applied, including
    plugins without a persisted override. Startup may apply both `RUNTIME` and
    `RESTART` fields because the plugin is being initialized.
@@ -422,7 +468,10 @@ contains the plugin ID and item keys but no config values. Detail queries keep
 returning the accepted effective snapshot, so they do not report an unapplied
 restart-required environment value as effective. A static change hidden by a
 higher-priority source updates source metadata but does not require another
-plugin apply when the effective config is unchanged.
+plugin apply when the effective config equals the last successfully applied
+snapshot. If apply fails after a static snapshot is accepted, the plugin keeps
+its previous applied config and a later refresh retries while the resolved
+effective config still differs from that successful snapshot.
 
 Updates for the same plugin are serialized. A runtime persisted update first
 persists the normalized complete source map, replaces the resolver source,

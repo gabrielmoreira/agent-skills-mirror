@@ -1,10 +1,19 @@
+[![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
+[![GitHub stars](https://img.shields.io/github/stars/brycewang-stanford/Auto-Empirical-Research-Skills?style=social)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Validate catalog](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml/badge.svg)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/brycewang-stanford/Auto-Empirical-Research-Skills/badge)](https://scorecard.dev/viewer/?uri=github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
+[![Security audit: baseline 52/52 CLEAN](https://img.shields.io/badge/security%20audit-baseline%2052%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
+[![Rigor coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrycewang-stanford%2FAuto-Empirical-Research-Skills%2Fmain%2Fdocs%2Fbadges%2Frigor-coverage.json)](docs/RIGOR_COVERAGE.md)
+[![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
+
 # Auto-Empirical Research Skills (AERS)
 
-> **⚠️ 中文版已迁出本文件。** 中文 README 内容（先看这里段、74 合集表格、目录、信任面、旗舰流水线等正文）已抽取到
-> [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)。本文件只保留顶部 banner + badges + 简短入口 + 底部脚注；
-> **完整中文内容请看 [docs/CONTENT_ZH.md](docs/CONTENT_ZH.md)。**
+> **📌 文档结构（2026-07-22 起）：** 本文件是**中文默认入口** —— banner + badges + 信任面 + 9 阶段流水线速览 + 74 行合集总表。
+> 每个合集的**完整描述、按用途分组、精确数字、验证方法**在 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)（扩展正文，总表行内的 `→` 直接跳转到对应锚点）。
 >
-> English version: [`README-en.md`](README-en.md) · 中文完整正文：[`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) · 旧版完整中文 README：[`README-zh-CN.md`](README-zh-CN.md)（已迁出，与本文件等效指向 CONTENT_ZH.md）
+> English version: [`README-en.md`](README-en.md) · 中文扩展正文：[`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) · [`README-zh-CN.md`](README-zh-CN.md) 已弃用（重定向占位）
 
 <div align="center">
 
@@ -37,21 +46,9 @@
   <br/>
 </div>
 
-> ### 🚀 New here? Open the **[Skill Search →](docs/search.html)** to filter all 1,151 skills by method, stage, language, and license. The 5-minute tour (`make quickstart`) prints the same picture in your terminal.
+> ### 🚀 New here? Open the **[Skill Search →](docs/search.html)** to filter all 1,094 skills by method, stage, language, and license. The 5-minute tour (`make quickstart`) prints the same picture in your terminal.
 >
-> ### 🇨🇳 **中文用户请直接看 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)** —— 完整中文内容已迁出本文件。📖 **English readers:** see [`README-en.md`](README-en.md) — this file is just the GitHub default README (banner + badges + footer).
-
----
-
-[![Awesome](https://awesome.re/badge.svg)](https://awesome.re)
-[![GitHub stars](https://img.shields.io/github/stars/brycewang-stanford/Auto-Empirical-Research-Skills?style=social)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
-[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Validate catalog](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml/badge.svg)](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/actions/workflows/validate-catalog.yml)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/brycewang-stanford/Auto-Empirical-Research-Skills/badge)](https://scorecard.dev/viewer/?uri=github.com/brycewang-stanford/Auto-Empirical-Research-Skills)
-[![Security audit: 52/52 CLEAN](https://img.shields.io/badge/security%20audit-52%2F52%20CLEAN-brightgreen)](SECURITY-SCAN-REPORT.md)
-[![Rigor coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbrycewang-stanford%2FAuto-Empirical-Research-Skills%2Fmain%2Fdocs%2Fbadges%2Frigor-coverage.json)](docs/RIGOR_COVERAGE.md)
-[![Powered by StatsPAI](https://img.shields.io/badge/powered%20by-StatsPAI-orange)](https://github.com/brycewang-stanford/StatsPAI)
+> ### 🇨🇳 **中文用户从本文件开始**（流水线速览 + 74 行总表），每个合集的完整描述见 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)。📖 **English readers:** see [`README-en.md`](README-en.md).
 
 ---
 
@@ -66,25 +63,20 @@
 
 ---
 
-## 中文版指引（P2.2 重构）
+## 中文文档结构
 
-本文件（P2.2 重构后）只承担 GitHub 默认入口的角色，**完整中文内容已迁出到 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)**：
+中文内容分两级维护，各司其职：
 
-- **先看这里段 / 74 合集一览 / 目录 / 按用途分组 / 精确数字 / 2 分钟验证 / 三层信任 / 旗舰流水线 / 30 秒入口 / 信任面表 / 浏览全景 / 安全扫描 / 更新日志 / 贡献与引用** → 全部在 CONTENT_ZH.md。
-- **顶部 banner / badges / 底部脚注** → 保留在本文件（GitHub 默认渲染）。
-- **入口分流**：
-  - 中文读者 → [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)（新唯一权威中文版）
-  - 英文读者 → [`README-en.md`](README-en.md)
-  - 繁中 → [`README-zh-TW.md`](README-zh-TW.md)
-  - 日文 → [`README-ja.md`](README-ja.md)
-  - 韩文 → [`README-ko.md`](README-ko.md)
+- **本文件（README.md，GitHub 默认入口）**：banner、badges、信任面、9 阶段流水线速览、74 行合集总表。
+- **[`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)（扩展正文）**：每个合集的完整描述（`#skill-NN` 锚点）、按用途分组、精确数字、2 分钟验证、三层信任、旗舰流水线详解、贡献与引用。总表行内的 `→` 直接跳到对应锚点。
+- **其他语言**：[`README-en.md`](README-en.md) · [`README-zh-TW.md`](README-zh-TW.md) · [`README-ja.md`](README-ja.md) · [`README-ko.md`](README-ko.md)
 
 > [!NOTE]
-> **维护规则：** 任何对正文（先看这里 / 74 合集 / 旗舰流水线 / 信任说明等）的改动，请改 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)；本 README 仅维护顶部 banner、badges、底部脚注与本节简短入口。
+> **维护规则：** 改合集总表 → 本文件与 CONTENT_ZH.md 的锚点表**两处同步**；改合集详情 / 分组 / 数字 → 只改 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)。统计数字（合集数 / skill 数）以 [`catalog/skills.json`](catalog/skills.json) 为准，由 `make validate` 的 readme-stats 检查器守护。
 >
 > **贡献者（Contributors）：** 提交前请在本地跑通完整门禁 `make check`（catalog 校验 + 链接 + 单元测试 + eval-harness + benchmark）。详见 [`CONTRIBUTING.md`](CONTRIBUTING.md)。
 >
-> **旧版归档：** [`README-zh-CN.md`](README-zh-CN.md) 已重写为同一指向 CONTENT_ZH.md 的极简入口（与本文件等价）。原 README.md 的完整中文正文未删，仅迁移到 CONTENT_ZH.md，并在所有内部链接前缀前加 `../`（保留可用性）。
+> **旧版归档：** [`README-zh-CN.md`](README-zh-CN.md) 已弃用，仅作向后兼容的重定向占位。
 
 ---
 
@@ -135,19 +127,19 @@
 | [00.3 Full Empirical · R](skills/00.3-Full-empirical-analysis-skill_R/) 📗 | 显式 R 栈（tidyverse / fixest / did / HonestDiD）+ Quarto 渲染 |
 | [48 chinese-de-aigc](skills/48-copaper-ai-chinese-de-aigc/) 🇨🇳 | 面向知网 / 万方 / Turnitin 中文版的中文去 AIGC |
 | [50 AER-skills](skills/50-brycewang-aer-skills/) 📕 | Top-5 经济学投稿套件：识别 → 稳健性 → R&R |
-| [69 Paper-WorkFlow](skills/69-Paper-WorkFlow/) 🧭 | 元编排器，把上面 74 步串成一键流水线 |
+| [69 Paper-WorkFlow](skills/69-Paper-WorkFlow/) 🧭 | 元编排器，把上面 9 个阶段串成一键流水线 |
 
 **为什么挑这 7 个？因为它们的行为都被基准钉死了** —— 不是营销口径，是对着已知答案反复跑过验证过的（[17 项数值 benchmark + 37 项行为评测 ↗](docs/CONTENT_ZH.md#你究竟得到什么精确数字)）。
 
 ### 看到这里 —— 完整 74 行合集目录
 
-[↴ 直跳到下方 74 行总表（每个合集带 `#skill-NN` 锚点）](#-74-个核心-skills-合集一览00--69编号连续无空缺)。如果你更关心"这些 skill **怎么用**"而不是"有哪些 skill"，看 [📘 中文唯一权威正文](docs/CONTENT_ZH.md) 里的「按用途分组」与「旗舰流水线」两节。
+[↴ 直跳到下方 74 行总表（每个合集带 `#skill-NN` 锚点）](#-74-个核心-skills-合集一览00--70编号连续无空缺)。如果你更关心"这些 skill **怎么用**"而不是"有哪些 skill"，看 [📘 中文唯一权威正文](docs/CONTENT_ZH.md) 里的「按用途分组」与「旗舰流水线」两节。
 
 ---
 
-## 🧰 74 个核心 Skills 合集一览（`00 → 69`，编号连续无空缺）
+## 🧰 74 个核心 Skills 合集一览（`00 → 70`，编号连续无空缺）
 
-> **打开仓库 → 看见整座库。** 全部 **74 个合集 · 1,151 个 skill**，每一个都已 vendor 进本仓库，由 [`catalog/skills.json`](catalog/skills.json) 跟踪。**⭐ = Stanford REAP × CoPaper.AI 团队自研的 skill**；其余为精选、经安全审计的社区作品。
+> **打开仓库 → 看见整座库。** 全部 **74 个合集 · 1,094 个 skill**，每一个都已 vendor 进本仓库，由 [`catalog/skills.json`](catalog/skills.json) 跟踪。**⭐ = Stanford REAP × CoPaper.AI 团队自研的 skill**；其余为精选、经安全审计的社区作品。
 >
 > **主题图例 —** 🚀 全流程与编排器 · 🎯 因果推断与计量经济学 · 📚 文献与研究设计 · ✍️ 写作 / 编辑 / 去 AIGC · 📑 引用 / 复现 / 同行评审 · 🛠️ 数据 / 工具 / 基础设施
 >
@@ -230,7 +222,7 @@
 | ⭐ [69](skills/69-Paper-WorkFlow/) | **Paper-WorkFlow** 🧭 | 元编排器，串起整个社会科学论文流水线 | [→](docs/CONTENT_ZH.md#skill-69) |
 | [70](skills/70-ssci-polish/) | ssci-polish ✍️ | SSCI / SCI 英文论文语言润色（语法、可读性、学术语气） | [→](docs/CONTENT_ZH.md#skill-70) |
 
-> **想看更详细的描述（主题分类、字段、统计）？** 见 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) 中标注 `#skill-NN` 锚点的同一张表 —— 它是 P2.2 重构后的中文唯一权威正文。
+> **想看更详细的描述（主题分类、字段、统计）？** 见 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) 中标注 `#skill-NN` 锚点的同一张表 —— 它是每个合集的完整描述所在的扩展正文。
 
 ---
 

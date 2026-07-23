@@ -280,6 +280,100 @@ Rules:
 - advisory clock starts from marker comment `created_at`
 - if marker cannot be posted/read, route to `AW4` recovery-failed hold
 
+### AW3-S — Bounded stale-request recovery (`#1571`)
+
+**Distinct from `AW3-R`**: `AW3-R` fires when the pending request is
+already **proven** to cover HEAD and only anchors a missing marker.
+`AW3-S` fires for the **opposite**, unproven case PR #1562 identified
+(`COPILOT_PENDING_COVERS_HEAD = false`, no same-head marker) — the
+`REQUEST_NEEDED`-with-pending sub-case (E14). It bounds the
+remove-then-re-request sequence with the independent, per-HEAD
+recovery-cycle cap from the
+[terminal contract](#terminal-copilot-stall-recovery-contract-state-policy-markers-clock)
+(default 2) instead of the far larger ordinary `REQUEST_CAP` (30).
+
+**Eligibility.** Run `advisory-wait-state` **with `--claim-id`/`--agent-id`
+set to the active claim** (omitting either makes the budget read as the
+full un-decremented cap; the classifier itself fails this closed to
+`"not-applicable"` / `active-claim-not-provided` rather than relying on the
+caller to remember not to trust an unbound `"attempt"`) and read
+`staleRequestRecovery`:
+
+- `"not-applicable"` → does not apply; use ordinary handling unchanged.
+- `"cap-exhausted"` → do **not** remove or re-request; handle like
+  `CAP_EXHAUSTED` (`CAP_EXHAUSTED_ROUTE`) instead of looping.
+- `"attempt"` → run the cycle below.
+
+Without helper runtime, derive the same decision from AW1-AW2 plus the
+terminal contract's `remaining budget` (`max(cap - completedCycleCount,
+0)`, trusted bound `advisory-wait-recovery:` markers only).
+
+**Bounded cycle** (only when `"attempt"`). Before each mutating step,
+re-verify the active claim
+([claim revalidation gate](idd-overview-core.instructions.md#claim-revalidation-gate))
+and that HEAD has not moved since this attempt started; either failure
+aborts without mutating or counting a cycle — discard state and restart
+from E1 against the new HEAD.
+
+1. **Remove** the stale request, gh-then-REST (`{primary-advisory-bot}` /
+   `{primary-advisory-bot-rest-login}` substitution per
+   `idd-review-fix.instructions.md`'s E14 **Primary advisory bot** section):
+
+   ```sh
+   gh pr edit {pr-number} --remove-reviewer "@{primary-advisory-bot}"
+   # on a GraphQL login-resolution failure:
+   gh api repos/{owner}/{repo}/pulls/{pr-number}/requested_reviewers \
+     -X DELETE -f "reviewers[]={primary-advisory-bot-rest-login}"
+   ```
+
+   If it fails because the bot is no longer pending, re-run AW1-AW3 and
+   re-evaluate `staleRequestRecovery` fresh; any other failure posts the
+   `AW4` pending-refresh-failed hold and stops — no cycle counted.
+2. **Verify** removal and current HEAD before proceeding.
+3. **Request** Copilot again, same gh-then-REST fallback:
+
+   ```sh
+   gh pr edit {pr-number} --add-reviewer "@{primary-advisory-bot}"
+   # on a GraphQL login-resolution failure:
+   gh api repos/{owner}/{repo}/pulls/{pr-number}/requested_reviewers \
+     -X POST -f "reviewers[]={primary-advisory-bot-rest-login}"
+   ```
+
+4. **Verify association**: re-fetch the PR timeline and confirm the
+   fresh request's `review_requested` now follows HEAD's `committed`
+   event (the same proof `COPILOT_PENDING_COVERS_HEAD` uses). If not yet
+   true, this is ordinary eventual-consistency lag, not a failed
+   request — do **not** redo steps 1-3 (the request already made is
+   still valid; removing and re-requesting again only churns it).
+   Re-check this step alone after a brief pause, up to a small bounded
+   number of attempts (distributed default: 3, a few seconds apart). If
+   it still cannot be proven after that budget, do **not** post the
+   marker or count a cycle: abort the whole attempt and return to the
+   polling loop (or E1) to re-evaluate fresh at the next interval — never
+   tight-loop steps 1-4 on unresolved timeline lag. An attempt that never
+   reaches a verified marker never consumes budget either way, so
+   re-entry after a partial failure is naturally idempotent.
+5. **Post exactly one** bound marker, only once every prior step is
+   verified:
+
+   ```sh
+   node scripts/post-idd-marker.mjs --type advisory-recovery --target pr <pr-number> \
+     --agent-id <id> --claim-id <id> --head-sha <PR_HEAD_SHA> \
+     --attempt <n> --timestamp <ISO8601> --apply
+   ```
+
+   `<n>` is `completedCycleCount + 1`. Posting last is what prevents
+   double-counting: `buildCopilotRecoverySummary` counts trusted marker
+   **presence**, so a retried-but-unmarked attempt never consumes budget.
+
+**Ordinary counters are untouched.** The bound marker is excluded from
+`requestMarkerCount` (only `advisory-wait:` markers count there) and from
+`#1511`'s reroll accounting. It **does** count as a same-head marker for
+the AW2 clock, which is what naturally blocks a second mutation for the
+_same_ verified HEAD within one pass (`staleRequestRecovery` reads
+`"not-applicable"` once a same-head marker exists), with no extra guard
+needed.
+
 ### AW3-H — Hide superseded advisory-wait markers
 
 After any new `advisory-wait` or `advisory-wait-recovery` marker is
@@ -343,6 +437,125 @@ this hold and stop:
 ## AW6 — Same-HEAD advisory reroll
 
 F2-only (`#1511`) on `sameHeadReroll.eligible`; see
-`idd-helper-scripts.md`. `requestable`: post+request
-`advisory-reroll:`, poll (not E14's loop). `inFlight`: poll only.
+`docs/idd-helper-scripts.md`. `requestable`: post the marker below **before**
+requesting the review, then poll (not E14's loop). `inFlight`: poll only.
 Else F2's route; `!inFlight`: E1.
+
+```text
+advisory-reroll: {agent-id} {PR_HEAD_SHA} {ISO8601-requested-at}
+```
+
+Plain text, no HTML comment — matching both `advisory-wait:`'s and
+`advisory-wait-recovery:`'s shape. When helper runtime is enabled, render
+and POST this marker with the profile-selected post-idd-marker command:
+
+```sh
+post-idd-marker --type advisory-reroll --target pr <pr-number> \
+  --agent-id <id> --head-sha <PR_HEAD_SHA> --timestamp <ISO8601> --apply
+```
+
+The manual JSON `POST` stays the fallback. If the marker cannot be
+posted or verified, fail closed to AW4's **Recovery failed** hold
+template and stop (mirroring AW3-R's identical routing on the same
+failure).
+
+## Terminal Copilot stall-recovery contract (state, policy, markers, clock)
+
+`#1572` defines state/policy/marker/schema **contracts** for a terminal
+`COPILOT_UNAVAILABLE` signal. `#1571` (`AW3-S` above) builds the
+execution track against this contract: the bounded remove/re-request/
+verify/mark recovery cycle, and the `staleRequestRecovery` eligibility
+classification that gates it. `AW3-S`'s `"cap-exhausted"` result still
+falls back to the existing `CAP_EXHAUSTED_ROUTE` handling, not the
+terminal routing below (recovery-cycle exhaustion alone does not prove
+`COPILOT_UNAVAILABLE` — see **State** below). Routing it into
+F2/F3/convergence/waiver decisions:
+[Terminal routing](#terminal-routing-1570) below.
+
+**Policy** (`advisory-wait-policy.mts`, resolved/read like every other
+`advisoryWait.*` knob, independent counters from `requestCap` and `#1511`'s
+`sameHeadRerollCap`): `advisoryWait.recoveryCycleCap` (integer ≥ 1,
+default **2**) bounds completed recovery cycles per PR HEAD.
+`advisoryWait.terminalWindow` (ISO 8601 duration, default **`PT12H`**) is
+the window that must elapse after cap exhaustion before the state can
+turn terminal.
+
+**Markers.** `advisory-wait-recovery:` (posted via `post-idd-marker --type
+advisory-recovery`, already used by AW3-R above) gained an _optional_
+bound form:
+`advisory-wait-recovery: {agent-id} {PR_HEAD_SHA} {ISO8601-timestamp}
+claim:{claim-id} attempt:{n}`. Omitting both `--claim-id`/`--attempt`
+renders the legacy 3-field form byte-for-byte — **AW3-R's written
+procedure above is unchanged**; passing only one of the two fails closed.
+The legacy form stays a recognized operational marker but is not usable
+recovery-cycle evidence (treated like a malformed marker: excluded from
+counting/anchoring). A new terminal marker, `copilot-unavailable:` (same
+five fields, all required, no legacy form), has no defined trigger in
+this issue — deciding when to post it is the consuming track's job. Post
+either with `post-idd-marker --type advisory-recovery [--claim-id <id>
+--attempt <n>]` / `--type copilot-unavailable --claim-id <id> --attempt
+<n>` (plus `--agent-id --head-sha --timestamp`).
+
+**Trust-filtering.** A bound marker counts as recovery-cycle evidence only
+when _all_ hold, each excluding it independently (never a whole-abort):
+author is a trusted marker actor (else untrusted); body parses as the
+bound five-field shape (else malformed/unbound); embedded agent id
+matches the active claim's (else foreign-agent); embedded claim id
+matches (else mismatched-claim); embedded HEAD SHA matches the current PR
+HEAD (else mismatched-HEAD, earlier or later); the comment's GitHub
+`created_at` validates as an ISO 8601 UTC timestamp (else
+ambiguous-created-at — excluded from both counting and anchoring, never
+counted without a valid anchor contribution).
+
+**Clock anchor** = GitHub `created_at` of the _earliest_ trusted, bound,
+current-HEAD `advisory-recovery` marker. Embedded marker timestamps are
+diagnostics only and never move it, mirroring the `review-watermark` /
+claim-heartbeat clock rule. **Completed-cycle count** = trusted bound
+marker _presence_, never the largest embedded `attempt` (diagnostic
+only). `remaining budget = max(cap - completedCycleCount, 0)`.
+
+**State.** `COPILOT_UNAVAILABLE` only when all three hold, from trusted
+evidence: cap exhausted (`completedCycleCount >= cap`); terminal window
+elapsed since the anchor; and no current-HEAD Copilot review
+(`lastCopilotCommit != PR_HEAD_SHA`). Missing/ambiguous timeline, marker,
+claim, or HEAD evidence — including the claim id/agent id simply not
+being supplied — fails closed to `NOT_TERMINAL` with a machine-readable
+reason (e.g. `active-claim-not-provided`, `no-trusted-recovery-markers`,
+`recovery-cap-not-exhausted`, `terminal-window-not-elapsed`,
+`current-head-review-exists`).
+
+**Non-bypass by construction.** `COPILOT_UNAVAILABLE` is a distinct
+terminal signal: no existing advisory-satisfied field (`outcome`,
+`f3Outcome`, any future readiness rollup) is or may be derived from it,
+and it is never derived from them — structurally independent
+computations, composed side by side. Consumers may treat it only as
+waiver _eligibility_ (a maintainer may authorize a waiver or equivalent
+human off-ramp), never as advisory satisfaction or merge readiness on its
+own; no merge or gate-satisfied report may follow from
+`COPILOT_UNAVAILABLE` alone — see the routing below.
+
+### Terminal routing (`#1570`)
+
+Two consumers reuse the SAME `idd-external-check-waiver:` evidence
+(selector `idd-advisory-convergence`, current HEAD, active claim) — one
+waiver satisfies either:
+
+- CI check (`advisory-convergence.mts`): `terminal` field (separate from
+  `deadline`); its waiver hatch also opens on `COPILOT_UNAVAILABLE`
+  independent of `deadline.passed` — `ready` still needs a valid waiver.
+- F2/F3 (`pre-merge-readiness.mts`): `advisoryWait.copilotUnavailable` /
+  `copilotUnavailableWaived`. `f3Outcome` is unchanged; unwaived instead
+  adds `copilot-terminal-unavailable` to `blockers[]`, additive to
+  `advisory-wait`. Do not merge on `f3Outcome: SATISFIED` alone here.
+
+**Unwaived**: post this hold and stop (no E14 loop, no merge bypass):
+
+> Copilot is terminally unavailable on HEAD `{PR_HEAD_SHA}`: the recovery
+> cycle is exhausted and the terminal window elapsed with no current-HEAD
+> review. A maintainer must post an `idd-external-check-waiver:` marker
+> for selector `idd-advisory-convergence`, this HEAD, and the active
+> claim before this PR can proceed.
+
+**Waived**: rerun the existing `idd-advisory-convergence` run (Rerun
+mechanics below — never `workflow_dispatch`); both fields recompute every
+call, so an expired or invalid marker reverts automatically.

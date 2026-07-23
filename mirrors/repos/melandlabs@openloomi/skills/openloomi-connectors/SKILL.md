@@ -2,7 +2,7 @@
 name: openloomi-connectors
 description: "openloomi Connectors tools - manage the native 7 messaging integrations and pair with the composio skill for the 1000+ apps OAuth layer (Slack, Discord, X, Gmail, Outlook, Google Calendar/Drive/Docs, GitHub, Notion, Linear, HubSpot, LinkedIn, Jira, Asana). Triggers: connect platform, integration status, list accounts, disconnect, list-accounts, status, connect, send-reply, native vs composio, 1000+ apps, list connections."
 metadata:
-  version: 0.8.6
+  version: 0.8.7
 allowed-tools: Bash(node $SKILL_DIR/scripts/openloomi-connectors.cjs *)
 ---
 

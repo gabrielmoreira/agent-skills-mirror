@@ -101,6 +101,7 @@
 
 | 文件 | 主题 | 状态 |
 |------|------|------|
+| [active/qwen-token-plan-and-grok-access.md](active/qwen-token-plan-and-grok-access.md) | **千问 Token Plan 与 Grok 4.5 接入**：把百炼 Coding Plan、千问 Token Plan 个人版/团队版建模为三个稳定套餐，修复同 URL identity 串线并增加交互式使用 gate；xAI 同时接 API Key + Grok 4.5 Responses 和兼容 SuperGrok browser/device OAuth | 🟡 Phase 0–5、Tier 0/1、Web smoke 与 Electron build 已完成；真实 Qwen/xAI/SuperGrok 凭据和 packaged macOS/Windows 验收待外部条件 |
 | [active/codebase-health-audit-2026-06.md](active/codebase-health-audit-2026-06.md) | **代码健康审计与修复计划（2026-06）**：6 路并行审计（流式核心 / Codex / DB+API / 前端 / Electron+构建 / 测试覆盖）产出 bug、性能、安全加固、测试补洞四个 Phase；关键发现已现场核验并逐条标注核验状态与验证分层；v2 已按 Codex 静态审查订正 7 处事实偏差与执行边界 | 🔄 Phase A 已完成（A1–A6），B/C/D 待实施（Codex 负责审查/用例设计） |
 | [active/codex-cli-discovery-refresh.md](active/codex-cli-discovery-refresh.md) | **Codex CLI 发现与刷新修复**：适配当前 `ChatGPT.app` 内置 CLI，保留旧 `Codex.app`，修复进程级路径缓存与设置页假刷新，并让实际 selected binary/version 与登录失败可见 | 🟡 production UI、签名 arm64 `.app`/DMG/ZIP 与 packaged Codex status smoke 已完成；仅真实双安装终验待完成 |
 | [active/v0.56.x-stability-trust.md](active/v0.56.x-stability-trust.md) | **v0.56.x Stability / Trust 总计划**：从 Notion GPT Pro 产品审查、当前 GitHub Issues / PR 治理状态、用户最新体验反馈汇总出的稳定性 umbrella plan；先收 codebase-health Phase A，再治理 session/context/stream/composer、文件引用安全、安装更新、CI 与 GitHub triage | 🚧 Phase 0/1 ✅ 已完成；Phase 2 进行中（Composer/Context 主链路 #1–#5 闭环；#629 已关闭 🟢、#635 代码层完成 🟡（待真实 smoke）、#632 假% 已修 item3 待续；stream 终态原因码 / 压缩回滚 / 诊断字段待续）；Phase 3 主问题 #628 已关闭 🟢；Phase 7 已细化为 GitHub 旧 issue 清库存 + 保守机器人治理批次，待 Claude Code 执行；Codex 持续核验 |

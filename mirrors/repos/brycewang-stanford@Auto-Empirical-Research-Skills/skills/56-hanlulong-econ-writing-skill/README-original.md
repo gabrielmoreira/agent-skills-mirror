@@ -258,7 +258,7 @@ This skill synthesizes advice from **50+ authoritative sources**. The top 10 sou
 
 Notable authorities include **Nobel laureates** (Goldin 2023, Kremer 2019), **Clark Medal winners** (Gentzkow 2014, Finkelstein 2012), a **MacArthur Fellow** (Shapiro 2021), and editors of leading journals (Bellemare at AJAE, Beatty at AJAE, Shimshack at JEEM).
 
-The full ranked list of all 50+ sources with links, tiers, and notes is available in [`sources/SOURCES_RANKED.md`](sources/SOURCES_RANKED.md).
+The full ranked list of all 50+ sources with links, tiers, and notes is available in [`sources/SOURCES_RANKED.md`](https://github.com/hanlulong/econ-writing-skill/blob/main/sources/SOURCES_RANKED.md) (upstream only; not vendored).
 
 ---
 

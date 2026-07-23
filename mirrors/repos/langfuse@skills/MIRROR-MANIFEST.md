@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 18 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,17 +66,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.cursor/skills/skill-creator/scripts/package_skill.py`](.cursor/skills/skill-creator/scripts/package_skill.py) |
 | 6 | ✓ | [`.cursor/skills/skill-creator/scripts/quick_validate.py`](.cursor/skills/skill-creator/scripts/quick_validate.py) |
 | 7 | ✓ | [`.cursor/skills/skill-creator/SKILL.md`](.cursor/skills/skill-creator/SKILL.md) |
-| 8 | ✓ | [`skills/langfuse/references/ci-cd.md`](skills/langfuse/references/ci-cd.md) |
-| 9 | ✓ | [`skills/langfuse/references/cli.md`](skills/langfuse/references/cli.md) |
-| 10 | ✓ | [`skills/langfuse/references/error-analysis.md`](skills/langfuse/references/error-analysis.md) |
-| 11 | ✓ | [`skills/langfuse/references/instrumentation.md`](skills/langfuse/references/instrumentation.md) |
-| 12 | ✓ | [`skills/langfuse/references/judge-calibration.md`](skills/langfuse/references/judge-calibration.md) |
-| 13 | ✓ | [`skills/langfuse/references/prompt-engineering.md`](skills/langfuse/references/prompt-engineering.md) |
-| 14 | ✓ | [`skills/langfuse/references/prompt-migration.md`](skills/langfuse/references/prompt-migration.md) |
-| 15 | ✓ | [`skills/langfuse/references/skill-feedback.md`](skills/langfuse/references/skill-feedback.md) |
-| 16 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
-| 17 | ✓ | [`skills/langfuse/references/v4-project-migration.md`](skills/langfuse/references/v4-project-migration.md) |
-| 18 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
+| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 9 | ✓ | [`skills/langfuse/references/ci-cd.md`](skills/langfuse/references/ci-cd.md) |
+| 10 | ✓ | [`skills/langfuse/references/cli.md`](skills/langfuse/references/cli.md) |
+| 11 | ✓ | [`skills/langfuse/references/error-analysis.md`](skills/langfuse/references/error-analysis.md) |
+| 12 | ✓ | [`skills/langfuse/references/instrumentation.md`](skills/langfuse/references/instrumentation.md) |
+| 13 | ✓ | [`skills/langfuse/references/judge-calibration.md`](skills/langfuse/references/judge-calibration.md) |
+| 14 | ✓ | [`skills/langfuse/references/prompt-engineering.md`](skills/langfuse/references/prompt-engineering.md) |
+| 15 | ✓ | [`skills/langfuse/references/prompt-migration.md`](skills/langfuse/references/prompt-migration.md) |
+| 16 | ✓ | [`skills/langfuse/references/skill-feedback.md`](skills/langfuse/references/skill-feedback.md) |
+| 17 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
+| 18 | ✓ | [`skills/langfuse/references/v4-project-migration.md`](skills/langfuse/references/v4-project-migration.md) |
+| 19 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
 
 ---
 

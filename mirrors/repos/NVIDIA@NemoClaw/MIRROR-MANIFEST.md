@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 153 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 1 followed patterns, 154 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 153 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 153 |
+| Followed pats | 1 |
+| Files         | 154 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 0 followed patterns, 153 fi
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `WRITING.md`
 
 ## File Index
 
@@ -212,6 +212,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 151 | ✓ | [`skills/nemoclaw-user-guide/skill.oms.sig`](skills/nemoclaw-user-guide/skill.oms.sig) |
 | 152 | ✓ | [`skills/README.md`](skills/README.md) |
 | 153 | ✓ | [`src/lib/messaging/AGENTS.md`](src/lib/messaging/AGENTS.md) |
+| 154 | → | [`WRITING.md`](WRITING.md) |
 
 ---
 

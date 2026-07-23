@@ -8,8 +8,8 @@ Paste this snapshot into the GitHub release body and add a hand-written
 
 ## Catalog
 
-- Top-level collections: **70**
-- `SKILL.md` files: **1151**
+- Top-level collections: **74**
+- `SKILL.md` files: **1094**
 - Cataloged agent tools: **334** ([`tools/CATALOG.md`](../tools/CATALOG.md))
 
 ## Methodological rigor
@@ -34,6 +34,7 @@ Paste this snapshot into the GitHub release body and add a hand-written
 - `mediation`: 8
 - `survival`: 3
 - `quantile`: 2
+- `decomposition`: 1
 - `shift-share`: 1
 
 ### Eval scenarios by category
@@ -55,10 +56,10 @@ Paste this snapshot into the GitHub release body and add a hand-written
 - CC-BY-SA-4.0: 1
 - CC-BY-SA-4.0 (repository default): 5
 - GPL-3.0: 1
-- MIT: 35
+- MIT: 36
 - MIT Non-Commercial: 1
 - Mixed (per-skill; see folder): 2
-- UNKNOWN - check upstream: 22
+- UNKNOWN - check upstream: 25
 
 ## Quality gates
 

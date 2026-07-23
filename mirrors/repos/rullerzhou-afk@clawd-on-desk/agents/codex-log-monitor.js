@@ -242,7 +242,10 @@ class CodexLogMonitor {
     let bytesScanned = 0;
     for (const candidate of candidates) {
       if (filesScanned >= RECOVERY_SWEEP_MAX_FILES) break;
-      const candidateCost = Math.min(candidate.size, RECOVERY_HEAD_LINE_MAX_BYTES + RECOVERY_TAIL_SCAN_BYTES);
+      const candidateCost = Math.min(
+        candidate.size,
+        RECOVERY_HEAD_LINE_MAX_BYTES + RECOVERY_TAIL_SCAN_BYTES + 1
+      );
       // Check BEFORE adding — accumulating post-hoc lets exactly one
       // over-budget candidate slip through every time the running total
       // lands just under the cap (#707 follow-up review round 4).
@@ -382,6 +385,11 @@ class CodexLogMonitor {
     // Codex stops writing once it's blocked waiting for an answer.
     const tailLen = Math.min(stat.size, RECOVERY_TAIL_SCAN_BYTES);
     const tailStart = stat.size - tailLen;
+    // A non-zero tailStart is not necessarily mid-line: it can land exactly
+    // on the first byte after a newline. Inspect the preceding raw byte so a
+    // valid request at that exact 1 MiB boundary is not discarded below.
+    const tailStartsOnRecordBoundary = tailStart === 0
+      || this._readByteRange(filePath, tailStart - 1, 1).buf[0] === 0x0a;
     const { buf: tailBuf } = this._readByteRange(filePath, tailStart, tailLen);
     // Find the last complete (newline-terminated) record in RAW BYTE space —
     // 0x0A can never appear inside a multi-byte UTF-8 sequence, so this index
@@ -397,10 +405,10 @@ class CodexLogMonitor {
     const tailText = tailBuf.toString("utf8", 0, committedTailBytes);
     const rawLines = tailText.split("\n");
     rawLines.pop(); // trailing "" — tailText always ends in the newline we just found
-    // The window can start mid-line when tailStart > 0 — that first fragment
-    // is unparseable garbage, not a real record; drop it rather than risk a
-    // false JSON.parse failure silently masking a genuine question.
-    if (tailStart > 0) rawLines.shift();
+    // Drop the first fragment only when the preceding byte proves the window
+    // really started mid-line. At an exact newline boundary, the first line
+    // is a complete record and must be retained.
+    if (!tailStartsOnRecordBoundary) rawLines.shift();
 
     const pending = new Map();
     const pendingTimestampMs = new Map();

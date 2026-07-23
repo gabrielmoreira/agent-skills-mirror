@@ -12,6 +12,7 @@ module.exports = {
   id: "opencode",
   name: "OpenCode",
   processNames: { win: ["opencode.exe"], mac: ["opencode"], linux: ["opencode"] },
+  startupRecoveryProcessNames: { win: ["opencode.exe"], mac: ["opencode"], linux: ["opencode"] },
   eventSource: "plugin-event",
   eventMap: FAMILY_EVENT_MAP,
   capabilities: FAMILY_CAPABILITIES,

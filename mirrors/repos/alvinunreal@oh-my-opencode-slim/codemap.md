@@ -41,7 +41,7 @@ This codemap covers the plugin repository itself and excludes the nested `openco
 | `src/hooks/json-error-recovery/` | JSON/tool-output recovery helpers for malformed model responses. | [View Map](src/hooks/json-error-recovery/codemap.md) |
 | `src/hooks/phase-reminder/` | Message-transform reminder enforcing orchestrator workflow phases. | [View Map](src/hooks/phase-reminder/codemap.md) |
 | `src/hooks/post-file-tool-nudge/` | Post-read/write reminder path that nudges delegation-aware next steps. | [View Map](src/hooks/post-file-tool-nudge/codemap.md) |
-| `src/hooks/task-session-manager/` | Resumable `task` session tracking, short alias resolution, prompt injection, and stale-session cleanup. | [View Map](src/hooks/task-session-manager/codemap.md) |
+| `src/hooks/task-session-manager/` | Resumable `task` session tracking, short alias resolution, prompt injection, stale-session cleanup, and terminal task reconciliation. | [View Map](src/hooks/task-session-manager/codemap.md) |
 | `src/interview/` | `/interview` feature: per-session and dashboard prompt/state orchestration, persistence, local UI, and cross-process coordination. | [View Map](src/interview/codemap.md) |
 | `src/mcp/` | Built-in MCP registry and per-provider MCP definitions. | [View Map](src/mcp/codemap.md) |
 | `src/multiplexer/` | Terminal multiplexer abstraction layer with backend selection, session mirroring, polling fallback, and shutdown lifecycle orchestration. | [View Map](src/multiplexer/codemap.md) |
@@ -97,7 +97,7 @@ This codemap covers the plugin repository itself and excludes the nested `openco
   multiplexer behavior remains on the upstream path.
 - Council mode is implemented in `src/agents/`; the orchestrator dispatches councillors as subagents and the council agent synthesizes responses.
 - `src/tools/preset-manager.ts` hooks command execution and updates runtime agent models from configured presets.
-- `src/hooks/task-session-manager/` depends on `src/utils/background-job-board.ts` and `src/utils/task.ts` to support background task tracking, task output parsing, and safe alias reuse.
+- `src/hooks/task-session-manager/` depends on `src/utils/background-job-board.ts` and `src/utils/task.ts` to support background task tracking, task output parsing, terminal task reconciliation, and safe alias reuse.
 - `src/hooks/filter-available-skills/` and agent permission logic rely on shared skill names from the CLI/config layer.
 - `src/interview/` hooks into plugin command/event surfaces exposed by `src/index.ts`.
 

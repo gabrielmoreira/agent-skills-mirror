@@ -97,7 +97,7 @@ Container Apps·GitHub 기반 App Platform·CI/CD 중심 서사도 지원한다.
 
 ## 워크플로우
 
-> **순서를 반드시 지킨다: ① 기초 리서치(google-web-search) → ② 스토리라인 구성 → ③ 메뉴·데이터 매핑 → ④ 빌드 → ⑤ 검증.**
+> **순서를 반드시 지킨다: ① 기초 리서치(web-search) → ② 스토리라인 구성 → ③ 메뉴·데이터 매핑 → ④ 빌드 → ⑤ 검증.**
 > 리서치 없이 바로 HTML을 만들지 않는다. 스토리라인이 확정되기 전에 빌드하지 않는다. 이 순서는 생략·역전 불가.
 > **디자인은 GitHub Primer Dark Dimmed 계열 soft-dark로 고정**되어 있으므로 매 요청 새로 설계하지 않는다(고객별로는 메뉴와 데이터만 바꾼다).
 
@@ -114,10 +114,12 @@ Container Apps·GitHub 기반 App Platform·CI/CD 중심 서사도 지원한다.
 - 결함을 한 번에 모아 수정하고 단계별 시간과 캐시 적중 여부를 `metrics.json`에 기록한다.
 
 ### 1단계 — 기초 리서치 (⚠️ 필수 · 가장 먼저)
-**데모를 만들기 전에 반드시 `google-web-search` 스킬을 호출해 고객·산업 기초자료를 검색·수집한다. 이 단계는 생략 불가이며, 다른 콘텐츠 작업(스토리라인·화면 설계·빌드)보다 먼저 수행한다. 저장소 밖 도구 캐시 확인만 리서치와 병렬 실행할 수 있다.**
+**데모를 만들기 전에 반드시 `web-search` 스킬을 호출해 고객·산업 기초자료를 검색·수집한다. 이 단계는 생략 불가이며, 다른 콘텐츠 작업(스토리라인·화면 설계·빌드)보다 먼저 수행한다. 저장소 밖 도구 캐시 확인만 리서치와 병렬 실행할 수 있다.**
 1. 입력 파라미터 확정. 부족하면 사용 가능한 경우 `ask_user`, 그렇지 않으면 client의 일반 chat UX로
    **한 번에 하나의 focused question만** 묻는다. 자율 모드에서는 합리적 가정 후 명시한다.
-2. **`google-web-search` 스킬로 최소 2~3회 검색**하고, 메인 에이전트가 다음 독립 조사 축을 병렬 tool call로 직접 수행한다:
+2. **`web-search` 스킬로 다음 2~3개 독립 조사 축을 병렬 수행**하고, 공통 schema의
+   `fact-ledger.json`을 생성한다. AI 데모 handoff는 timezone이 포함된 `checkedAt`과 서로 다른 canonical
+   `Fact` source URL 2개 이상을 포함해야 하며, 이 조건을 충족하기 전에는 리서치를 완료하지 않는다:
    - 고객의 주요 사업·제품·브랜드·사업장/생산능력 등 **규모 수치** — 데모 KPI의 현실 범위 근거.
    - 고객의 **디지털 전환·AI·클라우드 네이티브·App Platform·DevOps 현황과 최근 뉴스/이슈** —
      데모를 고객의 *실제 방향*에 정렬(고객이 이미 추진 중인 과제가 있으면 그것을 화면으로).
@@ -131,8 +133,14 @@ Container Apps·GitHub 기반 App Platform·CI/CD 중심 서사도 지원한다.
    Microsoft Defender·GitHub AI Controls)를 focus에 맞춰 구체 서비스명으로 확인한다. GA/Preview 상태는
    공식 문서에서 해당 기능의 현재 상태를 확인한 경우에만 표시한다. 변동 정보는
    `devblogs.microsoft.com/foundry`·`github.blog`·`docs.github.com`·`learn.microsoft.com`로 확인.
-5. 메인 에이전트가 병렬 조사 결과를 하나의 Fact Ledger로 합친다. 이후 모든 화면·KPI·시뮬레이터·채팅·서사는 이 리서치에 근거해야 한다.
-> google-web-search 스킬을 도저히 사용할 수 없을 때만 내장 `web_search`/`web_fetch`로 대체하되, **리서치 단계 자체는 절대 건너뛰지 않는다.**
+5. 메인 에이전트가 병렬 조사 결과를 하나의 Fact Ledger로 합친다. Ledger는 `web-search` 공통 열
+   (ID·Type·Claim·Evidence·Source·Publisher·Published/updated·Accessed·Scope/status·Confidence)을
+   보존하고, 필요하면 demo route·KPI candidate를 추가한다. 이후 모든 화면·KPI·시뮬레이터·채팅·서사는
+   이 리서치에 근거해야 한다.
+> 먼저 GitHub Copilot이 제공하는 general search capability(`web_search`, `/research`, web source를
+> 지원하는 Research agent)를 확인한다. `web_fetch`는 이미 아는 canonical URL의 원문 확인에만 사용하고 검색 대용으로
+> 공개 SERP를 조회하지 않는다. 범용 검색 capability도 출발 URL도 없으면 최신 조사를 완료한 척 진행하지
+> 말고 사용자 source URL이 필요함을 알린다. **리서치 단계 자체는 절대 건너뛰지 않는다.**
 
 ### 2단계 — 스토리라인 구성 (리서치 → 서사)
 1단계에서 수집한 사실을 데모의 **이야기(storyline)**로 엮는다. **빌드 전에** 아래 세 가지를 짧게 확정한다:
@@ -180,8 +188,10 @@ Spec을 직접 작성한다.
 빌드 전에 세션 작업 폴더의 `view-contract.md`에 `DEMO_FOCUS`, 4~6개 핵심 시연 동선, route별 임원
 질문·KPI·primary action·필수 DOM ID, 시뮬레이터 입력·결과, 에이전트 전환 조건을 확정한다. 이어서
 [Composable Spec 계약](./reference/composable-spec.md)에 따라
-`customer-overlay.json`을 작성한다. **Overlay는 실시간 research metadata와 고객 `meta`·`story`·핵심
+`customer-overlay.json`을 작성한다. **Overlay는 고객 `meta`·`story`·핵심
 route·Agent(=메뉴와 데이터)만 소유하며, `design`은 넣지 않는다**(디자인은 base가 고정 제공).
+실시간 research metadata는 `fact-ledger.json`을 Composer의 `--fact-ledger`로 전달해 주입하며,
+Overlay에 중복 작성한 metadata가 Ledger와 다르면 Composer가 실패한다.
 
 ### 4단계 — 빌드
 1. [Golden Runtime 가이드](./reference/golden-runtime.md),
@@ -197,16 +207,20 @@ route·Agent(=메뉴와 데이터)만 소유하며, `design`은 넣지 않는다
      --base .github/skills/ai-platform-demo/examples/precision-manufacturing.example.json \
      --pack .github/skills/ai-platform-demo/packs/<industry>.pack.json \
      --customer <session>/<app>-work/customer-overlay.json \
+     --fact-ledger <session>/<app>-work/fact-ledger.json \
      --output <session>/<app>-work/demo-spec.json \
      --html-output <session>/<app>-work/<app>.html
    ```
-5. Composer는 Overlay가 `design`을 정의하거나(디자인은 고정) research metadata가 오래됐거나 Pack의 고객
+5. Composer는 Overlay가 `design`을 정의하거나(디자인은 고정) Fact Ledger가 오래됐거나 canonical Fact
+   source가 2개 미만이거나, Overlay의 research metadata가 Ledger와 다르거나, Pack의 고객
    필수 path가 빠지면 실패한다. Repository example/test에서만 `--allow-stale-research`를 쓴다.
 6. 기본 수정 surface는 HTML이나 전체 Spec이 아니라 `customer-overlay.json`이다. 고객 콘텐츠·
    공식·DevOps/Agent(메뉴·데이터)를 바꾸면 Overlay를 수정하고 재합성한다.
 7. 적합한 Pack이 없으면 전체 `demo-spec.json`을 직접 작성한다.
    **[Authoring cheatsheet](./reference/authoring-cheatsheet.md)**를 따라
    `examples/precision-manufacturing.example.json`을 복사해 **내부 ID는 두고 콘텐츠만 교체**하면 한 번에 유효한 spec이 된다.
+   `meta.research`는 현재 `fact-ledger.json`의 `checkedAt`, canonical source, Ledger ID로 반드시
+   교체한다. 누락·형식 오류·중복 source는 linter와 Renderer가 거부한다.
    렌더 전에 **먼저 `scripts/lint_spec.py`로 린트**(구조 + QA 불변식, <1초)해 gotcha를 차단한다.
    ```bash
    python3 -B .github/skills/ai-platform-demo/scripts/lint_spec.py <session>/<app>-work/demo-spec.json

@@ -5,6 +5,11 @@ behavior. Where [`eval-harness/`](../eval-harness/) checks *properties of an age
 the benchmark checks *numbers*: given a real dataset with a known answer, does
 the pipeline recover it — and does it avoid the trap a naive pipeline falls into?
 
+> **Scope note:** the committed `reference-*` candidates score the *reference
+> implementations* — they prove the tasks are solvable and the golds correct.
+> They are not scores of skill-driven agent output; grade an agent by
+> submitting its own candidate per [`docs/INTEROP.md`](../docs/INTEROP.md) Recipe C.
+
 ## Task: `lalonde-recovery`
 
 The LaLonde (1986) / Dehejia–Wahba (1999) data is the canonical observational

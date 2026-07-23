@@ -12,6 +12,7 @@ module.exports = {
   id: "mimocode",
   name: "MiMo Code",
   processNames: { win: ["mimo.exe"], mac: ["mimo"], linux: ["mimo"] },
+  startupRecoveryProcessNames: { win: ["mimo.exe"], mac: ["mimo"], linux: ["mimo"] },
   eventSource: "plugin-event",
   eventMap: FAMILY_EVENT_MAP,
   capabilities: FAMILY_CAPABILITIES,
