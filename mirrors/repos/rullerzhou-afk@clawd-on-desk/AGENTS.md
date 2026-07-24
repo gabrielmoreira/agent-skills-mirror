@@ -137,7 +137,8 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 | `hooks/cursor-install.js` / `gemini-install.js` / `antigravity-install.js` / `kiro-install.js` / `kimi-install.js` / `qwen-code-install.js` / `codewhale-install.js` / `codebuddy-install.js` / `workbuddy-install.js` / `opencode-install.js` / `pi-install.js` / `openclaw-install.js` / `hermes-install.js` / `qoder-install.js` / `qoderwork-install.js` / `reasonix-install.js` | 各 agent 集成安装逻辑 |
 | `hooks/workbuddy-hook.js` | WorkBuddy state + Notification command hook；无 session_id 时返回合法 stdout 后丢弃事件 |
 | `hooks/qoder-hook.js` | Qoder state-only 状态上报脚本（Phase 1，stdout 恒为 `{}`） |
-| `hooks/codex-remote-monitor.js` | 远程 Codex JSONL 轮询并通过 SSH 隧道回传 |
+| `hooks/codex-remote-monitor.js` | 远程 Codex JSONL 轮询并通过 SSH 隧道回传（含 token_count 订阅配额的 metadata_only 上报） |
+| `hooks/claude-statusline.js` / `hooks/antigravity-statusline.js` | 各 CLI statusline 适配器：渲染状态行 + 把订阅配额（rate_limits）以 metadata_only POST 上报；Claude 版支持远程部署（`CLAWD_REMOTE=1` 前缀）与 `--chain` 串联模式（原 statusLine 对象保存在 `~/.claude/hooks/clawd-statusline-chain.json`，卸载时恢复） |
 | `extensions/vscode/extension.js` | VS Code / Cursor 终端 tab 聚焦辅助扩展 |
 
 ## Constraints
@@ -145,7 +146,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - Claude Code / CodeBuddy 的阻塞式权限审批走 `POST /permission` HTTP hook；普通状态事件走 command hook
 - WorkBuddy 通过 `~/.workbuddy/settings.json` 的 Claude Code 兼容 command hooks 做 **state + Notification only** 集成：不注册 `/permission`，审批始终留在 WorkBuddy 原生沙箱与 GUI；无 `session_id` 的事件返回合法 stdout 后直接丢弃。当前只支持 macOS/Windows 桌面应用，没有已验证的 Linux/WSL CLI；不要把裸 `Electron` 当 WorkBuddy 进程。
 - Codex 的阻塞式权限审批走 official `PermissionRequest` command hook：hook 脚本长连接 `POST /permission`，只允许 stdout 返回 sanitized `behavior/message`，`updatedInput` / `updatedPermissions` / `interrupt` 必须 omit
-- hook 脚本只允许依赖 Node 内置模块，以及同目录 `hooks/` 下、且登记在两套部署清单（`scripts/remote-deploy.sh` 的 `FILES` 与 `src/remote-ssh-deploy.js` 的 `HOOK_FILES`）的纯 Node helper（如 `server-config.js` / `shared-process.js` / `json-utils.js` / `codex-originator.js` / `codex-subagent-fields.js` / `context-usage.js` / `state-payload-size.js`）；两套清单由 manifest-consistency 测试强制同步，新增 helper 必须同时登记
+- hook 脚本只允许依赖 Node 内置模块，以及同目录 `hooks/` 下、且登记在两套部署清单（`scripts/remote-deploy.sh` 的 `FILES` 与 `src/remote-ssh-deploy.js` 的 `HOOK_FILES`）的纯 Node helper（如 `server-config.js` / `shared-process.js` / `json-utils.js` / `codex-originator.js` / `codex-subagent-fields.js` / `context-usage.js` / `state-payload-size.js` / `quota-bucket.js` / `claude-rate-limits.js` / `codex-rate-limits.js` / `antigravity-context-usage.js`）；两套清单由 manifest-consistency 测试强制同步，新增 helper 必须同时登记
 - hook 脚本需要稳定终端 PID 时，必须走 `getStablePid()` 进程树解析；不要用 `process.ppid` 做简化替代
 - opencode 权限不走 `permission.ask` hook，而是 event hook + reverse bridge
 - Pi 通过 `~/.pi/agent/extensions/clawd-on-desk` 的 global extension 推送状态；Clawd 对 Pi 是 **state-only**，不接管权限、不弹权限气泡，也不把 Pi 的默认 YOLO 流程改成手动确认
@@ -158,6 +159,7 @@ Copilot CLI 同步走 `<COPILOT_HOME 或 ~/.copilot>/hooks/hooks.json`，marker-
 - CodeBuddy PermissionRequest hook 的所有权只认本机 managed URL 或 marker `clawd-on-desk.permission.v1`；纯 `name:"clawd"` 不能触发改写/删除。裸 CLI 和 WSL 默认 preserve，Settings/startup/repair 必须显式传 local/custom permission target
 - Remote SSH 的远端 Node 探测要求 Node >= 14；`scripts/remote-deploy.sh` 与 `src/remote-ssh-node.js` 的 probe 顺序、候选路径、版本判断和输出字段必须保持行为对齐
 - 注册 Claude Code hook 时只能追加，不能覆盖用户已有 hook 数组
+- 注册 Claude Code statusLine 时只接管空槽或自己的槽（marker `claude-statusline.js`）；远程部署可用 profile 的 `chainStatusline` opt-in 串联既有第三方 statusline（`--chain-existing`），显式关闭时必须从 sidecar 恢复原 statusLine。订阅配额通过 `metadata_only` POST 进入 session-independent `updateAccountQuota` per-source store；不要把 quota 塞进 `updateSession` opts，也不要以 session 存活作为摄入前提
 - Copilot CLI hooks 走按需自动同步：`hooks/copilot-install.js` 在本地启动仅当 Copilot CLI 已安装且已启用时调用；`scripts/remote-deploy.sh --remote` 仍会在远端部署路径里调用。路径解析尊重 `COPILOT_HOME` env（trimmed 非空才生效，否则 fallback 到 `~/.copilot`）；`hooks/copilot-hook.js` 的 session-state resolver 同样走 env
 - 禁用 agent 不应卸载 hooks / plugins / extensions：只停止对应 monitor、清理 session / bubble、让 HTTP hook 入口快速 fallback；重新启用未安装 agent 不触发本机 integration sync。卸载集成必须走 Settings Agent 页的 Uninstall / 对应 uninstall 命令，并同时清掉 `integrationInstalled`
 - Kiro 的 `sessionId="default"` 会复用；session alias key 必须按 cwd scope 区分，同时保留旧 `local|kiro-cli|default` 只读 fallback

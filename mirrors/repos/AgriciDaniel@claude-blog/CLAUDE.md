@@ -4,9 +4,10 @@
 
 This repository contains **Claude Blog**, a Tier 4 Claude Code skill for blog content
 creation, optimization, and management. It follows the Agent Skills open standard and the
-3-layer architecture (directive, orchestration, execution). 30 sub-skills, 5 specialized
-subagents, 12 content templates, and 21 reference docs are dual-optimized for Google rankings
-(December 2025 Core Update, E-E-A-T) and AI citations (GEO/AEO). Includes FLOW framework
+3-layer architecture (directive, orchestration, execution). 32 skill directories
+(1 orchestrator + 31 sub-skills), 30 user-facing `/blog` commands, 5 specialized
+subagents, 12 content templates, and 22 reference docs are dual-optimized for Google rankings
+(2026 core and spam update timeline, E-E-A-T) and AI citations (GEO/AEO). Includes FLOW framework
 integration, semantic topic-cluster planning + execution, multilingual publishing (Pro Hub
 Challenge v1.7.0), BRAND.md/VOICE.md/DISCOURSE.md project-root context auto-load (v1.8.0,
 fenced via `scripts/load_untrusted_root.py` with CSPRNG nonces, v1.8.3+), CI-enforced
@@ -19,24 +20,33 @@ prose hygiene via `scripts/lint_prose.py` (v1.8.4+), and the 5-gate Blog Deliver
 ```
 claude-blog/
   CLAUDE.md                          # Project instructions (this file)
-  CONTRIBUTORS.md                    # Pro Hub Challenge attribution and integration decisions
+  docs/CONTRIBUTORS.md               # Pro Hub Challenge attribution and integration decisions
   CHANGELOG.md                       # Keep a Changelog format
-  .claude-plugin/plugin.json         # Plugin manifest (v1.9.0)
+  .claude-plugin/plugin.json         # Plugin manifest (v2.1.1)
   .claude-plugin/marketplace.json    # Marketplace catalog for distribution
-  .mcp.json                          # MCP server configuration (nanobanana-mcp)
+  .mcp.example.json                  # MCP config example (tracked; .mcp.json is gitignored)
   pyproject.toml                     # Python packaging (3.11+)
+  brain/                             # Vendored self-contained evidence-gated Obsidian brain; not plugin payload; tooling stays under skills/
   scripts/analyze_blog.py            # 5-category quality scoring (stdlib)
   scripts/blog_preflight.py          # 5-gate delivery contract runner (v1.9.0)
   scripts/blog_render.py             # md -> html -> pdf renderer; XSS-safe JSON-LD (v1.9.0)
+  scripts/blog_hygiene.py            # Optional deterministic hygiene: lazy-load imgs + auto-TOC (v1.11.0)
   scripts/cognitive_load.py          # Per-section concept-density analyzer (v1.8.0)
   scripts/discourse_research.py      # Discourse brief synthesis from SERP JSON (v1.8.0)
   scripts/generate_hero.py           # Hero image ladder: Banana -> Gemini -> stock -> Openverse (v1.9.0)
   scripts/load_untrusted_root.py     # Code-enforced fence helper for BRAND/VOICE/DISCOURSE (v1.8.3)
   scripts/lint_prose.py              # Fence-aware prose-hygiene linter (v1.8.4; CI-enforced)
   scripts/sync_flow.py               # Pulls FLOW references (stdlib, sandboxed)
-  skills/                            # 30 sub-skills (blog/ is the orchestrator)
+  scripts/ai_citation_score.py       # AI citation readiness heuristic, 0-100
+  scripts/content_decay.py           # GSC content-decay detector: 20%+ QoQ decline (v1.10.0)
+  scripts/quality_gate.py            # Pre-commit gate: block posts scoring < 70 (v1.10.0)
+  scripts/style_learn.py             # Author voice-profile learner from sample posts (v1.10.0)
+  scripts/consistency_check.py       # Local reference + FLOW lock validation
+  scripts/dependency_smoke.py        # Offline optional-runtime initialization checks
+  scripts/validate_public_release.py # Read-only public worktree validation
+  skills/                            # 32 skill directories (1 orchestrator + 31 sub-skills)
     blog/SKILL.md                   # Main orchestrator, routing, scoring
-      references/                   # 21 on-demand knowledge files (5 in v1.8.0, 1 in v1.9.0)
+      references/                   # 22 on-demand knowledge files (5 in v1.8.0, 1 in v1.9.0)
       templates/                    # 12 content templates
       scripts/                     # Python analysis scripts
     blog-write/SKILL.md            # Write new articles from scratch
@@ -88,13 +98,17 @@ claude-blog/
       SKILL.md
     blog-locale-audit/             # Multilingual content QA (v1.7.0)
       SKILL.md
+    blog-brand/SKILL.md            # BRAND.md + VOICE.md context files (v1.8.0)
+    blog-discourse/SKILL.md        # Last-30-days discourse research (v1.8.0)
+    blog-style/SKILL.md            # Author voice-profile learner (v1.10.0)
+    blog-decay/SKILL.md            # GSC content-decay detector (v1.10.0)
   agents/                            # 5 specialized subagents
     blog-researcher.md              # Statistics and source research
     blog-writer.md                  # Content generation
     blog-seo.md                     # SEO validation
     blog-reviewer.md                # Quality scoring (no Bash, post v1.7.0 hardening)
     blog-translator.md              # Multilingual translation (no Bash, v1.7.0)
-  tests/                             # pytest suite (160 tests) incl. test_blog_delivery_contract.py + test_security_guardrails.py
+  tests/                             # 250+ pytest checks incl. delivery-contract + security suites
 ```
 
 ## Commands
@@ -102,15 +116,14 @@ claude-blog/
 | Command | Purpose |
 |---------|---------|
 | `/blog write` | Write new articles optimized for rankings + AI citations |
-| `/blog rewrite` | Optimize existing posts with sourced statistics |
-| `/blog analyze` | 5-category 100-point scoring with AI detection |
+| `/blog rewrite` | Optimize existing posts with sourced statistics; `/blog update` aliases here |
+| `/blog analyze` | 5-category 100-point scoring with evidence and style diagnostics, not authorship detection |
 | `/blog brief` | Detailed content briefs with competitive analysis |
 | `/blog outline` | SERP-informed outlines with heading hierarchy |
 | `/blog calendar` | Editorial calendars with topic clusters |
 | `/blog strategy` | Blog positioning and content planning |
 | `/blog seo-check` | Post-writing SEO validation checklist |
 | `/blog schema` | JSON-LD schema markup generation |
-| `/blog chart` | Inline SVG data visualization charts |
 | `/blog repurpose` | Multi-platform content repurposing |
 | `/blog geo` | AI citation optimization audit |
 | `/blog image` | AI image generation and editing via Gemini |
@@ -130,7 +143,11 @@ claude-blog/
 | `/blog flow` | FLOW framework prompts: find, optimize, win, prompts index, sync (v1.7.0) |
 | `/blog brand` | Generate BRAND.md + VOICE.md context auto-loaded by all sub-skills (v1.8.0) |
 | `/blog discourse` | API-free last-30-days discourse research; produces DISCOURSE.md (v1.8.0) |
-| `/blog update` | Freshness update (alias to rewrite) |
+| `/blog style` | Learn author voice profile from existing posts (v1.10.0) |
+| `/blog decay` | Detect content decay from GSC exports (v1.10.0) |
+
+Internal capability: `blog-chart` generates inline SVG charts for `/blog write`
+and `/blog rewrite`; it is not a top-level user command.
 
 ## Development Rules
 
@@ -141,7 +158,7 @@ claude-blog/
 - Follow kebab-case naming for all skill directories
 - Agents invoked via Task tool, never via Bash
 - Python 3.11+ required; dependencies in pyproject.toml
-- Test with `python -m pytest tests/` after changes
+- Test with `python3 -m pytest tests/` after changes
 - Run `claude plugin validate .` before pushing plugin changes
 - Run `python3 scripts/lint_prose.py` locally to catch forbidden prose chars before CI does (v1.8.4+)
 - Project-root file loading (BRAND.md/VOICE.md/DISCOURSE.md): use `scripts/load_untrusted_root.py` via Bash; never hand-roll a fence (v1.8.3+)
@@ -155,12 +172,15 @@ Submit at: claude.ai/settings/plugins/submit or platform.claude.com/plugins/subm
 ### Self-Hosted Marketplace
 ```
 /plugin marketplace add AgriciDaniel/claude-blog
-/plugin install claude-blog@AgriciDaniel-claude-blog
+/plugin install claude-blog@agricidaniel-blog
 ```
 
 ### Standalone Install (no marketplace)
 ```bash
-curl -sL https://raw.githubusercontent.com/AgriciDaniel/claude-blog/main/install.sh | bash
+curl -fsSLo install.sh \
+  https://raw.githubusercontent.com/AgriciDaniel/claude-blog/v2.1.1/install.sh
+# Compare the SHA-256 digest with the value published in README.md.
+CLAUDE_BLOG_REF=v2.1.1 bash ./install.sh
 ```
 
 ## Release Blog Post
@@ -171,4 +191,4 @@ After cutting a new release (git tag + `gh release create`), run:
 /release-blog
 ```
 
-This generates a blog post on https://claude-blog.md/blog/, handles cover image generation, SEO metadata, FAQ schema, internal linking, sitemap/llms.txt updates, Vercel deployment, and Google indexing.
+This generates a blog post on https://claude-blog.md/blog/, handles cover image generation, SEO metadata, FAQ schema, internal linking, sitemap/llms.txt updates, and Vercel deployment.

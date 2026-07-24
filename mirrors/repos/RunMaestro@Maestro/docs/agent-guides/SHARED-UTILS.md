@@ -86,15 +86,6 @@ All utilities in Maestro organized by category. Each entry lists the file path, 
 | ---------------------- | -------------------- | ----------------------------------------------------------------------------------------------------------- |
 | `stripAnsiCodes(text)` | `(string) => string` | Remove ANSI escape codes, OSC sequences, iTerm2/VSCode shell integration sequences. Handles SSH edge cases. |
 
-## Font Utilities (`src/shared/fontStack.ts` - Both)
-
-| Export                     | Signature                                 | Purpose                                                                                                                                                                                                                                                              |
-| -------------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `withMonoFallback(family)` | `(string \| undefined \| null) => string` | Guarantee a CSS font-family degrades to monospace, not the browser's serif default. Apply where the `fontFamily` setting becomes a CSS value, not at the source (the picker `<select>` needs the raw name). No-ops when the value already carries a generic keyword. |
-| `MONO_FALLBACK_STACK`      | `string`                                  | The safe monospace chain appended by `withMonoFallback` (`ui-monospace` -> ... -> `monospace`). Matches the file-preview surfaces so the whole app degrades to the same faces.                                                                                       |
-
-The font picker stores a bare name (`Roboto Mono`) with no generic fallback, which resolves to serif on iOS / the web-desktop bundle. Do NOT re-derive a fallback chain inline; call `withMonoFallback(s.fontFamily)` at the render site.
-
 ## JSON Utilities (`src/shared/jsonUtils.ts` - Both)
 
 | Function           | Signature                         | Purpose                                                                   |
@@ -129,7 +120,6 @@ The font picker stores a bare name (`Roboto Mono`) with no generic fallback, whi
 | `getParentDir(path)`                   | `(string) => string`                   | Return the parent directory segment of a path.                                    |
 | `isAbsolutePath(path)`                 | `(string) => boolean`                  | True for Unix (`/x`), Windows drive (`C:\x`, `C:/x`), UNC paths.                  |
 | `getBasename(path)`                    | `(string) => string`                   | Final path segment; handles `/` and `\`, ignores trailing sep.                    |
-| `joinPath(base, ...segments)`          | `(string, ...string[]) => string`      | Join onto a base using the separator the base uses. Renderer-safe (no `path`).    |
 | `truncateCommand(command, maxLength?)` | `(string, number?) => string`          | Single-line with ellipsis. Default max 40 chars.                                  |
 
 ---
@@ -170,36 +160,6 @@ The font picker stores a bare name (`Roboto Mono`) with no generic fallback, whi
 | `TEMPLATE_VARIABLES`                             | `Array<{variable, description, autoRunOnly?}>` | All available template variables with docs.                                                                     |
 | `TEMPLATE_VARIABLES_GENERAL`                     | Same array filtered                            | Excludes Auto Run-only variables.                                                                               |
 | `substituteTemplateVariables(template, context)` | `(string, TemplateContext) => string`          | Case-insensitive replacement of `{{VAR}}` placeholders. Handles agent, path, date/time, git, context variables. |
-
----
-
-## Additional Directories (`src/shared/additionalDirectories.ts` - Both)
-
-Extra directories an agent may read from and/or write to beyond its working directory. Grants live on `Session.additionalDirectories` (`AdditionalDirectory[]`, from `src/shared/types.ts`) and are **enforced only by the system prompt** - nothing sandboxes the agent process.
-
-| Function                                         | Signature                                                                             | Purpose                                                                                                                           |
-| ------------------------------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `normalizeAdditionalDirectories(dirs, homeDir?)` | `(AdditionalDirectory[] \| undefined, string?) => AdditionalDirectory[] \| undefined` | Call at save time in every form. Expands `~`, trims, drops blank paths, de-dupes (last row wins), returns `undefined` when empty. |
-| `formatAdditionalDirectoriesForPrompt(dirs)`     | `(AdditionalDirectory[] \| undefined) => string`                                      | Renders the `{{ADDITIONAL_DIRECTORIES}}` markdown block (heading + access table). Returns `''` when there are no grants.          |
-
-`read` and `write` are independent: read-only (reference material), write-only (a drop box the agent must never read back), or both. A row with neither flag is inert and never reaches the prompt.
-
-**Two enforcement layers, and they are not equivalent:**
-
-- **Prompt (every agent):** carries the full read/write nuance, including write-only. Only as good as the agent's obedience.
-- **Native (agents with `capabilities.supportsAdditionalDirectories`):** actually enforced by the provider via `--add-dir`, but coarser. No CLI today can express "write but never read", so a native grant opens the directory and the prompt holds the line on the finer rule.
-
-Providers translate grants to their own CLI vocabulary in `additionalDirArgs` (`src/main/agents/definitions.ts`) using these building blocks. The flags look identical across providers and are NOT: Claude Code / Copilot-CLI `--add-dir` grants tool access (read+write), Codex `--add-dir` adds a writable sandbox root.
-
-| Function                    | Signature                                                       | Purpose                                                                                           |
-| --------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `dirsWithAnyAccess(dirs)`   | `(AdditionalDirectory[] \| undefined) => AdditionalDirectory[]` | Grants the agent may touch at all. For access-style flags (Claude, Copilot).                      |
-| `dirsWithWriteAccess(dirs)` | `(AdditionalDirectory[] \| undefined) => AdditionalDirectory[]` | Grants the agent may write. For writable-root flags (Codex).                                      |
-| `repeatDirFlag(flag, dirs)` | `(string, AdditionalDirectory[]) => string[]`                   | Emit `<flag> <path>` once per dir. Never use a variadic list - it swallows the prompt positional. |
-
-Adding a provider? See [AGENT_SUPPORT.md → Step 3.5](../../AGENT_SUPPORT.md#step-35-additional-directories). `agent-completeness.test.ts` fails CI if `supportsAdditionalDirectories` and `additionalDirArgs` disagree.
-
-UI: use `<AdditionalDirectoriesSection>` (`src/renderer/components/shared/`) - do NOT hand-roll a row editor. It is already wired into NewInstanceModal, EditAgentModal, and the Wizard's DirectorySelectionScreen. Pass `nativelyEnforced` from the selected agent's capability so the copy doesn't promise enforcement the provider can't deliver.
 
 ---
 
@@ -445,19 +405,6 @@ Per-model token pricing is the single source of truth in `src/shared/modelPricin
 | ------------------------------------------ | ----------------------------------------- | --------------------------------------- |
 | `captureException(error, captureContext?)` | `(Error \| unknown, { extra? }?) => void` | Report error to Sentry from renderer.   |
 | `captureMessage(message, captureContext?)` | `(string, { level?, extra? }?) => void`   | Report message to Sentry from renderer. |
-
-### Touch Primitives (`src/renderer/utils/touch.ts`)
-
-The desktop renderer also runs on phones (web-desktop build). These are the canonical touch helpers - do NOT re-derive `navigator.vibrate` calls or pointer-media queries. Hoisted out of the legacy mobile bundle (retired in Phase 06); the touch gesture hook `useLongPress` (see [UI-PATTERNS.md](UI-PATTERNS.md)) is built on `triggerHaptic`/`HAPTIC_PATTERNS`.
-
-| Export               | Signature                                         | Purpose                                                                                                                                   |
-| -------------------- | ------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| `isCoarsePointer`    | `() => boolean`                                   | True when the primary pointer is coarse (finger/stylus). Gate touch-only affordances on it. Falls back to `false` if `matchMedia` throws. |
-| `triggerHaptic`      | `(pattern?: number \| readonly number[]) => void` | Fire `navigator.vibrate` when supported; no-op otherwise. Defaults to a 10ms tap.                                                         |
-| `supportsHaptics`    | `() => boolean`                                   | Whether `navigator.vibrate` exists.                                                                                                       |
-| `HAPTIC_PATTERNS`    | const record                                      | Named vibrate patterns: `tap`, `send`, `interrupt`, `success`, `error`.                                                                   |
-| `GESTURE_THRESHOLDS` | const record                                      | `swipeDistance`, `swipeTime`, `pullToRefresh`, `longPress` thresholds.                                                                    |
-| `MIN_TOUCH_TARGET`   | `44`                                              | Minimum touch target size (px) per Apple HIG.                                                                                             |
 
 ---
 

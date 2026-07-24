@@ -223,58 +223,28 @@ vi.mocked(window.maestro.settings.get).mockResolvedValue('custom-value');
 
 ---
 
-## Cross-Platform Path Assertions
-
-Tests run on the CI matrix (Linux + Windows), so any assertion about a filesystem path must be OS-agnostic. Production code emits native paths via `path.join`, `path.resolve`, and `os.homedir()`, which differ per platform (`/a/b` vs `C:\a\b`), and `os.homedir()` is not `process.env.HOME` on Windows.
-
-```typescript
-// WRONG - POSIX-only; passes on the Linux leg, fails on the Windows leg
-expect(outputPath.startsWith('/')).toBe(true);
-expect(outputPath.endsWith('/sub/out.zip')).toBe(true);
-expect(outputPath).toBe(`${process.env.HOME}/Desktop/p.zip`);
-expect(key).toBe('/home/u/.claude');
-
-// CORRECT - assert the behavior through the path/os API
-import path from 'path';
-import os from 'os';
-expect(path.isAbsolute(outputPath)).toBe(true);
-expect(outputPath.endsWith(path.join('sub', 'out.zip'))).toBe(true);
-expect(outputPath).toBe(path.join(os.homedir(), 'Desktop', 'p.zip'));
-const configDir = path.join(os.tmpdir(), '.claude-test'); // native absolute fixture
-const key = resolveConfigDirKeyFromEnv({ CLAUDE_CONFIG_DIR: configDir });
-expect(key).toBe(path.resolve(configDir));
-```
-
-Never hardcode `/`, `\`, or `process.env.HOME` in path assertions or path fixtures. Use `path.isAbsolute`, `path.join`, `path.resolve`, `os.homedir()`, and `os.tmpdir()` so the test verifies identical behavior on every OS.
-
----
-
 ## Common Mock Patterns
 
 ### Mocking Zustand Stores
 
-Zustand stores are singletons. Prefer seeding the **real** store with `setState` after a full reset. Do not hand-roll partial default snapshots that drift from each store's create-time initial state.
+Zustand stores are singletons. Two approaches:
 
-**Approach 1: `resetAllStores()` then seed (preferred)**
+**Approach 1: Direct setState (preferred for store tests)**
 
 ```typescript
-import { resetAllStores } from '../../helpers';
-import { useSessionStore } from '../../../renderer/stores/sessionStore';
 import { useSettingsStore } from '../../../renderer/stores/settingsStore';
 
 beforeEach(() => {
-	resetAllStores();
-	// Optional: seed only what this test needs
-	useSessionStore.setState({ sessions: [createMockSession()], activeSessionId: 's1' });
-	useSettingsStore.setState({ activeThemeId: 'dracula' });
+	useSettingsStore.setState({
+		settingsLoaded: false,
+		activeThemeId: 'dracula',
+		fontSize: 14,
+		// ... reset all fields to initial values
+	});
 });
 ```
 
-`resetAllStores()` / `resetStore()` / `resetStores(...)` live in `src/__tests__/helpers/resetStores.ts` (re-exported from `src/__tests__/helpers`). They use Zustand v5 `getInitialState()` with replace mode and deep-clone `Set`/`Map`/array/plain-object defaults so in-place mutations cannot poison later tests. Store actions keep their original function references.
-
-For a single-store unit suite, `resetStore(useSessionStore)` (or `resetStores(useSessionStore, useUIStore)`) is enough.
-
-**Approach 2: vi.mock with selector function (legacy; avoid for new tests)**
+**Approach 2: vi.mock with selector function (for hook/component tests)**
 
 ```typescript
 const mockSettingsState: Record<string, unknown> = {
@@ -811,7 +781,7 @@ describe('myStore', () => {
 
 1. **Always wrap modal components** in `<LayerStackProvider>`.
 2. **Use `vi.clearAllMocks()`** in `beforeEach` and `vi.restoreAllMocks()` in `afterEach`.
-3. **Reset Zustand stores** with `resetAllStores()` (or `resetStore` / `resetStores`) from `src/__tests__/helpers` since stores persist across tests.
+3. **Reset Zustand stores** explicitly since they persist across tests.
 4. **Use `vi.useFakeTimers()`** when testing timeouts, intervals, or debouncing.
 5. **Mock `window.maestro`** at the setup level; override specific methods per test.
 6. **Use `data-testid`** for elements that lack accessible roles.

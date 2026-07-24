@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Michael-A-Kuykendall/shimmy` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,7 +67,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.github/instructions/post-launch-monitoring.instructions.md`](.github/instructions/post-launch-monitoring.instructions.md) |
 | 7 | ✓ | [`.github/instructions/release-validation.instructions.md`](.github/instructions/release-validation.instructions.md) |
 | 8 | ✓ | [`.github/instructions/wrangler-setup.instructions.md`](.github/instructions/wrangler-setup.instructions.md) |
-| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 9 | ✓ | [`.opencode/skills/release/SKILL.md`](.opencode/skills/release/SKILL.md) |
+| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
 
 ---
 

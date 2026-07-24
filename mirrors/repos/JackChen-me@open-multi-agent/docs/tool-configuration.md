@@ -22,6 +22,12 @@ For both `required` and `preferred`, OMA skips coordinator decomposition and the
 
 The goal text is not inspected to choose this topology. The same declaration therefore produces the same roles and dependency order for English, Chinese, or any other language. Every `requiredRoles` name must exist in the team roster, and `requiredOrder`, when present, must be a permutation of those roles. Invalid declarations throw before any agent runs.
 
+When `planOnly: true` is combined with `governanceIntent: 'required'` or
+`'preferred'`, `planOnly` wins: OMA validates and returns the declared role DAG
+with every task pending, but runs neither the coordinator nor task agents. The
+result reports `governanceConclusion: 'not-applicable'` until that plan is
+executed, for example through `runFromPlan()`.
+
 Use `governanceIntent: 'none'` to opt into the existing automatic `runTeam()` route explicitly. Omitting `governanceIntent` also preserves the existing behavior, including simple-goal short circuit and coordinator-generated task planning.
 
 After execution, required declarations are checked against the execution
@@ -37,6 +43,88 @@ The gate reads only the structured execution topology produced by
 `buildExecutionReceipt()`. Agent answer text cannot prove that another role ran
 or that an independent review occurred, even if it contains reviewer names,
 approval labels, or audit markers.
+
+### Explicit modes and budget conflicts
+
+`runTeam()` resolves execution policy in this order:
+
+1. An application `mode` (`single` or `team`).
+2. A declared `governanceIntent` topology or `preferredUnderBudget` policy.
+3. The configured [Execution Router](execution-routing.md) for automatic routing.
+4. The built-in `DeterministicRouter`.
+
+`single` always uses the existing best-agent path. `team` forces the
+coordinator-generated team path and bypasses the simple-goal short circuit.
+`runAgent()` and `runTasks()` remain explicit choices in their own right.
+Selecting `mode` declares a topology preference, not governance intent, so it
+does not bypass consequential confirmation when `governanceIntent` is omitted.
+Routers follow the same boundary: they choose execution topology but do not
+declare governance or override structured role requirements.
+
+An application may select a mode that overrides a required floor, but that
+decision is never reported as a clean governance success:
+
+```typescript
+const result = await orchestrator.runTeam(team, goal, {
+  mode: 'single',
+  governanceIntent: 'required',
+  requiredRoles: ['reviewer', 'security'],
+  requiredOrder: ['reviewer', 'security'],
+})
+
+// The Single result is still returned, and runtime success keeps its existing meaning.
+result.governanceConclusion // 'unsatisfied'
+result.governanceReason     // 'overridden'
+result.flags                // includes 'governance-overridden'
+```
+
+This is the "floor may be explicitly overridden, but never silently" rule.
+The structured declaration is still validated before execution, even when an
+explicit mode displaces its topology.
+
+Token and cost ceilings can be set on the orchestrator or on one `runTeam()` /
+`runTasks()` call. A per-run value cannot widen the orchestrator ceiling; the
+lower value wins. This lets an application declare the governance floor and
+budget ceiling together without introducing another budget subsystem:
+
+```typescript
+const result = await orchestrator.runTeam(team, goal, {
+  governanceIntent: 'required',
+  requiredRoles: ['reviewer', 'security'],
+  requiredOrder: ['reviewer', 'security'],
+  maxTokenBudget: 12_000,
+  maxCostBudget: 0.25, // requires orchestrator estimateCost
+})
+```
+
+If a required run exhausts that ceiling before every required role/order fact
+is observed, the existing budget stop remains in force and the result reports
+`governanceConclusion: 'unsatisfied'` with `governanceReason: 'budget'`.
+`result.success` is not repurposed as a governance field; budget exhaustion
+continues to use the existing `budget_exhausted` runtime status.
+
+For a soft preference, the application can predeclare that a ceiling should
+win without turning the missed review into a governance violation:
+
+```typescript
+const result = await orchestrator.runTeam(team, goal, {
+  governanceIntent: 'preferred',
+  requiredRoles: ['reviewer', 'security'],
+  preferredUnderBudget: 'degrade',
+  maxTokenBudget: 4_000,
+})
+
+// Executes the Single path and discloses why independent review was skipped.
+result.governanceConclusion // 'not-applicable'
+result.flags                // includes 'review-skipped-due-to-budget'
+```
+
+`preferredUnderBudget` defaults to `attempt`, which preserves the pre-existing
+preferred-role behavior. `degrade` applies only when an effective token or cost
+ceiling exists and no explicit `mode` already won. It is an application policy,
+not a model-cost prediction: OMA intentionally does not estimate whether a plan
+will fit before it runs. Normal ceiling enforcement remains reactive at model
+turn and task boundaries.
 
 ## Consequential tools on undeclared runs
 
@@ -187,6 +275,39 @@ const customAgent: AgentConfig = {
 
 **Resolution order:** default-deny (no preset _and_ no allowlist ⇒ zero built-in tools) → preset → allowlist → denylist → framework safety rails. Custom / runtime tools bypass the grant step (registration is the grant) but still honor the denylist.
 
+## Capability-aware agent selection
+
+`AgentConfig` can carry four optional, caller-declared selection signals:
+`description` (a one-sentence role summary), `capabilities` (tags), `costTier`,
+and `latencyClass`. Omitted fields stay unknown; OMA does not guess defaults
+from the model, agent name, or system prompt.
+
+Tasks supplied to `runTasks()` can declare hard requirements:
+
+```typescript
+const tasks: RunTaskSpec[] = [{
+  title: 'Patch the parser',
+  description: 'Implement and test the parser fix.',
+  requires: {
+    requiredTools: ['file_read', 'file_edit'],
+    requiredCapabilities: ['typescript'],
+    requiredBackend: 'llm',
+    requiredProvider: 'anthropic',
+  },
+}]
+```
+
+The unified `AgentSelector` applies hard filters first, then ranks eligible
+agents by declared capability affinity before falling back to the existing
+multilingual keyword signal. `requiredTools` is checked against the exact
+definitions returned by the same resolved-grant path used by execution.
+Backend and provider checks use their structured configuration fields.
+`requiredCapabilities` uses only the caller-declared tags.
+
+Neither permissions nor capabilities are ever inferred from `systemPrompt` or
+other prose. When no candidate satisfies the hard requirements, the selector
+returns `NO_ELIGIBLE_AGENT`; a caller must choose any fallback explicitly.
+
 ## Per-call gating with `onToolCall`
 
 The layers above answer **"which tools are reachable?"** by operating on tool _names_. The `onToolCall` gate answers a different question one layer down: **"should _this specific invocation_ run right now?"** `bash` is a single allowed name that covers `ls -la` and `rm -rf /` equally; the gate inspects the actual arguments and can veto individual calls.
@@ -215,7 +336,7 @@ Key semantics:
 - **Human-in-the-loop lives inside your callback.** `await` your own CLI prompt, Slack button, or web dialog, then return `allow` or `deny`. The framework prescribes no review channel, keeping the surface small.
 - **Agent overrides orchestrator.** `AgentConfig.onToolCall` beats `OrchestratorConfig.onToolCall` for that agent, so a team can set a default policy while one specialist tightens or relaxes it. A standalone `new Agent({ ..., onToolCall })` wires the gate straight into its executor.
 - **Runs after the name-based grant.** Default-deny / allowlist / denylist resolution runs **first**; a tool that is not granted is refused before the gate is reached, so the gate only ever sees calls to already-reachable tools. Custom tools and MCP tools route through the same executor, so they are gated too.
-- **Orthogonal to `onApproval`.** `OrchestratorConfig.onApproval` gates whole task batches between orchestration rounds; `onToolCall` gates a single tool invocation during execution. They operate at different layers and compose.
+- **Orthogonal to task dispatch approval.** `OrchestratorConfig.onApproval` gates legacy task rounds and `onTaskDispatch` gates one ready task before dispatch; `onToolCall` gates a single tool invocation during execution. They operate at different layers and compose. The two task-level approval modes are mutually exclusive with each other.
 - **Observability.** When a gate runs, the `tool_call` trace event carries `gated: true`, `gateAction: 'allow' | 'deny'`, and (on deny) a `gateReason` that is redacted like other sensitive trace text, so `onTrace` consumers can audit every decision.
 
 > **Not a security boundary.** A gate that returns `deny` still relies on cooperating code; it is a coordination layer, not containment. `bash` remains un-sandboxed (see the callout below). For an actually-untrusted shell, use process-level isolation (a container / VM / seccomp); the gate is for *policy*, not *isolation*.

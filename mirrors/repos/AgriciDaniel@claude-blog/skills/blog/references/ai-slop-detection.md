@@ -1,22 +1,34 @@
-# AI Slop Detection: Two-Tier Reflex Methodology
+# Editorial Pattern Review: Two-Tier Reflex Methodology
 
-A phrase blocklist catches the obvious tells. Most AI-generated prose passes that filter and still reads like AI. The structural tics, the rhythmic flatness, the "everything is a three-clause sentence" cadence: those survive the first pass.
+A project phrase list catches common voice mismatches. Structural repetition,
+rhythmic flatness, and filler can still reduce editorial quality after a phrase
+cleanup.
 
-This reference defines a **two-tier reflex check** for editorial review. Run both passes before declaring a draft human-natural. Adapted from the impeccable plugin's UI slop methodology (Paul Bakaus, Apache 2.0).
+This reference defines a **two-tier reflex check** for optional editorial
+review. It does not classify authorship and none of its metrics block delivery
+or change the 100-point score.
 
 ---
 
 ## Why two tiers
 
-LLMs converge on a small set of safe patterns. The first thing the model reaches for is the **first-order reflex**: the genre-obvious tell. Replace it and the model reaches for the **second-order reflex**, the next-most-trained pattern that survives anti-AI guidance.
+Writers and generation systems can converge on the same familiar genre
+patterns. The **first-order reflex** is an obvious wording habit; the
+**second-order reflex** is a structural pattern that survives vocabulary edits.
 
-Most AI-detection passes only check the first-order pattern. The result is "anti-AI" rewrites that still read like AI because the structural pass was never run.
+Phrase-only edits can leave repetitive structure intact. Review both levels
+when the project voice calls for it.
 
-**Note on terminology**: this file uses **"first-order"** and **"second-order"** for the two detection passes. Elsewhere in the project, "Tier 1 / Tier 2 / Tier 3" refers to *source authority* (Google Search Central = Tier 1, Ahrefs = Tier 2, reputable industry sources = Tier 3). The two namespaces are intentionally kept separate; do not call the second-order detection pass "Tier 2."
+**Note on terminology**: this file uses **"first-order"** and
+**"second-order"** for the two editorial review passes. Elsewhere in the
+project, "Tier 1 / Tier 2 / Tier 3" refers to *source authority* (Google Search
+Central = Tier 1, Ahrefs = Tier 2, reputable industry sources = Tier 3). The two
+namespaces are intentionally kept separate; do not call the second-order review
+"Tier 2."
 
 Examples of the same idea across both tiers:
 
-| Topic | First-order tell | Second-order tell that survives |
+| Topic | First-order observation | Second-order observation |
 |---|---|---|
 | SEO blog | "In today's digital landscape..." | Every H2 ends with a rhetorical question |
 | SaaS post | "Game-changer," "Revolutionize" | Three-clause sentence rhythm, "While X, also Y" framings |
@@ -24,13 +36,14 @@ Examples of the same idea across both tiers:
 | Listicle | "Cutting-edge," numbered fluff | Every item is ~80 words, identical structure |
 | Thought leadership | "Comprehensive guide," "harness the power" | Hedge stack: "often," "typically," "may" within 20 words |
 
-The point: **a draft can score zero on a phrase blocklist and still be obviously AI.**
+The point: **a draft can score zero on a phrase list and still be repetitive or generic.**
 
 ---
 
 ## First-order reflex (phrase + lexical)
 
-This is what the existing AI-detection in `blog-analyze` and `blog-rewrite` already covers. Documented here for completeness.
+This is what the advisory style diagnostics in `blog-analyze` and
+`blog-rewrite` cover. Documented here for completeness.
 
 **Trigger phrases** (full list in `agents/blog-reviewer.md` and `scripts/analyze_blog.py`):
 
@@ -49,45 +62,64 @@ This is what the existing AI-detection in `blog-analyze` and `blog-rewrite` alre
 
 **Lexical signals**:
 
-- AI trigger-word density > 5 per 1,000 words
-- Type-Token Ratio (TTR) below 0.40 on long-form
-- Burstiness (sentence-length standard deviation / mean) below 0.3
+- Configured style-list density
+- Type-Token Ratio (TTR), interpreted cautiously against sample length
+- Sentence-length variation
 
-**Outcome of the first-order pass**: a "phrase-clean" draft. Necessary, not sufficient.
+**Outcome of the first-order pass**: descriptive editing notes, never an
+authorship verdict.
 
 ---
 
 ## Second-order reflex (structural + rhythmic)
 
-These are the patterns LLMs default to **after** the obvious vocabulary is replaced. They are structural and rhythmic, so a vocabulary swap doesn't fix them. Run this pass on drafts that already passed the first-order check.
+These are structural and rhythmic patterns that a vocabulary swap does not
+fix. Review them only as possible clarity, voice, or repetition problems.
 
-### Structural tics to flag
+### Structural patterns to review
 
-1. **Question-cadence H2s.** Every section heading is phrased as a question. Real long-form mixes question, statement, and noun-phrase headings. Flag if > 70% of H2 headings end with a question mark.
+1. **Question-cadence H2s.** Review whether repeated question headings suit the
+   reader's task. Declarative, question, and noun-phrase headings can all work.
 
-2. **The Heres opener.** A paragraph opens with the word "Here" ("Here's why...", "Here are five..."). Once is fine. Three or more in a 1,500-word post is an AI fingerprint.
+2. **The Here opener.** Repeated paragraph openings such as "Here's why" or
+   "Here are five" may sound formulaic. Edit only when repetition weakens flow.
 
-3. **Three-clause sentence rhythm.** Most sentences in a paragraph follow the structure `[clause], [clause], [clause].` The cadence is metronomic. Flag if > 50% of sentences in any 200-word window match this shape.
+3. **Three-clause sentence rhythm.** Repeated `[clause], [clause], [clause]`
+   structures can create a metronomic cadence. Review examples in context.
 
-4. **False-balance framing.** Repeated use of "While X, also Y" or "On one hand X, on the other Y" without a real contrast. The model uses it to feel even-handed but it adds no information. Flag if it appears more than twice per 1,000 words.
+4. **False-balance framing.** Review "While X, also Y" or "On one hand X, on
+   the other Y" when no meaningful contrast exists. Remove framing that adds no
+   information.
 
-5. **Hedge stacking.** Three or more hedges in a 20-word span ("It may often be the case that..."). Flag any 20-word window with > 2 of: may, might, often, typically, generally, usually, tend to, perhaps, somewhat, likely.
+5. **Hedge stacking.** Several hedges close together can obscure confidence and
+   evidence. Review words such as may, might, often, typically, generally,
+   usually, perhaps, somewhat, and likely in context.
 
-6. **Symmetric list bloat.** Every item in a numbered or bulleted list is the same length within +/- 10 words and follows the same syntactic structure. Real lists vary; some items need one line, others need a paragraph. Flag if list-item length standard deviation < 5 words.
+6. **Symmetric list bloat.** Uniform list items may indicate padding when each
+   point has different evidence needs. Keep parallel structure when it helps
+   scanning; vary detail when the material warrants it.
 
-7. **The wrap-up question.** Section ends with "What does this mean for [audience]?" or "Why does this matter?" Once per post is rhetorical; three or more is filler.
+7. **The wrap-up question.** Repeated endings such as "Why does this matter?"
+   can become filler. Keep a question only when it advances the reader's
+   decision.
 
-8. **Capsule transitions.** Each H2 opener begins with a single-word transition ("First..." "Next..." "Additionally..." "Crucially..."). Real prose buries transitions inside sentences. Flag if > 50% of H2 openers start with a transition word.
+8. **Repeated transitions.** Repeated H2 openers such as "First," "Next," or
+   "Additionally" may sound mechanical. Retain them when sequence matters.
 
-9. **The "key insight" tell.** The phrase "The key insight is..." or "What's important here is..." appears as a sentence-opener. This is the model telegraphing that it's about to summarize. Cut and let the sentence stand.
+9. **Explicit summary openers.** Phrases such as "The key insight is" may be
+   redundant. Cut them when the substantive sentence stands on its own.
 
-10. **Listicle introduction bloat.** Before the actual list, three or more paragraphs of "context." Real listicles get to the list. Flag if > 250 words of pre-list intro.
+10. **Listicle introduction bloat.** Review pre-list context for relevance and
+    remove material that delays the reader without helping the decision.
 
 ### Rhythmic signals to compute
 
-- **Sentence-length flatness within paragraphs.** Compute SD of sentence length per paragraph; flag any paragraph with internal SD < 4.
-- **Opening-word repetition.** Count first-word frequencies across all sentences. Flag if the top three first-words account for > 25% of all sentence openings.
-- **Paragraph-shape flatness.** Compute SD of paragraph word counts across the post; flag if < 25 (real long-form varies dramatically).
+- **Sentence-length variation within paragraphs.** Describe the distribution
+  and inspect passages that feel monotonous.
+- **Opening-word repetition.** Count first-word frequencies and show examples
+  without applying a universal threshold.
+- **Paragraph-shape variation.** Describe paragraph lengths as an optional
+  editing observation, not a pass/fail metric.
 
 ---
 
@@ -95,14 +127,15 @@ These are the patterns LLMs default to **after** the obvious vocabulary is repla
 
 For `blog-rewrite` and `blog-reviewer`:
 
-1. Run the first-order pass first (phrase + lexical). If it fails, fix and re-run before moving on.
-2. Once the first-order pass is clean, run the second-order pass. Report each second-order pattern with line numbers and an example.
-3. Do not declare "AI-detection passed" unless both passes are clean.
+1. Run the first-order descriptive pass.
+2. Review second-order patterns with line numbers and examples.
+3. Apply judgment: keep patterns that suit the audience and edit only those
+   that reduce clarity, distinctiveness, or usefulness.
 
 For `blog-write` (initial drafting):
 
-- First-order is enforced at generation time via the persona's anti-phrase list.
-- Second-order is checked once on the full draft before delivery.
+- First-order preferences may be applied from the persona's style list.
+- Second-order observations may be reviewed on the full draft when useful.
 
 ---
 
@@ -111,41 +144,40 @@ For `blog-write` (initial drafting):
 When reporting findings, use:
 
 ```
-## AI Slop Detection Report
+## Editorial Pattern Review
 
 ### First-order (Phrase + Lexical)
 - Trigger phrases: [N found] -> [list with line numbers]
-- AI trigger words: [N/1K words], [pass/fail at ≤5]
-- TTR: [score], [pass/fail at ≥0.40]
-- Burstiness: [score], [pass/fail at ≥0.3]
+- Configured style-list terms: [N/1K words], [advisory]
+- TTR sample: [score], [descriptive only]
+- Sentence-length variation: [score], [descriptive only]
 
 ### Second-order (Structural + Rhythmic)
-- Question-cadence H2s: [X%], [pass/fail at ≤70%]
-- "Here" openers: [N], [pass/fail at ≤2]
-- Three-clause rhythm: [X%], [pass/fail at ≤50%]
-- False-balance framings: [N/1K words], [pass/fail at ≤2]
-- Hedge stacking: [N windows], [pass/fail at 0]
-- Symmetric list bloat: [N lists], [pass/fail at 0]
-- Wrap-up questions: [N], [pass/fail at ≤2]
-- Capsule transitions on H2s: [X%], [pass/fail at ≤50%]
-- "Key insight" sentence openers: [N], [pass/fail at 0]
-- Listicle intro bloat: [pre-list words], [pass/fail at ≤250]
-- Sentence-length flat paragraphs: [N], [pass/fail at 0]
-- Opening-word repetition: [top-3 share], [pass/fail at ≤25%]
-- Paragraph-shape SD: [value], [pass/fail at ≥25]
+- Question-cadence headings: [descriptive observation + examples]
+- Repeated paragraph openers: [descriptive observation + examples]
+- Repeated clause rhythm: [descriptive observation + examples]
+- False-balance framing: [descriptive observation + examples]
+- Hedge stacking: [descriptive observation + examples]
+- Symmetric list structure: [descriptive observation + examples]
+- Repeated wrap-up questions: [descriptive observation + examples]
+- Repeated section transitions: [descriptive observation + examples]
+- Explicit summary openers: [descriptive observation + examples]
+- Listicle introduction pacing: [descriptive observation]
+- Sentence and paragraph shape: [descriptive observation]
 
-### Verdict
-First-order: [PASS / FAIL]
-Second-order: [PASS / FAIL]
-Overall: [PASS only if both passes clean]
+### Editorial Judgment
+- Patterns that reduce clarity or distinctiveness: [list]
+- Patterns retained because they fit the audience: [list]
+- This review does not infer authorship and does not block delivery.
 ```
 
 ---
 
-## Why this matters for ranking + AI citations
+## Why this matters for editorial quality
 
-- **Google December 2025 Core Update**: rewards content that demonstrates "experience" and original perspective. Second-order patterns are exactly what makes "AI consensus content," the kind being demoted.
-- **AI citations**: ChatGPT and Perplexity reward citable, distinctive passages. Second-order tics produce interchangeable prose that no AI surface has reason to prefer over the source it was trained on.
+- Repetition and filler can make content interchangeable and less useful.
+- Distinctive value comes from accurate evidence, specific examples, and clear
+  analysis, not from manipulating surface-level style metrics.
 
 The two-tier check is the editorial parallel to impeccable's "design slop" methodology: vocabulary-clean is necessary but not sufficient; structural distinctiveness is what separates citeable content from indexable filler.
 

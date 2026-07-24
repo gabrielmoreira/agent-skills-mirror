@@ -53,6 +53,8 @@ npm run init-precommit
 
 When you create a new git worktree for this repository, run `npm install` inside the new worktree before starting development. Each worktree has its own working directory and needs its dependencies installed there.
 
+Also run `npm install` in `testing/fake-llm-server/` before `npm run ts` in a fresh worktree. Otherwise the root type-check reports missing declarations for that package's local `express` and `cors` dependencies.
+
 ## Pre-commit checks
 
 RUN THE FOLLOWING CHECKS before you do a commit.
@@ -130,6 +132,8 @@ Our project relies on a combination of unit tests, Vitest integration tests, and
 Use unit testing for pure business logic and util functions.
 
 Target a Vitest file with `npm test -- path/to/file.test.ts`. Do not pass Jest-only flags such as `--runInBand`; Vitest will fail with `Unknown option '--runInBand'`.
+
+When mocking a widely imported module such as `@/lib/schemas`, prefer a partial mock with `importOriginal` and override only the target exports. A full replacement can make unrelated transitive imports fail with `No "<export>" export is defined` as the module graph evolves.
 
 When adding another suite or prerequisite to the root `test` script, keep Vitest as the final shell command. `npm test -- <path>` appends its arguments only to the final command, so placing another runner last silently turns a targeted Vitest run into the full suite.
 

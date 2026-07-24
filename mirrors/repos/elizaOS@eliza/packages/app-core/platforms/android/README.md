@@ -18,6 +18,37 @@ hosting target. Produces a release AAB at
 For local Pixel smoke tests, `android-cloud-debug` produces a debug APK
 under `packages/app-core/platforms/android/app/build/outputs/apk/debug/`.
 
+Release AAB auditing uses Google's standalone bundletool JAR. The canonical
+build downloads bundletool 1.18.3 into a temporary cache and verifies its
+pinned SHA-256 before execution. To supply a pre-provisioned official JAR
+instead, point the build at it:
+
+```bash
+export ELIZA_ANDROID_BUNDLETOOL_JAR=/absolute/path/bundletool-all-1.18.3.jar
+bun run build:android:cloud
+```
+
+The release build fails closed when bundletool cannot be downloaded, either
+downloaded or configured JAR has the wrong checksum, the configured JAR is
+missing, or bundletool cannot validate the bundle. The post-build audit decodes
+the merged manifest for every AAB module and scans every
+`<module>/dex/classes*.dex` entry. This keeps stripped permissions, components,
+private LP3 actions, policy classes, and policy markers out of the Play
+artifact. Every packaged `.dex` is scanned — including one smuggled outside a
+module `dex/` directory — and cloud artifacts additionally reject any `.dex`
+or banned native library under `assets/`. APK targets continue to use AAPT for
+their badging and manifest checks. Every Cloud `bundleRelease` Gradle task
+audits its exact final output, including the signed bundle produced by release
+automation; the Gradle finalizer resolves the audit CLI from
+`ELIZA_MOBILE_AUDIT_SCRIPT` (set by the orchestrator, so npm-packages /
+white-label layouts work) and falls back to the repo-relative script path for
+direct `./gradlew` runs from a source checkout. An already-built Cloud bundle
+can be audited directly with:
+
+```bash
+node packages/app-core/scripts/run-mobile-build.mjs android-cloud-audit /absolute/path/app-release.aab
+```
+
 What this target deliberately does **not** ship:
 
 - No on-device agent runtime — `assets/agent/` is not staged, and no
@@ -87,6 +118,102 @@ renderer reads this via
 [`packages/ui/src/platform/android-runtime.ts`](../../../../ui/src/platform/android-runtime.ts)
 and the `RuntimeSettingsSection` hides the Local picker option so users
 cannot try to provision an on-device agent that physically isn't there.
+
+## `build:android:lp3-cloud:debug` — direct LP3 Cloud APK
+
+```bash
+bun run --cwd packages/app build:android:lp3-cloud:debug
+```
+
+This explicit direct-distribution variant keeps the Cloud-only renderer but
+adds the Light Phone III display-color guard from issue #16888. It is not a
+Play artifact: the build preserves a `specialUse` foreground service, boot
+receiver, and `WRITE_SECURE_SETTINGS` solely when
+`ELIZA_ANDROID_LP3_COLOR_POLICY_ENABLED=1`. Ordinary `android-cloud` and
+`android-cloud-debug` builds strip the components, Java sources, and all three
+direct-only policy permissions. The overlay also repeats the shared
+`POST_NOTIFICATIONS` declaration because the color guard will not run without
+a visible foreground notification on Android 13 and newer.
+
+The build flag alone cannot activate the guard. On a Light/TLP301 device, the
+operator must grant the declared privileged permission, then send the explicit
+enable command as the debuggable app's own UID. The unexported receiver stores
+the opt-in in device-protected private preferences:
+
+```bash
+adb shell pm grant ai.elizaos.app android.permission.WRITE_SECURE_SETTINGS
+adb shell pm grant ai.elizaos.app android.permission.POST_NOTIFICATIONS
+adb shell am start -W -n ai.elizaos.app/.MainActivity
+adb shell dumpsys activity activities | grep topResumedActivity
+adb shell run-as ai.elizaos.app am broadcast \
+  -n ai.elizaos.app/ai.elizaos.app.Lp3ColorPolicyBootReceiver \
+  -a ai.elizaos.app.action.ENABLE_LP3_COLOR_POLICY
+```
+
+Confirm that `topResumedActivity` names `ai.elizaos.app/.MainActivity` before
+sending `ENABLE`. Android 12+ can deny a foreground-service start from a custom
+background broadcast. If that happens, the receiver keeps the durable opt-in
+but logcat records `foreground guard start failed`. A private process
+initializer retries automatically when MainActivity resumes, where Android
+permits the user-visible foreground-service start. If notification permission
+was not pre-granted, that initializer requests it only after the build, LP3,
+opt-in, and `WRITE_SECURE_SETTINGS` gates pass, then retries after consent.
+The guard also requires notifications to remain enabled for the app and for the
+`lp3_color_policy` channel. Android reports either block through protected
+system broadcasts: the service cancels pending repairs and stops immediately,
+then the process initializer retries after the operator unblocks notifications.
+A channel/app block never triggers another `POST_NOTIFICATIONS` prompt.
+Never treat the preference write alone as proof that the guard is running.
+
+Verify the service, repair result, and final SettingsProvider state before
+calling the device durable:
+
+```bash
+adb logcat -d -s ElizaLp3Color:I '*:S'
+adb shell dumpsys activity services ai.elizaos.app | grep Lp3ColorPolicyService
+adb shell dumpsys package ai.elizaos.app | grep -A2 POST_NOTIFICATIONS
+adb shell dumpsys notification --noredact | grep -A8 -B4 lp3_color_policy
+adb shell settings get secure accessibility_display_daltonizer_enabled
+adb shell settings get secure accessibility_display_daltonizer
+```
+
+The final two values must be `0` and `-1`. Reboot the device and repeat those
+checks; the boot receiver plus observer are what prove persistence beyond the
+one-time repair. The package dump must show `POST_NOTIFICATIONS: granted=true`,
+the app notification state must be enabled, and the `lp3_color_policy` channel
+must have nonzero importance. The notification drawer must also show the
+ongoing “Eliza display color” notification; otherwise the service is not
+allowed to claim a durable, user-visible guard. Exercise app-level block,
+channel-level block, and unblock before release: both block paths must stop the
+service without changing either daltonizer value, while unblock plus returning
+to Eliza must restore the visible service without a permission-prompt loop.
+
+To disable it cleanly, send the matching same-UID command:
+
+```bash
+adb shell run-as ai.elizaos.app am broadcast \
+  -n ai.elizaos.app/ai.elizaos.app.Lp3ColorPolicyBootReceiver \
+  -a ai.elizaos.app.action.DISABLE_LP3_COLOR_POLICY
+```
+
+`SYNC_LP3_COLOR_POLICY` re-evaluates the existing private opt-in without
+changing it. `run-as` requires a debuggable direct build and makes the sender
+the app UID; ordinary apps cannot reach the unexported receiver. The private
+state survives reboot and in-place update, but correctly disappears on app
+data clear or uninstall. Unknown actions are ignored.
+
+When all gates pass, a low-importance ongoing notification makes the lifecycle
+honest and lets the service observe only Android's two daltonizer keys. It
+writes `accessibility_display_daltonizer_enabled=0` and
+`accessibility_display_daltonizer=-1` only when either value is wrong.
+`BOOT_COMPLETED` and package-replacement delivery reapply the same gate; a
+force-stopped Android app cannot receive boot broadcasts until the user
+launches it again, by platform design. The unexported process initializer closes
+that gap on the first normal relaunch and performs the same device, opt-in,
+secure-settings, and notification-permission checks before restarting the
+guard. App-level and channel-level notification disclosure are separate gates;
+the service rechecks them immediately after first creating its channel so a
+restored user-blocked channel can never leave an invisible guard running.
 
 ## `build:android` — sideload-only debug
 

@@ -149,6 +149,10 @@ OMNI_RELEASE_KEY_PWD=***
 
 ## Development Notes
 
+### WebUI Verification Rules
+- Do not use the in-app Browser, Chrome automation, Playwright, or any other browser-based visual/interaction acceptance for WebUI changes unless the user explicitly requests browser verification.
+- Validate WebUI changes with focused source inspection plus `cd webchat && pnpm run typecheck && pnpm run build`.
+
 ### GitHub Codex Bot Rules
 - The self-hosted GitHub Actions Codex bot is configured in `.github/workflows/codex-bot.yml`.
 - Supported maintainer command format is `@codex <natural-language task>` in issue, PR, or review comments.

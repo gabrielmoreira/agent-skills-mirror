@@ -1,6 +1,9 @@
 # Research Quality: Rubric, Pre-Flight Traps, Clustering, Freshness
 
-claude-blog already enforces source-tier hygiene (Tier 1 to 3) and the FLOW evidence triple (year anchor + inline citation + URL with retrieval date). This reference adds four research-discipline layers adapted from `last30days-skill` (Matt Van Horn, MIT, https://github.com/mvanhorn/last30days-skill):
+claude-blog already enforces source-tier hygiene (Tier 1 to 3), source fidelity,
+and claim-appropriate provenance. This reference adds four research-discipline
+layers adapted from `last30days-skill` (Matt Van Horn, MIT,
+https://github.com/mvanhorn/last30days-skill):
 
 1. A **5-dimension quality rubric** for scoring research outputs
 2. **Topic pre-flight checks** for catching keyword-trap topics before search burns time
@@ -17,11 +20,11 @@ Score every research output against these five dimensions before passing to `blo
 
 | Dimension | Weight | What it asks |
 |---|---|---|
-| Groundedness | 30 | Every non-trivial claim ties to a named source. No "studies show," no "experts agree" without naming who. Each statistic has the FLOW triple (year + publisher + URL + retrieval date). |
+| Groundedness | 30 | Every non-trivial claim ties to evidence that substantiates it. No "studies show" or "experts agree" without identifying who and what. Source identity, dates, methodology, limitations, URLs, and retrieval notes are included when needed to verify or interpret the claim. |
 | Specificity | 25 | Named entities, exact numbers, dates beat general phrasing. "$47B Q3 2025 revenue" beats "tens of billions in revenue." Specific subreddit names, X handles, GitHub repos beat "the community says." |
 | Coverage | 20 | At least two independent sources per load-bearing claim. At least two perspectives represented (proponent + critic, vendor + customer, expert + practitioner). Single-source dependency on a load-bearing claim is a failure. |
 | Actionability | 15 | The reader can do something concrete with this. "Use X library, version Y, this way" beats "consider modern frameworks." Includes commands, configs, decision criteria, or a clear yes/no. |
-| Format compliance | 10 | Citations inline as `[name](url)` per `synthesis-contract.md`. No trailing Sources block when inline citations are present. No invented titles. No em-dashes. No raw-cluster dumps. |
+| Format compliance | 10 | Research synthesis uses citations inline as `[name](url)` per `synthesis-contract.md`. No duplicate trailing Sources block when inline citations are present. Publishable drafts may include retrieval notes when they identify a changeable or undated source or change interpretation. No invented titles. No em-dashes. No raw-cluster dumps. |
 
 ### Scoring procedure
 
@@ -86,7 +89,9 @@ Some topic phrasings will never produce good research because their literal text
 3. If matched, emit a one-line note in research output: `Pre-Flight: matched Class N. Reframing to: "<new query>".`
 4. If not matched, proceed.
 
-Skipping pre-flight on a trap topic is the same failure mode as skipping the FLOW evidence triple. Both are mandatory.
+Skipping pre-flight on a trap topic creates avoidable research noise. Treat
+pre-flight as a required workflow check and keep enough source provenance to
+verify each material claim; no fixed citation form is required.
 
 ---
 
@@ -142,11 +147,13 @@ When research returns five posts all citing the same upstream source (e.g. five 
 For every load-bearing claim, mark it explicitly:
 
 ```
-**Claim**: AI Overviews now appear on 47% of informational queries.
-**Upstream**: [BrightEdge 2025 AI Search Report](https://...)
-**Echo sources** (paraphrase the upstream): [Search Engine Land](url), [SEJ](url), [Ahrefs blog](url)
-**Independent corroboration**: [Semrush 2025 study](url) reports 51% with different methodology.
-**Cluster health**: 2 (BrightEdge + Semrush as independent uppers)
+**Claim**: AI Overview coverage is methodology-dependent: about 20% of searches
+in Ahrefs data cited by SparkToro, with an unconfirmed BrightEdge upper estimate
+around 48%.
+**Upstream**: [SparkToro 2026 zero-click study](https://sparktoro.com/blog/in-2026-less-than-one-third-of-google-searches-still-send-a-click/)
+**Echo sources** (paraphrase the upstream): [SEO trade article](url), [agency recap](url)
+**Independent corroboration**: [Semrush AI Overviews study](url) reports about 15.7% in November 2025 after recalibration.
+**Cluster health**: 2 defensible sources (Ahrefs/SparkToro + Semrush), with BrightEdge quarantined as an unconfirmed upper estimate.
 ```
 
 This format makes the difference between echo and corroboration explicit. The writer can then decide whether to lead with the original or note the independent confirmation.
@@ -177,12 +184,12 @@ For time-sensitive topics, require at least 2 sources published within the last 
 
 | Source | Date | Within floor? |
 |---|---|---|
-| BrightEdge 2025 AI Search Report | 2026-04-12 | Yes (30d) |
-| Semrush 2025 study | 2026-03-28 | Yes (30d) |
-| Search Engine Land article | 2026-04-19 | Yes (30d) |
-| Older Ahrefs blog | 2025-09-10 | NO (historical context only) |
+| SparkToro 2026 zero-click study | 2026-06-09 | Yes (30d) |
+| Google Search Status Dashboard | 2026-06-30 | Yes (30d) |
+| Google FAQ and HowTo rich-result changes | 2023-08-08 | Historical policy baseline |
+| Semrush AI Overviews study | 2025-11 | NO (historical context only) |
 
-Floor satisfied: 3 sources within 30d (need >=2). PASS.
+Floor satisfied: 2 sources within 30d (need >=2). PASS.
 ```
 
 If the floor is not satisfied, the research output is incomplete. The agent should either find more recent sources or explicitly reclassify the topic as evergreen.

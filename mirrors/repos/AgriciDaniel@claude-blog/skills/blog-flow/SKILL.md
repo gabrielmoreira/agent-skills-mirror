@@ -12,17 +12,22 @@ license: MIT
 compatibility: Requires Claude Code and Python 3.11+ for the sync script
 metadata:
   author: AgriciDaniel
-  version: "1.9.1"
+  version: "2.1.1"
   category: blog
 ---
 
 # FLOW Framework for Bloggers (Find, Optimize, Win)
 
+Runs FLOW Find/Optimize/Win prompts for a blog topic or URL, turning query data,
+source notes, and page evidence into structured decisions instead of improvised
+prompts.
+
 > Framework and prompts (c) Daniel Agrici, CC BY 4.0. Source: github.com/AgriciDaniel/flow
 
-FLOW is an evidence-led operating model built for the AI-search era. Claude Blog
-integrates the FLOW prompt library so writers can drive their workflow with
-structured, source-backed AI prompts instead of improvised queries.
+FLOW is an evidence-led operating model for retrieval, citation, and conversion
+workflows. Claude Blog integrates the FLOW prompt library so writers can turn
+query data, source notes, and page evidence into structured decisions instead of
+improvised prompts.
 
 This skill exposes the three blog-relevant stages (Find, Optimize, Win) and keeps
 the single Leverage prompt available through the prompts index. The local-SEO

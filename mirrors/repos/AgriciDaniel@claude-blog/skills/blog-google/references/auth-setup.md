@@ -6,7 +6,7 @@ Four credential tiers serve different API combinations:
 
 | Tier | Credentials | APIs Unlocked |
 |------|------------|---------------|
-| **0** | API Key only | PageSpeed Insights, CrUX, CrUX History, Knowledge Graph, YouTube Data |
+| **0** | API Key only | PageSpeed Insights, CrUX, CrUX History, YouTube Data, Cloud Natural Language |
 | **1** | + Service Account | + Search Console, Indexing API |
 | **2** | + GA4 property ID | + GA4 Data API |
 | **3** | + Google Ads tokens | + Keyword Planner |
@@ -29,9 +29,8 @@ Navigate to **APIs & Services > Library** and enable:
 | Google Search Console API | Search Analytics, URL Inspection, Sitemaps |
 | Web Search Indexing API | Indexing API v3 (new post notifications) |
 | Google Analytics Data API | GA4 organic traffic analysis |
-| YouTube Data API v3 | Video research for GEO/AEO optimization |
+| YouTube Data API v3 | Video research for AI-search SEO visibility |
 | Cloud Natural Language API | Entity salience, sentiment, classification |
-| Knowledge Graph Search API | Entity/brand verification |
 
 ## Step 3: Create an API Key (Tier 0)
 
@@ -84,11 +83,21 @@ Config is shared with claude-seo at `~/.config/claude-seo/google-api.json`:
 {
   "service_account_path": "~/.config/claude-seo/service_account.json",
   "api_key": "AIzaSy...",
+  "oauth_client_path": "~/.config/claude-seo/oauth_client.json",
   "default_property": "sc-domain:example.com",
   "ga4_property_id": "properties/123456789",
   "ads_developer_token": "YOUR_DEV_TOKEN",
-  "ads_customer_id": "123-456-7890"
+  "ads_customer_id": "123-456-7890",
+  "ads_login_customer_id": "123-456-7890"
 }
+```
+
+Protect the config and downloaded credential files:
+
+```bash
+chmod 700 ~/.config/claude-seo
+chmod 600 ~/.config/claude-seo/google-api.json
+chmod 600 ~/.config/claude-seo/service_account.json ~/.config/claude-seo/oauth_client.json
 ```
 
 ### GSC Property URL Formats
@@ -102,15 +111,19 @@ Config is shared with claude-seo at `~/.config/claude-seo/google-api.json`:
 
 | Variable | Purpose |
 |----------|---------|
-| `GOOGLE_API_KEY` | API key for PSI/CrUX/YouTube/NLP/Knowledge Graph |
+| `GOOGLE_API_KEY` | API key for PSI/CrUX/YouTube/NLP |
 | `GOOGLE_APPLICATION_CREDENTIALS` | Path to service account JSON |
+| `GOOGLE_OAUTH_CLIENT_PATH` | Path to OAuth client JSON |
 | `GA4_PROPERTY_ID` | GA4 property (e.g., `properties/123456789`) |
 | `GSC_PROPERTY` | Default GSC property (e.g., `sc-domain:example.com`) |
+| `GOOGLE_ADS_DEVELOPER_TOKEN` | Google Ads developer token |
+| `GOOGLE_ADS_CUSTOMER_ID` | Google Ads customer ID |
+| `GOOGLE_ADS_LOGIN_CUSTOMER_ID` | Optional manager account login customer ID |
 
 ## Verify Setup
 
 ```bash
-python scripts/google_auth.py --check
+python3 scripts/google_auth.py --check
 ```
 
 ## Quick Troubleshooting

@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 12 file(s) materialized.
+Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `home-assistant/core` — 26 default patterns, 1 followed patterns, 12
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,12 +65,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.claude/skills/ha-integration-knowledge/SKILL.md`](.claude/skills/ha-integration-knowledge/SKILL.md) |
 | 5 | ✓ | [`.claude/skills/ha-pr-comment-audit/SKILL.md`](.claude/skills/ha-pr-comment-audit/SKILL.md) |
 | 6 | ✓ | [`.claude/skills/ha-pr-reviewer/SKILL.md`](.claude/skills/ha-pr-reviewer/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/ha-review/SKILL.md`](.claude/skills/ha-review/SKILL.md) |
-| 8 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 9 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | → | [`AI_POLICY.md`](AI_POLICY.md) |
+| 7 | ✓ | [`.claude/skills/ha-quality-scale-verify/SKILL.md`](.claude/skills/ha-quality-scale-verify/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/ha-review/SKILL.md`](.claude/skills/ha-review/SKILL.md) |
+| 9 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 10 | ✓ | [`.github/instructions/integrations.instructions.md`](.github/instructions/integrations.instructions.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | → | [`AI_POLICY.md`](AI_POLICY.md) |
 
 ---
 

@@ -35,7 +35,7 @@
 
 ---
 
-### TL;DR Box (40-60 words)
+### TL;DR Box (concise; length follows the material)
 
 [ANSWER-FIRST] Deliver the verdict immediately. The reader should be able to stop here and have a useful answer.
 
@@ -63,7 +63,9 @@
 
 [STAT: Market context statistic: adoption rates, npm downloads, GitHub stars, survey data that frames both options]
 
-[INFO-GAIN: hands-on experience] Briefly state your direct experience with both options: what you built, how long you used them, at what scale.
+[INFO-GAIN: hands-on experience] Include only when the author supplies what was
+built, the test period, scale, methodology, evidence, and results. Otherwise
+state that the comparison is research-only.
 
 [INTERNAL-LINK] Link to individual deep-dive posts on each product: "For standalone reviews, see our [Product A Guide] and [Product B Guide]."
 
@@ -95,11 +97,15 @@
 - Include a "Best For" row at the top and "Our Verdict" row at the bottom
 - Keep to 8-12 rows: enough to be comprehensive, not so many that it's overwhelming
 
-[STAT: Include at least one benchmark or metric in the table that you measured yourself]
+[STAT: Include a benchmark only when its source or supplied test methodology,
+evidence, and results are available]
 
 [INFO-GAIN: original benchmark] If you ran your own performance tests, note the methodology in a footnote below the table.
 
-**Benchmark data sourcing.** Every stat in a comparison table must follow the FLOW evidence triple: year anchor (preferably in the row caption or surrounding paragraph), inline citation in the source column or as a footnote, and URL plus retrieval date in the source block at the bottom of the post. See `skills/blog/references/flow-alignment.md`.
+**Benchmark data sourcing.** Every material statistic must be traceable to a
+source or supplied test record that supports it. Record dates, methodology,
+limitations, and retrieval details when they affect interpretation. Do not
+force one citation format.
 
 ---
 
@@ -107,7 +113,8 @@
 
 [ANSWER-FIRST] Open by naming the winner of this category and the single strongest reason in the first sentence.
 
-**H2 format:** Frame each category as a question: `## Which Has Better Performance?`
+**H2 format:** Use a clear question or declarative category heading according to
+reader intent, such as `## Performance comparison`.
 
 **Structure for EVERY category section:**
 1. **Winner declaration** (1 sentence): "[Product A/B] wins on [category] because [specific reason]."
@@ -123,13 +130,14 @@
 **Example:**
 > ## Which Has Better Build Performance?
 >
-> **Astro wins on build speed**: building our 500-page test site in 4.2 seconds compared to Next.js's 18.7 seconds.
+> **[PRODUCT] leads in [DEFINED TEST CONDITION]**, based on [SUPPLIED TEST
+> RECORD OR VERIFIED SOURCE].
 >
-> Astro's build pipeline is optimized for static content. It processes Markdown files in parallel and only bundles JavaScript for components explicitly marked as interactive. Our test site with 500 MDX pages and 12 interactive islands built in 4.2 seconds consistently.
+> Describe the environment, versions, sample, repetitions, measurement method,
+> and result. If no hands-on record exists, attribute each benchmark to its
+> original source and label the comparison research-only.
 >
-> Next.js processes every page through its full rendering pipeline, including server component resolution. The same 500 pages took 18.7 seconds. However, Next.js's incremental static regeneration means subsequent builds only reprocess changed pages: after the first build, adding a single page took 1.1 seconds.
->
-> **Verdict: Astro wins for full builds. Next.js wins for incremental updates in large, frequently-changing sites.**
+> **Verdict: [CONDITIONAL DECISION BASED ON THE VERIFIED EVIDENCE].**
 
 ---
 
@@ -139,7 +147,8 @@
 
 [STAT: Comparative metric for this category]
 
-[INFO-GAIN: real-world observation] Share something you noticed during actual usage that benchmarks don't capture.
+[INFO-GAIN: real-world observation] Include only a supplied, documented usage
+observation. Otherwise use a sourced comparison or omit it.
 
 ---
 
@@ -159,7 +168,8 @@
 
 [STAT: Comparative metric for this category]
 
-[INFO-GAIN: ecosystem or community insight] Share an observation about documentation quality, community helpfulness, or ecosystem maturity that comes from real experience.
+[INFO-GAIN: ecosystem or community insight] Use documented first-hand evidence
+when supplied; otherwise attribute the observation to current public sources.
 
 ---
 
@@ -208,7 +218,8 @@
 
 [STAT: Total cost of ownership for a specific scenario (e.g., "For a 10-person team with 100K monthly users")]
 
-[INFO-GAIN: hidden cost insight] Share a pricing detail that isn't obvious from the pricing page: something you discovered during actual usage (overage charges, required add-ons, support tier limitations).
+[INFO-GAIN: hidden cost insight] Use a supplied billing record or verified
+source. Do not imply discovery through actual usage without evidence.
 
 ---
 
@@ -237,7 +248,7 @@
 
 ---
 
-### Frequently Asked Questions (3-5 questions)
+### Optional Reader Questions (count by reader need)
 
 [FAQ]
 
@@ -250,7 +261,7 @@
 4. "[Specific feature] question" (Address the most searched feature-specific question)
 5. "Is [Product] still worth using in [Year]?" (Address relevance and future trajectory)
 
-[STAT: Include at least one statistic in your FAQ answers]
+[STAT when useful: a verified metric that materially improves an FAQ answer]
 
 **Example:**
 
@@ -312,12 +323,12 @@ Before publishing, verify:
 - [ ] 5-7 categories cover the dimensions that matter most to the target audience
 - [ ] Pricing comparison includes free tiers, scaling costs, and hidden costs
 - [ ] "Who Should Choose What" provides clear persona-based recommendations
-- [ ] At least 3 [INFO-GAIN] elements with original testing data or observations
-- [ ] At least 5 [STAT] markers filled with sourced or first-party statistics
+- [ ] Any [INFO-GAIN] elements contain supported testing data or observations
+- [ ] Statistics are optional, material to the decision, and verified when used
 - [ ] At least 2 [IMAGE] markers with side-by-side visual comparisons
 - [ ] FAQ addresses migration, hybrid use, and product relevance
 - [ ] Verdict table summarizes category winners clearly
 - [ ] All [INTERNAL-LINK] zones have contextual links to related content
-- [ ] Word count falls within 1,500-2,000 range
+- [ ] Coverage is complete for the comparison intent without padding
 - [ ] Both products are treated fairly: no strawman arguments
-- [ ] Meta description written (under 160 characters, includes both product names)
+- [ ] Meta description accurately summarizes the visible comparison

@@ -213,7 +213,7 @@ Routing into Mode B requires explicit user signal — `/ars-<mode>` slash comman
 | Mode | Trigger | Agents | Output |
 |------|---------|--------|--------|
 | `full` | Default / "full review" | All 7 agents | 5 review reports + Editorial Decision + Revision Roadmap |
-| **`re-review`** | **Pipeline Stage 3' / "verification review"** | **field_analyst + eic + editorial_synthesizer** | **Revision response checklist + residual issues + new Decision** |
+| **`re-review`** | **Pipeline Stage 3' / "verification review"** | **eic + editorial_synthesizer (field_analyst NOT re-run — `re_review_mode_protocol.md` § Yardstick Continuity)** | **Revision response checklist + residual issues + new Decision** |
 | `quick` | "quick review" | field_analyst + eic | EIC quick assessment + key issues list (15-minute version) |
 | `methodology-focus` | "check methodology" | field_analyst + eic + methodology_reviewer | In-depth methodology review report (panel 2 under v3.6.2 sprint contract: EIC + methodology) |
 | `guided` | "guide me" | All + Socratic dialogue | Socratic issue-by-issue guided review |
@@ -239,7 +239,7 @@ Routing into Mode B requires explicit user signal — `/ars-<mode>` slash comman
 
 Dedicated mode for Pipeline Stage 3' — verifies whether revisions address first-round review comments. Uses R&R Traceability Matrix (Schema 11) with Author's Claim + Verified? columns.
 
-**Input**: Original Revision Roadmap + Revised manuscript + Response to Reviewers (optional) + Editorial Decision Letter (optional, #539 — its Review Panel Provenance block feeds the Judge Record)
+**Input**: Original Revision Roadmap + Revised manuscript + Response to Reviewers (optional) + Editorial Decision Letter (optional, #539 — its Review Panel Provenance block feeds the Judge Record) + Round-1 Reviewer Configuration Cards (yardstick continuity, § Yardstick Continuity in the protocol; absent → visible regeneration fallback) + apply report(s) (#390, when the revision used patch apply)
 **Output**: Verification Review Report with traceability matrix + new issues + Decision
 
 > See `references/re_review_mode_protocol.md` for full verification logic, output format template, and Socratic guidance details.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
+Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `langfuse/skills` — 26 default patterns, 0 followed patterns, 19 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 19 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,9 +75,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`skills/langfuse/references/prompt-engineering.md`](skills/langfuse/references/prompt-engineering.md) |
 | 15 | ✓ | [`skills/langfuse/references/prompt-migration.md`](skills/langfuse/references/prompt-migration.md) |
 | 16 | ✓ | [`skills/langfuse/references/skill-feedback.md`](skills/langfuse/references/skill-feedback.md) |
-| 17 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
-| 18 | ✓ | [`skills/langfuse/references/v4-project-migration.md`](skills/langfuse/references/v4-project-migration.md) |
-| 19 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
+| 17 | ✓ | [`skills/langfuse/references/trace-evaluator-upgrade.md`](skills/langfuse/references/trace-evaluator-upgrade.md) |
+| 18 | ✓ | [`skills/langfuse/references/user-feedback.md`](skills/langfuse/references/user-feedback.md) |
+| 19 | ✓ | [`skills/langfuse/references/v4-project-migration.md`](skills/langfuse/references/v4-project-migration.md) |
+| 20 | ✓ | [`skills/langfuse/SKILL.md`](skills/langfuse/SKILL.md) |
 
 ---
 

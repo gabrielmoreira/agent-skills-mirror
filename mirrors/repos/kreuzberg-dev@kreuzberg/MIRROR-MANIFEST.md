@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kreuzberg-dev/kreuzberg` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,7 +69,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`.ai-rulez/skills/format-specific-extraction/SKILL.md`](.ai-rulez/skills/format-specific-extraction/SKILL.md) |
 | 9 | ✓ | [`.ai-rulez/skills/mime-detection-routing/SKILL.md`](.ai-rulez/skills/mime-detection-routing/SKILL.md) |
 | 10 | ✓ | [`.ai-rulez/skills/plugin-architecture-patterns/SKILL.md`](.ai-rulez/skills/plugin-architecture-patterns/SKILL.md) |
-| 11 | ✓ | [`.ai-rulez/skills/wasm-constraints/SKILL.md`](.ai-rulez/skills/wasm-constraints/SKILL.md) |
+| 11 | ✓ | [`.ai-rulez/skills/release-versioning/SKILL.md`](.ai-rulez/skills/release-versioning/SKILL.md) |
+| 12 | ✓ | [`.ai-rulez/skills/wasm-constraints/SKILL.md`](.ai-rulez/skills/wasm-constraints/SKILL.md) |
 
 ---
 

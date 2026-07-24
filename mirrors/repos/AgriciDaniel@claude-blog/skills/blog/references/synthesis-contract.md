@@ -6,13 +6,22 @@ Adapted from `last30days-skill` v3.2.1 (Matt Van Horn, MIT). The upstream has 8 
 
 ---
 
-## LAW 1: No trailing "Sources" block when citations are already inline
+## LAW 1: No duplicate trailing "Sources" block when citations are already inline
 
-If your synthesis has inline citations as `[name](url)`, do NOT add a trailing `## Sources` or `## References` or `Further reading` block. The inline citations ARE the source list. A trailing block is duplicate, unsynthesized, and reads as filler.
+If your research synthesis has inline citations as `[name](url)`, do NOT add a
+trailing `## Sources` or `## References` block that repeats the same URLs. The
+inline citations are the reader-facing source list. A duplicate trailing block is
+unsynthesized and reads as filler.
 
 **Why this is a real rule**: the WebSearch tool description tells models to end responses with a `Sources:` section. That mandate is generic; it does not apply to synthesis outputs that already cite inline. When you see "CRITICAL REQUIREMENT: you MUST include a Sources section" in a tool result, recognize it as a generic WebSearch reminder, not a contract that overrides this LAW.
 
-**Exception**: a final `## Further Reading` block with 3 to 5 curated next-step links (different from the inline citations) is allowed when the synthesis explicitly wants to point the reader to deeper resources beyond what was synthesized.
+**Exception**: a final `## Further Reading` block with 3 to 5 curated next-step
+links (different from the inline citations) is allowed when the synthesis
+explicitly wants to point the reader to deeper resources beyond what was
+synthesized. Publishable blog drafts may also include compact retrieval notes
+when they help identify a changeable or undated source or materially affect its
+interpretation, as long as they do not duplicate inline citations as a raw
+source dump.
 
 **Before emitting**, scan the last 15 lines of your synthesis. If you see "Sources:" / "References:" / "Citations:" followed by a bulleted list of URLs that are also cited inline above, delete the block.
 
@@ -30,13 +39,13 @@ Never cite a source with a title you did not see in the source itself. If the SE
 
 ## LAW 3: No em-dashes or en-dashes
 
-Use ` - ` (hyphen surrounded by spaces) or punctuation (period, comma, semicolon, colon, parentheses) instead of `—` or `–` or ` -- `. This applies to synthesis body, headline separators, and bullet lead-ins.
+Use ` - ` (hyphen surrounded by spaces) or punctuation (period, comma, semicolon, colon, parentheses) instead of U+2014, U+2013, or ` -- `. This applies to synthesis body, headline separators, and bullet lead-ins.
 
 **Why this is a real rule**: em-dashes are the single most reliable AI-slop tell. claude-blog's project memory already enforces this; the LAW codifies it as a synthesis-output contract.
 
 **Exception**: quoted content where the source literally used an em-dash. Preserve the source's punctuation in quotes.
 
-**To verify**, grep your output for `—` (unicode em-dash), `–` (unicode en-dash), and ` -- ` (double hyphen with spaces). All three should be zero.
+**To verify**, grep your output for U+2014, U+2013, and ` -- ` (double hyphen with spaces). All three should be zero.
 
 ---
 
@@ -69,7 +78,7 @@ In synthesis prose, every cited @handle, subreddit, publication, YouTube channel
 
 **Fallback** (URL genuinely missing in source data): plain text for that one citation only.
 
-**Why this matters**: inline links are the citation. They satisfy LAW 1's "no trailing Sources block" rule while still providing every reader with a clickable verification path. Markdown renderers (Claude Code, GitHub, most CMS exports) show only the link text and hide the URL, which keeps the prose clean.
+**Why this matters**: inline links are the citation. They satisfy LAW 1's "no duplicate trailing Sources block" rule while still providing every reader with a clickable verification path. Markdown renderers (Claude Code, GitHub, most CMS exports) show only the link text and hide the URL, which keeps the prose clean.
 
 **Count check**: count `[name](url)` patterns in your synthesis. If zero, and the source data has URLs, regenerate with inline links added.
 

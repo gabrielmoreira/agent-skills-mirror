@@ -6,7 +6,7 @@
 |-------|----------|
 | ModuleNotFoundError | Always use `python3 scripts/run.py [script].py` |
 | Not authenticated | `python3 scripts/run.py auth_manager.py setup` (browser visible) |
-| Browser crash | Kill Chrome, cleanup with `--preserve-library`, re-auth |
+| Browser crash | Close the skill browser window, cleanup with `--preserve-library`, re-auth |
 | Rate limit (50/day) | Wait until midnight PST or switch Google account |
 | Notebook not found | Check with `notebook_manager.py list` |
 | Query timeout | Retry with simpler question or `--show-browser` to debug |
@@ -36,8 +36,9 @@ Uses hybrid auth: persistent browser profile + cookie injection
 ## Browser Issues
 
 ### Browser crashes or hangs
+Close the Chrome window opened by this skill, then run:
+
 ```bash
-pkill -f chromium && pkill -f chrome             # Kill hanging processes
 python3 scripts/run.py cleanup_manager.py --confirm --preserve-library
 python3 scripts/run.py auth_manager.py reauth    # Re-authenticate
 ```
@@ -48,7 +49,7 @@ python3 scripts/run.py auth_manager.py reauth    # Re-authenticate
 python3 scripts/run.py auth_manager.py status
 # If still failing, manual install:
 source .venv/bin/activate
-python -m patchright install chromium
+python3 -m patchright install chrome
 ```
 
 ### Timeout waiting for selector
@@ -109,7 +110,6 @@ python3 scripts/run.py notebook_manager.py add --url ... --name ...  # Re-add
 
 ### Complete reset (keep library)
 ```bash
-pkill -f chromium
 python3 scripts/run.py cleanup_manager.py --confirm --preserve-library
 rm -rf .venv
 python3 scripts/run.py auth_manager.py setup     # Rebuilds everything
@@ -117,7 +117,6 @@ python3 scripts/run.py auth_manager.py setup     # Rebuilds everything
 
 ### Complete reset (fresh start)
 ```bash
-pkill -f chromium
 python3 scripts/run.py cleanup_manager.py --confirm --force
 rm -rf .venv
 python3 scripts/run.py auth_manager.py setup

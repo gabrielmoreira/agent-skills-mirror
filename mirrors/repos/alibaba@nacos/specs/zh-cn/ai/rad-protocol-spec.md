@@ -69,7 +69,8 @@ MCP、调用代理、凭据、重试或负载均衡。Agent 资源和版本语�
   缺省命名空间规范化为 `public`。
 - 缓存、订阅、鉴权和发布者贡献键必须包含生效命名空间。
 
-`namespaceId` 包含 1～64 个 `[A-Za-z0-9_-]` 字符。
+`namespaceId` 遵循 Nacos 公共 Namespace 契约，包含 1～128 个
+`[A-Za-z0-9_-]` 字符。
 
 ### 2.2 Agent、Protocol 与 Label 身份
 
@@ -87,7 +88,7 @@ Agent 的公开身份是 `(namespaceId, agentName)`。
 `[A-Za-z0-9][A-Za-z0-9._-]{0,63}`。两者均大小写敏感。
 
 `latest` 是保留 Label，用于解析 Agent 当前的 latest 版本。它不得出现在
-`AgentVersionCatalog.labels` 中。
+`AgentCatalogVersion.labels` 中。
 
 ### 2.3 Agent 版本
 
@@ -159,13 +160,16 @@ Schema 只暴露以下六个根消息：
 | `namespaceId` | 是 | 生效命名空间 |
 | `agentNameContains` | 否 | 对 `agentName` 执行大小写敏感的字面量子串匹配 |
 | `tagsAll[]` | 否 | Agent 包含全部给定 Tag |
-| `protocolsAny[]` | 否 | 至少一个在线版本包含任一给定 Protocol |
+| `protocolsAny[]` | 否 | 至少一个 online Version 暴露任一给定调用协议 |
 | `pageNo` | 否 | 从 1 开始的页码，缺省为 `1` |
 | `pageSize` | 否 | 每页数量，缺省为 `20`，最大为 `100` |
 
+按 Protocol 筛选是 RAD 的结果语义，不规定物理索引实现。实现可以读取 online Version
+目录，也可以维护独立的派生索引，但不得把 Protocol 值编码为公开 Agent tag。
+
 `%`、`_` 等对底层查询语言具有特殊含义的字符必须作为普通字面量处理。
 
-### 3.4 `AgentCatalogPage`、`AgentCatalogEntry` 与 `AgentVersionCatalog`
+### 3.4 `AgentCatalogPage`、`AgentCatalogEntry` 与 `AgentCatalogVersion`
 
 `AgentCatalogPage` 包含：
 
@@ -178,7 +182,7 @@ totalCount / pageNumber / pagesAvailable / pageItems[]
 ```text
 agentName / displayName? / description? / iconUrl? / provider?
 tags? / latestVersion
-versions[] AgentVersionCatalog {
+versions[] AgentCatalogVersion {
   version
   labels[]?
   protocols[]

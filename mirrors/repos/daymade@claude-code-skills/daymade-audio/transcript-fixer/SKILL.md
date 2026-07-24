@@ -125,7 +125,7 @@ After native AI correction, review all applied fixes and decide which to save. U
 |-------------|---------|--------|
 | Non-word → correct term | 克劳锐→Claude, cloucode→Claude Code | ✅ Add (zero false positive risk) |
 | Rare word → correct term | 拉行链→LangChain, 哈金费斯→Hugging Face | ✅ Add (verify it's not a real word first) |
-| Person/company name ASR error | 卡帕西→Karpathy, Anthropics→Anthropic | For **important recurring people**, add to your **people roster** instead (see "People Roster" above) — it carries relationship context and survives DB resets. For one-off names: ✅ `--add --domain` (stable, unique) |
+| Person/company name ASR error | 卡帕西→Karpathy, Anthropics→Anthropic | For **important recurring people**, add to your **people roster** instead (see "People Roster" below) — it carries relationship context and survives DB resets. For one-off names: ✅ `--add --domain` (stable, unique) |
 | Common word → context word | 争→蒸, 减→剪, affect→effect | ❌ Never add as a rule — record the trap + its disambiguating cue in the domain's context file instead (see "Domain Correction Contexts") |
 | Real brand → different brand | Xcode→Claude Code, Clover→Claude | ❌ Skip (real words in other contexts) |
 | Real name → different real name | 张亮→肖亮 (two real people in different projects) | ❌ Never a rule — same hazard as real brand → brand, but it corrupts a real person's name. Domain context trap with a disambiguating cue instead (see the user-verdict refinements in Native AI Correction step 4) |
@@ -286,7 +286,7 @@ at Stage 1 time when `people_roster_path` is set in
 After this, every `--stage 1` run automatically merges roster corrections
 (in-memory only — never written to DB). The DB always wins on conflicts, so the
 roster fills gaps without overriding hand-tuned entries. See
-`core/people_roster.py` for the parser.
+`scripts/core/people_roster.py` for the parser.
 
 **When to use the roster vs `--add` to DB:**
 
@@ -342,9 +342,45 @@ A recording can be long but still fast-tier (two known speakers, plain language)
 1. Run Stage 1 (dictionary) on all files (parallel if multiple)
 2. Verify Stage 1 — diff against the original. If the dictionary introduced false positives, work from the **original** file instead and apply your edits there
 3. **Load the domain's priors, then read the entire transcript.** If `~/.transcript-fixer/contexts/<domain>.md` exists for this transcript's domain, read it first — it primes which homophone traps to suspect and names the authoritative sources for step 4's ladder (see "Domain Correction Contexts" above). Then read the **entire** transcript before proposing corrections — later context disambiguates earlier errors (a name garbled near the start often becomes obvious later). For large files, read in chunks but finish the whole thing before deciding anything
-4. **Triage each candidate error into one of three buckets** — this triage is the part that takes judgment. **First override two reflexes that repeatedly misfile names** (both are real, recurring failures — they send a fixable name straight to "ask the user"):
+4. **Triage each candidate error into one of three buckets** — this triage is the part that takes judgment. **First override three reflexes that repeatedly misfile names** (all three are real, recurring failures — they send a fixable name straight to "ask the user"):
+   - **Speaker labels first — the transcript usually already holds the names.**
+     Before searching anywhere, collect the set of speaker labels in the file;
+     if a garbled token matches one by SOUND, it is almost certainly that same
+     person, and the label carries the spelling — a label is copied from a name
+     *registry* (a human annotating the recording, or the attendee list /
+     voiceprint enrollment a diarizer matched against), while the body is raw
+     ASR of a spoken sound. Four qualifiers, and the first one is not optional.
+     **(a) Apply it only to a name being ADDRESSED or SELF-INTRODUCED, never one
+     being REFERRED TO.** "hi, <token>" and "my name is <token>" identify a
+     speaker; "I'll ask <token> from the bank" identifies a third party who may
+     merely *sound* like one — and rewriting them to a speaker's name corrupts a
+     real person, the exact hazard the dictionary table calls "Real name →
+     different real name ❌ Never a rule". Two acoustically identical tokens in
+     one file can need opposite answers for this reason alone, so a referred-to
+     name keeps walking the ladder rather than resolving here.
+     **(b) Match against ALL labels — including, but not limited to, the one
+     above the block** — a garbled name usually sits in a block spoken by
+     someone else (`A` greeting `B`), and sometimes in that speaker's own block
+     (a self-introduction). **(c) The label settles WHO; the roster still
+     settles the canonical spelling** — a hand-typed `Joe` normalizes to the
+     roster's `Jo`, spelling only, never length. **(d) Labels annotated by a
+     human are a human identification: apply them, and do NOT put that name on
+     the needs-checking list or ask the user to confirm it — they answered it by
+     labeling it.** (Real case: walked the whole ladder on a name printed above
+     every one of that speaker's blocks, found nothing, then asked the user to
+     confirm it. They had labeled it themselves.)
+     When you cannot tell whether labels were hand-annotated or auto-assigned,
+     **assume auto-assigned**: voiceprint matching can attach a perfectly
+     spelled name to the wrong speaker, and that never looks garbled — so treat
+     the label as a strong candidate to confirm through the ladder, not as a
+     stop condition. Fall through to the ladder for `说话人 N` / `Speaker N`,
+     role labels (`主持人` / `Interviewer`), a third party who is not one of the
+     speakers, or a label that is itself visibly garbled. Fix the **body** only
+     — never edit a label or reassign who said what — keep the edit minimal
+     (do not expand a given name into a full name nobody said), and `--add` the
+     confirmed variant to a `--domain` so the next transcript fixes it free.
    - **Judge ASR errors by SOUND, not by glyphs.** Chinese ASR errors are homophone / near-homophone substitutions, so decide "same entity?" by pronunciation, not by whether the characters match exactly. A name that comes through as `X小Y` when the roster or dictionary already holds `X晓Y` (小/晓 are the same sound) is the **same person → Confident fix** — do NOT downgrade it to Uncertain just because 小≠晓 on the page. Same logic for a foreign name whose syllables all map by sound to a near-homophone transliteration. The dictionary having a sound-alike canonical is *evidence for* the fix, not a mismatch to be dismissed.
-   - **A name you can't place defaults to the search ladder below, NOT to asking the user.** "Only the user knows this name" is the single most common wrong reflex. The canonical spelling is almost always already on this machine under a **different project's domain** — so you must query **all** domains at once (step 4.1's cross-domain SQL), not the one domain you happened to pass to `--stage 1`, which may be brand-new and empty. Querying only that one and giving up looks exactly like "I checked" while finding nothing that was right there.
+   - **A name you can't place defaults to the search ladder below, NOT to asking the user.** "Only the user knows this name" is the single most common wrong reflex. The canonical spelling is almost always already on this machine under a **different project's domain** — so you must query **all** domains at once (the cross-domain SQL in the ladder below), not the one domain you happened to pass to `--stage 1`, which may be brand-new and empty. Querying only that one and giving up looks exactly like "I checked" while finding nothing that was right there.
    - **Confident fix** — non-words, obvious garbling, product-name variants you already recognize, or a homophone that's unambiguous in context (`their`→`there` where context forces it; `彭波`→`彭博` when every other mention already reads `彭博`). Apply directly (step 5).
    - **Needs verification** — a proper noun you can't confirm from context: a person / company / ticker / product / place name (a misheard drug name in a medical interview, a researcher's surname in a podcast, a ticker on an earnings call), or any term you can't point to a specific source for — even one you think you recognize ("I'm pretty sure" is exactly how wrong names slip in). **Resolve it through a local-first search ladder before asking the user.** For project / personal entities the authoritative spelling almost always already lives on this machine, and WebSearch is near-useless on internal names — it returns wrong same-name people, or nothing — and worse, a fluent wrong guess becomes a confident fix that's hard to catch later. Search in this order:
 
@@ -359,7 +395,7 @@ A recording can be long but still fast-tier (two known speakers, plain language)
          transcripts whose speakers are confirmed NOT in the roster.
       1. **All domains of `corrections.db`, not just the current `--domain`.** The same entity shatters into different ASR variants across projects, and every prior fix already collapsed them to the canonical name — so the answer is often sitting in another domain you didn't pass to `--stage 1`. Checking only the current domain and giving up is the recurring failure mode.
          `sqlite3 ~/.transcript-fixer/corrections.db "SELECT from_text, to_text, domain FROM active_corrections WHERE to_text LIKE '%<fragment>%' OR from_text LIKE '%<fragment>%';"`
-      2. **Project delivery docs & the alias ledger** — cost reports, review sheets, deliverables, PKM notes for that project. These are human-written correct spellings, the strongest possible source. `grep -rl "<fragment>" <project-dir>` then read the hits. (The domain context file from step 3 usually names the project's alias ledger explicitly — start there.) **Read every name table the ledger holds, not just the one that looks like "the speaker list."** A project's people are almost always split across role-based tables — internal speakers, external collaborators, client-side, vendor/dealer-side, attendees — and the person you're chasing often lives in a sibling table you didn't open. If a name you end up confirming wasn't reachable from the context file's name-source manifest, that manifest is incomplete: add the missing table to it so the next run can't miss it. (See `domain_context_guide.md` Rule 6 for the failure case this prevents.)
+      2. **Project delivery docs & the alias ledger** — cost reports, review sheets, deliverables, PKM notes for that project. These are human-written correct spellings, the strongest possible source. `grep -rl "<fragment>" <project-dir>` then read the hits. (The domain context file you loaded before triage usually names the project's alias ledger explicitly — start there.) **Read every name table the ledger holds, not just the one that looks like "the speaker list."** A project's people are almost always split across role-based tables — internal speakers, external collaborators, client-side, vendor/dealer-side, attendees — and the person you're chasing often lives in a sibling table you didn't open. If a name you end up confirming wasn't reachable from the context file's name-source manifest, that manifest is incomplete: add the missing table to it so the next run can't miss it. (See `domain_context_guide.md` Rule 6 for the failure case this prevents.)
       3. **Memory** (`~/.claude/.../memory/`) — project relationship maps and person profiles often record canonical names explicitly.
       4. **WebSearch** — only for genuinely public entities (a public-company ticker, a known researcher, a drug name). Skip for anything project-internal.
 
@@ -385,7 +421,7 @@ A recording can be long but still fast-tier (two known speakers, plain language)
    - **Reject — evidence-free reconstruction.** A proposed fix with no phonetic basis (`半`→`分`) is a guess about meaning, not a correction.
    - **Minimal edit.** Fix the misrecognized word; never insert unspoken words (`打完`→`打算` ✓; rewriting as `打算怎么` inserts a `怎么` the speaker never uttered ✗).
    A second-pass subagent that returns 8 sharp rows beats one that returns 8000 tokens of narration every time. Task works when you're in the main context; if it isn't available — e.g. these instructions are themselves running inside a subagent, which can't spawn another — just do one more thorough independent re-read yourself. Never skip the second pass over a missing tool.
-7. **Emit a needs-checking list AND enqueue it** — the chat summary alone evaporates when the session ends, so every *Uncertain* item gets dual-written: (a) in your chat summary to the human — line number, the original text you left in place, what you suspect, why you couldn't confirm it; (b) into the persistent review queue via `--enqueue-review items.json` (see "Review Queue & Dashboard" below; item field/alias schema: `references/script_parameters.md` §Review Queue Item Schema — unknown keys are silently dropped, so write `line`, not `line_hint`) with the same fields plus a proposed action pack, so the human can one-keystroke-resolve it later in the dashboard — or a later agent session can close it with new evidence (`--resolve-review ID --decision … --note "<evidence>"`). Entity/name questions get `kind: entity` (they compound into the dictionary/roster, so they lead the queue); pure phrasing doubts get `kind: wording`. If nothing is uncertain, say so.
+7. **Emit a needs-checking list AND enqueue it** — the chat summary alone evaporates when the session ends, so every *Uncertain* item gets dual-written: (a) in your chat summary to the human — line number, the original text you left in place, what you suspect, why you couldn't confirm it; (b) into the persistent review queue via `--enqueue-review items.json` (see "Review Queue & Dashboard" above; item field/alias schema: `references/script_parameters.md` §Review Queue Item Schema — unknown keys are silently dropped, so write `line`, not `line_hint`) with the same fields plus a proposed action pack, so the human can one-keystroke-resolve it later in the dashboard — or a later agent session can close it with new evidence (`--resolve-review ID --decision … --note "<evidence>"`). Entity/name questions get `kind: entity` (they compound into the dictionary/roster, so they lead the queue); pure phrasing doubts get `kind: wording`. If nothing is uncertain, say so.
 8. Verify with diff against the file you actually edited (`diff <original> <your-working-file>`) — every change should trace back to a triage decision
 9. Finalize and archive:
    - **Primary path (recommended):** Re-run `--stage 1` on the original `file.md` — **plain, without `--apply-all`** (an explicit `--apply-all` always runs corrections and never finalizes, so a stale sidecar can't silently swallow the run). If `file_stage1.md` is newer than `file.md`, transcript-fixer automatically promotes it to `file.md` and removes the intermediate sidecars (`_stage1.md`, `_stage2.md`, `_dryrun.md`, `_changes.md`, `_needs_review.md`, `_uncertain.md`, `_对比.html`). This is the default way to finalize; it is atomic, preserves manual edits (it skips promotion when `file.md` is newer), and avoids macOS `mv` alias hazards.
@@ -403,7 +439,7 @@ A recording can be long but still fast-tier (two known speakers, plain language)
    - Keep or move the original `.txt` to the archive if you want it; otherwise delete it.
    - Re-grep the final file for a correction you know you applied to confirm the corrected version landed.
 10. **Filename hygiene — rename machine-generated gibberish before archiving.** A transcript whose filename is a raw ASR artifact, device tag, or opaque timestamp hash (`TX02_MIC021_20260720_095909_1.3x.md`, `soundcore Work_01-01 10-36.md`, `07-12-2026 20.07.md`) is not a useful artifact. Rename it to a human-readable form before the file enters a shared repo: `YYYY-MM-DD-HH-MM-<topic-or-speaker-summary>.md`, using Chinese or short English as appropriate to the project. The bar: a human should be able to identify the meeting from the filename alone. If the content clearly belongs to one business line, also encode that in the slug when the repo convention allows it.
-11. Save stable patterns to the dictionary (see "Dictionary Addition" below)
+11. Save stable patterns to the dictionary (see "Dictionary Addition" above)
 12. Strip any remaining Stage 1 false positives from the final file before archiving
 
 ### Common ASR Error Patterns

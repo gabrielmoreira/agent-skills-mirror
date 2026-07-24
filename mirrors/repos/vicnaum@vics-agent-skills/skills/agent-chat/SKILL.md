@@ -1,6 +1,6 @@
 ---
 name: agent-chat
-description: "Local peer-to-peer chat and remote control between Claude Code sessions running concurrently on the same machine, with mIRC-style rooms: register under a name, broadcast to your project room or other rooms, DM other agents, get unread messages auto-delivered by hooks, wake idle peers (nudge), watch their terminals (screen), drive them with keys (escape/enter/...), and spawn brand-new agents into fresh iTerm windows or tmux sessions. Use when: (1) the user asks to message, notify, coordinate with, watch, stop, or control another running agent/session, (2) joining the agent chat ('register as summarizer'), (3) announcing schema/format changes or claiming work areas between parallel agents, (4) checking/reading agent chat messages or browsing rooms, (5) spinning up a new worker agent in a new window or headless tmux session, (6) rebinding an agent identity after a session fork/strip/restart, (7) installing agent-chat on a new machine. Triggers on agent chat, message the other agent, tell the other session, coordinate agents, nudge an agent, spawn an agent, register on chat, chat rooms. Backends: iTerm2 (macOS) and tmux (works headless, e.g. Linux servers)."
+description: "Local peer-to-peer chat and remote control between Claude Code AND OpenAI Codex sessions running concurrently on the same machine (cross-CLI: setup-codex wires Codex 0.145+ hooks), with mIRC-style rooms: register under a name, broadcast to your project room or other rooms, DM other agents, get unread messages auto-delivered by hooks, wake idle peers (nudge), watch their terminals (screen), drive them with keys (escape/enter/...), and spawn brand-new agents into fresh iTerm windows or tmux sessions. Use when: (1) the user asks to message, notify, coordinate with, watch, stop, or control another running agent/session, (2) joining the agent chat ('register as summarizer'), (3) announcing schema/format changes or claiming work areas between parallel agents, (4) checking/reading agent chat messages or browsing rooms, (5) spinning up a new worker agent in a new window or headless tmux session, (6) rebinding an agent identity after a session fork/strip/restart, (7) installing agent-chat on a new machine. Triggers on agent chat, message the other agent, tell the other session, coordinate agents, nudge an agent, spawn an agent, register on chat, chat rooms. Backends: iTerm2 (macOS) and tmux (works headless, e.g. Linux servers)."
 ---
 
 # Agent Chat
@@ -14,7 +14,7 @@ agent-chat register <name>       # join as <name> (short lowercase role name) �
                                  # rebind an existing name to this session (see Identity)
 agent-chat send "msg"            # broadcast to your project room (passive delivery)
 agent-chat send "msg" --room <room>        # post to another room (auto-joins it)
-agent-chat send "msg" --to <name>          # DM one agent — NUDGES them by default
+agent-chat send "msg" --to <name>          # DM — lands in a room you both share, NUDGES them
 agent-chat send "msg" --to <name> --quiet  # DM without the wake-up (pure FYI)
 agent-chat send "msg" --nudge              # room post that also wakes all members
 agent-chat read                  # print + consume unread from all joined rooms
@@ -35,13 +35,15 @@ agent-chat spawn <name> [--dir <path>] [--prompt "task"] [--cmd "claude ..."] [-
                                  # a detached tmux session (--tmux / headless). It inherits this
                                  # session's CLI flags and registers itself as <name>
 agent-chat unregister [<name>]   # leave the chat
+agent-chat web [port]            # local live web viewer (default :8787) — channels, messages, people
+agent-chat setup-codex           # one-time: wire hooks into OpenAI Codex CLI (cross-CLI chat)
 ```
 
 Identity resolves from `$CLAUDE_CODE_SESSION_ID` against `~/.claude/agent-chat/registry/`; `--as <name>` overrides (for humans/testing).
 
 ## Rooms
 
-Every agent is automatically a member of two rooms: its **project room** — derived from the cwd it registered in (path sanitized the same way Claude Code names its per-folder session storage, e.g. `#-Users-x-github-myproject`) — and **#general**. Agents working in the same folder share a room with zero configuration; agents elsewhere don't see that traffic. Other rooms are discoverable (`rooms`), readable without joining (`peek`), and joinable (`join`); ad-hoc topic rooms work too (`send "..." --room db-migration` creates and auto-joins it). DMs (`--to`) always travel through #general so they reach any agent regardless of project — note they're addressed, not private (any agent can `peek general`).
+Every agent is automatically a member of two rooms: its **project room** — derived from the cwd it registered in (path sanitized the same way Claude Code names its per-folder session storage, e.g. `#-Users-x-github-myproject`) — and **#general**. Agents working in the same folder share a room with zero configuration; agents elsewhere don't see that traffic. Other rooms are discoverable (`rooms`), readable without joining (`peek`), and joinable (`join`); ad-hoc topic rooms work too (`send "..." --room db-migration` creates and auto-joins it). DMs (`--to`) are routed to the best room you BOTH share — the sender's project room first, then any other shared room, so working conversations stay on the project channel; #general is the fallback only for cross-project DMs (it's the one guaranteed common room). Note DMs are addressed, not private (any member of that room can peek them).
 
 ## Identity and continuity
 
@@ -109,6 +111,12 @@ Terminal-typing gotcha (why this works): TUIs like Claude Code run with **bracke
    ```
    (`PermissionRequest` is optional — only needed for the `waiting` status; the other three cover delivery and busy/idle.)
 3. Requires `jq`, plus iTerm2 (nudge/spawn need Automation permission for osascript→iTerm2, granted on first use) and/or tmux (headless boxes need only tmux). Running sessions pick hooks up only after a restart or `/hooks` review.
+
+## OpenAI Codex agents (cross-CLI chat)
+
+Codex CLI (>= 0.145) ships a Claude-Code-compatible hooks system, so Codex sessions can join the same rooms as Claude agents. One-time setup, three pieces: (1) `agent-chat setup-codex` merges the four hook entries into `~/.codex/hooks.json` (backup kept; requires `plugin_hooks = true` in `~/.codex/config.toml`); Codex may ask to approve/activate the new hooks — check `/hooks` in a Codex session if delivery seems missing. (2) Copy this skill (and `respawn`) into `~/.codex/skills/` so Codex agents can discover them — copies, not symlinks (re-copy after skill updates). (3) Add the agent-chat section to `~/.codex/AGENTS.md` so every Codex session knows the chat exists (mirror of the CLAUDE.md section). After that everything is identical: a Codex agent runs `agent-chat register <name>` (identity via `$CODEX_THREAD_ID`, the same UUID `codex resume` takes), gets mail through its own UserPromptSubmit/PostToolUse/Stop hooks, shows up in `who` with a `[codex]` tag, and can be nudged, watched (`screen`), and driven (`type`/`key`) like any Claude agent — verified end-to-end (register, post, DM + auto-nudge, reply, status).
+
+Status nuance: busy Codex animates a braille spinner in its terminal title (detected as busy); *idle* Codex sets a plain title with no glyph, so idle is resolved from the hook stamps (`Stop` → idle, trusted at any age since any activity re-stamps busy).
 
 ## Related
 

@@ -15,7 +15,7 @@ argument-hint: "[setup|pagespeed|crux|crux-history|gsc|inspect|index|ga4|nlp|you
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "1.9.1"
+  version: "2.1.1"
   category: blog
 ---
 
@@ -43,7 +43,8 @@ python3 skills/blog-google/scripts/run.py google_auth --check --json
   "default_property": "sc-domain:example.com",
   "ga4_property_id": "properties/123456789",
   "ads_developer_token": "...",
-  "ads_customer_id": "123-456-7890"
+  "ads_customer_id": "123-456-7890",
+  "ads_login_customer_id": "123-456-7890"
 }
 ```
 
@@ -117,6 +118,17 @@ Search Analytics: clicks, impressions, CTR, position for last 28 days.
 
 Includes quick-win detection: queries at position 4-10 with high impressions.
 
+The dedicated Search Console generative-AI reports are a gradual, subset
+rollout in the Search Console UI. They have separate Search and Discover views;
+the Search view covers AI Overviews and AI Mode. Do not promise clicks, queries,
+or API retrieval from these dedicated views. Until Google documents an API,
+report that capability as `SKIPPED` or unavailable and point the user to the UI.
+
+Search Console platform properties for Instagram, TikTok, X, and YouTube are
+also rolling out gradually. Their UI can expose Search and Discover performance,
+but `/blog google gsc` must not claim to retrieve these platform reports through
+the current API.
+
 ### `/blog google inspect <url>`
 
 URL Inspection: real indexation status from Google.
@@ -126,6 +138,12 @@ URL Inspection: real indexation status from Google.
 Returns: verdict (PASS/FAIL), coverage state, robots.txt status, indexing state,
 page fetch state, canonical selection, mobile usability, rich results.
 
+After a canonicalization fix, Google may retain the URL in a duplicate cluster
+for up to two weeks. If the implementation is now correct and the fix is within
+that window, report `PENDING_REEVALUATION` rather than an immediate failure.
+Search Console's Request Indexing feature is quota-limited; reserve it for
+important URLs.
+
 For batch inspection: `python3 skills/blog-google/scripts/run.py gsc_inspect --batch <file> --json`
 
 ---
@@ -134,13 +152,15 @@ For batch inspection: `python3 skills/blog-google/scripts/run.py gsc_inspect --b
 
 ### `/blog google index <url>`
 
-Notify Google of a URL update. Submit new blog posts for faster indexation.
+Notify Google of a URL update through the Indexing API.
 
 **Script:** `python3 skills/blog-google/scripts/run.py indexing_notify <url> --json`
 **Reference:** `references/api-reference.md`
 
 The Indexing API is officially for JobPosting and BroadcastEvent/VideoObject pages.
 Always inform the user of this restriction. Daily quota: 200 publish requests.
+Do not present it as a general-purpose replacement for URL Inspection's Request
+Indexing feature.
 
 For batch: `python3 skills/blog-google/scripts/run.py indexing_notify --batch <file> --json`
 
@@ -161,8 +181,10 @@ For top landing pages: `python3 skills/blog-google/scripts/run.py ga4_report --p
 
 ## YouTube (Video Discovery)
 
-YouTube mentions have the strongest AI visibility correlation (0.737, Ahrefs 75K brands).
-Free, API key only. Used by blog-write and blog-rewrite for video embedding.
+YouTube research can add useful, relevant media and distribution context. Any
+third-party visibility correlation is observational, not a Google ranking or
+citation requirement. Free, API key only. Used by blog-write and blog-rewrite
+for video embedding.
 
 ### `/blog google youtube <query>`
 
@@ -179,7 +201,9 @@ For video details + comments: `python3 skills/blog-google/scripts/run.py youtube
 
 ## NLP Content Analysis
 
-Google's own entity/sentiment analysis. Enhances E-E-A-T scoring for blog content.
+Google's entity and sentiment analysis can support topic and editorial review.
+It does not expose ranking-system scores, and E-E-A-T is not a numeric Google
+ranking factor.
 
 ### `/blog google nlp <url-or-text>`
 
@@ -210,7 +234,7 @@ For volume lookup: `python3 skills/blog-google/scripts/run.py keyword_planner vo
 
 ### `/blog google report <type>`
 
-Generate a professional PDF/HTML report with charts.
+Generate a PDF/HTML report with charts and tables.
 
 **Script:** `python3 skills/blog-google/scripts/run.py google_report --type <type> --data <json> --domain <domain> --format pdf`
 
@@ -222,7 +246,7 @@ Generate a professional PDF/HTML report with charts.
 | `full` | All data combined | Comprehensive Google SEO report |
 
 **Note:** PDF generation requires system libraries: `sudo apt install libpango1.0-dev libcairo2-dev`.
-Falls back to HTML if weasyprint is unavailable.
+Falls back to HTML if WeasyPrint is unavailable or PDF rendering fails.
 
 ---
 
@@ -262,6 +286,14 @@ Falls back gracefully when credentials are not configured.
 - Search Analytics data has 2-3 day lag.
 - Indexing API is officially for JobPosting/BroadcastEvent pages only.
 - All Google APIs used are FREE at normal usage levels.
+- Read `references/search-currentness.md` before diagnosing a named update,
+  canonical change, Discover visibility, Google generative-AI reporting,
+  platform properties, Preferred Sources, AMP, or crawler byte-limit issue.
+- A named update's dates do not prove what caused an individual site's change.
+  Wait one full week after rollout before comparing data, and separate Web,
+  Image, Video, and News performance.
+- Googlebot processes only the first 2MB of supported files and first 64MB of
+  PDFs. Keep critical metadata and primary content before the cutoff.
 
 ## Error Handling
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,12 +79,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 19 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
 | 20 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
-| 21 | ✓ | [`apps/marketing/src/app/.well-known/agent-skills/superset/SKILL.md/route.ts`](apps/marketing/src/app/.well-known/agent-skills/superset/SKILL.md/route.ts) |
-| 22 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
-| 23 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
-| 24 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 25 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 26 | ✓ | [`skills/superset/SKILL.md`](skills/superset/SKILL.md) |
+| 21 | ✓ | [`apps/docs/src/app/llms.txt/route.ts`](apps/docs/src/app/llms.txt/route.ts) |
+| 22 | ✓ | [`apps/marketing/src/app/.well-known/agent-skills/superset/SKILL.md/route.ts`](apps/marketing/src/app/.well-known/agent-skills/superset/SKILL.md/route.ts) |
+| 23 | ✓ | [`apps/marketing/src/app/blog/llms.txt/route.ts`](apps/marketing/src/app/blog/llms.txt/route.ts) |
+| 24 | ✓ | [`apps/marketing/src/app/compare/llms.txt/route.ts`](apps/marketing/src/app/compare/llms.txt/route.ts) |
+| 25 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
+| 26 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
+| 27 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 28 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 29 | ✓ | [`skills/superset/SKILL.md`](skills/superset/SKILL.md) |
 
 ---
 

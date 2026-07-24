@@ -70,8 +70,8 @@ critical but overuse of exact-match anchors triggers spam signals.
   at the destination
 - **Natural**: Must read naturally in the sentence: if removing the link
   leaves awkward phrasing, rewrite
-- **Varied**: Never use the same anchor text for the same destination across
-  multiple pages
+- **Varied**: Vary anchors naturally and avoid manipulative repetition; exact
+  repeats are acceptable when they are the clearest wording
 - **Relevant**: Anchor text must relate to the destination page's topic
 - **Reasonable length**: 2-6 words is ideal, never an entire sentence
 
@@ -303,8 +303,9 @@ Run this audit quarterly or when publishing new content.
 
 ## Link Velocity Guidelines
 
-When adding internal links to existing content, do not bulk-update every page
-at once. This can trigger algorithmic review.
+When adding internal links to existing content, avoid bulk-updating every page
+at once unless you have QA coverage. Pace changes so crawl logs, broken links,
+and editorial relevance can be reviewed.
 
 | Action | Recommended Pace |
 |--------|-----------------|

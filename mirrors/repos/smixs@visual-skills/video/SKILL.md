@@ -1,5 +1,6 @@
 ---
 name: video
+license: CC-BY-4.0 (attribution required — Serge Shima, github.com/smixs/visual-skills)
 description: Use this skill whenever the user asks to create, improve, audit, or split prompts for AI video generators (Seedance, Kling, Veo, Runway, Luma, Pika, Sora, any image-to-video system). The skill also covers storyboards, shot lists, director treatments, dynamic montage, multi-clip story structure, camera direction, lighting, blocking, pacing, character continuity, dialogue, and sound design. Trigger even when the user says things like "придумай сцену для видео", "разбей на склейки", "сделай раскадровку", "улучши промпт для Kling", "переведи сценарий в промпты", "как снять X в AI-видео", or shares a prompt and asks to fix it.
 ---
 
@@ -33,8 +34,8 @@ Use this short selector. The full reasoning is in the chosen file.
 
 | Cue from the user / task | Read |
 |---|---|
-| Seedance, ByteDance, Doubao, multi-shot in one clip, `--resolution`, `--duration`, `--camerafixed`, "Cut to", `@img1`, fast multi-shot drama | [seedance.md](references/seedance.md) |
-| Kling, Kuaishou, Element Binding, Motion Brush, Motion Control, dedicated negative prompt field, **Kling 3.0 multi-shot with `[Character A: ...]` labels, native dialogue + lip-sync, 15s** | [kling.md](references/kling.md) |
+| Seedance, ByteDance, Doubao, multi-shot in one clip, `--resolution`, `--duration`, `--camerafixed`, "Cut to", `@img1`, fast multi-shot drama, **Seedance 2.5 30-second single-pass, reference kits, 3D blockout** | [seedance.md](references/seedance.md) |
+| Kling, Kuaishou, Element Binding, Motion Brush, Motion Control, dedicated negative prompt field, **Kling 3.0 multi-shot with `[Character A: ...]` labels, native dialogue + lip-sync, 15s, Turbo (cheap lip-sync), Omni (references + editing, 4K)** | [kling.md](references/kling.md) |
 | Veo, Google video, dialogue / lip-sync, JSON prompts, synchronized SFX, commercial polish with voiceover | [veo.md](references/veo.md) |
 
 Default if nothing in the request hints at a model:
@@ -42,12 +43,16 @@ Default if nothing in the request hints at a model:
 - Dialogue / commercial polish / synchronized SFX → Veo, or Kling 3.0 for multi-character dialogue scenes up to 15s.
 - Character consistency across many social clips → Kling 2.6 Pro (cheaper) or Kling 3.0 (with in-prompt `[Character A: ...]` labels).
 - 10-15s continuous narrative with audio → Kling 3.0.
+- 15-30s continuous single-generation arc, heavy reference kits (up to 50 assets) → Seedance 2.5.
+- Face-heavy drama on Seedance → route to 1.5 Pro or Kling/Veo (Seedance 2.0+ filters human faces aggressively).
 
 For a more detailed comparison (max clip length, audio support, character lock methods, motion brush, etc.), read the model file you picked. Do not load all three.
 
 ### Step 4 — task-shaped reading (load only those that match)
 
 - Storyboard / shot list / director treatment / "разбей на склейки" → [role-modes.md](references/role-modes.md). Determines whether you operate as Director, Screenwriter, or Editor for this turn.
+- Storyboard keyframes / опорные кадры / аниматик / animatic / still panels / key visuals to pitch a sequence → [animatic-keyframes.md](references/animatic-keyframes.md). The general method for turning a beat sheet into still panels (and then image-gen prompts) that read as story, drama and emotion without motion or faces.
+- Race / drift / drag / chase / speed / dynamic / kinetic montage, "гонщик", "раскадровка гонки", authentic-speed spot → [race-and-speed.md](references/race-and-speed.md). Specializes `animatic-keyframes.md` for the race domain — read that file first.
 - Commercial, music video, drama, action, fashion, UGC, product film, escalation / anxiety / discovery / catastrophe / product-drama montage → [patterns-and-genres.md](references/patterns-and-genres.md).
 - Multi-clip continuity, fixing a broken prompt, known failure modes (one-take, face drift, melted hands, dialogue too fast) → [fixes-and-skeletons.md](references/fixes-and-skeletons.md).
 - Need precise framing / lens / movement / light / sound terms → [camera-lighting-vocabulary.md](references/camera-lighting-vocabulary.md).
@@ -87,3 +92,7 @@ Prefer: ready-to-copy prompts, clear section labels, production language, motiva
 Avoid: long theory unless asked, academic lectures, vague inspiration, decorative jargon, "cinematic masterpiece" filler, prompts without camera and light, prompts without continuity, stacking more than two director references, abstract emotions without physical translation.
 
 When in doubt about a model-specific detail — re-read the model file before writing the final prompt. It costs nothing and prevents bad output.
+
+---
+
+*Author: Serge Shima ([t.me/aimastersme](https://t.me/aimastersme) · [sergeshima.com](https://sergeshima.com) · [aimasters.me](https://aimasters.me)) · License: CC BY 4.0 — attribution required · Source: [smixs/visual-skills](https://github.com/smixs/visual-skills)*

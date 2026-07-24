@@ -75,7 +75,8 @@ Every operation executes in exactly one effective namespace.
 - Cache, watch, authorization, and publisher-contribution keys MUST include the
   effective namespace.
 
-`namespaceId` contains 1 to 64 characters from `[A-Za-z0-9_-]`.
+`namespaceId` follows the Nacos namespace contract and contains 1 to 128
+characters from `[A-Za-z0-9_-]`.
 
 ### 2.2 Agent, Protocol, And Label Identity
 
@@ -93,7 +94,7 @@ The public Agent identity is `(namespaceId, agentName)`.
 matches `[A-Za-z0-9][A-Za-z0-9._-]{0,63}`. Both are case-sensitive.
 
 `latest` is a reserved label that resolves to the Agent's current latest
-version. It MUST NOT appear in `AgentVersionCatalog.labels`.
+version. It MUST NOT appear in `AgentCatalogVersion.labels`.
 
 ### 2.3 Agent Version
 
@@ -177,14 +178,19 @@ introducing another page class.
 | `namespaceId` | Yes | Effective namespace |
 | `agentNameContains` | No | Case-sensitive literal substring match on `agentName` |
 | `tagsAll[]` | No | Agent contains every supplied tag |
-| `protocolsAny[]` | No | At least one online version contains any supplied protocol |
+| `protocolsAny[]` | No | At least one online Version exposes any supplied calling protocol |
 | `pageNo` | No | One-based page number; default `1` |
 | `pageSize` | No | Page size; default `20`, maximum `100` |
+
+Protocol filtering is a RAD result-semantic requirement, not a physical-index
+contract. An implementation may evaluate the online Version catalog or use an
+independent derived index. It must not encode protocol values as public Agent
+tags.
 
 Characters such as `%` and `_` that are special to a backing query language
 MUST be treated as literals.
 
-### 3.4 `AgentCatalogPage`, `AgentCatalogEntry`, And `AgentVersionCatalog`
+### 3.4 `AgentCatalogPage`, `AgentCatalogEntry`, And `AgentCatalogVersion`
 
 `AgentCatalogPage` contains:
 
@@ -198,7 +204,7 @@ namespace:
 ```text
 agentName / displayName? / description? / iconUrl? / provider?
 tags? / latestVersion
-versions[] AgentVersionCatalog {
+versions[] AgentCatalogVersion {
   version
   labels[]?
   protocols[]

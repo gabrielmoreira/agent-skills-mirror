@@ -62,7 +62,8 @@ If a section forces the reader to hold more than four things at once to make sen
 | Forward references per section | 0 | 1 | 2+ |
 | Nested clauses per sentence average | < 1.5 | 1.5 to 2.5 | > 2.5 |
 
-A section that triggers two or more "overloaded" rows is a P1; break it up before publishing.
+A section that triggers two or more "overloaded" rows is a P1 per
+`editorial-heuristics.md`; break it up before publishing.
 
 ---
 

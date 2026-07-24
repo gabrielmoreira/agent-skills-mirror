@@ -34,7 +34,7 @@
 
 ---
 
-### TL;DR Box (40-60 words)
+### TL;DR Box (concise; length follows the material)
 
 [ANSWER-FIRST] This is the entire case study compressed into a single box. Lead with the headline result number.
 
@@ -188,7 +188,7 @@
 
 ---
 
-### Frequently Asked Questions (3 questions)
+### Optional Reader Questions (count by reader need)
 
 [FAQ]
 
@@ -199,7 +199,7 @@
 2. **Resource question:** "What was the budget/team size for this project?" (Address feasibility)
 3. **Alternative question:** "What would you do differently if you started over?" (Demonstrate honest reflection)
 
-[STAT: Include at least one statistic in your FAQ answers]
+[STAT when useful: a verified metric that materially improves an FAQ answer]
 
 **Example:**
 
@@ -233,9 +233,9 @@ Before publishing, verify:
 - [ ] Results include a [VISUAL: grouped-bar chart] for before/after comparison
 - [ ] Key Takeaways are transferable, specific, and grounded in the case
 - [ ] At least 3 [INFO-GAIN] elements with original process or observational data
-- [ ] At least 5 [STAT] markers filled with sourced or first-party statistics
+- [ ] Statistics are optional, material to the case, and verified when used
 - [ ] FAQ addresses applicability, feasibility, and honest reflection
 - [ ] All [INTERNAL-LINK] zones have contextual links to related content
-- [ ] Word count falls within 1,500-2,000 range
+- [ ] Coverage is complete for the case-study intent without padding
 - [ ] Subject has given permission to be referenced (or case is anonymized)
-- [ ] Meta description written (under 160 characters, includes primary keyword and key metric)
+- [ ] Meta description accurately summarizes the visible case and result

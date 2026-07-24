@@ -37,7 +37,7 @@ python3 scripts/run.py ask_question.py --question "..." --show-browser
 |-----------|----------|-------------|
 | `--question` | Yes | Question to ask |
 | `--notebook-id` | No | Use notebook from library |
-| `--notebook-url` | No | Use URL directly |
+| `--notebook-url` | No | Validate and use a NotebookLM notebook URL |
 | `--json` | No | Output structured JSON |
 | `--show-browser` | No | Make browser visible |
 

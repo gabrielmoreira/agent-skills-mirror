@@ -5,8 +5,8 @@ description: >
   Generates BRAND.md (audience, positioning, do/don't editorial rules, taboo
   phrases, competitor differentiation) and VOICE.md (existing persona JSON
   re-expressed as readable prose), both written to the project root. When
-  present, all blog sub-skills auto-load these files before writing or
-  reviewing. Pairs with blog-persona, which manages the structured persona
+  present, the blog orchestrator auto-loads these files for write, rewrite,
+  brief, outline, calendar, and strategy workflows. Pairs with blog-persona, which manages the structured persona
   JSON. Use when user says "blog brand", "create brand context", "brand
   voice doc", "BRAND.md", "VOICE.md", "establish editorial brand",
   "brand guidelines for blog".
@@ -17,7 +17,7 @@ license: MIT
 
 # Blog Brand: Durable Editorial Context
 
-Generates two project-root files that every blog sub-skill auto-loads when present:
+Generates two project-root files that the blog orchestrator auto-loads for supported writing and planning commands when present:
 
 - `BRAND.md`: who the audience is, what the brand stands for, what to never say
 - `VOICE.md`: how the brand sounds, structurally and lexically
@@ -53,9 +53,14 @@ Ask:
 - **Problems the reader is actively trying to solve** (3 to 5 bullets)
 - **Common misconceptions the audience holds** (used to anchor information gain)
 
-### Step 2: Positioning
+### Step 2: Positioning and Canonical Entity
 
 Ask:
+- **Official entity name** (legal or public brand name)
+- **Homepage URL** (canonical brand front door)
+- **Logo URL or file path** (preferred square or SVG asset)
+- **sameAs profiles** (LinkedIn, X, YouTube, Crunchbase, GitHub, or other official profiles)
+- **Wikidata Q-ID** if one exists; leave blank if not notable
 - **One-sentence brand mission** (what the brand helps people do)
 - **Distinctive point of view** (the contrarian or non-obvious belief that shapes content)
 - **What this brand is NOT** (anti-positioning, what to never be confused with)
@@ -66,7 +71,8 @@ Ask:
 Ask:
 - **Do list** (3 to 7 things the blog will always do; e.g. "cite primary sources only," "name the practitioner not the product")
 - **Don't list** (3 to 7 things the blog will never do; e.g. "no clickbait titles," "no listicle filler")
-- **Taboo phrases** (specific words or phrases this brand never uses; complements but is separate from the AI-detection blocklist)
+- **Taboo phrases** (specific words or phrases this brand never uses; separate
+  from the repository's optional project style list)
 - **Required disclosures** (e.g. affiliate disclosure, AI-content disclosure, conflict-of-interest patterns)
 
 ### Step 4: Topic boundaries
@@ -114,6 +120,13 @@ Write to project root as:
 
 ## Positioning
 
+- **Official entity name**: [brand/entity]
+- **Homepage**: [canonical URL]
+- **Logo**: [URL or file path]
+- **sameAs profiles**:
+  - [profile URL 1]
+  - [profile URL 2]
+- **Wikidata Q-ID**: [QID or none]
 - **Mission**: [one sentence]
 - **Distinctive POV**: [contrarian or non-obvious belief]
 - **What we are NOT**: [anti-positioning]

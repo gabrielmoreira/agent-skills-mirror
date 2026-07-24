@@ -5,6 +5,7 @@ Centralizes constants, selectors, and paths
 
 import os
 from pathlib import Path
+from urllib.parse import urlparse
 
 # Paths
 SKILL_DIR = Path(__file__).parent.parent
@@ -50,3 +51,17 @@ USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
 LOGIN_TIMEOUT_MINUTES = 10
 QUERY_TIMEOUT_SECONDS = 120
 PAGE_LOAD_TIMEOUT = 30000
+
+
+def validate_notebook_url(url: str) -> str:
+    """Allow only first-party NotebookLM notebook URLs."""
+    parsed = urlparse(url.strip())
+    if parsed.scheme != "https":
+        raise ValueError("Notebook URL must use https")
+    if parsed.netloc != "notebooklm.google.com":
+        raise ValueError("Notebook URL must be on notebooklm.google.com")
+    if not parsed.path.startswith("/notebook/") or parsed.path == "/notebook/":
+        raise ValueError("Notebook URL must start with https://notebooklm.google.com/notebook/")
+    if parsed.username or parsed.password:
+        raise ValueError("Notebook URL must not contain credentials")
+    return url.strip()

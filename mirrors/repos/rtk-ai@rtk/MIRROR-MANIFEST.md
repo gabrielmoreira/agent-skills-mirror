@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `rtk-ai/rtk` — 26 default patterns, 13 followed patterns, 54 file(s) materialized.
+Mirror of `rtk-ai/rtk` — 26 default patterns, 14 followed patterns, 56 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `rtk-ai/rtk` — 26 default patterns, 13 followed patterns, 54 file(s)
 | Ref Type      | `branch` |
 | Ref           | `develop` |
 | Default pats  | 26 |
-| Followed pats | 13 |
-| Files         | 54 |
+| Followed pats | 14 |
+| Files         | 56 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `rtk-ai/rtk` — 26 default patterns, 13 followed patterns, 54 file(s)
 - `CONTRIBUTING.md`
 - `hooks/README.md`
 - `src/core/README.md`
+- `docs/guide/resources/savings-explained.md`
 - `src/filters/README.md`
 - `src/cmds/README.md`
 - `README.md`
@@ -85,46 +86,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`.claude/skills/tdd-rust/SKILL.md`](.claude/skills/tdd-rust/SKILL.md) |
 | 13 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 15 | ✓ | [`hooks/antigravity/README.md`](hooks/antigravity/README.md) |
-| 16 | ✓ | [`hooks/claude/README.md`](hooks/claude/README.md) |
-| 17 | ✓ | [`hooks/cline/README.md`](hooks/cline/README.md) |
-| 18 | ✓ | [`hooks/codex/README.md`](hooks/codex/README.md) |
-| 19 | ✓ | [`hooks/copilot/README.md`](hooks/copilot/README.md) |
-| 20 | ✓ | [`hooks/cursor/README.md`](hooks/cursor/README.md) |
-| 21 | ✓ | [`hooks/hermes/README.md`](hooks/hermes/README.md) |
-| 22 | ✓ | [`hooks/kilocode/README.md`](hooks/kilocode/README.md) |
-| 23 | ✓ | [`hooks/opencode/README.md`](hooks/opencode/README.md) |
-| 24 | ✓ | [`hooks/pi/README.md`](hooks/pi/README.md) |
-| 25 | ✓ | [`hooks/windsurf/README.md`](hooks/windsurf/README.md) |
-| 26 | ✓ | [`openclaw/README.md`](openclaw/README.md) |
-| 27 | ✓ | [`src/analytics/README.md`](src/analytics/README.md) |
-| 28 | ✓ | [`src/cmds/cloud/README.md`](src/cmds/cloud/README.md) |
-| 29 | ✓ | [`src/cmds/dotnet/README.md`](src/cmds/dotnet/README.md) |
-| 30 | ✓ | [`src/cmds/git/README.md`](src/cmds/git/README.md) |
-| 31 | ✓ | [`src/cmds/go/README.md`](src/cmds/go/README.md) |
-| 32 | ✓ | [`src/cmds/js/README.md`](src/cmds/js/README.md) |
-| 33 | ✓ | [`src/cmds/jvm/README.md`](src/cmds/jvm/README.md) |
-| 34 | ✓ | [`src/cmds/php/README.md`](src/cmds/php/README.md) |
-| 35 | ✓ | [`src/cmds/python/README.md`](src/cmds/python/README.md) |
-| 36 | ✓ | [`src/cmds/ruby/README.md`](src/cmds/ruby/README.md) |
-| 37 | ✓ | [`src/cmds/rust/README.md`](src/cmds/rust/README.md) |
-| 38 | ✓ | [`src/cmds/system/README.md`](src/cmds/system/README.md) |
-| 39 | ✓ | [`src/discover/README.md`](src/discover/README.md) |
-| 40 | ✓ | [`src/learn/README.md`](src/learn/README.md) |
-| 41 | ✓ | [`src/parser/README.md`](src/parser/README.md) |
-| 42 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 43 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
-| 44 | → | [`docs/contributing/ARCHITECTURE.md`](docs/contributing/ARCHITECTURE.md) |
-| 45 | → | [`docs/contributing/TECHNICAL.md`](docs/contributing/TECHNICAL.md) |
-| 46 | → | [`docs/TELEMETRY.md`](docs/TELEMETRY.md) |
-| 47 | → | [`hooks/README.md`](hooks/README.md) |
-| 48 | → | [`INSTALL.md`](INSTALL.md) |
-| 49 | → | [`README.md`](README.md) |
-| 50 | → | [`SECURITY.md`](SECURITY.md) |
-| 51 | → | [`src/cmds/README.md`](src/cmds/README.md) |
-| 52 | → | [`src/core/README.md`](src/core/README.md) |
-| 53 | → | [`src/filters/README.md`](src/filters/README.md) |
-| 54 | → | [`src/hooks/README.md`](src/hooks/README.md) |
+| 15 | ✓ | [`docs/guide/resources/what-rtk-covers.md`](docs/guide/resources/what-rtk-covers.md) |
+| 16 | ✓ | [`hooks/antigravity/README.md`](hooks/antigravity/README.md) |
+| 17 | ✓ | [`hooks/claude/README.md`](hooks/claude/README.md) |
+| 18 | ✓ | [`hooks/cline/README.md`](hooks/cline/README.md) |
+| 19 | ✓ | [`hooks/codex/README.md`](hooks/codex/README.md) |
+| 20 | ✓ | [`hooks/copilot/README.md`](hooks/copilot/README.md) |
+| 21 | ✓ | [`hooks/cursor/README.md`](hooks/cursor/README.md) |
+| 22 | ✓ | [`hooks/hermes/README.md`](hooks/hermes/README.md) |
+| 23 | ✓ | [`hooks/kilocode/README.md`](hooks/kilocode/README.md) |
+| 24 | ✓ | [`hooks/opencode/README.md`](hooks/opencode/README.md) |
+| 25 | ✓ | [`hooks/pi/README.md`](hooks/pi/README.md) |
+| 26 | ✓ | [`hooks/windsurf/README.md`](hooks/windsurf/README.md) |
+| 27 | ✓ | [`openclaw/README.md`](openclaw/README.md) |
+| 28 | ✓ | [`src/analytics/README.md`](src/analytics/README.md) |
+| 29 | ✓ | [`src/cmds/cloud/README.md`](src/cmds/cloud/README.md) |
+| 30 | ✓ | [`src/cmds/dotnet/README.md`](src/cmds/dotnet/README.md) |
+| 31 | ✓ | [`src/cmds/git/README.md`](src/cmds/git/README.md) |
+| 32 | ✓ | [`src/cmds/go/README.md`](src/cmds/go/README.md) |
+| 33 | ✓ | [`src/cmds/js/README.md`](src/cmds/js/README.md) |
+| 34 | ✓ | [`src/cmds/jvm/README.md`](src/cmds/jvm/README.md) |
+| 35 | ✓ | [`src/cmds/php/README.md`](src/cmds/php/README.md) |
+| 36 | ✓ | [`src/cmds/python/README.md`](src/cmds/python/README.md) |
+| 37 | ✓ | [`src/cmds/ruby/README.md`](src/cmds/ruby/README.md) |
+| 38 | ✓ | [`src/cmds/rust/README.md`](src/cmds/rust/README.md) |
+| 39 | ✓ | [`src/cmds/system/README.md`](src/cmds/system/README.md) |
+| 40 | ✓ | [`src/discover/README.md`](src/discover/README.md) |
+| 41 | ✓ | [`src/learn/README.md`](src/learn/README.md) |
+| 42 | ✓ | [`src/parser/README.md`](src/parser/README.md) |
+| 43 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 44 | → | [`DISCLAIMER.md`](DISCLAIMER.md) |
+| 45 | → | [`docs/contributing/ARCHITECTURE.md`](docs/contributing/ARCHITECTURE.md) |
+| 46 | → | [`docs/contributing/TECHNICAL.md`](docs/contributing/TECHNICAL.md) |
+| 47 | → | [`docs/guide/resources/savings-explained.md`](docs/guide/resources/savings-explained.md) |
+| 48 | → | [`docs/TELEMETRY.md`](docs/TELEMETRY.md) |
+| 49 | → | [`hooks/README.md`](hooks/README.md) |
+| 50 | → | [`INSTALL.md`](INSTALL.md) |
+| 51 | → | [`README.md`](README.md) |
+| 52 | → | [`SECURITY.md`](SECURITY.md) |
+| 53 | → | [`src/cmds/README.md`](src/cmds/README.md) |
+| 54 | → | [`src/core/README.md`](src/core/README.md) |
+| 55 | → | [`src/filters/README.md`](src/filters/README.md) |
+| 56 | → | [`src/hooks/README.md`](src/hooks/README.md) |
 
 ---
 

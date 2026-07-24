@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zylon-ai/private-gpt` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `zylon-ai/private-gpt` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zylon-ai/private-gpt` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 2 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,9 +59,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`private_gpt/resources/skills/guidelines/SKILL.md`](private_gpt/resources/skills/guidelines/SKILL.md) |
-| 2 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
-| 3 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
+| 1 | ✓ | [`ui/AGENTS.md`](ui/AGENTS.md) |
+| 2 | ✓ | [`ui/CLAUDE.md`](ui/CLAUDE.md) |
 
 ---
 

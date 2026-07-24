@@ -43,7 +43,7 @@ This document focuses on the cluster-specific overlay.
 | Depth | Broad but substantive; each section can stand alone |
 | Outgoing links | One contextual link to every spoke |
 | Incoming links | One contextual link from every spoke |
-| Internal-link density | 8 to 12 internal links total (cluster-internal plus existing-site links) |
+| Internal-link density | One link to every spoke, plus only as many existing-site links as fit naturally |
 | Schema | `Article` plus `BreadcrumbList` plus `ItemList` (the spokes) |
 
 The pillar is written first during execution so that every spoke can link to
@@ -118,7 +118,7 @@ across more than one source post.
 
 | Post type | Min outgoing | Min incoming | Max total internal |
 |-----------|--------------|--------------|--------------------|
-| Pillar | One per spoke | One per spoke | 12 |
+| Pillar | One per spoke | One per spoke | Dynamic: at least `spoke_count`, plus existing-site links only when useful |
 | Spoke | 3 (pillar + 2 siblings) | 2 (pillar + 1 sibling) | 7 |
 
 ## Schema markup strategy

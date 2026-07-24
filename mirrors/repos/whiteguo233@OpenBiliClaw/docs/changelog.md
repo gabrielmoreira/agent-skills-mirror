@@ -4,6 +4,22 @@
 
 ---
 
+## v0.3.184：全端品牌图标统一（2026-07-23）
+
+- **全产品品牌图标统一为新的粉色猫爪标记**：感谢 [@xiongguixg](https://github.com/xiongguixg) 在 [issue #127](https://github.com/whiteguo233/OpenBiliClaw/issues/127) 中主动提供移动端图标方案；项目以选定的方形源图固化 `assets/brand/openbiliclaw-icon.png`，重新派生浏览器扩展 16 / 48 / 128px、PWA / favicon 192 / 512px 与官网图标。side panel、移动 Web、桌面 Web、首次设置页和 GitHub Pages 首页都从旧字母 `B` / CSS 圆环占位切到正式图标。桌面包同时补齐多尺寸 Windows `.ico` 与 macOS `.icns` 并接入 PyInstaller，系统托盘 / 菜单栏也直接加载同一随包 Web 图标，不再单独绘制旧临时标记；社交分享图源同步切换，资产尺寸、桌面容器与各界面引用均有回归测试。
+
+---
+
+## v0.3.183：多实例模型路由与真实模型发现（2026-07-23）
+
+- **模型配置从“Provider 名 + 一个迷惑的备选项”升级为可编排的端点实例路由**：新增 `[llm.instances.<id>]`，每个实例独立保存 Provider 类型、Base URL、token、模型与协议选项，同类型渠道可同时存在；`default_chain` 支持任意长度、可拖拽排序的全局故障切换，Soul / Discovery / Recommendation / Evaluation 默认继承，也能各自配置严格不越界的实例链。Registry 改为实例 ID 注册与实例级 cooldown，响应和探针返回实际命中的 `instance_id`，初始化前置检查会沿完整链寻找可用端点。桌面设置页提供实例卡片、编辑器、链条排序与逐实例 / 整链真实测试；插件也可新建、编辑、删除和逐实例测试，使用窄屏友好的上移 / 下移维护全局默认链，并完整回传 PC Web 创建的模块链（模块链编辑仍留在 PC Web）。两端保存其他设置都不会再把新路由压回旧格式，密钥输入留空时保留已保存值。旧 `default_provider` / `fallback_provider`、Provider 分段和模块 model override 会无损投影，只有新版 UI 保存时才迁移；仅含样例默认模型、没有凭据且未被引用的远程模板分段不会误迁移成实例。安装器、CLI、setup、Docker 模板与配置 API 均保留全部实例和顺序。Embedding 本轮仍保持独立配置，避免 chat 切换时悄悄改变向量空间。
+
+- **模型名可从当前渠道真实拉取，同时始终保留手填**：桌面 Web、插件实例编辑器和 `/setup/` 新增「获取模型」，把当前未保存的实例草稿提交到无写入的 `POST /api/config/discover-models`，后端使用该实例自己的 Base URL / token 调用 OpenAI 兼容 `GET /models`，排序去重后填入可编辑下拉框；失败不会清空用户已输入的模型名，加载期间按钮禁用并用 `aria-live` 就近反馈。OpenAI 协议没有“列出某模型支持哪些 reasoning effort”的标准接口，因此 Effort 下拉仅是按 Provider / 模型给出的本地建议，仍允许任意手填；泛 OpenAI-compatible 仅在新版实例中明确填写非空 Effort 时透传，旧格式升级继续保持“不发送”语义，避免安装新包后请求体静默变化。
+
+- **模型路由迁移可以真实回退旧版本**：首次把已有旧 `config.toml` 写成 v2 前，中心保存层会创建逐字节、同权限且永不覆盖的 `config.toml.pre-llm-routing.bak`；只读、旧格式保存、新建 v2 和后续 v2 保存均不误建备份。新增 `openbiliclaw config-export-legacy [--output PATH] [--force]`，在不改当前配置的前提下生成 `0600` 的旧 schema 副本，并用回读校验后才原子替换目标；输出逐项披露旧格式无法表达的同类型端点折叠、全局长链截断、模块 fallback 截断和端点重绑定，Embedding 保持独立不变。自动测试冻结上一代解析契约；本次验收另用真实上一版源码解析导出文件，避免“当前版本自己能读”冒充降级兼容。
+
+---
+
 ## v0.3.182：账号同步、换批去重与桌面升级交接（2026-07-21）
 
 - **移动端惊喜卡恢复整卡点击打开（issue #126）**：用户反馈手机上「惊喜推荐一定要点『看看』才能跳转，下面的内容却是整卡点一下就进去」，问这是防误触还是别的设计原因。查下来两者都不是——这是实现不一致而非有意为之：移动 Web 的普通卡片在 `renderCard()` 里绑了整卡 click（动作行 `stopPropagation` 排除按钮），而惊喜卡的 `.delight-tray` 上只有左右滑动切卡的 pointer handler，位移不足 50px 时松手什么也不做，于是卡体在视觉上像可点、实际是死区。现在死区内松手（位移 <10px，`DELIGHT_DRAG_DEAD_ZONE`，与桌面端 `_DELIGHT_DRAG_DEAD_ZONE` 同值）等同点击「看看」：走同一个 `handleDelightAction(d, "view")`，因此已读标记、`POST /api/delight/respond` 与打开链接的语义和按钮完全一致，不是另一条旁路。10px–50px 之间仍然刻意不触发任何动作，手指轻微拖动不会误开内容；≥50px 继续是切卡。反馈按钮、聊天输入框等交互元素本就在 `pointerdown` 阶段 `stopPropagation`，天然不会被整卡点击吸收；已反馈完成（`show_actions=false`）、聊天 composer 展开中、或拿不到内容 URL 时不接管点击，避免抢走「点空白处收起输入框」的预期。**四端范围**：桌面 Web 的普通推荐卡本来就只有动作按钮、没有整卡点击，惊喜卡另有封面点击区 + 「去看看」按钮，自身已经自洽，本次不动以免改变桌面既有手感；插件 popup / side panel 没有惊喜卡（delight 只走 background 通知），CLI 无此交互。新增三个 Playwright 真机级 E2E：点击卡体打开内容并只上报一次 `view`、拖动 30px 不打开也不上报、点「喜欢」不会连带打开内容。

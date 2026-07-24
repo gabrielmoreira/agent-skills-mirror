@@ -1,11 +1,13 @@
 # SEO Landscape 2026: Google Updates & E-E-A-T
 
-## December 2025 Core Update
+## July 2026 Search Baseline
 
-Ran December 11-29, 2025 (18 days). Google's official statement: "designed to better
-surface relevant, satisfying content." Rewarded authentic first-hand experience and
-penalized "fake freshness." 71% of affiliate sites without original testing were
-negatively impacted (ALM Corp). E-E-A-T requirements expanded beyond YMYL to ALL competitive queries.
+As verified on 2026-07-23, the latest confirmed ranking event is the June 2026
+spam update, 2026-06-24 to 2026-06-26. The latest confirmed core update is the
+May 2026 core update, 2026-05-21 to 2026-06-02. Do not turn status-dashboard
+dates into causal claims about what a specific update rewarded or penalized.
+E-E-A-T is quality-rater language, not a single confirmed ranking factor;
+evidence expectations apply broadly and are highest for YMYL topics.
 
 ### Authenticity Signals Google Evaluates
 
@@ -13,31 +15,36 @@ negatively impacted (ALM Corp). E-E-A-T requirements expanded beyond YMYL to ALL
 |--------|-------------|
 | Original images/video | Not stock photos - real screenshots, photos, demos |
 | Specific language | Details only direct experience provides |
-| First-person perspective | "When we tested this..." "In our experience..." |
+| Verifiable first-hand evidence | Method, sample, result, screenshots, or other proof when experience is claimed |
 | Original data | Proprietary surveys, case studies, experiments |
 | Build-in-public docs | Process documentation, behind-the-scenes |
 
 ### What Gets Penalized
 - Articles that read like "summaries of top five search results"
-- Mass-produced AI content lacking human oversight
+- Scaled low-value content created primarily to manipulate Search, regardless of
+  whether people, automation, or both produced it
 - Content without unique perspective or original information
 
 ### Key Clarification
-John Mueller has stated in multiple Google Office Hours sessions that Google's systems
-evaluate content quality regardless of origin. AI as a research tool is fine; AI as sole
-content creator without human expertise and oversight is not.
+Google evaluates helpfulness, reliability, originality, and value rather than
+assigning quality by production method. Generative AI use is not itself a
+violation. Scaled content abuse applies when many pages are produced primarily
+to manipulate rankings and provide little value, whether the production is
+manual, automated, or mixed.
 
-### Post-Update Analysis: Winners & Losers
+### Post-Update Analysis
 
-Post-December 2025 core update visibility shifts:
-- Sites with original testing, case studies, and first-hand experience gained visibility
-- 71% of affiliate sites without original testing lost rankings (ALM Corp analysis of 847
-  sites across 23 industries; methodology not independently verified)
-- E-E-A-T expanded beyond YMYL to ALL competitive queries - this is the biggest shift
-  since E-A-T was introduced
-- Winners share a common trait: unique data or perspectives AI cannot replicate
-- Losers overwhelmingly produced "consensus content" - rewritten summaries of existing
-  top results with no original contribution
+Use Google's documented procedure rather than reverse-engineering a winner
+profile:
+
+1. Confirm the update has finished, then wait at least one full week.
+2. Compare a week after completion with a week before rollout.
+3. Separate Web Search, Images, Video mode, and News tab data.
+4. Distinguish small position movement from a large, sustained site-wide drop.
+5. Avoid quick fixes and mass deletion. Improve reader value and structure in
+   durable ways; deletion is a last resort for content that cannot be salvaged.
+6. Remember that smaller core changes can be unannounced and improvements can
+   take effect without waiting for another named update.
 
 ### Quality Rater Guidelines Updates
 
@@ -45,38 +52,59 @@ Post-December 2025 core update visibility shifts:
 - Added AI Overview evaluation criteria - raters now assess AI-generated summary accuracy
 - Expanded YMYL definitions to cover broader range of topics affecting wellbeing
 - Key principle codified: "Trust is the most important member of the E-E-A-T family"
+- This 182-page September 11, 2025 version remains current as of 2026-07-07
 
 **January 2025 QRG Update:**
 - First formal "generative AI" definition added to the guidelines
-- Scaled content abuse explicitly flagged - mass AI generation without human oversight
-  marked as lowest quality
-- Raters instructed to evaluate whether AI-generated content demonstrates genuine
-  expertise or merely mimics it
+- Scaled content abuse is explicitly flagged when content is produced at scale
+  primarily to manipulate rankings and provides little value
+- Raters evaluate the resulting page's purpose, originality, accuracy, effort,
+  and value rather than treating production method as a quality verdict
 
-## E-E-A-T Framework (Extended December 2025)
+## 2026 Algorithm Timeline
 
-**Critical**: December 2025 core update extended E-E-A-T to ALL competitive queries,
-not just YMYL.
+Google-owned status sources are current through 2026-07-23.
 
-| Factor | Weight | Key Signals |
-|--------|--------|-------------|
-| Experience | 20% | First-hand knowledge, original content, case studies |
-| Expertise | 25% | Credentials, depth, technical accuracy |
-| Authoritativeness | 25% | Industry recognition, citations, reputation |
-| Trustworthiness | 30% | Contact info, transparency, security (most important) |
+| Update | Dates | Blog Impact |
+|--------|-------|-------------|
+| December 2025 Core Update | 2025-12-11 to 2025-12-29 | Quality reassessment; reinforce helpful, trustworthy, differentiated content |
+| Discover Update | 2026-02-05 | Monitor Discover traffic separately from core ranking volatility |
+| March 2026 Spam Update | 2026-03-24 | Spam enforcement; keep scaled and low-value AI pages out of the index |
+| March 2026 Core Update | 2026-03-27 to 2026-04-08 | Named core update; use the standard post-update analysis procedure |
+| May 2026 Core Update | 2026-05-21 to 2026-06-02 | Latest named core update as of 2026-07-23 |
+| June 2026 Spam Update | 2026-06-24 to 2026-06-26 | Spam enforcement; thin aggregation and abusive automation remain high risk |
+
+Treat third-party reports of an unconfirmed July 2026 update as volatility only,
+not as a Google-confirmed event.
+
+## E-E-A-T Framework Since December 2025
+
+Google's helpful-content guidance uses E-E-A-T as quality-rater language. It is
+not a published numeric ranking factor. Use it as an internal quality lens, with
+the highest scrutiny for YMYL and other high-harm topics.
+
+| Factor | Internal review emphasis | Key Signals |
+|--------|--------------------------|-------------|
+| Experience | Internal heuristic only | First-hand knowledge when genuine, original content, case studies |
+| Expertise | Internal heuristic only | Credentials, depth, technical accuracy |
+| Authoritativeness | Internal heuristic only | Industry recognition, citations, reputation |
+| Trustworthiness | Internal heuristic only | Contact info, transparency, security |
 
 ### YMYL Topics (Highest Scrutiny)
 Health, finance, legal, news, elections, democratic processes, groups of people.
 
-### AI Content Assessment (Sept 2025 QRG)
-- AI content acceptable IF it demonstrates genuine E-E-A-T
-- Low-quality AI markers: generic language, no unique insights, regurgitated facts
+### Content Assessment (September 2025 QRG)
+- Apply the same purpose, quality, accuracy, and value review regardless of how
+  the page was produced
+- Generic language, unsupported claims, no unique contribution, and
+  regurgitated facts are quality defects, not authorship proof
 
 ## Hidden Gems Ranking System
 
-Now fully integrated into core ranking (not Helpful Content System).
-Identifies content from forums, social media, niche blogs where people share
-"first-hand knowledge and personal insights."
+Experience-based niche content is handled by Google's core ranking systems, not
+a separate "Hidden Gems" system to optimize for directly. The practical takeaway
+is to publish first-hand knowledge and personal insights where they genuinely
+answer the query.
 
 - 70.85% of keyphrases with product reviews show "Discussions and Forums" SERP feature
   (Jul 2024 re-analysis; original Feb 2024 figure was 77%, now outdated)
@@ -87,55 +115,91 @@ Identifies content from forums, social media, niche blogs where people share
 ## Structured Data 2026
 
 ### Active (Recommend Freely)
-- BlogPosting, Article
+- Article or BlogPosting with Person author and Organization publisher. Article is
+  the priority type for blog content after FAQ and HowTo rich result removal.
 - Organization, LocalBusiness
-- FAQPage (keep answers 40-60 words; note: rich results only shown for government/health
-  sites since Aug 2023 - still valuable for AI citation, not for Google rich snippets)
 - BreadcrumbList
 - Person (author credentials)
 - Product, SoftwareApplication
 - AggregateRating, Review (only supported on eligible types: Product, Recipe,
   SoftwareApplication, LocalBusiness, Movie, Book - NOT on BlogPosting directly)
+- Video, Product, Review, and Event when the page has eligible visible content
 
-### Deprecated (Never Recommend)
-- HowTo (Sept 2023)
-- SpecialAnnouncement (July 2025)
-- ClaimReview (June 2025, Google structured data simplification)
-- Practice Problem (Jan 2026, confirmed via Google Search Console changelog)
-- Dataset for general search, Sitelinks Search Box, Q&A (Jan 2026 per secondary sources;
-  primary Google documentation not directly confirmed for these three)
+Still rich-result-eligible for blog content in 2026: Article, BreadcrumbList,
+Video, Product, Review, and Event.
+
+FAQPage is optional only when visible Q&A independently helps readers. Google
+retired FAQ rich results for all sites starting 2026-05-07, including
+government and health sites, and removed the feature documentation in June.
+Existing FAQPage markup remains schema.org-valid, but it earns no Google rich
+result or generative-AI advantage.
+
+### Rich-Result Eligibility Notes
+- FAQ rich results were fully retired for all sites starting 2026-05-07. HowTo
+  was fully deprecated as of 2023-09-13.
+- ClaimReview, SpecialAnnouncement, Course Info, Estimated Salary, Learning
+  Video, and Vehicle Listing are former Google Search experiences.
+- PracticeProblem was removed from Search and its documentation. Dataset is for
+  Dataset Search, not ordinary Google Search rich results.
+- Course Info is retired, but Course list is a distinct currently documented
+  feature. QAPage remains narrow: one question with user-submitted answers.
+- Schema.org validity is separate from Google Search feature eligibility.
 
 ### Critical Technical Note
-Schema must appear in HTML source, not injected via JavaScript.
-Most AI crawlers cannot execute JS. 72% of first-page results use schema markup.
+
+Google can process JavaScript-generated structured data when it is present in
+the rendered DOM. Test the rendered URL and make sure the markup matches visible
+content. Source or server-rendered JSON-LD remains more portable for crawlers
+that do not render JavaScript, but it is not a Google requirement.
 
 ## Google AI Overviews & AI Mode
 
 ### Coverage
-- AI Overviews appear in 49% of SERPs (across all query types)
-- 15-21% global (conservative) to 60% US queries
-- Doubled from 6.49% (Jan 2025) to 24.61% peak (July 2025), stabilized ~15.69% (Semrush,
-  10M+ keywords, Dec 2025)
+- AI Overview coverage is methodology-dependent, not one fixed 49% figure.
+- Conservative floor: about 20% of searches in Ahrefs data cited by SparkToro
+  (SparkToro, 2026-06-09).
+- Higher upper estimate: about 48% in BrightEdge reporting, but this is
+  unconfirmed second-hand data.
+- Semrush recalibrated AI Overview visibility to about 15.7% in November 2025.
 
-### Traffic Impact (Seer Interactive, 3,119 queries, 42 orgs)
-- Organic CTR declined 61% with AI Overviews (1.76% → 0.61%)
-- Paid CTR declined 68% (19.7% → 6.34%)
-- Even without AI Overviews: 41% organic CTR decline
-- BUT: brands cited in AI Overviews see 35% higher organic CTR, 91% higher paid CTR
+### Traffic Impact (Seer Interactive, April 2026, 53 brands, 5.47M queries)
+- AI Overview organic CTR hit a 1.3% floor in December 2025, then rebounded to
+  about 2.4% by February 2026.
+- The AIO-present CTR gap narrowed from about 61% to about 38% compared with
+  no-AIO results.
+- Vendor reporting described an association between being included as an AI
+  Overview source and higher click activity. Treat this as unverified,
+  methodology-specific, non-causal research context. It does not justify a
+  citation-format, citation-position, or optimization target.
 
-### AI Mode (Separate Product)
-- 200+ countries, 100 million monthly users
-- 300-word average responses (vs 157 for AI Overviews)
-- 12.6 links per response (vs 9.26)
-- 93% zero-click rate
-- Gemini 3 default model (Jan 27, 2026)
+### AI Mode and Product Context
+
+Google I/O 2026 announced Gemini 3.5 Flash as AI Mode's global default,
+follow-up transitions from AI Overviews into AI Mode, multimodal inputs, and
+information agents. Google's May 2026 Explore-the-web update highlighted
+in-depth analyses, original content, public discussions, inline links, and link
+previews. These are product capabilities, not published ranking factors.
+
+Use them only as landscape context. Do not invent agent-specific schema,
+fan-out landing-page factories, or scoring bonuses. The defensible response is
+the same people-first SEO baseline: accurate, original, in-depth material;
+authentic public discussion where relevant; clear page identity; and useful
+images or video.
 
 ## Market Context
 
-- Google market share below 90% for first time since 2015 (87.3% US; global share ~89%)
+- Google market share is about 89.85% global in March 2026 and about 90% in
+  April 2026; mobile is about 95.5%, desktop about 84.5%, and Bing about 5.1%
+  (StatCounter).
 - ChatGPT: 900M weekly users (Feb 2026), 2.5B daily queries (Jul 2025)
-- AI referral traffic: 1.08% of all web traffic, grew 527% (Jan-May 2025)
-- Zero-click searches: 58-60%, projected 65-70% by mid-2026
+- AI referral traffic is small but the fastest-growing channel. It grew 3x+
+  year over year from September 2024 to September 2025; Gemini surged to about
+  18% share with 237% YoY growth, while ChatGPT share slid from about 87% to the
+  high-60s (Similarweb, 2026-05-28). Do not cite a standardized share of total
+  web traffic.
+- Zero-click searches reached 68.01% of US Google searches from January to
+  April 2026, up from 60.45% in 2024. About 276 clicks reach the open web per
+  1,000 searches (SparkToro, 2026-06-09).
 - Gartner: 25% decline in traditional search volume by 2026 (appears accurate)
 - B2B SaaS discovery search declined 70-80% as buyers use AI assistants instead
   (primarily based on HubSpot case study; no rigorous sector-wide study confirms this as
@@ -146,8 +210,9 @@ Most AI crawlers cannot execute JS. 72% of first-page results use schema markup.
 Emerging trends reshaping search monetization:
 
 - **ChatGPT Agent**: Autonomous web browsing, form-filling, purchasing on user's behalf
-- **Google Unified Commerce Platform (UCP)**: Single campaign type across Search, Shopping,
-  YouTube, Maps - replacing fragmented campaign management
+- **Universal Commerce Protocol (UCP)**: An open commerce standard for agentic
+  product discovery and transactions, not a campaign type or advertising
+  platform
 - **AI Overview Ads**: Sponsored placements in AI Overviews grew from 1% to 25% of queries;
   projected to reach 50%+ by end of 2026
 - **ChatGPT shopping traffic**: 11.4% conversion rate vs 5.3% organic search
@@ -166,23 +231,82 @@ Emerging trends reshaping search monetization:
 - Google's systems evaluate quality regardless of origin - but the sheer volume of AI
   content raises the bar for differentiation through original research and experience
 
-## AMP Deprecation
+## AMP Status
 
-AMP (Accelerated Mobile Pages) is effectively dead:
-- Squarespace deprecated AMP support in February 2025
-- Google removed AMP as a Top Stories ranking requirement in 2021
-- No SEO benefit to AMP implementation - Core Web Vitals replaced AMP's purpose
-- Recommendation: Remove AMP versions if maintaining them creates overhead; focus on
-  native page speed optimization instead
+AMP is supported but not required and has no special ranking benefit. As of
+2026-07-01, Google Search sends users directly to the publisher-hosted AMP URL
+instead of routing through the AMP viewer or cache. Keep AMP when it provides
+operational value; otherwise remove it carefully with correct canonicals and
+redirects. AMP content ranks like other web pages.
+
+## Search Feature Operations
+
+### Canonical Changes
+
+After fixing a duplicate or canonicalization issue, Google may keep pages in the
+same duplicate cluster for up to two weeks. Mark a recently fixed case as
+pending reevaluation rather than an immediate failure. Search Console's Request
+Indexing feature is quota-limited; reserve it for the most important URLs.
+
+### Search Console Generative AI Reports
+
+The dedicated generative-AI reports are rolling out to a subset of properties.
+Search and Discover have separate views. The Search view covers AI Overviews
+and AI Mode and exposes impressions, pages, countries, devices, and dates.
+Do not promise clicks or queries in this report. The blog-google API tooling
+does not fetch the dedicated view; report `SKIPPED` or unavailable and direct
+the user to Search Console until Google documents API support.
+
+Platform properties for Instagram, TikTok, X, and YouTube are also rolling out
+gradually. In their Search Console UI, eligible creators can see Search and
+Discover performance, including clicks, impressions, posts, and queries. Do not
+promise that the current Search Console API supports these property reports.
+
+### Discover
+
+Run Discover checks only when the site targets Discover or has Discover data.
+Favor original, in-depth, timely, non-sensational content with topic-level
+expertise and local relevance where applicable. Older useful content can still
+appear. No special schema is required.
+
+For a preferred Discover image, check all of:
+
+- At least 1200px wide.
+- More than 300,000 total pixels.
+- Prefer a useful 16:9 crop.
+- Relevant and representative, not generic or text-heavy.
+- Enabled with `max-image-preview:large` or AMP.
+- Declared through appropriate image markup or `og:image`.
+
+### Preferred Sources
+
+Preferred Sources is optional audience development, not a ranking signal. A
+reader-selected domain or subdomain is more likely to appear in Top Stories and
+may receive a preferred badge in AI Mode or AI Overviews for that reader. A
+subdirectory alone is not eligible. Offer Google's publisher button only when
+it fits the audience strategy.
+
+### Crawling, Navigation, and Snippets
+
+- Googlebot processes the first 2MB of a supported file and the first 64MB of a
+  PDF, using uncompressed size. Keep the title, metadata, canonical, essential
+  schema, and primary content before the HTML cutoff. Flag large inline
+  base64, CSS, or JavaScript payloads.
+- Back-button hijacking requires behavioral evidence that navigation is
+  obstructed or users are sent to deceptive history entries. Do not flag normal
+  History API use by syntax alone.
+- For "Read more" deep links, keep target content immediately visible and retain
+  its hash on page load. Avoid forced scroll resets or hash removal. This does
+  not ban every accordion elsewhere on the page.
 
 ## Readability & Engagement Signals
 
 Google does NOT use readability as a direct ranking factor. John Mueller has
-stated this explicitly. However, readability drives the engagement signals
-Google DOES measure - bounce rate, time on page, scroll depth, and return
-visits.
+stated this explicitly. Readability still affects user satisfaction and task
+completion, but do not assert analytics metrics such as bounce rate, time on
+page, scroll depth, or return visits as direct ranking inputs.
 
-### December 2025 Core Update: Readability Correlation
+### Core Update Quality Patterns in 2026
 Raptive analysis (published Feb 2026, high reliability) found:
 - Sites with <7% of pages ≤500 words had more stable rankings
 - Winning pages averaged 393 days freshness vs 500 for losers
@@ -192,10 +316,10 @@ Raptive analysis (published Feb 2026, high reliability) found:
 - **INP >300ms** = 31% more traffic loss (ALM Corp, not Raptive)
 - Thin content, template-based pages, and generic AI aggregation were penalized
 
-### E-E-A-T Expansion
-E-E-A-T now applies to virtually ALL content categories, not just YMYL. The
-December 2025 Core Update extended E-E-A-T evaluation to ALL competitive
-queries - the biggest scope expansion since E-A-T was introduced.
+### E-E-A-T Framing
+Helpful, trustworthy content matters across topics. Evidence expectations scale
+with topic risk, user harm, and YMYL sensitivity; do not claim a dated expansion
+of E-E-A-T to every competitive query unless a primary Google source is loaded.
 
 ### Quality Rater Guidelines Updates
 - **January 2025 QRG**: Added "Filler" section penalizing pages that bury useful
@@ -206,8 +330,9 @@ queries - the biggest scope expansion since E-A-T was introduced.
   language, no unique insights, regurgitated facts.
 
 ### Hidden Gems Ranking System
-Hidden Gems is its own ranking system (Brad Kellett confirmation), separate from
-core ranking. It surfaces experience-based niche content from forums, social media,
-and small blogs. 70.85% of keyphrases with product reviews now show "Discussions and
-Forums" SERP features (Jul 2024 re-analysis, Detailed.com). Domain authority influence is diminishing - depth,
-originality, and strong intent alignment matter more.
+Experience-based niche content is part of core ranking systems. It surfaces
+useful first-hand content from forums, social media, and small blogs when that
+content best satisfies the query. 70.85% of keyphrases with product reviews now
+show "Discussions and Forums" SERP features (Jul 2024 re-analysis, Detailed.com).
+Depth, originality, and strong intent alignment matter more than optimizing for a
+separate Hidden Gems system.

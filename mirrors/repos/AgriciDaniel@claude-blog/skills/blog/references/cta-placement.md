@@ -1,12 +1,15 @@
 # CTA Placement Guide
 
-## Core Statistics
+## Core Testing Hypotheses
 
-- Personalized/contextual CTAs convert 202% better than generic (HubSpot, 330K CTAs)
-- Single focused CTA per page: 266% more conversions than multiple (HubSpot)
-- Inline CTAs: 121% higher CTR than sidebar (HubSpot)
-- Center-aligned CTAs: 682% more clicks than left/right
-- First-person copy ("Start My Free Trial"): 90% higher CTR than second-person
+The figures below are vendor-reported directional benchmarks. Use them as A/B
+test hypotheses, not universal rules, unless the source URL, date, methodology,
+and audience fit are loaded for the project.
+
+- Personalized/contextual CTAs often outperform generic CTAs
+- A focused primary CTA often outperforms competing conversion goals
+- Inline CTAs often outperform disconnected sidebar CTAs
+- CTA alignment and first-person copy should be tested against the page design
 
 ## Placement Rules by Content Type
 
@@ -16,7 +19,7 @@
 | Listicle | After item #3-4 (mid-list) | Reader engaged but not finished |
 | Comparison | After recommendation section | Decision point reached |
 | Case study | After results section | Proof delivered |
-| Pillar page | End of each major section | Natural pause points |
+| Pillar page | 2-3 natural section breaks | Avoid CTA fatigue on long pages |
 | Tutorial | After first working example | Success moment |
 | Product review | After verdict/rating | Purchase intent peaks |
 | Thought leadership | At natural conclusion | Reflection complete |
@@ -35,7 +38,8 @@
 - Use `<a>` for navigation CTAs, `<button>` for action CTAs
 - Never use `<div>` as a clickable CTA
 - Minimum 44x44px touch targets
-- 3:1 contrast ratio minimum
+- CTA text: 4.5:1 contrast ratio minimum
+- Focus indicators, borders, and icons: 3:1 contrast ratio minimum
 - Visible focus indicators
 - Descriptive link text (not "click here")
 - `aria-labelledby` pointing to CTA heading when context is needed

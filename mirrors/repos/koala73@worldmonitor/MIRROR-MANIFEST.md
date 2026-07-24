@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 32 file(s) materialized.
+Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 33 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `koala73/worldmonitor` — 26 default patterns, 3 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 32 |
+| Files         | 33 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,10 +89,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`public/.well-known/agent-skills/track-unrest-events/SKILL.md`](public/.well-known/agent-skills/track-unrest-events/SKILL.md) |
 | 27 | ✓ | [`public/.well-known/agent-skills/track-vessel-traffic/SKILL.md`](public/.well-known/agent-skills/track-vessel-traffic/SKILL.md) |
 | 28 | ✓ | [`public/api/llms.txt`](public/api/llms.txt) |
-| 29 | ✓ | [`public/llms.txt`](public/llms.txt) |
-| 30 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 31 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 32 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 29 | ✓ | [`public/developers/llms.txt`](public/developers/llms.txt) |
+| 30 | ✓ | [`public/llms.txt`](public/llms.txt) |
+| 31 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 32 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 33 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

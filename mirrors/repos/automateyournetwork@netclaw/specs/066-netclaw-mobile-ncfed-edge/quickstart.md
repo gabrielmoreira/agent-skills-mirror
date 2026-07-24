@@ -82,7 +82,30 @@ Expected coverage:
 | SC-005 | `test_edge_enrollment.py::test_revoked_edge_member_blocks_further_delivery`, `test_edge_push.py::test_push_to_edge_on_disconnected_member_fails_cleanly_not_hangs` | Fully automated: removal blocks both a valid-signature reconnect attempt and subsequent push/heartbeat. |
 | SC-006 | `test_edge_heartbeat.py::test_disconnected_edge_node_reflects_unreachable`, `::test_connected_heartbeating_edge_node_with_zero_skills_passes_base_floor` | Both the negative (disconnected → unreachable) and positive (connected, zero skills, still healthy) cases are covered. |
 
-Not yet exercised anywhere in this repo (needs the operator's Mac + a real device,
-per T044/T045): the actual iOS Secure Enclave key generation/signing
-(`EdgeIdentityPlugin.swift`), an actual Android build/run, and any real FCM/APNs
-delivery.
+### T045 status — partially exercised against a throwaway Border, not a full walkthrough
+
+A debug APK was built, installed, and launched on an Android emulator against a fully
+isolated throwaway Border (separate `HOME`, SQLite DB, and ports — never the live
+production daemon): steps 1-4 of the walkthrough above (domain-verified cert, QR
+enrollment, the app refusing a mismatched domain, and the resulting member row showing
+`node_type=edge` with a pinned key) were confirmed for real this way, and a full
+`n2n/edge/ask` handshake (feature 067) round-tripped over the same connection — proving
+the transport, enrollment, and pinned-key trust model work end-to-end on real Android,
+not just in unit tests.
+
+Steps 6-9 remain genuinely unexercised here, not because of the production-daemon
+restriction (a throwaway daemon covers that) but because they need infrastructure this
+environment doesn't have: step 6/7 (push via `n2n_notify_phone`, no-mirroring) needs a
+live Slack/TUI conversation actually asking the agent to push, which wasn't set up
+against the throwaway daemon; step 8 needs real FCM/APNs credentials (`.env.example`'s
+`FCM_SERVICE_ACCOUNT_JSON`/`APNS_*`), which don't exist in this repo; step 9 needs a
+real network-connectivity drop (airplane mode) on physical or real emulator networking,
+not exercised this pass. Step 10 (revocation) IS fully covered, but only by the
+automated `test_revoked_edge_member_blocks_further_delivery` test above, not manually.
+
+iOS Secure Enclave key generation/signing (`EdgeIdentityPlugin.swift`) remains entirely
+unexercised — that requires Xcode, which only runs on macOS, per T044's own note.
+
+T045's checkbox stays unchecked: a genuine end-to-end 10-step walkthrough needs live
+push credentials and a Slack conversation wired to the throwaway/real Border, which is
+follow-up work, not something this pass silently declared done.

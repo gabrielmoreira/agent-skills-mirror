@@ -3,8 +3,8 @@ name: blog-write
 description: >
   Write new blog articles from scratch optimized for Google rankings and AI
   citations. Generates full articles with template selection, answer-first
-  formatting, Key Takeaways summary box, information gain markers, citation capsules, sourced
-  statistics, Pixabay/Unsplash images, built-in SVG chart generation, FAQ schema,
+  formatting, Key Takeaways summary box, information gain markers, evidence-backed explanations, sourced
+  statistics, Pixabay/Unsplash images, built-in SVG chart generation, optional FAQ sections,
   internal linking zones, and proper heading hierarchy. Supports MDX, markdown,
   and HTML output.
   Use when user says "write blog", "new blog post", "create article",
@@ -28,6 +28,7 @@ main `blog` skill's references directory, not in `blog-write/`):
 - `skills/blog/references/eeat-signals.md`: Experience, expertise, authority, trust markers
 - `skills/blog/references/internal-linking.md`: Linking strategy and anchor text rules
 - `skills/blog/references/visual-media.md`: Image sourcing and chart styling
+- `skills/blog-write/references/delivery.md`: delivery contract steps and summary template for this sub-skill
 
 ## Workflow
 
@@ -98,32 +99,29 @@ Spawn a `blog-researcher` agent (or do inline research with WebSearch):
    - Prioritize tier 1-3 sources (see `skills/blog/references/quality-scoring.md`)
    - Record: statistic, source name, URL, date, methodology
 2. **Find a cover image** (wide, high-quality, topic-relevant):
-   - Search: `site:pixabay.com [topic] wide banner` (preferred)
-   - Alternative: `site:unsplash.com [topic] wide`
-   - Fallback: `site:pexels.com [topic] wide banner`
+   - Prefer original screenshots, product visuals, diagrams, or data graphics when available
+   - For stock, use official APIs such as Openverse, Unsplash, Pexels, or Pixabay so license, creator, source URL, and download URL are captured
+   - Download approved assets into the draft folder, store attribution, and never hotlink arbitrary CDN URLs
+   - Reject `javascript:`, `data:`, and `file:` image URLs
    - Target dimensions: 1200x630 (OG-compatible) or 1920x1080
    - Or generate a custom SVG cover via `blog-chart` (text-on-gradient with key stat)
-   - Or generate a custom AI image via `blog-image` sub-skill (if nanobanana-mcp configured)
+   - Or generate a custom AI image via `blog-image`; prefer `gemini-3.1-flash-image`, then `gemini-3.1-flash-lite-image` or `gemini-3-pro-image` when available, and record the model ID
    - See `skills/blog/references/visual-media.md` for cover image sizing details
 3. **Find 3-5 inline images** from open-source platforms:
-   - **Pixabay** (preferred): Search `site:pixabay.com [topic keywords]`
-     - Extract image URL from page
-     - Direct URLs: `https://cdn.pixabay.com/photo/YYYY/MM/DD/HH/MM/filename.jpg`
-     - Verify with `curl -sI "<url>" | head -1` returns HTTP 200
-   - **Unsplash** (alternative): Search `site:unsplash.com [topic keywords]`
-     - Build URL: `https://images.unsplash.com/photo-<id>?w=1200&h=630&fit=crop&q=80`
-   - **Pexels** (fallback): Search `site:pexels.com [topic keywords]`
+   - Use official APIs or Openverse search; keep license, creator, source URL, and retrieval date with each asset
+   - Download images locally and reference local paths in the draft
+   - Validate final URLs with the delivery contract SSRF rules before download
 4. **Plan 2-4 data visualizations** from researched statistics
    - Select diverse chart types (see `skills/blog/references/visual-media.md`)
    - Map data points to chart formats
-5. **AI image generation** (optional, if nanobanana-mcp configured):
+5. **AI image generation** (optional, if `blog-image` is available):
    - If stock photo results are insufficient (< 3 good matches) or topic is too niche
    - Generate custom hero image and/or inline illustrations via `blog-image` sub-skill
-   - Stock photos remain default - AI generation supplements, never replaces
+   - Record prompt, provider, and model ID; stock photos remain available, but original and data visuals are preferred when they better serve the topic
 6. **NotebookLM research** (optional, if user has relevant notebooks):
    - If the user mentions a NotebookLM notebook or the topic aligns with a configured notebook
    - Query via `blog-notebooklm` for source-grounded data from user-uploaded documents
-   - Treat NotebookLM responses as Tier 1 sources (user's own primary documents)
+   - Inherit the source tier from the underlying document provenance; user's own primary documents can be Tier 1, while copied secondary sources keep their original tier
    - Falls back silently if not configured or not authenticated
 7. **Find relevant YouTube videos** (2-3 per post):
    - Use `blog-google` youtube command or WebSearch `site:youtube.com [topic] [year]`
@@ -139,7 +137,8 @@ adapt this skeleton to match the template's section structure:
 # [Title as Question - Include Primary Keyword]
 
 ## Introduction (100-150 words)
-- Hook with surprising statistic
+- Open with the reader's problem, a useful finding, a concrete example, or an
+  optional verified statistic when evidence makes that the strongest hook
 - Problem/opportunity statement
 - What the reader will learn
 
@@ -147,37 +146,37 @@ adapt this skeleton to match the template's section structure:
 > - [Core finding with statistic and source]
 > - [Second key insight or recommendation]
 > - [Third actionable takeaway]
-> (3-5 bullets, 40-60 words combined)
+> (3-5 concise bullets when a summary helps this content type)
 
-## H2: [Question Format] (300-400 words)
-- Answer-first paragraph (40-60 words with stat + source)
+## H2: [Intent-Matched Heading]
+- Clear section point with verified support where needed
 - Supporting evidence
 - [Image placement]
 - Practical advice
-- [CITATION CAPSULE placeholder]
+- [EVIDENCE-BACKED EXPLANATION placeholder]
 - [INTERNAL-LINK: anchor text → target description]
 
-## H2: [Question Format] (300-400 words)
+## H2: [Intent-Matched Heading]
 - Answer-first paragraph
 - [Chart: type + data description]
 - Analysis and implications
-- [CITATION CAPSULE placeholder]
+- [EVIDENCE-BACKED EXPLANATION placeholder]
 - [INTERNAL-LINK: anchor text → target description]
 
-## H2: [Statement for Variety] (300-400 words)
+## H2: [Intent-Matched Heading]
 - Answer-first paragraph
 - Real-world example or case study
 - [Image placement]
-- [CITATION CAPSULE placeholder]
+- [EVIDENCE-BACKED EXPLANATION placeholder]
 
-## H2: [Question Format] (300-400 words)
+## H2: [Intent-Matched Heading]
 - Answer-first paragraph
 - [Chart: type + data description]
 - Step-by-step guidance
-- [CITATION CAPSULE placeholder]
+- [EVIDENCE-BACKED EXPLANATION placeholder]
 - [INTERNAL-LINK: anchor text → target description]
 
-## H2: [Question Format] (200-300 words)
+## H2: [Intent-Matched Heading]
 - Answer-first paragraph
 - Forward-looking analysis
 
@@ -187,7 +186,7 @@ adapt this skeleton to match the template's section structure:
 - Single focused CTA per post (266% more conversions)
 - [CTA: contextual call-to-action matching article topic]
 
-## FAQ Section (3-5 questions, 40-60 words each answer)
+## Optional FAQ Section (only when real reader questions warrant it)
 - [INTERNAL-LINK: anchor text → detailed content]
 
 ## Conclusion (100-150 words)
@@ -223,8 +222,8 @@ Write the full article following these rules:
 #### 5a. Frontmatter
 ```yaml
 ---
-title: "[Question-format title with primary keyword]"
-description: "[Fact-dense, 150-160 chars, includes 1 statistic]"
+title: "[Clear title that identifies the page and matches search intent]"
+description: "[Accurate, page-specific summary of the visible content]"
 coverImage: "[URL from Pixabay/Unsplash/Pexels or generated SVG path]"
 coverImageAlt: "[Descriptive sentence about the cover image]"
 ogImage: "[Same as coverImage, or custom OG image URL]"
@@ -244,23 +243,22 @@ Immediately after the introduction (before the first H2 body section), add a sum
 
 ```markdown
 > **Key Takeaways**
-> - [Core finding with statistic] ([Source], year)
+> - [Core finding with verified support when needed]
 > - [Second key insight or recommendation]
 > - [Third actionable takeaway]
 ```
 
 Requirements:
-- 3-5 bullet points, 40-60 words combined
+- 3-5 concise bullet points sized to the material
 - Must be self-contained - understandable without reading the article
-- Include 1 specific statistic with source name
+- Use statistics only when material to the summary and verified
 - State the key finding, recommendation, or answer
 - Default label: "Key Takeaways". If a persona is active, use the persona's summary_label
 - Backward compatible: accept existing TL;DR boxes during rewrites
 
-#### 5c. Answer-First Formatting (Critical)
-Every H2 section MUST open with a 40-60 word paragraph containing:
-- At least one specific statistic with source attribution
-- A direct answer to the heading's implicit question
+#### 5c. Purpose-First Formatting (Critical)
+State the point of important sections early, then supply the context and
+verified evidence the claim needs. Do not force statistics or fixed lengths.
 
 Pattern:
 ```markdown
@@ -271,26 +269,20 @@ question in 1-2 more sentences, explaining the implication and what this means
 for the reader.]
 ```
 
-**FLOW evidence triple (drafting requirement, not just audit):**
+**Source record for material public statistics:**
 
-Every public statistic must carry three components AT DRAFTING TIME:
+Record enough provenance for a reader or editor to verify the claim. Use the
+publication's citation style rather than forcing one sentence pattern.
 
-1. **Year anchor in prose.** Write "In 2026," or "As of Q1 2026," BEFORE
-   the statistic, in the sentence body. Year buried inside parentheses
-   does not count. Example:
-   - GOOD: "In 2026, Ahrefs found a 58% lower CTR for position one when
-     an AI Overview was present."
-   - WEAK: "Position-one CTR dropped 58% (Ahrefs, 2026)."
+1. **Relevant date or study period.** Include it where recency or the measured
+   period changes the claim's meaning.
 
-2. **Inline citation with publisher and title.** Name both the publisher
-   and the document title (or report name), not just a brand. Example:
-   - GOOD: "Ahrefs, AI Overviews CTR update, December 2025"
-   - WEAK: "Ahrefs reported..."
+2. **Identifiable source.** Name the publisher and document title when needed
+   to distinguish the source and place the citation close to the claim.
 
-3. **URL plus retrieval date in the source block at the bottom of the post.**
-   Provenance discipline lets future readers and AI crawlers verify the
-   source still says what was claimed. Format:
-   - "[Publisher], [Title], retrieved YYYY-MM-DD, [full URL]"
+3. **Retrievable support.** Keep a stable URL. Add a retrieval date for
+   changeable or undated sources, and record methodology or limitations when
+   they affect interpretation.
 
 **FLOW quality bar (drop or replace):**
 Public claims must use verified sources OR stay qualitative. If a statistic
@@ -298,14 +290,15 @@ cannot be verified, drop it. If it is contradicted by a more recent source,
 replace it with the verified alternative. Do not soften vague language to
 keep an unsourceable number.
 
-For evidence-led optimization prompts (CTR audit, AI detector test, schema,
+For evidence-led optimization prompts (CTR audit, quality follow-up, schema,
 PAA rewording, ChatGPT visibility), see `/blog flow optimize`.
 
 #### 5d. Information Gain Markers
 
-Distribute at least 2-3 information gain markers throughout the article. These
-signal to search engines and AI systems that the content contains original value
-not available elsewhere.
+Use information-gain markers as optional drafting annotations when the article
+contains genuinely original data, transparent first-hand evidence, or
+distinctive sourced synthesis. The evidence itself helps readers; the marker is
+not a search-engine signal and earns no points by its presence.
 
 Tag each with a comment or visible marker:
 
@@ -323,32 +316,29 @@ Placement:
   ```markdown
   > **Our finding:** [original observation backed by specific data]
   ```
-- Minimum 2 per post, target 3 for comprehensive articles
+- Use only as many as the supported original material warrants.
 
-These markers map directly to the "Originality/unique value markers" criterion
-in the Content Quality scoring category (see `skills/blog/references/quality-scoring.md`).
+#### 5e. Evidence-Backed Explanations
 
-#### 5e. Citation Capsules
+For important reusable claims, create a self-contained, evidence-backed
+explanation sized to the material.
 
-For each major H2 section, generate a citation capsule - a 40-60 word self-contained
-passage designed so AI systems can extract and quote it directly.
-
-Requirements per capsule:
-- 40-60 words, self-contained (makes sense in isolation)
-- Contains: one specific claim + one data point + source attribution
+Guidance:
+- Self-contained and understandable in isolation
+- Contains a specific claim plus verified support when the claim needs it
 - Written in a declarative, quotable style
 - Placed within the H2 section body (not as a separate block)
 
 Example:
 ```markdown
-According to a 2026 Gartner study, 58% of enterprise buyers now consult AI
-assistants before contacting a vendor ([Gartner](https://www.gartner.com), 2026).
-This shift means B2B content must answer specific questions concisely enough
-for AI systems to extract and cite in their responses.
+[Verified source title], a [method or sample description] published on [date],
+found [specific metric] for [audience or market] ([Source name](https://example.com/full-report),
+retrieved YYYY-MM-DD). In practical terms, connect the evidence to one action
+the reader should take before making a claim or changing a workflow.
 ```
 
-Capsules map to the "AI Citation Readiness" scoring category (15 points) in
-`skills/blog/references/quality-scoring.md`.
+Do not pad explanations to a fixed length or add them solely to earn readiness
+points.
 
 #### 5f. Internal Linking Zones
 
@@ -377,16 +367,17 @@ Target 5-10 internal link zones per 2,000-word post. Use descriptive anchor text
 anchor text rules and linking strategy.
 
 #### 5g. Paragraph Rules
-- Every paragraph: 40-80 words (never exceed 150)
-- Every sentence: max 15-20 words
+- Use paragraph and sentence lengths that fit the audience and material
+- Split passages when doing so improves comprehension, not to satisfy a quota
 - Start each paragraph with the most important information
 - Target Flesch Reading Ease: 60-70
 
 #### 5h. Heading Rules
 - One H1 (title only)
-- H2s for main sections (60-70% as questions)
+- H2s for main sections; use question or declarative forms according to intent
 - H3s for subsections only - never skip levels
-- Include primary keyword naturally in 2-3 headings
+- Keep heading terminology naturally consistent with the page topic; do not
+  enforce an exact-match keyword quota
 
 #### 5i. Image Embedding
 
@@ -428,16 +419,19 @@ Include aria-label, noscript fallback for AI crawlers. Place after relevant H2, 
 #### 5l. Citation Format
 Inline attribution (always):
 ```markdown
-Organic CTR declined 61% with AI Overviews ([Seer Interactive](https://www.seerinteractive.com/), 2025).
+In February 2026, Seer Interactive's AI Overview CTR tracker reported a 2.4% organic CTR on AI Overview SERPs ([Seer Interactive](https://www.seerinteractive.com/), retrieved YYYY-MM-DD).
 ```
 
 #### 5m. FAQ Section
-Add 3-5 FAQ items with 40-60 word answers. Each answer must contain a statistic.
+Add FAQ items only when user questions warrant them. Answers should be complete
+and concise; include verified statistics only when relevant.
 
-For MDX with FAQSchema component:
+FAQPage is optional entity markup only. Google FAQ rich results were fully retired for all sites on 2026-05-07, so do not make FAQ schema a core Google rich-result output or citation lever. Prioritize Article/BlogPosting + Person + Organization + BreadcrumbList; emit FAQPage only when the platform already supports it and the questions genuinely help users.
+
+For MDX with an optional FAQSchema component:
 ```mdx
 <FAQSchema faqs={[
-  { question: "Question?", answer: "40-60 word answer with statistic and source." },
+  { question: "Question?", answer: "Complete answer with support where needed." },
 ]} />
 ```
 
@@ -447,7 +441,7 @@ For standard markdown:
 
 ### Question text here?
 
-Answer with statistic and source attribution (40-60 words).
+Answer completely, with source attribution where the claim needs it.
 ```
 
 #### 5n. Internal Linking
@@ -460,99 +454,44 @@ Answer with statistic and source attribution (40-60 words).
 Before delivering, verify:
 
 #### Structure and Content
-1. Every H2 opens with a statistic + source
-2. No paragraph exceeds 150 words
+1. Important claims state their point clearly and include verified support where needed
+2. Paragraph and sentence pacing suits the audience; length alone cannot block delivery
 3. All statistics have named tier 1-3 sources
 4. 2-4 charts with type diversity
 5. 3-5 inline images with descriptive alt text
 6. Cover image present in frontmatter (coverImage + ogImage)
-7. FAQ section present with 3-5 items
+7. FAQ section present with 3-5 items when warranted by user questions
 8. Heading hierarchy is clean (H1 -> H2 -> H3)
-9. Meta description is 150-160 chars with a stat
+9. Meta description accurately and specifically summarizes the visible content
 
 #### New Element Verification
-10. TL;DR box present after introduction (40-60 words, contains statistic + source)
-11. At least 2-3 information gain markers (`[ORIGINAL DATA]`, `[PERSONAL EXPERIENCE]`, or `[UNIQUE INSIGHT]`)
-12. Citation capsules present in major H2 sections (40-60 words, self-contained, quotable)
+10. Optional summary helps the reader and contains no unsupported claims
+11. Any information-gain markers point to supported original material
+12. Important reusable claims are self-contained and evidence-backed
 13. Internal linking zones marked in introduction, H2 sections, FAQ, and conclusion
-14. No AI-detectable phrases from banned list (see `agents/blog-writer.md`)
+14. Project voice preferences reviewed where they improve clarity and fit
 
-#### Burstiness and Naturalness Check
-15. **Sentence length variance** - Verify a mix of short (8-word) and long (25-word) sentences. Uniform sentence length signals AI authorship.
-16. **Banned AI phrase scan** - Check for and remove:
+#### Optional Editorial Voice Review
+15. **Sentence rhythm** - Vary sentence structure only where it improves clarity,
+    emphasis, or flow. Do not infer authorship from sentence patterns or enforce
+    fixed sentence-length bands.
+16. **Configured phrase review** - Review these project style-list terms in
+    context and replace them only when a clearer alternative fits:
     - "in today's digital landscape", "it's important to note", "dive into"
     - "game-changer", "navigate the landscape", "revolutionize", "seamlessly"
     - "cutting-edge", "harness the power of", "leverage" (as verb)
     - "delve", "crucial", "elevate", "foster", "landscape" (overused)
     - "multifaceted", "robust", "tapestry", "embark"
     - Full list in `agents/blog-writer.md`
-17. **Contractions** - Verify natural use of contractions ("it's", "we've", "don't", "isn't"). Formal AI prose avoids contractions; natural writing uses them.
-18. **Rhetorical questions** - Verify at least one rhetorical question every 200-300 words to break up declarative patterns.
+17. **Contractions** - Use contractions when they fit the selected voice. Their
+    presence or absence says nothing about authorship or Google performance.
+18. **Rhetorical questions** - Use them only when they help the reader reason
+    through a decision. There is no quota.
 19. **YouTube videos** - 2-3 embeds with lazy loading, aria-labels, and noscript fallback (see `skills/blog/references/video-embeds.md`)
 
 ### Phase 6.5: Delivery Contract Enforcement (v1.9.0)
-
-Before Phase 7, run the 5-gate delivery contract per `skills/blog/references/blog-delivery-contract.md`. The user is never the first reviewer; the gates are.
-
-Steps:
-
-1. **Capability discovery + hero**: run `python scripts/blog_preflight.py --draft <folder> --gate 1` to enumerate available paths. If `nanobanana-mcp` is loaded, generate the hero via the MCP tool. Otherwise run `python scripts/generate_hero.py --topic "<title>" --tags "<tags>" --out <folder>` (uses the Gemini, Unsplash, Pexels, Pixabay, Openverse ladder).
-
-2. **Format completeness**: render the canonical `.md` to `.html` and `.pdf` via `python scripts/blog_render.py --md <slug>.md --out-dir <folder>`. All three artifacts plus `hero.<ext>` must end up in the draft folder.
-
-3. **Content review (blocking)**: dispatch the `blog-reviewer` agent (Task tool) against the rendered `.html`. The agent emits its scorecard to `<folder>/review.md` ending with `BLOCKING: true|false (reason)`. Threshold: overall score 90/100 or higher AND zero P0 issues per `editorial-heuristics.md`.
-
-4. **Visual + asset gates**: run `python scripts/blog_preflight.py --draft <folder> --strict`. This runs Gate 3 (visual verification via patchright at 3 viewport widths), Gate 4 (reads review.md BLOCKING line), and Gate 5 (asset + link integrity). Exit 0 = ship; exit 1 = block.
-
-5. **Iteration**: on any block, capture the failure diagnostic from `<folder>/preflight-report.json`, re-dispatch the blog-writer agent with the diagnostic as input, and re-run from step 1. Maximum 3 iterations. On the 3rd failure, STOP and present the failure diagnostic instead of the draft.
-
-The orchestrator holds the loop counter; this sub-skill never loops itself.
+Before Phase 7, run the 5-gate delivery contract (via `python3 scripts/blog_preflight.py` plus a BLOCKING `blog-reviewer` agent) per `skills/blog/references/blog-delivery-contract.md` and the writer-specific checklist in `skills/blog-write/references/delivery.md`. Use `python3` for local scripts. The user is never the first reviewer; the gates are.
+On any block, capture `<folder>/preflight-report.json`, re-dispatch the blog-writer agent with the diagnostic as input, and re-run the gated steps. Maximum 3 iterations. On the 3rd failure, stop and present the failure diagnostic instead of the draft.
 
 ### Phase 7: Delivery
-
-Present the completed article ONLY after Phase 6.5 returns all gates passing. Include the screenshots from `<folder>/preview/*.png` in the summary so the user can see what they are getting before reading the prose.
-
-Summary template:
-
-```
-## Blog Post Complete: [Title]
-
-### Template Used
-- [Template name] (or "generic outline - no template matched")
-
-### Statistics
-- [N] sourced statistics from tier 1-3 sources
-- [N] unique sources cited
-
-### Visual Elements
-- Cover image: [source - Pixabay/Unsplash/Pexels or generated SVG]
-- [N] inline images (Pixabay/Unsplash/Pexels)
-- [N] SVG charts (types: bar, lollipop, donut, line)
-- [N] YouTube video embeds (titles: ...)
-
-### Dual-Optimization Elements
-- TL;DR box: present (N words)
-- Information gain markers: [N] ([types used])
-- Citation capsules: [N] across H2 sections
-- Internal linking zones: [N] marked
-
-### Structure
-- [N] H2 sections with answer-first formatting
-- [N] FAQ items with schema
-- Word count: ~[N] words
-- Estimated reading time: [N] min
-
-### Naturalness
-- Sentence length variance: [pass/fail]
-- AI phrase scan: [pass/fail]
-- Contractions used: [yes/no]
-- Rhetorical questions: [N] (target: 1 per 200-300 words)
-
-### Next Steps
-- Review and customize for your brand voice
-- Resolve [INTERNAL-LINK] placeholders with actual URLs
-- Add internal links to your existing content
-- Run `/blog analyze <file>` to verify quality score
-- Generate VideoObject schema: `/blog schema <file>` (includes video markup)
-- Generate audio narration: `/blog audio generate <file>` (optional)
-```
+Present the completed article only after Phase 6.5 returns all gates passing. Include `<folder>/preview/*.png` screenshots and the compact completion summary described in `skills/blog-write/references/delivery.md`.

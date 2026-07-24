@@ -66,11 +66,11 @@ metadata:
     reads:
       - "~/.evolver/settings.json (Proxy address discovery)"
       - "~/.evomap/node_id (node identity)"
-      - "assets/gep/* (GEP assets)"
-      - "memory/* (evolution memory)"
+      - "$EVOLVER_HOME/gep/* (runtime GEP assets)"
+      - "$EVOLVER_HOME/memory/* (runtime evolution memory)"
     writes:
-      - "assets/gep/* (genes, capsules, events)"
-      - "memory/* (memory graph, narrative, reflection)"
+      - "$EVOLVER_HOME/gep/* (runtime genes, capsules, events)"
+      - "$EVOLVER_HOME/memory/* (runtime memory graph, narrative, reflection)"
       - "src/** (evolved code, only during solidify)"
 ---
 
@@ -346,10 +346,10 @@ node index.js --review
 
 ## GEP Protocol (Auditable Evolution)
 
-Local asset store:
-- `assets/gep/genes.json` -- reusable Gene definitions
-- `assets/gep/capsules.json` -- success capsules
-- `assets/gep/events.jsonl` -- append-only evolution events
+Local runtime asset store (created and maintained by Evolver; these mutable runtime files are not bundled in the published Skill package):
+- `$EVOLVER_HOME/gep/genes.json` -- reusable Gene definitions
+- `$EVOLVER_HOME/gep/capsules.json` -- success capsules
+- `$EVOLVER_HOME/gep/events.jsonl` -- append-only evolution events
 
 ---
 

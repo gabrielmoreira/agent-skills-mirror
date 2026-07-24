@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tomasz-tomczyk/crit` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `tomasz-tomczyk/crit` — 26 default patterns, 0 followed patterns, 34 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tomasz-tomczyk/crit` — 26 default patterns, 0 followed patterns, 32
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 34 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,31 +66,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`.cursor/rules/proxy-auth-transport.mdc`](.cursor/rules/proxy-auth-transport.mdc) |
 | 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 8 | ✓ | [`integrations/claude-code/skills/crit-cli/SKILL.md`](integrations/claude-code/skills/crit-cli/SKILL.md) |
-| 9 | ✓ | [`integrations/claude-code/skills/crit-story/SKILL.md`](integrations/claude-code/skills/crit-story/SKILL.md) |
-| 10 | ✓ | [`integrations/claude-code/skills/crit/SKILL.md`](integrations/claude-code/skills/crit/SKILL.md) |
-| 11 | ✓ | [`integrations/cline/skills/crit-cli/SKILL.md`](integrations/cline/skills/crit-cli/SKILL.md) |
-| 12 | ✓ | [`integrations/codex/plugin/crit/skills/crit-cli/SKILL.md`](integrations/codex/plugin/crit/skills/crit-cli/SKILL.md) |
-| 13 | ✓ | [`integrations/codex/plugin/crit/skills/crit/SKILL.md`](integrations/codex/plugin/crit/skills/crit/SKILL.md) |
-| 14 | ✓ | [`integrations/codex/skills/crit-cli/SKILL.md`](integrations/codex/skills/crit-cli/SKILL.md) |
-| 15 | ✓ | [`integrations/codex/skills/crit/SKILL.md`](integrations/codex/skills/crit/SKILL.md) |
-| 16 | ✓ | [`integrations/cursor/skills/crit-cli/SKILL.md`](integrations/cursor/skills/crit-cli/SKILL.md) |
-| 17 | ✓ | [`integrations/cursor/skills/crit/SKILL.md`](integrations/cursor/skills/crit/SKILL.md) |
-| 18 | ✓ | [`integrations/gemini/skills/crit-cli/SKILL.md`](integrations/gemini/skills/crit-cli/SKILL.md) |
-| 19 | ✓ | [`integrations/github-copilot/skills/crit-cli/SKILL.md`](integrations/github-copilot/skills/crit-cli/SKILL.md) |
-| 20 | ✓ | [`integrations/github-copilot/skills/crit/SKILL.md`](integrations/github-copilot/skills/crit/SKILL.md) |
-| 21 | ✓ | [`integrations/grok/skills/crit-cli/SKILL.md`](integrations/grok/skills/crit-cli/SKILL.md) |
-| 22 | ✓ | [`integrations/grok/skills/crit/SKILL.md`](integrations/grok/skills/crit/SKILL.md) |
-| 23 | ✓ | [`integrations/hermes/skills/crit-cli/SKILL.md`](integrations/hermes/skills/crit-cli/SKILL.md) |
-| 24 | ✓ | [`integrations/hermes/skills/crit/SKILL.md`](integrations/hermes/skills/crit/SKILL.md) |
-| 25 | ✓ | [`integrations/opencode/skills/crit-cli/SKILL.md`](integrations/opencode/skills/crit-cli/SKILL.md) |
-| 26 | ✓ | [`integrations/pi/skills/crit-cli/SKILL.md`](integrations/pi/skills/crit-cli/SKILL.md) |
-| 27 | ✓ | [`integrations/pi/skills/crit/SKILL.md`](integrations/pi/skills/crit/SKILL.md) |
-| 28 | ✓ | [`integrations/qwen/skills/crit-cli/SKILL.md`](integrations/qwen/skills/crit-cli/SKILL.md) |
-| 29 | ✓ | [`integrations/qwen/skills/crit/SKILL.md`](integrations/qwen/skills/crit/SKILL.md) |
-| 30 | ✓ | [`integrations/windsurf/skills/crit-cli/SKILL.md`](integrations/windsurf/skills/crit-cli/SKILL.md) |
-| 31 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
-| 32 | ✓ | [`scripts/CLAUDE.md`](scripts/CLAUDE.md) |
+| 8 | ✓ | [`integrations/ampcode/skills/crit-cli/SKILL.md`](integrations/ampcode/skills/crit-cli/SKILL.md) |
+| 9 | ✓ | [`integrations/ampcode/skills/crit/SKILL.md`](integrations/ampcode/skills/crit/SKILL.md) |
+| 10 | ✓ | [`integrations/claude-code/skills/crit-cli/SKILL.md`](integrations/claude-code/skills/crit-cli/SKILL.md) |
+| 11 | ✓ | [`integrations/claude-code/skills/crit-story/SKILL.md`](integrations/claude-code/skills/crit-story/SKILL.md) |
+| 12 | ✓ | [`integrations/claude-code/skills/crit/SKILL.md`](integrations/claude-code/skills/crit/SKILL.md) |
+| 13 | ✓ | [`integrations/cline/skills/crit-cli/SKILL.md`](integrations/cline/skills/crit-cli/SKILL.md) |
+| 14 | ✓ | [`integrations/codex/plugin/crit/skills/crit-cli/SKILL.md`](integrations/codex/plugin/crit/skills/crit-cli/SKILL.md) |
+| 15 | ✓ | [`integrations/codex/plugin/crit/skills/crit/SKILL.md`](integrations/codex/plugin/crit/skills/crit/SKILL.md) |
+| 16 | ✓ | [`integrations/codex/skills/crit-cli/SKILL.md`](integrations/codex/skills/crit-cli/SKILL.md) |
+| 17 | ✓ | [`integrations/codex/skills/crit/SKILL.md`](integrations/codex/skills/crit/SKILL.md) |
+| 18 | ✓ | [`integrations/cursor/skills/crit-cli/SKILL.md`](integrations/cursor/skills/crit-cli/SKILL.md) |
+| 19 | ✓ | [`integrations/cursor/skills/crit/SKILL.md`](integrations/cursor/skills/crit/SKILL.md) |
+| 20 | ✓ | [`integrations/gemini/skills/crit-cli/SKILL.md`](integrations/gemini/skills/crit-cli/SKILL.md) |
+| 21 | ✓ | [`integrations/github-copilot/skills/crit-cli/SKILL.md`](integrations/github-copilot/skills/crit-cli/SKILL.md) |
+| 22 | ✓ | [`integrations/github-copilot/skills/crit/SKILL.md`](integrations/github-copilot/skills/crit/SKILL.md) |
+| 23 | ✓ | [`integrations/grok/skills/crit-cli/SKILL.md`](integrations/grok/skills/crit-cli/SKILL.md) |
+| 24 | ✓ | [`integrations/grok/skills/crit/SKILL.md`](integrations/grok/skills/crit/SKILL.md) |
+| 25 | ✓ | [`integrations/hermes/skills/crit-cli/SKILL.md`](integrations/hermes/skills/crit-cli/SKILL.md) |
+| 26 | ✓ | [`integrations/hermes/skills/crit/SKILL.md`](integrations/hermes/skills/crit/SKILL.md) |
+| 27 | ✓ | [`integrations/opencode/skills/crit-cli/SKILL.md`](integrations/opencode/skills/crit-cli/SKILL.md) |
+| 28 | ✓ | [`integrations/pi/skills/crit-cli/SKILL.md`](integrations/pi/skills/crit-cli/SKILL.md) |
+| 29 | ✓ | [`integrations/pi/skills/crit/SKILL.md`](integrations/pi/skills/crit/SKILL.md) |
+| 30 | ✓ | [`integrations/qwen/skills/crit-cli/SKILL.md`](integrations/qwen/skills/crit-cli/SKILL.md) |
+| 31 | ✓ | [`integrations/qwen/skills/crit/SKILL.md`](integrations/qwen/skills/crit/SKILL.md) |
+| 32 | ✓ | [`integrations/windsurf/skills/crit-cli/SKILL.md`](integrations/windsurf/skills/crit-cli/SKILL.md) |
+| 33 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
+| 34 | ✓ | [`scripts/CLAUDE.md`](scripts/CLAUDE.md) |
 
 ---
 

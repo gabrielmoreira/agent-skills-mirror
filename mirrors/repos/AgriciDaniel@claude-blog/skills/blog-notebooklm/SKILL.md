@@ -5,7 +5,7 @@ description: >
   answers from user-uploaded documents. Manages notebook library, handles
   Google authentication, and supports smart discovery. Works standalone
   via /blog notebooklm or internally from blog-write and blog-researcher
-  for Tier 1 research data. Falls back gracefully when not configured.
+  for source-grounded research context. Falls back gracefully when not configured.
   Use when user says "notebooklm", "notebook", "query notebook",
   "ask notebook", "notebook research", "source grounded research",
   "document query", "notebook library".
@@ -14,7 +14,7 @@ argument-hint: "[ask|discover|library|setup|status|cleanup] [question-or-url]"
 license: MIT
 metadata:
   author: AgriciDaniel
-  version: "1.9.1"
+  version: "2.1.1"
   source: "https://github.com/PleasePrompto/notebooklm-skill"
 ---
 
@@ -22,12 +22,15 @@ metadata:
 
 Query Google NotebookLM notebooks directly from Claude Code for citation-backed
 answers from Gemini. Each question opens a headless browser session, retrieves
-the answer exclusively from your uploaded documents, and closes. Responses are
-Tier 1 quality (user's own primary sources): zero hallucination risk.
-Answers satisfy the FLOW evidence triple: use the returned source title as the
-inline citation and the notebook URL plus retrieval date as the bibliography
-entry. This is the highest-confidence path to meeting the "verified source"
-bar that FLOW requires before any statistic goes public.
+the answer from your uploaded documents, and closes. Responses are
+source-grounded model answers, not proof of truth: uploaded documents may be
+primary or secondary, and the answer can still omit context.
+
+Answers provide usable provenance only when the returned citation identifies a
+verifiable underlying source. Record a stable source URL and a publication,
+study-period, or retrieval date when that detail affects verification or
+interpretation. Use the underlying source title as the inline citation. Do not
+cite the private NotebookLM URL as the bibliography entry for public content.
 
 ## Quick Reference
 
@@ -50,17 +53,16 @@ bar that FLOW requires before any statistic goes public.
 - Google Chrome (installed automatically on first run via Patchright)
 - One-time authentication setup (interactive Google login in visible browser)
 
-## Always Use run.py Wrapper
+## Use the run.py Wrapper
 
-**NEVER call scripts directly. ALWAYS use `python3 scripts/run.py [script]`:**
+Call scripts only through the run.py wrapper: `python3 scripts/run.py [script]`:
 
 ```bash
 # CORRECT:
 python3 scripts/run.py auth_manager.py status
 python3 scripts/run.py ask_question.py --question "..."
 
-# WRONG -- fails without venv:
-python3 scripts/auth_manager.py status
+# Do not call files under scripts/ directly. The wrapper owns venv setup.
 ```
 
 The `run.py` wrapper automatically creates `.venv`, installs dependencies,
@@ -108,7 +110,7 @@ Run auth check (see gate pattern above). If not authenticated, guide to setup.
 
 ### Step 2: Resolve Notebook
 Determine which notebook to query:
-- If `--notebook-url` provided: use directly
+- If `--notebook-url` provided: validate it is a NotebookLM notebook URL, then use it
 - If `--notebook-id` provided: look up in library
 - If neither: use active notebook from library
 - If no active notebook: show library and ask user to select
@@ -160,7 +162,7 @@ python3 scripts/run.py notebook_manager.py add \
   --topics "<Extracted topics>"
 ```
 
-**NEVER guess or use generic descriptions.** Always discover or ask the user.
+Do not guess descriptions; discover or ask the user.
 
 ## Library Management
 
@@ -208,7 +210,9 @@ When invoked as a Task subagent from blog-write or blog-researcher:
 - **Source:** [Notebook name]
 - **Question:** [What was asked]
 - **Answer:** [Source-grounded response from user's documents]
-- **Source Quality:** Tier 1 (user-uploaded primary documents)
+- **Underlying Source:** [Public source URL or document identifier]
+- **Underlying Source Date:** [Publication date or retrieval date]
+- **Source Quality:** [Tier 1-3 after classifying the underlying document]
 ```
 
 **Graceful fallback:** If auth is missing or query fails, return immediately
@@ -218,9 +222,9 @@ Never block blog-write or blog-rewrite because NotebookLM is unavailable.
 ## Data Storage
 
 All data stored inside the skill directory:
-- `scripts/data/library.json`: Notebook metadata and library
-- `scripts/data/auth_info.json`: Authentication status
-- `scripts/data/browser_state/`: Chrome profile with cookies
+- `data/library.json`: Notebook metadata and library
+- `data/auth_info.json`: Authentication status
+- `data/browser_state/`: Chrome profile with cookies
 
 **Security:** All data directories are gitignored. Never commit auth or browser state.
 
