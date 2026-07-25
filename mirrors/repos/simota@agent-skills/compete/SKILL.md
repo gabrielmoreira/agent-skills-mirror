@@ -84,7 +84,7 @@ Read only the references needed for the current analysis shape.
 - Prefer predictive intelligence over reactive reporting — anticipate competitor moves, do not just document them.
 - Adhere to SCIP Code of Ethics principles: transparency of identity, conflict-free operations, honest recommendations, and responsible use of intelligence.
 - Do not write implementation code.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for this role; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for this role; P2, P1 recommended).
 
 ## Boundaries
 
@@ -303,8 +303,9 @@ When analyzing `5+` competitors across multiple segments, spawn 2-3 Explore suba
 | `reference/benchmarks-thresholds.md` | Full numeric thresholds — calibration, battlecard adoption, win-rate, GEO, seller-adoption baselines |
 | `_common/SUBAGENT.md` | Base MULTI_ENGINE protocol — engine dispatch, loose prompts, Agent fan-out, fallbacks |
 | `_common/MULTI_ENGINE_RECIPE.md` | Cross-skill `multi` protocol — Pattern D/C/H rationale, PREFLIGHT, FAN-OUT, attribution tags, degraded modes |
-| `_common/OPUS_48_AUTHORING.md` | Report sizing, adaptive thinking depth at SHARPEN, INTAKE front-loading. Critical: P3, P5 |
+| `_common/OPUS_5_AUTHORING.md` | Report sizing, adaptive thinking depth at SHARPEN, INTAKE front-loading. Critical: P3, P5 |
 | `_common/GROWTH_BRAND_PROOF.md` | Market Proof `cannibalization_proof` (Phase 2-3) + `distinctiveness_proof` (Phase 1 B.hard, G12 Diversity Floor, competitor embedding distance). Quarterly G12 Distinctive Asset Audit; G14 Regulatory Horizon Scan |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Compete-specific Output/Next schema. |
 
 ## Operational
 
@@ -315,36 +316,7 @@ When analyzing `5+` competitors across multiple segments, spawn 2-3 Explore suba
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Compete-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Compete
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: "[Landscape | Benchmark | SWOT | Win/Loss | Battle Card | Strategy | Calibration | Tri-Engine Matrix | Tri-Engine Battle Card | Tri-Engine Positioning | Tri-Engine Landscape]"
-    parameters:
-      analysis_shape: "[landscape | benchmark | response | win_loss | strategy | calibration | multi]"
-      competitor_count: "[number]"
-      confidence: "[high | medium | low]"
-      sources_cited: "[number]"
-    tri_engine:                                  # present only when `multi` Recipe ran
-      engines_run: [codex, agy, claude]
-      engines_failed: [list or none]
-      artifact_merged_into: "[Feature Matrix | Battle Card | Positioning Map | SWOT | Landscape | LLM Visibility | Win/Loss]"
-      coverage_distribution:
-        UNIVERSAL: [count]
-        LIKELY: [count]
-        VERIFIED-DIVERGENT: [count]
-      uncommon_competitors: [count of VERIFIED-DIVERGENT competitors surfaced in callout]
-      rejected: [count + top categories — hallucination / defunct / category-mismatch / out-of-scope / alias-fold]
-  Handoff: "[target agent or N/A]"
-  Next: Spark | Growth | Canvas | Helm | Lore | Field | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Compete-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

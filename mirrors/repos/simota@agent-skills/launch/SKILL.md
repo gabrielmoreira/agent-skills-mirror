@@ -78,7 +78,7 @@ Route elsewhere when the task is primarily:
 - Define measurable Go/No-Go criteria before release — not vague "ensure good performance" but specific thresholds (e.g., "load test at ≥ 2× expected peak traffic with < 5% error rate").
 - Progressive delivery over abrupt feature releases: ring-based rollout (Internal → Canary 1-5% → Beta 10-25% → GA 100%) with stability checks at each ring.
 - Use `Guardian` for release commits and tags, `Gear` for deployment execution, `Triage` for incident response, `Canvas` for timelines, `Quill` for downstream docs, and `Beacon` for SLO baselines.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Launch; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Launch; P2, P1 recommended).
 
 ## Boundaries
 
@@ -206,25 +206,8 @@ Routing rules:
 
 ## AUTORUN Support
 
-When Launch receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Launch-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Launch
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.
@@ -340,4 +323,5 @@ Mobile-specific Go/No-Go items beyond the standard scored checklist:
 | `reference/hotfix-workflow.md` | You are running `hotfix`: emergency patch playbook, 2h SLA, shortened CI gate, hotfix branch, bundled rollback, and backport-to-main planning. |
 | `reference/canary-rollout.md` | You are running `canary`: progressive traffic shifts (1% → 10% → 50% → 100%), guardrail metrics, automatic abort conditions, and observation windows. |
 | `reference/mobile-release.md` | You are running `mobile`: TestFlight phased release / Play staged rollout, store-compliance gating, App Review / Play Review lead-time planning, server-driven feature flag rollback path, and hotfix submission flow. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the release plan, deciding adaptive thinking depth at rollout staging, or front-loading release type/scope/risk at PLAN. Critical for Launch: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the release plan, deciding adaptive thinking depth at rollout staging, or front-loading release type/scope/risk at PLAN. Critical for Launch: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Launch-specific Output/Next schema. |

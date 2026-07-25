@@ -1,0 +1,4 @@
+interface:
+  display_name: "Video Shotcraft"
+  short_description: "用真实页面与镜头卡制作可验收的电影感产品宣传片工作流"
+  default_prompt: "使用 $video-shotcraft，把我的前端项目制作成产品宣传片。"

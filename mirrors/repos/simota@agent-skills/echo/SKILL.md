@@ -87,7 +87,7 @@ Route elsewhere when the task is primarily:
 - When using synthetic personas, mark findings as `[hypothesis]` until real-user confirmation. Flag WEIRD bias when target audience is non-Western/non-WEIRD. See `_common/AI_PERSONA_RISKS.md` for hallucination/over-sanitization/standardization risks.
 - For cognitive load measurement, prefer SUS + SEQ for consumer UX; reserve NASA-TLX for mission-critical domains (healthcare, aviation, finance). NASA-TLX lacks convergent validity for typical HCI tasks per 2025-2026 systematic reviews.
 - For WCAG 3.0 evaluation, apply the March 2026 Working Draft (Bronze ≥3.5 average; Silver/Gold require cognitive walkthroughs as testing method — Echo output serves as evidence). Do not treat as final until W3C Recommendation (CR expected Q4 2027).
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for this role; P1, P2 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for this role; P1, P2 recommended).
 
 ## Boundaries
 
@@ -253,10 +253,11 @@ Full algorithm, JSON schema, CLUSTER identity rules, GROUND checks, prompt skele
 | `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts. |
 | `_common/MULTI_ENGINE_RECIPE.md` | You need cross-skill multi-engine protocol — Pattern type selection (D/C/H), shared SCOPE/PREFLIGHT/FAN-OUT/NORMALIZE/CLUSTER mechanics, engine-attribution tag conventions. Echo applies Pattern H. |
 | `_common/UX_TRENDS_2026.md` | You need 2025-2026 evaluation evidence — NN/g navigation / IA studies, WCAG 2.2 motion-a11y criteria, agentic UX failure modes, and dark-mode / hamburger / search-as-escape-hatch anti-patterns. Read §2 IA and §1 Design a11y. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the walkthrough report, deciding adaptive thinking depth at persona/method selection, or front-loading persona/UI/method at PLAN. Critical for Echo: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the walkthrough report, deciding adaptive thinking depth at persona/method selection, or front-loading persona/UI/method at PLAN. Critical for Echo: P3, P5. |
 | `_common/IMAGE_INPUT.md` | You are evaluating a UI screenshot or visual as input — apply the image pipeline (describe-first, task-frame, region enumeration, observed-vs-inferred) before the walkthrough so confusion points are grounded in the pixels, not speculated. |
 | `_common/PROOF_CARRYING.md` v3.1 | You define the AI-user persona set for `ux_task_proof` in `nexus acceptance` Phase 3B: standard / returning / impatient / mobile / screen-reader / slow-net / payment-fail / locale-edge / adversarial. Each persona must produce a non-trivial walkthrough log; empty findings without log = rejected (semantic-non-emptiness rule). v4 fold-in: `council` Recipe with machine-readable Persona Contract (situation/goal/fear/comprehension/success/disqualification), no-opinion discipline, Org-Tier persona cap, engine diversity for Tier-S/A. |
 | `_common/GROWTH_BRAND_PROOF.md` | You provide `council` Recipe output to `nexus growth-acceptance` Phase 0 (Pre-Design, Enterprise org-tier) for Persona Proof. Friction Ledger entries (when writing trace evidence via the `echo` writer role per G11) capture persona-specific UI moments at second-grain. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Echo-specific Output/Next schema. |
 
 ## Operational
 
@@ -266,52 +267,7 @@ Full algorithm, JSON schema, CLUSTER identity rules, GROUND checks, prompt skele
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Echo-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Echo
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: "[Emotion Journey | Dark Pattern Audit | Cross-Persona Analysis | Visual Review | Accessibility Audit | Latent Needs Report | Tri-Engine Persona × Step Matrix]"
-    parameters:
-      persona: "[persona name or list when multi-persona]"
-      environment: "[device, connectivity, context]"
-      emotion_range: "[min to max score]"
-      friction_count: "[number]"
-      dark_patterns_found: "[count or none]"
-      a11y_issues: "[count or none]"
-    ab_hypotheses: ["[hypothesis descriptions]"]
-    latent_needs: ["[JTBD findings]"]
-    tri_engine:                                  # present only when `multi` Recipe ran
-      engines_run: [codex, agy, claude]
-      engines_failed: [list or none]
-      personas_in_matrix: [list of persona_id]
-      steps_in_matrix: [list of step_id]
-      confidence_distribution:
-        CONFIRMED: [count]
-        LIKELY: [count]
-        VERIFIED-DIVERGENT: [count]
-      perspective_distribution:
-        CONVERGENT: [count]
-        DIVERGENT: [count]
-      cross_persona_distribution:
-        CROSS-PERSONA-UNIVERSAL: [count]
-        CROSS-PERSONA-SEGMENT: [count]
-        PERSONA-SPECIFIC: [count]
-      calibration_distribution:
-        validated: [count]
-        supported: [count]
-        hypothesis: [count]
-        synthetic-only: [count]
-      dark_pattern_auto_promoted: [count]
-      rejected: [count + top categories — hallucination / voice-mismatch / already-mitigated / needs-info]
-  Next: Palette | Experiment | Growth | Canvas | Spark | Scout | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Echo-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

@@ -60,7 +60,7 @@ Route elsewhere when the task is primarily:
 - For accessibility-critical outputs, target both PDF/UA and WCAG compliance; see **Critical Decision Rules → Accessibility minimums** for version-specific targets and regulatory deadlines.
 - Use Pandoc Lua filters over JSON filters for AST manipulation — they run in Pandoc's embedded interpreter with no external dependencies and are significantly faster.
 - Use Pandoc defaults files (YAML or JSON) to centralize conversion options — they capture `--from`, `--to`, filters, metadata, and variables in a single reusable config, reducing command-line drift across environments.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Morph; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Morph; P2, P1 recommended).
 
 ## Boundaries
 
@@ -230,7 +230,8 @@ Routing rules:
 - [pdf-accessibility-anti-patterns.md](~/.claude/skills/morph/reference/pdf-accessibility-anti-patterns.md): Read this when tagged PDF, alt text, reading order, or assistive-tech safety is the main risk.
 - [css-print-anti-patterns.md](~/.claude/skills/morph/reference/css-print-anti-patterns.md): Read this when printed HTML/CSS layout is unstable.
 - [conversion-pipeline-anti-patterns.md](~/.claude/skills/morph/reference/conversion-pipeline-anti-patterns.md): Read this when CI/CD, Docker, artifact handling, or batch conversion governance is the problem.
-- [\_common/OPUS_48_AUTHORING.md](~/.claude/skills/_common/OPUS_48_AUTHORING.md): Read this when sizing the conversion spec, deciding adaptive thinking depth at filter/accessibility selection, or front-loading source/target/accessibility/CI at SCAN. Critical for Morph: P3, P5.
+- [autorun-schema.md](~/.claude/skills/morph/reference/autorun-schema.md): Read this when you are emitting the AUTORUN `_STEP_COMPLETE` block — Morph-specific Output/Next schema.
+- [\_common/OPUS_5_AUTHORING.md](~/.claude/skills/_common/OPUS_5_AUTHORING.md): Read this when sizing the conversion spec, deciding adaptive thinking depth at filter/accessibility selection, or front-loading source/target/accessibility/CI at SCAN. Critical for Morph: P3, P5.
 
 ## Operational
 
@@ -240,25 +241,8 @@ Routing rules:
 
 ## AUTORUN Support
 
-When Morph receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Morph-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Morph
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.

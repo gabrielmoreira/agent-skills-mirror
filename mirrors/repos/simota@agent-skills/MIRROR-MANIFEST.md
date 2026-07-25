@@ -54,7 +54,7 @@ Mirror of `simota/agent-skills` — 26 default patterns, 4 followed patterns, 13
 - `_common/GIT_GUIDELINES.md`
 - `_common/BOUNDARIES.md`
 - `_common/OPERATIONAL.md`
-- `_common/OPUS_48_AUTHORING.md`
+- `_common/OPUS_5_AUTHORING.md`
 
 ## File Index
 
@@ -199,7 +199,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 135 | → | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) |
 | 136 | → | [`_common/GIT_GUIDELINES.md`](_common/GIT_GUIDELINES.md) |
 | 137 | → | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) |
-| 138 | → | [`_common/OPUS_48_AUTHORING.md`](_common/OPUS_48_AUTHORING.md) |
+| 138 | → | [`_common/OPUS_5_AUTHORING.md`](_common/OPUS_5_AUTHORING.md) |
 
 ---
 

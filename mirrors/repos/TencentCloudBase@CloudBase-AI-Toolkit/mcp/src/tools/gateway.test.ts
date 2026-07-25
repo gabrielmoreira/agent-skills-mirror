@@ -3,10 +3,6 @@ import { registerGatewayTools } from "./gateway.js";
 import type { ExtendedMcpServer } from "../server.js";
 
 const {
-  mockGetAccessList,
-  mockGetDomainList,
-  mockCreateAccess,
-  mockDeleteAccess,
   mockDescribeHttpServiceRoute,
   mockCreateHttpServiceRoute,
   mockModifyHttpServiceRoute,
@@ -17,10 +13,6 @@ const {
   mockLogCloudBaseResult,
   mockGetEnvId,
 } = vi.hoisted(() => ({
-  mockGetAccessList: vi.fn(),
-  mockGetDomainList: vi.fn(),
-  mockCreateAccess: vi.fn(),
-  mockDeleteAccess: vi.fn(),
   mockDescribeHttpServiceRoute: vi.fn(),
   mockCreateHttpServiceRoute: vi.fn(),
   mockModifyHttpServiceRoute: vi.fn(),
@@ -72,53 +64,37 @@ describe("gateway tools", () => {
     vi.clearAllMocks();
 
     mockGetEnvId.mockResolvedValue("env-test");
-    mockGetAccessList.mockResolvedValue({
-      Total: 1,
-      EnableService: true,
-      APISet: [
-        {
-          APIId: "api-123",
-          Path: "api/hello",
-          Name: "helloFn",
-        },
-      ],
-    });
-    mockGetDomainList.mockResolvedValue({
-      DefaultDomain: "env-test.app.tcloudbase.com",
-      EnableService: true,
-      ServiceSet: [
-        {
-          Domain: "api.example.com",
-        },
-      ],
-    });
-    mockCreateAccess.mockResolvedValue({
-      RequestId: "req-create-access",
-      APIId: "api-123",
-    });
-    mockDeleteAccess.mockResolvedValue({
-      RequestId: "req-delete-access",
-    });
     mockDescribeHttpServiceRoute.mockResolvedValue({
-      OriginDomain: "env-test.service.tcloudbase.com",
+      OriginDomain: "origin.service.tcloudbase.com",
       TotalCount: 1,
       Domains: [
         {
           Domain: "env-test.service.tcloudbase.com",
+          IsDefault: true,
+          Enable: true,
+          Status: "SUCCESS",
           Routes: [
             {
               RouteId: "route-1",
               Path: "/api/hello",
-              UpstreamResourceType: "SCF",
+              UpstreamResourceType: "WEB_SCF",
               UpstreamResourceName: "helloFn",
+              EnableAuth: false,
             },
           ],
+        },
+        {
+          Domain: "api.example.com",
+          IsDefault: false,
+          Enable: true,
+          Status: "SUCCESS",
+          CertId: "cert-1",
+          Routes: [],
         },
       ],
       RequestId: "req-route-list",
     });
     mockCreateHttpServiceRoute.mockResolvedValue({
-      RouteId: "route-2",
       RequestId: "req-route-create",
     });
     mockModifyHttpServiceRoute.mockResolvedValue({
@@ -134,12 +110,6 @@ describe("gateway tools", () => {
       RequestId: "req-domain-delete",
     });
     mockGetCloudBaseManager.mockResolvedValue({
-      access: {
-        getAccessList: mockGetAccessList,
-        getDomainList: mockGetDomainList,
-        createAccess: mockCreateAccess,
-        deleteAccess: mockDeleteAccess,
-      },
       env: {
         describeHttpServiceRoute: mockDescribeHttpServiceRoute,
         createHttpServiceRoute: mockCreateHttpServiceRoute,
@@ -153,21 +123,41 @@ describe("gateway tools", () => {
     ({ tools } = createMockServer());
   });
 
-  it("manageGateway schema should explain how to expose an existing HTTP function", () => {
+  it("schema should expose Domain/Route actions only", () => {
+    const queryActions = tools.queryGateway.meta.inputSchema.action._def.values;
+    const manageActions = tools.manageGateway.meta.inputSchema.action._def.values;
+
+    expect(queryActions).toEqual(["listRoutes", "getRoute", "listCustomDomains"]);
+    expect(manageActions).toEqual([
+      "createRoute",
+      "updateRoute",
+      "deleteRoute",
+      "bindCustomDomain",
+      "deleteCustomDomain",
+    ]);
+    expect(queryActions).not.toContain("getAccess");
+    expect(queryActions).not.toContain("listDomains");
+    expect(manageActions).not.toContain("createAccess");
+    expect(manageActions).not.toContain("deleteAccess");
+    expect(manageActions).not.toContain("updatePathAuth");
+  });
+
+  it("manageGateway schema should explain createRoute for HTTP functions", () => {
     const schema = tools.manageGateway.meta.inputSchema;
 
-    expect(tools.manageGateway.meta.description).toContain("HTTP 云函数补默认域名访问");
-    expect(schema.action.description).toContain("createAccess");
-    expect(schema.action.description).toContain("默认域名访问入口");
+    expect(tools.manageGateway.meta.description).toContain("createRoute");
+    expect(tools.manageGateway.meta.description).toContain("WEB_SCF");
+    expect(schema.action.description).toContain("createRoute");
     expect(schema.targetName.description).toContain("填写函数名");
     expect(schema.path.description).toContain("/api/hello");
-    expect(schema.type.description).toContain("已创建的 HTTP 云函数时传 HTTP");
+    expect(schema.type.description).toContain("HTTP");
+    expect(schema.type.description).toContain("WEB_SCF");
     expect(schema.auth.description).toContain("通常设为 false");
   });
 
-  it("manageGateway(action=createAccess) should normalize path and return structured payload", async () => {
+  it("manageGateway(action=createRoute) should map HTTP to WEB_SCF on default domain", async () => {
     const result = await tools.manageGateway.handler({
-      action: "createAccess",
+      action: "createRoute",
       targetType: "function",
       targetName: "helloFn",
       path: "api/hello",
@@ -177,46 +167,52 @@ describe("gateway tools", () => {
 
     const payload = JSON.parse(result.content[0].text);
 
-    expect(mockCreateAccess).toHaveBeenCalledWith({
-      name: "helloFn",
-      path: "/api/hello",
-      type: 6,
-      auth: false,
+    expect(mockDescribeHttpServiceRoute).toHaveBeenCalled();
+    expect(mockCreateHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "env-test.service.tcloudbase.com",
+        Routes: [
+          {
+            Path: "/api/hello",
+            UpstreamResourceType: "WEB_SCF",
+            UpstreamResourceName: "helloFn",
+            EnableAuth: false,
+          },
+        ],
+      },
     });
     expect(payload).toMatchObject({
       success: true,
-      message:
-        "已为目标 helloFn 创建网关访问路径。注意：路由配置传播通常需要等待 30 秒到 3 分钟，请勿立即访问。该操作只创建网关入口，不会自动放开函数安全规则；若需要匿名或浏览器直接访问，请继续检查函数资源权限。",
       data: {
-        action: "createAccess",
-        targetType: "function",
-        targetName: "helloFn",
+        action: "createRoute",
+        model: "httpServiceRoute",
+        domain: "env-test.service.tcloudbase.com",
         path: "/api/hello",
+        upstreamResourceType: "WEB_SCF",
+        upstreamResourceName: "helloFn",
       },
       nextActions: [
         expect.objectContaining({
           tool: "queryGateway",
-          action: "getAccess",
-          reason: "等待 30 秒到 3 分钟后再确认访问入口是否已生效",
+          action: "getRoute",
         }),
         expect.objectContaining({
           tool: "queryPermissions",
           action: "getResourcePermission",
-          reason:
-            "确认函数安全规则是否允许预期访问方；网关 auth=false 不等于函数已允许匿名访问",
         }),
         expect.objectContaining({
           tool: "managePermissions",
           action: "updateResourcePermission",
-          reason: "只有在确认需要匿名或浏览器直连访问时，才按实际安全要求更新函数权限",
         }),
       ],
     });
+    expect(payload.message).toContain("30 秒到 3 分钟");
   });
 
-  it("manageGateway(action=createAccess) should default path to targetName when omitted", async () => {
+  it("manageGateway(action=createRoute) should map Event to SCF and default path", async () => {
     const result = await tools.manageGateway.handler({
-      action: "createAccess",
+      action: "createRoute",
       targetType: "function",
       targetName: "helloFn",
       type: "Event",
@@ -224,41 +220,39 @@ describe("gateway tools", () => {
 
     const payload = JSON.parse(result.content[0].text);
 
-    expect(mockCreateAccess).toHaveBeenCalledWith({
-      name: "helloFn",
-      path: "/helloFn",
-      type: 1,
-      auth: undefined,
+    expect(mockCreateHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "env-test.service.tcloudbase.com",
+        Routes: [
+          {
+            Path: "/helloFn",
+            UpstreamResourceType: "SCF",
+            UpstreamResourceName: "helloFn",
+            EnableAuth: undefined,
+          },
+        ],
+      },
     });
     expect(payload).toMatchObject({
       success: true,
       data: {
-        action: "createAccess",
-        targetType: "function",
-        targetName: "helloFn",
         path: "/helloFn",
+        upstreamResourceType: "SCF",
       },
     });
   });
 
-  it("manageGateway metadata should warn that createAccess requires explicit type", () => {
-    expect(tools.manageGateway.meta.description).toContain("createAccess");
-    expect(tools.manageGateway.meta.description).toContain("type");
-    expect(tools.manageGateway.meta.inputSchema.action.description).toContain("显式");
-    expect(tools.manageGateway.meta.inputSchema.type.description).toContain("createAccess");
-    expect(tools.manageGateway.meta.inputSchema.type.description).toContain("省略会默认按 Event 路由处理");
-  });
-
-  it("manageGateway(action=createAccess) should reject missing type with a clear message", async () => {
+  it("manageGateway(action=createRoute) should reject missing type for function routes", async () => {
     const result = await tools.manageGateway.handler({
-      action: "createAccess",
+      action: "createRoute",
       targetType: "function",
       targetName: "helloFn",
     });
 
     const payload = JSON.parse(result.content[0].text);
 
-    expect(mockCreateAccess).not.toHaveBeenCalled();
+    expect(mockCreateHttpServiceRoute).not.toHaveBeenCalled();
     expect(payload).toMatchObject({
       success: false,
       message: expect.stringContaining("必须显式提供 type"),
@@ -266,85 +260,118 @@ describe("gateway tools", () => {
     expect(payload.message).toContain("FUNCTION_PARAM_INVALID");
   });
 
-  it("manageGateway(action=deleteAccess) should delete by accessId directly", async () => {
+  it("manageGateway(action=createRoute) should not use OriginDomain as public domain", async () => {
+    mockDescribeHttpServiceRoute.mockResolvedValueOnce({
+      OriginDomain: "origin.service.tcloudbase.com",
+      TotalCount: 0,
+      Domains: [],
+      RequestId: "req-empty",
+    });
+
     const result = await tools.manageGateway.handler({
-      action: "deleteAccess",
-      accessId: "api-123",
+      action: "createRoute",
+      targetType: "function",
+      targetName: "helloFn",
+      type: "HTTP",
     });
 
     const payload = JSON.parse(result.content[0].text);
 
-    // 仅传 accessId 时，代码会先查询补全 name
-    expect(mockGetAccessList).toHaveBeenCalledWith({});
-    expect(mockDeleteAccess).toHaveBeenCalledWith({
-      name: "helloFn",
-      apiId: "api-123",
-    });
-    expect(payload).toMatchObject({
-      success: true,
-      data: {
-        action: "deleteAccess",
-        accessId: "api-123",
-      },
-    });
+    expect(mockCreateHttpServiceRoute).not.toHaveBeenCalled();
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("默认 HTTP 访问域名未就绪");
+    expect(payload.message).not.toContain("origin.service.tcloudbase.com");
   });
 
-  it("manageGateway(action=deleteAccess) should resolve accessId by targetName and path", async () => {
+  it("manageGateway(action=updateRoute) should modify route auth", async () => {
     const result = await tools.manageGateway.handler({
-      action: "deleteAccess",
+      action: "updateRoute",
+      domain: "api.example.com",
       targetName: "helloFn",
       path: "/api/hello",
+      type: "HTTP",
+      auth: true,
     });
 
     const payload = JSON.parse(result.content[0].text);
 
-    expect(mockGetAccessList).toHaveBeenCalledWith({
-      name: "helloFn",
-      path: "/api/hello",
-    });
-    expect(mockDeleteAccess).toHaveBeenCalledWith({
-      name: "helloFn",
-      apiId: "api-123",
+    expect(mockModifyHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "api.example.com",
+        Routes: [
+          {
+            Path: "/api/hello",
+            UpstreamResourceType: "WEB_SCF",
+            UpstreamResourceName: "helloFn",
+            EnableAuth: true,
+          },
+        ],
+      },
     });
     expect(payload).toMatchObject({
       success: true,
       data: {
-        action: "deleteAccess",
-        targetName: "helloFn",
-        path: "/api/hello",
-        accessId: "api-123",
+        action: "updateRoute",
+        domain: "api.example.com",
+        auth: true,
       },
     });
   });
 
-  it("queryGateway(action=getAccess) should aggregate access urls from domains", async () => {
+  it("manageGateway(action=deleteRoute) should delete by domain and path", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "deleteRoute",
+      domain: "env-test.service.tcloudbase.com",
+      path: "/api/hello",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockDeleteHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: "env-test.service.tcloudbase.com",
+      Paths: ["/api/hello"],
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "deleteRoute",
+        domain: "env-test.service.tcloudbase.com",
+        path: "/api/hello",
+      },
+    });
+  });
+
+  it("queryGateway(action=getRoute) should return urls for matching function", async () => {
     const result = await tools.queryGateway.handler({
-      action: "getAccess",
+      action: "getRoute",
       targetType: "function",
       targetName: "helloFn",
     });
 
     const payload = JSON.parse(result.content[0].text);
 
-    expect(mockGetAccessList).toHaveBeenCalledWith({ name: "helloFn" });
+    expect(mockDescribeHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Limit: 1000,
+    });
     expect(payload).toMatchObject({
       success: true,
       data: {
-        action: "getAccess",
-        targetType: "function",
+        action: "getRoute",
         targetName: "helloFn",
         total: 1,
-        domains: ["env-test.app.tcloudbase.com", "api.example.com"],
-        urls: [
-          "https://env-test.app.tcloudbase.com/api/hello",
-          "https://api.example.com/api/hello",
-        ],
-        enableService: true,
+        urls: ["https://env-test.service.tcloudbase.com/api/hello"],
+        route: expect.objectContaining({
+          UpstreamResourceName: "helloFn",
+          UpstreamResourceType: "WEB_SCF",
+        }),
       },
       nextActions: [
         expect.objectContaining({
           tool: "manageGateway",
-          action: "createAccess",
+          action: "createRoute",
         }),
       ],
     });
@@ -357,9 +384,6 @@ describe("gateway tools", () => {
 
     const payload = JSON.parse(result.content[0].text);
 
-    expect(mockDescribeHttpServiceRoute).toHaveBeenCalledWith({
-      EnvId: "env-test",
-    });
     expect(payload).toMatchObject({
       success: true,
       data: {
@@ -370,14 +394,31 @@ describe("gateway tools", () => {
     });
   });
 
-  it("manageGateway(action=createRoute) should create http route", async () => {
+  it("queryGateway(action=listCustomDomains) should exclude default domain", async () => {
+    const result = await tools.queryGateway.handler({
+      action: "listCustomDomains",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "listCustomDomains",
+        total: 1,
+        domains: [expect.objectContaining({ Domain: "api.example.com" })],
+      },
+    });
+  });
+
+  it("manageGateway(action=createRoute) should accept explicit upstreamResourceType", async () => {
     const result = await tools.manageGateway.handler({
       action: "createRoute",
-      domain: "env-test.service.tcloudbase.com",
+      domain: "api.example.com",
       route: {
-        path: "/api/hello",
-        serviceType: "function",
-        serviceName: "helloFn",
+        path: "/api/run",
+        serviceName: "my-service",
+        upstreamResourceType: "CBR",
       },
     });
 
@@ -386,23 +427,18 @@ describe("gateway tools", () => {
     expect(mockCreateHttpServiceRoute).toHaveBeenCalledWith({
       EnvId: "env-test",
       Domain: {
-        Domain: "env-test.service.tcloudbase.com",
+        Domain: "api.example.com",
         Routes: [
           {
-            Path: "/api/hello",
-            UpstreamResourceType: "SCF",
-            UpstreamResourceName: "helloFn",
+            Path: "/api/run",
+            UpstreamResourceType: "CBR",
+            UpstreamResourceName: "my-service",
             EnableAuth: undefined,
           },
         ],
       },
     });
-    expect(payload).toMatchObject({
-      success: true,
-      data: {
-        action: "createRoute",
-      },
-    });
+    expect(payload.success).toBe(true);
   });
 
   it("manageGateway(action=bindCustomDomain) should bind custom domain", async () => {

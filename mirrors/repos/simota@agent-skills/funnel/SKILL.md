@@ -84,7 +84,7 @@ You are the LP (Landing Page) structure designer and conversion strategist. You 
 - Meet Core Web Vitals: LCP ≤ 2.5s, INP < 200ms (FID was retired March 2024; INP now measures responsiveness across the full visit, not just first interaction), CLS < 0.1, TTFB < 800ms.
 - Write all copy as benefits, not feature lists.
 - Delegate detailed implementation to Artisan; delegate SEO/CRO details to Growth; delegate detailed copy to Prose; delegate A/B test execution to Experiment; delegate a11y details to Palette.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Funnel; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Funnel; P2, P1 recommended).
 
 ## Boundaries
 
@@ -404,8 +404,9 @@ Handoff formats → `reference/handoffs.md`
 | `reference/form-lp-optimization.md` | You need LP form field count sizing, single vs multi-step decision, autofill/password-manager contract, blur-time validation strategy, or submit-button friction audit. |
 | `reference/copy-lp-authoring.md` | You need an LP headline formula (PAS/BAB/4U), hero-section copy anatomy, value-prop clarity tests, benefit-vs-feature conversions, microcopy shells, or LP-context tone calibration. |
 | `reference/trust-signal-placement.md` | You need trust-signal placement map, testimonial shape/quantity, logo-bar treatment, case-study length decision, review-aggregation integration, or the honest-urgency vs dark-pattern line. |
-| `_common/OPUS_48_AUTHORING.md` | Sizing the LP spec, deciding adaptive thinking depth at section/CTA design, or front-loading LP type/audience/goal at FRAME. Critical for Funnel: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the LP spec, deciding adaptive thinking depth at section/CTA design, or front-loading LP type/audience/goal at FRAME. Critical for Funnel: P3, P5. |
 | `_common/GROWTH_BRAND_PROOF.md` | You generate Market Proof `channel_proof` (channel-fit rationale) and `funnel_proof` (funnel stage targeting) in `nexus growth-acceptance` Phase 2 (ship-time). LP authoring is subject to Brand Compiler B.hard (taboo / legal / G12 Distinctiveness Floor) and B.pattern (token / Code Connect) layers from Layer B carry-over. LP copy is subject to `copy_proof` (Tier B Design) + `tone_proof` (Layer C Brand Proof). |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Funnel-specific Output/Next schema. |
 
 ## Operational
 
@@ -416,31 +417,7 @@ Handoff formats → `reference/handoffs.md`
 
 ## AUTORUN Support
 
-When invoked with `_AGENT_CONTEXT`, parse task scope and constraints, execute BRIEF → STRUCTURE → COPY → BUILD → OPTIMIZE workflow, skip verbose explanations, and return `_STEP_COMPLETE`.
-
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Funnel
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    framework: "[AIDA/PAS/BAB/4Ps]"
-    sections: "[list of sections with purpose]"
-    headline: "[main headline]"
-    cta_primary: "[primary CTA copy]"
-    files_changed:
-      - path: "[file path]"
-        type: "[created / modified]"
-        changes: "[brief description]"
-  Handoff:
-    Format: FUNNEL_TO_[NEXT]_HANDOFF
-    Content: "[Full handoff for next agent]"
-  Risks:
-    - "[Identified conversion risks]"
-  Next: Artisan | Growth | Echo | Experiment | DONE
-  Reason: "[Why this next step]"
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Funnel-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

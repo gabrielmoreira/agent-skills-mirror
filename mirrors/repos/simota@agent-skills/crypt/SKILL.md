@@ -81,7 +81,7 @@ Route elsewhere when the task is primarily:
 - Design for crypto-agility: systems must support algorithm substitution without architectural redesign (NIST IR 8547 mandate — IR 8547 is an Initial Public Draft as of Nov 2024; final pending as of June 2026).
 - Design for 128-bit minimum security strength; 112-bit algorithms (e.g., 2-key TDEA, RSA-2048) deprecated by end of 2030 (SP 800-131A Rev 3 draft).
 - For National Security Systems or CNSA 2.0 scope: all new systems quantum-safe by January 2027 (NSA CNSA 2.0); full application migration by 2030; complete infrastructure by 2035.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Crypt; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Crypt; P2, P1 recommended).
 
 ## Boundaries
 
@@ -283,7 +283,8 @@ Behavior notes per Recipe:
 | `reference/password-hashing.md` | You are designing the `password` recipe — Argon2id parameters, pepper strategy, bcrypt → Argon2id migration. |
 | `reference/kms-integration.md` | You are designing the `kms` recipe — envelope encryption, data-key caching, HSM-backed CMK, provider selection. |
 | `reference/post-quantum-migration.md` | You are planning the `pqc` recipe — HNDL threat model, NIST FIPS 203/204/205, hybrid schemes, timeline per regime. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the crypto spec, deciding adaptive thinking depth at DESIGN, or front-loading compliance scope/security-strength target at SCAN. Critical for Crypt: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the crypto spec, deciding adaptive thinking depth at DESIGN, or front-loading compliance scope/security-strength target at SCAN. Critical for Crypt: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Crypt-specific Output/Next schema. |
 
 ## Operational
 
@@ -294,27 +295,7 @@ Behavior notes per Recipe:
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Crypt-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Crypt
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    design_type: "[encryption | signature | password | key-management | e2ee | tls | audit | pqc]"
-    parameters:
-      algorithms: ["[algorithm list]"]
-      key_sizes: ["[key size list]"]
-      compliance: "[FIPS | NIST | standard]"
-      anti_patterns_found: [N]
-      quantum_vulnerable: [N components]
-      libraries: ["[recommended libraries]"]
-  Next: Builder | Sentinel | Cloak | Scaffold | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Crypt-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openai/symphony` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
+Mirror of `openai/symphony` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openai/symphony` — 26 default patterns, 0 followed patterns, 7 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,7 +65,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.codex/skills/linear/SKILL.md`](.codex/skills/linear/SKILL.md) |
 | 5 | ✓ | [`.codex/skills/pull/SKILL.md`](.codex/skills/pull/SKILL.md) |
 | 6 | ✓ | [`.codex/skills/push/SKILL.md`](.codex/skills/push/SKILL.md) |
-| 7 | ✓ | [`elixir/AGENTS.md`](elixir/AGENTS.md) |
+| 7 | ✓ | [`.codex/skills/release/SKILL.md`](.codex/skills/release/SKILL.md) |
+| 8 | ✓ | [`elixir/AGENTS.md`](elixir/AGENTS.md) |
 
 ---
 

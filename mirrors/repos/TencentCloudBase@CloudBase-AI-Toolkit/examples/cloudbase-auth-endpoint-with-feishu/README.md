@@ -99,7 +99,7 @@ curl -X POST http://localhost:9000/auth/device/code -H 'Content-Type: applicatio
 {
   "tool": "manageGateway",
   "params": {
-    "action": "createAccess",
+    "action": "createRoute",
     "targetType": "function",
     "targetName": "auth-service",
     "path": "/",
@@ -109,7 +109,7 @@ curl -X POST http://localhost:9000/auth/device/code -H 'Content-Type: applicatio
 }
 ```
 
-这会创建一个默认域名的网关入口。之后你的服务访问地址为：
+这会在环境默认 HTTP 域名（`IsDefault`）上创建 Domain/Route 入口。之后你的服务访问地址为：
 ```
 https://{envId}-{appId}.ap-shanghai.app.tcloudbase.com/cli-auth.html
 ```

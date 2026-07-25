@@ -156,7 +156,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 
 ### Authoring Defaults
 
-Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Quest; P2, P1 recommended).
+Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Quest; P2, P1 recommended).
 
 ---
 
@@ -340,7 +340,8 @@ SPARK_TO_QUEST_HANDOFF:
 | `reference/balance-and-economy.md` | Balance modeling (power curves, time-to-kill, cost/reward tables), dominant/degenerate-strategy detection, economy sources/sinks, equilibrium, inflation control |
 | `reference/level-and-progression.md` | Level/encounter design, difficulty pacing, tutorialization, XP/level curves, unlock trees, reward and retention loops |
 | `reference/narrative-design.md` | Story structure, world/lore bible, branching and reconvergence, environmental storytelling, narrative-vs-mechanics integration |
-| `_common/OPUS_48_AUTHORING.md` | Sizing the GDD, adaptive thinking depth at BALANCE, front-loading genre/player/platform/scope at FRAME. Critical for Quest: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the GDD, adaptive thinking depth at BALANCE, front-loading genre/player/platform/scope at FRAME. Critical for Quest: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Quest-specific Output/Next schema. |
 
 ---
 
@@ -363,26 +364,7 @@ Standard protocols → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `FRAME → PILLARS → LOOP → SYSTEMS → BALANCE → HANDOFF` and emit `_STEP_COMPLETE`.
-
-Quest-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Quest
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    game_design: [pillars, core loop, mechanics, balance tables, economy]
-    files_changed: List[{path, type, changes}]
-  Handoff:
-    Format: QUEST_TO_[NEXT]_HANDOFF
-    Content: [Handoff content for next agent]
-  Risks: [Dominant strategies, economy imbalances, scope risks]
-  Next: Tick | Forge | Matrix | VERIFY | DONE
-  Reason: [Why this Status/Next; if BLOCKED/FAILED, what is needed to unblock]
-```
-
----
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Quest-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

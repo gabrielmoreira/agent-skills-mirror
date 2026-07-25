@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 288 file(s) materialized.
+Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 295 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 288 |
+| Files         | 295 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -284,69 +284,76 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 223 | ✓ | [`skills/ce-resolve-pr-feedback/scripts/reply-to-pr-thread`](skills/ce-resolve-pr-feedback/scripts/reply-to-pr-thread) |
 | 224 | ✓ | [`skills/ce-resolve-pr-feedback/scripts/resolve-pr-thread`](skills/ce-resolve-pr-feedback/scripts/resolve-pr-thread) |
 | 225 | ✓ | [`skills/ce-resolve-pr-feedback/SKILL.md`](skills/ce-resolve-pr-feedback/SKILL.md) |
-| 226 | ✓ | [`skills/ce-riffrec-feedback-analysis/references/compound-engineering-feedback-format.md`](skills/ce-riffrec-feedback-analysis/references/compound-engineering-feedback-format.md) |
-| 227 | ✓ | [`skills/ce-riffrec-feedback-analysis/references/extensive-analysis.md`](skills/ce-riffrec-feedback-analysis/references/extensive-analysis.md) |
-| 228 | ✓ | [`skills/ce-riffrec-feedback-analysis/references/install-riffrec.md`](skills/ce-riffrec-feedback-analysis/references/install-riffrec.md) |
-| 229 | ✓ | [`skills/ce-riffrec-feedback-analysis/references/quick-bug-report.md`](skills/ce-riffrec-feedback-analysis/references/quick-bug-report.md) |
-| 230 | ✓ | [`skills/ce-riffrec-feedback-analysis/scripts/analyze_riffrec_zip.py`](skills/ce-riffrec-feedback-analysis/scripts/analyze_riffrec_zip.py) |
-| 231 | ✓ | [`skills/ce-riffrec-feedback-analysis/SKILL.md`](skills/ce-riffrec-feedback-analysis/SKILL.md) |
-| 232 | ✓ | [`skills/ce-setup/references/config-template.yaml`](skills/ce-setup/references/config-template.yaml) |
-| 233 | ✓ | [`skills/ce-setup/scripts/check-health`](skills/ce-setup/scripts/check-health) |
-| 234 | ✓ | [`skills/ce-setup/SKILL.md`](skills/ce-setup/SKILL.md) |
-| 235 | ✓ | [`skills/ce-simplify-code/references/personas/code-quality-reviewer.md`](skills/ce-simplify-code/references/personas/code-quality-reviewer.md) |
-| 236 | ✓ | [`skills/ce-simplify-code/references/personas/code-reuse-reviewer.md`](skills/ce-simplify-code/references/personas/code-reuse-reviewer.md) |
-| 237 | ✓ | [`skills/ce-simplify-code/references/personas/efficiency-reviewer.md`](skills/ce-simplify-code/references/personas/efficiency-reviewer.md) |
-| 238 | ✓ | [`skills/ce-simplify-code/SKILL.md`](skills/ce-simplify-code/SKILL.md) |
-| 239 | ✓ | [`skills/ce-strategy/references/interview.md`](skills/ce-strategy/references/interview.md) |
-| 240 | ✓ | [`skills/ce-strategy/references/strategy-template.md`](skills/ce-strategy/references/strategy-template.md) |
-| 241 | ✓ | [`skills/ce-strategy/SKILL.md`](skills/ce-strategy/SKILL.md) |
-| 242 | ✓ | [`skills/ce-sweep/references/agents/media-analyzer.md`](skills/ce-sweep/references/agents/media-analyzer.md) |
-| 243 | ✓ | [`skills/ce-sweep/references/interview.md`](skills/ce-sweep/references/interview.md) |
-| 244 | ✓ | [`skills/ce-sweep/references/model-tiers.md`](skills/ce-sweep/references/model-tiers.md) |
-| 245 | ✓ | [`skills/ce-sweep/references/plan-template.md`](skills/ce-sweep/references/plan-template.md) |
-| 246 | ✓ | [`skills/ce-sweep/references/sources/email.md`](skills/ce-sweep/references/sources/email.md) |
-| 247 | ✓ | [`skills/ce-sweep/references/sources/github-issues.md`](skills/ce-sweep/references/sources/github-issues.md) |
-| 248 | ✓ | [`skills/ce-sweep/references/sources/slack.md`](skills/ce-sweep/references/sources/slack.md) |
-| 249 | ✓ | [`skills/ce-sweep/references/state-schema.md`](skills/ce-sweep/references/state-schema.md) |
-| 250 | ✓ | [`skills/ce-sweep/references/subagent-template.md`](skills/ce-sweep/references/subagent-template.md) |
-| 251 | ✓ | [`skills/ce-sweep/scripts/analyze_riffrec_zip.py`](skills/ce-sweep/scripts/analyze_riffrec_zip.py) |
-| 252 | ✓ | [`skills/ce-sweep/scripts/sweep-state.py`](skills/ce-sweep/scripts/sweep-state.py) |
-| 253 | ✓ | [`skills/ce-sweep/SKILL.md`](skills/ce-sweep/SKILL.md) |
-| 254 | ✓ | [`skills/ce-test-browser/references/agent-browser-driver.md`](skills/ce-test-browser/references/agent-browser-driver.md) |
-| 255 | ✓ | [`skills/ce-test-browser/references/pipeline-orchestration.md`](skills/ce-test-browser/references/pipeline-orchestration.md) |
-| 256 | ✓ | [`skills/ce-test-browser/SKILL.md`](skills/ce-test-browser/SKILL.md) |
-| 257 | ✓ | [`skills/ce-test-xcode/SKILL.md`](skills/ce-test-xcode/SKILL.md) |
-| 258 | ✓ | [`skills/ce-work/references/agents/figma-design-sync.md`](skills/ce-work/references/agents/figma-design-sync.md) |
-| 259 | ✓ | [`skills/ce-work/references/agents/implementation-worker.md`](skills/ce-work/references/agents/implementation-worker.md) |
-| 260 | ✓ | [`skills/ce-work/references/cross-model-execution.md`](skills/ce-work/references/cross-model-execution.md) |
-| 261 | ✓ | [`skills/ce-work/references/cross-model-work-eval.md`](skills/ce-work/references/cross-model-work-eval.md) |
-| 262 | ✓ | [`skills/ce-work/references/execution-engines.md`](skills/ce-work/references/execution-engines.md) |
-| 263 | ✓ | [`skills/ce-work/references/implementation-loop.md`](skills/ce-work/references/implementation-loop.md) |
-| 264 | ✓ | [`skills/ce-work/references/implementation-result-schema.json`](skills/ce-work/references/implementation-result-schema.json) |
-| 265 | ✓ | [`skills/ce-work/references/non-code-execution.md`](skills/ce-work/references/non-code-execution.md) |
-| 266 | ✓ | [`skills/ce-work/references/review-findings-followup.md`](skills/ce-work/references/review-findings-followup.md) |
-| 267 | ✓ | [`skills/ce-work/references/shipping-workflow.md`](skills/ce-work/references/shipping-workflow.md) |
-| 268 | ✓ | [`skills/ce-work/references/tracker-defer.md`](skills/ce-work/references/tracker-defer.md) |
-| 269 | ✓ | [`skills/ce-work/scripts/cross-model-work.sh`](skills/ce-work/scripts/cross-model-work.sh) |
-| 270 | ✓ | [`skills/ce-work/scripts/peer-job-runner.py`](skills/ce-work/scripts/peer-job-runner.py) |
-| 271 | ✓ | [`skills/ce-work/scripts/unit_workspace_integration.py`](skills/ce-work/scripts/unit_workspace_integration.py) |
-| 272 | ✓ | [`skills/ce-work/scripts/unit_workspace_jobs.py`](skills/ce-work/scripts/unit_workspace_jobs.py) |
-| 273 | ✓ | [`skills/ce-work/scripts/unit_workspace_lifecycle.py`](skills/ce-work/scripts/unit_workspace_lifecycle.py) |
-| 274 | ✓ | [`skills/ce-work/scripts/unit_workspace_state.py`](skills/ce-work/scripts/unit_workspace_state.py) |
-| 275 | ✓ | [`skills/ce-work/scripts/unit_workspace_transaction.py`](skills/ce-work/scripts/unit_workspace_transaction.py) |
-| 276 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
-| 277 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
-| 278 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
-| 279 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
-| 280 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
-| 281 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
-| 282 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
-| 283 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
-| 284 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
-| 285 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
-| 286 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
-| 287 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
-| 288 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
+| 226 | ✓ | [`skills/ce-retune/references/baseline-mining.md`](skills/ce-retune/references/baseline-mining.md) |
+| 227 | ✓ | [`skills/ce-retune/references/corpus-audit.md`](skills/ce-retune/references/corpus-audit.md) |
+| 228 | ✓ | [`skills/ce-retune/references/cut-passes.md`](skills/ce-retune/references/cut-passes.md) |
+| 229 | ✓ | [`skills/ce-retune/references/halt-taxonomy.md`](skills/ce-retune/references/halt-taxonomy.md) |
+| 230 | ✓ | [`skills/ce-retune/references/noise-floor.md`](skills/ce-retune/references/noise-floor.md) |
+| 231 | ✓ | [`skills/ce-retune/references/workflow-shapes.md`](skills/ce-retune/references/workflow-shapes.md) |
+| 232 | ✓ | [`skills/ce-retune/SKILL.md`](skills/ce-retune/SKILL.md) |
+| 233 | ✓ | [`skills/ce-riffrec-feedback-analysis/references/compound-engineering-feedback-format.md`](skills/ce-riffrec-feedback-analysis/references/compound-engineering-feedback-format.md) |
+| 234 | ✓ | [`skills/ce-riffrec-feedback-analysis/references/extensive-analysis.md`](skills/ce-riffrec-feedback-analysis/references/extensive-analysis.md) |
+| 235 | ✓ | [`skills/ce-riffrec-feedback-analysis/references/install-riffrec.md`](skills/ce-riffrec-feedback-analysis/references/install-riffrec.md) |
+| 236 | ✓ | [`skills/ce-riffrec-feedback-analysis/references/quick-bug-report.md`](skills/ce-riffrec-feedback-analysis/references/quick-bug-report.md) |
+| 237 | ✓ | [`skills/ce-riffrec-feedback-analysis/scripts/analyze_riffrec_zip.py`](skills/ce-riffrec-feedback-analysis/scripts/analyze_riffrec_zip.py) |
+| 238 | ✓ | [`skills/ce-riffrec-feedback-analysis/SKILL.md`](skills/ce-riffrec-feedback-analysis/SKILL.md) |
+| 239 | ✓ | [`skills/ce-setup/references/config-template.yaml`](skills/ce-setup/references/config-template.yaml) |
+| 240 | ✓ | [`skills/ce-setup/scripts/check-health`](skills/ce-setup/scripts/check-health) |
+| 241 | ✓ | [`skills/ce-setup/SKILL.md`](skills/ce-setup/SKILL.md) |
+| 242 | ✓ | [`skills/ce-simplify-code/references/personas/code-quality-reviewer.md`](skills/ce-simplify-code/references/personas/code-quality-reviewer.md) |
+| 243 | ✓ | [`skills/ce-simplify-code/references/personas/code-reuse-reviewer.md`](skills/ce-simplify-code/references/personas/code-reuse-reviewer.md) |
+| 244 | ✓ | [`skills/ce-simplify-code/references/personas/efficiency-reviewer.md`](skills/ce-simplify-code/references/personas/efficiency-reviewer.md) |
+| 245 | ✓ | [`skills/ce-simplify-code/SKILL.md`](skills/ce-simplify-code/SKILL.md) |
+| 246 | ✓ | [`skills/ce-strategy/references/interview.md`](skills/ce-strategy/references/interview.md) |
+| 247 | ✓ | [`skills/ce-strategy/references/strategy-template.md`](skills/ce-strategy/references/strategy-template.md) |
+| 248 | ✓ | [`skills/ce-strategy/SKILL.md`](skills/ce-strategy/SKILL.md) |
+| 249 | ✓ | [`skills/ce-sweep/references/agents/media-analyzer.md`](skills/ce-sweep/references/agents/media-analyzer.md) |
+| 250 | ✓ | [`skills/ce-sweep/references/interview.md`](skills/ce-sweep/references/interview.md) |
+| 251 | ✓ | [`skills/ce-sweep/references/model-tiers.md`](skills/ce-sweep/references/model-tiers.md) |
+| 252 | ✓ | [`skills/ce-sweep/references/plan-template.md`](skills/ce-sweep/references/plan-template.md) |
+| 253 | ✓ | [`skills/ce-sweep/references/sources/email.md`](skills/ce-sweep/references/sources/email.md) |
+| 254 | ✓ | [`skills/ce-sweep/references/sources/github-issues.md`](skills/ce-sweep/references/sources/github-issues.md) |
+| 255 | ✓ | [`skills/ce-sweep/references/sources/slack.md`](skills/ce-sweep/references/sources/slack.md) |
+| 256 | ✓ | [`skills/ce-sweep/references/state-schema.md`](skills/ce-sweep/references/state-schema.md) |
+| 257 | ✓ | [`skills/ce-sweep/references/subagent-template.md`](skills/ce-sweep/references/subagent-template.md) |
+| 258 | ✓ | [`skills/ce-sweep/scripts/analyze_riffrec_zip.py`](skills/ce-sweep/scripts/analyze_riffrec_zip.py) |
+| 259 | ✓ | [`skills/ce-sweep/scripts/sweep-state.py`](skills/ce-sweep/scripts/sweep-state.py) |
+| 260 | ✓ | [`skills/ce-sweep/SKILL.md`](skills/ce-sweep/SKILL.md) |
+| 261 | ✓ | [`skills/ce-test-browser/references/agent-browser-driver.md`](skills/ce-test-browser/references/agent-browser-driver.md) |
+| 262 | ✓ | [`skills/ce-test-browser/references/pipeline-orchestration.md`](skills/ce-test-browser/references/pipeline-orchestration.md) |
+| 263 | ✓ | [`skills/ce-test-browser/SKILL.md`](skills/ce-test-browser/SKILL.md) |
+| 264 | ✓ | [`skills/ce-test-xcode/SKILL.md`](skills/ce-test-xcode/SKILL.md) |
+| 265 | ✓ | [`skills/ce-work/references/agents/figma-design-sync.md`](skills/ce-work/references/agents/figma-design-sync.md) |
+| 266 | ✓ | [`skills/ce-work/references/agents/implementation-worker.md`](skills/ce-work/references/agents/implementation-worker.md) |
+| 267 | ✓ | [`skills/ce-work/references/cross-model-execution.md`](skills/ce-work/references/cross-model-execution.md) |
+| 268 | ✓ | [`skills/ce-work/references/cross-model-work-eval.md`](skills/ce-work/references/cross-model-work-eval.md) |
+| 269 | ✓ | [`skills/ce-work/references/execution-engines.md`](skills/ce-work/references/execution-engines.md) |
+| 270 | ✓ | [`skills/ce-work/references/implementation-loop.md`](skills/ce-work/references/implementation-loop.md) |
+| 271 | ✓ | [`skills/ce-work/references/implementation-result-schema.json`](skills/ce-work/references/implementation-result-schema.json) |
+| 272 | ✓ | [`skills/ce-work/references/non-code-execution.md`](skills/ce-work/references/non-code-execution.md) |
+| 273 | ✓ | [`skills/ce-work/references/review-findings-followup.md`](skills/ce-work/references/review-findings-followup.md) |
+| 274 | ✓ | [`skills/ce-work/references/shipping-workflow.md`](skills/ce-work/references/shipping-workflow.md) |
+| 275 | ✓ | [`skills/ce-work/references/tracker-defer.md`](skills/ce-work/references/tracker-defer.md) |
+| 276 | ✓ | [`skills/ce-work/scripts/cross-model-work.sh`](skills/ce-work/scripts/cross-model-work.sh) |
+| 277 | ✓ | [`skills/ce-work/scripts/peer-job-runner.py`](skills/ce-work/scripts/peer-job-runner.py) |
+| 278 | ✓ | [`skills/ce-work/scripts/unit_workspace_integration.py`](skills/ce-work/scripts/unit_workspace_integration.py) |
+| 279 | ✓ | [`skills/ce-work/scripts/unit_workspace_jobs.py`](skills/ce-work/scripts/unit_workspace_jobs.py) |
+| 280 | ✓ | [`skills/ce-work/scripts/unit_workspace_lifecycle.py`](skills/ce-work/scripts/unit_workspace_lifecycle.py) |
+| 281 | ✓ | [`skills/ce-work/scripts/unit_workspace_state.py`](skills/ce-work/scripts/unit_workspace_state.py) |
+| 282 | ✓ | [`skills/ce-work/scripts/unit_workspace_transaction.py`](skills/ce-work/scripts/unit_workspace_transaction.py) |
+| 283 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
+| 284 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
+| 285 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
+| 286 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
+| 287 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
+| 288 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
+| 289 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
+| 290 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
+| 291 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
+| 292 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
+| 293 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
+| 294 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
+| 295 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
 
 ---
 

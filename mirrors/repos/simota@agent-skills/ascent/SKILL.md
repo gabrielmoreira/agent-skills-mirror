@@ -101,7 +101,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Keep assets (resume, cover letters, portfolio outline, self-intro scripts) consistent with the chosen positioning statement — one canonical positioning drives all of them.
 - Include salary-negotiation strategy and an offer-comparison rubric whenever the path is a job change or independence with client pricing.
 - Verify cross-artifact consistency before delivery: direction ↔ positioning ↔ learning plan ↔ job-search target list must not contradict.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Ascent; P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Ascent; P1 recommended).
 
 ---
 
@@ -206,7 +206,8 @@ Ascent receives audience insight from Field and positioning frameworks from Comp
 | `reference/job-search-kit.md` | You need target-list/tracker CSV schemas, interview prep, outreach/cover-letter templates, or negotiation rubrics |
 | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) | Role boundaries are ambiguous |
 | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
-| [`_common/OPUS_48_AUTHORING.md`](_common/OPUS_48_AUTHORING.md) | You are sizing the deliverable, deciding adaptive thinking depth at route selection, or front-loading goal/role/region/timeline at INTAKE. Critical for Ascent: P3, P5. |
+| [`_common/OPUS_5_AUTHORING.md`](_common/OPUS_5_AUTHORING.md) | You are sizing the deliverable, deciding adaptive thinking depth at route selection, or front-loading goal/role/region/timeline at INTAKE. Critical for Ascent: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Ascent-specific Output/Next schema. |
 
 ## Operational
 
@@ -219,28 +220,7 @@ Shared protocols: [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md)
 
 ## AUTORUN Support
 
-When Ascent receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow (skip verbose explanations, focus on deliverables), and return `_STEP_COMPLETE`.
-
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Ascent
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact or path]
-    recipe: "[direction | self | market | learn | jobsearch | package]"
-    parameters:
-      route: "[recommended career route]"
-      target_role: "[target role / work-style]"
-      region: "[region / work mode]"
-  Validations:
-    grounding: "[grounded in user experience | assumptions flagged]"
-    sources: "[market/salary claims cited | none required]"
-    consistency: "[cross-artifact check passed | partial]"
-  Next: Crest | Scribe | Prose | Canvas | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Ascent-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

@@ -26,6 +26,8 @@ Treat `convert --draft` and `create_image_post` as different publish targets, no
 
 Use CLI discovery as the source of truth, but keep it scoped to the next decision. Do not run the full catalog for tasks that do not need provider, theme, prompt, or layout selection.
 
+Use `capabilities` for aggregate routing facts, resource `list` for lightweight selection fields, `show` for one full resource definition, and `render` for materialized prompt/layout output. JSON stdout is compact; use `jq` only when a human needs formatted output.
+
 Run the smallest useful discovery set:
 
 - Article formatting with no theme or modules chosen:
@@ -89,9 +91,10 @@ Use CLI output as the source of truth for currently available modes, providers, 
 
 - Assume `md2wechat` is already available on `PATH`.
 - `convert` defaults to API mode unless the user explicitly asks for `--mode ai`.
-- API conversion requires md2wechat API credentials.
-- WeChat draft creation requires WeChat credentials.
-- Named WeChat account execution requires a valid `MD2WECHAT_API_KEY`; the CLI validates it before upload or draft side effects.
+- API-mode preview and conversion require a valid `MD2WECHAT_API_KEY`.
+- WeChat upload, article draft creation, and `create_image_post` require WeChat credentials whenever the user explicitly requests those side effects.
+- Read-only discovery, `inspect`, `preview`, and plain conversion are free of any global WeChat publishing credential requirement; API-mode preview and conversion still require a valid `MD2WECHAT_API_KEY`.
+- Named WeChat account execution requires a valid `MD2WECHAT_API_KEY`; the CLI validates it before upload, draft, or `create_image_post` effects.
 - Direct image generation requires image-provider credentials; image plan mode (`--plan --json`) only emits prompt intent for a host Agent or external tool and does not require image-provider credentials.
 - `title suggest --json` only emits a title-generation prompt request for the host Agent or external model. It does not call a model, upload, create drafts, or write back to Markdown.
 - For stronger factual title hooks, pass --hook-level 2 or 3; do not treat generated titles as confirmed publishing intent.
@@ -108,7 +111,7 @@ Prefer a confirm-first workflow for article work:
 3. `md2wechat convert <article.md> ...`
 4. Add `--upload`, `--draft`, `--cover`, or `--cover-media-id` only when the user explicitly asks for upload or draft creation.
 
-`inspect` is the source-of-truth command for resolved metadata, readiness, and publish checks. In `--json` output, read `data.readiness.targets` and `data.readiness.blockers` before deciding whether `convert`, `upload`, or `draft` is blocked. If the requested target is blocked, stop and report the matching blockers; do not continue by guessing from legacy booleans or `checks` alone. Do not invent `data.agent_readiness`, `data.target_readiness`, `ArticleState`, state files, or a second readiness/state object. `preview` is a local preview artifact. It does not upload images, create drafts, or write back to Markdown. `convert --preview` is the convert-path preview flag and is not the same as the standalone `preview` command. `preview --mode ai` is degraded confirmation only and must not be treated as final AI-generated layout.
+`inspect` is the source-of-truth command for structured metadata, checks, readiness targets, and blockers. In `--json` output, read `data.readiness.targets` and `data.readiness.blockers` before deciding whether `convert`, `upload`, or `draft` is blocked. If the requested target is blocked, stop and report the matching blockers; do not continue by guessing from legacy booleans or `checks` alone. Do not invent `data.agent_readiness`, `data.target_readiness`, `ArticleState`, state files, or a second readiness/state object. `preview` writes only byte-identical final API HTML from a successful converter result; with `--json`, inspect diagnostics are returned in `data.inspect` and are never wrapped into that file. It does not upload images, create drafts, or write back to Markdown. `convert` performs conversion and only the explicitly requested upload/draft effects. `convert --preview` is the convert-path preview flag and is not the same as the standalone `preview` command. On `PREVIEW_ACTION_REQUIRED` or `PREVIEW_FAILED`, this invocation does not create or overwrite preview HTML. With `--json`, `PREVIEW_ACTION_REQUIRED` returns an empty `data.output_file`. Any pre-existing explicit output path is stale and must not be treated as this invocation's result; use the returned prompt for host-Agent work or report the failure.
 When the intended execution path is `convert --mode ai --custom-prompt ...`, run `inspect` with the same `--mode ai --custom-prompt ...` before trusting readiness.
 
 ## Formatting Protocol
@@ -181,6 +184,8 @@ Brand Profile lives at `~/.config/md2wechat/brand.md`.
 ## Publishing Side Effects
 
 Do not create drafts, upload images, publish, or call remote image generation unless the user asks for that action.
+
+Before every explicit WeChat side effect—image upload, article draft creation, or `create_image_post`—require configured WeChat credentials and use the target-matched readiness/preflight path. Discovery and inspection remain non-publishing paths; preview and plain conversion are free of any global WeChat publishing credential requirement, while API mode still requires a valid `MD2WECHAT_API_KEY`.
 
 Before draft creation:
 

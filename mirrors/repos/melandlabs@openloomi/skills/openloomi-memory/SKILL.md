@@ -2,7 +2,7 @@
 name: openloomi-memory
 description: "openloomi Memory tools - search and manage the holistic context (people, projects, decisions, knowledge base, chat insights). Triggers: memory search, knowledge base, search documents, list insights, who is John, what did we decide about X, tiered memory, knowledge graph, people/projects/decisions, search-all, conversation memory"
 metadata:
-  version: 0.8.7
+  version: 0.8.8
 allowed-tools: Bash(node $SKILL_DIR/scripts/openloomi-memory.cjs *)
 ---
 

@@ -111,6 +111,16 @@ def _extract_core_subject(topic: str) -> str:
     return extract_core_subject(topic, max_words=5, strip_suffixes=True)
 
 
+def _plain_query_tokens(text: str) -> list[str]:
+    """Return lexical tokens without Bird query grouping syntax."""
+    separators = str.maketrans({char: " " for char in '\"“”()[]{}'})
+    return [
+        clean
+        for token in text.translate(separators).split()
+        if (clean := token.strip("'‘’"))
+    ]
+
+
 def is_bird_installed() -> bool:
     """Check if vendored Bird search module is available.
 
@@ -361,17 +371,18 @@ def search_x(
     timeout = 30 if depth == "quick" else 45 if depth == "default" else 60
 
     # Extract core subject - X search is literal, not semantic
-    core_topic = _extract_core_subject(topic)
+    core_words = _plain_query_tokens(_extract_core_subject(topic))
+    core_topic = " ".join(core_words)
     query = f"{core_topic} since:{from_date}"
 
     _log(f"Searching: {query}")
     response = _run_bird_search(query, count, timeout)
+    last_clean_response = response if not response.get("error") else None
 
     # Check if we got results
     items = parse_bird_response(response, query=core_topic)
 
     # Retry with OR groups for multi-word queries (X supports OR operator)
-    core_words = core_topic.split()
     if not items and len(core_words) >= 2:
         from .query import extract_compound_terms
         compounds = extract_compound_terms(topic)
@@ -381,6 +392,8 @@ def search_x(
             _log(f"0 results for '{core_topic}', retrying with OR groups: {or_parts}")
             query = f"({or_parts}) since:{from_date}"
             response = _run_bird_search(query, count, timeout)
+            if not response.get("error"):
+                last_clean_response = response
             items = parse_bird_response(response, query=core_topic)
 
     # Retry with fewer keywords if still 0 results and query has 3+ words
@@ -389,6 +402,8 @@ def search_x(
         _log(f"0 results for '{core_topic}', retrying with '{shorter}'")
         query = f"{shorter} since:{from_date}"
         response = _run_bird_search(query, count, timeout)
+        if not response.get("error"):
+            last_clean_response = response
         items = parse_bird_response(response, query=core_topic)
 
     # Last-chance retry: use strongest remaining token (often the product name)
@@ -412,7 +427,12 @@ def search_x(
             _log(f"0 results for '{core_topic}', retrying anchored on '{retry_terms}'")
             query = f"{retry_terms} since:{from_date}"
             response = _run_bird_search(query, count, timeout)
+            if not response.get("error"):
+                last_clean_response = response
 
+    if response.get("error") and last_clean_response is not None:
+        _log("Optional retry failed after a clean empty response; preserving no-results outcome")
+        return last_clean_response
     return response
 
 

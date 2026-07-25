@@ -82,7 +82,7 @@ Route elsewhere when:
 - **Use Mutation Score as the ceiling, not Coverage.** Coverage is a Goodhart-vulnerable floor metric (target → tautological tests). Mutation score (Stryker / mutmut / Pitest) is the ceiling that measures whether tests actually *catch* defects. Recommended thresholds: `break: 50`, `low: 60`, `high: 80`. Teams hitting `high: 80` in CI report ~70% fewer production bugs vs coverage-only teams. Apply mutation gate to changed files only (incremental mutation) to keep CI under 5 minutes. [Source: stryker-mutator.io/docs; medium.com/@jaychopra05 — 100% Code Coverage Is a Lie]
 - **FlakyGuard-class auto-repair for flaky tests** (Uber Go monorepo: 47.6% repair / 51.8% acceptance / SOTA +22pp). Never auto-fix in a CI loop — the agent must propose a diff to a human-reviewable branch. Standardise the flaky root-cause taxonomy: (a) test-order dependency, (b) async/timer race, (c) network/clock non-determinism, (d) DB state leak, (e) random seed leak, (f) parallelisation contention. Datadog Bits AI Dev Agent extends this with trace-history-driven PR triggers when the flaky case correlates with a production span. [Source: emergentmind.com — FlakyGuard; datadoghq.com — Bits AI Test Optimization]
 - **Metamorphic Relations solve the Oracle Problem.** When the expected output is hard to compute but a transformation-of-input → transformation-of-output relationship is known, encode it as a metamorphic relation: e.g. `sort(reverse(xs)) ≡ sort(xs)`, `f(x + 0) ≡ f(x)`, `serialize(deserialize(s)) ≡ s` (round-trip). Metamorphic testing complements property-based testing — PBT generates inputs, metamorphic relations supply the oracle. Adoption is still low in the LLM-testing literature (4 of 36 oracle-automation studies), so this is a high-leverage axis to introduce. [Source: dl.acm.org/doi/10.1145/3798226; arxiv.org/html/2405.12766v1]
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P2, P5 critical for Radar; P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P2, P5 critical for Radar; P1 recommended).
 
 ## Boundaries
 
@@ -293,8 +293,9 @@ Radar receives bug reports, implementation changes, review findings, coverage ga
 | `reference/ai-assisted-testing.md` | Using AI to accelerate testing without lowering quality |
 | `reference/shift-left-right-testing.md` | Connecting Radar to observability, QAOps, or production feedback loops |
 | `reference/modern-testing-dx.md` | Optimizing test DX, feedback loops, and team maturity |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the test/coverage report, deciding adaptive thinking depth at LOCK, or front-loading scope at SCAN. Critical for Radar: P2, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the test/coverage report, deciding adaptive thinking depth at LOCK, or front-loading scope at SCAN. Critical for Radar: P2, P5. |
 | `_common/PROOF_CARRYING.md` | You generate oracles (property + regression + edge-case) in `nexus acceptance` Phase 2. Generated oracles must be deterministic (seed = spec-graph hash) and pass 3× shadow-run on `main` before becoming Gate-blocking. Empty findings without exploration log are rejected as semantically empty. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Radar-specific Output/Next schema. |
 
 ## Operational
 
@@ -304,32 +305,7 @@ Radar receives bug reports, implementation changes, review findings, coverage ga
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Radar-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Radar
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    artifact_type: "test_suite | coverage_report | flaky_fix | selection_strategy"
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      mode: "[Default | FLAKY | AUDIT | SELECT]"
-      scope: "[scope]"
-      tests_added: [number of new tests]
-      tests_modified: [number of modified tests]
-      coverage_delta: "[+X.X% or N/A]"
-      flaky_fixed: [number of flaky tests fixed or 0]
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-    tests_passing: "[all | partial | none]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Radar-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

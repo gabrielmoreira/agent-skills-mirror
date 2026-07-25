@@ -4,8 +4,8 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { test } from "node:test";
 import {
-  CORE_PRESET_IDS,
   LIBRARY_LUT_OFFLINE_CODE,
+  RESOLVABLE_PRESET_IDS,
   freezeLibraryLut,
   matchColorLook,
   readBundledLutIndex,
@@ -35,6 +35,18 @@ test("high contrast punchy resolves to deep-contrast", () => {
   assert.equal(matchColorLook("high contrast punchy").preset, "deep-contrast");
 });
 
+test("removed preset phrases resolve to surviving looks", () => {
+  assert.equal(matchColorLook("natural lift").preset, "soft-boost");
+  assert.equal(matchColorLook("fresh pop").preset, "bright-pop");
+  assert.equal(matchColorLook("warm clean").preset, "warm-daylight");
+  assert.equal(matchColorLook("cool clean").preset, "clean-studio");
+});
+
+test("complete-filter intent aliases resolve deterministically", () => {
+  assert.equal(matchColorLook("analog tape").preset, "vhs-playback");
+  assert.equal(matchColorLook("creator video").preset, "creator-camcorder");
+});
+
 test("library look freezes a validated cube from params offline (--local-only)", async () => {
   const projectDir = mkdtempSync(join(tmpdir(), "mu-lut-provider-"));
   try {
@@ -53,9 +65,13 @@ test("library look freezes a validated cube from params offline (--local-only)",
   }
 });
 
-test("preset IDs stay in sync with packages/core/src/colorGrading.ts", () => {
-  assert.deepEqual(CORE_PRESET_IDS, corePresetIdsFromSource());
-  for (const id of CORE_PRESET_IDS) {
+test("every resolver preset exists in packages/core/src/colorGrading.ts", () => {
+  const corePresetIds = corePresetIdsFromSource();
+  assert.deepEqual(
+    RESOLVABLE_PRESET_IDS.filter((id) => !corePresetIds.includes(id)),
+    [],
+  );
+  for (const id of RESOLVABLE_PRESET_IDS) {
     const match = matchColorLook(id);
     assert.equal(match.kind, "preset");
     assert.equal(match.preset, id);

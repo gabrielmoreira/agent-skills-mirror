@@ -1801,7 +1801,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 - aider: Aider AI编辑器
 
 特别说明：
-- rules 模板会自动包含当前 mcp 版本号信息（版本号：2.24.0），便于后续维护和版本追踪
+- rules 模板会自动包含当前 mcp 版本号信息（版本号：2.24.1），便于后续维护和版本追踪
 - 下载 rules 模板时，如果项目中已存在 README.md 文件，系统会自动保护该文件不被覆盖（除非设置 overwrite=true）
 
 #### 参数
@@ -1858,7 +1858,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 文档名：cloudrun-development 文档介绍：CloudBase Run backend development rules (Function mode/Container mode). Use this skill when deploying backend services that require long connections, multi-language support, custom environments, or AI agent development.
 文档名：data-model-creation 文档介绍："[Deprecated] Optional advanced tool for complex data modeling. For simple MySQL table creation, use relational-database-tool directly; for PostgreSQL / CloudBase PG schema work, use postgresql-development. New environments should use PostgreSQL DDL via queryPgDatabase/managePgDatabase — see postgresql-development skill instead."
 文档名：http-api 文档介绍：CloudBase official HTTP API client guide. This skill should be used when backends, scripts, or non-SDK clients must call CloudBase platform APIs over raw HTTP instead of using a platform SDK or MCP management tool.
-文档名：miniprogram-development 文档介绍：WeChat Mini Program development skill for building, debugging, previewing, testing, publishing, and optimizing mini program projects. This skill should be used when users ask to create, develop, modify, debug, preview, test, deploy, publish, launch, review, or optimize WeChat Mini Programs, mini program pages, components, `tabBar`, routing, navigation, icon assets, project structure, project configuration, `project.config.json`, `appid` setup, device preview, real-device validation, WeChat Developer Tools workflows, `miniprogram-ci` preview/upload flows, or mini program release processes. It should also be used when users explicitly mention CloudBase, `wx.cloud`, Tencent CloudBase, 腾讯云开发, or 云开发 in a mini program project.
+文档名：miniprogram-development 文档介绍：WeChat Mini Program development skill for building, debugging, previewing, testing, publishing, and optimizing mini program projects. This skill should be used when users ask to create, develop, modify, debug, preview, test, deploy, publish, launch, review, or optimize WeChat Mini Programs, mini program pages, components, `tabBar`, routing, navigation, icon assets, project structure, project configuration, `project.config.json`, `appid` setup, device preview, real-device validation, WeChat Developer Tools Nightly workflows, `wechatide` CLI, WeChat IDE Skills/MCP, console/network debugging, `miniprogram-ci` preview/upload flows, or mini program release processes. It should also be used when users explicitly mention CloudBase, `wx.cloud`, Tencent CloudBase, 腾讯云开发, 微信云开发, or 云开发 in a mini program project.
 文档名：no-sql-web-sdk 文档介绍：Use CloudBase document database Web SDK only for confirmed NoSQL collection work. Query, create, update, and delete document data; if the task mentions PostgreSQL / CloudBase PG / app.rdb(), route to postgresql-development instead.
 文档名：no-sql-wx-mp-sdk 文档介绍：Use CloudBase document database WeChat MiniProgram SDK to query, create, update, and delete data. Supports complex queries, pagination, aggregation, and geolocation queries.
 文档名：ops-inspector 文档介绍：AIOps-style one-click inspection skill for CloudBase resources. Use this skill when users need to diagnose errors, check resource health, inspect logs, or run a comprehensive health check across cloud functions, CloudRun services, databases, and other CloudBase resources.
@@ -1870,12 +1870,12 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 文档名：web-development 文档介绍：Use when users need to implement, integrate, debug, build, deploy, or validate a Web frontend after the product direction is already clear, especially for React, Vue, Vite, browser flows, or CloudBase Web integration.
 
       OpenAPI 文档 (openapi) 查询只需要传 mode="openapi" 和 apiName，不要传 action；action 仅用于 mode="docs"。当前支持 7 个 API 文档，分别是：
-      API名：functions API介绍：Cloud Functions API - 云函数 HTTP API
-API名：nosql API介绍：NoSQL RESTful API - 文档型数据库 HTTP API
-API名：storage API介绍：Storage API - 云存储 HTTP API
-API名：mysqldb API介绍：关系型数据库 RESTful API (MySQL/PostgreSQL) - 云开发关系型数据库 HTTP API
-API名：cloudrun API介绍：CloudRun API - 云托管服务 HTTP API
+      API名：mysqldb API介绍：关系型数据库 RESTful API (MySQL/PostgreSQL) - 云开发关系型数据库 HTTP API
+API名：functions API介绍：Cloud Functions API - 云函数 HTTP API
 API名：auth API介绍：Authentication API - 身份认证 HTTP API
+API名：cloudrun API介绍：CloudRun API - 云托管服务 HTTP API
+API名：storage API介绍：Storage API - 云存储 HTTP API
+API名：nosql API介绍：NoSQL RESTful API - 文档型数据库 HTTP API
 API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
 
 #### 参数
@@ -1896,7 +1896,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
     {
       name: "apiName",
       type: "string",
-      description: `mode=openapi 时指定。API 名称。 可填写的值: "functions", "nosql", "storage", "mysqldb", "cloudrun", "auth", "ai_model"`,
+      description: `mode=openapi 时指定。API 名称。 可填写的值: "mysqldb", "functions", "auth", "cloudrun", "storage", "nosql", "ai_model"`,
     },
     {
       name: "action",
@@ -2346,7 +2346,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
 ---
 
 ### `queryGateway`
-CloudBase 网关统一只读入口。通过 action 查询网关域名、访问入口和目标暴露情况。
+CloudBase 网关统一只读入口（Domain/Route 模型）。通过 listRoutes / getRoute / listCustomDomains 查询域名与路由；主键为 Domain + Path，上游类型为 SCF / WEB_SCF / CBR / STATIC_STORE / LH。
 
 #### 参数
 
@@ -2356,22 +2356,32 @@ CloudBase 网关统一只读入口。通过 action 查询网关域名、访问�
       name: "action",
       type: "string",
       required: true,
-      description: `只读操作类型，例如 getAccess、listDomains 可填写的值: "getAccess", "listDomains", "listRoutes", "getRoute", "listCustomDomains"`,
+      description: `只读操作类型：listRoutes、getRoute、listCustomDomains 可填写的值: "listRoutes", "getRoute", "listCustomDomains"`,
     },
     {
       name: "targetType",
       type: "string",
-      description: `目标资源类型。当前支持 function，后续可扩展 可填写的值: "function"`,
+      description: `目标资源类型。当前支持 function 可填写的值: "function"`,
     },
     {
       name: "targetName",
       type: "string",
-      description: `目标资源名称。getAccess 时必填`,
+      description: `上游资源名称。getRoute 时可按云函数名过滤`,
     },
     {
       name: "routeId",
       type: "string",
       description: `路由 ID。getRoute 时可选`,
+    },
+    {
+      name: "path",
+      type: "string",
+      description: `路由路径。getRoute / listRoutes 过滤时可选`,
+    },
+    {
+      name: "domain",
+      type: "string",
+      description: `域名。getRoute / listRoutes 过滤时可选`,
     }
   ]}
 />
@@ -2379,7 +2389,7 @@ CloudBase 网关统一只读入口。通过 action 查询网关域名、访问�
 ---
 
 ### `manageGateway`
-CloudBase 网关统一写入口。通过 action 创建目标访问入口，后续承接更通用的网关配置能力。为已存在的 HTTP 云函数补默认域名访问时，通常使用 createAccess 并提供 targetType="function"、targetName、type="HTTP" 与期望 path。注意 createAccess 只创建网关入口，不会自动修改函数资源权限。⚠️ 如需绑定带 SSL 证书的自定义域名供公网 HTTPS 访问，使用 action="bindCustomDomain"（需要 domain 和 certificateId 参数）；如需配置 CORS/安全域名（无证书），请使用 envDomainManagement 工具。
+CloudBase 网关统一写入口（Domain/Route 模型）。为已存在的 HTTP 云函数补默认域名访问时，使用 createRoute，并提供 targetType="function"、targetName、type="HTTP"（映射 WEB_SCF）与期望 path；Event 函数传 type="Event"（映射 SCF）。未传 domain 时自动解析 IsDefault 默认域名。注意 createRoute 只创建网关入口，不会自动修改函数资源权限。更新鉴权用 updateRoute；删除用 deleteRoute（Domain+Path）。⚠️ 绑定带 SSL 证书的自定义域名用 bindCustomDomain；CORS/安全域名请使用 envDomainManagement。
 
 #### 参数
 
@@ -2389,17 +2399,17 @@ CloudBase 网关统一写入口。通过 action 创建目标访问入口，后�
       name: "action",
       type: "string",
       required: true,
-      description: `写操作类型，例如 createAccess。为已有函数补默认域名访问入口时使用 createAccess；若 action=createAccess 且 targetType=function，必须显式提供 type。 可填写的值: "createAccess", "createRoute", "updateRoute", "deleteRoute", "bindCustomDomain", "deleteCustomDomain", "deleteAccess", "updatePathAuth"`,
+      description: `写操作类型。为已有函数补默认域名访问入口时使用 createRoute；函数场景必须显式提供 type（HTTP→WEB_SCF，Event→SCF）或 route.upstreamResourceType。 可填写的值: "createRoute", "updateRoute", "deleteRoute", "bindCustomDomain", "deleteCustomDomain"`,
     },
     {
       name: "targetType",
       type: "string",
-      description: `目标资源类型。当前支持 function，后续可扩展 可填写的值: "function"`,
+      description: `目标资源类型。当前支持 function 可填写的值: "function"`,
     },
     {
       name: "targetName",
       type: "string",
-      description: `目标资源名称。createAccess 到云函数时填写函数名`,
+      description: `目标资源名称。createRoute 到云函数时填写函数名`,
     },
     {
       name: "path",
@@ -2409,33 +2419,30 @@ CloudBase 网关统一写入口。通过 action 创建目标访问入口，后�
     {
       name: "type",
       type: "string",
-      description: `目标函数的运行时类型，不是接入协议。createAccess 到已创建的 HTTP 云函数时传 HTTP；给 Event 函数补网关访问时传 Event 或省略。省略会默认按 Event 路由处理，可能让 HTTP 云函数访问后返回 FUNCTION_PARAM_INVALID。 可填写的值: "Event", "HTTP"`,
+      description: `目标函数运行时类型，不是接入协议。HTTP 云函数传 HTTP（UpstreamResourceType=WEB_SCF）；Event 函数传 Event（SCF）。误标会导致 FUNCTION_PARAM_INVALID 或网关错误。函数路由场景必须显式提供 type 或 route.upstreamResourceType。 可填写的值: "Event", "HTTP"`,
     },
     {
       name: "auth",
       type: "boolean",
-      description: `是否开启网关路径鉴权。若要走默认域名做匿名或浏览器访问，通常设为 false；该开关仅控制网关入口本身，不会修改函数资源权限，仍需检查并按需调整函数安全规则。`,
+      description: `是否开启网关路径鉴权（EnableAuth）。若要走默认域名做匿名或浏览器访问，通常设为 false；该开关仅控制网关入口本身，不会修改函数资源权限。`,
     },
     {
       name: "route",
       type: "object",
-      description: `HTTP 路由配置对象`,
+      description: `HTTP 路由配置。upstreamResourceType 可选 SCF / WEB_SCF / CBR / STATIC_STORE / LH`,
       children: [
-        {
-          name: "routeId",
-          type: "string",
-        },
         {
           name: "path",
           type: "string",
         },
         {
-          name: "serviceType",
+          name: "serviceName",
           type: "string",
         },
         {
-          name: "serviceName",
+          name: "upstreamResourceType",
           type: "string",
+          description: ` 可填写的值: "SCF", "WEB_SCF", "CBR", "STATIC_STORE", "LH"`,
         },
         {
           name: "auth",
@@ -2446,22 +2453,12 @@ CloudBase 网关统一写入口。通过 action 创建目标访问入口，后�
     {
       name: "domain",
       type: "string",
-      description: `自定义域名`,
+      description: `域名。省略时自动使用环境 IsDefault 默认 HTTP 域名；自定义域名场景请显式传入`,
     },
     {
       name: "certificateId",
       type: "string",
-      description: `证书 ID`,
-    },
-    {
-      name: "accessName",
-      type: "string",
-      description: `访问入口名称，保留字段`,
-    },
-    {
-      name: "accessId",
-      type: "string",
-      description: `访问入口 ID。deleteAccess 时可直接传入，避免参数歧义`,
+      description: `证书 ID。bindCustomDomain 时必填`,
     }
   ]}
 />

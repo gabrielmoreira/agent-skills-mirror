@@ -10,7 +10,10 @@ Agent Skills package for researching any topic across Reddit, X, YouTube, and we
 - `docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`)
 - `CONCEPTS.md` — shared domain vocabulary (Skill, Engine, Harness, Beta channel) — relevant when orienting to the codebase or discussing project terminology
 - `CONFIGURATION.md` — user-facing knobs (env vars, flags, per-host install patterns); keep in sync per the rules below
-- `CHANGELOG.md` — structured release history (launch copy lives in GitHub Releases)
+- `CHANGELOG.md` — structured release history built by towncrier at release time (launch copy lives in GitHub Releases)
+- `changelog.d/` — per-PR news fragments; feature PRs write here, never edit `CHANGELOG.md` directly
+- `CONTRIBUTING.md` — setup, fragments, and release notes for humans and agents (towncrier is release-only)
+- `.github/scripts/prepare_release.py` — lockstep version bump + towncrier build (release PRs only)
 - `HERMES_SETUP.md` — install instructions for the Hermes harness specifically
 
 ## Orientation
@@ -32,9 +35,23 @@ uv run pytest                              # full suite
 uv run pytest tests/test_dedupe_v3.py      # single file
 uv run pytest tests/test_dedupe_v3.py -k some_case   # single case
 uv run pytest --cov                        # with coverage (skips lib/vendor/)
+
+# Release prep (maintainers / release automation — not feature PRs):
+# Prefer GitHub Actions → "Prepare release". Local equivalent:
+uv run python .github/scripts/prepare_release.py --bump patch   # or --version X.Y.Z
 ```
 
 Python 3.12+ required. Use `uv` for the env; the venv lives at `.venv/`.
+
+## Changelog and releases (agents)
+
+Agents open most PRs. Follow this so `CHANGELOG.md` stops conflicting and versions stay lockstep:
+
+1. **Feature/fix PRs:** add `changelog.d/<pr-or-issue>.<type>.md` (`added` / `changed` / `fixed` / `removed` / `deprecated` / `security`) when the change belongs in the next release notes. See `changelog.d/README.md` and `CONTRIBUTING.md`. Fill the PR template’s Summary, Agent disclosure, and Relationship sections.
+2. **Never** edit `CHANGELOG.md` in a feature PR. **Never** bump version strings in `pyproject.toml`, `SKILL.md`, plugin/marketplace JSON, or `uv.lock` outside a release PR. CI (`changelog-guard.yml`) enforces this.
+3. **Nothing for release notes:** omit the fragment, check Skip changelog in the template, and add the `skip-changelog` label.
+4. **Cutting a release:** run Actions → **Prepare release** (patch/minor/major). That opens a `chore(release): bump version to X.Y.Z` PR which runs towncrier and bumps every lockstep surface. Merging to `main` triggers **Tag release**, which pushes `vX.Y.Z` and existing `release.yml` publishes `.skill` / `.mcpb` artifacts. Do not hand-edit ten version files. Contributors do not need a global towncrier install — `uv sync --group dev` (or the Action) provides it for release prep only.
+5. Lockstep gate remains `tests/test_plugin_contract.py::test_versions_match_across_manifests`. Workflow contract: `tests/test_changelog_workflow.py`.
 
 ## Rules
 - `lib/__init__.py` must be bare package marker (comment only, NO eager imports)

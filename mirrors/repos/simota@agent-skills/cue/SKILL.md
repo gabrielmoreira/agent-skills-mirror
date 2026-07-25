@@ -59,7 +59,7 @@ Route elsewhere when the task is primarily:
 - Include at least one CTA with placement rationale.
 - Provide narration in the target language with tone/pacing guidance.
 - Mark screen recording segments explicitly for Director handoff.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Cue; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Cue; P2, P1 recommended).
 
 ## Boundaries
 
@@ -202,7 +202,8 @@ Parse the first token of user input.
 | `reference/shorts-format.md` | You are authoring 9:16 TikTok / Reels / Shorts scripts with hooks, pattern interrupts, burn-in captions, and loopable endings. |
 | `reference/captions-authoring.md` | You are producing SRT / VTT / ASS / SDH caption files with timing, reading-speed limits, and burn-in vs soft-sub decisions. |
 | `reference/narration-localize.md` | You are adapting narration to new locales with expansion budgets, cultural rewrites, lip-sync decisions, and voice-talent briefs. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the script, deciding adaptive thinking depth at story structure, or front-loading video type/audience/duration at FRAME. Critical for Cue: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the script, deciding adaptive thinking depth at story structure, or front-loading video type/audience/duration at FRAME. Critical for Cue: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Cue-specific Output/Next schema. |
 
 ## Operational
 
@@ -213,27 +214,7 @@ Parse the first token of user input.
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Cue-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Cue
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    video_type: "[product-demo | explainer | tutorial | onboarding | social | comparison]"
-    parameters:
-      duration: "[target seconds]"
-      scene_count: [N]
-      word_count: [N]
-      platform: "[YouTube | Twitter | Product Hunt | landing | general]"
-      template: "[Problem-Solution | AIDA | Before-After | Step-by-Step | Hook-Payoff]"
-    cta: "[CTA description and placement]"
-  Next: Director | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Cue-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

@@ -12,6 +12,7 @@ This file contains Copilot-specific additions. See AGENTS.md for the shared cros
 Before suggesting a pull request:
 
 - Confirm that pytest passes.
+- For changes that belong in the next release notes, add a `changelog.d/<n>.<type>.md` fragment (do not edit `CHANGELOG.md` or bump version manifests). See `CONTRIBUTING.md` / `AGENTS.md` § Changelog and releases and fill the PR template’s Agent disclosure + Relationship sections.
 - If changes were made anywhere under skills/last30days/, confirm the install copy has been refreshed with:
 
 npx skills add . -g -y

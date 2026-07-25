@@ -1,6 +1,6 @@
 # Support the Open Source Projects We Depend On
 
-Scientific Agent Skills is built on the shoulders of giants. The 148 skills in this repository leverage dozens of incredible open source projects created and maintained by dedicated developers and research communities around the world.
+Scientific Agent Skills is built on the shoulders of giants. The 150 skills in this repository leverage dozens of incredible open source projects created and maintained by dedicated developers and research communities around the world.
 
 **If you find value in these skills, please consider supporting the underlying open source projects that make them possible.**
 
@@ -31,6 +31,8 @@ Scientific Agent Skills is built on the shoulders of giants. The 148 skills in t
 | **scikit-bio** | Bioinformatics library | [GitHub](https://github.com/scikit-bio/scikit-bio) |
 | **gget** | Gene and transcript info retrieval | [GitHub](https://github.com/pachterlab/gget) |
 | **deepTools** | Tools for deep-sequencing data | [GitHub](https://github.com/deeptools/deepTools) |
+| **geniml** | Machine learning for genomic interval sets | [GitHub](https://github.com/databio/geniml) |
+| **Gtars** | Rust/Python genomic interval toolkit | [GitHub](https://github.com/databio/gtars) |
 | **ETE Toolkit** | Phylogenetic tree analysis | [GitHub](https://github.com/etetoolkit/ete) |
 
 ### Cheminformatics & Drug Discovery
@@ -63,10 +65,12 @@ Scientific Agent Skills is built on the shoulders of giants. The 148 skills in t
 | **PyMC** | Probabilistic programming | [GitHub](https://github.com/pymc-devs/pymc) - [Donate](https://numfocus.org/donate-to-pymc) |
 | **SHAP** | Model interpretability | [GitHub](https://github.com/shap/shap) |
 | **Stable Baselines3** | Reinforcement learning | [GitHub](https://github.com/DLR-RM/stable-baselines3) |
+| **PufferLib** | High-performance reinforcement learning environments and training | [GitHub](https://github.com/PufferAI/PufferLib) |
 | **scikit-survival** | Survival analysis | [GitHub](https://github.com/sebp/scikit-survival) |
 | **aeon** | Time series ML toolkit | [GitHub](https://github.com/aeon-toolkit/aeon) |
 | **PyMOO** | Multi-objective optimization | [GitHub](https://github.com/anyoptimization/pymoo) |
 | **UMAP** | Dimensionality reduction | [GitHub](https://github.com/lmcinnes/umap) |
+| **HypoGeniC** | LLM-assisted candidate textual hypothesis generation from labeled data | [GitHub](https://github.com/ChicagoHAI/hypothesis-generation) |
 
 ### Data Science & Visualization
 
@@ -90,6 +94,7 @@ Scientific Agent Skills is built on the shoulders of giants. The 148 skills in t
 | **pydicom** | DICOM file handling | [GitHub](https://github.com/pydicom/pydicom) |
 | **histolab** | Digital pathology preprocessing | [GitHub](https://github.com/histolab/histolab) |
 | **PathML** | Pathology ML toolkit | [GitHub](https://github.com/Dana-Farber-AIOS/pathml) |
+| **OMERO.py** | Python client for the OMERO microscopy data platform | [GitHub](https://github.com/ome/omero-py) |
 
 ### Healthcare & Clinical
 
@@ -119,8 +124,9 @@ Scientific Agent Skills is built on the shoulders of giants. The 148 skills in t
 
 | Project | Description | Links |
 |---------|-------------|-------|
-| **SimPy** | Discrete-event simulation | [GitHub](https://github.com/TeamSim/SimPy) |
+| **SimPy** | Discrete-event simulation | [GitLab](https://gitlab.com/team-simpy/simpy/) |
 | **FluidSim** | CFD framework | [GitHub](https://github.com/fluiddyn/fluidsim) |
+| **FluidFFT** | FFT framework and plugins used by FluidSim | [GitHub](https://github.com/fluiddyn/fluidfft) |
 
 ### Laboratory & Automation
 
@@ -140,6 +146,12 @@ Scientific Agent Skills is built on the shoulders of giants. The 148 skills in t
 |---------|-------------|-------|
 | **Zarr** | Chunked array storage | [GitHub](https://github.com/zarr-developers/zarr-python) |
 | **FlowIO** | Flow cytometry I/O | [GitHub](https://github.com/whitews/FlowIO) |
+
+### Scientific Communication & Documents
+
+| Project | Description | Links |
+|---------|-------------|-------|
+| **python-pptx** | Create and inspect editable PowerPoint `.pptx` files | [GitHub](https://github.com/scanny/python-pptx) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 27 followed patterns, 204 file(s) materialized.
+Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 29 followed patterns, 206 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 27 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 27 |
-| Files         | 204 |
+| Followed pats | 29 |
+| Files         | 206 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,6 +72,8 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 27 followed patterns
 - `docs/references/lifecycle/lifecycle-decision-guide.md`
 - `v2-refactor-temp/docs/breaking-changes/README.md`
 - `README.md`
+- `packages/ui/docs/design-token-system.md`
+- `packages/ui/docs/variable-catalog.md`
 - `docs/sponsor.md`
 - `docs/guides/branching-strategy.md`
 - `CONTRIBUTING.md`
@@ -285,10 +287,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 198 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
 | 199 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
 | 200 | → | [`docs/sponsor.md`](docs/sponsor.md) |
-| 201 | → | [`README.md`](README.md) |
-| 202 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
-| 203 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
-| 204 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
+| 201 | → | [`packages/ui/docs/design-token-system.md`](packages/ui/docs/design-token-system.md) |
+| 202 | → | [`packages/ui/docs/variable-catalog.md`](packages/ui/docs/variable-catalog.md) |
+| 203 | → | [`README.md`](README.md) |
+| 204 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
+| 205 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
+| 206 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
 
 ---
 

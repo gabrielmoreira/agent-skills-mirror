@@ -35,7 +35,7 @@ I synthesize what people are actually saying right now across social, news, and 
 
 Auto setup gives you the core sources free in about 30 seconds:
 - X/Twitter - reads your browser cookies to authenticate (read live each run, never saved to disk). I check Chrome first (fastest - a one-time macOS Keychain prompt may appear; click Always Allow), then Firefox and Safari.
-- Reddit with comments - public JSON, no API key needed.
+- Reddit with comments - free keyless discovery (RSS + shreddit), no API key needed.
 - YouTube search + transcripts - installs yt-dlp (open source, 190K+ GitHub stars).
 - Digg - trending news, GitHub stars, and pipeline feeds - installs the free, keyless Digg CLI.
 - arXiv (papers) + Techmeme (tech-news) - install free, keyless Printing Press CLIs and run on any topic (arXiv is relevance + recency gated to research topics).

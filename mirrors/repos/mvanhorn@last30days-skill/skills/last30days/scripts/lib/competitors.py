@@ -19,6 +19,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from . import dates, grounding, log
 from .resolve import _has_backend
 
+# Peer cap vs total vs-entity cap (main + peers).
+COMPETITORS_MIN = 1
+COMPETITORS_MAX = 6
+COMPETITORS_DEFAULT = 2
+COMPARISON_ENTITY_MAX = COMPETITORS_MAX + 1
+
 # A "brand-shaped" token starts with uppercase OR is camelCase with an
 # uppercase letter later. Catches "Anthropic", "OpenAI", "xAI", "iPhone",
 # "eBay", "Hugging", "Face".

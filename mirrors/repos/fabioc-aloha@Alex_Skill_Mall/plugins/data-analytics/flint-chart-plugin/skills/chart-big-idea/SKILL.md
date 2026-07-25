@@ -1,0 +1,206 @@
+---
+name: chart-big-idea
+description: "Distill the one-sentence Big Idea, story arc, audience, and style stance for a chart BEFORE picking a chart type. Reads the surrounding docs / prose / ticket for an existing Big Idea first, then helps the user articulate one via a 3-question elicitation ladder if none is found. Asks whether the user wants a TRADITIONAL (safe) or INNOVATIVE (higher-impact, higher-risk) treatment. Use before invoking the flint-chart skill or the /render-chart prompt whenever the user's ask is 'chart this', 'visualize', 'make a chart', 'show the data', or when framing is unclear."
+lastReviewed: 2026-07-24
+---
+
+# Chart Big Idea
+
+Frame the chart before you pick it. A chart is a rhetorical act — it makes an argument about the data. If you can't state the argument in one sentence, the chart type will be wrong no matter how it's rendered.
+
+This skill produces a **Chart Brief** — a short structured record of Big Idea + story arc + audience + style stance — which then feeds the `flint-chart` skill's §0.2 selection table.
+
+## When to invoke
+
+Invoke this skill BEFORE `flint-chart` selection when any of these fire:
+
+- User says "chart this", "visualize this", "make a chart", "show me the data"
+- User attaches a dataset without a stated question
+- User says "which chart should I use for..." and gives a data description
+- The `/render-chart` prompt fires — this skill is its Step 0
+- Existing chart is being redesigned ("this doesn't land — can we improve it?")
+
+Do NOT invoke when:
+
+- User provides a fully-formed spec asking to render it verbatim
+- User is iterating on style/color/spacing of an already-chosen chart type
+- The chart is diagnostic-only (e.g. exploratory data profiling); framing overhead isn't earned
+
+## Step 0: Read the surrounding context first (before asking anything)
+
+Before you ask the user for the Big Idea, look for it in the material they've already produced. Often the Big Idea is written in prose next to where the chart will live — you just have to find it and lift it. Interrogating the user for a claim they already wrote is wasteful and slightly insulting.
+
+**Where to look, in order:**
+
+| Source | What to grep for | Example |
+|---|---|---|
+| The paragraph immediately before/after the chart's insertion point | Claim-shaped sentences ("...shows that...", "...demonstrates...", "...surprisingly...", "...contrary to...", "...three of the last five...") | Paper section says "Skeptics span the full Likert range" — that's a Big Idea seed |
+| The doc / report / notebook section heading the chart sits under | The heading often IS the topic; the sentence beneath is often the Big Idea | Section titled "Clusters differ in shape, not just center" |
+| The PR description, ticket, issue, or commit message that spawned the chart request | The "why" that justified opening the ticket | "Need to show finance the West is pulling away" |
+| Any existing chart caption, figure title, `alt=` text, or prior version of this chart | Prior authors' framing you can inherit or sharpen | Old caption: "BI by cluster with SD bars" (topic — needs upgrade) |
+| The user's own recent messages in this conversation | Adjectives, verbs, and framings they used to describe the finding | User said "the Skeptics story is vivid" — "vivid" is the tell |
+| README / abstract / one-pager / project overview | Confirms the audience the whole document is targeting | Fixes Step 3 audience-read without a separate question |
+| Adjacent charts in the same doc | Their captions establish the narrative rhythm this chart plugs into | Fig06 caption sets up the comparison; fig07 caption should extend it |
+
+**What to do with what you find:**
+
+- **Found a claim-shaped sentence**: draft the Big Idea from it, show it to the user in Step 1 as *"Here's what I think you're arguing — confirm or correct?"*, let them fix in one hop. Do not silently rewrite the user's own words — if their prose already states the Big Idea, quote it verbatim in the Brief and cite the source.
+- **Found only a topic**: skip to Step 1 elicitation with the topic as your anchor.
+- **Found nothing** (cold ask, no doc, no ticket): go directly to Step 1 elicitation with no anchor.
+- **Found conflicting framings** (e.g. ticket says one thing, prose says another): surface the conflict to the user before drafting — "the ticket asks for X but the section prose argues Y — which is the chart supposed to land?"
+
+**Skip Step 0 when**: the user pasted a Big Idea directly ("Chart this: X grew 3× faster than Y"). Context-gathering isn't needed when the framing arrived on the request.
+
+**Time budget**: Step 0 should take under a minute. If you're spelunking through 20 files trying to reconstruct intent, stop and ask the user — the doc genuinely doesn't have it.
+
+## Step 1: The Big Idea (one sentence)
+
+Adapted from Cole Nussbaumer Knaflic's *Storytelling with Data* framing. Write ONE sentence that:
+
+1. **States a unique point of view** — not a topic. "Adoption is up" beats "Q3 adoption metrics".
+2. **Conveys what's at stake** — why the reader should care. "…so we need to reallocate the training budget" beats "…which is notable".
+3. **Is a complete sentence** — subject + verb + object. If it reads like a chart title, tighten it into a claim.
+
+**Template**: *"[Subject] [did/is/shows] [specific finding], [therefore/so-what implication]."*
+
+**Examples:**
+
+| Weak (topic) | Strong (Big Idea) |
+|---|---|
+| "Sales by region" | "The West region grew 3× faster than the rest of the company last quarter, so the FY26 hiring plan should shift 15 headcount west." |
+| "AI readiness scores" | "One-third of respondents are Skeptics with BI below the Likert midpoint — training programs that treat them the same as Enthusiasts will underperform." |
+| "Portfolio risk over time" | "Portfolio VaR crossed the policy ceiling in three of the last five quarters — the risk-appetite statement needs a formal review." |
+
+### If the Big Idea is still not clear after Step 0 — help the user find it
+
+Run this 3-question elicitation ladder. Ask **one question at a time**; stop as soon as a Big Idea sentence writes itself. Do not batch the questions — batching is an interrogation, not a conversation.
+
+1. **"What surprised you in this data?"** — the surprise is almost always the Big Idea. If nothing surprised, the chart may not have a claim to make (in which case, ask whether it's decorative / reference-only).
+2. **"What decision should change if this chart lands?"** — gets the "so-what" clause. If no decision changes, the chart is informational; that's fine, but the Big Idea shape shifts from persuasive to descriptive.
+3. **"If a colleague read only the chart title and moved on, what one sentence do you want stuck in their head?"** — the Big Idea reframed as a headline the user can imagine writing. This one usually unlocks users who couldn't answer #1 or #2 abstractly.
+
+**If all three come back vague** ("just show the data", "I don't know, you pick"): propose a Big Idea *yourself* from Step 0 context + what the data actually shows, mark it clearly as `**Proposal**:`, and let the user confirm or edit. Do not stall waiting for a perfect answer. A specific proposal the user can react to is faster than an open-ended prompt.
+
+**Anti-pattern**: running the whole ladder in one message ("What surprised you? What decision changes? What headline?"). One question, wait, listen, next.
+
+## Step 2: Story arc
+
+Once the Big Idea is written, classify the story arc. This narrows chart families before `flint-chart` §0.2 fires:
+
+| Story arc | What it argues | Chart-family shortlist |
+|---|---|---|
+| **Comparison** | A > B, A ≠ B, ranking | Bar, dot plot, lollipop, bullet |
+| **Change over time** | X trended up/down/inflected | Line, area, slope, small-multiple line |
+| **Composition** | X is made up of parts | Stacked bar, treemap, waffle, donut (rarely pie) |
+| **Distribution** | X is spread this way | Histogram, box, violin, strip, jittered dot, density |
+| **Relationship** | X co-varies with Y | Scatter, bubble, connected scatter, hexbin |
+| **Deviation** | X differs from a benchmark / expectation | Diverging bar, dumbbell, bullet, error-bar |
+| **Flow** | X moves from A to B | Sankey, chord, alluvial |
+| **Anomaly** | X is unusual | Annotated line/scatter with the anomaly highlighted |
+| **Ranking-with-context** | X's position vs peers *and* distribution shape | Lollipop on distribution, dot plot with reference bands |
+
+A single chart usually leans on ONE arc. If the Big Idea needs two arcs (e.g. "compare + show distribution"), that's the hybrid signal — flag it for Step 4.
+
+## Step 3: Audience + stakes
+
+Three quick reads. Do not turn this into an interview:
+
+| Read | Options | Impact on chart choice |
+|---|---|---|
+| **Reading time** | Glance (5s) / Read (30s) / Study (2min+) | Glance → traditional + one message. Study → can afford complexity. |
+| **Statistical fluency** | General / Domain-fluent / Technical | Fluent audiences can read box/violin/parallel coords; general audiences cannot. |
+| **Stakes** | Informational / Persuasive / Decision-critical | Decision-critical earns a title-sentence overlay and annotation; informational may not. |
+
+If the user hasn't told you, infer defaults: **Glance / General / Persuasive** for external audiences, **Read / Domain-fluent / Decision-critical** for internal analytics work.
+
+## Step 4: Style stance — TRADITIONAL vs INNOVATIVE
+
+**Ask the user explicitly** (unless they already stated a preference):
+
+> *"Do you want the traditional treatment — a familiar chart everyone will read at a glance — or an innovative treatment that shows more of the story but costs the reader a few seconds of study?"*
+
+Both are valid design choices. The tradeoff:
+
+| Dimension | TRADITIONAL (safe) | INNOVATIVE (higher-impact, higher-risk) |
+|---|---|---|
+| **Legibility** | Universal — no explanation needed | Needs a caption, sometimes a legend walkthrough |
+| **Information density** | One dimension per chart | Multiple dimensions layered |
+| **Risk of misreading** | Low | Moderate — some readers will bounce off |
+| **Best for** | Executive dashboards, first exposure, glance-time audiences | Analytical narratives, technical reports, curated presentations |
+| **Comparison example** | Bar chart of cluster means | Lollipop on strip-jitter distribution |
+| **Change-over-time example** | Line chart | Slope chart (first + last only) or connected scatter |
+| **Distribution example** | Histogram | Ridgeline plot or beeswarm |
+| **Composition example** | Stacked bar | Waffle grid or treemap |
+| **Deviation example** | Bar with target line | Bullet chart or dumbbell |
+| **Ranking + context example** | Ranked bar | Dot plot with reference band, or lollipop on distribution |
+
+**Style-stance × Story-arc → concrete chartType hints for flint-chart §0.2**:
+
+| Story arc | Traditional pick | Innovative pick |
+|---|---|---|
+| Comparison | `bar_chart` (grouped or single) | `lollipop_chart` |
+| Change over time | `line_chart` | `slope_chart` or annotated `line_chart` with markers |
+| Composition | `stacked_bar_chart` | `treemap` or faceted `bar_chart` (small multiples) |
+| Distribution | `histogram` or `bar_chart` of bins | `strip_plot` + jitter, `boxplot`, or `violin` where Flint supports it |
+| Relationship | `scatter_plot` | `scatter_plot` with color/size encoding + trendline layer |
+| Deviation | `bar_chart` with reference `rule` | `bullet_chart` or dumbbell (two-point layered) |
+| Flow | `bar_chart` of source→target counts | `sankey` (if backend supports it — see `flint-chart` §0.4) |
+| Anomaly | `line_chart` with annotated point | `line_chart` with shaded band + annotation callout |
+| Ranking-with-context | Ranked `bar_chart` | Layered `lollipop_chart` overlaid on `strip_plot` (see AIRS fig07 ultimate for a worked example) |
+
+**Rule of thumb**: default to TRADITIONAL when the audience is glance-time or general-fluency. Default to INNOVATIVE when the audience is domain-fluent AND has 30+ seconds of study time AND the extra dimensions materially strengthen the Big Idea. When in doubt, ask.
+
+## Step 5: Write the Chart Brief and hand off
+
+Output a compact brief (fits in one message, ~10 lines) that the `flint-chart` skill or `/render-chart` prompt consumes directly:
+
+```markdown
+### Chart Brief
+
+- **Big Idea**: <one sentence, from Step 1>
+- **Story arc**: <one label from Step 2 taxonomy>
+- **Audience**: <reading-time> / <fluency> / <stakes>
+- **Style stance**: TRADITIONAL | INNOVATIVE (with one-sentence rationale)
+- **Suggested chartType(s)**: <1-2 from the Step 4 crosstab>
+- **Alternates considered**: <1-2 the crosstab surfaced but you didn't pick, with why>
+- **Anti-patterns to avoid**: <call out any per flint-chart §0.3 that this brief risks>
+```
+
+Then invoke `flint-chart` §0.2 with the brief as context. The brief locks the framing; §0.2 handles the mechanical chartType lookup + Flint coverage check.
+
+## Anti-patterns
+
+| Anti-pattern | Correction |
+|---|---|
+| **Asking the user for the Big Idea without doing Step 0 first** | Read the surrounding prose / ticket / section heading first. If the user already wrote the claim, lift it — don't make them re-articulate it. |
+| Silently rewriting the user's own claim into your preferred phrasing | If Step 0 surfaces their sentence, quote it verbatim in the Brief and cite the source. Sharpen only with permission. |
+| Writing a topic ("Q3 metrics") and calling it a Big Idea | Topics don't argue anything. Force the subject-verb-implication shape. |
+| Running the Step 1 elicitation ladder as a batch of 3 questions | Interrogation, not conversation. One question at a time; stop as soon as the sentence writes itself. |
+| Stalling forever when the user can't articulate the Big Idea | Propose one yourself from Step 0 + the data, mark it `**Proposal**:`, let them react. Specific proposals unlock faster than open prompts. |
+| Skipping Step 4 because "the chart is obvious" | If the chart is obvious, the style stance is a 10-second confirmation, not skipped work. Ask. |
+| Defaulting to INNOVATIVE because it's more visually interesting to you | Traditional charts win most decisions. Innovation is earned by audience + stakes, not by aesthetics. |
+| Picking INNOVATIVE when the reader has 5 seconds | Innovative charts need study time. If the audience is glance-time, an innovative chart fails the Big Idea, no matter how elegant. |
+| Writing the Brief AFTER rendering | The Brief is the constraint on the render, not a post-hoc justification. |
+
+## Worked example (AIRS fig07 ultimate)
+
+- **Step 0 sources** (context found before asking the user anything):
+  - `AIRS/paper/manuscript.html` § Results — paragraph before the figure reads *"cluster centroids on BI diverge sharply, but the within-cluster spread tells the more actionable story"* → near-verbatim Big Idea seed
+  - Existing R plot caption: "BI by cluster with SD bars" → topic-shaped, needed upgrading to a claim
+  - `AIRS/SUMMARY.md` audience note: technical readers, decision-critical for training program design → fixed Audience read without a separate question
+- **Big Idea**: *"The three AI-readiness clusters differ not just in average Behavioral Intention but in how tightly their members cluster around the mean — Enthusiasts are uniformly high, Skeptics span the full Likert range."* (drafted from Step 0 seed, confirmed by user in one hop — no elicitation ladder needed)
+- **Story arc**: Ranking-with-context (comparison + distribution)
+- **Audience**: Study (2min+) / Domain-fluent / Decision-critical
+- **Style stance**: INNOVATIVE — the Big Idea has two arcs, so a traditional single-arc chart (bar of means) loses half the argument. Study-time + domain-fluent audience can afford the extra read cost.
+- **Suggested chartType**: layered `lollipop_chart` (centroid + stem) overlaid on `strip_plot` (respondent-level jitter)
+- **Alternates considered**: (a) traditional bar with error bars — chosen against because it hides the floor/ceiling clamping that makes the Skeptics story vivid; (b) boxplot + strip — chosen against because box quartile lines are redundant with the strip density and add visual noise.
+- **Anti-patterns to avoid**: over-layering (kept to strip + lollipop + centroid, no boxplot); starting y at 0 on a Likert scale (started at 1); putting metadata inside the plot area (n= labels moved to the axis).
+
+## Would Revise If
+
+Revise this skill by 2026-10-22 (90 days) or sooner if any of the following fires:
+
+- The Brief format is skipped in ≥3 consecutive `/render-chart` invocations because it's too heavy for the common case → tighten to 3 fields.
+- The TRADITIONAL/INNOVATIVE binary produces user confusion in ≥2 sessions (users say "I don't know, you pick") → replace the ask with an inferred default per audience, keep the binary as an override.
+- The Step 4 crosstab produces a chartType that `flint-chart` §0.4 can't render more than once per quarter → the crosstab is out of sync with Flint coverage and needs a refresh pass.
+- Cole Nussbaumer Knaflic publishes a materially revised Big Idea framing that supersedes the three-part rule used here.

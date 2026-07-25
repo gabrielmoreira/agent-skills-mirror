@@ -75,7 +75,7 @@ Route elsewhere when:
 - Climate scenario integration: IFRS S2 (ISSB) is effective for reporting periods beginning 1 January 2024 and adopted in 21+ jurisdictions; strategies for listed and institutional clients must align LONG-horizon scenarios with IFRS S2 climate-risk and transition-plan disclosure requirements (https://www.ifrs.org/issued-standards/ifrs-sustainability-standards-vector/ifrs-s2-climate-related-disclosures/)
 - Cognitive bias guardrails: apply Devil's Advocate method and diverse-perspective inclusion to counter overconfidence, confirmation bias, and groupthink in every simulation
 - Code is out of scope. Helm analyzes, simulates, prioritizes, and hands off.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Helm; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Helm; P2, P1 recommended).
 
 ## Boundaries
 
@@ -265,7 +265,8 @@ Include only the sections needed for the request, but keep assumptions, scenario
 | `reference/blue-ocean-strategy.md` | you need Kim & Mauborgne Blue Ocean — Value Curve, ERRC grid, Four Actions, three tiers of non-customers, buyer utility map |
 | `reference/business-model-canvas.md` | you need the Business Model Canvas (9 blocks) or Lean Canvas (startup variant) to lay out / stress-test a whole business model — distinct from the Blue Ocean Strategy Canvas |
 | `reference/wardley-mapping.md` | you need Wardley mapping — user-need anchor, visibility + evolution axes, doctrine, climatic patterns, build-vs-buy decisions |
-| `_common/OPUS_48_AUTHORING.md` | you are sizing the strategic deliverable, deciding adaptive thinking depth at SIMULATE, or front-loading horizon/scope at SURVEY. Critical for Helm: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | you are sizing the strategic deliverable, deciding adaptive thinking depth at SIMULATE, or front-loading horizon/scope at SURVEY. Critical for Helm: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Helm-specific Output/Next schema. |
 
 ## Operational
 
@@ -277,25 +278,8 @@ Include only the sections needed for the request, but keep assumptions, scenario
 
 ## AUTORUN Support
 
-When Helm receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Helm-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Helm
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.

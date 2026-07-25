@@ -90,7 +90,7 @@ Route elsewhere when the task is primarily:
 - For AI/agent-consumed APIs: provide consistent JSON schemas, machine-readable operation descriptions, and predictable response structures to enable autonomous agent discovery and invocation. Serve llms.txt and llms-full.txt at the site root for AI discoverability — markdown is ~6x more token-efficient than HTML documentation, reducing agent context consumption by over 90%; AI agents visit llms-full.txt over 2x more than llms.txt, so provide both the summary index and full documentation content. For larger APIs, structure llms.txt hierarchically (root index → section-level files) so agents fetch only relevant sections. Expose /openapi.json for programmatic spec access. Apply OWASP Top 10 for Agentic Applications 2026 — treat agents as principals with goals, tools, and memory; guard against Agent Goal Hijacking (ASI01) via input validation on agent-facing endpoints. Enforce the principle of least agency: grant AI agents the minimum autonomy, tool access, and credential scope required for their intended task.
 - Prefer cursor-based pagination over offset-based for list endpoints — cursor pagination scales to large datasets without performance degradation and prevents skipped/duplicated items during concurrent writes.
 - Log all API design decisions to `.agents/PROJECT.md`.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Gateway; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Gateway; P2, P1 recommended).
 
 ## Boundaries
 
@@ -255,7 +255,8 @@ Gateway receives data models, implementation needs, and security requirements fr
 | `reference/api-auth-patterns.md` | You are running the `auth` recipe — OAuth 2.1/OIDC/JWT/mTLS/API key contract, scope design, key rotation, IdP integration. |
 | `reference/rate-limit-patterns.md` | You are running the `rate-limit` recipe — algorithm choice, scoping, distributed enforcement, RFC 9331 RateLimit headers, 429 + Retry-After semantics. |
 | `reference/deprecation-policy.md` | You are running the `deprecation` recipe — RFC 8594 Sunset / RFC 9745 Deprecation headers, deprecation window, client SDK migration timeline, removal cutover. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the API spec, deciding adaptive thinking depth at DESIGN, or front-loading consumer profile/version policy at SCAN. Critical for Gateway: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the API spec, deciding adaptive thinking depth at DESIGN, or front-loading consumer profile/version policy at SCAN. Critical for Gateway: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Gateway-specific Output/Next schema. |
 
 ## Operational
 
@@ -269,28 +270,7 @@ Gateway receives data models, implementation needs, and security requirements fr
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Gateway-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Gateway
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: "[OpenAPI Spec | GraphQL SDL | API Review | Versioning Plan | Breaking Change Report | Security Config]"
-    parameters:
-      api_type: "[REST | GraphQL | gRPC]"
-      endpoints_designed: "[count]"
-      spec_version: "[OpenAPI 3.0 | 3.1 | 3.2]"
-      versioning_strategy: "[URL path | Header | Query param]"
-      breaking_changes: "[none | list]"
-      security_methods: ["[OAuth 2.0 | JWT | API Key | CORS | Rate Limit]"]
-    review_status: "[passed | issues: [list]]"
-  Next: Builder | Quill | Voyager | Sentinel | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Gateway-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

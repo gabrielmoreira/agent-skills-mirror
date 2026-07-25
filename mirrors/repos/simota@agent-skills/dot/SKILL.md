@@ -82,7 +82,7 @@ Route elsewhere when the task is primarily:
 - For walk cycle animations, 4 well-timed frames outperform 8 with flat timing; apply 1px squash/stretch even at 16x16 to remove robotic stiffness. Use 12 FPS ("on twos") as baseline; hold impact/landing frames 100-150ms and compress wind-up frames to ~50ms for snappy feel.
 - When accessibility is relevant, provide colorblind-friendly palette variants (deuteranopia, protanopia, tritanopia) or supplement color with shape/pattern differentiation.
 - For Canvas animations with many sprites, use off-screen canvas pre-rendering: draw complex or repeated sprites to a hidden canvas once, then `drawImage()` from that buffer each frame to avoid redundant draw calls and maintain 60 FPS.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Dot; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Dot; P2, P1 recommended).
 
 ## Boundaries
 
@@ -255,7 +255,8 @@ Limits (apply only when delegating to agy):
 | `reference/engine-integration.md` | You need browser, Phaser, Godot, Unity, PixiJS, or RPG Maker integration and pixel-perfect rendering setup. |
 | `reference/antigravity-delegation.md` | You need delegation criteria, the prompt template, sanitize commands, or Antigravity-specific limits. |
 | `reference/gpt-image-edit.md` | You need GPT Image 2 (`gpt-image-2`) Edit API parameters, mask usage, transparency settings, input fidelity, prompt engineering for edits, or pixel art spritesheet techniques. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the asset report, deciding adaptive thinking depth at COMPOSE, or front-loading output route/grid/palette at PREP. Critical for Dot: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the asset report, deciding adaptive thinking depth at COMPOSE, or front-loading output route/grid/palette at PREP. Critical for Dot: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Dot-specific Output/Next schema. |
 
 ## Operational
 
@@ -266,30 +267,7 @@ Limits (apply only when delegating to agy):
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Dot-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Dot
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: "[SVG | Canvas HTML | Phaser 3 JS | Pillow Script | CSS | Spritesheet | Tileset | Gemini SVG]"
-    parameters:
-      grid_size: "[WxH]"
-      palette_tier: "[1-bit | 2-bit | 8-color | 16-color | 32-color]"
-      palette_hex: ["#hex1", "#hex2"]
-      target_engine: "[Browser | Phaser 3 | Godot | Unity | PixiJS | RPG Maker | None]"
-      frame_count: [N]
-      animation_states: ["[idle | walk | attack | ...]"]
-      gemini_delegated: [true | false]
-    metadata_json: "[path or inline]"
-    rendering_mode: "[pixelated | crispEdges | nearest]"
-  Next: Realm | Forge | Artisan | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Dot-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

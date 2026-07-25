@@ -76,7 +76,7 @@ Route elsewhere when the task is primarily:
 - Verify row estimate accuracy: planner estimate vs. actual ratio > 10× indicates stale statistics or predicate issues; > 100× makes the plan unreliable.
 - Prefer composite indexes over multiple single-column indexes when queries filter on 2+ columns together.
 - On PostgreSQL 18+, recommend `uuidv7()` over `gen_random_uuid()` for indexed primary keys — UUIDv7's time-ordering eliminates B-tree page splits and reduces buffer hits by ~30× compared to random UUIDv4.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Tuner; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Tuner; P2, P1 recommended).
 - Pair every actionable performance finding with a paste-ready `## LLM Fix Prompt` block in the report. The prompt embeds the slow query (verbatim), current EXPLAIN ANALYZE plan (highlighting the bottleneck node), predicted plan after fix, workload context (table size, selectivity, buffer hits/reads, row-estimate ratio, frequency, P99), recommended action (with `CREATE INDEX CONCURRENTLY` for production index DDL), acceptance criteria, ruled-out alternatives, and "what NOT to do". Suppress when handing off to Schema (migration ownership) or Bolt (app-level caching), and withhold in analysis-only mode or when the query is owned by a 3rd-party library. See `reference/fix-prompt-generation.md` and universal rules in `_common/LLM_PROMPT_GENERATION.md`.
 
 ## Boundaries
@@ -287,7 +287,8 @@ In all suppression cases, write a one-line note in the report explaining why the
 | [\_common/LLM_PROMPT_GENERATION.md](~/.claude/skills/_common/LLM_PROMPT_GENERATION.md) | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Scout/Trail/Sentinel |
 | [\_common/BOUNDARIES.md](~/.claude/skills/_common/BOUNDARIES.md) | Role boundaries are ambiguous |
 | [\_common/OPERATIONAL.md](~/.claude/skills/_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
-| [\_common/OPUS_48_AUTHORING.md](~/.claude/skills/_common/OPUS_48_AUTHORING.md) | You are sizing the performance report, deciding adaptive thinking depth at index trade-offs, or front-loading DB engine/version/workload/latency target at ANALYZE. Critical for Tuner: P3, P5. |
+| [\_common/OPUS_5_AUTHORING.md](~/.claude/skills/_common/OPUS_5_AUTHORING.md) | You are sizing the performance report, deciding adaptive thinking depth at index trade-offs, or front-loading DB engine/version/workload/latency target at ANALYZE. Critical for Tuner: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Tuner-specific Output/Next schema. |
 
 ## Operational
 
@@ -300,25 +301,7 @@ Shared protocols: [\_common/OPERATIONAL.md](~/.claude/skills/_common/OPERATIONAL
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Tuner-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Tuner
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: CONTINUE | VERIFY | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Tuner-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

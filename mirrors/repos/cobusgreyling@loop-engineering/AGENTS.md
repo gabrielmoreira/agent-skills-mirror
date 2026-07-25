@@ -5,7 +5,12 @@ Conventions for humans and loops maintaining this repository.
 ## Build & verify
 
 ```bash
-# Loop readiness audit CLI
+# Unified front door (prefer for new workflows)
+cd tools/loop && npm ci && npm test
+node dist/cli.js doctor ../..
+node dist/cli.js status ../..
+
+# Loop readiness audit CLI (still canonical scorer)
 cd tools/loop-audit && npm ci && npm run build
 node dist/cli.js ../..              # audit repo root
 node dist/cli.js ../.. --suggest    # show copy commands for gaps
@@ -13,6 +18,8 @@ node dist/cli.js ../.. --suggest    # show copy commands for gaps
 # Before/after demo (scores an empty dir → starter → L2)
 bash scripts/before-after-demo.sh
 ```
+
+Front door map: [docs/cli-front-door.md](docs/cli-front-door.md). Agent install skill: [skills/install-loop/SKILL.md](skills/install-loop/SKILL.md).
 
 CI runs `validate-patterns` and `audit` on every push/PR (see `.github/workflows/`).
 
@@ -34,6 +41,7 @@ CI runs `validate-patterns` and `audit` on every push/PR (see `.github/workflows
 This repo has no application test suite. Quality gates:
 
 ```bash
+cd tools/loop && npm test && node dist/cli.js doctor ../..
 cd tools/loop-audit && npm run build && node dist/cli.js ../../
 bash scripts/before-after-demo.sh
 ```

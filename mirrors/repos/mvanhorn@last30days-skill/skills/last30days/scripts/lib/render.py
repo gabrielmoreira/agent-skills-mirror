@@ -4,11 +4,22 @@ from __future__ import annotations
 
 import json
 import pathlib
+import re
 from collections import Counter
 from datetime import date
 from urllib.parse import urlparse
 
-from . import dates, health, library_index, registers, schema, signals, skill_meta
+from . import (
+    dates,
+    health,
+    hiring_signals,
+    library_index,
+    registers,
+    relevance,
+    schema,
+    signals,
+    skill_meta,
+)
 
 
 def _skill_version() -> str:
@@ -329,6 +340,30 @@ def _format_library_engagement(value: float) -> str:
     return f"{value:g}"
 
 
+def _qualifying_representative_ids(
+    cluster: schema.Cluster,
+    candidate_by_id: dict[str, schema.Candidate],
+    *,
+    limit: int | None = None,
+    fallback_limit: int = 1,
+) -> list[str]:
+    """Keep qualifying MMR representatives, or promote a conservative fallback."""
+    representative_ids = [
+        candidate_id
+        for candidate_id in cluster.representative_ids
+        if candidate_id in candidate_by_id
+        and _best_take_relevance_ok(candidate_by_id[candidate_id])
+    ]
+    if not representative_ids:
+        representative_ids = [
+            candidate_id
+            for candidate_id in cluster.candidate_ids
+            if candidate_id in candidate_by_id
+            and _best_take_relevance_ok(candidate_by_id[candidate_id])
+        ][:fallback_limit]
+    return representative_ids[:limit] if limit is not None else representative_ids
+
+
 def _render_ranked_clusters(
     report: schema.Report,
     clusters: list[schema.Cluster],
@@ -337,7 +372,16 @@ def _render_ranked_clusters(
     candidate_by_id = {
         candidate.candidate_id: candidate for candidate in report.ranked_candidates
     }
-    for index, cluster in enumerate(clusters, start=1):
+    solid_clusters = _clusters_clearing_relevance_floor(report, clusters)
+    if clusters and not solid_clusters:
+        lines.extend([
+            "**Nothing solid this window.**",
+            "",
+            "No recent evidence cluster cleared the relevance floor. "
+            "Do not infer findings or quote community comments from this run.",
+            "",
+        ])
+    for index, cluster in enumerate(solid_clusters, start=1):
         lines.append(
             f"### {index}. {cluster.title} "
             f"(score {cluster.score:.0f}, {len(cluster.candidate_ids)} "
@@ -346,13 +390,99 @@ def _render_ranked_clusters(
         )
         if cluster.uncertainty:
             lines.append(f"- Uncertainty: {cluster.uncertainty}")
-        for rep_index, candidate_id in enumerate(cluster.representative_ids, start=1):
+        representative_ids = _qualifying_representative_ids(
+            cluster,
+            candidate_by_id,
+        )
+        for rep_index, candidate_id in enumerate(representative_ids, start=1):
             candidate = candidate_by_id.get(candidate_id)
             if not candidate:
                 continue
             lines.extend(_render_candidate(candidate, prefix=f"{rep_index}.", report=report))
         lines.append("")
     return lines
+
+
+def _clusters_clearing_relevance_floor(
+    report: schema.Report,
+    clusters: list[schema.Cluster],
+) -> list[schema.Cluster]:
+    """Return visible clusters with positive, non-entity-miss evidence.
+
+    A zero-score cluster is diagnostic retrieval residue rather than evidence.
+    Likewise, a positive cluster with known members but no qualifying member
+    must not be promoted by engagement into the synthesis. Every cluster member
+    is considered because MMR representatives can omit valid evidence. Missing
+    member records are not treated as misses: score remains the only signal
+    available when no member record is present.
+    """
+    candidate_by_id = {
+        candidate.candidate_id: candidate for candidate in report.ranked_candidates
+    }
+    solid: list[schema.Cluster] = []
+    for cluster in clusters:
+        if cluster.score <= 0:
+            continue
+        members = [
+            candidate_by_id[candidate_id]
+            for candidate_id in cluster.candidate_ids
+            if candidate_id in candidate_by_id
+        ]
+        if members and not any(_best_take_relevance_ok(candidate) for candidate in members):
+            continue
+        solid.append(cluster)
+    return solid
+
+
+def _candidates_in_clusters(
+    report: schema.Report,
+    clusters: list[schema.Cluster],
+) -> list[schema.Candidate]:
+    """Return ranked candidates belonging to the supplied visible clusters."""
+    candidate_ids = {
+        candidate_id
+        for cluster in clusters
+        for candidate_id in cluster.candidate_ids
+    }
+    return [
+        candidate
+        for candidate in report.ranked_candidates
+        if candidate.candidate_id in candidate_ids
+    ]
+
+
+def _candidates_for_auxiliary_sections(
+    report: schema.Report,
+    requested_clusters: list[schema.Cluster],
+    visible_clusters: list[schema.Cluster],
+) -> list[schema.Candidate]:
+    """Exclude rejected cluster members while preserving unclustered evidence."""
+    if requested_clusters and not visible_clusters:
+        return []
+    clustered_ids = {
+        candidate_id
+        for cluster in report.clusters
+        for candidate_id in cluster.candidate_ids
+    }
+    visible_ids = {
+        candidate_id
+        for cluster in visible_clusters
+        for candidate_id in cluster.candidate_ids
+    }
+    return [
+        candidate
+        for candidate in report.ranked_candidates
+        if candidate.candidate_id not in clustered_ids
+        or candidate.candidate_id in visible_ids
+    ]
+
+
+def _visible_clusters_fail_relevance_floor(
+    report: schema.Report,
+    clusters: list[schema.Cluster],
+) -> bool:
+    """Whether a non-empty visible cluster set contains no usable evidence."""
+    return bool(clusters) and not _clusters_clearing_relevance_floor(report, clusters)
 
 
 def _render_corpus_section(report: schema.Report, limit: int = 8) -> list[str]:
@@ -473,35 +603,55 @@ def _render_registered_sections(
 ) -> list[str]:
     """Render one audience preset's ordered, budgeted evidence sections."""
 
-    best_takes = _render_best_takes(
-        report.ranked_candidates,
-        limit=audience.budget_for("best_takes", int(fun_params["limit"])),
-        threshold=float(fun_params["threshold"]),
-        vote_weight=float(fun_params.get("vote_weight", 18.0)),
-        # The preset's source emphasis must reach the lead section's own
-        # ranking: a creator register surfaces TikTok/IG/YouTube takes ahead
-        # of equally-rated HN or GitHub ones.
-        source_weight=(audience.emphasis_for if audience.emphasis_weights else None),
-    )
-    if not best_takes:
-        best_takes = ["## Best Takes", "", "- No qualifying takes surfaced in this run."]
-
-    top_comments = _render_top_comments(
+    visible_clusters = _clusters_for_register(report, audience, cluster_limit)
+    solid_clusters = _clusters_clearing_relevance_floor(report, visible_clusters)
+    visible_candidates = _candidates_for_auxiliary_sections(
         report,
-        limit=audience.budget_for("top_comments", 8),
+        visible_clusters,
+        solid_clusters,
     )
-    if not top_comments:
-        top_comments = [
-            "## Top Community Comments",
-            "",
-            "- No qualifying community comments surfaced in this run.",
-        ]
+    no_solid_evidence = bool(visible_clusters) and not solid_clusters
+    if no_solid_evidence:
+        best_takes: list[str] = []
+        top_comments: list[str] = []
+    else:
+        best_takes = _render_best_takes(
+            visible_candidates,
+            limit=audience.budget_for("best_takes", int(fun_params["limit"])),
+            threshold=float(fun_params["threshold"]),
+            vote_weight=float(fun_params.get("vote_weight", 18.0)),
+            # The preset's source emphasis must reach the lead section's own
+            # ranking: a creator register surfaces TikTok/IG/YouTube takes ahead
+            # of equally-rated HN or GitHub ones.
+            source_weight=(audience.emphasis_for if audience.emphasis_weights else None),
+        )
+        if not best_takes:
+            best_takes = ["## Best Takes", "", "- No qualifying takes surfaced in this run."]
+
+        top_comments = _render_top_comments(
+            report,
+            limit=audience.budget_for("top_comments", 8),
+            candidates=visible_candidates,
+        )
+        if not top_comments:
+            top_comments = [
+                "## Top Community Comments",
+                "",
+                "- No qualifying community comments surfaced in this run.",
+            ]
 
     sections = {
-        "hiring_signals": _render_hiring_signals(report),
+        "hiring_signals": (
+            []
+            if no_solid_evidence
+            else _render_hiring_signals(
+                report,
+                candidates=None if not visible_clusters else visible_candidates,
+            )
+        ),
         "clusters": _render_ranked_clusters(
             report,
-            _clusters_for_register(report, audience, cluster_limit),
+            visible_clusters,
         ),
         "stats": _render_stats(report),
         "best_takes": best_takes,
@@ -582,7 +732,27 @@ def render_compact(
     # block below) vs "synthesize from" (this block).
     lines.append("<!-- EVIDENCE FOR SYNTHESIS: read this, do not emit verbatim. Transform into `What I learned:` prose per LAW 2. -->")
     lines.append("")
-    hiring_block = _render_hiring_signals(evidence_report)
+    # Echo the synthesis contract early so it survives tail truncation (#726).
+    lines.extend(_render_synthesis_directive())
+    visible_clusters = evidence_report.clusters[:cluster_limit]
+    solid_clusters = _clusters_clearing_relevance_floor(
+        evidence_report,
+        visible_clusters,
+    )
+    visible_candidates = _candidates_for_auxiliary_sections(
+        evidence_report,
+        visible_clusters,
+        solid_clusters,
+    )
+    no_solid_evidence = bool(visible_clusters) and not solid_clusters
+    hiring_block = (
+        []
+        if no_solid_evidence
+        else _render_hiring_signals(
+            evidence_report,
+            candidates=None if not visible_clusters else visible_candidates,
+        )
+    )
     if hiring_block and audience.name in {"default", "eli5"}:
         lines.extend(hiring_block)
         lines.append("")
@@ -590,21 +760,25 @@ def render_compact(
     if audience.name in {"default", "eli5"}:
         # Keep this legacy assembly byte-for-byte stable. ELI5 has always been
         # a synthesis-only voice change, so it intentionally takes this path.
-        lines.extend(_render_ranked_clusters(evidence_report, evidence_report.clusters[:cluster_limit]))
+        lines.extend(_render_ranked_clusters(evidence_report, visible_clusters))
         lines.extend(_render_stats(evidence_report))
 
-        best_takes = _render_best_takes(
-            evidence_report.ranked_candidates,
-            limit=fun_params["limit"],
-            threshold=fun_params["threshold"],
-            vote_weight=fun_params.get("vote_weight", 18.0),
-        )
-        if best_takes:
-            lines.extend([""] + best_takes)
+        if not no_solid_evidence:
+            best_takes = _render_best_takes(
+                visible_candidates,
+                limit=fun_params["limit"],
+                threshold=fun_params["threshold"],
+                vote_weight=fun_params.get("vote_weight", 18.0),
+            )
+            if best_takes:
+                lines.extend([""] + best_takes)
 
-        top_comments = _render_top_comments(evidence_report)
-        if top_comments:
-            lines.extend([""] + top_comments)
+            top_comments = _render_top_comments(
+                evidence_report,
+                candidates=visible_candidates,
+            )
+            if top_comments:
+                lines.extend([""] + top_comments)
 
         outcome_note = _render_source_outcome_note(report)
         if outcome_note:
@@ -677,7 +851,19 @@ def render_for_html(
     drill_context = _render_drill_context(report)
     if drill_context:
         lines.extend(["", *drill_context])
-    hiring_block = _render_hiring_signals(evidence_report)
+    html_clusters = _clusters_clearing_relevance_floor(
+        evidence_report,
+        evidence_report.clusters,
+    )
+    html_candidates = _candidates_for_auxiliary_sections(
+        evidence_report,
+        evidence_report.clusters,
+        html_clusters,
+    )
+    hiring_block = _render_hiring_signals(
+        evidence_report,
+        candidates=html_candidates if evidence_report.clusters else None,
+    )
     if synthesis_md:
         lines.extend(["", synthesis_md.strip()])
         if hiring_block and "## Hiring Signals" not in synthesis_md:
@@ -848,6 +1034,36 @@ def _append_html_footer(lines: list[str], report: schema.Report, save_path: str 
     lines.append("<!-- END PASS-THROUGH FOOTER -->")
 
 
+def _render_synthesis_directive() -> list[str]:
+    """Echo the synthesis contract at the TOP of the evidence envelope.
+
+    Added 2026-06-30 for issue #726 (Grok Build v0.2.67 emitted only logs and
+    raw evidence clusters instead of the canonical synthesis). Root cause: the
+    strong directive only lived in `_render_canonical_boundary` — the very END
+    of stdout, AFTER the whole evidence block and footer. Hosts that truncate
+    the tail (`engine | head -N`, timeout-backgrounding that captures partial
+    output, scrollback caps) keep the badge and the `### N.` clusters but never
+    reach the instruction that says "synthesize, don't dump", so they fall into
+    the LAW 6 failure mode and emit the raw evidence.
+
+    This block restates the contract in the head region that survives
+    truncation. It lives INSIDE the EVIDENCE FOR SYNTHESIS envelope (a model
+    instruction, not user output), mirroring how the DEGRADED RUN WARNING is
+    positioned early so the pass-through contract still carries it.
+    """
+    return [
+        "> **SYNTHESIS CONTRACT — read before emitting anything.** Everything below this",
+        "> line, up to where this evidence envelope closes, is raw evidence for you to",
+        "> READ, not text to emit. Transform it into `What I learned:` prose paragraphs",
+        "> per LAW 2. Do NOT pass the `### N.` evidence clusters or the stats and",
+        "> source-coverage blocks through verbatim. The ONLY block you emit verbatim is",
+        "> the PASS-THROUGH FOOTER (the emoji tree) lower down. The full contract repeats",
+        "> at the end-of-output boundary near the bottom; if your captured output was",
+        "> truncated and never reached it, this contract still binds.",
+        "",
+    ]
+
+
 def _render_canonical_boundary() -> list[str]:
     """Emit the explicit END-OF-CANONICAL-OUTPUT boundary.
 
@@ -1014,19 +1230,16 @@ def _render_degraded_run_warning(report: schema.Report) -> list[str]:
 
 
 def _parse_comparison_entities(topic: str) -> list[str] | None:
-    """Return list of entity names if topic is a comparison query, else None.
+    """Return entity names if topic is a comparison query, else None.
 
-    Splits on ` vs ` or ` versus ` (case-insensitive). Caps at 4 entities
-    for table readability. Returns None if only one entity or empty input.
+    Delegates to ``planner._comparison_entities`` so scaffold columns match
+    vs-routing (including `/`, trailing-context strip, and dedup).
     """
     if not topic:
         return None
-    import re
-    parts = re.split(r"\s+(?:vs\.?|versus)\s+", topic.strip(), flags=re.IGNORECASE)
-    parts = [p.strip() for p in parts if p.strip()]
-    if len(parts) < 2:
-        return None
-    return parts[:4]
+    from . import planner
+    entities = planner._comparison_entities(topic)
+    return entities if len(entities) >= 2 else None
 
 
 def _render_comparison_scaffold(topic: str) -> list[str]:
@@ -1136,6 +1349,8 @@ def render_comparison_multi(
         "`What I learned:` prose per LAW 2. Each entity has its own evidence subsection. -->"
     )
     lines.append("")
+    # Echo the synthesis contract early so it survives tail truncation (#726).
+    lines.extend(_render_synthesis_directive())
 
     resolved_block = _render_resolved_entities_block(entity_reports)
     if resolved_block:
@@ -1233,6 +1448,11 @@ def _render_entity_evidence_block(
     """Render one entity's clusters and best-takes inside the evidence envelope."""
     evidence_report = schema.without_sources(report, {"corpus"})
     candidate_by_id = {c.candidate_id: c for c in evidence_report.ranked_candidates}
+    requested_clusters = evidence_report.clusters[:cluster_limit]
+    visible_clusters = _clusters_clearing_relevance_floor(
+        evidence_report,
+        requested_clusters,
+    )
     out: list[str] = [f"## {label}", ""]
 
     if not evidence_report.clusters:
@@ -1246,7 +1466,14 @@ def _render_entity_evidence_block(
 
     out.append("### Ranked Evidence Clusters")
     out.append("")
-    for index, cluster in enumerate(evidence_report.clusters[:cluster_limit], start=1):
+    if requested_clusters and not visible_clusters:
+        out.extend([
+            "**Nothing solid this window.**",
+            "",
+            "No recent evidence cluster cleared the relevance floor.",
+            "",
+        ])
+    for index, cluster in enumerate(visible_clusters, start=1):
         out.append(
             f"#### {index}. {cluster.title} "
             f"(score {cluster.score:.0f}, {len(cluster.candidate_ids)} item"
@@ -1255,15 +1482,24 @@ def _render_entity_evidence_block(
         )
         if cluster.uncertainty:
             out.append(f"- Uncertainty: {cluster.uncertainty}")
-        for rep_index, candidate_id in enumerate(cluster.representative_ids, start=1):
+        representative_ids = _qualifying_representative_ids(
+            cluster,
+            candidate_by_id,
+        )
+        for rep_index, candidate_id in enumerate(representative_ids, start=1):
             candidate = candidate_by_id.get(candidate_id)
             if not candidate:
                 continue
             out.extend(_render_candidate(candidate, prefix=f"{rep_index}.", report=evidence_report))
         out.append("")
 
+    comparison_candidates = _candidates_for_auxiliary_sections(
+        evidence_report,
+        requested_clusters,
+        visible_clusters,
+    )
     best_takes = _render_best_takes(
-        evidence_report.ranked_candidates,
+        comparison_candidates,
         limit=fun_params["limit"],
         threshold=fun_params["threshold"],
         vote_weight=fun_params.get("vote_weight", 18.0),
@@ -1301,12 +1537,19 @@ def render_comparison_multi_context(
         lines.append("")
     for label, report in entity_reports:
         evidence_report = schema.without_sources(report, {"corpus"})
+        requested_clusters = evidence_report.clusters[:cluster_limit]
+        visible_clusters = _clusters_clearing_relevance_floor(
+            evidence_report,
+            requested_clusters,
+        )
         lines.append(f"## {label}")
         lines.append(f"Intent: {report.query_plan.intent}")
         if not evidence_report.clusters:
             lines.append("- (no significant discussion this month)")
+        elif not visible_clusters:
+            lines.append("- Nothing solid this window.")
         else:
-            for cluster in evidence_report.clusters[:cluster_limit]:
+            for cluster in visible_clusters:
                 lines.append(
                     f"- {cluster.title} "
                     f"[{', '.join(_source_label(s) for s in cluster.sources)}]"
@@ -1353,27 +1596,20 @@ def render_full(report: schema.Report) -> str:
             lines.append("")
 
     # ALL clusters (no limit)
-    lines.append("## Ranked Evidence Clusters")
-    lines.append("")
-    candidate_by_id = {c.candidate_id: c for c in evidence_report.ranked_candidates}
-    for index, cluster in enumerate(evidence_report.clusters, start=1):
-        lines.append(
-            f"### {index}. {cluster.title} "
-            f"(score {cluster.score:.0f}, {len(cluster.candidate_ids)} item{'s' if len(cluster.candidate_ids) != 1 else ''}, "
-            f"sources: {', '.join(_source_label(s) for s in cluster.sources)})"
-        )
-        if cluster.uncertainty:
-            lines.append(f"- Uncertainty: {cluster.uncertainty}")
-        for rep_index, cid in enumerate(cluster.representative_ids, start=1):
-            candidate = candidate_by_id.get(cid)
-            if not candidate:
-                continue
-            lines.extend(_render_candidate(candidate, prefix=f"{rep_index}.", report=evidence_report))
-        lines.append("")
+    lines.extend(_render_ranked_clusters(evidence_report, evidence_report.clusters))
 
     fun_params = _FUN_LEVELS["medium"]
+    full_clusters = _clusters_clearing_relevance_floor(
+        evidence_report,
+        evidence_report.clusters,
+    )
+    full_candidates = _candidates_for_auxiliary_sections(
+        evidence_report,
+        evidence_report.clusters,
+        full_clusters,
+    )
     best_takes = _render_best_takes(
-        evidence_report.ranked_candidates,
+        full_candidates,
         limit=fun_params["limit"],
         threshold=fun_params["threshold"],
         vote_weight=fun_params["vote_weight"],
@@ -1402,16 +1638,21 @@ def render_full(report: schema.Report) -> str:
             if item.container:
                 lines.append(f"  *{item.container}*")
             if item.snippet:
-                lines.append(f"  {item.snippet[:500]}")
+                lines.append(
+                    f"  {_format_untrusted_evidence(item.snippet, 500, continuation_indent='  ')}"
+                )
             # Top comments for Reddit, YouTube, TikTok, HackerNews.
             top_comments = item.metadata.get("top_comments", [])
             if top_comments and isinstance(top_comments[0], dict):
                 vote_label = _vote_label_for(item.source)
                 for tc in top_comments[:3]:
-                    excerpt = tc.get("excerpt", tc.get("text", ""))[:200]
+                    excerpt = tc.get("excerpt", tc.get("text", ""))
                     tc_score = tc.get("score", "")
                     attribution = _comment_attribution(item.source, tc.get("author"))
-                    lines.append(f"  Top comment {attribution} ({tc_score} {vote_label}): {excerpt}")
+                    lines.append(
+                        f"  Top comment {attribution} ({tc_score} {vote_label}): "
+                        f"{_format_untrusted_evidence(excerpt, 200, continuation_indent='  ')}"
+                    )
             # Digg: inline X-post quotes attached to the cluster.
             for post in _digg_posts_for(item, limit=3):
                 lines.append(f"  > {_format_digg_quote(post)}")
@@ -1420,18 +1661,24 @@ def render_full(report: schema.Report) -> str:
             if insights:
                 lines.append("  Insights:")
                 for ins in insights[:3]:
-                    lines.append(f"    - {ins[:200]}")
+                    lines.append(
+                        f"    - {_format_untrusted_evidence(ins, 200, continuation_indent='      ')}"
+                    )
             # Transcript highlights for YouTube
             highlights = item.metadata.get("transcript_highlights", [])
             if highlights:
                 lines.append("  Highlights (auto-generated transcript; may contain transcription errors):")
                 for hl in highlights[:5]:
-                    lines.append(f'    - "{hl[:200]}"')
+                    lines.append(
+                        f'    - "{_format_untrusted_evidence(hl, 200, continuation_indent="      ")}"'
+                    )
             # Full transcript snippet for YouTube
             transcript = item.metadata.get("transcript_snippet", "")
             if transcript and len(transcript) > 100:
                 lines.append(f"  <details><summary>Transcript ({len(transcript.split())} words; auto-generated — may contain transcription errors)</summary>")
-                lines.append(f"  {transcript[:5000]}")
+                lines.append(
+                    f"  {_format_untrusted_evidence(transcript, 5000, continuation_indent='  ')}"
+                )
                 lines.append("  </details>")
             # Polymarket outcome prices and market details
             outcome_prices = item.metadata.get("outcome_prices") or []
@@ -1485,6 +1732,12 @@ def _format_item_engagement(item: schema.SourceItem) -> str:
 def render_context(report: schema.Report, cluster_limit: int = 6) -> str:
     evidence_report = schema.without_sources(report, {"corpus"})
     candidate_by_id = {candidate.candidate_id: candidate for candidate in evidence_report.ranked_candidates}
+    requested_clusters = evidence_report.clusters[:cluster_limit]
+    visible_clusters = _clusters_clearing_relevance_floor(
+        evidence_report,
+        requested_clusters,
+    )
+    no_solid_evidence = bool(requested_clusters) and not visible_clusters
     lines = [
         f"Topic: {report.topic}",
         f"Intent: {report.query_plan.intent}",
@@ -1499,13 +1752,31 @@ def render_context(report: schema.Report, cluster_limit: int = 6) -> str:
     freshness_warning = _assess_data_freshness(report)
     if freshness_warning:
         lines.append(f"Freshness warning: {freshness_warning}")
-    hiring_block = _render_hiring_signals(report)
+    context_candidates = _candidates_for_auxiliary_sections(
+        report,
+        requested_clusters,
+        visible_clusters,
+    )
+    hiring_block = (
+        []
+        if no_solid_evidence
+        else _render_hiring_signals(
+            report,
+            candidates=context_candidates if requested_clusters else None,
+        )
+    )
     if hiring_block:
         lines.extend(["", *hiring_block, ""])
     lines.append("Top clusters:")
-    for cluster in evidence_report.clusters[:cluster_limit]:
+    if no_solid_evidence:
+        lines.append("- Nothing solid this window.")
+    for cluster in visible_clusters:
         lines.append(f"- {cluster.title} [{', '.join(_source_label(source) for source in cluster.sources)}]")
-        for candidate_id in cluster.representative_ids[:2]:
+        for candidate_id in _qualifying_representative_ids(
+            cluster,
+            candidate_by_id,
+            limit=2,
+        ):
             candidate = candidate_by_id.get(candidate_id)
             if not candidate:
                 continue
@@ -1517,7 +1788,10 @@ def render_context(report: schema.Report, cluster_limit: int = 6) -> str:
             ]
             lines.append(f"  - {' | '.join(detail_parts)}")
             if candidate.snippet:
-                lines.append(f"    Evidence: {_truncate(candidate.snippet, 180)}")
+                lines.append(
+                    f"    Evidence: "
+                    f"{_format_untrusted_evidence(candidate.snippet, 180, continuation_indent='      ')}"
+                )
     corpus_section = _render_corpus_section(report)
     if corpus_section:
         lines.extend(["", *corpus_section])
@@ -1561,23 +1835,46 @@ def render_brief(report: schema.Report, cluster_limit: int = 8) -> str:
     lines.append("## Ranked Storylines")
     lines.append("")
     candidate_by_id = {c.candidate_id: c for c in evidence_report.ranked_candidates}
-    for i, cluster in enumerate(evidence_report.clusters[:cluster_limit], start=1):
+    requested_clusters = evidence_report.clusters[:cluster_limit]
+    visible_clusters = _clusters_clearing_relevance_floor(
+        evidence_report,
+        requested_clusters,
+    )
+    brief_candidates = _candidates_for_auxiliary_sections(
+        evidence_report,
+        requested_clusters,
+        visible_clusters,
+    )
+    qualifying_candidates = [
+        candidate
+        for candidate in brief_candidates
+        if _best_take_relevance_ok(candidate)
+    ]
+    if requested_clusters and not visible_clusters:
+        lines.extend(["**Nothing solid this window.**", ""])
+    for i, cluster in enumerate(visible_clusters, start=1):
         source_tags = ", ".join(_source_label(s) for s in cluster.sources)
         qualifier = f" [{cluster.uncertainty.replace('-', ' ')}]" if cluster.uncertainty else ""
         lines.append(f"### {i}. {cluster.title} (score {cluster.score:.0f}, {source_tags}){qualifier}")
-        for cid in cluster.representative_ids[:2]:
+        for cid in _qualifying_representative_ids(
+            cluster,
+            candidate_by_id,
+            limit=2,
+        ):
             candidate = candidate_by_id.get(cid)
             if not candidate:
                 continue
             if candidate.snippet:
-                lines.append(f"- {_truncate(candidate.snippet, 280)}")
+                lines.append(
+                    f"- {_format_untrusted_evidence(candidate.snippet, 280, continuation_indent='  ')}"
+                )
             explanation = _format_explanation(candidate)
             if explanation:
                 lines.append(f"  _Why: {explanation}_")
         lines.append("")
 
     hooks = sorted(
-        (c for c in evidence_report.ranked_candidates if c.fun_score is not None and c.fun_score >= 70),
+        (c for c in qualifying_candidates if c.fun_score is not None and c.fun_score >= 70),
         key=lambda c: -(c.fun_score or 0),
     )
     if hooks:
@@ -1605,7 +1902,7 @@ def render_brief(report: schema.Report, cluster_limit: int = 8) -> str:
             )
         lines.append("")
 
-    tensions = [c for c in evidence_report.clusters[:cluster_limit] if c.uncertainty]
+    tensions = [c for c in visible_clusters if c.uncertainty]
     if tensions:
         lines.append("## Topic Tensions")
         lines.append("")
@@ -1615,7 +1912,7 @@ def render_brief(report: schema.Report, cluster_limit: int = 8) -> str:
             lines.append(f"- **{cluster.title}** [{label}]: {source_tags}")
         lines.append("")
 
-    questions = _extract_audience_questions(evidence_report.ranked_candidates)
+    questions = _extract_audience_questions(qualifying_candidates)
     if questions:
         lines.append("## Audience Questions")
         lines.append("")
@@ -1625,7 +1922,7 @@ def render_brief(report: schema.Report, cluster_limit: int = 8) -> str:
 
     lines.append("## Source Clusters")
     lines.append("")
-    for cluster in evidence_report.clusters[:cluster_limit]:
+    for cluster in visible_clusters:
         source_tags = " + ".join(_source_label(s) for s in cluster.sources)
         lines.append(f"- **{cluster.title}**: {source_tags}")
     lines.append("")
@@ -1659,13 +1956,30 @@ def _extract_audience_questions(candidates: list[schema.Candidate]) -> list[str]
     return questions
 
 
-def _render_hiring_signals(report: schema.Report) -> list[str]:
+def _render_hiring_signals(
+    report: schema.Report,
+    *,
+    candidates: list[schema.Candidate] | None = None,
+) -> list[str]:
     summary = report.artifacts.get("hiring_signals")
     if not isinstance(summary, dict):
         return []
+    mode = summary.get("mode") or "standard"
+    if candidates is not None:
+        job_items: dict[str, schema.SourceItem] = {}
+        for candidate in candidates:
+            for item in candidate.source_items:
+                if item.source == "jobs":
+                    job_items[item.item_id] = item
+        if not job_items:
+            return []
+        summary = hiring_signals.analyze(
+            list(job_items.values()),
+            explicit=mode == "explicit",
+            topic=report.topic,
+        )
     signals = summary.get("signals") or []
     include = bool(summary.get("include"))
-    mode = summary.get("mode") or "standard"
     if not include and mode != "explicit":
         return []
 
@@ -1758,24 +2072,29 @@ def _render_candidate(
     if explanation:
         lines.append(f"   - Why: {explanation}")
     if candidate.snippet:
-        lines.append(f"   - Evidence: {_truncate(candidate.snippet, 360)}")
+        lines.append(
+            f"   - Evidence: {_format_untrusted_evidence(candidate.snippet, 360)}"
+        )
     for tc in _top_comments_list(primary):
         excerpt = tc.get("excerpt") or tc.get("text") or ""
         score = tc.get("score", "")
         vote_label = _vote_label_for(primary.source) if primary else "upvotes"
         source = primary.source if primary else None
         attribution = _comment_attribution(source, tc.get("author"))
-        lines.append(f"   - {attribution} ({score} {vote_label}): {_truncate(excerpt.strip(), 240)}")
+        lines.append(
+            f"   - {attribution} ({score} {vote_label}): "
+            f"{_format_untrusted_evidence(excerpt.strip(), 240)}"
+        )
     for post in _digg_posts_for(primary):
         lines.append(f"   - {_format_digg_quote(post)}")
     insight = _comment_insight(primary)
     if insight:
-        lines.append(f"   - Insight: {_truncate(insight, 220)}")
+        lines.append(f"   - Insight: {_format_untrusted_evidence(insight, 220)}")
     highlights = _transcript_highlights(primary)
     if highlights:
         lines.append("   - Highlights (auto-generated transcript; may contain transcription errors):")
         for hl in highlights:
-            lines.append(f'     - "{_truncate(hl, 200)}"')
+            lines.append(f'     - "{_format_untrusted_evidence(hl, 200)}"')
     return lines
 
 
@@ -2703,11 +3022,19 @@ def _render_best_takes(
         crowd_tag = " +crowd" if crowd_boost >= 5.0 else ""
         score_tag = f"(fun:{candidate.fun_score:.0f}{crowd_tag})"
         reason = f" -- {candidate.fun_explanation}" if candidate.fun_explanation and candidate.fun_explanation != "heuristic-fallback" else ""
-        lines.append(f'- "{_truncate(text, 280)}" -- {attribution} {score_tag}{reason}')
+        lines.append(
+            f'- "{_format_untrusted_evidence(text, 280, continuation_indent="  ")}" '
+            f"-- {attribution} {score_tag}{reason}"
+        )
     return lines
 
 
-def _render_top_comments(report, limit: int = 8) -> list[str]:
+def _render_top_comments(
+    report,
+    limit: int = 8,
+    *,
+    candidates: list[schema.Candidate] | None = None,
+) -> list[str]:
     """Vote-ranked community comments across ALL ranked candidates — not just the
     top-cluster representatives — surfaced into the EVIDENCE block so the reading
     model can weave the funniest/highest-engagement lines into the synthesis.
@@ -2722,7 +3049,20 @@ def _render_top_comments(report, limit: int = 8) -> list[str]:
     """
     seen: set[str] = set()
     scored: list[tuple[float, schema.Candidate, schema.SourceItem, dict, str]] = []
-    for cand in report.ranked_candidates:
+    candidate_pool = report.ranked_candidates if candidates is None else candidates
+    floor_candidates = [
+        cand for cand in candidate_pool
+        if _best_take_relevance_ok(cand)
+        and (cand.local_relevance or 0.0) >= relevance.RELEVANCE_FLOOR
+    ]
+    apply_relevance_floor = len(floor_candidates) >= relevance.MIN_ON_TOPIC
+    for cand in candidate_pool:
+        if not _best_take_relevance_ok(cand):
+            continue
+        # Skip comments from off-topic threads when enough candidates clear the
+        # floor; sparse niche topics still surface their best comments (#641).
+        if apply_relevance_floor and (cand.local_relevance or 0.0) < relevance.RELEVANCE_FLOOR:
+            continue
         for item in cand.source_items:
             # Pass min_score=0 here: the cross-platform list deliberately does
             # NOT gate on the per-platform absolute floor, because a less-watched
@@ -2739,7 +3079,10 @@ def _render_top_comments(report, limit: int = 8) -> list[str]:
                 if key in seen:
                     continue
                 seen.add(key)
-                strength = signals.normalized_comment_vote(cand.source, tc.get("score"))
+                # Blend vote strength (60%) with thread relevance (40%) so comments
+                # from on-topic threads rank above off-topic viral comments.
+                vote_strength = signals.normalized_comment_vote(cand.source, tc.get("score"))
+                strength = 0.6 * vote_strength + 0.4 * (cand.local_relevance or 0.0)
                 scored.append((strength, cand, item, tc, body))
     if len(scored) < 2:
         return []
@@ -2770,7 +3113,10 @@ def _render_top_comments(report, limit: int = 8) -> list[str]:
         attribution = _comment_attribution(cand.source, tc.get("author"))
         url = tc.get("url") or cand.url or ""
         url_part = f" — {url}" if url else ""
-        lines.append(f'- "{_truncate(body, 240)}" — {attribution} ({score} {vote_label}){url_part}')
+        lines.append(
+            f'- "{_format_untrusted_evidence(body, 240, continuation_indent="  ")}" '
+            f"— {attribution} ({score} {vote_label}){url_part}"
+        )
     return lines
 
 
@@ -2779,3 +3125,44 @@ def _truncate(text: str, limit: int) -> str:
     if len(text) <= limit:
         return text
     return text[: limit - 3].rstrip() + "..."
+
+
+_ATX_HEADING_PREFIX = re.compile(r"^(#{1,6})(\s|$)")
+
+
+def _escape_atx_heading_prefix(line: str) -> str:
+    """Neutralize leading ATX heading markers so scraped text cannot mint sections."""
+    stripped = line.lstrip()
+    if not stripped:
+        return line
+    leading = line[: len(line) - len(stripped)]
+    match = _ATX_HEADING_PREFIX.match(stripped)
+    if not match:
+        return line
+    hashes = match.group(1)
+    rest = stripped[len(hashes) :]
+    return f"{leading}{'\\#' * len(hashes)}{rest}"
+
+
+def _format_untrusted_evidence(
+    text: str,
+    limit: int,
+    *,
+    continuation_indent: str = "     ",
+) -> str:
+    """Truncate scraped text and keep it from injecting markdown structure.
+
+    Multi-line snippets previously broke out of the ``   - Evidence:`` indent
+    so a bare ``##`` from a jobs page became a sibling of engine section
+    headings inside the EVIDENCE FOR SYNTHESIS block (#874). Continuation
+    lines stay indented (CommonMark ATX headings need ≤3 leading spaces), and
+    leading ``#`` runs are escaped as defense in depth.
+    """
+    truncated = _truncate(text, limit)
+    if not truncated:
+        return truncated
+    lines = truncated.splitlines()
+    safe: list[str] = [_escape_atx_heading_prefix(lines[0])]
+    for line in lines[1:]:
+        safe.append(continuation_indent + _escape_atx_heading_prefix(line))
+    return "\n".join(safe)

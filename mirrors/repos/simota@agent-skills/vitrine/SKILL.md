@@ -96,7 +96,7 @@ Route elsewhere when the task is primarily:
 - For `interaction` recipe: import test utilities exclusively from `@storybook/test` (Storybook 8+ unified package) — never from deprecated `@storybook/jest` or `@storybook/testing-library`. Always `await` `userEvent` calls (v14+ is async), scope queries via `within(canvasElement)`, and prefer `findBy*`/`waitFor` over `waitForTimeout`. Use `step()` to group multi-stage flows for the Interactions panel. Stop play functions at the component boundary; cross-page flows hand off to Voyager.
 - For `mdx` recipe: start every component with Autodocs (`tags: ['autodocs']`); promote to hand-authored MDX only when narrative, multi-page guides, or custom JSX is required. Always bind via `<Meta of={meta} />`, embed stories with `<Canvas of={Story} />` (never re-define stories inline — Storybook 7+ deprecates `<Story name="...">` with JSX children), and register `'../src/**/*.mdx'` in `.storybook/main.ts`. Generate prop tables with `<ArgTypes>` rather than hand-written Markdown.
 - For `cosmos` recipe: recommend React Cosmos only for React-only projects valuing minimal config and fastest hot reload, where Chromatic / MCP / MDX / multi-framework support are not required. Coexistence with Storybook is permitted short-term but designate one tool as primary to avoid maintenance drift. Cosmos has no native play-function or VRT — wire Vitest browser-mode for interactions and Playwright VRT/Lost Pixel/Loki for visual diff.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Vitrine; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Vitrine; P2, P1 recommended).
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -277,8 +277,9 @@ Vitrine receives components and design context from upstream agents. Vitrine sen
 | `reference/mdx-docs.md` | MDX 3 + Storybook 10 Doc Blocks, Autodocs vs hand-authored MDX trade-off, multi-page docs structure |
 | `reference/react-cosmos.md` | Cosmos 6+ fixtures, decorator chains, multi-instance props, Storybook vs Cosmos decision tree |
 | `_common/UX_TRENDS_2026.md` | You need 2025-2026 component catalogue context — token-layer linkage (§1), framework state (React 19.2 / Svelte 5 / Vue 3.6, §3), and case studies for Radix Themes 3.0 / Primer / Polaris Unified. Read §1 Design and §3 Frontend. |
-| `_common/OPUS_48_AUTHORING.md` | Sizing the story plan, deciding adaptive thinking depth at PLAN, or front-loading target component/coverage tier at SCAN. Critical for Vitrine: P3, P5 |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the story plan, deciding adaptive thinking depth at PLAN, or front-loading target component/coverage tier at SCAN. Critical for Vitrine: P3, P5 |
 | `_common/PROOF_CARRYING.md` | You generate `vrt_proof` (visual regression diff within tolerance per Matrix Sampling Policy PD-2) in `nexus acceptance` Phase 2B. Use matrix-sampled stories (pairwise default for Tier-A, full pairwise + critical-path full-coverage for Tier-S). New story-set additions pass shadow-run for ≥3 weeks before becoming Gate-blocking. Pixel-match snapshot ≠ translation quality (PD-2 locale semantic note). |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Vitrine-specific Output/Next schema. |
 
 ## Operational
 
@@ -289,25 +290,7 @@ Vitrine receives components and design context from upstream agents. Vitrine sen
 
 ## AUTORUN Support
 
-When Vitrine receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
-
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Vitrine
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Vitrine-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

@@ -4,6 +4,42 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.220](https://github.com/Piebald-AI/claude-code-system-prompts/commit/5aef43e)
+
+<sub>_No changes to the system prompts in v2.1.220._</sub>
+
+# [2.1.219](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4068e71)
+
+_+30,034 tokens_
+
+- **NEW:** Agent Prompt: /code-review minimal mode — Adds a single careful diff pass that reports up to 15 concrete correctness findings without the normal finder-and-verifier workflow.
+- **NEW:** Data: DirectoryAdded hook description — Documents the post-registration hook for `/add-dir` and SDK `register_repo_root` requests, including its input, refreshed-sandbox timing, and source-specific failure and output handling.
+- **NEW:** Data: Interrupt cancel queued parameter, Data: Interrupt receipt cancelled field, and Data: SDK protocol capabilities field — Add feature-detectable `cancel_queued` interrupts that abort the running turn, synchronously cancel queued UUID-stamped commands, return them under `cancelled`, and leave `still_queued` empty.
+- **NEW:** Skill: Artifact PR review description (composed publish flow) — Adds dedicated routing for composed PR review briefings and requires published pages to be updated through the acting loop’s conflict-safe republish path rather than direct HTML edits.
+- **NEW:** System Prompt: Plan mode interactive workshop offer — Lets plan mode offer an interactive decision workshop once for tasks with substantive design choices, keep its document beside the canonical plan, and fold accepted decisions back into that plan.
+- Agent Prompt: /code-review workflow routing — Generalizes comment-posting instructions and prevents minimal-mode findings from being redundantly restated after structured reporting.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Scopes cross-session intent and permission-laundering rules within the auto-mode session-rule boundary.
+- Data: Claude API reference (all languages) and Streaming reference (Python, TypeScript) — Add Claude Opus 5 guidance that omitting `thinking` runs adaptive thinking.
+- Data: Claude API reference (all languages) — Document that explicit thinking disablement on Claude Opus 5 is accepted only through `high` effort and returns a 400 at `xhigh` or `max`.
+- Data: Claude API reference (C#, PHP, Python, TypeScript) and Streaming reference (Python, TypeScript) — Add Claude Opus 5 to the summarized-thinking display examples.
+- Data: Claude API reference (C#, Go, Java) — Update default and quickstart model examples to Claude Opus 5, using its plain model ID where typed SDK constants are not yet available.
+- Data: Claude API reference (C#, Java) — Expand dynamic web-search compatibility guidance to Fable 5, Claude Opus 5, and Sonnet 5.
+- Data: Claude API reference (Java, Python, TypeScript) — Add `xhigh` to the documented effort values.
+- Data: Claude API reference (Python, TypeScript) — Add Claude Opus 5 to server-side compaction support.
+- Data: Claude API reference (cURL, Go, Java, PHP, Python, Ruby, TypeScript) — Change Fable refusal-fallback examples to target the previous Claude Opus generation.
+- Data: Claude API reference (cURL, Python, TypeScript) — Distinguish the existing array fallback form and `server-side-fallback-2026-06-01` header from the new `"default"` scalar form and `server-side-fallback-2026-07-01` header.
+- Data: Claude API reference — C# — Add Claude Opus 5 to the models that reject assistant-message prefilling.
+- Data: Claude model catalog, HTTP error codes reference, and Platform availability, plus Skill: Building LLM-powered applications with Claude and Skill: Model migration guide — Add Claude Opus 5 capabilities, pricing, aliases, platform support, fast mode, migration paths, API features, breaking thinking changes, and prompt-tuning guidance while marking Opus 4.8 as the previous Opus generation.
+- Data: Prompt Caching — Design & Optimization and Data: Tool use concepts — Add 512-token cache minimums for the newest models, broaden cache-preserving mid-conversation system messages, document beta `tool_addition` and `tool_removal` blocks, and expand advisor-model compatibility and encrypted-result handling.
+- Data: Interrupt receipt still queued field — Clarifies that `cancel_queued: true` moves every cancellable survivor from `still_queued` to `cancelled` and emits terminal cancellation lifecycles.
+- Data: Managed Agents endpoint reference, events and steering, memory stores reference, and overview — Add Claude Opus 5 fast-mode and system-message support, remove unsupported memory-list sorting parameters, and correct SDK event-listing and stream troubleshooting paths.
+- Data: Workshop artifact HTML template and Skill: Artifact workshop — Make a verified template-based HTML document the default workshop lane, add per-decision and whole-plan SVG diagrams, preserve waiting state across republishes, route follow-up clarification through new decision blocks, and require shipped deliverables and divergences to be linked back onto the workshop page.
+- Skill: Artifact PR review and Skill: Artifact PR review (composed publish flow) — Keep user updates focused on the review deliverable; in the composed flow, require the acting loop to validate both the decision and publication-anchor islands, including the exact UTC shape of `publishedAt`, before carrying the timestamp verbatim into republishing.
+- Skill: Artifact whiteboard — Seeds new boards with a sparse first sketch when appropriate, titles and rebuilds them through the state-merging helper, reconstructs user diagrams before responding, adds a user-confirmed path to reconnect **Send to Claude** using only the capabilities declared on the first publish, and retires superseded Claude-authored marks without modifying user content.
+- System Prompt: Persistent memory usage and writing guidance and System Reminders: Memory consolidation and extraction tool constraints — Tighten mandatory recording of durable corrections and preferences, add pinned memories for globally applicable guidance, and restrict memory deletion to eligible Markdown files outside protected subdirectories.
+- System Prompt: Action safety and truthful reporting — Makes durable approval-context handling aware of the active model while preserving target inspection and truthful outcome reporting.
+- System Prompt: Phase four of plan mode, System Reminder: Plan mode approval tool enforcement, and System Reminder: Plan mode workflow — Allow an active workshop document as plan mode’s second writable file and as a valid end-of-turn publication path while retaining the plan file as canonical.
+
 # [2.1.218](https://github.com/Piebald-AI/claude-code-system-prompts/commit/37c256b)
 
 _+39,506 tokens_

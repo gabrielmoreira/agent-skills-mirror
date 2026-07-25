@@ -68,7 +68,7 @@ Route elsewhere when the task is primarily:
 - Deliver reports, scripts, plans, and thresholds. Do not leave injected failure active.
 - Report percentile latencies (p50/p95/p99/max), never averages alone — the "False Pass" anti-pattern occurs when average and p50 pass but p99 is 8× p50, hiding tail-latency issues affecting 1% of users.
 - For resilience verification, enforce ordering: rate limiting → circuit breaker → retry with jitter — retries inside an open circuit or consuming rate-limit quota cause cascading failures.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Siege; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Siege; P2, P1 recommended).
 - **Default to k6 v1.0 with TypeScript-native execution** for new load tests. v1.0 GA removed the `xk6-ts` requirement, executes `.ts` scripts directly, integrated browser load testing, and reports ~70% lower CPU vs v0.x. Recommend k6 v1.0 over Gatling / Artillery for greenfield unless a specific feature is missing (e.g. Gatling Java DSL). [Source: grafana.com/docs/k6/latest/using-k6/javascript-typescript-compatibility-mode/; infoq.com — Grafana k6 Releases]
 - **Use Schemathesis for stateful API fuzz** driven by OpenAPI/GraphQL specs. Property-based generation explores state transitions automatically; published benchmarks show 1.4-4.5× more defects than peer tools. Pair with Pact-style consumer-driven contract tests — Schemathesis covers spec-vs-implementation, Pact covers consumer-vs-provider. [Source: schemathesis.io; apideck.com/blog/openapi-testing]
 - **Adopt trace-based testing (Tracetest) for distributed assertions.** Tracetest asserts on individual OpenTelemetry spans, not just the HTTP response — proving that the auth service was called once, the cache was hit, the DB query took under N ms. Combine with Playwright for UI→trace assertions. The right tool when "the response was 200" hides a broken internal call. [Source: tracetest.io; oneuptime.com/blog/post/2026-02-06-tracetest-playwright-browser-testing/view]
@@ -275,7 +275,8 @@ Use mode-specific reporting:
 | `reference/resilience-patterns.md` | You need retry, timeout, circuit-breaker, or bulkhead verification patterns. |
 | `reference/resilience-anti-patterns.md` | You need resilience anti-patterns, error-budget rules, or SLO-based resilience testing. |
 | `reference/test-strategy-2026.md` | You need the consolidated 2026 picture across the seven test layers (unit+PBT / mutation / metamorphic / integration+contract / trace-based / E2E+visual+a11y / load+chaos+replay), shape selection (pyramid / diamond / trophy), coverage-floor + mutation-ceiling thresholds, or the skill-to-layer mapping. Use this when designing a test strategy from scratch or evaluating a team's current test mix. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the test report, deciding adaptive thinking depth at tool/percentile selection, or front-loading test type/environment/criteria at PLAN. Critical for Siege: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the test report, deciding adaptive thinking depth at tool/percentile selection, or front-loading test type/environment/criteria at PLAN. Critical for Siege: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Siege-specific Output/Next schema. |
 
 
 ## Operational
@@ -285,25 +286,7 @@ Use mode-specific reporting:
 - Standard protocols -> `_common/OPERATIONAL.md`
 ## AUTORUN Support
 
-When invoked in Nexus AUTORUN mode, parse any `_AGENT_CONTEXT` block for mode hints, environment scope, success criteria, and upstream findings. Execute the normal workflow with concise delivery, then append `_STEP_COMPLETE:`.
-
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Siege
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    mode: LOAD | CONTRACT | CHAOS | MUTATE | RESILIENCE
-    artifacts: ["[test scripts]", "[reports]", "[contracts]"]
-    findings: ["[metric or issue summary]"]
-  Validations:
-    thresholds_checked: "[pass/fail/partial]"
-    cleanup_complete: "[yes/no]"
-    rollback_ready: "[yes/no/not_applicable]"
-  Next: Bolt | Radar | Builder | Triage | Beacon | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Siege-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

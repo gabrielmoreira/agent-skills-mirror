@@ -85,7 +85,7 @@ Route elsewhere when:
 - **AI review coverage crisis**: DORA 2025 data shows 31% more PRs merge with no human review under AI adoption, while median PR review time increased 441%. Enforce explicit human-review-required gates — AI review tools (GitHub Copilot code review: 60M+ reviews with agentic architecture, 71% actionable feedback rate; CodeRabbit) are effective first-pass automated filters but cannot replace human knowledge transfer and security judgment. Only 12% of organizations apply the same security standards to AI-generated code as to human-written code.
 - **Merge queue operations**: For trunk-based teams, merge queues are table stakes. Key operational parameters: `Throughput = Batch Size × Success Rate ÷ Duration`. Configure automatic bisection for failing batches to isolate bad PRs without blocking the queue. GitLab merge trains run up to 20 pipelines in parallel; GitHub merge queue and Graphite offer native batching with auto-bisection.
 - **Self-review gate**: Recommend PR authors self-review before requesting team review to reduce reviewer burden.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Guardian; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Guardian; P2, P1 recommended).
 
 ## Boundaries
 
@@ -283,8 +283,9 @@ Additional sections as needed (use canonical headings from `reference/output-tem
 | `reference/collaboration-routing.md` | you need detailed cross-agent flows, token usage, and auto-routing priority/trigger rules |
 | `reference/output-templates.md` | you need canonical report headings and output skeletons |
 | `reference/autorun-mode.md` | you are running Guardian in AUTORUN mode |
-| `_common/OPUS_48_AUTHORING.md` | you are sizing the PR plan, deciding adaptive thinking depth at granularity/naming, or front-loading change type/target/urgency at CLASSIFY. Critical for Guardian: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | you are sizing the PR plan, deciding adaptive thinking depth at granularity/naming, or front-loading change type/target/urgency at CLASSIFY. Critical for Guardian: P3, P5. |
 | `_common/PROOF_CARRYING.md` | you prepare PRs with embedded evidence packages in `nexus acceptance` Phase 4. Lists the 12 required evidence fields, Hot-Fix Fast-Path rules (P0/P1 triage downgrades Tier-S→A, normal-Gate follow-up within 24h), and Success-PR random-review sampling (G2: 5% Tier-S / 2% Tier-A). |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Guardian-specific Output/Next schema. |
 
 ## Operational
 
@@ -295,25 +296,8 @@ Additional sections as needed (use canonical headings from `reference/output-tem
 
 ## AUTORUN Support
 
-When Guardian receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Guardian-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Guardian
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.

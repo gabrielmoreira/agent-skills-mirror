@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agno-agi/agno` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `agno-agi/agno` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agno-agi/agno` — 26 default patterns, 0 followed patterns, 10 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,10 +65,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`cookbook/02_agents/16_skills/sample_skills/code-review/SKILL.md`](cookbook/02_agents/16_skills/sample_skills/code-review/SKILL.md) |
 | 5 | ✓ | [`cookbook/02_agents/16_skills/sample_skills/git-workflow/SKILL.md`](cookbook/02_agents/16_skills/sample_skills/git-workflow/SKILL.md) |
 | 6 | ✓ | [`cookbook/03_teams/20_human_in_the_loop/CLAUDE.md`](cookbook/03_teams/20_human_in_the_loop/CLAUDE.md) |
-| 7 | ✓ | [`cookbook/05_agent_os/scheduler/CLAUDE.md`](cookbook/05_agent_os/scheduler/CLAUDE.md) |
-| 8 | ✓ | [`cookbook/05_agent_os/skills/sample_skills/system-info/SKILL.md`](cookbook/05_agent_os/skills/sample_skills/system-info/SKILL.md) |
-| 9 | ✓ | [`cookbook/frameworks/antigravity/example_agent/AGENTS.md`](cookbook/frameworks/antigravity/example_agent/AGENTS.md) |
-| 10 | ✓ | [`cookbook/frameworks/antigravity/example_agent/skills/haiku/SKILL.md`](cookbook/frameworks/antigravity/example_agent/skills/haiku/SKILL.md) |
+| 7 | ✓ | [`cookbook/05_agent_os/23_skills/sample_skills/system-info/SKILL.md`](cookbook/05_agent_os/23_skills/sample_skills/system-info/SKILL.md) |
+| 8 | ✓ | [`cookbook/frameworks/antigravity/example_agent/AGENTS.md`](cookbook/frameworks/antigravity/example_agent/AGENTS.md) |
+| 9 | ✓ | [`cookbook/frameworks/antigravity/example_agent/skills/haiku/SKILL.md`](cookbook/frameworks/antigravity/example_agent/skills/haiku/SKILL.md) |
 
 ---
 

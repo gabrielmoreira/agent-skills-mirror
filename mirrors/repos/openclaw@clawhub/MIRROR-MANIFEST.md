@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 285 file(s) materialized.
+Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 289 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openclaw/clawhub` — 26 default patterns, 0 followed patterns, 285 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 285 |
+| Files         | 289 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -275,75 +275,79 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 214 | ✓ | [`.agents/skills/openclaw-brand/references/asset-rights.md`](.agents/skills/openclaw-brand/references/asset-rights.md) |
 | 215 | ✓ | [`.agents/skills/openclaw-brand/references/identity.md`](.agents/skills/openclaw-brand/references/identity.md) |
 | 216 | ✓ | [`.agents/skills/openclaw-brand/SKILL.md`](.agents/skills/openclaw-brand/SKILL.md) |
-| 217 | ✓ | [`.agents/skills/openclaw-design-audit/references/fix-policy.md`](.agents/skills/openclaw-design-audit/references/fix-policy.md) |
-| 218 | ✓ | [`.agents/skills/openclaw-design-audit/references/github-pr-delivery.md`](.agents/skills/openclaw-design-audit/references/github-pr-delivery.md) |
-| 219 | ✓ | [`.agents/skills/openclaw-design-audit/references/report-format.md`](.agents/skills/openclaw-design-audit/references/report-format.md) |
-| 220 | ✓ | [`.agents/skills/openclaw-design-audit/references/rubric.md`](.agents/skills/openclaw-design-audit/references/rubric.md) |
-| 221 | ✓ | [`.agents/skills/openclaw-design-audit/SKILL.md`](.agents/skills/openclaw-design-audit/SKILL.md) |
-| 222 | ✓ | [`.agents/skills/openclaw-design-system/references/consumer-adapters.md`](.agents/skills/openclaw-design-system/references/consumer-adapters.md) |
-| 223 | ✓ | [`.agents/skills/openclaw-design-system/references/tokens.md`](.agents/skills/openclaw-design-system/references/tokens.md) |
-| 224 | ✓ | [`.agents/skills/openclaw-design-system/SKILL.md`](.agents/skills/openclaw-design-system/SKILL.md) |
-| 225 | ✓ | [`.agents/skills/openclaw-design/SKILL.md`](.agents/skills/openclaw-design/SKILL.md) |
-| 226 | ✓ | [`.agents/skills/openclaw-marketing-pages/references/page-patterns.md`](.agents/skills/openclaw-marketing-pages/references/page-patterns.md) |
-| 227 | ✓ | [`.agents/skills/openclaw-marketing-pages/SKILL.md`](.agents/skills/openclaw-marketing-pages/SKILL.md) |
-| 228 | ✓ | [`.agents/skills/query-metrics/README.md`](.agents/skills/query-metrics/README.md) |
-| 229 | ✓ | [`.agents/skills/query-metrics/scripts/axiom-api`](.agents/skills/query-metrics/scripts/axiom-api) |
-| 230 | ✓ | [`.agents/skills/query-metrics/scripts/datasets`](.agents/skills/query-metrics/scripts/datasets) |
-| 231 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-info`](.agents/skills/query-metrics/scripts/metrics-info) |
-| 232 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-query`](.agents/skills/query-metrics/scripts/metrics-query) |
-| 233 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-spec`](.agents/skills/query-metrics/scripts/metrics-spec) |
-| 234 | ✓ | [`.agents/skills/query-metrics/scripts/resolve-url`](.agents/skills/query-metrics/scripts/resolve-url) |
-| 235 | ✓ | [`.agents/skills/query-metrics/scripts/setup`](.agents/skills/query-metrics/scripts/setup) |
-| 236 | ✓ | [`.agents/skills/query-metrics/SKILL.md`](.agents/skills/query-metrics/SKILL.md) |
-| 237 | ✓ | [`.agents/skills/sentry-fix-issues/SKILL.md`](.agents/skills/sentry-fix-issues/SKILL.md) |
-| 238 | ✓ | [`.agents/skills/spl-to-apl/.meta/2026-01-28-schema-read-findings.md`](.agents/skills/spl-to-apl/.meta/2026-01-28-schema-read-findings.md) |
-| 239 | ✓ | [`.agents/skills/spl-to-apl/.meta/cases.ts`](.agents/skills/spl-to-apl/.meta/cases.ts) |
-| 240 | ✓ | [`.agents/skills/spl-to-apl/.meta/DESIGN-NOTES.md`](.agents/skills/spl-to-apl/.meta/DESIGN-NOTES.md) |
-| 241 | ✓ | [`.agents/skills/spl-to-apl/.meta/spl-to-apl.eval.ts`](.agents/skills/spl-to-apl/.meta/spl-to-apl.eval.ts) |
-| 242 | ✓ | [`.agents/skills/spl-to-apl/README.md`](.agents/skills/spl-to-apl/README.md) |
-| 243 | ✓ | [`.agents/skills/spl-to-apl/reference/command-mapping.md`](.agents/skills/spl-to-apl/reference/command-mapping.md) |
-| 244 | ✓ | [`.agents/skills/spl-to-apl/reference/dataset-schemas.md`](.agents/skills/spl-to-apl/reference/dataset-schemas.md) |
-| 245 | ✓ | [`.agents/skills/spl-to-apl/reference/examples.md`](.agents/skills/spl-to-apl/reference/examples.md) |
-| 246 | ✓ | [`.agents/skills/spl-to-apl/reference/function-mapping.md`](.agents/skills/spl-to-apl/reference/function-mapping.md) |
-| 247 | ✓ | [`.agents/skills/spl-to-apl/SKILL.md`](.agents/skills/spl-to-apl/SKILL.md) |
-| 248 | ✓ | [`.agents/skills/spl-to-apl/tests/test-queries.md`](.agents/skills/spl-to-apl/tests/test-queries.md) |
-| 249 | ✓ | [`.agents/skills/technical-documentation/agents/docs-framework-agent.md`](.agents/skills/technical-documentation/agents/docs-framework-agent.md) |
-| 250 | ✓ | [`.agents/skills/technical-documentation/agents/governance-agent.md`](.agents/skills/technical-documentation/agents/governance-agent.md) |
-| 251 | ✓ | [`.agents/skills/technical-documentation/agents/inventory-agent.md`](.agents/skills/technical-documentation/agents/inventory-agent.md) |
-| 252 | ✓ | [`.agents/skills/technical-documentation/agents/openai.yaml`](.agents/skills/technical-documentation/agents/openai.yaml) |
-| 253 | ✓ | [`.agents/skills/technical-documentation/agents/synthesis-agent.md`](.agents/skills/technical-documentation/agents/synthesis-agent.md) |
-| 254 | ✓ | [`.agents/skills/technical-documentation/assets/icon.jpg`](.agents/skills/technical-documentation/assets/icon.jpg) |
-| 255 | ✓ | [`.agents/skills/technical-documentation/references/agent-and-contributing.md`](.agents/skills/technical-documentation/references/agent-and-contributing.md) |
-| 256 | ✓ | [`.agents/skills/technical-documentation/references/build.md`](.agents/skills/technical-documentation/references/build.md) |
-| 257 | ✓ | [`.agents/skills/technical-documentation/references/openclaw.md`](.agents/skills/technical-documentation/references/openclaw.md) |
-| 258 | ✓ | [`.agents/skills/technical-documentation/references/principles.md`](.agents/skills/technical-documentation/references/principles.md) |
-| 259 | ✓ | [`.agents/skills/technical-documentation/references/review.md`](.agents/skills/technical-documentation/references/review.md) |
-| 260 | ✓ | [`.agents/skills/technical-documentation/references/tooling.md`](.agents/skills/technical-documentation/references/tooling.md) |
-| 261 | ✓ | [`.agents/skills/technical-documentation/SKILL.md`](.agents/skills/technical-documentation/SKILL.md) |
-| 262 | ✓ | [`.agents/skills/writing-evals/.meta/.gitkeep`](.agents/skills/writing-evals/.meta/.gitkeep) |
-| 263 | ✓ | [`.agents/skills/writing-evals/README.md`](.agents/skills/writing-evals/README.md) |
-| 264 | ✓ | [`.agents/skills/writing-evals/reference/api-reference.md`](.agents/skills/writing-evals/reference/api-reference.md) |
-| 265 | ✓ | [`.agents/skills/writing-evals/reference/flag-schema-guide.md`](.agents/skills/writing-evals/reference/flag-schema-guide.md) |
-| 266 | ✓ | [`.agents/skills/writing-evals/reference/scorer-patterns.md`](.agents/skills/writing-evals/reference/scorer-patterns.md) |
-| 267 | ✓ | [`.agents/skills/writing-evals/reference/templates/app-scope.ts`](.agents/skills/writing-evals/reference/templates/app-scope.ts) |
-| 268 | ✓ | [`.agents/skills/writing-evals/reference/templates/axiom.config.ts`](.agents/skills/writing-evals/reference/templates/axiom.config.ts) |
-| 269 | ✓ | [`.agents/skills/writing-evals/reference/templates/classification.eval.ts`](.agents/skills/writing-evals/reference/templates/classification.eval.ts) |
-| 270 | ✓ | [`.agents/skills/writing-evals/reference/templates/instrumentation.ts`](.agents/skills/writing-evals/reference/templates/instrumentation.ts) |
-| 271 | ✓ | [`.agents/skills/writing-evals/reference/templates/minimal.eval.ts`](.agents/skills/writing-evals/reference/templates/minimal.eval.ts) |
-| 272 | ✓ | [`.agents/skills/writing-evals/reference/templates/retrieval.eval.ts`](.agents/skills/writing-evals/reference/templates/retrieval.eval.ts) |
-| 273 | ✓ | [`.agents/skills/writing-evals/reference/templates/structured-output.eval.ts`](.agents/skills/writing-evals/reference/templates/structured-output.eval.ts) |
-| 274 | ✓ | [`.agents/skills/writing-evals/reference/templates/tool-use.eval.ts`](.agents/skills/writing-evals/reference/templates/tool-use.eval.ts) |
-| 275 | ✓ | [`.agents/skills/writing-evals/scripts/eval-add-cases`](.agents/skills/writing-evals/scripts/eval-add-cases) |
-| 276 | ✓ | [`.agents/skills/writing-evals/scripts/eval-init`](.agents/skills/writing-evals/scripts/eval-init) |
-| 277 | ✓ | [`.agents/skills/writing-evals/scripts/eval-list`](.agents/skills/writing-evals/scripts/eval-list) |
-| 278 | ✓ | [`.agents/skills/writing-evals/scripts/eval-results`](.agents/skills/writing-evals/scripts/eval-results) |
-| 279 | ✓ | [`.agents/skills/writing-evals/scripts/eval-run`](.agents/skills/writing-evals/scripts/eval-run) |
-| 280 | ✓ | [`.agents/skills/writing-evals/scripts/eval-scaffold`](.agents/skills/writing-evals/scripts/eval-scaffold) |
-| 281 | ✓ | [`.agents/skills/writing-evals/scripts/eval-validate`](.agents/skills/writing-evals/scripts/eval-validate) |
-| 282 | ✓ | [`.agents/skills/writing-evals/scripts/setup`](.agents/skills/writing-evals/scripts/setup) |
-| 283 | ✓ | [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/SKILL.md) |
-| 284 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 285 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 217 | ✓ | [`.agents/skills/openclaw-carapace/references/application-surfaces.md`](.agents/skills/openclaw-carapace/references/application-surfaces.md) |
+| 218 | ✓ | [`.agents/skills/openclaw-carapace/references/consumer-adapters.md`](.agents/skills/openclaw-carapace/references/consumer-adapters.md) |
+| 219 | ✓ | [`.agents/skills/openclaw-carapace/references/tokens.md`](.agents/skills/openclaw-carapace/references/tokens.md) |
+| 220 | ✓ | [`.agents/skills/openclaw-carapace/SKILL.md`](.agents/skills/openclaw-carapace/SKILL.md) |
+| 221 | ✓ | [`.agents/skills/openclaw-design-audit/references/fix-policy.md`](.agents/skills/openclaw-design-audit/references/fix-policy.md) |
+| 222 | ✓ | [`.agents/skills/openclaw-design-audit/references/github-pr-delivery.md`](.agents/skills/openclaw-design-audit/references/github-pr-delivery.md) |
+| 223 | ✓ | [`.agents/skills/openclaw-design-audit/references/report-format.md`](.agents/skills/openclaw-design-audit/references/report-format.md) |
+| 224 | ✓ | [`.agents/skills/openclaw-design-audit/references/rubric.md`](.agents/skills/openclaw-design-audit/references/rubric.md) |
+| 225 | ✓ | [`.agents/skills/openclaw-design-audit/SKILL.md`](.agents/skills/openclaw-design-audit/SKILL.md) |
+| 226 | ✓ | [`.agents/skills/openclaw-design-system/references/consumer-adapters.md`](.agents/skills/openclaw-design-system/references/consumer-adapters.md) |
+| 227 | ✓ | [`.agents/skills/openclaw-design-system/references/tokens.md`](.agents/skills/openclaw-design-system/references/tokens.md) |
+| 228 | ✓ | [`.agents/skills/openclaw-design-system/SKILL.md`](.agents/skills/openclaw-design-system/SKILL.md) |
+| 229 | ✓ | [`.agents/skills/openclaw-design/SKILL.md`](.agents/skills/openclaw-design/SKILL.md) |
+| 230 | ✓ | [`.agents/skills/openclaw-marketing-pages/references/page-patterns.md`](.agents/skills/openclaw-marketing-pages/references/page-patterns.md) |
+| 231 | ✓ | [`.agents/skills/openclaw-marketing-pages/SKILL.md`](.agents/skills/openclaw-marketing-pages/SKILL.md) |
+| 232 | ✓ | [`.agents/skills/query-metrics/README.md`](.agents/skills/query-metrics/README.md) |
+| 233 | ✓ | [`.agents/skills/query-metrics/scripts/axiom-api`](.agents/skills/query-metrics/scripts/axiom-api) |
+| 234 | ✓ | [`.agents/skills/query-metrics/scripts/datasets`](.agents/skills/query-metrics/scripts/datasets) |
+| 235 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-info`](.agents/skills/query-metrics/scripts/metrics-info) |
+| 236 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-query`](.agents/skills/query-metrics/scripts/metrics-query) |
+| 237 | ✓ | [`.agents/skills/query-metrics/scripts/metrics-spec`](.agents/skills/query-metrics/scripts/metrics-spec) |
+| 238 | ✓ | [`.agents/skills/query-metrics/scripts/resolve-url`](.agents/skills/query-metrics/scripts/resolve-url) |
+| 239 | ✓ | [`.agents/skills/query-metrics/scripts/setup`](.agents/skills/query-metrics/scripts/setup) |
+| 240 | ✓ | [`.agents/skills/query-metrics/SKILL.md`](.agents/skills/query-metrics/SKILL.md) |
+| 241 | ✓ | [`.agents/skills/sentry-fix-issues/SKILL.md`](.agents/skills/sentry-fix-issues/SKILL.md) |
+| 242 | ✓ | [`.agents/skills/spl-to-apl/.meta/2026-01-28-schema-read-findings.md`](.agents/skills/spl-to-apl/.meta/2026-01-28-schema-read-findings.md) |
+| 243 | ✓ | [`.agents/skills/spl-to-apl/.meta/cases.ts`](.agents/skills/spl-to-apl/.meta/cases.ts) |
+| 244 | ✓ | [`.agents/skills/spl-to-apl/.meta/DESIGN-NOTES.md`](.agents/skills/spl-to-apl/.meta/DESIGN-NOTES.md) |
+| 245 | ✓ | [`.agents/skills/spl-to-apl/.meta/spl-to-apl.eval.ts`](.agents/skills/spl-to-apl/.meta/spl-to-apl.eval.ts) |
+| 246 | ✓ | [`.agents/skills/spl-to-apl/README.md`](.agents/skills/spl-to-apl/README.md) |
+| 247 | ✓ | [`.agents/skills/spl-to-apl/reference/command-mapping.md`](.agents/skills/spl-to-apl/reference/command-mapping.md) |
+| 248 | ✓ | [`.agents/skills/spl-to-apl/reference/dataset-schemas.md`](.agents/skills/spl-to-apl/reference/dataset-schemas.md) |
+| 249 | ✓ | [`.agents/skills/spl-to-apl/reference/examples.md`](.agents/skills/spl-to-apl/reference/examples.md) |
+| 250 | ✓ | [`.agents/skills/spl-to-apl/reference/function-mapping.md`](.agents/skills/spl-to-apl/reference/function-mapping.md) |
+| 251 | ✓ | [`.agents/skills/spl-to-apl/SKILL.md`](.agents/skills/spl-to-apl/SKILL.md) |
+| 252 | ✓ | [`.agents/skills/spl-to-apl/tests/test-queries.md`](.agents/skills/spl-to-apl/tests/test-queries.md) |
+| 253 | ✓ | [`.agents/skills/technical-documentation/agents/docs-framework-agent.md`](.agents/skills/technical-documentation/agents/docs-framework-agent.md) |
+| 254 | ✓ | [`.agents/skills/technical-documentation/agents/governance-agent.md`](.agents/skills/technical-documentation/agents/governance-agent.md) |
+| 255 | ✓ | [`.agents/skills/technical-documentation/agents/inventory-agent.md`](.agents/skills/technical-documentation/agents/inventory-agent.md) |
+| 256 | ✓ | [`.agents/skills/technical-documentation/agents/openai.yaml`](.agents/skills/technical-documentation/agents/openai.yaml) |
+| 257 | ✓ | [`.agents/skills/technical-documentation/agents/synthesis-agent.md`](.agents/skills/technical-documentation/agents/synthesis-agent.md) |
+| 258 | ✓ | [`.agents/skills/technical-documentation/assets/icon.jpg`](.agents/skills/technical-documentation/assets/icon.jpg) |
+| 259 | ✓ | [`.agents/skills/technical-documentation/references/agent-and-contributing.md`](.agents/skills/technical-documentation/references/agent-and-contributing.md) |
+| 260 | ✓ | [`.agents/skills/technical-documentation/references/build.md`](.agents/skills/technical-documentation/references/build.md) |
+| 261 | ✓ | [`.agents/skills/technical-documentation/references/openclaw.md`](.agents/skills/technical-documentation/references/openclaw.md) |
+| 262 | ✓ | [`.agents/skills/technical-documentation/references/principles.md`](.agents/skills/technical-documentation/references/principles.md) |
+| 263 | ✓ | [`.agents/skills/technical-documentation/references/review.md`](.agents/skills/technical-documentation/references/review.md) |
+| 264 | ✓ | [`.agents/skills/technical-documentation/references/tooling.md`](.agents/skills/technical-documentation/references/tooling.md) |
+| 265 | ✓ | [`.agents/skills/technical-documentation/SKILL.md`](.agents/skills/technical-documentation/SKILL.md) |
+| 266 | ✓ | [`.agents/skills/writing-evals/.meta/.gitkeep`](.agents/skills/writing-evals/.meta/.gitkeep) |
+| 267 | ✓ | [`.agents/skills/writing-evals/README.md`](.agents/skills/writing-evals/README.md) |
+| 268 | ✓ | [`.agents/skills/writing-evals/reference/api-reference.md`](.agents/skills/writing-evals/reference/api-reference.md) |
+| 269 | ✓ | [`.agents/skills/writing-evals/reference/flag-schema-guide.md`](.agents/skills/writing-evals/reference/flag-schema-guide.md) |
+| 270 | ✓ | [`.agents/skills/writing-evals/reference/scorer-patterns.md`](.agents/skills/writing-evals/reference/scorer-patterns.md) |
+| 271 | ✓ | [`.agents/skills/writing-evals/reference/templates/app-scope.ts`](.agents/skills/writing-evals/reference/templates/app-scope.ts) |
+| 272 | ✓ | [`.agents/skills/writing-evals/reference/templates/axiom.config.ts`](.agents/skills/writing-evals/reference/templates/axiom.config.ts) |
+| 273 | ✓ | [`.agents/skills/writing-evals/reference/templates/classification.eval.ts`](.agents/skills/writing-evals/reference/templates/classification.eval.ts) |
+| 274 | ✓ | [`.agents/skills/writing-evals/reference/templates/instrumentation.ts`](.agents/skills/writing-evals/reference/templates/instrumentation.ts) |
+| 275 | ✓ | [`.agents/skills/writing-evals/reference/templates/minimal.eval.ts`](.agents/skills/writing-evals/reference/templates/minimal.eval.ts) |
+| 276 | ✓ | [`.agents/skills/writing-evals/reference/templates/retrieval.eval.ts`](.agents/skills/writing-evals/reference/templates/retrieval.eval.ts) |
+| 277 | ✓ | [`.agents/skills/writing-evals/reference/templates/structured-output.eval.ts`](.agents/skills/writing-evals/reference/templates/structured-output.eval.ts) |
+| 278 | ✓ | [`.agents/skills/writing-evals/reference/templates/tool-use.eval.ts`](.agents/skills/writing-evals/reference/templates/tool-use.eval.ts) |
+| 279 | ✓ | [`.agents/skills/writing-evals/scripts/eval-add-cases`](.agents/skills/writing-evals/scripts/eval-add-cases) |
+| 280 | ✓ | [`.agents/skills/writing-evals/scripts/eval-init`](.agents/skills/writing-evals/scripts/eval-init) |
+| 281 | ✓ | [`.agents/skills/writing-evals/scripts/eval-list`](.agents/skills/writing-evals/scripts/eval-list) |
+| 282 | ✓ | [`.agents/skills/writing-evals/scripts/eval-results`](.agents/skills/writing-evals/scripts/eval-results) |
+| 283 | ✓ | [`.agents/skills/writing-evals/scripts/eval-run`](.agents/skills/writing-evals/scripts/eval-run) |
+| 284 | ✓ | [`.agents/skills/writing-evals/scripts/eval-scaffold`](.agents/skills/writing-evals/scripts/eval-scaffold) |
+| 285 | ✓ | [`.agents/skills/writing-evals/scripts/eval-validate`](.agents/skills/writing-evals/scripts/eval-validate) |
+| 286 | ✓ | [`.agents/skills/writing-evals/scripts/setup`](.agents/skills/writing-evals/scripts/setup) |
+| 287 | ✓ | [`.agents/skills/writing-evals/SKILL.md`](.agents/skills/writing-evals/SKILL.md) |
+| 288 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 289 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

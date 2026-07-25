@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dash0hq/agent-skills` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
+Mirror of `dash0hq/agent-skills` — 26 default patterns, 2 followed patterns, 51 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `dash0hq/agent-skills` — 26 default patterns, 0 followed patterns, 4
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 49 |
+| Followed pats | 2 |
+| Files         | 51 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `dash0hq/agent-skills` — 26 default patterns, 0 followed patterns, 4
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `evals/README.md`
+- `evals/fixtures/README.md`
 
 ## File Index
 
@@ -108,6 +109,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 47 | ✓ | [`skills/otel-semantic-conventions/rules/dash0.md`](skills/otel-semantic-conventions/rules/dash0.md) |
 | 48 | ✓ | [`skills/otel-semantic-conventions/rules/versioning.md`](skills/otel-semantic-conventions/rules/versioning.md) |
 | 49 | ✓ | [`skills/otel-semantic-conventions/SKILL.md`](skills/otel-semantic-conventions/SKILL.md) |
+| 50 | → | [`evals/fixtures/README.md`](evals/fixtures/README.md) |
+| 51 | → | [`evals/README.md`](evals/README.md) |
 
 ---
 

@@ -57,7 +57,7 @@ Route elsewhere when the task is primarily:
 - When using full catalog (cache miss or non-recommend recipes), retrieve catalog information from `reference/catalog.md` to reflect current ecosystem state. Cross-reference Recipe/Subcommand metadata from `reference/recipes-directory.md` — every recommendation must surface at least the default Recipe. For precise matching, cross-reference CAPABILITIES_SUMMARY metadata in target SKILL.md files — match by declared capabilities, not category labels alone.
 - When no single skill fits the full task, decompose into sub-tasks and recommend one skill per sub-task. Avoid suggesting loosely related agents for a monolithic task.
 - Cap recommendations at 3. Too many choices paralyze users.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Compass; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Compass; P2, P1 recommended).
 
 ## Boundaries
 
@@ -192,7 +192,8 @@ Every deliverable must include:
 | `reference/cache-recipes.md` | You are executing `init` or `refresh` and need the SCAN→SIZE→SCORE→PICK→WRITE→REPORT procedure, signal extraction sources, signal→skill mapping table, or top-N sizing formula |
 | `_common/BOUNDARIES.md` | Role boundaries are ambiguous |
 | `_common/OPERATIONAL.md` | Shared operational defaults |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the recommendation, deciding adaptive thinking depth at decomposition, or front-loading task/user/decomposability at LOOKUP. Critical for Compass: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the recommendation, deciding adaptive thinking depth at decomposition, or front-loading task/user/decomposability at LOOKUP. Critical for Compass: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Compass-specific Output/Next schema. |
 
 ## Operational
 
@@ -205,26 +206,7 @@ Shared protocols: `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Compass-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Compass
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [recommended agents or catalog]
-    artifact_type: "recommendation | catalog | comparison | onboarding"
-    parameters:
-      recommended_agents: "[agent1, agent2]"
-      confidence: "high | medium | low"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [Nexus | Architect] | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Compass-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

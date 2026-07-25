@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `vibheksoni/stealth-browser-mcp` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `vibheksoni/stealth-browser-mcp` — 26 default patterns, 5 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `vibheksoni/stealth-browser-mcp` — 26 default patterns, 0 followed p
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 2 |
+| Followed pats | 5 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,11 @@ Mirror of `vibheksoni/stealth-browser-mcp` — 26 default patterns, 0 followed p
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `README.md`
+- `STEALTH_TESTS.md`
+- `demo/augment-hero-clone.md`
+- `ROADMAP.md`
+- `CONTRIBUTING.md`
 
 ## File Index
 
@@ -59,8 +63,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/stealth-browser-mcp/agents/openai.yaml`](skills/stealth-browser-mcp/agents/openai.yaml) |
-| 2 | ✓ | [`skills/stealth-browser-mcp/SKILL.md`](skills/stealth-browser-mcp/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`demo/README.md`](demo/README.md) |
+| 3 | ✓ | [`skills/stealth-browser-mcp/agents/openai.yaml`](skills/stealth-browser-mcp/agents/openai.yaml) |
+| 4 | ✓ | [`skills/stealth-browser-mcp/SKILL.md`](skills/stealth-browser-mcp/SKILL.md) |
+| 5 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 6 | → | [`demo/augment-hero-clone.md`](demo/augment-hero-clone.md) |
+| 7 | → | [`README.md`](README.md) |
+| 8 | → | [`ROADMAP.md`](ROADMAP.md) |
+| 9 | → | [`STEALTH_TESTS.md`](STEALTH_TESTS.md) |
 
 ---
 

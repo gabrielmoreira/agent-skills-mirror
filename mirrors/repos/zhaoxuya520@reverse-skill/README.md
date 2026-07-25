@@ -247,5 +247,5 @@ Special thanks to the OLLVM deobfuscation ecosystem contributors and everyone wh
 ## Contact
 
 - **Email:** [24781737@qq.com](mailto:24781737@qq.com)
-- **Telegram:** [t.me/AI_And_Security](https://t.me/AI_And_Security)
+- **Telegram:** [t.me/AI_And_Security](https://t.me/+uf7-Ji6R-RQxZTUy)
 - **X (Twitter):** [@apivixtls](https://x.com/apivixtls)

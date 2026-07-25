@@ -1,11 +1,12 @@
-"""X (Twitter) search via xurl CLI — official X API v2 with OAuth2.
+"""X (Twitter) search via xurl CLI — official X API v2.
 
-xurl is an open-source CLI for the X API (https://github.com/openclaw/xurl).
-It uses OAuth2 with PKCE and automatic token refresh, requiring only a free
+xurl is X's official CLI for the X API
+(https://github.com/xdevplatform/xurl). It requires only a free
 X Developer App. No xAI subscription or browser cookies needed.
 
-Install: npm install -g xurl
-Auth:    xurl auth oauth2 login
+Install: npm install -g @xdevplatform/xurl
+Auth:    xurl auth app-only <bearer-token>   (search / availability)
+         xurl auth oauth1 ...                (optional; not used for search)
 
 Priority: xAI API > Bird/GraphQL > xurl > web-only fallback
 """
@@ -19,6 +20,11 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from . import log
 from .relevance import token_overlap_relevance as _compute_relevance
+
+# xurl auth status marks a configured app-only bearer as "bearer: ✓".
+# Search uses --auth app, so availability must require this — oauth1 alone
+# is not enough.
+_BEARER_CONFIGURED_RE = re.compile(r"bearer:\s*✓")
 
 
 def _log(msg: str) -> None:
@@ -34,8 +40,8 @@ DEPTH_CONFIG = {
 
 
 # Memoized availability, mirroring health.py's per-process dependency-probe
-# cache: each uncached is_available() check spawns an `xurl whoami`
-# subprocess (a live, authenticated X API call). The doctor/safe-diagnose
+# cache: each uncached is_available() check spawns an `xurl auth status`
+# subprocess (local credential status; no network). The doctor/safe-diagnose
 # path never uses it — see stored_auth_status()/has_stored_auth() below —
 # but research-time callers may consult it more than once per process.
 # None means "not yet probed".
@@ -49,10 +55,11 @@ def clear_availability_cache() -> None:
 
 
 def is_available() -> bool:
-    """Check if xurl is installed and has valid authentication.
+    """Check if xurl is installed and has app-only bearer auth.
 
-    Returns True only if xurl binary is found AND the user is authenticated
-    (i.e. ``xurl whoami`` exits 0 and returns a username field).
+    Returns True only if xurl binary is found AND ``xurl auth status``
+    exits 0 with a configured app-only bearer (``bearer: ✓``). OAuth1
+    alone is insufficient — ``search_x`` pins ``--auth app``.
     Memoized per process; ``clear_availability_cache()`` resets.
     """
     global _availability_cache
@@ -64,12 +71,15 @@ def is_available() -> bool:
 def _is_available_uncached() -> bool:
     try:
         result = subprocess.run(
-            ["xurl", "whoami"],
+            ["xurl", "auth", "status"],
             capture_output=True,
             text=True,
             timeout=10,
         )
-        return result.returncode == 0 and '"username"' in result.stdout
+        return (
+            result.returncode == 0
+            and _BEARER_CONFIGURED_RE.search(result.stdout) is not None
+        )
     except (OSError, subprocess.TimeoutExpired):
         # OSError covers FileNotFoundError (no xurl on PATH) and
         # PermissionError (a non-executable match on PATH, e.g. WSL's
@@ -164,8 +174,11 @@ def search_x(
     max_results = max(10, min(100, max_results))
 
     try:
+        # --auth app (app-only bearer): xurl >=1.1 mis-signs OAuth1 requests
+        # whose query needs percent-encoding (spaces, parens, ...) -> 401.
+        # Bearer auth sends no signature, so multi-word queries work.
         result = subprocess.run(
-            ["xurl", "search", query, "-n", str(max_results)],
+            ["xurl", "search", query, "-n", str(max_results), "--auth", "app"],
             capture_output=True,
             text=True,
             timeout=30,

@@ -35,6 +35,10 @@ Orca targets macOS, Linux, and Windows. Keep all platform-dependent behavior beh
 
 All changes must consider the SSH use case. Don't assume local-only execution.
 
+## Folder Workspace Use Case
+
+All changes must consider folder workspaces as well as git worktrees. Don't assume every workspace is a git worktree.
+
 ## Git Binary Compatibility
 
 Orca runs the user's Git binary on native, WSL, and SSH hosts, which may all have different versions. Treat Git 2.25 as the core-workflow baseline and follow [`docs/reference/git-compatibility.md`](./docs/reference/git-compatibility.md).

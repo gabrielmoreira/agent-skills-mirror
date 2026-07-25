@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Agentchengfeng/chengfeng-videocut-skills` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `Agentchengfeng/chengfeng-videocut-skills` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Agentchengfeng/chengfeng-videocut-skills` — 26 default patterns, 0 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`plugins/chengfeng-videocut/skills/cut-talking-head/SKILL.md`](plugins/chengfeng-videocut/skills/cut-talking-head/SKILL.md) |
-| 3 | ✓ | [`plugins/chengfeng-videocut/skills/finish-talking-head/SKILL.md`](plugins/chengfeng-videocut/skills/finish-talking-head/SKILL.md) |
+| 2 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-check-videocut-updates/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-check-videocut-updates/SKILL.md) |
+| 3 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-cut-talking-head/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-cut-talking-head/SKILL.md) |
+| 4 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-finish-talking-head/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-finish-talking-head/SKILL.md) |
+| 5 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-report-videocut-bug/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-report-videocut-bug/SKILL.md) |
 
 ---
 

@@ -30,28 +30,13 @@ CONVO_DIR="$HOME/.claude/projects/-${PROJECT_KEY}"
 
 resolve_health_helper() {
   local name="$1"
-  local installed_path=""
-  local candidate=""
-
-  for candidate in "$SCRIPT_DIR/$name" "./skills/health/scripts/$name"; do
-    if [ -f "$candidate" ]; then
-      printf '%s\n' "$candidate"
-      return 0
-    fi
-  done
-
-  installed_path="$(npx skills path tw93/Waza 2>/dev/null || true)"
-  if [ -n "$installed_path" ] && [ -f "$installed_path/skills/health/scripts/$name" ]; then
-    printf '%s\n' "$installed_path/skills/health/scripts/$name"
-    return 0
-  fi
-
-  return 1
+  [ -f "$SCRIPT_DIR/$name" ] || return 1
+  printf '%s\n' "$SCRIPT_DIR/$name"
 }
 
 count_project_files() {
   local count
-  count=$(git -C "$P" ls-files 2>/dev/null | wc -l | tr -d ' ' || true)
+  count=$(git -c core.fsmonitor=false -C "$P" ls-files 2>/dev/null | wc -l | tr -d ' ' || true)
   if [ -z "$count" ] || [ "$count" = "0" ]; then
     count=$(find "$P" -type f \
       -not -path "*/.git/*" \
@@ -65,7 +50,7 @@ count_project_files() {
 
 count_contributors() {
   local count
-  count=$(git -C "$P" log -n 500 --format='%ae' 2>/dev/null | sort -u | wc -l | tr -d ' ' || true)
+  count=$(git -c core.fsmonitor=false -C "$P" log -n 500 --format='%ae' 2>/dev/null | sort -u | wc -l | tr -d ' ' || true)
   printf '%s\n' "${count:-0}"
 }
 
@@ -502,8 +487,9 @@ echo "global_claude_words: $(count_file_words "$HOME/.claude/CLAUDE.md")"
 echo "local_claude_words: $(count_file_words "$P/CLAUDE.md")"
 echo "rules_words: $(rules_word_count)"
 echo "skill_desc_words: $(skill_description_word_count)"
-if command -v python3 >/dev/null 2>&1; then
-python3 - "$SETTINGS" "$MODE" <<'PYEOF' 2>/dev/null || echo "(unavailable)"
+PYTHON_BIN="${WAZA_PYTHON:-python3}"
+if command -v "$PYTHON_BIN" >/dev/null 2>&1 || [ -x "$PYTHON_BIN" ]; then
+"$PYTHON_BIN" - "$SETTINGS" "$MODE" <<'PYEOF' 2>/dev/null || echo "(unavailable)"
 import json
 import sys
 
@@ -593,7 +579,7 @@ else
   echo "(none)"
 fi
 echo "=== GITIGNORE ==="
-_GITIGNORE_HIT=$(git -C "$P" check-ignore -v .claude/settings.local.json 2>/dev/null || true)
+_GITIGNORE_HIT=$(git -c core.fsmonitor=false -C "$P" check-ignore -v .claude/settings.local.json 2>/dev/null || true)
 if [ -n "$_GITIGNORE_HIT" ]; then
   _GITIGNORE_SOURCE=${_GITIGNORE_HIT%%:*}
   case "$_GITIGNORE_SOURCE" in
@@ -714,10 +700,10 @@ for DIR in "$P/.claude/skills" "$HOME/.claude/skills"; do
     _PROVENANCE_FOUND=1
     TARGET=$(resolve_symlink "$link")
     echo "link=$(basename "$link") target=$TARGET"
-    GIT_ROOT=$(git -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || echo "")
+    GIT_ROOT=$(git -c core.fsmonitor=false -C "$TARGET" rev-parse --show-toplevel 2>/dev/null || echo "")
     if [ -n "$GIT_ROOT" ]; then
-      REMOTE=$(git -C "$GIT_ROOT" remote get-url origin 2>/dev/null || echo "unknown")
-      COMMIT=$(git -C "$GIT_ROOT" rev-parse --short HEAD 2>/dev/null || echo "unknown")
+      REMOTE=$(git -c core.fsmonitor=false -C "$GIT_ROOT" remote get-url origin 2>/dev/null || echo "unknown")
+      COMMIT=$(git -c core.fsmonitor=false -C "$GIT_ROOT" rev-parse --short HEAD 2>/dev/null || echo "unknown")
       echo "  git_remote=$REMOTE commit=$COMMIT"
     fi
   done

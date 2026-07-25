@@ -13,6 +13,7 @@ The goal is a recommendation: stay put, update, or pin to a specific version. Cl
 - **Quiet version = good sign.** If nobody is complaining about a recent release, that's a positive signal. A loud pile-on about a specific build is the thing to avoid.
 - **Version comparisons are the strongest signal.** Posts where people compare builds ("X broke Y, rolled back to Z") tell you exactly which release to avoid.
 - **Stay ~a day behind the bleeding edge.** Avoid a release that's only a few hours old - let others surface same-day regressions first.
+- **But a same-day release is fine when the tracker is quiet and it fixes something you're carrying.** If a few hours have passed with no cluster of issues, and the changelog shows it fixing a regression that's live in your installed range, taking it is usually better than waiting. Say plainly what you're trading: a few hours of field time instead of a day.
 - **The real lever is *when* you update, not stable-vs-latest.** Default Claude Code auto-updates to `latest` constantly, which is how you drift onto a same-day regression.
 
 ## 1. What's installed vs what's published
@@ -44,16 +45,22 @@ curl -sL https://raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG
 
 ### GitHub issues (primary - reliable and fetchable)
 
-The most dependable signal. Search recent open bug reports, sorted by reactions, via `gh api` in a safeclaw container. A version regression shows up as a cluster of high-reaction issues filed right after a release.
+The most dependable signal. Search recent open bug reports, sorted by reactions:
 
 ```bash
-docker exec safeclaw-<name> bash -c 'gh api -X GET search/issues \
+gh api -X GET search/issues \
   -f q="repo:anthropics/claude-code is:issue is:open created:>=<DATE> label:bug" \
   -f sort=reactions -f per_page=25 \
-  --jq ".items[] | \"\(.created_at[:10]) +\(.reactions.total_count) c\(.comments) #\(.number) \(.title)\""'
+  --jq '.items[] | "\(.created_at[:10]) +\(.reactions.total_count) c\(.comments) #\(.number) \(.title)"'
 ```
 
-(Set `<DATE>` to ~3 days before today.) Cross-reference titles against the changelog gap: if a top issue is already addressed by a fix/flag in `latest`, that build is *safer*, not riskier. Mostly minor or server-side (API 500/529) issues = quiet release = good sign.
+(Set `<DATE>` to ~3 days before today.) A version regression shows up as a *cluster* of high-reaction issues filed right after a release. Single reports with 0-1 reactions are noise, not a signal - the tracker always has a steady trickle of those.
+
+Cross-reference titles against the changelog gap: if a top issue is already addressed by a fix/flag in `latest`, that build is *safer*, not riskier. Mostly minor or server-side (API 500/529) issues = quiet release = good sign.
+
+To judge a release that's only hours old, drop `label:bug` and `is:open` and set the date to today - you want everything filed since it shipped, before anyone has triaged or labeled it.
+
+Also check whether the issues are even about the CLI. Clusters about Claude Desktop or the VS Code extension say nothing about whether a Claude Code CLI build is safe.
 
 ### Reddit (secondary - reachable via the DuckDuckGo hop)
 
@@ -65,8 +72,34 @@ https://www.reddit.com/r/ClaudeAI/search.json?q=claude+code+update+broke+OR+regr
 
 Apply the heuristics above: a positive or quiet recent-update thread is reassuring; a high-score "X is broken" thread names the build to skip.
 
-## 4. Recommend
+## 4. Test the claim instead of arguing about it
+
+When the question is "do I actually need this release to get X" - usually a new model - just run it. A new model is server-side, so it often works on an older client; what the older client gets *wrong* is the metadata around it.
+
+```bash
+claude -p "Reply with exactly: ok" --model <model-id> --output-format json 2>&1 \
+  | python3 -c "import sys,json;u=json.load(sys.stdin)['modelUsage'];print(json.dumps({m:{'contextWindow':v['contextWindow'],'costUSD':v['costUSD']} for m,v in u.items()},indent=2))"
+```
+
+`modelUsage` is the honest answer: it names the model that actually served the turn (ignore the Haiku row, that's the background helper) and reports the `contextWindow` the client is applying. A new model responding on an old client but showing a 200000 window where the changelog promises 1000000 means the model works and the *client* is capping it - which is a concrete, checkable reason to update rather than a vague one.
+
+Re-run the same command after updating to confirm the number moved.
+
+## 5. Recommend
 
 - If the installed version is in the recent, well-received range and nothing in the gap regressed: **stay put**, don't chase a release that's only hours old.
-- If there's a known regression in a build, recommend the last good version and `npm install -g @anthropic-ai/claude-code@X.Y.Z` to pin/rollback.
+- If there's a known regression in a build, recommend the last good version and pin/rollback to it.
 - For anyone who's been burned: **disable the auto-updater and update deliberately** (the repo's setup script does this), rather than religiously tracking `@stable`.
+
+### Installing a specific version - check how it was installed first
+
+`npm install -g @anthropic-ai/claude-code@X.Y.Z` is **not** universal. On a native install it fails with `EEXIST: file already exists /Users/<you>/.local/bin/claude`, because that path is a symlink into `~/.local/share/claude/versions/` that npm won't overwrite. Don't `--force` past it - that replaces the native launcher with an npm shim.
+
+```bash
+ls -la "$(command -v claude)"   # symlink into ~/.local/share/claude/versions/ = native install
+```
+
+- **Native install** → `claude install X.Y.Z` (same command for rollback)
+- **npm install** → `npm install -g @anthropic-ai/claude-code@X.Y.Z`
+
+Either way, confirm with `claude --version` afterwards - a package manager reporting success is not the same as the launcher pointing at the new build.

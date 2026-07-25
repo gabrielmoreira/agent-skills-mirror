@@ -129,7 +129,7 @@ git clone https://github.com/breferrari/obsidian-mind.git
 
 ```bash
 npm install -g @tobilu/qmd
-node --experimental-strip-types scripts/qmd-bootstrap.ts
+node --experimental-strip-types .scripts/qmd-bootstrap.ts
 ```
 
 引导脚本是幂等的，可以安全地重复运行。它读取 `vault-manifest.json` 中的 `qmd_index` 和 `qmd_context` 字段，注册命名索引并生成嵌入向量（默认索引名：`obsidian-mind`）。SessionStart 钩子、`.mcp.json` 封装脚本和 CLI 命令都读取同一个清单字段，因此同一台机器上的其他 vault 不会与本 vault 的 QMD 数据混淆。CLI 命令始终需要传递 `--index <名称>`：
@@ -175,7 +175,7 @@ qmd --index obsidian-mind embed    # 大量新笔记后
 
 | 钩子 | 触发时机 | 功能 |
 |------|---------|------|
-| 🚀 SessionStart | 启动/恢复时 | QMD 重新索引＋自愈，注入北极星焦点、活跃工作、最近变更、任务、文件列表、仓库卫生标志 — 末行为注入大小计量 |
+| 🚀 SessionStart | 启动/恢复时 | QMD 重新索引＋自愈，注入北极星焦点、活跃工作、最近变更、任务、文件列表、仓库卫生标志 — 整体受字节预算约束，末行为注入大小计量 |
 | 💬 UserPromptSubmit | 每条消息 | 对内容分类（决策、事件、成就、1:1、架构、人员、项目更新）并注入路由提示 |
 | ✍️ PostToolUse | 写入 `.md` 后 | 验证 frontmatter＋wikilinks，拦截误放的记忆文件，标记过大笔记（拆分而非删减）与写入时的主题集群 |
 | 💾 PreCompact | 上下文压缩前 | 将会话记录备份到 `thinking/session-logs/` |
@@ -196,7 +196,7 @@ obsidian-mind **不会**将整个 vault 加载到上下文中。它使用分层�
 | **触发** | PostToolUse 验证 | `.md` 写入后 | ~200 tokens |
 | **罕见** | 完整文件读取 | 仅在明确需要时 | 可变 |
 
-SessionStart 加载**轻量级上下文** — 关键文件的简短摘要、文件名和 git 摘要，而非完整笔记内容。Agent 通过 QMD 进行语义搜索后再读取文件，因此只获取相关内容。分类钩子每条消息仅执行一次轻量级 Node 调用。验证钩子仅在 markdown 写入时触发，跳过排除的路径。 四个机制让注入层随仓库增长仍保持诚实：**来源感知注入**（resume/compact 时只重新注入易变部分——静态大块已在会话中）、每次注入末行的**注入大小计量**、每次写入**仅一次钩子进程**（QMD 刷新搭载在验证钩子上）、**列表折叠**（归档折叠为一行计数）。
+SessionStart 加载**轻量级上下文** — 关键文件的简短摘要、文件名和 git 摘要，而非完整笔记内容。Agent 通过 QMD 进行语义搜索后再读取文件，因此只获取相关内容。分类钩子每条消息仅执行一次轻量级 Node 调用。验证钩子仅在 markdown 写入时触发，跳过排除的路径。 五个机制让注入层随仓库增长仍保持诚实：**来源感知注入**（resume/compact 时只重新注入易变部分——静态大块已在会话中）、每次注入末行的**注入大小计量**、真正强制执行计量结果的**注入预算**（超出上限时，最容易舍弃的部分降级为指针，且计量行会逐一列出被降级的部分——因为悄无声息的丢失比膨胀更糟）、每次写入**仅一次钩子进程**（QMD 刷新搭载在验证钩子上）、**列表折叠**（笔记数超过阈值的文件夹折叠为一行计数，因此仓库不会通过某个没人想到要配置的文件夹突破上限）。预算与阈值均可在 `vault-manifest.json` 中调整。
 
 ### 🌐 与其他 Agent 配合使用
 
@@ -366,6 +366,8 @@ templates/              带有 YAML frontmatter 的 Obsidian 模板
   scripts/              钩子脚本 + charcount.ts 工具
   skills/               Obsidian + QMD 技能
   settings.json         5 个钩子配置
+
+.scripts/                仓库级工具 — QMD 引导脚本（新克隆时运行一次）
 
 .shardmind/             ShardMind 旁挂目录——仅在通过 `shardmind install` 安装时使用
   shard.yaml            清单文件（名称、版本、模块、钩子）

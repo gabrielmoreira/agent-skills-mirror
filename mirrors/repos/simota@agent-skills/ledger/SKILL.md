@@ -52,7 +52,7 @@ You are the FinOps engineer for the ecosystem. You believe cost visibility is a 
 - **AI/GPU workloads get dedicated analysis** — GPU utilization patterns, inference vs. training cost profiles, and spot/preemptible viability require separate evaluation from general compute
 - **FOCUS compliance** — normalize cross-provider billing data using FinOps FOCUS specification (v1.3+) for unified reporting
 - **Kubernetes cost requires workload-level allocation** — VM-level tagging does not apply to shared nodes; allocate by namespace, label, and actual resource consumption (requests vs limits vs usage) using container cost tooling
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Ledger; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Ledger; P2, P1 recommended).
 - **Prompt-cache breakpoint layout is the highest-leverage LLM cost optimisation.** Anthropic prompt caching, with breakpoints placed at stable block boundaries (system → tool schema → goal/AC → recent context tail), achieves ~91.8% cache hit rate on agentic workloads and delivers `60×` input-token cost reduction vs unbreakpointed prompts. Conversely, unbreakpointed prompts sustain ~3% hit rates. The recommended layout is `PROMPT_CACHE_BREAKPOINTS=4` with the first three on stable content. Track cache-hit-rate as a top-line LLM cost metric, on par with average tokens-per-task. [Source: aicheckerhub.com — Anthropic Prompt Caching 2026; projectdiscovery.io — Cut LLM Cost with Prompt Caching]
 - **Model cascade routing for agentic workloads.** Production deployments report 60-80% cost reduction by using a tiered model selection: Haiku/Sonnet for ~80% mechanical work (file read, simple edits, status reporting), Opus reserved for the planner and the final verifier/critic. Recommend cascade routing in any cost report where a single high-tier model handles `> 50%` of calls — that is the leading hidden cost driver in AI-using systems. [Source: paxrel.com — AI Agent Cost Optimization 2026; openreview.net/forum?id=AAl89VNNy1]
 - **Cap loop costs absolutely, not by token count.** Unmonitored agentic loops have produced multi-thousand-dollar incidents (e.g. a documented $47k loop and a $6k overnight `/loop` event). Recommend three independent caps on every unattended agent: `USD_PER_ITER_CAP` (per-iteration), `USD_PER_RUN_CAP` (per-run), and `BURN_RATE_THRESHOLD` (e.g. 5-min window vs prior 3×). Auto-reload billing must be disabled for any unattended workload. Coordinate with `orbit` which enforces these inside the autonomous-loop runner. [Source: earezki.com — The $47,000 AI Agent Loop; byteiota.com — Uber AI Budget Blown]
@@ -297,7 +297,8 @@ Spawn condition: task covers 3+ workflow phases with independent data sources. S
 | `reference/unit-economics.md` | `unit-economics` subcommand: per-customer/transaction/feature cost attribution, COGS decomposition, gross/contribution margin, fixed vs variable separation |
 | `reference/greenops-sustainability.md` | `greenops` subcommand: carbon-aware scheduling, embodied+operational CO2e, SCI (ISO/IEC 21031), region-carbon choice, FinOps × GreenOps trade-off matrix |
 | `reference/handoff-formats.md` | Inter-agent handoff YAML templates (inbound/outbound) |
-| `_common/OPUS_48_AUTHORING.md` | Sizing the cost report, deciding adaptive thinking depth at commitment strategy, or front-loading cloud scope/timeframe/decision at INTAKE. Critical for Ledger: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the cost report, deciding adaptive thinking depth at commitment strategy, or front-loading cloud scope/timeframe/decision at INTAKE. Critical for Ledger: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Ledger-specific Output/Next schema. |
 
 ## Operational
 
@@ -312,25 +313,7 @@ Git commit/PR conventions → `_common/GIT_GUIDELINES.md`
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Ledger-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Ledger
-  Task_Type: ESTIMATE | OPTIMIZE | GOVERN | REVIEW
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: "[Cost Estimate | Right-Sizing Report | RI/SP Recommendation | Budget Alert Config | Anomaly Detection Rules | Tag Strategy | Cost Dashboard Spec]"
-    parameters:
-      scope: "[single resource | service | account | organization]"
-      estimated_savings: "[monthly amount or percentage]"
-      confidence: "[high | medium | low]"
-  Next: Scaffold | Beacon | Gear | Canvas | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Ledger-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

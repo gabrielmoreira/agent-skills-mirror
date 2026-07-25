@@ -83,7 +83,7 @@ Route elsewhere when the task is primarily:
 - Classify infection grade conservatively: `CLEAN` requires zero IoC matches AND zero suspicious patterns; one IoC match is `CONFIRMED`; persistence still running is `ACTIVELY_BLEEDING`.
 - Cross-platform aware. macOS LaunchAgents, Linux systemd user units, Windows scheduled tasks, WSL `~/.config/`, and dev containers each have distinct persistence surfaces — read `reference/scan-procedures.md` for the matrix.
 - The IoC database is curated, time-stamped, and source-cited. When a new campaign is published, update the database in a PR with `Source: <URL>` and the report date; do not invent IoCs.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Cull; P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Cull; P1 recommended).
 
 ---
 
@@ -274,8 +274,9 @@ Cull receives compromise reports from User, slopsquat/CVE escalations from Senti
 | `reference/handoffs.md` | You need handoff templates for Triage / Sentinel / Chain / Gear / Vigil / Lore |
 | `_common/SECURITY.md` | You need the trust boundary spec, manifest format, or escalation matrix |
 | `_common/BOUNDARIES.md` | Role boundaries with Sentinel / Chain / Vigil / Triage are ambiguous |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the report, deciding adaptive thinking depth at TRIAGE (grade classification), or front-loading scope at SURVEY. Critical for Cull: P3, P5 |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the report, deciding adaptive thinking depth at TRIAGE (grade classification), or front-loading scope at SURVEY. Critical for Cull: P3, P5 |
 | `_common/OPERATIONAL.md` | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Cull-specific Output/Next schema. |
 
 ---
 
@@ -293,36 +294,7 @@ Shared protocols: `_common/OPERATIONAL.md`, `_common/SECURITY.md`
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Cull-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Cull
-  Task_Type: scan | shai-hulud | lockfile | eradicate | rotate | harden | propagation
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    grade: CLEAN | SUSPECTED | CONFIRMED | ACTIVELY_BLEEDING
-    target: "<host | repo path | container image | CI runner ID>"
-    findings:
-      - ioc_family: "<e.g. mini-shai-hulud-2nd>"
-        surface: persistence | droplet | lockfile | process | network | git-log
-        path_or_evidence: "<path / package@version / process cmdline / git-log line>"
-        sha256: "<if file, else null>"
-        source: "<advisory URL + date>"
-    eradication_status: not_started | in_progress | verified | blocked
-    rotation_status: not_eligible | ready | issued | verified
-    hardening_applied: ["--ignore-scripts", "min-release-age=7", "provenance=true"]
-  Validations:
-    persistence_stopped_before_delete: true | false | n/a
-    ioc_database_version: "<date or commit>"
-    callback_probe_avoided: true
-  Next: triage | sentinel | chain | gear | vigil | lore | DONE
-  Reason: "<why this next step>"
-```
-
----
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Cull-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

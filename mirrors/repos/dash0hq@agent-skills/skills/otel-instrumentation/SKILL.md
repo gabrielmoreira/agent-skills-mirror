@@ -73,8 +73,16 @@ tracer.startActiveSpan('operation-name', async (span) => {
     span.setStatus({ code: SpanStatusCode.OK });
     return result;
   } catch (err) {
-    span.setStatus({ code: SpanStatusCode.ERROR, message: err.message });
-    span.recordException(err);
+    // Record the exception as a structured log record, not span.recordException — see rules/spans.md
+    span.setStatus({ code: SpanStatusCode.ERROR, message: `${err.name}: ${err.message}` });
+    const spanContext = span.spanContext();
+    logger.error('operation-name.failed', {
+      'trace_id': spanContext.traceId,
+      'span_id': spanContext.spanId,
+      'exception.type': err.name,
+      'exception.message': err.message,
+      'exception.stacktrace': err.stack,
+    });
     throw err;
   } finally {
     span.end();
@@ -99,6 +107,7 @@ Use the `AlwaysOn` sampler (the default) in every SDK.
 Do not configure SDK-side samplers — they make irreversible decisions before the outcome of a request is known.
 Defer all sampling to the [Collector](../otel-collector/rules/sampling.md), where policies can be changed centrally without redeploying applications.
 
+<!-- eval:skip -->
 ```
 SDK (AlwaysOn)  →  Collector (sampling)  →  Backend (retention)
      ↓                    ↓                       ↓

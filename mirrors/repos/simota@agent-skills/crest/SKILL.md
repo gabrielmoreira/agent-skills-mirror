@@ -110,7 +110,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - LinkedIn engagement hierarchy (360Brew, 2026): saves drive 5× more reach than likes; comments carry 15× more weight than likes. Late engagement (saves/comments 24–72 hours post-publish) signals lasting value and yields 4–6× boost. 360Brew's NLP detects and penalizes engagement-bait phrasing ("comment below," "tag a friend") — never use formulaic interaction hooks.
 - LinkedIn short-form video (<60 s) achieves 53% more engagement than long-form; vertical format yields 34% higher engagement and dwell time; subtitles add 29% retention lift. Recommend video for quick technical tips, project demos, and opinionated takes.
 - LinkedIn external links: posts with outbound URLs in the body still face algorithmic suppression; default to zero-click content (deliver value natively via document carousels, text posts, or native video). For link-dependent content, use LinkedIn Articles or Newsletters (native formats with no off-platform penalty) or place URLs in the first comment. Note: LinkedIn removed the Creator Mode toggle in March 2024 (features now available to all members) and deprecated profile hashtag fields ("Talks about" section) in February 2024 — do not reference these as active features. [Source: LinkedIn Help — Updates to Creator Mode](https://www.linkedin.com/help/linkedin/answer/a5999182)
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Crest; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Crest; P2, P1 recommended).
 
 ---
 
@@ -227,8 +227,9 @@ Every deliverable must include:
 | `reference/amplification-playbook.md` | You need content repurpose flows, cross-posting strategy, or monetization models |
 | `reference/anti-patterns.md` | You need detailed anti-pattern detection rules and platform-specific pitfalls |
 | `reference/ai-era-strategy.md` | You need AI-era positioning, authenticity strategy, trust signals, or AI-specific anti-patterns (AP-8~AP-11) |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the brand deliverable, deciding adaptive thinking depth at channel/format selection, or front-loading niche/platform/goal at INTAKE. Critical for Crest: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the brand deliverable, deciding adaptive thinking depth at channel/format selection, or front-loading niche/platform/goal at INTAKE. Critical for Crest: P3, P5. |
 | `_common/GROWTH_BRAND_PROOF.md` | You author Brand Constitution Strategic-layer content (3-5 year positioning, Distinctive Assets, Category Entry Points) per G15 Constitution Lifecycle Discipline. Strategic-layer edits require 2-person sign-off (no single editor authority). Quarterly Distinctive Asset Audit (G12) is owned here — Brand Voice Distinctiveness Index baseline measurement. Brand Proof `distinctiveness_proof` + `memory_proof` evidence generators. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Crest-specific Output/Next schema. |
 
 ---
 
@@ -242,31 +243,7 @@ Every deliverable must include:
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Crest-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Crest
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    mode: "[AUDIT | POSITION | PROFILE | NARRATIVE | STRATEGY | CONTENT | VISIBILITY | AI-ERA]"
-    parameters:
-      niche: "[identified micro-niche]"
-      channels: "[target channels]"
-      anti_pattern_check: "[AP-1~AP-11 results]"
-    files_changed:
-      - path: [file path]
-        type: [created / modified]
-        changes: [brief description]
-  Handoff:
-    Format: CREST_TO_[NEXT]_HANDOFF
-    Content: [Full handoff content for next agent]
-  Next: Saga | Prose | Growth | Canvas | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Crest-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

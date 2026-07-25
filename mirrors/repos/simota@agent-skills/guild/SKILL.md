@@ -68,7 +68,7 @@ Route elsewhere when the task is primarily:
 - Separate MVP / initial-version / future-expansion scope in strategy and org-design docs so teams do not over-build the first hire's process.
 - Treat all labor-law, employment, anti-discrimination, and PII-handling content as **advisory only**. State assumptions as hypotheses, mark items needing confirmation, and **flag for professional (lawyer / labor-law expert) review** — never assert it as legal advice. For formal regulatory control assessment, hand off to `Oath`.
 - Do not write code. Output is Markdown documents plus structured data files (CSV for scorecards / onboarding tasks; tables for matrices). CSVs are header-first; any embedded JSON/YAML must be syntactically valid.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Guild; P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Guild; P1 recommended).
 
 ## Boundaries
 
@@ -186,7 +186,8 @@ Guild receives org/headcount strategy from Helm and candidate personas from Cast
 |------|-------------------|
 | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) | Role boundaries vs Oath / Cast / Crest / Scribe are ambiguous |
 | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, or Git operational defaults |
-| [`_common/OPUS_48_AUTHORING.md`](_common/OPUS_48_AUTHORING.md) | Sizing the package, deciding thinking depth at must-have/nice-to-have split, or front-loading role/seniority/type at intake. Critical for Guild: P3, P5. |
+| [`_common/OPUS_5_AUTHORING.md`](_common/OPUS_5_AUTHORING.md) | Sizing the package, deciding thinking depth at must-have/nice-to-have split, or front-loading role/seniority/type at intake. Critical for Guild: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Guild-specific Output/Next schema. |
 
 ## Operational
 
@@ -199,27 +200,7 @@ Shared protocols: [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md)
 
 ## AUTORUN Support
 
-When Guild receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow (skip verbose explanations, focus on deliverables), and return `_STEP_COMPLETE`.
-
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Guild
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    artifact_type: "[Hiring Strategy | Job Description | Competency Matrix | Interview Rubric | Scorecard | Onboarding Plan | Performance Review | Culture Doc | Hiring Risk / Bias Checklist | Hiring Package]"
-    parameters:
-      role_id: "[R-001]"
-      seniority: "[level]"
-      employment_type: "[full-time | contractor | part-time | intern]"
-  Validations:
-    artifact_consistency: "[passed | flagged]"
-    labor_law_review_flagged: "[yes | n/a]"
-  Next: [Oath | Scribe | Prose | Cast] | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Guild-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 5 followed patterns, 52 file(s) materialized.
+Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 5 followed patterns, 64 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 5 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 52 |
+| Files         | 64 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,55 +66,67 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`docs/skills.md`](docs/skills.md) |
 | 3 | ✓ | [`milestones/M2/README.md`](milestones/M2/README.md) |
-| 4 | ✓ | [`skills/archive-docs/README.md`](skills/archive-docs/README.md) |
-| 5 | ✓ | [`skills/archive-docs/SKILL.md`](skills/archive-docs/SKILL.md) |
-| 6 | ✓ | [`skills/bootstrap-project/README.md`](skills/bootstrap-project/README.md) |
-| 7 | ✓ | [`skills/bootstrap-project/SKILL.md`](skills/bootstrap-project/SKILL.md) |
-| 8 | ✓ | [`skills/code-search/__pycache__/code_indexer.cpython-312.pyc`](skills/code-search/__pycache__/code_indexer.cpython-312.pyc) |
-| 9 | ✓ | [`skills/code-search/check-health.sh`](skills/code-search/check-health.sh) |
-| 10 | ✓ | [`skills/code-search/code_indexer.py`](skills/code-search/code_indexer.py) |
-| 11 | ✓ | [`skills/code-search/code-search.sh`](skills/code-search/code-search.sh) |
-| 12 | ✓ | [`skills/code-search/docs/skeletons/code_search_skeleton.md`](skills/code-search/docs/skeletons/code_search_skeleton.md) |
-| 13 | ✓ | [`skills/code-search/README.md`](skills/code-search/README.md) |
-| 14 | ✓ | [`skills/code-search/SKILL.md`](skills/code-search/SKILL.md) |
-| 15 | ✓ | [`skills/diagrammer/README.md`](skills/diagrammer/README.md) |
-| 16 | ✓ | [`skills/diagrammer/SKILL.md`](skills/diagrammer/SKILL.md) |
-| 17 | ✓ | [`skills/evaluate-implementation/README.md`](skills/evaluate-implementation/README.md) |
-| 18 | ✓ | [`skills/evaluate-implementation/SKILL.md`](skills/evaluate-implementation/SKILL.md) |
-| 19 | ✓ | [`skills/evolve-skills/EVOLUTION.md`](skills/evolve-skills/EVOLUTION.md) |
-| 20 | ✓ | [`skills/evolve-skills/README.md`](skills/evolve-skills/README.md) |
-| 21 | ✓ | [`skills/evolve-skills/SKILL.md`](skills/evolve-skills/SKILL.md) |
-| 22 | ✓ | [`skills/generate-spec/README.md`](skills/generate-spec/README.md) |
-| 23 | ✓ | [`skills/generate-spec/SKILL.md`](skills/generate-spec/SKILL.md) |
-| 24 | ✓ | [`skills/generate-tests/README.md`](skills/generate-tests/README.md) |
-| 25 | ✓ | [`skills/generate-tests/SKILL.md`](skills/generate-tests/SKILL.md) |
-| 26 | ✓ | [`skills/generate-verification/README.md`](skills/generate-verification/README.md) |
-| 27 | ✓ | [`skills/generate-verification/SKILL.md`](skills/generate-verification/SKILL.md) |
-| 28 | ✓ | [`skills/hotfix-focus/SKILL.md`](skills/hotfix-focus/SKILL.md) |
-| 29 | ✓ | [`skills/hotfix-issue/README.md`](skills/hotfix-issue/README.md) |
-| 30 | ✓ | [`skills/hotfix-issue/SKILL.md`](skills/hotfix-issue/SKILL.md) |
-| 31 | ✓ | [`skills/implement-specification/README.md`](skills/implement-specification/README.md) |
-| 32 | ✓ | [`skills/implement-specification/SKILL.md`](skills/implement-specification/SKILL.md) |
-| 33 | ✓ | [`skills/investigate-issue/README.md`](skills/investigate-issue/README.md) |
-| 34 | ✓ | [`skills/investigate-issue/SKILL.md`](skills/investigate-issue/SKILL.md) |
-| 35 | ✓ | [`skills/manage-development/README.md`](skills/manage-development/README.md) |
-| 36 | ✓ | [`skills/manage-development/SKILL.md`](skills/manage-development/SKILL.md) |
-| 37 | ✓ | [`skills/manage-roadmap/README.md`](skills/manage-roadmap/README.md) |
-| 38 | ✓ | [`skills/manage-roadmap/SKILL.md`](skills/manage-roadmap/SKILL.md) |
-| 39 | ✓ | [`skills/milestone/README.md`](skills/milestone/README.md) |
-| 40 | ✓ | [`skills/milestone/SKILL.md`](skills/milestone/SKILL.md) |
-| 41 | ✓ | [`skills/README.md`](skills/README.md) |
-| 42 | ✓ | [`skills/review-implementation/README.md`](skills/review-implementation/README.md) |
-| 43 | ✓ | [`skills/review-implementation/SKILL.md`](skills/review-implementation/SKILL.md) |
-| 44 | ✓ | [`skills/session-audit/README.md`](skills/session-audit/README.md) |
-| 45 | ✓ | [`skills/session-audit/SKILL.md`](skills/session-audit/SKILL.md) |
-| 46 | ✓ | [`skills/sync-documentation/README.md`](skills/sync-documentation/README.md) |
-| 47 | ✓ | [`skills/sync-documentation/SKILL.md`](skills/sync-documentation/SKILL.md) |
-| 48 | → | [`docs/FRAMEWORK.md`](docs/FRAMEWORK.md) |
-| 49 | → | [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md) |
-| 50 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 51 | → | [`INDEX.md`](INDEX.md) |
-| 52 | → | [`README.md`](README.md) |
+| 4 | ✓ | [`skills/approve-spec/SKILL.md`](skills/approve-spec/SKILL.md) |
+| 5 | ✓ | [`skills/archive-docs/README.md`](skills/archive-docs/README.md) |
+| 6 | ✓ | [`skills/archive-docs/SKILL.md`](skills/archive-docs/SKILL.md) |
+| 7 | ✓ | [`skills/archive-docs/structure-cleanup.sh`](skills/archive-docs/structure-cleanup.sh) |
+| 8 | ✓ | [`skills/bootstrap-project/README.md`](skills/bootstrap-project/README.md) |
+| 9 | ✓ | [`skills/bootstrap-project/SKILL.md`](skills/bootstrap-project/SKILL.md) |
+| 10 | ✓ | [`skills/code-search/__pycache__/code_indexer.cpython-312.pyc`](skills/code-search/__pycache__/code_indexer.cpython-312.pyc) |
+| 11 | ✓ | [`skills/code-search/check-health.sh`](skills/code-search/check-health.sh) |
+| 12 | ✓ | [`skills/code-search/code_indexer.py`](skills/code-search/code_indexer.py) |
+| 13 | ✓ | [`skills/code-search/code-search.sh`](skills/code-search/code-search.sh) |
+| 14 | ✓ | [`skills/code-search/docs/skeletons/code_search_skeleton.md`](skills/code-search/docs/skeletons/code_search_skeleton.md) |
+| 15 | ✓ | [`skills/code-search/README.md`](skills/code-search/README.md) |
+| 16 | ✓ | [`skills/code-search/SKILL.md`](skills/code-search/SKILL.md) |
+| 17 | ✓ | [`skills/diagrammer/README.md`](skills/diagrammer/README.md) |
+| 18 | ✓ | [`skills/diagrammer/SKILL.md`](skills/diagrammer/SKILL.md) |
+| 19 | ✓ | [`skills/evaluate-implementation/README.md`](skills/evaluate-implementation/README.md) |
+| 20 | ✓ | [`skills/evaluate-implementation/SKILL.md`](skills/evaluate-implementation/SKILL.md) |
+| 21 | ✓ | [`skills/evolve-skills/__pycache__/skills-auditor.cpython-312.pyc`](skills/evolve-skills/__pycache__/skills-auditor.cpython-312.pyc) |
+| 22 | ✓ | [`skills/evolve-skills/EVOLUTION.md`](skills/evolve-skills/EVOLUTION.md) |
+| 23 | ✓ | [`skills/evolve-skills/PLAYBOOK.md`](skills/evolve-skills/PLAYBOOK.md) |
+| 24 | ✓ | [`skills/evolve-skills/README.md`](skills/evolve-skills/README.md) |
+| 25 | ✓ | [`skills/evolve-skills/SKILL.md`](skills/evolve-skills/SKILL.md) |
+| 26 | ✓ | [`skills/evolve-skills/skills-auditor.py`](skills/evolve-skills/skills-auditor.py) |
+| 27 | ✓ | [`skills/evolve-skills/skills-auditor.py.bak2`](skills/evolve-skills/skills-auditor.py.bak2) |
+| 28 | ✓ | [`skills/evolve-skills/skills-auditor.py.bak3`](skills/evolve-skills/skills-auditor.py.bak3) |
+| 29 | ✓ | [`skills/evolve-skills/skills-auditor.py.bak4`](skills/evolve-skills/skills-auditor.py.bak4) |
+| 30 | ✓ | [`skills/evolve-skills/skills-auditor.py.bak5`](skills/evolve-skills/skills-auditor.py.bak5) |
+| 31 | ✓ | [`skills/evolve-skills/skills-auditor.py.bak6`](skills/evolve-skills/skills-auditor.py.bak6) |
+| 32 | ✓ | [`skills/evolve-skills/skills-auditor.py.bak7`](skills/evolve-skills/skills-auditor.py.bak7) |
+| 33 | ✓ | [`skills/generate-spec/README.md`](skills/generate-spec/README.md) |
+| 34 | ✓ | [`skills/generate-spec/SKILL.md`](skills/generate-spec/SKILL.md) |
+| 35 | ✓ | [`skills/generate-tests/README.md`](skills/generate-tests/README.md) |
+| 36 | ✓ | [`skills/generate-tests/SKILL.md`](skills/generate-tests/SKILL.md) |
+| 37 | ✓ | [`skills/generate-verification/README.md`](skills/generate-verification/README.md) |
+| 38 | ✓ | [`skills/generate-verification/SKILL.md`](skills/generate-verification/SKILL.md) |
+| 39 | ✓ | [`skills/hotfix-focus/SKILL.md`](skills/hotfix-focus/SKILL.md) |
+| 40 | ✓ | [`skills/hotfix-issue/README.md`](skills/hotfix-issue/README.md) |
+| 41 | ✓ | [`skills/hotfix-issue/SKILL.md`](skills/hotfix-issue/SKILL.md) |
+| 42 | ✓ | [`skills/implement-specification/README.md`](skills/implement-specification/README.md) |
+| 43 | ✓ | [`skills/implement-specification/SKILL.md`](skills/implement-specification/SKILL.md) |
+| 44 | ✓ | [`skills/investigate-issue/README.md`](skills/investigate-issue/README.md) |
+| 45 | ✓ | [`skills/investigate-issue/SKILL.md`](skills/investigate-issue/SKILL.md) |
+| 46 | ✓ | [`skills/manage-development/README.md`](skills/manage-development/README.md) |
+| 47 | ✓ | [`skills/manage-development/SKILL.md`](skills/manage-development/SKILL.md) |
+| 48 | ✓ | [`skills/manage-roadmap/README.md`](skills/manage-roadmap/README.md) |
+| 49 | ✓ | [`skills/manage-roadmap/SKILL.md`](skills/manage-roadmap/SKILL.md) |
+| 50 | ✓ | [`skills/milestone-focus/SKILL.md`](skills/milestone-focus/SKILL.md) |
+| 51 | ✓ | [`skills/milestone/README.md`](skills/milestone/README.md) |
+| 52 | ✓ | [`skills/milestone/SKILL.md`](skills/milestone/SKILL.md) |
+| 53 | ✓ | [`skills/README.md`](skills/README.md) |
+| 54 | ✓ | [`skills/review-implementation/README.md`](skills/review-implementation/README.md) |
+| 55 | ✓ | [`skills/review-implementation/SKILL.md`](skills/review-implementation/SKILL.md) |
+| 56 | ✓ | [`skills/session-audit/README.md`](skills/session-audit/README.md) |
+| 57 | ✓ | [`skills/session-audit/SKILL.md`](skills/session-audit/SKILL.md) |
+| 58 | ✓ | [`skills/sync-documentation/README.md`](skills/sync-documentation/README.md) |
+| 59 | ✓ | [`skills/sync-documentation/SKILL.md`](skills/sync-documentation/SKILL.md) |
+| 60 | → | [`docs/FRAMEWORK.md`](docs/FRAMEWORK.md) |
+| 61 | → | [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md) |
+| 62 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 63 | → | [`INDEX.md`](INDEX.md) |
+| 64 | → | [`README.md`](README.md) |
 
 ---
 

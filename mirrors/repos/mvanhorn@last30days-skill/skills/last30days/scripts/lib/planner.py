@@ -7,7 +7,7 @@ import re
 import unicodedata
 from collections import Counter
 
-from . import categories, entity_extract, http, providers, query, relevance, schema
+from . import categories, competitors, entity_extract, http, providers, query, relevance, schema
 
 # Hebrew Unicode block: U+0590–U+05FF
 _HEBREW_RE = re.compile(r'[\u0590-\u05FF]')
@@ -93,6 +93,7 @@ ALLOWED_INTENTS = {
     "prediction",
 }
 ALLOWED_CLUSTER_MODES = {"none", "story", "workflow", "market", "debate"}
+
 QUICK_SOURCE_PRIORITY = {
     "factual": ["hackernews", "reddit", "x", "xquik", "youtube"],
     "product": ["jobs", "youtube", "reddit", "x", "xquik", "tiktok"],
@@ -156,6 +157,55 @@ SOURCE_CAPABILITIES = {
     "jobs": {"jobs", "company_signal", "link"},
     "corpus": {"reference", "analysis"},
 }
+
+
+def validate_external_plan(raw: dict) -> None:
+    """Validate explicit-plan structure before permissive sanitization.
+
+    Enum-like metadata stays permissive because direct pipeline callers rely on
+    the sanitizer to canonicalize those values.
+    """
+    if not isinstance(raw, dict):
+        raise ValueError("top-level plan must be an object")
+    for field in ("intent", "freshness_mode", "cluster_mode", "subqueries"):
+        if field not in raw:
+            raise ValueError(f"missing required field '{field}'")
+    for field in ("intent", "freshness_mode", "cluster_mode"):
+        if not isinstance(raw[field], str) or not raw[field].strip():
+            raise ValueError(f"field '{field}' must be a non-empty string")
+
+    source_weights = raw.get("source_weights")
+    if source_weights is not None and not isinstance(source_weights, dict):
+        raise ValueError("field 'source_weights' must be an object when provided")
+    for source, weight in (source_weights or {}).items():
+        if (
+            not isinstance(source, str)
+            or not source.strip()
+            or isinstance(weight, bool)
+            or not isinstance(weight, (int, float))
+        ):
+            raise ValueError("field 'source_weights' must map source names to numbers")
+    subqueries = raw["subqueries"]
+    if not isinstance(subqueries, list) or not subqueries:
+        raise ValueError("field 'subqueries' must be a non-empty array")
+    for index, subquery in enumerate(subqueries):
+        if not isinstance(subquery, dict):
+            raise ValueError(f"subqueries[{index}] must be an object")
+        for field in ("search_query", "ranking_query"):
+            if not isinstance(subquery.get(field), str) or not subquery[field].strip():
+                raise ValueError(f"subqueries[{index}].{field} must be a non-empty string")
+        sources = subquery.get("sources")
+        if not isinstance(sources, list) or not sources or not all(
+            isinstance(source, str) and source.strip() for source in sources
+        ):
+            raise ValueError(f"subqueries[{index}].sources must be a non-empty string array")
+        weight = subquery.get("weight")
+        if weight is not None and (
+            isinstance(weight, bool) or not isinstance(weight, (int, float))
+        ):
+            raise ValueError(f"subqueries[{index}].weight must be a number when provided")
+
+
 DEFAULT_INTENT_CAPABILITIES = {
     "comparison": {"discussion", "video", "web", "reference", "social", "link", "market"},
     "how_to": {"discussion", "video", "web", "reference", "link"},
@@ -804,7 +854,12 @@ _TRAILING_CONTEXT = re.compile(
 )
 
 
-def _comparison_entities(topic: str) -> list[str]:
+def _comparison_entities(topic: str, *, uncapped: bool = False) -> list[str]:
+    """Split a comparison topic into entity names.
+
+    Caps at ``competitors.COMPARISON_ENTITY_MAX`` unless ``uncapped`` (caller
+    truncates and may warn about dropped entities).
+    """
     # "difference between X and Y" -> "X vs Y" (replace "and" only in this context)
     normalized = re.sub(
         r"\bdifference between\s+(.+?)\s+and\s+",
@@ -819,14 +874,16 @@ def _comparison_entities(topic: str) -> list[str]:
         if part.strip(" \t\r\n?.,:;!()[]{}\"'")
     ]
     # Strip trailing context from parts ("Svelte for frontend in 2026" -> "Svelte")
-    if len(parts) >= 2:
-        parts = [_TRAILING_CONTEXT.sub("", part).strip() or part for part in parts]
-        deduped = []
-        for part in parts:
-            if part and part not in deduped:
-                deduped.append(part)
-        return deduped[:_max_subqueries("comparison")]
-    return []
+    if len(parts) < 2:
+        return []
+    parts = [_TRAILING_CONTEXT.sub("", part).strip() or part for part in parts]
+    deduped: list[str] = []
+    for part in parts:
+        if part and part not in deduped:
+            deduped.append(part)
+    if uncapped:
+        return deduped
+    return deduped[: competitors.COMPARISON_ENTITY_MAX]
 
 
 def _should_force_deterministic_plan(topic: str) -> bool:
@@ -901,7 +958,8 @@ def _max_subqueries(intent: str, topic: str | None = None) -> int:
     # Hermes Agent Use Cases failure: prior cap of 3 produced near-literal
     # echoes of the topic instead of a paraphrase fanout.
     if intent == "comparison":
-        return 4
+        # primary + one dedicated subquery per entity (up to COMPARISON_ENTITY_MAX)
+        return competitors.COMPARISON_ENTITY_MAX + 1
     # Intent-modifier topics get headroom for paraphrase fanout even when
     # the intent itself is factual/concept. Without this, a "Hermes Agent
     # use cases" query (classified "concept" after the 2026-04-19 default

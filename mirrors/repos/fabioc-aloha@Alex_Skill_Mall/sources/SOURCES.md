@@ -10,10 +10,10 @@
 | [ai-research-skills](../catalog/stores/ai-research-skills.md) | [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-Research-SKILLs) | `.` | community-curated | false | - | 100 |
 | [alirezarezvani-claude-skills](../catalog/stores/alirezarezvani-claude-skills.md) | [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills) | `.` | community-curated | false | - | 38 |
 | [antfu-skills](../catalog/stores/antfu-skills.md) | [antfu/skills](https://github.com/antfu/skills) | `skills` | community-curated | false | - | 19 |
-| [antigravity-awesome-skills](../catalog/stores/antigravity-awesome-skills.md) | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | `skills` | community-curated | false | - | 1882 |
+| [antigravity-awesome-skills](../catalog/stores/antigravity-awesome-skills.md) | [sickn33/antigravity-awesome-skills](https://github.com/sickn33/antigravity-awesome-skills) | `skills` | community-curated | false | - | 1901 |
 | [awesome-claude-code](../catalog/stores/awesome-claude-code.md) | [hesreallyhim/awesome-claude-code](https://github.com/hesreallyhim/awesome-claude-code) | `.` | community-curated | false | - | 0 |
 | [awesome-claude-code-toolkit](../catalog/stores/awesome-claude-code-toolkit.md) | [rohitg00/awesome-claude-code-toolkit](https://github.com/rohitg00/awesome-claude-code-toolkit) | `.` | community-curated | false | - | 43 |
-| [awesome-copilot](../catalog/stores/awesome-copilot.md) | [github/awesome-copilot](https://github.com/github/awesome-copilot) | `.` | github-community | false | - | 466 |
+| [awesome-copilot](../catalog/stores/awesome-copilot.md) | [github/awesome-copilot](https://github.com/github/awesome-copilot) | `.` | github-community | false | - | 484 |
 | [awesome-copilot-agents](../catalog/stores/awesome-copilot-agents.md) | [Code-and-Sorts/awesome-copilot-agents](https://github.com/Code-and-Sorts/awesome-copilot-agents) | `.` | community-curated | false | - | 2 |
 | [awesome-design-skills](../catalog/stores/awesome-design-skills.md) | [bergside/awesome-design-skills](https://github.com/bergside/awesome-design-skills) | `skills` | domain | false | - | 67 |
 | [awesome-mcp-servers](../catalog/stores/awesome-mcp-servers.md) | [punkpeye/awesome-mcp-servers](https://github.com/punkpeye/awesome-mcp-servers) | `.` | community-registry | false | - | 0 |
@@ -24,8 +24,8 @@
 | [composio-awesome-claude-plugins](../catalog/stores/composio-awesome-claude-plugins.md) | [ComposioHQ/awesome-claude-plugins](https://github.com/ComposioHQ/awesome-claude-plugins) | `.` | community-curated | false | - | 16 |
 | [context-engineering-kit](../catalog/stores/context-engineering-kit.md) | [NeoLabHQ/context-engineering-kit](https://github.com/NeoLabHQ/context-engineering-kit) | `plugins` | community-curated | false | - | 13 |
 | [copilot-agents-dojo](../catalog/stores/copilot-agents-dojo.md) | [andreaswasita/copilot-agents-dojo](https://github.com/andreaswasita/copilot-agents-dojo) | `skills` | domain | false | - | 28 |
-| [copilot-collections](../catalog/stores/copilot-collections.md) | [canonical/copilot-collections](https://github.com/canonical/copilot-collections) | `skills` | official | false | - | 13 |
-| [daymade-claude-code-skills](../catalog/stores/daymade-claude-code-skills.md) | [daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) | `.` | community-curated | false | - | 90 |
+| [copilot-collections](../catalog/stores/copilot-collections.md) | [canonical/copilot-collections](https://github.com/canonical/copilot-collections) | `skills` | official | false | - | 14 |
+| [daymade-claude-code-skills](../catalog/stores/daymade-claude-code-skills.md) | [daymade/claude-code-skills](https://github.com/daymade/claude-code-skills) | `.` | community-curated | false | - | 92 |
 | [everything-claude-code](../catalog/stores/everything-claude-code.md) | [WorldFlowAI/everything-claude-code](https://github.com/WorldFlowAI/everything-claude-code) | `.` | community | false | - | 15 |
 | [flutter-ai-rules](../catalog/stores/flutter-ai-rules.md) | [evanca/flutter-ai-rules](https://github.com/evanca/flutter-ai-rules) | `skills` | domain | false | MIT | 34 |
 | [game-studios](../catalog/stores/game-studios.md) | [Donchitos/Claude-Code-Game-Studios](https://github.com/Donchitos/Claude-Code-Game-Studios) | `.` | domain | false | - | 3 |
@@ -34,17 +34,17 @@
 | [healthcare-agents](../catalog/stores/healthcare-agents.md) | [ajhcs/healthcare-agents](https://github.com/ajhcs/healthcare-agents) | `agents` | domain | false | - | 0 |
 | [hoodini-ai-agents-skills](../catalog/stores/hoodini-ai-agents-skills.md) | [hoodini/ai-agents-skills](https://github.com/hoodini/ai-agents-skills) | `skills` | domain | false | - | 39 |
 | [imbad-academic-research-skills](../catalog/stores/imbad-academic-research-skills.md) | [Imbad0202/academic-research-skills](https://github.com/Imbad0202/academic-research-skills) | `.` | domain | false | - | 10 |
-| [k-dense-scientific-agent-skills](../catalog/stores/k-dense-scientific-agent-skills.md) | [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | `skills` | domain | false | - | 149 |
+| [k-dense-scientific-agent-skills](../catalog/stores/k-dense-scientific-agent-skills.md) | [K-Dense-AI/scientific-agent-skills](https://github.com/K-Dense-AI/scientific-agent-skills) | `skills` | domain | false | - | 150 |
 | [karpathy-skills](../catalog/stores/karpathy-skills.md) | [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) | `.` | reference | false | - | 1 |
 | [libukai-awesome-agent-skills](../catalog/stores/libukai-awesome-agent-skills.md) | [libukai/awesome-agent-skills](https://github.com/libukai/awesome-agent-skills) | `skills` | community-curated | false | - | 1 |
-| [marketingskills](../catalog/stores/marketingskills.md) | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) | `.` | domain | false | - | 49 |
+| [marketingskills](../catalog/stores/marketingskills.md) | [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills) | `.` | domain | false | - | 50 |
 | [mcp-servers](../catalog/stores/mcp-servers.md) | [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) | `src` | anthropic-official | false | - | 7 |
 | [microsoft-copilot-studio-skills](../catalog/stores/microsoft-copilot-studio-skills.md) | [microsoft/skills-for-copilot-studio](https://github.com/microsoft/skills-for-copilot-studio) | `skills` | microsoft-official | false | MIT | 31 |
 | [microsoft-win-dev-skills](../catalog/stores/microsoft-win-dev-skills.md) | [microsoft/win-dev-skills](https://github.com/microsoft/win-dev-skills) | `plugins/winui/skills` | microsoft-official | false | MIT | 8 |
 | [moiz-ai-agent-skills](../catalog/stores/moiz-ai-agent-skills.md) | [MoizIbnYousaf/Ai-Agent-Skills](https://github.com/MoizIbnYousaf/Ai-Agent-Skills) | `skills` | community-curated | false | - | 17 |
 | [n-skills](../catalog/stores/n-skills.md) | [numman-ali/n-skills](https://github.com/numman-ali/n-skills) | `skills` | community-curated | false | - | 5 |
 | [planning-with-files](../catalog/stores/planning-with-files.md) | [OthmanAdi/planning-with-files](https://github.com/OthmanAdi/planning-with-files) | `skills` | reference | false | - | 6 |
-| 🏆 [plugin-mall](../catalog/stores/plugin-mall.md) | [fabioc-aloha/Alex_Skill_Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) | `plugins` | first-party | true | PolyForm-Noncommercial-1.0.0 | 364 |
+| 🏆 [plugin-mall](../catalog/stores/plugin-mall.md) | [fabioc-aloha/Alex_Skill_Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) | `plugins` | first-party | true | PolyForm-Noncommercial-1.0.0 | 365 |
 | [robotics-agent-skills](../catalog/stores/robotics-agent-skills.md) | [arpitg1304/robotics-agent-skills](https://github.com/arpitg1304/robotics-agent-skills) | `skills` | domain | false | Apache-2.0 | 10 |
 | [rust-skills](../catalog/stores/rust-skills.md) | [leonardomso/rust-skills](https://github.com/leonardomso/rust-skills) | `.` | domain | false | - | 1 |
 | [spec-kit](../catalog/stores/spec-kit.md) | [github/spec-kit](https://github.com/github/spec-kit) | `.` | github-official | false | - | 6 |
@@ -55,4 +55,4 @@
 | [wshobson-agents](../catalog/stores/wshobson-agents.md) | [wshobson/agents](https://github.com/wshobson/agents) | `.` | community-quality | false | - | 91 |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-07-20T13:02:43.172Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-07-24T20:27:56.833Z*

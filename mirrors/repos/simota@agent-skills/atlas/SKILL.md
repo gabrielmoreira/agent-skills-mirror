@@ -79,7 +79,7 @@ Route elsewhere when the task is primarily:
 - **Recommend Vertical Slice Architecture** as the default feature-organisation pattern; reserve Hexagonal / Clean / Onion for stable cross-feature boundaries. Layer-per-folder (`controllers/`, `services/`, `repositories/`, `dto/`) is the canonical over-engineering pattern that AI codegen amplifies — a single feature edit hits 6 files, and the agent context window has to span all of them. A vertical slice (`features/cancel-subscription/`) is independently testable, AI-friendly, and avoids the 15-layer abstraction cliff. [Source: jimmybogard.com/vertical-slice-architecture; milanjovanovic.tech/blog/vertical-slice-architecture]
 - **Edge-first hybrid topology is the 2026 default deployment shape** for new web systems: edge (Cloudflare Workers / Deno Deploy / Vercel Edge) for auth, redirect, rate-limit, and short-lived RPC; containers for CRUD and long-lived business logic; serverless for batch and async fan-out. ~78% of teams now run hybrid topologies; ADRs should explicitly justify single-tier choices (pure-container or pure-edge) against the hybrid default. Edge state via Durable Objects / Deno KV / Workers KV is mature enough to colocate. [Source: byteiota.com — Edge Computing 2026; digitalapplied.com — Edge Computing Cloudflare Workers Guide]
 - **Track Comprehension Debt alongside Technical Debt.** Comprehension Debt is the gap between code volume the team produces (now amplified by AI codegen) and code volume the team genuinely understands. Symptoms: review approvals without questions, fixes that re-introduce removed code, "we already shipped this" surprise. Add a `comprehension_debt` axis to TDR reports (HIGH / MEDIUM / LOW based on AI authorship % and review depth signals). Remediation is not refactoring — it is documentation, ADR backfill, and judge-level review. [Source: oreilly.com/radar — Comprehension Debt: The Hidden Cost of AI-Generated Code]
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Atlas; P2 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Atlas; P2 recommended).
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -246,7 +246,8 @@ Full algorithm, JSON schema, prompt skeletons, clustering rules, and grounding/a
 | `reference/tri-engine-architect.md` | You are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Pattern H two-axis scoring, Consensus + Dissenting Options ADR structure, JSON schema, subagent prompt skeleton, and degraded-mode behavior. |
 | `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts. |
 | `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill multi-engine protocol — Pattern H definition, canonical PREFLIGHT probe, CLUSTER/SCORE/GROUND/SYNTHESIZE flow, engine-attribution tag conventions, and degraded modes. |
-| `_common/OPUS_48_AUTHORING.md` | You are scoping SURVEY breadth, deciding adaptive thinking depth at PLAN, or sizing ADR/RFC outputs. Critical for Atlas: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are scoping SURVEY breadth, deciding adaptive thinking depth at PLAN, or sizing ADR/RFC outputs. Critical for Atlas: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Atlas-specific Output/Next schema. |
 
 ## Operational
 
@@ -256,39 +257,7 @@ Full algorithm, JSON schema, prompt skeletons, clustering rules, and grounding/a
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Atlas-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Atlas
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: "[ADR | RFC | Dependency Analysis | Debt Assessment | Module Boundary Design | Health Score | Tri-Engine Consensus ADR]"
-    parameters:
-      analysis_scope: "[module | package | system]"
-      coupling_score: "[metric]"
-      debt_items: "[count]"
-      migration_risk: "[Low | Medium | High]"
-    tri_engine:                                  # present only when `multi` Recipe ran
-      engines_run: [codex, agy, claude]
-      engines_failed: [list or none]
-      smell_confidence:
-        CONFIRMED: [count]
-        LIKELY: [count]
-        VERIFIED-CANDIDATE: [count]
-      option_perspective:
-        CONVERGENT: [count]
-        CONVERGENT-PARTIAL: [count]
-        DIVERGENT: [count]
-      recommended_option_style: "[Layered | Hexagonal | DDD | Event-Driven | Modular-Monolith | Microservices | CQRS | Vertical-Slice | Pipeline | Plugin]"
-      dissenting_option_styles: [list of architectural styles preserved as alternatives]
-      rejected: [count + top categories — hallucinated-module / already-mitigated / infeasible / anti-pattern]
-  Next: Zen | Quill | Sherpa | Canvas | Builder | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Atlas-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

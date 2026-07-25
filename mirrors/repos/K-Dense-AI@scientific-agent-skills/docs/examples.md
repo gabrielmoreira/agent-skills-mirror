@@ -2,6 +2,8 @@
 
 This document provides comprehensive, practical examples demonstrating how to combine Scientific Agent Skills to solve real scientific problems across multiple domains.
 
+> **Safety and execution note:** These workflows are illustrative and must be adapted to the current `SKILL.md`, official requirements, local policy, and the user's authorized data and systems. Clinical skills do not provide patient-specific diagnosis, treatment, dosing, triage, monitoring, or other care. Live API mutations, submissions, cloud jobs, purchases, and physical robot/equipment actions require explicit user or trained-operator authorization at the relevant skill safety gate; a planning step is not permission to execute.
+
 ---
 
 ## 📋 Table of Contents
@@ -21,33 +23,31 @@ This document provides comprehensive, practical examples demonstrating how to co
 13. [Environmental Microbiology](#environmental-microbiology)
 14. [Infectious Disease Research](#infectious-disease-research)
 15. [Multi-Omics Integration](#multi-omics-integration)
-16. [Computational Chemistry & Synthesis](#computational-chemistry--synthesis)
-17. [Clinical Research & Real-World Evidence](#clinical-research--real-world-evidence)
-18. [Experimental Physics & Data Analysis](#experimental-physics--data-analysis)
-19. [Chemical Engineering & Process Optimization](#chemical-engineering--process-optimization)
-20. [Scientific Illustration & Visual Communication](#scientific-illustration--visual-communication)
-21. [Quantum Computing for Chemistry](#quantum-computing-for-chemistry)
-22. [Research Grant Writing](#research-grant-writing)
-23. [Flow Cytometry & Immunophenotyping](#flow-cytometry--immunophenotyping)
-24. [Geospatial & Earth Observation](#geospatial--earth-observation)
-25. [Time-Series Forecasting & Sensor Analytics](#time-series-forecasting--sensor-analytics)
-26. [Cloud-Scale Bioinformatics](#cloud-scale-bioinformatics)
-27. [Functional Genomics & Knowledge Graphs](#functional-genomics--knowledge-graphs)
-28. [Molecular Modeling & Simulation](#molecular-modeling--simulation)
-29. [Protein Engineering & Cloud Wet-Lab](#protein-engineering--cloud-wet-lab)
-30. [Medical Imaging & Clinical AI](#medical-imaging--clinical-ai)
-31. [Research Ideation & Study Planning](#research-ideation--study-planning)
-32. [Literature & Knowledge Management](#literature--knowledge-management)
-33. [Regulatory & Quality Management](#regulatory--quality-management)
-34. [Scientific Communication & Tooling](#scientific-communication--tooling)
+16. [Experimental Physics & Data Analysis](#experimental-physics--data-analysis)
+17. [Chemical Engineering & Process Optimization](#chemical-engineering--process-optimization)
+18. [Scientific Illustration & Visual Communication](#scientific-illustration--visual-communication)
+19. [Quantum Computing for Chemistry](#quantum-computing-for-chemistry)
+20. [Research Grant Writing](#research-grant-writing)
+21. [Flow Cytometry & Immunophenotyping](#flow-cytometry--immunophenotyping)
+22. [Geospatial & Earth Observation](#geospatial--earth-observation)
+23. [Time-Series Forecasting & Sensor Analytics](#time-series-forecasting--sensor-analytics)
+24. [Cloud-Scale Bioinformatics](#cloud-scale-bioinformatics)
+25. [Functional Genomics & Knowledge Graphs](#functional-genomics--knowledge-graphs)
+26. [Molecular Modeling & Simulation](#molecular-modeling--simulation)
+27. [Protein Engineering & Cloud Wet-Lab](#protein-engineering--cloud-wet-lab)
+28. [Medical Imaging & Clinical AI](#medical-imaging--clinical-ai)
+29. [Research Ideation & Study Planning](#research-ideation--study-planning)
+30. [Literature & Knowledge Management](#literature--knowledge-management)
+31. [Regulatory & Quality Management](#regulatory--quality-management)
+32. [Scientific Communication & Tooling](#scientific-communication--tooling)
 
 ---
 
 ## Drug Discovery & Medicinal Chemistry
 
-### Example 1: Discovery of Novel EGFR Inhibitors for Lung Cancer
+### Example 1: Preclinical EGFR Inhibitor Candidate Discovery
 
-**Objective**: Identify novel small molecule inhibitors of EGFR with improved properties compared to existing drugs.
+**Objective**: Identify candidate small molecules for preclinical EGFR research and laboratory validation; do not infer therapeutic safety or efficacy.
 
 **Skills Used**:
 - `database-lookup` - Query ChEMBL, PubChem, COSMIC, AlphaFold DB
@@ -60,7 +60,7 @@ This document provides comprehensive, practical examples demonstrating how to co
 - `deepchem` - Property prediction
 - `torchdrug` - Graph neural networks for molecules
 - `scientific-visualization` - Create figures
-- `clinical-reports` - Generate PDF reports
+- `scientific-writing` - Build an evidence-traceable research report
 
 **Workflow**:
 
@@ -120,19 +120,20 @@ Step 9: Literature validation with PubMed
 - Query: "[scaffold_name] AND EGFR AND inhibitor"
 - Summarize relevant findings and potential liabilities
 
-Step 10: Create comprehensive report
+Step 10: Create an evidence-traceable research report
 - Generate 2D structure visualizations of top hits
 - Create scatter plots: MW vs LogP, TPSA vs potency
 - Produce binding pose figures for top 3 compounds
 - Generate table comparing properties to approved drugs (gefitinib, erlotinib)
-- Write scientific summary with methodology, results, and recommendations
+- Write a scientific summary with methods, uncertainty, source provenance,
+  research-prioritization rationale, and preclinical validation gaps
 - Export to PDF with proper citations
 
 Expected Output: 
-- Ranked list of 10-20 novel EGFR inhibitor candidates
+- Research-prioritized list of 10-20 EGFR inhibitor candidates
 - Predicted activity and ADMET properties
 - Docking poses and binding analysis
-- Comprehensive scientific report with publication-quality figures
+- Evidence-traceable scientific report with reviewed figures
 ```
 
 ---
@@ -217,22 +218,23 @@ Expected Output:
 
 ## Cancer Genomics & Precision Medicine
 
-### Example 3: Clinical Variant Interpretation Pipeline
+### Example 3: Research Variant Evidence Review Pipeline
 
-**Objective**: Analyze a patient's tumor sequencing data to identify actionable mutations and therapeutic recommendations.
+**Objective**: Annotate an authorized synthetic or properly de-identified tumor VCF and prepare a source-traceable research evidence packet for qualified review—not diagnosis, prognosis, treatment selection, or trial eligibility.
 
 **Skills Used**:
 - `database-lookup` - Query Ensembl, ClinVar, COSMIC, NCBI Gene, UniProt, ClinPGx, DrugBank, ClinicalTrials.gov, Open Targets
 - `paper-lookup` - Search PubMed for literature evidence
 - `pysam` - Parse VCF files
 - `gget` - Unified gene/protein data retrieval
-- `clinical-reports` - Generate clinical report PDF
+- `scientific-writing` - Maintain claim-to-source traceability
+- `clinical-reports` - Create a visibly marked draft structure from a verified source-fact manifest
 
 **Workflow**:
 
 ```bash
 Step 1: Parse and filter VCF file
-- Use pysam to read tumor VCF
+- Confirm authorization and de-identification, then use pysam to read the research VCF locally
 - Filter for high-quality variants (QUAL > 30, DP > 20)
 - Extract variant positions, alleles, and VAF (variant allele frequency)
 - Separate SNVs, indels, and structural variants
@@ -243,11 +245,12 @@ Step 2: Annotate variants with Ensembl
 - Extract transcript information and protein changes
 - Identify canonical transcripts for each gene
 
-Step 3: Query ClinVar for known pathogenic variants
+Step 3: Retrieve ClinVar assertions
 - Search ClinVar by genomic coordinates
 - Extract clinical significance classifications
 - Note conflicting interpretations and review status
-- Prioritize variants with "Pathogenic" or "Likely Pathogenic" labels
+- Preserve submitter, review status, date, and conflicts; do not independently
+  convert database labels into a patient conclusion
 
 Step 4: Query COSMIC for somatic cancer mutations
 - Search COSMIC for each variant
@@ -267,49 +270,48 @@ Step 6: Assess protein-level impact with UniProt
 - Check if variant affects active sites or protein stability
 - Retrieve post-translational modification sites
 
-Step 7: Search DrugBank for targetable alterations
-- Query for drugs targeting mutated genes
-- Filter for FDA-approved and investigational drugs
-- Extract mechanism of action and indications
-- Prioritize variants with approved targeted therapies
+Step 7: Map alteration-to-intervention research evidence
+- Query documented sources for drugs studied against the affected genes
+- Separate approved indications from investigational or preclinical evidence
+- Extract mechanism, source, population, and evidence limitations
+- Do not recommend, rank, or select therapy for a person
 
 Step 8: Query Open Targets for target-disease associations
 - Validate therapeutic hypotheses
 - Assess target tractability scores
 - Review clinical precedence for each gene-disease pair
 
-Step 9: Search ClinicalTrials.gov for matching trials
-- Build query with: cancer type + gene names + variants
-- Filter for: recruiting status, phase II/III trials
-- Extract trial eligibility criteria
-- Note geographic locations and contact information
+Step 9: Describe the aggregate clinical-trial landscape
+- Build reproducible searches from cancer type, gene names, and variants
+- Record recruiting status, phase, and source access date
+- Summarize published eligibility text as research metadata
+- Do not determine whether any person qualifies or should enroll
 
 Step 10: Literature search for clinical evidence
 - PubMed query: "[gene] AND [variant] AND [cancer type]"
 - Focus on: case reports, clinical outcomes, resistance mechanisms
 - Extract relevant prognostic or predictive information
 
-Step 11: Classify variants by actionability
-Tier 1: FDA-approved therapy for this variant
-Tier 2: Clinical trial available for this variant
-Tier 3: Therapy approved for variant in different cancer
-Tier 4: Biological evidence but no approved therapy
+Step 11: Prepare an evidence matrix for qualified interpretation
+- Record source assertions, dates, review status, populations, and limitations
+- If an authorized reviewer supplies a current classification framework, map
+  evidence mechanically and leave unresolved judgments explicit
+- Do not invent an actionability tier or resolve conflicting evidence
 
-Step 12: Generate clinical genomics report
-- Executive summary of key findings
-- Table of actionable variants with evidence levels
-- Therapeutic recommendations with supporting evidence
-- Clinical trial options with eligibility information
-- Prognostic implications based on mutation profile
-- References to guidelines (NCCN, ESMO, AMP/ASCO/CAP)
-- Generate professional PDF using clinical-reports skill
+Step 12: Generate a safety-bounded draft evidence packet
+- Build a verified source-fact manifest and claim/evidence registry
+- Use scientific-writing for methods, evidence synthesis, uncertainty, and citations
+- Use clinical-reports only for a visibly marked draft structure populated from
+  the verified manifest
+- Require qualified clinician/scientist and privacy review
+- Include no diagnosis, prognosis, treatment recommendation, eligibility decision,
+  filing, submission, signature, or source-record amendment
 
 Expected Output:
-- Annotated variant list with clinical significance
-- Tiered list of actionable mutations
-- Therapeutic recommendations with evidence levels
-- Matching clinical trials
-- Comprehensive clinical genomics report (PDF)
+- Annotated research variant table with source provenance and conflicts
+- Evidence matrix and aggregate trial-landscape table
+- Visibly marked draft research packet for qualified review
+- Explicit unresolved questions and limitations
 ```
 
 ---
@@ -645,7 +647,7 @@ Expected Output:
 
 ### Example 7: Predictive Toxicology Assessment
 
-**Objective**: Assess potential toxicity and safety liabilities of drug candidates before synthesis.
+**Objective**: Screen candidate compounds for in-silico toxicity liabilities and preclinical follow-up. Predictions do not establish that a compound is safe or suitable for human use.
 
 **Skills Used**:
 - `database-lookup` - Query ChEMBL, PubChem, DrugBank, FDA, HMDB
@@ -655,7 +657,7 @@ Expected Output:
 - `pytdc` - Therapeutics data commons
 - `scikit-learn` - Classification models
 - `shap` - Model interpretability
-- `clinical-reports` - Safety assessment reports
+- `scientific-writing` - Evidence-traceable preclinical assessment reports
 
 **Workflow**:
 
@@ -742,10 +744,10 @@ Step 11: Assess ADME liabilities
 - Evaluate metabolic stability
 
 Step 12: Generate safety assessment report
-- Executive summary of safety profile for each candidate
+- Executive summary of predicted liabilities for each candidate
 - Red flags: structural alerts, predicted toxicities
 - Yellow flags: moderate concerns requiring testing
-- Green light: acceptable predicted safety profile
+- Unresolved/low-signal findings: explicitly label uncertainty rather than declaring safety
 - Comparison table of all candidates
 - Recommendations for risk mitigation:
   * Structural modifications to reduce toxicity
@@ -763,7 +765,7 @@ Expected Output:
 - Structural alert analysis
 - hERG, hepatotoxicity, and genotoxicity risk scores
 - Metabolite predictions
-- Prioritized list with safety rankings
+- Research-prioritized list with uncertainty and required assays
 - Comprehensive toxicology assessment report
 ```
 
@@ -782,8 +784,8 @@ Expected Output:
 - `matplotlib` - Visualization
 - `seaborn` - Statistical plots
 - `scientific-visualization` - Publication-quality & interactive visualization
-- `clinical-reports` - Report generation
-- `market-research-reports` - Competitive intelligence
+- `scientific-writing` - Evidence-traceable research synthesis
+- `market-research-reports` - Claim/source mapping, sizing, and scenario analysis
 - `usfiscaldata` - U.S. federal R&D and economic context data
 
 **Workflow**:
@@ -810,9 +812,11 @@ Step 2: Categorize trials by mechanism of action
   * Novel vs repurposing
 
 Step 3: Analyze trial phase progression
-- Calculate success rates by phase (I → II, II → III)
+- Predeclare the cohort, censoring rules, denominator, and estimand
+- Estimate observed phase transitions with uncertainty; do not equate registry
+  status changes with causal development success
 - Identify terminated trials and reasons for termination
-- Track time from phase I start to NDA submission
+- Track time from phase I start to a verified milestone when source data support it
 - Calculate median development timelines
 
 Step 4: Search FDA database for recent approvals
@@ -833,7 +837,7 @@ Step 5: Extract outcome measures
 Step 6: Analyze competitive dynamics
 - Identify leading companies and their pipelines
 - Map trials by phase for each major competitor
-- Note partnership and licensing deals
+- Note partnership and licensing deals only from verified sources
 - Assess crowded vs underserved patient segments
 
 Step 7: Search PubMed for published trial results
@@ -858,7 +862,7 @@ Step 10: Perform temporal trend analysis
 - Plot trial starts over time (by phase, mechanism)
 - Identify increasing or decreasing interest in targets
 - Correlate with publication trends and scientific advances
-- Predict future trends in the space
+- Build labeled future scenarios with explicit assumptions and sensitivity ranges
 
 Step 11: Create comprehensive visualizations
 - Timeline of all trials (Gantt chart style)
@@ -867,9 +871,9 @@ Step 11: Create comprehensive visualizations
 - Geographic distribution of trials
 - Enrollment trends over time
 - Success rate funnels (Phase I → II → III → Approval)
-- Sponsor/company market share
+- Sponsor share of the observed registered-trial set (not commercial market share)
 
-Step 12: Generate competitive intelligence report
+Step 12: Generate an evidence-first landscape report
 - Executive summary of competitive landscape
 - Total number of active programs by phase
 - Key players and their development stage
@@ -877,20 +881,23 @@ Step 12: Generate competitive intelligence report
 - Emerging approaches and novel targets
 - Identified opportunities and white space
 - Risk analysis (crowded targets, high failure rates)
-- Strategic recommendations:
+- Decision options, each labeled with evidence and assumptions:
   * Patient population to target
   * Differentiation strategies
   * Partnership opportunities
-  * Regulatory pathway considerations
-- Export as professional PDF with citations and data tables using clinical-reports skill
+  * Questions for qualified regulatory specialists
+- Maintain a claim/source ledger and distinguish facts, estimates, calculations,
+  forecasts, opinions, and recommendations
+- Export a cited research report with market-research-reports and scientific-writing;
+  do not imitate or imply affiliation with an analyst or consulting brand
 
 Expected Output:
 - Comprehensive trial database for indication
-- Success rate and timeline statistics
+- Defined transition/timeline estimates with uncertainty
 - Competitive landscape mapping
 - Unmet need analysis
-- Strategic recommendations
-- Publication-ready report with visualizations
+- Assumption-labeled decision options and scenarios
+- Evidence-traceable report with reviewed visualizations
 ```
 
 ---
@@ -1145,32 +1152,35 @@ Expected Output:
 
 ## Digital Pathology
 
-### Example 11: Automated Tumor Detection in Whole Slide Images
+### Example 11: Research Tumor-Pattern Classification in Whole Slide Images
 
-**Objective**: Develop and validate a deep learning model for automated tumor detection in histopathology images.
+**Objective**: Develop and retrospectively evaluate a research model on authorized, de-identified pathology data. PathML, pydicom, and the resulting model are research-only—not diagnostic systems or substitutes for pathologists.
 
 **Skills Used**:
 - `histolab` - Whole slide image processing
-- `pathml` - Computational pathology
+- `pathml` - Local research-only computational pathology (PathML 3.0.5)
 - `pytorch-lightning` - Deep learning and image models
 - `scikit-learn` - Model evaluation
-- `pydicom` - DICOM handling
-- `omero-integration` - Image management
+- `pydicom` - Privacy-aware local DICOM handling (not a diagnostic viewer)
+- `omero-integration` - Scoped image inventory and reviewed write planning
 - `matplotlib` - Visualization
 - `scientific-visualization` - Publication-quality & interactive visualization
 - `shap` - Model interpretability
-- `clinical-reports` - Clinical validation reports
+- `scientific-writing` - Evidence-traceable research validation reports
 
 **Workflow**:
 
 ```bash
 Step 1: Load whole slide images with HistoLab
+- Confirm authorization, data-use terms, and local de-identification; keep source
+  images and any re-identification key in approved separate storage
 - Load WSI files (SVS, TIFF formats)
-- Extract slide metadata and magnification levels
+- Extract only allowlisted, non-identifying metadata and magnification levels
 - Visualize slide thumbnails
 - Inspect tissue area vs background
 
 Step 2: Tile extraction and preprocessing
+- Split by patient and then slide before tiling or fitting preprocessing
 - Use HistoLab to extract tiles (256×256 pixels at 20× magnification)
 - Filter tiles:
   * Remove background (tissue percentage > 80%)
@@ -1190,7 +1200,7 @@ Step 4: Set up PathML pipeline
   * Stain normalization
   * Color augmentation (HSV jitter)
   * Rotation and flipping
-- Split data: 70% train, 15% validation, 15% test
+- Apply the predeclared patient-level train/validation/test split and audit leakage
 
 Step 5: Build deep learning model with PyTorch Lightning
 - Architecture: ResNet50 or EfficientNet backbone
@@ -1223,44 +1233,48 @@ Step 8: Slide-level aggregation
   * Majority voting
   * Weighted average by confidence
   * Spatial smoothing with convolution
-- Generate probability heatmaps overlaid on WSI
+- Generate research probability heatmaps overlaid on WSI with clear limitations
 
 Step 9: Model interpretability with SHAP
 - Apply GradCAM or SHAP to explain predictions
 - Visualize which regions contribute to tumor classification
 - Generate attention maps showing model focus
-- Validate that model attends to relevant histological features
+- Ask qualified reviewers to inspect focus patterns; attribution maps do not validate
+  pathology reasoning, causality, or diagnostic performance
 
-Step 10: Clinical validation
-- Compare model predictions with pathologist diagnosis
+Step 10: Retrospective research evaluation
+- Compare model outputs with authorized pathologist-supplied research labels
 - Calculate inter-rater agreement (kappa score)
 - Identify discordant cases for review
 - Analyze error types: false positives, false negatives
+- Keep conclusions within the sampled cohort; do not claim clinical utility
 
-Step 11: Integration with OMERO
-- Upload processed slides and heatmaps to OMERO server
-- Attach model predictions as slide metadata
-- Enable pathologist review interface
-- Store annotations and corrections for model retraining
+Step 11: Plan reviewed OMERO integration
+- Start with bounded read-only inventory and a local transfer/write plan
+- Show exact server, group, image IDs, files, annotations, and user-visible effects
+- Upload heatmaps or create annotations only after explicit authorization for that
+  reviewed write; re-read and verify the result
+- Otherwise retain the plan without changing the server
 
-Step 12: Generate clinical validation report
+Step 12: Generate a research validation report
 - Model architecture and training details
 - Performance metrics with confidence intervals
-- Slide-level accuracy vs pathologist ground truth
+- Slide-level performance against the supplied reference labels
 - Heatmap visualizations for representative cases
 - Analysis of failure modes
 - Comparison with published methods
-- Discussion of clinical applicability
-- Recommendations for deployment and monitoring
-- Export PDF report for regulatory submission (if needed)
+- Research-use limitations, privacy controls, subgroup checks, and external-validation gaps
+- Questions requiring pathologist, biostatistical, privacy, and regulatory review
+- Export an evidence-traceable draft report; do not claim deployment readiness,
+  diagnostic validity, authorization, or suitability for regulatory submission
 
 Expected Output:
-- Trained deep learning model for tumor detection
-- Tile-level and slide-level predictions
+- Research model artifact for tumor-pattern classification
+- Tile-level and slide-level research scores
 - Probability heatmaps for visualization
 - Performance metrics and validation results
 - Model interpretation visualizations
-- Clinical validation report
+- Research-only validation report with explicit non-diagnostic limitations
 ```
 
 ---
@@ -1269,25 +1283,27 @@ Expected Output:
 
 ### Example 12: Automated High-Throughput Screening Protocol
 
-**Objective**: Design and execute an automated compound screening workflow using liquid handling robots.
+**Objective**: Design, validate, and simulate a compound-screening workflow. Physical execution occurs only after equipment-specific review and explicit trained-operator authorization.
 
 **Skills Used**:
-- `pylabrobot` - Lab automation
-- `opentrons-integration` - Opentrons protocol
+- `pylabrobot` - Offline-first resource planning and Chatterbox simulation
+- `opentrons-integration` - Current protocol authoring, simulation, and production checks
 - `benchling-integration` - Sample tracking
-- `labarchive-integration` - Electronic lab notebook
-- `protocolsio-integration` - Protocol documentation
+- `labarchive-integration` - Separate ELN/Inventory planning with reviewed remote writes
+- `protocolsio-integration` - Bounded reads and non-executing mutation plans
 - `simpy` - Process simulation
 - `polars` - Data processing
 - `matplotlib` - Plate visualization
 - `scientific-visualization` - Publication-quality & interactive visualization
 - `rdkit` - PAINS filtering for hits
-- `clinical-reports` - Screening report generation
+- `scientific-writing` - Evidence-traceable screening report
 
 **Workflow**:
 
 ```bash
 Step 1: Define screening campaign in Benchling
+- Begin with a local manifest; any Benchling create/update operation requires
+  explicit authorization for the exact target and payload
 - Create compound library in Benchling registry
 - Register all compounds with structure, concentration, location
 - Define plate layouts (384-well format)
@@ -1302,8 +1318,8 @@ Step 2: Design assay protocol
   * Add detection reagent (cell viability assay)
   * Read luminescence signal
 - Calculate required reagent volumes
-- Document protocol in Protocols.io
-- Share with team for review
+- Create a non-executing protocols.io mutation plan and exact-version export
+- Have an authorized user review and apply any remote change through an approved path
 
 Step 3: Simulate workflow with SimPy
 - Model liquid handler, incubator, plate reader as resources
@@ -1313,7 +1329,8 @@ Step 3: Simulate workflow with SimPy
 - Validate that throughput goal is achievable (20 plates/day)
 
 Step 4: Design plate layout
-- Use PyLabRobot to generate plate maps:
+- Use PyLabRobot locally with the software-only Chatterbox backend to generate and
+  simulate plate maps:
   * Columns 1-2: positive controls (DMSO)
   * Columns 3-22: compound titrations (10 concentrations in duplicate)
   * Columns 23-24: negative controls (cytotoxic control)
@@ -1322,14 +1339,16 @@ Step 4: Design plate layout
 - Export plate maps to CSV
 
 Step 5: Create Opentrons protocol for cell seeding
-- Write Python protocol using Opentrons API 2.0
+- Select the exact Flex/OT-2 model and supported Protocol API version, then author
+  the protocol against that declared target
 - Steps:
   * Aspirate cells from reservoir
   * Dispense 40 μL cell suspension per well
   * Tips: use P300 multi-channel for speed
   * Include mixing steps to prevent settling
 - Simulate protocol in Opentrons app
-- Test on one plate before full run
+- Complete deck, labware, liquid, collision, contamination, tip, volume, and module
+  checks; prepare an operator-reviewed one-plate dry-run plan
 
 Step 6: Create Opentrons protocol for compound addition
 - Acoustic liquid handler (Echo) or pin tool for nanoliter transfers
@@ -1341,18 +1360,18 @@ Step 6: Create Opentrons protocol for compound addition
 - Account for DMSO normalization (1% final)
 
 Step 7: Integrate with Benchling for sample tracking
-- Use Benchling API to:
+- After explicit authorization, use the Benchling API to:
   * Retrieve compound information (structure, batch, concentration)
   * Log plate creation in inventory
   * Create transfer records for audit trail
   * Link assay plates to ELN entry
 
-Step 8: Execute automated workflow
-- Day 1: Seed cells with Opentrons
-- Day 1 (4h later): Add compounds with Opentrons
-- Day 3: Add detection reagent (manual or automated)
-- Day 3 (2h later): Read plates on plate reader
-- Store plates at 4°C between steps
+Step 8: Pass the physical-execution safety gate
+- A trained operator verifies calibration, deck state, consumables, volumes,
+  hazards, waste handling, emergency stop/recovery, and instrument readiness
+- The operator explicitly approves the exact protocol/version and supervises a
+  small dry run before deciding whether to execute the campaign
+- The agent does not connect to or command hardware automatically
 
 Step 9: Collect and process data
 - Export raw luminescence data from plate reader
@@ -1388,22 +1407,22 @@ Step 12: Visualize results and generate report
 - Scatter plot: potency vs max effect
 - QC metric summary across plates
 - Structure visualization of top 20 hits
-- Generate campaign summary report:
+- Generate an evidence-traceable campaign summary with scientific-writing:
   * Screening statistics (compounds tested, hit rate)
   * QC metrics and data quality assessment
   * Hit list with structures and IC50 values
   * Protocol documentation from Protocols.io
   * Raw data files and analysis code
   * Recommendations for confirmation assays
-- Update Benchling ELN with results
+- Prepare a reviewed Benchling/ELN update and execute it only with explicit authorization
 - Export PDF report for stakeholders
 
 Expected Output:
-- Automated screening protocols (Opentrons Python files)
-- Executed screen of 384-well plates
+- Reviewed protocol files, local manifests, simulations, and operator checklist
+- No automatic hardware action; screen data only if an authorized operator conducted the run
 - Quality-controlled dose-response data
 - Hit list with IC50 values
-- Comprehensive screening report
+- Evidence-traceable screening report
 ```
 
 ---
@@ -1546,11 +1565,11 @@ Expected Output:
 
 ### Example 14: Brain Connectivity Analysis from fMRI Data
 
-**Objective**: Analyze resting-state fMRI data to identify altered brain connectivity patterns in disease.
+**Objective**: Analyze authorized, de-identified resting-state fMRI data for group-level connectivity research. The workflow is non-diagnostic and does not select treatment or validate a medical device.
 
 **Skills Used**:
 - `bids` - Organize/validate neuroimaging data in BIDS format
-- `neurokit2` - Neurophysiological signal processing
+- `neurokit2` - NeuroKit2 0.2.13 research processing for separately recorded physiological signals
 - `neuropixels-analysis` - Neural data analysis
 - `scikit-learn` - Classification and clustering
 - `networkx` - Graph theory analysis
@@ -1567,6 +1586,7 @@ Expected Output:
 ```bash
 Step 1: Load and preprocess fMRI data
 # Note: Use nilearn or similar for fMRI-specific preprocessing
+- Confirm authorization, privacy controls, and subject-level train/test separation
 - Organize and validate the dataset in BIDS layout using the bids skill
   (standardized sub-*/func/ structure, JSON sidecars, participants.tsv)
 - Load 4D fMRI images (BOLD signal)
@@ -1584,10 +1604,10 @@ Step 2: Define brain regions (parcellation)
 - Result: 200 time series per subject (one per brain region)
 
 Step 3: Signal cleaning with NeuroKit2
-- Denoise time series
-- Remove physiological artifacts
-- Apply additional bandpass filtering if needed
-- Identify and handle outlier time points
+- Use NeuroKit2 only for separately recorded ECG, respiration, or other supported
+  physiological channels; it is not an fMRI preprocessing package
+- Derive documented nuisance regressors for a validated neuroimaging pipeline
+- Record method choices and artifacts; do not treat NeuroKit2 outputs as diagnoses
 
 Step 4: Calculate functional connectivity
 - Compute pairwise Pearson correlations between all regions
@@ -1627,18 +1647,19 @@ Step 7: Identify altered subnetworks
   * Sensorimotor network
 - Visualize altered connections on brain surfaces
 
-Step 8: Machine learning classification
-- Train classifier to distinguish patients from controls
+Step 8: Retrospective group-label classification
+- Train an experimental classifier to distinguish supplied cohort labels
 - Use scikit-learn Random Forest or SVM
 - Features: connectivity values or network metrics
 - Cross-validation (10-fold)
 - Calculate accuracy, sensitivity, specificity, AUC
 - Identify most discriminative features (connectivity edges)
+- Do not apply the model to diagnose or classify a person
 
 Step 9: Graph neural network analysis with Torch Geometric
 - Build graph neural network (GCN or GAT)
 - Input: connectivity matrices as adjacency matrices
-- Train to predict diagnosis
+- Train to predict the held-out research group label
 - Extract learned representations
 - Visualize latent space (UMAP)
 - Interpret which brain regions are most important
@@ -1650,37 +1671,37 @@ Step 10: Bayesian network modeling with PyMC
 - Perform posterior inference
 - Identify key driver regions in disease
 
-Step 11: Clinical correlation analysis
-- Correlate network metrics with clinical scores:
+Step 11: Cohort correlation analysis
+- Correlate network metrics with authorized research variables:
   * Symptom severity
   * Cognitive performance
   * Treatment response
 - Use Spearman or Pearson correlation
 - Identify brain-behavior relationships
 
-Step 12: Generate comprehensive neuroimaging report
+Step 12: Generate a research neuroimaging report
 - Brain connectivity matrices (patients vs controls)
 - Statistical comparison maps on brain surface
 - Network metric comparison bar plots
 - Graph visualizations (circular or force-directed layout)
 - Machine learning ROC curves
 - Brain-behavior correlation plots
-- Clinical interpretation:
+- Research interpretation:
   * Which networks are disrupted?
   * Relationship to symptoms
-  * Potential biomarker utility
-- Recommendations:
-  * Brain regions for therapeutic targeting (TMS, DBS)
-  * Network metrics as treatment response predictors
-- Export publication-ready PDF with brain visualizations
+  * Candidate biomarker questions requiring independent validation
+- Follow-up research:
+  * Replication and sensitivity analyses
+  * Prospective validation questions for qualified investigators
+- Export an evidence-traceable PDF with non-diagnostic limitations
 
 Expected Output:
 - Functional connectivity matrices for all subjects
 - Statistical maps of altered connectivity
 - Graph theory metrics
-- Machine learning classification model
+- Retrospective research classification model
 - Brain-behavior correlations
-- Comprehensive neuroimaging report
+- Non-diagnostic neuroimaging research report
 ```
 
 ---
@@ -1851,7 +1872,7 @@ Expected Output:
 - `statistical-analysis` - Hypothesis testing
 - `matplotlib` - Epidemiological plots
 - `scientific-visualization` - Publication-quality & interactive visualization
-- `clinical-reports` - Surveillance reports
+- `scientific-writing` - Evidence-traceable surveillance reports
 
 **Workflow**:
 
@@ -1918,6 +1939,8 @@ Step 7: Machine learning resistance prediction
 - Cross-validate (stratified 5-fold)
 - Calculate accuracy, precision, recall, F1 score
 - Feature importance: which genes are most predictive?
+- Treat predictions as surveillance research; do not replace validated clinical
+  susceptibility testing or use the model to select therapy
 
 Step 8: Temporal trend analysis
 - Track resistance rates over time
@@ -1961,6 +1984,8 @@ Step 12: Generate AMR surveillance report
 - Transmission network visualizations
 - Prediction model performance metrics
 - Heatmap: resistance genes by isolate
+- Build the report with scientific-writing, source provenance, privacy controls,
+  uncertainty, and explicit non-clinical limitations
 - Geographic distribution map (if spatial data available)
 - Interpretation:
   * Predominant resistance mechanisms
@@ -1989,7 +2014,7 @@ Expected Output:
 
 ### Example 17: Integrative Analysis of Cancer Multi-Omics Data
 
-**Objective**: Integrate genomics, transcriptomics, proteomics, and clinical data to identify cancer subtypes and therapeutic strategies.
+**Objective**: Integrate authorized, de-identified genomics, transcriptomics, proteomics, and cohort data to identify research subtypes, outcome associations, and candidates for independent validation—not patient-specific care.
 
 **Skills Used**:
 - `database-lookup` - Query Ensembl, COSMIC, STRING, Reactome, Open Targets
@@ -2003,7 +2028,7 @@ Expected Output:
 - `statsmodels` - Statistical modeling
 - `pymoo` - Multi-objective optimization
 - `pyhealth` - Healthcare ML models
-- `clinical-reports` - Integrative genomics report
+- `scientific-writing` - Evidence-traceable integrative genomics report
 
 **Workflow**:
 
@@ -2032,6 +2057,7 @@ Step 3: Load proteomic data (Mass spec)
 - Create protein matrix: samples × proteins
 
 Step 4: Load clinical data
+- Use only authorized de-identified research variables with an approved data-use plan
 - Demographics: age, sex, race
 - Tumor characteristics: stage, grade, histology
 - Treatment: surgery, chemo, radiation, targeted therapy
@@ -2086,15 +2112,15 @@ Step 9: Build protein-protein interaction networks
 - Overlay fold changes on network for visualization
 
 Step 10: Survival analysis by subtype
-- Use statsmodels or lifelines for survival analysis
+- Use scikit-survival with leakage-safe preprocessing and censoring-aware metrics
 - Kaplan-Meier curves for each subtype
 - Log-rank test for significance
 - Cox proportional hazards model:
   * Covariates: subtype, stage, age, treatment
   * Estimate hazard ratios
-- Identify prognostic subtypes
+- Describe cohort associations with uncertainty; do not claim prognosis for a person
 
-Step 11: Predict therapeutic response
+Step 11: Retrospective treatment-response modeling for research
 - Train machine learning models with scikit-learn:
   * Features: multi-omics data
   * Target: response to specific therapy (responder/non-responder)
@@ -2102,36 +2128,36 @@ Step 11: Predict therapeutic response
 - Cross-validation to assess performance
 - Identify features predictive of response
 - Calculate AUC and feature importance
+- Treat associations as research signals, not treatment-selection evidence
 
 Step 12: Graph neural network for integrated prediction
 - Build heterogeneous graph with Torch Geometric:
   * Nodes: samples, genes, proteins, pathways
   * Edges: gene-protein, protein-protein, gene-pathway
   * Node features: expression, mutation status
-- Train GNN to predict:
+- Train GNN to model research outcomes:
   * Subtype classification
-  * Survival risk
+  * Cohort survival outcome
   * Treatment response
 - Extract learned embeddings for interpretation
 
-Step 13: Identify therapeutic targets with Open Targets
+Step 13: Build a target-evidence hypothesis map with Open Targets
 - For each subtype, query Open Targets:
   * Input: upregulated genes/proteins
   * Extract target-disease associations
-  * Prioritize by tractability score
+  * Record tractability score as one evidence field, not a decision
 - Search for FDA-approved drugs targeting identified proteins
 - Identify clinical trials for relevant targets
-- Propose subtype-specific therapeutic strategies
+- Propose preclinical validation questions and alternative explanations
 
-Step 14: Multi-objective optimization of treatment strategies
-- Use PyMOO to optimize treatment selection:
+Step 14: Multi-objective prioritization of follow-up research
+- Use PyMOO to explore candidate experiments:
   * Objectives:
-    1. Maximize predicted response probability
-    2. Minimize predicted toxicity
-    3. Minimize cost
-  * Constraints: patient eligibility, drug availability
-- Generate Pareto-optimal treatment strategies
-- Personalized treatment recommendations per patient
+    1. Increase expected information gain
+    2. Reduce model uncertainty
+    3. Respect budget and assay constraints
+  * Constraints: available models, samples, assays, and ethics approvals
+- Present a Pareto set for human research planning; do not optimize care
 
 Step 15: Generate comprehensive multi-omics report
 - Sample clustering and subtype assignments
@@ -2143,23 +2169,22 @@ Step 15: Generate comprehensive multi-omics report
 - Kaplan-Meier survival curves by subtype
 - ML model performance (AUC, confusion matrices)
 - Feature importance plots
-- Therapeutic target tables with supporting evidence
-- Personalized treatment recommendations
-- Clinical implications:
-  * Prognostic biomarkers
-  * Predictive biomarkers for therapy selection
-  * Novel drug targets
+- Candidate target tables with source evidence and uncertainty
+- Research implications:
+  * Candidate cohort-associated biomarkers
+  * Candidate treatment-response associations for validation
+  * Follow-up experiments and replication needs
 - Export publication-quality PDF with all figures and tables
 
 Expected Output:
 - Integrated multi-omics dataset
 - Cancer subtype classification
 - Molecular characterization of subtypes
-- Survival analysis and prognostic markers
-- Predictive models for treatment response
-- Therapeutic target identification
-- Personalized treatment strategies
-- Comprehensive integrative genomics report
+- Survival/outcome association analysis
+- Retrospective treatment-response research models
+- Candidate target evidence map
+- Human-reviewed follow-up research priorities
+- Evidence-traceable integrative genomics report
 ```
 
 ---
@@ -2527,7 +2552,7 @@ Expected Output:
 
 ### Example 20: Creating Publication-Ready Scientific Figures
 
-**Objective**: Generate and refine scientific illustrations, diagrams, and graphical abstracts for publications and presentations.
+**Objective**: Generate, audit, and package scientific illustrations, diagrams, and graphical abstracts while preserving evidence provenance and current venue requirements.
 
 **Skills Used**:
 - `generate-image` - AI image generation and editing
@@ -2537,13 +2562,17 @@ Expected Output:
 - `scientific-writing` - Figure caption creation
 - `scientific-slides` - Presentation materials
 - `latex-posters` - Conference posters
-- `pptx-posters` - PowerPoint posters
+- `pptx-posters` - Macro-free `.pptx` posters from approved local manifests
 - `pdf` - PDF report generation
 
 **Workflow**:
 
 ```bash
 Step 1: Plan visual communication strategy
+- Separate data figures from conceptual/AI-generated illustrations; never use image
+  generation to invent observations, labels, scale, or quantitative evidence
+- Confirm authorization before sending any source image or unpublished/sensitive
+  content to an external image service
 - Identify key concepts that need visual representation:
   * Experimental workflow diagrams
   * Molecular structures and interactions
@@ -2562,7 +2591,8 @@ Step 2: Generate experimental workflow diagram
   Clean, professional style with numbered steps, white background,
   suitable for scientific publication."
 - Save as workflow_diagram.png
-- Review and iterate on prompt if needed
+- Record model, prompt, output, edits, and source/permission metadata; have a domain
+  expert verify every depicted scientific detail
 
 Step 3: Create molecular interaction schematic
 - Generate detailed molecular visualization:
@@ -2576,13 +2606,12 @@ Step 3: Create molecular interaction schematic
 - Select best representation
 
 Step 4: Edit existing figures for consistency
-- Load existing figure that needs modification:
-  python scripts/generate_image.py "Change the background to white
-  and make the protein blue instead of green" --input figure1.png
+- Use the generate-image skill's supported host interface to request a background
+  or palette edit only after confirming permission to process the source image
 - Standardize color schemes across all figures
-- Edit to match journal style guidelines:
-  python scripts/generate_image.py "Remove the title text and
-  increase contrast for print publication" --input diagram.png
+- Preserve the untouched original and record each transformation
+- Verify current journal requirements directly rather than assuming an edit makes
+  the figure compliant
 
 Step 5: Generate graphical abstract
 - Create comprehensive visual summary:
@@ -2625,12 +2654,12 @@ Step 8: Generate figure panels for multi-part figures
 - Annotate with panel labels
 
 Step 9: Edit for accessibility
-- Modify figures for colorblind accessibility:
-  python scripts/generate_image.py "Change the red and green
-  elements to blue and orange for colorblind accessibility,
-  maintain all other aspects" --input figure_v1.png
+- Use redundant encodings, labels, patterns, and an audited contrast-aware palette
+- If an authorized AI edit changes colors, compare it against the original and
+  verify that no scientific content or spatial relationship changed
 - Add patterns or textures for additional differentiation
-- Verify contrast meets accessibility standards
+- Run contrast checks and manual accessibility review; do not claim that palette
+  selection alone establishes accessibility
 
 Step 10: Create supplementary visual materials
 - Generate additional context figures:
@@ -2649,24 +2678,28 @@ Step 11: Compile figure legends and captions
   * Scale bars and measurement units
   * Statistical information if applicable
 - Format according to journal guidelines
+- Map factual and numerical caption claims to verified evidence IDs
 
 Step 12: Assemble final publication package
 - Organize all figures in publication order
-- Create high-resolution exports (300+ DPI for print)
-- Generate both RGB (web) and CMYK (print) versions
+- Verify the target venue's current dimensions, resolution, color-space, font,
+  accessibility, and submission requirements before export
 - Compile into PDF using pdf skill:
   * Title page with graphical abstract
   * All figures with captions
   * Supplementary figures section
 - Create separate folder with individual figure files
 - Document all generation prompts for reproducibility
+- For a PowerPoint poster, build an author-approved local content/asset manifest,
+  validate hashes, provenance, printer rules, reading order, and approval hash,
+  then generate and inspect a macro-free `.pptx`; final review/export is manual
 
 Expected Output:
-- Complete set of publication-ready scientific illustrations
+- Complete set of source-traceable, human-reviewed scientific illustrations
 - Graphical abstract for table of contents
 - Mechanism diagrams and workflow figures
-- Edited versions meeting journal style guidelines
-- Accessibility-compliant figure versions
+- Edited versions checked against current journal guidance
+- Accessibility-reviewed figure versions with redundant encodings
 - Figure package with captions and metadata
 - Documentation of prompts used for reproducibility
 ```
@@ -2871,7 +2904,7 @@ Expected Output:
 
 ### Example 23: Multi-Parameter Flow Cytometry Analysis Pipeline
 
-**Objective**: Analyze high-dimensional flow cytometry data to characterize immune cell populations in clinical samples.
+**Objective**: Analyze authorized, de-identified high-dimensional flow-cytometry research data to characterize immune-cell populations. Outputs are not diagnostic laboratory reports.
 
 **Skills Used**:
 - `flowio` - FCS file parsing
@@ -2881,7 +2914,7 @@ Expected Output:
 - `statistical-analysis` - Population statistics
 - `matplotlib` - Flow cytometry plots
 - `scientific-visualization` - Publication-quality & interactive visualization
-- `clinical-reports` - Clinical flow reports
+- `scientific-writing` - Evidence-traceable research reports
 - `exploratory-data-analysis` - Data exploration
 
 **Workflow**:
@@ -2943,11 +2976,12 @@ Step 8: Differential abundance analysis
 - Identify significantly altered populations
 
 Step 9: Biomarker discovery
-- Train classifiers to predict clinical outcome
+- Train retrospective classifiers for an approved cohort outcome
 - Use scikit-learn Random Forest or SVM
 - Calculate feature importance (which populations matter)
 - Cross-validate prediction accuracy
 - Identify candidate biomarkers
+- Do not use candidate markers or model output for diagnosis, prognosis, or care
 
 Step 10: Quality metrics and batch effects
 - Calculate CV for control samples
@@ -2966,23 +3000,24 @@ Step 11: Visualization suite
   * Violin plots for marker distributions
 - Interactive plots with Plotly
 
-Step 12: Generate clinical flow cytometry report
-- Sample information and QC summary
+Step 12: Generate a flow-cytometry research report
+- De-identified cohort information and QC summary
 - Gating strategy diagrams
 - Population frequency tables
-- Reference range comparisons
+- Predeclared research-reference comparisons
 - Statistical comparisons between groups
-- Interpretation and clinical significance
-- Export as PDF for clinical review
+- Research interpretation, uncertainty, and validation gaps
+- Export an evidence-traceable PDF for qualified scientific review; do not issue
+  a diagnostic result or amend a laboratory record
 
 Expected Output:
 - Parsed and compensated flow cytometry data
 - Traditional and automated gating results
 - High-dimensional clustering and UMAP
 - Differential abundance statistics
-- Biomarker candidates for clinical outcome
+- Candidate cohort-associated biomarkers
 - Publication-quality flow plots
-- Clinical flow cytometry report
+- Non-diagnostic flow-cytometry research report
 ```
 
 ---
@@ -3045,15 +3080,15 @@ Expected Output:
 
 ## Time-Series Forecasting & Sensor Analytics
 
-### Example 25: Forecasting Clinical Vitals and Wearable Sensor Streams
+### Example 25: Research Forecasting of Physiological Sensor Streams
 
-**Objective**: Forecast physiological time series and detect anomalies from wearable/ICU sensor data to support early-warning systems.
+**Objective**: Retrospectively benchmark forecasting and anomaly methods on authorized synthetic, public, or properly de-identified physiological data. Outputs are research-only—not diagnostic, monitoring, triage, alarm, or device-validation results.
 
 **Skills Used**:
 - `timesfm-forecasting` - Zero-shot foundation-model forecasting
 - `aeon` - Time-series classification, clustering, and anomaly detection
-- `neurokit2` - Physiological signal processing (ECG, PPG, EDA)
-- `pyhealth` - Healthcare ML models and clinical pipelines
+- `neurokit2` - NeuroKit2 0.2.13 research signal processing (not clinical use)
+- `pyhealth` - Retrospective healthcare-ML research
 - `statistical-analysis` - Evaluation and hypothesis testing
 - `matplotlib` - Visualization
 
@@ -3061,23 +3096,30 @@ Expected Output:
 
 ```bash
 Step 1: Ingest and clean signals
+- Confirm authorization, privacy controls, cohort definition, and a leakage-safe
+  subject-level split before inspecting outcomes
 - Load multi-channel sensor streams (heart rate, SpO2, ECG, activity)
 - Use NeuroKit2 to clean ECG/PPG, detect R-peaks, and derive HRV features
-- Resample to a common cadence and handle gaps/outliers
+- Resample to a common cadence; document gaps, artifacts, method choices, and
+  sensitivity instead of silently deleting or imputing observations
 
 Step 2: Feature extraction and segmentation with aeon
 - Extract time-series features and segment into windows
 - Cluster typical vs atypical patterns
-- Flag anomalous windows with aeon anomaly detectors
+- Label algorithmically unusual windows for retrospective review; do not call them
+  clinical events or alarms
 
 Step 3: Zero-shot forecasting with TimesFM
 - Forecast each vital sign ahead (e.g., next 30-60 min) with timesfm-forecasting
 - Produce point forecasts and quantile/uncertainty bands
 - No per-series training required (foundation model)
+- Do not use forecasts to guide care or real-time monitoring
 
-Step 4: Clinical risk modeling with PyHealth
-- Build a deterioration/early-warning model from forecasts + EHR features
-- Evaluate with appropriate clinical metrics (AUROC, AUPRC, calibration)
+Step 4: Retrospective outcome-model research with PyHealth
+- Build a clearly labeled experimental model from forecasts plus approved cohort features
+- Evaluate discrimination, calibration, subgroup behavior, missingness, and temporal
+  transport on held-out data
+- Do not choose a live threshold, produce patient alerts, or recommend deployment
 
 Step 5: Statistical evaluation
 - Backtest forecasts (MAE, MASE, coverage) with statistical-analysis
@@ -3085,13 +3127,14 @@ Step 5: Statistical evaluation
 
 Step 6: Generate monitoring report
 - Forecast vs actual overlays with uncertainty bands
-- Anomaly timelines and alert thresholds
-- Model performance summary and deployment recommendations
+- Retrospective anomaly timelines and threshold-sensitivity curves
+- Model performance, failure modes, privacy limits, and questions for qualified review
+- Prominent statement that NeuroKit2 and all outputs are non-diagnostic research artifacts
 
 Expected Output:
 - Cleaned, feature-rich physiological time series
 - Multi-horizon forecasts with uncertainty
-- Anomaly detection and early-warning model with validation
+- Retrospective anomaly/outcome-model benchmark with non-clinical limitations
 ```
 
 ---
@@ -3297,11 +3340,16 @@ Step 3: Glycoengineering
 - Add/remove sequons to tune stability, half-life, or immunogenicity (glycoengineering)
 
 Step 4: Submit binding assays to Adaptyv
-- Design a protein binding experiment and submit via the Adaptyv Foundry API
+- Design a protein binding experiment and prepare an exact submission plan
+- Submit via the Adaptyv Foundry API only after the user explicitly authorizes the
+  payload, cost, destination, and external data transfer
 - Retrieve and parse measured affinities/binding results
 
 Step 5: Cloud wet-lab expression with Ginkgo
-- Submit cell-free expression / validation protocols to Ginkgo Cloud Lab
+- Prepare a cell-free expression/validation protocol, feasibility/cost review, and
+  exact execution plan
+- Submit to Ginkgo Cloud Lab only after explicit user authorization for the order
+  and trained-provider/operator safety review
 - Track RAC execution and collect results
 
 Step 6: Iterate and report
@@ -3320,17 +3368,17 @@ Expected Output:
 
 ### Example 30: AI-Assisted Radiology on Public Imaging Cohorts
 
-**Objective**: Train and interpret a deep learning model on public cancer imaging data and generate a clinically oriented summary.
+**Objective**: Train and retrospectively evaluate a research model on an authorized public cancer-imaging cohort. pydicom and model outputs are not diagnostic, and the workflow does not produce patient-specific care.
 
 **Skills Used**:
 - `imaging-data-commons` - Query/download NCI Imaging Data Commons (CT/MR/PET)
-- `pydicom` - DICOM parsing and handling
+- `pydicom` - Privacy-aware local DICOM preflight and pixel handling
 - `hugging-science` - Pretrained medical imaging models
 - `pytorch-lightning` - Model training
 - `optimize-for-gpu` - GPU acceleration
 - `shap` - Interpretability
-- `clinical-decision-support` - Evidence-based decision support
-- `treatment-plans` - Generate structured treatment plan documents
+- `clinical-decision-support` - Aggregate research evaluation and governance artifacts only
+- `scientific-writing` - Evidence-traceable research report
 
 **Workflow**:
 
@@ -3338,11 +3386,13 @@ Expected Output:
 Step 1: Acquire imaging cohort
 - Use idc-index via the imaging-data-commons skill to query CT/MR/PET by modality,
   collection, and metadata (no authentication required)
-- Download and organize series for the task
+- Check collection licenses/data-use terms and download only the approved series
 
 Step 2: Load and preprocess DICOM
-- Parse pixel data and metadata with pydicom
-- Resample, window, and normalize; build train/val/test splits
+- Preflight locally with pydicom 3.0.2; treat filenames, tags, private elements,
+  overlays, structured content, and pixels as potentially identifying
+- Use allowlisted metadata and privacy/DICOM expert-reviewed de-identification
+- Resample, window, and normalize; build patient-level train/validation/test splits
 
 Step 3: Model training
 - Start from a hugging-science pretrained medical imaging backbone
@@ -3351,20 +3401,24 @@ Step 3: Model training
 
 Step 4: Evaluation and interpretability
 - Evaluate on the held-out set with confidence intervals
-- Use SHAP/saliency to explain predictions and verify clinically relevant focus
+- Use SHAP/saliency to inspect model behavior; explanations do not establish
+  causality, diagnostic validity, or clinical relevance
 
-Step 5: Clinical synthesis
-- Map model findings to guidance with clinical-decision-support
-- Generate a concise treatment plan document with the treatment-plans skill
+Step 5: Aggregate research evaluation and governance
+- Use clinical-decision-support only with aggregate or synthetic metrics to prepare
+  intended-use limits, cohort/performance tables, privacy review, and governance gates
+- Do not diagnose, triage, alert, choose treatment, calculate a dose, or operate live
+- Record external-validation, bias, calibration, workflow, and authorization gaps
 
 Step 6: Report
 - Performance metrics, example predictions with heatmaps
-- Interpretability summary and clinical caveats
+- Interpretability limits, privacy controls, cohort scope, and non-diagnostic caveats
+- Draft with scientific-writing and map each factual/numerical claim to verified evidence
 
 Expected Output:
 - Trained, interpreted imaging model on IDC data
-- Decision-support mapping and a structured treatment plan
-- Validation report with explainability
+- Aggregate research evaluation/governance packet
+- Evidence-traceable, non-diagnostic validation report
 ```
 
 ---
@@ -3373,14 +3427,14 @@ Expected Output:
 
 ### Example 31: From Idea to a Powered, Well-Designed Study
 
-**Objective**: Move from open-ended ideation to concrete, testable hypotheses and a statistically powered, well-designed study.
+**Objective**: Move from open-ended ideation to transparent candidate hypotheses and a statistically powered study plan without treating any candidate as validated or automatically selecting a winner.
 
 **Skills Used**:
 - `scientific-brainstorming` - Open-ended ideation and gap-finding
 - `consciousness-council` - Multi-perspective deliberation on directions
 - `what-if-oracle` - Structured scenario/branch analysis
-- `hypothesis-generation` - Formalize testable hypotheses
-- `hypogenic` - Data-driven hypothesis generation on tabular data
+- `hypothesis-generation` - Formalize evidence-bounded candidates and rival predictions
+- `hypogenic` - Produce candidate textual patterns from labeled text datasets
 - `experimental-design` - Choose design, randomization, and blocking
 - `statistical-power` - Sample size, MDE, and power curves
 
@@ -3393,11 +3447,15 @@ Step 1: Diverge — generate ideas
 
 Step 2: Stress-test directions
 - Use what-if-oracle to explore best/likely/worst/contrarian scenarios for top ideas
-- Eliminate fragile or untestable directions
+- Record assumptions, objections, vetoes, uncertainty, and reasons a human team
+  retains, revises, or sets aside a direction
 
 Step 3: Formalize hypotheses
 - Convert the chosen direction into testable hypotheses with hypothesis-generation
-- If pilot/tabular data exist, use hypogenic to mine and rank candidate hypotheses
+- If an approved labeled text dataset exists, use HypoGeniC to produce candidate
+  textual hypotheses and held-out task statistics
+- Do not treat HypoGeniC accuracy as truth, causal evidence, novelty, or scientific
+  validation, and do not automatically score, rank, select, accept, or reject hypotheses
 
 Step 4: Design the study
 - Use experimental-design to select a design (factorial, RCT, block, crossover),
@@ -3408,11 +3466,11 @@ Step 5: Power and sample size
   and power curves across plausible effect sizes
 
 Step 6: Deliverable
-- A pre-registration-ready plan: hypotheses, design diagram, analysis plan, and
-  justified sample size
+- A human-reviewed, preregistration-ready plan: candidate/rival set, discriminating
+  predictions, design diagram, analysis plan, oversight gates, and justified sample size
 
 Expected Output:
-- A prioritized set of testable hypotheses
+- A documented set of candidate hypotheses, rivals, assumptions, and human decisions
 - A concrete experimental design with randomization/blocking
 - Power analysis and sample-size justification
 ```
@@ -3435,8 +3493,7 @@ Expected Output:
 - `markitdown` - Convert documents to Markdown
 - `open-notebook` - Organize sources into AI research notebooks
 - `pyzotero` - Manage a Zotero reference library
-- `scholar-evaluation` - ScholarEval structured quality assessment
-- `dhdna-profiler` - Profile authors'/reviewers' thinking patterns
+- `scholar-evaluation` - Qualitative, low-stakes developmental review of works
 - `citation-management` - Reference formatting
 - `literature-review` - Systematic synthesis
 
@@ -3458,8 +3515,12 @@ Step 3: Reference management
 - Tag by theme, method, and evidence level
 
 Step 4: Critical appraisal
-- Use scholar-evaluation (ScholarEval) to score methodology, analysis, and writing
-- Optionally profile argumentation/thinking style with dhdna-profiler
+- Use scholar-evaluation for qualitative, evidence-traceable developmental review
+  of each authorized scholarly work
+- If a predeclared low-stakes rubric is useful, treat optional scores only as
+  bounded anchor summaries with uncertainty—not measurements of quality
+- Never score or rank authors, reviewers, institutions, or other people, and never
+  use the output for consequential personnel, admissions, funding, or award decisions
 
 Step 5: Synthesize
 - Use the literature-review skill to synthesize themes, gaps, and consensus/conflicts
@@ -3471,21 +3532,20 @@ Step 6: Deliverable
 Expected Output:
 - Comprehensive multi-source search results
 - Organized, parsed, and reference-managed corpus
-- Appraised, synthesized, fully cited literature review
+- Qualitatively appraised, synthesized, fully cited literature review
 ```
 
 ---
 
 ## Regulatory & Quality Management
 
-### Example 33: ISO 13485 Documentation for an AI Diagnostic Device
+### Example 33: ISO 13485 QMS Evidence Preparation for Device Software
 
-**Objective**: Prepare a Quality Management System documentation package for a medical-device software product.
+**Objective**: Prepare draft QMS scope, controlled-document scaffolds, and evidence manifests for qualified ISO 13485 readiness review. The workflow does not determine legal applicability, compliance, audit outcome, or certification.
 
 **Skills Used**:
-- `iso-13485-certification` - Gap analysis and QMS documentation
-- `clinical-decision-support` - Clinical evidence and intended-use framing
-- `treatment-plans` - Care-pathway documentation where applicable
+- `iso-13485-certification` - Draft scope, controlled-document, and evidence preparation
+- `scientific-writing` - Evidence provenance and accountable draft controls
 - `markdown-mermaid-writing` - Process diagrams and SOP flowcharts
 - `docx` - Formatted Word deliverables
 - `pdf` - Final controlled documents
@@ -3493,30 +3553,40 @@ Expected Output:
 **Workflow**:
 
 ```bash
-Step 1: Gap analysis
-- Use the iso-13485-certification skill to assess existing documentation vs the standard
-- Identify missing procedures, records, and controls
+Step 1: Authorized evidence inventory
+- Confirm access to the applicable licensed standard and current jurisdiction-specific
+  requirements through qualified RA/QA or legal owners
+- Use iso-13485-certification to inventory supplied documents, implementation records,
+  evidence status, owners, and unresolved blockers
+- Do not infer readiness or conformity from filenames, keywords, document counts,
+  percentages, templates, or script results
 
-Step 2: Define scope and intended use
-- Frame intended use and clinical claims with clinical-decision-support inputs
-- Document care pathways/treatment context with treatment-plans where relevant
+Step 2: Draft QMS scope and evidence boundaries
+- Record organization, sites, products, processes, outsourced activities, exclusions,
+  and interfaces exactly as supplied by authorized management/RA/QA
+- Keep ISO 13485, FDA QMSR, MDSAP, and EU MDR/IVDR evidence mappings distinct
+- Preserve applicability, classification, claims, and legal decisions as qualified-review items
 
-Step 3: Author QMS documents
-- Draft required SOPs, work instructions, and quality manual sections
+Step 3: Prepare controlled-document scaffolds
+- Draft only source-bound procedures, work-instruction outlines, and quality-manual
+  sections whose owners, inputs, responsibilities, records, and approvals are supplied
 - Diagram processes (design controls, CAPA, risk management) with markdown-mermaid-writing
+- Label every artifact as draft evidence-preparation material for authorized review
 
-Step 4: Produce controlled deliverables
-- Export procedures and the quality manual to DOCX
-- Generate signed, version-controlled PDFs
+Step 4: Produce review copies
+- Export draft procedures and manual sections to DOCX
+- Generate review PDFs with document IDs, versions, owners, status, and unresolved
+  placeholders; do not sign, approve, release, submit, or represent them as controlled
 
 Step 5: Traceability
-- Build a requirements/records traceability matrix
-- Map each clause to its evidence
+- Build a requirements/evidence traceability matrix from authorized requirement IDs
+- Link objective evidence, implementation records, owners, review status, and blockers
+- Route results to management, RA/QA, legal, auditors, and the certification body as appropriate
 
 Expected Output:
-- Gap-analysis report against ISO 13485
-- Complete QMS document set (SOPs, manual, diagrams)
-- Controlled DOCX/PDF deliverables with traceability
+- Draft evidence-readiness inventory with explicit unknowns and blockers
+- Source-bound QMS document scaffolds and process diagrams
+- Local traceability manifest and review copies for qualified assessment
 ```
 
 ---
@@ -3525,51 +3595,64 @@ Expected Output:
 
 ### Example 34: Publication Packaging — Diagrams, Infographics, and Venue Formatting
 
-**Objective**: Turn results into a venue-ready manuscript package with diagrams, an infographic summary, and correct formatting.
+**Objective**: Turn verified results into an author-reviewed draft manuscript package with source-traceable prose and visuals, current venue checks, and an optional macro-free PPTX poster.
 
 **Skills Used**:
 - `markdown-mermaid-writing` - Text-based diagrams and structured docs
+- `scientific-writing` - Evidence registry, authorship, confidentiality, and consistency checks
 - `scientific-schematics` - Scientific diagrams
 - `infographics` - AI-generated infographics with data accuracy checks
 - `venue-templates` - LaTeX templates and submission guidelines
 - `markitdown` - Convert drafts/sources to Markdown
 - `docx` - Word manuscript output
 - `latex-posters` - Conference poster
+- `pptx-posters` - Macro-free PowerPoint poster from an approved local manifest
 - `pdf` - Final compiled outputs
 
 **Workflow**:
 
 ```bash
 Step 1: Structure the manuscript
-- Draft the document in Markdown; add Mermaid flowcharts/diagrams (markdown-mermaid-writing)
+- Establish an authorized local workspace, source manifest, claim/evidence registry,
+  authorship/declaration records, and reporting-guideline coverage
+- Draft the document in Markdown with scientific-writing; add Mermaid diagrams
 - Convert existing source materials to Markdown with markitdown
 
 Step 2: Build figures and schematics
 - Create mechanism/workflow schematics with scientific-schematics
-- Produce a one-page infographic summary with the infographics skill (verified data)
+- Produce a one-page infographic summary only from verified, author-approved data
+- Obtain explicit authorization before any external image service receives source
+  material; record prompt/model/output provenance and manually verify every detail
 
 Step 3: Apply venue formatting
-- Use venue-templates to select the correct LaTeX template and follow submission rules
+- Use venue-templates to identify a candidate LaTeX template, then verify the current
+  official author instructions and AI/disclosure policy for the exact venue and article type
   (Nature/Science/PLOS/IEEE/ACM or a target conference)
 
 Step 4: Generate outputs
-- Compile the manuscript to PDF and a DOCX version for collaborators
+- Compile draft manuscript review copies to PDF and DOCX for authorized collaborators
 - Build a conference poster with latex-posters
+- If PowerPoint is requested, populate the pptx-posters local manifest with exact
+  author-approved text/assets, hashes, provenance, printer requirements, reading order,
+  alt text, and approval hash; generate and inspect a one-slide macro-free `.pptx`
 
 Step 5: Final check
-- Verify formatting, figure resolution, and reference style against venue requirements
+- Run local claim/reference/consistency checks and verify formatting, figure properties,
+  accessibility, and reference style against current official venue requirements
+- Accountable human authors resolve scientific issues, approve declarations and content,
+  and separately authorize any submission
 
 Expected Output:
-- Venue-formatted manuscript (PDF + DOCX)
-- Diagrams, schematics, and an infographic summary
-- A matching conference poster
+- Author-reviewed draft manuscript package (PDF + DOCX) with evidence traceability
+- Source-traceable diagrams, schematics, and infographic
+- A matching LaTeX poster or inspected macro-free `.pptx` poster
 ```
 
 ---
 
 ### Example 35: Building and Automating Custom Scientific Tools
 
-**Objective**: Detect repeated research workflows, draft new automation, and deploy compute-heavy steps to the cloud.
+**Objective**: At the user's request, detect repeated research workflows, draft new automation, and prepare or explicitly authorize resource-aware cloud execution.
 
 **Skills Used**:
 - `autoskill` - Detect repeated workflows and draft new skills/recipes
@@ -3583,7 +3666,9 @@ Expected Output:
 
 ```bash
 Step 1: Discover repeated workflows
-- Use autoskill to observe recurring research steps and match them to existing skills
+- Use autoskill only after the user asks to analyze their local screen history; review
+  redaction and retain only the minimum workflow summary
+- Match recurring research steps to existing skills
 - Draft new skills or composition recipes for gaps
 
 Step 2: Prototype a custom tool
@@ -3595,16 +3680,19 @@ Step 3: Profile and accelerate
 - Apply optimize-for-gpu to accelerate the hot numerical paths
 
 Step 4: Deploy to the cloud
-- Package the workload on Modal for on-demand GPU/CPU execution
-- Expose it as a scheduled job or web endpoint
+- Prepare the Modal image, resources, secrets, network, data-egress, cost, and access plan
+- Deploy only after explicit authorization for the exact project and side effects
+- Expose a scheduled job or web endpoint only with reviewed authentication,
+  authorization, rate limits, logging, and shutdown controls
 
 Step 5: Document
 - Document the new skill/recipe and usage for the team
 
 Expected Output:
 - New drafted skills/composition recipes for recurring work
-- A deployed, GPU-accelerated custom tool on Modal
+- A reviewed deployment plan or explicitly authorized GPU-accelerated Modal tool
 - Documentation for reuse
+```
 
 ---
 
@@ -3614,9 +3702,10 @@ These examples demonstrate:
 
 1. **Cross-domain applicability**: Skills are useful across many scientific fields
 2. **Skill integration**: Complex workflows combine multiple databases, packages, and analysis methods
-3. **Real-world relevance**: Examples address actual research questions and clinical needs
-4. **End-to-end workflows**: From data acquisition to publication-ready reports
-5. **Best practices**: QC, statistical rigor, visualization, interpretation, and documentation
+3. **Real-world relevance**: Examples address research, engineering, evidence-synthesis, and clinician-reviewed documentation needs
+4. **End-to-end workflows**: From authorized data acquisition to evidence-traceable draft deliverables
+5. **Best practices**: QC, statistical rigor, visualization integrity, uncertainty, provenance, and reproducibility
+6. **Safety gates**: Planning, local validation, remote writes, physical execution, clinical review, and regulated decisions remain distinct stages
 
 ### Skills Coverage Summary
 
@@ -3655,11 +3744,11 @@ The examples in this document cover the following skill categories:
 **Ideation, Search & Knowledge:**
 - `scientific-brainstorming`, `consciousness-council`, `hypothesis-generation`, `what-if-oracle`
 - `research-lookup`, `exa-search`, `parallel-web`, `bgpt-paper-search`, `paperzilla`
-- `liteparse`, `markitdown`, `open-notebook`, `pyzotero`, `scholar-evaluation`, `dhdna-profiler`
+- `liteparse`, `markitdown`, `open-notebook`, `pyzotero`, `scholar-evaluation`
 
 **Writing & Reporting:**
 - `scientific-writing`, `scientific-visualization`, `scientific-schematics`, `scientific-slides`, `markdown-mermaid-writing`, `infographics`
-- `clinical-reports`, `clinical-decision-support`, `treatment-plans`
+- `clinical-reports`, `clinical-decision-support`
 - `literature-review`, `scientific-critical-thinking`
 - `research-grants`, `peer-review`, `venue-templates`, `iso-13485-certification`
 - `pdf`, `docx`, `pptx`, `xlsx`, `latex-posters`, `pptx-posters`
@@ -3671,11 +3760,12 @@ The examples in this document cover the following skill categories:
 
 ### How to Use These Examples
 
-1. **Adapt to your needs**: Modify parameters, datasets, and objectives for your specific research question
+1. **Adapt within the contract**: Modify parameters, datasets, and objectives only within the current skill's scope, compatibility, and safety boundaries
 2. **Combine skills creatively**: Mix and match skills from different categories
-3. **Follow the structure**: Each example provides a clear step-by-step workflow
-4. **Generate comprehensive output**: Aim for publication-quality figures and professional reports
-5. **Cite your sources**: Always verify data and provide proper citations
+3. **Treat workflows as illustrative**: Verify current official APIs, package versions, venue rules, standards, licenses, and institutional requirements
+4. **Generate reviewable output**: Prefer source manifests, claim/evidence maps, explicit assumptions, uncertainty, and draft labels over unsupported claims of readiness
+5. **Cite and verify sources**: An identifier, search snippet, generated summary, or fluent draft is not source verification
+6. **Keep humans accountable**: Qualified users approve scientific conclusions, clinical documentation, external transfers, submissions, regulated artifacts, and physical execution
 
 ### Additional Notes
 
@@ -3684,7 +3774,12 @@ The examples in this document cover the following skill categories:
 - Save checkpoints and intermediate data files
 - Document parameters and decisions for reproducibility
 - Generate README files explaining methodology
-- Create PDFs for stakeholder communication
+- Create clearly labeled review copies for stakeholder communication
+- Clinical Decision Support is for aggregate/synthetic research evaluation and governance only; Clinical Reports creates source-bound draft structures; Treatment Plans only formats verified clinician-authored decisions
+- PathML, NeuroKit2, pydicom, imaging models, and physiological-signal examples are research-only and not diagnostic, monitoring, treatment, or medical-device validation workflows
+- PyLabRobot defaults to offline planning/simulation; all live API writes, cloud submissions, purchases, and robot/equipment actions require explicit authorization at the applicable gate
+- Hypotheses remain candidates until independently tested; HypoGeniC task statistics do not validate them, and Scholar Evaluation never ranks people or supports consequential decisions
+- ISO 13485 outputs are draft evidence-preparation artifacts, not compliance or certification findings; PPTX posters use author-approved local manifests and macro-free `.pptx` generation with manual final review
 
 These examples showcase the power of combining the skills in this repository to tackle complex, real-world scientific challenges across multiple domains.
 

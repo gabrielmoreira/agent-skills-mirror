@@ -182,15 +182,16 @@ describe("functions tool helpers", () => {
       force: false,
     });
     expect(mockCreateAccess).not.toHaveBeenCalled();
-    expect(payload.message).toContain("manageGateway(action=\"createAccess\")");
+    expect(payload.message).toContain("manageGateway(action=\"createRoute\")");
     expect(payload.message).toContain("type=\"HTTP\"");
+    expect(payload.message).toContain("WEB_SCF");
     expect(payload.message).toContain("匿名身份访问");
     expect(payload.message).toContain("EXCEED_AUTHORITY");
     expect(payload.nextActions).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           tool: "manageGateway",
-          action: "createAccess",
+          action: "createRoute",
         }),
         expect.objectContaining({
           tool: "queryPermissions",

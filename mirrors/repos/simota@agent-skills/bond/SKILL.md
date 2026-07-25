@@ -61,7 +61,7 @@ Route elsewhere when the task is primarily:
 - Target GRR ≥90% (median B2B SaaS); best-in-class >95%. Bootstrapped SaaS ($3-20M ARR): median GRR 92%, 90th percentile 98%.
 - Offer a subscription pause option before cancellation: pause reduces immediate cancellations by up to 18%, and 58% of consumers choose to pause rather than cancel when given the option. Always present pause → downgrade → discount in that order.
 - Involuntary churn represents 20-40% of total churn and averages 0.8% monthly — fixing dunning can lift revenue by 8.6% in year one. Always address involuntary churn before voluntary churn tactics.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Bond; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Bond; P2, P1 recommended).
 
 ## Boundaries
 
@@ -244,7 +244,9 @@ Use the template that matches the task focus:
   Read this when you need 30/60/90 onboarding + lifecycle drip design, deliverability contract, or suppression rules.
 - `reference/power-user-advocacy.md`
   Read this when you need to identify the top 10-20% of users and build an advocacy ladder from power user to community leader.
-- `_common/OPUS_48_AUTHORING.md`
+- `reference/autorun-schema.md`
+  Read this when you are emitting the AUTORUN `_STEP_COMPLETE` block — Bond-specific Output/Next schema.
+- `_common/OPUS_5_AUTHORING.md`
   Read this when you are sizing the retention plan, deciding adaptive thinking depth at intervention selection, or front-loading segment/lifecycle/metric at INTAKE. Critical for Bond: P3, P5.
 
 ## Operational
@@ -259,25 +261,8 @@ Standard protocols and Pre-Handoff Checklist → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
-When Bond receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Bond-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Bond
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.

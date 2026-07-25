@@ -484,7 +484,7 @@ def store_findings(
 
         for url, f in with_urls:
             existing = existing_by_url.get(url)
-            new_engagement = f.get("engagement_score", 0)
+            new_engagement = f.get("engagement_score") or 0
             if existing:
                 update_rows.append((
                     max(new_engagement, existing["engagement_score"] or 0),

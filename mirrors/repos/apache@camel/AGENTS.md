@@ -110,7 +110,7 @@ When merging a PR, an agent MUST perform the following steps **in order**:
 
 4. **Categorize the PR with labels**:
    - Determine the PR category from the linked JIRA issue type or PR content:
-     - `bug` — for bug fixes (JIRA type: Bug)
+     - `bug` — for Camel end user facing bug fixes (JIRA type: Bug) - any CI, build system or internal project managed should be categorized as `task`. 
      - `enhancement` — for improvements and new features (JIRA type: Improvement, New Feature)
      - `documentation` — for documentation-only changes (JIRA type: Documentation)
      - `task` — for chores, refactoring, build changes (JIRA type: Task)
@@ -179,7 +179,7 @@ assertTrue(list.contains("a"));
 
 **Rules:**
 
-- New test code SHOULD use AssertJ assertions (`assertThat(...)`) instead of JUnit assertions
+- New test code is preferred to use AssertJ assertions (`assertThat(...)`) instead of JUnit assertions
   (`assertEquals`, `assertTrue`, `assertFalse`, `assertNotNull`, etc.).
 - When modifying existing test code that uses JUnit assertions, migrate touched assertions to
   AssertJ where it improves readability. No need to migrate the entire file.

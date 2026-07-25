@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Vincentwei1021/video-shotcraft` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `Vincentwei1021/video-shotcraft` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Vincentwei1021/video-shotcraft` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`gallery/llms.txt`](gallery/llms.txt) |
-| 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
+| 2 | ✓ | [`gallery/llms.txt`](gallery/llms.txt) |
+| 3 | ✓ | [`SKILL.md`](SKILL.md) |
 
 ---
 

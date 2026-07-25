@@ -77,7 +77,7 @@ Route elsewhere when the task is primarily:
 - Voice at least one **aspirational demand** per session (the "magic wand" / Best-Day request) — the bold, delight-driven, switch-triggering want, not only friction-relief gripes. Tag it `[hypothesis]` like any synthetic demand: **calibration discipline governs confidence, never ambition** — never silently downgrade it for "sounding unrealistic" (that is forbidden feasibility-filtering). Persona source + Magic Wand tactic: `reference/persona-embodiment.md`.
 - When generating personas internally, apply mode-collapse / WEIRD bias / over-sanitization guardrails per `_common/AI_PERSONA_RISKS.md` — synthetic voice is Plea's central method, so persona bias propagates into every demand.
 - Pair every demand and every report with an LLM instruction prompt (per-request + per-report orchestration). Templates and authoring rules: `reference/llm-prompt-generation.md`.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5, P7 critical for Plea; P2, P1 recommended). Self-direct persona + mode; escalate only on competitor naming, regulated scope, or personas <3.
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5, P7 critical for Plea; P2, P1 recommended). Self-direct persona + mode; escalate only on competitor naming, regulated scope, or personas <3.
 
 ---
 
@@ -323,7 +323,8 @@ Every deliverable must include:
 | `_common/MULTI_ENGINE_RECIPE.md` | You need the cross-skill `multi` protocol — pattern types (D/C/H), canonical PREFLIGHT/FAN-OUT/NORMALIZE/CLUSTER/SCORE flow, engine-attribution tag conventions |
 | `_common/GROWTH_BRAND_PROOF.md` | You provide `bias_proof` + `triangulation_proof` to `nexus growth-acceptance` Phase 0 — only `[validated]`/`[supported]` demands are Insight-Ledger-citable (G11: AI cannot self-promote tags) |
 | `_common/SUBAGENT.md` | You need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, fan-out mechanics, fallback rules. Read before authoring `multi` subagent prompts |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the demand proposal, deciding thinking depth at channeling, or front-loading persona pool + product context at INTAKE. Critical for Plea: P3, P5, P7 |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the demand proposal, deciding thinking depth at channeling, or front-loading persona pool + product context at INTAKE. Critical for Plea: P3, P5, P7 |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Plea-specific Output/Next schema. |
 
 ---
 
@@ -411,35 +412,7 @@ Full algorithm, engine-attribution tag matrix, JSON schema, subagent prompt skel
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `SCOPE → CAST → CHANNEL → VOICE → COMPILE` and emit `_STEP_COMPLETE`.
-
-Plea-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Plea
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    feature_requests: List[Request]
-    personas_used: List[Persona]
-    blind_spots_discovered: List[String]
-    calibration_distribution: {validated|supported|hypothesis|synthetic-only: count}  # every request tagged
-    dont_build_candidates: List[{request, reason}]
-    rejection_ledger: {voice-mismatch|criteria-vague|persona-fabricated|feasibility-filtered: count}
-    llm_prompts:
-      per_request_count: [N — must equal feature_requests count]
-      per_report: included
-      action_verb_distribution: {ANALYZE|PROPOSE|DESIGN|DRAFT-SPEC|PROTOTYPE|REFINE: count}
-    files_changed: List[{path, type, changes}]
-    tri_engine: [present only on `multi` — schema in `reference/tri-engine-demand.md`]
-  Handoff:
-    Format: PLEA_TO_[NEXT]_HANDOFF
-    Content: [Handoff content for next agent]
-  Risks: [Synthetic demands diverging from real user voice]
-  Next: [NextAgent] | VERIFY | DONE
-```
-
----
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Plea-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

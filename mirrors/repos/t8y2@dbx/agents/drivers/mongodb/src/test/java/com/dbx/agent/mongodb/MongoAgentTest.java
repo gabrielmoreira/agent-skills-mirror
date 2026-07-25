@@ -179,10 +179,12 @@ class MongoAgentTest {
     void preservesLongDocumentIdTypeForGridUpdates() {
         Object id = MongoAgent.convertDocumentFieldValue("_id", 2_048_938_405_781_032_962L);
         Object value = MongoAgent.convertDocumentFieldValue("snowflake", 2_048_938_405_781_032_962L);
+        ObjectId objectId = new ObjectId("507f1f77bcf86cd799439011");
 
         assertEquals(Collections.singletonMap("$numberLong", "2048938405781032962"), id);
         assertEquals("2048938405781032962", value);
         assertEquals(2_048_938_405_781_032_962L, MongoAgent.parseId("{\"$numberLong\":\"2048938405781032962\"}"));
+        assertEquals(objectId, MongoAgent.parseId("{\"$oid\":\"507f1f77bcf86cd799439011\"}"));
     }
 
     @Test
@@ -194,6 +196,23 @@ class MongoAgentTest {
             MongoAgent.parseId("{\"$numberLong\":\"2048938405781032962\",\"tenant\":1}")
         );
         assertEquals("{\"$numberLong\":\"invalid\"}", MongoAgent.parseId("{\"$numberLong\":\"invalid\"}"));
+    }
+
+    @Test
+    void documentUpdateDistinguishesNoMatchFromUnchangedValue() {
+        MongoAgent.requireMatchedDocument(
+            "{\"$oid\":\"507f1f77bcf86cd799439011\"}",
+            UpdateResult.acknowledged(1, 0L, null)
+        );
+
+        IllegalStateException error = assertThrows(
+            IllegalStateException.class,
+            () -> MongoAgent.requireMatchedDocument(
+                "{\"$oid\":\"507f1f77bcf86cd799439012\"}",
+                UpdateResult.acknowledged(0, 0L, null)
+            )
+        );
+        assertTrue(error.getMessage().startsWith("No document matched _id"));
     }
 
     @Test

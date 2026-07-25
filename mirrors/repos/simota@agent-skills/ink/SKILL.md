@@ -65,7 +65,7 @@ Route elsewhere when the task is primarily:
 - Optimize SVG output: remove editor metadata, normalize viewBox, minimize path data. Target ≤4KB per icon after SVGO (inline-safe threshold). Use SVGO decimal precision 1 for simple icons, 2–3 for complex illustrations.
 - Provide icons as both inline SVG and symbol-reference formats. Prefer sprites for icon sets of 10+ icons to reduce bundle size.
 - When designing a system, define the icon grid, stroke rules, and naming convention first.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Ink; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Ink; P2, P1 recommended).
 
 ## Boundaries
 
@@ -199,7 +199,8 @@ Behavior notes per Recipe:
 | `reference/svg-optimization.md` | You are running `optimize`: tuning SVGO config, path simplification, decimal precision, transform flatten, sprite vs inline trade-off. |
 | `reference/pictogram-design.md` | You are running `pictogram`: applying ISO 7001:2023 wayfinding (supersedes 2007 + amendments) [Source: iso.org/standard/77442.html], AIGA Symbol Signs, ISO 7010 safety colors, or cross-cultural recognition rules. |
 | `reference/logo-construction.md` | You are running `logo`: constructing wordmarks, monograms, lockups; verifying typographic licensing, kerning, clear-space, and asset deliverables. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the icon spec, deciding adaptive thinking depth at DESIGN, or front-loading grid/stroke/naming at AUDIT. Critical for Ink: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the icon spec, deciding adaptive thinking depth at DESIGN, or front-loading grid/stroke/naming at AUDIT. Critical for Ink: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Ink-specific Output/Next schema. |
 
 ## Operational
 
@@ -210,27 +211,7 @@ Behavior notes per Recipe:
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Ink-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Ink
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    asset_type: "[icon | icon-set | illustration | sprite | animated]"
-    parameters:
-      grid_size: "[16x16 | 20x20 | 24x24 | 32x32 | 48x48]"
-      stroke_width: "[1.5px | 2px | 2.5px]"
-      icon_count: [N]
-      style: "[outline | filled | duotone]"
-      accessibility: "[complete | partial]"
-    optimization: "[SVGO applied | manual]"
-  Next: Artisan | Vitrine | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Ink-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

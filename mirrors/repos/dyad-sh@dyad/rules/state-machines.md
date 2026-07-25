@@ -19,6 +19,30 @@ Background and before/after examples of why this pattern exists:
 
 ## Invariants
 
+- Controllers migrated to `TransactionalDispatcher` use one event transaction:
+  enqueue FIFO; run the pure transition exactly once; validate; reserve the
+  command batch without running domain code; cancel exiting state-owned leases;
+  commit the snapshot (the linearization point); update the authoritative
+  projection; notify snapshot subscribers; notify transition observers; then
+  hand the reserved batch to the injected domain scheduler. Re-entrant sends
+  from any callback append to the FIFO and run after the current transaction.
+  Ignored events skip commit, projection, subscribers, and commands, but notify
+  observers at the equivalent point in FIFO order.
+- The dispatcher isolates and reports projection, subscriber, observer,
+  scheduler, and command failures. Adapters convert expected command failures
+  to typed domain events; unexpected throws/rejections may be mapped by the
+  domain and never create a universal failure event. Scheduler injection owns
+  concurrency policy.
+- A pre-commit lease-cancellation failure is also isolated and reported, but
+  does not veto commit. Unlike pure transition and validation failures, an
+  effectful cleanup hook may have partially completed; rejecting at that point
+  would drop the event against a partially modified old state. Cancellation is
+  required resource hygiene, while operation/state-instance token checks are
+  the correctness backstop that rejects any stale callback which still fires.
+- Use `TimerLeaseScope` for migrated watchdogs. Carry the lease's operation or
+  state-instance token in its event, cancel it in the dispatcher's pre-commit
+  lease hook before exiting state, explicitly replace it on self-re-entry, and
+  dispose it with its controller.
 - Never return a value-equal state with a new reference. One-shot effects are
   commands, not identity signals.
 - Snapshots are immutable and reference-stable. Notify subscribers only when
@@ -34,6 +58,19 @@ Background and before/after examples of why this pattern exists:
 - Machine-generated queued work must not be editable or removable (including
   through bulk-clear paths) unless removal explicitly settles or rejects the
   owning machine request; otherwise reload can resurrect abandoned work.
+- Settle memory-owned requests on every destructive entity path, including
+  parent-row cascade deletion, bulk deletion, and full reset—not only direct
+  deletion of the child entity the request references.
+- Model user-initiated owner rejection as a typed non-error facade outcome.
+  Rejecting the transport promise routes successful cancellation through
+  generic failure toasts/retry logic and can incorrectly acknowledge dispatch.
+- If queue removal awaits owner settlement, atomically claim/remove the
+  invocation-time items before the await so the queue driver cannot start
+  them. Restore failed owners, preserve items enqueued during the await, and
+  surface settlement errors without aborting the whole clear.
+- When a callback's direct caller owns rollback or restoration, settlement
+  failure must reject that callback itself. Rejecting only a separate outer
+  promise hides the failure from the component responsible for compensation.
 - Do not persist machine-generated queue entries when their authority or
   acceptance callbacks are memory-only. Let the live authoritative registry
   rehydrate and re-enqueue them; a full restart must not restore orphan shells.
@@ -49,10 +86,16 @@ Background and before/after examples of why this pattern exists:
 - When a resume event can come from a global watcher as well as explicit UI
   senders, validate the captured payload in the transition. Caller-only guards
   can be bypassed after navigation or another asynchronous detour.
-- When several adapters enrich the same resume event with derived data, use one
-  shared resolver. Divergent raw/effective values make event races observable.
+- Every waiter settlement path (success, decline, timeout, abort, and sweep)
+  emits a correlated resolved event to every observer.
+- On saga resume or retry, preserve explicit user choices from the snapshot and
+  re-resolve implicit derived values through one shared resolver. Model SUBMIT
+  (a new payload) and RETRY (the retained payload) as distinct events.
 - A machine-owned watchdog timer needs an explicit cancel command on every
   transition that leaves the watched state, plus disposal cleanup.
+- In a cancelling state, finalize on every non-stale terminal event. Reject
+  staleness by identity; never infer event provenance from arrival order.
+- Compensation on abort rolls back only what the aborted operation touched.
 - When a multi-step side effect can fail partway through, retain the exact
   completed/next step in the failure state. Retrying from the start can repeat
   non-idempotent external work or deterministically fail on an existing-resource
@@ -73,6 +116,12 @@ Background and before/after examples of why this pattern exists:
 - When disposal can race an async command that registers external state after
   an `await`, clean up both immediately and again after the command settles.
   Disposal must also clear any machine-owned legacy projection synchronously.
+- A keyed ownership replacement must adopt the incoming cleanup before running
+  the previous cleanup. Otherwise a throwing unsubscribe/cancel can orphan the
+  already-acquired replacement resource.
+- If command adapters can be replaced while async setup is pending, late
+  compensation must use the adapter captured when setup began. A fresh adapter
+  lookup may release the wrong lifetime's resource.
 - When that external state is created in the main process, renderer disposal
   cannot rely on reply-based IPC cleanup. Mint an operation ID before creation,
   send teardown cancellation one-way, and retain a main-owned cancellation
@@ -80,6 +129,17 @@ Background and before/after examples of why this pattern exists:
 - Before keying a cross-entity registry by a generation counter, verify the
   counter's scope. If generations restart per entity, use a composite key or a
   separate invocation ID and test two entities with the same generation.
+- Cross-lifetime operations use `InvocationRef` from `src/state_machines/`,
+  minted by the injected `IdSource` at the authoritative start boundary and
+  echoed through every available correlation boundary. Registry claims use
+  `InvocationRegistry.claim(ref)`. When a source cannot echo the ref, use
+  `InvocationRegistry.claimStructurally(...)` with a documented
+  structural-safety note at the claim site.
+- Correlation identity and durable idempotency identity are separate contracts.
+  Name which property each boundary relies on even when a protocol deliberately
+  uses the same value for both.
+- When a machine becomes the sole scheduler for a queue, every legacy enqueue
+  path must poke the machine or enqueue through it.
 
 ## Deliberate degrees of freedom
 
@@ -113,14 +173,25 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
 
 - A machine projection has one writer: its controller or manager. Jotai atoms
   exposed to legacy UI are read-only views and are updated from snapshots in
-  one subscription, not opportunistically by individual commands.
+  one subscription through `projectToAtom` or a claim from
+  `registerAtomWriter`, not opportunistically by individual commands. A
+  projection is safe only once the machine is its single writer; interim
+  dual-writer periods are where races live.
+- A machine with interactive controls defines a pure
+  `selectCapabilities(state)` whose named booleans express domain UI policy,
+  and exposes those capabilities through its projection. Do not derive
+  capability by probing the transition with a synthetic event: acceptance may
+  depend on payload, and accepted idempotent work may still warrant hidden UI.
 - Prefer derived selectors for values computable from the snapshot. Do not add
   generation counters or mirrored booleans beside a machine-owned identity or
   lifecycle state.
+- When replacing a retained generation with an active-only identity, audit
+  React effect dependencies for the new active-to-empty settlement edge.
+  Start-only effects must explicitly require a new non-empty identity.
 - When local form or dialog state dispatches a machine-owned mutation, preserve
-  the user's input while the operation runs and after failure. Clear or close
-  it only from typed successful-completion state; dispatch itself is not proof
-  that the mutation succeeded.
+  the user's input while the operation runs and after failure. Close dialogs
+  and clear forms only on authoritative settlement; dispatch itself is not
+  proof that the mutation succeeded.
 - When an epoch keys a mounted resource, capture props such as an iframe `src`
   from the epoch-changing snapshot. Do not let later same-epoch state updates
   rewrite identity-defining DOM attributes and trigger an implicit reload.
@@ -141,6 +212,15 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   On teardown, flush the latest accepted snapshot through a transport that is
   safe for the lifecycle boundary (for example, one-way IPC during pagehide).
 
+## Query keys and recorded decisions
+
+- Machine-adjacent TanStack Query keys nest as `[domain, appId, ...]` so data
+  invalidated together remains scoped per app; do not use sibling keys for
+  those values.
+- Recorded plan decisions are reviewable artifacts. When a review finding is
+  rebutted as working as designed, the cited decision must actually cover the
+  disputed behavior.
+
 ## Tests
 
 - Exercise every reachable state against every event type and assert totality.
@@ -148,15 +228,37 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   transitions do not create value-equal snapshots.
 - Use fake command runners. Tests must get isolation from constructed owners,
   never from a module-global reset helper.
+- Run `runControllerConformanceSuite` for controllers built on the shared
+  dispatcher/lifecycle contract; domain tests remain responsible for domain
+  behavior. A command fixture may change domain state,
+  but its test adapter must model that real transition and expose the
+  controller's real snapshot. Disposal assertions compare with the snapshot
+  captured immediately before disposal; never normalize or fabricate snapshots
+  to make them pass.
 - Normalize discovered file paths to `/` before asserting literal repository
   paths; `path.relative()` returns `\` on Windows CI.
 - `driveTransitionMatrix` remains available for hand-enumerated totality
   tests; new machines may instead use `exploreReachableStates` when a finite
   event generator can discover the reachable graph. Existing bespoke suites
   need not be migrated mechanically.
+- Use `assertCapabilityTransitionConsistency` with domain-supplied
+  representative valid events for every capability. Every enabled
+  capability/state pair must supply at least one valid representative so the
+  assertion cannot pass vacuously. When payload affects acceptance, include
+  representative invalid payloads; disabled capabilities may also pin their
+  expected ignore reason.
 - `boundaries.test.ts` enforces kernel purity and machine-to-machine isolation;
   add new machine directories to its inventory when they are introduced.
 - In `runCosim` suites, `maxSchedules` bounds visited configurations, not only
   quiescent leaves. If one orthogonal action (for example quit at every phase)
   causes a bound hit, split it into a focused exhaustive alphabet instead of
   raising the bound and slowing the primary scenario.
+- Treat snapshots passed to `runCosim` callbacks as frozen immutable views.
+  Do not mutate them, and do not replace the generic callback contract with a
+  serialization-based clone that rejects valid domain values or loses
+  prototypes.
+- Key-aware debug retention must bound both entry payloads and per-key
+  metadata. When aggregate eviction empties a key's ring, prune the ring so
+  one-shot entity IDs cannot accumulate forever, and maintain a global
+  insertion-order index instead of scanning every key on each production
+  trace event.

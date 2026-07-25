@@ -73,7 +73,7 @@ Route elsewhere when:
 - AI-assisted context gathering (pulling runbooks, linking past incidents, identifying affected services) accelerates triage but does not replace human diagnosis and decision-making. Route automated remediation of known patterns to Mend; Triage retains classification and escalation authority. Automation benchmarks (2024–2026 industry data): AI-assisted triage reduces MTTD by 30–40% and MTTR by 30–50%; alert correlation achieves 60–80% noise reduction; AI-drafted postmortem timelines cut reconstruction time up to 80%. Factor these gains into capacity planning but do not depend on automation for novel failure modes.
 - Diagnostics vs remediation boundary (2026 industry principle): AI may gather context, reconstruct timelines, and draft postmortems, but remediation of novel failures stays with humans (Mend handles only pre-catalogued runbook patterns). On low-confidence AI signals, **escalate and pause safely rather than proceed with uncertainty** — the inverse is how AI-assisted incident systems cause secondary outages.
 - Apply the Swiss cheese model to RCA coordination: incidents result from failures aligning across multiple defensive layers. Direct Scout to map aligned system failures across layers, not chase a single root cause.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Triage; P2 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Triage; P2 recommended).
 - **Adopt the Howie ("How We Got Here") postmortem method** from PagerDuty (Jeli lineage) as the default for SEV-1/SEV-2 reviews. Howie reframes the postmortem as a *facilitated narrative* rather than a 5-Whys interrogation: a Narrative Builder reconstructs the timeline, a Takeaways round captures what the team learned, and a Learning Review session translates those takeaways into durable changes. Use 5-Whys / fault tree only as supplementary analysis inside this frame, not as the frame itself. [Source: howie-guide.pagerduty.com]
 - **Parallelise hypothesis tracking with a Dynamic Knowledge Graph (Resolve AI pattern).** Live-connect Pods, Grafana, GitHub, and Jenkins evidence into a graph that the triage agent maintains across multiple concurrent hypotheses; each hypothesis carries its own evidence list and disconfirmation criteria. Resolve.ai's production deployments report ~80% incident auto-resolution targeting this design. Replace the single-thread "Scout investigates one hypothesis" handoff with parallel hypothesis evidence requests when severity is SEV-1 / SEV-2. [Source: resolve.ai/product/ai-sre]
 - **Catalogue + Scribe pattern (incident.io)** for incident-comms authoring. Use a service catalogue to determine scope (which downstream services consume the failing component) and a Scribe agent to auto-transcribe the war-room call into the timeline. incident.io reports `5×` faster timeline assembly and `90%` accuracy on the scope determination. Wire this into `incident_comms_authoring` so the human IC drives, not types. [Source: incident.io/blog — What is AI SRE Complete Guide 2026]
@@ -272,7 +272,8 @@ Routing rules:
 | `reference/first-response.md` | You are inside the first 15 minutes of an incident: assigning IC, opening the war-room, classifying SEV, assigning a scribe, capturing the initial timeline, or drafting a holding comm. |
 | `reference/escalation-matrix.md` | You are designing the tiered escalation policy: on-call rotation, paging thresholds, auto-escalation timers, handoff scripts, after-hours rules, or PagerDuty / Opsgenie / VictorOps integration. |
 | `reference/incident-communications.md` | You are authoring stakeholder-specific incident templates: internal engineering / leadership / sales / support, external status page, customer notices, social updates, with SEV-based cadence and legal-review hooks. |
-| `_common/OPUS_48_AUTHORING.md` | You are calibrating tool-use eagerness at DETECT, deciding adaptive thinking depth at CLASSIFY, or sizing the postmortem. Critical for Triage: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are calibrating tool-use eagerness at DETECT, deciding adaptive thinking depth at CLASSIFY, or sizing the postmortem. Critical for Triage: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Triage-specific Output/Next schema. |
 
 ## Daily Process
 
@@ -293,25 +294,8 @@ Execution loop: `SURVEY → PLAN → VERIFY → PRESENT`
 
 ## AUTORUN Support
 
-When Triage receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Triage-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Triage
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.

@@ -1,6 +1,6 @@
 ---
 name: ito-compute
-description: Query live GPU inventory, submit an authenticated Itô fixed-rate RFQ, and inspect RFQ or procurement status through the separately installed canonical CLI or its exact MCP tools. Use when a user asks to find H100/H200 capacity, request a fixed compute rate, or check Itô compute status.
+description: Query live GPU inventory, submit an authenticated Itô fixed-rate RFQ, inspect RFQ or procurement status, and run explicitly gated node qualification through the separately installed canonical CLI. Use when a user asks to find H100/H200 capacity, request a fixed compute rate, check Itô compute status, or validate GPU nodes.
 metadata:
   origin: ECC
 ---
@@ -67,6 +67,32 @@ Never put it in arguments, tracked files, MCP results, logs, or chat.
 Inventory prices are indicative. An RFQ is not reserved capacity. Treat a rate
 as fixed only when the canonical result contains a non-null firm quote.
 
+## Live node qualification
+
+`ecc ito evals` exposes the canonical CLI's narrow live adapter to a separately
+installed `sixtytwo-cli==0.3.33`. It does not expose local fixture execution
+through ECC.
+Require all of the following before invoking it:
+
+- operator authorization to contact the named nodes;
+- `ITO_ENABLE_SIXTYTWO_LIVE=1`;
+- `--live-sixtytwo`;
+- an explicit node list; and
+- an existing absolute config directory containing `sixtytwo.yaml`.
+
+```sh
+ecc ito evals \
+  --cluster clu_prod_example \
+  --live-sixtytwo \
+  --nodes gpu-01,gpu-02 \
+  --config-dir /absolute/path/to/qualification-config
+```
+
+The canonical adapter can run only the pinned version check and
+`sixtytwo test --full` against the explicit nodes. It cannot rent, launch,
+recover, repair, reset, purchase, or order resources. ECC does not forward
+`ITO_API_KEY` or model/cloud credentials into node qualification.
+
 ## MCP workflow
 
 Build the canonical package, then configure the stdio server with an absolute
@@ -97,7 +123,7 @@ Use `ito_auth`, gather explicit buyer authority and every hard constraint, call
 ## Unsupported operations
 
 The supported client surface cannot lock quotes, reserve capacity, execute
-workloads, qualify nodes through ECC, or serve inference. Do not invent
-additional tools or a purchase path. Do not substitute a browser or fixture
-when the local CLI is missing or a live operation fails. Report the missing
-capability and stop.
+workloads, or serve inference. The MCP server does not expose qualification;
+use the explicit CLI command above. Do not invent additional tools or a
+purchase path. Do not substitute a browser or fixture when the local CLI is
+missing or a live operation fails. Report the missing capability and stop.

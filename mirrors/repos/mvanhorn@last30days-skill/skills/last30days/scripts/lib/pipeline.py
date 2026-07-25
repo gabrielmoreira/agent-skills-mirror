@@ -1956,7 +1956,10 @@ def run(
         available = [s for s in available if s != "grounding"]
     elif web_backend in ("brave", "exa", "serper", "parallel", "keyless") and "grounding" not in available:
         available.append("grounding")
-    if (hiring_signals_mode or _company_topic_likely(topic)) and "jobs" not in available:
+    if (
+        hiring_signals_mode
+        or (not requested_sources and _company_topic_likely(topic))
+    ) and "jobs" not in available:
         available.append("jobs")
     if hiring_signals_mode:
         config = dict(config)
@@ -1970,9 +1973,10 @@ def run(
     if hiring_signals_mode and not planner_requested_sources:
         planner_requested_sources = ["jobs"]
 
-    if external_plan:
+    if external_plan is not None:
         # External plan provided (e.g., from Claude Code via --plan flag).
-        # Parse it through the same sanitizer to validate structure.
+        # Explicit input is a contract: validate it before permissive sanitization.
+        planner.validate_external_plan(external_plan)
         plan = planner._sanitize_plan(
             external_plan, topic, available, planner_requested_sources, depth,
         )
@@ -2410,6 +2414,10 @@ def run(
         shortlist_size=settings["rerank_limit"],
         resolved_handles=resolved_handles,
     )
+    ranked_public = rerank.prune_fallback_entity_misses(ranked_public, topic=topic)
+    # Private corpus already cleared a body-aware retrieval floor; do not apply
+    # the public title/snippet visibility gate (filenames often omit the head
+    # token even when the document body matched).
     ranked_candidates = sorted(
         [*ranked_public, *ranked_private],
         key=lambda candidate: (

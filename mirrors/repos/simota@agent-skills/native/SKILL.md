@@ -1,6 +1,6 @@
 ---
 name: native
-description: "Implementing pure-native mobile features for iOS (Swift 6.3 + SwiftUI + Liquid Glass) and Android (Kotlin 2.4+ + Jetpack Compose + Material 3 Expressive). Builds production features with @Observable/Swift Concurrency, Compose Strong Skipping, SwiftData/Room, Credential Manager + Passkeys, Privacy Manifest, App Intents, Foundation Models/Gemini Nano, and store-compliance staged rollout. Use when building production iOS/Android features. Not for cross-platform (RN/Flutter/KMP/CMP — out of scope), porting design (Port), prototypes (Forge), or web (Artisan)."
+description: "Implementing pure-native mobile features for iOS (Swift 6.3 + SwiftUI + Liquid Glass) and Android (Kotlin 2.4+ + Jetpack Compose + Material 3 Expressive). Builds production features with @Observable/Swift Concurrency, Compose Strong Skipping, SwiftData/Room, Credential Manager + Passkeys, Privacy Manifest, App Intents, Foundation Models/Gemini Nano, and store-compliance staged rollout. Also runs the agent visual loop for screen implementation and visual debugging against a reference design — Xcode MCP RenderPreview, XcodeBuildMCP, mobile-mcp, Android Studio Agent Mode, simulator/emulator capture, and numeric screenshot diffing. Use when building production iOS/Android features or iterating a native screen until it matches a design. Not for cross-platform (RN/Flutter/KMP/CMP — out of scope), porting design (Port), prototypes (Forge), web mockup-to-code (Pixel), mobile test suites (Snap/Voyager), or web (Artisan)."
 ---
 
 <!--
@@ -76,7 +76,7 @@ Pure-native mobile implementation specialist — implements production-quality f
 - **Performance gates**: cold start < 2 s (target < 500 ms on flagship), crash-free sessions ≥ 99.85%, interaction response < 100 ms. Regressions block release.
 - **Privacy Manifest / Data Safety drafted alongside the feature**, not after. Required Reasons API declarations on iOS, ANDROID_ID classification on Android.
 - **Store-aware from MVP**. App Store 5.1.2(i) AI disclosure UI, Sign in with Apple alongside any third-party social login, Photo Picker (Android), Credential Manager / Passkeys, Liquid Glass icon variants, M3 Expressive components — built in, not bolted on.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P6 critical for this role; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P6 critical for this role; P2, P1 recommended).
 
 ## Trigger Guidance
 
@@ -210,6 +210,7 @@ Three core architecture decisions per feature — full tables and code samples �
 | Staged Rollout | `rollout` | | TestFlight phased / Play staged + feature flags + halt-hotfix | `reference/release-rollout.md` |
 | Store Compliance | `store` | | App Store / Play submission compliance audit | `reference/store-compliance.md` |
 | CLI Tooling | `cli` | | Terminal automation — `xcrun` (simctl/devicectl/xctrace/xcresulttool/notarytool/atos) + `adb` (pm/am/logcat/dumpsys/pair/Perfetto) | `reference/xcrun-cli.md`, `reference/adb-cli.md` |
+| Agent Visual Loop | `visualloop` | | Agent-driven screen implementation / visual debugging against a reference — render or capture, score with a numeric oracle, iterate under a ≤ 3-pass cap | `reference/agent-visual-loop.md` |
 
 ## Subcommand Dispatch
 
@@ -233,6 +234,8 @@ Per-Recipe behavior notes (key gotchas + thresholds) → `reference/recipes.md`.
 | iOS terminal tooling (`xcrun` / `simctl` / `devicectl` / `xctrace` / `notarytool` / `atos`) | `cli` Recipe — iOS | `reference/xcrun-cli.md` |
 | Android terminal tooling (`adb` / `logcat` / `dumpsys` / `am` / `pm` / wireless pair / `screenrecord`) | `cli` Recipe — Android | `reference/adb-cli.md` |
 | Cross-platform CLI (Perfetto / xctrace / cold-start / jank / demo capture) | `cli` Recipe — both platforms | `reference/xcrun-cli.md`, `reference/adb-cli.md` |
+| "Match this design", "the screen looks wrong", screenshot/mockup supplied as the target | `visualloop` Recipe — observe by accessibility tree first, score pixels numerically, cap at 3 passes | `reference/agent-visual-loop.md` |
+| Agent tooling for simulator/emulator control (Xcode MCP `xcrun mcpbridge` / XcodeBuildMCP / `mobile-mcp` / Android Studio Agent Mode) | `visualloop` Recipe — tool-layer selection table | `reference/agent-visual-loop.md` |
 
 ## Output Requirements
 
@@ -287,7 +290,9 @@ Every Native deliverable must include:
 | `reference/bg-execution.md` | iOS BGTaskScheduler, Android WorkManager, Doze / App Standby, Foreground Service Types |
 | `reference/xcrun-cli.md` | `xcrun` toolchain — `simctl` / `devicectl` / `xctrace` / `xcresulttool` / `notarytool` / `atos` / binary introspection |
 | `reference/adb-cli.md` | `adb` reference — `pm` / `am` / `logcat` / `dumpsys` / wireless pair / Perfetto / iOS↔Android command map |
-| `_common/OPUS_48_AUTHORING.md` | Sizing implementation summary, effort-level for offline tier, platform/framework front-load. Critical: P3, P6 |
+| `reference/agent-visual-loop.md` | Agent-in-the-loop screen work — loop contract + pass cap, accessibility-tree-before-pixels rule, iOS/Android agent tool layer (Xcode MCP `RenderPreview` / XcodeBuildMCP / `mobile-mcp` / Android Studio Agent Mode), ImageMagick numeric oracle, snapshot substrate, agent-readiness authoring, documented failure modes |
+| `_common/OPUS_5_AUTHORING.md` | Sizing implementation summary, effort-level for offline tier, platform/framework front-load. Critical: P3, P6 |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Native-specific Output/Next schema. |
 
 ---
 
@@ -319,29 +324,7 @@ Standard protocols → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `DETECT → SCAFFOLD → IMPLEMENT → ADAPT → VERIFY` and emit `_STEP_COMPLETE`. Native-specific Constraints in `_AGENT_CONTEXT`: `target_platforms`, `ios_baseline`, `android_baseline`, `target_sdk`, `offline_tier`.
-
-Native-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Native
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    implementation: [Feature per platform; Liquid Glass / M3 Expressive notes]
-    files_changed: List[{path, type, changes}]
-  Privacy_Compliance:
-    privacy_manifest: complete | partial | n/a
-    data_safety: complete | partial | n/a
-    ai_disclosure_ui: present | n/a
-  Handoff:
-    Format: NATIVE_TO_[NEXT]_HANDOFF
-    Content: [Handoff content for next agent]
-  Risks: [Platform-specific risks, store-review risks]
-  Next: [NextAgent] | VERIFY | DONE
-```
-
----
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Native-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

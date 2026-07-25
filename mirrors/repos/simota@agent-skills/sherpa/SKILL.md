@@ -82,7 +82,7 @@ Route elsewhere when the task is primarily:
 - Track estimate accuracy using PRED(0.25) — the percentage of estimates with ≤25% relative error — as the primary calibration metric. Feed actuals into future planning to shrink estimation variance over time.
 - Prefer Plan-and-Execute decomposition: decouple planning from execution. Plan-and-Execute uses significantly fewer tokens on multi-step reasoning by avoiding repeated re-planning cycles, yielding faster execution and more predictable cost. Route planning to high-capability agents and execution to specialized workers.
 - Protect flow state: a single context switch costs ~23 minutes of recovery time (developers average 12-15 major switches daily ≈ 4.5h lost focus). Interrupted tasks take 2× longer with 2× errors. The per-developer productivity cost is ~$78K/year.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P1, P2, P7 critical for Sherpa). Decomposition outputs that omit acceptance criteria or length envelopes force downstream agents to ask clarifying questions instead of executing.
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P1, P2, P7 critical for Sherpa). Decomposition outputs that omit acceptance criteria or length envelopes force downstream agents to ask clarifying questions instead of executing.
 - **Anchor decomposition on the Explore → Plan → Implement → Commit cycle** (Anthropic Claude Code Best Practices, 2026). Each Atomic Step belongs to exactly one phase: `Explore` steps read code / map symbols / load context but write nothing; `Plan` steps produce a plan artifact (file diff sketch, AC list, test stubs) but no implementation; `Implement` steps write code against the locked plan; `Commit` steps run the verifier and produce a commit/PR. Skip `Plan` only when the change is mechanically obvious (single-file rename, dependency bump). Forcing Plan-mode for cross-file work catches half the failure surface before code is written. [Source: code.claude.com/docs/en/best-practices]
 - **Output Spec-Kit-compatible Atomic Steps** when the user invokes `spec` or `speckit`. The GitHub Spec-Kit (`/speckit.specify` / `/speckit.plan` / `/speckit.tasks` / `/speckit.implement`) is the executable-spec standard supported by Claude Code, Cursor, Copilot and 29+ other tools. Match the file layout (`spec/`, `plan/`, `tasks/`) and the Constitution → Specify → Plan → Tasks → Implement phase contract so downstream tooling (Builder, Forge, Artisan) can consume the steps without translation. [Source: github.com/github/spec-kit]
 - **Keep atomic steps small to counteract AI-era PR bloat.** The DORA 2025 report found that AI-assisted teams produced PRs 51% larger on average, pushing median PR review time up 441% and allowing 31% more PRs to merge without any review — and bugs per developer rose 54% year-over-year. Keeping each Atomic Step to a single, committable concern directly counters this trend. [Source: dora.dev/research/2025/dora-report/](https://dora.dev/research/2025/dora-report/)
@@ -325,7 +325,8 @@ Use this shape:
 | `reference/atomic-step-decomposition.md` | you need INVEST checklist, ≤15-minute step contract, reversibility classification, or commit-point contract |
 | `reference/walking-skeleton.md` | you need Cockburn Walking Skeleton template, layer-coverage checklist, or thinnest-slice definition |
 | `reference/vertical-slice.md` | you need vertical vs horizontal decomposition trade-off, slice-quality checklist, or slice sizing rubric |
-| `_common/OPUS_48_AUTHORING.md` | you are drafting Atomic Step contracts, GUIDE-phase handoff prompts, or `SHERPA_TO_*_HANDOFF` blocks. Critical principles for Sherpa: P1 (front-loaded acceptance criteria), P2 (bounded step output), P7 (delegation framing). |
+| `_common/OPUS_5_AUTHORING.md` | you are drafting Atomic Step contracts, GUIDE-phase handoff prompts, or `SHERPA_TO_*_HANDOFF` blocks. Critical principles for Sherpa: P1 (front-loaded acceptance criteria), P2 (bounded step output), P7 (delegation framing). |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Sherpa-specific Output/Next schema. |
 
 
 ## Operational
@@ -337,34 +338,8 @@ Use this shape:
 
 ## AUTORUN Support
 
-When Sherpa receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Sherpa-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Sherpa
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    type: "[task_decomposition | progress_update | risk_assessment | replan]"
-    summary: "[1-2 line summary of what was produced]"
-    deliverable: [primary artifact]
-    files_changed: [list of files if applicable, or "none"]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-      steps_total: [N]
-      steps_completed: [M]
-      weather: "[Clear | Cloudy | Stormy | Dangerous]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Handoff:
-    Format: "[SHERPA_TO_*_HANDOFF format name]"
-    Content: "[Full handoff block for next agent]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).

@@ -86,7 +86,7 @@ Route elsewhere when the task is primarily:
 - **Single-writer state rule**: `bazaar` itself owns all writes to `.agents/bazaar/{project}.json`. Delegates return values via `_STEP_COMPLETE`; they never write state directly. Use atomic temp-file rename to commit each update; `decisions_log` is append-only.
 - **AUTORUN Ask-First enforcement**: in `AUTORUN` / `AUTORUN_FULL`, every item in the Ask First list MUST emit `_STEP_COMPLETE.Status = NEED_INFO` and pause — silent proceed is forbidden. The full trigger set lives in `reference/handoff-protocols.md` § AUTORUN-Gate Matrix.
 - **Atelier delegation pre-flight**: before delegating to Atelier, enumerate the planned artifact list. If < 3 artifacts → call Vision/Muse/Frame/Forge/Pixel directly. If ≥ 3 artifacts → Atelier with an explicit no-op list (e.g., "Funnel already produced wireframe at Stage 4").
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P1, P4, P7 critical for this role; P3 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P1, P4, P7 critical for this role; P3 recommended).
 - Output language follows the CLI global config; identifiers, KPI names, and schema keys remain in English.
 
 ## Quality Disciplines (6 Axes)
@@ -279,23 +279,7 @@ Every `bazaar` run produces:
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-`bazaar`-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Bazaar
-  Task_Type: PREMIUM | LEAD_GEN | SAAS | ECOM | EVENT | MAGNET | AUDIT
-  Status: DONE | BLOCKED | NEED_INFO
-  Recipe: <recipe id>
-  Stage_Reached: <last completed stage>
-  Output: <summary of deliverables and artifacts paths>
-  Quality_Gates: <pass/fail per stage>
-  Handoff: <next agent if applicable>
-  Next: <suggested follow-up action>
-  Reason: <why this outcome>
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Bazaar-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 
@@ -313,6 +297,7 @@ When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical
 | `reference/craft-standards.md` | You are scoring Design / Animation / Branding axes (rubrics, motion tokens, brand system anatomy, detail-craft checklist, 2026 trend calibration) |
 | `reference/ia-blueprint.md` | You are designing IA (visual hierarchy / scan pattern / scroll narrative / heading tree), running technical or content SEO, or scoring GEO citation-readiness for AI search |
 | `_common/GROWTH_BRAND_PROOF.md` | You orchestrate full LP pipeline in `nexus growth-acceptance` Phase 2 (ship-time). LP bundles consume Brand Compiler 3-layer (B.hard / B.pattern blocking + B.tone advisory) — your 6-axis quality gates align with Brand Proof field set (tone / message / distinctiveness / asset / memory / trust / consistency / brand_lift). G12 Distinctiveness Floor: LP creatives are subject to embedding-distance check against past 90d + top-10 competitor recent LPs. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Bazaar-specific Output/Next schema. |
 
 ## Operational
 

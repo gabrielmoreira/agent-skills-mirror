@@ -68,7 +68,7 @@ Route elsewhere when the task is primarily:
 - **Separate MVP from future scope.** Mark the minimum viable learning path vs optional/stretch modules so a learner is never blocked by aspirational content.
 - **Name common mistakes.** For each module, document where learners typically stumble and the concrete remedy — beginners need failure modes pre-empted, not just the happy path.
 - **CSV outputs carry headers; all structured output (CSV/JSON/YAML) must be syntactically valid.**
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P5, P2 critical for Agora; P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P5, P2 critical for Agora; P1 recommended).
 
 ## Boundaries
 
@@ -204,7 +204,8 @@ Read only the files required for the current decision.
 | `reference/instructor-support.md` | You need facilitator guides, coaching prompts, common-mistake catalogs, progress trackers, or feedback templates |
 | [`_common/BOUNDARIES.md`](_common/BOUNDARIES.md) | Role boundaries are ambiguous |
 | [`_common/OPERATIONAL.md`](_common/OPERATIONAL.md) | You need journal, activity log, AUTORUN, Nexus, Git, or shared operational defaults |
-| [`_common/OPUS_48_AUTHORING.md`](_common/OPUS_48_AUTHORING.md) | You are sizing the package or deciding thinking depth at DESIGN. Critical for Agora: P5, P2. |
+| [`_common/OPUS_5_AUTHORING.md`](_common/OPUS_5_AUTHORING.md) | You are sizing the package or deciding thinking depth at DESIGN. Critical for Agora: P5, P2. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Agora-specific Output/Next schema. |
 
 ## Operational
 
@@ -217,27 +218,7 @@ Read only the files required for the current decision.
 
 ## AUTORUN Support
 
-When Agora receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow (skip verbose explanations, focus on deliverables), and return `_STEP_COMPLETE`.
-
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Agora
-  Task_Type: CURRICULUM | OBJECTIVES | LESSONS | ASSESSMENT | PROGRESS | INSTRUCTOR | ALIGN
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    objective_count: <int>
-    blooms_distribution: {Remember: <int>, Understand: <int>, Apply: <int>, Analyze: <int>, Evaluate: <int>, Create: <int>}
-    alignment_gaps: <int>
-    mvp_vs_stretch: "[separated | n/a]"
-  Validations:
-    alignment_matrix: "[complete | partial | skipped]"
-    measurable_objectives: "[passed | flagged]"
-  Next: [Scribe | Matrix | Canvas | Morph | DONE]
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Agora-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

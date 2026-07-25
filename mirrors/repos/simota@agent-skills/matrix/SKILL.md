@@ -79,7 +79,7 @@ Route elsewhere when the task is primarily:
 - When parameter modeling is expensive or incomplete, AI-assisted parameter extraction (e.g., Hexawise AI Guidance / Sembi iQ, 2025) can draft parameter/value models from specification documents, accelerating the PARSE phase without replacing engineer review. Treat AI-generated models as first-draft; validate constraints before optimizing.
 - Hand off a plan another agent can execute immediately.
 - Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Keep code, IDs, YAML, JSON, and agent names in English.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Matrix; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Matrix; P2, P1 recommended).
 
 ## Boundaries
 
@@ -263,10 +263,11 @@ When results are already available (Remap mode), also include:
 - Read [fault-interaction-statistics.md](~/.claude/skills/matrix/reference/fault-interaction-statistics.md) when choosing `2-way` vs `3-way+` or mixed strength.
 - Read [prioritization-pitfalls.md](~/.claude/skills/matrix/reference/prioritization-pitfalls.md) when the ranking looks biased or everything is becoming critical.
 - Read [coverage-measurement.md](~/.claude/skills/matrix/reference/coverage-measurement.md) when mapping execution results back into coverage gaps.
+- Read [autorun-schema.md](~/.claude/skills/matrix/reference/autorun-schema.md) when you are emitting the AUTORUN `_STEP_COMPLETE` block — Matrix-specific Output/Next schema.
 - Read [pairwise-ipog.md](~/.claude/skills/matrix/reference/pairwise-ipog.md) when you need the IPOG/IPOG-F algorithm walk-through, OATS selection rubric, or pairwise vs n-wise trade-offs.
 - Read [equiv-class-bva.md](~/.claude/skills/matrix/reference/equiv-class-bva.md) when axes are input ranges (integers, strings, continuous values) and you need equivalence partitioning + BVA + one-defect-per-negative-case discipline.
 - Read [risk-weighted-coverage.md](~/.claude/skills/matrix/reference/risk-weighted-coverage.md) when prioritizing combinations by RPN / Action Priority or integrating with FMEA output from omen.
-- Read [\_common/OPUS_48_AUTHORING.md](~/.claude/skills/_common/OPUS_48_AUTHORING.md) when you are sizing the combinatorial plan, deciding adaptive thinking depth at t-way strength, or front-loading domain/axes/target at SCAN. Critical for Matrix: P3, P5.
+- Read [\_common/OPUS_5_AUTHORING.md](~/.claude/skills/_common/OPUS_5_AUTHORING.md) when you are sizing the combinatorial plan, deciding adaptive thinking depth at t-way strength, or front-loading domain/axes/target at SCAN. Critical for Matrix: P3, P5.
 - Read [\_common/PROOF_CARRYING.md](~/.claude/skills/_common/PROOF_CARRYING.md) when generating pairwise / orthogonal-array story sets for `vrt_proof` in `nexus acceptance` Phase 2B per PD-2 Matrix Sampling Policy. Default to 2-way coverage; full N-way reserved for Tier-S critical paths. Target story count ≤ 5,000 per build; "Approve all" actions on >10 diffs forbidden at tool level (G5).
 
 ## Operational
@@ -281,25 +282,8 @@ Agent, Status(SUCCESS|PARTIAL|BLOCKED|FAILED), Output(domain, axes_count, total_
 
 ## AUTORUN Support
 
-When Matrix receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Matrix-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Matrix
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.

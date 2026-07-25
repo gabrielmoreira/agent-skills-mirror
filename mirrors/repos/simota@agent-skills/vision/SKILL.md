@@ -86,7 +86,7 @@ Route elsewhere when the task is primarily:
 - For AI-driven interfaces: prohibit prediction-driven UI without user override — auto-fill, auto-sort, and auto-decide actions must always provide visible undo, explanation of what changed, and manual override. Silent automation that surprises users is the top AI-interface failure pattern (IxDF/UX Collective 2026).
 - Token governance: prevent design drift by enforcing single-source-of-truth token architecture — no duplicated tokens across teams. For multi-brand products, use the Core → Brand → Product orchestrated inheritance model (semantic tokens only at Core; brand overrides at Brand; product-specific exceptions at Product) — shared-library flat models produce "Frankenstein systems" where tokens are shared but behavior diverges. For new design systems, align token format with the Design Tokens Community Group (DTCG) specification v2025.10 (first stable release October 2025; Community Group Report, not a W3C Standard).
 - WCAG 3.0 forward-readiness: keep WCAG 2.2 AA as the legal baseline (DOJ ADA Title II / EU EAA reference it). Do not plan around APCA as a standards-track replacement — APCA was removed from the WCAG 3 working draft in July 2023 and was not reintroduced in the **March 2026 Working Draft (W3C, 03 March 2026)**. Treat APCA as an optional perceptual overlay for brand/marketing surfaces only if it does not fail WCAG 2.2 AA; document any WCAG 2.2 failures as a legal risk. WCAG 3.0 remains a Working Draft; Candidate Recommendation expected 2026–2027, Proposed/final Recommendation 2027–2028 at earliest. [Source: W3C — WCAG 3.0 Working Draft 03 March 2026](https://www.w3.org/TR/wcag-3.0/)
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Vision; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Vision; P2, P1 recommended).
 - **Co-design pair mode (`pair`) changes cadence, not the evidence bar.** Vision is the **driver** (proposes grounded decisions, directs production); the user is the **navigator** (picks options, steers taste, confirms each increment). Propose ONE decision at a time as 2-3 options — each with rationale, trade-offs, a measurable outcome metric, and a WCAG 2.2 AA note — then produce it via delegation (Muse/Forge/Flow/Palette/Frame/Prose; Vision writes no code) and confirm before advancing. INTERACTIVE — cannot run unattended; under AUTORUN, draft the decision plan + first options and return `Next: USER`. Bounded and checkpoint-resumable. Full contract → `reference/co-design-pair.md`.
 ## Boundaries
 
@@ -280,12 +280,13 @@ Activated by the `multi` Recipe (or any explicit request for parallel design-dir
 | `reference/linear-restraint-mode.md` | you need Linear-style restraint: calm surfaces, minimal chrome, card usage rules, or app vs marketing guidance |
 | `_common/OPERATIONAL.md` | you need journal, activity log, AUTORUN, Nexus, or shared operational defaults |
 | `_common/UX_TRENDS_2026.md` | you need 2025-2026 web-sourced direction signals — OS design languages (Liquid Glass, M3 Expressive), brand-system case studies (Polaris Unified, Primer, Radix Themes 3.0), and current visual-language standards. Read §1 Design. |
-| `_common/OPUS_48_AUTHORING.md` | you are sizing the direction/critique report, deciding adaptive thinking depth at DIRECT/CRITIQUE, or front-loading brand/scope at SURVEY. Critical for Vision: P3, P5 |
+| `_common/OPUS_5_AUTHORING.md` | you are sizing the direction/critique report, deciding adaptive thinking depth at DIRECT/CRITIQUE, or front-loading brand/scope at SURVEY. Critical for Vision: P3, P5 |
 | `_common/IMAGE_INPUT.md` | you are reading brand assets, competitor screenshots, or mockups as input — apply the image pipeline (RECOGNIZE→PARSE→ANALYZE, describe-first, observed-vs-inferred) before direction or critique |
 | `reference/tri-engine-direction.md` | you are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Concurrence-Divergence scoring, aesthetic-spectrum coverage rules, Portfolio (default) vs Compete (opt-in) merge strategies, JSON schema, subagent prompt skeletons, GROUND brand/persona/a11y/AI-disclosure checks, and downstream handoff stubs |
 | `_common/SUBAGENT.md` | you need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts |
 | `_common/MULTI_ENGINE_RECIPE.md` | you need the canonical Pattern D protocol (SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND/CALIBRATE → SYNTHESIZE → DELIVER), engine-attribution tag conventions, and degraded-mode rules shared across all `multi` Recipe skills |
 | `_common/PROOF_CARRYING.md` | You issue `brand_proof` advisory in `nexus acceptance` Phase 4B (LLM-as-judge, non-blocking per Unspecifiable-Quality Carve-Out). Brand voice / illustration style / motion feel / emotional appropriateness route to G7 Unmeasurable-Quality Audit Gate for Tier-S UI human sign-off (≥10 min recorded). Avoid the "AI Design Reviewer" anti-pattern — operate as Design Compiler, not approver. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Vision-specific Output/Next schema. |
 
 ## Operational
 
@@ -296,41 +297,8 @@ Activated by the `multi` Recipe (or any explicit request for parallel design-dir
 
 ## AUTORUN Support
 
-When Vision receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Vision-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-The `pair` recipe is INTERACTIVE and cannot run unattended — under AUTORUN, run UNDERSTAND, draft the ordered decision plan + the first decision's options, and set `Next: USER` (pair-ready) rather than locking decisions without confirmation.
-
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Vision
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-    tri_engine:                                  # present only when `multi` Recipe ran
-      engines_run: [codex, agy, claude]
-      engines_failed: [list or none]
-      merge_strategy: "[Portfolio | Compete]"
-      concurrence_distribution:
-        UNIVERSAL: [count]
-        LIKELY: [count]
-        VERIFIED-DIVERGENT: [count]
-      spectrum_coverage:
-        positions: [list of distinct spectrum_position values across surviving directions]
-        spread_ok: [true | false]
-      rejected: [count + top categories — brand-drift / persona-mismatch / a11y / hallucination / vague-outcome / ai-trust]
-      lead_recommendation: "[direction concept_name]"
-      challenger: "[direction concept_name or none]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.

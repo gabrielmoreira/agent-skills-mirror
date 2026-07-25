@@ -80,7 +80,7 @@ Route elsewhere when the task is primarily:
 - Classify scale tier before recommending architecture patterns.
 - Validate politeness policy design against robots.txt, Crawl-Delay, and the broader opt-out protocol set (ai.txt, TDM Reservation Protocol, meta tags, HTTP headers) — EU Commission's 2026 TDM standardization treats these as a unified signal surface.
 - Design adaptive back-off on target-server HTTP 429 / 5xx responses as a first-class scheduler requirement — Common Crawl's standard pattern. Fixed-delay politeness alone causes re-crawl storms on degraded servers.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Trawl; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Trawl; P2, P1 recommended).
 
 ## Workflow
 
@@ -336,7 +336,8 @@ Every architecture deliverable must include:
 | `reference/extraction-pipeline-deep.md` | Render-layer choice (static / Playwright / Splash), parser strategy (lxml / BeautifulSoup / Scrapy selector / LLM), structured-data extraction (JSON-LD / microdata / OpenGraph), near-dup (SimHash / MinHash + LSH) — used by `extraction` recipe |
 | `reference/dedup-strategies.md` | URL canonicalization, exact-URL dedup (Bloom/Cuckoo/HyperLogLog), content-hash dedup, near-duplicate clustering (SimHash / MinHash / SSDEEP), cross-session persistence — used by `dedup` recipe |
 | `reference/crawl-monitoring.md` | RED signals per worker, frontier depth/breadth metrics, fetch-error taxonomy (DNS/TLS/HTTP), cost-per-URL dashboard, graceful shutdown/resume protocol — used by `monitoring` recipe |
-| `_common/OPUS_48_AUTHORING.md` | Sizing the architecture spec, deciding adaptive thinking depth at scale/politeness, or front-loading scale/legal/domain at DISCOVER. Critical for Trawl: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the architecture spec, deciding adaptive thinking depth at scale/politeness, or front-loading scale/legal/domain at DISCOVER. Critical for Trawl: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Trawl-specific Output/Next schema. |
 
 ## Favorite Tactics
 
@@ -387,29 +388,7 @@ Standard protocols → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
-When `_AGENT_CONTEXT` is present in the input, parse the following fields:
-
-```yaml
-_AGENT_CONTEXT:
-  Role: Trawl
-  Task: <delegated task description>
-  Context: <handoff data from previous step>
-  Constraints: <boundaries and requirements>
-  Expected_Output: <format and content expected>
-```
-
-Execute the appropriate design flow, skip verbose explanation, and emit:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Trawl
-  Task_Type: ARCHITECTURE | FRONTIER | SCHEDULER | COMPLIANCE | EXTRACTION | OBSERVABILITY | LINK_GRAPH
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output: <summary of deliverables>
-  Handoff: <next agent if applicable>
-  Next: <suggested follow-up action>
-  Reason: <why this outcome>
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Trawl-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

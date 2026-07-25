@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 68 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,43 +59,74 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`Agent Tools/launch mcp/skills/demo-site-builder/SKILL.md`](Agent%20Tools/launch%20mcp/skills/demo-site-builder/SKILL.md) |
-| 2 | ✓ | [`Agent Tools/launch mcp/skills/ui-ux-pro-max/SKILL.md`](Agent%20Tools/launch%20mcp/skills/ui-ux-pro-max/SKILL.md) |
-| 3 | ✓ | [`Agent Tools/launch mcp/skills/writing-linkedin-posts/SKILL.md`](Agent%20Tools/launch%20mcp/skills/writing-linkedin-posts/SKILL.md) |
-| 4 | ✓ | [`Agent Tools/launch mcp/skills/x-algo-tweet-writer/SKILL.md`](Agent%20Tools/launch%20mcp/skills/x-algo-tweet-writer/SKILL.md) |
-| 5 | ✓ | [`agent-skills/crazy-ecommerce-builder/SKILL.md`](agent-skills/crazy-ecommerce-builder/SKILL.md) |
-| 6 | ✓ | [`agent-skills/landing-page-generator/SKILL.md`](agent-skills/landing-page-generator/SKILL.md) |
-| 7 | ✓ | [`agent-skills/talking-avatar/SKILL.md`](agent-skills/talking-avatar/SKILL.md) |
-| 8 | ✓ | [`agents/AG2_Building_Multi_Agent_AI_Systems.ipynb`](agents/AG2_Building_Multi_Agent_AI_Systems.ipynb) |
-| 9 | ✓ | [`agents/AgentScope.ipynb`](agents/AgentScope.ipynb) |
-| 10 | ✓ | [`agents/Agno_Skills_Claude_Sonnet_4_6.ipynb`](agents/Agno_Skills_Claude_Sonnet_4_6.ipynb) |
-| 11 | ✓ | [`agents/Agno_TypeSafe_Agents.ipynb`](agents/Agno_TypeSafe_Agents.ipynb) |
-| 12 | ✓ | [`agents/Browser_Use_Agent.ipynb`](agents/Browser_Use_Agent.ipynb) |
-| 13 | ✓ | [`agents/CrewAI_Qwen3_5_OpenRouter.ipynb`](agents/CrewAI_Qwen3_5_OpenRouter.ipynb) |
-| 14 | ✓ | [`agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb`](agents/CSV_Agents_with_LangChain_&_LlamaIndex.ipynb) |
-| 15 | ✓ | [`agents/Day_5_OpenAI_Agents.ipynb`](agents/Day_5_OpenAI_Agents.ipynb) |
-| 16 | ✓ | [`agents/day1_langchain_agent.ipynb`](agents/day1_langchain_agent.ipynb) |
-| 17 | ✓ | [`agents/DAY2_AI_BOOTCAMP_CrewAI.ipynb`](agents/DAY2_AI_BOOTCAMP_CrewAI.ipynb) |
-| 18 | ✓ | [`agents/DAY3_Ai_AGNET_SERIES.ipynb`](agents/DAY3_Ai_AGNET_SERIES.ipynb) |
-| 19 | ✓ | [`agents/Day4_agno_encryption.ipynb`](agents/Day4_agno_encryption.ipynb) |
-| 20 | ✓ | [`agents/elysia_agentic_decision_tree_framework.ipynb`](agents/elysia_agentic_decision_tree_framework.ipynb) |
-| 21 | ✓ | [`agents/Financial_AI_Agent_with_Google_ADK.ipynb`](agents/Financial_AI_Agent_with_Google_ADK.ipynb) |
-| 22 | ✓ | [`agents/GLM_5_Agno_Agents.ipynb`](agents/GLM_5_Agno_Agents.ipynb) |
-| 23 | ✓ | [`agents/Google_Agent_DevKit_Tutorial_.ipynb`](agents/Google_Agent_DevKit_Tutorial_.ipynb) |
-| 24 | ✓ | [`agents/JEE_AI_Agent.ipynb`](agents/JEE_AI_Agent.ipynb) |
-| 25 | ✓ | [`agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb`](agents/Kimi_K2_5_Agent_Swarm_Cookbook.ipynb) |
-| 26 | ✓ | [`agents/Kimi_K2_5_Agno_Cookbook.ipynb`](agents/Kimi_K2_5_Agno_Cookbook.ipynb) |
-| 27 | ✓ | [`agents/kimi_k2_5_crewai.ipynb`](agents/kimi_k2_5_crewai.ipynb) |
-| 28 | ✓ | [`agents/langchain_agent.ipynb`](agents/langchain_agent.ipynb) |
-| 29 | ✓ | [`agents/LangGraph_Supervisor.ipynb`](agents/LangGraph_Supervisor.ipynb) |
-| 30 | ✓ | [`agents/microsoft-agents/maf-code-reviewer.ipynb`](agents/microsoft-agents/maf-code-reviewer.ipynb) |
-| 31 | ✓ | [`agents/openai_swarm_.ipynb`](agents/openai_swarm_.ipynb) |
-| 32 | ✓ | [`agents/personel_agent.py`](agents/personel_agent.py) |
-| 33 | ✓ | [`agents/qwen3_coder_next_agno.ipynb`](agents/qwen3_coder_next_agno.ipynb) |
-| 34 | ✓ | [`agents/README.md`](agents/README.md) |
-| 35 | ✓ | [`agents/simple-agent-gemini3-pro.py`](agents/simple-agent-gemini3-pro.py) |
-| 36 | ✓ | [`agents/smolagents_a_smol_library_to_build_great_agents.ipynb`](agents/smolagents_a_smol_library_to_build_great_agents.ipynb) |
-| 37 | ✓ | [`agents/step_3_5_using_agno.ipynb`](agents/step_3_5_using_agno.ipynb) |
+| 1 | ✓ | [`agents/.gitkeep`](agents/.gitkeep) |
+| 2 | ✓ | [`mcp/clients/.gitkeep`](mcp/clients/.gitkeep) |
+| 3 | ✓ | [`mcp/examples/.gitkeep`](mcp/examples/.gitkeep) |
+| 4 | ✓ | [`mcp/integrations/.gitkeep`](mcp/integrations/.gitkeep) |
+| 5 | ✓ | [`mcp/servers/launch-mcp/.claude-plugin/marketplace.json`](mcp/servers/launch-mcp/.claude-plugin/marketplace.json) |
+| 6 | ✓ | [`mcp/servers/launch-mcp/.claude-plugin/plugin.json`](mcp/servers/launch-mcp/.claude-plugin/plugin.json) |
+| 7 | ✓ | [`mcp/servers/launch-mcp/.gitignore`](mcp/servers/launch-mcp/.gitignore) |
+| 8 | ✓ | [`mcp/servers/launch-mcp/.mcp.json`](mcp/servers/launch-mcp/.mcp.json) |
+| 9 | ✓ | [`mcp/servers/launch-mcp/LICENSE`](mcp/servers/launch-mcp/LICENSE) |
+| 10 | ✓ | [`mcp/servers/launch-mcp/README.md`](mcp/servers/launch-mcp/README.md) |
+| 11 | ✓ | [`mcp/servers/launch-mcp/server/index.mjs`](mcp/servers/launch-mcp/server/index.mjs) |
+| 12 | ✓ | [`mcp/servers/launch-mcp/skills/demo-site-builder/references/template.html`](mcp/servers/launch-mcp/skills/demo-site-builder/references/template.html) |
+| 13 | ✓ | [`mcp/servers/launch-mcp/skills/demo-site-builder/SKILL.md`](mcp/servers/launch-mcp/skills/demo-site-builder/SKILL.md) |
+| 14 | ✓ | [`mcp/servers/launch-mcp/skills/ui-ux-pro-max/SKILL.md`](mcp/servers/launch-mcp/skills/ui-ux-pro-max/SKILL.md) |
+| 15 | ✓ | [`mcp/servers/launch-mcp/skills/writing-linkedin-posts/references/examples.md`](mcp/servers/launch-mcp/skills/writing-linkedin-posts/references/examples.md) |
+| 16 | ✓ | [`mcp/servers/launch-mcp/skills/writing-linkedin-posts/references/hooks.md`](mcp/servers/launch-mcp/skills/writing-linkedin-posts/references/hooks.md) |
+| 17 | ✓ | [`mcp/servers/launch-mcp/skills/writing-linkedin-posts/SKILL.md`](mcp/servers/launch-mcp/skills/writing-linkedin-posts/SKILL.md) |
+| 18 | ✓ | [`mcp/servers/launch-mcp/skills/x-algo-tweet-writer/references/x-algo-insights.md`](mcp/servers/launch-mcp/skills/x-algo-tweet-writer/references/x-algo-insights.md) |
+| 19 | ✓ | [`mcp/servers/launch-mcp/skills/x-algo-tweet-writer/SKILL.md`](mcp/servers/launch-mcp/skills/x-algo-tweet-writer/SKILL.md) |
+| 20 | ✓ | [`skills/backend-skills/api-auth-data/mcp-server-builder.md`](skills/backend-skills/api-auth-data/mcp-server-builder.md) |
+| 21 | ✓ | [`skills/backend-skills/api-auth-data/mern-auth-best-practices.md`](skills/backend-skills/api-auth-data/mern-auth-best-practices.md) |
+| 22 | ✓ | [`skills/backend-skills/api-auth-data/mongoose-schema-architect.md`](skills/backend-skills/api-auth-data/mongoose-schema-architect.md) |
+| 23 | ✓ | [`skills/backend-skills/api-auth-data/nextjs-route-handler.md`](skills/backend-skills/api-auth-data/nextjs-route-handler.md) |
+| 24 | ✓ | [`skills/crazy-ecommerce-builder/agents/openai.yaml`](skills/crazy-ecommerce-builder/agents/openai.yaml) |
+| 25 | ✓ | [`skills/crazy-ecommerce-builder/references/commerce-checklist.md`](skills/crazy-ecommerce-builder/references/commerce-checklist.md) |
+| 26 | ✓ | [`skills/crazy-ecommerce-builder/references/creative-system.md`](skills/crazy-ecommerce-builder/references/creative-system.md) |
+| 27 | ✓ | [`skills/crazy-ecommerce-builder/references/image-system.md`](skills/crazy-ecommerce-builder/references/image-system.md) |
+| 28 | ✓ | [`skills/crazy-ecommerce-builder/SKILL.md`](skills/crazy-ecommerce-builder/SKILL.md) |
+| 29 | ✓ | [`skills/docs-writing-research-skills/deck-outline-generator.md`](skills/docs-writing-research-skills/deck-outline-generator.md) |
+| 30 | ✓ | [`skills/docs-writing-research-skills/readme-architect.md`](skills/docs-writing-research-skills/readme-architect.md) |
+| 31 | ✓ | [`skills/docs-writing-research-skills/research-synthesizer.md`](skills/docs-writing-research-skills/research-synthesizer.md) |
+| 32 | ✓ | [`skills/frontend-skills/core/frontend.md`](skills/frontend-skills/core/frontend.md) |
+| 33 | ✓ | [`skills/frontend-skills/core/tailwind-component-factory.md`](skills/frontend-skills/core/tailwind-component-factory.md) |
+| 34 | ✓ | [`skills/frontend-skills/styles/bold-saas-marketing-ui.md`](skills/frontend-skills/styles/bold-saas-marketing-ui.md) |
+| 35 | ✓ | [`skills/frontend-skills/styles/editorial-web-layout.md`](skills/frontend-skills/styles/editorial-web-layout.md) |
+| 36 | ✓ | [`skills/frontend-skills/styles/glass-ui-system.md`](skills/frontend-skills/styles/glass-ui-system.md) |
+| 37 | ✓ | [`skills/frontend-skills/styles/minimal-luxury-ui.md`](skills/frontend-skills/styles/minimal-luxury-ui.md) |
+| 38 | ✓ | [`skills/frontend-skills/styles/neo-brutalism-web.md`](skills/frontend-skills/styles/neo-brutalism-web.md) |
+| 39 | ✓ | [`skills/frontend-skills/styles/retro-futurist-web.md`](skills/frontend-skills/styles/retro-futurist-web.md) |
+| 40 | ✓ | [`skills/landing-page-generator/agents/openai.yaml`](skills/landing-page-generator/agents/openai.yaml) |
+| 41 | ✓ | [`skills/landing-page-generator/assets/template.html`](skills/landing-page-generator/assets/template.html) |
+| 42 | ✓ | [`skills/landing-page-generator/references/copy-frameworks.md`](skills/landing-page-generator/references/copy-frameworks.md) |
+| 43 | ✓ | [`skills/landing-page-generator/references/design-styles.md`](skills/landing-page-generator/references/design-styles.md) |
+| 44 | ✓ | [`skills/landing-page-generator/references/optimization.md`](skills/landing-page-generator/references/optimization.md) |
+| 45 | ✓ | [`skills/landing-page-generator/references/section-library.md`](skills/landing-page-generator/references/section-library.md) |
+| 46 | ✓ | [`skills/landing-page-generator/scripts/conversion_checklist.py`](skills/landing-page-generator/scripts/conversion_checklist.py) |
+| 47 | ✓ | [`skills/landing-page-generator/scripts/cta_analyzer.py`](skills/landing-page-generator/scripts/cta_analyzer.py) |
+| 48 | ✓ | [`skills/landing-page-generator/scripts/page_speed_estimator.py`](skills/landing-page-generator/scripts/page_speed_estimator.py) |
+| 49 | ✓ | [`skills/landing-page-generator/SKILL.md`](skills/landing-page-generator/SKILL.md) |
+| 50 | ✓ | [`skills/README.md`](skills/README.md) |
+| 51 | ✓ | [`skills/talking-avatar/agents/openai.yaml`](skills/talking-avatar/agents/openai.yaml) |
+| 52 | ✓ | [`skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl`](skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl) |
+| 53 | ✓ | [`skills/talking-avatar/assets/starter/app/globals.css.tmpl`](skills/talking-avatar/assets/starter/app/globals.css.tmpl) |
+| 54 | ✓ | [`skills/talking-avatar/assets/starter/app/layout.tsx.tmpl`](skills/talking-avatar/assets/starter/app/layout.tsx.tmpl) |
+| 55 | ✓ | [`skills/talking-avatar/assets/starter/app/page.tsx.tmpl`](skills/talking-avatar/assets/starter/app/page.tsx.tmpl) |
+| 56 | ✓ | [`skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl`](skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl) |
+| 57 | ✓ | [`skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl`](skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl) |
+| 58 | ✓ | [`skills/talking-avatar/references/app-contract.md`](skills/talking-avatar/references/app-contract.md) |
+| 59 | ✓ | [`skills/talking-avatar/references/image-pipeline.md`](skills/talking-avatar/references/image-pipeline.md) |
+| 60 | ✓ | [`skills/talking-avatar/references/realtime-lipsync.md`](skills/talking-avatar/references/realtime-lipsync.md) |
+| 61 | ✓ | [`skills/talking-avatar/scripts/scaffold_app.py`](skills/talking-avatar/scripts/scaffold_app.py) |
+| 62 | ✓ | [`skills/talking-avatar/scripts/validate_avatar_assets.py`](skills/talking-avatar/scripts/validate_avatar_assets.py) |
+| 63 | ✓ | [`skills/talking-avatar/SKILL.md`](skills/talking-avatar/SKILL.md) |
+| 64 | ✓ | [`skills/tooling-workflow-skills/agent-output-critic.md`](skills/tooling-workflow-skills/agent-output-critic.md) |
+| 65 | ✓ | [`skills/tooling-workflow-skills/git-conventional-commits.md`](skills/tooling-workflow-skills/git-conventional-commits.md) |
+| 66 | ✓ | [`skills/tooling-workflow-skills/linux-kernel-troubleshooter.md`](skills/tooling-workflow-skills/linux-kernel-troubleshooter.md) |
+| 67 | ✓ | [`skills/tooling-workflow-skills/prompt-optimizer-cot.md`](skills/tooling-workflow-skills/prompt-optimizer-cot.md) |
+| 68 | ✓ | [`skills/tooling-workflow-skills/tool-use-validator.md`](skills/tooling-workflow-skills/tool-use-validator.md) |
 
 ---
 

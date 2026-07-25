@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `johnlokerse/azure-bicep-github-copilot` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `johnlokerse/azure-bicep-github-copilot` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `johnlokerse/azure-bicep-github-copilot` — 26 default patterns, 0 fo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,8 +62,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/instructions/copilot-instructions.md`](.github/instructions/copilot-instructions.md) |
 | 2 | ✓ | [`.github/skills/convert-bicep-to-avm/SKILL.md`](.github/skills/convert-bicep-to-avm/SKILL.md) |
 | 3 | ✓ | [`.github/skills/convert-loose-to-strong-type/SKILL.md`](.github/skills/convert-loose-to-strong-type/SKILL.md) |
-| 4 | ✓ | [`.github/skills/format-bicep/SKILL.md`](.github/skills/format-bicep/SKILL.md) |
-| 5 | ✓ | [`.github/skills/run-bicep-in-console/SKILL.md`](.github/skills/run-bicep-in-console/SKILL.md) |
+| 4 | ✓ | [`.github/skills/deduplicate-bicep-parameters/SKILL.md`](.github/skills/deduplicate-bicep-parameters/SKILL.md) |
+| 5 | ✓ | [`.github/skills/format-bicep/SKILL.md`](.github/skills/format-bicep/SKILL.md) |
+| 6 | ✓ | [`.github/skills/run-bicep-in-console/SKILL.md`](.github/skills/run-bicep-in-console/SKILL.md) |
 
 ---
 

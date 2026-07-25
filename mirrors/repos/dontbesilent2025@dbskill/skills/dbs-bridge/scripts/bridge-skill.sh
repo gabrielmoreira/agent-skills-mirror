@@ -66,7 +66,12 @@ list_skill_sources() {
 }
 
 ensure_target_parent() {
-  mkdir -p "$HOME/.claude/skills" "$HOME/.codex/skills" "$HOME/.agents/skills" "$HOME/.grok/skills"
+  mkdir -p \
+    "$HOME/.claude/skills" \
+    "$HOME/.codex/skills" \
+    "$HOME/.agents/skills" \
+    "$HOME/.workbuddy/skills" \
+    "$HOME/.grok/skills"
 }
 
 link_one() {
@@ -214,7 +219,12 @@ main() {
   local action="$1"
   local input="$2"
   local root candidate src name failed
-  local target_dirs=("$HOME/.claude/skills" "$HOME/.codex/skills" "$HOME/.agents/skills")
+  local target_dirs=(
+    "$HOME/.claude/skills"
+    "$HOME/.codex/skills"
+    "$HOME/.agents/skills"
+    "$HOME/.workbuddy/skills"
+  )
 
   root="$(repo_root)"
   candidate="$(resolve_candidate "$input" "$root")"

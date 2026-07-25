@@ -65,7 +65,7 @@ Route elsewhere when:
 - Exclude generated files, build artifacts, and third-party / vendored code via `.claudeignore` (Claude Code) and `.gitignore` patterns Claude Code respects. Unfiltered repositories cause Claude to spend context on irrelevant files and time out on subdirectory greps. Treat `.claudeignore` as a first-class structural artifact, not an afterthought — it sits next to root `CLAUDE.md` and is audited alongside it. [Source: claude.com — *How Claude Code works in large codebases* (2026)]
 - Curate over expose. More files reachable in context does not improve agent accuracy — in a production deployment, raw access to 1000+ files moved task accuracy `<1%` because the information was present but unmapped. Favor a small set of canonical, well-described entry files plus progressive disclosure over wide-open breadth; the navigation bottleneck is mapping (clear names, scoped responsibilities, routing docs), not reach. [Source: claude.com — *How Anthropic Enables Self-Service Data Analytics with Claude*]
 - Use `git mv` for all file moves during APPLY phase. Verify build passes after each batch of moves before proceeding.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Nest; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Nest; P2, P1 recommended).
 
 ## Boundaries
 
@@ -251,21 +251,7 @@ When CLAUDE.md exceeds 200 lines or density issues are detected, hand off to Hon
 
 ## AUTORUN Support
 
-```yaml
-_STEP_COMPLETE:
-  Agent: Nest
-  Task_Type: AUDIT | RESTRUCTURE | CLAUDE_HIERARCHY | NAMING | GREENFIELD
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output: <summary of deliverables>
-  Metrics:
-    token_cost_before: <estimated tokens>
-    token_cost_after: <estimated tokens>
-    discovery_score: <0-100>
-    cache_topology_score: <0-100>
-  Handoff: <next agent if applicable>
-  Next: <suggested follow-up action>
-  Reason: <why this outcome>
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Nest-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 
@@ -280,7 +266,8 @@ When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical
 | `reference/naming-guide.md` | Evaluating or fixing file/folder naming for LLM discoverability |
 | `reference/sharding-strategy.md` | Splitting large CLAUDE.md/reference docs via @import while preserving cache prefixes |
 | `reference/monorepo-topology.md` | Designing per-workspace CLAUDE.md cascade for turborepo / nx / pnpm-workspace |
-| `_common/OPUS_48_AUTHORING.md` | Sizing the structure proposal, deciding adaptive thinking depth at DESIGN, or front-loading LLM target/token budget at AUDIT. Critical for Nest: P3, P5 |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the structure proposal, deciding adaptive thinking depth at DESIGN, or front-loading LLM target/token budget at AUDIT. Critical for Nest: P3, P5 |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Nest-specific Output/Next schema. |
 
 ## Operational
 

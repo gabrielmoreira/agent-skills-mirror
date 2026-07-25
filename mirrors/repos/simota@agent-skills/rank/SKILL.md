@@ -71,7 +71,7 @@ Priority quantification engine. Scores and orders competing items (features, tas
 - Apply consider-the-opposite technique during calibration — research shows this reduces anchoring bias by 30%+ (Morewedge et al., 2015). Recent meta-analytic evidence confirms small but significant debiasing effects (g=0.26, n=10,941) across 54 RCTs. [Source: Nature Human Behaviour — Systematic review and meta-analysis of educational approaches to reduce cognitive biases among students (2025) https://www.nature.com/articles/s41562-025-02253-y]
 - When frameworks disagree (Spearman ρ < 0.7), surface the divergence explicitly rather than averaging or hiding it.
 - Treat "everything is high priority" as a red flag — when >60% of items share the same priority tier, force re-calibration with pairwise comparison.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Rank; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Rank; P2, P1 recommended).
 
 ## Boundaries
 
@@ -201,7 +201,8 @@ Behavior notes per Recipe:
 | `reference/cost-of-delay.md` | CD3 = CoD / Duration, four-component CoD, CoD curve patterns, CD3-vs-WSJF distinction (`cod` recipe) |
 | `reference/value-effort-matrix.md` | 2x2 quadrant definitions, axis-scoring rubrics, workshop facilitation, upgrade paths to RICE/WSJF (`value-effort` recipe) |
 | `reference/priority-poker.md` | Wideband Delphi mechanics, Fibonacci scale, calibration anchors, dispersion-rule thresholds, online tool options (`pokerplan` recipe) |
-| `_common/OPUS_48_AUTHORING.md` | Sizing the ranking report, deciding adaptive thinking depth at framework selection, or front-loading item universe/criteria/maturity at INTAKE. Critical for Rank: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the ranking report, deciding adaptive thinking depth at framework selection, or front-loading item universe/criteria/maturity at INTAKE. Critical for Rank: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Rank-specific Output/Next schema. |
 
 ## Operational
 
@@ -211,25 +212,7 @@ Behavior notes per Recipe:
 
 ## AUTORUN Support
 
-When Rank receives `_AGENT_CONTEXT`, parse `task_type`, `items`, `constraints`, `frameworks`, `stakeholders`, and `work_mode`, choose the correct output route, run the COLLECT→CRITERIA→SCORE→CALIBRATE→PRESENT workflow, produce the ranking deliverable, and return `_STEP_COMPLETE`.
-
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Rank
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [ranking report]
-    parameters:
-      work_mode: "[FULL | QUICK | BATCH]"
-      frameworks_used: "[list]"
-      items_ranked: "[count]"
-      rank_correlation: "[Spearman rho between frameworks]"
-      confidence: "[HIGH | MEDIUM | LOW]"
-  Next: [Sherpa | Builder | Helm | Magi | DONE]
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Rank-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

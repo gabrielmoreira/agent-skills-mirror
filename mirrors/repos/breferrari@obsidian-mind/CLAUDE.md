@@ -16,7 +16,7 @@ This vault has [obsidian-skills](https://github.com/kepano/obsidian-skills) inst
   2. **`qmd --index <name> query|search|vsearch|get|multi-get`** — CLI fallback for one-off shell checks or when the MCP server is unavailable. Always pass `--index <name>` where `<name>` is the `qmd_index` field from `vault-manifest.json` so the SQLite store stays isolated from other vaults on the machine.
   3. **Grep / Glob / Read** — last resort, only when QMD is not installed at all.
 
-  The MCP server (`.mcp.json` → `.claude/scripts/qmd-mcp.mjs`), the CLI, and the SessionStart hook all read the same manifest field, so every surface scopes to the same store. On a fresh clone, run `node --experimental-strip-types scripts/qmd-bootstrap.ts` once to build the index. Note: the MCP connect-time banner can read "0 documents" when the server registers before the SessionStart reindex finishes — a stale snapshot, not the dead-search state the self-heal guards; don't diagnose it.
+  The MCP server (`.mcp.json` → `.claude/scripts/qmd-mcp.mjs`), the CLI, and the SessionStart hook all read the same manifest field, so every surface scopes to the same store. On a fresh clone, run `node --experimental-strip-types .scripts/qmd-bootstrap.ts` once to build the index. Note: the MCP connect-time banner can read "0 documents" when the server registers before the SessionStart reindex finishes — a stale snapshot, not the dead-search state the self-heal guards; don't diagnose it.
 
 ### Custom Slash Commands
 
@@ -321,7 +321,7 @@ Five lifecycle hooks in `.claude/settings.json`:
 
 | Hook | When | What |
 |------|------|------|
-| SessionStart | On startup/resume | QMD re-index + self-heal, inject North Star, active work, recent changes, tasks, file listing, vault-hygiene drift flags (completed-not-archived, ungrouped clusters, 25KB oversize, stale open loops, meetings-inbox pressure); ends with an injection-size meter line |
+| SessionStart | On startup/resume | QMD re-index + self-heal, inject North Star, active work, recent changes, tasks, file listing (folders past a note-count threshold collapse to one line), vault-hygiene drift flags (completed-not-archived, ungrouped clusters, 25KB oversize, stale open loops, meetings-inbox pressure); the whole injection is held under a byte budget — over it, low-priority sections degrade to pointers and the closing injection-size meter names each one it dropped |
 | UserPromptSubmit | Every message | Classifies content (decision, incident, win, 1:1, architecture, person, project update) and injects routing hints |
 | PostToolUse | After writing `.md` | Validates frontmatter + wikilinks, blocks misplaced memory files, flags notes crossing the 25KB organization threshold (split, don't trim) and write-time topic clusters |
 | PreCompact | Before context compaction | Backs up session transcript to `thinking/session-logs/` |

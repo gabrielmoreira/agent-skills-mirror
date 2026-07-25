@@ -76,7 +76,7 @@ Route elsewhere when the task is primarily:
 - Target fidelity ≥90% overall; flag sections below 80%. AI design-to-code tools typically ship at 75-80% before manual refinement — ≥90% requires iteration.
 - Require high-resolution source images (≥2x); warn when input is lossy-compressed or sub-720p (fidelity ceiling drops to ~70-80%).
 - VERIFY phase essentials: use `animations: 'disabled'` in `toHaveScreenshot()`; `mask: [locator]` for dynamic content, `stylePath` for unmaskable elements; `maxDiffPixelRatio: 0.01-0.02` + `threshold: 0.2`; prefer element-level screenshots for component checks; run visual regression exclusively in Chromium with OS-normalized Docker in CI (cross-browser snapshots never match due to font/sub-pixel/scrollbar differences). Full workflow: `reference/visual-verification.md`.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical; P2, P1 recommended).
 - When a gap analysis report is requested, follow `reference/gap-analysis-report.md` (8 dimensions × 5 severity × 9 root causes, Markdown + JSON). REFINE loop uses the lightweight `visual-verification.md` diff; the detailed report is additive.
 
 ## Boundaries
@@ -331,8 +331,9 @@ Templates: `reference/handoffs.md`. Key flows — **From Frame:** merge Figma da
 | `reference/animation-extraction.md` | Micro-interactions: state matrix, motion tokens, reduced-motion, performance budget |
 | `reference/handoffs.md` | Packaging deliverables for downstream agents |
 | `reference/examples.md` | Reference reproduction examples |
-| `_common/OPUS_48_AUTHORING.md` | Reproduction report sizing + adaptive depth (critical: P3, P5) |
+| `_common/OPUS_5_AUTHORING.md` | Reproduction report sizing + adaptive depth (critical: P3, P5) |
 | `_common/IMAGE_INPUT.md` | Mockup/screenshot input pipeline (pre-crop, describe-first, observed-vs-inferred) before EXTRACT |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Pixel-specific Output/Next schema. |
 
 ## Operational
 
@@ -369,31 +370,7 @@ Operational guidelines → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `SCAN → EXTRACT → COMPOSE → VERIFY → REFINE` and emit `_STEP_COMPLETE`. Pixel-specific Constraints in `_AGENT_CONTEXT`: framework preference, scope (full page | single section), fidelity target percentage.
-
-Pixel-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Pixel
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: HTML/CSS Reproduction
-    parameters:
-      framework: Vanilla | React | Vue 3 | Svelte 5
-      fidelity_score: [percentage]
-      iterations_used: 1-3
-      confidence_breakdown: {high_values, medium_values, low_values}
-    files_changed: List[{path, type, changes}]
-  Handoff:
-    Format: PIXEL_TO_[NEXT]_HANDOFF
-    Content: [Handoff content for next agent]
-  Risks: [Low-confidence values needing manual verification; responsive assumptions]
-  Next: Artisan | Muse | Growth | Voyager | Canon | Judge | DONE
-```
-
----
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Pixel-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

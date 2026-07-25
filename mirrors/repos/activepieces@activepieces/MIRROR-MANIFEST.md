@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 132 file(s) materialized.
+Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patterns, 138 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `activepieces/activepieces` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 132 |
+| Files         | 138 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -175,22 +175,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 114 | ✓ | [`.agents/skills/triage-security-advisories/SKILL.md`](.agents/skills/triage-security-advisories/SKILL.md) |
 | 115 | ✓ | [`.cursor/rules/mintlify`](.cursor/rules/mintlify) |
 | 116 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 117 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 118 | ✓ | [`packages/core/execution/AGENTS.md`](packages/core/execution/AGENTS.md) |
-| 119 | ✓ | [`packages/core/execution/CLAUDE.md`](packages/core/execution/CLAUDE.md) |
-| 120 | ✓ | [`packages/core/formula/AGENTS.md`](packages/core/formula/AGENTS.md) |
-| 121 | ✓ | [`packages/core/formula/CLAUDE.md`](packages/core/formula/CLAUDE.md) |
-| 122 | ✓ | [`packages/core/piece-types/AGENTS.md`](packages/core/piece-types/AGENTS.md) |
-| 123 | ✓ | [`packages/core/piece-types/CLAUDE.md`](packages/core/piece-types/CLAUDE.md) |
-| 124 | ✓ | [`packages/core/shared/CLAUDE.md`](packages/core/shared/CLAUDE.md) |
-| 125 | ✓ | [`packages/core/utils/AGENTS.md`](packages/core/utils/AGENTS.md) |
-| 126 | ✓ | [`packages/core/utils/CLAUDE.md`](packages/core/utils/CLAUDE.md) |
-| 127 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
-| 128 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
-| 129 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
-| 130 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
-| 131 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
-| 132 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
+| 117 | ✓ | [`brain/wiki/file-storage.md`](brain/wiki/file-storage.md) |
+| 118 | ✓ | [`brain/wiki/flows.md`](brain/wiki/flows.md) |
+| 119 | ✓ | [`brain/wiki/managed-auth.md`](brain/wiki/managed-auth.md) |
+| 120 | ✓ | [`brain/wiki/piece-sets.md`](brain/wiki/piece-sets.md) |
+| 121 | ✓ | [`brain/wiki/pieces.md`](brain/wiki/pieces.md) |
+| 122 | ✓ | [`brain/wiki/projects.md`](brain/wiki/projects.md) |
+| 123 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 124 | ✓ | [`packages/core/execution/AGENTS.md`](packages/core/execution/AGENTS.md) |
+| 125 | ✓ | [`packages/core/execution/CLAUDE.md`](packages/core/execution/CLAUDE.md) |
+| 126 | ✓ | [`packages/core/formula/AGENTS.md`](packages/core/formula/AGENTS.md) |
+| 127 | ✓ | [`packages/core/formula/CLAUDE.md`](packages/core/formula/CLAUDE.md) |
+| 128 | ✓ | [`packages/core/piece-types/AGENTS.md`](packages/core/piece-types/AGENTS.md) |
+| 129 | ✓ | [`packages/core/piece-types/CLAUDE.md`](packages/core/piece-types/CLAUDE.md) |
+| 130 | ✓ | [`packages/core/shared/CLAUDE.md`](packages/core/shared/CLAUDE.md) |
+| 131 | ✓ | [`packages/core/utils/AGENTS.md`](packages/core/utils/AGENTS.md) |
+| 132 | ✓ | [`packages/core/utils/CLAUDE.md`](packages/core/utils/CLAUDE.md) |
+| 133 | ✓ | [`packages/pieces/CLAUDE.md`](packages/pieces/CLAUDE.md) |
+| 134 | ✓ | [`packages/server/AGENTS.md`](packages/server/AGENTS.md) |
+| 135 | ✓ | [`packages/server/CLAUDE.md`](packages/server/CLAUDE.md) |
+| 136 | ✓ | [`packages/server/engine/CLAUDE.md`](packages/server/engine/CLAUDE.md) |
+| 137 | ✓ | [`packages/web/AGENTS.md`](packages/web/AGENTS.md) |
+| 138 | ✓ | [`packages/web/CLAUDE.md`](packages/web/CLAUDE.md) |
 
 ---
 

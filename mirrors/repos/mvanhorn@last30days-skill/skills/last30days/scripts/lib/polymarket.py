@@ -112,16 +112,91 @@ _NOISE_WORDS = frozenset({
     "springs", "heights", "ridge", "bridge", "harbor", "port", "station", "center",
     "square", "field", "forest", "garden", "tower", "school", "church", "camp",
     "ranch", "crossing", "shore", "rock", "summit", "falls", "grove", "haven",
-    # Generic tech terms that match too broadly on Polymarket
-    # "cli" -> any CLI tool market; "mcp" -> protocol markets; "ai" -> every AI market
-    "cli", "mcp", "protocol", "tool", "app", "code", "model", "ai", "api",
-    "software", "plugin", "skill", "agent", "bot", "search", "research",
+    # Generic tech terms — see _DOMAIN_WORDS below, which is folded in here
     # Generic prediction market terms
     "market", "odds", "prediction", "forecast", "chance", "probability",
     # Comparison-query conjunctions — should not count as informative filter tokens
     # when the topic is "X vs Y vs Z"
     "vs", "versus",
 })
+
+# Generic tech terms that match too broadly to be the sole signal for a NARROW
+# topic ("cli" -> any CLI tool market; "ai" -> every AI market), but which ARE
+# the subject when the topic is a domain sweep rather than one product. Kept
+# separate from the rest of _NOISE_WORDS — the directional/sports/place words
+# there exist to PREVENT false matches ("NFC West" vs a "Kanye West" search),
+# so they must never be used as a positive signal.
+_DOMAIN_WORDS = frozenset({
+    "cli", "mcp", "protocol", "tool", "app", "code", "model", "ai", "api",
+    "software", "plugin", "skill", "agent", "bot", "search", "research",
+})
+
+# Soft residue left after stripping domain words from a sweep topic
+# ("AI frontier developments"). Domain-word fallback may fire when these are
+# the only informative leftovers. Distinctive terms like "benchmark" block it.
+_SWEEP_RESIDUE = frozenset({
+    "frontier", "developments", "development", "news", "trends", "trend",
+    "latest", "industry", "space", "ecosystem", "landscape", "overview",
+    "updates", "update", "future", "outlook", "sector", "field", "world",
+})
+
+_NOISE_WORDS = _NOISE_WORDS | _DOMAIN_WORDS
+
+
+def _domain_stem(word: str) -> str | None:
+    """Return the canonical domain token if ``word`` is a domain term or plural.
+
+    Exact-set membership alone treats ``models`` as a hard narrowing term even
+    though ``model`` is a domain word — which blocked soft AI sweeps and broke
+    ``AI models`` → ``New AI prediction``.
+    """
+    if word in _DOMAIN_WORDS:
+        return word
+    if word.endswith("ies") and len(word) > 4:
+        stem = word[:-3] + "y"
+        if stem in _DOMAIN_WORDS:
+            return stem
+    if len(word) > 3 and word.endswith("es") and word[:-2] in _DOMAIN_WORDS:
+        return word[:-2]
+    if len(word) > 2 and word.endswith("s") and word[:-1] in _DOMAIN_WORDS:
+        return word[:-1]
+    return None
+
+
+def _informative_words(core_words: list[str]) -> list[str]:
+    """Topic words that are neither noise nor (possibly plural) domain terms."""
+    return [
+        w for w in core_words
+        if w not in _NOISE_WORDS and _domain_stem(w) is None
+    ]
+
+
+def _domain_word_fallback_allows(core_words: list[str], informative: list[str],
+                                 title_lower: str, title_words: set[str]) -> bool:
+    """Allow domain-word title matches only for pure/soft domain sweeps.
+
+    Blocks mixed topics like \"MCP protocol benchmark\" from accepting a Kyoto
+    Protocol market via the shared domain token \"protocol\" when the distinctive
+    informative word (\"benchmark\") missed.
+    """
+    hard_informative = [w for w in informative if w not in _SWEEP_RESIDUE]
+    if hard_informative:
+        return False
+    domain_stems = []
+    seen: set[str] = set()
+    for w in core_words:
+        stem = _domain_stem(w)
+        if stem and stem not in seen:
+            seen.add(stem)
+            domain_stems.append(stem)
+    if not domain_stems:
+        return False
+    for word in domain_stems:
+        if word in title_words or f"{word}s" in title_words or f"{word}es" in title_words:
+            return True
+        if len(word) >= 4 and word in title_lower:
+            return True
+    return False
 
 
 def _passes_topic_filter(topic: str, event_title: str) -> bool:
@@ -139,8 +214,8 @@ def _passes_topic_filter(topic: str, event_title: str) -> bool:
     if not core_words:
         return True  # No words to check against
 
-    # Split into informative vs generic
-    informative = [w for w in core_words if w not in _NOISE_WORDS]
+    # Split into informative vs generic (domain plurals count as domain, not hard)
+    informative = _informative_words(core_words)
 
     # If ALL words are generic, we can't meaningfully filter — keep everything
     if not informative:
@@ -166,7 +241,11 @@ def _passes_topic_filter(topic: str, event_title: str) -> bool:
     # when the topic is "Mill.com food recycler" (3 informative words).
     min_matches = 2 if len(informative) >= 3 else 1
 
-    return match_count >= min_matches
+    if match_count >= min_matches:
+        return True
+
+    # Domain-word fallback for soft domain sweeps only (see helper).
+    return _domain_word_fallback_allows(core_words, informative, title_lower, title_words)
 
 
 def _passes_any_informative_word(topic: str, event_title: str) -> bool:
@@ -183,7 +262,7 @@ def _passes_any_informative_word(topic: str, event_title: str) -> bool:
     core_words = [w for w in re.sub(r"[^\w\s]", " ", core).split() if len(w) > 1]
     if not core_words:
         return True
-    informative = [w for w in core_words if w not in _NOISE_WORDS]
+    informative = _informative_words(core_words)
     if not informative:
         return True
 
@@ -195,7 +274,8 @@ def _passes_any_informative_word(topic: str, event_title: str) -> bool:
             return True
         if len(word) >= 4 and word in title_lower:
             return True
-    return False
+
+    return _domain_word_fallback_allows(core_words, informative, title_lower, title_words)
 
 
 def filter_items_against_topic(topic: str, items: List[Any]) -> List[Any]:

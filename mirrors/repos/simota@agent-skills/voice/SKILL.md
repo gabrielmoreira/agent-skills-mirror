@@ -95,7 +95,7 @@ Route elsewhere when the task is primarily:
 - **VoC platform market (2026)**: Gartner Magic Quadrant for VoC Platforms 2026 (https://www.gartner.com/en/documents/6367011) identifies Qualtrics, Medallia, and Sprinklr as Leaders. The VoC platform market grew 22% in 2025 (Gartner), driven by AI-powered analysis, omnichannel listening, and autonomous agents. Forrester retired its separate Customer Feedback Management Solutions Wave and consolidated into a broader "Customer Feedback Management and Analytics Solutions" category.
 - **EU AI Act & GDPR for feedback pipelines**: The EU Digital Omnibus (November 2025) proposed amendments that explicitly recognize AI training on personal data as a legitimate interest under GDPR, subject to data minimisation, transparency, and an unconditional right to object (https://www.whitecase.com/insight-alert/eu-digital-omnibus-what-changes-lie-ahead-data-act-gdpr-and-ai-act). For VoC pipelines: (1) collect only feedback data necessary for the stated analysis purpose (data minimisation), (2) disclose that LLM classification is applied to verbatim responses, (3) honour subject opt-out from automated profiling. Applies whenever survey respondents are EU residents.
 - **Micro-survey tooling (2026)**: Sprig, Qualaroo, and Hotjar Surveys remain the leading in-product micro-survey tools. Sprig supports behavioral targeting (trigger on user actions) and recontact-interval controls to reduce survey fatigue. Qualaroo specialises in contextual Nudge-style surveys (1-2 questions). Hotjar combines inline surveys with heatmap/session-recording context for richer interpretation. Tool choice should follow a 2-week pilot with A/B test before scaling.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Voice; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Voice; P2, P1 recommended).
 
 ## Boundaries
 
@@ -237,8 +237,9 @@ Overlap boundaries:
 | `reference/kano-model.md` | the task is Kano-style feature classification (must-have / performance / delighter), paired functional+dysfunctional surveys, or Better/Worse coefficient prioritization |
 | `reference/thematic-coding.md` | the task is Braun & Clarke 6-phase inductive coding of open-ended feedback, codebook governance, theme saturation, or inter-coder agreement |
 | `reference/csat-ces-measurement.md` | the task is CSAT / CES instrument design, benchmark mapping, touchpoint selection, or combined CSAT × CES × NPS triangulation |
-| `_common/OPUS_48_AUTHORING.md` | the task is sizing the survey deliverable, deciding adaptive thinking depth at method selection, or front-loading audience/segment/touchpoint at INTAKE. Critical for Voice: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | the task is sizing the survey deliverable, deciding adaptive thinking depth at method selection, or front-loading audience/segment/touchpoint at INTAKE. Critical for Voice: P3, P5. |
 | `_common/GROWTH_BRAND_PROOF.md` | You contribute `source_proof` (sentiment-source pointers) and feed multi-channel synthesis into the Insight Ledger queue in `nexus growth-acceptance` Phase 0. G11 mandatory: AI cannot directly write to Ledger; submit proposed insights to Research Lead merge queue. Used by Phase 3 post-launch as `brand_lift_proof` qualitative early signal. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Voice-specific Output/Next schema. |
 
 ## Operational
 
@@ -251,29 +252,7 @@ Shared protocols → `_common/OPERATIONAL.md`
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Voice-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Voice
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    artifact_type: "[NPS Report | CSAT Report | CES Report | Exit Survey Report | Multi-Channel Report | Feedback Analysis]"
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-      survey_type: "[NPS | CSAT | CES | Exit | Multi-Channel | Widget]"
-      channels_analyzed: "[list of channels]"
-      sample_size: "[number of responses or signals]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Voice-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 
