@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 44 file(s) materialized.
+Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 55 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vercel/next.js` — 26 default patterns, 0 followed patterns, 44 file
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 44 |
+| Files         | 55 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,33 +76,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`.agents/skills/README.md`](.agents/skills/README.md) |
 | 16 | ✓ | [`.agents/skills/router-act/SKILL.md`](.agents/skills/router-act/SKILL.md) |
 | 17 | ✓ | [`.agents/skills/runtime-debug/SKILL.md`](.agents/skills/runtime-debug/SKILL.md) |
-| 18 | ✓ | [`.agents/skills/update-docs/references/CODE-TO-DOCS-MAPPING.md`](.agents/skills/update-docs/references/CODE-TO-DOCS-MAPPING.md) |
-| 19 | ✓ | [`.agents/skills/update-docs/references/DOC-CONVENTIONS.md`](.agents/skills/update-docs/references/DOC-CONVENTIONS.md) |
-| 20 | ✓ | [`.agents/skills/update-docs/SKILL.md`](.agents/skills/update-docs/SKILL.md) |
-| 21 | ✓ | [`.agents/skills/v8-jit/SKILL.md`](.agents/skills/v8-jit/SKILL.md) |
-| 22 | ✓ | [`.agents/skills/write-api-reference/SKILL.md`](.agents/skills/write-api-reference/SKILL.md) |
-| 23 | ✓ | [`.agents/skills/write-guide/SKILL.md`](.agents/skills/write-guide/SKILL.md) |
-| 24 | ✓ | [`.cursor/commands/gt-workflow.md`](.cursor/commands/gt-workflow.md) |
-| 25 | ✓ | [`.cursor/worktrees.json`](.cursor/worktrees.json) |
-| 26 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
-| 27 | ✓ | [`.github/CLAUDE.md`](.github/CLAUDE.md) |
-| 28 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 30 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
-| 31 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
-| 32 | ✓ | [`skills/next-cache-components-adoption/references/dev-only-validations.md`](skills/next-cache-components-adoption/references/dev-only-validations.md) |
-| 33 | ✓ | [`skills/next-cache-components-adoption/references/per-page-decisions.md`](skills/next-cache-components-adoption/references/per-page-decisions.md) |
-| 34 | ✓ | [`skills/next-cache-components-adoption/SKILL.md`](skills/next-cache-components-adoption/SKILL.md) |
-| 35 | ✓ | [`skills/next-cache-components-optimizer/reference/patterns.md`](skills/next-cache-components-optimizer/reference/patterns.md) |
-| 36 | ✓ | [`skills/next-cache-components-optimizer/reference/real-app-patterns.md`](skills/next-cache-components-optimizer/reference/real-app-patterns.md) |
-| 37 | ✓ | [`skills/next-cache-components-optimizer/reference/red-test-robustness.md`](skills/next-cache-components-optimizer/reference/red-test-robustness.md) |
-| 38 | ✓ | [`skills/next-cache-components-optimizer/rig-template.md`](skills/next-cache-components-optimizer/rig-template.md) |
-| 39 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
-| 40 | ✓ | [`skills/next-cache-components-optimizer/test-template.md`](skills/next-cache-components-optimizer/test-template.md) |
-| 41 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
-| 42 | ✓ | [`skills/next-partial-prefetching-adoption/SKILL.md`](skills/next-partial-prefetching-adoption/SKILL.md) |
-| 43 | ✓ | [`turbopack/AGENTS.md`](turbopack/AGENTS.md) |
-| 44 | ✓ | [`turbopack/CLAUDE.md`](turbopack/CLAUDE.md) |
+| 18 | ✓ | [`.agents/skills/sandbox-bench/references/methodology.md`](.agents/skills/sandbox-bench/references/methodology.md) |
+| 19 | ✓ | [`.agents/skills/sandbox-bench/scripts/bench-analyze.mjs`](.agents/skills/sandbox-bench/scripts/bench-analyze.mjs) |
+| 20 | ✓ | [`.agents/skills/sandbox-bench/scripts/bench-collect.mjs`](.agents/skills/sandbox-bench/scripts/bench-collect.mjs) |
+| 21 | ✓ | [`.agents/skills/sandbox-bench/scripts/bench-db.mjs`](.agents/skills/sandbox-bench/scripts/bench-db.mjs) |
+| 22 | ✓ | [`.agents/skills/sandbox-bench/scripts/bench-stats.mjs`](.agents/skills/sandbox-bench/scripts/bench-stats.mjs) |
+| 23 | ✓ | [`.agents/skills/sandbox-bench/scripts/bench-status.mjs`](.agents/skills/sandbox-bench/scripts/bench-status.mjs) |
+| 24 | ✓ | [`.agents/skills/sandbox-bench/scripts/config.mjs`](.agents/skills/sandbox-bench/scripts/config.mjs) |
+| 25 | ✓ | [`.agents/skills/sandbox-bench/scripts/sandbox-e2e.mjs`](.agents/skills/sandbox-bench/scripts/sandbox-e2e.mjs) |
+| 26 | ✓ | [`.agents/skills/sandbox-bench/scripts/sandbox-gate.mjs`](.agents/skills/sandbox-bench/scripts/sandbox-gate.mjs) |
+| 27 | ✓ | [`.agents/skills/sandbox-bench/scripts/sandbox-sweep.mjs`](.agents/skills/sandbox-bench/scripts/sandbox-sweep.mjs) |
+| 28 | ✓ | [`.agents/skills/sandbox-bench/SKILL.md`](.agents/skills/sandbox-bench/SKILL.md) |
+| 29 | ✓ | [`.agents/skills/update-docs/references/CODE-TO-DOCS-MAPPING.md`](.agents/skills/update-docs/references/CODE-TO-DOCS-MAPPING.md) |
+| 30 | ✓ | [`.agents/skills/update-docs/references/DOC-CONVENTIONS.md`](.agents/skills/update-docs/references/DOC-CONVENTIONS.md) |
+| 31 | ✓ | [`.agents/skills/update-docs/SKILL.md`](.agents/skills/update-docs/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/v8-jit/SKILL.md`](.agents/skills/v8-jit/SKILL.md) |
+| 33 | ✓ | [`.agents/skills/write-api-reference/SKILL.md`](.agents/skills/write-api-reference/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/write-guide/SKILL.md`](.agents/skills/write-guide/SKILL.md) |
+| 35 | ✓ | [`.cursor/commands/gt-workflow.md`](.cursor/commands/gt-workflow.md) |
+| 36 | ✓ | [`.cursor/worktrees.json`](.cursor/worktrees.json) |
+| 37 | ✓ | [`.github/AGENTS.md`](.github/AGENTS.md) |
+| 38 | ✓ | [`.github/CLAUDE.md`](.github/CLAUDE.md) |
+| 39 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 40 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 41 | ✓ | [`packages/next/AGENTS.md`](packages/next/AGENTS.md) |
+| 42 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
+| 43 | ✓ | [`skills/next-cache-components-adoption/references/dev-only-validations.md`](skills/next-cache-components-adoption/references/dev-only-validations.md) |
+| 44 | ✓ | [`skills/next-cache-components-adoption/references/per-page-decisions.md`](skills/next-cache-components-adoption/references/per-page-decisions.md) |
+| 45 | ✓ | [`skills/next-cache-components-adoption/SKILL.md`](skills/next-cache-components-adoption/SKILL.md) |
+| 46 | ✓ | [`skills/next-cache-components-optimizer/reference/patterns.md`](skills/next-cache-components-optimizer/reference/patterns.md) |
+| 47 | ✓ | [`skills/next-cache-components-optimizer/reference/real-app-patterns.md`](skills/next-cache-components-optimizer/reference/real-app-patterns.md) |
+| 48 | ✓ | [`skills/next-cache-components-optimizer/reference/red-test-robustness.md`](skills/next-cache-components-optimizer/reference/red-test-robustness.md) |
+| 49 | ✓ | [`skills/next-cache-components-optimizer/rig-template.md`](skills/next-cache-components-optimizer/rig-template.md) |
+| 50 | ✓ | [`skills/next-cache-components-optimizer/SKILL.md`](skills/next-cache-components-optimizer/SKILL.md) |
+| 51 | ✓ | [`skills/next-cache-components-optimizer/test-template.md`](skills/next-cache-components-optimizer/test-template.md) |
+| 52 | ✓ | [`skills/next-dev-loop/SKILL.md`](skills/next-dev-loop/SKILL.md) |
+| 53 | ✓ | [`skills/next-partial-prefetching-adoption/SKILL.md`](skills/next-partial-prefetching-adoption/SKILL.md) |
+| 54 | ✓ | [`turbopack/AGENTS.md`](turbopack/AGENTS.md) |
+| 55 | ✓ | [`turbopack/CLAUDE.md`](turbopack/CLAUDE.md) |
 
 ---
 

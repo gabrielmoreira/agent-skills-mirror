@@ -9,7 +9,8 @@ description: >-
   PR for UX bugs", "audit this component", "check my UI", "is this accessible",
   "design QA this page", or "is this ready to ship". For product decisions use
   product-design; for agentic apps use ax-audit; for deep type or motion use
-  typography-audit or ui-animation.
+  typography-audit or ui-animation; for the wording of a string rather than
+  whether it is missing or leaky, use copywriting.
 ---
 
 # UI Audit
@@ -77,7 +78,7 @@ Four layers, each with its own loading condition. Load rule files individually, 
 |---|---|---|---|
 | 1: Feature playbooks | `references/feature-playbooks.md` | Always, at Step 2, since it is the entry point that names which Layer 2/3/4 rules to run | 12 playbooks |
 | 2: Modern failure modes (behavior) | `rules-modern/<category>-<slug>.md` | A playbook check names the rule, or a changed file matches the rule's category (forms, states, async, focus, mobile, dark-i18n, microcopy) | 28 rules |
-| 3: Rendered quality (surface) | `rules-surface/<prefix>-<slug>.md` | A playbook check names the rule, or a surface needs a rendered-quality check (a11y, interaction, forms, type, nav, layout, perf, motion, copy) | 34 rules |
+| 3: Rendered quality (surface) | `rules-surface/<prefix>-<slug>.md` | A playbook check names the rule, or a surface needs a rendered-quality check (a11y, interaction, forms, type, nav, layout, perf, motion, copy) | 33 rules |
 | 4: Laws of UX | `rules/<prefix>-<slug>.md` | A playbook explicitly names a Laws rule, or a finding needs cognitive/perceptual reasoning no Layer 2/3 rule covers | 21 rules (19 programmatic, 2 rubric) |
 
 Layer-specific notes:
@@ -166,9 +167,9 @@ Full coverage map plus the gaps only ui-audit catches: `references/defer-to-othe
 | `references/ship-readiness.md` | Step 5: tier definitions, surface bump table, verdict logic |
 | `references/output-adapters.md` | Step 6: verbatim terminal / PR-comment / JSON templates |
 | `references/output-schema.md` | Step 6: strict JSON schema and validation rules |
-| `references/observational-rubrics.md` | Scoring any of the 10 Layer 4 rubric-kind rules (1-5 anchors) |
+| `references/observational-rubrics.md` | Scoring either Layer 4 rubric-kind rule (1-5 anchors) |
 | `references/defer-to-other-tools.md` | Deciding whether a concern is another tool's job |
-| `references/craft-checklist.md` | Optional polish sweep (hit targets, hover states, chrome hierarchy, optical alignment, concentric radii) when polish or pre-release sign-off is in scope |
+| `references/craft-checklist.md` | Optional polish sweep for details no rule encodes (hover affordances, pointer corridors, preserved scroll and object position, chrome hierarchy, theme-switch behavior) when polish or pre-release sign-off is in scope |
 | `references/typography-checklist.md` | Optional typography sweep (punctuation, measure, leading, OpenType basics, link styling, table numerals) when typography is named |
 | `rules-modern/_sections.md` | Layer 2 category index (behavior failure modes) |
 | `rules-modern/<category>-<slug>.md` | Step 4: running a named Layer 2 behavior check |
@@ -188,7 +189,7 @@ Full coverage map plus the gaps only ui-audit catches: `references/defer-to-othe
 ## Gotchas
 
 - **Don't audit the whole codebase by default.** Full sweeps need an explicit request; otherwise the noise floor hides release-blockers.
-- **Don't skip feature detection and run every rule on every file.** 83 rules × N files is a wall of backlog nits; per-feature playbook checks produce signal. Load only the `rules-modern/`, `rules-surface/`, `rules/` files the playbook names.
+- **Don't skip feature detection and run every rule on every file.** 82 rules × N files is a wall of backlog nits; per-feature playbook checks produce signal. Load only the `rules-modern/`, `rules-surface/`, `rules/` files the playbook names.
 - **Don't assign `release-blocker` liberally.** Reserve it for data loss, broken critical paths, and dark patterns. If everything is a blocker, the verdict stops gating merges.
 - **Don't prescribe fixes without the matching React 19 API.** "Add a loading state" is unactionable; "wrap in `<Suspense fallback={<InvoiceListSkeleton />}>`" gets applied.
 - **Don't render markdown before the JSON document is complete.** Adapters project the JSON; skipping it loses `defaultTier`/`assignedTier`/`tierReason` and makes runs incomparable.

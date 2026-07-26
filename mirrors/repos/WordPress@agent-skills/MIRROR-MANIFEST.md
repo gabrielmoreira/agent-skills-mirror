@@ -130,9 +130,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 69 | ✓ | [`skills/wp-phpstan/references/wordpress-annotations.md`](skills/wp-phpstan/references/wordpress-annotations.md) |
 | 70 | ✓ | [`skills/wp-phpstan/scripts/phpstan_inspect.mjs`](skills/wp-phpstan/scripts/phpstan_inspect.mjs) |
 | 71 | ✓ | [`skills/wp-phpstan/SKILL.md`](skills/wp-phpstan/SKILL.md) |
-| 72 | ✓ | [`skills/wp-playground/references/blueprints.md`](skills/wp-playground/references/blueprints.md) |
-| 73 | ✓ | [`skills/wp-playground/references/cli-commands.md`](skills/wp-playground/references/cli-commands.md) |
-| 74 | ✓ | [`skills/wp-playground/references/debugging.md`](skills/wp-playground/references/debugging.md) |
+| 72 | ✓ | [`skills/wp-playground/references/cli.md`](skills/wp-playground/references/cli.md) |
+| 73 | ✓ | [`skills/wp-playground/references/debugging.md`](skills/wp-playground/references/debugging.md) |
+| 74 | ✓ | [`skills/wp-playground/references/website.md`](skills/wp-playground/references/website.md) |
 | 75 | ✓ | [`skills/wp-playground/SKILL.md`](skills/wp-playground/SKILL.md) |
 | 76 | ✓ | [`skills/wp-plugin-development/references/data-and-cron.md`](skills/wp-plugin-development/references/data-and-cron.md) |
 | 77 | ✓ | [`skills/wp-plugin-development/references/debugging.md`](skills/wp-plugin-development/references/debugging.md) |

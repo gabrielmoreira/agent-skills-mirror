@@ -4,7 +4,7 @@ description: 查询 AI HOT 的中文 AI 资讯、精选、当前热点和日报�
 license: MIT. See LICENSE
 metadata:
   author: Virxact
-  version: "1.1.1"
+  version: "1.1.2"
 ---
 
 # AI HOT
@@ -57,7 +57,7 @@ metadata:
 
 ## 请求
 
-- API 匿名、只读、无需 Key。客户端允许时可设置 `User-Agent: aihot-skill/1.1.1 (+https://aihot.virxact.com/aihot-skill/)` 方便诊断，但不得因为无法设置而拒绝查询或伪装浏览器。
+- API 匿名、只读、无需 Key。客户端允许时可设置 `User-Agent: aihot-skill/1.1.2 (+https://aihot.virxact.com/aihot-skill/)` 方便诊断，但不得因为无法设置而拒绝查询或伪装浏览器。
 - 普通查询不做版本检查，也不访问旧兼容层。后端在稳定 v1 契约内升级时，用户无需更新本 Skill。
 - 反复查询同一个 URL 时保存响应的 `ETag`，下次带 `If-None-Match` 发出；`304` 表示内容没变，直接复用上次结果，不要重新总结。
 - 定时任务对同一端点至少间隔 60 秒；资讯类内容没有秒级新鲜度，更密的轮询只是浪费双方带宽。

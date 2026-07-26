@@ -4137,6 +4137,41 @@ class AutoreviewHardeningTests(unittest.TestCase):
                 known_fragments,
             )
 
+    def test_review_patch_keeps_typescript_annotations_in_deleted_file(self) -> None:
+        removed_source = (
+            "export function modelRuntime("
+            "env: NodeJS.ProcessEnv = process.env): ModelRuntime {\n"
+            "  return env.MODEL_RUNTIME;\n"
+            "}\n"
+            "const credentials: NodeJS.ProcessEnv = {};\n"
+        )
+        patch = (
+            "diff --git a/removed.ts b/removed.ts\n"
+            "deleted file mode 100644\n"
+            "--- a/removed.ts\n"
+            "+++ /dev/null\n"
+            "@@ -1,4 +0,0 @@\n"
+            + "".join(f"-{line}\n" for line in removed_source.splitlines())
+            + "diff --git a/runtime.ts b/runtime.ts\n"
+            "new file mode 100644\n"
+            "--- /dev/null\n"
+            "+++ b/runtime.ts\n"
+            "@@ -0,0 +1 @@\n"
+            "+export type RuntimeEnv = NodeJS.ProcessEnv;\n"
+        )
+        known_fragments: set[str] = set()
+
+        validated = self.helper["validate_review_patch"](
+            "branch diff",
+            ["removed.ts", "runtime.ts"],
+            patch,
+            deletion_only_paths={"removed.ts"},
+            known_secret_fragments_out=known_fragments,
+        )
+
+        self.assertEqual(validated, patch)
+        self.assertEqual(known_fragments, set())
+
     def test_review_patch_bounds_deletion_secret_fragment_scan(self) -> None:
         values = [f"{realistic_secret_value()}{index:03d}" for index in range(257)]
         patch = (

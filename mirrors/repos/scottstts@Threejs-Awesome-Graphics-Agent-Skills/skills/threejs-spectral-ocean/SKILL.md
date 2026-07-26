@@ -1,6 +1,6 @@
 ---
 name: threejs-spectral-ocean
-description: Build large procedural oceans in Three.js from directional wave spectra. Use for WebGPU/TSL FFT oceans, multi-cascade wavelength bands, hybrid FFT plus Gerstner clear-water oceans, stylized above/below surface optics, permanently submerged Snell-window views, total internal reflection, aquatic perspective, caustic god rays, choppy displacement, spectral derivatives, Jacobian whitecaps, temporal foam, analytic sky reflection, underwater absorption, crest scatter, and GPU validation.
+description: Build large procedural oceans in Three.js from directional wave spectra. Use for WebGPU/TSL FFT oceans, multi-cascade wavelength bands, hybrid FFT plus Gerstner clear-water oceans, stylized above/below surface optics, permanently submerged Snell-window views, total internal reflection, forward-refracted structures through an interface, pixel-footprint spectral LOD, aquatic perspective, caustic god rays, choppy displacement, spectral derivatives, Jacobian whitecaps, windrow and temporal foam, analytic sky reflection, underwater absorption, crest scatter, and GPU validation.
 ---
 
 # Spectral Ocean
@@ -46,10 +46,12 @@ underwater Beer-Lambert composite driven by scene depth.
 Read the
 [submerged Snell ocean system](examples/submerged-snell-ocean/underwater-snell-ocean.ts)
 when the camera must remain underwater beneath a WebGPU spectral surface: it
-provides surface-anchored above-water structure reprojection through Snell's
-window, exact water-to-air Fresnel and total internal reflection, shared HDR
-sky radiance, aquatic extinction and in-scatter, differential-area caustics,
-full-resolution god rays, suspended particulates, and the final HDR grade.
+provides exact water-to-air Fresnel with a derivative-filtered critical-angle
+mask, total internal reflection against a physically bright upwelling underside,
+an energy-conserving transmitted-sun lobe, forward projection of above-water
+structures into the window, shared HDR sky radiance, aquatic extinction and
+in-scatter, footprint-faded differential-area caustics, full-resolution god rays,
+suspended particulates, and the final HDR grade.
 
 ## Non-negotiable gates
 
@@ -60,13 +62,16 @@ full-resolution god rays, suspended particulates, and the final HDR grade.
 - Persist foam in simulation state; do not infer all foam anew per frame.
 - Submit FFT stages with the synchronization required by the active backend.
 - Share sun and sky parameters between the visible sky and ocean reflection.
-- Start underwater structure reprojection at the displaced interface hit point; reject samples that are offscreen, on the wrong side of the interface, or misaligned with the refracted ray.
+- Transport opposite-medium structures by FORWARD projection: rasterize their own vertices at their refracted screen positions. On an open interface, never trace a water pixel backward to a source screen position, and never gate transported radiance on whether a direction's vanishing point lands on screen. (A bounded pool seen only from air can still use the screen-space offset in `$threejs-water-optics`; an ocean whose camera changes medium cannot.)
+- Bracket a water-side crossing solve by the critical angle (`tan θc ≈ 1.1346` times the ray's own distance from the interface), not by the camera-to-source span.
+- Scale spectral LOD by PIXEL FOOTPRINT — `distance² · pixelAngle / heightGap` — and apply it to vertex displacement, derivatives, and every band that rides them. Fade each band to its own mean when the band is an albedo or radiance term.
+- Filter the critical-angle domain test over about one output pixel; never filter the interface normal itself to stabilize what is transported through it.
 - Gate the entire optical side from one camera-medium state; do not choose above/below behavior per triangle.
 - Terminate distant underwater sightlines with a safely submerged terrain rim; do not mask an empty seabed/ocean horizon with a view-aligned scattering layer.
 - Keep a deterministic seed and fixed-camera capture for comparisons.
 
 ## Route elsewhere
 
-- Use `$threejs-water-optics` for bounded water, screen-space refraction, depth thickness, shoreline absorption, and analytic wave surfaces.
+- Use `$threejs-water-optics` for bounded water, screen-space refraction, depth thickness, shoreline absorption, and analytic wave surfaces. Its screen-space refraction is valid there because the camera stays in air and the volume is bounded; it is not a substitute for this skill's forward projection across an open interface.
 - Add `$threejs-procedural-vfx` only when crest spray or interaction splashes are required.
 - Add `$threejs-visual-validation` for cross-seed, temporal, and GPU evidence.

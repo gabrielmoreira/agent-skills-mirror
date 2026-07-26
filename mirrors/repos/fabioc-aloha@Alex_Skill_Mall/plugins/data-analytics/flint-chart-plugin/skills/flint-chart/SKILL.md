@@ -1,7 +1,7 @@
 ---
 name: flint-chart
 description: "Use when the user wants to visualize data — from 'which chart should I use?' to 'render this'. Helps pick the right chart from the analytical question (comparison / trend / distribution / relationship / proportion / flow / KPI), then authors a ChartAssemblyInput and renders via the flint-chart-mcp server (Vega-Lite / ECharts / Chart.js). Transform data before Flint; style tweaks after Flint."
-lastReviewed: 2026-07-24
+lastReviewed: 2026-07-25
 ---
 
 # flint-chart: pick, author, and render a chart
@@ -30,6 +30,10 @@ or `assembleChartjs` to get a backend spec.
   presentation tweak Flint does not express (a reference line, annotation, or
   shaded band), use the Vega-Lite escape hatch — see "Post-Flint style
   customization". Never feed edited Vega-Lite JSON back to `render_chart`.
+- **Look at what you rendered.** A chart with a collapsed scale, a merged color
+  scale, or an empty data binding renders as a valid image that tells the wrong
+  story — `validate_chart` cannot catch that. Load the `render-verify` skill
+  after rendering, and always after a post-Flint Vega-Lite edit.
 
 ## Verify Flint is available before rendering
 
@@ -45,14 +49,38 @@ authoring a spec no one can render.
    and reachable — skip to step 4.
 
 2. **If the tools are missing, `flint-chart-mcp` is not registered.** Ask the
-   user to add it, or add it yourself if you can edit their workspace-root
-   `.mcp.json`:
+   user to add it, or add it yourself if you can edit their workspace config.
+
+   **Put the file in the right place — this is the single most common failure.**
+
+   | Host                         | Path                          | Top-level key |
+   | ---------------------------- | ----------------------------- | ------------- |
+   | **VS Code** (workspace)      | `.vscode/mcp.json`            | `servers`     |
+   | Claude Code / Claude Desktop | `.mcp.json` at workspace root | `servers`     |
+   | Cursor                       | `.cursor/mcp.json`            | `servers`     |
+   | GitHub Copilot CLI           | `~/.copilot/mcp-config.json`  | `mcpServers`  |
+
+   The schema is identical across the first three, which is exactly why the
+   wrong path looks like it should work. **VS Code never reads a workspace-root
+   `.mcp.json`** — and it reports no error, because it isn't parsing a broken
+   file, it's reading no file at all. If a user says "I added the config and
+   nothing happened," check the path before anything else.
+
+   **Copilot CLI differs twice over:** different path _and_ a different
+   top-level key (`mcpServers`, not `servers`). A `servers` block pasted there
+   fails just as silently. Prefer telling the user to run `/mcp add` inside a
+   CLI session and let it write the file. The path is overridable via
+   `$COPILOT_HOME`.
+
+   Always **merge** into any existing config rather than overwriting it —
+   clobbering the file destroys whatever other servers the user had.
 
    ```jsonc
-   // .mcp.json at the workspace root — merge with any existing "servers" map
+   // .vscode/mcp.json (VS Code) — merge with any existing "servers" map
    {
      "servers": {
        "flint": {
+         "type": "stdio",
          "command": "npx",
          "args": ["-y", "flint-chart-mcp@^0.2.2"],
        },
@@ -60,10 +88,16 @@ authoring a spec no one can render.
    }
    ```
 
+   - `"type": "stdio"` is optional in some hosts but always declare it —
+     omitting it makes transport-related failures harder to diagnose.
    - `npx -y` fetches the package on first use and caches it (~5-10 MB in the
      npm cache; ~1-2 s cold start).
-   - Bump the pin to `^0.3.0` (or higher) when the target version is published
-     to npm; `npm view flint-chart-mcp version` reports the current `latest`.
+   - The `^0.2.2` pin is held deliberately, not through neglect. Public npm
+     `latest` is 0.4.0, but it is unreachable from Microsoft corporate machines,
+     whose npm mirror stops at 0.2.2. Do not advise a user to bump the pin
+     without checking `npm config get registry` first — a corporate mirror can
+     report a stale `latest` that is not the public one, and on such a machine a
+     `^0.4.0` pin fails with `ETARGET`.
    - **Corporate / air-gapped:** if `npx` cannot reach the npm registry, ask
      the user to run `npm install -g flint-chart-mcp` once from a machine that
      can, then change `"command": "npx", "args": ["-y", "flint-chart-mcp"]` to
@@ -76,13 +110,31 @@ authoring a spec no one can render.
    restart the app.
 
 4. **Verify.** Call `list_chart_types` with `{ "backend": "vegalite" }`. If it
-   returns the chart catalog, the server is up. If the call fails, re-check
-   the `.mcp.json` config and the host reload.
+   returns the chart catalog, the server is up.
 
-5. **For deeper MCP config** — HTTP transport, allowed-host lists, deployment
+5. **If the tools still do not appear, isolate which half is broken before
+   guessing.** The server and the client fail identically from chat. If the
+   user has the plugin repo checked out, `node scripts/verify-install.mjs`
+   does this in one step; otherwise probe the server yourself — pipe a
+   handshake plus a `tools/list` into the binary over stdio and read the
+   response. A `serverInfo` block followed by a `tools` array proves the server
+   is healthy and the fault is config, trust, or session staleness. Then work
+   down this list:
+   1. **Trust prompt.** VS Code will not start a local stdio server until you
+      approve it. `Ctrl+Shift+P` → **MCP: List Servers** → pick `flint` →
+      **Start**, and watch for the approval dialog.
+   2. **Server output.** Same menu → **Show Output**. Startup crashes surface
+      there and nowhere else.
+   3. **Restart the chat session.** A window reload is not always enough — the
+      agent's tool inventory can stay stale until the session itself restarts.
+   4. **HTTP transport only:** an HTTP server needs OAuth authorization after
+      starting, which is a separate step from trust. A server can be
+      configured and started yet still unauthorized.
+
+6. **For deeper MCP config** — HTTP transport, allowed-host lists, deployment
    patterns, full CLI reference — see the canonical MCP doc:
    <https://microsoft.github.io/flint-chart/#/mcp>. Point the user there for
-   anything beyond the stdio + `.mcp.json` install path documented above.
+   anything beyond the stdio install path documented above.
 
 ### For project code integration
 
@@ -260,6 +312,12 @@ For a Vega-Lite-specific style tweak:
 This edited Vega-Lite spec is no longer a portable Flint spec. Do not send it to
 `render_chart`; use `render_chart` only for Flint `ChartAssemblyInput`.
 
+**Verification is mandatory here.** Once you leave the Flint level, the MCP
+server's validation no longer protects you — an edited spec can render a
+plausible-looking chart that is silently wrong. Load the `render-verify` skill:
+open the result, read its console errors, and check it against the failure
+catalog before declaring it done.
+
 ## Attribution
 
 Chart-selection framework (§0 below) distilled from standard visualization
@@ -287,9 +345,30 @@ editor).
 weight vs mpg"). Jump to Step 1 and author the spec. Otherwise, work down this
 list before choosing a `chartType`.
 
-### 0.1 One-sentence message
+### 0.1 One-sentence message — the Big Idea
 
-Before choosing a chart, write the message it should carry
+Before choosing a chart, establish the message it should carry. **Load the
+`chart-big-idea` skill and run it now** — look in
+`.github/skills/local/chart-big-idea/SKILL.md` first (heir-installed), then
+`.github/skills/chart-big-idea/SKILL.md` (baseline).
+
+It does four things this step cannot do inline:
+
+- **Reads the surrounding context first** — the prose next to the insertion
+  point, the ticket, the section heading, prior captions — so you do not ask the
+  user to re-articulate a claim they already wrote.
+- **Questions the intent** — whether the chart should exist at all, and whether
+  the stated purpose is the real one. If the intended message and the data
+  disagree, that surfaces here rather than after rendering.
+- **Elicits the Big Idea** with a three-question ladder, one question at a time,
+  when it is not written down anywhere.
+- **Asks the TRADITIONAL vs INNOVATIVE style stance**, which changes the
+  chartType you pick in §0.2.
+
+The output is a compact Chart Brief. Treat it as the constraint on everything
+below: §0.2 selection, §0.4 coverage, and the spec you author in Steps 1-3.
+
+**If that skill is not available**, do the compact version inline
 (Knaflic — _Storytelling with Data_):
 
 - What is your unique point of view?
@@ -366,7 +445,7 @@ Fetch the canonical [Flint gallery](https://microsoft.github.io/flint-chart/#/ga
 - You need a live example of a chart variant (e.g. a _faceted_ boxplot, a _dodge = local_ grouped bar, a _sparse_ streamgraph) — the gallery shows multiple named variants per `chartType`.
 - You want the canonical semantic grouping (Bar & Column / Line & Area / Scatter & Points / Distributions / Circular & Radial / Tables & Multi-Dimensional / Maps) that Flint itself uses to organize its chart registry.
 
-This is the authoritative reference for **what Flint actually does**; §0.2–0.4 above is the compact map, but the gallery is the source of truth for edge cases and backend-specific behaviour.
+This is the authoritative reference for **what Flint actually does**; §0.2–0.4 above is the compact map, but the gallery is the source of truth for edge cases and backend-specific behavior.
 
 **Rule of thumb**: Defensible Decision answers "should I use a bar or a boxplot?"; the Flint gallery answers "will Flint's `Bar Chart` on ECharts backend do what I need?"
 
@@ -417,7 +496,7 @@ properties"). Required channels are noted.
 | `"Area Chart"`             | x, y, color, opacity, column, row                     | props `interpolate`, `opacity`, `stackMode`                                                                                                                                   |
 | `"Range Area Chart"`       | x, y, y2, color, column, row                          | x + y + y2 required; translucent band from `y` (low) to `y2` (high), value axis fits the band (not zero)                                                                      |
 | `"Violin Plot"`            | x, y, color, row                                      | x (category) + y (measure) required; mirrored KDE density per category, prop `bandwidth`; **Vega-Lite only**; a genuine `color` subgroup splits two groups or grids 3+ groups |
-| `"Streamgraph"`            | x, y, color, column, row                              | centre-stacked areas                                                                                                                                                          |
+| `"Streamgraph"`            | x, y, color, column, row                              | center-stacked areas                                                                                                                                                          |
 | `"Density Plot"`           | x, color, column, row                                 | prop `bandwidth`                                                                                                                                                              |
 | `"Pie Chart"`              | size, color, column, row                              | `size` = slice value (→ angle), `color` = category; props `innerRadius`, `sortSlices`                                                                                         |
 | `"Rose Chart"`             | x, y, color, column, row                              | polar bars; props `alignment`, `padAngle`, `sortSlices`                                                                                                                       |
@@ -796,3 +875,5 @@ Revise this skill by 2026-10-22 (90 days) or sooner if any of the following fire
 - Any recommendation in §0.2 (question → family → chartType) is refuted by a source we trust (a case study, a Knaflic/Kirk/Few/Wexler update, or field feedback from ≥2 heir workspaces) — retire or rework that row.
 - The plugin gets ≥3 heir installs and none of them exercise §0.5 (deep-reference escalation) — that signals the compact table alone is sufficient and §0.5 is decorative; prune it.
 - The upstream fork base ([`microsoft/flint-chart/agent-skills/flint-chart-author/SKILL.md`](https://github.com/microsoft/flint-chart/blob/main/agent-skills/flint-chart-author/SKILL.md)) publishes a materially revised body — decide whether to rebase §1-N onto the new upstream or hold on the current fork point.
+- **Upstream absorbs chart selection itself.** `flint-chart` 0.3.0 shipped backend-neutral chart-type recommendations and transformations — the capability §0 exists to provide. If those recommendations become reachable through the MCP tools and match or beat §0.2 on the same question, §0 is redundant: call the upstream recommender and keep only the framing this plugin adds on top. Re-test when the pin moves past 0.2.2.
+- **The backend list changes.** §0.4 and the worked examples assume Vega-Lite / ECharts / Chart.js. 0.4.0 adds Plotly (38 chart types, including Funnel, Gauge, and Density Contour) and Excel (18 native Office.js templates), which expands what "Flint can't express this" means. Re-check the coverage rules whenever `list_chart_types` reports a backend this skill does not name.

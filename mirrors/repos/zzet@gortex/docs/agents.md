@@ -24,7 +24,7 @@ commands accept `--agents=<csv>` to constrain setup and
 | `aider`         | `.aiderignore` block, `CONVENTIONS.md` communities block                                        | project    | https://aider.chat/docs/config/aider_conf.html                      |
 | `antigravity`   | `~/.gemini/antigravity/mcp_config.json` + Knowledge Item                                        | user       | https://antigravity.google/docs/mcp                                 |
 | `cline`         | `cline_mcp_settings.json` (per VS Code / Cursor globalStorage), `.clinerules/gortex-communities.md` | both     | https://docs.cline.bot/mcp/mcp-overview                             |
-| `codex`         | `~/.codex/config.toml` (`[mcp_servers.gortex]` + `SessionStart`, `UserPromptSubmit`, Bash/Gortex-read `PreToolUse`, and Bash/`apply_patch` `PostToolUse` hooks), `AGENTS.md` communities block | both       | https://developers.openai.com/codex/mcp                             |
+| `codex`         | `~/.codex/config.toml` (`[mcp_servers.gortex]` + `SessionStart`, `UserPromptSubmit`, Bash/Gortex-read `PreToolUse`, and Bash/`apply_patch` `PostToolUse` hooks), `~/.codex/AGENTS.md` rule block, repo `AGENTS.md` communities block | both       | https://developers.openai.com/codex/mcp                             |
 | `continue`      | `.continue/mcpServers/gortex.json`, `.continue/rules/gortex-communities.md`                     | project    | https://docs.continue.dev/customize/deep-dives/mcp                  |
 | `cursor`        | `.cursor/mcp.json` (project) or `~/.cursor/mcp.json`, `.cursor/rules/gortex-communities.mdc`    | both       | https://docs.cursor.com/en/context/mcp                              |
 | `gemini`        | `.gemini/settings.json` or `~/.gemini/settings.json`, `GEMINI.md` communities block             | both       | https://geminicli.com/docs/tools/mcp-server/                        |
@@ -227,7 +227,27 @@ directory that exists. Auto-approval field is `alwaysAllow` (not
 ### codex
 
 OpenAI Codex CLI stores config in `~/.codex/config.toml`. We
-upsert a `[mcp_servers.gortex]` table there. When hooks are enabled
+upsert a `[mcp_servers.gortex]` table there. `gortex install` also merges the
+active instruction profile into `~/.codex/AGENTS.md` between
+`<!-- gortex:rules:start -->` / `<!-- gortex:rules:end -->` markers — Codex
+loads that file into every session, so it is the Codex analogue of
+`~/.claude/CLAUDE.md`. The body is inlined rather than `@`-included because
+Codex reads AGENTS.md as literal markdown; `gortex instructions switch`
+refreshes the copy in place. Skip it with `--no-claude-md`. If
+`~/.codex/AGENTS.override.md` exists, Codex reads that instead and the
+installer says so.
+
+> **Trust the hooks or they do nothing.** Codex records trust against each
+> non-managed hook's current hash and **skips new or changed hooks until you
+> review them**. A fresh `gortex install` therefore leaves the Gortex hooks
+> configured but inert, and nothing in `config.toml` distinguishes the two
+> states. Run `/hooks` inside Codex, review the gortex entries, and trust
+> them — and again after any upgrade that changes a hook definition (the
+> installer prints a reminder whenever it writes or changes one). Until then
+> `SessionStart` never fires, which is the surface that puts the Gortex rule
+> in front of the model.
+
+When hooks are enabled
 (the default), Codex receives user-level hooks. The default posture remains
 advisory. A team can opt into `deny`, `rewrite`, or `suppress` by setting
 `GORTEX_CODEX_HOOK_MODE` while running `gortex init --hooks-only`; the selected

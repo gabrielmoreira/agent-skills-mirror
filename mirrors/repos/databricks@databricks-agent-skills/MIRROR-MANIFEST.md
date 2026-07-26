@@ -67,7 +67,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 5 | ✓ | [`experimental/databricks-ai-runtime/docker-images.md`](experimental/databricks-ai-runtime/docker-images.md) |
 | 6 | ✓ | [`experimental/databricks-ai-runtime/SKILL.md`](experimental/databricks-ai-runtime/SKILL.md) |
-| 7 | ✓ | [`experimental/databricks-genie/SKILL.md`](experimental/databricks-genie/SKILL.md) |
+| 7 | ✓ | [`experimental/databricks-genie-agents/SKILL.md`](experimental/databricks-genie-agents/SKILL.md) |
 | 8 | ✓ | [`experimental/spark-python-data-source/SKILL.md`](experimental/spark-python-data-source/SKILL.md) |
 | 9 | ✓ | [`plugins/databricks/claude/skills/databricks-agent-bricks/SKILL.md`](plugins/databricks/claude/skills/databricks-agent-bricks/SKILL.md) |
 | 10 | ✓ | [`plugins/databricks/claude/skills/databricks-ai-functions/SKILL.md`](plugins/databricks/claude/skills/databricks-ai-functions/SKILL.md) |

@@ -14,7 +14,7 @@ Write or rewrite a README.md tailored to the project type and audience.
 
 | File | Read when |
 |------|-----------|
-| `references/section-templates.md` | Phase 3: copy the matching skeleton and section guidance |
+| `references/section-templates.md` | Phase 3: per-section markup plus the per-type notes |
 | `references/badges-and-shields.md` | Phase 4: only if publishing to a registry |
 | `references/quality-checklist.md` | Phase 5: score before declaring done |
 
@@ -81,7 +81,7 @@ Load `references/section-templates.md`. Use this matrix to pick sections (`yes` 
 
 ### Phase 3: Write sections
 
-Copy the matching skeleton from `references/section-templates.md` and fill it. The skeleton plus its Notes block carries per-type detail; these rules hold across every type:
+Copy each selected section's skeleton from `references/section-templates.md`, fill it, then apply the per-type notes at the end of that file. These rules hold across every type:
 
 - H1 is the project name. The one-liner sits directly below with no heading; state what it does, not what it "is". Good: "Manage configurations across environments with type-safe schemas." Bad: "This is a tool that helps you manage your configurations."
 - Put the feature list above the fold (before Install) so value lands before setup cost.
@@ -95,7 +95,7 @@ Copy the matching skeleton from `references/section-templates.md` and fill it. T
 
 Skip entirely unless the project publishes to a registry (npm, crates.io, PyPI). Private apps, internal monorepos, unpublished skill bundles: no badges.
 
-When badges apply, load `references/badges-and-shields.md`, place them under the title and one-liner, cap at 4.
+When badges apply, load `references/badges-and-shields.md` for markup and placement. Cap at 4; past that they read as decoration and push the one-liner down.
 
 ### Phase 5: Validate
 
@@ -110,7 +110,7 @@ The checklist's Automatic Fail list is the hard gate: missing description, missi
 - Detect the type before writing a line: a library README with a `git clone` Getting Started, or an app README with npm install/registry badges, means the type was guessed wrong and sends readers down a dead path.
 - Skill-bundle and private-monorepo READMEs get no badges and no version column: no registry entry behind them, so badges render broken or stale.
 - Stale install commands are the most common rewrite bug: copy the package name from the manifest `name` field, not the old README (it may predate a rename).
-- Feature bullets use `- **Name:** what it does.` with a colon, never a hyphen separator (`- **Name** - what it does.` is the spaced-hyphen pattern this repo forbids).
+- Feature bullets use `- **Name:** what it does.` with a colon, never a spaced hyphen (`- **Name** - what it does.`), which reads as a stand-in for an em dash.
 - A "Features" section that restates the one-liner is noise: cut it or make each bullet add a capability the one-liner did not name.
 - No table of contents in a README under 100 lines: it pushes install below the fold for no navigation benefit.
 - Never ship a default scaffold README (create-next-app, create-vite): replace it wholesale; readers treat it as abandoned.

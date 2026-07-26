@@ -27,43 +27,27 @@ Headlines: 4-12 words, sentence case, no trailing period.
 
 - **Bold lead-in + explanation**: `**Retention is the real metric.** Acquisition gets attention, retention builds the business.`
 - **Key phrase emphasis**: "We compete on **speed** and **focus**"
-- **Minimal bullets**: 3-4 max, each earning its place
+- **Minimal bullets**: 3-4 max on a presented deck, each earning its place (pitch decks use the denser rules in [pitch-decks.md](pitch-decks.md) instead)
 - **Inline code**: `backticks` for technical terms, file names, commands
 
-## Slide templates
+## Copy per slide type
 
-### statement
-**Headline:** Bold claim or insight
-**Body:** Optional 1-2 line explanation or stat
+What each type's headline and body carry. The types themselves, and what each is for, live in [outline-structure.md](outline-structure.md).
 
-### big-statement
-**Headline only:** Full-screen, maximum scale, centered
-
-### question
-**Headline:** Provocative question
-**Body:** Optional context (1 line max)
-
-### data
-**Headline:** What the data shows (not "Data")
-**Metrics:** 2-4 key numbers with labels
-
-### code
-**Headline:** What this code does
-**Code:** 5-15 lines, syntax-highlighted, no comments
-
-### goals
-**Headline:** "Goals for today" or outcome framing
-**Points:** 3-4 bullets, bold lead-in + brief explanation
-
-### recap
-**Headline:** "Recap" or "Key takeaways"
-**Points:** One-liner per section, complete thoughts
-
-### quote
-**Quote:** The quote itself, large
-**Attribution:** Name, role/source
-
-The other four types are headline-only ([outline-structure.md](outline-structure.md)): **section-divider**, **framework** (matrix, do/don't, or comparison), **next-steps** (action + 3-4 bullets), **resources** (grouped links).
+| Type | Headline | Body |
+|------|----------|------|
+| statement | Bold claim or insight | Optional 1-2 line explanation or stat |
+| big-statement | Full-screen, maximum scale, centered | None |
+| question | Provocative question | Optional context, 1 line max |
+| section-divider | Section title | None |
+| goals | "Goals for today" or outcome framing | 3-4 bullets, bold lead-in + brief explanation |
+| data | What the data shows, never "Data" | 2-4 key numbers with labels |
+| code | What this code does | 5-15 lines, syntax-highlighted, no comments |
+| framework | The comparison being drawn | Matrix, do/don't, or side-by-side |
+| quote | The quote itself, large | Attribution: name, role or source |
+| recap | "Recap" or "Key takeaways" | One-liner per section, complete thoughts |
+| resources | Grouped links | Links grouped by section |
+| next-steps | Action framing | 3-4 bullets |
 
 ## Transformation examples
 
@@ -77,10 +61,8 @@ The other four types are headline-only ([outline-structure.md](outline-structure
 > **Headline:** Building blocks over modules
 > **Supporting:** A platform built on configurable building blocks.
 
-## Writing workflow
+## Order of work per slide
 
-1. Identify the one thing the audience must remember
-2. Write the headline first: bold statement or question
-3. Add body only if it earns its place
-4. Read at arm's length; if not parseable in 3 seconds, simplify
-5. Cut anything the speaker will say anyway
+1. Write the headline first: bold statement or question. Everything else is optional.
+2. Add body only if it says something the headline does not.
+3. Cut anything the speaker will say aloud anyway; a slide that repeats the talk track makes one of them redundant.

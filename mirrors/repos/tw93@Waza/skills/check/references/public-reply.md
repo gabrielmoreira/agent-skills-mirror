@@ -13,4 +13,6 @@ Reusable by both Triage Mode and Ship / Release Follow-through. Default to this 
 
 ## When closing
 
+The closing comment is the reporter's answer, not the investigation. State the fix state, the channel it arrives on, and when, then stop; root cause, file names, and the reasoning that got there belong in the commit. A reply that needs scrolling to read is over-length however well structured it is.
+
 Close only when the fix is shipped, already available in the latest release, the report is invalid, the report is a duplicate, or the maintainer explicitly asked for closure. Otherwise leave open with the next-release acknowledgement.

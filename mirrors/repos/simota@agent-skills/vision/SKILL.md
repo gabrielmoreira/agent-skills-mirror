@@ -14,6 +14,7 @@ CAPABILITIES_SUMMARY:
 - figma_mcp_strategy: Direct Figma MCP-driven design-to-code pipelines via Frame agent
 - tri_engine_direction: `multi` Recipe — parallel design-direction generation across Codex + Antigravity + Claude subagents with concurrence-divergence scoring and aesthetic-spectrum coverage; Portfolio-only merge by default (3–5 complementary directions for user selection) with opt-in Compete merge (`multi --compete`); preserves single-engine breakthrough directions and prepares downstream handoff stubs for Muse/Palette/Flow/Forge/Frame/Prose
 - co_design_pair: `pair` Recipe — interactive co-design (INTERACTIVE); Vision drives (proposes grounded design decisions, directs production), user navigates; propose 2-3 options → choose → produce/delegate → confirm one decision at a time; no code (delegates to Muse/Forge/Flow/Palette/Frame/Prose), bounded + checkpoint-resumable
+- apple_design_direction: Apple-platform design direction and taste — Liquid Glass adoption judgment (tasteful vs over-glassed), direction archetypes, Apple Design Award pattern analysis, macOS-specific direction, cross-platform coherence, durability check (`reference/apple-design-trends.md`; normative HIG rules stay in `native/reference/ios-hig.md`)
 
 COLLABORATION_PATTERNS:
 - Field -> Vision: User research insights and usability findings
@@ -285,8 +286,10 @@ Activated by the `multi` Recipe (or any explicit request for parallel design-dir
 | `reference/tri-engine-direction.md` | you are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), Concurrence-Divergence scoring, aesthetic-spectrum coverage rules, Portfolio (default) vs Compete (opt-in) merge strategies, JSON schema, subagent prompt skeletons, GROUND brand/persona/a11y/AI-disclosure checks, and downstream handoff stubs |
 | `_common/SUBAGENT.md` | you need the base MULTI_ENGINE protocol — engine dispatch table, loose prompt rules, Agent tool fan-out mechanics, fallback rules. Read before authoring `multi` Recipe subagent prompts |
 | `_common/MULTI_ENGINE_RECIPE.md` | you need the canonical Pattern D protocol (SCOPE → PREFLIGHT → FAN-OUT → NORMALIZE → CLUSTER → SCORE → GROUND/CALIBRATE → SYNTHESIZE → DELIVER), engine-attribution tag conventions, and degraded-mode rules shared across all `multi` Recipe skills |
+| `_common/PROPORTION_AND_SPACING.md` | you are justifying a direction's proportional system — modular/type scale ratio choice (1.2-1.25 product vs 1.333-1.618 editorial), grid column and container decisions, composition claims (optical vs geometric center, rule of thirds, F- vs Z-pattern evidence asymmetry). **Read §1 and §10 before invoking the golden ratio in a direction rationale** — φ-as-beauty-law is contested, and asserting it unqualified is a grounding failure. |
 | `_common/PROOF_CARRYING.md` | You issue `brand_proof` advisory in `nexus acceptance` Phase 4B (LLM-as-judge, non-blocking per Unspecifiable-Quality Carve-Out). Brand voice / illustration style / motion feel / emotional appropriateness route to G7 Unmeasurable-Quality Audit Gate for Tier-S UI human sign-off (≥10 min recorded). Avoid the "AI Design Reviewer" anti-pattern — operate as Design Compiler, not approver. |
 | `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Vision-specific Output/Next schema. |
+| `reference/apple-design-trends.md` | you need Apple-platform design *direction and taste* — Liquid Glass adoption judgment, direction archetypes, Apple Design Award pattern analysis, macOS-specific direction, or cross-platform coherence (not HIG normative rules — those live in `native/reference/ios-hig.md`) |
 
 ## Operational
 

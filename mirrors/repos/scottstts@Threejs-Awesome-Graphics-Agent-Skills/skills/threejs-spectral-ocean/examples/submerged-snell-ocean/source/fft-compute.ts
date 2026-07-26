@@ -21,41 +21,42 @@ import {
   workgroupId,
 } from 'three/tsl'
 
-export function createFrequencyTexture(resolution: number): StorageTexture {
-  const texture = new StorageTexture(resolution, resolution)
-  texture.type = FloatType
-  texture.minFilter = NearestFilter
-  texture.magFilter = NearestFilter
-  texture.generateMipmaps = false
-  return texture
+/**
+ * Inverse FFT for packed complex fields on WebGPU compute (spectral-ocean
+ * reference §5). One texture carries TWO independent complex fields
+ * (.xy and .zw) through the same butterfly stages.
+ *
+ * Each axis runs in one 256-invocation workgroup per row/column. Butterfly
+ * stages stay explicitly separated by workgroup barriers; the horizontal and
+ * vertical axes remain separate submissions for storage visibility.
+ */
+
+export function createFrequencyTexture(n: number): StorageTexture {
+  const tex = new StorageTexture(n, n)
+  tex.type = FloatType
+  tex.minFilter = NearestFilter
+  tex.magFilter = NearestFilter
+  tex.generateMipmaps = false
+  return tex
 }
 
-/**
- * Transform two packed complex fields through a radix-2 inverse FFT. Each
- * 256-point row or column stays in one workgroup with explicit barriers.
- */
 export class PackedIFFT {
   readonly stages: ComputeNode[] = []
+  /** Where the spatial result lives after horizontal + vertical passes. */
   readonly output: StorageTexture
 
-  constructor(ping: StorageTexture, pong: StorageTexture, resolution: number) {
-    const logN = Math.log2(resolution)
-    if (!Number.isInteger(logN) || resolution > 256) {
-      throw new Error(
-        `PackedIFFT requires a power-of-two workgroup size up to 256; received ${resolution}`,
-      )
+  constructor(ping: StorageTexture, pong: StorageTexture, n: number) {
+    const logN = Math.log2(n)
+    if (!Number.isInteger(logN) || n > 256) {
+      throw new Error(`PackedIFFT requires a power-of-two workgroup size up to 256; received ${n}`)
     }
 
-    const makeAxis = (
-      inputTexture: StorageTexture,
-      outputTexture: StorageTexture,
-      horizontal: boolean,
-    ) => {
-      const shared = workgroupArray('vec4', resolution) as unknown as {
+    const makeAxis = (source: StorageTexture, dest: StorageTexture, horizontal: boolean) => {
+      const shared = workgroupArray('vec4', n) as unknown as {
         element(index: Node<'uint'>): Node<'vec4'>
       }
-
-      return Fn(() => {
+      return (
+      Fn(() => {
         const lane = localId.x.toVar()
         const line = int(workgroupId.x)
         const reversed = uint(0).toVar()
@@ -64,11 +65,10 @@ export class PackedIFFT {
           reversed.assign(reversed.shiftLeft(1).bitOr(remaining.bitAnd(1)))
           remaining.assign(remaining.shiftRight(1))
         }
-
         const input = horizontal
           ? ivec2(int(reversed), line)
           : ivec2(line, int(reversed))
-        shared.element(lane).assign(textureLoad(texture(inputTexture), input))
+        shared.element(lane).assign(textureLoad(texture(source), input))
         workgroupBarrier()
 
         for (let stage = 0; stage < logN; stage++) {
@@ -83,29 +83,25 @@ export class PackedIFFT {
           const b = shared.element(indexB).toVar()
           const angle = float(offset).mul((Math.PI * 2) / (1 << (stage + 1)))
           const sign = select(top, float(1), float(-1))
-          const twiddle = vec2(angle.cos(), angle.sin()).mul(sign)
-          const fieldOne = a.xy.add(
-            vec2(
-              b.x.mul(twiddle.x).sub(b.y.mul(twiddle.y)),
-              b.x.mul(twiddle.y).add(b.y.mul(twiddle.x)),
-            ),
+          const w = vec2(angle.cos(), angle.sin()).mul(sign)
+          const field1 = a.xy.add(
+            vec2(b.x.mul(w.x).sub(b.y.mul(w.y)), b.x.mul(w.y).add(b.y.mul(w.x))),
           )
-          const fieldTwo = a.zw.add(
-            vec2(
-              b.z.mul(twiddle.x).sub(b.w.mul(twiddle.y)),
-              b.z.mul(twiddle.y).add(b.w.mul(twiddle.x)),
-            ),
+          const field2 = a.zw.add(
+            vec2(b.z.mul(w.x).sub(b.w.mul(w.y)), b.z.mul(w.y).add(b.w.mul(w.x))),
           )
+          // Every invocation captures both inputs before any invocation writes.
           workgroupBarrier()
-          shared.element(lane).assign(vec4(fieldOne, fieldTwo))
+          shared.element(lane).assign(vec4(field1, field2))
           workgroupBarrier()
         }
 
         const output = horizontal
           ? ivec2(int(lane), line)
           : ivec2(line, int(lane))
-        textureStore(outputTexture, output, shared.element(lane))
-      })().compute(resolution * resolution, [resolution])
+        textureStore(dest, output, shared.element(lane))
+      })().compute(n * n, [n])
+      )
     }
 
     this.stages.push(makeAxis(ping, pong, true))
@@ -114,44 +110,40 @@ export class PackedIFFT {
   }
 }
 
-/** Validate a centered DC impulse and one-bin complex sinusoid. */
+/**
+ * FFT hard gate (reference §6). Test A: DC impulse → constant field.
+ * Test B: one-bin X impulse → cos/sin along x. Both must pass before the
+ * spectrum is trusted. Centering sign (-1)^(x+y) is applied in comparison,
+ * matching its application point in the assembly kernel.
+ */
 export async function runFftSelfTest(
   renderer: WebGPURenderer,
-  resolution = 64,
+  n = 64,
 ): Promise<{ maxErrorConstant: number; maxErrorWave: number }> {
-  const ping = createFrequencyTexture(resolution)
-  const pong = createFrequencyTexture(resolution)
-  const ifft = new PackedIFFT(ping, pong, resolution)
-  const readBuffer = new StorageBufferAttribute(
-    new Float32Array(resolution * resolution * 4),
-    4,
-  )
+  const ping = createFrequencyTexture(n)
+  const pong = createFrequencyTexture(n)
+  const ifft = new PackedIFFT(ping, pong, n)
 
-  const runCase = async (
-    impulseX: number,
-    impulseY: number,
-  ): Promise<Float32Array> => {
-    const data = new Float32Array(resolution * resolution * 4)
-    data[(impulseY * resolution + impulseX) * 4] = 1
-    const input = new DataTexture(
-      data,
-      resolution,
-      resolution,
-      RGBAFormat,
-      FloatType,
-    )
+  // Readback goes through a storage buffer — never through a material blit,
+  // which would route the data through tone mapping / color-space transforms
+  // (AgX clamps negatives to zero and silently corrupts the comparison).
+  const readBuffer = new StorageBufferAttribute(new Float32Array(n * n * 4), 4)
+
+  const runCase = async (impulseX: number, impulseY: number): Promise<Float32Array> => {
+    const data = new Float32Array(n * n * 4)
+    data[(impulseY * n + impulseX) * 4] = 1
+    const input = new DataTexture(data, n, n, RGBAFormat, FloatType)
     input.minFilter = NearestFilter
     input.magFilter = NearestFilter
     input.needsUpdate = true
 
-    const mask = uint(resolution - 1)
-    const shift = uint(Math.log2(resolution))
+    const mask = uint(n - 1)
+    const shift = uint(Math.log2(n))
     const upload = Fn(() => {
       const x = int(instanceIndex.bitAnd(mask))
       const y = int(instanceIndex.shiftRight(shift))
-      const cell = ivec2(x, y)
-      textureStore(ping, cell, textureLoad(texture(input), cell))
-    })().compute(resolution * resolution)
+      textureStore(ping, ivec2(x, y), textureLoad(texture(input), ivec2(x, y)))
+    })().compute(n * n)
     renderer.compute(upload)
     for (const stage of ifft.stages) renderer.compute(stage)
 
@@ -159,10 +151,8 @@ export async function runFftSelfTest(
       const x = int(instanceIndex.bitAnd(mask))
       const y = int(instanceIndex.shiftRight(shift))
       const value = textureLoad(texture(ifft.output), ivec2(x, y))
-      storage(readBuffer, 'vec4', resolution * resolution)
-        .element(instanceIndex)
-        .assign(value)
-    })().compute(resolution * resolution)
+      storage(readBuffer, 'vec4', n * n).element(instanceIndex).assign(value)
+    })().compute(n * n)
     renderer.compute(download)
 
     const pixels = new Float32Array(await renderer.getArrayBufferAsync(readBuffer))
@@ -170,33 +160,31 @@ export async function runFftSelfTest(
     return pixels
   }
 
-  const constant = await runCase(resolution / 2, resolution / 2)
+  // Test A: impulse at the centered DC bin.
+  const constant = await runCase(n / 2, n / 2)
   let maxErrorConstant = 0
-  for (let y = 0; y < resolution; y++) {
-    for (let x = 0; x < resolution; x++) {
+  for (let y = 0; y < n; y++) {
+    for (let x = 0; x < n; x++) {
       const sign = (x + y) % 2 === 0 ? 1 : -1
-      const real = constant[(y * resolution + x) * 4] * sign
-      const imaginary = constant[(y * resolution + x) * 4 + 1] * sign
-      maxErrorConstant = Math.max(
-        maxErrorConstant,
-        Math.abs(real - 1),
-        Math.abs(imaginary),
-      )
+      const re = constant[(y * n + x) * 4] * sign
+      const im = constant[(y * n + x) * 4 + 1] * sign
+      maxErrorConstant = Math.max(maxErrorConstant, Math.abs(re - 1), Math.abs(im))
     }
   }
 
-  const wave = await runCase(resolution / 2 + 1, resolution / 2)
+  // Test B: one bin above DC on X → complex exponential along x.
+  const wave = await runCase(n / 2 + 1, n / 2)
   let maxErrorWave = 0
-  for (let y = 0; y < resolution; y++) {
-    for (let x = 0; x < resolution; x++) {
+  for (let y = 0; y < n; y++) {
+    for (let x = 0; x < n; x++) {
       const sign = (x + y) % 2 === 0 ? 1 : -1
-      const real = wave[(y * resolution + x) * 4] * sign
-      const imaginary = wave[(y * resolution + x) * 4 + 1] * sign
-      const phase = (Math.PI * 2 * x) / resolution
+      const re = wave[(y * n + x) * 4] * sign
+      const im = wave[(y * n + x) * 4 + 1] * sign
+      const phase = (Math.PI * 2 * x) / n
       maxErrorWave = Math.max(
         maxErrorWave,
-        Math.abs(real - Math.cos(phase)),
-        Math.abs(imaginary - Math.sin(phase)),
+        Math.abs(re - Math.cos(phase)),
+        Math.abs(im - Math.sin(phase)),
       )
     }
   }

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bytedance/deer-flow` — 26 default patterns, 18 followed patterns, 144 file(s) materialized.
+Mirror of `bytedance/deer-flow` — 26 default patterns, 19 followed patterns, 145 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 18 followed patterns, 1
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 18 |
-| Files         | 144 |
+| Followed pats | 19 |
+| Files         | 145 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,6 +66,7 @@ Mirror of `bytedance/deer-flow` — 26 default patterns, 18 followed patterns, 1
 - `README_ru.md`
 - `backend/docs/MEMORY_SETTINGS_REVIEW.md`
 - `backend/docs/IM_CHANNEL_CONNECTIONS.md`
+- `docker/lark-cli-init/README.md`
 - `docs/plans/2026-07-10-pluggable-authorization-rfc.md`
 - `backend/docs/TUI.md`
 - `backend/README.md`
@@ -211,15 +212,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 133 | → | [`backend/README.md`](backend/README.md) |
 | 134 | → | [`CHANGELOG.md`](CHANGELOG.md) |
 | 135 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 136 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
-| 137 | → | [`Install.md`](Install.md) |
-| 138 | → | [`README_fr.md`](README_fr.md) |
-| 139 | → | [`README_ja.md`](README_ja.md) |
-| 140 | → | [`README_ru.md`](README_ru.md) |
-| 141 | → | [`README_zh.md`](README_zh.md) |
-| 142 | → | [`README.md`](README.md) |
-| 143 | → | [`RELEASING.md`](RELEASING.md) |
-| 144 | → | [`SECURITY.md`](SECURITY.md) |
+| 136 | → | [`docker/lark-cli-init/README.md`](docker/lark-cli-init/README.md) |
+| 137 | → | [`docs/plans/2026-07-10-pluggable-authorization-rfc.md`](docs/plans/2026-07-10-pluggable-authorization-rfc.md) |
+| 138 | → | [`Install.md`](Install.md) |
+| 139 | → | [`README_fr.md`](README_fr.md) |
+| 140 | → | [`README_ja.md`](README_ja.md) |
+| 141 | → | [`README_ru.md`](README_ru.md) |
+| 142 | → | [`README_zh.md`](README_zh.md) |
+| 143 | → | [`README.md`](README.md) |
+| 144 | → | [`RELEASING.md`](RELEASING.md) |
+| 145 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

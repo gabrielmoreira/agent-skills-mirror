@@ -61,7 +61,7 @@ Conflict rule: current requirements win first. Then `as simple as possible, no s
 | `references/html-question-form.md` | Create | Create Step 2, optional: batched HTML question form for large or greenfield specs instead of one-at-a-time chat |
 | `references/plan-quality-rubric.md` | Review | Review Step 2 triage: 1-5 scoring criteria per dimension |
 | `references/questioning-framework.md` | Review | Review Step 3: question templates and pushback patterns per dimension |
-| `references/dialogue-examples.md` | Review | Before the Review dialogue: tone calibration and all four moves in action |
+| `references/dialogue-examples.md` | Review | Before the Review dialogue: tone calibration, and the Verify move's claim/evidence/verdict block worked through |
 | `references/claim-verification.md` | Review | When a claim is checkable against local code, docs, or specs, or the user asks to verify one |
 
 ## Create mode
@@ -71,7 +71,7 @@ Create progress:
 - [ ] Step 1: Understand intent (read the request, scan code and docs, state findings)
 - [ ] Step 2: Interrogate (one question at a time; end with the "radically simpler?" challenge)
 - [ ] Step 3: Synthesize (write the plan file, format matched to scope)
-- [ ] Step 4: Validate (check the plan against the original request, report the path)
+- [ ] Step 4: Validate (run the four checks, emit the validation block)
 - [ ] Step 5: Hand off to Review mode
 ```
 
@@ -88,6 +88,7 @@ State findings in 2-3 sentences before the first question.
 
 Load `references/interrogation-protocol.md`. Ask ONE question at a time. Every question carries a **recommended answer** grounded in Step 1: name the file, function, approach.
 
+- **Diverge before converging (first move):** put 2-3 genuinely different framings of the work on the table, not variations on one, each with what it buys and what it forecloses, then recommend one. Every later question narrows, so this is the only turn where the frame itself is still open. It costs at most one question and catches the two scope errors nothing else does: too narrow (a one-line fix where the whole bug class needed handling) and too wide (a framework where one function held).
 - If code or docs can answer it, answer it yourself; never spend a user question on it.
 - Each answer shapes the next. Walk the decision tree: resolve intent and scope before approach, approach before risks.
 - Flag fuzzy terms ("handle auth", "make it fast"): propose a sharp version and ask if it is right.
@@ -96,7 +97,7 @@ Load `references/interrogation-protocol.md`. Ask ONE question at a time. Every q
 - **Probe for a reference-as-spec:** ask if existing code, a library, a design, or a site already does this the way the user wants. If so, read it and treat its semantics as the spec, interrogating only deviations.
 - **Blindspot pass (conditional):** when the user is unfamiliar with the area or asks for one ("blindspot pass", "unknown unknowns"), pause questions to surface what good looks like, prior work, and potholes, then teach it back before resuming. Detail in `references/interrogation-protocol.md`.
 
-**Budget:** 5-10 questions, then synthesize.
+**Budget:** 5-10 questions, then synthesize. Needing more than 10 is evidence the scope is too big for one plan; propose a split instead of continuing to ask.
 
 **Mandatory scope challenge (before synthesizing):** ask "What can we cut without dropping a current requirement?" Carry a recommended cut list: removed extension points, setup collapsed into the first vertical slice, new code or dependencies a higher ladder rung already covers, abstractions kept only when they protect a shared invariant/owner/lifecycle, and safety gates preserved where "simpler" would drop correctness. Challenge the *sum* of the plan, not each piece.
 
@@ -118,6 +119,8 @@ Keep plans scannable yet executable without re-reading the conversation. Record 
 
 **Handoff plans:** when another agent or session will execute, the executor has not seen this conversation. Inline any code excerpts and conventions it needs (with `file:line` markers), and add a **STOP conditions** section: assumptions that, if false, mean stop and report back rather than improvise.
 
+Name an implementation-notes file next to the plan and instruct the executor to keep it: every deviation the code forced on the plan gets logged under a `## Deviations` heading as what the plan said, what the code required, and which option was taken. A deviation that is not a STOP condition never pauses the work; take the conservative option, log it, keep going. The notes file is what review reads afterwards, so a handoff without one loses every decision made during execution.
+
 ### Step 4: Validate
 
 - Does the plan answer the user's original request?
@@ -125,7 +128,20 @@ Keep plans scannable yet executable without re-reading the conversation. Record 
 - **Scope gate:** the plan fails if it violates any decision principle, especially an unneeded extension point, horizontal setup before the first tracer bullet, new code or a new dependency where a higher ladder rung holds, or a cut that drops required correctness, permissions, rollback, migration safety, or edge states.
 - Any unstated assumptions that should be explicit?
 
-Fix failures in the plan directly; don't reopen the interrogation. Report the plan path and confirm each check passed.
+Fix failures in the plan directly; don't reopen the interrogation.
+
+Then emit the validation block. Every row cites the plan section that satisfies its check, so a check with nothing to cite is a failure to fix before reporting rather than a claim to assert:
+
+```text
+PLAN VALIDATION: <path>
+  Answers the request    <section stating the intended outcome>
+  Answers landed         <n of n interrogation answers; name any dropped>
+  Scope gate             <section carrying the cut list; principles checked>
+  Assumptions explicit   <section, or "none found">
+  Verification           <the plan's Verification commands, copied>
+```
+
+Lightweight plans have no Verification section; cite the one check that proves the approach instead.
 
 ### Step 5: Hand off
 
@@ -221,12 +237,11 @@ Plan edits happen incrementally during the loop; this final pass confirms the fi
 
 ## Gotchas
 
-- Explore before asking. Never ask what code or docs answer; ask about rationale and tradeoffs instead.
-- Create mode: each question needs a recommended answer and stays collaborative. Stop at 10 questions and propose a split.
-- Review mode: one question per turn, apply each accepted resolution immediately, use the stall rule after two failed pushes.
-- Use batch questions only in explicit HTML batch mode.
-- Do not implement. The deliverable is the plan file.
-- Verification steps need a command and expected result, never just "verify it works".
+- A question the code or docs can answer spends one of the 5-10 budget and returns what Step 1 would have read for free.
+- Past 10 questions the scope is too big for one plan. Asking an eleventh buys detail on a plan that cannot be executed in one pass; propose a split.
+- Re-asking a stalled question in different words never produces the 5/5 answer. Propose a concrete fix to accept or reject, or record what blocks 5/5 and move to the next dimension.
+- A handoff plan with no named implementation-notes file loses every deviation the code forced on the executor, so review afterwards has nothing to read.
+- A plan that arrived as pasted text has no file to write resolutions into, so the whole Review evaporates when the session ends. Output the full updated plan in a code block and offer a path.
 
 ## Related skills
 

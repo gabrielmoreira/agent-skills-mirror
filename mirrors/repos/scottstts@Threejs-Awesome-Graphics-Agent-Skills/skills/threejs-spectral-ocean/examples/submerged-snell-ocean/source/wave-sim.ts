@@ -19,11 +19,7 @@ import {
 } from 'three/tsl'
 import type { Rng } from './random'
 import { createFrequencyTexture, PackedIFFT } from './fft-compute'
-import {
-  cascadeBands,
-  createSpectrumTexture,
-  DEFAULT_SEA_STATE,
-} from './ocean-spectrum'
+import { cascadeBands, createSpectrumTexture, DEFAULT_SEA_STATE } from './ocean-spectrum'
 import type { SeaState } from './ocean-spectrum'
 
 export const OCEAN_PRESET = {
@@ -32,36 +28,50 @@ export const OCEAN_PRESET = {
   boundaryFactor: 6,
   choppiness: 1.3,
   foamRecovery: 0.35,
+  /** Global art-direction scale on displacement (dream lever). 0.35 keeps a
+   * living glassy swell (~0.5 m crests). A 0.9 sea reads as a storm: it dunks
+   * sightlines at deck height and makes a surface crossing chaotic. */
   amplitude: 0.35,
-} as const
+}
 
 interface Cascade {
+  patchLength: number
   ifft: PackedIFFT
   evolve: ComputeNode
+  /** Two assembly nodes: [prev=0→next=1, prev=1→next=0]. */
   assemble: [ComputeNode, ComputeNode]
   clear: [ComputeNode, ComputeNode]
   displacementMaps: [StorageTexture, StorageTexture]
   derivativesMap: StorageTexture
 }
 
-function createMapTexture(resolution: number): StorageTexture {
-  const map = new StorageTexture(resolution, resolution)
-  map.type = HalfFloatType
-  map.wrapS = RepeatWrapping
-  map.wrapT = RepeatWrapping
-  map.minFilter = LinearFilter
-  map.magFilter = LinearFilter
-  map.generateMipmaps = false
-  return map
+function createMapTexture(n: number): StorageTexture {
+  const tex = new StorageTexture(n, n)
+  tex.type = HalfFloatType
+  tex.wrapS = RepeatWrapping
+  tex.wrapT = RepeatWrapping
+  tex.minFilter = LinearFilter
+  tex.magFilter = LinearFilter
+  tex.generateMipmaps = false
+  return tex
 }
 
 /**
- * Three directional cascades evolve height and horizontal displacement,
- * transform both packed fields, and assemble derivatives, Jacobians, and
+ * Three-cascade spectral wave simulation (spectral-ocean reference).
+ * Per frame: evolve h0→h(k,t) packed [height | horizontal], run packed IFFTs
+ * in workgroup memory with one submission per axis, then assemble
+ * displacement/derivative maps with finite differences, Jacobian, and
  * persistent foam history.
+ *
+ * The maps drive the ocean surface, its underside, the caustics
+ * projector, and god-ray flicker — one wave field, every consumer.
  */
 export class WaveSim {
   readonly patchLengths: number[]
+  /** The sea state these cascades were built from — consumers that need the
+   * wind axis (foam windrows) must read it here, never re-import a default. */
+  readonly sea: SeaState
+  /** TSL texture nodes — .value is repointed after each ping-pong swap. */
   readonly displacementNodes: ReturnType<typeof texture>[]
   readonly derivativeNodes: ReturnType<typeof texture>[]
 
@@ -72,19 +82,14 @@ export class WaveSim {
   private initialized = false
 
   constructor(rng: Rng, sea: SeaState = DEFAULT_SEA_STATE) {
-    const {
-      resolution,
-      patchLengths,
-      boundaryFactor,
-      choppiness,
-      foamRecovery,
-      amplitude,
-    } = OCEAN_PRESET
-    this.patchLengths = [...patchLengths]
-    const logN = Math.log2(resolution)
-    const mask = uint(resolution - 1)
+    const { resolution: n, patchLengths, boundaryFactor, choppiness, foamRecovery, amplitude } =
+      OCEAN_PRESET
+    this.patchLengths = patchLengths
+    this.sea = sea
+    const logN = Math.log2(n)
+    const mask = uint(n - 1)
     const shift = uint(logN)
-    const bands = cascadeBands(this.patchLengths, boundaryFactor)
+    const bands = cascadeBands(patchLengths, boundaryFactor)
 
     const cellOf = () => {
       const x = int(instanceIndex.bitAnd(mask))
@@ -97,90 +102,71 @@ export class WaveSim {
         rng.fork(`ocean-cascade-${index}`),
         band,
         sea,
-        resolution,
+        n,
       )
-      const frequencyPing = createFrequencyTexture(resolution)
-      const frequencyPong = createFrequencyTexture(resolution)
-      const ifft = new PackedIFFT(frequencyPing, frequencyPong, resolution)
+      const freqPing = createFrequencyTexture(n)
+      const freqPong = createFrequencyTexture(n)
+      const ifft = new PackedIFFT(freqPing, freqPong, n)
       const displacementMaps: [StorageTexture, StorageTexture] = [
-        createMapTexture(resolution),
-        createMapTexture(resolution),
+        createMapTexture(n),
+        createMapTexture(n),
       ]
-      const derivativesMap = createMapTexture(resolution)
+      const derivativesMap = createMapTexture(n)
+
       const twoPiOverPatch = (Math.PI * 2) / band.patchLength
 
       const evolve = Fn(() => {
         const { x, y, cell } = cellOf()
         const initial = textureLoad(texture(spectrum), cell)
-        const centered = vec2(
-          float(x).sub(resolution / 2),
-          float(y).sub(resolution / 2),
-        )
+        const centered = vec2(float(x).sub(n / 2), float(y).sub(n / 2))
         const k = centered.mul(twoPiOverPatch)
         const kLength = max(k.length(), 1e-4)
         const omega = k.length()
           .mul(float(sea.gravity))
-          .mul(min(kLength.mul(sea.depth), 20).tanh())
+          .mul(min(kLength.mul(sea.depth), 20.0).tanh())
           .sqrt()
         const phase = omega.mul(this.timeUniform)
-        const phaseCosine = phase.cos()
-        const phaseSine = phase.sin()
-        const height = vec2(
-          initial.x
-            .mul(phaseCosine)
-            .sub(initial.y.mul(phaseSine))
-            .add(
-              initial.z
-                .mul(phaseCosine)
-                .sub(initial.w.mul(phaseSine.negate())),
-            ),
-          initial.x
-            .mul(phaseSine)
-            .add(initial.y.mul(phaseCosine))
-            .add(
-              initial.z
-                .mul(phaseSine.negate())
-                .add(initial.w.mul(phaseCosine)),
-            ),
+        const pc = phase.cos()
+        const ps = phase.sin()
+        // h = h0·e^{iωt} + conj(h0(-k))·e^{-iωt}
+        const h = vec2(
+          initial.x.mul(pc).sub(initial.y.mul(ps)).add(initial.z.mul(pc).sub(initial.w.mul(ps.negate()))),
+          initial.x.mul(ps).add(initial.y.mul(pc)).add(initial.z.mul(ps.negate()).add(initial.w.mul(pc))),
         ).mul(amplitude)
-        const imaginaryHeight = vec2(height.y.negate(), height.x)
-        const displacementX = imaginaryHeight.mul(k.x.div(kLength))
-        const displacementZ = imaginaryHeight.mul(k.y.div(kLength))
-        const horizontal = vec2(
-          displacementX.x.sub(displacementZ.y),
-          displacementX.y.add(displacementZ.x),
-        )
-        textureStore(frequencyPing, cell, vec4(height, horizontal))
-      })().compute(resolution * resolution)
+        const ih = vec2(h.y.negate(), h.x)
+        const dx = ih.mul(k.x.div(kLength))
+        const dz = ih.mul(k.y.div(kLength))
+        const horizontal = vec2(dx.x.sub(dz.y), dx.y.add(dz.x))
+        textureStore(freqPing, cell, vec4(h, horizontal))
+      })().compute(n * n)
 
       const spatial = ifft.output
-      const inverseSpacing = resolution / (2 * band.patchLength)
+      const inverseSpacing = n / (2 * band.patchLength)
+
       const makeAssemble = (
         previous: StorageTexture,
         next: StorageTexture,
       ): ComputeNode =>
         Fn(() => {
           const { x, y, cell } = cellOf()
-          const parity = float(
-            int(instanceIndex.bitAnd(mask))
-              .add(int(instanceIndex.shiftRight(shift)))
-              .bitAnd(int(1)),
-          )
+          const parity = float(int(instanceIndex.bitAnd(mask)).add(int(instanceIndex.shiftRight(shift))).bitAnd(int(1)))
           const sign = float(1).sub(parity.mul(2))
-          const neighborSign = sign.negate()
-          const xPlus = int(uint(x.add(1)).bitAnd(mask))
-          const xMinus = int(uint(x.add(resolution - 1)).bitAnd(mask))
-          const yPlus = int(uint(y.add(1)).bitAnd(mask))
-          const yMinus = int(uint(y.add(resolution - 1)).bitAnd(mask))
+          // Adjacent texels flip parity → neighbor sign is -sign.
+          const nSign = sign.negate()
+          const xp = int(uint(x.add(1)).bitAnd(mask))
+          const xm = int(uint(x.add(n - 1)).bitAnd(mask))
+          const yp = int(uint(y.add(1)).bitAnd(mask))
+          const ym = int(uint(y.add(n - 1)).bitAnd(mask))
 
           const center = textureLoad(texture(spatial), cell)
-          const right = textureLoad(texture(spatial), ivec2(xPlus, y)).mul(neighborSign)
-          const left = textureLoad(texture(spatial), ivec2(xMinus, y)).mul(neighborSign)
-          const up = textureLoad(texture(spatial), ivec2(x, yPlus)).mul(neighborSign)
-          const down = textureLoad(texture(spatial), ivec2(x, yMinus)).mul(neighborSign)
+          const right = textureLoad(texture(spatial), ivec2(xp, y)).mul(nSign)
+          const left = textureLoad(texture(spatial), ivec2(xm, y)).mul(nSign)
+          const up = textureLoad(texture(spatial), ivec2(x, yp)).mul(nSign)
+          const down = textureLoad(texture(spatial), ivec2(x, ym)).mul(nSign)
 
           const height = center.x.mul(sign)
           const horizontal = center.zw.mul(sign)
+
           const slopeX = right.x.sub(left.x).mul(inverseSpacing)
           const slopeZ = up.x.sub(down.x).mul(inverseSpacing)
           const dDxDx = right.z.sub(left.z).mul(inverseSpacing)
@@ -192,41 +178,33 @@ export class WaveSim {
           const jzz = float(1).add(dDzDz.mul(choppiness))
           const jxz = dDxDz.add(dDzDx).mul(0.5).mul(choppiness)
           const jacobian = jxx.mul(jzz).sub(jxz.mul(jxz))
+
           const previousHistory = textureLoad(texture(previous), cell).w
           const recovered = previousHistory.add(
             this.dtUniform.mul(foamRecovery).div(max(jacobian, 0.5)),
           )
-          const history = min(min(jacobian, recovered), 2)
+          const history = min(min(jacobian, recovered), 2.0)
 
           textureStore(
             next,
             cell,
-            vec4(
-              horizontal.x.mul(choppiness),
-              height,
-              horizontal.y.mul(choppiness),
-              history,
-            ),
+            vec4(horizontal.x.mul(choppiness), height, horizontal.y.mul(choppiness), history),
           )
           textureStore(
             derivativesMap,
             cell,
-            vec4(
-              slopeX,
-              slopeZ,
-              dDxDx.mul(choppiness),
-              dDzDz.mul(choppiness),
-            ),
+            vec4(slopeX, slopeZ, dDxDx.mul(choppiness), dDzDz.mul(choppiness)),
           )
-        })().compute(resolution * resolution)
+        })().compute(n * n)
 
       const makeClear = (target: StorageTexture): ComputeNode =>
         Fn(() => {
           const { cell } = cellOf()
           textureStore(target, cell, vec4(0, 0, 0, 1))
-        })().compute(resolution * resolution)
+        })().compute(n * n)
 
       return {
+        patchLength: band.patchLength,
         ifft,
         evolve,
         assemble: [
@@ -236,17 +214,14 @@ export class WaveSim {
         clear: [makeClear(displacementMaps[0]), makeClear(displacementMaps[1])],
         displacementMaps,
         derivativesMap,
-      }
+      } satisfies Cascade
     })
 
-    this.displacementNodes = this.cascades.map((cascade) =>
-      texture(cascade.displacementMaps[0]),
-    )
-    this.derivativeNodes = this.cascades.map((cascade) =>
-      texture(cascade.derivativesMap),
-    )
+    this.displacementNodes = this.cascades.map((c) => texture(c.displacementMaps[0]))
+    this.derivativeNodes = this.cascades.map((c) => texture(c.derivativesMap))
   }
 
+  /** Foam-history maps start at 1 (no foam). */
   private ensureInitialized(renderer: WebGPURenderer): void {
     if (this.initialized) return
     this.initialized = true
@@ -256,28 +231,29 @@ export class WaveSim {
     }
   }
 
-  update(renderer: WebGPURenderer, elapsed: number, delta: number): void {
+  update(renderer: WebGPURenderer, elapsed: number, dt: number): void {
     this.ensureInitialized(renderer)
     this.timeUniform.value = elapsed
-    this.dtUniform.value = Math.min(delta, 0.1)
-    renderer.compute(this.cascades.map((cascade) => cascade.evolve))
+    this.dtUniform.value = Math.min(dt, 0.1)
 
+    // Evolve all cascades (independent — one submission).
+    renderer.compute(this.cascades.map((c) => c.evolve))
+
+    // Workgroup-shared row/column transforms: one submission per axis, with
+    // explicit barriers between every radix-2 butterfly stage.
     const stageCount = this.cascades[0].ifft.stages.length
     for (let stage = 0; stage < stageCount; stage++) {
-      renderer.compute(
-        this.cascades.map((cascade) => cascade.ifft.stages[stage]),
-      )
+      renderer.compute(this.cascades.map((c) => c.ifft.stages[stage]))
     }
 
+    // Assemble maps + foam history (ping-pong).
     const parity = this.current
-    renderer.compute(
-      this.cascades.map((cascade) => cascade.assemble[parity]),
-    )
+    renderer.compute(this.cascades.map((c) => c.assemble[parity]))
     this.current = 1 - this.current
 
-    for (let index = 0; index < this.cascades.length; index++) {
-      this.displacementNodes[index].value =
-        this.cascades[index].displacementMaps[this.current === 0 ? 0 : 1]
+    // Repoint material texture nodes at the freshly written maps.
+    for (let i = 0; i < this.cascades.length; i++) {
+      this.displacementNodes[i].value = this.cascades[i].displacementMaps[this.current === 0 ? 0 : 1]
     }
   }
 }

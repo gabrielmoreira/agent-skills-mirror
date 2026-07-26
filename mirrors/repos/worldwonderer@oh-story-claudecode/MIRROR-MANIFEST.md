@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followed patterns, 257 file(s) materialized.
+Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followed patterns, 261 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `worldwonderer/oh-story-claudecode` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 257 |
+| Files         | 261 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -314,8 +314,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 253 | ✓ | [`skills/story-short-write/scripts/check-degeneration.js`](skills/story-short-write/scripts/check-degeneration.js) |
 | 254 | ✓ | [`skills/story-short-write/scripts/normalize-punctuation.js`](skills/story-short-write/scripts/normalize-punctuation.js) |
 | 255 | ✓ | [`skills/story-short-write/SKILL.md`](skills/story-short-write/SKILL.md) |
-| 256 | ✓ | [`skills/story/SKILL.md`](skills/story/SKILL.md) |
-| 257 | ✓ | [`skills/story/VERSION`](skills/story/VERSION) |
+| 256 | ✓ | [`skills/story/assets/app.js`](skills/story/assets/app.js) |
+| 257 | ✓ | [`skills/story/assets/index.html`](skills/story/assets/index.html) |
+| 258 | ✓ | [`skills/story/assets/styles.css`](skills/story/assets/styles.css) |
+| 259 | ✓ | [`skills/story/scripts/dashboard-server.mjs`](skills/story/scripts/dashboard-server.mjs) |
+| 260 | ✓ | [`skills/story/SKILL.md`](skills/story/SKILL.md) |
+| 261 | ✓ | [`skills/story/VERSION`](skills/story/VERSION) |
 
 ---
 

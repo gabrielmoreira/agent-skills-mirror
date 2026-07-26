@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `breaking-brake/cc-wf-studio` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `breaking-brake/cc-wf-studio` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `breaking-brake/cc-wf-studio` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,15 +61,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/jira-driven-planning/SKILL.md`](.claude/skills/jira-driven-planning/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/next-idea/SKILL.md`](.claude/skills/next-idea/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/next-task/SKILL.md`](.claude/skills/next-task/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/pr-review-analysis/SKILL.md`](.claude/skills/pr-review-analysis/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/pr-to-main-cleanup/SKILL.md`](.claude/skills/pr-to-main-cleanup/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/pr-to-main/SKILL.md`](.claude/skills/pr-to-main/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/workflow-schema-tuning/SKILL.md`](.claude/skills/workflow-schema-tuning/SKILL.md) |
-| 8 | ✓ | [`.github/skills/cc-workflow-ai-editor/SKILL.md`](.github/skills/cc-workflow-ai-editor/SKILL.md) |
-| 9 | ✓ | [`.roo/skills/cc-workflow-ai-editor/SKILL.md`](.roo/skills/cc-workflow-ai-editor/SKILL.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`packages/cli/skills/ccwf-cli/SKILL.md`](packages/cli/skills/ccwf-cli/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/next-qa-idea/SKILL.md`](.claude/skills/next-qa-idea/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/next-qa/SKILL.md`](.claude/skills/next-qa/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/next-task/SKILL.md`](.claude/skills/next-task/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/pr-review-analysis/SKILL.md`](.claude/skills/pr-review-analysis/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/pr-to-main-cleanup/SKILL.md`](.claude/skills/pr-to-main-cleanup/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/pr-to-main/SKILL.md`](.claude/skills/pr-to-main/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/workflow-schema-tuning/SKILL.md`](.claude/skills/workflow-schema-tuning/SKILL.md) |
+| 10 | ✓ | [`.github/skills/cc-workflow-ai-editor/SKILL.md`](.github/skills/cc-workflow-ai-editor/SKILL.md) |
+| 11 | ✓ | [`.roo/skills/cc-workflow-ai-editor/SKILL.md`](.roo/skills/cc-workflow-ai-editor/SKILL.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`packages/cli/skills/ccwf-cli/SKILL.md`](packages/cli/skills/ccwf-cli/SKILL.md) |
 
 ---
 

@@ -119,7 +119,7 @@ Release notes: one English line, no markdown sections (`Fix token stats inflatio
 cd TokenTrackerBar && npm run dashboard:build && ./scripts/bundle-node.sh
 xcodegen generate && ruby scripts/patch-pbxproj-icon.rb
 xcodebuild -scheme TokenTrackerBar -configuration Release clean build
-APP="$(find ~/Library/Developer/Xcode/DerivedData/TokenTrackerBar-*/Build/Products/Release -name 'TokenTrackerBar.app' -maxdepth 1)"
+APP="$(find ~/Library/Developer/Xcode/DerivedData/TokenTrackerBar-*/Build/Products/Release -name 'TokenTracker.app' -maxdepth 1)"
 bash scripts/create-dmg.sh "$APP"
 ```
 

@@ -6111,7 +6111,7 @@ def unsafe_multiline_self_reference_assignment(
     )
 
 
-def boolean_declaration_initializer_range(
+def declaration_initializer_range(
     text: str,
     match: re.Match[str],
     *,
@@ -6128,13 +6128,13 @@ def boolean_declaration_initializer_range(
     return start, start + len(expression)
 
 
-def boolean_declaration_initializer_risk(
+def declaration_initializer_risk(
     text: str,
     match: re.Match[str],
     *,
     javascript_dialect: str | None = None,
 ) -> bool:
-    initializer_range = boolean_declaration_initializer_range(
+    initializer_range = declaration_initializer_range(
         text,
         match,
         javascript_dialect=javascript_dialect,
@@ -6149,13 +6149,13 @@ def boolean_declaration_initializer_risk(
     )
 
 
-def boolean_declaration_initializer_spans(
+def declaration_initializer_spans(
     text: str,
     match: re.Match[str],
     *,
     javascript_dialect: str | None = None,
 ) -> list[tuple[int, int]]:
-    initializer_range = boolean_declaration_initializer_range(
+    initializer_range = declaration_initializer_range(
         text,
         match,
         javascript_dialect=javascript_dialect,
@@ -6170,6 +6170,72 @@ def boolean_declaration_initializer_spans(
     ):
         return []
     return top_level_fallback_value_spans(text, start, end)
+
+
+def typescript_declaration_type_annotation(
+    text: str,
+    match: re.Match[str],
+    *,
+    javascript_dialect: str | None = None,
+) -> bool:
+    if javascript_dialect != "typescript":
+        return False
+    separator = re.search(r"[:=]", match.group(0))
+    if (
+        separator is None
+        or separator.group(0) != ":"
+        or (
+            match.group("reference_value") is None
+            and match.group("bare_value") is None
+        )
+    ):
+        return False
+    annotation_suffix = re.match(r"\s*(?:=|[,;)])", text[match.end() :])
+    if annotation_suffix is None:
+        return False
+
+    line_start = max(
+        text.rfind("\n", 0, match.start()),
+        text.rfind("\r", 0, match.start()),
+    )
+    declaration = mask_reference_declaration_evidence(text)[
+        line_start + 1 : match.start()
+    ]
+    if re.search(
+        r"(?:^|[;{}])\s*(?:(?:declare|export)\s+)*(?:const|let|var)\s+$",
+        declaration,
+    ):
+        return True
+
+    function_prefix = re.search(
+        r"\bfunction\b[^()\r\n]*\((?P<parameters>[^()]*)$",
+        declaration,
+    )
+    return bool(
+        function_prefix is not None
+        and re.fullmatch(
+            r"\s*(?:\.\.\.\s*)?",
+            split_top_level_call_arguments(
+                function_prefix.group("parameters")
+            )[-1],
+        )
+    )
+
+
+def typescript_secret_type_declarations(
+    text: str,
+    *,
+    javascript_dialect: str | None = None,
+) -> tuple[re.Match[str], ...]:
+    return tuple(
+        match
+        for match in SECRET_ASSIGNMENT_PATTERN.finditer(text)
+        if typescript_declaration_type_annotation(
+            text,
+            match,
+            javascript_dialect=javascript_dialect,
+        )
+    )
 
 
 def secret_text_risk(
@@ -6191,13 +6257,18 @@ def secret_text_risk(
     boolean_declaration_positions = {
         match.start("boolean_key") for match in boolean_declarations
     }
+    typed_declarations = typescript_secret_type_declarations(
+        text,
+        javascript_dialect=javascript_dialect,
+    )
+    typed_declaration_positions = {match.start() for match in typed_declarations}
     if any(
-        boolean_declaration_initializer_risk(
+        declaration_initializer_risk(
             text,
             match,
             javascript_dialect=javascript_dialect,
         )
-        for match in boolean_declarations
+        for match in (*boolean_declarations, *typed_declarations)
     ):
         return True
     safe_uri_credentials = interpolated_empty_password_uri_ranges(
@@ -6221,7 +6292,10 @@ def secret_text_risk(
         else frozenset()
     )
     for prefix in assignment_prefixes:
-        if prefix.start() in boolean_declaration_positions:
+        if (
+            prefix.start() in boolean_declaration_positions
+            or prefix.start() in typed_declaration_positions
+        ):
             continue
         assignment = SECRET_ASSIGNMENT_PATTERN.match(text, prefix.start())
         if assignment is not None and safe_self_reference_assignment(
@@ -6254,7 +6328,10 @@ def secret_text_risk(
         assignment_scan_text,
         safe_uri_credentials,
     ):
-        if match.start() in boolean_declaration_positions:
+        if (
+            match.start() in boolean_declaration_positions
+            or match.start() in typed_declaration_positions
+        ):
             continue
         quoted = any(
             match.group(name) is not None
@@ -6778,17 +6855,25 @@ def review_repeatable_secret_spans(
     boolean_declaration_positions = {
         match.start("boolean_key") for match in boolean_declarations
     }
+    typed_declarations = typescript_secret_type_declarations(
+        text,
+        javascript_dialect=javascript_dialect,
+    )
+    typed_declaration_positions = {match.start() for match in typed_declarations}
     spans = [
         span
-        for match in boolean_declarations
-        for span in boolean_declaration_initializer_spans(
+        for match in (*boolean_declarations, *typed_declarations)
+        for span in declaration_initializer_spans(
             text,
             match,
             javascript_dialect=javascript_dialect,
         )
     ]
     for match in SECRET_ASSIGNMENT_PATTERN.finditer(text):
-        if match.start() in boolean_declaration_positions:
+        if (
+            match.start() in boolean_declaration_positions
+            or match.start() in typed_declaration_positions
+        ):
             continue
         selected_name = next(
             (
@@ -6870,17 +6955,25 @@ def review_secret_value_spans(
     boolean_declaration_positions = {
         match.start("boolean_key") for match in boolean_declarations
     }
+    typed_declarations = typescript_secret_type_declarations(
+        text,
+        javascript_dialect=javascript_dialect,
+    )
+    typed_declaration_positions = {match.start() for match in typed_declarations}
     spans = [
         span
-        for match in boolean_declarations
-        for span in boolean_declaration_initializer_spans(
+        for match in (*boolean_declarations, *typed_declarations)
+        for span in declaration_initializer_spans(
             text,
             match,
             javascript_dialect=javascript_dialect,
         )
     ]
     for match in SECRET_ASSIGNMENT_PATTERN.finditer(text):
-        if match.start() in boolean_declaration_positions:
+        if (
+            match.start() in boolean_declaration_positions
+            or match.start() in typed_declaration_positions
+        ):
             continue
         for name in (
             "double_value",

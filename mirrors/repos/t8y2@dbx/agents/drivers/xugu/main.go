@@ -3363,7 +3363,74 @@ func errorResponse(id json.RawMessage, err error) response {
 }
 
 func trimStatementSQL(sqlText string) string {
-	return strings.TrimRight(strings.TrimSpace(sqlText), "; \t\r\n")
+	trimmed := strings.TrimSpace(sqlText)
+	if isXuguProgrammableObjectDDL(trimmed) {
+		// Xugu's compiler requires the terminator after END. The desktop
+		// statement splitter already removes only client-side delimiters, while
+		// retaining this one for Oracle-style procedural objects.
+		return trimmed
+	}
+	return strings.TrimRight(trimmed, "; \t\r\n")
+}
+
+func isXuguProgrammableObjectDDL(sqlText string) bool {
+	fields := strings.Fields(strings.ToUpper(stripLeadingSQLComments(sqlText)))
+	if len(fields) < 2 || fields[0] != "CREATE" {
+		return false
+	}
+
+	// Skip CREATE modifiers used by Xugu/Oracle-style programmable DDL:
+	// OR REPLACE, FORCE/NOFORCE, and EDITIONABLE/NONEDITIONABLE (any order).
+	index := 1
+	for index < len(fields) {
+		if index+1 < len(fields) && fields[index] == "OR" && fields[index+1] == "REPLACE" {
+			index += 2
+			continue
+		}
+		switch fields[index] {
+		case "FORCE", "NOFORCE", "EDITIONABLE", "NONEDITIONABLE":
+			index++
+			continue
+		}
+		break
+	}
+	if index >= len(fields) {
+		return false
+	}
+
+	switch fields[index] {
+	case "PROCEDURE", "FUNCTION", "TRIGGER", "PACKAGE":
+		// PACKAGE also covers PACKAGE BODY (next token is BODY).
+		return true
+	case "TYPE":
+		// Only TYPE BODY needs the trailing END; terminator.
+		// Plain CREATE TYPE ... AS OBJECT (...); is ordinary SQL.
+		return index+1 < len(fields) && fields[index+1] == "BODY"
+	default:
+		return false
+	}
+}
+
+func stripLeadingSQLComments(sqlText string) string {
+	remaining := strings.TrimLeft(sqlText, " \t\r\n")
+	for {
+		switch {
+		case strings.HasPrefix(remaining, "--"):
+			lineEnd := strings.IndexByte(remaining, '\n')
+			if lineEnd < 0 {
+				return ""
+			}
+			remaining = strings.TrimLeft(remaining[lineEnd+1:], " \t\r\n")
+		case strings.HasPrefix(remaining, "/*"):
+			commentEnd := strings.Index(remaining[2:], "*/")
+			if commentEnd < 0 {
+				return ""
+			}
+			remaining = strings.TrimLeft(remaining[commentEnd+4:], " \t\r\n")
+		default:
+			return remaining
+		}
+	}
 }
 
 func isQuerySQL(sqlText string) bool {

@@ -31,6 +31,15 @@ loop architecture and safety rails. Key points for agents:
   agents never open or merge PRs based on `main`; a human promotes
   `auto-dev` → `main` via a promotion PR. Release actions are always
   human-only.
+- A second, sibling track handles **quality assurance**, split the same way:
+  `next-qa-idea` (ideation — files one locked `qa` issue per run) and
+  `next-qa` (implementation — builds one per run) grow the automated test
+  suite on the **`auto-qa`** branch (queue = Issues labeled `qa`, memory =
+  `docs/qa-log.md`). `auto-qa` branches from `main` and is promoted back to
+  `main` by a human, independently of `auto-dev`. The two tracks never merge into each other and are kept to
+  disjoint files: **the QA loop never edits `packages/*/src`** — when a test
+  finds a product bug it files a `bug` issue for the feature loop and lands
+  the test skipped.
 
 ## Project Structure
 
@@ -140,10 +149,22 @@ To target a single package, filter: `pnpm -F @cc-wf-studio/cli run check` / `pnp
    - Prevents committing code with linting/formatting issues
 
 #### Testing
-- **Unit/Integration tests**: Not required (manual E2E testing only)
+
+The automated suite is being built by the quality-assurance loop (`next-qa`
+on the `auto-qa` branch); it is not yet complete, so manual E2E remains the
+primary check for feature work.
+
 - **Manual E2E testing**: Required for all feature changes and bug fixes
   - Run `pnpm build` first
   - Test in VSCode Extension Development Host
+- **Automated tests**: run with `pnpm test` from the repo root. Adding to
+  the suite is the QA loop's job, not the feature loop's — a feature PR is
+  not expected to ship tests, and **must not** delete, skip, or weaken an
+  existing passing test to get CI green.
+- **Where tests live**: `packages/core` (pure validators, generators,
+  schema) and the pure transforms in `packages/cli` / `packages/mcp` are the
+  suite's target. Webview React rendering and the VSCode host stay on manual
+  E2E — the cost/benefit there does not justify automation.
 
 ## Version Update & Release Procedure
 
@@ -229,3 +250,18 @@ Prefer `pnpm changeset` always. Only edit a `packages/*/package.json` `version` 
   - `001-ai-workflow-generation`: AI Workflow Generation via AiGenerationDialog
   - `001-ai-workflow-refinement`: AI Workflow Refinement via RefinementChatPanel
   - `001-ai-skill-generation`: AI Skill Node Generation via AiGenerationDialog
+
+### Slack Sharing and Claude API Upload (Frozen)
+- Both are **frozen as thin value**: maintenance-only, no new features or enhancements. The code stays and ships; it receives no investment.
+- Affected features:
+  - Slack share, OAuth / manual-token connect, import deep link (`vscode://cc-wf-studio/import`)
+  - The pre-share sensitive-data scan (`sensitive-data-detector`) — its only caller is Slack share, so it is frozen with it
+  - Claude API skill upload (`claude-api-upload-service`)
+- **Out of assurance scope too** — writing automated tests for a feature we have decided not to touch contradicts the decision to freeze it. See `docs/quality/02-feature-map.md`.
+
+> ⚠️ **Known open gap — the Claude API upload does not scan for secrets.**
+> `detectSensitiveData` has exactly one caller, `slack-share-workflow.ts:55`. The upload path (`claude-api-upload-service`) sends workflow content — including free-text prompt fields, where users are known to paste credentials — to the Anthropic API with no scan and no warning.
+>
+> **Frozen does not mean dormant.** The code still ships and users can still invoke it, so this gap is live, not deferred. It is lower severity than the Slack case (the destination is the user's own Anthropic account, not a shared team channel), but the secret still comes to rest on an external service and persists beyond the session.
+>
+> It is left open deliberately, and the resolution is a product decision, not an assurance one. Note that **adding a scan would mean investing in a feature we just declared thin value; removing the entry point would be the option consistent with the freeze.** Until one is chosen, treat this as accepted risk with no owner assigned.

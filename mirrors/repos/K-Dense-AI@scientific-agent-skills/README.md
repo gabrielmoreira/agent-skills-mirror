@@ -221,7 +221,7 @@ We recommend the following:
   ```
 - **Report anything suspicious.** If you find a skill that looks malicious or behaves unexpectedly, please [open an issue](https://github.com/K-Dense-AI/scientific-agent-skills/issues) immediately so we can investigate.
 
-All skills are scanned on an approximately weekly basis, and [SECURITY.md](SECURITY.md) is updated with the latest results. We try to address security gaps as they arise.
+Skills are scanned weekly — incrementally, so unchanged skills carry their previous findings forward, with a full rescan of everything at least every 30 days and whenever the scanner or model changes — and the results are published to [docs/security-report.md](docs/security-report.md) once they pass an automated consistency check against the repository contents. See [SECURITY.md](SECURITY.md) for our security policy, what is in scope, how to report a vulnerability privately, and how to contest a scan finding. We try to address security gaps as they arise.
 
 ---
 
@@ -237,6 +237,12 @@ Scientific Agent Skills is powered by **50+ incredible open source projects** ma
 - 💻 **Contribute** code, docs, or bug reports
 
 👉 **[View the full list of projects to support](docs/open-source-sponsors.md)**
+
+---
+
+## 🙏 Skill Credits
+
+The **[docx](skills/docx/)**, **[pdf](skills/pdf/)**, **[pptx](skills/pptx/)**, and **[xlsx](skills/xlsx/)** document skills are created and maintained by **Anthropic** and vendored here from [anthropics/skills](https://github.com/anthropics/skills/tree/main/skills). They are used under Anthropic's terms — see each skill's `LICENSE.txt` — and we track upstream so you get their latest improvements. All credit for those four skills goes to Anthropic.
 
 ---
 

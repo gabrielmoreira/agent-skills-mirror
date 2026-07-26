@@ -39,6 +39,25 @@ for a complete hard-surface assembly with a tilted-collar hull loft,
 parallel-transport trim, furnished glass cabin, shrouded propeller, lens-section
 fins, generated material inputs, and per-part triangle evidence.
 
+Read
+[references/vehicle-loft-and-projector-contract.md](references/vehicle-loft-and-projector-contract.md)
+for parameter-curve section tracks, recess-opening sections, superellipse
+volumes, spanwise airfoil lofts, warped outline plates, the two-plane paint
+projector, load-deflected tyre carcasses, and their measured limits.
+
+Read the
+[Formula One race car model](examples/formula-one-race-car/race-car-model.js)
+for one continuous nose-to-engine-cover loft driven by monotone parameter
+tracks, a cockpit recess opened inside the section itself, superellipse sidepods
+with a real inlet aperture, spanwise wing lofts, the livery projector, and a
+contact-deflected tyre.
+
+Read the
+[sport motorcycle model](examples/sport-motorcycle/motorcycle-model.js)
+for a slot-tagged mesh writer, revolve and upright-frame sweeps, offset panel
+shells, spoked wheels with a rotor alpha mask, a hanging chain path, and a
+volume-audited assembly.
+
 Read the
 [procedural financial tower compiler](../threejs-procedural-architecture/examples/procedural-financial-tower/building-system.js)
 for semantic placement compilation and material-slot instancing at building
@@ -55,7 +74,13 @@ scale.
 - triangle count is the only reported complexity metric;
 - apertures, frames, and glazing use unrelated coordinate systems;
 - complete object parts are positioned by late visual nudges instead of a
-  shared dimension contract.
+  shared dimension contract;
+- a closed body ships inside-out because winding was never audited — check the
+  enclosed signed volume, since a wireframe pass cannot see it;
+- a section track uses per-segment easing, so every knot has zero slope and the
+  lofted surface terraces under grazing light;
+- a projected surface graphic is blended between planes without normalising the
+  weights, printing the same graphic twice on a 45-degree shoulder.
 
 ## Routing boundary
 

@@ -567,7 +567,7 @@ Steps:
 5. Present a clean summary with counts per category
 6. For safe fixes (missing frontmatter, obvious duplicates, creating pages for concept gaps), offer to fix them automatically
 7. For destructive fixes (archiving, merging, resolving contradictions), list them and ask for explicit confirmation before touching anything
-8. Append to `log.md` with severity counts
+8. Append an operation-log entry with severity counts - if `Logs/` exists write the entry to `Logs/YYYY-MM-DD.md`, otherwise append to `log.md` (SKILL.md's own rule: the root `log.md` is a pointer file in v0.9+ vaults, never an entry target)
 
 ---
 
@@ -595,7 +595,7 @@ Steps:
    - **Clear winner**: rewrite the outdated page, add a History section noting what changed
    - **Ambiguous**: create `wiki/decisions/Conflict - Topic.md` with both sides, mark `status: open`
    - **Evolution**: update the page to current state with historical context
-5. Rebuild affected `index.md` sections, append to `log.md`, update daily note
+5. Rebuild affected `index.md` sections, append an operation-log entry (if `Logs/` exists write the entry to `Logs/YYYY-MM-DD.md`, otherwise append to `log.md` (SKILL.md's own rule: the root `log.md` is a pointer file in v0.9+ vaults, never an entry target)), update daily note
 
 ---
 
@@ -678,10 +678,28 @@ Steps:
    - **Ideas agent**: create or append to Ideas/ for new concepts
    - **Knowledge agent**: create or update Knowledge/ notes for factual claims and frameworks
 7. Update `index.md` with all newly created notes
-8. Append to `log.md`: `## [YYYY-MM-DD] ingest | Source Title (type) - X created, Y updated`
+8. Append an operation-log entry: if `Logs/` exists write `**HH:MM** - ingest | Source Title (type) - X created, Y updated` to `Logs/YYYY-MM-DD.md`; otherwise append `## [YYYY-MM-DD] ingest | Source Title (type) - X created, Y updated` to `log.md`
 9. Update today's daily note with an ingest summary
 
 A single ingest should touch 5-15 files. Compile knowledge once, distribute everywhere.
+
+---
+
+### `/obsidian-decide [topic] [--formal]`
+
+**Records decisions at two depths.** Default mode captures the decisions made in a conversation as dated one-liners appended to the relevant project notes' `## Key Decisions` sections (and the daily note) - for the steady stream of choices made while working. `--formal` (or leading with `adr`) instead writes one full Architecture Decision Record - Decision / Context / Options Considered / Rationale / Consequences / Related - to the decisions folder (resolved per `references/folder-map.md`: wiki-style `wiki/decisions/`, Obsidian-style `Knowledge/`), links it from the project's Key Decisions and `index.md`, and logs it. Use the formal mode for a structural or directional decision worth a real writeup; `python scripts/mine_commit_decisions.py` surfaces decision-shaped commits as ADR candidates.
+
+The vault knows why it's structured the way it is - when a future session asks "why?", the formal record answers. `/obsidian-graduate`, `/obsidian-health` structural fixes, and folder reorganizations may offer to write a formal record; they offer, they don't force.
+
+(Consolidated: the former standalone `/obsidian-adr` is now `/obsidian-decide --formal`; its triggers still route here.)
+
+---
+
+### `/obsidian-learn [recent|all|topic]`
+
+**Reviews the lessons scattered across the vault and turns them into a living rulebook.**
+
+Scans daily notes, dev logs, ADRs, and auto-generated pattern reports for lessons, mistakes, and wins, then classifies each as active, stale, superseded, or a promotion candidate (appeared 3+ times - worth becoming a permanent rule in `_CLAUDE.md`). Default scope is the last 30 days (`all` for the whole vault, or a named topic). Writes a Learnings Review to `wiki/concepts/YYYY-MM-DD - Learnings Review.md` and offers to promote candidates or archive stale lessons with confirmation. Lessons that are not reviewed do not compound.
 
 ---
 
@@ -823,14 +841,6 @@ Answers "what is worth doing next" from vault material. Distinct from `/obsidian
 
 ---
 
-### `/obsidian-learn [recent|all|topic]`
-
-**Reviews the lessons scattered across the vault and turns them into a living rulebook.**
-
-Scans daily notes, dev logs, ADRs, and auto-generated pattern reports for lessons, mistakes, and wins, then classifies each as active, stale, superseded, or a promotion candidate (appeared 3+ times - worth becoming a permanent rule in `_CLAUDE.md`). Default scope is the last 30 days (`all` for the whole vault, or a named topic). Writes a Learnings Review to `wiki/concepts/YYYY-MM-DD - Learnings Review.md` and offers to promote candidates or archive stale lessons with confirmation. Lessons that are not reviewed do not compound.
-
----
-
 ## Context Engine
 
 ### `/obsidian-world`
@@ -859,21 +869,11 @@ If `index.md` doesn't exist, offer to run `/obsidian-init` to generate it.
 
 ---
 
-### `/obsidian-decide [topic] [--formal]`
-
-**Records decisions at two depths.** Default mode captures the decisions made in a conversation as dated one-liners appended to the relevant project notes' `## Key Decisions` sections (and the daily note) - for the steady stream of choices made while working. `--formal` (or leading with `adr`) instead writes one full Architecture Decision Record - Decision / Context / Options Considered / Rationale / Consequences / Related - to the decisions folder (resolved per `references/folder-map.md`: wiki-style `wiki/decisions/`, Obsidian-style `Knowledge/`), links it from the project's Key Decisions and `index.md`, and logs it. Use the formal mode for a structural or directional decision worth a real writeup; `python scripts/mine_commit_decisions.py` surfaces decision-shaped commits as ADR candidates.
-
-The vault knows why it's structured the way it is - when a future session asks "why?", the formal record answers. `/obsidian-graduate`, `/obsidian-health` structural fixes, and folder reorganizations may offer to write a formal record; they offer, they don't force.
-
-(Consolidated: the former standalone `/obsidian-adr` is now `/obsidian-decide --formal`; its triggers still route here.)
-
----
-
 ## Research Commands
 
 Seven commands that pull external knowledge into the vault - X posts, X discourse, web research with citations, vault-grounded synthesis, YouTube videos, and podcast episodes (plus `/obsidian-ingest` above for arbitrary URLs, PDFs, audio, and screenshots). All output AI-first notes per the vault's Section 0 rule (preamble, rich frontmatter, recency markers, mandatory wikilinks, sources verbatim).
 
-**Setup:** API keys live at `~/.config/obsidian-second-brain/.env`. Run `install.sh` and answer "y" to the research toolkit prompt, or copy `.env.example` manually. xAI Grok and Perplexity keys are required; YouTube key is optional (transcripts work without it).
+**Setup:** API keys live at `~/.config/obsidian-second-brain/.env`. Run `install.sh` and answer "y" to the research toolkit prompt, or copy `.env.example` manually. The xAI Grok key is required for `/x-read` and `/x-pulse`. Perplexity is optional: with no `PERPLEXITY_API_KEY` set, `/research` and `/research-deep` fall back to free key-less sources automatically, and `--free` forces that path even when a key exists (`--academic` restricts it to scholarly sources). YouTube key is optional; transcripts work without it. Never tell a user a research command is unavailable because they lack a Perplexity key.
 
 **Stack:** Python 3.10+ with `uv`. Install deps via `uv sync` from the repo root.
 
@@ -902,7 +902,7 @@ Steps:
 2. Run `uv run -m scripts.research.x_pulse "<topic>"`
 3. Show the pulse output verbatim
 4. **Default save: auto-saves** to `Research/X-pulse/YYYY-MM-DD - <slug>.md` (AI-first format)
-5. Append one-line entry to `log.md`
+5. Append a one-line operation-log entry - if `Logs/` exists write the entry to `Logs/YYYY-MM-DD.md`, otherwise append to `log.md` (SKILL.md's own rule: the root `log.md` is a pointer file in v0.9+ vaults, never an entry target)
 
 Plain English: "what's hot on X about AI", "X pulse on vibe coding", "what should I post today on AI automation".
 
@@ -1004,7 +1004,6 @@ Spotify URLs are not supported (DRM blocks audio + transcript access). If no tra
 uv run python -c "from scripts.research.lib.usage import month_total; t,c = month_total(); print(f'\${t:.2f} across {c} calls')"
 ```
 
-No usage tracking on Perplexity calls (intentional - user opted out).
 
 No hard caps. No blocking. No per-call confirmation prompts. Trust the user to monitor.
 
@@ -1054,7 +1053,10 @@ Phase 1 - Close the day:
 Phase 2 - Reconcile:
 - Scan wiki/entities/ for outdated roles, companies, or descriptions that conflict with newer daily notes.
 - Scan wiki/concepts/ for claims contradicted by recently ingested sources.
-- Auto-resolve clear winners. Flag ambiguous ones in wiki/decisions/.
+- Flag EVERY contradiction as a `type: conflict` note with `status: open` in wiki/decisions/. Do NOT rewrite any existing page.
+  (Resolving a contradiction means rewriting the outdated note, which is destructive and irreversible while the user sleeps. It also
+  contradicts the constraint below. Leave the resolve step to an interactive /obsidian-reconcile run, matching the health agent's
+  report-only posture.)
 
 Phase 3 - Synthesize:
 - Scan sources ingested today and yesterday. Find concepts that appear in 2+ unrelated sources.
@@ -1066,7 +1068,7 @@ Phase 4 - Heal:
 - Rebuild index.md to reflect today's changes.
 
 Phase 5 - Log:
-- Append to log.md: ## [YYYY-MM-DD] nightly | End of day + X reconciled, Y synthesized, Z orphans linked
+- Append an operation-log entry: if `Logs/` exists write `**HH:MM** - nightly | End of day + X flagged, Y synthesized, Z orphans linked` to `Logs/YYYY-MM-DD.md`; otherwise append `## [YYYY-MM-DD] nightly | ...` to `log.md`
 
 Do not ask questions. Do not fix anything destructive - only add, update, link. Save and stop.
 ```

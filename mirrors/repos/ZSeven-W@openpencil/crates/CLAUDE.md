@@ -106,7 +106,7 @@ Mutators on `Document`:
 | LocalePicker      | TopBar Globe-button dropdown (15 native names + Check)                                                                               | `locale_picker.rs`                                                                                                                      |
 | StatusBar         | Floating bottom-right — zoom controls                                                                                                | `status_bar.rs`                                                                                                                         |
 | icons             | lucide d-string library (50+ icons; 24×24 viewBox stroke art)                                                                        | `icons.rs`                                                                                                                              |
-| brand_icons       | Claude / OpenAI / Gemini / Copilot / OpenCode brand logos (filled SVG paths, non-24×24 viewBoxes)                                    | `brand_icons.rs`                                                                                                                        |
+| brand_icons       | Claude / OpenAI / Gemini / Copilot / Antigravity / Grok filled logos + OpenCode primitive logo                                      | `brand_icons.rs`                                                                                                                        |
 | ColorPicker       | HSV overlay (Cmd-Shift-C or fill/stroke swatch click) — sat/value box + hue strip + hex input                                        | `color_picker.rs`                                                                                                                       |
 | LayerContextMenu  | Right-click overlay on layer rows + page tabs (Rename / Duplicate / Delete / Group / Ungroup / Lock / Hide; subset on page tabs)     | `layer_context_menu.rs`                                                                                                                 |
 | AgentSettings     | Cmd+, modal — 880×640 with sidebar nav (Agents / MCP / Images / System) + scrollable right pane                                      | `agent_settings_panel.rs` + `agent_settings_{i18n,images,mcp,system}.rs`                                                                |
@@ -286,8 +286,8 @@ Every input path that reasons about the canvas region MUST derive its rects from
 
 `agent_settings_panel.rs` + 4 tab modules render an 880×640 modal opened from the TopBar agent chip or `Cmd+,`. Sidebar nav: Agents / MCP / Images / System. Right pane scrolls; modal paints last (over dim scrim) so it covers every other widget.
 
-- **Agents** — `+ 添加服务商` and `+ 添加 Agent` actions in two empty-state sections, then 5 provider cards (Claude / Codex / OpenCode / GitHub Copilot / Gemini) with real brand logos from `widgets/brand_icons.rs`. Hovering a connected card swaps the green `✓ Connected` row for a red `断开连接` button; both lifecycle actions toggle `agent_settings.connected[i]`.
-- **MCP** — server status card with port input + Start/Stop button, then a 2×4 grid of CLI integration toggles (Claude Code / Codex / Gemini / OpenCode / Kiro / GitHub Copilot / Antigravity / Grok Build). Port input is editable (see "Settings input editing" below).
+- **Agents** — `+ 添加服务商` and `+ 添加 Agent` actions in two empty-state sections, then 6 provider cards (Claude / Codex / OpenCode / GitHub Copilot / Antigravity / Grok Build) with real brand logos from `widgets/brand_icons.rs`. Hovering a connected card swaps the green `✓ Connected` row for a red `断开连接` button; both lifecycle actions toggle `agent_settings.connected[i]`.
+- **MCP** — server status card with port input + Start/Stop button, then a grid of 7 CLI integration toggles (Claude Code / Codex / OpenCode / Kiro / GitHub Copilot / Antigravity / Grok Build). Port input is editable (see "Settings input editing" below).
 - **Images** — Image Search Ready/Not-configured indicator + collapsible Advanced section (Openverse OAuth Client ID / Secret + Register link + Test button), then Image Generation section with `+ Add` empty state.
 - **System** — read-only Auto-update status card (no updater backend wired yet — a togglable switch would lie to the user; the row paints as informational text).
 
@@ -506,7 +506,7 @@ mcp_tests.rs (in crate root) Cross-cutting: stdio dispatch, parser invariants
 
 ### Host wiring
 
-`openpencil-desktop --mcp <path>` (`crates/openpencil-desktop/src/mcp_serve.rs`) runs a JSON-RPC stdio MCP server backed by the .op file at `<path>`. External CLIs (Claude Code / Codex / Gemini / Copilot) spawn the binary in this mode to drive the Rust editor the same way they drive TS pen-mcp.
+`openpencil-desktop --mcp <path>` (`crates/op-host-desktop/src/mcp_serve.rs`) runs a JSON-RPC stdio MCP server backed by the .op file at `<path>`. External CLIs (Claude Code / Codex / OpenCode / Kiro / Copilot / Antigravity / Grok Build) spawn the binary in this mode to drive the Rust editor.
 
 - Handshake: `initialize` returns protocol version + capabilities + serverInfo; `tools/list` enumerates all 21 tools with JSON inputSchemas; `notifications/initialized` + `ping` handled inline.
 - Per-call lifecycle: re-build the `ToolRegistry` against the live document (so read-tool snapshots reflect prior writes) → dispatch through `run_stdio_with_applier` → applier closure mutates the doc + saves to disk on each successful write.
@@ -535,9 +535,8 @@ real CLI agents, not a stub:
   transport-free trait; real impls live desktop-side:
   `chat_runtime.rs` (`BuiltInProvider`, agent-rs), `chat_claude.rs`
   (`ClaudeCodeProvider`, `anthropic-agent-sdk`), `chat_subprocess.rs`
-  (`SubprocessProvider` for Claude/Gemini/Copilot), `chat_copilot.rs`,
-  `chat_http_server.rs` (Codex/OpenCode — `for_cli` returns `None`,
-  protocol unverified upstream).
+  (`SubprocessProvider` for Codex/Antigravity/Grok Build),
+  `chat_copilot.rs`, `chat_http_server.rs` (OpenCode).
 - `chat_session.rs` — `ChatSession` runs a turn on a worker thread
   (`ChatProvider::send` is a blocking iterator). `launch_if_pending`
   drains `pending_send` → `provider_for_agent(chat_selected_agent)`;

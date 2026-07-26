@@ -40,6 +40,8 @@ Run `make test` before meaningful changes to skill behavior, packaging, scripts,
 
 ## Skill Design Rules
 
+The doctrine behind every rule below: give the model the target, not the path. A skill that spells out the route buys compliance and loses the judgment that makes the model worth calling; state what "done" looks like and let it route.
+
 Before adding a capability, decide the layer deliberately:
 
 | Question | Yes | No |
@@ -59,7 +61,8 @@ Examples: `verify_skills.py` is a script; `rules/english.md` and `rules/chinese.
 - Leading words collapse a restated quality into one pretrained token the model already thinks with: `fast, deterministic, low-overhead` becomes a `tight` loop; `a repro you trust` becomes the loop that goes `red` on the bug. One token anchors a whole region of behavior and gives a sharper hook than the spelled-out triad, at fewer tokens. When a skill states the same quality three times, that is the passage to collapse into a leading word.
 - Keep `skills/RESOLVER.md` in sync when a skill description, trigger, or scope changes.
 - Keep each `description` concrete enough for automatic routing.
-- Write skill entrypoints outcome-first: name the target result, what counts as done, which constraints and evidence matter, and what the final answer or artifact should look like. Keep detailed process in mode sections and references.
+- Write skill entrypoints outcome-first: name the target result, what counts as done, which constraints and evidence matter, and what the final answer or artifact should look like. Keep detailed process in references.
+- `SKILL.md` carries what every run of that skill needs; a body only some runs need belongs in `references/`, reached from a picker row or a conditional line that names the trigger. Mutually exclusive modes are the clearest case: a diff review should not pay for the release, triage, and audit playbooks. Deterministic checks keep going to `scripts/`; this rule is about where the judgment prose loads, not about splitting a skill.
 - Keep all eight `SKILL.md` on one skeleton so they read as a set: a `🥷` first line and one-line tagline, then Outcome Contract, then Durable Context Preflight (right after it, for skills that read memory), then modes, the must-obey list, Gotchas, and Output. Use one name per concept across skills (`Hard Rules` for a skill's must-obey constraints; `Hard Stops` is check's separate merge-blocker list). Tables are compact `| a | b |` with no hand-aligned spacing; a numbered step sequence stays contiguous, with side-checks grouped under a step rather than wedged between two.
 - Avoid broad skills that mix unrelated workflows.
 - Eight skills is the hard cap. Do not propose a 9th skill or split an existing one. Behavior additions land in `references/`, `rules/`, `scripts/`, or `rules/anti-patterns.md`, not as a new skill.

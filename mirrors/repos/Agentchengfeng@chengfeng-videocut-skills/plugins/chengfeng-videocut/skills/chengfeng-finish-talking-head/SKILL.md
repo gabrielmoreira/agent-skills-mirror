@@ -112,6 +112,8 @@ node "$RUNNING" --json
 
 先读 [动画规则](references/animation-rules.md)；需要 HTML 模块时再读 [动画模块契约](references/animation-module-contract.md)。
 
+动效风格从 [风格注册表](animation-styles/styles.json) 选取，再读该风格自己的 `SKILL.md` 与 references。当前只有 `xiaohei`（小黑漫画感 SVG 动效）。注册表里没有的风格不得凭空发明；用户未指定时说明可选项并让用户选。
+
 - 动画必须绑定具体口播句与 cue。
 - 真实产品操作、截图、结果页优先使用真实素材。
 - 无动画时提交空 modules 和明确原因，不能造占位模块。

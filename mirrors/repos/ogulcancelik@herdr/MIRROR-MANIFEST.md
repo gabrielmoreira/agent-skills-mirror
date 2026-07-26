@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ogulcancelik/herdr` — 26 default patterns, 0 followed patterns, 13 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,19 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.codex/skills/herdr-pre-release-audit/SKILL.md`](.codex/skills/herdr-pre-release-audit/SKILL.md) |
-| 2 | ✓ | [`.codex/skills/triage/SKILL.md`](.codex/skills/triage/SKILL.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`SKILL.md`](SKILL.md) |
-| 6 | ✓ | [`vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md`](vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md) |
-| 7 | ✓ | [`vendor/libghostty-vt/AGENTS.md`](vendor/libghostty-vt/AGENTS.md) |
-| 8 | ✓ | [`vendor/libghostty-vt/CLAUDE.md`](vendor/libghostty-vt/CLAUDE.md) |
-| 9 | ✓ | [`vendor/libghostty-vt/src/benchmark/AGENTS.md`](vendor/libghostty-vt/src/benchmark/AGENTS.md) |
-| 10 | ✓ | [`vendor/libghostty-vt/src/inspector/AGENTS.md`](vendor/libghostty-vt/src/inspector/AGENTS.md) |
-| 11 | ✓ | [`vendor/libghostty-vt/src/terminal/apc/glyph/AGENTS.md`](vendor/libghostty-vt/src/terminal/apc/glyph/AGENTS.md) |
-| 12 | ✓ | [`vendor/libghostty-vt/src/terminal/c/AGENTS.md`](vendor/libghostty-vt/src/terminal/c/AGENTS.md) |
-| 13 | ✓ | [`vendor/libghostty-vt/src/terminal/compress/AGENTS.md`](vendor/libghostty-vt/src/terminal/compress/AGENTS.md) |
+| 1 | ✓ | [`.agents/skills/herdr-pre-release-audit/references/pre-release-audit.md`](.agents/skills/herdr-pre-release-audit/references/pre-release-audit.md) |
+| 2 | ✓ | [`.agents/skills/herdr-pre-release-audit/SKILL.md`](.agents/skills/herdr-pre-release-audit/SKILL.md) |
+| 3 | ✓ | [`.agents/skills/herdr-throwaway-repro/SKILL.md`](.agents/skills/herdr-throwaway-repro/SKILL.md) |
+| 4 | ✓ | [`.agents/skills/triage/SKILL.md`](.agents/skills/triage/SKILL.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | ✓ | [`SKILL.md`](SKILL.md) |
+| 8 | ✓ | [`vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md`](vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md) |
+| 9 | ✓ | [`vendor/libghostty-vt/AGENTS.md`](vendor/libghostty-vt/AGENTS.md) |
+| 10 | ✓ | [`vendor/libghostty-vt/CLAUDE.md`](vendor/libghostty-vt/CLAUDE.md) |
+| 11 | ✓ | [`vendor/libghostty-vt/src/benchmark/AGENTS.md`](vendor/libghostty-vt/src/benchmark/AGENTS.md) |
+| 12 | ✓ | [`vendor/libghostty-vt/src/inspector/AGENTS.md`](vendor/libghostty-vt/src/inspector/AGENTS.md) |
+| 13 | ✓ | [`vendor/libghostty-vt/src/terminal/apc/glyph/AGENTS.md`](vendor/libghostty-vt/src/terminal/apc/glyph/AGENTS.md) |
+| 14 | ✓ | [`vendor/libghostty-vt/src/terminal/c/AGENTS.md`](vendor/libghostty-vt/src/terminal/c/AGENTS.md) |
+| 15 | ✓ | [`vendor/libghostty-vt/src/terminal/compress/AGENTS.md`](vendor/libghostty-vt/src/terminal/compress/AGENTS.md) |
 
 ---
 

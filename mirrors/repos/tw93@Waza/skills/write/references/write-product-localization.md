@@ -21,6 +21,15 @@ Use this when reviewing product pages, release notes, app strings, runtime notif
 - **French**: Missing apostrophes or accents such as `L app`, `memoire`, `desinstallation`, `defaut`; spaces before punctuation should follow French conventions when the surrounding text already does.
 - **Italian**: Missing accents and articles such as `piu`, `non e`, `un app`; mechanical replacements that create invalid forms like `puòi`.
 
+## Surface Voice Defects
+
+Language-agnostic shapes that survive translation review because each locale reads as correct. Check them on the source string first, then on every locale.
+
+- **Parenthetical padding**: the qualifier that got appended in a parenthesis. Titles, labels, and metric names carry none; split the sentence or drop the qualifier.
+- **Hedged verdict**: a question mark or a "maybe / possibly" wrapper around a result the product already computed. A verdict sentence states the verdict; the uncertainty belongs in the value, not the punctuation.
+- **Untranslated domain noun**: a term borrowed from the implementation used as a metric name or label (ledger, buffer, daemon, quota). Replace it with the word the user would say for the same thing; if there is no such word, the metric is measuring something the user did not ask about.
+- **Alarming detail**: a user-facing string that reports the failure mechanism instead of the user's next action. Release notes, error banners, and update prompts keep what the reader does; the mechanism goes in the commit.
+
 ## Review Procedure
 
 1. Identify all source and generated surfaces in scope. For websites, include templates, locale JSON, content partials, generated pages, language switchers, canonical links, and route rewrites. For apps, include runtime catalogs, permission strings, update feeds, and notification copy.

@@ -1,6 +1,6 @@
 ---
 name: optimise-seo
-description: Optimises SEO and technical foundations for Next.js App Router apps, covering sitemaps, robots, meta tags, structured data, canonical URLs, redirects, indexing policy, hreflang and internationalisation, Core Web Vitals, programmatic SEO, security headers, privacy/consent, and error-page resilience. Use when asked to "improve SEO", "add a sitemap", "fix meta tags", "add structured data", "set canonical URLs", "set up redirects", "fix soft 404s", "add hreflang", "add security headers", "add cookie consent", "improve Core Web Vitals", "audit SEO", or "build SEO pages at scale". Performs no visual redesigns; for visual direction use ui-design, for page-level UI quality use ui-audit. Does not cover llms.txt or AI-agent readability; research current specs for that work.
+description: Optimises SEO and technical foundations for Next.js App Router apps, covering sitemaps, robots, meta tags, structured data, canonical URLs, redirects, indexing policy, hreflang and internationalisation, Core Web Vitals, programmatic SEO, security headers, privacy/consent, and error-page resilience. Use when asked to "improve SEO", "add a sitemap", "fix meta tags", "add structured data", "set canonical URLs", "set up redirects", "fix soft 404s", "add hreflang", "add security headers", "add cookie consent", "improve Core Web Vitals", "audit SEO", or "build SEO pages at scale". Performs no visual redesigns; for visual direction use ui-design, for page-level UI quality use ui-audit, for writing the article itself use blog-post. Does not cover llms.txt or AI-agent readability; research current specs for that work.
 ---
 
 # Optimise SEO
@@ -31,7 +31,7 @@ Before writing code for steps 2-4, read [references/nextjs-implementation.md](re
 - Canonical URL set and consistent on every page (one host, one casing, one trailing-slash policy)
 - Unique title and description per page via `metadata` or `generateMetadata`
 - OpenGraph + Twitter Card tags with a 1200x630 image
-- JSON-LD: Organization and WebSite on the homepage, BreadcrumbList on inner pages, plus Article/Product/FAQ where the content type matches. Define each entity once in a `@graph` with a stable `@id` (`/#person`, `/#website`, `/#organization`); reference by `@id`, don't duplicate. On articles keep `Person` as `author`, use an `Organization` (with a `logo`) as `publisher`
+- JSON-LD: Organization and WebSite on the homepage, BreadcrumbList on inner pages, plus Article/Product/FAQ where the content type matches. Define each entity once in a `@graph` with a stable `@id` and reference it by `@id` instead of duplicating it inline (`@id` conventions and the per-type code: `references/nextjs-implementation.md`)
 - One h1 per page with logical h2-h6 hierarchy
 - Descriptive alt text, internal links between related pages, CWV in target (LCP < 2.5s, INP < 200ms, CLS < 0.1)
 
@@ -69,15 +69,14 @@ Security headers (HSTS, CSP, `nosniff`, `frame-ancestors`, `Referrer-Policy`, `P
 - Don't over-generate thin or doorway pages: indexation drops and sitewide quality signals suffer.
 - Don't let canonicals conflict across variants (trailing slash, www, uppercase): ranking signal splits between duplicates.
 - Don't block crawlers via `robots.txt`, `noindex`, or auth walls on routes meant to rank; check before shipping, not after traffic drops.
-- Don't rely on client-only JS rendering for indexable content; ship SSR/SSG HTML.
+- Don't move indexable content behind a client-only render (`"use client"` plus a fetch in `useEffect`): the crawler indexes the empty shell, so the page ranks for nothing. Server Components already render on the server, so this is a regression you introduce, not a default to fix.
 - Don't change URLs without 301/308 redirects: link equity and crawl budget are lost.
 - Don't add JSON-LD that doesn't match visible content; Google treats it as spam and may demote the page.
-- Don't return 200 for "not found" or error pages: soft 404s won't index and drag quality scores down.
 - Don't ship `hreflang` that isn't reciprocal across every alternate; search engines ignore non-mutual sets.
 - Don't serve a maintenance window with 200 or 404: return 503 + `Retry-After` so the site isn't deindexed.
 - Don't add `Strict-Transport-Security` with `preload`/`includeSubDomains` before every subdomain is HTTPS; it's effectively irreversible.
 - Don't set `Person` as `publisher` on articles: rich results expect an `Organization` publisher with a `logo`. Keep `Person` as `author`.
-- Don't stop at required schema fields: Search Console flags missing recommended fields as rich-result warnings (e.g. Event wants `endDate`, `offers`, `image`, `eventStatus`, `eventAttendanceMode`, address, `organizer.url`). Clear warnings, not just errors.
+- Don't stop at required schema fields: Search Console flags missing recommended fields as rich-result warnings. Clear warnings, not just errors (per-type field lists: `references/nextjs-implementation.md`).
 - Don't hardcode the sitemap `lastModified`: it goes stale and signals dead content. Derive it from the most recent content date.
 - Don't leave indexable pages orphaned: no internal link wastes crawl equity and the page may never be discovered or ranked.
 
@@ -92,6 +91,7 @@ Security headers (HSTS, CSP, `nosniff`, `frame-ancestors`, `Referrer-Policy`, `P
 
 - `ui-design`: visual direction, palettes, typography, landing-page CRO
 - `ui-audit`: page-level UI quality and rendered i18n behavior (locale formatting, plurals, RTL); `optimise-seo` owns hreflang and localized metadata
+- `multi-tenant-architecture`: per-tenant routing and custom domains. It owns the constraint that `robots.txt`, `sitemap.xml`, and `llms.txt` vary by tenant and never come from `/public`; this skill owns their content once routing works.
 
 ## Validation (step 5, evidence required)
 

@@ -7,7 +7,7 @@ version: 3.5.0
 
 > 📦 项目主页：https://github.com/simonlin1212/a-stock-data — 更新、反馈、支持作者
 > 
-> 作者：Simon 林 · 抖音「Simon林」· 公众号「硅基世纪」
+> 作者：Simon 林 · X [@linsizhen](https://x.com/linsizhen) · 邮箱：simonlin0423@gmail.com
 
 # A股全栈数据工具包 V3.5.0
 

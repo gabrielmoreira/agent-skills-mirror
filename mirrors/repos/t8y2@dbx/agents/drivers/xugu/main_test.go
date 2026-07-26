@@ -1037,6 +1037,69 @@ func TestNormalizeValuePreservesDriverNumericTypes(t *testing.T) {
 	}
 }
 
+func TestTrimStatementSQLKeepsXuguProgrammableObjectTerminators(t *testing.T) {
+	cases := []struct {
+		name string
+		sql  string
+	}{
+		{"procedure", "CREATE OR REPLACE PROCEDURE p AS BEGIN NULL; END;"},
+		{"procedure without or replace", "CREATE PROCEDURE p AS BEGIN NULL; END;"},
+		{"function", "CREATE OR REPLACE FUNCTION f RETURN INTEGER AS BEGIN RETURN 1; END;"},
+		{"function without or replace", "CREATE FUNCTION f RETURN INTEGER AS BEGIN RETURN 1; END;"},
+		{"trigger", "CREATE OR REPLACE TRIGGER t BEFORE INSERT ON events FOR EACH ROW BEGIN NULL; END;"},
+		{"trigger without or replace", "CREATE TRIGGER t BEFORE INSERT ON events FOR EACH ROW BEGIN NULL; END;"},
+		{"package", "CREATE OR REPLACE PACKAGE pkg AS PROCEDURE ping; END pkg;"},
+		{"package without or replace", "CREATE PACKAGE pkg AS PROCEDURE ping; END pkg;"},
+		{"package body", "CREATE OR REPLACE PACKAGE BODY pkg AS PROCEDURE ping AS BEGIN NULL; END ping; END pkg;"},
+		{"force package", "CREATE OR REPLACE FORCE PACKAGE pkg AS PROCEDURE ping; END pkg;"},
+		{"noforce package", "CREATE OR REPLACE NOFORCE PACKAGE pkg AS PROCEDURE ping; END pkg;"},
+		{"force package body", "CREATE OR REPLACE FORCE PACKAGE BODY pkg AS PROCEDURE ping AS BEGIN NULL; END ping; END pkg;"},
+		{"noforce package body", "CREATE OR REPLACE NOFORCE PACKAGE BODY pkg AS PROCEDURE ping AS BEGIN NULL; END ping; END pkg;"},
+		{"type body", "CREATE OR REPLACE TYPE BODY obj AS MEMBER PROCEDURE ping IS BEGIN NULL; END; END;"},
+		{"type body without or replace", "CREATE TYPE BODY obj AS MEMBER PROCEDURE ping IS BEGIN NULL; END; END;"},
+		{"force type body", "CREATE OR REPLACE FORCE TYPE BODY obj AS MEMBER PROCEDURE ping IS BEGIN NULL; END; END;"},
+		{"leading comments", "-- generated source\n/* object DDL */\nCREATE OR REPLACE PROCEDURE p AS BEGIN NULL; END;"},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := trimStatementSQL(tc.sql); got != tc.sql {
+				t.Fatalf("trimStatementSQL() = %q, want %q", got, tc.sql)
+			}
+		})
+	}
+
+	if got := trimStatementSQL("CREATE TABLE items (id INTEGER);"); got != "CREATE TABLE items (id INTEGER)" {
+		t.Fatalf("regular SQL terminator should be removed, got %q", got)
+	}
+	// Plain CREATE TYPE ends with ");" and is ordinary SQL — strip the client terminator.
+	if got := trimStatementSQL("CREATE OR REPLACE TYPE address_t AS OBJECT (id INT);"); got != "CREATE OR REPLACE TYPE address_t AS OBJECT (id INT)" {
+		t.Fatalf("plain TYPE should strip trailing semicolon, got %q", got)
+	}
+	if got := trimStatementSQL("CREATE TYPE address_t AS OBJECT (id INT);"); got != "CREATE TYPE address_t AS OBJECT (id INT)" {
+		t.Fatalf("plain TYPE without OR REPLACE should strip trailing semicolon, got %q", got)
+	}
+}
+
+func TestExecuteQueryPreservesXuguTypeBodyTerminator(t *testing.T) {
+	resetXuguRecordingDriver()
+	db, err := sql.Open("xugu-test-recording", "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer db.Close()
+
+	s := newServer()
+	s.db = db
+	sqlText := "CREATE OR REPLACE TYPE BODY obj_t AS MEMBER PROCEDURE ping IS BEGIN NULL; END; END;"
+	if _, err := s.executeQuery(queryOptions{SQL: sqlText}); err != nil {
+		t.Fatalf("executeQuery() error: %v", err)
+	}
+	if got := recordedXuguSQL(); got != sqlText {
+		t.Fatalf("Agent executed %q, want %q", got, sqlText)
+	}
+}
+
 func contains(values []string, target string) bool {
 	for _, value := range values {
 		if value == target {
@@ -1051,8 +1114,46 @@ func contains(values []string, target string) bool {
 func init() {
 	sql.Register("xugu-test-blocking", &xuguBlockingDriver{})
 	sql.Register("xugu-test-fast", &xuguFastDriver{})
+	sql.Register("xugu-test-recording", &xuguRecordingDriver{})
 	sql.Register("xugu-test-legacy-columns", &xuguLegacyColumnsDriver{})
 	sql.Register("xugu-test-table-objects", &xuguTableObjectsDriver{})
+}
+
+type xuguRecordingDriver struct{}
+
+var xuguRecordingState struct {
+	sync.Mutex
+	sql string
+}
+
+func resetXuguRecordingDriver() {
+	xuguRecordingState.Lock()
+	xuguRecordingState.sql = ""
+	xuguRecordingState.Unlock()
+}
+
+func recordedXuguSQL() string {
+	xuguRecordingState.Lock()
+	defer xuguRecordingState.Unlock()
+	return xuguRecordingState.sql
+}
+
+func (d *xuguRecordingDriver) Open(name string) (driver.Conn, error) {
+	return &xuguRecordingConn{}, nil
+}
+
+type xuguRecordingConn struct{}
+
+func (c *xuguRecordingConn) Prepare(query string) (driver.Stmt, error) {
+	return nil, errors.New("not supported")
+}
+func (c *xuguRecordingConn) Close() error              { return nil }
+func (c *xuguRecordingConn) Begin() (driver.Tx, error) { return nil, errors.New("not supported") }
+func (c *xuguRecordingConn) ExecContext(_ context.Context, query string, _ []driver.NamedValue) (driver.Result, error) {
+	xuguRecordingState.Lock()
+	xuguRecordingState.sql = query
+	xuguRecordingState.Unlock()
+	return driver.ResultNoRows, nil
 }
 
 type xuguTableObjectsDriver struct{}

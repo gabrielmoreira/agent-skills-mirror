@@ -118,6 +118,59 @@ class AutoreviewPriorityTests(unittest.TestCase):
 
 
 class AutoreviewSecretScannerTests(unittest.TestCase):
+    def test_typescript_type_annotations_are_not_credential_material(self) -> None:
+        source = "\n".join(
+            (
+                "export function modelRuntime(",
+                "  env: NodeJS.ProcessEnv = process.env,",
+                "): ModelRuntime {",
+                "  return env.MODEL_RUNTIME;",
+                "}",
+                "",
+                "export function modelRuntimeCredentials(",
+                "  env: NodeJS.ProcessEnv,",
+                "): NodeJS.ProcessEnv {",
+                "  const credentials: NodeJS.ProcessEnv = {};",
+                "  return credentials;",
+                "}",
+            )
+        )
+
+        self.assertFalse(
+            AUTOREVIEW.secret_text_risk(
+                source,
+                javascript_dialect="typescript",
+            )
+        )
+        self.assertEqual(
+            AUTOREVIEW.review_secret_fragments(
+                source,
+                javascript_dialect="typescript",
+            ),
+            set(),
+        )
+
+    def test_typescript_typed_declaration_still_scans_initializer(self) -> None:
+        literal_value = "actual-production-" + "secret"
+        source = (
+            "const credentials: NodeJS.ProcessEnv = "
+            f'"{literal_value}";'
+        )
+
+        self.assertTrue(
+            AUTOREVIEW.secret_text_risk(
+                source,
+                javascript_dialect="typescript",
+            )
+        )
+        self.assertEqual(
+            AUTOREVIEW.review_secret_fragments(
+                source,
+                javascript_dialect="typescript",
+            ),
+            {literal_value},
+        )
+
     def test_boolean_declarations_are_not_credential_material(self) -> None:
         secret_field = "is" + "Secret"
         client_secret_field = "hasClient" + "Secret"

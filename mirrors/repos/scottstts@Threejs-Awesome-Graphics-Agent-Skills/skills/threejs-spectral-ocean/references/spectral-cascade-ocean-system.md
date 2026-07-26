@@ -14,10 +14,11 @@ Use this reference for a large, unbounded-looking ocean whose identity comes fro
 8. Jacobian whitecaps with history
 9. Fold-aware surface normal
 10. Optical composition
-11. Runtime order
-12. Geometry, camera, and fog
-13. Required diagnostics
-14. Failure diagnosis
+11. Submerged interface optics
+12. Runtime order
+13. Geometry, camera, and fog
+14. Required diagnostics
+15. Failure diagnosis
 
 ## 1. Architecture contract
 
@@ -337,6 +338,10 @@ strength low enough that it cannot rewrite the swell direction.
 
 ## 10. Optical composition
 
+This is the base optical tier. Section 11 documents the exact-dielectric
+submerged tier and states which example implements it; the Schlick fit below
+belongs to the `spectral-cascade-ocean` example, not to that one.
+
 Use one sky-radiance function for both the dome and reflected ray:
 
 ```text
@@ -374,7 +379,164 @@ zenith color
 
 Otherwise the reflection will appear pasted onto the surface.
 
-## 11. Runtime order
+## 11. Submerged interface optics
+
+Section 10 is the base tier: a Schlick fit, one reflected sky sample, and a body
+term. The `submerged-snell-ocean` example implements the exact tier, and every
+constant below is that example's code. Do not mix the two — the Schlick fit
+over-reflects by up to about 6 percentage points across the 80–85 degree grazing
+range that dominates a low camera, and it does not rise correctly into the
+critical angle, so a structure stays pasted over what should be total internal
+reflection.
+
+**Exact unpolarised dielectric Fresnel, both sides.** One helper answers three
+questions: reflectance, whether transmission is physically possible, and the
+transmitted cosine that the water-to-air side reuses for its angular stretch.
+
+```text
+etaRatio      = etaI / etaT                       (air 1.0, water 1.333)
+sinT2         = etaRatio² · (1 − cosI²)
+criticalWidth = clamp(fwidth(sinT2) · 1.5, 0.001, 0.05)
+canTransmit   = 1 − smoothstep(1 − criticalWidth, 1 + criticalWidth, sinT2)
+cosT          = sqrt(max(1 − sinT2, 0))
+rs            = (etaI·cosI − etaT·cosT) / (etaI·cosI + etaT·cosT)
+rp            = (etaT·cosI − etaI·cosT) / (etaT·cosI + etaI·cosT)
+F             = (rs² + rp²) / 2
+```
+
+The critical-angle boundary moves across the screen with the wave normal, so the
+binary domain test is derivative-filtered over roughly one output pixel. Exact
+Fresnel still drives transmitted energy to zero at the physical limit; the mask
+only stops an animated normal from toggling a whole pixel.
+
+**The optical side is a camera-medium state, never a facing test.** At a crossing
+a displaced sheet can expose nearby backfaces before the camera itself is
+submerged. Use one state for the whole draw and multiply the resolved fold-aware
+normal by a side sign of `isAbove · 2 − 1`.
+
+**Both sides share the one resolved normal.** Never filter the interface to
+stabilize what is transported through it: the window's rim IS the interface's own
+silhouette. A second below-surface normal whose cascade keeps ran on
+`pixelFootprint × stretch²` reaches 3–45 at the rim against thresholds authored
+in metres per pixel, so past about 10 m of camera depth every cascade zeroes and
+the window refracts off a mathematically flat plane — a clean analytic conic
+where the sea should show a live, dappled, wave-shaped rim.
+
+**The transmitted sun is the only genuinely unresolvable source, so its LOBE is
+broadened, not the geometry.** Water-to-air expands angles by
+`S = eta·cosI/cosT`, unbounded at the critical angle, and for a fixed view ray a
+normal tilting by δ moves the transmitted direction by `|1 − S|·δ`. Since
+`cos^n ≈ exp(−n·δ²/2)`, an authored lobe carries variance `1/n`:
+
+```text
+stretch  = max(eta · cosI / max(cosT, 0.04), 1)
+spread   = (stretch − 1) · max(|∂n/∂x|, |∂n/∂y|) · 0.5
+exponent = 1 / (1/700 + spread²)
+glint    = pow(max(dot(refracted, sunDir), 0), exponent) · exponent · 24/700
+```
+
+Rescaling the peak by the surviving exponent conserves the lobe's integrated
+energy as it widens: resolved water keeps the hard sparkle, the rim hands it to a
+broad sheen instead of crawling. Note for any future stretch-aware filtering that
+the water-to-air solid-angle Jacobian is `S·eta`, not `S²`, and that the stretch
+is anisotropic — meridional `S`, sagittal `eta`.
+
+**The underside outside the critical angle must be BRIGHT.** Total internal
+reflection mirrors the upwelling water light, so start from a radiance close to
+what the fog converges to — silvery teal near the medium's horizontal ambient:
+
+```text
+tirBody = (0.035, 0.14, 0.19) + SSS_TINT · crestScatter · 0.5
+```
+
+A near-black `DEEP · 0.55` ceiling carves a bright gap band at the surface
+silhouette against converged fog. Keep this in the same family as the medium's
+ambient endpoints if either is retuned.
+
+**Opposite-medium structures are FORWARD projected.** A dedicated layer solves
+the optical path and rasterizes each source vertex at its refracted screen
+position; the water then samples that target at its own screen UV and applies
+coverage once. Forward projection is frustum-safe: if a projected image lands
+offscreen, so does the water pixel that needed it. Backward tracing never can be
+— it projects a ray DIRECTION and requires the vanishing point to be inside the
+frustum, which is a pure function of camera pitch.
+
+```text
+raw = layer.color.sample(screenUV)
+if (raw.a · layer.active > 0.001)     # linear filtering premultiplies edge color
+  source = raw.rgb / max(raw.a, 0.001)
+```
+
+**Bracket the crossing solve by the critical angle.** A ray in water that
+connects to a source in air is inside Snell's cone by construction, so its
+crossing point can never lie further than `tan θc ≈ 1.1346` times its own
+distance from the interface. Submerged, that bound belongs to the CAMERA, so the
+bisection interval is about `1.13 × depth` — identical for every vertex and
+independent of distance. Bracketing by the camera-to-source span instead leaves
+an absolute error proportional to horizontal separation while the refracted image
+shrinks as `1/L`, so the solve goes coarser than the thing it resolves: the
+returned crossing becomes a staircase anchored to each vertex's own span, and
+neighbouring vertices land on incommensurate grids. Fourteen halvings of the
+correct interval land within a ten-thousandth of it.
+
+**What a correct distant refraction looks like**, so it is not "fixed" again.
+Refraction compresses incidence only; azimuth passes through untouched. Measured
+apparent height of a 6.5 m structure from 14 m down at 1600×900 and a 55 degree
+vertical field:
+
+```text
+25 m → 135 px    40 m → 46 px    60 m → 16 px    90 m → 6 px    130 m → 2.6 px
+```
+
+Roughly `1/L^2.4`, because the compression factor itself grows with distance. A
+thin bright streak hard against the rim IS the right answer at range; anything
+appreciably taller is a solver artifact. Retire the layer where its image falls
+below a pixel — drawing it beyond that scintillates, and clean sky reads better.
+
+**Spectral LOD is by pixel footprint.** The cascade maps carry no mips, and at
+grazing incidence the vertical footprint is `distance² · pixelAngle / heightGap`,
+so a 4.4 m deck eye is under-sampled at 200 m while a diver sees the same span
+steeply and keeps detail. Distance-only fades can never serve both.
+
+```text
+PIXEL_ANGLE = 0.001 rad
+footprint   = distance² · PIXEL_ANGLE / max(|cameraY − surfaceY|, 0.5)
+keeps (shortest wavelengths ~41 / 2.8 / 0.83 m):
+  cascade 0 above-water   1 − smoothstep(2.5, 5.5, footprint)
+  cascade 1               1 − smoothstep(0.35, 1.2, footprint)
+  cascade 2               1 − smoothstep(0.1, 0.4, footprint)
+  normal flatten              smoothstep(5.0, 16.0, footprint)
+  capillary bands A / B   1 − smoothstep(0.025, 0.12) / (0.008, 0.035)
+```
+
+The same three keeps apply to VERTEX displacement, measured against the y = 0
+base plane so the grazing gap is just camera height. Flattening the reconstructed
+normal while leaving displacement alive collapses displaced triangle rows into a
+second comb near the mesh fade.
+
+**Caustics read two ways from one texture.** Surfaces take the footprint-faded
+sampler; the god-ray march takes the exact one, because its per-pixel jitter
+makes screen derivatives meaningless.
+
+```text
+tile 17 m, 256² source grid drawn 3×3 into a 1024² wrapping target
+field mean 0.18 (differential-area reprojection conserves flux)
+surface fade: mix(field, 0.18, smoothstep(0.06, 0.28, metresPerPixel))
+depth fade:   min(exp(y · 0.055), 1)
+god rays: march ≤85 m, 8/14/22 steps, hash jitter, weight exp(−0.03 t), × 0.007
+```
+
+Fading a caustic web to zero instead of to its mean makes distant sand change
+brightness with camera height; it is an albedo term.
+
+**Do NOT add a near-surface scattering layer to the medium.** For any camera
+below such a slab, up-grazing rays integrate along it while down-grazing rays
+exit it, so a brightness step sits pinned to the exact view horizon and reads as
+a screen-space tint mask. Close the horizon gap at its roots instead: terrain
+that fills the water column geometrically, and the physically bright underside
+above.
+
+## 12. Runtime order
 
 Use this order each frame:
 
@@ -393,7 +555,7 @@ resolve GPU timing asynchronously
 Sea-state changes that alter `h0` should recompute the initial spectrum on
 interaction release, not continuously while dragging a control.
 
-## 12. Geometry, camera, and fog
+## 13. Geometry, camera, and fog
 
 The presentation uses:
 
@@ -420,7 +582,7 @@ low: 128², 2 cascades, no spray, reduced detail texture
 Do not call a four-wave analytic surface a low-quality FFT tier; that is a
 different representation and should be routed to `$threejs-water-optics`.
 
-## 13. Required diagnostics
+## 14. Required diagnostics
 
 Expose:
 
@@ -446,7 +608,7 @@ GPU milliseconds by compute and render phase
 Capture a fixed camera at multiple times. A single attractive frame cannot
 prove temporal stability, transform correctness, or foam persistence.
 
-## 14. Failure diagnosis
+## 15. Failure diagnosis
 
 ```text
 periodic square tiles:

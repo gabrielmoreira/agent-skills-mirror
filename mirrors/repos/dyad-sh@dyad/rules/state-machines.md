@@ -13,6 +13,16 @@ Background and before/after examples of why this pattern exists:
   adapters in `commands.ts`, and renderer bindings in a hook/provider.
 - `state.ts` and `transition.ts` stay pure. They must not depend on React,
   Electron, Jotai, TanStack Query, zod, timers, `Date`, or randomness.
+- When that purity requires a hand-written state type to duplicate an IPC zod
+  schema, add a mutual-assignability assertion beside the schema so either
+  definition drifting fails type-checking.
+- A strict Zod object with a `message` field still accepts an `Error` instance
+  through property lookup. Wire schemas that exclude `Error` objects must
+  reject them before parsing the plain error-info object, and test that case.
+- When a keyed wire transport decodes its key and event independently, keep
+  events entity-relative. If an event must repeat entity identity, the
+  per-definition admission boundary must validate it (and cancellation refs)
+  against the decoded key; separate schemas cannot enforce that relationship.
 - Cover the full state × event matrix with exhaustive switches and `never`
   checks. Deliberate no-ops must use shared `ignore(state, reason)` so they are
   distinguishable from omissions and observable in telemetry.
@@ -39,6 +49,9 @@ Background and before/after examples of why this pattern exists:
   would drop the event against a partially modified old state. Cancellation is
   required resource hygiene, while operation/state-instance token checks are
   the correctness backstop that rejects any stale callback which still fires.
+- Recheck dispatcher admission after an effectful pre-commit hook. The hook can
+  synchronously re-enter owner disposal; if it does, do not commit, notify,
+  schedule commands, or report the current ticket as applied.
 - Use `TimerLeaseScope` for migrated watchdogs. Carry the lease's operation or
   state-instance token in its event, cancel it in the dispatcher's pre-commit
   lease hook before exiting state, explicitly replace it on self-re-entry, and
@@ -55,6 +68,44 @@ Background and before/after examples of why this pattern exists:
   idempotency key through every queue, IPC, and persistence boundary. Make the
   receiving boundary durably deduplicate acceptance, and acknowledge only
   after that acceptance; a renderer-local enqueue is not durable acceptance.
+  Bounded dedup caches may evict settled history, never unresolved receipts;
+  reject excess in-flight work through a separate bounded admission limit.
+  Scope renderer retries to the stable window-session identity, not an
+  ephemeral `webContents.id`, so reconnect cannot bypass deduplication. Start
+  the retention window when the receipt settles, not when slow authorization
+  begins, or a lost receipt can be immediately evicted after acceptance. Evict
+  transient pre-admission transport-lifetime rejections after settlement, with
+  an identity check against the cached entry, so reconnect can retry work that
+  was never admitted while concurrent in-flight duplicates still coalesce.
+- Make remote subscribe/bootstrap idempotent per window, machine, and key.
+  Resync and reconnect retries must refresh the bootstrap without incrementing
+  ownership; projection/encoding failure rolls back only ownership acquired by
+  that call. Coalesce concurrent retries of the same logical attach behind one
+  pending quota reservation and admission result. Track pending attach identity
+  so unsubscribe, window destruction, actor disposal, or transport disposal
+  invalidates authorization still in flight; after every await, reject a
+  cancelled or closed lifetime before admission. Renderer bootstrap applies both
+  codecs and refuses disposed actor lifetimes, or failed retries and delayed
+  responses can retain stale state.
+- After asynchronous remote authorization, revalidate both the sender's window
+  session and the actor instance/revision used for the decision. Re-authorize
+  changed state only a bounded number of times (then reject it), and keep
+  admission synchronous. Remote dispatch may address only an existing actor
+  created by subscription and must lock admission to that actor instance.
+- Remote key codecs need an explicit encoder as well as a decoder. Use the
+  canonical encoded value in every wire envelope; never emit the decoded domain
+  key, which may be transformed or non-serializable. Bound every untrusted
+  envelope before its codec runs, including subscribe/unsubscribe addresses,
+  and bound snapshot envelopes before delivery. Use a
+  structured-clone-compatible byte measurement; JSON sizing is not
+  wire-compatible with values such as `bigint`.
+- Remote authorization hooks use `DyadErrorKind.Auth` for expected access
+  denial. Convert only that explicit classification to an unauthorized receipt;
+  propagate unexpected hook failures so telemetry can distinguish dependency
+  failures and bugs from ordinary refusal.
+- Capture receipt metadata synchronously when that dispatch ticket settles.
+  Reading mutable actor metadata after awaiting the ticket can observe a
+  re-entrant follow-up transaction instead of the acknowledged event.
 - Machine-generated queued work must not be editable or removable (including
   through bulk-clear paths) unless removal explicitly settles or rejects the
   owning machine request; otherwise reload can resurrect abandoned work.
@@ -77,6 +128,11 @@ Background and before/after examples of why this pattern exists:
 - `observeTransition` runs before a controller commits its next snapshot. If
   an observer callback can re-enter the machine (for example, by submitting a
   follow-up turn), defer that callback until the committed state is visible.
+- In custom controllers that start an async command batch before committing,
+  the batch executes synchronously through its first `await`. Defer any
+  command callback that promises post-commit delivery (or reserve the batch
+  until after commit), and test the snapshot observed inside the callback—not
+  only the snapshot after the event returns.
 - When a manager needs machine-specific observer behavior, compose it with the
   production trace observer (including ignored events) instead of replacing
   trace coverage.
@@ -103,6 +159,49 @@ Background and before/after examples of why this pattern exists:
 - Controllers are disposable and their owner must call `dispose()` on provider
   unmount or entity deletion. Renderer controller collections belong to a
   provider-owned `KeyedControllerHost`; never keep them in module globals.
+- Async keyed disposal must stop admission synchronously but keep the lifetime
+  addressable until its final cleanup promise settles. Every disposal caller
+  awaits that same barrier, and same-key recreation stays blocked behind it.
+  If the key is still under synchronous construction, publish a keyed barrier
+  that adopts the eventual actor cleanup rather than treating the missing map
+  entry as already disposed. Publish the barrier before invoking any cleanup
+  hook, and aggregate synchronous admission/timer cleanup failures behind it.
+- Reserve a keyed lifetime before running definition factories. Factories may
+  synchronously re-enter host admission; reject that re-entry rather than
+  constructing a second owner that can be overwritten and leaked.
+- Bulk or machine-scoped disposal must publish one collection barrier before
+  snapshotting members and block new member admission until it settles. Enroll
+  members whose synchronous construction began before the barrier but finishes
+  after publication, suppress their buffered factory-time ingress, and await
+  their cleanup as part of that same barrier. Reserve every snapshotted member's
+  disposal cause before stopping any member: one member's injected cancellation
+  hook may otherwise re-enter and claim another member's barrier with the wrong
+  cause. If the definition remains registered, reopen admission only after
+  final cleanup.
+- Treat bounded retention as an edge-triggered deadline. Once a snapshot
+  qualifies for delayed disposal, traffic that leaves it qualifying must not
+  refresh the timer; cancel the deadline only when the authoritative snapshot
+  stops qualifying.
+- Reject bounded terminal-retention policies that do not provide a terminal
+  classifier; otherwise the configured deadline can never become eligible.
+- Retention scheduling must publish a provisional ownership token before
+  calling the injected clock, then attach the returned handle only if ownership
+  survived synchronous re-entry. Callbacks verify that token before acting, and
+  cancellation clears it before touching the clock; a clock may re-enter or
+  throw without physically removing the callback.
+- Route every actor event ingress—including command and timer callbacks—through
+  the host's shared enqueue wrapper. Bypassing it may preserve FIFO ordering
+  while skipping retention, tracing, or other host-owned settlement bookkeeping.
+- Register a newly constructed actor before draining events buffered by its
+  factories, and recheck collection/key admission for every drained event.
+  Disposal re-entered by the first event must be able to stop that actor before
+  any later buffered event commits.
+- After actor activation, recheck host, machine, and keyed admission before
+  returning the reference. Activation can synchronously re-enter disposal
+  through buffered observers or an injected retention clock.
+- When a host passes live scopes or snapshot/send methods into definition
+  factories, make factory-time access safe and construction failure-atomic.
+  Dispose every acquired task/timer resource if any later factory step throws.
 - When registering a manager method as a disposal callback, wrap it in a stable
   closure or bind it if it reads `this`; passing a bare prototype method loses
   its receiver when the registry invokes it.
@@ -116,6 +215,9 @@ Background and before/after examples of why this pattern exists:
 - When disposal can race an async command that registers external state after
   an `await`, clean up both immediately and again after the command settles.
   Disposal must also clear any machine-owned legacy projection synchronously.
+- When a cross-owner facade defers keyed delivery to a microtask, entity
+  disposal must invalidate both queued and future deliveries for that key.
+  Otherwise the deferred callback can recreate a controller after deletion.
 - A keyed ownership replacement must adopt the incoming cleanup before running
   the previous cleanup. Otherwise a throwing unsubscribe/cancel can orphan the
   already-acquired replacement resource.
@@ -177,6 +279,11 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   `registerAtomWriter`, not opportunistically by individual commands. A
   projection is safe only once the machine is its single writer; interim
   dual-writer periods are where races live.
+- Manager admission and transition application are separate facts. Before
+  deleting an admission-gated side channel, characterize admitted events that
+  the transition deliberately ignores (including startup, shutdown, and
+  compatibility routing); preserve any observable data in an owner-scoped read
+  model unless changing those transitions is explicitly in scope.
 - A machine with interactive controls defines a pure
   `selectCapabilities(state)` whose named booleans express domain UI policy,
   and exposes those capabilities through its projection. Do not derive

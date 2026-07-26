@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `LC044/TrailSnap` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `LC044/TrailSnap` — 26 default patterns, 1 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `LC044/TrailSnap` — 26 default patterns, 0 followed patterns, 9 file
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 9 |
+| Followed pats | 1 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `LC044/TrailSnap` — 26 default patterns, 0 followed patterns, 9 file
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `tests/README.md`
 
 ## File Index
 
@@ -68,6 +68,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`skills/trailsnap-cli/install.md`](skills/trailsnap-cli/install.md) |
 | 8 | ✓ | [`skills/trailsnap-cli/reference.md`](skills/trailsnap-cli/reference.md) |
 | 9 | ✓ | [`skills/trailsnap-cli/SKILL.md`](skills/trailsnap-cli/SKILL.md) |
+| 10 | → | [`tests/README.md`](tests/README.md) |
 
 ---
 
