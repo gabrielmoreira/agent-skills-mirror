@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fugazi/test-automation-skills-agents` — 26 default patterns, 6 followed patterns, 112 file(s) materialized.
+Mirror of `fugazi/test-automation-skills-agents` — 26 default patterns, 5 followed patterns, 111 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `fugazi/test-automation-skills-agents` — 26 default patterns, 6 foll
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 6 |
-| Files         | 112 |
+| Followed pats | 5 |
+| Files         | 111 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,9 +53,8 @@ Mirror of `fugazi/test-automation-skills-agents` — 26 default patterns, 6 foll
 
 - `docs/getting-started.md`
 - `docs/skill-anatomy.md`
-- `instructions/agents.instructions.md`
-- `instructions/agent-skills.instructions.md`
-- `instructions/orchestration-workflow.instructions.md`
+- `docs/references/authoring-agents.md`
+- `docs/references/authoring-skills.md`
 - `references/testing-anti-patterns.md`
 
 ## File Index
@@ -73,10 +72,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`agents/selenium-test-specialist.agent.md`](agents/selenium-test-specialist.agent.md) |
 | 8 | ✓ | [`agents/test-refactor-specialist.agent.md`](agents/test-refactor-specialist.agent.md) |
 | 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 10 | ✓ | [`docs/claude-code-setup.md`](docs/claude-code-setup.md) |
-| 11 | ✓ | [`docs/copilot-setup.md`](docs/copilot-setup.md) |
-| 12 | ✓ | [`docs/cursor-setup.md`](docs/cursor-setup.md) |
-| 13 | ✓ | [`docs/gemini-cli-setup.md`](docs/gemini-cli-setup.md) |
+| 10 | ✓ | [`docs/antigravity-setup.md`](docs/antigravity-setup.md) |
+| 11 | ✓ | [`docs/claude-code-setup.md`](docs/claude-code-setup.md) |
+| 12 | ✓ | [`docs/copilot-setup.md`](docs/copilot-setup.md) |
+| 13 | ✓ | [`docs/cursor-setup.md`](docs/cursor-setup.md) |
 | 14 | ✓ | [`docs/windsurf-setup.md`](docs/windsurf-setup.md) |
 | 15 | ✓ | [`skills/a11y-playwright-testing/LICENSE.txt`](skills/a11y-playwright-testing/LICENSE.txt) |
 | 16 | ✓ | [`skills/a11y-playwright-testing/references/aria_patterns.md`](skills/a11y-playwright-testing/references/aria_patterns.md) |
@@ -171,11 +170,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 105 | ✓ | [`skills/webapp-selenium-testing/scripts/setup-maven-project.ps1`](skills/webapp-selenium-testing/scripts/setup-maven-project.ps1) |
 | 106 | ✓ | [`skills/webapp-selenium-testing/SKILL.md`](skills/webapp-selenium-testing/SKILL.md) |
 | 107 | → | [`docs/getting-started.md`](docs/getting-started.md) |
-| 108 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
-| 109 | → | [`instructions/agent-skills.instructions.md`](instructions/agent-skills.instructions.md) |
-| 110 | → | [`instructions/agents.instructions.md`](instructions/agents.instructions.md) |
-| 111 | → | [`instructions/orchestration-workflow.instructions.md`](instructions/orchestration-workflow.instructions.md) |
-| 112 | → | [`references/testing-anti-patterns.md`](references/testing-anti-patterns.md) |
+| 108 | → | [`docs/references/authoring-agents.md`](docs/references/authoring-agents.md) |
+| 109 | → | [`docs/references/authoring-skills.md`](docs/references/authoring-skills.md) |
+| 110 | → | [`docs/skill-anatomy.md`](docs/skill-anatomy.md) |
+| 111 | → | [`references/testing-anti-patterns.md`](references/testing-anti-patterns.md) |
 
 ---
 

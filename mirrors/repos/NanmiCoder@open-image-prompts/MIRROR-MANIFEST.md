@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NanmiCoder/open-image-prompts` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
+Mirror of `NanmiCoder/open-image-prompts` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NanmiCoder/open-image-prompts` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 17 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,23 +59,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/img-gen-prompts/agents/openai.yaml`](skills/img-gen-prompts/agents/openai.yaml) |
-| 2 | ✓ | [`skills/img-gen-prompts/references/gallery-session.md`](skills/img-gen-prompts/references/gallery-session.md) |
-| 3 | ✓ | [`skills/img-gen-prompts/references/retrieval-contract.md`](skills/img-gen-prompts/references/retrieval-contract.md) |
-| 4 | ✓ | [`skills/img-gen-prompts/scripts/oip.py`](skills/img-gen-prompts/scripts/oip.py) |
-| 5 | ✓ | [`skills/img-gen-prompts/SKILL.md`](skills/img-gen-prompts/SKILL.md) |
-| 6 | ✓ | [`skills/img-gen-taste/agents/openai.yaml`](skills/img-gen-taste/agents/openai.yaml) |
-| 7 | ✓ | [`skills/img-gen-taste/references/architecture-interior.md`](skills/img-gen-taste/references/architecture-interior.md) |
-| 8 | ✓ | [`skills/img-gen-taste/references/food-drink.md`](skills/img-gen-taste/references/food-drink.md) |
-| 9 | ✓ | [`skills/img-gen-taste/references/graphic-abstract.md`](skills/img-gen-taste/references/graphic-abstract.md) |
-| 10 | ✓ | [`skills/img-gen-taste/references/illustration-storytelling.md`](skills/img-gen-taste/references/illustration-storytelling.md) |
-| 11 | ✓ | [`skills/img-gen-taste/references/landscape-city.md`](skills/img-gen-taste/references/landscape-city.md) |
-| 12 | ✓ | [`skills/img-gen-taste/references/portrait-photography.md`](skills/img-gen-taste/references/portrait-photography.md) |
-| 13 | ✓ | [`skills/img-gen-taste/references/poster-cover.md`](skills/img-gen-taste/references/poster-cover.md) |
-| 14 | ✓ | [`skills/img-gen-taste/references/print-paint-craft.md`](skills/img-gen-taste/references/print-paint-craft.md) |
-| 15 | ✓ | [`skills/img-gen-taste/references/product-advertising.md`](skills/img-gen-taste/references/product-advertising.md) |
-| 16 | ✓ | [`skills/img-gen-taste/references/sci-fi-fantasy.md`](skills/img-gen-taste/references/sci-fi-fantasy.md) |
-| 17 | ✓ | [`skills/img-gen-taste/SKILL.md`](skills/img-gen-taste/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`skills/img-gen-prompts/agents/openai.yaml`](skills/img-gen-prompts/agents/openai.yaml) |
+| 3 | ✓ | [`skills/img-gen-prompts/references/gallery-session.md`](skills/img-gen-prompts/references/gallery-session.md) |
+| 4 | ✓ | [`skills/img-gen-prompts/references/retrieval-contract.md`](skills/img-gen-prompts/references/retrieval-contract.md) |
+| 5 | ✓ | [`skills/img-gen-prompts/scripts/oip.py`](skills/img-gen-prompts/scripts/oip.py) |
+| 6 | ✓ | [`skills/img-gen-prompts/SKILL.md`](skills/img-gen-prompts/SKILL.md) |
+| 7 | ✓ | [`skills/img-gen-taste/agents/openai.yaml`](skills/img-gen-taste/agents/openai.yaml) |
+| 8 | ✓ | [`skills/img-gen-taste/references/architecture-interior.md`](skills/img-gen-taste/references/architecture-interior.md) |
+| 9 | ✓ | [`skills/img-gen-taste/references/food-drink.md`](skills/img-gen-taste/references/food-drink.md) |
+| 10 | ✓ | [`skills/img-gen-taste/references/graphic-abstract.md`](skills/img-gen-taste/references/graphic-abstract.md) |
+| 11 | ✓ | [`skills/img-gen-taste/references/illustration-storytelling.md`](skills/img-gen-taste/references/illustration-storytelling.md) |
+| 12 | ✓ | [`skills/img-gen-taste/references/landscape-city.md`](skills/img-gen-taste/references/landscape-city.md) |
+| 13 | ✓ | [`skills/img-gen-taste/references/portrait-photography.md`](skills/img-gen-taste/references/portrait-photography.md) |
+| 14 | ✓ | [`skills/img-gen-taste/references/poster-cover.md`](skills/img-gen-taste/references/poster-cover.md) |
+| 15 | ✓ | [`skills/img-gen-taste/references/print-paint-craft.md`](skills/img-gen-taste/references/print-paint-craft.md) |
+| 16 | ✓ | [`skills/img-gen-taste/references/product-advertising.md`](skills/img-gen-taste/references/product-advertising.md) |
+| 17 | ✓ | [`skills/img-gen-taste/references/sci-fi-fantasy.md`](skills/img-gen-taste/references/sci-fi-fantasy.md) |
+| 18 | ✓ | [`skills/img-gen-taste/SKILL.md`](skills/img-gen-taste/SKILL.md) |
 
 ---
 

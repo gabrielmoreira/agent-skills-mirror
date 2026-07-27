@@ -42,10 +42,10 @@ non-trivial change. CI runs these on Linux, Windows, and macOS.
 - `main` — release branch. It only moves by maintainer-controlled promotion
   from `dev` (releases, docs deploys). Do not open feature PRs against `main`.
 - `preview` — prerelease train (`x.y.z-preview.*` versions).
-- `claudedesktop` — ongoing in-development branch. Parts of it have already
-  been merged into `dev` (e.g. 418d29b1); the remaining commits are integrated
-  only by maintainer action. Its divergence from `main`/`dev` is expected and
-  is not a bug. Do not merge or rebase it in a PR without maintainer direction.
+
+The Claude Desktop integration formerly carried on the `claudedesktop` branch is
+now fully merged into `dev`, and that branch has been retired. Desktop work
+continues as normal pull requests against `dev`.
 
 [`MAINTAINERS.md`](./MAINTAINERS.md) is authoritative for review and merge
 policy (approvals, CI requirements, security review, promotion). This file

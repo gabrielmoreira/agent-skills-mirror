@@ -187,6 +187,12 @@ aggregates into the run and honors `maxTokenBudget`. An agent that emits no
 `usage_update` reports `{0, 0}` and is therefore **not** budget-gated — size the
 budget on LLM agents, or bound the ACP agent with its own `--max-*` flags.
 
+On a Hybrid `runTeam()` Single short circuit, semantic-profiler usage is charged
+before the external backend starts. The backend's reported usage is then added
+at the run boundary, so an ACP usage delta can exhaust the remaining run budget.
+The process backend continues to contribute `{0, 0}` because it has no token
+signal.
+
 ## Programmatic API
 
 Most users only touch `backend`. To construct a backend directly, import from the

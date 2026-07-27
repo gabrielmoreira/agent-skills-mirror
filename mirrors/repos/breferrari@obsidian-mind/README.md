@@ -146,8 +146,27 @@ qmd --index obsidian-mind update   # after bulk edits
 qmd --index obsidian-mind embed    # after many new notes
 ```
 
-> [!NOTE]
-> First-time `qmd embed` downloads a ~328MB embedding model. `qmd query` (with LLM reranking) also downloads a ~1.28GB model on first use — skip it with `qmd search` (BM25) or `qmd vsearch` (semantic only) if you want to avoid the larger download.
+#### How it works under the hood
+
+QMD runs **three small models locally**, so there is no API key to set up, no per-query cost, and it works offline:
+
+| model | size | job |
+|---|---|---|
+| `embeddinggemma-300M` | ~328MB | turns notes and queries into vectors |
+| `qmd-query-expansion-1.7B` | ~1.28GB | rewrites your query into better search terms |
+| `Qwen3-Reranker-0.6B` | ~640MB | reorders the shortlist by actual relevance |
+
+They download on first use and are cached. QMD offloads to the GPU when it finds one — CUDA on a discrete card, Metal on Apple Silicon — and falls back to CPU otherwise. Check what yours is doing with `qmd doctor`.
+
+The three CLI verbs map onto that stack, cheapest first: `qmd search` is BM25 keywords with **no model at all**, `qmd vsearch` is vector-only, and `qmd query` is the full hybrid. If you want to avoid the larger downloads, `search` alone is genuinely useful.
+
+#### What that means for the MCP server
+
+The `om` server sends a lexical *and* a vector sub-query, so retrieval finds the note that answers your question even when it shares no keywords with it. Practical consequences worth knowing:
+
+- **Reads are the expensive side, not writes.** A query embeds locally before it can search, so `recall` with a query takes a couple of seconds while `recall` without one is near-instant. `search` over notes is fast — it is the vector step that costs.
+- **Writing a memory does not wait for the model.** The index update is synchronous, so a new memory is immediately retrievable; generating its vector happens in the background, because that only affects where it *ranks*, not whether it is found.
+- **No index, no problem.** Without QMD the server falls back to lexical matching. Ordering gets worse; nothing disappears.
 
 > [!NOTE]
 > If QMD isn't installed, everything still works — the agent falls back to grep and the Obsidian CLI, and the MCP server entry is skipped with a harmless warning.
@@ -197,7 +216,7 @@ obsidian-mind does **not** dump your entire vault into context. It uses tiered l
 
 | Tier | What | When | Cost |
 |------|------|------|------|
-| **Always** | `CLAUDE.md` + SessionStart context (North Star excerpt, git summary, tasks, vault file listing) | Session start | ~2K tokens |
+| **Always** | `CLAUDE.md` + SessionStart context (North Star excerpt, git summary, tasks, vault file listing) | Session start | capped by the manifest budget; the meter reports the real size every session |
 | **On-demand** | QMD semantic search results | When the agent needs specific context | Targeted |
 | **Triggered** | Classification routing hints | Every message | ~100 tokens |
 | **Triggered** | PostToolUse validation | After `.md` writes | ~200 tokens |
@@ -207,7 +226,7 @@ SessionStart loads **lightweight context** — small excerpts from key files, fi
 
 ### 🌐 Using with Other Agents
 
-obsidian-mind works with Claude Code, Codex CLI, and Gemini CLI. The vault conventions in `CLAUDE.md`, the hook scripts in `.claude/scripts/`, and the 18 commands in `.claude/commands/` are all agent-agnostic — pure Markdown, TypeScript, and shell with no SDK dependencies.
+obsidian-mind works with Claude Code, Codex CLI, and Gemini CLI. The vault conventions in `CLAUDE.md`, the hook scripts in `.claude/scripts/`, and the commands in `.claude/commands/` are all agent-agnostic — pure Markdown, TypeScript, and shell with no SDK dependencies.
 
 **Claude Code** — full support. Hooks, commands, subagents, and the memory system all work out of the box.
 
@@ -219,6 +238,45 @@ obsidian-mind works with Claude Code, Codex CLI, and Gemini CLI. The vault conve
 
 > [!NOTE]
 > Hooks, commands, subagent prompts, and vault memory (`brain/`) are all agent-agnostic. Only the `~/.claude/` auto-memory loader is Claude Code-specific. See `AGENTS.md` for the full portability guide.
+
+---
+
+## 🧠 Reach Your Vault From Any Repo
+
+Your vault normally only helps while you are sitting in it. The **`om` MCP server** changes that: a coding session in *any other repository* can search your notes, read them, follow the graph, and record what it learned back into the vault.
+
+```json
+{
+  "mcpServers": {
+    "om": {
+      "command": "node",
+      "args": ["/path/to/your-vault/.claude/scripts/om-mcp.mjs"]
+    }
+  }
+}
+```
+
+That goes in the **consuming project's** `.mcp.json`. Then add a short section to that project's own `CLAUDE.md` pointing at the vault.
+
+> [!IMPORTANT]
+> **Both steps are required, and the second is not paperwork.** Measured: with the server wired and no repo-side instruction, a session made **zero** vault calls and implemented a design the vault had recorded as explicitly rejected. With the instruction present, it refused and cited the note.
+>
+> A **prohibition** in the MCP `instructions` field propagates into the calling session reliably. A positive *"go consult the vault"* is advisory and gets skipped whenever a nearer source exists. The server can stop a session doing something; only the project's own law makes one go looking.
+
+**What the session gets:** `search` (semantic + keyword), `expand` (a note's links and backlinks), `recall` (durable lessons scoped to that repo), `remember` (record a lesson), `record_work` (file what happened), and `health` (is the wiring intact?). Plus your notes as readable resources.
+
+**Repos are identified by folder name**, which is right until it isn't — two repos both called `api` share one identity and therefore each other's memories. Drop a `.om-project` file with a distinct name at the repo root to separate them; `health` tells you which repo it thinks is calling and where that name came from.
+
+**Cross-repo memory with an epistemic contract.** A lesson learned in one repo reaches the repos it was scoped to and no others. Reach is *declared at write time*, never guessed at read time, so a sibling project does not inherit another's constraints. Everything recorded carries `confidence: verified | inferred | unverified`, dated volatile facts, and provenance derived server-side — a session cannot claim to be a project it is not. Corrections supersede rather than overwrite, so the store gets *more* trustworthy as it grows instead of accumulating contradictions.
+
+**Which notes it serves.** Your vault, your notes, your session — the default is simply what your vault already declares as your content (`user_content_roots`), at the granularity you wrote it (`work/active/`, not all of `work/`). Set `mcp_exposed_roots` in `vault-manifest.json` only if this vault holds material that is **not yours to share** — employer-confidential notes, a client's data. A note tagged `private` is never served, and memories are never served as ordinary notes, since they carry their own scope.
+
+Every read is logged with the calling repo, so "what did that session actually see" is answerable afterwards.
+
+> [!NOTE]
+> Keeping vault material out of a public PR is the **contract's** job, not the exposure list's — a session can read your vault directly regardless. The prohibition injected into the calling session is the part that measurably holds.
+
+**Want the mechanics?** `ARCHITECTURE.md` → *Reaching the Vault From Another Repo* walks the whole layer with diagrams: the four MCP surfaces and why the non-tool ones matter, the identity handshake, a `search` call traced end to end, how each memory's reach is evaluated, the write path, and every failure mode against the signal that reveals it.
 
 ---
 

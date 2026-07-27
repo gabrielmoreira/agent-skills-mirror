@@ -30,6 +30,7 @@ or assembling a custom treatment:
 | User intent                                         | Lane                                       |
 | --------------------------------------------------- | ------------------------------------------ |
 | too dark, flat, too warm, too many shadows          | correction                                 |
+| shape shadows/highlights or selected colors         | wheels, curves, or HSL secondary           |
 | polished, premium, warm, cinematic, fit the topic   | preset or custom treatment                 |
 | retro, print, ASCII, glitch, camcorder              | shader effect or effect-bearing preset     |
 | obscure the whole selected media                    | privacy Blur or Pixelate                   |
@@ -151,8 +152,8 @@ drops frames. Do not impose or claim a universal hard cap from one machine.
    contact sheet justifies it. Do not invent keys, exceed reported ranges, or
    stack effects without a visual reason. Do not run the generic grade/LUT
    resolver first; it adds irrelevant candidates and may download an unused
-   LUT. Use `grade --for --analyze` only when correction needs measured signal
-   evidence.
+   LUT. Use `media-treatment --selector "#hero" --analyze --json` only when
+   correction needs measured signal evidence.
 4. Persist pixel settings with `hyperframes media-treatment`; it validates and
    merges a patch into the existing nested `data-color-grading` contract. Use registered
    GSAP only for supported animated values and Registry overlay blocks only
@@ -195,5 +196,7 @@ drops frames. Do not impose or claim a universal hard cap from one machine.
    composed controls, optional overlays, and the frames/render that were
    actually checked. Do not report visual quality from command success alone.
 
-`resolve --type grade --for ... --analyze --json` provides deterministic
-clipping and signal evidence, not subject recognition or automatic taste.
+`media-treatment --analyze` provides deterministic clipping and signal
+evidence for local composition media, not subject recognition or automatic
+taste. It reports HDR/metadata caveats and a bounded primary-correction patch;
+it does not invent wheels, curves, or HSL selections from statistics.

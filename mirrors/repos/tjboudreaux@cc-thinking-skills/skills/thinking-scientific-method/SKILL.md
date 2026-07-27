@@ -1,162 +1,56 @@
 ---
 name: thinking-scientific-method
-description: Use when a symptom could have several causes and you must find the faulty code by ranking falsifiable hypotheses and checking the cheapest discriminating observation first.
+description: When a symptom has several plausible causes, rank falsifiable hypotheses and run the cheapest discriminating observation first; prefer least-assumptive survivors only after evidence fit.
+disable-model-invocation: true
 ---
 
-# Hypothesis-Differential Debugging
+# Scientific Method (Hypothesis Differential)
 
-## Overview
-
-The scientific method's payoff for an agent is not narrating "observe -> question." It is the **differential**: when a symptom could come from several places, enumerate competing falsifiable hypotheses and spend your cheapest observation on the one that best discriminates between them.
-
-This is the proven replacement for the old broad scientific-method skill. In SWE-bench fault localization, the original was flat; this agent-native version turned it into the strongest measured debugging lift in the current eval set.
-
-**Core Principle:** Don't guess-and-patch. Enumerate competing causes, then make the cheapest observation that would falsify the most likely one.
+When a symptom could come from several places, enumerate competing falsifiable hypotheses and spend the cheapest observation on the one that best discriminates among them. After each observation, keep only hypotheses that still fit, then prefer the survivor with the fewest unsupported assumptions as the working explanation.
 
 ## When to Use
 
-- A bug or incident symptom could plausibly come from more than one place
-- You have read access to code, logs, diffs, traces, or tests
-- You need to localize the faulty file, function, branch, config, or invariant before fixing
-
-```
-Symptom has several plausible causes?
-  -> no  -> test or fix the obvious cause directly
-  -> yes -> can you make cheap observations now?
-       -> no  -> gather access/evidence first
-       -> yes -> apply hypothesis-differential debugging
-```
+- A bug, incident, or anomaly has more than one plausible cause.
+- You can observe code, logs, diffs, traces, tests, configs, or data now.
+- You must localize the faulty file, function, branch, config, or invariant before fixing.
+- Competing explanations fit the same surface facts and you need a discriminating check.
 
 ## When NOT to Use
 
-- The cause is already obvious from a single trace, failing test, or recent diff -> fix directly.
-- Only one plausible hypothesis exists -> test it directly.
-- You cannot make any observation -> get access first; don't speculate.
-- You are designing an A/B test, canary, or multi-week experiment -> this skill is for observations an agent can make now.
+- Cause is already obvious from a single stack, failing test, or recent diff — fix directly.
+- Only one plausible hypothesis exists — test it; do not invent rivals for ritual.
+- No observation is possible yet — obtain access first; do not speculate a localization.
+- Multi-week experiments, product A/B tests, or policy trials — this skill is for agent-now checks.
+- Fault is already localized and you need systemic root/prevention depth — use five-whys-plus.
+- Selective "only these objects/times" defects better suited to IS/IS-NOT comparison — use Kepner-Tregoe.
+- Representation (doc/dashboard) may be stale versus reality — verify territory with map-territory first, then resume hypotheses.
 
-## The Procedure
+## Procedure
 
-### Step 1: Enumerate competing hypotheses
+1. **State the symptom precisely.** Capture failing behavior, scope, timing, environment, and constraints. Separate observation from interpretation.
+2. **Enumerate 2–5 competing hypotheses.** Name specific files, functions, configs, input conditions, or invariants. Reject vague buckets ("backend issue"). If no serious alternative remains after a deliberate check, exit this differential and test or fix the sole evidenced cause directly; never fabricate a rival to continue the procedure.
+3. **Name falsifiers and cheap observations before looking.** For each hypothesis: what result drops it, and what read/grep/diff/log/test check can you run now. Prefer observations available immediately over deploys, canaries, or long waits.
+4. **Rank observations by discrimination × cheapness.** Run the cheapest check that best separates the top contenders. Do not deep-dive the favorite first if a cheap cross-check would kill alternatives.
+5. **Update after each observation.** Drop falsified hypotheses. Among survivors that still fit all evidence, prefer the one with the fewest independent unsupported assumptions (extra components, rare timing, external dependencies). Parsimony ranks survivors after fit; it never rescues a leaner hypothesis that evidence already contradicts. Escalate complexity only when simpler survivors are ruled out.
+6. **Localize and stop.** When one hypothesis has direct supporting evidence and key alternatives are ruled out, name the file/function/config to change and the evidence that localizes it. Stop analyzing once localization is direct.
 
-List 3-5 specific, falsifiable hypotheses. Name the likely file, function, subsystem, input condition, or invariant. Avoid vague buckets like "backend issue" or "race condition somewhere."
+## Output
 
-```markdown
-| # | Hypothesis | Why plausible? |
-|---|------------|----------------|
-| H1 | `auth/session.py:refresh` drops rotated tokens | failures start after token rotation |
-| H2 | cache TTL mismatch in `session_cache` | stale sessions persist across deploys |
-| H3 | frontend retries reuse expired cookie | only browser flow is affected |
-```
-
-If you can only think of one hypothesis, you are guessing. Force alternatives before inspecting deeper.
-
-### Step 2: Name the cheapest discriminating observation
-
-For each hypothesis, name one observation you can make now that would separate it from the others.
-
-Good observations:
-- read the function the stack trace names
-- grep callers of a parser or config key
-- inspect the recent diff touching the failing path
-- compare two log lines across working and broken cases
-- check a test fixture or schema invariant
-
-Bad observations:
-- deploy a canary
-- run a long experiment
-- ask users to wait
-- inspect every file in the subsystem
-
-### Step 3: State falsifiers before looking
-
-For each hypothesis, write what result would make you drop it. This prevents confirmation search.
-
-```markdown
-| Hypothesis | Falsified if... |
-|------------|-----------------|
-| H1 token refresh | refresh path never reads rotated token state |
-| H2 cache TTL | cache entry expires before the observed stale window |
-| H3 frontend retry | same failure occurs in API-only reproduction |
-```
-
-### Step 4: Rank by likelihood x cheapness
-
-Test the observation with the best expected information per unit of effort. Start with the cheapest observation that separates your top hypotheses, not the most elaborate investigation.
-
-```
-For each hypothesis → name falsifier → rank by likelihood x cheapness → observe → update/drop → localize fault
-```
-
-### Step 5: Stop on direct localization
-
-Stop when one hypothesis is supported by direct evidence and the key alternatives are ruled out. Name the file/function/config to change and the evidence that localizes it.
-
-## Investigation Template
-
-```markdown
-## Symptom
-[Specific failing behavior, scope, timing, and known constraints]
-
-## Hypotheses
-| # | Hypothesis | Why plausible? | Cheapest observation | Falsified if... |
-|---|------------|----------------|----------------------|-----------------|
-| H1 | [specific file/function/config cause] | [evidence] | [read/grep/diff/check] | [drop condition] |
-| H2 | [specific alternate cause] | [evidence] | [read/grep/diff/check] | [drop condition] |
-| H3 | [specific alternate cause] | [evidence] | [read/grep/diff/check] | [drop condition] |
-
-## Test Order
-1. [Cheapest discriminating observation]
-2. [Next observation if H1 is falsified]
-3. [Deferred only if cheap observations do not localize]
-
-## Localization
-[Supported hypothesis, ruled-out alternatives, and the file/function/config to change]
-```
-
-## Worked Shape
-
-```markdown
-Symptom: intermittent 500s on /export, only eu-west, started three days ago.
-
+```text
+Symptom: <specific failing behavior, scope, timing>
 Hypotheses:
-1. recent diff to export serializer
-   Observation: inspect commits touching `export_serializer`
-   Falsified if: no diff touches the failing codepath
-2. eu-west Redis rotation broke a cache key
-   Observation: read cache key construction + region config
-   Falsified if: key and TTL match healthy regions
-3. upstream timeout under load
-   Observation: compare timeout logs during failure window
-   Falsified if: no upstream latency spike
-
-Test order: H1, H2, H3.
-Result: H1 diff changed nested export handling and matches stack trace.
-Localized fault: `app/export/serializer.py`.
+  H1: <specific cause> | Why plausible | Observation | Falsified if
+  H2: ...
+  H3: ...
+Test order: <cheapest discriminating checks>
+Results: <what each observation showed>
+Survivors: <remaining Hs; least-assumptive working pick among fit>
+Localized fault: <file/function/config + supporting evidence>
+Ruled out: <Hs dropped and why>
 ```
 
-## Anti-Patterns
+## Verification
 
-- Narrating the scientific method without proposing competing causes
-- Looking only for evidence that supports your first guess
-- Calling an expensive experiment a "test" when a cheap observation exists
-- Stopping at a plausible explanation before ruling out alternatives
-- Continuing to analyze after the faulty file/function is localized
-
-## Verification Checklist
-
-- [ ] Listed 3-5 specific hypotheses
-- [ ] Each hypothesis has a cheap observation available now
-- [ ] Each hypothesis has a stated falsifier
-- [ ] Observations are ranked by likelihood x cheapness
-- [ ] Final answer names the localized file/function/config and the evidence
-
-## Key Questions
-
-- What would I see if this hypothesis were false?
-- Which observation best separates the top two hypotheses?
-- Am I testing a hypothesis or confirming my first guess?
-- Can I localize the fault with a cheaper observation?
-
-## Feynman's Wisdom
-
-"The first principle is that you must not fool yourself - and you are the easiest person to fool." Your intuition generates hypotheses; the differential tests them.
+- Falsify the differential conclusion if you continued with fewer than two serious hypotheses, if no pre-stated falsifier existed, if a cheaper discriminating check was skipped, or if a "simpler" story was kept after evidence contradicted it.
+- Stop when the fault is directly localized and alternatives that matter are ruled out; do not continue theorizing.
+- Over-application guard: do not narrate observe→question without competing causes; do not treat fewest assumptions as proof; do not run this skill when a single obvious cause is already evidenced.

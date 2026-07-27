@@ -102,7 +102,7 @@ See `references/vault-schema.md` for full structural details.
 ## Core Operating Principles
 
 ### AI-first vault rule (applies to every note)
-The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes - across all 45 commands - must follow `references/ai-first-rules.md`:
+The vault is designed for **future-Claude** to read and reason over, not for human review. Every note Claude writes - across all 46 commands - must follow `references/ai-first-rules.md`:
 
 1. **Self-contained context** - each note explains itself; don't rely on backlinks alone
 2. **"For future Claude" preamble** - 2-3 sentence summary so Claude can decide relevance in 10 seconds
@@ -267,7 +267,7 @@ See `references/write-rules.md` for the complete guide. Summary:
 
 - **Links**: Use `[[Note Name]]` for internal links. Always link to people, projects, and jobs mentioned in a note.
 - **Dates**: ISO format (`YYYY-MM-DD`) in frontmatter. Human format (`March 24`) in body text.
-- **Naming**: `YYYY-MM-DD - Title.md` for dated notes. `Title.md` for evergreen notes. No special characters except `-` (em dash).
+- **Naming**: `YYYY-MM-DD - Title.md` for dated notes. `Title.md` for evergreen notes. No special characters except the ASCII hyphen `-`. Never an em dash (U+2014) or en dash (U+2013) in a filename: link matching compares stems literally, so `2026-07-26 - Title.md` will not resolve a `[[2026-07-26 - Title]]` link, producing an orphan and a dangling link in the same write. The write-time validator checks file CONTENT, not filenames, so nothing catches this for you.
 - **Status values**: `active` / `planning` / `completed` / `archived` / `on-hold` for projects. `in-progress` / `done` / `waiting` for tasks.
 - **Kanban**: Items follow the format `- [ ] 🔴 **Title** · @{YYYY-MM-DD}\n\tDescription [[Link]]`
 
@@ -325,7 +325,7 @@ Completed items move to the `## ✅ Done` column with a strikethrough: `- [x] ~~
 
 ### Run vault health check
 ```bash
-python scripts/vault_health.py --path ~/path/to/vault
+uv run --directory "SKILL_ROOT" scripts/vault_health.py --path ~/path/to/vault
 ```
 Reports: duplicate notes, orphaned files (no incoming links), stale tasks (overdue), empty folders, broken links, notes missing frontmatter.
 
@@ -338,6 +338,20 @@ Proactively suggest running this when the user says the vault feels messy, notes
 These slash commands can be used in any Claude surface. Each one is smart - it reads context, searches before writing, and propagates everywhere changes belong.
 
 **Name matching:** If a name argument has a typo or is approximate, search the vault for the closest match, show what was found, and confirm with the user before proceeding. Never silently create a note with a misspelled name.
+
+**Command selection: the longest matching trigger wins.** Several triggers are prefixes of longer, more specific ones, so a shorter match is not evidence that the shorter command is the right one. Always check whether a longer trigger also matches before choosing.
+
+The five collisions that exist today, with the correct routing:
+
+| The user says | Route to | Not to | Why it matters |
+|---|---|---|---|
+| "remind me every month...", "track a recurring..." | `/obsidian-recurring` | `/obsidian-task` | A one-shot card never recurs, which is the whole point of the request |
+| "save this idea", "capture this" | `/obsidian-capture` | `/obsidian-save` | One small idea note, not a multi-subagent sweep across people, projects, tasks, decisions and boards |
+| "save this person", "remember this person" | `/obsidian-person` | `/obsidian-save` | A person note, not a full conversation sweep |
+| "synthesize what I know about X" | `/vault-deep-synthesis` | `/obsidian-synthesize` | One topic cross-referenced, not a whole-vault pattern scan |
+| "find unnamed patterns" | `/obsidian-emerge` | `/obsidian-synthesize` | Surfaces patterns for the user, does not write synthesis pages unasked |
+
+When two commands still look equally plausible after applying the rule, ask which one rather than guessing - the blast radii differ enormously, and `/obsidian-save` in particular writes across many files.
 
 ---
 
@@ -547,7 +561,7 @@ If a project name argument is given, shows deep context for that one project onl
 **Runs a vault health check and summarizes findings.**
 
 Steps:
-1. Run: `python scripts/vault_health.py --path ~/path/to/vault --json`
+1. Run: `uv run --directory "SKILL_ROOT" scripts/vault_health.py --path ~/path/to/vault --json`
 2. Parse the JSON output and split findings into categories
 3. Spawn parallel subagents to handle each category simultaneously:
    - **Links agent**: verify broken links, attempt to resolve them
@@ -568,6 +582,14 @@ Steps:
 6. For safe fixes (missing frontmatter, obvious duplicates, creating pages for concept gaps), offer to fix them automatically
 7. For destructive fixes (archiving, merging, resolving contradictions), list them and ask for explicit confirmation before touching anything
 8. Append an operation-log entry with severity counts - if `Logs/` exists write the entry to `Logs/YYYY-MM-DD.md`, otherwise append to `log.md` (SKILL.md's own rule: the root `log.md` is a pointer file in v0.9+ vaults, never an entry target)
+
+---
+
+### `/obsidian-reindex`
+
+**Refreshes the semantic search index and makes its coverage visible.** Full steps in `commands/obsidian-reindex.md` (the source of truth).
+
+In short: reads the vault path from `_CLAUDE.md`, reports the current `index_coverage`, runs the existing incremental `semantic_search.py --build`, and reports coverage again with the builder's new, cached, excluded, degraded, and dropped counts. A backend failure stops the flow and is shown to the user; it is never presented as a successful refresh. The command updates only `.obsidian-semantic-index.json`, not Markdown notes.
 
 ---
 
@@ -1106,7 +1128,7 @@ Setup:
 
 Prompt to schedule:
 ```
-Read _CLAUDE.md. Run: python scripts/vault_health.py --path ~/path/to/vault --json
+Read _CLAUDE.md. Run: uv run --directory "SKILL_ROOT" scripts/vault_health.py --path ~/path/to/vault --json
 Parse the output. Write a health report to Knowledge/Vault Health YYYY-MM-DD.md
 summarizing findings by severity (critical, warning, info).
 Do not fix anything autonomously - only report.

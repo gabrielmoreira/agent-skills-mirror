@@ -6,7 +6,7 @@ license: MIT
 compatibility: Designed for Claude Code or similar AI coding agents, and for projects using Golang.
 metadata:
   author: samber
-  version: "1.2.4"
+  version: "1.2.5"
   openclaw:
     emoji: "💉"
     homepage: https://github.com/samber/cc-skills-golang
@@ -92,12 +92,15 @@ do.ProvideValue(injector, &Config{Port: 8080})
 The container MUST only be accessed at the composition root:
 
 ```go
-// Invoke with error handling
+// Invoke with error handling — reserve for call sites outside the DI graph
+// (e.g. an HTTP handler that must degrade gracefully instead of crashing)
 db, err := do.Invoke[Database](injector)
 
-// MustInvoke panics on error (use when confident service exists)
+// MustInvoke panics on error — preferred in providers, recovered by do.Invoke on the parent call
 db := do.MustInvoke[Database](injector)
 ```
+
+Inside a provider function, always use `do.MustInvoke` (or `MustInvokeAs`/`MustInvokeNamed`/`MustInvokeStruct`) rather than the error-returning variant. A provider already returns `(T, error)`, so propagating a dependency failure with `do.Invoke` costs an extra `if err != nil { return nil, err }` on every call. `do.MustInvoke` panics instead, but samber/do correctly catches and recovers that panic at the enclosing `Invoke` call and converts it back into a regular error — this recover happens inside the library itself, not in caller code, so `MustInvoke` is safe to use inside providers. The failure still surfaces as an error at the composition root, just without the manual boilerplate in every provider.
 
 ### 3. Service Dependencies
 
@@ -183,6 +186,7 @@ func main() {
 3. Keep dependency trees shallow — chains beyond 3-4 levels make initialization order fragile and errors harder to trace
 4. Handle errors in provider functions — a silently failing provider creates a broken service that crashes later in unexpected places
 5. Use scopes to organize services by lifecycle — request-scoped services prevent leaks, global services prevent redundant initialization
+6. Use `do.MustInvoke*` inside provider functions instead of `do.Invoke*` — samber/do correctly catches and recovers the panic at the outer `Invoke` call, turning it back into a returned error, so it's safe to use inside providers and you get the same error propagation without the boilerplate
 
 For scopes, lifecycle management, struct injection, and debugging, see [Advanced Usage](./references/advanced.md).
 

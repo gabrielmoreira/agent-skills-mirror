@@ -23,7 +23,7 @@ The hook scripts in `.claude/scripts/` are agent-agnostic TypeScript and shell, 
 
 ## Commands
 
-18 commands in `.claude/commands/` — agent-agnostic markdown with YAML frontmatter.
+Commands live in `.claude/commands/` — agent-agnostic markdown with YAML frontmatter. `brain/Skills.md` is the catalog.
 
 - **Claude Code / Gemini CLI**: invoke as `/om-standup`, `/om-dump`, etc.
 - **Codex CLI**: type the command name as a regular prompt without the `/` prefix (e.g. `om-standup`). Codex will find and execute the command file.
@@ -33,6 +33,14 @@ The hook scripts in `.claude/scripts/` are agent-agnostic TypeScript and shell, 
 The vault's memory lives in `brain/` — `Memories.md`, `Patterns.md`, `Key Decisions.md`, `Gotchas.md`. These are plain markdown files that any agent can read and write. When you learn something worth remembering, write it to the relevant `brain/` topic note with a wikilink to context.
 
 The `~/.claude/` auto-loaded memory index is Claude Code-specific — skip that section in `CLAUDE.md`. The vault-side `brain/` notes are the source of truth.
+
+## Reaching this vault from another repo
+
+The `om` MCP server (`.claude/scripts/om-mcp.mjs`) exposes this vault over MCP, so a session running in a **different repository** can search it, read notes, follow the graph, and record durable lessons back into it. It speaks plain MCP over stdio, so any MCP-capable agent can register it — nothing about it is Claude Code-specific.
+
+Register it in the *consuming* project's MCP config, pointing at this vault's absolute path, then add a short section to that project's own agent doc telling it the vault exists. **Both steps are required**: measured, a session with the server wired but no repo-side instruction made zero vault calls, because a prohibition propagates into a session reliably while a positive "go look" does not.
+
+Do not register the raw `qmd` server in a consuming repo — it searches every note directly, so the repo matches against memories written for unrelated projects. Applying each memory's declared scope on top of the index is what `om` adds. Full details in `CLAUDE.md`.
 
 ## Subagents
 

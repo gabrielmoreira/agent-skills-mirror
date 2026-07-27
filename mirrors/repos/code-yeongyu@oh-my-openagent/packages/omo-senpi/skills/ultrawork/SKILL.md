@@ -1,6 +1,6 @@
 ---
 name: ultrawork
-description: Binding ultrawork mode directive for omo-senpi. When a prompt contains ultrawork or ulw, the omo input hook injects the full directive inline as an <ultrawork-mode> block in the same message, so when that block is already present do not read this file again - it duplicates the same directive. Read this file only when ultrawork mode is requested and no <ultrawork-mode> block is present in the conversation.
+description: Binding ultrawork mode directive for omo-senpi. When a prompt contains ultrawork or ulw, the omo input hook injects the full directive as a hidden custom message (customType omo-ultrawork:directive, display false) ahead of the user's text, which is left untouched; a prompt queued while the agent is streaming instead carries the directive appended inside that same message. The directive is present in the conversation context; on the idle path it is not shown in the visible prompt, while a queued prompt carries the directive visibly (exactly as before this change). When the directive is already present in the conversation, do not read this file again - this file is that same directive. Read this file only when ultrawork mode is requested and the directive is not already present in the conversation.
 metadata:
   short-description: Binding ultrawork mode directive
 ---
@@ -341,17 +341,20 @@ Until every success criterion PASSES with its evidence captured:
 Within a step, follow Finding things; NEVER parallelise RED and GREEN of
 the same criterion.
 
-# Waiting discipline (a poll costs a full model round)
-Every status check you issue as a tool call replays the entire
-accumulated context through the model. When a command will run long
-(installs, builds, test suites, containers, CI), run it to completion
-in ONE call with a timeout sized to the expected duration, or send
-output to a log file and read it once when a completion signal is
-expected. Never re-poll the same surface with empty reads or
-sub-minute waits — batch waiting into the fewest, longest blocking
-calls the harness allows, and do independent root work while the
-command runs. If two consecutive checks show no state change, double
-the wait before the next check or switch to a completion signal.
+# Waiting discipline (notifications, not polls)
+Blocking waits are gone from this harness. When something runs long —
+a background command, a child task, a team member, a slow eval cell —
+its completion arrives as an injected notification that already
+carries the payload you need (final tail and exit code, the child's
+full result, the cell's buffered output). End your turn or keep doing
+independent root work; the notification wakes you. Never re-poll the
+same surface with empty reads — every status check you issue as a
+tool call replays the entire accumulated context through the model.
+- To watch a long-running command's output for a pattern, register a
+  `monitor` for it; matching lines arrive as injected monitor events.
+- Need a midpoint read? Peek once with `bash_output` or
+  `task_output({ mode: "tail" })` — both return immediately — then go
+  back to root work.
 
 # omo-senpi task + team tools
 Delegate through the `task` tool: `prompt` plus exactly ONE of
@@ -368,11 +371,13 @@ members; route them through `task`, never `team_create`.
 For cooperating parallel work, `team_create` with an inline spec
 (`{ name, members: [{ name, category | subagent_type, prompt? }] }`)
 makes you the lead of background member children: send work to a
-member with `task_send` (`to: "<member>"`, `team_run_id`), block on
-replies with `team_wait`, track shared work through the team tasklist
-(`task_create`, `task_list`, `task_update`, `task_get`), and tear down
-with `team_delete`. Members see only member-scoped `task_send` /
-`team_wait` and reply with `task_send({ to: "lead", ... })`.
+member with `task_send` (`to: "<member>"`, `team_run_id`), track
+shared work through the team tasklist (`task_create`, `task_list`,
+`task_update`, `task_get`), and tear down with `team_delete`. Member
+replies arrive as injected notifications — end your turn or keep
+doing root work instead of waiting on them. Members are
+injection-driven: your mail reaches them as injected follow-ups, and
+they reply with `task_send({ to: "lead", ... })`.
 
 # omo-senpi subagent reliability
 Every child prompt is self-contained and starts with
@@ -385,9 +390,11 @@ Treat child status as a progress signal, not a timeout counter. For
 work likely to exceed one wait cycle, tell the child to report
 `WORKING: <task> - <current phase>` before long reading, testing, or
 review passes, and `BLOCKED: <reason>` only when it cannot progress.
-Track spawned child names locally. A `team_wait` / `task_output`
-timeout only means no new update arrived — treat a running child as
-alive and keep doing independent root work. Fall back only when the
+Track spawned child names locally. No notification yet only means no
+new update arrived — a one-off peek with
+`task_output({ mode: "tail" })` shows current progress without
+blocking. Treat a running child as alive and keep doing independent
+root work. Fall back only when the
 child completes without the deliverable, answers ack-only, or stops
 running: send one follow-up demanding the deliverable, and if that
 stays silent or ack-only, record the lane inconclusive (never as
@@ -401,15 +408,16 @@ research, or review result is integrated or explicitly recorded as
 inconclusive. Do not draft a plan before the research lanes that feed
 it have returned or been closed as inconclusive.
 Spawn every independent child for the current wave FIRST. After the
-wave is launched, wait on each spawned child (`task_output`,
-`team_wait`) until each reaches terminal status (`completed`,
-`failed`, `blocked`, or explicitly recorded inconclusive) before any
-dependent todo transition, goal continuation, implementation tool
-call, plan drafting, approval-gate work, PR handoff, or final
-response. A timeout is not terminal status.
+wave is launched, end your turn or keep doing independent root work —
+each child's completion arrives as an injected notification carrying
+its final result. Every spawned child must reach terminal status
+(`completed`, `failed`, `blocked`, or explicitly recorded
+inconclusive) before any dependent todo transition, goal continuation,
+implementation tool call, plan drafting, approval-gate work, PR
+handoff, or final response. Silence is not terminal status.
 Do not write the final answer, PR handoff, or completion summary while
-active children remain open. Use wait cycles with growing timeouts:
-start short (~30s) and double up to ~5 minutes. After two silent waits
+active children remain open. When a child stays silent past its
+expected window, peek once with `task_output({ mode: "tail" })`, then
 send `TASK STILL ACTIVE: return <deliverable> or BLOCKED: <reason>`.
 After four silent or ack-only checks, close the lane as inconclusive,
 record that it is not approval, and respawn smaller only if the

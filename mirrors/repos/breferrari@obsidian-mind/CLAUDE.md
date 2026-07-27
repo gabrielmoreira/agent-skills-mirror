@@ -42,6 +42,7 @@ Defined in `.claude/commands/`. Claude Code auto-surfaces every command with its
 | `perf/evidence/` | PR deep scans, data extracts for reviews | Named `<Person> PRs - <Period>.md` |
 | `perf/<cycle>/` | Review cycle briefs + artifacts | Review briefs (private, manager, peer) |
 | `brain/` | Claude's operational knowledge | `Memories.md`, `Key Decisions.md`, `Patterns.md`, `Gotchas.md`, `Skills.md`, `North Star.md` |
+| `memories/YYYY/MM/` | **Cross-repo agent memory** -- durable lessons recorded over MCP by sessions working in *other* repositories. Time is the only thing in the path; reach is declared in frontmatter | Browse via `bases/Memories.base`; never edit by hand |
 | `org/` | Organizational knowledge index | `People & Context.md` (MOC) |
 | `org/people/` | Atomic person notes | One note per person |
 | `org/teams/` | Team notes as graph nodes | One note per team |
@@ -50,7 +51,7 @@ Defined in `.claude/commands/`. Claude Code auto-surfaces every command with its
 | `templates/` | Obsidian templates | `Work Note.md`, `Decision Record.md`, etc. |
 | `.claude/commands/` | Slash commands (auto-surfaced in-session; catalog in `brain/Skills.md`) | One `.md` per command |
 | `.claude/agents/` | Subagents | See subagents table below |
-| `.claude/scripts/` | Hook scripts | `session-start.ts`, `classify-message.ts`, `validate-write.ts`, `pre-compact.ts`, `stop-checklist.ts`, `charcount.ts` |
+| `.claude/scripts/` | Hook scripts + the MCP server | `session-start.ts`, `classify-message.ts`, `validate-write.ts`, `pre-compact.ts`, `stop-checklist.ts`, `charcount.ts`, `om-mcp.mjs` (see **Reaching the vault from another repo** below) |
 | `.claude/skills/` | Obsidian + QMD skills | Loaded automatically via Skill tool |
 
 ## Obsidian CLI
@@ -252,6 +253,9 @@ Beyond tags, use these frontmatter properties to enable search and Bases views:
 |--------|----------|---------|
 | **MEMORY.md** | `~/.claude/projects/.../memory/MEMORY.md` | Auto-loaded index only. Pointers to vault notes. |
 | **Vault memories** | `brain/` topic notes | Git-tracked, Obsidian-browsable, linked. All durable knowledge lives here. |
+| **Cross-repo memories** | `memories/YYYY/MM/` | Written by sessions in *other* repos over MCP, under an enforced epistemic contract. See below. |
+
+**Which one, when you are working inside the vault:** `brain/`. Always. The `memories/` tree is written by the `om` MCP server on behalf of sessions elsewhere, and the server **refuses** a write from a session running inside the vault — a memory recorded here would be scoped to the vault-as-a-project and reach only the sessions that already read every note directly. Write the note normally and let the hooks file it.
 
 When asked to "remember" something:
 1. Find or create the appropriate `brain/` topic note (Gotchas, Patterns, Key Decisions, etc.)
@@ -267,6 +271,78 @@ The SessionStart hook injects a **Brain Topics (read on demand)** index listing 
 - If QMD is unavailable, read the specific `brain/` note directly with the Read tool. Don't load all of `brain/` — only the one(s) matching the topic.
 - Skip notes marked `(empty)` in the index — they're stubs with no substantive content.
 - After answering, if the conversation produced durable knowledge, update the relevant brain note (see the "remember" workflow above).
+
+## Reaching the Vault From Another Repo
+
+The vault normally only helps while you are sitting in it. The **`om` MCP server** makes it reachable from a coding session running in any other repository: that session can search the vault, read notes, follow the graph, and record back into it.
+
+### The install is two steps, and both are required
+
+**1. Register the server** in the consuming project's `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "om": {
+      "command": "node",
+      "args": ["<absolute path to your vault>/.claude/scripts/om-mcp.mjs"]
+    }
+  }
+}
+```
+
+**2. Add a short section to that project's own `CLAUDE.md`**, telling it the vault exists and to consult it.
+
+> [!warning] Step 2 is not documentation garnish.
+> **Measured:** with the server wired and *no* repo-side instruction, a session made **zero** vault calls and went on to implement a design the vault had recorded as explicitly rejected. With the instruction present, it refused and cited the note.
+>
+> The reason is an asymmetry in how MCP `instructions` propagate: a **prohibition** holds reliably, while a positive *"go consult the vault"* is advisory and gets skipped whenever a nearer source exists. The server can stop a session doing something; only the project's own law makes one go looking.
+
+> [!warning] Do not register the raw `qmd` server in a consuming repo.
+> It searches every note directly, with no notion of which memories were written for which project — so the repo matches against lessons meant for unrelated ones. Applying each memory's declared scope on top of the index is exactly what `om` adds, and going around it returns the **wrong** things, not merely more of them.
+
+### What it exposes
+
+| tool | purpose |
+|------|---------|
+| `search` | semantic + keyword search over exposed notes |
+| `expand` | a note's graph neighbourhood — links out and backlinks |
+| `recall` | durable lessons scoped to the calling repo, most specific first |
+| `remember` | record a lesson that will still be true in a different repo |
+| `record_work` | record what happened in this repo, filed where it belongs |
+| `health` | is the wiring intact? |
+
+Plus notes as readable **resources**, and `recall_topic` / `prior_art` as **prompts** you invoke yourself from the `/` menu.
+
+### Which memories reach which project
+
+This is the part worth understanding, and it is what the layer is for. Every memory declares its reach when written:
+
+- `scope: project`, `projects: [a, b]` — reaches those repos and no others
+- `scope: platform`, `platforms: [ios]` — reaches any repo on that platform
+- `scope: general` — reaches everywhere
+
+A reader never widens what the writer declared, so a sibling app on the same platform does not inherit another app's project-scoped constraints. `recall` with `explain: true` reports why each memory was shown and how many were withheld.
+
+**A repo is identified by its folder name**, which is usually right and occasionally not: two repos both called `api` share one identity, so each receives the other's memories. Write a distinct name into a `.om-project` file at the repo root to separate them — `health` reports which repo it thinks is calling and where that name came from.
+
+### Which notes the server serves
+
+Your vault, your notes, your session. The default is the vault's own `user_content_roots`, at the granularity it declares them (`work/active/`, not all of `work/`). Set `mcp_exposed_roots` only if this vault holds material that is **not yours to share** — employer-confidential notes, a client's data.
+
+| key | default | meaning |
+|-----|---------|---------|
+| `mcp_exposed_roots` | *(empty → `user_content_roots`)* | folders whose notes may be read |
+| `mcp_never_expose` | *(empty)* | filenames withheld regardless of folder |
+| `memory_root` | `memories` | where cross-repo memories live |
+| `mcp_inbox` | `inbox` | fallback destination for `record_work` |
+
+`memories/` is never served as an ordinary note whatever the config says — memories carry their own scope, and the note surface would bypass it. A note tagged `private` in frontmatter is never served either.
+
+> [!note] Keeping vault material out of repos is the contract's job, not this list's.
+> A session can read the vault directly, so narrowing what the server serves prevents nothing on its own. What works is the prohibition injected into the calling session, plus `.claude/om-mcp-audit.jsonl` (gitignored), which records every read with the calling repo.
+
+Run `health` when something that should be in the vault cannot be found — every failure in this layer presents identically as "no results", and that tool is what tells them apart.
 
 ## Agent Guidelines
 

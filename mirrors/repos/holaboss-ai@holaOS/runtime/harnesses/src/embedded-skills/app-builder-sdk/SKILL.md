@@ -23,7 +23,7 @@ All supplemental files named in this skill are bundled beside this `SKILL.md`. T
 
 ## When NOT to use this skill
 
-- The user already has a working hola-boss-apps module and wants to extend it → modify it in place; don't rewrite as SDK. (The legacy app-builder skill that used to live alongside this one has been removed; all new app work goes through this SDK.)
+- The user already has a working module app and wants to extend it → modify it in place; don't rewrite as SDK. (The legacy app-builder skill that used to live alongside this one has been removed; all new app work goes through this SDK.)
 
 ## The 5 primitives
 
@@ -100,6 +100,62 @@ The helper reads `HOLABOSS_APP_GRANT` + `WORKSPACE_API_URL` (both injected by th
 There is **no legitimate reason** for an SDK app to ping the upstream API host as a connectivity test. If something looks like it needs that, you want `getIntegrationStatus` instead.
 
 The runtime enforces this at `workspace_apps_register` time: a source-tree scan rejects any app whose `src/` contains hardcoded toolkit hosts like `api.twitter.com`, `api.x.com`, `api.github.com`, `slack.com/api`, `api.notion.com`, `api.linear.app`, `gmail.googleapis.com`, etc. The error names the file, line, and the provider you should be routing through instead. The right shape is **always** `createRuntimeBrokerTransport({ provider })` — no upstream host belongs in your app code.
+
+### SDK actions are deterministic provider effects only
+
+The SDK supports one execution model: deterministic provider effects through `providerEffectAction(...)`. If the app needs open-ended agentic work, that belongs in a first-class workflow agent node or an issue, not inside an app action. App code does not have a delegated-task surface.
+
+- Use `providerEffectAction(...)` for "send/post/create/update this exact thing in provider X".
+- Use plain `app.action(...)` for non-provider local effects on app state.
+- Do **not** wire raw `fetch` calls to `/api/v1/issues` or `/api/v1/capabilities/runtime-tools/tasks/*` from app code to fake delegation. If an action is agentic in nature, redesign the flow so the workflow / issue surface owns it.
+
+### Deterministic provider effects: use `providerEffectAction(...)`
+
+If an action is an app-owned, deterministic provider side effect, use `providerEffectAction(...)` from `@holaboss/app-builder-sdk`.
+
+What it encodes:
+
+- the app owns the provider call directly
+- readiness is checked through `getIntegrationStatus()`
+- missing auth/binding becomes a blocked app state
+- the action does **not** silently swallow a missing connection
+
+Minimal shape:
+
+```ts
+import {
+  createRuntimeBrokerTransport,
+  providerEffectAction,
+} from "@holaboss/app-builder-sdk"
+
+const bridge = createRuntimeBrokerTransport({ provider: "gmail" })
+
+app.action(draft, "send", providerEffectAction({
+  provider: "gmail",
+  fromStates: ["approved"],
+  toState: "sent",
+  blockedState: "send_blocked",
+  failedState: "send_failed",
+  buildRequest: ({ row }) => ({
+    to: row.email,
+    subject: row.subject,
+    body: row.body,
+  }),
+  execute: async ({ bridge, request }) =>
+    bridge.call("POST", "/messages/send", request),
+  persistBlocked: (blocked) => ({
+    blocker_code: blocked.code,
+    blocker_message: blocked.message,
+  }),
+  persistSuccess: ({ result }) => ({
+    provider_message_id: result.id,
+  }),
+}))
+```
+
+### Multi-step orchestration belongs in workflows
+
+If the app needs multi-step orchestration, model it as a first-class workflow. App actions stay single-step provider effects; the workflow surface owns sequencing, agent steps, and durable state across steps.
 
 ## Dashboard / workspace-pane UI (vibe-coded apps)
 
@@ -236,7 +292,7 @@ Other UI anti-patterns (not lint-enforced, but still wrong):
 
 - **Hand-rolled polling / `setInterval` / `setTimeout(retry, N)` / custom backoff loops.** All scheduling and retry lives in the workspace automations layer. The SDK's `sync(name, { schedule, ... })` is a **declarative** statement of intent — Holaboss runs it on the declared cadence; you do not. Putting an interval in client or server code creates duplicate fetches, fights workspace pause/resume, and ignores user-level rate budgets.
 - **Custom OAuth, token storage, or refresh logic.** The runtime broker via Composio owns the OAuth lifecycle, token rotation, scope negotiation, and re-auth detection end-to-end. Your app's only credential primitive is `createRuntimeBrokerTransport({ provider })`. If you find yourself reading a token, you are off-path; route through the broker instead. To branch on "needs reauth", use `getIntegrationStatus()` and inspect `code === "integration_needs_reauth"`.
-- **Hardcoded user identity in code** — usernames, email addresses, account ids, workspace names. These are mutable + per-workspace. Read identity from `getIntegrationStatus()` issues (handle/email come back enriched), from app row state, or from a server-function parameter. Never bake "@jotyy" or "user@example.com" into source.
+- **Hardcoded user identity in code** — usernames, email addresses, account ids, workspace names. These are mutable + per-workspace. Read identity from `getIntegrationStatus()` issues (handle/email come back enriched), from app row state, or from a server-function parameter. Never bake "@alice" or "user@example.com" into source.
 - **Layering a second ORM / entity abstraction on top of `resource` + `action` + `sync`.** The five primitives are the whole storage contract; the MCP tool surface and the dashboard reads derive from them. If you need a field, a state, or an action that doesn't exist in your `resource`, extend the resource — don't wrap it in your own `class Repository`. A parallel model silently desynchronizes from the tools the agent gets.
 - **All-or-nothing dashboard rendering.** Don't block the entire page on a `Promise.all` of every server fetch. Each card, table, and chart should render the moment its own data lands, with a `Skeleton` during fetch and `EmptyState` if the data is empty. A 0.5s skeleton beats a 4s blank page even when the slow query is just one card.
 - **Forgetting the `integration:` block when the app uses a Composio provider.** If you call `createRuntimeBrokerTransport({ provider: "gmail" })` anywhere in the app, `app.runtime.yaml` MUST declare a matching `integrations:` entry. Otherwise the binding step has no key to bind, `getIntegrationStatus()` reports `integration_not_bound`, and the dashboard is stuck. See section 4 below.
@@ -365,7 +421,7 @@ If you're not sure, write the app, `bun run server.ts` once locally, and read th
 
 ### 4. `integration` block in app.runtime.yaml — REQUIRED if the app calls any provider
 
-If your app uses `createRuntimeBrokerTransport({ provider })` or otherwise consumes a Composio toolkit, you **must** declare a matching `integrations:` entry. Without it:
+If your app uses `createRuntimeBrokerTransport({ provider })`, `providerEffectAction(...)`, or otherwise consumes a Composio toolkit, you **must** declare a matching `integrations:` entry. Without it:
 - The runtime binding lookup has no key to match, so `upsertIntegrationBinding` succeeds at the row level but `getIntegrationStatus()` reports `integration_not_bound` forever.
 - The Connect card the chat renders never resolves, the multi-card gate keeps the agent paused, and the user sees a dashboard stuck on "needs connection" no matter how many times they click Connect.
 
@@ -441,6 +497,8 @@ The single biggest failure mode in vibe-coded apps is **shipping a non-functiona
 4. You stop. The runtime emits a `waiting_on_pending_integrations` event, parks your next input, and re-dispatches it the moment all required connections land as `active`. You do not poll, do not retry, do not chain "let me also call gmail_get_profile to verify" — that hits 401 noise.
 5. When the system re-dispatches you, every required provider is connected, the dashboard's `getIntegrationStatus()` will return `ready: true`, and the app actually works.
 
+For `providerEffectAction(...)`, this loop is the contract. Missing connection means the action should land in the app's blocked state and ask the user to connect; it does **not** mean you should swap the architecture to something else.
+
 **The trap you must NOT fall into:**
 
 - Do not catch a 401 / `integration_not_connected` from an MCP tool and conclude "this API is not available" or "Composio doesn't expose this". That error means **the user hasn't connected yet**, NOT that the action is missing. Propose connect and try again after the user authorizes.
@@ -462,19 +520,21 @@ Run all of these. Stop at the first failure and report the symptom verbatim, don
 4. (After registering in workspace.yaml + restarting desktop or hitting the binding refresh API) the app appears in the desktop integrations pane
 5. After the manual PUT binding step, agent calls `<app_id>_connection_status` → returns `{connected: true, identity: {...}}` if `provider.whoamiPath` is set, else `{connected: null, reason: "no_probe_defined"}`. Anything else (`{connected: false, reason: ...}`) means the binding or the upstream is broken — read the `message` field, fix root cause, don't retry blindly.
 6. Agent calls one real action tool end-to-end (e.g. `discord_send_message_message`). Must return `{ok: true, externalId: "..."}` and the provider must show the action in its UI (the user can verify).
+7. For every action implemented with `providerEffectAction(...)`, verify both branches:
+   - disconnected branch: the action transitions the row into the declared blocked state and persists a connect/reconnect blocker
+   - connected branch: the action executes the provider call directly with no detour through a workflow or issue
 
 ### Dashboard (additionally, for dashboard apps)
 
-7. `curl http://localhost:<PORT>/` returns a TanStack Start HTML response — NOT the SDK's default "headless module" placeholder (search for "headless module" in the response body; if it appears, the dashboard server didn't start or isn't bound to PORT).
-8. Open the app's workspace pane in the desktop. It MUST visually resemble other holaOS panes — same fonts, same borders, same radii, same Card surface color. If it looks alien (raw HTML, off-brand colors, weird spacing), you've broken L1 or L2 of the UI constraints. Re-check that the global theme stylesheet is imported in `__root.tsx` and that all surfaces use shadcn primitives.
-9. Click around. Every interaction (dialogs, dropdowns, table sort, tab switch) must come from shadcn primitives; no native `<select>` / `<input>` / `<button>` should appear unstyled.
-10. Reload the desktop. The dashboard should rehydrate without a flash of unstyled content — confirms the CSS variables resolve at first paint.
+8. `curl http://localhost:<PORT>/` returns a TanStack Start HTML response — NOT the SDK's default "headless module" placeholder (search for "headless module" in the response body; if it appears, the dashboard server didn't start or isn't bound to PORT).
+9. Open the app's workspace pane in the desktop. It MUST visually resemble other holaOS panes — same fonts, same borders, same radii, same Card surface color. If it looks alien (raw HTML, off-brand colors, weird spacing), you've broken L1 or L2 of the UI constraints. Re-check that the global theme stylesheet is imported in `__root.tsx` and that all surfaces use shadcn primitives.
+10. Click around. Every interaction (dialogs, dropdowns, table sort, tab switch) must come from shadcn primitives; no native `<select>` / `<input>` / `<button>` should appear unstyled.
+11. Reload the desktop. The dashboard should rehydrate without a flash of unstyled content — confirms the CSS variables resolve at first paint.
 
 ## Anti-patterns
 
 ### SDK / backend
 
-- Do not import `@holaboss/bridge` — that's the legacy SDK. Use `@holaboss/app-builder-sdk` exclusively.
 - Do not write `as any` to dodge a type error. The SDK vends `RowOf<TSchema>` end-to-end via `z.infer`; if a callback's `row` doesn't have the field you want, the schema is missing it — fix the schema.
 - Do not hardcode the broker URL, grant, workspace id, MCP port, or dashboard PORT. They're env-injected at boot.
 - Do not write a "scheduler" — no cron in app code. Sync `schedule:` strings are descriptive, not executed by the SDK.

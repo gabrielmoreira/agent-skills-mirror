@@ -19,7 +19,7 @@ description: 花叔Design——用HTML做高保真原型、幻灯片、动画、
 - **动画Demo**：时间轴驱动的motion design，做视频素材或概念演示
 - **信息图/可视化**：精确排版、数据驱动、印刷级质量
 
-不适用场景：生产级Web App、SEO网站、需要后端的动态系统——这些用frontend-design skill。
+不适用场景：生产级Web App、SEO网站、需要后端的动态系统——这些不走本 skill。
 
 ## 任务路由：一张表定入口
 

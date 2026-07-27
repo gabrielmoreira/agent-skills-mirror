@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `gadievron/raptor` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `gadievron/raptor` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `gadievron/raptor` — 26 default patterns, 0 followed patterns, 14 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,20 +59,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.claude/skills/code-understanding/SKILL.md`](.claude/skills/code-understanding/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/crash-analysis/function-tracing/SKILL.md`](.claude/skills/crash-analysis/function-tracing/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/crash-analysis/gcov-coverage/SKILL.md`](.claude/skills/crash-analysis/gcov-coverage/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/crash-analysis/line-execution-checker/SKILL.md`](.claude/skills/crash-analysis/line-execution-checker/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/crash-analysis/rr-debugger/SKILL.md`](.claude/skills/crash-analysis/rr-debugger/SKILL.md) |
-| 6 | ✓ | [`.claude/skills/exploitability-validation/SKILL.md`](.claude/skills/exploitability-validation/SKILL.md) |
-| 7 | ✓ | [`.claude/skills/frida/SKILL.md`](.claude/skills/frida/SKILL.md) |
-| 8 | ✓ | [`.claude/skills/oss-forensics/github-archive/SKILL.md`](.claude/skills/oss-forensics/github-archive/SKILL.md) |
-| 9 | ✓ | [`.claude/skills/oss-forensics/github-commit-recovery/SKILL.md`](.claude/skills/oss-forensics/github-commit-recovery/SKILL.md) |
-| 10 | ✓ | [`.claude/skills/oss-forensics/github-evidence-kit/SKILL.md`](.claude/skills/oss-forensics/github-evidence-kit/SKILL.md) |
-| 11 | ✓ | [`.claude/skills/oss-forensics/github-wayback-recovery/SKILL.md`](.claude/skills/oss-forensics/github-wayback-recovery/SKILL.md) |
-| 12 | ✓ | [`.claude/skills/oss-forensics/orchestration/SKILL.md`](.claude/skills/oss-forensics/orchestration/SKILL.md) |
-| 13 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 14 | ✓ | [`core/sage/CLAUDE.md`](core/sage/CLAUDE.md) |
+| 1 | ✓ | [`.claude/skills/audit/SKILL.md`](.claude/skills/audit/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/code-understanding/SKILL.md`](.claude/skills/code-understanding/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/crash-analysis/function-tracing/SKILL.md`](.claude/skills/crash-analysis/function-tracing/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/crash-analysis/gcov-coverage/SKILL.md`](.claude/skills/crash-analysis/gcov-coverage/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/crash-analysis/line-execution-checker/SKILL.md`](.claude/skills/crash-analysis/line-execution-checker/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/crash-analysis/rr-debugger/SKILL.md`](.claude/skills/crash-analysis/rr-debugger/SKILL.md) |
+| 7 | ✓ | [`.claude/skills/exploitability-validation/SKILL.md`](.claude/skills/exploitability-validation/SKILL.md) |
+| 8 | ✓ | [`.claude/skills/frida/SKILL.md`](.claude/skills/frida/SKILL.md) |
+| 9 | ✓ | [`.claude/skills/oss-forensics/github-archive/SKILL.md`](.claude/skills/oss-forensics/github-archive/SKILL.md) |
+| 10 | ✓ | [`.claude/skills/oss-forensics/github-commit-recovery/SKILL.md`](.claude/skills/oss-forensics/github-commit-recovery/SKILL.md) |
+| 11 | ✓ | [`.claude/skills/oss-forensics/github-evidence-kit/SKILL.md`](.claude/skills/oss-forensics/github-evidence-kit/SKILL.md) |
+| 12 | ✓ | [`.claude/skills/oss-forensics/github-wayback-recovery/SKILL.md`](.claude/skills/oss-forensics/github-wayback-recovery/SKILL.md) |
+| 13 | ✓ | [`.claude/skills/oss-forensics/orchestration/SKILL.md`](.claude/skills/oss-forensics/orchestration/SKILL.md) |
+| 14 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 15 | ✓ | [`core/sage/CLAUDE.md`](core/sage/CLAUDE.md) |
 
 ---
 

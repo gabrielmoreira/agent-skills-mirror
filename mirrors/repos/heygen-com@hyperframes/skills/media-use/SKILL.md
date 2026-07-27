@@ -76,7 +76,7 @@ Surface an opportunity only when a concrete signal is present:
 | Image that is a placeholder, tiny, or upscaled-looking   | a better `image` (and/or upscale — see `references/operations.md`)                                     |
 | Hard scene cuts / transitions with no sound              | transition `sfx`                                                                                       |
 | A piece over ~10s with no music bed                      | `bgm`                                                                                                  |
-| Footage that reads under/over-exposed or color-cast      | a corrective `grade` (inspect with `grade --for --analyze`, preview with `hyperframes grade-compare`)  |
+| Footage that reads under/over-exposed or color-cast      | a corrective grade (inspect it with `hyperframes media-treatment --selector '#hero' --analyze --json`) |
 | Photographic media that feels visually flat or off-topic | one specific source-appropriate preset or custom treatment, with the intended target named             |
 | A meaningful media entrance/reveal that feels static     | one supported seek-safe treatment animation; preserve color unless the request also justifies a preset |
 

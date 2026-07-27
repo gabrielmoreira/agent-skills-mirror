@@ -61,11 +61,12 @@ canonical toolbox first:
 hyperframes media-treatment --capabilities --json
 ```
 
-It reports valid adjustment, finishing, effect, palette, preset, and animated
-property ranges from Core. Compose one nested payload and pass it back through
-`hyperframes media-treatment`; the command rejects unknown keys before mutation.
-Do not generate or hand-edit a LUT merely to combine controls already owned by
-the realtime shader.
+It reports a concise family map. Read `--capability grading` for the processing
+order, then request only the focused family needed to get its legal controls
+and ranges from Core. Compose one nested payload and pass it back through
+`hyperframes media-treatment`; the command rejects unknown keys before
+mutation. Do not generate or hand-edit a LUT merely to combine controls already
+owned by the realtime shader.
 
 For seek-safe effect motion, animate only the runtime-supported CSS properties
 on that same real media element with its registered paused GSAP timeline:
@@ -131,18 +132,20 @@ For visual selection, list reusable LUT candidates with
 `hyperframes grade-compare --for <frame> --grades grades.json`, then commit the
 winner with `resolve -t grade` as the final `data-color-grading` block.
 
-Use `grade --for <media> --analyze` when you only need side-effect-free
-`ffmpeg`/`ffprobe` signalstats evidence. It returns a bounded `adjust`
-suggestion without writing a manifest record. The suggestion is a starting
+For media already selected in a composition, use `media-treatment --analyze`
+when you need side-effect-free `ffmpeg`/`ffprobe` signalstats evidence. It
+returns source metadata, HDR/unknown-LOG warnings, and a bounded `adjust`
+suggestion without modifying the composition. The suggestion is a starting
 point for visual review, not an automatic neutralization of intentional color.
 
 ```bash
-node <SKILL_DIR>/scripts/resolve.mjs --type grade --for ./frame.png --analyze --project . --json
+hyperframes media-treatment --project . --file index.html \
+  --selector '#hero' --analyze --json
 ```
 
-Without `--analyze`, `grade --for` merges measured values into the resolved
-grade and records that candidate in `.media`; use that form only when you
-intend to keep the candidate.
+For an unbound source file, `resolve --type grade --for ... --analyze` remains
+available. Without `--analyze`, that resolver records a grade candidate in
+`.media`; use that form only when you intend to keep the candidate.
 
 Library LUT entries live in `luts/index.json`. Each entry keeps `id`,
 `description`, `tags`, and `intensity`, then supplies either compact `params`

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed patterns, 6 file(s) materialized.
+Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 6 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,8 +63,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`backend/internal/skillassets/using-ao/references.md`](backend/internal/skillassets/using-ao/references.md) |
 | 3 | ✓ | [`backend/internal/skillassets/using-ao/SKILL.md`](backend/internal/skillassets/using-ao/SKILL.md) |
 | 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`skills/bug-triage/SKILL.md`](skills/bug-triage/SKILL.md) |
-| 6 | → | [`DESIGN.md`](DESIGN.md) |
+| 5 | ✓ | [`frontend/src/landing/src/app/api/llms.txt/route.ts`](frontend/src/landing/src/app/api/llms.txt/route.ts) |
+| 6 | ✓ | [`frontend/src/landing/src/app/blog/llms.txt/route.ts`](frontend/src/landing/src/app/blog/llms.txt/route.ts) |
+| 7 | ✓ | [`frontend/src/landing/src/app/llms.txt/route.ts`](frontend/src/landing/src/app/llms.txt/route.ts) |
+| 8 | ✓ | [`skills/bug-triage/SKILL.md`](skills/bug-triage/SKILL.md) |
+| 9 | → | [`DESIGN.md`](DESIGN.md) |
 
 ---
 

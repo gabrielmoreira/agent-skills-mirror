@@ -632,8 +632,12 @@ Forward trace spans to OpenTelemetry, Datadog, Honeycomb, Langfuse, or your own 
 Every `runTeam()` topology choice emits a `routing_decision` legacy event and
 a v2 span with kind `routing` named `decide_execution_route`. The
 record includes the decision-time `mode`, `reasons`, optional `confidence`,
-and the actual `routerVersion` when a router ran. Its `source` distinguishes
-the priority-chain path without pretending every choice came from a router:
+the actual `routerVersion`, and structured Router fallback fields when a
+Router ran. Hybrid Single candidates also create a
+`profile_execution_route` routing span with confidence, latency, token usage,
+and fallback code; the decision record and `TeamRunResult` carry the bounded
+`semanticRoutingAssessment`. Its `source` distinguishes the priority-chain path
+without pretending every choice came from a router:
 
 - `override` — the caller supplied `mode`;
 - `declared` — structured governance roles selected the team topology;
@@ -646,8 +650,10 @@ the priority-chain path without pretending every choice came from a router:
 
 The event/span's `receiptId` points to the eventual `ExecutionReceipt`; the
 receipt points back with `routingDecisionId` and `routingDecisionSpanId`.
-The decision records do not duplicate actual task roles, order, or dependency
-edges; those remain post-execution receipt/task facts.
+The assessment is model-inferred evidence and does not duplicate or replace
+actual task roles, order, dependency edges, or final tool grants; those remain
+post-execution receipt/task facts. Observability sinks pass assessment-derived
+text through the existing sensitive-data processor.
 
 The `TraceEvent` union now has eight members, including `routing_decision`.
 Internally, `LegacyCallbackTraceSink` maps v2 records back to the exact legacy

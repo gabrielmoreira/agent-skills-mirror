@@ -7,6 +7,8 @@ description: "Find dead code using parallel subagent analysis and optional CLI t
 
 Identify dead code in a codebase. **Core rule: code only used in tests is still dead code.** Only production usage counts.
 
+In an incomplete or abandoned implementation, a declared-but-unused symbol may be intended-but-not-yet-used. When git history shows it was added as a deliberate part of an unfinished stack, recommend **investigate** rather than **delete**.
+
 ## Step 1: Detect Languages, Scope & Test Boundaries
 
 Determine the project structure:
@@ -52,7 +54,7 @@ If no CLI tool is installed, skip to Step 3. Do not ask the user to install anyt
 
 ## Step 3: Test-Only Analysis — Parallel Subagents (Core)
 
-This is the primary analysis. Use the Agent tool to launch one subagent per top-level source directory from Step 1 in a single assistant message so they run concurrently. Run them in the foreground so all their results return in this turn. Each Agent call uses `model: "opus"`. Expect one Agent tool call per directory, capped at 8 by the Rules section. State the count explicitly when emitting the calls. Each subagent's prompt directs it to treat the shared working tree and its git index as read-only — any empirical check runs in an isolated `git worktree` the subagent discards afterward.
+This is the primary analysis. Use the Agent tool to launch one subagent per top-level source directory from Step 1 in a single assistant message so they run concurrently. Run them in the foreground so all their results return in this turn. Each Agent call uses `model: "opus"` and no `name`. Expect one Agent tool call per directory, capped at 8 by the Rules section. State the count explicitly when emitting the calls. Each subagent's prompt directs it to treat the shared working tree and its git index as read-only — any empirical check runs in an isolated `git worktree` the subagent discards afterward.
 
 ### Subagent Strategy
 

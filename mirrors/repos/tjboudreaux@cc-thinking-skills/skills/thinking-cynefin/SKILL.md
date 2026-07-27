@@ -1,70 +1,55 @@
 ---
 name: thinking-cynefin
-description: Use when unsure how to approach a problem—plan, analyze, experiment, or stabilize first. Classify it by cause-effect (clear/complicated/complex/chaotic) and match the approach to the domain.
+description: When the right response mode is unclear, classify the cause-effect domain first; decompose disorder.
+disable-model-invocation: true
 ---
 
-# Cynefin Framework
+# Cynefin Classification
 
-## Overview
-
-Cynefin (Dave Snowden) classifies a problem by the relationship between cause and effect, then prescribes the matching approach. Using the wrong approach for the domain is the failure mode: detailed planning is useless in chaos, and experimentation is reckless when a best practice already exists.
-
-**Core Principle:** The nature of the problem determines the approach. Classify first, then act.
-
-## The Classifier
-
-| Cause–effect is… | Domain | Approach | Do this |
-|------------------|--------|----------|---------|
-| Obvious to anyone | **Clear** | Sense → Categorize → Respond | Apply the known best practice / runbook; don't over-engineer |
-| Knowable with expertise/analysis | **Complicated** | Sense → Analyze → Respond | Investigate, profile, design; multiple valid solutions exist |
-| Only visible in retrospect (emergent) | **Complex** | Probe → Sense → Respond | Run small safe-to-fail probes, amplify what works |
-| Not perceivable; turbulent | **Chaotic** | Act → Sense → Respond | Act now to stabilize (rollback/failover), understand later |
-| Unsure which domain | **Disorder** | Decompose | Split into parts and classify each part |
-
-```
-Can you see clear cause→effect?
-  obvious to everyone        → CLEAR
-  knowable with analysis     → COMPLICATED
-  only clear in hindsight    → COMPLEX
-  totally turbulent, no time → CHAOTIC
-  can't tell                 → DISORDER (decompose)
-```
+Classify by cause-effect, then use only the matching response mode. Wrong-domain method is the failure mode.
 
 ## When to Use
 
-- You're unsure whether to plan, analyze, experiment, or just act
-- An approach isn't working and you suspect it's mismatched to the problem
-- Triaging an incident (is this stabilize-first chaos, or analyzable?)
+- Unsure whether to run a playbook, analyze, probe, or stabilize.
+- A method keeps failing and domain mismatch is plausible.
+- A novel or mixed problem needs approach selection before solution work.
 
 ## When NOT to Use
 
-- The domain is already obvious and the approach is uncontested → skip the ceremony and just do it.
-- You've already classified and now need to execute → switch to the domain's actual method (debugging, a hypothesis differential, experiment design); Cynefin only routes, it doesn't solve.
-- The question is "what is the cause," not "how should I approach this" → classification won't find the bug.
+- Domain and method are already agreed—execute.
+- Task is finding a specific cause, not choosing an approach.
+- Classification done; switch to the domain method—do not re-label endlessly.
+- Pure mechanical edits with no approach uncertainty.
 
-## The Common Mismatches (the whole point)
+## Procedure
 
-- **Complex treated as Complicated:** extensive planning, but outcomes keep surprising you. You can't analyze your way through emergence—probe instead.
-- **Complicated treated as Clear:** "just do it like Company X" without understanding why. Context matters; analyze the specific case.
-- **Chaotic treated as Complex:** running experiments during an active outage. Chaos needs immediate stability, not learning.
-- **Clear treated as Complicated:** over-engineering a trivial problem. Apply the best practice and move on.
+1. **State the unit.** Name the decision, incident, or subsystem; if mixed, list separable parts.
+2. **Probe cause-effect.** Is the link obvious, expert-analyzable, retrospective only, or imperceptible in turbulence? Check predictability, urgency, and probe safety.
+3. **Assign one domain per unit:**
+   - **Clear** — obvious → Sense → Categorize → Respond with a runbook.
+   - **Complicated** — expert-analyzable → Sense → Analyze → Respond; several valid answers.
+   - **Complex** — emergent → Probe → Sense → Respond with safe-to-fail probes; amplify/dampen signals.
+   - **Chaotic** — no safe sensing time → Act → Sense → Respond; stabilize first.
+   - **Disorder** — unknown → split and classify each part.
+4. **Mismatch check.** Reject Clear if its runbook fails; Complicated if analysis cannot predict; Complex if probing is unsafe; Chaotic once safe probing becomes possible.
+5. **Commit and stop.** Output domain + first actions. Re-classify only on evidence of domain shift.
 
-## Confidence Check
+**Stop when** every unit has one domain, first actions, and a falsifier—or disorder is decomposed.
 
-Before committing, test the classification:
-- Clear? Do best practices reliably work here? If not → probably Complicated.
-- Complicated? Can analysis predict the outcome? If not → probably Complex.
-- Complex? Can you run a safe-to-fail probe? If it's too turbulent to probe → Chaotic.
-- Re-check as the situation evolves; domains shift (chaos stabilizes into complex/complicated).
+## Output
 
-## Key Questions
+```text
+unit: <decision/incident/part>
+domain: clear | complicated | complex | chaotic | disorder
+evidence: <cause-effect basis>
+response_mode: <Sense-Categorize-Respond | Sense-Analyze-Respond | Probe-Sense-Respond | Act-Sense-Respond | decompose>
+first_actions: <1-3 concrete steps>
+falsifier: <what forces reclassification>
+parts: <only if disorder>
+```
 
-- "What's the relationship between cause and effect here?"
-- "Can experts reliably predict the outcome, or is it only clear in hindsight?"
-- "Is this actually complex, or am I avoiding the analysis?"
-- "Is this actually complicated, or am I over-planning a simple thing?"
-- "Has the situation moved to a different domain since I last looked?"
+## Verification
 
-## Snowden's Wisdom
-
-"Complex systems are dispositional, not causal—you can't predict what will happen, only influence what might." The failure is rarely the methodology itself; it's applying the wrong methodology to the wrong domain.
+- **Falsify:** Reliable prediction → not Complex. No safe probe → Chaotic. Working runbook → Clear.
+- **Stop:** Stop classifying once the matched action is clear.
+- **Over-application guard:** Do not call work Complex to avoid analysis or Complicated to avoid a standard fix. One label per unit; decompose multi-domain work.

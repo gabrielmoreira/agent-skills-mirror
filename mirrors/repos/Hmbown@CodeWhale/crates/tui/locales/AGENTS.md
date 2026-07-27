@@ -37,9 +37,10 @@ zh-Hant is **intentionally partial** (#4057, Setup core only).
 Mirror what PR #4347 (Korean) did: pack JSON with full parity, `Locale`
 variant + tag/display/parse arms in `localization.rs`, onboarding picker
 entry (`language.rs` — a test forces every shipped locale to be offered),
-setup-wizard match arms, and locale display arms in the config/change
-commands. The `/config` hint and invalid-locale error derive from
-`Locale::shipped()` automatically.
+the typed `UiLocale` schema in `config_ui.rs`, setup-wizard match arms, and
+locale display arms in the config/change commands. The `/config` hint and
+invalid-locale error derive from `Locale::shipped()` automatically; the
+schema agreement test must keep `UiLocale` aligned with that registry.
 
 ## READMEs
 

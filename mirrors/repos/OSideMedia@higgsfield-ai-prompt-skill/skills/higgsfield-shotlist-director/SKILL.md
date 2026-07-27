@@ -4,8 +4,8 @@ description: "Turns a brief, script, scene breakdown, treatment, or story idea i
 user-invocable: true
 metadata:
   tags: [higgsfield, seedance, seedance-2.0, shotlist, director, style-prefix, ad, commercial, artifact, html]
-  version: 1.0.0
-  updated: 2026-06-27
+  version: 1.1.1
+  updated: 2026-07-26
   parent: higgsfield
 ---
 
@@ -29,6 +29,7 @@ prompts that all inherit both.
 - Output = **one self-contained HTML file** (inline CSS/JS, no deps), not loose prompts [→](#what-you-produce)
 - Three structural layers, top to bottom: **Global Style Prefix → `@`-asset glossary → named per-scene prompts** [→](#the-three-layers)
 - Per-scene prompt law: `Style → Characters → Scene → CUT 1..N`; each prompt targets **15s**; split long scenes as `3a/3b/3c` [→](#per-scene-prompt-law)
+- [OFFICIAL] Density heuristic: group rows when ALL of {same cast, same location, one emotional unit, ≤15s, inside length limits}; split on ANY of {location cut, cast change, setup change, performance arc, insert} — **don't fragment grief**; complexity budget + auto-enrichment defaults for thin briefs [→](#prompt-density-grouping-shot-rows-into-15s-envelopes)
 - **Edit-once-propagates**: change the prefix once → it changes in every prompt; per-scene **override** lets one scene break the global look [→](#edit-once-and-per-scene-override)
 - Differentiators over a bare shotlist generator: **preflight linter**, **reference-role lanes**, **Elements `@`-auto-attach**, **failure-mode awareness**, **acceptance-rate logging** [→](#what-makes-this-outclass-a-bare-generator)
 - English prompt text only (Seedance expects English), even if the user writes in another language [→](#workflow)
@@ -122,9 +123,14 @@ CUT 2 — …
 ```
 
 Each prompt **targets 15s** (Seedance generates a fixed-length clip — design the
-cuts to fill it, don't pad with dead air). Most 15s prompts hold 1–3 cuts. If a
-scene runs longer, split it across `3a/3b/3c`, each its own 15s block with the
-full Style Prefix and Characters block, continuity holding across them.
+cuts to fill it, don't pad with dead air). Most 15s prompts hold 1–3 cuts —
+that is the **live-action narrative norm**; stylized registers run denser by
+design (3D-animated 6 shots/15s, product montage 8–10 sections with 0.3s macro
+cuts — `../higgsfield-style/SKILL.md` § Style Recipes), and the flash-establish
+/ insert durations in `../higgsfield-camera/SKILL.md` § Shot duration by type
+are what make dense shapes fit. If a scene runs longer, split it across
+`3a/3b/3c`, each its own 15s block with the full Style Prefix and Characters
+block, continuity holding across them.
 
 **Beat-by-beat choreography, not "he dances."** Generic motion verbs mean nothing
 to Seedance — spell the move out: *"two crisp head nods on the beat, shoulders
@@ -134,6 +140,66 @@ quarter-spin."* (Full pattern: `../../templates/10-dance-music-performance.md`.)
 **Match-cut via a repeated anchor action.** When independently-generated scenes
 must cut together, end and begin neighboring scenes on the **same gesture** (the
 ear-cup tap) — the reused motion lets them "cut on action" most of the time.
+
+---
+
+## Prompt density — grouping shot rows into 15s envelopes
+
+`[OFFICIAL — Higgsfield shotlist-builder + seedance-2-pro-director skills,
+2026-07]` — the shotlist's hardest judgment call is how many script beats
+share one 15s prompt. There is no fixed ratio (canonical productions ran
+anywhere from 1.4 rows per prompt to 4.7); decide per scene with this
+heuristic:
+
+**Group shot rows into ONE prompt when ALL of these hold:**
+
+1. Same character set in frame
+2. Same location (or sub-area of it)
+3. One continuous emotional/temporal unit — no time skip, no mood pivot
+4. Stageable in ≤15 seconds of screen time
+5. The combined prompt stays inside practical length limits (ZH: the
+   1,800-char hard cap; EN block prompts run much longer — see
+   `../higgsfield-seedance/SKILL.md` § Field calibration)
+
+**Split into separate prompts when ANY of these fire:**
+
+1. Hard cut between locations (apartment → flashback)
+2. A major character entrance/exit changes the handle list
+3. A lens/setup change that needs its own envelope (wide establish → tight
+   insert)
+4. A performance arc that deserves its own 15 seconds — a reaction that
+   builds across 5–7 beats is never bundled with action. **Don't fragment
+   grief**: one continuous emotional collapse is ONE prompt even if the
+   script writes it as three rows.
+5. An insert/cutaway to a prop or screen (those get their own ECU prompt)
+
+**Complexity budget per prompt** (split triggers): more than 2 strong
+actions · more than 2 camera moves · more than 3 important characters ·
+more than 1 complex VFX event · more than 1 location change — any of these
+means the scene wants another envelope. Duration ladder: 4–8s = one strong
+action · 8–12s = one action + a reveal · 12–15s = 2–3 simple beats ·
+complex fight/chase/transformation = multiple prompts. **Reconciling the
+ladder with the 15s target:** 15s is the default envelope, not a
+straitjacket — when a scene's beats genuinely fill only 4–8s of screen time,
+generate a deliberately shorter clip (Seedance accepts 4–15s) rather than
+padding dead air into 15; the prompt-law's "don't pad" rule wins.
+
+**When in doubt, err toward more prompts and shorter envelopes** — Seedance
+handles tight prompts better than overloaded ones, and the user can run them
+in sequence.
+
+**Auto-enrichment for thin briefs.** When a scene row is thin ("a guy in a
+room, he's angry"), don't ask — fill in production detail with the default
+cinematic choices, never details that change the meaning: 16:9 · one
+clear physical action · slow controlled dolly-in or locked-off frame ·
+a neutral-to-portrait lens (63°/47° FOV in Seedance block prompts — mm
+vocabulary like "35–50mm" is for non-Seedance surfaces; 29° only if a
+close-up needs it — `../higgsfield-seedance/SKILL.md` § FOV anchors) ·
+motivated practical light · subtle ambience + one meaningful SFX · a clear
+final frame. **Duration is never auto-defaulted** — inside a shotlist the
+envelope law above governs (target 15s, shorter deliberate clips per the
+ladder); for a standalone prompt, ask — the seedance rule "always ask the
+user for runtime, never default" stands.
 
 ---
 

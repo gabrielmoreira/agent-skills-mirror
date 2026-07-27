@@ -12,7 +12,8 @@ machine. Nineteen adapters ship today.
   hooks where supported, per-agent marker-guarded community-routing
   blocks, and `.claude/skills/generated/` per-community SKILL.md.
 
-Run `gortex init doctor` to see what's currently configured. Both
+Run `gortex doctor` to see what's currently configured — and, past what a
+config file can prove, whether the hooks it declares are actually running. Both
 commands accept `--agents=<csv>` to constrain setup and
 `--agents-skip=<csv>` to exclude an adapter.
 
@@ -137,8 +138,10 @@ gortex init --force                  # overwrite merge-preserved keys
 gortex init --hooks-only             # refresh supported agent hooks only
 
 # Observe-only
-gortex init doctor                   # read-only state report
-gortex init doctor --json            # machine-readable report
+gortex doctor                        # config + hook activity + adoption
+gortex doctor --json                 # machine-readable report (always complete)
+gortex doctor --redact               # safe to paste into an issue
+gortex doctor --all                  # include adapters that are not installed
 ```
 
 ## Adapter contract
@@ -247,6 +250,14 @@ installer says so.
 > `SessionStart` never fires, which is the surface that puts the Gortex rule
 > in front of the model.
 
+To tell the two states apart, run `gortex doctor`. It correlates the Codex
+config, the hook-invocation log, the Codex session transcripts, and the savings
+ledger into one verdict — *hooks configured but none has run* is the
+untrusted-hook signature, reported as a blocker with the `/hooks` remedy.
+`--redact` hashes repo paths and branch names so the report can be pasted into
+an issue, `--json` emits it machine-readably, and the exit status is non-zero
+when a blocker is found.
+
 When hooks are enabled
 (the default), Codex receives user-level hooks. The default posture remains
 advisory. A team can opt into `deny`, `rewrite`, or `suppress` by setting
@@ -258,10 +269,10 @@ Current Codex hook coverage:
 | Surface | Coverage |
 | ------- | -------- |
 | `SessionStart` | Matches `startup|resume|clear|compact` and emits graph-tools orientation for new, resumed, cleared, and compacted sessions. |
-| Bash `PreToolUse` | Advises by default; `deny` hard-blocks graph-detectable fallback reads/searches; `rewrite` converts only an unambiguous indexed `cat <source>` into the exact public `gortex call read` mirror. Compound or ambiguous commands remain advisory. |
+| Bash `PreToolUse` | Advises by default; `deny` hard-blocks graph-detectable fallback reads/searches; `rewrite` converts only an unambiguous indexed `cat <source>` into the exact public `gortex call read` mirror. Compound or ambiguous commands remain advisory. A shell command that would *rewrite* indexed source — `sed -i` / `perl -pi`, a `>` / `>>` redirect, `tee`, or an inline interpreter script opening the path for writing — gets the same redirect Edit and Write get, escalating to a hard block under `GORTEX_HOOK_BLOCK_EDIT`. Writing a path the daemon does not know is a new file and passes through. |
 | Gortex MCP `read` `PreToolUse` | Advises broad file/editing-context reads by default; `deny` blocks them; `rewrite` preserves the request and adds `options.compress_bodies=true`. Selector-driven reads with no explicit operation are covered. |
 | Bash `PostToolUse` | Adds graph context for grep/search, source reads, and conservative file-list shapes: `find -name`, `fd`, `ls`, `tree -fi`, and `git ls-files`; bounded `sed`/`awk` reads get file graph context. Execution-capable or ambiguous forms are no-ops. |
-| `apply_patch` `PostToolUse` | Runs `detect_changes`, extracts affected symbol IDs, then reports tests, guards, and contracts. The completed mutation is never rolled back by the hook. |
+| `apply_patch` `PostToolUse` | Runs `detect_changes`, extracts affected symbol IDs, then reports tests, guards, and contracts. The completed mutation is never rolled back by the hook. Codex payloads carry no `session_id`, so this path reports the whole working tree with an explicit label instead of attributing the diff to the session. |
 | `UserPromptSubmit` | Re-surfaces prompt-relevant indexed symbols on every turn so long sessions do not rely on the initial reminder alone. |
 | `gortex init --hooks-only` | Refreshes Codex hooks without rewriting the MCP server config, `AGENTS.md`, or other adapter surfaces. |
 
@@ -344,7 +355,7 @@ machine-wide user hook stays inert elsewhere):
 | Surface | Coverage |
 | ------- | -------- |
 | `UserPromptSubmit` | Injects graph symbols relevant to the prompt before the model runs. |
-| `PreToolUse` | Redirects native `Read`/`Grep`/`Glob`/`Bash` to graph tools — a hard `deny` for an indexed whole-file read, soft plain-stdout guidance otherwise — plus compact `read` shaping for broad file/editing-context operations. |
+| `PreToolUse` | Redirects native `Read`/`Grep`/`Glob`/`Bash` to graph tools — a hard `deny` for an indexed whole-file read, soft plain-stdout guidance otherwise — plus compact `read` shaping for broad file/editing-context operations. Shell rewrites of indexed source (`sed -i`, `>` redirects, `tee`) are redirected to `edit` / `refactor` on the same terms as `Edit` and `Write`. |
 | `Stop` | Runs post-turn diagnostics (changed symbols → test targets, guards, dead code, coverage, contracts) and feeds them back so the agent self-corrects before handoff. |
 | `SubagentStart` | Briefs a spawned subagent with `smart_context` results and the tool-swap table so it doesn't default to raw `Read`/`Grep`. |
 

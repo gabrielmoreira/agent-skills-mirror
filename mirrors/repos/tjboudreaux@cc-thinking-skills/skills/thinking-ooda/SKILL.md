@@ -1,127 +1,46 @@
 ---
 name: thinking-ooda
-description: Use under time pressure (incident, outage, debugging a moving target) when you must act before you have certainty—cycle Observe→Orient→Decide→Act on ~70% confidence, then re-observe.
+description: Use under time pressure when the situation is still changing and you must act before certainty — cycle Observe→Orient→Decide→Act on ~70% confidence, then re-observe.
+disable-model-invocation: true
 ---
 
 # OODA Loop
 
-## Overview
-The OODA Loop (Observe, Orient, Decide, Act) is a framework for acting in fast-moving, uncertain situations. The core decision rule: don't wait for certainty—act on the best current understanding, then immediately observe the result and loop again. Speed through the loop beats a perfect plan that arrives too late.
-
-**Core Principle:** Act on ~70% confidence for reversible moves, then re-observe. Cycle faster than the situation changes.
+**Core rule:** For reversible moves under time pressure, act on ~70% confidence, then immediately re-observe. Cycle faster than the situation compounds; a late perfect plan loses to a fast loop.
 
 ## When to Use
-- Incident response and outages
-- Debugging a moving target (intermittent failure, ongoing degradation)
-- Any time-sensitive decision where the situation is still changing
 
-```
-Situation changing rapidly AND need to act before certainty? → yes → APPLY OODA
-                                                              → no  → use deliberate analysis / a hypothesis differential
-```
+- Incident response, outage, or ongoing degradation where state is still moving.
+- Debugging a moving target (intermittent failure, live traffic shift).
+- Any time-bounded decision where waiting for full certainty costs more than a reversible action.
 
 ## When NOT to Use
-- The situation is static and you have time → deliberate analysis beats fast looping.
-- The action is irreversible/high-blast-radius → gather more information before acting; 70% confidence isn't enough.
-- You can cheaply and directly localize the cause (read the diff/log) → use `thinking-scientific-method` (hypothesis differential) instead of looping in the dark.
 
-## Trigger Card
+- The situation is static and you have time — deliberate analysis or a hypothesis differential wins.
+- The next action is irreversible or high blast-radius — raise the evidence bar; 70% is not enough.
+- You can cheaply localize the cause (read the failing diff, log, or metric) — test that hypothesis directly instead of looping in the dark.
+- There is no time pressure and no changing environment — OODA adds churn without value.
 
-When under time pressure (incident, outage, debugging a moving target) and you must act before certainty:
+## Procedure
 
-1. **Observe** — what is happening right now? Gather the cheapest, highest-signal data available.
-2. **Orient** — what does it mean given your mental model? Update the model if the data contradicts it.
-3. **Decide** — pick an action on ~70% confidence. Don't wait for 100%.
-4. **Act** — execute, then immediately re-observe. The loop is the point; speed beats precision.
+1. **Observe (time-boxed):** gather the cheapest high-signal state now — metrics, logs, alerts, recent deploys/config, and feedback from the last action. Cap the window; do not collect forever.
+2. **Orient:** match observations to a pattern and form **≥2** candidate explanations. Update or discard the mental model when data contradicts it; refuse single-hypothesis lock.
+3. **Decide:** pick one reversible action that tests the leading hypothesis. State confidence (~70% threshold for reversible moves), the predicted effect, the observation you will check next, and a time box for that check.
+4. **Act:** execute once, decisively, with a known rollback or degrade path.
+5. **Re-observe immediately:** compare outcome to prediction within the time box; feed the result into the next Observe. Loop until stable or until the next move is no longer reversible enough for this skill.
+6. **Stop condition:** exit the loop when the system is stable, the remaining work is static analysis, or the next step requires irreversible commitment — then switch method.
 
-If the action is irreversible or high-blast-radius, gather more information before acting. If you can cheaply localize the cause (read the diff/log), use `thinking-scientific-method` instead.
+## Output
 
-## The Four Phases
+A cycle record (repeat per loop):
 
-### 1. OBSERVE — gather current state fast
-- Current metrics, logs, alerts, error rates
-- What changed recently (deploys, config, traffic)
-- Feedback from your last action
-- Cast wide, then narrow as a pattern emerges. Time-box it—don't observe forever.
+1. **Observed** — current signals and what changed since last cycle.
+2. **Orientation** — ≥2 hypotheses; which one leads and why.
+3. **Decision** — action, confidence, predicted effect, next observation, time box.
+4. **Act + result** — what ran and what the immediate re-observe showed.
+5. **Loop status** — continue / stable / escalate out of OODA.
 
-```
-Incident: error rate 10x normal; affects API gateway + user service;
-started 5 min ago; a deploy went out 15 min ago; users report login failures.
-```
+## Verification
 
-### 2. ORIENT — make sense of it (the critical phase)
-Match the observations to a pattern and form a hypothesis. This is where most loops go wrong: don't lock onto the first framing. Hold ≥2 candidate explanations and let new evidence shift you.
-
-```
-Pattern resembles last month's connection-pool exhaustion, BUT no DB anomaly this time.
-The deploy touched auth rate-limiting.
-Hypothesis: rate-limit config is too aggressive.
-```
-
-### 3. DECIDE — pick an action under uncertainty
-- State the action and the hypothesis it tests.
-- 70% confidence now beats 90% too late, for a reversible action.
-- Decide what you'll observe next to confirm or refute.
-
-```
-Decision: roll back the auth deploy.
-Hypothesis: this restores normal error rates.
-Will watch: error rate for 2 minutes; fallback = investigate DB connections.
-```
-
-### 4. ACT — execute, then immediately re-observe
-Execute decisively and go straight back to OBSERVE. The action creates new information; don't wait blindly for it to "settle."
-
-```
-Action: roll back deployment/auth-service.
-Immediate observe: error rate, response times, 2-minute window.
-```
-
-The loop restarts until the system is stable.
-
-## What Speeds the Loop
-| Speeds it up | Stalls it |
-|--------------|-----------|
-| Pre-planned responses for known scenarios | Waiting for certainty (stuck at Observe/Decide) |
-| Good observability (fast, trustworthy signals) | Information overload (Observe never ends) |
-| Clear hypotheses (fast Orient) | Locking onto one hypothesis (Orient lock) |
-| Reversible actions you can undo | Seeking the perfect fix (Decide never ends) |
-
-## Application Patterns
-
-### Incident Response
-```
-OBSERVE: metrics, logs, alerts, recent changes
-ORIENT:  match pattern, form ≥2 hypotheses, assess blast radius
-DECIDE:  mitigation (rollback, scale, disable feature)
-ACT:     execute, immediately observe results
-LOOP:    continue until stable
-```
-
-### Debugging Under Pressure
-```
-OBSERVE: errors, stack traces, recent changes
-ORIENT:  form a hypothesis about the cause
-DECIDE:  test the most likely hypothesis first
-ACT:     add logging / try the fix / eliminate the possibility
-LOOP:    update the hypothesis from the result
-```
-
-## Common Failure Modes
-| Failure | Symptom | Fix |
-|---------|---------|-----|
-| Observation overload | Can't process all data | Filter to key indicators |
-| Orientation lock | Stuck on one hypothesis | Force a second framing |
-| Decision paralysis | Waiting for certainty | Set a decision deadline; act on 70% |
-| Action without observation | Blind execution | Mandate observe-after-act |
-| Not actually looping | Stuck in one phase | Time-box each phase |
-
-## Key Questions
-- "What do I observe RIGHT NOW?" (not 5 minutes ago)
-- "What pattern does this match—and what's my second hypothesis?"
-- "What's my best reversible action given current understanding?"
-- "How will I know in the next 2 minutes whether it worked?"
-- "Am I cycling, or stuck in one phase?"
-
-## Boyd's Insight
-"He who can handle the quickest rate of change survives." The goal isn't just making decisions—it's making and revising them faster than the situation compounds. Speed creates options; delay eliminates them.
+- **Falsify/stop:** if you cannot name a reversible next action and a near-term observation that would refute it, stop looping and gather more evidence or escalate. If re-observe never happens after act, the loop is broken — fix that before another action.
+- **Over-application guard:** do not OODA static design work, irreversible launches, or cases where a single cheap localization check ends the uncertainty. Do not wait for 100% confidence on reversible mitigations under active incident pressure.

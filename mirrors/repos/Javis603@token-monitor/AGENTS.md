@@ -42,6 +42,8 @@ Usage and limits have independent lifecycles under `src/shared/deviceRuntime.js`
 
 `DeviceState` composes both outputs into the unchanged device wire record, buffering limits until usage exists and cold-start previews until a complete usage baseline exists; limits-only updates preserve the usage `updatedAt`. Provider dispatch starts in `src/shared/limitCollector.js`, with provider-specific implementations split between that file and `src/shared/*Limits.js`; shared normalization remains in `src/shared/limits.js`. The hub and Worker receive the composed record and never need provider credentials.
 
+Balance-style quotas are marked with `windows[].metric === 'credits'`: their headline value is money (`remaining` + `currency`), not a percentage. `src/shared/limitBalanceDisplay.js` is the single formatting/derivation entry point shared by Home, the tray and the limits page — key off that marker, never a provider whitelist. The meter percentage for a top-up balance (`amount / (amount + monthSpend)`) is a **display-layer derivation** and is deliberately kept out of the wire shape; don't push it back into a collector.
+
 ### Widget mode switching
 
 `main.js` chooses the data path from `settings.hubMode` (`local` / `client` / `host`, set in the GUI's Multi-device Sync section). In `client` mode (a `hubUrl` is set) it: stops the local collector, opens an SSE stream to `/api/stats/stream`, and *also* runs a sync-collector to post this device's own usage. In `host` mode it additionally runs an embedded hub (`startEmbeddedHub()`) so other devices can connect. In `local` mode it runs only the local collector and emits stats over IPC to the renderer.
@@ -68,7 +70,7 @@ The default client CSV lives in **one** place: `DEFAULT_CLIENTS` in `src/shared/
 | Default client list | `DEFAULT_CLIENTS` in `src/shared/clientTracking.js` |
 | Watch paths | the `add(...)` call in `clientWatchCandidates()` (`src/shared/collector.js`) |
 | Name normalization | the `normalizeClientName()` branch in `src/shared/usage.js` |
-| Renderer maps | `clientLabels` / `clientsWithIcon` / `KNOWN_CLIENTS` in `src/electron/renderer/app.js`; `VENDOR_ORDER` / `VENDOR_LABELS` in `themePresets.js`; `clientColors` in `usageCharts.js` |
+| Renderer maps | `clientLabels` / `clientsWithIcon` / `KNOWN_CLIENTS` in `src/electron/renderer/app.js`; provider artwork in `src/electron/renderer/trayProviderIcons.js`; `VENDOR_ORDER` / `VENDOR_LABELS` in `themePresets.js`; `clientColors` in `usageCharts.js` |
 | Discord RPC | `KNOWN_CLIENT_ASSETS` / `CLIENT_LABELS` in `src/electron/discordRpc.js` |
 | Row icon CSS | the `.row-icon-<id>` rule in `src/electron/renderer/styles.css` |
 | Icon assets | `assets/icons/<id>.svg` + `.github/assets/tools-icon/<id>.png` |
@@ -79,6 +81,7 @@ The default client CSV lives in **one** place: `DEFAULT_CLIENTS` in `src/shared/
 One caveat on top of the table:
 
 - Self-synced clients (cursor/antigravity) additionally go in `SELF_SYNCED_CLIENTS`; parse-local clients must NOT.
+- Limits-only providers must keep `LIMIT_PROVIDER_IDS` in `src/shared/limitCollector.js` aligned with renderer `LIMIT_PROVIDERS`, account settings when applicable, tray artwork, and every README table. `LIMIT_PROVIDER_IDS` defines the new-install order; a changed default must not overwrite a saved custom order.
 
 ### Data flow contract
 

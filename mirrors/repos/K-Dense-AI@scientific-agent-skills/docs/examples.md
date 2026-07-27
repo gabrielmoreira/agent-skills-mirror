@@ -1,8 +1,71 @@
 # Real-World Scientific Examples
 
-This document provides comprehensive, practical examples demonstrating how to combine Scientific Agent Skills to solve real scientific problems across multiple domains.
+Worked, interdisciplinary examples showing how the skills in this repository compose into
+end-to-end research workflows. Every skill in `skills/` appears in at least one example, and
+every skill named in an example exists in the directory.
+
+Each example is deliberately cross-disciplinary: a **Disciplines** line names the fields the
+workflow actually draws on, because the interesting problems rarely stay inside one. A drug
+discovery run borrows survival statistics from epidemiology; a metagenomics run borrows
+compositional statistics from geology; a reactor design run borrows PIV from experimental fluid
+mechanics.
 
 > **Safety and execution note:** These workflows are illustrative and must be adapted to the current `SKILL.md`, official requirements, local policy, and the user's authorized data and systems. Clinical skills do not provide patient-specific diagnosis, treatment, dosing, triage, monitoring, or other care. Live API mutations, submissions, cloud jobs, purchases, and physical robot/equipment actions require explicit user or trained-operator authorization at the relevant skill safety gate; a planning step is not permission to execute.
+
+---
+
+## How to prompt these workflows
+
+The workflow blocks below are **prompt material, not shell scripts**. They are written the way a
+prompt should be written, and the structure is doing real work. Five things make the difference
+between a workflow an agent executes well and one it executes vaguely:
+
+**1. Name the skills you want.** Skills are selected by matching your request against each
+skill's `description`. If two skills plausibly cover the same ground — `phylogenetics` builds
+trees, `etetoolkit` analyses existing ones; `scanpy` runs analyses, `anndata` defines the format —
+naming the one you mean removes the ambiguity instead of hoping the router guesses right. Each
+example lists its skills up front for exactly this reason.
+
+**2. State the decision criteria, not just the steps.** "Filter the variants" is
+underspecified; "keep QUAL > 30 and DP > 20, then report how many variants each filter removed"
+is executable and auditable. Every threshold in these examples is a placeholder you should
+replace with one justified for your data — but a stated placeholder beats an unstated
+assumption, because you can see it and argue with it.
+
+**3. Declare the output contract before the work starts.** The `Expected Output` block is not a
+summary written afterwards; it is part of the prompt. Saying "a ranked table with one row per
+candidate, columns for predicted pIC50, its 90% interval, and nearest training-set neighbour"
+front-loads a decision that otherwise gets made badly at the end.
+
+**4. Ask for provenance and for the negative result.** Retrieval and inference are different
+operations and should be labelled differently. Ask which database was queried, with what
+parameters, on what date — and ask explicitly what the analysis *failed* to find. A workflow that
+can only report hits will report hits.
+
+**5. Separate planning from irreversible action.** Anything that writes to a remote system,
+spends money, transfers data off-site, or moves physical equipment belongs in its own prompt,
+after you have read the plan. Several skills here enforce this with an explicit gate; treat that
+as the pattern rather than the exception.
+
+A prompt built from those five parts looks like this:
+
+```text
+Use the <skills> skills. Keep the output organized and save intermediates.
+
+Goal: <one sentence, with the decision the result will inform>
+Data: <where it is, what authorization covers it, what may not leave the machine>
+Criteria: <thresholds, filters, what counts as a hit, what would falsify the result>
+Deliver: <exact artifacts, formats, and the columns/figures they must contain>
+Report: <provenance for every retrieved fact; uncertainty for every estimate;
+         what you could not determine and why>
+Do not: <the irreversible actions reserved for a separate, explicit approval>
+```
+
+Two smaller habits pay off across long runs. **Checkpoint** — write intermediates to disk and
+name them, so a failure in step 9 does not cost steps 1–8. And **validate against something
+cheap you already trust** — an exactly solvable case, a positive control, a published benchmark,
+an order-of-magnitude estimate — before believing the expensive result. Several examples below
+build that check in as a numbered step.
 
 ---
 
@@ -23,23 +86,26 @@ This document provides comprehensive, practical examples demonstrating how to co
 13. [Environmental Microbiology](#environmental-microbiology)
 14. [Infectious Disease Research](#infectious-disease-research)
 15. [Multi-Omics Integration](#multi-omics-integration)
-16. [Experimental Physics & Data Analysis](#experimental-physics--data-analysis)
-17. [Chemical Engineering & Process Optimization](#chemical-engineering--process-optimization)
-18. [Scientific Illustration & Visual Communication](#scientific-illustration--visual-communication)
-19. [Quantum Computing for Chemistry](#quantum-computing-for-chemistry)
-20. [Research Grant Writing](#research-grant-writing)
-21. [Flow Cytometry & Immunophenotyping](#flow-cytometry--immunophenotyping)
-22. [Geospatial & Earth Observation](#geospatial--earth-observation)
-23. [Time-Series Forecasting & Sensor Analytics](#time-series-forecasting--sensor-analytics)
-24. [Cloud-Scale Bioinformatics](#cloud-scale-bioinformatics)
-25. [Functional Genomics & Knowledge Graphs](#functional-genomics--knowledge-graphs)
-26. [Molecular Modeling & Simulation](#molecular-modeling--simulation)
-27. [Protein Engineering & Cloud Wet-Lab](#protein-engineering--cloud-wet-lab)
-28. [Medical Imaging & Clinical AI](#medical-imaging--clinical-ai)
-29. [Research Ideation & Study Planning](#research-ideation--study-planning)
-30. [Literature & Knowledge Management](#literature--knowledge-management)
-31. [Regulatory & Quality Management](#regulatory--quality-management)
-32. [Scientific Communication & Tooling](#scientific-communication--tooling)
+16. [Regulatory Genomics & Variant-to-Function](#regulatory-genomics--variant-to-function)
+17. [Experimental Physics & Data Analysis](#experimental-physics--data-analysis)
+18. [Chemical Engineering & Process Optimization](#chemical-engineering--process-optimization)
+19. [Fluid Mechanics & Bioprocess Engineering](#fluid-mechanics--bioprocess-engineering)
+20. [Scientific Illustration & Visual Communication](#scientific-illustration--visual-communication)
+21. [Quantum Computing for Chemistry](#quantum-computing-for-chemistry)
+22. [Open Quantum Systems & Cross-Framework Benchmarking](#open-quantum-systems--cross-framework-benchmarking)
+23. [Research Grant Writing](#research-grant-writing)
+24. [Flow Cytometry & Immunophenotyping](#flow-cytometry--immunophenotyping)
+25. [Geospatial & Earth Observation](#geospatial--earth-observation)
+26. [Time-Series Forecasting & Sensor Analytics](#time-series-forecasting--sensor-analytics)
+27. [Cloud-Scale Bioinformatics](#cloud-scale-bioinformatics)
+28. [Functional Genomics & Knowledge Graphs](#functional-genomics--knowledge-graphs)
+29. [Molecular Modeling & Simulation](#molecular-modeling--simulation)
+30. [Protein Engineering & Cloud Wet-Lab](#protein-engineering--cloud-wet-lab)
+31. [Medical Imaging & Clinical AI](#medical-imaging--clinical-ai)
+32. [Research Ideation & Study Planning](#research-ideation--study-planning)
+33. [Literature & Knowledge Management](#literature--knowledge-management)
+34. [Regulatory & Quality Management](#regulatory--quality-management)
+35. [Scientific Communication & Tooling](#scientific-communication--tooling)
 
 ---
 
@@ -48,6 +114,8 @@ This document provides comprehensive, practical examples demonstrating how to co
 ### Example 1: Preclinical EGFR Inhibitor Candidate Discovery
 
 **Objective**: Identify candidate small molecules for preclinical EGFR research and laboratory validation; do not infer therapeutic safety or efficacy.
+
+**Disciplines**: medicinal chemistry · structural biology · cancer genetics · machine learning
 
 **Skills Used**:
 - `database-lookup` - Query ChEMBL, PubChem, COSMIC, AlphaFold DB
@@ -59,30 +127,52 @@ This document provides comprehensive, practical examples demonstrating how to co
 - `diffdock` - Molecular docking
 - `deepchem` - Property prediction
 - `torchdrug` - Graph neural networks for molecules
+- `uncertainty-and-units` - Keep IC50/Ki/pChEMBL units consistent and propagate error
 - `scientific-visualization` - Create figures
 - `scientific-writing` - Build an evidence-traceable research report
 
+**Starting prompt**:
+
+```text
+Use the database-lookup, rdkit, datamol, medchem, deepchem, diffdock, and
+scientific-writing skills. Keep the output organized and save every intermediate.
+
+Goal: a research-prioritized shortlist of EGFR inhibitor scaffolds worth
+synthesizing, with the evidence for each and the reasons it might fail.
+Criteria: below. Deliver: a ranked table plus a cited report.
+Report: for every predicted value, the model, its held-out error, and the
+nearest training-set neighbour by Tanimoto — so I can see what is interpolation
+and what is extrapolation. Say plainly which candidates the models cannot score.
+```
+
 **Workflow**:
 
-```bash
-# Always use available 'skills' when possible. Keep the output organized.
-
+```text
 Step 1: Query ChEMBL for known EGFR inhibitors with high potency
 - Search for compounds targeting EGFR (CHEMBL203)
-- Filter: IC50 < 50 nM, pChEMBL value > 7
+- Filter on pChEMBL >= 7 for a single, stated assay type and target confidence
+  score; do not pool IC50, Ki, and Kd into one activity column
 - Extract SMILES strings and activity data
+- Record assay heterogeneity: the same compound often has a >1 log unit spread
+  across labs, which bounds how well any model built on this can perform
 - Export to DataFrame for analysis
 
 Step 2: Analyze structure-activity relationships
-- Load compounds into RDKit
+- Load compounds into RDKit; standardize (parent salt stripping, charge, tautomer)
+  before any descriptor or fingerprint is computed
 - Calculate molecular descriptors (MW, LogP, TPSA, HBD, HBA)
 - Generate Morgan fingerprints (radius=2, 2048 bits)
-- Perform hierarchical clustering to identify scaffolds
-- Visualize top scaffolds with activity annotations
+- Cluster with Butina on Tanimoto distance, and separately group by Bemis-Murcko
+  scaffold; the two views disagree in informative ways
+- Visualize top scaffolds with activity annotations, and flag activity cliffs
+  (near-identical structures, large potency gap) as SAR to explain, not noise
 
 Step 3: Identify resistance mutations from COSMIC
 - Query COSMIC for EGFR mutations in lung cancer
-- Focus on gatekeeper mutations (T790M, C797S)
+- Distinguish the mechanisms rather than lumping them: T790M is the gatekeeper
+  substitution that restores ATP affinity against first-generation inhibitors,
+  while C797S removes the cysteine that third-generation inhibitors bind
+  covalently — a compound series can be robust to one and defeated by the other
 - Extract mutation frequencies and clinical significance
 - Cross-reference with literature in PubMed
 
@@ -94,20 +184,29 @@ Step 4: Retrieve EGFR structure from AlphaFold
 Step 5: Generate novel analogs using datamol
 - Select top 5 scaffolds from ChEMBL analysis
 - Use scaffold decoration to generate 100 analogs per scaffold
-- Apply Lipinski's Rule of Five filtering
+- Apply Lipinski's Rule of Five as a soft prior on oral absorption, not a potency
+  filter — approved kinase inhibitors routinely sit at or past its edges
 - Ensure synthetic accessibility (SA score < 4)
-- Check for PAINS and unwanted substructures
+- Check for PAINS and unwanted substructures with medchem
 
 Step 6: Predict properties with DeepChem
-- Train graph convolutional model on ChEMBL EGFR data
-- Predict pIC50 for generated analogs
-- Predict ADMET properties (solubility, permeability, hERG)
-- Rank candidates by predicted potency and drug-likeness
+- Train a graph convolutional model on the ChEMBL EGFR set
+- Split by Bemis-Murcko scaffold, never randomly: a random split leaks close
+  analogs across the fold boundary and inflates apparent accuracy
+- Report held-out error against two baselines — the training-set mean, and a
+  1-nearest-neighbour Tanimoto predictor. A model that cannot beat nearest
+  neighbour is a lookup table with extra steps
+- Predict pIC50 and ADMET properties (solubility, permeability, hERG) for analogs
+- Define the applicability domain and mark every analog outside it as unscored
+  rather than assigning it a confident number
 
 Step 7: Virtual screening with DiffDock
 - Perform molecular docking on top 50 candidates
-- Dock into wild-type EGFR and T790M mutant
-- Rank generated poses by DiffDock confidence, then rescore with GNINA/MM-GBSA for affinity-oriented prioritization
+- Dock into wild-type EGFR and the T790M mutant
+- DiffDock confidence scores pose plausibility, not affinity; use it to triage,
+  then rescore surviving poses with GNINA/MM-GBSA for affinity-oriented ranking
+- Sanity-check the pipeline by redocking a co-crystallized ligand and measuring
+  pose RMSD against its experimental coordinates before trusting any novel pose
 - Identify compounds with favorable binding to both forms
 
 Step 8: Search PubChem for commercial availability
@@ -140,19 +239,42 @@ Expected Output:
 
 ### Example 2: Drug Repurposing for Rare Diseases
 
-**Objective**: Identify FDA-approved drugs that could be repurposed for treating a rare metabolic disorder.
+**Objective**: Identify FDA-approved drugs that could be repurposed for research into a rare metabolic disorder, and state the evidence and the counter-evidence for each.
+
+**Disciplines**: pharmacology · network biology · metabolism · clinical epidemiology · evidence synthesis
 
 **Skills Used**:
 - `database-lookup` - Query DrugBank, Open Targets, STRING, KEGG, Reactome, ClinicalTrials.gov, FDA
 - `paper-lookup` - Search OpenAlex, bioRxiv, PubMed
 - `networkx` - Network analysis
 - `bioservices` - Biological database queries
+- `pathway-enrichment` - Gene-set and pathway enrichment of drug-target sets
+- `ontology-term-resolution` - Pin the disease to a MONDO/Orphanet ID before searching
 - `literature-review` - Systematic review
+
+**Starting prompt**:
+
+```text
+Use the database-lookup, bioservices, networkx, pathway-enrichment, and
+literature-review skills.
+
+Goal: a shortlist of approved drugs with a mechanistic rationale for this rare
+metabolic disorder, for a research proposal — not for prescribing.
+Criteria: rank by pathway proximity, then safety, then existing human evidence.
+Deliver: a table of candidates with a mechanism sentence, evidence class
+(preclinical / case report / trial), and the strongest argument against each.
+Report: resolve the disease to a single ontology ID first and search on that,
+not on a free-text name. Note every trial that already failed and why.
+Do not: suggest doses, off-label regimens, or anything patient-specific.
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Define disease pathway
+- Resolve the disease name to a MONDO or Orphanet identifier with
+  ontology-term-resolution, and check it is not obsolete; rare-disease synonyms
+  are a common source of silently empty query results
 - Query KEGG and Reactome for disease-associated pathways
 - Identify key proteins and enzymes involved
 - Map upstream and downstream pathway components
@@ -184,8 +306,9 @@ Step 6: Search ClinicalTrials.gov for prior repurposing attempts
 - Identify ongoing trials that may compete
 
 Step 7: Perform pathway enrichment analysis
-- Map drug targets to disease pathways
-- Calculate enrichment scores with Reactome
+- Map drug targets to disease pathways with the pathway-enrichment skill
+- Use the druggable proteome as the background set, not all of Ensembl; an
+  all-genes background makes almost any drug-target list look enriched
 - Identify drugs affecting multiple pathway nodes
 
 Step 8: Conduct systematic literature review
@@ -222,28 +345,68 @@ Expected Output:
 
 **Objective**: Annotate an authorized synthetic or properly de-identified tumor VCF and prepare a source-traceable research evidence packet for qualified review—not diagnosis, prognosis, treatment selection, or trial eligibility.
 
+**Disciplines**: cancer genomics · population genetics · structural biology · pharmacology · clinical informatics
+
 **Skills Used**:
 - `database-lookup` - Query Ensembl, ClinVar, COSMIC, NCBI Gene, UniProt, ClinPGx, DrugBank, ClinicalTrials.gov, Open Targets
 - `paper-lookup` - Search PubMed for literature evidence
 - `pysam` - Parse VCF files
+- `genomic-coordinates` - Reconcile build, chr-prefix, and indel representation before any lookup
+- `onekgpd` - 1000 Genomes population allele frequencies for germline/common-variant context
 - `gget` - Unified gene/protein data retrieval
+- `ontology-term-resolution` - Pin tumour type and phenotype terms to MONDO/HPO IDs
 - `scientific-writing` - Maintain claim-to-source traceability
 - `clinical-reports` - Create a visibly marked draft structure from a verified source-fact manifest
+- `treatment-plans` - Format only decisions a licensed clinician has already made and supplied
+
+**Starting prompt**:
+
+```text
+Use the genomic-coordinates, pysam, database-lookup, onekgpd, and
+scientific-writing skills. Data stays local.
+
+Goal: an evidence matrix a qualified reviewer can audit, one row per variant.
+Criteria: below. Deliver: the matrix plus a visibly-marked draft packet.
+Report: for each database assertion, the submitter, review status, and access
+date. Where sources conflict, show the conflict — do not resolve it.
+Do not: assign an actionability tier, infer prognosis, judge trial eligibility,
+or state or imply a treatment recommendation. Those are the reviewer's calls.
+```
 
 **Workflow**:
 
-```bash
+```text
+Step 0: Establish the coordinate contract
+- Use genomic-coordinates to record the assembly (GRCh37 / hg19 / GRCh38 / T2T),
+  contig naming, and coordinate convention of every file before anything is joined
+- Left-align and trim indels to a reference FASTA so that two spellings of the same
+  deletion become one record; unnormalized indels silently miss ClinVar matches
+- Verify REF alleles against the reference; a REF mismatch means the build is wrong,
+  and every downstream annotation built on it will be wrong too
+
 Step 1: Parse and filter VCF file
 - Confirm authorization and de-identification, then use pysam to read the research VCF locally
 - Filter for high-quality variants (QUAL > 30, DP > 20)
 - Extract variant positions, alleles, and VAF (variant allele frequency)
 - Separate SNVs, indels, and structural variants
+- Record how many variants each filter removed, not just what survived
 
 Step 2: Annotate variants with Ensembl
 - Query Ensembl VEP API for functional consequences
 - Classify variants: missense, nonsense, frameshift, splice site
 - Extract transcript information and protein changes
-- Identify canonical transcripts for each gene
+- Pick one transcript convention (MANE Select where it exists) and hold to it: the
+  same variant has different HGVS notation and different predicted consequences on
+  different transcripts, and mixing conventions produces contradictions
+
+Step 2b: Establish population context with 1000 Genomes
+- Query onekgpd for population allele frequencies at each position, alongside the
+  gnomAD frequencies it returns
+- A variant common in any ancestry group is a germline polymorphism until shown
+  otherwise; in tumour-only sequencing this is the main confounder, and frequency
+  is stratified by ancestry, so a single global AF hides the signal
+- Record AlphaMissense scores as one predictive field among several, never as a
+  classification
 
 Step 3: Retrieve ClinVar assertions
 - Search ClinVar by genomic coordinates
@@ -307,8 +470,20 @@ Step 12: Generate a safety-bounded draft evidence packet
 - Include no diagnosis, prognosis, treatment recommendation, eligibility decision,
   filing, submission, signature, or source-record amendment
 
+Step 13 (separate, downstream, clinician-gated): documentation only
+- treatment-plans has a hard boundary and belongs to a different stage: it formats
+  and structurally validates documentation of decisions a licensed professional has
+  already made, supplied, and verified
+- It never enters this workflow as a next step from the evidence matrix. If a
+  clinician has independently reached and recorded a decision, treatment-plans can
+  format that record, check source traceability, and gate release — nothing more
+- It does not select, rank, compare, or recommend therapies, and does not read the
+  evidence matrix and infer one
+
 Expected Output:
 - Annotated research variant table with source provenance and conflicts
+- Coordinate-reconciliation log (build, normalization, REF checks) as an artifact
+- Population-frequency context distinguishing likely germline from candidate somatic
 - Evidence matrix and aggregate trial-landscape table
 - Visibly marked draft research packet for qualified review
 - Explicit unresolved questions and limitations
@@ -318,7 +493,9 @@ Expected Output:
 
 ### Example 4: Cancer Subtype Classification from Gene Expression
 
-**Objective**: Classify breast cancer subtypes using RNA-seq data and identify subtype-specific therapeutic vulnerabilities.
+**Objective**: Classify breast cancer subtypes from research RNA-seq data and identify subtype-associated therapeutic hypotheses for preclinical follow-up.
+
+**Disciplines**: cancer transcriptomics · biostatistics · survival analysis · pharmacology
 
 **Skills Used**:
 - `database-lookup` - Query NCBI Gene, Reactome, Open Targets
@@ -332,22 +509,49 @@ Expected Output:
 - `scientific-visualization` - Publication-quality & interactive visualization
 - `scikit-survival` - Survival analysis
 - `pathway-enrichment` - Gene-set and pathway enrichment analysis
+- `xlsx` - Supplementary tables of DE results and subtype assignments
+
+**Starting prompt**:
+
+```text
+Use the pydeseq2, scanpy, scikit-learn, pathway-enrichment, scikit-survival,
+and scientific-visualization skills.
+
+Goal: subtype assignments plus subtype-associated target hypotheses for a
+preclinical validation plan.
+Criteria: FDR < 0.05 and |LFC| > 1.5 for DE; state the background set for every
+enrichment test; report subtype-call confidence per sample.
+Deliver: assignment table, DE tables (xlsx), enrichment plots, KM curves,
+and a target table where each row carries its evidence and its main caveat.
+Report: how many samples fell near a subtype boundary, and how the calls shift
+if the cohort's composition changes.
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Load and preprocess RNA-seq data
 - Load count matrix (genes × samples)
 - Filter low-expression genes (mean counts < 10)
 - Normalize with DESeq2 size factors
 - Apply variance-stabilizing transformation (VST)
 
-Step 2: Classify samples using PAM50 genes
-- Query NCBI Gene for PAM50 classifier gene list
-- Extract expression values for PAM50 genes
-- Train Random Forest classifier on labeled training data
-- Predict subtypes: Luminal A, Luminal B, HER2+, Basal, Normal-like
-- Validate with published markers (ESR1, PGR, ERBB2, MKI67)
+Step 2: Classify samples using the PAM50 signature
+- PAM50 is a published nearest-centroid predictor (Parker et al. 2009), not a gene
+  list you retrain on. Apply the published centroids and correlation rule so results
+  are comparable to the literature
+- The method is sensitive to how expression is centred, and gene-median centring
+  makes a sample's call depend on the *other samples in the cohort*. A cohort
+  enriched for ER-negative disease shifts the medians and reassigns borderline
+  samples. State the centring procedure and the cohort composition, and report the
+  correlation to each centroid, not only the winning label
+- Treat "Normal-like" with suspicion: it largely reflects low tumour cellularity
+  rather than a distinct biology, so check tumour purity before interpreting it
+- Cross-check calls against ESR1, PGR, ERBB2, and MKI67 expression and flag
+  discordances instead of overwriting them
+- If you additionally train a classifier with scikit-learn, hold out whole batches
+  rather than random samples, and report its agreement with the centroid calls as a
+  concordance rate — it is a different estimator, not a validation of PAM50
 
 Step 3: Perform differential expression for each subtype
 - Use PyDESeq2 to compare each subtype vs all others
@@ -361,16 +565,26 @@ Step 4: Annotate differentially expressed genes
 - Extract biological process and molecular function terms
 
 Step 5: Pathway enrichment analysis
-- Submit gene lists to Reactome API
-- Identify enriched pathways for each subtype (p < 0.01)
-- Focus on druggable pathways (kinase signaling, metabolism)
+- Run the pathway-enrichment skill against Reactome and Hallmark gene sets
+- Use the set of genes actually tested as the background, not the whole genome —
+  filtering out low-expression genes and then testing against all of Ensembl
+  manufactures enrichment
+- Prefer a rank-based method (GSEA-style) over a threshold-based one when the
+  signal is distributed rather than concentrated in a few large-effect genes
+- Report adjusted p-values and note that Reactome pathways overlap heavily, so
+  "twelve enriched pathways" may be one signal counted twelve times
 - Compare pathway profiles across subtypes
 
 Step 6: Identify therapeutic targets with Open Targets
 - Query Open Targets for each upregulated gene
-- Filter by tractability score > 5
-- Prioritize targets with clinical precedence
-- Extract associated drugs and development phase
+- Open Targets reports tractability as evidence *buckets* per modality (small
+  molecule, antibody, PROTAC, and others), not a single numeric score — record the
+  bucket and modality rather than inventing a threshold
+- Keep the overall association score separate from the genetic-evidence component;
+  a high score driven only by text-mining co-occurrence is weak evidence
+- Prioritize targets with clinical precedence and extract associated drugs and phase
+- Overexpression is not dependency. Treat every target here as a hypothesis for the
+  dependency screen in Example 30, not as a validated vulnerability
 
 Step 7: Create comprehensive visualization
 - Generate UMAP projection of all samples colored by subtype
@@ -414,7 +628,9 @@ Expected Output:
 
 ### Example 5: Single-Cell Atlas of Tumor Microenvironment
 
-**Objective**: Characterize immune cell populations in tumor microenvironment and identify immunotherapy biomarkers.
+**Objective**: Characterize immune cell populations in the tumor microenvironment and identify candidate immunotherapy-response biomarkers for independent validation.
+
+**Disciplines**: immunology · single-cell genomics · compositional statistics · machine learning · cancer biology
 
 **Skills Used**:
 - `database-lookup` - Query NCBI Gene for cell type markers
@@ -422,6 +638,7 @@ Expected Output:
 - `scvi-tools` - Batch correction and integration
 - `scvelo` - RNA velocity and cell-state transitions
 - `cellxgene-census` - Reference data
+- `ontology-term-resolution` - Cell Ontology (CL) and UBERON IDs for annotations
 - `lamindb` - Dataset registration and lineage tracking
 - `gget` - Gene data retrieval
 - `anndata` - Data structure
@@ -432,9 +649,25 @@ Expected Output:
 - `statistical-analysis` - Hypothesis testing
 - `geniml` - Genomic ML embeddings
 
+**Starting prompt**:
+
+```text
+Use the scanpy, anndata, scvi-tools, cellxgene-census, ontology-term-resolution,
+statistical-analysis, and lamindb skills.
+
+Goal: an annotated atlas and a defensible answer to "which populations differ
+between responders and non-responders".
+Criteria: n = number of donors, not number of cells, in every statistical test.
+Deliver: h5ad, cell-type proportion table with CL ontology IDs, differential
+abundance results with effect sizes and intervals, figures.
+Report: the QC thresholds and how many cells each removed; which clusters are
+stable under reclustering and which are not.
+Do not: run a t-test on cell-level data and present it as a group difference.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Load and QC 10X Genomics data
 - Use Scanpy to read 10X h5 files
 - Calculate QC metrics: n_genes, n_counts, pct_mitochondrial
@@ -444,28 +677,47 @@ Step 1: Load and QC 10X Genomics data
 - Document filtering criteria and cell retention rate
 
 Step 2: Normalize and identify highly variable genes
-- Normalize to 10,000 counts per cell
-- Log-transform data (log1p)
-- Store raw counts in adata.raw
-- Identify 3,000 highly variable genes
-- Regress out technical variation (n_counts, pct_mt)
-- Scale to unit variance, clip at 10 standard deviations
+- Copy the integer count matrix to adata.layers["counts"] first. This matters:
+  adata.raw assigned after log1p holds log-normalized values, not counts, and
+  scVI needs the counts — losing them here means re-running from the h5 files
+- Normalize to 10,000 counts per cell, then log-transform (log1p)
+- Identify 3,000 highly variable genes, computed per batch and intersected, so the
+  HVG set does not simply encode the largest batch
+- Do not routinely regress out n_counts or pct_mt. Current scanpy guidance advises
+  against it: regression on covariates that correlate with biology (activated cells
+  really do have more counts; dying cells really are a population) removes signal
+  along with the artifact. If you regress anyway, show the before/after UMAP
+- Scale to unit variance and clip at 10 SD for PCA-based views only, keeping the
+  unscaled log-normalized matrix for differential expression and plotting
 
 Step 3: Integrate with reference atlas using scVI
 - Download reference tumor microenvironment data from Cellxgene Census
-- Train scVI model on combined dataset for batch correction
-- Use scVI latent representation for downstream analysis
-- Generate batch-corrected expression matrix
+- Train scVI on the raw counts layer restricted to HVGs, with batch as the batch
+  key. scVI models count noise directly, so feeding it scaled or regressed data
+  breaks its likelihood — this is why the counts layer was preserved in Step 2
+- Use the scVI latent representation for the neighbourhood graph and clustering
+- Check integration the honest way: batches should mix *within* a cell type while
+  cell types stay separate. A metric that rewards mixing alone rewards
+  over-correction, which erases the tumour-versus-normal difference you are after
 
 Step 4: Dimensionality reduction and clustering
-- Compute neighborhood graph (n_neighbors=15, n_pcs=50)
-- Calculate UMAP embedding for visualization
+- Compute the neighborhood graph on the scVI latent space (n_neighbors=15)
+- Calculate UMAP for visualization only. UMAP distances and cluster sizes are not
+  quantitative; never read population abundance off an embedding
 - Perform Leiden clustering at multiple resolutions (0.3, 0.5, 0.8)
-- Select optimal resolution based on silhouette score
+- Choose resolution by stability, not by silhouette score: silhouette rewards
+  compact round clusters and systematically prefers the wrong answer on graph-based
+  single-cell data. Subsample cells, recluster, and keep the resolution whose
+  clusters reproduce; check with a clustering tree that clusters split cleanly
+  rather than reshuffling as resolution rises
 
 Step 5: Identify cell type markers
 - Run differential expression for each cluster (Wilcoxon test)
-- Calculate marker scores (log fold change, p-value, pct expressed)
+- Read the p-values as a ranking device only. The clusters were defined by the same
+  expression data being tested, so the null is violated by construction and the
+  p-values are anticonservative — this is double dipping, and it is why marker
+  q-values from this step do not belong in a results table as evidence
+- Rank by effect size and detection rate (log fold change, pct expressed in/out)
 - Query NCBI Gene for canonical immune cell markers:
   * T cells: CD3D, CD3E, CD4, CD8A
   * B cells: CD19, MS4A1 (CD20), CD79A
@@ -476,8 +728,14 @@ Step 5: Identify cell type markers
 Step 6: Annotate cell types
 - Assign cell type labels based on marker expression
 - Refine annotations with CellTypist or manual curation
+- Resolve every label to a Cell Ontology ID with ontology-term-resolution and store
+  the CURIE alongside the free-text name. "CD8 T cell", "CD8+ T-cell", and
+  "Cytotoxic T lymphocyte" are three strings and one CL term; without the ID, this
+  atlas cannot be joined to CELLxGENE or to the next dataset, and cannot be
+  submitted anywhere that requires controlled vocabulary
 - Identify T cell subtypes: CD4+, CD8+, Tregs, exhausted T cells
-- Characterize myeloid cells: M1/M2 macrophages, dendritic cells
+- Treat the macrophage M1/M2 axis as a shorthand for a continuum, not two discrete
+  populations — in tissue the polarization states overlap and co-express markers
 - Create cell type proportion tables by sample/condition
 
 Step 7: Identify tumor-specific features
@@ -493,16 +751,27 @@ Step 8: Gene regulatory network inference
 - Build regulatory networks for visualization
 
 Step 9: Statistical analysis of cell proportions
-- Calculate cell type frequencies per sample
-- Test for significant differences between groups (responders vs non-responders)
-- Use statistical-analysis skill for appropriate tests (t-test, Mann-Whitney)
-- Calculate effect sizes and confidence intervals
+- Calculate cell type frequencies per sample, and treat the donor as the unit of
+  analysis. Cells from one donor are not independent observations; testing across
+  cells inflates n from ~20 to ~200,000 and will return p < 1e-50 for noise
+- Cell-type proportions are compositional — they sum to one, so one population
+  expanding forces every other to appear to shrink. Testing each proportion with an
+  independent t-test guarantees spurious "depletions". Use a method built for this
+  (scCODA, propeller, or a Dirichlet-multinomial / centred-log-ratio model) and say
+  which reference population the change is measured against
+- Use statistical-analysis for the group comparison, effect sizes, and intervals
+- Report the per-donor cell yield: a donor contributing 200 cells and one
+  contributing 20,000 do not carry equal information about a rare population
 
 Step 10: Biomarker discovery for immunotherapy response
 - Correlate cell type abundances with clinical response
 - Identify gene signatures associated with response
 - Test signatures: T cell exhaustion, antigen presentation, inflammation
-- Validate with published immunotherapy response signatures
+- Score published signatures on this cohort as a pre-specified check, and treat any
+  signature discovered here as untested: with a handful of donors and thousands of
+  candidate features, the top hit is expected to look strong under the null
+- State the sample size honestly — most single-cell response cohorts are powered to
+  generate hypotheses, not to validate biomarkers
 
 Step 11: Create comprehensive visualizations
 - UMAP plots colored by: cell type, sample, treatment, key genes
@@ -535,10 +804,13 @@ Expected Output:
 
 **Objective**: Design small molecules to disrupt a therapeutically relevant protein-protein interaction.
 
+**Disciplines**: structural biology · medicinal chemistry · biophysics · machine learning
+
 **Skills Used**:
 - `database-lookup` - Query AlphaFold DB, PDB, UniProt, ZINC
 - `biopython` - Structure analysis
 - `esm` - Protein language models and embeddings
+- `tamarind` - Cloud AlphaFold/Boltz/Chai structure prediction and Vina/DiffDock docking at batch scale
 - `rdkit` - Chemical library generation
 - `datamol` - Molecule manipulation
 - `diffdock` - Molecular docking
@@ -546,28 +818,58 @@ Expected Output:
 - `scientific-visualization` - Structure visualization
 - `medchem` - Medicinal chemistry filters
 
+**Starting prompt**:
+
+```text
+Use the database-lookup, biopython, tamarind, diffdock, rdkit, medchem, and
+deepchem skills.
+
+Goal: a fragment-derived series targeting the interface hot spot, with the
+evidence that the pocket is druggable at all.
+Criteria: every "binding energy" must name the scoring function that produced
+it; every hot spot must say whether it is experimental or predicted.
+Deliver: interface analysis, ranked designs, poses, synthetic route sketches.
+Report: redock a known ligand and give the pose RMSD before I read any novel
+pose. If the interface has no enclosed pocket, say so and stop — a flat
+interface is a real negative result, not a reason to lower the threshold.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Retrieve protein structures
 - Query AlphaFold Database for both proteins in the interaction
 - Download PDB files and confidence scores
-- If available, get experimental structures from PDB database
-- Compare AlphaFold predictions with experimental structures (if any)
+- Prefer an experimental complex from the PDB where one exists. AlphaFold predicts
+  monomer folds well, but a monomer prediction says nothing about the interface
+  geometry; per-residue pLDDT is a confidence in local structure, not in a contact
+- Where no experimental complex exists, run a cofolding predictor (Boltz, Chai, or
+  AlphaFold-Multimer via tamarind) and read the interface confidence — ipTM/PAE
+  across the interface, not the global score — then treat the interface as a
+  hypothesis to be tested, not as a structure
 
 Step 2: Analyze protein interaction interface
 - Load structures with BioPython
-- Identify interface residues (distance < 5Å between proteins)
-- Calculate interface area and binding energy contribution
-- Identify hot spot residues (key for binding)
+- Define interface residues by heavy-atom contact (< 5 Å) and cross-check with
+  buried surface area (ΔSASA on complexation); the two definitions disagree at the
+  rim, and the rim is where scoring functions are least reliable
+- Report buried surface area, which is measurable from coordinates. "Binding
+  energy" is not: any per-residue energy here is the output of a specific empirical
+  scoring function, so name the function and treat the number as a ranking
+- Hot spots from computational alanine scanning (FoldX or similar) are predictions.
+  Where mutagenesis data exist in the literature, prefer them and say which
+  residues are experimentally supported versus predicted
 - Map to UniProt to get functional annotations
 
 Step 3: Characterize binding pocket
 - Identify cavities at the protein-protein interface
 - Calculate pocket volume and surface area
-- Assess druggability: depth, hydrophobicity, shape
-- Identify hydrogen bond donors/acceptors
-- Note any known allosteric sites
+- Assess druggability: depth, hydrophobicity, enclosure, shape. Most PPI interfaces
+  are large, flat, and hydrophobic, and most are not druggable by small molecules —
+  reaching that conclusion early is a successful outcome of this step
+- Run the pocket detection on several frames or models, not one static structure:
+  many PPI pockets are cryptic and only open transiently
+- Identify hydrogen bond donors/acceptors and note any known allosteric sites
 
 Step 4: Query UniProt for known modulators
 - Search UniProt for both proteins
@@ -583,9 +885,14 @@ Step 5: Search ZINC15 for fragment library
 - Download 1,000-5,000 fragment SMILES
 
 Step 6: Virtual screening with fragment library
-- Use DiffDock to dock fragments into interface pocket
+- Use DiffDock locally, or tamarind for batch docking when the library outgrows
+  local GPU capacity
 - Rank by pose confidence, then rescore promising poses with an affinity-oriented method
-- Identify fragments binding to hot spot residues
+- Fragment docking is the hardest case for scoring functions: fragments are small,
+  bind weakly (mM–µM), and their scores compress into the noise. Use docking to
+  decide *where* fragments sit, and expect experiment to decide which ones bind
+- Include a decoy set (property-matched non-binders) and report enrichment; a
+  screen that cannot separate known binders from decoys will not find new ones
 - Select top 50 fragments for elaboration
 
 Step 7: Fragment elaboration with RDKit
@@ -649,19 +956,40 @@ Expected Output:
 
 **Objective**: Screen candidate compounds for in-silico toxicity liabilities and preclinical follow-up. Predictions do not establish that a compound is safe or suitable for human use.
 
+**Disciplines**: computational toxicology · medicinal chemistry · pharmacokinetics · regulatory science · machine learning
+
 **Skills Used**:
 - `database-lookup` - Query ChEMBL, PubChem, DrugBank, FDA, HMDB
 - `rdkit` - Molecular descriptors
 - `medchem` - Toxicophore detection
 - `deepchem` - Toxicity prediction
-- `pytdc` - Therapeutics data commons
+- `pytdc` - Therapeutics data commons benchmark datasets and splits
 - `scikit-learn` - Classification models
 - `shap` - Model interpretability
+- `uncertainty-and-units` - Concentration, dose, and exposure-margin arithmetic
 - `scientific-writing` - Evidence-traceable preclinical assessment reports
+
+**Starting prompt**:
+
+```text
+Use the rdkit, medchem, pytdc, deepchem, shap, uncertainty-and-units, and
+scientific-writing skills.
+
+Goal: a liability triage for these candidates, to decide which in vitro assays
+to run first.
+Criteria: flag on structural alerts and on model predictions separately; never
+merge them into one score.
+Deliver: per-compound risk table with red / yellow / insufficient-evidence, and
+the assay that would resolve each flag.
+Report: for every model, its held-out performance on a scaffold split, its
+applicability domain, and whether this compound is inside it.
+Do not: label any compound "safe", "non-toxic", or "clean". A negative
+prediction on a small imbalanced dataset is an absence of evidence.
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Calculate molecular descriptors
 - Load candidate molecules with RDKit
 - Calculate physicochemical properties:
@@ -698,13 +1026,21 @@ Step 4: Search PubChem BioAssays for toxicity screening
 - Calculate hit rates for concerning assays
 
 Step 5: Train toxicity prediction models with DeepChem
-- Load Tox21 dataset from DeepChem
+- Load Tox21 from DeepChem, or use pytdc for its benchmark splits so results are
+  comparable to published numbers instead of to a split you invented
 - Train graph convolutional models for:
   * Nuclear receptor signaling
   * Stress response pathways
   * Genotoxicity endpoints
-- Validate models with cross-validation
-- Predict toxicity for candidate molecules
+- Tox21 labels are heavily imbalanced (a few percent actives on most tasks), so
+  accuracy and ROC-AUC both look impressive on a model that predicts "inactive"
+  for everything. Report precision-recall AUC and the confusion matrix at the
+  operating threshold you would actually use
+- Validate on a scaffold split; random cross-validation on a dataset built from
+  congeneric series measures memorization
+- Tox21 is an in vitro assay panel, not an in vivo outcome. A positive is a
+  pathway-level signal at assay concentrations, and translating it to organism
+  toxicity requires exposure, which this step does not have
 
 Step 6: Predict hERG cardiotoxicity liability
 - Train DeepChem model on hERG inhibition data from ChEMBL
@@ -715,8 +1051,16 @@ Step 6: Predict hERG cardiotoxicity liability
 Step 7: Predict hepatotoxicity risk
 - Train models on DILI (drug-induced liver injury) datasets
 - Extract features: reactive metabolites, mitochondrial toxicity
-- Predict hepatotoxicity risk class (low/medium/high)
-- Use SHAP values to explain predictions
+- Predict a hepatotoxicity risk class, and carry the caveat with the number: public
+  DILI sets are small (hundreds to low thousands), label definitions differ between
+  them, and reported accuracies do not transfer to new chemical space
+- Use SHAP to explain what the *model* used, not what the *liver* does. A high SHAP
+  attribution on a substructure means that substructure drove the prediction; it
+  does not identify a mechanism, and it will happily attribute to a feature that is
+  merely correlated with the training set's chemical series
+- Cross-check against exposure: hepatotoxicity risk without a dose is not a risk
+  assessment. Use uncertainty-and-units to compute the margin between predicted
+  active concentration and plausible plasma exposure, carrying units explicitly
 
 Step 8: Predict metabolic stability and metabolites
 - Identify sites of metabolism using RDKit SMARTS patterns
@@ -777,22 +1121,47 @@ Expected Output:
 
 **Objective**: Analyze the clinical trial landscape for a specific indication to inform development strategy.
 
+**Disciplines**: clinical epidemiology · regulatory science · biostatistics · health economics · competitive intelligence
+
 **Skills Used**:
 - `database-lookup` - Query ClinicalTrials.gov, FDA, DrugBank, Open Targets
 - `paper-lookup` - Search PubMed, OpenAlex for published results
 - `polars` - Data manipulation
+- `ontology-term-resolution` - Resolve the indication to MONDO/EFO before searching
 - `matplotlib` - Visualization
 - `seaborn` - Statistical plots
 - `scientific-visualization` - Publication-quality & interactive visualization
 - `scientific-writing` - Evidence-traceable research synthesis
 - `market-research-reports` - Claim/source mapping, sizing, and scenario analysis
 - `usfiscaldata` - U.S. federal R&D and economic context data
+- `xlsx` - The trial database and comparison tables as a working spreadsheet
+
+**Starting prompt**:
+
+```text
+Use the database-lookup, polars, market-research-reports, scientific-writing,
+and xlsx skills.
+
+Goal: a landscape of everything in development for this indication, and where
+the white space is.
+Criteria: define the cohort before pulling it — which phases, which statuses,
+which date range, and how you handle trials with multiple indications.
+Deliver: a trial-level spreadsheet, timeline and phase charts, and a report
+whose every claim is tagged fact / estimate / forecast / opinion.
+Report: registry coverage is incomplete and status fields go stale, so state
+the access date and how many records had missing or ambiguous fields.
+Do not: present registry phase transitions as clinical success rates, or
+imply affiliation with any analyst or consulting brand.
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Search ClinicalTrials.gov for all trials in indication
-- Query: "[disease/indication]"
+- Resolve the indication to a MONDO/EFO identifier with ontology-term-resolution and
+  expand to its synonyms and child terms. Registries store free text, so a single
+  string search silently drops trials filed under a synonym or a subtype
+- Query: "[disease/indication]" plus the resolved synonym set
 - Filter: All phases, all statuses
 - Extract fields:
   * NCT ID, title, phase, status
@@ -908,6 +1277,8 @@ Expected Output:
 
 **Objective**: Integrate transcriptomics, proteomics, and metabolomics to identify dysregulated pathways in metabolic disease.
 
+**Disciplines**: systems biology · analytical chemistry · metabolic engineering · Bayesian statistics · network science
+
 **Skills Used**:
 - `database-lookup` - Query HMDB, Metabolomics Workbench, KEGG, Reactome, STRING
 - `pydeseq2` - RNA-seq analysis
@@ -915,14 +1286,31 @@ Expected Output:
 - `matchms` - Mass spectra matching
 - `cobrapy` - Constraint-based metabolic modeling
 - `pathway-enrichment` - Multi-omics pathway/gene-set enrichment
+- `ontology-term-resolution` - ChEBI IDs for metabolites, UBERON for tissue
 - `statsmodels` - Multi-omics correlation
 - `networkx` - Network analysis
 - `pymc` - Bayesian modeling
+- `uncertainty-and-units` - Concentration units, dilution factors, and error propagation
 - `scientific-visualization` - Publication-quality & interactive visualization
+
+**Starting prompt**:
+
+```text
+Use the pydeseq2, pyopenms, matchms, cobrapy, pathway-enrichment, statsmodels,
+networkx, pymc, and uncertainty-and-units skills.
+
+Goal: pathways dysregulated across at least two omics layers, with the
+confidence level of every metabolite identification stated.
+Criteria: MSI confidence level per metabolite; FDR < 0.05 within each layer.
+Deliver: per-layer result tables, a joint pathway table showing which layers
+support each pathway, an integrated network, and a target shortlist.
+Report: mRNA and protein abundance correlate only moderately in most tissues,
+so where they disagree, report the disagreement rather than picking a side.
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Process RNA-seq data
 - Load gene count matrix
 - Run differential expression with PyDESeq2
@@ -939,11 +1327,18 @@ Step 2: Process proteomics data
 
 Step 3: Process metabolomics data
 - Load untargeted metabolomics data (mzML format) with PyOpenMS
-- Perform peak detection and alignment
-- Match features to HMDB database by accurate mass
-- Annotate metabolites with MS/MS fragmentation
-- Extract putative identifications (Level 2/3)
-- Perform statistical analysis (FDR < 0.05, |FC| > 2)
+- Perform peak detection, retention-time alignment, and adduct/isotope grouping —
+  one metabolite produces many features, and skipping this step inflates the
+  "number of altered metabolites" by a factor of several
+- Match features to HMDB by accurate mass with a stated tolerance (e.g. 5 ppm).
+  Accurate mass alone cannot distinguish isomers and is MSI level 3 at best
+- Score MS/MS spectra against spectral libraries with matchms for level 2. Level 1
+  requires matching both MS/MS and retention time to an authentic standard run on
+  the same method — say which level each identification reached
+- Attach a ChEBI or HMDB identifier to every reported metabolite using
+  ontology-term-resolution; metabolite common names are ambiguous across databases
+- Perform statistical analysis (FDR < 0.05, |FC| > 2) and monitor QC pool samples
+  for signal drift before believing any fold change
 
 Step 4: Search Metabolomics Workbench for public data
 - Query for same disease or tissue type
@@ -981,15 +1376,35 @@ Step 9: Correlation analysis across omics layers
   * Gene expression and protein abundance
   * Protein abundance and metabolite levels
   * Gene expression and metabolites (for enzyme-product pairs)
-- Use statsmodels for significance testing
-- Focus on enzyme-metabolite pairs with expected relationships
+- Use statsmodels for significance testing, with FDR control across the full set of
+  pairs tested — not just the ones that looked interesting
+- Calibrate expectations before interpreting: mRNA-protein correlation is typically
+  moderate (often r ≈ 0.4 across genes), because translation rate and protein
+  turnover vary widely. A weak correlation for a given gene is the normal case, not
+  evidence of post-transcriptional regulation
+- Restrict enzyme-metabolite testing to pairs with a prior mechanistic link, so the
+  multiple-testing burden buys you something
 
-Step 10: Bayesian network modeling with PyMC
-- Build probabilistic graphical model of pathway
-- Model causal relationships: gene → protein → metabolite
-- Incorporate prior knowledge from KEGG/Reactome
-- Perform inference to identify key regulatory nodes
-- Estimate effect sizes and uncertainties
+Step 10: Bayesian modeling with PyMC
+- Build an explicit probabilistic model of the pathway. PyMC does inference on a
+  model you specify; it does not learn graph structure, so the edges here come from
+  KEGG/Reactome and are an assumption, not a finding
+- Encode the gene → protein → metabolite chain as a generative model with priors
+  informed by literature, and fit with MCMC
+- The parameters are causal only under the assumptions you wrote down —
+  no unmeasured confounding, correct direction, correct functional form. In
+  observational cross-sectional data those assumptions are strong. Report them
+  alongside the posterior instead of describing the result as "causal relationships"
+- Check convergence (R-hat, effective sample size) and run prior predictive and
+  posterior predictive checks before reading any effect size
+- Where the data cannot distinguish two directions, say so — a wide, bimodal
+  posterior is a result
+
+Step 10b: Constraint-based cross-check with COBRApy
+- Map the differentially abundant enzymes onto a genome-scale metabolic model
+- Test whether the flux changes implied by the omics data are stoichiometrically
+  feasible; a "dysregulated pathway" that no flux distribution can produce is
+  usually an annotation artifact
 
 Step 11: Identify therapeutic targets
 - Prioritize enzymes with:
@@ -1027,20 +1442,41 @@ Expected Output:
 
 **Objective**: Discover novel solid electrolyte materials for lithium-ion batteries using computational screening.
 
+**Disciplines**: solid-state chemistry · condensed-matter physics · electrochemistry · machine learning · optimization
+
 **Skills Used**:
 - `pymatgen` - Materials analysis and feature engineering
 - `scikit-learn` - Machine learning
 - `pymoo` - Multi-objective optimization
+- `arbor` - Hypothesis-tree search over screening/model configurations without overfitting the dev set
 - `sympy` - Symbolic math
+- `uncertainty-and-units` - meV/atom, S/cm, eV: dimensional checks and error propagation
 - `vaex` - Large dataset handling
 - `dask` - Parallel computing
 - `matplotlib` - Visualization
 - `scientific-writing` - Report generation
 - `scientific-visualization` - Publication figures
 
+**Starting prompt**:
+
+```text
+Use the pymatgen, scikit-learn, pymoo, uncertainty-and-units, dask, and
+scientific-writing skills.
+
+Goal: a Pareto set of candidate solid electrolytes worth attempting to
+synthesize, with an honest read on which predictions are trustworthy.
+Criteria: state the DFT functional behind every energy; hold out a chemical
+family entirely rather than splitting randomly.
+Deliver: the screened library, the Pareto front, a top-10 table with predicted
+values and intervals, and DFT validation for those 10.
+Report: how far each Pareto candidate sits from the training distribution.
+Extrapolating a conductivity model into a new anion chemistry is a guess, and
+should be labelled one.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Generate candidate materials library
 - Use Pymatgen to enumerate compositions:
   * Li-containing compounds (Li₁₋ₓM₁₊ₓX₂)
@@ -1050,10 +1486,18 @@ Step 1: Generate candidate materials library
 - Apply charge neutrality constraints
 
 Step 2: Filter by thermodynamic stability
-- Query Materials Project database via Pymatgen
-- Calculate formation energy from elements
-- Calculate energy above convex hull (E_hull)
-- Filter: E_hull < 50 meV/atom (likely stable)
+- Query the Materials Project through the current `mp-api` client (the legacy
+  pymatgen MPRester endpoints have been retired) and record the database version
+- Calculate formation energy from elements and energy above the convex hull
+- Filter at E_hull < 50 meV/atom, and describe what that means accurately:
+  E_hull = 0 is on the hull; a nonzero value is metastable. The 50 meV/atom line is
+  an empirical heuristic for "has been synthesized before at comparable
+  metastability", not a stability guarantee. Many known, useful materials sit above
+  it, and plenty below it have never been made
+- Compare energies only within one functional and one correction scheme. Mixing
+  GGA and GGA+U totals across a hull produces meaningless differences
+- Use uncertainty-and-units to keep meV/atom, eV/formula-unit, and kJ/mol distinct
+  throughout; a silent factor of 96.5 here invalidates the entire screen
 - Retain ~2,000 thermodynamically plausible compounds
 
 Step 3: Predict crystal structures
@@ -1081,12 +1525,17 @@ Step 5: Feature engineering with Pymatgen
 
 Step 6: Build ML models for Li⁺ conductivity prediction
 - Collect training data from literature (experimental conductivities)
-- Train ensemble models with scikit-learn:
-  * Random Forest
-  * Gradient Boosting
-  * Neural Network
-- Use 5-fold cross-validation
-- Predict ionic conductivity for all candidates
+- Note what that data is: room-temperature conductivities measured by different
+  groups on differently-densified pellets vary by orders of magnitude for the same
+  nominal composition. Model on log₁₀(σ) and expect an irreducible error floor
+- Train ensemble models with scikit-learn (Random Forest, Gradient Boosting, MLP)
+- Split by chemical family, holding out whole anion or framework classes. Random
+  5-fold CV on a literature set full of near-duplicate doped variants reports an
+  accuracy the model will not reproduce on anything new
+- Predict ionic conductivity for all candidates with prediction intervals, and use
+  arbor if you want to search systematically over featurization, model, and split
+  choices — its held-out merge gate is what keeps that search from quietly tuning
+  itself onto the validation set
 
 Step 7: Predict additional properties
 - Electrochemical stability window (ML model)
@@ -1114,11 +1563,19 @@ Step 10: Validate predictions with DFT calculations
 - Select top 10 candidates for detailed study
 - Set up DFT calculations using Pymatgen's interface
 - Calculate:
-  * Accurate formation energies
+  * Formation energies at converged k-point density and cutoff (report both)
   * Li⁺ migration barriers (NEB calculations)
-  * Electronic band gap
+  * Electronic band gap — GGA underestimates gaps substantially, so a GGA gap
+    is a lower bound and cannot by itself establish an electrochemical window
   * Elastic constants
-- Compare DFT results with ML predictions
+- A migration barrier is not a conductivity. Converting one to the other needs the
+  attempt frequency and the mobile-carrier concentration via a Nernst-Einstein
+  relation, plus an assumption that the migration path found by NEB is the rate-
+  limiting one. Ab initio MD at elevated temperature is the stronger check where
+  affordable
+- Barriers computed in a perfect bulk crystal ignore grain boundaries and interfaces,
+  which usually dominate measured conductivity in a real pellet
+- Compare DFT results with ML predictions and record where they disagree
 
 Step 11: Literature and patent search
 - Search for prior art on top candidates
@@ -1156,6 +1613,24 @@ Expected Output:
 
 **Objective**: Develop and retrospectively evaluate a research model on authorized, de-identified pathology data. PathML, pydicom, and the resulting model are research-only—not diagnostic systems or substitutes for pathologists.
 
+**Disciplines**: pathology · computer vision · biostatistics · research ethics and privacy
+
+**Starting prompt**:
+
+```text
+Use the histolab, pathml, pytorch-lightning, scikit-learn, shap, and
+scientific-writing skills. Slides and any key stay in approved storage.
+
+Goal: a research classifier and an honest read on whether it generalizes.
+Criteria: split by patient before tiling — not by tile, not by slide.
+Deliver: model artifact, tile- and slide-level metrics with bootstrap CIs,
+heatmaps for representative cases, failure-mode analysis.
+Report: per-site and per-scanner performance separately. If the model can
+predict the source site from the tiles, it has learned stain and scanner
+signature, and the headline metric is measuring the wrong thing — test for it.
+Do not: describe any output as diagnostic, validated, or deployment-ready.
+```
+
 **Skills Used**:
 - `histolab` - Whole slide image processing
 - `pathml` - Local research-only computational pathology (PathML 3.0.5)
@@ -1170,7 +1645,7 @@ Expected Output:
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Load whole slide images with HistoLab
 - Confirm authorization, data-use terms, and local de-identification; keep source
   images and any re-identification key in approved separate storage
@@ -1220,12 +1695,18 @@ Step 6: Train model
 - Training time: ~6-12 hours on GPU
 
 Step 7: Evaluate model performance
-- Test on held-out test set
+- Test on the held-out test set
 - Calculate metrics with scikit-learn:
   * Accuracy, precision, recall, F1 per class
   * Confusion matrix
   * ROC curves and AUC
-- Compute confidence intervals with bootstrapping
+- Bootstrap confidence intervals at the *patient* level. Bootstrapping over tiles
+  treats 100,000 correlated crops from 40 patients as 100,000 independent samples
+  and produces intervals that are far too narrow
+- Break performance down by site, scanner, and stain batch. Digital pathology models
+  routinely learn site-specific colour signatures instead of morphology, and a
+  single pooled AUC hides it. As a direct probe, train a classifier to predict the
+  source site from the tiles: if it succeeds, the confound is present and measurable
 
 Step 8: Slide-level aggregation
 - Apply model to all tiles in each test slide
@@ -1285,6 +1766,8 @@ Expected Output:
 
 **Objective**: Design, validate, and simulate a compound-screening workflow. Physical execution occurs only after equipment-specific review and explicit trained-operator authorization.
 
+**Disciplines**: assay biology · laboratory automation · operations research · cheminformatics · statistics
+
 **Skills Used**:
 - `pylabrobot` - Offline-first resource planning and Chatterbox simulation
 - `opentrons-integration` - Current protocol authoring, simulation, and production checks
@@ -1292,15 +1775,36 @@ Expected Output:
 - `labarchive-integration` - Separate ELN/Inventory planning with reviewed remote writes
 - `protocolsio-integration` - Bounded reads and non-executing mutation plans
 - `simpy` - Process simulation
+- `experimental-design` - Randomization, blocking, and plate-layout confounding
+- `statistical-power` - How many replicates the effect size actually needs
+- `uncertainty-and-units` - Transfer volumes, dilution factors, final DMSO fraction
 - `polars` - Data processing
 - `matplotlib` - Plate visualization
 - `scientific-visualization` - Publication-quality & interactive visualization
 - `rdkit` - PAINS filtering for hits
+- `xlsx` - Plate maps and hit lists for the bench
 - `scientific-writing` - Evidence-traceable screening report
+
+**Starting prompt**:
+
+```text
+Use the pylabrobot, opentrons-integration, simpy, experimental-design,
+statistical-power, uncertainty-and-units, and polars skills.
+Everything here is planning and simulation. No hardware is to be contacted.
+
+Goal: a screening campaign design an operator can review, dry-run, and then
+decide whether to execute.
+Criteria: Z' > 0.5 on the simulated controls; every transfer volume checked
+dimensionally end to end, including final DMSO percentage.
+Deliver: plate maps (xlsx), simulated schedule with the bottleneck named,
+Opentrons protocol that passes simulation, and an operator checklist.
+Do not: connect to, command, or move any instrument. Producing the protocol
+file is the deliverable; running it is a separate, operator-gated decision.
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Define screening campaign in Benchling
 - Begin with a local manifest; any Benchling create/update operation requires
   explicit authorization for the exact target and payload
@@ -1331,12 +1835,19 @@ Step 3: Simulate workflow with SimPy
 Step 4: Design plate layout
 - Use PyLabRobot locally with the software-only Chatterbox backend to generate and
   simulate plate maps:
-  * Columns 1-2: positive controls (DMSO)
+  * Columns 1-2: neutral controls (DMSO vehicle, defines 100% viability)
   * Columns 3-22: compound titrations (10 concentrations in duplicate)
-  * Columns 23-24: negative controls (cytotoxic control)
-- Randomize compound positions across plates
-- Account for edge effects (avoid outer wells for samples)
-- Export plate maps to CSV
+  * Columns 23-24: cytotoxic controls (defines 0% viability)
+- Note the naming: in a viability assay the DMSO wells are the *high* signal and the
+  cytotoxic wells the *low* signal. Calling DMSO the "positive control" inverts the
+  Z' calculation, so fix the convention here and use it consistently downstream
+- Use experimental-design to randomize compound position across plates and to block
+  by plate, so that a plate-level effect does not alias onto a compound series
+- Keep samples off the outer wells: evaporation makes edge wells systematically
+  different, and edge effects are the most common cause of an irreproducible hit
+- Size replicates with statistical-power against the smallest effect worth
+  detecting, rather than defaulting to duplicate because the plate map allows it
+- Export plate maps to CSV and to xlsx for the bench
 
 Step 5: Create Opentrons protocol for cell seeding
 - Select the exact Flex/OT-2 model and supported Protocol API version, then author
@@ -1355,9 +1866,19 @@ Step 6: Create Opentrons protocol for compound addition
 - If using Opentrons:
   * Source: 384-well compound plates
   * Transfer 100 nL compound (in DMSO) to assay plates
-  * Use P20 for precision
+  * 100 nL is below the reliable range of an air-displacement pipette; either use
+    acoustic dispensing, or redesign as an intermediate-dilution step. State which
   * Prepare serial dilutions on deck if needed
-- Account for DMSO normalization (1% final)
+- Work the DMSO arithmetic explicitly with uncertainty-and-units: 100 nL into a
+  40 µL well is 100/(40,000 + 100) ≈ 0.25% v/v final, not 1%. Both numbers are
+  under the ~0.5% most mammalian lines tolerate, but the factor-of-four error
+  propagates straight into the reported compound concentration and therefore into
+  every IC50
+- Backsolve and check the top assay concentration: with a 10 mM stock at 0.25%
+  dilution the top well is 25 µM, which sets the ceiling on any IC50 you can
+  measure. If the hit criterion is IC50 < 10 µM, confirm the curve actually spans it
+- Hold DMSO constant across every well including controls, so vehicle effects do not
+  track compound concentration
 
 Step 7: Integrate with Benchling for sample tracking
 - After explicit authorization, use the Benchling API to:
@@ -1433,30 +1954,62 @@ Expected Output:
 
 **Objective**: Identify genetic markers associated with drought tolerance and yield in a crop species.
 
+**Disciplines**: quantitative genetics · plant physiology · statistics · agronomy · breeding
+
 **Skills Used**:
-- `database-lookup` - Query GWAS Catalog, Ensembl, NCBI Gene
+- `database-lookup` - Query GWAS Catalog, Ensembl Plants, NCBI Gene
 - `biopython` - Sequence analysis
 - `pysam` - VCF processing
+- `genomic-coordinates` - Assembly version and contig-naming reconciliation
 - `gget` - Gene data retrieval
-- `scanpy` - Population structure analysis
-- `scikit-learn` - PCA and clustering
-- `statsmodels` - Association testing
+- `ontology-term-resolution` - Plant Trait Ontology (TO) and PATO terms for phenotypes
+- `scikit-learn` - PCA and genomic prediction
+- `statsmodels` - Association testing and covariate models
 - `statistical-analysis` - Hypothesis testing
+- `statistical-power` - What effect size this panel can actually detect
+- `experimental-design` - Field trial structure, blocking, and G×E
 - `matplotlib` - Manhattan plots
 - `seaborn` - Visualization
 - `scientific-visualization` - Publication-quality & interactive visualization
 
+**Starting prompt**:
+
+```text
+Use the pysam, genomic-coordinates, statsmodels, statistical-analysis,
+statistical-power, experimental-design, and scikit-learn skills.
+
+Goal: SNP-trait associations for drought tolerance and yield that a breeding
+program could act on, plus a genomic-prediction baseline.
+Criteria: derive the significance threshold empirically for this panel — do
+not import the human 5e-8 convention. State the mating system, because it
+determines which QC filters are valid.
+Deliver: Manhattan and QQ plots, a significance table with effect sizes and
+variance explained, candidate genes, and prediction accuracy.
+Report: the genomic inflation factor, and what fraction of trait variance the
+significant hits explain. If that fraction is small, say so — for yield it
+usually is, and the honest conclusion is polygenic architecture.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Load and QC genotype data
+- Confirm the assembly and contig naming with genomic-coordinates before joining
+  genotypes to any annotation; crop reference assemblies revise often, and a v3-to-v4
+  mismatch will place every hit in the wrong gene
 - Load VCF file with pysam
 - Filter variants:
   * Call rate > 95%
-  * Minor allele frequency (MAF) > 5%
-  * Hardy-Weinberg equilibrium p > 1e-6
-- Convert to numeric genotype matrix (0, 1, 2)
-- Retain ~500,000 SNPs after QC
+  * Minor allele frequency (MAF) > 5%, chosen against the panel size — with a few
+    hundred lines, rare variants have no power and only add multiple-testing burden
+  * Hardy-Weinberg equilibrium: apply this **only if the panel is outcrossing**. In
+    a panel of inbred lines or a selfing species, heterozygosity is near zero by
+    design, so an HWE filter removes real markers wholesale. For inbred panels use
+    heterozygosity rate as the QC statistic instead, flagging lines that are *more*
+    heterozygous than expected as contaminated or insufficiently inbred
+- Convert to numeric genotype matrix (0, 1, 2); for inbred lines confirm the coding
+  matches the ploidy and inbreeding assumptions of the association model
+- Retain ~500,000 SNPs after QC, and record how many each filter removed
 
 Step 2: Assess population structure
 - Calculate genetic relationship matrix
@@ -1470,24 +2023,46 @@ Step 3: Load and process phenotype data
 - Grain yield (kg/hectare)
 - Days to flowering
 - Plant height
+- Resolve each trait to a Plant Trait Ontology term with ontology-term-resolution so
+  the results can be compared against GWAS Catalog and Gramene entries later
 - Quality control:
-  * Remove outliers (> 3 SD from mean)
+  * Inspect outliers before removing them; a 3-SD rule applied blindly to a
+    stress trial deletes the most drought-affected plots, which is the signal
   * Transform if needed (log or rank-based for skewed traits)
-  * Adjust for environmental covariates (field, year)
+  * Fit the field trial's actual design with experimental-design — block, replicate,
+    row/column position, year — and carry forward BLUPs or adjusted means rather
+    than raw plot values. Spatial field variation is usually larger than the
+    genetic effect being chased
+  * Estimate broad-sense heritability per trait. A trait with low heritability in
+    this trial cannot yield associations, and knowing that now saves the analysis
 
 Step 4: Calculate kinship matrix
-- Compute genetic relatedness matrix
-- Account for population structure and relatedness
-- Will use in mixed linear model to control for confounding
+- Compute the genomic relationship matrix (VanRaden or equivalent)
+- This absorbs both population structure and cryptic relatedness, which in a
+  breeding panel are severe: elite lines share recent pedigree, and unmodeled
+  structure produces confidently significant SNPs that track subpopulation rather
+  than causation
+- Use statistical-power with the realized relatedness to state what effect size this
+  panel can detect before running the scan
 
 Step 5: Run genome-wide association study
-- For each phenotype, test association with each SNP
-- Use mixed linear model (MLM) in statsmodels:
-  * Fixed effects: SNP genotype, PCs (top 10)
-  * Random effects: kinship matrix
-  * Bonferroni threshold: p < 5e-8 (genome-wide significance)
-- Multiple testing correction: Bonferroni or FDR
-- Calculate genomic inflation factor (λ) to check for inflation
+- Fit a mixed linear model with the GRM as the random-effect covariance —
+  y = Xβ + Zu + ε with u ~ N(0, σ²K). Note the tooling constraint: statsmodels'
+  MixedLM supports grouped/random-effects structures but not an arbitrary dense
+  kinship covariance, so use a dedicated implementation (GEMMA, GCTA-fastGWA,
+  rrBLUP, statgenGWAS) for the K-aware scan, and statsmodels for the covariate
+  models, post-hoc conditional analysis, and diagnostics around it
+- Fixed effects: SNP genotype plus the top PCs, only as many as the scree plot and λ
+  justify; over-correcting with PCs on top of K removes real signal
+- Derive the significance threshold for *this* panel. The 5e-8 convention comes from
+  the roughly one million independent tests in European-ancestry human genomes and
+  does not transfer: crop panels have far longer LD blocks and far fewer effective
+  tests, so 5e-8 is often needlessly conservative. Use permutation, or an effective
+  number of independent tests (Meff), and report which you used. It is not a
+  Bonferroni correction unless you actually compute one
+- Report both the nominal-threshold and FDR-controlled hit sets
+- Calculate the genomic inflation factor (λ). λ ≫ 1 means structure is still
+  uncorrected; λ ≪ 1 means over-correction. Show the QQ plot, not just the number
 
 Step 6: Identify significant associations
 - Extract SNPs passing significance threshold
@@ -1567,6 +2142,26 @@ Expected Output:
 
 **Objective**: Analyze authorized, de-identified resting-state fMRI data for group-level connectivity research. The workflow is non-diagnostic and does not select treatment or validate a medical device.
 
+**Disciplines**: cognitive neuroscience · graph theory · biostatistics · signal processing · machine learning
+
+**Starting prompt**:
+
+```text
+Use the bids, networkx, statsmodels, statistical-analysis, torch-geometric,
+and pymc skills. Data is de-identified and stays local.
+
+Goal: group-level differences in functional connectivity, reported in a way a
+reviewer can trust.
+Criteria: match groups on head motion before comparing anything; report graph
+metrics across a range of densities, not at one threshold.
+Deliver: connectivity matrices, edge-level statistics with FDR control, graph
+metrics as curves over density, and a classification baseline.
+Report: mean framewise displacement per group and the number of volumes
+censored. If the groups differ in motion, the connectivity difference may be
+motion, and that possibility goes in the results, not the limitations.
+Do not: apply any model to an individual or describe output as diagnostic.
+```
+
 **Skills Used**:
 - `bids` - Organize/validate neuroimaging data in BIDS format
 - `neurokit2` - NeuroKit2 0.2.13 research processing for separately recorded physiological signals
@@ -1583,7 +2178,7 @@ Expected Output:
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Load and preprocess fMRI data
 # Note: Use nilearn or similar for fMRI-specific preprocessing
 - Confirm authorization, privacy controls, and subject-level train/test separation
@@ -1596,7 +2191,16 @@ Step 1: Load and preprocess fMRI data
   * Spatial normalization to MNI space
   * Smoothing (6mm FWHM Gaussian kernel)
   * Temporal filtering (0.01-0.1 Hz bandpass)
-  * Nuisance regression (motion, CSF, white matter)
+  * Nuisance regression (motion parameters and their derivatives, CSF, white matter)
+- Head motion is the dominant confound in resting-state connectivity, and it biases
+  in a specific direction: motion inflates short-range and deflates long-range
+  correlations. Censor high-motion volumes (framewise displacement threshold stated),
+  exclude subjects above a stated retention floor, and check that the groups do not
+  differ in motion before comparing them
+- Decide on global signal regression explicitly. It suppresses motion and respiratory
+  artifact but mathematically forces the correlation distribution negative, creating
+  anticorrelations that may not be physiological. Whichever you choose, run the
+  primary analysis both ways and report whether the conclusion survives
 
 Step 2: Define brain regions (parcellation)
 - Apply brain atlas (e.g., AAL, Schaefer 200-region atlas)
@@ -1613,15 +2217,25 @@ Step 4: Calculate functional connectivity
 - Compute pairwise Pearson correlations between all regions
 - Result: 200×200 connectivity matrix per subject
 - Fisher z-transform correlations for group statistics
-- Threshold weak connections (|r| < 0.2)
+- Do not threshold at a fixed |r|. An absolute cutoff gives each subject a different
+  number of edges, so any later graph metric partly measures overall connectivity
+  strength rather than topology — and sicker or noisier subjects systematically end
+  up with sparser graphs. Use proportional (density-matched) thresholding instead,
+  and repeat the analysis across a range of densities
 
 Step 5: Graph theory analysis with NetworkX
-- Convert connectivity matrices to graphs
+- Convert connectivity matrices to graphs at matched density
 - Calculate global network metrics:
   * Clustering coefficient (local connectivity)
-  * Path length (integration)
-  * Small-worldness (balance of segregation and integration)
-  * Modularity (community structure)
+  * Characteristic path length (integration)
+  * Small-worldness — report the null model used, since σ and ω are defined relative
+    to randomized graphs and the choice of randomization changes the answer
+  * Modularity (community structure), noting that most algorithms are stochastic;
+    run multiple seeds and report consensus rather than one partition
+- Report every metric as a curve over density, and treat a difference that appears at
+  one density and vanishes at neighbouring ones as a threshold artifact
+- Negative edges have no agreed graph-theoretic interpretation; state whether you
+  discarded them, took absolute values, or analysed them separately
 - Calculate node-level metrics:
   * Degree centrality
   * Betweenness centrality
@@ -1712,22 +2326,42 @@ Expected Output:
 
 **Objective**: Characterize microbial community composition and functional potential from environmental DNA samples.
 
+**Disciplines**: microbial ecology · phylogenetics · compositional statistics · biogeochemistry · network science
+
 **Skills Used**:
 - `database-lookup` - Query ENA, GEO, UniProt, KEGG
 - `biopython` - Sequence processing
 - `pysam` - BAM file handling
 - `phylogenetics` - MAFFT/IQ-TREE/FastTree tree building
 - `etetoolkit` - Existing-tree analysis, annotation, and visualization
-- `scikit-bio` - Microbial ecology
+- `scikit-bio` - Microbial ecology, diversity, and ordination
+- `ontology-term-resolution` - ENVO environment terms and NCBITaxon IDs for metadata
 - `networkx` - Co-occurrence networks
 - `statsmodels` - Diversity statistics
 - `statistical-analysis` - Hypothesis testing
+- `uncertainty-and-units` - Nutrient, salinity, and contaminant concentration handling
 - `matplotlib` - Visualization
 - `scientific-visualization` - Publication-quality & interactive visualization
 
+**Starting prompt**:
+
+```text
+Use the biopython, scikit-bio, phylogenetics, etetoolkit, networkx,
+statsmodels, statistical-analysis, and ontology-term-resolution skills.
+
+Goal: how community composition and functional potential differ between the
+sampled environments, and which taxa drive it.
+Criteria: treat the abundance table as compositional throughout — sequencing
+depth is an arbitrary constant, so raw counts carry no absolute information.
+Deliver: taxonomic profiles, alpha/beta diversity with tests, a validated
+tree, a co-occurrence network, and functional pathway comparisons.
+Report: rarefaction curves so I can see whether sampling saturated. Name the
+differential-abundance method and why it suits compositional data.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Load and QC metagenomic reads
 - Load FASTQ files with BioPython
 - Quality control with FastQC-equivalent:
@@ -1744,43 +2378,67 @@ Step 2: Taxonomic classification
   * Columns: samples
   * Values: read counts or relative abundance
 - Summarize at different levels: phylum, class, order, family, genus, species
+- Attach NCBITaxon IDs, and resolve the sample's environment to ENVO terms with
+  ontology-term-resolution, so these samples can be compared to public studies later
 
-Step 3: Calculate diversity metrics with scikit-bio
+Step 3: Build the phylogeny first, then compute diversity
+- Phylogenetic beta-diversity metrics need a tree, so infer it before this step
+  rather than after: extract 16S or marker-gene sequences, align with MAFFT, and
+  infer with IQ-TREE 2 or FastTree via the phylogenetics skill
 - Alpha diversity (within-sample):
-  * Richness (number of species)
-  * Shannon entropy
-  * Simpson diversity
-  * Chao1 estimated richness
-- Beta diversity (between-sample):
-  * Bray-Curtis dissimilarity
-  * Weighted/unweighted UniFrac distance
-  * Jaccard distance
+  * Observed richness — strongly depth-dependent, so never compare it across
+    samples of unequal depth without addressing depth explicitly
+  * Shannon entropy and Simpson diversity, which are far less depth-sensitive
+  * Chao1 estimated richness, remembering it is an estimator with a variance
+- Beta diversity (between-sample) with scikit-bio:
+  * Bray-Curtis dissimilarity and Jaccard distance
+  * Weighted and unweighted UniFrac, which consume the tree from above
+  * Aitchison distance (CLR-transformed Euclidean) as the compositionally coherent
+    alternative worth reporting alongside Bray-Curtis
+- Handle depth deliberately and say what you did. Rarefying to even depth discards
+  data and has been criticized for that; not rarefying leaves richness confounded
+  with depth. Both positions are defensible and defended in the literature — an
+  unstated choice is the only indefensible option
 - Rarefaction curves to assess sampling completeness
 
 Step 4: Statistical comparison of communities
 - Compare diversity between groups (e.g., polluted vs pristine)
-- Use statsmodels for:
-  * Mann-Whitney or Kruskal-Wallis tests (alpha diversity)
-  * PERMANOVA for beta diversity (adonis test)
-  * LEfSe for differential abundance testing
-- Identify taxa enriched or depleted in each condition
+- Use statsmodels and statistical-analysis for Mann-Whitney or Kruskal-Wallis tests
+  on alpha diversity
+- Run PERMANOVA on the beta-diversity distance matrix with scikit-bio, and pair it
+  with PERMDISP: PERMANOVA is sensitive to differences in within-group dispersion,
+  so a significant result can mean "the groups differ in variability" rather than
+  "the groups differ in composition"
+- For differential abundance, use a method designed for compositional data —
+  ANCOM-BC, ALDEx2, or a CLR-based linear model. A plain t-test or Wilcoxon on
+  relative abundances has a badly inflated false-positive rate, because one taxon
+  blooming forces every other taxon's proportion down. LEfSe is a separate external
+  tool with its own compositional caveats, not a statsmodels function
+- Identify taxa enriched or depleted in each condition, reporting effect sizes
 
-Step 5: Infer, then analyze a phylogenetic tree
-- Extract 16S rRNA sequences (or marker genes)
-- Align sequences with MAFFT or another domain-appropriate aligner
-- Infer the tree with IQ-TREE 2, FastTree, or another explicit method
-- Load the resulting Newick into ETE 4 with the matching parser
-- Validate tip identity and support scale, then root with a justified outgroup
+Step 5: Analyze and annotate the tree from Step 3
+- Load the Newick produced above into ETE 4 with the matching parser
+- Validate tip identity and support scale — bootstrap, aLRT, and aBayes supports live
+  on different scales, and reading one as another misstates confidence
+- Root with a justified outgroup, or document midpoint rooting as a fallback
 - Annotate and visualize the tree by sample or environment
+- Note the resolution limit honestly: a single 16S region does not reliably resolve
+  species, and short-read amplicon trees should not be presented as if it does
 
 Step 6: Co-occurrence network analysis
-- Calculate pairwise correlations between taxa
-- Use Spearman correlation to identify co-occurrence patterns
-- Filter significant correlations (p < 0.01, |r| > 0.6)
-- Build co-occurrence network with NetworkX
-- Identify modules (communities of co-occurring taxa)
-- Calculate network topology metrics
-- Visualize network (nodes = taxa, edges = correlations)
+- Do not build the network from Spearman or Pearson correlations on relative
+  abundances. Compositional data produce strong spurious correlations — proportions
+  are constrained to sum to one, so unrelated taxa appear negatively correlated by
+  construction, and the resulting network is largely an artifact of the constraint
+- Use a compositionally aware method instead: SparCC, SPIEC-EASI, or proportionality
+  (ρ) on CLR-transformed abundances
+- Filter edges by a permutation-derived significance threshold rather than a fixed
+  |r| cutoff, and report the number of edges retained
+- Build the network with NetworkX, detect modules, and compute topology metrics
+- Interpret with restraint: co-occurrence is not interaction. Two taxa can co-occur
+  because they share a habitat preference, and edges here are hypotheses for
+  isolation or co-culture work
+- Visualize the network (nodes = taxa, edges = associations)
 
 Step 7: Functional annotation
 - Assemble contigs from reads (if performing assembly)
@@ -1859,6 +2517,26 @@ Expected Output:
 
 **Objective**: Track antimicrobial resistance trends and predict resistance phenotypes from genomic data.
 
+**Disciplines**: microbial genomics · infectious disease epidemiology · public health · machine learning · phylogenetics
+
+**Starting prompt**:
+
+```text
+Use the biopython, phylogenetics, etetoolkit, polars-bio, scikit-learn,
+networkx, statsmodels, and scientific-writing skills.
+
+Goal: a surveillance picture — what is circulating, what is spreading, and
+what is trending — for a public health report.
+Criteria: calibrate the transmission SNP threshold to this species and this
+sampling window; do not import a threshold from another organism.
+Deliver: resistance gene matrix, annotated ML phylogeny, trend plots with
+confidence bands, putative transmission clusters, and prediction metrics.
+Report: sampling is not random — say what the denominator is and which wards,
+species, or time periods are under-sampled.
+Do not: use any model output to select therapy for a patient. Genotypic
+prediction supplements, never replaces, phenotypic susceptibility testing.
+```
+
 **Skills Used**:
 - `database-lookup` - Query ENA, UniProt, NCBI Gene
 - `biopython` - Sequence analysis
@@ -1876,7 +2554,7 @@ Expected Output:
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Collect bacterial genome sequences
 - Isolates from hospital surveillance program
 - Load FASTA assemblies with BioPython
@@ -1952,14 +2630,23 @@ Step 8: Temporal trend analysis
 - Identify emerging resistance mechanisms
 
 Step 9: Transmission network inference
-- Identify closely related isolates (< 10 SNPs difference)
-- Build transmission network with NetworkX:
-  * Nodes: isolates
-  * Edges: putative transmission links
-- Incorporate temporal and spatial data
-- Identify outbreak clusters
-- Detect super-spreaders (high degree nodes)
-- Analyze network topology
+- Identify closely related isolates by core-genome SNP distance, after masking
+  recombinant regions — in recombinogenic species, unmasked recombination inflates
+  SNP distances and breaks apart genuine clusters
+- Calibrate the threshold rather than adopting one. A "< 10 SNPs" rule is
+  species-specific and depends on the substitution rate, the sampling interval, and
+  within-host diversity; the same number that identifies an outbreak in
+  M. tuberculosis is far too permissive for a faster-evolving organism. Derive it
+  from the estimated molecular clock and state the assumption
+- Build the network with NetworkX (nodes: isolates; edges: putative links)
+- Incorporate temporal and spatial data, and require directionality to be consistent
+  with sampling dates
+- Genomic linkage is necessary but not sufficient for transmission: an unsampled
+  intermediate, a shared environmental reservoir, or a common admission source all
+  produce the same pattern. Report clusters as "genomically consistent with
+  transmission" and hand them to infection control for epidemiological confirmation
+- A high-degree node reflects sampling intensity as much as biology — do not label
+  it a super-spreader without epidemiological support
 
 Step 10: Search ENA for global context
 - Query ENA for same species from other regions/countries
@@ -2016,10 +2703,14 @@ Expected Output:
 
 **Objective**: Integrate authorized, de-identified genomics, transcriptomics, proteomics, and cohort data to identify research subtypes, outcome associations, and candidates for independent validation—not patient-specific care.
 
+**Disciplines**: cancer genomics · proteomics · survival analysis · machine learning · clinical epidemiology
+
 **Skills Used**:
 - `database-lookup` - Query Ensembl, COSMIC, STRING, Reactome, Open Targets
 - `pydeseq2` - RNA-seq DE analysis
 - `pysam` - Variant calling
+- `genomic-coordinates` - Reconcile builds across VCF, expression, and proteomics
+- `onekgpd` - Population allele frequencies to separate germline from somatic
 - `gget` - Gene data retrieval
 - `scikit-learn` - Clustering and classification
 - `torch-geometric` - Graph neural networks
@@ -2027,18 +2718,47 @@ Expected Output:
 - `scikit-survival` - Survival analysis
 - `statsmodels` - Statistical modeling
 - `pymoo` - Multi-objective optimization
-- `pyhealth` - Healthcare ML models
+- `pyhealth` - Retrospective healthcare-ML research
 - `scientific-writing` - Evidence-traceable integrative genomics report
+
+**Starting prompt**:
+
+```text
+Use the genomic-coordinates, pysam, onekgpd, pydeseq2, scikit-learn,
+umap-learn, scikit-survival, statsmodels, and scientific-writing skills.
+De-identified research data only.
+
+Goal: molecular subtypes and their outcome associations, as hypotheses for
+independent validation.
+Criteria: reconcile genome build across all layers before joining anything;
+assess cluster stability by resampling, not by picking the prettiest k.
+Deliver: subtype assignments with stability scores, per-subtype molecular
+characterization, KM curves with log-rank and Cox results, target evidence.
+Report: proteomics missingness is mostly below-detection, not random — say how
+you handled it and show the sensitivity of conclusions to that choice. Test
+the proportional-hazards assumption and report it.
+Do not: describe any association as prognostic for an individual.
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Load and preprocess genomic data (WES/WGS)
+- Use genomic-coordinates to confirm that the VCF, the expression annotation, and
+  the proteomics identifier mapping all refer to the same assembly and the same
+  contig naming, and normalize indel representation before any join. Cross-omics
+  integration is where build mismatches do the most damage, because the join
+  silently succeeds and produces a smaller, biased overlap
 - Parse VCF files with pysam
 - Filter high-quality variants (QUAL > 30, DP > 20)
 - Annotate with Ensembl VEP (missense, nonsense, frameshift)
+- Where no matched normal exists, filter germline variants using population allele
+  frequencies from onekgpd and gnomAD, stratified by ancestry. Tumour-only calling
+  without this step yields a mutation matrix dominated by inherited polymorphism
 - Query COSMIC for known cancer mutations
 - Create mutation matrix: samples × genes (binary: mutated or not)
+- Record tumour purity and ploidy; a low-purity sample looks like a low-mutation
+  sample, and that artifact will drive a "subtype" in Step 7 if left uncorrected
 - Focus on cancer genes from COSMIC Cancer Gene Census
 
 Step 2: Process transcriptomic data (RNA-seq)
@@ -2067,27 +2787,41 @@ Step 4: Load clinical data
 Step 5: Data integration and harmonization
 - Match sample IDs across omics layers
 - Ensure consistent gene/protein identifiers
-- Handle missing data:
-  * Impute with KNN or median (for moderate missingness)
-  * Remove features with > 50% missing
+- Handle missing data by first asking *why* it is missing. In mass-spec proteomics
+  most missingness is left-censored — the protein was below the detection limit, so
+  it is missing *because* it is low. KNN and median imputation assume missing-at-
+  random and will impute those values upward toward the mean, erasing the very
+  differences you are looking for
+  * For left-censored values, use a censoring-aware approach (minimum-value or
+    quantile-based imputation, or a model that treats them as censored)
+  * Distinguish that from technical dropout, which is closer to MAR
+  * Remove features with > 50% missing, and report how many that removed per layer
+  * Show the main conclusions under two imputation choices
 - Create multi-omics data structure (dictionary of matrices)
 
 Step 6: Multi-omics dimensionality reduction
-- Concatenate all omics features (genes + proteins + mutations)
-- Apply UMAP with umap-learn for visualization
-- Alternative: PCA or t-SNE
-- Visualize samples in 2D space colored by:
-  * Histological subtype
-  * Stage
-  * Survival (high vs low)
-- Identify patterns or clusters
+- Do not simply concatenate layers. Blocks differ in dimensionality and variance
+  scale — 20,000 genes and 300 mutations in one matrix means the transcriptome
+  determines the embedding and the mutations contribute nothing. Scale per block, or
+  use a factor model built for this (MOFA/MOFA+, iCluster) that gives each layer its
+  own loadings and tells you how much variance each explains
+- Apply UMAP with umap-learn for visualization, or PCA when you need distances that
+  mean something quantitatively
+- Visualize samples in 2D coloured by histological subtype, stage, and outcome
+- Also colour by batch, sequencing centre, and purity. If the embedding separates on
+  those, it is showing you technical structure and the "subtypes" are artifacts
 
 Step 7: Unsupervised clustering to identify subtypes
-- Perform consensus clustering with scikit-learn
-- Test k = 2 to 10 clusters
-- Evaluate cluster stability and optimal k
-- Assign samples to clusters (subtypes)
-- Visualize clustering in UMAP space
+- Consensus clustering is not a scikit-learn estimator; implement it as repeated
+  clustering over subsamples of features and samples, accumulating a co-clustering
+  matrix, using scikit-learn's base clusterers underneath
+- Test k = 2 to 10
+- Choose k by stability across resamples, not by the consensus CDF alone — the
+  consensus plot is known to suggest structure even in null data, so include a
+  permuted-data control and check that real k beats it
+- Assign samples to clusters and record each sample's assignment confidence
+- Clustering always returns clusters. Before interpreting them, verify they are more
+  than a purity, batch, or stage gradient
 
 Step 8: Characterize molecular subtypes
 For each subtype:
@@ -2113,11 +2847,19 @@ Step 9: Build protein-protein interaction networks
 
 Step 10: Survival analysis by subtype
 - Use scikit-survival with leakage-safe preprocessing and censoring-aware metrics
-- Kaplan-Meier curves for each subtype
-- Log-rank test for significance
+- Kaplan-Meier curves for each subtype, with numbers-at-risk under the axis; late
+  timepoints where few remain at risk are where curves separate spuriously
+- Log-rank test for significance. Note that the subtypes were derived from the same
+  cohort, so this p-value is optimistic — the grouping was chosen with the outcome
+  data available in the same dataset
 - Cox proportional hazards model:
   * Covariates: subtype, stage, age, treatment
-  * Estimate hazard ratios
+  * Test the proportional-hazards assumption with Schoenfeld residuals. If hazards
+    cross — common when comparing an aggressive and an indolent subtype — the
+    hazard ratio averages over a changing effect and is not interpretable as stated.
+    Use time-varying coefficients or report restricted mean survival time instead
+  * Respect the events-per-variable limit; a model with 40 events and 12 covariates
+    is fitting noise
 - Describe cohort associations with uncertainty; do not claim prognosis for a person
 
 Step 11: Retrospective treatment-response modeling for research
@@ -2189,14 +2931,158 @@ Expected Output:
 
 ---
 
+## Regulatory Genomics & Variant-to-Function
+
+### Example 18: From a Non-Coding Association Signal to a Testable Regulatory Mechanism
+
+**Objective**: Take a non-coding GWAS locus and produce a ranked, falsifiable set of candidate causal variants with a proposed regulatory mechanism and a specific experiment to test each.
+
+**Disciplines**: population genetics · regulatory biology · deep learning · epigenomics · statistics
+
+Most trait-associated variants are non-coding, and the associated SNP is usually not
+the causal one — it is a tag for a haplotype. This workflow is the standard
+interdisciplinary bridge: statistical genetics narrows the credible set, sequence
+models propose a mechanism, and epigenomic data says whether the mechanism is
+plausible in the relevant tissue.
+
+**Skills Used**:
+- `genomic-coordinates` - Build, chr-prefix, and variant-representation hygiene across every source
+- `onekgpd` - 1000 Genomes individual-level genotypes, LD context, and population allele frequencies
+- `genomic-intelligence` - Hosted DNA language models for promoter, splice, enhancer, chromatin-state, and sequence-to-expression prediction
+- `transformers` - Run or fine-tune sequence models locally when the hosted API is not appropriate
+- `deeptools` - Coverage tracks, matrices, and heatmaps over ATAC/ChIP/DNase signal
+- `geniml` - Genomic interval embeddings and region-set similarity
+- `polars-bio` / `gtars` - Fast interval overlap against candidate regulatory regions
+- `database-lookup` - GWAS Catalog, Ensembl Regulatory Build, GTEx eQTLs, ENCODE
+- `gget` - Gene, transcript, and expression lookup
+- `ontology-term-resolution` - UBERON/CL terms so tissue matches between GWAS, eQTL, and epigenome
+- `statistical-analysis` - Fine-mapping summaries, enrichment testing, multiple comparisons
+- `scientific-visualization` - Locus plots and prediction tracks
+- `scientific-writing` - Evidence-traceable write-up
+
+**Starting prompt**:
+
+```text
+Use the genomic-coordinates, onekgpd, genomic-intelligence, deeptools,
+polars-bio, database-lookup, ontology-term-resolution, statistical-analysis,
+and scientific-writing skills.
+
+Goal: for this locus, a ranked credible set of candidate causal variants, each
+with a proposed mechanism and the single experiment that would falsify it.
+Criteria: the epigenomic evidence must come from a tissue matched to the trait
+by ontology term, not by name similarity.
+Deliver: credible-set table, per-variant model predictions with effect
+direction, overlap with regulatory annotations, and an experiment per candidate.
+Report: model predictions are correlative and were trained on reference
+genomes — say which predictions are supported by independent epigenomic
+evidence and which rest on the model alone.
+Do not: call any variant causal. The output is a prioritized hypothesis list.
+```
+
+**Workflow**:
+
+```text
+Step 1: Fix the coordinate contract before anything else
+- Use genomic-coordinates to record assembly and contig convention for the GWAS
+  summary statistics, the eQTL catalog, the epigenome tracks, and the reference FASTA
+- These four sources routinely disagree — GWAS Catalog entries are often GRCh37,
+  ENCODE tracks GRCh38, and one of them uses "chr1" while another uses "1"
+- Lift over once, deliberately, and check REF alleles afterward. Silent strand and
+  build errors here produce a confident mechanism for the wrong variant
+
+Step 2: Define the credible set with population genetics
+- Query onekgpd for the variants in the locus and the genotypes of the individuals
+  carrying them, in the ancestry group where the association was discovered
+- Compute LD from those genotypes. LD is population-specific: a credible set derived
+  from European LD does not transfer to an African-ancestry cohort, and the shorter
+  LD blocks in African-ancestry panels are what usually let you narrow the set
+- Fine-map to a credible set with posterior inclusion probabilities. Record how many
+  variants are in the 95% set — if it is 40, say 40; a single "lead SNP" is a
+  reporting convention, not a finding
+- Retrieve gnomAD frequencies and AlphaMissense scores as returned, treating the
+  latter as a coding-variant predictor that is irrelevant to intergenic candidates
+
+Step 3: Match the tissue before looking at any functional data
+- Resolve the trait's relevant tissue and cell type to UBERON and CL terms with
+  ontology-term-resolution
+- A regulatory element is active in specific cell types. Enhancer evidence from an
+  unrelated tissue is not weak evidence for this locus — it is evidence about a
+  different question, and mixing the two is the most common failure in this analysis
+
+Step 4: Predict regulatory consequence from sequence
+- For each credible-set variant, extract the reference and alternate sequence context
+- Use genomic-intelligence to predict promoter overlap, splice donor/acceptor
+  disruption, enhancer activity, chromatin state, and sequence-to-expression (log TPM)
+  for both alleles
+- The quantity of interest is the *difference* between alleles, not the absolute
+  score. A variant in a strong enhancer that does not change the prediction is
+  uninteresting; a variant that flips the prediction is the candidate
+- Run local models with transformers where the sequence is unpublished, the data may
+  not leave the machine, or you need gradients and attributions the hosted API
+  does not expose
+- Two honest limits on these predictions. They are trained on reference genomes and
+  extrapolate poorly to variants far from the training distribution; and they capture
+  correlation between sequence and assay signal, so a predicted change is a
+  hypothesis about a mechanism, not a measurement of one
+
+Step 5: Cross-check against measured epigenomic signal
+- Pull ATAC-seq, DNase, and histone ChIP tracks for the matched cell type
+- Use deeptools to build coverage matrices centred on candidate variants and plot
+  profile heatmaps; a variant in a genuine regulatory element should sit inside a
+  measured accessibility or H3K27ac peak, not merely inside a predicted one
+- Overlap candidates with the Ensembl Regulatory Build and ENCODE cCREs using
+  polars-bio or gtars
+- Use geniml to ask whether the candidate region set resembles known enhancer
+  collections for this tissue, as a set-level sanity check on the individual calls
+
+Step 6: Connect the element to a gene
+- Query GTEx for eQTLs in the matched tissue and check whether the credible-set
+  variants are also credible eQTL variants for a nearby gene — colocalization, not
+  mere overlap, since two independent signals in the same LD block look identical
+  to a naive overlap test
+- The nearest gene is frequently the wrong gene. Prefer chromatin-contact evidence
+  (Hi-C, promoter-capture) or eQTL colocalization over proximity, and say which you
+  had
+
+Step 7: Rank and design the falsifying experiment
+- Score each candidate on: posterior inclusion probability, predicted allelic effect
+  size, measured accessibility in the matched tissue, and eQTL colocalization
+- Report the scores as separate columns, not summed into one index — the components
+  are on incomparable scales and a composite hides which line of evidence is carrying
+  the ranking
+- For each top candidate, name the experiment that would refute it: an allele-specific
+  reporter assay, a CRISPRi tiling screen across the element, or base editing of the
+  variant in the relevant cell type
+- Where the evidence lines disagree, keep the disagreement in the table
+
+Step 8: Write it up
+- Use scientific-writing with a claim-to-source registry that distinguishes measured
+  data, model predictions, and inference
+- State the ancestry of the discovery cohort and the LD reference, since the credible
+  set is conditional on both
+
+Expected Output:
+- Coordinate-reconciliation log across all four data sources
+- Credible set with posterior inclusion probabilities and LD context
+- Per-variant, per-allele regulatory predictions with effect directions
+- Measured epigenomic support in an ontology-matched tissue
+- Candidate target genes with the evidence type that links them
+- A ranked hypothesis list, each with the experiment that would falsify it
+```
+
+---
+
 ## Experimental Physics & Data Analysis
 
-### Example 18: Analysis of Particle Physics Detector Data
+### Example 19: Analysis of Particle Physics Detector Data
 
 **Objective**: Analyze experimental data from particle detector to identify signal events and measure physical constants.
 
+**Disciplines**: experimental particle physics · statistics · machine learning · large-scale computing · metrology
+
 **Skills Used**:
 - `astropy` - Units and constants
+- `uncertainty-and-units` - GUM uncertainty budget, coverage factors, error propagation
 - `sympy` - Symbolic mathematics
 - `matlab` - Matrix/numerical computing and signal processing
 - `statistical-analysis` - Statistical analysis
@@ -2209,9 +3095,25 @@ Expected Output:
 - `vaex` - Out-of-core dataframes
 - `scientific-visualization` - Publication-quality & interactive visualization
 
+**Starting prompt**:
+
+```text
+Use the vaex, dask, scikit-learn, statistical-analysis, statsmodels,
+uncertainty-and-units, and scientific-visualization skills.
+
+Goal: a cross-section measurement with a defensible uncertainty budget.
+Criteria: the analysis is blinded — every selection, cut, and classifier
+threshold is fixed using simulation and sidebands before the signal region is
+looked at. Say explicitly when the box is opened.
+Deliver: selection efficiency, background estimate, fitted yield, cross
+section with statistical and systematic uncertainties itemized separately.
+Report: significance via the asymptotic likelihood formula, not S/sqrt(B).
+If the search scanned a mass range, give local and global significance.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Load and inspect detector data
 - Load ROOT files or HDF5 with raw detector signals
 - Use Vaex for out-of-core processing (TBs of data)
@@ -2238,8 +3140,12 @@ Step 3: Event reconstruction
 - Compute momentum and energy for each particle
 - Use Dask for parallel processing across events
 
-Step 4: Event selection and filtering
-- Define signal region based on physics hypothesis
+Step 4: Event selection and filtering (blinded)
+- Define the signal region from the physics hypothesis, then keep it blinded:
+  optimize every cut on simulation and on data sidebands only. Tuning selections
+  while watching the signal region biases the yield upward and invalidates the
+  quoted p-value, because the selection has been fitted to a fluctuation
+- Fix and document the full selection before unblinding, and record the moment
 - Apply quality cuts:
   * Track quality (chi-squared, number of hits)
   * Fiducial volume cuts
@@ -2260,12 +3166,20 @@ Step 5: Background estimation
 
 Step 6: Signal extraction
 - Fit invariant mass distributions to extract signal
-- Use scipy for likelihood fitting:
-  * Signal model: Gaussian or Breit-Wigner
-  * Background model: polynomial or exponential
-  * Combined fit with maximum likelihood
-- Calculate signal significance (S/√B or Z-score)
-- Estimate systematic uncertainties
+- Use a binned or unbinned extended maximum-likelihood fit:
+  * Signal model: Gaussian, or Breit-Wigner convolved with the detector resolution
+    when the natural width is comparable to resolution
+  * Background model: polynomial or exponential, with the functional-form choice
+    itself carried as a systematic (fit with alternatives, take the spread)
+- Compute significance with the asymptotic formula from the profile likelihood ratio,
+  Z = sqrt( 2 [ (s+b) ln(1 + s/b) - s ] ), which reduces to S/√B only in the
+  large-background limit. S/√B overstates significance exactly where it matters
+  most — few events, small b — so quote the likelihood-based number
+- Include background-estimate uncertainty in the profile as a nuisance parameter;
+  significance computed with b fixed is not the significance you have
+- If the fit scanned a mass range, the local significance is inflated by the
+  look-elsewhere effect. Report the global significance as well, or say the trials
+  factor was not evaluated
 
 Step 7: Machine learning event classification
 - Train classifier with scikit-learn to separate signal from background
@@ -2287,11 +3201,17 @@ Step 9: Calculate physical observables
 - Measure cross-sections:
   * σ = N_signal / (ε × L × BR)
   * N_signal: number of signal events
-  * ε: detection efficiency
+  * ε: detection efficiency (including acceptance — state whether it is folded in)
   * L: integrated luminosity
   * BR: branching ratio
-- Use Sympy for symbolic error propagation
-- Calculate with Astropy for proper unit handling
+- Use uncertainty-and-units to carry units and correlated uncertainties through the
+  division. Naive quadrature is wrong here: the efficiency and the background
+  estimate often share a simulation-modelling systematic, and treating correlated
+  terms as independent understates the total
+- Derive the propagation symbolically with Sympy where the expression is nontrivial,
+  and use Astropy units and constants for the conversions (eV, GeV, barns, pb⁻¹)
+- Report a GUM-style budget: Type A (statistical) and Type B (systematic) terms
+  itemized, the combined standard uncertainty, and the coverage factor used
 
 Step 10: Statistical analysis and hypothesis testing
 - Perform hypothesis tests with statsmodels:
@@ -2343,12 +3263,15 @@ Expected Output:
 
 ## Chemical Engineering & Process Optimization
 
-### Example 19: Optimization of Chemical Reactor Design and Operation
+### Example 20: Optimization of Chemical Reactor Design and Operation
 
 **Objective**: Design and optimize a continuous chemical reactor for maximum yield and efficiency while meeting safety and economic constraints.
 
+**Disciplines**: chemical engineering · reaction kinetics · Bayesian inference · control theory · process economics
+
 **Skills Used**:
 - `sympy` - Symbolic equations and reaction kinetics
+- `uncertainty-and-units` - Dimensional consistency across kinetics, balances, and economics
 - `statistical-analysis` - Numerical analysis
 - `pymoo` - Multi-objective optimization
 - `simpy` - Process simulation
@@ -2359,12 +3282,30 @@ Expected Output:
 - `matplotlib` - Process diagrams
 - `scientific-visualization` - Publication-quality & interactive visualization
 - `fluidsim` - Fluid dynamics simulation
+- `openpiv` - Validate simulated mixing against measured velocity fields
 - `scientific-writing` - Engineering reports
 - `pdf` - Technical documentation
 
+**Starting prompt**:
+
+```text
+Use the sympy, uncertainty-and-units, pymc, scikit-learn, pymoo, simpy, and
+scientific-writing skills.
+
+Goal: a reactor design and operating envelope, with the uncertainty in the
+kinetics carried all the way through to the economics.
+Criteria: dimensional consistency checked on every equation; kinetic
+parameters reported as posteriors, not point estimates.
+Deliver: validated model, Pareto front, recommended operating point, dynamic
+simulation, control design, economics with sensitivity, safety analysis.
+Report: propagate the kinetic posterior into the yield prediction. A design
+optimized against a point estimate can sit on a cliff edge — show whether it
+is robust across the posterior.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Define reaction system and kinetics
 - Chemical reaction: A + B → C + D
 - Use Sympy to define symbolic rate equations:
@@ -2389,10 +3330,20 @@ Step 3: Parameter estimation with PyMC
   * Pre-exponential factor (A)
   * Activation energy (Ea)
   * Reaction orders (α, β)
-- Use MCMC sampling with PyMC
-- Incorporate prior knowledge from literature
-- Calculate posterior distributions and credible intervals
-- Assess parameter uncertainty and correlation
+- Reparameterize Arrhenius around a reference temperature —
+  k = k_ref · exp[−(Ea/R)(1/T − 1/T_ref)] — before sampling. In the raw form ln A
+  and Ea are almost perfectly correlated (the compensation effect), which produces a
+  narrow diagonal ridge that MCMC samples badly and that makes both marginals look
+  uninformative even when k(T) is well determined
+- Use uncertainty-and-units to confirm the rate law is dimensionally consistent: the
+  units of A depend on the reaction orders, so a fitted α or β changes what A even
+  means, and this is a routine source of silent error
+- Incorporate literature priors, and check they are compatible with the data via a
+  prior predictive check
+- Sample with PyMC; check R-hat, effective sample size, and divergences
+- Report posteriors and the parameter correlation structure, not just marginal
+  credible intervals — the correlation is what determines the uncertainty in any
+  prediction you make downstream
 
 Step 4: Model validation
 - Simulate reactor with estimated parameters using scipy.integrate
@@ -2404,13 +3355,19 @@ Step 4: Model validation
 - Refine model if needed
 
 Step 5: Machine learning surrogate model
-- Train fast surrogate model with scikit-learn
-- Generate training data from detailed model (1000+ runs)
+- Train a fast surrogate with scikit-learn
+- Generate training data from the detailed model over a space-filling design (Latin
+  hypercube or Sobol), not a grid — grids waste runs and leave diagonal gaps
 - Features: T, P, residence time, feed composition, catalyst loading
 - Target: yield, selectivity, conversion
-- Models: Gaussian Process Regression, Random Forest
-- Validate surrogate accuracy (R² > 0.95)
-- Use for rapid optimization
+- Prefer Gaussian Process Regression here specifically because it returns a
+  predictive variance; the optimizer in Step 7 will push toward the design-space
+  edges, and you need the surrogate to say when it is extrapolating
+- Validate on held-out points, reporting R² and max error. A surrogate is only valid
+  inside its sampled envelope; the optimizer must be constrained to that envelope, or
+  every optimum it finds will sit in a region the surrogate never saw
+- Re-verify the final optimum against the full mechanistic model, never against the
+  surrogate alone
 
 Step 6: Single-objective optimization
 - Maximize yield with scipy.optimize:
@@ -2548,11 +3505,145 @@ Expected Output:
 
 ---
 
+## Fluid Mechanics & Bioprocess Engineering
+
+### Example 21: Linking Measured Hydrodynamics to Cellular Response in a Perfused Culture
+
+**Objective**: Measure the flow field in a perfusion bioreactor or organ-on-chip, validate a simulation against it, and test whether the resulting shear stress explains the transcriptional response of the cells.
+
+**Disciplines**: experimental fluid mechanics · computational fluid dynamics · cell biology · metrology · statistics
+
+This is the example where a measurement, a simulation, and a biological assay have to
+agree before any of them means anything. The physics is only interesting because it
+predicts the biology, and the biology is only interpretable because the physics was
+measured rather than assumed.
+
+**Skills Used**:
+- `openpiv` - Particle image velocimetry: velocity fields from image pairs, vector validation, vorticity and strain rate
+- `fluidsim` - CFD simulation of the same geometry
+- `uncertainty-and-units` - Reynolds/Peclet/Womersley numbers, shear-stress units, measurement uncertainty
+- `experimental-design` - Flow conditions, replication, and blocking
+- `statistical-power` - Replicates needed to detect the expected expression change
+- `scanpy` / `pydeseq2` - Transcriptional response of the cells to each flow condition
+- `pathway-enrichment` - Mechanotransduction and shear-responsive gene sets
+- `statistical-analysis` - Dose-response between shear and expression
+- `matplotlib` / `scientific-visualization` - Vector fields, contour maps, and response curves
+- `scientific-writing` - Report tying measurement, simulation, and biology together
+
+**Starting prompt**:
+
+```text
+Use the openpiv, fluidsim, uncertainty-and-units, experimental-design,
+statistical-power, pydeseq2, pathway-enrichment, and statistical-analysis
+skills.
+
+Goal: does wall shear stress in this device explain the observed change in
+mechanotransduction gene expression?
+Criteria: the simulation is only usable after it reproduces the measured
+velocity field within a stated tolerance. State that tolerance up front.
+Deliver: validated velocity fields, a shear-stress map, per-condition DE
+results, and a shear-versus-response curve with confidence bands.
+Report: every dimensionless group with its inputs and units. If the flow is
+not in the regime the device was designed for, that is the finding.
+Do not: report a CFD-derived shear value as measured. Label each number by
+where it came from.
+```
+
+**Workflow**:
+
+```text
+Step 1: Characterize the regime before measuring anything
+- Use uncertainty-and-units to compute Reynolds, Peclet, and (for pulsatile
+  perfusion) Womersley numbers from the channel dimensions, flow rate, and fluid
+  properties, carrying units explicitly
+- These decide the experiment. Re ≪ 1 means Stokes flow, so the profile is
+  analytically predictable and PIV is a check rather than a discovery; a Womersley
+  number above ~1 means the velocity profile does not track the pressure waveform
+  and a steady-flow shear estimate is wrong
+- Do an order-of-magnitude estimate of wall shear stress from the analytic solution
+  first. Any later CFD or PIV result more than a factor of a few away from it is
+  probably a units or scaling error, not a discovery
+
+Step 2: Acquire and preprocess PIV image pairs
+- Seed with tracers small enough to follow the flow (check the Stokes number) and
+  large enough to scatter usefully
+- Record the pulse separation Δt, the magnification, and the calibration target;
+  velocity is displacement × magnification / Δt, and an unrecorded calibration makes
+  the entire dataset unscalable to physical units
+- Preprocess with openpiv: background subtraction and intensity normalization
+
+Step 3: Cross-correlate and validate vectors
+- Run openpiv cross-correlation with interrogation windows sized so that particle
+  displacement is roughly a quarter of the window — too large and you lose
+  resolution, too small and correlation peaks drop out
+- Apply signal-to-noise, global, and local median validation, then replace outliers
+- Report the fraction of vectors replaced. A field where 30% of vectors were
+  interpolated is a smooth-looking picture of very little data, and the smoothness
+  is the interpolation, not the flow
+- Estimate uncertainty: sub-pixel peak-fitting bias (peak locking), Δt jitter, and
+  calibration error, combined with uncertainty-and-units into a per-vector budget
+
+Step 4: Derive shear and vorticity
+- Compute vorticity and strain rate from the velocity field, remembering that
+  differentiating a noisy measured field amplifies noise — smooth deliberately and
+  report the smoothing
+- Wall shear stress needs the velocity gradient *at the wall*, which is exactly where
+  PIV is weakest: reflections and the finite interrogation window degrade near-wall
+  vectors. Say how close to the wall the measurement is trustworthy, and treat the
+  extrapolated wall value as an estimate with a stated uncertainty
+
+Step 5: Simulate the same geometry with fluidsim
+- Build the simulation from the as-measured geometry and the measured inlet
+  condition, not the nominal design values
+- Run a mesh-convergence study and show that the reported quantity is
+  mesh-independent; an unconverged simulation can agree with experiment by accident
+- Compare simulated and measured velocity profiles at several stations and report
+  the discrepancy quantitatively against the tolerance declared up front
+- Only after agreement is established, use the simulation for what PIV cannot give:
+  near-wall shear, and the full three-dimensional field
+
+Step 6: Design the biological arm
+- Use experimental-design to lay out flow conditions with independent chips or
+  reactors as replicates, randomized across positions and runs. Two channels on one
+  chip are pseudo-replicates for anything driven by the shared perfusion circuit
+- Use statistical-power to set the replicate count against the smallest expression
+  change worth detecting, before running anything
+- Include a static control and a condition at a shear level the analytic estimate
+  says should produce no response — a negative control on the physics side
+
+Step 7: Measure and analyze the cellular response
+- Run differential expression per flow condition with pydeseq2, using chip as the
+  replicate unit
+- Test shear-responsive and mechanotransduction gene sets with pathway-enrichment,
+  stating the background set
+- Fit the dose-response between measured shear and expression with
+  statistical-analysis. Because shear varies spatially across the device, decide and
+  state which exposure metric you are regressing on — mean, wall, or
+  cell-position-resolved — as they can lead to different conclusions
+
+Step 8: Report
+- Present three clearly labelled sources: measured (PIV), simulated (CFD), and
+  inferred (shear at the cell surface)
+- Include the validation comparison, the vector-replacement fraction, and the
+  uncertainty budget. A shear-response curve without them is not interpretable
+
+Expected Output:
+- Validated velocity fields with per-vector uncertainty and replacement statistics
+- A mesh-converged simulation that reproduces the measurement within tolerance
+- A shear-stress map distinguishing measured from inferred regions
+- Differential expression per flow condition with chip-level replication
+- A shear-versus-response relationship with confidence bands and stated exposure metric
+```
+
+---
+
 ## Scientific Illustration & Visual Communication
 
-### Example 20: Creating Publication-Ready Scientific Figures
+### Example 22: Creating Publication-Ready Scientific Figures
 
 **Objective**: Generate, audit, and package scientific illustrations, diagrams, and graphical abstracts while preserving evidence provenance and current venue requirements.
+
+**Disciplines**: scientific communication · visual design · accessibility · research integrity
 
 **Skills Used**:
 - `generate-image` - AI image generation and editing
@@ -2561,13 +3652,30 @@ Expected Output:
 - `scientific-schematics` - Scientific diagrams
 - `scientific-writing` - Figure caption creation
 - `scientific-slides` - Presentation materials
+- `pptx` - Slide decks and figure-panel layouts
 - `latex-posters` - Conference posters
 - `pptx-posters` - Macro-free `.pptx` posters from approved local manifests
 - `pdf` - PDF report generation
 
+**Starting prompt**:
+
+```text
+Use the scientific-visualization, scientific-schematics, matplotlib,
+generate-image, scientific-writing, pptx, and pdf skills.
+
+Goal: a figure package for submission, plus a talk version of the same figures.
+Criteria: data figures come from the data, always. Generated imagery is
+allowed only for conceptual illustration and must be labelled as such.
+Deliver: numbered figures at venue-required resolution, captions, a slide deck,
+and a provenance file recording every model, prompt, and edit.
+Report: which figures are data-derived and which are illustrative, per figure.
+Do not: use image generation to render, alter, or extend anything that
+represents observed data — no invented error bars, scale bars, or micrographs.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Plan visual communication strategy
 - Separate data figures from conceptual/AI-generated illustrations; never use image
   generation to invent observations, labels, scale, or quantitative evidence
@@ -2708,19 +3816,37 @@ Expected Output:
 
 ## Quantum Computing for Chemistry
 
-### Example 21: Variational Quantum Eigensolver for Molecular Ground States
+### Example 23: Variational Quantum Eigensolver for Molecular Ground States
 
 **Objective**: Build and benchmark a reproducible VQE workflow for a small, classically verifiable molecular ground-state problem before considering larger chemistry applications.
 
+**Disciplines**: quantum information · quantum chemistry · numerical optimization · metrology
+
 **Skills Used**:
 - `qiskit` - Qiskit Nature mapping, V2 primitives, target-aware transpilation, simulation, and IBM Runtime execution
+- `uncertainty-and-units` - Hartree/eV/kcal·mol⁻¹ conversions and shot-noise error budgets
 - `matplotlib` - Energy landscape visualization
 - `scientific-visualization` - Publication figures
 - `scientific-writing` - Quantum chemistry reports
 
+**Starting prompt**:
+
+```text
+Use the qiskit, uncertainty-and-units, and scientific-writing skills.
+
+Goal: a VQE result I can trust, on a system where I already know the answer.
+Criteria: exact diagonalization baseline first; define the accuracy target
+(chemical accuracy, 1.6 mHa) before running anything noisy.
+Deliver: convergence history, ideal / noisy / hardware energies side by side,
+resource counts, and every version pin and seed.
+Report: shot-noise uncertainty on every energy, in consistent units. Do not
+convert between Hartree and eV without showing the factor.
+Say plainly where mitigation did not help — that is a useful result too.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Define molecular system
 - Start with H2 or another small molecule that can be solved exactly
 - Record geometry, units, charge, spin, and basis set
@@ -2788,11 +3914,138 @@ Expected Output:
 
 ---
 
+## Open Quantum Systems & Cross-Framework Benchmarking
+
+### Example 24: Dissipative Dynamics of an Excitonic Energy-Transfer Complex
+
+**Objective**: Model coherent energy transfer in a light-harvesting complex coupled to a vibrational bath, and check whether a variational quantum algorithm on the same Hamiltonian reproduces the classically computed result.
+
+**Disciplines**: quantum optics · biophysics · physical chemistry · quantum computing · numerical analysis
+
+Photosynthetic energy transfer sits between disciplines: the system is biological, the
+Hamiltonian is physics, the parameters come from spectroscopy, and the interesting
+question — whether coherence survives long enough to matter at physiological
+temperature — is answerable only by simulating an open quantum system properly. It is
+also a well-characterized benchmark, which makes it a good place to test whether a
+quantum-computing approach reproduces a known answer before trusting it on an unknown one.
+
+**Skills Used**:
+- `qutip` - Open-system dynamics: Lindblad, Redfield, HEOM-style hierarchies, and steady states
+- `pennylane` - Variational algorithms and differentiable quantum programming on the same Hamiltonian
+- `cirq` - Independent circuit construction and compilation for a second hardware target
+- `qiskit` - Third framework for cross-checking transpiled circuit depth and results
+- `sympy` - Symbolic derivation of the system-bath Hamiltonian and rate expressions
+- `uncertainty-and-units` - cm⁻¹, meV, fs, and kT conversions; the whole problem turns on these
+- `statistical-analysis` - Fitting, convergence testing, and comparison statistics
+- `matplotlib` / `scientific-visualization` - Population dynamics and coherence plots
+- `scientific-writing` - Report with the classical baseline foregrounded
+
+**Starting prompt**:
+
+```text
+Use the qutip, pennylane, cirq, qiskit, sympy, uncertainty-and-units, and
+scientific-writing skills.
+
+Goal: population dynamics and coherence lifetimes for this complex, plus an
+answer to whether a VQE on the same Hamiltonian matches the classical result.
+Criteria: convergence in bath-hierarchy depth and time step must be
+demonstrated, not assumed. Every energy in cm^-1 and every time in fs, with
+conversions shown.
+Deliver: population traces, coherence decay with timescales, a
+temperature/reorganization-energy sweep, and a classical-versus-quantum
+comparison table with circuit resource counts.
+Report: state which master equation you used and why it is valid in this
+coupling and temperature regime — that choice determines the answer.
+Do not: present the quantum-hardware result as an advantage. It is a
+correctness check against a classically solvable case.
+```
+
+**Workflow**:
+
+```text
+Step 1: Assemble the Hamiltonian and get the units right first
+- Build the excitonic Hamiltonian: site energies on the diagonal, electronic
+  couplings off-diagonal, conventionally in cm⁻¹
+- Use sympy to derive the system-bath coupling and the spectral density expression
+  symbolically before committing to numbers
+- Use uncertainty-and-units for every conversion. This problem is unforgiving about
+  it: site energies in cm⁻¹, couplings sometimes in meV, dynamics in fs, and thermal
+  energy as kT — at 300 K, kT ≈ 208 cm⁻¹, which is comparable to typical
+  reorganization energies. Whether coherence survives depends on that comparison, so
+  a botched conversion does not produce a slightly wrong answer, it produces the
+  wrong physics
+- Record the spectroscopic source for every parameter and its uncertainty
+
+Step 2: Choose the master equation deliberately
+- The regime decides the method, and the method decides the answer:
+  * Secular Lindblad is fast and guarantees positivity, but assumes weak coupling and
+    well-separated timescales — it will underestimate coherence lifetimes here
+  * Redfield captures the bath structure better but can produce unphysical negative
+    populations outside its validity range
+  * A hierarchical (HEOM-style) treatment is appropriate when reorganization energy
+    is comparable to electronic coupling, which is the interesting case
+- State the regime, state the choice, and run at least two methods so the reader can
+  see how much the conclusion depends on it
+
+Step 3: Simulate with QuTiP
+- Construct the Liouvillian and propagate the density matrix
+- Demonstrate convergence: hierarchy depth (or bath-mode truncation), time step, and
+  Hilbert-space truncation each swept until the observable stops moving
+- Verify the physics at every step — trace preservation, positivity of the density
+  matrix, and relaxation to the correct thermal state at long times. A simulation
+  that does not thermalize correctly is wrong regardless of how the early dynamics look
+- Extract site populations, exciton populations, and inter-site coherences
+
+Step 4: Sweep the parameters that matter
+- Vary temperature, reorganization energy, and bath correlation time
+- Report coherence lifetime as a function of each. The scientifically honest framing:
+  coherence in these systems is short-lived at physiological temperature, and the
+  question is whether it is long enough to affect transfer efficiency — quantify the
+  efficiency change, do not just show that oscillations exist
+- Propagate the spectroscopic parameter uncertainties into the lifetime estimate
+
+Step 5: Set up the same Hamiltonian as a variational problem
+- Map the electronic Hamiltonian to qubits and build a VQE for its ground state
+- Implement in PennyLane, using its autodifferentiation for analytic parameter-shift
+  gradients rather than finite differences
+- Rebuild the same ansatz in Cirq and in Qiskit. This is not redundancy: the three
+  compile to different native gate sets and different circuit depths, and comparing
+  their transpiled two-qubit counts tells you what the circuit actually costs on a
+  given hardware target
+
+Step 6: Validate against the classical answer
+- Diagonalize the same Hamiltonian exactly — the system is small, so the true ground
+  state is available
+- Compare VQE energies from all three frameworks to it, in consistent units, with
+  shot-noise uncertainties
+- Report circuit depth, two-qubit gate count, and optimizer evaluations per
+  framework. Any discrepancy between frameworks on the same Hamiltonian is a bug in
+  one of the implementations, and finding it is the point of running three
+
+Step 7: Report
+- Lead with the classical result; the quantum implementation is a benchmark against it
+- Give the master-equation choice, the convergence evidence, and the parameter
+  uncertainties before any conclusion about coherence
+- State the limitation plainly: a handful of sites solved exactly on a classical
+  machine says nothing about scaling, and no part of this demonstrates quantum advantage
+
+Expected Output:
+- Converged open-system dynamics with population and coherence traces
+- Coherence lifetime versus temperature and reorganization energy, with uncertainty
+- A comparison of at least two master equations on the same system
+- VQE ground-state energies from PennyLane, Cirq, and Qiskit against exact diagonalization
+- Circuit resource counts per framework and per hardware target
+```
+
+---
+
 ## Research Grant Writing
 
-### Example 22: NIH R01 Grant Proposal Development
+### Example 25: NIH R01 Grant Proposal Development
 
 **Objective**: Develop a comprehensive research grant proposal with literature review, specific aims, and budget justification.
+
+**Disciplines**: research strategy · biostatistics · experimental design · scientific writing · research administration
 
 **Skills Used**:
 - `database-lookup` - Query ClinicalTrials.gov for preliminary data context
@@ -2800,14 +4053,36 @@ Expected Output:
 - `research-grants` - Grant writing templates and guidelines
 - `literature-review` - Systematic literature analysis
 - `hypothesis-generation` - Scientific hypothesis development
+- `experimental-design` - Design, randomization, blinding, and controls for each aim
+- `statistical-power` - A priori power analysis and sample-size justification
 - `scientific-writing` - Technical writing
 - `scientific-critical-thinking` - Research design
+- `peer-review` - Self-assessment against the review criteria before submission
 - `citation-management` - Reference formatting
+- `xlsx` - Budget spreadsheet and personnel effort tables
+- `docx` - Editable sections for collaborators
 - `pdf` - PDF generation
+
+**Starting prompt**:
+
+```text
+Use the research-grants, literature-review, hypothesis-generation,
+experimental-design, statistical-power, scientific-writing, peer-review,
+citation-management, xlsx, and pdf skills.
+
+Goal: a complete R01 package, plus an honest internal review of it.
+Criteria: each aim states its hypothesis, its design, its power analysis, and
+what result would refute it. Aims must not be contingent on each other.
+Deliver: Specific Aims page, Research Strategy, budget (xlsx), timeline,
+rigor and reproducibility section, bibliography.
+Report: run the peer-review skill against the FOA's review criteria and give
+me the critique before I read the draft — including the weaknesses you would
+raise if you were reviewer 3.
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Define research question and significance
 - Use hypothesis-generation skill to refine research questions
 - Identify knowledge gaps in the field
@@ -2829,11 +4104,14 @@ Step 3: Develop specific aims
 - Define success criteria for each aim
 
 Step 4: Design research approach
-- Use scientific-critical-thinking for experimental design
-- Define methods for each specific aim
-- Include positive and negative controls
-- Plan statistical analysis approach
-- Identify potential pitfalls and alternatives
+- Use experimental-design to choose the design for each aim — factorial, blocked,
+  crossover, or randomized — and to specify randomization, blinding, and the unit of
+  randomization (the unit is where most designs quietly go wrong)
+- Use scientific-critical-thinking to stress-test the logic connecting aims to claims
+- Include positive and negative controls, and state what each one rules out
+- Plan the statistical analysis before the data exist, including how missing data and
+  multiplicity across aims will be handled
+- Identify potential pitfalls and pre-specify the alternative approach for each
 
 Step 5: Preliminary data compilation
 - Gather existing data supporting hypothesis
@@ -2861,8 +4139,14 @@ Step 8: Budget development
 - Indirect cost calculation
 
 Step 9: Rigor and reproducibility
-- Address biological variables (sex, age, strain)
-- Statistical power calculations
+- Address biological variables (sex as a biological variable, age, strain) as factors
+  in the design, not as a sentence in the text — reviewers check for the difference
+- Run a priori power analysis with statistical-power for each aim's primary endpoint:
+  state the effect size, its source, alpha, target power, and the resulting n. Power
+  computed after the fact from an observed effect is not a power analysis, and adding
+  it will cost credibility
+- Where the effect size is genuinely unknown, present a power curve across a
+  plausible range and name the minimum detectable effect instead of inventing one
 - Data management and sharing plan
 - Authentication of key resources
 
@@ -2874,10 +4158,12 @@ Step 10: Format and compile
 - Check page limits and formatting requirements
 
 Step 11: Review and revision
-- Use peer-review skill principles for self-assessment
+- Run the peer-review skill against the proposal, scored on the actual review
+  criteria for this mechanism (significance, investigators, innovation, approach,
+  environment) rather than on general writing quality
+- Ask it for the strongest objection to each aim, not a summary of strengths
 - Check for logical flow and clarity
-- Verify alignment with FOA requirements
-- Ensure responsive to review criteria
+- Verify alignment with FOA requirements, page limits, and formatting rules
 
 Step 12: Final deliverables
 - Specific Aims page (1 page)
@@ -2902,9 +4188,28 @@ Expected Output:
 
 ## Flow Cytometry & Immunophenotyping
 
-### Example 23: Multi-Parameter Flow Cytometry Analysis Pipeline
+### Example 26: Multi-Parameter Flow Cytometry Analysis Pipeline
 
 **Objective**: Analyze authorized, de-identified high-dimensional flow-cytometry research data to characterize immune-cell populations. Outputs are not diagnostic laboratory reports.
+
+**Disciplines**: immunology · cytometry · compositional statistics · machine learning
+
+**Starting prompt**:
+
+```text
+Use the flowio, scanpy, umap-learn, scikit-learn, statistical-analysis, and
+exploratory-data-analysis skills. De-identified research data only.
+
+Goal: population frequencies per sample and which populations differ between
+groups.
+Criteria: donor is the unit of analysis; frequencies are compositional and
+must be analysed as such.
+Deliver: QC summary, gating diagrams, frequency table, differential abundance
+with effect sizes, UMAP and marker heatmaps.
+Report: verify compensation with single-stain controls and show the spillover
+before and after. Flag any sample whose acquisition looks unstable over time.
+Do not: issue a diagnostic result or amend a laboratory record.
+```
 
 **Skills Used**:
 - `flowio` - FCS file parsing
@@ -2919,7 +4224,7 @@ Expected Output:
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Load and parse FCS files
 - Use flowio to read FCS 2.0/3.0/3.1 files
 - Extract channel names and normalized metadata (lowercase keys without `$`)
@@ -2963,17 +4268,26 @@ Step 6: Dimensionality reduction
   * Clinical group
 
 Step 7: Automated clustering
-- Apply Leiden or FlowSOM clustering
-- Determine optimal cluster resolution
+- Cluster with Leiden through scanpy, or with FlowSOM — noting that FlowSOM is a
+  separate self-organizing-map implementation, not a scanpy function, so it is an
+  additional dependency rather than a parameter choice
+- Determine cluster resolution by stability across resampling, and check that
+  clusters are not splitting on a single dim marker or on autofluorescence
 - Assign cell type labels based on marker profiles
-- Validate clusters against manual gating
+- Validate clusters against manual gating and report the concordance both ways:
+  which gated populations fragment across clusters, and which clusters straddle gates
 
 Step 8: Differential abundance analysis
-- Compare population frequencies between groups
-- Use statistical-analysis for hypothesis testing
-- Calculate fold changes and p-values
-- Apply multiple testing correction
-- Identify significantly altered populations
+- Compare population frequencies between groups, with the donor as the unit
+- Frequencies are compositional — they sum to 100% of the parent gate, so one
+  population expanding makes every other appear to contract. Analyse on a
+  log-ratio scale, or use a Dirichlet-multinomial or beta-binomial model, and state
+  the parent population each frequency is expressed relative to
+- Use statistical-analysis for the tests, reporting effect sizes and intervals
+  alongside p-values
+- Apply multiple testing correction across all populations tested
+- Weight by events acquired: a frequency of 0.1% from 5,000 events and from 500,000
+  events carry very different precision
 
 Step 9: Biomarker discovery
 - Train retrospective classifiers for an approved cohort outcome
@@ -3024,9 +4338,11 @@ Expected Output:
 
 ## Geospatial & Earth Observation
 
-### Example 24: Remote Sensing for Environmental Monitoring
+### Example 27: Remote Sensing for Environmental Monitoring
 
 **Objective**: Combine satellite imagery and vector data to map land-cover change and quantify environmental drivers across a watershed.
+
+**Disciplines**: remote sensing · hydrology · landscape ecology · spatial statistics · machine learning
 
 **Skills Used**:
 - `geomaster` - Remote sensing, GIS, and earth-observation workflows
@@ -3034,13 +4350,31 @@ Expected Output:
 - `zarr-python` - Chunked N-D arrays for large raster/time stacks
 - `dask` - Parallel/out-of-core processing of image cubes
 - `scikit-learn` - Land-cover classification
+- `timesfm-forecasting` - Project index time series forward where a baseline is needed
 - `statistical-analysis` - Trend and correlation testing
+- `uncertainty-and-units` - Reflectance scaling, area units, and change-area intervals
 - `matplotlib` - Mapping and charts
 - `scientific-visualization` - Publication-quality & interactive visualization
 
+**Starting prompt**:
+
+```text
+Use the geomaster, geopandas, zarr-python, dask, scikit-learn,
+statistical-analysis, and uncertainty-and-units skills.
+
+Goal: how much land cover changed in this watershed, where, and what covaries
+with it — with an area estimate that has a confidence interval.
+Criteria: accuracy assessed on an independent probability sample, not on
+training pixels. Reproject everything to one equal-area CRS before measuring area.
+Deliver: classified maps per date, a change matrix, area estimates with CIs,
+per-sub-catchment statistics, and driver correlations.
+Report: pixel-counted area is biased by classification error — give the
+error-adjusted area estimate and say which estimator you used.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Acquire and stack imagery
 - Use geomaster to pull Sentinel-2/Landsat scenes for the area and time range
 - Compute spectral indices (NDVI, NDWI, NBR) per scene
@@ -3058,12 +4392,26 @@ Step 3: Scale processing with Dask
 Step 4: Land-cover classification
 - Sample labeled training pixels (forest, cropland, water, urban)
 - Train a Random Forest classifier with scikit-learn on spectral + index features
-- Produce per-date land-cover maps and accuracy metrics (confusion matrix, kappa)
+- Validate on an independent probability sample of reference points, not on held-out
+  pixels from the same polygons. Neighbouring pixels are spatially autocorrelated, so
+  a random pixel split reports an accuracy that will not hold on new ground — use
+  spatial block cross-validation for model selection
+- Report the confusion matrix, per-class user's and producer's accuracy, and overall
+  accuracy. Prefer these to kappa, which is largely redundant with overall accuracy
+  and has been argued out of favour in the remote-sensing literature
 
 Step 5: Change detection and zonal statistics
 - Compute land-cover transitions between years
+- Do not report change area by counting classified pixels. Classification errors are
+  asymmetric and change is rare, so pixel counting is badly biased — a 5% error rate
+  on a stable class can swamp a 2% real change. Use a stratified estimator with the
+  reference sample to produce error-adjusted area estimates with confidence intervals
+- Reproject to an equal-area CRS before computing any area; measuring hectares in a
+  Web Mercator projection introduces a latitude-dependent error of tens of percent
 - Use GeoPandas zonal stats to summarize change per sub-catchment
-- Correlate change with covariates (slope, precipitation) via statistical-analysis
+- Correlate change with covariates (slope, precipitation) via statistical-analysis,
+  accounting for spatial autocorrelation — ordinary regression on spatial data
+  understates standard errors substantially
 
 Step 6: Generate report
 - Time-series maps, change matrices, and trend plots
@@ -3080,9 +4428,30 @@ Expected Output:
 
 ## Time-Series Forecasting & Sensor Analytics
 
-### Example 25: Research Forecasting of Physiological Sensor Streams
+### Example 28: Research Forecasting of Physiological Sensor Streams
 
 **Objective**: Retrospectively benchmark forecasting and anomaly methods on authorized synthetic, public, or properly de-identified physiological data. Outputs are research-only—not diagnostic, monitoring, triage, alarm, or device-validation results.
+
+**Disciplines**: physiology · time-series analysis · machine learning · clinical research methodology
+
+**Starting prompt**:
+
+```text
+Use the timesfm-forecasting, aeon, neurokit2, pyhealth, and
+statistical-analysis skills. Synthetic or de-identified data only.
+
+Goal: a retrospective benchmark — does a foundation model beat classical
+baselines at forecasting these signals?
+Criteria: split by subject, never by window. Compare against seasonal-naive
+and a simple statistical baseline; a model that cannot beat seasonal-naive is
+not a result.
+Deliver: MAE/MASE with prediction-interval coverage per horizon, per method,
+with the baselines in the same table.
+Report: TimesFM was pretrained on large public corpora, so if any evaluation
+series resembles its training data the comparison is contaminated — say what
+you can and cannot rule out.
+Do not: select an operating threshold, generate alerts, or imply monitoring use.
+```
 
 **Skills Used**:
 - `timesfm-forecasting` - Zero-shot foundation-model forecasting
@@ -3094,7 +4463,7 @@ Expected Output:
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Ingest and clean signals
 - Confirm authorization, privacy controls, cohort definition, and a leakage-safe
   subject-level split before inspecting outcomes
@@ -3122,8 +4491,16 @@ Step 4: Retrospective outcome-model research with PyHealth
 - Do not choose a live threshold, produce patient alerts, or recommend deployment
 
 Step 5: Statistical evaluation
-- Backtest forecasts (MAE, MASE, coverage) with statistical-analysis
-- Compare TimesFM vs aeon baselines and test for significant differences
+- Backtest with rolling-origin evaluation, refitting or re-forecasting at each origin;
+  a single train/test cut on time series measures one arbitrary period
+- Report MAE, MASE, and prediction-interval coverage per horizon. MASE is scaled
+  against the naive forecast, which is what makes cross-signal comparison meaningful
+- Include a seasonal-naive baseline in every comparison table. Physiological signals
+  are strongly autocorrelated and diurnal, so naive persistence is a strong baseline
+  over short horizons and beating it is the minimum bar
+- Compare methods with a test appropriate for correlated forecast errors
+  (Diebold-Mariano or a blocked permutation test); a paired t-test over overlapping
+  windows treats dependent errors as independent
 
 Step 6: Generate monitoring report
 - Forecast vs actual overlays with uncertainty bands
@@ -3141,9 +4518,11 @@ Expected Output:
 
 ## Cloud-Scale Bioinformatics
 
-### Example 26: Reproducible, Cloud-Scale Genomics Pipelines
+### Example 29: Reproducible, Cloud-Scale Genomics Pipelines
 
 **Objective**: Run a reproducible tumor-normal and bulk RNA-seq analysis at population scale across cloud platforms, with lineage tracking and efficient variant storage.
+
+**Disciplines**: bioinformatics · distributed computing · research data management · cancer genomics
 
 **Skills Used**:
 - `get-available-resources` - Detect CPU/GPU/memory and plan execution
@@ -3154,6 +4533,8 @@ Expected Output:
 - `latchbio-integration` - LatchBio SDK workflows and deployment
 - `modal` - Serverless GPU/CPU compute for custom steps
 - `optimize-for-gpu` - GPU-accelerate alignment/quantification steps
+- `genomic-coordinates` - One assembly and one contig convention across every stage
+- `ontology-term-resolution` - Controlled-vocabulary sample metadata for archive submission
 - `tiledbvcf` - Scalable VCF ingestion and querying
 - `polars-bio` - Fast genomic interval operations
 - `gtars` - High-performance genomic interval/BED analysis
@@ -3161,12 +4542,36 @@ Expected Output:
 - `pydeseq2` - Differential expression
 - `pathway-enrichment` - Downstream gene-set enrichment
 
+**Starting prompt**:
+
+```text
+Use the get-available-resources, bulk-rnaseq, nextflow, pacsomatic,
+genomic-coordinates, tiledbvcf, polars-bio, lamindb, pydeseq2, and
+pathway-enrichment skills.
+
+Goal: a reproducible pipeline someone else can rerun and get the same answer.
+Criteria: one reference assembly, one annotation version, pinned container
+digests, recorded seeds. Register every input and output in LaminDB.
+Deliver: counts matrix, TileDB-VCF store, DE and enrichment results, and a
+provenance graph linking each output back to its inputs and parameters.
+Report: cost and wall-clock per stage, so the next run can be planned.
+Do not: launch cloud jobs or spend against an account without explicit
+approval of the concrete job, its resources, and its estimated cost.
+```
+
 **Workflow**:
 
-```bash
-Step 1: Plan resources
+```text
+Step 1: Plan resources and pin the reference
 - Run get-available-resources to detect cores/GPUs/RAM/disk
 - Choose local vs cloud execution and parallelism strategy
+- Pin one reference assembly and one annotation release for the whole project, and
+  use genomic-coordinates to confirm every incoming BAM, BED, and interval list
+  agrees on assembly and contig naming. At population scale this is the failure that
+  costs the most: a chr-prefix mismatch between the reference and a capture BED
+  yields an empty intersection, the pipeline completes without error, and the
+  callset is quietly wrong across every sample
+- Record container digests, tool versions, and seeds now, not at write-up time
 
 Step 2: RNA-seq quantification
 - Use the bulk-rnaseq skill to take FASTQ -> QC (FastQC/fastp) -> STAR/Salmon -> counts
@@ -3188,6 +4593,10 @@ Step 5: Differential expression and enrichment
 
 Step 6: Track lineage and report
 - Record every artifact, transform, and parameter set in LaminDB
+- Annotate samples with controlled-vocabulary terms via ontology-term-resolution
+  (UBERON tissue, CL cell type, MONDO disease, EFO assay). Archives such as ENA,
+  BioSamples, and GEO require these, and retrofitting them onto a finished cohort is
+  far more work than capturing them during the run
 - Export a reproducible pipeline report with provenance graph
 
 Expected Output:
@@ -3200,9 +4609,28 @@ Expected Output:
 
 ## Functional Genomics & Knowledge Graphs
 
-### Example 27: Cancer Dependency Mapping and Knowledge-Graph Target Discovery
+### Example 30: Cancer Dependency Mapping and Knowledge-Graph Target Discovery
 
 **Objective**: Identify cancer-specific vulnerabilities and synthetic-lethal targets by combining dependency screens with biomedical knowledge graphs.
+
+**Disciplines**: functional genomics · knowledge representation · pharmacology · network science · machine learning
+
+**Starting prompt**:
+
+```text
+Use the depmap, primekg, database-lookup, networkx, pathway-enrichment,
+what-if-oracle, and scikit-learn skills.
+
+Goal: context-specific dependencies that are selective enough to be worth a
+validation campaign.
+Criteria: selectivity, not just essentiality — a pan-essential gene is a
+ribosome subunit, not a target. Define the comparison context explicitly.
+Deliver: dependency table with selectivity scores, KG subnetworks, enrichment
+results, and a ranked target list with the risk for each.
+Report: for each candidate, the number of cell lines supporting it and whether
+the lineage is well represented in DepMap. A dependency seen in three lines of
+a rare lineage is a lead, not a finding.
+```
 
 **Skills Used**:
 - `depmap` - DepMap CRISPR dependency, drug sensitivity, gene-effect data
@@ -3216,15 +4644,27 @@ Expected Output:
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Pull dependency profiles
 - Query DepMap for gene-effect (CRISPR Chronos) scores across cell lines
-- Filter for strong, selective dependencies in the lineage of interest
+- Separate essentiality from selectivity. Chronos scores near −1 mark strong
+  dependency, but common-essential genes score that way everywhere and are not
+  targets; the quantity of interest is the gap between the lineage of interest and
+  the rest, so compute a selectivity statistic and report both numbers
+- Watch for copy-number confounding: CRISPR cutting in amplified regions causes
+  DNA-damage-driven dropout that mimics dependency. Use the copy-number-corrected
+  scores and check whether candidate hits sit in amplified segments
 - Retrieve drug-sensitivity profiles for candidate vulnerabilities
 
 Step 2: Define context and synthetic lethality
 - Stratify cell lines by mutation/expression context
 - Identify genes essential only in a given context (synthetic-lethal candidates)
+- Count the lines on each side of the split. Contexts defined by a rare mutation
+  often leave five or six lines in the mutant group, where a two-group comparison
+  across ~18,000 genes will produce apparent hits by chance — report group sizes
+  next to every p-value, and control the false discovery rate across genes
+- Cell lines are not tissues: they carry culture-adapted metabolism and have lost
+  their microenvironment, so a dependency here is a hypothesis about the tumour
 
 Step 3: Knowledge-graph expansion with PrimeKG
 - For each candidate, query PrimeKG for connected genes, drugs, diseases, phenotypes
@@ -3258,22 +4698,44 @@ Expected Output:
 
 ## Molecular Modeling & Simulation
 
-### Example 28: Molecular Dynamics and Binding Free Energy for Lead Optimization
+### Example 31: Molecular Dynamics and Binding Free Energy for Lead Optimization
 
 **Objective**: Refine a protein-ligand complex with molecular dynamics and estimate binding affinity to guide lead optimization.
+
+**Disciplines**: computational biophysics · statistical mechanics · medicinal chemistry · high-performance computing
 
 **Skills Used**:
 - `molecular-dynamics` - OpenMM/MDAnalysis simulation and trajectory analysis
 - `rowan` - Cloud molecular modeling (pKa, conformers, docking, cofolding)
+- `tamarind` - Cloud structure prediction, cofolding, and batch MD when local GPUs are the bottleneck
 - `rdkit` - Ligand preparation and cheminformatics
 - `biopython` - Protein structure handling
 - `optimize-for-gpu` - GPU acceleration of MD and analysis
+- `uncertainty-and-units` - kcal/mol vs kJ/mol, and replica-based uncertainty on ΔG
+- `statistical-analysis` - Convergence testing and correlation with experiment
 - `matplotlib` - Plots
 - `scientific-visualization` - Publication-quality & interactive visualization
 
+**Starting prompt**:
+
+```text
+Use the molecular-dynamics, rowan, rdkit, biopython, optimize-for-gpu,
+uncertainty-and-units, and statistical-analysis skills.
+
+Goal: a rank ordering of these analogs by predicted affinity, with enough
+uncertainty information to know which pairs are actually distinguishable.
+Criteria: independent replicas, not one long trajectory; state the force
+field and water model; check convergence before reporting any number.
+Deliver: equilibrated trajectories, interaction fingerprints, ΔG estimates
+with uncertainties, and a predicted-versus-experimental correlation.
+Report: ligand protonation state at assay pH, chosen explicitly — it changes
+the answer more than most methodological choices here.
+Do not: report ΔG to more decimal places than the replica spread supports.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Prepare structures
 - Load the protein with BioPython; clean, protonate, and assign chains
 - Prepare ligand 3D conformers/tautomers and protonation states with RDKit
@@ -3286,53 +4748,113 @@ Step 2: System setup (molecular-dynamics skill)
 
 Step 3: Production MD
 - Run production simulations on GPU (optimize-for-gpu)
-- Save trajectories for multiple replicas
+- Run several independent replicas with different initial velocities rather than one
+  long trajectory. Replicas sample distinct basins and give you a variance estimate;
+  a single trajectory gives you neither, and its apparent stability may only mean it
+  never escaped its starting basin
+- Save trajectories for every replica
 
 Step 4: Trajectory analysis
 - Compute RMSD/RMSF, contact maps, H-bond occupancy, and pocket stability
+- Discard equilibration before computing any average, and justify where you cut by
+  showing the observable plateauing
+- Report block-averaged statistics with autocorrelation-aware error bars. Frames are
+  highly correlated, so treating 10,000 frames as 10,000 samples produces error bars
+  that are far too small
 - Identify key interactions and conformational changes
 
 Step 5: Binding free energy
-- Estimate relative/absolute binding free energies (MM-GBSA / alchemical methods)
-- Rank analogs by predicted affinity and stability
+- Choose the method for the question, and state its limits:
+  * MM-GBSA is cheap and correlates weakly with experiment. It is usable for coarse
+    ranking within one congeneric series and unreliable across chemotypes; the
+    absolute numbers are not free energies in any transferable sense
+  * Alchemical free-energy methods (FEP/TI) are far more accurate for relative ΔΔG
+    within a series, at much greater cost, and only when they converge
+- For alchemical runs, demonstrate convergence: overlap between neighbouring lambda
+  windows, forward/backward hysteresis, and thermodynamic cycle closure. A cycle that
+  does not close tells you the error directly
+- Use uncertainty-and-units to keep kcal/mol and kJ/mol separate and to propagate
+  replica variance. As calibration: 1.4 kcal/mol is a factor of ten in affinity at
+  room temperature, so a method with 1 kcal/mol error cannot resolve two analogs that
+  differ threefold
+- Rank analogs, and mark pairs whose predicted difference is within the uncertainty
+  as unresolved rather than ordering them
 
 Step 6: Report
-- Trajectory plots, interaction fingerprints, and free-energy rankings
+- Trajectory plots, interaction fingerprints, and free-energy rankings with intervals
+- Correlate predictions against whatever measured affinities exist, reporting Spearman
+  rank correlation and mean unsigned error — a method that ranks well but is
+  systematically offset is still useful, and saying so is more informative than one
+  aggregate score
 - Recommendations for the next round of analogs
 
 Expected Output:
-- Equilibrated protein-ligand MD trajectories
-- Interaction and stability analysis
-- Binding free-energy rankings to guide optimization
+- Replicated, equilibrated protein-ligand MD trajectories
+- Interaction and stability analysis with autocorrelation-aware error bars
+- Binding free-energy rankings with uncertainties and explicitly unresolved pairs
+- Predicted-versus-experimental correlation where measurements exist
 ```
 
 ---
 
 ## Protein Engineering & Cloud Wet-Lab
 
-### Example 29: Designing and Validating an Engineered Binder
+### Example 32: Designing and Validating an Engineered Binder
 
 **Objective**: Design a protein binder, engineer its glycosylation and stability, and validate candidates through cloud wet-lab assays.
 
+**Disciplines**: protein engineering · evolutionary biology · glycobiology · machine learning · automated experimentation
+
 **Skills Used**:
 - `esm` - Protein language model embeddings and variant scoring
+- `tamarind` - Cloud RFdiffusion/ProteinMPNN/BoltzGen design, AlphaFold/Boltz/Chai prediction, and developability
 - `hugging-science` - Scientific ML models for design/screening
 - `phylogenetics` - Homolog alignment and evolutionary context
 - `glycoengineering` - N/O-glycosylation analysis and engineering
 - `biopython` - Sequence/structure manipulation
+- `experimental-design` - Assay layout, controls, and replication for the validation round
 - `adaptyv` - Adaptyv Bio Foundry protein binding assays
 - `ginkgo-cloud-lab` - Ginkgo Cloud Lab protocol execution
 
+**Starting prompt**:
+
+```text
+Use the phylogenetics, esm, tamarind, glycoengineering, biopython, and
+experimental-design skills.
+
+Goal: a design round of binder variants ranked for ordering, with controls.
+Criteria: include known positive and negative controls in the submitted set,
+and hold out some designs the models disagree on — that is where the
+information is.
+Deliver: ranked designs with predicted affinity, predicted structure
+confidence at the interface, glyco profile, and a submission-ready plan.
+Report: ESM likelihood scores fitness-like plausibility, not binding affinity.
+Do not conflate them. Say which designs the models disagree about.
+Do not: submit anything to Adaptyv or Ginkgo. Produce the plan and the cost
+estimate; ordering is a separate decision I will make explicitly.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Establish evolutionary context
 - Collect homologs and build an alignment/tree with the phylogenetics skill
 - Identify conserved and variable positions to guide design
 
 Step 2: Generate and score variants
-- Use ESM embeddings and variant effect scores to propose stabilizing/affinity mutations
+- Use ESM embeddings and variant effect scores to propose candidate mutations. Read
+  what the score means: a language-model likelihood reflects what looks natural given
+  evolutionary sequence statistics, which correlates with stability and fitness but
+  is not a binding-affinity prediction. Mutations that improve affinity for a
+  specific novel target are often exactly the ones evolution never sampled
+- Generate structure-guided designs with tamarind (RFdiffusion for backbones,
+  ProteinMPNN for sequences, BoltzGen for binders), then predict complexes with
+  AlphaFold/Boltz/Chai and filter on interface confidence (ipTM and interface PAE),
+  not on the global structure score
 - Screen designs with hugging-science models (structure/function predictors)
+- Where the orthogonal predictors disagree on a design, keep it in the ordered set.
+  Designs all models agree on tell you least; disagreements are where an experiment
+  actually resolves something
 - Manipulate sequences and models with BioPython
 
 Step 3: Glycoengineering
@@ -3340,7 +4862,11 @@ Step 3: Glycoengineering
 - Add/remove sequons to tune stability, half-life, or immunogenicity (glycoengineering)
 
 Step 4: Submit binding assays to Adaptyv
-- Design a protein binding experiment and prepare an exact submission plan
+- Design the experiment with experimental-design: include characterized positive and
+  negative controls in the same run, randomize design position, and replicate enough
+  to distinguish the affinity differences you expect. A design round without controls
+  cannot separate "the designs failed" from "the assay failed"
+- Prepare an exact submission plan with sequences, assay format, and cost
 - Submit via the Adaptyv Foundry API only after the user explicitly authorizes the
   payload, cost, destination, and external data transfer
 - Retrieve and parse measured affinities/binding results
@@ -3353,8 +4879,14 @@ Step 5: Cloud wet-lab expression with Ginkgo
 - Track RAC execution and collect results
 
 Step 6: Iterate and report
-- Correlate predicted vs measured performance; pick the next design round
-- Report designs, glyco profiles, and assay results
+- Correlate predicted vs measured performance. Report the correlation for each
+  predictor separately, so the next round knows which score to trust — this is the
+  main thing a design round buys beyond the binders themselves
+- Note the survivorship problem: you only measured the designs the models ranked
+  highly, so the observed correlation is computed on a truncated range and
+  understates the models' true discrimination. Including a few low-ranked designs in
+  each round is what makes the correlation interpretable
+- Report designs, glyco profiles, and assay results, including the failures
 
 Expected Output:
 - Ranked, evolution- and ML-informed binder designs
@@ -3366,23 +4898,43 @@ Expected Output:
 
 ## Medical Imaging & Clinical AI
 
-### Example 30: AI-Assisted Radiology on Public Imaging Cohorts
+### Example 33: AI-Assisted Radiology on Public Imaging Cohorts
 
 **Objective**: Train and retrospectively evaluate a research model on an authorized public cancer-imaging cohort. pydicom and model outputs are not diagnostic, and the workflow does not produce patient-specific care.
+
+**Disciplines**: radiology · computer vision · biostatistics · health informatics · research governance
 
 **Skills Used**:
 - `imaging-data-commons` - Query/download NCI Imaging Data Commons (CT/MR/PET)
 - `pydicom` - Privacy-aware local DICOM preflight and pixel handling
 - `hugging-science` - Pretrained medical imaging models
+- `transformers` - Vision-transformer backbones, fine-tuning loops, and processors
 - `pytorch-lightning` - Model training
 - `optimize-for-gpu` - GPU acceleration
 - `shap` - Interpretability
+- `ontology-term-resolution` - RadLex/UBERON/MONDO terms for cohort and label metadata
 - `clinical-decision-support` - Aggregate research evaluation and governance artifacts only
 - `scientific-writing` - Evidence-traceable research report
 
+**Starting prompt**:
+
+```text
+Use the imaging-data-commons, pydicom, transformers, pytorch-lightning,
+optimize-for-gpu, shap, and scientific-writing skills.
+
+Goal: a research model on a public imaging cohort, evaluated honestly.
+Criteria: split by patient before any preprocessing statistic is computed.
+Report performance per collection and per scanner manufacturer, not pooled.
+Deliver: model, metrics with CIs, saliency examples, governance packet.
+Report: if performance drops sharply on a held-out collection, that is the
+headline result — external validity is the question this design can answer.
+Do not: describe output as diagnostic, or use patient-level data in the
+clinical-decision-support step. Aggregate metrics only.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Acquire imaging cohort
 - Use idc-index via the imaging-data-commons skill to query CT/MR/PET by modality,
   collection, and metadata (no authentication required)
@@ -3395,14 +4947,26 @@ Step 2: Load and preprocess DICOM
 - Resample, window, and normalize; build patient-level train/validation/test splits
 
 Step 3: Model training
-- Start from a hugging-science pretrained medical imaging backbone
+- Start from a hugging-science pretrained medical imaging backbone, or load a vision
+  transformer and its matching image processor through transformers when you need
+  control over the preprocessing, the head, or the fine-tuning loop
+- Keep the processor's normalization identical between training and inference; a
+  mismatched preprocessing pipeline is the most common cause of a model that scores
+  well in validation and collapses at test time
 - Fine-tune with PyTorch Lightning; accelerate with optimize-for-gpu
 - Track metrics (AUC, Dice/IoU for segmentation)
 
 Step 4: Evaluation and interpretability
-- Evaluate on the held-out set with confidence intervals
-- Use SHAP/saliency to inspect model behavior; explanations do not establish
-  causality, diagnostic validity, or clinical relevance
+- Evaluate on the held-out set with confidence intervals computed at the patient level
+- Report calibration as well as discrimination. AUC is invariant to monotone
+  rescaling, so a model can rank well and still produce badly miscalibrated
+  probabilities — show a reliability curve
+- Evaluate separately per collection, scanner manufacturer, and acquisition protocol.
+  Medical imaging models reliably learn site and scanner signatures, and IDC cohorts
+  span many sites, so a pooled metric conceals exactly the failure that matters
+- Use SHAP/saliency to inspect model behavior. Saliency maps are unstable and can
+  look plausible for a model that has learned a shortcut, so treat them as debugging
+  aids; they do not establish causality, diagnostic validity, or clinical relevance
 
 Step 5: Aggregate research evaluation and governance
 - Use clinical-decision-support only with aggregate or synthetic metrics to prepare
@@ -3425,9 +4989,27 @@ Expected Output:
 
 ## Research Ideation & Study Planning
 
-### Example 31: From Idea to a Powered, Well-Designed Study
+### Example 34: From Idea to a Powered, Well-Designed Study
 
 **Objective**: Move from open-ended ideation to transparent candidate hypotheses and a statistically powered study plan without treating any candidate as validated or automatically selecting a winner.
+
+**Disciplines**: philosophy of science · experimental design · biostatistics · domain-specific reasoning
+
+**Starting prompt**:
+
+```text
+Use the scientific-brainstorming, consciousness-council, what-if-oracle,
+hypothesis-generation, experimental-design, and statistical-power skills.
+
+Goal: a preregistration-ready plan built from candidates I can still argue with.
+Criteria: for every hypothesis, a rival that predicts something different, and
+the observation that would distinguish them. A hypothesis with no rival that
+makes a different prediction is not yet testable.
+Deliver: candidate set with rivals, discriminating predictions, chosen design
+with randomization and blocking, power analysis, and analysis plan.
+Report: keep the human decisions visible — which directions were set aside and
+why. Do not silently rank or eliminate candidates on my behalf.
+```
 
 **Skills Used**:
 - `scientific-brainstorming` - Open-ended ideation and gap-finding
@@ -3440,7 +5022,7 @@ Expected Output:
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Diverge — generate ideas
 - Use scientific-brainstorming to explore the problem space and interdisciplinary links
 - Run a consciousness-council deliberation to weigh competing research directions
@@ -3479,12 +5061,15 @@ Expected Output:
 
 ## Literature & Knowledge Management
 
-### Example 32: Systematic Literature Review and Research Knowledge Base
+### Example 35: Systematic Literature Review and Research Knowledge Base
 
 **Objective**: Run a multi-source literature search, ingest and organize sources, and synthesize a cited, well-managed review.
 
+**Disciplines**: evidence synthesis · information science · research methodology · science communication
+
 **Skills Used**:
 - `research-lookup` - Routed current-research search (web/deep/academic)
+- `paper-lookup` - PubMed, PMC, bioRxiv, medRxiv, arXiv, OpenAlex, Crossref, Semantic Scholar, CORE, Unpaywall
 - `exa-search` - Semantic web search tuned for technical content
 - `parallel-web` - Academic-focused web search/fetch and enrichment
 - `bgpt-paper-search` - Structured experimental data extracted from papers
@@ -3494,16 +5079,45 @@ Expected Output:
 - `open-notebook` - Organize sources into AI research notebooks
 - `pyzotero` - Manage a Zotero reference library
 - `scholar-evaluation` - Qualitative, low-stakes developmental review of works
+- `dhdna-profiler` - Optional, non-evaluative characterization of reasoning style in a text
 - `citation-management` - Reference formatting
 - `literature-review` - Systematic synthesis
+- `xlsx` - Evidence tables and screening logs
+
+**Starting prompt**:
+
+```text
+Use the research-lookup, paper-lookup, exa-search, liteparse, markitdown,
+open-notebook, pyzotero, citation-management, literature-review, and xlsx skills.
+
+Goal: a systematic review with an auditable search, not a summary of whatever
+came back first.
+Criteria: record the exact query, database, filters, and date for every search;
+state inclusion and exclusion criteria before screening; log every exclusion
+with its reason.
+Deliver: search log, PRISMA-style counts, evidence table (xlsx), synthesis
+with themes and conflicts, and a de-duplicated Zotero library.
+Report: which databases returned nothing, and where coverage is thin. A silent
+gap reads as "no evidence exists" when it may mean "not indexed here".
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Multi-source search
-- Use research-lookup to route queries; broaden with exa-search and parallel-web
+- Write the protocol first: question, inclusion and exclusion criteria, and the
+  databases to be searched. A search designed after seeing results is a narrative
+  review wearing a systematic review's clothes
+- Use research-lookup to route queries and paper-lookup for the bibliographic
+  databases; broaden with exa-search and parallel-web for grey literature and
+  technical sources the indexes miss
+- Record every query verbatim with its database, filters, result count, and access
+  date. This log is what makes the review reproducible, and it cannot be
+  reconstructed afterwards
 - Pull structured study fields (sample sizes, methods, outcomes) via bgpt-paper-search
 - Surface canonical references and recommendations with paperzilla
+- Search preprint servers deliberately and label preprints as unrefereed. Restricting
+  to published work imports publication bias, since null results are published less
 
 Step 2: Ingest and normalize sources
 - Parse local PDFs/Office files with liteparse (layout + bounding boxes)
@@ -3522,41 +5136,86 @@ Step 4: Critical appraisal
 - Never score or rank authors, reviewers, institutions, or other people, and never
   use the output for consequential personnel, admissions, funding, or award decisions
 
+Step 4b (optional): Characterizing reasoning style in a corpus
+- dhdna-profiler extracts cognitive and reasoning patterns from text. In a research
+  context its legitimate use is descriptive and corpus-level — for instance,
+  characterizing how argumentation differs between a field's theoretical and
+  empirical literature, or how a research programme's framing shifted across a decade
+- The constraints are the same as for scholar-evaluation, and they are strict: this
+  is never a measurement of a person's ability, and its output must not inform any
+  personnel, admissions, funding, review-assignment, or award decision
+- Do not profile identified individuals without their knowledge and consent, and do
+  not present a stylistic characterization as a finding about competence or rigour
+- Skip this step entirely if the corpus is small enough that "the corpus" means
+  "a few identifiable authors"
+
 Step 5: Synthesize
 - Use the literature-review skill to synthesize themes, gaps, and consensus/conflicts
-- Format citations with citation-management
+- Report PRISMA-style counts: records identified, de-duplicated, screened, excluded
+  with reasons, and included
+- Assess risk of bias with an instrument appropriate to the study designs included,
+  and weight the synthesis accordingly rather than counting papers. Six weak studies
+  agreeing is not stronger evidence than one strong study disagreeing
+- Where studies conflict, examine whether population, dose, endpoint, or analysis
+  differs before concluding the literature is simply inconsistent
+- Format citations with citation-management and verify every one resolves — check
+  that each DOI, PMID, and arXiv ID retrieves the paper you think it does
 
 Step 6: Deliverable
 - A cited systematic review with evidence tables and a managed reference library
 
 Expected Output:
-- Comprehensive multi-source search results
+- A reproducible search log with per-database queries, filters, and dates
+- PRISMA-style flow counts including exclusions with reasons
 - Organized, parsed, and reference-managed corpus
+- Evidence table with risk-of-bias assessment per study
 - Qualitatively appraised, synthesized, fully cited literature review
+- An explicit statement of where the evidence is thin or absent
 ```
 
 ---
 
 ## Regulatory & Quality Management
 
-### Example 33: ISO 13485 QMS Evidence Preparation for Device Software
+### Example 36: ISO 13485 QMS Evidence Preparation for Device Software
 
 **Objective**: Prepare draft QMS scope, controlled-document scaffolds, and evidence manifests for qualified ISO 13485 readiness review. The workflow does not determine legal applicability, compliance, audit outcome, or certification.
 
+**Disciplines**: quality management · regulatory affairs · software engineering process · technical documentation
+
 **Skills Used**:
-- `iso-13485-certification` - Draft scope, controlled-document, and evidence preparation
+- `iso-standards-readiness` - Draft scope, controlled-document, and evidence preparation
 - `scientific-writing` - Evidence provenance and accountable draft controls
 - `markdown-mermaid-writing` - Process diagrams and SOP flowcharts
+- `xlsx` - Requirements/evidence traceability matrix
 - `docx` - Formatted Word deliverables
 - `pdf` - Final controlled documents
 
+**Starting prompt**:
+
+```text
+Use the iso-standards-readiness, scientific-writing, markdown-mermaid-writing,
+xlsx, docx, and pdf skills.
+
+Goal: a draft evidence package for our RA/QA team to assess readiness against.
+Criteria: every statement traces to a document they gave you. Where evidence
+is absent, say "not supplied" — not "not applicable" and not a percentage.
+Deliver: evidence inventory with owners and gaps, document scaffolds, process
+diagrams, and a traceability matrix (xlsx).
+Report: list the blockers and the open questions for RA/QA and legal, plainly.
+Do not: judge conformity, estimate a readiness score, decide applicability or
+device classification, or mark anything approved, released, or controlled.
+Those are decisions for qualified people with access to the licensed standard.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Authorized evidence inventory
 - Confirm access to the applicable licensed standard and current jurisdiction-specific
   requirements through qualified RA/QA or legal owners
-- Use iso-13485-certification to inventory supplied documents, implementation records,
+- Use iso-standards-readiness with `--standard iso-13485` to inventory supplied
+  documents, implementation records,
   evidence status, owners, and unresolved blockers
 - Do not infer readiness or conformity from filenames, keywords, document counts,
   percentages, templates, or script results
@@ -3593,25 +5252,49 @@ Expected Output:
 
 ## Scientific Communication & Tooling
 
-### Example 34: Publication Packaging — Diagrams, Infographics, and Venue Formatting
+### Example 37: Publication Packaging — Diagrams, Infographics, and Venue Formatting
 
 **Objective**: Turn verified results into an author-reviewed draft manuscript package with source-traceable prose and visuals, current venue checks, and an optional macro-free PPTX poster.
+
+**Disciplines**: scientific writing · publishing standards · visual communication · research integrity
 
 **Skills Used**:
 - `markdown-mermaid-writing` - Text-based diagrams and structured docs
 - `scientific-writing` - Evidence registry, authorship, confidentiality, and consistency checks
 - `scientific-schematics` - Scientific diagrams
 - `infographics` - AI-generated infographics with data accuracy checks
+- `peer-review` - Internal critique before the manuscript leaves the group
 - `venue-templates` - LaTeX templates and submission guidelines
 - `markitdown` - Convert drafts/sources to Markdown
+- `citation-management` - Reference formatting and verification
+- `xlsx` - Supplementary data tables
 - `docx` - Word manuscript output
 - `latex-posters` - Conference poster
 - `pptx-posters` - Macro-free PowerPoint poster from an approved local manifest
 - `pdf` - Final compiled outputs
 
+**Starting prompt**:
+
+```text
+Use the scientific-writing, markdown-mermaid-writing, scientific-schematics,
+infographics, peer-review, venue-templates, citation-management, docx, and
+pdf skills.
+
+Goal: a submission-ready draft package plus the critique I would get from a
+hostile reviewer.
+Criteria: every numerical claim in the text maps to an entry in the evidence
+registry. Every citation resolves to the paper it claims to.
+Deliver: manuscript (PDF + DOCX), figures with captions, supplementary tables
+(xlsx), poster, and a reviewer-style critique.
+Report: verify the venue's current author instructions and AI-disclosure
+policy directly rather than assuming the template is current.
+Do not: submit anything. Authors approve declarations and content, and
+authorize submission separately.
+```
+
 **Workflow**:
 
-```bash
+```text
 Step 1: Structure the manuscript
 - Establish an authorized local workspace, source manifest, claim/evidence registry,
   authorship/declaration records, and reporting-guideline coverage
@@ -3650,21 +5333,42 @@ Expected Output:
 
 ---
 
-### Example 35: Building and Automating Custom Scientific Tools
+### Example 38: Building and Automating Custom Scientific Tools
 
-**Objective**: At the user's request, detect repeated research workflows, draft new automation, and prepare or explicitly authorize resource-aware cloud execution.
+**Objective**: At the user's request, detect repeated research workflows, draft new automation, systematically optimize it against a held-out evaluator, and prepare or explicitly authorize resource-aware cloud execution.
+
+**Disciplines**: research software engineering · experiment methodology · performance engineering · ML operations
 
 **Skills Used**:
 - `autoskill` - Detect repeated workflows and draft new skills/recipes
 - `pi-agent` - Build/use the Pi terminal coding harness and skills/extensions
+- `arbor` - Hypothesis Tree Refinement: many-trial optimization with a held-out merge gate
 - `get-available-resources` - Detect local CPU/GPU/memory
 - `optimize-for-gpu` - GPU-accelerate Python (CuPy/Numba/cuDF/cuML, etc.)
 - `modal` - Serverless on-demand GPU/CPU deployment
 - `hugging-science` - Scientific ML models to wrap as tools
+- `markdown-mermaid-writing` - Document the resulting pipeline for the team
+
+**Starting prompt**:
+
+```text
+Use the autoskill, pi-agent, arbor, get-available-resources, optimize-for-gpu,
+and modal skills.
+
+Goal: turn this recurring analysis into a tool, then make it measurably better.
+Criteria: define the objective and the evaluator before optimizing anything,
+and hold out a test evaluator the search never sees.
+Deliver: the tool, the hypothesis tree with what each trial taught, the final
+version that passed the held-out gate, and a deployment plan.
+Report: the gap between dev and held-out scores at each merge. A search that
+improves dev while held-out stays flat is overfitting, and I want to see it.
+Do not: deploy to Modal, expose an endpoint, or spend against my account
+without a separate explicit approval of the concrete plan and its cost.
+```
 
 **Workflow**:
 
-```bash
+```text
 Step 1: Discover repeated workflows
 - Use autoskill only after the user asks to analyze their local screen history; review
   redaction and retain only the minimum workflow summary
@@ -3677,7 +5381,24 @@ Step 2: Prototype a custom tool
 
 Step 3: Profile and accelerate
 - Run get-available-resources to size the job
-- Apply optimize-for-gpu to accelerate the hot numerical paths
+- Profile before optimizing, and confirm the hot path is where you assume it is
+- Apply optimize-for-gpu to accelerate the hot numerical paths, checking numerical
+  agreement against the CPU implementation — GPU kernels often default to different
+  floating-point behaviour, and a fast wrong answer is worse than a slow right one
+
+Step 3b: Optimize the pipeline against a held-out evaluator
+- When the goal is "make this measurably better" over many trials — a model's score,
+  a pipeline's runtime, an agent harness's success rate — use arbor rather than
+  hand-iterating. It keeps the research state in a persistent hypothesis tree, so
+  what each trial taught survives instead of evaporating into conversation history
+- Define the objective and *two* evaluators up front: a dev evaluator the search
+  optimizes against, and a test evaluator it never sees. Arbor's merge gate admits a
+  change only when it improves the held-out one
+- This is the whole point. Any long optimization loop with a single feedback signal
+  eventually tunes itself onto that signal, and the improvement is not real. Report
+  the dev-versus-held-out gap at each merge as a first-class result
+- Prune branches that stop paying, and keep the tree as the audit trail of what was
+  tried and rejected — negative results here are what stop the next round repeating them
 
 Step 4: Deploy to the cloud
 - Prepare the Modal image, resources, secrets, network, data-egress, cost, and access plan
@@ -3695,91 +5416,157 @@ Expected Output:
 ```
 
 ---
-
 ## Summary
 
 These examples demonstrate:
 
-1. **Cross-domain applicability**: Skills are useful across many scientific fields
-2. **Skill integration**: Complex workflows combine multiple databases, packages, and analysis methods
-3. **Real-world relevance**: Examples address research, engineering, evidence-synthesis, and clinician-reviewed documentation needs
-4. **End-to-end workflows**: From authorized data acquisition to evidence-traceable draft deliverables
-5. **Best practices**: QC, statistical rigor, visualization integrity, uncertainty, provenance, and reproducibility
-6. **Safety gates**: Planning, local validation, remote writes, physical execution, clinical review, and regulated decisions remain distinct stages
+1. **Interdisciplinary composition**: every workflow above draws on at least three fields, and the hardest step is usually the one at the boundary — compositional statistics in a microbiology run, metrology in a physics run, fluid mechanics in a cell biology run
+2. **Skill integration**: complex workflows combine databases, packages, simulation, and reporting rather than living inside one library
+3. **Real-world relevance**: research, engineering, evidence synthesis, and clinician-reviewed documentation
+4. **End-to-end workflows**: from authorized data acquisition to evidence-traceable draft deliverables
+5. **Method accuracy over method availability**: the recurring theme in these examples is that a tool running successfully is not the same as an analysis being valid — splits, backgrounds, thresholds, and units are where results are actually won or lost
+6. **Safety gates**: planning, local validation, remote writes, physical execution, clinical review, and regulated decisions remain distinct stages
 
-### Skills Coverage Summary
+### Recurring methodological failures these examples guard against
 
-The examples in this document cover the following skill categories:
+The same handful of errors appear across unrelated fields, which is why the examples
+call them out individually rather than in a single checklist:
 
-**Databases & Data Sources:**
-- `database-lookup` — unified access to 78+ databases including ChEMBL, PubChem, DrugBank, UniProt, NCBI Gene, Ensembl, ClinVar, COSMIC, STRING, KEGG, Reactome, HMDB, PDB, AlphaFold DB, ZINC, GWAS Catalog, GEO, ENA, ClinicalTrials.gov, FDA, Open Targets, ClinPGx, Metabolomics Workbench, and more
-- `paper-lookup` — unified access to 10 academic paper databases including PubMed, PMC, bioRxiv, medRxiv, arXiv, OpenAlex, Crossref, Semantic Scholar, CORE, Unpaywall
-- `cellxgene-census` — CZ CELLxGENE single-cell reference data
-- `depmap` — Cancer Dependency Map (CRISPR/drug sensitivity)
-- `primekg` — Precision Medicine Knowledge Graph
-- `imaging-data-commons` — NCI Imaging Data Commons (CT/MR/PET)
-- `usfiscaldata` — U.S. Treasury Fiscal Data API
+- **Wrong unit of analysis** — cells instead of donors, tiles instead of patients,
+  overlapping windows instead of subjects. Inflates n and manufactures significance.
+- **Optimistic splits** — random splits on data with congeneric series, spatial
+  autocorrelation, or repeated measures. Scaffold, spatial-block, patient, and
+  chemical-family splits exist because random ones lie.
+- **Compositional data treated as absolute** — microbiome abundances, cell-type
+  proportions, cytometry frequencies. One thing going up forces everything else down.
+- **Threshold imported from another field** — the human 5e-8 GWAS threshold in a crop
+  panel, a tuberculosis SNP cutoff for a fast-evolving pathogen, S/√B where B is small.
+- **Silent coordinate and unit mismatches** — genome builds, chr-prefixes, Hartree
+  versus eV, meV/atom versus kJ/mol, Web Mercator areas. The join succeeds; the answer
+  is wrong.
+- **Prediction reported as measurement** — docking scores as affinities, CFD shear as
+  measured shear, sequence-model output as regulatory function, SHAP as mechanism.
+- **Double dipping** — clustering then testing the genes that defined the clusters,
+  tuning cuts on the signal region, deriving subtypes and then testing their survival
+  difference in the same cohort.
 
-**Analysis Packages:**
-- Chemistry & Modeling: `rdkit`, `datamol`, `medchem`, `molfeat`, `deepchem`, `torchdrug`, `pytdc`, `diffdock`, `pyopenms`, `matchms`, `cobrapy`, `rowan`, `molecular-dynamics`
-- Genomics: `biopython`, `pysam`, `pydeseq2`, `bulk-rnaseq`, `scanpy`, `scvelo`, `scvi-tools`, `anndata`, `gget`, `geniml`, `deeptools`, `etetoolkit`, `phylogenetics`, `scikit-bio`, `gtars`, `polars-bio`, `tiledbvcf`, `pathway-enrichment`, `lamindb`
-- Proteins & Engineering: `esm`, `bioservices`, `glycoengineering`, `adaptyv`
-- Machine Learning: `scikit-learn`, `pytorch-lightning`, `torch-geometric`, `transformers`, `stable-baselines3`, `pufferlib`, `shap`, `hugging-science`, `hypogenic`
-- Statistics & Design: `statsmodels`, `statistical-analysis`, `pymc`, `scikit-survival`, `statistical-power`, `experimental-design`
-- Time Series: `aeon`, `timesfm-forecasting`
-- Visualization: `matplotlib`, `seaborn`, `scientific-visualization`
-- Data Processing: `polars`, `dask`, `vaex`, `networkx`, `zarr-python`
-- Geospatial: `geomaster`, `geopandas`
-- Materials: `pymatgen`
-- Physics & Math: `astropy`, `sympy`, `fluidsim`, `matlab`
-- Quantum: `qiskit`, `pennylane`, `cirq`, `qutip`
-- Neuroscience: `neurokit2`, `neuropixels-analysis`, `bids`
-- Pathology & Imaging: `histolab`, `pathml`, `pydicom`
-- Flow Cytometry: `flowio`
-- Dimensionality Reduction: `umap-learn`, `arboreto`
-- Lab Automation & Cloud Labs: `pylabrobot`, `opentrons-integration`, `benchling-integration`, `labarchive-integration`, `protocolsio-integration`, `ginkgo-cloud-lab`
-- Simulation & Optimization: `simpy`, `pymoo`
-- Compute & Pipelines: `get-available-resources`, `optimize-for-gpu`, `modal`, `nextflow`, `pacsomatic`, `dnanexus-integration`, `latchbio-integration`
+### Complete skill index
 
-**Ideation, Search & Knowledge:**
-- `scientific-brainstorming`, `consciousness-council`, `hypothesis-generation`, `what-if-oracle`
-- `research-lookup`, `exa-search`, `parallel-web`, `bgpt-paper-search`, `paperzilla`
-- `liteparse`, `markitdown`, `open-notebook`, `pyzotero`, `scholar-evaluation`
+Every skill in `skills/` appears in at least one example above. Grouped by what it is for:
 
-**Writing & Reporting:**
-- `scientific-writing`, `scientific-visualization`, `scientific-schematics`, `scientific-slides`, `markdown-mermaid-writing`, `infographics`
-- `clinical-reports`, `clinical-decision-support`
-- `literature-review`, `scientific-critical-thinking`
-- `research-grants`, `peer-review`, `venue-templates`, `iso-13485-certification`
-- `pdf`, `docx`, `pptx`, `xlsx`, `latex-posters`, `pptx-posters`
-- `citation-management`, `market-research-reports`
+**Multi-database retrieval**
+`database-lookup` (78 documented public databases: ChEMBL, PubChem, DrugBank, UniProt,
+NCBI Gene, Ensembl, ClinVar, COSMIC, STRING, KEGG, Reactome, HMDB, PDB, AlphaFold DB,
+ZINC, GWAS Catalog, GEO, ENA, ClinicalTrials.gov, FDA, Open Targets, ClinPGx,
+Metabolomics Workbench and more) · `paper-lookup` (PubMed, PMC, bioRxiv, medRxiv, arXiv,
+OpenAlex, Crossref, Semantic Scholar, CORE, Unpaywall)
 
-**Image, Media & Tooling:**
-- `generate-image`, `omero-integration`
-- `autoskill`, `pi-agent`
+**Specialist data sources**
+`cellxgene-census` · `depmap` · `primekg` · `imaging-data-commons` · `onekgpd` ·
+`genomic-intelligence` · `usfiscaldata` · `bioservices`
 
-### How to Use These Examples
+**Cheminformatics & drug discovery**
+`rdkit` · `datamol` · `medchem` · `molfeat` · `deepchem` · `torchdrug` · `pytdc` ·
+`diffdock` · `rowan` · `molecular-dynamics`
 
-1. **Adapt within the contract**: Modify parameters, datasets, and objectives only within the current skill's scope, compatibility, and safety boundaries
-2. **Combine skills creatively**: Mix and match skills from different categories
-3. **Treat workflows as illustrative**: Verify current official APIs, package versions, venue rules, standards, licenses, and institutional requirements
-4. **Generate reviewable output**: Prefer source manifests, claim/evidence maps, explicit assumptions, uncertainty, and draft labels over unsupported claims of readiness
-5. **Cite and verify sources**: An identifier, search snippet, generated summary, or fluent draft is not source verification
-6. **Keep humans accountable**: Qualified users approve scientific conclusions, clinical documentation, external transfers, submissions, regulated artifacts, and physical execution
+**Mass spectrometry & metabolism**
+`pyopenms` · `matchms` · `cobrapy`
 
-### Additional Notes
+**Genomics & transcriptomics**
+`biopython` · `pysam` · `genomic-coordinates` · `gget` · `pydeseq2` · `bulk-rnaseq` ·
+`deeptools` · `geniml` · `gtars` · `polars-bio` · `tiledbvcf` · `pathway-enrichment` ·
+`lamindb` · `nextflow` · `pacsomatic`
 
-- Always start with: "Always use available 'skills' when possible. Keep the output organized."
-- For complex projects, break into manageable steps and validate intermediate results
-- Save checkpoints and intermediate data files
-- Document parameters and decisions for reproducibility
-- Generate README files explaining methodology
+**Single-cell**
+`scanpy` · `anndata` · `scvi-tools` · `scvelo` · `arboreto` · `umap-learn`
+
+**Phylogenetics & microbial ecology**
+`phylogenetics` · `etetoolkit` · `scikit-bio`
+
+**Proteins & protein engineering**
+`esm` · `tamarind` · `glycoengineering` · `adaptyv`
+
+**Machine learning**
+`scikit-learn` · `pytorch-lightning` · `torch-geometric` · `transformers` ·
+`stable-baselines3` · `pufferlib` · `shap` · `hugging-science` · `hypogenic` ·
+`optimize-for-gpu` · `arbor`
+
+**Statistics, design & uncertainty**
+`statsmodels` · `statistical-analysis` · `pymc` · `scikit-survival` ·
+`statistical-power` · `experimental-design` · `exploratory-data-analysis` ·
+`uncertainty-and-units`
+
+**Time series**
+`aeon` · `timesfm-forecasting`
+
+**Data engineering & compute**
+`polars` · `dask` · `vaex` · `zarr-python` · `networkx` · `sympy` ·
+`get-available-resources` · `modal` · `dnanexus-integration` · `latchbio-integration`
+
+**Physics, chemistry & engineering simulation**
+`astropy` · `matlab` · `pymatgen` · `fluidsim` · `openpiv` · `simpy` · `pymoo`
+
+**Quantum**
+`qiskit` · `pennylane` · `cirq` · `qutip`
+
+**Geospatial**
+`geomaster` · `geopandas`
+
+**Neuroscience & physiological signals**
+`bids` · `neurokit2` · `neuropixels-analysis`
+
+**Imaging, pathology & cytometry**
+`histolab` · `pathml` · `pydicom` · `omero-integration` · `flowio`
+
+**Lab automation & cloud labs**
+`pylabrobot` · `opentrons-integration` · `benchling-integration` ·
+`labarchive-integration` · `protocolsio-integration` · `ginkgo-cloud-lab`
+
+**Metadata & vocabularies**
+`ontology-term-resolution`
+
+**Ideation & reasoning**
+`scientific-brainstorming` · `consciousness-council` · `hypothesis-generation` ·
+`what-if-oracle` · `scientific-critical-thinking`
+
+**Search, literature & knowledge management**
+`research-lookup` · `exa-search` · `parallel-web` · `bgpt-paper-search` · `paperzilla` ·
+`liteparse` · `markitdown` · `open-notebook` · `pyzotero` · `literature-review` ·
+`citation-management` · `scholar-evaluation` · `peer-review` · `dhdna-profiler`
+
+**Writing, figures & deliverables**
+`scientific-writing` · `scientific-visualization` · `scientific-schematics` ·
+`scientific-slides` · `markdown-mermaid-writing` · `infographics` · `generate-image` ·
+`matplotlib` · `seaborn` · `latex-posters` · `pptx-posters` · `venue-templates` ·
+`pdf` · `docx` · `pptx` · `xlsx` · `research-grants` · `market-research-reports`
+
+**Clinical & regulatory documentation** — all bounded, none clinical decision-making
+`clinical-reports` · `clinical-decision-support` · `treatment-plans` · `pyhealth` ·
+`iso-standards-readiness`
+
+**Tooling**
+`autoskill` · `pi-agent`
+
+### How to use these examples
+
+1. **Adapt within the contract**: modify parameters, datasets, and objectives only within the current skill's scope, compatibility, and safety boundaries
+2. **Combine skills across categories**: the examples that produce the most defensible results are the ones that borrow a method from a neighbouring field
+3. **Treat workflows as illustrative**: verify current official APIs, package versions, venue rules, standards, licenses, and institutional requirements
+4. **Replace every placeholder threshold**: the numeric cutoffs above are written down so you can argue with them, not so you can inherit them
+5. **Generate reviewable output**: prefer source manifests, claim/evidence maps, explicit assumptions, uncertainty, and draft labels over unsupported claims of readiness
+6. **Cite and verify sources**: an identifier, search snippet, generated summary, or fluent draft is not source verification
+7. **Keep humans accountable**: qualified users approve scientific conclusions, clinical documentation, external transfers, submissions, regulated artifacts, and physical execution
+
+### Additional notes
+
+- Open every prompt with something like: "Always use available 'skills' when possible. Keep the output organized." Then name the specific skills you want, so selection does not depend on description matching alone
+- For complex projects, break into checkpointed steps and validate intermediate results; save intermediates to disk so a late failure does not cost the whole run
+- Document parameters, seeds, versions, and decisions for reproducibility, and generate a README explaining methodology
 - Create clearly labeled review copies for stakeholder communication
-- Clinical Decision Support is for aggregate/synthetic research evaluation and governance only; Clinical Reports creates source-bound draft structures; Treatment Plans only formats verified clinician-authored decisions
+- Clinical Decision Support is for aggregate/synthetic research evaluation and governance only; Clinical Reports creates source-bound draft structures; Treatment Plans only formats verified clinician-authored decisions and never derives them
 - PathML, NeuroKit2, pydicom, imaging models, and physiological-signal examples are research-only and not diagnostic, monitoring, treatment, or medical-device validation workflows
 - PyLabRobot defaults to offline planning/simulation; all live API writes, cloud submissions, purchases, and robot/equipment actions require explicit authorization at the applicable gate
-- Hypotheses remain candidates until independently tested; HypoGeniC task statistics do not validate them, and Scholar Evaluation never ranks people or supports consequential decisions
+- Hypotheses remain candidates until independently tested; HypoGeniC task statistics do not validate them, and Scholar Evaluation and DHDNA Profiler never rank people or support consequential decisions about them
 - ISO 13485 outputs are draft evidence-preparation artifacts, not compliance or certification findings; PPTX posters use author-approved local manifests and macro-free `.pptx` generation with manual final review
 
 These examples showcase the power of combining the skills in this repository to tackle complex, real-world scientific challenges across multiple domains.
-

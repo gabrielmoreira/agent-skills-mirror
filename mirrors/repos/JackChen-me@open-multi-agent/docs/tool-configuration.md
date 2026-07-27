@@ -28,7 +28,12 @@ with every task pending, but runs neither the coordinator nor task agents. The
 result reports `governanceConclusion: 'not-applicable'` until that plan is
 executed, for example through `runFromPlan()`.
 
-Use `governanceIntent: 'none'` to opt into the existing automatic `runTeam()` route explicitly. Omitting `governanceIntent` also preserves the existing behavior, including simple-goal short circuit and coordinator-generated task planning.
+Use `governanceIntent: 'none'` to opt into automatic `runTeam()` routing
+explicitly. Omitting `governanceIntent` does the same. This route is Hybrid by
+default: a deterministic Single candidate may be upgraded after one semantic
+profile call. Set
+`executionRouting: { strategy: 'deterministic' }` for the previous no-profiler
+behavior.
 
 After execution, required declarations are checked against the execution
 receipt. The `governanceConclusion` value is `satisfied`, `unsatisfied`, or
@@ -50,8 +55,10 @@ approval labels, or audit markers.
 
 1. An application `mode` (`single` or `team`).
 2. A declared `governanceIntent` topology or `preferredUnderBudget` policy.
-3. The configured [Execution Router](execution-routing.md) for automatic routing.
+3. A custom [Execution Router](execution-routing.md) for automatic routing.
 4. The built-in `DeterministicRouter`.
+5. The semantic Profiler and deterministic policy, only for a default/fallback
+   Single candidate.
 
 `single` always uses the existing best-agent path. `team` forces the
 coordinator-generated team path and bypasses the simple-goal short circuit.
@@ -59,7 +66,11 @@ coordinator-generated team path and bypasses the simple-goal short circuit.
 Selecting `mode` declares a topology preference, not governance intent, so it
 does not bypass consequential confirmation when `governanceIntent` is omitted.
 Routers follow the same boundary: they choose execution topology but do not
-declare governance or override structured role requirements.
+declare governance or override structured role requirements. A TaskProfile is
+also inferred routing evidence only. If inferred side-effect or isolation needs
+intersect with actual consequential grants or multiple caller-declared
+`AgentConfig.permissionBoundary` values, OMA raises
+`ROUTING_DECLARATION_REQUIRED` before any model or tool execution.
 
 An application may select a mode that overrides a required floor, but that
 decision is never reported as a clean governance success:
@@ -306,7 +317,9 @@ Backend and provider checks use their structured configuration fields.
 
 Neither permissions nor capabilities are ever inferred from `systemPrompt` or
 other prose. When no candidate satisfies the hard requirements, the selector
-returns `NO_ELIGIBLE_AGENT`; a caller must choose any fallback explicitly.
+returns `NO_ELIGIBLE_AGENT`. Team and explicit-task execution validate the
+complete plan before dispatch and fail with `INVALID_TASK_REQUIREMENTS`; no
+scheduling strategy may fall back to an ineligible agent.
 
 ## Per-call gating with `onToolCall`
 

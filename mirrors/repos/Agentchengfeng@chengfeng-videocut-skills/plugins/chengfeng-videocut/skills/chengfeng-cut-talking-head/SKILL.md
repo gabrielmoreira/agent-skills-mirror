@@ -88,7 +88,19 @@ node "$VC" cuts get "$jobDir" --json
 
 ## 2. proposal → Product CAS：生成并提交删词候选
 
-先读 [语义删除规则](references/semantic-deletion.md)。候选只引用稳定 `wordIds`：
+先读 [语义删除规则](references/semantic-deletion.md)。
+
+**判断前必须取 Product 的播放顺序视图，不许自己从 `transcript.json` 拼：**
+
+```bash
+node "$VC" transcript playback "$jobDir" --json
+```
+
+判断「说了两遍」靠的是**播出来相邻**，不是文件里存着相邻。剪过的项目里段号必然跳号，而跳号会被
+读成「有内容没给我看」，从而拒绝判断——2026-07-26 因此误否了两条正确判断。自己拼这份视图错过两次，
+错法和后果见判据文件的「判断之前」一节。
+
+候选只引用稳定 `wordIds`：
 
 ```json
 {
@@ -106,6 +118,8 @@ node "$VC" cuts get "$jobDir" --json
 - 口误、重复和残句默认删前保后；长句、整句和分叉重说必须高风险复核。
 - 普通停顿不由 Skill 计算。相邻静音合并与 `natural-pause-v2` 由 Product 确定性执行。
 - 候选 `cutWordIds` 只列语义删词；禁止读取、复制或手工合并 `initialization.baselineCutWordIds`。`cuts set` 会以 semantic-overlay 让 Product 在锁内完成合并。
+- **「只列语义删词」指本轮判断的完整结论，不是本轮新找到的增量。** semantic-overlay 是替换语义：Product 用「停顿基线 ∪ 本次提交」重建删词集合，上一次提交的语义词不会被保留。2026-07-26 交了增量，删词数从 430 掉到 394，声音仍对但账本退了，而 `changed: true` 看着一切正常。
+- `reasons` 会被落盘（2026-07-26 起），要如实写。Product 保证理由不会比它解释的删除活得久，也会裁掉提到未删词的部分。
 - 不直接写 `cut-selection.json`、`project.json` 或事件日志。
 
 读取 Cuts 自己的 revision，再提交候选：
@@ -120,7 +134,11 @@ node "$VC" cuts set "$jobDir" \
 
 `cuts get.data.revision` 是 `cut-selection.json` 的 revision；`workflow get.data.revision` 是 `project.json` 的 revision。两者禁止混用。
 
-`cuts set` 返回成功后，立即再次 `workflow get` 与 `cuts get`，确认 Product readback 的 `projectId`、`cut_review_ready`、Project / Cuts / EditList revisions；CAS 返回或读回不一致即停止并重新审核，绝不直接写 JSON 或自动覆盖。
+`cuts set` 自己会回读核对写入结果，成功时结果带 `readBackVerified: true`；写入与读回不一致会报 `readback_mismatch` 而不是返回成功。
+
+**成功之后必须看 `noLongerCut`**：这是本次不再删的词数与样本。不为零且不是有意撤回，就说明交了增量，回去补全量重交。读不到当前状态时它是 `"unknown"`，那也要看见。
+
+随后仍要立即再次 `workflow get` 与 `cuts get`，确认 Product readback 的 `projectId`、`cut_review_ready`、Project / Cuts / EditList revisions；CAS 返回或读回不一致即停止并重新审核，绝不直接写 JSON 或自动覆盖。
 
 ## 3. project-level review binding：到人工审核时才打开 Studio
 

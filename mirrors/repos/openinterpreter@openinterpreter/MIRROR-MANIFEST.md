@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openinterpreter/openinterpreter` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `openinterpreter/openinterpreter` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openinterpreter/openinterpreter` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,11 +78,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 17 | ✓ | [`codex-rs/skills/src/assets/samples/openai-docs/SKILL.md`](codex-rs/skills/src/assets/samples/openai-docs/SKILL.md) |
 | 18 | ✓ | [`codex-rs/skills/src/assets/samples/plugin-creator/SKILL.md`](codex-rs/skills/src/assets/samples/plugin-creator/SKILL.md) |
 | 19 | ✓ | [`codex-rs/skills/src/assets/samples/qa-testing/SKILL.md`](codex-rs/skills/src/assets/samples/qa-testing/SKILL.md) |
-| 20 | ✓ | [`codex-rs/skills/src/assets/samples/skill-creator/SKILL.md`](codex-rs/skills/src/assets/samples/skill-creator/SKILL.md) |
-| 21 | ✓ | [`codex-rs/skills/src/assets/samples/skill-installer/SKILL.md`](codex-rs/skills/src/assets/samples/skill-installer/SKILL.md) |
-| 22 | ✓ | [`codex-rs/tui/src/bottom_pane/AGENTS.md`](codex-rs/tui/src/bottom_pane/AGENTS.md) |
-| 23 | ✓ | [`docs/skills.md`](docs/skills.md) |
-| 24 | ✓ | [`docs/zh/skills.md`](docs/zh/skills.md) |
+| 20 | ✓ | [`codex-rs/skills/src/assets/samples/review-agent/SKILL.md`](codex-rs/skills/src/assets/samples/review-agent/SKILL.md) |
+| 21 | ✓ | [`codex-rs/skills/src/assets/samples/skill-creator/SKILL.md`](codex-rs/skills/src/assets/samples/skill-creator/SKILL.md) |
+| 22 | ✓ | [`codex-rs/skills/src/assets/samples/skill-installer/SKILL.md`](codex-rs/skills/src/assets/samples/skill-installer/SKILL.md) |
+| 23 | ✓ | [`codex-rs/tui/src/bottom_pane/AGENTS.md`](codex-rs/tui/src/bottom_pane/AGENTS.md) |
+| 24 | ✓ | [`docs/skills.md`](docs/skills.md) |
+| 25 | ✓ | [`docs/zh/skills.md`](docs/zh/skills.md) |
 
 ---
 

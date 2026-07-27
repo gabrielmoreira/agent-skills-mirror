@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tjboudreaux/cc-thinking-skills` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
+Mirror of `tjboudreaux/cc-thinking-skills` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tjboudreaux/cc-thinking-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 41 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,45 +61,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`skills/thinking-archetypes/SKILL.md`](skills/thinking-archetypes/SKILL.md) |
-| 4 | ✓ | [`skills/thinking-bayesian/SKILL.md`](skills/thinking-bayesian/SKILL.md) |
-| 5 | ✓ | [`skills/thinking-bounded-rationality/SKILL.md`](skills/thinking-bounded-rationality/SKILL.md) |
-| 6 | ✓ | [`skills/thinking-circle-of-competence/SKILL.md`](skills/thinking-circle-of-competence/SKILL.md) |
-| 7 | ✓ | [`skills/thinking-cynefin/SKILL.md`](skills/thinking-cynefin/SKILL.md) |
-| 8 | ✓ | [`skills/thinking-debiasing/SKILL.md`](skills/thinking-debiasing/SKILL.md) |
-| 9 | ✓ | [`skills/thinking-dual-process/SKILL.md`](skills/thinking-dual-process/SKILL.md) |
-| 10 | ✓ | [`skills/thinking-effectuation/SKILL.md`](skills/thinking-effectuation/SKILL.md) |
-| 11 | ✓ | [`skills/thinking-feedback-loops/SKILL.md`](skills/thinking-feedback-loops/SKILL.md) |
-| 12 | ✓ | [`skills/thinking-fermi-estimation/SKILL.md`](skills/thinking-fermi-estimation/SKILL.md) |
-| 13 | ✓ | [`skills/thinking-first-principles/SKILL.md`](skills/thinking-first-principles/SKILL.md) |
-| 14 | ✓ | [`skills/thinking-five-whys-plus/SKILL.md`](skills/thinking-five-whys-plus/SKILL.md) |
-| 15 | ✓ | [`skills/thinking-inversion/SKILL.md`](skills/thinking-inversion/SKILL.md) |
-| 16 | ✓ | [`skills/thinking-jobs-to-be-done/SKILL.md`](skills/thinking-jobs-to-be-done/SKILL.md) |
-| 17 | ✓ | [`skills/thinking-kepner-tregoe/SKILL.md`](skills/thinking-kepner-tregoe/SKILL.md) |
-| 18 | ✓ | [`skills/thinking-leverage-points/SKILL.md`](skills/thinking-leverage-points/SKILL.md) |
+| 3 | ✓ | [`evals/studies/scientific-method-vnext/variants/candidate-01/SKILL.md`](evals/studies/scientific-method-vnext/variants/candidate-01/SKILL.md) |
+| 4 | ✓ | [`evals/studies/scientific-method-vnext/variants/candidate-02/SKILL.md`](evals/studies/scientific-method-vnext/variants/candidate-02/SKILL.md) |
+| 5 | ✓ | [`evals/studies/scientific-method-vnext/variants/candidate-03/SKILL.md`](evals/studies/scientific-method-vnext/variants/candidate-03/SKILL.md) |
+| 6 | ✓ | [`evals/studies/scientific-method-vnext/variants/candidate-04/SKILL.md`](evals/studies/scientific-method-vnext/variants/candidate-04/SKILL.md) |
+| 7 | ✓ | [`evals/studies/scientific-method-vnext/variants/candidate-05/SKILL.md`](evals/studies/scientific-method-vnext/variants/candidate-05/SKILL.md) |
+| 8 | ✓ | [`evals/studies/scientific-method-vnext/variants/candidate-06/SKILL.md`](evals/studies/scientific-method-vnext/variants/candidate-06/SKILL.md) |
+| 9 | ✓ | [`evals/studies/scientific-method-vnext/variants/candidate-clue-first/SKILL.md`](evals/studies/scientific-method-vnext/variants/candidate-clue-first/SKILL.md) |
+| 10 | ✓ | [`evals/studies/scientific-method-vnext/variants/candidate-module-role/SKILL.md`](evals/studies/scientific-method-vnext/variants/candidate-module-role/SKILL.md) |
+| 11 | ✓ | [`skills/thinking-bounded-rationality/SKILL.md`](skills/thinking-bounded-rationality/SKILL.md) |
+| 12 | ✓ | [`skills/thinking-circle-of-competence/SKILL.md`](skills/thinking-circle-of-competence/SKILL.md) |
+| 13 | ✓ | [`skills/thinking-cynefin/SKILL.md`](skills/thinking-cynefin/SKILL.md) |
+| 14 | ✓ | [`skills/thinking-effectuation/SKILL.md`](skills/thinking-effectuation/SKILL.md) |
+| 15 | ✓ | [`skills/thinking-first-principles/SKILL.md`](skills/thinking-first-principles/SKILL.md) |
+| 16 | ✓ | [`skills/thinking-five-whys-plus/SKILL.md`](skills/thinking-five-whys-plus/SKILL.md) |
+| 17 | ✓ | [`skills/thinking-jobs-to-be-done/SKILL.md`](skills/thinking-jobs-to-be-done/SKILL.md) |
+| 18 | ✓ | [`skills/thinking-kepner-tregoe/SKILL.md`](skills/thinking-kepner-tregoe/SKILL.md) |
 | 19 | ✓ | [`skills/thinking-lindy-effect/SKILL.md`](skills/thinking-lindy-effect/SKILL.md) |
 | 20 | ✓ | [`skills/thinking-map-territory/SKILL.md`](skills/thinking-map-territory/SKILL.md) |
 | 21 | ✓ | [`skills/thinking-margin-of-safety/SKILL.md`](skills/thinking-margin-of-safety/SKILL.md) |
 | 22 | ✓ | [`skills/thinking-model-combination/SKILL.md`](skills/thinking-model-combination/SKILL.md) |
 | 23 | ✓ | [`skills/thinking-model-router/SKILL.md`](skills/thinking-model-router/SKILL.md) |
-| 24 | ✓ | [`skills/thinking-model-selection/SKILL.md`](skills/thinking-model-selection/SKILL.md) |
-| 25 | ✓ | [`skills/thinking-occams-razor/SKILL.md`](skills/thinking-occams-razor/SKILL.md) |
-| 26 | ✓ | [`skills/thinking-ooda/SKILL.md`](skills/thinking-ooda/SKILL.md) |
-| 27 | ✓ | [`skills/thinking-opportunity-cost/SKILL.md`](skills/thinking-opportunity-cost/SKILL.md) |
-| 28 | ✓ | [`skills/thinking-pre-mortem/SKILL.md`](skills/thinking-pre-mortem/SKILL.md) |
-| 29 | ✓ | [`skills/thinking-probabilistic/SKILL.md`](skills/thinking-probabilistic/SKILL.md) |
-| 30 | ✓ | [`skills/thinking-red-team/SKILL.md`](skills/thinking-red-team/SKILL.md) |
-| 31 | ✓ | [`skills/thinking-regret-minimization/SKILL.md`](skills/thinking-regret-minimization/SKILL.md) |
-| 32 | ✓ | [`skills/thinking-reversibility/SKILL.md`](skills/thinking-reversibility/SKILL.md) |
-| 33 | ✓ | [`skills/thinking-scientific-method/SKILL.md`](skills/thinking-scientific-method/SKILL.md) |
-| 34 | ✓ | [`skills/thinking-second-order/SKILL.md`](skills/thinking-second-order/SKILL.md) |
-| 35 | ✓ | [`skills/thinking-socratic/SKILL.md`](skills/thinking-socratic/SKILL.md) |
-| 36 | ✓ | [`skills/thinking-steel-manning/SKILL.md`](skills/thinking-steel-manning/SKILL.md) |
-| 37 | ✓ | [`skills/thinking-systems/SKILL.md`](skills/thinking-systems/SKILL.md) |
-| 38 | ✓ | [`skills/thinking-theory-of-constraints/SKILL.md`](skills/thinking-theory-of-constraints/SKILL.md) |
-| 39 | ✓ | [`skills/thinking-thought-experiment/SKILL.md`](skills/thinking-thought-experiment/SKILL.md) |
-| 40 | ✓ | [`skills/thinking-triz/SKILL.md`](skills/thinking-triz/SKILL.md) |
-| 41 | ✓ | [`skills/thinking-via-negativa/SKILL.md`](skills/thinking-via-negativa/SKILL.md) |
+| 24 | ✓ | [`skills/thinking-ooda/SKILL.md`](skills/thinking-ooda/SKILL.md) |
+| 25 | ✓ | [`skills/thinking-opportunity-cost/SKILL.md`](skills/thinking-opportunity-cost/SKILL.md) |
+| 26 | ✓ | [`skills/thinking-pre-mortem/SKILL.md`](skills/thinking-pre-mortem/SKILL.md) |
+| 27 | ✓ | [`skills/thinking-probabilistic/SKILL.md`](skills/thinking-probabilistic/SKILL.md) |
+| 28 | ✓ | [`skills/thinking-red-team/SKILL.md`](skills/thinking-red-team/SKILL.md) |
+| 29 | ✓ | [`skills/thinking-reversibility/SKILL.md`](skills/thinking-reversibility/SKILL.md) |
+| 30 | ✓ | [`skills/thinking-scientific-method/SKILL.md`](skills/thinking-scientific-method/SKILL.md) |
+| 31 | ✓ | [`skills/thinking-second-order/SKILL.md`](skills/thinking-second-order/SKILL.md) |
+| 32 | ✓ | [`skills/thinking-socratic/SKILL.md`](skills/thinking-socratic/SKILL.md) |
+| 33 | ✓ | [`skills/thinking-steel-manning/SKILL.md`](skills/thinking-steel-manning/SKILL.md) |
+| 34 | ✓ | [`skills/thinking-systems/SKILL.md`](skills/thinking-systems/SKILL.md) |
+| 35 | ✓ | [`skills/thinking-theory-of-constraints/SKILL.md`](skills/thinking-theory-of-constraints/SKILL.md) |
+| 36 | ✓ | [`skills/thinking-thought-experiment/SKILL.md`](skills/thinking-thought-experiment/SKILL.md) |
+| 37 | ✓ | [`skills/thinking-triz/SKILL.md`](skills/thinking-triz/SKILL.md) |
+| 38 | ✓ | [`skills/thinking-via-negativa/SKILL.md`](skills/thinking-via-negativa/SKILL.md) |
 
 ---
 

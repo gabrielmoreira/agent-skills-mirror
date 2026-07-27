@@ -2,14 +2,14 @@
 name: a-stock-data
 description: 当任务需要写代码实际获取A股数据时使用——拉取行情/K线(mootdx+腾讯+百度)、研报(东财+同花顺+iwencai)、信号(热点/北向/龙虎榜/解禁/行业)、资金面(融资融券/大宗/股东户数/分红/资金流)、新闻、财务三表/F10、公告(巨潮)、打板(涨停池/连板/炸板率)、ETF期权(T型报价/希腊字母/IV)、舆情互动(互动易/热榜/人气榜)等真实数据。十层数据源·44端点(含3官方备胎)·内嵌全部可运行代码，自包含零依赖外部文件；优先用通达信(mootdx)/腾讯(不封IP)，东财接口已内置限流防封，主源被封可查「备用源速查」降级。仅在需要调用数据接口取数时使用：A股概念解释、投资观点讨论、策略问答等无需取数的话题不要加载本skill。
 origin: custom
-version: 3.5.0
+version: 3.5.1
 ---
 
 > 📦 项目主页：https://github.com/simonlin1212/a-stock-data — 更新、反馈、支持作者
 > 
 > 作者：Simon 林 · X [@linsizhen](https://x.com/linsizhen) · 邮箱：simonlin0423@gmail.com
 
-# A股全栈数据工具包 V3.5.0
+# A股全栈数据工具包 V3.5.1
 
 十层数据架构，44 个端点实测可用（41 主端点 + 3 官方备胎，2026-07 验证），覆盖主板/中小板/科创板/ST。每类数据在「备用源速查」列有独立备胎，主源被封时可降级。
 
@@ -195,6 +195,26 @@ ETF期权层 (V3.3 新增)
 
 被封表现：连续请求后 `403` / `429` / 连接超时 / 返回空数据。临时封禁通常几分钟到几小时。
 
+### ⚠️ 实测封禁案例（2026-06-30，一手数据，感谢 [@luodada99](https://github.com/luodada99) issue #36）
+
+上表是社区口径；下面这条是**真实踩到 IP 级封禁**的完整记录，比阈值表更有参考价值：
+
+- **触发方式**：选股脚本 10 线程并发、**完全不走 `em_get()` 限流**，1 小时内发出 45000+ 请求（三个版本的脚本同时跑全市场 5208 只）
+- **后果**：`push2` / `push2his` **全系列** `RemoteDisconnected`，**IP 级封禁持续 20+ 小时**——不是"几分钟到几小时"那种临时限速
+- **关键观察一**：`datacenter-web.eastmoney.com` **不受影响**——东财不同子域走不同 WAF，`push2` 被封不代表整个东财都不能用
+- **关键观察二**：**腾讯 K 线（`web.ifzq.gtimg.cn`）连续 5000+ 次后会返回空**，但这是**限流不是封 IP**，降速或换新浪即可恢复
+- **降级实测**：东财被封时，第一只股票花 10.9s 完成"检测被封 + 降级"，之后每只 0.4s 走腾讯，数据准确
+
+**这个案例正是「限流是铁律」的实证**：`em_get()` 的默认间隔（1s + 抖动、串行）下，1 小时最多约 3000 次请求，与踩坑者的 45000 次差一个数量级。
+
+**被封后的降级路径**（各层备胎详见「备用源速查」章节）：
+
+| 被封端点 | 替代方案 | 差异 |
+|---|---|---|
+| `push2/clist/get`（股票列表） | `datacenter-web` + 腾讯行情批量 | 行业字段来自 datacenter 的 `BOARD_NAME` |
+| `push2his/kline/get`（K线） | 腾讯 `fqkline/get`（前复权）→ 新浪 `getKLineData`（不复权） | 腾讯有前复权，新浪没有 |
+| `push2/stock/get`（个股） | 腾讯 `qt.gtimg.cn` | 腾讯无行业/概念字段 |
+
 ### 防封铁律（调用东财时必须遵守）
 
 1. **串行，不并发**——绝不对东财开多线程/协程并发请求
@@ -296,8 +316,14 @@ def _probe(ip, port, timeout=2.0):
     except Exception:
         return False
 
-def _validate(client) -> bool:
-    """真实取数验活：坏服务器可 TCP 握手通过却回 2 字节空 body → 静默空表。用一次真实 K 线请求兜底。"""
+def _validate(client, market: str = 'std') -> bool:
+    """真实取数验活：坏服务器可 TCP 握手通过却回 2 字节空 body → 静默空表。用一次真实 K 线请求兜底。
+
+    验活样本 '000001' 是 A 股代码，只对 market='std' 有意义。其它市场（如扩展行情 'ext'）
+    用它必然取不到数，会把所有正常服务器都判死、误报「全部不可达」，故非 std 时跳过验活。
+    """
+    if market != 'std':
+        return True
     try:
         df = client.bars(symbol='000001', frequency=9, offset=1)
         return df is not None and not df.empty
@@ -318,14 +344,14 @@ def tdx_client(market='std'):
             continue
         try:
             c = Quotes.factory(market=market, server=(ip, port))
-            if _validate(c):
+            if _validate(c, market):
                 return c
         except Exception:
             continue                                        # 握手过但取数崩 → 跳过下一台
     for kwargs in ({'bestip': True}, {}):                   # fallback: bestip 测速 / 裸 factory
         try:
             c = Quotes.factory(market=market, **kwargs)
-            if _validate(c):
+            if _validate(c, market):
                 return c
         except Exception:
             continue
@@ -350,7 +376,9 @@ def get_prefix(code: str) -> str:
     c = code.lower()
     if c.startswith(("sh", "sz", "bj")):     # 显式前缀透传（如 sh000001=上证指数 vs sz000001=平安银行）
         return c[:2]
-    if c.startswith(("5", "6", "9")):        # 5x=沪 ETF/LOF，6/9=沪个股
+    if c.startswith("92"):                   # 北交所 2024-10 起的新股号段，必须先于下面的 9x 判断
+        return "bj"
+    if c.startswith(("5", "6", "9")):        # 5x=沪 ETF/LOF，6/9=沪个股（900xxx=沪 B 股）
         return "sh"
     if c.startswith(("4", "8")):             # 4x/8x=北交所
         return "bj"
@@ -494,16 +522,21 @@ def tencent_quote(codes: list[str]) -> dict[str, dict]:
     # 前缀路由：与全局 get_prefix() 一致。5x 沪ETF / 000300 等沪指数不能落到 sz（会返回空或错票）。
     SH_INDEX = {"000300", "000905", "000016", "000688", "000852", "000010"}   # 沪指数白名单
     prefixed = []
+    key_of = {}          # 带前缀的查询键 → 调用方原始写法，保证结果键与入参一一对应
     for c in codes:
         low = c.lower()
         if low.startswith(("sh", "sz", "bj")):        # 显式前缀透传，解决 000001 等歧义
-            prefixed.append(low)
+            p = low
+        elif c.startswith("92"):                      # 北交所 920 号段须先于 9x 判断
+            p = f"bj{c}"
         elif c in SH_INDEX or c.startswith(("5", "6", "9")):
-            prefixed.append(f"sh{c}")
+            p = f"sh{c}"
         elif c.startswith(("4", "8")):
-            prefixed.append(f"bj{c}")
+            p = f"bj{c}"
         else:
-            prefixed.append(f"sz{c}")
+            p = f"sz{c}"
+        prefixed.append(p)
+        key_of[p] = c    # 显式前缀入参原样返回，裸代码返回裸代码
 
     url = "https://qt.gtimg.cn/q=" + ",".join(prefixed)
     req = urllib.request.Request(url)
@@ -519,7 +552,9 @@ def tencent_quote(codes: list[str]) -> dict[str, dict]:
         vals = line.split('"')[1].split("~")
         if len(vals) < 53:
             continue
-        code = key[2:]
+        # 用入参原样做键：批量里同时传 sh000001 与 sz000001 时，若都退回裸 6 位码
+        # 会撞成同一个键、后者静默覆盖前者，显式前缀这个特性就白做了。
+        code = key_of.get(key, key[2:])
         result[code] = {
             "name":         vals[1],
             "price":        float(vals[3]) if vals[3] else 0,
@@ -533,8 +568,9 @@ def tencent_quote(codes: list[str]) -> dict[str, dict]:
             "turnover_pct": float(vals[38]) if vals[38] else 0,
             "pe_ttm":       float(vals[39]) if vals[39] else 0,
             "amplitude_pct":float(vals[43]) if vals[43] else 0,
-            "mcap_yi":      float(vals[44]) if vals[44] else 0,
-            "float_mcap_yi":float(vals[45]) if vals[45] else 0,
+            # ⚠️ 44=流通市值、45=总市值（曾标反）。总股本≠流通股本时差数倍，见上方踩坑提醒二
+            "float_mcap_yi":float(vals[44]) if vals[44] else 0,
+            "mcap_yi":      float(vals[45]) if vals[45] else 0,
             "pb":           float(vals[46]) if vals[46] else 0,
             "limit_up":     float(vals[47]) if vals[47] else 0,
             "limit_down":   float(vals[48]) if vals[48] else 0,
@@ -573,15 +609,21 @@ etf_quotes = tencent_quote(["510050", "510300"])
 | 38 | 换手率% | 4.55 |
 | **39** | **PE(TTM)** | 300.45 |
 | **43** | **振幅%（不是PB！）** | 7.22 |
-| **44** | **总市值(亿)** | 410.88 |
-| **45** | **流通市值(亿)** | 410.88 |
+| **44** | **流通市值(亿)** | 410.88 |
+| **45** | **总市值(亿)** | 410.88 |
 | **46** | **PB(市净率)** | 11.51 |
 | **47** | **涨停价** | 258.01 |
 | **48** | **跌停价** | 172.01 |
 | 49 | 量比 | 1.20 |
 | **52** | **PE(静)** | 314.76 |
 
-> **踩坑提醒：** 网上很多教程把索引 43 写成 PB，实测是振幅%。PB 在索引 46。
+> **踩坑提醒一：** 网上很多教程把索引 43 写成 PB，实测是振幅%。PB 在索引 46。
+>
+> **踩坑提醒二（2026-07-26 修正）：** **44 是流通市值、45 才是总市值**，此前本表标反了。
+> 多数股票两者相等，所以看不出来；但**总股本 ≠ 流通股本的票（科创板/次新股/有限售股）会差出数倍**。
+> 实测中船特气(688146)：`f[44]=356.15亿`(流通股本 1.45亿股)、`f[45]=1300.61亿`(总股本 5.29亿股)，**差 3.65 倍**。
+> 用市值做筛选时取错会把大市值公司误判成小盘股。可用 `f[45] ÷ 现价` 反推总股本核对（与东财 `f84` 一致）。
+> 参考：东财 push2 的 `f116`=总市值 / `f117`=流通市值 方向与腾讯相反，实测确认无误，勿混用。
 
 ### 1.3 百度股市通 K线 — 带MA5/MA10/MA20（V3.0 新增）
 
@@ -1434,14 +1476,35 @@ def board_fund_flow(board_type: str = "industry", period: str = "today",
         fields += ["f66", "f72", "f78", "f84"]   # 超大/大/中/小单净额
 
     url = "https://push2.eastmoney.com/api/qt/clist/get"
-    params = {
-        "pn": "1", "pz": "200", "po": "1", "np": "1",
+    base = {
+        "pz": "200", "po": "1", "np": "1",
         "fltt": "2", "invt": "2", "fid": fid,       # fid + po=1：按该周期主力净额降序
         "fs": _BOARD_FS[board_type],
         "fields": ",".join(dict.fromkeys(fields)),  # 去重保序
     }
-    r = em_get(url, params=params, headers={"User-Agent": UA}, timeout=15)
-    items = r.json().get("data", {}).get("diff", []) or []   # 注：API 的 total 字段不可信，用 len(items)
+    # ⚠️ 板块数超过单页上限：实测行业 496 个、概念 495 个，写死 pz=200 会把两者都截断，
+    # total 也会误报成 200。先取第一页拿真实 total，需要更多才翻页（多数调用 top_n≤200，
+    # 只发一次请求；em_get 有限流，不无谓翻页）。
+    def _page(pn: int):
+        r = em_get(url, params={**base, "pn": str(pn)},
+                   headers={"User-Agent": UA}, timeout=15)
+        d = r.json().get("data") or {}
+        return (d.get("diff") or []), int(d.get("total") or 0)
+
+    _PAGE = 200
+    items, total = _page(1)
+    pn = 2
+    while len(items) < top_n:
+        if total and len(items) >= total:
+            break                      # 已取满接口声明的总数
+        more, _ = _page(pn)
+        if not more:
+            break                      # 防御：API 提前返空则停止，避免死循环
+        items += more
+        pn += 1
+        if len(more) < _PAGE:
+            break                      # 不足一页＝已到末页（total 缺失时的收敛条件）
+    total = max(total, len(items))
 
     rows = []
     for i, it in enumerate(items):
@@ -1464,7 +1527,7 @@ def board_fund_flow(board_type: str = "industry", period: str = "today",
         rows.append(row)
 
     return {"board_type": board_type, "period": period,
-            "total": len(rows), "rows": rows[:top_n]}
+            "total": total, "rows": rows[:top_n]}
 
 # 用法
 d = board_fund_flow("industry", "today", 10)
@@ -2587,7 +2650,10 @@ import pandas as pd
 def full_valuation(code: str) -> dict:
     """单票完整估值分析"""
     # 1. 腾讯实时行情
-    prefix = "sh" if code.startswith(("6","9")) else ("bj" if code.startswith("8") else "sz")
+    # 92 必须先判：北交所 2024-10 起启用 920xxx 号段，裸 startswith("9") 会误判成沪市，
+    # 腾讯对 sh920xxx 返回空载荷（静默失败）。900xxx 沪市 B 股仍走 sh。
+    prefix = ("bj" if code.startswith(("92", "8"))
+              else "sh" if code.startswith(("6", "9")) else "sz")
     url = f"https://qt.gtimg.cn/q={prefix}{code}"
     req = urllib.request.Request(url)
     req.add_header("User-Agent", "Mozilla/5.0")
@@ -2595,7 +2661,7 @@ def full_valuation(code: str) -> dict:
     data = resp.read().decode("gbk")
     vals = data.split('"')[1].split("~")
     price = float(vals[3])
-    mcap = float(vals[44])
+    mcap = float(vals[45])   # 45=总市值（44 是流通市值，见「腾讯行情字段」踩坑提醒二）
     pe_ttm = float(vals[39]) if vals[39] else 0
     pb = float(vals[46]) if vals[46] else 0
 
@@ -2821,7 +2887,9 @@ def dragon_tiger_backup(trade_date: str) -> dict:
 
 def fund_flow_backup(code: str, days: int = 60) -> list:
     """个股资金流备用源（东财被封时用）：新浪，日度四档单净额。"""
-    pre = ("sh" if code.startswith(("6", "9")) else "bj" if code.startswith("8") else "sz") + code
+    # 92 先判：920xxx 是北交所，误判成 sh/sz 时新浪返回空数组（实测 bj920002 有数据、sh/sz 为 []）
+    pre = ("bj" if code.startswith(("92", "8"))
+           else "sh" if code.startswith(("6", "9")) else "sz") + code
     u = (f"https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/"
          f"MoneyFlow.ssl_qsfx_zjlrqs?page=1&num={days}&sort=opendate&asc=0&daima={pre}")
     req = urllib.request.Request(u, headers={"User-Agent": UA, "Referer": "https://finance.sina.com.cn/"})

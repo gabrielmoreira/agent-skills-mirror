@@ -3,6 +3,13 @@
 ## User Requirements
 - Always use Context7 MCP for library/API documentation, code generation, setup steps, and configuration guidance without requiring an explicit user prompt.
 
+## Icons (desktop renderer)
+- Every icon in `apps/desktop/` goes through `@/components/ui/icons` — a thin wrapper layer around `@hugeicons/core-free-icons`. **Never** import from `lucide-react` (the package is removed) and **never** import from `@hugeicons/core-free-icons` directly inside a feature file.
+- Need a new glyph? Add the wrapper to `apps/desktop/src/components/ui/icons.tsx` via the existing `makeIcon(SomeHugeicon)` helper, then import it from `@/components/ui/icons`. Single icon vocabulary, one-file swap.
+- Use `IconType` (exported from `ui/icons.tsx`) for "component-typed" icon slots (the project's stand-in for lucide's `LucideIcon`).
+- Default `strokeWidth` is `1.75`. The sidebar nav rail rebinds locally to `2`. Per-call `strokeWidth` overrides always win.
+- "More / overflow" affordances use the plain three-dot `MoreHorizontal` (no surrounding circle).
+
 ## Commit & Pull Request Guidelines
 Commit history follows Conventional Commits (`feat:`, `fix:`, `migrate:`, `chore:`, etc.) and must use a detailed, structured message format.
 

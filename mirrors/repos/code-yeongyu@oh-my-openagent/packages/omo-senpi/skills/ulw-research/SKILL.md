@@ -23,14 +23,14 @@ This skill is authored against the native senpi task + team tool surface. You co
 |---------|------|---------------|
 | Stand up the research team once | `team_create` | `inline_spec: { name, members: [{ name, category, prompt? }] }` → returns `team_run_id` |
 | Send work / a lead / a debate round to a member | `task_send` | `to: "<member>"`, `team_run_id`, `message`, optional `summary` |
-| Collect member replies (durable pull inbox) | `team_wait` | `team_run_id`, optional `from`, optional `timeout_ms` |
+| Collect member replies | injected notifications | replies auto-inject as they arrive — keep working or end your turn |
 | Track shared research state | `task_create` / `task_list` / `task_update` / `task_get` | lead-only team tasklist |
 | Spawn a bounded recon / expansion / verification lane | `task` | `prompt` + `subagent_type: "explore" \| "librarian" \| "oracle"` or a `category`; `run_in_background: true`; optional `load_skills`, `name` |
 | Read a finished lane back | `task_output` | task id or name |
 | End a lane / park it | `task_cancel` / `task_send({ deliver_as: "interrupt" })` | — |
 | Disband the team at the end | `team_delete` | `team_run_id`, `force: true` |
 
-Members see only member-scoped `task_send` / `team_wait` inside their child process; they report to you with `task_send({ to: "lead", message: "..." })`. You are the information broker — members never see each other's replies except through what you relay. The curated agents (`explore`, `librarian`, `oracle`, `metis`, `momus`) are read-only, in-process, and REJECTED as team members: route them through `task` lanes, never through `team_create`.
+Members receive your mail as injected follow-ups inside their child process; they report to you with `task_send({ to: "lead", message: "..." })`. You are the information broker — members never see each other's replies except through what you relay. The curated agents (`explore`, `librarian`, `oracle`, `metis`, `momus`) are read-only, in-process, and REJECTED as team members: route them through `task` lanes, never through `team_create`.
 
 ## Authority while active
 
@@ -107,7 +107,7 @@ team_create({
 - **One member per axis — by part, ownership, or perspective, never a job title.** Each Phase 0 axis is one member owning one concrete slice: a codebase part, a source territory, or a question lens. No two members share an angle. "Backend researcher" or "the web person" gives no real boundary and invites overlap — name what the member owns.
 - **Many teammates by default.** Prefer a larger roster, usually 5-8 members, whenever the axes can be made distinct. Route researchers through a capable category your `omo.json` defines (`deep`, `unspecified-high`); a category member must also carry its brief as `prompt` (the runtime requires both), and a `subagent_type` member must name a non-curated agent — a member with neither is rejected at parse. NEVER name a curated agent (`explore`, `librarian`, `oracle`, `metis`, `momus`) as a member — the runtime rejects them; they run as `task` lanes instead.
 - **Debate members are mandatory for ultradebate/hyperdebate, default otherwise.** At least one skeptic/red-team member (`ultrabrain` or your strongest reasoning category) whose ONLY job is attack: cross-critique claims, evidence quality, source independence, synthesis structure, and report choices before they reach the deliverable. When the user says ultradebate or hyperdebate, run at least two attacking perspectives (e.g. a skeptic attacking evidence and a contrarian attacking framing) and give every contested claim a full round.
-- **The raise law — broadcast every lead the instant it surfaces.** Member briefs order relentless over-communication: every new lead, finding, contradiction, and dead end goes to `task_send({ to: "lead" })` the moment it surfaces, never hoarded for a final dump. Through long passes members send `WORKING: <axis> - <phase>`, and `BLOCKED: <reason>` the moment progress stops. Too many small updates is correct here; going quiet is the only failure. You collect them with `team_wait` — act on each lead the moment it lands (Phase 3), never waiting for a member's final reply.
+- **The raise law — broadcast every lead the instant it surfaces.** Member briefs order relentless over-communication: every new lead, finding, contradiction, and dead end goes to `task_send({ to: "lead" })` the moment it surfaces, never hoarded for a final dump. Through long passes members send `WORKING: <axis> - <phase>`, and `BLOCKED: <reason>` the moment progress stops. Too many small updates is correct here; going quiet is the only failure. They arrive as injected notifications — act on each lead the moment it lands (Phase 3), never holding out for a member's final reply.
 - **Track shared state in the open.** Register the axes and major leads on the team tasklist (`task_create`) and keep them current (`task_update`) so a member reconnecting after a crash can see the whole board.
 
 ### Member brief contract
@@ -157,7 +157,7 @@ Curated-agent lane ground rules:
 
 ## Phase 3 — Expand and debate until convergence
 
-This loop is what makes the mode research rather than search. Collect returns as they land with `team_wait` and `task_output` — and act on each raised lead the moment it arrives:
+This loop is what makes the mode research rather than search. Collect returns as they land via injected notifications — peek a running lane with `task_output({ mode: "tail" })` when you need its transcript mid-run — and act on each raised lead the moment it arrives:
 
 1. Journal the return: digest plus verbatim EXPAND markers into `wave-<N>-<kind>-<axis>.md`.
 2. Deduplicate new markers against `expansion-log.md` — every lead ever seen, not just confirmed ones, or rejected leads resurface each wave.

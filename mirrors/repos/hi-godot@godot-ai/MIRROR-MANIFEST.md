@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hi-godot/godot-ai` — 26 default patterns, 2 followed patterns, 5 file(s) materialized.
+Mirror of `hi-godot/godot-ai` — 26 default patterns, 10 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `hi-godot/godot-ai` — 26 default patterns, 2 followed patterns, 5 fi
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 5 |
+| Followed pats | 10 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,8 +51,16 @@ Mirror of `hi-godot/godot-ai` — 26 default patterns, 2 followed patterns, 5 fi
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/tool-surface.md`
+- `docs/client-configuration.md`
+- `docs/worktrees.md`
+- `docs/server-lifecycle.md`
+- `docs/releasing.md`
 - `docs/testing.md`
+- `docs/STRESS_TESTING.md`
+- `docs/verification.md`
 - `docs/audit-tier2-plan.md`
+- `docs/plugin-architecture.md`
 
 ## File Index
 
@@ -60,11 +68,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/testing-strategy.md`](docs/testing-strategy.md) |
-| 4 | → | [`docs/audit-tier2-plan.md`](docs/audit-tier2-plan.md) |
-| 5 | → | [`docs/testing.md`](docs/testing.md) |
+| 1 | ✓ | [`.claude/skills/verification/SKILL.md`](.claude/skills/verification/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`docs/implementation-plan.md`](docs/implementation-plan.md) |
+| 5 | ✓ | [`docs/packaging-distribution.md`](docs/packaging-distribution.md) |
+| 6 | ✓ | [`docs/testing-strategy.md`](docs/testing-strategy.md) |
+| 7 | ✓ | [`docs/tool-taxonomy.md`](docs/tool-taxonomy.md) |
+| 8 | → | [`docs/audit-tier2-plan.md`](docs/audit-tier2-plan.md) |
+| 9 | → | [`docs/client-configuration.md`](docs/client-configuration.md) |
+| 10 | → | [`docs/plugin-architecture.md`](docs/plugin-architecture.md) |
+| 11 | → | [`docs/releasing.md`](docs/releasing.md) |
+| 12 | → | [`docs/server-lifecycle.md`](docs/server-lifecycle.md) |
+| 13 | → | [`docs/STRESS_TESTING.md`](docs/STRESS_TESTING.md) |
+| 14 | → | [`docs/testing.md`](docs/testing.md) |
+| 15 | → | [`docs/tool-surface.md`](docs/tool-surface.md) |
+| 16 | → | [`docs/verification.md`](docs/verification.md) |
+| 17 | → | [`docs/worktrees.md`](docs/worktrees.md) |
 
 ---
 

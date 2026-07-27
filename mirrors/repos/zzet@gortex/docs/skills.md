@@ -35,7 +35,7 @@ The trade-off versus an MCP install — push notifications and per-session overl
 Tool-usage guidance for agents that have a user-level surface (Claude Code, Antigravity) lives once per user; for the rest, MCP tool descriptions carry the teaching and `gortex init` adds only a per-repo community-routing block — no more duplicated instructions blocks in every repo.
 
 - **Adapter matrix + per-agent schema notes:** [`agents.md`](agents.md)
-- **Audit what's currently configured:** `gortex init doctor` (zero-op; `--json` for CI consumers)
+- **Audit what's currently configured:** `gortex doctor` (zero-op; `--json` for CI consumers)
 - **Constrain setup:** `gortex init --agents=claude-code,cursor` or `--agents-skip=antigravity` (same flags accepted by `gortex install`)
 - **CI / scripted install:** `gortex install --yes --json` then `gortex init --yes --json --dry-run`
 
