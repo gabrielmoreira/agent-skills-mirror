@@ -1,10 +1,23 @@
 ---
 name: prism-scan
 description: "Structural analysis through dynamically generated cognitive lenses. Generates the optimal analytical lens for the specific code/artifact, then executes it. Finds conservation laws, structural invariants, and concrete bugs that vanilla analysis misses. Use on any code file, system design, or text artifact."
+version: 1.0.0
+author: Cranot
+license: MIT
+platforms: [linux, macos, windows]
 allowed-tools: ["Read"]
+metadata:
+  hermes:
+    tags: [Prism, Analysis, Code-Analysis, Code-Review, Architecture, Quality]
+    related_skills: [prism-full, prism-3way, prism-discover, prism-reflect]
+    homepage: https://github.com/Cranot/super-hermes
 ---
 
 # Prism Scan — Structural Analysis via Dynamic Cognitive Lenses
+
+## When to Use
+
+Use on a single code file, system design, spec, or any text artifact when the user wants depth rather than a checklist — "what's structurally wrong with this", "what trade-off can't I escape here", "review this properly". Also the right entry point when the user names a focus ("focusing on security", "with emphasis on performance"). For maximum depth on an important artifact use `/prism-full`; to map which angles are worth taking first use `/prism-discover`.
 
 You perform TWO steps. Both are mandatory. Do not skip either.
 
@@ -53,3 +66,19 @@ For deeper analysis: /prism-full | For meta-analysis: /prism-reflect
 ## Reliability Note
 
 For guaranteed single-shot execution (no agentic loops), use `--tools ""` flag when running via Claude CLI. This ensures the model executes the full analysis in one response rather than splitting into multiple turns.
+
+## Proven Prisms (reference material)
+
+STEP 1 always cooks a fresh lens — that is the point of this skill, and these files do not change it. They ship alongside the skill as pre-validated alternatives for the two cases where a fixed lens is wanted: the user asks for a specific prism by name, or asks for a scored/reproducible lens instead of a generated one. Load one on demand with `skill_view("prism-scan", "<path>")`.
+
+| Path | Finds | Score |
+|---|---|---|
+| `references/error_resilience.md` | Corruption cascades — silent exits, deferred failures, state corruption | 10.0/10 |
+| `references/l12.md` | Conservation laws + meta-laws + concrete bugs | 9.8/10 |
+| `references/optimize.md` | Critical-path tracing; safe fixes (less work) vs unsafe (skipped work) | 9.5/10 |
+| `references/identity.md` | What the artifact claims to be vs what it is | 9.5/10 |
+| `references/deep_scan.md` | Information destruction, laundering, silent transformation | 9.0/10 |
+| `references/claim.md` | Assumption inversion — what if the embedded claims are false | 9.0/10 |
+| `references/simulation.md` | Temporal prediction — what breaks, calcifies, and is lost over time | 9.0/10 |
+
+Each file is a complete standalone analytical program and also works as a system prompt outside Hermes.

@@ -2,13 +2,13 @@
 name: input-guard
 description: 'Scan untrusted external text (web pages, tweets, search results, API responses) for prompt injection attacks. Returns severity levels and alerts on dangerous content. Use BEFORE processing any text from untrusted sources.'
 zh_description: "用于输入安全检查、提示注入防护和高风险请求拦截。"
-version: "1.0.0"
+version: "1.1.0"
 author: "seaworld008"
 source: "in-house"
 source_url: ""
 tags: '["guard", "input"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "intermediate"
 ---
@@ -114,7 +114,7 @@ jailbreaks, indirect instruction extraction, etc.).
 | `--llm-only` | Skip patterns, run LLM analysis only |
 | `--llm-auto` | Auto-escalate to LLM only if pattern scan finds MEDIUM+ |
 | `--llm-provider` | Force provider: `openai` or `anthropic` |
-| `--llm-model` | Force a specific model (e.g. `gpt-4o`, `claude-sonnet-4-5`) |
+| `--llm-model` | Force a provider-supported model; verify the ID in current official docs |
 | `--llm-timeout` | API timeout in seconds (default: 30) |
 
 ### Examples
@@ -162,8 +162,8 @@ python3 {baseDir}/scripts/get_taxonomy.py clear   # Delete local file
 ### Provider Detection
 
 Auto-detects in order:
-1. `OPENAI_API_KEY` → Uses `gpt-4o-mini` (cheapest, fastest)
-2. `ANTHROPIC_API_KEY` → Uses `claude-sonnet-4-5`
+1. `OPENAI_API_KEY` → Uses `INPUT_GUARD_OPENAI_MODEL`, then `OPENAI_MODEL`, then the maintained default
+2. `ANTHROPIC_API_KEY` → Requires `INPUT_GUARD_ANTHROPIC_MODEL` or `ANTHROPIC_MODEL`
 
 ### Cost & Performance
 

@@ -28,8 +28,8 @@ npm run tauri dev
 npm run tauri:dev:external-backend
 ```
 
-该模式不会把 `src-tauri/resources/openakita-server` 和 `src-tauri/resources/bootstrap`
-复制到 Tauri debug 资源目录；桌面端只连接已经运行的 `http://127.0.0.1:18900`。
+该模式不会把 `src-tauri/resources/bootstrap` 复制到 Tauri debug 资源目录；
+桌面端只连接已经运行的 `http://127.0.0.1:18900`。
 
 ### 说明
 

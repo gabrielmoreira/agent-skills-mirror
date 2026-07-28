@@ -8,7 +8,7 @@ pattern-based scanning misses (metaphorical framing, storytelling-based attacks,
 indirect instruction extraction, etc.).
 
 Provider detection order:
-1. OPENAI_API_KEY → OpenAI API (uses gpt-4o-mini for cost efficiency)
+1. OPENAI_API_KEY → OpenAI API (model configurable with INPUT_GUARD_OPENAI_MODEL)
 2. ANTHROPIC_API_KEY → Anthropic API (uses claude-sonnet-4-5)
 3. OpenClaw gateway chat completions endpoint (fallback)
 
@@ -140,15 +140,25 @@ def _detect_provider() -> Tuple[str, str, str]:
 
     Returns: (provider, api_key, model)
     """
-    # 1. OpenAI (preferred — gpt-4o-mini is cheap and fast)
+    # 1. OpenAI
     openai_key = os.environ.get("OPENAI_API_KEY")
     if openai_key:
-        return ("openai", openai_key, "gpt-4o-mini")
+        model = (
+            os.environ.get("INPUT_GUARD_OPENAI_MODEL")
+            or os.environ.get("OPENAI_MODEL")
+            or "gpt-5-mini"
+        )
+        return ("openai", openai_key, model)
 
     # 2. Anthropic
     anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
     if anthropic_key:
-        return ("anthropic", anthropic_key, "claude-sonnet-4-5-20250514")
+        model = (
+            os.environ.get("INPUT_GUARD_ANTHROPIC_MODEL")
+            or os.environ.get("ANTHROPIC_MODEL")
+        )
+        if model:
+            return ("anthropic", anthropic_key, model)
 
     # 3. Try OpenClaw gateway config
     try:
@@ -161,10 +171,20 @@ def _detect_provider() -> Tuple[str, str, str]:
         config = json.loads(result.stdout)
 
         if config.get("env", {}).get("OPENAI_API_KEY"):
-            return ("openai", config["env"]["OPENAI_API_KEY"], "gpt-4o-mini")
+            model = (
+                config["env"].get("INPUT_GUARD_OPENAI_MODEL")
+                or config["env"].get("OPENAI_MODEL")
+                or "gpt-5-mini"
+            )
+            return ("openai", config["env"]["OPENAI_API_KEY"], model)
 
         if config.get("env", {}).get("ANTHROPIC_API_KEY"):
-            return ("anthropic", config["env"]["ANTHROPIC_API_KEY"], "claude-sonnet-4-5-20250514")
+            model = (
+                config["env"].get("INPUT_GUARD_ANTHROPIC_MODEL")
+                or config["env"].get("ANTHROPIC_MODEL")
+            )
+            if model:
+                return ("anthropic", config["env"]["ANTHROPIC_API_KEY"], model)
 
     except Exception:
         pass

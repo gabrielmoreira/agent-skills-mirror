@@ -102,7 +102,7 @@ cat assets/sample_comps_input.json
 - 结合 DCF, Comps, Precedent Transactions 的多种估值方法，利用脚本自动生成“足球场图”，直观展示估值交集。
 
 ### 2. 情绪溢价实时监控
-- 结合 `tavily-search` 抓取最新的卖方报告，分析市场情绪对特定倍数的影响力。
+- 结合客户端内置 Web Search 或 `deep-research` 检索可授权访问的最新卖方资料，分析市场情绪对特定倍数的影响。
 
 ## 边界与限制 / Boundaries
 

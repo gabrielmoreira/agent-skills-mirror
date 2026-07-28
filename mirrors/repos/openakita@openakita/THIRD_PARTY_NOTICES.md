@@ -130,9 +130,9 @@ environments.
 **License:** Python Software Foundation License Version 2
 **Copyright:** © Python Software Foundation
 
-Packaged desktop backends include the Python runtime artifacts produced by
-PyInstaller. Future managed Python seed runtimes must be recorded in the
-bootstrap manifest with version, ABI, source, license, and SHA-256 hash.
+Desktop packages include a managed Python seed runtime sourced from
+python-build-standalone. Seed runtimes are recorded in the bootstrap manifest
+with version, ABI, source, license, and SHA-256 hash.
 
 ### Node.js
 

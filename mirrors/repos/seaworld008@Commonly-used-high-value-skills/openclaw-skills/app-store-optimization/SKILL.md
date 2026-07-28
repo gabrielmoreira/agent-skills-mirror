@@ -510,6 +510,5 @@ Trusted by 500,000+ professionals.
 
 | Skill | Integration Point |
 |-------|-------------------|
-| [content-creator](../content-creator/) | App description copywriting |
-| [marketing-demand-acquisition](../marketing-demand-acquisition/) | Launch promotion campaigns |
+| [growth](../growth/) | App description copywriting and launch promotion workflows |
 | [marketing-strategy-pmm](../marketing-strategy-pmm/) | Go-to-market planning |

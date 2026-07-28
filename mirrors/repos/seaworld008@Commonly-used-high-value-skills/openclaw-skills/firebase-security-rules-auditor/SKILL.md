@@ -1,15 +1,15 @@
 ---
 name: firebase-security-rules-auditor
-description: A skill to evaluate how secure Firestore security rules are. Use this when Firestore security rules are updated to ensure that the generated rules are extremely secure and robust.
+description: 'Audit Firestore and Cloud Storage Security Rules for authorization bypass, cross-tenant access, privilege escalation, unsafe field mutation, query/rule mismatch, type and size validation, and emulator test coverage. Use before deploying new or changed Firebase rules, after a data-model change, or when investigating unauthorized access.'
 zh_description: "审计 Firestore 与 Cloud Storage 安全规则，检查授权、字段校验、权限提升、资源滥用和模拟器测试覆盖。"
-version: "1.0.1"
+version: "1.1.1"
 author: seaworld008
 source: github:firebase/agent-skills
 source_url: "https://github.com/firebase/agent-skills/tree/main/skills/firebase-security-rules-auditor"
 license: Apache-2.0
 tags: '[firebase, firestore, cloud-storage, security-rules, authorization, appsec]'
 created_at: "2026-07-06"
-updated_at: "2026-07-13"
+updated_at: "2026-07-27"
 quality: 4
 complexity: advanced
 ---
@@ -105,3 +105,36 @@ source is intentionally concise.
 - Stop and ask for clarification when the next action could overwrite user work,
   expose private data, or change production state.
 <!-- LOCAL-QUALITY-SUPPLEMENT:END -->
+
+<!-- LOCAL-CURATION-SUPPLEMENT:START -->
+## Repository Security Contract
+
+Read the rules and application queries together:
+
+```bash
+rg --files -g 'firestore.rules' -g 'storage.rules' -g 'firebase.json'
+rg -n "collection\\(|doc\\(|query\\(|where\\(|orderBy\\(|limit\\(" src app functions
+rg -n "rules-unit-testing|initializeTestEnvironment|assertFails|assertSucceeds" .
+```
+
+Security Rules are not filters. Flag queries that are not constrained tightly
+enough for the rule engine to prove every possible result is authorized.
+Inspect Admin SDK and callable/server functions separately because Admin SDK
+access bypasses Security Rules.
+
+Require emulator tests for unauthenticated access, cross-tenant access,
+immutable owner/role fields, self-escalation, invalid types, oversized values,
+and insufficiently constrained queries:
+
+```bash
+firebase emulators:exec --only firestore,storage "npm test"
+```
+
+For every finding include the rules path, actor, initial resource, attempted
+request, relevant expression, minimal reproducing test, and remediation.
+Distinguish confirmed exploit paths from defense-in-depth recommendations.
+
+Block deployment for unauthenticated protected-data access, cross-tenant
+read/write, self-assigned roles, Admin SDK endpoints without equivalent server
+authorization, or missing negative tests for a changed sensitive path.
+<!-- LOCAL-CURATION-SUPPLEMENT:END -->

@@ -81,9 +81,11 @@ visual pass; the test leaves no provider traffic or credentials behind.
 2. **Multi-terminal route isolation (#3227).** Open multiple terminals on
    distinct provider/model routes. Confirm zero cross-terminal contamination and
    no provider+model mismatch — each terminal honors its own route.
-3. **Queued steering + Ctrl+G (#3203).** Queue a steering message into a busy
-   turn; confirm Ctrl+G sends the queued/draft message and queued-steering
-   status reads clearly.
+3. **Running-turn input contract (#3203).** During a busy turn, confirm Enter
+   queues a typed follow-up, the preview advertises **Enter send now**, and an
+   empty Enter promotes the oldest queued follow-up. Confirm Ctrl+Enter steers
+   typed text directly, Shift+Enter inserts a newline, and Ctrl+G/Ctrl+S only
+   stash drafts.
 
 ## Reporting format
 

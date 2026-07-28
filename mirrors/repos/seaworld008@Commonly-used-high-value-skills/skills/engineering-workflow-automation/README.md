@@ -4,7 +4,7 @@
 
 聚焦 GitHub、浏览器自动化、CI 排障、Playwright 与工程协作自动化。
 
-当前分类共 **16** 个技能。
+当前分类共 **15** 个技能。
 
 ## 推荐先看
 
@@ -120,16 +120,15 @@ gsd-sdk --version
 |------|------|------|------|
 | `agent-browser` | 用于让 Agent 操作真实浏览器，完成页面交互、截图录屏、脚本执行和端到端验证。 | [目录](./agent-browser/) | [SKILL.md](./agent-browser/SKILL.md) |
 | `billing-automation` | 用于构建订阅计费、自动开票、续费生命周期和催收管理流程。 | [目录](./billing-automation/) | [SKILL.md](./billing-automation/SKILL.md) |
-| `changelog-automation` | 用于基于提交、PR 和发布记录自动生成 Keep a Changelog 风格的变更日志。 | [目录](./changelog-automation/) | [SKILL.md](./changelog-automation/SKILL.md) |
 | `gh-address-comments` | 用于通过 gh CLI 处理当前分支的 GitHub PR Review 评论或 Issue 评论。 | [目录](./gh-address-comments/) | [SKILL.md](./gh-address-comments/SKILL.md) |
 | `gh-fix-ci` | 用于gh、修复、CI，支持工程协作、自动化验证和交付闭环。 | [目录](./gh-fix-ci/) | [SKILL.md](./gh-fix-ci/SKILL.md) |
 | `github` | 用于通过 GitHub CLI 自动化 Issue、PR、Review、CI 检查、标签和发布协作。 | [目录](./github/) | [SKILL.md](./github/SKILL.md) |
 | `gsd-graphify-brownfield-bootstrap` | 用于gsd、Graphify、brownfield、启动，支持工程协作、自动化验证和交付闭环。 | [目录](./gsd-graphify-brownfield-bootstrap/) | [SKILL.md](./gsd-graphify-brownfield-bootstrap/SKILL.md) |
-| `guardian` | 用于guardian，支持工程协作、自动化验证和交付闭环。 | [目录](./guardian/) | [SKILL.md](./guardian/SKILL.md) |
-| `harvest` | 用于harvest，支持工程协作、自动化验证和交付闭环。 | [目录](./harvest/) | [SKILL.md](./harvest/SKILL.md) |
+| `guardian` | 提交、分支、合并请求策略和变更粒度把关。 | [目录](./guardian/) | [SKILL.md](./guardian/SKILL.md) |
+| `harvest` | 采集合并请求信息并生成工作报告和发布材料。 | [目录](./harvest/) | [SKILL.md](./harvest/SKILL.md) |
 | `hermes-graphify-gsd-project-integration` | 用于hermes、Graphify、gsd、project、集成，支持工程协作、自动化验证和交付闭环。 | [目录](./hermes-graphify-gsd-project-integration/) | [SKILL.md](./hermes-graphify-gsd-project-integration/SKILL.md) |
 | `jupyter-notebook` | 用于Jupyter、Notebook，支持工程协作、自动化验证和交付闭环。 | [目录](./jupyter-notebook/) | [SKILL.md](./jupyter-notebook/SKILL.md) |
-| `latch` | 用于latch，支持工程协作、自动化验证和交付闭环。 | [目录](./latch/) | [SKILL.md](./latch/SKILL.md) |
+| `latch` | 配置和维护生命周期钩子、质量门禁和自动化守卫。 | [目录](./latch/) | [SKILL.md](./latch/SKILL.md) |
 | `playwright` | 用于使用 Playwright 编写、运行和调试端到端测试。 | [目录](./playwright/) | [SKILL.md](./playwright/SKILL.md) |
 | `playwright-pro` | 用于高级 Playwright 测试、诊断、稳定性和浏览器自动化。 | [目录](./playwright-pro/) | [SKILL.md](./playwright-pro/SKILL.md) |
 | `web-scraper` | 用于网页抓取、结构化数据提取、爬取策略、选择器设计和反爬应对。 | [目录](./web-scraper/) | [SKILL.md](./web-scraper/SKILL.md) |

@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-07-25
+Auto-generated from all feature plans. Last updated: 2026-07-27
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -95,6 +95,8 @@ Auto-generated from all feature plans. Last updated: 2026-07-25
 - No Border-side schema change — `session_key=f"n2n-edge-{member_id}"` passed to `run_agent_turn` already gives each enrolled device its own agent session (research D6); the per-device conversation history itself (FR-007) is entirely on-device, a second JSON-Lines store mirroring 066's `MessageFeedStore` pattern (`ConversationStore`). (067-ncfed-mobile-command-channel)
 - Swift 5.0 (existing `ios/Runner/*.swift`, `SWIFT_VERSION = 5.0` in + None new. Reuses what's already in `pubspec.yaml`: `local_auth ^3.0.2` (071-ios-mobile-port)
 - N/A — Secure Enclave key storage is managed entirely by the Keychain/Secure Enclave (071-ios-mobile-port)
+- JavaScript ES2022 (ESM), Node 22+ for tooling + three.js `^0.170.0` (existing), `OrbitControls`, (072-hud-2-org-chart)
+- N/A — stateless client; all state from `/api/n2n` and `/api/graph` (072-hud-2-org-chart)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -114,9 +116,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 072-hud-2-org-chart: Added JavaScript ES2022 (ESM), Node 22+ for tooling + three.js `^0.170.0` (existing), `OrbitControls`,
 - 071-ios-mobile-port: Added Swift 5.0 (existing `ios/Runner/*.swift`, `SWIFT_VERSION = 5.0` in + None new. Reuses what's already in `pubspec.yaml`: `local_auth ^3.0.2`
 - 067-ncfed-mobile-command-channel: Added Python 3.10+ (daemon + `bgp/federation/*`, matching 052–066); Dart 3.x / Flutter 3.x (extends `mobile/netclaw-mobile/`, the same codebase 066 established) + Python: none new — reuses `gateway.run_agent_turn()`, `tasks.py`'s `TaskManager`, `edge.py`'s `EdgeChannel`/`EDGE_METHODS`, `invocation.py`'s `handle_task_status`/`result`/`cancel` exactly as-is. Dart: an on-device speech-to-text package for US4 (voice → text before sending, research D7) and (for US5) reuses `mobile_scanner` (already added in 066) for the QR half of the device deep link; the `netclaw://device/<id>` URI-scheme half needs a deep-link/app-links package (e.g. `app_links` or platform intent filters) — exact package choice is a Phase 2 task detail, not fixed here.
-- 068-ncfed-mobile-biometrics-capture: Added Python 3.10+ (daemon + `bgp/federation/*`, matching 052–067); Dart 3.x / Flutter 3.x (extends `mobile/netclaw-mobile/`) + Python: none new — reuses `push_to_edge()`, `resolve_approval()`, `RiskRouter`/`member.scope`, `TaskManager`. Dart: `local_auth` (biometric gating, US1), `camera` (photo/video capture, US2/US3) — exact audio-recording package (distinct from 067's speech-to-text, which discards audio after transcribing) is a Phase 2 task detail.
 
 
 <!-- MANUAL ADDITIONS START -->

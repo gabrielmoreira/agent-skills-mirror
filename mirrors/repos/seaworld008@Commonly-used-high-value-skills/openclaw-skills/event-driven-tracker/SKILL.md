@@ -109,7 +109,7 @@ python scripts/track_events.py --ticker MSFT --range 30d
 - 监控某一并购案的所有监管审批节点（反垄断审查、股东大会投票、反向收购限期），实时计算“Deal Spread”（价差），并在价差异常收窄或扩大时报警。
 
 ### 2. 生物医药 FDA “开盲盒”
-- 针对生物科技公司，跟踪 PDUFA 日期，并结合 `tavily-search` 抓取临床试验数据的专家讨论摘要。
+- 针对生物科技公司，跟踪 PDUFA 日期，并结合客户端内置 Web Search 或 `deep-research` 检索临床试验数据和可追溯的专家讨论。
 
 ## 边界与限制 / Boundaries
 

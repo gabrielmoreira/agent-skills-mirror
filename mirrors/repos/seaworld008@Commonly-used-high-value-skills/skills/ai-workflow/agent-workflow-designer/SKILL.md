@@ -2,13 +2,13 @@
 name: agent-workflow-designer
 description: 'Design production-grade multi-agent orchestration systems. Covers five core patterns (sequential pipeline, parallel fan-out/fan-in, hierarchical delegation, event-driven, consensus), platform-specific implementations, handoff protocols, state management, error recovery, context window budgeting, and cost optimization.'
 zh_description: "用于Agent、工作流、设计，支持任务规划、执行、评审和验证。"
-version: "1.0.0"
+version: "1.1.0"
 author: "seaworld008"
 source: "in-house"
 source_url: ""
 tags: '["agent", "designer", "planning", "workflow"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "intermediate"
 ---
@@ -71,9 +71,12 @@ Is the task sequential (each step needs previous output)?
 
 ```python
 # sequential_pipeline.py
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Callable, Any
+import os
 import anthropic
+
+DEFAULT_MODEL = os.environ["ANTHROPIC_MODEL"]
 
 @dataclass
 class PipelineStage:
@@ -81,7 +84,7 @@ class PipelineStage:
     system_prompt: str
     input_key: str      # what to take from state
     output_key: str     # what to write to state
-    model: str = "claude-3-5-sonnet-20241022"
+    model: str = field(default_factory=lambda: DEFAULT_MODEL)
     max_tokens: int = 2048
 
 class SequentialPipeline:
@@ -143,11 +146,13 @@ pipeline = SequentialPipeline([
 ```python
 # parallel_fanout.py
 import asyncio
+import os
 import anthropic
 from typing import Any
 
-async def run_agent(client, task_name: str, system: str, user: str, model: str = "claude-3-5-sonnet-20241022") -> dict:
+async def run_agent(client, task_name: str, system: str, user: str, model: str | None = None) -> dict:
     """Single async agent call"""
+    model = model or os.environ["ANTHROPIC_MODEL"]
     loop = asyncio.get_event_loop()
     
     def _call():
@@ -199,7 +204,7 @@ async def parallel_research(competitors: list[str], research_type: str) -> dict:
         task_name="synthesizer",
         system="You are a strategic analyst. Synthesize competitor research into a concise comparison matrix and strategic recommendations.",
         user=f"Synthesize these competitor analyses:\n\n{combined_research}",
-        model="claude-3-5-sonnet-20241022",
+        model=os.environ["ANTHROPIC_MODEL"],
     )
     
     return {
@@ -218,6 +223,7 @@ async def parallel_research(competitors: list[str], research_type: str) -> dict:
 ```python
 # hierarchical_delegation.py
 import json
+import os
 import anthropic
 
 ORCHESTRATOR_SYSTEM = """You are an orchestration agent. Your job is to:
@@ -254,7 +260,7 @@ class HierarchicalOrchestrator:
     def run(self, user_request: str) -> str:
         # 1. Orchestrator creates plan
         plan_response = self.client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model=os.environ["ANTHROPIC_MODEL"],
             max_tokens=1024,
             system=ORCHESTRATOR_SYSTEM,
             messages=[{"role": "user", "content": user_request}],
@@ -269,7 +275,7 @@ class HierarchicalOrchestrator:
             specialist = SPECIALIST_SYSTEMS[subtask["agent"]]
             
             result = self.client.messages.create(
-                model="claude-3-5-sonnet-20241022",
+                model=os.environ["ANTHROPIC_MODEL"],
                 max_tokens=2048,
                 system=specialist,
                 messages=[{"role": "user", "content": f"{context}\n\nTask: {subtask['task']}"}],
@@ -279,7 +285,7 @@ class HierarchicalOrchestrator:
         # 3. Final synthesis
         all_results = "\n\n".join([f"### {k}\n{v}" for k, v in results.items()])
         synthesis = self.client.messages.create(
-            model="claude-3-5-sonnet-20241022",
+            model=os.environ["ANTHROPIC_MODEL"],
             max_tokens=2048,
             system="Synthesize the specialist outputs into a coherent final response.",
             messages=[{"role": "user", "content": f"Original request: {user_request}\n\nSpecialist outputs:\n{all_results}"}],
@@ -357,6 +363,7 @@ You have approximately {self.context_budget_remaining} tokens remaining. Be conc
 ## Error Recovery Patterns
 
 ```python
+import os
 import time
 from functools import wraps
 
@@ -383,7 +390,7 @@ def with_retry(max_attempts=3, backoff_seconds=2, fallback_model=None):
         return wrapper
     return decorator
 
-@with_retry(max_attempts=3, fallback_model="claude-3-haiku-20240307")
+@with_retry(max_attempts=3, fallback_model=os.environ.get("ANTHROPIC_FALLBACK_MODEL"))
 def call_agent(model, system, user):
     ...
 ```
@@ -396,14 +403,11 @@ def call_agent(model, system, user):
 # Budget context across a multi-step pipeline
 # Rule: never let any step consume more than 60% of remaining budget
 
-CONTEXT_LIMITS = {
-    "claude-3-5-sonnet-20241022": 200_000,
-    "gpt-4o": 128_000,
-}
-
 class ContextBudget:
-    def __init__(self, model: str, reserve_pct: float = 0.2):
-        total = CONTEXT_LIMITS.get(model, 128_000)
+    def __init__(self, total_context_tokens: int, reserve_pct: float = 0.2):
+        # Read the current limit from the selected provider's official model
+        # documentation or API metadata; do not hard-code model generations here.
+        total = total_context_tokens
         self.total = total
         self.reserve = int(total * reserve_pct)  # keep 20% as buffer
         self.used = 0

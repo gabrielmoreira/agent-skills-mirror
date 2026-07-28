@@ -122,7 +122,7 @@ mcp_call({
 - Agent 监听 Slack 频道。每当有外来人员发布包含 URL 的消息时，Link Checker 自动进行隐形探测，并以 Thread 回复的形式告知全组人员该链接是否安全。
 
 ### 2. 内容资产自愈 (Self-healing Content)
-- 每月自动扫描 Notion 知识库。发现失效链接后，Agent 自动通过 `tavily-search` 寻找该资源的新位置并自动更新页面。
+- 每月自动扫描 Notion 知识库。发现失效链接后，使用客户端内置 Web Search 寻找该资源的新位置；验证域名和内容一致性后，再请求确认并更新页面。
 
 ## 边界与限制 / Boundaries
 

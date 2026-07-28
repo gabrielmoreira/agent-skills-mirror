@@ -1,8 +1,9 @@
 # crates/tui/locales — agent guidance
 
-Eight UI packs. `en.json` is the reference; ja, zh-Hans, es-419, pt-BR, vi,
-and ko are **complete packs** held to exact raw key parity with English;
-zh-Hant is **intentionally partial** (#4057, Setup core only).
+Fifteen UI packs. `en.json` is the reference; ja, zh-Hans, es-419, pt-BR,
+vi, ko, ca, de, fr, id, hi, ru, and uk are **complete packs** held to exact
+raw key parity with English; zh-Hant is **intentionally partial** (#4057,
+Setup core only).
 
 ## Adding or changing a string
 
@@ -31,6 +32,10 @@ zh-Hant is **intentionally partial** (#4057, Setup core only).
   never in translations; they are composed in code.
 - Preserve intentional leading/trailing spaces (pane titles, `Rule  `,
   the slash-menu hint).
+- Script rules: ru/uk prose is Cyrillic only (uk uses і/ї/є/ґ, never
+  ы/э/ъ); hi prose is Devanagari. Latin appears only in product terms,
+  commands, key names, placeholders, and URLs. Script-purity fixtures in
+  `localization.rs` enforce this for high-visibility strings.
 
 ## Adding a locale
 
@@ -41,10 +46,12 @@ the typed `UiLocale` schema in `config_ui.rs`, setup-wizard match arms, and
 locale display arms in the config/change commands. The `/config` hint and
 invalid-locale error derive from `Locale::shipped()` automatically; the
 schema agreement test must keep `UiLocale` aligned with that registry.
+Picker hotkeys run `1..=9` then `a`, `b`, …, so more than nine locales stay
+single-keystroke selectable.
 
 ## READMEs
 
 Translated READMEs (repo root) are separate from these packs but follow
 the same discipline: `scripts/check-readme-translations.py` (in CI) fails
-when English changes without the six translations being refreshed and
+when English changes without the translations being refreshed and
 restamped.

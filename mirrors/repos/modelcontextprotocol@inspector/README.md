@@ -1,0 +1,220 @@
+# MCP Inspector
+
+A developer tool for inspecting [Model Context Protocol](https://modelcontextprotocol.io) (MCP) servers. It ships as a single package, `@modelcontextprotocol/inspector`, that provides three ways to inspect a server:
+
+- **Web** — a Vite + React + [Mantine](https://mantine.dev) single-page app with a Node backend.
+- **CLI** — a scriptable command-line client for automation, CI, and fast agent feedback loops.
+- **TUI** — an interactive terminal UI built with [Ink](https://github.com/vadimdemedes/ink).
+
+All three run through one global `mcp-inspector` binary:
+
+```bash
+npx @modelcontextprotocol/inspector          # web UI (default)
+npx @modelcontextprotocol/inspector --cli    # CLI
+npx @modelcontextprotocol/inspector --tui    # TUI
+```
+
+> **Repo status.** This is the **v2** line of the Inspector (branch `v2/main`). The `main` branch is the legacy v1 implementation (bug fixes only). v2 will eventually replace `main`. See [`AGENTS.md`](./AGENTS.md) for branch/board conventions.
+
+## Project layout
+
+v2 is **not** an npm workspace. Each client under `clients/*` keeps its own `package.json` and `node_modules`; shared code lives in `core/` and is consumed via a `@inspector/core` build-time alias (no `package.json` of its own). A single `npm install` at the root cascades installs into every client (see [Setup](#setup)).
+
+```
+inspector/
+├── clients/
+│   ├── web/          # Web client (Vite + React + Mantine). src/ = browser app; server/ = Node dev/prod backend
+│   ├── cli/          # CLI client (tsup bundle, @inspector/core alias)
+│   ├── tui/          # TUI client (Ink + React, tsup bundle)
+│   └── launcher/     # Shared launcher — provides the `mcp-inspector` bin, dispatches to web/cli/tui
+├── core/             # Shared code consumed via the `@inspector/core` alias (no package.json)
+│   ├── auth/         # OAuth: providers, discovery, storage, mid-session recovery (browser/node/remote backends)
+│   ├── json/         # JSON + parameter/argument conversion utilities
+│   ├── logging/      # Silent pino logger singleton
+│   ├── mcp/          # InspectorClient runtime, state stores, transports, config import
+│   ├── node/         # Node-only shared helpers: version reader, hostUrl (host normalize/canonicalize + all-interfaces/loopback detection)
+│   ├── react/        # React hooks over the state stores
+│   └── storage/      # File I/O helpers for the OAuth persist backends
+├── test-servers/     # Composable MCP test servers + fixtures used by integration tests
+├── scripts/          # Root build/verify tooling (install cascade, smokes, verify-build-gate, verify-format-coverage, pack:verify)
+├── specification/    # Design/build specifications
+├── AGENTS.md         # Contribution rules for agents AND humans (see below)
+└── README.md         # You are here
+```
+
+Each client has its own README with client-specific detail:
+[web](./clients/web/README.md) · [cli](./clients/cli/README.md) · [tui](./clients/tui/README.md) · [launcher](./clients/launcher/README.md).
+
+Task-oriented guides live under [`docs/`](./docs):
+
+- [MCP server configuration](./docs/mcp-server-configuration.md) — which server(s) the Inspector connects to: `--catalog` vs. `--config`, ad-hoc targets, the `--` separator, the file format and its Inspector-specific per-server fields. Shared by all three clients; the cli and tui READMEs delegate their server-options sections to it.
+- [Reviewing an MCP App](./docs/mcp-app-review.md) — the CLI-first → one-shot-web recipe for automated App-tool review: `--app-info` probe → deep-link navigate → rendered widget, plus OAuth handoff and proxy support.
+- [Launcher and config consolidation](./docs/launcher-config-consolidation-plan.md) — why the launcher runs a client in-process rather than spawning it, and how the shared config processor fits in.
+
+## Setup
+
+Requires Node `>=22.19.0`.
+
+```bash
+npm install     # root install; postinstall cascades into every client
+```
+
+- **Fresh clone:** run `npm install` at the repo root.
+- **After a pull that changes a client's dependencies:** re-run `npm install` at the root to re-sync every client.
+
+The cascade (`scripts/install-clients.mjs`) is dev-only — it exits early when the package is installed as a dependency, and the published tarball ships only each client's `build/`, so end users are unaffected. Set `INSPECTOR_SKIP_CLIENT_INSTALL=1` to skip it.
+
+## Running during development
+
+For day-to-day web iteration, run Vite directly from the web client (fast HMR, no launcher build needed):
+
+```bash
+cd clients/web && npm run dev
+```
+
+The launcher-driven scripts below run the **built** launcher, so build first (`npm run build`):
+
+```bash
+npm run web        # prod web launcher against clients/web/dist
+npm run web:dev    # web launcher in --dev mode (Vite)
+```
+
+## The `@inspector/core` shared package
+
+![Shared code architecture: the four clients over the @inspector/core shared package](specification/diagrams/shared-code-architecture.png)
+
+`core/` holds the logic shared by all three clients so that web, CLI, and TUI behave identically. Its entry point is the **`InspectorClient`** class (`core/mcp/`), which owns the connection to an MCP server, the request/response lifecycle, and a set of state stores; `core/react/` exposes React hooks over those stores that both the web and TUI (Ink) React trees consume. OAuth (`core/auth/`) is factored into isomorphic logic plus browser/node/remote backends so the same flows work in the browser, in Node, and against a remote backend.
+
+`core/` intentionally has **no `package.json`** — it is not published on its own. Each client bundles it in via a `@inspector/core` alias:
+
+- **CLI / TUI:** `esbuildOptions.alias` in their `tsup.config.ts` maps `@inspector/core` → the repo `core/` directory, and `noExternal: [/^@inspector\/core/]` inlines it into the bundle.
+- **Web:** the same alias in `clients/web/vite.config.ts` for the browser app and the Node backend runner.
+
+Publishing `core/` as its own package (e.g. for third parties to build on) is deliberately deferred — see issue [#1636](https://github.com/modelcontextprotocol/inspector/issues/1636).
+
+## Web client: "dumb components" + Storybook
+
+The v2 web client is built from **presentational ("dumb") components** — they accept data and callbacks as props and contain only display logic, with no direct data fetching or client state. State comes from the `@inspector/core` hooks, wired in near the top of the tree. This keeps components isolated, testable, and documentable.
+
+That approach is what makes **Storybook** first-class here: every screen and element component has a `*.stories.tsx` file (96+ stories) that renders it against fixture props. Storybook **play functions** double as interaction tests, run headless in CI (`npm run ci:storybook`, Chromium via Playwright).
+
+Styling follows a strict Mantine-first convention (theme variants and component props over CSS classes, `--inspector-*` CSS custom properties over raw color literals). The full rules live in [`AGENTS.md`](./AGENTS.md) under **React instructions** — read them before touching web UI. Element components live in `clients/web/src/components/elements/`; theme variants in `clients/web/src/theme/`.
+
+## Test servers
+
+`test-servers/` provides **composable MCP servers** used by the integration and smoke suites, so tests exercise a real server over a real transport instead of mocks. A server is assembled from **presets** (fixture factories in `test-servers/src/preset-registry.ts` — tools, resources, prompts, tasks, elicitation, sampling, OAuth, …) and can be driven two ways:
+
+- **In-process** — import the factories (`createTestServerHttp`, `createEchoTool`, …) and run the server inside the test's event loop (used by the HTTP integration paths).
+- **As a subprocess** — `test-servers/build/test-server-stdio.js` is spawned as a real stdio child (used by the CLI smoke and stdio integration tests).
+
+Configure a server declaratively with a JSON config (see `test-servers/configs/*.json`) selecting presets, then load it via `--config`. Because the servers are spawned as real subprocesses, the build output must exist first:
+
+```bash
+npm run test-servers:build   # (from clients/web) → tsc -p test-servers, emits test-servers/build/
+```
+
+The Vite alias `@modelcontextprotocol/inspector-test-server` (in `clients/web/vite.config.ts`) points at `test-servers/build/index.js` so `getTestMcpServerPath()` resolves to a real `.js` path.
+
+A streamable-HTTP server can also serve the **modern (2026-07-28) protocol era** via the SDK's `createMcpHandler` — set `transport.modern` in the JSON config (`true` for dual-era stateless serving, or `{ "legacy": "reject" }` for modern-only strict), or pass `modern` on the `ServerConfig` for an in-process `createTestServerHttp`. This is what lets an Inspector connection negotiating `protocolEra: "auto" | "modern"` reach the modern leg (populated `server/discover`, sessionless). See `test-servers/configs/modern-http.json`. `test-servers/configs/modern-mrtr-http.json` additionally serves the `mrtr_confirm` tool (preset `mrtr_confirm`, `createMrtrTool`) over the modern leg: its handler returns `inputRequired(...)` embedding a form elicitation, so invoking it produces a real MRTR round-trip (`input_required` → the client fulfils the embedded elicitation and retries with a new id → `complete`). The Inspector drives MRTR manually (`inputRequired: { autoFulfill: false }`), so the embedded elicitation pauses at the pending-request modal (tagged "input_required") for you to answer, then the retry completes — useful for eyeballing both that pending-request UX and the Protocol view's MRTR conversation grouping. `test-servers/configs/mrtr-showcase-http.json` bundles every MRTR preset in one modern server for manual testing: `mrtr_confirm` (single round), `mrtr_two_step` (two elicitation rounds via `requestState`), `mrtr_sample` (embedded sampling → the Sampling panel), `mrtr_roots` (embedded `roots/list`, auto-answered silently from configured roots — no modal), `mrtr_edge` (an `inputRequests`-only round then a `requestState`-only round), and `mrtr_loop` (never completes → the `MRTR_MAX_ROUNDS` bound trips). (The legacy `collect_elicitation` preset calls `server.elicitInput`, which errors on the 2026-07-28 leg — server→client requests aren't allowed there; MRTR is the modern replacement.)
+
+`test-servers/configs/modern-network-http.json` is the **Network-tab showcase** for the standardized HTTP headers and new error taxonomy (SEP-2243 / SEP-2575). It serves a `get_weather` tool whose `city` argument carries an `x-mcp-header: "City"` annotation (so a modern client mirrors it to `Mcp-Param-City`), plus four `trigger_*` tools that the modern leg's spec-error injector (`transport.modern.injectSpecErrors: true`) answers with a real HTTP status + JSON-RPC error body: `trigger_header_mismatch` → `400 / -32020`, `trigger_missing_capability` → `400 / -32021`, `trigger_unsupported_version` → `400 / -32022` (with `data.supported`), `trigger_method_not_found` → `404 / -32601`. Connect to it with **Protocol Era = Modern** and open the Network tab to see the mirrored `Mcp-*` headers highlighted, sentinel values decoded, and each error rendered distinctly. Note: `Mcp-Param-*` mirroring is **skipped by the SDK in the browser** (`detectProbeEnvironment() !== "browser"`), so calling `get_weather` from the **web** client omits `Mcp-Param-City` and the strict server answers `-32020` — the same tool is callable from the Node CLI/TUI, where mirroring is active.
+
+`test-servers/configs/xmcpheader-modern-http.json` is the **`x-mcp-header` Tools-tab showcase** (#1632). It serves `echo`, a `get_weather` tool with a **valid** `x-mcp-header: "City"` annotation on its `city` argument, an `invalid_header_tool` whose annotation uses the header name `"Bad Header"` (a space makes it an invalid RFC 9110 token, so the whole tool definition is invalid), and a `trigger_invalid_params` tool that the modern leg's spec-error injector (`transport.modern.injectSpecErrors: true`) answers with a real `-32602 Invalid params` JSON-RPC error whose message is not about a missing tool. Connect with **Protocol Era = Modern** and open the Tools tab: `get_weather`'s detail panel shows a **"Mirrored request headers (SEP-2243)"** section (`city → Mcp-Param-City`), and `invalid_header_tool` appears struck-through under an **"Excluded (SEP-2243)"** divider in the sidebar with the reason on hover (a conforming Streamable HTTP client MUST drop it from `tools/list`; the Inspector surfaces _why_). Under SDK v2 a `tools/call` that rejects with **`-32602`** now renders as a distinct error panel rather than an `isError` result — headed **"Unknown Tool"** when the message names a missing tool (reproduce by calling a tool the server dropped from its list), or **"Invalid Parameters"** for any other `-32602` (run `trigger_invalid_params`).
+
+`test-servers/configs/pagination-http.json` is the **page-by-page fetch showcase** (#1721). It serves 12 tools, 12 resources, and 12 prompts (presets `numbered_tools` / `numbered_resources` / `numbered_prompts`, `count: 12`) with `maxPageSize` of 4 for each, so every list paginates into three pages. Turn on **"Fetch Lists One Page at a Time"** (Server Settings — the `paginatedLists` setting, or the **Paginated** switch in a list sidebar) and the Tools/Resources/Prompts lists load page 1 only (4 items) with a **Load next page** control and an _N pages loaded_ status; each click fetches the next 4 and appends them, and Refresh resets to page 1. With the switch off (the default), the same lists auto-aggregate all three pages on connect.
+
+`test-servers/configs/advertised-extensions-http.json` is the **advertised-extensions showcase** (#1739). It serves `echo` (always) and a `get_weather` tool that is **gated on the `io.modelcontextprotocol/tasks` extension** (`extensionGatedTools`): the tool is registered but starts disabled, and the server enables it on `notifications/initialized` only when the connected client declared that extension in its `capabilities.extensions`. Connect (the Inspector advertises the Tasks extension by default) and the Tools list shows both `echo` and `get_weather`. Open **Server Settings → Advertised Extensions**, uncheck **Tasks (io.modelcontextprotocol/tasks)**, and reconnect: the client now advertises no extensions, the server never enables `get_weather`, and the Tools list shows only `echo`. This demonstrates the debugging knob — a server legitimately changing tool registration on what the client advertises. (Legacy stateful leg only; the modern per-request leg has no persistent `oninitialized`.)
+
+`test-servers/configs/logging-legacy-http.json` and `test-servers/configs/logging-modern-http.json` are the **logging era-fork showcase** (#1629). Both serve `logging: true` plus a `send_notification` tool that emits a `notifications/message` at a chosen level; the legacy one is a plain streamable-HTTP server (`logging/setLevel` era) and the modern one sets `transport.modern: true`. Connect to the legacy server and open the **Logs** tab to get the session-scoped **Set Active Level** selector + **Set** button; calling `send_notification` streams the log into the panel. Connect to the modern one with **Protocol Era = Modern** and the same tab instead shows the **Log Level per Request** control — pick a level to opt in and the client stamps `_meta["io.modelcontextprotocol/logLevel"]` on every subsequent request (verify in the Network tab's request body); calling `send_notification` then streams the log into the panel over the request's SSE response. Set the control back to **Off** and the same call is silently gated — the request omits the `logLevel` key, so the log never arrives. That gating is faithful to the spec ("a server MUST NOT emit `notifications/message` for a request that didn't opt in") because `send_notification` emits through the SDK's request-scoped, threshold-aware `extra.log` (`ctx.mcpReq.log`): on the modern leg it reads the per-request `logLevel` opt-in from the request envelope and drops the message when the client didn't opt in or the level is below the requested severity; on legacy it honors the session level from `logging/setLevel`. Because it emits through the request's `notify`, the modern response upgrades to SSE and the log rides the originating request's stream.
+
+`test-servers/configs/subscriptions-legacy-http.json` and `test-servers/configs/subscriptions-modern-http.json` are the **resource-subscription era-fork showcase** (#1630). Both serve three `numbered_resources` with `subscriptions: true`; the legacy one also serves an `update_resource` tool, and the modern one sets `transport.modern: true`. Connect to the **legacy** server, open a resource in the **Resources** tab and click **Subscribe** — the client sends `resources/subscribe` (Network/Protocol view) and the Subscriptions section lists the URI with no stream chrome; call `update_resource` with that URI and the server updates the content and emits `notifications/resources/updated`, stamping the subscribed tile's last-updated time. Connect to the **modern** server with **Protocol Era = Modern** and the same Subscribe instead sends **`subscriptions/listen`** (its filter carries `resourceSubscriptions` + the `resourcesListChanged` opt-in) and resolves on `notifications/subscriptions/acknowledged`; the Subscriptions section then shows the stream-status badge (`Connecting…` → `Listening`) in its header, and if the long-lived stream drops it reconnects by re-listing. The modern config deliberately **omits** `update_resource`: the SDK's modern leg is stateless/per-request (`createMcpHandler(() => createMcpServer(config))`), so the tool would run against a throwaway server instance — the content change wouldn't persist for the next `resources/read`, and its `resources/updated` wouldn't reach the (separate) listen stream — which is more confusing than useful. The live update-notification round-trip is therefore demonstrated on the legacy (stateful-session) server; the modern server is for the subscribe/listen/badge behavior. (The Inspector's _receive_ path is era-transparent, so a real stateful modern server that routes `resources/updated` onto the listen stream drives the subscribed tile the same way.)
+
+`test-servers/configs/tasks-legacy-http.json` and `test-servers/configs/tasks-modern-http.json` are the **Tasks era-fork showcase** (#1631). The legacy server advertises `capabilities.tasks` (`tasks: { list, cancel }`) with the `simple_task` / `progress_task` / `elicitation_task` presets — connect to it, run one of those tools with **Run as task** on, and the **Tasks** tab lists it (populated via `tasks/list`), polls `tasks/get`, fetches the payload with the blocking `tasks/result`, and cancels with `tasks/cancel`. The modern server sets `transport.modern: true` and `tasksExtension: true`, advertising the `io.modelcontextprotocol/tasks` extension (SEP-2663) and serving the `modern_task` / `modern_input_task` tools. Connect with **Protocol Era = Modern**: the **Tasks** tab is now gated on the negotiated extension (not `capabilities.tasks`). Run `modern_task` as a task — the `tools/call` returns a `CreateTaskResult` (`resultType: "task"`, visible in the Protocol/Network tabs), the client polls **`tasks/get`** (no `tasks/list`), and the completed task inlines its result (no blocking `tasks/result`). Run `modern_input_task` and the task moves to `input_required`, surfacing an embedded elicitation through the pending-request modal; answering it sends **`tasks/update`** with the `inputResponses`, and the next poll completes. SDK v2 removed all tasks support **and** era-gates the `tasks/*` spec methods out of the modern era on both sides — so the Inspector drives the extension itself (the `resultType: "task"` frame is rewritten at the transport into a `CallToolResult` carrying the handle; `tasks/get`/`update`/`cancel` ride a raw-wire request channel with the full modern envelope), and the test server serves `tasks/*` from an Express interceptor ahead of the SDK handler (the SDK's modern leg would answer them `-32601`). The Tasks tab's **Refresh** re-polls the handles already known to the client (modern has no server-side task list).
+
+## Building
+
+```bash
+npm run build     # builds all clients: web → cli → tui → launcher
+```
+
+Individual clients: `build:web`, `build:cli`, `build:tui`, `build:launcher`. The web build produces both the browser SPA (`clients/web/dist`, Vite) and the Node prod-server runner (`clients/web/build`, tsup).
+
+## Testing & the quality gate
+
+Each client self-validates from its own folder; the root scripts chain them. There is **no** aggregate root `test` script — use `validate` (fast) or `coverage` (the gate).
+
+| Script                | What it does                                                                                                                                                                                                                                              |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run validate`    | Runs `verify:format-coverage` (asserts every tracked source file is format-gated) first, then `validate:core` (the shared `core/` `format:check` + `lint` gate), then per client: `format:check` + `lint` + **`typecheck`** (cli/tui only) + `build` + fast unit tests. The quick inner-loop check.                                          |
+| `npm run coverage`    | The **per-file ≥90% gate** (lines/statements/functions/branches) under v8 instrumentation, per client. CI-enforced. For web this also runs the integration project and covers the shared `core/` runtime (including `core/json` and `core/client`).       |
+| `npm run smoke`       | End-to-end smokes through the built launcher (`--help` dispatch + prod cli/tui/web), plus a headless-Chromium boot smoke that runs the prod web bundle and asserts a clean first render (no uncaught error — sync exception or unhandled rejection, how a Node built-in reaching the browser bundle manifests).                               |
+| `npm run verify:build-gate` | Runs a real `vite build` with a Node built-in forced into the browser graph and asserts the build **fails** via the #1769 gate (which turns Vite's browser-externalization warning into a hard error). Guards against the warning phrasing drifting in a Vite bump and silently disabling the gate. Part of `npm run ci`.                        |
+| `npm run verify:format-coverage` | Parses the `format:check` globs out of every `package.json` (only those reachable from `validate`), enumerates all tracked source files, and **fails** listing any not covered by a glob — the durable guard for the "every first-party source file is format-gated" invariant (#1792). Runs first in `validate`.                        |
+| `npm run test:scripts` | Table-driven unit tests (`node --test`) for the guard's own pure parsers (`scripts/lib/npm-scripts.mjs` + the exported helpers of `verify-typecheck-coverage.mjs`), one case per rule they encode. Runs in `validate` — and `verify:typecheck-coverage` guards *this* gate in turn (reachable from `validate`, non-empty test set, every test file matched by the `test:scripts` glob), since `node --test` silently skips a file its glob misses and still exits 0. |
+| `npm run verify:typecheck-coverage` | The typecheck-coverage analog of the above (#1791): for each Node client (auto-discovered from disk — enrolled via its `typecheck` script's projects, or for a `tsc -b` client like `clients/web` via its `tsconfig.json` `references`) it runs those projects with `tsc --listFilesOnly`, unions them, and **fails** listing any tracked `.ts`/`.tsx`/`.mts`/`.cts` under the client that lands in no project (so a new top-level config/helper can't silently go untypechecked). It also requires, deny-by-default, the first-party TS no client owns (`test-servers/src`, the root `vitest.shared.mts`, all of `core/`, and any new top-level location) to land in some client project's tsc pass — so a `core` `*.tsx` web's projects don't reach is caught too. Also asserts the gate is wired (each client's typecheck pass — its `typecheck` script, or web's `tsc -b` — is reachable from its `validate`, and the root chain runs each client's `validate`). Runs in `validate`.                        |
+| `npm run ci`          | **Mandatory pre-push command.** `validate` → `coverage` → `verify:build-gate` → `smoke` → Storybook. A true superset of GitHub CI.                                                                                                                        |
+| `npm run pack:verify` | Publish smoke — see [Publishing](#publishing).                                                                                                                                                                                                          |
+
+Per-client scripts exist too (`validate:web`, `coverage:cli`, `smoke:tui`, …), plus root `validate:core` / `format:core` for the shared `core/` package, `format:scripts` for the root `scripts/` tooling, and `format:shared` / `lint:shared` for the root "shared" surface (`test-servers/src/**`, `vitest.shared.mts`, the root `eslint.config.js`). Run `npm run format` before committing — the root `format` fixes `core/`, the root `scripts/`, the shared surface, and every client; `validate` runs the non-fixing `format:check` and fails CI on any unformatted file.
+
+For the full testing rules — the ≥90% per-file gate, where test files live, the unit vs. integration vs. storybook projects, and the `v8 ignore` policy — see [`AGENTS.md`](./AGENTS.md).
+
+## Publishing
+
+The root `@modelcontextprotocol/inspector` package ships as **one tarball with a single version number** — no separate `-web` / `-cli` / `-tui` / `-core` packages. `npm run build` builds every client, then `prepack` runs before `npm publish`. Runtime dependencies are declared on the root `package.json`; client builds bundle `@inspector/core` and externalize npm packages resolved from the root install.
+
+### What ships, and the packaging invariants
+
+The root `package.json` `"files"` allowlist is the source of truth for the tarball. A few non-obvious entries exist because they are read **at runtime** or were silently dropped by npm's packlist — do not remove them without re-running `npm run pack:verify`:
+
+- **No source maps.** The client bundlers set `sourcemap: false` (`clients/{cli,tui}/tsup.config.ts`, `clients/web/tsup.runner.config.ts`); Vite and the launcher's `tsc` already emit none. Maps are ~half the unpacked size and aren't needed at runtime — debug via `npm run dev` on the source.
+- **`clients/web/build` ships via `clients/web/.npmignore`.** `clients/web/.gitignore` lists `build/`, and npm's packlist honors that nested `.gitignore` over the root `"files"` allowlist — so the prod web-server runner was silently missing from the tarball while `clients/web/dist` slipped through (its `.gitignore` only lists `dist-ssr`). `clients/web/.npmignore` overrides the `.gitignore` for publishing so both `build/` (runner) and `dist/` (SPA) ship. The other clients don't need this — none ship a nested `.gitignore`.
+- **A single version number, read from the root `package.json`.** The Inspector ships as one package with one version, so only the **root** `package.json` carries a `version` — the four `clients/*/package.json`s deliberately have none. Every Node client (CLI, TUI, and the web backend) resolves the version through the shared `readInspectorVersion()` reader in `core/node/version.ts`, which walks up to the root manifest (always present in the tarball). No client `package.json` is read at runtime, so none needs to ship. The web **browser** can't read the filesystem; it gets its version from the backend via `GET /api/config` (see [#1639](https://github.com/modelcontextprotocol/inspector/issues/1639)).
+
+### `npm run pack:verify` — publish smoke against the real tarball
+
+The `smoke:*` scripts run against the in-repo build tree, which is **not** the published package. `npm run pack:verify` (`scripts/pack-and-verify.mjs`) closes that gap: it builds, `npm pack`s the publishable tarball (asserting no source maps ship and that the runtime-required files are present), installs the tarball into a **clean throwaway consumer** — a fresh temp directory where it runs a real `npm install <tgz>` (pulls runtime deps, runs `postinstall`), exactly as `npx @modelcontextprotocol/inspector` would — and drives the installed `mcp-inspector` bin end to end: `--help` dispatch, a real `--cli tools/list` over stdio, and a prod `--web` boot that must serve `/` from the shipped `dist`. It catches "works in `--dev`, breaks under `npx …`" path/packaging failures. It requires network access (the install pulls deps), so it is a local / release check, **not** part of the fast `validate`/`ci` loop.
+
+### Cutting a release
+
+Publishing is automated by two release-gated jobs in [`.github/workflows/main.yml`](.github/workflows/main.yml) (`github.event_name == 'release'`, both `needs: build`):
+
+- **`publish`** — the npm package. Runs `npm run pack:verify` as the pre-publish gate, asserts the release tag matches the root `package.json` version, then `npm publish --access public --provenance` — a single `npm publish` (v2 is not an npm workspace, so there is no v1-style `publish-all`/`--workspaces`), with a signed provenance attestation via GitHub OIDC (`id-token: write`, `environment: release`, `NPM_TOKEN`).
+- **`publish-github-container-registry`** — the container image (see [Docker](#docker)).
+
+Because there is **one version number** (only the root `package.json` has one — the clients carry none, so there is nothing to keep in sync and no `check-version` step), the release flow is just:
+
+```bash
+npm version <major|minor|patch>   # bumps the root package.json + tags
+git push --follow-tags
+# then draft & publish a GitHub Release for that tag → triggers `publish`
+```
+
+The release's target commit selects which workflow runs, so this only publishes when a release is cut from a commit carrying this (v2) workflow.
+
+### Docker
+
+A container image is published to GHCR (`ghcr.io/modelcontextprotocol/inspector`, `linux/amd64` + `linux/arm64`) by the release workflow. The [`Dockerfile`](Dockerfile) is a two-stage build: the first stage installs and `npm pack`s the publishable tarball; the second stage `npm install -g`s that tarball, so the image ships the exact same artifact as npm, with a clean `mcp-inspector` bin.
+
+```bash
+# run the web UI (reads the auth token from the container logs)
+docker run --rm -p 6274:6274 ghcr.io/modelcontextprotocol/inspector
+
+# or build the image locally
+docker build -t mcp-inspector .
+docker run --rm -p 6274:6274 mcp-inspector
+```
+
+The image defaults to `--web` bound to `0.0.0.0:6274` with browser auto-open disabled; override the args to run another mode (`docker run --rm ghcr.io/modelcontextprotocol/inspector --cli …`). Pass `-e MCP_INSPECTOR_API_TOKEN=…` to set a known token (otherwise one is generated and printed in the logs), or `-e DANGEROUSLY_OMIT_AUTH=true` to disable auth. Binding `0.0.0.0` (all network interfaces) is refused by default outside a container — it exposes the process-spawning backend to the local network — so the image opts in explicitly with `DANGEROUSLY_BIND_ALL_INTERFACES=true` (already set in the `Dockerfile`); a bare `HOST=0.0.0.0` without that flag exits with an error. If you **remap the published port** (`-p 8080:6274`), the browser's origin (`http://localhost:8080`) no longer matches the in-container port, so set `-e ALLOWED_ORIGINS=http://localhost:8080,http://127.0.0.1:8080` (or run `-e CLIENT_PORT=8080 -p 8080:8080`) or connects will 403. `ALLOWED_ORIGINS` **replaces** the default list rather than merging, so list every loopback form you'll browse from (see the [web README](./clients/web/README.md#host-binding--the-origin-allow-list)). The image runs as the non-root `node` user and has a `HEALTHCHECK` that probes the web UI — it assumes the default `--web` mode, so add `--no-healthcheck` when running `--cli`/`--tui` (which have no web server).
+
+## Contributing — `AGENTS.md` and `CLAUDE.md`
+
+**[`AGENTS.md`](./AGENTS.md) is the contract for changing this codebase, and it applies to humans and AI agents alike.** It is not agent-only boilerplate — it holds the project's real conventions: the issue-and-board workflow, branch/label rules, the TypeScript and Mantine/React standards, the testing and coverage requirements, and the mandatory pre-push gate. Read it before making changes, and keep it up to date when you change structure, tooling, or rules.
+
+`CLAUDE.md` is the entry point the [Claude Code](https://claude.com/claude-code) agent loads automatically; it simply includes `AGENTS.md` and this README, so both agents and humans work from the same source of truth. If you use a different agent that reads `AGENTS.md`, you get the same rules.
+
+A key rule worth surfacing here: **all work is issue-driven.** Before starting, find or create a tracking issue on the v2 project board; open PRs against `v2/main` with `Closes #<issue>`. The exact recipes (labels, board IDs, statuses) are in `AGENTS.md`.
+
+## License
+
+MIT.

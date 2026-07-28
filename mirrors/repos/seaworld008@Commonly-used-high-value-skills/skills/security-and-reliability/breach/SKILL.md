@@ -1,15 +1,15 @@
 ---
 name: breach
-description: 'Designing red team attack scenarios, building threat models, applying MITRE ATT&CK/OWASP frameworks, running Purple Team exercises, and performing AI/LLM red teaming. Use when adversarial security validation is needed.'
-zh_description: "用于breach，支持安全扫描、审计、加固和风险治理。"
-version: "1.0.9"
+description: '红队场景、攻击路径、威胁建模和对抗演练设计。'
+zh_description: "红队场景、攻击路径、威胁建模和对抗演练设计。"
+version: "1.0.0"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/breach"
 license: MIT
 tags: '["breach", "security"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-20"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "advanced"
 ---
@@ -105,7 +105,7 @@ Route elsewhere when the task is primarily:
 - For vendor and tooling selection, apply OWASP Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling v1.0 — distinguishes meaningful adversarial testing from "jailbreak-only" offerings; covers simple GenAI (chatbots, RAG) and advanced systems (tool-calling agents, MCP architectures, multi-agent workflows). [Source: OWASP Vendor Evaluation Criteria for AI Red Teaming Providers & Tooling v1.0 (2025)](https://genai.owasp.org/resource/owasp-vendor-evaluation-criteria-for-ai-red-teaming-providers-tooling-v1-0/)
 - Use MITRE ATT&CK v19 (released 2026-04-28) for technique mapping — Enterprise contains 15 Tactics, 222 Techniques, 475 Sub-Techniques. [Source: MITRE ATT&CK April 2026 Updates](https://attack.mitre.org/resources/updates/updates-april-2026/)
 - Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Breach; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Breach; P2, P1 recommended).
 
 ---
 
@@ -336,7 +336,8 @@ All subagents share the threat model (read-only) produced in the MODEL phase. Th
 | `reference/supply-chain-attack-design.md` | You are modeling supply chain attacks (dependency confusion, typosquatting, build-tool compromise, postinstall scripts) with SBOM/SLSA/in-toto verification guidance. |
 | `reference/social-engineering-design.md` | You are planning social engineering scenarios (vishing, smishing, tailgating, OSINT pretexting, BEC, deepfakes) coordinated with an awareness program. |
 | `reference/handoffs.md` | You need handoff templates for passing findings to Builder, Sentinel, Radar, Scribe, or Mend. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the red-team report, deciding adaptive thinking depth at framework selection, or front-loading target type/framework/cadence at FRAME. Critical for Breach: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the red-team report, deciding adaptive thinking depth at framework selection, or front-loading target type/framework/cadence at FRAME. Critical for Breach: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Breach-specific Output/Next schema. |
 
 ---
 
@@ -351,29 +352,7 @@ All subagents share the threat model (read-only) produced in the MODEL phase. Th
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `SCOPE → MODEL → PLAN → EXECUTE → REPORT` and emit `_STEP_COMPLETE`. Breach-specific Constraints in `_AGENT_CONTEXT`: target scope, framework preference, authorization level.
-
-Breach-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Breach
-  Task_Type: threat_model | attack_scenario | ai_red_team | purple_team | full_assessment
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    findings: List[{id: "FIND-XXX", severity: Critical | High | Medium | Low, title}]
-    threat_model: [Framework used and key threats]
-    attack_scenarios: [Count and coverage]
-    files_changed: List[{path, type, changes}]
-  Handoff:
-    Format: BREACH_TO_[NEXT]_HANDOFF
-    Content: [Handoff content for next agent]
-  Risks: [Untested attack surfaces, scope limitations]
-  Next: [NextAgent] | VERIFY | DONE
-  Reason: [Why this Status/Next; if BLOCKED/FAILED, what is needed to unblock]
-```
-
----
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Breach-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

@@ -16,7 +16,7 @@ component_xx/
         ├── scripts/
         │   └── action.lua
         └── assets/
-            └── image.bin
+            └── icon.jpg
 ```
 
 Notes:
@@ -37,18 +37,18 @@ Notes:
   "description": "Short capability description.",
   "author": "bob",
   "metadata": {
+    "category": ["game", "ui"],
+    "tags": ["flappybird", "arcade", "demo", "button", "touch"],
+    "peripherals": ["display"],
     "cap_groups": ["cap_lua"],
-    "manage_mode": "web",
-    "category": ["utility", "ui"],
-    "peripherals": [],
-    "tags": ["weather", "forecast"]
+    "manage_mode": "web"
   },
-  "simulator": {
-    "entry": "scripts/action.lua",
-    "files": [
-      "scripts/action.lua",
-      "assets/icon.bin"
-    ]
+  "execution": {
+    "entry": "scripts/flappybird.lua",
+    "icon": "assets/icon.jpg",
+    "args": {},
+    "order": 10,
+    "visible": true
   }
 }
 ---
@@ -70,16 +70,18 @@ Rules:
 - `metadata.cap_groups` is optional. When present, it must be a JSON array of non-empty unique strings and declares the capability groups that need to be activated.
 - `metadata.manage_mode` must be `readonly`, `web`, or `runtime`. Use `web` for ESP-Claw Skills Lab packaged skills. On device, `web` is treated the same as `readonly` for management (for example unregister rules). `runtime` is reserved for skills registered by the runtime.
 - `metadata.category` must contain at least one value, and every value must be in the category allowlist.
-- `metadata.category` value `ui` marks a Skill as browser-simulator capable. Web tools should only expose simulator entry points for Skills that explicitly include `ui`.
 - `metadata.peripherals` may contain zero or more values, and every value must be in the peripheral allowlist.
 - `metadata.tags` is optional.
 - `metadata.tags`, when present, must be a string array.
 - `metadata.tags` is free-form and is not validated against an allowlist.
 - `metadata.tags` must not repeat any value already present in `metadata.category` or `metadata.peripherals`.
-- If `metadata.category` contains `ui`, the frontmatter must include a `simulator` object.
-- `simulator.entry` is the skill-relative Lua entry script used by the browser simulator, for example `scripts/action.lua`.
-- `simulator.files` is the complete skill-relative file list that the browser simulator must download and mount before running the entry script. It must include `simulator.entry` and any required Lua libraries, assets, fonts, or data files.
-- `simulator.entry` and `simulator.files` must not use absolute paths, `{CUR_SKILL_DIR}`, or `..`; paths are always relative to the skill directory.
+- `execution` is optional. When present, it declares a System UI launcher entry for the skill.
+- `execution.entry` is required when `execution` is present. It must be a skill-owned relative `.lua` path such as `scripts/action.lua`.
+- `execution.icon` is optional. It must be a skill-owned relative `.jpg` or `.jpeg` launcher icon path when present. System UI decodes it to its fixed launcher icon size at runtime.
+- `execution.args` is optional. It must be a JSON object and is passed to the launcher script as compact JSON.
+- `execution.order` is optional. Lower values appear earlier in the launcher.
+- `execution.visible` is optional and defaults to `true`; set it to `false` to keep the execution metadata without showing it in the launcher.
+- `execution` does not support a `title` field. The launcher uses the skill id as the item title.
 - Additional keys at the root of the frontmatter or inside `metadata` may appear (for example tooling or Skills Lab fields). The device runtime ignores keys it does not read.
 
 ### Description

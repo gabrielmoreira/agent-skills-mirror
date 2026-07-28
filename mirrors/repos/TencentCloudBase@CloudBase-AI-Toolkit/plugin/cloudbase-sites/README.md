@@ -36,24 +36,30 @@ paths instead of `npx plugins add`.
 Add the CloudBase marketplace, then install the plugin:
 
 ```bash
-# Add the marketplace (do this once)
-codex plugin marketplace add TencentCloudBase/CloudBase-MCP --ref main --name cloudbase-plugins
+# Add the marketplace (do this once; sparse avoids full-repo clone)
+codex plugin marketplace add TencentCloudBase/CloudBase-MCP --ref main \
+  --sparse .agents/plugins \
+  --sparse plugin
 
 # Install the sites plugin
-codex plugin add cloudbase-sites@cloudbase-plugins
+codex plugin add cloudbase-sites@tencent-cloudbase
 ```
 
 Verify the marketplace is active:
 
 ```bash
-codex plugin list --marketplace cloudbase-plugins
+codex plugin list --marketplace tencent-cloudbase
 ```
 
 To update the plugin, upgrade the marketplace:
 
 ```bash
-codex plugin marketplace upgrade cloudbase-plugins
+codex plugin marketplace upgrade tencent-cloudbase
 ```
+
+Codex prefers `.agents/plugins/marketplace.json` (falls back to
+`.claude-plugin/marketplace.json`). Sparse must include both paths;
+`plugin` alone is not enough.
 
 ### Claude Code
 

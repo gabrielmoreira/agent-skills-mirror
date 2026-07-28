@@ -309,6 +309,110 @@ Append-only. Newest at top. Each entry follows this shape:
 
 ---
 
+### 2026-07-27 — Keep the GAIA evaluator out of desktop bundles
+- **Context:** Tauri CLI 2.8.4 treats every file under `src/bin` as an
+  application binary to bundle, independently of whether Cargo declares it as
+  a feature-gated `[[bin]]` or `[[example]]`. The normal release build skipped
+  `gaia-eval`, but the macOS bundler still tried to copy it and failed because
+  `target/universal-apple-darwin/release/gaia-eval` did not exist.
+- **Decision:** Disable Cargo's automatic binary discovery, declare the desktop
+  application and legacy CLI as explicit `[[bin]]` targets, and declare
+  `gaia-eval` as a feature-gated `[[example]]` outside `src/bin`, run through
+  `cargo run --example gaia-eval`. Keep the evaluator's feature gate,
+  arguments, and `make gaia-eval` entry point unchanged.
+- **Consequences:** Tauri no longer considers the evaluator an application
+  binary, so ordinary desktop bundles do not require or ship it. Explicit
+  GAIA evaluations retain the same executable behavior and dependencies.
+- **Owner:** team.
+- **Links:** [`src-tauri/Cargo.toml`](src-tauri/Cargo.toml),
+  [`Makefile`](Makefile) (`gaia-eval`).
+
+### 2026-07-27 — Reconcile remote providers before proxy-routed requests
+- **Context:** Remote models intentionally send through the Local API Server
+  proxy, but startup left that proxy stopped when no local engine model was
+  active. A restored remote selection could therefore send its first request
+  to an unavailable `localhost:1337` and fail with connection refused until
+  the user reselected the model.
+- **Decision:** Add one serialized, idempotent remote-provider readiness
+  preflight that validates and registers the selected provider, then starts
+  the Local API Server when needed. Invoke it after provider hydration for the
+  restored remote selection and immediately before constructing a remote chat
+  model. Keep remote traffic on the existing local proxy architecture.
+- **Consequences:** Restored and first-use remote models cannot race provider
+  registration or proxy startup. Local-engine startup policy remains
+  unchanged, while remote sends may now wait for one bounded proxy-start
+  attempt and surface its failure before model construction.
+- **Owner:** team.
+- **Links:** [ATO-306](https://linear.app/atomicchat/issue/ATO-306),
+  [`web-app/src/utils/ensureRemoteProviderReady.ts`](web-app/src/utils/ensureRemoteProviderReady.ts),
+  [`web-app/src/providers/DataProvider.tsx`](web-app/src/providers/DataProvider.tsx),
+  [`web-app/src/lib/custom-chat-transport.ts`](web-app/src/lib/custom-chat-transport.ts).
+
+### 2026-07-27 — Replace advanced model settings with a focused context control
+- **Context:** The model pill exposed an advanced settings sheet whose engine
+  options were too complex for the primary Chat and Agent surfaces, while
+  context size still needed a direct control on Home and in active threads.
+- **Decision:** Remove the per-model settings gear from the model pill and add
+  one compact composer control that retains the token-usage percentage and
+  circular meter on its trigger while opening a context-size editor. Back the
+  popover with each selected local model's existing `ctx_len`
+  metadata for `llamacpp`, `llamacpp-upstream`, and `mlx`; expose the range as
+  a full-width slider whose upper bound comes from the engine's
+  `getMaxCtxTrain` capability; persist changes through the model-provider store
+  and restart a running model using its saved settings.
+- **Consequences:** Chat and Agent share one focused context-size control on
+  Home and in threads, including before token usage is available. The compact
+  token meter is no longer duplicated beside a separate context-size button.
+  Users can select any supported context size up to the model's training
+  maximum without entering a raw value. Provider navigation gears remain
+  available, and advanced model settings are no longer directly exposed from
+  the model pill.
+- **Owner:** team.
+- **Links:** [`web-app/src/containers/ContextSizeControl.tsx`](web-app/src/containers/ContextSizeControl.tsx),
+  [`web-app/src/containers/ChatInput.tsx`](web-app/src/containers/ChatInput.tsx),
+  [`web-app/src/containers/DropdownModelProvider.tsx`](web-app/src/containers/DropdownModelProvider.tsx).
+
+### 2026-07-27 — Run Windows GAIA evaluation on the selected upstream GPU backend
+- **Context:** `make gaia-eval` inherited the macOS-oriented TurboQuant
+  `llama-server` path on every platform. On Windows this omitted `.exe` and
+  selected the bundled TurboQuant CPU fallback even when development setup had
+  already installed the hardware-selected upstream backend, such as
+  `win-cuda-13.3-x64`.
+- **Decision:** Default `GAIA_LLAMA_SERVER` on Windows to the prepared
+  `llamacpp-backend-upstream/build/bin/llama-server.exe`. Preserve the existing
+  TurboQuant default on other platforms and preserve an explicit
+  `GAIA_LLAMA_SERVER` override everywhere.
+- **Consequences:** Windows GAIA runs use the same CUDA 13, CUDA 12, Vulkan, or
+  CPU upstream binary selected by the existing Windows backend setup instead
+  of silently benchmarking the TurboQuant CPU fallback. GAIA does not download
+  or replace backends itself; the selected resource must already exist.
+- **Owner:** team.
+- **Links:** [`Makefile`](Makefile) (`GAIA_LLAMA_SERVER`, `gaia-eval`),
+  [`scripts/dev-windows.ps1`](scripts/dev-windows.ps1).
+
+### 2026-07-27 — Evaluate the Rust Agent sequentially on gated GAIA validation
+- **Context:** Atomic Chat needed a repeatable benchmark for its direct Rust
+  Agent loop that fits one local model in memory and does not depend on the
+  Tauri UI or IPC.
+- **Decision:** Add a feature-gated headless `gaia-eval` binary and
+  `make gaia-eval`. Load and cache the official gated GAIA 2023 validation
+  split through Hugging Face, start one dedicated `llama-server` with one
+  slot, and call `core::agent::runner::run_turn` directly for isolated tasks
+  in a strictly sequential loop. Keep workspace path policy, shell hard
+  blocks, SSRF protections, task timeouts, event capture, GAIA-compatible
+  scoring, and JSON plus terminal reporting. Default runs to Level 1 while
+  retaining `GAIA_LEVEL` / `--level` as an explicit override.
+- **Consequences:** Local models can be compared through one reproducible
+  command without competing inference jobs or GUI state. A valid gated
+  Hugging Face token and local server/model paths remain operator
+  prerequisites. Unconfigured runs cover only Level 1; Levels 2 and 3 require
+  an explicit filter. Parallel execution is deliberately deferred until
+  models or hardware can support multiple independent slots.
+- **Owner:** team.
+- **Links:** [`src-tauri/src/core/agent/eval/`](src-tauri/src/core/agent/eval/),
+  [`src-tauri/src/bin/gaia-eval.rs`](src-tauri/src/bin/gaia-eval.rs),
+  [`Makefile`](Makefile) (`gaia-eval`).
+
 ### 2026-07-24 — Let users revoke or downgrade Agent folder access
 - **Context:** Connected external Agent folders were permanently editable for
   the thread and had no management controls after being added.

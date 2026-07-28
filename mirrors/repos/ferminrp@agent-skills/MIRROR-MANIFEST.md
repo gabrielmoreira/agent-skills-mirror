@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 32 file(s) materialized.
+Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ferminrp/agent-skills` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 32 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -86,11 +86,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 25 | ✓ | [`skills/ripio-wfiat/references/tokens.md`](skills/ripio-wfiat/references/tokens.md) |
 | 26 | ✓ | [`skills/ripio-wfiat/SKILL.md`](skills/ripio-wfiat/SKILL.md) |
 | 27 | ✓ | [`skills/travel-promos-argentina/SKILL.md`](skills/travel-promos-argentina/SKILL.md) |
-| 28 | ✓ | [`skills/uniswap-v4-subgraph/references/v4-queries.md`](skills/uniswap-v4-subgraph/references/v4-queries.md) |
-| 29 | ✓ | [`skills/uniswap-v4-subgraph/SKILL.md`](skills/uniswap-v4-subgraph/SKILL.md) |
-| 30 | ✓ | [`skills/workflowy/references/api-reference.md`](skills/workflowy/references/api-reference.md) |
-| 31 | ✓ | [`skills/workflowy/SKILL.md`](skills/workflowy/SKILL.md) |
-| 32 | ✓ | [`skills/writing-well/SKILL.md`](skills/writing-well/SKILL.md) |
+| 28 | ✓ | [`skills/tvmaze-series-tracker/references/tvmaze-api.md`](skills/tvmaze-series-tracker/references/tvmaze-api.md) |
+| 29 | ✓ | [`skills/tvmaze-series-tracker/scripts/tvmaze_tracker.py`](skills/tvmaze-series-tracker/scripts/tvmaze_tracker.py) |
+| 30 | ✓ | [`skills/tvmaze-series-tracker/SKILL.md`](skills/tvmaze-series-tracker/SKILL.md) |
+| 31 | ✓ | [`skills/uniswap-v4-subgraph/references/v4-queries.md`](skills/uniswap-v4-subgraph/references/v4-queries.md) |
+| 32 | ✓ | [`skills/uniswap-v4-subgraph/SKILL.md`](skills/uniswap-v4-subgraph/SKILL.md) |
+| 33 | ✓ | [`skills/workflowy/references/api-reference.md`](skills/workflowy/references/api-reference.md) |
+| 34 | ✓ | [`skills/workflowy/SKILL.md`](skills/workflowy/SKILL.md) |
+| 35 | ✓ | [`skills/writing-well/SKILL.md`](skills/writing-well/SKILL.md) |
 
 ---
 

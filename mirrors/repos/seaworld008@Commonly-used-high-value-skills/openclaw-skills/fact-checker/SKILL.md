@@ -2,13 +2,13 @@
 name: fact-checker
 description: 'Verifies factual claims in documents using web search and official sources, then proposes corrections with user confirmation. Use when the user asks to fact-check, verify information, validate claims, check accuracy, or update outdated information in documents. Supports AI model specs, technical documentation, statistics, and general factual statements.'
 zh_description: "用于事实、checker，支持信息整理、沟通和执行管理。"
-version: "1.0.0"
+version: "1.1.0"
 author: "seaworld008"
 source: "in-house"
 source_url: ""
 tags: '["checker", "fact", "productivity"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "intermediate"
 ---
@@ -76,7 +76,7 @@ For each claim, search official sources:
 - Industry standards bodies
 
 **Search strategy:**
-- Use model names + specification (e.g., "Claude Opus 4.5 context window")
+- Use the exact claim subject + specification + provider
 - Include current year for recent information
 - Verify from multiple sources when possible
 
@@ -86,8 +86,8 @@ Create a comparison table:
 
 | Claim in Document | Source Information | Status | Authoritative Source |
 |-------------------|-------------------|--------|---------------------|
-| Claude 3.5 Sonnet: 200K tokens | Claude Sonnet 4.5: 200K tokens | ❌ Outdated model name | platform.claude.com/docs |
-| GPT-4o: 128K tokens | GPT-5.2: 400K tokens | ❌ Incorrect version & spec | openai.com/index/gpt-5-2 |
+| Product supports feature X in all plans | Current plan matrix limits X to enterprise | ❌ Incorrect scope | Official pricing/docs |
+| Library Y 2.4 is the current stable release | Registry and release page list a newer stable version | ⚠️ Outdated | Official registry/release |
 
 **Status codes:**
 - ✅ Accurate - claim matches sources
@@ -109,19 +109,19 @@ Present findings in structured format:
 
 ### Issues Requiring Correction
 
-#### Issue 1: Outdated AI Model Reference
+#### Issue 1: Outdated Product Specification
 **Location:** Line 77-80 in docs/file.md
-**Current claim:** "Claude 3.5 Sonnet: 200K tokens"
-**Correction:** "Claude Sonnet 4.5: 200K tokens"
-**Source:** https://platform.claude.com/docs/en/build-with-claude/context-windows
-**Rationale:** Claude 3.5 Sonnet has been superseded by Claude Sonnet 4.5 (released Sept 2025)
+**Current claim:** "<exact text from the document>"
+**Correction:** "<claim supported by the current official source>"
+**Source:** <direct official documentation URL>
+**Rationale:** <what changed, including effective or release date>
 
-#### Issue 2: Incorrect Context Window
+#### Issue 2: Incorrect Scope or Unit
 **Location:** Line 79 in docs/file.md
-**Current claim:** "GPT-4o: 128K tokens"
-**Correction:** "GPT-5.2: 400K tokens"
-**Source:** https://openai.com/index/introducing-gpt-5-2/
-**Rationale:** 128K was output limit; context window is 400K. Model also updated to GPT-5.2
+**Current claim:** "<exact text>"
+**Correction:** "<correct value with unit and scope>"
+**Source:** <direct primary-source URL>
+**Rationale:** <explain whether the error was version, unit, geography, plan, or date>
 ```
 
 ### Step 5: Apply corrections with user approval
@@ -134,14 +134,9 @@ Present findings in structured format:
 
 **When applying corrections:**
 
-```python
-# Use Edit tool to update document
-# Example:
-Edit(
-    file_path="docs/03-写作规范/AI辅助写书方法论.md",
-    old_string="- Claude 3.5 Sonnet: 200K tokens（约 15 万汉字）",
-    new_string="- Claude Sonnet 4.5: 200K tokens（约 15 万汉字）"
-)
+```text
+Apply an exact, anchored replacement only after re-reading the current file.
+Preserve surrounding formatting and attach the source near the corrected claim.
 ```
 
 **After corrections:**
@@ -155,9 +150,9 @@ Edit(
 ### Query construction
 
 **Good queries** (specific, current):
-- "Claude Opus 4.5 context window 2026"
-- "GPT-5.2 official release announcement"
-- "Gemini 3 Pro token limit specifications"
+- "<provider> <product> official plan limits <current year>"
+- "<library> official release notes stable version"
+- "<standards body> <metric> definition <effective year>"
 
 **Poor queries** (vague, generic):
 - "Claude context"
@@ -226,7 +221,7 @@ Match precision to source:
 Include citations in corrections:
 
 ```markdown
-> **注**：具体上下文窗口以模型官方文档为准，本书写作时使用 Claude Sonnet 4.5 为主要工具。
+> **注**：产品规格和版本信息以链接的官方文档为准；核验日期：YYYY-MM-DD。
 ```
 
 Link to sources when possible.
@@ -238,9 +233,9 @@ Link to sources when possible.
 **User request:** "Fact-check the AI model context windows in section 2.1"
 
 **Process:**
-1. Identify claims: Claude 3.5 Sonnet (200K), GPT-4o (128K), Gemini 1.5 Pro (2M)
-2. Search official docs for current models
-3. Find: Claude Sonnet 4.5, GPT-5.2, Gemini 3 Pro
+1. Extract each model name, limit, unit, plan, and date as a separate claim
+2. Search each provider's current official model catalog and documentation
+3. Record the exact source page and verification date
 4. Generate report showing discrepancies
 5. Apply corrections after approval
 

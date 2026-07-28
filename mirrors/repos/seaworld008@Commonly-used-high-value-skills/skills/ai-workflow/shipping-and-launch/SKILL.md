@@ -2,14 +2,14 @@
 name: shipping-and-launch
 description: 'Prepares production launches. Use when preparing to deploy to production. Use when you need a pre-launch checklist, when setting up monitoring, when planning a staged rollout, or when you need a rollback strategy.'
 zh_description: "用于shipping、launch，支持任务规划、执行、评审和验证。"
-version: "1.0.1"
+version: "1.0.0"
 author: addyosmani
 source: "github:addyosmani/agent-skills"
 source_url: "https://github.com/addyosmani/agent-skills/blob/main/skills/shipping-and-launch/SKILL.md"
 license: MIT
 tags: '["agent", "ai", "engineering", "shipping-and-launch", "workflow"]'
-created_at: "2026-04-25"
-updated_at: "2026-06-24"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: advanced
 upstream_slug: shipping-and-launch
@@ -44,7 +44,7 @@ Ship with confidence. The goal is not just to deploy — it's to deploy safely, 
 ### Security
 
 - [ ] No secrets in code or version control
-- [ ] `npm audit` shows no critical or high vulnerabilities
+- [ ] The ecosystem's dependency audit (`npm audit`, `pip-audit`, `cargo audit`, ...) shows no critical or high vulnerabilities
 - [ ] Input validation on all user-facing endpoints
 - [ ] Authentication and authorization checks in place
 - [ ] Security headers configured (CSP, HSTS, etc.)

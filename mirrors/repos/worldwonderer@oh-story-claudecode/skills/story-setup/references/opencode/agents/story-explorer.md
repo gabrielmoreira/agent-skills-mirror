@@ -10,6 +10,7 @@ mode: subagent
 permission:
   read: allow
   edit: deny
+  bash: deny
 steps: 15
 ---
 

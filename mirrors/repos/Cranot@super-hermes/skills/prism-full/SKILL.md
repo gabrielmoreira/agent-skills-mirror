@@ -1,9 +1,22 @@
 ---
 name: prism-full
 description: "Full Prism: multi-pass structural analysis with mandatory adversarial self-correction. Designs custom analytical passes, executes them with chaining, then attacks its own findings before synthesizing. Use for maximum depth on important code or artifacts."
+version: 1.0.0
+author: Cranot
+license: MIT
+platforms: [linux, macos, windows]
+metadata:
+  hermes:
+    tags: [Prism, Analysis, Code-Analysis, Code-Review, Quality, Refactoring]
+    related_skills: [prism-scan, prism-3way, prism-discover, prism-reflect]
+    homepage: https://github.com/Cranot/super-hermes
 ---
 
 # Full Prism — Multi-Pass Analysis with Adversarial Self-Correction
+
+## When to Use
+
+Use when the artifact matters enough to pay for depth — a core module, a design about to be committed to, a document whose conclusions will be acted on. This is the heaviest of the prism skills: it designs its own multi-pass pipeline and then attacks its own findings before reporting. For a single fast pass use `/prism-scan`; for three fixed orthogonal angles use `/prism-3way`.
 
 You perform THREE phases. All are mandatory.
 

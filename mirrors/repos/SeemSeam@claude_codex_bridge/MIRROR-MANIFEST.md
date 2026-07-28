@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 42 file(s) materialized.
+Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SeemSeam/claude_codex_bridge` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 42 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -87,20 +87,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`inherit_skills/codex_skills/ccb-clear/SKILL.md`](inherit_skills/codex_skills/ccb-clear/SKILL.md) |
 | 27 | ✓ | [`inherit_skills/codex_skills/reconnect/SKILL.md`](inherit_skills/codex_skills/reconnect/SKILL.md) |
 | 28 | ✓ | [`inherit_skills/droid_skills/ask/SKILL.md`](inherit_skills/droid_skills/ask/SKILL.md) |
-| 29 | ✓ | [`inherit_skills/gemini_skills/ask/SKILL.md`](inherit_skills/gemini_skills/ask/SKILL.md) |
-| 30 | ✓ | [`inherit_skills/grok_skills/ask/SKILL.md`](inherit_skills/grok_skills/ask/SKILL.md) |
-| 31 | ✓ | [`inherit_skills/grok_skills/ccb-clear/SKILL.md`](inherit_skills/grok_skills/ccb-clear/SKILL.md) |
-| 32 | ✓ | [`inherit_skills/kimi_skills/ask/SKILL.md`](inherit_skills/kimi_skills/ask/SKILL.md) |
-| 33 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
-| 34 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
-| 35 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
-| 36 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
-| 37 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
-| 38 | ✓ | [`mcp/ccb-role-command/server.py`](mcp/ccb-role-command/server.py) |
-| 39 | ✓ | [`test/fixtures/claude-plugin-marketplace/plugins/ccb-fixture-plugin/skills/ccb-fixture-skill/SKILL.md`](test/fixtures/claude-plugin-marketplace/plugins/ccb-fixture-plugin/skills/ccb-fixture-skill/SKILL.md) |
-| 40 | ✓ | [`tools/codex-reconnect/skills/reconnect/SKILL.md`](tools/codex-reconnect/skills/reconnect/SKILL.md) |
-| 41 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
-| 42 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
+| 29 | ✓ | [`inherit_skills/droid_skills/ccb-clear/SKILL.md`](inherit_skills/droid_skills/ccb-clear/SKILL.md) |
+| 30 | ✓ | [`inherit_skills/gemini_skills/ask/SKILL.md`](inherit_skills/gemini_skills/ask/SKILL.md) |
+| 31 | ✓ | [`inherit_skills/gemini_skills/ccb-clear/SKILL.md`](inherit_skills/gemini_skills/ccb-clear/SKILL.md) |
+| 32 | ✓ | [`inherit_skills/grok_skills/ask/SKILL.md`](inherit_skills/grok_skills/ask/SKILL.md) |
+| 33 | ✓ | [`inherit_skills/grok_skills/ccb-clear/SKILL.md`](inherit_skills/grok_skills/ccb-clear/SKILL.md) |
+| 34 | ✓ | [`inherit_skills/kimi_skills/ask/SKILL.md`](inherit_skills/kimi_skills/ask/SKILL.md) |
+| 35 | ✓ | [`inherit_skills/kimi_skills/ccb-clear/SKILL.md`](inherit_skills/kimi_skills/ccb-clear/SKILL.md) |
+| 36 | ✓ | [`mcp/ccb-delegation/server_runtime_io.py`](mcp/ccb-delegation/server_runtime_io.py) |
+| 37 | ✓ | [`mcp/ccb-delegation/server_runtime_protocol.py`](mcp/ccb-delegation/server_runtime_protocol.py) |
+| 38 | ✓ | [`mcp/ccb-delegation/server_runtime_schema.py`](mcp/ccb-delegation/server_runtime_schema.py) |
+| 39 | ✓ | [`mcp/ccb-delegation/server_runtime_tools.py`](mcp/ccb-delegation/server_runtime_tools.py) |
+| 40 | ✓ | [`mcp/ccb-delegation/server.py`](mcp/ccb-delegation/server.py) |
+| 41 | ✓ | [`mcp/ccb-role-command/server.py`](mcp/ccb-role-command/server.py) |
+| 42 | ✓ | [`test/fixtures/claude-plugin-marketplace/plugins/ccb-fixture-plugin/skills/ccb-fixture-skill/SKILL.md`](test/fixtures/claude-plugin-marketplace/plugins/ccb-fixture-plugin/skills/ccb-fixture-skill/SKILL.md) |
+| 43 | ✓ | [`tools/codex-reconnect/skills/reconnect/SKILL.md`](tools/codex-reconnect/skills/reconnect/SKILL.md) |
+| 44 | ✓ | [`useful_tools/claude_skills/plan-tree/SKILL.md`](useful_tools/claude_skills/plan-tree/SKILL.md) |
+| 45 | ✓ | [`useful_tools/codex_skills/plan-tree/SKILL.md`](useful_tools/codex_skills/plan-tree/SKILL.md) |
 
 ---
 

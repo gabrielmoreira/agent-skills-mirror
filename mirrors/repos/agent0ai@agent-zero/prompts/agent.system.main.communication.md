@@ -15,6 +15,8 @@
 
 - No text output before or after the JSON object
 
+Fences in the examples below are documentation formatting only. Your actual output starts with `{` and ends with `}` — no fences, no language tag, no prose.
+
 ### Response example
 ~~~json
 {

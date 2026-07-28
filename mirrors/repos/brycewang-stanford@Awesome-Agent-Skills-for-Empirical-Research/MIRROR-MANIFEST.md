@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 37 followed patterns, 3704 file(s) materialized.
+Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 37 followed patterns, 3712 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 37 |
-| Files         | 3704 |
+| Files         | 3712 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -3762,43 +3762,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3665 | ✓ | [`skills/70-ssci-polish/references/grammar.md`](skills/70-ssci-polish/references/grammar.md) |
 | 3666 | ✓ | [`skills/70-ssci-polish/references/style.md`](skills/70-ssci-polish/references/style.md) |
 | 3667 | ✓ | [`skills/70-ssci-polish/SKILL.md`](skills/70-ssci-polish/SKILL.md) |
-| 3668 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 3669 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 3670 | → | [`docs/archive/EMPIRICAL_TOOLS_2026-06.md`](docs/archive/EMPIRICAL_TOOLS_2026-06.md) |
-| 3671 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
-| 3672 | → | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
-| 3673 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| 3674 | → | [`docs/EVALS.md`](docs/EVALS.md) |
-| 3675 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 3676 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
-| 3677 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
-| 3678 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
-| 3679 | → | [`docs/INTEROP.md`](docs/INTEROP.md) |
-| 3680 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
-| 3681 | → | [`docs/LONG_SKILL_STATUS.md`](docs/LONG_SKILL_STATUS.md) |
-| 3682 | → | [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) |
-| 3683 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
-| 3684 | → | [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) |
-| 3685 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
-| 3686 | → | [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md) |
-| 3687 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 3688 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
-| 3689 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| 3690 | → | [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
-| 3691 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
-| 3692 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
-| 3693 | → | [`docs/TRUST.md`](docs/TRUST.md) |
-| 3694 | → | [`docs/WORKFLOW_MAP.md`](docs/WORKFLOW_MAP.md) |
-| 3695 | → | [`INSTALL.md`](INSTALL.md) |
-| 3696 | → | [`README-en.md`](README-en.md) |
-| 3697 | → | [`README-ja.md`](README-ja.md) |
-| 3698 | → | [`README-ko.md`](README-ko.md) |
-| 3699 | → | [`README-zh-CN.md`](README-zh-CN.md) |
-| 3700 | → | [`README-zh-TW.md`](README-zh-TW.md) |
-| 3701 | → | [`README.md`](README.md) |
-| 3702 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| 3703 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
-| 3704 | → | [`tools/README.md`](tools/README.md) |
+| 3668 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/LICENSE`](skills/71-brycewang-lit-review-agent-tools/LICENSE) |
+| 3669 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/literature-review-tools/recipes/recipes.json`](skills/71-brycewang-lit-review-agent-tools/literature-review-tools/recipes/recipes.json) |
+| 3670 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/literature-review-tools/recipes/workflows.json`](skills/71-brycewang-lit-review-agent-tools/literature-review-tools/recipes/workflows.json) |
+| 3671 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/literature-review-tools/reference/catalog.md`](skills/71-brycewang-lit-review-agent-tools/literature-review-tools/reference/catalog.md) |
+| 3672 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/literature-review-tools/scripts/fetch_arxiv.py`](skills/71-brycewang-lit-review-agent-tools/literature-review-tools/scripts/fetch_arxiv.py) |
+| 3673 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/literature-review-tools/scripts/litrun.py`](skills/71-brycewang-lit-review-agent-tools/literature-review-tools/scripts/litrun.py) |
+| 3674 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/literature-review-tools/SKILL.md`](skills/71-brycewang-lit-review-agent-tools/literature-review-tools/SKILL.md) |
+| 3675 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/README-original.md`](skills/71-brycewang-lit-review-agent-tools/README-original.md) |
+| 3676 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 3677 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3678 | → | [`docs/archive/EMPIRICAL_TOOLS_2026-06.md`](docs/archive/EMPIRICAL_TOOLS_2026-06.md) |
+| 3679 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
+| 3680 | → | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
+| 3681 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 3682 | → | [`docs/EVALS.md`](docs/EVALS.md) |
+| 3683 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 3684 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
+| 3685 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
+| 3686 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
+| 3687 | → | [`docs/INTEROP.md`](docs/INTEROP.md) |
+| 3688 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
+| 3689 | → | [`docs/LONG_SKILL_STATUS.md`](docs/LONG_SKILL_STATUS.md) |
+| 3690 | → | [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) |
+| 3691 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
+| 3692 | → | [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) |
+| 3693 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 3694 | → | [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md) |
+| 3695 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 3696 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
+| 3697 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| 3698 | → | [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
+| 3699 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
+| 3700 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
+| 3701 | → | [`docs/TRUST.md`](docs/TRUST.md) |
+| 3702 | → | [`docs/WORKFLOW_MAP.md`](docs/WORKFLOW_MAP.md) |
+| 3703 | → | [`INSTALL.md`](INSTALL.md) |
+| 3704 | → | [`README-en.md`](README-en.md) |
+| 3705 | → | [`README-ja.md`](README-ja.md) |
+| 3706 | → | [`README-ko.md`](README-ko.md) |
+| 3707 | → | [`README-zh-CN.md`](README-zh-CN.md) |
+| 3708 | → | [`README-zh-TW.md`](README-zh-TW.md) |
+| 3709 | → | [`README.md`](README.md) |
+| 3710 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3711 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
+| 3712 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

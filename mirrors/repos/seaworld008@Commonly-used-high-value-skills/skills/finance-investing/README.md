@@ -23,9 +23,9 @@
 | `factor-backtester` | 用于factor、回测，支持投资研究、风险评估和报告生成。 | [目录](./factor-backtester/) | [SKILL.md](./factor-backtester/SKILL.md) |
 | `financial-analyst` | 用于金融、分析，支持投资研究、风险评估和报告生成。 | [目录](./financial-analyst/) | [SKILL.md](./financial-analyst/SKILL.md) |
 | `financial-data-collector` | 用于收集股票、财报、宏观和市场数据并生成分析输入。 | [目录](./financial-data-collector/) | [SKILL.md](./financial-data-collector/SKILL.md) |
-| `helm` | 用于helm，支持投资研究、风险评估和报告生成。 | [目录](./helm/) | [SKILL.md](./helm/SKILL.md) |
+| `helm` | 商业战略场景模拟、市场分析、指标预测和路线图规划。 | [目录](./helm/) | [SKILL.md](./helm/SKILL.md) |
 | `investment-memo-writer` | 用于投资、memo、writer，支持投资研究、风险评估和报告生成。 | [目录](./investment-memo-writer/) | [SKILL.md](./investment-memo-writer/SKILL.md) |
-| `ledger` | 用于ledger，支持投资研究、风险评估和报告生成。 | [目录](./ledger/) | [SKILL.md](./ledger/SKILL.md) |
+| `ledger` | 云成本、预算告警、资源规格和人工智能工作负载成本优化。 | [目录](./ledger/) | [SKILL.md](./ledger/SKILL.md) |
 | `levy` | 用于levy，支持投资研究、风险评估和报告生成。 | [目录](./levy/) | [SKILL.md](./levy/SKILL.md) |
 | `macro-regime-monitor` | 用于macro、regime、monitor，支持投资研究、风险评估和报告生成。 | [目录](./macro-regime-monitor/) | [SKILL.md](./macro-regime-monitor/SKILL.md) |
 | `options-strategy-evaluator` | 用于options、策略、评估，支持投资研究、风险评估和报告生成。 | [目录](./options-strategy-evaluator/) | [SKILL.md](./options-strategy-evaluator/SKILL.md) |

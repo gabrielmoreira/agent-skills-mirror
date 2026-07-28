@@ -1155,22 +1155,24 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
         {
           name: "envVariables",
           type: "object",
-          description: `环境变量`,
+          description: `环境变量。若包含 DATABASE_URL / MYSQL_* / POSTGRES_* / REDIS_* 等传统 TCP 连库变量，必须同时配置 vpc（vpcId+subnetId），且 ID 必须来自真实库/网络信息，禁止猜测。原生 app.rdb()/app.database() 不需要 VPC。`,
         },
         {
           name: "vpc",
           type: "object",
-          description: `私有网络配置`,
+          description: `私有网络配置（出网）。非原生 SDK、用 TCP 访问 VPC 内 MySQL/PostgreSQL/Redis 时必填。vpcId/subnetId 必须与数据库内网 VPC 一致；未知时先查控制台或询问用户，禁止填占位符。`,
           children: [
             {
               name: "vpcId",
               type: "string",
               required: true,
+              description: `VPC ID from the real database/network console (e.g. vpc-xxxxxxxx). Required for non-native TCP DB access. Do NOT invent or use placeholders.`,
             },
             {
               name: "subnetId",
               type: "string",
               required: true,
+              description: `Subnet ID in the same VPC as the private DB endpoint (e.g. subnet-xxxxxxxx). Do NOT invent or use placeholders.`,
             }
           ],
         },
@@ -1319,12 +1321,12 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
     {
       name: "envVariables",
       type: "object",
-      description: `配置更新时要合并的环境变量`,
+      description: `配置更新时要合并的环境变量。若含 DATABASE_URL / MYSQL_* / POSTGRES_* / REDIS_* 等 TCP 连库变量，必须同时提供真实 vpc（或函数已绑定完整 VPC）。禁止猜测 vpcId/subnetId。`,
     },
     {
       name: "vpc",
       type: "unknown",
-      description: `配置更新时的 VPC 信息`,
+      description: `配置更新时的 VPC 信息。非原生 TCP 连库场景必填真实 vpcId+subnetId；不要用占位符。`,
     },
     {
       name: "params",
@@ -2094,7 +2096,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
         {
           name: "EnvParams",
           type: "string",
-          description: `环境变量配置，JSON字符串格式。用于传递配置信息给服务代码，如'{"DATABASE_URL":"mysql://...","NODE_ENV":"production"}'。SDK v5.6.1+ 会自动对传入的环境变量进行 AES-256-CBC 加密传输`,
+          description: `环境变量配置，JSON字符串格式。用于传递配置信息给服务代码，如'{"DATABASE_URL":"postgres://user:pass@10.x.x.x:5432/db","NODE_ENV":"production"}'。SDK v5.6.1+ 会自动对传入的环境变量进行 AES-256-CBC 加密传输。⚠️ 若 EnvParams 含 DATABASE_URL / MYSQL_* / POSTGRES_* / REDIS_* 等传统 TCP 连库变量，必须同时配置 VpcConf，否则实例通常无法访问 VPC 内数据库`,
         },
         {
           name: "Dockerfile",
@@ -2210,19 +2212,19 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
         {
           name: "VpcConf",
           type: "object",
-          description: `VPC网络配置，用于将云托管服务部署到指定的私有网络中。需要提前创建好VPC和子网`,
+          description: `VPC网络配置（实例出网/私有网络）。用于让云托管实例接入指定 VPC，从而内网访问 MySQL/PostgreSQL/Redis/CVM 等资源。与 OpenAccessTypes（外部如何访问本服务）是不同概念。TCP 连库场景必须配置。禁止猜测 VpcId/SubnetId，须来自数据库控制台、已有资源详情、callCloudApi 或用户确认。MCP 在创建时会将 VpcConf 映射为 SDK vpcInfo(CreateType=2)；更新后必须用 queryCloudRun detail 复核 ServerConfig.VpcConf，未生效再走控制台网络设置或删建兜底`,
           children: [
             {
               name: "VpcId",
               type: "string",
               required: true,
-              description: `VPC网络ID，指定服务所在的私有网络`,
+              description: `VPC网络ID，格式如 vpc-xxxxxxxx。必须与目标数据库/Redis 处于同一地域，并优先选择同一 VPC。禁止猜测或使用占位符；须来自数据库控制台、已有资源详情、callCloudApi 或用户确认。建议首次创建即配置；已存在服务也可在 deploy 时传入，部署后必须用 queryCloudRun detail 复核是否生效`,
             },
             {
               name: "SubnetId",
               type: "string",
               required: true,
-              description: `子网ID，指定服务所在的子网`,
+              description: `子网ID，格式如 subnet-xxxxxxxx。云托管实例将占用该子网 IP，需确保有足够可用 IP`,
             }
           ],
         },

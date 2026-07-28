@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Hmbown/CodeWhale` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
+Mirror of `Hmbown/CodeWhale` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Hmbown/CodeWhale` — 26 default patterns, 0 followed patterns, 47 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 47 |
+| Files         | 49 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,47 +65,49 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`crates/tui/assets/plugins/rust-toolkit/skills/rust-check/SKILL.md`](crates/tui/assets/plugins/rust-toolkit/skills/rust-check/SKILL.md) |
 | 5 | ✓ | [`crates/tui/assets/skills/batch/SKILL.md`](crates/tui/assets/skills/batch/SKILL.md) |
 | 6 | ✓ | [`crates/tui/assets/skills/best-of-n/SKILL.md`](crates/tui/assets/skills/best-of-n/SKILL.md) |
-| 7 | ✓ | [`crates/tui/assets/skills/dataviz/SKILL.md`](crates/tui/assets/skills/dataviz/SKILL.md) |
-| 8 | ✓ | [`crates/tui/assets/skills/debug/SKILL.md`](crates/tui/assets/skills/debug/SKILL.md) |
-| 9 | ✓ | [`crates/tui/assets/skills/delegate/SKILL.md`](crates/tui/assets/skills/delegate/SKILL.md) |
-| 10 | ✓ | [`crates/tui/assets/skills/dependency-update/SKILL.md`](crates/tui/assets/skills/dependency-update/SKILL.md) |
-| 11 | ✓ | [`crates/tui/assets/skills/document/SKILL.md`](crates/tui/assets/skills/document/SKILL.md) |
-| 12 | ✓ | [`crates/tui/assets/skills/documents/SKILL.md`](crates/tui/assets/skills/documents/SKILL.md) |
-| 13 | ✓ | [`crates/tui/assets/skills/docx/SKILL.md`](crates/tui/assets/skills/docx/SKILL.md) |
-| 14 | ✓ | [`crates/tui/assets/skills/feishu/SKILL.md`](crates/tui/assets/skills/feishu/SKILL.md) |
-| 15 | ✓ | [`crates/tui/assets/skills/fleet-manager/SKILL.md`](crates/tui/assets/skills/fleet-manager/SKILL.md) |
-| 16 | ✓ | [`crates/tui/assets/skills/frontend-design/SKILL.md`](crates/tui/assets/skills/frontend-design/SKILL.md) |
-| 17 | ✓ | [`crates/tui/assets/skills/implement/SKILL.md`](crates/tui/assets/skills/implement/SKILL.md) |
-| 18 | ✓ | [`crates/tui/assets/skills/interview/SKILL.md`](crates/tui/assets/skills/interview/SKILL.md) |
-| 19 | ✓ | [`crates/tui/assets/skills/mcp-builder/SKILL.md`](crates/tui/assets/skills/mcp-builder/SKILL.md) |
-| 20 | ✓ | [`crates/tui/assets/skills/pdf/SKILL.md`](crates/tui/assets/skills/pdf/SKILL.md) |
-| 21 | ✓ | [`crates/tui/assets/skills/plan/SKILL.md`](crates/tui/assets/skills/plan/SKILL.md) |
-| 22 | ✓ | [`crates/tui/assets/skills/plugin-creator/SKILL.md`](crates/tui/assets/skills/plugin-creator/SKILL.md) |
-| 23 | ✓ | [`crates/tui/assets/skills/pptx/SKILL.md`](crates/tui/assets/skills/pptx/SKILL.md) |
-| 24 | ✓ | [`crates/tui/assets/skills/presentations/SKILL.md`](crates/tui/assets/skills/presentations/SKILL.md) |
-| 25 | ✓ | [`crates/tui/assets/skills/release/SKILL.md`](crates/tui/assets/skills/release/SKILL.md) |
-| 26 | ✓ | [`crates/tui/assets/skills/research/SKILL.md`](crates/tui/assets/skills/research/SKILL.md) |
-| 27 | ✓ | [`crates/tui/assets/skills/review/SKILL.md`](crates/tui/assets/skills/review/SKILL.md) |
-| 28 | ✓ | [`crates/tui/assets/skills/security-review/SKILL.md`](crates/tui/assets/skills/security-review/SKILL.md) |
-| 29 | ✓ | [`crates/tui/assets/skills/simplify/SKILL.md`](crates/tui/assets/skills/simplify/SKILL.md) |
-| 30 | ✓ | [`crates/tui/assets/skills/skill-creator/SKILL.md`](crates/tui/assets/skills/skill-creator/SKILL.md) |
-| 31 | ✓ | [`crates/tui/assets/skills/skill-installer/SKILL.md`](crates/tui/assets/skills/skill-installer/SKILL.md) |
-| 32 | ✓ | [`crates/tui/assets/skills/spreadsheets/SKILL.md`](crates/tui/assets/skills/spreadsheets/SKILL.md) |
-| 33 | ✓ | [`crates/tui/assets/skills/test/SKILL.md`](crates/tui/assets/skills/test/SKILL.md) |
-| 34 | ✓ | [`crates/tui/assets/skills/v4-best-practices/SKILL.md`](crates/tui/assets/skills/v4-best-practices/SKILL.md) |
-| 35 | ✓ | [`crates/tui/assets/skills/verify/SKILL.md`](crates/tui/assets/skills/verify/SKILL.md) |
-| 36 | ✓ | [`crates/tui/assets/skills/webapp-testing/SKILL.md`](crates/tui/assets/skills/webapp-testing/SKILL.md) |
-| 37 | ✓ | [`crates/tui/assets/skills/xlsx/SKILL.md`](crates/tui/assets/skills/xlsx/SKILL.md) |
-| 38 | ✓ | [`crates/tui/locales/AGENTS.md`](crates/tui/locales/AGENTS.md) |
-| 39 | ✓ | [`docs/skills/codew-release-qa-sweep/SKILL.md`](docs/skills/codew-release-qa-sweep/SKILL.md) |
-| 40 | ✓ | [`docs/skills/gh-assign-issues/SKILL.md`](docs/skills/gh-assign-issues/SKILL.md) |
-| 41 | ✓ | [`docs/skills/gh-close-issues/SKILL.md`](docs/skills/gh-close-issues/SKILL.md) |
-| 42 | ✓ | [`docs/skills/gh-compile-issues/SKILL.md`](docs/skills/gh-compile-issues/SKILL.md) |
-| 43 | ✓ | [`docs/skills/gh-credit-harvest/SKILL.md`](docs/skills/gh-credit-harvest/SKILL.md) |
-| 44 | ✓ | [`docs/skills/gh-file-issue/SKILL.md`](docs/skills/gh-file-issue/SKILL.md) |
-| 45 | ✓ | [`docs/skills/gh-find-prs/SKILL.md`](docs/skills/gh-find-prs/SKILL.md) |
-| 46 | ✓ | [`docs/skills/gh-treasure-hunt/SKILL.md`](docs/skills/gh-treasure-hunt/SKILL.md) |
-| 47 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 7 | ✓ | [`crates/tui/assets/skills/contributor-onboarding/SKILL.md`](crates/tui/assets/skills/contributor-onboarding/SKILL.md) |
+| 8 | ✓ | [`crates/tui/assets/skills/dataviz/SKILL.md`](crates/tui/assets/skills/dataviz/SKILL.md) |
+| 9 | ✓ | [`crates/tui/assets/skills/debug/SKILL.md`](crates/tui/assets/skills/debug/SKILL.md) |
+| 10 | ✓ | [`crates/tui/assets/skills/delegate/SKILL.md`](crates/tui/assets/skills/delegate/SKILL.md) |
+| 11 | ✓ | [`crates/tui/assets/skills/dependency-update/SKILL.md`](crates/tui/assets/skills/dependency-update/SKILL.md) |
+| 12 | ✓ | [`crates/tui/assets/skills/document/SKILL.md`](crates/tui/assets/skills/document/SKILL.md) |
+| 13 | ✓ | [`crates/tui/assets/skills/documents/SKILL.md`](crates/tui/assets/skills/documents/SKILL.md) |
+| 14 | ✓ | [`crates/tui/assets/skills/docx/SKILL.md`](crates/tui/assets/skills/docx/SKILL.md) |
+| 15 | ✓ | [`crates/tui/assets/skills/feishu/SKILL.md`](crates/tui/assets/skills/feishu/SKILL.md) |
+| 16 | ✓ | [`crates/tui/assets/skills/fleet-manager/SKILL.md`](crates/tui/assets/skills/fleet-manager/SKILL.md) |
+| 17 | ✓ | [`crates/tui/assets/skills/frontend-design/SKILL.md`](crates/tui/assets/skills/frontend-design/SKILL.md) |
+| 18 | ✓ | [`crates/tui/assets/skills/help/SKILL.md`](crates/tui/assets/skills/help/SKILL.md) |
+| 19 | ✓ | [`crates/tui/assets/skills/implement/SKILL.md`](crates/tui/assets/skills/implement/SKILL.md) |
+| 20 | ✓ | [`crates/tui/assets/skills/interview/SKILL.md`](crates/tui/assets/skills/interview/SKILL.md) |
+| 21 | ✓ | [`crates/tui/assets/skills/mcp-builder/SKILL.md`](crates/tui/assets/skills/mcp-builder/SKILL.md) |
+| 22 | ✓ | [`crates/tui/assets/skills/pdf/SKILL.md`](crates/tui/assets/skills/pdf/SKILL.md) |
+| 23 | ✓ | [`crates/tui/assets/skills/plan/SKILL.md`](crates/tui/assets/skills/plan/SKILL.md) |
+| 24 | ✓ | [`crates/tui/assets/skills/plugin-creator/SKILL.md`](crates/tui/assets/skills/plugin-creator/SKILL.md) |
+| 25 | ✓ | [`crates/tui/assets/skills/pptx/SKILL.md`](crates/tui/assets/skills/pptx/SKILL.md) |
+| 26 | ✓ | [`crates/tui/assets/skills/presentations/SKILL.md`](crates/tui/assets/skills/presentations/SKILL.md) |
+| 27 | ✓ | [`crates/tui/assets/skills/release/SKILL.md`](crates/tui/assets/skills/release/SKILL.md) |
+| 28 | ✓ | [`crates/tui/assets/skills/research/SKILL.md`](crates/tui/assets/skills/research/SKILL.md) |
+| 29 | ✓ | [`crates/tui/assets/skills/review/SKILL.md`](crates/tui/assets/skills/review/SKILL.md) |
+| 30 | ✓ | [`crates/tui/assets/skills/security-review/SKILL.md`](crates/tui/assets/skills/security-review/SKILL.md) |
+| 31 | ✓ | [`crates/tui/assets/skills/simplify/SKILL.md`](crates/tui/assets/skills/simplify/SKILL.md) |
+| 32 | ✓ | [`crates/tui/assets/skills/skill-creator/SKILL.md`](crates/tui/assets/skills/skill-creator/SKILL.md) |
+| 33 | ✓ | [`crates/tui/assets/skills/skill-installer/SKILL.md`](crates/tui/assets/skills/skill-installer/SKILL.md) |
+| 34 | ✓ | [`crates/tui/assets/skills/spreadsheets/SKILL.md`](crates/tui/assets/skills/spreadsheets/SKILL.md) |
+| 35 | ✓ | [`crates/tui/assets/skills/test/SKILL.md`](crates/tui/assets/skills/test/SKILL.md) |
+| 36 | ✓ | [`crates/tui/assets/skills/v4-best-practices/SKILL.md`](crates/tui/assets/skills/v4-best-practices/SKILL.md) |
+| 37 | ✓ | [`crates/tui/assets/skills/verify/SKILL.md`](crates/tui/assets/skills/verify/SKILL.md) |
+| 38 | ✓ | [`crates/tui/assets/skills/webapp-testing/SKILL.md`](crates/tui/assets/skills/webapp-testing/SKILL.md) |
+| 39 | ✓ | [`crates/tui/assets/skills/xlsx/SKILL.md`](crates/tui/assets/skills/xlsx/SKILL.md) |
+| 40 | ✓ | [`crates/tui/locales/AGENTS.md`](crates/tui/locales/AGENTS.md) |
+| 41 | ✓ | [`docs/skills/codew-release-qa-sweep/SKILL.md`](docs/skills/codew-release-qa-sweep/SKILL.md) |
+| 42 | ✓ | [`docs/skills/gh-assign-issues/SKILL.md`](docs/skills/gh-assign-issues/SKILL.md) |
+| 43 | ✓ | [`docs/skills/gh-close-issues/SKILL.md`](docs/skills/gh-close-issues/SKILL.md) |
+| 44 | ✓ | [`docs/skills/gh-compile-issues/SKILL.md`](docs/skills/gh-compile-issues/SKILL.md) |
+| 45 | ✓ | [`docs/skills/gh-credit-harvest/SKILL.md`](docs/skills/gh-credit-harvest/SKILL.md) |
+| 46 | ✓ | [`docs/skills/gh-file-issue/SKILL.md`](docs/skills/gh-file-issue/SKILL.md) |
+| 47 | ✓ | [`docs/skills/gh-find-prs/SKILL.md`](docs/skills/gh-find-prs/SKILL.md) |
+| 48 | ✓ | [`docs/skills/gh-treasure-hunt/SKILL.md`](docs/skills/gh-treasure-hunt/SKILL.md) |
+| 49 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
 
 ---
 

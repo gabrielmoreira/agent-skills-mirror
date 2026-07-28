@@ -2697,6 +2697,123 @@ Expected Output:
 
 ---
 
+### Example 39: What Is Circulating Right Now — Viral Variant Situation Report
+
+**Objective**: Produce a defensible weekly picture of which viral lineages are circulating in a
+region, which are growing, and whether a diagnostic assay target still matches them.
+
+**Disciplines**: genomic epidemiology · public health surveillance · viral evolution · binomial and
+compositional statistics · molecular diagnostics
+
+**Skills Used**:
+- `pathogen-variant-surveillance` - Live lineage prevalence, nomenclature resolution, mutation profiles, reporting-lag measurement
+- `statistical-analysis` - Interval estimation and trend testing
+- `statsmodels` - Time-series modelling of the prevalence series
+- `scientific-visualization` - Stacked prevalence area charts with uncertainty bands
+- `matplotlib` - Figures
+- `scientific-writing` - Evidence-traceable situation report
+
+**Starting prompt**:
+
+```text
+Use the pathogen-variant-surveillance, statistical-analysis, statsmodels,
+scientific-visualization, and scientific-writing skills.
+
+Goal: a situation report on what is circulating in the US right now, what is
+growing, and whether our S-gene assay still matches the dominant lineages.
+Criteria: measure the reporting lag before choosing a window — do not assume
+the last four weeks are usable. Resolve every lineage name against the live
+nomenclature before it goes in the report.
+Deliver: a weekly prevalence table with intervals, a growth estimate for each
+lineage that has enough observations to support one, a mutation diff against
+our assay target region, and a figure.
+Report: the instance, the data version, the filters, and the window with every
+number. State which weeks were excluded and why.
+Do not: present sequence counts as case counts, or a growth slope as a
+transmissibility estimate.
+```
+
+**Workflow**:
+
+```text
+Step 1: Measure the reporting lag before anything else
+- Run reporting_lag.py for the pathogen and country in question
+- This returns the measured filling-in curve and a cutoff date
+- The last several weeks are a sample of whoever reports fastest, not of what
+  circulated. On the open SARS-CoV-2 instance only ~29% of US sequences have
+  arrived 7 days after collection and ~68% after 30 days; H5N1 is far slower,
+  at ~15% after 30 days
+- Everything downstream uses the cutoff this step produces. Treat the curve as a
+  lower bound — cohort denominators are still growing
+
+Step 2: Find what is actually circulating
+- Run lineage_prevalence.py with --top N and no lineage names. It discovers the
+  most common lineages in the window rather than starting from a list you already
+  believe, which is the whole point — a remembered list is exactly what is wrong
+- Note which lineage column the instance carries: pangoLineage for SARS-CoV-2,
+  clade for H5N1, cladeHA for seasonal influenza. Field names are per-instance
+
+Step 3: Resolve every name before using it
+- Run resolve_lineage.py on the candidate list
+- Names get withdrawn and redesignated continuously; a withdrawn name can still be
+  attached to sequences because assignment pipelines lag designation
+- Record the unaliased path and, for recombinants, the parents — these come from
+  pango-designation, not from the query API
+- Anything that comes back unknown is a typo or a name that never existed; fix it
+  now rather than reporting an absence
+
+Step 4: Build the prevalence series
+- Run lineage_prevalence.py for the resolved lineages over the trusted window
+- Decide explicitly whether you mean the exact name or the name plus descendants.
+  These are different questions and often differ by more than an order of
+  magnitude — a bare lineage name excludes its own descendants
+- Proportions carry Wilson intervals; weeks whose denominator has not filled in are
+  flagged and excluded from fits
+
+Step 5: Estimate growth, and know when not to
+- Add --growth for a weighted log-odds slope over the trusted weeks
+- No slope is produced for a lineage with too few observations. This guard exists
+  because the continuity correction alone will manufacture a tight, confident
+  positive slope out of a shrinking denominator for a lineage nobody has seen
+- The slope is descriptive. It absorbs every change in who is sequencing, where,
+  and how fast they report. It is not a fitness or transmissibility estimate, and
+  a rising proportion is equally consistent with a founder effect or a single
+  facility outbreak
+
+Step 6: Check the assay target
+- Run mutation_profile.py restricted to the gene your assay targets
+- Use --nucleotide for primer and probe questions; the codon is not the unit that
+  matters for hybridisation
+- Diff the growing lineage against the previously dominant one to see what changed
+- Read the coverage column: proportion is over the sequences that resolved that
+  site, so a poorly covered site can show 1.000 on very few reads
+
+Step 7: Visualise with the uncertainty visible
+- Stacked weekly prevalence area chart over the trusted window
+- Shade or hatch the excluded recent weeks rather than deleting them, so the reader
+  can see where the data stops being interpretable
+- Plot intervals, not bare point estimates
+
+Step 8: Write it up
+- Lead with the window and why it ends where it does
+- Every figure carries the instance, data version, filters, and window; without
+  them the number cannot be reproduced, because the database changes daily
+- Distinguish "not detected" from "not sequenced". With slow-reporting pathogens
+  recent absence is close to uninformative
+- Report proportions of sequenced specimens, never of infections
+
+Expected Output:
+- Measured reporting-lag curve and a justified cutoff date
+- Weekly prevalence table with Wilson intervals and coverage flags
+- Growth estimates for the lineages that support one, and explicit nulls for those
+  that do not
+- Mutation diff over the assay target region
+- Prevalence figure with excluded weeks marked
+- Situation report carrying instance, data version, filters, and window throughout
+```
+
+---
+
 ## Multi-Omics Integration
 
 ### Example 17: Integrative Analysis of Cancer Multi-Omics Data
@@ -5250,6 +5367,95 @@ Expected Output:
 
 ---
 
+### Example 36b: Validating a Stability-Indicating Impurity Method, and Transferring It
+
+**Objective**: Design a validation study for an HPLC related-substances procedure under ICH Q2(R2), evaluate the resulting data with the statistics that actually test the claims, then transfer the procedure to a second site on an equivalence basis. The workflow does not conclude that the procedure is validated — that decision belongs to the analyst and the quality unit.
+
+**Disciplines**: analytical chemistry · pharmaceutical quality control · applied statistics · regulatory documentation
+
+**Skills Used**:
+- `analytical-method-validation` - Framework selection, protocol, and the validation statistics
+- `statistical-analysis` - Supporting diagnostics and assumption checks
+- `scientific-visualization` - Residual plots, recovery plots, Bland-Altman and difference plots
+- `xlsx` - Raw-data and traceability tables
+- `docx` - Formatted protocol and report deliverables
+
+**Starting prompt**:
+
+```text
+Use the analytical-method-validation, statistical-analysis,
+scientific-visualization, xlsx, and docx skills.
+
+Goal: a validation protocol and report for an HPLC related-substances procedure,
+plus a transfer assessment to our second site.
+Context: impurity specification 0.15%, reporting threshold 0.05%, three
+specified impurities, stability-indicating claim required.
+Criteria: state every acceptance criterion before any data is evaluated, and say
+where each one comes from. Use the framework that actually governs and name it.
+Deliver: protocol, evaluated data with the diagnostics that test the model
+(not just r-squared), a transfer equivalence assessment, and a report with raw
+data traceability.
+Report: list anything the data do not support, plainly.
+Do not: declare the procedure validated, set criteria after seeing results,
+reproduce paywalled USP or CLSI text, or invent a threshold from memory.
+```
+
+**Workflow**:
+
+```text
+Step 1: Framework and required characteristics
+- python3 plan_validation.py --framework ich-q2r2 --attribute impurity \
+    --technique hplc --range-use impurity-quantitative
+- Confirm the attribute drives the requirement: a quantitative impurity test needs
+  specificity, response, QL, accuracy, repeatability, and intermediate precision
+- Note that robustness belongs to development under ICH Q14, not to this protocol
+
+Step 2: Protocol with criteria fixed in advance
+- python3 plan_validation.py --framework ich-q2r2 --attribute impurity --protocol
+- Derive each criterion from the 0.15% specification and the 0.05% reporting
+  threshold, and record the derivation next to the number
+- Fix the calibration model and any weighting now, not after seeing the residuals
+
+Step 3: Response across the reportable range
+- python3 check_response.py -i calibration.csv --max-back-calc-error 5 \
+    --weight 1/x
+- Read the lack-of-fit F test and the residual pattern, not the r-squared
+- If the low end is biased, that is the reporting-threshold region — fix the model
+
+Step 4: Accuracy and precision
+- python3 check_accuracy_precision.py -i ap.csv --accuracy-limit 10 \
+    --rsd-limit 5 --design-check impurity
+- Compare repeatability against intermediate precision: if the between-day
+  component dominates, routine performance is the larger number
+- Report recovery with its confidence interval, per Q2(R2) 3.3.1.4
+
+Step 5: Quantitation limit against the reporting threshold
+- python3 check_detection_limits.py --calibration lowrange.csv --blanks blanks.csv \
+    --confirm-ql 0.05 --confirm-data ql_check.csv --reporting-threshold 0.05
+- Name the approach used, and confirm the estimate with real determinations
+- The QL must be at or below 0.05%
+
+Step 6: Transfer to the second site
+- python3 compare_methods.py -i paired.csv --margin 10 --relative \
+    --slope-tolerance 0.10
+- Pre-state the equivalence margin from the specification; TOST, not a t test
+- Deming and Passing-Bablok rather than ordinary least squares, because both
+  sites' results carry error
+
+Step 7: Report and traceability
+- Fill assets/validation-report-template.md; every number traces to raw data
+- Include out-of-criteria individual results rather than dropping them
+- Route to the technical reviewer and quality unit for the actual decision
+```
+
+Expected Output:
+- Validation protocol with pre-stated, derived acceptance criteria
+- Evaluated data with model diagnostics, variance components, and named DL/QL approach
+- Transfer equivalence assessment against a pre-stated margin
+- Validation report with raw-data traceability, and an explicit list of what the data do not support
+
+---
+
 ## Scientific Communication & Tooling
 
 ### Example 37: Publication Packaging — Diagrams, Infographics, and Venue Formatting
@@ -5542,7 +5748,7 @@ OpenAlex, Crossref, Semantic Scholar, CORE, Unpaywall)
 
 **Clinical & regulatory documentation** — all bounded, none clinical decision-making
 `clinical-reports` · `clinical-decision-support` · `treatment-plans` · `pyhealth` ·
-`iso-standards-readiness`
+`iso-standards-readiness` · `analytical-method-validation`
 
 **Tooling**
 `autoskill` · `pi-agent`

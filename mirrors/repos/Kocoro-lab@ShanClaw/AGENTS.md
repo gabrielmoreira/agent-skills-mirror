@@ -17,7 +17,7 @@ Kocoro is the Go CLI/runtime for Shannon AI agents. The main production path is 
 ## Module Map
 
 - cmd: CLI entry points for one-shot, daemon, scheduling, update, and MCP serve.
-- internal/daemon: primary production path; HTTP API server, WebSocket client, routing, approvals, events, launchd, attachments, session CWD, memory fallback, suggestions, email/password auth (`auth.go` / `auth_handlers.go` / `ws_controller.go`), Desktop RPC reverse-channel (`desktop_rpc/` subpackage — Unix sock listener + length-prefixed JSON codec + DesktopRPCBroker for Calendar RPC v1).
+- internal/daemon: primary production path; HTTP API server, WebSocket client, routing, approvals + structured user questions (`pending.go` `pendingCore[D]` shared by `ApprovalBroker` and `QuestionBroker`), events, launchd, attachments, session CWD, memory fallback, suggestions, email/password auth (`auth.go` / `auth_handlers.go` / `ws_controller.go`), Desktop RPC reverse-channel (`desktop_rpc/` subpackage — Unix sock listener + length-prefixed JSON codec + DesktopRPCBroker for Calendar RPC v1).
 - internal/agent: core loop; tool batching, compaction, spill/budget state, deferred loading, state cache, read tracking, approvals, phase/watchdog, thinking handling, prompt suggestions, forked requests.
 - internal/koe: macOS native speech-to-speech voice front brain; one first-person Kocoro identity; Realtime tool authority; bounded continuation; call-scoped task ledger with one `do_task` per response by default and explicit, disjoint scopes for parallel calls; asynchronous result mailbox; and reversible raw-audio native-floor barge-in. Keep `stop_speaking` (current output), `cancel` (delegated work), and terminal `end_call` (voice session) as separate authorities. ASR transcripts remain asynchronous evidence/logging, not ordinary-turn, barge-in-admission, or default dismissal control.
 - internal/tools: local, gateway, cloud, schedule, publish/upload, image, memory, MCP, and document tools.
@@ -54,6 +54,14 @@ Agent names must match `^[a-z0-9][a-z0-9_-]{0,63}$`. Validate before path constr
 Tool priority is local tools, then MCP tools, then gateway tools. Deduplicate by name. Skill `allowed-tools` is enforced at execution time, not by schema filtering, to keep prompt-cache tool arrays stable.
 
 Skill-exempt tools must be pure infrastructure with no external side effects. Do not exempt side-effecting tools from skill restrictions.
+
+Tool exposure resolves per tool: explicit `ToolExposure` first, then source
+defaults. Local tools default Direct; MCP, gateway, and integration tools
+default Deferred. `tool_search` discovers cold Deferred tools through
+deterministic BM25 over canonical name, description, schema, source, and
+namespace metadata, with exact `select:` lookup for known names. Schema-size
+budgets are regression diagnostics only and must never reclassify tools at
+runtime.
 
 ### Tool Concurrency
 
@@ -176,7 +184,7 @@ Context-window defaults are only seeds; model responses may auto-adjust the acti
 
 ### Anti-Hallucination
 
-Keep random XML tool execution delimiters, suppress preamble when tool calls are present, and strip fabricated tool calls.
+Keep random XML tool execution delimiters and strip fabricated tool calls. For attended runs, preserve model-authored preambles; if the first tool batch is silent, a local tool may surface its required user-facing `description` without exposing other arguments. External tool descriptions are never used as runtime fallback text. Unattended runs remain silent.
 
 ## Tests
 
@@ -205,6 +213,6 @@ Schedule tests use temp directories and do not write to the real LaunchAgents di
 
 ## Tools
 
-Core local tools include file ops, archive inspect/extract, document extraction, shell/system, macOS GUI, schedules, memory, and skills. `computer_use` is the primary native-GUI tool: Accessibility-first observations return a per-run `state_id`; ref mutations reject stale state; screenshots are explicit; windowless apps are reopened generically; integer-shaped strings are tolerated; bounded delay waits need no shell fallback; pointer actions move the real cursor visibly; observations skip approval while mutations retain normal approval policy; whole calls serialize across concurrent routes on one GUI-operation lock shared with the legacy `accessibility` / `computer` / `applescript` tools; unattended runs (including auto-approve transports and IM/voice channels without an approval UI) can never invoke it — observation actions included — even via persisted or broker Always Allow. The standalone `screenshot` tool also requires approval and is denied on unattended runs. Runtime-conditional tools include session search, cloud delegation, publish/list/retract uploads, image generation/editing, and deferred tool search.
+Core local tools include file ops, archive inspect/extract, document extraction, shell/system, macOS GUI, schedules, memory, and skills. Common openers and compact local utilities are Direct; process/GUI automation and uncommon mutations are Deferred and loaded through `tool_search` when needed. `computer_use` is the primary native-GUI tool: Accessibility-first observations return a per-run `state_id`; ref mutations reject stale state; screenshots are explicit; windowless apps are reopened generically; integer-shaped strings are tolerated; bounded delay waits need no shell fallback; pointer actions move the real cursor visibly; observations skip approval while mutations retain normal approval policy; whole calls serialize across concurrent routes on one GUI-operation lock shared with the legacy `accessibility` / `computer` / `applescript` tools; unattended runs (including auto-approve transports and IM/voice channels without an approval UI) can never invoke it — observation actions included — even via persisted or broker Always Allow. The standalone `screenshot` tool also requires approval and is denied on unattended runs. Runtime-conditional tools include session search, cloud delegation, publish/list/retract uploads, image generation/editing, and deferred tool search.
 
 Every approval-required tool must expose a short human-readable description or equivalent purpose field for approval UI. Destructive or paid/public cloud tools require approval.

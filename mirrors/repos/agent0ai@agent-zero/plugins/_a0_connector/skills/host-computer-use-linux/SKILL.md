@@ -29,13 +29,14 @@ Use `ax_snapshot` to inspect the Linux AT-SPI tree:
   "tool_name": "computer_use_remote",
   "tool_args": {
     "action": "ax_snapshot",
+    "window_id": "<window_id from list_windows>",
     "max_depth": 4,
     "max_nodes": 200
   }
 }
 ```
 
-The snapshot returns paths, roles, names/titles, descriptions, frames, states, actions, text previews, values, and child nodes. Use it to choose a target, not as final visual proof.
+Pass `window_id` whenever one is known so unrelated applications cannot consume the node budget. The snapshot returns paths, roles, names/titles, descriptions, frames, states, actions, text previews, values, and child nodes. Use it to choose a target, not as final visual proof.
 
 Use `ax_action` for structural actions:
 
@@ -55,7 +56,7 @@ Use `ax_action` for structural actions:
 
 Supported operations are:
 
-- `press`: activate a button, menu item, tab, checkbox, or similar action-bearing node
+- `press`: activate a button, menu item, tab, checkbox, or similar action-bearing node; never use it on an application/frame/window
 - `focus`: focus a focusable node before typing or keyboard input
 - `set_value`: set text/value on editable nodes; pass `value` or `text`
 
@@ -71,6 +72,10 @@ Targeting options:
 Use screenshots for proof after every state-changing action. AT-SPI actions and keyboard events are attempts, not proof, and Wayland focus can reject or redirect input when the active window changes.
 
 True background dispatch on Linux is compositor, toolkit, and app dependent. Do not claim a Linux action was background-safe unless the tool result explicitly says `actual_dispatch=background`.
+
+To bring a Linux window forward, target its frame/window element from `get_window_state` with `element_action`, operation `focus`, and `dispatch: "foreground"` or `"auto"`. Continue only when the result says `focus_verified=true`; an accepted AT-SPI call without active/focused state is not activation proof.
+
+Linux text injection is target-guarded. Pass the same verified active `window_id` to `type`. If the tool reports `COMPUTER_USE_WINDOW_REQUIRED` or `COMPUTER_USE_TARGET_NOT_FOCUSED`, do not type globally and do not substitute another application target.
 
 On GNOME/Wayland, useful shortcuts include:
 

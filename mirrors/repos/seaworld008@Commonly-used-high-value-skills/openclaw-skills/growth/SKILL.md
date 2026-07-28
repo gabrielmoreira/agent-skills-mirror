@@ -1,15 +1,15 @@
 ---
 name: growth
 description: 'Optimizing SEO (meta/OGP/JSON-LD/heading hierarchy), SMO (social sharing), CRO (CTA/form/exit-intent), and GEO (AI citation optimization) across four pillars. Use when search ranking, conversion, or AI visibility improvement is needed.'
-zh_description: "用于增长，支持内容、营销、渠道和数据分析。"
-version: "1.0.7"
+zh_description: "搜索、社交、转化和人工智能引用优化的一体化增长。"
+version: "1.0.1"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/growth"
 license: MIT
 tags: '["growth", "marketing"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-20"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "advanced"
 ---
@@ -106,7 +106,7 @@ Route elsewhere when the task is primarily:
 - CRO personalization is expected: showing identical static content to all visitor segments (first-time vs returning, ad-referred vs organic) is a missed conversion opportunity — segment-aware content or dynamic CTAs should be the default recommendation.
 - CRO must distinguish conversion quality from quantity — adding friction (e.g., qualification questions) can increase revenue by filtering unqualified leads.
 - Ensure minimum statistical significance (95% confidence, ≥1000 conversions per variant) before declaring test winners.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Growth; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Growth; P2, P1 recommended).
 
 ## Boundaries
 
@@ -267,7 +267,8 @@ Growth receives data and insights from upstream agents. Growth sends hypotheses,
 | `reference/channel-lifecycle-planning.md` | You need channel selection (Bullseye 19 channels) or lifecycle marketing planning (See-Think-Do-Care intent map, RACE operating loop). |
 | `reference/geo-optimization.md` | You are running the `geo` recipe — AI Overviews / AI Mode (2026-05 GA), four-signal framework, AI bot taxonomy (Anthropic 4-bot split, OpenAI 3-bot), GEO KPIs (Mention/Citation/Share-of-Voice), llms.txt 2026 status. |
 | `reference/code-standards.md` | You need good/bad code examples. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the SEO/GEO/CRO spec, deciding adaptive thinking depth at AUDIT, or front-loading scope/channel/metric at INTAKE. Critical for Growth: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the SEO/GEO/CRO spec, deciding adaptive thinking depth at AUDIT, or front-loading scope/channel/metric at INTAKE. Critical for Growth: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Growth-specific Output/Next schema. |
 
 ## Operational
 
@@ -278,28 +279,34 @@ Growth receives data and insights from upstream agents. Growth sends hypotheses,
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Growth-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Growth
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: "[SEO Meta | Heading Fix | OGP Setup | JSON-LD | Stacked Schema | Core Web Vitals Fix | GEO Optimization | E-E-A-T Signals | CRO Optimization | Form Optimization | Exit Prevention]"
-    parameters:
-      pillar: "[SEO | SMO | CRO]"
-      target_metric: "[metric name]"
-      expected_impact: "[description]"
-      mobile_verified: "[yes | no]"
-      lighthouse_score: "[before → after]"
-    compliance: "[GDPR/CCPA notes if applicable]"
-  Next: Experiment | Bolt | Pulse | Artisan | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Growth-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
+<!-- LOCAL-QUALITY-SUPPLEMENT:START -->
+## Usage Notes
+
+This supplement is maintained by the repository sync pipeline. It keeps the
+imported upstream skill usable inside this curated collection when the upstream
+source is intentionally concise.
+
+## Common Patterns
+
+```text
+1. Confirm that the user's task matches the skill trigger.
+2. Read the relevant project files or user-provided context before acting.
+3. Choose the smallest reversible action that advances the task.
+4. Run the verification command or manual check that proves the result.
+5. Report the outcome, evidence, and any remaining risk.
+```
+
+## Boundaries
+
+- Prefer the upstream workflow for Growth; this section only adds local quality
+  guardrails.
+- Do not invent project facts when required files, vaults, services, or tools are
+  unavailable.
+- Stop and ask for clarification when the next action could overwrite user work,
+  expose private data, or change production state.
+<!-- LOCAL-QUALITY-SUPPLEMENT:END -->

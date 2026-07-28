@@ -2,14 +2,14 @@
 name: test-driven-development
 description: 'Drives development with tests. Use when implementing any logic, fixing any bug, or changing any behavior. Use when you need to prove that code works, when a bug report arrives, or when you''re about to modify existing functionality.'
 zh_description: "用于测试、驱动、development，支持任务规划、执行、评审和验证。"
-version: "1.0.1"
+version: "1.0.0"
 author: addyosmani
 source: "github:addyosmani/agent-skills"
 source_url: "https://github.com/addyosmani/agent-skills/blob/main/skills/test-driven-development/SKILL.md"
 license: MIT
 tags: '["agent", "ai", "engineering", "test-driven-development", "workflow"]'
-created_at: "2026-04-25"
-updated_at: "2026-05-19"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: advanced
 upstream_slug: test-driven-development
@@ -32,6 +32,20 @@ Write a failing test before writing the code that makes it pass. For bug fixes, 
 **When NOT to use:** Pure configuration changes, documentation updates, or static content changes that have no behavioral impact.
 
 **Related:** For browser-based changes, combine TDD with runtime verification using Chrome DevTools MCP — see the Browser Testing section below.
+
+## Discover the Stack First
+
+The TDD cycle is universal; the commands are not. Before writing the first test, discover how *this* repository tests, and use its commands for every RED, GREEN, and verification step:
+
+- **Language and build system** — `package.json`, `pom.xml`/`build.gradle`, `pyproject.toml`, `go.mod`, `Cargo.toml`, `Gemfile`, a `Makefile`
+- **Checked-in wrappers** — prefer `./gradlew`, `./mvnw`, `make test`, or a repo script over globally installed tools
+- **Test framework and configuration** — and how it runs a single focused test vs the full suite
+- **Existing conventions** — where tests live, how files are named, what patterns neighboring tests follow
+- **Documented commands** — README, CONTRIBUTING, and CI workflows show the commands that actually gate merges
+
+Run the repository's focused-test command during the loop and its full-suite command before completion. Never assume a default like `npm test` — a Gradle, Cargo, or pytest project has its own equivalent.
+
+The examples below use TypeScript for illustration; the workflow is identical in any language once you've discovered the project's own tooling.
 
 ## The TDD Cycle
 
@@ -356,7 +370,7 @@ This separation ensures the test is written without knowledge of the fix, making
 
 ## See Also
 
-For detailed testing patterns, examples, and anti-patterns across frameworks, see `references/testing-patterns.md`.
+For JavaScript/TypeScript testing patterns illustrating these principles — Jest, React Testing Library, Supertest, Playwright — see `references/testing-patterns.md`. The principles transfer to any ecosystem; the syntax and tools there are JS/TS-specific.
 
 ## Common Rationalizations
 
@@ -373,6 +387,7 @@ For detailed testing patterns, examples, and anti-patterns across frameworks, se
 ## Red Flags
 
 - Writing code without any corresponding tests
+- Reaching for a default test command (`npm test`) without checking what this repository actually uses
 - Tests that pass on the first run (they may not be testing what you think)
 - "All tests pass" but no tests were actually run
 - Bug fixes without reproduction tests
@@ -386,7 +401,7 @@ For detailed testing patterns, examples, and anti-patterns across frameworks, se
 After completing any implementation:
 
 - [ ] Every new behavior has a corresponding test
-- [ ] All tests pass: `npm test`
+- [ ] The full suite passes, run with the repository's own test command (`npm test`, `./gradlew test`, `pytest`, `go test ./...`, ...)
 - [ ] Bug fixes include a reproduction test that failed before the fix
 - [ ] Test names describe the behavior being verified
 - [ ] No tests were skipped or disabled

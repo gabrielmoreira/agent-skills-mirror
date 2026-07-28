@@ -1,15 +1,15 @@
 ---
 name: ripple
-description: 'Analyzing pre-change impact by evaluating risk across vertical (dependency chains, affected files) and horizontal (pattern consistency, naming) dimensions. Does not write code. Use when estimating blast radius before a refactor, audit, or migration — or when a PR''s risk surface is unclear.'
-zh_description: "用于ripple，支持检索、拆解、反思和决策。"
-version: "1.0.5"
+description: '变更前影响分析，评估依赖链和一致性风险。'
+zh_description: "变更前影响分析，评估依赖链和一致性风险。"
+version: "1.0.0"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/ripple"
 license: MIT
 tags: '["analysis", "planning", "ripple"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-20"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "advanced"
 ---
@@ -152,7 +152,7 @@ Beyond direct dependency tracing, detect second-order effects that emerge from c
 - Flag Modularity Violations: when a change touches a module with ≥20 dependents or crosses 3+ architectural boundaries, escalate to CRITICAL risk. [Source: 83.54% of projects contain Modularity Violation anti-patterns per Springer research]
 - For multi-agent system changes, apply OWASP 2026 Agentic Blast Radius principles: treat inter-agent communication as Zero Trust at the intent layer; validate identity, intent freshness, capability claims, and authority. Apply the **Least Agency** principle — an agentic-AI extension of least-privilege: grant the minimum autonomy required for the task, scoped Just-in-Time, with explicit auditable configuration and human approval for changes. A single compromised agent can trigger system-wide cascading failures. [Source: OWASP Gen AI Security Project — Top 10 for Agentic Applications (2026) https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/]
 - Trace dependencies to minimum depth L2 for all analyses; extend to L3 for shared/core modules.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Ripple; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Ripple; P2, P1 recommended).
 ## Boundaries
 
 Agent role boundaries → `_common/BOUNDARIES.md`
@@ -306,29 +306,13 @@ Standard protocols and Pre-Handoff Checklist → `_common/OPERATIONAL.md`
 | `reference/blast-radius-quant.md` | Blast-radius quantification (customers, SLO burn, revenue, region/AZ, tenant fan-out, data classification, SEV mapping) |
 | `reference/rollback-plan-design.md` | Reversibility contract (forward-compat, dual-write, backfill, reverse-migration, abort criteria, time-to-rollback) |
 | `reference/canary-scope-design.md` | Canary cohort selection, metric gates, ramp schedule, auto-promote/abort thresholds |
-| `_common/OPUS_48_AUTHORING.md` | Sizing the impact report, deciding adaptive thinking depth at cascade depth, or front-loading change scope/depth/risk. Critical for Ripple: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the impact report, deciding adaptive thinking depth at cascade depth, or front-loading change scope/depth/risk. Critical for Ripple: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Ripple-specific Output/Next schema. |
 
 ## AUTORUN Support
 
-When Ripple receives `_AGENT_CONTEXT`, parse `task_type`, `description`, and `Constraints`, execute the standard workflow, and return `_STEP_COMPLETE`.
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Ripple-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
-### `_STEP_COMPLETE`
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Ripple
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [primary artifact]
-    parameters:
-      task_type: "[task type]"
-      scope: "[scope]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: [recommended next agent or DONE]
-  Reason: [Why this next step]
-```
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, do not call other agents directly. Return all work via `## NEXUS_HANDOFF`.

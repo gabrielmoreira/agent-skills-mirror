@@ -253,3 +253,20 @@ full incident narratives and old Case numbers for earlier cross-references.
 **What it breaks**: the direct summary no longer matches the compact coding-agent pattern the user expects, and the action occupies persistent visual weight despite being needed only on inspection.
 
 **Correct approach**: place additions/deletions directly below the single-file title, reveal “View changes” on row hover or keyboard focus, and keep it visible while the diff is open so the reverse action remains discoverable.
+
+## Task Acceptance continuity must be proven with one Task
+
+**Wrong approach**: compare the configured criteria of one Task with the completed Acceptance of another Task, then treat a larger cross-round union as a current-data defect.
+
+**Why it's wrong**: two Tasks can legitimately have different goals and item counts, while Acceptance intentionally retains checks introduced by later rounds as part of the auditable delivery history.
+
+**What it breaks**: evidence appears to show an unexplained 6→7 mutation and two different goals, and a legitimate seventh cross-round check can be incorrectly hidden.
+
+**Correct approach**: capture definition and result states from the same Task, keep the full Acceptance check union visible, and keep the Task verify requirement synchronized with the aggregate goal.
+
+# Floating composer overlays must reserve space in every content path
+
+- Wrong approach: reserve the measured composer overlay height only in the virtualized message list.
+- Why it fails: an empty conversation renders the welcome surface instead, so alerts and trays can overlap its content.
+- What it breaks: combined Alert + tray states visually collide with welcome copy even though the overlay items do not overlap each other.
+- Correct approach: apply the same measured overlay reservation to both message and welcome paths, and capture acceptance evidence with the real combined state visible.

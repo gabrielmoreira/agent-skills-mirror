@@ -1,15 +1,15 @@
 ---
 name: gear
 description: 'Managing dependencies, CI/CD optimization, Docker configuration, and operational observability (logging/alerting/health checks). Use when build errors, dev environment issues, or operational config fixes are needed.'
-zh_description: "用于gear，支持部署、监控、排障和发布管理。"
-version: "1.0.5"
+zh_description: "依赖、构建、容器、监控和开发环境运维优化。"
+version: "1.0.1"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/gear"
 license: MIT
 tags: '["devops", "gear", "sre"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-20"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "advanced"
 ---
@@ -96,7 +96,7 @@ Route elsewhere when the task is primarily:
 - **Environment drift advisory (v6 fold-in)**: When the engagement scope includes environment configuration changes (env vars, Secret refs, K8s manifests, IaC plans across dev/staging/prod), produce an advisory drift report comparing declared spec vs current live state at config-file granularity. Required output fields: `env`, `declared_state_hash`, `live_state_hash`, `diff` (per-key add/remove/modify), `drift_class` (allowed / unauthorized / emergency_response), `proposed_remediation` (rollback-to-git OR follow-up-PR-to-absorb). Hand off to `mend` for runbook generation; route to `beacon` if drift correlates with SLO breach. **Never block merge based on drift detection** — drift reporting is advisory only because production incident response legitimately requires manual mutation; mandating zero manual mutation pushes ops into unofficial bypass (omen v6 FM-9 RPN 432). Suppress when scope has no environment touch.
 - **CI performance targets**: Aim for cache hit rate ≥ 80%, CI build time ≤ 5 min for incremental builds. Dependency caching reduces Node.js job times by 60–80%. Docker layer caching (`cache-from/cache-to: type=gha`) can turn a 5-min build into 30 seconds on cache hit. Use `fetch-depth: 1` for most CI builds — only the latest commit is needed, significantly reducing checkout time on large repos. Split lint, type-check, and test into separate parallel jobs for faster wall-clock time. Use `concurrency` groups to cancel stale PR runs — reduces wasted CI minutes by 30–40% for active PRs. Pin all third-party actions to full commit SHA (not mutable tags) to prevent supply chain compromise. Use OIDC (`permissions: id-token: write`) instead of static cloud credentials. Set explicit `permissions` at the job level (least privilege). **arm64 runners GA** (2024-09-03): use `ubuntu-24.04-arm` (free for public repos since 2025-01-16) or `macos-15-xlarge` (M2) for native arm64 builds — eliminates slow QEMU cross-compilation in most cases. [Source: [arm64 runners GA](https://github.blog/changelog/2024-09-03-github-actions-arm64-linux-and-windows-runners-are-now-generally-available/)] **Node.js 20 deprecated in GHA** (2025-09-19): runners will default to Node 24 on 2026-06-16; Node 20 removed 2026-09-16. Upgrade `actions/cache` → v5, `actions/setup-node` → v4, and all other actions using Node 20 runtime. [Source: [Node 20 deprecation](https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/)] **GHA 2026 security roadmap**: a native egress firewall for GitHub-hosted runners operates at Layer 7 outside the runner VM (immutable even with root access inside) — enables organizations to enforce allowlisted-only outbound traffic per workflow. A `dependencies:` section in workflow YAML (like Go's `go.sum`) will lock all direct and transitive action dependencies by SHA for deterministic reproducibility. Scoped secrets will bind credentials to specific branches, environments, workflow identities, or paths — ending the default where repository write access implicitly grants secret management permissions. Workflow execution rules support evaluate mode for impact assessment before enforcement.
 - **DORA alignment**: The 2025 DORA report replaced low/medium/high/elite clusters with seven archetypes (e.g., "The Harmonious High Achiever"), but the numeric thresholds remain useful benchmarks. Target change failure rate < 15% (top-tier: 0–2% — only 8.5% of orgs achieve this), lead time under 1 hour (only 9.4% achieve this), on-demand deployment (only 16.2% achieve this), MTTR < 1 hour. Track Rework Rate (5th DORA metric, introduced 2025) — measures post-deployment fixes that indicate quality issues; top-tier threshold < 2% (only 7.3% of teams achieve this). **AI amplification effect** (2025 DORA finding): AI adoption improves throughput but increases delivery instability — strong teams benefit, struggling teams see problems amplified. Factor this in when recommending AI-assisted CI/CD tooling.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Gear; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Gear; P2, P1 recommended).
 
 ## Boundaries
 
@@ -223,7 +223,8 @@ Every deliverable must include:
 | `reference/alert-configuration.md` | You are running the `alert` recipe — Alertmanager routing tree, PagerDuty/Opsgenie receiver config, severity taxonomy (P1-P4), fatigue mitigation, alert-as-code. |
 | `reference/secrets-management.md` | You are running the `secret` recipe — Vault/AWS Secrets Manager/Doppler architecture, .env separation, rotation/lease TTL, CI leak prevention, K8s sealed/external-secrets. |
 | `reference/kubernetes-config.md` | You are running the `k8s` recipe — Deployment/Service/Ingress, Helm/Kustomize, HPA/VPA, PDB, NetworkPolicy, requests/limits tuning, probe design. |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the Gear deliverable, deciding adaptive thinking depth at supply-chain hardening, or front-loading ecosystem/runtime/scope at DIAGNOSE. Critical for Gear: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the Gear deliverable, deciding adaptive thinking depth at supply-chain hardening, or front-loading ecosystem/runtime/scope at DIAGNOSE. Critical for Gear: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Gear-specific Output/Next schema. |
 
 ## Operational
 
@@ -233,27 +234,34 @@ Every deliverable must include:
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Gear-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Gear
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: "[Dependency Update | CI Fix | Docker Config | Linter Setup | Env Config | Observability Setup | Monorepo Config | Build Fix]"
-    parameters:
-      area: "[dependencies | ci-cd | docker | linting | environment | observability | monorepo | build]"
-      change_type: "[update | fix | config | setup]"
-      risk_level: "[low | medium | high]"
-      verification: "[build passes | tests pass | linter clean]"
-    rollback: "[instructions if medium/high risk]"
-  Next: Shift | Sentinel | Radar | Bolt | Launch | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Gear-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
+<!-- LOCAL-QUALITY-SUPPLEMENT:START -->
+## Usage Notes
+
+This supplement is maintained by the repository sync pipeline. It keeps the
+imported upstream skill usable inside this curated collection when the upstream
+source is intentionally concise.
+
+## Common Patterns
+
+```text
+1. Confirm that the user's task matches the skill trigger.
+2. Read the relevant project files or user-provided context before acting.
+3. Choose the smallest reversible action that advances the task.
+4. Run the verification command or manual check that proves the result.
+5. Report the outcome, evidence, and any remaining risk.
+```
+
+## Boundaries
+
+- Prefer the upstream workflow for Gear; this section only adds local quality
+  guardrails.
+- Do not invent project facts when required files, vaults, services, or tools are
+  unavailable.
+- Stop and ask for clarification when the next action could overwrite user work,
+  expose private data, or change production state.
+<!-- LOCAL-QUALITY-SUPPLEMENT:END -->

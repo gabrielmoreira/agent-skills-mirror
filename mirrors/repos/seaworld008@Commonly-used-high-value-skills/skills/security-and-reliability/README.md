@@ -10,15 +10,15 @@
 
 - [security-ownership-map](./security-ownership-map/) - 用于基于 Git 历史分析安全所有权、敏感代码归属、bus factor、CODEOWNERS 现实差距和风险热点。
 - [sentry](./sentry/) - 用于只读查询 Sentry issues、events 和服务健康数据，汇总线上错误并辅助生产问题排查。
-- [breach](./breach/) - 用于breach，支持安全扫描、审计、加固和风险治理。
-- [cloak](./cloak/) - 用于cloak，支持安全扫描、审计、加固和风险治理。
+- [breach](./breach/) - 红队场景、攻击路径、威胁建模和对抗演练设计。
+- [cloak](./cloak/) - 隐私工程、敏感信息流、同意管理和数据治理。
 
 ## 技能总览
 
 | 技能 | 简介 | 目录 | 详情 |
 |------|------|------|------|
-| `breach` | 用于breach，支持安全扫描、审计、加固和风险治理。 | [目录](./breach/) | [SKILL.md](./breach/SKILL.md) |
-| `cloak` | 用于cloak，支持安全扫描、审计、加固和风险治理。 | [目录](./cloak/) | [SKILL.md](./cloak/SKILL.md) |
+| `breach` | 红队场景、攻击路径、威胁建模和对抗演练设计。 | [目录](./breach/) | [SKILL.md](./breach/SKILL.md) |
+| `cloak` | 隐私工程、敏感信息流、同意管理和数据治理。 | [目录](./cloak/) | [SKILL.md](./cloak/SKILL.md) |
 | `codeql-security-scanner` | 用于通过 CodeQL 执行语义代码扫描、安全查询、自定义规则、SARIF 报告和 GitHub Code Scan。 | [目录](./codeql-security-scanner/) | [SKILL.md](./codeql-security-scanner/SKILL.md) |
 | `comply` | 用于comply，支持安全扫描、审计、加固和风险治理。 | [目录](./comply/) | [SKILL.md](./comply/SKILL.md) |
 | `firebase-security-rules-auditor` | 审计 Firestore 与 Cloud Storage 安全规则，检查授权、字段校验、权限提升、资源滥用和模拟器测试覆盖。 | [目录](./firebase-security-rules-auditor/) | [SKILL.md](./firebase-security-rules-auditor/SKILL.md) |

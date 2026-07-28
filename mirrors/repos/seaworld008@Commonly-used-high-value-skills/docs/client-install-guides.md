@@ -50,12 +50,19 @@ npx github:seaworld008/Commonly-used-high-value-skills install --target agents-p
 
 # 自定义目录，适配其他客户端
 npx github:seaworld008/Commonly-used-high-value-skills install --target custom --dir ./vendor/agent-skills
+
+# 只安装一个或多个分类
+npx github:seaworld008/Commonly-used-high-value-skills install --target codex --category developer-engineering,security-and-reliability
+
+# 只安装指定技能；与 --category 同时使用时取交集
+npx github:seaworld008/Commonly-used-high-value-skills install --target codex --skill docx,xlsx,pdf,pptx
 ```
 
 查看所有目标：
 
 ```bash
 npx github:seaworld008/Commonly-used-high-value-skills list-targets
+npx github:seaworld008/Commonly-used-high-value-skills list-skills
 ```
 
 如果你已经使用 `skills.sh`，也可以用它的通用入口安装：

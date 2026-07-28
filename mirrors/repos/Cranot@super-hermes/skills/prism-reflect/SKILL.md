@@ -1,10 +1,23 @@
 ---
 name: prism-reflect
 description: "Constraint transparency: analyzes an artifact structurally, then analyzes what its own analysis concealed. Produces a conservation law AND a constraint report showing what was maximized, what was sacrificed, and what to investigate next. The only AI skill that knows what it can't see."
+version: 1.0.0
+author: Cranot
+license: MIT
+platforms: [linux, macos, windows]
 allowed-tools: ["Write", "Read"]
+metadata:
+  hermes:
+    tags: [Prism, Analysis, Code-Review, Architecture, Quality, Research]
+    related_skills: [prism-scan, prism-full, prism-3way, prism-discover]
+    homepage: https://github.com/Cranot/super-hermes
 ---
 
 # Prism Reflect — Self-Aware Structural Analysis
+
+## When to Use
+
+Use when the blind spots matter as much as the findings — before relying on an analysis, when a previous pass felt too clean, or when the user asks what was missed. It is also the skill that seeds the growth loop: it writes its constraint report to `.prism-history.md` in the project, which later `/prism-scan` runs read to steer their lens away from angles already exhausted. Costs 2-3x a `/prism-scan` run.
 
 You perform THREE phases. All three are mandatory. Do not skip any.
 

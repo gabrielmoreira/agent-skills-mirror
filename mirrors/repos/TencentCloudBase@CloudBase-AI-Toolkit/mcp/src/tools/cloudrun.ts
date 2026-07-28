@@ -49,7 +49,7 @@ const ManageCloudRunInputSchema = {
     })).optional().describe('扩缩容配置数组，用于配置服务的自动扩缩容策略。可配置多个扩缩容策略'),
     CustomLogs: z.string().optional().describe('自定义日志配置，用于配置服务的日志收集和存储策略'),
     Port: z.number().min(1).max(65535).optional().describe('服务监听端口配置。函数型服务固定为3000，容器型服务可自定义。服务代码必须监听此端口才能正常接收请求'),
-    EnvParams: z.string().optional().describe('环境变量配置，JSON字符串格式。用于传递配置信息给服务代码，如\'{"DATABASE_URL":"mysql://...","NODE_ENV":"production"}\'。SDK v5.6.1+ 会自动对传入的环境变量进行 AES-256-CBC 加密传输'),
+    EnvParams: z.string().optional().describe('环境变量配置，JSON字符串格式。用于传递配置信息给服务代码，如\'{"DATABASE_URL":"postgres://user:pass@10.x.x.x:5432/db","NODE_ENV":"production"}\'。SDK v5.6.1+ 会自动对传入的环境变量进行 AES-256-CBC 加密传输。⚠️ 若 EnvParams 含 DATABASE_URL / MYSQL_* / POSTGRES_* / REDIS_* 等传统 TCP 连库变量，必须同时配置 VpcConf，否则实例通常无法访问 VPC 内数据库'),
     Dockerfile: z.string().optional().describe('Dockerfile文件名配置，仅容器型服务需要。指定用于构建容器镜像的Dockerfile文件路径，默认为项目根目录下的Dockerfile'),
     BuildDir: z.string().optional().describe('构建目录配置，指定代码构建的目录路径。当代码结构与标准不同时使用，默认为项目根目录'),
     InternalAccess: z.string().optional().describe('内网访问开关配置，控制是否启用内网访问。true=启用内网访问（可通过云开发SDK直接调用），false=关闭内网访问（仅公网访问）'),
@@ -73,9 +73,9 @@ const ManageCloudRunInputSchema = {
       ReplicaNum: z.number().min(0).describe('定时扩缩容的目标副本数，最小值0（缩容到0）')
     })).optional().describe('定时扩缩容配置数组，用于配置服务的定时自动扩缩容策略。可配置多个时间段的扩缩容计划，支持每日/每周/每月循环'),
     VpcConf: z.object({
-      VpcId: z.string().describe('VPC网络ID，指定服务所在的私有网络'),
-      SubnetId: z.string().describe('子网ID，指定服务所在的子网'),
-    }).optional().describe('VPC网络配置，用于将云托管服务部署到指定的私有网络中。需要提前创建好VPC和子网'),
+      VpcId: z.string().describe('VPC网络ID，格式如 vpc-xxxxxxxx。必须与目标数据库/Redis 处于同一地域，并优先选择同一 VPC。禁止猜测或使用占位符；须来自数据库控制台、已有资源详情、callCloudApi 或用户确认。建议首次创建即配置；已存在服务也可在 deploy 时传入，部署后必须用 queryCloudRun detail 复核是否生效'),
+      SubnetId: z.string().describe('子网ID，格式如 subnet-xxxxxxxx。云托管实例将占用该子网 IP，需确保有足够可用 IP'),
+    }).optional().describe('VPC网络配置（实例出网/私有网络）。用于让云托管实例接入指定 VPC，从而内网访问 MySQL/PostgreSQL/Redis/CVM 等资源。与 OpenAccessTypes（外部如何访问本服务）是不同概念。TCP 连库场景必须配置。禁止猜测 VpcId/SubnetId，须来自数据库控制台、已有资源详情、callCloudApi 或用户确认。MCP 在创建时会将 VpcConf 映射为 SDK vpcInfo(CreateType=2)；更新后必须用 queryCloudRun detail 复核 ServerConfig.VpcConf，未生效再走控制台网络设置或删建兜底'),
     VolumesConf: z.array(z.object({
       VolumeName: z.string().describe('存储卷名称'),
       VolumeType: z.string().describe('存储卷类型，如CFS表示云文件存储'),
@@ -224,6 +224,95 @@ function buildManageCloudRunErrorMessage(action: ManageCloudRunInput["action"], 
   }
 
   return `[manageCloudRun/${action}] ${baseMessage}\n建议：${suggestions.join(" ")}`;
+}
+
+const CLOUDRUN_DB_ENV_KEY_PATTERN =
+  /^(DATABASE_URL|DB_HOST|DB_PORT|DB_USER|DB_PASSWORD|DB_NAME|MYSQL_|POSTGRES_|PGHOST|PGPORT|PGUSER|PGPASSWORD|PGDATABASE|PG_|REDIS_|MONGO_|MONGODB_|SQLALCHEMY_DATABASE_URI|SPRING_DATASOURCE_)/i;
+
+const CLOUDRUN_DB_URL_PATTERN =
+  /(mysql|mariadb|postgres|postgresql|mongodb(\+srv)?|redis|rediss):\/\//i;
+
+export type CloudRunDbNetworkRisk = {
+  code: "MISSING_VPC_FOR_DB_ENV";
+  message: string;
+  matchedKeys: string[];
+  remediation: string[];
+};
+
+/**
+ * Detect likely TCP database/cache env usage without VpcConf.
+ * Soft signal for AI agents — does not block deploy.
+ */
+export function detectCloudRunDbNetworkRisk(options: {
+  envParams?: string;
+  vpcConf?: { VpcId?: string; SubnetId?: string } | null;
+}): CloudRunDbNetworkRisk | null {
+  const vpcId = options.vpcConf?.VpcId?.trim();
+  const subnetId = options.vpcConf?.SubnetId?.trim();
+  if (vpcId && subnetId) {
+    return null;
+  }
+
+  const rawEnv = options.envParams?.trim();
+  if (!rawEnv) {
+    return null;
+  }
+
+  let parsed: Record<string, unknown>;
+  try {
+    const value = JSON.parse(rawEnv);
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return null;
+    }
+    parsed = value as Record<string, unknown>;
+  } catch {
+    // Non-JSON EnvParams still may embed connection URLs as plain text.
+    if (!CLOUDRUN_DB_URL_PATTERN.test(rawEnv)) {
+      return null;
+    }
+    return {
+      code: "MISSING_VPC_FOR_DB_ENV",
+      message:
+        "EnvParams appears to include a database/cache connection URL, but serverConfig.VpcConf is missing. CloudRun instances usually cannot reach VPC-private MySQL/PostgreSQL/Redis without VpcConf.",
+      matchedKeys: ["<non-json-envParams>"],
+      remediation: [
+        "Set serverConfig.VpcConf to the same region/VPC (and a subnet with free IPs) as the database.",
+        "Do NOT invent VpcId/SubnetId. Resolve real IDs from the DB console, resource detail, callCloudApi, or the user.",
+        "Use the database private/intranet hostname in EnvParams, not localhost or docker-compose service names.",
+        "Ensure the DB security group allows the CloudRun subnet on the DB port.",
+        "Re-deploy after VpcConf is set. OpenAccessTypes alone does not provide VPC egress to databases.",
+      ],
+    };
+  }
+
+  const matchedKeys: string[] = [];
+  for (const [key, value] of Object.entries(parsed)) {
+    if (CLOUDRUN_DB_ENV_KEY_PATTERN.test(key)) {
+      matchedKeys.push(key);
+      continue;
+    }
+    if (typeof value === "string" && CLOUDRUN_DB_URL_PATTERN.test(value)) {
+      matchedKeys.push(key);
+    }
+  }
+
+  if (matchedKeys.length === 0) {
+    return null;
+  }
+
+  return {
+    code: "MISSING_VPC_FOR_DB_ENV",
+    message:
+      "EnvParams includes database/cache connection settings, but serverConfig.VpcConf is missing. Deploy may succeed while runtime DB connections fail.",
+    matchedKeys,
+    remediation: [
+      "Set serverConfig.VpcConf.VpcId and SubnetId to the database VPC/subnet (same region).",
+      "Do NOT invent VpcId/SubnetId. Resolve real IDs from the DB console, resource detail, callCloudApi, or the user.",
+      "Use the private DB endpoint in EnvParams.",
+      "Confirm security group / allowlist permits CloudRun subnet access to the DB port.",
+      "Do not confuse OpenAccessTypes (ingress) with VpcConf (egress to VPC resources).",
+    ],
+  };
 }
 
 function getCloudRunQueryServerName(input: queryCloudRunInput): string | undefined {
@@ -781,6 +870,18 @@ for await (let x of res.textStream) {
               deployParams.serverConfig = input.serverConfig;
             }
 
+            // Manager SDK create path prefers top-level vpcInfo (CreateCloudRunServer.VpcInfo).
+            // Map serverConfig.VpcConf → vpcInfo so first-time create actually binds VPC.
+            // Update path still sends Items.VpcConf; platform may ignore VPC changes on existing services.
+            const vpcConf = input.serverConfig?.VpcConf;
+            if (vpcConf?.VpcId?.trim() && vpcConf?.SubnetId?.trim()) {
+              deployParams.vpcInfo = {
+                VpcId: vpcConf.VpcId.trim(),
+                CreateType: 2,
+                SubnetIds: [vpcConf.SubnetId.trim()],
+              };
+            }
+
             let result: unknown;
             try {
               result = await cloudrunService.deploy(deployParams);
@@ -851,6 +952,15 @@ for await (let x of res.textStream) {
               // Error is already logged in sendDeployNotification
             }
 
+            const dbNetworkRisk = detectCloudRunDbNetworkRisk({
+              envParams: input.serverConfig?.EnvParams,
+              vpcConf: input.serverConfig?.VpcConf,
+            });
+            const warnings = dbNetworkRisk ? [dbNetworkRisk] : [];
+            const warningSuffix = dbNetworkRisk
+              ? ` Warning: ${dbNetworkRisk.message} Set serverConfig.VpcConf before relying on DB connectivity.`
+              : "";
+
             return {
               content: [
                 {
@@ -863,9 +973,10 @@ for await (let x of res.textStream) {
                       deployPath: targetPath,
                       serverType: serverType,
                       cloudbasercGenerated: true,
-                      consoleUrl
+                      consoleUrl,
+                      ...(warnings.length > 0 ? { warnings } : {}),
                     },
-                    message: `Triggered deployment for ${serverType} service '${input.serverName}' from ${targetPath}. You can follow the progress in ${consoleUrl}`
+                    message: `Triggered deployment for ${serverType} service '${input.serverName}' from ${targetPath}. You can follow the progress in ${consoleUrl}.${warningSuffix}`
                   }, null, 2)
                 }
               ]

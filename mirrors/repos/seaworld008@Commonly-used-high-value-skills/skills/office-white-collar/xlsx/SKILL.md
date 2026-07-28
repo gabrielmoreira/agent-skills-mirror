@@ -2,14 +2,14 @@
 name: xlsx
 description: 'Use this skill any time a spreadsheet file is the primary input or output. This means any task where the user wants to: open, read, edit, or fix an existing .xlsx, .xlsm, .csv, or .tsv file (e.g., adding columns, computing formulas, formatting, charting, cleaning messy data); create a new spreadsheet from scratch or from other data sources; or convert between tabular file formats. Trigger especially when the user references a spreadsheet file by name or path — even casually (like \"the xlsx in my downloads\") — and wants something done to it or produced from it. Also trigger for cleaning or restructuring messy tabular data files (malformed rows, misplaced headers, junk data) into proper spreadsheets. The deliverable must be a spreadsheet file. Do NOT trigger when the primary deliverable is a Word document, HTML report, standalone Python script, database pipeline, or Google Sheets API integration, even if tabular data is involved.'
 zh_description: "用于XLSX，支持文档、表格、演示和资料整理。"
-version: "1.0.0"
+version: "1.1.0"
 author: "seaworld008"
 source: "in-house"
 source_url: ""
 license: Proprietary. LICENSE.txt has complete terms
 tags: '["xlsx"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "intermediate"
 ---
@@ -300,3 +300,21 @@ The script returns JSON with error details:
 - Add comments to cells with complex formulas or important assumptions
 - Document data sources for hardcoded values
 - Include notes for key calculations and model sections
+
+## Bundled Advanced Recipes
+
+- `scripts/create_formatted_excel.py` provides a reusable, script-backed
+  financial-model formatting baseline with input, formula, linked-cell, and
+  sensitivity-table conventions.
+- `scripts/parse_complex_excel.py` reads difficult `.xlsx`/`.xlsm` files
+  directly from OOXML when `openpyxl` cannot load them and can remove corrupted
+  defined-name entries into a new output file.
+- `references/excel-automation/formatting-reference.md` contains detailed
+  formatting conventions; load it only for professional financial or
+  presentation-ready workbooks.
+- `references/openpyxl-examples/` contains small runnable examples for basic
+  creation, reading, and styling.
+
+Treat repair operations as copy-on-write: never overwrite the user's only
+workbook, especially for macro-enabled files. Re-open, recalculate, scan formula
+errors, and visually inspect the repaired copy before delivery.

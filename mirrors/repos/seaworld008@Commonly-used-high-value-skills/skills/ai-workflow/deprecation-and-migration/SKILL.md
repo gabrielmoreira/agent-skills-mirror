@@ -2,14 +2,14 @@
 name: deprecation-and-migration
 description: 'Manages deprecation and migration. Use when removing old systems, APIs, or features. Use when migrating users from one implementation to another. Use when deciding whether to maintain or sunset existing code.'
 zh_description: "用于deprecation、migration，支持任务规划、执行、评审和验证。"
-version: "1.0.1"
+version: "1.0.0"
 author: addyosmani
 source: "github:addyosmani/agent-skills"
 source_url: "https://github.com/addyosmani/agent-skills/blob/main/skills/deprecation-and-migration/SKILL.md"
 license: MIT
 tags: '["agent", "ai", "deprecation-and-migration", "engineering", "workflow"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-13"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: advanced
 upstream_slug: deprecation-and-migration

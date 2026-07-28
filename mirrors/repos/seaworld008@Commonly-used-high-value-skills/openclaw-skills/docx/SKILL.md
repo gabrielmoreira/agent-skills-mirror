@@ -2,14 +2,14 @@
 name: docx
 description: 'Use this skill whenever the user wants to create, read, edit, or manipulate Word documents (.docx files). Triggers include: any mention of ''Word doc'', ''word document'', ''.docx'', or requests to produce professional documents with formatting like tables of contents, headings, page numbers, or letterheads. Also use when extracting or reorganizing content from .docx files, inserting or replacing images in documents, performing find-and-replace in Word files, working with tracked changes or comments, or converting content into a polished Word document. If the user asks for a ''report'', ''memo'', ''letter'', ''template'', or similar deliverable as a Word or .docx file, use this skill. Do NOT use for PDFs, spreadsheets, Google Docs, or general coding tasks unrelated to document generation.'
 zh_description: "用于创建、编辑和检查 Word `.docx` 文档。"
-version: "1.0.0"
+version: "1.1.0"
 author: "seaworld008"
 source: "in-house"
 source_url: ""
 license: Proprietary. LICENSE.txt has complete terms
 tags: '["docx"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "intermediate"
 ---
@@ -52,6 +52,17 @@ python scripts/office/unpack.py document.docx unpacked/
 python scripts/office/soffice.py --headless --convert-to pdf document.docx
 pdftoppm -jpeg -r 150 document.pdf page
 ```
+
+For deterministic page-sized PNG output, use the bundled renderer. It checks
+for LibreOffice and Poppler, calculates a suitable DPI from the document page
+size, and writes one image per page:
+
+```bash
+python scripts/render_docx.py document.docx --output_dir /tmp/rendered-docx
+```
+
+Inspect every rendered page before delivery. Text extraction and OOXML
+validation cannot detect clipping, unexpected pagination, or visual overlap.
 
 ### Accepting Tracked Changes
 

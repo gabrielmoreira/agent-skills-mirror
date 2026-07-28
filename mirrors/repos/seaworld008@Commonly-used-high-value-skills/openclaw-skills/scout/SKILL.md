@@ -1,15 +1,15 @@
 ---
 name: scout
-description: 'Investigating bugs via root cause analysis (RCA), reproduction steps, and impact assessment. Investigation-only — identifies why bugs occur and where to fix them, no code. Use when a bug needs RCA, reproduction must be established before fix, or impact radius needs assessment.'
-zh_description: "用于scout，支持检索、拆解、反思和决策。"
-version: "1.0.9"
+description: '缺陷调查、复现步骤、根因分析和影响评估。'
+zh_description: "缺陷调查、复现步骤、根因分析和影响评估。"
+version: "1.0.0"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/scout"
 license: MIT
 tags: '["analysis", "planning", "scout"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-20"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "advanced"
 ---
@@ -107,7 +107,7 @@ Route elsewhere when the task is primarily:
 - **Slopsquat / hallucinated-import check** on `ImportError / ModuleNotFoundError / unresolved import` symptoms involving recently-added dependencies — query registry existence and download history before code-path hypotheses (5-21% of AI-suggested package names do not exist; typo-squats are increasingly attacker-registered).
 - **Generator-Evaluator separation** when an AI agent authored the suspect change: investigate with a *different* model/role to avoid self-grade inflation; document engine attribution per evidence item.
 - **Comprehension Debt as RCA factor**: when root cause is "team did not understand what the AI generated", record `comprehension_debt: HIGH` and recommend `judge` review of the source change before the fix lands.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for this role; P2 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for this role; P2 recommended).
 
 ## Boundaries
 
@@ -342,7 +342,7 @@ Cross-cluster escalation (LENS↔SCOUT, unified confidence scale): `_common/INVE
 | `reference/fix-prompt-generation.md` | You are authoring the `## LLM Fix Prompt` block, choosing a Scout-specific action verb, or deciding whether to suppress the prompt for a Sentinel handoff or investigation-only scope. |
 | `_common/LLM_PROMPT_GENERATION.md` | You need universal authoring rules, prompt structure, or the cross-agent verb/suppression principles shared with Trail/Sentinel/Plea. |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation, handoff formats (LENS_TO_SCOUT, SCOUT_TO_LENS), or unified confidence scale is needed. |
-| `_common/OPUS_48_AUTHORING.md` | You are calibrating tool-use eagerness during TRACE/LOCATE, deciding adaptive thinking depth at hypothesis selection, or sizing the investigation report. Critical for Scout: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are calibrating tool-use eagerness during TRACE/LOCATE, deciding adaptive thinking depth at hypothesis selection, or sizing the investigation report. Critical for Scout: P3, P5. |
 | `_common/IMAGE_INPUT.md` | The report includes a screenshot or error-screen image — run the image pipeline (observed-vs-inferred, hypothesize-with-confidence, abstention) and the mandatory bug-report 5-section analysis before RCA; complements `vague-report-handling.md` screenshot-only handling. |
 | `reference/multi-engine-mode.md` | You are running the `multi` Recipe and need the full core mechanics, CLUSTER/Confidence/Perspective rules, GROUND protocol, SYNTHESIZE merge, engine-attribution tag table, and degraded-mode rules. Companion to `tri-engine-investigate.md` (algorithm + JSON schema). |
 | `reference/tri-engine-investigate.md` | You are running the `multi` Recipe — tri-engine fan-out (Codex + Antigravity + Claude subagents), JSON schema, subagent prompt skeleton, GROUND verdict examples, and worked synthesis examples. |

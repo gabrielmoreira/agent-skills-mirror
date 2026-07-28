@@ -2,14 +2,14 @@
 name: lark-task
 description: '飞书任务：管理任务、清单和任务智能体。创建待办任务、查看和更新任务状态、拆分子任务、组织任务清单、分配协作成员、上传任务附件、注册或注销任务智能体、更新任务智能体的主页数据、写入智能体任务记录。当用户需要创建待办事项、查看任务列表、跟踪任务进度、管理项目清单或给他人分配任务、为任务上传附件文件、注册注销任务智能体、更新智能体主页数据、写入任务记录时使用。'
 zh_description: "用于创建、查询和更新飞书任务及待办事项。"
-version: "1.0.4"
+version: "1.0.5"
 author: larksuite
 source: "github:larksuite/cli"
 source_url: "https://github.com/larksuite/cli/tree/main/skills/lark-task"
 license: MIT
 tags: '[feishu, lark, lark-cli, tasks, project-management]'
 created_at: "2026-05-19"
-updated_at: "2026-07-20"
+updated_at: "2026-07-27"
 quality: 4
 complexity: intermediate
 metadata:
@@ -47,6 +47,13 @@ metadata:
 > **Task GUID 定义**：
 > Task OpenAPI 中用于更新/操作任务的 `guid` 是任务的全局唯一标识（GUID），不是客户端展示的任务编号（例如 `t104121` / `suite_entity_num`）。
 > 对于 Feishu 的任务 applink（例如 `.../client/todo/task?guid=...`），必须使用 URL query 里的 `guid` 参数作为 task guid。
+
+> **从任务清单定位并修改任务的最短路径**：
+> 1. 已知任务清单 GUID 时直接使用，不要先搜索；已知任务清单 applink 时，取 URL query 中的 `guid` 作为 `tasklist_guid`。
+> 2. 只有清单名称或关键词、没有 GUID/applink 时，才调用一次 `+tasklist-search` 解析目标清单。
+> 3. 按原生 API 规则先执行 `lark-cli schema task.tasklists.tasks`，再执行 `lark-cli task tasklists tasks --params '{"tasklist_guid":"<tasklist_guid>"}' --as user`。
+> 4. 从清单任务结果中取任务的 `guid`，直接传给 `+update` 或 `+complete`；禁止传客户端展示编号（例如 `t104121`）。这两个 shortcut 也可直接接收包含 `guid=` 的任务 applink。
+> 5. `+update` 返回 `updated_fields` 和每个任务的服务端 `confirmed` 字段；`+complete` 返回 `status`、`completed_at`、`already_completed`。这些字段已确认目标状态时，不要例行追加 `tasks get`；仅在服务端未返回所需字段或用户明确要求完整复核时再查询详情。
 
 | Shortcut | 说明 |
 |----------|------|

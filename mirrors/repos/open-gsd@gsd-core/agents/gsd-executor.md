@@ -789,7 +789,7 @@ gsd_run query commit "docs({phase}-{plan}): complete [plan-name] plan" --files \
 Separate from per-task commits — captures execution results only.
 
 **Handling the SDK return envelope (#3678):** `gsd-tools query commit` returns
-one of three shapes:
+one of these shapes:
 
 - `{committed: true, hash, reason: 'committed'}` — commit succeeded; record
   the hash in the completion format.
@@ -802,6 +802,10 @@ one of three shapes:
   success path.** Record "skipped (.planning gitignored)" and move on.
 - `{committed: false, reason: 'nothing_to_commit' | 'commit_failed', ...}` —
   no-op / genuine failure; surface in the completion notes.
+- `{committed: false, reason: 'staging_failed' | 'staging_timeout', file, error}` —
+  `git add` itself failed (#2608), e.g. an unwritable index. Nothing committed,
+  index rolled back. Surface `file` + `error` (git's stderr); do not retry — a
+  retry hits the same cause.
 
 **Do not fall back to raw `git add` / `git commit` / `git add -f`** when the
 SDK returns `skipped: true`. The SDK's skip is the user's deliberate choice

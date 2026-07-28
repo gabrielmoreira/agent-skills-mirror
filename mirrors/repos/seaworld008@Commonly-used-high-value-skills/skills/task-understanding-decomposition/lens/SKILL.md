@@ -1,15 +1,15 @@
 ---
 name: lens
 description: 'Comprehending and investigating codebases. Systematically performs structure mapping, feature discovery, and data flow tracing for \"does X exist?\", \"how does Y work?\", or \"what is this module''s responsibility?\". Includes a conversational Q&A mode (\"ask\") for navigator-style, multi-turn questions about a project. Does not write code.'
-zh_description: "用于lens，支持检索、拆解、反思和决策。"
-version: "1.0.9"
+zh_description: "代码库理解、功能发现、数据流追踪和上下文调查。"
+version: "1.0.1"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/lens"
 license: MIT
 tags: '["analysis", "lens", "planning"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-20"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "advanced"
 ---
@@ -117,7 +117,7 @@ Route elsewhere when the task is primarily:
 - Flag dynamic dispatch boundaries (event emitters, middleware chains, DI containers, plugin systems) explicitly — they create gaps between static analysis and runtime behavior that keyword/reference search cannot bridge.
 - When semantic code search tools are available (MCP servers, IDE integrations), use them for meaning-based queries where keyword search requires guessing exact identifiers. Combine grep + semantic + LSP rather than replacing grep.
 - Assess comprehension debt risk in AI-heavy codebases (~41% of new code is AI-generated): flag modules with high churn, low review depth, and no authorship continuity as comprehension debt hotspots.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Lens; P2 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Lens; P2 recommended).
 - Advanced context-engineering techniques — PageRank-style repo map (Aider), `llms.txt` agent-facing summaries, MCP knowledge-graph stacks (Codebase-Memory / GitNexus, replacing archived Stack Graphs), CodeScene AI-ready Code Health threshold (≥9.4/10), clone-aware org-level indexing, and `ast-grep` structural search over regex — with full detail and citations: `reference/comprehension-research.md`.
 
 ## Boundaries
@@ -299,7 +299,8 @@ Every deliverable must include:
 | `reference/recipes-detail.md` | Full "When to Use" descriptions for every recipe and the verbatim per-recipe Subcommand Dispatch behavior notes. |
 | `reference/comprehension-research.md` | Research backing and source citations behind the Principles, Core Contract, and Boundaries rules, plus advanced context-engineering techniques (PageRank repo map, `llms.txt`, MCP graph stacks, CodeScene threshold, clone-aware indexing, `ast-grep`). |
 | `_common/INVESTIGATION_ESCALATION.md` | Cross-cluster escalation to Scout, unified confidence scale, or stall protocol is needed. |
-| `_common/OPUS_48_AUTHORING.md` | You are choosing tool-use eagerness during SURVEY/TRACE, deciding adaptive thinking depth at SCOPE, or sizing the report. Critical for Lens: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are choosing tool-use eagerness during SURVEY/TRACE, deciding adaptive thinking depth at SCOPE, or sizing the report. Critical for Lens: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Lens-specific Output/Next schema. |
 
 ---
 
@@ -314,27 +315,34 @@ Every deliverable must include:
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Lens-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Lens
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [report path or inline]
-    artifact_type: "[Quick Answer | Investigation Report | Structure Map | Data Flow Report | Convention Report | Onboarding Report]"
-    parameters:
-      investigation_type: "[Existence | Flow | Structure | Data | Convention | Onboarding | ComprehensionDebt]"
-      scope: "[files/modules investigated]"
-      confidence: "[High | Medium | Low]"
-      findings_count: "[count]"
-      gaps: "[What I didn't find]"
-  Next: Builder | Sherpa | Atlas | Scribe | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Lens-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
+<!-- LOCAL-QUALITY-SUPPLEMENT:START -->
+## Usage Notes
+
+This supplement is maintained by the repository sync pipeline. It keeps the
+imported upstream skill usable inside this curated collection when the upstream
+source is intentionally concise.
+
+## Common Patterns
+
+```text
+1. Confirm that the user's task matches the skill trigger.
+2. Read the relevant project files or user-provided context before acting.
+3. Choose the smallest reversible action that advances the task.
+4. Run the verification command or manual check that proves the result.
+5. Report the outcome, evidence, and any remaining risk.
+```
+
+## Boundaries
+
+- Prefer the upstream workflow for Lens; this section only adds local quality
+  guardrails.
+- Do not invent project facts when required files, vaults, services, or tools are
+  unavailable.
+- Stop and ask for clarification when the next action could overwrite user work,
+  expose private data, or change production state.
+<!-- LOCAL-QUALITY-SUPPLEMENT:END -->

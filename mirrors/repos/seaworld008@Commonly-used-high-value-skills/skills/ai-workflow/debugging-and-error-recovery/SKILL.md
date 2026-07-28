@@ -2,14 +2,14 @@
 name: debugging-and-error-recovery
 description: 'Guides systematic root-cause debugging. Use when tests fail, builds break, behavior doesn''t match expectations, or you encounter any unexpected error. Use when you need a systematic approach to finding and fixing the root cause rather than guessing.'
 zh_description: "用于调试、错误、recovery，支持任务规划、执行、评审和验证。"
-version: "1.0.1"
+version: "1.0.0"
 author: addyosmani
 source: "github:addyosmani/agent-skills"
 source_url: "https://github.com/addyosmani/agent-skills/blob/main/skills/debugging-and-error-recovery/SKILL.md"
 license: MIT
 tags: '["agent", "ai", "debugging-and-error-recovery", "engineering", "workflow"]'
-created_at: "2026-04-25"
-updated_at: "2026-06-21"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: advanced
 upstream_slug: debugging-and-error-recovery
@@ -84,7 +84,7 @@ Cannot reproduce on demand:
     └── Document the conditions observed and revisit when it recurs
 ```
 
-For test failures:
+For test failures (npm shown — substitute the repository's own test command, per the test-driven-development skill's Discover the Stack First section):
 ```bash
 # Run the specific failing test
 npm test -- --grep "test name"
@@ -117,7 +117,7 @@ git bisect start
 git bisect bad                    # Current commit is broken
 git bisect good <known-good-sha> # This commit worked
 # Git will checkout midpoint commits; run your test at each
-git bisect run npm test -- --grep "failing test"
+git bisect run npm test -- --grep "failing test"  # substitute the repository's focused-test command
 ```
 
 ### Step 3: Reduce
@@ -165,7 +165,7 @@ This test will prevent the same bug from recurring. It should fail without the f
 
 ### Step 6: Verify End-to-End
 
-After fixing, verify the complete scenario:
+After fixing, verify the complete scenario with the repository's own commands (npm shown):
 
 ```bash
 # Run the specific test

@@ -2,14 +2,14 @@
 name: landing-page-generator
 description: 'Generates high-converting landing pages as complete Next.js/React (TSX) components with Tailwind CSS. Creates hero sections, feature grids, pricing tables, FAQ accordions, testimonial blocks, and CTA sections using proven copy frameworks (PAS, AIDA, BAB). Outputs SEO meta tags, structured data, and performance-optimised code targeting Core Web Vitals (LCP < 1s, CLS < 0.1). Use when the user asks to create a landing page, marketing page, homepage, single-page site, lead capture page, campaign page, promo page, or conversion-optimised web page — or when they want to A/B test landing page variants or replace a static page with one designed to convert.'
 zh_description: "用于落地页、page、生成，支持产品研究、策略、界面和交付协作。"
-version: "1.0.5"
+version: "1.0.6"
 author: "seaworld008"
 source: "github:alirezarezvani/claude-skills"
 source_url: ""
 license: MIT
 tags: '["design", "generator", "landing", "page", "product"]'
 created_at: "2026-03-27"
-updated_at: "2026-06-16"
+updated_at: "2026-07-27"
 quality: 4
 complexity: "intermediate"
 ---
@@ -207,3 +207,11 @@ Inject `FAQPage` JSON-LD via `<script type="application/ld+json" dangerouslySetI
 - **Brand Voice Analyzer** (`marketing-skill/skills/content-production/scripts/brand_voice_analyzer.py`) — Run before generation to establish voice profile and ensure copy consistency
 - **UI Design System** (`product-team/ui-design-system/`) — Generate design tokens from brand color before building the page
 - **Competitive Teardown** (`product-team/competitive-teardown/`) — Competitive positioning informs landing page messaging and differentiation
+
+<!-- LOCAL-CURATION-SUPPLEMENT:START -->
+## Repository Routing Override
+
+For competitive evidence in this repository, use
+`skills/growth-operations-xiaohongshu/compete/`. The upstream
+`product-team/competitive-teardown/` path is not part of this repository.
+<!-- LOCAL-CURATION-SUPPLEMENT:END -->

@@ -61,7 +61,15 @@ node "$VC" workflow get "$jobDir" --json
 
 只有文件路径、但 Runtime 没有返回上述 artifact 状态时，以 `artifact_state_unavailable` fail-closed。不得仅因 `source_cut.mp4` 存在就假设它对应当前时间线，也不得让旧成片进入分镜链。
 
-若缺失，切换到 `$chengfeng-videocut:chengfeng-cut-talking-head` 完成前置剪辑，再以同一个 `projectId` 恢复本 Skill。不要新增业务状态机或第二个项目。
+缺什么就回哪一段，**不要笼统地指回剪口播**——缺的东西不同，该跑的 Skill 就不同：
+
+| 缺什么 | 切换到 |
+| --- | --- |
+| `source_cut.mp4` 不存在（还没物理剪切） | `$chengfeng-videocut:chengfeng-export-talking-head` |
+| `source_cut.mp4` 有、`subtitles.srt` 没有 | `$chengfeng-videocut:chengfeng-subtitle-talking-head` |
+| 连删词账本都没有 | `$chengfeng-videocut:chengfeng-cut-talking-head` |
+
+都以同一个 `projectId` 恢复本 Skill。不要新增业务状态机或第二个项目。
 
 ## 2. 读取项目配置并准备 proposal
 

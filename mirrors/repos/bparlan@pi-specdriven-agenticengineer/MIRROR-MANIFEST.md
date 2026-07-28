@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 5 followed patterns, 75 file(s) materialized.
+Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 5 followed patterns, 76 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bparlan/pi-specdriven-agenticengineer` — 26 default patterns, 5 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 75 |
+| Files         | 76 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -133,11 +133,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 68 | ✓ | [`skills/sync-documentation/README.md`](skills/sync-documentation/README.md) |
 | 69 | ✓ | [`skills/sync-documentation/SKILL.md`](skills/sync-documentation/SKILL.md) |
 | 70 | ✓ | [`tests/M3/README.md`](tests/M3/README.md) |
-| 71 | → | [`docs/FRAMEWORK.md`](docs/FRAMEWORK.md) |
-| 72 | → | [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md) |
-| 73 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 74 | → | [`INDEX.md`](INDEX.md) |
-| 75 | → | [`README.md`](README.md) |
+| 71 | ✓ | [`tests/M5/README.md`](tests/M5/README.md) |
+| 72 | → | [`docs/FRAMEWORK.md`](docs/FRAMEWORK.md) |
+| 73 | → | [`docs/PLAYBOOK.md`](docs/PLAYBOOK.md) |
+| 74 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 75 | → | [`INDEX.md`](INDEX.md) |
+| 76 | → | [`README.md`](README.md) |
 
 ---
 

@@ -80,10 +80,12 @@ If any tool result contains `COMPUTER_USE_REARM_REQUIRED` or `status=rearm requi
 4. If the backend advertises native window listing through capabilities or `native-window-list`, call `list_windows` before using coordinates.
 5. If the backend advertises window state and element-index targeting through capabilities or features, call `get_window_state` for the target `pid`/`window_id`, then use `element_action` with `dispatch: "background"` by default.
 6. If `element_action` reports `background_unavailable`, use `dispatch: "auto"` or `dispatch: "foreground"` only when foreground control is acceptable for the user/task.
-7. Decide final success from the latest screenshot or a definitive structural result, not from memory.
-8. Interactive actions already attach a fresh screenshot after they run; inspect it before claiming the requested outcome succeeded.
-9. Use `status` for state without starting a session.
-10. Use `capture` only when you need another screenshot without taking an action.
+7. When the backend advertises verified window focus, activate a window only with foreground `element_action` operation `focus`; require `focus_verified=true`. Never use `press` on an application/frame/window node as activation.
+8. When the backend advertises target-verified keyboard input, pass the verified active `window_id` to `type`; a missing, inactive, or unverifiable target must fail closed.
+9. Decide final success from the latest screenshot or a definitive structural result, not from memory.
+10. Interactive actions already attach a fresh screenshot after they run; inspect it before claiming the requested outcome succeeded.
+11. Use `status` for state without starting a session.
+12. Use `capture` only when you need another screenshot without taking an action.
 
 ## Backend Skills
 
@@ -107,7 +109,7 @@ If any tool result contains `COMPUTER_USE_REARM_REQUIRED` or `status=rearm requi
 - If the same approach has already failed twice without visible progress, switch strategy instead of repeating it.
 - Do not infer focus or task completion from chat logs, sidebars, tool summaries, or status text.
 - Never claim a state-changing action succeeded until the latest screenshot visibly confirms it.
-- A `type` tool result only confirms keystrokes were sent. It is not evidence that the text landed in the intended application.
+- A `type` tool result confirms the destination only when it reports `focus_verified=true` with the intended `window_id`; otherwise it confirms only global keyboard events were sent.
 - For browser-navigation tasks done through this tool, only claim success if the browser content area visibly shows the destination page or result.
 - If the attached screenshot appears unchanged after a state-changing action, use one explicit `capture` to verify before repeating the same action.
 - Use `type(..., submit=true)` only for URL or navigation-style entry where Enter should fire immediately after typing.

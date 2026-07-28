@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Cranot/super-hermes` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `Cranot/super-hermes` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Cranot/super-hermes` — 26 default patterns, 0 followed patterns, 5 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,7 +63,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`skills/prism-discover/SKILL.md`](skills/prism-discover/SKILL.md) |
 | 3 | ✓ | [`skills/prism-full/SKILL.md`](skills/prism-full/SKILL.md) |
 | 4 | ✓ | [`skills/prism-reflect/SKILL.md`](skills/prism-reflect/SKILL.md) |
-| 5 | ✓ | [`skills/prism-scan/SKILL.md`](skills/prism-scan/SKILL.md) |
+| 5 | ✓ | [`skills/prism-scan/references/claim.md`](skills/prism-scan/references/claim.md) |
+| 6 | ✓ | [`skills/prism-scan/references/deep_scan.md`](skills/prism-scan/references/deep_scan.md) |
+| 7 | ✓ | [`skills/prism-scan/references/error_resilience.md`](skills/prism-scan/references/error_resilience.md) |
+| 8 | ✓ | [`skills/prism-scan/references/identity.md`](skills/prism-scan/references/identity.md) |
+| 9 | ✓ | [`skills/prism-scan/references/l12.md`](skills/prism-scan/references/l12.md) |
+| 10 | ✓ | [`skills/prism-scan/references/optimize.md`](skills/prism-scan/references/optimize.md) |
+| 11 | ✓ | [`skills/prism-scan/references/simulation.md`](skills/prism-scan/references/simulation.md) |
+| 12 | ✓ | [`skills/prism-scan/SKILL.md`](skills/prism-scan/SKILL.md) |
 
 ---
 

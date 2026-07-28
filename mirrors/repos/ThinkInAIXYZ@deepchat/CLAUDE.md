@@ -1,1 +1,1 @@
-cache/repos/github.com/ThinkInAIXYZ@deepchat/AGENTS.md
+READ [AGENTS.md](AGENTS.md)

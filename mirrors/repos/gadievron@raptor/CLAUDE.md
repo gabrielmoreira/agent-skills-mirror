@@ -44,6 +44,8 @@ When a `/command` fires:
 /validate - Exploitability validation pipeline (see below)
 /understand - Code understanding: map attack surface, trace flows, hunt variants (see below)
 /diagram - Generate Mermaid visual maps from /understand or /validate output (see below)
+/audit - Hypothesis-driven code audit with tool verification (see below)
+/review - Unified operator CLI for navigating audit results across runs
 /annotate - Per-function prose annotations (manual or LLM-emitted) attached to source files
 
 **Coverage:** When asked about coverage, run `libexec/raptor-coverage-summary` (no args = active project). Use `--detailed` for per-file table, `--gaps` for unreviewed functions. See `.claude/skills/coverage.md` for mark/unmark and the full API.
@@ -136,7 +138,7 @@ The coverage tracking plugin (`plugins/coverage/`) tracks which source files the
 
 When scanning untrusted repositories:
 
-- **Environment sanitisation**: `RaptorConfig.get_safe_env()` strips environment variables that tools may shell-evaluate (`TERMINAL`, `EDITOR`, `VISUAL`, `BROWSER`, `PAGER`). Always use `get_safe_env()` when spawning subprocesses.
+- **Environment sanitisation**: `RaptorConfig.get_safe_env()` uses a strict allowlist (`SAFE_ENV_ALLOWLIST`) — only ~30 explicitly named variables plus `LC_*` prefixes are kept; everything else is dropped. A secondary blocklist (`DANGEROUS_ENV_VARS`) covers `TERMINAL`, `EDITOR`, `VISUAL`, `BROWSER`, `PAGER` as belt-and-braces. Always use `get_safe_env()` when spawning subprocesses.
 - **File path injection**: Never interpolate file paths from scanned repos into shell command strings. Use list-based `subprocess` arguments.
 
 ---
@@ -226,6 +228,16 @@ The `/validate` command validates that vulnerability findings are real, reachabl
 
 ---
 
+## SYSTEMATIC CODE REVIEW
+
+The `/audit` command runs a hypothesis-driven code audit with tool verification. The LLM forms hypotheses about assumption violations; deterministic tools (Semgrep, Coccinelle, CodeQL, SMT, Joern) validate. The LLM never directly classifies code as vulnerable — tool output is the verdict.
+
+**Usage:** `/audit <target> [--model <name>] [--max-cost <usd>] [--review-passes N] [--adversarial]`
+
+See `docs/audit.md` for the full pipeline, gates, strategies, and tool menu. `/review` is the companion operator CLI for navigating results across all four layers (coverage, journal, context-map, annotations).
+
+---
+
 ## CODE UNDERSTANDING
 
 The `/understand` command provides deep, adversarial code comprehension for security research.
@@ -256,7 +268,7 @@ The `/understand` command provides deep, adversarial code comprehension for secu
 The `/diagram` command generates Mermaid visual maps from `/understand` and `/validate` JSON outputs, giving researchers a visual representation of code flows, sources, sinks, trust boundaries, attack trees, and attack paths. Consider this 
 very much a WIP but it could be of use for those wanting to see relationships and flows better. 
 
-**Usage:** `/diagram <out-dir> [--target <name>] [--type context-map|flow-trace|attack-tree|attack-paths|all]`
+**Usage:** `/diagram <out-dir> [--target <name>]`
 
 **What gets rendered:**
 - `context-map.json` → flowchart LR: entry points → trust boundaries → sinks; unchecked flows as dashed edges
@@ -362,7 +374,7 @@ Default behaviour (no flags): /agentic and /codeql auto-detect debug binaries un
 - `symbol_present` / `inlined` / `folded` — the function survived compilation in some form
 - `absent` — the compiler / linker removed it from the analysed binary
 
-`absent` is corpus-earned for suppression: **1952/1952 verdicts correct across 6 iteratively-tuned corpora (consistency) + 187/187 on the held-out zstd v1.5.6 corpus with NO classifier tuning (generalization)** — rule-of-three 95% UB on miss rate ≤1.6% on first-contact-with-unseen-data. The held-out is non-vacuous: 473/1431 functions exercised by the workload, zero `absent` verdicts on actually-live functions. Conditional on full-DWARF evidence — a stripped binary in the analysed set downgrades to `tier="symbol_only"` and the chokepoint refuses to suppress.
+`absent` is corpus-earned for suppression: **1952/1952 absent verdicts correct across 6 iteratively-tuned corpora (consistency) + 187/187 absent verdicts correct on the held-out zstd v1.5.6 corpus with NO classifier tuning (generalization)** — rule-of-three 95% UB on miss rate ≤1.6% on first-contact-with-unseen-data. The held-out is non-vacuous: 473/1431 functions exercised by the workload, zero `absent` verdicts on actually-live functions. Conditional on full-DWARF evidence — a stripped binary in the analysed set downgrades to `tier="symbol_only"` and the chokepoint refuses to suppress.
 
 The verdict flows through the existing reachability chokepoint: /codeql + /agentic skip LLM analysis on absent-function findings (pre-LLM hard-suppress); /validate's demoter clamps attack-path proximity; /understand --map annotates entry-points and sinks with the per-binary verdict + tier.
 

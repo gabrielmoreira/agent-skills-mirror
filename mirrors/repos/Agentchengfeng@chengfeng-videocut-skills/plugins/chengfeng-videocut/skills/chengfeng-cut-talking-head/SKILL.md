@@ -1,20 +1,28 @@
 ---
 name: chengfeng-cut-talking-head
-description: 剪辑中文口播原素材：逐词转录、识别口误与重复、生成删词候选、在 Studio 审核后执行可靠物理剪切，并重建剪后字幕。用户说剪口播、处理口误、生成口播基础素材、继续剪口播，或确认卡回传 action=continue_cut / return_cut_review 时使用。不要用于单独安装、单独打开工作台、普通视频编辑或口播分镜成片。
+description: 剪辑中文口播原素材：逐词转录、按词典修正听错的专名、识别口误与重复、生成删词候选、打开 Studio 让用户复核。只产出一份已复核的删词账本，不切媒体、不做字幕、不做分镜动画。用户说剪口播、处理口误、生成口播基础素材、继续剪口播，或确认卡回传 action=return_cut_review 时使用。不要用于执行物理剪切、导出剪后视频、单独安装、单独打开工作台或口播分镜成片。
 user-invocable: true
 ---
 
 # 剪口播
 
-这是 `chengfeng-videocut` 的第一个业务入口。目标产物只有：
+这是 `chengfeng-videocut` 的第一个业务入口。目标产物只有一样：
 
 ```text
-source_cut.mp4 + subtitles.srt
+一份已经人工复核过的删词账本（Cuts + EDL）
 ```
+
+**不切媒体。** 到本 Skill 结束为止，磁盘上没有任何新的视频文件——原片一动不动，账本记着哪些段要播，预览把它们拼起来给人听。物理剪切在下一段才发生。
+
+```text
+【本 Skill】──账本──▶ 导出 ──source_cut.mp4──▶ 字幕 ──subtitles.srt──▶ 分镜动画
+```
+
+**为什么不切**：账本改一次是几十毫秒，切一次是一个不可撤销的文件。把删词判断和媒体产出分开，用户就能反复改到满意，而不必为每一版都付一次剪切的代价。
 
 Skill 做语义判断与编排；产品 Runtime 是项目、Cuts、媒体剪切和 Studio 状态的唯一写入者。
 
-先读取并执行 [两个业务 Skill 的阶段合同](../../references/business-workflow-contract.md)。本 Skill 的任何一次续跑也必须保持其中的固定阶段：`preflight -> Product state readback -> proposal -> Product CAS -> project-level review binding -> user confirmation -> Product execution -> outcome verification`。
+先读取并执行 [业务 Skill 的阶段合同](../../references/business-workflow-contract.md)。本 Skill 的任何一次续跑都必须保持其中的固定阶段，并且**只走到审核绑定为止**：`preflight -> Product state readback -> proposal -> Product CAS -> project-level review binding`。后面三个阶段（user confirmation -> Product execution -> outcome verification）属于导出 Skill。
 
 ## 0. 每次先做 Runtime 预检
 
@@ -86,7 +94,36 @@ node "$VC" cuts get "$jobDir" --json
 
 两份 readback 必须指向同一个 Product 返回的 `projectId`，并保存当前 workflow stage、Project / Cuts / EditList revisions；缺失或不一致时停止，禁止猜测或用本地文件补齐。
 
-## 2. proposal → Product CAS：生成并提交删词候选
+## 2. 修字：把听错的专名换回来
+
+**在判断该删什么之前做，不是之后。**
+
+转录会把专名听错，也会把同一个词写成好几种。真实项目上一份 39 个含字母的词里出现过
+**16 种写法**：`Grok` 被听成 `Clock` / `Glock` / `Gokul`，`Codex` 写成 `CodeX` / `codex`。
+
+**删词修不掉这个。** 听错的字不是多余的话——把 `Clock` 删掉，那句话就缺一个词。
+
+先读 [AI 用词词典](../../references/ai-term-dictionary.md)，产出 `{ wordId, text }` 的对照表，
+然后交给产品：
+
+```bash
+node "$VC" transcript playback "$jobDir" --json
+node "$VC" transcript correct "$jobDir" \
+  --file "$correctionFile" \
+  --json
+```
+
+固定原则：
+
+- **只改文字，不改时间、不改词数、不改 wordId。** 产品会逐词比对时间戳，动了任何一个直接拒绝——时间是所有已做剪辑的地基。
+- **只换写法，不换意思。** 说话人真的说错又重说，那属于残句改口，归下一步删词管。
+- **词典里没有、且稿子里没有任何一个写法能确认正确时，不许猜。** 报告出来，留给人补词典。往用户片子里塞一个编的名字，比留一个听错的名字更坏。
+- 中文口语按原文保留。说话人说「叉」「大模型」「智能体」，那就是他说的话。
+
+**为什么必须在判断之前**：稿子还是错的时候去判断该删什么，判断就得一路绕开错名字——
+判据里那条「专名听错不算删除理由」就是这么来的，它是补丁，不是解法。修完字，那条补丁才不用生效。
+
+## 3. proposal → Product CAS：生成并提交删词候选
 
 先读 [语义删除规则](references/semantic-deletion.md)。
 
@@ -140,7 +177,7 @@ node "$VC" cuts set "$jobDir" \
 
 随后仍要立即再次 `workflow get` 与 `cuts get`，确认 Product readback 的 `projectId`、`cut_review_ready`、Project / Cuts / EditList revisions；CAS 返回或读回不一致即停止并重新审核，绝不直接写 JSON 或自动覆盖。
 
-## 3. project-level review binding：到人工审核时才打开 Studio
+## 4. project-level review binding：到人工审核时才打开 Studio
 
 只有 transcript 与 Cuts 已落盘、工作流已经进入 `cut_review_ready`，才准备打开审核页。即使流程起点已经 ensure，打开前也必须再次幂等 ensure，再取得产品返回的项目 URL：
 
@@ -172,64 +209,35 @@ node "$STUDIO" \
 - 控制 Studio DOM、直接改媒体元素；
 - 创建独立音频轨或占位字幕轨。
 
-## 4. user confirmation → Product execution：确认卡与物理剪切
+## 5. 交棒：到账本为止
 
-用户表示审核完成后：
+用户表示复核完成后，**本 Skill 就结束了**。不弹确认卡，不执行剪切。
 
-1. 再次执行 `node "$RUNNING" --json`；成功后才恢复审核流程。页面关闭不代表服务停止，健康服务会被幂等复用。
-2. 分别执行 `workflow get` 与 `cuts get`，取得当前 `projectId`、项目 revision、Cuts revision 与 `workflow get.data.editListRevision`。EDL 不存在时该值必须明确为 `none`，禁止省略。
-3. 调用本插件 MCP App 的 `show_workflow_confirmation`，传入：
-
-```text
-projectId
-stage=cut_review_ready
-expectedProjectRevision
-expectedCutsRevision
-expectedEditListRevision
-selectedCount（可选）
-removedDuration（可选）
-```
-
-4. 卡片只回传 action，不直接剪切。
-5. 收到 `action=continue_cut` 后再次执行 `node "$RUNNING" --json`，再执行 `workflow get` 与 `cuts get`；项目、Cuts、EDL 任一 revision 与卡片不一致，都停止并让用户核对新编辑。
-6. 三个 revision 都一致时，仍使用卡片回传的确认 revision 执行；禁止把刚读取的“当前最新 revision”替换成确认 revision：
-
-```bash
-node "$VC" cuts apply "$jobDir" \
-  --expected-revision "$confirmedProjectRevision" \
-  --expected-edit-list-revision "$confirmedEditListRevision" \
-  --confirmed \
-  --json
-```
-
-`return_cut_review` 先再次 ensure-running，再返回同一 Studio；`pause_workflow` 保存状态后停止。
-
-本次不实现一次性 confirmation receipt；卡片动作仍由 Agent 与 Product revision 比对约束，不把它描述为 Product 强制 receipt。
-
-## 5. outcome verification：重建剪后字幕
-
-物理剪切成功后，必须基于 `source_cut.mp4` 重新转录。先读 [剪后字幕校对](references/subtitle-correction.md)。禁止把原始字幕按删除区间机械拼成最终字幕。
-
-字幕候选通过产品发布：
+结束前读回一次，把状态说清楚：
 
 ```bash
 node "$VC" workflow get "$jobDir" --json
-node "$VC" artifact put "$jobDir" \
-  --type subtitles \
-  --file "$subtitleProposal" \
-  --expected-project-revision "$latestProjectRevision" \
-  --expected-artifact-revision "$latestSubtitleRevisionOrNone" \
-  --json
+node "$VC" cuts get "$jobDir" --json
 ```
 
-只有媒体可解码、有音频流、剪后字幕已发布且时间轴有效，才能报告基础素材包完成。报告必须分开写：Product 结构化 revision / artifact / verification 为 **API/readback PASS**；真实同项目浏览器帧审核才是 **visual frame PASS**；没有人实际听音时一律为 **human listening UNVERIFIED**，不得用播放、DOM、截图或媒体探测替代。
+报告里写明三件事，然后告诉用户下一步跑导出：
+
+```text
+删了多少词、少了多少秒
+当前 stage（应为 cut_review_ready）
+项目 / Cuts / EDL 三个 revision
+```
+
+`return_cut_review`：先再次 `node "$RUNNING" --json`，再返回同一 Studio 继续复核。
+
+**不要替用户决定「顺手剪了吧」。** 物理剪切不可撤销，它的确认卡属于导出 Skill —— 那张卡冻结的 revision 必须是用户按下确认那一刻的，不是复核结束那一刻的。这两个时刻之间用户随时可能再改一刀。
+
+报告必须分开写：Product 结构化 revision 为 **API/readback PASS**；真实同项目浏览器帧审核才是 **visual frame PASS**；没有人实际听音时一律为 **human listening UNVERIFIED**，不得用播放、DOM、截图或媒体探测替代。
 
 ## 恢复与失败
 
-- `revision_conflict`：重新读取状态，说明用户刚才的编辑，不自动覆盖；若 `reason=edit_list_changed_after_confirmation`，必须重新展示确认卡，不能沿用旧确认。
-- `revision_required`：旧入口没有携带 `expectedEditListRevision`，按未确认处理并停止；禁止自动补成当前 EDL revision。
-- `media_has_no_audio`：保留原素材和上一份有效产物，停止交付。
+- `revision_conflict`：重新读取状态，说明用户刚才的编辑，不自动覆盖。
 - `runtime_unhealthy`：不要循环重装。
 - `service_identity_mismatch` 或 `service_port_conflict`：停止，不回退 foreground、不换端口、不杀未知进程。
 - 页面关闭但服务仍在：读取 workflow 后从当前状态续做，不新建项目。
-- 任何失败都不得把“能预览”说成“已经剪好”。
+- 任何失败都不得把「账本已写」说成「已经剪好」。**到这一段为止没有任何媒体文件产生**，说成剪好了就是在报告一件没发生的事。

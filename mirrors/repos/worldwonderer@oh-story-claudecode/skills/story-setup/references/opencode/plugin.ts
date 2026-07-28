@@ -6,6 +6,7 @@ import {
   discoverActiveBook,
   resolveTarget,
   extractProseTargets,
+  extractPatchTargets,
   proseBlockReason,
   proseAfterWrite,
 } from "./lib/story_hook_core.js"
@@ -28,6 +29,24 @@ function projectRoot(): string {
   } catch {
     return process.cwd()
   }
+}
+
+function targetBase(root: string, args?: Record<string, unknown>): string {
+  const raw = args?.workdir || args?.cwd
+  if (typeof raw !== "string" || !raw.trim()) return root
+  let candidate = path.resolve(root, raw)
+  let canonicalRoot = path.resolve(root)
+  try {
+    if (!fs.statSync(candidate).isDirectory()) return root
+    candidate = fs.realpathSync(candidate)
+    canonicalRoot = fs.realpathSync(root)
+  } catch {
+    return root
+  }
+  const relative = path.relative(canonicalRoot, candidate)
+  return relative && (relative === ".." || relative.startsWith(`..${path.sep}`))
+    ? root
+    : candidate
 }
 
 function tryGit(root: string, args: string): string {
@@ -90,21 +109,33 @@ export default (async () => {
       input: { tool: string; args?: Record<string, unknown> },
       output: { args?: Record<string, unknown> }
     ) => {
-      const root = projectRoot()
       const targets: string[] = []
 
       if (input.tool === "write" || input.tool === "edit") {
         const filePath = (output.args?.filePath as string) || ""
-        if (filePath) targets.push(resolveTarget(root, filePath))
+        if (filePath) targets.push(filePath)
+      } else if (input.tool === "apply_patch") {
+        // apply_patch 是 OpenCode 的 edit 类工具（upstream permission 与 write/edit 同组），
+        // 且 gpt-5 系模型只暴露它、隐藏 write/edit——不接这个分支等于守卫整场失效。
+        // 目标抽取（*** Add/Update File: 与 *** Move to: 的目的地）复用共享核，与 ZCode/Codex
+        // adapter 同一份判据；Move 必须走目的地，否则搬家式补丁能把无细纲草稿搬进 正文/。
+        const patchText = (output.args?.patchText as string) || ""
+        for (const t of extractPatchTargets(patchText)) targets.push(t)
       } else if (input.tool === "bash") {
         const cmd = (output.args?.command as string) || ""
-        for (const t of extractProseTargets(cmd)) targets.push(resolveTarget(root, t))
+        for (const t of extractProseTargets(cmd)) targets.push(t)
       } else {
         return
       }
 
-      for (const abs of targets) {
-        const reason = proseBlockReason(root, abs)
+      // 非写类工具（read/grep/glob/list/…）已在上面 return：projectRoot() 是同步 execSync，
+      // 插件常驻在 OpenCode 服务进程里，只有确认有目标要查时才 fork git。
+      if (targets.length === 0) return
+
+      const root = projectRoot()
+      const base = targetBase(root, output.args || input.args)
+      for (const target of [...new Set(targets)]) {
+        const reason = proseBlockReason(root, resolveTarget(root, target, base))
         if (reason) {
           throw new Error(`${reason}（此操作无法通过 Bash/命令行绕过。）`)
         }
@@ -118,13 +149,30 @@ export default (async () => {
       input: { tool: string; args?: Record<string, unknown> },
       output: { output?: string }
     ) => {
-      if (input.tool !== "write" && input.tool !== "edit") return
-      const filePath = (input.args?.filePath as string) || ""
-      if (!filePath) return
+      const targets: string[] = []
+      if (input.tool === "write" || input.tool === "edit") {
+        const filePath = (input.args?.filePath as string) || ""
+        if (filePath) targets.push(filePath)
+      } else if (input.tool === "apply_patch") {
+        // 与 before 同一套目标抽取（含 *** Move to: 的目的地——搬进 正文/ 的章节要被扫的是
+        // 目的地，源已不存在）：gpt-5 系模型只有 apply_patch，不接就等于整场没有落盘兜底。
+        const patchText = (input.args?.patchText as string) || ""
+        for (const t of extractPatchTargets(patchText)) targets.push(t)
+      } else {
+        return
+      }
+      if (targets.length === 0) return
       const root = projectRoot()
+      const base = targetBase(root, input.args)
       try {
-        const note = proseAfterWrite(root, resolveTarget(root, filePath))
-        if (note && typeof output.output === "string") output.output += `\n\n${note}`
+        const notes: string[] = []
+        for (const target of [...new Set(targets)]) {
+          const note = proseAfterWrite(root, resolveTarget(root, target, base))
+          if (note) notes.push(note)
+        }
+        if (notes.length && typeof output.output === "string") {
+          output.output += `\n\n${notes.join("\n\n")}`
+        }
       } catch {
         // 兜底不能反过来卡流程：解析失败一律放行
       }

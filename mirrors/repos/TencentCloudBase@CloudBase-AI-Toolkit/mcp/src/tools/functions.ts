@@ -202,8 +202,16 @@ type ManageFunctionsInput = {
 };
 
 const VPC_SCHEMA = z.object({
-  vpcId: z.string(),
-  subnetId: z.string(),
+  vpcId: z
+    .string()
+    .describe(
+      "VPC ID from the real database/network console (e.g. vpc-xxxxxxxx). Required for non-native TCP DB access. Do NOT invent or use placeholders.",
+    ),
+  subnetId: z
+    .string()
+    .describe(
+      "Subnet ID in the same VPC as the private DB endpoint (e.g. subnet-xxxxxxxx). Do NOT invent or use placeholders.",
+    ),
 });
 
 // 镜像部署值，对应 SCF Runtime=CustomImage
@@ -305,8 +313,15 @@ const CREATE_FUNCTION_SCHEMA = z.object({
     })
     .optional(),
   timeout: z.number().optional().describe("函数超时时间"),
-  envVariables: z.record(z.string()).optional().describe("环境变量"),
-  vpc: VPC_SCHEMA.optional().describe("私有网络配置"),
+  envVariables: z
+    .record(z.string())
+    .optional()
+    .describe(
+      "环境变量。若包含 DATABASE_URL / MYSQL_* / POSTGRES_* / REDIS_* 等传统 TCP 连库变量，必须同时配置 vpc（vpcId+subnetId），且 ID 必须来自真实库/网络信息，禁止猜测。原生 app.rdb()/app.database() 不需要 VPC。",
+    ),
+  vpc: VPC_SCHEMA.optional().describe(
+    "私有网络配置（出网）。非原生 SDK、用 TCP 访问 VPC 内 MySQL/PostgreSQL/Redis 时必填。vpcId/subnetId 必须与数据库内网 VPC 一致；未知时先查控制台或询问用户，禁止填占位符。",
+  ),
   runtime: z
     .string()
     .optional()
@@ -1840,8 +1855,15 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
         ),
         handler: z.string().optional().describe("函数入口"),
         timeout: z.number().optional().describe("配置更新时的超时时间"),
-        envVariables: z.record(z.string()).optional().describe("配置更新时要合并的环境变量"),
-        vpc: VPC_SCHEMA.optional().describe("配置更新时的 VPC 信息"),
+        envVariables: z
+          .record(z.string())
+          .optional()
+          .describe(
+            "配置更新时要合并的环境变量。若含 DATABASE_URL / MYSQL_* / POSTGRES_* / REDIS_* 等 TCP 连库变量，必须同时提供真实 vpc（或函数已绑定完整 VPC）。禁止猜测 vpcId/subnetId。",
+          ),
+        vpc: VPC_SCHEMA.optional().describe(
+          "配置更新时的 VPC 信息。非原生 TCP 连库场景必填真实 vpcId+subnetId；不要用占位符。",
+        ),
         params: z.record(z.any()).optional().describe("invokeFunction 的调用参数"),
         triggers: z
           .array(TRIGGER_SCHEMA)

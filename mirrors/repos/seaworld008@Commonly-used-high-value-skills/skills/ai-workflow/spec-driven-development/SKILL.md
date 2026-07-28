@@ -2,14 +2,14 @@
 name: spec-driven-development
 description: 'Creates specs before coding. Use when starting a new project, feature, or significant change and no specification exists yet. Use when requirements are unclear, ambiguous, or only exist as a vague idea.'
 zh_description: "用于spec、驱动、development，支持任务规划、执行、评审和验证。"
-version: "1.0.3"
+version: "1.0.0"
 author: addyosmani
 source: "github:addyosmani/agent-skills"
 source_url: "https://github.com/addyosmani/agent-skills/blob/main/skills/spec-driven-development/SKILL.md"
 license: MIT
 tags: '["agent", "ai", "engineering", "spec-driven-development", "workflow"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-03"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: advanced
 upstream_slug: spec-driven-development

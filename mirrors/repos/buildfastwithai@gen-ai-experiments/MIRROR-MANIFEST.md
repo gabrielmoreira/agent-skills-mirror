@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
+Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 68 |
+| Files         | 78 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,35 +98,45 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 37 | ✓ | [`skills/frontend-skills/styles/minimal-luxury-ui.md`](skills/frontend-skills/styles/minimal-luxury-ui.md) |
 | 38 | ✓ | [`skills/frontend-skills/styles/neo-brutalism-web.md`](skills/frontend-skills/styles/neo-brutalism-web.md) |
 | 39 | ✓ | [`skills/frontend-skills/styles/retro-futurist-web.md`](skills/frontend-skills/styles/retro-futurist-web.md) |
-| 40 | ✓ | [`skills/landing-page-generator/agents/openai.yaml`](skills/landing-page-generator/agents/openai.yaml) |
-| 41 | ✓ | [`skills/landing-page-generator/assets/template.html`](skills/landing-page-generator/assets/template.html) |
-| 42 | ✓ | [`skills/landing-page-generator/references/copy-frameworks.md`](skills/landing-page-generator/references/copy-frameworks.md) |
-| 43 | ✓ | [`skills/landing-page-generator/references/design-styles.md`](skills/landing-page-generator/references/design-styles.md) |
-| 44 | ✓ | [`skills/landing-page-generator/references/optimization.md`](skills/landing-page-generator/references/optimization.md) |
-| 45 | ✓ | [`skills/landing-page-generator/references/section-library.md`](skills/landing-page-generator/references/section-library.md) |
-| 46 | ✓ | [`skills/landing-page-generator/scripts/conversion_checklist.py`](skills/landing-page-generator/scripts/conversion_checklist.py) |
-| 47 | ✓ | [`skills/landing-page-generator/scripts/cta_analyzer.py`](skills/landing-page-generator/scripts/cta_analyzer.py) |
-| 48 | ✓ | [`skills/landing-page-generator/scripts/page_speed_estimator.py`](skills/landing-page-generator/scripts/page_speed_estimator.py) |
-| 49 | ✓ | [`skills/landing-page-generator/SKILL.md`](skills/landing-page-generator/SKILL.md) |
-| 50 | ✓ | [`skills/README.md`](skills/README.md) |
-| 51 | ✓ | [`skills/talking-avatar/agents/openai.yaml`](skills/talking-avatar/agents/openai.yaml) |
-| 52 | ✓ | [`skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl`](skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl) |
-| 53 | ✓ | [`skills/talking-avatar/assets/starter/app/globals.css.tmpl`](skills/talking-avatar/assets/starter/app/globals.css.tmpl) |
-| 54 | ✓ | [`skills/talking-avatar/assets/starter/app/layout.tsx.tmpl`](skills/talking-avatar/assets/starter/app/layout.tsx.tmpl) |
-| 55 | ✓ | [`skills/talking-avatar/assets/starter/app/page.tsx.tmpl`](skills/talking-avatar/assets/starter/app/page.tsx.tmpl) |
-| 56 | ✓ | [`skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl`](skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl) |
-| 57 | ✓ | [`skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl`](skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl) |
-| 58 | ✓ | [`skills/talking-avatar/references/app-contract.md`](skills/talking-avatar/references/app-contract.md) |
-| 59 | ✓ | [`skills/talking-avatar/references/image-pipeline.md`](skills/talking-avatar/references/image-pipeline.md) |
-| 60 | ✓ | [`skills/talking-avatar/references/realtime-lipsync.md`](skills/talking-avatar/references/realtime-lipsync.md) |
-| 61 | ✓ | [`skills/talking-avatar/scripts/scaffold_app.py`](skills/talking-avatar/scripts/scaffold_app.py) |
-| 62 | ✓ | [`skills/talking-avatar/scripts/validate_avatar_assets.py`](skills/talking-avatar/scripts/validate_avatar_assets.py) |
-| 63 | ✓ | [`skills/talking-avatar/SKILL.md`](skills/talking-avatar/SKILL.md) |
-| 64 | ✓ | [`skills/tooling-workflow-skills/agent-output-critic.md`](skills/tooling-workflow-skills/agent-output-critic.md) |
-| 65 | ✓ | [`skills/tooling-workflow-skills/git-conventional-commits.md`](skills/tooling-workflow-skills/git-conventional-commits.md) |
-| 66 | ✓ | [`skills/tooling-workflow-skills/linux-kernel-troubleshooter.md`](skills/tooling-workflow-skills/linux-kernel-troubleshooter.md) |
-| 67 | ✓ | [`skills/tooling-workflow-skills/prompt-optimizer-cot.md`](skills/tooling-workflow-skills/prompt-optimizer-cot.md) |
-| 68 | ✓ | [`skills/tooling-workflow-skills/tool-use-validator.md`](skills/tooling-workflow-skills/tool-use-validator.md) |
+| 40 | ✓ | [`skills/html-game-generator/references/audio-recipes.md`](skills/html-game-generator/references/audio-recipes.md) |
+| 41 | ✓ | [`skills/html-game-generator/references/engine-patterns.md`](skills/html-game-generator/references/engine-patterns.md) |
+| 42 | ✓ | [`skills/html-game-generator/references/genres.md`](skills/html-game-generator/references/genres.md) |
+| 43 | ✓ | [`skills/html-game-generator/references/visuals.md`](skills/html-game-generator/references/visuals.md) |
+| 44 | ✓ | [`skills/html-game-generator/SKILL.md`](skills/html-game-generator/SKILL.md) |
+| 45 | ✓ | [`skills/landing-page-generator/agents/openai.yaml`](skills/landing-page-generator/agents/openai.yaml) |
+| 46 | ✓ | [`skills/landing-page-generator/assets/template.html`](skills/landing-page-generator/assets/template.html) |
+| 47 | ✓ | [`skills/landing-page-generator/references/copy-frameworks.md`](skills/landing-page-generator/references/copy-frameworks.md) |
+| 48 | ✓ | [`skills/landing-page-generator/references/design-styles.md`](skills/landing-page-generator/references/design-styles.md) |
+| 49 | ✓ | [`skills/landing-page-generator/references/optimization.md`](skills/landing-page-generator/references/optimization.md) |
+| 50 | ✓ | [`skills/landing-page-generator/references/section-library.md`](skills/landing-page-generator/references/section-library.md) |
+| 51 | ✓ | [`skills/landing-page-generator/scripts/conversion_checklist.py`](skills/landing-page-generator/scripts/conversion_checklist.py) |
+| 52 | ✓ | [`skills/landing-page-generator/scripts/cta_analyzer.py`](skills/landing-page-generator/scripts/cta_analyzer.py) |
+| 53 | ✓ | [`skills/landing-page-generator/scripts/page_speed_estimator.py`](skills/landing-page-generator/scripts/page_speed_estimator.py) |
+| 54 | ✓ | [`skills/landing-page-generator/SKILL.md`](skills/landing-page-generator/SKILL.md) |
+| 55 | ✓ | [`skills/react-screenshot-recreator/references/effects.md`](skills/react-screenshot-recreator/references/effects.md) |
+| 56 | ✓ | [`skills/react-screenshot-recreator/references/patterns.md`](skills/react-screenshot-recreator/references/patterns.md) |
+| 57 | ✓ | [`skills/react-screenshot-recreator/references/tailwind-mapping.md`](skills/react-screenshot-recreator/references/tailwind-mapping.md) |
+| 58 | ✓ | [`skills/react-screenshot-recreator/references/visual-audit.md`](skills/react-screenshot-recreator/references/visual-audit.md) |
+| 59 | ✓ | [`skills/react-screenshot-recreator/SKILL.md`](skills/react-screenshot-recreator/SKILL.md) |
+| 60 | ✓ | [`skills/README.md`](skills/README.md) |
+| 61 | ✓ | [`skills/talking-avatar/agents/openai.yaml`](skills/talking-avatar/agents/openai.yaml) |
+| 62 | ✓ | [`skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl`](skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl) |
+| 63 | ✓ | [`skills/talking-avatar/assets/starter/app/globals.css.tmpl`](skills/talking-avatar/assets/starter/app/globals.css.tmpl) |
+| 64 | ✓ | [`skills/talking-avatar/assets/starter/app/layout.tsx.tmpl`](skills/talking-avatar/assets/starter/app/layout.tsx.tmpl) |
+| 65 | ✓ | [`skills/talking-avatar/assets/starter/app/page.tsx.tmpl`](skills/talking-avatar/assets/starter/app/page.tsx.tmpl) |
+| 66 | ✓ | [`skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl`](skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl) |
+| 67 | ✓ | [`skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl`](skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl) |
+| 68 | ✓ | [`skills/talking-avatar/references/app-contract.md`](skills/talking-avatar/references/app-contract.md) |
+| 69 | ✓ | [`skills/talking-avatar/references/image-pipeline.md`](skills/talking-avatar/references/image-pipeline.md) |
+| 70 | ✓ | [`skills/talking-avatar/references/realtime-lipsync.md`](skills/talking-avatar/references/realtime-lipsync.md) |
+| 71 | ✓ | [`skills/talking-avatar/scripts/scaffold_app.py`](skills/talking-avatar/scripts/scaffold_app.py) |
+| 72 | ✓ | [`skills/talking-avatar/scripts/validate_avatar_assets.py`](skills/talking-avatar/scripts/validate_avatar_assets.py) |
+| 73 | ✓ | [`skills/talking-avatar/SKILL.md`](skills/talking-avatar/SKILL.md) |
+| 74 | ✓ | [`skills/tooling-workflow-skills/agent-output-critic.md`](skills/tooling-workflow-skills/agent-output-critic.md) |
+| 75 | ✓ | [`skills/tooling-workflow-skills/git-conventional-commits.md`](skills/tooling-workflow-skills/git-conventional-commits.md) |
+| 76 | ✓ | [`skills/tooling-workflow-skills/linux-kernel-troubleshooter.md`](skills/tooling-workflow-skills/linux-kernel-troubleshooter.md) |
+| 77 | ✓ | [`skills/tooling-workflow-skills/prompt-optimizer-cot.md`](skills/tooling-workflow-skills/prompt-optimizer-cot.md) |
+| 78 | ✓ | [`skills/tooling-workflow-skills/tool-use-validator.md`](skills/tooling-workflow-skills/tool-use-validator.md) |
 
 ---
 

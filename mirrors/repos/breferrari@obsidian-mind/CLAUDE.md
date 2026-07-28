@@ -310,9 +310,37 @@ The vault normally only helps while you are sitting in it. The **`om` MCP server
 | `recall` | durable lessons scoped to the calling repo, most specific first |
 | `remember` | record a lesson that will still be true in a different repo |
 | `record_work` | record what happened in this repo, filed where it belongs |
+| `reason` | judgement across several notes — spawns a second session, so it takes longer |
 | `health` | is the wiring intact? |
 
 Plus notes as readable **resources**, and `recall_topic` / `prior_art` as **prompts** you invoke yourself from the `/` menu.
+
+### `reason` — judgement across notes
+
+The other tools answer without inference. `reason` reads the vault with a second Claude session, so it is slower and uses more — reach for it when `search` or `recall` returned the notes but not the judgement. It seeds itself from search, so there is no need to search first.
+
+**It runs on your own CLI default model**, so the vault answers at the level you are already working at. MCP gives a server no way to see the calling session's model, so inheriting the CLI default is the closest reachable thing to "the same model I am using".
+
+**Every call is on the record** — including one that produced no answer, since the log is written before any refusal. It lands in `.claude/om-mcp-audit.jsonl` with the question, cost, turns, terminal reason, model asked for, model that ran, wall time, and the roots the spawn was given. `health` reports the day's figure, and says *at least* when the log was too big to read whole rather than quietly under-reporting.
+
+**It reads what this vault serves, and nothing else.** The spawn is handed the same three rules the exposure policy applies to search results: your `mcp_exposed_roots`, your `mcp_never_expose` filenames, and `private:`-tagged notes — the last two matter because they live *inside* exposed roots. Unset, that is simply your `user_content_roots`, so the boundary is whatever you already declared rather than anything this tool adds. It is also told not to read the memory root, since a memory belongs to the project it was scoped to.
+
+**The server stays responsive while it runs.** Other tools answer normally mid-call, and a shutdown ends any spawn still in flight rather than orphaning it.
+
+One optional key, which does not ship set:
+
+```json
+"reason": { "model": "claude-haiku-4-5" }   // pin a model instead of inheriting
+```
+
+Left unset — the default — it uses your own Claude settings.
+
+> [!warning] If you pin a model, use a FULL id.
+> `--model haiku` is not honoured by the CLI and does not error — it silently runs `claude-sonnet-5`. Bare aliases (`haiku`, `sonnet`, `opus`) are therefore dropped in favour of inheriting; anything else is passed through as written. Every answer names the model that actually ran, and says whether it was the pinned one.
+
+If a run ends early you get **no answer**, not a truncated one, plus the evidence search already found — a partial synthesis presented as complete is the one outcome worse than none.
+
+Answers land in `.claude/om-reasoning/` (gitignored) marked `confidence: inferred`. They are deliberately **not** recorded as memories — a spawned conclusion is reasoning, not verified knowledge, and the calling session decides whether any of it earns a `remember`.
 
 ### Which memories reach which project
 

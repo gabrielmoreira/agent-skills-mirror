@@ -1,15 +1,15 @@
 ---
 name: cloak
 description: 'Engineering privacy and data governance via PII detection, data flow mapping, consent management patterns, GDPR/CCPA-compliant code implementation, and DPIA facilitation. Use when privacy-by-design implementation is needed.'
-zh_description: "用于cloak，支持安全扫描、审计、加固和风险治理。"
-version: "1.0.5"
+zh_description: "隐私工程、敏感信息流、同意管理和数据治理。"
+version: "1.0.1"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/cloak"
 license: MIT
 tags: '["cloak", "security"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-20"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "advanced"
 ---
@@ -130,7 +130,7 @@ Agent role boundaries → `_common/BOUNDARIES.md`
 - Reference NIST Privacy Framework 1.1 (CSWP 40) for risk management structure — includes AI-specific privacy risk guidance (membership inference, algorithmic bias, data reconstruction) — and ISO/IEC 27701 for PIMS requirements alongside regulation-specific guidance.
 - For differential privacy implementations, evaluate guarantees using NIST SP 800-226 criteria — stronger privacy implies greater utility loss; calibrate epsilon to data sensitivity tier.
 - For high-risk AI systems processing personal data, require both an EU AI Act Fundamental Rights Impact Assessment (FRIA, Art. 27) and a GDPR DPIA (Art. 35). EU AI Act penalties reach €35M / 7% of global turnover — exceeding GDPR.
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Cloak; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Cloak; P2, P1 recommended).
 
 ## Data Classification
 
@@ -290,7 +290,8 @@ Cloak receives security findings, standard requirements, and codebase analysis f
 | `reference/ccpa-cpra.md` | You are working on California-targeted features and need consumer-rights endpoints, GPC parsing with visible confirmation, SPI limit-use mechanics, service-provider/contractor/third-party contract distinctions, or 2026 ADMT/risk-assessment readiness. |
 | `reference/appi-japan.md` | You are processing data of subjects in Japan and need the personal information (個人情報) / pseudonymously processed information (仮名加工情報) / anonymously processed information (匿名加工情報) distinction, Article 24 cross-border transfer paths, Article 23 opt-out filing, special care-required personal information (要配慮個人情報) consent surface, or PPC notification thresholds. |
 | `reference/pseudonymization-techniques.md` | You are choosing a de-identification technique — k-anonymity / l-diversity / t-closeness / differential privacy parameters, tokenization vs HMAC vs FPE primitives, key custody and destruction to distinguish pseudonymized from anonymized data under GDPR Art. 4(5). |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the privacy report, deciding adaptive thinking depth at classification/DPIA, or front-loading regulations/sensitivity/jurisdiction at SCAN. Critical for Cloak: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the privacy report, deciding adaptive thinking depth at classification/DPIA, or front-loading regulations/sensitivity/jurisdiction at SCAN. Critical for Cloak: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Cloak-specific Output/Next schema. |
 
 ## Output Requirements
 
@@ -312,29 +313,34 @@ Every deliverable must include:
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling).
-
-Cloak-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Cloak
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    deliverable: [artifact path or inline]
-    artifact_type: "[PII Inventory | Compliance Audit | Consent Pattern | DSAR Handler | Data Flow Map | DPIA]"
-    parameters:
-      regulation: "[GDPR | CCPA | APPI | Multiple]"
-      pii_findings: "[count by severity]"
-      data_classification: "[tiers found]"
-      remediation_status: "[complete | partial | blocked]"
-  Validations:
-    completeness: "[complete | partial | blocked]"
-    quality_check: "[passed | flagged | skipped]"
-  Next: Builder | Schema | Gateway | Beacon | Scribe | DONE
-  Reason: [Why this next step]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Cloak-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 
 When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
+<!-- LOCAL-QUALITY-SUPPLEMENT:START -->
+## Usage Notes
+
+This supplement is maintained by the repository sync pipeline. It keeps the
+imported upstream skill usable inside this curated collection when the upstream
+source is intentionally concise.
+
+## Common Patterns
+
+```text
+1. Confirm that the user's task matches the skill trigger.
+2. Read the relevant project files or user-provided context before acting.
+3. Choose the smallest reversible action that advances the task.
+4. Run the verification command or manual check that proves the result.
+5. Report the outcome, evidence, and any remaining risk.
+```
+
+## Boundaries
+
+- Prefer the upstream workflow for Cloak; this section only adds local quality
+  guardrails.
+- Do not invent project facts when required files, vaults, services, or tools are
+  unavailable.
+- Stop and ask for clarification when the next action could overwrite user work,
+  expose private data, or change production state.
+<!-- LOCAL-QUALITY-SUPPLEMENT:END -->

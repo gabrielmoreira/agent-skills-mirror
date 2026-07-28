@@ -9,6 +9,9 @@ const state = {
   loadingFile: false,
   saving: false,
   deleting: false,
+  // 记住作者手动展开/收起过的目录，重绘文件树时不要把人正在翻的章节文件夹关掉
+  expandedDirs: new Set(),
+  collapsedDirs: new Set(),
 };
 
 const elements = {
@@ -43,6 +46,7 @@ const elements = {
   toastRegion: document.querySelector("#toastRegion"),
   conflictDialog: document.querySelector("#conflictDialog"),
   reloadConflictButton: document.querySelector("#reloadConflictButton"),
+  truncationNotice: null,
 };
 
 class ApiError extends Error {
@@ -111,8 +115,46 @@ function countCharacters(content) {
   return [...content.replace(/\s/g, "")].length;
 }
 
+// textarea 的 value 永远是 LF：读盘时先归一化，写盘时再换回原文件的换行符，
+// 否则 CRLF 稿件会被一次改动整篇重写，而且脏标记永远对不上、清不掉。
+function detectEol(content) {
+  let crlf = 0;
+  let lf = 0;
+  let cr = 0;
+  for (let index = 0; index < content.length; index += 1) {
+    if (content[index] === "\r") {
+      if (content[index + 1] === "\n") {
+        crlf += 1;
+        index += 1;
+      } else {
+        cr += 1;
+      }
+    } else if (content[index] === "\n") {
+      lf += 1;
+    }
+  }
+  // 按 LF/CRLF 的主流风格回写；只有纯 CR 文件才保留 CR。一个粘贴进来的孤立 CR
+  // 不能把每个 LF 都扩散成 CR，反过来也不能让 CRLF 稿件整篇变成 LF。
+  if (crlf > lf) return "\r\n";
+  if (lf > 0) return "\n";
+  if (cr > 0) return "\r";
+  return "\n";
+}
+
+function normalizeEol(content) {
+  return content.replaceAll("\r\n", "\n").replaceAll("\r", "\n");
+}
+
+function applyEol(content, eol) {
+  return !eol || eol === "\n" ? content : content.replaceAll("\n", eol);
+}
+
+function activeEol() {
+  return state.activeFile?.eol || "\n";
+}
+
 function currentByteSize() {
-  return new TextEncoder().encode(elements.editorInput.value).length;
+  return new TextEncoder().encode(applyEol(elements.editorInput.value, activeEol())).length;
 }
 
 function fileExtension(name) {
@@ -140,7 +182,24 @@ function createTreeEntry(node, depth = 0) {
   const item = document.createElement("li");
   if (node.type === "directory") {
     const details = document.createElement("details");
-    details.open = depth === 0 || Boolean(query);
+    const shouldOpen = query
+      ? true
+      : state.expandedDirs.has(node.path) ||
+        (depth === 0 && !state.collapsedDirs.has(node.path));
+    details.open = shouldOpen;
+    // 只记录作者亲手的展开/收起；渲染时的程序化展开（首层、搜索命中）不算偏好
+    let recorded = shouldOpen;
+    details.addEventListener("toggle", () => {
+      if (details.open === recorded) return;
+      recorded = details.open;
+      if (details.open) {
+        state.expandedDirs.add(node.path);
+        state.collapsedDirs.delete(node.path);
+      } else {
+        state.expandedDirs.delete(node.path);
+        state.collapsedDirs.add(node.path);
+      }
+    });
     const summary = document.createElement("summary");
     summary.innerHTML = iconSvg("folder");
     const label = document.createElement("span");
@@ -184,6 +243,14 @@ function createTreeEntry(node, depth = 0) {
   return item;
 }
 
+// 只改当前高亮行，不重建整棵树——重建会把作者正在翻的目录全部收起
+function syncActiveRow() {
+  const activePath = state.activeFile?.path;
+  elements.fileTree.querySelectorAll(".file-row").forEach((row) => {
+    row.dataset.active = String(row.dataset.path === activePath);
+  });
+}
+
 function renderTree() {
   elements.fileTree.replaceChildren();
   elements.treeLoading.hidden = true;
@@ -214,16 +281,72 @@ function renderTree() {
   elements.fileTree.append(list);
 }
 
+// 节点预算打满要减量，目录套太深要把嵌套拍平：两种截断的处置办法不同，
+// 混成同一句话等于让作者照着错的办法搬文稿，所以按后端报的成因分别成句。
+function truncationMessage(limits, scanErrors = []) {
+  const byDepth = Boolean(limits.truncatedByDepth);
+  const byReadError = Boolean(limits.truncatedByReadError);
+  // 老版本后端只给 truncated 一个布尔值，没有成因时按节点上限解释，保持旧文案不回退成空话。
+  const byNodes = typeof limits.truncatedByNodes === "boolean" ? limits.truncatedByNodes : !byDepth;
+  const reasons = [];
+  if (byNodes) {
+    reasons.push(`工作区文件太多，目录树只列到 ${formatNumber(limits.maxTreeNodes)} 条上限，部分文稿没有列出`);
+  }
+  if (byDepth) {
+    const depthLimit = Number.isFinite(limits.maxTreeDepth)
+      ? `（超过 ${formatNumber(limits.maxTreeDepth)} 层）`
+      : "";
+    reasons.push(`有目录套得太深${depthLimit}，更深处的文稿没有列出`);
+  }
+  if (byReadError) {
+    const paths = scanErrors.map((entry) => entry.path).filter(Boolean);
+    const shown = paths.slice(0, 3).join("、") || "部分目录";
+    const more = paths.length > 3 ? `等 ${formatNumber(paths.length)} 处` : "";
+    reasons.push(`${shown}${more}无法读取，其中的文稿没有列出`);
+  }
+  let advice = "请把旧卷或拆文库挪到别处，或直接在编辑器里打开缺失的文件。";
+  if (byReadError) {
+    advice = "请检查这些目录的访问权限和外挂盘挂载状态，恢复后刷新目录。";
+  } else if (byNodes && byDepth) {
+    advice = "请把旧卷或拆文库挪到别处、并把过深的子目录拍平，或直接在编辑器里打开缺失的文件。";
+  } else if (byDepth) {
+    advice = "请把过深的子目录拍平，或直接在编辑器里打开缺失的文件。";
+  }
+  return `${reasons.join("；")}，搜索也只覆盖已列出的部分。${advice}`;
+}
+
+// 扫描碰到上限时目录树和搜索都只覆盖已列出的部分，必须明说，不能让作者以为文件不存在
+function renderTruncationNotice(limits, scanErrors) {
+  if (!limits?.truncated) {
+    elements.truncationNotice?.remove();
+    elements.truncationNotice = null;
+    return;
+  }
+  if (!elements.truncationNotice) {
+    const notice = document.createElement("div");
+    notice.id = "treeTruncationNotice";
+    notice.className = "tree-message";
+    notice.setAttribute("role", "status");
+    notice.append(document.createElement("p"));
+    elements.treePanel.insertBefore(notice, elements.fileTree);
+    elements.truncationNotice = notice;
+  }
+  elements.truncationNotice.querySelector("p").textContent = truncationMessage(limits, scanErrors);
+}
+
 function renderWorkspace() {
-  const { workspace, stats, libraries, projects } = state.workspace;
+  const { workspace, stats, libraries, projects, limits, scanErrors } = state.workspace;
   elements.workspaceName.textContent = workspace.name;
   elements.workspacePath.textContent = workspace.path;
   elements.workspacePath.title = workspace.path;
   elements.libraryCount.textContent = formatNumber(stats.libraries);
   elements.projectCount.textContent = formatNumber(stats.projects);
-  elements.fileCount.textContent = formatNumber(stats.editableFiles);
+  // 树被截断时统计只是下限，用 + 标出来，别把残缺数字当成真相
+  elements.fileCount.textContent = formatNumber(stats.editableFiles) + (limits?.truncated ? "+" : "");
+  elements.fileCount.title = limits?.truncated ? "目录树已截断，实际文稿数多于此" : "";
   elements.librariesBadge.textContent = formatNumber(libraries.length);
   elements.projectsBadge.textContent = formatNumber(projects.length);
+  renderTruncationNotice(limits, scanErrors);
   renderTree();
 }
 
@@ -314,9 +437,12 @@ async function openFile(path, { force = false } = {}) {
   elements.fileTree.setAttribute("aria-busy", "true");
   try {
     const file = await requestJson(`/api/file?path=${encodeURIComponent(path)}`);
+    const normalized = normalizeEol(file.content);
+    file.eol = detectEol(file.content);
+    file.content = normalized;
     state.activeFile = file;
-    state.originalContent = file.content;
-    elements.editorInput.value = file.content;
+    state.originalContent = normalized;
+    elements.editorInput.value = normalized;
     elements.editorTitle.textContent = file.name;
     renderBreadcrumbs(file.path);
     setDirty(false);
@@ -326,7 +452,7 @@ async function openFile(path, { force = false } = {}) {
     elements.editorEmpty.hidden = true;
     elements.editorWorkspace.hidden = false;
     document.body.classList.add("document-open");
-    renderTree();
+    syncActiveRow();
     window.requestAnimationFrame(() => elements.editorInput.focus());
   } catch (error) {
     showToast(error.message, "error");
@@ -431,24 +557,35 @@ function setMode(mode) {
 
 async function saveFile() {
   if (!state.activeFile || !state.dirty || state.saving || state.deleting) return;
+  // 请求发出前就把身份和正文快照下来：保存期间作者可能换文件、也可能接着敲字，
+  // 收尾只允许写回这次真正送出去的那份，绝不能落到别的文稿头上。
+  const file = state.activeFile;
+  const sent = elements.editorInput.value;
   setSaving(true);
   try {
     const saved = await requestJson("/api/file", {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        path: state.activeFile.path,
-        content: elements.editorInput.value,
-        expectedMtimeMs: state.activeFile.mtimeMs,
+        path: file.path,
+        content: applyEol(sent, file.eol),
+        expectedVersion: file.version,
       }),
     });
-    state.activeFile.mtimeMs = saved.mtimeMs;
-    state.activeFile.size = saved.size;
-    state.originalContent = elements.editorInput.value;
-    setDirty(false);
+    file.mtimeMs = saved.mtimeMs;
+    file.version = saved.version;
+    file.size = saved.size;
+    showToast(`已保存《${file.name}》`);
+    if (state.activeFile !== file) return;
+    state.originalContent = sent;
+    // 保存途中敲进来的字仍是未保存修改，不能被这次结果抹平成「已保存」
+    setDirty(elements.editorInput.value !== sent);
     updateDocumentMeta();
-    showToast(`已保存《${state.activeFile.name}》`);
   } catch (error) {
+    if (state.activeFile !== file) {
+      showToast(`《${file.name}》保存失败：${error.message}`, "error");
+      return;
+    }
     setDirty(true);
     if (error instanceof ApiError && error.status === 409) {
       elements.conflictDialog.showModal();
@@ -476,7 +613,7 @@ async function deleteFile() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         path: file.path,
-        expectedMtimeMs: file.mtimeMs,
+        expectedVersion: file.version,
       }),
     });
     state.activeFile = null;

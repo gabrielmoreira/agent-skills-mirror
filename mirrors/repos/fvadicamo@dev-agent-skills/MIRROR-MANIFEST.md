@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fvadicamo/dev-agent-skills` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `fvadicamo/dev-agent-skills` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fvadicamo/dev-agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -64,7 +64,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3 | ✓ | [`plugins/github-workflow/skills/github-pr-creation/SKILL.md`](plugins/github-workflow/skills/github-pr-creation/SKILL.md) |
 | 4 | ✓ | [`plugins/github-workflow/skills/github-pr-merge/SKILL.md`](plugins/github-workflow/skills/github-pr-merge/SKILL.md) |
 | 5 | ✓ | [`plugins/github-workflow/skills/github-pr-review/SKILL.md`](plugins/github-workflow/skills/github-pr-review/SKILL.md) |
-| 6 | ✓ | [`plugins/skill-authoring/skills/creating-skills/SKILL.md`](plugins/skill-authoring/skills/creating-skills/SKILL.md) |
+| 6 | ✓ | [`plugins/privacy-guard/skills/privacy-guard/SKILL.md`](plugins/privacy-guard/skills/privacy-guard/SKILL.md) |
+| 7 | ✓ | [`plugins/skill-authoring/skills/creating-skills/SKILL.md`](plugins/skill-authoring/skills/creating-skills/SKILL.md) |
 
 ---
 

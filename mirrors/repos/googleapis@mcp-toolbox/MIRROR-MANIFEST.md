@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `googleapis/mcp-toolbox` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `googleapis/mcp-toolbox` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `googleapis/mcp-toolbox` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,6 +63,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`docs/en/documentation/configuration/embedding-models/gemini.md`](docs/en/documentation/configuration/embedding-models/gemini.md) |
 | 4 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 5 | ✓ | [`skills/maintainer/triage-issues/SKILL.md`](skills/maintainer/triage-issues/SKILL.md) |
+| 6 | ✓ | [`skills/README.md`](skills/README.md) |
 
 ---
 

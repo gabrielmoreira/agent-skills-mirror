@@ -5,12 +5,12 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-313-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-288-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 A high-value skills repository for AI developers, organized by real work scenarios such as developer engineering, DevOps, automation, finance, design, knowledge workflows, and reliability.
 
-This repository currently contains **16 categories / 313 skills**.
+This repository currently contains **16 categories / 288 skills**.
 
 ## Who This Is For
 
@@ -62,6 +62,15 @@ npx github:seaworld008/Commonly-used-high-value-skills install --all
 
 # Install into a custom directory for another AI agent client
 npx github:seaworld008/Commonly-used-high-value-skills install --target custom --dir ./vendor/agent-skills
+
+# Install only selected categories to reduce default context and maintenance surface
+npx github:seaworld008/Commonly-used-high-value-skills install --target codex --category developer-engineering,security-and-reliability
+
+# Install only named skills; combine with --category to take the intersection
+npx github:seaworld008/Commonly-used-high-value-skills install --target codex --skill docx,xlsx,pdf,pptx
+
+# Browse available skills and categories
+npx github:seaworld008/Commonly-used-high-value-skills list-skills
 ```
 
 Available targets:
@@ -314,10 +323,10 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 2. Open the relevant `SKILL.md` and read its triggers, workflow, boundaries, and scripts.
 3. If a skill includes `scripts/`, `references/`, or `assets/`, reuse those files before recreating similar content.
 
-## Skill Overview (by category, 16 categories / 313 skills)
+## Skill Overview (by category, 16 categories / 288 skills)
 
 <a id="cat-developer-engineering"></a>
-### 1. Developer Engineering (developer-engineering, 51)
+### 1. Developer Engineering (developer-engineering, 46)
 
 - [`agent-designer`](./skills/developer-engineering/agent-designer/)
 - [`api-design-reviewer`](./skills/developer-engineering/api-design-reviewer/)
@@ -325,12 +334,10 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`aws-solution-architect`](./skills/developer-engineering/aws-solution-architect/)
 - [`builder`](./skills/developer-engineering/builder/)
 - [`cli-demo-generator`](./skills/developer-engineering/cli-demo-generator/)
-- [`code-review-excellence`](./skills/developer-engineering/code-review-excellence/)
 - [`codebase-inspection`](./skills/developer-engineering/codebase-inspection/)
 - [`codebase-onboarding`](./skills/developer-engineering/codebase-onboarding/)
 - [`database-designer`](./skills/developer-engineering/database-designer/)
 - [`database-schema-designer`](./skills/developer-engineering/database-schema-designer/)
-- [`debugging-strategies`](./skills/developer-engineering/debugging-strategies/)
 - [`dependency-auditor`](./skills/developer-engineering/dependency-auditor/)
 - [`docker-expert`](./skills/developer-engineering/docker-expert/)
 - [`frontend-design`](./skills/developer-engineering/frontend-design/)
@@ -342,13 +349,11 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`i18n-expert`](./skills/developer-engineering/i18n-expert/)
 - [`kubernetes-specialist`](./skills/developer-engineering/kubernetes-specialist/)
 - [`mcp-builder`](./skills/developer-engineering/mcp-builder/)
-- [`mcp-server-builder`](./skills/developer-engineering/mcp-server-builder/)
 - [`migration-architect`](./skills/developer-engineering/migration-architect/)
 - [`monorepo-navigator`](./skills/developer-engineering/monorepo-navigator/)
 - [`neon-postgres`](./skills/developer-engineering/neon-postgres/)
 - [`neon-postgres-egress-optimizer`](./skills/developer-engineering/neon-postgres-egress-optimizer/)
 - [`nextjs-app-router`](./skills/developer-engineering/nextjs-app-router/)
-- [`parallel-debugging`](./skills/developer-engineering/parallel-debugging/)
 - [`performance-profiler`](./skills/developer-engineering/performance-profiler/)
 - [`pr-review-expert`](./skills/developer-engineering/pr-review-expert/)
 - [`promptfoo-evaluation`](./skills/developer-engineering/promptfoo-evaluation/)
@@ -359,7 +364,6 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`schema`](./skills/developer-engineering/schema/)
 - [`skill-tester`](./skills/developer-engineering/skill-tester/)
 - [`supabase`](./skills/developer-engineering/supabase/)
-- [`supabase-postgres`](./skills/developer-engineering/supabase-postgres/)
 - [`supabase-postgres-best-practices`](./skills/developer-engineering/supabase-postgres-best-practices/)
 - [`systematic-debugging`](./skills/developer-engineering/systematic-debugging/)
 - [`tailwind-design-system`](./skills/developer-engineering/tailwind-design-system/)
@@ -372,7 +376,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`webapp-testing`](./skills/developer-engineering/webapp-testing/)
 
 <a id="cat-ai-workflow"></a>
-### 2. AI Workflow (ai-workflow, 45)
+### 2. AI Workflow (ai-workflow, 47)
 
 - [`agent-workflow-designer`](./skills/ai-workflow/agent-workflow-designer/)
 - [`andrej-karpathy-skills`](./skills/ai-workflow/andrej-karpathy-skills/)
@@ -388,6 +392,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`deprecation-and-migration`](./skills/ai-workflow/deprecation-and-migration/)
 - [`dispatching-parallel-agents`](./skills/ai-workflow/dispatching-parallel-agents/)
 - [`documentation-and-adrs`](./skills/ai-workflow/documentation-and-adrs/)
+- [`doubt-driven-development`](./skills/ai-workflow/doubt-driven-development/)
 - [`executing-plans`](./skills/ai-workflow/executing-plans/)
 - [`find-skills`](./skills/ai-workflow/find-skills/)
 - [`finishing-a-development-branch`](./skills/ai-workflow/finishing-a-development-branch/)
@@ -395,8 +400,10 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`git-workflow-and-versioning`](./skills/ai-workflow/git-workflow-and-versioning/)
 - [`idea-refine`](./skills/ai-workflow/idea-refine/)
 - [`incremental-implementation`](./skills/ai-workflow/incremental-implementation/)
+- [`interview-me`](./skills/ai-workflow/interview-me/)
 - [`nexus`](./skills/ai-workflow/nexus/)
 - [`nlpm-audit`](./skills/ai-workflow/nlpm-audit/)
+- [`observability-and-instrumentation`](./skills/ai-workflow/observability-and-instrumentation/)
 - [`performance-optimization`](./skills/ai-workflow/performance-optimization/)
 - [`planning-and-task-breakdown`](./skills/ai-workflow/planning-and-task-breakdown/)
 - [`prompt-optimizer`](./skills/ai-workflow/prompt-optimizer/)
@@ -408,7 +415,6 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`shipping-and-launch`](./skills/ai-workflow/shipping-and-launch/)
 - [`skill-creator`](./skills/ai-workflow/skill-creator/)
 - [`skill-reviewer`](./skills/ai-workflow/skill-reviewer/)
-- [`skills-search`](./skills/ai-workflow/skills-search/)
 - [`source-driven-development`](./skills/ai-workflow/source-driven-development/)
 - [`spec-driven-development`](./skills/ai-workflow/spec-driven-development/)
 - [`subagent-driven-development`](./skills/ai-workflow/subagent-driven-development/)
@@ -421,7 +427,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`writing-skills`](./skills/ai-workflow/writing-skills/)
 
 <a id="cat-ai-agent-platform"></a>
-### 3. AI Platform and Agent Development (ai-agent-platform, 16)
+### 3. AI Platform and Agent Development (ai-agent-platform, 15)
 
 - [`agent-hub`](./skills/ai-agent-platform/agent-hub/)
 - [`arena`](./skills/ai-agent-platform/arena/)
@@ -436,16 +442,14 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`native-mcp`](./skills/ai-agent-platform/native-mcp/)
 - [`openai-docs`](./skills/ai-agent-platform/openai-docs/)
 - [`oracle`](./skills/ai-agent-platform/oracle/)
-- [`proactive-agent`](./skills/ai-agent-platform/proactive-agent/)
 - [`self-improving-agent`](./skills/ai-agent-platform/self-improving-agent/)
 - [`sigil`](./skills/ai-agent-platform/sigil/)
 
 <a id="cat-workflow-automation"></a>
-### 4. Engineering Workflow Automation (engineering-workflow-automation, 16)
+### 4. Engineering Workflow Automation (engineering-workflow-automation, 15)
 
 - [`agent-browser`](./skills/engineering-workflow-automation/agent-browser/)
 - [`billing-automation`](./skills/engineering-workflow-automation/billing-automation/)
-- [`changelog-automation`](./skills/engineering-workflow-automation/changelog-automation/)
 - [`gh-address-comments`](./skills/engineering-workflow-automation/gh-address-comments/)
 - [`gh-fix-ci`](./skills/engineering-workflow-automation/gh-fix-ci/)
 - [`github`](./skills/engineering-workflow-automation/github/)
@@ -461,13 +465,11 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`yeet`](./skills/engineering-workflow-automation/yeet/)
 
 <a id="cat-devops-sre"></a>
-### 5. DevOps / SRE (devops-sre, 15)
+### 5. DevOps / SRE (devops-sre, 13)
 
 - [`azure-kubernetes`](./skills/devops-sre/azure-kubernetes/)
 - [`beacon`](./skills/devops-sre/beacon/)
 - [`cc-devops-skills`](./skills/devops-sre/cc-devops-skills/)
-- [`changelog-generator`](./skills/devops-sre/changelog-generator/)
-- [`ci-cd-pipeline-builder`](./skills/devops-sre/ci-cd-pipeline-builder/)
 - [`cloudflare-troubleshooting`](./skills/devops-sre/cloudflare-troubleshooting/)
 - [`env-secrets-manager`](./skills/devops-sre/env-secrets-manager/)
 - [`gear`](./skills/devops-sre/gear/)
@@ -500,7 +502,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`stock-screener-builder`](./skills/finance-investing/stock-screener-builder/)
 
 <a id="cat-growth-operations"></a>
-### 7. Growth Operations (growth-operations-xiaohongshu, 17)
+### 7. Growth Operations (growth-operations-xiaohongshu, 15)
 
 - [`algorithmic-art`](./skills/growth-operations-xiaohongshu/algorithmic-art/)
 - [`app-store-optimization`](./skills/growth-operations-xiaohongshu/app-store-optimization/)
@@ -512,34 +514,24 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`linkedin-growth`](./skills/growth-operations-xiaohongshu/linkedin-growth/)
 - [`marketing-demand-acquisition`](./skills/growth-operations-xiaohongshu/marketing-demand-acquisition/)
 - [`marketing-strategy-pmm`](./skills/growth-operations-xiaohongshu/marketing-strategy-pmm/)
-- [`prompt-engineer-toolkit`](./skills/growth-operations-xiaohongshu/prompt-engineer-toolkit/)
 - [`pulse`](./skills/growth-operations-xiaohongshu/pulse/)
-- [`seo-audit`](./skills/growth-operations-xiaohongshu/seo-audit/)
 - [`social-media-analyzer`](./skills/growth-operations-xiaohongshu/social-media-analyzer/)
 - [`tweetclaw-source-research`](./skills/growth-operations-xiaohongshu/tweetclaw-source-research/)
 - [`twitter-reader`](./skills/growth-operations-xiaohongshu/twitter-reader/)
 - [`x-twitter-scraper`](./skills/growth-operations-xiaohongshu/x-twitter-scraper/)
 
 <a id="cat-office-white-collar"></a>
-### 8. Office and Documents (office-white-collar, 20)
+### 8. Office and Documents (office-white-collar, 12)
 
-- [`capture-screen`](./skills/office-white-collar/capture-screen/)
-- [`doc`](./skills/office-white-collar/doc/)
-- [`doc-coauthoring`](./skills/office-white-collar/doc-coauthoring/)
 - [`docx`](./skills/office-white-collar/docx/)
-- [`excel-automation`](./skills/office-white-collar/excel-automation/)
-- [`gog`](./skills/office-white-collar/gog/)
 - [`guizang-ppt-skill`](./skills/office-white-collar/guizang-ppt-skill/)
 - [`markdown-tools`](./skills/office-white-collar/markdown-tools/)
 - [`meeting-minutes-taker`](./skills/office-white-collar/meeting-minutes-taker/)
 - [`mermaid-tools`](./skills/office-white-collar/mermaid-tools/)
 - [`morph`](./skills/office-white-collar/morph/)
 - [`pdf`](./skills/office-white-collar/pdf/)
-- [`pdf-creator`](./skills/office-white-collar/pdf-creator/)
-- [`ppt-creator`](./skills/office-white-collar/ppt-creator/)
 - [`pptx`](./skills/office-white-collar/pptx/)
 - [`prism`](./skills/office-white-collar/prism/)
-- [`spreadsheet`](./skills/office-white-collar/spreadsheet/)
 - [`stage`](./skills/office-white-collar/stage/)
 - [`transcript-fixer`](./skills/office-white-collar/transcript-fixer/)
 - [`xlsx`](./skills/office-white-collar/xlsx/)
@@ -585,32 +577,26 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`tome`](./skills/knowledge-and-pm-integrations/tome/)
 
 <a id="cat-operations-general"></a>
-### 10. General Operations (operations-general, 15)
+### 10. General Operations (operations-general, 10)
 
 - [`brand-guidelines`](./skills/operations-general/brand-guidelines/)
-- [`confidence-check`](./skills/operations-general/confidence-check/)
 - [`crest`](./skills/operations-general/crest/)
 - [`dawn`](./skills/operations-general/dawn/)
 - [`docs-cleaner`](./skills/operations-general/docs-cleaner/)
 - [`fact-checker`](./skills/operations-general/fact-checker/)
 - [`hearth`](./skills/operations-general/hearth/)
-- [`internal-comms`](./skills/operations-general/internal-comms/)
 - [`interview-system-designer`](./skills/operations-general/interview-system-designer/)
 - [`linkedin`](./skills/operations-general/linkedin/)
 - [`slack-gif-creator`](./skills/operations-general/slack-gif-creator/)
-- [`supermemory`](./skills/operations-general/supermemory/)
-- [`teams-channel-post-writer`](./skills/operations-general/teams-channel-post-writer/)
 - [`theme-factory`](./skills/operations-general/theme-factory/)
-- [`weather`](./skills/operations-general/weather/)
 
 <a id="cat-product-design"></a>
-### 11. Product and Design (product-design, 14)
+### 11. Product and Design (product-design, 13)
 
 - [`agile-product-owner`](./skills/product-design/agile-product-owner/)
 - [`canvas-design`](./skills/product-design/canvas-design/)
 - [`competitive-teardown`](./skills/product-design/competitive-teardown/)
 - [`landing-page-generator`](./skills/product-design/landing-page-generator/)
-- [`product-analysis`](./skills/product-design/product-analysis/)
 - [`product-manager-toolkit`](./skills/product-design/product-manager-toolkit/)
 - [`product-strategist`](./skills/product-design/product-strategist/)
 - [`researcher`](./skills/product-design/researcher/)
@@ -649,7 +635,7 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`vuls-linux-cve-scanner`](./skills/security-and-reliability/vuls-linux-cve-scanner/)
 
 <a id="cat-multimodal-media"></a>
-### 13. Multimodal Media (multimodal-media, 10)
+### 13. Multimodal Media (multimodal-media, 9)
 
 - [`clay`](./skills/multimodal-media/clay/)
 - [`gpt-image2`](./skills/multimodal-media/gpt-image2/)
@@ -658,7 +644,6 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`sketch`](./skills/multimodal-media/sketch/)
 - [`sora`](./skills/multimodal-media/sora/)
 - [`speech`](./skills/multimodal-media/speech/)
-- [`summarize`](./skills/multimodal-media/summarize/)
 - [`tone`](./skills/multimodal-media/tone/)
 - [`transcribe`](./skills/multimodal-media/transcribe/)
 
@@ -685,13 +670,12 @@ openclaw-skills/                        # Generated flat export for OpenClaw
 - [`warden`](./skills/openclaw-memory-and-safety/warden/)
 
 <a id="cat-task-understanding"></a>
-### 16. Task Understanding and Decomposition (task-understanding-decomposition, 5)
+### 16. Task Understanding and Decomposition (task-understanding-decomposition, 4)
 
 - [`lens`](./skills/task-understanding-decomposition/lens/)
 - [`reflect-learn`](./skills/task-understanding-decomposition/reflect-learn/)
 - [`ripple`](./skills/task-understanding-decomposition/ripple/)
 - [`scout`](./skills/task-understanding-decomposition/scout/)
-- [`tavily-search`](./skills/task-understanding-decomposition/tavily-search/)
 
 ## Next Curation Directions
 

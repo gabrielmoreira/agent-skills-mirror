@@ -2,14 +2,14 @@
 name: git-workflow-and-versioning
 description: 'Structures git workflow practices. Use when making any code change. Use when committing, branching, resolving conflicts, or when you need to organize work across multiple parallel streams. Use when cutting a release, choosing a semantic version bump, tagging, or writing a changelog.'
 zh_description: "用于Git、工作流、versioning，支持任务规划、执行、评审和验证。"
-version: "1.0.1"
+version: "1.0.0"
 author: addyosmani
 source: "github:addyosmani/agent-skills"
 source_url: "https://github.com/addyosmani/agent-skills/blob/main/skills/git-workflow-and-versioning/SKILL.md"
 license: MIT
 tags: '["agent", "ai", "engineering", "git-workflow-and-versioning", "workflow"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-03"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: advanced
 upstream_slug: git-workflow-and-versioning

@@ -56,6 +56,47 @@ def _get_tokenizer():
 # Cached at import time. None if tiktoken is unavailable; consumers must handle.
 _TOKENIZER = _get_tokenizer()
 
+
+def _resolve_ollama_base_url(default: str) -> str:
+    """Resolve the Ollama base URL. Honors an explicit OLLAMA_BASE_URL first
+    (verbatim), else falls back to Ollama's own OLLAMA_HOST (#1940), else the
+    default. OLLAMA_HOST may be a bare host, host:port, ``:port`` or bare port —
+    normalized the way the ollama client does: add ``http://`` when the scheme is
+    missing, default the port to 11434 when absent, and append the OpenAI-compat
+    ``/v1`` suffix."""
+    ollama_base_url = os.environ.get("OLLAMA_BASE_URL")
+    if ollama_base_url is not None:
+        return ollama_base_url
+    ollama_host = os.environ.get("OLLAMA_HOST")
+    if ollama_host is None:
+        return default
+    host = ollama_host.strip()
+    if not host:
+        return default
+    # Bare port ("11434") or ":port" (":11434") -> localhost on that port.
+    if host.isdigit():
+        host = f"localhost:{host}"
+    elif host.startswith(":") and host[1:].isdigit():
+        host = f"localhost{host}"
+    if not host.startswith(("http://", "https://")):
+        host = f"http://{host}"
+    # Default the port to Ollama's 11434 when the host omits it (bare hostname
+    # would otherwise resolve to port 80 and silently fail to connect).
+    from urllib.parse import urlsplit, urlunsplit
+    try:
+        parts = urlsplit(host)
+        if parts.hostname and parts.port is None:
+            hostname = f"[{parts.hostname}]" if ":" in parts.hostname else parts.hostname
+            userinfo = parts.netloc.rsplit("@", 1)[0] + "@" if "@" in parts.netloc else ""
+            host = urlunsplit(parts._replace(netloc=f"{userinfo}{hostname}:11434"))
+    except (ValueError, TypeError):
+        pass
+    host = host.rstrip("/")
+    if not host.endswith("/v1"):
+        host = f"{host}/v1"
+    return host
+
+
 BACKENDS: dict[str, dict] = {
     "claude": {
         # ANTHROPIC_BASE_URL points the backend at any Anthropic-compatible
@@ -83,7 +124,7 @@ BACKENDS: dict[str, dict] = {
         "max_tokens": 16384,
     },
     "ollama": {
-        "base_url": os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434/v1"),
+        "base_url": _resolve_ollama_base_url("http://localhost:11434/v1"),
         "default_model": os.environ.get("OLLAMA_MODEL", "qwen2.5-coder:7b"),
         "env_key": "OLLAMA_API_KEY",
         "pricing": {"input": 0.0, "output": 0.0},
@@ -110,13 +151,12 @@ BACKENDS: dict[str, dict] = {
         # model. GRAPHIFY_OPENAI_MODEL still wins over OPENAI_MODEL when both
         # are set (via model_env_key).
         "base_url": os.environ.get("OPENAI_BASE_URL", "https://api.openai.com/v1"),
-        "default_model": os.environ.get("OPENAI_MODEL", "gpt-4.1-mini"),
+        "default_model": os.environ.get("OPENAI_MODEL", "gpt-5-mini"),
         "env_key": "OPENAI_API_KEY",
         "model_env_key": "GRAPHIFY_OPENAI_MODEL",
         "max_tokens": 16384,
         "pricing": {"input": 0.40, "output": 1.60},  # USD per 1M tokens
-        # Default (gpt-4.1-mini) accepts temperature=0. Reasoning models
-        # (o1/o3/o4/gpt-5) reject any explicit temperature and have it omitted
+        # Reasoning models can reject an explicit temperature; it is omitted
         # automatically by _resolve_temperature; GRAPHIFY_LLM_TEMPERATURE
         # overrides either way (#1191).
         "temperature": 0,
@@ -146,15 +186,15 @@ BACKENDS: dict[str, dict] = {
         #           AZURE_OPENAI_DEPLOYMENT or GRAPHIFY_AZURE_MODEL (deployment name).
         # base_url is intentionally absent — prevents accidental routing through
         # _call_openai_compat, which requires it and uses the wrong SDK client class.
-        "default_model": os.environ.get("AZURE_OPENAI_DEPLOYMENT", os.environ.get("GRAPHIFY_AZURE_MODEL", "gpt-4o")),
+        "default_model": os.environ.get("AZURE_OPENAI_DEPLOYMENT", os.environ.get("GRAPHIFY_AZURE_MODEL", "")),
         "env_key": "AZURE_OPENAI_API_KEY",
         "model_env_key": "GRAPHIFY_AZURE_MODEL",
-        "pricing": {"input": 2.50, "output": 10.00},  # USD per 1M tokens (gpt-4o; may mis-estimate other deployments)
+        "pricing": {"input": 0.0, "output": 0.0},  # deployment-specific; avoid false cost precision
         "temperature": 0,
         "max_tokens": 16384,
     },
     "bedrock": {
-        "default_model": "anthropic.claude-3-5-sonnet-20241022-v2:0",
+        "default_model": os.environ.get("BEDROCK_MODEL_ID", ""),
         "model_env_key": "GRAPHIFY_BEDROCK_MODEL",
         "pricing": {"input": 3.0, "output": 15.0},  # USD per 1M tokens
         "temperature": 0,
@@ -1058,7 +1098,14 @@ def _default_model_for_backend(backend: str) -> str:
         model = os.environ.get(model_env_key)
         if model:
             return model
-    return cfg["default_model"]
+    model = cfg["default_model"]
+    if not model:
+        raise RuntimeError(
+            f"No model configured for backend '{backend}'. Set "
+            f"{model_env_key or 'the provider model environment variable'} "
+            "to a current provider-supported model or deployment ID."
+        )
+    return model
 
 
 def _backend_pkg_hint(pkg: str, extra: str) -> str:
@@ -1296,6 +1343,62 @@ def _claude_cli_envelope(stdout: str) -> dict:
     return envelope
 
 
+# A JSON Schema pinning the top-level shape graphify consumes. Passed to
+# `claude -p --json-schema` (structured output) so the CLI CONSTRAINS the model
+# to emit the object directly instead of relying on it CHOOSING to honour a
+# "raw JSON only" instruction in the prompt. Item internals stay loose so a
+# valid extraction is never rejected; the `result` envelope field still carries
+# the JSON string, so the parse path is unchanged. See #2076.
+_EXTRACTION_JSON_SCHEMA = json.dumps(
+    {
+        "type": "object",
+        "properties": {
+            "nodes": {"type": "array", "items": {"type": "object"}},
+            "edges": {"type": "array", "items": {"type": "object"}},
+            "hyperedges": {"type": "array", "items": {"type": "object"}},
+        },
+        "required": ["nodes", "edges"],
+    }
+)
+
+# Cache the `--json-schema` capability probe per resolved claude command so it
+# runs at most once per process (extract fans a chunk out per file/slice).
+_JSON_SCHEMA_SUPPORT: dict[str, bool] = {}
+
+
+def _claude_cli_supports_json_schema(claude_cmd: str) -> bool:
+    """Return True if this Claude Code CLI accepts ``--json-schema``.
+
+    Structured output (``--json-schema``) landed in newer Claude Code releases.
+    Probing ``claude --help`` for the flag is a direct capability check — more
+    reliable than guessing a version boundary — so graphify uses structured
+    output where it exists and falls back to the user-turn prompt on older CLIs
+    that predate it. Any probe failure is treated as "unsupported" (safe
+    fallback). Result is cached per resolved command.
+    """
+    import subprocess
+
+    cached = _JSON_SCHEMA_SUPPORT.get(claude_cmd)
+    if cached is not None:
+        return cached
+    try:
+        proc = subprocess.run(
+            [claude_cmd, "--help"],
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            timeout=30,
+            check=False,
+            **_no_window_kwargs(),
+        )
+        supported = "--json-schema" in (proc.stdout or "")
+    except (OSError, subprocess.SubprocessError):
+        supported = False
+    _JSON_SCHEMA_SUPPORT[claude_cmd] = supported
+    return supported
+
+
 def _call_claude_cli(user_message: str, max_tokens: int = 8192, *, deep_mode: bool = False, images: list[_ImageRef] | None = None) -> dict:
     """Call Claude via the locally-installed Claude Code CLI (`claude -p`).
 
@@ -1384,6 +1487,16 @@ def _call_claude_cli(user_message: str, max_tokens: int = 8192, *, deep_mode: bo
     cli_model = os.environ.get("GRAPHIFY_CLAUDE_CLI_MODEL", "").strip()
     if cli_model:
         cli_args.extend(["--model", cli_model])
+    # Constrain the output shape structurally where the CLI supports it. Newer
+    # Claude Code releases increasingly treat a bare file-dump prompt as an
+    # agentic task and REPORT the extraction in prose ("Knowledge graph
+    # extracted — 21 nodes, 20 edges…") instead of returning it; that parses to
+    # zero nodes, reads as truncation, and gets bisected without ever
+    # converging (#2076). --json-schema pins the object shape regardless of
+    # that framing; the user-turn prompt above stays as the fallback for older
+    # CLIs that predate the flag.
+    if _claude_cli_supports_json_schema(claude_cmd):
+        cli_args.extend(["--json-schema", _EXTRACTION_JSON_SCHEMA])
     proc = subprocess.run(
         cli_args,
         input=combined_message,
@@ -1402,7 +1515,17 @@ def _call_claude_cli(user_message: str, max_tokens: int = 8192, *, deep_mode: bo
 
     envelope = _claude_cli_envelope(proc.stdout)
 
-    raw_content = envelope.get("result", "")
+    # When --json-schema is in effect the CLI puts the CONSTRAINED object in the
+    # `structured_output` envelope field; `result` stays the model's discretionary
+    # text, which on a "reporting" turn is prose even with the flag set (verified
+    # live on Claude Code 2.1.185). Prefer the structured channel and route it
+    # through the same _parse_llm_json normalizer; fall back to parsing `result`
+    # for older CLIs that don't emit structured_output (#2076 review).
+    structured = envelope.get("structured_output")
+    if isinstance(structured, dict):
+        raw_content = json.dumps(structured)
+    else:
+        raw_content = envelope.get("result", "")
     result = _parse_llm_json(raw_content or "{}")
     usage = envelope.get("usage") or {}
     result["input_tokens"] = (
@@ -1572,7 +1695,7 @@ def extract_files_direct(
         # Ollama ignores auth but the OpenAI client library requires a non-empty
         # string. Use a placeholder and surface a visible warning so this never
         # silently routes traffic without the user realising — see F-029.
-        ollama_url = os.environ.get("OLLAMA_BASE_URL", cfg.get("base_url", ""))
+        ollama_url = _resolve_ollama_base_url(cfg.get("base_url", ""))
         _validate_ollama_base_url(ollama_url)
         print(
             "[graphify] WARNING: ollama backend selected with no OLLAMA_API_KEY set; "
@@ -2373,7 +2496,7 @@ def _call_llm(
     cfg = BACKENDS[backend]
     key = _get_backend_api_key(backend)
     if not key and backend == "ollama":
-        ollama_url = os.environ.get("OLLAMA_BASE_URL", cfg.get("base_url", ""))
+        ollama_url = _resolve_ollama_base_url(cfg.get("base_url", ""))
         _validate_ollama_base_url(ollama_url)
         key = "ollama"
     if not key and backend not in ("bedrock", "claude-cli"):
@@ -2625,7 +2748,11 @@ def detect_backend() -> str | None:
         return "azure"
     if os.environ.get("AWS_PROFILE") or os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION"):
         return "bedrock"
-    ollama_url = os.environ.get("OLLAMA_BASE_URL")
+    # Honor Ollama's own OLLAMA_HOST here too, not just OLLAMA_BASE_URL (#1940) —
+    # otherwise a user who set the standard Ollama var but no --backend still
+    # gets "no LLM API key found". Empty default -> falsy when neither is set,
+    # so ollama stays opt-in and never shadows a paid key (checked first above).
+    ollama_url = _resolve_ollama_base_url("")
     if ollama_url:
         _validate_ollama_base_url(ollama_url)
         return "ollama"

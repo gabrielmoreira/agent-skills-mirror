@@ -7,6 +7,8 @@ Guizang PPT Skill 是由 [歸藏](https://x.com/op7418) 创建和维护的开源
 | 赞助方 | 等级 / 类型 | 说明 |
 |--------|-------------|------|
 | 360 安全龙虾 | 金牌赞助 | 支持 guizang-ppt-skill 的持续维护、模板测试与开源传播。 |
+| [Kimi work](https://www.kimi.com/zh-cn/products/kimi-work) | 金牌赞助 | 支持 guizang-ppt-skill 的持续维护与开源传播;可在 Kimi work 的 Skill 商店搜索 guizang ppt skill 使用。 |
+| [Cola Skill](https://colaskill.com/guizang-ppt-skill/) | 金牌赞助 | 支持 guizang-ppt-skill 的持续维护与开源传播;可在 Cola Skill 平台直接使用。 |
 | [真格 Token Grant](https://zhenfund.feishu.cn/share/base/form/shrcn1lAANF659o7EpWnxlR1VOh?sessionid=) | Grant Supporter | 通过 Token Grant 支持项目的模板迭代、配图流程验证与开源维护。 |
 
 ## 赞助用途

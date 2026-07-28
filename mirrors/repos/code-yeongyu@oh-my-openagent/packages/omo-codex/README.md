@@ -73,9 +73,27 @@ Entries may be absolute, `~`-relative, or relative to the configured home direct
 
 CodeGraph runs with `CODEGRAPH_NO_DOWNLOAD=1`, `CODEGRAPH_TELEMETRY=0`, and `DO_NOT_TRACK=1` in the managed child environment. The shared daemon is enabled by default; setting `codegraph.daemon` to `false` adds `CODEGRAPH_NO_DAEMON=1`. OMO stores per-project CodeGraph data under the managed CodeGraph home and prunes dead project stores when their recorded source directory no longer exists.
 
+### CodeGraph SessionStart bootstrap
+
+The Codex `SessionStart` hook never runs `codegraph status`. It judges a project initialized only when `<projectRoot>/.codegraph/codegraph.db` exists. If an ancestor directory has that database, the nested project is treated as covered and no duplicate child index is initialized.
+
+Only a definitively uninitialized project may spawn the background initializer. OMO serializes attempts with an atomic per-project lock under `~/.omo/codegraph/session-start/locks/`, recovers stale locks, and records worker failures in an exponential cooldown stamp. The default cooldown starts at 15 minutes, doubles after consecutive failures, and caps at 24 hours. Configure the base interval for Codex with `codegraph.session_start_cooldown_ms` (minimum 60000):
+
+```jsonc
+{
+  "[codex]": {
+    "codegraph": {
+      "session_start_cooldown_ms": 900000
+    }
+  }
+}
+```
+
+Suppressed attempts are auditable in `~/.omo/codegraph/session-start.jsonl` through actions such as `skipped-cooldown`, `skipped-locked`, and `skipped-nested-root`. The worker invokes only bounded `codegraph init` and records success only when the exact project database appears afterward; probe errors and timeouts never mean "uninitialized".
+
 ### CodeGraph daemon
 
-By default CodeGraph uses the upstream shared daemon. Set `codegraph.daemon` to `false` in the OMO config (`~/.omo/config.jsonc`, or `.omo/config.jsonc` in a project) to keep each MCP process in-process:
+By default CodeGraph uses the upstream shared daemon. Set `codegraph.daemon` to `false` in the unified OMO config (`~/.omo/omo.jsonc`, or `.omo/omo.jsonc` in a project) to keep each MCP process in-process:
 
 ```jsonc
 {
@@ -96,9 +114,9 @@ codegraph daemon   # interactive list of running daemons; pick one and press ent
 
 An ambient `CODEGRAPH_NO_DAEMON=1` in the environment still forces daemon-off when `codegraph.daemon` is `true`.
 
-### Process hygiene and the CodeGraph 1.4.1 upgrade
+### Process hygiene and the CodeGraph 1.5.0 upgrade
 
-CodeGraph is pinned to 1.4.1. Project stores built by older versions migrate automatically on first use; no manual re-index is needed.
+CodeGraph is pinned to 1.5.0. Managed installs provisioned at 1.0.1 or 1.4.1 upgrade automatically, and project stores built by older versions remain compatible without a manual re-index.
 
 Process lifecycle is self-cleaning and always on (no config keys):
 

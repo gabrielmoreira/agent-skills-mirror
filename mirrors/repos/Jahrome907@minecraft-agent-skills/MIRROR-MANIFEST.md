@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Jahrome907/minecraft-agent-skills` — 26 default patterns, 0 followed patterns, 92 file(s) materialized.
+Mirror of `Jahrome907/minecraft-agent-skills` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Jahrome907/minecraft-agent-skills` — 26 default patterns, 0 followe
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 92 |
+| Files         | 94 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -90,67 +90,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 29 | ✓ | [`.agents/skills/minecraft-multiloader/SKILL.md`](.agents/skills/minecraft-multiloader/SKILL.md) |
 | 30 | ✓ | [`.agents/skills/minecraft-plugin-dev/references/runtime-patterns.md`](.agents/skills/minecraft-plugin-dev/references/runtime-patterns.md) |
 | 31 | ✓ | [`.agents/skills/minecraft-plugin-dev/scripts/validate-plugin-layout.sh`](.agents/skills/minecraft-plugin-dev/scripts/validate-plugin-layout.sh) |
-| 32 | ✓ | [`.agents/skills/minecraft-plugin-dev/SKILL.md`](.agents/skills/minecraft-plugin-dev/SKILL.md) |
-| 33 | ✓ | [`.agents/skills/minecraft-resource-pack/scripts/jq-shim.mjs`](.agents/skills/minecraft-resource-pack/scripts/jq-shim.mjs) |
-| 34 | ✓ | [`.agents/skills/minecraft-resource-pack/scripts/validate-resource-pack.sh`](.agents/skills/minecraft-resource-pack/scripts/validate-resource-pack.sh) |
-| 35 | ✓ | [`.agents/skills/minecraft-resource-pack/SKILL.md`](.agents/skills/minecraft-resource-pack/SKILL.md) |
-| 36 | ✓ | [`.agents/skills/minecraft-server-admin/references/deployment-checklists.md`](.agents/skills/minecraft-server-admin/references/deployment-checklists.md) |
-| 37 | ✓ | [`.agents/skills/minecraft-server-admin/SKILL.md`](.agents/skills/minecraft-server-admin/SKILL.md) |
-| 38 | ✓ | [`.agents/skills/minecraft-testing/references/test-layouts.md`](.agents/skills/minecraft-testing/references/test-layouts.md) |
-| 39 | ✓ | [`.agents/skills/minecraft-testing/scripts/validate-test-layout.sh`](.agents/skills/minecraft-testing/scripts/validate-test-layout.sh) |
-| 40 | ✓ | [`.agents/skills/minecraft-testing/SKILL.md`](.agents/skills/minecraft-testing/SKILL.md) |
-| 41 | ✓ | [`.agents/skills/minecraft-world-generation/scripts/jq-shim.mjs`](.agents/skills/minecraft-world-generation/scripts/jq-shim.mjs) |
-| 42 | ✓ | [`.agents/skills/minecraft-world-generation/scripts/validate-worldgen-json.sh`](.agents/skills/minecraft-world-generation/scripts/validate-worldgen-json.sh) |
-| 43 | ✓ | [`.agents/skills/minecraft-world-generation/SKILL.md`](.agents/skills/minecraft-world-generation/SKILL.md) |
-| 44 | ✓ | [`.agents/skills/minecraft-worldedit-ops/references/safety-checklists.md`](.agents/skills/minecraft-worldedit-ops/references/safety-checklists.md) |
-| 45 | ✓ | [`.agents/skills/minecraft-worldedit-ops/SKILL.md`](.agents/skills/minecraft-worldedit-ops/SKILL.md) |
-| 46 | ✓ | [`.claude/skills/minecraft-ci-release/SKILL.md`](.claude/skills/minecraft-ci-release/SKILL.md) |
-| 47 | ✓ | [`.claude/skills/minecraft-commands-scripting/SKILL.md`](.claude/skills/minecraft-commands-scripting/SKILL.md) |
-| 48 | ✓ | [`.claude/skills/minecraft-datapack/SKILL.md`](.claude/skills/minecraft-datapack/SKILL.md) |
-| 49 | ✓ | [`.claude/skills/minecraft-essentials-ops/SKILL.md`](.claude/skills/minecraft-essentials-ops/SKILL.md) |
-| 50 | ✓ | [`.claude/skills/minecraft-imagegen/SKILL.md`](.claude/skills/minecraft-imagegen/SKILL.md) |
-| 51 | ✓ | [`.claude/skills/minecraft-modding/SKILL.md`](.claude/skills/minecraft-modding/SKILL.md) |
-| 52 | ✓ | [`.claude/skills/minecraft-multiloader/SKILL.md`](.claude/skills/minecraft-multiloader/SKILL.md) |
-| 53 | ✓ | [`.claude/skills/minecraft-plugin-dev/SKILL.md`](.claude/skills/minecraft-plugin-dev/SKILL.md) |
-| 54 | ✓ | [`.claude/skills/minecraft-resource-pack/SKILL.md`](.claude/skills/minecraft-resource-pack/SKILL.md) |
-| 55 | ✓ | [`.claude/skills/minecraft-server-admin/SKILL.md`](.claude/skills/minecraft-server-admin/SKILL.md) |
-| 56 | ✓ | [`.claude/skills/minecraft-testing/SKILL.md`](.claude/skills/minecraft-testing/SKILL.md) |
-| 57 | ✓ | [`.claude/skills/minecraft-world-generation/SKILL.md`](.claude/skills/minecraft-world-generation/SKILL.md) |
-| 58 | ✓ | [`.claude/skills/minecraft-worldedit-ops/SKILL.md`](.claude/skills/minecraft-worldedit-ops/SKILL.md) |
-| 59 | ✓ | [`.codex/skills/minecraft-ci-release/SKILL.md`](.codex/skills/minecraft-ci-release/SKILL.md) |
-| 60 | ✓ | [`.codex/skills/minecraft-commands-scripting/SKILL.md`](.codex/skills/minecraft-commands-scripting/SKILL.md) |
-| 61 | ✓ | [`.codex/skills/minecraft-datapack/SKILL.md`](.codex/skills/minecraft-datapack/SKILL.md) |
-| 62 | ✓ | [`.codex/skills/minecraft-essentials-ops/SKILL.md`](.codex/skills/minecraft-essentials-ops/SKILL.md) |
-| 63 | ✓ | [`.codex/skills/minecraft-imagegen/SKILL.md`](.codex/skills/minecraft-imagegen/SKILL.md) |
-| 64 | ✓ | [`.codex/skills/minecraft-modding/SKILL.md`](.codex/skills/minecraft-modding/SKILL.md) |
-| 65 | ✓ | [`.codex/skills/minecraft-multiloader/SKILL.md`](.codex/skills/minecraft-multiloader/SKILL.md) |
-| 66 | ✓ | [`.codex/skills/minecraft-plugin-dev/SKILL.md`](.codex/skills/minecraft-plugin-dev/SKILL.md) |
-| 67 | ✓ | [`.codex/skills/minecraft-resource-pack/SKILL.md`](.codex/skills/minecraft-resource-pack/SKILL.md) |
-| 68 | ✓ | [`.codex/skills/minecraft-server-admin/SKILL.md`](.codex/skills/minecraft-server-admin/SKILL.md) |
-| 69 | ✓ | [`.codex/skills/minecraft-testing/SKILL.md`](.codex/skills/minecraft-testing/SKILL.md) |
-| 70 | ✓ | [`.codex/skills/minecraft-world-generation/SKILL.md`](.codex/skills/minecraft-world-generation/SKILL.md) |
-| 71 | ✓ | [`.codex/skills/minecraft-worldedit-ops/SKILL.md`](.codex/skills/minecraft-worldedit-ops/SKILL.md) |
-| 72 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 73 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-ci-release/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-ci-release/SKILL.md) |
-| 74 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-commands-scripting/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-commands-scripting/SKILL.md) |
-| 75 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-datapack/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-datapack/SKILL.md) |
-| 76 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-essentials-ops/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-essentials-ops/SKILL.md) |
-| 77 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-imagegen/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-imagegen/SKILL.md) |
-| 78 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-modding/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-modding/SKILL.md) |
-| 79 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-multiloader/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-multiloader/SKILL.md) |
-| 80 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-plugin-dev/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-plugin-dev/SKILL.md) |
-| 81 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-resource-pack/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-resource-pack/SKILL.md) |
-| 82 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-server-admin/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-server-admin/SKILL.md) |
-| 83 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-testing/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-testing/SKILL.md) |
-| 84 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-world-generation/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-world-generation/SKILL.md) |
-| 85 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-worldedit-ops/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-worldedit-ops/SKILL.md) |
-| 86 | ✓ | [`tests/fixtures/validators/ci-release/indented-workflow/SKILL.md`](tests/fixtures/validators/ci-release/indented-workflow/SKILL.md) |
-| 87 | ✓ | [`tests/fixtures/validators/ci-release/invalid-yaml/SKILL.md`](tests/fixtures/validators/ci-release/invalid-yaml/SKILL.md) |
-| 88 | ✓ | [`tests/fixtures/validators/ci-release/invalid/SKILL.md`](tests/fixtures/validators/ci-release/invalid/SKILL.md) |
-| 89 | ✓ | [`tests/fixtures/validators/ci-release/multiline-flow/SKILL.md`](tests/fixtures/validators/ci-release/multiline-flow/SKILL.md) |
-| 90 | ✓ | [`tests/fixtures/validators/ci-release/non-workflow-yaml/SKILL.md`](tests/fixtures/validators/ci-release/non-workflow-yaml/SKILL.md) |
-| 91 | ✓ | [`tests/fixtures/validators/ci-release/valid/SKILL.md`](tests/fixtures/validators/ci-release/valid/SKILL.md) |
-| 92 | ✓ | [`tests/fixtures/validators/ci-release/warn-only/SKILL.md`](tests/fixtures/validators/ci-release/warn-only/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/minecraft-plugin-dev/scripts/vendor/js-yaml.min.cjs`](.agents/skills/minecraft-plugin-dev/scripts/vendor/js-yaml.min.cjs) |
+| 33 | ✓ | [`.agents/skills/minecraft-plugin-dev/scripts/vendor/LICENSE.js-yaml`](.agents/skills/minecraft-plugin-dev/scripts/vendor/LICENSE.js-yaml) |
+| 34 | ✓ | [`.agents/skills/minecraft-plugin-dev/SKILL.md`](.agents/skills/minecraft-plugin-dev/SKILL.md) |
+| 35 | ✓ | [`.agents/skills/minecraft-resource-pack/scripts/jq-shim.mjs`](.agents/skills/minecraft-resource-pack/scripts/jq-shim.mjs) |
+| 36 | ✓ | [`.agents/skills/minecraft-resource-pack/scripts/validate-resource-pack.sh`](.agents/skills/minecraft-resource-pack/scripts/validate-resource-pack.sh) |
+| 37 | ✓ | [`.agents/skills/minecraft-resource-pack/SKILL.md`](.agents/skills/minecraft-resource-pack/SKILL.md) |
+| 38 | ✓ | [`.agents/skills/minecraft-server-admin/references/deployment-checklists.md`](.agents/skills/minecraft-server-admin/references/deployment-checklists.md) |
+| 39 | ✓ | [`.agents/skills/minecraft-server-admin/SKILL.md`](.agents/skills/minecraft-server-admin/SKILL.md) |
+| 40 | ✓ | [`.agents/skills/minecraft-testing/references/test-layouts.md`](.agents/skills/minecraft-testing/references/test-layouts.md) |
+| 41 | ✓ | [`.agents/skills/minecraft-testing/scripts/validate-test-layout.sh`](.agents/skills/minecraft-testing/scripts/validate-test-layout.sh) |
+| 42 | ✓ | [`.agents/skills/minecraft-testing/SKILL.md`](.agents/skills/minecraft-testing/SKILL.md) |
+| 43 | ✓ | [`.agents/skills/minecraft-world-generation/scripts/jq-shim.mjs`](.agents/skills/minecraft-world-generation/scripts/jq-shim.mjs) |
+| 44 | ✓ | [`.agents/skills/minecraft-world-generation/scripts/validate-worldgen-json.sh`](.agents/skills/minecraft-world-generation/scripts/validate-worldgen-json.sh) |
+| 45 | ✓ | [`.agents/skills/minecraft-world-generation/SKILL.md`](.agents/skills/minecraft-world-generation/SKILL.md) |
+| 46 | ✓ | [`.agents/skills/minecraft-worldedit-ops/references/safety-checklists.md`](.agents/skills/minecraft-worldedit-ops/references/safety-checklists.md) |
+| 47 | ✓ | [`.agents/skills/minecraft-worldedit-ops/SKILL.md`](.agents/skills/minecraft-worldedit-ops/SKILL.md) |
+| 48 | ✓ | [`.claude/skills/minecraft-ci-release/SKILL.md`](.claude/skills/minecraft-ci-release/SKILL.md) |
+| 49 | ✓ | [`.claude/skills/minecraft-commands-scripting/SKILL.md`](.claude/skills/minecraft-commands-scripting/SKILL.md) |
+| 50 | ✓ | [`.claude/skills/minecraft-datapack/SKILL.md`](.claude/skills/minecraft-datapack/SKILL.md) |
+| 51 | ✓ | [`.claude/skills/minecraft-essentials-ops/SKILL.md`](.claude/skills/minecraft-essentials-ops/SKILL.md) |
+| 52 | ✓ | [`.claude/skills/minecraft-imagegen/SKILL.md`](.claude/skills/minecraft-imagegen/SKILL.md) |
+| 53 | ✓ | [`.claude/skills/minecraft-modding/SKILL.md`](.claude/skills/minecraft-modding/SKILL.md) |
+| 54 | ✓ | [`.claude/skills/minecraft-multiloader/SKILL.md`](.claude/skills/minecraft-multiloader/SKILL.md) |
+| 55 | ✓ | [`.claude/skills/minecraft-plugin-dev/SKILL.md`](.claude/skills/minecraft-plugin-dev/SKILL.md) |
+| 56 | ✓ | [`.claude/skills/minecraft-resource-pack/SKILL.md`](.claude/skills/minecraft-resource-pack/SKILL.md) |
+| 57 | ✓ | [`.claude/skills/minecraft-server-admin/SKILL.md`](.claude/skills/minecraft-server-admin/SKILL.md) |
+| 58 | ✓ | [`.claude/skills/minecraft-testing/SKILL.md`](.claude/skills/minecraft-testing/SKILL.md) |
+| 59 | ✓ | [`.claude/skills/minecraft-world-generation/SKILL.md`](.claude/skills/minecraft-world-generation/SKILL.md) |
+| 60 | ✓ | [`.claude/skills/minecraft-worldedit-ops/SKILL.md`](.claude/skills/minecraft-worldedit-ops/SKILL.md) |
+| 61 | ✓ | [`.codex/skills/minecraft-ci-release/SKILL.md`](.codex/skills/minecraft-ci-release/SKILL.md) |
+| 62 | ✓ | [`.codex/skills/minecraft-commands-scripting/SKILL.md`](.codex/skills/minecraft-commands-scripting/SKILL.md) |
+| 63 | ✓ | [`.codex/skills/minecraft-datapack/SKILL.md`](.codex/skills/minecraft-datapack/SKILL.md) |
+| 64 | ✓ | [`.codex/skills/minecraft-essentials-ops/SKILL.md`](.codex/skills/minecraft-essentials-ops/SKILL.md) |
+| 65 | ✓ | [`.codex/skills/minecraft-imagegen/SKILL.md`](.codex/skills/minecraft-imagegen/SKILL.md) |
+| 66 | ✓ | [`.codex/skills/minecraft-modding/SKILL.md`](.codex/skills/minecraft-modding/SKILL.md) |
+| 67 | ✓ | [`.codex/skills/minecraft-multiloader/SKILL.md`](.codex/skills/minecraft-multiloader/SKILL.md) |
+| 68 | ✓ | [`.codex/skills/minecraft-plugin-dev/SKILL.md`](.codex/skills/minecraft-plugin-dev/SKILL.md) |
+| 69 | ✓ | [`.codex/skills/minecraft-resource-pack/SKILL.md`](.codex/skills/minecraft-resource-pack/SKILL.md) |
+| 70 | ✓ | [`.codex/skills/minecraft-server-admin/SKILL.md`](.codex/skills/minecraft-server-admin/SKILL.md) |
+| 71 | ✓ | [`.codex/skills/minecraft-testing/SKILL.md`](.codex/skills/minecraft-testing/SKILL.md) |
+| 72 | ✓ | [`.codex/skills/minecraft-world-generation/SKILL.md`](.codex/skills/minecraft-world-generation/SKILL.md) |
+| 73 | ✓ | [`.codex/skills/minecraft-worldedit-ops/SKILL.md`](.codex/skills/minecraft-worldedit-ops/SKILL.md) |
+| 74 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 75 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-ci-release/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-ci-release/SKILL.md) |
+| 76 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-commands-scripting/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-commands-scripting/SKILL.md) |
+| 77 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-datapack/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-datapack/SKILL.md) |
+| 78 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-essentials-ops/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-essentials-ops/SKILL.md) |
+| 79 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-imagegen/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-imagegen/SKILL.md) |
+| 80 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-modding/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-modding/SKILL.md) |
+| 81 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-multiloader/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-multiloader/SKILL.md) |
+| 82 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-plugin-dev/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-plugin-dev/SKILL.md) |
+| 83 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-resource-pack/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-resource-pack/SKILL.md) |
+| 84 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-server-admin/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-server-admin/SKILL.md) |
+| 85 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-testing/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-testing/SKILL.md) |
+| 86 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-world-generation/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-world-generation/SKILL.md) |
+| 87 | ✓ | [`plugins/minecraft-codex-skills/skills/minecraft-worldedit-ops/SKILL.md`](plugins/minecraft-codex-skills/skills/minecraft-worldedit-ops/SKILL.md) |
+| 88 | ✓ | [`tests/fixtures/validators/ci-release/indented-workflow/SKILL.md`](tests/fixtures/validators/ci-release/indented-workflow/SKILL.md) |
+| 89 | ✓ | [`tests/fixtures/validators/ci-release/invalid-yaml/SKILL.md`](tests/fixtures/validators/ci-release/invalid-yaml/SKILL.md) |
+| 90 | ✓ | [`tests/fixtures/validators/ci-release/invalid/SKILL.md`](tests/fixtures/validators/ci-release/invalid/SKILL.md) |
+| 91 | ✓ | [`tests/fixtures/validators/ci-release/multiline-flow/SKILL.md`](tests/fixtures/validators/ci-release/multiline-flow/SKILL.md) |
+| 92 | ✓ | [`tests/fixtures/validators/ci-release/non-workflow-yaml/SKILL.md`](tests/fixtures/validators/ci-release/non-workflow-yaml/SKILL.md) |
+| 93 | ✓ | [`tests/fixtures/validators/ci-release/valid/SKILL.md`](tests/fixtures/validators/ci-release/valid/SKILL.md) |
+| 94 | ✓ | [`tests/fixtures/validators/ci-release/warn-only/SKILL.md`](tests/fixtures/validators/ci-release/warn-only/SKILL.md) |
 
 ---
 

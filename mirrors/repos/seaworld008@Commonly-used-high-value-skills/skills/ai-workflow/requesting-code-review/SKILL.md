@@ -2,20 +2,20 @@
 name: requesting-code-review
 description: 'Use when completing tasks, implementing major features, or before merging to verify work meets requirements'
 zh_description: "用于在完成任务、实现重要功能或合并前请求代码审查并验证需求满足情况。"
-version: "1.0.3"
+version: "1.0.4"
 author: "seaworld008"
 source: "in-house"
 source_url: ""
 tags: '["code-review", "workflow", "quality-gate"]'
 created_at: "2026-04-13"
-updated_at: "2026-06-29"
+updated_at: "2026-07-27"
 quality: 4
 complexity: "intermediate"
 ---
 
 # Requesting Code Review
 
-Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
+Dispatch a code reviewer subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history.
 
 **Core principle:** Review early, review often.
 
@@ -82,20 +82,12 @@ You: [Fix progress indicators]
 [Continue to Task 3]
 ```
 
-## Integration with Workflows
+## Common Rationalizations
 
-**Subagent-Driven Development:**
-- Review after EACH task
-- Catch issues before they compound
-- Fix before moving to next task
-
-**Executing Plans:**
-- Review after each task or at natural checkpoints
-- Get feedback, apply, continue
-
-**Ad-Hoc Development:**
-- Review before merge
-- Review when stuck
+| Excuse | Reality |
+|--------|---------|
+| "I'll just review the diff myself instead of dispatching a reviewer" | You're the coordinator — reviewing the diff inline burns the context window you need to keep driving the work. Dispatch a reviewer subagent: the diff and the evaluation live in its context, and only the findings come back to you. |
+| "The reviewer needs my whole session history to understand the change" | Hand it precisely crafted context, never your session's history. That keeps the reviewer on the work product, not your thought process. |
 
 ## Red Flags
 
@@ -111,39 +103,29 @@ You: [Fix progress indicators]
 - Request clarification
 
 See template at: [code-reviewer.md](code-reviewer.md)
+<!-- LOCAL-QUALITY-SUPPLEMENT:START -->
+## Usage Notes
 
-<!-- LOCAL-CURATION-SUPPLEMENT:START -->
-## Review Request Checklist
+This supplement is maintained by the repository sync pipeline. It keeps the
+imported upstream skill usable inside this curated collection when the upstream
+source is intentionally concise.
 
-A strong review request includes:
-
-- The user-facing requirement or plan being validated.
-- The exact diff range, branch, or commit pair under review.
-- The areas where risk is highest: data loss, auth, concurrency, migrations, billing, security, or UX regressions.
-- The tests already run and any tests intentionally skipped.
-- The expected behavior in edge cases, not just the happy path.
-- Any files or generated artifacts reviewers should ignore.
-
-## Good vs Weak Requests
-
-Weak:
+## Common Patterns
 
 ```text
-Please review my changes.
+1. Confirm that the user's task matches the skill trigger.
+2. Read the relevant project files or user-provided context before acting.
+3. Choose the smallest reversible action that advances the task.
+4. Run the verification command or manual check that proves the result.
+5. Report the outcome, evidence, and any remaining risk.
 ```
 
-Better:
+## Boundaries
 
-```text
-Review the checkout retry changes from BASE..HEAD. Focus on idempotency,
-double-charge prevention, webhook replay behavior, and missing tests.
-I ran the unit suite and one manual Stripe test; migration rollback is not covered.
-```
-
-## Follow-up Rules
-
-- Fix critical and important findings before moving to the next task.
-- If a finding is rejected, document the technical reason and supporting evidence.
-- Re-run the relevant tests after changes, not only the full suite.
-- Keep review conversations tied to code and requirements, not preferences.
-<!-- LOCAL-CURATION-SUPPLEMENT:END -->
+- Prefer the upstream workflow for Requesting Code Review; this section only adds local quality
+  guardrails.
+- Do not invent project facts when required files, vaults, services, or tools are
+  unavailable.
+- Stop and ask for clarification when the next action could overwrite user work,
+  expose private data, or change production state.
+<!-- LOCAL-QUALITY-SUPPLEMENT:END -->

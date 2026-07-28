@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `kyegomez/swarms` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `kyegomez/swarms` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kyegomez/swarms` — 26 default patterns, 0 followed patterns, 5 file
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,10 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 2 | ✓ | [`docs/swarms/examples/claude.md`](docs/swarms/examples/claude.md) |
-| 3 | ✓ | [`examples/single_agent/capabilities/skills/code-review/SKILL.md`](examples/single_agent/capabilities/skills/code-review/SKILL.md) |
-| 4 | ✓ | [`examples/single_agent/capabilities/skills/data-visualization/SKILL.md`](examples/single_agent/capabilities/skills/data-visualization/SKILL.md) |
-| 5 | ✓ | [`examples/single_agent/capabilities/skills/financial-analysis/SKILL.md`](examples/single_agent/capabilities/skills/financial-analysis/SKILL.md) |
+| 2 | ✓ | [`examples/single_agent/capabilities/skills/code-review/SKILL.md`](examples/single_agent/capabilities/skills/code-review/SKILL.md) |
+| 3 | ✓ | [`examples/single_agent/capabilities/skills/data-visualization/SKILL.md`](examples/single_agent/capabilities/skills/data-visualization/SKILL.md) |
+| 4 | ✓ | [`examples/single_agent/capabilities/skills/financial-analysis/SKILL.md`](examples/single_agent/capabilities/skills/financial-analysis/SKILL.md) |
 
 ---
 

@@ -1,0 +1,117 @@
+# MCP Inspector Launcher
+
+The launcher is the package that provides the global `mcp-inspector` binary (e.g. when users run `npx @modelcontextprotocol/inspector`). It is not a separate user-facing app—it is the single entrypoint that selects and runs one of the clients (web, CLI, or TUI).
+
+## Responsibility
+
+- Parse mode from a leading prefix of `--web` (default), `--cli`, or `--tui` immediately after the script name.
+- Forward all following arguments unchanged (including tokens that look like mode flags).
+- Dynamically import that app’s runner from `clients/{web,cli,tui}/build/index.js` (relative to the launcher build output) and call it **in-process** (no `spawn()`).
+
+All configuration parsing, config-file loading, and server setup are handled by the app runners and by **core**; the launcher does not interpret config or env vars.
+
+**Error reporting.** A `--cli` failure is routed through the CLI's own error sink, so `mcp-inspector --cli` preserves the CLI exit-code map (`1` usage, `2` no-app, `3` auth-required, `4` unreachable, `5` tool-error) and its machine-readable `{"error":{…}}` stderr envelope — the same as invoking the CLI bin directly. `--web` / `--tui` failures print a human-readable `Error: <message>` and exit `1` (append `MCP_DEBUG=1` for the stack).
+
+## Web server-list flags (`--web`)
+
+`mcp-inspector --web` chooses which server list the UI shows and whether it is
+editable (see [specification/v2_catalog_launch_config.md](../../specification/v2_catalog_launch_config.md)):
+
+| Invocation                                                                                                 | Server list                                                                                                     | Editable in UI? |
+| ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------- |
+| `mcp-inspector --web`                                                                                      | Default catalog `~/.mcp-inspector/mcp.json` (seeded with the two sample servers if missing)                     | Yes             |
+| `mcp-inspector --web --catalog <path>` (or `MCP_CATALOG_PATH=<path>`)                                      | That file as the active catalog (same seed-if-missing behavior)                                                 | Yes             |
+| `mcp-inspector --web --config <path>`                                                                      | That file as a **read-only session** — shown but never written, seeded, or migrated (safe for a foreign config) | No              |
+| `mcp-inspector --web --server-url <url> --transport http --header "Name: Value"` (or a positional command) | One ad-hoc server held in memory, connectable with the given `--header`s                                        | No              |
+
+Rules: `--catalog` and `--config` are mutually exclusive; neither combines with
+an ad-hoc target or `--header`; `--header` requires an ad-hoc HTTP/SSE server
+and is applied to that connection (it is no longer a warn-only no-op).
+
+**Seed contents are web-specific.** When the web backend creates a missing
+writable catalog it seeds `DEFAULT_SEED_CONFIG` (`core/mcp/serverList.ts`) — a
+`filesystem-server-default` scoped to `/tmp` plus the canonical
+`everything-server-default` — so a first launch has something to connect to.
+The CLI and TUI seed an **empty** catalog instead; see the next section. A
+read-only `--config` is never seeded on any surface.
+
+## CLI and TUI server-list flags (`--cli` / `--tui`)
+
+The CLI and TUI use the same `--catalog` / `--config` vocabulary as `--web`,
+resolved by the shared `core/mcp/node/config.ts` helpers:
+
+| Invocation                                                         | Server list source                                                                                 |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| `mcp-inspector --cli` / `--tui` (no source flag, no ad-hoc target) | Default writable catalog `~/.mcp-inspector/mcp.json` (created/seeded empty if missing)             |
+| `--catalog <path>` (or `MCP_CATALOG_PATH=<path>`)                  | That file as a **writable catalog** — seeded empty if missing                                      |
+| `--config <path>`                                                  | That file as a **read-only session** — served as-is, never written or seeded; **errors if absent** |
+| positional command / `--server-url <url>`                          | One ad-hoc server                                                                                  |
+
+Note the seed contrast with `--web` above: the CLI and TUI write an **empty**
+`{ "mcpServers": {} }` (`seedEmptyCatalog` in `core/mcp/node/config.ts`), not
+the web client's two sample servers — they are non-interactive or list-driven,
+so sample entries would be noise rather than a starting point.
+
+Rules (shared `serverSourceConflict`): `--catalog` and `--config` are mutually
+exclusive, and neither combines with an ad-hoc command/URL target. The CLI/TUI
+do not perform catalog CRUD yet — they are read consumers — so the
+writable/read-only split currently surfaces only as **seed-if-missing**
+(`--catalog`/default) vs **error-if-missing** (`--config`). Full writable
+persistence is tracked in #1482 / #1432.
+
+### Production web build (`--web`, no `--dev`)
+
+Prod `--web` serves static assets from `clients/web/dist/`, which only exists
+after a build. In the published package `dist/` always ships. In a fresh dev
+checkout it is absent, so the runner **builds it on demand** the first time you
+launch (`vite build` via `npm run build:client`, run in `clients/web`) instead
+of serving a broken page (#1486). If that build can't run — e.g. dev
+dependencies are missing — the launcher exits with an actionable error telling
+you to run `npm run build` (from `clients/web`) or relaunch with `--dev` to use
+the Vite dev server. `--dev` never needs `dist/`; it runs Vite directly.
+
+CI and `npm run validate` (via the top-level `smoke` step) exercise this prod
+path end-to-end with `npm run smoke:web` (`scripts/smoke-web.mjs`): it starts
+`mcp-inspector --web` against the built `dist/` and asserts `GET /` returns the
+SPA (HTTP 200) with the injected `__INSPECTOR_API_TOKEN__`.
+
+### CLI and TUI smokes
+
+The top-level `smoke` step also runs end-to-end smokes for the other two modes
+through the built launcher artifact (beyond the `--help` checks in
+`smoke:launcher`):
+
+- `npm run smoke:cli` (`scripts/smoke-cli.mjs`) — runs `mcp-inspector --cli`
+  against the bundled stdio test server via a temp `--catalog` and asserts
+  `tools/list` returns the server's tools, plus the `--catalog`/`--config`
+  resolution paths (default-catalog seed-on-missing, read-only `--config`
+  error-without-seed, `--catalog`/`--config` conflict).
+- `npm run smoke:tui` (`scripts/smoke-tui.mjs`) — launches
+  `mcp-inspector --tui --catalog <temp>` and asserts the Ink app renders its
+  first frame within a timeout, then shuts it down (a shallow boot/render
+  check, not full interaction).
+
+Both build `test-servers/build` on demand if it is missing.
+
+## Development
+
+Like the web client, the launcher self-validates from its own folder:
+
+```bash
+npm run validate  # format:check && lint && build && test:coverage
+```
+
+This has **no** dependency on the other clients being built — it only checks the
+launcher's own source. `eslint.config.js` is a Node-only flat config (the web
+client's React/Storybook plugins stripped out), and the per-file coverage gate
+covers `parse-launcher-argv.ts` (the pure arg-parsing logic); `src/index.ts` is
+excluded as binary bootstrap and is instead exercised by the smokes above. The
+repo-root `validate:launcher` simply delegates here (`cd clients/launcher && npm run validate`).
+
+## Publishing
+
+The launcher provides the `mcp-inspector` bin for the single `@modelcontextprotocol/inspector` tarball. Packaging is a whole-repo concern — how the one-package/single-version tarball is assembled, the `"files"` allowlist invariants (no source maps, why `clients/web/build` needs `.npmignore`, why the cli/tui `package.json`s ship), and the `npm run pack:verify` publish smoke — is documented in the [root README](../../README.md#publishing).
+
+## Architecture
+
+For how the launcher fits with the shared config processor and app runners, see the [Launcher and config consolidation](../../docs/launcher-config-consolidation-plan.md) document in the repo root `docs/` folder.

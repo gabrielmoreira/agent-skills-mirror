@@ -189,10 +189,6 @@ description: |
 
 ---
 
-> 📚 深度参考：知识库/Skill知识包/action_心理诊断框架.md、知识库/Skill知识包/action_信号案例库.md
-
----
-
 ## 内联案例库
 
 ### 典型案例

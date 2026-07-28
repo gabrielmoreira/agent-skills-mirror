@@ -1,15 +1,15 @@
 ---
 name: tome
-description: 'Converting repository changes into detailed learning documents. Use when turning diffs into teaching materials, recording design decisions, or creating onboarding materials for new members.'
-zh_description: "用于tome，支持知识管理、项目同步和平台集成。"
-version: "1.0.10"
+description: '把仓库变更转化为学习文档、术语说明和设计记录。'
+zh_description: "把仓库变更转化为学习文档、术语说明和设计记录。"
+version: "1.0.0"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/tome"
 license: MIT
 tags: '["knowledge", "tome"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-20"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "advanced"
 ---
@@ -91,7 +91,7 @@ Route elsewhere:
 - **Documents only.** Never write or modify code — Tome's deliverables are learning documents, glossaries, decision records, and tutorials.
 - **Honest narration.** Do not embellish change rationale — include constraints, compromises, and limitations honestly. Post-hoc rationalization degrades trust.
 - **Append-only for accepted decision records.** When a prior ADR/decision record must change, write a new superseding record and cross-link (`Supersedes: ADR-NNN` / `Superseded-by: ADR-MMM`); never silently rewrite an accepted one. Preserving the history of thinking is the point. [Source: adr.github.io; AWS Prescriptive Guidance — ADR process]
-- Author for Opus 4.8 defaults. See `_common/OPUS_48_AUTHORING.md` (P3, P5 critical for Tome; P2, P1 recommended).
+- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Tome; P2, P1 recommended).
 
 ---
 
@@ -342,7 +342,8 @@ All handoff templates → `reference/handoffs.md`
 | `reference/worked-example.md` | You are running the `worked` recipe — Sweller cognitive load theory, expert-reasoning annotation, faded-guidance progression |
 | `reference/coding-kata.md` | You are running the `kata` recipe — constraint design, difficulty tiers (Bronze/Silver/Gold), pair vs solo facilitation, common katas |
 | `reference/quickstart-guide.md` | You are running the `quickstart` recipe — 15-minute time budget, prerequisite filtering, success anchors, troubleshooting decision tree |
-| `_common/OPUS_48_AUTHORING.md` | You are sizing the learning document, deciding adaptive thinking depth at audience/evidence separation, or front-loading audience/doc-type/scope at EXTRACT. Critical for Tome: P3, P5. |
+| `_common/OPUS_5_AUTHORING.md` | You are sizing the learning document, deciding adaptive thinking depth at audience/evidence separation, or front-loading audience/doc-type/scope at EXTRACT. Critical for Tome: P3, P5. |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Tome-specific Output/Next schema. |
 
 ---
 
@@ -375,31 +376,7 @@ After each task, add a row to `.agents/PROJECT.md`:
 
 ## AUTORUN Support
 
-See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). On AUTORUN, run `SCOPE → EXTRACT → ANALYZE → COMPOSE → REVIEW` and emit `_STEP_COMPLETE`.
-
-Tome-specific `_STEP_COMPLETE.Output` schema:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Tome
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output:
-    summary: [Generated document overview]
-    artifact_type: learning_doc | glossary | decision_record | tutorial | learning_series | incremental_doc
-    parameters:
-      target_ref: [commit hash / PR number / branch]
-      audience_level: beginner | intermediate | advanced
-      audience_detection: explicit | auto (confidence)
-      output_format: [format used]
-      files_analyzed: [count]
-      inference_count: [count]
-      quality_scorecard: [A/B/C per axis]
-    files_changed: List[{path, type, changes}]
-  Risks: [Accuracy risks related to inference]
-  Next: [NextAgent] | VERIFY | DONE
-```
-
----
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Tome-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

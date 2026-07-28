@@ -122,7 +122,7 @@ python scripts/screen_stocks.py --config assets/garp_config.json --export output
 - 结合 `cron` 技能，每天收盘后自动运行筛选器，如果出现符合“深度价值”（如：破净且现金充足）的新标的，立即通过 `question` 发送提醒给投资经理。
 
 ### 2. 情绪筛选器 (Sentiment Screener)
-- 将财务指标与 `tavily-search` 抓取的新闻情绪得分结合。筛选出那些“基本面极佳但近期市场情绪极度悲观”（即：跌出价值）的错杀股。
+- 将财务指标与客户端内置 Web Search 或 `deep-research` 得到的可溯源新闻信号结合，筛选“基本面较强但近期市场情绪极度悲观”的候选，并明确数据时间与局限。
 
 ## 边界与限制 / Boundaries
 

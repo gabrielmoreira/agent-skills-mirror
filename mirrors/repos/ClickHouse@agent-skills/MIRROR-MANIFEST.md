@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 303 file(s) materialized.
+Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns, 309 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ClickHouse/agent-skills` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 303 |
+| Files         | 309 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -356,12 +356,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 295 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/slow-query-patterns-fields.md`](skills/clickhouse-managed-postgres-rca/rules/slow-query-patterns-fields.md) |
 | 296 | ✓ | [`skills/clickhouse-managed-postgres-rca/rules/triage.md`](skills/clickhouse-managed-postgres-rca/rules/triage.md) |
 | 297 | ✓ | [`skills/clickhouse-managed-postgres-rca/SKILL.md`](skills/clickhouse-managed-postgres-rca/SKILL.md) |
-| 298 | ✓ | [`skills/clickhousectl-cloud-deploy/metadata.json`](skills/clickhousectl-cloud-deploy/metadata.json) |
-| 299 | ✓ | [`skills/clickhousectl-cloud-deploy/SKILL.md`](skills/clickhousectl-cloud-deploy/SKILL.md) |
-| 300 | ✓ | [`skills/clickhousectl-local-dev/metadata.json`](skills/clickhousectl-local-dev/metadata.json) |
-| 301 | ✓ | [`skills/clickhousectl-local-dev/SKILL.md`](skills/clickhousectl-local-dev/SKILL.md) |
-| 302 | ✓ | [`skills/clickstack-otel-collector/metadata.json`](skills/clickstack-otel-collector/metadata.json) |
-| 303 | ✓ | [`skills/clickstack-otel-collector/SKILL.md`](skills/clickstack-otel-collector/SKILL.md) |
+| 298 | ✓ | [`skills/clickstack-otel-collector/metadata.json`](skills/clickstack-otel-collector/metadata.json) |
+| 299 | ✓ | [`skills/clickstack-otel-collector/SKILL.md`](skills/clickstack-otel-collector/SKILL.md) |
+| 300 | ✓ | [`skills/infra-clickhouse/metadata.json`](skills/infra-clickhouse/metadata.json) |
+| 301 | ✓ | [`skills/infra-clickhouse/README.md`](skills/infra-clickhouse/README.md) |
+| 302 | ✓ | [`skills/infra-clickhouse/ref/cloud.md`](skills/infra-clickhouse/ref/cloud.md) |
+| 303 | ✓ | [`skills/infra-clickhouse/ref/local.md`](skills/infra-clickhouse/ref/local.md) |
+| 304 | ✓ | [`skills/infra-clickhouse/SKILL.md`](skills/infra-clickhouse/SKILL.md) |
+| 305 | ✓ | [`skills/infra-postgres/metadata.json`](skills/infra-postgres/metadata.json) |
+| 306 | ✓ | [`skills/infra-postgres/README.md`](skills/infra-postgres/README.md) |
+| 307 | ✓ | [`skills/infra-postgres/ref/cloud.md`](skills/infra-postgres/ref/cloud.md) |
+| 308 | ✓ | [`skills/infra-postgres/ref/local.md`](skills/infra-postgres/ref/local.md) |
+| 309 | ✓ | [`skills/infra-postgres/SKILL.md`](skills/infra-postgres/SKILL.md) |
 
 ---
 

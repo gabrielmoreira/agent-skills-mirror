@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `ThinkInAIXYZ/deepchat` — 26 default patterns, 2 followed patterns, 40 file(s) materialized.
+Mirror of `ThinkInAIXYZ/deepchat` — 26 default patterns, 0 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ThinkInAIXYZ/deepchat` — 26 default patterns, 2 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `dev` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 40 |
+| Followed pats | 0 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,8 +51,7 @@ Mirror of `ThinkInAIXYZ/deepchat` — 26 default patterns, 2 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/spec-driven-dev.md`
-- `docs/release-flow.md`
+_None._
 
 ## File Index
 
@@ -98,8 +97,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`resources/skills/skill-creator/SKILL.md`](resources/skills/skill-creator/SKILL.md) |
 | 37 | ✓ | [`resources/skills/web-artifacts-builder/SKILL.md`](resources/skills/web-artifacts-builder/SKILL.md) |
 | 38 | ✓ | [`resources/skills/xlsx/SKILL.md`](resources/skills/xlsx/SKILL.md) |
-| 39 | → | [`docs/release-flow.md`](docs/release-flow.md) |
-| 40 | → | [`docs/spec-driven-dev.md`](docs/spec-driven-dev.md) |
 
 ---
 

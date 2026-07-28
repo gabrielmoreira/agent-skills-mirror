@@ -2,14 +2,14 @@
 name: advice-get-advice
 api: Random Advice
 method: GET
-path: /v1/text/advice
+path: /v1/entertainment/advice
 base_url: https://api.requiems.xyz
 description: Returns a random piece of advice
 ---
 
 ## Endpoint
 
-**GET https://api.requiems.xyz/v1/text/advice**
+**GET https://api.requiems.xyz/v1/entertainment/advice**
 
 ## Get Random Advice
 

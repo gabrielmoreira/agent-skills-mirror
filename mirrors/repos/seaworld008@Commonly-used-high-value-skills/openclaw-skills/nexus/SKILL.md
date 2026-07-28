@@ -1,15 +1,15 @@
 ---
 name: nexus
-description: 'Orchestrating specialist AI agent teams as a meta-coordinator. Decomposes requests into minimum viable chains, spawns each as an independent session in AUTORUN modes, and drives to final output. Use when a task spans multiple specialist domains, requires parallel agent execution, or needs hub-and-spoke routing across the skill ecosystem.'
-zh_description: "用于nexus，支持任务规划、执行、评审和验证。"
-version: "1.0.15"
+description: '多智能体任务分解、链路编排、执行协调和结果整合。'
+zh_description: "多智能体任务分解、链路编排、执行协调和结果整合。"
+version: "1.0.0"
 author: "seaworld008"
 source: "github:simota/agent-skills"
 source_url: "https://github.com/simota/agent-skills/tree/main/nexus"
 license: MIT
 tags: '["ai", "nexus", "workflow"]'
-created_at: "2026-04-25"
-updated_at: "2026-07-20"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "advanced"
 ---
@@ -65,7 +65,7 @@ Coordinate specialist agents, design the minimum viable chain, and execute safel
 - Verify acceptance criteria before delivery; pair quantitative metrics with human evaluation for high-stakes tasks.
 - Adapt routing from execution evidence with safety constraints; track OE (orchestration efficiency) per chain type.
 - Leverage standardized inter-agent protocols where available: MCP, A2A, ACP.
-- Apply Plan-and-Execute pattern: capable models plan, cheaper models execute. Claude Code = opus/fable-5 plan / **Sonnet 5 execute** (haiku trivial only); Codex CLI = **latest `gpt-5.6` generation, variant by role** (sol plan/design / terra execute / luna rote; depth via `model_reasoning_effort`); **agy = always Gemini 3.5 Flash**; Fable 5 hub → `high` effort. Full per-engine map → `reference/hub-authoring.md` § Model Selection, `_common/CLI_COMPATIBILITY.md §4`.
+- Apply Plan-and-Execute pattern: capable models plan, cheaper models execute. Claude Code = opus/fable-5 plan / **Sonnet 5 execute** (haiku trivial only); Codex CLI = **latest `gpt-5.6` generation, variant by role** (sol plan/design / terra execute / luna rote; depth via `model_reasoning_effort`); **agy = always Gemini 3.6 Flash (High)**, High `thinking_level` default for every step + Deep Reasoning Directive on recipe spawns (`AGY_ORCHESTRATION.md` A1-R/A9-D); Fable 5 hub → `high` effort. Full per-engine map → `reference/hub-authoring.md` § Model Selection, `_common/CLI_COMPATIBILITY.md §4`.
 - Use Anthropic **Managed Agents** vocabulary (SF 2026) and surface an escalation recommendation in `NEXUS_COMPLETE` when the workload justifies the managed platform; prefer **Dynamic Workflows** for large homogeneous parallel sweeps. Detail: `reference/managed-agents-mapping.md` §5.
 - Output language follows the CLI global config (`settings.json` `language`, `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`); identifiers and technical terms remain in English.
 
@@ -80,7 +80,7 @@ Coordinate specialist agents, design the minimum viable chain, and execute safel
 7. **Learn only from evidence.** Routing adaptation requires execution data, verification, and journaled results.
 8. **Prevent circular handoffs.** Enforce max-hop limits (default: 2 round-trips per agent pair) to prevent A→B→A loops.
 9. **Hierarchical decomposition for scale.** For chains with 6+ agents, spawn feature-lead agents that each coordinate 2-3 specialists.
-10. **Author for the active orchestrator engine.** Detect which CLI drives the hub (see **Execution Model → Orchestrator Detection**) and apply the matching authoring protocol per `reference/hub-authoring.md` (Claude Code → P-principles, **plus F-principles on a Fable 5 hub**; Codex CLI → C-principles; agy → A-principles — Gemini 3.5 Flash mandate).
+10. **Author for the active orchestrator engine.** Detect which CLI drives the hub (see **Execution Model → Orchestrator Detection**) and apply the matching authoring protocol per `reference/hub-authoring.md` (Claude Code → P-principles, **plus F-principles on a Fable 5 hub**; Codex CLI → C-principles; agy → A-principles — Gemini 3.6 Flash (High) mandate).
 
 ## Boundaries
 
@@ -96,7 +96,7 @@ Agent disambiguation → `reference/agent-disambiguation.md`
 - Use `NEXUS_HANDOFF` format from `_common/HANDOFF.md`.
 - Validate execution results after each step (schema, required fields, confidence) to catch semantic failures.
 - Record routing corrections and user overrides in the journal.
-- Track orchestration efficiency (OE = successful tasks / total compute cost) and token efficiency per chain.
+- Track orchestration efficiency (OE = successful tasks / total compute cost) and token efficiency per chain. Where the API surface is available, split the denominator with `usage.output_tokens_details.thinking_tokens` — reasoning vs. deliverable spend are different problems (over-thinking → lower effort; over-writing → tighten the P2 envelope), and a single output-token total cannot tell them apart.
 
 ### Ask First
 
@@ -107,7 +107,7 @@ Agent disambiguation → `reference/agent-disambiguation.md`
 - First-time use of a newly registered agent in a production chain.
 - Approving creation of a new skill via LADDER (`architect`'s gap-fill proposal, before it is registered) — see `reference/routing-matrix.md` § LADDER.
 - **Before the first `agy -p ... --dangerously-skip-permissions` Bash spawn of a session** — emit the Pre-flight Notification per `_common/CLI_COMPATIBILITY.md §9.1` (informational, does not block AUTORUN).
-- **On a Fable 5 hub, before executing a task that does not warrant Fable 5-tier reasoning** (classified `SIMPLE` / single trivial step, no multi-domain planning or high-reasoning design) — confirm before proceeding and recommend the cheaper path (delegate directly to a Sonnet 5 subagent, or re-run the hub on Sonnet 5 / Opus 4.8). Fable 5 hub is high-cost; this is the **Fable 5 cost gate (F8)**, contract-level — it blocks even in `AUTORUN`/`AUTORUN_FULL`. See `reference/hub-authoring.md` § Claude Code hub — Fable 5.
+- **On a Fable 5 hub, before executing a task that does not warrant Fable 5-tier reasoning** (classified `SIMPLE` / single trivial step, no multi-domain planning or high-reasoning design) — confirm before proceeding and recommend the cheaper path (delegate directly to a Sonnet 5 subagent, or re-run the hub on Sonnet 5 / Opus 5). Fable 5 hub is high-cost; this is the **Fable 5 cost gate (F8)**, contract-level — it blocks even in `AUTORUN`/`AUTORUN_FULL`. See `reference/hub-authoring.md` § Claude Code hub — Fable 5.
 
 ### Never
 
@@ -163,6 +163,7 @@ The full table below is flat; these families group it by the axis that separates
 | **Verdict** (which feature) | `essential` · `killer` · `trim` | THE must-have / THE differentiator / remove dead-weight (inverse). Shared gate: `reference/verdict-gate.md` |
 | **Reproduce & Synthesize** | `clone` · `fuse` · `graft` · `transmute` · `migrate` | 1 source faithful / ≥2 synthesized / host+donor concept / own-source cross-language / own-system change-completeness. Shared: `_common/DIFFERENTIAL_PARITY.md`. `differential parity` alone → REDIRECT |
 | **Quality-Max** (expensive, confirm) | `acceptance` · `growth-acceptance` · `summit` · `podium` · `wish` · `runway` · `hallmark` · `rebrand` · `marquee` | proof-carrying merge (G1-10) / post-launch lifecycle (G11-15) / pre-merge quality tournament / content-slide quality / **once-in-a-lifetime one-shot ceiling — scarcity-gated, deliverable-agnostic, ACCEPT = all rubric dims = 3** / **design-brand wing:** flagship *in-product UI* design tournament (`runway`) / *create* the brand identity — proof-carrying Brand Book (`hallmark`) / *propagate* a settled brand, completeness-proven (`rebrand`) / wish-grade one-shot *acquisition LP* with machine oracles, no Scarcity Gate (`marquee`). `runway` vs `marquee` = in-product surface vs conversion LP; `hallmark`→`rebrand` = create→propagate pair |
+| **Grounded content** | `newsroom` | claim-grounding maximization for a single article — Evidence Ledger before writing (compose) or against an existing draft (audit) → producer≠verifier claim audit with citation-support re-open → adversarial refutation of load-bearing claims → remediation; ships a **Provenance Report**, zero ungrounded facts for external-facing. vs `podium` = package polish (grounding is one branch there); vs `zine` direct = authoring with no grounding requirement; vs `attest` = prose-vs-world, not impl-vs-spec |
 | **Document package** | `package` (incl. `venture`) | 12-domain preset registry |
 | **Meta / control** | `classify` · `proactive` · `pack` | routing · project scan · skill-profile |
 
@@ -198,6 +199,7 @@ The full table below is flat; these families group it by the axis that separates
 | Growth-Acceptance | `growth-acceptance` |  | **Layer C lifecycle gate** (Market + Research + Brand axes) for Enterprise org-tier. | See `reference/recipes-detail.md` | `_common/GROWTH_BRAND_PROOF.md`, `reference/growth-acceptance-recipe.md` |
 | Summit | `summit` |  | Multi-engine **five-team** quality-maximization. | See `reference/recipes-detail.md` | `reference/summit-recipe.md` |
 | Podium | `podium` |  | Content-quality maximization. | See `reference/recipes-detail.md` | `reference/podium-recipe.md` |
+| Newsroom | `newsroom` |  | **Grounded article production / audit** — every factual claim source-cited and adversarially verified; no speculation ships unlabeled. Confirm release-critical. | See `reference/recipes-detail.md` | `reference/newsroom-recipe.md`, `reference/research-grounding.md` |
 | Wish | `wish` |  | **Once-in-a-lifetime request** — scarcity-gated one-shot quality-ceiling delivery: crystallize the true wish → tournament → adversarial gauntlet + ceiling convergence (all dims = 3) → One-Shot Gate. **Always confirm.** | See `reference/recipes-detail.md` | `reference/wish-recipe.md` |
 | Runway | `runway` |  | **Flagship UI design tournament** — 3 parallel design directions → persona-panel judging → ceiling convergence (all dims = 3) for product-defining surfaces. **Always confirm.** | See `reference/recipes-detail.md` | `reference/runway-recipe.md` |
 | Hallmark | `hallmark` |  | Brand identity package quality-max — brand-core dialogue → identity tournament → persona-resonance + adversarial gauntlet → proof-carrying Brand Book + tokens. | See `reference/recipes-detail.md` | `reference/hallmark-recipe.md` |
@@ -235,10 +237,11 @@ For natural-language input without an explicit subcommand. **Subcommand match al
 | `hallmark`, `brand identity`, `brand book`, `brand voice`, `visual identity` | `hallmark` (creates the brand — propagation → `rebrand`; personal branding → `crest`) |
 | `rebrand`, `brand refresh`, `apply new brand everywhere`, `brand migration` | `rebrand` (completeness-proven propagation; no settled Brand Book → `hallmark` first) |
 | `marquee`, `best possible landing page`, `flagship LP`, `one-shot LP` | `marquee` (wish-grade one-shot LP; routine LP → `bazaar`/`funnel`; bare `landing page` overloaded → REDIRECT) |
+| `newsroom`, `fact-check`, `verify sources`, `every claim cited`, `no speculation`, `source-grounded article`, `check the article is correct` | `newsroom` (grounding-first article compose/audit — package polish + slides → `podium`; plain article → `zine` direct) |
 | `/Nexus` (no arguments) | `proactive` |
 | unclear or multi-domain request | `classify` → `reference/intent-clarification.md` |
 
-Specialist anchors (Chain / Cull-Triage-Crypt / Sonar / Clause-Scribe / Rank-Magi / Omen-Ripple / Matrix / Sketch), mobile/cross-platform anchors (`MOBILE_NATIVE`, `IOS_UI_TEST`, `PORTING`), and package/domain-preset anchors (research / ai-adoption / legal / saas / media / growth / career / learning / hiring / local-gov) — see `reference/signal-keywords.md`.
+Specialist anchors (Chain / Cull-Triage-Crypt / Sonar / Clause-Scribe / Rank-Magi / Omen-Ripple / Matrix / Sketch), native-app / cross-platform anchors (`MOBILE_NATIVE`, `MACOS_NATIVE`, `IOS_UI_TEST`, `PORTING`), and package/domain-preset anchors (research / ai-adoption / legal / saas / media / growth / career / learning / hiring / local-gov) — see `reference/signal-keywords.md`.
 
 ## Subcommand Dispatch
 
@@ -273,29 +276,17 @@ Before the first spawn, determine which CLI drives **this hub session**, then bi
 
 | Signal | Hub engine | Spawn API | Authoring protocol | Model map |
 |--------|-----------|-----------|--------------------|-----------|
-| `Agent` tool present | **Claude Code** | `Agent(...)` (L1 fg / L2 `run_in_background`) | `_common/OPUS_48_AUTHORING.md` (P-principles); **Fable 5 hub → also `reference/hub-authoring.md` § Claude Code hub — Fable 5 (F-principles)** | **Sonnet 5** (subagent default) / opus / haiku / **fable-5** (see Model Selection ¶) |
+| `Agent` tool present | **Claude Code** | `Agent(...)` (L1 fg / L2 `run_in_background`) | `_common/OPUS_5_AUTHORING.md` (P-principles); **Fable 5 hub → also `reference/hub-authoring.md` § Claude Code hub — Fable 5 (F-principles)** | **Sonnet 5** (subagent default) / opus / haiku / **fable-5** (see Model Selection ¶) |
 | `spawn_agent` callable (C1 prereqs hold) | **Codex CLI** | `spawn_agent` → `wait_agent` (parallel = N spawn → join all) | `_common/CODEX_ORCHESTRATION.md` (C-principles) | `gpt-5.6` family — sol/terra/luna by role (see `CLI_COMPATIBILITY.md §4`) |
-| `/agent` in TUI main session | **agy** | `/agent` or `agy -p` headless | `_common/AGY_ORCHESTRATION.md` (A1–A9) | Gemini 3.5 Flash mandated (‡), effort tier per step via `/model` (see `CLI_COMPATIBILITY.md §4`) |
+| `/agent` in TUI main session | **agy** | `/agent` or `agy -p` headless | `_common/AGY_ORCHESTRATION.md` (A1–A9) | Gemini 3.6 Flash (High) mandated (‡), effort tier per step via `/model` (see `CLI_COMPATIBILITY.md §4`) |
 
 Codex-hub prereqs (C1): `multi_agent = true` + `[agents] max_depth >= 2`. If unmet → internal execution with a concrete reason, never a generic "spawn tool not found"; `spawn_agent` may be lazily hidden — attempt when prereqs hold (C5). Details → `_common/CLI_COMPATIBILITY.md`, `reference/execution-layers.md`.
 
-**Claude Code hub model detection.** The hub runs on Opus 4.8 or Claude Fable 5; on Fable 5, apply the F-principles in `reference/hub-authoring.md` § Claude Code hub — Fable 5 on top of the P-principles. When unknown, author for Opus 4.8 defaults — safe on both.
+**Claude Code hub model detection.** The hub runs on Opus 5 or Claude Fable 5; on Fable 5, apply the F-principles in `reference/hub-authoring.md` § Claude Code hub — Fable 5 on top of the P-principles. When unknown, author for Opus 5 defaults — safe on both.
 
 ### Spawn Decision Flow
 
-```
-EXECUTE step begins
-  ↓
-Is spawn tool available? (Agent / spawn_agent / /agent)
-  ├─ NO → Internal execution (log reason)
-  └─ YES
-       ↓
-     Step requires specialist expertise?
-       ├─ YES → SPAWN (mandatory)
-       └─ NO (trivial single-file edit)
-            ↓
-          Spawn overhead justified? → SPAWN (recommended) | Internal (log reason)
-```
+Core Rule #3 decides it: no spawn tool → internal (log the blocker); specialist expertise → spawn (mandatory); trivial edit → spawn only if overhead is justified. Opus 5 delegates readily (P4) — bound the *upper* count, and never spawn an agent to re-check another's output (that is a sequential Q9 step, not a sibling).
 
 ### Execution Layers
 
@@ -337,9 +328,10 @@ Agent(
     Context from previous step: [handoff_context]
     Constraints: [constraints]
     Acceptance criteria: [acceptance_criteria]  # P1: front-loaded (always)
-    Output length envelope: [length_envelope]   # P2: optional — add for L/XL output
+    Output length envelope: [length_envelope]   # P2: always — default output runs long
+    Scope bound: [in_scope / out_of_scope]      # P8: always — Opus 5 widens tasks on its own
     Tool-use directive: [tool_use_directive]    # P3: optional — add when tool use matters
-    Thinking directive: [thinking_directive]    # P5: optional — add for high-stakes steps
+    Thinking directive: [thinking_directive]    # P5: optional — depth nudge, never a self-check
 
     On completion, emit:
     _STEP_COMPLETE:
@@ -350,7 +342,7 @@ Agent(
 )
 ```
 
-Front-load acceptance criteria (P1) on every spawn. The output-length (P2), tool-use (P3), and thinking (P5) directives are optional — add them by task scale, not by default. For orchestrator spawns the Critical directives per `_common/OPUS_48_AUTHORING.md` are P4/P6/P7/P9 (parallel triggers, effort, delegation framing, effort-calibrated tool use), carried by the `model`/`mode` fields and the parallel-spawn rules rather than by per-field template text. **On a Fable 5 hub directives are lighter, not heavier** — a brief outcome+brevity instruction steers best, and any "echo / show / transcribe your reasoning" wording is forbidden (`reasoning_extraction` refusal). Engine variants, Opus 4.8 / Fable 5 notes, parallel-spawn rules → `reference/hub-authoring.md` § Spawn Template Variants; detailed flows → `reference/execution-phases.md`, `reference/orchestration-patterns.md`.
+Front-load acceptance criteria (P1), a length envelope (P2), and a scope bound (P8) on **every** spawn — Opus 5's default output runs long in both channels and it can widen a task unprompted. Tool-use (P3) and thinking (P5) directives are optional, added by task scale. **Never include self-verification wording** ("verify your work", "double-check", "re-verify before responding", "spawn a subagent to check this") — Opus 5 self-verifies and these cause over-verification (P9). Independent verification is unaffected: it lives in the *chain* as a separate agent (Radar after Builder, Judge after implementation), not in a producer's own prompt. For orchestrator spawns the Critical directives per `_common/OPUS_5_AUTHORING.md` are P4/P6/P7/P9 (delegation caps, effort, delegation framing, no redundant verification), carried by the `model`/`mode` fields and the spawn-ceiling rules rather than by per-field template text. **On a Fable 5 hub directives are lighter, not heavier** — a brief outcome+brevity instruction steers best, and any "echo / show / transcribe your reasoning" wording is forbidden (`reasoning_extraction` refusal). Engine variants, Opus 5 / Fable 5 notes, parallel-spawn rules → `reference/hub-authoring.md` § Spawn Template Variants; detailed flows → `reference/execution-phases.md`, `reference/orchestration-patterns.md`.
 
 ## Safety Contract
 
@@ -379,7 +371,7 @@ Front-load acceptance criteria (P1) on every spawn. The output-length (P2), tool
 
 ## Routing Quick Start
 
-Canonical matrix: `reference/routing-matrix.md` defines **98 task types** (ground-truthed by row count, `grep -c` the Task Type table); the Recipes table exposes the most-used 20 as subcommands — the rest are reachable via the `classify` (default) flow. Phase contracts (BUG/FEATURE/SECURITY/REFACTOR/OPTIMIZE), Sherpa skip conditions, chain adjustment and clarification rules all live in `reference/routing-matrix.md` (merged from the retired `routing-quick-start.md` — see § Sherpa Skip & Chain Adjustment there).
+Canonical matrix: `reference/routing-matrix.md` defines **99 task types** (ground-truthed by row count, `grep -c` the Task Type table); the Recipes table exposes the most-used 20 as subcommands — the rest are reachable via the `classify` (default) flow. Phase contracts (BUG/FEATURE/SECURITY/REFACTOR/OPTIMIZE), Sherpa skip conditions, chain adjustment and clarification rules all live in `reference/routing-matrix.md` (merged from the retired `routing-quick-start.md` — see § Sherpa Skip & Chain Adjustment there).
 
 **Chain reference hierarchy (Source of Truth):**
 - `routing-matrix.md` — owns task type → default chain (98 types), the classify/LADDER flow, and the per-task-type phase contracts + Sherpa-skip/chain-adjustment rules. **Primary SoT for "which agents fire for task X"**.
@@ -452,7 +444,7 @@ Read only the files that match the current decision point.
 | `reference/execution-layers.md` | Per-CLI prereqs, runtime notes, agy headless mitigations + template |
 | `reference/hub-authoring.md` | Per-engine authoring (Claude/Codex/agy), spawn-template variants, model selection, execution-layer key rules, Fable 5 F-principles |
 | `reference/recipes-detail.md` | Recipe Families full axis prose + extended Recipe descriptions + full chain templates |
-| `reference/{anneal,restyle,apex,playable,charter,enact,layer,gedanken,delve,cartograph,chronicle,spec,migrate,clone,fuse,graft,converge,loop,goal,acceptance,growth-acceptance,summit,transmute,venture,package,podium,wish,runway,hallmark,rebrand,marquee}-recipe.md`, `reference/apex-walkthrough.md` | Per-Recipe phase contracts, chain templates, cost profiles (+ apex Mermaid walkthroughs). Indexed per subcommand in the Recipes table Read column; open the matching `<recipe>-recipe.md` for full detail |
+| `reference/{anneal,restyle,apex,playable,charter,enact,layer,gedanken,delve,cartograph,chronicle,spec,migrate,clone,fuse,graft,converge,loop,goal,acceptance,growth-acceptance,summit,transmute,venture,package,podium,newsroom,wish,runway,hallmark,rebrand,marquee}-recipe.md`, `reference/apex-walkthrough.md` | Per-Recipe phase contracts, chain templates, cost profiles (+ apex Mermaid walkthroughs). Indexed per subcommand in the Recipes table Read column; open the matching `<recipe>-recipe.md` for full detail |
 | `reference/inline-recipes.md` | Full phase contracts for `kaizen` / `essential` / `killer` / `trim` |
 | `reference/recipe-contract.md` | Authoring standard for nexus recipes — 8 required elements + canonical phrasing. Read when authoring/normalizing a recipe |
 | `reference/verdict-gate.md` | Shared contract for verdict recipes (`essential`/`killer`/`trim` + graft flag clause) |
@@ -464,43 +456,28 @@ Read only the files that match the current decision point.
 | `reference/official-skill-categories.md` | Official use case categories + 5 canonical patterns |
 | `reference/managed-agents-mapping.md` | Managed Agents / Outcomes / Dreaming / Webhooks mapping + Dynamic Workflows |
 | `_common/DIFFERENTIAL_PARITY.md` | Shared parity discipline for `transmute`/`clone`/`fuse`/`graft`/`migrate` — read when a recipe claims "verified by differential parity" |
-| `_common/ADVERSARIAL_REFUTATION.md` | Shared skeptic-panel discipline for `killer`/`trim`/`graft` — read when a recipe gates a verdict on "refute ×2-3" |
-| `reference/research-grounding.md` | Phase 0.5 web-research sweep shared by `clone`/`fuse`/`graft` (Evidence Ledger) |
+| `_common/ADVERSARIAL_REFUTATION.md` | Shared skeptic-panel discipline for `killer`/`trim`/`graft`/`newsroom` — read when a recipe gates a verdict on "refute ×2-3" |
+| `_common/PROPORTION_AND_SPACING.md` | Shared sourced proportion/spacing reference for design recipes (`restyle`/`runway`/`marquee`/`hallmark`/`rebrand`) — read when a rubric axis needs a defensible number (spacing scale, measure, grid, touch target) or when a design rationale is about to invoke the golden ratio (§1 evidence tiers, §10 contradictions) |
+| `reference/research-grounding.md` | Phase 0.5 web-research sweep shared by `clone`/`fuse`/`graft` (Evidence Ledger); `newsroom` reuses the ledger schema + trust tiers (primary-source-authoritative variant) |
 | `_common/PROOF_CARRYING.md` | `/nexus acceptance` Tier policy + G1-G10. **Mandatory before `acceptance`.** |
 | `_common/GROWTH_BRAND_PROOF.md` | `/nexus growth-acceptance` Layer C + Insight Ledger + Brand Compiler + G11-G15 |
 | `reference/feature-impact-simulate.md` | Feature impact prediction (Persona+Journey+Product v4) |
 | `reference/pack-subcommand.md` | `/nexus pack` — skill profile switch, settings.json edit, backup, diff, confirm |
 | `_common/SKILL_PACKS.md` | Pack membership matrix (10 packs × 130 skills), profile catalog, routing protocol |
-| `_common/OPUS_48_AUTHORING.md` | **Claude Code hub** — P4 / P6 / P7 spawn prompts, output envelopes, effort |
+| `_common/OPUS_5_AUTHORING.md` | **Claude Code hub** — P1–P12 (delegation caps, effort against a `high` default, length envelopes, scope bounds, no self-verification scaffolding, context minimalism) + Opus 5 platform facts |
 | `reference/hub-authoring.md` § Claude Code hub — Fable 5 | **Hub runs on `claude-fable-5`** — F-principles (F1-F8): lighter spawn prompts, `high` default effort, async harness, no-reasoning-reproduction, cost gate |
 | `_common/CODEX_ORCHESTRATION.md` | **Codex CLI hub** — C1 spawn-depth, C2 sync fan-out, C3 effort-by-model, C6 checkpoint-resume |
 | `_common/AGY_ORCHESTRATION.md` | **agy hub** — A1 Flash-mandate effort-tier routing, A2 file-handoff+pty capture, A3 session-scoped tier, A4 flattened fan-out / `-c` resume, A6 sandbox posture (#36) |
 | `_common/IMAGE_INPUT.md` | Routing request carries an image — five-stage pipeline at CLASSIFY |
+| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Nexus-specific Output/Next schema. |
 
 ## Operational Notes
 
-Follow `_common/OPERATIONAL.md`, `_common/AUTORUN.md`, `_common/HANDOFF.md`, `_common/GIT_GUIDELINES.md`, `_common/HARNESS_EVOLUTION.md`. For the active orchestrator engine apply `_common/OPUS_48_AUTHORING.md` (Claude Code hub; add the F-principles in `reference/hub-authoring.md` when the hub runs on Fable 5), `_common/CODEX_ORCHESTRATION.md` (Codex CLI hub), or `_common/AGY_ORCHESTRATION.md` (agy hub — A1–A9). Journal in `.agents/nexus.md`; log to `.agents/PROJECT.md`. No agent names in commits/PRs. Decompose, route, execute, verify, deliver. Keep chains small, handoffs structured, recovery explicit.
+Follow `_common/OPERATIONAL.md`, `_common/AUTORUN.md`, `_common/HANDOFF.md`, `_common/GIT_GUIDELINES.md`, `_common/HARNESS_EVOLUTION.md`. For the active orchestrator engine apply `_common/OPUS_5_AUTHORING.md` (Claude Code hub; add the F-principles in `reference/hub-authoring.md` when the hub runs on Fable 5), `_common/CODEX_ORCHESTRATION.md` (Codex CLI hub), or `_common/AGY_ORCHESTRATION.md` (agy hub — A1–A9). Journal in `.agents/nexus.md`; log to `.agents/PROJECT.md`. No agent names in commits/PRs. Decompose, route, execute, verify, deliver. Keep chains small, handoffs structured, recovery explicit.
 
 ## AUTORUN Support
 
-When `_AGENT_CONTEXT` is present in the input, parse the following fields to configure execution:
-
-- **Task**: The delegated task description
-- **Context**: Handoff data from the previous step
-- **Constraints**: Boundaries and requirements for this step
-- **Expected Output**: Format and content expected by the caller
-
-After completing the delegated work, emit the following completion block:
-
-```yaml
-_STEP_COMPLETE:
-  Agent: Nexus
-  Status: SUCCESS | PARTIAL | BLOCKED | FAILED
-  Output: |
-    [Execution report: chain selected, steps executed, verification results]
-  Next: [recommended next agent or DONE]
-  Reason: [why this status; if BLOCKED/FAILED, what is needed to unblock]
-```
+See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantics, error handling). Nexus-specific `_STEP_COMPLETE.Output` schema lives in `reference/autorun-schema.md`.
 
 ## Nexus Hub Mode
 

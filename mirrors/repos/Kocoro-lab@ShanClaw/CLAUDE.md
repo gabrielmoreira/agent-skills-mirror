@@ -32,7 +32,10 @@ internal/
     runner.go          # Run orchestration, session routing, output profiles
     client.go          # WS client (reconnect, bounded concurrency)
     router.go          # SessionKey + SessionCache + route locking
-    approval.go        # ApprovalBroker (WS approval round-trip)
+    pending.go         # pendingCore[D] — shared request/resolve lifecycle (approval + question)
+    approval.go        # ApprovalBroker (WS approval round-trip; wire face over pendingCore)
+    question.go        # ask_user_question wire types (QuestionRequest/Response/…)
+    question_broker.go # QuestionBroker + bus hooks + ctx-injected QuestionAsker adapter
     alwaysallow.go     # Always-allow persistence dispatcher (SSE+WS)
     types.go           # Shared wire types
     events.go          # EventBus ring buffer
@@ -66,10 +69,12 @@ internal/
     partition.go         # Read-only batching, executeBatches
     spill.go             # Per-result spill + 200K per-turn aggregate cap
     toolresult_budget.go # Persisted tool_result replacement state
-    toolbudget.go        # Schema-token budget, deferred set
+    exposure.go          # Explicit Direct/Deferred policy + source defaults
+    toolbudget.go        # Direct-schema diagnostic budget + fingerprints
     timebasedcompact.go  # Time-based tool_result clearing
     context_bloat.go     # tool_result_bloat nudge builder
-    deferred.go          # Deferred tool loading (tool_search)
+    deferred.go          # Deferred loading and tool_search protocol paths
+    toolsearch_index.go  # Derived search documents + BM25 index
     statecache.go        # Tool-result cache keyed by read/write state
     resultshape.go       # Tree result shaping
     microcompact.go      # Tier 2 semantic compaction
@@ -270,7 +275,7 @@ Global and per-agent always-allow lists are **unioned at injection** in `SetAlwa
 - **Wire fixtures**: canonical JSON for every payload UI clients decode lives in `docs/desktop-wire-fixtures/` (bus event payloads, per-request SSE payloads, HTTP response bodies — see its README for surface framing). `internal/daemon/wire_fixtures_test.go` emits each through the REAL producer path (event emitters / full `Handler()` router), semantic-compares against the fixture (never byte-equal), and decodes the produced bytes into consumer-shaped structs. Any payload-shape change updates fixture + test in the same PR; the Desktop side mirrors with decode tests over the same fixture files.
 - **Capability token minting**: every cross-version contract change a UI client must detect mints a token in `Capabilities` (`internal/daemon/client.go`), surfaced on BOTH the WS handshake (`X-Kocoro-Capabilities`) and `GET /status` (`capabilities` array). Clients gate features on tokens — never version sniffing or decode-failure probing. Historical trap this kills: `display_name` / `model_tier` shipped as HTTP contract changes with no token, so partially-deployed Desktop/daemon pairs half-rendered. The `/status` fixture pins the full token list, so minting is enforced mechanically by the fixture test.
 - **New event families**: session-scoped events stay flat (`tool_status`, `approval_request`, …). A new domain (e.g. a hypothetical hardware-device integration) uses dotted types (`device.status`, `device.action_request`) with a common envelope — `type`, `ts`, plus `session_id` (session-scoped) or `target_id` (device-scoped) — and the domain payload nested under its own keys. Never repurpose an existing type's fields; additive only. Full rules in the kocoro skill `references/events.md`.
-- **Request/resolve interactions**: `ApprovalBroker` is today's only request-lifecycle mechanism (at-most-one terminal event, bus-ID ordering — see `approval.go` doc comments). If a second interaction kind lands (user questions, device action requests), factor the broker into one pending-interaction core with multiple wire faces — do NOT copy it. A `question` event was deliberately deferred on 2026-06-12: the agent loop has no native ask-user semantics, and adding one purely for UI symmetry inverts the dependency.
+- **Request/resolve interactions**: two kinds today — `ApprovalBroker` (tool approvals) and `QuestionBroker` (`ask_user_question`). Both are thin wire faces over ONE shared generic core, `pendingCore[D]` in `pending.go` (register / emit-guard / Resolve / CancelAll + at-most-one-terminal-event + bus-ID ordering invariants). A third interaction kind (device action requests, …) must build on `pendingCore` too — do NOT copy a broker. Question specifics: `question.request`/`question.resolved` bus events (dotted family) + per-request SSE `question` frame + `POST /question` ingress (Desktop-only, agent never calls it → not in kocoro skill refs, but pinned by wire fixtures); non-interactive channels DECLINE (a question has no safe auto-answer, unlike approval's auto-approve); capability token `question_v1`. There is no Cloud question transport yet (Desktop-local).
 
 ### Config Merge Order
 
@@ -335,12 +340,12 @@ fields, drift patterns). Invariants:
 - **Failure telemetry**: `recordCompactionFailure` emits `OnRunStatus("compaction_failed")` + audit row. 9 phase tags.
 - **Tiered result compression**: Tier 1 (>10 msg old) metadata only; Tier 2 (3-10) head+tail; Tier 3 (0-2) full.
 - **Memory staleness**: `annotateStaleness()` appends `[N days ago]` to memory headings.
-- **Deferred tool loading**: when count > 30, MCP/gateway tools sent as name+description; model calls `tool_search`. `web_search`/`web_fetch` are exempt (`neverDeferTools` in `toolbudget.go`) and always ship full schemas, on both the primary tool-ref path and the legacy path (`buildLocalActiveSchemas`).
+- **Deferred tool loading**: each tool resolves independently from an explicit `ToolExposure` override, then its source default. Local tools default Direct; MCP/gateway/integration tools default Deferred. `web_search`, `web_fetch`, and `ask_user_question` are explicit Direct openers. GUI/process automation plus calendar/schedule mutations are explicit Deferred, while calendar/schedule reads remain Direct. `tool_search` ranks automatically derived name/description/schema/namespace metadata with BM25 (maximum 8 ranked seeds before family expansion). The session `WorkingSet` caches warmed schemas and the deterministic search index. The 16K Direct-schema estimate is diagnostic only and never reclassifies tools.
 - **System reminders**: short `<system-reminder>` hints appended to `file_read`/`file_write`/`file_edit`/`bash` results; skipped for `cloud_delegate`.
 
 ### Anti-Hallucination
 
-XML `<tool_exec>` delimiters with random hex call_id. Preamble suppressed when response has tool calls. Fabricated tool calls detected and stripped.
+XML `<tool_exec>` delimiters use random hex call_id. Model-authored preambles are preserved. In attended runs, a silent first tool batch may fall back to a local tool's required user-facing `description`; external tool descriptions and generic `purpose` fields remain silent. Unattended runs remain silent. Fabricated tool calls are detected and stripped.
 
 ## Testing
 
@@ -379,6 +384,7 @@ Always registered (`internal/tools/register.go RegisterLocalTools`):
 - **macOS GUI**: computer_use (primary native-GUI workflow), accessibility (legacy low-level AX), applescript, screenshot, computer, clipboard, notify, browser, wait_for, ghostty. `computer_use` observations are approval-free; mutations use the normal approval/Always Allow policy. It reopens windowless running apps through LaunchServices, accepts decimal strings for integer tool arguments, supports condition-free bounded waits, and makes pointer actions visible by moving the real cursor. Its `state_id`, refs, and cached screen dimensions are cloned per run, while whole calls — including legacy `accessibility`, `computer`, and `applescript` calls, which acquire the same `computerUseGUIOperationMu` — share one GUI-operation lock so Desktop, iOS remote, Slack, and other concurrent routes neither share state nor interleave a stale-state check with another route's action. Screenshots are explicit-only: AppleScript no longer captures one automatically, and the standalone `screenshot` tool requires approval. Both `computer_use` and standalone `screenshot` are on the unattended auto-approval deny-list (schedule/heartbeat/watcher/mcp, remote/SSE auto-approve, synchronous HTTP, and no-approval-UI IM/voice runs can never invoke them; the `computer_use` approval-free observation exemption applies only to attended runs).
 - **Schedule**: schedule_create / _list / _update / _remove / _show
 - **Memory**: memory_append (flock-protected MEMORY.md append)
+- **User interaction**: ask_user_question — closed-choice escalation (1-4 questions, 2-4 options each; model receives full option labels, not bare tokens). `RequiresApproval()==false` — its own request/resolve interaction, NOT an approval. Reaches the daemon `QuestionBroker` through an `agent.QuestionAsker` injected on the tool-call context (`internal/tools` can't import `internal/daemon`); no asker on ctx (unattended / non-interactive channel / sync HTTP / TUI) → clean "can't ask here, use best judgment" result. Its explicit Direct exposure keeps it in the first-turn schema set; the volatile `Structured question UI: available` capability line gates calls on surfaces with a live asker. See Wire Contract Discipline + `internal/daemon/question.go` / `question_broker.go` / `pending.go`. Over-asking is suppressed by the "## Asking the user" prompt gate (`internal/prompt/builder.go`), not the tool description.
 - **Skills**: use_skill
 
 Conditional:
@@ -389,5 +395,5 @@ Conditional:
 - `list_my_published_files` — same gating. Read-only, no approval. `limit` (≤100), `offset`, optional `kind` filter (same enum). Returns paged `UploadEntry` rows keyed by id; rendering surfaces a `kind=…` badge per row so the LLM can answer "which of these are session shares".
 - `retract_published_file` — same gating. Destructive, requires approval. Args: `id` (UUID from list) + `description`. 404 conflates not-found/already-retracted/not-yours to avoid existence leak.
 - `generate_image` / `edit_image` — same gating. Always approval (paid quota + permanent CDN). Edit requires `image_urls` 1-4 entries starting with `https://static.kocoro.ai/`.
-- `tool_search` — deferred mode when tool count > 30 (lives in `agent/deferred.go`)
+- `tool_search` — registered Direct whenever the effective registry contains cold Deferred tools; keyword retrieval uses the internal deterministic BM25 index in `agent/toolsearch_index.go`
 - **`calendar_*` family (8 tools)** — registered only when daemon is a Kocoro Desktop subprocess (`tools.RegisterCalendarTools` no-ops when the `DesktopRPCBroker` is nil; TUI/one-shot/MCP/scheduled paths fall back to `applescript` + Calendar.app). Tools: `calendar_check_permission`, `calendar_request_permission` (approval, 5-min TCC-dialog timeout), `calendar_list_sources`, `calendar_list_events`, `calendar_get_event`, `calendar_create_event` / `_update_event` / `_delete_event` (approval). Backed by `docs/desktop-calendar-rpc.md` v0.5.1 (Unix socket reverse RPC to Desktop's EventKit). `attendees` is metadata-only — `invitations_sent` always `false` in v1. `update_event` rejects `scope=all`; use delete + create.

@@ -19,6 +19,7 @@ import re
 import shutil
 import sys
 from pathlib import Path
+from typing import NoReturn
 
 try:
     from importlib.metadata import version as _pkg_version
@@ -263,9 +264,11 @@ def _remove_claude_skill_registration(project_dir: Path) -> None:
     if not claude_md.exists():
         return
     content = claude_md.read_text(encoding="utf-8")
-    if "# graphify" not in content:
+    # Match the exact H1 `# graphify` registration heading, never a substring of a
+    # user's `## graphify`/`### graphify` (#2062). Section runs to the next H1.
+    cleaned = _remove_marker_section(content, "# graphify", boundary_prefix="# ")
+    if cleaned is None:
         return
-    cleaned = re.sub(r"\n*# graphify\n.*?(?=\n# |\Z)", "", content, flags=re.DOTALL).rstrip()
     if cleaned:
         claude_md.write_text(cleaned + "\n", encoding="utf-8")
         print(f"  CLAUDE.md        ->  graphify skill registration removed from {claude_md}")
@@ -516,6 +519,46 @@ def _replace_or_append_section(content: str, marker: str, new_section: str) -> s
     if not out.endswith("\n"):
         out += "\n"
     return out
+
+
+def _remove_marker_section(content: str, marker: str, boundary_prefix: str = "## ") -> "str | None":
+    """Remove every section whose heading line is exactly ``marker``.
+
+    The heading is matched only when a line *is* exactly ``marker`` (after
+    stripping surrounding whitespace), never as a substring. The old uninstall
+    regex ``## graphify`` was unanchored, so it matched inside a user's
+    ``### graphify`` heading and deleted hand-written content (#2062) — the same
+    class of bug the install side hardened against in #1688. Each section runs to
+    the line before the next ``boundary_prefix`` heading (default the next H2) or
+    EOF, mirroring ``_replace_or_append_section``. All exact-heading sections are
+    removed (pre-#1688 installs could leave duplicates).
+
+    Returns None when no exact ``marker`` line exists — the caller must then leave
+    the file untouched. This doubles as the guard: a substring mention (a bullet,
+    an inline reference, a deeper ``###`` heading) never triggers a strip.
+    """
+    lines = content.split("\n")
+    removed = False
+    while True:
+        starts = [i for i, line in enumerate(lines) if line.strip() == marker]
+        if not starts:
+            break
+        start = starts[-1]
+        end = len(lines)
+        for j in range(start + 1, len(lines)):
+            if lines[j].startswith(boundary_prefix):
+                end = j
+                break
+        head = "\n".join(lines[:start]).rstrip()
+        tail = "\n".join(lines[end:]).lstrip()
+        merged = head + "\n\n" + tail if head and tail else (head or tail)
+        lines = merged.split("\n")
+        removed = True
+    if not removed:
+        return None
+    return "\n".join(lines).rstrip()
+
+
 def _print_banner() -> None:
     """Amber brain banner on graphify install. TTY-only, never raises."""
     if not sys.stdout.isatty():
@@ -676,23 +719,63 @@ def gemini_install(project_dir: Path | None = None, *, project: bool = False) ->
     print()
     print("Gemini CLI will now check the knowledge graph before answering")
     print("codebase questions and rebuild it after code changes.")
+def _refuse_to_modify(settings_path: Path) -> "NoReturn":
+    """Abort a hook install rather than clobber a config file we can't parse (#2167)."""
+    print(
+        f"[graphify] refusing to modify {settings_path}: not valid JSON "
+        "(fix or move it and re-run)",
+        file=sys.stderr,
+    )
+    sys.exit(1)
+def _read_settings_for_merge(settings_path: Path) -> dict:
+    """Load an existing settings/hooks JSON file for a read-modify-write merge.
+
+    A missing file yields a fresh ``{}`` (first install). An existing file that
+    cannot be parsed as a JSON object aborts via ``_refuse_to_modify`` instead of
+    silently falling back to ``{}`` — the old fallback rewrote the whole file and
+    destroyed every setting the user had (#2167). Reads with ``utf-8-sig`` so a
+    UTF-8 BOM (the most likely parse-error trigger, same class as #2163) is
+    tolerated rather than fatal.
+    """
+    if not settings_path.exists():
+        return {}
+    try:
+        settings = json.loads(settings_path.read_text(encoding="utf-8-sig"))
+    except (json.JSONDecodeError, UnicodeDecodeError, OSError):
+        settings = None
+    if not isinstance(settings, dict):
+        _refuse_to_modify(settings_path)
+    return settings
+def _write_settings_with_backup(settings_path: Path, settings: dict) -> None:
+    """Serialize ``settings`` to ``settings_path``, backing up the previous file.
+
+    Skips the write entirely when the output is identical to what is on disk
+    (idempotent re-install: no backup churn, no mtime churn). Otherwise copies
+    the existing file to ``<name>.graphify-bak`` (single rolling backup) before
+    overwriting, so one bad merge can never destroy the user's config (#2167).
+    """
+    output = json.dumps(settings, indent=2)
+    if settings_path.exists():
+        if settings_path.read_text(encoding="utf-8") == output:
+            return
+        backup = settings_path.with_name(settings_path.name + ".graphify-bak")
+        shutil.copy2(settings_path, backup)
+    settings_path.write_text(output, encoding="utf-8")
 def _install_gemini_hook(project_dir: Path) -> None:
     settings_path = project_dir / ".gemini" / "settings.json"
     settings_path.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        settings = (
-            json.loads(settings_path.read_text(encoding="utf-8"))
-            if settings_path.exists()
-            else {}
-        )
-    except json.JSONDecodeError:
-        settings = {}
-    before_tool = settings.setdefault("hooks", {}).setdefault("BeforeTool", [])
-    settings["hooks"]["BeforeTool"] = [
+    settings = _read_settings_for_merge(settings_path)
+    hooks = settings.setdefault("hooks", {})
+    if not isinstance(hooks, dict):
+        _refuse_to_modify(settings_path)
+    before_tool = hooks.setdefault("BeforeTool", [])
+    if not isinstance(before_tool, list):
+        _refuse_to_modify(settings_path)
+    hooks["BeforeTool"] = [
         h for h in before_tool if "graphify" not in str(h)
     ]
-    settings["hooks"]["BeforeTool"].append(_gemini_hook())
-    settings_path.write_text(json.dumps(settings, indent=2), encoding="utf-8")
+    hooks["BeforeTool"].append(_gemini_hook())
+    _write_settings_with_backup(settings_path, settings)
     print("  .gemini/settings.json  ->  BeforeTool hook registered")
 def _uninstall_gemini_hook(project_dir: Path) -> None:
     settings_path = project_dir / ".gemini" / "settings.json"
@@ -719,12 +802,10 @@ def gemini_uninstall(project_dir: Path | None = None, *, project: bool = False) 
         print("No GEMINI.md found in current directory - nothing to do")
         return
     content = target.read_text(encoding="utf-8")
-    if _GEMINI_MD_MARKER not in content:
+    cleaned = _remove_marker_section(content, _GEMINI_MD_MARKER)
+    if cleaned is None:
         print("graphify section not found in GEMINI.md - nothing to do")
         return
-    cleaned = re.sub(
-        r"\n*## graphify\n.*?(?=\n## |\Z)", "", content, flags=re.DOTALL
-    ).rstrip()
     if cleaned:
         target.write_text(cleaned + "\n", encoding="utf-8")
         print(f"graphify section removed from {target.resolve()}")
@@ -811,11 +892,9 @@ def vscode_uninstall(project_dir: Path | None = None) -> None:
     if not instructions.exists():
         return
     content = instructions.read_text(encoding="utf-8")
-    if _VSCODE_INSTRUCTIONS_MARKER not in content:
+    cleaned = _remove_marker_section(content, _VSCODE_INSTRUCTIONS_MARKER)
+    if cleaned is None:
         return
-    cleaned = re.sub(
-        r"\n*## graphify\n.*?(?=\n## |\Z)", "", content, flags=re.DOTALL
-    ).rstrip()
     if cleaned:
         instructions.write_text(cleaned + "\n", encoding="utf-8")
         print(f"  graphify section removed from {instructions}")
@@ -1326,13 +1405,7 @@ def _install_codex_hook(project_dir: Path) -> None:
     hooks_path = project_dir / ".codex" / "hooks.json"
     hooks_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if hooks_path.exists():
-        try:
-            existing = json.loads(hooks_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            existing = {}
-    else:
-        existing = {}
+    existing = _read_settings_for_merge(hooks_path)
 
     graphify_exe = _resolve_graphify_exe()
     hook_entry = {
@@ -1346,11 +1419,22 @@ def _install_codex_hook(project_dir: Path) -> None:
         }
     }
 
-    pre_tool = existing.setdefault("hooks", {}).setdefault("PreToolUse", [])
-    existing["hooks"]["PreToolUse"] = [h for h in pre_tool if "graphify" not in str(h)]
-    existing["hooks"]["PreToolUse"].extend(hook_entry["hooks"]["PreToolUse"])
-    hooks_path.write_text(json.dumps(existing, indent=2), encoding="utf-8")
-    print(f"  .codex/hooks.json  ->  PreToolUse hook registered ({graphify_exe} hook-check)")
+    hooks = existing.setdefault("hooks", {})
+    if not isinstance(hooks, dict):
+        _refuse_to_modify(hooks_path)
+    pre_tool = hooks.setdefault("PreToolUse", [])
+    if not isinstance(pre_tool, list):
+        _refuse_to_modify(hooks_path)
+    hooks["PreToolUse"] = [h for h in pre_tool if "graphify" not in str(h)]
+    hooks["PreToolUse"].extend(hook_entry["hooks"]["PreToolUse"])
+    _write_settings_with_backup(hooks_path, existing)
+    print(
+        f"  .codex/hooks.json  ->  PreToolUse hook registered ({graphify_exe} hook-check"
+        " - intentional no-op; Codex Desktop rejects additionalContext on PreToolUse,"
+        " so graph guidance comes from AGENTS.md)"
+    )
+
+
 def _uninstall_codex_hook(project_dir: Path) -> None:
     """Remove graphify PreToolUse hook from .codex/hooks.json."""
     hooks_path = project_dir / ".codex" / "hooks.json"
@@ -1541,7 +1625,8 @@ def _agents_uninstall(project_dir: Path, platform: str = "") -> None:
         return
 
     content = target.read_text(encoding="utf-8")
-    if _AGENTS_MD_MARKER not in content:
+    cleaned = _remove_marker_section(content, _AGENTS_MD_MARKER)
+    if cleaned is None:
         print("graphify section not found in AGENTS.md - nothing to do")
         if platform == "opencode":
             _uninstall_opencode_plugin(project_dir or Path("."))
@@ -1549,12 +1634,6 @@ def _agents_uninstall(project_dir: Path, platform: str = "") -> None:
             _uninstall_kilo_plugin(project_dir or Path("."))
         return
 
-    cleaned = re.sub(
-        r"\n*## graphify\n.*?(?=\n## |\Z)",
-        "",
-        content,
-        flags=re.DOTALL,
-    ).rstrip()
     if cleaned:
         target.write_text(cleaned + "\n", encoding="utf-8")
         print(f"graphify section removed from {target.resolve()}")
@@ -1637,20 +1716,18 @@ def _install_claude_hook(project_dir: Path, strict: bool = False) -> None:
     settings_path = project_dir / ".claude" / "settings.json"
     settings_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if settings_path.exists():
-        try:
-            settings = json.loads(settings_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            settings = {}
-    else:
-        settings = {}
+    settings = _read_settings_for_merge(settings_path)
 
     hooks = settings.setdefault("hooks", {})
+    if not isinstance(hooks, dict):
+        _refuse_to_modify(settings_path)
     pre_tool = hooks.setdefault("PreToolUse", [])
+    if not isinstance(pre_tool, list):
+        _refuse_to_modify(settings_path)
 
-    hooks["PreToolUse"] = [h for h in pre_tool if not (h.get("matcher") in ("Glob|Grep", "Bash", "Bash|Grep", "Read|Glob") and "graphify" in str(h))]
+    hooks["PreToolUse"] = [h for h in pre_tool if not (isinstance(h, dict) and h.get("matcher") in ("Glob|Grep", "Bash", "Bash|Grep", "Read|Glob") and "graphify" in str(h))]
     hooks["PreToolUse"].extend(_claude_pretooluse_hooks(strict=strict))
-    settings_path.write_text(json.dumps(settings, indent=2), encoding="utf-8")
+    _write_settings_with_backup(settings_path, settings)
     _mode = " (strict)" if strict else ""
     print(f"  .claude/settings.json  ->  PreToolUse hooks registered (Bash|Grep search + Read/Glob){_mode}")
 def _uninstall_claude_hook(project_dir: Path) -> None:
@@ -1766,15 +1843,11 @@ def _strip_graphify_md_section(target: Path) -> bool:
         # An unreadable/undecodable CLAUDE.md-style file (e.g. non-UTF-8, or a
         # directory of that name) must not abort uninstall - nothing to strip.
         return False
-    if _CLAUDE_MD_MARKER not in content:
+    # Remove graphify's ## graphify section (heading matched exactly, never as a
+    # substring of a user's ### graphify) from the marker to the next H2 or EOF.
+    cleaned = _remove_marker_section(content, _CLAUDE_MD_MARKER)
+    if cleaned is None:
         return False
-    # Remove the ## graphify section: from the marker to the next ## heading or EOF
-    cleaned = re.sub(
-        r"\n*## graphify\n.*?(?=\n## |\Z)",
-        "",
-        content,
-        flags=re.DOTALL,
-    ).rstrip()
     if cleaned:
         target.write_text(cleaned + "\n", encoding="utf-8")
         print(f"graphify section removed from {target.resolve()}")
@@ -1812,20 +1885,18 @@ def _install_codebuddy_hook(project_dir: Path) -> None:
     settings_path = project_dir / ".codebuddy" / "settings.json"
     settings_path.parent.mkdir(parents=True, exist_ok=True)
 
-    if settings_path.exists():
-        try:
-            settings = json.loads(settings_path.read_text(encoding="utf-8"))
-        except json.JSONDecodeError:
-            settings = {}
-    else:
-        settings = {}
+    settings = _read_settings_for_merge(settings_path)
 
     hooks = settings.setdefault("hooks", {})
+    if not isinstance(hooks, dict):
+        _refuse_to_modify(settings_path)
     pre_tool = hooks.setdefault("PreToolUse", [])
+    if not isinstance(pre_tool, list):
+        _refuse_to_modify(settings_path)
 
-    hooks["PreToolUse"] = [h for h in pre_tool if not (h.get("matcher") in ("Glob|Grep", "Bash", "Bash|Grep", "Read|Glob") and "graphify" in str(h))]
+    hooks["PreToolUse"] = [h for h in pre_tool if not (isinstance(h, dict) and h.get("matcher") in ("Glob|Grep", "Bash", "Bash|Grep", "Read|Glob") and "graphify" in str(h))]
     hooks["PreToolUse"].extend(_claude_pretooluse_hooks())
-    settings_path.write_text(json.dumps(settings, indent=2), encoding="utf-8")
+    _write_settings_with_backup(settings_path, settings)
     print(f"  .codebuddy/settings.json  ->  PreToolUse hooks registered")
 def _uninstall_codebuddy_hook(project_dir: Path) -> None:
     """Remove graphify PreToolUse hook from .codebuddy/settings.json."""
@@ -1854,17 +1925,11 @@ def codebuddy_uninstall(project_dir: Path | None = None, *, project: bool = Fals
         return
 
     content = target.read_text(encoding="utf-8")
-    if _CODEBUDDY_MD_MARKER not in content:
+    cleaned = _remove_marker_section(content, _CODEBUDDY_MD_MARKER)
+    if cleaned is None:
         print("graphify section not found in CODEBUDDY.md - nothing to do")
         return
 
-    # Remove the ## graphify section: from the marker to the next ## heading or EOF
-    cleaned = re.sub(
-        r"\n*## graphify\n.*?(?=\n## |\Z)",
-        "",
-        content,
-        flags=re.DOTALL,
-    ).rstrip()
     if cleaned:
         target.write_text(cleaned + "\n", encoding="utf-8")
         print(f"graphify section removed from {target.resolve()}")

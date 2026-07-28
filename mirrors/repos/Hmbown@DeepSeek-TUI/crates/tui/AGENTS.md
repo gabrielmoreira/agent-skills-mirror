@@ -52,6 +52,7 @@ The default shell is the underwater system (`src/tui/underwater.rs`,
 cargo test -p codewhale-tui --bins --locked            # full unit suite
 cargo test -p codewhale-tui --test qa_pty --locked     # PTY snapshots
 cargo test -p codewhale-tui --test release_runtime_qa --locked
+cargo test -p codewhale-tui --test terminal_matrix_qa --locked  # #3758 matrix
 cargo clippy --workspace --all-targets --locked -- -D warnings
 ```
 

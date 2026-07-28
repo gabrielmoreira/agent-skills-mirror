@@ -4,7 +4,7 @@
 
 聚焦 AI 编程 Agent 的规格、计划、实现、测试、审查、发布与持续同步工作流。
 
-当前分类共 **45** 个技能。
+当前分类共 **47** 个技能。
 
 ## 推荐先看
 
@@ -31,6 +31,7 @@
 | `deprecation-and-migration` | 用于deprecation、migration，支持任务规划、执行、评审和验证。 | [目录](./deprecation-and-migration/) | [SKILL.md](./deprecation-and-migration/SKILL.md) |
 | `dispatching-parallel-agents` | 用于拆分任务并调度多个 Agent 并行协作。 | [目录](./dispatching-parallel-agents/) | [SKILL.md](./dispatching-parallel-agents/SKILL.md) |
 | `documentation-and-adrs` | 用于documentation、adrs，支持任务规划、执行、评审和验证。 | [目录](./documentation-and-adrs/) | [SKILL.md](./documentation-and-adrs/SKILL.md) |
+| `doubt-driven-development` | 用新上下文的对抗性审查质疑关键决策，适用于高风险或正确性优先的开发任务。 | [目录](./doubt-driven-development/) | [SKILL.md](./doubt-driven-development/SKILL.md) |
 | `executing-plans` | 用于按既定实现计划逐步执行任务，并在关键节点进行审查和完成验证。 | [目录](./executing-plans/) | [SKILL.md](./executing-plans/SKILL.md) |
 | `find-skills` | 用于搜索、比较并安装适合当前任务的技能，帮助 Agent 正确路由能力。 | [目录](./find-skills/) | [SKILL.md](./find-skills/SKILL.md) |
 | `finishing-a-development-branch` | 用于finishing、development、branch，支持任务规划、执行、评审和验证。 | [目录](./finishing-a-development-branch/) | [SKILL.md](./finishing-a-development-branch/SKILL.md) |
@@ -38,20 +39,21 @@
 | `git-workflow-and-versioning` | 用于Git、工作流、versioning，支持任务规划、执行、评审和验证。 | [目录](./git-workflow-and-versioning/) | [SKILL.md](./git-workflow-and-versioning/SKILL.md) |
 | `idea-refine` | 用于idea、refine，支持任务规划、执行、评审和验证。 | [目录](./idea-refine/) | [SKILL.md](./idea-refine/SKILL.md) |
 | `incremental-implementation` | 用于incremental、实现，支持任务规划、执行、评审和验证。 | [目录](./incremental-implementation/) | [SKILL.md](./incremental-implementation/SKILL.md) |
-| `nexus` | 用于nexus，支持任务规划、执行、评审和验证。 | [目录](./nexus/) | [SKILL.md](./nexus/SKILL.md) |
+| `interview-me` | 通过逐问访谈澄清真实需求、目标用户与成功标准，避免在含糊请求上过早实施。 | [目录](./interview-me/) | [SKILL.md](./interview-me/SKILL.md) |
+| `nexus` | 多智能体任务分解、链路编排、执行协调和结果整合。 | [目录](./nexus/) | [SKILL.md](./nexus/SKILL.md) |
 | `nlpm-audit` | 审计 SKILL.md、AGENTS.md、CLAUDE.md、插件清单、hooks、commands 和提示词，检查安装一致性、质量评分、安全风险与版本漂移。 | [目录](./nlpm-audit/) | [SKILL.md](./nlpm-audit/SKILL.md) |
+| `observability-and-instrumentation` | 为生产代码设计日志、指标、追踪和告警，使行为可观测、问题可诊断。 | [目录](./observability-and-instrumentation/) | [SKILL.md](./observability-and-instrumentation/SKILL.md) |
 | `performance-optimization` | 用于性能、优化，支持任务规划、执行、评审和验证。 | [目录](./performance-optimization/) | [SKILL.md](./performance-optimization/SKILL.md) |
 | `planning-and-task-breakdown` | 用于planning、任务、breakdown，支持任务规划、执行、评审和验证。 | [目录](./planning-and-task-breakdown/) | [SKILL.md](./planning-and-task-breakdown/SKILL.md) |
 | `prompt-optimizer` | 用于提示词、optimizer，支持任务规划、执行、评审和验证。 | [目录](./prompt-optimizer/) | [SKILL.md](./prompt-optimizer/SKILL.md) |
-| `rally` | 用于rally，支持任务规划、执行、评审和验证。 | [目录](./rally/) | [SKILL.md](./rally/SKILL.md) |
+| `rally` | 多会话并行执行编排，协调多个智能体共同完成任务。 | [目录](./rally/) | [SKILL.md](./rally/SKILL.md) |
 | `receiving-code-review` | 用于receiving、代码、评审，支持任务规划、执行、评审和验证。 | [目录](./receiving-code-review/) | [SKILL.md](./receiving-code-review/SKILL.md) |
 | `requesting-code-review` | 用于在完成任务、实现重要功能或合并前请求代码审查并验证需求满足情况。 | [目录](./requesting-code-review/) | [SKILL.md](./requesting-code-review/SKILL.md) |
 | `security-and-hardening` | 用于安全、加固，支持任务规划、执行、评审和验证。 | [目录](./security-and-hardening/) | [SKILL.md](./security-and-hardening/SKILL.md) |
-| `sherpa` | 用于sherpa，支持任务规划、执行、评审和验证。 | [目录](./sherpa/) | [SKILL.md](./sherpa/SKILL.md) |
+| `sherpa` | 把复杂任务拆成短步骤，控制漂移并推进交付。 | [目录](./sherpa/) | [SKILL.md](./sherpa/SKILL.md) |
 | `shipping-and-launch` | 用于shipping、launch，支持任务规划、执行、评审和验证。 | [目录](./shipping-and-launch/) | [SKILL.md](./shipping-and-launch/SKILL.md) |
 | `skill-creator` | 用于技能、创建，支持任务规划、执行、评审和验证。 | [目录](./skill-creator/) | [SKILL.md](./skill-creator/SKILL.md) |
 | `skill-reviewer` | 用于技能、评审，支持任务规划、执行、评审和验证。 | [目录](./skill-reviewer/) | [SKILL.md](./skill-reviewer/SKILL.md) |
-| `skills-search` | 用于技能、搜索，支持任务规划、执行、评审和验证。 | [目录](./skills-search/) | [SKILL.md](./skills-search/SKILL.md) |
 | `source-driven-development` | 用于来源、驱动、development，支持任务规划、执行、评审和验证。 | [目录](./source-driven-development/) | [SKILL.md](./source-driven-development/SKILL.md) |
 | `spec-driven-development` | 用于spec、驱动、development，支持任务规划、执行、评审和验证。 | [目录](./spec-driven-development/) | [SKILL.md](./spec-driven-development/SKILL.md) |
 | `subagent-driven-development` | 用于subagent、驱动、development，支持任务规划、执行、评审和验证。 | [目录](./subagent-driven-development/) | [SKILL.md](./subagent-driven-development/SKILL.md) |

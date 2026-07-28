@@ -2,14 +2,14 @@
 name: pdf
 description: 'Use this skill whenever the user wants to do anything with PDF files. This includes reading or extracting text/tables from PDFs, combining or merging multiple PDFs into one, splitting PDFs apart, rotating pages, adding watermarks, creating new PDFs, filling PDF forms, encrypting/decrypting PDFs, extracting images, and OCR on scanned PDFs to make them searchable. If the user mentions a .pdf file or asks to produce one, use this skill.'
 zh_description: "用于pdf，支持文档、表格、演示和资料整理。"
-version: "1.0.0"
+version: "1.1.0"
 author: "seaworld008"
 source: "in-house"
 source_url: ""
 license: Proprietary. LICENSE.txt has complete terms
 tags: '["pdf"]'
 created_at: "2026-03-04"
-updated_at: "2026-03-20"
+updated_at: "2026-07-27"
 quality: 5
 complexity: "intermediate"
 ---
@@ -315,6 +315,20 @@ with open("encrypted.pdf", "wb") as output:
 | Command line merge | qpdf | `qpdf --empty --pages ...` |
 | OCR scanned PDFs | pytesseract | Convert to image first |
 | Fill PDF forms | pdf-lib or pypdf (see FORMS.md) | See FORMS.md |
+
+## Deterministic Markdown-to-PDF Creation
+
+Use the bundled converter when Markdown is the source and Chinese typography,
+tables, fenced code, or reproducible A4 output matters:
+
+```bash
+python scripts/md_to_pdf.py report.md report.pdf
+python scripts/batch_convert.py --output-dir ./pdfs reports/*.md
+```
+
+The converter requires `weasyprint` and `markdown`. Render the resulting PDF to
+images and inspect every page before delivery; successful conversion alone does
+not prove that tables, page breaks, or fonts are correct.
 
 ## Next Steps
 

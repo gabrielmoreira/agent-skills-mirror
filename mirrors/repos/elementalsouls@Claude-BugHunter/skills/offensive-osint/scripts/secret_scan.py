@@ -142,12 +142,15 @@ def scan_path(path: str):
                 yield from scan_path(p)
         return
     try:
-        # Skip large binary files (>10MB)
+        # Skip large files (>10MB) — but say so: a silently-skipped bundle is a false "clean".
         if os.path.getsize(path) > 10 * 1024 * 1024:
+            print(f"[warning] skipped (>10MB, NOT scanned): {path}", file=sys.stderr)
             return
         with open(path, "r", errors="replace") as fh:
             yield from scan_text(fh.read(), source=path)
-    except (OSError, IOError):
+    except (OSError, IOError) as e:
+        # Missing/unreadable path must not be mistaken for "no secrets found".
+        print(f"[warning] could not read (skipped): {path} ({e})", file=sys.stderr)
         return
 
 

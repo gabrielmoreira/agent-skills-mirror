@@ -40,23 +40,25 @@ paths instead of `npx plugins add`.
 Add the CloudBase marketplace, then install the plugin:
 
 ```bash
-# Add the marketplace (do this once)
-codex plugin marketplace add TencentCloudBase/CloudBase-MCP --ref main --name cloudbase-plugins
+# Add the marketplace (do this once; sparse avoids full-repo clone)
+codex plugin marketplace add TencentCloudBase/CloudBase-MCP --ref main \
+  --sparse .agents/plugins \
+  --sparse plugin
 
 # Install plugins from the marketplace
-codex plugin add cloudbase@cloudbase-plugins
+codex plugin add cloudbase@tencent-cloudbase
 ```
 
 Verify the marketplace is active:
 
 ```bash
-codex plugin list --marketplace cloudbase-plugins
+codex plugin list --marketplace tencent-cloudbase
 ```
 
 To update the plugin when new skills are released, upgrade the marketplace:
 
 ```bash
-codex plugin marketplace upgrade cloudbase-plugins
+codex plugin marketplace upgrade tencent-cloudbase
 ```
 
 ### Claude Code
@@ -78,6 +80,20 @@ claude plugin install cloudbase@tencent-cloudbase
 ```
 
 Claude Code reads the marketplace from `.claude-plugin/marketplace.json`.
+
+### Cursor
+
+This repository includes Cursor Marketplace manifests
+(`.cursor-plugin/marketplace.json` and per-plugin `.cursor-plugin/plugin.json`).
+
+Until the official Cursor Marketplace listing is approved, prefer:
+
+```bash
+npx plugins add TencentCloudBase/cloudbase-plugin -y --scope user --target cursor
+```
+
+To submit / update the official listing, use
+https://cursor.com/marketplace/publish with this repository URL.
 
 ### OpenClaw
 

@@ -5,10 +5,10 @@
 [![简体中文](https://img.shields.io/badge/README-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-1677ff)](./README.md)
 [![English](https://img.shields.io/badge/README-English-111111)](./README.en.md)
 [![OpenClaw](https://img.shields.io/badge/OpenClaw-Compatible-00b894)](./openclaw-skills/README.md)
-[![Skills](https://img.shields.io/badge/Skills-313-7c3aed)](./skills/)
+[![Skills](https://img.shields.io/badge/Skills-288-7c3aed)](./skills/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 313 个技能**。
+面向全球 AI 开发者与 Agent 工作流构建者的高价值 Skills 仓库，覆盖开发工程、DevOps、产品设计、运营、办公自动化、金融投资、AI 平台与安全治理等高频任务场景。当前共 **16 个分类 / 288 个技能**。
 
 ## 为什么值得收藏
 
@@ -60,6 +60,15 @@ npx github:seaworld008/Commonly-used-high-value-skills install --all
 
 # 安装到自定义目录，适配其他 AI Agent 客户端
 npx github:seaworld008/Commonly-used-high-value-skills install --target custom --dir ./vendor/agent-skills
+
+# 只安装指定分类，减少默认上下文和维护面
+npx github:seaworld008/Commonly-used-high-value-skills install --target codex --category developer-engineering,security-and-reliability
+
+# 只安装明确需要的技能；可与 --category 组合取交集
+npx github:seaworld008/Commonly-used-high-value-skills install --target codex --skill docx,xlsx,pdf,pptx
+
+# 浏览可选技能和分类
+npx github:seaworld008/Commonly-used-high-value-skills list-skills
 ```
 
 可用目标：
@@ -372,10 +381,10 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 2. 打开对应技能的 `SKILL.md` 查看触发条件、操作流程和脚本说明。
 3. 若技能下含 `scripts/`、`references/`、`assets/`，优先复用现成内容。
 
-## 技能总览（按分类，16 类 / 313 技能）
+## 技能总览（按分类，16 类 / 288 技能）
 
 <a id="cat-developer-engineering"></a>
-### 1. 开发工程（developer-engineering，51）
+### 1. 开发工程（developer-engineering，46）
 
 - `agent-designer`：用于Agent、设计，支持开发、调试、评审和交付。
 - `api-design-reviewer`：用于评审 API 设计的一致性、可用性、版本策略、错误语义、安全性和开发者体验。
@@ -383,30 +392,26 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `aws-solution-architect`：用于 AWS 云架构设计、服务选型、成本优化与 Well-Architected Framework 评估。
 - `builder`：用于构建，支持开发、调试、评审和交付。
 - `cli-demo-generator`：用于CLI、演示、生成，支持开发、调试、评审和交付。
-- `code-review-excellence`：用于代码、评审、excellence，支持开发、调试、评审和交付。
 - `codebase-inspection`：用于用 pygount 检查代码行数、语言构成、仓库规模和代码/注释比例。
 - `codebase-onboarding`：用于代码库、onboarding，支持开发、调试、评审和交付。
 - `database-designer`：用于数据库、设计，支持开发、调试、评审和交付。
 - `database-schema-designer`：用于数据库、Schema、设计，支持开发、调试、评审和交付。
-- `debugging-strategies`：用于调试、策略，支持开发、调试、评审和交付。
 - `dependency-auditor`：用于dependency、审计，支持开发、调试、评审和交付。
 - `docker-expert`：用于 Docker 容器化最佳实践、多阶段构建优化与 Docker Compose 编排。
 - `frontend-design`：用于创建高质量、非模板化的前端页面、组件、仪表盘、海报和 Web UI。
-- `gateway`：用于gateway，支持开发、调试、评审和交付。
+- `gateway`：接口设计、规范生成、版本策略和破坏性变更检查。
 - `git-worktree-manager`：用于Git、worktree、管理，支持开发、调试、评审和交付。
 - `github-contributor`：用于GitHub、贡献，支持开发、调试、评审和交付。
-- `graphify`：用于Graphify，支持开发、调试、评审和交付。
+- `graphify`：将代码、文档和多媒体资料映射为持久知识图谱，支持社区发现、路径查询、解释和影响分析。
 - `graphql-expert`：用于 GraphQL API 设计、Schema/Resolver 评审、查询优化和安全最佳实践。
 - `i18n-expert`：用于i18n、expert，支持开发、调试、评审和交付。
 - `kubernetes-specialist`：用于 Kubernetes 集群管理、Pod 调试、Helm Chart 设计、清单评审和部署优化。
 - `mcp-builder`：用于MCP、构建，支持开发、调试、评审和交付。
-- `mcp-server-builder`：用于MCP、服务器、构建，支持开发、调试、评审和交付。
 - `migration-architect`：用于migration、架构，支持开发、调试、评审和交付。
 - `monorepo-navigator`：用于Monorepo、导航，支持开发、调试、评审和交付。
 - `neon-postgres`：用于 Neon Postgres 数据库连接、分支、迁移和运行维护。
 - `neon-postgres-egress-optimizer`：诊断并降低 Neon / Postgres 数据出口流量与相关成本。
 - `nextjs-app-router`：用于 Next.js App Router 项目开发、路由设计和服务端渲染实践。
-- `parallel-debugging`：用于并行、调试，支持开发、调试、评审和交付。
 - `performance-profiler`：用于性能、性能分析，支持开发、调试、评审和交付。
 - `pr-review-expert`：用于PR、评审、expert，支持开发、调试、评审和交付。
 - `promptfoo-evaluation`：用于promptfoo、评估，支持开发、调试、评审和交付。
@@ -417,7 +422,6 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `schema`：用于Schema，支持开发、调试、评审和交付。
 - `skill-tester`：用于技能、tester，支持开发、调试、评审和交付。
 - `supabase`：用于Supabase，支持开发、调试、评审和交付。
-- `supabase-postgres`：用于 Supabase 平台开发与 PostgreSQL 最佳实践，包含 RLS、Edge Functions 和实。
 - `supabase-postgres-best-practices`：用于编写、评审和优化 Supabase/Postgres 查询、Schema、索引和数据库配置。
 - `systematic-debugging`：用于systematic、调试，支持开发、调试、评审和交付。
 - `tailwind-design-system`：用于 Tailwind CSS 设计系统、主题 token、组件样式和响应式布局规范。
@@ -430,7 +434,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `webapp-testing`：用于使用 Playwright 测试本地 Web 应用、验证前端行为、截图和查看浏览器日志。
 
 <a id="cat-ai-workflow"></a>
-### 2. AI 工作流（ai-workflow，45）
+### 2. AI 工作流（ai-workflow，47）
 
 - `agent-workflow-designer`：用于Agent、工作流、设计，支持任务规划、执行、评审和验证。
 - `andrej-karpathy-skills`：用于应用 Andrej Karpathy 风格的 AI 学习、构建和研究实践。
@@ -446,6 +450,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `deprecation-and-migration`：用于deprecation、migration，支持任务规划、执行、评审和验证。
 - `dispatching-parallel-agents`：用于拆分任务并调度多个 Agent 并行协作。
 - `documentation-and-adrs`：用于documentation、adrs，支持任务规划、执行、评审和验证。
+- `doubt-driven-development`：用新上下文的对抗性审查质疑关键决策，适用于高风险或正确性优先的开发任务。
 - `executing-plans`：用于按既定实现计划逐步执行任务，并在关键节点进行审查和完成验证。
 - `find-skills`：用于搜索、比较并安装适合当前任务的技能，帮助 Agent 正确路由能力。
 - `finishing-a-development-branch`：用于finishing、development、branch，支持任务规划、执行、评审和验证。
@@ -453,8 +458,10 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `git-workflow-and-versioning`：用于Git、工作流、versioning，支持任务规划、执行、评审和验证。
 - `idea-refine`：用于idea、refine，支持任务规划、执行、评审和验证。
 - `incremental-implementation`：用于incremental、实现，支持任务规划、执行、评审和验证。
+- `interview-me`：通过逐问访谈澄清真实需求、目标用户与成功标准，避免在含糊请求上过早实施。
 - `nexus`：用于nexus，支持任务规划、执行、评审和验证。
 - `nlpm-audit`：审计 SKILL.md、AGENTS.md、CLAUDE.md、插件清单、hooks、commands 和提示词，检查安装一致性、质量评分、安全风险与版本漂移。
+- `observability-and-instrumentation`：为生产代码设计日志、指标、追踪和告警，使行为可观测、问题可诊断。
 - `performance-optimization`：用于性能、优化，支持任务规划、执行、评审和验证。
 - `planning-and-task-breakdown`：用于planning、任务、breakdown，支持任务规划、执行、评审和验证。
 - `prompt-optimizer`：用于提示词、optimizer，支持任务规划、执行、评审和验证。
@@ -466,7 +473,6 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `shipping-and-launch`：用于shipping、launch，支持任务规划、执行、评审和验证。
 - `skill-creator`：用于技能、创建，支持任务规划、执行、评审和验证。
 - `skill-reviewer`：用于技能、评审，支持任务规划、执行、评审和验证。
-- `skills-search`：用于技能、搜索，支持任务规划、执行、评审和验证。
 - `source-driven-development`：用于来源、驱动、development，支持任务规划、执行、评审和验证。
 - `spec-driven-development`：用于spec、驱动、development，支持任务规划、执行、评审和验证。
 - `subagent-driven-development`：用于subagent、驱动、development，支持任务规划、执行、评审和验证。
@@ -479,7 +485,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `writing-skills`：用于writing、技能，支持任务规划、执行、评审和验证。
 
 <a id="cat-ai-agent-platform"></a>
-### 3. AI 平台与 Agent 开发（ai-agent-platform，16）
+### 3. AI 平台与 Agent 开发（ai-agent-platform，15）
 
 - `agent-hub`：用于管理 Agent 能力中心、技能发现、路由和协作工作流。
 - `arena`：用于构建和运行 Agent 竞技场、评测对战和能力比较流程。
@@ -494,16 +500,14 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `native-mcp`：用于构建和调试原生 MCP 集成、服务器和工具调用流程。
 - `openai-docs`：用于查阅和应用 OpenAI 官方文档、API 行为和集成指南。
 - `oracle`：用于oracle，支持 Agent 平台编排、集成和运行管理。
-- `proactive-agent`：用于让 Agent 主动规划、跟踪进展、暴露风险并提出下一步行动。
 - `self-improving-agent`：用于构建具备记忆、反馈吸收和安全自我优化机制的持续改进型 Agent。
 - `sigil`：用于sigil，支持 Agent 平台编排、集成和运行管理。
 
 <a id="cat-workflow-automation"></a>
-### 4. 工程工作流自动化（engineering-workflow-automation，16）
+### 4. 工程工作流自动化（engineering-workflow-automation，15）
 
 - `agent-browser`：用于让 Agent 操作真实浏览器，完成页面交互、截图录屏、脚本执行和端到端验证。
 - `billing-automation`：用于构建订阅计费、自动开票、续费生命周期和催收管理流程。
-- `changelog-automation`：用于基于提交、PR 和发布记录自动生成 Keep a Changelog 风格的变更日志。
 - `gh-address-comments`：用于通过 gh CLI 处理当前分支的 GitHub PR Review 评论或 Issue 评论。
 - `gh-fix-ci`：用于gh、修复、CI，支持工程协作、自动化验证和交付闭环。
 - `github`：用于通过 GitHub CLI 自动化 Issue、PR、Review、CI 检查、标签和发布协作。
@@ -519,16 +523,14 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `yeet`：用于yeet，支持工程协作、自动化验证和交付闭环。
 
 <a id="cat-devops-sre"></a>
-### 5. DevOps / SRE（devops-sre，15）
+### 5. DevOps / SRE（devops-sre，13）
 
 - `azure-kubernetes`：用于 Azure Kubernetes 集群管理、部署、排障和运维。
-- `beacon`：用于beacon，支持部署、监控、排障和发布管理。
+- `beacon`：可观测性、服务目标、告警、容量和可靠性设计。
 - `cc-devops-skills`：用于cc、DevOps、技能，支持部署、监控、排障和发布管理。
-- `changelog-generator`：用于changelog、生成，支持部署、监控、排障和发布管理。
-- `ci-cd-pipeline-builder`：用于CI、CD、流水线、构建，支持部署、监控、排障和发布管理。
 - `cloudflare-troubleshooting`：用于Cloudflare、排障，支持部署、监控、排障和发布管理。
 - `env-secrets-manager`：用于env、secrets、管理，支持部署、监控、排障和发布管理。
-- `gear`：用于gear，支持部署、监控、排障和发布管理。
+- `gear`：依赖、构建、容器、监控和开发环境运维优化。
 - `github-ops`：用于 GitHub 运维、仓库管理、PR/Issue 流程和自动化协作。
 - `incident-commander`：用于事故响应中的分诊、角色分配、沟通协调、缓解跟踪和复盘。
 - `observability-designer`：用于可观测性、设计，支持部署、监控、排障和发布管理。
@@ -558,47 +560,37 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `stock-screener-builder`：用于stock、screener、构建，支持投资研究、风险评估和报告生成。
 
 <a id="cat-growth-operations"></a>
-### 7. 增长运营（growth-operations-xiaohongshu，17）
+### 7. 增长运营（growth-operations-xiaohongshu，15）
 
 - `algorithmic-art`：用于algorithmic、art，支持内容、营销、渠道和数据分析。
 - `app-store-optimization`：用于应用、store、优化，支持内容、营销、渠道和数据分析。
 - `campaign-analytics`：用于活动、分析，支持内容、营销、渠道和数据分析。
-- `compete`：用于compete，支持内容、营销、渠道和数据分析。
+- `compete`：竞品研究、差异化定位、矩阵对比和竞争战卡。
 - `competitors-analysis`：Analyze competitor repositories with evidence-based approa。
 - `content-creator`：用于内容、创建，支持内容、营销、渠道和数据分析。
-- `growth`：用于增长，支持内容、营销、渠道和数据分析。
+- `growth`：搜索、社交、转化和人工智能引用优化的一体化增长。
 - `linkedin-growth`：构建领英线索导入、筛选、分配、邀请与待处理请求维护流水线。
 - `marketing-demand-acquisition`：用于营销、需求、acquisition，支持内容、营销、渠道和数据分析。
 - `marketing-strategy-pmm`：用于营销、策略、PMM，支持内容、营销、渠道和数据分析。
-- `prompt-engineer-toolkit`：用于提示词、工程、工具包，支持内容、营销、渠道和数据分析。
-- `pulse`：用于pulse，支持内容、营销、渠道和数据分析。
-- `seo-audit`：用于执行网站 SEO 审计、页面优化、技术检查和搜索增长建议。
+- `pulse`：关键指标、埋点、漏斗、留存和仪表盘规格设计。
 - `social-media-analyzer`：用于社交、媒体、分析，支持内容、营销、渠道和数据分析。
 - `tweetclaw-source-research`：用于tweetclaw、来源、研究，支持内容、营销、渠道和数据分析。
 - `twitter-reader`：用于通过 URL 抓取 Twitter/X 帖子内容、作者、时间、图片和线程回复。
 - `x-twitter-scraper`：用于抓取和分析 X/Twitter 公开内容、线程和增长信号。
 
 <a id="cat-office-white-collar"></a>
-### 8. 办公与文档（office-white-collar，20）
+### 8. 办公与文档（office-white-collar，12）
 
-- `capture-screen`：用于捕获、screen，支持文档、表格、演示和资料整理。
-- `doc`：用于读取、创建和编辑 `.docx` 文档，尤其适合需要格式和版面保真时。
-- `doc-coauthoring`：用于文档、coauthoring，支持文档、表格、演示和资料整理。
 - `docx`：用于创建、编辑和检查 Word `.docx` 文档。
-- `excel-automation`：用于自动化 Excel 工作簿、公式、图表和数据处理。
-- `gog`：用于跨 Gmail、Calendar、Drive、Docs 等 Google Workspace 工具执行办公自动化流程。
 - `guizang-ppt-skill`：生成横向翻页网页 PPT（单 HTML 文件），含 WebGL 背景、章节幕封、数据大字报、图片网格等模板。
 - `markdown-tools`：用于Markdown、tools，支持文档、表格、演示和资料整理。
 - `meeting-minutes-taker`：用于会议、纪要、taker，支持文档、表格、演示和资料整理。
 - `mermaid-tools`：用于mermaid、tools，支持文档、表格、演示和资料整理。
 - `morph`：用于morph，支持文档、表格、演示和资料整理。
 - `pdf`：用于pdf，支持文档、表格、演示和资料整理。
-- `pdf-creator`：用于将 Markdown 转为支持中文字体和正式排版的 PDF 文档。
-- `ppt-creator`：用于PPT、创建，支持文档、表格、演示和资料整理。
 - `pptx`：用于创建、编辑和美化 PowerPoint 演示文稿。
 - `prism`：用于prism，支持文档、表格、演示和资料整理。
-- `spreadsheet`：用于处理电子表格数据、公式、清洗和分析。
-- `stage`：用于stage，支持文档、表格、演示和资料整理。
+- `stage`：演示文稿生成、叙事节奏设计和会议演讲优化。
 - `transcript-fixer`：用于转录稿、fixer，支持文档、表格、演示和资料整理。
 - `xlsx`：用于XLSX，支持文档、表格、演示和资料整理。
 
@@ -606,7 +598,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 ### 9. 项目管理与知识库集成（knowledge-and-pm-integrations，36）
 
 - `arxiv`：用于按关键词、作者、分类或编号检索 arXiv 论文。
-- `grove`：用于grove，支持知识管理、项目同步和平台集成。
+- `grove`：仓库结构、文档布局、测试脚本组织和迁移规划。
 - `lark-approval`：用于查询、处理和发起飞书原生审批，区分审批待办与普通飞书任务。
 - `lark-attendance`：用于查询飞书考勤记录、核对打卡缺失、整理异常考勤并生成可追溯说明。
 - `lark-base`：用于操作飞书 Base 数据表、记录、字段和自动化数据流程。
@@ -634,7 +626,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `lark-workflow-standup-report`：日程待办摘要：编排 calendar +agenda 和 task +get-my-tasks，生成指定日期的日程与。
 - `linear`：用于管理 Linear issue、项目、状态流转和工程协作。
 - `llm-wiki`：用于构建、查询和维护 Karpathy 风格的互联 Markdown LLM 知识库。
-- `lore`：用于lore，支持知识管理、项目同步和平台集成。
+- `lore`：跨智能体知识沉淀、模式提炼和最佳实践传播。
 - `notion-knowledge-capture`：用于把对话、决策和笔记沉淀到 Notion。
 - `notion-meeting-intelligence`：用于基于 Notion 上下文准备会议材料。
 - `notion-research-documentation`：用于整合 Notion 信息并生成研究文档。
@@ -643,47 +635,41 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `tome`：用于tome，支持知识管理、项目同步和平台集成。
 
 <a id="cat-operations-general"></a>
-### 10. 通用运营（operations-general，15）
+### 10. 通用运营（operations-general，10）
 
 - `brand-guidelines`：用于在文档、页面或视觉产物中应用 Anthropic 风格的品牌色、字体和视觉规范。
-- `confidence-check`：用于结构化自检答案、验证假设、识别不确定性并降低幻觉风险。
 - `crest`：用于crest，支持信息整理、沟通和执行管理。
 - `dawn`：用于dawn，支持信息整理、沟通和执行管理。
 - `docs-cleaner`：用于合并冗余文档、减少文档膨胀，并在保留有效内容的前提下整理知识库。
 - `fact-checker`：用于事实、checker，支持信息整理、沟通和执行管理。
 - `hearth`：用于hearth，支持信息整理、沟通和执行管理。
-- `internal-comms`：用于撰写状态报告、领导层更新、FAQ、事故通报和项目进展等内部沟通材料。
 - `interview-system-designer`：用于interview、系统、设计，支持信息整理、沟通和执行管理。
 - `linkedin`：通过 Linked API 搜索领英资料、管理连接、消息与内容发布。
 - `slack-gif-creator`：用于Slack、gif、创建，支持信息整理、沟通和执行管理。
-- `supermemory`：用于长期记忆管理、偏好捕获、矛盾检测和项目状态跟踪。
-- `teams-channel-post-writer`：用于teams、channel、post、writer，支持信息整理、沟通和执行管理。
 - `theme-factory`：用于为幻灯片、文档、报告和网页应用预设主题或生成新的颜色字体系统。
-- `weather`：用于免 API Key 查询当前天气、预报、恶劣天气和旅行天气信息。
 
 <a id="cat-product-design"></a>
-### 11. 产品与设计（product-design，14）
+### 11. 产品与设计（product-design，13）
 
 - `agile-product-owner`：用于agile、产品、负责人，支持产品研究、策略、界面和交付协作。
 - `canvas-design`：用于画布、设计，支持产品研究、策略、界面和交付协作。
 - `competitive-teardown`：用于竞品、teardown，支持产品研究、策略、界面和交付协作。
 - `landing-page-generator`：用于落地页、page、生成，支持产品研究、策略、界面和交付协作。
-- `product-analysis`：Multi-path parallel product analysis with cross-model test。
 - `product-manager-toolkit`：用于产品、管理、工具包，支持产品研究、策略、界面和交付协作。
 - `product-strategist`：用于产品、strategist，支持产品研究、策略、界面和交付协作。
 - `researcher`：用于研究，支持产品研究、策略、界面和交付协作。
-- `saas-scaffolder`：用于saas、scaffolder，支持产品研究、策略、界面和交付协作。
-- `trace`：用于trace，支持产品研究、策略、界面和交付协作。
+- `saas-scaffolder`：用于依据已验证产品需求搭建可演进的 SaaS 垂直切片，并覆盖鉴权、租户、计费、监控和验收。
+- `trace`：会话回放分析、行为模式提取和体验问题叙事。
 - `ui-design-system`：用于UI、设计、系统，支持产品研究、策略、界面和交付协作。
 - `ui-ux-pro-max`：用于UI、UX、pro、max，支持产品研究、策略、界面和交付协作。
 - `ux-researcher-designer`：用于UX、研究、设计，支持产品研究、策略、界面和交付协作。
-- `voice`：用于voice，支持产品研究、策略、界面和交付协作。
+- `voice`：用户反馈收集、满意度调研、评论分析和洞察提炼。
 
 <a id="cat-security-reliability"></a>
 ### 12. 安全治理与稳定性（security-and-reliability，23）
 
 - `breach`：用于breach，支持安全扫描、审计、加固和风险治理。
-- `cloak`：用于cloak，支持安全扫描、审计、加固和风险治理。
+- `cloak`：隐私工程、敏感信息流、同意管理和数据治理。
 - `codeql-security-scanner`：用于通过 CodeQL 执行语义代码扫描、安全查询、自定义规则、SARIF 报告和 GitHub Code Scan。
 - `comply`：用于comply，支持安全扫描、审计、加固和风险治理。
 - `firebase-security-rules-auditor`：审计 Firestore 与 Cloud Storage 安全规则，检查授权、字段校验、权限提升、资源滥用和模拟器测试覆盖。
@@ -707,7 +693,7 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `vuls-linux-cve-scanner`：用于通过 Vuls 对 Linux、FreeBSD、容器、WordPress、库和网络设备执行 Agentless。
 
 <a id="cat-multimodal-media"></a>
-### 13. 多模态内容（multimodal-media，10）
+### 13. 多模态内容（multimodal-media，9）
 
 - `clay`：用于clay，支持内容生成、编辑、分析和交付。
 - `gpt-image2`：让 Codex 通过本地配置的 gpt-image-2 兼容画图服务生成图片，支持提示词、参考图、比例、清晰度和本地保存。
@@ -716,7 +702,6 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 - `sketch`：用于sketch，支持内容生成、编辑、分析和交付。
 - `sora`：用于构思、生成和评审 Sora 视频或视频提示词。
 - `speech`：用于语音，支持内容生成、编辑、分析和交付。
-- `summarize`：用于忠实摘要网页、文档、邮件、转录稿或长文本，并提炼重点和后续行动。
 - `tone`：用于tone，支持内容生成、编辑、分析和交付。
 - `transcribe`：用于将音频或视频中的语音转写为文本，并可结合说话人分离和已知说话人提示。
 
@@ -734,22 +719,21 @@ openclaw-skills/                        # 为 OpenClaw 生成的扁平兼容导�
 <a id="cat-memory-safety"></a>
 ### 15. 记忆与安全（openclaw-memory-and-safety，7）
 
-- `cast`：用于cast，支持记忆管理、安全防护和运行治理。
+- `cast`：用户画像生成、角色注册、生命周期和跨智能体同步。
 - `honcho`：用于管理 Agent 记忆、运行状态、协作上下文和安全边界。
 - `input-guard`：用于输入安全检查、提示注入防护和高风险请求拦截。
 - `omen`：用于omen，支持记忆管理、安全防护和运行治理。
-- `rag-architect`：用于设计 RAG 架构、检索策略、索引和评估流程。
-- `runbook-generator`：用于runbook、生成，支持记忆管理、安全防护和运行治理。
+- `rag-architect`：用于以评测为先设计和诊断生产级 RAG，包括权限、混合检索、重排、引用和监控。
+- `runbook-generator`：用于基于仓库和平台证据编写安全、可演练、可验证的生产运维 Runbook。
 - `warden`：用于warden，支持记忆管理、安全防护和运行治理。
 
 <a id="cat-task-understanding"></a>
-### 16. 任务理解与拆解（task-understanding-decomposition，5）
+### 16. 任务理解与拆解（task-understanding-decomposition，4）
 
-- `lens`：用于lens，支持检索、拆解、反思和决策。
+- `lens`：代码库理解、功能发现、数据流追踪和上下文调查。
 - `reflect-learn`：用于reflect、learn，支持检索、拆解、反思和决策。
 - `ripple`：用于ripple，支持检索、拆解、反思和决策。
 - `scout`：用于scout，支持检索、拆解、反思和决策。
-- `tavily-search`：用于实时联网检索最新事实、来源证据、新闻市场信息和 Tavily 检索结果。
 
 ## 下一轮建议补充方向
 

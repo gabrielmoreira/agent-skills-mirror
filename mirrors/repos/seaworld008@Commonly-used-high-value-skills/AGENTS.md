@@ -103,6 +103,7 @@ Step 4: PIPELINE — Run full refresh and validation
   ├── python scripts/build_catalog_json.py
   ├── python scripts/check_readme_sync.py
   ├── python scripts/lint_skill_quality.py --min-lines 50
+  ├── python scripts/audit_skill_portfolio.py --check-policy
   ├── python scripts/audit_licenses.py
   ├── python -m unittest discover tests -v
   └── git diff --exit-code  (verify generated files are committed)
@@ -242,6 +243,7 @@ complexity: intermediate            # beginner | intermediate | advanced
 | `generate_repo_banner.py` | Regenerate .github/assets/repo-banner.svg from docs/catalog.json | Usually via build_catalog_json.py |
 | `check_readme_sync.py` | Verify Chinese and English READMEs match the skill tree | After README or skill list changes |
 | `lint_skill_quality.py` | Quality gate check | Before commit |
+| `audit_skill_portfolio.py --check-policy` | Prevent retired/redundant skills from being reintroduced | Before commit |
 | `audit_licenses.py` | License gate for external skills | Before commit |
 | `generate_changelog.py` | Auto-generate CHANGELOG.md | Before release |
 
@@ -255,11 +257,12 @@ python scripts/generate_tags_index.py && \
 python scripts/build_catalog_json.py && \
 python scripts/check_readme_sync.py && \
 python scripts/lint_skill_quality.py --min-lines 50 && \
+python scripts/audit_skill_portfolio.py --check-policy && \
 python scripts/audit_licenses.py && \
 python -m unittest discover tests -v
 ```
 
 Windows (PowerShell):
 ```powershell
-python scripts/enrich_frontmatter.py; python scripts/bootstrap_in_house_sources.py --write-json docs/sources/in-house.skills.json; python scripts/refresh_repo_views.py; python scripts/generate_tags_index.py; python scripts/build_catalog_json.py; python scripts/check_readme_sync.py; python scripts/lint_skill_quality.py --min-lines 50; python scripts/audit_licenses.py; python -m unittest discover tests -v
+python scripts/enrich_frontmatter.py; python scripts/bootstrap_in_house_sources.py --write-json docs/sources/in-house.skills.json; python scripts/refresh_repo_views.py; python scripts/generate_tags_index.py; python scripts/build_catalog_json.py; python scripts/check_readme_sync.py; python scripts/lint_skill_quality.py --min-lines 50; python scripts/audit_skill_portfolio.py --check-policy; python scripts/audit_licenses.py; python -m unittest discover tests -v
 ```

@@ -1,9 +1,22 @@
 ---
 name: prism-3way
 description: "Three orthogonal analytical operations (WHERE/WHEN/WHY) + cross-operation synthesis. Each operation attacks the problem from a fundamentally different angle. The disagreements between the three ARE the valuable output. Works on any domain — code, business, strategy, design, text."
+version: 1.0.0
+author: Cranot
+license: MIT
+platforms: [linux, macos, windows]
+metadata:
+  hermes:
+    tags: [Prism, Analysis, Architecture, Research, Planning, Quality]
+    related_skills: [prism-scan, prism-full, prism-discover, prism-reflect]
+    homepage: https://github.com/Cranot/super-hermes
 ---
 
 # Prism 3-Way — WHERE / WHEN / WHY + Synthesis
+
+## When to Use
+
+Use when one angle is not enough and the artifact is not necessarily code — a business plan, a strategy doc, a research note, an architecture as well as a source file. Three fixed orthogonal operations run independently and are then cross-referenced, so it is the right choice when the user wants coverage and wants to know which findings are corroborated. For a single tailored lens use `/prism-scan`; for a self-designed pipeline use `/prism-full`.
 
 You perform FOUR operations on the artifact. Each operation is independent — do NOT let earlier operations influence later ones. The synthesis at the end cross-references all three.
 

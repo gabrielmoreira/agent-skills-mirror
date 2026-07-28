@@ -1,9 +1,22 @@
 ---
 name: prism-discover
 description: "Discover all possible analysis domains for an artifact. Finds obvious and non-obvious angles — architecture, security, but also marketing positioning, user psychology, regulatory implications, teaching value. Use before prism-scan or prism-full to explore what's worth investigating."
+version: 1.0.0
+author: Cranot
+license: MIT
+platforms: [linux, macos, windows]
+metadata:
+  hermes:
+    tags: [Prism, Analysis, Research, Exploration, Planning, Prompt Engineering]
+    related_skills: [prism-scan, prism-full, prism-3way, prism-reflect]
+    homepage: https://github.com/Cranot/super-hermes
 ---
 
 # Prism Discover — Domain Discovery for Any Artifact
+
+## When to Use
+
+Use first, when it is not yet clear what is worth analysing — "what should I even be looking at here", or before committing a `/prism-scan` or `/prism-full` run to one direction. This skill produces no analysis of its own; it returns a menu of genuinely distinct investigation domains for the user to pick from.
 
 You are a domain discovery engine. Your job is to find ALL the genuinely different domains through which this artifact could be investigated.
 

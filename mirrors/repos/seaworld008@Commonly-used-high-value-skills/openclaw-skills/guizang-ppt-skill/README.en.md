@@ -8,6 +8,8 @@
 ![Codex](https://img.shields.io/badge/Codex-Supported-222222?style=flat-square)
 [![Supported by ZhenFund Token Grant](https://img.shields.io/static/v1?label=ZhenFund%20Token%20Grant&message=Supported&color=FF4D00&style=flat-square)](https://zhenfund.feishu.cn/share/base/form/shrcn1lAANF659o7EpWnxlR1VOh?sessionid=)
 ![360 Security Lobster Gold Sponsor](https://img.shields.io/static/v1?label=360%20Security%20Lobster&message=Gold%20Sponsor&color=1677FF&style=flat-square)
+![Kimi work Gold Sponsor](https://img.shields.io/static/v1?label=Kimi%20work&message=Gold%20Sponsor&color=111111&style=flat-square)
+![Cola Skill Gold Sponsor](https://img.shields.io/static/v1?label=Cola%20Skill&message=Gold%20Sponsor&color=E4353F&style=flat-square)
 
 An agent skill for Claude Code, Codex, and similar coding-agent environments. It generates **single-file HTML horizontal-swipe decks**, deck visuals, and social cover pages.
 
@@ -62,10 +64,20 @@ Redesign this product screenshot as a 16:10 slide visual.
 ## Sponsors and Supporters
 
 <a href="./SPONSORS.md">
-  <img src="https://github.com/user-attachments/assets/5b0c22c8-aff4-4219-900d-6af8604c57a8" alt="360 Security Lobster Gold Sponsor" width="100%">
+  <img src="https://github.com/user-attachments/assets/81138fad-31b9-49ab-8e38-23b2bc48edc4" alt="360 Security Lobster / Kimi work / Cola Skill Gold Sponsors" width="100%">
 </a>
 
-Guizang PPT Skill is supported by **360 Security Lobster** as Gold Sponsor and by [ZhenFund Token Grant](https://zhenfund.feishu.cn/share/base/form/shrcn1lAANF659o7EpWnxlR1VOh?sessionid=). See [SPONSORS.md](./SPONSORS.md) for details.
+Guizang PPT Skill is supported by **360 Security Lobster**, **Kimi work**, and **Cola Skill** as Gold Sponsors and by [ZhenFund Token Grant](https://zhenfund.feishu.cn/share/base/form/shrcn1lAANF659o7EpWnxlR1VOh?sessionid=). See [SPONSORS.md](./SPONSORS.md) for details.
+
+### Use Guizang PPT Skill elsewhere
+
+Beyond Claude Code / Codex, you can also use Guizang PPT Skill on these platforms:
+
+| Channel | Link |
+|---------|------|
+| 360 Security Lobster | [claw.360.cn](https://claw.360.cn/claw?vm_id=p19c1be5d7bed40bcb857ec4a9c785b69&target_url=https%3A%2F%2Fp19c1be5d7bed40bcb857ec4a9c785b69.claw.360.cn%2Fagents) |
+| Cola Skill | [colaskill.com/guizang-ppt-skill](https://colaskill.com/guizang-ppt-skill/) |
+| Kimi work | [kimi.com](https://www.kimi.com/zh-cn/products/kimi-work) (after installing, search "guizang ppt skill" in the Skill store) |
 
 ## What you get
 

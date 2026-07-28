@@ -99,6 +99,11 @@ Background and before/after examples of why this pattern exists:
   and bound snapshot envelopes before delivery. Use a
   structured-clone-compatible byte measurement; JSON sizing is not
   wire-compatible with values such as `bigint`.
+- When a remote machine uses an object key, canonicalize it through the same
+  interner used by main-process producers only after subscription authorization
+  succeeds, then pass that canonical key to `ActorHost`. Its actor map is
+  identity-keyed, but interning inside an untrusted wire decoder lets rejected
+  entity IDs grow a process-lifetime cache.
 - Remote authorization hooks use `DyadErrorKind.Auth` for expected access
   denial. Convert only that explicit classification to an unauthorized receipt;
   propagate unexpected hook failures so telemetry can distinguish dependency
@@ -112,6 +117,10 @@ Background and before/after examples of why this pattern exists:
 - Settle memory-owned requests on every destructive entity path, including
   parent-row cascade deletion, bulk deletion, and full reset—not only direct
   deletion of the child entity the request references.
+- Register an in-memory request's disposal rejector before its first
+  asynchronous admission await, and remove it in `finally`. Registering only
+  before the terminal subscription leaves an admission-to-subscription race
+  where owner disposal can strand the request forever.
 - Model user-initiated owner rejection as a typed non-error facade outcome.
   Rejecting the transport promise routes successful cancellation through
   generic failure toasts/retry logic and can incorrectly acknowledge dispatch.
@@ -122,6 +131,10 @@ Background and before/after examples of why this pattern exists:
 - When a callback's direct caller owns rollback or restoration, settlement
   failure must reject that callback itself. Rejecting only a separate outer
   promise hides the failure from the component responsible for compensation.
+- When changing a lifecycle facade from projecting failures in state to
+  rejecting its returned promise, audit every event-handler and automatic
+  fire-and-forget caller. Attach an explicit rejection consumer there while
+  preserving rejection for callers that await the operation for sequencing.
 - Do not persist machine-generated queue entries when their authority or
   acceptance callbacks are memory-only. Let the live authoritative registry
   rehydrate and re-enqueue them; a full restart must not restore orphan shells.
@@ -139,6 +152,9 @@ Background and before/after examples of why this pattern exists:
 - Command runners convert expected failures into events. A runner throw is a
   programming error: log it and keep the service usable; never wedge a queue or
   silently rewrite state.
+- When a generation token suppresses superseded async probe results, apply the
+  same token check to rejection handling. A stale failure must not emit a
+  toast, settle newer state, or trigger recovery for the replacement probe.
 - When a resume event can come from a global watcher as well as explicit UI
   senders, validate the captured payload in the transition. Caller-only guards
   can be bypassed after navigation or another asynchronous detour.
@@ -218,6 +234,9 @@ Background and before/after examples of why this pattern exists:
 - When a cross-owner facade defers keyed delivery to a microtask, entity
   disposal must invalidate both queued and future deliveries for that key.
   Otherwise the deferred callback can recreate a controller after deletion.
+- Producer callbacks that arrive after entity disposal must use a non-creating
+  actor lookup. Never route late output through `ensure()`, which can recreate
+  retained authority for a deleted entity.
 - A keyed ownership replacement must adopt the incoming cleanup before running
   the previous cleanup. Otherwise a throwing unsubscribe/cancel can orphan the
   already-acquired replacement resource.
@@ -299,6 +318,32 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   the user's input while the operation runs and after failure. Close dialogs
   and clear forms only on authoritative settlement; dispatch itself is not
   proof that the mutation succeeded.
+- A remote dispatch receipt proves transport admission, not runtime completion.
+  When callers sequence work on the outcome, project a bounded,
+  operation-correlated settlement acknowledgment. Superseded completions must
+  settle their original waiters without advancing the current lifecycle.
+  Keep the request correlation ID separate from a reused runtime invocation
+  identity (for example, an idempotent ensure-running request targeting an
+  existing process), and subscribe before the final settlement recheck so a
+  completion cannot land between the initial read and listener registration.
+  Track every in-flight request, not only the latest: a reused invocation can
+  be superseded before its producer settles, but its original waiter must
+  still complete. A producer sink captured for one invocation must also ignore
+  or overwrite any conflicting invocation identity supplied by its payload.
+- A first-response-wins renderer handoff needs a correlated claim, not a
+  boolean. Matching follow-ups may be revision-stale only when the opaque claim
+  ID is validated by the host. Unrelated reconciliation must not release the
+  claim, and renderer loss needs an owner signal or bounded actor-owned expiry.
+  Clear claimant-local identity in `finally` when a matching settlement
+  dispatch fails, because actor expiry cannot clear renderer memory. If the
+  claimant creates a durable resource before host acknowledgement, delete it
+  when acknowledgement fails or the claim expires.
+- An unavailable/bootstrap remote snapshot is not authoritative idle state.
+  Gate every actor-backed capability on a ready connection and defer recovery
+  dispatches until subscription bootstrap has completed.
+- Keep transport revisions separate from semantic presentation epochs. A
+  revision may advance for bookkeeping-only transitions, while a reload token
+  must advance exactly once for each user-visible remount.
 - When an epoch keys a mounted resource, capture props such as an iframe `src`
   from the epoch-changing snapshot. Do not let later same-epoch state updates
   rewrite identity-defining DOM attributes and trigger an implicit reload.
@@ -318,6 +363,10 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
 - Define merge/replacement semantics for events received during hydration.
   On teardown, flush the latest accepted snapshot through a transport that is
   safe for the lifecycle boundary (for example, one-way IPC during pagehide).
+- Entity deletion must fence new command admission before waiting for the
+  entity lock. Recheck the fence inside the lock, stop actor admission before
+  unrelated awaited cleanup, and make actor disposal flush every admitted
+  command before database or filesystem deletion.
 
 ## Query keys and recorded decisions
 
@@ -342,8 +391,10 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   controller's real snapshot. Disposal assertions compare with the snapshot
   captured immediately before disposal; never normalize or fabricate snapshots
   to make them pass.
-- Normalize discovered file paths to `/` before asserting literal repository
-  paths; `path.relative()` returns `\` on Windows CI.
+- Normalize discovered file paths to `/` and sort filesystem-derived
+  inventories before asserting literal repository paths. `path.relative()`
+  returns `\` on Windows CI, and directory enumeration order differs by
+  filesystem and case-sensitivity.
 - `driveTransitionMatrix` remains available for hand-enumerated totality
   tests; new machines may instead use `exploreReachableStates` when a finite
   event generator can discover the reachable graph. Existing bespoke suites
@@ -356,6 +407,15 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   expected ignore reason.
 - `boundaries.test.ts` enforces kernel purity and machine-to-machine isolation;
   add new machine directories to its inventory when they are introduced.
+- Keep host-only distributed-machine definitions outside shared machine
+  directories (for example, under `src/ipc/services/` for a main-owned actor).
+  Shared machine directories are scanned as renderer-reachable code and may
+  not import IPC, Electron, or WindowRegistry internals. Add every intentional
+  distributed-machine consumer to the exact inventory in
+  `src/distributed_machines/boundaries.test.ts`.
+- Keep remote transport test doubles behind an existing domain test-support
+  facade. Renderer and hybrid harnesses may consume that facade, but must not
+  widen the allowlist of production modules that import transport internals.
 - In `runCosim` suites, `maxSchedules` bounds visited configurations, not only
   quiescent leaves. If one orthogonal action (for example quit at every phase)
   causes a bound hit, split it into a focused exhaustive alphabet instead of

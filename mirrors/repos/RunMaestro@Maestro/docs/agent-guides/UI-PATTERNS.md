@@ -132,6 +132,33 @@ Guidance:
 
 The expanded Prompt Composer (`src/renderer/components/PromptComposerModal.tsx`) is the reference implementation of the compact-vs-`90vw x 90vh` toggle.
 
+### Resizable Modals
+
+A modal opts into drag-to-resize by passing `resizeKey` to `<Modal>`. Do NOT hand-roll a resize handle, a `ResizeObserver`, or CSS `resize: both` - the shared path already covers persistence, minimums, and viewport clamping.
+
+```tsx
+<Modal
+	theme={theme}
+	title="About Maestro"
+	priority={MODAL_PRIORITIES.ABOUT}
+	onClose={onClose}
+	width={560} // default size before any resize
+	resizeKey="about" // stable, unique; enables the corner grip
+	minWidth={460} // floor for this modal's layout
+	minHeight={420}
+>
+```
+
+How it works:
+
+- `useResizableModal` (`src/renderer/hooks/ui/useResizableModal.ts`) owns the drag. Like `useResizablePanel` it writes to the DOM during the drag and commits React state once on mouseup. Deltas are doubled because the card is centered: growing the width by W moves the right edge by only W/2, so doubling keeps the grip under the pointer.
+- Sizes persist in one `modalSizes` map in `uiStore`, keyed by `resizeKey`, written through to settings and hydrated by `loadAllSettings` on startup.
+- Minimums default to `MODAL_MIN_WIDTH` (360) / `MODAL_MIN_HEIGHT` (300), never exceeding the modal's declared `width`. Pass higher values when a modal's content stops making sense below a given size - every resizable modal should have a floor that still looks right.
+- Sizes are clamped to 95% of the viewport both at drag time and at read time, so a modal sized on a large display still opens sanely on a laptop.
+- `ModalResizeGrip` renders the bottom-right grip; double-clicking it forgets the remembered size and returns the modal to its declared default.
+
+`resizeKey` must be stable across renders - it is the persistence key, not a label.
+
 ### Escape Key Flow
 
 1. `LayerStackProvider` attaches a **capture-phase** `keydown` listener on `window`.

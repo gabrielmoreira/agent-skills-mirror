@@ -1,0 +1,185 @@
+# MCP Inspector Web Client
+
+The browser incarnation of the Inspector: a **Vite + React + [Mantine](https://mantine.dev)** single-page app backed by a small **Node (Hono)** server. The SPA is presentational — it renders data and fires callbacks; all MCP state comes from the shared `@inspector/core` hooks. The backend proxies MCP connections, serves the built SPA, and exposes `/api/*`.
+
+This README covers what's specific to the web client. For the repo-wide picture (the `@inspector/core` shared package, the "dumb components" philosophy, the top-level `validate`/`coverage`/`ci` scripts, and publishing), see the [root README](../../README.md).
+
+## Two halves: `src/` (browser) and `server/` (Node)
+
+| Path | Runs in | Purpose |
+| --- | --- | --- |
+| `src/` | browser | The React SPA — components, hooks, theme, entry (`main.tsx`). |
+| `server/` | Node | The dev/prod backend wiring (never imported by the browser). |
+
+The `server/` directory holds the Node-only backend:
+
+- **`vite-hono-plugin.ts`** — mounts the Hono `/api/*` middleware onto the Vite dev server (so `npm run dev` has a live backend).
+- **`server.ts`** — the standalone Hono production server (serves `dist/` + `/api/*`).
+- **`run-web.ts`** / **`start-vite-dev-server.ts`** — entry points the launcher calls for prod `--web` and `--web --dev`.
+- **`web-server-config.ts`** — env parsing, the `GET /api/config` payload, the startup banner, the default origin allow-list.
+- **`resolve-bind-host.ts`** — the shared bind-host guard (refuses an all-interfaces `HOST` unless `DANGEROUSLY_BIND_ALL_INTERFACES`), used by both bind points (`web-server-config.ts` + `vite.config.ts`); see [Host binding & the origin allow-list](#host-binding--the-origin-allow-list).
+- **`inject-auth-token.ts`** — embeds the API token into the served `index.html` (see [Auth token](#auth-token)).
+- **`sandbox-controller.ts`** — the MCP Apps sandbox HTTP server; **`ensure-web-build.ts`** — builds `dist/` on demand for prod `--web`; **`vite-base-config.ts`** — shared `optimizeDeps` exclusions.
+- **`browser-externalized-builtin-gate.ts`** — Vite-agnostic build-gate logic that fails `vite build` when a Node built-in reaches the browser bundle (#1769); the thin Vite plugin wiring lives in `vite.config.ts`. It sits under `server/` (rather than `src/`) as the home for Node-only, build-time tooling — it's imported by the Vite config, never by the browser — alongside the other `vite-*` config helpers here.
+
+## Development
+
+```bash
+npm run dev        # Vite dev server + Hono /api middleware, HMR
+```
+
+For the launcher-driven prod/dev flows (`npm run web` / `web:dev`), see the root README — those run the built launcher.
+
+## Build
+
+```bash
+npm run build      # tsc -b  →  vite build  →  build:runner
+```
+
+Two artifacts come out, both of which ship in the published package:
+
+- **`dist/`** — the browser SPA (`vite build`). Served statically by the prod backend.
+- **`build/`** — the Node prod-server runner (`build:runner` = `tsup --config tsup.runner.config.ts`), which bundles `server/` + `@inspector/core` into one ESM file and externalizes npm deps.
+
+`build:client` runs only the `vite build` half when you just need fresh `dist/`.
+
+## Component layers
+
+Components live under `src/components/` in four layers, smallest to largest:
+
+| Layer | Count | What it is |
+| --- | --- | --- |
+| `elements/` | ~31 | Leaf presentational pieces (badges, buttons, toggles) over Mantine primitives. |
+| `groups/` | ~63 | Composite pieces (cards, panels, modals, control bars). |
+| `screens/` | ~11 | Full tab screens (Tools, Resources, Servers, monitoring screens…). |
+| `views/` | 1 | `InspectorView` — the top-level layout that composes the screens. |
+
+Every screen and element has a `*.stories.tsx` (see [Storybook](#storybook)). Styling follows the Mantine-first rules in [`AGENTS.md`](../../AGENTS.md) — theme variants and component props over CSS, `--inspector-*` tokens over raw colors.
+
+## Non-component code: `src/lib` vs `src/utils`
+
+Two grab-bag directories, split by one rule: **`utils` = functions that compute; `lib` = things that instantiate, adapt, or touch the environment.** If it does I/O or wraps a subsystem, it's `lib`; if it's a pure transform, it's `utils`.
+
+- **`src/utils/`** — pure, side-effect-free functions (no DOM/`window`/`sessionStorage` I/O, no subsystem ownership), trivially unit-testable with no mocks. Examples: `jsonUtils`, `schemaUtils`, `toolUtils`, `maskSecrets`, `inspectorTabs`, `deepLink`, `mcpNetworkHeaders`. Carve-outs that stay `utils`:
+  - _Diagnostic logging_ (`console.warn`/`console.error`) doesn't count as a side effect.
+  - _Importing from `@inspector/core`_ — neither a type-only import nor re-exporting core's pure functions/constants is a subsystem dependency (what makes a module `lib` is wrapping core's stateful runtime).
+  - _Pure domain types + their constructors_ (`customHeaders`) — there is no `types/` sub-bucket inside `lib`/`utils`.
+- **`src/lib/`** — infrastructure / stateful adapters: modules that compose subsystems, wrap the `@inspector/core` **runtime**, or produce side effects. Examples: `environmentFactory`, `remoteOAuthStorage`, `oauthResume` (sessionStorage), `browserTabVisibility` (DOM listeners), `clearServerOAuthState`, `downloadFile`.
+
+The top-level `src/types/` is a separate sibling — ambient `.d.ts` module stubs, not the place for new domain types (the one that lingers there, dead `navigation.ts`, is tracked for removal in [#1785](https://github.com/modelcontextprotocol/inspector/issues/1785)).
+
+Nothing _enforces_ the boundary — no path alias keys off it, and the coverage `include` in `vite.config.ts` lists both directories, so a move between them is coverage-neutral. It's a human-legible import-time signal. See [`AGENTS.md`](../../AGENTS.md) for the full rule (including the whitelist caveat — a module placed outside `components`/`lib`/`utils`/`server` falls out of the ≥90 gate).
+
+## MCP Apps screen automation contract
+
+The Apps screen exposes a small, stable set of `data-testid` / `data-*` attributes so an automated driver (deep-link auto-open, CI review harness) can `waitForSelector` on a deterministic signal instead of sleeping. Treat these as a public contract — drivers depend on them staying stable:
+
+| Attribute | Where | Meaning |
+| --- | --- | --- |
+| `data-testid="apps-form"` | Apps content card | The container that carries the status/error attributes below. |
+| `data-app-status` | on `apps-form` | Renderer lifecycle: `idle` (nothing running) → `loading` (bridge building / `ui/initialize` in flight) → `ready` (view fired `notifications/initialized`) → `error` (bridge factory threw/rejected). Poll for `ready`. |
+| `data-app-error` | on `apps-form` | The failure reason string when `data-app-status="error"` (e.g. no connected client); absent otherwise. |
+| `data-testid="apps-error"` | error panel | Rendered below the frame when the app fails to load (factory throw/reject); shows the reason so the failure isn't a silent blank frame. |
+| `data-testid="open-app"` | Open App button | Launches the selected app. |
+| `data-testid="apps-stage"` | Stage-partial button | Snapshots the current form values for progressive-render testing. |
+| `data-testid="apps-messages"` | messages panel | `ui/message` submissions from the running view. |
+| `data-testid="apps-logs"` | app-logs panel | `notifications/message` log entries (default-expanded). |
+
+The renderer lifecycle itself is `AppRendererStatus` (`loading` | `ready` | `error`) reported via `AppRenderer`'s `onAppStatusChange`; the screen maps it to `data-app-status`. Resource-read failures (malformed/404 UI resource) are surfaced as a toast via the bridge factory's `onResourceError`; because the app never reaches `ready` in that case, a driver times out on `data-app-status` and reads the toast.
+
+## Deep-link auto-connect
+
+A driver (launcher, CLI `--print-handoff`, CI review harness) can reach a **connected** inspector with a single navigate by encoding the target in the URL query string. Parsing + security gating live in `src/utils/deepLink.ts` (`parseDeepLink`), and a returned `DeepLink` is proof the link passed validation.
+
+```
+http://127.0.0.1:6274/?serverUrl=<url>&transport=http|sse&autoConnect=<token>
+```
+
+| Param | Meaning |
+| --- | --- |
+| `serverUrl` | The MCP server URL. Restricted to `http:` / `https:` (a crafted `javascript:` / `data:` / `file:` value is rejected). Canonicalized via `URL.href` so it matches the OAuth store's key form. |
+| `transport` | `http` (streamable-HTTP, the default) or `sse`. Unknown values fall back to `http`. |
+| `autoConnect` | **CSRF gate.** Must equal the per-launch `MCP_INSPECTOR_API_TOKEN`. The token is random per launch and only known to whatever started the server, so a third-party-minted link cannot satisfy it — this is the same exposure surface as the existing `?MCP_INSPECTOR_API_TOKEN=` param. Without a match the link is ignored. |
+
+The deep link upserts a stable `deep-link` catalog row (so a reload reconnects to the same row instead of accumulating duplicates) and connects. Connection-level outcomes are surfaced on the `AppShell.Header` as a machine-readable contract, so a driver can `waitForSelector` and read the failure reason without scraping a transient toast:
+
+| Attribute | Where | Meaning |
+| --- | --- | --- |
+| `data-testid="connection-status"` | header | The element carrying the attributes below. |
+| `data-status` | on `connection-status` | The live `ConnectionStatus` (`disconnected` → `connecting` → `connected` / `error`). Poll for `connected`. |
+| `data-error-message` | on `connection-status` | Why the last connect failed (handshake error, OAuth-start failure, deep-link automation failure); absent when there is no error. |
+| `data-deeplink` | on `connection-status` | `parsed` (a valid deep link drove this load), `rejected` (deep-link params present but the token/serverUrl gate failed), or `none`. Lets a driver distinguish "no deep link" from "rejected" — both otherwise leave `data-status` idle. |
+
+### Landing on a rendered app
+
+Three further params extend the deep link to pre-select — and optionally auto-open — an MCP App, so a driver reaches a rendered widget with zero clicks:
+
+```
+…&openApp=<toolName>&appArgs=<base64url(JSON)>&autoOpen=<token>
+```
+
+| Param | Meaning |
+| --- | --- |
+| `openApp` | The app-tool name. Once the connection is up and the tool appears in the app list, the inspector switches to the Apps tab and pre-selects it. |
+| `appArgs` | `base64url(JSON)` object of form values. Merged **over** the tool's schema defaults (`collectSchemaDefaults`) so a required-with-default field isn't left blank — which would otherwise disable "Open App". Malformed / non-object values fall back to `{}`. |
+| `autoOpen` | **Same CSRF gate as `autoConnect`** — must equal the session token. When set, "Open App" fires automatically (a tool call from a URL), so the token gate is mandatory. Without a match the app is pre-selected but not opened. |
+
+The app-side render lifecycle is observable through the [MCP Apps screen automation contract](#mcp-apps-screen-automation-contract) above (`data-app-status="ready"`), so a driver can `waitForSelector` the whole `connect → open → ready` chain deterministically.
+
+## Theme (`src/theme/`)
+
+Each customized Mantine component has a `Theme<Name>.ts` file (`Button.ts`, `Text.ts`, …, ~21 total) exporting a `Theme<Name>` constant; the barrel `index.ts` re-exports them and `theme.ts` assembles the `MantineProvider` theme. Theme files hold app-wide defaults and **variants** (flat CSS-in-JS); only pseudo-selectors, nested child selectors, keyframes, and native-HTML styling belong in `App.css`. Element components import from `@mantine/core` (never from `theme/`) — the theme layer is applied transparently by the provider.
+
+## Testing
+
+Tests run under three Vitest **projects** (configured in `vite.config.ts`), each in the right environment:
+
+| Project | Env | Scope | Script |
+| --- | --- | --- | --- |
+| `unit` | happy-dom | Components, hooks, utils (`*.test.tsx` beside the source) | `npm test` |
+| `integration` | node | `@inspector/core` + transports + auth, spawning the real stdio test server (`src/test/integration/**`) | `npm run test:integration` |
+| `storybook` | real Chromium | Story **play functions** as interaction tests | `npm run test:storybook` |
+
+- `npm test` runs the fast **unit** project (happy-dom). `test:watch` for the loop.
+- **Integration** tests run in a real Node env (no happy-dom, 30s timeouts) and spawn `test-servers/build/test-server-stdio.js` as a subprocess, so `pretest`/the coverage script build the test servers first (`test-servers:build`).
+- **`npm run test:coverage`** runs unit **and** integration under v8 instrumentation and enforces the **per-file ≥90%** gate (lines/statements/functions/branches) — the same gate CI runs. Genuinely-unreachable branches are annotated with a justified `/* v8 ignore … */`, not waved through.
+
+Integration tests live under `src/test/integration/` mirroring the `core/` layout; anything placed there is picked up by the `integration` project automatically. Render components with `renderWithMantine` (`src/test/renderWithMantine.tsx`) so they get the project theme.
+
+## Storybook
+
+```bash
+npm run storybook        # dev server on :6006
+npm run build:storybook  # static build
+npm run test:storybook   # run every story's play function in headless Chromium
+```
+
+Storybook is first-class here because the components are presentational — each renders against fixture props. **Play functions double as interaction tests** and run headless in real Chromium via `@vitest/browser-playwright` + `@storybook/addon-vitest` (the `storybook` Vitest project). They're part of `npm run ci` (which installs the Chromium binary first) but kept out of the fast `validate` loop since they need the browser.
+
+## Auth token
+
+The dev/prod backend guards every `/api/*` route with `x-mcp-remote-auth: Bearer <MCP_INSPECTOR_API_TOKEN>`. The browser recovers the token, in priority order (see `App.tsx` `getAuthToken()`): the `window.__INSPECTOR_API_TOKEN__` global injected into `index.html` on every page load (`server/inject-auth-token.ts`), then a `?MCP_INSPECTOR_API_TOKEN=…` query param, then `sessionStorage`. Injection is a no-op when auth is disabled (`DANGEROUSLY_OMIT_AUTH`). See the root [AGENTS.md](../../AGENTS.md) for the full rationale.
+
+## Host binding & the origin allow-list
+
+Both the prod backend (`server/web-server-config.ts`) and the dev Vite server (`vite.config.ts`) resolve their bind host through one shared guard, `server/resolve-bind-host.ts`. It binds `localhost` by default and **refuses an all-interfaces host** (`0.0.0.0`, `::`, empty, or any equivalent spelling — `0`, `0x0`, `0.0`, `::0`, `::ffff:0.0.0.0`, … are all folded to the wildcard and refused) — which would expose the process-spawning backend to the whole network, the exposure DNS-rebinding attacks target — unless `DANGEROUSLY_BIND_ALL_INTERFACES=true` is set. The Docker image sets that flag (a container must bind `0.0.0.0` to be reachable through `-p`); a bare `HOST=0.0.0.0` anywhere else exits with an actionable error.
+
+The backend's `/api/*` routes also enforce an **origin allow-list** (`allowedOrigins`) as DNS-rebinding protection. When left to default on a loopback host, it expands to all three interchangeable loopback origin forms for the port — `http://localhost:PORT`, `http://127.0.0.1:PORT`, and `http://[::1]:PORT` — because `localhost` resolves to either IPv4 or IPv6 loopback and Node/Vite may bind the IPv6 form, so the browser can legitimately arrive at `http://[::1]:PORT`. Set `ALLOWED_ORIGINS` (comma-separated) to override; entries are canonicalized (`new URL(o).origin`), so a trailing slash / uppercase host / explicit `:80` still match. **Each entry must include the scheme** — `http://localhost:6274`, not `localhost:6274` (a scheme-less value is dropped with a warning). `ALLOWED_ORIGINS` **replaces** the default list (it does not merge), so **list every origin you'll browse from, including the loopback forms** you still want (`http://localhost:PORT`, `http://127.0.0.1:PORT`, `http://[::1]:PORT`) — otherwise local access stops working. A blank `ALLOWED_ORIGINS` does **not** disable the check — it falls back to the default (fail closed); there is no env knob to turn origin validation off.
+
+### Hosting on a network
+
+The guard blocks only the **wildcard** all-interfaces addresses. Binding a **specific** IP or hostname is allowed with no opt-in — that's a single, deliberate exposure, unlike the wildcard which binds every interface at once (the pattern DNS-rebinding exploits). To serve the Inspector on a LAN or the internet:
+
+- **Bind a specific address.** `HOST=192.168.1.50` (a LAN IP) or a public IP works directly: the default origin allow-list follows the bind host, so `allowedOrigins` becomes `http://<that-host>:PORT` and a browser hitting that address is accepted with no extra config. (The host is canonicalized the way a browser is — so `HOST=127.1` advertises `http://127.0.0.1:PORT`, an IPv6 bind host is bracketed as `http://[2001:db8::1]:PORT`, and the port is dropped when it's the http default `:80` — matching what the browser sends.)
+- **Behind TLS or a reverse proxy**, the browser's `Origin` becomes the public origin (e.g. `https://inspector.example.com`, often without a port), which won't match the auto-derived `http://<bind-host>:PORT`. Set `ALLOWED_ORIGINS` to the real public origin(s): `ALLOWED_ORIGINS=https://inspector.example.com`.
+- **Using the `0.0.0.0` wildcard** (opt-in via `DANGEROUSLY_BIND_ALL_INTERFACES=true`, as the Docker image does): a wildcard bind also serves loopback, so the default allow-list is the loopback trio plus the canonical wildcard origins (`http://0.0.0.0:PORT`, `http://[::]:PORT`), and **local access works out of the box** — `docker run -p 6274:6274` browsed at `http://localhost:6274` connects with no extra config. Reaching it at a **non-loopback** address (a LAN IP, a public hostname) still needs `ALLOWED_ORIGINS` — but since that **replaces** the default, keep the loopback forms in the list if you also browse locally: `ALLOWED_ORIGINS=http://localhost:PORT,http://127.0.0.1:PORT,http://192.168.1.50:PORT,https://inspector.example.com`.
+
+The bind-host guard and the `ALLOWED_ORIGINS` allow-list apply to both the prod server and `--dev`. Note that in **`--dev`** the Vite dev server _additionally_ enforces its own `server.allowedHosts` Host-header check, whose default accepts loopback and IP-literal hosts. The host you **bind** is auto-allowed (Vite adds the resolved `server.host` — which this config sets from `HOST` — to the allow-list), so `HOST=<hostname>` works out of the box under `--dev` too. What needs an explicit `server.allowedHosts` entry is reaching the dev server at a **different** name than the one bound — e.g. a wildcard bind reached by hostname, or a reverse-proxy domain. For those, prefer the prod server (`mcp-inspector --web`) or add the host to `server.allowedHosts`.
+
+**MCP Apps caveats.** The MCP Apps sandbox runs on a **separate** port (`MCP_SANDBOX_PORT`, dynamic by default). For the Apps tab to work off loopback, that sandbox port must be independently reachable from the browser — pin it with `MCP_SANDBOX_PORT` and expose/forward it too (the Docker image `EXPOSE`s only `6274`). (Under a `0.0.0.0` wildcard bind the sandbox URL is advertised as `localhost`, which is reachable — a wildcard bind serves loopback — so only the port needs handling.) Also note the sandbox iframe is gated by a `frame-ancestors` CSP, and **a bracketed IPv6 literal is not a valid CSP host-source** — so MCP Apps requires browsing the app at a name or IPv4 (`localhost`, `127.0.0.1`, a hostname, a LAN IPv4), **not** a bare `http://[::1]:…` address. Finally, the sandbox URL is always `http://` — so **behind TLS** (an `https://` app page) the browser blocks the `http://…/sandbox` iframe as mixed content and MCP Apps can't render; the Apps tab needs a plain-`http` app origin today.
+
+In every case, exposing the Inspector beyond loopback also means anyone who can reach it can drive its backend — keep authentication on (do **not** set `DANGEROUSLY_OMIT_AUTH`) and prefer a specific bind address over the wildcard.
+
+## HTTP proxy support
+
+The web backend connects to remote MCP servers through the shared Node transport (`core/mcp/node/transport.ts`), which honors the conventional proxy environment variables: `HTTPS_PROXY` / `HTTP_PROXY` (and their lowercase forms) select the proxy, and `NO_PROXY` exempts hosts. Routing is powered by [`undici`](https://www.npmjs.com/package/undici)'s `EnvHttpProxyAgent`, imported lazily only when a proxy variable is set, so runs without a proxy configured pay no cost. See the CLI README for more detail.

@@ -172,6 +172,27 @@ helpers below.
 
 ---
 
+## Media Types (`src/shared/mediaTypes.ts` - Both)
+
+Audio/video detection plus the `maestro-media://` stream URL format used by the
+file preview's `MediaViewer`. Unlike images (which `fs:readFile` inlines as a
+base64 data URL), media is streamed: the main process returns a short stream URL
+and `src/main/media/media-stream.ts` serves range requests off disk, so a
+multi-GB recording never crosses IPC or lands in the renderer heap.
+
+| Function / Constant                       | Signature                                  | Purpose                                                                                              |
+| ----------------------------------------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| `getMediaKind(filePath)`                  | `(string) => 'audio' \| 'video' \| null`   | Classify a path. Only formats Chromium can decode; mkv/avi stay null so they keep the binary path.   |
+| `isMediaFile(filePath)`                   | `(string) => boolean`                      | Whether the path names playable media.                                                               |
+| `getMediaMimeType(filePath)`              | `(string) => string \| null`               | MIME type for the `content-type` header.                                                             |
+| `buildMediaStreamUrl(token, absPath)`     | `(string, string) => string`               | Build a stream URL. Main process only - use `buildLocalMediaStreamUrl()` so the boot token is right. |
+| `parseMediaStreamUrl(url, expectedToken)` | `(string, string) => string \| null`       | Validate token/host/extension and recover the path.                                                  |
+| `isMediaStreamUrl(value)`                 | `(string \| null \| undefined) => boolean` | Cheap check for "is this `fs:readFile` result a stream URL".                                         |
+| `MEDIA_PLAYBACK_RATES`                    | `readonly number[]`                        | Speed ladder shown in the transport.                                                                 |
+| `normalizePlaybackRate(value)`            | `(unknown) => number`                      | Clamp a persisted/CLI-supplied rate to 0.25-4, falling back to 1.                                    |
+
+---
+
 ## Template Variables (`src/shared/templateVariables.ts` - Both)
 
 | Function / Constant                              | Signature                                      | Purpose                                                                                                         |

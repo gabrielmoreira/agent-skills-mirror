@@ -8,8 +8,8 @@ source: "github:addyosmani/agent-skills"
 source_url: "https://github.com/addyosmani/agent-skills/blob/main/skills/context-engineering/SKILL.md"
 license: MIT
 tags: '["agent", "ai", "context-engineering", "engineering", "workflow"]'
-created_at: "2026-04-25"
-updated_at: "2026-04-25"
+created_at: "2026-07-27"
+updated_at: "2026-07-27"
 quality: 5
 complexity: advanced
 upstream_slug: context-engineering

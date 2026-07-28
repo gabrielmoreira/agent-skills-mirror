@@ -83,7 +83,7 @@ gh auth status
   1. 列出最近的运行记录：`gh run list --limit 5`。
   2. 如果失败，下载日志：`gh run view <run_id> --log`。
   3. 分析报错日志，定位到具体的 Step 和文件行号。
-- **最佳实践**：结合 `tavily-search` 技能，搜索该报错日志在 StackOverflow 上的典型解决方案。
+- **最佳实践**：结合客户端内置 Web Search 或 `deep-research`，检索该报错日志的官方文档、Issue 和可靠技术资料。
 
 ### 4. 仓库级数据汇总 (Activity Analytics)
 - **操作步骤**：
