@@ -1,0 +1,30 @@
+name: code-refactoring
+format_version: 1
+title: Refactoring
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Improve code structure without changing observable behavior. Use when the
+  request asks to refactor, simplify, reorganize, deduplicate, decouple, or improve
+  cohesion, clarity, testability, control flow, abstractions, or code granularity.
+  Do not use for feature work, bug fixes, dependency upgrades, technology migrations,
+  or broad codebase assessment without a concrete refactoring target.
+primary_workflow: refactoring.safe-refactor
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Refactoring
+  short_description: Evidence-driven behavior-preserving refactoring
+  default_prompt: Use $code-refactoring to improve this structure without changing behavior.

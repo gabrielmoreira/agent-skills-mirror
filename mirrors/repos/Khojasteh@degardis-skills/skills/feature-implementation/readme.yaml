@@ -1,0 +1,23 @@
+format_version: 1
+purpose: |-
+  Design and implement new software behavior.
+when_it_applies: |-
+  This skill applies to adding a capability, endpoint, command, workflow, user
+  interaction, or integration. Correcting established behavior or restructuring
+  code without changing observable behavior is outside its scope.
+capabilities:
+- Clarifies requirements, scope, and acceptance criteria.
+- Designs changes that fit the existing architecture and contracts.
+- Implements reviewable slices with appropriate error handling and security.
+- Handles compatibility, data migration, and rollout concerns when applicable.
+- Verifies delivered behavior with independent evidence.
+sample_prompts:
+- Implement passkey sign-in.
+- Add a REST endpoint for exporting user data as CSV.
+- Build a command-line flag that lets users filter results by date.
+- Integrate this third-party payment provider into checkout.
+- Add support for dark mode across the settings screens.
+catalog:
+  order: 40
+  category: Software engineering / Development
+  summary: Design, implement, and verify new software behavior.

@@ -1,0 +1,7 @@
+name: rust
+label: Rust
+description: Load when refactoring Rust code.
+instructions:
+- Treat public items, feature combinations, macros, derive output, FFI symbols, layout, serialization,
+  and `Send` or `Sync` behavior as compatibility boundaries.
+- Prefer concrete types until demonstrated consumers need a trait abstraction.

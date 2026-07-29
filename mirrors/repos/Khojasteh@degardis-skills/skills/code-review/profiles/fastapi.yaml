@@ -1,0 +1,7 @@
+name: fastapi
+label: FastAPI
+description: Load when reviewing FastAPI code or behavior.
+instructions:
+- Review validation and serialization, dependency scopes, authentication, async cancellation, background
+  tasks, streaming, exception mapping, OpenAPI compatibility, tenant isolation, transactions, and lifespan
+  cleanup.

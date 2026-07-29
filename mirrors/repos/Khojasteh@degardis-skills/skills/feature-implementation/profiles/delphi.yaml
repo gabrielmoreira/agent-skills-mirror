@@ -1,0 +1,7 @@
+name: delphi
+label: Delphi
+description: Load when implementing Delphi features.
+instructions:
+- Use idiomatic units, records, sets, generics, properties and events; define object/interface ownership,
+  reference counting, exceptions, initialization, RTTI, UI-thread affinity, ABI, Unicode, and cleanup
+  before each bounded slice.

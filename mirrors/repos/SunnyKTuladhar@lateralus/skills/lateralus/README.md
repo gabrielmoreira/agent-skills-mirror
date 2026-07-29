@@ -51,6 +51,5 @@ Always establishes goal and horizon before generating anything.
 ## Source of truth
 
 - `skills/lateralus/SKILL.md` — full debugging skill
-- `skills/lateralus-caveman/SKILL.md` — compressed variant (~60% fewer tokens)
 - `skills/lateralus-brainstorm/SKILL.md` — brainstorming / plan-mode skill
 - Copilot mirrors: `.github/skills/`

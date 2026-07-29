@@ -1,0 +1,7 @@
+name: sql
+label: SQL
+description: Load when optimizing SQL performance.
+instructions:
+- Compare representative plans and distributions with realistic cardinality; measure I/O, CPU, memory,
+  locks, waits, round trips, query count, tail latency, and write cost, then verify null, ordering, transaction,
+  and concurrency behavior.

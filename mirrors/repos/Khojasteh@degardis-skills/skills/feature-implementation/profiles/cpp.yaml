@@ -1,0 +1,6 @@
+name: cpp
+label: C++
+description: Load when implementing C++ features.
+instructions:
+- Design across RAII, value categories, exception guarantees, template constraints, concurrency, lifetime,
+  undefined behavior, serialization, and source or ABI compatibility.

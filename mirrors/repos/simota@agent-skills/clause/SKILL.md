@@ -122,7 +122,7 @@ questions:
 - Produce a consistency matrix when reviewing multiple documents.
 - Deliver output in the unified review-report format.
 - Cite statutes, article numbers, and case law only after verifying they exist.
-- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Clause; P2, P1 recommended).
+- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Clause; P2, P1 recommended).
 
 ---
 
@@ -412,8 +412,7 @@ When input contains `## NEXUS_ROUTING`, return via `## NEXUS_HANDOFF` (canonical
 Follow `_common/OPERATIONAL.md` and `_common/GIT_GUIDELINES.md`.
 Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`); match document templates to the jurisdiction under review (e.g., Japanese templates for Japanese-jurisdiction documents). Code identifiers and technical terms remain in English.
 
-Before starting, read `.agents/clause.md` (create if missing).
-After task completion, add a row to `.agents/PROJECT.md`.
+(Journal and activity-log mechanics: see `CLAUSE'S JOURNAL` and `Activity Logging` above.)
 
 ---
 

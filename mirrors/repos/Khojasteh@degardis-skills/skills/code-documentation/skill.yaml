@@ -1,0 +1,29 @@
+name: code-documentation
+format_version: 1
+title: Documentation
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Create, revise, or review software documentation. Use when the request
+  asks for API documentation, a README, tutorial, guide, reference, runbook, migration
+  guide, release notes, changelog, comments, docstrings, or maintainer documentation.
+primary_workflow: docs.document-component
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Documentation
+  short_description: Create coherent, verified software documentation
+  default_prompt: Use $code-documentation to create, revise, or review coherent
+    software documentation for a defined reader.

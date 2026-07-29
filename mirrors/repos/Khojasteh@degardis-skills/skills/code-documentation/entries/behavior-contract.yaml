@@ -1,0 +1,15 @@
+id: docs.behavior-contract
+title: Document the observable contract
+kind: principle
+rule: Describe what readers can observe and rely on rather than how the current implementation
+  happens to produce it.
+require:
+- Cover inputs, outputs, public fields, state changes, side effects, limits, permissions,
+  persistence, concurrency, compatibility, and version conditions when they affect
+  the selected reader's goal.
+- Treat public endpoints, flags, configuration keys, types, fields, and documented errors
+  as contract.
+reject:
+- Omitting a behavior because its representation is a public field rather than a method.
+- Narrating private helpers, control flow, storage structures, or incidental dependencies.
+- Documenting every observed contract dimension regardless of audience or task.

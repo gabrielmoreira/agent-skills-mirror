@@ -1,0 +1,11 @@
+id: performance-optimization.memory
+title: Measure memory and allocation effects
+kind: policy
+priority: 16
+rule: Measure retained memory, peak working set, allocation rate, copies, fragmentation,
+  collection pressure, and resource lifetime according to the actual constraint.
+require:
+- Separate temporary allocation from retained growth and leaks.
+- Verify ownership, cleanup, pooling limits, and behavior under repeated or concurrent workloads.
+reject:
+- Trading unbounded retention or stale pooled state for a narrow allocation reduction.

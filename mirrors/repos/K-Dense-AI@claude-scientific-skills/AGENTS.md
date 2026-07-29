@@ -45,6 +45,10 @@ tests/<skill-name>/          # same name as the skill directory
 └── fixtures/                # optional test data
 ```
 
+**Diagrams never live under `skills/` either.** Every skill has one generated workflow diagram at
+`docs/images/<skill-name>.png`, produced by `scripts/generate_skill_image.py` and kept in step with
+the skill's documentation — see [Skill diagrams](#skill-diagrams).
+
 Tests reach their skill through an explicit anchor, never a relative walk:
 
 ```python
@@ -62,6 +66,11 @@ SKILL_ROOT = Path(__file__).resolve().parents[2] / "skills" / "<skill-name>"
 5. If the skill ships `scripts/`, put their tests in **`tests/<name>/`** — never in the skill
    directory. Fixtures go in `tests/<name>/fixtures/`.
 6. Validate and scan (below).
+7. Generate the skill's diagram — a new skill without `docs/images/<name>.png` is incomplete:
+
+   ```bash
+   uv run python scripts/generate_skill_image.py --skill <name>
+   ```
 
 ```markdown
 ---
@@ -97,7 +106,17 @@ Use this skill when...
 4. **Bump `metadata.version` in the same change**: minor for normal improvements (`"1.2"` →
    `"1.3"`), major only for a breaking change or substantial redesign (`"1.9"` → `"2.0"`).
 5. Re-run any example, command, or script you touched, plus `tests/<name>/` if that suite exists.
-   Some suites assert the skill's exact version string, so a version bump can require a test edit.
+   Suites check that `metadata.version` is present and quoted, not what it equals, so a version bump
+   never needs a matching test edit.
+6. **Regenerate the diagram in the same change** whenever the edit changes what the skill does or
+   how its workflow runs — the picture is generated from `SKILL.md` and `references/`, so it goes
+   stale silently. The command overwrites `docs/images/<name>.png` in place:
+
+   ```bash
+   uv run python scripts/generate_skill_image.py --skill <name>
+   ```
+
+   A typo fix, a link repair, or a version bump alone does not need a new image.
 
 ## Frontmatter
 
@@ -222,7 +241,7 @@ If the skill has tests in `tests/<name>/`, run them:
 ```bash
 uv run --with pytest python -m pytest tests/<name> -q
 
-# every skill's suite, one process each
+# every skill's suite, one process each, after the repo-wide guard
 uv run --with pytest python tests/run_all.py
 ```
 
@@ -230,6 +249,47 @@ uv run --with pytest python tests/run_all.py
 32 of them ship a `scripts/_common.py` — so collecting two skills into one interpreter resolves
 `_common` to whichever skill imported first and silently tests the wrong files. `tests/conftest.py`
 refuses such a session; `tests/run_all.py` forks per skill.
+
+### The repo-wide guard
+
+```bash
+uv run --with pytest python -m pytest tests/_meta -q
+```
+
+`tests/_meta` is the fastest useful signal in the repo: pure standard library, no scientific
+packages, a couple of seconds. It runs the shared structural contract against **every** skill and
+fails if a skill ships `scripts/` without a suite under `tests/<name>/` or an entry in
+`tests/skill-requirements.toml`. `.github/workflows/skill-tests.yml` runs it on every pull request,
+so a skill with untested scripts cannot land. A full run of `tests/run_all.py` starts with it.
+
+It is not one of the per-skill processes because it deliberately spans all of them at once — safe
+because it never imports skill code, only parses it.
+
+### The shared contract
+
+`tests/_contract/` holds the assertions every skill shares, so a per-skill suite contains only what
+is actually specific to that skill. `tests/conftest.py` registers it as the importable module
+`skill_contract`:
+
+```python
+import skill_contract
+
+# every argparse script answers --help; skips when its packages are absent,
+# runs for real under --isolated
+CliHelpTests = skill_contract.cli.help_test_case(SKILL_ROOT)
+
+# for library-style scripts with an `if __name__ == "__main__"` worked example
+DemoBlockTests = skill_contract.cli.demo_test_case(SKILL_ROOT, ("doe_designs.py",))
+```
+
+- `structure` — frontmatter conformance, the 500-line limit, no tests or bytecode under `skills/`,
+  local links resolve, scripts parse, no `eval`/`exec`/`os.system`, no standard-library shadowing,
+  no hardcoded local paths, shell scripts valid. Run repo-wide by `tests/_meta`; do not duplicate
+  these in a per-skill suite.
+- `cli` — the `--help` and demo-block cases above.
+- `office` / `schematic` — behaviour for files several skills ship byte-identical copies of (the
+  OOXML tree under docx/pptx/xlsx; the AI schematic generator under five skills). `tests/_meta`
+  separately fails if those copies drift apart, so fix them together.
 
 ### One environment per skill
 
@@ -253,9 +313,50 @@ run on the default interpreter; uv downloads that interpreter on demand. Package
 installed at all — a GitHub-only SDK, a conda-forge-only library, a CUDA build — are recorded under
 `[unavailable]` with the reason, and the runner prints them so the gap shows up in test output.
 
-Adding a skill with `scripts/` means adding its `[skills.<name>]` entry. Use `packages = []` for
-skills whose bundled tooling is standard-library only; they still get a clean environment. uv caches
-wheels globally, so repeat runs create each environment in milliseconds.
+Adding a skill with `scripts/` means adding its `[skills.<name>]` entry — `tests/_meta` fails
+without one. Use `packages = []` for skills whose bundled tooling is standard-library only; they
+still get a clean environment, and CI runs exactly that set on every pull request. uv caches wheels
+globally, so repeat runs create each environment in milliseconds.
+
+The full `--isolated` sweep is not run in CI: it builds one environment per skill, several of which
+need a CUDA toolchain, a JDK, or a local MATLAB install. Run it before a release, or whenever you
+touch the shared contract.
+
+## Skill diagrams
+
+Every skill carries one generated workflow diagram at `docs/images/<skill-name>.png`. Creating a
+skill means creating its image; changing what a skill does means regenerating it. The image is not
+optional decoration — it is derived from the documentation, so an out-of-date one misrepresents the
+skill.
+
+`scripts/generate_skill_image.py` is local repository tooling, standard library only, and runs in
+two stages on one `OPENROUTER_API_KEY` (environment variable, repository `.env`, or `--api-key`):
+a text model reads `SKILL.md` plus everything under `references/` and a manifest of `scripts/` and
+`assets/`, distils it into a description of one diagram, then an image model draws it. Because it
+reads the whole skill, run it **after** the documentation is final, not before.
+
+```bash
+# one skill -> docs/images/<name>.png, replacing any existing image
+uv run python scripts/generate_skill_image.py --skill <name>
+
+# see which files feed the reader, and where the image lands — no API calls, nothing billed
+uv run python scripts/generate_skill_image.py --skill <name> --dry-run
+
+# read the skill and print the diagram prompt without drawing it
+uv run python scripts/generate_skill_image.py --skill <name> --prompt-only
+
+# several skills in one batch
+uv run python scripts/generate_skill_image.py --skill <name-a> <name-b>
+
+# backfill everything missing an image, six at a time
+uv run python scripts/generate_skill_image.py --all --skip-existing -j 6
+```
+
+Look at the result before committing it. Image models misspell labels and occasionally point an
+arrow at the wrong card; regenerate rather than ship a diagram whose text is wrong. `--quality low`
+makes iteration cheap while checking composition, but commit a `high` render. Both the art direction
+and the reader's instructions live at the top of the script — change them there rather than
+hand-tuning one skill's prompt, so the set stays visually consistent.
 
 ## Before opening a PR
 
@@ -266,5 +367,12 @@ wheels globally, so repeat runs create each environment in milliseconds.
 - `metadata.version` exists, is quoted, and is bumped if you changed an existing skill.
 - `metadata` is a block mapping; `openclaw` / `hermes` blocks are nested mappings.
 - `uv run skills-ref validate skills/<name>` passes.
+- `uv run --with pytest python -m pytest tests/_meta -q` passes — this is what CI blocks on, and it
+  catches a missing suite, a missing `skill-requirements.toml` entry, a broken local link, and a
+  leaked local path.
+- If the skill ships `scripts/`: a suite exists at `tests/<name>/`, a `[skills.<name>]` entry exists
+  in `tests/skill-requirements.toml`, and `python tests/run_all.py --isolated <name>` passes.
+- `docs/images/<name>.png` exists, and was regenerated if the change altered what the skill does.
+  Its labels are spelled correctly and its arrows point where they should.
 - Examples and scripts are tested, or clearly marked illustrative.
 - No secrets or private data; scan results clean or explained in the PR.

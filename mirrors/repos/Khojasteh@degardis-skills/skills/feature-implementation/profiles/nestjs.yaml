@@ -1,0 +1,6 @@
+name: nestjs
+label: NestJS
+description: Load when implementing NestJS features.
+instructions:
+- Define injection tokens and scopes, endpoints or messages, guards, pipes, interceptors, filters, authentication,
+  validation, serialization, transactions, async providers, configuration, startup, and shutdown.

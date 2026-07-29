@@ -1,0 +1,16 @@
+id: review.scope
+title: Match the review boundary
+kind: heuristic
+rule: Keep findings within the requested review boundary and make the inspected coverage
+  explicit.
+require:
+- For a change review, compare with the base revision and determine how the change
+  creates or materially exposes the failure.
+- For a codebase review, choose representative or risk-critical paths within the agreed
+  scope and disclose important surfaces that remain uninspected.
+- Review unchanged context when needed to understand changed behavior.
+reject:
+- Reporting unrelated pre-existing defects during a change review unless the user
+  requested a broader scope.
+- Claiming repository-wide assurance from a partial or sampled review.
+- Expanding into style or cleanup work that does not affect review risk.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
+Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patterns, 69 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `vicnaum/vics-agent-skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 65 |
+| Files         | 69 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,6 +124,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`skills/session-stripper/tests/test_reset_usage.py`](skills/session-stripper/tests/test_reset_usage.py) |
 | 64 | ✓ | [`skills/session-stripper/tests/test_strip_attachments.py`](skills/session-stripper/tests/test_strip_attachments.py) |
 | 65 | ✓ | [`skills/session-stripper/tests/test_strip_tools_is_error.py`](skills/session-stripper/tests/test_strip_tools_is_error.py) |
+| 66 | ✓ | [`skills/tasx/references/format.md`](skills/tasx/references/format.md) |
+| 67 | ✓ | [`skills/tasx/scripts/board.html`](skills/tasx/scripts/board.html) |
+| 68 | ✓ | [`skills/tasx/scripts/tasx`](skills/tasx/scripts/tasx) |
+| 69 | ✓ | [`skills/tasx/SKILL.md`](skills/tasx/SKILL.md) |
 
 ---
 

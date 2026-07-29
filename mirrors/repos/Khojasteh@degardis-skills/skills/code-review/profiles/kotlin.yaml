@@ -1,0 +1,9 @@
+name: kotlin
+label: Kotlin
+description: Load when reviewing Kotlin code or behavior.
+instructions:
+- Trace platform types, nullability, coroutine scopes, cancellation, dispatchers, structured concurrency,
+  flows, and resource cleanup.
+- Check data-class equality, collection mutability, extension resolution, initialization order, Java interoperability,
+  and multiplatform actual implementations.
+- Verify lifecycle ownership before recommending a different coroutine scope or dispatcher.

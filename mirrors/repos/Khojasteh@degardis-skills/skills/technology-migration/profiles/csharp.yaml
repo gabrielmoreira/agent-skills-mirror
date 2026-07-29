@@ -1,0 +1,14 @@
+name: csharp
+label: C#
+description: Load when migrating to or from C#.
+instructions:
+- When C# is the target, inventory BCL collections/algorithms, records, pattern matching, spans, LINQ,
+  async streams/tasks, cancellation, disposal, parsing, serialization, source generation, and DI before
+  translating source-shaped helpers.
+- Prefer target-version C# and BCL facilities while preserving contracts; do not mechanically convert
+  nulls, exceptions, promises, iterators, inheritance, or resource wrappers.
+- Verify equality/ordering, nullability, culture, precision/overflow, allocation, LINQ evaluation, async
+  timing, exceptions, cancellation, thread safety, disposal, serialization, reflection, trimming, and
+  binary/interop semantics.
+- Bound P/Invoke, COM, multi-target fallbacks, adapters, suppressions, and compatibility packages to explicit
+  migration stages with parity tests and removal criteria.

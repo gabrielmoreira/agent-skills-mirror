@@ -1,0 +1,7 @@
+name: django
+label: Django
+description: Load when fixing Django code or behavior.
+instructions:
+- Trace middleware, request handling, validation, permissions, ORM evaluation, transactions, constraints,
+  signals, migrations, caches, tasks, and database cleanup.
+- Distinguish request-time, commit-time, signal, task, and command failures.

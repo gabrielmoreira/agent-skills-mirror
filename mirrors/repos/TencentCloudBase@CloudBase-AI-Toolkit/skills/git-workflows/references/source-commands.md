@@ -290,6 +290,24 @@ When user inputs `/version_publish_main`
    - Example: `chore(release): bump version to vX.Y.Z`
    - `git push origin main`
 
+### Step 2.5: README Recent updates (minor required)
+1. Decide release class from the new version:
+   - **minor** (`x.Y.0`) or first publish of a new `x.Y` line: **must** update Recent updates.
+   - **patch** (`x.Y.Z`): skip by default; only append one bullet to the **current** `vX.Y.x` block if the patch adds clear user-facing capability.
+2. When updating, edit **both** files with aligned meaning (wording may differ by language):
+   - `README.md` → section `## Recent updates`
+   - `README.zh-CN.md` → section `## 最近更新`
+   - Do **not** edit `README-ZH.md` (redirect only).
+3. Format (keep 2–4 short bullets, category-prefixed, no chore/ci detail):
+   ```markdown
+   **vX.Y.x** (YYYY-MM)
+
+   - Area: one-line user benefit
+   ```
+   Chinese uses full-width parentheses: `**vX.Y.x**（YYYY-MM）`.
+4. Keep at most the latest **1–2** minor blocks; replace older ones rather than growing an unbounded changelog. Point readers to Releases for full history.
+5. Include the README edits in the version bump commit when possible, or a follow-up `docs(readme): …` commit on `main` before `/releasenote`.
+
 ### Step 3: Release note
 Run `/releasenote` and follow the interactive confirmation before publishing.
 

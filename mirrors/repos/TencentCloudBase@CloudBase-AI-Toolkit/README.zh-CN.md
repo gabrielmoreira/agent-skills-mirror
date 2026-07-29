@@ -24,11 +24,10 @@
 
 ## 最近更新
 
-**v2.24.x**（2026-07）
+**v2.25.x**（2026-07）
 
-- Plugin：Open Plugin Spec；`npx plugins add` 安装 MCP / Skills / Hooks
-- PostgreSQL：schema 变更默认经 `applyMigration`（显式 `migrationVersion`）
-- 环境与可观测性：`manageEnv` 契约修正；工具调用可关联客户端信息
+- 云托管 / 网关：接 TCP 数据库时的 VPC 指导；Domain/Route，统一 `upstreamResourceType` 与路径透传
+- Plugin：Open Plugin / 市场安装路径更顺
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases
 

@@ -1,0 +1,8 @@
+name: flask
+label: Flask
+description: Load when migrating to or from Flask.
+instructions:
+- Prefer native blueprints, contexts, configuration, templates, sessions, CLI, and teardown over translated
+  source layers; verify request, authentication, error, transaction, and deployment parity.
+- Keep proxy routes, dual applications, and adapters bounded to explicit stages with owners and removal
+  gates.

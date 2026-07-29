@@ -1,0 +1,8 @@
+name: delphi
+label: Delphi
+description: Load when testing Delphi code or behavior.
+instructions:
+- Cover Unicode strings, sets and records, properties and events, exceptions, generics, RTTI, interface
+  reference counting, object ownership, initialization/finalization, ABI boundaries, and UI-thread lifecycle.
+- Dispose owned objects and platform resources deterministically, isolate global and unit initialization
+  state, and exercise only supported compiler and platform combinations.

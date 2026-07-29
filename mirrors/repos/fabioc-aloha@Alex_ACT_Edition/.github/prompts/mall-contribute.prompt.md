@@ -1,6 +1,6 @@
 ---
 description: "Propose a local skill for contribution to the Plugin Mall — strip project specifics, format as a Mall-compatible proposal, submit via feedback channel"
-lastReviewed: 2026-05-31
+lastReviewed: 2026-07-28
 ---
 
 # Contribute a Skill to the Plugin Mall
@@ -51,7 +51,7 @@ Propose a local skill (from `.github/skills/local/`) for inclusion in the Alex A
 
    ## Install
 
-   See `/mall-install <name>` (Phase 5b; manual install per [mall-installation.instructions.md](../instructions/mall-installation.instructions.md) until then).
+   See `/mall-install <name>` and [mall-installation.instructions.md](../instructions/mall-installation.instructions.md) for legacy-compatible install behavior.
    ```
 
    The Mall's self-curation pipeline (per [ADR-008](https://github.com/fabioc-aloha/Alex_ACT_Supervisor/blob/main/docs/adrs/ADR-008-mall-self-curation.md)) computes the catalog entry's `{ name, store, shape, trust_score, version, description_short, source_url, provenance, adapted_from }` fields from these two files. The Supervisor's editorial review (per `mall-curation` skill) decides whether the proposal lands in the curated `plugin-mall` store (provenance:true, +50 trust bonus) or gets routed elsewhere.

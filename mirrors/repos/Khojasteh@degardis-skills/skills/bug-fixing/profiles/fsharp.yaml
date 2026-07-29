@@ -1,0 +1,11 @@
+name: fsharp
+label: F#
+description: Load when fixing F# code or behavior.
+instructions:
+- Trace `option` versus null, discriminated-union cases, exhaustive matching, structural equality and
+  comparison, generic inference, units of measure, and mutable escape points.
+- Reproduce lazy `seq` evaluation, list/array conversions, closures, partial application, computation
+  expressions, `async` versus `task`, cancellation, exceptions/`Result`, and `use`/disposal at the original
+  evaluation boundary.
+- Check C# interop, compiled names, serialization, reflection, trimming/AOT, and public signatures when
+  source-level behavior differs from the emitted .NET surface.

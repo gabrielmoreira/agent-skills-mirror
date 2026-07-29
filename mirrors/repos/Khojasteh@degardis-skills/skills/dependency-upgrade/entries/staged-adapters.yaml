@@ -1,0 +1,12 @@
+id: dependency-upgrade.staged-adapters
+title: Bound temporary adapters
+kind: constraint
+priority: 2
+rule: Permit an adapter only when the user explicitly authorizes a staged upgrade.
+require:
+- State the supported transition it enables, owner, bounded lifetime, removal condition, and validation.
+- Keep the adapter narrow and prevent new callers from adopting the legacy interface.
+- Report that the final migration remains incomplete until removal.
+reject:
+- Presenting a temporary adapter as a genuine final-state upgrade.
+- Creating a general abstraction solely to avoid updating call sites.

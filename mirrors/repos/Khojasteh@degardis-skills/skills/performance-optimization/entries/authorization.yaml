@@ -1,0 +1,11 @@
+id: performance-optimization.authorization
+title: Require authority for performance changes
+kind: constraint
+priority: 1
+rule: Modify production code only when the user explicitly requests implementation of
+  a performance optimization.
+require:
+- Keep assessment, planning, and review read-only.
+- Preserve unrelated changes, external state, and costs outside the authorized scope.
+reject:
+- Treating a request to measure, profile, explain, plan, or review as permission to edit.

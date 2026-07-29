@@ -1,0 +1,13 @@
+id: testing.independent-oracle
+title: Independent oracle
+kind: principle
+rule: Derive expected outcomes independently from the production implementation.
+priority: 1
+reject:
+- Running production code to discover the expected result.
+- Copying the production algorithm into test helpers.
+allow:
+- Requirements and contracts.
+- Mathematical derivation.
+- Standards and independently verified fixtures.
+- Invariants, metamorphic relations, and comparisons with an independent implementation.

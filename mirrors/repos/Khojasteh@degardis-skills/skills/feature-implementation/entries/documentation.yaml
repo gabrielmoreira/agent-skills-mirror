@@ -1,0 +1,11 @@
+id: feature-implementation.documentation
+title: Update documentation when contracts change
+kind: policy
+priority: 35
+rule: Update documentation when the feature changes public contracts, maintainer
+  invariants, configuration, failures, side effects, operations, migration steps,
+  release information, or comments.
+allow:
+- Leaving user documentation unchanged when public behavior and reader tasks are unchanged.
+reject:
+- Narrating private implementation details or adding trivial examples.

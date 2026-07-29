@@ -1,0 +1,7 @@
+name: assembly
+label: Assembly
+description: Load when implementing Assembly features.
+instructions:
+- Define register, flag, stack, memory, atomicity, privilege, portability, unwind, security, and performance
+  contracts before implementation; isolate architecture-specific code and require independently derived
+  boundary tests.

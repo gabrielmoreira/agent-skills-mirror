@@ -1,0 +1,9 @@
+name: java
+label: Java
+description: Load when documenting Java code or APIs.
+instructions:
+- Use the repository's native documentation tags and links for parameters, type parameters, return values,
+  code elements, and deprecation.
+- Document nullability, mutation, thread safety, resource ownership, futures, compatibility, and distinct
+  exception conditions from evidence.
+- Separate synchronous exceptions from failures delivered through asynchronous results.

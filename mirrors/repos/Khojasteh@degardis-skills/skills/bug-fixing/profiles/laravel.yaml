@@ -1,0 +1,7 @@
+name: laravel
+label: Laravel
+description: Load when fixing Laravel code or behavior.
+instructions:
+- Trace routing, middleware, validation, authorization, container scope, transactions, model events, queues,
+  retries, caches, configuration, and database cleanup.
+- Distinguish request-time, commit-time, queue-time, event, and command failures.

@@ -14,6 +14,7 @@ Use this skill when the user asks to:
 - run a commit workflow (conventional-changelog style)
 - push changes with safe branching and open a PR
 - generate release notes from git history / GitHub context
+- publish a version from `main` (including bilingual README Recent updates on minor bumps)
 - analyze the latest failed GitHub Actions workflow, attempt a fix in an isolated worktree, and submit a PR
 - check IDE icon configuration consistency across document components and source files
 

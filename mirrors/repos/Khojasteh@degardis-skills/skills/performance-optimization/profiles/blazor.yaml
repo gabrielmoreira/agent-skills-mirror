@@ -1,0 +1,7 @@
+name: blazor
+label: Blazor
+description: Load when optimizing Blazor performance.
+instructions:
+- Measure startup and payload, rendering and diffing, events, circuits and network latency, serialization,
+  DI scopes, WebAssembly CPU/memory, JS interop, hydration, and tail latency; retain state, authorization,
+  cancellation, and disposal.

@@ -1,0 +1,12 @@
+id: technology-migration.slicing
+title: Migrate reviewable vertical slices
+kind: pattern
+priority: 3
+rule: Slice by observable capability or boundary rather than source file type or mechanical conversion batch.
+require:
+- Keep each slice integrated enough to exercise target behavior and small enough to review.
+- Define source and target ownership during the slice.
+- Verify each conceptual transformation before expanding scope.
+reject:
+- Converting syntax repository-wide before any end-to-end target path works.
+- Leaving invalid intermediate states without an explicit controlled operation.

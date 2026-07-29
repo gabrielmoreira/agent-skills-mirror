@@ -1,0 +1,7 @@
+name: angularjs
+label: AngularJS
+description: Load when reviewing AngularJS code or behavior.
+instructions:
+- Review scope ownership, watcher and digest behavior, directive lifecycle, transclusion, expression and
+  HTML trust boundaries, promise timing, HTTP interception, route cleanup, duplicate handlers, and memory
+  leaks; do not import lifecycle assumptions from successor frameworks.

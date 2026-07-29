@@ -4,7 +4,7 @@ description: 查询 AI HOT 的中文 AI 资讯、精选、当前热点和日报�
 license: MIT. See LICENSE
 metadata:
   author: Virxact
-  version: "1.2.0"
+  version: "1.2.1"
 ---
 
 # AI HOT
@@ -31,7 +31,7 @@ metadata:
 | “今天／过去 24 小时有什么” | `/api/v1/items?mode=selected&window=24h` |
 | “最近／最近一周有什么” | `/api/v1/items?mode=selected&window=7d&limit=10` |
 | “当前最热／最近在爆什么” | `/api/v1/hot-topics` |
-| “这件事的来龙去脉／后续进展” | `/api/v1/stories/{publicId}`（id 来自 hot-topics 的 `links.story` 或事件间引用） |
+| “这件事的来龙去脉／后续进展” | 先查 hot-topics；若实际返回 `links.story`，从其 `/story/{publicId}` 路径提取 `publicId`，再调用 `/api/v1/stories/{publicId}`；否则用 items 的 `q` 查询 |
 | 明确说“日报” | `/api/v1/dailies/latest` 或 `/api/v1/dailies/{YYYY-MM-DD}` |
 | “有哪些日报／日报归档” | `/api/v1/dailies?limit=N` |
 | 模型／产品／论文／行业／技巧 | `/api/v1/items?mode=selected&category=<slug>&window=<24h|7d>` |
@@ -48,7 +48,7 @@ metadata:
 - 只有用户明确说“日报”才用 dailies；日报是固定日切成品，不等同滚动时间窗。
 - 最新日报返回 404 时，只查询一次有界的 `/api/v1/dailies?limit=7`；索引有结果时，再用其中实际返回的最近日期请求一次 `/api/v1/dailies/{date}`，索引为空就停止。绝不猜“昨天”或自行拼日期。
 - “现在最热”只用 hot-topics；items 按时间倒序，不能替代热度排序。
-- 用户追问某个热点的来龙去脉、时间线或最新进展时，用 hot-topics 条目 `links.story` 末段的 publicId 调 `/api/v1/stories/{publicId}`：响应含逆序报道时间线、AI 综述（`digest`，随事件演化更新，矛盾会显式标注）与最新进展一句话（`latest`）。除此之外没有获取 story id 的检索端点，不得猜测或拼造 id；拿不到 id 就回落到 items 关键词查询。
+- 用户追问某个热点的来龙去脉、时间线或最新进展时，只有 hot-topics 条目实际含 `links.story` 才继续：确认 URL 属于 `https://aihot.virxact.com/story/{publicId}`，从路径末段提取实际 `publicId`，再请求 `/api/v1/stories/{publicId}`。`links.story` 本身是给人阅读的 HTML 网页，不得直接请求，也不得把网页响应当 API 数据。事件 API 响应含逆序报道时间线、AI 综述（`digest`，随事件演化更新，矛盾会显式标注）与最新进展一句话（`latest`）。字段缺失、URL 不符合上述格式或事件 API 返回 404，表示事件层当前不可用；改用标题关键词查询 items。除此之外没有获取 story id 的检索端点，不得猜测或拼造 id。
 - v1 原生时间窗是 `24h` 或 `7d`。用户指定其它七天内范围时，取最小覆盖窗后本地收窄，并如实写明范围。收窄要用与服务端一致的时间轴值，可由返回字段直接算出：`publishedAt` 为空时取 `discoveredAt`；`discoveredAt - publishedAt > 72 小时`（历史回填）时取 `publishedAt`；其余取 `discoveredAt`。直接拿 `publishedAt` 收窄会把慢推信源误删。
 - “最近一周资讯”是滚动 7 天查询，不等同 AI HOT 的编辑成品周报。用户明确要 AI HOT 周报或月报时，如实说明当前只有 `https://aihot.virxact.com/weekly` 与 `https://aihot.virxact.com/monthly` 网页，尚无 Skill／API／RSS 端点；不得调用猜测的 weeklies／monthlies 路径。
 - 当前 v1 没有按条目 ID 获取正文的端点。用户要深入阅读时，只能提供 items 已返回的 `summary`、`links.aihot` 与 `links.original`；不得绕过 API 抓网页或把混合权限的全文 RSS 冒充单篇正文接口。
@@ -59,7 +59,7 @@ metadata:
 
 ## 请求
 
-- API 匿名、只读、无需 Key。客户端允许时可设置 `User-Agent: aihot-skill/1.2.0 (+https://aihot.virxact.com/aihot-skill/)` 方便诊断，但不得因为无法设置而拒绝查询或伪装浏览器。
+- API 匿名、只读、无需 Key。客户端允许时可设置 `User-Agent: aihot-skill/1.2.1 (+https://aihot.virxact.com/aihot-skill/)` 方便诊断，但不得因为无法设置而拒绝查询或伪装浏览器。
 - 普通查询不做版本检查，也不访问旧兼容层。后端在稳定 v1 契约内升级时，用户无需更新本 Skill。
 - 反复查询同一个 URL 时保存响应的 `ETag`，下次带 `If-None-Match` 发出；`304` 表示内容没变，直接复用上次结果，不要重新总结。
 - 定时任务对同一端点至少间隔 60 秒；资讯类内容没有秒级新鲜度，更密的轮询只是浪费双方带宽。

@@ -1,0 +1,10 @@
+name: c
+label: C
+description: Load when testing C code or behavior.
+instructions:
+- Exercise ownership transfer, allocation and I/O failures, buffer boundaries, integer
+  conversion, aliasing, error codes, cleanup, and undefined-behavior risks at public
+  and ABI boundaries.
+- Run configured sanitizer, architecture, and optimization variants when repository
+  evidence makes them part of the supported test surface; do not infer safety from
+  a single debug build.

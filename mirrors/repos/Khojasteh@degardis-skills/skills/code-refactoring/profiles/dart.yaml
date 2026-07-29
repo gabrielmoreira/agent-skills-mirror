@@ -1,0 +1,7 @@
+name: dart
+label: Dart
+description: Load when refactoring Dart code.
+instructions:
+- Treat generated serialization, annotations, routes, assets, platform channels, and reflective registration
+  as non-static consumers.
+- Prefer direct seams for clocks, I/O, and platform boundaries over broad service abstractions.

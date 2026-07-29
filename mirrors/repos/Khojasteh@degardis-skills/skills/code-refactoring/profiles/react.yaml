@@ -1,0 +1,7 @@
+name: react
+label: React
+description: Load when refactoring React code.
+instructions:
+- Search route and framework conventions, dynamic imports, component registries, test selectors, server/client
+  boundaries, and generated code before moving components.
+- Avoid splitting a cohesive component across tiny hooks and wrappers that obscure one interaction.

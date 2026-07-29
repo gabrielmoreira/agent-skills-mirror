@@ -1,0 +1,11 @@
+id: testing.reporting
+title: Report evidence and residual risk
+kind: policy
+rule: Report what was tested, how it was verified, and what remains uncertain.
+require:
+- List exact commands and whether they passed, failed, or could not run.
+- Connect added or reviewed cases to behaviors and risks.
+- Identify unverified assumptions, skipped checks, and suspected production defects.
+reject:
+- Claiming the suite passes when only a subset ran.
+- Reporting coverage percentages without explaining meaningful behavior covered.

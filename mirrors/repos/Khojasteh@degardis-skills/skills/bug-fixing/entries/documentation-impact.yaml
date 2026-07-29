@@ -1,0 +1,13 @@
+id: bug-fixing.documentation-impact
+title: Update documentation only when the contract requires it
+kind: policy
+rule: Use documentation guidance when the correction changes or clarifies reader-relevant
+  behavior, failures, side effects, operations, migration, release impact, or maintainer invariants.
+require:
+- Preserve user documentation when the public contract was already correct and only
+  the implementation changes.
+- Update incorrect documented errors, recovery, limitations, runbooks, comments, or
+  invariants affected by the correction.
+reject:
+- Narrating the patch or private control flow in user-facing documentation.
+- Adding release or migration guidance when no reader action or compatibility impact exists.

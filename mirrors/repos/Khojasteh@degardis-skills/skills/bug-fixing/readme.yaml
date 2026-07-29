@@ -1,0 +1,24 @@
+format_version: 1
+purpose: |-
+  Diagnose and fix software defects, regressions, crashes, incorrect behavior,
+  and failure conditions.
+when_it_applies: |-
+  This skill applies when established or expected behavior is failing and the
+  work requires diagnosis, a causal repair, and regression evidence. Adding
+  behavior that does not yet exist is outside its scope.
+capabilities:
+- Establishes expected behavior and reproduces the failure.
+- Classifies the failure and identifies its root cause.
+- Designs the smallest causal fix that preserves supported behavior.
+- Adds or improves regression evidence sensitive to the defect.
+- Verifies the repair and reports residual risks or unresolved conditions.
+sample_prompts:
+- Fix this checkout regression.
+- Users see a 500 error when uploading large files—find out why and fix it.
+- This test started failing after the last deploy; find the root cause.
+- The app crashes intermittently on startup; diagnose and fix it.
+- Investigate and resolve why login sessions expire early for some users.
+catalog:
+  order: 50
+  category: Software engineering / Development
+  summary: Diagnose defects, implement causal fixes, and verify regressions.

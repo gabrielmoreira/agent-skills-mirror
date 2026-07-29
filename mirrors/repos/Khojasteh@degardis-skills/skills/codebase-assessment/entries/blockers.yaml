@@ -1,0 +1,17 @@
+id: codebase-assessment.blockers
+title: Quarantine blocked improvement paths
+kind: constraint
+priority: 3
+rule: Do not build a behavior-preserving improvement plan on defective, unknown, or
+  unreliable foundations.
+require:
+- Report suspected production defects, unknown intended behavior, unreliable baselines,
+  and unapproved compatibility changes as explicit blockers.
+- Block only actions that depend on the unresolved condition and continue assessing
+  independent areas.
+- Require a separately scoped defect fix or compatibility decision before dependent
+  refactoring or characterization tests.
+reject:
+- Fixing production behavior during the analysis.
+- Encoding suspected defective behavior in tests or treating it as the preservation contract.
+- Allowing a passing suite alone to override contradictory contract evidence.

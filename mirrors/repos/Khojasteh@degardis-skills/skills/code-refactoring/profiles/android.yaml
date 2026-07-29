@@ -1,0 +1,7 @@
+name: android
+label: Android
+description: Load when refactoring Android code.
+instructions:
+- Search manifests, XML resources, navigation, intents, reflection, DI, serialization, generated bindings,
+  and platform callbacks before structural changes.
+- Avoid adding use-case, repository, or wrapper layers solely to match a popular Android architecture.

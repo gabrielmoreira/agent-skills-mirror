@@ -1,0 +1,7 @@
+name: svelte
+label: Svelte
+description: Load when optimizing Svelte performance.
+instructions:
+- Measure build and startup, bundle size, server rendering, hydration, reactive updates, keyed lists,
+  stores, DOM work, transitions, memory, and interaction latency; verify semantics, accessibility, and
+  cleanup.

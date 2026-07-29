@@ -1,0 +1,9 @@
+name: sql
+label: SQL
+description: Load when migrating to or from SQL.
+instructions:
+- Prefer target-native SQL types, constraints, window functions, JSON support, identity, concurrency,
+  and query features over translated source routines; verify ordering, equality, nulls, collation, precision,
+  complexity, locks, and failure semantics.
+- Keep dual reads/writes, compatibility views, and adapters bounded to explicit stages with ownership,
+  reconciliation, cutover, rollback, and removal gates.

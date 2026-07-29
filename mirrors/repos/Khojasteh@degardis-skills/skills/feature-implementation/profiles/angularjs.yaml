@@ -1,0 +1,6 @@
+name: angularjs
+label: AngularJS
+description: Load when implementing AngularJS features.
+instructions:
+- Define bindings, scope ownership, digest timing, directives, transclusion, routing, HTTP, promises,
+  accessibility, DOM cleanup, minification, and browser compatibility.

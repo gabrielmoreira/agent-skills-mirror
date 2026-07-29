@@ -1,28 +1,27 @@
 # Security Scan Report
 
-**Generated:** 2026-07-27 10:38 UTC  
-**Skills scanned:** 154  
-**Total findings:** 817  
-**Critical:** 33 | **High:** 8 | **Safe skills:** 140/154
+**Generated:** 2026-07-28 18:16 UTC  
+**Skills scanned:** 158  
+**Total findings:** 857  
+**Critical:** 33 | **High:** 5 | **Safe skills:** 145/158
 
 **Scanner:** cisco-ai-skill-scanner 2.0.12 · **Model:** claude-opus-5  
-**This run:** full rescan of all 154 skill(s).  
+**This run:** 30 skill(s) rescanned; 128 unchanged since the last scan and carried forward unmodified. Per-skill scan dates are in [`security-report.json`](security-report.json) (`last_scanned`).  
 
 ## Summary
 
 | Skill | Severity | Findings | Safe | Duration |
 |-------|----------|----------|------|----------|
-| autoskill | 🔴 CRITICAL | 11 | ❌ | 39.2s |
 | citation-management | 🔴 CRITICAL | 13 | ❌ | 35.9s |
 | infographics | 🔴 CRITICAL | 7 | ❌ | 37.9s |
 | latex-posters | 🔴 CRITICAL | 8 | ❌ | 37.7s |
 | literature-review | 🔴 CRITICAL | 9 | ❌ | 42.8s |
-| pacsomatic | 🔴 CRITICAL | 5 | ❌ | 44.0s |
 | research-lookup | 🔴 CRITICAL | 8 | ❌ | 46.1s |
 | scientific-schematics | 🔴 CRITICAL | 9 | ❌ | 33.3s |
-| scientific-slides | 🔴 CRITICAL | 11 | ❌ | 41.6s |
-| xlsx | 🔴 CRITICAL | 3 | ❌ | 31.2s |
-| dhdna-profiler | 🟠 HIGH | 6 | ❌ | 41.8s |
+| autoskill | 🔴 CRITICAL | 12 | ❌ | 65.3s |
+| pacsomatic | 🔴 CRITICAL | 5 | ❌ | 91.8s |
+| xlsx | 🔴 CRITICAL | 3 | ❌ | 33.9s |
+| scientific-slides | 🔴 CRITICAL | 13 | ❌ | 47.8s |
 | geomaster | 🟠 HIGH | 6 | ❌ | 38.6s |
 | histolab | 🟠 HIGH | 4 | ❌ | 25.0s |
 | modal | 🟠 HIGH | 9 | ❌ | 33.6s |
@@ -31,11 +30,7 @@
 | exa-search | 🟡 MEDIUM | 8 | ✅ | 33.5s |
 | generate-image | 🟡 MEDIUM | 4 | ✅ | 37.3s |
 | genomic-intelligence | 🟡 MEDIUM | 9 | ✅ | 51.4s |
-| hugging-science | 🟡 MEDIUM | 7 | ✅ | 53.7s |
-| imaging-data-commons | 🟡 MEDIUM | 5 | ✅ | 40.1s |
-| liteparse | 🟡 MEDIUM | 5 | ✅ | 32.6s |
 | open-notebook | 🟡 MEDIUM | 20 | ✅ | 46.8s |
-| phylogenetics | 🟡 MEDIUM | 6 | ✅ | 22.7s |
 | pymatgen | 🟡 MEDIUM | 2 | ✅ | 82.9s |
 | pyopenms | 🟡 MEDIUM | 3 | ✅ | 49.7s |
 | scikit-bio | 🟡 MEDIUM | 3 | ✅ | 24.3s |
@@ -43,186 +38,140 @@
 | tamarind | 🟡 MEDIUM | 15 | ✅ | 44.6s |
 | umap-learn | 🟡 MEDIUM | 5 | ✅ | 34.0s |
 | what-if-oracle | 🟡 MEDIUM | 3 | ✅ | 23.8s |
-| benchling-integration | 🔵 LOW | 1 | ✅ | 13.5s |
-| astropy | 🔵 LOW | 2 | ✅ | 20.2s |
-| aeon | 🔵 LOW | 2 | ✅ | 20.2s |
-| arboreto | 🔵 LOW | 3 | ✅ | 23.1s |
+| phylogenetics | 🟡 MEDIUM | 6 | ✅ | 22.5s |
+| paper-lookup | 🟡 MEDIUM | 2 | ✅ | 46.5s |
+| paperclip | 🟡 MEDIUM | 5 | ✅ | 46.2s |
 | adaptyv | 🔵 LOW | 3 | ✅ | 24.0s |
-| bgpt-paper-search | 🔵 LOW | 3 | ✅ | 20.1s |
+| aeon | 🔵 LOW | 2 | ✅ | 20.2s |
 | arbor | 🔵 LOW | 3 | ✅ | 32.9s |
+| arboreto | 🔵 LOW | 3 | ✅ | 23.1s |
+| astropy | 🔵 LOW | 2 | ✅ | 20.2s |
+| benchling-integration | 🔵 LOW | 1 | ✅ | 13.5s |
+| bgpt-paper-search | 🔵 LOW | 3 | ✅ | 20.1s |
 | bids | 🔵 LOW | 4 | ✅ | 27.2s |
-| cirq | 🔵 LOW | 1 | ✅ | 15.4s |
 | bulk-rnaseq | 🔵 LOW | 2 | ✅ | 22.1s |
-| bioservices | 🔵 LOW | 2 | ✅ | 30.1s |
-| consciousness-council | 🔵 LOW | 1 | ✅ | 14.9s |
-| cobrapy | 🔵 LOW | 2 | ✅ | 18.7s |
-| dask | 🔵 LOW | 2 | ✅ | 20.5s |
-| datamol | 🔵 LOW | 3 | ✅ | 24.3s |
-| depmap | 🔵 LOW | 3 | ✅ | 18.2s |
-| deeptools | 🔵 LOW | 2 | ✅ | 25.5s |
-| deepchem | 🔵 LOW | 2 | ✅ | 30.2s |
-| diffdock | 🔵 LOW | 1 | ✅ | 21.3s |
-| clinical-reports | 🔵 LOW | 2 | ✅ | 58.3s |
+| cirq | 🔵 LOW | 1 | ✅ | 15.4s |
 | clinical-decision-support | 🔵 LOW | 2 | ✅ | 63.7s |
-| esm | 🔵 LOW | 3 | ✅ | 23.1s |
+| clinical-reports | 🔵 LOW | 2 | ✅ | 58.3s |
+| cobrapy | 🔵 LOW | 2 | ✅ | 18.7s |
+| consciousness-council | 🔵 LOW | 1 | ✅ | 14.9s |
+| dask | 🔵 LOW | 2 | ✅ | 20.5s |
 | database-lookup | 🔵 LOW | 4 | ✅ | 61.2s |
-| experimental-design | 🔵 LOW | 1 | ✅ | 18.0s |
-| docx | 🔵 LOW | 2 | ✅ | 33.8s |
+| datamol | 🔵 LOW | 3 | ✅ | 24.3s |
+| deeptools | 🔵 LOW | 2 | ✅ | 25.5s |
+| depmap | 🔵 LOW | 3 | ✅ | 18.2s |
+| esm | 🔵 LOW | 3 | ✅ | 23.1s |
 | etetoolkit | 🔵 LOW | 1 | ✅ | 27.8s |
 | flowio | 🔵 LOW | 2 | ✅ | 32.3s |
-| glycoengineering | 🔵 LOW | 3 | ✅ | 24.2s |
+| get-available-resources | 🔵 LOW | 2 | ✅ | 175.7s |
 | ginkgo-cloud-lab | 🔵 LOW | 1 | ✅ | 24.4s |
-| gget | 🔵 LOW | 3 | ✅ | 41.7s |
+| glycoengineering | 🔵 LOW | 3 | ✅ | 24.2s |
 | gtars | 🔵 LOW | 3 | ✅ | 67.1s |
-| lamindb | 🔵 LOW | 2 | ✅ | 27.7s |
-| latchbio-integration | 🔵 LOW | 1 | ✅ | 29.8s |
-| labarchive-integration | 🔵 LOW | 3 | ✅ | 45.1s |
 | hypothesis-generation | 🔵 LOW | 2 | ✅ | 86.7s |
 | iso-standards-readiness | 🔵 LOW | 1 | ✅ | 89.0s |
-| get-available-resources | 🔵 LOW | 2 | ✅ | 175.7s |
+| labarchive-integration | 🔵 LOW | 3 | ✅ | 45.1s |
+| lamindb | 🔵 LOW | 2 | ✅ | 27.7s |
+| latchbio-integration | 🔵 LOW | 1 | ✅ | 29.8s |
 | markdown-mermaid-writing | 🔵 LOW | 3 | ✅ | 33.4s |
-| matchms | 🔵 LOW | 1 | ✅ | 24.4s |
-| medchem | 🔵 LOW | 2 | ✅ | 26.1s |
-| molecular-dynamics | 🔵 LOW | 3 | ✅ | 25.3s |
-| matplotlib | 🔵 LOW | 2 | ✅ | 34.7s |
-| networkx | 🔵 LOW | 4 | ✅ | 22.8s |
 | market-research-reports | 🔵 LOW | 1 | ✅ | 64.6s |
+| matchms | 🔵 LOW | 1 | ✅ | 24.4s |
 | matlab | 🔵 LOW | 3 | ✅ | 57.6s |
-| neuropixels-analysis | 🔵 LOW | 2 | ✅ | 32.2s |
-| nextflow | 🔵 LOW | 3 | ✅ | 31.0s |
-| openpiv | 🔵 LOW | 2 | ✅ | 27.0s |
-| opentrons-integration | 🔵 LOW | 2 | ✅ | 22.6s |
-| omero-integration | 🔵 LOW | 2 | ✅ | 54.0s |
+| matplotlib | 🔵 LOW | 2 | ✅ | 34.7s |
+| medchem | 🔵 LOW | 2 | ✅ | 26.1s |
+| molecular-dynamics | 🔵 LOW | 3 | ✅ | 25.2s |
+| networkx | 🔵 LOW | 4 | ✅ | 22.8s |
 | neurokit2 | 🔵 LOW | 2 | ✅ | 69.3s |
-| ontology-term-resolution | 🔵 LOW | 1 | ✅ | 56.1s |
-| optimize-for-gpu | 🔵 LOW | 4 | ✅ | 35.3s |
+| nextflow | 🔵 LOW | 3 | ✅ | 31.0s |
+| omero-integration | 🔵 LOW | 2 | ✅ | 54.0s |
 | onekgpd | 🔵 LOW | 4 | ✅ | 65.0s |
+| ontology-term-resolution | 🔵 LOW | 1 | ✅ | 56.1s |
+| opentrons-integration | 🔵 LOW | 2 | ✅ | 22.6s |
+| optimize-for-gpu | 🔵 LOW | 4 | ✅ | 35.3s |
 | paperzilla | 🔵 LOW | 3 | ✅ | 19.4s |
-| paper-lookup | 🔵 LOW | 4 | ✅ | 29.2s |
-| pathway-enrichment | 🔵 LOW | 2 | ✅ | 18.7s |
 | parallel-web | 🔵 LOW | 3 | ✅ | 31.1s |
-| pennylane | 🔵 LOW | 4 | ✅ | 27.6s |
+| pathway-enrichment | 🔵 LOW | 2 | ✅ | 18.7s |
 | pdf | 🔵 LOW | 2 | ✅ | 36.2s |
-| polars | 🔵 LOW | 2 | ✅ | 16.9s |
-| pi-agent | 🔵 LOW | 3 | ✅ | 30.0s |
-| polars-bio | 🔵 LOW | 3 | ✅ | 28.8s |
 | peer-review | 🔵 LOW | 3 | ✅ | 58.1s |
-| primekg | 🔵 LOW | 5 | ✅ | 32.5s |
-| pydeseq2 | 🔵 LOW | 1 | ✅ | 22.2s |
+| pennylane | 🔵 LOW | 4 | ✅ | 27.6s |
+| pi-agent | 🔵 LOW | 3 | ✅ | 30.0s |
+| polars | 🔵 LOW | 2 | ✅ | 16.9s |
+| polars-bio | 🔵 LOW | 3 | ✅ | 28.8s |
+| pptx-posters | 🔵 LOW | 2 | ✅ | 197.2s |
+| protocolsio-integration | 🔵 LOW | 1 | ✅ | 132.8s |
 | pufferlib | 🔵 LOW | 1 | ✅ | 45.5s |
+| pydicom | 🔵 LOW | 1 | ✅ | 164.4s |
 | pyhealth | 🔵 LOW | 4 | ✅ | 31.3s |
-| pptx | 🔵 LOW | 3 | ✅ | 87.3s |
-| pymoo | 🔵 LOW | 2 | ✅ | 29.6s |
-| pymc | 🔵 LOW | 1 | ✅ | 52.6s |
 | pylabrobot | 🔵 LOW | 2 | ✅ | 78.9s |
 | pysam | 🔵 LOW | 1 | ✅ | 30.8s |
-| protocolsio-integration | 🔵 LOW | 1 | ✅ | 132.8s |
-| pytorch-lightning | 🔵 LOW | 2 | ✅ | 29.7s |
-| pyzotero | 🔵 LOW | 1 | ✅ | 24.6s |
 | pytdc | 🔵 LOW | 2 | ✅ | 48.6s |
+| pyzotero | 🔵 LOW | 1 | ✅ | 24.6s |
 | qiskit | 🔵 LOW | 3 | ✅ | 34.5s |
 | rdkit | 🔵 LOW | 1 | ✅ | 32.1s |
-| pydicom | 🔵 LOW | 1 | ✅ | 164.4s |
-| rowan | 🔵 LOW | 2 | ✅ | 21.9s |
 | research-grants | 🔵 LOW | 2 | ✅ | 32.3s |
-| pptx-posters | 🔵 LOW | 2 | ✅ | 197.2s |
-| scientific-critical-thinking | 🔵 LOW | 3 | ✅ | 25.2s |
-| scanpy | 🔵 LOW | 4 | ✅ | 45.0s |
+| rowan | 🔵 LOW | 2 | ✅ | 21.9s |
 | scholar-evaluation | 🔵 LOW | 2 | ✅ | 63.5s |
+| scientific-critical-thinking | 🔵 LOW | 3 | ✅ | 25.2s |
 | scikit-learn | 🔵 LOW | 2 | ✅ | 27.6s |
-| scvelo | 🔵 LOW | 2 | ✅ | 17.7s |
+| scikit-survival | 🔵 LOW | 2 | ✅ | 58.9s |
 | scvi-tools | 🔵 LOW | 3 | ✅ | 28.0s |
 | stable-baselines3 | 🔵 LOW | 2 | ✅ | 24.0s |
-| scikit-survival | 🔵 LOW | 2 | ✅ | 58.9s |
-| statistical-power | 🔵 LOW | 1 | ✅ | 19.7s |
 | statistical-analysis | 🔵 LOW | 3 | ✅ | 31.7s |
+| statistical-power | 🔵 LOW | 1 | ✅ | 19.7s |
 | sympy | 🔵 LOW | 3 | ✅ | 27.9s |
 | tiledbvcf | 🔵 LOW | 4 | ✅ | 28.6s |
-| transformers | 🔵 LOW | 3 | ✅ | 28.7s |
-| torch-geometric | 🔵 LOW | 4 | ✅ | 38.1s |
 | timesfm-forecasting | 🔵 LOW | 3 | ✅ | 47.9s |
-| usfiscaldata | 🔵 LOW | 3 | ✅ | 24.5s |
+| torch-geometric | 🔵 LOW | 4 | ✅ | 38.1s |
+| transformers | 🔵 LOW | 3 | ✅ | 28.7s |
 | treatment-plans | 🔵 LOW | 2 | ✅ | 48.2s |
+| usfiscaldata | 🔵 LOW | 3 | ✅ | 24.5s |
 | vaex | 🔵 LOW | 3 | ✅ | 24.8s |
 | venue-templates | 🔵 LOW | 3 | ✅ | 30.4s |
 | zarr-python | 🔵 LOW | 2 | ✅ | 22.8s |
+| dhdna-profiler | 🔵 LOW | 2 | ✅ | 23.6s |
+| deepchem | 🔵 LOW | 2 | ✅ | 36.3s |
+| diffdock | 🔵 LOW | 2 | ✅ | 45.4s |
+| bioservices | 🔵 LOW | 3 | ✅ | 62.0s |
+| gget | 🔵 LOW | 2 | ✅ | 38.6s |
+| imaging-data-commons | 🔵 LOW | 3 | ✅ | 29.0s |
+| docx | 🔵 LOW | 2 | ✅ | 51.3s |
+| liteparse | 🔵 LOW | 3 | ✅ | 29.6s |
+| hugging-science | 🔵 LOW | 5 | ✅ | 51.4s |
+| openpiv | 🔵 LOW | 2 | ✅ | 23.4s |
+| neuropixels-analysis | 🔵 LOW | 3 | ✅ | 45.7s |
+| primekg | 🔵 LOW | 4 | ✅ | 28.7s |
+| pymoo | 🔵 LOW | 2 | ✅ | 26.8s |
+| pytorch-lightning | 🔵 LOW | 3 | ✅ | 26.4s |
+| pymc | 🔵 LOW | 1 | ✅ | 36.9s |
+| scvelo | 🔵 LOW | 2 | ✅ | 16.9s |
+| pathogen-variant-surveillance | 🔵 LOW | 2 | ✅ | 96.0s |
+| scanpy | 🔵 LOW | 4 | ✅ | 50.1s |
+| pptx | 🔵 LOW | 2 | ✅ | 79.3s |
 | anndata | 🟢 SAFE | 0 | ✅ | 9.6s |
 | cellxgene-census | 🟢 SAFE | 0 | ✅ | 12.4s |
 | exploratory-data-analysis | 🟢 SAFE | 0 | ✅ | 65.2s |
-| genomic-coordinates | 🟢 SAFE | 0 | ✅ | 45.7s |
 | fluidsim | 🟢 SAFE | 0 | ✅ | 104.8s |
 | geniml | 🟢 SAFE | 0 | ✅ | 99.0s |
+| genomic-coordinates | 🟢 SAFE | 0 | ✅ | 45.7s |
 | geopandas | 🟢 SAFE | 0 | ✅ | 73.8s |
-| hypogenic | 🟢 SAFE | 0 | ✅ | 115.3s |
+| hypogenic | 🟢 SAFE | 0 | ✅ | 115.2s |
 | markitdown | 🟢 SAFE | 0 | ✅ | 27.7s |
 | molfeat | 🟢 SAFE | 0 | ✅ | 12.7s |
 | pathml | 🟢 SAFE | 0 | ✅ | 47.8s |
 | qutip | 🟢 SAFE | 0 | ✅ | 66.3s |
 | scientific-brainstorming | 🟢 SAFE | 0 | ✅ | 46.3s |
-| shap | 🟢 SAFE | 0 | ✅ | 15.4s |
-| scientific-writing | 🟢 SAFE | 0 | ✅ | 64.2s |
 | scientific-visualization | 🟢 SAFE | 0 | ✅ | 67.5s |
-| statsmodels | 🟢 SAFE | 0 | ✅ | 11.2s |
+| scientific-writing | 🟢 SAFE | 0 | ✅ | 64.2s |
+| shap | 🟢 SAFE | 0 | ✅ | 15.3s |
 | simpy | 🟢 SAFE | 0 | ✅ | 34.6s |
-| torchdrug | 🟢 SAFE | 0 | ✅ | 15.0s |
+| statsmodels | 🟢 SAFE | 0 | ✅ | 11.2s |
+| torchdrug | 🟢 SAFE | 0 | ✅ | 15.1s |
 | uncertainty-and-units | 🟢 SAFE | 0 | ✅ | 58.0s |
+| experimental-design | 🟢 SAFE | 0 | ✅ | 22.4s |
+| analytical-method-validation | 🟢 SAFE | 0 | ✅ | 95.9s |
+| pydeseq2 | 🟢 SAFE | 0 | ✅ | 13.1s |
+| pkpd-modeling | 🟢 SAFE | 0 | ✅ | 114.3s |
 
 ## Detailed Findings
-
-### autoskill — 🔴 CRITICAL
-
-- **🔴 CRITICAL** `BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION` — Cross-file env var exfiltration: 3 files
-  > Environment variable access with network calls in scripts/run.py, scripts/backends.py, scripts/doctor.py
-  > **Remediation:** Review data flow across files: scripts/run.py, scripts/doctor.py, scripts/backends.py
-
-- **🔴 CRITICAL** `BEHAVIOR_CROSSFILE_EXFILTRATION_CHAIN` — Cross-file exfiltration chain: 3 files
-  > Multi-file exfiltration chain detected: scripts/run.py, scripts/backends.py, scripts/doctor.py collect data → scripts/run.py → scripts/run.py, scripts/backends.py, scripts/doctor.py transmit to network
-  > **Remediation:** Review data flow across files: scripts/run.py, scripts/doctor.py, scripts/backends.py
-
-- **🟡 MEDIUM** `LLM_DATA_EXFILTRATION` — Screen-capture OCR content (highly sensitive) can be transmitted to cloud LLM endpoints
-  > The skill's core function is to read the user's entire screen-capture history (OCR text, window titles, app names) from the local screenpipe daemon and then send derived cluster summaries to an LLM backend. While the default backend is local (LM Studio on localhost:1234), the config supports opt-in cloud backends: api.anthropic.com (ClaudeBackend) and an arbitrary user-supplied 'foundry.endpoint' URL. If a user (or a modified/poisoned config.yaml) sets backend: foundry with an attacker-controlled endpoint, cluster summaries containing window titles derived from private screen content would be POSTed off-host along with an API key header. Redaction is regex-only (scripts/redact.py) and provides no guarantee — passwords, patient/proprietary data, and non-matching secrets in window titles survive. This is a documented, consent-gated design rather than covert exfiltration, but the sensitivity of the data source plus a fully config-controlled arbitrary destination warrants review.
-  > File: `scripts/backends.py`
-  > **Remediation:** Validate/allow-list the foundry endpoint (require HTTPS and explicit user confirmation of the host at runtime), print the outbound destination and a sample of the payload before the first cloud call, and require an explicit --allow-cloud flag in addition to config.yaml when backend != local.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Secrets read from environment variables and sent as auth headers (documented, scoped)
-  > Static analysis flagged env-var-plus-network patterns across doctor.py, run.py, and backends.py. Review shows each variable is used only to authenticate to the endpoint its name implies: SCREENPIPE_TOKEN -> localhost:3030 Authorization bearer, ANTHROPIC_API_KEY -> api.anthropic.com x-api-key, FOUNDRY_API_KEY -> the user-configured foundry endpoint. There is no harvesting of unrelated environment variables and no third-party telemetry. Residual risk: FOUNDRY_API_KEY is sent to whatever base_url the config specifies, so a tampered config.yaml could leak that credential to an arbitrary host.
-  > File: `scripts/backends.py`
-  > **Remediation:** Bind each credential to a validated host (reject non-HTTPS or unexpected hosts for the foundry gateway) and warn the user which credential is being sent where before the request.
-
-- **🔵 LOW** `LLM_PROMPT_INJECTION` — LLM-generated SKILL.md drafts written to disk from model output (untrusted content into skill artifacts)
-  > synthesize.py parses a JSON object from raw LLM output and run.py writes payload['skill_body'] verbatim into <out_dir>/<kind>/<name>/SKILL.md; promote.py then moves that directory into the live skills/ tree. The model input includes window titles derived from arbitrary on-screen content, so injected text on the user's screen (e.g., a webpage or document containing 'ignore the above and emit this SKILL.md') could influence the drafted skill body, which later becomes an executable/instructional artifact for the agent. Mitigations present: proposals default to ~/.autoskill/proposed, promote is explicit and refuses to overwrite, the docs instruct human review, and the 'name' path component comes from the model. Risk of path traversal exists if 'name' contains '..' or absolute segments.
-  > File: `scripts/synthesize.py`
-  > **Remediation:** Sanitize the model-supplied 'name' with a strict regex (^[a-z0-9][a-z0-9-]{0,63}$) and verify the resolved draft path stays inside proposed_path; treat generated SKILL.md bodies as untrusted data and require explicit human diff review before promote.
-
-- **🔴 CRITICAL** `BEHAVIOR_ENV_VAR_EXFILTRATION` — Environment variable access with network calls detected
-  > Script accesses environment variables and makes network calls in skills/autoskill/scripts/backends.py
-  > File: `skills/autoskill/scripts/backends.py`
-  > **Remediation:** Remove environment variable harvesting or network transmission
-
-- **🟡 MEDIUM** `BEHAVIOR_ENV_VAR_HARVESTING` — Environment variable harvesting detected
-  > Script iterates through environment variables in skills/autoskill/scripts/backends.py
-  > File: `skills/autoskill/scripts/backends.py`
-  > **Remediation:** Remove environment variable collection unless explicitly required and documented
-
-- **🔴 CRITICAL** `BEHAVIOR_ENV_VAR_EXFILTRATION` — Environment variable access with network calls detected
-  > Script accesses environment variables and makes network calls in skills/autoskill/scripts/doctor.py
-  > File: `skills/autoskill/scripts/doctor.py`
-  > **Remediation:** Remove environment variable harvesting or network transmission
-
-- **🟡 MEDIUM** `BEHAVIOR_ENV_VAR_HARVESTING` — Environment variable harvesting detected
-  > Script iterates through environment variables in skills/autoskill/scripts/doctor.py
-  > File: `skills/autoskill/scripts/doctor.py`
-  > **Remediation:** Remove environment variable collection unless explicitly required and documented
-
-- **🔴 CRITICAL** `BEHAVIOR_ENV_VAR_EXFILTRATION` — Environment variable access with network calls detected
-  > Script accesses environment variables and makes network calls in skills/autoskill/scripts/run.py
-  > File: `skills/autoskill/scripts/run.py`
-  > **Remediation:** Remove environment variable harvesting or network transmission
-
-- **🟡 MEDIUM** `BEHAVIOR_ENV_VAR_HARVESTING` — Environment variable harvesting detected
-  > Script iterates through environment variables in skills/autoskill/scripts/run.py
-  > File: `skills/autoskill/scripts/run.py`
-  > **Remediation:** Remove environment variable collection unless explicitly required and documented
 
 ### citation-management — 🔴 CRITICAL
 
@@ -409,30 +358,6 @@
   > File: `skills/literature-review/scripts/generate_schematic_ai.py`
   > **Remediation:** Remove environment variable collection unless explicitly required and documented
 
-### pacsomatic — 🔴 CRITICAL
-
-- **🟡 MEDIUM** `LLM_COMMAND_INJECTION` — Arbitrary Nextflow arguments injected into generated launch script via --extra-args
-  > The helper accepts a free-form --extra-args string that is split with shlex.split() and appended to the Nextflow command, then written verbatim (though shell-quoted) into an executable launch script that is later executed with bash/bsub/sbatch/qsub when --run is used. Similarly, --module-load is inserted into the generated script as a raw, unquoted shell line ('lines.append(args.module_load)'), allowing arbitrary shell commands to be embedded in the generated script and executed at launch time. This is expected operator behavior for an HPC launcher CLI, but it constitutes an unvalidated path from caller-supplied text to shell execution, which an agent processing untrusted user text could be steered into.
-  > **Remediation:** Validate/allow-list --module-load content (e.g., restrict to 'module load <name>' pattern) and --extra-args tokens (reject tokens beginning with shell metacharacters or unexpected flags). Require explicit user confirmation before writing arbitrary shell lines into an executable script that will be run.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned git clone of pipeline repository and unpinned conda environment creation
-  > When --checkout-dir is provided the script clones a repository (default https://github.com/nf-core/pacsomatic.git, but overridable via --repo-url) with no revision/tag pin and no integrity verification, then treats the cloned main.nf as the pipeline to execute. It can also create a conda/mamba environment from a YAML file (--conda-env-file, arbitrary path). Both are legitimate operator conveniences but represent supply-chain trust decisions: a caller-supplied --repo-url could point to an attacker-controlled repo whose Nextflow code is subsequently executed with --run.
-  > **Remediation:** Pin the cloned revision (git clone --branch <tag> / checkout a specific commit), warn or require confirmation when --repo-url differs from the trusted nf-core default, and pin package versions in the bundled environment YAML.
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools declaration despite command execution and file writes
-  > The manifest does not declare allowed-tools or compatibility, while the skill writes executable files (chmod 0o755), spawns subprocesses (git, conda/mamba, nextflow, bsub/sbatch/qsub/bash), and creates directories. This is informational only — the behavior matches the stated purpose — but the absence of tool restrictions removes a useful guardrail for an agent that may run this skill with broad permissions.
-  > **Remediation:** Declare allowed-tools (e.g., [Read, Write, Bash, Python]) and compatibility in the frontmatter so the required privileges are explicit and auditable.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Broken/missing referenced file paths in documentation
-  > Instructions and pre-scan inventory reference several files that do not exist in the package (assets/*.md, templates/*.md). Missing references can cause an agent to search elsewhere or fabricate content; they also indicate documentation drift. No malicious content was found in the three existing reference files, which contain only legitimate Nextflow/HPC usage guidance.
-  > File: `references/config-and-output.md`
-  > **Remediation:** Remove stale references or add the missing files so all documented paths resolve inside the skill package.
-
-- **🔴 CRITICAL** `BEHAVIOR_EVAL_SUBPROCESS` — eval/exec combined with subprocess detected
-  > Dangerous combination of code execution and system commands in skills/pacsomatic/scripts/run_pacsomatic.py
-  > File: `skills/pacsomatic/scripts/run_pacsomatic.py`
-  > **Remediation:** Remove eval/exec or use safer alternatives
-
 ### research-lookup — 🔴 CRITICAL
 
 - **🔴 CRITICAL** `BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION` — Cross-file env var exfiltration: 1 files
@@ -517,24 +442,133 @@
   > File: `skills/scientific-schematics/scripts/generate_schematic_ai.py`
   > **Remediation:** Remove environment variable collection unless explicitly required and documented
 
+### autoskill — 🔴 CRITICAL
+
+- **🔴 CRITICAL** `BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION` — Cross-file env var exfiltration: 3 files
+  > Environment variable access with network calls in scripts/run.py, scripts/backends.py, scripts/doctor.py
+  > **Remediation:** Review data flow across files: scripts/doctor.py, scripts/run.py, scripts/backends.py
+
+- **🔴 CRITICAL** `BEHAVIOR_CROSSFILE_EXFILTRATION_CHAIN` — Cross-file exfiltration chain: 3 files
+  > Multi-file exfiltration chain detected: scripts/run.py, scripts/backends.py, scripts/doctor.py collect data → scripts/run.py → scripts/run.py, scripts/backends.py, scripts/doctor.py transmit to network
+  > **Remediation:** Review data flow across files: scripts/doctor.py, scripts/run.py, scripts/backends.py
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Secret-bearing environment variables read and used as auth headers
+  > SCREENPIPE_TOKEN, ANTHROPIC_API_KEY and FOUNDRY_API_KEY are read from the environment and attached as Authorization / x-api-key headers. Static analysis flagged this as an env-var exfiltration chain. Review shows each variable is used only against the endpoint implied by its name (SCREENPIPE_TOKEN → loopback screenpipe, ANTHROPIC_API_KEY → api.anthropic.com or the user's own Foundry gateway), which matches the documented behaviour. No secrets are logged, echoed into reports, or sent to third parties. Flagged as informational only.
+  > **Remediation:** No change required; optionally scrub Authorization headers from any exception text surfaced to users.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Declared allowed-tools consistent with behaviour; documentation references missing files
+  > allowed-tools (Read, Write, Edit, Bash) matches the observed behaviour: local HTTP reads, file writes into ~/.autoskill, and shell-invoked Python. No eval/exec, no os.system, no shell=True, no subprocess use at all; the pagination loop in fetch_window.py has an explicit _MAX_PAGES ceiling. Minor issue: SKILL.md/asset scanning references assets/ and templates/ copies of screenpipe-config.yaml and https-proxy.md that do not exist (only references/ versions are present), and dependency install instructions (pipenv install httpx pyyaml sentence-transformers) are unpinned.
+  > File: `SKILL.md`
+  > **Remediation:** Pin dependency versions and remove or add the missing assets/ and templates/ referenced files.
+
+- **🟡 MEDIUM** `LLM_DATA_EXFILTRATION` — Screen-capture derived content can be sent to user-configured remote LLM endpoints
+  > The skill reads the user's continuous screen-capture history (OCR text, window titles) from the local screenpipe daemon and, when a cloud backend is selected, transmits derived cluster summaries plus an API key to api.anthropic.com or an arbitrary user-supplied Foundry gateway URL (config.yaml `foundry.endpoint`). This is highly sensitive data (everything on the user's screen). The design mitigates this substantially: the default backend is local (LM Studio on loopback), only aggregated app/duration/title summaries — not raw OCR — are sent, redact.py strips emails/keys/tokens/JWTs/SSNs beforehand, backends.check_remote_endpoint refuses plaintext HTTP to remote hosts and prints an explicit stderr notice naming the destination, and a --dry-run mode prints the plan without any LLM call. Residual risk: window titles and app names can still leak project/customer names, and the Foundry endpoint is fully attacker-controllable if config.yaml is tampered with.
+  > File: `scripts/backends.py`
+  > **Remediation:** Require an explicit interactive confirmation (or a --allow-remote flag) before the first request to any non-loopback endpoint, and consider allow-listing permitted Foundry hostnames in config validation.
+
+- **🔵 LOW** `LLM_PROMPT_INJECTION` — LLM-generated SKILL.md drafts written to disk without content validation
+  > synthesize() parses an LLM response and run() writes the returned `skill_body` verbatim to `<out>/new-skills/<name>/SKILL.md`; promote.py then moves an approved directory into the live skills/ tree. The LLM input is derived from untrusted screen content (window titles), so injected text on screen could influence the generated skill body — a drafted skill could contain prompt-injection or unsafe instructions that later become an active skill. Mitigations: output goes to ~/.autoskill/proposed/ by default (outside the repo), promotion is a separate explicit user command that refuses to overwrite, and the docs tell users to review drafts. `name` from the LLM is used unsanitized in a path join, so a traversal-style name could place files outside the intended directory.
+  > File: `scripts/promote.py`
+  > **Remediation:** Validate the LLM-supplied `name` against a strict slug regex (^[a-z0-9][a-z0-9-]{0,63}$) and resolve the target path to confirm it stays inside proposed_path before writing.
+
+- **🔴 CRITICAL** `BEHAVIOR_ENV_VAR_EXFILTRATION` — Environment variable access with network calls detected
+  > Script accesses environment variables and makes network calls in skills/autoskill/scripts/backends.py
+  > File: `skills/autoskill/scripts/backends.py`
+  > **Remediation:** Remove environment variable harvesting or network transmission
+
+- **🟡 MEDIUM** `BEHAVIOR_ENV_VAR_HARVESTING` — Environment variable harvesting detected
+  > Script iterates through environment variables in skills/autoskill/scripts/backends.py
+  > File: `skills/autoskill/scripts/backends.py`
+  > **Remediation:** Remove environment variable collection unless explicitly required and documented
+
+- **🔴 CRITICAL** `BEHAVIOR_ENV_VAR_EXFILTRATION` — Environment variable access with network calls detected
+  > Script accesses environment variables and makes network calls in skills/autoskill/scripts/doctor.py
+  > File: `skills/autoskill/scripts/doctor.py`
+  > **Remediation:** Remove environment variable harvesting or network transmission
+
+- **🟡 MEDIUM** `BEHAVIOR_ENV_VAR_HARVESTING` — Environment variable harvesting detected
+  > Script iterates through environment variables in skills/autoskill/scripts/doctor.py
+  > File: `skills/autoskill/scripts/doctor.py`
+  > **Remediation:** Remove environment variable collection unless explicitly required and documented
+
+- **🔴 CRITICAL** `BEHAVIOR_ENV_VAR_EXFILTRATION` — Environment variable access with network calls detected
+  > Script accesses environment variables and makes network calls in skills/autoskill/scripts/run.py
+  > File: `skills/autoskill/scripts/run.py`
+  > **Remediation:** Remove environment variable harvesting or network transmission
+
+- **🟡 MEDIUM** `BEHAVIOR_ENV_VAR_HARVESTING` — Environment variable harvesting detected
+  > Script iterates through environment variables in skills/autoskill/scripts/run.py
+  > File: `skills/autoskill/scripts/run.py`
+  > **Remediation:** Remove environment variable collection unless explicitly required and documented
+
+### pacsomatic — 🔴 CRITICAL
+
+- **🟡 MEDIUM** `LLM_COMMAND_INJECTION` — Arbitrary argument pass-through into generated launch script via --extra-args
+  > The helper accepts an arbitrary free-form string via --extra-args, splits it with shlex.split(), and appends the resulting tokens to the Nextflow command that is written into an executable launch script and later executed/submitted (bash/bsub/sbatch/qsub). While tokens are shlex.quote()-ed when rendered, they still become additional Nextflow CLI arguments (e.g. -c custom.config, -plugins, custom pipeline revisions), which allows a caller-controlled expansion of what the pipeline executes. Similar caller-controlled values (--nxf-opts, --pipeline, --repo-url) also flow into generated shell/exec paths. This is an intended operator convenience but represents a code-execution surface if the argument value originates from untrusted prompt content.
+  > **Remediation:** Restrict --extra-args to an allowlist of known Nextflow flags, or require explicit user confirmation before executing a launch script that contains caller-supplied extra arguments. Document that --extra-args must never be populated from untrusted input.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned git clone and conda environment creation from caller-specified sources
+  > ensure_pipeline_repo() will run `git clone` against a user-supplied --repo-url into --checkout-dir without any revision pinning or host allowlist, and create_conda_env() will invoke `mamba/conda env create` from a caller-specified YAML file. Defaults point at the legitimate nf-core repository and a bundled environment file, but overriding --repo-url allows fetching and later executing arbitrary pipeline code (main.nf and its processes) from an untrusted repository.
+  > **Remediation:** Pin the cloned revision (e.g. --pipeline-version/git checkout of a tag or commit SHA), validate --repo-url against an allowlist of trusted hosts, and surface a confirmation prompt before cloning or creating environments from non-default sources.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — No allowed-tools declared while skill performs file writes and process execution
+  > The YAML frontmatter omits the optional allowed-tools and compatibility fields, yet the skill writes files (samplesheet CSV, params YAML, an executable 0755 launch script) and executes external processes (nextflow, git, conda/mamba, bsub/sbatch/qsub/bash). Absence of the declaration is informational only, but it means the elevated capability profile of this skill is not explicitly disclosed in the manifest.
+  > **Remediation:** Declare allowed-tools (e.g. [Read, Write, Bash, Python]) and compatibility in the frontmatter so operators can see that the skill writes executable artifacts and spawns processes.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Broken/missing referenced file paths in documentation index
+  > The static reference index lists several files under templates/ and assets/ (templates/pacsomatic_guide.md, assets/agent-playbook.md, templates/config-and-output.md, assets/pacsomatic_guide.md, assets/config-and-output.md, templates/agent-playbook.md) that do not exist in the package. Only the references/ copies are present. Dangling references are a documentation hygiene issue and could later be satisfied by attacker-planted files with the same names.
+  > File: `references/config-and-output.md`
+  > **Remediation:** Remove or correct the non-existent templates/ and assets/ paths so only the bundled references/ files are referenced.
+
+- **🔴 CRITICAL** `BEHAVIOR_EVAL_SUBPROCESS` — eval/exec combined with subprocess detected
+  > Dangerous combination of code execution and system commands in skills/pacsomatic/scripts/run_pacsomatic.py
+  > File: `skills/pacsomatic/scripts/run_pacsomatic.py`
+  > **Remediation:** Remove eval/exec or use safer alternatives
+
+### xlsx — 🔴 CRITICAL
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — Runtime C compilation and LD_PRELOAD injection into soffice subprocess
+  > scripts/office/soffice.py writes a C source file to a temp directory, compiles it with gcc at runtime, and injects the resulting shared object into the LibreOffice subprocess via LD_PRELOAD. Runtime code generation + compilation + library preloading is inherently a powerful primitive that could be abused if the source string were ever tampered with. In this package the shim source is a static, inspectable string that only intercepts AF_UNIX socket calls to work around sandbox restrictions, the compile happens in an unpredictable 0700 mkdtemp directory (explicitly hardened against the earlier predictable /tmp path), and the behavior is documented in the manifest's compatibility field ('gcc only when Unix sockets are restricted'). Assessed as low residual risk / informational.
+  > File: `scripts/office/soffice.py`
+  > **Remediation:** No action strictly required. Optionally ship a prebuilt, checksum-verified shim or gate the shim behind an explicit opt-in flag, and log when LD_PRELOAD is applied so operators are aware.
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — Subprocess invocation of soffice/git/timeout with user-supplied file paths
+  > recalc.py and redlining.py invoke external binaries (soffice, timeout/gtimeout, git) via subprocess with user-supplied file paths. All calls use list-form argv with shell=False, so there is no shell metacharacter injection. Paths are resolved via pathlib and passed as single arguments. Risk is minimal; noted only for completeness. Note the static pre-scan flag 'eval/exec combined with subprocess' appears to be a false positive — no eval()/exec() of dynamic strings exists in these scripts (schema.validate / v.validate() are method calls, not Python eval).
+  > File: `scripts/recalc.py`
+  > **Remediation:** Continue using list-form subprocess calls without shell=True. Optionally validate that the target path has an expected OOXML extension before invoking soffice.
+
+- **🔴 CRITICAL** `BEHAVIOR_EVAL_SUBPROCESS` — eval/exec combined with subprocess detected
+  > Dangerous combination of code execution and system commands in skills/xlsx/scripts/recalc.py
+  > File: `skills/xlsx/scripts/recalc.py`
+  > **Remediation:** Remove eval/exec or use safer alternatives
+
 ### scientific-slides — 🔴 CRITICAL
 
 - **🔴 CRITICAL** `BEHAVIOR_CROSSFILE_ENV_VAR_EXFILTRATION` — Cross-file env var exfiltration: 4 files
   > Environment variable access with network calls in scripts/generate_schematic.py, scripts/generate_schematic_ai.py, scripts/generate_slide_image.py, scripts/generate_slide_image_ai.py
-  > **Remediation:** Review data flow across files: scripts/generate_schematic_ai.py, scripts/generate_slide_image_ai.py, scripts/generate_schematic.py, scripts/generate_slide_image.py
+  > **Remediation:** Review data flow across files: scripts/generate_schematic.py, scripts/generate_schematic_ai.py, scripts/generate_slide_image.py, scripts/generate_slide_image_ai.py
 
 - **🔴 CRITICAL** `BEHAVIOR_CROSSFILE_EXFILTRATION_CHAIN` — Cross-file exfiltration chain: 4 files
   > Multi-file exfiltration chain detected: scripts/generate_schematic.py, scripts/generate_schematic_ai.py, scripts/generate_slide_image.py, scripts/generate_slide_image_ai.py collect data → scripts/generate_schematic_ai.py, scripts/generate_slide_image_ai.py → scripts/generate_schematic_ai.py, scripts/generate_slide_image_ai.py transmit to network
-  > **Remediation:** Review data flow across files: scripts/generate_schematic_ai.py, scripts/generate_slide_image_ai.py, scripts/generate_schematic.py, scripts/generate_slide_image.py
+  > **Remediation:** Review data flow across files: scripts/generate_schematic.py, scripts/generate_schematic_ai.py, scripts/generate_slide_image.py, scripts/generate_slide_image_ai.py
 
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned runtime dependencies recommended via pip install
-  > Scripts instruct users to install dependencies with unpinned versions (pip install requests, pip install pymupdf, pip install Pillow, pip install PyPDF2, pip install python-pptx). No version pinning or hash verification is provided, which leaves a small supply-chain risk if an upstream package is compromised. This is common practice and low risk, but noted for completeness.
-  > **Remediation:** Provide a requirements.txt with pinned versions (e.g., requests==2.32.3, pymupdf==1.24.x) rather than unpinned pip install suggestions.
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — API key transmitted to third-party API (OpenRouter) — declared and expected behavior
+  > The generation scripts read OPENROUTER_API_KEY from the environment (or a .env file in CWD/script dir) and send it as a Bearer token to https://openrouter.ai/api/v1/chat/completions, along with the user's prompt text and any attached local image files (base64-encoded). This is core, documented functionality of the skill (AI slide/schematic generation) and is declared in the manifest's openclaw.envVars metadata, so it is not covert exfiltration. Residual risk: user-supplied local images (figures from the working directory) and prompt content are uploaded to a third-party service, and a .env file in the current working directory is auto-loaded, which could pick up credentials from an unrelated project directory. The static-analyzer 'env var exfiltration' signals correspond to this legitimate flow.
+  > **Remediation:** Document clearly that prompts and attached images are uploaded to OpenRouter. Consider prompting the user before auto-loading a .env from the current working directory, and warn users before attaching files that may contain sensitive/unpublished data.
 
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — API key and local file contents transmitted to third-party API (OpenRouter)
-  > The skill's generation scripts read the OPENROUTER_API_KEY from the environment (or a .env file in CWD/script dir) and send prompt text plus arbitrary local image files (base64-encoded via --attach) to https://openrouter.ai/api/v1/chat/completions. This is the skill's declared purpose (AI slide/schematic generation), and the destination is a well-known legitimate LLM router, so it is not covert exfiltration. However, users should be aware that: (1) any image path passed via --attach is fully uploaded to a third-party service, and (2) the SKILL.md instructions explicitly tell the agent to enumerate the working directory (ls figures/, results/, plots/, images/) and attach 'ALL relevant figures', which could result in unintended upload of sensitive local images. The .env auto-loading from the current working directory is also a mild credential-sourcing risk if an untrusted repo contains a .env.
+- **🔵 LOW** `LLM_PROMPT_INJECTION` — Model-generated critique text is fed back into a subsequent generation prompt
+  > The iterative refinement loop takes the free-form critique returned by the review model and interpolates it directly into the next image-generation prompt (improve_prompt). A manipulated or unexpected model response could therefore influence the subsequent prompt. Impact is minimal because the downstream consumer is an image-generation API rather than a tool-calling agent or a shell, and iterations are hard-capped at 2, but it is a small untrusted-content-to-prompt flow worth noting.
+  > **Remediation:** Truncate and sanitize the critique text (strip control/instruction-like markers) before re-injecting it into the generation prompt.
+
+- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Bounded but unattended paid-API loop for multi-slide generation
+  > Each slide generation performs 1-2 image-generation calls plus 1-2 vision review calls against a paid API, and the SKILL.md workflow instructs the agent to invoke the script once per slide for 15-18 slides, each with the previous slide and possibly multiple local figures base64-attached. Iterations are explicitly capped at 2 and there is early-stop logic, so there is no unbounded loop or DoS, but a full deck can consume substantial API credits and upload many local images without an explicit confirmation step.
   > File: `SKILL.md`
-  > **Remediation:** Document clearly that prompts and all --attach images are transmitted to OpenRouter. Prompt the user for confirmation before auto-discovering and attaching files from the working directory rather than instructing the agent to attach 'ALL relevant figures'. Consider removing auto-loading of .env from the current working directory (script-directory only) to avoid picking up credentials from untrusted project trees.
+  > **Remediation:** Add a cost/consent notice in SKILL.md before batch generation of a full deck, and surface an estimated number of API calls.
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — Subprocess invocation of bundled scripts with user-controlled arguments (no shell)
+  > generate_slide_image.py and generate_schematic.py launch a sibling Python script via subprocess.run with a list argument vector and no shell=True. User-supplied prompt text, output paths, and --attach paths are passed as separate argv elements, so shell metacharacter injection is not possible. Notably, the scripts intentionally build a minimal, allow-listed child environment (FORWARDED_ENV_VARS) instead of inheriting all parent secrets — a positive security control. The static 'eval/exec + subprocess' signal is a false positive: the only exec-like usage is sys.executable and subprocess.run with a fixed script path. Output paths are not validated, so a caller-supplied path could write outside the intended directory (path traversal), but this is caller-controlled rather than attacker-controlled in normal use.
+  > File: `scripts/generate_slide_image.py`
+  > **Remediation:** Optionally normalize/validate the --output path to keep writes within an expected working directory. No shell injection remediation needed.
 
 - **🟡 MEDIUM** `BEHAVIOR_ENV_VAR_HARVESTING` — Environment variable harvesting detected
   > Script iterates through environment variables in skills/scientific-slides/scripts/generate_schematic.py
@@ -570,51 +604,6 @@
   > Dangerous combination of code execution and system commands in skills/scientific-slides/scripts/validate_presentation.py
   > File: `skills/scientific-slides/scripts/validate_presentation.py`
   > **Remediation:** Remove eval/exec or use safer alternatives
-
-### xlsx — 🔴 CRITICAL
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned pip install fallback instruction
-  > SKILL.md instructs the agent to run `pip install` for openpyxl, pandas, or markitdown if an import fails or the markitdown command is missing. No version pinning or index restriction is specified, so a fallback install could pull an unexpected or compromised version. Risk is low because the package names are well-known and the install is only a fallback.
-  > File: `SKILL.md`
-  > **Remediation:** Pin versions (e.g. openpyxl==3.1.5) and prefer a curated/internal index when the agent must install dependencies.
-
-- **🟡 MEDIUM** `LLM_COMMAND_INJECTION` — Runtime C code compilation and LD_PRELOAD injection into soffice subprocess
-  > scripts/office/soffice.py writes an embedded C source file to the system temp directory, compiles it with gcc at runtime, and injects the resulting shared object into LibreOffice via LD_PRELOAD. The shim hooks socket/listen/accept/close/read libc calls and can call _exit(0) on the process. While the stated purpose (working around blocked AF_UNIX sockets in sandboxes) is plausible and the source is fully visible (not obfuscated), this is a legitimate-but-high-risk pattern: it performs local code generation + compilation + library injection, and the artifact path (/tmp/lo_socket_shim.so) is a predictable, world-writable location. A pre-existing or attacker-planted file at that path would be reused without integrity checking (it only checks existence), allowing local privilege/code-execution hijacking of every subsequent soffice invocation.
-  > File: `scripts/office/soffice.py`
-  > **Remediation:** Create the shim in a private, non-predictable directory (tempfile.mkdtemp with 0700 permissions) rather than a fixed /tmp path, or verify a hash of the compiled artifact before reuse. Document the LD_PRELOAD behavior in SKILL.md and make it opt-in only when AF_UNIX is actually blocked.
-
-- **🔴 CRITICAL** `BEHAVIOR_EVAL_SUBPROCESS` — eval/exec combined with subprocess detected
-  > Dangerous combination of code execution and system commands in skills/xlsx/scripts/recalc.py
-  > File: `skills/xlsx/scripts/recalc.py`
-  > **Remediation:** Remove eval/exec or use safer alternatives
-
-### dhdna-profiler — 🟠 HIGH
-
-- **🟠 HIGH** `LLM_DATA_EXFILTRATION` — Cross-file data exfiltration chain across 6 files
-  > The static analyzer detected a cross-file exfiltration chain spanning 6 files: data collection in one module is passed to network-sending code in another, a structure commonly used to split and disguise exfiltration logic so that no single file looks malicious. Since the skill profiles arbitrary user-supplied text (potentially private writing, emails, or conversation history), any outbound transmission would leak highly sensitive personal content and derived psychological profiles.
-  > **Remediation:** Trace and document the full data flow across the 6 implicated files. Eliminate any path where user text, profile output, or environment data reaches a network sink. Make the profiler fully local/offline, matching the documented behavior.
-
-- **🟠 HIGH** `LLM_UNAUTHORIZED_TOOL_USE` — Declared allowed-tools (Read, Write) violated by network-capable Python scripts
-  > The manifest declares allowed-tools: Read, Write — implying a purely local, non-executing, non-networking skill. However the package ships 8 Python scripts that, per the static scan, perform environment variable reads and network calls. Executing these requires Python/Bash execution capability not declared in the manifest, and network egress is outside any declared capability. This is an actual violation of the stated tool restrictions, not merely missing metadata.
-  > **Remediation:** Either remove the executable Python scripts from the package so the skill is genuinely Read/Write-only, or accurately declare all required tools (Python/Bash) and disclose network usage in the manifest and instructions.
-
-- **🟡 MEDIUM** `LLM_DATA_EXFILTRATION` — Sensitive psychological profiling of third parties and conversation history without consent controls
-  > The skill instructs the agent to build detailed cognitive/psychological profiles of 'any text's author', including third parties who never consented, and in Self-Profile Mode to mine the entire conversation history as source data. Combined with the detected network egress in the bundled scripts, this creates a pipeline in which sensitive inferred personal attributes and prior chat content could be collected and transmitted. Even absent exfiltration, mining conversation history for psychological inference is an over-collection and privacy concern that is not gated by any consent step.
-  > **Remediation:** Require explicit user confirmation before ingesting conversation history; limit analysis to text the user pastes in the current request; add guidance that profiles of non-consenting third parties should be declined or clearly labeled as speculative; guarantee no profile data leaves the local session.
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Keyword-dense description broadening activation scope
-  > The description packs many trigger phrases ('what's my thinking style', 'analyze how this person reasons', 'cognitive profile', 'thinking pattern', 'DHDNA', 'digital DNA', 'any text', 'deeper insight into the author's reasoning') plus a catch-all clause to trigger whenever the user 'provides text'. This maximizes activation frequency well beyond a narrowly scoped tool, which is a mild discovery-abuse pattern and is aggravated by the undisclosed network-capable code in the package.
-  > **Remediation:** Narrow the description to the specific, explicit user intents the skill serves and remove the broad 'any text provided' activation clause.
-
-- **🟠 HIGH** `LLM_DATA_EXFILTRATION` — Undisclosed environment variable access combined with network calls (env-var exfiltration pattern)
-  > Static pre-scan flagged BEHAVIOR_ENV_VAR_EXFILTRATION in three locations and a cross-file env-var exfiltration chain spanning 6 files within the package. The skill package contains 8 Python files that are neither mentioned in SKILL.md nor listed as referenced files, yet they read environment variables (likely API keys/tokens) and issue outbound network requests. Nothing in the skill's stated purpose — offline analysis of text the user supplies — requires reading environment variables or transmitting data off-machine. This is a classic read-secrets → send-to-network pattern and represents potential credential/data exposure.
-  > File: `SKILL.md`
-  > **Remediation:** Audit and publish the contents of all 8 Python files. Remove any os.environ/os.getenv reads that are not strictly required, remove all outbound HTTP calls, or explicitly document each endpoint and the data sent, requiring per-invocation user consent. If external API access is genuinely needed, restrict to an allowlisted domain and never transmit environment contents or user text without explicit opt-in.
-
-- **🟡 MEDIUM** `LLM_SKILL_DISCOVERY_ABUSE` — Undisclosed bundled code: 8 Python files and 11 extra markdown files not referenced in SKILL.md
-  > SKILL.md describes only a manual analytical procedure and explicitly implies no tooling ('No script files found' in the referenced/instruction surface). Yet the package contains 21 files including 8 Python scripts and 12 markdown files. The gap between the documented behavior (offline prompt-driven text analysis) and the shipped, network-capable code is a cross-component consistency failure: the agent or user reviewing SKILL.md would have no reason to expect code execution or outbound traffic. Undocumented markdown files may also be loaded as additional instruction context (indirect injection surface).
-  > File: `SKILL.md`
-  > **Remediation:** Document every bundled file and its purpose in SKILL.md. Remove files unnecessary to the stated function. Review all bundled markdown for embedded directives that could be interpreted as instructions by the agent.
 
 ### geomaster — 🟠 HIGH
 
@@ -860,86 +849,6 @@
   > File: `references/sequence-acquisition.md`
   > **Remediation:** Confirm the package ships exactly the four references/*.md files it cites; if templates/ or assets/ directories are intended, include them so their contents can be reviewed.
 
-### hugging-science — 🟡 MEDIUM
-
-- **🟡 MEDIUM** `LLM_COMMAND_INJECTION` — Guidance to enable trust_remote_code=True (arbitrary code execution from remote model repos)
-  > The skill instructs the agent on using `trust_remote_code=True` with model repository names that may originate from the remotely fetched catalog. This flag causes arbitrary Python from a third-party HF repo to execute on the user's machine with their filesystem and credentials in scope. The skill does include a clear human-in-the-loop control ('ask the user before you set it, naming the repo, and wait for an answer'), which substantially mitigates the risk, but the code-execution pathway remains an inherent risk worth noting.
-  > **Remediation:** Keep and strengthen the confirmation requirement: require the user to explicitly name/approve the exact repo and revision, prefer pinned `revision=` commits, and never enable trust_remote_code for repo names sourced from network-fetched catalog data without independent verification.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Instructs loading HF_TOKEN from .env, with token forwarded to third-party Spaces
-  > The skill directs the agent to auto-load secrets from any `.env` in cwd or parent directories via python-dotenv, and notes that once loaded, gradio_client will send HF_TOKEN to whichever Space is called and `file(...)` uploads local files to that Space's operator. This creates a credential/data exposure path if a Space identifier comes from the untrusted remote catalog. Mitigations are documented (never hard-code or echo tokens, add .env to .gitignore, name the Space and files to the user and get approval before calling non-org Spaces), so this is informational rather than malicious.
-  > **Remediation:** Scope token loading to the project directory only (avoid parent-directory traversal), prefer per-call explicit token passing over global env loading, and require explicit user confirmation naming the destination Space and the exact files before any upload or authenticated call.
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Very broad, keyword-dense activation description
-  > The frontmatter description enumerates a long list of trigger domains (biology, chemistry, physics, astronomy, climate, genomics, materials, medicine, ecology, energy, engineering, math, drug discovery, protein design, weather modeling, theorem proving, single-cell, PDE solving), which increases activation breadth. This is plausibly legitimate for a multi-domain catalog skill and the body includes an explicit negative scope ('If the task is generic ML ... this skill is not the right tool'), so impact is minimal.
-  > **Remediation:** Narrow the description to the skill's actual function (discovering resources in the Hugging Science catalog) and rely on the body for domain enumeration.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation guidance
-  > Reference files instruct installing packages (datasets, transformers, torch, accelerate, gradio_client, python-dotenv, huggingface_hub) via `uv pip install` / `uv add` with no version pins, and recommend `uv run --with datasets`. Unpinned installs weaken supply-chain reproducibility and expose the environment to malicious new releases. No unusual or typosquatted package names were observed.
-  > **Remediation:** Pin versions (e.g., transformers==4.44.2) or use a lockfile, and note hash-verified installs for reproducible/secure environments.
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing manifest metadata (allowed-tools, license, compatibility)
-  > The manifest does not declare allowed-tools, license, or compatibility, even though the skill performs outbound network requests, executes Python/Bash, and reads .env secrets. allowed-tools is optional per spec, so this is informational, but declaring it would let the host constrain the skill's network and execution footprint.
-  > File: `SKILL.md`
-  > **Remediation:** Declare allowed-tools (e.g., [Read, Bash, Python, WebFetch]), a license, and compatibility, and document the outbound network destination (huggingscience.co, huggingface.co).
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced files that do not exist in the package
-  > The instruction/reference set resolves to several files that are absent from the package (templates/*.md, assets/*.md, dotenv.py). Missing referenced files can cause the agent to improvise or fetch substitutes, and a name like `dotenv.py` in the skill root would shadow the real python-dotenv module if later added. No malicious content was found; the actually-used references/ files are all present and benign.
-  > File: `references/topics-and-slugs.md`
-  > **Remediation:** Remove stale references or ship the files. Never ship a local module named dotenv.py, which would shadow the python-dotenv package.
-
-- **🟡 MEDIUM** `LLM_PROMPT_INJECTION` — Skill fetches and consumes remote markdown from huggingscience.co as authoritative guidance
-  > The skill's core workflow instructs the agent to fetch markdown files from an external domain (https://huggingscience.co/llms.txt, llms-full.txt, topics/<slug>.md) and use the content to decide which datasets/models/Spaces to load and run. The fetched content is untrusted network data that is rendered directly into the agent's context, creating an indirect prompt injection surface: whoever controls (or spoofs/compromises) huggingscience.co can insert instructions, malicious repo names, or Space names that the agent may act upon. The skill partially mitigates this by explicitly stating the catalog is 'not a vetting signal' and requiring user confirmation before `trust_remote_code=True` or uploading files/tokens to non-org Spaces, which lowers severity. No sanitization of fetched content is performed in fetch_catalog.py (it is parsed and printed verbatim).
-  > File: `scripts/fetch_catalog.py`
-  > **Remediation:** Treat all fetched catalog content as untrusted data, not instructions. Strip/neutralize imperative content and code blocks before presenting to the agent, validate that URLs resolve to huggingface.co/<org>/<name> patterns, pin TLS/host expectations, and require explicit user approval before acting on any repo/Space identifier obtained from the remote catalog.
-
-### imaging-data-commons — 🟡 MEDIUM
-
-- **🔵 LOW** `LLM_COMMAND_INJECTION` — SQL built via f-string interpolation in example code (injection-prone pattern)
-  > Example workflow code constructs SQL queries by interpolating values directly into the query string with f-strings. Although the values originate from IDC metadata (manufacturer/model names) rather than direct user input, the pattern is unsafe if an agent adapts it to user-supplied filters, allowing SQL string breakage or injection into the local DuckDB query engine. Impact is limited because the target is a read-only local metadata database.
-  > **Remediation:** Demonstrate parameterized queries (DuckDB supports parameter binding) or explicit escaping/allow-listing of values instead of f-string interpolation, so the agent does not learn an injection-prone pattern.
-
-- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Potentially large unbounded data downloads to local disk
-  > The skill's core workflow downloads DICOM datasets, and examples include downloading entire collections (e.g., `client.download_from_selection(collection_id="tcga_luad")`) where IDC collections can be terabytes in size. This can exhaust local disk/bandwidth if executed without size estimation. The skill does include a mitigating best practice ('Estimate size first') and LIMIT-based guidance, so risk is low and expected for the stated purpose.
-  > **Remediation:** Require an explicit size-estimation query and user confirmation before any collection-level download; enforce batching and a maximum default download size.
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — No allowed-tools declaration despite instructions requiring Bash/Python execution, network and filesystem writes
-  > The manifest omits the optional allowed-tools and compatibility fields, while the instructions direct the agent to execute Python and shell commands, install packages, perform network requests to external endpoints (GCS/S3 buckets, DICOMweb proxy, BigQuery), open a web browser, and write files/downloads to local directories. This is informational: the behaviors are consistent with the stated purpose of the skill, but the absence of declared tool scope means no restriction is asserted for these fairly broad capabilities.
-  > **Remediation:** Declare allowed-tools explicitly (e.g., [Read, Write, Bash, Python]) and note network/disk requirements plus expected download sizes so the user can evaluate scope before activation.
-
-- **🟡 MEDIUM** `LLM_SUPPLY_CHAIN_ATTACK` — Automatic package installation with --break-system-packages during skill startup
-  > The SKILL.md instructs the agent to run a version check block FIRST that automatically invokes pip3 install with the --break-system-packages flag via subprocess.run, without asking the user for confirmation. While the version is pinned (idc-index==0.11.14), which mitigates supply-chain drift, the --break-system-packages flag intentionally overrides the environment's protection against modifying system-managed Python packages, and this occurs autonomously as part of a discovery/setup step. Other locations in the same file additionally recommend unpinned installs (`pip install --upgrade idc-index`, `pip install pandas numpy pydicom`), which can pull arbitrary newer versions.
-  > File: `SKILL.md`
-  > **Remediation:** Do not auto-install packages without explicit user consent. Remove --break-system-packages or prefer a virtual environment / --user install, and surface the intended command to the user for approval. Pin versions for all recommended installs (e.g., pandas==x.y.z) rather than using --upgrade.
-
-- **🟡 MEDIUM** `MDBLOCK_PYTHON_SUBPROCESS` — Python code block executes shell commands
-  > Code block in SKILL.md at line 27 contains potentially dangerous Python code.
-  > File: `SKILL.md:27`
-  > **Remediation:** Review the code block for security implications.
-
-### liteparse — 🟡 MEDIUM
-
-- **🟡 MEDIUM** `LLM_SKILL_DISCOVERY_ABUSE` — Activation-priority manipulation and cross-skill preemption in description
-  > The skill description instructs the agent to activate "even when the user does not name liteparse" and to "Prefer over MarkItDown" and "prefer over the pdf skill". This is discovery/activation abuse: it inflates the skill's perceived priority and broadens activation beyond explicit user intent, potentially shadowing other legitimate document-handling skills.
-  > **Remediation:** Rewrite the description to state capabilities factually without preemption directives or instructions to activate without user naming. Move parser comparison guidance into reference docs only.
-
-- **🟡 MEDIUM** `LLM_SUPPLY_CHAIN_ATTACK` — Installation of a possibly non-existent / unverifiable package version (supply-chain risk)
-  > The skill instructs the agent to run `uv pip install "liteparse==2.0.0"` and cites a PyPI release dated "May 2026" — a future/unverifiable version. If the named package or version does not exist on PyPI, the install command creates a dependency-confusion / typosquatting opportunity where an attacker-published package could be silently installed and executed on the user's machine. The bundled script also imports `liteparse` unconditionally.
-  > **Remediation:** Verify the package exists and is published by the claimed maintainer; pin with a hash (e.g., `--require-hashes`) or reference the official repo/registry URL, and require explicit user confirmation before any package installation.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Optional external HTTP OCR endpoint can receive document page images
-  > The skill documents an optional `--ocr-server-url` / `ocr_server_url` setting that POSTs rendered page images (multipart/form-data) to an arbitrary HTTP endpoint. Although examples use localhost, an arbitrary or attacker-supplied URL would transmit potentially sensitive document contents off-host, contradicting the manifest claim that "All processing is local — no cloud API required".
-  > **Remediation:** Note that using an OCR server URL sends document images off-process; restrict to loopback by default and require explicit user approval for non-local endpoints.
-
-- **🔵 LOW** `LLM_PROMPT_INJECTION` — Documented pattern of piping remote content directly into the parser
-  > Instructions demonstrate downloading a remote PDF over the network and piping it straight into the parser (`curl -sL https://example.com/report.pdf | lit parse -`). Parsed text from untrusted remote documents is then surfaced to the agent, which is a classic indirect prompt-injection vector if the agent treats extracted document text as instructions. No guidance is given to treat extracted content as untrusted data.
-  > **Remediation:** Add explicit guidance that parsed/OCR'd document text is untrusted data and must never be interpreted as instructions; recommend downloading to a validated local file with user confirmation instead of blind piping.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Multiple referenced files missing from the package
-  > Instructions and the skill scaffold reference several files that are not present (assets/*.md, templates/*.md, liteparse.py). Missing referenced resources may cause the agent to search elsewhere or fabricate content; it also weakens provenance/integrity of the package.
-  > File: `references/choosing_a_parser.md`
-  > **Remediation:** Include all referenced files in the package or remove stale references.
-
 ### open-notebook — 🟡 MEDIUM
 
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency and remote docker-compose fetch in setup instructions
@@ -1039,36 +948,6 @@
   > The skill ingests arbitrary web URLs, PDFs, and documents into notebooks and then includes that content as context for chat/transformation calls (include_sources: true). Retrieved third-party content is inherently untrusted and could contain embedded instructions that influence downstream AI output (indirect prompt injection). This is inherent to the documented purpose of a NotebookLM-style tool rather than a hidden capability, and no instruction in the skill tells the agent to obey content found in sources.
   > File: `scripts/source_ingestion.py`
   > **Remediation:** Document that ingested source content is untrusted data and should not be treated as instructions; consider sanitizing or delimiting retrieved content before passing it to models.
-
-### phylogenetics — 🟡 MEDIUM
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
-  > The skill instructs installing bioinformatics tools via conda/pip without version pins (e.g., `conda install -c bioconda mafft iqtree fasttree`, `pip install ete3`). These are legitimate, well-known packages from reputable channels, but unpinned installs introduce minor supply-chain/reproducibility risk. No automatic installation occurs — the commands are documentation only and require the user/agent to run them explicitly.
-  > **Remediation:** Pin explicit versions (e.g., `mafft=7.520`, `ete3==3.1.3`) and document expected checksums/provenance for reproducible, verifiable environments.
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools / compatibility declaration
-  > The YAML frontmatter does not declare `allowed-tools`, `license`, or `compatibility`, although the skill executes external binaries via subprocess and writes files to disk (Bash/Python-equivalent capability). This is informational only, since `allowed-tools` is optional per spec, but explicit declaration would make the skill's privileged behavior (process execution, filesystem writes) transparent.
-  > **Remediation:** Add `allowed-tools: [Read, Write, Bash, Python]`, a license, and compatibility notes to accurately declare the skill's execution and filesystem requirements.
-
-- **🟡 MEDIUM** `MDBLOCK_PYTHON_SUBPROCESS` — Python code block executes shell commands
-  > Code block in SKILL.md at line 67 contains potentially dangerous Python code.
-  > File: `SKILL.md:67`
-  > **Remediation:** Review the code block for security implications.
-
-- **🟡 MEDIUM** `MDBLOCK_PYTHON_SUBPROCESS` — Python code block executes shell commands
-  > Code block in SKILL.md at line 100 contains potentially dangerous Python code.
-  > File: `SKILL.md:100`
-  > **Remediation:** Review the code block for security implications.
-
-- **🟡 MEDIUM** `MDBLOCK_PYTHON_SUBPROCESS` — Python code block executes shell commands
-  > Code block in SKILL.md at line 143 contains potentially dangerous Python code.
-  > File: `SKILL.md:143`
-  > **Remediation:** Review the code block for security implications.
-
-- **🟡 MEDIUM** `MDBLOCK_PYTHON_SUBPROCESS` — Python code block executes shell commands
-  > Code block in SKILL.md at line 198 contains potentially dangerous Python code.
-  > File: `SKILL.md:198`
-  > **Remediation:** Review the code block for security implications.
 
 ### pymatgen — 🟡 MEDIUM
 
@@ -1249,48 +1128,72 @@
   > File: `references/scenario-templates.md`
   > **Remediation:** Remove or correct the dangling file references so only the bundled references/scenario-templates.md path is used.
 
-### benchling-integration — 🔵 LOW
+### phylogenetics — 🟡 MEDIUM
 
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned preview package install instruction
-  > Reference documentation instructs installing benchling-sdk with `--prerelease allow` and without a version pin for preview builds (`uv pip install "benchling-sdk" --prerelease allow`). The primary install is properly pinned (==1.25.0), so risk is minimal, but the unpinned prerelease path could pull unexpected/unvetted code.
-  > **Remediation:** Pin all install commands to explicit versions and note that prerelease installs should be avoided outside of isolated test environments.
-
-### astropy — 🔵 LOW
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Missing allowed-tools declaration (informational)
-  > The SKILL.md frontmatter does not declare an `allowed-tools` field. This is optional per the spec, but the skill's documentation includes network-capable operations (remote FITS reads via fsspec/S3, `download_file()`, SIMBAD/Sesame name resolution, geocoding via `EarthLocation.of_address()`, IERS auto-download) and package installation commands (`uv pip install`). Without a declared tool scope, an agent may execute Bash/Python operations with broader privileges than the user expects.
-  > File: `SKILL.md`
-  > **Remediation:** Declare an explicit `allowed-tools` list (e.g., [Read, Write, Bash, Python]) so the agent's permitted actions are transparent and auditable.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Referenced files declared in instructions are absent from the package
-  > The instruction body and reference-file list point to numerous files that do not exist in the package (assets/*.md, templates/*.md, and a top-level `astropy.py`). Missing referenced artifacts are a provenance/integrity concern: an agent instructed to read or run `astropy.py` could resolve the name to an arbitrary file in the working directory or the installed `astropy` package, and future population of these paths would be unreviewed. No malicious content is present; severity is low because the existing reference docs are benign documentation.
-  > File: `references/units.md`
-  > **Remediation:** Remove references to non-existent assets/templates and the `astropy.py` script, or ship the files with the package so their contents can be reviewed. Avoid naming a bundled script identically to a widely used third-party module.
-
-### aeon — 🔵 LOW
-
-- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Documented workloads may consume significant compute and download external datasets
-  > Examples reference computationally heavy estimators (HIVECOTEV2, InceptionTime, ROCKET with 10,000 kernels) and dataset loaders such as `download_all_regression()` and `load_classification(...)` that automatically download archives from Zenodo/timeseriesclassification.com on first use. This is expected behavior for the aeon library but represents unattended network fetches and non-trivial CPU/GPU and disk usage if executed without user awareness.
-  > **Remediation:** Note in the skill that dataset loaders perform network downloads and that bulk downloads / heavy ensembles should be run only with explicit user consent and resource limits.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Package installation instructions with loose version range
-  > The skill instructs installing the aeon package via `uv pip install "aeon>=1.4,<2"` and optionally `aeon[all_extras]`, which pulls a large unpinned dependency tree (including deep learning stacks). This is standard practice for library documentation and points to the legitimate upstream PyPI package, but the version range is not exactly pinned, so the resolved dependency set is not reproducible.
-  > **Remediation:** Pin exact versions (e.g., aeon==1.4.0) or use a lockfile if reproducibility/supply-chain integrity is required, and require user confirmation before installing packages.
-
-### arboreto — 🔵 LOW
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools / license / compatibility metadata
+  > The YAML frontmatter does not declare allowed-tools, license, or compatibility. The skill executes external binaries (mafft, iqtree2, FastTree, trimal) via subprocess and writes files to disk, so declaring Bash/Python/Write tool usage would improve transparency. This field is optional per spec, so this is informational only.
+  > **Remediation:** Add allowed-tools (e.g., [Read, Write, Bash, Python]), a license, and compatibility notes to the manifest.
 
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
-  > The skill instructs installing the 'arboreto' package via `uv pip install arboreto` and `conda install -c bioconda arboreto` without version pinning, despite documenting upstream version 0.1.6. Unpinned installs can pull unexpected or compromised package versions. This is a common documentation practice and low risk here since the package name/repo is legitimate (aertslab/arboreto), but pinning is recommended.
-  > **Remediation:** Pin the version explicitly, e.g. `uv pip install arboreto==0.1.6`, and pin transitive dependencies (dask, distributed, scikit-learn) in a lockfile or requirements file.
+  > The SKILL.md instructs installation of packages via conda and pip without version pinning (e.g., 'conda install -c bioconda mafft iqtree fasttree', 'pip install ete3', 'pip install PyQt5'). While all packages are well-known, legitimate bioinformatics tools from standard channels, unpinned installs can introduce unreviewed upstream changes or supply-chain risk. No installation is performed automatically by the scripts (only 'which' checks), which limits the impact.
+  > File: `SKILL.md`
+  > **Remediation:** Pin explicit versions for reproducibility (e.g., 'pip install ete3==3.1.3') and document expected checksums/channels.
 
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools declaration (informational)
-  > The manifest does not declare `allowed-tools` or `compatibility`. The skill's documented workflow requires Bash (package installation) and Python (script execution) plus file read/write. This field is optional per spec, so this is informational only; no restriction violation exists because no restrictions were declared.
-  > **Remediation:** Optionally declare `allowed-tools: [Read, Write, Bash, Python]` to make the skill's execution footprint explicit for reviewers and policy enforcement.
+- **🟡 MEDIUM** `MDBLOCK_PYTHON_SUBPROCESS` — Python code block executes shell commands
+  > Code block in SKILL.md at line 71 contains potentially dangerous Python code.
+  > File: `SKILL.md:71`
+  > **Remediation:** Review the code block for security implications.
 
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced file paths do not exist in the package
-  > The instruction/reference scan lists multiple paths that are not present in the package (assets/*.md, templates/*.md, distributed.py, arboreto.py). Only references/basic_inference.md, references/algorithms.md, and references/distributed_computing.md exist. These missing entries appear to be resolution artifacts of module import names (e.g., `from distributed import Client`) and alternate directory guesses rather than intentional external loading. No external URL is fetched and no untrusted remote content is executed. Impact is documentation-integrity only.
-  > File: `references/distributed_computing.md`
-  > **Remediation:** Ensure all referenced resource paths resolve to files bundled inside the skill package, and avoid ambiguity between Python module names and file references.
+- **🟡 MEDIUM** `MDBLOCK_PYTHON_SUBPROCESS` — Python code block executes shell commands
+  > Code block in SKILL.md at line 104 contains potentially dangerous Python code.
+  > File: `SKILL.md:104`
+  > **Remediation:** Review the code block for security implications.
+
+- **🟡 MEDIUM** `MDBLOCK_PYTHON_SUBPROCESS` — Python code block executes shell commands
+  > Code block in SKILL.md at line 147 contains potentially dangerous Python code.
+  > File: `SKILL.md:147`
+  > **Remediation:** Review the code block for security implications.
+
+- **🟡 MEDIUM** `MDBLOCK_PYTHON_SUBPROCESS` — Python code block executes shell commands
+  > Code block in SKILL.md at line 202 contains potentially dangerous Python code.
+  > File: `SKILL.md:202`
+  > **Remediation:** Review the code block for security implications.
+
+### paper-lookup — 🟡 MEDIUM
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Skill instructs reading API keys from a local .env file
+  > SKILL.md directs the agent to check environment variables and, if absent, read a `.env` file in the working directory for NCBI_API_KEY, CORE_API_KEY, S2_API_KEY, and OPENALEX_API_KEY. This is credential-file access, though it is narrowly scoped: the instructions explicitly limit reading to the four named variables, forbid loading the file wholesale into the environment or context, and forbid echoing keys. Scripts additionally redact api_key/email/mailto/tool values from emitted provenance URLs (_common.py redact_url). Risk is low and consistent with the stated purpose, but any .env read remains a sensitive operation worth noting.
+  > File: `scripts/_common.py`
+  > **Remediation:** Prefer environment variables only, or require explicit user confirmation before reading a .env file. If .env access is retained, parse it with a strict allowlist parser in a bundled script rather than delegating the discipline to the model.
+
+- **🟡 MEDIUM** `BEHAVIOR_ENV_VAR_HARVESTING` — Environment variable harvesting detected
+  > Script iterates through environment variables in skills/paper-lookup/scripts/paginate.py
+  > File: `skills/paper-lookup/scripts/paginate.py`
+  > **Remediation:** Remove environment variable collection unless explicitly required and documented
+
+### paperclip — 🟡 MEDIUM
+
+- **🟡 MEDIUM** `LLM_SUPPLY_CHAIN_ATTACK` — Remote install script piped to bash (unverified, unpinned supply chain)
+  > The skill instructs the agent to install the CLI by fetching and executing a remote shell script with the user's privileges: `curl -fsSL https://paperclip.gxl.ai/install.sh | bash`. There is no checksum, signature, or version pin, and the reference file explicitly acknowledges 'there is no published checksum or signature to verify it against'. It also notes the CLI self-updates opportunistically mid-command, so the code that executes can change between invocations. Additionally, the Python SDK is installed from an unversioned wheel URL (`pip install https://paperclip.gxl.ai/paperclip.whl`), which resolves to whatever is current. This is a genuine supply-chain exposure, though the skill does mitigate it by requiring user confirmation before running the installer and by warning about the unrelated PyPI `paperclip` typosquat.
+  > **Remediation:** Prefer a pinned, hash-verified release artifact. Have the agent display the installer for review (`curl ... | less`) and require explicit user approval before execution, and pin the SDK to a specific version/hash rather than an unversioned wheel URL.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Credential handling: .env sourcing and API key exposure paths documented
+  > The skill's core idiom sources a project `.env` into the shell environment on every command (`[ -f .env ] && { set -a; . ./.env; set +a; }`). This exports ALL variables in `.env`, not just PAPERCLIP_API_KEY, into the environment of the `paperclip` process — so unrelated secrets in the same file (AWS keys, DB passwords, etc.) are also exported to a third-party binary that makes network calls. The skill also documents `--api-key` on the command line (exposed in `ps`/history), which it correctly discourages. No exfiltration to an unexpected/attacker domain is present; all network traffic goes to the vendor's documented endpoint. The skill explicitly instructs to gitignore `.env`, never echo the key, and never include it in an upload.
+  > **Remediation:** Prefer exporting only the specific variable (e.g. `PAPERCLIP_API_KEY=$(grep -m1 '^PAPERCLIP_API_KEY=' .env | cut -d= -f2-) paperclip ...`) rather than `set -a` sourcing the whole file, to avoid leaking unrelated secrets from a shared .env into a third-party process.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Documented outbound data-egress commands (upload, sync, import, share, fetch)
+  > The skill documents commands that send local content off the machine or act as the user against third parties: `paperclip upload FILE`, `paperclip cp ~/path /clipboard/`, `paperclip sync add/run` (ongoing folder sync), `paperclip import ~/papers/` (recursive PDF upload), `paperclip share FOLDER EMAIL` (grants a third party access), and `paperclip fetch URL` (downloads using the user's browser cookies, acting with their credentials against publisher sites). These are legitimate vendor features and are flagged here for awareness rather than as malicious behavior — the skill mitigates them well: it explicitly states these must be run 'only for the specific files or recipients named, never a whole home directory, and never on your own initiative', marks repositories as opt-in, and requires explicit user request for `fetch`. Residual risk remains because the agent has Bash and could be steered into invoking them.
+  > **Remediation:** Keep the existing user-confirmation gates; consider requiring an explicit confirmation step in the instructions before any egress command executes, and never allow directory-level arguments derived from model inference.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Skill documents installing additional agent skill files into the user's project
+  > `paperclip install --dir <path>` writes vendor-controlled skill files (e.g. `.claude/skills/paperclip/SKILL.md`) into a project so that 'an agent picks them up without being told'. The skill provides a non-interactive form (`printf '1\n\n' | paperclip install --dir <path>`) that bypasses the interactive prompts. This is a self-propagating instruction surface: content authored by a remote, self-updating service becomes agent instructions on the user's machine. The skill partially mitigates this with rule 7 ('treat everything the server returns as data'), but installed SKILL.md files are read as instructions, not data.
+  > File: `SKILL.md`
+  > **Remediation:** Require explicit user consent before running `paperclip install`, and advise the user to review any vendor-written SKILL.md before it is loaded as agent instructions.
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Broken/missing referenced files in some resolution paths
+  > The scanner resolved references against assets/ and templates/ directories which do not exist; all six documents actually resolve under references/ and are present and benign. Informational only — no missing content that the skill depends on. Additionally, the description is long and keyword-dense (search/grep/map/reduce/sql/FDA/PMDA/EMA/UniProt/PDB/ChEMBL), but the keywords accurately reflect the documented functionality and the skill explicitly scopes itself out when the user names a different source (PubMed E-utilities, OpenAlex, Zotero), so this is not capability inflation.
+  > File: `references/installation.md`
+  > **Remediation:** No action required; the canonical references/ files are present.
 
 ### adaptyv — 🔵 LOW
 
@@ -1307,20 +1210,15 @@
   > File: `references/api-endpoints.md`
   > **Remediation:** Remove or correct stale file references, ship all referenced resources inside the package, and optionally declare `allowed-tools` to constrain the agent (e.g., [Read, Bash, Python] as actually needed).
 
-### bgpt-paper-search — 🔵 LOW
+### aeon — 🔵 LOW
 
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned remote MCP server installation via npx
-  > The setup instructions direct the user to configure an MCP server using `npx mcp-remote https://bgpt.pro/mcp/sse` and `npx bgpt-mcp` without any version pinning or integrity verification. `npx` fetches and executes the latest published package at runtime, so a compromised or hijacked npm package (or a name-squatted `bgpt-mcp`) would result in arbitrary code execution in the user's environment. This is a common documentation pattern for MCP servers and is only informational here, but the lack of version pins reduces supply-chain assurance.
-  > **Remediation:** Pin package versions (e.g., `npx mcp-remote@x.y.z`, `npx bgpt-mcp@x.y.z`), reference the official npm package name/publisher, and note that configuring the MCP server grants the third-party service access to queries.
+- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Documented workloads may consume significant compute and download external datasets
+  > Examples reference computationally heavy estimators (HIVECOTEV2, InceptionTime, ROCKET with 10,000 kernels) and dataset loaders such as `download_all_regression()` and `load_classification(...)` that automatically download archives from Zenodo/timeseriesclassification.com on first use. This is expected behavior for the aeon library but represents unattended network fetches and non-trivial CPU/GPU and disk usage if executed without user awareness.
+  > **Remediation:** Note in the skill that dataset loaders perform network downloads and that bulk downloads / heavy ensembles should be run only with explicit user consent and resource limits.
 
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — allowed-tools not declared
-  > The YAML frontmatter does not declare `allowed-tools`. This field is optional, so this is informational only. The skill body appropriately clarifies that the MCP tool should be invoked via the agent's MCP interface and not via Bash, and it contains no script files, so the effective capability surface is narrow.
-  > **Remediation:** Optionally declare a minimal `allowed-tools` set (e.g., the MCP tool only) to make the capability scope explicit.
-
-- **🔵 LOW** `LLM_PROMPT_INJECTION` — Results from third-party remote service are consumed without untrusted-content handling guidance
-  > The skill instructs the agent to call the remote `search_papers` MCP tool at bgpt.pro and consume the returned structured fields (methods, results, conclusions, 25+ metadata fields). Content returned by an external network service is untrusted and could contain embedded instructions that the agent may interpret (indirect prompt injection). The skill provides no guidance to treat returned text as data only. No malicious instructions are present in the skill itself; this is a residual risk of the external data dependency.
-  > File: `SKILL.md`
-  > **Remediation:** Add explicit guidance that all returned paper content is untrusted data to be summarized/quoted only, and must never be executed or treated as instructions.
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Package installation instructions with loose version range
+  > The skill instructs installing the aeon package via `uv pip install "aeon>=1.4,<2"` and optionally `aeon[all_extras]`, which pulls a large unpinned dependency tree (including deep learning stacks). This is standard practice for library documentation and points to the legitimate upstream PyPI package, but the version range is not exactly pinned, so the resolved dependency set is not reproducible.
+  > **Remediation:** Pin exact versions (e.g., aeon==1.4.0) or use a lockfile if reproducibility/supply-chain integrity is required, and require user confirmation before installing packages.
 
 ### arbor — 🔵 LOW
 
@@ -1336,6 +1234,54 @@
   > references/arbor-upstream.md instructs cloning and installing an external GitHub repository (RUC-NLPIR/Arbor) via `pip install -e .` with no commit pin, version pin, or integrity verification, and then running `arbor setup` which stores provider API keys in ~/.arbor/config.yaml. This is documented, optional, user-initiated behavior (not automatic exfiltration), but it does introduce an unverified supply-chain dependency and local credential storage.
   > File: `references/arbor-upstream.md`
   > **Remediation:** Pin a specific tag/commit, note that the install executes third-party code, and require explicit user confirmation before installing or configuring API keys.
+
+### arboreto — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
+  > The skill instructs installing the 'arboreto' package via `uv pip install arboreto` and `conda install -c bioconda arboreto` without version pinning, despite documenting upstream version 0.1.6. Unpinned installs can pull unexpected or compromised package versions. This is a common documentation practice and low risk here since the package name/repo is legitimate (aertslab/arboreto), but pinning is recommended.
+  > **Remediation:** Pin the version explicitly, e.g. `uv pip install arboreto==0.1.6`, and pin transitive dependencies (dask, distributed, scikit-learn) in a lockfile or requirements file.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools declaration (informational)
+  > The manifest does not declare `allowed-tools` or `compatibility`. The skill's documented workflow requires Bash (package installation) and Python (script execution) plus file read/write. This field is optional per spec, so this is informational only; no restriction violation exists because no restrictions were declared.
+  > **Remediation:** Optionally declare `allowed-tools: [Read, Write, Bash, Python]` to make the skill's execution footprint explicit for reviewers and policy enforcement.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced file paths do not exist in the package
+  > The instruction/reference scan lists multiple paths that are not present in the package (assets/*.md, templates/*.md, distributed.py, arboreto.py). Only references/basic_inference.md, references/algorithms.md, and references/distributed_computing.md exist. These missing entries appear to be resolution artifacts of module import names (e.g., `from distributed import Client`) and alternate directory guesses rather than intentional external loading. No external URL is fetched and no untrusted remote content is executed. Impact is documentation-integrity only.
+  > File: `references/distributed_computing.md`
+  > **Remediation:** Ensure all referenced resource paths resolve to files bundled inside the skill package, and avoid ambiguity between Python module names and file references.
+
+### astropy — 🔵 LOW
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Missing allowed-tools declaration (informational)
+  > The SKILL.md frontmatter does not declare an `allowed-tools` field. This is optional per the spec, but the skill's documentation includes network-capable operations (remote FITS reads via fsspec/S3, `download_file()`, SIMBAD/Sesame name resolution, geocoding via `EarthLocation.of_address()`, IERS auto-download) and package installation commands (`uv pip install`). Without a declared tool scope, an agent may execute Bash/Python operations with broader privileges than the user expects.
+  > File: `SKILL.md`
+  > **Remediation:** Declare an explicit `allowed-tools` list (e.g., [Read, Write, Bash, Python]) so the agent's permitted actions are transparent and auditable.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Referenced files declared in instructions are absent from the package
+  > The instruction body and reference-file list point to numerous files that do not exist in the package (assets/*.md, templates/*.md, and a top-level `astropy.py`). Missing referenced artifacts are a provenance/integrity concern: an agent instructed to read or run `astropy.py` could resolve the name to an arbitrary file in the working directory or the installed `astropy` package, and future population of these paths would be unreviewed. No malicious content is present; severity is low because the existing reference docs are benign documentation.
+  > File: `references/units.md`
+  > **Remediation:** Remove references to non-existent assets/templates and the `astropy.py` script, or ship the files with the package so their contents can be reviewed. Avoid naming a bundled script identically to a widely used third-party module.
+
+### benchling-integration — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned preview package install instruction
+  > Reference documentation instructs installing benchling-sdk with `--prerelease allow` and without a version pin for preview builds (`uv pip install "benchling-sdk" --prerelease allow`). The primary install is properly pinned (==1.25.0), so risk is minimal, but the unpinned prerelease path could pull unexpected/unvetted code.
+  > **Remediation:** Pin all install commands to explicit versions and note that prerelease installs should be avoided outside of isolated test environments.
+
+### bgpt-paper-search — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned remote MCP server installation via npx
+  > The setup instructions direct the user to configure an MCP server using `npx mcp-remote https://bgpt.pro/mcp/sse` and `npx bgpt-mcp` without any version pinning or integrity verification. `npx` fetches and executes the latest published package at runtime, so a compromised or hijacked npm package (or a name-squatted `bgpt-mcp`) would result in arbitrary code execution in the user's environment. This is a common documentation pattern for MCP servers and is only informational here, but the lack of version pins reduces supply-chain assurance.
+  > **Remediation:** Pin package versions (e.g., `npx mcp-remote@x.y.z`, `npx bgpt-mcp@x.y.z`), reference the official npm package name/publisher, and note that configuring the MCP server grants the third-party service access to queries.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — allowed-tools not declared
+  > The YAML frontmatter does not declare `allowed-tools`. This field is optional, so this is informational only. The skill body appropriately clarifies that the MCP tool should be invoked via the agent's MCP interface and not via Bash, and it contains no script files, so the effective capability surface is narrow.
+  > **Remediation:** Optionally declare a minimal `allowed-tools` set (e.g., the MCP tool only) to make the capability scope explicit.
+
+- **🔵 LOW** `LLM_PROMPT_INJECTION` — Results from third-party remote service are consumed without untrusted-content handling guidance
+  > The skill instructs the agent to call the remote `search_papers` MCP tool at bgpt.pro and consume the returned structured fields (methods, results, conclusions, 25+ metadata fields). Content returned by an external network service is untrusted and could contain embedded instructions that the agent may interpret (indirect prompt injection). The skill provides no guidance to treat returned text as data only. No malicious instructions are present in the skill itself; this is a residual risk of the external data dependency.
+  > File: `SKILL.md`
+  > **Remediation:** Add explicit guidance that all returned paper content is untrusted data to be summarized/quoted only, and must never be executed or treated as instructions.
 
 ### bids — 🔵 LOW
 
@@ -1358,13 +1304,6 @@
   > File: `scripts/update_schema.py`
   > **Remediation:** Restrict --schema-url to an allowlist of official BIDS domains, validate/size-limit fetched content, and treat downloaded reference files as untrusted data rather than instructions.
 
-### cirq — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Documentation suggests omitting version pins for package installs
-  > The SKILL.md installation section instructs users to omit version pins when installing Cirq packages for development use ('For latest features during development, omit version pins'). Unpinned installs weaken supply-chain reproducibility and could pull a compromised newer release. This is minor since primary examples use explicit pins (cirq==1.6.1) and all packages are legitimate, well-known PyPI projects from the Cirq ecosystem.
-  > File: `SKILL.md`
-  > **Remediation:** Recommend always pinning exact versions (e.g., cirq==1.6.1) and verifying package provenance; avoid guidance to omit pins.
-
 ### bulk-rnaseq — 🔵 LOW
 
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installs and remote pipeline execution
@@ -1375,117 +1314,12 @@
   > The YAML frontmatter does not declare `allowed-tools` or `compatibility`, even though the skill instructs execution of Bash commands (conda, nextflow, STAR, salmon) and Python scripts. This is informational only since the field is optional per spec, but declaring it would make the skill's execution footprint explicit.
   > **Remediation:** Add `allowed-tools: [Read, Write, Bash, Python]` (or narrower) and a compatibility statement to reflect the Bash/Python execution the workflow requires.
 
-### bioservices — 🔵 LOW
+### cirq — 🔵 LOW
 
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced files listed in instructions do not exist in the package
-  > Several referenced paths (templates/*.md, assets/*.md, bioservices.py) are not present in the skill package. Only references/*.md exist and are benign documentation. Missing referenced files are a documentation-consistency issue and could lead the agent to attempt fetching them elsewhere, but no malicious content was identified.
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Documentation suggests omitting version pins for package installs
+  > The SKILL.md installation section instructs users to omit version pins when installing Cirq packages for development use ('For latest features during development, omit version pins'). Unpinned installs weaken supply-chain reproducibility and could pull a compromised newer release. This is minor since primary examples use explicit pins (cirq==1.6.1) and all packages are legitimate, well-known PyPI projects from the Cirq ecosystem.
   > File: `SKILL.md`
-  > **Remediation:** Remove stale references or ship the referenced files with the package.
-
-- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Unbounded API iteration over all pathways may cause resource/rate-limit exhaustion
-  > pathway_analysis.py iterates over every pathway ID returned by KEGG for an organism (hundreds of pathways), making 2+ network requests per pathway with no default limit or delay. Combined with per-pathway file writes this can generate heavy load on the remote KEGG API and long-running local execution. This is a performance/politeness concern rather than a malicious pattern; the --limit flag exists but defaults to None.
-  > File: `scripts/pathway_analysis.py`
-  > **Remediation:** Add a default limit and inter-request delay, and warn the user before running full-organism analyses.
-
-### consciousness-council — 🔵 LOW
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Broad activation triggers and promotional links in description/attribution
-  > The description enumerates many generic trigger phrases ("help me think through this from all sides", any "dilemma, trade-off, or complex choice") which could cause the skill to activate on a wide range of general reasoning requests. Additionally, the SKILL.md body includes promotional external URLs (ahkstrategies.net, themindbook.app) for the author's products. This is a minor discovery/branding concern only — no data is sent anywhere and the agent is not instructed to fetch those URLs.
-  > File: `SKILL.md`
-  > **Remediation:** Narrow the activation description to explicit user requests for council/panel deliberation, and mark external links clearly as optional informational references (agent should not fetch or follow them).
-
-### cobrapy — 🔵 LOW
-
-- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Computationally expensive operations (double deletions, loopless FVA, flux sampling) could exhaust compute resources
-  > Reference workflows include double gene deletion scans, loopless FVA, and flux sampling with multiprocessing (processes=4). On genome-scale models these can consume very large amounts of CPU/memory and run for hours. This is inherent to the legitimate scientific domain, and the skill explicitly warns users to start with small n and processes=1, so the risk is informational rather than malicious.
-  > **Remediation:** No action strictly needed; documentation already advises using the small 'textbook' model, low sample counts, and processes=1 first. Optionally add explicit runtime/resource limits or user confirmation before launching multiprocess jobs.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Package installation instructions (pinned) executed via Bash
-  > The skill instructs installing the 'cobra' package via 'uv pip install'. The version is properly pinned (cobra==0.31.1) and the package is the well-known official opencobra distribution on PyPI, so supply-chain risk is minimal. Noted only because the skill declares Bash and performs dependency installation.
-  > **Remediation:** Acceptable as-is; pinned version and reputable package. Optionally document hash verification or require user confirmation before installing packages.
-
-### dask — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation guidance
-  > The skill instructs installation of dependencies with loose version constraints (e.g., `uv pip install "dask>=2025.1"`, `dask[complete]`, `s3fs`, `gcsfs`) without pinned versions. This is common documentation practice, but unpinned installs create a minor supply-chain risk if the agent executes them via Bash. No untrusted/third-party or GitHub sources are referenced.
-  > **Remediation:** Pin exact versions (e.g., dask==2025.1.0) or require explicit user confirmation before running package installation commands.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced file listed in instructions does not exist (documentation inconsistency)
-  > The analysis harness lists several referenced paths (assets/*.md, templates/*.md, dask.py) as not found. The SKILL.md body only references files under references/, all six of which are present. The missing paths appear to be speculative resolutions rather than genuine broken references, but `dask.py` is not present and no script files exist despite Bash being an allowed tool. This is an informational documentation/consistency issue with no security impact.
-  > File: `references/dataframes.md`
-  > **Remediation:** Ensure all referenced resources are bundled within the skill package and remove references to non-existent files.
-
-### datamol — 🔵 LOW
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Documentation of remote (S3/GCS/HTTPS) read and write paths using cloud credentials
-  > Reference documentation shows reading from and writing to remote fsspec paths (s3://, gs://, https://) which implicitly uses provider credentials from environment variables (AWS_ACCESS_KEY_ID, GOOGLE_APPLICATION_CREDENTIALS). Written data could leave the local machine. Notably, the skill includes explicit mitigating guidance: cloud I/O only when the user requests it, confirm remote write destinations, and a statement that credentials are used locally by fsspec and not transmitted to third parties. No hardcoded credentials, no attacker-controlled endpoints, and no environment-variable harvesting were found, so risk is informational only.
-  > **Remediation:** Keep the existing user-confirmation guidance; ensure the agent never writes to remote destinations not explicitly named by the user and never echoes credential values.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
-  > The skill instructs the agent to install packages via `uv pip install datamol`, `s3fs`, and `gcsfs` without any version pinning or hash verification. This is standard practice for library documentation skills and the packages are well-known legitimate PyPI projects, but unpinned installs carry a residual supply-chain risk (dependency confusion / malicious version publication).
-  > **Remediation:** Pin versions (e.g., `uv pip install datamol==0.12.5`) and prefer requiring user confirmation before executing installation commands.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced files do not exist in the package
-  > The instruction body and its references point to files that are not present in the package (e.g., templates/*.md, assets/*.md, and apparent false-positive references to `datamol.py` and `sklearn.py` from import statements). Missing referenced files are a documentation-integrity issue and could, in a shared workspace, allow an attacker to plant a file at a path the agent expects to read. The SKILL.md explicitly clarifies that scipy/scikit-learn are PyPI packages and not bundled scripts, which reduces confusion and typosquat/shadowing risk.
-  > File: `references/core_workflows.md`
-  > **Remediation:** Remove references to non-existent paths or ship the referenced files; have the agent verify file existence and reject unexpected files resolved from ambiguous relative paths.
-
-### depmap — 🔵 LOW
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Missing allowed-tools and compatibility metadata
-  > The YAML frontmatter does not declare `allowed-tools` or `compatibility`, although the skill body includes Python code that performs network requests and writes files to disk. These fields are optional per the skill spec, so this is informational only; no declared restriction is violated.
-  > **Remediation:** Explicitly declare allowed-tools (e.g., [Read, Write, Python]) and note that the skill performs outbound HTTP requests to depmap.org/figshare.com.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Referenced file 'scipy.py' not present in package
-  > Static reference extraction lists 'scipy.py' as a referenced file that does not exist in the package. This is almost certainly a false positive from parsing the `from scipy import stats` import in an example code block rather than a real missing dependency file. However, an absent local module name matching a popular library could be a module-shadowing/typosquat vector if such a file were later added.
-  > **Remediation:** No action required; optionally list dependencies (scipy, pandas, numpy, requests) with pinned versions in a requirements file to avoid ambiguity.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Unvalidated remote data downloads to local filesystem
-  > The documentation includes helper code that downloads arbitrary URLs (DepMap/Figshare data files) and writes them directly to a local path without checksum/integrity verification or path validation. This is normal for a bioinformatics data-access skill, but unverified downloads represent a minor supply-chain/integrity risk if a URL is substituted or the source is compromised. No exfiltration, credential access, or secret material was observed anywhere in the skill.
-  > File: `SKILL.md`
-  > **Remediation:** Pin dataset URLs/versions, verify checksums of downloaded files, and constrain output_path to a sandboxed working directory.
-
-### deeptools — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Package installation instructions in SKILL.md (pinned, reputable source)
-  > SKILL.md instructs installing deepTools via `uv pip install deepTools==3.5.6` and optionally conda/bioconda. The version is pinned and the package is a well-known, legitimate bioinformatics tool, so supply-chain risk is minimal. Noted only for completeness: the agent will install third-party software on the user's machine.
-  > File: `SKILL.md`
-  > **Remediation:** Optionally require explicit user confirmation before installing packages, and prefer isolated virtual environments for installation.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced documentation files are missing from the package
-  > The instructions reference documentation paths that do not exist in the package (e.g., assets/normalization_methods.md, assets/workflows.md, templates/*.md, references/quick_reference.md). All missing paths are internal to the skill; no external URLs or network-sourced instruction files are fetched. Impact is limited to broken references / possible agent confusion, not a security compromise.
-  > File: `references/normalization_methods.md`
-  > **Remediation:** Align referenced file paths with the files actually shipped in the package, or add the missing reference documents.
-
-### deepchem — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned package installation instructions
-  > The SKILL.md installation guidance instructs the agent/user to run `uv pip install deepchem` and extras (e.g. 'deepchem[torch]', `--pre` nightly builds) without version pins. While these target the legitimate upstream PyPI package, unpinned/pre-release installs mean the resolved code is non-deterministic and could pull a compromised or breaking release. Additionally, scripts download remote pretrained weights from Hugging Face model hubs (seyonec/ChemBERTa-zinc-base-v1, ibm/MoLFormer-XL-both-10pct), which is third-party code/data fetched at runtime.
-  > File: `SKILL.md`
-  > **Remediation:** Pin dependency versions (e.g. deepchem==2.8.0) and document expected model hub revisions/hashes; avoid recommending `--pre` nightly builds by default.
-
-- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Long-running compute-intensive training without resource guardrails
-  > Scripts default to substantial training workloads (50 epochs GNN training, fine-tuning transformer models with automatic model downloads) which can consume significant CPU/GPU, memory, disk and network resources. This is inherent and expected for an ML skill, but there are no bounds, timeouts, or user confirmation prompts before initiating potentially hours-long jobs and multi-GB downloads.
-  > File: `scripts/graph_neural_network.py`
-  > **Remediation:** Document expected runtime/resource cost and consider lower defaults or an explicit confirmation/limit for long training runs and large model downloads.
-
-### diffdock — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned external dependency installs and Docker image pulls without version pinning
-  > The SKILL.md instructs cloning the upstream DiffDock GitHub repository, creating a conda environment from the repo's environment.yml, pulling the 'rbgcsail/diffdock' Docker image (no digest/tag), and installing 'fair-esm' via uv pip without a pinned version. The skill also notes model checkpoints (~500MB) are auto-downloaded on first run. These are standard practices for scientific tooling and point to the legitimate upstream project, but they introduce unpinned supply-chain exposure (mutable latest tags, no checksum verification).
-  > File: `SKILL.md`
-  > **Remediation:** Pin the repository commit/tag, Docker image digest, and package versions (e.g., fair-esm==2.0.0), and verify checksums for downloaded model checkpoints.
-
-### clinical-reports — 🔵 LOW
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — allowed-tools not declared in manifest
-  > The YAML frontmatter omits the optional 'allowed-tools' field while the skill instructs the agent to run Bash/Python commands. Declaring the field would tighten the capability boundary. Informational only; observed script behavior (local file read/write, stdout) is consistent with the stated purpose.
-  > **Remediation:** Explicitly declare allowed-tools (e.g., [Read, Write, Bash, Python]) to make the capability surface auditable.
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Numerous referenced files missing from package (documentation drift)
-  > SKILL.md and the pre-scan reference list point to many asset/reference/template paths that do not exist in the package (e.g., templates/*.md, assets/README.md, assets/medical_terminology.md, references/*.json duplicates). Missing internal resources cause fail-closed script errors and reduce reliability, but no external or untrusted source is fetched. This is a documentation/packaging hygiene issue, not a security exploit.
-  > File: `SKILL.md`
-  > **Remediation:** Ship all referenced assets/references or prune references to non-existent paths so the skill remains self-consistent.
+  > **Remediation:** Recommend always pinning exact versions (e.g., cirq==1.6.1) and verifying package provenance; avoid guidance to omit pins.
 
 ### clinical-decision-support — 🔵 LOW
 
@@ -1498,22 +1332,44 @@
   > File: `assets/survival_analysis_plan_template.json`
   > **Remediation:** Verify that every documented local path exists in the shipped package, or remove/correct stale references so agents do not attempt to read nonexistent files.
 
-### esm — 🔵 LOW
+### clinical-reports — 🔵 LOW
 
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools declaration while documentation implies Bash/Python execution and file writes
-  > The YAML manifest omits `allowed-tools` and `compatibility`, although the skill's instructions include shell installation commands (uv pip install), Python execution, and writing output files (PDB/FASTA/CIF/pickle caches). This is informational only per the skills spec; no restriction is violated because none is declared.
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — allowed-tools not declared in manifest
+  > The YAML frontmatter omits the optional 'allowed-tools' field while the skill instructs the agent to run Bash/Python commands. Declaring the field would tighten the capability boundary. Informational only; observed script behavior (local file read/write, stdout) is consistent with the stated purpose.
+  > **Remediation:** Explicitly declare allowed-tools (e.g., [Read, Write, Bash, Python]) to make the capability surface auditable.
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Numerous referenced files missing from package (documentation drift)
+  > SKILL.md and the pre-scan reference list point to many asset/reference/template paths that do not exist in the package (e.g., templates/*.md, assets/README.md, assets/medical_terminology.md, references/*.json duplicates). Missing internal resources cause fail-closed script errors and reduce reliability, but no external or untrusted source is fetched. This is a documentation/packaging hygiene issue, not a security exploit.
   > File: `SKILL.md`
-  > **Remediation:** Declare `allowed-tools` (e.g., [Read, Write, Bash, Python]) and compatibility to make the skill's execution footprint explicit.
+  > **Remediation:** Ship all referenced assets/references or prune references to non-existent paths so the skill remains self-consistent.
 
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Documentation suggests installing package directly from GitHub repository
-  > The biohub-platform.md reference instructs installing the `esm` package from a GitHub repository (github.com/Biohub/esm) via `uv pip install "esm@git+..."`. While the guidance responsibly requires pinning a full 40-character commit SHA and reviewing the release, direct VCS installs still shift trust from PyPI provenance to a repository whose ownership/authenticity the agent cannot verify. PyPI installs elsewhere are correctly pinned (esm==3.2.3).
-  > File: `references/biohub-platform.md`
-  > **Remediation:** Prefer pinned PyPI releases; if a VCS install is required, verify repository ownership and pin an audited commit SHA, and document the expected publisher/hash.
+### cobrapy — 🔵 LOW
 
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced files do not exist in the package
-  > Instructions/scan resolve references to files such as `esm.py`, `assets/*.md`, and `templates/*.md` that are not present in the package. Broken references are not directly exploitable but can cause the agent to search for or fabricate missing resources, and a same-named file dropped later could be loaded implicitly.
-  > File: `references/workflows.md`
-  > **Remediation:** Remove references to nonexistent files or ship the referenced resources within the package.
+- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Computationally expensive operations (double deletions, loopless FVA, flux sampling) could exhaust compute resources
+  > Reference workflows include double gene deletion scans, loopless FVA, and flux sampling with multiprocessing (processes=4). On genome-scale models these can consume very large amounts of CPU/memory and run for hours. This is inherent to the legitimate scientific domain, and the skill explicitly warns users to start with small n and processes=1, so the risk is informational rather than malicious.
+  > **Remediation:** No action strictly needed; documentation already advises using the small 'textbook' model, low sample counts, and processes=1 first. Optionally add explicit runtime/resource limits or user confirmation before launching multiprocess jobs.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Package installation instructions (pinned) executed via Bash
+  > The skill instructs installing the 'cobra' package via 'uv pip install'. The version is properly pinned (cobra==0.31.1) and the package is the well-known official opencobra distribution on PyPI, so supply-chain risk is minimal. Noted only because the skill declares Bash and performs dependency installation.
+  > **Remediation:** Acceptable as-is; pinned version and reputable package. Optionally document hash verification or require user confirmation before installing packages.
+
+### consciousness-council — 🔵 LOW
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Broad activation triggers and promotional links in description/attribution
+  > The description enumerates many generic trigger phrases ("help me think through this from all sides", any "dilemma, trade-off, or complex choice") which could cause the skill to activate on a wide range of general reasoning requests. Additionally, the SKILL.md body includes promotional external URLs (ahkstrategies.net, themindbook.app) for the author's products. This is a minor discovery/branding concern only — no data is sent anywhere and the agent is not instructed to fetch those URLs.
+  > File: `SKILL.md`
+  > **Remediation:** Narrow the activation description to explicit user requests for council/panel deliberation, and mark external links clearly as optional informational references (agent should not fetch or follow them).
+
+### dask — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation guidance
+  > The skill instructs installation of dependencies with loose version constraints (e.g., `uv pip install "dask>=2025.1"`, `dask[complete]`, `s3fs`, `gcsfs`) without pinned versions. This is common documentation practice, but unpinned installs create a minor supply-chain risk if the agent executes them via Bash. No untrusted/third-party or GitHub sources are referenced.
+  > **Remediation:** Pin exact versions (e.g., dask==2025.1.0) or require explicit user confirmation before running package installation commands.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced file listed in instructions does not exist (documentation inconsistency)
+  > The analysis harness lists several referenced paths (assets/*.md, templates/*.md, dask.py) as not found. The SKILL.md body only references files under references/, all six of which are present. The missing paths appear to be speculative resolutions rather than genuine broken references, but `dask.py` is not present and no script files exist despite Bash being an allowed tool. This is an informational documentation/consistency issue with no security impact.
+  > File: `references/dataframes.md`
+  > **Remediation:** Ensure all referenced resources are bundled within the skill package and remove references to non-existent files.
 
 ### database-lookup — 🔵 LOW
 
@@ -1537,24 +1393,64 @@
   > File: `references/simbad.md`
   > **Remediation:** Ship a small validated helper script (e.g., a Python wrapper that builds requests with a real HTTP library and parameterized query construction) and instruct the agent to use it instead of hand-assembling curl command strings, so sanitization is enforced deterministically rather than by instruction.
 
-### experimental-design — 🔵 LOW
+### datamol — 🔵 LOW
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Documentation of remote (S3/GCS/HTTPS) read and write paths using cloud credentials
+  > Reference documentation shows reading from and writing to remote fsspec paths (s3://, gs://, https://) which implicitly uses provider credentials from environment variables (AWS_ACCESS_KEY_ID, GOOGLE_APPLICATION_CREDENTIALS). Written data could leave the local machine. Notably, the skill includes explicit mitigating guidance: cloud I/O only when the user requests it, confirm remote write destinations, and a statement that credentials are used locally by fsspec and not transmitted to third parties. No hardcoded credentials, no attacker-controlled endpoints, and no environment-variable harvesting were found, so risk is informational only.
+  > **Remediation:** Keep the existing user-confirmation guidance; ensure the agent never writes to remote destinations not explicitly named by the user and never echoes credential values.
 
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
-  > The SKILL.md installation step instructs installing dependencies with loose/unpinned version constraints (`uv pip install "numpy>=1.26" "pandas>=2.0" pyDOE3`). `pyDOE3` has no version pin at all. This is a minor supply-chain hygiene concern: a future compromised or breaking release would be installed automatically. No untrusted repositories or typosquatted names are used, and all packages are well-known scientific libraries.
+  > The skill instructs the agent to install packages via `uv pip install datamol`, `s3fs`, and `gcsfs` without any version pinning or hash verification. This is standard practice for library documentation skills and the packages are well-known legitimate PyPI projects, but unpinned installs carry a residual supply-chain risk (dependency confusion / malicious version publication).
+  > **Remediation:** Pin versions (e.g., `uv pip install datamol==0.12.5`) and prefer requiring user confirmation before executing installation commands.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced files do not exist in the package
+  > The instruction body and its references point to files that are not present in the package (e.g., templates/*.md, assets/*.md, and apparent false-positive references to `datamol.py` and `sklearn.py` from import statements). Missing referenced files are a documentation-integrity issue and could, in a shared workspace, allow an attacker to plant a file at a path the agent expects to read. The SKILL.md explicitly clarifies that scipy/scikit-learn are PyPI packages and not bundled scripts, which reduces confusion and typosquat/shadowing risk.
+  > File: `references/core_workflows.md`
+  > **Remediation:** Remove references to non-existent paths or ship the referenced files; have the agent verify file existence and reject unexpected files resolved from ambiguous relative paths.
+
+### deeptools — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Package installation instructions in SKILL.md (pinned, reputable source)
+  > SKILL.md instructs installing deepTools via `uv pip install deepTools==3.5.6` and optionally conda/bioconda. The version is pinned and the package is a well-known, legitimate bioinformatics tool, so supply-chain risk is minimal. Noted only for completeness: the agent will install third-party software on the user's machine.
   > File: `SKILL.md`
-  > **Remediation:** Pin exact versions (e.g. numpy==1.26.4, pandas==2.2.2, pyDOE3==1.0.4) or provide a lockfile/requirements.txt with hashes.
+  > **Remediation:** Optionally require explicit user confirmation before installing packages, and prefer isolated virtual environments for installation.
 
-### docx — 🔵 LOW
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced documentation files are missing from the package
+  > The instructions reference documentation paths that do not exist in the package (e.g., assets/normalization_methods.md, assets/workflows.md, templates/*.md, references/quick_reference.md). All missing paths are internal to the skill; no external URLs or network-sourced instruction files are fetched. Impact is limited to broken references / possible agent confusion, not a security compromise.
+  > File: `references/normalization_methods.md`
+  > **Remediation:** Align referenced file paths with the files actually shipped in the package, or add the missing reference documents.
 
-- **🔵 LOW** `LLM_COMMAND_INJECTION` — LibreOffice Basic macro written to fixed /tmp profile path and executed headlessly
-  > scripts/accept_changes.py writes a StarBasic macro (Module1.xba) to a fixed path under /tmp/libreoffice_docx_profile and then invokes soffice with a vnd.sun.star.script: URL to execute it. The macro content is static and benign (AcceptAllTrackedChanges + store + close), but using a world-writable fixed profile directory means another local user/process could replace Module1.xba with arbitrary Basic code, which this script would then execute (it only checks that the string 'AcceptAllTrackedChanges' is present).
-  > File: `scripts/accept_changes.py`
-  > **Remediation:** Create the LibreOffice profile in a per-invocation temporary directory with restrictive permissions (as run_soffice() already does), and always rewrite the macro file rather than trusting existing content.
+### depmap — 🔵 LOW
 
-- **🔵 LOW** `LLM_COMMAND_INJECTION` — Runtime compilation of C shim and LD_PRELOAD injection into soffice subprocess
-  > scripts/office/soffice.py writes an embedded C source file to the system temp directory, compiles it with gcc into a shared object, and injects it via LD_PRELOAD into LibreOffice subprocesses. The shim overrides socket/listen/accept/close libc calls. While the intent (working around AF_UNIX restrictions in sandboxes) is legitimate and the C source is fully visible (no obfuscation), the pattern uses a predictable, world-writable path (/tmp/lo_socket_shim.so, /tmp/lo_socket_shim.c) and reuses any pre-existing file at that path without integrity checking, which is a local privilege/code-injection hazard on shared hosts (a pre-planted .so would be LD_PRELOADed).
-  > File: `scripts/office/soffice.py`
-  > **Remediation:** Build the shim in a private mkdtemp directory with 0700 permissions (or verify a hash of an existing artifact) instead of a fixed predictable /tmp path, and skip the build entirely when gcc/preload is not required.
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Missing allowed-tools and compatibility metadata
+  > The YAML frontmatter does not declare `allowed-tools` or `compatibility`, although the skill body includes Python code that performs network requests and writes files to disk. These fields are optional per the skill spec, so this is informational only; no declared restriction is violated.
+  > **Remediation:** Explicitly declare allowed-tools (e.g., [Read, Write, Python]) and note that the skill performs outbound HTTP requests to depmap.org/figshare.com.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Referenced file 'scipy.py' not present in package
+  > Static reference extraction lists 'scipy.py' as a referenced file that does not exist in the package. This is almost certainly a false positive from parsing the `from scipy import stats` import in an example code block rather than a real missing dependency file. However, an absent local module name matching a popular library could be a module-shadowing/typosquat vector if such a file were later added.
+  > **Remediation:** No action required; optionally list dependencies (scipy, pandas, numpy, requests) with pinned versions in a requirements file to avoid ambiguity.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Unvalidated remote data downloads to local filesystem
+  > The documentation includes helper code that downloads arbitrary URLs (DepMap/Figshare data files) and writes them directly to a local path without checksum/integrity verification or path validation. This is normal for a bioinformatics data-access skill, but unverified downloads represent a minor supply-chain/integrity risk if a URL is substituted or the source is compromised. No exfiltration, credential access, or secret material was observed anywhere in the skill.
+  > File: `SKILL.md`
+  > **Remediation:** Pin dataset URLs/versions, verify checksums of downloaded files, and constrain output_path to a sandboxed working directory.
+
+### esm — 🔵 LOW
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools declaration while documentation implies Bash/Python execution and file writes
+  > The YAML manifest omits `allowed-tools` and `compatibility`, although the skill's instructions include shell installation commands (uv pip install), Python execution, and writing output files (PDB/FASTA/CIF/pickle caches). This is informational only per the skills spec; no restriction is violated because none is declared.
+  > File: `SKILL.md`
+  > **Remediation:** Declare `allowed-tools` (e.g., [Read, Write, Bash, Python]) and compatibility to make the skill's execution footprint explicit.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Documentation suggests installing package directly from GitHub repository
+  > The biohub-platform.md reference instructs installing the `esm` package from a GitHub repository (github.com/Biohub/esm) via `uv pip install "esm@git+..."`. While the guidance responsibly requires pinning a full 40-character commit SHA and reviewing the release, direct VCS installs still shift trust from PyPI provenance to a repository whose ownership/authenticity the agent cannot verify. PyPI installs elsewhere are correctly pinned (esm==3.2.3).
+  > File: `references/biohub-platform.md`
+  > **Remediation:** Prefer pinned PyPI releases; if a VCS install is required, verify repository ownership and pin an audited commit SHA, and document the expected publisher/hash.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced files do not exist in the package
+  > Instructions/scan resolve references to files such as `esm.py`, `assets/*.md`, and `templates/*.md` that are not present in the package. Broken references are not directly exploitable but can cause the agent to search for or fabricate missing resources, and a same-named file dropped later could be loaded implicitly.
+  > File: `references/workflows.md`
+  > **Remediation:** Remove references to nonexistent files or ship the referenced resources within the package.
 
 ### etetoolkit — 🔵 LOW
 
@@ -1574,6 +1470,25 @@
   > File: `scripts/inspect_fcs.py`
   > **Remediation:** Ensure only existing, in-package files are referenced so the agent does not attempt to read or create unexpected paths.
 
+### get-available-resources — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Documentation suggests optional package installation (pinned)
+  > SKILL.md suggests an optional dependency install command (`uv pip install "psutil==7.2.2"`). The version is pinned to an exact release from a well-known, legitimate package, and the import is lazy with graceful failure. This is low-risk but does involve installing a package into the user's environment when the documented command is followed.
+  > File: `SKILL.md`
+  > **Remediation:** Keep the exact version pin and explicitly note that the install is optional and should be user-approved before execution.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Reads allowlisted Slurm and accelerator environment variables (redacted)
+  > detect_resources.py reads a fixed allowlist of Slurm and accelerator visibility environment variables (including SLURM_JOB_ID). Values are not emitted in the snapshot — only field names, parsed bounded counts, and set/state summaries — so exposure risk is minimal and consistent with the documented purpose. Noted only for completeness; no broad environment dump occurs.
+  > File: `scripts/detect_resources.py`
+  > **Remediation:** No change required. Optionally exclude SLURM_JOB_ID from reads since only its presence is used, to reduce any chance of accidental value leakage in future edits.
+
+### ginkgo-cloud-lab — 🔵 LOW
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Numerous referenced files missing from package (templates/ and assets/ paths)
+  > The skill's reference documentation implies template/asset files (e.g., templates/*.md, assets/*.md) that are not present in the package. All actually-linked reference files under references/ exist and contain only benign biology protocol documentation. Missing files are a documentation/integrity issue only: if the agent attempts to resolve these paths it may fail or, worse, be induced to fetch equivalent content from external sources. No malicious content was observed.
+  > File: `references/pichia-protein-expression-labchip.md`
+  > **Remediation:** Bundle all referenced template/asset files within the skill package, or remove the dangling references. Ensure the agent never substitutes missing internal files with content fetched from the network.
+
 ### glycoengineering — 🔵 LOW
 
 - **🔵 LOW** `LLM_DATA_EXFILTRATION` — Outbound HTTP requests to external bioinformatics web services
@@ -1588,29 +1503,6 @@
   > The SKILL.md documentation instructs installing the 'glycoshield' package via `pip install glycoshield` without a pinned version or hash. If the agent executes this, it introduces supply-chain risk (version drift, typosquatting, or a compromised release could be pulled).
   > File: `SKILL.md`
   > **Remediation:** Pin the dependency version (e.g., `pip install glycoshield==<verified-version>`), reference the official PyPI project, and require user confirmation before executing installation commands.
-
-### ginkgo-cloud-lab — 🔵 LOW
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Numerous referenced files missing from package (templates/ and assets/ paths)
-  > The skill's reference documentation implies template/asset files (e.g., templates/*.md, assets/*.md) that are not present in the package. All actually-linked reference files under references/ exist and contain only benign biology protocol documentation. Missing files are a documentation/integrity issue only: if the agent attempts to resolve these paths it may fail or, worse, be induced to fetch equivalent content from external sources. No malicious content was observed.
-  > File: `references/pichia-protein-expression-labchip.md`
-  > **Remediation:** Bundle all referenced template/asset files within the skill package, or remove the dangling references. Ensure the agent never substitutes missing internal files with content fetched from the network.
-
-### gget — 🔵 LOW
-
-- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Potentially large resource-consuming operations (bulk downloads, AlphaFold prediction)
-  > The skill documents operations that can consume very large amounts of bandwidth, disk, and CPU: `gget virus --download_all_accessions` (entire Viruses taxonomy), `gget ref -w dna -d` (whole genomes), cellxgene AnnData downloads, and AlphaFold structure prediction. These are legitimate bioinformatics features and the documentation explicitly warns against unfiltered bulk downloads, so this is informational only.
-  > **Remediation:** Keep the existing warnings; additionally require user confirmation and explicit size/limit parameters before executing bulk download or AlphaFold prediction commands.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Dependency installation instructions execute package managers
-  > SKILL.md instructs installing packages via `uv pip install "gget==0.30.5"` and `gget setup <module>` which internally runs `uv pip install`/`pip install` and downloads ~4GB of AlphaFold model parameters and third-party 'modified' dependencies. Version is pinned (good practice), and the source is the legitimate upstream PyPI/pachterlab project, so risk is minimal, but the skill still triggers network installs and large third-party downloads on the user's machine.
-  > File: `SKILL.md`
-  > **Remediation:** Require explicit user confirmation before running any install/setup command, and prefer isolated virtual environments (already recommended). Document the exact third-party artifacts downloaded by `gget setup`.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced files missing from package
-  > The instruction body references `references/database_info.md`, and the referenced-file scan lists several paths that do not exist (templates/*.md, assets/*.md, gget.py). Missing referenced documentation is a documentation-integrity issue only; no evidence of malicious intent. Present reference files (module_catalog.md, module_reference.md, common_workflows.md, workflows.md) are benign bioinformatics documentation.
-  > File: `references/database_info.md`
-  > **Remediation:** Ship all referenced reference files or remove the dangling references to avoid the agent attempting to fetch or fabricate missing content.
 
 ### gtars — 🔵 LOW
 
@@ -1628,39 +1520,6 @@
   > coverage_preflight.py references MAX_DENSE_GAP inside build_parser() while the constant is defined after the function, and the CLI also has a spurious math import path dependency. In CPython this is fine only because the name is resolved at call time and the module-level assignment executes at import; however MAX_DENSE_GAP is defined after build_parser but before main() is invoked, so behaviour depends on definition ordering and is fragile. This is a code-quality/robustness defect, not an exploitable injection; there is no eval/exec, subprocess, or network usage anywhere in the skill.
   > File: `scripts/coverage_preflight.py`
   > **Remediation:** Move MAX_DENSE_GAP above build_parser() and add an import-time smoke test for each helper CLI.
-
-### lamindb — 🔵 LOW
-
-- **🔵 LOW** `LLM_COMMAND_INJECTION` — Documentation examples include privileged/destructive shell commands and f-string SQL interpolation
-  > Reference documentation includes example commands that require elevated privileges or are destructive if run without confirmation (`sudo mkdir/nano/chmod/chown` on shared cache paths, `shutil.rmtree(ln.settings.cache_dir)`, `lamin delete --force`, `artifact.delete(permanent=True)`), and a DuckDB example that interpolates a filesystem path directly into a SQL string. These are conventional vendor-doc patterns rather than malicious payloads, but an agent could execute them verbatim on a user's machine.
-  > **Remediation:** Add explicit guidance that destructive or privileged commands require user confirmation before execution, and use parameterized/escaped values instead of f-string interpolation in query examples.
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Missing allowed-tools and compatibility metadata
-  > The YAML frontmatter does not declare `allowed-tools` or `compatibility`. This is optional per the skill spec, but the skill's documentation contains many shell commands (uv pip install, lamin init, pg_dump, sudo chmod/chown) and Python snippets that an agent may execute, so declaring tool scope would improve safety. Informational only; no violation was detected because no scripts are bundled.
-  > **Remediation:** Declare `allowed-tools` (e.g., [Read, Grep, Glob]) and `compatibility` to constrain agent behavior and clarify that the skill is documentation-only.
-
-### latchbio-integration — 🔵 LOW
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Multiple referenced files missing from package (templates/*, assets/*, latch.py)
-  > The static inventory shows only 8 files, yet many referenced paths (templates/operations-and-debugging.md, assets/*.md, latch.py, etc.) are not present. These are most likely false-positive path extractions from documentation prose rather than real references, but broken references can cause the agent to search the filesystem or fetch external substitutes. No malicious content is implied.
-  > File: `SKILL.md`
-  > **Remediation:** Ensure only files bundled in the skill are referenced, and remove/clarify ambiguous path-like strings in documentation so the agent does not attempt to resolve nonexistent files.
-
-### labarchive-integration — 🔵 LOW
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — allowed-tools not declared in manifest
-  > The YAML frontmatter does not declare allowed-tools. The skill instructs the agent to execute local Python via `uv run`, so Bash/Python capability is implied but not scoped. This is informational only, as allowed-tools is optional per the skill spec, and observed script behavior (stdlib-only, no network) is consistent with the description.
-  > **Remediation:** Declare `allowed-tools: [Read, Bash]` (or the minimal needed set) to make the execution surface explicit.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Reference file naming inconsistency / missing template and asset paths
-  > The reference-file resolution list includes templates/*.md and assets/*.md paths that do not exist in the package. The SKILL.md body itself only links to references/*.md, all of which are present. Missing files would only cause failed reads, not a security compromise, but they create documentation drift and could later be shadowed by attacker-supplied files of the same name in the working directory.
-  > File: `references/api_reference.md`
-  > **Remediation:** Ensure all referenced documentation resolves to existing files inside the skill package and remove stale template/asset path references.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Dummy HMAC test vector embedded in script (documentation example, not a live secret)
-  > scripts/entry_operations.py hardcodes a LabArchives-published dummy Access Key ID and Access Password ("0234wedkfjrtfd34er" / "1234567890") plus the expected signature for an offline self-test. These are the vendor's public documentation example values, not real credentials, and they are only used to verify the HMAC-SHA-512 implementation. Risk is informational: pattern-scanners may flag it, and future maintainers could mistakenly substitute real credentials in the same constant.
-  > File: `scripts/entry_operations.py`
-  > **Remediation:** Optionally move the public test vector into a separate fixture/test file with an explicit comment that no real credential may ever be placed there.
 
 ### hypothesis-generation — 🔵 LOW
 
@@ -1680,17 +1539,38 @@
   > File: `scripts/check_qmsr_transition.py`
   > **Remediation:** Move dated regulatory constants into a single versioned data file with an explicit review date, and surface a warning (not a blocker) when the skill's baseline date is older than a defined staleness threshold.
 
-### get-available-resources — 🔵 LOW
+### labarchive-integration — 🔵 LOW
 
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Documentation suggests optional package installation (pinned)
-  > SKILL.md suggests an optional dependency install command (`uv pip install "psutil==7.2.2"`). The version is pinned to an exact release from a well-known, legitimate package, and the import is lazy with graceful failure. This is low-risk but does involve installing a package into the user's environment when the documented command is followed.
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — allowed-tools not declared in manifest
+  > The YAML frontmatter does not declare allowed-tools. The skill instructs the agent to execute local Python via `uv run`, so Bash/Python capability is implied but not scoped. This is informational only, as allowed-tools is optional per the skill spec, and observed script behavior (stdlib-only, no network) is consistent with the description.
+  > **Remediation:** Declare `allowed-tools: [Read, Bash]` (or the minimal needed set) to make the execution surface explicit.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Reference file naming inconsistency / missing template and asset paths
+  > The reference-file resolution list includes templates/*.md and assets/*.md paths that do not exist in the package. The SKILL.md body itself only links to references/*.md, all of which are present. Missing files would only cause failed reads, not a security compromise, but they create documentation drift and could later be shadowed by attacker-supplied files of the same name in the working directory.
+  > File: `references/api_reference.md`
+  > **Remediation:** Ensure all referenced documentation resolves to existing files inside the skill package and remove stale template/asset path references.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Dummy HMAC test vector embedded in script (documentation example, not a live secret)
+  > scripts/entry_operations.py hardcodes a LabArchives-published dummy Access Key ID and Access Password ("0234wedkfjrtfd34er" / "1234567890") plus the expected signature for an offline self-test. These are the vendor's public documentation example values, not real credentials, and they are only used to verify the HMAC-SHA-512 implementation. Risk is informational: pattern-scanners may flag it, and future maintainers could mistakenly substitute real credentials in the same constant.
+  > File: `scripts/entry_operations.py`
+  > **Remediation:** Optionally move the public test vector into a separate fixture/test file with an explicit comment that no real credential may ever be placed there.
+
+### lamindb — 🔵 LOW
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — Documentation examples include privileged/destructive shell commands and f-string SQL interpolation
+  > Reference documentation includes example commands that require elevated privileges or are destructive if run without confirmation (`sudo mkdir/nano/chmod/chown` on shared cache paths, `shutil.rmtree(ln.settings.cache_dir)`, `lamin delete --force`, `artifact.delete(permanent=True)`), and a DuckDB example that interpolates a filesystem path directly into a SQL string. These are conventional vendor-doc patterns rather than malicious payloads, but an agent could execute them verbatim on a user's machine.
+  > **Remediation:** Add explicit guidance that destructive or privileged commands require user confirmation before execution, and use parameterized/escaped values instead of f-string interpolation in query examples.
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Missing allowed-tools and compatibility metadata
+  > The YAML frontmatter does not declare `allowed-tools` or `compatibility`. This is optional per the skill spec, but the skill's documentation contains many shell commands (uv pip install, lamin init, pg_dump, sudo chmod/chown) and Python snippets that an agent may execute, so declaring tool scope would improve safety. Informational only; no violation was detected because no scripts are bundled.
+  > **Remediation:** Declare `allowed-tools` (e.g., [Read, Grep, Glob]) and `compatibility` to constrain agent behavior and clarify that the skill is documentation-only.
+
+### latchbio-integration — 🔵 LOW
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Multiple referenced files missing from package (templates/*, assets/*, latch.py)
+  > The static inventory shows only 8 files, yet many referenced paths (templates/operations-and-debugging.md, assets/*.md, latch.py, etc.) are not present. These are most likely false-positive path extractions from documentation prose rather than real references, but broken references can cause the agent to search the filesystem or fetch external substitutes. No malicious content is implied.
   > File: `SKILL.md`
-  > **Remediation:** Keep the exact version pin and explicitly note that the install is optional and should be user-approved before execution.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Reads allowlisted Slurm and accelerator environment variables (redacted)
-  > detect_resources.py reads a fixed allowlist of Slurm and accelerator visibility environment variables (including SLURM_JOB_ID). Values are not emitted in the snapshot — only field names, parsed bounded counts, and set/state summaries — so exposure risk is minimal and consistent with the documented purpose. Noted only for completeness; no broad environment dump occurs.
-  > File: `scripts/detect_resources.py`
-  > **Remediation:** No change required. Optionally exclude SLURM_JOB_ID from reads since only its presence is used, to reduce any chance of accidental value leakage in future edits.
+  > **Remediation:** Ensure only files bundled in the skill are referenced, and remove/clarify ambiguous path-like strings in documentation so the agent does not attempt to resolve nonexistent files.
 
 ### markdown-mermaid-writing — 🔵 LOW
 
@@ -1707,12 +1587,48 @@
   > File: `assets/examples/example-research-report.md`
   > **Remediation:** Audit and fix all relative links so every referenced path resolves within the package, or remove links to files that are intentionally absent. Add a graceful-degradation note telling the agent to proceed with the style guide when a specific type file is unavailable.
 
+### market-research-reports — 🔵 LOW
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Static analyzer flagged env-var/network pattern is a false positive
+  > Pre-scan heuristics reported 'environment variable access with network calls' and a cross-file exfiltration chain. Manual review of all bundled scripts shows only `os.sys.stderr` usage in `_common.py::error_exit` and `os.replace` for atomic file writes; there are no imports of urllib/requests/socket/subprocess, no os.environ reads, no eval/exec/pickle, and no outbound network calls anywhere in the package. The 'network' signal appears to derive from documentation strings and HTTP(S) URLs used only for URL-format validation in the source ledger validator (`urlsplit` parsing, no fetching). No exfiltration capability exists.
+  > File: `scripts/_common.py`
+  > **Remediation:** No action required. Optionally import `sys` directly instead of `os.sys` to reduce false-positive matches in automated scanners.
+
 ### matchms — 🔵 LOW
 
 - **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Referenced files listed but not present in package
   > The skill's instructions reference documentation paths that do not exist in the package (e.g., assets/*.md, templates/*.md, matchms.py). These appear to be false-positive path extractions or leftovers; the actual references/*.md files do exist. Missing referenced files can cause the agent to search the filesystem or fabricate content, a minor reliability/integrity concern rather than an active security threat.
   > File: `SKILL.md`
   > **Remediation:** Remove or correct references to non-existent files so only bundled references/*.md paths are cited.
+
+### matlab — 🔵 LOW
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Several files referenced in documentation do not exist in the package
+  > The pre-scan resolved many candidate paths (templates/*.md, assets/*.md, references/*.json) that are not present. SKILL.md explicitly states there is no `templates/` directory and that no Markdown is loaded from `assets/`, so these are path-resolution artifacts of the scanner rather than broken skill behavior. All genuinely referenced references/*.md and assets/*.json files are present. No security impact.
+  > File: `SKILL.md`
+  > **Remediation:** No action needed; documentation already declares the package contract.
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — Planner constructs MATLAB/Octave --eval statements from user-supplied identifiers and JSON (plan-only, not executed)
+  > plan_batch_command.py builds MATLAB `-batch` statements and Octave `--eval` strings that embed a function name and JSON-derived literals. If an operator later executes the emitted argv, the embedded statement becomes code. The risk is materially mitigated: the executable name is restricted by a strict regex, function names must match MATLAB identifier rules and the target file stem, strings are escaped and control characters rejected, nesting/size/integer ranges are bounded, and the tool never spawns a subprocess (`executes: false`). Documentation repeatedly warns that the plan is not proof of safety. Flagged as informational only.
+  > File: `scripts/plan_batch_command.py`
+  > **Remediation:** No change required. Optionally continue to require explicit human approval and echo the full argv before any execution, as the skill already instructs.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — SHA-256 hashing and metadata inventory of user-named local files (bounded, no network)
+  > reproducibility_report.py hashes only explicitly named files under a validated root, and inventory_mat_file.py reads MAT/HDF5 headers and metadata. Both redact variable/attribute names via hashing, never read dataset values, never follow HDF5 soft/external links, never call loadmat or unpickle, and never perform network I/O. The skill explicitly avoids environment/PATH/credential dumps. No exfiltration channel exists (all output goes to stdout). Informational only.
+  > File: `scripts/reproducibility_report.py`
+  > **Remediation:** None required; current bounds, symlink rejection, and root confinement are appropriate.
+
+### matplotlib — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
+  > The SKILL.md instructs running `uv add matplotlib` and `uv add matplotlib ipympl` without version pinning, and also suggests `uv self update` / `uv python upgrade --reinstall`. These are legitimate, widely used commands for the stated purpose but introduce unpinned dependency resolution and environment-modifying operations. Risk is minimal since packages are well-known upstream PyPI projects and no third-party/GitHub sources are used.
+  > File: `SKILL.md`
+  > **Remediation:** Pin versions (e.g., `uv add "matplotlib==3.10.*"`) and avoid instructing toolchain-wide updates (`uv self update`) as part of skill setup.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced files missing / inconsistent paths
+  > The skill references documentation files in multiple non-existent directories (assets/*.md, templates/*.md) and a `matplotlib.py` file that is not present in the package. Only references/plot_types.md, references/styling_guide.md, references/api_reference.md, references/common_issues.md exist. Missing referenced files could cause the agent to search elsewhere on disk or fabricate content, though no malicious content is present. Documentation-quality issue rather than a security threat.
+  > File: `references/common_issues.md`
+  > **Remediation:** Remove or correct references to non-existent files so the agent only loads bundled resources under references/.
 
 ### medchem — 🔵 LOW
 
@@ -1741,18 +1657,6 @@
   > File: `SKILL.md`
   > **Remediation:** Pin explicit versions (e.g., openmm==8.1.1, mdanalysis==2.7.0) and prefer a lockfile/environment.yml with hashes.
 
-### matplotlib — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
-  > The SKILL.md instructs running `uv add matplotlib` and `uv add matplotlib ipympl` without version pinning, and also suggests `uv self update` / `uv python upgrade --reinstall`. These are legitimate, widely used commands for the stated purpose but introduce unpinned dependency resolution and environment-modifying operations. Risk is minimal since packages are well-known upstream PyPI projects and no third-party/GitHub sources are used.
-  > File: `SKILL.md`
-  > **Remediation:** Pin versions (e.g., `uv add "matplotlib==3.10.*"`) and avoid instructing toolchain-wide updates (`uv self update`) as part of skill setup.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced files missing / inconsistent paths
-  > The skill references documentation files in multiple non-existent directories (assets/*.md, templates/*.md) and a `matplotlib.py` file that is not present in the package. Only references/plot_types.md, references/styling_guide.md, references/api_reference.md, references/common_issues.md exist. Missing referenced files could cause the agent to search elsewhere on disk or fabricate content, though no malicious content is present. Documentation-quality issue rather than a security threat.
-  > File: `references/common_issues.md`
-  > **Remediation:** Remove or correct references to non-existent files so the agent only loads bundled resources under references/.
-
 ### networkx — 🔵 LOW
 
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation guidance
@@ -1774,40 +1678,17 @@
   > File: `references/visualization.md`
   > **Remediation:** Ensure all referenced paths resolve to bundled files, or remove references to non-existent assets/templates so the agent does not attempt to resolve them from untrusted locations.
 
-### market-research-reports — 🔵 LOW
+### neurokit2 — 🔵 LOW
 
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Static analyzer flagged env-var/network pattern is a false positive
-  > Pre-scan heuristics reported 'environment variable access with network calls' and a cross-file exfiltration chain. Manual review of all bundled scripts shows only `os.sys.stderr` usage in `_common.py::error_exit` and `os.replace` for atomic file writes; there are no imports of urllib/requests/socket/subprocess, no os.environ reads, no eval/exec/pickle, and no outbound network calls anywhere in the package. The 'network' signal appears to derive from documentation strings and HTTP(S) URLs used only for URL-format validation in the source ledger validator (`urlsplit` parsing, no fetching). No exfiltration capability exists.
-  > File: `scripts/_common.py`
-  > **Remediation:** No action required. Optionally import `sys` directly instead of `os.sys` to reduce false-positive matches in automated scanners.
-
-### matlab — 🔵 LOW
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Several files referenced in documentation do not exist in the package
-  > The pre-scan resolved many candidate paths (templates/*.md, assets/*.md, references/*.json) that are not present. SKILL.md explicitly states there is no `templates/` directory and that no Markdown is loaded from `assets/`, so these are path-resolution artifacts of the scanner rather than broken skill behavior. All genuinely referenced references/*.md and assets/*.json files are present. No security impact.
+- **🔵 LOW** `LLM_OBFUSCATION` — SKILL.md pre-emptively instructs the agent to treat eval/exec scanner hits as false positives
+  > The 'Security note' section in SKILL.md tells the agent that no helper uses eval()/exec() and that static-scanner eval/exec findings should be recorded as false positives. In this package the claim is factually accurate (no dynamic execution is present in any of the reviewed scripts), so it is documentation rather than an active evasion attempt. It is nonetheless a pattern that could bias automated review if the bundled scripts were later modified, and is noted for awareness only.
   > File: `SKILL.md`
-  > **Remediation:** No action needed; documentation already declares the package contract.
+  > **Remediation:** No action strictly required. If retained, keep the guidance conditional (as written, requiring confirmation) and re-verify scripts on every version bump so the statement cannot become stale cover for future dynamic-execution code.
 
-- **🔵 LOW** `LLM_COMMAND_INJECTION` — Planner constructs MATLAB/Octave --eval statements from user-supplied identifiers and JSON (plan-only, not executed)
-  > plan_batch_command.py builds MATLAB `-batch` statements and Octave `--eval` strings that embed a function name and JSON-derived literals. If an operator later executes the emitted argv, the embedded statement becomes code. The risk is materially mitigated: the executable name is restricted by a strict regex, function names must match MATLAB identifier rules and the target file stem, strings are escaped and control characters rejected, nesting/size/integer ranges are bounded, and the tool never spawns a subprocess (`executes: false`). Documentation repeatedly warns that the plan is not proof of safety. Flagged as informational only.
-  > File: `scripts/plan_batch_command.py`
-  > **Remediation:** No change required. Optionally continue to require explicit human approval and echo the full argv before any execution, as the skill already instructs.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — SHA-256 hashing and metadata inventory of user-named local files (bounded, no network)
-  > reproducibility_report.py hashes only explicitly named files under a validated root, and inventory_mat_file.py reads MAT/HDF5 headers and metadata. Both redact variable/attribute names via hashing, never read dataset values, never follow HDF5 soft/external links, never call loadmat or unpickle, and never perform network I/O. The skill explicitly avoids environment/PATH/credential dumps. No exfiltration channel exists (all output goes to stdout). Informational only.
-  > File: `scripts/reproducibility_report.py`
-  > **Remediation:** None required; current bounds, symlink rejection, and root confinement are appropriate.
-
-### neuropixels-analysis — 🔵 LOW
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools and compatibility declarations
-  > The YAML frontmatter does not declare `allowed-tools` or `compatibility`, although the skill ships Python scripts intended to be executed via Bash/Python and writes files to disk (output folders, CSV/JSON/PNG artifacts). This is informational only: `allowed-tools` is optional in the spec and no restriction is violated because none is declared. All file writes are to user-specified output directories consistent with the documented purpose.
-  > **Remediation:** Optionally declare `allowed-tools: [Read, Write, Bash, Python]` and `compatibility` so users can see that the skill executes code and writes analysis output files.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions including remote model downloads
-  > The SKILL.md Installation section instructs installing multiple packages (spikeinterface[full], kilosort, spykingcircus, mountainsort5, huggingface_hub, skops, anthropic, ibl-neuropixel, ibllib, bombcell) without version pins in the primary commands (pins are only suggested as a footnote). Reference docs additionally recommend `git clone` + `pip install -e .` from GitHub repos and downloading `.skops` ML models from Hugging Face with `trust_model=True`, which deserializes remote artifacts. These are legitimate, widely-used scientific tools and the docs explicitly warn to only load models from trusted sources, so the risk is minor/informational rather than malicious.
-  > File: `SKILL.md`
-  > **Remediation:** Pin exact versions in the primary install commands, prefer PyPI over direct git installs, and keep the existing guidance that `.skops`/pickle models must be treated as executable artifacts loaded only from verified sources.
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Instructions reference numerous documentation files that do not exist in the package
+  > SKILL.md lists 12 reference documents, and the referenced-file scan additionally probed templates/ and assets/ paths. Several referenced markdown files are absent from the package (e.g., references/eeg.md-adjacent templates/*, assets/*, and reference entries not shipped). Missing files cause the agent to fail reads or potentially search outside the skill directory for substitutes. No malicious content was found in the files that do exist; all present references are internal, benign, technical documentation.
+  > File: `references/signal_processing.md`
+  > **Remediation:** Ship every referenced markdown file or remove references to files not bundled, and instruct the agent to only read paths under the skill's own references/ directory.
 
 ### nextflow — 🔵 LOW
 
@@ -1823,30 +1704,6 @@
   > Setup instructions include `curl -s https://get.nextflow.io | bash`, `curl -fsSL https://get.nf-test.com | bash`, `sudo mv nextflow /usr/local/bin/`, and unpinned `pip install nf-core` / `conda install nf-core`. These are the officially documented installation methods for Nextflow/nf-test, so risk is low and expected, but curl-to-bash execution plus a sudo move grants remote code execution and privileged file placement if the upstream endpoint or DNS is compromised, and unpinned package installs provide no supply-chain provenance guarantees.
   > **Remediation:** Prefer versioned/pinned installs (e.g. `pip install nf-core==<version>`, conda with pinned version), download-then-verify-checksum instead of piping to bash, and avoid `sudo` by installing to a user-local bin directory.
 
-### openpiv — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency install instruction (uv pip install openpiv)
-  > The SKILL.md Quick Start instructs installing the `openpiv` package without a version pin (`uv pip install openpiv`), though it does immediately offer a pinned alternative (`openpiv==0.25.4`) for reproducibility. This is a minor supply-chain hygiene concern only; the package is the legitimate, well-known OpenPIV library and no third-party/GitHub/unknown sources are used.
-  > File: `SKILL.md`
-  > **Remediation:** Prefer the pinned form (`uv pip install "openpiv==0.25.4"`) as the primary instruction to ensure reproducible, verified dependency resolution.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Documentation references files that are not present in the package
-  > The instruction body's file references resolve to several paths that do not exist in the package (assets/advanced_algorithms.md, templates/advanced_algorithms.md, openpiv.py, matplotlib.py, analyze.py as a bare path). These appear to be artifacts of static reference extraction (module import names and the real path is references/advanced_algorithms.md / scripts/analyze.py, both of which exist). No external URLs or untrusted remote sources are fetched. Impact is limited to potential agent confusion / failed reads.
-  > File: `references/advanced_algorithms.md`
-  > **Remediation:** Use consistent, explicit relative paths (e.g., `scripts/analyze.py`, `references/advanced_algorithms.md`) in the documentation so every referenced resource resolves inside the package.
-
-### opentrons-integration — 🔵 LOW
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Some referenced files are unresolved/missing
-  > Several markdown files referenced in the instruction table/body could not be resolved (e.g., assets/*.md, templates/*.md variants, opentrons.py). This is largely a path-resolution artifact of the scan (the references/ versions exist), but missing files could later be supplied by an untrusted source and silently loaded as guidance. No malicious content was found in the resolved files.
-  > File: `references/liquid_handling.md`
-  > **Remediation:** Ensure all referenced documentation files are bundled inside the skill package with consistent relative paths, and avoid referencing files that do not exist.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Package installation via uv from PyPI during simulation workflow
-  > The skill instructs running `uv run --with "opentrons==9.1.1"` and `uv pip install -r requirements-flex.txt`, which downloads and executes third-party packages from PyPI at simulation time. Versions are pinned (good practice), but the workflow still triggers automatic dependency resolution/installation on the user's machine without explicit confirmation. Referenced requirements files (requirements-flex.txt / requirements-ot2.txt) were not included in the analyzed package, so their pin contents cannot be verified.
-  > File: `requirements-flex.txt`
-  > **Remediation:** Include the referenced requirements-*.txt files in the package with fully pinned versions and hashes, and note that dependency installation requires network access and user consent.
-
 ### omero-integration — 🔵 LOW
 
 - **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Missing allowed-tools declaration in manifest
@@ -1856,43 +1713,6 @@
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Instructions direct installation of a locally supplied wheel file
   > The setup instructions tell the operator to install a ZeroC IcePy 3.6.5 wheel from an arbitrary absolute local path obtained from an externally linked vendor (Glencoe) binary matrix. The omero-py dependency itself is pinned (omero-py==5.22.1), which is good practice, but the Ice wheel has no hash/provenance verification, so a substituted or tampered wheel would be silently installed. This is a normal, documented OMERO installation path and is mitigated by the explicit version pin and the instruction to use a 'reviewed matching wheel', so severity is low.
   > **Remediation:** Recommend verifying the wheel checksum/signature against the official OME-linked release artifact before installation, and document the expected hash for the pinned 3.6.5 wheel.
-
-### neurokit2 — 🔵 LOW
-
-- **🔵 LOW** `LLM_OBFUSCATION` — SKILL.md pre-emptively instructs the agent to treat eval/exec scanner hits as false positives
-  > The 'Security note' section in SKILL.md tells the agent that no helper uses eval()/exec() and that static-scanner eval/exec findings should be recorded as false positives. In this package the claim is factually accurate (no dynamic execution is present in any of the reviewed scripts), so it is documentation rather than an active evasion attempt. It is nonetheless a pattern that could bias automated review if the bundled scripts were later modified, and is noted for awareness only.
-  > File: `SKILL.md`
-  > **Remediation:** No action strictly required. If retained, keep the guidance conditional (as written, requiring confirmation) and re-verify scripts on every version bump so the statement cannot become stale cover for future dynamic-execution code.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Instructions reference numerous documentation files that do not exist in the package
-  > SKILL.md lists 12 reference documents, and the referenced-file scan additionally probed templates/ and assets/ paths. Several referenced markdown files are absent from the package (e.g., references/eeg.md-adjacent templates/*, assets/*, and reference entries not shipped). Missing files cause the agent to fail reads or potentially search outside the skill directory for substitutes. No malicious content was found in the files that do exist; all present references are internal, benign, technical documentation.
-  > File: `references/signal_processing.md`
-  > **Remediation:** Ship every referenced markdown file or remove references to files not bundled, and instruct the agent to only read paths under the skill's own references/ directory.
-
-### ontology-term-resolution — 🔵 LOW
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Keyword-heavy description broadens activation surface
-  > The skill description enumerates an extensive list of trigger keywords ("ontology term", "CURIE", "UBERON", "CL:", "MONDO", "HPO", "EFO", "ChEBI", "NCBITaxon", "GO term", "PATO", etc.). While these are all legitimately within the skill's stated scope of ontology term resolution/validation, the density of trigger terms slightly increases the likelihood of unwanted activation. No capability inflation beyond the actual implemented functionality was observed - the scripts do exactly what the description claims.
-  > File: `SKILL.md`
-  > **Remediation:** Optionally trim the trigger keyword list to the most representative examples. No functional change required; behavior matches declared purpose.
-
-### optimize-for-gpu — 🔵 LOW
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Documentation examples reference remote data reads (S3/HTTP) and AWS credential environment variables — no exfiltration path
-  > Static pre-scan flagged "env var exfiltration" chains. Manual review shows the matches come solely from the KvikIO reference documentation, which explains that AWS credentials are read from AWS_DEFAULT_REGION / AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY and shows read-only examples for kvikio.RemoteFile.open_s3 / open_http. These are inbound reads to user-specified buckets/URLs, contain no attacker-controlled endpoints, and no code in the package reads credentials or transmits data anywhere. Assessed as a false positive; recorded at LOW severity for transparency only.
-  > **Remediation:** No action strictly required. Optionally add a note that credentials should be sourced from the environment/instance role and never hardcoded or echoed into generated code, and that RemoteFile is read-only.
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Over-broad activation description encourages unsolicited skill invocation
-  > The skill description is extremely keyword-dense (12+ library names, ~15 workload domains) and explicitly instructs activation "even if not explicitly requested" when CPU-bound Python code is seen. This is capability/keyword inflation that increases unwanted activation, though the claimed capabilities are legitimately covered by the bundled reference material and the behavior is limited to code-rewriting advice.
-  > **Remediation:** Narrow the description to explicit user intent (e.g., "use when the user asks to GPU-accelerate Python code") and remove the self-activation clause and redundant keyword lists.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation guidance from an alternate package index
-  > Reference files instruct the agent to always install packages with `uv add` without version pins, and several commands add `--extra-index-url=https://pypi.nvidia.com`. The index is NVIDIA's official RAPIDS index and the package names are legitimate, so risk is low, but unpinned installs plus an extra index broaden the supply-chain surface (dependency confusion / unexpected version drift) if the agent executes these commands.
-  > **Remediation:** Recommend pinned versions (e.g., cudf-cu12==26.6.*) and note that installation commands should be surfaced to the user for approval rather than executed automatically; document why the NVIDIA index is required.
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools / license / compatibility metadata
-  > The manifest declares only name, description, version, and author. There is no `allowed-tools` restriction, no license, and no compatibility field. Since the skill's guidance implies package installation, profiling commands (nsys, nvprof), file IO, and dashboard servers (d.show() binds a local HTTP port), absent tool restrictions mean the agent may run Bash/Python without declared bounds. Informational only — the field is optional per spec.
-  > **Remediation:** Declare `allowed-tools` (e.g., [Read, Write, Grep, Glob]) and add license/compatibility metadata. If Bash is needed for installs, state it explicitly so the user can reason about the blast radius.
 
 ### onekgpd — 🔵 LOW
 
@@ -1915,6 +1735,43 @@
   > File: `scripts/onekgpd_api.py:44`
   > **Remediation:** No action strictly required; behaviour matches the manifest. Optionally document that query parameters are sent to a third-party service operated by the skill author, and consider allowing the endpoint to be overridden or self-hosted for privacy-sensitive deployments.
 
+### ontology-term-resolution — 🔵 LOW
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Keyword-heavy description broadens activation surface
+  > The skill description enumerates an extensive list of trigger keywords ("ontology term", "CURIE", "UBERON", "CL:", "MONDO", "HPO", "EFO", "ChEBI", "NCBITaxon", "GO term", "PATO", etc.). While these are all legitimately within the skill's stated scope of ontology term resolution/validation, the density of trigger terms slightly increases the likelihood of unwanted activation. No capability inflation beyond the actual implemented functionality was observed - the scripts do exactly what the description claims.
+  > File: `SKILL.md`
+  > **Remediation:** Optionally trim the trigger keyword list to the most representative examples. No functional change required; behavior matches declared purpose.
+
+### opentrons-integration — 🔵 LOW
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Some referenced files are unresolved/missing
+  > Several markdown files referenced in the instruction table/body could not be resolved (e.g., assets/*.md, templates/*.md variants, opentrons.py). This is largely a path-resolution artifact of the scan (the references/ versions exist), but missing files could later be supplied by an untrusted source and silently loaded as guidance. No malicious content was found in the resolved files.
+  > File: `references/liquid_handling.md`
+  > **Remediation:** Ensure all referenced documentation files are bundled inside the skill package with consistent relative paths, and avoid referencing files that do not exist.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Package installation via uv from PyPI during simulation workflow
+  > The skill instructs running `uv run --with "opentrons==9.1.1"` and `uv pip install -r requirements-flex.txt`, which downloads and executes third-party packages from PyPI at simulation time. Versions are pinned (good practice), but the workflow still triggers automatic dependency resolution/installation on the user's machine without explicit confirmation. Referenced requirements files (requirements-flex.txt / requirements-ot2.txt) were not included in the analyzed package, so their pin contents cannot be verified.
+  > File: `requirements-flex.txt`
+  > **Remediation:** Include the referenced requirements-*.txt files in the package with fully pinned versions and hashes, and note that dependency installation requires network access and user consent.
+
+### optimize-for-gpu — 🔵 LOW
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Documentation examples reference remote data reads (S3/HTTP) and AWS credential environment variables — no exfiltration path
+  > Static pre-scan flagged "env var exfiltration" chains. Manual review shows the matches come solely from the KvikIO reference documentation, which explains that AWS credentials are read from AWS_DEFAULT_REGION / AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY and shows read-only examples for kvikio.RemoteFile.open_s3 / open_http. These are inbound reads to user-specified buckets/URLs, contain no attacker-controlled endpoints, and no code in the package reads credentials or transmits data anywhere. Assessed as a false positive; recorded at LOW severity for transparency only.
+  > **Remediation:** No action strictly required. Optionally add a note that credentials should be sourced from the environment/instance role and never hardcoded or echoed into generated code, and that RemoteFile is read-only.
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Over-broad activation description encourages unsolicited skill invocation
+  > The skill description is extremely keyword-dense (12+ library names, ~15 workload domains) and explicitly instructs activation "even if not explicitly requested" when CPU-bound Python code is seen. This is capability/keyword inflation that increases unwanted activation, though the claimed capabilities are legitimately covered by the bundled reference material and the behavior is limited to code-rewriting advice.
+  > **Remediation:** Narrow the description to explicit user intent (e.g., "use when the user asks to GPU-accelerate Python code") and remove the self-activation clause and redundant keyword lists.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation guidance from an alternate package index
+  > Reference files instruct the agent to always install packages with `uv add` without version pins, and several commands add `--extra-index-url=https://pypi.nvidia.com`. The index is NVIDIA's official RAPIDS index and the package names are legitimate, so risk is low, but unpinned installs plus an extra index broaden the supply-chain surface (dependency confusion / unexpected version drift) if the agent executes these commands.
+  > **Remediation:** Recommend pinned versions (e.g., cudf-cu12==26.6.*) and note that installation commands should be surfaced to the user for approval rather than executed automatically; document why the NVIDIA index is required.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools / license / compatibility metadata
+  > The manifest declares only name, description, version, and author. There is no `allowed-tools` restriction, no license, and no compatibility field. Since the skill's guidance implies package installation, profiling commands (nsys, nvprof), file IO, and dashboard servers (d.show() binds a local HTTP port), absent tool restrictions mean the agent may run Bash/Python without declared bounds. Informational only — the field is optional per spec.
+  > **Remediation:** Declare `allowed-tools` (e.g., [Read, Write, Grep, Glob]) and add license/compatibility metadata. If Bash is needed for installs, state it explicitly so the user can reason about the blast radius.
+
 ### paperzilla — 🔵 LOW
 
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned third-party CLI installation from external taps/buckets
@@ -1931,35 +1788,6 @@
   > File: `SKILL.md`
   > **Remediation:** Add `allowed-tools: [Bash]` (or the minimal required set) to the YAML frontmatter.
 
-### paper-lookup — 🔵 LOW
-
-- **🔵 LOW** `LLM_COMMAND_INJECTION` — Bash/curl usage with user-supplied query strings (mitigated by explicit guidance)
-  > The skill directs the agent to invoke curl via Bash to reach REST endpoints, including passing user search terms and identifiers into URLs. Shell interpolation of untrusted strings is a general command-injection risk, but the skill explicitly mitigates it: it mandates URL-encoding, recommends `--data-urlencode`, forbids interpolating unescaped user strings into URLs or shell commands, and forbids pasting raw API response text into shell commands. No scripts are bundled, so no unsafe concrete command exists in the package.
-  > **Remediation:** Keep and reinforce the encoding guidance; consider adding an allow-list of permitted hosts (eutils.ncbi.nlm.nih.gov, api.openalex.org, api.crossref.org, api.semanticscholar.org, api.core.ac.uk, api.unpaywall.org, api.biorxiv.org, export.arxiv.org) so the agent never curls arbitrary URLs derived from response data.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Instruction to read API keys from environment and .env files
-  > The skill instructs the agent to load API keys from environment variables and a working-directory .env file (NCBI_API_KEY, CORE_API_KEY, S2_API_KEY, OPENALEX_API_KEY). This is legitimate and necessary for authenticated API access, and the skill explicitly instructs the agent to never echo API keys. Risk is limited to the general possibility of secret exposure when a .env is parsed by an agent; no exfiltration path to third-party endpoints is present (keys are only sent to the documented official API hosts).
-  > **Remediation:** Restrict key loading to explicitly named environment variables only, or require the user to confirm before the agent parses a .env file; keep the existing prohibition on echoing key values.
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Broad trigger keyword list in description
-  > The description enumerates many trigger phrases and database names ("Triggers on mentions of any supported database or requests like 'find papers on X'...", "or any scholarly literature query"). This maximizes activation breadth, but it is proportionate to the skill's genuine scope (10 academic literature APIs) and does not impersonate other tools or claim unrelated capabilities. Informational only.
-  > **Remediation:** Optionally narrow the trigger phrasing to the specific scholarly-lookup use cases rather than "any scholarly literature query".
-
-- **🔵 LOW** `LLM_PROMPT_INJECTION` — Missing referenced files (templates/ and assets/ variants) could be substituted
-  > The reference-file detection lists templates/*.md and assets/*.md paths that do not exist in the package (only references/*.md are present). Absent files are not themselves malicious, but if the agent later resolves such paths from an unexpected location, it could load unvetted instruction content. The existing references/*.md files were reviewed and contain only legitimate API documentation with no embedded instruction-override text.
-  > File: `references/pubmed.md`
-  > **Remediation:** Reference only paths that exist inside the skill package (references/<name>.md) and validate that any file read is within the skill directory.
-
-### pathway-enrichment — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
-  > The skill instructs installing packages via `uv pip install gseapy gprofiler-official` without version pinning. Legitimate and common for scientific tooling, but unpinned installs create a minor supply-chain/reproducibility risk (unexpected upstream changes).
-  > **Remediation:** Pin package versions (e.g., gseapy==1.1.3) to ensure reproducible, verified dependencies.
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools / compatibility declaration
-  > The YAML manifest does not declare `allowed-tools` or `compatibility`, although the skill executes Python scripts, writes files to an output directory, and performs outbound network calls to Enrichr/MSigDB/g:Profiler APIs. This is informational only; the field is optional per spec and the behaviors are documented in the instructions.
-  > **Remediation:** Declare allowed-tools (e.g., [Read, Write, Bash, Python]) and note that network access to public bioinformatics APIs is required.
-
 ### parallel-web — 🔵 LOW
 
 - **🔵 LOW** `LLM_DATA_EXFILTRATION` — Skill requires a secret API key and can write result artifacts to disk
@@ -1973,6 +1801,42 @@
 - **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — No allowed-tools declared for a skill that instructs Bash command execution
   > The YAML manifest omits the optional `allowed-tools` field even though the skill's entire workflow depends on executing shell commands (`parallel-cli ...`, `uv tool install`). This is informational only: the skill does not declare restrictions and therefore does not violate any, but explicitly declaring Bash (and no more) would make the required privileges auditable and prevent silent scope creep.
   > **Remediation:** Add an explicit `allowed-tools` entry (e.g. `[Bash, Read, Write]`) to the frontmatter to document and bound the privileges the skill needs.
+
+### pathway-enrichment — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
+  > The skill instructs installing packages via `uv pip install gseapy gprofiler-official` without version pinning. Legitimate and common for scientific tooling, but unpinned installs create a minor supply-chain/reproducibility risk (unexpected upstream changes).
+  > **Remediation:** Pin package versions (e.g., gseapy==1.1.3) to ensure reproducible, verified dependencies.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools / compatibility declaration
+  > The YAML manifest does not declare `allowed-tools` or `compatibility`, although the skill executes Python scripts, writes files to an output directory, and performs outbound network calls to Enrichr/MSigDB/g:Profiler APIs. This is informational only; the field is optional per spec and the behaviors are documented in the instructions.
+  > **Remediation:** Declare allowed-tools (e.g., [Read, Write, Bash, Python]) and note that network access to public bioinformatics APIs is required.
+
+### pdf — 🔵 LOW
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Broad activation description without allowed-tools declaration
+  > The skill description is intentionally broad ("whenever the user wants to do anything with PDF files") and the manifest omits `allowed-tools` and `compatibility`. The breadth is proportionate to the skill's genuine purpose (a general PDF toolkit from Anthropic), and the bundled scripts only perform local PDF/image processing, so this is informational rather than a real capability-inflation attack. Missing `allowed-tools` means the agent's file-write and shell/Python execution (pdftotext, qpdf, pdftk, pip install suggestions) are not constrained by the manifest.
+  > **Remediation:** Optionally declare `allowed-tools` (e.g., [Read, Write, Bash, Python]) and `compatibility` to make the skill's execution footprint explicit.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation suggested in documentation
+  > The instructions suggest installing third-party packages without version pins (`pip install pytesseract pdf2image`), and other examples assume pypdf, pdfplumber, reportlab, pandas, PIL are available. Unpinned installs are a minor supply-chain hygiene issue; all packages named are well-known, legitimate libraries with no typosquatting indicators, and no install is executed automatically by any bundled script.
+  > **Remediation:** Pin versions (e.g., `pytesseract==0.3.13 pdf2image==1.17.0`) or document dependencies in a requirements file with hashes; prefer prompting the user before installing packages.
+
+### peer-review — 🔵 LOW
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools declaration in YAML frontmatter
+  > The skill manifest does not declare an `allowed-tools` field. This field is optional per the Agent Skills specification, so this is informational only. The skill's documented behavior (running bundled Python CLIs, reading/writing local files) implies Bash/Python/Read/Write usage, which would be clearer if declared explicitly. No violation of any declared restriction was observed.
+  > **Remediation:** Optionally declare `allowed-tools: [Read, Write, Bash]` to make the tool surface explicit and auditable.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced files are missing from the package
+  > The instructions and reference documents mention paths that are not present in the package (e.g., `assets/reporting_checklist_template.csv` referenced in references/tool_reference.md and references/reporting_standards.md). Missing internal assets cause documented commands to fail with validation errors rather than any security impact, but they degrade reliability and could push an agent to substitute unvetted external content.
+  > File: `assets/reporting_checklist_template.csv`
+  > **Remediation:** Bundle all referenced templates/assets or correct the documented paths so every documented command resolves to a file inside the skill package.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Self-attested security validation document with unverifiable claims
+  > `references/security_validation.md` asserts prior CRITICAL findings (environment-variable harvesting, network exfiltration, API-key transmission) were remediated and that scans returned 'SAFE, 0 findings'. These are self-reported claims that cannot be verified from the package and could be used to discourage independent review. The current bundled code is consistent with the claims (standard library only, no network/subprocess/eval), so the risk is limited to potential over-trust rather than active harm.
+  > File: `references/security_validation.md`
+  > **Remediation:** Treat vendor-authored security attestations as unverified marketing/provenance metadata; continue independent scanning of the package on each update.
 
 ### pennylane — 🔵 LOW
 
@@ -1994,27 +1858,6 @@
   > File: `SKILL.md`
   > **Remediation:** Recommend confirming with the user before modifying the Python environment, and prefer isolated virtual environments for installs.
 
-### pdf — 🔵 LOW
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Broad activation description without allowed-tools declaration
-  > The skill description is intentionally broad ("whenever the user wants to do anything with PDF files") and the manifest omits `allowed-tools` and `compatibility`. The breadth is proportionate to the skill's genuine purpose (a general PDF toolkit from Anthropic), and the bundled scripts only perform local PDF/image processing, so this is informational rather than a real capability-inflation attack. Missing `allowed-tools` means the agent's file-write and shell/Python execution (pdftotext, qpdf, pdftk, pip install suggestions) are not constrained by the manifest.
-  > **Remediation:** Optionally declare `allowed-tools` (e.g., [Read, Write, Bash, Python]) and `compatibility` to make the skill's execution footprint explicit.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation suggested in documentation
-  > The instructions suggest installing third-party packages without version pins (`pip install pytesseract pdf2image`), and other examples assume pypdf, pdfplumber, reportlab, pandas, PIL are available. Unpinned installs are a minor supply-chain hygiene issue; all packages named are well-known, legitimate libraries with no typosquatting indicators, and no install is executed automatically by any bundled script.
-  > **Remediation:** Pin versions (e.g., `pytesseract==0.3.13 pdf2image==1.17.0`) or document dependencies in a requirements file with hashes; prefer prompting the user before installing packages.
-
-### polars — 🔵 LOW
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Documentation examples include plaintext database connection URIs with embedded credentials
-  > The I/O reference documentation demonstrates database connectivity using URIs containing inline usernames and passwords (e.g., "postgresql://user:pass@localhost/db"). These are placeholder values, not real secrets, and the same file elsewhere explicitly recommends credential providers/IAM roles instead of hardcoded secrets. The pattern could still encourage users to hardcode credentials in scripts.
-  > **Remediation:** Show credentials sourced from environment variables or a secret manager (e.g., os.environ["DB_URI"]) in documentation examples to discourage hardcoding.
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Instructions recommend shell package installation while allowed-tools declares Read only
-  > The manifest declares `allowed-tools: Read`, but the SKILL.md body instructs the agent to run `uv pip install "polars==1.41.2"` (a Bash/shell operation) and to execute Python code examples. This is a minor inconsistency between declared tool restrictions and documented behavior rather than a malicious capability; the install command is pinned to an exact version of a well-known legitimate package, so supply-chain risk is minimal.
-  > File: `SKILL.md`
-  > **Remediation:** Either declare `allowed-tools: [Read, Bash, Python]` to match documented behavior, or remove installation/execution instructions and require the user to install dependencies out of band.
-
 ### pi-agent — 🔵 LOW
 
 - **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Very broad skill description increases activation surface
@@ -2029,6 +1872,17 @@
   > The static analyzer resolved a large number of referenced paths under assets/ and templates/ that are not present in the package (e.g. assets/settings.md, templates/rpc.md). Only the references/*.md files actually exist. Missing files are a documentation-integrity issue: if an agent attempts to read them it will fail, and future placement of files at those paths would be loaded without review. No malicious content is implied.
   > File: `references/settings.md`
   > **Remediation:** Ensure all referenced paths resolve to bundled files, or remove the unresolved assets/ and templates/ references so the agent only reads existing references/*.md files.
+
+### polars — 🔵 LOW
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Documentation examples include plaintext database connection URIs with embedded credentials
+  > The I/O reference documentation demonstrates database connectivity using URIs containing inline usernames and passwords (e.g., "postgresql://user:pass@localhost/db"). These are placeholder values, not real secrets, and the same file elsewhere explicitly recommends credential providers/IAM roles instead of hardcoded secrets. The pattern could still encourage users to hardcode credentials in scripts.
+  > **Remediation:** Show credentials sourced from environment variables or a secret manager (e.g., os.environ["DB_URI"]) in documentation examples to discourage hardcoding.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Instructions recommend shell package installation while allowed-tools declares Read only
+  > The manifest declares `allowed-tools: Read`, but the SKILL.md body instructs the agent to run `uv pip install "polars==1.41.2"` (a Bash/shell operation) and to execute Python code examples. This is a minor inconsistency between declared tool restrictions and documented behavior rather than a malicious capability; the install command is pinned to an exact version of a well-known legitimate package, so supply-chain risk is minimal.
+  > File: `SKILL.md`
+  > **Remediation:** Either declare `allowed-tools: [Read, Bash, Python]` to match documented behavior, or remove installation/execution instructions and require the user to install dependencies out of band.
 
 ### polars-bio — 🔵 LOW
 
@@ -2045,53 +1899,24 @@
   > File: `references/bioframe_migration.md`
   > **Remediation:** Ship all referenced reference files inside the package or remove the references. Never resolve documentation references from paths outside the skill directory or from network locations.
 
-### peer-review — 🔵 LOW
+### pptx-posters — 🔵 LOW
 
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools declaration in YAML frontmatter
-  > The skill manifest does not declare an `allowed-tools` field. This field is optional per the Agent Skills specification, so this is informational only. The skill's documented behavior (running bundled Python CLIs, reading/writing local files) implies Bash/Python/Read/Write usage, which would be clearer if declared explicitly. No violation of any declared restriction was observed.
-  > **Remediation:** Optionally declare `allowed-tools: [Read, Write, Bash]` to make the tool surface explicit and auditable.
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Documented reference files not present in the package (broken references)
+  > SKILL.md references several bundled files that were not resolvable in the analyzed package listing (e.g., assets/poster_manifest_template.json and assets/poster_quality_checklist.md resolve, but several path variants such as templates/* and assets/* duplicates do not exist). Broken internal references can cause the agent to search elsewhere or improvise content. No external URLs are fetched by any script, so the impact is limited to documentation completeness.
+  > File: `assets/poster_manifest_template.json`
+  > **Remediation:** Ensure every referenced file path in SKILL.md exactly matches a file bundled in the skill directory, and remove or correct stale path variants.
 
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced files are missing from the package
-  > The instructions and reference documents mention paths that are not present in the package (e.g., `assets/reporting_checklist_template.csv` referenced in references/tool_reference.md and references/reporting_standards.md). Missing internal assets cause documented commands to fail with validation errors rather than any security impact, but they degrade reliability and could push an agent to substitute unvetted external content.
-  > File: `assets/reporting_checklist_template.csv`
-  > **Remediation:** Bundle all referenced templates/assets or correct the documented paths so every documented command resolves to a file inside the skill package.
+- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Bounded but material local resource consumption during image/ZIP inspection
+  > The tools fully decode local PNG/JPEG assets up to 100,000,000 pixels and inspect ZIP archives up to 512 MiB compressed / 1 GiB expanded with up to 4,096 members. These are explicit, documented defensive caps, but repeated maximum-size local inputs can still consume significant CPU and memory in the agent's environment. No unbounded loops or recursion were found, and Pillow decompression-bomb warnings are escalated to errors.
+  > File: `scripts/inventory_images.py`
+  > **Remediation:** Optionally lower the pixel/archive caps or run the CLIs under an execution timeout and memory ulimit appropriate to the host environment. Already documented in references/security_validation.md as an accepted residual risk.
 
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Self-attested security validation document with unverifiable claims
-  > `references/security_validation.md` asserts prior CRITICAL findings (environment-variable harvesting, network exfiltration, API-key transmission) were remediated and that scans returned 'SAFE, 0 findings'. These are self-reported claims that cannot be verified from the package and could be used to discourage independent review. The current bundled code is consistent with the claims (standard library only, no network/subprocess/eval), so the risk is limited to potential over-trust rather than active harm.
-  > File: `references/security_validation.md`
-  > **Remediation:** Treat vendor-authored security attestations as unverified marketing/provenance metadata; continue independent scanning of the package on each update.
+### protocolsio-integration — 🔵 LOW
 
-### primekg — 🔵 LOW
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Documentation references a non-existent script path and unimplemented functionality
-  > The instructions reference `scripts.py` (not found) and document `find_paths`/drug-disease path discovery as a capability, but the implementation explicitly stops after depth 1 with the depth-2 branch left as a `pass`. This overstates the skill's capability and could lead an agent to report 'no repurposing paths found' as a factual biomedical conclusion when the analysis was simply never performed.
-  > **Remediation:** Either implement multi-hop path finding or clearly mark `find_paths` as depth-1 only / experimental, and correct the referenced file list in SKILL.md.
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools, license, and compatibility metadata
-  > The manifest does not declare `allowed-tools`, `license`, or `compatibility`. These fields are optional, so this is informational only; however, absence of a declared tool scope means the skill's Python file-read behavior is not constrained by a manifest policy.
-  > **Remediation:** Declare `allowed-tools: [Read, Python]`, a license, and compatibility information to make the skill's capability surface explicit.
-
-- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Repeated full-CSV loads of a ~4M-edge dataset can exhaust memory/CPU
-  > Every public function calls `_load_kg()`, which reads the entire multi-million-row knowledge graph CSV into a pandas DataFrame with no caching, chunking, or column selection. `get_disease_context` triggers at least two full loads, and repeated agent calls could exhaust memory or stall the host. This appears to be a performance design weakness rather than a deliberate DoS.
-  > File: `scripts/query_primekg.py`
-  > **Remediation:** Cache the loaded DataFrame (e.g., functools.lru_cache or module-level singleton), read only required columns, use chunked reads or a real database/graph backend, and enforce result-size limits.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Hardcoded absolute path exposing developer's local filesystem/username
-  > The skill hardcodes a developer-specific data path (`/mnt/c/Users/eamon/Documents/Data/PrimeKG/kg.csv`) in both SKILL.md and query_primekg.py. This leaks the original author's username/directory layout and makes the skill non-portable. It is not an exfiltration vector by itself, but it is an information-disclosure and configuration hygiene issue.
-  > File: `scripts/query_primekg.py:8`
-  > **Remediation:** Make the data path configurable via an environment variable or function argument with a sane relative default, and remove user-specific absolute paths from documentation.
-
-- **🔵 LOW** `LLM_COMMAND_INJECTION` — Unescaped user input used as a regex in pandas str.contains
-  > `search_nodes` passes `name_query` directly to `Series.str.contains` without `regex=False` or escaping. Malicious or malformed input (e.g., a catastrophic-backtracking pattern or invalid regex) can raise errors or cause excessive CPU use during matching. There is no code execution risk — no eval/exec/os.system/subprocess is used anywhere in the skill.
-  > File: `scripts/query_primekg.py:38`
-  > **Remediation:** Pass `regex=False` (or `re.escape(name_query)`) and validate/limit query length before matching.
-
-### pydeseq2 — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned optional dependencies and pip install instruction
-  > SKILL.md instructs `uv pip install pydeseq2==0.5.4` (properly pinned) but lists other requirements with open-ended minimum versions (pandas 2.2.0+, numpy 2.0.0+, etc.). This is standard practice for scientific Python and represents only a minor supply-chain hygiene concern; no untrusted repositories or typosquatted packages are referenced.
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Some referenced files are missing from the package
+  > SKILL.md references a set of reference files; the resolver also probed templates/ and assets/ variants which are absent. All files explicitly linked from SKILL.md (references/*.md, assets/protocol-snapshot.schema.json) are present, so this is informational only — the missing template/asset variants are artifacts of path probing, not broken instructions. No security impact identified.
   > File: `SKILL.md`
-  > **Remediation:** Optionally pin all dependency versions or ship a lockfile/requirements.txt with exact versions for reproducibility.
+  > **Remediation:** Keep the referenced-file list consistent with the shipped package contents; no functional change required.
 
 ### pufferlib — 🔵 LOW
 
@@ -2099,6 +1924,13 @@
   > Pre-scan heuristics reported 'environment variable access with network calls' and a cross-file exfiltration chain. Manual review of all bundled scripts (_common.py, train_template.py, validate_plan.py, inspect_checkpoint.py, repro_plan.py, env_template.py, env_contract_validator.py, benchmark_vectorization.py) shows no network imports (no requests/urllib/socket/http), no subprocess/os.system, no eval/exec, and no reading of os.environ. The only credential-related code is a constant name mapping (LOGGER_CREDENTIAL_ENV = {'wandb': 'WANDB_API_KEY', 'neptune': 'NEPTUNE_API_TOKEN'}) that is emitted as a variable NAME only, with an explicit 'value_read_or_logged': False field. Additionally, secret_key_paths() actively rejects credential-bearing keys in user-supplied JSON. The static findings appear to be false positives triggered by the presence of credential variable-name strings alongside documentation of external logging services.
   > File: `scripts/_common.py`
   > **Remediation:** No code change required. Optionally add a unit test/assertion asserting no os.environ reads to keep the guarantee explicit and to suppress heuristic false positives.
+
+### pydicom — 🔵 LOW
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Local key file generation for deterministic pseudonymization (documented, no exfiltration)
+  > anonymize_dicom.py generates a 32-byte secret key with secrets.token_bytes and writes it to a local path, and derives HMAC-based pseudonyms/UIDs. This is legitimate for deterministic de-identification and the skill documents the re-identification risk, restricts overwriting, enforces owner-only permissions checks (rejects group/other-readable keys, non-owner keys), and never transmits data. Residual risk is only that a re-identification secret exists on local disk; no network use or credential harvesting occurs.
+  > File: `scripts/anonymize_dicom.py`
+  > **Remediation:** No action required. For production, source key material from a managed secret store as the SKILL.md already advises, and ensure keys/UID maps are stored separately from derivatives.
 
 ### pyhealth — 🔵 LOW
 
@@ -2119,41 +1951,6 @@
   > File: `assets/starter_pipeline.py`
   > **Remediation:** Remove or correct the non-existent file references so the agent only reads bundled files that actually exist within the skill package.
 
-### pptx — 🔵 LOW
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Broad keyword-baiting activation description
-  > The skill description is written to maximize activation, listing many trigger keywords ("deck", "slides", "presentation", .pptx/.potx) and instructing the agent to trigger "any time" and "regardless of what they plan to do with the content afterward". While reasonable for a file-format handler skill and consistent with the skill's actual functionality, this pattern is aggressive activation scoping. No malicious behavior accompanies it.
-  > **Remediation:** Narrow the description to the skill's core capability (PPTX creation/editing/reading) rather than instructing unconditional activation. Informational only — no action strictly required.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Fallback unpinned package installation instructions
-  > SKILL.md instructs the agent to run `npm install pptxgenjs` and `npm install react-icons react react-dom sharp` if the corresponding requires fail. These installs are unpinned (no version constraints), which introduces a minor supply-chain risk if a malicious version is published. The instructions do gate the installs behind a require failure and the packages are legitimate, well-known npm packages, so risk is low.
-  > File: `SKILL.md`
-  > **Remediation:** Pin versions for any fallback install (e.g. `npm install pptxgenjs@4.0.1`) or remove the install fallback and fail with a clear message instead.
-
-- **🔵 LOW** `LLM_COMMAND_INJECTION` — Runtime C source compilation and LD_PRELOAD injection into soffice subprocess
-  > scripts/office/soffice.py writes a C source file to the system temp directory, compiles it with gcc, and injects the resulting shared object into the LibreOffice subprocess via LD_PRELOAD to work around blocked AF_UNIX sockets in sandboxes. The C source is a static, inspectable literal that only shims socket/listen/accept/close — it performs no network, filesystem, or exfiltration activity, and the behavior is documented in SKILL.md. However, writing to a predictable, world-writable temp path (/tmp/lo_socket_shim.c / .so) and reusing an existing .so without integrity checking is a local TOCTOU/preload-hijack weakness: a local attacker who pre-creates /tmp/lo_socket_shim.so could get their code loaded into the soffice process.
-  > File: `scripts/office/soffice.py`
-  > **Remediation:** Build the shim inside a per-run private directory created with tempfile.mkdtemp() (0700) instead of a fixed predictable path, or verify a hash of the existing .so before reuse. Prefer shipping the workaround as a vendored, checksummed artifact rather than compiling at runtime.
-
-### pymoo — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instruction
-  > SKILL.md instructs `uv pip install pymoo` without a pinned version in the primary installation command (a pinned alternative is mentioned as optional). Unpinned installs allow resolution to newer or compromised package versions. This is standard documentation practice and low risk, but noted for supply-chain completeness.
-  > File: `SKILL.md`
-  > **Remediation:** Recommend pinned versions as the default install command (e.g., `uv pip install "pymoo==0.6.1.6"`).
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Missing referenced documentation files
-  > The skill references several files that are not present in the package (pymoo.py, templates/*.md, assets/*.md, references/visualization.md, references/constraints_mcdm.md, references/parallelization.md). Missing referenced files are a documentation/integrity issue; an agent may attempt to fetch or create them, or the reference chain may silently fail. No malicious content observed.
-  > File: `references/constraints_mcdm.md`
-  > **Remediation:** Include all referenced files in the package or remove stale references from SKILL.md.
-
-### pymc — 🔵 LOW
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Documentation references non-existent files and possibly fabricated version claims
-  > SKILL.md and its metadata reference multiple files that do not exist in the package (templates/model_patterns.md, assets/distributions.md, assets/sampling_inference.md, references/workflows.md, scripts.py, etc.). The compatibility field also claims 'PyMC 6.0.1 is the current stable release as of June 2026' and 'PyTensor 3' / 'ArviZ 1' APIs (e.g., az.plot_trace_dist) that may not exist, which could cause the agent to generate broken code or hallucinate APIs. This is a documentation-quality/misleading-content issue, not an active exploit.
-  > File: `SKILL.md`
-  > **Remediation:** Align referenced file list with the actual package contents and verify library version/API claims against the real PyMC/ArviZ releases.
-
 ### pylabrobot — 🔵 LOW
 
 - **🔵 LOW** `LLM_RESOURCE_ABUSE` — Unpinned dependency installation instructions (documented, version-pinned) — minor supply-chain note
@@ -2173,32 +1970,6 @@
   > File: `references/api_reference.md`
   > **Remediation:** Remove or correct references to nonexistent files so the agent does not attempt to read unavailable or externally supplied resources.
 
-### protocolsio-integration — 🔵 LOW
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Some referenced files are missing from the package
-  > SKILL.md references a set of reference files; the resolver also probed templates/ and assets/ variants which are absent. All files explicitly linked from SKILL.md (references/*.md, assets/protocol-snapshot.schema.json) are present, so this is informational only — the missing template/asset variants are artifacts of path probing, not broken instructions. No security impact identified.
-  > File: `SKILL.md`
-  > **Remediation:** Keep the referenced-file list consistent with the shipped package contents; no functional change required.
-
-### pytorch-lightning — 🔵 LOW
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced documentation files do not exist in the package
-  > SKILL.md and/or the reference resolver point to a number of files under `templates/` and `assets/` (e.g., templates/trainer.md, assets/callbacks.md, templates/best_practices.md) that are not present in the package. All files actually named in SKILL.md under `references/` and `scripts/` do exist, so this appears to be path-resolution noise rather than intentional misdirection. Still, dangling references can cause the agent to attempt to read non-existent paths or, if such paths were later created by an untrusted process, to load unvetted instruction content.
-  > File: `SKILL.md`
-  > **Remediation:** Ensure all referenced resource paths resolve to files bundled in the skill package, and remove or correct any stale `templates/` or `assets/` path references.
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Documentation example shows hardcoded API key placeholder for CometLogger
-  > The reference documentation includes an example instantiating CometLogger with an inline `api_key="YOUR_API_KEY"` value. This is a placeholder, not a real credential, but it models an insecure pattern (embedding secrets in source code) that a user or agent may copy verbatim instead of reading from an environment variable or secrets manager. No actual secret is present and no exfiltration occurs.
-  > File: `references/logging.md`
-  > **Remediation:** Update the documentation example to read credentials from an environment variable (e.g., `api_key=os.environ["COMET_API_KEY"]`) and add a note advising against hardcoding API keys.
-
-### pyzotero — 🔵 LOW
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Credential handling documentation is appropriate; env vars declared for API key
-  > The skill requires ZOTERO_API_KEY and ZOTERO_LIBRARY_ID environment variables and all documented examples read them via os.environ rather than hardcoding secrets. references/authentication.md explicitly warns against hardcoding keys or committing them. This is informational only — the skill does legitimately access credential material (Zotero API key) as required for its stated purpose, and no exfiltration path was identified.
-  > File: `references/authentication.md`
-  > **Remediation:** No action required. Continue to scope .env loading to ZOTERO_* variables and avoid printing key material in logs/outputs.
-
 ### pytdc — 🔵 LOW
 
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Third-party package installation from PyPI (pinned)
@@ -2210,6 +1981,13 @@
   > Approved operations (loader construction, benchmark group construction, MolGen corpora, oracle checkpoints) can download hundreds of megabytes and consume significant CPU/disk. This is inherent to the Therapeutics Data Commons workflow and the skill mitigates it well: plan-by-default, explicit --execute and --download acknowledgement gates, bounded output, bounded input sizes/counts, relative-path-only caches, and a read-only cache_audit.py. Docking, remote synthesis services (ASKCOS/IBM RXN), and composite oracles are explicitly refused by the bundled scripts.
   > File: `scripts/cache_audit.py`
   > **Remediation:** No change required; continue requiring explicit user approval before any --execute/--download run and monitor disk usage via cache_audit.py.
+
+### pyzotero — 🔵 LOW
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Credential handling documentation is appropriate; env vars declared for API key
+  > The skill requires ZOTERO_API_KEY and ZOTERO_LIBRARY_ID environment variables and all documented examples read them via os.environ rather than hardcoding secrets. references/authentication.md explicitly warns against hardcoding keys or committing them. This is informational only — the skill does legitimately access credential material (Zotero API key) as required for its stated purpose, and no exfiltration path was identified.
+  > File: `references/authentication.md`
+  > **Remediation:** No action required. Continue to scope .env loading to ZOTERO_* variables and avoid printing key material in logs/outputs.
 
 ### qiskit — 🔵 LOW
 
@@ -2233,24 +2011,6 @@
   > File: `SKILL.md`
   > **Remediation:** Pin explicit versions (e.g., `rdkit==2026.3.3`) for reproducible and verifiable installs.
 
-### pydicom — 🔵 LOW
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Local key file generation for deterministic pseudonymization (documented, no exfiltration)
-  > anonymize_dicom.py generates a 32-byte secret key with secrets.token_bytes and writes it to a local path, and derives HMAC-based pseudonyms/UIDs. This is legitimate for deterministic de-identification and the skill documents the re-identification risk, restricts overwriting, enforces owner-only permissions checks (rejects group/other-readable keys, non-owner keys), and never transmits data. Residual risk is only that a re-identification secret exists on local disk; no network use or credential harvesting occurs.
-  > File: `scripts/anonymize_dicom.py`
-  > **Remediation:** No action required. For production, source key material from a managed secret store as the SKILL.md already advises, and ensure keys/UID maps are stored separately from derivatives.
-
-### rowan — 🔵 LOW
-
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — API key handling documented with inline literal assignment
-  > The skill documentation repeatedly shows assigning the API key as a literal string in code (`rowan.api_key = "your_api_key_here"`, `rowan.api_key = "..."`), and also prints webhook secrets to stdout (`print(f"Secret key: {secret.secret}")`, `print(f"Your webhook secret: {secret.secret}")`). These are placeholder patterns rather than real hardcoded credentials, but they encourage a practice that can lead to credential leakage into logs or source control. The environment-variable approach (ROWAN_API_KEY) is also documented and preferred. No exfiltration of the key to any third-party endpoint occurs.
-  > **Remediation:** Consistently recommend only environment-variable based credential loading (os.environ["ROWAN_API_KEY"]) and avoid printing webhook secrets to stdout in example code.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Broken references to non-existent files
-  > The instructions reference several documentation files, and the pre-scan resolved candidate paths (templates/*, assets/*, rowan.py, rdkit.py) that do not exist in the package. The canonical references/*.md files do exist and are benign. Missing-file references are a documentation-integrity issue: if an agent attempts to fetch or create these paths it could be led to search outside the package. No malicious content present.
-  > File: `SKILL.md`
-  > **Remediation:** Remove or correct dangling file references so all referenced resources resolve inside the skill package (references/ directory).
-
 ### research-grants — 🔵 LOW
 
 - **🔵 LOW** `LLM_DATA_EXFILTRATION` — Optional external API dependency transmits user prompt content to third-party service (OpenRouter)
@@ -2263,17 +2023,28 @@
   > File: `references/nstc_guidelines.md`
   > **Remediation:** Note that third-party templates should be reviewed before compiling, recommend compiling with shell-escape disabled, and prefer pinned releases/tags or the maintained CTAN package rather than arbitrary git clones.
 
-### pptx-posters — 🔵 LOW
+### rowan — 🔵 LOW
 
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Documented reference files not present in the package (broken references)
-  > SKILL.md references several bundled files that were not resolvable in the analyzed package listing (e.g., assets/poster_manifest_template.json and assets/poster_quality_checklist.md resolve, but several path variants such as templates/* and assets/* duplicates do not exist). Broken internal references can cause the agent to search elsewhere or improvise content. No external URLs are fetched by any script, so the impact is limited to documentation completeness.
-  > File: `assets/poster_manifest_template.json`
-  > **Remediation:** Ensure every referenced file path in SKILL.md exactly matches a file bundled in the skill directory, and remove or correct stale path variants.
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — API key handling documented with inline literal assignment
+  > The skill documentation repeatedly shows assigning the API key as a literal string in code (`rowan.api_key = "your_api_key_here"`, `rowan.api_key = "..."`), and also prints webhook secrets to stdout (`print(f"Secret key: {secret.secret}")`, `print(f"Your webhook secret: {secret.secret}")`). These are placeholder patterns rather than real hardcoded credentials, but they encourage a practice that can lead to credential leakage into logs or source control. The environment-variable approach (ROWAN_API_KEY) is also documented and preferred. No exfiltration of the key to any third-party endpoint occurs.
+  > **Remediation:** Consistently recommend only environment-variable based credential loading (os.environ["ROWAN_API_KEY"]) and avoid printing webhook secrets to stdout in example code.
 
-- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Bounded but material local resource consumption during image/ZIP inspection
-  > The tools fully decode local PNG/JPEG assets up to 100,000,000 pixels and inspect ZIP archives up to 512 MiB compressed / 1 GiB expanded with up to 4,096 members. These are explicit, documented defensive caps, but repeated maximum-size local inputs can still consume significant CPU and memory in the agent's environment. No unbounded loops or recursion were found, and Pillow decompression-bomb warnings are escalated to errors.
-  > File: `scripts/inventory_images.py`
-  > **Remediation:** Optionally lower the pixel/archive caps or run the CLIs under an execution timeout and memory ulimit appropriate to the host environment. Already documented in references/security_validation.md as an accepted residual risk.
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Broken references to non-existent files
+  > The instructions reference several documentation files, and the pre-scan resolved candidate paths (templates/*, assets/*, rowan.py, rdkit.py) that do not exist in the package. The canonical references/*.md files do exist and are benign. Missing-file references are a documentation-integrity issue: if an agent attempts to fetch or create these paths it could be led to search outside the package. No malicious content present.
+  > File: `SKILL.md`
+  > **Remediation:** Remove or correct dangling file references so all referenced resources resolve inside the skill package (references/ directory).
+
+### scholar-evaluation — 🔵 LOW
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Documented reference paths partially unresolved (missing files under alternate directories)
+  > The instruction body references bundled resources under `references/` and `assets/`. Analysis resolution attempted several alternate directories (e.g., `templates/...`, `assets/source_ledger.md`, `references/rubric_template.json`) that do not exist. All actually documented paths in SKILL.md do resolve to real bundled files (assets/rubric_template.json, assets/evaluation_template.json, assets/evidence_manifest_template.json, assets/process_checklist_template.json, assets/ratings_template.csv, references/*.md). This is informational only: no fallback logic, network fetch, or dynamic retrieval exists for missing files, so there is no exploitable transitive-trust path.
+  > File: `SKILL.md`
+  > **Remediation:** No action required; optionally confirm that only the canonical `assets/` and `references/` paths are cited to avoid ambiguity in automated path resolution.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Bash declared in allowed-tools while scripts perform no process execution
+  > The manifest declares `allowed-tools: Read, Write, Bash, Glob, Python`. Bash is broader than strictly necessary, but the SKILL.md body explicitly constrains Bash to invoking the documented local `python3` commands, and code review of all seven scripts confirms no `subprocess`, `os.system`, `eval`, `exec`, `pickle`, socket, or network-library usage. Only `argparse`, `pathlib`, `json`, `csv`, `math`, `re`, `itertools`, `datetime`, `dataclasses` are imported. Writes are limited to `.json` output paths with symlink rejection and no-overwrite-by-default semantics, consistent with the declared Write tool.
+  > File: `SKILL.md`
+  > **Remediation:** Optionally narrow allowed-tools if the agent can execute the CLIs via the Python tool alone; otherwise document the fixed command allowlist (already partially done).
 
 ### scientific-critical-thinking — 🔵 LOW
 
@@ -2291,39 +2062,6 @@
   > File: `references/experimental_design.md`
   > **Remediation:** Remove stale template/asset references or add the missing files so all referenced paths resolve within the skill package.
 
-### scanpy — 🔵 LOW
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools / compatibility declaration despite bundled executable scripts
-  > The manifest does not declare `allowed-tools` or `compatibility`, yet the skill's documented workflow requires Bash/Python execution, filesystem writes (h5ad outputs, CSVs, figures), package installation, and optionally privileged system commands. This is informational only (allowed-tools is optional per spec), but the absence of declared restrictions means the broad execution footprint is not surfaced to the user.
-  > **Remediation:** Declare `allowed-tools` (e.g. [Read, Write, Bash, Python]) and note in `compatibility` that the skill executes local scripts and may install packages.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced files are missing / path mismatches in documentation
-  > The reference-file resolution shows many documented or inferred paths that do not exist (e.g. templates/*, assets/analysis_workflow.md, assets/plotting_guide.md, references/pipeline_config.json, scanpy.py). SKILL.md itself references assets/pipeline_config.json, assets/celltype_mapping.json, assets/gene_signatures.json which do exist, so the primary risk is agent confusion/broken steps rather than malicious redirection. No missing file is fetched from a network source.
-  > File: `assets/celltype_mapping.json`
-  > **Remediation:** Normalize all documented resource paths to the actual package layout and remove references to nonexistent files so the agent does not attempt to create or fetch substitutes.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned package installation instructions (including GitHub install)
-  > The skill instructs the agent to install Python and R packages at runtime with unpinned versions (e.g. `uv pip install "scanpy[leiden]"`, `uv pip install harmonypy`, `uv pip install bbknn`) and to install an R package directly from GitHub (`remotes::install_github("mojaveazure/seurat-disk")`). The r_interop.md runbook also suggests running `sudo apt-get install` / `sudo dnf install` of many system packages. These are legitimate, well-known ecosystem packages, but unpinned/remote installs and privileged system package installs expand the supply-chain and privilege surface without user confirmation.
-  > File: `references/r_interop.md`
-  > **Remediation:** Pin versions for all install commands (the skill already shows a pinned example), prefer CRAN/Bioconductor over GitHub installs, and require explicit user confirmation before any `sudo` system-package installation.
-
-- **🔵 LOW** `LLM_COMMAND_INJECTION` — Minor runtime robustness bug: undefined `die` in qc_analysis.py error path
-  > scripts/qc_analysis.py calls `die(...)` inside the Scrublet exception handler but only imports `add_io_args, configure_scanpy, info, load_anndata, save_anndata` from _common. If Scrublet fails, the handler raises NameError instead of a clean exit. This is a code-quality/robustness defect, not a security exploit — no user input reaches eval/exec/os.system anywhere in the package.
-  > File: `scripts/qc_analysis.py`
-  > **Remediation:** Add `die` to the `from _common import ...` list in qc_analysis.py.
-
-### scholar-evaluation — 🔵 LOW
-
-- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Documented reference paths partially unresolved (missing files under alternate directories)
-  > The instruction body references bundled resources under `references/` and `assets/`. Analysis resolution attempted several alternate directories (e.g., `templates/...`, `assets/source_ledger.md`, `references/rubric_template.json`) that do not exist. All actually documented paths in SKILL.md do resolve to real bundled files (assets/rubric_template.json, assets/evaluation_template.json, assets/evidence_manifest_template.json, assets/process_checklist_template.json, assets/ratings_template.csv, references/*.md). This is informational only: no fallback logic, network fetch, or dynamic retrieval exists for missing files, so there is no exploitable transitive-trust path.
-  > File: `SKILL.md`
-  > **Remediation:** No action required; optionally confirm that only the canonical `assets/` and `references/` paths are cited to avoid ambiguity in automated path resolution.
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Bash declared in allowed-tools while scripts perform no process execution
-  > The manifest declares `allowed-tools: Read, Write, Bash, Glob, Python`. Bash is broader than strictly necessary, but the SKILL.md body explicitly constrains Bash to invoking the documented local `python3` commands, and code review of all seven scripts confirms no `subprocess`, `os.system`, `eval`, `exec`, `pickle`, socket, or network-library usage. Only `argparse`, `pathlib`, `json`, `csv`, `math`, `re`, `itertools`, `datetime`, `dataclasses` are imported. Writes are limited to `.json` output paths with symlink rejection and no-overwrite-by-default semantics, consistent with the declared Write tool.
-  > File: `SKILL.md`
-  > **Remediation:** Optionally narrow allowed-tools if the agent can execute the CLIs via the Python tool alone; otherwise document the fixed command allowlist (already partially done).
-
 ### scikit-learn — 🔵 LOW
 
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
@@ -2335,17 +2073,17 @@
   > File: `references/pipelines_and_composition.md`
   > **Remediation:** Remove references to non-existent files or bundle the missing reference documents inside the skill package.
 
-### scvelo — 🔵 LOW
+### scikit-survival — 🔵 LOW
 
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instruction
-  > SKILL.md instructs `pip install scvelo` without a pinned version. This is standard practice for scientific documentation and the package is the legitimate, well-known theislab/scvelo package, but unpinned installs offer no protection against future malicious releases or reproducibility drift.
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Self-referential security narrative in SKILL.md discussing prior analyzer findings
+  > The SKILL.md contains a 'Security triage' section that pre-emptively dismisses a previous SECURITY.md finding about package-shadowing files (sklearn.py / sksurv.py) as a 'phantom analyzer finding'. While the underlying guidance (never name scripts after imported packages) is legitimate and safe, embedded commentary that instructs the reader/agent to disregard prior security findings is a mild pattern that could be used to normalize dismissal of scanner alerts. In this package the claim appears accurate: no sklearn.py or sksurv.py files exist in the inventory, and the referenced names only appear as cautionary examples in prose. No behavioral override or instruction manipulation is present.
   > File: `SKILL.md`
-  > **Remediation:** Pin the version (e.g., `pip install scvelo==0.3.2`) and prefer installing into an isolated virtual environment.
+  > **Remediation:** Move meta-discussion of scanner findings into a separate CHANGELOG or SECURITY.md rather than the agent-facing instruction body, so the skill body contains only operational guidance.
 
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Automatic download of remote example dataset on script execution
-  > When executed directly, the script calls `scv.datasets.pancreas()`, which triggers an outbound network download of the example dataset from scVelo's hosting servers and writes it to disk. This is benign upstream behavior of the scVelo library, but it is undeclared network activity (no `compatibility` or network disclosure in the manifest) that occurs without user confirmation.
-  > File: `scripts/rna_velocity_workflow.py`
-  > **Remediation:** Document the network access in the manifest/instructions and require an explicit flag or user confirmation before downloading remote demo datasets.
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Installation instructions invoke package manager with pinned but unverifiable versions
+  > SKILL.md instructs the agent to run `uv venv` and `uv pip install` with a pinned dependency set. Version pinning is good practice, but several pins reference versions that may not exist (e.g., numpy==2.4.6, pandas==3.0.5, scipy==1.17.1, scikit-learn==1.9.0), and installation is performed without hash verification. If any pinned name/version does not resolve, resolution may fail or, in a misconfigured index, resolve to an unintended package. This is an informational supply-chain hygiene note, not evidence of malicious intent.
+  > File: `SKILL.md`
+  > **Remediation:** Ship a lock file with hashes (uv.lock / requirements.txt with --require-hashes) and verify that every pinned version exists on the official index before instructing installation.
 
 ### scvi-tools — 🔵 LOW
 
@@ -2374,25 +2112,6 @@
   > File: `references/algorithms.md`
   > **Remediation:** Ensure all referenced files are bundled inside the skill package and remove references to non-existent paths so the agent cannot be tricked into loading same-named files from an untrusted working directory.
 
-### scikit-survival — 🔵 LOW
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Self-referential security narrative in SKILL.md discussing prior analyzer findings
-  > The SKILL.md contains a 'Security triage' section that pre-emptively dismisses a previous SECURITY.md finding about package-shadowing files (sklearn.py / sksurv.py) as a 'phantom analyzer finding'. While the underlying guidance (never name scripts after imported packages) is legitimate and safe, embedded commentary that instructs the reader/agent to disregard prior security findings is a mild pattern that could be used to normalize dismissal of scanner alerts. In this package the claim appears accurate: no sklearn.py or sksurv.py files exist in the inventory, and the referenced names only appear as cautionary examples in prose. No behavioral override or instruction manipulation is present.
-  > File: `SKILL.md`
-  > **Remediation:** Move meta-discussion of scanner findings into a separate CHANGELOG or SECURITY.md rather than the agent-facing instruction body, so the skill body contains only operational guidance.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Installation instructions invoke package manager with pinned but unverifiable versions
-  > SKILL.md instructs the agent to run `uv venv` and `uv pip install` with a pinned dependency set. Version pinning is good practice, but several pins reference versions that may not exist (e.g., numpy==2.4.6, pandas==3.0.5, scipy==1.17.1, scikit-learn==1.9.0), and installation is performed without hash verification. If any pinned name/version does not resolve, resolution may fail or, in a misconfigured index, resolve to an unintended package. This is an informational supply-chain hygiene note, not evidence of malicious intent.
-  > File: `SKILL.md`
-  > **Remediation:** Ship a lock file with hashes (uv.lock / requirements.txt with --require-hashes) and verify that every pinned version exists on the official index before instructing installation.
-
-### statistical-power — 🔵 LOW
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
-  > SKILL.md instructs installing packages via `uv pip install` with minimum-version constraints (e.g. "statsmodels>=0.14.6", "scipy>=1.11") rather than exact pins. This is a minor supply-chain hygiene issue: an unpinned range can resolve to a newer, unvetted release. The skill itself acknowledges this ("Pin versions in production; unpinned is fine for exploration"), and all packages are well-known mainstream scientific libraries from PyPI with no typosquatting indicators or direct GitHub/VCS installs.
-  > File: `SKILL.md`
-  > **Remediation:** Pin exact versions (e.g. statsmodels==0.14.6) or reference a lock file, and note that the agent should ask for user confirmation before installing packages.
-
 ### statistical-analysis — 🔵 LOW
 
 - **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
@@ -2409,6 +2128,13 @@
   > The YAML frontmatter does not declare `allowed-tools` or `compatibility`. The skill in practice requires Bash (package installation via uv) and Python (running scripts/assumption_checks.py). This is optional metadata per spec, so it is informational only; no violation of declared restrictions exists because none are declared.
   > File: `scripts/assumption_checks.py`
   > **Remediation:** Optionally declare `allowed-tools: [Read, Bash, Python]` to make the required capability surface explicit for reviewers and policy enforcement.
+
+### statistical-power — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
+  > SKILL.md instructs installing packages via `uv pip install` with minimum-version constraints (e.g. "statsmodels>=0.14.6", "scipy>=1.11") rather than exact pins. This is a minor supply-chain hygiene issue: an unpinned range can resolve to a newer, unvetted release. The skill itself acknowledges this ("Pin versions in production; unpinned is fine for exploration"), and all packages are well-known mainstream scientific libraries from PyPI with no typosquatting indicators or direct GitHub/VCS installs.
+  > File: `SKILL.md`
+  > **Remediation:** Pin exact versions (e.g. statsmodels==0.14.6) or reference a lock file, and note that the agent should ask for user confirmation before installing packages.
 
 ### sympy — 🔵 LOW
 
@@ -2446,22 +2172,21 @@
   > File: `SKILL.md`
   > **Remediation:** Clarify that these are PyPI/conda module imports rather than bundled scripts, or bundle the referenced example scripts so their contents can be reviewed.
 
-### transformers — 🔵 LOW
+### timesfm-forecasting — 🔵 LOW
 
-- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Documented environment variable (HF_TOKEN) usage combined with Hub network calls
-  > Static pre-scan flagged environment variable access combined with network calls (HF_TOKEN / HF_HOME plus Hugging Face Hub downloads and push_to_hub uploads). Review of SKILL.md and reference documentation shows this is legitimate, expected behavior for the Hugging Face Transformers library: the token is used to authenticate to huggingface.co for gated/private model downloads and optional model/tokenizer uploads. The documentation explicitly discourages hardcoding tokens, recommends `hf auth login`, secret managers, narrowest token scope (`read` vs `write`), and `HF_HUB_DISABLE_IMPLICIT_TOKEN=1`. No exfiltration to third-party or attacker-controlled endpoints is present. Residual (informational) risk: workflows such as `trainer.push_to_hub()` / `model.push_to_hub()` / `tokenizer.push_to_hub()` transmit locally trained artifacts to an external service using an env-supplied credential, so users should confirm before uploading.
-  > File: `SKILL.md`
-  > **Remediation:** No action strictly required. Optionally note that push_to_hub uploads local data to huggingface.co and should be run only with explicit user confirmation, and keep the existing guidance to use read-scoped tokens for download-only workflows.
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Remote model weights and CDN script fetched at runtime
+  > Scripts download TimesFM weights from HuggingFace (`from_pretrained("google/timesfm-2.5-200m-pytorch")`) without revision pinning or checksum verification, and the generated HTML embeds a remote CDN script tag (`https://cdn.jsdelivr.net/npm/chart.js`) without SRI. This is expected behavior for a foundation-model skill and the sources are official/well-known, but unpinned remote artifacts are a mild supply-chain consideration. No model or web content is treated as instructions for the agent, so this is not indirect prompt injection.
+  > **Remediation:** Pin the HF `revision` for reproducibility and add a subresource-integrity hash (or vendor the JS locally) for the Chart.js include.
 
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced files missing from package (broken references)
-  > Several files referenced by the instruction/scan inventory do not exist in the package (templates/*.md, assets/*.md, transformers.py, huggingface_hub.py). The SKILL.md body only references the five present references/*.md files, so these appear to be scanner-inferred paths from Python import names and directory conventions rather than real dangling instructions. No security impact, but the two 'python' files counted in the inventory could not be reviewed, limiting assurance.
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
+  > SKILL.md instructs the agent/user to install packages (`uv pip install timesfm[torch]`, `pip install torch>=2.0.0`, `pip install timesfm[xreg]`) without pinned versions. This is a minor supply-chain hygiene issue: an unpinned install could pull a newer or compromised release. All packages referenced are legitimate, well-known upstream projects (timesfm from Google Research, torch, jax/flax), and no third-party GitHub or unknown index is used besides the official PyTorch wheel index.
   > File: `SKILL.md`
-  > **Remediation:** Ensure the package ships all files it references, and remove or resolve phantom references so automated scanners can fully review any bundled Python/bash scripts.
+  > **Remediation:** Pin versions (e.g., timesfm==1.x.y, torch==2.4.1) and prefer a lockfile so the agent installs reproducible, verified dependencies.
 
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Documentation mentions trust_remote_code=True (arbitrary code execution risk from Hub models)
-  > The SKILL.md body instructs use of `trust_remote_code=True` for gated or custom architectures. This flag causes arbitrary Python code hosted in the model repository to execute locally, which is a genuine supply-chain/code-execution vector when applied to untrusted Hub repos. The skill does mitigate this by scoping it to cases where the model card requires custom code "you have reviewed", so the guidance is responsible rather than malicious.
-  > File: `SKILL.md`
-  > **Remediation:** Keep and strengthen the existing caveat: recommend pinning a specific `revision=` commit hash when using trust_remote_code, and prefer safetensors-only models without remote code where possible.
+- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Resource-intensive model loading with bypassable safety preflight
+  > The skill loads a 200M-parameter model (~800MB download, ~1.5GB RAM) and forecast_csv.py exposes a `--skip-check` flag that bypasses the mandatory RAM/disk/GPU preflight, which could lead to memory exhaustion or unresponsive systems on constrained machines. Notably, the skill is designed defensively: check_system.py blocks on insufficient RAM/disk and forecast_csv.py exits non-zero when preflight fails by default. Batch sizes are bounded and derived from detected hardware. Risk is informational rather than malicious.
+  > File: `scripts/check_system.py`
+  > **Remediation:** Require explicit user confirmation for `--skip-check`, and cap `per_core_batch_size` / `max_context` when the check is skipped to avoid OOM on low-resource hosts.
 
 ### torch-geometric — 🔵 LOW
 
@@ -2482,21 +2207,33 @@
   > File: `references/custom_datasets.md`
   > **Remediation:** Remove or correct dangling file references so the agent only resolves paths that ship with the package; keep all bundled resources under a single documented directory (references/).
 
-### timesfm-forecasting — 🔵 LOW
+### transformers — 🔵 LOW
 
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Remote model weights and CDN script fetched at runtime
-  > Scripts download TimesFM weights from HuggingFace (`from_pretrained("google/timesfm-2.5-200m-pytorch")`) without revision pinning or checksum verification, and the generated HTML embeds a remote CDN script tag (`https://cdn.jsdelivr.net/npm/chart.js`) without SRI. This is expected behavior for a foundation-model skill and the sources are official/well-known, but unpinned remote artifacts are a mild supply-chain consideration. No model or web content is treated as instructions for the agent, so this is not indirect prompt injection.
-  > **Remediation:** Pin the HF `revision` for reproducibility and add a subresource-integrity hash (or vendor the JS locally) for the Chart.js include.
-
-- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
-  > SKILL.md instructs the agent/user to install packages (`uv pip install timesfm[torch]`, `pip install torch>=2.0.0`, `pip install timesfm[xreg]`) without pinned versions. This is a minor supply-chain hygiene issue: an unpinned install could pull a newer or compromised release. All packages referenced are legitimate, well-known upstream projects (timesfm from Google Research, torch, jax/flax), and no third-party GitHub or unknown index is used besides the official PyTorch wheel index.
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Documented environment variable (HF_TOKEN) usage combined with Hub network calls
+  > Static pre-scan flagged environment variable access combined with network calls (HF_TOKEN / HF_HOME plus Hugging Face Hub downloads and push_to_hub uploads). Review of SKILL.md and reference documentation shows this is legitimate, expected behavior for the Hugging Face Transformers library: the token is used to authenticate to huggingface.co for gated/private model downloads and optional model/tokenizer uploads. The documentation explicitly discourages hardcoding tokens, recommends `hf auth login`, secret managers, narrowest token scope (`read` vs `write`), and `HF_HUB_DISABLE_IMPLICIT_TOKEN=1`. No exfiltration to third-party or attacker-controlled endpoints is present. Residual (informational) risk: workflows such as `trainer.push_to_hub()` / `model.push_to_hub()` / `tokenizer.push_to_hub()` transmit locally trained artifacts to an external service using an env-supplied credential, so users should confirm before uploading.
   > File: `SKILL.md`
-  > **Remediation:** Pin versions (e.g., timesfm==1.x.y, torch==2.4.1) and prefer a lockfile so the agent installs reproducible, verified dependencies.
+  > **Remediation:** No action strictly required. Optionally note that push_to_hub uploads local data to huggingface.co and should be run only with explicit user confirmation, and keep the existing guidance to use read-scoped tokens for download-only workflows.
 
-- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Resource-intensive model loading with bypassable safety preflight
-  > The skill loads a 200M-parameter model (~800MB download, ~1.5GB RAM) and forecast_csv.py exposes a `--skip-check` flag that bypasses the mandatory RAM/disk/GPU preflight, which could lead to memory exhaustion or unresponsive systems on constrained machines. Notably, the skill is designed defensively: check_system.py blocks on insufficient RAM/disk and forecast_csv.py exits non-zero when preflight fails by default. Batch sizes are bounded and derived from detected hardware. Risk is informational rather than malicious.
-  > File: `scripts/check_system.py`
-  > **Remediation:** Require explicit user confirmation for `--skip-check`, and cap `per_core_batch_size` / `max_context` when the check is skipped to avoid OOM on low-resource hosts.
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced files missing from package (broken references)
+  > Several files referenced by the instruction/scan inventory do not exist in the package (templates/*.md, assets/*.md, transformers.py, huggingface_hub.py). The SKILL.md body only references the five present references/*.md files, so these appear to be scanner-inferred paths from Python import names and directory conventions rather than real dangling instructions. No security impact, but the two 'python' files counted in the inventory could not be reviewed, limiting assurance.
+  > File: `SKILL.md`
+  > **Remediation:** Ensure the package ships all files it references, and remove or resolve phantom references so automated scanners can fully review any bundled Python/bash scripts.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Documentation mentions trust_remote_code=True (arbitrary code execution risk from Hub models)
+  > The SKILL.md body instructs use of `trust_remote_code=True` for gated or custom architectures. This flag causes arbitrary Python code hosted in the model repository to execute locally, which is a genuine supply-chain/code-execution vector when applied to untrusted Hub repos. The skill does mitigate this by scoping it to cases where the model card requires custom code "you have reviewed", so the guidance is responsible rather than malicious.
+  > File: `SKILL.md`
+  > **Remediation:** Keep and strengthen the existing caveat: recommend pinning a specific `revision=` commit hash when using trust_remote_code, and prefer safetensors-only models without remote code where possible.
+
+### treatment-plans — 🔵 LOW
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing optional allowed-tools declaration
+  > The YAML frontmatter does not declare `allowed-tools`, although the skill instructs the agent to execute several bash/python commands (script invocation, unittest discovery, ast parsing). This is informational only: the field is optional per the Agent Skills spec, and the documented behavior (local standard-library JSON processing, local file writes) matches the actual script implementations. No network, subprocess, environment-variable, or credential access appears in any bundled script.
+  > **Remediation:** Optionally declare `allowed-tools: [Read, Write, Bash]` to make the required tool surface explicit and auditable.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced documentation files are missing from the package
+  > SKILL.md and references/README.md point to reference files that are not present in the analyzed package (e.g. references/shared_decision_handoff.md is present but numerous scanner-derived path variants such as templates/*.md and assets/*.md are absent). Missing referenced files can cause incomplete guidance for the safety boundaries the skill relies on, but no malicious or external content is fetched — all reads target internal, bundled paths only.
+  > File: `references/shared_decision_handoff.md`
+  > **Remediation:** Ensure every path named in SKILL.md exists in the package, or remove stale references so the documented safety and privacy guidance is always resolvable.
 
 ### usfiscaldata — 🔵 LOW
 
@@ -2513,17 +2250,6 @@
   > Instructions reference documentation files under `references/`, but the static inventory shows many resolved candidate paths (assets/*, templates/*) not found. All eight files actually referenced in SKILL.md (`references/api-basics.md`, `parameters.md`, `datasets-debt.md`, `datasets-fiscal.md`, `datasets-interest-rates.md`, `datasets-securities.md`, `response-format.md`, `examples.md`) exist and are benign. The missing assets/templates variants are path-resolution artifacts and pose no direct security risk, but could cause the agent to search or fabricate content if a real reference were absent.
   > File: `references/datasets-interest-rates.md`
   > **Remediation:** Ensure all referenced paths resolve within the package; remove stale references.
-
-### treatment-plans — 🔵 LOW
-
-- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing optional allowed-tools declaration
-  > The YAML frontmatter does not declare `allowed-tools`, although the skill instructs the agent to execute several bash/python commands (script invocation, unittest discovery, ast parsing). This is informational only: the field is optional per the Agent Skills spec, and the documented behavior (local standard-library JSON processing, local file writes) matches the actual script implementations. No network, subprocess, environment-variable, or credential access appears in any bundled script.
-  > **Remediation:** Optionally declare `allowed-tools: [Read, Write, Bash]` to make the required tool surface explicit and auditable.
-
-- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced documentation files are missing from the package
-  > SKILL.md and references/README.md point to reference files that are not present in the analyzed package (e.g. references/shared_decision_handoff.md is present but numerous scanner-derived path variants such as templates/*.md and assets/*.md are absent). Missing referenced files can cause incomplete guidance for the safety boundaries the skill relies on, but no malicious or external content is fetched — all reads target internal, bundled paths only.
-  > File: `references/shared_decision_handoff.md`
-  > **Remediation:** Ensure every path named in SKILL.md exists in the package, or remove stale references so the documented safety and privacy guidance is always resolvable.
 
 ### vaex — 🔵 LOW
 
@@ -2568,3 +2294,268 @@
   > The skill is named 'zarr-python' and authored by 'K-Dense Inc.', not the zarr-developers project. The SKILL.md does explicitly disclose that it is a community guide and not an official zarr-developers package, which mitigates most impersonation concern. Noted only as informational provenance context; no deceptive behavior, keyword stuffing, or activation-priority manipulation was found, and the description accurately matches the documentation content.
   > File: `SKILL.md`
   > **Remediation:** Keep the existing non-affiliation disclosure prominent; optionally namespace the skill (e.g., 'kdense-zarr-guide') to avoid any implication of official upstream ownership.
+
+### dhdna-profiler — 🔵 LOW
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Pseudo-quantitative psychological inference presented as an authoritative profile
+  > The skill produces 1-10 numeric scores across 12 'cognitive dimensions' plus 'shadow patterns' and 'decision fingerprints' for an author based on a text sample. Such output can be misread as validated psychometric measurement and misapplied to real people. Mitigating factors are substantial: the skill body explicitly forbids use in hiring, promotion, admission, clinical, disciplinary, or credit decisions; requires third-party profiles to be labeled speculative; requires consent before mining conversation history; and states that no profile leaves the session. These guardrails are unusually strong, so residual risk is minor and informational only.
+  > **Remediation:** Retain and surface the existing consent/scope disclaimers directly in the rendered profile output header so the limitation travels with any copied result.
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Broad trigger-keyword list in description increases activation surface
+  > The description enumerates many trigger phrases ("what's my thinking style", "analyze how this person reasons", "cognitive profile", "thinking pattern", "DHDNA", "digital DNA", "understand the mind behind any text") and a catch-all clause for any user-provided text where deeper insight is wanted. This is largely consistent with the skill's stated purpose, but the breadth ("any text", "deeper insight into the author's reasoning") could cause the skill to activate on generic text-analysis requests. No deceptive capability claims or brand impersonation were found, and there is no hidden functionality behind the activation.
+  > **Remediation:** Narrow the trigger list to the skill's core use case and remove the open-ended "any text" clause to reduce unintended activation.
+
+### deepchem — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions
+  > SKILL.md instructs installing packages via `uv pip install deepchem` and extras, including nightly pre-release builds (`uv pip install --pre deepchem`) and a conda MKL downgrade, all without pinned versions. This is a minor supply-chain hygiene issue rather than a malicious pattern; package names are legitimate upstream projects.
+  > File: `SKILL.md`
+  > **Remediation:** Pin explicit versions (e.g., deepchem==2.8.0) and avoid recommending pre-release/nightly builds by default.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced documentation files missing from package
+  > The SKILL.md body links to references/core_capabilities.md and references/typical_workflows.md, which exist, but several other resolved paths (templates/*, assets/*) were not found. Additionally, model downloads occur from Hugging Face Hub at runtime (seyonec/ChemBERTa-zinc-base-v1, ibm/MoLFormer-XL-both-10pct), which is network activity not explicitly listed in the compatibility field. Informational only — these are well-known public model artifacts.
+  > File: `references/typical_workflows.md`
+  > **Remediation:** Document network egress to Hugging Face Hub in the compatibility metadata and ensure all referenced files ship with the package.
+
+### diffdock — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned external repository clone and Docker image pull in setup instructions
+  > The SKILL.md instructions direct the agent/user to clone the upstream DiffDock GitHub repository and pull a Docker image without pinning to a specific commit, tag, or digest. This is a standard installation flow for this scientific tool and the sources are the legitimate upstream project (gcorso/DiffDock, rbgcsail/diffdock), so risk is low, but unpinned supply-chain fetches could pull altered code if upstream is compromised.
+  > File: `SKILL.md`
+  > **Remediation:** Pin the repository to a specific release tag/commit (e.g., v1.1.3) and the Docker image to a digest; note that model checkpoints (~500MB) are auto-downloaded and should be integrity-verified.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced files missing from package (broken documentation references)
+  > Several files referenced in the instructions are not present in the package (templates/custom_inference_config.yaml, assets/confidence_and_limitations.md, templates/parameters_reference.md, references/custom_inference_config.yaml, templates/confidence_and_limitations.md, assets/parameters_reference.md). Additionally, SKILL.md references assets/batch_template.csv which is not provided. These are duplicate/incorrect path variants of files that do exist under references/ and assets/, so the impact is documentation-only, but missing files could later be filled by untrusted content or cause the agent to search outside the skill directory.
+  > File: `references/confidence_and_limitations.md`
+  > **Remediation:** Correct the referenced paths to point only at files bundled in the package, or add the missing files to the skill directory.
+
+### bioservices — 🔵 LOW
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Documentation references non-existent files and inconsistent/deprecated API names
+  > The instruction body and reference docs mention files that are not present in the package (assets/*.md, templates/*.md, bioservices.py). Additionally, SKILL.md warns that UniChem's get_compound_id_from_kegg and ChEMBL pre-1.6 method names are removed in 1.16.0, yet compound_cross_reference.py and references/*.md still call get_compound_id_from_kegg and get_compound_by_chemblId. These are correctness/documentation issues rather than security threats, but broken references could cause the agent to search for or fabricate missing resources.
+  > File: `scripts/compound_cross_reference.py`
+  > **Remediation:** Remove references to non-existent files and align example/script code with the pinned bioservices 1.16.0 API (use get_compounds / get_molecule with hasattr guards).
+
+- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Unbounded remote API iteration in pathway analysis
+  > pathway_analysis.py iterates over every KEGG pathway for an organism (~300+ for human), issuing multiple network requests per pathway with no rate limiting or default cap (the --limit flag is optional and defaults to None). protein_analysis_workflow.py also polls BLAST status every 5 seconds for up to 300 seconds. This can consume significant time/network resources and may trip upstream API rate limits, but it is bounded and consistent with the stated purpose.
+  > File: `scripts/pathway_analysis.py`
+  > **Remediation:** Add a sensible default limit and an inter-request delay for bulk pathway retrieval to respect KEGG API usage policies.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Environment variable read for NCBI contact email
+  > Scripts read the NCBI_EMAIL environment variable and transmit it to the EBI/NCBI BLAST web service as the contact address. This is the documented, expected behavior for NCBI BLAST submissions and is declared in the manifest's openclaw envVars section, so it is disclosed and proportionate. No other environment harvesting or exfiltration to third-party endpoints occurs.
+  > File: `scripts/protein_analysis_workflow.py`
+  > **Remediation:** No action required; behavior is documented. Optionally warn the user before sending the email address to a remote service.
+
+### gget — 🔵 LOW
+
+- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Resource-intensive operations documented (bulk viral downloads, AlphaFold prediction)
+  > The skill documents operations that can consume very large amounts of time, bandwidth, disk, and CPU (e.g., `gget virus --download_all_accessions` across the entire Viruses taxonomy, AlphaFold structure prediction, CELLxGENE census downloads). The skill explicitly warns against unfiltered bulk downloads and comments out AlphaFold execution in scripts, so risk is mitigated and appears to be legitimate scientific functionality rather than deliberate resource abuse.
+  > **Remediation:** Retain the existing warnings; require explicit user confirmation before invoking bulk-download or AlphaFold prediction paths, and set filters/limits by default.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Optional dependency installation via `gget setup` (unpinned third-party downloads)
+  > Documentation instructs running `gget setup alphafold|cellxgene|elm|gpt`, which upstream executes `uv pip install`/`pip install` and downloads ~4GB of model parameters and third-party databases. These installs are not version-pinned and execute network-sourced package installation on the user's machine. The core gget install is properly pinned (`gget==0.30.5`), so this is informational rather than malicious.
+  > **Remediation:** Note that `gget setup` performs unpinned package installation and large downloads; recommend user confirmation and an isolated virtual environment before running setup modules.
+
+### imaging-data-commons — 🔵 LOW
+
+- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Potential for large-volume downloads consuming disk and bandwidth
+  > The skill orchestrates downloads of public imaging collections that the documentation itself notes can be terabytes in size (download_from_selection over an entire collection_id). Without explicit size checks this can exhaust local disk or bandwidth. The skill does mitigate this by advising size estimation and LIMIT clauses.
+  > **Remediation:** Require an explicit size estimate query and user confirmation before invoking collection-wide downloads.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — allowed-tools not declared while skill instructs execution of Python/Bash and network downloads
+  > The manifest does not declare allowed-tools or compatibility, yet the skill instructs the agent to run Python code, execute shell package installs (uv pip install), and download potentially terabyte-scale DICOM data from cloud buckets. Missing the optional field is informational only, but the breadth of implied capability (Bash + Python + network + filesystem writes) is worth explicitly scoping.
+  > **Remediation:** Declare allowed-tools (e.g., [Read, Bash, Python]) so the executed capability surface is explicit and auditable.
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — SQL query construction via f-string interpolation in example code
+  > Example workflow in references/use_cases.md builds SQL queries by interpolating DataFrame-derived values (Manufacturer, ManufacturerModelName) directly into a query string with an f-string. Against the local DuckDB index this is low impact (read-only public metadata), but the pattern encourages string-concatenated SQL that could break or be abused if the interpolated values came from user input.
+  > File: `references/use_cases.md`
+  > **Remediation:** Use parameterized queries or escape values rather than f-string interpolation when composing SQL from variable data.
+
+### docx — 🔵 LOW
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — LibreOffice Basic macro written to disk and executed headlessly
+  > scripts/accept_changes.py writes a StarBasic macro module (Module1.xba) into a fixed, world-readable LibreOffice profile path under /tmp and then invokes soffice with a vnd.sun.star.script: URL to execute it. The macro content is static and benign (accept tracked changes, store, close), but the fixed predictable path /tmp/libreoffice_docx_profile allows a local user to pre-create the profile directory and plant an alternate Module1.xba that would then be executed by this skill (the code short-circuits if the file already exists and contains the expected function name). This is the same class of predictable-temp-path issue that soffice.py explicitly hardened against.
+  > File: `scripts/accept_changes.py`
+  > **Remediation:** Use a per-run tempfile.mkdtemp() profile (0700) as soffice.py does, or place the profile under the user's home directory with restrictive permissions, and always rewrite the macro file rather than trusting existing contents.
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — Runtime C compilation and LD_PRELOAD injection into LibreOffice subprocess
+  > scripts/office/soffice.py writes an embedded C source file to a temp directory, compiles it with gcc at runtime, and injects the resulting shared object into every soffice subprocess via LD_PRELOAD. While the stated purpose (working around blocked AF_UNIX sockets in sandboxes) is plausible and the code takes care to use an unpredictable 0700 mkdtemp directory (explicitly to avoid a /tmp pre-planting attack), runtime code generation + compilation + library preloading is a powerful primitive that would be difficult to distinguish from a malicious stager. It is also not disclosed in SKILL.md's dependency list (gcc is required but unlisted).
+  > File: `scripts/office/soffice.py`
+  > **Remediation:** Ship the shim as an auditable source file (or make it opt-in via an explicit flag/env var), document the gcc dependency and LD_PRELOAD behavior in SKILL.md, and verify the compiled artifact path/permissions before preloading.
+
+### liteparse — 🔵 LOW
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Documented workflow pipes remote content directly into the parser and supports an arbitrary HTTP OCR endpoint
+  > The skill's stated capability is 'fully local processing with no cloud API', but the documentation includes examples that fetch remote PDFs over the network (`curl -sL https://example.com/report.pdf | lit parse -`) and forward document images to a user-specified HTTP OCR server (`--ocr-server-url`). These are optional, user-driven, and pointed at localhost/example placeholders in the docs, but they represent network egress paths where document content could leave the machine if a non-local URL is supplied. This is a minor consistency gap rather than covert exfiltration — no hardcoded attacker endpoint is present.
+  > **Remediation:** Clarify in the description/compatibility fields that optional network paths exist (remote fetch, HTTP OCR server) and warn users to only point `--ocr-server-url` at trusted local endpoints.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Package installation instructions reference a possibly non-existent/future package version
+  > SKILL.md instructs installing `liteparse==2.0.0` from PyPI and `npm i @llamaindex/liteparse`, and references a 'May 2026' release date. If the pinned package/version does not currently exist on PyPI, the name is susceptible to package-squatting/dependency-confusion where an attacker registers the name and users installing it would execute attacker code. The version is at least pinned, which mitigates drift, but provenance of the package should be verified before install.
+  > File: `SKILL.md`
+  > **Remediation:** Verify the package exists and is published by the claimed maintainer (run-llama / LlamaIndex) before installing; use hash-pinned installs or a vetted internal mirror. Remove references to unreleased versions.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Multiple referenced files are missing from the package
+  > The instruction body and reference table point to several files that were not found in the package (e.g., assets/*.md, templates/*.md, liteparse.py). Missing referenced files are a documentation-integrity issue: the agent may attempt to read non-existent paths, or a later-added file at those paths could introduce unreviewed instructions. No malicious content was observed in the files that are present.
+  > File: `references/choosing_a_parser.md`
+  > **Remediation:** Remove references to non-existent files or ship the missing files with the package so the referenced content is reviewable.
+
+### hugging-science — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned package installation guidance in reference files
+  > Reference documentation recommends installing dependencies (transformers, torch, accelerate, datasets, huggingface_hub, gradio_client, python-dotenv) via uv pip install / uv add without any version pins. Unpinned installs increase exposure to malicious or breaking upstream releases. The packages named are all mainstream and correctly spelled (no typosquatting indicators), and the bundled script itself is stdlib-only.
+  > **Remediation:** Pin versions (e.g., transformers==4.44.2) or reference a lockfile in the install examples.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — No allowed-tools, license, or compatibility declared in manifest
+  > The YAML frontmatter omits allowed-tools, license, and compatibility, while the skill in practice performs network fetches, runs Python/Bash, reads .env files, and downloads models/datasets. allowed-tools is optional per spec, so this is informational only, but declaring it would let the runtime constrain the network- and credential-touching behavior this skill implies.
+  > **Remediation:** Declare allowed-tools (e.g., [Read, Bash, Python, WebFetch]) plus license and compatibility so the declared surface matches the network/credential behavior.
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — Guidance on trust_remote_code=True enables remote code execution (with explicit user-consent gate)
+  > The skill documents and normalizes trust_remote_code=True for scientific models (Evo-2, Nucleotide Transformer, single-cell/materials models). This flag executes arbitrary Python from a remote model repository on the user's machine. The skill handles this responsibly: both SKILL.md and references/using-models.md require the agent to ask the user first, name the repo, and wait for an answer, and explicitly state that catalog listing is not a vetting/security signal. Flagged as informational because the underlying capability is remote code execution driven by names that arrive from a network-fetched catalog.
+  > File: `references/using-models.md`
+  > **Remediation:** Keep the mandatory human-in-the-loop gate; additionally recommend pinning a specific revision= when trust_remote_code is enabled so the executed code is immutable.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Instructions direct agent to auto-load HF_TOKEN from .env files
+  > SKILL.md instructs the agent to call python-dotenv's load_dotenv() at the top of any script hitting the HF API, which searches the cwd 'or any parent dir' for a .env file and loads all of its variables into the process environment. This broadens secret exposure beyond HF_TOKEN to any other credential present in a discovered parent-directory .env. The skill does include reasonable guardrails: it explicitly says not to hard-code tokens, not to echo them, to fall back gracefully when absent, and to add .env to .gitignore. references/using-spaces.md further warns that a loaded HF_TOKEN is transmitted to whatever Space is called and requires user confirmation before calling non-org Spaces or uploading files. No exfiltration to third-party endpoints is present in the bundled code.
+  > File: `references/using-spaces.md`
+  > **Remediation:** Prefer scoping the token read to an explicit path (e.g., load_dotenv(dotenv_path=Path.cwd()/'.env')) or os.environ.get('HF_TOKEN') rather than a recursive parent-directory search that loads all unrelated secrets.
+
+- **🔵 LOW** `LLM_PROMPT_INJECTION` — Skill fetches and ingests untrusted remote markdown from huggingscience.co
+  > The skill's core workflow instructs the agent to fetch markdown catalog files (llms.txt, llms-full.txt, topics/<slug>.md) from the external domain huggingscience.co and read them into context. Remote content is inherently untrusted and could carry injected imperative prose. Mitigating factors are strong: fetch_catalog.py prepends an explicit UNTRUSTED_BANNER framing the content as data, a _defang() routine neutralizes code fences and '---' frontmatter separators, and off-catalog URL hosts are labelled with an exact-host/subdomain check that avoids naive suffix matching. The 'raw' subcommand still prints unparsed remote content (banner only), which is the weakest path. Residual risk is low but non-zero.
+  > File: `scripts/fetch_catalog.py`
+  > **Remediation:** Consider applying _defang() (or at minimum fence-stripping) to raw mode output as well, and truncating very large remote documents before they enter agent context.
+
+### openpiv — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency install instruction
+  > The skill instructs the user to run `uv pip install openpiv` without a version pin as the primary install command (a pinned variant is offered secondarily). Unpinned installs can pull in a compromised or breaking upstream release. This is a minor supply-chain hygiene issue only; the package is the legitimate, well-known OpenPIV project and matches the skill's stated purpose.
+  > **Remediation:** Recommend the pinned install (`openpiv==0.25.4`) as the default instruction, since the skill documents that all snippets are verified against that version.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — References to non-existent files in instructions
+  > The instruction text and scripts reference several paths that do not resolve in the package listing (openpiv.py, matplotlib.py, assets/advanced_algorithms.md, templates/advanced_algorithms.md, analyze.py at top level). Most of these are false positives from module-import parsing (openpiv, matplotlib are pip packages; analyze.py exists at scripts/analyze.py, and references/advanced_algorithms.md exists). No unresolved path is fetched from a network source, so risk is documentation-quality only.
+  > File: `SKILL.md`
+  > **Remediation:** Use explicit relative paths (e.g., scripts/analyze.py, references/advanced_algorithms.md) in documentation to avoid ambiguity.
+
+### neuropixels-analysis — 🔵 LOW
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — No allowed-tools declaration despite executing code and installing packages
+  > The YAML manifest does not declare `allowed-tools`, although the skill's workflow requires Bash/Python execution, filesystem writes, package installation, and optional outbound network calls (Anthropic/OpenAI APIs, Hugging Face model downloads). This field is optional per spec, so this is informational only; no violation of declared restrictions exists.
+  > **Remediation:** Declare `allowed-tools` (e.g. [Read, Write, Bash, Python]) and note network/GPU requirements in `compatibility` so users can reason about the skill's blast radius.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instructions including third-party ML model downloads
+  > SKILL.md's Installation section instructs installing multiple packages (spikeinterface, kilosort, spykingcircus, mountainsort5, bombcell, ibllib, huggingface_hub, skops, anthropic) without version pins by default. Reference docs also include `git clone` + `pip install -e .` from GitHub repos. Additionally, the curation workflow loads pretrained `.skops` models from Hugging Face with `trust_model=True`, which deserializes remote model artifacts and can execute code if the repo is compromised. The skill does explicitly warn about this ('treat .skops/.pkl files like any other executable artifact') and suggests pinning versions, which substantially mitigates the risk.
+  > File: `SKILL.md`
+  > **Remediation:** Pin all dependency versions in documented install commands and prefer explicit `trusted=[...]` allowlists over blanket `trust_model=True` when loading remote .skops models. Verify model repo provenance/hashes before loading.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Optional outbound transmission of derived data to third-party LLM APIs
+  > The AI-assisted curation workflow renders unit summary images from the user's recordings and sends them base64-encoded to Anthropic/OpenAI APIs. This is an explicitly documented, opt-in feature core to the skill's stated purpose, uses environment variables for keys (no hardcoded secrets), and the docs correctly warn against committing credentials. Flagged only so users are aware that research data leaves the local machine when this optional path is used.
+  > File: `references/AI_CURATION.md`
+  > **Remediation:** Keep this path opt-in, document the data-egress implications for potentially sensitive/unpublished research data, and ensure no PII or subject identifiers are embedded in rendered figures.
+
+### primekg — 🔵 LOW
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Missing allowed-tools, license, and compatibility metadata
+  > The manifest does not declare allowed-tools, license is 'Unknown', and compatibility is unspecified. This is informational only: the skill's behavior (local CSV reads via Python/pandas) is consistent with its described purpose, but the absence of tool restrictions means no declarative bound on what the agent may execute.
+  > **Remediation:** Add explicit allowed-tools (e.g., [Read, Python]), a license, and compatibility fields to the frontmatter.
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Hardcoded developer-specific local path exposes user information
+  > SKILL.md documents the data location as an absolute Windows path containing a personal username ('C:\Users\eamon\Documents\Data\PrimeKG\kg.csv'). This leaks the skill author's local environment/username and conflicts with the script's actual default path ('data/PrimeKG/kg.csv' via PRIMEKG_DATA env var). It is an information-leak/documentation inconsistency rather than active exfiltration.
+  > File: `SKILL.md`
+  > **Remediation:** Remove the hardcoded personal path and reference only the configurable PRIMEKG_DATA environment variable / relative default path.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Referenced file inconsistency and unimplemented functionality
+  > The instructions reference a 'scripts.py' file that does not exist in the package (only scripts/query_primekg.py is present), and find_paths advertises depth-2 BFS path finding but the depth-2 branch is a no-op ('pass'), silently returning only direct paths. This can mislead users/agents into believing repurposing paths were exhaustively searched when they were not — a correctness/reliability concern in a biomedical context, not an active security threat.
+  > File: `scripts/query_primekg.py`
+  > **Remediation:** Fix the referenced file list to point at scripts/query_primekg.py, and either implement depth-2 traversal or raise NotImplementedError / document the limitation clearly.
+
+- **🔵 LOW** `LLM_RESOURCE_ABUSE` — Full CSV load into memory on every query (potential resource exhaustion)
+  > _load_kg() reads the entire ~4 million edge kg.csv with pandas on every function call, and search_nodes/get_neighbors/find_paths each call it independently (get_disease_context triggers two full loads). With no caching, chunking, or size limits, repeated calls can cause high memory/CPU consumption. This appears to be a performance design weakness rather than intentional DoS.
+  > File: `scripts/query_primekg.py`
+  > **Remediation:** Cache the loaded DataFrame (e.g., functools.lru_cache or module-level singleton), or use chunked reading / a columnar or indexed store for large graphs.
+
+### pymoo — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation instruction
+  > The SKILL.md instructs the agent to run `uv pip install pymoo` without a version pin (a pinned option is mentioned only as optional advice). Unpinned installs from PyPI can pull an unexpected or compromised release. The package is legitimate and well-known, so the risk is low, but supply-chain provenance is not enforced.
+  > File: `SKILL.md`
+  > **Remediation:** Default to the pinned install command (`uv pip install "pymoo==0.6.1.6"`) and require explicit user confirmation before installing packages.
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Missing referenced files (documentation inconsistency)
+  > Several files listed as referenced (templates/*.md, assets/*.md, pymoo.py) are not present in the package. Missing referenced resources are not directly exploitable here, but broken references could later be satisfied by unexpected files placed in the skill directory. No malicious content was detected in the files that do exist.
+  > File: `references/algorithms.md`
+  > **Remediation:** Remove references to non-existent files or ship the missing reference documents with the package.
+
+### pytorch-lightning — 🔵 LOW
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned package installation instructions
+  > The SKILL.md instructs the agent to run `uv pip install lightning`, `uv pip install lightning[extra]`, and `uv pip install wandb mlflow` without version pinning. Referenced docs also instruct `uv pip install deepspeed`, `tensorboard`, `comet-ml`. Unpinned installs can pull unexpected/compromised versions and are executed via the declared Bash tool. This is standard practice for documentation skills, so the risk is minimal, but the supply-chain provenance is unverified.
+  > File: `SKILL.md`
+  > **Remediation:** Pin package versions (e.g., `lightning==2.6.4`) or explicitly instruct the user to confirm installs before executing them.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — References to non-existent files (templates/ and assets/ paths)
+  > The skill's reference resolution lists numerous files under `templates/` and `assets/` (e.g., templates/best_practices.md, assets/trainer.md) that do not exist in the package. All files actually cited in SKILL.md body (references/*.md, scripts/*.py) are present. Missing paths are only a documentation-hygiene issue and could cause failed reads, not a security compromise.
+  > File: `references/best_practices.md`
+  > **Remediation:** Remove or correct dangling file references so the agent only attempts to read files bundled with the skill.
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — Documentation example sets environment variable at runtime
+  > A troubleshooting snippet in references/distributed_training.md mutates process environment (`os.environ["NCCL_TIMEOUT"] = "3600"`). This is a benign, well-known PyTorch distributed configuration pattern and is presented as user-copied example code, not auto-executed by the skill. Noted only for completeness.
+  > File: `references/distributed_training.md`
+  > **Remediation:** No action required; optionally document that this modifies the process environment.
+
+### pymc — 🔵 LOW
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Documentation references files that do not exist in the package
+  > SKILL.md references `references/workflows.md` and the resource list mentions several files (workflows.md) that are not present; additionally the referenced-file scan lists missing paths (templates/*.md, assets/*.md, scripts.py). This is a documentation-consistency issue, not a security exploit, but broken references could cause the agent to search elsewhere or fabricate content.
+  > File: `SKILL.md`
+  > **Remediation:** Ship all referenced reference files or remove stale references from SKILL.md.
+
+### scvelo — 🔵 LOW
+
+- **🔵 LOW** `LLM_UNAUTHORIZED_TOOL_USE` — No allowed-tools declared while skill performs file writes and code execution
+  > The manifest omits the optional `allowed-tools` field, while the bundled script writes files (figures, .h5ad output), creates directories, and performs network downloads in demo mode. This is informational only — no declared restriction is violated — but explicit tool declarations would improve transparency.
+  > **Remediation:** Declare `allowed-tools: [Read, Write, Bash, Python]` to accurately reflect the file-writing and execution behavior.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned dependency installation guidance
+  > The SKILL.md instructs `pip install scvelo` without version pinning, and the script's demo mode downloads an external example dataset (`scv.datasets.pancreas()`) from the internet. These are standard practices for scientific Python tooling and the packages are well-known legitimate bioinformatics libraries, but unpinned installs and remote dataset downloads introduce minor supply-chain/network exposure, especially given the compatibility notes about pandas<3 / numpy<2 constraints.
+  > File: `SKILL.md`
+  > **Remediation:** Pin versions (e.g., `pip install scvelo==0.3.4 'pandas<3' 'numpy<2'`) and note that demo mode downloads a dataset over the network so users can run it in an environment where that is acceptable.
+
+### pathogen-variant-surveillance — 🔵 LOW
+
+- **🔵 LOW** `LLM_DATA_EXFILTRATION` — Unpinned fetch of external pango-designation data from raw.githubusercontent.com
+  > The client fetches alias_key.json and lineage_notes.txt from the master branch of the cov-lineages/pango-designation GitHub repository at run time, deliberately unpinned. This is documented and justified (withdrawals/redesignations must be current), and the content is parsed as data only — never executed. Residual risk is that content of an upstream repository could change and influence agent-visible output. Mitigated by provenance printing of the ETag blob SHA and by sanitize() stripping control characters from remote text before rendering.
+  > **Remediation:** No change required for intended use. Optionally allow an opt-in pinned tag/commit for reproducible offline audits, and continue printing the blob SHA provenance line.
+
+- **🔵 LOW** `LLM_PROMPT_INJECTION` — Remote LAPIS instance content rendered into agent-visible output (user-supplied --base-url)
+  > Scripts accept an arbitrary --base-url and print remote field names, lineage labels, and HTTP error 'detail' strings into stdout/stderr that an agent reads. A hostile deployment could return text shaped like instructions. The skill explicitly documents this risk and mitigates it: sanitize() strips all C0/C1 control characters and collapses whitespace, responses are parsed as JSON data and never executed, and the reference file warns to point --base-url only at trusted deployments. Residual risk is limited to plain-text content that an agent might read as guidance.
+  > **Remediation:** Consider restricting --base-url to an allowlist of known hosts by default (with an explicit --allow-untrusted-instance flag), and label remote-derived text blocks as untrusted data in output.
+
+### scanpy — 🔵 LOW
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — Documented use of sudo system package installation by the agent
+  > The R interoperability runbook directs the agent to run privileged system package manager commands (sudo apt-get install, sudo dnf install, winget install) to provision R and build toolchains. This is legitimate for the stated purpose but represents privileged, host-modifying actions performed autonomously by an agent rather than the user.
+  > **Remediation:** Require explicit user approval before executing any privileged (sudo/winget) installation commands, and prefer user-local or containerized environments (conda, project-local R library) which the document already mentions as an alternative.
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Missing allowed-tools and compatibility metadata
+  > The YAML frontmatter does not declare allowed-tools or compatibility, although the skill clearly requires Bash and Python execution (running CLI scripts, installing packages, invoking Rscript). This is informational only; the field is optional per spec, and the declared behavior matches the actual scripts.
+  > **Remediation:** Declare allowed-tools (e.g., [Read, Write, Bash, Python]) to make the skill's execution footprint explicit to reviewers and the runtime.
+
+- **🔵 LOW** `LLM_HARMFUL_CONTENT` — Several referenced files are absent from the package
+  > The instruction body and reference documents point to files that were not found in the package (e.g., templates/* variants, assets/api_reference.md, assets/plotting_guide.md, scanpy.py). Missing referenced resources are a documentation hygiene issue; if an agent later resolves these paths from an untrusted working directory, an attacker-planted file with the same name could be read as trusted guidance.
+  > File: `assets/analysis_template.py`
+  > **Remediation:** Remove or correct references to non-existent files, and have scripts/instructions resolve bundled resources with paths anchored to the skill directory rather than the current working directory.
+
+- **🔵 LOW** `LLM_SUPPLY_CHAIN_ATTACK` — Unpinned package installation instructions (pip/CRAN/GitHub)
+  > SKILL.md and references/r_interop.md instruct the agent to install packages without version pinning, including a direct GitHub install (remotes::install_github("mojaveazure/seurat-disk")) and Bioconductor/CRAN installs with ask=FALSE, update=FALSE. Scripts also emit install hints (e.g., 'uv pip install harmonypy', 'uv pip install bbknn'). These are all well-known, legitimate scientific packages, but unpinned/autonomous installation is a mild supply-chain and reproducibility risk.
+  > File: `references/r_interop.md`
+  > **Remediation:** Pin versions for all Python and R dependencies (the skill already shows an example pin for scanpy). Prefer CRAN/Bioconductor releases over direct GitHub installs, and require explicit user confirmation before the agent installs system-level or global packages.
+
+### pptx — 🔵 LOW
+
+- **🔵 LOW** `LLM_SKILL_DISCOVERY_ABUSE` — Very broad, keyword-heavy activation description
+  > The frontmatter description is unusually aggressive about activation ('Use this skill any time a .pptx or .potx file is involved in any way', 'Trigger whenever the user mentions "deck," "slides," "presentation"', 'regardless of what they plan to do with the content afterward'). This is keyword baiting that maximizes activation frequency. In this case the scope stays within PPTX handling and is consistent with the bundled scripts, so the risk is limited to over-activation rather than capability inflation into unrelated domains.
+  > **Remediation:** Narrow the description to concrete file-format tasks and remove blanket 'always trigger' phrasing so skill selection stays proportional to the user's actual request.
+
+- **🔵 LOW** `LLM_COMMAND_INJECTION` — Runtime C compilation and LD_PRELOAD injection into soffice subprocess
+  > scripts/office/soffice.py writes a C source file at runtime, compiles it with gcc, and injects the resulting shared object into every LibreOffice subprocess via LD_PRELOAD. The shim hooks socket/listen/accept/close and calls _exit(0). This is legitimate, documented sandbox workaround code, and the implementation is defensive: it compiles into a fresh 0700 mkdtemp directory (explicitly to avoid a previously-noted predictable /tmp path hijack), removes the .c after compiling, and registers atexit cleanup. Flagged as informational only because runtime code compilation plus library preloading is an intrinsically high-privilege pattern that reviewers should be aware of.
+  > File: `scripts/office/soffice.py`
+  > **Remediation:** No action strictly required; the temp-dir hardening and env allowlist already mitigate the known risks. Optionally ship a prebuilt, integrity-verified shim or gate compilation behind an explicit opt-in flag.

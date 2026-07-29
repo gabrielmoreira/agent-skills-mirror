@@ -1,0 +1,7 @@
+name: svelte
+label: Svelte
+description: Load when reviewing Svelte code or behavior.
+instructions:
+- Review reactive dependencies, store subscriptions, bindings, event flow, actions, context, lifecycle,
+  keyed identity, server/client boundaries, hydration, escaping, transitions, and cleanup without reasoning
+  from generated internals alone.

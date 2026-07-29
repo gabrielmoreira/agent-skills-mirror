@@ -1,0 +1,31 @@
+id: docs.document-types
+title: Honor the document type
+kind: heuristic
+rule: Shape content according to the reader outcome promised by its document type.
+require:
+- Make a README or landing page answer what the software is, who it is for, why it
+  matters, the shortest verified first success, and where to go for task, concept,
+  reference, and contribution detail. Keep it a navigational front door rather than
+  a second manual.
+- Make a tutorial teach one bounded learning outcome through prerequisites, an ordered
+  path, meaningful checkpoints, a visible result, and next steps. Make a how-to guide
+  solve one named task through prerequisites, ordered actions, verification, and the
+  likely recovery paths.
+- Make reference material a self-contained, predictable lookup of the relevant public
+  contract. Make explanation clarify a concept, rationale, relationship, or tradeoff
+  without disguising a procedure or field catalog as conceptual prose.
+- Make a runbook state trigger, scope, prerequisites, permissions, diagnosis, bounded
+  actions, verification, rollback or recovery, and escalation. Make a migration guide
+  state applicability, before and after states, prerequisites, ordered changes,
+  compatibility impact, validation, and rollback.
+- Make release notes or changelogs identify the version or period, user-visible changes,
+  breaking or operational impact, required action, and known limitations. Make comments
+  and docstrings explain the local contract, rationale, invariants, ownership, or hazards
+  without restating syntax. Make maintainer documentation explain boundaries, invariants,
+  data flow, extension points, operation, and verification needed to change the system
+  safely.
+reject:
+- Turning every page into a mixed tutorial, reference, explanation, and troubleshooting guide.
+- Expanding a document beyond the outcome promised by its type.
+- Using a generic template section when it has no content that advances the promised
+  reader outcome.

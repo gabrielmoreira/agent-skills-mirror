@@ -1,0 +1,9 @@
+name: django
+label: Django
+description: Load when reviewing Django code or behavior.
+instructions:
+- Trace ORM query evaluation, transactions, signals, validation, permissions, middleware, caching, file
+  handling, time zones, and asynchronous boundaries.
+- Check migration ordering and reversibility, N+1 queries, lost updates, mass assignment, unsafe redirects,
+  template escaping, and tenant separation.
+- Verify behavior across configured databases and deployment settings when they differ.

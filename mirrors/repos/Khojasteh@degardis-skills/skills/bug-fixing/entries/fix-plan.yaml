@@ -1,0 +1,23 @@
+id: bug-fixing.fix-plan
+title: Plan from evidence to verification
+kind: policy
+priority: 7
+rule: Before production edits, write a bounded fix plan that connects the demonstrated
+  cause to the proposed correction and to evidence that can prove the correction.
+require:
+- State the established expected behavior, reproduced symptom, first causal divergence,
+  and confidence or unresolved competing explanations.
+- Identify the production and test surfaces likely to change, the invariant each change
+  restores, and any behavior deliberately left unchanged.
+- Specify regression evidence that fails for the demonstrated reason, the focused and
+  broader checks to run, and applicable compatibility, data, security, concurrency,
+  rollout, rollback, and documentation work.
+- Order implementation into the fewest reviewable steps that keep the repository valid
+  and can be verified independently.
+- Revise the plan when implementation evidence disproves an assumption or expands the
+  causal boundary.
+reject:
+- A file checklist that does not explain how each change corrects the cause.
+- Planning speculative cleanup, redesign, migration, or dependency work that is not
+  required by the demonstrated defect.
+- Treating the plan as evidence that the defect exists or that the proposed fix works.

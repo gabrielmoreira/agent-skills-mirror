@@ -1,0 +1,17 @@
+id: codebase-assessment.performance-gate
+title: Assess performance only from evidence
+kind: constraint
+priority: 3
+rule: Assess performance only when a requirement, budget, SLO, existing telemetry,
+  profile, benchmark, regression, scalability limit, or resource concern makes it relevant.
+require:
+- Use existing telemetry, profiles, and benchmark results first. Run an established
+  representative benchmark only when it passes the analysis-only command safety gate
+  and would resolve a material uncertainty.
+- Identify the target outcome, workload, evidence, and validation gap before proposing work.
+- Consolidate performance symptoms with their root cause and prerequisites.
+reject:
+- Guessing bottlenecks from code appearance.
+- Inventing a workload, modifying benchmark code, or treating an unrepresentative local
+  measurement as production evidence.
+- Adding benchmark, caching, concurrency, or micro-optimization work without demonstrated value.

@@ -1,0 +1,7 @@
+name: express
+label: Express
+description: Load when reviewing Express code or behavior.
+instructions:
+- Review parsing limits, route precedence, authentication and trust boundaries, async errors, response
+  completion, streaming, cancellation, error middleware, session and tenant isolation, header behavior,
+  and resource cleanup.

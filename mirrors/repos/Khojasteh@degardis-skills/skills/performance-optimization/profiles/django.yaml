@@ -1,0 +1,6 @@
+name: django
+label: Django
+description: Load when optimizing Django performance.
+instructions:
+- Measure request lifecycle, middleware, ORM evaluation, query counts and plans, N+1 access, transactions,
+  templates, serialization, caches, sessions, static assets, jobs, and startup.

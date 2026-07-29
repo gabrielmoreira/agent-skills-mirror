@@ -1,0 +1,8 @@
+name: java
+label: Java
+description: Load when optimizing Java performance.
+instructions:
+- Account for JIT warmup and deoptimization, dead-code elimination, GC, allocation, boxing, collections,
+  streams, synchronization, executors, serialization, I/O, and startup.
+- Compare equivalent JVM settings and representative steady-state and cold behavior; preserve interruption,
+  resource lifetime, compatibility, and correctness.

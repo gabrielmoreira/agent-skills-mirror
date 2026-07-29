@@ -1,44 +1,46 @@
 ---
-description: "Install a plugin from the Plugin Mall catalog at a user-pinned version — deferred to Phase 5b of PLAN-mall-automation v3"
-lastReviewed: 2026-05-29
+description: "Install a plugin from the Plugin Mall catalog using version-aware legacy compatibility rules"
+lastReviewed: 2026-07-28
 ---
 
 # /mall-install
 
-**Status: deferred to Phase 5b.** Install logic depends on plugin shape (skill / agent / mcp / hook + single-file vs multi-file with `references/`); shipping it before validating shape-handling against real heir use would lock in the wrong abstractions.
+Install a plugin from the Plugin Mall into this heir.
 
-Heirs should use `/mall-search <query>` (Phase 5a, live) to discover plugins, then `/mall-show <name>` (Phase 5a, live) to read full metadata + trust signals + the `source_url` and `available_refs` fields. To install from a heir today:
+Source of truth: [mall-installation.instructions.md](../instructions/mall-installation.instructions.md)
 
-1. Get the plugin's `source_url` and the version you want from `/mall-show <name>` (or pick a tag from `available_refs.tags`).
-2. Use the source_url's GitHub tree URL to fetch the plugin files manually (raw URLs or sparse-clone), placing them under your local `local/` namespace per [mall-installation.instructions.md](../instructions/mall-installation.instructions.md):
-   - skill → `.github/skills/local/<name>/`
-   - instruction → `.github/instructions/local/<name>.instructions.md`
-   - prompt → `.github/prompts/local/<name>.prompt.md`
-   - agent → `.github/agents/local/<name>.agent.md`
-3. Record the install in a sibling `.install.json` so reinstalls and upgrades are deterministic:
+## Steps
 
-   ```jsonc
-   {
-     "plugin": "<name>",
-     "store": "<store>",
-     "source_url": "<full tree URL at resolved SHA>",
-     "installed_at": "<ISO timestamp>",
-     "trust_score_at_install": <number>,
-     "frontmatter_at_install": { ... }
-   }
+1. Resolve identity:
+   - Run `/mall-search <query>` when needed.
+   - If multiple stores match, run `/mall-show <name>` and require explicit `(store, name)` choice.
+2. Read catalog fields: `name`, `store`, `version`, `shape`, `source_url`, `trust_score`, `provenance`.
+3. Build a no-write plan from the shared instruction:
+   - detect Mall 3 vs Mall 2 fallback layout,
+   - map supported components,
+   - classify unsupported components,
+   - define exact target paths,
+   - define `.install.json` content with exact `component_paths`.
+4. Fail closed before writes when unsupported legacy-mode components exist (`hooks`, `extensions`, `lspServers`, unknown).
+5. Show plan and request explicit user approval.
+6. If approved, write only allowed local targets and merge MCP servers additively with backup.
+7. Write `.github/skills/local/<plugin-name>/.install.json` with required fields.
+8. Verify all recorded `component_paths` exist.
+9. Run drift check:
+
+   ```bash
+   node .github/scripts/audit-mall-drift.cjs
    ```
 
-Phase 5b will automate this with a `mall-install.cjs` script + a fully-fledged `/mall-install <name>[@<version>]` prompt that handles all shapes uniformly.
+10. Report outcome with installed version, store, detected layout, and installed `component_paths`.
 
-## Why deferred
+## Safety rules
 
-Per [PLAN-mall-automation v3](https://github.com/fabioc-aloha/Alex_ACT_Supervisor/blob/main/docs/plans/PLAN-mall-automation.md) Phase 5 design:
-
-> Phase 5a (this commit) ships `/mall-search` + `/mall-show` so heirs can immediately use the catalog for discovery. Phase 5b will ship `/mall-install`, `/mall-upgrade`, `/mall-list` once we have heir feedback on which install workflows actually matter (single-file copy vs multi-file with references? per-shape rules? pinning strategy?).
-
-The catalog is the load-bearing change. Heirs can install manually from `source_url` today; the automation lands next.
+1. Never write outside allowed local targets.
+2. Never guess missing files or guessed delete paths.
+3. Never claim success if `.install.json` or `component_paths` verification fails.
+4. Never remove pre-existing content on a failed attempt.
 
 ## Would Revise If
 
-- A heir uses `/mall-install` 3+ times in a week with manual fallback (signal that Phase 5b is overdue — accelerate)
-- Manual install workflow surfaces a shape we missed in Phase 3 normalization (e.g., a hook with a config file pattern) — Phase 5b's installer needs to handle it
+Revisit by **2026-10-28** if guided installs repeatedly fail on distinct Mall 3 layouts or require deterministic script replacement.

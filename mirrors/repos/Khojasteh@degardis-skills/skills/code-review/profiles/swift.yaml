@@ -1,0 +1,9 @@
+name: swift
+label: Swift
+description: Load when reviewing Swift code or behavior.
+instructions:
+- Trace optionals, value and reference semantics, ARC ownership, captures, actors, task cancellation,
+  continuations, and resource cleanup.
+- Check isolation crossings, `Sendable` assumptions, collection indices, error handling, Objective-C bridging,
+  persistence, and availability guards.
+- Verify UI and application lifecycle assumptions against the configured Apple platforms.

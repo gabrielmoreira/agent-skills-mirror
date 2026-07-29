@@ -1,0 +1,6 @@
+name: ruby
+label: Ruby
+description: Load when implementing Ruby features.
+instructions:
+- Design across blocks, exceptions, mutation, fibers or threads, cleanup, callbacks, serialization, dynamic
+  dispatch, and public gem compatibility.

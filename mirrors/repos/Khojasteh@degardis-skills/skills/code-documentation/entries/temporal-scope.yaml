@@ -1,0 +1,54 @@
+id: docs.temporal-scope
+title: Match content to the document's time scope
+kind: policy
+priority: 5
+rule: Decide whether changed, absent, or superseded information belongs by each
+  statement's purpose and the document's temporal scope, not by keywords or the
+  kind of software element involved.
+require:
+- Classify every in-scope output independently as current-state documentation,
+  release history, before-and-after migration guidance, or explicit deprecation
+  or compatibility documentation.
+- In current-state reference, guides, comments, examples, and usage instructions,
+  describe only supported behavior. Remove every statement, description, example,
+  link, failure, and cross-reference that exists solely for behavior or a concept
+  that is no longer applicable.
+- Retain a contrast with removed, previous, absent, or changed behavior in current-state
+  documentation only when a supported compatibility path makes the contrast affect
+  the current reader's action or decision. State that boundary without presenting
+  superseded behavior as current.
+- In release notes and changelogs, identify a user-visible change when the affected
+  behavior existed in a published or supported version. State its compatibility or
+  operational impact, effective version or period, replacement when one exists, and
+  required user action.
+- In migration guides, describe the verified old and new states and the steps needed
+  to move between them.
+- Exclude abandoned, experimental, and never-released behavior from public release
+  history and migration guidance unless the requested document explicitly covers
+  internal development history.
+- >-
+  As the final content pass, perform a delta-language audit: inspect statements that
+  contrast current behavior with removed, previous, absent, or changed behavior;
+  retain each only when a supported compatibility path affects the current reader's
+  action or decision; otherwise remove it or place it in the appropriate release-history
+  or migration document. Judge the sentence by its purpose and temporal scope rather
+  than flagging words such as `not`, `removed`, or `previously`.
+reject:
+- Mentioning superseded behavior in current-state documentation merely to say that
+  it changed or no longer exists.
+- Erasing a previously released change from release history because it is absent
+  from the current product.
+- Reporting never-released behavior as a removal, deprecation, compatibility break,
+  or historical public capability.
+examples:
+- "Useful current limitation: `Archives omit empty directories; add a placeholder
+  file when the directory must be retained.` Obsolete implementation history:
+  `The source-only format_version is not emitted.` Current metadata reference:
+  `Generated metadata contains version and generated_by.`"
+- "Supported compatibility note: `Version 2 clients may send legacy_key through
+  the supported v2 compatibility endpoint; new clients should send current_key.`
+  Unnecessary current-state residue: `The primary endpoint no longer accepts legacy_key`
+  when no supported path makes that fact affect the reader."
+- "Current reference: `--output selects the destination directory.` Release note:
+  `Version 2 renamed --target to --output.` Migration guidance: `Replace --target
+  with --output in existing commands before upgrading to version 2.`"

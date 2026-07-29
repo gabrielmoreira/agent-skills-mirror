@@ -1,0 +1,15 @@
+id: bug-fixing.regression-evidence
+title: Preserve independent regression evidence
+kind: constraint
+priority: 6
+rule: Prefer an automated check that fails for the demonstrated defect before the fix
+  and passes afterward without reproducing the implementation algorithm.
+require:
+- Choose the smallest test level that exercises the real failure boundary.
+- Verify the pre-fix failure reason, not merely that the test is red.
+- Retain a higher-level regression when wiring, serialization, persistence, lifecycle,
+  concurrency, or integration causes the defect.
+- Keep the test deterministic, isolated, and sensitive to realistic regression.
+reject:
+- Writing a test that passes before the fix or fails for unrelated setup.
+- Weakening an assertion, over-mocking the faulty boundary, or copying production logic.

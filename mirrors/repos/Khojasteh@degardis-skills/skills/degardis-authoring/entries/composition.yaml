@@ -1,0 +1,13 @@
+id: degardis-authoring.composition
+title: Put guidance in the narrowest useful layer
+kind: heuristic
+priority: 20
+rule: Keep ordered procedure in workflows, independently reusable rules in entries,
+  execution-changing variants in profiles, deterministic helpers in scripts, and
+  output inputs in assets.
+require:
+- Keep the primary workflow concise enough to load as the generated skill body.
+- Use supporting fragments only when they reduce repetition or context cost.
+reject:
+- Repeating core rules across profiles.
+- Disguising instructions as assets or using entries as fragmented workflow steps.

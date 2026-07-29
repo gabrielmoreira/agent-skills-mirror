@@ -1,0 +1,11 @@
+name: visual-basic
+label: Visual Basic
+description: Load when optimizing Visual Basic performance.
+instructions:
+- Measure late binding, implicit conversions, boxing, `Object`-typed flows, closures, iterator/LINQ materialization,
+  async state machines, event dispatch, XML literals, reflection, serialization, thread-pool behavior,
+  and I/O as relevant.
+- Verify that caching, pooling, parallelism, stricter types, or representation changes preserve `Nothing`,
+  conversion, event lifetime, cancellation, disposal, culture, thread-safety, COM, and public API contracts.
+- Compare equivalent release deployments after warmup with representative workloads, allocation and latency
+  distributions, and independently checked outputs.

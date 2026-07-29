@@ -1,0 +1,7 @@
+name: spring
+label: Spring
+description: Load when implementing Spring features.
+instructions:
+- Design across bean scopes and proxies, configuration binding, security filters, validation, transactions,
+  lazy loading, serialization, async execution, and shutdown.
+- Verify at the narrowest useful unit, slice, or application boundary.

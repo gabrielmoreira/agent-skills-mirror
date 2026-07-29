@@ -1,0 +1,28 @@
+name: dependency-upgrade
+format_version: 1
+title: Dependency Upgrade
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Upgrade packages, frameworks, runtimes, SDKs, compilers, or build tools
+  while preserving supported behavior. Use for version bumps, dependency conflicts,
+  security updates, and same-technology major upgrades, not technology replacement.
+primary_workflow: dependency-upgrade.upgrade
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Dependency Upgrade
+  short_description: Upgrade dependencies safely to verified target versions
+  default_prompt: Use $dependency-upgrade to complete and verify this upgrade without unrelated changes.

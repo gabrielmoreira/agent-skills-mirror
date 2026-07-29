@@ -1,0 +1,12 @@
+id: refactoring.duplication
+title: Remove duplicated knowledge, not resemblance
+kind: heuristic
+rule: Apply DRY to repeated rules, invariants, decisions, and coordinated change rather
+  than code that merely looks similar.
+require:
+- Confirm duplicated sections represent the same concept and should evolve together.
+- Prefer temporary duplication when the concepts may vary independently.
+- Place shared knowledge at the narrowest stable ownership boundary.
+reject:
+- Unifying code only because its current syntax matches.
+- Adding flags or conditionals to force unrelated cases through one abstraction.

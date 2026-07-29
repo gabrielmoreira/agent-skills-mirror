@@ -1,0 +1,72 @@
+id: feature-implementation.deliver
+title: Plan, implement, or review a feature
+description: Convert requirements into the smallest compatible feature with independent
+  acceptance evidence and an explicit boundary between feature work and unrelated change.
+steps:
+- action: classify-request
+  instruction: Classify the request as planning, implementation, or review. Keep planning and review read-only; modify production code only when implementation is explicitly requested.
+- action: establish-outcome-and-scope
+  instruction: Establish the audience, desired outcome, scope, non-goals, constraints,
+    authorization, compatibility boundaries, and externally observable definition of done.
+- action: inspect-context
+  instruction: Read repository instructions and inspect relevant code, callers, tests,
+    configuration, schemas, persisted data, generated artifacts, architecture, operations,
+    and documentation before choosing a design. Honor explicit technology choices,
+    preserve established versions and tooling, and add no dependency or migration
+    without a demonstrated requirement and authorization.
+- action: establish-tooling-evidence
+  instruction: Select project tools and commands only when explicit scope or repository
+    instructions, manifests, lockfiles, configuration, scripts, CI, documentation, or
+    established usage supports them. Availability, filenames, conventions, and popularity
+    do not establish adoption; never execute competing tools as probes. When evidence is
+    absent, use tool-independent analysis, report the validation gap, or ask before
+    introducing tooling.
+- action: define-acceptance-contract
+  instruction: Translate requirements into independently grounded acceptance criteria
+    covering success, meaningful boundaries, failures, side effects, permissions,
+    persistence, concurrency, compatibility, and operational behavior.
+- action: resolve-ambiguity
+  instruction: Infer reversible details when repository evidence clearly supports them.
+    Ask before deciding material public behavior, data semantics, security boundaries,
+    compatibility, user experience, or architecture.
+- action: choose-minimal-design
+  instruction: Choose the smallest design consistent with existing architecture and
+    demonstrated variation. Apply SOLID, DRY, and KISS as contextual heuristics rather
+    than compliance targets. Keep behavior cohesive and locally traceable; reject
+    speculative extensibility, premature interfaces, ravioli fragmentation, lasagna
+    layering, dependency churn, broad cleanup, and unrelated formatting.
+- action: plan-vertical-slices
+  instruction: Divide the work into reviewable vertical slices that deliver observable
+    value and can be validated independently without leaving invalid intermediate states.
+- action: establish-test-evidence
+  instruction: Derive acceptance evidence independently from the implementation. Define
+    it before coding while following repository practice on whether tests are written
+    before, alongside, or immediately after each slice.
+- action: implement-and-verify-slices
+  instruction: In authorized implementation mode, implement one bounded slice at a time
+    and run its focused acceptance evidence before continuing.
+- action: verify-combined-feature
+  when: Multiple slices or shared boundaries were changed.
+  instruction: After the slices are combined, run broader relevant checks once when
+    integration, shared infrastructure, or regression risk requires them. Do not repeat
+    an unchanged broad build or test suite after every slice.
+- action: handle-system-risks
+  instruction: When applicable, address schemas, migrations, persisted data, transactions,
+    authorization, concurrency, resource ownership, configuration, rollout, rollback,
+    partial failure, and observability without inventing infrastructure.
+- action: separate-defects
+  instruction: Stop and report pre-existing production defects that require changes
+    outside the authorized feature scope. Correct defects introduced by this feature
+    within the current scope.
+- action: update-documentation-conditionally
+  instruction: Update documentation when public contracts, configuration, failures,
+    side effects, operations, migrations, release information, comments, or maintainer
+    invariants change.
+- action: review-final-change
+  instruction: Inspect the complete final diff for missing behavior, regressions,
+    security and data risk, inadequate tests, unnecessary abstractions, fragmented
+    control flow, deep pass-through layers, and unrelated edits.
+- action: report
+  instruction: Report the mode, delivered behavior, acceptance evidence, files and contracts
+    changed, exact validation performed, documentation impact, assumptions, exclusions,
+    rollout or rollback considerations, and residual risk.

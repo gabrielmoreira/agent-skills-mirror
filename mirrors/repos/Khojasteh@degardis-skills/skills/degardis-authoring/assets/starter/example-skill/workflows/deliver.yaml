@@ -1,0 +1,20 @@
+id: example-skill.deliver
+title: Deliver the example outcome
+description: Assess the request, perform the bounded work, verify it, and report
+  the result.
+steps:
+- action: establish-outcome
+  instruction: Identify the requested outcome, relevant inputs, constraints,
+    acceptance evidence, and boundaries.
+- action: perform-work
+  instruction: Complete the smallest work that satisfies the defined outcome while
+    following the loaded entries and any selected profiles.
+- action: review
+  instruction: Review the result against the requested outcome and constraints,
+    then correct deficiencies within scope.
+- action: verify
+  instruction: Check the completed result using the acceptance evidence identified
+    during assessment.
+- action: report
+  instruction: State the delivered outcome, verification performed, assumptions,
+    and any remaining limitation.

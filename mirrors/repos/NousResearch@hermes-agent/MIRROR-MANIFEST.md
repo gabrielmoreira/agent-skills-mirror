@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 665 file(s) materialized.
+Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patterns, 666 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NousResearch/hermes-agent` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 665 |
+| Files         | 666 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -712,18 +712,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 651 | ✓ | [`skills/software-development/dogfood/SKILL.md`](skills/software-development/dogfood/SKILL.md) |
 | 652 | ✓ | [`skills/software-development/dogfood/templates/dogfood-report-template.md`](skills/software-development/dogfood/templates/dogfood-report-template.md) |
 | 653 | ✓ | [`skills/software-development/hermes-agent-skill-authoring/SKILL.md`](skills/software-development/hermes-agent-skill-authoring/SKILL.md) |
-| 654 | ✓ | [`skills/software-development/node-inspect-debugger/SKILL.md`](skills/software-development/node-inspect-debugger/SKILL.md) |
-| 655 | ✓ | [`skills/software-development/plan/SKILL.md`](skills/software-development/plan/SKILL.md) |
-| 656 | ✓ | [`skills/software-development/python-debugpy/SKILL.md`](skills/software-development/python-debugpy/SKILL.md) |
-| 657 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
-| 658 | ✓ | [`skills/software-development/simplify-code/SKILL.md`](skills/software-development/simplify-code/SKILL.md) |
-| 659 | ✓ | [`skills/software-development/spike/SKILL.md`](skills/software-development/spike/SKILL.md) |
-| 660 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
-| 661 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
-| 662 | ✓ | [`website/docs/developer-guide/architecture.md`](website/docs/developer-guide/architecture.md) |
-| 663 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
-| 664 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/developer-guide/architecture.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/developer-guide/architecture.md) |
-| 665 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/user-guide/features/skills.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/user-guide/features/skills.md) |
+| 654 | ✓ | [`skills/software-development/inspecting-hermes-desktop-dom/SKILL.md`](skills/software-development/inspecting-hermes-desktop-dom/SKILL.md) |
+| 655 | ✓ | [`skills/software-development/node-inspect-debugger/SKILL.md`](skills/software-development/node-inspect-debugger/SKILL.md) |
+| 656 | ✓ | [`skills/software-development/plan/SKILL.md`](skills/software-development/plan/SKILL.md) |
+| 657 | ✓ | [`skills/software-development/python-debugpy/SKILL.md`](skills/software-development/python-debugpy/SKILL.md) |
+| 658 | ✓ | [`skills/software-development/requesting-code-review/SKILL.md`](skills/software-development/requesting-code-review/SKILL.md) |
+| 659 | ✓ | [`skills/software-development/simplify-code/SKILL.md`](skills/software-development/simplify-code/SKILL.md) |
+| 660 | ✓ | [`skills/software-development/spike/SKILL.md`](skills/software-development/spike/SKILL.md) |
+| 661 | ✓ | [`skills/software-development/systematic-debugging/SKILL.md`](skills/software-development/systematic-debugging/SKILL.md) |
+| 662 | ✓ | [`skills/software-development/test-driven-development/SKILL.md`](skills/software-development/test-driven-development/SKILL.md) |
+| 663 | ✓ | [`website/docs/developer-guide/architecture.md`](website/docs/developer-guide/architecture.md) |
+| 664 | ✓ | [`website/docs/user-guide/features/skills.md`](website/docs/user-guide/features/skills.md) |
+| 665 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/developer-guide/architecture.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/developer-guide/architecture.md) |
+| 666 | ✓ | [`website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/user-guide/features/skills.md`](website/i18n/zh-Hans/docusaurus-plugin-content-docs/current/user-guide/features/skills.md) |
 
 ---
 

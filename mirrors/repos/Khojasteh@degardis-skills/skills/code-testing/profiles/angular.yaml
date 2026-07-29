@@ -1,0 +1,7 @@
+name: angular
+label: Angular
+description: Load when testing Angular code or behavior.
+instructions:
+- Configure only the declarations, providers, routes, and imports needed for the behavior.
+- Test rendered behavior and user interaction; control change detection, async stabilization, HTTP requests,
+  routing, and dependency-injection scopes.

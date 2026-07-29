@@ -1,0 +1,7 @@
+name: css
+label: CSS
+description: Load when reviewing CSS code or behavior.
+instructions:
+- Trace cascade, specificity, inheritance, containment, layout, stacking, focus visibility, reduced motion,
+  responsive states, logical properties, and rendering cost; require credible visual or browser evidence
+  for claimed regressions.

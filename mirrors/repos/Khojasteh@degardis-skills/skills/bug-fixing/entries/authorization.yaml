@@ -1,0 +1,13 @@
+id: bug-fixing.authorization
+title: Require explicit authority for production changes
+kind: constraint
+priority: 1
+rule: Modify production behavior only when the user explicitly requests implementation
+  of the defect fix.
+require:
+- Keep diagnosis, planning, and fix review read-only.
+- Establish the allowed files, behavior, data, compatibility, and external-state boundaries.
+- Preserve unrelated user changes and request separate scope for broad cleanup.
+reject:
+- Treating a request to investigate, explain, plan, or review as permission to edit.
+- Expanding a fix into refactoring, dependency upgrades, formatting, or redesign.

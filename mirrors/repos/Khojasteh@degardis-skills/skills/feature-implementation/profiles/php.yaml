@@ -1,0 +1,6 @@
+name: php
+label: PHP
+description: Load when implementing PHP features.
+instructions:
+- Design across type coercion, nullability, exceptions, request lifetime, global state, serialization,
+  resources, transactions, and public package compatibility.

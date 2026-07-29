@@ -1,0 +1,20 @@
+id: docs.information-architecture
+title: Give every topic one authoritative home
+kind: policy
+priority: 20
+rule: Design a documentation set so readers can find each task or fact predictably
+  without encountering competing explanations.
+require:
+- For multi-page work, map each page to one primary audience, document type, and reader
+  outcome before drafting.
+- Assign volatile facts, canonical definitions, full schemas, and exhaustive option
+  lists one authoritative home; summarize and link elsewhere.
+- Make navigation labels describe reader intent, and provide next-step links at points
+  where a reader must change document type or depth.
+- Preserve useful established URLs and headings when possible; update inbound links
+  when content moves.
+reject:
+- Turning the README into a compressed copy of every guide.
+- Splitting one reader outcome across pages so no page is independently usable.
+- Maintaining parallel quick starts, schema descriptions, or installation instructions
+  that can drift.

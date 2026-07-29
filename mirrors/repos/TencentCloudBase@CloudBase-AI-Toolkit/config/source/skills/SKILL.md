@@ -62,7 +62,7 @@ Only handle tasks that are part of building, integrating, or maintaining a Cloud
 - Browser-side document database CRUD -> `./no-sql-web-sdk/SKILL.md`
 - Browser-side file upload -> `./cloud-storage-web/SKILL.md`
 - Platform overview only when capability selection is still unclear -> `./cloudbase-platform/SKILL.md`
-- If using `searchKnowledgeBase(mode="skill")`, pass the reference directory id such as `postgresql-development`, not the frontmatter `name` value such as `postgresql-development-cloudbase`.
+- If using `searchKnowledgeBase(mode="skill")`, pass the reference directory id such as `postgresql-development-cloudbase`, not the frontmatter `name` value such as `postgresql-development-cloudbase`.
 
 ### High-yield guardrails
 

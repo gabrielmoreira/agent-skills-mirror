@@ -1,0 +1,9 @@
+name: fsharp
+label: F#
+description: Load when testing F# code or behavior.
+instructions:
+- Cover option/null boundaries, every meaningful union case, pattern guards, structural and custom equality/comparison,
+  generic inference, units, eager/lazy collection behavior, computation expressions, `async`/`task`, cancellation,
+  exceptions/results, and disposal.
+- Exercise compiled-name/C# interop, serialization, reflection, trimming/AOT, and signature compatibility
+  where relevant.

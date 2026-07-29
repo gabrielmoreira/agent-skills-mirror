@@ -1,0 +1,7 @@
+name: express
+label: Express
+description: Load when fixing Express code or behavior.
+instructions:
+- Reproduce middleware and route order, parsing, authentication, async rejection, response completion,
+  streaming, cancellation, sessions, proxy settings, and cleanup; fix the causal handler or boundary rather
+  than adding catch-all retries or error swallowing.

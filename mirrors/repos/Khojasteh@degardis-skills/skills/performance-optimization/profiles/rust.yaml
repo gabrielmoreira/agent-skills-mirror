@@ -1,0 +1,6 @@
+name: rust
+label: Rust
+description: Load when optimizing Rust performance.
+instructions:
+- Measure algorithmic work, allocation, copies, cache locality, bounds checks, monomorphization, async
+  scheduling, synchronization, I/O, binary size, compilation, and startup.

@@ -1,0 +1,6 @@
+name: typescript
+label: TypeScript
+description: Load when fixing TypeScript code or behavior.
+instructions:
+- Trace emitted runtime behavior, erased types, optional versus missing values, narrowing, structural
+  compatibility, promises, event ordering, module resolution, and serialization.

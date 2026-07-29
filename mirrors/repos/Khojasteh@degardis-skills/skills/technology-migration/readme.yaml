@@ -1,0 +1,24 @@
+format_version: 1
+purpose: |-
+  Replace one software technology with another while preserving approved
+  behavior.
+when_it_applies: |-
+  This skill applies to replacing a language, framework, runtime, build system,
+  package manager, database, storage system, messaging system, or deployment
+  platform. Version changes within the same technology are outside its scope.
+capabilities:
+- Defines migration scope, behavioral parity, and success criteria.
+- Inventories source and target surfaces and proves target feasibility.
+- Chooses an atomic or staged migration strategy from operational risk.
+- Designs target-native implementation, data movement, cutover, and rollback.
+- Verifies contracts, security, observability, performance, and legacy removal.
+sample_prompts:
+- Migrate this codebase from JavaScript to TypeScript.
+- Move this service off REST onto GraphQL.
+- Migrate our database from MySQL to PostgreSQL.
+- Replace our message queue with Kafka.
+- Port this build from Webpack to Vite.
+catalog:
+  order: 110
+  category: Software engineering / Modernization
+  summary: Replace technologies with target-native designs.

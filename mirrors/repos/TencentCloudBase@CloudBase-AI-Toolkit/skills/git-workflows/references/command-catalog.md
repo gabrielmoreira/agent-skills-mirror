@@ -24,7 +24,7 @@ These workflows are derived from former local command templates.
 
 - **Command**: `/version_publish_main`
 - **Source**: `references/source-commands.md`
-- **Intent**: build on main -> bump version -> generate/publish release notes
+- **Intent**: build on main -> bump version -> update bilingual README Recent updates on minor -> generate/publish release notes
 
 ### GitHub workflow fix
 

@@ -1,0 +1,10 @@
+name: php
+label: PHP
+description: Load for Composer-managed PHP dependency or platform upgrades.
+instructions:
+- Reconcile Composer package constraints with the declared PHP version, required extensions, platform
+  emulation, repository priorities, stability flags, plugin permissions, and every supported deployment.
+- Use scoped Composer updates when possible, inspect solver explanations for conflicts, and review
+  `composer.json` and `composer.lock` together for package, plugin, autoload, and platform changes.
+- Validate authoritative installs without hidden platform bypasses, then rebuild autoload or framework
+  caches and remove polyfills only when the supported runtime matrix no longer needs them.

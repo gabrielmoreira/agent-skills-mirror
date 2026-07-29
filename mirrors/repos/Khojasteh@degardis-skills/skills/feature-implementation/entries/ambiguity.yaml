@@ -1,0 +1,13 @@
+id: feature-implementation.ambiguity
+title: Resolve material ambiguity explicitly
+kind: heuristic
+priority: 7
+rule: Infer reversible details supported by repository evidence and ask about ambiguity
+  that materially changes behavior or risk.
+require:
+- Ask before choosing material public behavior or API semantics, data meaning, security boundaries,
+  compatibility, irreversible operations, user experience, or architecture.
+- Record consequential assumptions that remain.
+reject:
+- Blocking on inconsequential choices already established by local conventions.
+- Silently selecting a consequential interpretation because it is convenient to implement.

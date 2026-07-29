@@ -57,7 +57,7 @@ Route elsewhere when the task is primarily:
 - When using full catalog (cache miss or non-recommend recipes), retrieve catalog information from `reference/catalog.md` to reflect current ecosystem state. Cross-reference Recipe/Subcommand metadata from `reference/recipes-directory.md` — every recommendation must surface at least the default Recipe. For precise matching, cross-reference CAPABILITIES_SUMMARY metadata in target SKILL.md files — match by declared capabilities, not category labels alone.
 - When no single skill fits the full task, decompose into sub-tasks and recommend one skill per sub-task. Avoid suggesting loosely related agents for a monolithic task.
 - Cap recommendations at 3. Too many choices paralyze users.
-- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Compass; P2, P1 recommended).
+- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Compass; P2, P1 recommended).
 
 ## Boundaries
 
@@ -101,7 +101,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | Recommend Skill | `recommend` | ✓ | Recommend best-fit skill for the task (cache-first; falls back to full catalog) | `.claude/compass-cache.md` (if present) OR `reference/catalog.md`, `reference/patterns.md`, `reference/recipes-directory.md` |
 | Catalog Listing | `catalog` | | Full catalog of all skills (cache bypassed) | `reference/catalog.md`, `reference/recipes-directory.md` |
 | Onboarding Guide | `onboard` | | Orientation for new users | `reference/examples.md`, `reference/recipes-directory.md` |
-| Recipe Directory | `recipes` | | Per-skill Recipe (Subcommand) listing. `/compass recipes <skill>` lists all Recipes for a specific skill; without arguments, shows all 130 skills | `reference/recipes-directory.md` |
+| Recipe Directory | `recipes` | | Per-skill Recipe (Subcommand) listing. `/compass recipes <skill>` lists all Recipes for a specific skill; without arguments, shows all 133 skills | `reference/recipes-directory.md` |
 | Init Cache | `init` | | Generate `.claude/compass-cache.md` for the current repository — scan signals (manifests, file mix, conventions), score skills, write Top-N slim cache. Reduces recommend-time context ~95%. | `reference/cache-recipes.md`, `reference/cache-format.md`, `reference/catalog.md` |
 | Refresh Cache | `refresh` | | Force-regenerate `.claude/compass-cache.md` with before/after diff (added / removed / affinity-changed skills). Use after catalog upgrades, framework changes, or TTL expiry. | `reference/cache-recipes.md`, `reference/cache-format.md`, `reference/catalog.md` |
 
@@ -116,7 +116,7 @@ Behavior notes per Recipe:
 - `catalog`: Cache fully bypassed. Always read `reference/catalog.md` + `reference/recipes-directory.md` and emit the full listing.
 - `onboard`: Cache not used. Standard flow centered on `reference/examples.md`.
 - `recipes`: Cache not used. Read `reference/recipes-directory.md` directly; filter by argument (skill name) when supplied.
-- `init`: Read `reference/cache-recipes.md` first. SCAN (signals from `package.json` / `Cargo.toml` / `pyproject.toml` / `go.mod` / file-extension distribution / `CLAUDE.md`) → SIZE (file count → small / medium / large / xlarge → `top_n` 15-50) → SCORE (signal-to-skill mapping; direct dep match = H, convention match = M, speculative = L) → PICK (`top_n` + 12 universal skills) → WRITE (generate `.claude/compass-cache.md` in the format from `cache-format.md` § 2) → REPORT (5-line summary). If a cache already exists, ask before overwriting. Always exclude `node_modules` / `dist` / `.git` / `vendor` / `target` / `.venv` from the file count.
+- `init`: Read `reference/cache-recipes.md` first. SCAN (signals from `package.json` / `Cargo.toml` / `pyproject.toml` / `go.mod` / file-extension distribution / `CLAUDE.md`) → SIZE (file count → small / medium / large / xlarge → `top_n` 15-50) → SCORE (signal-to-skill mapping; direct dep match = H, convention match = M, speculative = L) → PICK (`top_n` + 11 universal skills) → WRITE (generate `.claude/compass-cache.md` in the format from `cache-format.md` § 2) → REPORT (5-line summary). If a cache already exists, ask before overwriting. Always exclude `node_modules` / `dist` / `.git` / `vendor` / `target` / `.venv` from the file count.
 - `refresh`: Read `reference/cache-recipes.md` first. Same flow as `init` but skip the existence check and force overwrite. Display a before/after diff (added / removed / affinity-changed skills) at the top of REPORT. Use after a catalog upgrade, when a new framework is introduced, or when a TTL warning has appeared. Auto-refresh is forbidden — always user-initiated.
 
 ## Output Routing
@@ -144,7 +144,7 @@ For beginners, present the ecosystem as 5 intuitive domains:
 | **Design** | Atlas, Schema, Gateway | `/atlas 依存関係を分析して` |
 | **Operate** | Pipe, Scaffold, Beacon | `/pipe GitHub Actionsワークフロー作って` |
 
-Full 24-category, 141-agent catalog: `reference/catalog.md`.
+Full 24-category, 123-agent catalog: `reference/catalog.md`.
 Recommendation and comparison output formats: `reference/patterns.md` Output Formats section.
 
 ## Output Requirements

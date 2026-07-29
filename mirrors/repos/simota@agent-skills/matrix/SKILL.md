@@ -79,7 +79,7 @@ Route elsewhere when the task is primarily:
 - When parameter modeling is expensive or incomplete, AI-assisted parameter extraction (e.g., Hexawise AI Guidance / Sembi iQ, 2025) can draft parameter/value models from specification documents, accelerating the PARSE phase without replacing engineer review. Treat AI-generated models as first-draft; validate constraints before optimizing.
 - Hand off a plan another agent can execute immediately.
 - Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`). Keep code, IDs, YAML, JSON, and agent names in English.
-- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Matrix; P2, P1 recommended).
+- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Matrix; P2, P1 recommended).
 
 ## Boundaries
 
@@ -141,7 +141,7 @@ Agent role boundaries -> `_common/BOUNDARIES.md`
 | `SURVEY`  | Understand the matrix shape     | Check axes, values, missing constraints, and domain fit |
 | `PLAN`    | Produce the optimized set       | Include method rationale and priority order             |
 | `VERIFY`  | Validate the coverage claim     | Report coverage rate, warnings, and uncovered tuples    |
-| `PRESENT` | Hand off to the next specialist | Output an execution-ready Japanese plan                 |
+| `PRESENT` | Hand off to the next specialist | Output an execution-ready plan                          |
 
 ## Critical Decision Rules
 

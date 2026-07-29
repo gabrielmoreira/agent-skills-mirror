@@ -1,0 +1,7 @@
+name: c
+label: C
+description: Load when fixing C code or behavior.
+instructions:
+- Trace pointer ownership, lifetime, bounds, aliasing, integer conversion, undefined behavior, ABI, allocation,
+  cleanup, `errno`, signals, and thread synchronization.
+- Reproduce memory defects without inventing unsupported diagnostic flags.

@@ -1,0 +1,19 @@
+id: degardis-authoring.validation
+title: Validate sources and inspect artifacts
+kind: policy
+priority: 40
+rule: Establish correctness with Degardis validation and direct inspection of a
+  generated bundle.
+require:
+- Validate both the skill and its containing collection.
+- Pass an explicit --output root that does not overlap authored sources; for an
+  inspection-only build, use a temporary or repository-approved generated
+  directory. Inspect the generated frontmatter, workflow, links, references,
+  interface metadata, and copied resources.
+- Test added scripts independently with representative inputs.
+- Treat a generated SKILL.md over the recommended 500-line maximum as a warning
+  to review, not as validation failure.
+reject:
+- Claiming success from YAML parsing alone.
+- Building into an authored source directory or storing maintained files at a
+  selected skill's matching folder or ZIP path.

@@ -1,0 +1,11 @@
+id: performance-optimization.complexity
+title: Improve algorithmic scaling with evidence
+kind: heuristic
+priority: 15
+rule: Prefer reducing asymptotic work or data movement when representative input growth
+  demonstrates that complexity is a limiting factor.
+require:
+- Measure across meaningful input sizes and verify independently derived outputs.
+- Include constants, memory locality, preprocessing, and realistic scale in the decision.
+reject:
+- Claiming a practical improvement from Big-O notation alone or obscuring a simple bounded case.

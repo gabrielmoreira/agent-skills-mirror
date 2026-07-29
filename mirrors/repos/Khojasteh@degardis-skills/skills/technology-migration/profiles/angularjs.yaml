@@ -1,0 +1,8 @@
+name: angularjs
+label: AngularJS
+description: Load when migrating to or from AngularJS.
+instructions:
+- Prefer target-native components, reactivity, events, async work, and cleanup over wrappers preserving
+  scopes, watchers, and digest semantics; verify bindings, timing, accessibility, and route parity.
+- Keep hybrid bootstrap, dual routes, and adapters bounded to explicit stages with owners and removal
+  gates.

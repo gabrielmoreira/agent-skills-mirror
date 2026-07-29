@@ -1,0 +1,6 @@
+name: rails
+label: Rails
+description: Load when optimizing Rails performance.
+instructions:
+- Measure boot and request lifecycle, middleware, autoloading, Active Record queries and plans, N+1 access,
+  transactions and callbacks, rendering, serialization, jobs, caches, sessions, and connection pools.

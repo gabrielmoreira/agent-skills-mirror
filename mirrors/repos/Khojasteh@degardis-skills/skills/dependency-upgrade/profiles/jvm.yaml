@@ -1,0 +1,11 @@
+name: jvm
+label: JVM
+description: Load for Maven, Gradle, JVM language, JDK, or build-plugin-coupled upgrades.
+instructions:
+- Preserve the detected Maven or Gradle wrapper and repository conventions while reconciling JDK and bytecode
+  targets, BOMs or platforms, dependency mediation, plugin versions, repositories, verification metadata,
+  annotation processors, and generated sources.
+- Use native dependency insight to locate the actual constraint owner; prefer aligned supported graphs over
+  broad exclusions, forced versions, or duplicated libraries.
+- Validate clean resolution and every affected module, packaging form, service loader, reflection or module
+  boundary, and supported runtime; treat a JDK or build-system version change as separate scope unless required.

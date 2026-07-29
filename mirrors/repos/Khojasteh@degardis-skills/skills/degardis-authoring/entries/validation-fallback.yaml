@@ -1,0 +1,20 @@
+id: degardis-authoring.validation-fallback
+title: Check structure without repository access
+kind: heuristic
+priority: 70
+rule: When Degardis is unavailable, perform a transparent structural review using
+  the bundled contracts and distinguish it from compiler validation.
+require:
+- Confirm format_version is the integer 1 supported by the current compiler.
+- Confirm the directory and manifest name match and the manifest references a
+  loaded primary workflow.
+- Confirm all YAML list and mapping fields have the required types. Confirm
+  non-icon content and profile detail paths stay within the skill; icon sources
+  must use relative paths and may resolve outside the skill.
+- Confirm entry IDs and generated reference basenames are unique, workflow use
+  targets exist locally, profile names match filenames, and defaults exist.
+- Confirm the interface short description length and exact $skill-name token.
+- Report "not run" for compiler validation and bundle inspection.
+reject:
+- Claiming a skill is Degardis-valid merely because a generic YAML parser accepts
+  it.

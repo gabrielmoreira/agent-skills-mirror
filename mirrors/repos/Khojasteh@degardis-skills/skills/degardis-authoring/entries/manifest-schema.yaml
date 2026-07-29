@@ -1,0 +1,48 @@
+id: degardis-authoring.manifest-schema
+title: Degardis manifest contract
+kind: constraint
+priority: 50
+rule: Write skill.yaml as the discovery manifest and keep its identity, format,
+  content, profile, and interface fields within the Degardis contract.
+require:
+- "format_version: required integer source-contract version; the current
+  compiler supports format 1."
+- "name: required; 1-64 lowercase letters, digits, or single hyphens; must equal
+  the directory name; all is reserved."
+- "version: required non-empty skill version; generated SKILL.md metadata records
+  it separately from the format and compiler versions."
+- "description: required, 1-1024 characters; state what the skill does and the
+  ordinary requests it owns."
+- "primary_workflow: required; must equal the ID of a workflow loaded by
+  content.workflows."
+- "interface: required mapping containing display_name, short_description of 25-64
+  characters, and default_prompt containing the exact $skill-name token."
+- "content: optional mapping whose only keys are entries, workflows, scripts, and
+  assets; each value is a list of skill-relative globs. Defaults are
+  entries/*.yaml, workflows/*.yaml, scripts/**/*, and assets/**/*."
+- "profiles: optional mapping with directory, default profiles, or both; every
+  default must name an available profile."
+allow:
+- "title: optional human-facing heading; Degardis derives title case from name when
+  omitted."
+- "license: optional non-empty license name or bundled license-file reference."
+- "copyright: optional non-empty copyright notice."
+- "entry_kinds: optional author-facing inventory of non-empty strings; it neither
+  restricts compiler-supported entry kinds nor loads entries."
+- "interface icon, icon_small, icon_large, and brand_color: optional presentation
+  metadata; icon_small and icon_large override icon for their roles, and builds
+  generate self-contained PNG assets."
+- "Icon source paths: non-empty relative paths resolved from the skill directory;
+  they may resolve outside it when authors accept location-dependent sources."
+- "Icon dimensions: preserve source dimensions because the target skill metadata
+  contract prescribes no pixel sizes; for ICO sources use the smallest embedded
+  frame for icon_small and the largest for icon_large."
+- "Icon formats: use SVG or a Pillow-supported raster image; each source may be at
+  most 10 MiB and 67,108,864 pixels."
+reject:
+- Adding dependencies or unknown content fields.
+- Using an unsupported format version.
+- Using absolute paths, non-icon content paths outside the skill, or a generated
+  bundle as source.
+- Using an invalid image or an SVG containing script, foreignObject, external
+  references, or external CSS URLs.

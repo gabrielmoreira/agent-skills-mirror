@@ -1,0 +1,37 @@
+id: degardis-authoring.build-install
+title: Choose an explicit build or installation destination
+kind: policy
+priority: 42
+rule: Select --output from the requested outcome; never assume a default output
+  directory or treat every build as an installation.
+require:
+- Always pass `--output PATH` to `degardis build`.
+- For inspection-only builds, use a temporary or repository-approved generated
+  directory that does not overlap authored sources.
+- Honor an explicit destination. Otherwise determine the target agent and whether
+  the requested scope is project or personal before selecting a directory.
+- >-
+  For one named agent, use a directory its current documentation recognizes:
+  Claude uses `.claude/skills` or `~/.claude/skills`; Codex uses
+  `.agents/skills` or `~/.agents/skills`; Copilot uses `.github/skills`,
+  `.claude/skills`, or `.agents/skills` and `~/.copilot/skills` or
+  `~/.agents/skills`; Cursor uses `.cursor/skills` or `.agents/skills` and the
+  corresponding personal locations; Roo uses `.roo/skills` or `.agents/skills`
+  and the corresponding personal locations.
+- For one installation shared by Codex, Copilot, Cursor, or Roo, use the common
+  `.agents/skills` project directory or `~/.agents/skills` personal directory
+  only when every intended agent supports that location.
+- For another agent, inspect its available local or authoritative documentation
+  and existing workspace convention rather than guessing a directory.
+- For ChatGPT, pass `--zip` with an explicit distribution directory and deliver
+  the resulting ZIP as ready for direct upload.
+- Recognize that each build replaces both the folder and ZIP matching every
+  selected skill while preserving other entries in the output root. Replacement
+  is atomic per skill; earlier skills remain updated if a later skill fails.
+reject:
+- Installing into a project or personal skill directory unless the request
+  authorizes installation.
+- Choosing project versus personal scope, installing into multiple directories,
+  or preferring a common directory when the intended agents are unclear.
+- Omitting --output or inventing a fixed staging directory.
+- Treating a ZIP in a filesystem-based agent's skill directory as installed.

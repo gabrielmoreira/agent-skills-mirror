@@ -1,0 +1,11 @@
+name: flutter
+label: Flutter
+description: Load when migrating to or from Flutter.
+instructions:
+- When Flutter is the target, prefer target-version widget, layout, lifecycle, navigation, animation,
+  accessibility, rendering, platform-channel, asset, and state facilities already established in the repository.
+- Do not reproduce source UI framework lifecycle, view hierarchy, threading, layout, or event abstractions
+  behind compatibility widgets when Flutter supplies the required model.
+- Verify widget and application lifecycle, async state, frame scheduling, platform integration, plugin
+  registration, persistence, accessibility, device resources, startup, rendering, and cleanup.
+- Keep embedded views, platform bridges, dual navigation, and compatibility widgets bounded to stages.

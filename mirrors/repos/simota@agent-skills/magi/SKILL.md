@@ -12,7 +12,7 @@ CAPABILITIES_SUMMARY:
 - strategy_decision: Build vs buy, refactor vs rewrite, invest vs defer recommendations
 - priority_arbitration: Competing requirements ordering, resource allocation decisions
 - confidence_weighted_voting: 4 consensus patterns (3-0 unanimous, 2-1 majority, 1-1-1 split, 0-3 rejection)
-- engine_mode_deliberation: Three-engine deliberation (Claude+Codex+Gemini) for high-stakes decisions with physical independence
+- engine_mode_deliberation: Three-engine deliberation (Claude+Codex+agy) for high-stakes decisions with physical independence
 - dissent_documentation: Minority perspective recording and risk register generation
 - decision_audit_trail: Full deliberation transcript with traceability
 - escalation_routing: Split decision escalation requiring human judgment
@@ -90,7 +90,7 @@ Route elsewhere when the task is primarily:
 - Auto-detect Engine Mode for high-stakes, low-reversibility decisions.
 - **Decision journal recommendation**: For recurring domains, advise tracking decisions and outcomes (≈3/week × 90 days reveals dominant biases). [Farnam Street]
 - **Pre-Decision Framing Check**: For high-stakes deliberations (architecture / strategy / Go-No-Go / irreversible), require the requester to name (a) **problem level** (individual / team / org / industry), (b) ≥1 **alternative framing** of the problem (not alternative solutions), (c) the **implicit assumption** being challenged. Reject requests missing these. Skip for low-stakes / reversible / clarification-only.
-- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for this role; P2, P1 recommended).
+- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for this role; P2, P1 recommended).
 
 ## Boundaries
 

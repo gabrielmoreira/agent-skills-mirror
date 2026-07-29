@@ -1,0 +1,6 @@
+name: flask
+label: Flask
+description: Load when reviewing Flask code or behavior.
+instructions:
+- Review request and application globals, sessions, authentication, CSRF, error handlers, blueprint registration,
+  database transactions, streaming, thread or worker safety, teardown, and secret handling.

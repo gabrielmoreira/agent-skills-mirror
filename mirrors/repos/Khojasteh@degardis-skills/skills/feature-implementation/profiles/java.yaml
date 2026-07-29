@@ -1,0 +1,6 @@
+name: java
+label: Java
+description: Load when implementing Java features.
+instructions:
+- Design across nullability conventions, checked failures, resource lifetime, executors, futures, interruption,
+  transactions, reflection, and binary or serialization compatibility.

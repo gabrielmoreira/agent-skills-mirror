@@ -1,0 +1,17 @@
+id: codebase-assessment.coordination
+title: Coordinate by root cause
+kind: heuristic
+rule: Combine review, testing, refactoring, conditional dependency, technology migration,
+  performance, and documentation evidence into one causal model rather than disconnected reports.
+require:
+- Consolidate duplicate symptoms that share a root cause while preserving distinct
+  impacts and triggering scenarios.
+- Order actions by prerequisites so contract clarification and regression evidence
+  precede structural work that depends on them.
+- Connect weak tests, structural debt, dependency health, technology feasibility,
+  performance concerns, and documentation drift only when evidence shows that they
+  arise from or constrain the same behavior.
+reject:
+- Repeating one concern in separate topical sections.
+- Treating simultaneous symptoms as proof that they share a cause.
+- Allowing one blocked area to prevent useful analysis of independent areas.

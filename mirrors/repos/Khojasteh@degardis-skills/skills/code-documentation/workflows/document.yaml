@@ -1,0 +1,111 @@
+id: docs.document-component
+title: Create, revise, or review coherent documentation
+description: Produce documentation that gives a defined reader a verified path to
+  a specific outcome and fits coherently into the surrounding documentation set.
+steps:
+- action: establish-task-mode
+  instruction: Determine whether the request is to create, revise, review, or combine
+    those modes; whether it concerns one passage, one document, or a documentation set;
+    and which files and outputs are in scope. Treat review-only requests as analysis-only
+    and do not edit unless the user also requests improvement.
+- action: define-document-brief
+  instruction: For every in-scope document, identify its type, primary audience,
+    single reader outcome, starting state, prerequisites, expected end state, scope,
+    non-goals, and temporal scope. Classify it as a README or landing page, tutorial,
+    how-to guide, reference, explanation, runbook, migration guide, release note or
+    changelog, comment or docstring, or maintainer documentation. Independently mark
+    each output as current state, release history, before-and-after migration, or
+    explicit deprecation or compatibility documentation. Preserve an established
+    type unless changing it is necessary to satisfy the request.
+- action: inventory-documentation-system
+  instruction: Inspect nearby pages, navigation, headings, links, terminology, and
+    duplicated claims. For multi-page work, create a compact content map that assigns
+    each reader task and volatile fact one authoritative home; identify what the
+    current document should summarize, link to, move, remove, or leave unchanged.
+- action: inspect-evidence
+  instruction: Read the repository instructions, related documentation, and the
+    implementation, tests, schemas, CLI help, configuration, generated references,
+    and version metadata relevant to the document's claims. Treat tests as behavioral
+    evidence to inspect selectively, not as commands to execute merely because they
+    exist. Honor explicit technology and document-format choices; preserve established
+    documentation tools, generators, markup, versions, and repository commands. Use
+    implementation as evidence rather than an outline. Treat claims from existing
+    documentation as candidates to verify, not evidence for themselves. Establish
+    the applicable released or supported contract, and require comprehensive evidence
+    for negative or exhaustive claims. Never infer a guarantee from one implementation
+    path or absence from an unsuccessful search. Select validation tools only from
+    repository evidence; do not introduce a documentation dependency or execute
+    competing tools as probes.
+- action: design-content
+  instruction: Before drafting, choose the applicable pattern from the document-type
+    guidance and write a short outline that maps every section to the reader
+    outcome. Decide which verified inputs, outputs, side effects, limits, permissions,
+    failures, compatibility conditions, examples, and next steps are necessary. Omit
+    discovered detail that does not serve the brief.
+- action: draft-or-review
+  instruction: For creation or revision, write the shortest complete path from the
+    reader's starting state to the expected end state, using established terminology,
+    tone, information architecture, and native syntax. Remove superseded information
+    from current-state documentation unless a supported compatibility path makes it
+    affect the current reader's action or decision. Preserve applicable previously
+    released changes in release history and migration guidance with their impact and
+    required action. Exclude never-released behavior from public change history. For
+    review-only work, do not rewrite the document; report concrete findings with
+    location, reader impact, evidence, and bounded remediation.
+- action: improve-readability-without-loss
+  instruction: Rework dense prose into descriptive sections, focused paragraphs,
+    numbered procedures, bullets for parallel information, or comparison tables as
+    appropriate. Give each paragraph one specific subject and reader purpose; require
+    every sentence to explain, qualify, support, or advance that subject. For each
+    sentence, identify the concrete entity and reader question it addresses; split
+    the paragraph when either differs. Do not use a broad container such as a build,
+    archive, API, configuration, or component to manufacture cohesion between
+    independent facts. Give each list one parallel relationship. Lead with the point
+    the reader needs, keep qualifications beside the claims they govern, and explain
+    necessary terms. Compare the result with the content brief and evidence inventory
+    so simplification does not remove required prerequisites, conditions, exceptions,
+    warnings, limitations, side effects, recovery, or rationale.
+- action: make-examples-prove-the-path
+  instruction: Give task-oriented documentation a minimal verified first-success
+    example when it materially shortens the path to understanding. State required
+    context, use copyable commands or code, show only the output needed to recognize
+    success, and disclose mutations or external effects. Keep exhaustive cases in tests
+    or reference material.
+- action: reconcile-the-set
+  instruction: Re-read the changed document in its surrounding set. Remove duplicated
+    explanations and output dumps, link to authoritative detail, repair navigation
+    and terminology, and ensure that overview, task, explanation, and reference pages
+    do not compete to own the same content. Verify that current-state documentation
+    contains only applicable behavior while release history and migration guidance
+    retain the information needed to understand or adopt published changes.
+- action: apply-quality-gate
+  instruction: Audit the result against the reader-centered documentation quality
+    gate. Revise until the document is accurate, purposeful, findable, actionable,
+    coherent, appropriately complete, concise, and maintainable for the defined reader.
+    Remove retained claims that lack independent evidence or reader value, including
+    stale claims copied from existing documentation and claims about abandoned or
+    never-released behavior. In review-only mode, use failed criteria to organize
+    and prioritize findings.
+- action: audit-delta-language
+  instruction: As a mandatory final content pass, inspect statements that contrast
+    current behavior with removed, previous, absent, or changed behavior. Apply the
+    temporal-scope policy to retain only supported compatibility context that affects
+    the current reader's action or decision; otherwise remove it or route it to release
+    history or migration guidance. Judge each sentence by purpose and temporal scope,
+    not by keywords alone.
+- action: validate-reader-journey
+  instruction: Starting only from the stated prerequisites, follow the documented
+    path as the intended reader would. Validate commands, examples, links, anchors,
+    native markup, cross-references, expected results, safety warnings, and version
+    claims with documentation-specific repository checks and authoritative evidence.
+    Prefer documentation generation, link or markup checks, executable documentation
+    examples, and targeted execution of commands the reader is instructed to run.
+    Do not run project unit, integration, end-to-end, or general test suites as part
+    of a documentation request; their results establish code health rather than
+    documentation quality. Check that each page delivers its promised outcome without
+    requiring the reader to reconstruct it from unrelated pages.
+- action: report-validation
+  instruction: Summarize the documents created, revised, or reviewed; their audience
+    and purpose; material information-architecture decisions; validation commands and
+    results; and unresolved assumptions, conditional claims, or reader journeys that
+    could not be exercised.

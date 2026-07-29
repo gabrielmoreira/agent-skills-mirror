@@ -1,0 +1,7 @@
+name: angularjs
+label: AngularJS
+description: Load when fixing AngularJS code or behavior.
+instructions:
+- Reproduce injection, scope inheritance, watchers, digest/apply timing, directives, transclusion, promises,
+  HTTP mocks, routing, DOM events, and teardown; fix the causal lifecycle issue without hiding it behind
+  extra digests or timeouts.

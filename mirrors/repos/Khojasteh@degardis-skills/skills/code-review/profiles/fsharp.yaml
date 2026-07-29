@@ -1,0 +1,10 @@
+name: fsharp
+label: F#
+description: Load when reviewing F# code or behavior.
+instructions:
+- Review option/null boundaries, discriminated-union invariants, pattern exhaustiveness, structural equality/comparison,
+  immutability, generic inference, units of measure, partial application, and accidental mutable state.
+- Trace eager versus lazy collection operations, computation expressions, `async`/`task`, cancellation,
+  exception/`Result` contracts, resource ownership, and concurrency agents.
+- Check compiled names, C# interop, serialization, reflection, trimming/AOT, and whether `.fsi` signatures
+  accurately preserve the intended public surface.

@@ -1,0 +1,12 @@
+id: technology-migration.language-conversion
+title: Use the target language meaningfully
+kind: constraint
+priority: 1
+rule: Model domain behavior with the target language's type system, standard library,
+  errors, concurrency, resource ownership, modules, and tooling rather than annotating source-shaped code.
+require:
+- Preserve runtime, protocol, and consumer contracts while adopting idiomatic target constructs.
+- Replace custom source utilities with semantically suitable target built-ins.
+- Keep interop narrow, staged, and removable.
+reject:
+- Broad dynamic escape hatches, blanket suppressions, unchecked declarations, or generated stubs used to claim completion.

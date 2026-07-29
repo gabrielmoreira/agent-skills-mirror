@@ -13,7 +13,7 @@ This package is adapter-only. It may depend on harness-neutral core packages plu
 | `src/components/` | Eleven live components: `config-startup`, `ultrawork`, `start-work-continuation`, `ulw-loop`, `fallback-architect`, `comment-checker`, `telemetry`, `lsp`, `codegraph`, `task`, and `config-watch`, plus the `config-resolution` loader helper. |
 | `src/install/` | Local Senpi installer and uninstaller helpers. They add or remove the absolute plugin path in `SENPI_CODING_AGENT_DIR` or `~/.senpi/agent` settings. |
 | `scripts/qa/` | Live Senpi QA drivers, continuation probe, and mock provider used by task 13 validation. |
-| `skills/` | Native Senpi skills authored directly against the Senpi tool surface (not ported from Codex or the shared pool); currently `hyperplan`, `ultrawork`, and `ulw-research`. `sync-skills.mjs` ships them verbatim. |
+| `skills/` | Native Senpi skills authored directly against the Senpi tool surface (not ported from Codex or the shared pool); currently `hyperplan`, `ultrawork`, `ulw-loop`, and `ulw-research`. `sync-skills.mjs` ships them verbatim. |
 | `plugin/` | The single Pi package `@code-yeongyu/omo-senpi`. It contains generated `extensions/omo.js`, generated skills, package metadata, and plugin-local build scripts. |
 
 The v1 install surface is local-path only. Install the built Pi package from `packages/omo-senpi/plugin`; do not document npm, git, or marketplace distribution for this adapter until that exists in code.
@@ -48,7 +48,7 @@ Build outputs under `plugin/extensions/` and `plugin/skills/` are generated. Do 
 
 - `node packages/omo-senpi/plugin/scripts/build-extension.mjs` builds `plugin/extensions/omo.js`.
 - `node packages/omo-senpi/plugin/scripts/build-extension.mjs --check` verifies the generated extension is current.
-- `node packages/omo-senpi/plugin/scripts/sync-skills.mjs` syncs Senpi-ready skills into `plugin/skills/` from three pools: component skills (`ulw-loop`), native `skills/` sources shipped verbatim (`hyperplan`, `ultrawork`, `ulw-research`), and the repo `shared-skills` pool (start-work gets a `codex:`->`senpi:` overlay; ulw-plan gets a senpi overlay adding a momus-only review override plus architect/ultrabrain advisory consultation lanes; shared skills get a Senpi tool-compatibility banner).
+- `node packages/omo-senpi/plugin/scripts/sync-skills.mjs` syncs Senpi-ready skills into `plugin/skills/` from three pools: component-owned native sources shipped verbatim (`ulw-loop`), native `skills/` sources shipped verbatim (`hyperplan`, `ultrawork`, `ulw-research`), and the repo `shared-skills` pool (start-work gets a `codex:`->`senpi:` overlay; ulw-plan gets a senpi overlay adding a momus-only review override plus architect/ultrabrain advisory consultation lanes; shared skills get a Senpi tool-compatibility banner).
 - `node packages/omo-senpi/plugin/scripts/embed-directive.mjs --check` verifies the generated ultrawork directive is current.
 - `bun run test:senpi` runs the package gate: build the shared daemon, stage the plugin artifacts, typecheck, then `bun test packages/omo-senpi`.
 

@@ -1,0 +1,12 @@
+id: performance-optimization.requirements
+title: Define the performance outcome
+kind: principle
+priority: 5
+rule: Tie optimization to a user or system outcome, target metric, workload, environment,
+  and accepted budget rather than the vague goal of making code faster.
+require:
+- Cover relevant latency distributions, throughput, CPU, memory, allocation, I/O,
+  startup, artifact size, energy, cost, scalability, and reliability constraints.
+- Ask when the target, workload, or permitted tradeoff is materially ambiguous.
+reject:
+- Optimizing a convenient proxy without showing that it represents the desired outcome.

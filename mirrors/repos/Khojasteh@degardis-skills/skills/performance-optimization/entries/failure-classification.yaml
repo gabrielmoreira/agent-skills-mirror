@@ -1,0 +1,11 @@
+id: performance-optimization.failure-classification
+title: Classify performance symptoms before editing
+kind: policy
+priority: 12
+rule: Distinguish implementation cost from correctness defects, environment contention,
+  configuration, dependencies, data shape, external systems, and measurement defects.
+require:
+- Report correctness defects outside the authorized performance scope separately.
+- Optimize the layer that causally owns the cost rather than masking downstream symptoms.
+reject:
+- Editing production algorithms to compensate for a broken benchmark or unrelated environment.

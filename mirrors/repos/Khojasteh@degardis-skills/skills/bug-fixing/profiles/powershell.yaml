@@ -1,0 +1,7 @@
+name: powershell
+label: PowerShell
+description: Load when fixing PowerShell code or behavior.
+instructions:
+- Reproduce object pipelines, streams, terminating versus non-terminating errors, scopes, preference variables,
+  providers, remoting, serialization, and native exit codes; remove the root cause without swallowing
+  errors or depending on user profiles.

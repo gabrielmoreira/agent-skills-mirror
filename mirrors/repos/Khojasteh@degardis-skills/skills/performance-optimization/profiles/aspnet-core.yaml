@@ -1,0 +1,7 @@
+name: aspnet-core
+label: ASP.NET Core
+description: Load when optimizing ASP.NET Core performance.
+instructions:
+- Measure warmup and steady state, request distributions, middleware, routing, binding, serialization,
+  allocation, async and thread-pool behavior, DI scopes, database and network I/O, connection pools, caching,
+  startup, and shutdown.

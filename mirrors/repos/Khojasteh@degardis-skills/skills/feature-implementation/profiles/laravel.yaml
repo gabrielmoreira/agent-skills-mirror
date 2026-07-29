@@ -1,0 +1,6 @@
+name: laravel
+label: Laravel
+description: Load when implementing Laravel features.
+instructions:
+- Design across service-container lifetimes, middleware, validation, authorization, Eloquent behavior,
+  transactions, migrations, queues, events, caches, and filesystem effects.

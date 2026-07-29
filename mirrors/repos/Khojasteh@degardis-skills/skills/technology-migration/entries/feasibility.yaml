@@ -1,0 +1,14 @@
+id: technology-migration.feasibility
+title: Prove the target can replace the source
+kind: constraint
+priority: 1
+rule: Verify that the approved target covers every required source responsibility before implementation.
+require:
+- Evaluate target versions, support horizon, ecosystem, tooling, deployment, data,
+  security, performance, cost, operational, and compatibility constraints.
+- Identify capabilities that need an additional target component or an approved behavior change.
+- Stop when a critical responsibility has no agreed replacement.
+reject:
+- Treating technologies from different layers as direct substitutes.
+- Claiming Vite alone replaces Nuxt routing, SSR, server endpoints, data loading, modules,
+  conventions, and deployment responsibilities.

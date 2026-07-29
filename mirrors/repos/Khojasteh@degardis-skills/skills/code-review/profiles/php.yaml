@@ -1,0 +1,9 @@
+name: php
+label: PHP
+description: Load when reviewing PHP code or behavior.
+instructions:
+- Trace type coercion, null handling, array key conversion, references, comparison, exception flow, generators,
+  and resource cleanup.
+- Check request versus worker lifetime, mutable static state, serialization, filesystem paths, locale,
+  time zones, and database transaction boundaries.
+- Verify behavior against the configured PHP version rather than assuming newer semantics.

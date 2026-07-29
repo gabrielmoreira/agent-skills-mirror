@@ -1,0 +1,6 @@
+name: python
+label: Python
+description: Load when implementing Python features.
+instructions:
+- Design across sync and async boundaries, cancellation, context managers, mutation, import side effects,
+  descriptors, serialization, multiprocessing, and API compatibility.

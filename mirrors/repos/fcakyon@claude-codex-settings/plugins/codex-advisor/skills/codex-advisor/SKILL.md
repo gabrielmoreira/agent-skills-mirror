@@ -12,22 +12,27 @@ work over to it.
 
 1. In Claude Code, delegate to the native `codex-advisor` agent. It receives the
    recent conversation automatically, so do not paste the history yourself.
-2. In Codex, Cursor, or Gemini CLI, locate this skill's directory and run
-   `node scripts/ask_codex.mjs`. Pass the review request on standard input.
+2. Elsewhere, run this exact shape from this skill's directory so the request
+   reaches standard input:
 
-The request must include the decision or conclusion, the relevant recent
-context and evidence, and any constraints or alternatives that affect the
-verdict. Include only facts that matter to the decision.
+   ```
+   node scripts/ask_codex.mjs <<'REVIEW'
+   the review request
+   REVIEW
+   ```
 
-Return the reviewer's answer without rewriting it. If `codex` is missing or not
-authenticated, surface the command error and ask the user to install the Codex
-CLI or sign in. Do not fall back to the host model.
+State the decision, the evidence behind it, and any constraint that changes the
+verdict. Name the paths that matter: the reviewer has read-only access and
+checks load-bearing claims itself.
 
-## Picking the reviewer
+Return the answer without rewriting it. If `codex` is missing or unauthenticated,
+surface the error and ask the user to install it or sign in. Never review in its
+place.
 
-The review runs on whatever model `~/.codex/config.toml` sets. In Codex itself
-that is the same model already doing the work, which is a weak second opinion,
-so set `CODEX_ADVISOR_MODEL` to a different one before calling.
+## Reviewer
+
+Pinned to `gpt-5.6-sol` at medium reasoning effort. Inside Codex that may be the
+model already doing the work, so set `CODEX_ADVISOR_MODEL` to a different one.
 
 ## Weighing the answer
 

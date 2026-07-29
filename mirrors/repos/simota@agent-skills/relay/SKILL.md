@@ -100,7 +100,7 @@ Route elsewhere when the task is primarily:
 - Monitor platform-specific rate limit tiers and design accordingly. Slack (May 2025+) restricts **commercially distributed** non-Marketplace apps to 1 req/min for `conversations.history`/`conversations.replies` with max 15 objects per response — design bots to cache aggressively or pursue Marketplace approval. Custom/internal apps are unaffected (50+ req/min, 1000 objects). **Slack legacy custom bots stopped functioning on March 31, 2025.** Slack classic apps deprecation deadline: **November 16, 2026** — after that date classic apps will no longer function and API calls will be rejected; migrate to granular bot tokens. **Slack RTM API is legacy and new apps must NOT use RTM methods** — use Events API (webhooks) or Socket Mode instead; see [docs.slack.dev/legacy/legacy-rtm-api](https://docs.slack.dev/legacy/legacy-rtm-api/). Non-Marketplace `conversations.history`/`conversations.replies` rate limit (1 req/min, 15 objects) starts hitting existing installations on March 3, 2026. Discord enforces 50 req/s global with per-route limits via `X-RateLimit-Bucket` headers. **Discord API v10 is current** (v11 not yet released as of 2026). Discord Components V2 (IS_COMPONENTS_V2 flag `1 << 15`) is the recommended approach for new apps — enables Section, Container, Separator, Text Display components with 40-component limit. Discord permission splits effective February 23, 2026: PIN_MESSAGES required to pin (MANAGE_MESSAGES alone insufficient); CREATE_EVENTS required for scheduled events.
 - For webhook observability, track: delivery success % by provider/endpoint, end-to-end latency (p50/p95/p99), queue depth and time-to-drain, dedup/idempotency hit rate, error class distribution (auth/signature, rate-limit, schema, destination). Target SLO: ≥ 99.5% delivery success within 30 seconds.
 - Emerging webhook security trend (2025): short-lived HMAC keys (15 min–24 hr) published via a signed JWKS-style endpoint are replacing long-lived static signing secrets — dramatically reduces blast radius of a leaked secret. Evaluate for new webhook producer implementations. Standard Webhooks spec (`webhook-id`/`webhook-timestamp`/`webhook-signature`) remains the interoperability baseline for producer-side signing. Source: [github.com/standard-webhooks/standard-webhooks](https://github.com/standard-webhooks/standard-webhooks/blob/main/spec/standard-webhooks.md)
-- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Relay; P2, P1 recommended).
+- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Relay; P2, P1 recommended).
 
 ## Boundaries
 
@@ -279,24 +279,7 @@ See `_common/AUTORUN.md` for the protocol (`_AGENT_CONTEXT` input, mode semantic
 
 ## Nexus Hub Mode
 
-When input contains `## NEXUS_ROUTING`, treat Nexus as hub. Do not instruct calling other agents. Return `## NEXUS_HANDOFF` with: Step / Agent / Summary / Key findings / Artifacts / Risks / Pending Confirmations(Trigger/Question/Options/Recommended) / User Confirmations / Open questions / Suggested next agent / Next action.
-
-## Output Language
-
-Output language follows the CLI global config (`settings.json` `language` field, `CLAUDE.md`, `AGENTS.md`, or `GEMINI.md`).
-
-## Git Commit & PR Guidelines
-
-Follow `_common/GIT_GUIDELINES.md`. Conventional Commits format, no agent names in commits/PRs, subject under 50 chars, imperative mood.
-
-## Daily Process
-
-| Phase | Focus | Key Actions |
-|-------|-------|-------------|
-| SURVEY | Context gathering | Investigate messaging requirements and protocols |
-| PLAN | Planning | Design adapters and event flow plan |
-| VERIFY | Validation | Test connections and message send/receive |
-| PRESENT | Delivery | Deliver integration implementation and API specs |
+When input contains `## NEXUS_ROUTING`, treat Nexus as hub. Do not instruct calling other agents. Return via `## NEXUS_HANDOFF` (canonical schema in `_common/HANDOFF.md`).
 
 ---
 

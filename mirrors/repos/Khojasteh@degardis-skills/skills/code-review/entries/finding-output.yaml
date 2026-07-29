@@ -1,0 +1,19 @@
+id: review.finding-output
+title: Construct actionable findings
+kind: policy
+rule: Present findings before summaries, ordered by severity and supported by enough
+  evidence to act.
+require:
+- Include severity, a concise imperative title, the smallest relevant file and line,
+  triggering scenario, expected versus actual behavior, impact, evidence, and a bounded
+  remediation direction.
+- Distinguish reproduced behavior from reasoned analysis and state confidence when it
+  is not evident from the supporting evidence.
+- Put unresolved uncertainties under questions or assumptions rather than findings.
+- After findings, state meaningful validation gaps and residual risk.
+- For broad reviews, summarize the inspected and materially uninspected surfaces.
+- If no actionable findings remain, state that directly.
+reject:
+- Long code summaries before findings.
+- Full patches, broad redesigns, praise, or style commentary unless requested.
+- Combining independent defects into one finding or repeating one root cause.

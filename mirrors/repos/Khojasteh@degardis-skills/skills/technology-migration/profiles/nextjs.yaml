@@ -1,0 +1,8 @@
+name: nextjs
+label: Next.js
+description: Load when migrating to or from Next.js.
+instructions:
+- Prefer the target framework’s native routing, server/client boundaries, streaming, data loading, cache,
+  middleware, actions, and deployment model; verify parity instead of wrapping source conventions.
+- Keep route bridges, dual rendering, and adapters bounded to explicit stages with owners and removal
+  gates; final completion runs without source framework fallbacks.

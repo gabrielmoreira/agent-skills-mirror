@@ -1,0 +1,14 @@
+id: refactoring.pattern.consolidate-fragments
+title: Consolidate fragmented behavior
+kind: pattern
+rule: Bring behavior together when excessive small units scatter one cohesive concept.
+conditions:
+- Understanding or changing one behavior requires unnecessary navigation across units
+  that do not vary independently.
+require:
+- Identify the cohesive owner and preserve meaningful external boundaries.
+- Remove obsolete forwarding methods, registrations, interfaces, and construction wiring.
+- Verify the consolidation reduces navigation without creating a god object.
+reject:
+- Combining concepts with different reasons to change.
+- Crossing trust, I/O, process, lifecycle, or compatibility boundaries for convenience.

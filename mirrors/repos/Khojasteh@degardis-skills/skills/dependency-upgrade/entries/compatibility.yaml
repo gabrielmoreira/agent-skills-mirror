@@ -1,0 +1,12 @@
+id: dependency-upgrade.compatibility
+title: Honor the declared support matrix
+kind: constraint
+priority: 1
+rule: Preserve compatibility only for versions, consumers, and environments the repository still supports.
+require:
+- Check source, binary, runtime, protocol, persisted-format, configuration, and deployment compatibility.
+- Obtain approval before dropping a supported consumer or changing a public contract.
+- Tie every retained compatibility branch to a concrete supported obligation.
+reject:
+- Removing compatibility merely because it complicates the upgrade.
+- Keeping compatibility for versions that the requested final state explicitly drops.

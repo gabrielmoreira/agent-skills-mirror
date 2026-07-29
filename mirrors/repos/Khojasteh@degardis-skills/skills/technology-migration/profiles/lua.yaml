@@ -1,0 +1,9 @@
+name: lua
+label: Lua
+description: Load when migrating to or from Lua.
+instructions:
+- Prefer idiomatic tables, closures, iterators, coroutines, metatables, and host facilities over translated
+  source classes; verify ordering, equality, nil behavior, numeric precision, complexity, sandboxing,
+  ownership, and failure semantics.
+- Keep host bridges, dual modules, and compatibility adapters bounded to explicit stages with owners and
+  removal gates.

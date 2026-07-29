@@ -1,0 +1,12 @@
+id: testing.test-level
+title: Select the smallest credible test level
+kind: heuristic
+rule: Use the least expensive test level that exercises the real boundary responsible
+  for the behavior.
+require:
+- Escalate from unit to component, integration, contract, or end-to-end testing only
+  when a lower level cannot provide credible evidence.
+- Preserve a higher-level regression test when the defect depends on wiring or integration.
+reject:
+- Replacing a necessary integration check with mocks that assume the integration works.
+- Using end-to-end coverage for behavior a smaller deterministic test can verify.

@@ -1,0 +1,9 @@
+name: react
+label: React
+description: Load when reviewing React code or behavior.
+instructions:
+- Trace render purity, hook dependencies, stale closures, state updates, effects, subscriptions, cleanup,
+  keys, context, suspense, and asynchronous work.
+- Check server versus client boundaries, hydration, races, lost user input, unsafe HTML, accessibility
+  behavior, and updates after unmount.
+- Avoid reporting memoization or component decomposition preferences without a measurable defect.

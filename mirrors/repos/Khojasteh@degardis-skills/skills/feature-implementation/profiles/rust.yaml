@@ -1,0 +1,7 @@
+name: rust
+label: Rust
+description: Load when implementing Rust features.
+instructions:
+- Design across ownership, borrowing, lifetimes, trait coherence, `Send` and `Sync`, async cancellation,
+  panic boundaries, unsafe invariants, and public API compatibility.
+- Do not add crates, features, traits, macros, or unsafe code without demonstrated need.

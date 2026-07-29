@@ -1,6 +1,6 @@
 ---
 description: "Audit installed Mall plugins for upstream drift, then update or remove with explicit user consent"
-lastReviewed: 2026-06-10
+lastReviewed: 2026-07-28
 ---
 
 # /mall-refresh
@@ -33,13 +33,14 @@ Per [PLAN-mall-automation v3 / ADR-008](https://github.com/fabioc-aloha/Alex_ACT
    - Removals: ask per plugin name. Never remove in bulk without explicit yes.
 
 5. **If approved, apply updates for each `UPDATED_UPSTREAM` plugin**:
-   - The drift report carries `source_url` (a GitHub tree URL pinned to the upstream SHA at the new version).
-   - Refresh the plugin's artefacts from that source per the install path convention in [mall-installation.instructions.md](../instructions/mall-installation.instructions.md). For each shape (skill / instruction / prompt / agent), overwrite the heir's `local/<name>/` files with the upstream content.
-   - Rewrite `.install.json` to record the new `version_at_install`, `source_url`, and `installed_at` timestamp. This becomes the new drift baseline.
+   - The drift report carries `source_url` (GitHub tree URL pinned to upstream SHA).
+   - Re-run `/mall-install <name>[@<version>]` for that exact `(store, name)` target using the shared legacy mapping contract in [mall-installation.instructions.md](../instructions/mall-installation.instructions.md).
+   - Confirm `.install.json` now records the new `version_at_install`, `source_url`, and exact `component_paths`.
 
 6. **If approved, remove each `DEPRECATED_UPSTREAM` plugin**:
-   - Delete the plugin directory under `.github/skills/local/<name>/` (and any instruction / prompt / agent siblings the plugin installed per its README).
-   - If the plugin's README does not document install paths, ask the user before deleting only the skills directory.
+   - Read the plugin's `.install.json` and remove only the recorded `component_paths`.
+   - Remove related MCP entries only when those exact server names are recorded in `.install.json`.
+   - If `.install.json` is missing or malformed, stop and request manual confirmation instead of guessing paths.
 
 7. **Handle `UNMANAGED_LOCAL_PLUGIN` safely**:
    - Do NOT delete automatically.
@@ -57,5 +58,5 @@ Per [PLAN-mall-automation v3 / ADR-008](https://github.com/fabioc-aloha/Alex_ACT
 ## Falsifiability
 
 - The script's `--catalog` discovery order is wrong if heirs consistently clone the Mall to a path the script doesn't try; surface real reports and extend the discovery list.
-- The `(store, name)` identity is wrong if the same plugin needs separate identity per `version` (multi-version-installed) — re-evaluate when `/mall-install` ships and exposes pin-multiple workflows in Phase 5b.
+- The `(store, name)` identity is wrong if the same plugin needs separate identity per `version` (multi-version-installed) — re-evaluate if installed-plugin version pinning introduces multiple concurrent versions in one heir.
 - The HTTPS fallback assumption is wrong if heirs run in air-gapped environments by default; add a config switch to make `--no-network` the default in those environments.

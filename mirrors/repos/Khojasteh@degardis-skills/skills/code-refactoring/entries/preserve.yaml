@@ -1,0 +1,14 @@
+id: refactoring.preserve-behavior
+title: Preserve observable behavior
+kind: principle
+rule: A refactoring must not intentionally change externally observable behavior.
+priority: 1
+constraint: Treat behavior changes as separate changes with explicit approval.
+require:
+- Preserve values, errors, side effects, ordering, persistence, serialization, public
+  APIs, security boundaries, resource lifetime, and explicit timing or performance guarantees.
+- Establish behavior from requirements and consumers as well as tests.
+- Report suspected defects instead of encoding them in characterization tests.
+reject:
+- Using passing tests as the sole proof that behavior is unchanged.
+- Mixing a bug fix, feature, compatibility change, or dependency upgrade into the refactor.

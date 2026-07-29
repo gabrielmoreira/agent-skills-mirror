@@ -1,0 +1,12 @@
+id: dependency-upgrade.incremental-upgrades
+title: Cross version boundaries safely
+kind: pattern
+priority: 4
+rule: Use coherent supported increments when upstream requires ordered migrations.
+require:
+- Identify mandatory intermediate releases, schema steps, codemods, or compatibility windows.
+- Keep each intermediate state buildable or intentionally ephemeral within one controlled operation.
+- Validate irreversible steps and rollback before continuing.
+reject:
+- Skipping required migration versions.
+- Shipping a half-upgraded mixed-version state without an approved staged design.

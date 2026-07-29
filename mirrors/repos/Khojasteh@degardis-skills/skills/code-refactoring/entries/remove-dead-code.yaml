@@ -1,0 +1,16 @@
+id: refactoring.pattern.remove-dead-code
+title: Remove dead code
+kind: pattern
+rule: Delete code only when usage analysis and tests support that it is unreachable
+  or unused.
+conditions:
+- The behavior is obsolete or every supported entry path is proven unreachable.
+require:
+- Search static callers, reflection, configuration, routing, templates, scripts,
+  serialization, dependency injection, generated code, plugins, and external entry points.
+- Remove registrations, tests, documentation, and configuration made obsolete by the deletion.
+- Run focused verification and a build or packaging step only when it establishes
+  additional evidence about the affected compiled or packaged surface.
+reject:
+- Treating no static references or no recent execution as proof of dead code.
+- Deleting compatibility shims or migration paths without checking supported versions.

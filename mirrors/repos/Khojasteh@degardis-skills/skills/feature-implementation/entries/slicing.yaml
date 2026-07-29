@@ -1,0 +1,11 @@
+id: feature-implementation.slicing
+title: Deliver reviewable vertical slices
+kind: pattern
+priority: 15
+rule: Split substantial work into bounded slices that each connect observable behavior
+  through implementation and verification.
+require:
+- Keep intermediate states buildable and safe when practical.
+- Validate each slice before compounding later changes.
+reject:
+- Horizontal batches that defer all integration and behavioral evidence until the end.

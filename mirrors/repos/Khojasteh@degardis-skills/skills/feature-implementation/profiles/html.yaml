@@ -1,0 +1,7 @@
+name: html
+label: HTML
+description: Load when implementing HTML features.
+instructions:
+- Derive acceptance criteria for semantics, accessible relationships, forms, navigation, parsing, escaping,
+  progressive enhancement, localization, and supported browsers; choose the smallest structure that expresses
+  the behavior.

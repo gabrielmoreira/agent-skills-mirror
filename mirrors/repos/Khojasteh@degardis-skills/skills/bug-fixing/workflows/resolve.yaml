@@ -1,0 +1,89 @@
+id: bug-fixing.resolve
+title: Diagnose and resolve a production defect
+description: Adapt to diagnosis, planning, implementation, or fix review while requiring
+  causal evidence and explicit authorization for production changes.
+steps:
+- action: classify-request
+  instruction: Determine whether the request is diagnosis, planning, implementation,
+    or fix review. Keep diagnosis, planning, and review read-only; change production
+    behavior only when implementation is explicitly requested.
+- action: establish-contract-and-scope
+  instruction: Read repository instructions and establish the allowed surface, independently
+    supported expected behavior, affected users, inputs and state, compatibility boundaries,
+    and authorization. Honor explicit technology choices, preserve established versions
+    and tooling, add no dependency or migration without authorization, and preserve
+    unrelated user changes.
+- action: establish-tooling-evidence
+  instruction: Select project tools and commands only when explicit scope or repository
+    instructions, manifests, lockfiles, configuration, scripts, CI, documentation, or
+    established usage supports them. Availability, filenames, conventions, and popularity
+    do not establish adoption; never execute competing tools as probes. When evidence is
+    absent, use tool-independent analysis, report the validation gap, or ask before
+    introducing tooling.
+- action: reproduce-and-baseline
+  instruction: Reproduce the symptom with the smallest safe case and run a focused baseline
+    when feasible. Record exact inputs, state, environment, timing, commands, outputs,
+    and pre-existing failures.
+- action: classify-failure
+  instruction: Distinguish production defects from test, environment, configuration,
+    dependency, data, and operational failures before changing assertions or implementation.
+- action: form-and-test-causal-hypothesis
+  instruction: Form a causal hypothesis that connects the trigger, first incorrect
+    state or decision, propagation, and observed impact. Test it against the reproduction,
+    repository evidence, relevant semantics, and plausible competing explanations.
+    Revise or reject it when evidence disagrees; proceed with the supported cause while
+    stating confidence and unresolved uncertainty rather than presenting inference as fact.
+- action: establish-regression-evidence
+  instruction: Derive expected behavior independently from requirements, contracts,
+    standards, or verified fixtures. Prefer the smallest automated regression test that
+    fails for the demonstrated reason before editing production code.
+- action: handle-alternative-evidence
+  instruction: When an automated reproducer is unsafe or impractical, require a bounded
+    deterministic trace, crash artifact, invariant violation, isolated reproducer,
+    or equivalent evidence. Explain why a test is unavailable and how the fix will be verified.
+- action: assess-fix-risk
+  instruction: Assess source and runtime compatibility, persisted data, transactions,
+    partial failure, concurrency, security boundaries, resource lifetime, error visibility,
+    side effects, and rollback risk. Obtain approval before any compatibility break.
+- action: produce-fix-plan
+  instruction: Produce a bounded plan that maps the demonstrated cause to the invariant
+    to restore, likely production and test changes, deliberately unchanged behavior,
+    regression evidence, validation commands, applicable risk controls, documentation
+    impact, and rollback needs. In planning mode, quality-gate and report this plan
+    without editing.
+- action: pass-pre-change-gates
+  instruction: Before production edits, mark the evidence and change gates pass or
+    blocked using concrete findings. Do not edit when expected behavior, reproduction
+    or equivalent evidence, failure classification, root cause, authorization, regression
+    oracle, scope, or material risk remains unresolved.
+- action: implement-minimal-fix
+  instruction: In explicitly authorized implementation mode, implement the plan as
+    the smallest causal change, one reviewable step at a time, and run the narrowest
+    relevant regression evidence after each step. Reject symptom patches, assertion
+    weakening, arbitrary retries or sleeps, swallowed errors, broad refactoring, dependency
+    churn, and speculative redesign. If new evidence invalidates the diagnosis or plan,
+    stop editing, preserve unrelated work, remove only safely separable invalidated
+    implementation changes, and return to diagnosis and planning.
+- action: verify-correction
+  instruction: Run the original regression evidence first, then focused tests and broader
+    relevant checks. Verify failure timing, side effects, cleanup, compatibility, and
+    nearby behavior; do not claim a fix without checking the original mechanism or a
+    justified equivalent.
+- action: review-final-diff
+  instruction: Inspect the complete final diff for incomplete fixes, new failure paths,
+    security or data risk, unrelated edits, and inadequate regression coverage.
+- action: update-documentation-conditionally
+  instruction: Update documentation only when the corrected public contract, failures,
+    side effects, operations, migration guidance, release material, comments, or
+    maintainer invariants changed.
+- action: pass-completion-gate
+  instruction: Mark the completion gate pass or blocked from the verified before-and-after
+    regression result, focused and broader checks, final diff review, side-effect and
+    cleanup checks, documentation impact, unresolved assumptions, and residual risk.
+    A blocked gate means report the work as incomplete or unverified, never fixed.
+- action: report
+  instruction: Report the request mode, expected versus actual behavior, reproduction,
+    failure classification, root cause and confidence, final or proposed plan, files
+    changed, regression evidence, exact commands and before/after results, each applicable
+    gate as pass or blocked with its evidence, documentation impact, unresolved assumptions,
+    and residual risk.

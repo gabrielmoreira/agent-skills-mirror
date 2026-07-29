@@ -1,0 +1,13 @@
+id: technology-migration.inventory
+title: Inventory the complete source and target surface
+kind: policy
+priority: 2
+rule: Find every responsibility, dependency, consumer, artifact, and operational path affected by replacement.
+require:
+- Inspect code, manifests, locks, generated artifacts, schemas, data, CI, build, deployment,
+  runtime, infrastructure, observability, security, tests, documentation, and external contracts.
+- Identify direct, dynamic, generated, reflected, plugin, protocol, and human-operated dependencies.
+- Distinguish source responsibilities from incidental implementation structure.
+reject:
+- Migrating only the visible application entry point.
+- Ignoring workers, scripts, jobs, clients, rollback tooling, or operational procedures.

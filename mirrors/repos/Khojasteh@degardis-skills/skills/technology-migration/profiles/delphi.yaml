@@ -1,0 +1,9 @@
+name: delphi
+label: Delphi
+description: Load when migrating to or from Delphi.
+instructions:
+- Prefer target-native strings, collections, generics, records, sets, interfaces, properties, events,
+  tasks, streams, and resource management over source-shaped reimplementation; verify ordering, equality,
+  Unicode, precision, ownership, exceptions, thread affinity, ABI, complexity, and security.
+- Keep package bridges, UI adapters, and binary interoperability bounded to explicit stages with owners
+  and removal gates; final completion removes obsolete source units, forms, packages, and fallbacks.

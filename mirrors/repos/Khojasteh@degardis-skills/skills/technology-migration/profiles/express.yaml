@@ -1,0 +1,7 @@
+name: express
+label: Express
+description: Load when migrating to or from Express.
+instructions:
+- Prefer native middleware, routers, async error flow, streams, and server lifecycle over translated controller
+  layers; verify request, authentication, error, cancellation, and cleanup parity.
+- Keep proxy routes, dual handlers, and adapters bounded to explicit stages with owners and removal gates.

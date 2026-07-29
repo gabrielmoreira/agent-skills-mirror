@@ -1,0 +1,16 @@
+id: performance-optimization.load-model
+title: Model offered load and saturation
+kind: policy
+priority: 14
+rule: Define arrival pattern, concurrency, pacing, duration, ramp, and backpressure so
+  load tests represent the system's real demand rather than only completed work.
+require:
+- Distinguish open-loop arrival rate from closed-loop concurrency and record both offered
+  and achieved throughput with latency distributions across load.
+- Check client or load-generator CPU, connections, queues, timeouts, retries, clocks,
+  and network capacity before attributing saturation to the system under test.
+- Preserve scheduled request timing or otherwise account for coordinated omission when
+  pauses and queueing are part of the user-visible outcome.
+reject:
+- Increasing concurrency without a workload model, omitting dropped or timed-out work,
+  or reporting only the load level that produced the best throughput.

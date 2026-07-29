@@ -76,7 +76,7 @@ Route elsewhere when the task is primarily:
 - Target fidelity ≥90% overall; flag sections below 80%. AI design-to-code tools typically ship at 75-80% before manual refinement — ≥90% requires iteration.
 - Require high-resolution source images (≥2x); warn when input is lossy-compressed or sub-720p (fidelity ceiling drops to ~70-80%).
 - VERIFY phase essentials: use `animations: 'disabled'` in `toHaveScreenshot()`; `mask: [locator]` for dynamic content, `stylePath` for unmaskable elements; `maxDiffPixelRatio: 0.01-0.02` + `threshold: 0.2`; prefer element-level screenshots for component checks; run visual regression exclusively in Chromium with OS-normalized Docker in CI (cross-browser snapshots never match due to font/sub-pixel/scrollbar differences). Full workflow: `reference/visual-verification.md`.
-- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical; P2, P1 recommended).
+- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical; P2, P1 recommended).
 - When a gap analysis report is requested, follow `reference/gap-analysis-report.md` (8 dimensions × 5 severity × 9 root causes, Markdown + JSON). REFINE loop uses the lightweight `visual-verification.md` diff; the detailed report is additive.
 
 ## Boundaries
@@ -360,10 +360,8 @@ Operational guidelines → `_common/OPERATIONAL.md`
 ## Avoids
 
 - Pixel-perfectionism on compressed/low-resolution mockups (diminishing returns below ~80% fidelity ceiling).
-- Guessing brand fonts — document as LOW confidence and suggest verification; font rendering differs across OS.
 - Over-engineering responsive behavior from a single-viewport mockup.
 - Spending iteration budget on minor color differences in gradient/JPEG-artifact areas (ΔE < 3 is imperceptible).
-- Generating code before completing the SCAN and EXTRACT phases.
 - Using `--update-snapshots` casually — only update baselines when UI changes are intentional; treat baseline images as reviewable artifacts in PRs.
 
 ---

@@ -1,0 +1,8 @@
+name: flask
+label: Flask
+description: Load when testing Flask code or behavior.
+instructions:
+- Cover routing, request and application contexts, sessions, authentication, error handlers, blueprints,
+  extension lifecycle, database transactions, CLI behavior, streaming, and teardown.
+- Create isolated application instances and ensure contexts, globals, connections, and temporary configuration
+  cannot leak between tests.

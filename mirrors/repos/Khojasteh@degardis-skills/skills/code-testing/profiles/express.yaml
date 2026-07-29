@@ -1,0 +1,8 @@
+name: express
+label: Express
+description: Load when testing Express code or behavior.
+instructions:
+- Cover request parsing, middleware sequencing, route precedence, authentication, response completion,
+  error middleware, async rejection behavior, streaming, cancellation, and cleanup.
+- Prefer invoking the real application stack without binding a network port unless transport behavior
+  is specifically under test.

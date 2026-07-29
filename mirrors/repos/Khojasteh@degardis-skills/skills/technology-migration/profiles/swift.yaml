@@ -1,0 +1,12 @@
+name: swift
+label: Swift
+description: Load when migrating to or from Swift.
+instructions:
+- When Swift is the target, inventory standard collections and algorithms, optionals, value types, enums,
+  protocols, async and actors, task groups, errors, resource ownership, availability, and platform frameworks.
+- Prefer target-version Swift and platform facilities over translated nullable models, callback layers,
+  reference-heavy classes, custom collection helpers, or source runtime wrappers.
+- Verify equality and ordering, Unicode, locale, numeric behavior, copy-on-write, errors, cancellation,
+  actor isolation, sendability, lifetime, bridging, serialization, and availability.
+- Keep Objective-C or C bridges, compatibility extensions, availability fallbacks, and dual implementations
+  bounded to stages.

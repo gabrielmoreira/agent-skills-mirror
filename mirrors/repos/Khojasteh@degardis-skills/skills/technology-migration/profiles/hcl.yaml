@@ -1,0 +1,9 @@
+name: hcl
+label: HCL
+description: Load when migrating to or from HCL.
+instructions:
+- Prefer target-native types, validation, `for_each`, modules, moves, imports, and provider facilities
+  over generated source-shaped configuration; verify ordering, equality, unknowns, identity, security,
+  complexity, destructive effects, and cost.
+- Keep dual state, imports, bridges, and adapters bounded to explicit stages with owners, reconciliation,
+  rollback, and removal gates.

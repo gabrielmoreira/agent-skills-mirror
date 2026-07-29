@@ -1,0 +1,9 @@
+name: laravel
+label: Laravel
+description: Load when reviewing Laravel code or behavior.
+instructions:
+- Trace validation, authorization, mass assignment, model events, transactions, queues, retries, serialization,
+  caching, storage, and tenant boundaries.
+- Check request and worker lifetime differences, stale configuration, N+1 queries, idempotency, migration
+  safety, signed inputs, and filesystem visibility.
+- Distinguish authentication from policy or ownership enforcement.

@@ -1,0 +1,7 @@
+name: css
+label: CSS
+description: Load when optimizing CSS performance.
+instructions:
+- Measure representative stylesheet transfer, selector matching, style recalculation, layout, paint, compositing,
+  animation, and responsive interaction; verify appearance and accessibility while rejecting micro-optimizations
+  within noise.

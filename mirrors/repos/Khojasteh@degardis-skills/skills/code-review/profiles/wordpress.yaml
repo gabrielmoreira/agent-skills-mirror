@@ -1,0 +1,7 @@
+name: wordpress
+label: WordPress
+description: Load when reviewing WordPress code or behavior.
+instructions:
+- Review capabilities, nonces, escaping and sanitization by context, prepared queries, hook priority,
+  REST permissions, multisite boundaries, option autoloading, cron, cache invalidation, activation/deactivation,
+  and uninstall cleanup.

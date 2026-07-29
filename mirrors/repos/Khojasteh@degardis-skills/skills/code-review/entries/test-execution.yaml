@@ -1,0 +1,12 @@
+id: review.test-execution
+title: Keep project test execution out of review
+kind: policy
+rule: Evaluate tests as review evidence without executing project tests as part of
+  the review.
+require:
+- Inspect relevant tests, configuration, and existing CI or test reports to assess
+  coverage, oracles, boundaries, failures, determinism, and regression protection.
+reject:
+- Running project unit, integration, end-to-end, or general test suites as part of
+  code review.
+- Treating a passing suite as proof that the reviewed code has no actionable defects.

@@ -1,0 +1,14 @@
+id: refactoring.incremental
+title: Small verified steps
+kind: principle
+rule: Perform one conceptual transformation at a time and verify after each step.
+priority: 5
+require:
+- Keep each intermediate state buildable and reviewable when practical.
+- Run the narrowest verification sensitive to each conceptual change, and defer broader
+  combined verification until the final state unless a shared-boundary risk requires
+  it sooner.
+- Do not repeat an unchanged broad build or test suite after every transformation.
+- Inspect the diff before proceeding so accidental edits do not accumulate.
+reject:
+- Combining renames, moves, abstraction changes, formatting, and behavior changes in one step.

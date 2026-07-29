@@ -1,0 +1,6 @@
+name: fastapi
+label: FastAPI
+description: Load when implementing FastAPI features.
+instructions:
+- Define schemas, dependencies, authentication, validation, serialization, async cancellation, background
+  work, streaming, exceptions, OpenAPI compatibility, transactions, and lifespan cleanup in bounded slices.

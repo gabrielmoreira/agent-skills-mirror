@@ -1,0 +1,14 @@
+id: docs.native-comments
+title: Use native documentation syntax
+kind: constraint
+rule: Follow the detected language, generator, and repository conventions for comments,
+  docstrings, tags, links, and executable examples.
+require:
+- Detect the source language and configured documentation generator before editing
+  native comments.
+- Validate markup and code-element references with repository-provided generation or
+  build commands.
+reject:
+- Mixing Markdown into structured comment formats unless the configured generator
+  explicitly supports that extension.
+- Replacing an established documentation tool or style without an explicit request.

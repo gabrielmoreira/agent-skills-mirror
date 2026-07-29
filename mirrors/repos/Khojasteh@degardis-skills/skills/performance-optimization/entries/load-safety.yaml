@@ -1,0 +1,12 @@
+id: performance-optimization.load-safety
+title: Keep performance experiments safe
+kind: constraint
+priority: 30
+rule: Run load, stress, profiling, and telemetry experiments only within authorized
+  resource, data, privacy, external-effect, and cost boundaries.
+require:
+- Prefer isolated environments and synthetic or approved representative data.
+- Bound duration, concurrency, requests, storage, spend, and cleanup; define a stop condition.
+reject:
+- Destructive production load, unbounded external traffic, sensitive-data capture,
+  uncontrolled cost, or profiling live systems without explicit authority.

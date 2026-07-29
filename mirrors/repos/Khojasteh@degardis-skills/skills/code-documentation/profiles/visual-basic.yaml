@@ -1,0 +1,21 @@
+name: visual-basic
+label: Visual Basic
+description: Load when documenting Visual Basic code or APIs.
+instructions:
+- Document `Nothing` and conversion behavior, default properties, `ByRef` effects, events, side effects,
+  ownership/disposal, async and cancellation, exceptions, thread safety, COM behavior, and C# consumer
+  compatibility.
+- Use well-formed triple-apostrophe XML documentation comments, and do not use Markdown in them.
+- Document each parameter with `<param>`, each type parameter with `<typeparam>`, each `Function` result
+  with `<returns>`, and each property or default property's represented value with `<value>`. Cover meaning,
+  units, and valid values rather than restating names or signatures.
+- Refer to parameters, type parameters, and declared code elements with `<paramref>`, `<typeparamref>`,
+  and resolvable `<see cref="...">` elements instead of plain-text names.
+- Use `<c>` for inline code and `<code>` for multiline code or output. Add `<example>` only when usage,
+  ordering, or an edge case is not obvious from the contract.
+- Emit a separate `<exception>` element for each distinct failure condition, even when conditions share
+  an exception type, and distinguish failures thrown before returning a `Task` from failures observed
+  when awaiting it.
+- Keep comments consistent with `Option` settings and the emitted public surface.
+details_files:
+- details/xml-lists.md

@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-07-27T05:03:49.000Z
+Generated at: 2026-07-28T15:21:12.000Z
 
-Total skills: 1992
+Total skills: 1993
 
 ## agent-behavior (5)
 
@@ -422,10 +422,11 @@ Total skills: 1992
 | `lightning-factory-explainer` | Explain Bitcoin Lightning channel factories and the SuperScalar protocol — scalable Lightning onboarding using shared UTXOs, Decker-Wattenhofer trees, timeou... | safe | community | lightning, factory, explainer | lightning, factory, explainer, explain, bitcoin, channel, factories, superscalar, protocol, scalable, onboarding, shared |
 | `web3-testing` | Master comprehensive testing strategies for smart contracts using Hardhat, Foundry, and advanced testing patterns. | unknown | community | web3 | web3, testing, smart, contracts, hardhat, foundry |
 
-## browser-automation (2)
+## browser-automation (3)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
+| `browser-act` | Use BrowserAct for authenticated browser automation, JS-rendered extraction, screenshots, parallel sessions, verification handling, and human handoff. | critical | browser-act/skills | browser-automation, web-extraction, ai-agents, cli, multi-session | browser-automation, web-extraction, ai-agents, cli, multi-session, browser, act, browseract, authenticated, automation, js, rendered |
 | `browser-harness` | Drive an existing browser through CDP for authenticated, visual, or interactive web automation. | critical | davidondrej/skills | browser, cdp, automation, scraping | browser, cdp, automation, scraping, harness, drive, existing, through, authenticated, visual, interactive, web |
 | `skyvern-browser-automation` | AI-powered browser automation — navigate sites, fill forms, extract structured data, log in with stored credentials, and build reusable workflows. | safe | Skyvern-AI/skyvern | browser-automation, mcp, web-scraping, form-filling, ai-agents, workflow-automation | browser-automation, mcp, web-scraping, form-filling, ai-agents, workflow-automation, skyvern, browser, automation, ai, powered, navigate |
 
@@ -811,7 +812,7 @@ Total skills: 1992
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `article-illustrations` | Generate hand-drawn 16:9 article illustrations with the Grav character IP, sparse annotations, and absurd but clear visual metaphors. | safe | vipin-si/article-illustrations | illustration, article-graphics, visual-metaphors, image-generation, whiteboard-sketch | illustration, article-graphics, visual-metaphors, image-generation, whiteboard-sketch, article, illustrations, generate, hand, drawn, 16, grav |
-| `modellix` | Integrate Modellix unified API/CLI for async AI image and video generation (model run --wait, task download). | critical | Modellix/modellix-skill | image-generation, video-generation, modellix, cli, api | image-generation, video-generation, modellix, cli, api, integrate, unified, async, ai, image, video, generation |
+| `modellix` | Integrate Modellix unified API/CLI for async AI image and video generation (model run --wait, task download). | critical | Modellix/modellix-plugin | image-generation, video-generation, modellix, cli, api | image-generation, video-generation, modellix, cli, api, integrate, unified, async, ai, image, video, generation |
 
 ## data (24)
 

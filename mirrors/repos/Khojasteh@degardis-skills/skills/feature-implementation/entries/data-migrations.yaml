@@ -1,0 +1,11 @@
+id: feature-implementation.data-migrations
+title: Protect data and migrations
+kind: policy
+priority: 22
+rule: Treat persisted formats, schemas, migrations, transactions, and deployment ordering
+  as part of feature behavior.
+require:
+- Define behavior for existing data, partial failure, retries, idempotency, and rollback.
+- Validate destructive or irreversible transitions with representative data.
+reject:
+- Assuming an application rollback also reverses persisted data.

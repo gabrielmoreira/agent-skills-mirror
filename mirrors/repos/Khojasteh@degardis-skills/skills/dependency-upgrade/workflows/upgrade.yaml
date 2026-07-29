@@ -1,0 +1,96 @@
+id: dependency-upgrade.upgrade
+title: Complete a genuine dependency upgrade
+description: Adapt to assessment, planning, implementation, or review while requiring
+  authoritative migration evidence, supported compatibility, and a verified final state.
+steps:
+- action: classify-request
+  instruction: Classify the request as assessment, planning, implementation, or review.
+    Keep assessment, planning, and review read-only; modify dependency or production
+    state only when implementation is explicitly requested.
+- action: establish-scope
+  instruction: Establish the requested package, framework, runtime, SDK, compiler, or
+    build-tool surface; target versions; motivation; constraints; declared support matrix;
+    technology-replacement boundary; and authorization.
+- action: inspect-complete-inventory
+  instruction: Read repository instructions and inspect every relevant manifest, lockfile,
+    workspace, runtime declaration, build and deployment definition, generated artifact,
+    source use, test, script, configuration file, and documentation reference. Honor
+    explicit technology choices, preserve repository-native tooling, and introduce no
+    unrelated dependency, framework, or technology change.
+- action: establish-tooling-evidence
+  instruction: Select project tools and commands only when explicit scope or repository
+    instructions, manifests, lockfiles, configuration, scripts, CI, documentation, or
+    established usage supports them. Availability, filenames, conventions, and popularity
+    do not establish adoption; never execute competing tools as probes. When evidence is
+    absent, use tool-independent analysis, report the validation gap, or ask before
+    introducing tooling. An explicitly requested upgrade target remains in scope.
+- action: resolve-version-target
+  instruction: Resolve each target from the request, repository support policy, authoritative
+    compatibility data, and current registry or upstream evidence. When the evidence supports
+    one low-risk choice, proceed and state it; ask only when viable choices materially differ
+    in support, migration cost, security coverage, or release policy.
+- action: establish-baseline
+  instruction: Use trustworthy recent repository or CI results as the baseline when
+    they match the current revision, configuration, and relevant environment. Execute
+    only the repository-native restore, install, build, test, analysis, packaging,
+    or runtime checks needed to fill material attribution gaps for the affected surface;
+    do not rerun an unchanged broad baseline merely because commands are available.
+    Record existing failures and continue when they can be isolated from the upgrade;
+    stop before implementation only when the available evidence cannot safely attribute
+    or verify affected behavior.
+- action: gather-upstream-evidence
+  instruction: Consult authoritative release notes, migration guides, compatibility
+    tables, deprecations, and advisories for crossed boundaries that can affect the
+    repository. Scale the review to version distance, dependency role, and risk; record
+    unavailable or conflicting material requirements instead of guessing.
+- action: map-upgrade-impact
+  instruction: Map direct and transitive relationships, peers, runtime requirements,
+    removed APIs, changed defaults, configuration, generated code, serialization,
+    persisted data, security, licensing, deployment ordering, and rollback implications.
+- action: plan-supported-increments
+  instruction: Divide a large upgrade into coherent supported increments when upstream
+    requirements demand intermediate versions or migration steps. Group coupled packages
+    together, isolate unrelated targets when that improves attribution, and avoid invalid
+    mixed-version states.
+- action: update-resolution
+  instruction: In authorized implementation mode, update declarations and regenerate
+    resolved dependency state with the repository's native tooling. Keep unrelated graph
+    churn out when the tool supports a scoped update, review install or build lifecycle
+    effects, and never fabricate, casually hand-edit, force, or suppress resolution.
+- action: migrate-to-target-model
+  instruction: Replace removed APIs and migration-relevant deprecated usage, configuration,
+    defaults, and generated forms with the target version's supported model. Inventory
+    relevant diagnostics, classify introduced and pre-existing findings, trace each in-scope
+    replacement to authoritative guidance, and use supported codemods only after reviewing
+    their scope. Rerun focused behavior checks and diagnostics; do not suppress warnings,
+    confuse a mechanical rename with semantic migration, absorb unrelated defects, or broaden
+    the task into general deprecation cleanup.
+- action: remove-obsolete-compatibility
+  instruction: Search for and remove shims, adapters, polyfills, flags, duplicated paths,
+    old imports, dead configuration, and version branches that serve only dropped versions.
+    A green build that still executes the old path is not a completed upgrade.
+- action: justify-retained-compatibility
+  instruction: Retain compatibility only for a declared supported consumer or an explicitly
+    approved staged rollout. Give temporary adapters an owner, bounded lifetime, removal
+    condition, and incomplete-final-state warning.
+- action: verify-final-state
+  instruction: Verify clean restoration, compilation, focused and broader tests,
+    analysis, packaging, generated output, runtime behavior, and relevant deployment
+    paths only as applicable to the changed dependency surface and crossed version
+    boundaries, using repository-native commands. Do not execute every available build
+    or test command when narrower checks establish the same evidence. Confirm the intended
+    versions are actually selected and loaded rather than merely declared, and use
+    a clean cache or environment when cached state could mask the result.
+- action: review-complete-diff
+  instruction: Inspect dependency and source changes for hidden downgrades, duplicate
+    runtimes, unresolved warnings, incomplete migration, supply-chain risk, unrelated
+    churn, and inadequate evidence. Make structural changes only when required by the upgrade.
+- action: update-documentation-conditionally
+  instruction: Update documentation when supported versions, installation, configuration,
+    public behavior, operations, migration steps, release material, or maintainer
+    invariants change.
+- action: report
+  instruction: Report mode, scope, targets, authoritative sources, graph and source changes,
+    removed legacy paths, retained compatibility obligations, exact validation and results,
+    introduced versus pre-existing failures and warnings, rollback considerations,
+    assumptions, deferred checks, and residual risk.

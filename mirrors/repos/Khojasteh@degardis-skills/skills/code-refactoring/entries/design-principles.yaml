@@ -1,0 +1,14 @@
+id: refactoring.design-principles
+title: Apply SOLID contextually
+kind: heuristic
+rule: Use SOLID principles to diagnose demonstrated design pressure, not as a compliance checklist.
+require:
+- Use SRP to improve cohesion around genuine reasons to change, not to minimize class size.
+- Use OCP only when existing variation demonstrates a stable extension boundary.
+- Preserve LSP contracts when changing inheritance or polymorphism.
+- Derive ISP interfaces from concrete caller needs.
+- Apply DIP at volatile, external, nondeterministic, or policy boundaries.
+reject:
+- Introducing extension points for hypothetical requirements.
+- Creating single-use interfaces without a real boundary or substitutable behavior.
+- Treating dependency inversion as a requirement to abstract every dependency.

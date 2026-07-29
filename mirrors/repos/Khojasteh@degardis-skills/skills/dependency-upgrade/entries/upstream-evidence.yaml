@@ -1,0 +1,13 @@
+id: dependency-upgrade.upstream-evidence
+title: Use authoritative migration evidence
+kind: policy
+priority: 2
+rule: Derive material migration work from authoritative upstream evidence for the crossed boundaries.
+require:
+- Prefer official release notes, migration guides, compatibility matrices, deprecations, and advisories.
+- Scale research to version distance, dependency role, and risk, then reconcile relevant requirements with repository evidence.
+- Record source versions or dates when upstream content can change or multiple release lines exist.
+- Mark missing, contradictory, or unverifiable requirements as blockers or residual risk.
+reject:
+- Relying only on memory, a successful resolver run, or third-party summaries.
+- Assuming deprecated behavior remains supported because compilation succeeds.

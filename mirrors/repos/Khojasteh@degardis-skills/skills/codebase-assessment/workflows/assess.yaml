@@ -1,0 +1,85 @@
+id: codebase-assessment.assess
+title: Assess a codebase and plan improvements
+description: Produce one evidence-backed improvement plan without implementing changes
+  or mutating maintained repository content or external state.
+steps:
+- action: establish-scope
+  instruction: Identify the requested surface, goals, constraints, repository instructions,
+    desired depth, and nearby work that is out of scope. Keep the task analysis-only
+    and distinguish a broad codebase or subsystem assessment from bounded diff or
+    pull-request review.
+- action: inspect-evidence
+  instruction: Read and search relevant code, callers, tests, manifests, lockfiles,
+    configuration, schemas, scripts, generated artifacts, existing reports, operational
+    material, and documentation. Honor explicit technology choices and preserve user-owned
+    working-tree changes.
+- action: establish-tooling-evidence
+  instruction: Identify project tools and commands only when explicit scope or repository
+    instructions, manifests, lockfiles, configuration, scripts, CI, documentation, or
+    established usage supports them. Availability, filenames, conventions, and popularity
+    do not establish adoption; do not execute competing tools as probes.
+- action: verify-material-uncertainties
+  instruction: Inspect existing test, build, linter, analyzer, diagnostic, and CI
+    results before considering command execution. Do not run project unit, integration,
+    end-to-end, or general test suites as part of a codebase-assessment request. Run
+    another established read-only build, linter, analyzer, or diagnostic command only
+    when it would resolve a material uncertainty and its side effects are understood,
+    local, and disposable. Prefer temporary or ignored output. Do not run fix modes,
+    snapshot updates, code generation, installs, upgrades, migrations, persistent
+    services, benchmarks without a representative contract, or commands that may
+    rewrite maintained or user-owned files. Record useful results and skipped checks.
+- action: establish-behavior-and-evidence-limits
+  instruction: Establish observable behavior, compatibility boundaries, invariants,
+    and the available static evidence. Record unknown behavior, missing evidence,
+    unavailable reports, skipped commands, and other limits without unsafe probing.
+- action: assess-concrete-risk
+  instruction: Identify evidenced correctness, security, data-integrity, concurrency,
+    compatibility, reliability, resource, and operational risks. Describe a concrete
+    scenario and impact for every claimed defect.
+- action: assess-tests
+  instruction: Inspect tests and configuration for behavioral coverage, independent
+    oracles, meaningful boundaries and failures, determinism, isolation, test level,
+    and validation gaps without authoring, changing, or executing tests.
+- action: assess-structure
+  instruction: Evaluate cohesion, coupling, duplicated knowledge, control flow,
+    abstraction cost, testability, inappropriate granularity, ravioli fragmentation,
+    and repetitive layering while preserving observable behavior as the constraint.
+- action: assess-dependencies-conditionally
+  instruction: Assess dependency health only when repository evidence shows end-of-life
+    support, an applicable advisory, incompatible constraints, deprecation, unresolved
+    graph conflict, or concrete maintenance risk. Consult authoritative support or
+    advisory sources when the claim depends on current external status. Do not recommend
+    routine version churn or choose an unspecified target.
+- action: assess-technology-migration-conditionally
+  instruction: Recommend technology replacement only when evidence shows the current
+    technology cannot meet an approved requirement or has no viable supported upgrade
+    path. Require a concrete source responsibility, target capability, feasibility
+    gap, and migration outcome; reject fashion and generic modernization.
+- action: assess-performance-conditionally
+  instruction: Assess performance only when requirements, budgets, existing telemetry,
+    profiles, regressions, scalability, resource use, startup, artifact size, energy,
+    or cost provide evidence of a concern. Use existing measurements first; run an
+    established representative benchmark only under the verification safety gate.
+    Do not invent workloads, guess bottlenecks, or propose optimization from code
+    appearance alone.
+- action: assess-documentation-conditionally
+  instruction: Assess documentation when public contracts, side effects, failures,
+    maintainer rationale, comments, runbooks, migration guidance, or release material
+    are affected, missing, contradictory, or stale.
+- action: consolidate-and-filter
+  instruction: Consolidate duplicate symptoms under their root cause. Remove unsupported,
+    speculative, purely stylistic, out-of-scope, and unjustified extensibility concerns;
+    distinguish confirmed findings from questions, assumptions, and validation gaps.
+- action: identify-blockers
+  instruction: Treat suspected production defects, unknown intended behavior, unreliable
+    baselines, and unapproved compatibility changes as blockers for dependent refactoring
+    or characterization-test proposals. Do not fix them or encode defective behavior;
+    continue assessing independent areas.
+- action: report-plan
+  instruction: Report concrete defects first, then a deduplicated Now, Next, and Later
+    action plan. Cite concrete paths and symbols. For every action state the root cause,
+    affected surface, intended outcome, smallest bounded change, behavior-preservation
+    contract, prerequisites, validation strategy, documentation impact, and residual
+    risk, using clearly labeled shared context when multiple actions genuinely share
+    those fields. Summarize scope, evidence, commands run, skipped checks, assumptions,
+    and validation gaps. If no actionable work remains, say so and report only meaningful gaps.

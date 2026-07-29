@@ -1,0 +1,7 @@
+name: assembly
+label: Assembly
+description: Load when optimizing Assembly performance.
+instructions:
+- Measure representative optimized builds with stable counters or timing; inspect instruction throughput,
+  latency, branches, cache, alignment, vectorization, atomics, and host crossings while preserving flags,
+  stack, memory ordering, and constant-time requirements.

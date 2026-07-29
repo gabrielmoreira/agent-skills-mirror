@@ -1,0 +1,15 @@
+id: dependency-upgrade.testing
+title: Verify the resolved target independently
+kind: policy
+priority: 2
+rule: Demonstrate both preserved behavior and actual execution against the intended resolved versions.
+require:
+- Ground behavior, boundary, failure, and determinism checks independently from the implementation.
+- Select clean restoration, compilation, analysis, focused tests, broader tests,
+  packaging, and smoke behavior according to the affected dependency surface and
+  crossed version boundaries; do not execute every category by default.
+- Inspect resolver output and runtime or build metadata when declarations, caches, or compatibility paths could conceal the version actually used.
+reject:
+- Weakening assertions, skipping failures, or updating snapshots without explaining behavioral changes.
+- Repeating equivalent build or test commands that establish no additional upgrade evidence.
+- Treating one incremental build as clean-environment proof.

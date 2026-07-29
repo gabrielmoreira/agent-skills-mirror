@@ -1,0 +1,12 @@
+name: rust
+label: Rust
+description: Load when migrating to or from Rust.
+instructions:
+- When Rust is the target, inventory iterators and standard algorithms, collections, enums and pattern
+  matching, ownership and borrowing, `Result` and `Option`, traits, concurrency, async runtime conventions,
+  RAII, and modules.
+- Prefer target-version language and standard-library facilities over translated garbage collection, nullable
+  sentinels, exception emulation, source collection helpers, or object hierarchies.
+- Verify ordering and hashing, Unicode, numeric overflow, iterator laziness, allocation, panic versus
+  error, cancellation, pinning, thread safety, ownership, drop order, serialization, and FFI.
+- Keep unsafe code, FFI, compatibility traits, patched crates, and feature-gated bridges bounded to stages.

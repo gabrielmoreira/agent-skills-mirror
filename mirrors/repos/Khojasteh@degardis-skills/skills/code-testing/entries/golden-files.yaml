@@ -1,0 +1,15 @@
+id: testing.golden-files
+title: Review snapshots and golden files as specifications
+kind: policy
+rule: Treat snapshots, golden files, recorded responses, and visual baselines as reviewed
+  expectations rather than automatically accepted output.
+require:
+- Inspect the semantic diff and confirm each changed expectation follows from an intentional
+  contract change.
+- Stabilize clocks, identifiers, ordering, paths, locale, rendering inputs, and other
+  environmental data before recording a baseline.
+- Keep fixtures minimal enough that meaningful changes remain reviewable.
+reject:
+- Bulk-updating expected artifacts merely because the current implementation differs.
+- Accepting a baseline that contains secrets, personal data, machine-specific values,
+  or unrelated generated noise.

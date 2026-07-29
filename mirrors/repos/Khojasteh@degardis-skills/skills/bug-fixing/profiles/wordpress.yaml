@@ -1,0 +1,7 @@
+name: wordpress
+label: WordPress
+description: Load when fixing WordPress code or behavior.
+instructions:
+- Reproduce hooks and priorities, capabilities, nonces, escaping, sanitization, queries, multisite, REST,
+  cron, cache, activation, and uninstall behavior; protect site data and fix the root cause without operating
+  destructively on production.

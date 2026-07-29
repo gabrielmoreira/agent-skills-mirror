@@ -1,6 +1,6 @@
 ---
 description: "Show full metadata + trust signal breakdown for a single Plugin Mall entry"
-lastReviewed: 2026-05-31
+lastReviewed: 2026-07-28
 ---
 
 # /mall-show
@@ -82,7 +82,7 @@ Per [PLAN-mall-automation v3 / ADR-008](https://github.com/fabioc-aloha/Alex_ACT
 5. **Surface next actions**:
 
    ```text
-   To install (when shipped):    /mall-install <name>[@<version>]
+  To install:                   /mall-install <name>[@<version>] using [mall-installation.instructions.md](../instructions/mall-installation.instructions.md)
    To compare against upstream:  open the source_url
    To switch store:              /mall-show <name> --from-store <other>
    ```

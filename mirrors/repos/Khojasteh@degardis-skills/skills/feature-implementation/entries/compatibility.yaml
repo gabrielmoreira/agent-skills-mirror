@@ -1,0 +1,11 @@
+id: feature-implementation.compatibility
+title: Preserve compatibility deliberately
+kind: policy
+priority: 20
+rule: Identify and preserve supported source, runtime, data, configuration, protocol,
+  and operational contracts unless a break is explicitly approved.
+require:
+- Inspect callers, serializers, schemas, documented behavior, versions, and deployment order.
+- Obtain approval for unavoidable compatibility breaks and define migration or rollback.
+reject:
+- Assuming an internal-looking symbol or format has no external or dynamic consumers.

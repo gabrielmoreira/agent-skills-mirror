@@ -1,0 +1,11 @@
+name: php
+label: PHP
+description: Load when migrating to or from PHP.
+instructions:
+- When PHP is the target, inventory standard array and string facilities, iterators, enums, attributes,
+  types, exceptions, streams, date and internationalization APIs, serialization, and resource handling.
+- Prefer target-version built-ins and established framework facilities over translated source utilities,
+  dynamic service locators, collection wrappers, or custom parsing.
+- Verify loose and strict equality, key coercion and ordering, locale, Unicode, precision, errors and
+  exceptions, generators, request lifecycle, resource cleanup, serialization, and extension availability.
+- Keep polyfills, compatibility packages, facades, and old-runtime branches bounded to stages.

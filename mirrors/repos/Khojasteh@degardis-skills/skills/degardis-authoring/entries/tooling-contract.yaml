@@ -1,0 +1,34 @@
+id: degardis-authoring.tooling-contract
+title: Degardis discovery and command contract
+kind: constraint
+priority: 45
+rule: Use Degardis discovery, profile selection, validation, and build commands
+  according to their source and output boundaries.
+require:
+- A path containing skill.yaml selects that skill; otherwise Degardis recursively
+  selects descendant directories containing skill.yaml and stops searching below
+  each discovered skill.
+- Default content globs are `entries/*.yaml`, `workflows/*.yaml`, `scripts/**/*`,
+  and `assets/**/*`; profile discovery reads immediate `*.yaml` files from profiles
+  unless another directory is configured.
+- Use `degardis list PATH [PATH ...]` to inspect selected skills and available
+  profiles without creating output; do not treat list as full source validation
+  or expect it to apply profile defaults.
+- Use `degardis validate PATH [PATH ...]` to validate sources without creating an
+  artifact or executing bundled scripts.
+- Use `degardis build PATH [PATH ...] --output PATH [--zip]` to create one
+  self-contained folder or ZIP per selected skill.
+- Treat an uncompressed build into an agent's project or personal skill
+  directory as a direct installation. Treat ZIP output as a distributable
+  artifact suitable for direct ChatGPT upload, not a filesystem installation.
+- Use repeated `--profile NAME`, `--profile SKILL:NAME`, or `--profile all`
+  selectors when variants are required; selectors may be repeated, explicit
+  selectors replace all manifest defaults, and `SKILL:all` selects every profile
+  for one skill. Treat `all` as valid when selected skills have no profiles.
+- Expect folder bundles to contain SKILL.md at their root, generated references
+  and agents/openai.yaml, plus copied scripts and assets when populated.
+reject:
+- Building into a source directory or storing maintained files at a selected
+  skill's matching folder or ZIP path; each build replaces both paths.
+- Assuming one selected skill pulls in another or that a multi-skill build rolls
+  back skills already replaced before a later skill fails.

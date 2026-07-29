@@ -1,0 +1,10 @@
+name: hcl
+label: HCL
+description: Load when reviewing HashiCorp Configuration Language, including Terraform
+  or OpenTofu configuration.
+instructions:
+- Identify the product and configured version that interpret the HCL; do not assume
+  Terraform semantics from syntax or file extension alone.
+- For Terraform or OpenTofu, review unknown and sensitive values, resource identity,
+  `for_each` keys, dependency edges, lifecycle rules, provider aliases, state moves,
+  imports, replacement and deletion risk, secrets, drift, and rollback feasibility.

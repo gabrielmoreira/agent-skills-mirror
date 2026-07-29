@@ -1,0 +1,11 @@
+name: django
+label: Django
+description: Load when migrating to or from Django.
+instructions:
+- When Django is the target, prefer target-version request, middleware, form, validation, authentication,
+  ORM, transaction, migration, template, cache, management-command, and security facilities.
+- Do not recreate source-framework routing, active-record abstractions, service containers, validation,
+  or lifecycle behind generic wrappers when Django supplies the contract.
+- Verify middleware and application initialization, sync and async behavior, permissions, query evaluation,
+  transactions, signals, serialization, caches, tasks, time zones, deployment, and cleanup.
+- Keep gateways, dual ORM paths, compatibility applications, and synchronization bounded to stages.

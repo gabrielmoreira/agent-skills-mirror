@@ -1,0 +1,9 @@
+name: kotlin
+label: Kotlin
+description: Load when testing Kotlin code or behavior.
+instructions:
+- Cover platform types, nullability, data-class equality, sealed hierarchies, collection
+  mutability, extension resolution, Java interoperability, and multiplatform targets
+  where they affect behavior.
+- Control coroutine dispatch and virtual time through existing seams; test cancellation,
+  structured-concurrency ownership, flows, and cleanup without real delays.

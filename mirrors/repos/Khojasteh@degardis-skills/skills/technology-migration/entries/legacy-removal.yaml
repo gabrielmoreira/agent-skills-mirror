@@ -1,0 +1,13 @@
+id: technology-migration.legacy-removal
+title: Remove the source technology completely
+kind: constraint
+priority: 1
+rule: Overall completion requires removal of source machinery outside declared supported boundaries.
+require:
+- Search for and remove source dependencies, imports, code, adapters, flags, configuration,
+  pipelines, generators, artifacts, tests, infrastructure, telemetry, documentation, and runbooks.
+- Verify the target builds, starts, operates, and recovers without source fallback.
+- Justify every retained legacy element by supported consumer or unfinished stage.
+reject:
+- Permanent dual implementations, build systems, deployment paths, or ownerless cleanup.
+- Calling a completed stage the completed migration.

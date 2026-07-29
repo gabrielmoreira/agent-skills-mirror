@@ -1,0 +1,14 @@
+id: bug-fixing.security-errors
+title: Preserve security and error boundaries
+kind: constraint
+rule: Correct defects without weakening authentication, authorization, validation,
+  confidentiality, integrity, auditability, or error observability.
+require:
+- Trace untrusted input through validation, normalization, authorization, storage,
+  output encoding, and logging.
+- Preserve useful failure context without exposing secrets, credentials, personal data,
+  internal paths, or sensitive payloads.
+- Distinguish synchronous, deferred, streamed, and background failure timing.
+reject:
+- Bypassing a security check, broadening access, swallowing an error, or logging secrets.
+- Converting a visible failure into silent data corruption or partial success.

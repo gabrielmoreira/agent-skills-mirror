@@ -1,0 +1,11 @@
+name: kotlin
+label: Kotlin
+description: Load when migrating to or from Kotlin.
+instructions:
+- When Kotlin is the target, inventory collections, sequences, data and sealed classes, null safety, extension
+  functions, coroutines and flows, resource helpers, multiplatform facilities, and standard-library algorithms.
+- Prefer target-version Kotlin facilities over translated Java-style boilerplate, callback layers, custom
+  option types, inheritance, promise wrappers, or source collection utilities.
+- Verify equality, ordering, nullability, numeric conversions, sequence laziness, exceptions, coroutine
+  cancellation and context, flow backpressure, thread confinement, serialization, and binary metadata.
+- Keep expect/actual bridges, Java interop, adapters, and compatibility annotations bounded to stages.

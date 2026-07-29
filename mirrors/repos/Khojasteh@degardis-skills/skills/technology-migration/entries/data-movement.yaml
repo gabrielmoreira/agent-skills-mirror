@@ -1,0 +1,13 @@
+id: technology-migration.data-movement
+title: Migrate data with reconciliation
+kind: constraint
+priority: 1
+rule: Treat data representation, ownership, movement, consistency, and recovery as migration contracts.
+require:
+- Define mapping, backfill, validation, reconciliation, transactions, consistency,
+  dual-read or dual-write behavior, cutover, rollback, retention, and cleanup.
+- Measure completeness and divergence before changing authority.
+- Protect privacy, residency, encryption, access, and audit obligations.
+reject:
+- Destructive production migration without explicit authority and recovery.
+- Assuming row counts alone prove semantic equivalence.

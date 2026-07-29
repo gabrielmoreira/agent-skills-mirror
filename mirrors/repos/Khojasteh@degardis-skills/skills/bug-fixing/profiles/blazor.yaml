@@ -1,0 +1,7 @@
+name: blazor
+label: Blazor
+description: Load when fixing Blazor code or behavior.
+instructions:
+- Reproduce lifecycle, parameters, cascading state, rendering, navigation, forms, authorization, DI scopes,
+  circuits, prerendering, hydration, JS interop, cancellation, and disposal; distinguish Server and WebAssembly
+  failure paths.

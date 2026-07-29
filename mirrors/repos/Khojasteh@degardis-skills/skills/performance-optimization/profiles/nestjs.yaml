@@ -1,0 +1,7 @@
+name: nestjs
+label: NestJS
+description: Load when optimizing NestJS performance.
+instructions:
+- Measure startup and module compilation, provider scopes, guards, pipes, interceptors, serialization,
+  database/network I/O, transports, event-loop delay, memory, and tail latency; retain validation, isolation,
+  cancellation, and shutdown.

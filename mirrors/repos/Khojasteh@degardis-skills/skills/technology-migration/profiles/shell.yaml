@@ -1,0 +1,9 @@
+name: shell
+label: Shell
+description: Load when migrating to or from Shell.
+instructions:
+- Prefer target-native quoting, parameter expansion, arrays, pipelines, process control, and error handling
+  over mechanical translation; verify ordering, equality tests, streams, exit status, signals, portability,
+  security, and cleanup.
+- Keep wrapper scripts and dual entry points bounded to explicit stages with owners and removal gates;
+  final completion cannot depend on the source shell.

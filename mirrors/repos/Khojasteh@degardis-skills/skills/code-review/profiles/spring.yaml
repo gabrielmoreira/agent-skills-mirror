@@ -1,0 +1,9 @@
+name: spring
+label: Spring
+description: Load when reviewing Spring code or behavior.
+instructions:
+- Trace bean scope, proxy boundaries, transactions, validation, authorization, serialization, retries,
+  async work, events, caches, and application lifecycle.
+- Check self-invocation bypass, transaction propagation, lazy loading, N+1 queries, configuration precedence,
+  thread-local context, and default security behavior.
+- Verify annotations are effective at the actual proxy and call boundary.

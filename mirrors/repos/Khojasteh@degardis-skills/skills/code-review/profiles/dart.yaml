@@ -1,0 +1,9 @@
+name: dart
+label: Dart
+description: Load when reviewing Dart code or behavior.
+instructions:
+- Trace null safety, futures, streams, subscriptions, zones, isolates, cancellation, late initialization,
+  and resource disposal.
+- Check collection mutation, equality, serialization, platform differences, and errors lost across asynchronous
+  boundaries.
+- Review generated-code interactions without reporting generated output as the source defect.

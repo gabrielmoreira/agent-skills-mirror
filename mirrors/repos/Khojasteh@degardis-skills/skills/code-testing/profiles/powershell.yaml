@@ -1,0 +1,8 @@
+name: powershell
+label: PowerShell
+description: Load when testing PowerShell code or behavior.
+instructions:
+- Cover object-pipeline behavior, success and error streams, terminating versus non-terminating errors,
+  scope, preference variables, providers, native-process exit codes, serialization, and cleanup.
+- Isolate session state, environment variables, modules, locations, and filesystem or registry providers;
+  do not make tests depend on a developer profile.

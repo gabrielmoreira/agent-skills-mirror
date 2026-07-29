@@ -1,0 +1,9 @@
+name: flutter
+label: Flutter
+description: Load when reviewing Flutter code or behavior.
+instructions:
+- Trace widget and state lifecycle, build-context validity, keys, navigation, async work, subscriptions,
+  controllers, animation, and disposal.
+- Check state updates after disposal, rebuild assumptions, platform-channel failures, persistence, accessibility,
+  layout constraints, and device differences.
+- Separate framework lifecycle defects from stylistic preferences about widget composition.

@@ -1,0 +1,7 @@
+name: jquery
+label: jQuery
+description: Load when optimizing jQuery performance.
+instructions:
+- Measure representative selector work, DOM reads/writes, layout and paint, event handlers, plugin initialization,
+  Ajax, data caches, memory retention, and interaction latency; verify accessibility, event behavior,
+  and cleanup.

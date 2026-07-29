@@ -1,0 +1,14 @@
+id: dependency-upgrade.legacy-removal
+title: Remove obsolete compatibility debt
+kind: constraint
+priority: 1
+rule: A final-state upgrade must no longer depend on paths that serve only dropped versions.
+require:
+- Search for old imports, symbols, packages, configuration keys, flags, adapters, shims,
+  polyfills, generated forms, comments, and version branches.
+- Delete duplicated old and new paths when no supported consumer requires the old path.
+- Verify that tests execute the target implementation rather than a compatibility fallback.
+reject:
+- Declaring success because a shim makes old code compile against the new dependency.
+- Leaving dead compatibility code for hypothetical rollback or future consumers.
+- Removing compatibility that still serves the declared support matrix.

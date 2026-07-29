@@ -1,0 +1,6 @@
+name: wordpress
+label: WordPress
+description: Load when implementing WordPress features.
+instructions:
+- Define hooks and priority, capabilities, nonces, escaping, sanitization, queries, REST, multisite, cron,
+  cache, activation, schema evolution, deactivation, uninstall, compatibility, and recovery.

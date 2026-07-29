@@ -1,0 +1,9 @@
+name: svelte
+label: Svelte
+description: Load when migrating to or from Svelte.
+instructions:
+- Prefer native reactivity, stores, actions, context, server/client boundaries, and compiler behavior
+  over translated source abstractions; verify bindings, update timing, accessibility, hydration, and cleanup
+  parity.
+- Keep component bridges, dual rendering, and adapters bounded to explicit stages with owners and removal
+  gates.

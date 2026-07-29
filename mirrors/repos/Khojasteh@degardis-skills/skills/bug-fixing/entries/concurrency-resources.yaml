@@ -1,0 +1,15 @@
+id: bug-fixing.concurrency-resources
+title: Verify concurrency and resource lifetime
+kind: constraint
+rule: Preserve synchronization, cancellation, ordering, ownership, and cleanup across
+  success, failure, timeout, and interruption.
+require:
+- Reproduce scheduling-sensitive defects with coordination primitives or controlled
+  clocks rather than timing luck.
+- Check races, deadlocks, lost updates, duplicate work, use-after-close, leaks, and
+  work that outlives its owner.
+- Verify locks, files, sockets, transactions, tasks, threads, and callbacks are released
+  or completed correctly.
+reject:
+- Adding arbitrary sleeps, retries, larger timeouts, or global serialization as a guessed fix.
+- Dropping cancellation or cleanup to make the symptom disappear.

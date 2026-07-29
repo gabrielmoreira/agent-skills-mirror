@@ -1,0 +1,25 @@
+format_version: 1
+purpose: |-
+  Assess a broad codebase or subsystem for quality, maintainability, technical
+  debt, test adequacy, structure, dependency health, performance evidence, and
+  documentation, then produce a prioritized improvement roadmap.
+when_it_applies: |-
+  This skill applies to repository health audits and broad improvement planning.
+  Reviews of a bounded diff, pull request, or small set of files are outside its
+  scope.
+capabilities:
+- Maps the codebase structure and important subsystem boundaries.
+- Evaluates maintainability and evidence-backed technical debt.
+- Assesses test, dependency, performance, and documentation risks.
+- Distinguishes verified findings from areas needing further investigation.
+- Produces a prioritized, actionable roadmap without implementing it.
+sample_prompts:
+- Assess this codebase's quality and plan improvements.
+- Give me a technical debt assessment of this repository.
+- Evaluate how maintainable this project is and what should be fixed first.
+- Audit this codebase's test coverage, dependencies, and documentation gaps.
+- What are the biggest structural risks in this codebase, ranked by priority?
+catalog:
+  order: 20
+  category: Software engineering / Assessment
+  summary: Assess repository health and produce a prioritized improvement roadmap.

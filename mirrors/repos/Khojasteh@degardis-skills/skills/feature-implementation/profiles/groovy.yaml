@@ -1,0 +1,6 @@
+name: groovy
+label: Groovy
+description: Load when implementing Groovy features.
+instructions:
+- Model dynamic and static contracts, closure delegation, Java interop, build-phase behavior, serialization,
+  classloader effects, and cleanup idiomatically without speculative DSL or metaprogramming layers.

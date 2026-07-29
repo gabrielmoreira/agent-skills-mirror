@@ -1,0 +1,10 @@
+name: visual-basic
+label: Visual Basic
+description: Load when fixing Visual Basic code or behavior.
+instructions:
+- Trace `Nothing` for reference, nullable, and value types; narrowing conversions, `CType`/`DirectCast`/`TryCast`,
+  overload resolution, `ByRef`, default properties, and case-insensitive name binding.
+- Reproduce late binding, `Handles`/`AddHandler` event lifetime, async and cancellation, iterator and
+  LINQ evaluation, disposal, XML literals, and culture-sensitive operations.
+- Check `My` services, serialization, reflection, COM interop, trimming/AOT, and public API compatibility
+  when the failure depends on generated or runtime-discovered behavior.

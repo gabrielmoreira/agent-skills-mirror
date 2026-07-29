@@ -1,0 +1,6 @@
+name: nodejs
+label: Node.js
+description: Load when implementing Node.js features.
+instructions:
+- Define event-loop, promise, cancellation, stream and backpressure, worker, signal, filesystem, environment,
+  security, resource cleanup, and deployment behavior; prefer supported runtime facilities over new dependencies.

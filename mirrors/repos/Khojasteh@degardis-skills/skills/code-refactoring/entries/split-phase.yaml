@@ -1,0 +1,14 @@
+id: refactoring.pattern.split-phase
+title: Split phase
+kind: pattern
+rule: Separate acquisition, parsing, validation, decision, and effect phases when their
+  boundaries clarify behavior or permit independent verification.
+conditions:
+- Interleaved responsibilities obscure failure handling, state transitions, or testing.
+require:
+- Define explicit data and error contracts between phases.
+- Preserve ordering, transactions, cleanup, retries, and partial-failure behavior.
+- Verify end-to-end behavior as well as the separated decisions.
+reject:
+- Creating pass-through phases without independent policy or meaning.
+- Splitting operations whose atomicity or shared lifetime must remain explicit.

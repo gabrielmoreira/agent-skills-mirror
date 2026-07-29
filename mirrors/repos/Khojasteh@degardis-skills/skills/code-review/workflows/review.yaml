@@ -1,0 +1,60 @@
+id: code-review.review
+title: Review code with evidence
+description: Review either a change or an existing codebase at the requested scope
+  while minimizing false positives.
+steps:
+- action: select-review-mode
+  instruction: Select change review when a diff, commit, pull request, or base revision
+    is in scope. Select codebase review when the request targets existing files,
+    components, or the repository without a change boundary.
+- action: establish-scope
+  instruction: Identify intended behavior, allowed scope, exclusions, and risk priorities.
+    In change review, establish the base revision and changed surface, including relevant
+    uncommitted or generated changes. In codebase review, define a risk-based coverage
+    boundary and do not imply exhaustive review of surfaces not inspected. Honor explicit
+    technology choices and established versions and tooling. Treat the task as analysis-only
+    unless implementation is explicitly requested.
+- action: inspect-code-and-context
+  instruction: Read repository instructions, the complete in-scope code or diff, relevant
+    call sites, tests, configuration, schemas, migrations, generated artifacts, and
+    operational context needed to understand behavior. Use requirements, public contracts,
+    history, and callers to infer intent; do not treat missing documentation or surprising
+    code as proof of a defect.
+- action: establish-tooling-evidence
+  instruction: Select project tools and commands only when explicit scope or repository
+    instructions, manifests, lockfiles, configuration, scripts, CI, documentation, or
+    established usage supports them. Availability, filenames, conventions, and popularity
+    do not establish adoption; never execute competing tools as probes. When evidence is
+    absent, use tool-independent analysis, report the validation gap, or ask before
+    introducing tooling.
+- action: map-risk
+  instruction: Map in-scope behavior across correctness, trust boundaries, data integrity,
+    concurrency, compatibility, resource lifetime, failure handling, operations, and
+    regression exposure.
+- action: validate-hypotheses
+  instruction: Trace concrete execution paths, look for guards and counter-evidence,
+    and verify uncertain language, library, and framework semantics from configured
+    versions, authoritative documentation, focused checks, or a minimal reproduction
+    before raising a finding. Distinguish observed failures from reasoned but unexecuted
+    paths and calibrate confidence accordingly.
+- action: evaluate-tests
+  instruction: Assess whether tests independently exercise relevant behavior, boundaries,
+    failure modes, and regressions by inspecting the tests, configuration, and existing
+    CI or test reports. Do not run project unit, integration, end-to-end, or general
+    test suites as part of a code-review request. Do not infer adequacy from test count,
+    coverage percentage, or a passing suite alone.
+- action: filter-candidates
+  instruction: Remove speculation, duplicates, style preferences, and out-of-scope
+    concerns; record unresolved uncertainty as a question or assumption. In change
+    review, keep only issues introduced or materially affected by the change. In codebase
+    review, keep actionable in-scope issues regardless of when they were introduced.
+- action: rank-findings
+  instruction: Rank findings as Critical, High, Medium, or Low from concrete impact,
+    reachability, affected scope, and confidence. Use the smallest relevant file and
+    line location.
+- action: report
+  instruction: Report findings first with scenario, expected versus actual behavior,
+    impact, evidence, and bounded remediation direction. Then list material questions,
+    assumptions, inspected scope, checks performed, and residual validation risk. If
+    no actionable findings remain, say so directly without implying that uninspected
+    code is defect-free.

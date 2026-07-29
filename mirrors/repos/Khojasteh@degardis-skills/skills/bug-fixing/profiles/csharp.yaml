@@ -1,0 +1,10 @@
+name: csharp
+label: C#
+description: Load when fixing C# code or behavior.
+instructions:
+- Trace nullable flow, overload and generic inference, records and equality, pattern matching, checked
+  arithmetic, exception filters, and culture-sensitive parsing.
+- Reproduce async, `ValueTask`, async-stream, cancellation, disposal, iterator, closure, and deferred
+  or repeated LINQ behavior without changing observable timing or ownership.
+- Check reflection, serialization, source generation, trimming/AOT, interop, and public API compatibility
+  when the defect crosses compiled or runtime-discovered boundaries.

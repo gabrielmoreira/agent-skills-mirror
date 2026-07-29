@@ -1,0 +1,12 @@
+name: aspnet-core
+label: ASP.NET Core
+description: Load when migrating to or from ASP.NET Core.
+instructions:
+- When ASP.NET Core is the target, prefer target-version hosting, routing, binding, validation, middleware,
+  DI, authorization, configuration, logging, health, serialization, and async streaming facilities.
+- Do not recreate source-framework filters, service locators, request objects, routing, lifecycle, or
+  error pipelines when native framework facilities satisfy the contract.
+- Verify middleware order, DI lifetime, request and cancellation lifetime, authentication and authorization,
+  serialization defaults, streaming, exception timing, trimming or AOT, deployment, and resource cleanup.
+- Keep gateways, endpoint adapters, dual hosts, and compatibility packages bounded to stages; preserve
+  established hosting and architecture unless replacement is approved.

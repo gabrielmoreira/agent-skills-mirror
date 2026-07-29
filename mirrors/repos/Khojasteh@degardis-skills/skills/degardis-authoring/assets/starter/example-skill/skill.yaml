@@ -1,0 +1,14 @@
+name: example-skill
+title: Example Skill
+format_version: 1
+version: 0.1.0
+description: Perform one clearly bounded example outcome. Use when a request asks
+  for that outcome in ordinary language.
+primary_workflow: example-skill.deliver
+content:
+  workflows:
+  - workflows/*.yaml
+interface:
+  display_name: Example Skill
+  short_description: Deliver one clearly bounded example outcome
+  default_prompt: Use $example-skill to deliver this example outcome.

@@ -1,0 +1,6 @@
+name: typescript
+label: TypeScript
+description: Load when testing TypeScript code or behavior.
+instructions:
+- Match the configured compilation or runtime transformation path; do not invent a loader.
+- Distinguish runtime assertions from static type checks and run both when the contract requires it.

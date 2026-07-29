@@ -1,0 +1,16 @@
+id: technology-migration.builtin-semantics
+title: Prefer suitable target built-ins
+kind: constraint
+priority: 1
+rule: Use a target language, standard-library, framework, runtime, or platform built-in
+  instead of reimplementing source behavior when its semantics satisfy the approved contract.
+require:
+- Inventory applicable target algorithms, collections, parsing, formatting, concurrency,
+  resources, errors, types, serialization, modules, lifecycle, security, and platform services.
+- Verify ordering, stability, equality, locale, precision, overflow, complexity, allocation,
+  failure, cancellation, security, concurrency, and compatibility semantics.
+- Document why custom code remains when a demonstrated contract is not met by the built-in.
+reject:
+- Porting a custom source utility merely to retain familiar implementation structure.
+- Selecting a built-in by name alone when its edge behavior differs.
+- Wrapping a suitable built-in in a source-shaped compatibility API without a supported consumer.

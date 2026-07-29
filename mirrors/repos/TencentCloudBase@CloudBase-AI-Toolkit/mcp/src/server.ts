@@ -16,7 +16,6 @@ import { registerCapiTools } from "./tools/capi.js";
 import { registerCloudRunTools } from "./tools/cloudrun.js";
 import { registerDataModelTools } from "./tools/dataModel.js";
 import { registerGatewayTools } from "./tools/gateway.js";
-import { registerInviteCodeTools } from "./tools/invite-code.js";
 import { registerAgentTools } from "./tools/agents.js";
 import { registerAppAuthTools } from "./tools/app-auth.js";
 import { registerAppTools } from "./tools/apps.js";
@@ -56,7 +55,6 @@ const DEFAULT_PLUGINS = [
   "logs",
   "agents",
   "download",
-  "invite-code",
   "capi",
 ];
 
@@ -102,7 +100,6 @@ const AVAILABLE_PLUGINS: Record<string, PluginDefinition> = {
   logs: { name: "logs", register: registerLogTools },
   agents: { name: "agents", register: registerAgentTools },
   apps: { name: "apps", register: registerAppTools },
-  "invite-code": { name: "invite-code", register: registerInviteCodeTools },
   cloudrun: { name: "cloudrun", register: registerCloudRunTools },
   capi: { name: "capi", register: registerCapiTools },
 };

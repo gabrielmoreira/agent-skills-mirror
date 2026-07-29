@@ -1,0 +1,13 @@
+id: dependency-upgrade.completion
+title: Prove the final state
+kind: constraint
+priority: 1
+rule: Do not call an upgrade complete until declarations, resolution, source, configuration, artifacts, and supported behavior agree.
+require:
+- Confirm requested targets in manifests, lockfiles, runtime metadata, and actual execution.
+- Explain every introduced or materially relevant downgrade, duplicate runtime, override, warning, and retained compatibility path.
+- Review searches for obsolete identities and verify clean supported build paths.
+- Separate introduced failures, pre-existing defects, deferred validation, and residual risk.
+reject:
+- A green build that silently uses an old binary, cached artifact, fallback, or compatibility path.
+- Reporting partial migration as complete.

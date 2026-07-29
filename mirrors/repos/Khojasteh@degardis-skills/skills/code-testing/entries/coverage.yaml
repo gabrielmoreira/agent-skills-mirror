@@ -1,0 +1,11 @@
+id: testing.coverage
+title: Behavioral coverage
+kind: principle
+rule: Optimize for meaningful behavioral coverage instead of percentage targets.
+rationale: Line coverage can increase without testing important decisions or outcomes.
+require:
+- Cover representative success, boundary, invalid-input, and failure behavior according
+  to risk.
+- Explain intentionally untested risk when relevant.
+reject:
+- Adding assertions or cases solely to execute uncovered lines.

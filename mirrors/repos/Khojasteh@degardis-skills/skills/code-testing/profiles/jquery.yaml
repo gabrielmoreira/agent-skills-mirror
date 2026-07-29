@@ -1,0 +1,8 @@
+name: jquery
+label: jQuery
+description: Load when testing jQuery code or behavior.
+instructions:
+- Cover delegated and namespaced events, DOM insertion and cleanup, data caches, Deferred versus native
+  Promise behavior, Ajax callbacks, plugin initialization, chaining, and duplicate binding.
+- Reset fixtures and handlers between tests and use a real browser when layout or browser event behavior
+  matters.

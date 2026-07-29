@@ -1,0 +1,11 @@
+name: csharp
+label: C#
+description: Load when reviewing C# code or behavior.
+instructions:
+- Trace nullable flow, overload resolution, records and equality, pattern coverage, async/`ValueTask`
+  and cancellation behavior, disposal, iterators, closures, and LINQ execution, including deferred or
+  repeated enumeration.
+- Check synchronization assumptions, exception and checked-arithmetic boundaries, culture, serialization,
+  reflection, source generation, trimming/AOT, interop, and API compatibility.
+- Report language constructs only when they violate a concrete correctness, security, maintainability,
+  or compatibility invariant.

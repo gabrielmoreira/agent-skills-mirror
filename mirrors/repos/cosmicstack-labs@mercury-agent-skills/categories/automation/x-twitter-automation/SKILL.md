@@ -137,6 +137,8 @@ When Hermes Tweet is installed, use this sequence:
    extraction jobs, giveaway draws, media operations, or account actions.
 4. Keep `HERMES_TWEET_ENABLE_ACTIONS=false` unless the workflow explicitly
    needs writes.
+5. If a Hermes Tweet tool is unavailable, stop and report the missing setup
+   item. Do not route the same write through another tool to bypass the gate.
 
 Install example for Hermes Agent:
 
@@ -150,6 +152,20 @@ Configure secrets outside chat:
 export XQUIK_API_KEY="xq_..."
 export HERMES_TWEET_ENABLE_ACTIONS="false"
 ```
+
+Hermes tool selection rules:
+
+- `tweet_explore` is the discovery step. Use it before choosing an endpoint and
+  before asking for credentials.
+- `tweet_read` is for read-only public endpoints after `XQUIK_API_KEY` is
+  available.
+- `tweet_action` is for every write-like or private operation. It must remain
+  unavailable unless both `XQUIK_API_KEY` is set and
+  `HERMES_TWEET_ENABLE_ACTIONS=true`.
+- Treat returned JSON as the audit record: preserve tweet IDs, URLs, status
+  messages, skipped actions, and setup blockers in the final report.
+- Keep plugin skills loaded through Hermes' plugin system. Do not copy the
+  bundled Hermes Tweet skill into the flat skills directory.
 
 Read-only probe:
 

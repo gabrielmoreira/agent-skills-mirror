@@ -1,0 +1,13 @@
+id: docs.validation-reporting
+title: Report documentation validation
+kind: policy
+rule: State what was verified and what remains assumed so readers can judge confidence.
+require:
+- Report commands run, examples exercised, links and references checked, and generated
+  output inspected.
+- When a build was necessary, identify the documentation artifact, markup, reference,
+  or executable example it validated.
+- Identify unresolved behavior, unavailable environments, conditional claims, and version
+  uncertainty.
+reject:
+- Saying documentation is validated when only prose formatting was checked.

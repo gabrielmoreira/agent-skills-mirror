@@ -1,0 +1,6 @@
+name: nodejs
+label: Node.js
+description: Load when testing Node.js code or behavior.
+instructions:
+- Cover event-loop ordering, promises, timers, streams, backpressure, cancellation, process signals, workers,
+  module caches, filesystem behavior, and resource cleanup without arbitrary sleeps.

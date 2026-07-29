@@ -1,0 +1,29 @@
+id: codebase-assessment.output
+title: Produce one prioritized improvement plan
+kind: policy
+priority: 4
+rule: Report concrete defects first, then a deduplicated action plan ordered by risk,
+  prerequisites, and demonstrated value.
+require:
+- Use Critical, High, Medium, and Low only for concrete defects with demonstrated
+  impact and confidence.
+- Put blockers and high-risk correctness or safety work under Now.
+- Put justified testing, structural, dependency, technology-migration, performance,
+  and documentation improvements under Next.
+- Put bounded lower-risk improvements with demonstrated value under Later.
+- Omit speculative extensibility and optional churn.
+- Cite the concrete repository paths and symbols supporting each confirmed finding
+  and action.
+- Identify the smallest bounded change for every action.
+- For every action, individually or through clearly labeled shared context, state
+  the root cause, affected surface, intended outcome, behavior-preservation contract,
+  prerequisites, validation strategy, documentation impact, and residual risk.
+- Separate confirmed findings, questions, assumptions, pre-existing failures, and validation gaps.
+- Summarize the assessed scope, evidence used, commands run, and commands skipped
+  because their side effects or value were uncertain.
+- If no actionable findings or improvements remain, say so directly and report only
+  meaningful validation gaps.
+reject:
+- Ranking style preferences as defects or using severity as a proxy for implementation order.
+- Producing separate topical reports that duplicate or contradict one another.
+- Hiding uncertainty inside an imperative recommendation.

@@ -1,0 +1,17 @@
+id: refactoring.pattern.rename-symbol
+title: Rename symbol
+kind: pattern
+rule: Rename symbols to communicate domain meaning without changing behavior.
+conditions:
+- The current name is misleading, ambiguous, or inconsistent with the established domain language.
+require:
+- Use language-aware tooling when reliable and search textual, generated, reflective,
+  configuration, template, route, serialization, and external references.
+- Preserve public, wire, configuration, database, and compatibility names unless
+  their change is separately approved.
+- Verify the rename with the smallest applicable combination of usage searches,
+  compilation or build checks, and focused tests; do not run all categories when they
+  establish equivalent evidence.
+reject:
+- Combining a rename with logic, signature, ownership, or formatting changes.
+- Assuming internal visibility eliminates dynamic or external consumers.

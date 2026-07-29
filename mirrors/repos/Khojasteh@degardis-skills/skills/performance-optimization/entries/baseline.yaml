@@ -1,0 +1,15 @@
+id: performance-optimization.baseline
+title: Establish comparable baselines
+kind: policy
+priority: 7
+rule: Record correctness and performance before changing implementation so later results
+  can be compared under materially equivalent conditions.
+require:
+- Record commit, build mode, runtime, hardware or container resources, configuration,
+  inputs, commands, load model, sample protocol, distributions, and relevant variance.
+- Recheck the baseline or interleave measurements when thermal state, shared resources,
+  data state, deployment, or elapsed time could introduce drift.
+- Separate pre-existing functional, environment, and performance failures.
+reject:
+- Comparing debug and optimized builds, different data, different resource limits,
+  warmed and cold states, or unrelated environments as if they were equivalent.

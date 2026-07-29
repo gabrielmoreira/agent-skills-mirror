@@ -1,0 +1,8 @@
+name: aspnet-core
+label: ASP.NET Core
+description: Load when testing ASP.NET Core code or behavior.
+instructions:
+- Choose direct unit, in-process host, HTTP integration, or external dependency scope according to the
+  boundary being verified.
+- Isolate dependency-injection scopes, configuration, authentication, databases, clocks, background services,
+  and application lifetime.

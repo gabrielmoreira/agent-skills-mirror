@@ -1,0 +1,26 @@
+name: fsharp
+label: F#
+description: Load when documenting F# code or APIs.
+instructions:
+- Document module and function purpose, curried parameters, units, option/`Result` meaning, discriminated-union
+  cases and invariants, lazy sequences, side effects, exceptions, cancellation, resource ownership, and
+  thread-safety contracts.
+- Keep `.fsi` signatures, implementation documentation, compiled names, and C#-visible nullability or
+  overload behavior consistent; do not expose private representation details.
+- Use a plain triple-slash comment only for a summary-only comment. When documentation needs any structured
+  element, use well-formed XML beginning with `<summary>`, and do not mix Markdown into XML comments.
+- Document each function or member parameter with `<param>`, each type parameter with `<typeparam>`, and
+  each non-`unit` result with `<returns>`. Cover meaning, units, valid values, and union-case semantics
+  rather than restating names or signatures.
+- Refer to parameters and type parameters with `<paramref>` and `<typeparamref>`. Use the full XML documentation
+  signature in `cref`, such as `<see cref="T:System.Console">System.Console</see>`, because the F# compiler
+  does not resolve or validate abbreviated C#-style references.
+- Use `<c>` for inline code and `<code>` for multiline code or output. Add examples only when they clarify
+  composition, evaluation, ordering, or an edge case.
+- Emit a separate `<exception>` element for each distinct failure condition, even when conditions share
+  an exception type, and distinguish immediate validation failures from failures observed during asynchronous
+  workflows or sequence enumeration.
+- Do not rely on `<include>` or `<inheritdoc>` to compose F# documentation; the F# compiler copies those
+  elements without applying them.
+details_files:
+- details/xml-lists.md

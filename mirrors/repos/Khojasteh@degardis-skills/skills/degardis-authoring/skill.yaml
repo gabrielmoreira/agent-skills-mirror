@@ -1,0 +1,29 @@
+name: degardis-authoring
+title: Degardis Authoring
+format_version: 1
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Guide an agent in authoring, reviewing, or revising AI agent skills
+  in the Degardis source format, then use Degardis to validate them and compile
+  them into installable AI agent skill bundles. Use when a request asks to
+  create, assess, or change such a skill, work with skill.yaml, workflows,
+  entries, profiles, scripts, or assets, produce a bundle, or install generated
+  output.
+primary_workflow: degardis-authoring.author
+entry_kinds:
+- principle
+- policy
+- heuristic
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+  assets:
+  - assets/**/*
+interface:
+  display_name: Degardis Authoring
+  short_description: Author AI agent skills in Degardis format
+  default_prompt: Use $degardis-authoring to review and improve this AI agent skill in the Degardis source format.

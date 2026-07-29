@@ -1,0 +1,10 @@
+name: dotnet
+label: .NET
+description: Load for NuGet, .NET SDK, target-framework, or workload-coupled upgrades.
+instructions:
+- Reconcile package versions with the SDK selected by `global.json`, target frameworks, runtime identifiers,
+  workloads, central package management, package source mapping, lock modes, and every shipped project.
+- Use native restore and package graph inspection, explain transitive pinning or framework-provided assemblies,
+  and review central props, project files, lock or assets data, analyzers, and generators together.
+- Validate clean restore, build, test, publish, trimming or AOT where supported, plus binary and source
+  compatibility for downstream consumers; treat target-framework changes as explicit scope.

@@ -1,0 +1,12 @@
+id: refactoring.dynamic-references
+title: Search beyond static references
+kind: constraint
+rule: Check reflection, dependency injection, routing, serialization, templates, scripts,
+  configuration, generated code, and external consumers before renaming, moving, or deleting.
+require:
+- Search textual and structured registrations in addition to language references.
+- Identify generated sources and edit their source of truth rather than generated output.
+- Verify runtime discovery and registration after the transformation.
+reject:
+- Declaring code dead solely because static search finds no callers.
+- Renaming configuration, wire, or serialized names as an incidental symbol rename.

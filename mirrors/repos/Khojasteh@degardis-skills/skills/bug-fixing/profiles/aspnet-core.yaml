@@ -1,0 +1,7 @@
+name: aspnet-core
+label: ASP.NET Core
+description: Load when fixing ASP.NET Core code or behavior.
+instructions:
+- Trace middleware order, routing and binding, validation, authentication and authorization, DI lifetime,
+  transactions, cancellation, serialization, hosted services, and HTTP failure timing.
+- Reproduce at the narrowest direct, in-process host, HTTP, or external boundary that preserves the defect.

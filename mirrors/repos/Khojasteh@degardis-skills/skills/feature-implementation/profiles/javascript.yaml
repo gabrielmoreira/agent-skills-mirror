@@ -1,0 +1,6 @@
+name: javascript
+label: JavaScript
+description: Load when implementing JavaScript features.
+instructions:
+- Design across promise rejection, event-loop ordering, cancellation, module boundaries, mutation, coercion,
+  serialization, environment differences, and resource cleanup.

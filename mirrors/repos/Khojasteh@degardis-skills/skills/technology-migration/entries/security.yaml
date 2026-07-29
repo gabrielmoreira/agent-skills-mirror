@@ -1,0 +1,13 @@
+id: technology-migration.security
+title: Re-establish security boundaries
+kind: constraint
+priority: 1
+rule: Re-evaluate trust, identity, authorization, secrets, isolation, and supply-chain boundaries in the target.
+require:
+- Map authentication, authorization, tenancy, validation, encryption, secrets,
+  permissions, sandboxing, provenance, audit, and compliance behavior.
+- Verify target defaults rather than assuming source controls transfer.
+- Protect credentials and data during coexistence and cutover.
+reject:
+- Preserving an insecure source workaround as parity.
+- Broadening permissions temporarily without a bounded removal and verification plan.

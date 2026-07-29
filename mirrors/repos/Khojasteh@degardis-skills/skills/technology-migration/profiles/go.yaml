@@ -1,0 +1,12 @@
+name: go
+label: Go
+description: Load when migrating to or from Go.
+instructions:
+- When Go is the target, inventory standard packages, slices and maps, generics, interfaces at caller
+  boundaries, contexts, errors, goroutines, channels, synchronization, I/O, and cleanup before recreating
+  source abstractions.
+- Prefer direct target-version standard-library facilities and explicit control flow over translated inheritance,
+  exceptions, futures, dependency-injection graphs, or framework-style wrappers.
+- Verify equality and ordering, Unicode, numeric behavior, allocation, zero values, error identity, cancellation,
+  goroutine lifetime, channel ownership, races, and resource cleanup.
+- Keep cgo, RPC bridges, generated adapters, replacements, and build-tag compatibility bounded to stages.

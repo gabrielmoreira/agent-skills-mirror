@@ -1,0 +1,12 @@
+id: dependency-upgrade.rollback
+title: Make rollback truthful
+kind: policy
+priority: 3
+rule: Define rollback according to actual data, protocol, deployment, and package compatibility.
+require:
+- Identify irreversible migrations, cache or format changes, mixed-version constraints, and recovery prerequisites.
+- Prefer source-control and reproducible resolution over retained dead compatibility code.
+- State when rollback requires restoring data or coordinated deployment rather than only reverting files.
+reject:
+- Keeping unused shims indefinitely as a substitute for a rollback plan.
+- Claiming rollback is safe without checking target-produced state.

@@ -1,0 +1,12 @@
+id: testing.behavior-first
+title: Behavior over implementation
+kind: principle
+rule: Test observable contracts and outcomes rather than internal implementation details.
+priority: 10
+rationale: Implementation-coupled tests create false failures during safe refactoring
+  and can pass while user-visible behavior is wrong.
+require:
+- Assert outputs, state transitions, externally visible effects, or documented interactions.
+reject:
+- Reaching into private state when public behavior can demonstrate the same property.
+- Asserting incidental call order or object shape that the contract does not require.

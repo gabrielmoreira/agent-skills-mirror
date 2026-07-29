@@ -1,0 +1,8 @@
+name: html
+label: HTML
+description: Load when fixing HTML code or behavior.
+instructions:
+- Require rendered evidence before applying HTML-specific guidance.
+- Reproduce the affected browser, template path, input, and assistive contract; trace parsing, escaping,
+  form association, focus, navigation, and generated markup, then fix the smallest causal semantic defect
+  without rewriting incidental structure.

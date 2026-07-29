@@ -1,0 +1,7 @@
+name: lua
+label: Lua
+description: Load when optimizing Lua performance.
+instructions:
+- Measure representative interpreter/JIT warmup, table and string allocation, garbage collection, coroutine
+  scheduling, host crossings, and I/O; verify nil, ordering, numeric, error, and ownership semantics after
+  each change.

@@ -29,11 +29,9 @@ lateralus/
 ├── skills/                           # ALL skills — single source of truth
 │   ├── lateralus/
 │   │   ├── SKILL.md                  # Full debugging skill
-│   │   ├── SKILL-caveman.md          # Compressed variant (~60% fewer tokens)
 │   │   └── README.md
 │   └── lateralus-brainstorm/
-│       ├── SKILL.md                  # Full brainstorming / plan-mode skill
-│       └── SKILL-caveman.md          # Compressed variant
+│       └── SKILL.md                  # Full brainstorming / plan-mode skill
 │
 ├── agents/                           # Subagents — single source of truth
 │   ├── lateralus-ideator-ground.md   # Generates Tier 1 grounded hypotheses
@@ -47,9 +45,7 @@ lateralus/
 │
 ├── .github/skills/                   # Copilot-discoverable mirrors (CI-synced)
 │   ├── lateralus/SKILL.md
-│   ├── lateralus-caveman/SKILL.md
-│   ├── lateralus-brainstorm/SKILL.md
-│   └── lateralus-brainstorm-caveman/SKILL.md
+│   └── lateralus-brainstorm/SKILL.md
 │
 └── .github/workflows/
     └── sync-skill.yml                # Syncs skills/ → .github/skills/ on push to main
@@ -62,9 +58,7 @@ lateralus/
 | I want to change... | Edit this file |
 |---|---|
 | Core skill behavior (tiers, horizon routing, rules) | `skills/lateralus/SKILL.md` |
-| Debugging compressed variant | `skills/lateralus/SKILL-caveman.md` |
 | Brainstorming / plan-mode skill | `skills/lateralus-brainstorm/SKILL.md` |
-| Brainstorming compressed variant | `skills/lateralus-brainstorm/SKILL-caveman.md` |
 | Scout (interview + audit) | Built into `skills/lateralus/SKILL.md` Step 0 |
 | Tier 1 grounded hypotheses | `agents/lateralus-ideator-ground.md` |
 | Middle-ground hypotheses | `agents/lateralus-ideator-balanced.md` |
@@ -84,9 +78,8 @@ Do NOT edit `.github/skills/` directly — those are CI-synced mirrors.
 
 What it does:
 1. Copies `skills/lateralus/SKILL.md` → `.github/skills/lateralus/SKILL.md`
-2. Copies `skills/lateralus-caveman/SKILL.md` → `.github/skills/lateralus-caveman/SKILL.md`
-3. Copies `skills/lateralus-brainstorm/SKILL.md` → `.github/skills/lateralus-brainstorm/SKILL.md`
-4. Commits with `[skip ci]` to avoid loops.
+2. Copies `skills/lateralus-brainstorm/SKILL.md` → `.github/skills/lateralus-brainstorm/SKILL.md`
+3. Commits with `[skip ci]` to avoid loops.
 
 After merging a skill change, wait for the workflow before declaring the release complete.
 
@@ -99,9 +92,7 @@ Three skills ship from this repo:
 | Skill | File | Purpose |
 |---|---|---|
 | `lateralus` | `skills/lateralus/SKILL.md` | Full debugging skill — goal context + two-tier ideation |
-| `lateralus-caveman` | `skills/lateralus/SKILL-caveman.md` | Same, ~60% fewer tokens |
 | `lateralus-brainstorm` | `skills/lateralus-brainstorm/SKILL.md` | Brainstorming / plan mode — Grounded, Balanced, Wild |
-| `lateralus-brainstorm-caveman` | `skills/lateralus-brainstorm/SKILL-caveman.md` | Same, ~60% fewer tokens |
 
 Each skill has:
 - A `SKILL.md` (LLM-facing prompt body — what the agent loads)
@@ -167,7 +158,6 @@ Hook notes:
 ---
 
 @./skills/lateralus/SKILL.md
-@./skills/lateralus-caveman/SKILL.md
 @./skills/lateralus-brainstorm/SKILL.md
 @./agents/lateralus-ideator-ground.md
 @./agents/lateralus-ideator-balanced.md

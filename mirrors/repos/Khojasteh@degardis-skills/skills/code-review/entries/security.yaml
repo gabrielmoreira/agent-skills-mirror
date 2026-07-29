@@ -1,0 +1,13 @@
+id: review.security
+title: Review trust boundaries
+kind: constraint
+rule: Trace untrusted data and authority across authentication, authorization, validation,
+  storage, execution, logging, and output boundaries.
+require:
+- Check enforcement at the trusted boundary rather than relying only on clients or callers.
+- Consider injection, path traversal, unsafe deserialization, secret exposure, confused
+  deputy behavior, and privilege changes when reachable.
+- Verify deny paths, ownership checks, tenant separation, and failure defaults.
+reject:
+- Generic security warnings without a concrete input, missing control, and impact.
+- Assuming authenticated means authorized.

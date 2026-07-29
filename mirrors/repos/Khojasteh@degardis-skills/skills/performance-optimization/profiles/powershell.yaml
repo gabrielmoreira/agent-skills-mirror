@@ -1,0 +1,6 @@
+name: powershell
+label: PowerShell
+description: Load when optimizing PowerShell performance.
+instructions:
+- Measure representative pipeline enumeration, object creation, serialization, remoting, provider access,
+  native process startup, I/O, memory, and streams; retain type behavior, errors, idempotency, and cleanup.

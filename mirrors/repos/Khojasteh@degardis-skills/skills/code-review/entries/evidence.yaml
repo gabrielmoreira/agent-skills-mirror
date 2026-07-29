@@ -1,0 +1,21 @@
+id: review.evidence
+title: Ground findings in evidence
+kind: principle
+rule: Every finding must identify the affected location, failure scenario, and why
+  it matters.
+priority: 5
+require:
+- Establish the preconditions, execution path, expected behavior, actual behavior,
+  and concrete user or system impact.
+- Check nearby guards, callers, tests, configuration, and version constraints for
+  evidence that refutes or narrows the candidate.
+- Verify uncertain API, library, framework, and language semantics against the versions
+  actually in scope before reporting.
+- State uncertainty when execution was not reproduced or material assumptions remain;
+  lower confidence or omit the finding when the evidence cannot support it.
+- Use the smallest location that reveals the defect even when evidence spans several files.
+reject:
+- Hypothetical concerns without a reachable trigger.
+- Claims based only on naming, incomplete context, or an unverified assumption.
+- Treating a tool warning or failing check as proof that the reviewed code caused the failure.
+- Duplicate findings that describe symptoms of the same root cause.

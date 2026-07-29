@@ -1,0 +1,6 @@
+name: rust
+label: Rust
+description: Load when testing Rust code or behavior.
+instructions:
+- Keep unit, integration, documentation, and compile-fail tests at the level established by the crate.
+- Run relevant feature and target combinations without assuming default features are sufficient.

@@ -1,0 +1,12 @@
+id: dependency-upgrade.generated-code
+title: Regenerate derived artifacts
+kind: policy
+priority: 3
+rule: Regenerate version-sensitive artifacts with the target toolchain and review their semantic diff.
+require:
+- Identify generated clients, schemas, bindings, assets, snapshots, metadata, and checked-in build output.
+- Use repository generators and record their versions and commands.
+- Verify consumers against regenerated formats.
+reject:
+- Manually patching generated output while leaving its source or generator stale.
+- Accepting large generated churn without checking the causal version change.

@@ -1,0 +1,9 @@
+name: rust
+label: Rust
+description: Load when reviewing Rust code or behavior.
+instructions:
+- Trace ownership, borrowing, pinning, interior mutability, drop behavior, cancellation, lock ordering,
+  and task lifetime.
+- Check unsafe invariants, aliasing, layout, FFI, integer conversion, panic boundaries, feature combinations,
+  `Send` and `Sync`, and public API compatibility.
+- Require a concrete violated invariant before reporting unsafe code as defective.

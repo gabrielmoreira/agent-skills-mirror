@@ -1,0 +1,8 @@
+name: blazor
+label: Blazor
+description: Load when testing Blazor code or behavior.
+instructions:
+- Cover component parameters, cascading values, rendering and event updates, navigation, forms, authorization,
+  DI scopes, circuits, prerendering, hydration, JS interop, cancellation, and disposal.
+- Distinguish Server, WebAssembly, and interactive render-mode behavior and use browser checks only where
+  runtime integration requires them.

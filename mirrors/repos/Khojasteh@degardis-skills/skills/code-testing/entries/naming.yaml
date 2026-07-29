@@ -1,0 +1,8 @@
+id: testing.naming
+title: Descriptive naming
+kind: policy
+rule: Use names that describe the behavior, relevant condition, and expected outcome
+  while following the repository's established framework conventions.
+reject:
+- Imposing a new naming template on an established suite.
+- Names that restate only a method name or implementation step.

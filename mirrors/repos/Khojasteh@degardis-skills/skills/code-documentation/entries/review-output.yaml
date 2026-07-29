@@ -1,0 +1,20 @@
+id: docs.review-output
+title: Make documentation reviews actionable
+kind: pattern
+priority: 30
+rule: Report review findings as concrete reader failures rather than general writing
+  preferences.
+require:
+- Lead with findings ordered by reader impact and confidence, using the smallest useful
+  file and section location.
+- For each finding, state the affected reader task, what the document currently causes
+  the reader to misunderstand or fail to do, the supporting evidence, and a bounded
+  remediation direction.
+- Distinguish incorrect claims, missing task information, information-architecture
+  conflicts, validation gaps, and optional editorial improvements.
+- If no actionable defect remains, say so directly and list only material validation
+  limits.
+reject:
+- Editing during a review-only request.
+- Reporting taste, tone, or formatting preferences without a concrete effect on reader
+  comprehension, action, safety, or maintenance.

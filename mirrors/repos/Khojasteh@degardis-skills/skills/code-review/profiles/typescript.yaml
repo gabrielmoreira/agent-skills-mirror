@@ -1,0 +1,9 @@
+name: typescript
+label: TypeScript
+description: Load when reviewing TypeScript code or behavior.
+instructions:
+- Trace the emitted runtime behavior behind narrowing, assertions, generics, enums, decorators, path aliases,
+  and erased types.
+- Check optional versus missing values, structural compatibility, variance, declaration changes, serialization,
+  promises, and unsafe boundary casts.
+- Do not treat type-check success as proof that untrusted runtime data satisfies the type.

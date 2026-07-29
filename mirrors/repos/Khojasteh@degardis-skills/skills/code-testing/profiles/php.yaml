@@ -1,0 +1,9 @@
+name: php
+label: PHP
+description: Load when testing PHP code or behavior.
+instructions:
+- Cover coercion, strict-types boundaries, null handling, array-key conversion, comparison,
+  references, generators, exceptions, serialization, and request-versus-worker lifetime
+  where they affect behavior.
+- Isolate globals, static state, environment variables, locale, time zones, filesystem,
+  sessions, extensions, and database connections; run against the configured PHP version.

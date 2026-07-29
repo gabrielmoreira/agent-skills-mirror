@@ -1,0 +1,11 @@
+id: feature-implementation.security
+title: Preserve trust boundaries
+kind: policy
+priority: 21
+rule: Identify new inputs, identities, permissions, secrets, outputs, and external calls
+  introduced by the feature and enforce controls at their boundaries.
+require:
+- Validate authorization independently of presentation and authentication.
+- Preserve least privilege, safe defaults, output encoding, and sensitive-data handling.
+reject:
+- Relying on client checks, obscurity, or happy-path validation for security.

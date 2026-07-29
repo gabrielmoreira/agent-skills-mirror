@@ -1,0 +1,11 @@
+id: docs.structure
+title: Structure around reader tasks
+kind: heuristic
+rule: Make the shortest reliable path to the reader's outcome easy to find.
+require:
+- Put prerequisites and essential steps before optional context and advanced variations.
+- Keep related conditions, outcomes, side effects, and recovery near the behavior they qualify.
+- Make completeness relative to the selected audience, task, and observable contract.
+reject:
+- Organizing user documentation around the implementation's file or class hierarchy.
+- Adding sections for contract dimensions that do not affect the selected reader's goal.

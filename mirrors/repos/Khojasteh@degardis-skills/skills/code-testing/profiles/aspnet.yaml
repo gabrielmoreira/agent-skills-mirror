@@ -1,0 +1,8 @@
+name: aspnet
+label: ASP.NET
+description: Load when testing ASP.NET code or behavior.
+instructions:
+- Cover modules and handlers, request lifecycle, routing, model binding, authentication, session, cache,
+  configuration, synchronization context, application domains, disposal, and IIS-specific behavior.
+- Keep classic ASP.NET assumptions distinct from other hosting models and use hosted checks when System.Web or
+  IIS semantics are material.

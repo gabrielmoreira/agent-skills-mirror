@@ -1,0 +1,35 @@
+id: testing.determinism
+title: Determinism and isolation
+kind: constraint
+rule: Make repeated and order-independent runs produce the same result.
+require:
+- Replace the real clock with a fixed or injected clock for time-dependent behavior;
+  advance it deliberately when testing rollover, expiration, or scheduling.
+- When exact timestamps are not contractual, assert ordering or a justified range
+  instead of equality. Account for precision, truncation, and two operations crossing
+  a second or other clock boundary.
+- Seed or inject randomness and assert contract-level properties. Print or preserve
+  a failing seed when the framework supports it.
+- Coordinate concurrent work through observable signals or conditions with bounded
+  timeouts; make completion and cleanup explicit.
+- Compare unordered results as sets or canonicalize them unless order is part of the contract.
+- Set locale, time zone, encoding, and numeric culture explicitly when they affect results.
+- Use unique temporary paths, process-scoped resources, and operating-system-assigned
+  ports; release them during cleanup.
+- Isolate and restore databases, caches, files, environment variables, global state,
+  and other state shared across tests.
+- Replace live external services with controlled boundaries unless the test is explicitly
+  an external-system check.
+- Derive floating-point or approximate tolerances from the contract and operation,
+  not from an arbitrary value chosen to make the test pass.
+reject:
+- Hardcoding the date on which the test was authored as a stable expected value.
+- Assuming two separate real-clock reads occur in the same second, millisecond, or
+  storage precision bucket.
+- Fixed sleeps when an observable completion condition is available.
+- Unbounded polling, scheduler-order assumptions, or assertions that depend on which
+  concurrent operation happens first when the contract does not specify it.
+- Dependence on test order, default database ordering, generated identifier sequences,
+  working directory, developer home, machine-specific paths, or pre-existing files.
+- Fixed ports or shared resource names that collide during parallel runs.
+- Retrying or weakening a flaky assertion until it happens to pass.

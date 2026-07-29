@@ -1,0 +1,28 @@
+id: codebase-assessment.analysis-only
+title: Keep assessment read-only
+kind: constraint
+priority: 1
+rule: Keep the assessment analysis-only while allowing bounded verification that
+  materially strengthens the evidence and does not alter maintained content or external state.
+require:
+- Prefer source inspection, file searches, and review of existing reports or generated
+  evidence before executing project commands.
+- Do not run project unit, integration, end-to-end, or general test suites. Inspect
+  tests and existing CI or test reports instead.
+- Run another established read-only build, linter, analyzer, or diagnostic command
+  only when repository evidence supports it, its side effects are understood and
+  confined to disposable local output, and the result would resolve a material
+  uncertainty.
+- Use a temporary or ignored output location when a verification command supports one;
+  otherwise skip commands that may overwrite maintained or user-owned files.
+- State that implementation requires a separately scoped request.
+reject:
+- Editing, formatting, deleting, or rewriting code, tests, configuration, maintained
+  artifacts, or documentation.
+- Running project tests as part of codebase assessment.
+- Running fix modes, snapshot updates, code generation, dependency installation or
+  upgrade, database migrations, persistent services, or application commands that
+  mutate state.
+- Running commands intended to mutate application state, external systems, or persistent data.
+- Treating Plan mode, read-only intent, or a familiar command name as proof that a
+  command is non-mutating.

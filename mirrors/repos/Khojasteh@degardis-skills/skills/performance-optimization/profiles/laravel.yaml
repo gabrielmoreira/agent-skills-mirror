@@ -1,0 +1,7 @@
+name: laravel
+label: Laravel
+description: Load when optimizing Laravel performance.
+instructions:
+- Measure bootstrap and request lifecycle, middleware, container resolution, Eloquent query counts and
+  plans, N+1 access, serialization, transactions, queues, events, caches, sessions, filesystem effects,
+  and workers.

@@ -1,0 +1,10 @@
+id: docs.terminology
+title: Preserve established terminology
+kind: policy
+rule: Use the repository's names, tone, information architecture, and conceptual vocabulary
+  consistently.
+require:
+- Reconcile renamed concepts and related pages rather than introducing silent synonyms.
+- Use code identifiers only where they are part of the public contract or improve precision.
+reject:
+- Inventing friendlier terminology that obscures a stable public name.

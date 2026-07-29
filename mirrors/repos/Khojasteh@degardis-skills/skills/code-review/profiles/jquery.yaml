@@ -1,0 +1,6 @@
+name: jquery
+label: jQuery
+description: Load when reviewing jQuery code or behavior.
+instructions:
+- Review delegated and namespaced events, duplicate binding, DOM cleanup, data caches, Deferred semantics,
+  Ajax errors, HTML injection, selector scope, plugin lifecycle, global mutation, and memory leaks.

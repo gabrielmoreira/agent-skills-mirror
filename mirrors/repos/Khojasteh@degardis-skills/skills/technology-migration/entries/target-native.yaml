@@ -1,0 +1,15 @@
+id: technology-migration.target-native
+title: Design for the target technology
+kind: principle
+priority: 1
+rule: Express the migrated system through target-native capabilities, idioms, lifecycle,
+  types, tooling, project structure, and architectural boundaries.
+require:
+- Inspect capabilities available in the actual target version before designing replacements.
+- Replace source inheritance, exceptions, nullability, async, ownership, reflection,
+  modules, lifecycle, and framework patterns with clearer target-native models.
+- Respect established target-side repository conventions when they satisfy the contract.
+reject:
+- Syntax-only, line-by-line, or abstraction-by-abstraction translation.
+- Recreating the source runtime or framework model behind target-language wrappers.
+- Preserving navigation and complexity solely because the source was structured that way.

@@ -1,0 +1,11 @@
+name: java
+label: Java
+description: Load when testing Java code or behavior.
+instructions:
+- Cover null boundaries, equality and hashing, numeric overflow, collection mutability,
+  exceptions, stream reuse, serialization, reflection, and public or binary compatibility
+  when they are contractual.
+- Control static state, threads, executors, clocks, time zones, locale, temporary resources,
+  class loading, and asynchronous completion; close owned resources and preserve interruption.
+- Use the configured runtime, language level, and test engine rather than assuming current
+  Java defaults.

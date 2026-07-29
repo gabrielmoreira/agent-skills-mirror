@@ -1,0 +1,6 @@
+name: dart
+label: Dart
+description: Load when implementing Dart features.
+instructions:
+- Design across sound null safety, futures, streams, isolates, cancellation conventions, serialization,
+  platform boundaries, and generated-code ownership.

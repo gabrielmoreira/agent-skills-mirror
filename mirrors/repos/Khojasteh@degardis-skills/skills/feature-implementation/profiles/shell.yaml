@@ -1,0 +1,7 @@
+name: shell
+label: Shell
+description: Load when implementing Shell features.
+instructions:
+- Define arguments, environment, streams, exit statuses, filesystem and process effects, signal handling,
+  idempotency, privileges, partial failure, portability, and cleanup; keep control flow direct and quote
+  all data safely.

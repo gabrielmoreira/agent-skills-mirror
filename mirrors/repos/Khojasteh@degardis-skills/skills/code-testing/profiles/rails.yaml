@@ -1,0 +1,7 @@
+name: rails
+label: Rails
+description: Load when testing Rails code or behavior.
+instructions:
+- Use the lightest Rails-aware harness that exercises the real model, request, job, mailer, routing, or
+  transaction boundary.
+- Isolate configuration, callbacks, jobs, mail, files, caches, time, and database state.

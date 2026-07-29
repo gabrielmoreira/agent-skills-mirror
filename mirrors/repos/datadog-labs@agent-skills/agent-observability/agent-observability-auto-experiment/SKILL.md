@@ -61,12 +61,13 @@ run starts** (see the Mandatory intake gate below).
 | `goal` | what "better" means; the judge rubric + optimization direction | **must ask** |
 | `evaluators` | explicit evaluator/rubric text — how each datapoint is scored (ground-truth check vs LLM-judge, pass criteria, direction). | **must ask** (do NOT silently fall back to `goal`) |
 | data source | where the eval data comes from — a **`local_dataset_path`** (a local `.jsonl`/`.csv` file on disk), **or** a `dataset_id`, **or** an `ml_app` to pull traces from (optionally narrowed by explicit `trace_ids`). | **must ask** — mandatory; the run cannot start without one of `local_dataset_path` / `dataset_id` / `ml_app` (priority below) |
+| `datadog_backend` | `mcp` or `pup` — which client reaches Datadog for **every** call the run makes (dataset reads, span/trace reads, and the experiment create/update/event-submit writes). See **Datadog backend** below. | **must ask** — no default; the two backends are not interchangeable (provenance + dataset-loading differ), so the user picks |
 | `max_iterations` | how many changes to try (clamp **1–50**) | _default_ **2** |
 | `max_runs` | ceiling on the derived `runs` — how many times the harness may repeat the eval per candidate to beat variance (clamp **3–20**; the pilot already runs 3×, so 3 is the floor) | _default_ **3** |
+| `runtime` | which harness language to use (`python` \| `node`) — the harness must run in whatever can import/run `files_to_optimize` | _default_: **auto-detected** from `files_to_optimize` (see Step 2); the user may override |
 | `model` | judge model id | _default_: the Claude model selected in this session (see rubric) |
 | `base_branch` | branch the baseline is measured on | _default_: current branch / `main` |
 | `domain_notes` | **a list of strings** — product/domain facts the agents cannot infer from the code (what a term of art means, which behaviours are intended, what a reference row represents), one note per entry. Carried verbatim into every sub-agent briefing, every census describer, and the judge prompt. | _default_ **`[]`** |
-| `datadog_backend` | `mcp` or `pup` — which client reaches Datadog for **every** call the run makes (dataset reads, span/trace reads, and the experiment create/update/event-submit writes). See **Datadog backend** below. | _default_ **`mcp`** |
 
 `runs` and `min_delta` are **not inputs** — they are **derived** from the measured baseline noise in
 Step 2.4, not chosen by anyone. Do **not** ask for them and do **not** show them in the all-params
@@ -108,6 +109,13 @@ Before writing any config or touching git:
      `.jsonl`/`.csv` file), **or** a `dataset_id`, **or** an `ml_app` to find traces from
      (optionally narrowed by explicit `trace_ids`). Do not auto-pick, do not guess an `ml_app`, do
      not invent a file path, and do not start the run with none — if all are missing, ask.
+   - **`datadog_backend`** — `mcp` or `pup`. **There is no default**: if the user did not name a
+     backend, **ask** (use `AskUserQuestion`, options `mcp` / `pup`) and wait. Never pick one
+     yourself, not even when only one looks available — the choice determines the run's recorded
+     provenance and how the corpus is loaded (on `mcp`, a dataset over ~19 records cannot be read by
+     any MCP tool and needs a direct REST call; `pup` has a first-class `records-all`). Two runs on
+     different backends are not strictly comparable, so guessing silently makes a comparison the user
+     never sanctioned. See **Datadog backend** for the trade-offs to state when asking.
 
    **A detailed, specific goal is NOT permission to infer any must-ask field.** A rich goal is the
    single most common cause of wrongly auto-filling `files_to_optimize`, `evaluators`, and the data
@@ -120,7 +128,8 @@ Before writing any config or touching git:
    `config.json`, do not create the scratch branch, do not run the harness — ask (use
    `AskUserQuestion`) and wait.
 2. Fill the **default** fields (`max_iterations`, `max_runs`, `model`, `base_branch`,
-   `domain_notes`, `datadog_backend`) with their defaults above. Do **not** touch
+   `domain_notes`) with their defaults above. `datadog_backend` is **not** among them — it is
+   must-ask, per step 1. Do **not** touch
    `runs`/`min_delta` here — they are derived in Step 2.4, not intake params (`max_runs` only caps
    that derivation).
 
@@ -154,12 +163,14 @@ the run's state + audit trail):
   "local_dataset_path": "...", "dataset_id": "...", "trace_ids": [...],
   "dd_auto_experiment_id": null,
   "domain_notes": [],
-  "datadog_backend": "mcp",
+  "datadog_backend": null,
   "backend_used": null,
   "backend_version": null,
   "backend_fallback": false,
   "max_iterations": 2,
   "max_runs": 3,
+  "runtime": null,
+  "harness_path": null,
   "runs": null,
   "min_delta": null,
   "iteration_results": [],
@@ -168,7 +179,9 @@ the run's state + audit trail):
 ```
 
 `runs` and `min_delta` start `null` — they are **computed and written in Step 2.4** from the
-measured baseline noise, never chosen at intake.
+measured baseline noise, never chosen at intake. `datadog_backend` is shown `null` above only
+because it has no default: by the time `config.json` is written it must hold the user's explicit
+`"mcp"` or `"pup"`. A `null` there at Setup means the intake gate was skipped — STOP and ask.
 
 **Per-iteration timing.** Every `iteration_results` row (including iteration 0, the baseline)
 records `time_start` and `time_end` as **ISO-8601 UTC** wall-clock strings (e.g.
@@ -280,6 +293,12 @@ per-call: a run is unambiguously "via MCP" or "via pup", so its provenance is ne
 backend actually used in `config.json` as `backend_used`, because two runs that reached different
 backends are not strictly comparable.
 
+**It is a mandatory intake field with no default** — ask the user for `mcp` or `pup` and wait for
+their answer (intake gate, step 1). The table below is what to tell them: the backends differ in what
+they can even do (only `pup` can load a whole dataset in one command) and in failure policy (a
+missing `pup` is a STOP, a failing MCP call falls back), so the choice is the user's, not an
+implementation detail to be defaulted away.
+
 | purpose | `mcp` tool | `pup llm-obs …` subcommand | |
 |---|---|---|---|
 | **read the whole dataset** | ✗ no MCP tool can — see below | `datasets records-all --dataset-id D` | ★ |
@@ -367,8 +386,9 @@ array>'` in 1.8.0. Check `pup --version` and `pup agent schema` for the installe
 trusting this table's flags verbatim, and record the version in `config.json` alongside
 `backend_used`.
 
-**Read this table as a substitution rule for the whole file.** The steps below name MCP tools
-because that is the default backend; wherever one appears, it means *"this purpose, via the selected
+**Read this table as a substitution rule for the whole file.** The steps below name MCP tools purely
+as the naming convention — that is not a default, and naming one is never a licence to use MCP when
+the user chose `pup`. Wherever an MCP tool appears, it means *"this purpose, via the selected
 backend"*. Under `datadog_backend: pup`, `submit_llmobs_experiment_events` means
 `pup llm-obs experiments events submit --metrics '[{…}]' <EXPERIMENT_ID>`, and so on down the table. Nothing else about a step
 changes — same order, same gates, same payloads.
@@ -493,7 +513,7 @@ ran because you intended it to.
 |---|---|---|
 | 1 | clean tree + start SHA | `git rev-parse HEAD` recorded in `config.json` `start_sha`; tree clean or unrelated changes stashed |
 | 2 | scratch branch | `git branch --show-current` equals the scratch branch off `base_branch` |
-| 3 | `config.json` written | file exists with every required field populated (incl. the resolved `files_to_optimize` list, `evaluators` verbatim, data source) |
+| 3 | `config.json` written | file exists with every required field populated (incl. the resolved `files_to_optimize` list, `evaluators` verbatim, data source, and `datadog_backend` = the user's explicit `"mcp"`/`"pup"` — `null` or an unasked value means the intake gate was skipped) |
 | 4 | experiment id | `$experiment-id` validated as a UUID at the intake gate and persisted to `config.json` as `dd_auto_experiment_id` |
 | 5 | run context on experiment | confirm the `update_llmobs_experiment` call (or `pup llm-obs experiments update`) **actually returned a success response in hand** (not merely that you intended to call it). For the us5 MCP that response is `updated_fields` containing `"metadata"` — accept that, or any non-error response acknowledging the metadata write if the tool's shape differs. The check is "the call was made and acknowledged", so do not hard-block on one exact field name; if it errored or was never called, re-run it. |
 | 6 | backend reachable | with `datadog_backend: pup`, `pup auth status` (or `$PUP_BIN auth status`) returned `authenticated: true` for the expected site — run the check, don't assume the binary works. A missing or unauthenticated pup is a **STOP**, not a fallback (see **Datadog backend**). With `datadog_backend: mcp`, step 5's acknowledged response is itself the proof the backend is reachable. Record `backend_used` in `config.json` either way. **Under pup, satisfy step 5 by reading the experiment back** (`pup llm-obs experiments list --filter-project-id …` and confirm the metadata/status you just wrote). On released pup `experiments update` exits non-zero on a response-parsing bug even when the write landed, so an exit-code check would fail a step that actually succeeded; DataDog/pup#682 fixes that but is not merged yet. Read-back is correct either way, so use it unconditionally rather than branching on the build. |
@@ -562,11 +582,48 @@ Then **split once, deterministically** (hash of datapoint id, ~70/30) into
 (`AUTO_EXP_DATA=.auto_experiment/data.val.jsonl`); `test` is run only in the final report.
 
 ### Step 2 — Build the harness and compute BEFORE (baseline)
-Copy `references/eval_harness_template.py` to `.auto_experiment/eval_harness.py` and fill in
-`generate_output` (run the REAL code under test from `files_to_optimize`) and `judge`. **Prefer a
-deterministic ground-truth metric** (reference output / programmatic checker / pipeline count) and
-use an LLM-as-judge only when no ground truth exists — see the rubric's **Metric selection**. **No
-score literals anywhere.**
+
+**Pick the harness language to match the code under test (auto-detect, with override).** The loop is
+language-agnostic — it only reads the harness's stdout JSON contract — so the harness must be written
+in whatever runtime can import/run `files_to_optimize`. There are two templates: a Python one
+(`references/eval_harness_template.py`) and a Node/ESM one (`references/eval_harness_template.mjs`);
+both emit the identical JSON and honor the same env vars.
+
+- **Detect the runtime** from the edit scope, in this order: (1) if any file in `files_to_optimize`
+  is `.js`/`.ts`/`.mjs`/`.cjs`, or the nearest enclosing package manifest is a `package.json` →
+  **Node**; (2) if any is `.py`, or the manifest is `pyproject.toml`/`requirements.txt`/`setup.py` →
+  **Python**; (3) if the scope is language-neutral (e.g. a `.md` prompt file), fall back to the
+  language of the app whose entrypoint `generate_output`/`generateOutput` must call.
+- **Default to Python when the runtime is neither Node nor Python.** If the code under test is in
+  some other language (Go, Ruby, Rust, …), or the language can't be determined, use the **Python**
+  harness: it can drive any code-under-test out-of-process via `subprocess` (the language-agnostic
+  path — the harness spawns the real code and reads its stdout), so it is the safe general-purpose
+  default. The native Node harness is just the in-process convenience for Node/TS apps; everything
+  else goes through Python.
+- **Honor an explicit `runtime` override** if the user set one at intake. If detection is genuinely
+  ambiguous (e.g. both a `package.json` and a `pyproject.toml`/`requirements.txt` enclose the scope),
+  you may **ask the user** for `runtime` (`python` | `node`) rather than guess — but absent an
+  answer, default to **Python** per the rule above.
+
+Then copy the matching template and fill in the two functions (`generate_output`/`generateOutput`
+runs the REAL code under test from `files_to_optimize`; `judge` scores it):
+
+- **Python** → copy `references/eval_harness_template.py` to `.auto_experiment/eval_harness.py`; run
+  with `python .auto_experiment/eval_harness.py`.
+- **Node** → copy `references/eval_harness_template.mjs` to `.auto_experiment/eval_harness.mjs`; run
+  with `node .auto_experiment/eval_harness.mjs` (for a TypeScript entrypoint,
+  `npx tsx .auto_experiment/eval_harness.mjs`). The `.mjs` extension keeps it ESM regardless of the
+  repo's `package.json` `type`.
+
+Record the resolved `runtime` and `harness_path` in `config.json`. **Everywhere below that says
+`python .auto_experiment/eval_harness.py`, use the Node command instead when the runtime is Node** —
+the loop logic, the keep/discard gate, the `AUTO_EXP_DATA` / `AUTO_EXP_RUNS` / `AUTO_EXP_EVALUATORS`
+env vars, and the stdout contract (`{mean, stdev, runs, scored, excluded, run_means}`) are all
+identical across the two templates.
+
+**Prefer a deterministic ground-truth metric** (reference output / programmatic checker / pipeline
+count) and use an LLM-as-judge only when no ground truth exists — see the rubric's **Metric
+selection**. **No score literals anywhere.**
 
 Run it against the **original, unmodified** code with a **fixed pilot** `AUTO_EXP_RUNS` (**3** — an
 internal bootstrap value, not a user param): the harness re-runs the whole eval R times and prints
@@ -575,7 +632,8 @@ noise floor). Both computed numbers, never literals — obey the scoring policy 
 keep/discard policy** in the rubric. This pilot noise is what Step 2.4 turns into the real `runs`
 and `min_delta`.
 
-Commit `eval_harness.py`, `data.jsonl`, `data.val.jsonl`, `data.test.jsonl`, `eval_results.jsonl`.
+Commit the harness (`eval_harness.py` or `eval_harness.mjs`), `data.jsonl`, `data.val.jsonl`,
+`data.test.jsonl`, `eval_results.jsonl`.
 
 **Do NOT report the baseline to LLM-Obs yet.** Step 2.4 may raise `runs` and re-run the baseline,
 which **replaces** this pilot `mean`/`stdev`. Reporting the pilot now would publish an
@@ -662,7 +720,8 @@ reaches 0 failing datapoints, record the iteration `no_change` with the probe re
 next hypothesis — do **not** spend a full eval on a dead lever.
 
 ### Step 4 — Compute AFTER (re-run the SAME harness)
-Re-run `.auto_experiment/eval_harness.py` (same `evaluate_line`, same data) against the changed
+Re-run the committed harness (`eval_harness.py` or `eval_harness.mjs`, per `runtime`) with the same
+`evaluate_line`/`evaluateLine` and the same data, against the changed
 code. `after_score` = the new printed mean. Re-write `eval_results.jsonl`. Write the metric object
 (schema in the rubric) to `.auto_experiment/result.json` and commit it **in the same commit** as
 the change. `delta = after_score - before_score`.
@@ -705,7 +764,8 @@ Mirrors `build_followup_prompt`. Baseline is already known — **do not recomput
      a hard reset to base would delete them).
 2. `before_score` = the current best score (from `iteration_results`; iteration-1 baseline if
    nothing kept yet). Do NOT re-run the baseline.
-3. Reuse the data from `data.jsonl` and the committed `eval_harness.py` — do not reload or rebuild.
+3. Reuse the data from `data.jsonl` and the committed harness (`eval_harness.py` or
+   `eval_harness.mjs`) — do not reload or rebuild.
 4. Make **ONE new change, different from every previous attempt** (you can see prior attempts in
    `iteration_results`), aimed at a named `census.json` bucket, **in whichever in-scope file holds
    the lever** (tool/retrieval/pipeline/config/prompt — not prompt-only). Commit it.

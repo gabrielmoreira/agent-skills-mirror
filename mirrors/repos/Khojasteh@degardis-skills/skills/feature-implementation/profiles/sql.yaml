@@ -1,0 +1,7 @@
+name: sql
+label: SQL
+description: Load when implementing SQL features.
+instructions:
+- Define result shape and ordering, null and precision semantics, constraints, permissions, concurrency,
+  isolation, partial failure, data migration, rollback, and query-plan evidence; require authority for
+  destructive or irreversible changes.

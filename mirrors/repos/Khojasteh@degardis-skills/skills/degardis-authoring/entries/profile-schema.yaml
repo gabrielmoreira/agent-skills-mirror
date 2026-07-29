@@ -1,0 +1,23 @@
+id: degardis-authoring.profile-schema
+title: Degardis profile contract
+kind: constraint
+priority: 65
+rule: Define each retained profile as a material execution variant whose filename
+  and identity match.
+require:
+- "name: required lowercase hyphenated selector of at most 64 characters; must
+  equal the YAML filename; all is reserved."
+- "label: required human-facing heading."
+- "description: required condition of 1-1024 characters explaining when the
+  included profile applies."
+- "instructions: required non-empty YAML list of concrete execution changes."
+- Keep profile YAML files immediately inside the configured profiles directory;
+  discovery there is not recursive.
+allow:
+- "details: optional inline Markdown without a level-one heading."
+- "details_files: optional non-empty list of .md paths resolved relative to the
+  profile YAML; every path must remain inside the skill, and combined content
+  must not contain a level-one heading."
+reject:
+- Combining details and details_files.
+- Treating a profile description as a substitute for instructions.

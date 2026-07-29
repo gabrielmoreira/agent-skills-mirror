@@ -1,0 +1,9 @@
+name: fastapi
+label: FastAPI
+description: Load when migrating to or from FastAPI.
+instructions:
+- Prefer native schemas, dependency scopes, async handlers, lifespan, OpenAPI, streaming, and exception
+  mapping over source-framework wrappers; verify validation, authentication, cancellation, and contract
+  parity.
+- Keep proxy endpoints, dual services, and adapters bounded to explicit stages with owners and removal
+  gates.

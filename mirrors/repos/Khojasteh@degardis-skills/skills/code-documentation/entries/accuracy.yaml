@@ -1,0 +1,28 @@
+id: docs.accuracy
+title: Retain only relevant, supported claims
+kind: principle
+rule: Include a claim only when it serves the reader's outcome and independent,
+  applicable evidence supports it.
+priority: 1
+require:
+- Treat every claim in existing documentation, comments, examples, and generated
+  material as unverified until corroborated; a document is not evidence for itself.
+- Verify claims against requirements, tests, schemas, CLI help, configuration, version
+  metadata, or multiple relevant implementation paths.
+- Verify negative, universal, and exhaustive wording such as `no`, `never`, `only`,
+  `all`, and `exactly` against evidence broad enough to support that scope.
+- Establish the applicable released or supported contract. Exclude abandoned,
+  experimental, speculative, and never-released behavior from user-facing documentation
+  unless the reader explicitly needs supported history or maintainer context.
+- Remove unsupported or irrelevant claims. Mark a claim as unknown, conditional, or
+  requiring confirmation only when that uncertainty itself affects the reader's task
+  or decision.
+reject:
+- Preserving a statement solely because it already appears in documentation or source
+  comments.
+- Inferring a public guarantee from a single incidental implementation path.
+- Inferring the absence of a feature or behavior merely because a search found no
+  implementation.
+- Presenting an example result or failure as universal without evidence.
+- Describing an internal idea, discarded implementation, or unreleased feature as
+  part of the product's current or historical public contract.

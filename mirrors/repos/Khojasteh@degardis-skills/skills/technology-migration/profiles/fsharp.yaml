@@ -1,0 +1,14 @@
+name: fsharp
+label: F#
+description: Load when migrating to or from F#.
+instructions:
+- When F# is the target, inventory records, discriminated unions, options/results, pattern matching, collection
+  modules, sequences, computation expressions, async/tasks, units of measure, and resource expressions
+  before porting source runtimes or class hierarchies.
+- Use functional or OO F# according to the destination architecture; do not mechanically translate nulls,
+  exceptions, promises, mutable containers, callbacks, or inheritance.
+- Verify structural/custom equality and comparison, null boundaries, inference, precision, sequence evaluation,
+  exceptions/results, cancellation, thread safety, disposal, serialization, compiled names, C# interop,
+  reflection, trimming, and public signatures.
+- Keep adapters, C# facades, P/Invoke, conditional branches, suppressions, and compatibility packages
+  bounded to explicit stages with parity tests and removal criteria.

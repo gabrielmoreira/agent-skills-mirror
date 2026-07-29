@@ -1,0 +1,12 @@
+id: technology-migration.observability
+title: Compare source and target behavior observably
+kind: policy
+priority: 2
+rule: Preserve or intentionally replace the signals needed to validate, operate, and roll back the target.
+require:
+- Map logs, metrics, traces, audit events, health checks, alerts, dashboards, and diagnostics.
+- Detect divergence, fallback use, partial migration, data inconsistency, and target-only failures.
+- Remove source-only alerts and dashboards after decommissioning.
+reject:
+- Declaring parity without visibility into the target's critical paths.
+- Keeping source telemetry as a hidden operational dependency.

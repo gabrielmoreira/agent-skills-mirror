@@ -1,0 +1,11 @@
+name: cpp
+label: C++
+description: Load when migrating to or from C++.
+instructions:
+- When C++ is the target, inventory standard algorithms, containers, ranges, smart pointers, RAII, error
+  facilities, concurrency, modules, and filesystem support before reimplementing source utilities.
+- Prefer target-version built-ins and cohesive value or ownership models over translated garbage collection,
+  exception, inheritance, or runtime patterns.
+- Verify ordering, equality, locale, precision, complexity, allocation, iterator invalidation, exceptions,
+  ABI, thread safety, cancellation, and lifetime semantics.
+- Bound FFI, adapters, compatibility headers, macros, and version branches to explicit stages.

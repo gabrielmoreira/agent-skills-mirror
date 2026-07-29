@@ -1,0 +1,12 @@
+id: dependency-upgrade.reporting
+title: Report an auditable upgrade
+kind: policy
+priority: 4
+rule: Make the achieved state, evidence, exceptions, and remaining obligations explicit.
+require:
+- Report mode, requested and resolved versions, authoritative sources, graph changes, files and behavior changed, and exact commands with results.
+- List removed legacy paths and justify retained compatibility with owners and removal conditions.
+- State documentation impact, rollout and rollback, unresolved warnings, assumptions, deferred checks, and residual risk.
+reject:
+- Saying only that dependencies were updated or tests passed.
+- Hiding incomplete stages, forced resolution, or unverified environments.

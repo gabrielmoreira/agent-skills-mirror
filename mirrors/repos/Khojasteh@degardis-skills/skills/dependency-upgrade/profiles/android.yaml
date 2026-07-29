@@ -1,0 +1,11 @@
+name: android
+label: Android
+description: Load when upgrading Android dependencies or tooling.
+instructions:
+- Treat the Android Gradle plugin, Gradle, JDK, Kotlin, compile SDK, build tools, and first-party plugin
+  versions as a compatibility matrix; upgrade coupled coordinates together when their published support
+  requires it.
+- Review variant resolution, dependency catalogs or BOMs, manifests, resource processing, shrinking,
+  desugaring, native libraries, generated code, and device or API-level coverage affected by the change.
+- Use the repository's Gradle wrapper and dependency insight or build scans when available; do not introduce
+  a different dependency-management convention merely to perform the upgrade.

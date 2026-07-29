@@ -1,0 +1,7 @@
+name: react
+label: React
+description: Load when fixing React code or behavior.
+instructions:
+- Trace render purity, state ownership, stale closures, effect dependencies and cleanup, context, event
+  ordering, suspense, hydration, server/client boundaries, and user interaction.
+- Reproduce observable behavior at the narrowest hook, component, integration, or browser boundary.

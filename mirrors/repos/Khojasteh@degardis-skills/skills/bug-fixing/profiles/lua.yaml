@@ -1,0 +1,7 @@
+name: lua
+label: Lua
+description: Load when fixing Lua code or behavior.
+instructions:
+- Reproduce nil and absent values, indexing, table aliasing and iteration, metatables, multiple returns,
+  numeric behavior, coroutine scheduling, errors, globals, module caches, and host ownership; fix the
+  causal boundary without broad rewrites.

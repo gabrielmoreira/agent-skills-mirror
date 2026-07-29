@@ -1,0 +1,27 @@
+name: feature-implementation
+format_version: 1
+title: Feature Implementation
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Design and implement new software behavior. Use when the request asks to
+  add, build, or deliver a feature, capability, endpoint, command, workflow, or integration.
+primary_workflow: feature-implementation.deliver
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Feature Implementation
+  short_description: Deliver bounded features with independent evidence
+  default_prompt: Use $feature-implementation to deliver this feature safely.

@@ -1,0 +1,25 @@
+id: refactoring.improve-testability
+title: Improve testability
+description: Introduce the narrowest behavior-preserving seam needed to control a
+  real test obstacle.
+steps:
+- action: assess-testability
+  instruction: Identify the behavior that cannot be tested credibly and the evidence
+    blocked by the current design.
+- action: identify-coupling-and-nondeterminism
+  instruction: Locate hidden time, randomness, I/O, environment, global state,
+    construction, concurrency, or external-system dependencies.
+- action: choose-minimal-seam
+  instruction: Prefer a direct parameter, extracted pure decision, or boundary adapter
+    over a new framework, layer, or interface hierarchy. Do not add an interface for
+    every class.
+- use: refactoring.safe-refactor
+- action: prove-controllability
+  instruction: Exercise the new seam with the narrowest focused test or direct probe
+    permitted by scope, and verify production wiring still supplies the original dependency
+    with the same ownership and lifecycle. A seam is not an improvement if no caller can
+    substitute or control the obstacle it was introduced for.
+- action: verify-and-report
+  instruction: Use the repository's existing tests and independent behavioral checks
+    to verify preservation, then report the newly controllable evidence and any test work
+    still outside the authorized scope.

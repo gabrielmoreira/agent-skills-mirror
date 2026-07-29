@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `jiaxuan-tao/vibe-coding-lab` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `jiaxuan-tao/vibe-coding-lab` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `jiaxuan-tao/vibe-coding-lab` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,6 +61,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`ai-topic-collector-skill/SKILL.md`](ai-topic-collector-skill/SKILL.md) |
+| 3 | ✓ | [`web-app-acceptance-skill/SKILL.md`](web-app-acceptance-skill/SKILL.md) |
 
 ---
 

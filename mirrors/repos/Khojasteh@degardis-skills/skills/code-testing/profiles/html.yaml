@@ -1,0 +1,8 @@
+name: html
+label: HTML
+description: Load when testing HTML code or behavior.
+instructions:
+- Test observable document semantics, accessible names and relationships, form behavior, navigation, parsing,
+  escaping, and progressive enhancement rather than exact incidental markup.
+- Use real-browser or integration checks only when parsing, focus, navigation, platform APIs, or assistive-technology
+  behavior cannot be represented credibly at a smaller level.

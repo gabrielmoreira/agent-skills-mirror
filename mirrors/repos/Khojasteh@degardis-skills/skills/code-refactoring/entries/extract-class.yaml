@@ -1,0 +1,14 @@
+id: refactoring.pattern.extract-class
+title: Extract class
+kind: pattern
+rule: Split responsibilities when a class has distinct reasons to change.
+conditions:
+- State and behavior form a cohesive concept with a meaningful boundary.
+- The responsibilities vary independently or obscure the original unit's purpose.
+require:
+- Define ownership, lifecycle, visibility, and communication between the resulting units.
+- Verify public behavior, construction, serialization, dependency injection, and resource cleanup.
+- Confirm the extraction reduces navigation or change coupling.
+reject:
+- Creating a tiny data-and-delegation class without independent meaning.
+- Splitting behavior that must still be understood and changed together.

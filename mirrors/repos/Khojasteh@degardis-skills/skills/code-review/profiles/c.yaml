@@ -1,0 +1,10 @@
+name: c
+label: C
+description: Load when reviewing C code or behavior.
+instructions:
+- Trace pointer provenance, bounds, ownership, aliasing, integer conversion, allocation failure, initialization,
+  and cleanup on every exit path.
+- Check undefined and implementation-defined behavior, struct layout, ABI assumptions, macros, conditional
+  compilation, signals, and thread safety where reachable.
+- Treat sanitizer or compiler output as evidence to investigate, not as a substitute for a concrete failure
+  path.

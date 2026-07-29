@@ -1,0 +1,7 @@
+name: ruby
+label: Ruby
+description: Load when refactoring Ruby code.
+instructions:
+- Search metaprogramming, symbols and strings, routes, jobs, serializers, configuration, templates, and
+  monkey patches before renaming, moving, or deleting.
+- Avoid extracting many command, service, or concern objects that only scatter one cohesive flow.

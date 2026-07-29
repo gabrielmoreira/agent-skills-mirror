@@ -1,0 +1,6 @@
+name: css
+label: CSS
+description: Load when implementing CSS features.
+instructions:
+- Cover layout, cascade, responsive and container boundaries, zoom, writing modes, themes, focus, reduced
+  motion, loading and error states, and visual validation without broad unrelated restyling.

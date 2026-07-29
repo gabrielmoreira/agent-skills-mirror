@@ -1,0 +1,10 @@
+name: csharp
+label: C#
+description: Load when implementing C# features.
+instructions:
+- Design nullable and generic contracts, records/equality, pattern coverage, errors, async and cancellation,
+  `ValueTask`/async streams, disposal, concurrency, culture, and serialization before choosing implementation
+  syntax.
+- Make iterator and LINQ evaluation timing, ownership, side effects, repeated enumeration, and materialization
+  explicit where callers can observe them.
+- Check reflection, trimming/AOT, interop, generated sources, and binary/source compatibility.

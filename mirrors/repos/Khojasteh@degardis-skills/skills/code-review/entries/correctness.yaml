@@ -1,0 +1,13 @@
+id: review.correctness-first
+title: Correctness first
+kind: principle
+rule: Prioritize defects, regressions, data loss, security issues, and broken contracts
+  over style.
+priority: 1
+require:
+- Compare changed behavior with requirements, public APIs, schemas, serialized formats,
+  callers, and compatibility guarantees.
+- Trace boundary inputs, failure paths, cleanup, retries, and partial completion.
+reject:
+- Treating a preferred implementation or naming choice as a correctness defect.
+- Assuming a changed contract is safe without checking consumers and persisted data.

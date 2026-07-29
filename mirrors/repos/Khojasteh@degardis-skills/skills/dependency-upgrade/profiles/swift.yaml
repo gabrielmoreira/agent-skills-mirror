@@ -1,0 +1,10 @@
+name: swift
+label: Swift
+description: Load for SwiftPM, CocoaPods, or Swift toolchain-coupled dependency upgrades.
+instructions:
+- Preserve the repository's selected dependency manager and resolution policy while checking Swift tools
+  versions, platform minimums, binary targets, checksums, package products, resources, and transitive pins.
+- Reconcile package versions with compiler and SDK compatibility, module or ABI stability, Objective-C
+  bridges, code signing, and supported Apple platform destinations.
+- Regenerate resolved state natively and validate clean builds for maintained schemes and destinations,
+  not only dependency resolution.

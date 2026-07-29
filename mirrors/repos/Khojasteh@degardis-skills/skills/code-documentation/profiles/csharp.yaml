@@ -1,0 +1,34 @@
+name: csharp
+label: C#
+description: Load when documenting C# code or APIs.
+instructions:
+- Document contracts, nullable behavior, side effects, ownership/disposal, thread safety, cancellation,
+  deferred enumeration, trimming, and compatibility rather than implementation.
+- Summarize the member's contract in `<summary>` with a concise description of what the member does or
+  represents, not how it is implemented; use more than one sentence when needed for clarity.
+- Move extended discussion, caveats, and background that would clutter the summary — such as algorithmic
+  complexity, historical context, or usage recommendations — into `<remarks>` instead.
+- When `<remarks>` covers multiple distinct points, separate them with `<para>` elements rather than blank
+  lines or run-on prose.
+- Document each parameter with `<param>`, each type parameter with `<typeparam>`, each non-void method
+  result with `<returns>`, and each property or indexer's represented value with `<value>`. Cover meaning,
+  units, and valid ranges rather than restating names or signatures.
+- Refer to parameters, type parameters, and members (including enum members and other declared code elements)
+  from prose with `<paramref>`, `<typeparamref>`, and a resolvable `<see cref="...">` instead of plain-text
+  names, so generated links and cross-references stay valid.
+- Refer to C# language keywords such as `true`, `false`, and `null` from prose with `<see langword="...">`
+  rather than `<c>` or plain text.
+- Use `<c>` only for inline code spans that are not a resolvable code reference or keyword — literal values,
+  short expressions, or sample text — anywhere in prose.
+- Add `<example>` when usage, ordering, or edge cases are not obvious from the contract alone, and use
+  `<code>` within it when executable code or output materially clarifies the example; omit examples for
+  straightforward members.
+- Emit a separate `<exception>` element for each distinct failure condition, even when conditions share
+  an exception type, and distinguish synchronous argument validation from failures observed while awaiting
+  or enumerating an asynchronous result.
+- Use `<inheritdoc/>` only when the inherited contract applies; document local differences explicitly
+  and account for whether the generator expands inherited documentation.
+- Keep XML documentation comments well formed, and do not use Markdown in them.
+details_files:
+- details/xml-lists.md
+- details/csharp.md

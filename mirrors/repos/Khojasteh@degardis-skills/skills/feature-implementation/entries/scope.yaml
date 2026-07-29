@@ -1,0 +1,14 @@
+id: feature-implementation.scope
+title: Keep feature scope bounded
+kind: constraint
+priority: 10
+rule: Make only changes required to deliver and verify the accepted behavior.
+allow:
+- Small enabling changes that are necessary and locally verifiable.
+require:
+- Stop and report pre-existing production defects that require changes outside the
+  authorized feature scope.
+- Correct defects introduced by the feature within the accepted feature scope.
+reject:
+- Broad refactoring, opportunistic cleanup, repository-wide formatting, dependency upgrades,
+  and unrelated defect fixes.

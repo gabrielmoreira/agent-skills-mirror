@@ -1,0 +1,17 @@
+id: performance-optimization.reporting
+title: Report comparable evidence and uncertainty
+kind: policy
+priority: 50
+rule: Report enough method and evidence for another engineer to reproduce the comparison
+  and judge whether the optimization is valuable.
+require:
+- State target, workload, environment, baseline, bottleneck evidence, hypothesis, change,
+  absolute and relative effect, distributions, uncertainty, minimum worthwhile effect,
+  tradeoffs, and correctness checks.
+- For load-sensitive systems, include offered and achieved load, errors, timeouts, dropped
+  work, saturation points, and the latency-throughput relationship.
+- Separate measured conclusions, alternative evidence, assumptions, pre-existing failures,
+  deferred representative validation, and residual risk.
+- Say directly when no actionable optimization or statistically meaningful gain remains.
+reject:
+- Reporting only a percentage, best run, profiler screenshot, or unsupported claim of improvement.

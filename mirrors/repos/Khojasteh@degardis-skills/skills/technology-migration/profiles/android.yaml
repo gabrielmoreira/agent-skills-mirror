@@ -1,0 +1,11 @@
+name: android
+label: Android
+description: Load when migrating to or from Android.
+instructions:
+- When Android is the target, prefer platform and detected framework facilities for lifecycle, navigation,
+  state, permissions, storage, background work, configuration, resources, security, and rendering over
+  source-framework emulation.
+- Verify API availability, process death, configuration changes, lifecycle ownership, threading, cancellation,
+  permissions, persistence, accessibility, device resources, startup, and cleanup.
+- Keep bridges, compatibility resources, legacy components, dual UI paths, and platform fallbacks bounded
+  to stages.

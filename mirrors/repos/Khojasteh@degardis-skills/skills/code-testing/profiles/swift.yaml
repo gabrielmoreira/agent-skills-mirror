@@ -1,0 +1,11 @@
+name: swift
+label: Swift
+description: Load when testing Swift code or behavior.
+instructions:
+- Cover optionals, value-versus-reference semantics, ARC ownership, captures, collection
+  indices, errors, Objective-C bridging, persistence, and availability boundaries where
+  they affect behavior.
+- Isolate actors, tasks, clocks, notifications, files, keychain data, and persistent
+  stores; control cancellation and verify continuations resume exactly once.
+- Run platform- or UI-dependent checks only for configured Apple targets and lifecycle
+  boundaries that a smaller test cannot represent credibly.

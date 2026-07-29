@@ -1,0 +1,6 @@
+name: delphi
+label: Delphi
+description: Load when fixing Delphi code or behavior.
+instructions:
+- Reproduce Unicode, record and set, property and event, exception, initialization, RTTI, interface reference-counting,
+  object ownership, UI-thread, ABI, and resource-lifetime behavior.

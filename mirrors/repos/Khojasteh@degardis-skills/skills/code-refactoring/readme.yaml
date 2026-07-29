@@ -1,0 +1,24 @@
+format_version: 1
+purpose: |-
+  Improve code structure without changing observable behavior.
+when_it_applies: |-
+  This skill applies to bounded structural improvements such as simplifying
+  control flow, separating responsibilities, removing duplication, improving
+  cohesion, or creating testability seams. Changes intended to alter observable
+  behavior are outside its scope.
+capabilities:
+- Establishes a behavioral baseline before restructuring code.
+- Selects focused refactorings for demonstrated structural problems.
+- Simplifies responsibilities, conditionals, state, and dependencies.
+- Works incrementally to keep changes reviewable.
+- Verifies that established behavior and compatibility remain intact.
+sample_prompts:
+- Refactor this large method safely.
+- This class has too many responsibilities; break it apart.
+- Deduplicate the repeated logic across these three modules.
+- Simplify this deeply nested conditional without changing what it does.
+- Improve this component's testability by decoupling it from the database.
+catalog:
+  order: 60
+  category: Software engineering / Quality
+  summary: Improve code structure without changing observable behavior.

@@ -1,0 +1,7 @@
+name: nextjs
+label: Next.js
+description: Load when optimizing Next.js performance.
+instructions:
+- Measure build and startup, server and edge latency, streaming, cache hit/miss and revalidation, data
+  waterfalls, bundle size, hydration, navigation, images, memory, and tail latency; verify freshness,
+  security, and rendering parity.

@@ -1,0 +1,8 @@
+name: nestjs
+label: NestJS
+description: Load when testing NestJS code or behavior.
+instructions:
+- Cover module composition, injection scopes, controllers, pipes, guards, interceptors, filters, serialization,
+  authentication, transactions, async providers, transport adapters, startup, and shutdown.
+- Compile only the module graph needed for focused tests, and exercise the real application adapter when
+  lifecycle or protocol behavior is part of the contract.

@@ -1,0 +1,17 @@
+id: docs.failures
+title: Put actionable failures where readers need them
+kind: constraint
+rule: Document a failure at the level and location where the intended reader can
+  prevent it, diagnose it, or recover from it.
+require:
+- State the triggering input or state, recognizable failure representation, when it
+  surfaces, material partial effects, and the relevant prevention or recovery.
+- In API and reference documentation, separate conditions when timing, side effects,
+  or caller action differs, even when their outward error type or status is the same.
+- In task documentation, cover likely failures that interrupt that task and link to
+  an authoritative error catalog or runbook for exhaustive detail.
+reject:
+- Collapsing distinct triggers into vague statements such as "fails when the input is invalid."
+- Copying an exhaustive failure catalog into every overview or how-to page.
+- Separating failures that have the same cause, timing, effects, and reader action
+  merely because the wording of their symptoms differs.

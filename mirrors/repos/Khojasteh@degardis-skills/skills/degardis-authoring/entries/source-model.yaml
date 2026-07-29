@@ -1,0 +1,18 @@
+id: degardis-authoring.source-model
+title: Author sources, not generated bundles
+kind: policy
+priority: 5
+rule: Treat skill.yaml and its selected YAML and resource files as the source of
+  truth for an AI agent skill in the Degardis source format. The agent authors
+  those sources; Degardis validates and compiles them into an installable AI
+  agent skill bundle.
+require:
+- Discover a skill from the directory containing skill.yaml. Treat any ancestor
+  directory as a human-facing collection when it contains descendant skills;
+  discovery is recursive and stops descending once a skill is found.
+- Make every authored skill independently valid and buildable.
+reject:
+- Claiming that Degardis authors or creates skill content.
+- Editing generated SKILL.md, references, or agents/openai.yaml as source.
+- Adding a collection manifest or nesting another discoverable skill inside a
+  skill source.

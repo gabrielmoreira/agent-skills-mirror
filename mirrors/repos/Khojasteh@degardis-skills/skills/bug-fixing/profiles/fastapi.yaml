@@ -1,0 +1,7 @@
+name: fastapi
+label: FastAPI
+description: Load when fixing FastAPI code or behavior.
+instructions:
+- Reproduce validation, dependency scopes and overrides, authentication, async cancellation, background
+  tasks, streaming, exceptions, OpenAPI, transactions, and lifespan cleanup; repair the causal boundary
+  and restore application state.

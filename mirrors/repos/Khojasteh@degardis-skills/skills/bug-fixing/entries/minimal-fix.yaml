@@ -1,0 +1,13 @@
+id: bug-fixing.minimal-fix
+title: Apply the smallest causal correction
+kind: heuristic
+rule: Change only what is necessary to restore the established contract and prevent
+  the demonstrated regression.
+require:
+- Preserve established architecture, versions, tooling, interfaces, and unrelated behavior.
+- Keep the causal change and its regression evidence easy to review together.
+- Defer structural cleanup to a separately scoped refactoring task.
+reject:
+- Broad refactoring mixed into the causal fix.
+- Opportunistic renaming, extraction, formatting, dependency upgrades, or abstraction.
+- Special-casing only the reported example when the root cause affects a broader valid domain.

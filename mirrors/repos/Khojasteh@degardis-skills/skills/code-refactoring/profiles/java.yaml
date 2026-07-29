@@ -1,0 +1,6 @@
+name: java
+label: Java
+description: Load when refactoring Java code.
+instructions:
+- Search annotations, reflection, dependency injection, service loading, ORM mappings, configuration,
+  templates, and generated code before structural changes.

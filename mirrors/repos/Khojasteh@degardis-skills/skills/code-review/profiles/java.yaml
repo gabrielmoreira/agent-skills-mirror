@@ -1,0 +1,9 @@
+name: java
+label: Java
+description: Load when reviewing Java code or behavior.
+instructions:
+- Trace nullability, resource closure, exceptions, thread safety, executor lifetime, interruption, futures,
+  and shared mutable state.
+- Check equality and hashing, collection mutability, stream reuse, numeric overflow, serialization, reflection,
+  class loading, and binary compatibility.
+- Verify framework and library semantics from configured versions rather than current defaults.

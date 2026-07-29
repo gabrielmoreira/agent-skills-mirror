@@ -1,0 +1,15 @@
+id: dependency-upgrade.deprecation-migration
+title: Resolve migration-relevant deprecations
+kind: policy
+priority: 2
+rule: Resolve deprecations caused or made actionable by the target upgrade through an authoritative supported replacement path.
+require:
+- Inventory relevant compiler, analyzer, build, test, and runtime diagnostics before editing; distinguish introduced, pre-existing, in-scope, and unrelated deprecations.
+- Trace each in-scope deprecation to official migration guidance, API documentation, release notes, or diagnostics, including changed defaults and semantics.
+- Prefer upstream codemods or repository-native migration tools when authoritative evidence supports them, and review every generated change.
+- Migrate affected callers, configuration, tests, and generated sources together, then rerun focused behavior checks and deprecation diagnostics.
+- Retain an in-scope deprecated path only when the target still supports it and no approved replacement is viable; record the evidence, risk, and removal condition.
+reject:
+- Silencing an in-scope deprecation through warning suppression, disabled analysis, casts, reflection, wrappers, or compatibility aliases.
+- Treating a mechanical rename, clean compilation, or disappearance of a warning as proof that behavior is preserved.
+- Expanding the upgrade into unrelated pre-existing deprecation cleanup.

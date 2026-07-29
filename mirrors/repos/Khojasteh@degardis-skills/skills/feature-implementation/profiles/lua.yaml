@@ -1,0 +1,7 @@
+name: lua
+label: Lua
+description: Load when implementing Lua features.
+instructions:
+- Model nil and absent values, table ownership, indexing, multiple returns, errors, coroutine behavior,
+  globals, module loading, sandbox boundaries, and resource cleanup with idiomatic Lua rather than translated
+  class structures.

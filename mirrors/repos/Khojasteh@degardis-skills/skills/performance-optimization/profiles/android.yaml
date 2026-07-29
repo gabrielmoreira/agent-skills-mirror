@@ -1,0 +1,7 @@
+name: android
+label: Android
+description: Load when optimizing Android performance.
+instructions:
+- Measure representative release builds and devices across cold and warm startup, frame timing and jank,
+  allocation and GC, memory pressure, I/O, network, battery, app size, compilation, background limits,
+  and lifecycle transitions.

@@ -1,0 +1,7 @@
+name: groovy
+label: Groovy
+description: Load when fixing Groovy code or behavior.
+instructions:
+- Reproduce dynamic dispatch, truthiness, GString conversion, closure delegation, property resolution,
+  meta-class state, static compilation, Java interop, build-phase timing, and classloader effects; repair
+  the causal boundary and restore globals.

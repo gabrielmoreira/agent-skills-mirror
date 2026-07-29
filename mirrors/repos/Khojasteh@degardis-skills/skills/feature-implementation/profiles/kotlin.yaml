@@ -1,0 +1,6 @@
+name: kotlin
+label: Kotlin
+description: Load when implementing Kotlin features.
+instructions:
+- Design across nullability, coroutine scopes, structured concurrency, cancellation, flows, Java interop,
+  resource lifetime, and binary or serialization compatibility.

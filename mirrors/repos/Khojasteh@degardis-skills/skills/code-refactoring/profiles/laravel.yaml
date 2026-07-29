@@ -1,0 +1,7 @@
+name: laravel
+label: Laravel
+description: Load when refactoring Laravel code.
+instructions:
+- Search routes, bindings, facades, configuration keys, Blade templates, casts, policies, jobs, events,
+  commands, and dynamic model names before structural changes.
+- Avoid repositories, services, and actions that only relay framework calls without policy.

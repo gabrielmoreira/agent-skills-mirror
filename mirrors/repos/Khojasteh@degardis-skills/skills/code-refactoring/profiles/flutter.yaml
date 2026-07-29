@@ -1,0 +1,7 @@
+name: flutter
+label: Flutter
+description: Load when refactoring Flutter code.
+instructions:
+- Search routes, assets, localization keys, generated serialization, plugin registration, and platform
+  bindings before structural changes.
+- Avoid decomposing widgets into tiny wrappers that increase navigation without isolating behavior.

@@ -1,0 +1,8 @@
+name: android
+label: Android
+description: Load when reviewing Android code or behavior.
+instructions:
+- Trace activity, fragment, service, receiver, process, and configuration-change lifecycles.
+- Check main-thread work, coroutine or callback ownership, saved state, permissions, exported components,
+  intents, storage, background limits, and API-level guards.
+- Distinguish local JVM assumptions from behavior requiring framework or device execution.

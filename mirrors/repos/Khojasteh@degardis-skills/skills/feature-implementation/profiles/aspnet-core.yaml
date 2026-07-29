@@ -1,0 +1,7 @@
+name: aspnet-core
+label: ASP.NET Core
+description: Load when implementing ASP.NET Core features.
+instructions:
+- Design across middleware ordering, routing, model binding, validation, authorization, DI lifetimes,
+  cancellation, serialization, transactions, and request-scope cleanup.
+- Verify behavior at the narrowest useful service, host, or HTTP boundary.

@@ -1,0 +1,11 @@
+name: rust
+label: Rust
+description: Load for Cargo dependency or Rust toolchain-coupled upgrades.
+instructions:
+- Preserve the workspace resolver and the repository's application-versus-library lockfile policy while
+  checking MSRV, feature unification, target-specific dependencies, proc macros, build scripts, patched
+  sources, and yanked releases.
+- Use scoped Cargo updates when supported, inspect duplicate major lines and feature changes, and avoid
+  broad `cargo update` churn unless the requested scope calls for it.
+- Validate locked and supported target builds, generated bindings, unsafe or FFI contracts, and any public
+  dependency bound that changes downstream compatibility.

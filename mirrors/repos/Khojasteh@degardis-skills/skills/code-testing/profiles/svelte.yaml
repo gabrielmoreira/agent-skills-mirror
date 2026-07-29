@@ -1,0 +1,7 @@
+name: svelte
+label: Svelte
+description: Load when testing Svelte code or behavior.
+instructions:
+- Cover rendered behavior, bindings, events, stores, reactive updates, actions, slots or snippets, context,
+  lifecycle, SSR and hydration, transitions, and cleanup.
+- Await framework update boundaries through established helpers and avoid testing compiler-generated internals.

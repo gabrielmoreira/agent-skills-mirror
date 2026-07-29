@@ -1,0 +1,7 @@
+name: flutter
+label: Flutter
+description: Load when fixing Flutter code or behavior.
+instructions:
+- Trace widget lifecycle, state ownership, rebuilds, navigation, async work, plugin and platform channels,
+  permissions, frame timing, disposal, and platform differences.
+- Reproduce at the narrowest unit, widget, integration, emulator, or device boundary.

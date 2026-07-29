@@ -1,0 +1,16 @@
+id: review.severity
+title: Severity communicates impact
+kind: policy
+rule: Classify findings from impact and reachability, then communicate confidence separately.
+require:
+- "Critical: broadly reachable compromise, irreversible widespread data loss, or systemic outage."
+- "High: likely serious failure on a normal path, significant security exposure, major
+  data loss, or a major contract break."
+- "Medium: real failure under plausible conditions with limited scope or a practical workaround."
+- "Low: narrow but concrete correctness, reliability, or maintainability risk worth fixing."
+- Reduce severity when restrictive preconditions or a small affected population materially
+  limit likely impact; state low confidence separately rather than silently changing impact.
+reject:
+- Raising severity because a fix is easy or the code looks undesirable.
+- Confusing difficulty reproducing a scenario with how reachable it is in production.
+- Using severity as a substitute for disclosing uncertain evidence.

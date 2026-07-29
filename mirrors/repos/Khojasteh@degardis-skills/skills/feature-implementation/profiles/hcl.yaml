@@ -1,0 +1,7 @@
+name: hcl
+label: HCL
+description: Load when implementing HCL features.
+instructions:
+- Define variables, validation, outputs, sensitive data, resource identity, dependency graph, lifecycle,
+  permissions, cost, destructive replacement, state movement, rollout, observability, and rollback; require
+  separate authority before apply.

@@ -1,0 +1,7 @@
+name: nextjs
+label: Next.js
+description: Load when reviewing Next.js code or behavior.
+instructions:
+- Review server/client boundaries, caching and revalidation, streaming, hydration, route precedence, middleware
+  and authentication, server actions, redirects, error handling, serialization, secret exposure, and static
+  versus dynamic behavior.

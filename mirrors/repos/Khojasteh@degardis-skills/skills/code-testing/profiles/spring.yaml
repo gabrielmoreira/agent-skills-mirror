@@ -1,0 +1,7 @@
+name: spring
+label: Spring
+description: Load when testing Spring code or behavior.
+instructions:
+- Use the narrowest slice or context that exercises the real dependency-injection, web, transaction, messaging,
+  or persistence boundary.
+- Isolate application contexts, profiles, clocks, databases, brokers, caches, and background work.

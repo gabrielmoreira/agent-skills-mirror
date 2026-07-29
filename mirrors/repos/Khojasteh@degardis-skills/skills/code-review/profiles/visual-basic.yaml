@@ -1,0 +1,10 @@
+name: visual-basic
+label: Visual Basic
+description: Load when reviewing Visual Basic code or behavior.
+instructions:
+- Trace `Nothing` semantics, narrowing and user-defined conversions, overload resolution, `ByRef`, default
+  properties, late binding, case-insensitive identifiers, and equality.
+- Check event subscription lifetime, async/cancellation, iterator and LINQ evaluation, disposal, exception
+  filters, XML literals, culture, serialization, and COM interop.
+- Verify public API, reflection, generated `My` behavior, trimming/AOT, and C# consumer compatibility
+  when implementation details affect the emitted .NET surface.

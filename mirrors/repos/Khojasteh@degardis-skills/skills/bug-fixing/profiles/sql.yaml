@@ -1,0 +1,7 @@
+name: sql
+label: SQL
+description: Load when fixing SQL code or behavior.
+instructions:
+- Reproduce with safe representative data and trace nulls, collation, precision, ordering, constraints,
+  plans, transactions, locks, concurrency, permissions, and partial writes; protect persisted data and
+  require approval for destructive repair or compatibility changes.

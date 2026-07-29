@@ -1,0 +1,6 @@
+name: vue
+label: Vue
+description: Load when optimizing Vue performance.
+instructions:
+- Measure user-visible interaction across bundle and network loading, component rendering, reactive invalidation,
+  computed values, watchers, lists, routing, SSR, and hydration.

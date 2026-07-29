@@ -1,0 +1,12 @@
+id: refactoring.state-concurrency
+title: Preserve state and concurrency semantics
+kind: constraint
+rule: Maintain ownership, mutation, ordering, atomicity, cancellation, and resource
+  lifetime across structural changes.
+require:
+- Check evaluation timing and side-effect order when extracting, moving, caching, or inlining.
+- Preserve synchronization, transaction, cancellation, timeout, retry, and cleanup boundaries.
+- Verify callbacks and asynchronous work do not acquire a different lifetime or owner.
+reject:
+- Moving mutable state across scopes without proving equivalent ownership.
+- Reordering operations because they appear independent on the common path.

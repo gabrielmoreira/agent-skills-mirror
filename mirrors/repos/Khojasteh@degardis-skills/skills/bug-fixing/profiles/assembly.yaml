@@ -1,0 +1,7 @@
+name: assembly
+label: Assembly
+description: Load when fixing Assembly code or behavior.
+instructions:
+- Reproduce at the supported binary boundary and trace registers, flags, stack alignment, clobbers, bounds,
+  endianness, atomics, barriers, unwind behavior, and platform guards; retain performance and constant-time
+  properties where contracted.

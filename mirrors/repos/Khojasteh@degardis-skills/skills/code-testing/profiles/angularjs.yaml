@@ -1,0 +1,8 @@
+name: angularjs
+label: AngularJS
+description: Load when testing AngularJS code or behavior.
+instructions:
+- Cover dependency injection, scopes, watchers, digest and apply timing, directives, transclusion, filters,
+  promises, HTTP mocks, routing, teardown, and DOM interaction.
+- Keep AngularJS lifecycle assumptions distinct from successor frameworks and avoid brittle assertions about
+  private scope structure.

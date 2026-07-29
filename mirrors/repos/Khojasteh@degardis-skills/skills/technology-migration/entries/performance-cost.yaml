@@ -1,0 +1,13 @@
+id: technology-migration.performance-cost
+title: Preserve approved performance and cost outcomes
+kind: policy
+priority: 3
+rule: Measure performance only when requirements or evidence make latency, throughput,
+  resources, scalability, energy, artifact size, startup, or cost relevant.
+require:
+- Establish comparable source and target workloads and environments.
+- Report intentional tradeoffs and uncertainty across all relevant metrics.
+- Defer representative claims when only proxy evidence is available.
+reject:
+- Assuming the target is faster, cheaper, or more scalable because it is newer.
+- Blocking an otherwise valid migration on unevidenced micro-optimization.

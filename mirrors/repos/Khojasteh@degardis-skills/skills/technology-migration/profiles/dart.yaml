@@ -1,0 +1,11 @@
+name: dart
+label: Dart
+description: Load when migrating to or from Dart.
+instructions:
+- When Dart is the target, inventory core collections and algorithms, records and patterns, sealed types,
+  futures and streams, isolates, resource cleanup, serialization, and package conventions.
+- Prefer target-version language and core-library facilities over translated source helpers, dynamic models,
+  callback abstractions, or hand-built async primitives.
+- Verify equality, ordering, nullability, numeric precision, Unicode, async errors, cancellation limits,
+  stream behavior, isolate transfer, allocation, and generated-code semantics.
+- Keep interop, generated bridges, dynamic escape hatches, and compatibility packages bounded to stages.

@@ -1,0 +1,7 @@
+name: rails
+label: Rails
+description: Load when implementing Rails features.
+instructions:
+- Design across request lifecycle, strong parameters, authorization, Active Record transactions and callbacks,
+  migrations, jobs, mailers, caching, and autoloading.
+- Treat existing data and deployment order as contracts.

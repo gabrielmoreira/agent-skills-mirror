@@ -1,0 +1,13 @@
+name: typescript
+label: TypeScript
+description: Load when migrating to or from TypeScript.
+instructions:
+- When TypeScript is the target, inventory unions, discriminants, generics, mapped and conditional types,
+  narrowing, `unknown`, standard collections, promises, async iteration, modules, platform APIs, and declaration
+  generation.
+- Model real domain constraints with target-version types and runtime validation where required; prefer
+  suitable runtime built-ins over copied JavaScript or source-language utilities.
+- Verify runtime equality and ordering, Unicode, numeric precision, async errors, cancellation, event-loop
+  behavior, emit, module interop, declaration compatibility, serialization, and server/browser boundaries.
+- A completed full migration must not rely on broad `any`, blanket `@ts-ignore`, unchecked declarations,
+  `allowJs`, or JavaScript fallbacks; keep necessary interop narrow and bounded to explicit stages.

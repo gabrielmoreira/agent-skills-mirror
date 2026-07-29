@@ -1,0 +1,6 @@
+name: typescript
+label: TypeScript
+description: Load when implementing TypeScript features.
+instructions:
+- Design across runtime validation, structural typing, narrowing, promise rejection, event-loop ordering,
+  cancellation, module boundaries, and emitted API compatibility.

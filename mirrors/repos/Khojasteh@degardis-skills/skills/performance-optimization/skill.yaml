@@ -1,0 +1,28 @@
+name: performance-optimization
+format_version: 1
+title: Performance Optimization
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Measure, diagnose, and improve software performance. Use when the request
+  concerns latency, throughput, CPU, memory, allocation, I/O, startup, artifact size,
+  energy, cost, scalability, profiling, benchmarking, or a performance regression.
+primary_workflow: performance-optimization.optimize
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Performance Optimization
+  short_description: Optimize measured bottlenecks without guesswork
+  default_prompt: Use $performance-optimization to measure and improve this performance bottleneck.

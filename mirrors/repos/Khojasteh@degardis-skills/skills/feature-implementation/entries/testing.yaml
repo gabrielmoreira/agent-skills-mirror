@@ -1,0 +1,15 @@
+id: feature-implementation.testing
+title: Require independent feature evidence
+kind: policy
+priority: 30
+rule: Establish credible evidence for accepted behavior and regressions independently
+  from the implementation.
+require:
+- Define the oracle before relying on implementation output.
+- Run focused checks for each slice. Run broader relevant checks once after integration,
+  or earlier only when a slice changes a shared boundary whose result is needed before
+  continuing.
+- Do not repeat an unchanged broad build or test suite after each slice.
+- Preserve the repository's established runner, assertions, fixtures, and commands.
+reject:
+- Weakening assertions to match the implementation or adding arbitrary sleeps for timing failures.

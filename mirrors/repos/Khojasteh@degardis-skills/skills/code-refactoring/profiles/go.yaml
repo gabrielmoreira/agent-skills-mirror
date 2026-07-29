@@ -1,0 +1,8 @@
+name: go
+label: Go
+description: Load when refactoring Go code.
+instructions:
+- Treat exported identifiers, interfaces satisfied implicitly, init registration, build tags, generated
+  files, templates, and plugin names as usage boundaries.
+- Prefer small concrete interfaces derived from real consumers; do not add an interface solely to wrap
+  every implementation.

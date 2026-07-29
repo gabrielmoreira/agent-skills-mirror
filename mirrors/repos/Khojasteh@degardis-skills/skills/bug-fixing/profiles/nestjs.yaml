@@ -1,0 +1,7 @@
+name: nestjs
+label: NestJS
+description: Load when fixing NestJS code or behavior.
+instructions:
+- Reproduce injection tokens and cycles, guards, pipes, interceptors, filters, validation, serialization,
+  authentication, transactions, async providers, transport behavior, and shutdown; repair the smallest
+  causal boundary.

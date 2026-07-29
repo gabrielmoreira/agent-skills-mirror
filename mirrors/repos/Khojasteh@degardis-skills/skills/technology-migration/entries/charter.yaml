@@ -1,0 +1,13 @@
+id: technology-migration.charter
+title: Define a migration charter
+kind: policy
+priority: 1
+rule: Establish the source, target, reason, scope, non-goals, supported consumers,
+  approved differences, success criteria, and decommissioning result before designing work.
+require:
+- State why replacement rather than a same-lineage upgrade is required.
+- Identify what final completion means for source removal.
+- Ask about material ambiguity in behavior, architecture, data, security, operations, or compatibility.
+reject:
+- Beginning from a fashionable target without an approved outcome.
+- Treating an implementation preference as a migration requirement.

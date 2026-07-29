@@ -1,0 +1,11 @@
+name: angular
+label: Angular
+description: Load when migrating to or from Angular.
+instructions:
+- When Angular is the target, prefer its detected target-version component, template, dependency-injection,
+  signal or reactivity, routing, form, HTTP, security, rendering, and lifecycle facilities.
+- Do not reproduce source-framework component models, global service locators, manual reactivity, routing,
+  or rendering through wrappers when Angular supplies the required contract.
+- Verify lifecycle, injection scope, change detection, async scheduling, subscription cleanup, template
+  security, navigation, SSR and hydration, browser behavior, accessibility, and bundle boundaries.
+- Keep custom elements, interop shells, dual routers, and compatibility modules bounded to stages.

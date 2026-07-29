@@ -1,0 +1,13 @@
+id: technology-migration.coexistence
+title: Make coexistence behavior explicit
+kind: constraint
+priority: 1
+rule: During staging, define how source and target interact under success, failure, retry, and rollback.
+require:
+- Specify traffic selection, reads, writes, synchronization, ordering, idempotency,
+  retries, timeout, partial failure, reconciliation, monitoring, and cleanup.
+- Prevent new consumers from adopting the legacy path.
+- Bound the coexistence period and identify its removal gate.
+reject:
+- Unspecified dual writes, fallback, shadow traffic, or synchronization.
+- Treating eventual cleanup as an ownerless follow-up.

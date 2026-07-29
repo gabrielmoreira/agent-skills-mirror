@@ -1,0 +1,13 @@
+id: docs.audience
+title: Write for a defined audience
+kind: principle
+rule: Choose terminology, prerequisites, and depth for the intended reader.
+require:
+- Classify the intended reader as an end user, API consumer, operator, or maintainer.
+- State or establish the reader's goal, starting state, prerequisites, and expected outcome.
+- Use progressive disclosure so essential task information precedes optional context.
+- Include only content that supports the reader's task, decisions, safe operation,
+  understanding, troubleshooting, or recovery.
+reject:
+- Mixing user, operator, and maintainer concerns without clear boundaries.
+- Adding detail solely because it was discovered while inspecting the implementation.

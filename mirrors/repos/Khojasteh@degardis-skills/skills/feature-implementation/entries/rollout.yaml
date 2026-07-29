@@ -1,0 +1,11 @@
+id: feature-implementation.rollout
+title: Plan safe rollout and rollback
+kind: heuristic
+priority: 40
+rule: Define deployment order, configuration defaults, observability, rollback, and cleanup
+  when the feature changes runtime operations or persisted state.
+require:
+- Prefer safe defaults and independently reversible activation where the repository supports it.
+- State what signals confirm success or require rollback.
+reject:
+- Inventing feature flags or infrastructure when the change has no demonstrated rollout risk.

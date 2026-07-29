@@ -1,6 +1,6 @@
 ---
 description: "Search the Plugin Mall trust-scored catalog by query; ranks Mall-curated entries (🏆) first, surfaces third-party alternatives with their trust signals"
-lastReviewed: 2026-05-31
+lastReviewed: 2026-07-28
 ---
 
 # /mall-search
@@ -46,7 +46,7 @@ Per [PLAN-mall-automation v3 / ADR-008](https://github.com/fabioc-aloha/Alex_ACT
 
    ```text
    To see full metadata + signals: /mall-show <name>
-   To install:                     /mall-install <name>[@<version>] (Phase 5b — not yet shipped)
+   To install:                     /mall-install <name>[@<version>] using [mall-installation.instructions.md](../instructions/mall-installation.instructions.md)
    To browse a store:              read catalog/stores/<store>.md in the Mall repo
    ```
 

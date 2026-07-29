@@ -1,0 +1,9 @@
+name: blazor
+label: Blazor
+description: Load when migrating to or from Blazor.
+instructions:
+- Prefer native components, cascading state, forms, authorization, circuits, prerendering, hydration,
+  and JS interop over source-framework wrappers; verify state, serialization, navigation, cancellation,
+  and disposal parity.
+- Keep component islands, route proxies, and adapters bounded to explicit stages with owners and removal
+  gates.

@@ -1,0 +1,11 @@
+id: performance-optimization.hypothesis
+title: Make optimization hypotheses falsifiable
+kind: principle
+priority: 11
+rule: State the causal bottleneck, proposed mechanism, predicted metric change, possible
+  regressions, and comparable measurement that could disprove the optimization.
+require:
+- Change one causal factor at a time when practical.
+- Preserve failed or inconclusive findings in the report when they affect next decisions.
+reject:
+- Bundling several optimizations so their effects and regressions cannot be attributed.

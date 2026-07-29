@@ -1,0 +1,7 @@
+name: visual-basic
+label: Visual Basic
+description: Load when refactoring Visual Basic code.
+instructions:
+- Search `Handles` clauses, `AddHandler`, designer and `My` generated code, XML literals, reflection,
+  serializers, COM registration, configuration, and C# callers before renaming, moving, changing accessibility,
+  or deleting declarations.

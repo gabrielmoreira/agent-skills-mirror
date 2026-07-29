@@ -1,0 +1,12 @@
+id: dependency-upgrade.documentation
+title: Update only affected documentation
+kind: policy
+priority: 4
+rule: Update documentation when the upgrade changes supported versions, setup, behavior, operations, or maintainer obligations.
+require:
+- Cover new prerequisites, configuration, commands, compatibility, migrations, rollout, rollback, and release impact when applicable.
+- Remove instructions for unsupported versions and obsolete compatibility paths.
+- Keep internal version detail out of user documentation unless it changes the user contract.
+reject:
+- Rewriting unrelated documentation.
+- Leaving old installation or configuration guidance that reconstructs the pre-upgrade state.

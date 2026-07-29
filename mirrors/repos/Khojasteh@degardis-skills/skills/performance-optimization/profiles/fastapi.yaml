@@ -1,0 +1,7 @@
+name: fastapi
+label: FastAPI
+description: Load when optimizing FastAPI performance.
+instructions:
+- Measure warmup, request distributions, validation and serialization, dependency resolution, event-loop
+  blocking, database/network I/O, streaming, background tasks, startup, memory, and tail latency; retain
+  schemas, cancellation, and cleanup.

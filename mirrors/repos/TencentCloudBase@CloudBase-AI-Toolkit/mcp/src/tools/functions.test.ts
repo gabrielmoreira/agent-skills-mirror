@@ -183,7 +183,7 @@ describe("functions tool helpers", () => {
     });
     expect(mockCreateAccess).not.toHaveBeenCalled();
     expect(payload.message).toContain("manageGateway(action=\"createRoute\")");
-    expect(payload.message).toContain("type=\"HTTP\"");
+    expect(payload.message).toContain("upstreamResourceType=\"WEB_SCF\"");
     expect(payload.message).toContain("WEB_SCF");
     expect(payload.message).toContain("匿名身份访问");
     expect(payload.message).toContain("EXCEED_AUTHORITY");

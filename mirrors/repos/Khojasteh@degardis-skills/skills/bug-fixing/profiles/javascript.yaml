@@ -1,0 +1,6 @@
+name: javascript
+label: JavaScript
+description: Load when fixing JavaScript code or behavior.
+instructions:
+- Trace coercion, missing values, mutation, module boundaries, promises, microtasks, event-loop ordering,
+  timers, streams, cleanup, and browser-versus-server behavior.

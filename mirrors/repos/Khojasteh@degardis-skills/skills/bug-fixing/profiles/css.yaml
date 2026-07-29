@@ -1,0 +1,9 @@
+name: css
+label: CSS
+description: Load when fixing CSS code or behavior.
+instructions:
+- Require stylesheet and rendering evidence before applying CSS-specific
+  guidance.
+- Reproduce the browser, viewport, zoom, theme, fonts, interaction state, and cascade; trace specificity,
+  inheritance, containment, stacking, layout, animation, and browser support, then change the smallest
+  causal rule and check nearby states.

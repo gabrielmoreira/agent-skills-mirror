@@ -1,0 +1,16 @@
+id: dependency-upgrade.baseline
+title: Establish a trustworthy baseline
+kind: constraint
+priority: 2
+rule: Compare the upgraded state with a recorded pre-upgrade baseline that supports reliable attribution.
+require:
+- Prefer trustworthy recent results that match the current revision, configuration,
+  and relevant environment.
+- Execute only the repository-provided restore, build, test, analysis, packaging,
+  or smoke commands needed to fill material baseline gaps for the affected surface.
+- Record environment, tool versions, commands, outputs, warnings, and pre-existing failures.
+- Isolate understood pre-existing failures and stop only when uncertainty prevents verification of affected behavior.
+reject:
+- Attributing an existing failure to the upgrade.
+- Rerunning an unchanged broad baseline merely because repository commands are available.
+- Treating a dirty local cache as proof of reproducible installation.

@@ -1,0 +1,9 @@
+name: rails
+label: Rails
+description: Load when reviewing Rails code or behavior.
+instructions:
+- Trace validations, callbacks, transactions, strong parameters, authorization, jobs, retries, caching,
+  storage, time zones, and serialization.
+- Check callback ordering, N+1 queries, lost updates, tenant boundaries, migration safety, job idempotency,
+  and request versus worker lifetime.
+- Require a concrete behavior impact before criticizing established Rails conventions.

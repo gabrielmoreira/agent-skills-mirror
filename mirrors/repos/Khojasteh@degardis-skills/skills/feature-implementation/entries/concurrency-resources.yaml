@@ -1,0 +1,10 @@
+id: feature-implementation.concurrency-resources
+title: Preserve concurrency and resource semantics
+kind: policy
+priority: 23
+rule: Make ownership, ordering, cancellation, synchronization, cleanup, and resource lifetime explicit.
+require:
+- Check races, duplicate delivery, stale state, timeouts, cancellation, and cleanup paths.
+- Avoid tests that depend on scheduler timing, arbitrary sleeps, or same-timestamp assumptions.
+reject:
+- Adding retries or delays to hide an unresolved ordering defect.

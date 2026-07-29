@@ -1,0 +1,7 @@
+name: nodejs
+label: Node.js
+description: Load when reviewing Node.js code or behavior.
+instructions:
+- Review event-loop ordering, promise rejection, streams and backpressure, timers, signals, workers, module
+  caches, path and filesystem behavior, environment and secret boundaries, request isolation, and leaked
+  handles.

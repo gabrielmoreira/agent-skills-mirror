@@ -55,7 +55,7 @@ ipc.chatStream.start(params, { onChunk, onEnd, onError });
 - Mint an `InvocationRef` through the injected `IdSource` at the authoritative start boundary. Globally unique operation IDs eliminate cross-controller lifetime reuse without retaining per-key generation maps.
 - Terminal stream callbacks may synchronously start a replacement stream with the same key. Cleanup after `onEnd`/`onError` (including invoke rejection) must delete the entry only when the map still points to the generation that ended; an unconditional keyed delete can orphan the replacement stream.
 - By default the entry is removed when the end/error event arrives (`autoRelease: true`). Pass `{ autoRelease: false }` to keep receiving events after a terminal event, and call `release(key, { invocationRef })` when done — the chat stream machine uses this to keep entry ownership with its controller until finalization side effects complete (a stale release is a no-op).
-- Chat streams: do NOT call `ipc.chatStream.start` or guard against duplicate streams outside `src/chat_stream/commands.ts`. The per-chat state machine is the single source of truth for the lifecycle; submit through `useStreamChat().streamMessage` or `ChatStreamManager.ensure(chatId).send({ type: "submit", ... })`, and it serializes/queues by construction.
+- Chat streams: do NOT call `ipc.chatStream.start` or guard against duplicate streams from renderer code. The main-owned `chat_stream` actor is the single lifecycle and queue authority; submit through `useStreamChat().streamMessage` or `ChatStreamRemoteManager.ensure(chatId).send({ type: "submit", ... })`.
 - A null chat mode means the automatic default is still implicit. Renderer
   submissions must preserve that distinction with the existing null
   `requestedChatMode` sentinel instead of sending the computed display mode as
@@ -74,8 +74,20 @@ ipc.chatStream.start(params, { onChunk, onEnd, onError });
   idempotency insert, implicit-mode latch, and renderer acceptance event.
   Otherwise a rejected request leaves durable state and replays as accepted
   even though no model turn ran.
-- If a legacy UI path appends directly to `queuedMessagesByIdAtom` instead of submitting through the machine, poke the chat controller immediately after the synchronous atom write. The render that chose the queue path may be stale after finalization's one automatic dispatch, otherwise leaving the new item without a driver.
-- **Never gate global-state cleanup in `onEnd`/`onError` on a local `isMountedRef`.** Stream callbacks outlive the component that started them. If the user navigates away mid-stream, an unmount-guarded `onEnd` skips `setIsStreamingByIdAtom(false)` and `syncChatFromDb`, leaving the chat permanently `isStreaming=true` — `ChatPanel.fetchChatMessages` then skips IPC fetches forever and only a page refresh recovers. Always run global Jotai state writes and DB syncs unconditionally; only guard UI-only side effects (toasts, console logs, local React state) on mount. See `src/chat_stream/commands.ts` for the no-guard pattern.
+- Queue mutations must go through the main actor's revisioned events. Pass the
+  revision from the exact snapshot that rendered the action; falling back to a
+  newer client snapshot can accept stale clear/edit/reorder intent against
+  prompts the user never saw. Do not add renderer-owned queue atoms or
+  full-snapshot queue persistence.
+- Mirror bounded chat-prompt validation in the renderer before clearing the
+  composer. A main-only schema rejection otherwise discards the user's draft
+  before they can shorten it.
+- Terminal observation and cleanup belong to the main actor and must not depend on renderer liveness. Renderer callbacks are window-local receipts only.
+- The remote-machine transport rejects dispatch envelopes above 256 KiB before
+  running the event codec and reports `invalid-event`. If a bounded domain
+  schema legitimately permits larger payloads (for example base64 chat
+  attachments), set that machine's `remote.maxDispatchEnvelopeBytes` to match
+  the schema limit instead of raising the global transport limit.
 
 ## Settings write safety (`writeSettings`)
 
@@ -96,7 +108,18 @@ writeSettings({
 
 **Stream-admission barrier atomicity:** In `chat_stream_handlers.ts`, a stream's final admission-block check (`streamAdmissionBlockCounts`) and its `admissionPendingStreams.delete(controller)` "start" transition must run in the **same synchronous frame — no `await` between them**. `cancelActiveStreamsForApp` (used by restore-to-message) deliberately skips controllers still in `admissionPendingStreams`, so a restore that installs its `blockNewStreamsForApp` barrier in a gap between the check and the marker removal would neither cancel the stream nor make it re-observe the new barrier — letting it start mid-restore and dirty the freshly reverted tree. Adding any `await` in that window silently reintroduces this race.
 
-**Electron readiness:** `readSettings()` and `writeSettings()` may decrypt/encrypt secrets through Electron `safeStorage`, which throws `safeStorage cannot be used before app is ready` before `app.whenReady()`. Queue pre-ready entry points like deep links (`open-url`, `second-instance`) until the app/window is ready before calling OAuth/settings handlers.
+**Electron readiness:** `readSettings()` and `writeSettings()` may decrypt/encrypt secrets through Electron `safeStorage`, which throws `safeStorage cannot be used before app is ready` before `app.whenReady()`. Queue pre-ready entry points like deep links (`open-url`, `second-instance`) until the app/window is ready before calling OAuth/settings handlers. In a multi-window flow, tie renderer readiness to the current delivery target: mark delivery not-ready when the target changes to a loading window, and drain only after that target finishes loading. A global first-window-ready flag can flush payloads to a different renderer before its listeners exist.
+`did-finish-load` can still precede React effect subscriptions, so fire-and-forget startup events must register a renderer-module-level listener before bootstrap and replay buffered payloads when their UI consumer mounts.
+Mark transport readiness before development-only completed-load filters: a DevTools reload can abort the initial navigation, making the filtered completion the window's only `did-finish-load` event.
+Clear a window's renderer readiness only for a non-in-place main-frame `did-start-navigation`. `did-start-loading` is broader and can leave deep links queued when a usable renderer triggers loading activity that has no matching top-level `did-finish-load`.
+When explicit window creation awaits `loadURL()` / `loadFile()`, start any
+development-only DevTools reload only after that initial load promise resolves.
+Scheduling the reload first can reject the awaited promise with
+`ERR_ABORTED (-3)` and incorrectly roll back a healthy window.
+When a loaded window consumes and clears a persisted one-shot event, send the
+event through that known-ready window rather than `BrowserWindow.getAllWindows()[0]`.
+In multi-window startup the first global window may still be loading, which
+would drop the only replay before its early listener exists.
 
 **Custom-protocol debugging:** Before using `git bisect` on a `dyad://` flow, quit every dev and packaged Dyad instance and verify which build owns the protocol registration. macOS may route the link to a different running/registered build, producing a convincing but false good/bad result.
 
@@ -110,6 +133,10 @@ writeSettings({
 - Treat output schemas as type/validation contracts, not production serializers: `createTypedHandler` returns the handler result unchanged outside development. Explicitly project and map renderer-visible database columns before returning, especially for large or main-only fields such as `aiMessagesJson`.
 - When editing shared IPC contract code imported by `src/preload.ts` (especially `src/ipc/contracts/core.ts`), run `npm run build` before E2E. The preload Vite target may not resolve `@/...` aliases from those shared modules; use relative imports for preload-reachable shared code when packaging reports `Rollup failed to resolve import "@/..."`.
 - Avoid unguarded top-level `app.on(...)` or similar Electron API calls in modules that are imported broadly by tests. Many unit tests mock only the Electron APIs they touch, so prefer guarded calls like `app?.on?.(...)` or move event registration behind an explicit initialization function.
+- Keep best-effort persistence failures from escaping `BrowserWindow` close
+  callbacks. Catch and log file writes before continuing in-memory registry,
+  focused-window, and delivery-target cleanup; otherwise a closed window can
+  remain the authoritative target.
 - Electron lifecycle events do not await async handlers. When `before-quit` must finish asynchronous cleanup, call `event.preventDefault()` synchronously, wait with a hard timeout, then call `app.quit()` again behind a re-entry guard so cleanup cannot hang or recursively restart shutdown.
 - When main awaits a correlated renderer decision that can auto-settle on timeout or abort, emit a request-specific terminal event for every settlement path. Key every actionable renderer projection (including native notifications) by that request ID, consume the terminal event in each projection, and guard async UI setup so it cannot create stale UI after settlement; stream-end cleanup alone may be delayed or never run.
 - When splitting large handlers behind service boundaries, leave the handler responsible for IPC registration and request orchestration while moving runtime/policy logic into `src/ipc/services/*`. Preserve any intentional module side effects in the extracted service, such as `fixPath()` for child process PATH setup.
@@ -155,6 +182,9 @@ When an IPC event can fire at very high frequency (e.g., stdout/stderr from chil
   liveness check, so catch per destination (and per payload for individual
   delivery) to ensure one failed window cannot abort fanout to healthy peers or
   escape from a timer callback.
+- A proxy that masks `WebContents.isDestroyed()` to observe terminal sends must
+  dynamically expose a non-integer producer ID once its real target is gone.
+  Otherwise high-volume routing can re-register the destroyed endpoint.
 - Start a `setTimeout` on first enqueue; flush all buffered messages as a single batch event (e.g., `app:output-batch`) when the timer fires (100ms default).
 - Flush immediately on process exit so no messages are lost.
 - Keep latency-sensitive events (e.g., `input-requested`) on an immediate, unbatched channel.

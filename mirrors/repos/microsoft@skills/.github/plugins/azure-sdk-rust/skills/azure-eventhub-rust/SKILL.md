@@ -28,7 +28,7 @@ Use this skill when:
 cargo add azure_messaging_eventhubs azure_identity tokio futures
 ```
 
-> If your code uses `azure_core` types directly, add `azure_core` to `Cargo.toml`. If you only use `azure_messaging_eventhubs` re-exports, direct `azure_core` dependency is optional.
+> `DeveloperToolsCredential::new(None)?` already returns an `Arc<DeveloperToolsCredential>`, so you can pass or clone it directly into `.open()`. Add `azure_core` only when you need direct `azure_core` imports such as `ErrorKind`.
 
 ## Environment Variables
 
@@ -49,6 +49,8 @@ EVENTHUB_NAME=<eventhub-name>                     # Required — name of the Eve
 
 ## Authentication
 
+Rust Azure SDK code must not use `DefaultAzureCredential`. The Rust identity crate does not provide that type.
+
 ```rust
 use azure_identity::DeveloperToolsCredential;
 use azure_messaging_eventhubs::ProducerClient;
@@ -59,11 +61,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let credential = DeveloperToolsCredential::new(None)?;
 
     let producer = ProducerClient::builder()
-        .open("<namespace>.servicebus.windows.net", "<eventhub-name>", credential.clone())
+        .open(
+            "<namespace>.servicebus.windows.net",
+            "<eventhub-name>",
+            credential.clone(),
+        )
         .await?;
     Ok(())
 }
 ```
+
+Prefer the crate README/examples when checking builder signatures and receive-stream event wrapper shapes.
 
 ## Core Workflow
 
@@ -92,7 +100,11 @@ use azure_messaging_eventhubs::ConsumerClient;
 // Local dev: DeveloperToolsCredential. Production: use ManagedIdentityCredential.
 let credential = DeveloperToolsCredential::new(None)?;
 let consumer = ConsumerClient::builder()
-    .open("<namespace>.servicebus.windows.net", "<eventhub-name>", credential.clone())
+    .open(
+        "<namespace>.servicebus.windows.net",
+        "<eventhub-name>".to_string(),
+        credential.clone(),
+    )
     .await?;
 ```
 
@@ -120,7 +132,11 @@ let receiver = consumer
 let mut stream = receiver.stream_events();
 while let Some(event_result) = stream.next().await {
     match event_result {
-        Ok(event) => println!("Received: {:?}", event),
+        // Body is on the inner event data, not the received wrapper: `event.event_data().body()`.
+        Ok(event) => {
+            let body = event.event_data().body().unwrap_or_default();
+            println!("Received: {:?}", body);
+        }
         Err(err) => eprintln!("Error: {:?}", err),
     }
 }
@@ -139,12 +155,15 @@ For Entra ID auth, assign one of these roles:
 ## Best Practices
 
 1. **Use `cargo add` to manage dependencies, never edit `Cargo.toml` directly.** Add and remove Rust SDK dependencies with cargo commands instead of manual manifest edits.
-2. **Add `azure_core` only when importing `azure_core` types directly.** If your code imports `azure_core::http::Url`, `azure_core::http::RequestContent`, or `azure_core::error::ErrorKind`, include `azure_core`; otherwise a direct dependency is optional.
-3. **Use `DeveloperToolsCredential`** for local dev, **`ManagedIdentityCredential`** for production — Rust does not provide a single `DefaultAzureCredential` type
-4. **Never hardcode credentials** — use environment variables or managed identity
-5. **Use batching** — `create_batch` + `send_batch` for throughput optimization
-6. **Handle errors per event** — match on `Ok`/`Err` in the event stream
-7. **Specify start position** — use `StartLocation::Earliest` or `StartLocation::Latest` to control where consumption begins
+2. **Pass or clone credentials directly into `.open()`.** `DeveloperToolsCredential::new(None)?` already returns an `Arc`, so you do not need to annotate the binding as `Arc<dyn TokenCredential>` unless you are naming that trait object type explicitly.
+3. **Match the builder signature.** `ProducerClient::builder().open(...)` takes the hub name as `&str`, while `ConsumerClient::builder().open(...)` takes an owned `String`.
+4. **Use `DeveloperToolsCredential`** for local dev, **`ManagedIdentityCredential`** for production — Rust does not provide a single `DefaultAzureCredential` type
+5. **Never hardcode credentials** — use environment variables or managed identity
+6. **Use batching** — `create_batch` + `send_batch` for throughput optimization
+7. **Handle errors per event** — match on `Ok`/`Err` in the event stream
+8. **Extract event bodies via `event.event_data().body()`**, not `event.body()` — `ReceivedEventData` wraps the underlying `EventData`.
+9. **Specify start position** — use `StartLocation::Earliest` or `StartLocation::Latest` to control where consumption begins
+10. **Run `cargo clippy -- -D warnings`** when the prompt, eval, or CI expects lint-clean output
 
 ## Reference Links
 

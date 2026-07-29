@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wasp-lang/wasp` — 26 default patterns, 0 followed patterns, 26 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,6 +85,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 24 | ✓ | [`web/.claude/skills/notion-to-blog/SKILL.md`](web/.claude/skills/notion-to-blog/SKILL.md) |
 | 25 | ✓ | [`web/.claude/skills/social-content/SKILL.md`](web/.claude/skills/social-content/SKILL.md) |
 | 26 | ✓ | [`web/blog/CLAUDE.md`](web/blog/CLAUDE.md) |
+| 27 | ✓ | [`web/markdown-snapshots/llms.txt`](web/markdown-snapshots/llms.txt) |
 
 ---
 

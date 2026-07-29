@@ -1,0 +1,11 @@
+id: feature-implementation.errors
+title: Design complete failure behavior
+kind: principle
+priority: 24
+rule: Define how each meaningful failure surfaces, what state may change first, and how
+  callers or operators recover.
+require:
+- Preserve useful context and distinguish validation, deferred, partial, and background failures.
+- Verify cleanup and externally visible side effects on failure.
+reject:
+- Swallowing errors, returning ambiguous success, or exposing accidental implementation details.

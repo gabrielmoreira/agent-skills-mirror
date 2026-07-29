@@ -1,0 +1,13 @@
+id: dependency-upgrade.inventory
+title: Inventory the whole dependency surface
+kind: policy
+priority: 2
+rule: Find every declaration and consumer that can affect or be affected by the upgrade.
+require:
+- Inspect manifests, lockfiles, workspaces, central version files, runtime pins, build files,
+  containers, CI, deployment definitions, code generators, scripts, source, tests, and docs.
+- Identify direct, transitive, optional, development, build, runtime, plugin, and peer relationships.
+- Account for monorepo packages and independently shipped components.
+reject:
+- Updating the first manifest found and assuming the repository is complete.
+- Ignoring duplicated constraints or runtime versions outside the main application.

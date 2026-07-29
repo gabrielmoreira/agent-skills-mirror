@@ -1,0 +1,16 @@
+id: testing.bug-first
+title: Suspected production defects
+kind: policy
+rule: When evidence suggests a production defect, stop and report the evidence before
+  delivering changes to production behavior or encoding the defect as correct.
+priority: 5
+require:
+- Show the expected behavior and the independent source for that expectation.
+- Show the smallest reproduction and distinguish it from test or environment failures.
+- In a testing-only task, stop after reporting the production defect.
+- If the request separately authorizes production changes, keep the testing work focused
+  on reproducible regression evidence and report that boundary explicitly.
+reject:
+- Weakening an assertion to match defective behavior.
+- Changing production code as part of a testing-only task.
+- Treating a request for tests as implicit authority to fix production behavior.

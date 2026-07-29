@@ -1,0 +1,7 @@
+name: rails
+label: Rails
+description: Load when fixing Rails code or behavior.
+instructions:
+- Trace routing, parameter handling, authorization, callbacks, validations, transactions, model state,
+  jobs, mail, caches, autoloading, and database cleanup.
+- Distinguish request, callback, commit, job, mail, and command failure timing.

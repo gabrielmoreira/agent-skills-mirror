@@ -1,0 +1,7 @@
+name: laravel
+label: Laravel
+description: Load when testing Laravel code or behavior.
+instructions:
+- Use the lightest Laravel-aware harness that exercises the real container, HTTP, queue, event, console,
+  or database boundary.
+- Isolate configuration, facades, authentication, storage, time, queues, events, and database state.

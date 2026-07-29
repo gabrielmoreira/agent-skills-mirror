@@ -1,0 +1,12 @@
+id: technology-migration.source-of-truth
+title: Assign one source of truth per stage
+kind: constraint
+priority: 1
+rule: Define which implementation, datastore, configuration, pipeline, or platform is authoritative at every stage.
+require:
+- Specify authority for reads, writes, conflict resolution, configuration, generated output, and rollback.
+- Reconcile divergence before changing ownership.
+- Make the final target independently authoritative.
+reject:
+- Allowing two writable authorities without deterministic conflict semantics.
+- Claiming cutover while the source remains required for correctness.

@@ -16,7 +16,6 @@ const {
   mockRegisterCapiTools,
   mockRegisterCloudRunTools,
   mockRegisterGatewayTools,
-  mockRegisterInviteCodeTools,
   mockRegisterAppAuthTools,
   mockRegisterPermissionTools,
   mockRegisterLogTools,
@@ -38,7 +37,6 @@ const {
   mockRegisterCapiTools: vi.fn(),
   mockRegisterCloudRunTools: vi.fn(),
   mockRegisterGatewayTools: vi.fn(),
-  mockRegisterInviteCodeTools: vi.fn(),
   mockRegisterAppAuthTools: vi.fn(),
   mockRegisterPermissionTools: vi.fn(),
   mockRegisterLogTools: vi.fn(),
@@ -61,7 +59,6 @@ vi.mock("./tools/storage.js", () => ({ registerStorageTools: mockRegisterStorage
 vi.mock("./tools/capi.js", () => ({ registerCapiTools: mockRegisterCapiTools }));
 vi.mock("./tools/cloudrun.js", () => ({ registerCloudRunTools: mockRegisterCloudRunTools }));
 vi.mock("./tools/gateway.js", () => ({ registerGatewayTools: mockRegisterGatewayTools }));
-vi.mock("./tools/invite-code.js", () => ({ registerInviteCodeTools: mockRegisterInviteCodeTools }));
 vi.mock("./tools/app-auth.js", () => ({ registerAppAuthTools: mockRegisterAppAuthTools }));
 vi.mock("./tools/permissions.js", () => ({ registerPermissionTools: mockRegisterPermissionTools }));
 vi.mock("./tools/logs.js", () => ({ registerLogTools: mockRegisterLogTools }));

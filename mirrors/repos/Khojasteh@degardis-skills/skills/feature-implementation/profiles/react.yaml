@@ -1,0 +1,6 @@
+name: react
+label: React
+description: Load when implementing React features.
+instructions:
+- Design across render purity, state ownership, stale closures, effect dependencies and cleanup, context,
+  event ordering, suspense, hydration, server/client boundaries, and accessibility.

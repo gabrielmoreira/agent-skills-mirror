@@ -64,6 +64,44 @@ discover_active_book() {
   fi
 }
 
+# analysis_incomplete <_progress.md 路径> — 判断一份拆文进度是否仍未完成（返回 0 表示未完成）
+# 判据取「最终状态」字段：completed / completed_with_errors 视为已完成，其余状态
+# （pending / paused_after_stage1）以及字段缺失、文件为空、读取失败一律按未完成处理——
+# 宁可多提醒一次，也不让真断在半路的拆文静默消失（空文件正是管道刚起步就被打断的形态）。
+# LC_ALL=C 下全角冒号按字节匹配，故写成 (：|:) 而非字符组 [：:]：字符组会把全角标点按字节拆开。
+analysis_incomplete() {
+  local value
+  # 只认冒号后的状态值本身：拿整行做 *completed* 子串判断，会把模板占位符
+  # `{pending/paused_after_stage1/completed/completed_with_errors}` 和
+  # `pending（上次 completed 后重跑）` 这类括注误判成已完成，把真断在半路的拆文静默抹掉。
+  #
+  # 全角字符只许出现在 LC_ALL=C grep 的单引号模式里，绝不能进参数扩展或 case 模式：
+  # GBK 区域下 bash 按双字节解码脚本源码，全角冒号的尾字节会和紧邻的 `}` 配成一个字符、
+  # 把右花括号吃掉，`${x#*：}` 这种写法会让整个 common.sh 语法错误、所有 hook 一起哑掉。
+  # 字符组同理（[：:] 会被按字节拆开），故用 (：|:) 交替。
+  value=$(LC_ALL=C grep -m1 -oE '最终状态(：|:)[[:space:]]*[A-Za-z_]+' "$1" 2>/dev/null \
+    | LC_ALL=C grep -oE '[A-Za-z_]+$' || true)
+  [ -n "$value" ] || return 0
+  case "$value" in
+    completed|completed_with_errors) return 1 ;;
+    *) return 0 ;;
+  esac
+}
+
+# discover_incomplete_analyses <项目根> — 列出 拆文库/ 下仍未完成的 _progress.md
+# 输出：换行分隔的绝对路径（与 discover_all_books 同口径）。拆文库不存在时输出空。
+discover_incomplete_analyses() {
+  local root="$1"
+  [ -d "$root/拆文库" ] || return 0
+  { find "$root/拆文库" -name "_progress.md" -print 2>/dev/null || true; } | while IFS= read -r progress_file; do
+    [ -n "$progress_file" ] || continue
+    if analysis_incomplete "$progress_file"; then printf '%s\n' "$progress_file"; fi
+  done
+  # 显式收 0：循环体最后一次判定若落在「已完成」上，while 会把 1 带出来，调用方
+  # 一旦开了 pipefail（各 hook 都开）就会被 set -e 打断。用 if 包住 + return 0 双保险。
+  return 0
+}
+
 # discover_all_books — 多本书查询（项目内所有书目）
 # 输出：换行分隔的绝对目录路径列表（不含重复）。
 # 使用场景：detect-story-gaps —— 需要遍历项目内所有书目做缺口检测。

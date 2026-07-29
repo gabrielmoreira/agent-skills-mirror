@@ -1,0 +1,13 @@
+id: performance-optimization.concurrency
+title: Validate concurrency and parallelism
+kind: policy
+priority: 19
+rule: Add concurrency only when measured parallel capacity exceeds coordination, contention,
+  queueing, scheduling, and resource costs.
+require:
+- Check throughput and tail latency across load, ordering, cancellation, backpressure,
+  fairness, saturation, retries, duplicate work, and cleanup.
+- Bound worker, queue, connection, and memory growth.
+reject:
+- Unsafe parallelism, arbitrary sleeps, unbounded queues, or higher average throughput
+  that violates tail-latency or reliability budgets.

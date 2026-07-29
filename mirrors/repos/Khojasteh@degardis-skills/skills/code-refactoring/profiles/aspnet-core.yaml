@@ -1,0 +1,7 @@
+name: aspnet-core
+label: ASP.NET Core
+description: Load when refactoring ASP.NET Core code.
+instructions:
+- Search routes, attributes, configuration keys, options binding, reflection, source generation, EF mappings,
+  views, and DI registrations before structural changes.
+- Avoid interfaces and service layers that only mirror concrete implementations or controllers.

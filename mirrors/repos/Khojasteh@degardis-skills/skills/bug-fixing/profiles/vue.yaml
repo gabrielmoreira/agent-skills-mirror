@@ -1,0 +1,7 @@
+name: vue
+label: Vue
+description: Load when fixing Vue code or behavior.
+instructions:
+- Trace props, emits, slots, composable ownership, refs, computed values, watchers, effect cleanup, routing,
+  hydration, server/client boundaries, and user interaction.
+- Reproduce observable behavior at the narrowest composable, component, integration, or browser boundary.

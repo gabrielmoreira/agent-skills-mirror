@@ -1,0 +1,6 @@
+name: cpp
+label: C++
+description: Load when optimizing C++ performance.
+instructions:
+- Measure allocation, copies and moves, cache locality, templates, virtual dispatch, exceptions, synchronization,
+  I/O, code size, startup, and compiler optimization effects.

@@ -1,0 +1,6 @@
+name: groovy
+label: Groovy
+description: Load when reviewing Groovy code or behavior.
+instructions:
+- Review dynamic dispatch, truthiness, GString conversion, closure delegation, property resolution, meta-class
+  mutation, static compilation boundaries, serialization, classloaders, and configuration-time side effects.

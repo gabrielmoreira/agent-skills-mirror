@@ -1,0 +1,18 @@
+id: performance-optimization.comparison-design
+title: Design comparisons before measuring
+kind: policy
+priority: 9
+rule: Define the primary metric, sampling unit, comparison method, minimum worthwhile
+  effect, repetitions, and uncertainty treatment before collecting optimization results.
+require:
+- Use independent observations at the level where variation occurs; do not inflate
+  confidence by treating iterations from one process, host, or run as independent.
+- Interleave or randomize baseline and candidate measurements when drift, order,
+  caching, thermal state, or shared infrastructure could bias the comparison.
+- Report practical effect size with dispersion or interval estimates appropriate to
+  the metric and distribution.
+reject:
+- Selecting a favorable metric, aggregation, outlier rule, or stopping point after
+  seeing the result.
+- Treating statistical significance as practical value or a small sample's lack of
+  significance as proof that two implementations are equivalent.

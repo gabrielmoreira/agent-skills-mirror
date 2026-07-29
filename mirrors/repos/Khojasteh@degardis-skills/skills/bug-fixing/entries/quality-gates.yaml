@@ -1,0 +1,25 @@
+id: bug-fixing.quality-gates
+title: Pass explicit evidence and completion gates
+kind: constraint
+priority: 8
+rule: Use explicit pass or blocked quality gates before production edits and before
+  reporting a defect as fixed; never waive a failed gate silently.
+require:
+- "Evidence gate before editing: expected and actual behavior are independently established;
+  the symptom is reproduced or bounded alternative evidence exists; the failing layer
+  and first causal divergence are identified; and material ambiguity is resolved."
+- "Change gate before editing: implementation is authorized; the bounded fix plan,
+  regression oracle, affected contracts, and applicable compatibility, data, security,
+  concurrency, operational, and rollback risks have been reviewed."
+- "Completion gate before claiming fixed: the original regression evidence changes
+  from the verified pre-fix failure to a post-fix pass; focused checks pass; broader
+  relevant checks are run or explicitly justified; and the final diff, side effects,
+  cleanup, documentation impact, and residual risk are reviewed."
+- Mark each gate pass or blocked with concrete evidence. If blocked, continue safe
+  investigation when useful, otherwise stop at the authorized boundary and report
+  the missing evidence or decision.
+reject:
+- Using implementation progress, code inspection, compilation, or one broad green suite
+  as a substitute for causal regression evidence.
+- Claiming a gate passed when its check was skipped, inconclusive, flaky, or failed
+  for an unrelated reason.

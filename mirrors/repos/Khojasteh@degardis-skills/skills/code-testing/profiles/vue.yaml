@@ -1,0 +1,6 @@
+name: vue
+label: Vue
+description: Load when testing Vue code or behavior.
+instructions:
+- Prefer rendered behavior and user interaction over component internals or implementation structure.
+- Control reactive updates, timers, network requests, plugins, stores, routing, and cleanup.

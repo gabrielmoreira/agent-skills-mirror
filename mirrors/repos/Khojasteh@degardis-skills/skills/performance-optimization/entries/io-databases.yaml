@@ -1,0 +1,12 @@
+id: performance-optimization.io-databases
+title: Optimize I/O and database boundaries
+kind: policy
+priority: 17
+rule: Measure calls, queries, bytes, round trips, waits, batching, query plans, indexes,
+  serialization, and backpressure before changing an I/O boundary.
+require:
+- Check N+1 access, transaction scope, connection pools, pagination, data growth,
+  retries, timeouts, and partial failure.
+- Validate plans and behavior with representative data and parameter distributions.
+reject:
+- Hiding I/O behind concurrency or caching without addressing capacity and correctness.

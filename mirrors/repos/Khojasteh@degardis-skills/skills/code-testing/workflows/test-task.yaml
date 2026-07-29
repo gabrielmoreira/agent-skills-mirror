@@ -1,0 +1,70 @@
+id: testing.test-task
+title: Execute an adaptive testing task
+description: Adapt the depth and output to whether the request is planning,
+  authoring, reviewing, improving, or diagnosing tests.
+steps:
+- action: inspect-context
+  instruction: Read repository instructions, manifests, test configuration, commands,
+    relevant production code, and nearby tests. Honor explicit technology choices and
+    preserve the established runner, assertion style, fixtures, layout, dependencies,
+    and commands.
+- action: classify-task-and-scope
+  instruction: Determine whether the request is to plan, author, review, improve, or
+    diagnose tests and define the smallest relevant behavior and test surface. Treat
+    planning and review as analysis-only. For authoring or improvement, limit delivered
+    edits to tests and test-supporting artifacts unless the request explicitly includes
+    a separate production-code outcome.
+- action: establish-tooling-evidence
+  instruction: Select project tools and commands only when explicit scope or repository
+    instructions, manifests, lockfiles, configuration, scripts, CI, documentation, or
+    established usage supports them. Availability, filenames, conventions, and popularity
+    do not establish adoption; never execute competing tools as probes. When evidence is
+    absent, use tool-independent analysis, report the validation gap, or ask before
+    introducing tooling.
+- action: establish-baseline
+  instruction: For authoring, improvement, or diagnosis, identify the narrowest relevant
+    existing test command and, when practical, run it before editing so pre-existing
+    failures are distinguishable. Do not run commands merely to complete a planning
+    or static-review request.
+- action: define-behavior
+  instruction: Identify observable contracts, invariants, boundaries, failure modes,
+    and regression risks. For a reported defect, write down the smallest input and
+    expected outcome that distinguish correct behavior from the defect. Test behavior
+    rather than implementation details.
+- action: select-level
+  instruction: Choose the smallest test level that can provide credible evidence;
+    avoid unnecessary integration scope and mocking.
+- action: design-oracles
+  instruction: Derive expected outcomes independently from requirements, contracts,
+    standards, or verified fixtures; never copy or execute the production algorithm
+    to manufacture expectations.
+- action: cover-risk
+  instruction: Prioritize meaningful success, boundary, and failure cases over a
+    coverage percentage. Keep tests deterministic and isolated; apply the Determinism
+    and isolation reference whenever behavior involves time, randomness, concurrency,
+    ordering, environment, shared resources, numeric precision, or external systems.
+- action: perform-task
+  instruction: Implement, review, improve, or diagnose the minimum relevant tests
+    and test-supporting artifacts using the repository's runner, assertion style,
+    layout, and commands. Keep each test focused enough that a failure identifies
+    the violated behavior.
+- action: verify-test-sensitivity
+  instruction: For a new or revised regression test, establish when practical that
+    it fails for the targeted defect and passes for the correct behavior, using a
+    known faulty revision, a safely reverted local change, or a temporary mutation.
+    Preserve pre-existing work, restore only the temporary validation change afterward,
+    and never use destructive version-control cleanup. If sensitivity cannot be demonstrated,
+    explain why and identify the weaker evidence used instead.
+- action: verify-focused
+  instruction: Run the narrowest useful test command first, then broader relevant
+    checks only when warranted. Re-run flaky or order-sensitive candidates under the
+    relevant seed, order, parallelism, or repetition controls when the established
+    runner supports them. Record exact commands and outcomes.
+- action: classify-failures
+  instruction: Separate test defects and environment failures from production defects.
+    If evidence indicates a production defect, do not change production code or encode
+    the defective behavior as correct. Stop and report the production defect unless
+    the request explicitly includes production changes as a separate outcome.
+- action: report
+  instruction: Summarize tests changed or reviewed, behaviors covered, commands and
+    results, unresolved failures, and remaining risks.

@@ -1,0 +1,7 @@
+name: express
+label: Express
+description: Load when implementing Express features.
+instructions:
+- Define route and middleware order, parsing limits, authentication, validation, response and error contracts,
+  streaming, cancellation, session or tenant effects, proxy behavior, and cleanup without unnecessary
+  controller-service wrappers.

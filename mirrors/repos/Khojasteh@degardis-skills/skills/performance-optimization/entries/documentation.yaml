@@ -1,0 +1,10 @@
+id: performance-optimization.documentation
+title: Document durable performance contracts
+kind: policy
+priority: 40
+rule: Update documentation only when performance contracts, capacity assumptions, tuning,
+  operational procedures, configuration, benchmark maintenance, or maintainer rationale change.
+require:
+- Document verified behavior, prerequisites, tradeoffs, safe commands, and recovery.
+reject:
+- Publishing unstable benchmark numbers as guarantees or narrating incidental implementation details.

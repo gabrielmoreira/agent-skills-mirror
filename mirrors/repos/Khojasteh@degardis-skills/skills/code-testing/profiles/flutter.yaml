@@ -1,0 +1,7 @@
+name: flutter
+label: Flutter
+description: Load when testing Flutter code or behavior.
+instructions:
+- Choose unit, widget, golden, integration, or platform scope according to the boundary.
+- Drive widgets through user-observable interaction and control pumps, animations, clocks, platform channels,
+  assets, and persistent state.

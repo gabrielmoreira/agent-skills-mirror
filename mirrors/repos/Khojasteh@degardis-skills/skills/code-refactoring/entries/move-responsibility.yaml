@@ -1,0 +1,12 @@
+id: refactoring.pattern.move-responsibility
+title: Move responsibility
+kind: pattern
+rule: Move behavior to the cohesive owner of the knowledge or state it uses.
+conditions:
+- The current location creates feature envy, duplicated policy, or an unstable dependency direction.
+require:
+- Preserve call order, visibility, ownership, lifecycle, transaction, and serialization boundaries.
+- Update all callers and verify the new location reduces knowledge leakage.
+reject:
+- Moving behavior merely to satisfy a preferred layer diagram.
+- Creating circular dependencies or a god object that accumulates unrelated responsibilities.

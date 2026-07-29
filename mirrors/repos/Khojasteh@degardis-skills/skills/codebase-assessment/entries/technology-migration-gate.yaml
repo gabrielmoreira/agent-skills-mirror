@@ -1,0 +1,15 @@
+id: codebase-assessment.technology-migration-gate
+title: Recommend replacement only when the current technology is infeasible
+kind: constraint
+priority: 2
+rule: Recommend technology replacement only when evidence shows the current technology
+  cannot meet an approved requirement or has no viable supported upgrade path.
+require:
+- Keep migration assessment static and read-only.
+- Identify the blocked requirement, source responsibility, feasibility evidence,
+  candidate target capability, migration boundary, and validation gap.
+- Prefer a supported dependency upgrade or bounded change when it can meet the requirement.
+reject:
+- Fashion, novelty, generic modernization, popularity, or personal preference.
+- Recommending a rewrite because the source code needs ordinary refactoring.
+- Proposing a target before the unmet requirement and source responsibility are established.

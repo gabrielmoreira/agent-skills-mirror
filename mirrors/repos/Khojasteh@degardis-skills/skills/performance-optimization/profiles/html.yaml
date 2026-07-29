@@ -1,0 +1,6 @@
+name: html
+label: HTML
+description: Load when optimizing HTML performance.
+instructions:
+- Measure representative parse, DOM, accessibility, network, rendering, and interaction outcomes; optimize
+  excessive structure or payload only after tracing it to user-visible latency, memory, or transfer cost.

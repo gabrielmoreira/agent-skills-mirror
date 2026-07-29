@@ -1,0 +1,9 @@
+name: groovy
+label: Groovy
+description: Load when migrating to or from Groovy.
+instructions:
+- Prefer idiomatic closures, collections, builders, traits, static compilation, or Java interoperability
+  when semantically suitable; verify ordering, equality, coercion, dispatch, serialization, complexity,
+  security, and failure behavior.
+- Keep cross-language calls, build-system bridges, and compatibility adapters bounded to explicit stages
+  with owners and removal gates.

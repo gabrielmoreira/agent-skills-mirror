@@ -1,0 +1,8 @@
+name: jquery
+label: jQuery
+description: Load when migrating to or from jQuery.
+instructions:
+- Prefer target-native DOM, event, request, component, and cleanup facilities over wrappers that preserve
+  jQuery-shaped APIs; verify interaction, accessibility, timing, and plugin parity.
+- Keep selector bridges, dual event handlers, and adapters bounded to explicit stages with owners and
+  removal gates.

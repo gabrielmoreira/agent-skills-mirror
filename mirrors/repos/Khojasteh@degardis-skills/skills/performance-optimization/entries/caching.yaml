@@ -1,0 +1,12 @@
+id: performance-optimization.caching
+title: Justify and bound caching
+kind: constraint
+priority: 18
+rule: Add or change caching only when repeated work is measured and freshness, invalidation,
+  ownership, capacity, tenancy, and security semantics are defined.
+require:
+- Define and verify cache invalidation for every state transition that can make a value stale.
+- Measure hit rate, miss cost, memory growth, eviction, stampedes, and cold-start behavior.
+- Verify invalidation, authorization isolation, sensitive-data handling, and failure fallback.
+reject:
+- Caching as a default fix for slow code or allowing stale or cross-tenant data silently.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Decision Quality Check"
+  short_description: "Simplify and verify product decisions before commitment."
+  default_prompt: "Use $pm-karpathy-thinking to stress-test this product proposal, simplify the scope, and define a measurable go/no-go loop."

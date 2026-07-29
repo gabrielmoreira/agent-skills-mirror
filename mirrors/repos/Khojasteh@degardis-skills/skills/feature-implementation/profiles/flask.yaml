@@ -1,0 +1,6 @@
+name: flask
+label: Flask
+description: Load when implementing Flask features.
+instructions:
+- Define routing, contexts, sessions, authentication, validation, errors, blueprints, transactions, streaming,
+  configuration, CLI effects, deployment, and teardown without unnecessary layering.

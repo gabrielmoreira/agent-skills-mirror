@@ -1,0 +1,31 @@
+name: codebase-assessment
+format_version: 1
+title: Codebase Assessment
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Assess a broad codebase or subsystem for quality, maintainability,
+  technical debt, test adequacy, structure, dependency health, performance evidence,
+  and documentation, then produce a prioritized improvement roadmap. Use for repository
+  health audits and broad improvement planning, not bounded diff or pull-request review,
+  implementation, or repair.
+primary_workflow: codebase-assessment.assess
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Codebase Assessment
+  short_description: Assess codebase quality and plan improvements
+  default_prompt: Use $codebase-assessment to assess this codebase and produce an
+    evidence-backed prioritized improvement plan without implementing changes.

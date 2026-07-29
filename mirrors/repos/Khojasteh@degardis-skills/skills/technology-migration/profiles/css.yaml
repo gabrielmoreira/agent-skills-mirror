@@ -1,0 +1,9 @@
+name: css
+label: CSS
+description: Load when migrating to or from CSS.
+instructions:
+- Prefer native cascade layers, custom properties, logical properties, grid, flexbox, container queries,
+  and platform states over translated helper systems; verify source ordering, value equality, layout,
+  accessibility, and compatibility.
+- Keep duplicate styles and selector adapters bounded to explicit stages with owners and removal gates;
+  final completion requires removal of obsolete source styling paths.

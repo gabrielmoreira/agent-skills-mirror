@@ -1,0 +1,16 @@
+id: codebase-assessment.documentation-gate
+title: Assess documentation only when applicable
+kind: policy
+rule: Load documentation guidance only when the assessed behavior or improvement has
+  a real reader-facing or maintainer-facing documentation consequence.
+require:
+- Assess user documentation when public contracts, inputs, outputs, side effects,
+  failures, compatibility, operations, migrations, or release impact are affected or stale.
+- Assess maintainer documentation and comments when rationale, invariants, ownership,
+  extension boundaries, hazards, or troubleshooting knowledge would become inaccurate.
+- Record no documentation action when public behavior and relevant maintainer knowledge
+  remain unchanged.
+reject:
+- Recommending user-guide changes solely because private classes, helpers, or file
+  organization may change.
+- Adding comments or examples that merely narrate an implementation.

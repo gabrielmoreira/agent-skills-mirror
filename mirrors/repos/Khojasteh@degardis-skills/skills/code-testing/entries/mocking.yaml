@@ -1,0 +1,13 @@
+id: testing.mocking
+title: Mock sparingly
+kind: heuristic
+rule: Prefer real, lightweight collaborators and mock only at boundaries where control
+  or isolation is necessary.
+conditions:
+- Use test doubles for nondeterministic, expensive, remote, destructive, or unavailable
+  collaborators.
+- Verify interactions only when the interaction itself is part of the observable contract.
+reject:
+- Mocking the unit under test.
+- Reproducing collaborator implementation behavior in elaborate stubs.
+- Asserting incidental calls that make refactoring unsafe.

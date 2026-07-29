@@ -1,0 +1,7 @@
+name: aspnet
+label: ASP.NET
+description: Load when fixing ASP.NET code or behavior.
+instructions:
+- Reproduce modules, handlers, routing, model binding, authentication, session, cache, view state, synchronization
+  context, configuration transforms, app domains, serialization, and disposal; correct the causal legacy-runtime
+  behavior.

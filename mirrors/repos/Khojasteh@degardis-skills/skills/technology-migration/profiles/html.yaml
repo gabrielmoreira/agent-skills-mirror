@@ -1,0 +1,9 @@
+name: html
+label: HTML
+description: Load when migrating to or from HTML.
+instructions:
+- Prefer semantic HTML, native controls, validation, navigation, disclosure, media, and accessibility
+  features over source-shaped custom widgets; verify parsing, ordering, equality-like form semantics,
+  escaping, browser behavior, and progressive enhancement.
+- Keep dual templates, adapters, and selector bridges bounded to explicit stages with owners and removal
+  gates; final completion requires target markup without source fallbacks.

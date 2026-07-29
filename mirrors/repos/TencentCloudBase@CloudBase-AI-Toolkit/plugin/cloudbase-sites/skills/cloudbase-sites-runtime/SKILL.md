@@ -65,11 +65,11 @@ storage, ai), fetch the corresponding CloudBase domain skill via
 
 - `ui-design`               UI design spec (mandatory before new UI work)
 - `web-development`         Web project conventions
-- `auth-tool`               provider config (management-side)
-- `auth-web`                Web SDK auth client code
-- `no-sql-web-sdk`          document database Web SDK
+- `auth-tool-cloudbase`               provider config (management-side)
+- `auth-web-cloudbase`                Web SDK auth client code
+- `cloudbase-document-database-web-sdk`          document database Web SDK
 - `cloud-storage-web`       cloud storage Web SDK
-- `relational-database-web` MySQL Web SDK
+- `relational-database-web-cloudbase` MySQL Web SDK
 - `cloudbase-platform`      platform overview / console links
 
 These are **NOT Claude Code native skills** and are NOT bundled with this

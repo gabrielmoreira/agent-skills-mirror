@@ -1,0 +1,9 @@
+name: nodejs
+label: Node.js
+description: Load when migrating to or from Node.js.
+instructions:
+- Prefer target-native modules, promises, async iteration, streams, cancellation, workers, and platform
+  APIs over source-runtime shims; verify ordering, equality, Unicode, precision, event-loop timing, security,
+  complexity, and cleanup.
+- Keep process bridges, dual modules, and runtime adapters bounded to explicit stages with owners and
+  removal gates.

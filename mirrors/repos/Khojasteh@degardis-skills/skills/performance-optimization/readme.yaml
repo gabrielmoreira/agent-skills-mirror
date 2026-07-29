@@ -1,0 +1,23 @@
+format_version: 1
+purpose: |-
+  Measure, diagnose, and improve software performance.
+when_it_applies: |-
+  This skill applies to latency, throughput, CPU, memory, allocation, I/O,
+  startup, artifact size, energy, cost, scalability, or performance-regression
+  work where comparable measurements can demonstrate the outcome.
+capabilities:
+- Defines the relevant workload, requirements, and comparison method.
+- Establishes a reproducible baseline before optimization.
+- Uses profiling and experiments to identify real bottlenecks.
+- Evaluates correctness and resource tradeoffs alongside performance.
+- Verifies improvements with comparable measurements and regression gates.
+sample_prompts:
+- Profile and reduce this endpoint's tail latency.
+- This job takes too long; find out where the time goes and speed it up.
+- Reduce memory usage in this data pipeline.
+- Investigate why our bundle size grew and bring it back down.
+- This query is slow at scale; diagnose and optimize it.
+catalog:
+  order: 80
+  category: Software engineering / Quality
+  summary: Measure bottlenecks and verify performance improvements.

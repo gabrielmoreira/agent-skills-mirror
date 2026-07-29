@@ -1,0 +1,13 @@
+name: rust
+label: Rust
+description: Load when documenting Rust code or APIs.
+instructions:
+- Document ownership, borrowing, lifetimes relevant to callers, panic and error conditions, safety invariants,
+  feature gates, concurrency, and observable complexity.
+- Treat valuable documentation examples as executable examples when the repository supports them; do not
+  create public examples merely to increase coverage.
+- Keep exhaustive, private, and implementation-oriented checks in ordinary tests.
+- Use hidden lines for irrelevant setup. Use `no_run`, `compile_fail`, or `should_panic` only when each
+  accurately represents the public contract.
+- Document distinct causes of the same `Result::Err` variant separately when callers need different prevention,
+  context, or recovery.

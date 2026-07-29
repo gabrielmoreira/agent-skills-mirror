@@ -1,0 +1,14 @@
+id: refactoring.reporting
+title: Report preservation evidence
+kind: policy
+rule: Explain what structure changed, what behavior was preserved, and how preservation
+  was verified.
+require:
+- State whether the targeted structural problem measurably improved rather than merely moved.
+- List conceptual transformations, baseline and final commands and results, usage searches,
+  and diff review.
+- Identify assumptions, skipped checks, pre-existing failures, and residual compatibility risk.
+- For assessment or planning, separate recommendations from implemented work.
+reject:
+- Claiming no behavior change based only on intent or a single passing test command.
+- Hiding behavior changes inside a structural summary.

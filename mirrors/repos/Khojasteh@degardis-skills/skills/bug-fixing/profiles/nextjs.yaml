@@ -1,0 +1,7 @@
+name: nextjs
+label: Next.js
+description: Load when fixing Next.js code or behavior.
+instructions:
+- Reproduce request, build, server/client, caching, revalidation, streaming, hydration, middleware, action,
+  redirect, and error behavior; remove the causal defect without disabling caches or falling back to client
+  rendering indiscriminately.

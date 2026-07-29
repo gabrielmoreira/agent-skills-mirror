@@ -1,0 +1,34 @@
+id: feature-implementation.design
+title: Apply SOLID, DRY, and KISS contextually
+kind: heuristic
+priority: 12
+rule: Use SOLID, DRY, and KISS as contextual design heuristics to extend the existing
+  architecture with the fewest cohesive concepts, boundaries, and layers needed for
+  the demonstrated behavior, not as a compliance checklist.
+require:
+- Use SRP to group behavior around genuine reasons to change, not to minimize file,
+  class, or method size.
+- Use OCP only when demonstrated variation establishes a stable extension boundary,
+  preserve LSP contracts, derive ISP interfaces from concrete callers, and apply DIP
+  at volatile, external, nondeterministic, or policy boundaries.
+- Apply DRY to repeated knowledge, rules, invariants, and coordinated change rather
+  than code that merely looks similar; tolerate duplication when concepts may evolve
+  independently.
+- Apply KISS by preferring direct control flow and the fewest concepts, files, layers,
+  dependencies, and indirections that keep responsibilities cohesive.
+- Justify each new abstraction by a cohesive concept, real boundary, demonstrated
+  variation, or concrete comprehension or testing benefit.
+- Preserve local comprehensibility, clear ownership and construction paths, and a
+  common execution path that can be followed without unnecessary file hopping.
+- Balance granularity using cohesion, reasons to change, demonstrated reuse, and
+  navigation cost rather than line counts.
+reject:
+- Speculative extensibility, architecture chosen for fashion, and single-use interfaces
+  without a real boundary or substitutable behavior.
+- Unifying superficially similar code with flags or conditionals when the concepts
+  should vary independently.
+- Ravioli code made of tiny fragments without cohesive meaning or control flow scattered
+  across files.
+- Lasagna code made of deep abstraction stacks, repetitive pass-through layers, excessive
+  injection, or construction paths that are difficult to trace.
+- Avoiding all decomposition until unrelated responsibilities accumulate in a god object.

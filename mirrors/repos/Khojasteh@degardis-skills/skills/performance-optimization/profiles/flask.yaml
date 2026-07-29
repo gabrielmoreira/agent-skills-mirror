@@ -1,0 +1,7 @@
+name: flask
+label: Flask
+description: Load when optimizing Flask performance.
+instructions:
+- Measure representative request distributions, routing, context and session work, extension hooks, serialization,
+  database/network I/O, streaming, startup, memory, and worker behavior; retain isolation, errors, and
+  teardown.

@@ -1,0 +1,6 @@
+name: go
+label: Go
+description: Load when fixing Go code or behavior.
+instructions:
+- Trace goroutine ownership, channel closure, context cancellation, data races, interface nil values,
+  error wrapping, map ordering, resource cleanup, and deferred execution.

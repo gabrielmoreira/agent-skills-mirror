@@ -1,0 +1,6 @@
+name: angular
+label: Angular
+description: Load when optimizing Angular performance.
+instructions:
+- Measure production builds across bootstrap, bundle loading, change detection, signals or observables,
+  template work, lists, routing, forms, network boundaries, SSR, and hydration.

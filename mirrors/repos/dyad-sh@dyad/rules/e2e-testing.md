@@ -50,6 +50,12 @@ await po.navigation.goToChatTab();
 
 Key sub-components: `po.appManagement`, `po.navigation`, `po.chatActions`, `po.previewPanel`, `po.codeEditor`, `po.githubConnector`, `po.toastNotifications`, `po.settings`, `po.securityReview`, `po.modelPicker`.
 
+When an E2E assertion needs main-owned state after a legacy read IPC channel is
+deleted, read the authoritative remote-machine snapshot through
+`distributed-machine:subscribe` and immediately balance it with
+`distributed-machine:unsubscribe`. Do not retain a test-only legacy channel or
+leak a subscription reference just to inspect state.
+
 ## Base UI Radio component selection in Playwright
 
 Base UI Radio components render a hidden native `<input type="radio">` with `aria-hidden="true"`. Both `getByRole('radio', { name: '...' })` and `getByLabel('...')` find this hidden input but can't click it (element is outside viewport). Use `getByText` to click the visible label text instead.
@@ -231,6 +237,7 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 - **App-upgrade version labels**: Do not hardcode the exact `Version N` after an upgrade commit. Runtime baseline commits can advance the number; assert a visible `/^Version \d+$/` control or compare the before/after version when the increment itself matters.
 - **Stable message ARIA snapshots**: If snapshots intermittently miss version metadata even though the assistant turn finished, retry the ARIA capture itself. A retry wrapped only around comparing a pre-captured string cannot observe React Query metadata that arrives after the first capture.
 - **Uncommitted-files banner clean state / renderer restarts**: If a prompt/app startup creates Dyad-managed runtime files before a banner test asserts a clean worktree, commit that runtime baseline first. Avoid `page.reload()` for packaged Electron app restart simulations; SPA file routes can fail with `net::ERR_FILE_NOT_FOUND`. If a test needs to recreate the renderer, ask the main process to `BrowserWindow.loadFile(path.join(app.getAppPath(), ".vite/renderer/main_window/index.html"))`. TanStack Router can supersede that index navigation while restoring the persisted route, causing `loadFile()` to reject with `ERR_ABORTED (-3)` even though the route loaded; tolerate only that code and retain post-reload UI assertions.
+- **Reloading a newly opened product window**: Wait for `page.waitForLoadState("load")`, not only `"domcontentloaded"`, before forcing a main-process `loadFile()`. Starting the reload while the original `BrowserWindow.loadFile()` is still settling can abort the original navigation and make the replacement fail with `ERR_FAILED (-2)` on CI.
 - **Generated lockfile diff stats in message snapshots**: Package-manager resolution can change a generated `pnpm-lock.yaml` line count without changing the tested behavior. Normalize only that lockfile's `+N -N` button suffix and keep the file name, modification state, and all other changed-file entries in the snapshot.
 - **Version restore clean state**: If a restore/switch-version test fails with `Cannot revert: working tree has uncommitted changes` from a runtime `pnpm-workspace.yaml`, and exact version numbers are under test, amend that runtime file into the current generated commit instead of adding a new baseline commit that shifts `Version N`.
 - **Completion notifications for another chat**: When testing completion notifications while viewing a different chat, make the fake LLM response slow (for example `[sleep=medium]`) or otherwise prove navigation has settled before completion. Fast canned responses can complete while the route still points at the original chat, so the notification handler correctly treats it as the active chat.
@@ -252,6 +259,7 @@ If a targeted E2E fails before launch with `ENOENT: no such file or directory, s
 
 - In the merged `html-report` artifact's `results.json`, failure screenshots are embedded as base64 in `attachments[].body` (the `path` field is empty or CI-side); decode the body to view them. Trace zips live in the artifact's `data/` directory, keyed by the hash in the CI-side path.
 - Before root-causing a failure on a PR branch, download the `html-report` from a recent main-branch CI run and check whether the same spec fails there — pre-existing main failures are out of scope for the PR's deflake.
+- When a feature intentionally changes from restart-durable to process-lifetime state, replace restart/legacy-store E2E assertions with a renderer-reload contract. A test polling the removed persistence IPC can fail before it ever exercises relaunch and look like a recovery regression.
 
 ## Real Socket Firewall E2E tests
 

@@ -1,0 +1,13 @@
+id: bug-fixing.root-cause
+title: Fix the first causal defect
+kind: principle
+priority: 5
+rule: Trace from the trigger to the first incorrect state, decision, or missing guarantee
+  and correct that cause rather than its downstream symptoms.
+require:
+- Explain how the cause produces every relevant symptom and why the proposed change interrupts it.
+- Verify uncertain API, framework, concurrency, lifecycle, serialization, and persistence semantics.
+- Consolidate multiple symptoms only when evidence establishes one cause.
+reject:
+- Adding retries, sleeps, null guards, catches, defaults, or resets that merely hide the failure.
+- Suppressing an error without restoring the required behavior.

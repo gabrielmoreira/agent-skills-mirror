@@ -58,19 +58,19 @@ When this document references a rule file, try locations in this order:
 
 | Rule Shorthand | Full Rule Name |
 |----------------|----------------|
-| `auth-tool` | Authentication Tool Configuration |
-| `auth-web` | Web Authentication |
-| `auth-wechat` | WeChat Mini Program Authentication |
-| `auth-nodejs` | Node.js Authentication |
+| `auth-tool-cloudbase` | Authentication Tool Configuration |
+| `auth-web-cloudbase` | Web Authentication |
+| `auth-wechat-miniprogram` | WeChat Mini Program Authentication |
+| `auth-nodejs-cloudbase` | Node.js Authentication |
 | `web-development` | Web Platform Development |
 | `miniprogram-development` | Mini Program Platform Development |
 | `cloudrun-development` | CloudRun Backend Development |
 | `cloud-functions` | Cloud Functions Development |
-| `http-api` | HTTP API Usage |
-| `relational-database-tool` | MySQL Database Tool Operations |
-| `relational-database-web` | MySQL Web SDK |
-| `no-sql-web-sdk` | NoSQL Web SDK |
-| `no-sql-wx-mp-sdk` | NoSQL WeChat Mini Program SDK |
+| `http-api-cloudbase` | HTTP API Usage |
+| `relational-database-mcp-cloudbase` | MySQL Database Tool Operations |
+| `relational-database-web-cloudbase` | MySQL Web SDK |
+| `cloudbase-document-database-web-sdk` | NoSQL Web SDK |
+| `cloudbase-document-database-in-wechat-miniprogram` | NoSQL WeChat Mini Program SDK |
 | `cloudbase-platform` | CloudBase Platform Knowledge |
 | `cloud-storage-web` | Cloud Storage Web SDK |
 | `ui-design` | UI Design Guidelines |
@@ -83,8 +83,8 @@ When this document references a rule file, try locations in this order:
 ### Usage Example
 
 When you see "Read `{auth-web}` rule file" in this document:
-- Try: `.codebuddy/rules/tcb/rules/auth-web/rule.md` first
-- Then: `rules/auth-web/rule.md`
+- Try: `.codebuddy/rules/tcb/rules/auth-web-cloudbase/rule.md` first
+- Then: `rules/auth-web-cloudbase/rule.md`
 - Finally: Search with pattern `*auth-web*rule.md`
 
 **Note**: Files already using `rules/` prefix (like `rules/ui-design/rule.md`) work universally across all editors and don't need path resolution.
@@ -104,8 +104,8 @@ When you see "Read `{auth-web}` rule file" in this document:
 6. **Platform Rules**: Read `{web-development}` rule file (using path resolution strategy) for platform-specific rules (SDK integration, static hosting, build configuration)
 7. **Authentication**: Read `{auth-web}` rule file (using path resolution strategy) and `{auth-tool}` - **MUST use Web SDK built-in authentication**
 8. **Database**:
-   - NoSQL: `rules/no-sql-web-sdk/rule.md`
-   - MySQL: `rules/relational-database-web/rule.md` + `rules/relational-database-tool/rule.md`
+   - NoSQL: `rules/cloudbase-document-database-web-sdk/rule.md`
+   - MySQL: `rules/relational-database-web-cloudbase/rule.md` + `rules/relational-database-mcp-cloudbase/rule.md`
 
 ### When Developing a Mini Program Project:
 1. **Environment Check**: Call `envQuery` tool first (applies to all interactions)
@@ -113,10 +113,10 @@ When you see "Read `{auth-web}` rule file" in this document:
 3. **⚠️ UI Design (CRITICAL)**: **MUST read `rules/ui-design/rule.md` FIRST before generating any page, interface, component, or style** - This is NOT optional. You MUST explicitly read this file and output the design specification before writing any UI code.
 4. **Core Capabilities**: Read Core Capabilities section below (especially UI Design and Database + Authentication for Mini Program)
 5. **Platform Rules**: Read `rules/miniprogram-development/rule.md` for platform-specific rules (project structure, WeChat Developer Tools, wx.cloud usage)
-6. **Authentication**: Read `rules/auth-wechat/rule.md` - **Naturally login-free, get OPENID in cloud functions**
+6. **Authentication**: Read `rules/auth-wechat-miniprogram/rule.md` - **Naturally login-free, get OPENID in cloud functions**
 7. **Database**:
-   - NoSQL: `rules/no-sql-wx-mp-sdk/rule.md`
-   - MySQL: `rules/relational-database-tool/rule.md` (via tools)
+   - NoSQL: `rules/cloudbase-document-database-in-wechat-miniprogram/rule.md`
+   - MySQL: `rules/relational-database-mcp-cloudbase/rule.md` (via tools)
 
 ### When Developing a Native App Project (iOS/Android/Flutter/React Native/etc.):
 1. **Environment Check**: Call `envQuery` tool first (applies to all interactions)
@@ -160,8 +160,8 @@ When you see `{rule-name}` notation in this document, apply the path resolution 
 3. Use `search_file` with pattern `*{rule-name}*rule.md` if both fail
 
 **Specific example for auth-tool:**
-1. `.codebuddy/rules/tcb/rules/auth-tool/rule.md` (CodeBuddy)
-2. `rules/auth-tool/rule.md` (Other editors: Cursor, WindSurf, etc.)
+1. `.codebuddy/rules/tcb/rules/auth-tool-cloudbase/rule.md` (CodeBuddy)
+2. `rules/auth-tool-cloudbase/rule.md` (Other editors: Cursor, WindSurf, etc.)
 3. Use `search_file` with pattern `*auth-tool*rule.md` if both fail
 
 **Execution Sequence:**
@@ -204,21 +204,21 @@ As the most important part of application development, the following four core c
 
 **Authentication**:
 - **Web Projects**:
-  - Must use CloudBase Web SDK built-in authentication, refer to `rules/auth-web/rule.md`
+  - Must use CloudBase Web SDK built-in authentication, refer to `rules/auth-web-cloudbase/rule.md`
   - Platform development rules: Refer to `rules/web-development/rule.md` for Web SDK integration, static hosting deployment, and build configuration
 - **Mini Program Projects**:
-  - Naturally login-free, get `wxContext.OPENID` in cloud functions, refer to `rules/auth-wechat/rule.md`
+  - Naturally login-free, get `wxContext.OPENID` in cloud functions, refer to `rules/auth-wechat-miniprogram/rule.md`
   - Platform development rules: Refer to `rules/miniprogram-development/rule.md` for mini program project structure, WeChat Developer Tools integration, and CloudBase capabilities
-- **Node.js Backend**: Refer to `rules/auth-nodejs/rule.md`
+- **Node.js Backend**: Refer to `rules/auth-nodejs-cloudbase/rule.md`
 
 **Database Operations**:
 - **Web Projects**:
-  - NoSQL Database: Refer to `rules/no-sql-web-sdk/rule.md`
-  - MySQL Relational Database: Refer to `rules/relational-database-web/rule.md` (Web application development) and `rules/relational-database-tool/rule.md` (Management via tools)
+  - NoSQL Database: Refer to `rules/cloudbase-document-database-web-sdk/rule.md`
+  - MySQL Relational Database: Refer to `rules/relational-database-web-cloudbase/rule.md` (Web application development) and `rules/relational-database-mcp-cloudbase/rule.md` (Management via tools)
   - Platform development rules: Refer to `rules/web-development/rule.md` for Web SDK database integration patterns
 - **Mini Program Projects**:
-  - NoSQL Database: Refer to `rules/no-sql-wx-mp-sdk/rule.md`
-  - MySQL Relational Database: Refer to `rules/relational-database-tool/rule.md` (via tools)
+  - NoSQL Database: Refer to `rules/cloudbase-document-database-in-wechat-miniprogram/rule.md`
+  - MySQL Relational Database: Refer to `rules/relational-database-mcp-cloudbase/rule.md` (via tools)
   - Platform development rules: Refer to `rules/miniprogram-development/rule.md` for mini program database integration and wx.cloud usage
 
 ### 3. Web App Deployment (CloudApp / Static Hosting)
@@ -272,25 +272,25 @@ Identify current development scenario type, mainly for understanding project typ
 
 **Web Projects - Required Rule Files:**
 - `rules/web-development/rule.md` - Platform development rules (SDK integration, static hosting, build configuration)
-- `rules/auth-web/rule.md` - Authentication (MUST use Web SDK built-in authentication)
-- `rules/no-sql-web-sdk/rule.md` - NoSQL database operations
-- `rules/relational-database-web/rule.md` - MySQL database operations (Web)
-- `rules/relational-database-tool/rule.md` - MySQL database management (tools)
+- `rules/auth-web-cloudbase/rule.md` - Authentication (MUST use Web SDK built-in authentication)
+- `rules/cloudbase-document-database-web-sdk/rule.md` - NoSQL database operations
+- `rules/relational-database-web-cloudbase/rule.md` - MySQL database operations (Web)
+- `rules/relational-database-mcp-cloudbase/rule.md` - MySQL database management (tools)
 - `rules/cloud-storage-web/rule.md` - Cloud storage operations (upload, download, file management)
 - `rules/cloudbase-platform/rule.md` - Universal CloudBase platform knowledge
 - `rules/ai-model-web/rule.md` - AI model calling for Web apps (text generation, streaming)
 
 **Mini Program Projects - Required Rule Files:**
 - `rules/miniprogram-development/rule.md` - Platform development rules (project structure, WeChat Developer Tools, wx.cloud)
-- `rules/auth-wechat/rule.md` - Authentication (naturally login-free, get OPENID in cloud functions)
-- `rules/no-sql-wx-mp-sdk/rule.md` - NoSQL database operations
-- `rules/relational-database-tool/rule.md` - MySQL database operations (via tools)
+- `rules/auth-wechat-miniprogram/rule.md` - Authentication (naturally login-free, get OPENID in cloud functions)
+- `rules/cloudbase-document-database-in-wechat-miniprogram/rule.md` - NoSQL database operations
+- `rules/relational-database-mcp-cloudbase/rule.md` - MySQL database operations (via tools)
 - `rules/cloudbase-platform/rule.md` - Universal CloudBase platform knowledge
 - `rules/ai-model-wechat/rule.md` - AI model calling for Mini Program (text generation, streaming with callbacks)
 
 **Native App Projects (iOS/Android/Flutter/React Native/etc.) - Required Rule Files:**
-- **⚠️ `rules/http-api/rule.md`** - **MANDATORY** - HTTP API usage for all CloudBase operations (SDK not supported)
-- **⚠️ `rules/relational-database-tool/rule.md`** - **MANDATORY** - MySQL database operations (via tools)
+- **⚠️ `rules/http-api-cloudbase/rule.md`** - **MANDATORY** - HTTP API usage for all CloudBase operations (SDK not supported)
+- **⚠️ `rules/relational-database-mcp-cloudbase/rule.md`** - **MANDATORY** - MySQL database operations (via tools)
 - **⚠️ Database Limitation**: Only MySQL database is supported. If users need MySQL, **MUST prompt them to enable it in console**: [Enable MySQL Database](https://tcb.cloud.tencent.com/dev?envId=${envId}#/db/mysql/table/default/)
 
 **Native App Projects (iOS/Android/Flutter/React Native/etc.) - Optional Rule Files:**
@@ -320,9 +320,9 @@ Before starting work, suggest confirming with user:
 9. **Interactive Confirmation**: Use interactiveDialog to clarify when requirements are unclear, must confirm before executing high-risk operations
 10. **Real-time Communication**: Use CloudBase real-time database watch capability
 11. **⚠️ Authentication Rules**: When users develop projects, if user login authentication is needed, must use built-in authentication functions, must strictly distinguish authentication methods by platform
-   - **Web Projects**: **MUST use CloudBase Web SDK built-in authentication** (e.g., `auth.toDefaultLoginPage()`), refer to `rules/auth-web/rule.md`
-   - **Mini Program Projects**: **Naturally login-free**, get `wxContext.OPENID` in cloud functions, refer to `rules/auth-wechat/rule.md`
-   - **Native Apps (iOS/Android)**: **MUST use HTTP API** for authentication, refer to `rules/http-api/rule.md` and Authentication API swagger
+   - **Web Projects**: **MUST use CloudBase Web SDK built-in authentication** (e.g., `auth.toDefaultLoginPage()`), refer to `rules/auth-web-cloudbase/rule.md`
+   - **Mini Program Projects**: **Naturally login-free**, get `wxContext.OPENID` in cloud functions, refer to `rules/auth-wechat-miniprogram/rule.md`
+   - **Native Apps (iOS/Android)**: **MUST use HTTP API** for authentication, refer to `rules/http-api-cloudbase/rule.md` and Authentication API swagger
 12. **⚠️ Authentication Configuration Mandatory Check**: When user mentions any authentication-related requirements:
    - **MUST FIRST read** `{auth-tool}` rule file using the path resolution strategy at the top of this document
    - **MUST FIRST check** current authentication configuration status
@@ -333,7 +333,7 @@ Before starting work, suggest confirming with user:
    - **SDK Not Supported**: CloudBase SDK is NOT available for native apps, MUST use HTTP API
    - **Database Limitation**: Only MySQL database is supported via HTTP API
    - **MySQL Database Setup**: If users need MySQL database, MUST prompt them to enable it in console first at: [CloudBase Console - MySQL Database](https://tcb.cloud.tencent.com/dev?envId=${envId}#/db/mysql/table/default/) (replace `${envId}` with actual environment ID)
-   - **Required Rules**: MUST read `rules/http-api/rule.md` and `rules/relational-database-tool/rule.md`
+   - **Required Rules**: MUST read `rules/http-api-cloudbase/rule.md` and `rules/relational-database-mcp-cloudbase/rule.md`
 
 ## Development Workflow
 
@@ -412,16 +412,16 @@ For example, many interfaces require a confirm parameter, which is a boolean typ
 - **Platform (Universal)**: `rules/cloudbase-platform/rule.md` - Environment, authentication, services
 
 ### Authentication Skills
-- **Web**: `rules/auth-web/rule.md` - **MUST use Web SDK built-in authentication**
-- **Mini Program**: `rules/auth-wechat/rule.md` - **Naturally login-free, get OPENID in cloud functions**
-- **Node.js**: `rules/auth-nodejs/rule.md`
-- **Auth Tool (MCP)**: `rules/auth-tool/rule.md` - Configure and manage authentication providers (enable/disable login methods, setup provider settings) via MCP tools
+- **Web**: `rules/auth-web-cloudbase/rule.md` - **MUST use Web SDK built-in authentication**
+- **Mini Program**: `rules/auth-wechat-miniprogram/rule.md` - **Naturally login-free, get OPENID in cloud functions**
+- **Node.js**: `rules/auth-nodejs-cloudbase/rule.md`
+- **Auth Tool (MCP)**: `rules/auth-tool-cloudbase/rule.md` - Configure and manage authentication providers (enable/disable login methods, setup provider settings) via MCP tools
 
 ### Database Skills
-- **NoSQL (Web)**: `rules/no-sql-web-sdk/rule.md`
-- **NoSQL (Mini Program)**: `rules/no-sql-wx-mp-sdk/rule.md`
-- **MySQL (Web)**: `rules/relational-database-web/rule.md`
-- **MySQL (Tool)**: `rules/relational-database-tool/rule.md`
+- **NoSQL (Web)**: `rules/cloudbase-document-database-web-sdk/rule.md`
+- **NoSQL (Mini Program)**: `rules/cloudbase-document-database-in-wechat-miniprogram/rule.md`
+- **MySQL (Web)**: `rules/relational-database-web-cloudbase/rule.md`
+- **MySQL (Tool)**: `rules/relational-database-mcp-cloudbase/rule.md`
 
 ### Storage Skills
 - **Cloud Storage (Web)**: `rules/cloud-storage-web/rule.md` - Upload, download, temporary URLs, file management using Web SDK

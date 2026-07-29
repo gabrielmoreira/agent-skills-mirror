@@ -1,0 +1,30 @@
+name: technology-migration
+format_version: 1
+title: Technology Migration
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Replace one software technology with another while preserving approved
+  behavior. Use when the request asks to migrate a language, framework, runtime, build
+  system, package manager, database, storage, messaging, or deployment platform. Do
+  not use for same-technology version changes, which are dependency upgrades, or for
+  feature work that keeps the technology.
+primary_workflow: technology-migration.migrate
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Technology Migration
+  short_description: Replace technologies with genuine target-native designs
+  default_prompt: Use $technology-migration to replace the source technology with the approved target while preserving behavior and proving target independence.

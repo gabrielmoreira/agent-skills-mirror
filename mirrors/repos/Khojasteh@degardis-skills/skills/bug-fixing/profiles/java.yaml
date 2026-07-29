@@ -1,0 +1,6 @@
+name: java
+label: Java
+description: Load when fixing Java code or behavior.
+instructions:
+- Trace nullability, generics erasure, equality and hashing, exceptions, futures, thread interruption,
+  resource closure, serialization, reflection, class loading, and binary compatibility.

@@ -1,0 +1,6 @@
+name: vue
+label: Vue
+description: Load when implementing Vue features.
+instructions:
+- Design across reactivity, refs and computed values, watcher scheduling and cleanup, component lifecycle,
+  slots, provide/inject, routing, SSR or hydration, and accessibility.

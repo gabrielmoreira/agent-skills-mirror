@@ -1,0 +1,7 @@
+name: javascript
+label: JavaScript
+description: Load when refactoring JavaScript code.
+instructions:
+- Search dynamic property access, module loading, framework registration, configuration, templates, serialization,
+  and bundler conventions before renaming or deleting.
+- Avoid scattering simple control flow across helpers, hooks, wrappers, and configuration.

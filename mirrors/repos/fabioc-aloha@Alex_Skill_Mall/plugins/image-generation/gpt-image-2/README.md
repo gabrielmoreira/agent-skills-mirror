@@ -2,9 +2,7 @@
 
 **A focused image-generation / editing skill for GPT Image 2, with a single SKILL definition that adapts to three runtime modes — local generation, host-native delegation, and pure prompt advisor.**
 
-[中文文档](./README.zh-CN.md) · [Back to collection root](../../README.md)
-
-![GPT Image 2 Skill](../../dist/imgs/gpt-image-2-skill.png)
+[中文文档](skills/gpt-image-2/README.zh-CN.md)
 
 ---
 

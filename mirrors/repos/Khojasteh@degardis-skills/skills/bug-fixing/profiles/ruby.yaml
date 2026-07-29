@@ -1,0 +1,6 @@
+name: ruby
+label: Ruby
+description: Load when fixing Ruby code or behavior.
+instructions:
+- Trace truthiness, mutation, blocks, enumerators, exceptions, callbacks, metaprogramming, autoloading,
+  thread or fiber behavior, and resource lifetime.

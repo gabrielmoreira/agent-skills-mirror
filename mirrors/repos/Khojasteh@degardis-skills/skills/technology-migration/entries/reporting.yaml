@@ -1,0 +1,14 @@
+id: technology-migration.reporting
+title: Report stage and migration status separately
+kind: policy
+priority: 3
+rule: Make target adoption, parity, evidence, retained source obligations, and completion status auditable.
+require:
+- Report charter, source and target versions, parity decisions, strategy, completed stages,
+  target-native replacements, built-ins adopted, files and systems changed, and exact validation.
+- List removed legacy surfaces and justify every retained adapter, fallback, dependency, or platform.
+- State documentation, deployment, rollback, unknowns, deferred checks, and residual risk.
+- Label a successful milestone as stage complete but migration incomplete when cleanup remains.
+reject:
+- Saying only that code was converted or the new system works.
+- Hiding source fallbacks, broad suppressions, unverified environments, or unfinished decommissioning.

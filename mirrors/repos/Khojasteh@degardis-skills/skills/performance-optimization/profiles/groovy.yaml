@@ -1,0 +1,7 @@
+name: groovy
+label: Groovy
+description: Load when optimizing Groovy performance.
+instructions:
+- Measure JVM and Groovy warmup, dynamic dispatch, call sites, closure and GString allocation, garbage
+  collection, classloading, build configuration and execution, and Java interop; compare steady-state
+  distributions and verify semantics.

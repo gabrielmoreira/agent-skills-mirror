@@ -1,0 +1,10 @@
+name: fsharp
+label: F#
+description: Load when implementing F# features.
+instructions:
+- Model states with records, discriminated unions, options, results, and units of measure when they match
+  established code; keep pattern matches exhaustive and invariants explicit.
+- Define eager/lazy collection behavior, computation-expression effects, `async` versus `task`, cancellation,
+  exceptions, resource ownership, concurrency, and mutation boundaries.
+- Keep `.fsi` files, compiled names, C# interop, serialization, reflection, trimming/AOT, and public compatibility
+  aligned.

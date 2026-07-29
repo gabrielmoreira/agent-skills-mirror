@@ -1,0 +1,31 @@
+name: code-testing
+format_version: 1
+title: Testing
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Plan, write, run, review, improve, or diagnose software tests and test
+  suites. Use when the request asks to add or improve tests, increase meaningful
+  coverage, investigate failing or flaky tests, or assess test quality. Also use
+  alongside implementation or repair work when tests, regression coverage, or test
+  validation are part of the requested outcome; this skill owns the testing work,
+  not the production-code implementation.
+primary_workflow: testing.test-task
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Testing
+  short_description: Plan and improve behavior-focused software tests
+  default_prompt: Use $code-testing to plan, write, review, improve, or diagnose tests.

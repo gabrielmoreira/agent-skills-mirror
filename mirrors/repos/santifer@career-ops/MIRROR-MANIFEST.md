@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `santifer/career-ops` — 26 default patterns, 1 followed patterns, 11 file(s) materialized.
+Mirror of `santifer/career-ops` — 26 default patterns, 2 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `santifer/career-ops` — 26 default patterns, 1 followed patterns, 11
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 1 |
-| Files         | 11 |
+| Followed pats | 2 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `santifer/career-ops` — 26 default patterns, 1 followed patterns, 11
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/FREE_TIER.md`
+- `docs/AUTOMATION.md`
 
 ## File Index
 
@@ -62,14 +63,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.agents/skills/career-ops/SKILL.md`](.agents/skills/career-ops/SKILL.md) |
 | 2 | ✓ | [`.antigravitycli/skills/career-ops/SKILL.md`](.antigravitycli/skills/career-ops/SKILL.md) |
 | 3 | ✓ | [`.claude/skills/career-ops/SKILL.md`](.claude/skills/career-ops/SKILL.md) |
-| 4 | ✓ | [`.grok/skills/career-ops/SKILL.md`](.grok/skills/career-ops/SKILL.md) |
-| 5 | ✓ | [`.kimi/skills/career-ops/SKILL.md`](.kimi/skills/career-ops/SKILL.md) |
-| 6 | ✓ | [`.opencode/skills/career-ops/SKILL.md`](.opencode/skills/career-ops/SKILL.md) |
-| 7 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
-| 8 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 9 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 10 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 11 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
+| 4 | ✓ | [`.cursor/skills/career-ops/SKILL.md`](.cursor/skills/career-ops/SKILL.md) |
+| 5 | ✓ | [`.grok/skills/career-ops/SKILL.md`](.grok/skills/career-ops/SKILL.md) |
+| 6 | ✓ | [`.kimi/skills/career-ops/SKILL.md`](.kimi/skills/career-ops/SKILL.md) |
+| 7 | ✓ | [`.opencode/skills/career-ops/SKILL.md`](.opencode/skills/career-ops/SKILL.md) |
+| 8 | ✓ | [`.qwen/skills/career-ops/SKILL.md`](.qwen/skills/career-ops/SKILL.md) |
+| 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 12 | → | [`docs/AUTOMATION.md`](docs/AUTOMATION.md) |
+| 13 | → | [`docs/FREE_TIER.md`](docs/FREE_TIER.md) |
 
 ---
 

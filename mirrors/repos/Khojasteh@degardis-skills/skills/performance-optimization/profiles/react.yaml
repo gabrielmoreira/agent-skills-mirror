@@ -1,0 +1,6 @@
+name: react
+label: React
+description: Load when optimizing React performance.
+instructions:
+- Measure user-visible interaction across bundle and network loading, render and commit work, state updates,
+  lists, effects, context, suspense, server components, SSR, and hydration.

@@ -1,0 +1,8 @@
+name: dart
+label: Dart
+description: Load when optimizing Dart performance.
+instructions:
+- Account for JIT warmup versus ahead-of-time builds, allocation and GC, futures, streams, isolates, serialization,
+  startup, code size, I/O, and platform boundaries.
+- Compare equivalent runtime modes and representative inputs; preserve null safety, cancellation conventions,
+  ordering, and resource cleanup.

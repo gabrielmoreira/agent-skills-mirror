@@ -1,0 +1,7 @@
+name: swift
+label: Swift
+description: Load when refactoring Swift code.
+instructions:
+- Search selectors, Objective-C exposure, storyboards, resources, dependency registries, persistence,
+  serialization, and generated bindings before structural changes.
+- Avoid protocol proliferation when a concrete cohesive type remains the clearest design.

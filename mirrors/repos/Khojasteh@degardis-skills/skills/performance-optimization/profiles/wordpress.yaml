@@ -1,0 +1,7 @@
+name: wordpress
+label: WordPress
+description: Load when optimizing WordPress performance.
+instructions:
+- Measure representative pages and admin/REST paths, hook cost, query count and plans, object and page
+  cache, autoloaded options, cron, HTTP calls, assets, memory, and tail latency; retain permissions, freshness,
+  multisite isolation, and cleanup.

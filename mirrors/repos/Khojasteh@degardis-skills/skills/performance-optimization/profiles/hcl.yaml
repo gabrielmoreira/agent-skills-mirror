@@ -1,0 +1,7 @@
+name: hcl
+label: HCL
+description: Load when optimizing HCL performance.
+instructions:
+- Measure representative validation, plan and bounded apply evidence, graph size, provider/API calls,
+  state operations, concurrency, deployment duration, resource utilization, and cost; protect state, rate
+  limits, correctness, and rollback.

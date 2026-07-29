@@ -1,0 +1,7 @@
+name: angular
+label: Angular
+description: Load when fixing Angular code or behavior.
+instructions:
+- Trace component lifecycle, provider scope, change detection, signals or observables, routing, forms,
+  sanitization, browser/server boundaries, and subscription cleanup.
+- Reproduce user-visible failures at the narrowest component, integration, or browser boundary.

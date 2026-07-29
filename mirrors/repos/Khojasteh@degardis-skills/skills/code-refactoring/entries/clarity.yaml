@@ -1,0 +1,14 @@
+id: refactoring.clarity
+title: Clarity before abstraction
+kind: heuristic
+rule: Improve names, boundaries, and control flow before introducing new abstractions.
+require:
+- Prefer the fewest concepts, layers, files, and indirections that keep responsibilities cohesive.
+- Make the common execution path locally understandable.
+- Compare the result with the original structural problem and keep only abstractions
+  that produce a concrete comprehension, cohesion, coupling, or navigation benefit.
+reject:
+- Adding an abstraction because a design pattern or architecture is fashionable.
+- Hiding straightforward behavior behind factories, strategies, wrappers, or configuration
+  without demonstrated variation.
+- Moving complexity to more files or layers without reducing it.

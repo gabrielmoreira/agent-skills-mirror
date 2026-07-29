@@ -1,0 +1,7 @@
+name: django
+label: Django
+description: Load when implementing Django features.
+instructions:
+- Design across application loading, request middleware, authentication and permissions, forms, ORM evaluation,
+  transactions, migrations, signals, caching, and serialization.
+- Treat migration ordering and existing data as contracts.

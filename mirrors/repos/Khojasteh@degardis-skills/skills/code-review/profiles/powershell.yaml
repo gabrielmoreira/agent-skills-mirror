@@ -1,0 +1,7 @@
+name: powershell
+label: PowerShell
+description: Load when reviewing PowerShell code or behavior.
+instructions:
+- Review object versus text pipelines, terminating and non-terminating errors, streams, scope, preference
+  variables, parameter binding, quoting, remoting, serialization, native exit codes, idempotency, and
+  cleanup.

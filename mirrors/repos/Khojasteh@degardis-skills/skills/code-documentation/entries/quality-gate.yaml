@@ -1,0 +1,31 @@
+id: docs.quality-gate
+title: Pass a reader-centered documentation quality gate
+kind: policy
+priority: 10
+rule: Do not call documentation complete until it passes every quality dimension
+  applicable to its defined reader and outcome.
+require:
+- "Accuracy and relevance: every retained material claim serves the reader's outcome,
+  is independently supported by applicable authoritative evidence, and does not
+  present abandoned or unreleased behavior as public contract."
+- "Temporal scope: current-state documentation contains no irrelevant superseded
+  information, while release history and migration guidance preserve applicable
+  published changes, impact, and required action; the final delta-language audit
+  has passed."
+- "Purpose: the title, opening, scope, and document type make one promised reader outcome
+  clear."
+- "Findability: navigation, headings, link text, and terminology let the reader locate
+  prerequisites, actions, contracts, and recovery without reading linearly."
+- "Actionability: task documents provide sufficient context, copyable steps, a recognizable
+  success condition, and bounded recovery for likely failures."
+- "Coherence: each paragraph has one specific subject and reader purpose, each list
+  expresses one parallel relationship, each topic has one authoritative home, and
+  related pages agree."
+- "Appropriate completeness: the document covers every condition needed for its promised
+  outcome and omits unrelated implementation discovery."
+- "Concision and maintainability: every section earns its place, volatile detail is not
+  duplicated, and examples are small enough to verify."
+reject:
+- Treating grammar, formatting, link validity, or word count alone as evidence of quality.
+- Declaring a document complete when the intended reader must infer a missing prerequisite,
+  success condition, side effect, or next action.

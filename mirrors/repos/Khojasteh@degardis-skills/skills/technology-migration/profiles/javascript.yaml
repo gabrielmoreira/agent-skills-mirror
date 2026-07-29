@@ -1,0 +1,13 @@
+name: javascript
+label: JavaScript
+description: Load when migrating to or from JavaScript.
+instructions:
+- When JavaScript is the target, inventory standard collections and methods, promises and async iteration,
+  modules, structured cloning, platform APIs, internationalization, streams, and resource or cancellation
+  conventions.
+- Prefer target-runtime built-ins and idiomatic composition over translated classes, collection helpers,
+  synchronous assumptions, custom promise layers, or source-runtime shims.
+- Verify coercion, equality, property ordering, Unicode, locale, numeric precision, async errors, cancellation,
+  event-loop ordering, browser and server differences, security, and serialization.
+- Keep transpilation, polyfills, interop, dual modules, and compatibility adapters bounded to supported
+  stages.

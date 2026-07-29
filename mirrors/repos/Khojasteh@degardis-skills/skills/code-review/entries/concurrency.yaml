@@ -1,0 +1,13 @@
+id: review.concurrency
+title: Trace concurrency and asynchronous work
+kind: constraint
+rule: Review shared state and asynchronous control flow for races, lost work, deadlocks,
+  leaks, stale reads, and invalid ordering assumptions.
+require:
+- Identify ownership, synchronization, cancellation, timeout, retry, and cleanup behavior.
+- Trace what happens when operations overlap, complete out of order, or fail after
+  partial progress.
+- Check whether callbacks, tasks, goroutines, threads, or event handlers outlive their scope.
+reject:
+- Assuming sequential behavior because the common execution path appears sequential.
+- Reporting a race without identifying the shared state and conflicting operations.

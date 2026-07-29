@@ -1,0 +1,15 @@
+id: refactoring.pattern.simplify-condition
+title: Simplify conditional
+kind: pattern
+rule: Replace difficult boolean structure with named predicates or clearer control
+  flow.
+conditions:
+- The existing condition obscures cases, precedence, or domain meaning.
+require:
+- Preserve short-circuit evaluation, side-effect order, null handling, exception behavior,
+  precedence, and exhaustive cases.
+- Verify truth-table boundaries and focused tests before and after the change.
+reject:
+- Applying algebraic rewrites that are invalid for nullable, overloaded, stateful,
+  or non-boolean operands.
+- Extracting predicates whose names hide important side effects.

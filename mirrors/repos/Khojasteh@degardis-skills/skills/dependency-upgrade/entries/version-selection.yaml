@@ -1,0 +1,16 @@
+id: dependency-upgrade.version-selection
+title: Select an explicit target
+kind: policy
+priority: 2
+rule: Establish each intended target version and why it is appropriate before editing.
+require:
+- Respect user-specified versions, repository constraints, support policy, and upstream compatibility.
+- When unspecified, verify current choices through authoritative registries or upstream sources and select
+  the repository-supported low-risk target when evidence makes it unambiguous.
+- Ask only when viable targets materially differ in compatibility, migration cost, security coverage,
+  or release policy.
+- Distinguish desired, declared, resolved, and actually executed versions.
+reject:
+- Assuming newest is always appropriate.
+- Relying on remembered version numbers when current target information is available.
+- Quietly selecting a lower version because the requested target is difficult.

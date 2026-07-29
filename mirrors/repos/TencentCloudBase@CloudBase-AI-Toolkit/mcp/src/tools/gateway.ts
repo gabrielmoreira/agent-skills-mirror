@@ -31,9 +31,7 @@ const UPSTREAM_RESOURCE_TYPES = [
 
 type QueryGatewayAction = (typeof QUERY_GATEWAY_ACTIONS)[number];
 type ManageGatewayAction = (typeof MANAGE_GATEWAY_ACTIONS)[number];
-type GatewayTargetType = "function";
 type UpstreamResourceType = (typeof UPSTREAM_RESOURCE_TYPES)[number];
-type FunctionRouteType = "Event" | "HTTP";
 
 type GatewayToolEnvelope = {
   success: boolean;
@@ -48,7 +46,6 @@ type GatewayToolEnvelope = {
 
 type QueryGatewayInput = {
   action: QueryGatewayAction;
-  targetType?: GatewayTargetType;
   targetName?: string;
   routeId?: string;
   path?: string;
@@ -57,16 +54,17 @@ type QueryGatewayInput = {
 
 type ManageGatewayInput = {
   action: ManageGatewayAction;
-  targetType?: GatewayTargetType;
   targetName?: string;
   path?: string;
-  type?: FunctionRouteType;
+  upstreamResourceType?: UpstreamResourceType;
   auth?: boolean;
+  enablePathTransmission?: boolean;
   route?: {
     path?: string;
     serviceName?: string;
     upstreamResourceType?: UpstreamResourceType;
     auth?: boolean;
+    enablePathTransmission?: boolean;
   };
   domain?: string;
   certificateId?: string;
@@ -203,31 +201,20 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
     return resolveDefaultHttpDomain();
   };
 
-  const mapUpstreamResourceType = (input: {
-    type?: FunctionRouteType;
-    targetType?: GatewayTargetType;
+  const resolveUpstreamResourceType = (input: {
     upstreamResourceType?: UpstreamResourceType;
-    requiresFunctionType: boolean;
+    routeUpstreamResourceType?: UpstreamResourceType;
   }): UpstreamResourceType => {
-    if (input.upstreamResourceType) {
-      return input.upstreamResourceType;
-    }
-
-    if (input.type === "HTTP") {
-      return "WEB_SCF";
-    }
-    if (input.type === "Event") {
-      return "SCF";
-    }
-
-    if (input.requiresFunctionType || input.targetType === "function") {
-      throw new Error(
-        "为云函数创建/更新路由时必须显式提供 type（HTTP→WEB_SCF，Event→SCF）或 route.upstreamResourceType。省略会导致 HTTP 与 Event 函数互相误标，访问时可能返回 FUNCTION_PARAM_INVALID 或网关内部错误。",
-      );
+    const resolved =
+      input.routeUpstreamResourceType ?? input.upstreamResourceType;
+    if (resolved) {
+      return resolved;
     }
 
     throw new Error(
-      "必须提供 route.upstreamResourceType（SCF / WEB_SCF / CBR / STATIC_STORE / LH），或在函数场景提供 type=\"HTTP\"|\"Event\"。",
+      "必须提供 upstreamResourceType（或 route.upstreamResourceType）：" +
+        "WEB_SCF=HTTP云函数，SCF=Event云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器。" +
+        "禁止仅凭 targetName/serviceName 推断上游类型。",
     );
   };
 
@@ -242,6 +229,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
         UpstreamResourceType: UpstreamResourceType;
         UpstreamResourceName: string;
         EnableAuth?: boolean;
+        EnablePathTransmission?: boolean;
       }>;
     };
     resolved: {
@@ -250,28 +238,21 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
       upstreamResourceType: UpstreamResourceType;
       upstreamResourceName: string;
       enableAuth?: boolean;
+      enablePathTransmission?: boolean;
     };
   }> => {
     const upstreamResourceName =
       input.route?.serviceName ?? input.targetName;
     if (!upstreamResourceName) {
       throw new Error(
-        "必须提供 targetName 或 route.serviceName 作为上游资源名称（例如云函数名）",
+        "必须提供 targetName 或 route.serviceName 作为上游资源名称：" +
+          "云函数名、云托管服务名，或静态托管实例名（常见为 staticstore）。",
       );
     }
 
-    const isFunctionRoute =
-      input.targetType === "function" ||
-      input.type !== undefined ||
-      input.route?.upstreamResourceType === "SCF" ||
-      input.route?.upstreamResourceType === "WEB_SCF" ||
-      (!input.route?.upstreamResourceType && Boolean(input.targetName));
-
-    const upstreamResourceType = mapUpstreamResourceType({
-      type: input.type,
-      targetType: input.targetType,
-      upstreamResourceType: input.route?.upstreamResourceType,
-      requiresFunctionType: isFunctionRoute,
+    const upstreamResourceType = resolveUpstreamResourceType({
+      upstreamResourceType: input.upstreamResourceType,
+      routeUpstreamResourceType: input.route?.upstreamResourceType,
     });
 
     const path = normalizeAccessPath(
@@ -284,19 +265,34 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
         : input.auth !== undefined
           ? input.auth
           : undefined;
+    const enablePathTransmission =
+      input.route?.enablePathTransmission !== undefined
+        ? input.route.enablePathTransmission
+        : input.enablePathTransmission !== undefined
+          ? input.enablePathTransmission
+          : undefined;
+
+    const route: {
+      Path: string;
+      UpstreamResourceType: UpstreamResourceType;
+      UpstreamResourceName: string;
+      EnableAuth?: boolean;
+      EnablePathTransmission?: boolean;
+    } = {
+      Path: path,
+      UpstreamResourceType: upstreamResourceType,
+      UpstreamResourceName: upstreamResourceName,
+      EnableAuth: enableAuth,
+    };
+    if (enablePathTransmission !== undefined) {
+      route.EnablePathTransmission = enablePathTransmission;
+    }
 
     return {
       EnvId: await resolveEnvId(),
       Domain: {
         Domain: domain,
-        Routes: [
-          {
-            Path: path,
-            UpstreamResourceType: upstreamResourceType,
-            UpstreamResourceName: upstreamResourceName,
-            EnableAuth: enableAuth,
-          },
-        ],
+        Routes: [route],
       },
       resolved: {
         domain,
@@ -304,6 +300,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
         upstreamResourceType,
         upstreamResourceName,
         enableAuth,
+        enablePathTransmission,
       },
     };
   };
@@ -451,9 +448,12 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           if (message.includes("An error has occurred")) {
             let hint =
               "为目标资源配置访问路由失败（后端内部错误）。请确保：1) 目标云函数已成功创建并处于 Active 状态；2) 环境默认 HTTP 域名已完成初始化（IsDefault）；3) 该访问路径未被占用。";
-            if (input.type === "HTTP") {
+            if (
+              payload.resolved.upstreamResourceType === "WEB_SCF" ||
+              payload.resolved.upstreamResourceType === "SCF"
+            ) {
               hint +=
-                "此外注意：如果目标函数最初是作为 Event 函数创建的，这里 type 仍必须传 Event（UpstreamResourceType=SCF）；误传 HTTP/WEB_SCF 会导致此错误。";
+                "此外注意：HTTP 云函数必须用 upstreamResourceType=WEB_SCF，Event 云函数必须用 SCF；互标会导致此错误。";
             }
             throw new Error(`${hint} 原始错误：${message}`);
           }
@@ -465,16 +465,23 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           {
             action: input.action,
             model: "httpServiceRoute",
-            targetType: input.targetType ?? null,
             targetName: payload.resolved.upstreamResourceName,
             domain: payload.resolved.domain,
             path: payload.resolved.path,
             upstreamResourceType: payload.resolved.upstreamResourceType,
             upstreamResourceName: payload.resolved.upstreamResourceName,
             auth: payload.resolved.enableAuth ?? null,
+            enablePathTransmission:
+              payload.resolved.enablePathTransmission ?? null,
             raw: result,
           },
-          `已为目标 ${payload.resolved.upstreamResourceName} 在域名 ${payload.resolved.domain} 创建路由 ${payload.resolved.path}（${payload.resolved.upstreamResourceType}）。注意：路由配置传播通常需要等待 30 秒到 3 分钟，请勿立即访问。该操作只创建网关入口，不会自动放开函数安全规则；若需要匿名或浏览器直接访问，请继续检查函数资源权限。`,
+          `已为目标 ${payload.resolved.upstreamResourceName} 在域名 ${payload.resolved.domain} 创建路由 ${payload.resolved.path}（${payload.resolved.upstreamResourceType}）` +
+            (payload.resolved.enablePathTransmission === true
+              ? "；已开启路径透传（后端收到完整请求路径）"
+              : payload.resolved.enablePathTransmission === false
+                ? "；路径透传关闭（网关会剥掉触发路径前缀后再转发给后端）"
+                : "；路径透传未显式设置（平台默认 false，会剥掉触发路径前缀）") +
+            `。注意：路由配置传播通常需要等待 30 秒到 3 分钟，请勿立即访问。该操作只创建网关入口，不会自动放开上游权限；若上游是云函数且需要匿名或浏览器直接访问，请继续检查函数资源权限。`,
           routeMutationNextActions(payload.resolved.upstreamResourceName),
         );
       }
@@ -496,9 +503,17 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             upstreamResourceType: payload.resolved.upstreamResourceType,
             upstreamResourceName: payload.resolved.upstreamResourceName,
             auth: payload.resolved.enableAuth ?? null,
+            enablePathTransmission:
+              payload.resolved.enablePathTransmission ?? null,
             raw: result,
           },
-          `HTTP 路由更新成功（${payload.resolved.domain}${payload.resolved.path}）`,
+          `HTTP 路由更新成功（${payload.resolved.domain}${payload.resolved.path}` +
+            (payload.resolved.enablePathTransmission === true
+              ? "，路径透传=开启"
+              : payload.resolved.enablePathTransmission === false
+                ? "，路径透传=关闭"
+                : "") +
+            `）`,
           routeMutationNextActions(payload.resolved.upstreamResourceName),
         );
       }
@@ -584,19 +599,19 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
     {
       title: "查询 CloudBase 网关",
       description:
-        "CloudBase 网关统一只读入口（Domain/Route 模型）。通过 listRoutes / getRoute / listCustomDomains 查询域名与路由；主键为 Domain + Path，上游类型为 SCF / WEB_SCF / CBR / STATIC_STORE / LH。",
+        "CloudBase HTTP 网关统一只读入口（Domain/Route）。查询域名下路径路由及其上游：" +
+        "WEB_SCF/SCF=云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器。" +
+        "主键为 Domain + Path；listRoutes / getRoute / listCustomDomains。",
       inputSchema: {
         action: z
           .enum(QUERY_GATEWAY_ACTIONS)
           .describe("只读操作类型：listRoutes、getRoute、listCustomDomains"),
-        targetType: z
-          .enum(["function"])
-          .optional()
-          .describe("目标资源类型。当前支持 function"),
         targetName: z
           .string()
           .optional()
-          .describe("上游资源名称。getRoute 时可按云函数名过滤"),
+          .describe(
+            "上游资源名过滤（UpstreamResourceName）：云函数名、云托管服务名，或静态托管实例名（常见 staticstore）。",
+          ),
         routeId: z.string().optional().describe("路由 ID。getRoute 时可选"),
         path: z
           .string()
@@ -622,49 +637,87 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
     {
       title: "管理 CloudBase 网关",
       description:
-        "CloudBase 网关统一写入口（Domain/Route 模型）。为已存在的 HTTP 云函数补默认域名访问时，使用 createRoute，并提供 targetType=\"function\"、targetName、type=\"HTTP\"（映射 WEB_SCF）与期望 path；Event 函数传 type=\"Event\"（映射 SCF）。未传 domain 时自动解析 IsDefault 默认域名。注意 createRoute 只创建网关入口，不会自动修改函数资源权限。更新鉴权用 updateRoute；删除用 deleteRoute（Domain+Path）。⚠️ 绑定带 SSL 证书的自定义域名用 bindCustomDomain；CORS/安全域名请使用 envDomainManagement。",
+        "CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute/deleteRoute 把域名下的 path 转到上游；未传 domain 时用 IsDefault 默认域名。" +
+        "上游类型只用一个参数 upstreamResourceType（也可写在 route.upstreamResourceType，route 优先）：" +
+        "WEB_SCF=HTTP云函数，SCF=Event云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器；" +
+        "配合 targetName 或 route.serviceName（云函数名/云托管服务名/静态托管实例名，常见 staticstore）。" +
+        "createRoute 只建网关入口，不改上游权限。" +
+        "enablePathTransmission：默认 false 剥触发路径前缀；true 透传完整路径（CBR 多路由、WEB_SCF 自管子路径常需 true；STATIC_STORE 自定义触发路径映射站点根通常 false）。" +
+        "⚠️ SSL 自定义域名用 bindCustomDomain；CORS/安全域名用 envDomainManagement。",
       inputSchema: {
         action: z
           .enum(MANAGE_GATEWAY_ACTIONS)
           .describe(
-            "写操作类型。为已有函数补默认域名访问入口时使用 createRoute；函数场景必须显式提供 type（HTTP→WEB_SCF，Event→SCF）或 route.upstreamResourceType。",
+            "写操作：createRoute/updateRoute/deleteRoute 管理路由；bindCustomDomain/deleteCustomDomain 管理自定义域名。" +
+              "createRoute/updateRoute 必须提供 upstreamResourceType。",
           ),
-        targetType: z
-          .enum(["function"])
-          .optional()
-          .describe("目标资源类型。当前支持 function"),
         targetName: z
           .string()
           .optional()
-          .describe("目标资源名称。createRoute 到云函数时填写函数名"),
+          .describe(
+            "上游资源名称（UpstreamResourceName），与 route.serviceName 二选一（route 优先）。" +
+              "云函数=函数名；云托管=服务名；静态托管=实例名（常见 staticstore）。不会自动推断上游类型。",
+          ),
         path: z
           .string()
           .optional()
           .describe(
-            "访问路径，默认 /{targetName}。例如为 HTTP 函数暴露 /api/hello 时传 /api/hello。该参数只创建网关入口，不会自动放开函数资源权限。",
+            "触发路径（网关匹配前缀），默认 /{上游名}。例：云函数 /api/hello、云托管 /api、静态托管 / 或 /app。" +
+              "只建网关入口；与 enablePathTransmission 共同决定上游实际收到的路径。",
           ),
-        type: z
-          .enum(["Event", "HTTP"])
+        upstreamResourceType: z
+          .enum(UPSTREAM_RESOURCE_TYPES)
           .optional()
           .describe(
-            "目标函数运行时类型，不是接入协议。HTTP 云函数传 HTTP（UpstreamResourceType=WEB_SCF）；Event 函数传 Event（SCF）。误标会导致 FUNCTION_PARAM_INVALID 或网关错误。函数路由场景必须显式提供 type 或 route.upstreamResourceType。",
+            "上游类型（与 route.upstreamResourceType 二选一，route 优先）。" +
+              "WEB_SCF=HTTP云函数，SCF=Event云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器。" +
+              "createRoute/updateRoute 必填其一；勿把 manageFunctions 的 type=HTTP|Event 传到本字段。",
           ),
         auth: z
           .boolean()
           .optional()
           .describe(
-            "是否开启网关路径鉴权（EnableAuth）。若要走默认域名做匿名或浏览器访问，通常设为 false；该开关仅控制网关入口本身，不会修改函数资源权限。",
+            "网关路径鉴权（EnableAuth）。匿名/浏览器公网访问通常 false。" +
+              "只控制网关入口；云函数安全规则、云托管鉴权、静态托管权限需各自工具另行配置。",
+          ),
+        enablePathTransmission: z
+          .boolean()
+          .optional()
+          .describe(
+            "路径透传（EnablePathTransmission），平台默认 false。例 path=/api 且请求 /api/users：" +
+              "false→上游收到 /users；true→上游收到 /api/users。" +
+              "CBR 云托管（Express 等自管子路由）与 WEB_SCF 多路径函数常需 true；" +
+              "STATIC_STORE 把触发路径映射到站点根目录（如 /app → 托管 /）时通常 false；" +
+              "单入口/根路径处理保持 false。也可用 route.enablePathTransmission（route 优先）。",
           ),
         route: z
           .object({
             path: z.string().optional(),
-            serviceName: z.string().optional(),
-            upstreamResourceType: z.enum(UPSTREAM_RESOURCE_TYPES).optional(),
+            serviceName: z
+              .string()
+              .optional()
+              .describe(
+                "上游实例名：云函数名 / 云托管服务名 / 静态托管实例名（常见 staticstore）/ LH 实例。优先于顶层 targetName。",
+              ),
+            upstreamResourceType: z
+              .enum(UPSTREAM_RESOURCE_TYPES)
+              .optional()
+              .describe(
+                "同顶层 upstreamResourceType。route 内设置时优先于顶层。",
+              ),
             auth: z.boolean().optional(),
+            enablePathTransmission: z
+              .boolean()
+              .optional()
+              .describe(
+                "同顶层 enablePathTransmission。route 内设置时优先于顶层。",
+              ),
           })
           .optional()
           .describe(
-            "HTTP 路由配置。upstreamResourceType 可选 SCF / WEB_SCF / CBR / STATIC_STORE / LH",
+            "路由对象（可选写法）。例：云函数 {upstreamResourceType:\"WEB_SCF\",serviceName:\"fn\",path:\"/api\"}；" +
+              "云托管 {upstreamResourceType:\"CBR\",serviceName:\"svc\",path:\"/api\"}；" +
+              "静态托管 {upstreamResourceType:\"STATIC_STORE\",serviceName:\"staticstore\",path:\"/\"}。",
           ),
         domain: z
           .string()

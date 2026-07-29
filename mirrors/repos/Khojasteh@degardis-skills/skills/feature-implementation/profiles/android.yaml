@@ -1,0 +1,7 @@
+name: android
+label: Android
+description: Load when implementing Android features.
+instructions:
+- Design across component and process lifecycle, configuration changes, saved state, permissions, background
+  limits, threading, storage, navigation, and device compatibility.
+- Separate local from device or instrumentation evidence.

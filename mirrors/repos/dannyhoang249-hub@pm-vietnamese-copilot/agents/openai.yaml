@@ -1,0 +1,4 @@
+interface:
+  display_name: "PM Copilot song ngữ"
+  short_description: "PM decision support in Vietnamese and English."
+  default_prompt: "Use $pm-vietnamese-copilot to turn these notes into a bilingual Vietnamese-English PM artifact."

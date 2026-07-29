@@ -1,0 +1,12 @@
+name: java
+label: Java
+description: Load when migrating to or from Java.
+instructions:
+- When Java is the target, inventory standard collections and algorithms, records, sealed types, pattern
+  matching, streams, concurrency, virtual threads where supported, resource management, time, I/O, and
+  service loading.
+- Prefer target-version JDK facilities and established JVM idioms over translated source runtimes, collection
+  helpers, promise layers, manual resource wrappers, or source-shaped inheritance.
+- Verify equality and ordering, locale, Unicode, precision, overflow, stream evaluation, exceptions, interruption,
+  cancellation, thread safety, resource closure, serialization, reflection, and module access.
+- Keep JNI, compatibility facades, reflection fallbacks, and dual build paths bounded to stages.

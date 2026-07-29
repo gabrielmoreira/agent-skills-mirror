@@ -1,0 +1,9 @@
+name: cpp
+label: C++
+description: Load when reviewing C++ code or behavior.
+instructions:
+- Trace object lifetime, ownership, moves, references, iterator validity, exception safety, destruction
+  order, and resource cleanup.
+- Check undefined behavior, narrowing, overload resolution, template instantiation, ABI changes, synchronization,
+  and callbacks that outlive captured state.
+- Distinguish real runtime or compatibility defects from preference among valid C++ styles.

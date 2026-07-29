@@ -1,0 +1,6 @@
+name: swift
+label: Swift
+description: Load when optimizing Swift performance.
+instructions:
+- Measure allocation, copying and copy-on-write, ARC traffic, generics and dispatch, actors and tasks,
+  serialization, I/O, startup, binary size, and platform lifecycle.

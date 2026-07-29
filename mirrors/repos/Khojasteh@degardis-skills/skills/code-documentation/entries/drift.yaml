@@ -1,0 +1,11 @@
+id: docs.drift
+title: Minimize drift
+kind: policy
+rule: Keep generated details close to source-of-truth metadata or validate them in
+  CI.
+require:
+- Reconcile related pages and remove duplicated claims when one authoritative source
+  can be linked or generated.
+- Validate volatile commands, flags, versions, defaults, and compatibility statements.
+reject:
+- Copying implementation-derived tables into multiple manually maintained pages.

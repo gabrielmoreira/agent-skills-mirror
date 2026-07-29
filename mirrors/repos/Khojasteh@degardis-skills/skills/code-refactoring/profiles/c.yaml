@@ -1,0 +1,10 @@
+name: c
+label: C
+description: Load when refactoring C code.
+instructions:
+- Keep pointer ownership, aliasing, allocation, struct layout, macros, conditional compilation, and cleanup
+  behavior explicit while moving or extracting code.
+- Treat exported symbols, headers, calling conventions, binary layout, callbacks, and dynamically loaded
+  names as compatibility boundaries.
+- Use compiler-aware rename and analysis when available, then verify textual registrations and every supported
+  build configuration.

@@ -1,0 +1,12 @@
+id: refactoring.pattern.extract-method
+title: Extract method
+kind: pattern
+rule: Extract a coherent block when naming it clarifies intent or isolates variation.
+conditions:
+- The block expresses one meaningful operation or decision.
+require:
+- Preserve evaluation order, side effects, exceptions, captures, mutation, and async behavior.
+- Verify focused behavior and inspect whether the caller reads more clearly.
+reject:
+- Chains of one-line methods that force navigation without adding meaning.
+- Long parameter lists or control flags that reveal the block is not a coherent operation.

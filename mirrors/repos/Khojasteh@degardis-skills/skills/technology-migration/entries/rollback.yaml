@@ -1,0 +1,13 @@
+id: technology-migration.rollback
+title: Make rollback stage-specific and truthful
+kind: constraint
+priority: 2
+rule: Define rollback from actual code, data, protocol, infrastructure, and ownership state at each stage.
+require:
+- Identify irreversible transformations, target-produced state, mixed-version limits,
+  reconciliation, backup, recovery, and rollback validation.
+- Distinguish rollback from forward repair.
+- Stop before an irreversible action without explicit approval and recovery evidence.
+reject:
+- Calling source fallback a rollback plan when data or contracts have diverged.
+- Keeping legacy code indefinitely as a substitute for reproducible recovery.

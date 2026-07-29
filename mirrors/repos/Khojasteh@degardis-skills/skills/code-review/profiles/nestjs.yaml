@@ -1,0 +1,7 @@
+name: nestjs
+label: NestJS
+description: Load when reviewing NestJS code or behavior.
+instructions:
+- Review dependency graph and cycles, singleton/request/transient scope, guards, pipes, interceptors,
+  filters, authentication, validation, serialization, transactions, async providers, transport semantics,
+  and shutdown cleanup.

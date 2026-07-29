@@ -1,0 +1,12 @@
+id: dependency-upgrade.security-licensing
+title: Review supply-chain consequences
+kind: policy
+priority: 2
+rule: Evaluate security and licensing across the resolved graph, not only the requested direct version.
+require:
+- Confirm advisory applicability, patched ranges, provenance, integrity, permissions, and new transitive code.
+- Distinguish the minimum safe version from latest compatible and latest stable.
+- Escalate material license, registry, signing, or trust-boundary changes.
+reject:
+- Claiming remediation from a manifest edit without verifying the resolved version.
+- Introducing an unrelated replacement package to avoid a difficult migration.

@@ -1,0 +1,8 @@
+name: css
+label: CSS
+description: Load when testing CSS code or behavior.
+instructions:
+- Test user-visible layout and state across meaningful viewport, zoom, writing-mode, theme, and interaction
+  boundaries; avoid asserting generated class names or harmless computed-style details.
+- Control fonts, animation, clocks, device scale, and rendering environment before accepting screenshot
+  evidence, and review baselines rather than updating them automatically.

@@ -1,0 +1,6 @@
+name: go
+label: Go
+description: Load when testing Go code or behavior.
+instructions:
+- Match internal versus external test-package conventions and existing table-test style.
+- Control goroutine lifecycles, contexts, clocks, network listeners, and shared state.

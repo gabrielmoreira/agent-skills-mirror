@@ -1,0 +1,11 @@
+id: performance-optimization.workload
+title: Select a representative workload
+kind: policy
+priority: 6
+rule: Measure inputs, scale, state, concurrency, lifecycle, and environment representative
+  of the performance outcome.
+require:
+- Include meaningful common, boundary, and high-load cases without overfitting one fixture.
+- State which production dimensions the workload does and does not represent.
+reject:
+- Tiny inputs that hide scaling behavior or synthetic work unrelated to the real bottleneck.

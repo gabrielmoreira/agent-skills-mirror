@@ -1,0 +1,6 @@
+name: php
+label: PHP
+description: Load when fixing PHP code or behavior.
+instructions:
+- Trace coercion, nullable values, references, array keys, generators, exceptions, resource lifetime,
+  request state, serialization, and extension-dependent behavior.

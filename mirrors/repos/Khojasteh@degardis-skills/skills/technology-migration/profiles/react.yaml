@@ -1,0 +1,11 @@
+name: react
+label: React
+description: Load when migrating to or from React.
+instructions:
+- When React is the target, prefer target-version component composition, hooks, context, rendering, transitions,
+  suspense, error boundaries, server capabilities, and repository-established routing and state facilities.
+- Do not reproduce source UI lifecycle, controllers, mutable view models, templating, event systems, or
+  reactivity behind wrappers when React's model satisfies the contract.
+- Verify rendering and effect semantics, identity, scheduling, cleanup, events, refs, errors, hydration,
+  server/client separation, accessibility, browser behavior, and bundle boundaries.
+- Keep embedded source views, custom elements, dual routers, and compatibility components bounded to stages.

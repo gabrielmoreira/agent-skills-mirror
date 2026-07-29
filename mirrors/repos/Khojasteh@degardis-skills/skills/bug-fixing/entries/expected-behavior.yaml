@@ -1,0 +1,14 @@
+id: bug-fixing.expected-behavior
+title: Ground the expected behavior independently
+kind: principle
+priority: 2
+rule: Establish what should happen from requirements, public contracts, standards,
+  schemas, compatible callers, or verified historical behavior rather than from the
+  failing implementation.
+require:
+- State the affected input or state, expected outcome, actual outcome, and observable impact.
+- Reconcile contradictory tests, documentation, callers, and implementation evidence.
+- Stop before production edits when expected behavior remains ambiguous.
+reject:
+- Assuming every surprising result is a defect.
+- Copying current production output into the regression oracle.

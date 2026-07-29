@@ -1,0 +1,12 @@
+id: technology-migration.adapters
+title: Bound temporary migration adapters
+kind: constraint
+priority: 1
+rule: Permit an adapter only when an explicit migration stage requires coexistence.
+require:
+- State the boundary, supported consumers, owner, lifetime, removal condition, and validation.
+- Keep the adapter narrow and prevent new source-shaped usage.
+- Report overall migration as incomplete while the adapter remains outside the final support boundary.
+reject:
+- Recreating the source technology wholesale behind an adapter.
+- Presenting a permanent translation layer as target-native completion.

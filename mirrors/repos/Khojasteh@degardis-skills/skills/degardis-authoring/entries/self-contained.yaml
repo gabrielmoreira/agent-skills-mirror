@@ -1,0 +1,13 @@
+id: degardis-authoring.self-contained
+title: Keep every skill independently executable
+kind: constraint
+priority: 15
+rule: Include the minimum assessment, execution, review, and verification guidance
+  required for the skill to complete its own outcome.
+reject:
+- Declaring or implying a dependency on another installed skill.
+- Calling another skill from a workflow or returning unfinished work to a parent
+  skill.
+allow:
+- Referring to project tools, documentation, or external systems when the task
+  legitimately requires them.

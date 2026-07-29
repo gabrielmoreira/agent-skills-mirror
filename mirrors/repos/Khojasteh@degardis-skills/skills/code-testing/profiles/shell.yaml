@@ -1,0 +1,8 @@
+name: shell
+label: Shell
+description: Load when testing Shell code or behavior.
+instructions:
+- Cover quoting, expansion, whitespace, globbing, pipelines, exit statuses, signals, environment inheritance,
+  working directories, partial output, and cleanup with controlled processes and files.
+- Test supported shells explicitly; do not treat implementation-specific extensions as portable behavior or hide races
+  with sleeps.

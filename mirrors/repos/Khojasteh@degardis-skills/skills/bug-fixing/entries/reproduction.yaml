@@ -1,0 +1,12 @@
+id: bug-fixing.reproduction
+title: Reproduce the failure safely
+kind: constraint
+priority: 3
+rule: Capture the smallest safe reproduction that exercises the reported failure mechanism.
+require:
+- Record exact inputs, state, environment, timing, commands, outputs, and frequency.
+- Establish a focused baseline and distinguish pre-existing failures.
+- Minimize external effects and use bounded disposable resources for destructive scenarios.
+reject:
+- Broad edits before reproducing or otherwise demonstrating the defect.
+- Treating one unrepeated flaky result as a confirmed mechanism.

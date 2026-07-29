@@ -1,0 +1,24 @@
+format_version: 1
+purpose: |-
+  Review code, changes, pull requests, or a bounded codebase surface for
+  actionable defects and risks.
+when_it_applies: |-
+  This skill applies when a defined code surface needs correctness, security,
+  reliability, regression, or test-adequacy review. Broad repository health
+  audits and improvement roadmaps are outside its scope.
+capabilities:
+- Establishes the review scope and intended behavior.
+- Examines correctness, data integrity, security, reliability, and concurrency.
+- Evaluates whether tests credibly protect the changed behavior.
+- Prioritizes findings by impact and confidence.
+- Reports evidence and bounded remediation without focusing on stylistic preferences.
+sample_prompts:
+- Review this pull request.
+- Review this diff before I merge it—anything risky?
+- Do a security-focused review of this authentication module.
+- Review this commit for correctness and potential regressions.
+- Review these files for reliability issues.
+catalog:
+  order: 30
+  category: Software engineering / Assessment
+  summary: Find actionable correctness, security, reliability, and regression risks.

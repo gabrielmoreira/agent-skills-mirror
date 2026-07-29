@@ -1,0 +1,6 @@
+name: typescript
+label: TypeScript
+description: Load when optimizing TypeScript performance.
+instructions:
+- Measure emitted runtime behavior, JIT and GC, allocation, event-loop delay, promises, validation, serialization,
+  module loading, I/O, startup, type-check time, and bundle size.

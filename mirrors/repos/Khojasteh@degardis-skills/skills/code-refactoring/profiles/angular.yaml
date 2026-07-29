@@ -1,0 +1,7 @@
+name: angular
+label: Angular
+description: Load when refactoring Angular code.
+instructions:
+- Search templates, selectors, DI tokens, routes, metadata, lazy imports, styles, and generated declarations
+  before renaming or moving.
+- Do not split components and services into pass-through layers without independent responsibility.

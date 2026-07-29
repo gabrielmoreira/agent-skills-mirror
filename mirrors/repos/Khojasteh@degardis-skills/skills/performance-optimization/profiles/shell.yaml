@@ -1,0 +1,7 @@
+name: shell
+label: Shell
+description: Load when optimizing Shell performance.
+instructions:
+- Measure representative wall time, process count, startup, pipeline throughput, filesystem and network
+  I/O, memory, and temporary data; optimize dominant work without unsafe parallelism, lost statuses, quoting
+  changes, or cleanup regressions.

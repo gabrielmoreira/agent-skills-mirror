@@ -1,0 +1,10 @@
+name: vue
+label: Vue
+description: Load when migrating to or from Vue.
+instructions:
+- When Vue is the target, prefer target-version reactivity, components, composition or established options
+  conventions, templates, slots, emits, lifecycle, routing, state, plugins, SSR, and hydration facilities.
+- Do not recreate source UI lifecycle, controllers, mutable view models, manual reactivity, routing, or
+  templating behind wrappers when Vue supplies the contract.
+- Verify reactivity identity, watchers and effects, lifecycle cleanup, events, navigation, rendering,
+  SSR and hydration, accessibility, browser behavior, and bundle boundaries.

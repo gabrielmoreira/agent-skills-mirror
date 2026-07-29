@@ -1,0 +1,7 @@
+name: flutter
+label: Flutter
+description: Load when implementing Flutter features.
+instructions:
+- Design across widget lifecycle, rebuilds, state ownership, async disposal, navigation, platform channels,
+  accessibility, layout constraints, persistence, and target differences.
+- Select unit, widget, integration, or device evidence by behavior.

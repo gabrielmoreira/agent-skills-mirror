@@ -1,0 +1,6 @@
+name: blazor
+label: Blazor
+description: Load when implementing Blazor features.
+instructions:
+- Define parameters, cascading state, events, forms, authorization, DI scopes, circuits, prerendering,
+  hydration, navigation, JS interop, cancellation, serialization, deployment, and disposal.

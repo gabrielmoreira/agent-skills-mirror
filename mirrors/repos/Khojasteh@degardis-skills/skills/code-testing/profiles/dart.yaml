@@ -1,0 +1,6 @@
+name: dart
+label: Dart
+description: Load when testing Dart code or behavior.
+instructions:
+- Account for futures, streams, zones, isolates, and generated sources when relevant.
+- Keep tests independent of wall-clock timing and uncontrolled asynchronous scheduling.

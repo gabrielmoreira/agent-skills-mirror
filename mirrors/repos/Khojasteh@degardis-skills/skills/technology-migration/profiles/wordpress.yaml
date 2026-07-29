@@ -1,0 +1,9 @@
+name: wordpress
+label: WordPress
+description: Load when migrating to or from WordPress.
+instructions:
+- Prefer target-native hooks, content types, permissions, templates/blocks, REST, scheduling, cache, and
+  extension model over compatibility wrappers; verify users, URLs, media, metadata, SEO, and operational
+  parity.
+- Keep content synchronization, proxy routes, and adapters bounded to explicit stages with owners, reconciliation,
+  and removal gates.

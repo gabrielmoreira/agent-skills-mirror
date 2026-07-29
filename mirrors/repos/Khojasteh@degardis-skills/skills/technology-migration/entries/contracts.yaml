@@ -1,0 +1,12 @@
+id: technology-migration.contracts
+title: Preserve external and internal contracts deliberately
+kind: policy
+priority: 2
+rule: Map APIs, protocols, schemas, files, events, CLI behavior, configuration, and persisted formats independently of implementation.
+require:
+- Verify success, failures, timing, ordering, compatibility, side effects, and version negotiation.
+- Obtain approval for intentional breaks and provide rollout or consumer migration.
+- Remove source-specific contracts when no supported consumer requires them.
+reject:
+- Mistaking identical types or payload shapes for identical semantics.
+- Retaining obsolete contracts for hypothetical consumers.

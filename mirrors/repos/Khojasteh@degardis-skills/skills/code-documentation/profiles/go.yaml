@@ -1,0 +1,8 @@
+name: go
+label: Go
+description: Load when documenting Go code or APIs.
+instructions:
+- Follow established Go doc prose and symbol-link conventions for exported packages and names.
+- Document ownership of goroutines, blocking, cancellation, channel closure, concurrency safety, mutation,
+  sentinel errors, and error wrapping when observable.
+- Keep executable `Example` functions only when they teach non-obvious use; keep exhaustive cases in tests.

@@ -1,0 +1,15 @@
+id: review.test-adequacy
+title: Evaluate changed-behavior coverage
+kind: policy
+rule: Judge tests by whether they can detect realistic regressions in the changed behavior,
+  not by their presence or coverage percentage.
+require:
+- Inspect test adequacy, determinism, and oracle quality when they are material.
+- Check success, boundary, failure, compatibility, and regression paths according to risk.
+- Verify expectations are independent from the implementation and, when practical,
+  demonstrate that a test fails for the defect it claims to prevent.
+reject:
+- Requesting tests for trivial structure without identifying a behavior or risk.
+- Treating mocked implementation interactions as proof of integrated behavior.
+- Reporting missing coverage as a defect without identifying the regression it could
+  allow or the contract it leaves unverified.

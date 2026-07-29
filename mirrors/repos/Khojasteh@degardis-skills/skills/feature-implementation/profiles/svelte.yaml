@@ -1,0 +1,6 @@
+name: svelte
+label: Svelte
+description: Load when implementing Svelte features.
+instructions:
+- Define props, bindings, events, stores, actions, context, reactivity, lifecycle, accessibility, keyed
+  identity, server/client boundaries, hydration, transitions, errors, and cleanup.

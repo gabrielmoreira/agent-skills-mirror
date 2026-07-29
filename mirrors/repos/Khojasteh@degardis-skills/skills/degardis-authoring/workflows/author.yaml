@@ -1,0 +1,120 @@
+id: degardis-authoring.author
+title: Author AI agent skills in the Degardis source format
+description: Guide authoring, assessment, or revision of an AI agent skill in
+  the Degardis source format, then use Degardis to validate it and compile it
+  into an installable AI agent skill bundle for distribution or installation
+  as requested.
+steps:
+- action: establish-request
+  instruction: Classify the request as authoring, review, revision, validation,
+    build, distribution, installation, or a combination. Identify the requested
+    deliverable and evidence of success. Ask only when a missing decision would
+    materially change the skill's identity, behavior, output, or installation
+    destination.
+- action: inspect-local-contract
+  instruction: Load the bundled source-format, manifest, workflow, entry, profile,
+    and validation references needed for the requested skill. When a Degardis
+    repository, compiler, or versioned documentation is available, inspect it and
+    treat its behavior as authoritative over the bundled baseline; do not assume
+    repository access.
+- action: inspect-existing-source
+  when: The request concerns an existing skill.
+  instruction: Read the complete selected source surface, including skill.yaml
+    and every loaded workflow, entry, profile, script, and asset relevant to its
+    behavior. Inspect repository conventions, validation results, generated output,
+    tests, and version-control context when available. Identify evidence-backed
+    strengths, defects, duplication, stale contract details, and missing coverage
+    before deciding what to change; preserve unrelated author work.
+- action: select-source-location
+  when: A new skill must be created.
+  instruction: Place the skill within the repository's existing human-facing
+    collection hierarchy. Use a lowercase hyphenated directory name of at most 64
+    characters and make skill.yaml name match it exactly. Degardis discovers
+    descendant skill.yaml files recursively, stops descending after finding a
+    skill, and does not use collection manifests.
+- action: define-ownership
+  when: Creating a skill or changing its routing boundary.
+  instruction: Give the skill one clear outcome and write a routing description in
+    ordinary request language that states what it does and when it applies without
+    embedding the execution procedure or an exhaustive technology inventory. Test
+    the boundary with concrete requests that should and should not trigger it.
+- action: design-composition
+  when: Creating a skill or making a structural revision.
+  instruction: Plan one independently executable primary workflow, focused reusable
+    entries, and only the profiles, supporting workflows, scripts, or assets that
+    materially improve repeated execution. Do not declare dependencies on other
+    skills or require another skill to complete the work.
+- action: choose-starting-point
+  when: A new skill must be created.
+  instruction: Copy and adapt the bundled assets/starter/example-skill directory
+    when assets are accessible. Rename its directory and replace every example
+    identity, routing statement, and workflow. Add entries, entry_kinds, legal
+    metadata, profiles, scripts, or assets only when the request supplies a real
+    need for them. When assets cannot be accessed, recreate the same minimal
+    manifest-and-primary-workflow structure from the bundled schema references.
+- action: write-manifest
+  when: Creating a skill or when review shows the manifest must change.
+  instruction: Create or update skill.yaml with format_version, name, version,
+    description, primary_workflow, and interface metadata. Add title, entry_kinds,
+    content globs, legal metadata, profile configuration, icons, or brand color
+    only when applicable and supported by the request or repository. For icons,
+    use icon as the shared fallback and icon_small or icon_large only for
+    role-specific overrides; use relative source paths and do not invent pixel
+    dimensions. Ensure the short description is 25-64 characters and the default
+    prompt contains the exact $skill-name token.
+- action: write-workflows
+  when: Creating a skill or when review shows workflow behavior must change.
+  instruction: Express ordered procedures as workflow steps with stable namespaced
+    IDs. Include input assessment, execution, review, verification, and reporting
+    needed for standalone use. Keep every use reference inside this skill and make
+    primary_workflow resolve to a loaded workflow.
+- action: write-entries
+  when: A reusable rule is needed or an existing entry must change.
+  instruction: Express each reusable rule as one namespaced entry with a standalone
+    rule and the narrowest useful kind. Use require, allow, reject, conditions,
+    exceptions, or examples only when they clarify application; keep ordered
+    procedure in workflows.
+- action: evaluate-profiles
+  when: A profile exists or a context-specific execution variant is proposed.
+  instruction: Retain or add a profile only when an audience, format, technology,
+    or environment materially changes execution. Keep one subject per profile,
+    remove duplicated core guidance, match each profile name to its filename, and
+    avoid prescribing adjacent tooling without repository evidence. Remove empty
+    profile configuration and placeholder profiles when no material variant remains.
+- action: add-resources
+  when: Repeated deterministic behavior or output inputs justify bundled resources.
+  instruction: Add scripts only for necessary repeatable executable behavior and
+    assets only as inputs to requested outputs. Declare their portable relative
+    globs, keep instructions in YAML sources, and test every added script on
+    representative inputs.
+- action: validate-source
+  when: Source is reviewed, created, or changed.
+  instruction: When the Degardis CLI is available, run degardis validate on the
+    individual skill and the relevant containing collection. Fix discovery,
+    format, schema, identity, reference, interface, generated link, and size
+    errors in the authored sources rather than editing generated output.
+    Distinguish failures caused by the selected skill from unrelated collection
+    failures. Remember that validation does not execute bundled scripts and that
+    a generated SKILL.md over 500 lines is a warning, not a failure. When the CLI
+    is unavailable, perform the bundled structural checks and report that compiler
+    validation remains outstanding.
+- action: build-and-inspect
+  when: A build, distribution, or installation is requested, or source changed.
+  instruction: When the Degardis CLI is available, choose an explicit output root
+    from the requested outcome and always pass it with --output. Use a temporary or
+    repository-approved generated directory for inspection only; for an authorized
+    direct installation, resolve the native or common project or personal skill
+    directory from the target agents; or use --zip with a chosen distribution
+    directory for ChatGPT upload. Never assume a fixed staging or installation
+    directory. Inspect SKILL.md, generated references, agents/openai.yaml, selected
+    profiles, copied resources, and, for ZIP output, archive paths and script
+    permissions. Account for replacement being atomic per skill rather than per
+    multi-skill command. Otherwise deliver the authored sources without
+    fabricating generated artifacts.
+- action: review-and-report
+  instruction: Review the complete result and, when sources changed, the diff for
+    unclear ownership, unnecessary fragments, duplication, stale contract claims,
+    cross-skill assumptions, unsafe helpers, placeholder content, and unrelated
+    edits. Report findings or changes in priority order, the source location, exact
+    validation and build evidence, inspected artifacts, any explicit output or
+    installation destination, assumptions, and remaining limitations.

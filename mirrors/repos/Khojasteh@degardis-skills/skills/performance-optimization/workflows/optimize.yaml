@@ -1,0 +1,83 @@
+id: performance-optimization.optimize
+title: Measure and optimize a performance bottleneck
+description: Adapt to assessment, planning, implementation, or review while requiring
+  comparable evidence, preserved correctness, and explicit authority for production changes.
+steps:
+- action: classify-request
+  instruction: Classify the request as assessment, planning, implementation, or review.
+    Keep assessment, planning, and review read-only; edit production code only when
+    performance implementation is explicitly requested.
+- action: establish-target
+  instruction: Establish the user or system outcome, target metric, representative workload,
+    scope, environment, performance budget or SLO, minimum worthwhile effect, guardrail
+    metrics, constraints, and authorization.
+- action: inspect-context
+  instruction: Read repository instructions and inspect architecture, relevant code and
+    callers, tests, benchmark configuration, telemetry, build settings, schemas,
+    dependencies, deployment conditions, and operational constraints. Honor explicit
+    technology choices, preserve established versions and tooling, and introduce no
+    dependency or migration without authorization.
+- action: establish-tooling-evidence
+  instruction: Select project tools and commands only when explicit scope or repository
+    instructions, manifests, lockfiles, configuration, scripts, CI, documentation, or
+    established usage supports them. Availability, filenames, conventions, and popularity
+    do not establish adoption; never execute competing tools as probes. When evidence is
+    absent, use tool-independent analysis, report the validation gap, or ask before
+    introducing tooling.
+- action: establish-correctness-baseline
+  instruction: Establish intended behavior and focused correctness evidence independently
+    from the implementation. Record pre-existing functional and performance failures.
+- action: classify-symptom
+  instruction: Distinguish implementation cost from correctness defects, environment
+    contention, configuration, dependencies, data shape, external systems, and measurement
+    defects before editing. Report out-of-scope correctness defects separately.
+- action: measure-baseline
+  instruction: Identify the smallest representative workload and measure it in the
+    appropriate optimized configuration. Record environment, inputs, commands, samples,
+    distributions, relevant variance, and other metrics that could regress. For load-sensitive
+    systems define arrival pattern, concurrency, pacing, ramp, duration, offered and achieved
+    load, errors, and timeouts. Stop when the baseline is unstable or the experiment exceeds
+    authorized safety or cost limits.
+- action: validate-method
+  instruction: Check warmup, JIT or compilation, caches, GC, resource contention, sample
+    sufficiency, outliers, monotonic clock selection, dead-code elimination, profiler
+    perturbation, independent sampling, coordinated omission, load-generator saturation,
+    and environment drift before trusting the result. Predefine the primary metric,
+    comparison method, and uncertainty treatment.
+- action: handle-alternative-evidence
+  instruction: When representative local measurement is unavailable, use bounded causal
+    telemetry, profiles, traces, query plans, complexity analysis, allocation evidence,
+    or an isolated reproducer. Verify correctness, state the proxy and limitations, and
+    defer any representative improvement claim until the intended environment is measured.
+- action: locate-bottleneck
+  instruction: Profile, trace, inspect query plans, or use other bounded evidence to locate
+    the dominant causal resource, algorithm, wait, or boundary rather than guessing from symptoms.
+- action: form-hypothesis
+  instruction: State one bounded causal hypothesis, its predicted improvement, possible
+    regressions, and the measurement that could falsify it.
+- action: choose-minimal-change
+  instruction: Choose the smallest causal optimization. Make a structural transformation
+    only when measured evidence requires it; reject broad cleanup, speculative architecture,
+    benchmark-only special cases, and dependency churn.
+- action: implement-and-compare
+  instruction: In authorized implementation mode, apply one optimization at a time and
+    rerun the same comparable measurement. Interleave or randomize baseline and candidate
+    runs when order or drift could bias results. Remove changes whose effect is within
+    uncertainty, below the minimum worthwhile effect, or does not justify their complexity.
+- action: verify-behavior-and-range
+  instruction: Rerun focused correctness evidence, then broader representative workloads.
+    Check shifted bottlenecks, saturation points, and regressions in tail latency, throughput,
+    errors, dropped work, CPU, memory, allocation, I/O, cost, energy, correctness, reliability,
+    and maintainability.
+- action: review-final-change
+  instruction: Inspect the complete diff for correctness, concurrency, security,
+    compatibility, resource-lifetime, and maintenance risks.
+- action: update-documentation-conditionally
+  instruction: Update documentation when performance contracts, tuning, capacity
+    assumptions, operational procedures, configuration, benchmark maintenance, or
+    maintainer rationale change.
+- action: report
+  instruction: Report the mode, target and workload, baseline, method, bottleneck evidence,
+    hypothesis, change, comparable absolute and relative effects, uncertainty, minimum
+    worthwhile effect, load and saturation behavior when relevant, tradeoffs, correctness
+    checks, deferred representative validation, and residual risk.

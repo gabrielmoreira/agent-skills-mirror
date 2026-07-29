@@ -1,0 +1,9 @@
+name: aspnet-core
+label: ASP.NET Core
+description: Load when reviewing ASP.NET Core code or behavior.
+instructions:
+- Trace dependency-injection lifetimes, request cancellation, model binding, validation, authorization,
+  serialization, middleware short-circuiting, and response completion.
+- Check scoped services captured by singletons, background-service lifetime, forwarded headers, antiforgery,
+  tenant boundaries, streaming, and database transactions.
+- Distinguish authentication from authorization and client validation from server enforcement.

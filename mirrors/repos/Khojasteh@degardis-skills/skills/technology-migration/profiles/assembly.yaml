@@ -1,0 +1,8 @@
+name: assembly
+label: Assembly
+description: Load when migrating to or from Assembly.
+instructions:
+- Prefer semantically suitable target intrinsics or library algorithms over line-by-line instruction translation;
+  verify ordering, equality, precision, overflow, complexity, memory ordering, ABI, security, and performance.
+- Keep architecture dispatch and fallback routines bounded to explicit stages with owners and removal
+  gates; final completion removes obsolete source objects and binary paths.

@@ -1,0 +1,29 @@
+name: bug-fixing
+format_version: 1
+title: Bug Fixing
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Diagnose and fix software defects, regressions, crashes, incorrect behavior,
+  and failure conditions. Use when the request asks to investigate a bug, reproduce a
+  failure, find its root cause, or implement and verify a causal fix.
+primary_workflow: bug-fixing.resolve
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Bug Fixing
+  short_description: Diagnose and fix defects with regression evidence
+  default_prompt: Use $bug-fixing to diagnose this defect and implement the smallest
+    verified fix.

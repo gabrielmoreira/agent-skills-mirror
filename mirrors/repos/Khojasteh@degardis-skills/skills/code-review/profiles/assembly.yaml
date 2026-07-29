@@ -1,0 +1,7 @@
+name: assembly
+label: Assembly
+description: Load when reviewing Assembly code or behavior.
+instructions:
+- Review registers and flags, clobbers, stack alignment, memory bounds, integer overflow, endianness,
+  atomics, barriers, privilege boundaries, unwind information, side channels, portability guards, and
+  caller-visible behavior.

@@ -1,0 +1,7 @@
+name: python
+label: Python
+description: Load when refactoring Python code.
+instructions:
+- Search decorators, registries, entry points, dependency injection, ORM mappings, configuration, templates,
+  serialization, and monkey patches before structural changes.
+- Do not turn straightforward module functions into classes and protocols without a real boundary.

@@ -1,0 +1,6 @@
+name: kotlin
+label: Kotlin
+description: Load when optimizing Kotlin performance.
+instructions:
+- Account for JIT or native compilation, allocation and boxing, collections and sequences, coroutine scheduling,
+  flows, synchronization, serialization, interop, I/O, and startup.

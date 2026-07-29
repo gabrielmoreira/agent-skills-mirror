@@ -1,0 +1,11 @@
+name: rails
+label: Rails
+description: Load when migrating to or from Rails.
+instructions:
+- When Rails is the target, prefer target-version routing, controllers, parameters, validation, authorization,
+  ORM, transaction, migration, job, mailer, cache, asset, configuration, and security facilities.
+- Do not recreate source-framework service containers, persistence layers, callbacks, routing, or job
+  abstractions behind wrappers when Rails supplies the contract.
+- Verify framework defaults, autoloading, middleware, callbacks, transactions, serialization, jobs, retries,
+  caches, time zones, multi-process behavior, deployment, and cleanup.
+- Keep gateways, dual models, compatibility initializers, and synchronization bounded to stages.

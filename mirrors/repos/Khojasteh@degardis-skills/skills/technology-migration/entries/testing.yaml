@@ -1,0 +1,14 @@
+id: technology-migration.testing
+title: Derive migration evidence independently
+kind: policy
+priority: 1
+rule: Prove approved behavior and target independence rather than source implementation
+  similarity.
+require:
+- Test parity, intentional changes, meaningful boundaries, failures, side effects,
+  data, concurrency, operational behavior, and deterministic cutover conditions.
+- Run the target with source dependencies and fallbacks disabled before claiming completion.
+- Characterize only verified intended source behavior.
+reject:
+- Copying source tests whose oracle merely reproduces source implementation details.
+- Weakening assertions or snapshots to accommodate unexplained differences.

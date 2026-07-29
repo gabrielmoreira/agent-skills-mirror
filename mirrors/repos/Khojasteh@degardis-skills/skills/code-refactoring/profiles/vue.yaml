@@ -1,0 +1,7 @@
+name: vue
+label: Vue
+description: Load when refactoring Vue code.
+instructions:
+- Search templates, component registration, route names, store keys, dynamic imports, plugins, test selectors,
+  and generated declarations before structural changes.
+- Avoid extracting tiny composables and wrappers that scatter a cohesive component flow.

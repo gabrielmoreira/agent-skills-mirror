@@ -1,0 +1,11 @@
+name: csharp
+label: C#
+description: Load when optimizing C# performance.
+instructions:
+- Measure warmup, tiered compilation, allocation, boxing, closures, interface dispatch, iterator state
+  machines, LINQ materialization, spans/ref structs, async state machines, `ValueTask`, thread-pool behavior,
+  serialization, reflection, and I/O as relevant.
+- Verify that pooling, caching, stack allocation, parallelism, or reduced safety checks do not violate
+  ownership, lifetime, cancellation, culture, thread-safety, or API contracts.
+- Compare equivalent optimized deployments with representative workloads, allocation and latency distributions,
+  and independently checked outputs.

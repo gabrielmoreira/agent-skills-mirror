@@ -1,0 +1,16 @@
+id: bug-fixing.verification-reporting
+title: Verify and report the causal correction
+kind: policy
+rule: Demonstrate that the original failure mechanism is corrected and that the fix
+  does not introduce nearby regressions.
+require:
+- Run the regression evidence first, then focused and broader relevant checks.
+- Report expected versus actual behavior, root cause and confidence, changed files,
+  exact commands, before and after results, skipped checks, documentation impact,
+  unresolved assumptions, and residual risk.
+- State explicitly when only an equivalent mechanism could be verified.
+- Do not claim the defect is fixed without verified causal evidence.
+reject:
+- Claiming the defect is fixed because code compiles, a broad suite passes, or the symptom
+  was not observed once.
+- Hiding pre-existing failures or unavailable validation.

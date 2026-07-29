@@ -1,0 +1,6 @@
+name: angular
+label: Angular
+description: Load when implementing Angular features.
+instructions:
+- Design across component lifecycle, dependency-injection scopes, change detection, signals or observables,
+  forms, routing, guards, SSR or hydration, and cleanup.

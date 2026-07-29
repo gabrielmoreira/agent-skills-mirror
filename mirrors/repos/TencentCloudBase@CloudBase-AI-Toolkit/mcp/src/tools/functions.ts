@@ -1097,7 +1097,7 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
           },
           `已基于镜像 ${createImageConfig.imageUri} 创建 HTTP 函数 ${functionName}。` +
             `请确认 TCR、SCF 与构建管道处于同一地域；如需通过 URL 访问，请显式调用 ` +
-            `manageGateway(action="createRoute", type="HTTP") 并按需调整函数安全规则。` +
+            `manageGateway(action="createRoute", upstreamResourceType="WEB_SCF") 并按需调整函数安全规则。` +
             `部署后可用 queryFunctions(action="getFunctionDetail") 确认函数已就绪。`,
           [
             {
@@ -1202,7 +1202,7 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
           tool: "manageGateway",
           action: "createRoute",
           reason:
-            "如果需要通过 URL 访问 HTTP 函数，请调用 manageGateway(action=\"createRoute\") 并显式传 type=\"HTTP\"（映射 WEB_SCF），再按实际路径和鉴权需求创建访问入口，不要默认假设 /函数名 已存在",
+            "如果需要通过 URL 访问 HTTP 函数，请调用 manageGateway(action=\"createRoute\") 并显式传 upstreamResourceType=\"WEB_SCF\"，再按实际路径和鉴权需求创建访问入口，不要默认假设 /函数名 已存在",
         });
         nextActions.push({
           tool: "queryGateway",
@@ -1225,7 +1225,7 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
 
       const message =
         func.type === "HTTP"
-          ? `已创建 HTTP 函数 ${functionName}。如果后续需要通过 URL 访问，请显式调用 manageGateway(action="createRoute")，并把 type="HTTP" 一起传入（映射 UpstreamResourceType=WEB_SCF），再按实际路径和鉴权需求创建访问入口。评测或其他外部调用方可能会以匿名身份访问，而且失败后不一定会把 EXCEED_AUTHORITY 再反馈给 AI；交付前请主动确认访问路径和函数安全规则，若已出现 EXCEED_AUTHORITY，请先调用 queryPermissions(action="getResourcePermission", resourceType="function", resourceId="${functionName}") 查看当前规则，再按需要使用 managePermissions(action="updateResourcePermission") 调整权限。`
+          ? `已创建 HTTP 函数 ${functionName}。如果后续需要通过 URL 访问，请显式调用 manageGateway(action="createRoute")，并把 upstreamResourceType="WEB_SCF" 一起传入，再按实际路径和鉴权需求创建访问入口。评测或其他外部调用方可能会以匿名身份访问，而且失败后不一定会把 EXCEED_AUTHORITY 再反馈给 AI；交付前请主动确认访问路径和函数安全规则，若已出现 EXCEED_AUTHORITY，请先调用 queryPermissions(action="getResourcePermission", resourceType="function", resourceId="${functionName}") 查看当前规则，再按需要使用 managePermissions(action="updateResourcePermission") 调整权限。`
           : `已创建函数 ${functionName}`;
 
       return buildEnvelope(

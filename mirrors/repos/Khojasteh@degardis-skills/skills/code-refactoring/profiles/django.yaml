@@ -1,0 +1,7 @@
+name: django
+label: Django
+description: Load when refactoring Django code.
+instructions:
+- Search app labels, model strings, URL names, templates, settings, admin registration, serializers, tasks,
+  and migration state before renaming or moving.
+- Avoid service layers that merely forward ORM calls without owning policy or a boundary.

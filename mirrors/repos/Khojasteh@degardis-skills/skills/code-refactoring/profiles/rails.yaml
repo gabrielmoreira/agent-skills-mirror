@@ -1,0 +1,7 @@
+name: rails
+label: Rails
+description: Load when refactoring Rails code.
+instructions:
+- Search routes, symbols, callbacks, associations, serializers, views, jobs, configuration, autoloaded
+  constants, and dynamic dispatch before structural changes.
+- Avoid proliferating concerns, services, commands, and interactors that scatter one cohesive flow.

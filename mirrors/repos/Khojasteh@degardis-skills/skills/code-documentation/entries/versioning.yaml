@@ -1,0 +1,12 @@
+id: docs.versioning
+title: Bound claims to applicable versions
+kind: constraint
+rule: Tie version-sensitive behavior, availability, defaults, and migration steps to
+  verified version evidence.
+require:
+- Preserve detected product, language, framework, and documentation-tool versions.
+- Distinguish current behavior from compatibility promises and historical behavior.
+reject:
+- Using current upstream documentation to describe an older repository version without
+  checking applicability.
+- Prescribing upgrades or migrations that were not requested.

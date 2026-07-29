@@ -1,0 +1,7 @@
+name: typescript
+label: TypeScript
+description: Load when refactoring TypeScript code.
+instructions:
+- Search runtime property names, dynamic imports, framework metadata, path aliases, generated declarations,
+  schemas, and configuration before renaming or moving.
+- Do not introduce types or interfaces that merely mirror one implementation without a boundary.

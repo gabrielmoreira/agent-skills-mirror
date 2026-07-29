@@ -1,0 +1,12 @@
+id: feature-implementation.review-reporting
+title: Review and report the complete feature
+kind: policy
+priority: 50
+rule: Review the complete diff against acceptance criteria and report evidence without overstating certainty.
+require:
+- Check missing behavior, security, data, compatibility, concurrency, test adequacy,
+  and unrelated changes.
+- Report behavior delivered, validation commands and results, documentation impact,
+  assumptions, exclusions, rollout considerations, and residual risk.
+reject:
+- Claiming completion from code inspection alone or hiding unresolved validation gaps.

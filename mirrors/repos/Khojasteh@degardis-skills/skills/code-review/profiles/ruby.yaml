@@ -1,0 +1,9 @@
+name: ruby
+label: Ruby
+description: Load when reviewing Ruby code or behavior.
+instructions:
+- Trace nil handling, truthiness, mutation, blocks, enumerators, exceptions, ensure cleanup, fibers, threads,
+  and process state.
+- Check method lookup, monkey patches, callbacks, constant loading, keyword arguments, serialization,
+  time zones, and background-job boundaries.
+- Verify metaprogrammed behavior from reachable definitions rather than inferring it from names.

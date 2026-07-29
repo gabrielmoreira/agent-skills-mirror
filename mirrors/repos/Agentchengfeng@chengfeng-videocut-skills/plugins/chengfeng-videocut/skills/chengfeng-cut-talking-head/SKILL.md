@@ -103,14 +103,22 @@ node "$VC" cuts get "$jobDir" --json
 
 **删词修不掉这个。** 听错的字不是多余的话——把 `Clock` 删掉，那句话就缺一个词。
 
-先读 [AI 用词词典](../../references/ai-term-dictionary.md)，产出 `{ wordId, text }` 的对照表，
-然后交给产品：
+**词典这一步产品自己会做**，不用手工产对照表：
 
 ```bash
-node "$VC" transcript playback "$jobDir" --json
-node "$VC" transcript correct "$jobDir" \
-  --file "$correctionFile" \
-  --json
+node "$VC" transcript dictionary "$jobDir" \
+  --dictionary "$PLUGIN_ROOT/references/ai-term-dictionary.md" --json
+```
+
+它直接改，并列出改了哪几处、每处的上下文。**改完要看那份清单**——词典不看上下文，
+所以它也会改错（比如把说话人真说的「Skills」normalize 成「Skill」）。看到不对就改词典，
+不要在别处打补丁。
+
+只有词典解决不了、而作者手上有稿子时，才追加一次上下文对齐：
+
+```bash
+node "$VC" transcript align "$jobDir" --script "$scriptPath" --json   # 只报不改
+node "$VC" transcript correct "$jobDir" --file "$correctionFile" --json
 ```
 
 固定原则：
@@ -119,9 +127,35 @@ node "$VC" transcript correct "$jobDir" \
 - **只换写法，不换意思。** 说话人真的说错又重说，那属于残句改口，归下一步删词管。
 - **词典里没有、且稿子里没有任何一个写法能确认正确时，不许猜。** 报告出来，留给人补词典。往用户片子里塞一个编的名字，比留一个听错的名字更坏。
 - 中文口语按原文保留。说话人说「叉」「大模型」「智能体」，那就是他说的话。
+- **同一段音频转两遍，结果不一样。** 实测第二遍把 `Grok` 听成 `Clock` / `Gokul` / `Glock`，
+  `Codex` 听成 `CodeX`。所以词典不是「偶尔修个别名字」，是**每次转录都要过的一道闸**。
 
 **为什么必须在判断之前**：稿子还是错的时候去判断该删什么，判断就得一路绕开错名字——
 判据里那条「专名听错不算删除理由」就是这么来的，它是补丁，不是解法。修完字，那条补丁才不用生效。
+
+## 文稿是按标点分段的
+
+转录里每个词带着它后面的标点（火山给的），文稿栏按标点分段——**一个逗号就是一段**。
+所以那一栏读起来是一句一行，不是一整坨。
+
+```text
+我现在很少刷X了，
+因为今天有什么值得研究已经被我外包给了Codex和Grok。
+每天早上，
+Codex都会调用Grok
+```
+
+字幕那一段也吃同一份标点，所以两边的断句是一致的。
+
+**老项目可能没有标点**（2026-07-28 之前转的）。分段规则改了但转录没变的项目，
+跑一次重切段落即可，不必重新转录：
+
+```bash
+node "$VC" transcript regroup "$jobDir" --json
+```
+
+它逐词校验 id / 时间 / 文字不变，所以对已经剪过、配过字幕的项目是安全的。
+**真要标点还是得重转一次** —— 标点在转录里根本不存在，算不出来。
 
 ## 3. proposal → Product CAS：生成并提交删词候选
 

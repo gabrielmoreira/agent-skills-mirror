@@ -1,0 +1,12 @@
+id: dependency-upgrade.data-deployment
+title: Protect data and deployment order
+kind: constraint
+priority: 2
+rule: Treat persisted data, schemas, protocols, and mixed-version deployment as explicit compatibility surfaces.
+require:
+- Determine forward, backward, and rollback compatibility for rolling or staged deployment.
+- Validate migrations, transactions, partial failure, retries, backups, and recovery where applicable.
+- Sequence application, worker, client, database, and infrastructure changes safely.
+reject:
+- Assuming a dependency-only change cannot alter stored or transmitted data.
+- Performing destructive migration or load against an uncontrolled environment.

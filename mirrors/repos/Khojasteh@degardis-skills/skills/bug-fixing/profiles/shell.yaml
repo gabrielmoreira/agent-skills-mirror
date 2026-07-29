@@ -1,0 +1,7 @@
+name: shell
+label: Shell
+description: Load when fixing Shell code or behavior.
+instructions:
+- Reproduce quoting, expansion, environment, working directory, pipeline statuses, signals, permissions,
+  temporary files, and cleanup; fix the causal command or control-flow error without masking it with retries,
+  sleeps, ignored statuses, or suppressed stderr.

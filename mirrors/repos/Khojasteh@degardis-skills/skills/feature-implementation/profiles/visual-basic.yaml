@@ -1,0 +1,10 @@
+name: visual-basic
+label: Visual Basic
+description: Load when implementing Visual Basic features.
+instructions:
+- Define `Nothing`, conversion, overload, `ByRef`, default-property, event, error, async, cancellation,
+  disposal, concurrency, culture, and serialization behavior before coding.
+- Avoid accidental late binding or implicit narrowing when the repository requires strict typing; keep
+  iterator/LINQ timing and event-subscription ownership explicit.
+- Check `My` services, XML literals, reflection, COM interop, trimming/AOT, generated code, and C# consumer
+  compatibility.

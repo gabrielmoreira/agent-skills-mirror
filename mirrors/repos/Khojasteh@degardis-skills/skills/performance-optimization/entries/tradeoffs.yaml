@@ -1,0 +1,12 @@
+id: performance-optimization.tradeoffs
+title: Make performance tradeoffs explicit
+kind: principle
+priority: 26
+rule: Evaluate gains against regressions in other metrics, correctness, security, reliability,
+  compatibility, complexity, operability, and maintainability.
+require:
+- Obtain approval when a tradeoff exceeds the established budget or changes a contract.
+- Remove a change when its measured value does not justify its ongoing complexity.
+reject:
+- Hiding worse tail latency, memory, CPU, cost, energy, cold start, or failure behavior
+  behind an improved average.

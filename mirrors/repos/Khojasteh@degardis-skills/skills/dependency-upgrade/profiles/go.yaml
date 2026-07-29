@@ -1,0 +1,10 @@
+name: go
+label: Go
+description: Load when upgrading Go dependencies or tooling.
+instructions:
+- Account for minimal version selection, the `go` and `toolchain` directives, module retractions,
+  `replace` and `exclude` directives, workspaces, vendoring, and supported platform build tags.
+- Use native module commands with an explicit scope, review `go.mod` and `go.sum` together, and explain
+  indirect dependency movement or directive changes caused by the selected toolchain.
+- Regenerate affected code and vendor state through repository commands, then validate every supported
+  module rather than only the repository root.

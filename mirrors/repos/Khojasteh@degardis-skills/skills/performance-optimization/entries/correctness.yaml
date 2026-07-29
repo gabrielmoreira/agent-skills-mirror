@@ -1,0 +1,15 @@
+id: performance-optimization.correctness
+title: Preserve observable correctness
+kind: constraint
+priority: 25
+rule: Use independently grounded functional evidence before and after optimization; speed
+  does not compensate for changed values, failures, side effects, ordering, or compatibility.
+require:
+- Verify boundary, failure, state, concurrency, security, persistence, and cleanup behavior.
+- Treat explicit timing, capacity, and resource guarantees as part of the contract.
+- When optimizing a test suite, preserve behavioral coverage, independent oracles,
+  determinism, isolation, failure diagnostics, and required test levels.
+reject:
+- Weakening assertions, dropping work, skipping validation, or returning incomplete results
+  to improve a metric.
+- Deleting or bypassing tests merely to reduce test-suite duration.

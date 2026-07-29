@@ -1,0 +1,16 @@
+id: docs.validation-scope
+title: Keep documentation validation proportional
+kind: policy
+rule: Validate documentation with documentation-specific checks rather than project
+  test execution.
+require:
+- Distinguish inspecting tests as behavioral evidence from executing them as validation.
+- Validate generated documentation, links, anchors, markup, cross-references,
+  executable documentation examples, and commands the reader is instructed to run
+  when they apply to the promised reader outcome.
+- Do not run project unit, integration, end-to-end, or general test suites for a
+  documentation request; their code-health result does not validate documentation.
+reject:
+- Running a project test suite as part of documentation validation.
+- Treating passing tests as proof that links, markup, examples, navigation, or the
+  reader journey are correct.

@@ -1,0 +1,12 @@
+id: performance-optimization.profiling
+title: Locate the dominant bottleneck
+kind: policy
+priority: 10
+rule: Use profiles, traces, query plans, allocation evidence, telemetry, or an isolated
+  reproducer to connect the observed cost to its dominant causal path.
+require:
+- Inspect CPU work, waits, I/O, allocation, locking, queues, calls, queries, serialization,
+  network boundaries, and lifecycle costs as applicable.
+- Account for sampling bias, instrumentation overhead, missing spans, and aggregation.
+reject:
+- Optimizing code because it looks expensive without evidence that it matters to the workload.

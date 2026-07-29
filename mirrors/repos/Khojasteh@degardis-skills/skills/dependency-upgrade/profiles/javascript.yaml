@@ -1,0 +1,10 @@
+name: javascript
+label: JavaScript
+description: Load for npm, pnpm, Yarn, Bun, or other JavaScript package-graph upgrades.
+instructions:
+- Preserve the detected package manager, lockfile generation mode, workspace layout, registry configuration,
+  and lifecycle-script policy; do not mix clients or use force and legacy-peer modes to manufacture a graph.
+- Resolve peer dependencies, engines, optional platform packages, overrides, package exports, ESM/CommonJS
+  boundaries, browser targets, native addons, and build-tool or framework plugin alignment.
+- Prefer scoped native updates where supported, inspect why transitive packages moved, and validate clean
+  installation plus every affected workspace and production build.

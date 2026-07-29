@@ -1,0 +1,14 @@
+id: degardis-authoring.profiles
+title: Require material value from every profile
+kind: heuristic
+priority: 30
+rule: Retain a profile only when its subject materially changes selection,
+  structure, terminology, evidence handling, output conventions, failure modes, or
+  another part of execution.
+require:
+- Keep one clear audience, format, technology, or environment subject per profile.
+- Select tooling from explicit task scope or repository evidence.
+reject:
+- Creating an exhaustive matrix of thin profiles.
+- Keeping a profile whose instructions merely repeat general competence, its
+  description, the core workflow, or entries.

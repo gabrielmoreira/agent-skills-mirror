@@ -1,0 +1,11 @@
+id: performance-optimization.alternative-evidence
+title: Bound claims from alternative evidence
+kind: policy
+priority: 36
+rule: When representative local measurement is unavailable, use causal telemetry, profiles,
+  traces, query plans, complexity analysis, allocation evidence, or an isolated reproducer.
+require:
+- Explain why representative measurement is unavailable and verify local correctness.
+- State the proxy, its limitations, and the later environment and workload required for validation.
+reject:
+- Claiming representative improvement before the intended environment is measured.

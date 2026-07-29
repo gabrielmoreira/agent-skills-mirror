@@ -1,0 +1,11 @@
+name: csharp
+label: C#
+description: Load when testing C# code or behavior.
+instructions:
+- Cover nullable boundaries, records/equality, pattern branches, generic/overload behavior, checked arithmetic,
+  culture, async/`ValueTask`, async streams, cancellation, disposal, iterators, and deferred or repeated
+  LINQ evaluation where behavior depends on them.
+- Exercise serialization, reflection, source-generated paths, trimming/AOT, interop, and public API compatibility
+  when production deployment or consumers use those paths.
+- Await asynchronous work, control time and scheduling through existing seams, dispose owned resources,
+  and observe failures at the correct asynchronous boundary.

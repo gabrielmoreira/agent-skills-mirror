@@ -1,0 +1,14 @@
+id: performance-optimization.regression-gates
+title: Calibrate performance regression gates
+kind: policy
+priority: 35
+rule: Add a persistent benchmark or performance gate only when it is repeatable, representative,
+  valuable for future regressions, and hosted in a sufficiently controlled environment.
+require:
+- Derive budgets and tolerances from the contract and historical variation.
+- Keep noisy performance thresholds out of ordinary unit-test runs unless the repository
+  already provides calibrated infrastructure.
+- Ask before adding benchmark frameworks, profilers, dependencies, or CI gates.
+reject:
+- Arbitrary percentage thresholds, flaky timing assertions, retries until success,
+  or committed throwaway experiments.

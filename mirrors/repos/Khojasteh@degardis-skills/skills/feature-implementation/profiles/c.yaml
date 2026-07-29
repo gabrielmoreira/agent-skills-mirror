@@ -1,0 +1,6 @@
+name: c
+label: C
+description: Load when implementing C features.
+instructions:
+- Design across ownership, lifetimes, buffer bounds, integer ranges, error codes, callback contracts,
+  thread safety, linkage, and source or binary compatibility.

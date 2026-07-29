@@ -1,0 +1,12 @@
+name: fsharp
+label: F#
+description: Load when optimizing F# performance.
+instructions:
+- Measure list/array/sequence choice, lazy enumeration, intermediate collections, closures and partial
+  application, tuple/record/union allocation, structural equality/comparison, boxing, computation expressions,
+  async/task bridges, and C# interop as relevant.
+- Verify that mutation, pooling, caching, structs, parallelism, or representation changes preserve union
+  invariants, ordering, cancellation, ownership, thread safety, signatures, serialization, and public
+  compatibility.
+- Compare equivalent release deployments after warmup using representative distributions, allocations,
+  and independently verified outputs rather than microbenchmarks alone.

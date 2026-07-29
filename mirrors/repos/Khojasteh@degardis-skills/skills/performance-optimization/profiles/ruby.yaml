@@ -1,0 +1,6 @@
+name: ruby
+label: Ruby
+description: Load when optimizing Ruby performance.
+instructions:
+- Measure allocation and GC, dynamic dispatch, blocks, enumerators, metaprogramming, autoloading, serialization,
+  threads or fibers, I/O, startup, and request lifecycle.

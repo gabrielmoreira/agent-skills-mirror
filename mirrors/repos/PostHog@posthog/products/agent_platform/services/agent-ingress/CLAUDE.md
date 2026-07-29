@@ -1,1 +1,0 @@
-cache/repos/github.com/PostHog@posthog/products/agent_platform/services/agent-ingress/AGENTS.md

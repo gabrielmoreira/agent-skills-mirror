@@ -1,0 +1,6 @@
+name: aspnet
+label: ASP.NET
+description: Load when implementing ASP.NET features.
+instructions:
+- Define request lifecycle, routing, model binding, authentication, session, cache, view state, configuration,
+  serialization, synchronization context, deployment, compatibility, and disposal.

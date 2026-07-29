@@ -1,0 +1,6 @@
+name: python
+label: Python
+description: Load when fixing Python code or behavior.
+instructions:
+- Trace truthiness, equality and hashing, mutable defaults, imports, descriptors, iterator laziness, context
+  managers, async cancellation, task lifetime, serialization, and time.

@@ -1,0 +1,9 @@
+name: javascript
+label: JavaScript
+description: Load when reviewing JavaScript code or behavior.
+instructions:
+- Trace promises, rejected work, event-loop ordering, timers, cancellation, listeners, module state, and
+  cleanup.
+- Check coercion, truthiness, sparse collections, prototype behavior, object mutation, serialization,
+  numeric precision, and runtime-specific globals.
+- Verify browser, Node, worker, and edge behavior against the configured target rather than assuming interchangeability.

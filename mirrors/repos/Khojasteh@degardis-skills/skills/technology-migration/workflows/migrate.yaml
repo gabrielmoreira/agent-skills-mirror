@@ -1,0 +1,65 @@
+id: technology-migration.migrate
+title: Complete a genuine target-native migration
+description: Adapt to assessment, planning, implementation, or review while preserving
+  approved behavior, adopting target-native capabilities, and removing the source technology.
+steps:
+- action: classify-request
+  instruction: Classify the request as assessment, planning, implementation, or review.
+    Keep assessment, planning, and review read-only; modify source or configuration only
+    when implementation is explicit. Require separate authority for production data,
+    traffic, infrastructure, destructive operations, or cutover.
+- action: establish-charter
+  instruction: Establish the source and target, reason for replacement, scope, non-goals,
+    constraints, supported consumers, approved differences, success criteria, and final
+    decommissioning state. Classify a same-technology version change as a dependency
+    upgrade and route unrelated feature work out of this workflow.
+- action: inspect-and-map
+  instruction: Read repository instructions and inspect the complete code, dependency,
+    contract, data, build, deployment, operational, security, observability, test, and
+    documentation surface. Map every source responsibility to an approved target capability;
+    stop when the technologies are not equivalent or a material responsibility has no
+    agreed replacement.
+- action: establish-evidence
+  instruction: Establish observable behavior, contracts, data invariants, operational
+    characteristics, and focused baseline evidence. Classify each capability as preserved,
+    intentionally changed, approved for removal, or newly required; record pre-existing
+    defects, unavailable environments, and unknown behavior instead of preserving them
+    accidentally.
+- action: design-target
+  instruction: Verify the actual target version, support horizon, ecosystem, and repository
+    conventions from project evidence and authoritative documentation. Inventory target
+    language, standard-library, framework, runtime, and platform capabilities before
+    designing replacements; prefer semantically suitable built-ins and target-native
+    boundaries over source-shaped compatibility layers. When a technology profile is
+    active, apply its target-design guidance only when that technology is the target;
+    use its semantic checks to characterize either side as applicable.
+- action: choose-strategy
+  instruction: Choose an atomic or staged migration from coupling, data, deployment,
+    reversibility, security, performance, cost, and operational evidence. Define reviewable
+    vertical milestones with ownership, acceptance evidence, source of truth, entry and
+    exit criteria, rollback limits, and legacy-removal gates.
+- action: implement-native-slices
+  instruction: In authorized implementation mode, migrate bounded end-to-end capabilities,
+    transition dependencies through repository-native package and lockfile policy, and
+    adopt target-native concepts rather than mechanical translation. Correct defects
+    introduced by the migration and report unrelated defects separately.
+- action: control-transition
+  instruction: When stages coexist, define traffic, reads, writes, synchronization,
+    ordering, idempotency, retries, failures, reconciliation, observability, authority,
+    cutover, rollback, and prevention of new legacy consumers. Keep every adapter and
+    fallback narrow, owned, measurable, and removable.
+- action: verify-and-remove
+  instruction: Verify each milestone and the complete target against independent acceptance
+    evidence, then run it without source fallbacks. Remove obsolete source dependencies,
+    code, adapters, flags, pipelines, configuration, artifacts, tests, infrastructure,
+    telemetry, documentation, and procedures outside declared supported boundaries.
+- action: review-final-state
+  instruction: Inspect the complete result for missing parity, source-shaped design,
+    hidden fallback, unsafe data or security behavior, contract drift, operational gaps,
+    and incomplete cleanup. Update affected documentation and make only bounded corrections
+    required by the migration.
+- action: report
+  instruction: Report mode, charter, parity decisions, strategy, completed stages,
+    target-native replacements, evidence, source removal, retained obligations, exact
+    validation, documentation, rollout and rollback, assumptions, and residual risk.
+    Distinguish stage completion from overall migration completion.

@@ -1,0 +1,11 @@
+name: laravel
+label: Laravel
+description: Load when migrating to or from Laravel.
+instructions:
+- When Laravel is the target, prefer target-version routing, middleware, validation, authorization, container,
+  ORM, transaction, queue, event, cache, storage, configuration, scheduling, and security facilities.
+- Do not recreate source-framework service locators, active-record layers, request pipelines, queues,
+  or configuration models behind wrappers when Laravel supplies the contract.
+- Verify provider boot order, scopes, authentication, transactions, model events, serialization, retries,
+  idempotency, queue and cache behavior, deployment, and cleanup.
+- Keep gateways, dual persistence, legacy providers, and compatibility facades bounded to stages.

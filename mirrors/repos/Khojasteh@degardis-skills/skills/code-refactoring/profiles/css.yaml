@@ -1,0 +1,7 @@
+name: css
+label: CSS
+description: Load when refactoring CSS code.
+instructions:
+- Treat cascade, specificity, inheritance, source order, custom-property scope, layout, animation, and
+  responsive behavior as contracts; deduplicate shared design knowledge without creating utility indirection
+  that scatters one component’s styling.

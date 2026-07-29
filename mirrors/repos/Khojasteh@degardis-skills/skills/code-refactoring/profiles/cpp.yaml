@@ -1,0 +1,7 @@
+name: cpp
+label: C++
+description: Load when refactoring C++ code.
+instructions:
+- Treat headers, exported symbols, template instantiations, virtual layouts, ADL, reflection-like registries,
+  and FFI as compatibility or dynamic-reference boundaries.
+- Avoid converting cohesive value-oriented code into unnecessary interface hierarchies.

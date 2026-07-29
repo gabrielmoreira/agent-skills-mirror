@@ -1,0 +1,14 @@
+id: technology-migration.strategy
+title: Choose atomic or staged migration from risk
+kind: heuristic
+priority: 2
+rule: Select the smallest safe strategy supported by reversibility, coupling, data,
+  deployment, validation, and operational evidence.
+require:
+- Prefer atomic replacement when it is bounded, independently verifiable, and safely reversible.
+- Stage when data, traffic, external consumers, deployment ordering, or blast radius require coexistence.
+- Give every stage a valid state, owner, entry criteria, exit criteria, validation,
+  rollback, and cleanup obligation.
+reject:
+- Staging automatically and creating unnecessary long-lived dual systems.
+- Forcing an atomic cutover across unsafe data or operational boundaries.

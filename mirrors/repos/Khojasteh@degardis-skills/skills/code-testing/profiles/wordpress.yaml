@@ -1,0 +1,8 @@
+name: wordpress
+label: WordPress
+description: Load when testing WordPress code or behavior.
+instructions:
+- Cover hooks and priorities, capabilities, nonces, escaping, sanitization, queries, multisite, REST behavior,
+  cron, caching, activation/deactivation, and global-state cleanup.
+- Reset hooks, globals, options, users, posts, caches, and database changes between tests without operating
+  on a real site.

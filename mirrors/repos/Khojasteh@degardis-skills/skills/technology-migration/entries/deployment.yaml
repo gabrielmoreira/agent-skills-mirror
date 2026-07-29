@@ -1,0 +1,13 @@
+id: technology-migration.deployment
+title: Control deployment and cutover
+kind: constraint
+priority: 1
+rule: Treat build, release, traffic, mixed-version operation, rollback, and decommissioning as explicit migration stages.
+require:
+- Define ordering, canary or phased exposure, health signals, failure thresholds,
+  rollback triggers, configuration ownership, and final source shutdown.
+- Keep source and target artifacts distinguishable and reproducible.
+- Require operational authorization before changing live traffic or infrastructure.
+reject:
+- Treating a successful local build as deployment parity.
+- Decommissioning the source before target recovery and rollback limits are understood.

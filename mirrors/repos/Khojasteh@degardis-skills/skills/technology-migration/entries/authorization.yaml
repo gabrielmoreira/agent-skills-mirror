@@ -1,0 +1,14 @@
+id: technology-migration.authorization
+title: Separate code authority from operational authority
+kind: constraint
+priority: 1
+rule: Authorize assessment, source implementation, data mutation, infrastructure change,
+  traffic cutover, and destructive decommissioning as separate surfaces.
+require:
+- Keep assessment, planning, and review read-only.
+- Require explicit implementation authority before changing tracked source or configuration.
+- Require separate explicit authority before production data, traffic, deployment,
+  infrastructure, external systems, or irreversible actions.
+reject:
+- Treating permission to edit code as permission to deploy or cut over production.
+- Expanding the requested migration into unrelated systems.

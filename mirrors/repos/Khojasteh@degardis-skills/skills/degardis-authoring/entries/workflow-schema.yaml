@@ -1,0 +1,22 @@
+id: degardis-authoring.workflow-schema
+title: Degardis workflow contract
+kind: constraint
+priority: 55
+rule: Define each workflow as an ordered YAML procedure with a stable ID and a
+  steps list.
+require:
+- "id: required non-empty string; namespace it within the skill."
+- "steps: required list. A step may be a non-empty instruction string or a mapping
+  containing only id, action, instruction, when, and use; mappings must define at
+  least one of use, action, id, or instruction."
+- "use: reference only a workflow ID loaded by the same skill; it may be combined
+  with id or when, but not with action or instruction."
+allow:
+- "title: optional human-facing heading."
+- "description: optional concise statement of the workflow outcome."
+- "action: preferred short phase label; id may be used as a fallback step label."
+- "when: optional condition displayed for the agent to judge; Degardis does not
+  execute it as logic."
+reject:
+- Cross-skill workflow references.
+- Empty string steps, unknown mapping fields, and mappings containing only when.

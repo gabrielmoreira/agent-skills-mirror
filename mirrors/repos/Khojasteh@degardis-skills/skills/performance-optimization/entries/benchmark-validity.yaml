@@ -1,0 +1,18 @@
+id: performance-optimization.benchmark-validity
+title: Validate benchmark methodology
+kind: constraint
+priority: 8
+rule: Treat a benchmark as evidence only after checking that it measures the intended
+  work with enough control and repetition to distinguish signal from noise.
+require:
+- Account for warmup, JIT or compilation, caches, GC, scheduling, contention, turbo or
+  power state, setup cost, sample sufficiency, outliers, and environment drift.
+- Use an appropriate monotonic clock and prevent dead-code elimination or constant folding
+  from removing the measured work.
+- Separate within-run iteration noise from independent run, process, host, or deployment
+  variation, and repeat at the level where meaningful variation occurs.
+- Distinguish profiler observations from benchmark results; profiling locates work while
+  comparable measurement establishes impact.
+reject:
+- Reporting the fastest run, one timing, an unrepresentative mean, or profiler percentages
+  as proof of end-to-end improvement.

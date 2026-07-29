@@ -1,0 +1,6 @@
+name: python
+label: Python
+description: Load when optimizing Python performance.
+instructions:
+- Measure algorithmic work, allocation, object churn, imports, serialization, sync and async scheduling,
+  multiprocessing, locking, database and network I/O, and startup.

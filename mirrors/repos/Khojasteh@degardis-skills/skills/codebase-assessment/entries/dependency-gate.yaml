@@ -1,0 +1,17 @@
+id: codebase-assessment.dependency-gate
+title: Assess dependency health only from evidence
+kind: constraint
+priority: 3
+rule: Recommend a dependency upgrade only when evidence shows end-of-life support,
+  an applicable advisory, incompatibility, deprecation, graph conflict, or concrete
+  maintenance risk affecting the assessed repository.
+require:
+- Keep dependency assessment analysis-only and consult authoritative support or advisory
+  sources when the claim depends on current external status.
+- Identify the affected dependency surface, repository evidence, authoritative external
+  evidence when applicable, supported versions, and consequence.
+- Defer target selection when the requested outcome does not establish one.
+reject:
+- Recommending upgrades merely because newer versions exist.
+- Treating a framework, language, platform, or build-system replacement as a dependency update.
+- Encoding a temporary compatibility shim as the desired final state.

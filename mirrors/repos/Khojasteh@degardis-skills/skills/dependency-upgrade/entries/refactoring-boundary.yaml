@@ -1,0 +1,12 @@
+id: dependency-upgrade.refactoring-boundary
+title: Refactor only for the upgrade
+kind: constraint
+priority: 3
+rule: Refactor only when a structural transformation is required to adopt the target model.
+require:
+- Tie each structural change to a removed API, changed lifecycle, compatibility boundary, or legacy-path removal.
+- Apply bounded transformations and verify behavior after each conceptual change.
+- Prefer updating direct callers over adding speculative interfaces or layers.
+reject:
+- Opportunistic cleanup, repository-wide formatting, architecture modernization, or unrelated renaming.
+- Preserving an obsolete internal model behind forwarding wrappers.

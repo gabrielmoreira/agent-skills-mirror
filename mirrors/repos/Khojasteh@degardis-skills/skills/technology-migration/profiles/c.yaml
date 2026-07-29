@@ -1,0 +1,11 @@
+name: c
+label: C
+description: Load when migrating to or from C.
+instructions:
+- When C is the target, inventory standard-library algorithms and utilities, platform APIs, ownership
+  conventions, error conventions, atomics, and resource-lifetime patterns before porting source helpers.
+- Prefer suitable target-version built-ins and idiomatic explicit ownership over translated exceptions,
+  objects, collections, or runtime abstractions.
+- Verify integer width and overflow, ordering, locale, encoding, allocation, aliasing, layout, calling
+  convention, concurrency, failure, and cleanup semantics before replacing custom behavior.
+- Keep FFI, wrappers, conditional compilation, and compatibility code bounded to a migration stage.

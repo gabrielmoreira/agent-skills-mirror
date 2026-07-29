@@ -1,0 +1,6 @@
+name: powershell
+label: PowerShell
+description: Load when implementing PowerShell features.
+instructions:
+- Define parameter sets, pipeline input/output objects, streams, terminating and non-terminating failures,
+  provider and remoting effects, native-process behavior, idempotency, privileges, and cleanup.

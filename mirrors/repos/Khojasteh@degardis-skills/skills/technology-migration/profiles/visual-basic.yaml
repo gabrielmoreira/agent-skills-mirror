@@ -1,0 +1,12 @@
+name: visual-basic
+label: Visual Basic
+description: Load when migrating to or from Visual Basic.
+instructions:
+- When Visual Basic is the target, inventory BCL collections/algorithms, LINQ, iterators, async/tasks,
+  events, XML support, resource management, serialization, and `My` services before translating source-shaped
+  helpers.
+- Verify equality/ordering, `Option Compare`, culture, precision/overflow, LINQ evaluation, async timing,
+  cancellation, thread safety, serialization, reflection, COM, trimming, root namespace effects, and emitted
+  public API compatibility.
+- Bound compatibility modules, C# facades, COM/PInvoke bridges, conditional branches, and suppressions
+  to explicit stages with parity tests and removal criteria.

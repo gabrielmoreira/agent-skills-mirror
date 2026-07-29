@@ -1,0 +1,12 @@
+id: review.data-integrity
+title: Protect data and migrations
+kind: constraint
+rule: Review writes, migrations, transactions, retries, and asynchronous processing
+  for loss, duplication, corruption, and irreversible transitions.
+require:
+- Trace partial failure, rollback, idempotency, uniqueness, ordering, and concurrent updates.
+- Check compatibility during rolling deployment and with existing persisted data.
+- Verify destructive migrations have a safe sequence and explicit recovery assumptions.
+reject:
+- Assuming a transaction spans external systems or asynchronous work.
+- Treating schema acceptance as proof that existing data can be migrated safely.

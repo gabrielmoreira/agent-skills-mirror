@@ -1,0 +1,7 @@
+name: swift
+label: Swift
+description: Load when fixing Swift code or behavior.
+instructions:
+- Trace optionals, value and reference semantics, ARC lifetime, errors, actor isolation, task cancellation,
+  sendability, availability, bridging, and collection indices.
+- Verify supported platforms and synchronous versus awaited failure timing.

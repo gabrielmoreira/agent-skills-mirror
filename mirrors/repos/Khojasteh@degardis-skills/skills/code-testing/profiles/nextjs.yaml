@@ -1,0 +1,8 @@
+name: nextjs
+label: Next.js
+description: Load when testing Next.js code or behavior.
+instructions:
+- Test observable routing, server and client components, caching and revalidation, metadata, middleware,
+  route handlers, server actions, hydration, redirects, errors, and runtime boundaries.
+- Use the smallest credible level, but exercise the framework runtime when build-time, request, streaming,
+  or hydration behavior is part of the contract.

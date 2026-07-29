@@ -1,0 +1,9 @@
+name: powershell
+label: PowerShell
+description: Load when migrating to or from PowerShell.
+instructions:
+- Prefer target-native object pipelines, advanced functions, parameter binding, providers, and structured
+  errors over translated text processing; verify ordering, equality, types, streams, native exits, serialization,
+  security, and cleanup.
+- Keep cross-shell wrappers and adapters bounded to explicit stages with owners and removal gates; final
+  completion requires source automation and compatibility branches to be removed.

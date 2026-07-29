@@ -1,0 +1,12 @@
+id: dependency-upgrade.authorization
+title: Bound authority and upgrade scope
+kind: constraint
+priority: 1
+rule: Change dependency or production state only in explicitly authorized implementation mode.
+require:
+- Identify requested packages, frameworks, runtimes, SDKs, compilers, and build tools separately.
+- Preserve unrelated user changes and keep assessment, planning, and review read-only.
+- Obtain approval for compatibility, data, licensing, security, operational, or cost tradeoffs.
+reject:
+- Expanding a package update into an unrequested runtime or toolchain upgrade.
+- Treating a framework, language, platform, or build-system replacement as a version upgrade.

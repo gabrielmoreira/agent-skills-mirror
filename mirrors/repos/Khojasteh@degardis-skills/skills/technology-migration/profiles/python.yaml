@@ -1,0 +1,13 @@
+name: python
+label: Python
+description: Load when migrating to or from Python.
+instructions:
+- When Python is the target, inventory built-in functions, standard algorithms and collections, iterators,
+  dataclasses, enums, context managers, pathlib, typing, asyncio, serialization, and standard-library
+  services.
+- Prefer target-version built-ins and idioms over translated loops, collection helpers, resource wrappers,
+  callback abstractions, Java-style classes, or source exception hierarchies.
+- Verify equality and ordering, hashing, Unicode, locale, numeric precision, iterator laziness, exceptions,
+  cancellation, task lifetime, context propagation, resource cleanup, serialization, and process boundaries.
+- Keep native bridges, conditional imports, backports, dynamic escape hatches, and compatibility modules
+  bounded to stages.

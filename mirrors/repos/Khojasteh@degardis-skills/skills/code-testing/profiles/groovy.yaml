@@ -1,0 +1,6 @@
+name: groovy
+label: Groovy
+description: Load when testing Groovy code or behavior.
+instructions:
+- Cover dynamic dispatch, truthiness, GString conversion, closures and delegation, collection semantics,
+  static compilation, Java interop, and build-script configuration versus execution phases.

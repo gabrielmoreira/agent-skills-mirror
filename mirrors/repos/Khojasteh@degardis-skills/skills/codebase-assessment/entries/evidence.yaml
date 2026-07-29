@@ -1,0 +1,23 @@
+id: codebase-assessment.evidence
+title: Ground the assessment in evidence
+kind: principle
+priority: 2
+rule: Recommend work only when repository evidence establishes the affected behavior,
+  risk, or structural problem, supplemented by authoritative external evidence for
+  current-status claims when needed.
+require:
+- Inspect applicable requirements, code paths, callers, tests, configuration, schemas,
+  generated artifacts, operational material, and documentation.
+- Cite concrete repository paths and symbols for confirmed findings and proposed actions.
+- Trace concrete failure paths and distinguish confirmed facts from questions, assumptions,
+  and validation gaps.
+- Use authoritative external documentation or advisories when a current support,
+  compatibility, or vulnerability claim cannot be established from repository evidence alone.
+- Keep findings within the requested scope, including relevant pre-existing debt when
+  the request assesses existing code rather than a change.
+reject:
+- Treating style preference, unfamiliar code, or an unverified framework assumption
+  as evidence of a defect.
+- Inferring a public guarantee or root cause from one incidental implementation detail.
+- Presenting version age, popularity, or an uncited current-status claim as dependency
+  or technology evidence.

@@ -1,0 +1,72 @@
+id: refactoring.safe-refactor
+title: Perform a behavior-preserving refactor
+description: Improve a demonstrated structural problem and prove that established
+  behavior and compatibility remain intact.
+steps:
+- action: establish-target-and-authority
+  instruction: Identify the concrete structural problem, requested outcome, allowed files
+    and contracts, repository instructions, constraints, and implementation authority.
+    Keep advice or planning requests read-only. Treat bug fixes, feature changes, upgrades,
+    migrations, and broad assessments as separate work, and preserve unrelated user changes.
+- action: inspect-code-and-consumers
+  instruction: Read the complete target implementation and enough callers, tests,
+    configuration, schemas, generated-source inputs, and runtime registrations to understand
+    its responsibilities and actual consumers. Establish the current diff before editing.
+- action: establish-tooling-evidence
+  instruction: Select project tools and commands only when explicit scope or repository
+    instructions, manifests, lockfiles, configuration, scripts, CI, documentation, or
+    established usage supports them. Availability, filenames, conventions, and popularity
+    do not establish adoption; never execute competing tools as probes. When evidence is
+    absent, use tool-independent analysis, report the validation gap, or ask before
+    introducing tooling.
+- action: define-behavior
+  instruction: Establish observable values, errors, side effects, ordering, persistence,
+    serialization, public contracts, security boundaries, resource lifetime, and
+    applicable timing or performance guarantees from requirements, callers, tests,
+    configuration, schemas, and persisted formats.
+- action: establish-baseline
+  instruction: Use trustworthy recent results when they match the current revision
+    and relevant environment. Run only missing focused tests or checks needed to establish
+    the preservation contract, record pre-existing failures, and inspect uncovered
+    behavior. Do not rerun an unchanged broad baseline or treat passing tests alone
+    as proof of preservation.
+- action: map-risk
+  instruction: Identify compatibility, shared-state, concurrency, lifecycle, ownership,
+    resource, reflection, registration, generated-code, and dynamic-reference risks.
+- action: diagnose-structure
+  instruction: Determine whether the demonstrated problem is duplicated knowledge,
+    poor cohesion, excessive coupling, unclear control flow, excessive indirection,
+    or inappropriate granularity. Define how the proposed change will improve local
+    comprehension, cohesion, dependency direction, change coupling, or navigation cost.
+    Apply SOLID, DRY, and KISS as contextual heuristics, not transformation targets.
+- action: separate-behavior-changes
+  instruction: Stop and report suspected defects, unreliable baselines, unknown behavior,
+    and unapproved behavior or compatibility changes. Use characterization tests only
+    for verified intended behavior.
+- action: transform-incrementally
+  when: The request authorizes implementation and the preservation contract is reliable.
+  instruction: Choose the smallest justified transformation and apply one conceptual
+    change at a time. Avoid unrelated formatting, dependency churn, speculative
+    abstractions, ravioli fragmentation, and repetitive pass-through layers.
+- action: verify-each-step
+  when: A transformation was applied.
+  instruction: After each transformation, select the narrowest focused test, build,
+    static check, or usage search that is sensitive to that conceptual change. Do not
+    run every check category or repeat an unchanged broad build or suite after each step.
+- action: verify-final-preservation
+  when: One or more transformations were applied.
+  instruction: After the final transformation, run broader relevant verification once
+    when the accumulated changes or affected boundary warrant it. Reuse step-level
+    evidence and do not rerun equivalent commands that add no preservation evidence.
+- action: evaluate-structural-outcome
+  instruction: Compare the result with the original structural problem. Confirm that
+    the change reduces the targeted comprehension, cohesion, coupling, control-flow,
+    duplication, testability, or navigation cost without merely moving complexity or
+    introducing a larger abstraction burden. Revert or revise a transformation that
+    does not produce the intended structural improvement.
+- action: inspect-and-report
+  instruction: Inspect the final diff for behavioral changes, compatibility breaks,
+    unnecessary concepts, fragmented control flow, and unrelated edits. Report the
+    structural outcome, preserved contract, transformations, baseline and final commands
+    and results, assumptions, and residual risks. For read-only advice, report a bounded
+    recommendation and the evidence needed before implementation.

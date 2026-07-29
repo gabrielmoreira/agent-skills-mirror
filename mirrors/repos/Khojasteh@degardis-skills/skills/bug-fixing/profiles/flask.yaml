@@ -1,0 +1,7 @@
+name: flask
+label: Flask
+description: Load when fixing Flask code or behavior.
+instructions:
+- Reproduce application factory, request and application contexts, sessions, authentication, blueprints,
+  extensions, transactions, streaming, configuration, CLI, and teardown; fix the causal lifecycle issue
+  without leaking globals.

@@ -126,6 +126,7 @@ describe("gateway tools", () => {
   it("schema should expose Domain/Route actions only", () => {
     const queryActions = tools.queryGateway.meta.inputSchema.action._def.values;
     const manageActions = tools.manageGateway.meta.inputSchema.action._def.values;
+    const schema = tools.manageGateway.meta.inputSchema;
 
     expect(queryActions).toEqual(["listRoutes", "getRoute", "listCustomDomains"]);
     expect(manageActions).toEqual([
@@ -135,33 +136,101 @@ describe("gateway tools", () => {
       "bindCustomDomain",
       "deleteCustomDomain",
     ]);
-    expect(queryActions).not.toContain("getAccess");
-    expect(queryActions).not.toContain("listDomains");
-    expect(manageActions).not.toContain("createAccess");
-    expect(manageActions).not.toContain("deleteAccess");
-    expect(manageActions).not.toContain("updatePathAuth");
+    expect(schema.targetType).toBeUndefined();
+    expect(schema.type).toBeUndefined();
+    expect(schema.upstreamResourceType.unwrap()._def.values).toEqual([
+      "SCF",
+      "WEB_SCF",
+      "CBR",
+      "STATIC_STORE",
+      "LH",
+    ]);
+    expect(tools.queryGateway.meta.inputSchema.targetType).toBeUndefined();
   });
 
-  it("manageGateway schema should explain createRoute for HTTP functions", () => {
+  it("manageGateway schema should cover function / CloudRun / static hosting upstreams", () => {
     const schema = tools.manageGateway.meta.inputSchema;
+    const description = tools.manageGateway.meta.description;
 
-    expect(tools.manageGateway.meta.description).toContain("createRoute");
-    expect(tools.manageGateway.meta.description).toContain("WEB_SCF");
+    expect(description).toContain("createRoute");
+    expect(description).toContain("WEB_SCF");
+    expect(description).toContain("CBR");
+    expect(description).toContain("STATIC_STORE");
+    expect(description).toContain("云托管");
+    expect(description).toContain("静态托管");
+    expect(description).not.toContain('type="HTTP"');
+    expect(description).not.toContain("targetType");
     expect(schema.action.description).toContain("createRoute");
-    expect(schema.targetName.description).toContain("填写函数名");
+    expect(schema.targetName.description).toContain("云函数");
+    expect(schema.targetName.description).toContain("云托管");
+    expect(schema.targetName.description).toContain("静态托管");
     expect(schema.path.description).toContain("/api/hello");
-    expect(schema.type.description).toContain("HTTP");
-    expect(schema.type.description).toContain("WEB_SCF");
-    expect(schema.auth.description).toContain("通常设为 false");
+    expect(schema.upstreamResourceType.description).toContain("WEB_SCF");
+    expect(schema.upstreamResourceType.description).toContain("CBR");
+    expect(schema.upstreamResourceType.description).toContain("STATIC_STORE");
+    expect(schema.auth.description).toContain("通常 false");
+    expect(schema.enablePathTransmission.description).toContain("CBR");
+    expect(schema.enablePathTransmission.description).toContain("STATIC_STORE");
+    expect(schema.route.description).toContain("CBR");
+    expect(schema.route.description).toContain("STATIC_STORE");
+    expect(schema.route.description).toContain("staticstore");
   });
 
-  it("manageGateway(action=createRoute) should map HTTP to WEB_SCF on default domain", async () => {
+  it("manageGateway(action=createRoute) should require upstreamResourceType", async () => {
     const result = await tools.manageGateway.handler({
       action: "createRoute",
-      targetType: "function",
+      targetName: "my-service",
+      path: "/api",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("upstreamResourceType");
+    expect(payload.message).toContain("CBR");
+    expect(payload.message).toContain("STATIC_STORE");
+    expect(mockCreateHttpServiceRoute).not.toHaveBeenCalled();
+  });
+
+  it("manageGateway(action=createRoute) should accept STATIC_STORE upstream", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
+      domain: "api.example.com",
+      route: {
+        path: "/app",
+        serviceName: "staticstore",
+        upstreamResourceType: "STATIC_STORE",
+        enablePathTransmission: false,
+      },
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockCreateHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "api.example.com",
+        Routes: [
+          {
+            Path: "/app",
+            UpstreamResourceType: "STATIC_STORE",
+            UpstreamResourceName: "staticstore",
+            EnableAuth: undefined,
+            EnablePathTransmission: false,
+          },
+        ],
+      },
+    });
+    expect(payload.success).toBe(true);
+    expect(payload.data.upstreamResourceType).toBe("STATIC_STORE");
+  });
+
+  it("manageGateway(action=createRoute) should create WEB_SCF route on default domain", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
       targetName: "helloFn",
       path: "api/hello",
-      type: "HTTP",
+      upstreamResourceType: "WEB_SCF",
       auth: false,
     });
 
@@ -210,12 +279,11 @@ describe("gateway tools", () => {
     expect(payload.message).toContain("30 秒到 3 分钟");
   });
 
-  it("manageGateway(action=createRoute) should map Event to SCF and default path", async () => {
+  it("manageGateway(action=createRoute) should create SCF route with default path", async () => {
     const result = await tools.manageGateway.handler({
       action: "createRoute",
-      targetType: "function",
       targetName: "helloFn",
-      type: "Event",
+      upstreamResourceType: "SCF",
     });
 
     const payload = JSON.parse(result.content[0].text);
@@ -243,23 +311,6 @@ describe("gateway tools", () => {
     });
   });
 
-  it("manageGateway(action=createRoute) should reject missing type for function routes", async () => {
-    const result = await tools.manageGateway.handler({
-      action: "createRoute",
-      targetType: "function",
-      targetName: "helloFn",
-    });
-
-    const payload = JSON.parse(result.content[0].text);
-
-    expect(mockCreateHttpServiceRoute).not.toHaveBeenCalled();
-    expect(payload).toMatchObject({
-      success: false,
-      message: expect.stringContaining("必须显式提供 type"),
-    });
-    expect(payload.message).toContain("FUNCTION_PARAM_INVALID");
-  });
-
   it("manageGateway(action=createRoute) should not use OriginDomain as public domain", async () => {
     mockDescribeHttpServiceRoute.mockResolvedValueOnce({
       OriginDomain: "origin.service.tcloudbase.com",
@@ -270,9 +321,8 @@ describe("gateway tools", () => {
 
     const result = await tools.manageGateway.handler({
       action: "createRoute",
-      targetType: "function",
       targetName: "helloFn",
-      type: "HTTP",
+      upstreamResourceType: "WEB_SCF",
     });
 
     const payload = JSON.parse(result.content[0].text);
@@ -289,7 +339,7 @@ describe("gateway tools", () => {
       domain: "api.example.com",
       targetName: "helloFn",
       path: "/api/hello",
-      type: "HTTP",
+      upstreamResourceType: "WEB_SCF",
       auth: true,
     });
 
@@ -319,6 +369,93 @@ describe("gateway tools", () => {
     });
   });
 
+  it("manageGateway(action=createRoute) should pass EnablePathTransmission when enabled", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
+      targetName: "helloFn",
+      path: "/api",
+      upstreamResourceType: "WEB_SCF",
+      auth: false,
+      enablePathTransmission: true,
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockCreateHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "env-test.service.tcloudbase.com",
+        Routes: [
+          {
+            Path: "/api",
+            UpstreamResourceType: "WEB_SCF",
+            UpstreamResourceName: "helloFn",
+            EnableAuth: false,
+            EnablePathTransmission: true,
+          },
+        ],
+      },
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        path: "/api",
+        enablePathTransmission: true,
+      },
+    });
+    expect(payload.message).toContain("已开启路径透传");
+  });
+
+  it("manageGateway(action=updateRoute) should prefer route.enablePathTransmission", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "updateRoute",
+      domain: "api.example.com",
+      targetName: "helloFn",
+      path: "/api",
+      upstreamResourceType: "SCF",
+      enablePathTransmission: false,
+      route: {
+        path: "/api",
+        serviceName: "helloFn",
+        upstreamResourceType: "WEB_SCF",
+        enablePathTransmission: true,
+      },
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockModifyHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "api.example.com",
+        Routes: [
+          {
+            Path: "/api",
+            UpstreamResourceType: "WEB_SCF",
+            UpstreamResourceName: "helloFn",
+            EnableAuth: undefined,
+            EnablePathTransmission: true,
+          },
+        ],
+      },
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        enablePathTransmission: true,
+      },
+    });
+    expect(payload.message).toContain("路径透传=开启");
+  });
+
+  it("manageGateway schema should explain path transmission impact", () => {
+    const schema = tools.manageGateway.meta.inputSchema as Record<string, any>;
+    expect(schema.enablePathTransmission.description).toContain("路径透传");
+    expect(schema.enablePathTransmission.description).toContain("/api/users");
+    expect(schema.enablePathTransmission.description).toContain("false");
+    expect(schema.enablePathTransmission.description).toContain("true");
+  });
+
   it("manageGateway(action=deleteRoute) should delete by domain and path", async () => {
     const result = await tools.manageGateway.handler({
       action: "deleteRoute",
@@ -346,7 +483,6 @@ describe("gateway tools", () => {
   it("queryGateway(action=getRoute) should return urls for matching function", async () => {
     const result = await tools.queryGateway.handler({
       action: "getRoute",
-      targetType: "function",
       targetName: "helloFn",
     });
 
@@ -411,15 +547,13 @@ describe("gateway tools", () => {
     });
   });
 
-  it("manageGateway(action=createRoute) should accept explicit upstreamResourceType", async () => {
+  it("manageGateway(action=createRoute) should accept top-level CBR upstreamResourceType", async () => {
     const result = await tools.manageGateway.handler({
       action: "createRoute",
       domain: "api.example.com",
-      route: {
-        path: "/api/run",
-        serviceName: "my-service",
-        upstreamResourceType: "CBR",
-      },
+      path: "/api/run",
+      targetName: "my-service",
+      upstreamResourceType: "CBR",
     });
 
     const payload = JSON.parse(result.content[0].text);

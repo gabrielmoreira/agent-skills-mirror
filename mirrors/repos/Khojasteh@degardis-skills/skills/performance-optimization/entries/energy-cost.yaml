@@ -1,0 +1,11 @@
+id: performance-optimization.energy-cost
+title: Ground energy and cost claims
+kind: policy
+priority: 21
+rule: Optimize energy or infrastructure cost only from measured resource consumption,
+  representative utilization, and verified pricing or platform evidence.
+require:
+- Include idle and peak behavior, autoscaling, storage, transfer, retries, and operational overhead.
+- State time period, workload, environment, and pricing assumptions.
+reject:
+- Inventing prices, extrapolating from CPU time alone, or shifting cost to an unreported resource.

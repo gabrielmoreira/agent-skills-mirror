@@ -1,0 +1,15 @@
+id: bug-fixing.alternative-evidence
+title: Bound non-test evidence
+kind: policy
+rule: Permit a non-automated reproducer only when an automated failing test is unsafe,
+  destructive, environment-bound, nondeterministic, or disproportionately impractical.
+require:
+- Use a deterministic trace, crash artifact, invariant violation, isolated reproducer,
+  protocol transcript, or equivalent causal evidence.
+- Explain why automation is unavailable, what uncertainty remains, and how correction
+  will be verified.
+- Add the narrowest feasible automated coverage for separable logic without claiming
+  it reproduces the unavailable boundary.
+reject:
+- Treating code inspection alone as proof when the behavior can be reproduced safely.
+- Claiming success from disappearance of a symptom without validating the causal mechanism.

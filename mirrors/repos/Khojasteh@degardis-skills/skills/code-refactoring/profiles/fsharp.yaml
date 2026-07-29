@@ -1,0 +1,7 @@
+name: fsharp
+label: F#
+description: Load when refactoring F# code.
+instructions:
+- Update file order and signatures deliberately; search compiled names, reflection, serialization, quotations/type
+  providers, DI registrations, C# callers, and generated consumers before renaming, moving, changing representation,
+  or deleting declarations.

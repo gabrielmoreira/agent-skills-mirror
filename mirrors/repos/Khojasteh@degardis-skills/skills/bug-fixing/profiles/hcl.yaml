@@ -1,0 +1,7 @@
+name: hcl
+label: HCL
+description: Load when fixing HCL code or behavior.
+instructions:
+- Reproduce with validation and isolated plans; trace unknown values, resource identity, dependency edges,
+  provider aliases, lifecycle, state moves, drift, and destructive replacements. Require separate authority
+  before applying or repairing shared infrastructure.

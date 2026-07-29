@@ -1,0 +1,7 @@
+name: go
+label: Go
+description: Load when implementing Go features.
+instructions:
+- Design across context cancellation, goroutine ownership, channel closure, interface compatibility, zero
+  values, error wrapping, resource cleanup, and race safety.
+- Introduce an interface only at a demonstrated consumer boundary.

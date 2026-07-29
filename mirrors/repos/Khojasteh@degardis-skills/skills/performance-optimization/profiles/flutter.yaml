@@ -1,0 +1,7 @@
+name: flutter
+label: Flutter
+description: Load when optimizing Flutter performance.
+instructions:
+- Measure representative release or profile builds across startup, frame build and raster work, layout,
+  painting, rebuilds, images, allocation and GC, I/O, platform channels, network work, memory, battery,
+  and app size.

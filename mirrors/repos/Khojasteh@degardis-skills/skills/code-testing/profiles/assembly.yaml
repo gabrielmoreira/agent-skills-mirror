@@ -1,0 +1,8 @@
+name: assembly
+label: Assembly
+description: Load when testing Assembly code or behavior.
+instructions:
+- Verify functional results plus registers, flags, stack alignment, clobbers, memory bounds, endianness,
+  atomicity, and exceptional inputs at the supported ABI boundary.
+- Run architecture-specific checks only in controlled native or emulator environments and separate algorithmic
+  expectations from instruction-sequence details.

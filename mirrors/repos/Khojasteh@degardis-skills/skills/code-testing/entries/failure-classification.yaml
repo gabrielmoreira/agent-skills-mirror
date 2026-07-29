@@ -1,0 +1,13 @@
+id: testing.failure-classification
+title: Classify failures before revising
+kind: policy
+rule: Identify whether a failure comes from the test, environment, or production behavior
+  before changing assertions or implementation.
+require:
+- Read the complete failure, reproduce with the smallest command, and compare against
+  the stated contract.
+- Treat flaky or infrastructure-dependent results as unresolved until reproduced or
+  isolated.
+reject:
+- Updating expected values merely because the current implementation produced them.
+- Broad edits made before the failure mechanism is understood.

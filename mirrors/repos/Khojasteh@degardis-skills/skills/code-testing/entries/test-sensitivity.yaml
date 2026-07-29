@@ -1,0 +1,21 @@
+id: testing.test-sensitivity
+title: Demonstrate regression-test sensitivity
+kind: policy
+rule: Establish when practical that a new or revised regression test fails for the
+  targeted defect and passes for the correct behavior.
+priority: 15
+allow:
+- Run the test against a known faulty revision.
+- Temporarily revert the relevant fix or introduce a narrowly scoped local mutation
+  only after identifying pre-existing changes, then restore only that temporary change
+  before reporting.
+- Use an independent fault-injection seam when reverting or mutating production code
+  would be unsafe.
+reject:
+- Leaving temporary mutations or reverted production code in the delivered changes.
+- Using reset, checkout, clean, or another destructive version-control operation to
+  create or remove a mutation.
+- Claiming a test detects the regression solely because it passes against the current
+  implementation.
+- Requiring mutation evidence when it would be destructive, materially expensive,
+  or impossible to isolate; report the limitation instead.

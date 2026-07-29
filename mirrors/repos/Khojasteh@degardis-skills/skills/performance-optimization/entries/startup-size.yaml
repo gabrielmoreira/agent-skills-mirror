@@ -1,0 +1,11 @@
+id: performance-optimization.startup-size
+title: Measure startup and artifact size
+kind: policy
+priority: 20
+rule: Treat cold start, warm start, initialization, loading, compilation, bundle or binary
+  size, download, parsing, and first-use work as distinct measurable phases.
+require:
+- Identify the phase visible to the user or operator and measure on representative targets.
+- Check lazy work for shifted latency, failures, resource lifetime, and deployment effects.
+reject:
+- Moving required work out of the measured interval while worsening the actual user outcome.

@@ -1,0 +1,10 @@
+name: cpp
+label: C++
+description: Load when testing C++ code or behavior.
+instructions:
+- Exercise copy, move, ownership, lifetime, iterator invalidation, exception guarantees,
+  templates, overload resolution, and polymorphic destruction where they affect the
+  contract.
+- Include configured sanitizer, feature, compiler, standard-library, and optimization
+  variants only when repository evidence identifies them as supported; verify compile-fail
+  or static constraints separately from runtime behavior.

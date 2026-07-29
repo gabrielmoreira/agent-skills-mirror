@@ -76,9 +76,9 @@ When a skill is published standalone and also references sibling skills:
 - Keep same-skill `references/...` paths relative unless the target surface is known to drop those files
 - If nested reference files may be opened directly, make sure they still have a recoverable path back to the current skill or main entry
 
-### 8. Treat `auth-nodejs` as the quality benchmark
+### 8. Treat `auth-nodejs-cloudbase` as the quality benchmark
 
-Use `config/source/skills/auth-nodejs/SKILL.md` as a positive reference when reviewing nearby skills. It is a good benchmark for:
+Use `config/source/skills/auth-nodejs-cloudbase/SKILL.md` as a positive reference when reviewing nearby skills. It is a good benchmark for:
 
 - scenario-based structure
 - explicit boundaries
@@ -103,7 +103,7 @@ Use `config/source/skills/auth-nodejs/SKILL.md` as a positive reference when rev
 3. Check whether any public URL or fallback path was verified against the real published surface
 4. Check whether duplicated rules should collapse into one canonical source
 5. Check whether recommended defaults explain their tradeoffs
-6. Compare the result against `auth-nodejs` for structure and example quality
+6. Compare the result against `auth-nodejs-cloudbase` for structure and example quality
 
 ## Evaluation prompts
 

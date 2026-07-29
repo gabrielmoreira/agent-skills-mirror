@@ -1,0 +1,10 @@
+name: ruby
+label: Ruby
+description: Load for Bundler-managed Ruby dependency or runtime-coupled upgrades.
+instructions:
+- Preserve the repository's Bundler version, sources, groups, platforms, deployment or frozen settings,
+  and lockfile checksums while reconciling gem requirements with the supported Ruby matrix.
+- Prefer conservative targeted updates, explain newly unlocked transitives and platform variants, and
+  validate native extensions plus clean installation on maintained platforms.
+- Treat Ruby, Rails, and tightly coupled framework gem upgrades as separate targets unless upstream
+  compatibility requires a coordinated move.

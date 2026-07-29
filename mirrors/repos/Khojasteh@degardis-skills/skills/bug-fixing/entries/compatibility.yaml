@@ -1,0 +1,14 @@
+id: bug-fixing.compatibility
+title: Treat compatibility as part of the fix
+kind: constraint
+rule: Assess source, binary, protocol, schema, serialization, configuration, persisted-data,
+  and operational compatibility before changing behavior.
+require:
+- Search actual consumers and account for rolling deployments and independently versioned components.
+- Identify callers that may rely on the defective behavior and distinguish reliance
+  from an intended guarantee.
+- Obtain explicit approval for a compatibility break and state migration or rollback needs.
+- Stop rather than making an unapproved compatibility change.
+reject:
+- Assuming that correcting a defect cannot break a consumer.
+- Changing public defaults, error forms, timing, ordering, or stored formats silently.

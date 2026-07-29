@@ -1,0 +1,13 @@
+id: refactoring.testability
+title: Improve testability
+kind: policy
+rule: Prefer changes that reduce hidden dependencies, nondeterminism, and excessive
+  coupling.
+require:
+- Identify the specific evidence blocked by time, randomness, I/O, environment, global
+  state, construction, concurrency, or an external system.
+- Introduce the narrowest seam that makes that dependency controllable.
+- Verify production wiring and ownership remain correct.
+reject:
+- Adding an interface for every class.
+- Replacing cohesive direct code with a dependency-injection graph that obscures construction.

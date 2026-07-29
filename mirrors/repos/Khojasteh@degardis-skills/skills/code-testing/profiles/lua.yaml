@@ -1,0 +1,8 @@
+name: lua
+label: Lua
+description: Load when testing Lua code or behavior.
+instructions:
+- Cover nil-versus-absent behavior, one-based indexing, table identity and iteration assumptions, metatables,
+  multiple returns, numeric semantics, coroutine scheduling, errors, and host-language boundaries.
+- Reset package caches, globals, registries, random state, and host resources so tests remain isolated
+  and deterministic.

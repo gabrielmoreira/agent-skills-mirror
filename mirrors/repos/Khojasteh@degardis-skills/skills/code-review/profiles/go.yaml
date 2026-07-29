@@ -1,0 +1,9 @@
+name: go
+label: Go
+description: Load when reviewing Go code or behavior.
+instructions:
+- Trace goroutine ownership, channel closure, context propagation, cancellation, timers, locks, loop-variable
+  capture, and cleanup.
+- Check error wrapping and comparison, nil interfaces, slice and map aliasing, copies containing synchronization
+  state, integer conversion, and HTTP body closure.
+- Verify platform and build-tag behavior instead of assuming the currently built target is exhaustive.

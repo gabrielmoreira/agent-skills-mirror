@@ -1,0 +1,12 @@
+id: refactoring.compatibility
+title: Preserve compatibility boundaries
+kind: constraint
+rule: Treat source, binary, schema, serialization, configuration, and persisted-data
+  compatibility as observable behavior.
+require:
+- Search consumers before changing public names, signatures, defaults, formats, or locations.
+- Account for rolling deployments and independently versioned consumers when applicable.
+- Obtain explicit approval for any compatibility break.
+reject:
+- Assuming an internal-looking symbol is private without checking actual consumers.
+- Treating a compile-successful change as proof of runtime or data compatibility.

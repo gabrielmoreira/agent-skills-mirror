@@ -1,0 +1,13 @@
+id: refactoring.pattern.encapsulate-state
+title: Encapsulate mutable state
+kind: pattern
+rule: Centralize mutation behind the owner of its invariants and lifecycle.
+conditions:
+- State is mutated from multiple locations or can temporarily violate an invariant.
+require:
+- Define valid transitions, ownership, synchronization, transaction, and persistence behavior.
+- Preserve observable ordering, notifications, errors, serialization, and concurrency semantics.
+- Verify all mutation paths use the new boundary.
+reject:
+- Hiding shared mutable state behind accessors without reducing its mutation surface.
+- Moving state to a longer-lived global or singleton owner.

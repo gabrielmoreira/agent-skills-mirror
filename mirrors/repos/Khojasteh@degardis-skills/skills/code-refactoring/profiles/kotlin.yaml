@@ -1,0 +1,7 @@
+name: kotlin
+label: Kotlin
+description: Load when refactoring Kotlin code.
+instructions:
+- Search annotations, reflection, serialization, DI, resource names, expect/actual declarations, and generated
+  bindings before structural changes.
+- Prefer cohesive functions and data types over ceremonial interfaces or extension layers.

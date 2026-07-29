@@ -1,0 +1,9 @@
+name: ruby
+label: Ruby
+description: Load when testing Ruby code or behavior.
+instructions:
+- Cover nil and truthiness, mutation, blocks and enumerators, keyword arguments, method
+  lookup, exceptions and ensure cleanup, serialization, fibers, threads, and background-job
+  boundaries where they affect behavior.
+- Isolate constants, monkey patches, global and class state, environment variables,
+  locale, time zones, filesystem, process effects, and load-order state.

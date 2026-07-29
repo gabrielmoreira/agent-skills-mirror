@@ -1,0 +1,8 @@
+name: fastapi
+label: FastAPI
+description: Load when testing FastAPI code or behavior.
+instructions:
+- Cover request and response validation, dependency scopes and overrides, authentication, exception handlers,
+  async cancellation, background tasks, streaming, OpenAPI contracts, and startup/shutdown cleanup.
+- Restore dependency overrides and application state, and control asynchronous scheduling through existing
+  seams.

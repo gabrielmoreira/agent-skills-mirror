@@ -1,0 +1,15 @@
+id: refactoring.baseline
+title: Establish a trustworthy baseline
+kind: constraint
+rule: Record current behavior and verification results before structural changes.
+require:
+- Prefer trustworthy recent results that match the current revision and relevant
+  environment; run only missing focused checks needed for the preservation contract.
+- Record the exact tests, builds, and static checks used or reused for the baseline
+  and distinguish pre-existing failures.
+- Inspect important behavior not covered by tests.
+- Stop or narrow the refactor when behavior cannot be established reliably.
+reject:
+- Assuming the current implementation or a passing suite is the complete specification.
+- Rerunning an unchanged broad baseline when existing evidence already establishes it.
+- Silently repairing a baseline failure during structural work.

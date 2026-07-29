@@ -1,0 +1,24 @@
+format_version: 1
+purpose: |-
+  Plan, write, run, review, improve, or diagnose software tests and test suites.
+when_it_applies: |-
+  This skill applies when the requested outcome centers on test design,
+  regression coverage, flaky or failing tests, meaningful coverage, or
+  test-suite quality. It can also supply the testing work within a broader
+  implementation or repair.
+capabilities:
+- Derives tests from observable behavior and relevant risks.
+- Selects the smallest credible test level and independent oracle.
+- Writes deterministic, isolated, and descriptive tests.
+- Diagnoses failures before changing production code or expectations.
+- Evaluates coverage quality, regression sensitivity, mocks, and golden files.
+sample_prompts:
+- Improve the tests.
+- Write tests for this new module.
+- This test is flaky; investigate and fix it.
+- Increase test coverage for the payment processing logic.
+- Review this test suite for gaps and low-value tests.
+catalog:
+  order: 70
+  category: Software engineering / Quality
+  summary: Plan, write, improve, and diagnose software tests.

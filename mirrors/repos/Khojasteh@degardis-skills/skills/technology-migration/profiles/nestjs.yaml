@@ -1,0 +1,9 @@
+name: nestjs
+label: NestJS
+description: Load when migrating to or from NestJS.
+instructions:
+- Prefer native modules, providers, guards, pipes, interceptors, filters, transports, and shutdown over
+  wrappers preserving source-framework layers; verify request/message, transaction, authentication, and
+  error parity.
+- Keep gateway routes, dual transports, and adapters bounded to explicit stages with owners and removal
+  gates.

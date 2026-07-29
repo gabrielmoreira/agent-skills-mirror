@@ -1,0 +1,7 @@
+name: php
+label: PHP
+description: Load when refactoring PHP code.
+instructions:
+- Search string callables, container bindings, routes, templates, configuration, serialization, attributes,
+  magic methods, and autoloaded names before structural changes.
+- Avoid service and repository layers that only forward calls without owning policy or a boundary.

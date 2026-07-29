@@ -245,7 +245,7 @@ describe("rag tools", () => {
       await isolatedRegisterRagTools(server);
 
       expect(
-        tools.searchKnowledgeBase.meta.inputSchema.skillName.unwrap().safeParse("auth-tool").success,
+        tools.searchKnowledgeBase.meta.inputSchema.skillName.unwrap().safeParse("auth-tool-cloudbase").success,
       ).toBe(true);
       expect(
         tools.searchKnowledgeBase.meta.inputSchema.apiName.unwrap().safeParse("functions").success,

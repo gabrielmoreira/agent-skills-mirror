@@ -1,0 +1,7 @@
+name: kotlin
+label: Kotlin
+description: Load when fixing Kotlin code or behavior.
+instructions:
+- Trace platform types, nullability, coroutine scopes, dispatchers, structured concurrency, cancellation,
+  flows, resource lifetime, serialization, and platform-specific behavior.
+- Verify failures at call, suspension, collection, callback, and platform boundaries.

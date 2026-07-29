@@ -1,0 +1,7 @@
+name: lua
+label: Lua
+description: Load when reviewing Lua code or behavior.
+instructions:
+- Review nil and absent values, one-based indexing, table aliasing and iteration, metatables, multiple
+  returns, numeric semantics, coroutine scheduling, error propagation, sandbox boundaries, and host-resource
+  ownership.

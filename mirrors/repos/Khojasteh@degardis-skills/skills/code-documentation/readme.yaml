@@ -1,0 +1,24 @@
+format_version: 1
+purpose: |-
+  Create, revise, or review software documentation for a defined reader and
+  outcome.
+when_it_applies: |-
+  This skill applies to READMEs, API documentation, tutorials, how-to guides,
+  references, runbooks, migration guides, release notes, changelogs, comments,
+  docstrings, and maintainer documentation.
+capabilities:
+- Defines the document audience, type, outcome, and temporal scope.
+- Verifies claims against implementation and authoritative repository evidence.
+- Designs coherent information architecture with one home for each topic.
+- Produces actionable examples, prerequisites, limitations, and recovery paths.
+- Validates links, commands, terminology, and the intended reader journey.
+sample_prompts:
+- Create a README for this library.
+- Write API documentation for this new endpoint.
+- Add docstrings to this module's public functions.
+- Draft a migration guide for users moving from v1 to v2.
+- Write release notes summarizing what changed in this version.
+catalog:
+  order: 90
+  category: Software engineering / Quality
+  summary: Create and improve verified software documentation.

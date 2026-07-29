@@ -1,0 +1,7 @@
+name: aspnet
+label: ASP.NET
+description: Load when reviewing ASP.NET code or behavior.
+instructions:
+- Review request lifecycle, routing, model binding, authentication and authorization, session and cache,
+  view state, configuration transforms, synchronization context, application domains, serialization, and
+  disposal; do not import assumptions from other hosting models.

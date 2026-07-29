@@ -1,0 +1,12 @@
+id: dependency-upgrade.transitive-resolution
+title: Resolve graph conflicts causally
+kind: policy
+priority: 2
+rule: Explain and resolve peer, transitive, plugin, and runtime conflicts at their actual constraint.
+require:
+- Trace which direct constraints introduce an incompatible or vulnerable transitive version.
+- Prefer a supported graph over broad overrides, exclusions, or dependency duplication.
+- Justify any resolution override, bound its scope, and record its removal condition.
+reject:
+- Silencing peer warnings or accepting unexplained downgrades.
+- Pinning arbitrary transitives without understanding their owner and compatibility.

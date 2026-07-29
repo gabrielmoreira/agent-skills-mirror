@@ -1,0 +1,7 @@
+name: jquery
+label: jQuery
+description: Load when fixing jQuery code or behavior.
+instructions:
+- Reproduce DOM ownership, delegated and namespaced events, plugin initialization, data caches, Deferred
+  timing, Ajax callbacks, selector scope, duplicate binding, and cleanup; correct the causal lifecycle
+  defect without opportunistic framework conversion.

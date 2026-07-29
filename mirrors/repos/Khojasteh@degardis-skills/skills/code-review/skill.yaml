@@ -1,0 +1,30 @@
+name: code-review
+format_version: 1
+title: Code Review
+version: 1.0.0
+license: MIT
+copyright: Copyright (c) 2026 Kambiz Khojasteh
+description: Review code, changes, pull requests, or a bounded codebase surface for
+  actionable defects and risks. Use when the request asks to review code, files, a
+  diff, a commit, a pull request, or a repository for correctness, security, reliability,
+  or regressions. Do not use for a broad quality or technical-debt assessment whose
+  requested outcome is an improvement plan.
+primary_workflow: code-review.review
+entry_kinds:
+- principle
+- policy
+- heuristic
+- pattern
+- constraint
+content:
+  entries:
+  - entries/*.yaml
+  workflows:
+  - workflows/*.yaml
+profiles:
+  directory: profiles
+  defaults: []
+interface:
+  display_name: Code Review
+  short_description: Evidence-driven review with prioritized findings
+  default_prompt: Use $code-review to review this code for actionable defects.

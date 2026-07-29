@@ -1,0 +1,7 @@
+name: android
+label: Android
+description: Load when testing Android code or behavior.
+instructions:
+- Choose local JVM, simulated framework, instrumentation, or end-to-end scope according to the Android
+  API boundary being verified.
+- Control lifecycle, main-thread scheduling, permissions, storage, configuration changes, and device state.

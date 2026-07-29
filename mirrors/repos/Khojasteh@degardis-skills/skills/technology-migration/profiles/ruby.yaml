@@ -1,0 +1,12 @@
+name: ruby
+label: Ruby
+description: Load when migrating to or from Ruby.
+instructions:
+- When Ruby is the target, inventory Enumerable, core collections, pattern matching, keyword arguments,
+  blocks, fibers, exceptions, resource helpers, time and encoding facilities, and standard-library services.
+- Prefer target-version Ruby and framework facilities over translated loops, collection wrappers, Java-style
+  factories, custom callbacks, or source runtime abstractions.
+- Verify equality and hashing, ordering, symbols and strings, encodings, precision, block control flow,
+  exceptions, thread or fiber behavior, resource cleanup, serialization, and autoloading.
+- Keep native extensions, monkey patches, compatibility gems, aliases, and version branches bounded to
+  stages.

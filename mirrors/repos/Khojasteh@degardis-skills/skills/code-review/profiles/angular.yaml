@@ -1,0 +1,9 @@
+name: angular
+label: Angular
+description: Load when reviewing Angular code or behavior.
+instructions:
+- Trace component lifecycle, change detection, signals, subscriptions, async pipes, forms, routing, guards,
+  interceptors, and cleanup.
+- Check provider scope, server versus browser execution, sanitization, template trust, stale emissions,
+  duplicate requests, and rendering state.
+- Verify behavior against the configured Angular version rather than newer APIs or defaults.

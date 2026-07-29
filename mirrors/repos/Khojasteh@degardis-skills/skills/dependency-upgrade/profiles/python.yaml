@@ -1,0 +1,10 @@
+name: python
+label: Python
+description: Load for Python package, lockfile, or interpreter-coupled dependency upgrades.
+instructions:
+- Distinguish abstract project constraints from environment-specific lock or requirements files and preserve
+  the repository's resolver, indexes, hash policy, editable installs, and lock strategy.
+- Check interpreter ranges, environment markers, extras, dependency groups, wheel and native ABI availability,
+  build backends, plugins, and platform-specific resolution across the supported matrix.
+- Regenerate each maintained resolved environment natively, verify clean installation without casual
+  `--no-deps` or hash bypasses, and remove backports only when supported interpreters no longer require them.

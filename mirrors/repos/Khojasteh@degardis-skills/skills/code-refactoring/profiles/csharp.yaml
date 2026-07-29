@@ -1,0 +1,8 @@
+name: csharp
+label: C#
+description: Load when refactoring C# code.
+instructions:
+- Search reflection, attributes, serializers, source generators, routing/model binding, configuration,
+  markup, DI registrations, interop, and downstream consumers before renaming, moving, changing accessibility,
+  or deleting symbols.
+- Keep binary/source compatibility and ownership explicit.

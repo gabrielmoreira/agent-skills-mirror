@@ -1,0 +1,9 @@
+name: vue
+label: Vue
+description: Load when reviewing Vue code or behavior.
+instructions:
+- Trace refs and reactive state, computed values, watchers, props, emits, lifecycle, subscriptions, async
+  work, and cleanup.
+- Check lost reactivity, stale destructuring, watcher loops, keys, server hydration, unsafe HTML, store
+  lifetime, accessibility behavior, and updates after unmount.
+- Avoid reporting Composition versus Options API preferences without a concrete defect.

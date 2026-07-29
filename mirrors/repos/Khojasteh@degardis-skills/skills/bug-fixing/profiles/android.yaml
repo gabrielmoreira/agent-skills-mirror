@@ -1,0 +1,7 @@
+name: android
+label: Android
+description: Load when fixing Android code or behavior.
+instructions:
+- Trace activity, fragment, service, receiver, process, saved-state, permission, main-thread, coroutine,
+  configuration-change, resource, and device-version behavior.
+- Reproduce at the smallest appropriate local, emulator, instrumentation, or device boundary.

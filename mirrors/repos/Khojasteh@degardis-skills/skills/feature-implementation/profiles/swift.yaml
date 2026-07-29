@@ -1,0 +1,6 @@
+name: swift
+label: Swift
+description: Load when implementing Swift features.
+instructions:
+- Design across optionals, value semantics, actors, task cancellation, `Sendable`, ownership, Objective-C
+  interop, persistence, and source or binary compatibility.

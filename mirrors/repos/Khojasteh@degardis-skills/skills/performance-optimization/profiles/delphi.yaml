@@ -1,0 +1,7 @@
+name: delphi
+label: Delphi
+description: Load when optimizing Delphi performance.
+instructions:
+- Measure optimized builds, warmup, CPU, allocations, strings, interface reference counting, memory manager,
+  containers, I/O, synchronization, UI responsiveness, startup, and binary size; verify ownership, exceptions,
+  Unicode, and thread affinity.

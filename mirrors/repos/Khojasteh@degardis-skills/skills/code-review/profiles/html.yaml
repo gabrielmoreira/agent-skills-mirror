@@ -1,0 +1,7 @@
+name: html
+label: HTML
+description: Load when reviewing HTML code or behavior.
+instructions:
+- Review semantic structure, accessible names and relationships, form and navigation behavior, parsing,
+  escaping, injection boundaries, progressive enhancement, and compatibility; distinguish observable regressions
+  from incidental markup changes.

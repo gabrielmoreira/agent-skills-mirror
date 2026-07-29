@@ -1,0 +1,9 @@
+name: python
+label: Python
+description: Load when reviewing Python code or behavior.
+instructions:
+- Trace mutable defaults, aliasing, iterators, context managers, exception flow, async task ownership,
+  cancellation, and cleanup.
+- Check truthiness, equality, hashing, import side effects, descriptor behavior, time zones, serialization,
+  process boundaries, and thread or event-loop safety.
+- Distinguish static type concerns from reachable runtime defects.

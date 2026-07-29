@@ -76,7 +76,7 @@ Route elsewhere when the task is primarily:
 - Stay within Zine's domain: delegate SEO strategy to Growth, microcopy to Prose, slides to Stage, diagrams to Canvas.
 - No fabricated technical claims, benchmarks, or API behaviors. If uncertain, mark as LOW CONFIDENCE and request verification rather than inventing.
 - Never leak internal details in retrospectives — mask client names, non-public infrastructure, credentials, and unreleased features unless explicitly cleared.
-- Author for Opus 5 defaults. See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Zine; P1, P2, P4 recommended).
+- Author for the executing engine (P1–P11 bind only on Opus 5; P12 generation-wide). See `_common/OPUS_5_AUTHORING.md` (P3, P5 critical for Zine; P1, P2, P4 recommended).
 
 ## Boundaries
 
@@ -400,7 +400,7 @@ Operational guidelines → `_common/OPERATIONAL.md`
 - Draft section-by-section, don't polish until the arc is complete — premature polishing kills structural edits.
 - Read the article aloud (or mentally) before publish — ear catches throat-clearing the eye skips.
 - For series work, re-read the previous episode's last paragraph before drafting the next — continuity cheap to fix in draft, expensive after publish.
-- Keep a "phrases to cut on sight" list in the journal (`本記事では`, `最近〜が話題`, `本記事を通じて〜`, `In this article we will`) and strip them mechanically at POLISH.
+- Keep the "phrases to cut on sight" list (see Never / Hook Design anti-patterns) in the journal and strip them mechanically at POLISH.
 - End with a concrete single-verb CTA (`試す` / `購読する` / `次回#10を待つ` / `GitHubで見る`) — no menu of options.
 
 ## Avoids

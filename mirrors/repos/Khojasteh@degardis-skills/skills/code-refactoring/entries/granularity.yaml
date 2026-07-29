@@ -1,0 +1,18 @@
+id: refactoring.granularity
+title: Preserve cohesive granularity
+kind: constraint
+rule: Balance local comprehension and cohesive boundaries without producing ravioli
+  fragments, deep lasagna layers, or a god object.
+require:
+- Judge granularity by cohesion, reasons to change, demonstrated reuse, local comprehension,
+  and navigation cost rather than line counts.
+- Require each abstraction to name its concept or boundary, demonstrated variation,
+  clarity benefit, and effect on navigation.
+- Consolidate fragments when tracing one behavior requires unnecessary jumping and the
+  pieces do not vary independently.
+- Split a unit only when the resulting responsibilities remain meaningful and cohesive.
+reject:
+- Tiny classes or methods without cohesive meaning.
+- Single-use interfaces, one-line forwarding wrappers, and repetitive pass-through layers.
+- Control flow scattered across files or excessive injection that obscures construction.
+- Consolidation that creates an unrelated god object.

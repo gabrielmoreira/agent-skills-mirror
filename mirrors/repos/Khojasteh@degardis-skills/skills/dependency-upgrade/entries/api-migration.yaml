@@ -1,0 +1,12 @@
+id: dependency-upgrade.api-migration
+title: Adopt the target API model
+kind: policy
+priority: 1
+rule: Replace usage invalidated by the target version with its supported semantics.
+require:
+- Audit changed signatures, defaults, errors, lifecycle, concurrency, security, and resource ownership.
+- Prefer the target's direct supported API over a local imitation of the old one.
+- Verify behavior independently rather than translating syntax mechanically.
+reject:
+- Wrapping the new API to preserve an obsolete internal calling convention without a supported consumer.
+- Expanding the upgrade into unrelated deprecation cleanup without evidence or authorization.

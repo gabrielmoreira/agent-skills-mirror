@@ -1,0 +1,8 @@
+name: shell
+label: Shell
+description: Load when reviewing Shell code or behavior.
+instructions:
+- Identify the target shell, supported platforms, and invocation mode before applying
+  dialect-specific parsing or error-handling assumptions.
+- Review quoting, expansion, word splitting, globbing, pipelines and exit statuses, `set -e` assumptions,
+  signals, temporary files, permissions, secret exposure, partial writes, portability, and cleanup.

@@ -1,0 +1,6 @@
+name: nodejs
+label: Node.js
+description: Load when optimizing Node.js performance.
+instructions:
+- Measure warmup, event-loop delay, CPU, allocations, garbage collection, streams and backpressure, workers,
+  I/O, startup, memory growth, and tail latency; reject benchmark-only code and verify cleanup.

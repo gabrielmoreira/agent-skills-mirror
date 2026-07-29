@@ -1,0 +1,7 @@
+name: express
+label: Express
+description: Load when optimizing Express performance.
+instructions:
+- Measure representative request distributions, middleware and route cost, parsing, serialization, database/network
+  I/O, streams, backpressure, event-loop delay, memory, and connection behavior; retain authentication,
+  errors, cancellation, and isolation.

@@ -1,0 +1,7 @@
+name: svelte
+label: Svelte
+description: Load when fixing Svelte code or behavior.
+instructions:
+- Reproduce reactive dependencies, update timing, bindings, events, stores, actions, context, keyed identity,
+  SSR, hydration, transitions, and cleanup; fix source behavior rather than generated output or timing
+  with sleeps.

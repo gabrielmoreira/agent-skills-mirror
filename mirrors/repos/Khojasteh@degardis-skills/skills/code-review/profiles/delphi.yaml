@@ -1,0 +1,7 @@
+name: delphi
+label: Delphi
+description: Load when reviewing Delphi code or behavior.
+instructions:
+- Review object and interface ownership, reference counting, Unicode strings, records, sets, properties
+  and events, exception paths, initialization/finalization, RTTI, generics, UI-thread affinity, ABI and
+  calling conventions, and resource cleanup.

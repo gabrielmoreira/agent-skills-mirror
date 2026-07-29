@@ -1,0 +1,10 @@
+id: feature-implementation.authorization
+title: Require implementation authority
+kind: constraint
+priority: 1
+rule: Modify production code only when the request explicitly authorizes feature implementation.
+require:
+- Keep planning and review modes read-only.
+- Preserve unrelated user changes and external state outside the requested scope.
+reject:
+- Treating a request to assess, explain, design, or review as permission to edit.

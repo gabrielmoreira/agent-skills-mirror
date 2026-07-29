@@ -1,0 +1,8 @@
+name: sql
+label: SQL
+description: Load when testing SQL code or behavior.
+instructions:
+- Derive expectations for rows, constraints, null handling, collation, precision, transaction boundaries,
+  and concurrent effects independently; never assume row order without an explicit ordering contract.
+- Use the real dialect for dialect-specific behavior, isolate data per test, and verify commit, rollback,
+  locking, and cleanup without destructive shared-database operations.

@@ -1,0 +1,13 @@
+id: technology-migration.parity
+title: Define behavioral parity explicitly
+kind: constraint
+priority: 1
+rule: Preserve approved observable behavior, not source implementation structure.
+require:
+- Classify every capability as preserved, intentionally changed, approved for removal, or newly required.
+- Cover success, boundaries, failures, side effects, timing, ordering, permissions,
+  persistence, concurrency, compatibility, operations, and recovery.
+- Give each parity decision independent acceptance evidence and an owner.
+reject:
+- Assuming compiling or rendering similar output proves parity.
+- Preserving a suspected defect without verifying that it is intended behavior.

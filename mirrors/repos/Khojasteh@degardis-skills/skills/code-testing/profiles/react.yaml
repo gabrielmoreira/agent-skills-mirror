@@ -1,0 +1,7 @@
+name: react
+label: React
+description: Load when testing React code or behavior.
+instructions:
+- Prefer user-observable rendering and interaction over component internals, hook calls, snapshots, or
+  implementation structure.
+- Control asynchronous updates, timers, network requests, context, routing, and cleanup.

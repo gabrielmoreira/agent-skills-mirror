@@ -1,0 +1,13 @@
+id: refactoring.pattern.inline-indirection
+title: Inline needless indirection
+kind: pattern
+rule: Remove an abstraction whose navigation cost exceeds its remaining boundary or clarity value.
+conditions:
+- The wrapper, method, interface, or layer has no independent policy, variation, reuse,
+  test seam, or compatibility purpose.
+require:
+- Move behavior to the cohesive owner and preserve evaluation, errors, lifecycle, and visibility.
+- Verify callers, overrides, registrations, mocks, and dynamic references before deletion.
+reject:
+- Inlining a real trust, I/O, process, platform, or volatility boundary.
+- Consolidating unrelated responsibilities into a god object.

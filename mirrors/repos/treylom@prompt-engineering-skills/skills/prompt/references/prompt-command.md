@@ -1,11 +1,20 @@
 # /prompt - AI 프롬프트 생성기
 
-> **Version**: 2.11.3 | **Updated**: 2026-07-21 — 🆕 v2.11.3: --batch 리서치 흐름 "모델별 필수 블록" 표에 GPT-5.6 Sol 디폴트 행 신설(구 5.2/5.4 행은 legacy 명시 시로 조건화). v2.11.2: 동일 플러그인 나머지 스킬 현행화(prompt-variation-guide 통누락 해소·prompt-update 모델 믹스). v2.11.1: research-prompt-guide §3 현행화. v2.11.0: 모델 라인업 현행화: GPT 디폴트 **GPT-5.6 Sol** 승격(lean outcome-first, 5.5/5.4는 legacy 라우팅), Gems/GPTs 지침·통합 가이드의 Opus 4.7-디폴트 잔존 제거(Claude 디폴트 = Opus 4.8 · 최고난도 = Fable 5 · Sonnet 5 반영). v2.10.1: 🚨 AUTO 모드에 "3.5 산출 자가진단" 게이트 신설. v2.10.0: 🔁 AUTO 모드 신설(자율 작업 흐름의 hook-강제 호출 = 1회 자동 개선 → 바로 실행, 5옵션 사용자 대기 ❌). v2.9.0: ①템플릿 로드 게이트 전역 승격 ②Opus 4.8·Fable 5 공식 문서 재fetch 전수 대조
+> **Version**: 3.2.2 | **Updated**: 2026-07-29 — 🆕 **v3.2.2: Codex 표면 2건 수리**(.codex-plugin 버전 방치 root cause + Codex SKILL.md 이미지 경로 5옵션·타겟·전문가 앵커 의무화 — Works 실증 재현 수리). 이전: **v3.2.1: 게이트 A4 오탐 수리**(검사 범위=프롬프트 코드펜스 블록 tail 추출 + AR 앵커 완화[포맷 B 콤마형 대응], GD 실출력 fixture 승격, 셀프테스트 8/8). 이전: **v3.2.0: 산출 코드 게이트 신설**(`scripts/prompt-output-gate.mjs` 의존성 0 — A1 5옵션 전부[라벨 기준]·A2 전문가 앵커[구조 판정, 실존 여부 등 의미 축은 UNMEASURED 고지]·A3 `타겟:` 모델 표기·A4 image+gpt-image 시 끝 `AR`·A5 `--check-versions` 버전 표기 5표면 정합. fixture 7종 축 격리 셀프테스트 = `--test`, exit 0=PASS/1=FAIL/2=UNMEASURED[통과 취급 금지]). 이전: **v3.1.0: Skills 2.0 업그레이드**(skills-2.0-upgrade 공정 — 전 스킬 frontmatter 정비: 신규 5건[gemini-3.1·claude-4.7·gpt-5.6·fable-5·gpt-5.5 stub], "Use when..." description 패턴 전건, 참조형 12건 `disable-model-invocation: true`, YAML invalid 1건 수리. 우리 파일 준수율 61.1%→84.6%. vendored 킷 무수정·파일 경로 전부 불변[참조 회귀 0]). 이전: **v3.0.1: 🏛️ 대원칙 불변 조항 신설**(재경님 지시 — 전문가 프롬프팅·모델별 라우팅+현재 모델 자동 탐지는 전 목적[텍스트·이미지·동영상]·전 모델·향후 어떤 이식에도 불변. 이미지 = 타겟 모델 자동 탐지 절 신설 + Gemini-Image/Seedream에 gpt-image-2 전용 규격 강제 해소 + 전문가 시각 언어 앵커[Director signature/Lens character] / 동영상 = 스토리보드에 실존 시네마토그래퍼 지명). 이전: **v3.0.0 (major — 이미지 산출 계약 breaking 교체): 이미지 정본 = 공냥 프롬프트 킷 v4 이식**(gpt-image-2/`$imagegen` 산출 = 킷 텍스트 프롬프트[포맷 A 라벨 6섹션/포맷 B 화보 콤마형 + 끝 `AR`]·배치 = jsonl·검증 = check_prompt.mjs — 구 JSON 골격은 웹 UI legacy 강등, 네거티브 = 티어드[기본 전면 긍정형]. 킷 원문 vendor = `skills/image-prompt-kit/`, 상세 = `skills/image-prompt-guide.md` §0·§K). 이전: **v2.12.0: Claude 디폴트 = Opus 5 승격**(공식 3문서 대조 — thinking 기본 ON·`disabled`+effort `xhigh|max`=400 breaking 2건, 검증·재확인 지시 제거[과검증], 간결성/narration/범위/서브에이전트 억제, effort 재스윕, **web fetch·Priority Tier 미지원 → 해당 시 4.8 명시 분기**). 상세 = `skills/claude-fable-5-prompt-strategies.md` Part 2.5. 이전: v2.11.3: --batch 리서치 흐름 "모델별 필수 블록" 표에 GPT-5.6 Sol 디폴트 행 신설(구 5.2/5.4 행은 legacy 명시 시로 조건화). v2.11.2: 동일 플러그인 나머지 스킬 현행화(prompt-variation-guide 통누락 해소·prompt-update 모델 믹스). v2.11.1: research-prompt-guide §3 현행화. v2.11.0: 모델 라인업 현행화: GPT 디폴트 **GPT-5.6 Sol** 승격(lean outcome-first, 5.5/5.4는 legacy 라우팅), Gems/GPTs 지침·통합 가이드의 Opus 4.7-디폴트 잔존 제거(Claude 디폴트 = Opus 4.8 · 최고난도 = Fable 5 · Sonnet 5 반영). v2.10.1: 🚨 AUTO 모드에 "3.5 산출 자가진단" 게이트 신설. v2.10.0: 🔁 AUTO 모드 신설(자율 작업 흐름의 hook-강제 호출 = 1회 자동 개선 → 바로 실행, 5옵션 사용자 대기 ❌). v2.9.0: ①템플릿 로드 게이트 전역 승격 ②Opus 4.8·Fable 5 공식 문서 재fetch 전수 대조
 > **Model Rankings**: [LMArena Leaderboard](https://lmarena.ai) (2026년 3월 기준)
-> **이미지 프롬프트 소스**: [[OpenAI-gpt-image-2-Prompting-Guide-2026-04]] (공식 쿡북) + [[EvoLinkAI-awesome-gpt-image-2-prompts-2026-04]] (커뮤니티 200+ 케이스)
-> **Opus 4.8 / Fable 5 공식 소스**: [Prompting Claude Opus 4.8](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-4-8) + [Prompting Claude Fable 5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5) — **Claude 디폴트 = Opus 4.8** (2026-06-10). 상세: `skills/claude-fable-5-prompt-strategies.md`
+> **이미지 프롬프트 소스 (정본)**: **공냥 프롬프트 킷 v4** — [gongnyang/gongnyang-prompt-kit](https://github.com/gongnyang/gongnyang-prompt-kit) (MIT, 원문 vendor `skills/image-prompt-kit/` · 계약 전사 `skills/image-prompt-guide.md` §0·§K). 보조: [[OpenAI-gpt-image-2-Prompting-Guide-2026-04]] (쿡북) + [[EvoLinkAI-awesome-gpt-image-2-prompts-2026-04]] (커뮤니티 — 충돌 시 킷 우선)
+> **Opus 5 공식 소스 (현행 디폴트)**: [Prompting Claude Opus 5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-5) + [What's new in Opus 5](https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5) — thinking 기본 ON · `disabled`+effort `xhigh|max`=400 · **web fetch·Priority Tier 미지원**(그 경우 4.8 명시)
+> **Opus 4.8 / Fable 5 공식 소스 (구세대 first-class)**: [Prompting Claude Opus 4.8](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-4-8) + [Prompting Claude Fable 5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5) — **Claude 디폴트 = Opus 5** (2026-07-28). 상세: `skills/claude-fable-5-prompt-strategies.md` Part 2.5
 > **Opus 4.7 / 4.6 공식 소스 (구세대 first-class)**: [platform.claude.com/docs — Claude 4 best practices](https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices) + [Adaptive thinking](https://platform.claude.com/docs/en/docs/build-with-claude/adaptive-thinking) + [Migrating to Claude 4](https://platform.claude.com/docs/en/docs/about-claude/models/migrating-to-claude-4) — 사용자 명시 시 4.7/4.6 코드 패턴 적용
 > **GPT 공식 가이드 (디폴트 = GPT-5.6 Sol, 2026-07)**: [Prompting guidance for GPT-5.6](https://developers.openai.com/api/docs/guides/prompt-guidance-gpt-5p6) — lean outcome-first. 상세: `skills/gpt-5.6-prompt-enhancement.md`. 5.5 outcome-first(6섹션)·5.4 XML 12블록 stack은 legacy — 모델별 라우팅 적용.
+
+> 🔗 **이중 관리 쌍 (바이트 동일)** — 정본 = `commands/prompt.md` · 사본 = `skills/prompt/references/prompt-command.md`.
+> **두 파일은 바이트까지 같아야 합니다.** 한쪽만 고치지 마세요 — 동시 패치 후
+> `cmp commands/prompt.md skills/prompt/references/prompt-command.md` 가 **exit 0** 이어야 커밋합니다.
+> ⚠️ 이 선언문 자체도 **양쪽에 동일 문구**로 둡니다 — 파일마다 "내가 정본/사본"이라고 다르게 쓰면 그 줄 때문에 `cmp` 가 영구히 깨집니다.
+> **T3 융화 원칙 3 (2026-07-28 확정)** — ① 공식이 빼라는 **검증 *행동* 지시**는 빼되, 그 요구는 **「출력 형식 계약」(답에 채워질 칸 목록)** 으로 옮겨 **공존**한다 ② **칸 목록은 전 모델 동일**, 모델별로 다른 것은 **얹는 문구·길이·위치뿐** ③ **이중 관리 쌍은 유지**하되 정본/사본을 명시하고 **동시 패치 + `cmp exit 0`** 으로 관리한다. 상세 = `skills/claude-fable-5-prompt-strategies.md` Part 2.5.2.
+> **OFC 산출 게이트 (재현 검증 시 2항)** — ① **긍정형 자기 산출 재검증 지시 0** ② **OFC 필수 칸 전부 충족**(핵심 산출·근거·한계·판정 + 목적별 확장). 두 항 모두 통과해야 산출 GREEN.
+> ⚠️ **①은 리터럴 계수로 판정하지 않는다** — 3축으로 읽는다: **ⓐ대상**(외부 주장·자료 = 과업 절차 / 자기 답 = 제거 대상) **ⓑ시점**(판정 생성 *전* = 절차 / 완성 뒤·응답 직전 = 자기검증) **ⓒ극성**(수행 요구 = 위반 / **금지문 = 준수**). 예: `Do not review your own answer` 는 `review` 리터럴 1히트지만 **자기검증 금지문**이라 위반이 아니다. 검증 어휘 grep 은 후보 추출용이고, 판정은 3축 확인 뒤에 한다.
 
 AI 모델별로 최적화된 프롬프트를 생성합니다.
 
@@ -40,6 +49,13 @@ $ARGUMENTS
 
 **이 커맨드는 "프롬프트 생성" 전용입니다.**
 
+### 🏛️ 대원칙 불변 조항 (재경님 2026-07-29 — 전 목적·전 모델·향후 어떤 이식/개편에도 불변)
+
+**모든 프롬프트 출력**(텍스트·코딩·리서치·이미지·동영상·슬라이드·에이전트 — 예외 없음)에 다음 두 대원칙이 반드시 반영된다. 특정 형식 체계(공냥 킷 등)를 이식·교체해도 이 조항이 상위다:
+
+1. **전문가 프롬프팅**: 실존 전문가를 직접 지명한다. 텍스트 계열 = `<role>` "당신은 [전문가명]입니다" 정규 패턴(Step 4). 이미지 = 실존 전문가의 **시각 언어 앵커**(화보 `Director signature:`·`Lens character:` 슬롯, 포맷 A는 Camera·Lighting·Color grading에 그 전문가 스타일을 결과 서술로 — "전문가처럼" 빈 수사 ❌, 전문가는 *지명*·수사는 *구체 어휘로 환원*). 동영상 = 스토리보드·프롬프트에 실존 시네마토그래퍼/디렉터의 촬영·조명 어휘 앵커.
+2. **모델별 라우팅 + 현재 모델 자동 탐지**: 프롬프트 생성 전 **타겟 모델을 먼저 판정**(사용자 명시 > 현재 환경 자동 탐지 > 목적별 1순위 기본값)하고, 그 모델의 최적화 블록/형식으로 컴파일한다. 미지정 산출에는 "타겟: <모델>" 1줄을 명시한다. 한 형식을 다른 모델에 뭉뚱그려 적용 ❌(예: gpt-image-2 전용 규격을 Gemini-Image/Seedream에 강제 ❌).
+
 ### 절대 금지 사항 (Constraints)
 
 | # | 우선순위 | 규칙 |
@@ -59,15 +75,17 @@ $ARGUMENTS
 
 ### 🚨 템플릿 로드 게이트 (v2.9.0 — 2026-07-05 사용자 피드백 반영 · 인터랙티브·batch 공통, 기존 batch 전용 지시의 전역 승격)
 
-**리서치/팩트체크/이미지 목적 감지 = 프롬프트 생성 전 첫 행동이 `prompt-engineering-guide.md` 해당 섹션 Read다.** 게이트를 건너뛰고 일반 XML로 자체 생성 = 형식 격하(회귀: batch 절에만 지시가 있어 인터랙티브 흐름에서 반복 스킵).
+**리서치/팩트체크 목적 감지 = 프롬프트 생성 전 첫 행동이 `prompt-engineering-guide.md` 해당 섹션 Read다. 이미지 목적 감지 = 플러그인 내부 `skills/image-prompt-guide.md` 전체 Read가 첫 행동이다.** 게이트를 건너뛰고 일반 XML이나 자유형 산문으로 자체 생성 = 형식 격하(회귀: batch 절에만 지시가 있어 인터랙티브 흐름에서 반복 스킵).
 
 | 목적 | 로드할 섹션 (⚠️ 전체 통독 ❌ — 파일 257KB) | 방법 |
 |------|------|------|
 | 팩트체크 | IFCN 베이스 템플릿(LoopFactChecker / QuickFactCheck) | `grep -n` 으로 위치 확인 → 해당 offset 부분 Read |
 | 리서치/조사 | StructuredResearch_v1.0 템플릿 | 동일 (grep → 부분 Read) |
-| 이미지 | JSON 구조(purpose/hero/context/evidence/constraints)+Visual Re-description | 동일 |
+| 이미지 | 플러그인 내부 `skills/image-prompt-guide.md` 전체 — **정본 = 공냥 킷 포맷 A/B 텍스트 프롬프트 + 끝 `AR`**(§0·§K, 배치 = jsonl·검증 = `skills/image-prompt-kit/scripts/check_prompt.mjs`). JSON 골격(purpose/hero/…)은 웹 UI legacy(§L) | 내부 가이드 전체 Read |
 
-**자가진단(산출 직전)**: 생성한 프롬프트에 베이스 템플릿 구조(IFCN 단계 / StructuredResearch 섹션 / 이미지 JSON 골격)가 실제로 들어있나? 없으면 게이트 스킵 → 로드 후 재생성. 로드 증거(Read 라인 범위)를 skill_provenance에 1줄 명기.
+**📐 이 템플릿들은 「출력 형식 계약」입니다** — IFCN 단계·StructuredResearch 섹션·이미지 킷 포맷(A/B)은 모델에게 *"검증하라"* 는 **행동 지시가 아니라**, **답에 반드시 채워져 나와야 하는 칸 목록**입니다. 그래서 Opus 5 의 「검증 지시 제거」 권고와 충돌하지 않고 그대로 유지됩니다(상세 = `skills/claude-fable-5-prompt-strategies.md` Part 2.5.2). **칸 목록은 전 모델 동일**하고, 모델별로 다른 것은 **얹는 문구·길이·위치뿐**입니다.
+
+**자가진단(산출 직전)**: 생성한 프롬프트에 베이스 템플릿 구조(IFCN 단계 / StructuredResearch 섹션 / 이미지 킷 포맷 A/B + 끝 `AR`)가 실제로 들어있나? 없으면 게이트 스킵 → 로드 후 재생성. 로드 증거(Read 라인 범위)를 skill_provenance에 1줄 명기.
 
 ---
 
@@ -88,7 +106,8 @@ $ARGUMENTS
    → 발견 결함을 반영한 개선본 1개 확정
 3.5 🚨 산출 자가진단 (실행 직전 — 하나라도 No면 실행 금지, 2로 복귀. 2026-07-18 — 단계 스킵 회귀 방지):
    □ 프롬프트 코드블록이 실제로 생성됐나? (발주 지시문 그대로 ≠ 생성된 프롬프트)
-   □ `<role>`에 실존 전문가가 "당신은 [전문가명]입니다" 정규 패턴으로 지명됐나?
+   □ `<role>`에 실존 전문가가 "당신은 [전문가명]입니다" 정규 패턴으로 지명됐나? (이미지·동영상 = 실존 전문가 시각 언어 앵커[Director signature/Lens character/시네마토그래퍼 지명]로 충족 — 대원칙 불변 조항 §1)
+   □ 타겟 모델이 판정·명시됐나? (명시 > 자동 탐지 > 기본값 — 대원칙 불변 조항 §2)
    □ 프롬프트 전문이 작업 기록(SoT)에 저장됐나(요약 1줄 ❌)?
    ※ 워크플로우 규격이 컨텍스트에 이미 있어도 단계를 건너뛰는 사례가 관측됨("알고 있음 ≠ 실행함") — 실행 직전 체크포인트로 못박는다. 하네스에 동등한 자동 검증(예: 커밋/턴 종료 훅)이 있다면 같은 3항목을 기계적으로 재확인하는 것이 이상적이다.
 4. 개선본으로 바로 실행 — 5옵션 제시 ❌·사용자 선택 대기 ❌. **실행 형태 = 규모로 판단**: 작업이 다축 분해 가능(클래스/섹션/차원 fan-out + 종합 + 검증)하면 **Workflow 다중 에이전트**(병렬 fan-out→synthesis→adversarial verify)가 기본, 단일 서브에이전트 스폰은 분해 불가능한 소규모만. Codex 봇 등가물 = codex-spawn fleet 병렬.
@@ -118,7 +137,7 @@ Skill("prompt", "--batch GPT-5.2 상세 Chain-of-Verification 핵심 주장 검�
 | 위치 | 값 예시 | 설명 |
 |------|--------|------|
 | `--batch` | (필수 플래그) | 인터랙티브 우회 신호 |
-| 1번째 토큰 | `Claude` / `GPT-5.2` / `GPT-5.4` / `GPT-5.5` / `GPT-5.6` / `Gemini` / `gpt-image` / `Gemini-Image` / `Seedream` | 타겟 모델 (모델별 최적화 블록 결정). `Claude`는 **Opus 4.8 기본**(adaptive thinking + effort=xhigh; 4.7/4.6/Fable 5는 명시 시), GPT 미지정·`GPT-5.6`은 **GPT-5.6 Sol 기본**(lean outcome-first — `skills/gpt-5.6-prompt-enhancement.md`), 5.5/5.4/5.2는 legacy 명시 시. 이미지 모델(`gpt-image`/`Gemini-Image`/`Seedream`) 지정 시 Step 5의 텍스트 모델 블록은 스킵하고 `prompt-engineering-guide.md`의 JSON 구조만 생성 |
+| 1번째 토큰 | `Claude` / `GPT-5.2` / `GPT-5.4` / `GPT-5.5` / `GPT-5.6` / `Gemini` / `gpt-image` / `Gemini-Image` / `Seedream` | 타겟 모델 (모델별 최적화 블록 결정). `Claude`는 **Opus 5 기본**(thinking 기본 ON·`disabled`+`xhigh|max`=400; 4.8/4.7/4.6/Fable 5는 명시 시), GPT 미지정·`GPT-5.6`은 **GPT-5.6 Sol 기본**(lean outcome-first — `skills/gpt-5.6-prompt-enhancement.md`), 5.5/5.4/5.2는 legacy 명시 시. 이미지 모델 지정 시 Step 5의 텍스트 모델 블록은 스킵하고 모델별 라우팅: `gpt-image` = `skills/image-prompt-guide.md` §0·§K 킷 계약(텍스트 프롬프트, 웹 UI만 JSON legacy) / `Gemini-Image`·`Seedream` = 킷 보편 원칙(구체 시각어·전면 긍정형·전문가 시각 언어)만 공유, gpt-image-2 전용 규격(사이즈락·티어 문자열·검증기)은 비적용 — 해당 모델 최적 자연어 서술. 미지정 = 현재 환경 자동 탐지(Step 1 🔀 절) |
 | 2번째 토큰 | `간결` / `보통` / `상세` | 프롬프트 상세도 |
 | 나머지 | 자유 텍스트 | 워커가 수행할 핵심 지시문 (목적 자동 감지) |
 
@@ -136,7 +155,7 @@ Skill("prompt", "--batch GPT-5.2 상세 Chain-of-Verification 핵심 주장 검�
      - GPT-5.6 Sol(디폴트) → Markdown lean: `# Success Criteria` / `# Stop Rules` / 불확실성 처리 지시 — 상세 `skills/gpt-5.6-prompt-enhancement.md`
      - GPT-5.2/5.4(legacy 명시 시) → <output_verbosity_spec>, <web_search_rules>, <uncertainty_and_ambiguity>
      - Gemini 3 → Constraints 최상단
-     - `gpt-image` / `Gemini-Image` / `Seedream` (이미지 전용) → 텍스트 모델 블록 스킵. `prompt-engineering-guide.md` Read 로드 → JSON 구조(purpose/hero/context/evidence/constraints) + Visual Re-description + Technical Specifications만 생성. Anti-Patterns 섹션에 "no text/watermark/logos, no post-processing, deliver raw PNG as-is" 포함
+     - `gpt-image` / `Gemini-Image` / `Seedream` (이미지 전용) → 텍스트 모델 블록 스킵. 플러그인 내부 `skills/image-prompt-guide.md` 전체 Read 후 **모델별 라우팅**: `gpt-image`(gpt-image-2/`$imagegen`) = **킷 계약(§0·§K)** — 포맷 A(라벨 6섹션)/B(화보 콤마형) 텍스트 프롬프트 + 끝 `AR`(배치 = jsonl, 검증 = check_prompt.mjs), 웹 UI 간이 경로만 JSON 골격(§L) / `Gemini-Image`·`Seedream` = **킷 보편 원칙만 공유**(구체 시각어·전면 긍정형·수치·전문가 시각 언어 앵커) — gpt-image-2 전용 규격(사이즈락 6종·Tier-1 고정 문자열·`$imagegen` 규약·검증기 강제) 비적용, 해당 모델 최적 자연어 서술로. 미지정 = 현재 환경 자동 탐지(생성 연계 = gpt-image-2 기본, 산출에 "타겟: <모델>" 1줄). 플러그인 밖 `image-prompt`·`gongnyang-photo` 호출 금지(킷 원문은 내부 `skills/image-prompt-kit/`). 네거티브는 티어드 — 기본 전면 긍정형, 렌더 텍스트 있을 때만 Tier-1 결합 공식 1회(자유 네거티브 스택 ❌). 전문가 프롬프팅 = 실존 전문가 시각 언어 앵커(화보 `Director signature:`·`Lens character:` / 포맷 A Camera·Lighting·Color grading 결과 서술)
 6. CE 체크리스트(U자형, Lost-in-Middle 방지) 적용
 7. 프롬프트 코드블록 1개만 출력 → 응답 종료
 ```
@@ -220,13 +239,13 @@ Batch 호출 시 워커 템플릿이 자동 적용되며, `/tofu-at` 및 `/tofu-
 | "고급스러운" | "대리석 표면, 골드 액센트, 소프트 디퓨즈드 라이팅" |
 | "자연스러운" | "무광 피부 질감, 창가 자연광, 생활 소품이 보이는 배경" |
 
-**적용 규칙**: 이미지 프롬프트 생성 시 mood/details 필드에 추상어가 있으면 자동으로 시각적 재기술을 적용합니다.
+**적용 규칙**: 이미지 프롬프트에 추상어가 있으면 자동으로 시각적 재기술을 적용합니다 — 킷 포맷 A에서는 Scene/Lighting/Color grading 섹션, 웹 UI legacy JSON에서는 mood/details 필드가 대상.
 
 ---
 
 ## 목적별 추천 모델 (LMArena 기준)
 
-> 출처: [LMArena Leaderboard](https://lmarena.ai) 기준 사용자 투표 순위 + 2026년 7월 모델 라인업 반영 (Claude 디폴트 = Opus 4.8 / GPT 디폴트 = GPT-5.6 Sol)
+> 출처: [LMArena Leaderboard](https://lmarena.ai) 기준 사용자 투표 순위 + 2026년 7월 모델 라인업 반영 (Claude 디폴트 = **Opus 5** / GPT 디폴트 = GPT-5.6 Sol)
 
 | 목적 | 1순위 | 2순위 | 3순위 |
 |------|-------|-------|-------|
@@ -262,10 +281,11 @@ Batch 호출 시 워커 템플릿이 자동 적용되며, `/tofu-at` 및 `/tofu-
 
 ---
 
-## 🖼 gpt-image-2 핵심 원칙 (NEW v2.4.0 — 2026-04-24)
+## 🖼 gpt-image-2 핵심 원칙 (v3.0.0 — 정본 = 공냥 킷 v4)
 
-> **출처**: OpenAI 공식 쿡북 + EvoLinkAI 커뮤니티 200+ 케이스 분석 ([[Image-Prompt-Guides-2026-04-MOC]])
-> **적용**: 이미지 목적 감지 시(Step 1) **자동으로 아래 원칙을 이미지 프롬프트에 반영**
+> 🚨 **정본 = 공냥 프롬프트 킷 v4** (`skills/image-prompt-guide.md` §0·§K + vendor `skills/image-prompt-kit/`) — 아래 쿡북 원칙은 **보조**이며 충돌 시 킷이 우선(특히 §10 네거티브·§4 제약 표기는 킷 티어드 규칙으로 대체됨).
+> **출처(보조)**: OpenAI 공식 쿡북 + EvoLinkAI 커뮤니티 200+ 케이스 분석 ([[Image-Prompt-Guides-2026-04-MOC]])
+> **적용**: 이미지 목적 감지 시(Step 1) 내부 가이드 전체 Read 후 킷 계약으로 컴파일
 
 ### 1. 구조 프레임워크 — "배경/장면 → 주체 → 디테일 → 제약"
 이미지 프롬프트는 항상 이 순서로. 어텐션 모델은 앞단 정보로 뒤를 해석하므로 매체/목적/주 피사체를 **앞에** 배치.
@@ -315,17 +335,16 @@ Batch 호출 시 워커 템플릿이 자동 적용되며, `/tofu-at` 및 `/tofu-
 - 예: "make lighting warmer" → "remove the extra tree" → "restore original background"
 - 드리프트 발생 시 중요 디테일 **재명시**
 
-### 10. 네거티브 프롬프트 기본 스택 (자동 내장)
-Portrait/Realism 계열:
-```
-no plastic skin, no digital over-sharpening, no airbrushing,
-no blemishes, no oily skin, no watermark, no text
-```
-로고/UI 계열: `no watermark, no text, no logos/trademarks`
-인포그래픽: `no tiny text, no decorative clutter`
+### 10. 네거티브 = 티어드 (킷 v4로 대체 — 자유 네거티브 스택 폐기)
 
-> 상세 원칙·유스케이스 20+: [[OpenAI-gpt-image-2-Prompting-Guide-2026-04]]
-> 실전 프롬프트 200+: [[EvoLinkAI-awesome-gpt-image-2-prompts-2026-04]]
+> 구 "네거티브 기본 스택(no plastic skin … 자동 내장)"은 **폐기** — gpt-image-2는 장면 네거티브를 오히려 렌더한다(킷 철칙 2). 현행 규칙:
+
+- **Tier-0 (기본, 항상)**: all-positive — 부정문 0개. 빼려는 장면 요소는 긍정형 재서술(군중→"인물 한 명, 단독" / 잡티→"natural skin texture, visible pores").
+- **Tier-1 (렌더 텍스트 있을 때만)**: 화이트리스트 7종만, 결합 공식 1회 — `All text appears once, perfectly legible — no duplicate text, no extra words, no invented glyphs, no watermark.`
+- **Tier-2 (화보 레인, 명시 선언 시만)**: SAFETY_ASSERT+NEGATIVE_TAIL 페어 — 정본 `skills/image-prompt-kit/references/editorial-hwabo.md` §3.
+- `Negative:` 라벨 섹션은 전 티어 금지.
+
+> 상세 원칙: `skills/image-prompt-guide.md` §K2 · 보조 유스케이스: [[OpenAI-gpt-image-2-Prompting-Guide-2026-04]] · [[EvoLinkAI-awesome-gpt-image-2-prompts-2026-04]] (충돌 시 킷 우선)
 
 ---
 
@@ -333,13 +352,15 @@ no blemishes, no oily skin, no watermark, no text
 
 > **출처 (신)**: [Prompting Claude Opus 4.8](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-opus-4-8) + [Prompting Claude Fable 5](https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/prompting-claude-fable-5) — 상세: `skills/claude-fable-5-prompt-strategies.md`
 > **출처 (구)**: [Claude 4 best practices](https://platform.claude.com/docs/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices) + [Adaptive thinking](https://platform.claude.com/docs/en/docs/build-with-claude/adaptive-thinking) + [Migrating to Claude 4](https://platform.claude.com/docs/en/docs/about-claude/models/migrating-to-claude-4)
-> **적용**: Claude 타겟 감지 시 자동으로 아래 블록을 프롬프트에 반영. **디폴트 = Opus 4.8**. 구세대(4.7/4.6) first-class 유지 — 사용자 명시 시 해당 코드 패턴 사용 (마이그레이션 강요 금지).
+> **적용**: Claude 타겟 감지 시 자동으로 아래 블록을 프롬프트에 반영. **디폴트 = Opus 5**. 구세대(4.7/4.6) first-class 유지 — 사용자 명시 시 해당 코드 패턴 사용 (마이그레이션 강요 금지).
 
-### 🔀 Claude 모델 라우팅 (디폴트: Opus 4.8)
+### 🔀 Claude 모델 라우팅 (디폴트: **Opus 5**)
 
 | 사용자 표현 | 적용 모델 | 코드 패턴 |
 |------------|----------|----------|
-| Claude 모델 미지정 + 일반 작업 | **Opus 4.8** (디폴트) | adaptive thinking + effort(xhigh 코딩 기본) + **1M context 기본** |
+| Claude 모델 미지정 + 일반 작업 | **Opus 5** (디폴트) | **thinking 기본 ON**(필드 생략) + effort(low/medium 적극·xhigh 시 `max_tokens` 64k+) + 1M context. **검증·재확인 지시 제거**(과검증) · 간결성 명시 · 서브에이전트 억제 |
+| **web fetch 도구 · Priority Tier 필요** | **Opus 4.8 명시** | Opus 5 **미지원** — 해당 기능 쓰는 프롬프트는 4.8 로 분기 |
+| "Opus 4.8", "claude-opus-4-8" | **Opus 4.8** (구세대 first-class) | adaptive thinking 명시 필요 + effort(xhigh 코딩 기본) + 1M context |
 | "Fable 5", "최신 Claude", "claude-fable-5" | **Fable 5** | adaptive thinking 전용·summarized-only·extended thinking budget ❌ — 최고난도·장기 자율 run·병렬 서브에이전트. `skills/claude-fable-5-prompt-strategies.md` |
 | "Opus 4.8", "claude-opus-4-8" | **Opus 4.8** | 위 디폴트 동일. literal 해석·effort 엄수·코드리뷰 coverage 프롬프트 |
 | "Opus 4.7", "claude-opus-4-7" | **Opus 4.7** | adaptive thinking + xhigh + task_budget |
@@ -580,7 +601,7 @@ Role: [1-2 문장. 기능 + 컨텍스트]
 
 | 키워드/패턴 | 자동 선택 목적 | 권장 출력 형식 | 필수 베이스 스킬 |
 |------------|---------------|---------------|----------------|
-| 이미지, 그림, 사진, 그려줘 | 이미지생성 | **JSON 구조 기본** | **`image-prompt` 스킬(공냥 프롬프트 킷) 1순위** + `prompt-engineering-guide.md` |
+| 이미지, 그림, 사진, 그려줘 | 이미지생성 | **킷 텍스트 프롬프트 기본**(gpt-image-2/`$imagegen` — 포맷 A/B·끝 `AR`. 웹 UI만 JSON) | 플러그인 내부 **`skills/image-prompt-guide.md` 전체 Read** |
 | 영상, 동영상, 비디오, 클립 | 동영상생성 | **JSON 구조 기본** | `prompt-engineering-guide.md` |
 | 코드, 코딩, 개발, 프로그램 | 코딩/개발 | XML | 모델별 전략 가이드 |
 | 글, 작성, 블로그, 기사 | 글쓰기/창작 | Markdown + 자연어 | 모델별 전략 가이드 |
@@ -593,7 +614,12 @@ Role: [1-2 문장. 기능 + 컨텍스트]
 
 > ⚠️ **CRITICAL**: 팩트체크 / 리서치 / 분석 목적이 감지되면 `prompt-engineering-guide.md`(SKILL.md + 01-factcheck-prompts.md + 02-general-research.md) Read 로드 후 IFCN 기반 베이스 템플릿을 사용해야 합니다. 일반 XML로 생성 금지. 상세 절차는 Step 2 「리서치/팩트체크 템플릿 자동 로드」 참조.
 
-> 🎨 **이미지생성 = 공냥 프롬프트 킷이 1순위 베이스 (통합·강력 표기)**: 이미지 목적이 감지되면 **`image-prompt` 스킬**(공냥 프롬프트 킷 VOL.2 — `~/.claude/skills/image-prompt/`, 카테고리 플레이북 C1~C12·룩 프리셋·타이포 아트)을 먼저 적용해 프롬프트를 컴파일하고, `prompt-engineering-guide.md`의 이미지 부록(Nano Banana·다중 이미지 JSON 등)은 보조 레이어로 쓴다. `image-prompt-guide.md`(이론·작법 969줄)도 같은 뿌리다. **출처: 이 이미지 계열의 기반은 공냥이(@specal1849)님의 「공냥 프롬프트 킷」 — https://github.com/kimsh-1/gongnyang-prompt-kit — 산출물에 킷 기반임을 표기할 것.**
+> 🎨 **이미지생성 = 플러그인 내부 가이드가 정본**: 이미지 목적이 감지되면 `skills/image-prompt-guide.md`를 처음부터 끝까지 읽고 그 계약으로 프롬프트를 컴파일한다. Codex 플러그인 경로에서는 외부 `image-prompt`·`gongnyang-photo` 스킬을 호출하지 않는다. 공냥이(@specal1849) 기반 출처 표기는 내부 가이드의 `source_credits`를 따른다.
+
+> 🔀 **이미지 타겟 모델 자동 탐지 + 모델별 라우팅 (v3.0.1 — 대원칙, 킷 이식 후에도 불변)**: 프롬프트를 만들기 전에 **어느 이미지 모델이 소비할지 먼저 판정**한다.
+> 1. **자동 탐지(미지정 시)**: ① 생성 연계 맥락(Codex/Claude Code `$imagegen`·gpt-image API 배치) = **gpt-image-2** ② 사용자가 특정 도구/모델을 언급(ChatGPT 웹, "Gemini로", "나노바나나/NB2", "Seedream") = 그 모델 ③ 판단 불가 = 기본 **gpt-image-2**(목적별 1순위) — 산출 상단에 "타겟: <모델>" 1줄을 명시해 어느 모델 기준인지 드러낸다.
+> 2. **모델별 형식 라우팅**: **gpt-image-2/`$imagegen` = 킷 계약 전체**(포맷 A/B + 사이즈락 + 티어드 네거티브 + check_prompt.mjs). **Gemini-Image(NB2/3 Pro Image)·Seedream = 킷의 보편 원칙만 공유**(구체 시각어·전면 긍정형·수치 박기·전문가 시각 언어) — gpt-image-2 전용 규격(사이즈락 6종·Tier-1 고정 문자열·`$imagegen` 규약·검증기 강제)은 **적용하지 않고** 해당 모델 최적 자연어 서술로 컴파일한다.
+> 3. **전문가 프롬프팅(대원칙)은 이미지에도 적용**: `<role>` 블록 대신 **실존 전문가의 시각 언어 앵커**로 충족한다 — 화보(포맷 B) = `Director signature:`·`Lens character:` 슬롯(킷 철칙4 예외의 공식 경로), 포맷 A = Camera·Lighting·Color grading 섹션에 해당 실존 포토그래퍼/아트디렉터의 스타일을 **결과 서술**로 번역해 앵커. 컴파일 작성자 관점도 그 도메인 실존 전문가로 프레이밍(전문가 3인 토론 동일 적용). "전문가처럼/최고급" 류 빈 수사는 여전히 금지(킷 철칙3과 양립 — 전문가는 *지명*하고, 수사는 *구체 어휘로 환원*).
 
 ---
 
@@ -615,8 +641,8 @@ AskUserQuestion 호출 (questions 배열에 5개 질문 — 용도를 맨 앞에
     "header": "용도",
     "multiSelect": false,
     "options": [
-      {"label": "SNS/일반 (Recommended)", "description": "프로필, 피드, 일반 이미지 — 기본 JSON 구조"},
-      {"label": "광고/상품", "description": "메타 광고, 상세페이지, 배너 — 5-stage Framework 적용"},
+      {"label": "SNS/일반 (Recommended)", "description": "프로필, 피드, 일반 이미지 — 킷 포맷 A(웹 UI 간이 경로만 JSON)"},
+      {"label": "광고/상품", "description": "메타 광고, 상세페이지, 배너 — 킷 P1~P12 홍보 라우터 적용"},
       {"label": "프레젠테이션", "description": "발표 자료, 슬라이드 삽입"},
       {"label": "콘텐츠/블로그", "description": "블로그, 뉴스레터 삽입"}
     ]
@@ -750,7 +776,8 @@ AskUserQuestion 호출 (questions 배열에 4개 질문):
     "header": "AI 모델",
     "multiSelect": false,
     "options": [
-      {"label": "Claude Opus 4.8 (Recommended)", "description": "디폴트 (2026-06-10~), Adaptive Thinking + effort=xhigh, 1M context 기본"},
+      {"label": "Claude Opus 5 (Recommended)", "description": "디폴트 (2026-07-28~), thinking 기본 ON, 1M context, 검증지시 제거"},
+      {"label": "Claude Opus 4.8", "description": "구세대 first-class — web fetch·Priority Tier 필요 시 필수"},
       {"label": "Claude Fable 5", "description": "최고난도·장기 자율 run·병렬 서브에이전트 — 프롬프트 다이어트 원칙"},
       {"label": "GPT-5.6 Sol", "description": "2026-07 GPT 기본 모델, lean outcome-first (5.5/5.4는 legacy 명시 시)"},
       {"label": "Gemini 3 Pro", "description": "멀티모달 + Grounding Search 강점"}
@@ -1073,6 +1100,7 @@ AskUserQuestion 호출 (questions 배열에 4개 질문):
 1. 사용자 요청을 분석하여 스토리보드 생성
 2. 시간순으로 장면 구성 (오프닝 → 전개 → 클라이막스)
 3. 각 장면별: 설명, 카메라 워크, 오디오 정의
+4. 실존 시네마토그래퍼/디렉터 1인 지명 — 그 촬영·조명·편집 어휘로 장면 기술 (대원칙 불변 조항 §1)
 
 **스토리보드 출력 형식:**
 
@@ -1386,7 +1414,8 @@ Style Rules:
 | **GPT-5.6 Sol (디폴트)** | Markdown lean outcome-first — 열거 최소화, 짧고 정확한 지시 (요약 — 전체 블록 구조는 `skills/gpt-5.6-prompt-enhancement.md` 참조) |
 | GPT-5.5 (legacy outcome-first) | Markdown 6섹션: `Role` / `# Personality` / `# Goal` / `# Success Criteria` / `# Constraints` / `# Output` / `# Stop Rules`. 도구 워크플로면 Preamble 1줄 추가. **상세**: `prompt-engineering-guide.md` |
 | GPT-5.2/5.4 (legacy XML) | `<output_verbosity_spec>`, `<output_contract>`, `<completeness_contract>`, `<tool_persistence>`. **상세**: `prompt-engineering-guide.md` 하단 Legacy 섹션 |
-| **Claude Opus 4.8 (디폴트)** | 4.7 블록 동일 + literal 해석 범위 명시("every section") + 코드리뷰는 coverage/filter 분리 프롬프트 + 디자인은 구체 스펙 또는 "4방향 제안" 패턴. `thinking: {type: "adaptive"}` + `effort: "xhigh"`(코딩) |
+| **Claude Opus 5 (디폴트)** | 4.8 블록에서 **검증·재확인 지시를 뺀** 형태 + 간결성 명시 + 서브에이전트 위임 기준/상한 + 범위 고정. `thinking` 필드 생략(기본 ON), `effort` low/medium 우선 |
+| **Claude Opus 4.8 (구세대)** | 4.7 블록 동일 + literal 해석 범위 명시("every section") + 코드리뷰는 coverage/filter 분리 프롬프트 + 디자인은 구체 스펙 또는 "4방향 제안" 패턴. `thinking: {type: "adaptive"}` + `effort: "xhigh"`(코딩) |
 | **Claude Fable 5** | **장문 열거 ❌ — 짧은 지시 1개씩** (brevity·체크포인트·grounding·경계 스니펫은 `skills/claude-fable-5-prompt-strategies.md`). reasoning 재출력 지시 금지(refusal). adaptive thinking 전용 |
 | Claude Opus 4.7 | `<use_parallel_tool_calls>`, `<investigate_before_answering>`, `<default_to_action>`, `<explicit_scope>` (리터럴 해석 대응), `thinking: {type: "adaptive"}` + `output_config: {effort: "xhigh"}` |
 | Claude Opus 4.6 (레거시) | `<default_to_action>` (Adaptive Thinking 자동) |
@@ -1477,6 +1506,8 @@ Style Rules:
 ```
 정규 패턴: <role>당신은 [전문가명]입니다. [프레임워크]에 입각하여 [행동]합니다.</role>
 ⛔ 금지: "~철학을 체화한", "~원칙을 체화하여", "~을 체화한 전문가" 등 간접 표현
+
+> 🖼️🎬 **이미지·동영상 목적에도 동일 적용 (대원칙 불변 조항 §1)**: 이미지 프롬프트는 `<role>` 블록이 없는 대신 **실존 전문가의 시각 언어 앵커**로 충족한다 — 화보(포맷 B) = `Director signature:`·`Lens character:` 슬롯, 포맷 A = Camera·Lighting·Color grading 섹션에 해당 실존 포토그래퍼/아트디렉터 스타일을 결과 서술로 번역. 동영상 = 스토리보드와 프롬프트에 실존 시네마토그래퍼/디렉터를 지명하고 그 촬영·조명 어휘로 장면을 기술. 전문가 3인 토론의 Expert 2도 그 도메인 실존 전문가로.
 ```
 
 **전문가 3인 토론 (간략 진행)**
@@ -1660,7 +1691,9 @@ AI: 최종 프롬프트 출력 + 5가지 선택지 (Step 3으로 복귀)
 
 ---
 
-## 이미지 프롬프트 JSON 구조 (기본 형식)
+## 이미지 프롬프트 JSON 구조 (웹 UI 간이 경로 — legacy)
+
+> ⚠️ **gpt-image-2 / Codex `$imagegen` 경로의 정본은 킷 텍스트 프롬프트**(`skills/image-prompt-guide.md` §0·§K — 포맷 A/B + 끝 `AR`, 배치 = jsonl). 아래 JSON 구조는 **ChatGPT/Gemini 웹 UI에 붙여넣는 간이 경로**에서만 씁니다.
 
 > **토큰 순서 = JSON 필드 순서 = 어텐션 가중치 순서.**
 > Cross-Attention 이론상 앞쪽 필드가 더 강한 가중치를 받으므로, 핵심(목적/피사체)을 앞에, 제약/분위기를 뒤에 배치합니다.
@@ -1833,8 +1866,15 @@ AI: 최종 프롬프트 출력 + 5가지 선택지 (Step 3으로 복귀)
 
 ## Metadata
 
-- **Version**: 2.11.3
-- **Updated**: 2026-07-21
+- **Version**: 3.1.0
+- **Updated**: 2026-07-29
+- **Changes v3.1.0** (2026-07-29):
+  - **[MEDIUM] Skills 2.0 업그레이드 (재경님 지시 — skills-2.0-upgrade 공정 적용)**: 전 스킬 파일 frontmatter 정비. ① P1 신규 frontmatter 5건(gemini-3.1/claude-4.7 strategies·gpt-5.6/5.5 enhancement·fable-5 strategies — name은 valid kebab, 파일명 불변) ② P3 description 전건 "Use when..." 트리거 패턴화(기계 변환 ❌ 수기 — 내용 보존) ③ P4 참조형 12건 `disable-model-invocation: true`(모델 자동 invoke 차단 — /prompt가 Read로 소비하는 레퍼런스임을 명시) ④ expert-domain-priming source_credits YAML invalid 수리 ⑤ 우리 파일 준수율 61.1% → 84.6%(진단 = skills-2.0-upgrade diagnose.sh 12항목). 잔여: body >500줄 7건은 P5 분할 보류(대형 가이드는 grep-부분Read 운영·참조 회귀 위험 — 별도 사이클), broken_references/imperative_form 잔여는 진단기 오탐 판정(킷 상대경로 표기·한국어 문서), 보안 스캔 critical 6건 = "task-budgets/task-model" 부분 문자열 오탐 확인(실키 0). vendored 킷 무수정·전 파일 경로 불변(참조 회귀 0)
+- **Changes v3.0.1** (2026-07-29):
+  - **[CRITICAL] 🏛️ 대원칙 불변 조항 신설 (재경님 지시 — "이미지·동영상 프롬프트에도 대원칙[전문가 프롬프팅, 모델별 라우팅 - 현재 쓰는 모델 자동 탐지]은 고스란히 반영. 다른 프롬프트 출력도 마찬가지")**: CRITICAL RULES 직하에 전 목적·전 모델·향후 이식 불변의 2대원칙 명문화. ① 전문가 프롬프팅 — 텍스트 = `<role>` 정규 패턴 / 이미지 = 실존 전문가 시각 언어 앵커(화보 `Director signature:`·`Lens character:`, 포맷 A = Camera·Lighting·Color grading 결과 서술 — 킷 철칙3과 양립: 전문가는 지명, 수사는 구체 어휘 환원) / 동영상 = 스토리보드에 실존 시네마토그래퍼 지명 ② 모델별 라우팅 + 자동 탐지 — 이미지 타겟 모델 자동 탐지 절 신설(명시 > 환경 탐지 > gpt-image-2 기본, "타겟: <모델>" 1줄), v3.0.0에서 `Gemini-Image`/`Seedream`까지 킷 계약으로 뭉뚱그려진 batch 라우팅 결함 수리(킷 전용 규격은 gpt-image-2만, 타 모델은 보편 원칙만 공유). AUTO 자가진단에 2항 추가
+- **Changes v3.0.0** (2026-07-29):
+  - **[MAJOR] 이미지 정본 = 공냥 프롬프트 킷 v4 이식 (재경님 지시 — "킷을 최대한 가져오기, 형식·규칙·예시 전부")**: gpt-image-2/`$imagegen` 산출 계약을 JSON 골격 → **킷 텍스트 프롬프트**(포맷 A 라벨 6섹션/포맷 B 화보 콤마형 + 끝 `AR`, 배치 = jsonl, 검증 = check_prompt.mjs)로 교체. 킷 원문 전체 vendor(`skills/image-prompt-kit/` — KIT-SKILL.md·references 30종·검증기+fixtures 27그린·examples, rev fb5f75f, MIT). image-prompt-guide.md v2.0.0(§0 계약 교체 + §K 전사 + legacy 강등 배너). 네거티브 자유 스택 폐기 → 티어드(기본 전면 긍정형·Tier-1 화이트리스트·Tier-2 페어). 계기 = 이미지 생성 막힘(구 JSON·네거티브 스택이 킷 규칙과 상충)
+- **Changes v2.12.0** (2026-07-28): Claude 디폴트 = Opus 5 승격 (헤더 요약 참조)
 - **Changes v2.11.3** (2026-07-21):
   - **[LOW] --batch 리서치 흐름 "모델별 필수 블록" 표 GPT-5.6 행 신설**: 독립 검토 지적 — 1번째 토큰 표는 GPT-5.6이 1급인데 후속 필수 블록 표가 5.2/5.4 XML만 나열하던 내부모순 해소. GPT-5.6 Sol 디폴트 = Markdown lean(`# Success Criteria`/`# Stop Rules`), 구 XML 행은 legacy 명시 시로 조건화 (deep-research v2.1.1 라우팅 정합)
 - **Changes v2.11.2** (2026-07-21):

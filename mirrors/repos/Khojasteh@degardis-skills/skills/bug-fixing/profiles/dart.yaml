@@ -1,0 +1,7 @@
+name: dart
+label: Dart
+description: Load when fixing Dart code or behavior.
+instructions:
+- Trace null safety, futures, zones, stream subscription and cancellation, event ordering, isolates, platform
+  boundaries, and asynchronous error delivery.
+- Verify whether failures occur on call, on await, during stream consumption, or in background work.

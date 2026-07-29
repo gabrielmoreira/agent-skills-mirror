@@ -1,0 +1,12 @@
+id: dependency-upgrade.configuration
+title: Migrate configuration and defaults
+kind: policy
+priority: 2
+rule: Treat configuration keys, defaults, environment variables, flags, and build settings as upgrade behavior.
+require:
+- Identify renamed, removed, newly required, and behavior-changing settings.
+- Update templates, CI, containers, deployment, examples, and validation together.
+- Remove dead settings and compatibility flags for dropped versions.
+reject:
+- Preserving an old default accidentally.
+- Leaving both old and new keys active without a documented precedence and support need.

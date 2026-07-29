@@ -1,0 +1,11 @@
+id: docs.safety
+title: Make operational effects safe
+kind: constraint
+rule: Make destructive, irreversible, privileged, or externally visible actions unmistakable.
+require:
+- State prerequisites, permissions, affected resources, expected output, verification,
+  and recovery or rollback.
+- Use conspicuously safe placeholders and identify commands that mutate state.
+reject:
+- Presenting destructive commands without an adjacent warning and bounded target.
+- Claiming recovery is possible without verifying the mechanism.

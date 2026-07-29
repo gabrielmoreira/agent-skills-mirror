@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Canner/WrenAI` — 26 default patterns, 0 followed patterns, 24 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,29 +60,30 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/CLAUDE.md`](.claude/CLAUDE.md) |
-| 2 | ✓ | [`core/wren-core-base/.claude/CLAUDE.md`](core/wren-core-base/.claude/CLAUDE.md) |
-| 3 | ✓ | [`core/wren-core-base/AGENTS.md`](core/wren-core-base/AGENTS.md) |
-| 4 | ✓ | [`core/wren-core-py/.claude/CLAUDE.md`](core/wren-core-py/.claude/CLAUDE.md) |
-| 5 | ✓ | [`core/wren-core-py/AGENTS.md`](core/wren-core-py/AGENTS.md) |
-| 6 | ✓ | [`core/wren-core-wasm/.claude/CLAUDE.md`](core/wren-core-wasm/.claude/CLAUDE.md) |
-| 7 | ✓ | [`core/wren-core/.claude/CLAUDE.md`](core/wren-core/.claude/CLAUDE.md) |
-| 8 | ✓ | [`core/wren-core/AGENTS.md`](core/wren-core/AGENTS.md) |
-| 9 | ✓ | [`core/wren/.claude/CLAUDE.md`](core/wren/.claude/CLAUDE.md) |
-| 10 | ✓ | [`core/wren/src/wren/skills_content/dlt-connector/SKILL.md`](core/wren/src/wren/skills_content/dlt-connector/SKILL.md) |
-| 11 | ✓ | [`core/wren/src/wren/skills_content/enrich-context/SKILL.md`](core/wren/src/wren/skills_content/enrich-context/SKILL.md) |
-| 12 | ✓ | [`core/wren/src/wren/skills_content/genbi/SKILL.md`](core/wren/src/wren/skills_content/genbi/SKILL.md) |
-| 13 | ✓ | [`core/wren/src/wren/skills_content/generate-mdl/SKILL.md`](core/wren/src/wren/skills_content/generate-mdl/SKILL.md) |
-| 14 | ✓ | [`core/wren/src/wren/skills_content/onboarding/SKILL.md`](core/wren/src/wren/skills_content/onboarding/SKILL.md) |
-| 15 | ✓ | [`core/wren/src/wren/skills_content/usage/SKILL.md`](core/wren/src/wren/skills_content/usage/SKILL.md) |
-| 16 | ✓ | [`docs/core/reference/skills.md`](docs/core/reference/skills.md) |
-| 17 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
-| 18 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
-| 19 | ✓ | [`skills/AUTHORING.md`](skills/AUTHORING.md) |
-| 20 | ✓ | [`skills/index.json`](skills/index.json) |
-| 21 | ✓ | [`skills/install.sh`](skills/install.sh) |
-| 22 | ✓ | [`skills/README.md`](skills/README.md) |
-| 23 | ✓ | [`skills/SKILLS.md`](skills/SKILLS.md) |
-| 24 | ✓ | [`skills/wren/SKILL.md`](skills/wren/SKILL.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`core/wren-core-base/.claude/CLAUDE.md`](core/wren-core-base/.claude/CLAUDE.md) |
+| 4 | ✓ | [`core/wren-core-base/AGENTS.md`](core/wren-core-base/AGENTS.md) |
+| 5 | ✓ | [`core/wren-core-py/.claude/CLAUDE.md`](core/wren-core-py/.claude/CLAUDE.md) |
+| 6 | ✓ | [`core/wren-core-py/AGENTS.md`](core/wren-core-py/AGENTS.md) |
+| 7 | ✓ | [`core/wren-core-wasm/.claude/CLAUDE.md`](core/wren-core-wasm/.claude/CLAUDE.md) |
+| 8 | ✓ | [`core/wren-core/.claude/CLAUDE.md`](core/wren-core/.claude/CLAUDE.md) |
+| 9 | ✓ | [`core/wren-core/AGENTS.md`](core/wren-core/AGENTS.md) |
+| 10 | ✓ | [`core/wren/.claude/CLAUDE.md`](core/wren/.claude/CLAUDE.md) |
+| 11 | ✓ | [`core/wren/src/wren/skills_content/dlt-connector/SKILL.md`](core/wren/src/wren/skills_content/dlt-connector/SKILL.md) |
+| 12 | ✓ | [`core/wren/src/wren/skills_content/enrich-context/SKILL.md`](core/wren/src/wren/skills_content/enrich-context/SKILL.md) |
+| 13 | ✓ | [`core/wren/src/wren/skills_content/genbi/SKILL.md`](core/wren/src/wren/skills_content/genbi/SKILL.md) |
+| 14 | ✓ | [`core/wren/src/wren/skills_content/generate-mdl/SKILL.md`](core/wren/src/wren/skills_content/generate-mdl/SKILL.md) |
+| 15 | ✓ | [`core/wren/src/wren/skills_content/onboarding/SKILL.md`](core/wren/src/wren/skills_content/onboarding/SKILL.md) |
+| 16 | ✓ | [`core/wren/src/wren/skills_content/usage/SKILL.md`](core/wren/src/wren/skills_content/usage/SKILL.md) |
+| 17 | ✓ | [`docs/core/reference/skills.md`](docs/core/reference/skills.md) |
+| 18 | ✓ | [`skills/.claude-plugin/marketplace.json`](skills/.claude-plugin/marketplace.json) |
+| 19 | ✓ | [`skills/.claude-plugin/plugin.json`](skills/.claude-plugin/plugin.json) |
+| 20 | ✓ | [`skills/AUTHORING.md`](skills/AUTHORING.md) |
+| 21 | ✓ | [`skills/index.json`](skills/index.json) |
+| 22 | ✓ | [`skills/install.sh`](skills/install.sh) |
+| 23 | ✓ | [`skills/README.md`](skills/README.md) |
+| 24 | ✓ | [`skills/SKILLS.md`](skills/SKILLS.md) |
+| 25 | ✓ | [`skills/wren/SKILL.md`](skills/wren/SKILL.md) |
 
 ---
 

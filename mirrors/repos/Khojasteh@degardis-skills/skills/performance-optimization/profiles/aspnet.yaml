@@ -1,0 +1,7 @@
+name: aspnet
+label: ASP.NET
+description: Load when optimizing ASP.NET performance.
+instructions:
+- Measure warmup, compilation, modules and handlers, routing, view state, session, cache, serialization,
+  database/network I/O, synchronization context, app-domain recycling, memory, and tail latency; retain
+  lifecycle and compatibility.

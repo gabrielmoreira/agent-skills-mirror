@@ -1,0 +1,11 @@
+name: visual-basic
+label: Visual Basic
+description: Load when testing Visual Basic code or behavior.
+instructions:
+- Cover `Nothing` across reference/nullable/value types, conversions under current `Option` settings,
+  overloads, `ByRef`, default properties, late binding, case-insensitive binding, events, XML literals,
+  culture, async/cancellation, iterator/LINQ behavior, and disposal.
+- Isolate `My` services, event subscriptions, COM resources, global application state, time, and scheduling
+  through existing seams; await asynchronous work and clean up ownership.
+- Exercise serialization, reflection, trimming/AOT, generated code, and C# consumer compatibility when
+  relevant.

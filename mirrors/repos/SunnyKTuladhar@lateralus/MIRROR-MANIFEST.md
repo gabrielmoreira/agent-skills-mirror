@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `SunnyKTuladhar/lateralus` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `SunnyKTuladhar/lateralus` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SunnyKTuladhar/lateralus` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,22 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.github/skills/lateralus-brainstorm-caveman/SKILL.md`](.github/skills/lateralus-brainstorm-caveman/SKILL.md) |
-| 2 | ✓ | [`.github/skills/lateralus-brainstorm/SKILL.md`](.github/skills/lateralus-brainstorm/SKILL.md) |
-| 3 | ✓ | [`.github/skills/lateralus-caveman/SKILL.md`](.github/skills/lateralus-caveman/SKILL.md) |
-| 4 | ✓ | [`.github/skills/lateralus/SKILL.md`](.github/skills/lateralus/SKILL.md) |
-| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 6 | ✓ | [`agents/lateralus-ideator-balanced.md`](agents/lateralus-ideator-balanced.md) |
-| 7 | ✓ | [`agents/lateralus-ideator-ground.md`](agents/lateralus-ideator-ground.md) |
-| 8 | ✓ | [`agents/lateralus-ideator-wild.md`](agents/lateralus-ideator-wild.md) |
-| 9 | ✓ | [`agents/lateralus-workaround.md`](agents/lateralus-workaround.md) |
-| 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 11 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 12 | ✓ | [`skills/lateralus-brainstorm/SKILL-caveman.md`](skills/lateralus-brainstorm/SKILL-caveman.md) |
-| 13 | ✓ | [`skills/lateralus-brainstorm/SKILL.md`](skills/lateralus-brainstorm/SKILL.md) |
-| 14 | ✓ | [`skills/lateralus/README.md`](skills/lateralus/README.md) |
-| 15 | ✓ | [`skills/lateralus/SKILL-caveman.md`](skills/lateralus/SKILL-caveman.md) |
-| 16 | ✓ | [`skills/lateralus/SKILL.md`](skills/lateralus/SKILL.md) |
+| 1 | ✓ | [`.github/skills/lateralus-brainstorm/SKILL.md`](.github/skills/lateralus-brainstorm/SKILL.md) |
+| 2 | ✓ | [`.github/skills/lateralus/SKILL.md`](.github/skills/lateralus/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`agents/lateralus-ideator-balanced.md`](agents/lateralus-ideator-balanced.md) |
+| 5 | ✓ | [`agents/lateralus-ideator-ground.md`](agents/lateralus-ideator-ground.md) |
+| 6 | ✓ | [`agents/lateralus-ideator-wild.md`](agents/lateralus-ideator-wild.md) |
+| 7 | ✓ | [`agents/lateralus-workaround.md`](agents/lateralus-workaround.md) |
+| 8 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 9 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 10 | ✓ | [`skills/lateralus-brainstorm/SKILL.md`](skills/lateralus-brainstorm/SKILL.md) |
+| 11 | ✓ | [`skills/lateralus/README.md`](skills/lateralus/README.md) |
+| 12 | ✓ | [`skills/lateralus/SKILL.md`](skills/lateralus/SKILL.md) |
 
 ---
 

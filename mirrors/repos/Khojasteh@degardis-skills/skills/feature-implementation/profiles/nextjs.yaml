@@ -1,0 +1,7 @@
+name: nextjs
+label: Next.js
+description: Load when implementing Next.js features.
+instructions:
+- Define routes, server/client boundaries, rendering, streaming, caching and revalidation, authentication,
+  middleware, actions, errors, metadata, hydration, runtime targets, rollout, and observability in vertical
+  slices.

@@ -1,0 +1,11 @@
+id: feature-implementation.acceptance-criteria
+title: Define observable acceptance criteria
+kind: policy
+priority: 6
+rule: Express completion through independently verifiable behavior rather than code structure.
+require:
+- Cover success, meaningful boundaries, failures, side effects, permissions, persistence,
+  concurrency, compatibility, and operational outcomes when applicable.
+- Derive expected values independently from the production algorithm.
+reject:
+- Treating compilation, a passing happy path, or implementation-shaped assertions as sufficient.

@@ -1,0 +1,8 @@
+name: hcl
+label: HCL
+description: Load when testing HCL code or behavior.
+instructions:
+- Validate types, unknown and sensitive values, collection identity, dependency graphs, lifecycle rules,
+  provider behavior, plan stability, state moves, imports, and destructive replacements.
+- Prefer validation and isolated plans before bounded integration tests; never use shared production state
+  or apply destructive infrastructure merely to obtain test evidence.

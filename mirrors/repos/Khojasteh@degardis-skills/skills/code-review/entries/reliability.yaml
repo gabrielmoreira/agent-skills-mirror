@@ -1,0 +1,11 @@
+id: review.reliability
+title: Review failure and resource behavior
+kind: principle
+rule: Trace errors and resource lifetimes through every newly affected boundary.
+require:
+- Check acquisition, release, cancellation, timeout, retry, backoff, and partial-result behavior.
+- Verify failures remain observable without leaking secrets or hiding the root cause.
+- Consider file handles, connections, locks, processes, subscriptions, and temporary resources.
+reject:
+- Swallowing or broadly replacing errors without preserving actionable context.
+- Retrying non-idempotent work or permanent failures without a safe policy.

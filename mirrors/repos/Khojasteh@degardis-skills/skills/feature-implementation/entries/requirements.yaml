@@ -1,0 +1,11 @@
+id: feature-implementation.requirements
+title: Ground requirements in reader-visible outcomes
+kind: principle
+priority: 5
+rule: Establish who needs the feature, what outcome they need, and what remains explicitly
+  outside scope before choosing implementation details.
+require:
+- Distinguish requirements, assumptions, constraints, non-goals, and preferences.
+- Verify claims against repository behavior, tests, schemas, help, and documentation.
+reject:
+- Inventing guarantees from one convenient implementation path.

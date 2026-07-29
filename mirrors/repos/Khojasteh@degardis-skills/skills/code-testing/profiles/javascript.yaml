@@ -1,0 +1,6 @@
+name: javascript
+label: JavaScript
+description: Load when testing JavaScript code or behavior.
+instructions:
+- Match the configured Node, browser, DOM, worker, or edge runtime instead of assuming one.
+- Control timers, promises, globals, modules, network access, and process state.

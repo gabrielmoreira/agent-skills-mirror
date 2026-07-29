@@ -1,0 +1,9 @@
+name: sql
+label: SQL
+description: Load when reviewing SQL code or behavior.
+instructions:
+- Establish the database engine, configured version, schema, and transaction context
+  before applying dialect-specific semantics.
+- Review null and collation semantics, implicit casts, precision, ordering, cardinality, constraints,
+  locking, isolation, partial failure, injection, tenant boundaries, destructive statements, data compatibility,
+  and rollback.

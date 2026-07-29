@@ -1,0 +1,13 @@
+id: technology-migration.dependencies
+title: Transition dependency state cleanly
+kind: policy
+priority: 2
+rule: Use native package resolution for dependency transitions while the migration
+  remains responsible for technology replacement.
+require:
+- Add target dependencies and remove source dependencies according to the approved stage.
+- Preserve detected package-manager and lockfile policy unless replacement is itself in scope.
+- Verify clean resolution and actual target execution without hidden source binaries or services.
+reject:
+- Letting a package transition decide whether technologies should be replaced.
+- Leaving unused source packages, runtimes, plugins, registries, or build tools after final cutover.

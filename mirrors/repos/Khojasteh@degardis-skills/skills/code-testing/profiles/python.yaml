@@ -1,0 +1,11 @@
+name: python
+label: Python
+description: Load when testing Python code or behavior.
+instructions:
+- Cover mutable and aliased values, iterators, context managers, exception chaining,
+  descriptors, serialization, numeric edge cases, and sync-versus-async boundaries
+  where they affect the contract.
+- Isolate import and module state, environment variables, locale, time zones, randomness,
+  temporary files, processes, threads, and event loops; await and clean up spawned work.
+- Match the configured interpreter versions and optional dependency sets rather than
+  assuming the current environment is representative.

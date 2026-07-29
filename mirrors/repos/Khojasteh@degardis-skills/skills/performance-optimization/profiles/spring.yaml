@@ -1,0 +1,7 @@
+name: spring
+label: Spring
+description: Load when optimizing Spring performance.
+instructions:
+- Measure startup and warmup, bean creation and proxies, request and filter lifecycle, serialization,
+  allocation and GC, async execution, database queries and plans, N+1 access, transactions, connection
+  pools, caches, messaging, and shutdown.

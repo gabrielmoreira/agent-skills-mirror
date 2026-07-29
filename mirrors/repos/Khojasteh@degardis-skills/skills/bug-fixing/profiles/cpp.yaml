@@ -1,0 +1,7 @@
+name: cpp
+label: C++
+description: Load when fixing C++ code or behavior.
+instructions:
+- Trace ownership, object lifetime, move and copy behavior, iterator invalidation, exception safety, undefined
+  behavior, templates, ABI, RAII cleanup, and concurrency.
+- Verify fixes across the affected build modes and template instantiations supported by the repository.

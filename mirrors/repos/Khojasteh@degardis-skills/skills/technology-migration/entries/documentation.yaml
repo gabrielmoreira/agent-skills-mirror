@@ -1,0 +1,13 @@
+id: technology-migration.documentation
+title: Document changed contracts and operations
+kind: policy
+priority: 3
+rule: Update documentation when readers, operators, deployers, consumers, or maintainers must act differently.
+require:
+- Cover prerequisites, architecture rationale, configuration, contracts, failures,
+  data, rollout, rollback, operations, decommissioning, and release impact as applicable.
+- Remove source-technology instructions when no supported stage needs them.
+- Keep stage-specific guidance visibly distinct from the final state.
+reject:
+- Narrating mechanical implementation details without reader value.
+- Leaving documentation that reconstructs obsolete source paths.

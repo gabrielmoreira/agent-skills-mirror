@@ -1,0 +1,6 @@
+name: php
+label: PHP
+description: Load when optimizing PHP performance.
+instructions:
+- Measure request bootstrap, autoloading, allocation, arrays, serialization, database and network I/O,
+  caches, sessions, workers, filesystem effects, and cold versus warm state.

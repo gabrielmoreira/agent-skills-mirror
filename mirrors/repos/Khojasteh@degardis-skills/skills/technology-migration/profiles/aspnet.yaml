@@ -1,0 +1,8 @@
+name: aspnet
+label: ASP.NET
+description: Load when migrating to or from ASP.NET.
+instructions:
+- Prefer the target’s native request, configuration, session, authentication, serialization, and deployment
+  model rather than preserving System.Web through wrappers; verify view state, synchronization, errors,
+  and compatibility.
+- Keep proxy routes, dual hosting, and adapters bounded to explicit stages with owners and removal gates.

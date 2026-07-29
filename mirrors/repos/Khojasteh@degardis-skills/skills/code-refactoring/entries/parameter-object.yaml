@@ -1,0 +1,12 @@
+id: refactoring.pattern.parameter-object
+title: Introduce parameter object
+kind: pattern
+rule: Group parameters that travel together and represent one concept.
+conditions:
+- The values have a stable relationship, shared validation, or coordinated evolution.
+require:
+- Preserve defaults, nullability, ordering, overload behavior, serialization, and call-site compatibility.
+- Verify all callers and external construction or binding paths.
+reject:
+- Grouping unrelated parameters solely to shorten a signature.
+- Turning a public parameter list into a breaking wire or source contract without approval.

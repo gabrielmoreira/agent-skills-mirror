@@ -1,0 +1,12 @@
+id: degardis-authoring.ownership
+title: Give the skill one clear outcome
+kind: principle
+priority: 10
+rule: Define skill ownership by the outcome requested, with explicit boundaries
+  against neighboring capabilities.
+require:
+- Use concrete positive and negative request examples to test the boundary.
+- Make the description sufficient for routing before the workflow is loaded.
+reject:
+- Combining unrelated outcomes because they share a tool, audience, or topic.
+- Treating prompt phrases as an exhaustive routing specification.

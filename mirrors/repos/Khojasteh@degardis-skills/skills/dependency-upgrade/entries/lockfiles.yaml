@@ -1,0 +1,15 @@
+id: dependency-upgrade.lockfiles
+title: Regenerate resolved state natively
+kind: constraint
+priority: 1
+rule: Produce manifests and lockfiles through the repository's native package and build tooling.
+require:
+- Never fabricate integrity values or resolved dependency state.
+- Preserve the detected package manager, lockfile format, registry policy, and reproducibility settings.
+- Review the complete resolved diff, including transitive additions, removals, upgrades, and downgrades.
+- Prefer a scoped native update when supported so unrelated packages do not move without cause.
+- Verify a clean restore or install from committed declarations.
+reject:
+- Casually hand-editing generated resolution.
+- Using force, legacy-peer, ignore, or no-verify options to conceal incompatibility.
+- Deleting a lockfile merely to make resolution succeed.

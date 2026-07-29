@@ -1,0 +1,18 @@
+id: docs.examples
+title: Make examples prove a reader outcome
+kind: heuristic
+rule: Use the smallest verified example that lets the intended reader recognize a
+  successful outcome.
+require:
+- Give a README, tutorial, or how-to guide a minimal first-success example when the
+  reader cannot otherwise reach the promised outcome directly.
+- State the working context and prerequisites needed to copy the example, use safe
+  placeholders, and disclose destructive or externally visible effects.
+- Show only enough expected output or state to confirm success; explain why a non-obvious
+  step or result matters.
+- Keep examples representative and maintainable, and verify executable examples with
+  repository-provided commands.
+reject:
+- Decorative examples that repeat a signature or synopsis without advancing a reader task.
+- Long output captures, exhaustive variations, and setup unrelated to the behavior being taught.
+- Adding public examples solely to increase test coverage.

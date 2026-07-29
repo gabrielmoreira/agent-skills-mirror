@@ -24,11 +24,10 @@ The CloudBase integration layer for AI coding tools: Plugin installs the stack, 
 
 ## Recent updates
 
-**v2.24.x** (2026-07)
+**v2.25.x** (2026-07)
 
-- Plugin: Open Plugin Spec; `npx plugins add` for MCP / Skills / Hooks
-- PostgreSQL: schema changes default to `applyMigration` (explicit `migrationVersion`)
-- Env & observability: `manageEnv` contract fixes; tool calls can attach client info
+- CloudRun / Gateway: VPC guidance when using TCP databases; Domain/Route with `upstreamResourceType` and path transmission
+- Plugin: easier install via Open Plugin / marketplace packaging
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases
 

@@ -77,6 +77,9 @@ Background and before/after examples of why this pattern exists:
   transient pre-admission transport-lifetime rejections after settlement, with
   an identity check against the cached entry, so reconnect can retry work that
   was never admitted while concurrent in-flight duplicates still coalesce.
+  Compute the complete retry fingerprint before fresh actor admission: a
+  matching retained receipt must replay after its subscription is released,
+  while a fresh dispatch still requires an admitted subscription.
 - Make remote subscribe/bootstrap idempotent per window, machine, and key.
   Resync and reconnect retries must refresh the bootstrap without incrementing
   ownership; projection/encoding failure rolls back only ownership acquired by
@@ -94,20 +97,30 @@ Background and before/after examples of why this pattern exists:
   created by subscription and must lock admission to that actor instance.
 - Remote key codecs need an explicit encoder as well as a decoder. Use the
   canonical encoded value in every wire envelope; never emit the decoded domain
-  key, which may be transformed or non-serializable. Bound every untrusted
+  key, which may be transformed or non-serializable. A native intent contract's
+  codec, encoder, and key identity function must also own renderer store
+  identity plus inbound snapshot/disposal routing; mixing in the legacy key
+  contract can silently drop native updates. Bound every untrusted
   envelope before its codec runs, including subscribe/unsubscribe addresses,
   and bound snapshot envelopes before delivery. Use a
   structured-clone-compatible byte measurement; JSON sizing is not
-  wire-compatible with values such as `bigint`.
+  wire-compatible with values such as `bigint`. When an existing domain payload
+  legitimately exceeds the shared default, declare a bounded per-machine
+  ceiling and enforce aggregate projected state below its snapshot ceiling.
 - When a remote machine uses an object key, canonicalize it through the same
   interner used by main-process producers only after subscription authorization
   succeeds, then pass that canonical key to `ActorHost`. Its actor map is
   identity-keyed, but interning inside an untrusted wire decoder lets rejected
-  entity IDs grow a process-lifetime cache.
+  entity IDs grow a process-lifetime cache. Post-authorization canonicalization
+  must preserve the reserved encoded wire address; otherwise reject it or
+  atomically re-key pending quota, subscription, disposal, and reference
+  bookkeeping before admitting the actor.
 - Remote authorization hooks use `DyadErrorKind.Auth` for expected access
   denial. Convert only that explicit classification to an unauthorized receipt;
   propagate unexpected hook failures so telemetry can distinguish dependency
-  failures and bugs from ordinary refusal.
+  failures and bugs from ordinary refusal. A named domain-revision policy needs
+  both an explicit renderer-observed domain token and a main-side resolver;
+  never compare it with, or silently substitute, the actor snapshot revision.
 - Capture receipt metadata synchronously when that dispatch ticket settles.
   Reading mutable actor metadata after awaiting the ticket can observe a
   re-entrant follow-up transaction instead of the acknowledged event.
@@ -117,6 +130,9 @@ Background and before/after examples of why this pattern exists:
 - Settle memory-owned requests on every destructive entity path, including
   parent-row cascade deletion, bulk deletion, and full reset—not only direct
   deletion of the child entity the request references.
+- Before parent deletion snapshots child entities for settlement, fence new
+  child creation and serialize the snapshot with each child's final insertion.
+  Otherwise a late child can evade cleanup and disappear through the cascade.
 - Register an in-memory request's disposal rejector before its first
   asynchronous admission await, and remove it in `finally`. Registering only
   before the terminal subscription leaves an admission-to-subscription race
@@ -124,10 +140,11 @@ Background and before/after examples of why this pattern exists:
 - Model user-initiated owner rejection as a typed non-error facade outcome.
   Rejecting the transport promise routes successful cancellation through
   generic failure toasts/retry logic and can incorrectly acknowledge dispatch.
-- If queue removal awaits owner settlement, atomically claim/remove the
-  invocation-time items before the await so the queue driver cannot start
-  them. Restore failed owners, preserve items enqueued during the await, and
-  surface settlement errors without aborting the whole clear.
+- If queue removal awaits owner settlement, first validate the optimistic
+  revision and atomically claim/remove the invocation-time items so a rejected
+  mutation has no external effect and the queue driver cannot start them.
+  Restore failed owners, preserve items enqueued during the await, and surface
+  settlement errors without aborting the whole clear.
 - When a callback's direct caller owns rollback or restoration, settlement
   failure must reject that callback itself. Rejecting only a separate outer
   promise hides the failure from the component responsible for compensation.
@@ -167,6 +184,10 @@ Background and before/after examples of why this pattern exists:
   transition that leaves the watched state, plus disposal cleanup.
 - In a cancelling state, finalize on every non-stale terminal event. Reject
   staleness by identity; never infer event provenance from arrival order.
+- When destructive cleanup sends a cancellation terminal through an IPC sender
+  other than the actor's observer, also settle the authoritative actor with the
+  same correlated cancelled terminal; a silent handler return must not be
+  synthesized as successful completion.
 - Compensation on abort rolls back only what the aborted operation touched.
 - When a multi-step side effect can fail partway through, retain the exact
   completed/next step in the failure state. Retrying from the start can repeat
@@ -230,7 +251,6 @@ Background and before/after examples of why this pattern exists:
   acquire the resource before the StrictMode-safe disposal microtask runs.
 - When disposal can race an async command that registers external state after
   an `await`, clean up both immediately and again after the command settles.
-  Disposal must also clear any machine-owned legacy projection synchronously.
 - When a cross-owner facade defers keyed delivery to a microtask, entity
   disposal must invalidate both queued and future deliveries for that key.
   Otherwise the deferred callback can recreate a controller after deletion.
@@ -259,6 +279,9 @@ Background and before/after examples of why this pattern exists:
 - Correlation identity and durable idempotency identity are separate contracts.
   Name which property each boundary relies on even when a protocol deliberately
   uses the same value for both.
+- Do not include main-injected sender metadata in a renderer-computed immutable
+  payload hash. Bind and validate that metadata separately during authorization,
+  or compute the authoritative hash only after main supplies it.
 - When a machine becomes the sole scheduler for a queue, every legacy enqueue
   path must poke the machine or enqueue through it.
 
@@ -290,14 +313,21 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   and keep it acyclic. Construct concrete facade adapters at an application
   composition root, outside both machines.
 
-## Projections
+## Read models and intents
 
-- A machine projection has one writer: its controller or manager. Jotai atoms
-  exposed to legacy UI are read-only views and are updated from snapshots in
-  one subscription through `projectToAtom` or a claim from
-  `registerAtomWriter`, not opportunistically by individual commands. A
-  projection is safe only once the machine is its single writer; interim
-  dual-writer periods are where races live.
+- The former same-process Jotai projection compatibility layer was retired by
+  `plans/cleanup-state-machines.md`. Do not reintroduce `projectToAtom`,
+  `registerAtomWriter`, or another lifecycle-mirroring helper. Renderer
+  consumers read the owner snapshot through domain hooks and pure selectors.
+- Cross-process actors expose a named, serializable read model. Each renderer
+  window owns its subscription/bootstrap adapter and treats unavailable or
+  pre-bootstrap data as non-authoritative. The adapter may cache the remote
+  snapshot for `useSyncExternalStore`; it must not create a second writable
+  lifecycle authority in Jotai.
+- Renderer actions cross the owner boundary as typed facade intents. Intent
+  admission, transition commit, command completion, and durable acceptance are
+  distinct outcomes; expose the narrow receipt or settlement signal the caller
+  actually needs.
 - Manager admission and transition application are separate facts. Before
   deleting an admission-gated side channel, characterize admitted events that
   the transition deliberately ignores (including startup, shutdown, and
@@ -340,7 +370,36 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   when acknowledgement fails or the claim expires.
 - An unavailable/bootstrap remote snapshot is not authoritative idle state.
   Gate every actor-backed capability on a ready connection and defer recovery
-  dispatches until subscription bootstrap has completed.
+  dispatches until subscription bootstrap has completed. Cleanup dispatched
+  while navigating away must temporarily retain the old actor, resync stale
+  revisions, and retry with the same stable operation identity; losing an exit
+  intent can leave the external resource under hidden retained ownership.
+- When window-local presentation controls a shared external lifecycle, track
+  explicit per-window interest in main and clean up only when the last owner
+  explicitly releases it. Window destruction should drop stale interest without
+  triggering cleanup when the actor is designed to survive renderer reloads.
+- A safe remote projection contains only domain facts needed by consumers.
+  Keep window-local presentation fields out of the authoritative snapshot and
+  route one-shot toast/navigation outcomes to the initiating window. Publish
+  durable query scopes separately so every attached window converges. At the
+  renderer boundary, explicitly recombine the local presentation snapshot with
+  every remote lifecycle state, including transient command states; otherwise a
+  correct domain transition can silently reset the visible pane or selection.
+- Apply presentation for a remotely adjudicated selection only after an
+  applied receipt, and serialize rapid selections through resync. Suppressing
+  an earlier accepted presentation merely because a later stale dispatch is
+  pending can leave the UI disagreeing with the external resource.
+- Treat an operation ID's initiating window as a first-writer ownership claim.
+  A duplicate intent from another window must not overwrite that routing entry,
+  even if the duplicate transition will later be ignored.
+- Authorization can run before revision admission. Keep any presentation
+  ownership recorded there tentative and expire it unless an applied
+  transition confirms the claim; rejected stale dispatches never reach actor
+  observers and otherwise leak bounded routing capacity.
+- Do not hide local presentation for a cleanup intent until main accepts the
+  exit (or already reports a safe terminal state). Resync and retry stale
+  cleanup receipts with one operation ID so a hidden pane cannot mask retained
+  external ownership.
 - Keep transport revisions separate from semantic presentation epochs. A
   revision may advance for bookkeeping-only transitions, while a reload token
   must advance exactly once for each user-visible remount.
@@ -354,12 +413,38 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
 - If retries may replace an input payload, carry operation facts established
   by earlier transitions (such as create-vs-update) explicitly in state. Do not
   re-derive UI or analytics semantics from the replacement payload.
+- A remote renderer adapter must preserve the legacy terminal side-effect
+  contract as well as lifecycle state: query invalidations, authoritative
+  message refresh, preview-open policy, reload/capture requests, and settlement
+  callbacks all belong in the completion projection.
+- When seeding a retained-completion cursor from bootstrap, skip only receipts
+  that have no matching local in-flight request. A matching receipt must take
+  the normal completion path or its waiter and terminal side effects are lost.
+- Main-owned work must report terminal settlement through a main-owned observer
+  or return path. Renderer delivery is best-effort: a destroyed `WebContents`
+  can make `safeSend` a no-op and must not strand the authoritative actor.
+- `useSyncExternalStore` snapshots must be referentially stable between store
+  changes. If an adapter overlays optimistic admission on a remote snapshot,
+  cache the projected object by base snapshot and operation identity instead of
+  allocating a new object from every `getSnapshot()` call.
 
 ## Persistence and hydration
 
 - Model hydration explicitly when persisted state gates machine behavior.
   Persist through an adapter-owned, debounced command using a versioned zod
   schema; do not let components write snapshots independently.
+- When a side effect can make recovery state externally observable (for
+  example, detaching Git HEAD), force and await persistence of the exact
+  committed checkpoint before starting it. Observer error isolation must not
+  allow the side effect to run after that checkpoint fails.
+- A checkpoint immediately before a destructive step means that step may have
+  started. Restart reconciliation must not infer "not started" from one
+  unchanged external fact such as Git HEAD; validate every relevant identity
+  and mutable surface (for example branch, HEAD, and user-visible index/tree),
+  and classify failure from the last effect boundary that may have crossed.
+- A durable `completed` checkpoint must follow every authoritative effect, not
+  just the primary one. If a workflow mutates Git and then SQLite, persist an
+  explicit post-Git/next-database step until the database mutation finishes.
 - Define merge/replacement semantics for events received during hydration.
   On teardown, flush the latest accepted snapshot through a transport that is
   safe for the lifecycle boundary (for example, one-way IPC during pagehide).
@@ -367,6 +452,14 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   entity lock. Recheck the fence inside the lock, stop actor admission before
   unrelated awaited cleanup, and make actor disposal flush every admitted
   command before database or filesystem deletion.
+- Deletion settlement tracks the full command-runner continuation, including
+  post-handler lifecycle work and the terminal event that may synchronously
+  enqueue compensation. Waiting only for the low-level handler promise can
+  dispose the actor before its compensating command exists.
+- A persisted main-owned recovery actor must reconcile its domain facts with
+  the external resource before accepting new mutations after restart. Treat
+  matching origin state as closed and detached/divergent state as explicit
+  recovery; never serialize command handles or renderer presentation state.
 
 ## Query keys and recorded decisions
 
@@ -407,6 +500,11 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   expected ignore reason.
 - `boundaries.test.ts` enforces kernel purity and machine-to-machine isolation;
   add new machine directories to its inventory when they are introduced.
+- Boundary allowlist tests must derive the actual production call sites and
+  exact-compare them with the declared inventory. Checking only that declared
+  markers still exist does not prevent an undeclared boundary crossing.
+  Classify calls through the owning API (for example, Jotai stores and hooks),
+  not an expected import directory; domain values may be local or re-exported.
 - Keep host-only distributed-machine definitions outside shared machine
   directories (for example, under `src/ipc/services/` for a main-owned actor).
   Shared machine directories are scanned as renderer-reachable code and may
@@ -416,6 +514,25 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
 - Keep remote transport test doubles behind an existing domain test-support
   facade. Renderer and hybrid harnesses may consume that facade, but must not
   widen the allowlist of production modules that import transport internals.
+- When a test definition uses the native `remoteIntent` contract, inject
+  authorization races through `remoteIntent.authorizeSubscribe` or
+  `remoteIntent.authorizeDispatch`. Replacing the legacy `remote.authorize*`
+  hooks exercises only compatibility definitions and can leave a native test
+  gate waiting forever.
+- Keep native remote-admission revalidation out of the protocol-v1
+  compatibility adapter until a domain migrates. Moving trusted conversion or
+  adding a second revision fence to legacy dispatch can change terminal
+  delivery even when the wire envelope is unchanged; cover a representative
+  legacy streaming integration when editing the adapter. Preserve the adapter's
+  bounded re-authorization when an allow-stale event races an actor revision;
+  exact captured-revision rejection belongs to the native prepared path.
+- Model StrictMode subscriber replay and explicit subscription leases as
+  different ownership classes. A shared subscriber lease may use a
+  replacement generation, while every explicit `retain()` needs its own live
+  token so releasing one owner cannot retire or leak another. A lease created
+  before the owning client/provider starts must let `ready` adopt that startup
+  bootstrap, and an in-flight completion retain must count as transport
+  interest during connection replacement and disposal teardown.
 - In `runCosim` suites, `maxSchedules` bounds visited configurations, not only
   quiescent leaves. If one orthogonal action (for example quit at every phase)
   causes a bound hit, split it into a focused exhaustive alphabet instead of

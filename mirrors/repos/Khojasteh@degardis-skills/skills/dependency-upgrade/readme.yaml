@@ -1,0 +1,24 @@
+format_version: 1
+purpose: |-
+  Upgrade packages, frameworks, runtimes, SDKs, compilers, or build tools while
+  preserving supported behavior.
+when_it_applies: |-
+  This skill applies to version bumps, security updates, dependency conflicts,
+  and same-technology major upgrades. Replacing the technology itself is outside
+  its scope.
+capabilities:
+- Inventories direct, transitive, generated, and configuration dependencies.
+- Selects a supported target version from authoritative upstream evidence.
+- Updates manifests, lockfiles, APIs, configuration, and generated code.
+- Removes obsolete compatibility paths and resolves dependency conflicts.
+- Verifies behavior, security, licensing, deployment, and rollback concerns.
+sample_prompts:
+- Upgrade Nuxt and remove old compatibility code.
+- Bump this project to the latest major version of React and fix breakages.
+- Update our dependencies to patch the reported security vulnerabilities.
+- Move this service to the new major version of the SDK.
+- Upgrade our build tooling and clean up any legacy config it leaves behind.
+catalog:
+  order: 100
+  category: Software engineering / Modernization
+  summary: Upgrade dependencies while preserving supported behavior.

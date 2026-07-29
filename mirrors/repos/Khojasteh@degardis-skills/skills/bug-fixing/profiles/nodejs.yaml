@@ -1,0 +1,7 @@
+name: nodejs
+label: Node.js
+description: Load when fixing Node.js code or behavior.
+instructions:
+- Reproduce event-loop ordering, rejections, timers, streams, backpressure, signals, workers, caches,
+  filesystem behavior, environment, and open handles; reject arbitrary sleeps and verify cleanup after
+  the causal fix.

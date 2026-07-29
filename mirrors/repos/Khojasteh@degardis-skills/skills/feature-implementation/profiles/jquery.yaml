@@ -1,0 +1,7 @@
+name: jquery
+label: jQuery
+description: Load when implementing jQuery features.
+instructions:
+- Define DOM prerequisites and ownership, delegated events, plugin lifecycle, options and methods, chaining,
+  Ajax and Deferred behavior, accessibility, duplicate initialization, cleanup, and coexistence without
+  opportunistic framework migration.

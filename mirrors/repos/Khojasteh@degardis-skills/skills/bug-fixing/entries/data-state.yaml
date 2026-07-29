@@ -1,0 +1,12 @@
+id: bug-fixing.data-state
+title: Preserve data and state integrity
+kind: constraint
+rule: Trace state transitions, persistence, transactions, retries, idempotency, and
+  partial failure through the defective path and the proposed fix.
+require:
+- Account for existing malformed or partially written data and safe recovery.
+- Preserve atomicity, uniqueness, ordering, and retry safety where promised.
+- Verify cleanup and rollback paths, not only successful completion.
+reject:
+- Repairing only new writes while leaving existing affected state unaddressed or undocumented.
+- Retrying a non-idempotent operation without proving duplicate effects are prevented.

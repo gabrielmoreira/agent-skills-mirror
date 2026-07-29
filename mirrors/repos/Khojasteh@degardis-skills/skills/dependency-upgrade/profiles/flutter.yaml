@@ -1,0 +1,10 @@
+name: flutter
+label: Flutter
+description: Load when upgrading Flutter dependencies or tooling.
+instructions:
+- Resolve Flutter and Dart SDK constraints together with package constraints, platform plugins, code
+  generators, and the repository's committed pub lock policy.
+- Run native package resolution and generation before validating Android, iOS, web, and desktop targets
+  that the repository supports; a successful Dart-only check does not establish platform compatibility.
+- Review plugin registration, platform minimums, generated files, native dependency managers, and obsolete
+  overrides introduced for older SDK or plugin lines.

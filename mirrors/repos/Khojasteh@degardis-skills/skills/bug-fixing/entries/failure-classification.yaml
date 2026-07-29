@@ -1,0 +1,14 @@
+id: bug-fixing.failure-classification
+title: Classify the failing layer
+kind: policy
+priority: 4
+rule: Determine whether the failure belongs to production behavior, a test, the environment,
+  configuration, a dependency, data, or operations before selecting a remedy.
+require:
+- Trace the first divergence from the independently established contract.
+- Separate stale fixtures and assertions from production regressions.
+- Separate unavailable services, permissions, resource exhaustion, and tooling failures
+  from code defects.
+reject:
+- Changing production code to accommodate a broken test or environment.
+- Relabeling a production defect as expected merely because the current suite passes.

@@ -1,0 +1,51 @@
+id: docs.readability
+title: Make complete information easy to read
+kind: policy
+rule: Present every material fact the selected reader needs in a form that is easy
+  to scan, follow, and understand.
+require:
+- Use plain, direct language appropriate to the reader's knowledge.
+- Lead sections and paragraphs with the conclusion, action, or condition the reader
+  needs; keep setup subordinate to it.
+- Give each paragraph one specific subject and one reader purpose. Every sentence
+  must explain, qualify, support, or advance that same subject; move or remove a
+  sentence that does not.
+- Label each sentence mentally with the concrete entity and reader question it
+  addresses. Keep sentences in one paragraph only when those labels match; a shared
+  container such as a build, archive, API, or configuration does not make different
+  entities one subject.
+- Prefer short paragraphs, but use topical cohesion rather than length as the test.
+  Split a paragraph when its subject or reader purpose changes, even if the paragraph
+  is already short; retain a longer paragraph only when every sentence is tightly
+  connected.
+- Use descriptive headings for distinct reader questions or stages. Use numbered
+  lists for required sequences, bullets for parallel items, and tables only when
+  readers need to compare the same fields across several options.
+- Group list items only when they answer the same reader question and have a parallel
+  relationship. Separate unrelated facts instead of hiding them in one paragraph or
+  list merely because they concern the same broad component or artifact.
+- Keep prerequisites, conditions, exceptions, warnings, limitations, side effects,
+  recovery steps, and necessary rationale adjacent to the claim or action they qualify.
+- Preserve material information while simplifying. Remove only repetition, unnecessary
+  background, and detail outside the reader's goal; otherwise restructure, summarize,
+  or link to an authoritative destination instead of deleting it.
+- Explain necessary terminology on first use, make references unambiguous, and use
+  examples or concrete outcomes when abstraction alone would slow understanding.
+- Prefer a representative result over a full command transcript, and prefer a link
+  to authoritative detail over a second abbreviated explanation.
+- Check that every paragraph helps the reader act, decide, understand, troubleshoot,
+  or recover, and that no required fact was lost during the readability pass.
+reject:
+- Dense paragraphs that combine unrelated ideas, steps, conditions, and caveats.
+- Paragraphs whose sentences would need different headings or whose only connection
+  is a broad label such as output, configuration, archive, or behavior.
+- Unexplained jargon, indirect phrasing, and prose lists that obscure actionable information.
+- Improving scannability by omitting a prerequisite, qualification, risk, failure
+  condition, or other information required for the promised reader outcome.
+- Fragmenting connected prose into choppy one-sentence paragraphs or overusing headings,
+  lists, and tables when they do not clarify the content.
+examples:
+- Keep icon copying and the generated metadata path together because both answer how
+  icons are packaged. Put empty-directory omission and generated-reference contents
+  in separate paragraphs or parallel list items because they describe different
+  entities and answer different questions.

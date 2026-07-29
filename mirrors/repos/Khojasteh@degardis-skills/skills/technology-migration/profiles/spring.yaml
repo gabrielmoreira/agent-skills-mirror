@@ -1,0 +1,11 @@
+name: spring
+label: Spring
+description: Load when migrating to or from Spring.
+instructions:
+- When Spring is the target, prefer target-version dependency injection, configuration, web, validation,
+  security, transaction, persistence, messaging, scheduling, observability, health, and lifecycle facilities.
+- Do not recreate source-framework service containers, request filters, transaction layers, configuration,
+  or messaging abstractions behind wrappers when Spring supplies the contract.
+- Verify bean discovery and scopes, proxying, configuration binding, middleware or filter order, security
+  defaults, transactions, serialization, async work, messaging, lifecycle, deployment, and cleanup.
+- Keep gateways, dual contexts, compatibility starters, and synchronization bounded to stages.

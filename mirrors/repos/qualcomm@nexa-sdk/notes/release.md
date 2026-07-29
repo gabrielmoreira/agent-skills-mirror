@@ -165,12 +165,14 @@ The per-tag manifest is byte-stable across workflow re-runs of the same tag — 
 
 ## Hexagon HTP signing
 
-The Windows ARM64 SDK ships `libggml-htp.cat` plus `libggml-htp-v{68,69,73,75,79,81}.so` — Windows refuses to load them unsigned. Release CI runs an `overlay-htp` job **before** `build-cli` that `curl`s `s3://qaihub-public-assets/llama-cpp/libggml-htp-<sha>.zip`, where `<sha>` is the `third-party/llama.cpp` short SHA. Both the installer and the SDK zip end up with the same HTP files:
+The Windows ARM64 SDK ships `libggml-htp.cat` plus `libggml-htp-v{68,69,73,75,79,81}.so` — Windows refuses to load them unsigned. Release CI runs an `overlay-htp` job **before** `build-cli` that sparse-checks-out `sdk/signed-htp/libggml-htp-<sha>.zip` from the `chore/signed-htp-lfs-store` branch of `qcom-ai-hub/geniex` (LFS-tracked), where `<sha>` is the `third-party/llama.cpp` short SHA. Both the installer and the SDK zip end up with the same HTP files:
 
 - **Hit** — overlay the Microsoft-signed files into the SDK artifact; `build-cli` packages them into the installer; release normally.
 - **Miss** — keep the self-signed build. The SDK name gets a `-selfsigned` suffix, and the release also carries `ggml-htp-v1.cer` (users import it) and `libggml-htp-to-sign-<sha>.zip` (operators submit it for signing).
 
-The S3 bundle must contain exactly these eight files at the zip root: `libggml-htp.cat`, `libggml-htp.inf`, and `libggml-htp-v{68,69,73,75,79,81}.so`.
+The signed bundle must contain exactly these eight files at the zip root: `libggml-htp.cat`, `libggml-htp.inf`, and `libggml-htp-v{68,69,73,75,79,81}.so`.
+
+The cross-repo checkout reuses `secrets.GH_PAT` (already scoped for cross-repo access to `qcom-ai-hub/geniex` — see `publish-s3` below). If CI reports `signed=false` but the bundle is on `chore/signed-htp-lfs-store`, first check that `GH_PAT` has not expired.
 
 ### Promoting self-signed → Microsoft-signed
 
@@ -178,9 +180,9 @@ The S3 bundle must contain exactly these eight files at the zip root: `libggml-h
 2. Submit for Microsoft signing.
    a. Put the `.cat` `.inf` and all `.so` files into `ATT\libggml-htp\` in samba;
    b. Submit Jenkins pipeline, fill path with `\path\to\ATT`, other field use default or first param.
-   c. Get singed files from `ATT\Glymur\01000\ExtractedDrivers`.
-   d. keep files in a zip with the same files (without `.inf`) at the root.
-3. Upload the result to `s3://qaihub-public-assets/llama-cpp/libggml-htp-<sha>.zip`, with public acl.
+   c. Get signed files from `ATT\Glymur\01000\ExtractedDrivers`.
+   d. Repack the signed files (without `.inf`) into a zip with the same layout at the root.
+3. Commit the result to `qcom-ai-hub/geniex` at `sdk/signed-htp/libggml-htp-<sha>.zip` on the `chore/signed-htp-lfs-store` branch — `git lfs install` locally, push the zip directly, or open a PR against that branch and squash-merge.
 4. Re-run the Release workflow for the same tag.
 
 ## Windows installer signing gate

@@ -1,0 +1,21 @@
+id: degardis-authoring.entry-schema
+title: Degardis entry contract
+kind: constraint
+priority: 60
+rule: Define each entry as one focused reusable rule with a stable ID and
+  schema-correct optional guidance.
+require:
+- "id: required non-empty string; namespace it within the skill."
+- "rule: required non-empty string containing the central instruction."
+- "kind: when present, use principle, policy, heuristic, pattern, constraint, or
+  rule; default is rule."
+- "priority: when present, use an integer; lower values render first and the
+  default is 100."
+- "require, allow, reject, conditions, exceptions, and examples: when present,
+  each must be a YAML list of strings."
+allow:
+- "title: human-facing heading; the ID is used when omitted."
+- "rationale, scope, and constraint: optional string explanations or boundaries."
+reject:
+- Combining unrelated rules in one entry.
+- Putting ordered procedures or context variants into entries.

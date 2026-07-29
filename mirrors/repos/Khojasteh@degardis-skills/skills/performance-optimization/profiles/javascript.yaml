@@ -1,0 +1,8 @@
+name: javascript
+label: JavaScript
+description: Load when optimizing JavaScript performance.
+instructions:
+- Account for JIT warmup and deoptimization, GC and allocation, event-loop delay, promises, serialization,
+  module loading, I/O, network work, startup, and bundle size.
+- Compare equivalent runtime and optimized build modes; preserve rejection, cancellation, ordering, cleanup,
+  and browser or server compatibility.

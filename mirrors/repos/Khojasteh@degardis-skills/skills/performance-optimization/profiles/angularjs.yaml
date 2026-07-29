@@ -1,0 +1,7 @@
+name: angularjs
+label: AngularJS
+description: Load when optimizing AngularJS performance.
+instructions:
+- Measure digest duration and frequency, watcher count, scope and directive lifecycle, DOM work, filters,
+  events, HTTP, bundle/startup, memory, and interaction latency; retain binding, error, accessibility,
+  and cleanup behavior.

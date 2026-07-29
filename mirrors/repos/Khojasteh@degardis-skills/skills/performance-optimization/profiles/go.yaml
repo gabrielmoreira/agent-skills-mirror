@@ -1,0 +1,6 @@
+name: go
+label: Go
+description: Load when optimizing Go performance.
+instructions:
+- Measure allocation and escape behavior, GC, goroutines, scheduler and blocking, contention, channels,
+  interfaces, serialization, syscalls, I/O, startup, and binary size.
