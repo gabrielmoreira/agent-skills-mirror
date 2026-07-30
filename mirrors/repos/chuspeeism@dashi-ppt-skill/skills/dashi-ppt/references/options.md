@@ -36,21 +36,26 @@
 
 ## slide
 
-面向用户交付的每页使用 `layout` + `props`:
+新生成 deck 使用 `schemaVersion: 2`;每个逻辑页的唯一展示内容是 `slide.content.presentation`,禁止 `views.v*` 或候选内容副本,并包含 3 个 template variants 和 1 个无 layout 的 bespoke variant。旧 deck 的单 layout 和旧 3 候选仍可读取:
 
 - `layout`: 直接指定页面 key,例如 `theme01_page001` 或 `theme12_page001`。
-- `props`: 只填写可见文案/数据内容字段。普通生成不要写样式、结构、数量、显隐、强调、配色、图表或图片槽位控制字段。
-- `role`: 只允许草稿阶段辅助选页,渲染前必须换成具体 `layout`。
+- template: `{id, kind:"template", layout, props, contentMap}`。
+- bespoke: `{id:"v4", kind:"bespoke", adjustable:false, composition, contentMap}`,不写 `layout`、`props` 或 `controls`。
+- `slide.content.presentation`: 本页唯一展示内容,包含 `title/titleShort`、`summary/summaryShort`、`takeaway`、`items` 和可选 `structure`;每个 item 使用稳定 `id/label/value/displayValue/detail/unit/required/priority`。
+- `contentMap`: 标量使用 `{目标路径:"presentation.title"}`;唯一主数组字段重命名使用 `{source:"presentation.items",fields:{目标字段:"label"},limit:N}`;重复标量槽组按 item 下标映射。
+- `role`: 只作语义加分,渲染前必须换成具体 `layout`。
 
-每套主题的前 5 页都是封面候选。一个 deck 只能使用其中 1 页作为封面,正文页从第 6 页以后选择。
+每套主题的前 5 页都是封面候选。一个 deck 只能有 1 个逻辑封面页,它的 3 个模板方案都从前 5 页选择;正文模板方案从第 6 页以后选择。同一逻辑页内 3 个 template layout 必须互不重复且优先来自不同结构家族;整稿先使用尚未出现的 layout 和结构指纹,候选确实不足时才复用。
 
-选页先使用 `npm --prefix <skill-root>/project run layout:query -- --theme <themePack> --role <role> --limit 8`。动态背景页用 `--role ambient`。需要图片槽时加 `--needs-media`、`--planned-images <n>`、`--provided-images <n>` 或 `--image-gen`,候选会基于真实 `mediaSlots`;用户给素材时只用 `canPresetMedia: true` 的槽,按 `presetProp` 写路径。
+选页先冻结本页 `presentation`,再使用 `npm --prefix <skill-root>/project run layout:query -- --theme <themePack> --title-chars <n> --summary-chars <n> --takeaway-chars <n> --item-count <n> --value-item-count <n> --raw-numeric-item-count <n> --textual-value-item-count <n> --nested-depth <n> --priority <重点> --limit 12 --seed <randomSeed>:slide-<n>`。标题、items、`value/displayValue` 和明确媒体是硬条件;摘要、结论、detail、unit、focus 和 role 是软偏好。v4 在 Codex 环境先读取 `baoyu-design`,用其设计论点、视觉焦点、节奏和构图方法做整稿艺术指导;当前主题 runtime 是 binding design system,最终只绘制受约束 composition,不输出自由 HTML/CSS。需要图片槽时加 `--needs-media`、`--planned-images <n>`、`--provided-images <n>` 或 `--image-gen`。
 
-长 deck 先用 `npm --prefix <skill-root>/project run goal:scaffold -- --title <title> --goal <goal> --theme <themePack> --pages <n> --chunk-size 5 --out output/<deck-name>/goal.json` 生成唯一 layout 骨架和 `goal.fill-plan.json`,再按 `fillPlan` 分段补 `props`。输出目录写在当前会话工作目录,不要写入 `<skill-root>/project/output`。
+长 deck 先写逐页 brief JSON,每页包含 `role`、`priority` 和唯一 `content`,再用 `npm --prefix <skill-root>/project run goal:scaffold -- --title <title> --goal <goal> --theme <themePack> --pages <n> --content-briefs <briefs.json> --layout-variants 3 --seed <randomSeed> --workflow-run-id <workflowRunId> --chunk-size 5 --out output/<deck-name>/goal.json`;新任务生成新的 run ID,同一任务重试复用原 ID。scaffold 按内容容量和字段能力选 3 个模板,并追加可直接渲染的主题化 v4 初稿;Agent 保留 compositionFamily 和主题 recipe 做优化,不要清空后重做同一套卡片。输出目录写在当前会话工作目录,不要写入 `<skill-root>/project/output`。
 
-单页契约优先使用 `npm --prefix <skill-root>/project run inspect:layout -- --compact <layout...>`,一次传多个 layout 或多次 `--layout`。`fillPlan` 给出标题/正文长度、可见数组数量、嵌套数组数量和媒体写入字段;`propShapes` 给出 `copy`、对象数组和嵌套数组的内部 key。写 `copy`、`cells`、`items`、`rows` 等对象字段时只使用 `fillPlan` / `propShapes` 列出的 key,不要凭字段名猜测。写数组、数量或图片时使用 `npm --prefix <skill-root>/project run props:safe -- <layout> '<props-json>' [--images <path...>]`;写完整 `goal.json` 后使用 `npm --prefix <skill-root>/project run props:safe -- --goal <goal-json> --write` 做整份 props 规范化。
+单页契约优先使用 `npm --prefix <skill-root>/project run inspect:layout -- --compact <layout...>`,一次传多个 layout 或多次 `--layout`。`fillPlan` 给出标题/正文长度、可见数组数量、嵌套数组数量和媒体写入字段;`propShapes` 给出 `copy`、对象数组和嵌套数组的内部 key。scaffold 同时识别数组容器与重复标量槽组,完整 items 只投影到唯一主容器;辅助可见内容容器可隐藏时设为 0,不能隐藏且没有合法支持内容时该 layout 退出候选。不要让 Agent 手写 30 份 `contentMap`;用户显式指定复杂 layout 时才按 `goal.fill-plan.json` 补该页映射。写数组、数量或图片时使用 `npm --prefix <skill-root>/project run props:safe -- <layout> '<props-json>' [--images <path...>]`;写完整 `goal.json` 后使用 `npm --prefix <skill-root>/project run props:safe -- --goal <goal-json> --write` 做整份 props 规范化。
 
-图片/视频只写 `mediaSlots[].canPresetMedia: true` 的槽,按该槽 `presetProp` / `fieldPath` 写 deck 内相对路径。不要写 `slides[].media` 或不可 preset 的媒体槽;用户提供本地素材时先运行 `npm --prefix <skill-root>/project run media:stage -- <deck-output-dir-or-ppt-dir> <media-file...>`,再把返回的 `relative` 路径写入真实 media slot。每个素材最多使用一次。用户明确要求原创视觉图/生图时用 image-gen;未明确生图时先询问用户。需要 image-gen 生成 2 张以上独立图片时,用多个 subagent 并行,不要串行逐张等待;每张图独立生成,不要用一张拼图/素材板再拆分。subagent 只用于生图。用户只计划后续插图时选择并保留带 media slot 的页面。
+图片/视频只写 `mediaSlots[].canPresetMedia: true` 的槽,按该槽 `presetProp` / `fieldPath` 写 deck 内相对路径。不要写 `slides[].media` 或不可 preset 的媒体槽;用户提供本地素材时先运行 `npm --prefix <skill-root>/project run media:stage -- <deck-output-dir-or-ppt-dir> <media-file...>`,再把返回的 `relative` 路径写入真实 media slot。同一逻辑页的 4 个方案共用同一素材,不同逻辑页之间每个素材最多使用一次。用户明确要求原创视觉图/生图时用 image-gen;未明确生图时先询问用户。需要 image-gen 生成 2 张以上独立图片时,用多个 subagent 并行,不要串行逐张等待;每张图独立生成,不要用一张拼图/素材板再拆分。subagent 只用于生图。用户只计划后续插图时选择并保留带 media slot 的页面。
+
+编辑器和左侧目录始终只显示 N 个逻辑页,候选切换不改变逻辑页码。只有 `variantOutputMode:"comparison"` 比较稿导出才派生 4N 页(PDF/PPTX 和用户明确要求的比较稿使用此模式);`"selected-only"` 导出 N 页。v4 无模板属性控件,但仍可选择、保存和导出。
 
 需要调整卡片/条目数量时,用 `cardCount`、`itemCount`、`stepCount` 等 count 参数控制显示数量。数组字段是模板内容池;只覆盖当前显示的前 N 项。被 count/显隐控制隐藏的尾项可保留“请输入文本”占位。
 

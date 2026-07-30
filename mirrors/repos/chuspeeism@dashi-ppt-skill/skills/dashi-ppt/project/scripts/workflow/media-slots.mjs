@@ -21,15 +21,14 @@ export function getMediaSlotsForLayout(layout) {
   return record ? getMediaSlots(record) : [];
 }
 
-export function mediaSlotsCanFit(slots = [], count = 1, { requireInitialMedia = false, mediaKind = null } = {}) {
+export function mediaSlotsCanFit(slots = [], count = 1, { requireInitialMedia = false, mediaKind = null, exactCount = false } = {}) {
   const requested = Math.max(1, Number(count) || 1);
   const normalizedKind = normalizeMediaKind(mediaKind);
-  return slots.some(slot => {
-    if (!isWritableMediaSlot(slot)) return false;
-    if (requireInitialMedia && slot.initialSrcSupported !== true) return false;
-    if (normalizedKind && !slotAcceptsKind(slot, normalizedKind)) return false;
-    return mediaSlotCapacity(slot) >= requested;
-  });
+  return slots.some(slot => mediaSlotCanFit(slot, requested, {
+    requireInitialMedia,
+    mediaKind: normalizedKind,
+    exactCount,
+  }));
 }
 
 export function mediaSlotCapacity(slot) {
@@ -56,9 +55,23 @@ export function getPreferredMediaSlot(layout, { kind = 'images', count = 1 } = {
   const requested = Math.max(1, Number(count) || 1);
   const requestedKind = kind === 'media' ? null : 'image';
   const preferredFields = kind === 'media' ? ['media', 'images'] : MEDIA_ARRAY_KEYS;
-  return slots.find(slot => slot.initialSrcSupported === true && preferredFields.some(field => field.toLowerCase() === String(slot.field || '').toLowerCase()) && (!requestedKind || slotAcceptsKind(slot, requestedKind)) && mediaSlotCapacity(slot) >= requested)
-    || slots.find(slot => slot.initialSrcSupported === true && (!requestedKind || slotAcceptsKind(slot, requestedKind)) && mediaSlotCapacity(slot) >= requested)
+  const canFit = slot => mediaSlotCanFit(slot, requested, {
+    requireInitialMedia: true,
+    mediaKind: requestedKind,
+    exactCount: true,
+  });
+  return slots.find(slot => preferredFields.some(field => field.toLowerCase() === String(slot.field || '').toLowerCase()) && canFit(slot))
+    || slots.find(canFit)
     || null;
+}
+
+function mediaSlotCanFit(slot, requested, { requireInitialMedia, mediaKind, exactCount }) {
+  if (!isWritableMediaSlot(slot)) return false;
+  if (requireInitialMedia && slot.initialSrcSupported !== true) return false;
+  if (mediaKind && !slotAcceptsKind(slot, mediaKind)) return false;
+  const min = Number(slot?.min);
+  if (exactCount && Number.isFinite(min) && requested < min) return false;
+  return mediaSlotCapacity(slot) >= requested;
 }
 
 export function typedMediaItemForSource(source) {
@@ -358,8 +371,7 @@ export function slotAcceptsKind(slot, kind) {
 }
 
 export function isWritableMediaSlot(slot) {
-  return slot?.role === 'media'
-    && slot.canPresetMedia === true
+  return slot?.canPresetMedia === true
     && slot.initialSrcSupported === true
     && Boolean(slot.writableProp || slot.fieldPath || slot.presetProp);
 }

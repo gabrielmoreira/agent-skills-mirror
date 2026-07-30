@@ -36,13 +36,15 @@ curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
 | `q` | string | No | Keywords. Do NOT use for audio searches — transcriptions are noisy, q filters too aggressively. |
-| `content_type` | string | No | `all` (default), `accessibility`, `audio`, `input`, `ocr`, `memory`. Screen text is primarily captured via the OS accessibility tree (`accessibility`); OCR is a fallback for apps without accessibility support (games, remote desktops). Use `all` unless you need a specific modality. |
+| `content_type` | string | No | `all` (default), `accessibility`, `audio`, `input`, `ocr`, `memory`, `parsed`. Use `parsed` for compact app-specific messages, emails, tasks, documents, and code review. Parsed capture is experimental, may be empty when disabled/unsupported, and is not included in `all`. Screen text is primarily captured via the OS accessibility tree (`accessibility`); OCR is a fallback for apps without accessibility support. |
 | `limit` | integer | No | Max 1-20. Default: 10 |
 | `offset` | integer | No | Pagination. Default: 0 |
 | `start_time` | ISO 8601 or relative | **Yes** | Accepts `2024-01-15T10:00:00Z` or `16h ago`, `2d ago`, `30m ago` |
 | `end_time` | ISO 8601 or relative | No | Defaults to now. Accepts `now`, `1h ago` |
 | `app_name` | string | No | e.g. "Google Chrome", "Slack", "zoom.us" |
 | `window_name` | string | No | Window title substring |
+| `frame_id` | integer | No | With `content_type=parsed`, return parsed data attached to one frame. |
+| `actor_id` | integer | No | With `content_type=parsed`, filter by a resolved actor identity. |
 | `speaker_name` | string | No | Filter audio by speaker (case-insensitive partial) |
 | `focused` | boolean | No | Only focused windows |
 | `tags` | string | No | Comma-separated; return only items carrying ALL of them (e.g. `person:ada,project:atlas`). Works for screen/audio and, with `content_type=memory`, memories. See Tags below. |
@@ -105,7 +107,8 @@ curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
   "data": [
     {"type": "OCR", "content": {"frame_id": 12345, "text": "...", "timestamp": "...", "app_name": "Chrome", "window_name": "..."}},
     {"type": "Audio", "content": {"chunk_id": 678, "transcription": "...", "timestamp": "...", "speaker": {"name": "John"}}},
-    {"type": "UI", "content": {"id": 999, "text": "Clicked 'Submit'", "timestamp": "...", "app_name": "Safari"}}
+    {"type": "UI", "content": {"id": 999, "text": "Clicked 'Submit'", "timestamp": "...", "app_name": "Safari"}},
+    {"type": "Parsed", "content": {"frame_id": 12345, "text": "compact corrected app data", "items": [], "actors": []}}
   ],
   "pagination": {"limit": 10, "offset": 0, "total": 42}
 }
@@ -446,7 +449,25 @@ When the user says "that was actually Jordan, not Karishma":
 
 ---
 
-## 11. Memories — High-Signal Persistent Knowledge
+## 11. Parsed app data and actors
+
+Parsed data uses the same search surface as every other readable content type:
+
+```bash
+curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" \
+  "http://localhost:3030/search?content_type=parsed&start_time=2h%20ago&limit=10"
+```
+
+Results contain compact corrected `text`, typed `items`, parser provenance, and
+a separate `actors` array for correctable identities. Filter one frame with
+`frame_id` or one resolved identity with `actor_id`. Actor edits remain explicit:
+`GET /semantic/actors/search`, then `POST /semantic/actors/create`, `update`,
+`merge`, `reassign`, or `aliases/reassign`. Never merge actors by display name
+alone; the parser label is observed evidence, while the actor record is mutable.
+
+---
+
+## 12. Memories — High-Signal Persistent Knowledge
 
 **Memories are the highest-signal data source in screenpipe.** They contain curated facts, user preferences, decisions, and project context — distilled from hours of screen/audio data. Always check memories when answering questions or building context.
 

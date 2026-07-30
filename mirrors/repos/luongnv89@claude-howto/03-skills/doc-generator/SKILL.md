@@ -1,5 +1,5 @@
 ---
-name: api-documentation-generator
+name: doc-generator
 description: Generate comprehensive, accurate API documentation from source code. Use when creating or updating API documentation, generating OpenAPI specs, or when users mention API docs, endpoints, or documentation.
 ---
 

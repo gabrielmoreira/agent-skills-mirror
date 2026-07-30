@@ -29902,7 +29902,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -30092,7 +30092,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -30337,7 +30337,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "imageCount",
@@ -30568,7 +30568,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -30808,7 +30808,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -31009,7 +31009,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -31253,7 +31253,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -31586,7 +31586,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -31831,7 +31831,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -32086,7 +32086,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -32350,7 +32350,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -32611,7 +32611,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -32887,7 +32887,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -33144,7 +33144,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -33377,7 +33377,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -33638,7 +33638,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -33948,7 +33948,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -34175,7 +34175,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -34399,7 +34399,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -34646,7 +34646,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -34903,7 +34903,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -35179,7 +35179,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -35372,7 +35372,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -35635,7 +35635,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -35909,7 +35909,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -36141,7 +36141,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -36399,7 +36399,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -36664,7 +36664,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -36864,7 +36864,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -37127,7 +37127,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -37339,7 +37339,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -37582,7 +37582,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -37793,7 +37793,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -38040,7 +38040,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -38273,7 +38273,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -38507,7 +38507,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -38749,7 +38749,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -39026,7 +39026,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -39250,7 +39250,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -39445,7 +39445,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -39703,7 +39703,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -39994,7 +39994,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -40290,7 +40290,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -40594,7 +40594,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -40840,7 +40840,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -41121,7 +41121,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -41359,7 +41359,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -41660,7 +41660,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -41915,7 +41915,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -42158,7 +42158,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -42464,7 +42464,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -42718,7 +42718,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -43008,7 +43008,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -43293,7 +43293,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -43541,7 +43541,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -43788,7 +43788,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -44047,7 +44047,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -44353,7 +44353,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -44644,7 +44644,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -44867,7 +44867,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -45125,7 +45125,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -45360,7 +45360,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -45613,7 +45613,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -45867,7 +45867,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -46138,7 +46138,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -46436,7 +46436,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -46666,7 +46666,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -46893,7 +46893,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -47140,7 +47140,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -47389,7 +47389,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -47656,7 +47656,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -47876,7 +47876,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -48116,7 +48116,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -48367,7 +48367,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -48604,7 +48604,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -48828,7 +48828,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -49052,7 +49052,7 @@ export const GENERATED_THEME_PAGES = [
           }
         ],
         "publicKey": "accent",
-        "desc": "theme03 全局强调色，作用于该主题所有页面。"
+        "desc": "当前页面/当前变体的强调色。"
       },
       {
         "key": "showEyebrow",
@@ -60070,6 +60070,9 @@ export const GENERATED_THEME_PAGES = [
         "max": 3,
         "step": 1,
         "default": 3,
+        "countArrays": [
+          "thumbsData"
+        ],
         "desc": "右侧缩略图机位数量",
         "publicKey": "thumbCount"
       },
@@ -60081,6 +60084,9 @@ export const GENERATED_THEME_PAGES = [
         "max": 4,
         "step": 1,
         "default": 4,
+        "countArrays": [
+          "images"
+        ],
         "desc": "显示图片槽的画框数(主图优先)",
         "publicKey": "mediaCount"
       },

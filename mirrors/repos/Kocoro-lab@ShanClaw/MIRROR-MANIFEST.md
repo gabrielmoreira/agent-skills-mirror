@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Kocoro-lab/ShanClaw` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `Kocoro-lab/ShanClaw` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kocoro-lab/ShanClaw` — 26 default patterns, 0 followed patterns, 22
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,18 +69,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`internal/skills/bundled/skills/claude-api/SKILL.md`](internal/skills/bundled/skills/claude-api/SKILL.md) |
 | 9 | ✓ | [`internal/skills/bundled/skills/doc-coauthoring/SKILL.md`](internal/skills/bundled/skills/doc-coauthoring/SKILL.md) |
 | 10 | ✓ | [`internal/skills/bundled/skills/frontend-design/SKILL.md`](internal/skills/bundled/skills/frontend-design/SKILL.md) |
-| 11 | ✓ | [`internal/skills/bundled/skills/heatmap-analyze/SKILL.md`](internal/skills/bundled/skills/heatmap-analyze/SKILL.md) |
-| 12 | ✓ | [`internal/skills/bundled/skills/internal-comms/SKILL.md`](internal/skills/bundled/skills/internal-comms/SKILL.md) |
-| 13 | ✓ | [`internal/skills/bundled/skills/kocoro-generative-ui/SKILL.md`](internal/skills/bundled/skills/kocoro-generative-ui/SKILL.md) |
-| 14 | ✓ | [`internal/skills/bundled/skills/kocoro/references/skills.md`](internal/skills/bundled/skills/kocoro/references/skills.md) |
-| 15 | ✓ | [`internal/skills/bundled/skills/kocoro/SKILL.md`](internal/skills/bundled/skills/kocoro/SKILL.md) |
-| 16 | ✓ | [`internal/skills/bundled/skills/mcp-builder/SKILL.md`](internal/skills/bundled/skills/mcp-builder/SKILL.md) |
-| 17 | ✓ | [`internal/skills/bundled/skills/pdf-reader/SKILL.md`](internal/skills/bundled/skills/pdf-reader/SKILL.md) |
-| 18 | ✓ | [`internal/skills/bundled/skills/skill-creator/SKILL.md`](internal/skills/bundled/skills/skill-creator/SKILL.md) |
-| 19 | ✓ | [`internal/skills/bundled/skills/slack-gif-creator/SKILL.md`](internal/skills/bundled/skills/slack-gif-creator/SKILL.md) |
-| 20 | ✓ | [`internal/skills/bundled/skills/theme-factory/SKILL.md`](internal/skills/bundled/skills/theme-factory/SKILL.md) |
-| 21 | ✓ | [`internal/skills/bundled/skills/web-artifacts-builder/SKILL.md`](internal/skills/bundled/skills/web-artifacts-builder/SKILL.md) |
-| 22 | ✓ | [`internal/skills/bundled/skills/webapp-testing/SKILL.md`](internal/skills/bundled/skills/webapp-testing/SKILL.md) |
+| 11 | ✓ | [`internal/skills/bundled/skills/internal-comms/SKILL.md`](internal/skills/bundled/skills/internal-comms/SKILL.md) |
+| 12 | ✓ | [`internal/skills/bundled/skills/kocoro-generative-ui/SKILL.md`](internal/skills/bundled/skills/kocoro-generative-ui/SKILL.md) |
+| 13 | ✓ | [`internal/skills/bundled/skills/kocoro/references/skills.md`](internal/skills/bundled/skills/kocoro/references/skills.md) |
+| 14 | ✓ | [`internal/skills/bundled/skills/kocoro/SKILL.md`](internal/skills/bundled/skills/kocoro/SKILL.md) |
+| 15 | ✓ | [`internal/skills/bundled/skills/mcp-builder/SKILL.md`](internal/skills/bundled/skills/mcp-builder/SKILL.md) |
+| 16 | ✓ | [`internal/skills/bundled/skills/pdf-reader/SKILL.md`](internal/skills/bundled/skills/pdf-reader/SKILL.md) |
+| 17 | ✓ | [`internal/skills/bundled/skills/skill-creator/SKILL.md`](internal/skills/bundled/skills/skill-creator/SKILL.md) |
+| 18 | ✓ | [`internal/skills/bundled/skills/slack-gif-creator/SKILL.md`](internal/skills/bundled/skills/slack-gif-creator/SKILL.md) |
+| 19 | ✓ | [`internal/skills/bundled/skills/theme-factory/SKILL.md`](internal/skills/bundled/skills/theme-factory/SKILL.md) |
+| 20 | ✓ | [`internal/skills/bundled/skills/web-artifacts-builder/SKILL.md`](internal/skills/bundled/skills/web-artifacts-builder/SKILL.md) |
+| 21 | ✓ | [`internal/skills/bundled/skills/webapp-testing/SKILL.md`](internal/skills/bundled/skills/webapp-testing/SKILL.md) |
 
 ---
 

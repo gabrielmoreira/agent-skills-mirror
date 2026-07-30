@@ -4,15 +4,21 @@ set -euo pipefail
 usage() {
   cat <<'USAGE'
 Usage:
-  bridge-skill.sh link <skill-name-or-path>
-  bridge-skill.sh unlink <skill-name-or-path>
-  bridge-skill.sh status <skill-name-or-path>
+  bridge-skill.sh link [--with-agents] <skill-name-or-path>
+  bridge-skill.sh unlink [--with-agents] <skill-name-or-path>
+  bridge-skill.sh status [--with-agents] <skill-name-or-path>
 
 Examples:
   bridge-skill.sh link dbs-hook
   bridge-skill.sh link skills/dbs-hook
   bridge-skill.sh link skills
   bridge-skill.sh status /absolute/path/to/skill
+
+Notes:
+  Default targets are Claude Code, Codex, WorkBuddy, and Grok.
+  Use --with-agents only for generic Agents that read ~/.agents/skills.
+  Codex also reads ~/.agents/skills, so default linking avoids that path to
+  prevent duplicate skill entries.
 USAGE
 }
 
@@ -69,7 +75,6 @@ ensure_target_parent() {
   mkdir -p \
     "$HOME/.claude/skills" \
     "$HOME/.codex/skills" \
-    "$HOME/.agents/skills" \
     "$HOME/.workbuddy/skills" \
     "$HOME/.grok/skills"
 }
@@ -211,20 +216,59 @@ status_grok_one() {
 }
 
 main() {
-  if [[ $# -ne 2 ]]; then
+  if [[ $# -lt 2 || $# -gt 3 ]]; then
     usage
     exit 1
   fi
 
   local action="$1"
-  local input="$2"
+  shift
+  local with_agents=0
+  local input
+
+  if [[ "${1:-}" == "--with-agents" ]]; then
+    with_agents=1
+    shift
+  fi
+
+  if [[ "${2:-}" == "--with-agents" ]]; then
+    if [[ "$with_agents" -eq 1 ]]; then
+      usage
+      exit 1
+    fi
+    with_agents=1
+    set -- "$1"
+  fi
+
+  case "${1:-}" in
+    --with-agents)
+      with_agents=1
+      shift
+      ;;
+  esac
+
+  if [[ $# -ne 1 ]]; then
+    usage
+    exit 1
+  fi
+
+  input="$1"
+  if [[ "$input" == "--with-agents" ]]; then
+    usage
+    exit 1
+  fi
+
   local root candidate src name failed
   local target_dirs=(
     "$HOME/.claude/skills"
     "$HOME/.codex/skills"
-    "$HOME/.agents/skills"
     "$HOME/.workbuddy/skills"
   )
+
+  if [[ "$with_agents" -eq 1 ]]; then
+    mkdir -p "$HOME/.agents/skills"
+    target_dirs+=("$HOME/.agents/skills")
+  fi
 
   root="$(repo_root)"
   candidate="$(resolve_candidate "$input" "$root")"

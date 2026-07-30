@@ -58,7 +58,7 @@
   const MAX_DIM = 1200;
   // Raster formats plus browser-native video. Images are downscaled; videos keep
   // their original data URL and skip crop/reframe controls.
-  const ACCEPT = ['image/png', 'image/jpeg', 'image/webp', 'image/avif', 'video/mp4', 'video/webm', 'video/quicktime'];
+  const ACCEPT = ['image/png', 'image/jpeg', 'image/webp', 'image/avif', 'video/mp4', 'video/webm', 'video/quicktime', 'video/x-m4v', 'video/ogg'];
 
   // ── Shared sidecar store ────────────────────────────────────────────────
   // One fetch + immediate write-on-change for every <image-slot> on the
@@ -207,8 +207,8 @@
 
   function videoPosterSrc(url) {
     const s = String(url || '');
-    return /\.(mp4|webm|mov|m4v)(?:[?#].*)?$/i.test(s)
-      ? s.replace(/\.(mp4|webm|mov|m4v)(?:[?#].*)?$/i, '.poster.jpg')
+    return /\.(mp4|webm|mov|m4v|ogv)(?:[?#].*)?$/i.test(s)
+      ? s.replace(/\.(mp4|webm|mov|m4v|ogv)(?:[?#].*)?$/i, '.poster.jpg')
       : '';
   }
 
@@ -593,7 +593,7 @@
     async _ingest(file) {
       this._setError(null);
       if (!file || ACCEPT.indexOf(file.type) < 0) {
-        this._setError('Drop a PNG, JPEG, WebP, AVIF image, or MP4/WebM video.');
+        this._setError('Drop a PNG, JPEG, WebP, AVIF image, or MP4/WebM/MOV/M4V/OGV video.');
         return;
       }
       // toDataUrl can take hundreds of ms on a large photo. A Clear or a
@@ -773,7 +773,7 @@
       const srcAttr = this.getAttribute('src') || '';
       this._userUrl = (stored && stored.u) || null;
       const url = this._userUrl || srcAttr;
-      const kind = (stored && stored.kind) || (String(url).startsWith('data:video/') || /\.(mp4|webm|mov)(\?|#|$)/i.test(String(url)) ? 'video' : 'image');
+      const kind = (stored && stored.kind) || (String(url).startsWith('data:video/') || /\.(mp4|webm|mov|m4v|ogv)(?:[?#].*)?$/i.test(String(url)) ? 'video' : 'image');
       this._mediaKind = kind;
       // Don't clobber an in-flight reframe with a store-triggered re-render.
       if (!this.hasAttribute('data-reframe')) {

@@ -2,6 +2,8 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { isMediaArrayKey } from '../src/prop-contract-core.mjs';
+import { isBespokeVariant, resolveContentMap } from '../src/variant-contract.mjs';
+import { inspectLayout } from './skill-workflow-utils.mjs';
 
 // 相对路径按调用方目录解析:npm run(含 --prefix)会把脚本 cwd 切到项目根,INIT_CWD 才是用户所在目录。
 const CALLER_CWD = process.env.INIT_CWD || process.cwd();
@@ -46,7 +48,7 @@ const COUNT_ARRAY_CANDIDATES = {
   segmentCount: ['segments'],
 };
 const NEUTRAL_PLACEHOLDERS = ['请输入文本', '请输入', '请输'];
-const visibleText = extractSlideText(html);
+const visibleText = extractSlideText(html, undefined, errors);
 const COMMON_TERMS = new Set([
   '一个',
   '一份',
@@ -136,6 +138,7 @@ if (requestedTerms.length && !requestedTerms.some(term => visibleText.includes(t
 
 validateCountControls(html, errors);
 validateCoverCandidateUsage(html, errors);
+validateVariantCopyCompleteness(html, errors);
 
 if (errors.length) {
   console.error('Goal copy validation failed:');
@@ -167,8 +170,8 @@ function pickRequestedTerms(spec) {
   return [...terms].filter(term => !COMMON_TERMS.has(term)).slice(0, 12);
 }
 
-function extractSlideText(html, renderedText = extractRenderedSlideText(html)) {
-  return `${renderedText}\n${extractVisibleDeckPropsText(html)}`;
+function extractSlideText(html, renderedText = extractRenderedSlideText(html), validationErrors = []) {
+  return `${renderedText}\n${extractVisibleDeckPropsText(html, validationErrors)}`;
 }
 
 function extractRenderedSlideText(html) {
@@ -177,14 +180,33 @@ function extractRenderedSlideText(html) {
   return decodeEntities(slides.map(slide => stripTags(slide)).join('\n'));
 }
 
-function extractVisibleDeckPropsText(markup) {
+function extractVisibleDeckPropsText(markup, validationErrors = []) {
   const model = readJsonScript(markup, 'deck-view-model');
   if (!model?.slides?.length) return '';
   const sections = getSlideSections(markup);
-  return JSON.stringify(model.slides.map(slide => ({
-    layout: slide.layout,
-    props: visiblePropsForSlide(slide, readPropControls(sections.get(slide.id) || ''), readArrayMeta(slide)),
-  })));
+  return JSON.stringify(model.slides.flatMap(logicalSlide => {
+    return getSlideCandidates(logicalSlide).map(slide => {
+      const section = findSlideSection(sections, logicalSlide, slide);
+      if (isBespokeVariant(slide)) {
+        return {
+          kind: 'bespoke',
+          composition: resolveCandidateComposition(logicalSlide, slide, validationErrors),
+        };
+      }
+      const resolvedSlide = {
+        ...slide,
+        props: resolveCandidateProps(logicalSlide, slide, validationErrors),
+      };
+      return {
+        layout: slide.layout,
+        props: visiblePropsForSlide(
+          resolvedSlide,
+          readCandidateControls(logicalSlide, resolvedSlide, section),
+          readArrayMeta(resolvedSlide),
+        ),
+      };
+    });
+  }));
 }
 
 function visiblePropsForSlide(slide, controls = [], arrayMeta = []) {
@@ -308,19 +330,26 @@ function validateCountControls(html, errors) {
   const model = readJsonScript(html, 'deck-view-model');
   if (!model?.slides?.length) return;
   const sections = getSlideSections(html);
-  for (const slide of model.slides) {
-    const section = sections.get(slide.id);
-    if (!section) continue;
-    const controls = readPropControls(section);
-    for (const control of getCountBindings(slide, controls, readArrayMeta(slide))) {
-      const key = control.key;
-      const candidates = control.arrays || COUNT_ARRAY_CANDIDATES[key];
-      if (!candidates?.length) continue;
-      const props = slide.props || {};
-      const derived = deriveCount(props, key, candidates);
-      if (!derived) continue;
-      if (derived.error) errors.push(`${slide.label || slide.layout}: ${derived.error}`);
-      else validateCountValue(slide, control, derived, props, errors);
+  for (const logicalSlide of model.slides) {
+    for (const slide of getSlideCandidates(logicalSlide)) {
+      if (isBespokeVariant(slide)) continue;
+      const section = findSlideSection(sections, logicalSlide, slide);
+      if (!section) continue;
+      const resolvedSlide = {
+        ...slide,
+        props: resolveCandidateProps(logicalSlide, slide, errors),
+      };
+      const controls = readCandidateControls(logicalSlide, resolvedSlide, section);
+      for (const control of getCountBindings(resolvedSlide, controls, readArrayMeta(resolvedSlide))) {
+        const key = control.key;
+        const candidates = control.arrays || COUNT_ARRAY_CANDIDATES[key];
+        if (!candidates?.length) continue;
+        const props = resolvedSlide.props || {};
+        const derived = deriveCount(props, key, candidates);
+        if (!derived) continue;
+        if (derived.error) errors.push(`${resolvedSlide.label || resolvedSlide.layout}: ${derived.error}`);
+        else validateCountValue(resolvedSlide, control, derived, props, errors);
+      }
     }
   }
 }
@@ -328,10 +357,130 @@ function validateCountControls(html, errors) {
 function validateCoverCandidateUsage(html, errors) {
   const model = readJsonScript(html, 'deck-view-model');
   if (!model?.slides?.length) return;
-  const coverSlides = model.slides.filter(slide => /^theme\d+_page00[1-5]$/.test(slide.layout));
+  const coverSlides = model.slides.filter(slide => (
+    getSlideCandidates(slide).some(candidate => /^theme\d+_page00[1-5]$/.test(candidate.layout))
+  ));
   if (coverSlides.length > 1) {
-    errors.push(`同一个 deck 只能使用 1 个封面候选页,当前使用了 ${coverSlides.length} 个: ${coverSlides.map(slide => slide.layout).join(', ')}`);
+    const layouts = coverSlides.flatMap(slide => (
+      getSlideCandidates(slide)
+        .map(candidate => candidate.layout)
+        .filter(layout => /^theme\d+_page00[1-5]$/.test(layout))
+    ));
+    errors.push(`同一个 deck 只能使用 1 个封面候选页,当前使用了 ${coverSlides.length} 个: ${layouts.join(', ')}`);
   }
+}
+
+function validateVariantCopyCompleteness(html, errors) {
+  const model = readJsonScript(html, 'deck-view-model');
+  if (!model?.slides?.length) return;
+  const sections = getSlideSections(html);
+  for (const logicalSlide of model.slides) {
+    if (!Array.isArray(logicalSlide?.variants)) continue;
+    for (const candidate of logicalSlide.variants) {
+      if (isBespokeVariant(candidate)) continue;
+      const fillPlan = inspectLayout(candidate.layout, { compact: true })?.fillPlan;
+      if (!fillPlan) continue;
+      const resolvedProps = resolveCandidateProps(logicalSlide, candidate, errors);
+      const controls = readCandidateControls(
+        logicalSlide,
+        { ...candidate, props: resolvedProps },
+        findSlideSection(sections, logicalSlide, candidate),
+      );
+      const missing = [];
+      for (const field of fillPlan.text || []) {
+        if (!hasFilledPath(resolvedProps, field.key)) missing.push(field.key);
+      }
+      for (const field of fillPlan.arrays || []) {
+        if (isArrayHiddenByToggle(field, resolvedProps, controls)) continue;
+        const arrays = readAuthoredArrays(resolvedProps, field.key);
+        if (!arrays.length) {
+          missing.push(field.key);
+          continue;
+        }
+        const requestedCount = numberOrNull(resolvedProps?.[field.countKey]);
+        const visibleCount = requestedCount ?? numberOrNull(field.visibleCount) ?? 0;
+        arrays.forEach((items, arrayIndex) => {
+          if (items.length < visibleCount) {
+            missing.push(`${field.key}${arrays.length > 1 ? `[${arrayIndex}]` : ''}(${items.length}/${visibleCount})`);
+            return;
+          }
+          if (!Object.keys(field.itemFields || {}).length) {
+            for (let itemIndex = 0; itemIndex < visibleCount; itemIndex += 1) {
+              if (!hasFilledValue(items[itemIndex])) missing.push(`${field.key}[${itemIndex}]`);
+            }
+          }
+          for (let itemIndex = 0; itemIndex < visibleCount; itemIndex += 1) {
+            for (const key of Object.keys(field.itemFields || {})) {
+              if (!hasFilledPath(items[itemIndex], key)) {
+                missing.push(`${field.key}[${itemIndex}].${key}`);
+              }
+            }
+          }
+        });
+      }
+      if (missing.length) {
+        const label = candidate.label || candidate.id || candidate.layout;
+        const preview = missing.slice(0, 8).join(', ');
+        const suffix = missing.length > 8 ? ` 等 ${missing.length} 项` : '';
+        errors.push(`${label}: 未覆写模板文案槽: ${preview}${suffix}`);
+      }
+    }
+  }
+}
+
+function isArrayHiddenByToggle(field, props, controls = []) {
+  const key = String(field?.key || '')
+    .split('.')
+    .at(-1)
+    ?.replace(/\[\]$/, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '') || '';
+  if (!key) return false;
+  return controls.some(control => {
+    if (control?.type !== 'toggle') return false;
+    const prop = control.publicKey || control.key;
+    if (props?.[prop] !== false) return false;
+    const normalized = String(prop || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (!normalized.startsWith('show')) return false;
+    const subject = normalized.slice(4);
+    return subject && (key.startsWith(subject) || subject.startsWith(key));
+  });
+}
+
+function hasFilledPath(value, pathName) {
+  const segments = String(pathName || '').split('.').filter(Boolean);
+  let current = value;
+  for (const segment of segments) {
+    if (!current || typeof current !== 'object' || !Object.prototype.hasOwnProperty.call(current, segment)) {
+      return false;
+    }
+    current = current[segment];
+  }
+  return hasFilledValue(current);
+}
+
+function hasFilledValue(value) {
+  if (typeof value === 'string') return value.trim().length > 0;
+  return value !== undefined && value !== null;
+}
+
+function readAuthoredArrays(value, pathName) {
+  const segments = String(pathName || '').split('.').filter(Boolean);
+  return collectArrayTargets(value, segments, 0);
+}
+
+function collectArrayTargets(value, segments, index) {
+  if (!value || typeof value !== 'object' || index >= segments.length) return [];
+  const raw = segments[index];
+  const traversesArray = raw.endsWith('[]');
+  const key = traversesArray ? raw.slice(0, -2) : raw;
+  const next = value[key];
+  if (index === segments.length - 1) return Array.isArray(next) ? [next] : [];
+  if (traversesArray) {
+    if (!Array.isArray(next)) return [];
+    return next.flatMap(item => collectArrayTargets(item, segments, index + 1));
+  }
+  return collectArrayTargets(next, segments, index + 1);
 }
 
 function readLayoutManifest() {
@@ -406,6 +555,58 @@ function mergeCountBindings(...groups) {
 
 function readArrayMeta(slide) {
   return Array.isArray(slide?.arrayMeta) ? slide.arrayMeta : [];
+}
+
+function getSlideCandidates(slide) {
+  return Array.isArray(slide?.variants) && slide.variants.length ? slide.variants : [slide];
+}
+
+function resolveCandidateProps(logicalSlide, candidate, errors = []) {
+  return resolveCandidateRenderData(logicalSlide, candidate, candidate?.props, 'props', errors);
+}
+
+function resolveCandidateComposition(logicalSlide, candidate, errors = []) {
+  return resolveCandidateRenderData(logicalSlide, candidate, candidate?.composition, 'composition', errors);
+}
+
+function resolveCandidateRenderData(logicalSlide, candidate, base, field, errors) {
+  if (!candidate?.contentMap || typeof candidate.contentMap !== 'object' || Array.isArray(candidate.contentMap)) {
+    return base || {};
+  }
+  try {
+    return resolveContentMap(logicalSlide?.content, candidate.contentMap, base || {});
+  } catch (error) {
+    const label = candidate.label || candidate.id || candidate.layout || 'variant';
+    pushUniqueError(errors, `${label}: contentMap 无法从 sourceSlideId ${logicalSlide?.id || '<missing>'} 解析 ${field}: ${error.message}`);
+    return base || {};
+  }
+}
+
+function pushUniqueError(errors, error) {
+  if (!errors.includes(error)) errors.push(error);
+}
+
+function readCandidateControls(logicalSlide, slide, section) {
+  if (isBespokeVariant(slide)) return [];
+  const manifestControls = layoutManifest?.layouts?.[slide.layout]?.controls || [];
+  const sectionControls = readPropControls(section);
+  if (!Array.isArray(logicalSlide?.variants) || !logicalSlide.variants.length) {
+    return sectionControls.length ? sectionControls : manifestControls;
+  }
+  if (!isRenderedCandidate(logicalSlide, slide, section)) return manifestControls;
+  return sectionControls.length ? sectionControls : manifestControls;
+}
+
+function isRenderedCandidate(logicalSlide, slide, section) {
+  const renderedPhysicalId = getAttr(section, 'data-vm-slide-id');
+  const renderedStateId = getAttr(section, 'data-vm-variant-state-id');
+  if (renderedStateId) return slide.stateId === renderedStateId || renderedPhysicalId === slide.stateId;
+  if (renderedPhysicalId && slide.stateId) return renderedPhysicalId === slide.stateId;
+  if (logicalSlide.stateId) return slide.stateId === logicalSlide.stateId;
+  if (logicalSlide.selectedVariant) {
+    return slide.id === logicalSlide.selectedVariant || slide.stateId === logicalSlide.selectedVariant;
+  }
+  return slide.layout === logicalSlide.layout;
 }
 
 function deriveCount(props, key, candidates) {
@@ -496,13 +697,48 @@ function readJsonScript(html, id) {
 }
 
 function getSlideSections(html) {
-  const sections = new Map();
+  const sections = [];
   for (const match of html.matchAll(/<section\b[\s\S]*?<\/section>/g)) {
     const markup = match[0];
     const id = getAttr(markup, 'data-vm-slide-id');
-    if (id) sections.set(id, markup);
+    if (!id) continue;
+    sections.push({
+      id,
+      sourceSlideId: getAttr(markup, 'data-vm-source-slide-id'),
+      stateId: getAttr(markup, 'data-vm-variant-state-id'),
+      variantId: getAttr(markup, 'data-vm-variant-id'),
+      markup,
+    });
   }
   return sections;
+}
+
+function findSlideSection(sections, logicalSlide, candidate) {
+  const sourceSlideId = String(
+    candidate?.sourceSlideId
+      || logicalSlide?.sourceSlideId
+      || logicalSlide?.id
+      || '',
+  );
+  const variantId = String(candidate?.variantId || candidate?.id || '');
+  const stateId = String(
+    candidate?.stateId
+      || (sourceSlideId && variantId ? `${sourceSlideId}::${variantId}` : ''),
+  );
+  const exact = sections.find(section => (
+    (stateId && (section.id === stateId || section.stateId === stateId))
+    || (candidate?.id && section.id === candidate.id && section.sourceSlideId === sourceSlideId)
+  ));
+  if (exact) return exact.markup;
+
+  const grouped = sections.find(section => (
+    section.sourceSlideId === sourceSlideId
+    && (!section.variantId || !variantId || section.variantId === variantId)
+  ));
+  if (grouped) return grouped.markup;
+
+  const legacy = sections.find(section => section.id === logicalSlide?.id);
+  return legacy?.markup || '';
 }
 
 function readPropControls(section) {

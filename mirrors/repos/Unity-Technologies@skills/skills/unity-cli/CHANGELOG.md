@@ -14,7 +14,6 @@ Tracks the CLI's `1.0.0-beta.3` release. The CLI's own `[Unreleased]` changes (d
 
 - **`unity editors running`** — list running Editor instances and the project each has open (version + PID; cross-platform; an empty list is exit 0).
 - **`unity projects size [project]`** — on-disk footprint by top-level folder (`-a, --all`; `--json` emits raw bytes).
-- **`unity projects close <project>`** — gracefully quit the running editor that has a project open (`--timeout <seconds>` default 30, `--force`).
 - **`unity run --command <name>`** — execute a registered `[CliCommand]` Editor command headlessly (arguments after `--` parsed against its `[CliArg]` schema; requires `com.unity.pipeline`).
 - **`unity install --list-components`** — list an editor's available modules and exit (a drop-in alias for `unity modules list <version>`).
 - **`unity bug` non-interactive flags** — `--title`, `--description`, `--steps` (repeatable), `--reproducibility <first-time|sometimes|always>`, `--email`.
@@ -26,6 +25,8 @@ Tracks the CLI's `1.0.0-beta.3` release. The CLI's own `[Unreleased]` changes (d
 - **Authoring custom `[CliCommand]` tools** — `[CliCommand]` / `[CliArg]` in the `Unity.Pipeline.Commands` namespace (assembly `Unity.Pipeline`), with `MainThreadRequired` / `RuntimeOnly` as **named properties on `[CliCommand]`** (not separate attributes); worked example, and hot-registration via `unity command recompile` → `unity list`.
 - **Editor-side `eval` / `eval_file`** — noted the runtime-discoverable production path via `unity command eval`, distinct from the dev-only top-level `unity eval`.
 - **Live-Editor control surfaced up front** — the skill `description` now advertises controlling a running/connected Editor (create/modify GameObjects, edit scenes, inspect the hierarchy, run C#) so agents pick the skill for scene/GameObject prompts, and a new top-of-skill **"Drive a running Unity Editor"** quickstart shows the minimal `unity status` → `unity command` path ahead of the install steps.
+- **Production vs dev-only live commands + curated command list** — clarified that the whole `unity command <name>` / `com.unity.pipeline` command set (`create_gameobject`, `save_scene`, …) runs in production Editors and only the top-level `unity eval` / `collab` are dev-only (`HUB_ENV=development`), with `cloud-pipeline` opt-in via the `FEATURE_CLOUD_PIPELINE` env flag, so agents don't assume live-Editor control is dev-gated. Added a curated quick-reference of the common built-in scene/GameObject commands, noting `unity command --format json` remains the authoritative catalog.
+- **Scene / GameObject / asset workflow** — a new Common workflows entry makes `unity status` the first move for any scene or object task and, when an Editor is connected, prefers live `unity command` calls over file edits. Adds a strong anti-pattern block against hand-editing `.unity` / `.prefab` / `.asset` YAML while a live Editor is reachable (error-prone fileIDs/GUIDs, invisible until reimport, can silently target the wrong scene), with an explicit "only edit files when no Editor is reachable" fallback.
 
 ### Changed
 

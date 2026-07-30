@@ -6,6 +6,7 @@ SUPPORTED_CLIS = (
     "claude",
     "cursor-agent",
     "glm",
+    "kimi",
     "grok",
     "gemini",
     "opencode",

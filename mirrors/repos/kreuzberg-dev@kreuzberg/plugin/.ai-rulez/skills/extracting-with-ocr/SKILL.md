@@ -33,7 +33,7 @@ backends are opt-in:
 | ------------- | ------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------- |
 | Tesseract     | `--ocr-backend tesseract` (default)   | bundled                                          | Best general-purpose, 100+ languages via tessdata.             |
 | PaddleOCR     | `--ocr-backend paddle-ocr`            | bundled (ONNX Runtime)                           | Strong on Asian scripts. Not available on WASM or Windows.     |
-| Candle VLM    | `--ocr-backend candle-trocr` (and other `candle-*`) | bundled (Candle)                  | Local vision OCR models (`candle-trocr`, `candle-paddleocr-vl`, `candle-glm-ocr`, `candle-hunyuan-ocr`, `candle-deepseek-ocr`). |
+| Candle VLM    | `--ocr-backend candle-trocr` (and other `candle-*`) | bundled (Candle)                  | Local vision OCR models (`candle-trocr`, `candle-paddleocr-vl`, `candle-glm-ocr`, `candle-deepseek-ocr`). |
 | VLM (hosted)  | `--ocr-backend vlm` + `--vlm-model`   | liter-llm provider (`--vlm-api-key`)             | Multimodal LLM via liter-llm. Use when OCR fails on dense or handwritten layouts. |
 
 Pick Tesseract first. Switch only when accuracy is unacceptable.
@@ -70,7 +70,7 @@ that is not installed. Read the error — it names the missing file.
 - `--force-ocr=true` — OCR every page even if a text layer exists.
 - `--disable-ocr=true` — never OCR (extract embedded text only or fail).
 - `--ocr-language <lang>` — single code or `+`-joined list, or `all`.
-- `--ocr-backend <tesseract|paddle-ocr|vlm|candle-trocr|candle-paddleocr-vl|candle-glm-ocr|candle-hunyuan-ocr|candle-deepseek-ocr>` — pick backend.
+- `--ocr-backend <tesseract|paddle-ocr|vlm|candle-trocr|candle-paddleocr-vl|candle-glm-ocr|candle-deepseek-ocr>` — pick backend.
 - `--ocr-auto-rotate=true` — pre-rotate via the auto-rotate model.
 - `--acceleration <cpu|coreml|cuda|tensorrt|auto>` — ONNX accelerator for
   paddle-ocr / auto-rotate / layout models.

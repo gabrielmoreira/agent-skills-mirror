@@ -10851,6 +10851,9 @@ export const pages = [
         "max": 3,
         "step": 1,
         "default": 3,
+        "countArrays": [
+          "thumbsData"
+        ],
         "desc": "右侧缩略图机位数量",
         "publicKey": "thumbCount"
       },
@@ -10862,6 +10865,9 @@ export const pages = [
         "max": 4,
         "step": 1,
         "default": 4,
+        "countArrays": [
+          "images"
+        ],
         "desc": "显示图片槽的画框数(主图优先)",
         "publicKey": "mediaCount"
       },

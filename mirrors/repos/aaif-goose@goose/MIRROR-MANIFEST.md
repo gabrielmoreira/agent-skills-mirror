@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aaif-goose/goose` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `aaif-goose/goose` — 26 default patterns, 0 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aaif-goose/goose` — 26 default patterns, 0 followed patterns, 9 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -66,8 +66,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 5 | ✓ | [`documentation/CLAUDE.md`](documentation/CLAUDE.md) |
 | 6 | ✓ | [`documentation/static/llms.txt`](documentation/static/llms.txt) |
 | 7 | ✓ | [`evals/harbor/.agents/skills/compare_tasks/SKILL.md`](evals/harbor/.agents/skills/compare_tasks/SKILL.md) |
-| 8 | ✓ | [`ui/text/AGENTS.md`](ui/text/AGENTS.md) |
-| 9 | ✓ | [`ui/text/CLAUDE.md`](ui/text/CLAUDE.md) |
 
 ---
 

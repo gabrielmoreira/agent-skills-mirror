@@ -33,45 +33,13 @@ behavior that does not yet exist is outside its scope.
 
 ## Install for your agent
 
-> **General security warning:** Before installing any third-party AI agent
-> skill, review its instructions and executable scripts, and confirm that
-> you trust its source.
+> [!WARNING]
+> Before installing any third-party AI agent skill, review its instructions
+> and executable scripts, and confirm that you trust its source.
 
 Download the latest packaged [Bug Fixing skill][packaged-skill] in ZIP format,
-then follow the instructions for your target agent.
+then follow the repository's [installation guide][installation-guide]. The
+guide covers filesystem-based agents, safe upgrades, and ChatGPT uploads.
 
 [packaged-skill]: ../../../../releases/latest/download/bug-fixing.zip
-
-### Filesystem-based agents
-
-Choose where the skill should be available:
-
-| Agent | Current project | All projects |
-| --- | --- | --- |
-| Claude | `.claude/skills/bug-fixing/` | `~/.claude/skills/bug-fixing/` |
-| Codex | `.agents/skills/bug-fixing/` | `~/.agents/skills/bug-fixing/` |
-| Copilot | `.github/skills/bug-fixing/` | `~/.copilot/skills/bug-fixing/` or `~/.agents/skills/bug-fixing/` |
-| Cursor | `.cursor/skills/bug-fixing/` or `.agents/skills/bug-fixing/` | `~/.cursor/skills/bug-fixing/` or `~/.agents/skills/bug-fixing/` |
-| Roo | `.roo/skills/bug-fixing/` or `.agents/skills/bug-fixing/` | `~/.roo/skills/bug-fixing/` or `~/.agents/skills/bug-fixing/` |
-
-Paths under **Current project** are relative to the project's root
-directory. Paths under **All projects** are personal locations.
-
-On macOS, Linux, and other Unix-like systems, `~/` refers to the current user's
-home directory and can be used as written. On Windows, replace a leading `~`
-with `%USERPROFILE%` in Command Prompt or File Explorer, or with `$HOME` in
-PowerShell. For example, `~/.agents/skills/bug-fixing/` becomes
-`%USERPROFILE%\.agents\skills\bug-fixing\` or `$HOME/.agents/skills/bug-fixing/`.
-
-Create one of the directories shown above, extract the ZIP contents directly
-into it, and confirm that `SKILL.md` is immediately inside that directory.
-
-When upgrading an installed skill, first empty its existing skill directory,
-then extract the new ZIP into that directory. Back up any local modifications
-before emptying it.
-
-### ChatGPT
-
-Open [Skills in ChatGPT](https://chatgpt.com/skills), select the **+** button,
-choose **Upload from your computer**, and upload the downloaded ZIP as-is.
-Availability and workspace permissions can vary.
+[installation-guide]: ../../#install-skills

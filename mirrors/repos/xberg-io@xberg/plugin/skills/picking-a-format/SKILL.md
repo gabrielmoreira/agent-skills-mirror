@@ -5,8 +5,8 @@ description: Use when choosing an output format for extracted documents — text
 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:0e96e4a8486240e592c24c64c95444f13368922999e1adb53ddfd9cbe6ad41be
-Source-Hash: blake3:cf2e50e4fe88772155b882eacc338a857dfdc086a8a86b7d5d4721d540e33d8c
+Content-Hash: blake3:470e563273f21e16138f65bd8a6c9b7a7b0c4adb003af8747c2957f3c17df0c4
+Source-Hash: blake3:4f30c10e77f8c5ff8ed30b9e154ad9bcf00fb22405417016845401f0db77e0e4
 Schema-Version: v1
 -->
 
@@ -21,8 +21,10 @@ downstream code stays simple.
 | `--content-format`  | How extracted content is rendered inside `result` | `plain`, `markdown`, `djot`, `html`, `json` | `plain`     |
 | `--token-reduction` | Strip whitespace / boilerplate for LLM contexts   | `off`, `light`, `moderate`, `aggressive`, `maximum` | `off`  |
 
-`--format json` always returns the full `ExtractionResult` (content +
-metadata + tables + images). `--format text` prints just `content`.
+`--format json` returns an envelope wrapping the `ExtractedDocument` — the
+document lives under `.result` for `extract` and under `.results[]` for
+`batch`, with `content`, `metadata`, `tables`, and `images` as fields of
+that nested document. `--format text` prints just `content`.
 `--content-format` is what shows up inside that `content` field.
 
 ## Decision tree
@@ -60,7 +62,7 @@ Index a corpus into a RAG store with tables and headings preserved:
 
 ```bash
 xberg batch docs/*.pdf --format json --content-format markdown \
-  | jq -c '.[] | {path: .metadata.path, content: .content, tables: .tables}'
+  | jq -c '.results[] | {content: .content, tables: .tables}'
 ```
 
 Strip a file to bare text for a token-tight summarizer:
@@ -74,7 +76,7 @@ xberg extract long.pdf \
 Pull metadata only, ignore content:
 
 ```bash
-xberg extract file.pdf --format json | jq '.metadata'
+xberg extract file.pdf --format json | jq '.result.metadata'
 ```
 
 ## When in doubt

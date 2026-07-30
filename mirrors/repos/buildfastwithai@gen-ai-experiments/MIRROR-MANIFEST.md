@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 78 file(s) materialized.
+Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 78 |
+| Files         | 94 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -132,11 +132,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 71 | ✓ | [`skills/talking-avatar/scripts/scaffold_app.py`](skills/talking-avatar/scripts/scaffold_app.py) |
 | 72 | ✓ | [`skills/talking-avatar/scripts/validate_avatar_assets.py`](skills/talking-avatar/scripts/validate_avatar_assets.py) |
 | 73 | ✓ | [`skills/talking-avatar/SKILL.md`](skills/talking-avatar/SKILL.md) |
-| 74 | ✓ | [`skills/tooling-workflow-skills/agent-output-critic.md`](skills/tooling-workflow-skills/agent-output-critic.md) |
-| 75 | ✓ | [`skills/tooling-workflow-skills/git-conventional-commits.md`](skills/tooling-workflow-skills/git-conventional-commits.md) |
-| 76 | ✓ | [`skills/tooling-workflow-skills/linux-kernel-troubleshooter.md`](skills/tooling-workflow-skills/linux-kernel-troubleshooter.md) |
-| 77 | ✓ | [`skills/tooling-workflow-skills/prompt-optimizer-cot.md`](skills/tooling-workflow-skills/prompt-optimizer-cot.md) |
-| 78 | ✓ | [`skills/tooling-workflow-skills/tool-use-validator.md`](skills/tooling-workflow-skills/tool-use-validator.md) |
+| 74 | ✓ | [`skills/test-strength-codex-test-strength/agents/openai.yaml`](skills/test-strength-codex-test-strength/agents/openai.yaml) |
+| 75 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/auth.py`](skills/test-strength-codex-test-strength/fixtures/strong/auth.py) |
+| 76 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/billing.py`](skills/test-strength-codex-test-strength/fixtures/strong/billing.py) |
+| 77 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/calc.py`](skills/test-strength-codex-test-strength/fixtures/strong/calc.py) |
+| 78 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/logger.py`](skills/test-strength-codex-test-strength/fixtures/strong/logger.py) |
+| 79 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/test_strong.py`](skills/test-strength-codex-test-strength/fixtures/strong/test_strong.py) |
+| 80 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/utils.py`](skills/test-strength-codex-test-strength/fixtures/strong/utils.py) |
+| 81 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/auth.py`](skills/test-strength-codex-test-strength/fixtures/weak/auth.py) |
+| 82 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/billing.py`](skills/test-strength-codex-test-strength/fixtures/weak/billing.py) |
+| 83 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/calc.py`](skills/test-strength-codex-test-strength/fixtures/weak/calc.py) |
+| 84 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/logger.py`](skills/test-strength-codex-test-strength/fixtures/weak/logger.py) |
+| 85 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/test_weak.py`](skills/test-strength-codex-test-strength/fixtures/weak/test_weak.py) |
+| 86 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/utils.py`](skills/test-strength-codex-test-strength/fixtures/weak/utils.py) |
+| 87 | ✓ | [`skills/test-strength-codex-test-strength/README.md`](skills/test-strength-codex-test-strength/README.md) |
+| 88 | ✓ | [`skills/test-strength-codex-test-strength/scripts/strength.py`](skills/test-strength-codex-test-strength/scripts/strength.py) |
+| 89 | ✓ | [`skills/test-strength-codex-test-strength/SKILL.md`](skills/test-strength-codex-test-strength/SKILL.md) |
+| 90 | ✓ | [`skills/tooling-workflow-skills/agent-output-critic.md`](skills/tooling-workflow-skills/agent-output-critic.md) |
+| 91 | ✓ | [`skills/tooling-workflow-skills/git-conventional-commits.md`](skills/tooling-workflow-skills/git-conventional-commits.md) |
+| 92 | ✓ | [`skills/tooling-workflow-skills/linux-kernel-troubleshooter.md`](skills/tooling-workflow-skills/linux-kernel-troubleshooter.md) |
+| 93 | ✓ | [`skills/tooling-workflow-skills/prompt-optimizer-cot.md`](skills/tooling-workflow-skills/prompt-optimizer-cot.md) |
+| 94 | ✓ | [`skills/tooling-workflow-skills/tool-use-validator.md`](skills/tooling-workflow-skills/tool-use-validator.md) |
 
 ---
 

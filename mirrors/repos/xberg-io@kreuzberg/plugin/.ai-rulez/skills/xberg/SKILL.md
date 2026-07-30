@@ -48,9 +48,9 @@ cargo add xberg
 ```
 
 ```toml
-# Cargo.toml — the crate is currently 1.0.0-rc.1 (a pre-release, so pin it explicitly)
+# Cargo.toml
 [dependencies]
-xberg = { version = "1.0.0-rc.1", features = ["full"] }
+xberg = { version = "1.0.2", features = ["full"] }
 tokio = { version = "1", features = ["full"] }
 # feature flags: pdf, ocr, chunking, embeddings, language-detection, keywords, api, mcp
 #                (or "formats" / "full" aggregates); tokio-runtime is on by default
@@ -80,7 +80,7 @@ import asyncio
 from xberg import ExtractInput, extract, ExtractionConfig
 
 async def main() -> None:
-    result = await extract(ExtractInput.from_uri("document.pdf"), ExtractionConfig())
+    result = await extract(ExtractInput(uri="document.pdf"), ExtractionConfig())
     doc = result.results[0]
     print(doc.content)    # extracted text
     print(doc.metadata)   # document metadata
@@ -131,21 +131,21 @@ All languages use the same configuration structure with language-appropriate nam
 ```python
 from xberg import (
     ExtractInput, extract,
-    ExtractionConfig, OcrConfig, TesseractConfig, PdfConfig, ChunkingConfig,
+    ExtractionConfig, OcrConfig, TesseractConfig, PdfConfig, ChunkingConfig, OutputFormat,
 )
 
 config = ExtractionConfig(
     ocr=OcrConfig(
         backend="tesseract",
-        language="eng",
+        language=["eng"],
         tesseract_config=TesseractConfig(psm=6, enable_table_detection=True),
     ),
     pdf_options=PdfConfig(passwords=["secret123"]),
     chunking=ChunkingConfig(max_characters=1000, overlap=200),
-    output_format="markdown",
+    output_format=OutputFormat("markdown"),
 )
 
-result = await extract(ExtractInput.from_uri("document.pdf"), config)
+result = await extract(ExtractInput(uri="document.pdf"), config)
 ```
 
 ### Node.js (camelCase)
@@ -154,9 +154,9 @@ result = await extract(ExtractInput.from_uri("document.pdf"), config)
 import { extract, type ExtractionConfig } from "@xberg-io/xberg";
 
 const config: ExtractionConfig = {
-  ocr: { backend: "tesseract", language: "eng" },
+  ocr: { backend: "tesseract", language: ["eng"] },
   pdfOptions: { passwords: ["secret123"] },
-  chunking: { maxChars: 1000, maxOverlap: 200 },
+  chunking: { maxCharacters: 1000, overlap: 200 },
   outputFormat: "markdown",
 };
 
@@ -171,7 +171,7 @@ use xberg::{extract, ExtractInput, ExtractionConfig, OcrConfig, ChunkingConfig, 
 let config = ExtractionConfig {
     ocr: Some(OcrConfig {
         backend: "tesseract".into(),
-        language: "eng".into(),
+        language: vec!["eng".to_string()],
         ..Default::default()
     }),
     chunking: Some(ChunkingConfig {
@@ -218,14 +218,14 @@ xberg extract doc.pdf --config-json '{"ocr":{"backend":"tesseract","language":"d
 ### Python
 
 ```python
-from xberg import ExtractInput, extract_batch
+from xberg import ExtractInput, extract_batch, ExtractionConfig
 
 inputs = [
-    ExtractInput.from_uri("doc1.pdf"),
-    ExtractInput.from_uri("doc2.docx"),
-    ExtractInput.from_uri("doc3.xlsx"),
+    ExtractInput(uri="doc1.pdf"),
+    ExtractInput(uri="doc2.docx"),
+    ExtractInput(uri="doc3.xlsx"),
 ]
-output = await extract_batch(inputs)
+output = await extract_batch(inputs, ExtractionConfig())
 
 for doc in output.results:
     print(f"{len(doc.content)} chars extracted")
@@ -279,9 +279,10 @@ Custom backends can be registered in Python/Node via `register_ocr_backend` (see
 ### Language Codes
 
 ```python
-config = ExtractionConfig(ocr=OcrConfig(language="eng"))        # English
-config = ExtractionConfig(ocr=OcrConfig(language="eng+deu"))    # Multiple (string)
-config = ExtractionConfig(ocr=OcrConfig(language=["eng", "deu"]))  # Multiple (list)
+config = ExtractionConfig(ocr=OcrConfig(language=["eng"]))          # English
+config = ExtractionConfig(ocr=OcrConfig(language=["eng", "deu"]))   # Multiple
+# The single-string shorthand ("eng+deu") is only accepted in config files / --config-json,
+# not in the OcrConfig constructor (Python takes a list, Node takes an array).
 ```
 
 ### Force OCR
@@ -311,25 +312,16 @@ config = ExtractionConfig(force_ocr=True)  # OCR even if text is extractable
 
 ### Python
 
-Exceptions inherit from `XbergError` (note: the OCR exception is `OcrError`, not `OCRError`). Per-input failures during `extract_batch` are reported non-fatally in `result.errors`.
+`extract` / `extract_batch` raise a plain `RuntimeError` on failure — the typed `XbergError` subclasses are not raised by these entry points, so catch `RuntimeError`. Per-input failures during `extract_batch` are reported non-fatally in `result.errors`.
 
 ```python
-from xberg import (
-    ExtractInput, extract, ExtractionConfig,
-    XbergError, ParsingError, OcrError, ValidationError, MissingDependencyError,
-)
+from xberg import ExtractInput, extract, ExtractionConfig
 
 try:
-    result = await extract(ExtractInput.from_uri("file.pdf"), ExtractionConfig())
-except ParsingError as e:
-    print(f"Failed to parse: {e}")
-except OcrError as e:
-    print(f"OCR failed: {e}")
-except ValidationError as e:
-    print(f"Invalid input: {e}")
-except MissingDependencyError as e:
-    print(f"Missing dependency: {e}")
-except XbergError as e:
+    result = await extract(ExtractInput(uri="file.pdf"), ExtractionConfig())
+    for err in result.errors:
+        print(f"Per-input error: {err}")
+except RuntimeError as e:
     print(f"Extraction failed: {e}")
 ```
 
@@ -371,9 +363,9 @@ match extract(ExtractInput::from_uri("file.pdf"), &config).await {
 
 1. **Result is an envelope**: `extract` / `extract_batch` return `ExtractionResult` with `results`, `errors`, and `summary`. Per-document fields (`content`, `tables`, `chunks`, …) are on `result.results[i]`, NOT on the top-level return.
 2. **Async-only**: Python and Node have no sync variants — always `await extract(...)`. Rust `extract` is async; use `#[tokio::main]` or an async context.
-3. **Build the input**: pass an `ExtractInput`, not a bare path. Use `ExtractInput.from_uri(...)` / `ExtractInput::from_uri(...)` (Python/Rust) or `{ kind: "uri", uri: "..." }` (Node); for bytes use `kind="bytes"` with `bytes`/`mime_type`.
-4. **Python ChunkingConfig fields**: Use `max_characters` and `overlap` (defaults 1000 / 200). Node uses `maxChars` / `maxOverlap`; Rust uses `max_characters` / `overlap`.
-5. **Python OCR exception**: it is `OcrError`, not `OCRError`. Node throws plain `Error` (no typed error subclasses).
+3. **Build the input**: pass an `ExtractInput`, not a bare path. Use `ExtractInput(uri=...)` / `ExtractInput::from_uri(...)` (Python/Rust) or `{ kind: "uri", uri: "..." }` (Node); for bytes use `kind="bytes"` with `bytes`/`mime_type`.
+4. **Python ChunkingConfig fields**: construct with `max_characters` and `overlap` (defaults 1000 / 200); these are also the readable attributes. When passing config as a dict/JSON, the `max_chars` / `max_overlap` aliases are also accepted. Node uses `maxCharacters` / `overlap`; Rust struct fields are `max_characters` / `overlap`.
+5. **Python errors**: `extract` / `extract_batch` raise a plain `RuntimeError` on failure, not typed `XbergError` subclasses — catch `RuntimeError`. Node throws plain `Error` (no typed error subclasses).
 6. **Rust extract signature**: `extract(input, &config)` — the config is a reference. Use `&ExtractionConfig::default()` for defaults.
 7. **CLI --format vs --content-format**: `--format` controls CLI output (text/json). `--content-format` controls content format (plain/markdown/djot/html).
 8. **Config file field names**: Use snake_case in TOML/YAML/JSON config files — `[chunking]` fields are `max_characters` and `overlap`; other fields use names like `output_format`, `pdf_options`.

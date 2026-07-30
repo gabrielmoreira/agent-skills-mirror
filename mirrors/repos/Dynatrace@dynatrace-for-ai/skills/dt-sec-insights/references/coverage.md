@@ -3,6 +3,15 @@
 How to measure which processes, hosts, K8s workloads, and cloud entities are
 covered by Dynatrace vulnerability scanning or by external security products.
 
+> **Match recipes are in `dt-sec-contextualization`.** The 2-way container→workload
+> match recipe (K8s workload coverage), cloud entity match (Path 1), and host
+> coverage by IP match live in
+> `dt-sec-contextualization/references/correlation-and-coverage.md`. This file owns the **counting
+> logic** — the `smartscapeNodes` denominator queries, the DT-native scan-event
+> lookups, and the covered/not-covered classification. Load
+> `dt-sec-contextualization` alongside this file for any external-product coverage
+> question that requires the container→workload or cloud match recipe.
+
 > ⚠️ **Coverage means different things for runtime vs. non-runtime entities —
 > pick the right shape first.**
 >
@@ -240,22 +249,32 @@ instead.)
 Count entities covered (or not) by any external security product. These queries
 start from Smartscape topology (not `security.events`) and join external findings.
 
-### 3-Way Match Strategy for Container-Based Entities
+### 2-Way Match Strategy for Container-Based Entities
 
-External findings link to Dynatrace entities via three independent paths — all
-three are combined with `append`:
+External findings link to Dynatrace entities via two independent paths — both
+combined with `append`:
 
 | Path | Match key | Source node |
 |---|---|---|
 | 1 | `dt.smartscape_source.id` (direct entity ID) | finding → workload via Smartscape ID |
 | 2 | `container_image.digest` | finding → CONTAINER smartscapeNode → parent workload |
-| 3 | `container_image.id` | finding → `dt.entity.container_group_instance` → parent workload |
+
+> **Why only 2 paths?** A third path matching on `container_image.id`
+> (OCI image ID) previously used `dt.entity.container_group_instance`, which
+> carries `containerImageId`. That field does not exist on `smartscapeNodes
+> CONTAINER`, so the path has no pure-Smartscape equivalent and is omitted.
 
 ### K8s Workload Coverage (count by provider/product)
 
+> **Do not rename `id` before the join.** The `id` field of `smartscapeNodes`
+> must be used as-is in join conditions (`left[id]`). Renaming it to an alias
+> before the join (e.g. `| fields workload.id=id`) causes the DQL engine to
+> return 0 rows on the Smartscape-ID comparison. Always add the alias after
+> all joins via `fieldsAdd`.
+
 ```dql
 smartscapeNodes {K8S_DEPLOYMENT, K8S_CRONJOB, K8S_DAEMONSET, K8S_JOB, K8S_STATEFULSET, K8S_REPLICASET}
-| fields dt.k8s.workload.id=id, containerNames=name
+| fields id, containerNames=name
 | join [
   fetch security.events
   | filterOut event.provider=="Dynatrace" or product.vendor=="Dynatrace"
@@ -263,17 +282,18 @@ smartscapeNodes {K8S_DEPLOYMENT, K8S_CRONJOB, K8S_DAEMONSET, K8S_JOB, K8S_STATEF
   | filterOut isNull(event.type) or isNull(object.id)
   | dedup dt.smartscape_source.id, event.provider, product.name
   | fields dt.smartscape_source.id, event.provider, product.name
-], kind:leftouter, on:{left[dt.k8s.workload.id]==right[dt.smartscape_source.id]},
+], kind:leftouter, on:{left[id]==right[dt.smartscape_source.id]},
    fields:{event.provider, product.name, dt.smartscape_source.id}
 | append [
   smartscapeNodes CONTAINER
-  | fields container.image.digest, references
   | expand dt.k8s.workload.id=coalesce(references[is_part_of.k8s_deployment],
                            coalesce(references[is_part_of.k8s_daemonset],
                              coalesce(references[is_part_of.k8s_cronjob],
                                coalesce(references[is_part_of.k8s_statefulset],
                                  coalesce(references[is_part_of.k8s_job],
                                    references[is_part_of.k8s_replicaset])))))
+  | filter isNotNull(dt.k8s.workload.id)
+  | fields dt.k8s.workload.id, container.image.digest
   | join [
     fetch security.events
     | filterOut event.provider=="Dynatrace" or product.vendor=="Dynatrace"
@@ -284,24 +304,9 @@ smartscapeNodes {K8S_DEPLOYMENT, K8S_CRONJOB, K8S_DAEMONSET, K8S_JOB, K8S_STATEF
   ], kind:leftOuter, on:{left[container.image.digest]==right[container_image.digest]},
     fields:{event.provider, product.name, container_image.digest}
 ]
-| append [
-  fetch dt.entity.container_group_instance
-  | fields containerImageId, containerNames,
-           container_group.id=instance_of[dt.entity.container_group],
-           workload.id=belongs_to[dt.entity.cloud_application], workloadName
-  | fieldsAdd dt.k8s.workload.id=coalesce(workload.id,container_group.id)
-  | join [
-    fetch security.events
-    | filterOut event.provider=="Dynatrace" or product.vendor=="Dynatrace"
-    | filter isNotNull(container_image.id)
-    | filterOut isNull(event.type) or isNull(object.id)
-    | dedup event.provider, product.name, container_image.id
-    | fields event.provider, product.name, container_image.id
-  ], kind:leftOuter, on:{left[containerImageId]==right[container_image.id]},
-    fields:{event.provider, product.name, container_image.digest=container_image.id}
-]
 | fieldsAdd Product=if(isNotNull(container_image.digest) or isNotNull(dt.smartscape_source.id), product.name, else:"Not covered")
 | fieldsAdd Provider=if(isNotNull(container_image.digest) or isNotNull(dt.smartscape_source.id), event.provider, else:"Not covered")
+| fieldsAdd dt.k8s.workload.id=coalesce(dt.smartscape_source.id, dt.k8s.workload.id, id)
 | summarize {Entities=countDistinctExact(dt.k8s.workload.id)}, by:{Provider, Product}
 | sort Entities desc
 ```
@@ -310,7 +315,7 @@ smartscapeNodes {K8S_DEPLOYMENT, K8S_CRONJOB, K8S_DAEMONSET, K8S_JOB, K8S_STATEF
 
 Start from workload topology, expand container image identifiers, then anti-join
 security findings. If the pre-flight in
-[entity-enrichment.md § K8s Workload Enrichment](entity-enrichment.md#k8s-workload-enrichment-paths-1--2--3)
+[dt-sec-contextualization/references/entity-enrichment.md](../../dt-sec-contextualization/references/entity-enrichment.md) (§ K8s Workload Enrichment)
 shows no container-image identifiers in external findings, report that the
 tenant cannot answer this as a coverage gap rather than treating zero findings
 as proof of safety.

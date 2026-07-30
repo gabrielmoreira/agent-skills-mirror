@@ -1,0 +1,4 @@
+interface:
+  display_name: "短剧创作"
+  short_description: "基于文件系统初始化、恢复、路由并交付短剧全流程文本产物"
+  default_prompt: "使用 $short-drama 初始化、查看、继续或恢复我的文件系统短剧项目。"

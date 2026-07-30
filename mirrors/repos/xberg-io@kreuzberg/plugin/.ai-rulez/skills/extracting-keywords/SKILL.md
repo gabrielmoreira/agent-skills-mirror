@@ -44,7 +44,7 @@ Or in a config file:
 [keywords]
 algorithm = "rake"       # "yake" or "rake"
 max_keywords = 10        # default 10
-min_score = 0.0          # filter below this score (ranges differ per algorithm)
+min_score = 0.0          # filter below this score (normalized 0.0-1.0 for both algorithms)
 ngram_range = [1, 3]     # unigrams..trigrams (default); config-file only
 language = "en"          # stopword language; omit to skip stopword filtering
 ```
@@ -56,9 +56,10 @@ xberg extract report.pdf --config xberg.toml --format json | jq '.extracted_keyw
 Field notes:
 
 - `max_keywords` caps how many keywords are returned (default 10).
-- `min_score` filters low-scoring keywords; note YAKE scores are
-  *lower-is-better* while RAKE scores are *higher-is-better*, so a single
-  threshold behaves differently per algorithm.
+- `min_score` filters low-scoring keywords. Both YAKE and RAKE normalize
+  their scores to the `0.0`-`1.0` range with *higher-is-better*, so
+  `min_score` retains keywords with `score >= min_score` identically for
+  either algorithm.
 - `ngram_range` is `[min, max]`: `[1,1]` unigrams only, `[1,2]` adds
   bigrams, `[1,3]` (default) adds trigrams. Config-file only — it is not a
   field on the language bindings' `KeywordConfig`.
@@ -124,7 +125,7 @@ them with the cache command:
 
 ```bash
 xberg cache warm --embedding-model balanced   # one preset
-xberg cache warm --all-embeddings             # all four presets
+xberg cache warm --all-embeddings             # all available presets (currently 8)
 ```
 
 ## Programmatic access
@@ -137,7 +138,7 @@ from xberg import ExtractInput, extract, ExtractionConfig, KeywordConfig, Keywor
 config = ExtractionConfig(
     keywords=KeywordConfig(algorithm=KeywordAlgorithm.YAKE, max_keywords=15, language="en"),
 )
-result = await extract(ExtractInput.from_uri("paper.pdf"), config)
+result = await extract(ExtractInput(uri="paper.pdf"), config)
 doc = result.results[0]
 print(doc.extracted_keywords)   # extracted keywords (when enabled)
 print(doc.detected_languages)   # detected languages (when enabled)
@@ -151,8 +152,9 @@ classes and the embedding presets.
 
 - **No `--keywords` flag** — keyword extraction is config-only. Use
   `--config-json '{"keywords":{...}}'` or a `[keywords]` config block.
-- **`min_score` direction** — lower is better for YAKE, higher is better
-  for RAKE; pick the threshold to match the algorithm.
+- **`min_score` direction** — scores are normalized to `0.0`-`1.0` with
+  higher-is-better for both YAKE and RAKE, so the same threshold behaves
+  identically for either algorithm.
 - **Embeddings ≠ extraction** — `embed` only takes raw text. Pipe
   `xberg extract` output into it for document vectors.
 - **Cold embedding models** — first local run downloads the preset; run

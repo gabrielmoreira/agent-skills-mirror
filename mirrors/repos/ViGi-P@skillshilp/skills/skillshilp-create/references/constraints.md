@@ -24,7 +24,8 @@ Do not create empty or placeholder directories.
 | `license` | | Include only if applicable |
 | `compatibility` | | Include only when environment requirements exist |
 | `metadata` | | Optional metadata |
-| `allowed-tools` | | Optional |
+| `disable-model-invocation` | | Disable auto-triggering of the skill (`true` or `false`) |
+| `allowed-tools` | | List of tools permitted for the skill |
 
 ---
 

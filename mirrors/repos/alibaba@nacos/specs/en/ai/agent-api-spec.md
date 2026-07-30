@@ -32,7 +32,7 @@ new binding is implemented and negotiated.
 
 | Surface | Transport | Primary caller | Responsibility |
 |---|---|---|---|
-| Client | HTTP and gRPC | Agent consumers and runtime publishers | Search, Discover, Watch, register, and deregister |
+| Client | HTTP and gRPC | Agent consumers and runtime publishers | Search, Discover, register, and deregister; a later SDK provides local subscription by polling Discover |
 | Admin | HTTP | Maintainer SDK and management integrations | Agent CRUD, Version lifecycle, and runtime inspection |
 | Console | HTTP | Nacos Console UI | UI-oriented facade over Admin semantics |
 
@@ -112,13 +112,18 @@ AiService extends AgentDiscoveryService, A2aService
 | Search | `searchAgents` | `AgentSearchRequest` without a caller-controlled namespace | `Page<AgentCatalogEntry>` |
 | Discover | `discoverAgent` | `AgentReference` | `AgentDiscoveryResult` |
 | Filtered Discover | `discoverAgent` | `AgentReference`, `AgentDiscoveryFilter` | `AgentDiscoveryResult` |
-| Watch | `subscribeAgent` | Reference, optional Filter, Listener | Current `AgentDiscoveryResult` |
-| Cancel Watch | `unsubscribeAgent` | Same Reference, Filter, and Listener identity | `void` |
+| Polling subscription | `subscribeAgent` | Reference, optional Filter, Listener | Current `AgentDiscoveryResult`, or `null` while the target is absent |
+| Cancel polling subscription | `unsubscribeAgent` | Same Reference, Filter, and Listener identity | `void` |
 | Register | `registerAgentEndpoints` | `AgentEndpointRegistrationBatch` | `void` |
 | Deregister | `deregisterAgentEndpoints` | `AgentEndpointDeregistrationBatch` | `void` |
 
-`subscribeAgent` returns the current complete result and later delivers
-complete replacement results. `getAll`, `selectOneHealthy`, protocol choice,
+`subscribeAgent` is a local SDK convenience rather than a server Watch or Push
+operation. The SDK periodically executes Discover with the same Reference and
+Filter. If the target is initially absent, it returns `null` but retains the
+polling task. A later `NOT_FOUND` poll neither terminates the subscription nor
+delivers an empty snapshot. When the target appears, or the resolved Version,
+`contentDigest`, or any `sourceRevision` changes, the Listener receives a new
+complete replacement result. `getAll`, `selectOneHealthy`, protocol choice,
 priority/weight selection, and actual Agent calling are local SDK helpers, not
 additional remote operations.
 
@@ -144,14 +149,17 @@ registration never creates a definition implicitly.
 |---|:---:|:---:|
 | Search | Yes | Yes |
 | Discover | Yes | Yes |
-| Watch and push | No | Yes |
+| Server Watch and push | No | No |
+| Local SDK polling subscription | Reuses Discover | Reuses Discover |
 | Register and Deregister | Yes | Yes |
 | Publisher heartbeat | Yes | Uses the gRPC connection lifecycle |
 
-An HTTP-only SDK fails Watch locally; it must not simulate Watch by polling.
-After a write timeout, an SDK may change transport only when it knows the
-server did not process the request. An unknown gRPC write result must not be
-blindly repeated through HTTP.
+Polling subscriptions use the SDK-selected Discover transport and add no HTTP
+path, gRPC payload, ability key, or Publisher renewal. Ordinary Discover and
+subscription polls renew only an HTTP Client, never its Publisher. After a
+write timeout, an SDK may change transport only when it knows the server did
+not process the request. An unknown gRPC write result must not be blindly
+repeated through HTTP.
 
 ### 2.3 Client HTTP Paths
 
@@ -187,7 +195,7 @@ application-facing `AgentEndpointDeregistrationBatch` RAD model.
 
 ### 2.4 HTTP Publisher Identity And Liveness
 
-Endpoint write and heartbeat requests require:
+Endpoint write and Publisher heartbeat requests require:
 
 ```text
 X-Nacos-Client-Id: http-<ipToken>-<processToken>-<clientSequence>-<createTimestamp>
@@ -202,33 +210,48 @@ a diagnostic PID token. The id is stable across retry, server switch, and
 redo; a process restart creates a new id. It is routing identity, not a
 credential.
 
+The server wraps the external value as the Naming internal Client id
+`HTTP_CLIENT@@<externalClientId>`. Search and Discover may carry the same
+header. When the Client already exists, a query renews only Client liveness. It
+does not create an empty Client or change any Publisher liveness, health, or
+revision. An AI-module Distro Filter routes stateful requests by that internal
+id; it does not extend the Naming HTTP API Distro Filter.
+
 `ClientLivenessInfo` contains only:
 
 ```text
 heartbeatIntervalMillis < unhealthyTimeoutMillis < expireTimeoutMillis
 ```
 
-The latest successful registration or heartbeat response controls scheduling.
-One heartbeat keeps the whole client alive, independent of endpoint count.
-Endpoint writes also refresh liveness. A client with no remaining endpoints is
-removed and stops heartbeats.
+An HTTP Client tracks Client liveness and Publisher liveness separately. A
+valid query renews Client liveness only. Endpoint writes and Publisher
+heartbeat renew both the Client and every Publisher owned by that Client. One
+Publisher heartbeat is independent of endpoint count. A Client with no
+remaining Endpoint and no subscriber state is removed and stops heartbeats.
 
 | State | Runtime behavior |
 |---|---|
-| `ACTIVE` | Contributions use their current Naming health. |
-| `UNHEALTHY` | After `unhealthyTimeoutMillis`, contributions remain discoverable with `healthy=false`. |
-| `EXPIRED` | After `expireTimeoutMillis`, all contributions owned by the client are removed. |
+| `ACTIVE` | The Publisher is active and contributions use their current Naming health. |
+| `UNHEALTHY` | After Publisher `unhealthyTimeoutMillis`, contributions remain discoverable with `healthy=false`; query cannot recover them. |
+| `EXPIRED` | After Publisher `expireTimeoutMillis`, all contributions owned by the Client are removed, while a Client with subscriber state may remain. |
 
-The server routes HTTP publisher state by `clientId` through Distro type
-`AI_AGENT_HTTP_CLIENT`. Only the responsible node owns the native client,
-`lastActiveTime`, and timeout task. Peers receive complete client state needed
-to rebuild the Naming/RAD projection. A new owner starts its failover grace
-period only after receiving a complete snapshot; otherwise it returns
-`HTTP_CLIENT_NOT_FOUND`, and the client redoes every expected complete service
-batch.
-The first accepted write binds the client id to authenticated identity and
-namespace. Later mismatches are rejected. The same string in another module
-does not share liveness or cleanup state.
+The HTTP Client reuses Naming
+`Nacos:Naming:v2:ClientData`, `DistroClientDataProcessor`, Client snapshot,
+verify, and repair. It adds no Agent-specific Distro type.
+`HttpConnectionBasedClientManager` is a peer of
+`ConnectionBasedClientManager` and `ClientManagerDelegate` routes it by the
+internal id. Only the responsible node schedules native Client and Publisher
+timeouts. Peers receive the standard Client state required to rebuild
+Naming/RAD projections. Replica verify time provides the local timeout lower
+bound after responsibility transfer; the Client does not maintain another
+ownership flag. This normal Distro failover does not define a mixed-version
+compatibility path.
+
+The first stateful write binds the Client id to authenticated identity and
+namespace. Later mismatches are rejected. Another module using the same
+external Client id shares the same HTTP Client lifecycle. Old nodes have no
+corresponding Agent Client HTTP API capability; this spec defines no execution
+path for an upgrading cluster in which that API is not yet available.
 
 ### 2.5 gRPC Payloads And Abilities
 
@@ -236,15 +259,14 @@ does not share liveness or cleanup state.
 |---|---|---|
 | `AgentSearchRequest` | `AgentSearchResponse` | Search and return a page of catalog entries |
 | `AgentDiscoveryRequest` | `AgentDiscoveryResponse` | One Discover |
-| `AgentSubscribeRequest` | `AgentSubscribeResponse` | Subscribe or unsubscribe; a successful subscription returns an opaque `watchKey` and the current complete result |
-| `AgentDiscoveryNotifyRequest` | `AgentDiscoveryNotifyResponse` | Push a `SNAPSHOT` or `TERMINATED` event for one `watchKey` and receive an acknowledgement |
 | `AgentEndpointRegisterRequest` | `AgentEndpointOperationResponse` | Replace one complete RAD batch for the connection, Agent, and protocol |
 | `AgentEndpointDeregisterRequest` | `AgentEndpointOperationResponse` | Remove the connection's whole publication for one Agent and protocol |
 
 All requests report module `ai`. gRPC endpoint contributions belong to
 `RequestMeta.connectionId`; no client id or heartbeat payload is added.
 Disconnect removes that connection's contributions. Reconnect obtains a new
-connection id and redoes endpoints and subscriptions.
+connection id and redoes endpoints. Local polling subscriptions are not
+connection-scoped server state.
 
 The endpoint handlers are Naming adapters. Register validates and converts the
 submitted complete Endpoint batch to Naming Instances, then invokes Naming
@@ -253,39 +275,24 @@ They do not read or merge the previous publisher batch, add an Agent service
 lock, directly query Naming's client index, or scan other publishers during a
 write.
 
-Runtime Snapshot, Discover, and Watch read the complete internal Naming
+Runtime Snapshot and Discover read the complete internal Naming
 `ServiceStorage` projection. They construct one binding from each Instance's
 singular runtime Version and Version-range metadata, retain ranges matching the
 requested Version, and aggregate the resulting `bindings[]` and health by
 public Endpoint natural key.
 
-`AgentSubscribeResponse.watchKey` is the binding-defined opaque identity for
-the accepted wire subscription. The SDK maps it to the canonical local Watch
-identity and does not parse it. `AgentDiscoveryNotifyRequest` contains
-`watchKey` and `eventType`:
-
-- `SNAPSHOT` requires one complete `AgentDiscoveryResult` and has no error;
-- `TERMINATED` contains no result and, in this version, requires
-  `errorCode=NOT_FOUND`;
-- either event is acknowledged with `AgentDiscoveryNotifyResponse`;
-- `TERMINATED` closes only the identified Watch on the shared Payload
-  connection. It does not close that connection or any other Watch.
-
-The SDK atomically replaces the cached result for `SNAPSHOT`. For
-`TERMINATED`, it delivers the terminal status and removes only that Watch and
-its redo state before acknowledging. After reconnect, the SDK discards the old
-connection-scoped `watchKey`, subscribes again using its canonical local Watch
-identity, and stores the new response `watchKey` and current result. These
-request and response types are Nacos gRPC binding objects; they do not add to
-the six RAD root messages.
+This version defines no `AgentSubscribeRequest`,
+`AgentDiscoveryNotifyRequest`, `watchKey`, Push acknowledgement, or
+connection-scoped Watch redo state. Poll scheduling, complete-result caching,
+and change deduplication are local Java SDK behavior and do not extend the six
+RAD root messages.
 
 The target ability keys are:
 
 | Constant | Wire key | Meaning |
 |---|---|---|
-| `SERVER_AGENT_DISCOVERY_V1` | `agentDiscoveryV1` | Server accepts RAD Search, Discover, and Watch payloads |
+| `SERVER_AGENT_DISCOVERY_V1` | `agentDiscoveryV1` | Server accepts RAD Search and Discover payloads |
 | `SERVER_AGENT_ENDPOINT_V1` | `agentEndpointV1` | Server accepts RAD endpoint publication payloads |
-| `SDK_AGENT_DISCOVERY_V1` | `agentDiscoveryV1` | SDK accepts RAD discovery push |
 
 Legacy `SERVER_AGENT_REGISTRY`, `SERVER_AGENT_CARD_V1`, and
 `SDK_AGENT_REGISTRY` gate only the old A2A contract. Absence of a new ability
@@ -301,10 +308,11 @@ does not authorize sending a RAD payload through a legacy fallback.
 | Partial SDK Deregister | Remove keys from local expected state and Register the complete remainder |
 | Last SDK Deregister or direct remote Deregister | Remove the publisher's whole service publication |
 | Repeat whole-publication Deregister | Success without change |
-| Repeat heartbeat | Refresh only client liveness |
+| Repeat Publisher heartbeat | Refresh Client and Publisher liveness without changing Publisher payload or revision |
+| Repeat query carrying an existing Client id | Refresh Client liveness only; do not create a Client or renew Publisher |
 | HTTP timeout | Retry with the same client id and identical payload using backoff |
 | `HTTP_CLIENT_NOT_FOUND` | Mark local endpoint intent unregistered and redo each complete service batch |
-| gRPC reconnect | Redo complete endpoint batches and subscriptions under the new connection id |
+| gRPC reconnect | Redo complete endpoint batches under the new connection id; local polling subscriptions require no server redo |
 | Cross-transport deregistration | Forbidden; one publisher identity cannot remove another transport's contribution |
 
 The SDK records expected state before the first write and serializes desired
@@ -454,7 +462,8 @@ RAD ability:
 1. API models, validation, error mapping, authorization, and audit;
 2. gRPC payload registration and ability negotiation;
 3. HTTP publisher Distro state, liveness, idempotency, and redo;
-4. Java SDK namespace binding, cache, Watch, reconnect, and endpoint redo;
+4. Java SDK namespace binding, cache, Discover polling subscriptions,
+   reconnect, and endpoint redo;
 5. Admin/Maintainer and Console contracts;
 6. old A2A facade conversion; and
 7. OpenAPI, Java SDK, and Maintainer SDK integration-test scenario matrices and

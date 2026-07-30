@@ -12,6 +12,28 @@ const mediaIntent = getMediaIntent(args);
 const mediaCount = getMediaCount(args);
 const mediaKind = getMediaKind(args);
 const requireInitialMedia = args['require-initial-media'] === true || args.requireInitialMedia === true || Boolean(args['provided-images'] || args['provided-media']);
+const contentShape = {
+  required: {
+    titleChars: args['title-chars'] || args.titleChars,
+    itemCount: args['item-count'] || args.itemCount,
+    minItemCount: args['min-item-count'] || args.minItemCount,
+    numericItemCount: args['numeric-item-count'] || args.numericItemCount,
+    valueItemCount: args['value-item-count'] || args.valueItemCount,
+    rawNumericItemCount: args['raw-numeric-item-count'] || args.rawNumericItemCount,
+    textualValueItemCount: args['textual-value-item-count'] || args.textualValueItemCount,
+    nestedDepth: args['nested-depth'] || args.nestedDepth,
+    requiresValue: args['requires-value'] === true || args.requiresValue === true,
+  },
+  preferred: {
+    summaryChars: args['summary-chars'] || args.summaryChars,
+    takeawayChars: args['takeaway-chars'] || args.takeawayChars,
+    detailItemCount: args['detail-item-count'] || args.detailItemCount
+      || ((args['requires-detail'] === true || args.requiresDetail === true)
+        ? args['item-count'] || args.itemCount
+        : null),
+    priority: args.priority,
+  },
+};
 const result = {
   theme: args.theme || null,
   role: args.role || args.use || null,
@@ -21,6 +43,7 @@ const result = {
   mediaCount,
   mediaKind,
   requireInitialMedia,
+  contentShape,
   limit: Number(args.limit || 12),
   // 候选同分随机:未显式给 --seed 时每次调用生成新 seed(输出里回显,便于复现)。
   seed: args.seed !== undefined && args.seed !== true ? String(args.seed) : String(Math.floor(Math.random() * 0xffffffff)),
@@ -31,6 +54,7 @@ const layouts = listLayouts({
   theme: result.theme,
   role: result.role,
   keyword: result.keyword,
+  contentShape,
   needsMedia: result.needsMedia,
   plannedImages: args['planned-images'],
   providedImages: args['provided-images'],

@@ -40,45 +40,13 @@ install generated output.
 
 ## Install for your agent
 
-> **General security warning:** Before installing any third-party AI agent
-> skill, review its instructions and executable scripts, and confirm that
-> you trust its source.
+> [!WARNING]
+> Before installing any third-party AI agent skill, review its instructions
+> and executable scripts, and confirm that you trust its source.
 
 Download the latest packaged [Degardis Authoring skill][packaged-skill] in ZIP format,
-then follow the instructions for your target agent.
+then follow the repository's [installation guide][installation-guide]. The
+guide covers filesystem-based agents, safe upgrades, and ChatGPT uploads.
 
 [packaged-skill]: ../../../../releases/latest/download/degardis-authoring.zip
-
-### Filesystem-based agents
-
-Choose where the skill should be available:
-
-| Agent | Current project | All projects |
-| --- | --- | --- |
-| Claude | `.claude/skills/degardis-authoring/` | `~/.claude/skills/degardis-authoring/` |
-| Codex | `.agents/skills/degardis-authoring/` | `~/.agents/skills/degardis-authoring/` |
-| Copilot | `.github/skills/degardis-authoring/` | `~/.copilot/skills/degardis-authoring/` or `~/.agents/skills/degardis-authoring/` |
-| Cursor | `.cursor/skills/degardis-authoring/` or `.agents/skills/degardis-authoring/` | `~/.cursor/skills/degardis-authoring/` or `~/.agents/skills/degardis-authoring/` |
-| Roo | `.roo/skills/degardis-authoring/` or `.agents/skills/degardis-authoring/` | `~/.roo/skills/degardis-authoring/` or `~/.agents/skills/degardis-authoring/` |
-
-Paths under **Current project** are relative to the project's root
-directory. Paths under **All projects** are personal locations.
-
-On macOS, Linux, and other Unix-like systems, `~/` refers to the current user's
-home directory and can be used as written. On Windows, replace a leading `~`
-with `%USERPROFILE%` in Command Prompt or File Explorer, or with `$HOME` in
-PowerShell. For example, `~/.agents/skills/degardis-authoring/` becomes
-`%USERPROFILE%\.agents\skills\degardis-authoring\` or `$HOME/.agents/skills/degardis-authoring/`.
-
-Create one of the directories shown above, extract the ZIP contents directly
-into it, and confirm that `SKILL.md` is immediately inside that directory.
-
-When upgrading an installed skill, first empty its existing skill directory,
-then extract the new ZIP into that directory. Back up any local modifications
-before emptying it.
-
-### ChatGPT
-
-Open [Skills in ChatGPT](https://chatgpt.com/skills), select the **+** button,
-choose **Upload from your computer**, and upload the downloaded ZIP as-is.
-Availability and workspace permissions can vary.
+[installation-guide]: ../../#install-skills

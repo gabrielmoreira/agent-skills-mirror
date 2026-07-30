@@ -53,6 +53,8 @@ Agent names must match `^[a-z0-9][a-z0-9_-]{0,63}$`. Validate before path constr
 
 Tool priority is local tools, then MCP tools, then gateway tools. Deduplicate by name. Skill `allowed-tools` is enforced at execution time, not by schema filtering, to keep prompt-cache tool arrays stable.
 
+MCP tool dispatch is resilience-guarded: a supervisor-known-disconnected server is probed and reconnected before the call is sent (never dispatch onto a known-dead connection), every tools/call attempt is bounded by per-server `tool_timeout_secs` falling back to `mcp.tool_timeout_secs` (default 300s), and a failed call probes fresh health and retries once. Artifact paths from file-producing MCP servers are made unambiguous on both sides: results from servers with known path semantics (playwright, or any server with `workspace_base`) get "Saved to:" absolute-path annotations for files that verifiably exist, and screenshot output filenames default into the per-session artifact scratch dir (`~/.shannon/tmp/sessions/<id>/`, created lazily, swept by age at daemon startup) on daemon-served runs so intermediates stay out of user-visible folders. browser_snapshot never receives a default filename — its filename is a mode switch and omitting it returns the accessibility snapshot inline, the model's primary page-reading channel.
+
 Skill-exempt tools must be pure infrastructure with no external side effects. Do not exempt side-effecting tools from skill restrictions.
 
 Tool exposure resolves per tool: explicit `ToolExposure` first, then source
@@ -171,10 +173,10 @@ Payloads decoded by UI clients (bus events, per-request SSE events, HTTP respons
 
 ### Prompt Cache
 
-Cloud currently applies the short prompt-cache TTL to every request. Preserve
-`cache_source` as attribution (not a Kocoro-side TTL selector) and preserve
-canonical tool input normalization. Any future TTL-policy change belongs in
-shannon-cloud and must update `docs/cache-strategy.md` in the same rollout.
+Cloud owns the prompt-cache TTL policy. Preserve `cache_source` as attribution
+(not a Kocoro-side TTL selector) and preserve canonical tool input
+normalization. Any future TTL-policy change belongs in the Cloud service and
+must update `docs/cache-strategy.md` in the same rollout.
 
 Any in-place message content rewrite that can affect prompt bytes must emit cache-compaction/debug instrumentation so drift remains attributable.
 
@@ -213,6 +215,6 @@ Schedule tests use temp directories and do not write to the real LaunchAgents di
 
 ## Tools
 
-Core local tools include file ops, archive inspect/extract, document extraction, shell/system, macOS GUI, schedules, memory, and skills. Common openers and compact local utilities are Direct; process/GUI automation and uncommon mutations are Deferred and loaded through `tool_search` when needed. `computer_use` is the primary native-GUI tool: Accessibility-first observations return a per-run `state_id`; ref mutations reject stale state; screenshots are explicit; windowless apps are reopened generically; integer-shaped strings are tolerated; bounded delay waits need no shell fallback; pointer actions move the real cursor visibly; observations skip approval while mutations retain normal approval policy; whole calls serialize across concurrent routes on one GUI-operation lock shared with the legacy `accessibility` / `computer` / `applescript` tools; unattended runs (including auto-approve transports and IM/voice channels without an approval UI) can never invoke it — observation actions included — even via persisted or broker Always Allow. The standalone `screenshot` tool also requires approval and is denied on unattended runs. Runtime-conditional tools include session search, cloud delegation, publish/list/retract uploads, image generation/editing, and deferred tool search.
+Core local tools include file ops, archive inspect/extract, document extraction, shell/system, macOS GUI, schedules, memory, and skills. Common openers and compact local utilities are Direct; uncommon mutations are Deferred and loaded through `tool_search` when needed. On daemon runs, `computer_use` is the Direct, high-level native-GUI contract on the ordinary parent model. The parent keeps its configured model; only an invoked desktop task lazily resolves `openai.computer.v1` and starts a private OpenAI Responses trajectory that owns launch/focus, screenshots, visible coordinate pointer actions, typing, app switching, re-observation, continuation, and internal state/frame authority. NSWorkspace + CGWindow supplies exact target identity when AX is incomplete. The whole task serializes on the shared GUI-operation lock. Unattended runs can invoke it ONLY via an explicit persisted GLOBAL `computer_use` always-allow grant. The legacy `computer` / `accessibility` / `applescript` / `ghostty` wrappers cannot be persisted as Always Allow and remain denied for unattended execution; daemon parent runs remove the legacy GUI wrappers and reject shell `osascript` / `cliclick`. The standalone `screenshot` tool remains separate, approval-required, and denied unattended. Runtime-conditional tools include session search, cloud delegation, publish/list/retract uploads, image generation/editing, and deferred tool search.
 
 Every approval-required tool must expose a short human-readable description or equivalent purpose field for approval UI. Destructive or paid/public cloud tools require approval.

@@ -6,20 +6,29 @@ import {
   isMediaArrayKey,
   isMediaArrayPath,
   isPrunedContractOmit,
+  mediaVisibilityValue,
   normalizeSlidePropsForContract,
   pruneContractValue,
   isCssColorLike,
 } from '../../prop-contract-core.mjs';
+import { resolveContentMap } from '../../variant-contract.mjs';
+import { BespokeSlideBody } from '@dashi/bespoke-runtime';
+import { canonicalizeThemePageRuntime } from './canonical-metadata.mjs';
 // JAD-201:主题注册表(runtimePages + 图片槽 Provider 包裹)从可注入模块取。
 // renderDeck 打包时把 `@dashi/theme-registry` 别名指向「全主题」或「按 deck 实际用到的主题裁剪版」。
 import { runtimePages, wrapThemeImageProviders } from '@dashi/theme-registry';
 
 const mountedRoots = new WeakMap();
 const rootMediaApis = new WeakMap();
+const runtimeBespokeVariants = new WeakMap();
 const IMAGE_UPLOAD_MAX_DIM = 1400;
 const IMAGE_UPLOAD_QUALITY = 0.78;
 const releaseInactiveThemeKeys = new Set(['theme03', 'theme10']);
-const entriesByKey = new Map(runtimePages.map(page => [page.key, page]));
+const runtimeMetadataByKey = new Map(runtimePages.map(page => {
+  const metadata = canonicalizeThemePageRuntime(page);
+  return [page.key, metadata];
+}));
+const entriesByKey = new Map([...runtimeMetadataByKey].map(([key, metadata]) => [key, metadata.page]));
 const UNCHANGED_EXTERNAL_VALUE = Symbol('unchanged-external-value');
 const CONTRACT_VALUE_OMIT = Symbol('contract-value-omit');
 
@@ -34,10 +43,27 @@ function readJson(value, fallback) {
 function getRootApi(root) {
   let api = mountedRoots.get(root);
   if (!api) {
+    // The server-rendered fallback is replaced only on the first client
+    // takeover. Subsequent prop edits reuse this React root so finite entrance
+    // animations and component-local state are not restarted by a remount.
+    root.replaceChildren();
     api = createRoot(root);
     mountedRoots.set(root, api);
   }
   return api;
+}
+
+function resetRuntimeRoot(root) {
+  if (!root) return;
+  const api = mountedRoots.get(root);
+  if (api) {
+    try {
+      api.unmount();
+    } catch {}
+  }
+  mountedRoots.delete(root);
+  rootMediaApis.delete(root);
+  root.replaceChildren();
 }
 
 function toArray(value) {
@@ -273,6 +299,7 @@ function renderMedia(value, props = {}) {
 }
 
 function createMediaApi(slide, baseProps, entry, defaults) {
+  const stateId = getSlideStateId(slide);
   // `extraProps` (optional): companion top-level props to merge in the same
   // write — e.g. a theme gates a slot's visibility behind a switch
   // (backgroundMode:'unicorn'|'media', mediaCount:0) whose upload-only
@@ -282,9 +309,8 @@ function createMediaApi(slide, baseProps, entry, defaults) {
   // gate pass its target value here so the single setProps below flips both
   // atomically. Read back the gate's current value first so undo restores it.
   function updateList(key, index, value, extraProps) {
-    const slideId = slide.dataset.vmSlideId;
     const vmApi = window.__deckViewModel;
-    const currentProps = (vmApi?.peek ? vmApi.peek('props') : vmApi?.getState?.().props)?.[slideId] || {};
+    const currentProps = (vmApi?.peek ? vmApi.peek('props') : vmApi?.getState?.().props)?.[stateId] || {};
     const safeCurrentProps = sanitizeExternalStateValues(entry, defaults, currentProps);
     const sourceProps = { ...baseProps, ...safeCurrentProps };
     const nextList = toArray(sourceProps[key]);
@@ -307,8 +333,9 @@ function createMediaApi(slide, baseProps, entry, defaults) {
       label: 'media',
       undo: () => updateList(key, index, previousValue, previousExtraProps),
     });
-    window.__deckViewModel?.setProps?.(slideId, nextProps);
+    window.__deckViewModel?.setProps?.(stateId, nextProps);
     window.__markOverviewThumbDirty?.(slide);
+    if (getSlideStateId(slide) !== stateId) return;
     renderRuntimeThemeSlide(slide, nextProps);
     window.__initEditableText?.(slide);
     window.__syncActiveEffects?.(slide, { skipMotion: true });
@@ -332,11 +359,10 @@ function createMediaApi(slide, baseProps, entry, defaults) {
   }
 
   return {
-    isActive: () => isRuntimeSlideActive(slide),
+    isActive: () => getSlideStateId(slide) === stateId && isRuntimeSlideActive(slide),
     get: (key, index) => {
-      const slideId = slide.dataset.vmSlideId;
       const vmApi = window.__deckViewModel;
-      const currentProps = (vmApi?.peek ? vmApi.peek('props') : vmApi?.getState?.().props)?.[slideId] || {};
+      const currentProps = (vmApi?.peek ? vmApi.peek('props') : vmApi?.getState?.().props)?.[stateId] || {};
       const sourceProps = { ...baseProps, ...currentProps };
       return toArray(sourceProps[key])[index] || null;
     },
@@ -344,6 +370,10 @@ function createMediaApi(slide, baseProps, entry, defaults) {
     acceptFile,
     pick,
   };
+}
+
+function getSlideStateId(slide) {
+  return slide?.dataset?.vmVariantStateId || slide?.dataset?.vmSlideId;
 }
 
 function HostImageSlot({ mediaApi, index, options = {} }) {
@@ -725,11 +755,14 @@ function normalizeExternalValues(entry, defaults, values) {
   if (!Object.keys(externalValues).length) return externalValues;
   const contractValues = {};
   const passthroughValues = {};
+  let hasAuthoredMediaContractValue = false;
   for (const [key, value] of Object.entries(externalValues)) {
     const hasDefaultValue = hasRuntimeDefaultKey(entry, defaults, key);
     if (!hasDefaultValue) {
       if (isAuthoredMediaArrayValue(entry, defaults, key, authoredValues[key])) {
         passthroughValues[key] = authoredValues[key];
+        contractValues[key] = authoredValues[key];
+        hasAuthoredMediaContractValue = true;
       } else if (isAllowedPrunedControlValue(entry, key, value)) {
         passthroughValues[key] = value;
       }
@@ -741,6 +774,8 @@ function normalizeExternalValues(entry, defaults, values) {
     if (isPrunedContractOmit(pruneContractValue(defaultValue, key))) {
       if (isAuthoredMediaArrayValue(entry, defaults, key, authoredValues[key])) {
         passthroughValues[key] = authoredValues[key];
+        contractValues[key] = authoredValues[key];
+        hasAuthoredMediaContractValue = true;
       } else if (isAllowedPrunedControlValue(entry, key, value)) {
         passthroughValues[key] = value;
       }
@@ -751,6 +786,16 @@ function normalizeExternalValues(entry, defaults, values) {
   if (!Object.keys(contractValues).length) return passthroughValues;
   const contract = getEntryContract(entry);
   if (!contract) return { ...contractValues, ...passthroughValues };
+  if (hasAuthoredMediaContractValue) {
+    for (const control of contract.controls || []) {
+      const key = control?.key;
+      if (key
+        && mediaVisibilityValue(control) !== undefined
+        && Object.prototype.hasOwnProperty.call(authoredValues, key)) {
+        contractValues[key] = authoredValues[key];
+      }
+    }
+  }
   carryCountKeysForChangedArrays(contract, contractValues, authoredValues);
   const { values: normalizedValues, error } = safeNormalizeContractValues(entry, contract, contractValues, baselineValues);
   if (error) {
@@ -1086,6 +1131,10 @@ function renderRuntimeThemeSlide(slide, values = {}, options = {}) {
         componentProps.__mediaApi,
       ));
     });
+    if (root.firstElementChild instanceof HTMLElement) {
+      root.firstElementChild.style.width = '1920px';
+      root.firstElementChild.style.height = '1080px';
+    }
     applyImageSlotSources(root, componentProps.__mediaApi);
     bindRenderedImageSlots(root, componentProps.__mediaApi);
     root.dataset.importedThemeRuntime = 'true';
@@ -1099,19 +1148,51 @@ function renderRuntimeThemeSlide(slide, values = {}, options = {}) {
   }
 }
 
+function renderRuntimeBespokeSlide(slide) {
+  try {
+    const model = resolveRuntimeBespokeVariant(slide);
+    if (!model) return false;
+    resetRuntimeRoot(slide);
+    flushSync(() => {
+      getRootApi(slide).render(
+        <BespokeSlideBody
+          composition={model.composition}
+          themePack={model.variant.themePack || slide.dataset.themePack || 'theme01'}
+        />,
+      );
+    });
+    delete slide.dataset.layout;
+    delete slide.dataset.vmLayout;
+    window.__syncDeckPageNumbers?.(slide);
+    return true;
+  } catch (error) {
+    console.error(`[dashi-ppt] runtime render failed for bespoke variant "${getSlideStateId(slide) || ''}"`, error);
+    return false;
+  }
+}
+
 function releaseRuntimeThemeSlide(slide) {
   const root = slide?.querySelector?.('.imported-theme-root');
-  const api = root && mountedRoots.get(root);
-  if (!root || !api) return false;
+  if (!root) return false;
   releaseRuntimeSlideVideos(root);
-  try {
-    api.unmount();
-  } catch {}
-  mountedRoots.delete(root);
-  rootMediaApis.delete(root);
-  root.replaceChildren();
+  resetRuntimeRoot(root);
   delete root.dataset.importedThemeRuntime;
   return true;
+}
+
+function releaseRuntimeBespokeSlide(slide) {
+  if (!slide?.classList?.contains('bespoke-slide') && slide?.dataset?.vmVariantKind !== 'bespoke') {
+    return false;
+  }
+  releaseRuntimeSlideVideos(slide);
+  resetRuntimeRoot(slide);
+  return true;
+}
+
+function releaseRuntimeSlide(slide) {
+  return slide?.querySelector?.('.imported-theme-root')
+    ? releaseRuntimeThemeSlide(slide)
+    : releaseRuntimeBespokeSlide(slide);
 }
 
 function releaseRuntimeSlideVideos(root) {
@@ -1126,16 +1207,18 @@ function releaseInactiveRuntimeSlides(activeSlide, options = {}) {
   // 长 deck 逐页翻阅时,已渲染页的合成层/滤镜(玻璃卡 backdrop-filter)与 React 树
   // 会线性堆积,这是「越翻越卡」的直接来源。卸载后翻回由惰性渲染即时重建。
   const keys = options.themeKeys ? new Set(options.themeKeys) : null;
-  document.querySelectorAll?.('.slide.imported-theme-slide').forEach(slide => {
+  document.querySelectorAll?.('.slide.imported-theme-slide, .slide.bespoke-slide').forEach(slide => {
     if (slide === activeSlide) return;
-    const root = slide.querySelector?.('.imported-theme-root');
+    const bespoke = slide.classList?.contains('bespoke-slide');
+    const root = bespoke ? slide : slide.querySelector?.('.imported-theme-root');
     if (!root) return;
-    if (keys && !keys.has(root.dataset.themeKey) && !hasLiveVideoElement(root)) return;
+    const themeKey = bespoke ? slide.dataset.themePack : root.dataset.themeKey;
+    if (keys && !keys.has(themeKey) && !hasLiveVideoElement(root)) return;
     if (slide.classList?.contains('cv-near')) {
       releaseRuntimeSlideVideos(root);
       return;
     }
-    releaseRuntimeThemeSlide(slide);
+    releaseRuntimeSlide(slide);
   });
 }
 
@@ -1146,14 +1229,183 @@ function renderRuntimeThemeSlides(scope = document) {
 }
 
 function renderRuntimeSlide(slide, values = {}, options = {}) {
-  return renderRuntimeThemeSlide(slide, values, options);
+  return slide?.classList?.contains('bespoke-slide') || slide?.dataset?.vmVariantKind === 'bespoke'
+    ? renderRuntimeBespokeSlide(slide)
+    : renderRuntimeThemeSlide(slide, values, options);
+}
+
+function materializeRuntimeSlideVariant(slide, variant) {
+  const prepared = prepareRuntimeVariant(slide, variant);
+  if (!slide || !prepared) return false;
+  const currentRoot = slide.querySelector?.('.imported-theme-root');
+  const currentEntry = entriesByKey.get(currentRoot?.dataset?.pageKey);
+  const position = resolveVariantPosition(slide, variant);
+  const sourceSlideId = slide.dataset.vmSourceSlideId || slide.dataset.vmSlideId;
+  releaseRuntimeSlide(slide);
+
+  updateSlideBackgroundClass(
+    slide,
+    currentEntry?.bgClass,
+    prepared.kind === 'template' ? prepared.entry.bgClass : '',
+  );
+  slide.classList.toggle('imported-theme-slide', prepared.kind === 'template');
+  slide.classList.toggle('bespoke-slide', prepared.kind === 'bespoke');
+  slide.dataset.vmSourceSlideId = sourceSlideId;
+  slide.dataset.vmSlideKey = variant.key || (
+    prepared.kind === 'template' ? prepared.entry.key : variant.stateId
+  );
+  slide.dataset.vmVariantStateId = variant.stateId;
+  slide.dataset.vmVariantId = variant.id;
+  slide.dataset.vmVariantIndex = String(position.index);
+  slide.dataset.vmVariantCount = String(position.count);
+  slide.dataset.vmVariantKind = prepared.kind;
+
+  if (prepared.kind === 'bespoke') {
+    slide.replaceChildren();
+    delete slide.dataset.layout;
+    delete slide.dataset.vmLayout;
+    slide.dataset.themePack = variant.themePack || slide.dataset.themePack || 'theme01';
+    slide.dataset.label = variant.label || 'Agent 定制方案';
+    runtimeBespokeVariants.set(slide, {
+      variant,
+      composition: prepared.composition,
+    });
+  } else {
+    const { metadata, entry } = prepared;
+    const root = document.createElement('div');
+    root.className = 'imported-theme-root';
+    root.dataset.themeKey = entry.themeKey;
+    root.dataset.pageKey = entry.key;
+    root.dataset.propControls = JSON.stringify(metadata.controls);
+    root.dataset.propDefaults = JSON.stringify(metadata.defaults);
+    slide.replaceChildren(root);
+    slide.dataset.layout = entry.layout;
+    slide.dataset.vmLayout = entry.key;
+    slide.dataset.themePack = variant.themePack || entry.themeKey;
+    slide.dataset.label = variant.label || entry.label;
+    runtimeBespokeVariants.delete(slide);
+  }
+  slide.setAttribute('aria-label', slide.dataset.label);
+  return true;
+}
+
+function prepareRuntimeVariant(slide, variant) {
+  const kind = variant?.kind ?? 'template';
+  if (kind === 'template') {
+    const metadata = runtimeMetadataByKey.get(variant?.layout);
+    return metadata?.page?.Component
+      ? { kind, metadata, entry: metadata.page }
+      : null;
+  }
+  if (kind !== 'bespoke' || !isPlainObject(variant?.composition)) return null;
+  try {
+    return {
+      kind,
+      composition: resolveRuntimeBespokeComposition(slide, variant),
+    };
+  } catch (error) {
+    console.error(`[dashi-ppt] invalid bespoke runtime variant "${variant?.stateId || variant?.id || ''}"`, error);
+    return null;
+  }
+}
+
+function resolveRuntimeBespokeVariant(slide) {
+  const captured = runtimeBespokeVariants.get(slide);
+  const stateId = getSlideStateId(slide);
+  if (captured?.variant?.stateId === stateId) return captured;
+  const logical = findRuntimeLogicalSlide(slide);
+  const variant = logical?.variants?.find(item => (
+    item.stateId === stateId || item.id === slide?.dataset?.vmVariantId
+  ));
+  if (variant?.kind !== 'bespoke') return null;
+  return {
+    variant,
+    composition: resolveRuntimeBespokeComposition(slide, variant, logical),
+  };
+}
+
+function resolveRuntimeBespokeComposition(slide, variant, logical = findRuntimeLogicalSlide(slide)) {
+  if (!variant.contentMap) return variant.composition;
+  const contentMap = normalizeRuntimeContentMap(variant.contentMap);
+  return resolveContentMap(logical?.content, contentMap, variant.composition);
+}
+
+function resolveRuntimeTemplateVariantProps(slide, variant, logical = findRuntimeLogicalSlide(slide)) {
+  if (variant?.materializedProps) return variant.materializedProps;
+  if (!variant?.contentMap) return variant?.props || {};
+  return resolveContentMap(
+    logical?.content,
+    normalizeRuntimeContentMap(variant.contentMap),
+    variant.props || {},
+  );
+}
+
+function normalizeRuntimeContentMap(contentMap) {
+  return Object.fromEntries(Object.entries(contentMap || {}).map(([target, sourceMapping]) => {
+    if (typeof sourceMapping === 'string') {
+      return [
+        target,
+        sourceMapping.startsWith('content.')
+          ? sourceMapping.slice('content.'.length)
+          : sourceMapping,
+      ];
+    }
+    return [
+      target,
+      {
+        ...sourceMapping,
+        source: sourceMapping?.source?.startsWith('content.')
+          ? sourceMapping.source.slice('content.'.length)
+          : sourceMapping?.source,
+      },
+    ];
+  }));
+}
+
+function findRuntimeLogicalSlide(slide) {
+  const sourceSlideId = slide?.dataset?.vmSourceSlideId || slide?.dataset?.vmSlideId;
+  return window.__deckViewModel?.model?.slides?.find(item => item.id === sourceSlideId);
+}
+
+function resolveVariantPosition(slide, variant) {
+  const sourceSlideId = slide?.dataset?.vmSourceSlideId || slide?.dataset?.vmSlideId;
+  const variants = window.__deckViewModel?.model?.slides
+    ?.find((item) => item.id === sourceSlideId)
+    ?.variants;
+  const index = Number.isInteger(variant?.variantIndex)
+    ? variant.variantIndex
+    : variants?.findIndex((item) => item.stateId === variant?.stateId || item.id === variant?.id);
+  const count = Number.isInteger(variant?.variantCount)
+    ? variant.variantCount
+    : variants?.length;
+  return {
+    index: Number.isInteger(index) && index >= 0 ? index : 0,
+    count: Number.isInteger(count) && count > 0 ? count : 1,
+  };
+}
+
+function updateSlideBackgroundClass(slide, previousClassName, nextClassName) {
+  String(previousClassName || '').split(/\s+/).filter(Boolean).forEach(name => slide.classList.remove(name));
+  String(nextClassName || '').split(/\s+/).filter(Boolean).forEach(name => slide.classList.add(name));
 }
 
 function renderRuntimeSlides(scope = document) {
   renderRuntimeThemeSlides(scope);
+  scope.querySelectorAll?.('.slide.bespoke-slide').forEach(slide => {
+    renderRuntimeBespokeSlide(slide);
+  });
 }
 
 window.__renderRuntimeSlide = renderRuntimeSlide;
 window.__renderRuntimeSlides = renderRuntimeSlides;
-window.__releaseRuntimeSlide = releaseRuntimeThemeSlide;
+window.__releaseRuntimeSlide = releaseRuntimeSlide;
 window.__releaseInactiveRuntimeSlides = releaseInactiveRuntimeSlides;
+window.__materializeRuntimeSlideVariant = materializeRuntimeSlideVariant;
+window.__resolveRuntimeTemplateVariantProps = resolveRuntimeTemplateVariantProps;
+
+const initialRuntimeSlide = document.querySelector(
+  '#deck > .slide.active, #deck > .slide[data-deck-active], #deck > .slide',
+);
+if (initialRuntimeSlide) {
+  renderRuntimeSlide(initialRuntimeSlide);
+}

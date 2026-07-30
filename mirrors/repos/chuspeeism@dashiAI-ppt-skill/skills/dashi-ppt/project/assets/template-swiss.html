@@ -1743,6 +1743,11 @@
   .preview-prop-choice{position:relative;z-index:1;height:32px;display:flex;align-items:center;justify-content:center;border:0;border-radius:8px;background:transparent;color:var(--pp-fg2);font:500 12.5px/1 var(--sans-zh);cursor:pointer;transition:color .2s,font-weight .2s}
   .preview-prop-choice:hover:not(.is-active){color:var(--pp-fg)}
   .preview-prop-choice.is-active{background:transparent;color:var(--pp-fg);font-weight:600}
+  .preview-prop-choice:focus-visible{outline:2px solid var(--pp-blue);outline-offset:-2px}
+  .preview-layout-variants .preview-prop-choice{font:650 12px/1 var(--mono)}
+  .preview-layout-variant-readonly{margin-top:9px;padding:10px 11px;border:1px solid var(--pp-border);border-radius:8px;background:var(--pp-chip);color:var(--pp-fg2);font:500 11.5px/1.55 var(--sans-zh)}
+  .preview-layout-variant-readonly.is-hidden{display:none}
+  .preview-layout-variants .preview-prop-choice.is-selected::after{content:"";position:absolute;left:50%;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--pp-blue);transform:translateX(-50%)}
   /* color swatch group (display:color) */
   .preview-prop-choice-group.is-color{display:grid;grid-template-columns:repeat(var(--pp-color-cols,3),minmax(0,1fr));grid-auto-flow:row;grid-auto-columns:initial;gap:11px;padding:0;background:transparent;border-radius:0;overflow:visible}
   .preview-prop-choice-group.is-color .pp-seg-indicator{display:none}
@@ -1806,6 +1811,11 @@
   body.editor-panels-collapsed .page-transition-stage,body[data-mode="present"] .page-transition-stage{border-radius:0}
   .page-transition-stage .slide{position:absolute;left:0;top:0}
   .page-transition-stage [data-transition-role="current"] *{animation:none!important;transition:none!important}
+  .slide[data-runtime-prop-update] *,
+  .slide[data-runtime-prop-update] *::before,
+  .slide[data-runtime-prop-update] *::after{
+    transition:none!important;
+  }
   .page-transition-stage [data-transition-role="next"] *{animation-delay:0ms!important;animation-play-state:paused!important;animation-fill-mode:both!important;transition:none!important}
   .page-transition-stage[data-enter-motion="running"] [data-transition-role="next"] *{animation-play-state:running!important}
   .page-transition-pixel-grid,.page-transition-slice-grid,.page-transition-container{position:absolute;inset:0;z-index:6;pointer-events:none}
@@ -1913,6 +1923,11 @@
     <div class="preview-field" id="preview-theme-field">
       <label for="preview-theme-pack">预览风格</label>
       <select id="preview-theme-pack"></select>
+    </div>
+    <div class="preview-field is-hidden" id="preview-layout-variants-field">
+      <label>页面版式</label>
+      <div class="preview-prop-choice-group preview-layout-variants" id="preview-layout-variants" role="group" aria-label="页面版式"></div>
+      <div class="preview-layout-variant-readonly is-hidden" id="preview-layout-variant-readonly">Agent 定制方案：Agent 根据当前内容和主题风格定制，布局固定</div>
     </div>
     <div class="preview-field">
       <label for="preview-transition">切换动画</label>
@@ -2037,6 +2052,10 @@
     '该页渲染失败，内容已跳过': 'This page failed to render and was skipped',
     // Preview controls
     '预览风格': 'Theme',
+    '页面版式': 'Page layout',
+    '版式 {n}': 'Layout {n}',
+    'Agent 定制方案': 'Agent custom layout',
+    'Agent 定制方案：Agent 根据当前内容和主题风格定制，布局固定': 'Agent custom layout: tailored to this content and theme; the layout is fixed.',
     '切换动画': 'Transition',
     '无动画': 'None',
     '液态形变': 'Liquid morph',
@@ -2258,13 +2277,24 @@
     'rotate', 'rotation', 'angle', 'z', 'zIndex',
   ]);
   const vm = readJson(vmEl, {});
+  vm.variantOutputMode = vm.variantOutputMode === 'selected-only' || vm.variantOutputMode === 'comparison'
+    ? vm.variantOutputMode
+    : (Number(vm.schemaVersion) === 2 ? 'comparison' : 'selected-only');
   vm.state = vm.state || {};
   const embeddedText = readJson(textEl, {});
+  const renderedSlideOrder = [...document.querySelectorAll('#deck > .slide')]
+    .map(slide => slide.dataset.vmSlideId || slide.id)
+    .filter(Boolean);
   const baseState = {
-    slideOrder: [...(vm.state.slideOrder || (vm.slides || []).map(slide => slide.id))],
+    slideOrder: normalizeLogicalSlideOrder(
+      vm.state.slideOrder
+        || (renderedSlideOrder.length ? renderedSlideOrder : (vm.slides || []).map(slide => slide.id)),
+      renderedSlideOrder,
+    ),
     skippedSlides: uniqueIds(vm.state.skippedSlides || []),
     deletedSlides: uniqueIds(vm.state.deletedSlides || []),
     duplicatedSlides: Array.isArray(vm.state.duplicatedSlides) ? [...vm.state.duplicatedSlides] : [],
+    variantSelection: {...(vm.state.variantSelection || {})},
     text: {...(vm.state.text || {}), ...embeddedText},
     props: {...(vm.state.props || {})},
   };
@@ -2273,10 +2303,17 @@
   const deckSignature = createDeckSignature(vm, baseState.text);
   const saved = readSaved(deckSignature);
   if(saved.__draftInIdb) setTimeout(() => restoreDraftFromIdb(), 0);
-  vm.state.slideOrder = saved.slideOrder || baseState.slideOrder;
+  vm.state.slideOrder = normalizeLogicalSlideOrder(
+    saved.slideOrder || baseState.slideOrder,
+    renderedSlideOrder,
+  );
   vm.state.skippedSlides = saved.skippedSlides || baseState.skippedSlides;
   vm.state.deletedSlides = saved.deletedSlides || baseState.deletedSlides;
   vm.state.duplicatedSlides = saved.duplicatedSlides || baseState.duplicatedSlides;
+  vm.state.variantSelection = normalizeVariantSelections({
+    ...baseState.variantSelection,
+    ...(saved.variantSelection || {}),
+  });
   vm.state.text = {...baseState.text, ...(saved.text || {})};
   vm.state.props = normalizeRestoredProps(mergePropsStates(baseState.props, saved.props));
   vm.state.__deckSignature = deckSignature;
@@ -2293,6 +2330,8 @@
     setSlideOrder,
     setSkippedSlides,
     setDeletedSlides,
+    setVariantSelection,
+    setVariantSelections,
     setProps,
     addDuplicatedSlide,
     restoreDuplicatedSlide,
@@ -2336,6 +2375,28 @@
     persist();
   }
 
+  function setVariantSelection(slideId, stateId){
+    const next = normalizeVariantSelections({
+      ...(vm.state.variantSelection || {}),
+      [slideId]: stateId,
+    });
+    if(!next[slideId]) return false;
+    vm.state.variantSelection = next;
+    writeVm();
+    persist();
+    return true;
+  }
+
+  function setVariantSelections(source){
+    vm.state.variantSelection = normalizeVariantSelections({
+      ...(vm.state.variantSelection || {}),
+      ...(source || {}),
+    });
+    writeVm();
+    persist();
+    return {...vm.state.variantSelection};
+  }
+
   function setProps(slideId, props){
     if(!slideId) return;
     const authored = compactStatePropsFromRender(slideId, props || {});
@@ -2364,7 +2425,21 @@
     vm.state.duplicatedSlides = (vm.state.duplicatedSlides || []).filter(item => item.copyId !== copyId);
     vm.state.duplicatedSlides.push({...record});
     const sourceIndex = (vm.slides || []).findIndex(slide => slide.id === sourceId);
-    const source = sourceModel || (sourceIndex >= 0 ? vm.slides[sourceIndex] : null) || {};
+    const logicalSource = sourceModel || (sourceIndex >= 0 ? vm.slides[sourceIndex] : null) || {};
+    const activeSource = Array.isArray(logicalSource.variants)
+      ? logicalSource.variants.find(variant => variant.stateId === record?.sourceVariantStateId)
+        || logicalSource.variants.find(variant => variant.stateId === vm.state.variantSelection?.[sourceId])
+        || logicalSource.variants[0]
+        || logicalSource
+      : logicalSource;
+    const {
+      variants: _variants,
+      selectedVariant: _selectedVariant,
+      variantId: _variantId,
+      stateId: _stateId,
+      pageId: _pageId,
+      ...source
+    } = activeSource;
     const modelSlide = {
       ...source,
       id:copyId,
@@ -2643,12 +2718,15 @@
   }
 
   function getComponentDefaultSlideProps(slideId){
-    const slideEl = [...document.querySelectorAll('#deck > .slide')].find(slide => slide.dataset.vmSlideId === slideId);
+    const slideEl = [...document.querySelectorAll('#deck > .slide')].find(slide => (
+      (slide.dataset.vmVariantStateId || slide.dataset.vmSlideId) === slideId
+    ));
     return readDatasetJson(slideEl?.querySelector('[data-prop-controls]')?.dataset.propDefaults, {});
   }
 
   function getSlideSourceProps(slideId){
-    return (vm.slides || []).find(slide => slide.id === slideId)?.props || {};
+    const source = findSlideSourceModel(slideId);
+    return source?.materializedProps || source?.props || {};
   }
 
   function getDefaultSlideProps(slideId){
@@ -2716,8 +2794,36 @@
   }
 
   function getSlidePropControls(slideId){
-    const slideEl = [...document.querySelectorAll('#deck > .slide')].find(slide => slide.dataset.vmSlideId === slideId);
+    const slideEl = [...document.querySelectorAll('#deck > .slide')].find(slide => (
+      (slide.dataset.vmVariantStateId || slide.dataset.vmSlideId) === slideId
+    ));
     return readDatasetJson(slideEl?.querySelector('[data-prop-controls]')?.dataset.propControls, []);
+  }
+
+  function findSlideSourceModel(slideId){
+    for(const slide of vm.slides || []){
+      if(slide.id === slideId) return slide;
+      const variant = Array.isArray(slide.variants)
+        ? slide.variants.find(item => item?.stateId === slideId)
+        : null;
+      if(variant) return variant;
+    }
+    return null;
+  }
+
+  function normalizeVariantSelections(source){
+    const out = {};
+    for(const slide of vm.slides || []){
+      if(!Array.isArray(slide.variants) || !slide.variants.length) continue;
+      const requested = source?.[slide.id];
+      const selected = slide.variants.find(variant => variant?.stateId === requested)
+        || slide.variants.find(variant => variant?.id === requested)
+        || slide.variants.find(variant => variant?.stateId === slide.stateId)
+        || slide.variants.find(variant => variant?.id === slide.selectedVariant)
+        || slide.variants[0];
+      if(selected?.stateId) out[slide.id] = selected.stateId;
+    }
+    return out;
   }
 
   function hasOwn(object, key){
@@ -2734,6 +2840,37 @@
 
   function uniqueIds(ids){
     return [...new Set((ids || []).filter(Boolean).map(String))];
+  }
+
+  function normalizeLogicalSlideOrder(order, renderedIds){
+    const rendered = uniqueIds(renderedIds);
+    const renderedSet = new Set(rendered);
+    const sourceByStateId = new Map();
+    for(const slide of vm.slides || []){
+      if(!renderedSet.has(slide?.id)) continue;
+      sourceByStateId.set(slide.id, slide.id);
+      for(const variant of slide.variants || []){
+        if(variant?.stateId) sourceByStateId.set(String(variant.stateId), slide.id);
+      }
+    }
+    const normalized = [];
+    const seen = new Set();
+    for(const value of order || []){
+      const id = String(value || '');
+      const legacySource = id.includes('::') ? id.slice(0, id.lastIndexOf('::')) : '';
+      const sourceId = sourceByStateId.get(id)
+        || (renderedSet.has(id) ? id : '')
+        || (renderedSet.has(legacySource) ? legacySource : '');
+      if(!sourceId || seen.has(sourceId)) continue;
+      seen.add(sourceId);
+      normalized.push(sourceId);
+    }
+    for(const id of rendered){
+      if(seen.has(id)) continue;
+      seen.add(id);
+      normalized.push(id);
+    }
+    return normalized;
   }
 
   function readJson(el, fallback){
@@ -2753,7 +2890,30 @@
     const payload = JSON.stringify({
       title: model.title,
       exportId: model.exportId || '',
-      slides: (model.slides || []).map(slide => [slide.id, slide.key, slide.layout, slide.dataLayout, slide.props]),
+      schemaVersion: model.schemaVersion,
+      variantOutputMode: model.variantOutputMode,
+      slides: (model.slides || []).map(slide => [
+        slide.id,
+        slide.key,
+        slide.layout,
+        slide.dataLayout,
+        slide.props,
+        slide.content,
+        (slide.variants || []).map(variant => [
+          variant.id,
+          variant.stateId,
+          variant.key,
+          variant.kind,
+          variant.layout,
+          variant.dataLayout,
+          variant.themePack,
+          variant.props,
+          variant.media,
+          variant.contentMap,
+          variant.composition,
+          variant.adjustable,
+        ]),
+      ]),
       text,
     });
     let hash = 0;
@@ -2762,6 +2922,7 @@
     }
     return String(hash);
   }
+  window.__createDeckSignature = createDeckSignature;
 })();
 
 </script>
@@ -3029,31 +3190,166 @@ function getSlideVmId(slide, index){
     || `slide-${Math.max(0, index ?? allSlides.indexOf(slide)) + 1}`;
 }
 
-let svgCloneIdCounter = 0;
-function uniquifySvgCloneIds(root, label='clone'){
-  if(!root?.querySelectorAll) return root;
-  const idNodes = [...root.querySelectorAll('svg [id]')];
-  if(root.matches?.('svg [id]')) idNodes.unshift(root);
-  if(!idNodes.length) return root;
-  const suffix = `${label}-${Date.now().toString(36)}-${(svgCloneIdCounter++).toString(36)}`;
-  const idMap = new Map();
-  idNodes.forEach((node, index) => {
-    const id = node.id;
-    if(!id || idMap.has(id)) return;
-    const next = `${id}__${suffix}-${index}`;
-    idMap.set(id, next);
-    node.id = next;
+function getSlideStateId(slide, index){
+  return slide?.dataset?.vmVariantStateId || getSlideVmId(slide, index);
+}
+window.__getSlideStateId = getSlideStateId;
+
+function getSlideSourceId(slideOrId){
+  if(typeof slideOrId !== 'string'){
+    return slideOrId?.dataset?.vmSourceSlideId || getSlideVmId(slideOrId);
+  }
+  const direct = window.__deckViewModel?.model?.slides?.find(item => item.id === slideOrId);
+  if(direct) return direct.id;
+  const runtimeSlide = collectDeckSlides().find(slide => (
+    getSlideVmId(slide) === slideOrId
+    || getSlideStateId(slide) === slideOrId
+  ));
+  return runtimeSlide?.dataset?.vmSourceSlideId || slideOrId;
+}
+window.__getSlideSourceId = getSlideSourceId;
+
+function getLogicalSlideModel(slideOrId){
+  const sourceId = getSlideSourceId(slideOrId);
+  return window.__deckViewModel?.model?.slides?.find(item => item.id === sourceId) || null;
+}
+
+function getSlideVariantModel(slide, stateId=getSlideStateId(slide)){
+  const logical = getLogicalSlideModel(slide);
+  if(!logical || !Array.isArray(logical.variants)) return null;
+  return logical.variants.find(variant => variant?.stateId === stateId)
+    || logical.variants.find(variant => variant?.id === stateId)
+    || null;
+}
+
+function getSlideSourceModel(slide){
+  return getSlideVariantModel(slide) || getLogicalSlideModel(slide);
+}
+
+function hasLogicalSlideVariants(slide){
+  return (getLogicalSlideModel(slide)?.variants?.length || 0) > 1;
+}
+
+function normalizeVariantOutputMode(mode){
+  return mode === 'selected-only' ? 'selected-only' : 'comparison';
+}
+
+function getDeckVariantOutputMode(){
+  return normalizeVariantOutputMode(window.__deckViewModel?.model?.variantOutputMode);
+}
+window.__getDeckVariantOutputMode = getDeckVariantOutputMode;
+
+function getExportSlides(mode=getDeckVariantOutputMode()){
+  const visible = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
+  const outputMode = normalizeVariantOutputMode(mode);
+  const selections = window.__deckViewModel?.peek?.('variantSelection')
+    || window.__deckViewModel?.getState?.().variantSelection
+    || {};
+  const descriptors = [];
+  visible.forEach((slide, logicalIndex) => {
+    const sourceId = getSlideSourceId(slide);
+    const logical = getLogicalSlideModel(sourceId);
+    const variants = Array.isArray(logical?.variants) ? logical.variants : [];
+    if(!variants.length){
+      const variantStateId = getSlideStateId(slide);
+      descriptors.push({
+        id:variantStateId,
+        sourceSlideId:sourceId,
+        logicalIndex,
+        variantStateId,
+        variantId:slide.dataset.vmVariantId || '',
+        variantKind:slide.dataset.vmVariantKind || 'template',
+        variantIndex:Number(slide.dataset.vmVariantIndex || 0),
+        variantCount:Number(slide.dataset.vmVariantCount || 1),
+        exportIndex:descriptors.length,
+      });
+      return;
+    }
+    const selectedToken = selections[sourceId] || logical.selectedVariant || logical.stateId;
+    const selected = variants.find(variant => variant.stateId === selectedToken)
+      || variants.find(variant => variant.id === selectedToken)
+      || variants.find(variant => variant.stateId === getSlideStateId(slide))
+      || variants[0];
+    const requested = outputMode === 'selected-only' ? [selected] : variants;
+    requested.filter(Boolean).forEach(variant => {
+      const variantStateId = variant.stateId || variant.id || sourceId;
+      descriptors.push({
+        id:variantStateId,
+        sourceSlideId:sourceId,
+        logicalIndex,
+        variantStateId,
+        variantId:variant.id || '',
+        variantKind:variant.kind || 'template',
+        variantIndex:Number(variant.variantIndex ?? variants.indexOf(variant)),
+        variantCount:variants.length,
+        exportIndex:descriptors.length,
+      });
+    });
   });
-  if(!idMap.size) return root;
+  return descriptors;
+}
+window.__getExportSlides = getExportSlides;
+
+function materializeExportSlide(descriptor){
+  const visible = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
+  const sourceSlideId = descriptor?.sourceSlideId;
+  const slide = sourceSlideId
+    ? visible.find(item => item.dataset.vmSlideId === sourceSlideId)
+      || visible.find(item => getSlideSourceId(item) === sourceSlideId)
+    : visible[descriptor?.logicalIndex];
+  if(!slide) throw new Error(`Export source slide "${descriptor?.sourceSlideId || ''}" was not found.`);
+  const resolvedSourceSlideId = getSlideSourceId(slide);
+  const token = {
+    sourceSlideId:resolvedSourceSlideId,
+    logicalIndex:visible.indexOf(slide),
+    variantStateId:getSlideStateId(slide),
+  };
+  const logical = getLogicalSlideModel(resolvedSourceSlideId);
+  const variant = logical?.variants?.find(item => item.stateId === descriptor?.variantStateId)
+    || logical?.variants?.find(item => item.id === descriptor?.variantStateId);
+  if(!variant){
+    window.__ensureRuntimeSlideRendered?.(slide);
+    return token;
+  }
+  if(getSlideStateId(slide) === variant.stateId){
+    window.__ensureRuntimeSlideRendered?.(slide);
+    return token;
+  }
+  window.__flushEditableTextState?.(slide);
+  if(!materializeSlideVariant(slide, variant, {
+    context:'materialize export variant',
+  })){
+    throw new Error(`Export variant "${descriptor?.variantStateId || ''}" could not be materialized.`);
+  }
+  return token;
+}
+window.__materializeExportSlide = materializeExportSlide;
+
+function restoreExportSlide(token){
+  if(!token?.sourceSlideId || !token.variantStateId) return false;
+  const slide = collectDeckSlides().find(item => getSlideSourceId(item) === token.sourceSlideId);
+  const logical = getLogicalSlideModel(token.sourceSlideId);
+  const variant = logical?.variants?.find(item => item.stateId === token.variantStateId)
+    || logical?.variants?.find(item => item.id === token.variantStateId);
+  if(!slide || !variant) return false;
+  if(getSlideStateId(slide) === variant.stateId) return true;
+  return materializeSlideVariant(slide, variant, {
+    context:'restore export variant',
+  });
+}
+window.__restoreExportSlide = restoreExportSlide;
+
+let svgCloneIdCounter = 0;
+function rewriteSvgCloneReferences(scope, idMap, includeNode=()=>true){
   const rewriteSvgUrlRefs = value => String(value || '').replace(/url\((["']?)#([^"')]+)\1\)/g, (match, quote, id) => {
     const mapped = idMap.get(id);
     return mapped ? `url(${quote}#${mapped}${quote})` : match;
   });
-  const refNodes = [root, ...root.querySelectorAll('*')];
+  const refNodes = [scope, ...scope.querySelectorAll('*')];
   refNodes.forEach(node => {
-    if(!node.attributes) return;
+    if(!includeNode(node) || !node.attributes) return;
     [...node.attributes].forEach(attr => {
-      let value = attr.value;
+      const value = attr.value;
       if(!value) return;
       let next = rewriteSvgUrlRefs(value);
       if((attr.name === 'href' || attr.name === 'xlink:href') && next.startsWith('#')){
@@ -3063,11 +3359,46 @@ function uniquifySvgCloneIds(root, label='clone'){
       if(next !== value) node.setAttribute(attr.name, next);
     });
   });
-  root.querySelectorAll?.('style').forEach(node => {
+  scope.querySelectorAll?.('style').forEach(node => {
+    if(!includeNode(node)) return;
     const value = node.textContent || '';
     const next = rewriteSvgUrlRefs(value);
     if(next !== value) node.textContent = next;
   });
+}
+
+function uniquifySvgCloneIds(root, label='clone'){
+  if(!root?.querySelectorAll) return root;
+  const svgRoots = root.matches?.('svg') ? [root] : [];
+  root.querySelectorAll('svg').forEach(svg => {
+    if(!svgRoots.includes(svg)) svgRoots.push(svg);
+  });
+  if(!svgRoots.length) return root;
+  const suffix = `${label}-${Date.now().toString(36)}-${(svgCloneIdCounter++).toString(36)}`;
+  const mappingsByOriginalId = new Map();
+  svgRoots.forEach((svg, svgIndex) => {
+    const idMap = new Map();
+    const idNodes = svg.id ? [svg, ...svg.querySelectorAll('[id]')] : [...svg.querySelectorAll('[id]')];
+    idNodes.forEach((node, nodeIndex) => {
+      const id = node.id;
+      if(!id) return;
+      const next = `${id}__${suffix}-${svgIndex}-${nodeIndex}`;
+      if(!idMap.has(id)) idMap.set(id, next);
+      if(!mappingsByOriginalId.has(id)) mappingsByOriginalId.set(id, []);
+      mappingsByOriginalId.get(id).push(next);
+      node.id = next;
+    });
+    if(idMap.size) rewriteSvgCloneReferences(svg, idMap);
+  });
+  // References outside an SVG can only be rewritten safely when the original
+  // id belonged to exactly one SVG. Ambiguous duplicate ids stay untouched
+  // instead of being redirected across SVG boundaries.
+  const externalIdMap = new Map(
+    [...mappingsByOriginalId].flatMap(([id, nextIds]) => nextIds.length === 1 ? [[id, nextIds[0]]] : []),
+  );
+  if(externalIdMap.size){
+    rewriteSvgCloneReferences(root, externalIdMap, node => !node.closest?.('svg'));
+  }
   return root;
 }
 
@@ -3109,13 +3440,15 @@ function restorePersistedCatalogSlides(){
     if(!record?.sourceId || !record?.copyId || slideById.has(record.copyId)) return;
     const source = slideById.get(record.sourceId);
     if(!source) return;
+    const sourceModel = getLogicalSlideModel(source);
+    const sourceVariant = sourceModel?.variants?.find(variant => variant.stateId === record.sourceVariantStateId);
     const clone = source.cloneNode(true);
     releaseTemplateVideoElements(clone);
     uniquifySvgCloneIds(clone, 'duplicated-slide');
+    if(sourceVariant) window.__materializeRuntimeSlideVariant?.(clone, sourceVariant);
     prepareDuplicatedSlideClone(clone, source, record.copyId);
     deck.insertBefore(clone, source.nextSibling);
     slideById.set(record.copyId, clone);
-    const sourceModel = window.__deckViewModel?.model?.slides?.find(item => item.id === record.sourceId);
     window.__deckViewModel?.restoreDuplicatedSlide?.(record, sourceModel);
   });
 }
@@ -3131,6 +3464,7 @@ function applyPersistedSlideOrder(){
     if(slide) deck.appendChild(slide);
   });
 }
+window.__applyPersistedSlideOrder = applyPersistedSlideOrder;
 
 const slideStateSetCache = new Map();
 function getSlideStateSet(key){
@@ -3187,6 +3521,7 @@ function refreshSlideList(){
   if(idx >= total) idx=Math.max(0,total-1);
   syncDeckPageNumbers();
 }
+window.__refreshSlideList = refreshSlideList;
 
 function parseRuntimeSlidePage(layout){
   const match = String(layout || '').match(/^(theme\d+)_page(\d+)$/i);
@@ -3276,19 +3611,147 @@ function renderRuntimeSlideWithIsolation(slide, props, opts={}){
 }
 
 function ensureRuntimeSlideRendered(slide, values, opts={}){
+  const finalize = rendered => {
+    if(rendered){
+      uniquifyDuplicatedRuntimeSlideSvgIds(slide);
+      window.__initEditableText?.(slide);
+    }
+    return rendered;
+  };
   if(!slide) return false;
-  const slideId = slide.dataset.vmSlideId;
-  const sourceProps = window.__deckViewModel?.model?.slides?.find(item => item.id === slideId)?.props || {};
-  const savedProps = window.__deckViewModel?.getState?.().props?.[slideId] || {};
+  const slideId = getSlideStateId(slide);
+  const sourceModel = getSlideSourceModel(slide);
+  const sourceProps = sourceModel?.kind === 'template'
+    ? sourceModel.materializedProps
+      || window.__resolveRuntimeTemplateVariantProps?.(slide, sourceModel)
+      || sourceModel.props
+      || {}
+    : sourceModel?.props || {};
+  const savedProps = window.__deckViewModel?.peek?.('props')?.[slideId]
+    || window.__deckViewModel?.getState?.().props?.[slideId]
+    || {};
   const next = {...sourceProps, ...savedProps, ...(values || {})};
-  const rendered = renderRuntimeSlideWithIsolation(slide, next, opts);
-  if(rendered){
-    window.__initEditableText?.(slide);
-    uniquifyDuplicatedRuntimeSlideSvgIds(slide);
-  }
-  return rendered;
+  return finalize(renderRuntimeSlideWithIsolation(slide, next, opts));
 }
 window.__ensureRuntimeSlideRendered = ensureRuntimeSlideRendered;
+
+function materializeSlideVariant(slide, variant, opts={}){
+  if(!slide || !variant?.stateId || typeof window.__materializeRuntimeSlideVariant !== 'function') return false;
+  const logicalId = getSlideVmId(slide);
+  const logicalModel = getLogicalSlideModel(logicalId);
+  const variantIndex = Math.max(0, logicalModel?.variants?.findIndex(item => item.stateId === variant.stateId) ?? 0);
+  const previousVariant = getSlideVariantModel(slide);
+  const previousEditableText = new Map(
+    [...slide.querySelectorAll('[data-editable-id]')]
+      .map(element => [element.dataset.editableId, element.innerHTML]),
+  );
+  const previousTextState = {
+    ...(window.__deckViewModel?.peek?.('text')
+      || window.__deckViewModel?.getState?.().text
+      || {}),
+  };
+  const context = opts.context || 'switch slide variant';
+  const rollbackPreviousVariant = () => {
+    if(opts.rollback === false || !previousVariant || previousVariant.stateId === variant.stateId) return false;
+    const restored = materializeSlideVariant(slide, previousVariant, {
+      isolated:true,
+      context:`${context} rollback`,
+      rollback:false,
+    });
+    if(restored){
+      window.__replaceEditableTextState?.(previousTextState);
+      slide.querySelectorAll('[data-editable-id]').forEach(element => {
+        const value = previousEditableText.get(element.dataset.editableId);
+        if(value !== undefined) element.innerHTML = value;
+      });
+    }
+    return restored;
+  };
+  try{
+    if(!window.__materializeRuntimeSlideVariant(slide, variant)){
+      rollbackPreviousVariant();
+      return false;
+    }
+    slide.dataset.vmSlideId = logicalId;
+    slide.dataset.vmSourceSlideId = logicalId;
+    slide.dataset.vmVariantStateId = variant.stateId;
+    slide.dataset.vmVariantId = variant.id || `variant-${variantIndex + 1}`;
+    slide.dataset.vmVariantIndex = String(variantIndex);
+    slide.dataset.vmVariantCount = String(logicalModel?.variants?.length || 1);
+    slide.dataset.vmVariantKind = variant.kind || 'template';
+    delete slide.dataset.vmVariantMode;
+    slide.dataset.vmSlideKey = variant.key || variant.stateId;
+    slide.dataset.vmLayout = variant.layout || '';
+    slide.dataset.layout = variant.dataLayout || variant.layout || '';
+    if(variant.themePack) slide.dataset.themePack = variant.themePack;
+    else delete slide.dataset.themePack;
+    if(variant.label) slide.dataset.label = variant.label;
+    else delete slide.dataset.label;
+    const rendered = ensureRuntimeSlideRendered(slide, undefined, {
+      isolated:opts.isolated !== false,
+      context,
+    });
+    if(rendered){
+      window.__restoreEffectIframes?.(slide);
+      if(slide.classList.contains('active')) window.__syncActiveEffects?.(slide, {skipMotion:true});
+    }else{
+      rollbackPreviousVariant();
+    }
+    return rendered;
+  }catch(error){
+    if(opts.isolated !== false) reportRuntimeSlideError(context, slide, error);
+    rollbackPreviousVariant();
+    if(opts.isolated === false) throw error;
+    return false;
+  }
+}
+
+function applyDeckVariantSelections(opts={}){
+  const selections = window.__deckViewModel?.peek?.('variantSelection')
+    || window.__deckViewModel?.getState?.().variantSelection
+    || {};
+  collectDeckSlides().forEach(slide => {
+    const logical = getLogicalSlideModel(slide);
+    if(!Array.isArray(logical?.variants) || !logical.variants.length) return;
+    const requested = selections[logical.id];
+    const variant = logical.variants.find(item => item.stateId === requested)
+      || logical.variants.find(item => item.id === requested)
+      || logical.variants.find(item => item.stateId === logical.stateId)
+      || logical.variants[0];
+    if(!variant) return;
+    if(!opts.force && getSlideStateId(slide) === variant.stateId) return;
+    materializeSlideVariant(slide, variant, {
+      isolated:opts.isolated !== false,
+      context:opts.context || 'restore slide variant',
+    });
+  });
+}
+window.__applyDeckVariantSelections = applyDeckVariantSelections;
+
+function setSlideVariant(slideId, stateId){
+  const sourceId = getSlideSourceId(slideId);
+  const logical = getLogicalSlideModel(sourceId);
+  const variant = logical?.variants?.find(item => item.stateId === stateId)
+    || logical?.variants?.find(item => item.id === stateId);
+  if(!variant) return false;
+  const slide = collectDeckSlides().find(item => getSlideSourceId(item) === sourceId);
+  if(!slide) return false;
+  if(getSlideStateId(slide) === variant.stateId){
+    window.__deckViewModel?.setVariantSelection?.(sourceId, variant.stateId);
+    return true;
+  }
+  if(slide.contains(document.activeElement)) document.activeElement.blur?.();
+  if(!materializeSlideVariant(slide, variant, {context:'select slide variant'})) return false;
+  window.__deckViewModel?.setVariantSelection?.(sourceId, variant.stateId);
+  window.__markOverviewThumbDirty?.(slide);
+  window.__syncSlideTone?.(slide);
+  window.__layoutDeck?.();
+  if(isEditMode()) window.__refreshRailCatalog?.();
+  const detail = {slideId, sourceSlideId:sourceId, stateId:variant.stateId, variantId:variant.id, variantKind:variant.kind || 'template'};
+  dispatchEvent(new CustomEvent('swiss-slide-variant-change', {detail}));
+  return true;
+}
+window.__setSlideVariant = setSlideVariant;
 
 function prepareSlideForTransition(slide, values, opts={}){
   if(!slide) return false;
@@ -3557,6 +4020,7 @@ function renderNav(){
 }
 restorePersistedCatalogSlides();
 applyPersistedSlideOrder();
+applyDeckVariantSelections({context:'initial slide variant restore'});
 allSlides=collectDeckSlides();
 deckPagePrev?.addEventListener('click', () => go(idx - 1));
 deckPageNext?.addEventListener('click', () => go(idx + 1));
@@ -3936,24 +4400,26 @@ function duplicateCatalogSlide(catalogIndex){
   refreshSlideList();
   const catalogSlides = getCatalogSlides();
   const source = catalogSlides[catalogIndex];
-  if(!source) return false;
+  if(!source || hasLogicalSlideVariants(source)) return false;
   const previousActiveSlide = slides[idx];
   const sourceId = getSlideVmId(source, allSlides.indexOf(source));
+  const sourceStateId = getSlideStateId(source, allSlides.indexOf(source));
   const copyId = `${sourceId}__copy_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
   const clone = source.cloneNode(true);
   releaseTemplateVideoElements(clone);
   uniquifySvgCloneIds(clone, 'duplicated-slide');
   prepareDuplicatedSlideClone(clone, source, copyId);
   deck.insertBefore(clone, source.nextSibling);
-  const sourceModel = window.__deckViewModel?.model?.slides?.find(item => item.id === sourceId);
+  const sourceModel = getLogicalSlideModel(source);
   const state = window.__deckViewModel?.getState?.() || {};
   window.__deckViewModel?.addDuplicatedSlide?.({
     type:'copy',
     sourceId,
+    sourceVariantStateId:sourceStateId !== sourceId ? sourceStateId : '',
     copyId,
     copyKey:copyId,
     themePack:source.dataset.themePack || activeThemePack || '',
-    props:{...(state.props?.[sourceId] || {})},
+    props:{...(state.props?.[sourceStateId] || {})},
   }, sourceModel);
   window.__initEditableText?.(clone);
   ensureRuntimeSlideRendered(clone, undefined, {isolated:true, context:'duplicate slide'});
@@ -3968,6 +4434,10 @@ function prepareDuplicatedSlideClone(clone, source, copyId){
   clone.dataset.vmSlideId = copyId;
   clone.dataset.vmSlideKey = copyId;
   clone.dataset.slideId = copyId;
+  delete clone.dataset.vmVariantStateId;
+  delete clone.dataset.vmVariantId;
+  delete clone.dataset.vmVariantIndex;
+  delete clone.dataset.vmVariantCount;
   clone.dataset.duplicatedSlide = 'true';
   clone.classList.remove('active');
   clone.removeAttribute('data-deck-active');
@@ -4100,6 +4570,7 @@ function showRailContextMenu(event, catalogIndex){
   const copyButton = document.createElement('button');
   copyButton.type='button';
   copyButton.textContent=window.__deckI18n.ui('复制页面');
+  copyButton.disabled=hasLogicalSlideVariants(slide);
   copyButton.onclick=()=>{
     if(duplicateCatalogSlide(catalogIndex)) hideRailContextMenu();
   };
@@ -5611,6 +6082,9 @@ refreshRailCatalog();
   const propsPanel = document.getElementById('preview-props');
   const themePackField = document.getElementById('preview-theme-field');
   const themePackSelect = document.getElementById('preview-theme-pack');
+  const layoutVariantsField = document.getElementById('preview-layout-variants-field');
+  const layoutVariantsControl = document.getElementById('preview-layout-variants');
+  const layoutVariantReadonly = document.getElementById('preview-layout-variant-readonly');
   const transitionSelect = document.getElementById('preview-transition');
   const transitionColorField = document.getElementById('preview-transition-color-field');
   const transitionColorOptions = document.getElementById('preview-transition-color-options');
@@ -5730,6 +6204,89 @@ refreshRailCatalog();
     return [...document.querySelectorAll('#deck > .slide:not([hidden])')];
   }
 
+  function getPreviewLogicalSlideModel(slide){
+    const sourceId = slide?.dataset.vmSourceSlideId || slide?.dataset.vmSlideId;
+    if(!sourceId) return null;
+    return viewModel?.model?.slides?.find(item => item.id === sourceId) || null;
+  }
+
+  function getPreviewSlideStateId(slide){
+    return window.__getSlideStateId?.(slide) || slide?.dataset.vmVariantStateId || slide?.dataset.vmSlideId || '';
+  }
+
+  function getPreviewActiveSlideModel(slide){
+    const logical = getPreviewLogicalSlideModel(slide);
+    if(!logical) return null;
+    if(!Array.isArray(logical.variants)) return logical;
+    const stateId = getPreviewSlideStateId(slide);
+    return logical.variants.find(variant => variant.stateId === stateId)
+      || logical.variants.find(variant => variant.stateId === viewModel?.peek?.('variantSelection')?.[logical.id])
+      || logical.variants[0]
+      || logical;
+  }
+
+  function renderLayoutVariantControl(){
+    if(!layoutVariantsField || !layoutVariantsControl) return;
+    const slide = getCurrentSlide();
+    const logical = getPreviewLogicalSlideModel(slide);
+    const variants = Array.isArray(logical?.variants) ? logical.variants : [];
+    if(variants.length !== 3 && variants.length !== 4){
+      layoutVariantsField.classList.add('is-hidden');
+      layoutVariantsControl.replaceChildren();
+      layoutVariantReadonly?.classList.add('is-hidden');
+      return;
+    }
+    const activeStateId = getPreviewSlideStateId(slide);
+    const activeIndex = Math.max(0, variants.findIndex(variant => variant.stateId === activeStateId));
+    const selectedToken = viewModel?.peek?.('variantSelection')?.[logical.id] || logical.selectedVariant;
+    const selectedVariant = variants.find(variant => variant.stateId === selectedToken)
+      || variants.find(variant => variant.id === selectedToken)
+      || variants[0];
+    const selectedStateId = selectedVariant?.stateId || '';
+    const activeVariant = variants[activeIndex];
+    const fragment = document.createDocumentFragment();
+    const indicator = document.createElement('span');
+    indicator.className = 'pp-seg-indicator';
+    indicator.setAttribute('aria-hidden', 'true');
+    fragment.appendChild(indicator);
+    variants.forEach((variant, index) => {
+      const button = document.createElement('button');
+      const bespoke = variant.kind === 'bespoke';
+      const label = bespoke
+        ? window.__deckI18n.ui('Agent 定制方案')
+        : window.__deckI18n.ui('版式 {n}', {n:index + 1});
+      const active = index === activeIndex;
+      const selected = variant.stateId === selectedStateId;
+      button.type = 'button';
+      button.className = 'preview-prop-choice';
+      button.textContent = bespoke ? 'AI' : String(index + 1);
+      button.dataset.variantStateId = variant.stateId;
+      button.dataset.variantKind = variant.kind || 'template';
+      button.classList.toggle('is-active', active);
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-current', active ? 'page' : 'false');
+      button.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      button.setAttribute('aria-label', variant.label
+        ? `${label}: ${window.__deckI18n.meta(variant.label)}`
+        : label);
+      button.title = button.getAttribute('aria-label');
+      makePreviewControlKeyboardNeutral(button);
+      button.addEventListener('click', () => {
+        if(!canEditDeck() || !logical.id || !variant.stateId) return;
+        window.__setSlideVariant?.(logical.id, variant.stateId);
+      });
+      fragment.appendChild(button);
+    });
+    layoutVariantsControl.replaceChildren(fragment);
+    layoutVariantsControl.style.setProperty('--pp-choice-count', String(variants.length));
+    layoutVariantsControl.style.setProperty('--pp-choice-index', String(activeIndex));
+    layoutVariantsField.classList.remove('is-hidden');
+    if(layoutVariantReadonly){
+      layoutVariantReadonly.textContent = window.__deckI18n.ui('Agent 定制方案：Agent 根据当前内容和主题风格定制，布局固定');
+      layoutVariantReadonly.classList.toggle('is-hidden', activeVariant?.kind !== 'bespoke');
+    }
+  }
+
   function renderThemePackControl(){
     if(!themePackField || !themePackSelect) return;
     const entries = Object.entries(themePacks);
@@ -5799,6 +6356,7 @@ refreshRailCatalog();
     state.themePack = themePackSelect.value;
     window.__setActiveThemePack?.(state.themePack);
     refreshDeckSlides();
+    renderLayoutVariantControl();
     applyStoredSlideControls();
     renderPropControls();
     writeSaved();
@@ -5806,12 +6364,14 @@ refreshRailCatalog();
   });
 
   addEventListener('swiss-slide-change', refreshSlideControls);
+  addEventListener('swiss-slide-variant-change', refreshSlideControls);
   addEventListener('swiss-slide-reorder', refreshSlideControls);
   addEventListener('rd-themechange', refreshSlideControls);
   addEventListener('rd-accentchange', refreshSlideControls);
 
   function refreshSlideControls(){
     refreshDeckSlides();
+    renderLayoutVariantControl();
     renderPropControls();
   }
 
@@ -5951,7 +6511,7 @@ refreshRailCatalog();
     const controls = parsePropControls(root).filter(control => !isHiddenPropControl(control));
     const defaults = parsePropDefaults(root);
     const sourceProps = getSlideSourceProps(slide);
-    const savedProps = vmState.props?.[slide.dataset.vmSlideId] || {};
+    const savedProps = vmState.props?.[getPreviewSlideStateId(slide)] || {};
     const values = {...defaults, ...sourceProps, ...savedProps};
     controls.forEach(control => {
       values[control.key] = coercePropValue(control, values[control.key]);
@@ -5960,9 +6520,8 @@ refreshRailCatalog();
   }
 
   function getSlideSourceProps(slide){
-    const slideId = slide?.dataset.vmSlideId;
-    if(!slideId) return {};
-    return viewModel?.model?.slides?.find(item => item.id === slideId)?.props || {};
+    const model = getPreviewActiveSlideModel(slide);
+    return model?.materializedProps || model?.props || {};
   }
 
   function renderPropControls(opts = {}){
@@ -5973,6 +6532,12 @@ refreshRailCatalog();
     }
     renderingPropControls = true;
     try {
+    const slide = getCurrentSlide();
+    if(getPreviewActiveSlideModel(slide)?.kind === 'bespoke' || slide?.dataset.vmVariantKind === 'bespoke'){
+      propsField.classList.add('is-hidden');
+      propsPanel.replaceChildren();
+      return;
+    }
     const root = getCurrentPropRoot();
     const controls = orderPropControlsForPanel(parsePropControls(root), root);
     if(!root || !controls.length){
@@ -5980,7 +6545,6 @@ refreshRailCatalog();
       propsPanel.replaceChildren();
       return;
     }
-    const slide = getCurrentSlide();
     const values = getSlidePropValues(slide);
     const imageListCountKeys = new Set(
       controls.map(control => getImageListCountProxyControl(control, controls)?.key).filter(Boolean),
@@ -6220,11 +6784,13 @@ refreshRailCatalog();
   }
 
   function normalizePropControlType(type, control = {}){
-    if(control?.display === 'tab' || type === 'segment' || type === 'selection' || type === 'select' || type === 'color'){
+    if(control?.display === 'tab' || type === 'enum' || type === 'segment' || type === 'selection' || type === 'select' || type === 'color'){
       const optionCount = propOptions(control).length;
       if(control?.display !== 'color' && optionCount > 0 && optionCount <= 5) return 'segment';
       return 'select';
     }
+    if(type === 'boolean' || type === 'checkbox') return 'toggle';
+    if(type === 'slider' || type === 'number' || type === 'stepper') return 'range';
     if(type === 'icons') return 'icons';
     if(type === 'text' || type === 'string' || type === 'input' || type === 'url' || type === 'email') return 'text';
     if(type === 'textarea' || type === 'multiline') return 'textarea';
@@ -6336,6 +6902,7 @@ refreshRailCatalog();
 
   renderTransitionColorOptions();
   syncTransitionControl();
+  renderLayoutVariantControl();
   applyStoredSlideControls();
   renderPropControls();
 
@@ -6538,21 +7105,37 @@ refreshRailCatalog();
     const root = slide.querySelector('[data-prop-controls]');
     if(!root) return;
     const next = {...parsePropDefaults(root), ...getSlideSourceProps(slide), ...(values || {})};
-    if(opts.persist !== false) viewModel?.setProps?.(slide.dataset.vmSlideId, next);
+    if(opts.persist !== false) viewModel?.setProps?.(getPreviewSlideStateId(slide), next);
     if(opts.persist !== false) window.__markOverviewThumbDirty?.(slide);
     if(opts.unicornRefresh){
       slide.querySelectorAll('.bt-unicorn-frame').forEach(frame => window.__resetUnicornSceneFrame?.(frame));
     }
-    if(window.__renderRuntimeSlide?.(slide, next)){
+    const renderRevision = String((Number(slide.dataset.runtimePropUpdate) || 0) + 1);
+    const suppressMotion = opts.persist !== false;
+    if(suppressMotion) slide.dataset.runtimePropUpdate = renderRevision;
+    const rendered = window.__renderRuntimeSlide?.(slide, next, {trusted:true, suppressMotion:true});
+    if(rendered){
+      if(suppressMotion) settleRuntimePropAnimations(slide);
       window.__initEditableText?.(slide);
-      // A control-panel tweak re-renders the already-active slide in place —
-      // not a slide entry/transition. `skipMotion` avoids replaying theme10's
-      // JS-driven entrance stagger (playTheme10Motion) on every prop change;
-      // other themes' pure-CSS entrance already only fires once on mount, so
-      // this is a no-op for them.
       window.__syncActiveEffects?.(slide, {skipMotion:true});
-      requestAnimationFrame(() => window.__initUnicornScenes?.(slide, {force:true}));
+      requestAnimationFrame(() => {
+        if(suppressMotion) settleRuntimePropAnimations(slide);
+        window.__initUnicornScenes?.(slide, {force:!!opts.unicornRefresh});
+        requestAnimationFrame(() => {
+          if(slide.dataset.runtimePropUpdate === renderRevision) delete slide.dataset.runtimePropUpdate;
+        });
+      });
+    }else if(suppressMotion && slide.dataset.runtimePropUpdate === renderRevision){
+      delete slide.dataset.runtimePropUpdate;
     }
+  }
+
+  function settleRuntimePropAnimations(slide){
+    slide?.getAnimations?.({subtree:true}).forEach(animation => {
+      const timing = animation.effect?.getComputedTiming?.();
+      if(!timing || timing.iterations === Infinity || timing.endTime > 5000) return;
+      try { animation.finish(); } catch {}
+    });
   }
 
   function setEditorPanelsCollapsed(collapsed){
@@ -6706,20 +7289,30 @@ refreshRailCatalog();
 
   async function captureDeckPagesInBrowser(exportUi){
     await ensureHtmlToImageLoaded();
-    const slides = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
-    if(!slides.length) throw new Error(window.__deckI18n.ui('没有可导出的页面。'));
-    const originalIndex = Math.max(0, slides.findIndex(slide => slide.classList.contains('active')));
+    const visibleSlides = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
+    const descriptors = window.__getExportSlides?.() || visibleSlides.map((slide, logicalIndex) => ({
+      sourceSlideId:slide.dataset.vmSlideId,
+      logicalIndex,
+      variantStateId:window.__getSlideStateId?.(slide) || slide.dataset.vmSlideId,
+      variantKind:slide.dataset.vmVariantKind || 'template',
+      exportIndex:logicalIndex,
+    }));
+    if(!descriptors.length) throw new Error(window.__deckI18n.ui('没有可导出的页面。'));
+    const originalIndex = Math.max(0, visibleSlides.findIndex(slide => slide.classList.contains('active')));
     const waitFrame = () => new Promise(resolve => requestAnimationFrame(resolve));
     const pages = [];
     try {
-      for(let index = 0; index < slides.length; index += 1){
+      for(let index = 0; index < descriptors.length; index += 1){
         throwIfDeckExportCancelled(exportUi);
-        updateDeckExport(exportUi, index, slides.length, window.__deckI18n.ui('浏览器内截取第 {current}/{total} 页...', {current: index + 1, total: slides.length}));
-        window.go?.(index, { animate: false, force: true });
+        updateDeckExport(exportUi, index, descriptors.length, window.__deckI18n.ui('浏览器内截取第 {current}/{total} 页...', {current: index + 1, total: descriptors.length}));
+        const descriptor = descriptors[index];
+        const token = window.__materializeExportSlide?.(descriptor);
+        const logicalIndex = Math.max(0, Number(descriptor.logicalIndex) || 0);
+        window.go?.(logicalIndex, { animate: false, force: true });
         await waitFrame(); await waitFrame();
-        const slide = slides[index];
-        slides.forEach((item, slideIndex) => {
-          const active = slideIndex === index;
+        const slide = visibleSlides[logicalIndex];
+        visibleSlides.forEach(item => {
+          const active = item === slide;
           item.classList.toggle('active', active);
           if(active) item.setAttribute('data-deck-active', '');
           else item.removeAttribute('data-deck-active');
@@ -6736,8 +7329,10 @@ refreshRailCatalog();
         const capture = window.htmlToImage.toJpeg(slide, withSlideCaptureFilter({ quality: 0.92, pixelRatio: 1.5, backgroundColor: '#000000' }));
         const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error(window.__deckI18n.ui('第 {n} 页截图超时', {n: index + 1}))), 30000));
         pages.push(await Promise.race([capture, timeout]));
+        window.__restoreExportSlide?.(token);
       }
     } finally {
+      window.__applyDeckVariantSelections?.({force:true, context:'restore browser PDF variants'});
       window.go?.(originalIndex, { animate: false, force: true });
       window.__syncActiveEffects?.();
     }
@@ -6806,7 +7401,7 @@ refreshRailCatalog();
       window.__flushEditableTextState?.();
       window.__syncDeckViewModelFromDom?.();
       throwIfDeckExportCancelled(exportUi);
-      const slides = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
+      const slides = window.__getExportSlides?.() || window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
       // 在屏外 1920×1080 iframe 里跑导出:视口与服务端无头浏览器完全一致(deck 缩放
       // 为 1:1,细元素不会被视口阈值过滤),同时不打断用户正在看的页面;当前的编辑
       // 状态经 snapshot 带入 iframe。
@@ -6922,7 +7517,7 @@ refreshRailCatalog();
       window.__flushEditableTextState?.();
       window.__syncDeckViewModelFromDom?.();
       throwIfDeckExportCancelled(exportUi);
-      const slides = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
+      const slides = window.__getExportSlides?.() || window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
       let response;
       try {
         response = await fetch('/api/export-pdf', {
@@ -7009,9 +7604,12 @@ refreshRailCatalog();
   }
 
   function buildPdfExportSnapshot(){
+    const currentSlide = (window.__getVisibleSlides?.() || [])[window.__currentSlideIndex || 0];
     return {
       themePack: document.documentElement.dataset.themePack || '',
+      variantOutputMode: window.__getDeckVariantOutputMode?.() || 'comparison',
       currentIndex: window.__currentSlideIndex || 0,
+      currentSlideStateId: window.__getSlideStateId?.(currentSlide) || currentSlide?.dataset.vmVariantStateId || currentSlide?.dataset.vmSlideId || '',
       state: window.__getDeckViewModelState?.() || {},
       canvasSnapshots: collectEditablePptxCanvasSnapshots(),
     };
@@ -7044,7 +7642,7 @@ refreshRailCatalog();
       window.__syncDeckViewModelFromDom?.();
       throwIfDeckExportCancelled(exportUi);
 
-      const slides = window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
+      const slides = window.__getExportSlides?.() || window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')];
       const progressId = createEditablePptxProgressId();
       progressPoll = beginEditablePptxProgressPolling(exportUi, progressId);
       updateDeckExport(exportUi, 1, 100, window.__deckI18n.ui('提交可编辑 PPTX 生成任务...'));
@@ -7156,9 +7754,12 @@ refreshRailCatalog();
   }
 
   function buildEditablePptxExportSnapshot(){
+    const currentSlide = (window.__getVisibleSlides?.() || [])[window.__currentSlideIndex || 0];
     return {
       themePack: document.documentElement.dataset.themePack || '',
+      variantOutputMode: window.__getDeckVariantOutputMode?.() || 'comparison',
       currentIndex: window.__currentSlideIndex || 0,
+      currentSlideStateId: window.__getSlideStateId?.(currentSlide) || currentSlide?.dataset.vmVariantStateId || currentSlide?.dataset.vmSlideId || '',
       state: window.__getDeckViewModelState?.() || {},
       canvasSnapshots: collectEditablePptxCanvasSnapshots(),
     };
@@ -7222,6 +7823,7 @@ refreshRailCatalog();
           const data = canvas.toDataURL('image/png');
           out.push({
             slideIndex,
+            slideStateId:window.__getSlideStateId?.(slide) || slide.dataset.vmVariantStateId || slide.dataset.vmSlideId || '',
             canvasIndex,
             data,
             left: (rect.left - slideRect.left) / slideRect.width * 100,
@@ -7352,38 +7954,93 @@ refreshRailCatalog();
   function materializeHtmlExportViewModel(clone, visibleSlides){
     const vmEl = clone.querySelector('#deck-view-model');
     if(!vmEl || !window.__deckViewModel?.model) return;
+    const model = buildHtmlExportViewModel(visibleSlides);
+    vmEl.textContent = JSON.stringify(model).replace(/</g, '\\u003c');
+    const textEl = clone.querySelector('#embedded-text-state');
+    if(textEl) textEl.textContent = JSON.stringify(model.state?.text || {}).replace(/</g, '\\u003c');
+  }
+
+  function buildHtmlExportViewModel(visibleSlides, outputMode=window.__getDeckVariantOutputMode?.() || 'comparison'){
     const liveModel = window.__deckViewModel.model;
     const state = liveModel.state || {};
     const sourceSlides = new Map((liveModel.slides || []).map(slide => [slide.id, slide]));
+    const variantSelection = {};
+    const exportedProps = {};
+    const seenSources = new Set();
     const slides = (visibleSlides || []).map(slide => {
-      const id = slide.dataset.vmSlideId;
-      const source = sourceSlides.get(id);
+      const sourceId = slide.dataset.vmSourceSlideId || slide.dataset.vmSlideId;
+      if(!sourceId || seenSources.has(sourceId)) return null;
+      seenSources.add(sourceId);
+      const source = sourceSlides.get(sourceId);
       if(!source) return null;
+      if(Array.isArray(source.variants) && source.variants.length){
+        const variants = source.variants.map(variant => {
+          if(variant.kind === 'bespoke'){
+            const {props:_props, controls:_controls, layout:_layout, dataLayout:_dataLayout, ...bespoke} = variant;
+            return {
+              ...bespoke,
+              kind:'bespoke',
+              adjustable:false,
+            };
+          }
+          const id = variant.stateId;
+          const currentProps = {...(state.props?.[id] || {})};
+          if(id && Object.keys(currentProps).length) exportedProps[id] = currentProps;
+          return {
+            ...variant,
+            props: {...(variant.props || {}), ...currentProps},
+          };
+        });
+        const selectedToken = state.variantSelection?.[sourceId]
+          || slide.dataset.vmVariantStateId
+          || source.selectedVariant;
+        const selectedStateId = variants.find(variant => variant.stateId === selectedToken)?.stateId
+          || variants.find(variant => variant.id === selectedToken)?.stateId
+          || variants[0]?.stateId;
+        const active = variants.find(variant => variant.stateId === selectedStateId)
+          || variants[0];
+        if(active?.stateId) variantSelection[sourceId] = active.stateId;
+        return {
+          ...source,
+          selectedVariant:active?.id,
+          variants,
+        };
+      }
+      const id = sourceId;
+      const currentProps = {...(state.props?.[id] || {})};
+      if(Object.keys(currentProps).length) exportedProps[id] = currentProps;
       return {
         ...source,
-        props: {
-          ...(source.props || {}),
-          ...(state.props?.[id] || {}),
-        },
+        props: {...(source.props || {}), ...currentProps},
       };
     }).filter(Boolean);
-    const slideIds = slides.map(slide => slide.id);
+    const slideIds = (visibleSlides || []).map(slide => slide.dataset.vmSlideId).filter(Boolean);
     const model = {
       ...liveModel,
       exportId: 'html-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8),
+      variantOutputMode: normalizeVariantOutputMode(outputMode),
       slides,
+      comparisonPages:window.__getExportSlides?.('comparison') || [],
       state: {
         ...(state || {}),
         slideOrder: slideIds,
         skippedSlides: [],
         deletedSlides: [],
-        props: {},
+        variantSelection,
+        props: exportedProps,
       },
     };
-    vmEl.textContent = JSON.stringify(model).replace(/</g, '\\u003c');
-    const textEl = clone.querySelector('#embedded-text-state');
-    if(textEl) textEl.textContent = JSON.stringify(state.text || {}).replace(/</g, '\\u003c');
+    delete model.physicalPages;
+    delete model.variantPresentation;
+    return model;
   }
+
+  window.__buildHtmlExportViewModelSnapshot = (outputMode=window.__getDeckVariantOutputMode?.() || 'comparison') => (
+    buildHtmlExportViewModel(
+      window.__getVisibleSlides?.() || [...document.querySelectorAll('#deck > .slide:not([hidden])')],
+      outputMode,
+    )
+  );
 
   function pruneHiddenSlidesForHtmlExport(clone, visibleSlides){
     const visibleIds = new Set((visibleSlides || []).map((slide, index) => getCloneSlideKey(slide, index)).filter(Boolean));
@@ -8037,12 +8694,18 @@ refreshRailCatalog();
   const textState = readTextState();
   const defaultTextState = window.__deckDefaultTextState || {};
   const textCounters = new Map();
+  const renderedTextBaselines = new WeakMap();
 
   window.__deckDefaultTextState = defaultTextState;
   window.__getDeckDefaultTextState = () => ({...defaultTextState});
   window.__initEditableText = scope => applyTextState(scope);
   window.__setEditableTextMode = (on, scope = deck) => syncEditableMode(scope, on);
   window.__flushEditableTextState = flushTextState;
+  window.__replaceEditableTextState = state => {
+    Object.keys(textState).forEach(key => delete textState[key]);
+    Object.assign(textState, state || {});
+    writeTextState();
+  };
   applyTextState(deck);
   deck.addEventListener('pointerdown', handleEditablePointerDown, true);
   deck.addEventListener('focusin', handleFocusIn, true);
@@ -8067,6 +8730,7 @@ refreshRailCatalog();
       if(el !== root && el.parentElement?.closest('[data-editable-id]')) return;
       if(!el.dataset.editableId && !isTextCandidate(el)) return;
       el.dataset.editableId = claimTextId(el, el.dataset.editableId || explicitTextId(el));
+      renderedTextBaselines.set(el, el.innerHTML);
       if(defaultTextState[el.dataset.editableId] === undefined) defaultTextState[el.dataset.editableId] = el.innerHTML;
       if(el.dataset.syncText && defaultTextState[`sync:${el.dataset.syncText}`] === undefined){
         defaultTextState[`sync:${el.dataset.syncText}`] = el.innerHTML;
@@ -8206,7 +8870,7 @@ refreshRailCatalog();
     if(window.__isDeckFileSlotTarget?.(e.target)) return;
     const el = e.target.closest('[data-editable-id]');
     if(!el || !deck.contains(el)) return;
-    saveTextElement(el, {dirty:false});
+    saveTextElement(el, {dirty:false, userEdit:true});
   }
 
 	  function handleBlur(e){
@@ -8218,7 +8882,7 @@ refreshRailCatalog();
       const changed = before !== undefined && before !== after;
 	    delete el.dataset.editing;
 	    delete el.dataset.editBefore;
-	    saveTextElement(el, {dirty:changed});
+	    saveTextElement(el, {dirty:changed, userEdit:changed});
 	    if(changed && !window.__dashiUndo?.applying){
 	      const key = el.dataset.editableId;
 	      const syncName = el.dataset.syncText || '';
@@ -8233,8 +8897,19 @@ refreshRailCatalog();
     if(!canEditDeck()) return;
     const key = el.dataset.editableId;
     if(!key) return;
-    textState[key] = el.innerHTML;
-    if(el.dataset.syncText) textState[`sync:${el.dataset.syncText}`] = el.innerHTML;
+    const syncKey = el.dataset.syncText ? `sync:${el.dataset.syncText}` : '';
+    const alreadySaved = Object.prototype.hasOwnProperty.call(textState, key)
+      || (syncKey && Object.prototype.hasOwnProperty.call(textState, syncKey));
+    if(!opts.userEdit && !alreadySaved) return;
+    const value = el.innerHTML;
+    const baseline = renderedTextBaselines.get(el);
+    if(value === baseline){
+      delete textState[key];
+      if(syncKey) delete textState[syncKey];
+    }else{
+      textState[key] = value;
+      if(syncKey) textState[syncKey] = value;
+    }
     if(opts.dirty) window.__markOverviewThumbDirty?.(el.closest('.slide'));
     writeTextState();
   }
@@ -8246,12 +8921,14 @@ refreshRailCatalog();
     const seen = new Set();
     roots.forEach(root => {
       [
-        ...(root.dataset?.editableId ? [root] : []),
-        ...(root.querySelectorAll?.('[data-editable-id]') || []),
+        ...(root.dataset?.editing === 'true' ? [root] : []),
+        ...(root.querySelectorAll?.('[data-editable-id][data-editing="true"]') || []),
       ].forEach(el => {
         if(seen.has(el)) return;
         seen.add(el);
-        saveTextElement(el);
+        const before = el.dataset.editBefore;
+        const changed = before !== undefined && before !== el.innerHTML;
+        saveTextElement(el, {dirty:changed, userEdit:true});
       });
     });
     writeTextState();

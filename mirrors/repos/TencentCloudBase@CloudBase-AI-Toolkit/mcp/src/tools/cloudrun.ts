@@ -5,7 +5,15 @@ import { z } from "zod";
 import { getCloudBaseManager, getEnvId } from '../cloudbase-manager.js';
 import { ExtendedMcpServer } from '../server.js';
 import { debug } from '../utils/logger.js';
+import { preferGatewayOrFallback, resolveGatewayAccessUrls } from '../utils/gateway-access-urls.js';
 import { sendDeployNotification } from '../utils/notification.js';
+import {
+  listLikelyRedeployFields,
+  mergeCloudRunServerConfig,
+  parseServerConfigToDiffItems,
+  summarizeConfigSnapshot,
+  type CloudRunServerConfigLike,
+} from './cloudrun-config.js';
 
 // CloudRun service types
 export const CLOUDRUN_SERVICE_TYPES = ['function', 'container'] as const;
@@ -32,11 +40,12 @@ const queryCloudRunInputSchema = {
 
 // Input schema for manageCloudRun tool
 const ManageCloudRunInputSchema = {
-  action: z.enum(['init', 'download', 'run', 'deploy', 'delete', 'createAgent']).describe('云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体）'),
+  action: z.enum(['init', 'download', 'run', 'deploy', 'delete', 'createAgent', 'updateConfig']).describe('云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体）'),
   serverName: z.string().describe('云托管服务名称，用于标识和管理服务。命名规则：支持大小写字母、数字、连字符和下划线，必须以字母开头，长度3-45个字符。在init操作中会作为在targetPath下创建的子目录名，在其他操作中作为目标服务名'),
 
   // Deploy operation parameters
-  targetPath: z.string().optional().describe('本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun'),
+  targetPath: z.string().optional().describe('本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun'),
+  envParamsReplaceAll: z.boolean().optional().default(false).describe('EnvParams 合并策略（deploy / updateConfig）：false（默认）= 与远程按 key 合并（输入覆盖同名 key，远程其余 key 保留）；true= 用输入 EnvParams 整包替换远程。仅当显式传入 EnvParams 时生效'),
   serverConfig: z.object({
     OpenAccessTypes: z.array(z.enum(CLOUDRUN_ACCESS_TYPES)).optional().describe('公网访问类型配置，控制服务的访问权限：OA=办公网访问，PUBLIC=公网访问（默认，可通过HTTPS域名访问），MINIAPP=小程序访问，VPC=VPC访问（仅同VPC内可访问）。可配置多个类型'),
     Cpu: z.number().positive().optional().describe('CPU规格配置，单位为核。可选值：0.25、0.5、1、2、4、8等。注意：内存规格必须是CPU规格的2倍（如CPU=0.25时内存=0.5，CPU=1时内存=2）。影响服务性能和计费'),
@@ -75,7 +84,7 @@ const ManageCloudRunInputSchema = {
     VpcConf: z.object({
       VpcId: z.string().describe('VPC网络ID，格式如 vpc-xxxxxxxx。必须与目标数据库/Redis 处于同一地域，并优先选择同一 VPC。禁止猜测或使用占位符；须来自数据库控制台、已有资源详情、callCloudApi 或用户确认。建议首次创建即配置；已存在服务也可在 deploy 时传入，部署后必须用 queryCloudRun detail 复核是否生效'),
       SubnetId: z.string().describe('子网ID，格式如 subnet-xxxxxxxx。云托管实例将占用该子网 IP，需确保有足够可用 IP'),
-    }).optional().describe('VPC网络配置（实例出网/私有网络）。用于让云托管实例接入指定 VPC，从而内网访问 MySQL/PostgreSQL/Redis/CVM 等资源。与 OpenAccessTypes（外部如何访问本服务）是不同概念。TCP 连库场景必须配置。禁止猜测 VpcId/SubnetId，须来自数据库控制台、已有资源详情、callCloudApi 或用户确认。MCP 在创建时会将 VpcConf 映射为 SDK vpcInfo(CreateType=2)；更新后必须用 queryCloudRun detail 复核 ServerConfig.VpcConf，未生效再走控制台网络设置或删建兜底'),
+    }).optional().describe('VPC网络配置（实例出网/私有网络）。用于让云托管实例接入指定 VPC，从而内网访问 MySQL/PostgreSQL/Redis/CVM 等资源。与 OpenAccessTypes（外部如何访问本服务）是不同概念。TCP 连库场景必须配置。禁止猜测 VpcId/SubnetId，须来自数据库控制台、已有资源详情、callCloudApi 或用户确认。创建时映射为 SDK vpcInfo(CreateType=2)；已存在服务可用 updateConfig 或 deploy（RMW 会保留未传入的远程 VpcConf）。部署/更新后必须用 queryCloudRun detail 复核 ServerConfig.VpcConf'),
     VolumesConf: z.array(z.object({
       VolumeName: z.string().describe('存储卷名称'),
       VolumeType: z.string().describe('存储卷类型，如CFS表示云文件存储'),
@@ -85,7 +94,7 @@ const ManageCloudRunInputSchema = {
       PublicAccess: z.boolean().optional().describe('是否开启公网访问，true=开启公网访问，false=关闭公网访问'),
       PublicAccessPath: z.string().optional().describe('公网访问路径配置')
     }).optional().describe('公网访问配置，用于控制服务的公网访问策略。可配置是否开启公网访问及访问路径'),
-  }).optional().describe('服务配置项，用于部署时设置服务的运行参数。包括资源规格、访问权限、环境变量、日志、网络等配置。不提供时使用默认配置'),
+  }).optional().describe('服务配置项，用于 deploy / updateConfig。包括资源规格、访问权限、环境变量、日志、网络等。deploy 未提供时对已存在服务仍会从远程合并保留 VpcConf/EnvParams/OpenAccessTypes；updateConfig 至少需要一个配置字段'),
 
   // Init operation parameters
   template: z.string().optional().default('helloworld').describe('项目模板标识符，用于指定初始化项目时使用的模板。可通过queryCloudRun的templates操作获取可用模板列表。常用模板：helloworld=Hello World示例，nodejs=Node.js项目模板，python=Python项目模板等'),
@@ -122,10 +131,11 @@ type queryCloudRunInput = {
 };
 
 type ManageCloudRunInput = {
-  action: 'init' | 'download' | 'run' | 'deploy' | 'delete' | 'createAgent';
+  action: 'init' | 'download' | 'run' | 'deploy' | 'delete' | 'createAgent' | 'updateConfig';
   serverName: string;
   targetPath?: string;
   serverConfig?: any;
+  envParamsReplaceAll?: boolean;
   template?: string;
   force?: boolean;
   serverType?: CloudRunServiceType;
@@ -341,6 +351,37 @@ function normalizeProcessLogText(logs: unknown[]): string {
       return String(log);
     })
     .join("\n");
+}
+
+function normalizeCloudRunDomainUrl(input: unknown): string | undefined {
+  if (typeof input !== "string" || !input.trim()) return undefined;
+  const raw = input.trim();
+  return raw.startsWith("http://") || raw.startsWith("https://")
+    ? raw
+    : `https://${raw}`;
+}
+
+function resolveCloudRunFallbackAccess(details: any): {
+  url?: string;
+  source?:
+    | "cloudrun.customDomain"
+    | "cloudrun.defaultDomain"
+    | "cloudrun.publicDomain"
+    | "cloudrun.internalDomain";
+} {
+  const custom = normalizeCloudRunDomainUrl(details?.BaseInfo?.CustomDomainName);
+  if (custom) return { url: custom, source: "cloudrun.customDomain" };
+  const defaultDomain = normalizeCloudRunDomainUrl(
+    details?.BaseInfo?.DefaultDomainName,
+  );
+  if (defaultDomain) return { url: defaultDomain, source: "cloudrun.defaultDomain" };
+  const publicDomain =
+    normalizeCloudRunDomainUrl(details?.BaseInfo?.PublicDomain) ??
+    normalizeCloudRunDomainUrl(details?.AccessInfo?.PublicDomain);
+  if (publicDomain) return { url: publicDomain, source: "cloudrun.publicDomain" };
+  const internal = normalizeCloudRunDomainUrl(details?.BaseInfo?.InternalDomain);
+  if (internal) return { url: internal, source: "cloudrun.internalDomain" };
+  return {};
 }
 
 /**
@@ -610,7 +651,7 @@ export function registerCloudRunTools(server: ExtendedMcpServer) {
     "manageCloudRun",
     {
       title: "管理 CloudRun 服务",
-      description: "管理云托管服务，按开发顺序支持：初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、删除服务。部署可配置CPU、内存、实例数、访问类型等参数。删除操作需要确认，建议设置force=true。",
+      description: "管理云托管服务，按开发顺序支持：初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。",
       inputSchema: ManageCloudRunInputSchema,
       annotations: {
         readOnlyHint: false,
@@ -822,6 +863,8 @@ for await (let x of res.textStream) {
 
             // Determine service type - use input.serverType if provided, otherwise auto-detect
             let serverType: 'function' | 'container';
+            let remoteServerConfig: CloudRunServerConfigLike | null = null;
+            let existingService = false;
             if (input.serverType) {
               serverType = input.serverType;
             } else {
@@ -829,6 +872,8 @@ for await (let x of res.textStream) {
                 // First try to get existing service details
                 const details = await cloudrunService.detail({ serverName: input.serverName });
                 serverType = details.BaseInfo?.ServerType || 'container';
+                remoteServerConfig = (details.ServerConfig || null) as unknown as CloudRunServerConfigLike | null;
+                existingService = true;
               } catch (e) {
                 // If service doesn't exist, determine by project structure
                 const dockerfilePath = path.join(targetPath, 'Dockerfile');
@@ -858,6 +903,30 @@ for await (let x of res.textStream) {
               }
             }
 
+            // When serverType was provided explicitly, still try to load remote config for RMW.
+            if (!existingService) {
+              try {
+                const details = await cloudrunService.detail({ serverName: input.serverName });
+                remoteServerConfig = (details.ServerConfig || null) as unknown as CloudRunServerConfigLike | null;
+                existingService = true;
+              } catch {
+                // New service create path
+              }
+            }
+
+            let mergedFromRemote: string[] = [];
+            let effectiveServerConfig: CloudRunServerConfigLike | undefined = input.serverConfig;
+
+            if (existingService) {
+              const mergedResult = mergeCloudRunServerConfig({
+                remote: remoteServerConfig,
+                input: input.serverConfig || {},
+                envParamsReplaceAll: Boolean(input.envParamsReplaceAll),
+              });
+              effectiveServerConfig = mergedResult.merged;
+              mergedFromRemote = mergedResult.mergedFromRemote;
+            }
+
             const deployParams: any = {
               serverName: input.serverName,
               targetPath: targetPath,
@@ -865,15 +934,15 @@ for await (let x of res.textStream) {
               serverType: serverType,
             };
 
-            // Add server configuration if provided
-            if (input.serverConfig) {
-              deployParams.serverConfig = input.serverConfig;
+            if (effectiveServerConfig && Object.keys(effectiveServerConfig).length > 0) {
+              deployParams.serverConfig = effectiveServerConfig;
             }
 
             // Manager SDK create path prefers top-level vpcInfo (CreateCloudRunServer.VpcInfo).
             // Map serverConfig.VpcConf → vpcInfo so first-time create actually binds VPC.
-            // Update path still sends Items.VpcConf; platform may ignore VPC changes on existing services.
-            const vpcConf = input.serverConfig?.VpcConf;
+            const vpcConf = effectiveServerConfig?.VpcConf as
+              | { VpcId?: string; SubnetId?: string }
+              | undefined;
             if (vpcConf?.VpcId?.trim() && vpcConf?.SubnetId?.trim()) {
               deployParams.vpcInfo = {
                 VpcId: vpcConf.VpcId.trim(),
@@ -906,43 +975,48 @@ for await (let x of res.textStream) {
               debug('cloudbaserc.json creation skipped:', error instanceof Error ? error : new Error(String(error)));
             }
 
+            let preferredAccessUrl: string | undefined;
+            let preferredAccessUrls: string[] = [];
+            let preferredAccessSource: string | undefined;
+            let verifiedConfigSnapshot: ReturnType<typeof summarizeConfigSnapshot> | undefined;
+            try {
+              const serviceDetails = await cloudrunService.detail({
+                serverName: input.serverName,
+              });
+              verifiedConfigSnapshot = summarizeConfigSnapshot(
+                (serviceDetails as any)?.ServerConfig,
+              );
+              const fallback = resolveCloudRunFallbackAccess(serviceDetails as any);
+              const gateway = await resolveGatewayAccessUrls({
+                envId: currentEnvId,
+                upstreamResourceName: input.serverName,
+                upstreamResourceTypes: ["CBR"],
+                getManager: async () => {
+                  const manager = await getManager();
+                  if (!manager) {
+                    throw new Error("cloudbase manager unavailable");
+                  }
+                  return manager as any;
+                },
+              });
+              const preferred = preferGatewayOrFallback({
+                gateway,
+                fallbackUrl: fallback.url,
+                fallbackSource: fallback.source,
+              });
+              preferredAccessUrl = preferred.accessUrl;
+              preferredAccessUrls = preferred.accessUrls;
+              preferredAccessSource = preferred.accessUrlSource;
+            } catch {
+              // best-effort URL enrichment only
+            }
+
             // Send deployment notification to CodeBuddy IDE
             try {
-              // Query service details to get access URL
-              let serviceUrl = "";
-              try {
-                const serviceDetails = await cloudrunService.detail({ serverName: input.serverName });
-                // Extract access URL from service details
-                // Priority: DefaultDomainName > CustomDomainName > PublicDomain > InternalDomain
-                const details = serviceDetails as any; // Use any to access dynamic properties
-                if (details?.BaseInfo?.DefaultDomainName) {
-                  // DefaultDomainName is already a complete URL (e.g., https://...)
-                  serviceUrl = details.BaseInfo.DefaultDomainName;
-                } else if (details?.BaseInfo?.CustomDomainName) {
-                  // CustomDomainName might be a domain without protocol
-                  const customDomain = details.BaseInfo.CustomDomainName;
-                  serviceUrl = customDomain.startsWith('http') ? customDomain : `https://${customDomain}`;
-                } else if (details?.BaseInfo?.PublicDomain) {
-                  serviceUrl = `https://${details.BaseInfo.PublicDomain}`;
-                } else if (details?.BaseInfo?.InternalDomain) {
-                  serviceUrl = `https://${details.BaseInfo.InternalDomain}`;
-                } else if (details?.AccessInfo?.PublicDomain) {
-                  serviceUrl = `https://${details.AccessInfo.PublicDomain}`;
-                } else {
-                  serviceUrl = ""; // URL not available
-                }
-              } catch (detailErr) {
-                // If query fails, continue with empty URL
-                serviceUrl = "";
-              }
-
-              // Extract project name from targetPath
               const projectName = path.basename(targetPath);
-
-              // Send notification
               await sendDeployNotification(server, {
                 deployType: 'cloudrun',
-                url: serviceUrl,
+                url: preferredAccessUrl ?? "",
                 projectId: currentEnvId,
                 projectName: projectName,
                 consoleUrl: consoleUrl
@@ -953,8 +1027,10 @@ for await (let x of res.textStream) {
             }
 
             const dbNetworkRisk = detectCloudRunDbNetworkRisk({
-              envParams: input.serverConfig?.EnvParams,
-              vpcConf: input.serverConfig?.VpcConf,
+              envParams: effectiveServerConfig?.EnvParams as string | undefined,
+              vpcConf: effectiveServerConfig?.VpcConf as
+                | { VpcId?: string; SubnetId?: string }
+                | undefined,
             });
             const warnings = dbNetworkRisk ? [dbNetworkRisk] : [];
             const warningSuffix = dbNetworkRisk
@@ -974,12 +1050,199 @@ for await (let x of res.textStream) {
                       serverType: serverType,
                       cloudbasercGenerated: true,
                       consoleUrl,
+                      ...(existingService
+                        ? {
+                            configMerge: {
+                              existingService: true,
+                              mergedFromRemote,
+                              appliedConfig: summarizeConfigSnapshot(effectiveServerConfig),
+                              ...(verifiedConfigSnapshot
+                                ? { verifiedAfterDeploy: verifiedConfigSnapshot }
+                                : {}),
+                            },
+                          }
+                        : {}),
+                      ...(preferredAccessUrl ? { accessUrl: preferredAccessUrl } : {}),
+                      ...(preferredAccessUrls.length > 0
+                        ? { accessUrls: preferredAccessUrls }
+                        : {}),
+                      ...(preferredAccessSource
+                        ? { accessUrlSource: preferredAccessSource }
+                        : {}),
                       ...(warnings.length > 0 ? { warnings } : {}),
                     },
                     message: `Triggered deployment for ${serverType} service '${input.serverName}' from ${targetPath}. You can follow the progress in ${consoleUrl}.${warningSuffix}`
                   }, null, 2)
                 }
               ]
+            };
+          }
+
+          case 'updateConfig': {
+            if (!input.serverConfig || Object.keys(input.serverConfig).length === 0) {
+              throw new Error(
+                "serverConfig with at least one field is required for updateConfig",
+              );
+            }
+
+            let remoteServerConfig: CloudRunServerConfigLike = {};
+            try {
+              const details = await cloudrunService.detail({
+                serverName: input.serverName,
+              });
+              remoteServerConfig = (details.ServerConfig ||
+                {}) as unknown as CloudRunServerConfigLike;
+            } catch (error) {
+              throw new Error(
+                buildManageCloudRunErrorMessage(
+                  "updateConfig",
+                  input.serverName,
+                  error,
+                ),
+              );
+            }
+
+            // EnvParams on Diff replaces the whole blob — merge keys unless replaceAll.
+            const dirty: CloudRunServerConfigLike = { ...input.serverConfig };
+            if (Object.prototype.hasOwnProperty.call(input.serverConfig, "EnvParams")) {
+              const { merged } = mergeCloudRunServerConfig({
+                remote: { EnvParams: remoteServerConfig.EnvParams },
+                input: { EnvParams: input.serverConfig.EnvParams },
+                envParamsReplaceAll: Boolean(input.envParamsReplaceAll),
+              });
+              if (merged.EnvParams !== undefined) {
+                dirty.EnvParams = merged.EnvParams;
+              }
+            }
+
+            let Items;
+            try {
+              Items = parseServerConfigToDiffItems(dirty);
+            } catch (error) {
+              throw new Error(
+                buildManageCloudRunErrorMessage(
+                  "updateConfig",
+                  input.serverName,
+                  error,
+                ),
+              );
+            }
+
+            if (Items.length === 0) {
+              return {
+                content: [
+                  {
+                    type: "text",
+                    text: JSON.stringify(
+                      {
+                        success: true,
+                        data: {
+                          serviceName: input.serverName,
+                          status: "noop",
+                          itemsCount: 0,
+                          appliedConfig: summarizeConfigSnapshot(dirty),
+                          verifiedConfig: summarizeConfigSnapshot(remoteServerConfig),
+                        },
+                        message: `No effective config changes for '${input.serverName}'.`,
+                      },
+                      null,
+                      2,
+                    ),
+                  },
+                ],
+              };
+            }
+
+            const currentEnvId = await getEnvId(cloudBaseOptions);
+            if (!manager.commonService) {
+              throw new Error(
+                "Current CloudBase Manager does not support commonService; cannot call SubmitServerConfigChangeDiff.",
+              );
+            }
+
+            let diffResult: any;
+            try {
+              diffResult = await manager
+                .commonService("tcbr", "2022-02-17")
+                .call({
+                  Action: "SubmitServerConfigChangeDiff",
+                  Param: {
+                    EnvId: currentEnvId,
+                    ServerName: input.serverName,
+                    Items,
+                  },
+                });
+            } catch (error) {
+              const msg = error instanceof Error ? error.message : String(error);
+              if (/ResourceInUse|task|running|进行中/i.test(msg)) {
+                throw new Error(
+                  buildManageCloudRunErrorMessage(
+                    "updateConfig",
+                    input.serverName,
+                    new Error(
+                      `${msg} A deploy or config task may still be running. Wait, then retry; or use queryCloudRun(action="getDeployLog").`,
+                    ),
+                  ),
+                );
+              }
+              throw new Error(
+                buildManageCloudRunErrorMessage(
+                  "updateConfig",
+                  input.serverName,
+                  error,
+                ),
+              );
+            }
+
+            let verifiedConfig = summarizeConfigSnapshot(remoteServerConfig);
+            try {
+              const after = await cloudrunService.detail({
+                serverName: input.serverName,
+              });
+              verifiedConfig = summarizeConfigSnapshot(
+                (after as any)?.ServerConfig,
+              );
+            } catch {
+              // best-effort verify
+            }
+
+            const likelyRedeploy = listLikelyRedeployFields(dirty);
+            const consoleUrl = `https://tcb.cloud.tencent.com/dev?envId=${currentEnvId}#/platform-run/service/detail?serverName=${input.serverName}&tabId=overview&envId=${currentEnvId}`;
+            const taskId =
+              diffResult?.TaskId ??
+              diffResult?.Response?.TaskId ??
+              diffResult?.taskId;
+
+            const redeployHint =
+              likelyRedeploy.length > 0
+                ? ` Fields that often trigger redeploy-with-online-image: ${likelyRedeploy.join(", ")}.`
+                : " Change may apply as a hot update (e.g. MinNum/MaxNum/AccessTypes).";
+
+            return {
+              content: [
+                {
+                  type: "text",
+                  text: JSON.stringify(
+                    {
+                      success: true,
+                      data: {
+                        serviceName: input.serverName,
+                        status: "configUpdating",
+                        itemsCount: Items.length,
+                        itemsKeys: Items.map((i: { Key: string }) => i.Key),
+                        ...(taskId ? { taskId } : {}),
+                        appliedConfig: summarizeConfigSnapshot(dirty),
+                        verifiedConfig,
+                        likelyRedeployFields: likelyRedeploy,
+                        consoleUrl,
+                      },
+                      message: `Submitted config change for '${input.serverName}'.${redeployHint} Verify with queryCloudRun(action="detail"). Console: ${consoleUrl}`,
+                    },
+                    null,
+                    2,
+                  ),
+                },
+              ],
             };
           }
 

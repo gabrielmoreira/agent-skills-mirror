@@ -5,6 +5,11 @@ import {
   logCloudBaseResult,
 } from "../cloudbase-manager.js";
 import { ExtendedMcpServer } from "../server.js";
+import {
+  rankGatewayAccessUrls,
+  toAccessUrlEnvelope,
+  type GatewayRouteUrlCandidate,
+} from "../utils/gateway-access-urls.js";
 import { jsonContent } from "../utils/json-content.js";
 
 const QUERY_GATEWAY_ACTIONS = [
@@ -160,17 +165,34 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
       })),
     );
 
-  const buildRouteUrls = (routes: FlatRoute[]) =>
-    Array.from(
-      new Set(
-        routes
-          .filter((route) => route.Domain && route.Path)
-          .map(
-            (route) =>
-              `https://${route.Domain}${normalizeAccessPath(String(route.Path))}`,
-          ),
-      ),
-    );
+  const buildRouteUrls = (routes: FlatRoute[]) => {
+    const candidates: GatewayRouteUrlCandidate[] = routes.map((route) => ({
+      Domain: route.Domain,
+      Path: route.Path,
+      IsDefault: route.IsDefault,
+      UpstreamResourceType: route.UpstreamResourceType,
+      UpstreamResourceName: route.UpstreamResourceName,
+    }));
+    return rankGatewayAccessUrls(candidates).map((item) => item.url);
+  };
+
+  const buildAccessUrlFields = (routes: FlatRoute[]) => {
+    const candidates: GatewayRouteUrlCandidate[] = routes.map((route) => ({
+      Domain: route.Domain,
+      Path: route.Path,
+      IsDefault: route.IsDefault,
+      UpstreamResourceType: route.UpstreamResourceType,
+      UpstreamResourceName: route.UpstreamResourceName,
+    }));
+    const envelope = toAccessUrlEnvelope(rankGatewayAccessUrls(candidates));
+    return {
+      ...(envelope.accessUrl ? { accessUrl: envelope.accessUrl } : {}),
+      accessUrls: envelope.accessUrls,
+      ...(envelope.accessUrlSource
+        ? { accessUrlSource: envelope.accessUrlSource }
+        : {}),
+    };
+  };
 
   const resolveDefaultHttpDomain = async () => {
     const routeInfo = await listHttpServiceRoutes();
@@ -356,6 +378,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             action: input.action,
             routes,
             urls: buildRouteUrls(routes),
+            ...buildAccessUrlFields(routes),
             total: result.TotalCount ?? routes.length,
             raw: result,
           },
@@ -409,6 +432,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             routes: matches,
             total: matches.length,
             urls,
+            ...buildAccessUrlFields(matches),
             raw: result,
           },
           matches.length === 0
@@ -473,6 +497,12 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             auth: payload.resolved.enableAuth ?? null,
             enablePathTransmission:
               payload.resolved.enablePathTransmission ?? null,
+            accessUrl: `https://${payload.resolved.domain}${payload.resolved.path}`,
+            accessUrls: [`https://${payload.resolved.domain}${payload.resolved.path}`],
+            accessUrlSource:
+              input.domain && input.domain === payload.resolved.domain
+                ? "gateway.custom"
+                : "gateway.default",
             raw: result,
           },
           `已为目标 ${payload.resolved.upstreamResourceName} 在域名 ${payload.resolved.domain} 创建路由 ${payload.resolved.path}（${payload.resolved.upstreamResourceType}）` +
@@ -505,6 +535,12 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             auth: payload.resolved.enableAuth ?? null,
             enablePathTransmission:
               payload.resolved.enablePathTransmission ?? null,
+            accessUrl: `https://${payload.resolved.domain}${payload.resolved.path}`,
+            accessUrls: [`https://${payload.resolved.domain}${payload.resolved.path}`],
+            accessUrlSource:
+              input.domain && input.domain === payload.resolved.domain
+                ? "gateway.custom"
+                : "gateway.default",
             raw: result,
           },
           `HTTP 路由更新成功（${payload.resolved.domain}${payload.resolved.path}` +

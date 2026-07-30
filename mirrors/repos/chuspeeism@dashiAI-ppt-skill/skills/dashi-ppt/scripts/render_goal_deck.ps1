@@ -106,10 +106,10 @@ try {
     New-Item -ItemType Directory -Force -Path $outputDirectory | Out-Null
 
     Invoke-Native $npm 'run' 'props:safe' '--' '--goal' $goalPath '--write'
-    Invoke-Native $npm 'run' 'validate:goal-spec' '--' $goalPath
     Invoke-Native $npm 'run' 'render:goal' '--' $goalPath $outputPath
     Invoke-Native $npm 'run' 'validate:swiss' '--' $outputPath
     Invoke-Native $npm 'run' 'validate:goal-copy' '--' $goalPath $outputPath
+    Invoke-Native $npm 'run' 'validate:four-variant-quality' '--' '--deck' $outputPath '--goal' $goalPath
 
     # 缺省端口落在 SKILL.md 约定的 5200-5999 段(4178/4300/4400 为用户保留端口)。
     $previewPort = if ($env:DASHI_PPT_PREVIEW_PORT) { $env:DASHI_PPT_PREVIEW_PORT } else { '5200' }

@@ -27,8 +27,8 @@ skill inside another.
 ## Skill documentation
 
 Leaf README files are generated repository documentation, not Degardis source
-content. The root README is handwritten around generated catalog and
-installation sections. Each skill's documentation source is `readme.yaml`;
+content. The root README is handwritten except for its generated catalog
+table. Each skill's documentation source is `readme.yaml`;
 keep it outside the manifest content globs so neither it nor the generated
 README is copied into skill bundles.
 
@@ -78,16 +78,16 @@ Set `format_version: 1`. Write `purpose` and `when_it_applies` as Markdown
 block scalars, write capabilities and sample prompts as non-empty string
 lists, and give every skill a unique integer `catalog.order`.
 
-Treat `skill.yaml` and `readme.yaml` as the authoritative inputs. Keep all
-reader-visible wording and Markdown structure in these templates:
+Treat `skill.yaml` and `readme.yaml` as the authoritative inputs. Keep
+generated reader-visible wording and Markdown structure in these templates.
+The handwritten root README owns the `Available skills` heading immediately
+before the root catalog markers:
 
 - `.github/templates/skill-readme.md` owns complete leaf READMEs;
-- `.github/templates/root-catalog.md` owns the root catalog section;
+- `.github/templates/root-catalog.md` owns the generated root catalog table;
 - `.github/templates/catalog-row.md` owns catalog row structure;
 - `.github/templates/capability.md` and
   `.github/templates/sample-prompt.md` own repeated leaf list items;
-- `.github/templates/root-installation.md` owns the root installation section;
-  and
 - `.github/templates/changelog-link.md` owns the optional changelog link.
 
 The generator may validate inputs, calculate dynamic values, render repeated
@@ -176,14 +176,15 @@ in the repository.
 ## Distribution
 
 Every leaf skill README is generated end-user documentation. The root catalog
-and packaged-skill guide are also generated sections. Run
+table is also generated. Run
 `.github/scripts/generate-readmes.py` after adding or renaming a skill,
-changing `skill.yaml` or `readme.yaml`, editing a README template, or changing
-shared installation guidance. Do not hand-edit leaf README files or content
-between generated markers in the root README.
+changing `skill.yaml` or `readme.yaml`, or editing a README template. Do not
+hand-edit leaf README files or the catalog content between generated markers
+in the root README.
 
-The README templates own installation wording and agent-directory tables. The
-generator must:
+The root README owns the shared packaged-skill installation guide and
+agent-directory table. The skill README template owns each skill's download
+link, security warning, and link to that shared guide. The generator must:
 
 - supply authoritative `title`, `name`, `version`, and `license` values from
   `skill.yaml`;
@@ -192,11 +193,12 @@ generator must:
 - render capabilities, prompts, catalog rows, and optional changelog links; and
 - reject missing, duplicate, nested, or malformed source data.
 
-Change installation prose, warnings, headings, table labels, agent-directory
-choices, platform explanations, and ChatGPT instructions only in the
-templates. Filesystem installation guidance must tell users to back up local
-modifications and empty an existing skill directory before extracting an
-upgrade into it.
+Change shared installation prose, headings, table labels, agent-directory
+choices, platform explanations, and ChatGPT instructions in the root README.
+Change skill-specific installation wording and warnings in the skill README
+template. The shared filesystem installation guide must tell users to back up
+local modifications and empty an existing skill directory before extracting
+an upgrade into it.
 
 Keep maintainer release mechanics out of leaf READMEs.
 

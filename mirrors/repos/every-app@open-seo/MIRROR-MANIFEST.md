@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 35 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 37 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,21 +79,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`.agents/skills/openseo-review-web-content/SKILL.md`](.agents/skills/openseo-review-web-content/SKILL.md) |
 | 19 | ✓ | [`.agents/skills/papercuts/agents/openai.yaml`](.agents/skills/papercuts/agents/openai.yaml) |
 | 20 | ✓ | [`.agents/skills/papercuts/SKILL.md`](.agents/skills/papercuts/SKILL.md) |
-| 21 | ✓ | [`.agents/skills/seo-coach/SKILL.md`](.agents/skills/seo-coach/SKILL.md) |
-| 22 | ✓ | [`.agents/skills/seo-project-setup/SKILL.md`](.agents/skills/seo-project-setup/SKILL.md) |
-| 23 | ✓ | [`.agents/skills/webapp-testing/examples/console_logging.py`](.agents/skills/webapp-testing/examples/console_logging.py) |
-| 24 | ✓ | [`.agents/skills/webapp-testing/examples/element_discovery.py`](.agents/skills/webapp-testing/examples/element_discovery.py) |
-| 25 | ✓ | [`.agents/skills/webapp-testing/examples/static_html_automation.py`](.agents/skills/webapp-testing/examples/static_html_automation.py) |
-| 26 | ✓ | [`.agents/skills/webapp-testing/LICENSE.txt`](.agents/skills/webapp-testing/LICENSE.txt) |
-| 27 | ✓ | [`.agents/skills/webapp-testing/scripts/with_server.py`](.agents/skills/webapp-testing/scripts/with_server.py) |
-| 28 | ✓ | [`.agents/skills/webapp-testing/SKILL.md`](.agents/skills/webapp-testing/SKILL.md) |
-| 29 | ✓ | [`.claude/skills/deslop/SKILL.md`](.claude/skills/deslop/SKILL.md) |
-| 30 | ✓ | [`.claude/skills/merge-ready/SKILL.md`](.claude/skills/merge-ready/SKILL.md) |
-| 31 | ✓ | [`.claude/skills/openseo-release-notes/SKILL.md`](.claude/skills/openseo-release-notes/SKILL.md) |
-| 32 | ✓ | [`.claude/skills/openseo-review-web-content/SKILL.md`](.claude/skills/openseo-review-web-content/SKILL.md) |
-| 33 | ✓ | [`.claude/skills/papercuts/SKILL.md`](.claude/skills/papercuts/SKILL.md) |
-| 34 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 35 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 21 | ✓ | [`.agents/skills/seo-audit/SKILL.md`](.agents/skills/seo-audit/SKILL.md) |
+| 22 | ✓ | [`.agents/skills/seo-audit/template.html`](.agents/skills/seo-audit/template.html) |
+| 23 | ✓ | [`.agents/skills/seo-coach/SKILL.md`](.agents/skills/seo-coach/SKILL.md) |
+| 24 | ✓ | [`.agents/skills/seo-project-setup/SKILL.md`](.agents/skills/seo-project-setup/SKILL.md) |
+| 25 | ✓ | [`.agents/skills/webapp-testing/examples/console_logging.py`](.agents/skills/webapp-testing/examples/console_logging.py) |
+| 26 | ✓ | [`.agents/skills/webapp-testing/examples/element_discovery.py`](.agents/skills/webapp-testing/examples/element_discovery.py) |
+| 27 | ✓ | [`.agents/skills/webapp-testing/examples/static_html_automation.py`](.agents/skills/webapp-testing/examples/static_html_automation.py) |
+| 28 | ✓ | [`.agents/skills/webapp-testing/LICENSE.txt`](.agents/skills/webapp-testing/LICENSE.txt) |
+| 29 | ✓ | [`.agents/skills/webapp-testing/scripts/with_server.py`](.agents/skills/webapp-testing/scripts/with_server.py) |
+| 30 | ✓ | [`.agents/skills/webapp-testing/SKILL.md`](.agents/skills/webapp-testing/SKILL.md) |
+| 31 | ✓ | [`.claude/skills/deslop/SKILL.md`](.claude/skills/deslop/SKILL.md) |
+| 32 | ✓ | [`.claude/skills/merge-ready/SKILL.md`](.claude/skills/merge-ready/SKILL.md) |
+| 33 | ✓ | [`.claude/skills/openseo-release-notes/SKILL.md`](.claude/skills/openseo-release-notes/SKILL.md) |
+| 34 | ✓ | [`.claude/skills/openseo-review-web-content/SKILL.md`](.claude/skills/openseo-review-web-content/SKILL.md) |
+| 35 | ✓ | [`.claude/skills/papercuts/SKILL.md`](.claude/skills/papercuts/SKILL.md) |
+| 36 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

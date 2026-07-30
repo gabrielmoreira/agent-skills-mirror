@@ -55,7 +55,10 @@ When a `/command` fires:
 /crash-analysis - Autonomous crash root-cause analysis (see below)
 /oss-forensics - GitHub forensic investigation (see below)
 /scorecard - Inspect per-model reliability across decision classes; ask natural-language questions about which model is good at what (see below)
+/ask - Send a prompt to any configured LLM model (see below)
 /create-skill - Save approaches (alpha)
+
+**Ask:** `libexec/raptor-llm-ask --model <name> "prompt"` sends a free-form prompt to any configured model and prints the response. Use for cross-model diagnosis, debugging model reasoning, or comparing verdicts. Supports `--system`, `--file` (prepend file as context), `--json-schema` (structured output), `--debug` (show cost and metadata). When the user says "ask gemini...", "ask claude...", "ask gpt..." or similar, route through this tool. Example: `libexec/raptor-llm-ask --model gemini-2.5-pro --file context.txt "Why did you classify this function as suspicious?"`.
 
 **SAGE:** `libexec/raptor-sage` is the mechanical CLI for SAGE persistent memory (status, recall, list, remember, forget, domains, timeline, backlog, task, link, corroborate, get). When asked about SAGE memories, what SAGE knows, or to store/recall knowledge, route to this. If SAGE is not installed, run `libexec/raptor-sage-setup` to install the Docker sidecar and embedding model.
 

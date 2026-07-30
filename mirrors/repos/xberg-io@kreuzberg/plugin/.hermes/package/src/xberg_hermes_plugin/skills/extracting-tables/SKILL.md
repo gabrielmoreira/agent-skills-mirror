@@ -5,8 +5,8 @@ description: Use when extracting tabular data from PDFs, spreadsheets, or images
 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:668fb7004896108b5c4def0946cb4d1cd215c9416868c2ebec2a73cebd4b203b
-Source-Hash: blake3:cf2e50e4fe88772155b882eacc338a857dfdc086a8a86b7d5d4721d540e33d8c
+Content-Hash: blake3:7667a52a8674605a45cc61b67e7879a0104d5e86c0d82b4bde5ced9e6e3463a8
+Source-Hash: blake3:4f30c10e77f8c5ff8ed30b9e154ad9bcf00fb22405417016845401f0db77e0e4
 Schema-Version: v1
 -->
 
@@ -38,15 +38,16 @@ Two surfaces, picked via `--format` (CLI shape) and `--content-format`
 - **Markdown tables in `content`** — `--content-format markdown`. Tables
   appear inline as `| col | col |` blocks. Good for LLM ingestion.
 - **Structured `tables` array** — `--format json`. Each entry has
-  `cells[][]` (rows × cols), `markdown` (pre-rendered), `page_index`,
-  `bbox`. Use this when downstream code needs exact cell access.
+  `cells[][]` (rows × cols), `markdown` (pre-rendered), `page_number`,
+  `bounding_box`. Use this when downstream code needs exact cell access.
+  (`bounding_box` is omitted when no position data is available.)
 
 Both are populated at once when `--layout` is on. The `tables` array is
 always structured; the `content` stream switches representation.
 
 ```bash
 xberg extract financials.pdf --layout --format json \
-  | jq '.tables[] | {page: .page_index, rows: (.cells | length)}'
+  | jq '.result.tables[] | {page: .page_number, rows: (.cells | length)}'
 ```
 
 ## Table models
@@ -94,8 +95,7 @@ configs.
 # `output_format` in config files equals `--content-format` on the CLI.
 output_format = "markdown"
 
-[layout_detection]
-enabled = true
+[layout]
 confidence_threshold = 0.5
 table_model = "tatr"
 ```
@@ -118,7 +118,7 @@ config = ExtractionConfig(
     layout=LayoutDetectionConfig(table_model="tatr"),
     output_format="markdown",
 )
-result = await extract(ExtractInput.from_uri("report.pdf"), config)
+result = await extract(ExtractInput(uri="report.pdf"), config)
 for table in result.results[0].tables:
     print(table.markdown)        # rendered markdown
     print(table.cells[0][0])     # cell access
@@ -131,7 +131,7 @@ sibling `xberg` skill for full type signatures.
 ## Known limitations
 
 - **Merged cells** — reconstructed as repeated values across the spanned
-  region; the merge is not preserved as metadata in v0.1.
+  region; the merge is not preserved as metadata.
 - **Rotated tables** — enable `--ocr-auto-rotate true` for image-based
   PDFs before extraction.
 - **Nested tables** — flattened. Detection succeeds; structural nesting is

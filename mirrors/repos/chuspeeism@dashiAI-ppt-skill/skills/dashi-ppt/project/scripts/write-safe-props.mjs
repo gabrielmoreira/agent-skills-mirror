@@ -6,6 +6,9 @@ import {
   getLayoutRecord,
   getMediaSlotsForLayout,
   getPreferredMediaSlot,
+  inspectLayout,
+  isCoverCandidate,
+  isCoverLikeLayout,
   isDeckLocalMediaSource,
   listLayouts,
   mediaSlotsCanFit,
@@ -15,6 +18,11 @@ import {
 } from './skill-workflow-utils.mjs';
 import { validateGoalSpec, validateHtmlStringBoundaries } from './validate-goal-spec.mjs';
 import { isMediaArrayKey } from '../src/prop-contract-core.mjs';
+import { getVariantKind, resolveContentMap } from '../src/variant-contract.mjs';
+import {
+  beginWorkflowStage,
+  workflowTelemetryPath,
+} from './workflow-telemetry.mjs';
 
 const ALLOWED_MEDIA_ITEM_FIELDS = new Set(['src', 'kind', 'type', 'ar', 'ratio', 'poster']);
 
@@ -136,32 +144,109 @@ function runGoal(goalArg, options = {}) {
     process.exit(2);
   }
   const goalPath = path.resolve(CALLER_CWD, goalArg);
+  const telemetry = beginWorkflowStage({
+    goalPath,
+    telemetryFile: workflowTelemetryPath(goalPath),
+    stage: 'props-safe',
+    kind: 'normalize',
+    command: 'props:safe',
+  });
   let spec;
   try {
     spec = JSON.parse(readFileSync(goalPath, 'utf8'));
   } catch (error) {
+    telemetry.finish({ ok: false, error });
     console.error(`Invalid goal JSON: ${error.message}`);
     process.exit(2);
   }
 
   const slides = Array.isArray(spec.slides) ? spec.slides : [];
+  const canonicalContentErrors = slides.map(canonicalContentError);
+  const entries = slides.flatMap((slide, slideIndex) => (
+    Array.isArray(slide?.variants)
+      ? slide.variants.map((variant, variantIndex) => ({
+          slide: variant,
+          content: slide?.content || {},
+          canonicalContentError: variantIndex === 0 ? canonicalContentErrors[slideIndex] : null,
+          slideIndex,
+          variantIndex,
+          variantId: variant?.id || `v${variantIndex + 1}`,
+        }))
+      : [{
+          slide,
+          content: slide?.content || {},
+          canonicalContentError: canonicalContentErrors[slideIndex],
+          slideIndex,
+          variantIndex: null,
+          variantId: null,
+        }]
+  ));
   // JAD-workflow-friction:layout 容量确定放不下作者媒体数组时(仅此一种、可客观判定的场景),
   // 换用同主题内能容纳的候选 layout,而不是把无解的媒体错误抛回作者。每次替换都记入
   // layoutChanges,绝不无声改写——调用方必须能在输出里看到 from/to/reason。
-  const usedLayouts = new Set(slides.map(item => item?.layout).filter(Boolean));
+  const usedLayoutsBySlide = new Map(slides.map((_slide, slideIndex) => [
+    slideIndex,
+    new Set(entries
+      .filter(item => item.slideIndex === slideIndex)
+      .map(item => item.slide?.layout)
+      .filter(Boolean)),
+  ]));
   const layoutChanges = [];
-  const normalizedSlides = [];
-  const slideResults = slides.map((slide, index) => {
+  const normalizedEntries = entries.map((entry) => {
+    const {
+      slide,
+      content,
+      canonicalContentError: contentError,
+      slideIndex,
+      variantIndex,
+      variantId,
+    } = entry;
+    const contentMap = slide?.contentMap || {};
+    const canonicalErrors = [
+      ...(contentError ? [contentError] : []),
+      ...canonicalContentMapErrors(contentMap),
+    ];
+    if (getVariantKind(slide) === 'bespoke') {
+      return {
+        ...entry,
+        normalizedSlide: slide,
+        result: {
+          slide: slideIndex + 1,
+          ...(variantIndex == null ? {} : { variant: variantId }),
+          kind: 'bespoke',
+          layout: null,
+          warningCount: 0,
+          errorCount: canonicalErrors.length,
+          ...(canonicalErrors.length ? { errors: canonicalErrors } : {}),
+        },
+      };
+    }
     const originalLayout = slide?.layout;
     let layout = originalLayout;
-    let normalized = layout
-      ? normalizeProps(layout, slide?.props || {})
-      : { warnings: [], errors: ['missing layout'] };
-    if (layout && normalized.errors?.length) {
-      const safe = trySafeLayoutForSlide(layout, slide?.props || {}, usedLayouts);
+    let effectiveProps = slide?.props || {};
+    let contentMapError = canonicalErrors.length ? canonicalErrors.join('; ') : null;
+    if (!contentMapError) {
+      try {
+        effectiveProps = resolveContentMap(content, contentMap, effectiveProps);
+      } catch (error) {
+        contentMapError = `contentMap: ${error.message}`;
+      }
+    }
+    let normalized = contentMapError
+      ? { warnings: [], errors: [contentMapError] }
+      : layout
+        ? normalizeProps(layout, effectiveProps)
+        : { warnings: [], errors: ['missing layout'] };
+    let unresolvedMediaMismatch = layout
+      ? findLayoutMediaMismatch(layout, effectiveProps)
+      : null;
+    if (layout && normalized.errors?.length && !contentMapError) {
+      const usedLayouts = usedLayoutsBySlide.get(slideIndex);
+      const safe = trySafeLayoutForSlide(layout, effectiveProps, usedLayouts);
       if (safe) {
         layoutChanges.push({
-          slide: index + 1,
+          slide: slideIndex + 1,
+          ...(variantIndex == null ? {} : { variant: variantId }),
           from: layout,
           to: safe.layout,
           reason: `props.${safe.mismatch.key} 有 ${safe.mismatch.count} 项媒体,"${layout}" 没有能容纳的媒体槽位,已换为 "${safe.layout}"`,
@@ -170,12 +255,13 @@ function runGoal(goalArg, options = {}) {
         usedLayouts.add(safe.layout);
         layout = safe.layout;
         normalized = safe.normalized;
+        unresolvedMediaMismatch = null;
       }
     }
     // 字段级抢救:此前任何一个字段报错都会丢弃整页 props(整页回退演示文案,正是用户
     // 反馈的「几乎每页都残留」);现在仅剔除无法通过契约的根键,其余字段保留并写回。
-    if (layout && normalized.errors?.length) {
-      const salvaged = salvageSlideProps(layout, slide?.props || {});
+    if (layout && normalized.errors?.length && !unresolvedMediaMismatch && !contentMapError && !Object.keys(contentMap).length) {
+      const salvaged = salvageSlideProps(layout, effectiveProps);
       if (salvaged && Object.keys(salvaged.props || {}).length) {
         normalized = {
           props: salvaged.props,
@@ -187,21 +273,41 @@ function runGoal(goalArg, options = {}) {
         };
       }
     }
-    normalizedSlides.push(layout && !normalized.errors?.length
-      ? { ...slide, layout, props: normalized.props }
-      : { ...slide, layout });
+    const normalizedSlide = layout && !normalized.errors?.length
+      ? {
+          ...slide,
+          layout,
+          props: stripContentMapTargets(normalized.props, contentMap),
+        }
+      : { ...slide, layout };
     return {
-      slide: index + 1,
-      layout: layout || null,
-      warningCount: normalized.warnings?.length || 0,
-      errorCount: normalized.errors?.length || 0,
-      ...(normalized.warnings?.length ? { warnings: normalized.warnings } : {}),
-      ...(normalized.errors?.length ? { errors: normalized.errors } : {}),
+      ...entry,
+      normalizedSlide,
+      result: {
+        slide: slideIndex + 1,
+        ...(variantIndex == null ? {} : { variant: variantId }),
+        layout: layout || null,
+        warningCount: normalized.warnings?.length || 0,
+        errorCount: normalized.errors?.length || 0,
+        ...(normalized.warnings?.length ? { warnings: normalized.warnings } : {}),
+        ...(normalized.errors?.length ? { errors: normalized.errors } : {}),
+      },
     };
   });
+  const normalizedSlides = slides.map((slide, slideIndex) => {
+    const matches = normalizedEntries.filter(item => item.slideIndex === slideIndex);
+    if (!Array.isArray(slide?.variants)) return matches[0]?.normalizedSlide || slide;
+    return {
+      ...slide,
+      variants: matches.map(item => item.normalizedSlide),
+    };
+  });
+  const slideResults = normalizedEntries.map(item => item.result);
   const normalizedSpec = Array.isArray(spec.slides) ? { ...spec, slides: normalizedSlides } : spec;
   const goalSpecErrors = validateGoalSpec(normalizedSpec, { authoredSpec: spec });
-  const propErrors = slideResults.flatMap(item => (item.errors || []).map(error => `slide ${item.slide} ${item.layout || '<missing>'}: ${error}`));
+  const propErrors = slideResults.flatMap(item => (item.errors || []).map(error => (
+    `slide ${item.slide}${item.variant ? ` variant ${item.variant}` : ''} ${item.layout || '<missing>'}: ${error}`
+  )));
   const ok = goalSpecErrors.length === 0 && propErrors.length === 0;
   if (ok && options.write) writeFileSync(goalPath, compactJson(normalizedSpec));
   const result = {
@@ -217,11 +323,103 @@ function runGoal(goalArg, options = {}) {
     ...(propErrors.length ? { propErrors } : {}),
     slides: slideResults,
   };
+  telemetry.finish({
+    ok,
+    error: ok ? null : new Error([...goalSpecErrors, ...propErrors].join('; ')),
+    metrics: {
+      layoutChangeCount: layoutChanges.length,
+      propErrorCount: propErrors.length,
+      goalSpecErrorCount: goalSpecErrors.length,
+    },
+  });
   process.stdout.write(compactJson(result));
   if (layoutChanges.length) {
     console.error(`${layoutChanges.length} 处 layout 被替换(核对输出 JSON 的 layoutChanges,不认可就改回并换页)`);
   }
   if (!result.ok) process.exit(1);
+}
+
+function canonicalContentError(slide) {
+  const content = slide?.content;
+  if (content && typeof content === 'object' && !Array.isArray(content)) {
+    const variantKey = Object.keys(content).find(key => /^v\d+$/i.test(key));
+    if (variantKey) {
+      return `slide.content.${variantKey}: variant-specific content is not allowed; keep one canonical presentation source in slide.content`;
+    }
+  }
+  const candidates = [
+    ['slide.views', slide?.views],
+    ['slide.variantContent', slide?.variantContent],
+    ['slide.content.views', content?.views],
+    ['slide.content.variants', content?.variants],
+    ['slide.content.variantContent', content?.variantContent],
+  ];
+  for (const [scope, value] of candidates) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+    const variantKey = Object.keys(value).find(key => /^v\d+$/i.test(key));
+    if (variantKey) {
+      return `${scope}.${variantKey}: variant-specific content is not allowed; keep one canonical presentation source in slide.content`;
+    }
+  }
+  return null;
+}
+
+function canonicalContentMapErrors(contentMap) {
+  if (!contentMap || typeof contentMap !== 'object' || Array.isArray(contentMap)) return [];
+  return Object.entries(contentMap).flatMap(([target, mapping]) => {
+    const source = typeof mapping === 'string' ? mapping : mapping?.source;
+    return typeof source === 'string' && /^(?:v\d+|(?:views|variants|variantContent)\.v\d+)(?:\.|\[|$)/i.test(source)
+      ? [`contentMap target "${target}": variant-specific source "${source}" is not allowed; map from canonical slide.content`]
+      : []
+  });
+}
+
+function stripContentMapTargets(props, contentMap) {
+  const paths = Object.keys(contentMap || {});
+  if (!paths.length) return props;
+  const result = structuredClone(props || {});
+  const targets = paths
+    .map(contentMapPathTokens)
+    .map(tokens => (tokens[0] === 'props' ? tokens.slice(1) : tokens))
+    .filter(tokens => tokens.length)
+    .sort(compareContentMapTargets);
+  for (const tokens of targets) deleteContentMapTarget(result, tokens);
+  return result;
+}
+
+function contentMapPathTokens(value) {
+  const tokens = [];
+  String(value || '').replace(/([^[.\]]+)|\[(\d+)\]/g, (_match, key, index) => {
+    tokens.push(index === undefined ? key : Number(index));
+    return '';
+  });
+  return tokens;
+}
+
+function compareContentMapTargets(left, right) {
+  const leftParent = JSON.stringify(left.slice(0, -1));
+  const rightParent = JSON.stringify(right.slice(0, -1));
+  const leftLast = left.at(-1);
+  const rightLast = right.at(-1);
+  if (leftParent === rightParent && Number.isInteger(leftLast) && Number.isInteger(rightLast)) {
+    return rightLast - leftLast;
+  }
+  return right.length - left.length;
+}
+
+function deleteContentMapTarget(root, tokens) {
+  let parent = root;
+  for (const token of tokens.slice(0, -1)) {
+    if (parent == null || typeof parent !== 'object') return;
+    parent = parent[token];
+  }
+  if (parent == null || typeof parent !== 'object') return;
+  const key = tokens.at(-1);
+  if (Array.isArray(parent) && Number.isInteger(key)) {
+    if (key >= 0 && key < parent.length) parent.splice(key, 1);
+    return;
+  }
+  delete parent[key];
 }
 
 // 仅在“作者媒体数组长度超出该 layout 所有媒体槽位容量”这一可客观判定的场景下触发候选查找;
@@ -259,13 +457,27 @@ function findLayoutMediaMismatch(layout, props = {}) {
 function findSafeLayoutCandidates(currentLayout, mismatch) {
   const themeKey = getLayoutRecord(currentLayout)?.page?.themeKey;
   if (!themeKey) return [];
+  const currentRoles = new Set(inspectLayout(currentLayout, { compact: true })?.roles || []);
+  const currentIsCover = isCoverCandidate(currentLayout);
+  const currentIsCoverLike = isCoverLikeLayout(currentLayout);
   const rows = listLayouts({
     theme: themeKey,
     mediaCount: mismatch.count,
     mediaKind: mismatch.kind,
     limit: 30,
   });
-  return rows.map(row => row.layout).filter(candidate => candidate && candidate !== currentLayout);
+  return rows
+    .map(row => row.layout)
+    .filter(candidate => candidate && candidate !== currentLayout)
+    .filter(candidate => (
+      isCoverCandidate(candidate) === currentIsCover
+      && isCoverLikeLayout(candidate) === currentIsCoverLike
+    ))
+    .filter(candidate => {
+      if (!currentRoles.size) return true;
+      const candidateRoles = inspectLayout(candidate, { compact: true })?.roles || [];
+      return candidateRoles.some(role => currentRoles.has(role));
+    });
 }
 
 function trySafeLayoutForSlide(layout, props, usedLayouts) {

@@ -14,7 +14,7 @@ Before any UI, design, copy, or marketing/visual change, **read `.impeccable.md`
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **DashClaw** (18432 symbols, 34416 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **DashClaw** (18462 symbols, 34472 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > Index stale? Run `node .gitnexus/run.cjs analyze` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? `npx gitnexus analyze` (npm 11 crash → `npm i -g gitnexus`; #1939).
 
@@ -73,12 +73,9 @@ The global `~/.codex/AGENTS.md` covers core behavior; these are DashClaw-specifi
 
 This repository is indexed by Repowise. Use the Repowise MCP tools for codebase orientation, discovery, implementation context, modification risk, design rationale, and cleanup planning. MCP data reflects the last index run; verify against source files before editing.
 
-Last indexed: 2026-07-29 (commit 4dcbaa41). Confidence: 100%.
+Last indexed: 2026-07-29 (commit 841d5fb8). Confidence: 100%.
 ### Architecture
-This repository is an end-to-end “governed agent + documentation” platform: it ingests agent/policy configuration and repository content (inputs like contracts JSON, policy modes, and knowledge YAML), transforms them through a governance-aware agent runtime and an MCP tool server, and outputs runnable governed agent examples plus an SDK (JavaScript and Python) and an MCP-exposed interface for downstream tools/UI to consume. **Inputs**
-**Transformations**
-**Outputs**
-To add new governed capabilities:
+This repository is a codebase documentation and “governed agent” platform: it ingests source files and contract/policy inputs, builds an internal representation via indexing and analysis, and produces generated documentation artifacts (including LLM-synthesised wiki pages) that are exposed through an MCP server and supporting SDKs/UI integrations.
 ### Key Modules
 | Module | Purpose | Owner |
 |--------|---------|-------|
@@ -106,11 +103,11 @@ To add new governed capabilities:
 ### Risk Hotspots
 | File | Churn | 90d Commits | Owner |
 |------|-------|-------------|-------|
-| `docs/maintainer-log.md` | 100.0th percentile | 133 | Wes Sander |
+| `docs/maintainer-log.md` | 100.0th percentile | 137 | Wes Sander |
 | `mcp-server/lib/routes-inventory.generated.json` | 100.0th percentile | 34 | Wes Sander |
 | `app/lib/doctor/generated/last-snapshot.json` | 99.9th percentile | 71 | Wes Sander |
 | `app/lib/doctor/generated/shape.json` | 99.9th percentile | 71 | Wes Sander |
-| `CHANGELOG.md` | 99.9th percentile | 109 | Wes Sander |
+| `CHANGELOG.md` | 99.9th percentile | 105 | Wes Sander |
 
 ### Repowise MCP Workflow
 

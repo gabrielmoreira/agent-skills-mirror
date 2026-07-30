@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 49 file(s) materialized.
+Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ruvnet/RuView` — 26 default patterns, 1 followed patterns, 49 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 49 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,25 +89,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 28 | ✓ | [`.claude/skills/v3-security-overhaul/SKILL.md`](.claude/skills/v3-security-overhaul/SKILL.md) |
 | 29 | ✓ | [`.claude/skills/v3-swarm-coordination/SKILL.md`](.claude/skills/v3-swarm-coordination/SKILL.md) |
 | 30 | ✓ | [`.claude/skills/verification-quality/SKILL.md`](.claude/skills/verification-quality/SKILL.md) |
-| 31 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 32 | ✓ | [`harness/ruview/.claude/skills/calibrate-room/SKILL.md`](harness/ruview/.claude/skills/calibrate-room/SKILL.md) |
-| 33 | ✓ | [`harness/ruview/.claude/skills/onboard/SKILL.md`](harness/ruview/.claude/skills/onboard/SKILL.md) |
-| 34 | ✓ | [`harness/ruview/.claude/skills/provision-node/SKILL.md`](harness/ruview/.claude/skills/provision-node/SKILL.md) |
-| 35 | ✓ | [`harness/ruview/.claude/skills/train-pose/SKILL.md`](harness/ruview/.claude/skills/train-pose/SKILL.md) |
-| 36 | ✓ | [`harness/ruview/.claude/skills/verify/SKILL.md`](harness/ruview/.claude/skills/verify/SKILL.md) |
-| 37 | ✓ | [`harness/ruview/CLAUDE.md`](harness/ruview/CLAUDE.md) |
-| 38 | ✓ | [`plugins/ruview/codex/AGENTS.md`](plugins/ruview/codex/AGENTS.md) |
-| 39 | ✓ | [`plugins/ruview/skills/ruview-advanced-sensing/SKILL.md`](plugins/ruview/skills/ruview-advanced-sensing/SKILL.md) |
-| 40 | ✓ | [`plugins/ruview/skills/ruview-applications/SKILL.md`](plugins/ruview/skills/ruview-applications/SKILL.md) |
-| 41 | ✓ | [`plugins/ruview/skills/ruview-cli-api/SKILL.md`](plugins/ruview/skills/ruview-cli-api/SKILL.md) |
-| 42 | ✓ | [`plugins/ruview/skills/ruview-configure/SKILL.md`](plugins/ruview/skills/ruview-configure/SKILL.md) |
-| 43 | ✓ | [`plugins/ruview/skills/ruview-hardware-setup/SKILL.md`](plugins/ruview/skills/ruview-hardware-setup/SKILL.md) |
-| 44 | ✓ | [`plugins/ruview/skills/ruview-mmwave/SKILL.md`](plugins/ruview/skills/ruview-mmwave/SKILL.md) |
-| 45 | ✓ | [`plugins/ruview/skills/ruview-model-training/SKILL.md`](plugins/ruview/skills/ruview-model-training/SKILL.md) |
-| 46 | ✓ | [`plugins/ruview/skills/ruview-quickstart/SKILL.md`](plugins/ruview/skills/ruview-quickstart/SKILL.md) |
-| 47 | ✓ | [`plugins/ruview/skills/ruview-rvagent/SKILL.md`](plugins/ruview/skills/ruview-rvagent/SKILL.md) |
-| 48 | ✓ | [`plugins/ruview/skills/ruview-verify/SKILL.md`](plugins/ruview/skills/ruview-verify/SKILL.md) |
-| 49 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
+| 31 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 32 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 33 | ✓ | [`harness/homecore/.claude/skills/explore/SKILL.md`](harness/homecore/.claude/skills/explore/SKILL.md) |
+| 34 | ✓ | [`harness/homecore/.claude/skills/migrate/SKILL.md`](harness/homecore/.claude/skills/migrate/SKILL.md) |
+| 35 | ✓ | [`harness/homecore/.claude/skills/operate-server/SKILL.md`](harness/homecore/.claude/skills/operate-server/SKILL.md) |
+| 36 | ✓ | [`harness/homecore/.claude/skills/secure-plugin/SKILL.md`](harness/homecore/.claude/skills/secure-plugin/SKILL.md) |
+| 37 | ✓ | [`harness/homecore/.claude/skills/verify/SKILL.md`](harness/homecore/.claude/skills/verify/SKILL.md) |
+| 38 | ✓ | [`harness/homecore/AGENTS.md`](harness/homecore/AGENTS.md) |
+| 39 | ✓ | [`harness/homecore/CLAUDE.md`](harness/homecore/CLAUDE.md) |
+| 40 | ✓ | [`harness/ruview/.claude/skills/calibrate-room/SKILL.md`](harness/ruview/.claude/skills/calibrate-room/SKILL.md) |
+| 41 | ✓ | [`harness/ruview/.claude/skills/onboard/SKILL.md`](harness/ruview/.claude/skills/onboard/SKILL.md) |
+| 42 | ✓ | [`harness/ruview/.claude/skills/provision-node/SKILL.md`](harness/ruview/.claude/skills/provision-node/SKILL.md) |
+| 43 | ✓ | [`harness/ruview/.claude/skills/train-pose/SKILL.md`](harness/ruview/.claude/skills/train-pose/SKILL.md) |
+| 44 | ✓ | [`harness/ruview/.claude/skills/verify/SKILL.md`](harness/ruview/.claude/skills/verify/SKILL.md) |
+| 45 | ✓ | [`harness/ruview/CLAUDE.md`](harness/ruview/CLAUDE.md) |
+| 46 | ✓ | [`plugins/ruview/codex/AGENTS.md`](plugins/ruview/codex/AGENTS.md) |
+| 47 | ✓ | [`plugins/ruview/skills/ruview-advanced-sensing/SKILL.md`](plugins/ruview/skills/ruview-advanced-sensing/SKILL.md) |
+| 48 | ✓ | [`plugins/ruview/skills/ruview-applications/SKILL.md`](plugins/ruview/skills/ruview-applications/SKILL.md) |
+| 49 | ✓ | [`plugins/ruview/skills/ruview-cli-api/SKILL.md`](plugins/ruview/skills/ruview-cli-api/SKILL.md) |
+| 50 | ✓ | [`plugins/ruview/skills/ruview-configure/SKILL.md`](plugins/ruview/skills/ruview-configure/SKILL.md) |
+| 51 | ✓ | [`plugins/ruview/skills/ruview-hardware-setup/SKILL.md`](plugins/ruview/skills/ruview-hardware-setup/SKILL.md) |
+| 52 | ✓ | [`plugins/ruview/skills/ruview-mmwave/SKILL.md`](plugins/ruview/skills/ruview-mmwave/SKILL.md) |
+| 53 | ✓ | [`plugins/ruview/skills/ruview-model-training/SKILL.md`](plugins/ruview/skills/ruview-model-training/SKILL.md) |
+| 54 | ✓ | [`plugins/ruview/skills/ruview-quickstart/SKILL.md`](plugins/ruview/skills/ruview-quickstart/SKILL.md) |
+| 55 | ✓ | [`plugins/ruview/skills/ruview-rvagent/SKILL.md`](plugins/ruview/skills/ruview-rvagent/SKILL.md) |
+| 56 | ✓ | [`plugins/ruview/skills/ruview-verify/SKILL.md`](plugins/ruview/skills/ruview-verify/SKILL.md) |
+| 57 | → | [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) |
 
 ---
 

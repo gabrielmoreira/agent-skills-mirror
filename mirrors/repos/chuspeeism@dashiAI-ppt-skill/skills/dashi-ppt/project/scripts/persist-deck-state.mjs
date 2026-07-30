@@ -29,15 +29,21 @@ export function isValidDeckState(state) {
   for (const field of arrayFields) {
     if (state[field] !== undefined && !Array.isArray(state[field])) return false;
   }
-  const objectFields = ['text', 'props'];
+  const objectFields = ['text', 'props', 'variantSelection'];
   for (const field of objectFields) {
     if (state[field] !== undefined && !isPlainObject(state[field])) return false;
   }
+  if (
+    state.variantSelection !== undefined
+    && Object.values(state.variantSelection).some(value => typeof value !== 'string' || !value.trim())
+  ) return false;
   return true;
 }
 
 function isPlainObject(value) {
-  return !!value && typeof value === 'object' && !Array.isArray(value);
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
 }
 
 // data:<mime>;base64,<payload> 解码;非 image/* 或 video/* 一律返回 null(不落盘、原样保留)。

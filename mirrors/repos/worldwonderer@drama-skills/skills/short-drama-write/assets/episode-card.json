@@ -1,0 +1,62 @@
+{
+  "episode_id": "EP001",
+  "contract_authority": {
+    "mode": "development_projection",
+    "source_ref": {
+      "artifact": "development/episode-map.jsonl",
+      "hash": "<sha256>",
+      "record_id": "EP001",
+      "owner": "short-drama-develop"
+    },
+    "projected_fields": [
+      "/incoming_state",
+      "/active_pressure",
+      "/objective",
+      "/opposition",
+      "/causal_escalation",
+      "/turn",
+      "/local_dramatic_result",
+      "/promised_payoff",
+      "/character_progression",
+      "/information_release",
+      "/rhythm_plan",
+      "/outgoing_pressure",
+      "/handoff_state",
+      "/setup_ids",
+      "/payoff_ids"
+    ]
+  },
+  "execution_plan": {
+    "viewpoint_and_audience_alignment": "__FILL__",
+    "opening_action_carrier": "__FILL__",
+    "turn_carrier": "__FILL__",
+    "payoff_carrier": "__FILL__",
+    "outgoing_pressure_carrier": "__FILL__",
+    "scene_jobs": [
+      {
+        "scene_id": "SC001",
+        "agenda_collision": "__FILL__",
+        "dramatic_result": "__FILL__",
+        "external_pressure": "__LOW_MEDIUM_HIGH_WITH_REASON__",
+        "emotional_load": "__LOW_MEDIUM_HIGH_WITH_REASON__",
+        "visible_change": "__FILL__",
+        "source_contract_fields": [
+          "/objective",
+          "/opposition"
+        ]
+      }
+    ],
+    "production_requirements": [],
+    "causal_escalation_realization": [
+      {
+        "source_step_pointer": "/causal_escalation/0",
+        "visible_choice_carrier": "__FILL__",
+        "visible_countermove_carrier": "__FILL__",
+        "visible_state_change_carrier": "__FILL__"
+      }
+    ]
+  },
+  "source_refs": [],
+  "open_questions": [],
+  "creator_status": "draft"
+}

@@ -161,6 +161,14 @@ The criteria MUST list, upfront:
 
 These scenarios are the contract. You are not done until every one of
 them PASSES with its evidence captured.
+Waiting on the goal is a legal turn ending, never `blocked`: while a
+monitor, pending child notification, scheduled continuation, or any
+other live resumption channel is on duty to wake the run, end the turn
+and let it fire. `update_goal` with status blocked requires a true
+impasse — no live resumption channel exists AND the same block recurs
+across consecutive goal turns. Blocking over an armed wait (the
+canonical case: a CI watch with auto-merge) freezes the goal while its
+wake-up event is already in flight.
 
 ## 2. Open the durable notepad
 Run: `NOTE=$(mktemp -t ulw-$(date +%Y%m%d-%H%M%S).XXXXXX.md)`. Echo the

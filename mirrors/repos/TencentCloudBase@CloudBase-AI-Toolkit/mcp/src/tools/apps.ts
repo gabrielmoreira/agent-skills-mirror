@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { getCloudBaseManager, logCloudBaseResult } from "../cloudbase-manager.js";
+import { getCloudBaseManager, getEnvId, logCloudBaseResult } from "../cloudbase-manager.js";
 import type { ExtendedMcpServer } from "../server.js";
 import { jsonContent } from "../utils/json-content.js";
 import { isCloudMode } from "../utils/cloud-mode.js";
+import { preferGatewayOrFallback, resolveGatewayAccessUrls } from "../utils/gateway-access-urls.js";
 
 const QUERY_APP_ACTIONS = ["listApps", "getApp", "listAppVersions", "getAppVersion", "getBuildLog"] as const;
 const MANAGE_APP_ACTIONS = ["deployApp", "getUploadUrl", "deleteApp", "deleteAppVersion"] as const;
@@ -497,6 +498,8 @@ export function registerAppTools(server: ExtendedMcpServer) {
           let appInfo: Record<string, unknown> | undefined;
           let domain: string | undefined;
           let accessUrl: string | undefined;
+          let accessUrls: string[] = [];
+          let accessUrlSource: string | undefined;
           let accessUrlLookupWarning: string | undefined;
           try {
             appInfo = await appService.describeAppInfo({
@@ -505,8 +508,33 @@ export function registerAppTools(server: ExtendedMcpServer) {
             });
             logCloudBaseResult(server.logger, appInfo);
             ({ domain, accessUrl } = normalizeAccessUrlFromDomain(appInfo?.Domain));
+            const envId = await getEnvId(cloudBaseOptions);
+            const gateway = await resolveGatewayAccessUrls({
+              envId,
+              upstreamResourceName: serviceName,
+              upstreamResourceTypes: ["STATIC_STORE"],
+              getManager: async () => {
+                const manager = await getManager();
+                if (!manager) {
+                  throw new Error("cloudbase manager unavailable");
+                }
+                return manager as any;
+              },
+            });
+            const preferred = preferGatewayOrFallback({
+              gateway,
+              fallbackUrl: accessUrl,
+              fallbackSource: "describeAppInfo.Domain",
+            });
+            accessUrl = preferred.accessUrl;
+            accessUrls = preferred.accessUrls;
+            accessUrlSource = preferred.accessUrlSource;
           } catch (error) {
             accessUrlLookupWarning = error instanceof Error ? error.message : String(error);
+            if (accessUrl) {
+              accessUrls = [accessUrl];
+              accessUrlSource = "describeAppInfo.Domain";
+            }
           }
 
           return jsonContent(
@@ -518,7 +546,8 @@ export function registerAppTools(server: ExtendedMcpServer) {
                 buildId: BuildId,
                 domain,
                 accessUrl,
-                accessUrlSource: accessUrl ? "describeAppInfo.Domain" : undefined,
+                accessUrls: accessUrls.length > 0 ? accessUrls : undefined,
+                accessUrlSource,
                 accessUrlLookupWarning,
                 app: appInfo,
                 upload: { cosTimestamp: cosTs },

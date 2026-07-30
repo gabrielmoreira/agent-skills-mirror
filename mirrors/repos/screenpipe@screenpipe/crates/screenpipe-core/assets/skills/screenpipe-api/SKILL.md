@@ -60,13 +60,15 @@ curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030
 | Parameter | Required | Description |
 |-----------|----------|-------------|
 | `q` | No | Keywords. Avoid for audio — transcriptions are noisy, `q` over-filters. |
-| `content_type` | No | `all` (default), `accessibility`, `audio`, `input`, `ocr`, `memory`. Screen text is primarily the accessibility tree; OCR is the fallback for apps without it (videos, games, remote desktops). |
+| `content_type` | No | `all` (default), `accessibility`, `audio`, `input`, `ocr`, `memory`, `parsed`. Use `parsed` for compact app-specific messages, emails, tasks, documents, and code review. Parsed capture is experimental, may be empty when disabled/unsupported, and is not included in `all`. Screen text is primarily the accessibility tree; OCR is the fallback for apps without it (videos, games, remote desktops). |
 | `limit` | No | Default 20. Keep ≤20 to protect context. |
 | `offset` | No | Pagination. Default 0. |
 | `start_time` | **Yes** | ISO 8601 or relative (`16h ago`, `2d ago`, `30m ago`). |
 | `end_time` | No | Defaults to now (`now`, `1h ago`). |
 | `app_name` | No | Substring, e.g. "Google Chrome", "Slack". |
 | `window_name` | No | Window title substring. |
+| `frame_id` | No | With `content_type=parsed`, return parsed data attached to one frame. |
+| `actor_id` | No | With `content_type=parsed`, filter by a resolved actor identity. |
 | `speaker_name` | No | Filter audio by speaker (case-insensitive partial). |
 | `focused` | No | Only focused windows. |
 | `tags` | No | Comma-separated; returns items carrying ALL of them (`person:ada,project:atlas`). Exact match. |
@@ -79,7 +81,7 @@ curl -H "Authorization: Bearer $SCREENPIPE_LOCAL_API_KEY" "http://localhost:3030
 
 **Tags** link people/projects/topics across screen, audio, and memories under one namespace (`person:ada`, `project:atlas`, `topic:pricing`). Add to a frame/audio: `POST /tags/vision/{frame_id}` or `POST /tags/audio/{chunk_id}` body `{"tags":["person:ada"]}`; to a memory: `tags` in `POST /memories`. Retrieve: `GET /search?tags=person:ada&start_time=30d%20ago` (add `content_type=memory` for memories). Frames are pruned by retention — tag a **memory** for durable links (memories carry `created_at` + a `frame_id` back to the moment). `include_related=true` returns co-occurring tags grouped by namespace, replacing 2-3 follow-up calls.
 
-Response: `{"data": [{"type":"OCR","content":{"frame_id":...,"text":...,"app_name":...}}, {"type":"Audio","content":{"chunk_id":...,"transcription":...,"speaker":{"name":...}}}, {"type":"Input","content":{...}}], "pagination":{"limit":10,"offset":0,"total":42}}`.
+Response: `{"data": [{"type":"OCR","content":{"frame_id":...,"text":...,"app_name":...}}, {"type":"Audio","content":{"chunk_id":...,"transcription":...,"speaker":{"name":...}}}, {"type":"Parsed","content":{"frame_id":...,"text":...,"items":[...],"actors":[...]}}], "pagination":{"limit":10,"offset":0,"total":42}}`.
 
 ---
 
@@ -293,25 +295,26 @@ All POST with `Content-Type: application/json` unless noted:
 
 ---
 
-## 11. Semantic actors — `GET/POST /semantic/*`
+## 11. Parsed app data and actors
 
 Semantic parsing is optional and disabled by default. When enabled, parser actor
 labels are heuristic observations. The API exposes a separate durable identity
 that a user or Pipe can correct without overwriting source evidence.
 
 - `GET /semantic/actors/search?q=Alice&limit=20` — canonical and observed names
-- `GET /semantic/context?actor_id=12&format=json&limit=20` — context assigned to an actor
+- `GET /search?content_type=parsed&actor_id=12&limit=20` — parsed app data assigned to an actor
 - `POST /semantic/actors/create` `{"name":"Alice Smith"}` — create a separate identity
 - `POST /semantic/actors/update` `{"id":12,"name":"Alice Smith"}` — rename
 - `POST /semantic/actors/merge` `{"actor_to_keep_id":12,"actor_to_merge_id":31}` — merge current and future aliases
 - `POST /semantic/actors/reassign` `{"item_id":902,"actor_id":12}` — correct one semantic item
 - `POST /semantic/actors/aliases/reassign` `{"alias_id":44,"actor_id":12}` — move one alias, its heuristic history, and future observations
 
-In `format=json`, `items[*].actor` is always the original parser label. The
-parallel `actors` array contains `item_id`, canonical `actor_id`/`name`, observed
-name, and assignment source. Use actor IDs for edits; never merge by display
-name alone. Prefer moving a specific alias when a full actor merge would be too
-broad; explicit item corrections are preserved.
+Each `Parsed` search result includes compact corrected text plus typed `items`
+and a parallel `actors` array. `items[*].actor` is always the original parser
+label; `actors` contains `item_id`, canonical `actor_id`/`name`, observed name,
+and assignment source. Use actor IDs for edits; never merge by display name
+alone. Prefer moving a specific alias when a full actor merge would be too broad;
+explicit item corrections are preserved.
 
 ---
 

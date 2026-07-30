@@ -5,8 +5,8 @@ description: Use when extracting from many files at once with shared config, bou
 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:56759cf9f3342d73deb4620e219564789a72f852b3dd6dbf0f44f737c2eecb14
-Source-Hash: blake3:cf2e50e4fe88772155b882eacc338a857dfdc086a8a86b7d5d4721d540e33d8c
+Content-Hash: blake3:89aa763a66dc25e9aa2849d630b288e27b1b8e6aaebf70e4ee4b58f2e3670e73
+Source-Hash: blake3:4f30c10e77f8c5ff8ed30b9e154ad9bcf00fb22405417016845401f0db77e0e4
 Schema-Version: v1
 -->
 
@@ -41,9 +41,11 @@ xberg batch reports/*.pdf \
 
 ## Parallelism
 
-`--max-concurrent` caps how many files extract at once (default: CPU
-count). Lower it on memory-constrained hosts or when OCR/ML models are
-active, since each in-flight extraction holds its own buffers:
+`--max-concurrent` caps how many files extract at once (default: the CPU
+count, capped at 8). Lower it on memory-constrained hosts or when OCR/ML
+models are active, since each in-flight extraction holds its own buffers.
+Layout-heavy batches are further limited (1 concurrent extraction for
+all-PDF-layout batches, 2 for mixed layout):
 
 ```bash
 # Cap at 4 concurrent extractions
@@ -135,7 +137,7 @@ from xberg import ExtractInput, extract_batch, ExtractionConfig
 
 config = ExtractionConfig(output_format="markdown")
 
-inputs = [ExtractInput.from_uri(p) for p in ["a.pdf", "b.docx", "c.xlsx"]]
+inputs = [ExtractInput(uri=p) for p in ["a.pdf", "b.docx", "c.xlsx"]]
 output = await extract_batch(inputs, config)
 
 for doc in output.results:
@@ -160,7 +162,7 @@ and a config object and returns structured results directly.
   depends on one shape.
 - **`--output-dir` must exist** — the CLI does not create it.
 - **Memory blowups** — large batches with OCR/layout active need a lower
-  `--max-concurrent`; the default is CPU count.
+  `--max-concurrent`; the default is the CPU count, capped at 8.
 - **`--file-configs` path keys** — must match the paths as passed on the
   command line, not absolute-resolved variants.
 

@@ -1799,7 +1799,7 @@ CloudBase 云函数统一写入口。支持创建函数、更新代码、更新�
 - aider: Aider AI编辑器
 
 特别说明：
-- rules 模板会自动包含当前 mcp 版本号信息（版本号：2.25.0），便于后续维护和版本追踪
+- rules 模板会自动包含当前 mcp 版本号信息（版本号：2.25.1），便于后续维护和版本追踪
 - 下载 rules 模板时，如果项目中已存在 README.md 文件，系统会自动保护该文件不被覆盖（除非设置 overwrite=true）
 
 #### 参数
@@ -2007,7 +2007,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
 ---
 
 ### `manageCloudRun`
-管理云托管服务，按开发顺序支持：初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、删除服务。部署可配置CPU、内存、实例数、访问类型等参数。删除操作需要确认，建议设置force=true。
+管理云托管服务，按开发顺序支持：初始化项目（可从模板开始，模板列表可通过 queryCloudRun 查询）、下载服务代码、本地运行（仅函数型服务）、部署代码、仅更新配置（updateConfig，无需重新上传代码）、删除服务。deploy 对已存在服务会先读取远程配置再合并（保留 VpcConf/EnvParams/OpenAccessTypes）。updateConfig 对齐控制台服务设置页。删除操作需要确认，建议设置force=true。
 
 #### 参数
 
@@ -2017,7 +2017,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
       name: "action",
       type: "string",
       required: true,
-      description: `云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体） 可填写的值: "init", "download", "run", "deploy", "delete", "createAgent"`,
+      description: `云托管服务管理操作类型：init=从模板初始化新的云托管项目代码（在targetPath目录下创建以serverName命名的子目录，支持多种语言和框架模板），download=从云端下载现有服务的代码到本地进行开发，run=在本地运行函数型云托管服务（用于开发和调试，仅支持函数型服务），deploy=将本地代码部署到云端云托管服务（支持函数型和容器型；已存在服务会 Read-Merge-Write 保留远程 VpcConf/EnvParams/OpenAccessTypes），updateConfig=仅更新服务配置不重新上传代码（对齐控制台服务设置，走 SubmitServerConfigChangeDiff；不需要 targetPath），delete=删除指定的云托管服务（不可恢复，需要确认），createAgent=创建函数型Agent（基于函数型云托管开发AI智能体） 可填写的值: "init", "download", "run", "deploy", "delete", "createAgent", "updateConfig"`,
     },
     {
       name: "serverName",
@@ -2028,12 +2028,17 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
     {
       name: "targetPath",
       type: "string",
-      description: `本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun`,
+      description: `本地代码路径，必须是绝对路径。在deploy操作中指定要部署的代码目录，在download操作中指定下载目标目录，在init操作中指定云托管服务的上级目录（会在该目录下创建以serverName命名的子目录）。updateConfig 不需要此参数。建议约定：项目根目录下的cloudrun/目录，例如：/Users/username/projects/my-project/cloudrun`,
+    },
+    {
+      name: "envParamsReplaceAll",
+      type: "boolean",
+      description: `EnvParams 合并策略（deploy / updateConfig）：false（默认）= 与远程按 key 合并（输入覆盖同名 key，远程其余 key 保留）；true= 用输入 EnvParams 整包替换远程。仅当显式传入 EnvParams 时生效`,
     },
     {
       name: "serverConfig",
       type: "object",
-      description: `服务配置项，用于部署时设置服务的运行参数。包括资源规格、访问权限、环境变量、日志、网络等配置。不提供时使用默认配置`,
+      description: `服务配置项，用于 deploy / updateConfig。包括资源规格、访问权限、环境变量、日志、网络等。deploy 未提供时对已存在服务仍会从远程合并保留 VpcConf/EnvParams/OpenAccessTypes；updateConfig 至少需要一个配置字段`,
       children: [
         {
           name: "OpenAccessTypes",
@@ -2208,7 +2213,7 @@ API名：ai_model API介绍：AI 大模型接入 API - 统一 AI 模型 HTTP API
         {
           name: "VpcConf",
           type: "object",
-          description: `VPC网络配置（实例出网/私有网络）。用于让云托管实例接入指定 VPC，从而内网访问 MySQL/PostgreSQL/Redis/CVM 等资源。与 OpenAccessTypes（外部如何访问本服务）是不同概念。TCP 连库场景必须配置。禁止猜测 VpcId/SubnetId，须来自数据库控制台、已有资源详情、callCloudApi 或用户确认。MCP 在创建时会将 VpcConf 映射为 SDK vpcInfo(CreateType=2)；更新后必须用 queryCloudRun detail 复核 ServerConfig.VpcConf，未生效再走控制台网络设置或删建兜底`,
+          description: `VPC网络配置（实例出网/私有网络）。用于让云托管实例接入指定 VPC，从而内网访问 MySQL/PostgreSQL/Redis/CVM 等资源。与 OpenAccessTypes（外部如何访问本服务）是不同概念。TCP 连库场景必须配置。禁止猜测 VpcId/SubnetId，须来自数据库控制台、已有资源详情、callCloudApi 或用户确认。创建时映射为 SDK vpcInfo(CreateType=2)；已存在服务可用 updateConfig 或 deploy（RMW 会保留未传入的远程 VpcConf）。部署/更新后必须用 queryCloudRun detail 复核 ServerConfig.VpcConf`,
           children: [
             {
               name: "VpcId",

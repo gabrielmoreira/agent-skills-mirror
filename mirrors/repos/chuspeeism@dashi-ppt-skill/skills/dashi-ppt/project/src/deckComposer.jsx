@@ -2,6 +2,13 @@
 import { DEFAULT_THEME_PACK, THEME_PACK_OPTIONS, slide } from './options.jsx';
 import { THEME_PAGES } from './components/themes/index.jsx';
 import { isMediaArrayKey } from './prop-contract-core.mjs';
+import {
+  BESPOKE_SCHEMA_VERSION,
+  TEMPLATE_VARIANT_COUNT,
+  TOTAL_VARIANT_COUNT,
+  isBespokeVariant,
+  isTemplateVariant,
+} from './variant-contract.mjs';
 
 export const ROLE_KEYWORDS = {
   cover: ['cover', '封面', '首页'],
@@ -73,8 +80,13 @@ export const ROLE_LAYOUTS = Object.fromEntries(
 );
 
 const THEME_PAGE_BY_KEY = new Map(THEME_PAGES.map(page => [page.key, page]));
+const VARIANT_STATE_ID_SEPARATOR = '::';
 
 export function composeDeck(spec = {}) {
+  const expandedVariants = spec.schemaVersion === BESPOKE_SCHEMA_VERSION;
+  if (spec.schemaVersion != null && !expandedVariants) {
+    throw new Error(`Unsupported deck schemaVersion "${spec.schemaVersion}".`);
+  }
   const goal = spec.goal || spec.title || '主题汇报';
   const title = spec.title || goal;
   const randomSeed = spec.randomSeed || `${title}:${goal}`;
@@ -83,7 +95,19 @@ export function composeDeck(spec = {}) {
     ? spec.slides
     : defaultSlides({ title, goal, pageCount: getPageCount(spec) });
   const usedLayouts = new Set();
+  const slides = sourceSlides.map((page, index) => composeSlide(page, {
+    randomSeed,
+    index,
+    usedLayouts,
+    rolePools: THEME_ROLE_LAYOUT_POOLS[themePack] || ROLE_LAYOUT_POOLS,
+    expandedVariants,
+  }));
+  assertSlideIdentities(slides);
   return {
+    ...(expandedVariants ? {
+      schemaVersion: BESPOKE_SCHEMA_VERSION,
+      variantOutputMode: spec.variantOutputMode ?? 'comparison',
+    } : {}),
     themePack,
     title,
     language: spec.language,
@@ -91,19 +115,42 @@ export function composeDeck(spec = {}) {
     media: spec.media || {},
     props: spec.props || {},
     preview: spec.preview || {},
-    slides: sourceSlides.map((page, index) => composeSlide(page, {
-      randomSeed,
-      index,
-      usedLayouts,
-      rolePools: THEME_ROLE_LAYOUT_POOLS[themePack] || ROLE_LAYOUT_POOLS,
-    })),
+    slides,
   };
 }
 
 function composeSlide(page, context) {
+  if (context.expandedVariants) {
+    return composeExpandedVariantSlide(page, context);
+  }
   if (typeof page === 'string') {
     context.usedLayouts.add(page);
     return slide(page, {});
+  }
+  if (Object.prototype.hasOwnProperty.call(page || {}, 'variants')) {
+    const variants = Array.isArray(page.variants) ? page.variants : [];
+    if (variants.length !== TEMPLATE_VARIANT_COUNT) {
+      throw new Error('Slide variants must contain exactly 3 entries.');
+    }
+    const normalizedVariants = variants.map((variant, variantIndex) => {
+      const layout = variant?.layout || chooseLayout(variant || {}, normalizeRole(variant?.role || page.role), context);
+      context.usedLayouts.add(layout);
+      return {
+        ...slide(layout, variant?.props || {}),
+        id: variant?.id || `variant-${variantIndex + 1}`,
+        key: variant?.key || variant?.slideKey,
+        label: variant?.label,
+        media: variant?.media,
+      };
+    });
+    return {
+      id: page.id || page.key || page.slideKey || `slide-${context.index + 1}`,
+      key: page.key || page.slideKey,
+      label: page.label,
+      logicalIndex: page.logicalIndex,
+      selectedVariant: page.selectedVariant || normalizedVariants[0].id,
+      variants: normalizedVariants,
+    };
   }
   const role = normalizeRole(page.role);
   const layout = page.layout || chooseLayout(page, role, context);
@@ -116,6 +163,140 @@ function composeSlide(page, context) {
     logicalIndex: page.logicalIndex,
     copy: page.copy,
   };
+}
+
+function composeExpandedVariantSlide(page, context) {
+  if (!isPlainRecord(page) || !Array.isArray(page.variants) || page.variants.length !== TOTAL_VARIANT_COUNT) {
+    throw new Error(`schemaVersion ${BESPOKE_SCHEMA_VERSION} slides must contain exactly ${TOTAL_VARIANT_COUNT} variants.`);
+  }
+  if (!isPlainRecord(page.content)) {
+    throw new Error(`schemaVersion ${BESPOKE_SCHEMA_VERSION} slide ${context.index + 1} must define logical content as an object.`);
+  }
+
+  const normalizedVariants = page.variants.map((variant, variantIndex) => {
+    if (!isPlainRecord(variant)) {
+      throw new Error(`Slide ${context.index + 1} variant ${variantIndex + 1} must be an object.`);
+    }
+    if (Object.prototype.hasOwnProperty.call(variant, 'content')) {
+      throw new Error(`Slide ${context.index + 1} variant ${variantIndex + 1} must reference logical slide content through contentMap.`);
+    }
+    if (variantIndex < TEMPLATE_VARIANT_COUNT) {
+      return composeExpandedTemplateVariant(variant, variantIndex, context);
+    }
+    return composeBespokeVariant(variant, variantIndex, context);
+  });
+
+  return {
+    id: page.id || page.key || page.slideKey || `slide-${context.index + 1}`,
+    key: page.key || page.slideKey,
+    label: page.label,
+    logicalIndex: page.logicalIndex,
+    content: page.content,
+    selectedVariant: page.selectedVariant || normalizedVariants[0].id,
+    variants: normalizedVariants,
+  };
+}
+
+function composeExpandedTemplateVariant(variant, variantIndex, context) {
+  if (
+    variant.kind !== 'template'
+    || !isTemplateVariant(variant)
+    || typeof variant.layout !== 'string'
+    || !variant.layout.trim()
+  ) {
+    throw new Error(`schemaVersion ${BESPOKE_SCHEMA_VERSION} slide ${context.index + 1} variant ${variantIndex + 1} must be an explicit template variant with a layout.`);
+  }
+  if (!isPlainRecord(variant.props)) {
+    throw new Error(`Slide ${context.index + 1} template variant ${variantIndex + 1} props must be an object.`);
+  }
+  if (!isPlainRecord(variant.contentMap)) {
+    throw new Error(`Slide ${context.index + 1} template variant ${variantIndex + 1} contentMap must be an object.`);
+  }
+
+  context.usedLayouts.add(variant.layout);
+  return {
+    ...slide(variant.layout, variant.props),
+    id: variant.id || `variant-${variantIndex + 1}`,
+    kind: 'template',
+    key: variant.key || variant.slideKey,
+    label: variant.label,
+    media: variant.media,
+    contentMap: variant.contentMap,
+  };
+}
+
+function composeBespokeVariant(variant, variantIndex, context) {
+  if (variant.kind !== 'bespoke' || !isBespokeVariant(variant)) {
+    throw new Error(`schemaVersion ${BESPOKE_SCHEMA_VERSION} slide ${context.index + 1} variant ${variantIndex + 1} must be a bespoke variant.`);
+  }
+  for (const forbidden of ['layout', 'props', 'controls']) {
+    if (Object.prototype.hasOwnProperty.call(variant, forbidden)) {
+      throw new Error(`Slide ${context.index + 1} bespoke variant must not define ${forbidden}.`);
+    }
+  }
+  if (variant.adjustable !== false) {
+    throw new Error(`Slide ${context.index + 1} bespoke variant must set adjustable to false.`);
+  }
+  if (!isPlainRecord(variant.composition)) {
+    throw new Error(`Slide ${context.index + 1} bespoke variant composition must be an object.`);
+  }
+  if (!isPlainRecord(variant.contentMap)) {
+    throw new Error(`Slide ${context.index + 1} bespoke variant contentMap must be an object.`);
+  }
+
+  return {
+    id: variant.id || `variant-${variantIndex + 1}`,
+    kind: 'bespoke',
+    key: variant.key || variant.slideKey,
+    label: variant.label,
+    media: variant.media,
+    adjustable: false,
+    composition: variant.composition,
+    contentMap: variant.contentMap,
+  };
+}
+
+function isPlainRecord(value) {
+  return value != null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function assertSlideIdentities(slides) {
+  const logicalIdUsages = new Map();
+  slides.forEach((page, slideIndex) => {
+    const logicalId = resolveLogicalSlideId(page, slideIndex);
+    if (logicalId.includes(VARIANT_STATE_ID_SEPARATOR)) {
+      throw new Error(`Slide ${slideIndex + 1} logical slide id "${logicalId}" contains reserved delimiter "${VARIANT_STATE_ID_SEPARATOR}" used by stateId.`);
+    }
+    const positions = logicalIdUsages.get(logicalId) || [];
+    positions.push(slideIndex + 1);
+    logicalIdUsages.set(logicalId, positions);
+
+    if (!Array.isArray(page?.variants)) return;
+    const variantIdUsages = new Map();
+    page.variants.forEach((variant, variantIndex) => {
+      const variantId = String(variant?.id || `variant-${variantIndex + 1}`);
+      if (variantId.includes(VARIANT_STATE_ID_SEPARATOR)) {
+        throw new Error(`Slide ${slideIndex + 1} variant ${variantIndex + 1} variant id "${variantId}" contains reserved delimiter "${VARIANT_STATE_ID_SEPARATOR}" used by stateId.`);
+      }
+      const variantPositions = variantIdUsages.get(variantId) || [];
+      variantPositions.push(variantIndex + 1);
+      variantIdUsages.set(variantId, variantPositions);
+    });
+    for (const [variantId, variantPositions] of variantIdUsages.entries()) {
+      if (variantPositions.length <= 1) continue;
+      throw new Error(`Slide ${slideIndex + 1} has duplicate variant id "${variantId}" on variants ${variantPositions.join(', ')}.`);
+    }
+  });
+  for (const [logicalId, positions] of logicalIdUsages.entries()) {
+    if (positions.length <= 1) continue;
+    throw new Error(`Deck has duplicate logical slide id "${logicalId}" on slides ${positions.join(', ')}.`);
+  }
+}
+
+function resolveLogicalSlideId(slideModel, index) {
+  if (slideModel?.id != null && slideModel.id !== '') return String(slideModel.id);
+  const layout = slideModel?.layout || 'slide';
+  return `${layout}-${index + 1}`;
 }
 
 function chooseLayout(page, role, { randomSeed, index, usedLayouts, rolePools }) {

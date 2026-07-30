@@ -1,0 +1,36 @@
+{
+  "review_id": "REVIEW-EXAMPLE",
+  "scope": [
+    "story_script"
+  ],
+  "reviewed_artifacts": [
+    {
+      "owner": "short-drama-write",
+      "artifact": "episodes/EP001/screenplay.md",
+      "hash": "<sha256>"
+    }
+  ],
+  "findings_ref": {
+    "owner": "short-drama-review",
+    "artifact": "reviews/findings.jsonl",
+    "hash": "<sha256>"
+  },
+  "requested_review_mode": "independent_agent",
+  "effective_review_mode": "unattested",
+  "reviewer": {
+    "owner": "short-drama-review",
+    "kind": "unattested",
+    "independent": false,
+    "excluded_owner_skills": [
+      "short-drama-write"
+    ],
+    "provenance": null
+  },
+  "structural_validation": "not_run",
+  "verdict": "PROVISIONAL",
+  "blocking_findings": [],
+  "open_blocker_count": 0,
+  "notes": [],
+  "required_reviewer_independence": true,
+  "supersession_decisions": []
+}

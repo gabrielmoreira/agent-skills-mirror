@@ -9,6 +9,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [15.7.0] - 2026-07-29 - "Risk Metadata and Installation Hardening"
+
+> Completed semantic risk classification across the catalog, hardened skill installation and maintainer evidence boundaries, and added a consent-gated backend provisioning skill.
+
+Start here:
+
+- AAS Core setup: configure the exact `aas` runtime with the [Core guide](https://github.com/sickn33/agentic-awesome-skills/blob/main/docs/users/aas-core.md)
+- Direct skill distribution: `npx agentic-awesome-skills`
+- [Choose your tool](https://github.com/sickn33/agentic-awesome-skills#choose-your-tool)
+- [Best skills by tool](https://github.com/sickn33/agentic-awesome-skills#best-skills-by-tool)
+- [Bundles](https://github.com/sickn33/agentic-awesome-skills/blob/main/docs/users/bundles.md)
+- [Workflows](https://github.com/sickn33/agentic-awesome-skills/blob/main/docs/users/workflows.md)
+
+### Added
+
+- Added [`cohesivity`](skills/cohesivity/) for consent-gated provisioning of Postgres, Redis, object and vector storage, hosting, authentication, email, managed browser, and model APIs, with private credential storage, explicit retention disclosure, and budget controls.
+- Regenerated the canonical catalog and Codex/Claude distribution surfaces for 1,994 skills.
+
+### Changed
+
+- Replaced all 940 remaining `risk: unknown` declarations with individually reviewed semantic classifications: 798 `critical`, 71 `none`, 60 `safe`, and 11 `offensive`.
+- Added the repository-standard authorized-use disclaimer and per-action confirmation gate to the 11 newly classified offensive skills.
+- Added a pre-install audit and prominent risk summary while preserving the full-catalog installation default.
+- Replaced mutable external installation guidance with approval-gated, full-commit-SHA inspect-first workflows and clarified the difference between antivirus text detections and evidence of execution.
+- Bounded changed-skill ownership lookup by changed-path depth, extended the trusted evaluator budget for repository-wide reviews, and safely supported legacy executable-mode `SKILL.md` snapshots without materializing executable files, symlinks, or gitlinks.
+- Updated Modellix vendored source URLs and speech defaults, upgraded the catalog web app to `@supabase/supabase-js` 2.111.0, and normalized indexable catalog links for GitHub Pages.
+
+### Security
+
+- Removed mutable provider instructions from BrowserAct's operating-policy boundary and required full 40-character Git commit pins for linked FindMate profiles.
+- Strengthened installation safety for offensive and externally sourced skills with explicit authorization, command confirmation, provenance inspection, and immutable source pins.
+- Hardened Cohesivity credential files to private permissions and documented privacy, retention, billing, overage, and x402 self-payment boundaries.
+
+### Who should care
+
+- Claude Code, Cursor, Codex CLI, Gemini CLI, Windsurf, and Antigravity users who want actionable risk metadata before installing or running skills.
+- Security-conscious teams auditing offensive, networked, credential-bearing, or externally sourced skills.
+- Maintainers running large repository-wide skill reviews through the protected evidence and merge workflow.
+- Developers who need a consent-gated, agent-provisioned backend without manually copying credentials.
+
+### Validation
+
+- Passed canonical skill and reference validation, documentation security, warning-budget enforcement, changed-skill evidence, repository and AAS Core tests, protected CI, and CodeQL.
+- Confirmed canonical synchronization reproduced all risk labels and Cohesivity content byte-for-byte across Codex and Claude plugin distributions.
+- The protected release gate binds the release PR, tag, GitHub Release, npm `latest`, CI, CodeQL, release-only Pages deployment, live catalog and legacy bridge, and every already-configured AAS MCP host to the exact released commit.
+
+### Credits
+
+- **[@shouryamaanjain](https://github.com/shouryamaanjain)** and **[cohesivity-org/cohesivity-skill](https://github.com/cohesivity-org/cohesivity-skill)** for `cohesivity` in [PR #1032](https://github.com/sickn33/agentic-awesome-skills/pull/1032).
+- **[@alen-hh](https://github.com/alen-hh)** for the Modellix source URL and speech-default refresh in [PR #1025](https://github.com/sickn33/agentic-awesome-skills/pull/1025).
+
 ## [15.6.0] - 2026-07-28 - "Browser Automation and Performance RCA"
 
 > Added safety-hardened browser automation and evidence-first performance troubleshooting while preserving verified upstream provenance across the catalog.

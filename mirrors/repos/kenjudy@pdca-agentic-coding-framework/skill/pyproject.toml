@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=82.0.1"]
+requires = ["setuptools>=83.0.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -15,12 +15,12 @@ test = [
 ]
 # Eval harness — install separately: uv sync --extra eval
 eval = [
-    "anthropic>=0.116.0",
-    "deepeval>=4.1.1",
+    "anthropic>=0.120.2",
+    "deepeval>=4.1.4",
     "python-dotenv>=1.2.2",
 ]
 lint = [
-    "ruff>=0.15.21",
+    "ruff>=0.16.0",
     "mypy>=2.3.0",
 ]
 

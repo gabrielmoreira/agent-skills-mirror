@@ -32,45 +32,13 @@ code without changing observable behavior is outside its scope.
 
 ## Install for your agent
 
-> **General security warning:** Before installing any third-party AI agent
-> skill, review its instructions and executable scripts, and confirm that
-> you trust its source.
+> [!WARNING]
+> Before installing any third-party AI agent skill, review its instructions
+> and executable scripts, and confirm that you trust its source.
 
 Download the latest packaged [Feature Implementation skill][packaged-skill] in ZIP format,
-then follow the instructions for your target agent.
+then follow the repository's [installation guide][installation-guide]. The
+guide covers filesystem-based agents, safe upgrades, and ChatGPT uploads.
 
 [packaged-skill]: ../../../../releases/latest/download/feature-implementation.zip
-
-### Filesystem-based agents
-
-Choose where the skill should be available:
-
-| Agent | Current project | All projects |
-| --- | --- | --- |
-| Claude | `.claude/skills/feature-implementation/` | `~/.claude/skills/feature-implementation/` |
-| Codex | `.agents/skills/feature-implementation/` | `~/.agents/skills/feature-implementation/` |
-| Copilot | `.github/skills/feature-implementation/` | `~/.copilot/skills/feature-implementation/` or `~/.agents/skills/feature-implementation/` |
-| Cursor | `.cursor/skills/feature-implementation/` or `.agents/skills/feature-implementation/` | `~/.cursor/skills/feature-implementation/` or `~/.agents/skills/feature-implementation/` |
-| Roo | `.roo/skills/feature-implementation/` or `.agents/skills/feature-implementation/` | `~/.roo/skills/feature-implementation/` or `~/.agents/skills/feature-implementation/` |
-
-Paths under **Current project** are relative to the project's root
-directory. Paths under **All projects** are personal locations.
-
-On macOS, Linux, and other Unix-like systems, `~/` refers to the current user's
-home directory and can be used as written. On Windows, replace a leading `~`
-with `%USERPROFILE%` in Command Prompt or File Explorer, or with `$HOME` in
-PowerShell. For example, `~/.agents/skills/feature-implementation/` becomes
-`%USERPROFILE%\.agents\skills\feature-implementation\` or `$HOME/.agents/skills/feature-implementation/`.
-
-Create one of the directories shown above, extract the ZIP contents directly
-into it, and confirm that `SKILL.md` is immediately inside that directory.
-
-When upgrading an installed skill, first empty its existing skill directory,
-then extract the new ZIP into that directory. Back up any local modifications
-before emptying it.
-
-### ChatGPT
-
-Open [Skills in ChatGPT](https://chatgpt.com/skills), select the **+** button,
-choose **Upload from your computer**, and upload the downloaded ZIP as-is.
-Availability and workspace permissions can vary.
+[installation-guide]: ../../#install-skills

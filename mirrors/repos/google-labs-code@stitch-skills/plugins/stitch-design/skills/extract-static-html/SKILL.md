@@ -86,6 +86,8 @@ Launches headless Chrome, captures the fully rendered DOM, and produces a self-c
 | `--remove-fixed` | `false` | Remove fixed/sticky elements (cookie banners, chat widgets) |
 | `--full-height` | `false` | Resize viewport to full scroll height |
 | `--title` | — | Override page title |
+| `--auth-script` | — | Path to a JS/TS module that exports a default `async (page) => void` function for authentication |
+| `--inline-canvas` | `false` | Convert `<canvas>` elements (ECharts, Chart.js, D3) to base64 `<img>` tags |
 
 ### What It Does Automatically
 
@@ -102,6 +104,7 @@ Launches headless Chrome, captures the fully rendered DOM, and produces a self-c
 | :--- | :--- |
 | **React + Vite** | Works out of the box. `--wait 1000`. |
 | **Next.js** | `--wait 3000` for SSR hydration. URL: `http://localhost:3000`. `<img srcset>` from `/_next/image` is auto-inlined as base64. |
+| **Angular (@angular/cli / v17+)** | Works out of the box with `ng serve` (default URL: `http://localhost:4200`). `--wait 2000` for Angular Material / PrimeNG animation hydration and lazy-loaded routes. |
 | **Vue / Nuxt** | Works out of the box. |
 | **Svelte / SvelteKit** | Works out of the box. |
 | **Storybook** | Use story URL: `--url http://localhost:6006/?path=/story/...` |
@@ -116,8 +119,60 @@ Launches headless Chrome, captures the fully rendered DOM, and produces a self-c
 | Next.js `/_next/image` not inlined | Ensure the dev server is running when snapshot runs — the script fetches optimized images from the running server. |
 | Dark mode not applied | `--html-class dark` |
 | Cookie banner in output | `--remove-fixed` |
-| Page requires login | Use the Static Fallback (appendix below) |
+| Page requires login | Use `--auth-script ./auth.ts` (see Auth-Gated Pages below) |
+| Charts/graphs show as blank boxes | Use `--inline-canvas` to serialize `<canvas>` to base64 `<img>` |
 | `Cannot find module 'puppeteer'` | `npm install -g puppeteer` |
+
+### Auth-Gated Pages
+
+For apps with login guards (Vue Router `beforeEach`, React `ProtectedRoute`, etc.), create a small auth script that runs in the Puppeteer session:
+
+```ts
+// auth-myapp.ts
+import type { Page } from 'puppeteer';
+
+export default async function authenticate(page: Page) {
+  // Example 1: Fill and submit a login form
+  await page.type('#username', 'admin');
+  await page.type('#password', 'password123');
+  await page.click('#login-button');
+  await page.waitForNavigation({ waitUntil: 'networkidle2' });
+
+  // Example 2: Inject cookies/localStorage directly
+  // await page.evaluate(() => {
+  //   localStorage.setItem('token', 'mock-jwt-token');
+  // });
+
+  // Example 3: Call the app's own login API via module injection (Vue/Vite)
+  // await page.evaluate(() => {
+  //   return new Promise((resolve) => {
+  //     const script = document.createElement('script');
+  //     script.type = 'module';
+  //     script.textContent = `
+  //       import { useUserStore } from '/src/store/modules/user.ts';
+  //       import { fetchLogin } from '/src/api/auth.ts';
+  //       const res = await fetchLogin({ userName: 'Admin', password: '123456' });
+  //       useUserStore().setToken(res.token, res.refreshToken);
+  //       window.dispatchEvent(new CustomEvent('auth-done'));
+  //     `;
+  //     document.head.appendChild(script);
+  //     window.addEventListener('auth-done', () => resolve(true), { once: true });
+  //   });
+  // });
+}
+```
+
+Then use it:
+```bash
+npx tsx <SKILL_DIR>/scripts/snapshot.ts \
+  --url http://localhost:5173/#/dashboard \
+  --output .stitch/dashboard.html \
+  --auth-script ./auth-myapp.ts \
+  --inline-canvas \
+  --wait 5000
+```
+
+The script navigates to the `--url` first (which may redirect to login), runs your auth function, then **re-navigates** to the original `--url` with the authenticated session.
 
 ***
 

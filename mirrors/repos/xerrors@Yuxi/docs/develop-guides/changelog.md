@@ -6,6 +6,8 @@
 
 ## v0.7.2 (current)
 
+- 统一前端单元测试目录为 `web/test/unit`，测试脚本仅收集该目录；测试规范同步说明主应用与独立 CLI 包的目录约定，避免同一子项目混用 `test` 和 `tests`。
+- Skill 推荐区升级为套件卡片，首批提供 Anthropic 文档处理套件；统一选择、短时加载、生效范围和结果四步弹窗，远程仓库与全局搜索保持在同一弹窗，选择页标签居中并以桌面三列网格避免嵌套滚动；确认页支持移除、范围摘要及失败草稿清理；公共扩展卡片采用紧凑 gray 样式；上传入口共用普通请求流程，支持部分失败与重试。
 - 新增 PDF 解析前置页树校验：PDF 进入 PyPDFLoader、MinerU 或 OCR 引擎前会用 PyMuPDF 逐页加载页槽，提前识别加密、空文档、null 页槽和非 Page 对象等结构异常，并返回可操作的中文错误，避免解析服务内层延迟失败。
 - 修复真实 API 测试资源清理：integration 与 E2E 会在测试会话前后通过公开接口删除名称以 `pytest`（兼容旧 `py_test`）开头的评估基准、评估运行和知识库；知识库删除改用列表真实返回的 `kb_id`，清理失败会明确中止测试，避免测试数据长期残留。
 - 优化知识图谱构建：以持续队列并发执行 LLM 抽取、结构写入和向量索引，失败自动重试并持久化进度；已有结果支持断点恢复，新增按最近 Chunk 查询失败样例和向量 reconcile 接口，任务与前端分别展示抽取、结构、向量进度，索引面板支持键盘操作。
@@ -21,6 +23,7 @@
 - 知识库列表直接读取 PostgreSQL 中的概览和持久化统计，不再为展示卡片同步初始化 Milvus 等知识库实例，避免首次进入知识库页面时卡片长时间不可点击。
 - 新增知识库 external API 与 `yuxi kb` 查询类命令：后端在 `/api/knowledge/databases/external/*` 下暴露列库、文件搜索、检索、打开和文件内查找接口，统一走认证身份校验；CLI 新增 `yuxi kb list/files/query/open/find`，补充后端 external API 集成测试与 CLI client/命令测试。管理端同步新增 `GET /api/knowledge/databases/{kb_id}/documents/search`，复用底层文件名搜索能力供前端调用；知识库详情页工具栏新增「搜索文件」按钮，打开命令面板式弹窗（与历史对话搜索弹窗同风格），输入关键词按文件名搜索并在结果列表展示状态/大小/更新时间，placeholder 明确标注仅匹配文件名、不搜索文件内容，点击结果可直接打开文件详情。搜索请求增加序号校验，连续回车与快速重搜时丢弃过期响应，避免后发先至覆盖当前关键词结果。文件名搜索改为数据库侧按 filename/status 过滤、`updated_at desc` 排序与 count 统计，避免大知识库超过仓储单页上限时静默漏结果；管理端搜索先做当前用户可见性校验再判断文档能力，external open/find 统一清晰处理只读源与预期参数错误；CLI 查询结果从 `metadata.score` 读取并展示检索得分。
 - 新增 `download_kb_file` 知识库工具：通过 `file_id` 调用 `knowledge_base.get_file_download(variant="original")` 从 MinIO 拉取原始二进制（pdf/docx/xlsx 等），落盘到沙盒 `outputs` 目录并返回沙盒内可见的虚拟路径，供后续代码工具以文件对象方式读取（`openpyxl.load_workbook`、`pdfplumber.open` 等），弥补 `query_kb`/`open_kb_document` 只返回文本切片、丢失原始文件结构的不足。复用会话可见知识库校验与 `ocr_parse_file` 的落盘范式，支持 `save_as` 指定文件名（剥离目录防穿越，重名追加 `_N` 后缀），工具只搬运不解析、不自动登记交付物。工具已登记到 knowledge-base 内置 Skill 的 `tool_dependencies`，并在 SKILL.md 可用工具段补充说明；只读源拦截下沉到 `manager.get_file_download` 内部，与 `open_document`/`find_in_document` 落点一致，工具/router/CLI 所有调用方统一获得 dify 等只读检索源的拦截；返回的 `size_bytes` 与落盘统一用下标访问 `data["content"]`，避免回退掩盖契约异常。
+- 内置网页搜索工具新增豆包联网搜索支持：新增 `WEB_SEARCH_PROVIDER`（`doubao`/`tavily`）与 `DOUBAO_SEARCH_API_KEY` 配置，未显式指定时按已配置的 API Key 自动识别 provider；两种 provider 统一注册为工具名 `web_search`，`deep-research` Skill 依赖同步从 `tavily_search` 改为 `web_search`。
 
 ## v0.7.1 (2026-07-17)
 

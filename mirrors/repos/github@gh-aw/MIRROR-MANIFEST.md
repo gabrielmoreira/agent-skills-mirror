@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/gh-aw` — 26 default patterns, 4 followed patterns, 57 file(s) materialized.
+Mirror of `github/gh-aw` — 26 default patterns, 4 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `github/gh-aw` — 26 default patterns, 4 followed patterns, 57 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 4 |
-| Files         | 57 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,14 +111,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 47 | ✓ | [`.github/skills/workflow-step-summaries/SKILL.md`](.github/skills/workflow-step-summaries/SKILL.md) |
 | 48 | ✓ | [`.github/workflows/go-fan.md`](.github/workflows/go-fan.md) |
 | 49 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 50 | ✓ | [`docs/src/content/docs/experimental/experiments.md`](docs/src/content/docs/experimental/experiments.md) |
-| 51 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
-| 52 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
-| 53 | ✓ | [`SKILL.md`](SKILL.md) |
-| 54 | → | [`.github/aw/token-optimization.md`](.github/aw/token-optimization.md) |
-| 55 | → | [`actions/setup/md/safe_outputs_push_to_pr_branch.md`](actions/setup/md/safe_outputs_push_to_pr_branch.md) |
-| 56 | → | [`docs/sparseness.md`](docs/sparseness.md) |
-| 57 | → | [`docs/src/content/docs/reference/checkout.md`](docs/src/content/docs/reference/checkout.md) |
+| 50 | ✓ | [`docs/src/content/docs/engines/claude.md`](docs/src/content/docs/engines/claude.md) |
+| 51 | ✓ | [`docs/src/content/docs/engines/gemini.md`](docs/src/content/docs/engines/gemini.md) |
+| 52 | ✓ | [`docs/src/content/docs/experimental/experiments.md`](docs/src/content/docs/experimental/experiments.md) |
+| 53 | ✓ | [`pkg/workflow/data/engines/claude.md`](pkg/workflow/data/engines/claude.md) |
+| 54 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
+| 55 | ✓ | [`SKILL.md`](SKILL.md) |
+| 56 | → | [`.github/aw/token-optimization.md`](.github/aw/token-optimization.md) |
+| 57 | → | [`actions/setup/md/safe_outputs_push_to_pr_branch.md`](actions/setup/md/safe_outputs_push_to_pr_branch.md) |
+| 58 | → | [`docs/sparseness.md`](docs/sparseness.md) |
+| 59 | → | [`docs/src/content/docs/reference/checkout.md`](docs/src/content/docs/reference/checkout.md) |
 
 ---
 

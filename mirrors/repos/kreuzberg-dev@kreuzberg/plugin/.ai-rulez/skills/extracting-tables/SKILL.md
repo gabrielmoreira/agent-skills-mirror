@@ -31,15 +31,16 @@ Two surfaces, picked via `--format` (CLI shape) and `--content-format`
 - **Markdown tables in `content`** — `--content-format markdown`. Tables
   appear inline as `| col | col |` blocks. Good for LLM ingestion.
 - **Structured `tables` array** — `--format json`. Each entry has
-  `cells[][]` (rows × cols), `markdown` (pre-rendered), `page_index`,
-  `bbox`. Use this when downstream code needs exact cell access.
+  `cells[][]` (rows × cols), `markdown` (pre-rendered), `page_number`,
+  `bounding_box`. Use this when downstream code needs exact cell access.
+  (`bounding_box` is omitted when no position data is available.)
 
 Both are populated at once when `--layout` is on. The `tables` array is
 always structured; the `content` stream switches representation.
 
 ```bash
 xberg extract financials.pdf --layout --format json \
-  | jq '.tables[] | {page: .page_index, rows: (.cells | length)}'
+  | jq '.result.tables[] | {page: .page_number, rows: (.cells | length)}'
 ```
 
 ## Table models
@@ -87,8 +88,7 @@ configs.
 # `output_format` in config files equals `--content-format` on the CLI.
 output_format = "markdown"
 
-[layout_detection]
-enabled = true
+[layout]
 confidence_threshold = 0.5
 table_model = "tatr"
 ```
@@ -111,7 +111,7 @@ config = ExtractionConfig(
     layout=LayoutDetectionConfig(table_model="tatr"),
     output_format="markdown",
 )
-result = await extract(ExtractInput.from_uri("report.pdf"), config)
+result = await extract(ExtractInput(uri="report.pdf"), config)
 for table in result.results[0].tables:
     print(table.markdown)        # rendered markdown
     print(table.cells[0][0])     # cell access
@@ -124,7 +124,7 @@ sibling `xberg` skill for full type signatures.
 ## Known limitations
 
 - **Merged cells** — reconstructed as repeated values across the spanned
-  region; the merge is not preserved as metadata in v0.1.
+  region; the merge is not preserved as metadata.
 - **Rotated tables** — enable `--ocr-auto-rotate true` for image-based
   PDFs before extraction.
 - **Nested tables** — flattened. Detection succeeds; structural nesting is

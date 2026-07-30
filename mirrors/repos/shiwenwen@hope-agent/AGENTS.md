@@ -37,6 +37,7 @@
 - **只读例外双理由（红线）**：凭据安全**或**运行时稳定性——`active_model`/`fallback_models` 不携密、无重副作用仍恒 GUI-only（须与 provider 状态/agent 重建协同），**别当误挡解封**；Provider 列表与 API Key 更严：无 category、禁新增入口。
 - **凭据必脱敏（红线）**：带凭据新字段须接入 `redact_*_value`（否则 LLM 拿 history 当 leak 通道）；只覆盖非空串（保住「未设」vs「已清空」）。
 - **读写 contract（红线）**：读 `cached_config()`、写 `mutate_config((category, source), …)`；禁 `Mutex<AppConfig>` / `load_config()`+`save_config()` 克隆-改-存。详见 [config-system](docs/architecture/config-system.md)。
+- **STT 默认参数统一合并**：batch 只在 `failover_transcribe_batch`、streaming 只在 `SttSessionManager::start` 合并 `stt.default_options`，请求的非空 / `Some` 字段优先；新增转写入口不得各自复制合并逻辑或绕过这两个边界。Azure Speech 的 `language` 缺失须在联网前 fail closed。
 
 ## 易错提醒（新增即同步）
 
@@ -280,7 +281,12 @@ Tauri 命令 → `invoke_handler!`；HTTP 端点 → `build_router_with_cors`；
 ## 开发命令
 
 ```bash
-pnpm tauri dev                        # 开发（改 ha-browser-host 后先 pnpm dev:browser-host）
+pnpm desktop                          # 交互选择下面四种桌面开发模式
+pnpm dev:desktop                      # 默认桌面开发（不构建 Browser Host / Eval Sidecar）
+pnpm dev:desktop:browser              # Chrome 插件联调（仅构建 Browser Host）
+pnpm dev:desktop:eval                 # 评测功能开发（仅构建 Eval Sidecar）
+pnpm dev:desktop:full                 # 完整桌面能力（构建两者）
+pnpm tauri dev                        # 兼容旧入口（等价于完整能力，构建两者）
 node scripts/sync-i18n.mjs --check    # 翻译缺失（--apply 补齐）
 cargo run -p ha-eval --locked -- validate   # 评测资产校验
 ```

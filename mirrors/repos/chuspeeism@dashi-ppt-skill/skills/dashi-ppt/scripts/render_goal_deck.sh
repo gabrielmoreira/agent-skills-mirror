@@ -42,10 +42,10 @@ fi
 npx --no-install playwright-core install chromium-headless-shell >/dev/null 2>&1 || true
 mkdir -p "$(dirname "$OUT_PATH")"
 npm run props:safe -- --goal "$SPEC_PATH" --write
-npm run validate:goal-spec -- "$SPEC_PATH"
 npm run render:goal -- "$SPEC_PATH" "$OUT_PATH"
 npm run validate:swiss -- "$OUT_PATH"
 npm run validate:goal-copy -- "$SPEC_PATH" "$OUT_PATH"
+npm run validate:four-variant-quality -- --deck "$OUT_PATH" --goal "$SPEC_PATH"
 OUT_DIR="$(dirname "$OUT_PATH")"
 # 缺省端口落在 SKILL.md 约定的 5200-5999 段(4178/4300/4400 为用户保留端口);被占用时服务自增。
 PREVIEW_PORT="${DASHI_PPT_PREVIEW_PORT:-5200}"

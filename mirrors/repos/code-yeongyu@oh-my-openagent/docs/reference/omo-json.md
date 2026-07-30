@@ -119,44 +119,52 @@ Security invariant: the OpenCode plugin honors `mcp_env_allowlist` and `browser_
 
 ### `models` (shared catalog)
 
-A record of short name to catalog entry (`schema/model-catalog.ts`). Each entry is `{ model, variant?, reasoningEffort? }` and must be `.strict()`-clean:
+A record of short name to catalog entry (`schema/model-catalog.ts`). Each entry is `{ model, reasoning?, temperature?, top_p?, max_tokens?, provider_options? }` and must be `.strict()`-clean:
 
 ```jsonc
 {
   "models": {
-    "opus": { "model": "anthropic/claude-opus-4-8", "variant": "max" },
+    "opus": { "model": "anthropic/claude-opus-5", "reasoning": "max" },
     "fast": { "model": "anthropic/claude-haiku-4-5" }
   },
   "categories": {
-    "deep": { "model": "opus" },              // resolves to anthropic/claude-opus-4-8 at variant max
-    "quick": { "model": "fast", "variant": "high" } // site tuning wins over the entry
+    "deep": { "model": "opus" },              // resolves to anthropic/claude-opus-5 at reasoning max
+    "quick": { "model": "fast", "reasoning": "high" } // site tuning wins over the entry
   }
 }
 ```
 
-When an agent or category `model` string matches a catalog key, resolution (`models/model-reference-resolution.ts`) swaps in the entry's model id and fills any unset `variant` / `reasoningEffort` from the entry. Tuning written at the use site always wins. A `[harness]` block (or a profile) can override individual catalog entries for its own view. Catalog cycles are detected and reported as `model_catalog_cycle` diagnostics instead of looping.
+When an agent or category `model` string matches a catalog key, resolution (`models/model-reference-resolution.ts`) swaps in the entry's model id and fills any unset `reasoning` from the entry. Tuning written at the use site always wins. A `[harness]` block (or a profile) can override individual catalog entries for its own view. Catalog cycles are detected and reported as `model_catalog_cycle` diagnostics instead of looping.
 
-### `categories`
+### `agents`
 
-A record of category name to config (`schema/category.ts`). Category keys intentionally keep the OpenCode key set, including the camelCase exceptions `maxTokens`, `reasoningEffort`, `textVerbosity`, and `thinking.budgetTokens`; every other key is snake_case.
+A record of agent name to definition (`schema/agent.ts`).
 
 | Field | Type | Notes |
 |-------|------|-------|
 | `description` | string | |
-| `model` | string | |
-| `fallback_models` | fallback models | see [fallback models](#fallback-models) |
-| `variant` | string | |
+| `prompt` | string | |
+| `model` | string | Sugar for a single-entry `models` list. |
+| `models` | model entries | Ordered chain; each entry is a bare string or `{ model, reasoning?, temperature?, top_p?, max_tokens?, provider_options? }`. |
+| `reasoning` | `off \| minimal \| low \| medium \| high \| xhigh \| max \| auto` \| string | Canonical reasoning field. |
+| `tools` | record<string, boolean> | |
+| `execution_mode` | `in-process \| process` | overrides `task.default_execution_mode`; curated builtin agents remain in-process |
+| `background` | boolean | |
+| `max_depth` | int >= 0 | |
+| `allowed_subagents` | string[] | |
 | `temperature` | number 0..2 | |
-| `top_p` | number 0..1 | |
-| `maxTokens` | number | camelCase for parity |
-| `thinking` | `{ type: "enabled" \| "disabled", budgetTokens?: number }` | |
-| `reasoningEffort` | `none \| minimal \| low \| medium \| high \| xhigh \| max` | camelCase for parity |
-| `textVerbosity` | `low \| medium \| high` | camelCase for parity |
-| `tools` | record<string, boolean> | per-tool allow/deny |
-| `prompt_append` | string | |
-| `max_prompt_tokens` | positive int | |
-| `is_unstable_agent` | boolean | |
 | `disable` | boolean | |
+
+Deprecated keys accepted for back-compat and rewritten by migration:
+
+| Old key | Replacement | Notes |
+|---------|-------------|-------|
+| `variant` | `reasoning` | Reasoning level or harness-native preset token. |
+| `reasoningEffort` | `reasoning` | `none` normalizes to `off`. |
+| `textVerbosity` | `provider_options.textVerbosity` | Provider-native passthrough. |
+| `fallback_models` | `models` | Ordered model list. |
+
+#### Builtin agents
 
 ### `agents`
 
@@ -306,27 +314,24 @@ A record of profile name to a partial view (`schema/config.ts` `OmoConfigProfile
 
 Profiles are inert until activated (see [Profile activation](#profile-activation)). When active, the profile's base keys fold over the shared base, and the profile's harness block folds over the top-level harness block.
 
-### Fallback models
+### Model references and model strings
 
-`fallback_models` (on a category) and per-model fallback entries accept a union (`schema/fallback-models.ts`): a single model string, an array of model strings, an array of objects, or a mixed array. Each object is `{ model, variant?, reasoningEffort?, temperature?, top_p?, maxTokens?, thinking? }`.
+`model` accepts either a catalog alias or a provider-prefixed string. Reasoning levels can be written inline with a `:level` suffix, for example `openai/gpt-5.6-sol:xhigh`. The suffix is canonical; the older `model(xhigh)` and `model xhigh` forms remain accepted during the back-compat window and are normalized by migration.
 
-An agent's `models` array accepts a deliberately narrower entry object, `{ model, variant?, reasoningEffort? }`, so a fallback can run at a different effort than the agent's primary model. Agent resolution threads only `variant` and `reasoningEffort` to the child, so the remaining category-only fields are rejected rather than silently ignored:
+`models` is the shared ordered chain shape used by categories, agents, and harness blocks. Each entry may be a string or a model object. Object entries use the canonical fields documented above, including `reasoning` and `provider_options`.
 
-```jsonc
-{
-  "agents": {
-    "explore": {
-      "model": "apitopia/kimi-for-coding-highspeed",
-      "models": [
-        { "model": "quotio-openai/gpt-5.4-mini-fast", "reasoningEffort": "minimal" },
-        "anthropic/claude-haiku-4-5"
-      ]
-    }
-  }
-}
-```
+Deprecated chain keys are still accepted for now, but they map to `models` and the canonical `reasoning` field:
 
-For both categories and agents the resolved `variant` wins over `reasoningEffort`, and whichever applies becomes the spawned child's thinking level.
+| Old key | Replacement |
+|---------|-------------|
+| `fallback_models` | `models` |
+| `variant` | `reasoning` |
+| `reasoningEffort` | `reasoning` |
+| `thinking` | `reasoning` + `provider_options` |
+| `textVerbosity` | `provider_options.textVerbosity` |
+| `maxTokens` | `max_tokens` |
+
+The migration engine rewrites the persisted config in place, and doctor reports any leftover deprecated keys with their exact file and key path.
 
 ## Example
 
@@ -340,7 +345,7 @@ For both categories and agents the resolved `variant` wins over `reasoningEffort
   },
   "categories": {
     "deep": {
-      "model": "anthropic/claude-opus-4-8",
+      "model": "anthropic/claude-opus-5",
       "reasoningEffort": "high",
       "fallback_models": ["anthropic/claude-sonnet-4-5"]
     }

@@ -5,8 +5,8 @@ description: Use when extracting text from scanned PDFs, photographed pages, or 
 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:b15ed971e63babddf7c805db2c3f591c0c5fd37fe724b0a8d57b3105807e153c
-Source-Hash: blake3:cf2e50e4fe88772155b882eacc338a857dfdc086a8a86b7d5d4721d540e33d8c
+Content-Hash: blake3:3ec8b7cf60f56cbe5cc15a5a0b29d0c2f8e3cf4c3823503eb1128fb7f9ee11db
+Source-Hash: blake3:4f30c10e77f8c5ff8ed30b9e154ad9bcf00fb22405417016845401f0db77e0e4
 Schema-Version: v1
 -->
 
@@ -40,7 +40,7 @@ backends are opt-in:
 | ------------- | ------------------------------------- | ------------------------------------------------ | -------------------------------------------------------------- |
 | Tesseract     | `--ocr-backend tesseract` (default)   | bundled                                          | Best general-purpose, 100+ languages via tessdata.             |
 | PaddleOCR     | `--ocr-backend paddle-ocr`            | bundled (ONNX Runtime)                           | Strong on Asian scripts. Not available on WASM or Windows.     |
-| Candle VLM    | `--ocr-backend candle-trocr` (and other `candle-*`) | bundled (Candle)                  | Local vision OCR models (`candle-trocr`, `candle-paddleocr-vl`, `candle-glm-ocr`, `candle-hunyuan-ocr`, `candle-deepseek-ocr`). |
+| Candle VLM    | `--ocr-backend candle-trocr` (and other `candle-*`) | bundled (Candle)                  | Local vision OCR models (`candle-trocr`, `candle-paddleocr-vl`, `candle-glm-ocr`, `candle-deepseek-ocr`). |
 | VLM (hosted)  | `--ocr-backend vlm` + `--vlm-model`   | liter-llm provider (`--vlm-api-key`)             | Multimodal LLM via liter-llm. Use when OCR fails on dense or handwritten layouts. |
 
 Pick Tesseract first. Switch only when accuracy is unacceptable.
@@ -77,7 +77,7 @@ that is not installed. Read the error — it names the missing file.
 - `--force-ocr=true` — OCR every page even if a text layer exists.
 - `--disable-ocr=true` — never OCR (extract embedded text only or fail).
 - `--ocr-language <lang>` — single code or `+`-joined list, or `all`.
-- `--ocr-backend <tesseract|paddle-ocr|vlm|candle-trocr|candle-paddleocr-vl|candle-glm-ocr|candle-hunyuan-ocr|candle-deepseek-ocr>` — pick backend.
+- `--ocr-backend <tesseract|paddle-ocr|vlm|candle-trocr|candle-paddleocr-vl|candle-glm-ocr|candle-deepseek-ocr>` — pick backend.
 - `--ocr-auto-rotate=true` — pre-rotate via the auto-rotate model.
 - `--acceleration <cpu|coreml|cuda|tensorrt|auto>` — ONNX accelerator for
   paddle-ocr / auto-rotate / layout models.

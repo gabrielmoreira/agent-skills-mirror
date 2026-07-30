@@ -4,6 +4,18 @@
 
 ---
 
+## v0.3.189：图标与体验收尾（2026-07-30）
+
+- **桌面「聊聊口味」不再退化成裸文本和默认按钮**：共享确认 renderer 原本只有插件弹窗样式，桌面端的待确认条目、猜测卡片、依据和四个动作因此全部按浏览器默认样式平铺。现在桌面「待聊确认」直接对齐插件的紧凑品牌色折叠条、数字徽标、轻量箭头和单列小卡片，不再使用桌面仪表盘式重容器；猜测卡片补齐状态化边框和主次动作，对话气泡更紧凑，输入框也增加可访问名称和稳定 focus。430px 以下动作改两列，深浅主题与 reduced-motion 继续复用现有令牌。
+- **初始化期间也能测试 LLM 与 Embedding 配置**：`/api/config/probe-service` 只在配置内存副本上构建临时服务并真实探测，不写盘也不热重载，过去却因使用 POST 被 guided init 的 deny-by-default 写端守卫误判为冲突，插件只能显示 `/config/probe-service request failed: 409`。现在该端点成为精确只读例外，实例、默认调用链、embedding 与网络测试在画像初始化期间保持可用；LLM 探测仍经过稳定 total gate，真正保存配置的 `PUT /api/config` 继续返回 `409 init_running`，不会替换本轮任务正在使用的组件。
+- **彻底清理所有品牌图标入口的残余白边与旧图**：透明源图的半透明边缘过去仍携带旧白底 RGB 消光色，缩到 16–42px 会形成浅色晕边；根 `/favicon.ico`、PWA `maskable`、Apple 主屏幕图标、社交分享图、Chrome Web Store 素材和 README / 官网历史截图又各自保留了透明角或旧字母 `B`。现在扩展补齐 32px 精确尺寸，16 / 32 / 48 / 128px、根 favicon、PWA / Apple 全底色图标与页面头图统一用品牌粉承接透明角；普通 PWA 图标继续保留透明用途，专用 maskable 图标使用不透明底色，避免系统裁切露白。中英文社交分享图、商店三张成图与 14 张桌面 / 移动 / 插件文档截图均由本地确定性脚本重采集并重建；favicon URL 升版清缓存，像素测试锁定每种尺寸、透明策略和入口引用。
+- **惊喜推荐“×”现在等于看过并永久去重**：现场复现显示同一 canonical 内容已经进入 `seen_items` 后，普通推荐会排除，`get_delight_candidates()` 却仍返回，导致看过、点赞或收藏的视频继续占据惊喜栏位，只有再次点开触发 `delight_notified` 才消失；移动 Web 原有“×”更只删内存，刷新必回。现在 delight 动态阈值、打分 backlog、候选计数和最终出队全部硬过滤 `seen_items`；三端叉号统一标为“看过了，不再推荐”，通过 `dismiss` 先写 canonical seen ledger、再消费惊喜状态，普通/惊喜两条推荐都不再出现。移动端与扩展叉号采用至少 44×44 触控目标、明确 aria-label、可见 focus 与提交中禁用，写入失败不再假装成功移除。
+- **修复抖音 discovery 把任务故障当空结果、误消费关键词和 feed 长期饿死**：插件 search / hot / feed 现在把真实空结果、超时、失败与预算耗尽分开回传；producer 按每个关键词的真实终态分别 `used / failed / pending`，保留预算耗尽前已成功的候选，瞬时故障无损重排且不增加 attempts，统一关键词池暂空也不再阻断独立 hot / feed。大缺口改为 search + hot/feed 逐轮轮换，避免 feed 永远没有调度机会。`discover --source douyin` 已切到与 daemon 相同的正式 producer、统一关键词和待评估候选链；`search-douyin` 读取配置预算（`0` 为无限），并以非零退出码暴露 timeout / failed，真实空结果仍成功退出。
+- **应用图标去除白色方边并进入启动页**：品牌源图从实色白底改为透明外缘，扩展 16 / 48 / 128px、PWA / favicon 192 / 512px、Windows `.ico` 与 macOS `.icns` 全部从同一透明源图重新派生，系统托盘、菜单栏、桌面和深色背景下不再露出白色方框；Windows PyInstaller 启动页同步加入同款粉色猫爪图标，不再只有应用名和启动文案。透明角与启动页品牌区域新增像素级回归测试。
+- **PC Web 自动续页不再跳回平台 Tab**：用户点过平台 Tab 后再用滚轮浏览到底部，Tab 会继续持有键盘焦点；续页完成时重绘库存徽标，旧实现用普通 `focus()` 恢复焦点，Chromium 实测会把 `scrollY` 从 4849 拉回 85。现在重绘仍保留无障碍焦点，但通过 `preventScroll` 阻止浏览器改写视口；新增真实 Chromium 回归，锁住“焦点保留、滚动位置不变”两条约定。
+- **小红书关闭后不再继续开搜索页，并增加安全验证熔断**：来源开关过去只停掉新关键词生产，已经写进 `xhs_tasks` 的旧 search / creator / bootstrap 仍可被 `/api/sources/xhs/next-task` 领取，扩展因此在用户关闭小红书后继续打开页面；现在 claim 端每次现读热重载后的 `sources.xiaohongshu.enabled` 与全局 scheduler，关闭时旧任务保持 pending、返回 204，重新开启后再恢复，用户显式 native-save 与 discovery 开关保持正交。真实扩展 E2E 还发现跨来源互斥顺序相反：抖音占锁时 XHS 会先 claim、再因锁忙返回，留下没有 tab 和回调的 `in_progress`；dispatcher 现改为先取得共享锁再请求 `/next-task`，锁忙时不会触碰后端队列。扩展新增可见安全验证 / 操作频繁 / 429 分类器，命中只回传结构化 `rate_limited`、不上传页面正文；后端用单行 SQLite 状态持久化 search / creator 任务间隔和 1 小时平台冷却，跨 FastAPI / MV3 重启及多浏览器 profile 生效，冷却期间 producer 和所有 XHS claim（含 native-save）暂停，关联 planner 关键词无损退回 pending 且不增加 attempts，来源状态显示剩余冷却时间。新增后端队列/API/native-save/producer/keyword 生命周期测试与扩展 executor/dispatcher 误报回归。
+- **小红书自动任务默认间隔提高到 5 分钟**：`task_interval_seconds` 默认值从 45 秒改为 300 秒，并同步后端模型与异常兜底、桌面 Web、插件设置页、示例配置和架构文档；现有配置可通过设置页热更新，无需重载插件。
+
 ## v0.3.188：降级配置原地恢复（2026-07-29）
 
 - **修好 LLM 配置后不再要求重启后端**：安装包覆盖安装本来已经退出旧 `OpenBiliClaw.exe` 并启动新版本，但新进程会先读取保留的旧 `config.toml`，若其中仍有启用但缺 Key 的实例就以 degraded 恢复态启动；用户随后在 `/setup/` 修好配置时，`PUT /api/config` 过去只写盘并返回 `restart_required=true`，导致刚覆盖安装完还要再手动重启一次。现在降级上下文复用启动时保留的数据库、MemoryManager、事件总线和稳定 LLM total gate，按正常热重载的原子构造路径一次性补齐 Registry、Soul、Discovery、Recommendation、来源客户端与 runtime controller；全部构造成功后同步解除 API 503 guard、刷新 `app.state` 镜像、重绑 feedback scheduler 并启动所需后台任务，返回 `reloaded=true / restart_required=false`，`/setup/` 当场进入下一步。核心构造失败时恢复 `config.toml.bak`、保持降级并返回可重试 503；核心已恢复而仅后台循环启动失败时不反向回滚有效配置。旧后端或无备份的异常 bootstrap 仍保留 `restart_required` 兼容兜底。

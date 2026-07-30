@@ -27,22 +27,77 @@ Background and before/after examples of why this pattern exists:
   checks. Deliberate no-ops must use shared `ignore(state, reason)` so they are
   distinguishable from omissions and observable in telemetry.
 
+## Enforced distributed-machine boundaries
+
+- App-run and image generation are framework-covered surfaces. Their
+  definitions must be created with
+  `defineFrameworkCoveredRemoteMachine`; the constructor requires either a
+  native `RuntimeRemoteIntentContract` or the narrow protocol-v1 combination
+  of a declarative `RemoteIntentContract` plus `RemoteOperationContract`.
+  `createProductionRemoteMachineManifest` accepts only that capability or an
+  exact `defineLegacyRemoteMachineCompatibility` capability from the
+  production legacy-definition inventory.
+- `src/distributed_machines/boundary_inventory.test.ts` derives production
+  definitions and semantic dispatch, waiter, subscription, fence, and routing
+  boundaries from the TypeScript AST. Definitions and production manifest
+  capabilities are exact symbol inventories. Noisy implementation boundaries
+  are aggregated by exact owning file and count, so private function/class
+  renames do not create inventory churn while additions, deletions, and file
+  moves still fail review-visible tests. Do not classify a migrated adapter as
+  unsafe or widen an unsafe list to make the test pass.
+- Every unsafe compatibility entry lives in
+  `compatibilityBoundaryInventory` with its machine, exact file, mechanism,
+  expected boundary count, rationale, and conditional follow-up owner. File
+  moves, removals, and boundary-count changes require an explicit inventory
+  change. The mechanism-specific views are derived from those complete metadata
+  entries rather than from path-prefix allowlists.
+- New remote intents declare authorization, key/intent relationship, refusal
+  mapping, retry/idempotency, completion, observed revision, acceptance/input
+  disposition, and wire/snapshot budgets through
+  `defineRuntimeRemoteIntentContract` or `defineRemoteIntentContract`.
+  `defineMachineConformance` separately requires applicable tiers and explicit
+  exclusions, so purely local machines do not acquire irrelevant remote
+  capabilities.
+- Shared primitive scenarios run in
+  `testing/framework_mechanism_conformance.test.ts`; resource failures use
+  `assertNoOwnedResources` and identify the resource, owner, machine, key, and
+  generation. Do not call this cross-pilot runtime conformance unless one
+  reusable driver instantiates both domain façades and reads their inspectors.
+  Foundation and pilot review findings are exact-mapped in the corresponding
+  `*_finding_catalog.ts` files.
+
 ## Invariants
 
 - Controllers migrated to `TransactionalDispatcher` use one event transaction:
   enqueue FIFO; run the pure transition exactly once; validate; reserve the
-  command batch without running domain code; cancel exiting state-owned leases;
-  commit the snapshot (the linearization point); update the authoritative
-  projection; notify snapshot subscribers; notify transition observers; then
-  hand the reserved batch to the injected domain scheduler. Re-entrant sends
-  from any callback append to the FIFO and run after the current transaction.
-  Ignored events skip commit, projection, subscribers, and commands, but notify
-  observers at the equivalent point in FIFO order.
+  command batch and any explicit post-commit outcome batch without running
+  domain code; cancel exiting state-owned leases; commit the snapshot (the
+  linearization point); update the authoritative projection; publish reserved
+  correlated outcomes, marking the entire correlated batch terminal before
+  invoking any settlement listener; notify snapshot subscribers and transition
+  observers; then hand the reserved commands to the injected domain scheduler.
+  Publishing authoritative outcomes before teardown-capable observers prevents
+  disposal from winning after the operation's state has already committed.
+  Re-entrant
+  callbacks may mutate transition-owned arrays, so both batches must be
+  shallow-copied before callbacks. Re-entrant sends append to the FIFO and run
+  after the current transaction. Ignored events skip commit, projection,
+  subscribers, outcomes, and commands, but notify observers at the equivalent
+  point in FIFO order.
 - The dispatcher isolates and reports projection, subscriber, observer,
   scheduler, and command failures. Adapters convert expected command failures
   to typed domain events; unexpected throws/rejections may be mapped by the
   domain and never create a universal failure event. Scheduler injection owns
   concurrency policy.
+- When a linearization boundary requires a synchronous return value, reject
+  thenables whose runtime type is either `object` or `function`; callable
+  functions can also define a `.then` property and be assimilated by `await`.
+- A callback typed to return `void` can still be implemented with an async
+  function. Validate authoritative outcome publishers as synchronous and
+  report rejected thenable results instead of relying on `try`/`catch`.
+- Recheck dispatcher admission after publishing post-commit outcomes and
+  notifying lifecycle callbacks. If reentry disposed the owner, do not hand a
+  reserved command batch to the scheduler after teardown.
 - A pre-commit lease-cancellation failure is also isolated and reported, but
   does not veto commit. Unlike pure transition and validation failures, an
   effectful cleanup hook may have partially completed; rejecting at that point
@@ -124,6 +179,11 @@ Background and before/after examples of why this pattern exists:
 - Capture receipt metadata synchronously when that dispatch ticket settles.
   Reading mutable actor metadata after awaiting the ticket can observe a
   re-entrant follow-up transaction instead of the acknowledged event.
+- A completion-aware operation registered before actor dispatch must roll back
+  its admission when that dispatch later fails, is disposed, is ignored, or
+  lacks settled metadata. None of those paths will publish a correlated
+  post-commit outcome, so leaving the admission unresolved leaks registry
+  capacity.
 - Machine-generated queued work must not be editable or removable (including
   through bulk-clear paths) unless removal explicitly settles or rejects the
   owning machine request; otherwise reload can resurrect abandoned work.
@@ -251,6 +311,10 @@ Background and before/after examples of why this pattern exists:
   acquire the resource before the StrictMode-safe disposal microtask runs.
 - When disposal can race an async command that registers external state after
   an `await`, clean up both immediately and again after the command settles.
+- A captured non-creating sink validates late producer delivery but does not
+  by itself make a destructive fence wait. Externally initiated work, including
+  work that already owns a domain lock, must enroll its full promise under the
+  captured actor/admission generation before it starts.
 - When a cross-owner facade defers keyed delivery to a microtask, entity
   disposal must invalidate both queued and future deliveries for that key.
   Otherwise the deferred callback can recreate a controller after deletion.
@@ -348,6 +412,10 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   the user's input while the operation runs and after failure. Close dialogs
   and clear forms only on authoritative settlement; dispatch itself is not
   proof that the mutation succeeded.
+- When a presentation entry mounts the component that owns its mutation hook,
+  do not clear that entry before dispatch. Capture its identity and clear only
+  that same entry after authoritative settlement; an entry emitted during the
+  operation is newer state and must survive.
 - A remote dispatch receipt proves transport admission, not runtime completion.
   When callers sequence work on the outcome, project a bounded,
   operation-correlated settlement acknowledgment. Superseded completions must
@@ -360,6 +428,11 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   be superseded before its producer settles, but its original waiter must
   still complete. A producer sink captured for one invocation must also ignore
   or overwrite any conflicting invocation identity supplied by its payload.
+- When final admission registers an operation before awaiting the actor ticket,
+  roll back only that fresh entry on every failed, disposed, or metadata-less
+  ticket exit; never mutate a coalesced or replayed operation. Registry release
+  must use the same terminal predicate as settlement accounting, because a
+  rejected entry has already left pending capacity even without a payload.
 - A first-response-wins renderer handoff needs a correlated claim, not a
   boolean. Matching follow-ups may be revision-stale only when the opaque claim
   ID is validated by the host. Unrelated reconciliation must not release the
@@ -392,6 +465,37 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
 - Treat an operation ID's initiating window as a first-writer ownership claim.
   A duplicate intent from another window must not overwrite that routing entry,
   even if the duplicate transition will later be ignored.
+- Main-owned presentation routes use `OperationRouteRegistry` from
+  `src/window_infrastructure/main/`. Admit with the stable authoritative
+  operation ID and an owner containing stable owner/machine identities, an
+  optional window session, and an opaque route. Identical duplicates coalesce
+  (or replay while terminal retention remains); conflicts never replace the
+  first owner. The required `snapshotRoute` adapter must return an owned route
+  value so caller or inspector mutation cannot rewrite stored ownership, and
+  `sameRoute` must explicitly define equality for that opaque value. Both
+  adapters are trusted synchronous code; the registry fails closed if either
+  attempts to reenter ownership mutation, rejecting before stored ownership
+  changes even when the adapter catches the inner rejection. Runtime thenable
+  results from either adapter are rejected without assimilating arbitrary
+  thenables outside the guard.
+- `OperationRouteRegistry` pins unresolved routes behind a separately bounded
+  admission limit and evicts only terminal routes, in settlement order, behind
+  a declared finite retention count. Its constructor snapshots validated
+  policy values and callbacks; later caller mutation cannot change accounting.
+  Call `markTerminal(handle)` only at authoritative publication/settlement,
+  then release with the opaque generation-bearing handle or an explicit
+  owner/window/machine disposal method. Owner disposal is scoped by both
+  machine and owner identity. Duplicate terminal/release calls and stale
+  handles are no-ops.
+- Window destruction must call the registry's read-only
+  `inspectWindowRoutes()` before the domain explicitly chooses drop,
+  entity-window, or focused-window fallback. Do not wire window unregister to
+  `releaseWindow()`: unresolved ownership survives renderer loss until the
+  authoritative operation settles or the domain explicitly disposes it.
+- Use `inspect()` for route resource accounting and leak diagnostics; it
+  reports operation identity, owner, machine/window metadata, state, and
+  generation. Registry disposal is terminal and must leave the route count at
+  zero.
 - Authorization can run before revision admission. Keep any presentation
   ownership recorded there tentative and expire it unless an applied
   transition confirms the claim; rejected stale dispatches never reach actor
@@ -505,6 +609,13 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   markers still exist does not prevent an undeclared boundary crossing.
   Classify calls through the owning API (for example, Jotai stores and hooks),
   not an expected import directory; domain values may be local or re-exported.
+- Cache parsed TypeScript source files across semantic boundary-inventory
+  assertions. Re-parsing the full production tree for every exact inventory can
+  exceed the test timeout only under full-suite concurrency, hiding an
+  otherwise deterministic inventory result behind a load-dependent failure.
+- When adding an intentional completion-aware `dispatch` or `enqueue` framework
+  path, classify it in the boundary inventory separately from raw compatibility
+  escape hatches; do not widen the raw allowlist to make the inventory pass.
 - Keep host-only distributed-machine definitions outside shared machine
   directories (for example, under `src/ipc/services/` for a main-owned actor).
   Shared machine directories are scanned as renderer-reachable code and may
@@ -546,3 +657,68 @@ timers or nondeterministic UUIDs; retrofitting existing machines is optional.
   one-shot entity IDs cannot accumulate forever, and maintain a global
   insertion-order index instead of scanning every key on each production
   trace event.
+- Capturing keyed admission before authorization must not allocate permanent
+  per-key gate metadata. Use a shared open generation (or explicitly release
+  the capture) so rejected, attacker-controlled keys cannot grow a
+  process-lifetime map.
+- When a fence snapshots work admitted before publication, settlement must
+  remove that work from the current fence's drain set even though no fence
+  existed when tracking began. Test this with controlled pre-fence work; a
+  tracker that cleans up only its originally captured fence can strand sealing.
+- A command runner that returns `void` has not provided a fence-trackable
+  completion boundary, even when that particular branch is synchronous; the
+  host cannot distinguish it from detached asynchronous work. Migrated
+  definitions must return a completion promise from every command branch.
+  Until a compatibility path adopts a completion promise or explicit tracked
+  lease, destructive fencing must fail closed rather than treating the handoff
+  as command completion.
+- Prepared admission must revalidate after the last trusted synchronous domain
+  callback, not merely after asynchronous authorization. Revision policies,
+  intent conversion, and similar callbacks can reenter fencing, subscription,
+  or disposal code before final host admission.
+- Treat supersession settlement listeners as synchronous domain callbacks.
+  Revalidate after they run and roll back any replacement registration before
+  enqueue if they fence, replace, or dispose the intended actor.
+- A transport disconnect does not prove that authoritative admission failed.
+  Preserve delivery/admission ambiguity across retry and disposal; only a
+  failure classified at a definitely-pre-delivery boundary may settle as
+  `not-admitted`.
+- When a correlated outcome is delivered before its committed snapshot, carry
+  the committed actor metadata and retain request-owned snapshot observation
+  until that revision (or disposal) is visible. A compatibility owner that
+  emits no correlated outcome must still settle admitted ownership from an
+  unavailable snapshot; otherwise disposal strands the renderer request.
+- If terminal outcome or receipt construction throws, reject or explicitly
+  fail the exact correlated registry entry and continue bulk disposal. Never
+  leave callback-construction failures pinned as unresolved work.
+- A fresh subscription or actor-reference acquisition must assert that keyed
+  admission is open even when it retains an existing actor. Generation equality
+  alone is insufficient because work prepared after fencing captures the
+  current closed generation.
+- Revalidate fence identity and phase after invoking a drain-admission policy.
+  The policy is synchronous domain code and can reenter sealing, abort, or
+  replacement before returning.
+- Construction continuations enrolled for fencing must settle on every
+  post-activation exit, including host or machine disposal triggered by buffered
+  factory-time ingress, or a later fence can wait forever. Keep factory-buffered
+  events bound to that construction admission; if fencing publishes before
+  activation, do not reclassify them as cleanup allowed during draining.
+- Disposal of an admission primitive is terminal. Clearing current records
+  without a persistent disposed state lets retained references recreate open
+  admission after host teardown.
+- If a scheduler retains an execution callback and then throws or rejects, the
+  retained callback must be invalidated. Marking the batch failed while still
+  allowing that callback to run lets command side effects escape after sealing.
+- Keep captured producer sinks revision-bound by default. A collection actor
+  whose every producer event carries domain correlation may explicitly opt into
+  actor-instance plus keyed-admission-generation binding, because cancellation
+  and unrelated parallel jobs legitimately advance that actor before terminal
+  output arrives. Such an opt-in must use domain invocation identity to reject
+  stale or replacement-job output. Factory-buffered sequential emissions must
+  retain the same captured identity through activation, and output after actor
+  disposal must remain non-creating.
+- A destructive fence is scoped to the actor key, not to a domain predicate
+  within a collection. If owner deletion must preserve unrelated in-flight
+  producers, partition the actor key by owner or add first-class scoped gate
+  generations; filtering drain events alone cannot preserve unrelated captured
+  generations through seal and release.

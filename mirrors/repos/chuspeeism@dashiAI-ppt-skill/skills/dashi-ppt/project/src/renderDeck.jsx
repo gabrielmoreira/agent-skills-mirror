@@ -26,12 +26,17 @@ import {
   isFullThemeSet,
   normalizeThemeKeys,
 } from './components/themes/theme-registry-codegen.mjs';
+import { buildThemeRuntimeOverrideRegistrySource } from './components/themes/theme-overrides-registry-codegen.mjs';
+import { buildBespokeThemeProfileRegistrySource } from './components/bespoke/theme-profile-registry-codegen.mjs';
 import { normalizeDeckLanguage, buildDeckI18nDict } from './i18n.mjs';
 import {
   buildClientRuntime,
   buildClientRuntimeFromModules,
+  prebuiltBespokeModulePath,
   prebuiltBundlePath,
   prebuiltModulePath,
+  prebuiltThemeOverrideModulePath,
+  prebuiltThemeProfileModulePath,
 } from './components/themes/runtime-build.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
@@ -66,7 +71,9 @@ export function renderDeck(deck, { outFile, includeThemeSwitcher = deck.preview?
 function collectUsedThemeKeys(viewModel) {
   const keys = new Set();
   for (const slide of viewModel.slides || []) {
-    if (slide.themePack) keys.add(slide.themePack);
+    for (const variant of slide.variants || [slide]) {
+      if (variant.themePack) keys.add(variant.themePack);
+    }
   }
   return normalizeThemeKeys(keys);
 }
@@ -237,11 +244,21 @@ function buildImportedThemeRuntime(outFile, usedThemeKeys = []) {
 
 // 源路径(JAD-201):别名指向全主题签入注册表或按 usedThemeKeys 裁剪的源注册表。
 function buildImportedThemeRuntimeFromSource(outFile, usedThemeKeys = []) {
-  const { registryPath, cleanup } = resolveThemeRegistryEntry(usedThemeKeys);
+  const themeRegistry = resolveThemeRegistryEntry(usedThemeKeys);
+  const profileRegistry = resolveBespokeProfileRegistryEntry(usedThemeKeys);
+  const overrideRegistry = resolveThemeRuntimeOverrideRegistryEntry(usedThemeKeys);
   try {
-    buildClientRuntime({ root: ROOT, outFile, registryPath });
+    buildClientRuntime({
+      root: ROOT,
+      outFile,
+      registryPath: themeRegistry.registryPath,
+      bespokeProfilesPath: profileRegistry.registryPath,
+      themeOverridesPath: overrideRegistry.registryPath,
+    });
   } finally {
-    cleanup();
+    themeRegistry.cleanup();
+    profileRegistry.cleanup();
+    overrideRegistry.cleanup();
   }
 }
 
@@ -252,7 +269,13 @@ function hasThemeSource(normalized) {
 }
 
 function prebuiltModulesAvailable(normalized) {
-  return normalized.length > 0 && normalized.every(key => fs.existsSync(prebuiltModulePath(ROOT, key)));
+  return normalized.length > 0
+    && fs.existsSync(prebuiltBespokeModulePath(ROOT))
+    && normalized.every(key => (
+      fs.existsSync(prebuiltModulePath(ROOT, key))
+      && fs.existsSync(prebuiltThemeProfileModulePath(ROOT, key))
+      && fs.existsSync(prebuiltThemeOverrideModulePath(ROOT, key))
+    ));
 }
 
 // 全主题(或主题集合无法识别时)→ 直接用签入的全主题注册表;
@@ -270,6 +293,48 @@ function resolveThemeRegistryEntry(usedThemeKeys) {
   const registryPath = path.join(
     cacheDir,
     `registry-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.jsx`,
+  );
+  fs.writeFileSync(registryPath, source);
+  return {
+    registryPath,
+    cleanup: () => { try { fs.rmSync(registryPath, { force: true }); } catch {} },
+  };
+}
+
+function resolveBespokeProfileRegistryEntry(usedThemeKeys) {
+  const normalized = normalizeThemeKeys(usedThemeKeys || []);
+  const fullRegistry = path.join(ROOT, 'src/components/bespoke/theme-profiles.mjs');
+  if (!normalized.length || isFullThemeSet(normalized)) {
+    return { registryPath: fullRegistry, cleanup: () => {} };
+  }
+  const importPrefix = `${path.join(ROOT, 'src/components/bespoke')}${path.sep}`;
+  const source = buildBespokeThemeProfileRegistrySource(normalized, { importPrefix });
+  const cacheDir = path.join(ROOT, 'node_modules/.cache/dashi-theme-registry');
+  fs.mkdirSync(cacheDir, { recursive: true });
+  const registryPath = path.join(
+    cacheDir,
+    `bespoke-profile-registry-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.mjs`,
+  );
+  fs.writeFileSync(registryPath, source);
+  return {
+    registryPath,
+    cleanup: () => { try { fs.rmSync(registryPath, { force: true }); } catch {} },
+  };
+}
+
+function resolveThemeRuntimeOverrideRegistryEntry(usedThemeKeys) {
+  const normalized = normalizeThemeKeys(usedThemeKeys || []);
+  const fullRegistry = path.join(ROOT, 'src/components/themes/theme-overrides.mjs');
+  if (!normalized.length || isFullThemeSet(normalized)) {
+    return { registryPath: fullRegistry, cleanup: () => {} };
+  }
+  const importPrefix = `${path.join(ROOT, 'src/components/themes')}${path.sep}`;
+  const source = buildThemeRuntimeOverrideRegistrySource(normalized, { importPrefix });
+  const cacheDir = path.join(ROOT, 'node_modules/.cache/dashi-theme-registry');
+  fs.mkdirSync(cacheDir, { recursive: true });
+  const registryPath = path.join(
+    cacheDir,
+    `theme-override-registry-${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}.mjs`,
   );
   fs.writeFileSync(registryPath, source);
   return {

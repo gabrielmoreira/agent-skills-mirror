@@ -24,8 +24,8 @@ def build_command(cli: str, prompt: str) -> tuple[str, list]:
     if cli == "codex":
         return "codex", ["exec", "--json", "--skip-git-repo-check", prompt]
 
-    if cli in ("claude", "glm"):
-        # GLM uses Claude CLI as its transport.
+    if cli in ("claude", "glm", "kimi"):
+        # GLM and Kimi use Claude CLI as their transport.
         return "claude", ["--output-format", "stream-json", "--verbose", "-p", prompt]
 
     if cli == "gemini":
@@ -87,6 +87,7 @@ _PERMISSION_MAPPING = {
 }
 
 _PERMISSION_MAPPING["glm"] = _PERMISSION_MAPPING["claude"]
+_PERMISSION_MAPPING["kimi"] = _PERMISSION_MAPPING["claude"]
 
 
 def permission_flags(cli: str, permission: str) -> list:
@@ -96,7 +97,7 @@ def permission_flags(cli: str, permission: str) -> list:
         raise ValueError(f"No permission mapping for cli={cli!r}, permission={permission!r}") from e
 
 
-_EFFORT_SUPPORTED_CLIS = frozenset({"codex", "claude", "glm", "grok", "opencode"})
+_EFFORT_SUPPORTED_CLIS = frozenset({"codex", "claude", "glm", "kimi", "grok", "opencode"})
 _EFFORT_UNSUPPORTED_CLIS = frozenset({"cursor-agent", "gemini"})
 
 
@@ -108,7 +109,7 @@ def effort_flags(cli: str, effort: str | None) -> list:
         # JSON encoding produces a safe TOML string for the config override.
         encoded_effort = json.dumps(effort, ensure_ascii=False)
         return ["-c", f"model_reasoning_effort={encoded_effort}"]
-    if cli in ("claude", "glm"):
+    if cli in ("claude", "glm", "kimi"):
         return ["--effort", effort]
     if cli == "grok":
         return ["--reasoning-effort", effort]
@@ -194,32 +195,62 @@ def _build_opencode_args(inv: AgentInvocation) -> tuple[str, list, dict | None]:
 
 
 _GLM_BASE_URL = "https://api.z.ai/api/anthropic"
+_KIMI_BASE_URL = "https://api.kimi.com/coding/"
 
 
-def _build_glm_args(inv: AgentInvocation) -> tuple[str, list, dict | None]:
-    """Route a Claude CLI invocation to Z.ai for GLM."""
-    api_key = os.environ.get("CLI_API_KEY")
-    if not api_key or not api_key.strip():
-        raise ValueError(
-            "GLM configuration error: CLI_API_KEY is unset or blank. "
-            "A Z.ai API token is required before retrying."
-        )
+def _resolve_api_key(primary_env: str) -> str | None:
+    """Resolve a provider-specific API key with the legacy generic fallback."""
+    for env_name in (primary_env, "CLI_API_KEY"):
+        api_key = os.environ.get(env_name)
+        if api_key and api_key.strip():
+            return api_key
+    return None
+
+
+def _build_redirected_claude_args(
+    inv: AgentInvocation,
+    api_key: str,
+    base_url: str,
+    credential_env: str,
+) -> tuple[str, list, dict | None]:
     perm = _invocation_flags(inv)
     system_prompt = f"cwd: {inv.cwd}\n\n{inv.system_context}"
     command, base_args = build_command(inv.cli, inv.prompt)
     env_override = {
-        "ANTHROPIC_BASE_URL": _GLM_BASE_URL,
-        "ANTHROPIC_AUTH_TOKEN": api_key,
-        # Prevent inherited Anthropic credentials from reaching Z.ai.
+        "ANTHROPIC_BASE_URL": base_url,
         "ANTHROPIC_API_KEY": None,
+        "ANTHROPIC_AUTH_TOKEN": None,
     }
+    env_override[credential_env] = api_key
     return command, perm + ["--system-prompt", system_prompt] + base_args, env_override
+
+
+def _build_glm_args(inv: AgentInvocation) -> tuple[str, list, dict | None]:
+    """Route a Claude CLI invocation to Z.ai for GLM."""
+    api_key = _resolve_api_key("GLM_API_KEY")
+    if api_key is None:
+        raise ValueError(
+            "GLM configuration error: GLM_API_KEY and CLI_API_KEY are unset or blank. "
+            "A Z.ai API token is required before retrying."
+        )
+    return _build_redirected_claude_args(inv, api_key, _GLM_BASE_URL, "ANTHROPIC_AUTH_TOKEN")
+
+
+def _build_kimi_args(inv: AgentInvocation) -> tuple[str, list, dict | None]:
+    """Route a Claude CLI invocation to Kimi Code."""
+    api_key = _resolve_api_key("KIMI_API_KEY")
+    if api_key is None:
+        raise ValueError(
+            "Kimi configuration error: KIMI_API_KEY and CLI_API_KEY are unset or blank. "
+            "A Kimi API key is required before retrying."
+        )
+    return _build_redirected_claude_args(inv, api_key, _KIMI_BASE_URL, "ANTHROPIC_API_KEY")
 
 
 def _build_cursor_args(inv: AgentInvocation) -> tuple[str, list, dict | None]:
     perm = _invocation_flags(inv)
     # Keep the credential out of argv; logged-in sessions need no override.
-    api_key = os.environ.get("CLI_API_KEY")
+    api_key = _resolve_api_key("CURSOR_API_KEY")
     env_override = {"CURSOR_API_KEY": api_key} if api_key else None
     return _concatenated_args(inv, perm, env=env_override)
 
@@ -230,6 +261,7 @@ _BUILDERS = {
     "codex": _build_codex_args,
     "cursor-agent": _build_cursor_args,
     "glm": _build_glm_args,
+    "kimi": _build_kimi_args,
     "grok": _build_grok_args,
     "opencode": _build_opencode_args,
 }

@@ -6,6 +6,7 @@ import {
 } from "../cloudbase-manager.js";
 import { ExtendedMcpServer } from "../server.js";
 import { isCloudMode } from "../utils/cloud-mode.js";
+import { resolveGatewayAccessUrls } from "../utils/gateway-access-urls.js";
 import { jsonContent } from "../utils/json-content.js";
 import { debug } from "../utils/logger.js";
 
@@ -1228,10 +1229,35 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
           ? `已创建 HTTP 函数 ${functionName}。如果后续需要通过 URL 访问，请显式调用 manageGateway(action="createRoute")，并把 upstreamResourceType="WEB_SCF" 一起传入，再按实际路径和鉴权需求创建访问入口。评测或其他外部调用方可能会以匿名身份访问，而且失败后不一定会把 EXCEED_AUTHORITY 再反馈给 AI；交付前请主动确认访问路径和函数安全规则，若已出现 EXCEED_AUTHORITY，请先调用 queryPermissions(action="getResourcePermission", resourceType="function", resourceId="${functionName}") 查看当前规则，再按需要使用 managePermissions(action="updateResourcePermission") 调整权限。`
           : `已创建函数 ${functionName}`;
 
+      let accessUrl: string | undefined;
+      let accessUrls: string[] = [];
+      let accessUrlSource: string | undefined;
+      if (func.type === "HTTP") {
+        const envId = cloudBaseOptions?.envId ?? await getEnvId(cloudBaseOptions);
+        const gateway = await resolveGatewayAccessUrls({
+          envId,
+          upstreamResourceName: functionName,
+          upstreamResourceTypes: ["WEB_SCF", "SCF"],
+          getManager: async () => {
+            const manager = await getManager();
+            if (!manager) {
+              throw new Error("cloudbase manager unavailable");
+            }
+            return manager as any;
+          },
+        });
+        accessUrl = gateway.accessUrl;
+        accessUrls = gateway.accessUrls;
+        accessUrlSource = gateway.accessUrlSource;
+      }
+
       return buildEnvelope(
         {
           action: input.action,
           functionName,
+          ...(accessUrl ? { accessUrl } : {}),
+          ...(accessUrls.length > 0 ? { accessUrls } : {}),
+          ...(accessUrlSource ? { accessUrlSource } : {}),
           raw: result as Record<string, unknown>,
         },
         message,
@@ -1281,12 +1307,34 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
           );
         }
         logCloudBaseResult(server.logger, imageResult);
+        const envId = cloudBaseOptions?.envId ?? await getEnvId(cloudBaseOptions);
+        const imageGatewayAccess = await resolveGatewayAccessUrls({
+          envId,
+          upstreamResourceName: input.functionName,
+          upstreamResourceTypes: ["WEB_SCF", "SCF"],
+          getManager: async () => {
+            const manager = await getManager();
+            if (!manager) {
+              throw new Error("cloudbase manager unavailable");
+            }
+            return manager as any;
+          },
+        });
         return buildEnvelope(
           {
             action: input.action,
             functionName: input.functionName,
             deployMode: "image",
             imageUri: updateImageConfig.imageUri,
+            ...(imageGatewayAccess.accessUrl
+              ? { accessUrl: imageGatewayAccess.accessUrl }
+              : {}),
+            ...(imageGatewayAccess.accessUrls.length > 0
+              ? { accessUrls: imageGatewayAccess.accessUrls }
+              : {}),
+            ...(imageGatewayAccess.accessUrlSource
+              ? { accessUrlSource: imageGatewayAccess.accessUrlSource }
+              : {}),
             raw: imageResult as Record<string, unknown>,
           },
           `已将函数 ${input.functionName} 的镜像更新为 ${updateImageConfig.imageUri}。` +
@@ -1331,10 +1379,30 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
       }
 
       logCloudBaseResult(server.logger, result);
+      const envId = cloudBaseOptions?.envId ?? await getEnvId(cloudBaseOptions);
+      const gatewayAccess = await resolveGatewayAccessUrls({
+        envId,
+        upstreamResourceName: input.functionName,
+        upstreamResourceTypes: ["WEB_SCF", "SCF"],
+        getManager: async () => {
+          const manager = await getManager();
+          if (!manager) {
+            throw new Error("cloudbase manager unavailable");
+          }
+          return manager as any;
+        },
+      });
       return buildEnvelope(
         {
           action: input.action,
           functionName: input.functionName,
+          ...(gatewayAccess.accessUrl ? { accessUrl: gatewayAccess.accessUrl } : {}),
+          ...(gatewayAccess.accessUrls.length > 0
+            ? { accessUrls: gatewayAccess.accessUrls }
+            : {}),
+          ...(gatewayAccess.accessUrlSource
+            ? { accessUrlSource: gatewayAccess.accessUrlSource }
+            : {}),
           raw: result as Record<string, unknown>,
         },
         `已更新函数 ${input.functionName} 的代码`,

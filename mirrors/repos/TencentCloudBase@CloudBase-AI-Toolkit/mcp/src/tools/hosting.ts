@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { getCloudBaseManager, getEnvId, logCloudBaseResult } from '../cloudbase-manager.js';
 import { ExtendedMcpServer } from '../server.js';
 import { isCloudMode } from '../utils/cloud-mode.js';
+import { preferGatewayOrFallback, resolveGatewayAccessUrls } from '../utils/gateway-access-urls.js';
 import { sendDeployNotification } from '../utils/notification.js';
 import { buildJsonToolResult, toolPayloadErrorToResult } from '../utils/tool-result.js';
 
@@ -697,10 +698,53 @@ export function registerHostingTools(server: ExtendedMcpServer) {
             // StaticDomain there but not in DescribeStaticStore.
             const cdnFromStore = (store.CdnDomain ?? store.StaticDomain) as string | undefined;
             const staticDomain = cdnFromStore || await resolveHostingStaticDomain(cloudbase, server.logger);
-            const accessUrl = buildHostingAccessUrl(staticDomain, input.cloudPath, input.localPath);
+            const fallbackAccessUrl = buildHostingAccessUrl(staticDomain, input.cloudPath, input.localPath);
+            const envId = await getEnvId(cloudBaseOptions);
+            const gatewayCandidates = Array.from(
+              new Set(
+                [
+                  store.StaticStoreName,
+                  store.Name,
+                  store.StoreName,
+                  store.Bucket,
+                  "staticstore",
+                ]
+                  .map((item) => (typeof item === "string" ? item.trim() : ""))
+                  .filter(Boolean),
+              ),
+            );
+            let accessUrl = fallbackAccessUrl;
+            let accessUrls = accessUrl ? [accessUrl] : [];
+            let accessUrlSource: string | undefined = accessUrl
+              ? "hosting.staticDomain"
+              : undefined;
+            for (const upstreamName of gatewayCandidates) {
+              const gateway = await resolveGatewayAccessUrls({
+                envId,
+                upstreamResourceName: upstreamName,
+                upstreamResourceTypes: ["STATIC_STORE"],
+                getManager: async () => {
+                  const manager = await getManager();
+                  if (!manager) {
+                    throw new Error("cloudbase manager unavailable");
+                  }
+                  return manager as any;
+                },
+              });
+              const preferred = preferGatewayOrFallback({
+                gateway,
+                fallbackUrl: fallbackAccessUrl || undefined,
+                fallbackSource: "hosting.staticDomain",
+              });
+              if (preferred.accessUrl) {
+                accessUrl = preferred.accessUrl;
+                accessUrls = preferred.accessUrls;
+                accessUrlSource = preferred.accessUrlSource;
+                break;
+              }
+            }
 
             try {
-              const envId = await getEnvId(cloudBaseOptions);
               let projectName = 'unknown';
               if (input.localPath) {
                 try {
@@ -735,6 +779,8 @@ export function registerHostingTools(server: ExtendedMcpServer) {
                 ignore: input.ignore,
                 staticDomain,
                 accessUrl,
+                accessUrls,
+                accessUrlSource,
                 result,
                 nextActions: uploadPrefix ? [buildFindFilesNextStep(uploadPrefix.replace(/^\/+/, ''))] : undefined,
               },

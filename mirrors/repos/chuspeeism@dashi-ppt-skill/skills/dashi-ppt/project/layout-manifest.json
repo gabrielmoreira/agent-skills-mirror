@@ -45915,6 +45915,9 @@
           "min": 0,
           "max": 3,
           "step": 1,
+          "countArrays": [
+            "thumbsData"
+          ],
           "desc": "右侧缩略图机位数量",
           "publicKey": "thumbCount"
         },
@@ -45926,6 +45929,9 @@
           "min": 0,
           "max": 4,
           "step": 1,
+          "countArrays": [
+            "images"
+          ],
           "desc": "显示图片槽的画框数(主图优先)",
           "publicKey": "mediaCount"
         },
@@ -45990,7 +45996,7 @@
           "publicKey": "thumbCount",
           "label": "缩略图数量",
           "arrays": [
-            "images"
+            "thumbsData"
           ],
           "min": 0,
           "max": 3

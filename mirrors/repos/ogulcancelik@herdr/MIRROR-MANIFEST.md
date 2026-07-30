@@ -65,7 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.agents/skills/triage/SKILL.md`](.agents/skills/triage/SKILL.md) |
 | 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`SKILL.md`](SKILL.md) |
+| 7 | ✓ | [`skills/herdr/SKILL.md`](skills/herdr/SKILL.md) |
 | 8 | ✓ | [`vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md`](vendor/libghostty-vt/.agents/skills/writing-commit-messages/SKILL.md) |
 | 9 | ✓ | [`vendor/libghostty-vt/AGENTS.md`](vendor/libghostty-vt/AGENTS.md) |
 | 10 | ✓ | [`vendor/libghostty-vt/CLAUDE.md`](vendor/libghostty-vt/CLAUDE.md) |
