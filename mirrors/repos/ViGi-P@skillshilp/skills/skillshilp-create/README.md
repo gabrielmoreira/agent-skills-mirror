@@ -13,6 +13,7 @@ Use this skill to:
 - Design a modular skill collection.
 - Architect the structure of a new Agent Skill.
 - Generate supporting reference files, scripts, and assets.
+- Validate basic skill structure with the bundled portable Bash validator.
 
 ## When Not to Use
 

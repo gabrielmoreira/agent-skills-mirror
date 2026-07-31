@@ -1,6 +1,6 @@
 ---
 name: drawio-mcp-diagramming
-description: Create and edit diagrams using the Draw.io MCP server — any shape, any vendor. USE FOR: draw me a diagram, create an architecture diagram, add Azure/AWS/GCP/Cisco/Kubernetes icons to a diagram, convert Mermaid to draw.io, fix overlapping arrows, edit a .drawio file, network topology diagrams, CI/CD pipeline diagrams, auth flow diagrams. Supports XML, Mermaid, and CSV. Uses `drawio/search_shapes` to find any of 10,000+ shapes across all vendor and icon libraries. DO NOT USE FOR: Excalidraw output (use excalidraw-mcp-diagramming skill).
+description: "Create and edit diagrams using the Draw.io MCP server — any shape, any vendor. USE FOR: draw me a diagram, create an architecture diagram, add Azure/AWS/GCP/Cisco/Kubernetes icons to a diagram, convert Mermaid to draw.io, fix overlapping arrows, edit a .drawio file, network topology diagrams, CI/CD pipeline diagrams, auth flow diagrams. Supports XML, Mermaid, and CSV. Uses drawio/search_shapes to find any of 10,000+ shapes across all vendor and icon libraries. DO NOT USE FOR: Excalidraw output (use excalidraw-mcp-diagramming skill)."
 metadata:
   author: Thomas Thornton
   version: "1.1.1"

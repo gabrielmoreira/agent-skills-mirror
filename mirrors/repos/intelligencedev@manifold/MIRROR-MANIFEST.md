@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `intelligencedev/manifold` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `intelligencedev/manifold` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `intelligencedev/manifold` — 26 default patterns, 0 followed pattern
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`assets/skills/manifold-api/SKILL.md`](assets/skills/manifold-api/SKILL.md) |
-| 3 | ✓ | [`web/agentd-ui/AGENTS.md`](web/agentd-ui/AGENTS.md) |
+| 3 | ✓ | [`assets/skills/warpp-workflow-authoring/SKILL.md`](assets/skills/warpp-workflow-authoring/SKILL.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`web/agentd-ui/AGENTS.md`](web/agentd-ui/AGENTS.md) |
 
 ---
 

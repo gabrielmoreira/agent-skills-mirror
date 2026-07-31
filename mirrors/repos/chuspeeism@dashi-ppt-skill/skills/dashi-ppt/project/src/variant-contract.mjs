@@ -360,10 +360,12 @@ function withProjectionAliases(item, index) {
   const displayValue = String(item?.displayValue || '');
   const unit = String(item?.unit || '');
   const pageLabel = String(item?.pageLabel || '');
-  const ordinal = String(index + 1);
+  const ordinalNumber = index + 1;
+  const ordinal = String(ordinalNumber);
   return {
     ...item,
     projectionOrdinal: ordinal,
+    projectionOrdinalNumber: ordinalNumber,
     projectionLabel: [ordinal, label].filter(hasMappedValue).join('. '),
     projectionDetail: [label, detail].filter(hasMappedValue).join('：') || label || ordinal,
     projectionValue: displayValue,

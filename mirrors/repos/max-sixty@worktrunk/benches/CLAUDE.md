@@ -30,6 +30,9 @@ cargo bench --bench prune --features real-repo-benches prune_real_repo  # rust s
 # Picker preview pre-compute (wt switch preview workload)
 cargo bench --bench picker_preview               # all variants
 cargo bench --bench picker_preview warm          # warm only
+
+# Shell completion (COMPLETE=$SHELL wt -- wt switch <Tab>) — one variant, no filter
+cargo bench --bench completion
 ```
 
 ## Fixtures and Benches
@@ -44,10 +47,10 @@ it runs on.
 | Fixture (generator) | `wt-perf setup` handle | Bench group(s) |
 |---|---|---|
 | `RepoConfig::typical(N)` | `typical-N` | `skeleton`, `worktree_scaling` (list.rs); `first_output` (time_to_first_output.rs); `picker_preview`; `remove_e2e` |
-| `RepoConfig::branches(N, M)` | `branches-N[-M]` | `completion_switch` (completion.rs) |
+| `RepoConfig::branches(N, M)` | `branches-N[-M]` | — (branch-scaling investigation only) |
 | `RepoConfig::many_divergent_branches()` | `divergent` | `divergent_branches` (list.rs) |
-| `create_mixed_repo(W, B)` | `mixed-W-B` | `full` (list.rs) |
-| `create_prune_repo_at(M, U)` | `prune-M-U` | `prune_e2e` (prune.rs) |
+| `create_mixed_repo(W, B, R)` | `mixed-W-B[-R]` | `full` (list.rs); `completion_switch` (completion.rs) |
+| `create_prune_repo(M, U)` | `prune-M-U` | `prune_e2e` (prune.rs) |
 | `ensure_prune_real_repo(M, U)` | `prune-real[-M-U]` | `prune_real_repo` (prune.rs) |
 | rust-lang/rust clone (`clone_rust_repo`) | — | `real_repo`, `real_repo_many_branches` (list.rs) |
 | `lean_worktrees` (local to alias.rs) | — | `dispatch` (alias.rs) |
@@ -57,6 +60,12 @@ Renaming a bench group is not free: `.github/scripts/criterion-to-jsonl.py`
 keys each time-series row by the criterion output path (`<group>/<id>`), and the
 daily `benchmarks` workflow appends those to a gist. A rename orphans that
 series.
+
+Every ephemeral generator returns `FixtureRepo`, the owner of the temporary
+root plus the canonical primary/linked-worktree paths. Repo-bound benchmark
+subprocesses start through `wt_command`, and warm/cold matrices use
+`CacheState::WARM_AND_COLD`; keep lifecycle, environment isolation, and cache
+labels in those shared APIs rather than re-deriving them in a bench target.
 
 ## Rust Repo Caching
 
@@ -344,7 +353,8 @@ cargo run -p wt-perf -- setup typical-8
 #   branches-N      - N branches, 1 commit each
 #   branches-N-M    - N branches, M commits each
 #   divergent       - 200 branches × 20 commits (GH #461 scenario)
-#   mixed-W-B       - W worktrees + B branches in varied states (the `full` fixture)
+#   mixed-W-B[-R]   - W worktrees + B branches in varied states, plus R
+#                     remote-tracking refs (the `full` and completion fixture)
 #   prune-M-U       - M squash-merged candidates + U two-sided-diverged
 #                     worktrees/branches (the `wt step prune` workload; see
 #                     benches/prune.rs)
@@ -415,6 +425,28 @@ For visual critical-path inspection — the one thing the aggregate report can't
 show — open the Chrome Trace JSON (`wt-perf timeline --chrome`, or `wt-perf
 trace` on an existing `trace.jsonl`) in <https://ui.perfetto.dev> or
 chrome://tracing.
+
+**A traced run has no prewarm, so it is not the run users get.** At `-vv`,
+`logging::init` opens the log sinks through `log_files::try_create`, which calls
+`Repository::current()` and so resolves the git common dir. `Repository::prewarm`
+treats a populated `GIT_COMMON_DIR_CACHE` as "prewarm already ran" and returns
+without doing anything — so in every `-vv` run (and therefore every
+`wt-perf timeline`), the rev-parse batch, the `git config --list -z` preload, and
+the user-config preload never happen concurrently. Their work still gets done, one
+serial on-demand fork at a time, which is what the trace shows.
+
+The trace is still right about what ran; it is wrong about what production
+overlaps. Two consequences when reading one:
+
+- Don't conclude a phase is serial because the trace shows it serial. Read
+  `prewarm` / `prewarm_rev_parse` / `prewarm_git_config` spans first: if they're
+  absent, the trace is a no-prewarm run and the startup calls are ordered
+  differently than in production.
+- Don't measure a startup change by trace alone. Time the real binary
+  (`hyperfine` on the shipped path) and, for a fork inventory that doesn't perturb
+  the run, put a logging shim named `git` at the front of `PATH` — a two-line
+  `sh` script that appends `"$*"` to a file and `exec`s the real git. That counts
+  every spawn with no verbosity flag set.
 
 ### Performance questions
 

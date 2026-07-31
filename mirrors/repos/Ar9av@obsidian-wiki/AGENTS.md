@@ -90,6 +90,8 @@ Skills live in `.skills/<name>/SKILL.md`. Match the user's intent to the right s
 | "/vault-skill-factory" / "make a skill from my wiki" / "turn these pages into a skill" / "package my notes on X as a skill" / "build a domain-expert skill from my vault" | `vault-skill-factory` |
 | "/wiki-claude [topic]" / "/wiki-codex [topic]" / "/wiki-hermes [topic]" / "/wiki-openclaw [topic]" / "/wiki-copilot [topic]" / "/wiki-pi [topic]" | `wiki-agent` |
 | "/memory-bridge" / "browse codex memory" / "what did codex know about X" / "compare tool memories" / "cross-tool memory" | `memory-bridge` |
+| "/session-brain" / "build my session map" / "cluster my claude sessions" / "rebuild the session graph" / "what topics have gone stale" | `session-brain` |
+| "/wiki-sessions [topic]" / "which session did I do X in" / "find the session about X" / "when did I last work on X" / "have I done this before" | `session-search` |
 | "/daily-update" / "morning sync" / "refresh the wiki index" / "set up the daily cron" / "install terminal notification" | `daily-update` |
 | "/impl-validator" / "check this implementation" / "validate what you did" / "is this correct?" | `impl-validator` |
 | "/wiki-switch NAME" / "switch to my work wiki" / "switch vault" / "change wiki" / "list my wikis" / "show my vaults" / "create a new vault config" | `wiki-switch` |
@@ -97,6 +99,16 @@ Skills live in `.skills/<name>/SKILL.md`. Match the user's intent to the right s
 | "/wiki-context-pack" / "make a context pack" / "context slice for X" / "pack the wiki for my agent" / "bounded context for Y" | `wiki-context-pack` |
 | "/wiki-stage-commit" / "review staged pages" / "commit staged writes" / "promote staged pages" / "what's waiting in staging" | `wiki-stage-commit` |
 | "restyle Obsidian" / "adjust the vault layout" / "CSS snippet" / "tune tabs/sidebars/graph panes" | `obsidian-layout-adjustment` |
+
+### Session history: ingest vs. retrieve
+
+Three skills read agent session caches, and they are not interchangeable:
+
+- `wiki-history-ingest` (and its per-agent variants) **ingests** — distils sessions into permanent vault pages.
+- `wiki-agent` **ingests a slice** — finds sessions about one topic in another agent's history and pulls them into the vault.
+- `session-brain` / `session-search` **retrieve** — build a topic graph over the raw sessions and find or load one. They write a sidecar at `~/.claude/session-brain/` and never touch the vault.
+
+If the user wants knowledge preserved, ingest. If they want to find the session where something happened, retrieve.
 
 ## Cross-Project Usage
 
@@ -155,5 +167,7 @@ See `wiki-query` and `wiki-export` skills for how the filter is applied.
 ## Architecture Reference
 
 For the full pattern (three-layer architecture, page templates, project org), read `.skills/llm-wiki/SKILL.md`.
+
+Human-facing documentation lives in `docs/` — `installation.md`, `agents.md`, `skills.md`, `cli.md`, `configuration.md`, `architecture.md`, `session-brain.md`, `contributing.md`. `README.md` is a landing page only; when you add a skill, CLI command, or config variable, update the matching `docs/` page rather than the README.
 
 The vault format is structurally conformant with the [Open Knowledge Format (OKF) v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/blob/main/okf/SPEC.md) — markdown files with YAML frontmatter, category subfolders, reserved `index.md`/`log.md`. `wiki-export` (OKF mode) and `wiki-import` are the bridge: they translate between our native frontmatter (`title`/`category`/`tags`/`sources`/`created`/`updated` + `summary`) and OKF (`type`/`title`/`description`/`resource`/`tags`/`timestamp`), making vaults exchangeable with any OKF tool. The OKF round-trip is lossless; the `graph.json` round-trip is not.

@@ -561,7 +561,7 @@ describe("SQL database tools", () => {
     });
   });
 
-  it("queryMysqlDatabase(getInstanceInfo) uses cluster detail after create result succeeds", async () => {
+  it("queryMysqlDatabase(getInstanceInfo) returns lifecycle context without connection payloads", async () => {
     mockCommonServiceCall.mockImplementation(async ({ Action }: { Action: string }) => {
       if (Action === "DescribeCreateMySQLResult") {
         return {
@@ -576,8 +576,13 @@ describe("SQL database tools", () => {
           RequestId: "req-cluster",
           Data: {
             DbClusterId: "cluster-1",
+            InstanceId: "inst-1",
             DbInfo: {
               ClusterStatus: "running",
+              Host: "10.0.0.8",
+              Port: 3306,
+              User: "root",
+              Password: "secret-password",
             },
           },
         };
@@ -598,9 +603,103 @@ describe("SQL database tools", () => {
       data: {
         exists: true,
         clusterId: "cluster-1",
-        instanceId: "default",
+        instanceId: "inst-1",
         status: "READY",
       },
     });
+    expect(payload.data.clusterDetail).toBeUndefined();
+    expect(payload.data.createResult).toBeUndefined();
+    expect(JSON.stringify(payload)).not.toContain("secret-password");
+    expect(JSON.stringify(payload)).not.toContain("10.0.0.8");
+  });
+
+  it("queryMysqlDatabase(getConnectionInfo) passthroughs raw connection payloads including credentials", async () => {
+    mockCommonServiceCall.mockImplementation(async ({ Action }: { Action: string }) => {
+      if (Action === "DescribeCreateMySQLResult") {
+        return {
+          RequestId: "req-create",
+          Data: {
+            Status: "success",
+          },
+        };
+      }
+      if (Action === "DescribeMySQLClusterDetail") {
+        return {
+          RequestId: "req-cluster",
+          Data: {
+            DbClusterId: "cluster-1",
+            InstanceId: "inst-1",
+            DbInfo: {
+              ClusterStatus: "running",
+              Host: "10.0.0.8",
+              Port: 3306,
+              User: "root",
+              Password: "secret-password",
+            },
+          },
+        };
+      }
+      return {
+        RequestId: "req-1",
+      };
+    });
+
+    const { tools } = createMockServer();
+    expect(tools.queryMysqlDatabase.meta.inputSchema.action._def.values).toContain(
+      "getConnectionInfo",
+    );
+
+    const result = await tools.queryMysqlDatabase.handler({
+      action: "getConnectionInfo",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        exists: true,
+        clusterId: "cluster-1",
+        instanceId: "inst-1",
+        status: "READY",
+        clusterDetail: {
+          DbClusterId: "cluster-1",
+          DbInfo: {
+            Host: "10.0.0.8",
+            Password: "secret-password",
+          },
+        },
+      },
+    });
+    expect(payload.message).toMatch(/TCP migration/i);
+    expect(payload.nextActions?.[0]).toMatchObject({
+      tool: "queryMysqlDatabase",
+      action: "runQuery",
+    });
+  });
+
+  it("queryMysqlDatabase(getConnectionInfo) fails when MySQL is not provisioned", async () => {
+    mockCommonServiceCall.mockImplementation(async ({ Action }: { Action: string }) => {
+      if (Action === "DescribeCreateMySQLResult") {
+        return {
+          RequestId: "req-create",
+          Status: "NOT_FOUND",
+        };
+      }
+      throw Object.assign(new Error("not found"), {
+        code: "FailedOperation.DataSourceNotExist",
+      });
+    });
+
+    const { tools } = createMockServer();
+    const result = await tools.queryMysqlDatabase.handler({
+      action: "getConnectionInfo",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload).toMatchObject({
+      success: false,
+      errorCode: "MYSQL_NOT_CREATED",
+    });
+    expect(payload.data?.clusterDetail).toBeUndefined();
   });
 });

@@ -74,6 +74,10 @@ Launches headless Chrome, captures the fully rendered DOM, and produces a self-c
       --url http://localhost:5173/dashboard --output .stitch/dashboard.html --wait 2000 --html-class dark
     ```
 
+4.  **Clean Up Dev Server**:
+    If a local dev server was started specifically for snapshot extraction, make sure to stop the server process or terminate the background task once extraction is completed.
+
+
 ### Script Flags
 
 | Flag | Default | Description |
@@ -85,17 +89,19 @@ Launches headless Chrome, captures the fully rendered DOM, and produces a self-c
 | `--html-class` | — | Class(es) for `<html>` element (e.g., `dark`) |
 | `--remove-fixed` | `false` | Remove fixed/sticky elements (cookie banners, chat widgets) |
 | `--full-height` | `false` | Resize viewport to full scroll height |
-| `--title` | — | Override page title |
+| `--title` | — | Override page title (set to the route path, e.g. `/dashboard` or `/settings/profile`) |
 | `--auth-script` | — | Path to a JS/TS module that exports a default `async (page) => void` function for authentication |
 | `--inline-canvas` | `false` | Convert `<canvas>` elements (ECharts, Chart.js, D3) to base64 `<img>` tags |
 
 ### What It Does Automatically
 
+- Captures all CSSOM rules from `document.styleSheets` (preserves dynamic Vite/Tailwind dev styles and CSS-in-JS)
 - Inlines all `<link rel="stylesheet">` → `<style>` blocks
-- Converts `<img>` `src` **and `srcset`** → base64 data URIs (skips fonts)
+- Converts `<img>` `src` **and `srcset`** → base64 data URIs (skips external fonts)
+- Inlines same-origin and relative icon font files (`@font-face`) as base64 data URIs so ligatures never render as ASCII text
 - Inlines `<source srcset>` URLs as base64
 - Removes failed/dead `srcset` entries so the browser falls back to the inlined `src`
-- Removes `<script>` tags, Vite overlay, Next.js dev indicators
+- Removes `<script>` tags, Vite HMR dev style blocks (`createHotContext`, `import.meta.hot`), and dev overlays
 - Resolves relative CSS `url()` paths before inlining
 
 ### Framework Notes
@@ -116,6 +122,7 @@ Launches headless Chrome, captures the fully rendered DOM, and produces a self-c
 | :--- | :--- |
 | Images missing | Increase `--wait` |
 | Images show as broken after server stops | Verify `srcset` was inlined — check log for "Inlined N images". If `srcset` URLs failed, they are auto-removed so `src` (inlined) is used. |
+| Icons display as text / Serif unstyled font | Ensure `snapshot.ts` captures CSSOM from `document.styleSheets` (step 0) and same-origin icon fonts (`@font-face`) are inlined as base64 data URIs. |
 | Next.js `/_next/image` not inlined | Ensure the dev server is running when snapshot runs — the script fetches optimized images from the running server. |
 | Dark mode not applied | `--html-class dark` |
 | Cookie banner in output | `--remove-fixed` |

@@ -245,23 +245,109 @@ obsidian-mind works with Claude Code, Codex CLI, and Gemini CLI. The vault conve
 
 Your vault normally only helps while you are sitting in it. The **`om` MCP server** changes that: a coding session in *any other repository* can search your notes, read them, follow the graph, and record what it learned back into the vault.
 
+### Step 1 — register the server once, for every repo
+
+```bash
+claude mcp add --scope user om node "/absolute/path/to/your-vault/.claude/scripts/om-mcp.mjs"
+```
+
+User scope is the right default here: it registers in your own config, so the server is available in **every directory on the machine** with nothing added to any repository. No env var is needed either, because the launcher resolves the vault from its own location.
+
+<details>
+<summary>Per-repo alternative, and one trap to avoid</summary>
+
+If you would rather a specific repo carry the wiring (so a teammate gets it on clone), put it in that project's `.mcp.json`:
+
 ```json
 {
   "mcpServers": {
     "om": {
       "command": "node",
-      "args": ["/path/to/your-vault/.claude/scripts/om-mcp.mjs"]
+      "args": ["/absolute/path/to/your-vault/.claude/scripts/om-mcp.mjs"]
     }
   }
 }
 ```
 
-That goes in the **consuming project's** `.mcp.json`. Then add a short section to that project's own `CLAUDE.md` pointing at the vault.
+Note the cost: that path is **absolute and machine-specific**, so committing it breaks every collaborator and every other machine of yours.
+
+**Use an absolute path, and do not copy the relative one.** This vault's own `.mcp.json` registers `qmd` with a *relative* path (`.claude/scripts/qmd-mcp.mjs`). That is correct there, because a relative path resolves against the current working directory and a session in the vault is already in it. Reused for `om` in a consuming project, the same shape silently resolves against *that* project instead, and the server never starts.
+</details>
+
+### Step 2 — point the consuming project at the vault
+
+Add this to that project's own `CLAUDE.md`, filling in the triggers:
+
+```markdown
+## Where design decisions live
+
+Design rationale for this project is recorded outside this repo, reachable
+through the `om` MCP server.
+
+- **`search`** reaches the written record: why a choice was made, what was
+  rejected, what a constraint was set against. **Start here.**
+- **`expand`** shows a known note's links and backlinks, which is cheaper than
+  searching again for its neighbourhood.
+- **`recall`** returns short durable lessons scoped to this project. It is empty
+  until sessions put things in it, so early on it returns nothing, and that is
+  *not* evidence the record is missing.
+- **`health`** when something that should be there cannot be found. Every failure
+  in this layer looks identical from outside (no results), and this tells them
+  apart.
+
+Consult the record before changing:
+
+- <the storage format or schema>
+- <the ID or key semantics>
+- <the public surface: CLI flags, API shape, exported names>
+
+If that record and this repo disagree, the record holds the *why*. Reconcile
+before changing behaviour.
+
+**Say what came back, in whatever you write before implementing:** a plan, a
+design note, an issue comment. Name the recorded decisions the work rests on,
+anything you found that argues *against* the approach, and an explicit "nothing
+recorded on this" when the record is empty, which is a finding rather than a
+blank to skip. Consulting once at the start of a task is consulting at the
+moment you know least about what you will need; writing the result down moves it
+to the moment you commit, while a contradiction is still free to fix.
+
+## Recording what you learn
+
+Two tools, and picking the wrong one is the common mistake. The test is whether
+it would help someone working on a **different** project.
+
+- **`remember`** stores a durable lesson: a constraint you discovered, a gotcha
+  that cost time, a rule that generalises. Set `confidence`
+  (`verified` / `inferred` / `unverified`) honestly and supply `verification`
+  when you claim `verified`. For something specific to this project use
+  `scope: "project"` with `projects: ["<this-repo>"]`. Reach for
+  `scope: "platform"` before `"general"`: a dependency's quirk or a language's
+  rule is platform-level however hard-won, and `general` claims it would help
+  someone whose stack shares nothing with yours. When you do claim `general`,
+  supply `generality` saying why, the same way `verification` backs `verified`.
+- **`record_work`** files what happened *here*: changes, decisions and the
+  alternatives rejected, what was learned, what is still open, how it was
+  verified.
+
+A dependency limitation that would bite any project is a `remember`. "Landed the
+watch engine and here is what it cost" is a `record_work`. Do both when both are
+true.
+```
+
+**Three to five triggers, and name specific nouns.** `Consult it before changing the storage format, ID semantics, or the CLI surface` works. `Check the vault for context` is exactly the advisory phrasing that gets skipped, because it gives the model nothing to match against the task in front of it.
+
+**Anchor the consultation to an artifact, not to a moment.** "Consult before changing X" fires once, at the start of a task, which is when the session knows least about what it will need. Requiring the *result* to appear in whatever the project writes before implementing turns consultation from something a session intends to do into something an artifact is incomplete without. Measured across a day of real use: captures ran roughly four times heavier than consultations, because `remember` fires on an **event** (you just learned something) while consulting fires on **intention**. Event-triggered behaviour happens; intention-triggered behaviour decays.
+
+> [!TIP]
+> **Do not lead with `recall`.** It returns *memories*, and the store is empty on a project's first session **by construction**: `remember` refuses when called from inside the vault, since a memory written there would be scoped to the vault and reach nobody. So memories only ever arrive from outside. A snippet that promises `recall` will return this project's decisions therefore returns nothing on the first run, and fails **silently as "no results"** rather than as an error.
 
 > [!IMPORTANT]
 > **Both steps are required, and the second is not paperwork.** Measured: with the server wired and no repo-side instruction, a session made **zero** vault calls and implemented a design the vault had recorded as explicitly rejected. With the instruction present, it refused and cited the note.
 >
 > A **prohibition** in the MCP `instructions` field propagates into the calling session reliably. A positive *"go consult the vault"* is advisory and gets skipped whenever a nearer source exists. The server can stop a session doing something; only the project's own law makes one go looking.
+>
+> That asymmetry decides *which side* a rule belongs on, and it matters most for anything you would rather not advertise. Writing "this repo deliberately excludes X" into a **public** repo announces the withholding and points at exactly what is being withheld. The same rule as a prohibition in `instructions` reaches every session invisibly, and the repo says nothing at all. Routing belongs repo-side because it has to; constraints belong server-side because they can.
 
 **What the session gets:** `search` (semantic + keyword), `expand` (a note's links and backlinks), `recall` (durable lessons scoped to that repo), `remember` (record a lesson), `record_work` (file what happened), `reason` (judgement across several notes), and `health` (is the wiring intact?). Plus your notes as readable resources.
 

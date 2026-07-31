@@ -16,15 +16,80 @@ Bun-native TypeScript with no separate server compile step.
   `tests/helpers/`, broader scenarios in `tests/e2e-style/`.
 - `gui/` — React + Vite dashboard; packaged output is served from `gui/dist`.
 - `docs-site/` — public docs (Astro + Starlight), deployed to GitHub Pages.
-- `go/` — Go native runtime (primary on the `dev2-go` line during transition).
+- `go/` — retired Go native-runtime experiment; kept only where the TypeScript
+  runtime still references it. New work does not go here.
 - `structure/` — maintainer invariants and architecture notes; read before
   changing shared subsystems.
 - `scripts/` — release and maintenance tooling; `scripts/release.ts` is the
   release authority.
-- `devlog/` — planning and investigation artifacts (mostly gitignored).
+- `devlog/` — planning and investigation notes, tracked in this repository. See
+  "The `devlog` directory" below for what may and may not go there.
 
 Read the nearest nested `AGENTS.md` before changing files in a scoped
 directory (`src/`, `gui/`, `docs-site/`, `scripts/`, `.github/`).
+
+## The `devlog` directory
+
+Planning notes, triage matrices, and investigation artifacts live in `devlog/`,
+tracked like any other documentation. There is no submodule and no private
+mirror. It was a private submodule until the pointer churn outgrew its value:
+1723 commits touched the gitlink, and `dev`, `preview`, and `main` each carried a
+different pointer, so every branch move and promotion dragged a diff.
+
+- `devlog/_plan/` — units still open, one directory per unit, decade-numbered
+  docs.
+- `devlog/_fin/` — closed units, moved here once a terminal outcome is recorded.
+  A `_fin` unit is a record of work already visible in public git history.
+- `devlog/_chase/` — external reference material for parity comparisons.
+  Reference *clones* are gitignored: they are third-party source carrying their
+  own licenses and have no business in this repository's history.
+
+Nothing in the build, typecheck, or test path reads from `devlog/`, so a
+contributor who ignores it entirely still passes every gate. `privacy:scan` does
+read it — that is deliberate, and it is what makes a public devlog safe rather
+than merely visible.
+
+Two mechanical guards in `tests/repo-hygiene.test.ts` back this up: no `160000`
+gitlink may be tracked anywhere, and neither the vendored reference clones nor
+the security triage excised before publication may reappear in the index. Both
+were driven red once to prove they are not vacuous. The gitlink assertion exists
+because a gitlink in a tree CI does not initialize breaks `actions/checkout` for
+every contributor, which happened twice.
+
+## Security working notes
+
+**Security work is done in scratch space, never in a tracked directory.** That
+includes unreleased findings, severity assessments, draft advisories, exploit
+or bypass reasoning, reproduction steps for an unfixed defect, and
+pre-disclosure patch plans.
+
+Use `.tmp/` in the working tree (already gitignored) or a `mktemp -d` path.
+`devlog/` is **not** an acceptable location — it is a public directory in a
+public repository, so anything committed there is disclosed the moment it is
+pushed, and the history is not practical to purge afterwards. A private
+repository is not acceptable either: it gets cloned across machines and CI and
+outlives the embargo.
+
+**This binds maintainers exactly as it binds contributors and agents.** The rule
+has been violated by maintainer-authored triage before: two units of open
+security review accumulated under `devlog/_plan/` and had to be excised before
+this directory could be published. Seniority is not an exemption, and "it is
+only in the private half" is no longer a thing that exists.
+
+The test to apply before writing a security note into `devlog/`: **is there
+already a public diff that reveals this weakness?** If the fix has shipped, the
+writeup discloses nothing new and belongs in `_fin/`. If it has not, the note is
+pre-disclosure material and goes to scratch. That distinction is why closed
+hardening records stay in the tree while open triage does not.
+
+Only the published outcome reaches a repository — the fix itself, its
+regression test, the release note, the advisory once it is public. Draft the
+advisory in scratch space and delete the scratch directory once the advisory is
+live.
+
+This applies to `AGENTS.md`-following agents as much as to humans. If a task
+asks you to write up a security finding, put the write-up in scratch space and
+say where it is; do not add it to `devlog/`, `structure/`, or `docs-site/`.
 
 ## Commands
 
@@ -42,49 +107,29 @@ non-trivial change. CI runs these on Linux, Windows, and macOS.
 
 ## Branch policy
 
-- `dev` — integration branch and the default target. A pull request goes here
-  unless it belongs to a scoped line below.
-- `dev2-go` — parallel integration line for the Go native port: `go/`,
-  `bin/native-runtime.mjs`, `src/lib/runtime-entry.ts`, and the Go
-  release-asset tooling. Open for pull requests: the target-branch check
-  accepts `dev` and `dev2-go` as integration targets. Keep it to scoped Go
-  native-port work — the check cannot tell an intentional target from a
-  mistaken one, so that boundary is a review decision. It converges back
-  through maintainer-controlled merges, and promotion to `main` still happens
-  only from `dev`.
+- `dev` — the single integration branch and the target for every pull request.
 - `main` — release branch. It only moves by maintainer-controlled promotion
   from `dev` (releases, docs deploys). Do not open feature PRs against `main`.
 - `preview` — prerelease train (`x.y.z-preview.*` versions).
 
-### Transition to `dev2-go`
+Bun-native TypeScript on `dev` is the only runtime line. If native code
+returns, the expectation is an incremental module (for example Rust via N-API)
+landing on `dev`, not a second full-runtime branch.
 
-The project is moving its primary runtime to the Go native port, so `dev2-go`
-has to keep receiving everything that lands on `dev`. Pull requests against
-`dev` stay welcome and unchanged — the extra work belongs to the maintainer who
-merges them.
+Stacked child pull requests that target another **open** PR's head branch are
+an intentional review workflow, not an alternate integration line. The
+**`enforce-target`** check skips the wrong-base gate for those children; after
+the parent lands or closes, retarget the child to `dev`.
 
-A merge into `dev` does not finish the task. The merging maintainer also
-rebases that work onto `dev2-go`, ports whatever needs a Go counterpart under
-`go/`, and merges the port. The item is done only when both lines carry the
-change. If a change has no Go counterpart, say so in the merge or tracking
-issue; if the port has to wait, open a `needs-go-port` tracking issue against
-`dev2-go` naming the source commits before closing out the `dev` merge.
-[`MAINTAINERS.md`](./MAINTAINERS.md) holds the authoritative wording.
-
-The Claude Desktop integration formerly carried on the `claudedesktop` branch is
-now fully merged into `dev`, and that branch has been retired. Desktop work
-continues as normal pull requests against `dev`.
-
-Porting and rebase pull requests are welcome. Forward-porting a fix from one
-integration line to another, or rebasing a stale branch onto the current head,
-is ordinary maintenance rather than noise — open it as a normal pull request
-and name the source commits in the description.
+Rebase pull requests are welcome. Bringing a stale branch onto the current head
+is ordinary maintenance — open it as a normal pull request and name the source
+commits in the description.
 
 The **`enforce-target`** CI check rejects pull requests whose head
-ancestry sits on the **`main`** tip while far behind **`dev`** or **`dev2-go`**,
-and rejects empty, thin, or malformed descriptions; authors with repository
-push permission skip the ancestry heuristic only. As with approval requirements
-in [`MAINTAINERS.md`](./MAINTAINERS.md), this is enforced by convention until
+ancestry sits on the **`main`** tip while far behind **`dev`**, and rejects
+empty, thin, or malformed descriptions; authors with repository push permission
+skip the ancestry heuristic only. As with approval requirements in
+[`MAINTAINERS.md`](./MAINTAINERS.md), this is enforced by convention until
 branch protection is configured.
 
 [`MAINTAINERS.md`](./MAINTAINERS.md) is authoritative for review and merge
@@ -100,12 +145,8 @@ reviewers (Codex, CodeRabbit).
   language. Be detailed and specific: name the file and line, describe the
   concrete failure mode, and suggest a fix. Avoid vague or purely stylistic
   commentary.
-- **Branch targeting:** flag any pull request that targets neither `dev` nor
-  `dev2-go` (releases and maintainer promotions are the only exceptions).
-  `dev2-go` is accepted by the automation but scoped by review: if a pull
-  request targets it without touching `go/`, the native runtime entrypoint, or
-  the Go release-asset tooling, ask the author to retarget to `dev`. The
-  automation cannot make that judgement, which is why it is yours.
+- **Branch targeting:** flag any pull request that does not target `dev`
+  (releases and maintainer promotions are the only exceptions).
 - **Security boundary (highest priority):** changes touching authentication,
   credential/token handling, OAuth flows, GitHub Actions workflows, release
   automation (`scripts/release.ts`, `.github/workflows/release.yml`), or

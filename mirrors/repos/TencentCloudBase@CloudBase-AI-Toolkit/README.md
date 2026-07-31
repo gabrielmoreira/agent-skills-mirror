@@ -27,6 +27,7 @@ The CloudBase integration layer for AI coding tools: Plugin installs the stack, 
 **v2.25.x** (2026-07)
 
 - CloudRun / Gateway: VPC guidance when using TCP databases; Domain/Route with `upstreamResourceType` and path transmission
+- CloudRun / Gateway: preserve remote VPC & env config on redeploy; prefer custom-domain access URLs after deploy
 - Plugin: easier install via Open Plugin / marketplace packaging
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases

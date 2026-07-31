@@ -29,7 +29,7 @@ If not configured, explain what's needed and offer to help set it up.
 minutes ingest ~/meetings/2026-04-03-strategy-call.md
 ```
 
-### All meetings (backfill)
+### All normal meetings (backfill)
 ```bash
 minutes ingest --all
 ```
@@ -46,6 +46,7 @@ minutes ingest --all --dry-run
 3. **Updates** person profiles in the knowledge base (adapter-dependent format)
 4. **Appends** to `log.md` with a timestamped entry for each ingested meeting
 5. **Skips** facts that already exist (deduplication) or are below the confidence threshold
+6. **Excludes** meetings designated `sensitivity: restricted` from automated knowledge-base ingestion
 
 ## Safety guarantees
 

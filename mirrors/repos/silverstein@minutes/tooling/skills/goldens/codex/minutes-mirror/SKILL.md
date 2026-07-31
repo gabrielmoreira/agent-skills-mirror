@@ -77,15 +77,22 @@ Find the target meeting (filter to meetings, not voice memos — talk-time analy
 ```bash
 minutes list --content-type meeting --limit 5
 ```
-If the user named a specific meeting, use `minutes get <filename-without-.md>`. Otherwise pick the most recent.
+Require exit status 0. If the user named a specific meeting, use bounded search
+to identify its exact path; otherwise pick the most recent list result. Paths
+are hints, not retained capabilities.
 
 **Compute the metrics with the bundled helper script**, not by counting in-context. LLMs are bad at exact token counting; the script does it deterministically with regex and basic string ops.
 
 ```bash
+set -o pipefail
+minutes get "<exact path>" | \
 python3 "$MINUTES_SKILL_ROOT/scripts/mirror_metrics.py" \
-  "<path-to-meeting-file>" \
+  - \
   --self "$(cat ~/.minutes/config/self.txt 2>/dev/null | paste -sd, -)"
 ```
+
+Require both sides of the pipeline to exit successfully. The helper receives
+only the exact native-authorized bytes over stdin; never pass it a meeting path.
 
 The `--self` flag takes a comma-separated list of speaker labels (e.g., `Mat,Mat S.,SPEAKER_3`). Use the labels you cached in Phase 0.
 
@@ -103,16 +110,16 @@ The script outputs JSON to stdout with these fields:
 | `duration_minutes` | From last timestamp if present, else word-count estimate at 150 wpm |
 | `longest_monologue` | Longest uninterrupted self stretch: word count, seconds estimate, first 8 words, start time |
 | `longest_listen` | Same shape, but for the longest stretch where you didn't speak |
+| `outcome` | Supported frontmatter outcome (`won`, `lost`, `stalled`, `great`, `noise`), or null |
 
 The script exits non-zero on errors (file missing, no diarized turns, no self labels matched). On exit code 3 ("no turns matched any self label"), it tells you which speaker labels it found in the transcript — re-run with one of those, or update `~/.minutes/config/self.txt`.
 
-**Compute your baseline by running the script on the last ~10 meetings.** Use Glob to enumerate them:
-
-```
-Glob: <output_dir>/*.md   (where <output_dir> comes from `minutes paths`)
-```
-
-Take the 10 most recent (filename starts with `YYYY-MM-DD-`), run `mirror_metrics.py` on each, average the metrics. If you have fewer than 5 prior meetings to average, say so explicitly — "Baseline computed from only N meetings, treat with caution" — instead of pretending the comparison is meaningful.
+**Compute your baseline from the last ~10 bounded list results.** For each path,
+repeat the native `minutes get` to stdin pipeline above and require both commands
+to succeed. Never enumerate or open the meeting directory directly. Average the
+metrics. If you have fewer than 5 successful meetings, say so explicitly —
+"Baseline computed from only N meetings, treat with caution" — instead of
+pretending the comparison is meaningful.
 
 Once you have current-meeting metrics + baseline, flag anything >25% off baseline as worth noting.
 
@@ -139,15 +146,12 @@ Once you have current-meeting metrics + baseline, flag anything >25% off baselin
 
 Run across the last 30 days (or whatever window the user gives you).
 
-**Find the meeting directory** with `minutes paths` (look for the `output_dir:` line). Then use the **Glob tool** (not `ls`) to enumerate meeting files — Glob is more reliable than parsing shell output:
+Run `minutes list --content-type meeting --limit 50`, require exit status 0,
+and filter its JSON results to the requested window. Retrieve each selected
+meeting only through the native `minutes get` to stdin pipeline above.
 
-```
-Glob pattern: <output_dir>/*.md
-```
-
-Filter to the requested window. Each meeting filename starts with `YYYY-MM-DD-` so you can filter by filename prefix without reading the file. For more precise filtering, parse the `date:` field from each meeting's frontmatter.
-
-Compute the same per-meeting metrics across every meeting in the window. Then look for patterns:
+Compute the same per-meeting metrics across every successfully authorized normal
+meeting in the window. Then look for patterns:
 
 **Behavioral patterns** (always available):
 - Trend in talk ratio over time (going up = dominating more, going down = listening more)
@@ -161,13 +165,10 @@ Compute the same per-meeting metrics across every meeting in the window. Then lo
 
 Standard outcome tags that mirror correlates: `won`, `lost`, `stalled`, `great`, `noise`. These mirror the set defined by `/minutes-tag` — if that skill ever adds new standard tags, update mirror to recognize them too. Custom (non-standard) tags are ignored for correlation analysis.
 
-Quickly check whether any meetings are tagged before reading them all:
-
-```bash
-grep -l "^outcome:" "$(minutes paths | grep '^output_dir' | awk '{print $2}')"/*.md 2>/dev/null
-```
-
-If that returns nothing, skip the outcome-correlation section entirely. Otherwise read the `outcome:` field from each tagged meeting's frontmatter, group by tag (`won` / `lost` / `stalled` / `great` / `noise`), and compare metrics across groups:
+The helper includes a bounded `outcome` field (`won`, `lost`, `stalled`,
+`great`, `noise`, or null) from the same authorized bytes. If every result is
+null, skip the outcome-correlation section. Otherwise group only those returned
+values and compare metrics across groups:
 
 - "In meetings you tagged **won**, your average talk ratio was 38%. In **lost** meetings, 67%."
 - "In **stalled** meetings, your hedging rate was 2× your baseline."

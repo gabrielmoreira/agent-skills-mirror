@@ -1,10 +1,30 @@
 # Kun GUI 单运行时方案
 
-本文记录 Kun 桌面应用现在应该如何围绕一个专门服务 GUI 的
-Kun 改造。结论先说清楚：GUI 只保留一个 agent，唯一 ID 是
-`kun`；Code、Design、Write、连接手机都通过同一条 `kun serve`
-HTTP/SSE 边界工作；历史运行时、旧绘画/设计 starter、运行时诊断面板、
+本文记录 Kun 桌面应用和独立 TUI 如何共同使用同一个 Kun 运行时。
+结论先说清楚：GUI 只保留一个 agent，唯一 ID 是 `kun`；GUI、TUI、
+脚本、扩展和连接手机都通过同一条 `kun serve` HTTP/SSE 边界工作；
+GUI 与 TUI 可以独立启动并同时使用，任何一个客户端退出都不应关闭或
+重置共享运行时。历史运行时、旧绘画/设计 starter、运行时诊断面板、
 agent 切换都不再是产品表面。
+
+Graph 编排、自进化项目 Agent、恢复与治理仍运行在同一个 Kun 边界内，完整设计与
+运维说明见 [`docs/graph-mode.md`](./graph-mode.md)。
+
+## 客户端能力边界
+
+每个 turn 持久化发起端 `clientSurface`，取值为 `gui`、`tui`、`cli`、
+`api`、`im` 或 `extension`。自动续跑、后台任务和子代理必须继承来源，
+不能根据“最近连接的是 GUI 还是 TUI”修改进程全局状态。
+
+- `gui` 类型的 Tool Provider 只用于真正依赖桌面工作台的能力，例如
+  Design Canvas 和 Computer Use；非 GUI turn 在工具发现和执行两层都
+  必须拒绝这些 Provider。
+- goal、todo、plan、Skill、MCP、附件、审批、结构化用户输入和 subagent
+  都属于运行时能力，GUI/TUI 只负责各自的呈现，不应被误分类为 GUI 工具。
+- 稳定 system prompt 必须保持客户端中立，以便共享缓存前缀；当前客户端、
+  可用交互和禁止假设的界面能力，通过每个 turn 的动态 context 注入。
+- GUI、TUI、CLI、订阅 SDK 和 HTTP 模型路径必须使用同一条能力过滤规则，
+  不能只在某个前端隐藏菜单。
 
 ## 目标边界
 
@@ -165,9 +185,10 @@ Renderer 只应展示 Kun。需要删除或保持删除的 UI 面包括：
 - Agent 切换器：`AgentSwitcher` 不再出现，`AGENT_CATALOG` 只有
   `kun`。
 - 顶部连接状态条和 runtime 诊断按钮：不再把运行时检测作为用户入口。
-- Runtime insights/right panel：右侧面板只保留 Changes、Preview、Plan、
-  File 等 GUI 工作区视图，不再有 runtime/usage 控制台。
-- 斜杠菜单里的 `/usage`、`/runtime`：这些命令会暗示还有可切换运行时。
+- Runtime insights/right panel：右侧面板可以展示只读 Kun 用量与 provider
+  订阅额度，但不恢复 runtime 诊断、切换或控制台。
+- GUI 斜杠菜单不恢复 runtime 控制命令。独立 TUI 的 `/usage` 只读取
+  `GET /v1/usage` 生成用量报告，不代表可切换或可控制的运行时。
 - 设置页 provider selector：Settings -> Agents 直接展示 Kun 配置，
   包含 binary path、port、autoStart、API key、base URL、runtime token、
   data dir、model、approval policy、sandbox mode、insecure。
@@ -263,8 +284,8 @@ Renderer 只应展示 Kun。需要删除或保持删除的 UI 面包括：
 - `POST /v1/approvals/{id}` 继续支持工具审批；approval 和 user-input 都是
   gate/route/service 分层，不在 renderer 内实现 agent 逻辑。
 - `GET /v1/usage?group_by=thread|day` 返回累计 token、turn、cache hit 数据。
-  Workbench 首页和 composer 底部只消费 Kun usage，不再打开 runtime
-  insights 面板。
+  Workbench 首页、composer 底部和右侧“用量与额度”面板只消费 Kun usage，
+  不提供 runtime diagnostics 或控制动作。
 
 ## 已删除/应保持删除的旧入口
 
@@ -299,6 +320,27 @@ Kun 包按 ports & adapters 组织：
 GUI 侧不实现 agent 逻辑，只做 HTTP client、SSE subscription 和状态映射。
 新增能力时优先加 Kun tool 或 HTTP endpoint，不新增 GUI 内第二个
 agent。
+
+## GUI 与独立 TUI 联合发布约束
+
+GUI 包继续通过 `electron-builder` 内置 `kun/dist` 和平台启动器；独立 TUI 是额外的
+headless 压缩包，不替代 GUI 中的终端命令。两种形态必须从同一 commit 和同一份
+`kun/dist/runtime-build.json` 派生，并共享应用版本、tag、release channel 和 build ID。
+TUI 没有独立版本、独立 tag 或 npm 发布流程。
+
+独立 TUI 中 `/usage` 是只读 Kun 本地用量报告，展示当前会话、全部会话和
+Top Sessions；`/quota` 展示 provider 订阅额度，`/provider usage` 与
+`/provider quota` 保持相同的 provider 兼容语义，`/context` 继续展示当前
+请求上下文。这些命令只复用现有查询接口，不增加 runtime 诊断或控制入口。
+
+Stable 和 Daily 的发布工作流都必须生成 macOS arm64/x64、Windows x64、Linux x64
+四个独立 TUI 目标，并把 GUI/TUI 同一组资产上传到 GitHub Release 与 R2。R2 的
+`latest.json` 同时描述 GUI 和 TUI，`latest-tui.json` 为独立 TUI 更新器和官网提供
+精简契约。提升 latest 前必须预检三个 GUI 平台和四个 TUI 目标；任一缺失或哈希、
+版本、tag、commit、build ID 不一致都要终止联合发布。
+
+独立 TUI 固定携带 Node.js，Stable 只做节流后的更新提示并要求显式确认；GUI 内置
+TUI 跟随桌面应用更新，Daily/frontier 独立包禁止自更新。
 
 ## 验证清单
 

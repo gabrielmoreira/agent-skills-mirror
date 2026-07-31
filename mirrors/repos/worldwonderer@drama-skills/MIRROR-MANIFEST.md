@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `worldwonderer/drama-skills` — 26 default patterns, 0 followed patterns, 126 file(s) materialized.
+Mirror of `worldwonderer/drama-skills` — 26 default patterns, 0 followed patterns, 127 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `worldwonderer/drama-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 126 |
+| Files         | 127 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -150,41 +150,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 89 | ✓ | [`skills/short-drama-video-prompts/references/review-and-fixtures.md`](skills/short-drama-video-prompts/references/review-and-fixtures.md) |
 | 90 | ✓ | [`skills/short-drama-video-prompts/references/stage-contract.md`](skills/short-drama-video-prompts/references/stage-contract.md) |
 | 91 | ✓ | [`skills/short-drama-video-prompts/scripts/container_check.py`](skills/short-drama-video-prompts/scripts/container_check.py) |
-| 92 | ✓ | [`skills/short-drama-video-prompts/SKILL.md`](skills/short-drama-video-prompts/SKILL.md) |
-| 93 | ✓ | [`skills/short-drama-video-prompts/suite-ref.json`](skills/short-drama-video-prompts/suite-ref.json) |
-| 94 | ✓ | [`skills/short-drama-write/agents/openai.yaml`](skills/short-drama-write/agents/openai.yaml) |
-| 95 | ✓ | [`skills/short-drama-write/assets/beats.jsonl`](skills/short-drama-write/assets/beats.jsonl) |
-| 96 | ✓ | [`skills/short-drama-write/assets/episode-card-standalone.json`](skills/short-drama-write/assets/episode-card-standalone.json) |
-| 97 | ✓ | [`skills/short-drama-write/assets/episode-card.json`](skills/short-drama-write/assets/episode-card.json) |
-| 98 | ✓ | [`skills/short-drama-write/assets/screenplay.md`](skills/short-drama-write/assets/screenplay.md) |
-| 99 | ✓ | [`skills/short-drama-write/assets/voice-record-sheet.jsonl.md`](skills/short-drama-write/assets/voice-record-sheet.jsonl.md) |
-| 100 | ✓ | [`skills/short-drama-write/references/dialogue-craft.md`](skills/short-drama-write/references/dialogue-craft.md) |
-| 101 | ✓ | [`skills/short-drama-write/references/production-format-dialect.md`](skills/short-drama-write/references/production-format-dialect.md) |
-| 102 | ✓ | [`skills/short-drama-write/references/scene-handoff-capsule.md`](skills/short-drama-write/references/scene-handoff-capsule.md) |
-| 103 | ✓ | [`skills/short-drama-write/references/screenplay-format.md`](skills/short-drama-write/references/screenplay-format.md) |
-| 104 | ✓ | [`skills/short-drama-write/references/script-craft.md`](skills/short-drama-write/references/script-craft.md) |
-| 105 | ✓ | [`skills/short-drama-write/references/stage-contract.md`](skills/short-drama-write/references/stage-contract.md) |
-| 106 | ✓ | [`skills/short-drama-write/references/substitutable-realization.md`](skills/short-drama-write/references/substitutable-realization.md) |
-| 107 | ✓ | [`skills/short-drama-write/scripts/screenplay_index.py`](skills/short-drama-write/scripts/screenplay_index.py) |
-| 108 | ✓ | [`skills/short-drama-write/scripts/voice_sheet_check.py`](skills/short-drama-write/scripts/voice_sheet_check.py) |
-| 109 | ✓ | [`skills/short-drama-write/SKILL.md`](skills/short-drama-write/SKILL.md) |
-| 110 | ✓ | [`skills/short-drama-write/suite-ref.json`](skills/short-drama-write/suite-ref.json) |
-| 111 | ✓ | [`skills/short-drama/agents/openai.yaml`](skills/short-drama/agents/openai.yaml) |
-| 112 | ✓ | [`skills/short-drama/assets/creator-decision.example.jsonl`](skills/short-drama/assets/creator-decision.example.jsonl) |
-| 113 | ✓ | [`skills/short-drama/assets/project-template/short-drama.json`](skills/short-drama/assets/project-template/short-drama.json) |
-| 114 | ✓ | [`skills/short-drama/assets/reference-observation.example.jsonl`](skills/short-drama/assets/reference-observation.example.jsonl) |
-| 115 | ✓ | [`skills/short-drama/references/contract-and-ownership.md`](skills/short-drama/references/contract-and-ownership.md) |
-| 116 | ✓ | [`skills/short-drama/references/creator-workflow.md`](skills/short-drama/references/creator-workflow.md) |
-| 117 | ✓ | [`skills/short-drama/references/knowhow-index.md`](skills/short-drama/references/knowhow-index.md) |
-| 118 | ✓ | [`skills/short-drama/references/lifecycle-commands.md`](skills/short-drama/references/lifecycle-commands.md) |
-| 119 | ✓ | [`skills/short-drama/references/production-form-profiles.md`](skills/short-drama/references/production-form-profiles.md) |
-| 120 | ✓ | [`skills/short-drama/references/reference-media-and-pickups.md`](skills/short-drama/references/reference-media-and-pickups.md) |
-| 121 | ✓ | [`skills/short-drama/references/routing-examples.md`](skills/short-drama/references/routing-examples.md) |
-| 122 | ✓ | [`skills/short-drama/references/runtime-preflight.md`](skills/short-drama/references/runtime-preflight.md) |
-| 123 | ✓ | [`skills/short-drama/scripts/project_tool.py`](skills/short-drama/scripts/project_tool.py) |
-| 124 | ✓ | [`skills/short-drama/scripts/suite_verify.py`](skills/short-drama/scripts/suite_verify.py) |
-| 125 | ✓ | [`skills/short-drama/SKILL.md`](skills/short-drama/SKILL.md) |
-| 126 | ✓ | [`skills/short-drama/suite-manifest.json`](skills/short-drama/suite-manifest.json) |
+| 92 | ✓ | [`skills/short-drama-video-prompts/scripts/motion_timing_check.py`](skills/short-drama-video-prompts/scripts/motion_timing_check.py) |
+| 93 | ✓ | [`skills/short-drama-video-prompts/SKILL.md`](skills/short-drama-video-prompts/SKILL.md) |
+| 94 | ✓ | [`skills/short-drama-video-prompts/suite-ref.json`](skills/short-drama-video-prompts/suite-ref.json) |
+| 95 | ✓ | [`skills/short-drama-write/agents/openai.yaml`](skills/short-drama-write/agents/openai.yaml) |
+| 96 | ✓ | [`skills/short-drama-write/assets/beats.jsonl`](skills/short-drama-write/assets/beats.jsonl) |
+| 97 | ✓ | [`skills/short-drama-write/assets/episode-card-standalone.json`](skills/short-drama-write/assets/episode-card-standalone.json) |
+| 98 | ✓ | [`skills/short-drama-write/assets/episode-card.json`](skills/short-drama-write/assets/episode-card.json) |
+| 99 | ✓ | [`skills/short-drama-write/assets/screenplay.md`](skills/short-drama-write/assets/screenplay.md) |
+| 100 | ✓ | [`skills/short-drama-write/assets/voice-record-sheet.jsonl.md`](skills/short-drama-write/assets/voice-record-sheet.jsonl.md) |
+| 101 | ✓ | [`skills/short-drama-write/references/dialogue-craft.md`](skills/short-drama-write/references/dialogue-craft.md) |
+| 102 | ✓ | [`skills/short-drama-write/references/production-format-dialect.md`](skills/short-drama-write/references/production-format-dialect.md) |
+| 103 | ✓ | [`skills/short-drama-write/references/scene-handoff-capsule.md`](skills/short-drama-write/references/scene-handoff-capsule.md) |
+| 104 | ✓ | [`skills/short-drama-write/references/screenplay-format.md`](skills/short-drama-write/references/screenplay-format.md) |
+| 105 | ✓ | [`skills/short-drama-write/references/script-craft.md`](skills/short-drama-write/references/script-craft.md) |
+| 106 | ✓ | [`skills/short-drama-write/references/stage-contract.md`](skills/short-drama-write/references/stage-contract.md) |
+| 107 | ✓ | [`skills/short-drama-write/references/substitutable-realization.md`](skills/short-drama-write/references/substitutable-realization.md) |
+| 108 | ✓ | [`skills/short-drama-write/scripts/screenplay_index.py`](skills/short-drama-write/scripts/screenplay_index.py) |
+| 109 | ✓ | [`skills/short-drama-write/scripts/voice_sheet_check.py`](skills/short-drama-write/scripts/voice_sheet_check.py) |
+| 110 | ✓ | [`skills/short-drama-write/SKILL.md`](skills/short-drama-write/SKILL.md) |
+| 111 | ✓ | [`skills/short-drama-write/suite-ref.json`](skills/short-drama-write/suite-ref.json) |
+| 112 | ✓ | [`skills/short-drama/agents/openai.yaml`](skills/short-drama/agents/openai.yaml) |
+| 113 | ✓ | [`skills/short-drama/assets/creator-decision.example.jsonl`](skills/short-drama/assets/creator-decision.example.jsonl) |
+| 114 | ✓ | [`skills/short-drama/assets/project-template/short-drama.json`](skills/short-drama/assets/project-template/short-drama.json) |
+| 115 | ✓ | [`skills/short-drama/assets/reference-observation.example.jsonl`](skills/short-drama/assets/reference-observation.example.jsonl) |
+| 116 | ✓ | [`skills/short-drama/references/contract-and-ownership.md`](skills/short-drama/references/contract-and-ownership.md) |
+| 117 | ✓ | [`skills/short-drama/references/creator-workflow.md`](skills/short-drama/references/creator-workflow.md) |
+| 118 | ✓ | [`skills/short-drama/references/knowhow-index.md`](skills/short-drama/references/knowhow-index.md) |
+| 119 | ✓ | [`skills/short-drama/references/lifecycle-commands.md`](skills/short-drama/references/lifecycle-commands.md) |
+| 120 | ✓ | [`skills/short-drama/references/production-form-profiles.md`](skills/short-drama/references/production-form-profiles.md) |
+| 121 | ✓ | [`skills/short-drama/references/reference-media-and-pickups.md`](skills/short-drama/references/reference-media-and-pickups.md) |
+| 122 | ✓ | [`skills/short-drama/references/routing-examples.md`](skills/short-drama/references/routing-examples.md) |
+| 123 | ✓ | [`skills/short-drama/references/runtime-preflight.md`](skills/short-drama/references/runtime-preflight.md) |
+| 124 | ✓ | [`skills/short-drama/scripts/project_tool.py`](skills/short-drama/scripts/project_tool.py) |
+| 125 | ✓ | [`skills/short-drama/scripts/suite_verify.py`](skills/short-drama/scripts/suite_verify.py) |
+| 126 | ✓ | [`skills/short-drama/SKILL.md`](skills/short-drama/SKILL.md) |
+| 127 | ✓ | [`skills/short-drama/suite-manifest.json`](skills/short-drama/suite-manifest.json) |
 
 ---
 

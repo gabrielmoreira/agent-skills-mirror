@@ -16,6 +16,8 @@ Review every newly created Agent Skill before returning it.
 | Empty directories | Remove them |
 | Dead references | Link or delete them |
 | Undocumented scripts | Document requirements |
+| Unnecessary scripts | Use Markdown or references instead |
+| Non-portable scripts | Prefer minimal Bash or document dependency |
 | Tight coupling | Separate responsibilities |
 | Token waste | Remove repetition |
 | Poor activation criteria | Make discovery explicit |
@@ -24,6 +26,11 @@ Review every newly created Agent Skill before returning it.
 | Premature abstraction | Create only directories and files that provide meaningful value |
 | Over-engineering | Prefer the simplest architecture that satisfies the requirements |
 | Missing composition opportunities | Split reusable capabilities into separate skills when appropriate |
+| Missing concrete examples | Validate design against 2–3 realistic requests |
+| Unsupported frontmatter | Use only portable spec fields |
+| Oversized `SKILL.md` | Move conditional detail into references |
+| Leaked validation context | Forward-test with raw task artifacts only |
+| Excessive output dumping | Summarize written files instead of pasting full contents |
 
 ---
 
@@ -40,3 +47,5 @@ Before returning the newly created Agent Skill:
 - ✓ Progressive disclosure
 - ✓ Minimal duplication
 - ✓ Token-efficient
+- ✓ Portable frontmatter and resources
+- ✓ Concrete examples support the architecture

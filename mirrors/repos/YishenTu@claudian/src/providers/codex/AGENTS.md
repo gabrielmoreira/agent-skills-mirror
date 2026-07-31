@@ -19,6 +19,7 @@
 
 ## Design Rules
 
+- Native transcripts live under `~/.codex/sessions/`; resolve roots via `CodexHistoryPathResolver` (WSL and home-dir aware).
 - `CodexSkillListingService` uses a separate short-lived app-server process for `skills/list`. Do not couple skill discovery to the active chat runtime.
 - Environment hash changes for `OPENAI_MODEL`, `OPENAI_BASE_URL`, and `OPENAI_API_KEY` invalidate existing Codex sessions.
 - Existing threads require `thread/resume` before operations in a new app-server process.
@@ -36,7 +37,5 @@
 
 - Images are written to a temp directory, passed as local image paths, and cleaned up in `query()` `finally`.
 - `serverRequest/resolved` can auto-dismiss approval or ask-user UI without client input.
-- `CodexAuxQueryRunner` owns its own process, transport, and thread. It is independent from the chat runtime.
 - `CodexTaskResultInterpreter` is intentionally no-op because Claudian's Claude async-agent task system does not apply to Codex.
 - Codex is opt-in and must stay disabled by default.
-- Only explicitly enabled models belong in the chat selector. Do not preserve hidden session models or fall back to the app-server default when none are enabled.

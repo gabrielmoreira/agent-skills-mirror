@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 61 file(s) materialized.
+Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `google/adk-python` — 26 default patterns, 0 followed patterns, 61 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 61 |
+| Files         | 65 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -114,12 +114,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 53 | ✓ | [`.agents/skills/adk-verify-snippets/scripts/verify_md.py`](.agents/skills/adk-verify-snippets/scripts/verify_md.py) |
 | 54 | ✓ | [`.agents/skills/adk-verify-snippets/SKILL.md`](.agents/skills/adk-verify-snippets/SKILL.md) |
 | 55 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 56 | ✓ | [`contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md) |
-| 57 | ✓ | [`contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md) |
-| 58 | ✓ | [`contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md) |
-| 59 | ✓ | [`llms.txt`](llms.txt) |
-| 60 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
-| 61 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-graph/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-graph/SKILL.md) |
+| 56 | ✓ | [`contributing/samples/environment_and_skills/e2b_env_skill_toolset/skills/calc-skill/SKILL.md`](contributing/samples/environment_and_skills/e2b_env_skill_toolset/skills/calc-skill/SKILL.md) |
+| 57 | ✓ | [`contributing/samples/environment_and_skills/e2b_env_skill_toolset/skills/text-skill/SKILL.md`](contributing/samples/environment_and_skills/e2b_env_skill_toolset/skills/text-skill/SKILL.md) |
+| 58 | ✓ | [`contributing/samples/environment_and_skills/local_env_skill_toolset/skills/calc-skill/SKILL.md`](contributing/samples/environment_and_skills/local_env_skill_toolset/skills/calc-skill/SKILL.md) |
+| 59 | ✓ | [`contributing/samples/environment_and_skills/local_env_skill_toolset/skills/text-skill/SKILL.md`](contributing/samples/environment_and_skills/local_env_skill_toolset/skills/text-skill/SKILL.md) |
+| 60 | ✓ | [`contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/local_environment_skill/skills/weather-skill/SKILL.md) |
+| 61 | ✓ | [`contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills_agent/skills/weather-skill/SKILL.md) |
+| 62 | ✓ | [`contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md`](contributing/samples/environment_and_skills/skills/skills/weather-skill/SKILL.md) |
+| 63 | ✓ | [`llms.txt`](llms.txt) |
+| 64 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-ai-ml/SKILL.md) |
+| 65 | ✓ | [`src/google/adk/tools/bigquery/skills/bigquery-graph/SKILL.md`](src/google/adk/tools/bigquery/skills/bigquery-graph/SKILL.md) |
 
 ---
 

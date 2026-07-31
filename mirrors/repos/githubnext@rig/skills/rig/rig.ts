@@ -1,7 +1,7 @@
 /**
- * @file skills/rig/rig.ts @last-analyzed d697b7b @edit-time 2026-07-28T03:15:11Z
+ * @file skills/rig/rig.ts @last-analyzed 35bd710 @edit-time 2026-07-29T10:33:46Z
  * @purpose Minimal TypeScript multi-agent harness: typed input/output schemas, prompt intents, sub-agent delegation, Copilot SDK runtime
- * @deps @github/copilot-sdk (CopilotClient,RuntimeConnection,approveAll); node:path,url,fs/promises,child_process,util
+ * @deps @github/copilot-sdk (CopilotClient,RuntimeConnection,approveAll); node:path,url,os,fs,fs/promises,child_process,util
  * T:Json type null|bool|num|str|Json[]|{[k]:Json}
  * T:Schema type StringSchema|NumberSchema|IntegerSchema|BooleanSchema|NullSchema|UnknownSchema|ArraySchema|ObjectSchema|RecordSchema|EnumSchema|OptionalSchema|NullableSchema
  * T:NullableSchema<Inner> type {nullable:true;inner:Inner;description?} accepts inner|null
@@ -12,24 +12,29 @@
  * T:AgentSpec<I,O> type {name,description,input,output,prompt,addons?,maxTurns?,agents?} agent declaration; agents? enables sub-agent delegation
  * T:AgentFn<I,O> type callable agent with .use(addons) and .spec property
  * T:AgentFactory type (options:AgentOptions)=>Agent|Promise<Agent>
- * T:Agent interface {ask(input,opts?):Promise<unknown>,close():Promise<void>}
+ * T:AgentOptions type {model,systemMessage?,tools?} passed to AgentFactory [NEW]
+ * T:AgentAskOptions type {signal?,outputSchema?} per-ask overrides on Agent.ask [NEW]
+ * T:Agent interface {ask(input,opts?):Promise<string>,close():Promise<void>}
  * T:AgentAddon type middleware (ctx,next)=>Promise<void>; ctx exposes spec,turn,prompt,output,completed,nextPrompt
  * T:AgentAddonContext type context passed to each addon in the chain
  * T:AgentDefinitionFactory type typeof agent (for passing agent constructor as value)
  * T:AgentError class error carrying kind,agent,turn,response,schema,schemaText fields
+ * T:CallOptions type {signal?,timeout?,model?,maxTurns?} per-call overrides for AgentFn [NEW]
  * T:SteeringOptions type {message?:string} options for steering addon
  * T:TimeoutOptions type {timeout:number} options for timeout addon
  * T:AgentRegistration type callback invoked once per unique Agent instance for oncePerAgent
  * T:Tool<TArgs> type ToolConfig+name; created by defineTool
  * T:ToolConfig<TArgs> type {description,parameters,handler}
+ * T:ToolHandler<TArgs> type (args:TArgs)=>unknown|Promise<unknown> handler signature [NEW]
+ * T:ToolParameters type Schema|Record<string,unknown> for tool parameter schema [NEW]
  * T:PromptIntent type declarative placeholder {kind:'bash'|'bashEach'|'read'|'readAll'|'write'|'writeOutput'|'writeInput'|'glob'|'env',…} resolved into prompt text
  * T:PromptBuilder class template-tag result; composes intents+strings into a prompt fragment
  * T:PromptHelpers type shape of exported p object
  * T:PromptVariable<T> type {__rig:'prompt.var';name:string;value:T} named prompt variable
  * T:ResponseAnalysisResult type {ok:true;output}|{ok:false;error:AgentError}
  * T:CopilotEngineOptions type CopilotClientOptions minus connection, plus server/token/headers fields
- * T:LaunchOptions type options for launchRigProgram (server,token,headers,cwd,args)
- * T:LauncherIo type {stdin,stdout,stderr} override for launcher subprocess
+ * T:LaunchOptions type {cwd?,startServer?,typecheck?} options for launchRigProgram
+ * T:LauncherIo type {stdin,stdout} override for launcher subprocess
  * T:JsonSchemaObject type {[key:string]:unknown} plain JSON Schema object
  * T:DebugLogger type lazy category-bound logger controlled by RIG_DEBUG
  * s.string/number/integer/boolean/null SchemaHelperFactory primitives; call as value or fn(desc)
@@ -93,6 +98,7 @@ import { writeSync } from "node:fs";
 import { access, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { CopilotClient, RuntimeConnection, approveAll } from "@github/copilot-sdk";
 import type { CopilotClientOptions } from "@github/copilot-sdk";
 
@@ -689,6 +695,13 @@ const debugAgentComplete = debug("agent:complete");
 const debugAgentRetry = debug("agent:retry");
 const debugAgentFailure = debug("agent:failure");
 const debugAgentClose = debug("agent:close");
+const debugAgentTools = debug("agent:tools");
+const debugAgentParse = debug("agent:parse");
+const debugLauncherStart = debug("launcher:start");
+const debugLauncherProgram = debug("launcher:program");
+const debugLauncherTypecheck = debug("launcher:typecheck");
+const debugLauncherResult = debug("launcher:result");
+const debugWorkflowEvent = debug("workflow:event");
 
 export type AgentAddonContext = {
   spec: NormalizedAgentSpec<any, any>;
@@ -829,14 +842,10 @@ export type LauncherIo = {
 export type AgentFn<Input = unknown, Output = unknown> = ((input: AgentInputValue<Input>, options?: CallOptions) => Promise<Output>) & {
   /** Resolved name used in logs and error messages. */
   agentName: string;
-  /** The resolved input schema for this agent. Alias of `inputShape`. */
+  /** The resolved input schema for this agent. */
   inputSchema: Schema;
-  /** The resolved output schema for this agent. Alias of `outputShape`. */
+  /** The resolved output schema for this agent. */
   outputSchema: Schema;
-  /** The resolved input schema for this agent. Alias of `inputSchema`. */
-  inputShape: Schema;
-  /** The resolved output schema for this agent. Alias of `outputSchema`. */
-  outputShape: Schema;
   /** The fully normalized spec used to construct this agent. */
   spec: NormalizedAgentSpec<any, any>;
   _namespace: string;
@@ -1448,8 +1457,11 @@ export async function launchRigProgram(programPath: string, options: LaunchOptio
   const cwd = options.cwd ?? process.cwd();
   const resolvedPath = isAbsolute(programPath) ? programPath : resolve(cwd, programPath);
 
+  debugLauncherProgram({ mode: "import", program: resolvedPath, cwd, server: options.startServer === true });
   configureAgent(defaultAgentFactory({ cwd, ...(options.startServer ? { startServer: true } : {}) }));
-  await import(pathToFileURL(resolvedPath).href);
+  await runInRootWorkflow("launcher-program", async () => {
+    await import(pathToFileURL(resolvedPath).href);
+  });
 }
 
 async function readStdin(stream: NodeJS.ReadableStream): Promise<string> {
@@ -1501,7 +1513,12 @@ function asRootProgram(value: unknown, name: string): AgentFn | undefined {
     const hasInput = "inputSchema" in w;
     const inputSchema: Schema = hasInput ? (w.inputSchema as Schema) : defaultStringSchema;
     const fn = Object.assign(
-      async (input: unknown) => runWorkflow(w, hasInput ? { args: input } : {}),
+      async (input: unknown) => {
+        const args = hasInput ? input : undefined;
+        const ambient = currentWorkflow();
+        // Nest into the launcher's root run so limits, budget, and events are shared.
+        return ambient ? ambient.call.workflow(w, args) : runWorkflow(w, { args });
+      },
       {
         inputSchema,
         outputSchema: defaultStringSchema as Schema,
@@ -1514,6 +1531,19 @@ function asRootProgram(value: unknown, name: string): AgentFn | undefined {
     return agent({ name, instructions: value }) as AgentFn;
   }
   return undefined;
+}
+
+/**
+ * Runs a launcher program inside a workflow run so a program that exports an
+ * agent (or a plain prompt) can still use top-level workflow constructs such as
+ * `phase()` and `log()`.  Module evaluation happens inside `body`, so top-level
+ * program statements observe the ambient run too.
+ */
+async function runInRootWorkflow<Output>(name: string, body: () => Promise<Output>): Promise<Output> {
+  return runWorkflow<undefined, Output>(
+    { meta: { name, description: "Rig program root" }, body },
+    { onEvent: (event) => debugWorkflowEvent(event) },
+  );
 }
 
 function noInputInvocation(agentFn: AgentFn): unknown | undefined {
@@ -1621,6 +1651,7 @@ async function hasEsmPackageContext(filePath: string): Promise<boolean> {
 }
 
 async function typecheckProgram(programPath: string, cwd: string, displayPath = programPath): Promise<void> {
+  debugLauncherTypecheck({ phase: "start", program: displayPath, cwd });
   const execFileAsync = promisify(execFile);
   const skillTsconfigPath = resolve(dirname(fileURLToPath(import.meta.url)), "tsconfig.json");
   const candidateTsconfigPaths = [resolve(cwd, "tsconfig.json"), skillTsconfigPath];
@@ -1667,6 +1698,7 @@ async function typecheckProgram(programPath: string, cwd: string, displayPath = 
         env: { ...process.env, npm_config_ignore_scripts: "true" },
       },
     );
+    debugLauncherTypecheck({ phase: "passed", program: displayPath });
   } catch (error) {
     const execError = error as NodeJS.ErrnoException & { stdout?: string; stderr?: string };
     if (execError.code === "ENOENT") {
@@ -1686,6 +1718,7 @@ async function typecheckProgram(programPath: string, cwd: string, displayPath = 
       .replaceAll(relativeShadowPath, displayPath);
     const detail = diagnostics ? `\n${diagnostics}` : "";
     const hasCjsEsmMismatch = diagnostics.includes("TS1295") || diagnostics.includes("TS1479");
+    debugLauncherTypecheck({ phase: "failed", program: displayPath, diagnostics });
     const hint = hasCjsEsmMismatch
       ? "\nHint: add {\"type\":\"module\"} to a package.json in the same directory as your rig program."
       : "";
@@ -1715,14 +1748,20 @@ async function runRootAgentFromStdin(
   }
 
   configureAgent(defaultAgentFactory({ cwd, ...(options.startServer ? { startServer: true } : {}) }));
-  const mod = await import(pathToFileURL(resolvedPath).href);
-  const rootAgent = asRootProgram(mod.default, "launcher-root");
-  if (!rootAgent) {
-    throw new Error("Expected program to export a root value (agent, workflow, string, or prompt builder) as default export.");
-  }
-
-  const result = await rootAgent(coerceStdinInput(rootAgent, prompt));
-  io.stdout.write(renderStdout(result));
+  let rootName = "launcher-root";
+  const result = await runInRootWorkflow("launcher-root", async () => {
+    const mod = await import(pathToFileURL(resolvedPath).href);
+    const rootAgent = asRootProgram(mod.default, "launcher-root");
+    if (!rootAgent) {
+      throw new Error("Expected program to export a root value (agent, workflow, string, or prompt builder) as default export.");
+    }
+    rootName = rootAgent.agentName;
+    debugLauncherProgram({ mode: "file", program: resolvedPath, root: rootAgent.agentName, promptLength: prompt.length });
+    return rootAgent(coerceStdinInput(rootAgent, prompt));
+  });
+  const rendered = renderStdout(result);
+  debugLauncherResult({ mode: "file", root: rootName, bytes: Buffer.byteLength(rendered) });
+  io.stdout.write(rendered);
 }
 
 async function runProgramCodeFromStdin(
@@ -1749,17 +1788,24 @@ async function runProgramCodeFromStdin(
       return;
     }
     configureAgent(defaultAgentFactory({ cwd, ...(options.startServer ? { startServer: true } : {}) }));
-    const mod = await import(pathToFileURL(tempProgramPath).href);
-    const rootAgent = asRootProgram(mod.default, "launcher-inline-root");
-    if (!rootAgent) {
-      throw new Error("Expected program to export a root value (agent, workflow, string, or prompt builder) as default export.");
-    }
-    const input = noInputInvocation(rootAgent);
-    if (input === undefined) {
-      throw new Error("Expected stdin program root agent to have no input (omit input or use input: s.object({})).");
-    }
-    const result = await rootAgent(input);
-    io.stdout.write(renderStdout(result));
+    let rootName = "launcher-inline-root";
+    const result = await runInRootWorkflow("launcher-inline-root", async () => {
+      const mod = await import(pathToFileURL(tempProgramPath).href);
+      const rootAgent = asRootProgram(mod.default, "launcher-inline-root");
+      if (!rootAgent) {
+        throw new Error("Expected program to export a root value (agent, workflow, string, or prompt builder) as default export.");
+      }
+      rootName = rootAgent.agentName;
+      debugLauncherProgram({ mode: "stdin", program: tempProgramPath, root: rootAgent.agentName, codeLength: programCode.length });
+      const input = noInputInvocation(rootAgent);
+      if (input === undefined) {
+        throw new Error("Expected stdin program root agent to have no input (omit input or use input: s.object({})).");
+      }
+      return rootAgent(input);
+    });
+    const rendered = renderStdout(result);
+    debugLauncherResult({ mode: "stdin", root: rootName, bytes: Buffer.byteLength(rendered) });
+    io.stdout.write(rendered);
   } finally {
     await rm(tempDir, { recursive: true, force: true });
   }
@@ -1820,6 +1866,7 @@ export async function runLauncherCli(
   io: LauncherIo = process,
 ): Promise<void> {
   const scriptName = process.argv[1] ? basename(process.argv[1]) : "launcher";
+  debugLauncherStart({ script: scriptName, argv });
   if (argv.some(isLauncherHelpArg)) {
     io.stdout.write(`${renderLauncherUsage(scriptName)}\n`);
     return;
@@ -1972,8 +2019,6 @@ export function agent(spec: AgentSpec<any, any>): AgentFn<any, any> {
   fn.agentName = normalizedSpec.name;
   fn.inputSchema = inputSchema;
   fn.outputSchema = outputSchema;
-  fn.inputShape = inputSchema;
-  fn.outputShape = outputSchema;
   fn.spec = normalizedSpec;
   fn._namespace = normalizedSpec.name;
   fn.use = (addons) => {
@@ -1988,14 +2033,36 @@ export function agent(spec: AgentSpec<any, any>): AgentFn<any, any> {
 
 export type AgentDefinitionFactory = typeof agent;
 
+/** One declared phase of a workflow. A bare string is shorthand for `{ title }`. */
+export type WorkflowPhase = {
+  title: string;
+  detail?: string;
+};
+
 export type WorkflowMeta = {
   name: string;
   description: string;
-  phases: readonly string[];
+  /** Declared phases, in order. Each entry is a title or `{ title, detail }`. */
+  phases?: readonly (string | WorkflowPhase)[];
+  /** Guidance describing when this workflow should be selected. */
+  whenToUse?: string;
 };
 
 export type WorkflowCallOptions = CallOptions & {
+  /** Display label for this call in events and progress output. */
   label?: string;
+  /** Phase recorded for this call, overriding the ambient `phase()`. */
+  phase?: string;
+};
+
+/** Token-free budget meter, denominated in agent calls. */
+export type WorkflowBudget = {
+  /** Total agent calls allowed in this run (`limits.maxAgents`). */
+  readonly total: number;
+  /** Agent calls started so far. */
+  spent(): number;
+  /** Agent calls still available before the run fails. */
+  remaining(): number;
 };
 
 export type WorkflowEvent =
@@ -2025,22 +2092,36 @@ export type WorkflowCall = {
     input: AgentInputValue<Input>,
     options?: WorkflowCallOptions,
   ): Promise<Output | null>;
+  /** Runs a one-off string-output agent built from `prompt`. */
   text(prompt: string | PromptBuilder, options?: WorkflowCallOptions): Promise<string | null>;
+  /** Runs a one-off agent built from `prompt` and constrained to `output`. */
+  json<const Output extends Schema>(
+    prompt: string | PromptBuilder,
+    output: Output,
+    options?: WorkflowCallOptions,
+  ): Promise<InferSchema<Output> | null>;
+  /** Runs another workflow inline, sharing this run's limiter, budget, and events. */
+  workflow<Input, Output>(
+    child: Workflow<Input, Output>,
+    args?: Input,
+    options?: WorkflowNestedOptions,
+  ): Promise<Output>;
+};
+
+export type WorkflowNestedOptions = {
+  /** Display label for the nested run in log events. */
+  label?: string;
 };
 
 export type WorkflowContext<Input> = {
   input: Input;
   call: WorkflowCall;
-  pipeline<Item, Result>(
-    items: readonly Item[],
-    fn: (item: Item, index: number) => Promise<Result> | Result,
-  ): Promise<(Result | null)[]>;
-  parallel<Result>(
-    thunks: readonly (() => Promise<Result> | Result)[],
-  ): Promise<(Result | null)[]>;
+  pipeline: typeof pipeline;
+  parallel: typeof parallel;
   until<S>(options: UntilOptions, step: UntilStep<S>): Promise<S>;
   phase(name: string): void;
   log(message: string): void;
+  budget: WorkflowBudget;
   signal: AbortSignal;
 };
 
@@ -2073,6 +2154,27 @@ export function workflow(
     ...("input" in spec && { inputSchema: spec.input }),
     body: spec.body as (context: WorkflowContext<unknown>) => unknown,
   };
+}
+
+const workflowStore = new AsyncLocalStorage<WorkflowContext<unknown>>();
+
+/**
+ * Returns the context of the innermost active workflow run, or `undefined`
+ * outside a run.  Launcher programs always run inside a workflow, so a rig
+ * program can reach `call`, `budget`, and `signal` from module scope.
+ */
+export function currentWorkflow(): WorkflowContext<unknown> | undefined {
+  return workflowStore.getStore();
+}
+
+/** Sets the ambient phase of the active workflow run.  No-op outside a run. */
+export function phase(name: string): void {
+  currentWorkflow()?.phase(name);
+}
+
+/** Emits a structured log event on the active workflow run.  No-op outside a run. */
+export function log(message: string): void {
+  currentWorkflow()?.log(message);
 }
 
 export type WorkflowLimits = {
@@ -2153,11 +2255,52 @@ export async function parallel<Result>(
   }));
 }
 
-export async function pipeline<Item, Result>(
+/**
+ * One pipeline stage.  The first stage receives the item itself as `previous`,
+ * matching the `(previous, item, index)` shape of dynamic-workflow stages.
+ */
+export type PipelineStage<Previous, Item, Next> = (
+  previous: Previous,
+  item: Item,
+  index: number,
+) => Promise<Next> | Next;
+
+export async function pipeline<Item, R1>(
   items: readonly Item[],
-  fn: (item: Item, index: number) => Promise<Result> | Result,
-): Promise<(Result | null)[]> {
-  return Promise.all(items.map((item, index) => fn(item, index)));
+  stage1: PipelineStage<Item, Item, R1>,
+): Promise<(R1 | null)[]>;
+export async function pipeline<Item, R1, R2>(
+  items: readonly Item[],
+  stage1: PipelineStage<Item, Item, R1>,
+  stage2: PipelineStage<R1, Item, R2>,
+): Promise<(R2 | null)[]>;
+export async function pipeline<Item, R1, R2, R3>(
+  items: readonly Item[],
+  stage1: PipelineStage<Item, Item, R1>,
+  stage2: PipelineStage<R1, Item, R2>,
+  stage3: PipelineStage<R2, Item, R3>,
+): Promise<(R3 | null)[]>;
+export async function pipeline<Item, R1, R2, R3, R4>(
+  items: readonly Item[],
+  stage1: PipelineStage<Item, Item, R1>,
+  stage2: PipelineStage<R1, Item, R2>,
+  stage3: PipelineStage<R2, Item, R3>,
+  stage4: PipelineStage<R3, Item, R4>,
+): Promise<(R4 | null)[]>;
+export async function pipeline<Item>(
+  items: readonly Item[],
+  ...stages: PipelineStage<any, Item, any>[]
+): Promise<(unknown | null)[]> {
+  if (stages.length === 0) {
+    throw new Error("pipeline requires at least one stage.");
+  }
+  return Promise.all(items.map(async (item, index) => {
+    let value: unknown = item;
+    for (const stage of stages) {
+      value = await stage(value, item, index);
+    }
+    return value;
+  }));
 }
 
 export async function until<S>(options: UntilOptions, step: UntilStep<S>): Promise<S> {
@@ -2225,6 +2368,7 @@ export async function runWorkflow<Input, Output>(
   timer?.unref();
 
   const emit = (event: WorkflowEvent): void => {
+    debugWorkflowEvent(() => ({ workflow: definition.meta.name, event }));
     try {
       options.onEvent?.(event);
     } catch {
@@ -2252,8 +2396,8 @@ export async function runWorkflow<Input, Output>(
 
     const id = agentCount;
     const agentName = worker.agentName;
-    const phase = currentPhase;
-    const { label, signal: callSignal, ...agentOptions } = callOptions;
+    const { label, phase: phaseOverride, signal: callSignal, ...agentOptions } = callOptions;
+    const phase = phaseOverride ?? currentPhase;
     const fields = eventFields(phase, label);
     const callStarted = Date.now();
     emit({ type: "agent_start", id, agent: agentName, ...fields, ts: callStarted });
@@ -2287,6 +2431,25 @@ export async function runWorkflow<Input, Output>(
     return call(textAgent, "", callOptions);
   };
 
+  call.json = (<const Output extends Schema>(
+    prompt: string | PromptBuilder,
+    output: Output,
+    callOptions: WorkflowCallOptions = {},
+  ) => {
+    const jsonAgent = agent({
+      name: callOptions.label ?? "workflow-json",
+      instructions: prompt,
+      output,
+    });
+    return call(jsonAgent, "", callOptions);
+  }) as WorkflowCall["json"];
+
+  const budget: WorkflowBudget = {
+    total: maxAgents,
+    spent: () => agentCount,
+    remaining: () => Math.max(0, maxAgents - agentCount),
+  };
+
   const runUntil = <S>(untilOptions: UntilOptions, step: UntilStep<S>): Promise<S> =>
     until(untilOptions, async (state, round) => {
       signal.throwIfAborted();
@@ -2295,24 +2458,53 @@ export async function runWorkflow<Input, Output>(
       return result;
     });
 
-  const context: WorkflowContext<Input> = {
-    input: options.args as Input,
+  const setPhase = (name: string): void => {
+    currentPhase = name;
+    emit({ type: "phase_start", phase: name, ts: Date.now() });
+  };
+
+  const writeLog = (message: string): void => {
+    emit({ type: "log", message, ...(currentPhase !== undefined && { phase: currentPhase }), ts: Date.now() });
+  };
+
+  const makeContext = <ContextInput>(input: ContextInput): WorkflowContext<ContextInput> => ({
+    input,
     call,
     pipeline,
     parallel,
     until: runUntil,
-    phase(name) {
-      currentPhase = name;
-      emit({ type: "phase_start", phase: name, ts: Date.now() });
-    },
-    log(message) {
-      emit({ type: "log", message, ...(currentPhase !== undefined && { phase: currentPhase }), ts: Date.now() });
-    },
+    phase: setPhase,
+    log: writeLog,
+    budget,
     signal,
-  };
+  });
+
+  call.workflow = (async <ChildInput, ChildOutput>(
+    child: Workflow<ChildInput, ChildOutput>,
+    args?: ChildInput,
+    nestedOptions: WorkflowNestedOptions = {},
+  ): Promise<ChildOutput> => {
+    const name = nestedOptions.label ?? child.meta.name;
+    const outerPhase = currentPhase;
+    const childContext = makeContext(args as ChildInput);
+    writeLog(`workflow ${name} started`);
+    try {
+      return await workflowStore.run(
+        childContext as WorkflowContext<unknown>,
+        () => child.body(childContext),
+      );
+    } finally {
+      currentPhase = outerPhase;
+      writeLog(`workflow ${name} finished`);
+    }
+  }) as WorkflowCall["workflow"];
+
+  const context = makeContext(options.args as Input);
 
   try {
-    const body = Promise.resolve(definition.body(context));
+    const body = Promise.resolve(
+      workflowStore.run(context as WorkflowContext<unknown>, () => definition.body(context)),
+    );
     const output = await (wallLimit === undefined ? body : Promise.race([body, wallLimit]));
     emit({
       type: "run_done",
@@ -2369,6 +2561,7 @@ function normalizeToolConfig<T extends { skipPermission?: boolean }>(tool: T): T
 }
 
 function normalizeTools(tools: Tool<any>[], agentName: string): Tool<any>[] {
+  debugAgentTools(() => ({ agent: agentName, tools: tools.map((tool) => tool?.name) }));
   return tools.map((tool, index) => {
     if (!tool || typeof tool !== "object") {
       throw new Error(`Invalid tool for agent "${agentName}" at tools[${index}]. Expected a tool definition object.`);
@@ -2709,6 +2902,7 @@ export type ResponseAnalysisResult = { ok: true; output: unknown } | { ok: false
 export function analyzeResponse(response: string, outputSchema: Schema, agentName: string, turn: number): ResponseAnalysisResult {
   const parsed = parseJson(response);
   if (!parsed.ok) {
+    debugAgentParse({ agent: agentName, turn, kind: "parse", error: parsed.error });
     return {
       ok: false,
       error: new AgentError({
@@ -2724,6 +2918,7 @@ export function analyzeResponse(response: string, outputSchema: Schema, agentNam
 
   const result = validate(parsed.value, outputSchema);
   if (!result.ok) {
+    debugAgentParse({ agent: agentName, turn, kind: "validation", error: result.error });
     return {
       ok: false,
       error: new AgentError({
@@ -2737,6 +2932,7 @@ export function analyzeResponse(response: string, outputSchema: Schema, agentNam
     };
   }
 
+  debugAgentParse({ agent: agentName, turn, kind: "ok" });
   return { ok: true, output: parsed.value };
 }
 

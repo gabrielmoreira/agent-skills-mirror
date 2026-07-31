@@ -13,6 +13,10 @@ import {
 } from './skill-workflow-utils.mjs';
 import { hashSeed } from './workflow/layout-query.mjs';
 import {
+  presentationTargetEntries,
+  projectorPresentationFieldForTarget as presentationFieldForTarget,
+} from './workflow/presentation-field-semantics.mjs';
+import {
   createLayoutAllocationState,
   layoutCompositionIdentity,
   layoutFamily,
@@ -1670,12 +1674,11 @@ function canonicalSourceForArray(field, presentation = {}, {
     && !Array.isArray(field.itemShape)
     ? field.itemShape
     : null;
-  const itemFields = field.itemFields || {};
-  const numericKeys = shape
-    ? [...new Set([...Object.keys(shape), ...Object.keys(itemFields)])]
-      .filter(key => (shape[key] || itemFields[key]?.type) === 'number')
-    : [];
-  const filter = numericKeys.length ? 'value-bearing' : null;
+  const targetEntries = shape ? presentationTargetEntries(field) : [];
+  const hasNumericValueTarget = targetEntries.some(entry => (
+    entry.decision.semantic === 'numericValue'
+  ));
+  const filter = hasNumericValueTarget ? 'value-bearing' : null;
   const canonicalItems = deriveTemplateItems(presentation);
   const allItems = includeTextFallback
     ? deriveTemplateItems(presentation, {
@@ -1725,39 +1728,37 @@ function canonicalSourceForArray(field, presentation = {}, {
     };
   }
 
-  if (!shape || !Object.keys(shape).length) return null;
-  const keys = [...new Set([...Object.keys(shape), ...Object.keys(itemFields)])];
+  if (!shape || !Object.keys(shape).length || !targetEntries.length) return null;
+  const hasDisplayValueTarget = targetEntries.some(entry => (
+    entry.decision.semantic === 'displayValue'
+  ));
   const fields = {};
   const usedStringSources = new Set();
-  for (const key of keys) {
-    const type = shape[key] || itemFields[key]?.type;
-    const contract = itemFields[key] || {};
-    if (type === 'boolean') {
-      fields[key] = 'focus';
+  for (const { key, type, contract, decision } of targetEntries) {
+    const semantic = decision.semantic;
+    const stageSource = presentationFieldForTarget(key, type, field);
+    if (!semantic || !stageSource) return null;
+    if (semantic === 'focus') {
+      fields[key] = stageSource;
       continue;
     }
-    if (type === 'number') {
+    if (semantic === 'numericValue') {
       if (!deferred && projectedItems.some(item => !numericProjectionFits(item, contract))) return null;
-      fields[key] = 'chartValue';
+      fields[key] = stageSource;
       continue;
     }
-    if (type !== 'string') return null;
-    const semantic = presentationFieldForTarget(key, type, field)
-      || projectionSemanticForContract(contract);
+    if (type !== 'string' && !(type === 'number' && semantic === 'ordinal')) return null;
+    const sources = projectionSourcesForSemantic(semantic, type);
     const labelSources = projectedItems.some(item => item?.hasCondensedSupporting === true)
       ? (
-          keys.some(key => presentationFieldForTarget(
-            key,
-            shape[key] || itemFields[key]?.type,
-            field,
-          ) === 'displayValue')
+          hasDisplayValueTarget
             ? ['labelWithSupporting', 'labelWithValueAndSupporting', 'label', 'projectionLabel']
             : ['labelWithValueAndSupporting', 'labelWithSupporting', 'labelWithValue', 'label']
         )
-      : projectionSourcesForSemantic(semantic);
+      : sources;
     const source = chooseProjectionItemSource(
       projectedItems,
-      semantic === 'label' ? labelSources : projectionSourcesForSemantic(semantic),
+      semantic === 'label' ? labelSources : sources,
       Number(contract.maxChars || 0),
       deferred,
       usedStringSources,
@@ -1800,7 +1801,7 @@ function chooseProjectionItemSource(
   return null;
 }
 
-function projectionSourcesForSemantic(semantic) {
+function projectionSourcesForSemantic(semantic, type = 'string') {
   const sources = {
     label: ['label', 'projectionLabel', 'labelWithValue', 'projectionTag', 'id', 'projectionOrdinal'],
     indexedLabel: ['projectionLabel', 'labelWithValue', 'projectionTag', 'label', 'id', 'projectionOrdinal'],
@@ -1810,18 +1811,11 @@ function projectionSourcesForSemantic(semantic) {
     initial: ['projectionInitial'],
     detail: ['labelWithSupporting', 'projectionDetail', 'detail', 'labelWithValueAndSupporting', 'projectionLabel', 'label'],
     displayValue: ['displayValue', 'projectionValue'],
-    ordinal: ['projectionOrdinal'],
+    ordinal: type === 'number' ? ['projectionOrdinalNumber'] : ['projectionOrdinal'],
     unit: ['unit', 'projectionUnit'],
     id: ['id', 'projectionOrdinal', 'projectionLabel', 'label'],
   };
   return sources[semantic] || sources.label;
-}
-
-function projectionSemanticForContract(contract = {}) {
-  const role = String(contract?.role || '').toLowerCase();
-  if (role === 'metric') return 'displayValue';
-  if (role === 'body' || role === 'paragraph') return 'detail';
-  return 'label';
 }
 
 function numericProjectionFits(item, contract = {}) {
@@ -2374,97 +2368,6 @@ function mirrorProjectionCountAliases(inspected, props) {
   }
 }
 
-function presentationFieldForTarget(key, type, field = {}) {
-  const name = String(key || '').toLowerCase();
-  const container = String(field.key || '').toLowerCase().split('.').at(-1)?.replace(/\[\]$/g, '') || '';
-  const containerRole = String(field.role || '').toLowerCase();
-  const itemEntries = Object.entries(field.itemShape || {});
-  const siblingKeys = new Set(itemEntries.map(([item]) => item.toLowerCase()));
-  const siblingTypes = new Map(itemEntries.map(([item, itemType]) => [item.toLowerCase(), itemType]));
-  const itemFieldEntries = Object.entries(field.itemFields || {});
-  const itemField = itemFieldEntries
-    .find(([itemKey]) => String(itemKey).toLowerCase() === name)?.[1] || {};
-  const siblingRoles = new Map(itemFieldEntries.map(([itemKey, contract]) => [
-    String(itemKey).toLowerCase(),
-    String(contract?.role || '').toLowerCase(),
-  ]));
-  const contractRole = String(itemField.role || '').toLowerCase();
-  const numericSource = 'chartValue';
-  const metricContainer = containerRole === 'metric'
-    || /^(?:stats|metrics|kpis|metricsdata|indicators|scores|factsdata)$/.test(container);
-  const chapterContainer = containerRole === 'chapter'
-    || /^(?:contents|index|chapters|agenda)$/.test(container);
-  const durationContainer = /^(?:tracks|songs|playlist|setlist)$/.test(container);
-  const hasTitleSibling = ['t', 'title', 'label', 'name', 'big', 'cn', 'zh', 'nm', 'lb']
-    .some(item => siblingKeys.has(item));
-  const hasMetricSibling = itemEntries.some(([itemKey, itemType]) => (
-    itemKey.toLowerCase() !== name
-    && (itemType === 'number'
-      || siblingRoles.get(itemKey.toLowerCase()) === 'metric'
-      || /^(?:v|value|amount|amt|metric|stat|pct|percent|score|avg|disp|val)$/.test(itemKey.toLowerCase()))
-  ));
-
-  if (type === 'boolean' && /focus|active|highlight|selected|up|positive/.test(name)) return 'focus';
-  if (name === 'idx') return 'ordinal';
-
-  // Short fields are interpreted only inside their real container contract.
-  // Page, duration, metric and secondary-label slots require corresponding
-  // canonical data; they never fall back to an ordinal or ordinary label.
-  if (name === 'pg' || name === 'page' || name === 'pageno' || name === 'pagenumber') {
-    return 'pageLabel';
-  }
-  if (/^(?:unit|suffix)$/.test(name)
-    || (name === 'u' && (metricContainer || hasMetricSibling))) return 'unit';
-  if (container === 'quotes') {
-    if (name === 'q') return 'detail';
-    if (name === 'n') return 'label';
-    if (name === 'r') return 'secondaryLabel';
-    if (name === 'm') return 'initial';
-  }
-  if (name === 'd') {
-    if (type === 'number') return numericSource;
-    if (durationContainer) return 'duration';
-    if (contractRole === 'metric' || metricContainer) return 'displayValue';
-    if (contractRole === 'body' || contractRole === 'paragraph' || hasTitleSibling) return 'detail';
-    return null;
-  }
-  if (name === 'e') {
-    if (type === 'number') return numericSource;
-    if (contractRole === 'body' || contractRole === 'paragraph') return 'detail';
-    if (chapterContainer || siblingKeys.has('t') || siblingKeys.has('n') || siblingKeys.has('pg')) {
-      return 'secondaryLabel';
-    }
-    return null;
-  }
-  if (name === 'n') {
-    if (type === 'number') return numericSource;
-    if (contractRole === 'metric' || metricContainer) return 'displayValue';
-    if (/^(?:quotes|artists)$/.test(container)) return 'label';
-    if (hasTitleSibling) return 'ordinal';
-    return 'label';
-  }
-  if (name === 't') {
-    return contractRole === 'body' || contractRole === 'paragraph' ? 'detail' : 'label';
-  }
-  if (name === 's') {
-    if (type === 'number') return numericSource;
-    if (contractRole === 'metric' || metricContainer) return 'displayValue';
-    if (container === 'artists' && siblingTypes.has('v')) return 'displayValue';
-    return hasTitleSibling ? 'secondaryLabel' : null;
-  }
-  if ((name === 'l' || name === 'lb') && (metricContainer || hasMetricSibling)) return 'label';
-
-  if (type === 'number') return numericSource;
-  if (contractRole === 'metric') return 'displayValue';
-  if (contractRole === 'body' || contractRole === 'paragraph') return 'detail';
-  if (/^(?:no|num)$/.test(name)) return 'ordinal';
-  if (/body|detail|description|desc|note|summary|sub|caption|copy|text/.test(name)) return 'detail';
-  if (/^(?:v)$|value|amount|score|number|metric|stat|pct|percent|share|delta|rate/.test(name)) return 'displayValue';
-  if (/rank|index/.test(name)) return 'ordinal';
-  if (/^(?:k|t)$|label|name|title|heading|category|series|item|dim|^en$|phase|stage|period|time|tag/.test(name)) return 'label';
-  if (/^id$|key/.test(name)) return 'id';
-  return null;
-}
 function arrayFieldNestedDepth(field) {
   if (Object.keys(field?.nestedArrays || {}).length) return 1;
   return contentArrayDepth(field?.itemShape);

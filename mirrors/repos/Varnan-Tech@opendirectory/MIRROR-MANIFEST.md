@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Varnan-Tech/opendirectory` — 26 default patterns, 1 followed patterns, 441 file(s) materialized.
+Mirror of `Varnan-Tech/opendirectory` — 26 default patterns, 1 followed patterns, 447 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Varnan-Tech/opendirectory` — 26 default patterns, 1 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 441 |
+| Files         | 447 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -490,16 +490,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 429 | ✓ | [`skills/where-your-customer-lives/references/scoring-guide.md`](skills/where-your-customer-lives/references/scoring-guide.md) |
 | 430 | ✓ | [`skills/where-your-customer-lives/scripts/fetch.py`](skills/where-your-customer-lives/scripts/fetch.py) |
 | 431 | ✓ | [`skills/where-your-customer-lives/SKILL.md`](skills/where-your-customer-lives/SKILL.md) |
-| 432 | ✓ | [`skills/yc-intent-radar-skill/README.md`](skills/yc-intent-radar-skill/README.md) |
-| 433 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/.gitignore`](skills/yc-intent-radar-skill/yc-jobs-scraper/.gitignore) |
-| 434 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/auth.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/auth.js) |
-| 435 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/db.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/db.js) |
-| 436 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/export_radar_candidates.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/export_radar_candidates.js) |
-| 437 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package-lock.json`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package-lock.json) |
-| 438 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package.json`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package.json) |
-| 439 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/scraper.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/scraper.js) |
-| 440 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/SKILL.md`](skills/yc-intent-radar-skill/yc-jobs-scraper/SKILL.md) |
-| 441 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 432 | ✓ | [`skills/xquik-x-follower-scraper/package.json`](skills/xquik-x-follower-scraper/package.json) |
+| 433 | ✓ | [`skills/xquik-x-follower-scraper/README.md`](skills/xquik-x-follower-scraper/README.md) |
+| 434 | ✓ | [`skills/xquik-x-follower-scraper/SKILL.md`](skills/xquik-x-follower-scraper/SKILL.md) |
+| 435 | ✓ | [`skills/xquik-x-tweet-scraper/package.json`](skills/xquik-x-tweet-scraper/package.json) |
+| 436 | ✓ | [`skills/xquik-x-tweet-scraper/README.md`](skills/xquik-x-tweet-scraper/README.md) |
+| 437 | ✓ | [`skills/xquik-x-tweet-scraper/SKILL.md`](skills/xquik-x-tweet-scraper/SKILL.md) |
+| 438 | ✓ | [`skills/yc-intent-radar-skill/README.md`](skills/yc-intent-radar-skill/README.md) |
+| 439 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/.gitignore`](skills/yc-intent-radar-skill/yc-jobs-scraper/.gitignore) |
+| 440 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/auth.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/auth.js) |
+| 441 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/db.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/db.js) |
+| 442 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/export_radar_candidates.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/export_radar_candidates.js) |
+| 443 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package-lock.json`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package-lock.json) |
+| 444 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package.json`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/package.json) |
+| 445 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/scraper.js`](skills/yc-intent-radar-skill/yc-jobs-scraper/scripts/scraper.js) |
+| 446 | ✓ | [`skills/yc-intent-radar-skill/yc-jobs-scraper/SKILL.md`](skills/yc-intent-radar-skill/yc-jobs-scraper/SKILL.md) |
+| 447 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

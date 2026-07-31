@@ -75,3 +75,4 @@ You will need:
 - Your Stitch API Key (same key used in Step 4).
 - The target `projectId`.
 - The `--generated-by` argument set to `'stitch::extract-static-html'`.
+- The `--title` argument set to the **route path** of the page (e.g., `'/dashboard'`, `'/settings/profile'`, `'/inbox'`) so that the screen name/title in Stitch clearly identifies its route in the application.

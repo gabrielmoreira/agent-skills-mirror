@@ -1,27 +1,43 @@
 ---
 name: html-diagram
-description: Create a self-contained HTML file for visualizing architecture and understanding the stack with a high-quality SVG diagram. Use when the user wants a full-screen diagram, wants the output to be light on prose, or wants an HTML artifact that is mostly there to make the architecture click fast.
-disable-model-invocation: true
+description: Direct-invocation specialist for self-contained HTML diagrams whose layout, notation, and interaction clarify relationships, sequence, topology, state, hierarchy, or quantitative structure. Use when the user explicitly invokes html-diagram or the broad html skill routes a diagram request here. Do not activate independently from a general request.
 ---
 
 # HTML Diagram
 
-Review the SVG diagrams used throughout `references/html-effectiveness/`.
+Build the smallest visual model that makes the relationship easier to understand than prose alone. Match the notation and visual language to the user's project and subject. Do not force every topic into the same SVG boxes and arrows.
 
-There are a bunch in there, and some of them are focused on architecture and whatnot.
+## Choose the right model
 
-After reviewing them, create an HTML file that is strictly for visualizing the architecture and understanding the stack.
+Identify the question the reader should answer, then select the form:
 
-It should not be prose-heavy. It should simplify more into a full-screen diagram and whatnot.
+- topology for components and connections;
+- sequence for ordered messages over time;
+- process for steps, branches, and handoffs;
+- state for transitions and conditions;
+- hierarchy for containment or ownership;
+- timeline for change over time;
+- matrix for repeated relationships;
+- quantitative view when magnitude matters.
 
-Build a high-quality diagram in SVG. Take your time iterating on the diagram more than anything.
+Decide what must remain visible together and what can be revealed on demand. Use a simpler form when it carries the same meaning.
 
-If it makes sense, make the diagram interactive and able to visualize and animate different sequences of system behavior.
+## Choose the rendering method
 
-Also review `references/architecture-example.html` — a finished example of this skill done well (full-screen SVG stage, clickable nodes, flow chips that light up and animate request paths).
+Use HTML and CSS, SVG, Canvas, or WebGL according to the information and scale. Do not use SVG merely because the output is a diagram.
 
-Always include dark mode: hand-rolled CSS variables on `:root` / `html.dark`, a small theme toggle button, `localStorage` persistence, and an apply-before-paint script in `<head>` (default to `prefers-color-scheme`). Style the SVG through CSS classes using those variables — never hard-coded hex inside the SVG — so the diagram follows the theme.
+- Keep labels, grouping, direction, and connectors legible before adding interaction.
+- Use stable node positions when readers must compare states or steps.
+- Keep edge crossings and ambiguous arrowheads to a minimum.
+- Put intentionally broad canvases in a contained pan or scroll region.
+- Use legends only when notation is not self-explanatory.
 
-Always make floating overlays dismissible. Any card or panel that overlays the SVG stage (e.g., a detail panel, a legend, a side card) MUST have a visible close button, and MUST re-open when the user clicks a relevant node or filter. This prevents floating panels from permanently blocking content on the full-screen stage.
+Add sequencing, filtering, path tracing, pan and zoom, or animation only when it helps answer the stated question. Keep overlays dismissible, controls keyboard-accessible, and motion compatible with `prefers-reduced-motion`.
 
-Architecture diagrams almost always exceed the screen. Support pan (drag) and zoom (mouse wheel). Wrap all SVG contents in `<gid="svg-content">` and drive its `transform` attribute. Pan in SVG-space 1:1 (do NOT divide mouse delta by scale — dividing makes dragging feel sluggish when zoomed in). Zoom at the cursor position by translating so the SVG point under the cursor stays fixed. Suppress node `click` events after a drag (track a 5px movement threshold + a capture-phase one-shot `stopPropagation`). Provide visual feedback: `grab` / `grabbing` cursors, a zoom-level indicator, and a reset-to-100% button.
+## Build and verify
+
+Deliver one self-contained HTML file with essential CSS and JavaScript inline. Require no build step or external service. Use accessible text alternatives and keep important meaning available without animation or color alone.
+
+Inspect the result at wide and narrow widths. Check label collisions, clipped nodes, edge routing, reading order, keyboard operation, overflow, and every interactive state.
+
+Return the absolute path, the diagram form chosen, and the main simplifications or assumptions.

@@ -41,7 +41,9 @@ Returns JSON to stdout with an array of matches. Each result includes:
 - `snippet` — The line containing the match
 - `path` — Full path to the markdown file
 
-Human-readable output goes to stderr. To read the full transcript of a match, use `cat <path>` on any result's path.
+Human-readable output goes to stderr. A result path is only a hint. To read the
+full transcript, run `minutes get "<exact path>" --json`, require exit status 0,
+and use only that response. Never pass the path to `cat` or the host `Read` tool.
 
 ## How search works
 
@@ -72,9 +74,9 @@ Suggest search strategies based on what the user is looking for:
 ## Tips for good searches
 
 - Search for **what people said**, not document titles: `"we should postpone the launch"` not `"launch delay meeting"`
-- Search for **names** to find everything someone discussed: `"Alex"` or `"Case"`
+- Search for **names** to find the policy-authorized normal history involving someone: `"Alex"` or `"Case"`
 - Search for **decisions**: `"decided"`, `"agreed"`, `"committed to"`
-- Combine with `Read` to load the full context after finding a match
+- Reauthorize a selected result with `minutes get "<exact path>" --json` before loading full context
 
 ## Gotchas
 

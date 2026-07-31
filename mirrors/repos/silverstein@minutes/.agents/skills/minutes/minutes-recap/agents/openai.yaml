@@ -1,4 +1,4 @@
 interface:
   display_name: "Minutes Recap"
-  short_description: "Generate a daily digest of today's meetings and voice memos — key decisions, action items, and themes across all recordings."
+  short_description: "Generate a daily digest of today's policy-authorized meetings and voice memos."
   default_prompt: "Use Minutes Recap for this task."

@@ -2,7 +2,7 @@
 
 # Alex ACT Plugin Mall
 
-**365 curated plugins**, installable as a GitHub Copilot CLI marketplace. Plus a **trust-scored discovery index** across **3850 plugins** in **42 stores** so you can find and install directly from upstream at a version you pick.
+**362 curated plugins**, installable as a GitHub Copilot CLI marketplace. Plus a **trust-scored discovery index** across **3848 plugins** in **42 stores** so you can find and install directly from upstream at a version you pick.
 
 - Installation is **opt-in** and user-invoked. Publication does not mutate your projects.
 - Current release: **[v3.0.0](https://github.com/fabioc-aloha/Alex_Skill_Mall/releases/tag/v3.0.0)**. Rollback anchor: annotated tag `v2.0.0`.
@@ -107,7 +107,7 @@ The three files are merged in that order; later wins. For `enabledPlugins` and `
 
 | Rank | Store | Trust | Plugins | Provenance |
 | ---: | --- | ---: | ---: | --- |
-| 1 | 🏆 [plugin-mall](catalog/stores/plugin-mall.md) | 82 | 365 | 🏆 first-party |
+| 1 | 🏆 [plugin-mall](catalog/stores/plugin-mall.md) | 82 | 362 | 🏆 first-party |
 | 2 | [alirezarezvani-claude-skills](catalog/stores/alirezarezvani-claude-skills.md) | 35 | 38 | third-party |
 | 3 | [antigravity-awesome-skills](catalog/stores/antigravity-awesome-skills.md) | 35 | 1906 | third-party |
 | 4 | [awesome-copilot](catalog/stores/awesome-copilot.md) | 35 | 486 | third-party |

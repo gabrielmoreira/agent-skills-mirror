@@ -29,7 +29,7 @@ export function isValidDeckState(state) {
   for (const field of arrayFields) {
     if (state[field] !== undefined && !Array.isArray(state[field])) return false;
   }
-  const objectFields = ['text', 'props', 'variantSelection'];
+  const objectFields = ['text', 'media', 'props', 'variantSelection'];
   for (const field of objectFields) {
     if (state[field] !== undefined && !isPlainObject(state[field])) return false;
   }

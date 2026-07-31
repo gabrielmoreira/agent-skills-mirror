@@ -18,6 +18,10 @@ import {
 } from './inspect-fillplan.mjs';
 import { charLength } from './copy-contract.mjs';
 import { deriveTemplateItems } from '../../src/variant-contract.mjs';
+import {
+  plannerPresentationFieldForTarget as presentationFieldForTarget,
+  presentationTargetEntries,
+} from './presentation-field-semantics.mjs';
 
 const ROLE_ALIASES = {
   agenda: 'breakdown',
@@ -89,7 +93,7 @@ export function contentShapeFromPresentation(presentation = {}, hints = {}) {
     hasContentValue(item?.value) || hasContentValue(item?.displayValue)
   )).length || positive('valueItemCount') || positive('numericItemCount');
   const rawNumericItemCount = items.filter(item => (
-    typeof item?.value === 'number' && Number.isFinite(item.value)
+    Number.isFinite(item?.chartValue)
   )).length || positive('rawNumericItemCount');
   const textualValueItemCount = items.filter(item => (
     hasContentValue(item?.displayValue)
@@ -546,109 +550,19 @@ function shapeArrayDepth(value) {
 function arraySupportsPresentation(field) {
   if (field.itemShape === 'string') return true;
   if (!field.itemShape || typeof field.itemShape !== 'object' || Array.isArray(field.itemShape)) return false;
-  const supported = new Set(Object.entries(field.itemShape)
-    .map(([key, type]) => presentationFieldForTarget(key, type, field))
+  const supported = new Set(presentationTargetEntries(field)
+    .map(({ key, type }) => presentationFieldForTarget(key, type, field))
     .filter(Boolean));
   return supported.has('label');
 }
 
 function arraySupportsNumericItems(field) {
   if (!field.itemShape || typeof field.itemShape !== 'object' || Array.isArray(field.itemShape)) return false;
-  return Object.entries(field.itemShape).some(([key, type]) => (
+  return presentationTargetEntries(field).some(({ key, type }) => (
     ['value', 'displayValue'].includes(presentationFieldForTarget(key, type, field))
   ));
 }
 
-function presentationFieldForTarget(key, type, field = {}) {
-  const name = String(key || '').toLowerCase();
-  const container = String(field.key || '').toLowerCase().split('.').at(-1)?.replace(/\[\]$/g, '') || '';
-  const containerRole = String(field.role || '').toLowerCase();
-  const itemEntries = Object.entries(field.itemShape || {});
-  const siblingKeys = new Set(itemEntries.map(([item]) => item.toLowerCase()));
-  const siblingTypes = new Map(itemEntries.map(([item, itemType]) => [item.toLowerCase(), itemType]));
-  const itemFieldEntries = Object.entries(field.itemFields || {});
-  const itemField = itemFieldEntries
-    .find(([itemKey]) => String(itemKey).toLowerCase() === name)?.[1] || {};
-  const siblingRoles = new Map(itemFieldEntries.map(([itemKey, contract]) => [
-    String(itemKey).toLowerCase(),
-    String(contract?.role || '').toLowerCase(),
-  ]));
-  const contractRole = String(itemField.role || '').toLowerCase();
-  const numericSource = 'value';
-  const metricContainer = containerRole === 'metric'
-    || /^(?:stats|metrics|kpis|metricsdata|indicators|scores|factsdata)$/.test(container);
-  const chapterContainer = containerRole === 'chapter'
-    || /^(?:contents|index|chapters|agenda)$/.test(container);
-  const durationContainer = /^(?:tracks|songs|playlist|setlist)$/.test(container);
-  const hasTitleSibling = ['t', 'title', 'label', 'name', 'big', 'cn', 'zh', 'nm', 'lb']
-    .some(item => siblingKeys.has(item));
-  const hasMetricSibling = itemEntries.some(([itemKey, itemType]) => (
-    itemKey.toLowerCase() !== name
-    && (itemType === 'number'
-      || siblingRoles.get(itemKey.toLowerCase()) === 'metric'
-      || /^(?:v|value|amount|amt|metric|stat|pct|percent|score|avg|disp|val)$/.test(itemKey.toLowerCase()))
-  ));
-
-  if (type === 'boolean' && /focus|active|highlight|selected|up|positive/.test(name)) return 'focus';
-
-  // Short fields are interpreted only inside their real container contract.
-  // Page, duration, metric and secondary-label slots require corresponding
-  // canonical data; they never fall back to an ordinal or ordinary label.
-  if (name === 'pg' || name === 'page' || name === 'pageno' || name === 'pagenumber') {
-    return 'pageLabel';
-  }
-  if (/^(?:unit|suffix)$/.test(name)
-    || (name === 'u' && (metricContainer || hasMetricSibling))) return 'unit';
-  if (container === 'quotes') {
-    if (name === 'q') return 'detail';
-    if (name === 'n') return 'label';
-    if (name === 'r') return 'secondaryLabel';
-    if (name === 'm') return 'initial';
-  }
-  if (name === 'd') {
-    if (type === 'number') return numericSource;
-    if (durationContainer) return 'duration';
-    if (contractRole === 'metric' || metricContainer) return 'displayValue';
-    if (contractRole === 'body' || contractRole === 'paragraph' || hasTitleSibling) return 'detail';
-    return null;
-  }
-  if (name === 'e') {
-    if (type === 'number') return numericSource;
-    if (contractRole === 'body' || contractRole === 'paragraph') return 'detail';
-    if (chapterContainer || siblingKeys.has('t') || siblingKeys.has('n') || siblingKeys.has('pg')) {
-      return 'secondaryLabel';
-    }
-    return null;
-  }
-  if (name === 'n') {
-    if (type === 'number') return numericSource;
-    if (contractRole === 'metric' || metricContainer) return 'displayValue';
-    if (/^(?:quotes|artists)$/.test(container)) return 'label';
-    if (hasTitleSibling) return 'ordinal';
-    return 'label';
-  }
-  if (name === 't') {
-    return contractRole === 'body' || contractRole === 'paragraph' ? 'detail' : 'label';
-  }
-  if (name === 's') {
-    if (type === 'number') return numericSource;
-    if (contractRole === 'metric' || metricContainer) return 'displayValue';
-    if (container === 'artists' && siblingTypes.has('v')) return 'displayValue';
-    return hasTitleSibling ? 'secondaryLabel' : null;
-  }
-  if ((name === 'l' || name === 'lb') && (metricContainer || hasMetricSibling)) return 'label';
-
-  if (type === 'number') return numericSource;
-  if (contractRole === 'metric') return 'displayValue';
-  if (contractRole === 'body' || contractRole === 'paragraph') return 'detail';
-  if (/^(?:no|num)$/.test(name)) return 'ordinal';
-  if (/body|detail|description|desc|note|summary|sub|caption|copy|text/.test(name)) return 'detail';
-  if (/^(?:v)$|value|amount|score|number|metric|stat|pct|percent|share|delta|rate/.test(name)) return 'displayValue';
-  if (/rank|index/.test(name)) return 'ordinal';
-  if (/^(?:k|t)$|label|name|title|heading|category|series|item|dim|^en$|phase|stage|period|time|tag/.test(name)) return 'label';
-  if (/^id$|key/.test(name)) return 'id';
-  return null;
-}
 function scalarPresentationFieldForTarget(key, type) {
   const name = String(key || '').toLowerCase();
   if (/body|detail|description|desc|note|summary|sub|caption|copy|text/.test(name)) return 'detail';
@@ -806,16 +720,17 @@ function collectArrayContentContainers(layout, normalized) {
         : null;
       const minimumCapacity = Number(countBinding?.min || 0);
       const mappedFields = field.itemShape === 'string'
-        ? [{ key: field.key, type: 'string', source: 'label' }]
-        : Object.entries(field.itemShape || {})
-          .map(([key, type]) => ({
+        ? [{ key: field.key, type: 'string', semantic: 'label', source: 'label' }]
+        : presentationTargetEntries(field)
+          .map(({ key, type, decision }) => ({
             key,
             type,
+            semantic: decision.semantic,
             source: presentationFieldForTarget(key, type, field),
           }))
           .filter(item => item.source);
       const supported = new Set(mappedFields.map(item => item.source));
-      const numericTargetCount = mappedFields.filter(item => item.source === 'value').length;
+      const numericTargetCount = mappedFields.filter(item => item.semantic === 'numericValue').length;
       const supportsNumericValue = numericTargetCount > 0;
       const supportsTextualValue = mappedFields.some(item => item.source === 'displayValue');
       const requiresUnit = mappedFields.some(item => item.source === 'unit');
@@ -848,20 +763,24 @@ function collectArrayContentContainers(layout, normalized) {
         required.textualValueItemCount,
         effectiveProjectedItemCount,
       );
-      const canonicalValueTargetFits = !supportsNumericValue && !supportsTextualValue
-        ? true
-        : supportsNumericValue
-          ? requiredValueCount > 0
-          : requiredValueCount >= effectiveProjectedItemCount;
-      const canonicalUnitTargetFits = !requiresUnit
-        || required.unitItemCount >= (
-          supportsNumericValue ? projectedValueCount : effectiveProjectedItemCount
-        );
-      const canonicalSecondaryLabelTargetFits = !requiresSecondaryLabel
+      const deferred = normalized?.deferred === true;
+      const canonicalNumericTargetFits = deferred
+        || !supportsNumericValue
+        || required.rawNumericItemCount >= effectiveProjectedItemCount;
+      const canonicalTextualValueTargetFits = deferred
+        || !supportsTextualValue
+        || required.valueItemCount >= effectiveProjectedItemCount;
+      const canonicalUnitTargetFits = deferred
+        || !requiresUnit
+        || required.unitItemCount >= effectiveProjectedItemCount;
+      const canonicalSecondaryLabelTargetFits = deferred
+        || !requiresSecondaryLabel
         || required.secondaryLabelItemCount >= effectiveProjectedItemCount;
-      const canonicalDurationTargetFits = !requiresDuration
+      const canonicalDurationTargetFits = deferred
+        || !requiresDuration
         || required.durationItemCount >= effectiveProjectedItemCount;
-      const canonicalPageLabelTargetFits = !requiresPageLabel
+      const canonicalPageLabelTargetFits = deferred
+        || !requiresPageLabel
         || required.pageLabelItemCount >= effectiveProjectedItemCount;
       const requiredFits = semanticFits && (!required.itemCount || (
         capacity >= minimumItemCount
@@ -869,7 +788,8 @@ function collectArrayContentContainers(layout, normalized) {
       ))
         && valueCapacity >= projectedValueCount
         && textualValueCapacity >= projectedTextualValueCount
-        && canonicalValueTargetFits
+        && canonicalNumericTargetFits
+        && canonicalTextualValueTargetFits
         && canonicalUnitTargetFits
         && canonicalSecondaryLabelTargetFits
         && canonicalDurationTargetFits
@@ -887,13 +807,14 @@ function collectArrayContentContainers(layout, normalized) {
         capacity,
         minimumCapacity,
         fields: [...supported],
+        mappedFields,
         supportsLabel: supported.has('label'),
         supportsValue,
         supportsNumericValue,
         supportsTextualValue,
         supportsInlineValue,
         supportsDetail,
-        numericCapacity: valueCapacity,
+        numericCapacity: supportsNumericValue || supportsTextualValue ? capacity : 0,
         numericValueCapacity: supportsNumericValue ? capacity : 0,
         textualValueCapacity,
         inlineValueCapacity: supportsInlineValue ? capacity : 0,

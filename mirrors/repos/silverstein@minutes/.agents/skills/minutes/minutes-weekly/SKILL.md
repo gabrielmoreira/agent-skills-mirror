@@ -14,11 +14,16 @@ export MINUTES_SKILL_ROOT="$MINUTES_SKILLS_ROOT/minutes-weekly"
 
 # /minutes-weekly
 
-Synthesize an entire week of meetings and voice memos into a forward-looking brief — themes, decision arcs, stale commitments, and what deserves attention Monday.
+Synthesize a week of policy-authorized normal meetings and voice memos into a
+forward-looking brief — themes, decision arcs, stale commitments, and what
+deserves attention Monday. Restricted history is excluded by default.
 
 ## How it works
 
-This is a synthesis skill, not a command wrapper. It reads across all meetings, cross-references decisions and action items, and produces an intelligence brief.
+This is a synthesis skill, not a command wrapper. It reads across the normal
+meetings authorized by Minutes, cross-references decisions and action items,
+and produces an intelligence brief. Restricted meetings are excluded from this
+agent workflow by default and must never be treated as absent facts.
 
 ### Phase 1: Gather this week's recordings
 
@@ -28,7 +33,9 @@ minutes list --limit 50
 
 Filter to recordings from the last 7 days by checking the `date` field in each result's frontmatter. Do NOT use `minutes search` with a date string as the query — that searches file content, not dates.
 
-For each recording from the past 7 days, read the full file with `Read` to get content.
+For each selected recording, run `minutes get "<exact path>" --json`, require
+exit status 0, and use only the returned content. List/search paths are hints,
+not retained capabilities; never reopen them with the host `Read` tool.
 
 **If zero recordings this week:**
 Say: "No recordings found for the past 7 days. Nothing to synthesize."
@@ -40,7 +47,7 @@ Still produce the brief — it's shorter but still valuable. Note: "Light week �
 
 ### Phase 2: Theme extraction
 
-Identify the 3-5 dominant themes across all meetings this week. A theme is a topic that appeared in 2+ meetings.
+Identify the 3-5 dominant themes across the authorized normal meetings this week. A theme is a topic that appeared in 2+ meetings.
 
 For each theme:
 - Which meetings discussed it
@@ -66,11 +73,14 @@ Present as:
 
 ### Phase 3: Decision evolution arcs
 
-For every decision made this week, search for prior decisions on the same topic in the last 30 days:
+For every decision found in the authorized normal sources this week, search for prior normal-source decisions on the same topic in the last 30 days:
 
 ```bash
 minutes search "<topic>" --since <30-days-ago> --limit 20
 ```
+
+Require search exit status 0. Reauthorize any result used in the decision arc
+with `minutes get "<exact path>" --json`; never read a result path directly.
 
 Classify each decision:
 
@@ -96,13 +106,14 @@ If there are CONFLICTING decisions, flag them prominently:
 
 ### Phase 4: Action item audit
 
-Scan all meetings from the past 30 days for action items:
+Scan authorized normal meetings from the past 30 days for action items:
 
 ```bash
 minutes actions
 ```
 
-Or grep across meeting frontmatter for `action_items` with `status: open`.
+Require exit status 0. If the native action surface fails, report the source
+unavailable; never grep meeting files as a fallback.
 
 Categorize:
 - **Completed this week** — items that were marked done
@@ -113,42 +124,9 @@ Categorize:
 Flag overdue items prominently:
 "⚠️ 3 action items are overdue. The oldest is from Mar 10 (pricing doc for Alex)."
 
-### Phase 4b: Relationship intelligence (from conversation graph)
+### Phase 4b: Relationship intelligence
 
-If the `minutes` CLI is available, pull relationship data:
-
-```bash
-minutes people --json --limit 20
-minutes commitments --json
-```
-
-From the people data, produce:
-
-**Relationship changes this week:**
-- Who you met with most this week (compare to their usual frequency)
-- Anyone new you met for the first time
-- Anyone on your "losing touch" list
-
-**Stale commitments by person:**
-- Group overdue/stale commitments by person name
-- Include the meeting they came from and the original due date
-- Prioritize by age (oldest first)
-
-Present as:
-
-```
-## Relationship Pulse
-
-**Most active:** Sarah Chen (3 meetings this week, usually 1/week)
-**New contact:** Jordan Mills (first meeting Thursday)
-**Losing touch:** Alex Kumar (5 meetings total, last seen 3 weeks ago)
-
-### Stale Commitments
-- **Alex Kumar:** Send tech spec (due Mar 20, from Q2 Planning)
-- **mat:** Pull March revenue numbers (due Mar 22, from Investor Update Prep)
-```
-
-If no graph data is available (minutes people returns empty), skip this phase silently. It's additive, not required.
+Run `minutes people --json` and `minutes commitments --json` for bounded relationship intelligence. Require exit status 0 from each; a projection failure means unavailable, never “no relationships” or “no commitments.” Continue using source-backed actions and consistency results from the surrounding phases.
 
 ### Phase 5: Unresolved preps
 
@@ -185,22 +163,19 @@ Use this concrete ordering:
   1. Decision Arcs
   2. This Week's Themes
   3. Action Item Audit / stale commitments
-  4. Relationship Pulse
-  5. Attention Monday
+  4. Attention Monday
 
 - `commitments-first`
   1. Action Item Audit / stale commitments
   2. Decision Arcs
   3. This Week's Themes
-  4. Relationship Pulse
-  5. Attention Monday
+  4. Attention Monday
 
 - `memo-heavy`
   1. This Week's Themes, but ensure voice memos and idea capture are surfaced explicitly inside the theme summary
   2. Action Item Audit
   3. Decision Arcs
-  4. Relationship Pulse
-  5. Attention Monday
+  4. Attention Monday
 
 If there is no preference, keep the default order in this skill.
 

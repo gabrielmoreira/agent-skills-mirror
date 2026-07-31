@@ -78,12 +78,14 @@ Telegram/Feishu 消息
 
 ## 数据库（SQLite）
 
-Schema 定义在 `src/lib/db.ts`，12 张表：
+Schema 定义在 `src/lib/db.ts`，核心表包括：
 
 | 表 | 用途 |
 |----|------|
 | `chat_sessions` | 聊天会话元数据 |
 | `messages` | 消息（content 为 JSON 数组） |
+| `subagent_runs` | managed Sub-agent logical run 下的 physical attempt、route、structured result 与 durable phase（running → settling → terminal） |
+| `subagent_run_events` | Sub-agent attempt 的 typed lifecycle（activity / tool / permission / partial / terminal） |
 | `settings` | 键值设置 |
 | `tasks` | SDK TodoWrite 任务项 |
 | `api_providers` | API 提供商配置（Anthropic, OpenAI …） |
@@ -165,6 +167,7 @@ Schema 定义在 `src/lib/db.ts`，12 张表：
 | 上下文存储迁移（执行） | `docs/exec-plans/active/context-storage-migration.md` | 分阶段进度 + 决策日志 |
 | 技术债务 | `docs/exec-plans/tech-debt-tracker.md` | 已知技术债务清单 |
 | Provider/Error/Doctor | `docs/handover/provider-error-doctor.md` | 错误分类、Provider 生效、Auth 自动、诊断中心 |
+| 多模型 Sub-agent | `docs/handover/same-runtime-multi-model-subagents.md` | 三 Runtime Adapter、durable lifecycle、共享 workflow dependency compiler |
 
 ## 技术栈
 

@@ -57,51 +57,48 @@ If none return anything, ask once: "I can't find an upcoming meeting. Who do you
 
 ### Phase 1: Gather data in parallel
 
-The Minutes CLI already does the hard work. Fire all four of these as separate Bash tool calls in the same message — Claude Code will run them in parallel because they're independent. **The CLI's stream contract is messy; each command below has a specific shape documented below the block — read them before running.**
+The Minutes CLI already does the hard work. Person profiles, search, relationship rankings, and commitments are bounded policy-safe projections. Run the commands below in parallel and require exit status 0 before interpreting their output.
 
 ```bash
-# 1. Person profile. stdout is CONTAMINATED: WARN tracing lines + JSON, mixed.
-#    Use sed to extract from the first "{" to EOF before parsing as JSON.
-minutes person "<name>" 2>/dev/null | sed -n '/^{/,$p'
+# 1. Bounded live-source person profile.
+minutes person "<name>"
 
-# 2. Open commitments — what they owe you and what you owe them.
-#    Clean JSON on stdout when --json is passed.
-minutes commitments -p "<name>" --json 2>/dev/null
-
-# 3. Recent decisions involving them, last 30 days.
+# 2. Recent decisions involving them, last 30 days.
 #    Clean JSON on stdout by default (insights does NOT accept --json — output is already JSON).
-minutes insights --participant "<name>" --kind decision --since <30-days-ago> 2>/dev/null
+minutes insights --participant "<name>" --kind decision --since <30-days-ago>
 
-# 4. Recent meetings with them, last 60 days. Newline-delimited JSON (one object per line).
-minutes search "<name>" --limit 10 --since <60-days-ago> --format json 2>/dev/null
+# 3. Recent meetings with them, last 60 days. Newline-delimited JSON (one object per line).
+minutes search "<name>" --limit 10 --since <60-days-ago> --format json
 ```
 
 **CLI stream-handling notes** — the Minutes CLI is actively developed and its stream contract is not fully settled. Today (0.8.0):
 
-- `minutes person` writes tracing WARN lines **and** the JSON profile to **stdout** (not stderr, as you'd expect). The WARN lines appear first. The `sed -n '/^{/,$p'` pipe above strips them. If you pass `minutes person`'s raw stdout to a JSON parser, it will blow up on the first WARN line.
-- `minutes person` also writes a human-readable summary ("Profile for Mat: …") to **stderr**. Harmless but weird. We redirect stderr to `/dev/null` to keep it out of the pipeline.
-- `minutes commitments --json`, `minutes insights`, `minutes search --format json`, and `minutes people --json` all produce clean JSON on stdout when stderr is redirected. No extraction needed.
+- `minutes person`, `minutes insights`, and `minutes search --format json` are bounded live-source surfaces.
+- `minutes people`, `minutes commitments`, and `minutes person` fail closed on authorization, resource-budget, or correction races. Never suppress a nonzero exit or translate it into an empty fact.
+- Any nonzero exit from a live-source command means the source is unavailable. Do not interpret empty stdout as “no history.”
 - **Do not invent new flags** on top of what's shown above — e.g. `minutes insights --json` is not a real flag, `minutes export --since` is not a real flag. The CLI will reject unknown flags with a usage error.
 
 If a future CLI release changes any of these contracts, update this skill in the same PR that ships the CLI change.
 
-**The `minutes person` empty-but-not-empty trap.** Some real meetings have malformed frontmatter that the CLI's strict schema rejects — you can see it in the WARN lines. When that happens, `minutes person "<name>"` returns an empty profile (`{"recent_meetings": [], ...}`) **even though meetings with that person actually exist on disk**. Before declaring "first meeting on record", always cross-check with `minutes search`:
+Before declaring "first meeting on record", verify it with live-source search:
 
 ```bash
-minutes search "<name>" --limit 1 --format json 2>/dev/null
+minutes search "<name>" --limit 1 --format json
 ```
 
-If `search` returns hits but `person` is empty, surface that as: "I have meetings with this person on record but the person profile is broken (likely a frontmatter schema issue). Here's what search found instead." Then read those meeting files directly and synthesize from the raw transcripts. Never lie to the user about a "first meeting" when it isn't one.
-
-For multi-attendee meetings, focus on the **single most-mentioned attendee** (the one with the highest meeting count via `minutes person`). Mention the others briefly at the end. Don't try to brief 5 people at once — it dilutes the signal to nothing.
+For multi-attendee meetings, focus on the requested person. Mention the others briefly at the end. Don't try to brief five people at once.
 
 ### Phase 2: Read what you actually need
 
-Extract the file paths of the most recent 1–2 meetings from `minutes search`'s JSON output. Each line of the search output is a JSON object with a `path` field — the absolute path to the meeting file. Parse those, take the two most recent, and `Read` them in full.
+Extract the file paths of the most recent 1–2 meetings from a successful `minutes search` response. Reauthorize and retrieve each meeting through the native bounded surface:
+
+```bash
+minutes get "<exact path>" --json
+```
+
+Require exit status 0 and use only the returned content. Never pass the path to the host `Read` tool: search results are hints, not retained authorization capabilities.
 
 Don't read more than two — past three meetings is enough context for a brief, and the brief is supposed to fit on one screen.
-
-If `minutes person` returned a non-empty profile, you can also use its `recent_meetings` field for paths. Either source works; pick whichever is non-empty.
 
 ### Phase 3: Synthesize the brief
 
@@ -114,12 +111,7 @@ Produce a brief in this exact shape — every section is one tight chunk, total 
 
 **They've been thinking about**: <comma-separated list of 3–5 hot topics from the last 30 days, ordered by recency × frequency>
 
-**You owe them** (<count> open):
-- <commitment 1> — <due date if known, mark ⚠ OVERDUE if past due>
-- <commitment 2>
-
-**They owe you** (<count> open):
-- <commitment 1> — <due date if known>
+**Commitments**: Use `minutes commitments --person "<name>" --json`; require exit status 0.
 
 **Where things stand**: <one-line read of the relationship vibe — warming, cooling, stable, urgent, drifting>
 
@@ -137,7 +129,7 @@ Produce a brief in this exact shape — every section is one tight chunk, total 
 **Rules for the brief:**
 - **No filler.** Cut anything that doesn't change what the user does in the next 60 minutes.
 - **Be specific.** "They want to talk about Q2" is useless. "Sarah has raised the Q2 hiring freeze in 3 of her last 4 meetings" is useful.
-- **Honest about gaps.** If `minutes person` AND `minutes search` both return nothing, this is genuinely a first meeting — say so explicitly. If `minutes search` returns hits but `minutes person` is empty, surface that mismatch (likely a frontmatter schema issue) and synthesize from the raw meeting files anyway. **Never claim "first meeting on record" without verifying with `minutes search`.**
+- **Honest about gaps.** If `minutes search` returns nothing, say that no matching meeting history was found. Never infer relationship facts from the unavailable graph.
 - **The opening line matters most.** This is the punchline. Make it usable verbatim. The user should be able to literally say it.
 
 ### Phase 4: Save and display
@@ -156,7 +148,7 @@ Write to `~/.minutes/briefs/YYYY-MM-DD-{person-first-name-lowercase}.brief.md` w
 person: <Full Name>
 date: <today ISO>
 brief_type: auto | manual
-meeting_count: <count from minutes person>
+meeting_count: <count from minutes search results used>
 trigger: "calendar:<event title>" | "manual"
 ---
 ```
@@ -195,10 +187,10 @@ node "${CLAUDE_PLUGIN_ROOT}/hooks/lib/minutes-learn-cli.mjs" set-alias "Sarah Ch
 - **Don't duplicate prep.** Brief sets no goals, asks no questions, and never produces talking points. If the user wants any of that, the closing nudge points them at `/minutes-prep`. Two skills, two jobs — keep the line clean.
 - **One screen of output.** If the brief body is longer than ~25 lines, you've added filler. Cut it.
 - **Multi-attendee meetings focus on one person.** Pick the single most-mentioned attendee (highest meeting count) and brief on them. Mention others in one sentence at the end: "Also in the room: Logan, Kim." Don't try to brief everyone — the signal dilutes to noise.
-- **Zero history is not an error — but verify it before claiming it.** If both `minutes person` AND `minutes search` return empty, this is genuinely a first meeting. Output a brief that says exactly that, plus whatever the calendar event tells us. If `search` returns results but `person` is empty, this is the schema-error trap (Phase 1) — never call it a first meeting. Never invent history.
+- **Zero history is not an error — but verify it before claiming it.** If `minutes search` returns empty, say that no matching meeting history was found and use only the calendar event. Never invent history.
 - **Calendar attendee names are messy.** The event might say "Sarah Chen <sarah@acme.com>" but transcripts say "Sarah" or "SPEAKER_1". Match on first name when looking up history; the CLI's `--participant` flag does fuzzy matching for you.
 - **Briefs are sensitive.** Always `chmod 600`. They contain relationship intelligence the user wouldn't want leaked.
 - **Be honest about staleness.** If the most recent meeting with this person is 3+ months old, lead with that fact: "**Last conversation** (4 months ago): …" — the user's mental model of the relationship may be more recent than reality.
-- **Run the four CLI calls in parallel.** They're independent. Don't chain them sequentially — fire all four in one tool-call batch and synthesize from the combined results. Brief is supposed to be fast.
-- **Don't apologize for missing data.** If `minutes commitments` returns empty, just say "No open commitments on either side." Move on. Apologizing for the absence of data wastes the user's most precious resource: the 60 seconds before the call.
+- **Run the three live-source CLI calls in parallel.** They're independent. Synthesize only from returned source-backed results after all three exit successfully.
+- **A failed commitment projection is unavailable, not empty.** Never claim “No open commitments” from a nonzero graph command.
 

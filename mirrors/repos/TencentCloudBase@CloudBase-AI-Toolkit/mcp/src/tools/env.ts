@@ -1951,7 +1951,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
     {
       title: "CloudBase 环境域名管理（安全域名 / CORS 白名单）",
       description:
-        "管理 CloudBase 环境的安全域名（安全域名 / CORS 白名单），支持添加和删除操作。（原工具名：createEnvDomain/deleteEnvDomain，为兼容旧AI规则可继续使用这些名称）当浏览器 Web 应用需要从本地 Vite / dev server 直接访问 CloudBase 资源时，应先用 queryEnv(action=domains) 检查当前实际浏览器 origin 对应的 host:port 是否已在白名单中，再按该实际值添加。新增或删除后通常需要继续轮询 queryEnv(action=domains) 确认状态收敛；安全域名一般约 10 分钟生效。⚠️ 重要：此工具仅用于 CORS/请求来源验证，不涉及 SSL 证书。如需绑定自定义域名供公网 HTTPS 访问，请使用 manageGateway(action=\"bindCustomDomain\")。",
+        "管理 CloudBase 环境的安全域名（安全域名 / CORS 白名单），支持添加和删除操作。（原工具名：createEnvDomain/deleteEnvDomain，为兼容旧AI规则可继续使用这些名称）当浏览器 Web 应用需要从本地 Vite / dev server 直接访问 CloudBase 资源时，应先用 queryEnv(action=domains) 检查当前实际浏览器 origin 对应的 host:port 是否已在白名单中，再按该实际值添加。新增或删除后通常需要继续轮询 queryEnv(action=domains) 确认状态收敛；安全域名一般约 10 分钟生效。⚠️ 重要：此工具仅用于 CORS/请求来源验证，不涉及 SSL 证书。自定义域名公网 HTTPS：先 queryGateway(listCustomDomains)；已有域名则 manageGateway(createRoute) 显式传 domain（无需证书）；仅首次绑定新域名才用 bindCustomDomain（需 certificateId）。",
       inputSchema: {
         action: z
           .enum(["create", "delete"])

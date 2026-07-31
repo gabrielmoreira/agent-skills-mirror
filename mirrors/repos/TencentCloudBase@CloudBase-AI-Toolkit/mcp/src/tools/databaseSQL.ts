@@ -59,6 +59,7 @@ const QUERY_ACTIONS = [
   "describeTaskStatus",
   "getInstanceInfo",
   "describeInstance",
+  "getConnectionInfo",
 ] as const;
 
 const MANAGE_ACTIONS = [
@@ -104,9 +105,31 @@ type InstanceInfoResult = {
   rawStatus: string | null;
   status: SqlLifecycleStatus;
   clusterId?: string;
+  /** Raw cluster payload — only attached for getConnectionInfo. */
   clusterDetail?: Record<string, unknown>;
+  /** Raw create-result payload — only attached for getConnectionInfo. */
   createResult?: Record<string, unknown>;
 };
+
+/** Lifecycle fields safe to return from getInstanceInfo (no connection secrets). */
+type SanitizedInstanceInfo = Omit<
+  InstanceInfoResult,
+  "clusterDetail" | "createResult"
+>;
+
+function sanitizeInstanceInfo(
+  instanceInfo: InstanceInfoResult,
+): SanitizedInstanceInfo {
+  return {
+    exists: instanceInfo.exists,
+    envId: instanceInfo.envId,
+    instanceId: instanceInfo.instanceId,
+    schema: instanceInfo.schema,
+    rawStatus: instanceInfo.rawStatus,
+    status: instanceInfo.status,
+    ...(instanceInfo.clusterId ? { clusterId: instanceInfo.clusterId } : {}),
+  };
+}
 
 type QuerySqlDatabaseArgs = {
   action: QueryAction;
@@ -784,11 +807,12 @@ async function handleGetInstanceInfo(
   context: QueryManageContext,
 ): Promise<ToolResult> {
   const instanceInfo = await getSqlInstanceInfo(context);
+  const sanitized = sanitizeInstanceInfo(instanceInfo);
   return buildSqlToolResult({
     success: true,
-    data: instanceInfo,
+    data: sanitized,
     message: instanceInfo.exists
-      ? "Resolved current SQL database instance context."
+      ? "Resolved current SQL database instance context (lifecycle only; connection credentials are omitted). Prefer SDK or runQuery/runStatement for app data access. Use getConnectionInfo only for explicit TCP migration."
       : "No SQL database instance is currently available for this environment.",
     nextActions: instanceInfo.exists
       ? undefined
@@ -800,6 +824,50 @@ async function handleGetInstanceInfo(
             { action: "provisionMySQL", confirm: true },
           ),
         ],
+  });
+}
+
+async function handleGetConnectionInfo(
+  context: QueryManageContext,
+): Promise<ToolResult> {
+  const instanceInfo = await getSqlInstanceInfo(context);
+
+  if (!instanceInfo.exists) {
+    return buildSqlToolResult({
+      success: false,
+      errorCode: "MYSQL_NOT_CREATED",
+      data: sanitizeInstanceInfo(instanceInfo),
+      message:
+        "No MySQL instance exists for the current environment, so connection details cannot be returned.",
+      nextActions: [
+        buildNextAction(
+          MANAGE_MYSQL_DATABASE,
+          "provisionMySQL",
+          "Provision MySQL before requesting connection details.",
+          { action: "provisionMySQL", confirm: true },
+        ),
+      ],
+    });
+  }
+
+  return buildSqlToolResult({
+    success: true,
+    data: {
+      ...sanitizeInstanceInfo(instanceInfo),
+      // Full backend passthrough for explicit TCP migration only (may include credentials).
+      clusterDetail: instanceInfo.clusterDetail,
+      createResult: instanceInfo.createResult,
+    },
+    message:
+      "Returned raw MySQL connection/cluster payload for explicit TCP migration only. Prefer CloudBase SDK or queryMysqlDatabase(runQuery)/manageMysqlDatabase(runStatement) for normal app CRUD — do not treat this as the default data path.",
+    nextActions: [
+      buildNextAction(
+        QUERY_MYSQL_DATABASE,
+        "runQuery",
+        "Prefer platform-delegated read-only SQL instead of embedding TCP credentials in app code.",
+        { action: "runQuery", sql: "SELECT 1" },
+      ),
+    ],
   });
 }
 
@@ -832,7 +900,7 @@ async function handleProvisionMySQL(
   ) {
     return buildSqlToolResult({
       success: true,
-      data: existing,
+      data: sanitizeInstanceInfo(existing),
       message: "A SQL database instance already exists for the current environment.",
       nextActions:
         existing.status === "READY"
@@ -1264,12 +1332,12 @@ export function registerSQLDatabaseTools(server: ExtendedMcpServer) {
     {
       title: "查询 CloudBase MySQL 数据库状态或执行只读 SQL",
       description:
-        "查询 CloudBase MySQL 数据库信息。支持执行只读 SQL、查询 MySQL 开通结果、查询 MySQL 任务状态，以及获取当前实例上下文信息。",
+        "查询 CloudBase MySQL 数据库信息。支持执行只读 SQL、查询 MySQL 开通结果、查询 MySQL 任务状态，以及获取当前实例生命周期上下文。标准 getInstanceInfo/describeInstance 不返回连接凭据；仅 getConnectionInfo 透传原始连接/集群载荷（含可能的凭据），且仅用于显式 TCP 迁移。业务 CRUD 优先使用 SDK 或 runQuery/runStatement。",
       inputSchema: {
         action: z
           .enum(QUERY_ACTIONS)
           .describe(
-            "runQuery=execute read-only SQL; describeCreateResult=query CreateMySQL result; describeTaskStatus=query MySQL task status; getInstanceInfo=get current SQL instance context; describeInstance=alias of getInstanceInfo",
+            "runQuery=execute read-only SQL; describeCreateResult=query CreateMySQL result; describeTaskStatus=query MySQL task status; getInstanceInfo=get lifecycle context without connection credentials; describeInstance=alias of getInstanceInfo; getConnectionInfo=passthrough raw connection/cluster payload including possible credentials (TCP migration exception only)",
           ),
         sql: z
           .string()
@@ -1306,6 +1374,8 @@ export function registerSQLDatabaseTools(server: ExtendedMcpServer) {
         case "getInstanceInfo":
         case "describeInstance":
           return handleGetInstanceInfo(context);
+        case "getConnectionInfo":
+          return handleGetConnectionInfo(context);
         default:
           throw new Error(`Unsupported SQL query action: ${args.action}`);
       }

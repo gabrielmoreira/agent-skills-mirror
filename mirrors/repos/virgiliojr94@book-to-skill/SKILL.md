@@ -185,9 +185,9 @@ Read `<tempdir>/book_skill_work/metadata.json` and present the user with an esti
    Output (skill files generated/updated):  ~<N>K tokens
    Total:                           ~<N>K tokens
 
-   Reference prices (as of 2025):
-   Claude Sonnet 4.5 → ~$<X> USD
-   Claude Haiku 4.5  → ~$<X> USD
+   Cost: multiply the token counts above by your model's current
+   input/output per-1M-token rates (prices and model names change often —
+   do not hardcode them; quote today's rate and label it as an estimate).
 
    ⏱  Estimated time: ~<N> minutes
 
@@ -201,7 +201,7 @@ Read `<tempdir>/book_skill_work/metadata.json` and present the user with an esti
 - Input tokens ≈ `estimated_tokens` from metadata × 1.3 (prompts overhead per chapter pass)
 - Output tokens ≈ chapters × per-chapter budget + 4,000 (SKILL.md) + 4,500 (glossary + patterns + cheatsheet)
   - Per-chapter budget midpoint by `BOOK_TYPE` (DEPTH is decided later in Step 4 and can raise it): `text` ≈ 1,000, `technical` ≈ 1,800. If the user has already indicated reference-only vs deep study, use the matching row of the Step 7 matrix.
-- Price: Sonnet input=$3/MTok output=$15/MTok — Haiku input=$0.80/MTok output=$4/MTok
+- Cost: report the token counts and multiply by the user's current per-1M-token input/output rates. Do NOT hardcode dollar figures — model names and prices change; if you show one, label it an estimate and date it.
 
 Wait for the user to confirm before proceeding. If they say "analyze only", switch to Mode 2.
 

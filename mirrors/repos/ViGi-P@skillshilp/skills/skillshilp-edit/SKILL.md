@@ -5,13 +5,13 @@ license: MIT
 metadata:
   author: Vignesh Prasad
   github: https://github.com/ViGi-P/skillshilp
-  version: "2.0.1"
+  version: "2.1.0"
   purpose: meta-skill
 ---
 
 # Skillshilp Edit
 
-Improve Agent Skills as reusable software components—not as large prompts.
+Improve Agent Skills as reusable software components, not large prompts.
 
 Your objective is to preserve intended behaviour while making Agent Skills more discoverable, composable, maintainable, deterministic, and token-efficient.
 
@@ -32,12 +32,14 @@ If official documentation is available, treat it as the source of truth. Otherwi
 | Modular design | Overlapping responsibilities |
 | Focused references | Duplicate documentation |
 | Searchable descriptions | Generic descriptions |
-| Executable scripts | Large code blocks in Markdown |
+| Minimal Bash scripts | Large code blocks in Markdown |
 | Reusable assets | Embedded templates or schemas |
 | Deterministic workflows | Ambiguous instructions |
 | Token efficiency | Repetition |
 
 Preserve working behaviour unless a change is explicitly requested or clearly required to improve correctness, maintainability, or specification compliance.
+
+Prefer concise examples over broad explanations. Treat context as a scarce shared resource.
 
 ---
 
@@ -54,6 +56,8 @@ Unless explicitly requested, preserve:
 - documented workflows
 
 Only introduce structural changes when they provide a clear improvement in correctness, maintainability, discoverability, or specification compliance.
+
+When preserving product-specific metadata conflicts with a portability objective, remove or isolate it only when the request clearly asks for portability.
 
 ---
 
@@ -74,6 +78,8 @@ Determine:
 - dependencies
 - compatibility concerns
 
+If the intended behaviour is unclear, derive or ask for 2–3 realistic user requests before editing. Use those examples to identify what must keep working and what can change.
+
 If the requested changes significantly expand the skill's responsibility, recommend splitting it into multiple skills instead.
 
 ---
@@ -90,6 +96,15 @@ When modifying the architecture:
 - preserve activation criteria unless intentionally changing them
 - preserve file organization unless a better structure provides clear value
 - avoid introducing unnecessary directories or files
+
+Set the right degree of freedom:
+
+- Use `SKILL.md` for flexible workflow guidance.
+- Use `references/` for detailed knowledge that is only sometimes needed.
+- Use `scripts/` for repeated, deterministic, or fragile operations.
+- Use `assets/` for reusable output materials.
+
+Prefer minimal Bash for scripts. If Bash cannot express the operation safely, document the requirement and ask before choosing another runtime.
 
 When a larger redesign is justified, explain why.
 
@@ -111,6 +126,8 @@ When appropriate:
 
 Ensure all relative references remain valid.
 
+Use only portable Agent Skills frontmatter.
+
 ---
 
 ## 4. Review
@@ -128,6 +145,12 @@ Before finalizing, verify that the updated skill is:
 - minimally duplicated
 - token-efficient
 
+When a skill directory exists on disk, run:
+
+```bash
+scripts/validate-skill.sh <skill-dir>
+```
+
 Validate against:
 
 `references/constraints.md`
@@ -142,19 +165,30 @@ Check for common design mistakes:
 
 If any issue is found, revise before returning the updated skill.
 
+For complex or fragile changes, forward-test with realistic user requests. Give validators the skill and raw task artifacts, not expected answers or your diagnosis.
+
 ---
 
 # Output
 
-Unless instructed otherwise, provide:
+Prefer modifying files directly when the environment allows it.
+
+If files were written, provide:
+
+1. Changed paths
+2. Validation results
+3. Summary of changes made
+4. Brief design notes explaining significant architectural decisions
+
+If files cannot be written or the user asks for generated content, provide:
 
 1. Updated directory tree (only if it changed)
 2. Complete contents of every modified file
 3. Valid relative file references
-4. Summary of the changes made
-5. Brief design notes explaining significant architectural decisions
+4. Summary of changes made
+5. Brief design notes
 
-Do not regenerate unchanged files unless explicitly requested.
+Do not dump full file contents for files already written. Do not regenerate unchanged files unless explicitly requested.
 
 ---
 

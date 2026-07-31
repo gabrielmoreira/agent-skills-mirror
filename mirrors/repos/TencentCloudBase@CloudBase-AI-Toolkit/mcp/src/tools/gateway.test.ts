@@ -174,6 +174,11 @@ describe("gateway tools", () => {
     expect(schema.route.description).toContain("CBR");
     expect(schema.route.description).toContain("STATIC_STORE");
     expect(schema.route.description).toContain("staticstore");
+    expect(description).toContain("listCustomDomains");
+    expect(description).toContain("certificateId");
+    expect(schema.action.description).toContain("已有自定义域名");
+    expect(schema.domain.description).toContain("无需证书");
+    expect(schema.certificateId.description).toContain("createRoute");
   });
 
   it("manageGateway(action=createRoute) should require upstreamResourceType", async () => {

@@ -637,11 +637,15 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
       description:
         "CloudBase HTTP 网关统一只读入口（Domain/Route）。查询域名下路径路由及其上游：" +
         "WEB_SCF/SCF=云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器。" +
-        "主键为 Domain + Path；listRoutes / getRoute / listCustomDomains。",
+        "主键为 Domain + Path；listRoutes / getRoute / listCustomDomains。" +
+        "实现自定义域名访问前，先 listCustomDomains：若已有自定义域名，优先 createRoute 挂路由（无需证书 ID）；仅在没有可用自定义域名时才 bindCustomDomain。",
       inputSchema: {
         action: z
           .enum(QUERY_GATEWAY_ACTIONS)
-          .describe("只读操作类型：listRoutes、getRoute、listCustomDomains"),
+          .describe(
+            "只读操作类型：listRoutes、getRoute、listCustomDomains。" +
+              "自定义域名访问场景先 listCustomDomains 确认是否已有域名可复用。",
+          ),
         targetName: z
           .string()
           .optional()
@@ -679,13 +683,16 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
         "配合 targetName 或 route.serviceName（云函数名/云托管服务名/静态托管实例名，常见 staticstore）。" +
         "createRoute 只建网关入口，不改上游权限。" +
         "enablePathTransmission：默认 false 剥触发路径前缀；true 透传完整路径（CBR 多路由、WEB_SCF 自管子路径常需 true；STATIC_STORE 自定义触发路径映射站点根通常 false）。" +
-        "⚠️ SSL 自定义域名用 bindCustomDomain；CORS/安全域名用 envDomainManagement。",
+        "⚠️ 自定义域名访问：若环境已有自定义域名（先 queryGateway listCustomDomains），优先 createRoute 并显式传入该 domain，无需 certificateId；" +
+        "仅首次绑定全新自定义域名时用 bindCustomDomain（需 certificateId）。CORS/安全域名用 envDomainManagement。",
       inputSchema: {
         action: z
           .enum(MANAGE_GATEWAY_ACTIONS)
           .describe(
             "写操作：createRoute/updateRoute/deleteRoute 管理路由；bindCustomDomain/deleteCustomDomain 管理自定义域名。" +
-              "createRoute/updateRoute 必须提供 upstreamResourceType。",
+              "createRoute/updateRoute 必须提供 upstreamResourceType。" +
+              "已有自定义域名时优先 createRoute(domain=已有域名) 实现访问，不必再次 bindCustomDomain / 传入 certificateId；" +
+              "bindCustomDomain 仅用于首次绑定新域名。",
           ),
         targetName: z
           .string()
@@ -759,12 +766,17 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           .string()
           .optional()
           .describe(
-            "域名。省略时自动使用环境 IsDefault 默认 HTTP 域名；自定义域名场景请显式传入",
+            "域名。省略时自动使用环境 IsDefault 默认 HTTP 域名。" +
+              "已有自定义域名时请显式传入该域名并 createRoute/updateRoute/deleteRoute，即可实现自定义域名访问且无需证书 ID；" +
+              "仅 bindCustomDomain 时表示要新绑定的域名。",
           ),
         certificateId: z
           .string()
           .optional()
-          .describe("证书 ID。bindCustomDomain 时必填"),
+          .describe(
+            "证书 ID。仅首次 bindCustomDomain 必填。" +
+              "在已有自定义域名上 createRoute / updateRoute / deleteRoute 不需要 certificateId。",
+          ),
       },
       annotations: {
         readOnlyHint: false,

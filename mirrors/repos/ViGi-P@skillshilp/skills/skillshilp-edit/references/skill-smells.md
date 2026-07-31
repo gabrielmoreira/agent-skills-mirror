@@ -16,6 +16,8 @@ Review every updated Agent Skill before returning it.
 | Empty directories | Remove them |
 | Dead references | Link or delete them |
 | Undocumented scripts | Document requirements |
+| Unnecessary scripts | Use Markdown or references instead |
+| Non-portable scripts | Prefer minimal Bash or document dependency |
 | Tight coupling | Separate responsibilities |
 | Token waste | Remove repetition |
 | Poor activation criteria | Make discovery explicit |
@@ -26,6 +28,12 @@ Review every updated Agent Skill before returning it.
 | Broken activation criteria | Preserve discoverability unless intentionally updated |
 | Unnecessary renames | Preserve names unless they improve clarity or correctness |
 | Broken references | Update all affected relative paths |
+| Missing concrete examples | Validate intended behaviour against 2–3 realistic requests |
+| Unsupported frontmatter | Use only portable spec fields |
+| Oversized `SKILL.md` | Move conditional detail into references |
+| Leaked validation context | Forward-test with raw task artifacts only |
+| Excessive output dumping | Summarize written files instead of pasting full contents |
+| Spec drift | Recheck constraints before returning changes |
 
 ---
 
@@ -45,3 +53,5 @@ Before returning the updated Agent Skill:
 - ✓ Minimal duplication
 - ✓ Token-efficient
 - ✓ No broken references
+- ✓ Portable frontmatter and resources
+- ✓ Existing examples or behaviours still work

@@ -40,7 +40,9 @@ for await (const chunk of runtime.query(preparedTurn, history)) {
 }
 ```
 
-Title generation is provider-routed by the global `titleGenerationModel` setting and is independent from the active chat tab provider.
+Title generation is provider-routed by the global `titleGenerationModel` setting and is independent from the active chat tab provider. Core owns the shared prompt, parsing, cancellation, and callback workflow; provider registrations supply one-shot `TitleGenerationBackend` transports.
+
+Instruction refinement and inline edit follow the same boundary for multi-turn work: core owns conversation orchestration and response parsing, while provider registrations supply stateful auxiliary backends for native session continuation, tools, and lifecycle behavior.
 
 Workspace services are resolved through `ProviderWorkspaceRegistry`:
 
@@ -59,6 +61,4 @@ const cliResolver = ProviderWorkspaceRegistry.getCliResolver(providerId);
   - Claude merges runtime-discovered commands with vault commands and skills.
   - Codex skills come from app-server `skills/list` through `CodexSkillCatalog`.
   - OpenCode and Pi expose runtime commands through their provider protocols.
-- Shared skill management is a separate settings-owned flow over `.agents/skills` for Codex, Grok, Pi, and OpenCode. Runtime command catalogs must never import, scan, or synthesize entries from that repository.
-- Claude keeps its own `.claude/commands` and `.claude/skills` repository. Legacy provider skill roots are not migrated or managed.
 - Provider command caches and live snapshots are resource-generation fenced; cache identities contain only provider-owned non-secret fingerprints and monotonic generations.

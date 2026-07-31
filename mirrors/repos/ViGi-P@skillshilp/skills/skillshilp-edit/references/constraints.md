@@ -11,10 +11,9 @@ Use this document to validate updated Agent Skills.
 | | `assets/` |
 
 Preserve the existing directory structure unless a structural change provides meaningful value.
-
 Create optional directories only when they provide meaningful value.
-
 Do not introduce empty or placeholder directories.
+Do not add product-specific metadata directories, client configs, or product-specific helper scripts when portability is the goal.
 
 ---
 
@@ -25,12 +24,13 @@ Do not introduce empty or placeholder directories.
 | `name` | ✓ | 1–64 chars, lowercase letters/numbers/hyphens, no leading/trailing/consecutive hyphens, matches directory |
 | `description` | ✓ | Explains **what** the skill does, **when** it should be activated, and what distinguishes it from similar skills (≤1024 chars) |
 | `license` | | Include only if applicable |
-| `compatibility` | | Include only when environment requirements exist |
-| `metadata` | | Optional metadata |
-| `disable-model-invocation` | | Disable auto-triggering of the skill (`true` or `false`) |
-| `allowed-tools` | | List of tools permitted for the skill |
+| `compatibility` | | Include only when environment requirements exist (≤500 chars) |
+| `metadata` | | Optional portable key-value metadata |
+| `allowed-tools` | | Space-separated string of pre-approved tools; support varies by client |
 
-Unless explicitly requested, preserve existing frontmatter fields that remain valid.
+Use only these portable fields.
+Unless explicitly requested, preserve existing portable frontmatter fields that remain valid.
+Keep descriptions as single-line scalars unless multiline YAML is truly necessary.
 
 ---
 
@@ -47,6 +47,7 @@ Contains only:
 - references to supporting files
 
 Move implementation details elsewhere.
+Keep `SKILL.md` under 500 lines.
 
 ---
 
@@ -59,9 +60,10 @@ Move implementation details elsewhere.
 | Schemas | `references/` |
 | Templates | `assets/` |
 | Example documents | `assets/` |
-| Executable logic | `scripts/` |
+| Repeated deterministic logic | `scripts/` |
 
 Do not relocate content unless doing so clearly improves maintainability or specification compliance.
+Scripts should be minimal Bash when possible. If Bash is not enough, document the dependency and do not assume it is portable.
 
 ---
 
@@ -71,6 +73,8 @@ Do not relocate content unless doing so clearly improves maintainability or spec
 - Avoid deep reference chains.
 - Prefer multiple focused files.
 - Preserve existing references unless they are incorrect or obsolete.
+- Link directly from `SKILL.md` to any reference the agent may need.
+- Add a table of contents to long reference files.
 
 ---
 
@@ -86,3 +90,5 @@ Before returning:
 - ✓ No duplicate documentation
 - ✓ Progressive disclosure
 - ✓ Existing behaviour preserved unless intentionally changed
+- ✓ No unnecessary product-specific metadata or scripts
+- ✓ Minimal, documented script dependencies

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Misaka-Mikoto-Tech/agent-skills` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `Misaka-Mikoto-Tech/agent-skills` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Misaka-Mikoto-Tech/agent-skills` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,8 +63,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`skills/bilibili-page-reader/audio2srt.py`](skills/bilibili-page-reader/audio2srt.py) |
 | 3 | ✓ | [`skills/bilibili-page-reader/clean_srt.py`](skills/bilibili-page-reader/clean_srt.py) |
 | 4 | ✓ | [`skills/bilibili-page-reader/SKILL.md`](skills/bilibili-page-reader/SKILL.md) |
-| 5 | ✓ | [`skills/powershell-safe-invocation/reference.md`](skills/powershell-safe-invocation/reference.md) |
-| 6 | ✓ | [`skills/powershell-safe-invocation/SKILL.md`](skills/powershell-safe-invocation/SKILL.md) |
+| 5 | ✓ | [`skills/locus-unity-bridge/agents/openai.yaml`](skills/locus-unity-bridge/agents/openai.yaml) |
+| 6 | ✓ | [`skills/locus-unity-bridge/scripts/locus-unity.ps1`](skills/locus-unity-bridge/scripts/locus-unity.ps1) |
+| 7 | ✓ | [`skills/locus-unity-bridge/scripts/Test-LocusUnityBridge.ps1`](skills/locus-unity-bridge/scripts/Test-LocusUnityBridge.ps1) |
+| 8 | ✓ | [`skills/locus-unity-bridge/SKILL.md`](skills/locus-unity-bridge/SKILL.md) |
+| 9 | ✓ | [`skills/powershell-safe-invocation/reference.md`](skills/powershell-safe-invocation/reference.md) |
+| 10 | ✓ | [`skills/powershell-safe-invocation/SKILL.md`](skills/powershell-safe-invocation/SKILL.md) |
 
 ---
 

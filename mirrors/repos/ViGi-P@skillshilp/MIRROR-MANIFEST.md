@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ViGi-P/skillshilp` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
+Mirror of `ViGi-P/skillshilp` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ViGi-P/skillshilp` — 26 default patterns, 0 followed patterns, 10 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 10 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,12 +63,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`skills/skillshilp-create/references/constraints.md`](skills/skillshilp-create/references/constraints.md) |
 | 3 | ✓ | [`skills/skillshilp-create/references/patterns.md`](skills/skillshilp-create/references/patterns.md) |
 | 4 | ✓ | [`skills/skillshilp-create/references/skill-smells.md`](skills/skillshilp-create/references/skill-smells.md) |
-| 5 | ✓ | [`skills/skillshilp-create/SKILL.md`](skills/skillshilp-create/SKILL.md) |
-| 6 | ✓ | [`skills/skillshilp-edit/README.md`](skills/skillshilp-edit/README.md) |
-| 7 | ✓ | [`skills/skillshilp-edit/references/constraints.md`](skills/skillshilp-edit/references/constraints.md) |
-| 8 | ✓ | [`skills/skillshilp-edit/references/patterns.md`](skills/skillshilp-edit/references/patterns.md) |
-| 9 | ✓ | [`skills/skillshilp-edit/references/skill-smells.md`](skills/skillshilp-edit/references/skill-smells.md) |
-| 10 | ✓ | [`skills/skillshilp-edit/SKILL.md`](skills/skillshilp-edit/SKILL.md) |
+| 5 | ✓ | [`skills/skillshilp-create/scripts/validate-skill.sh`](skills/skillshilp-create/scripts/validate-skill.sh) |
+| 6 | ✓ | [`skills/skillshilp-create/SKILL.md`](skills/skillshilp-create/SKILL.md) |
+| 7 | ✓ | [`skills/skillshilp-edit/README.md`](skills/skillshilp-edit/README.md) |
+| 8 | ✓ | [`skills/skillshilp-edit/references/constraints.md`](skills/skillshilp-edit/references/constraints.md) |
+| 9 | ✓ | [`skills/skillshilp-edit/references/patterns.md`](skills/skillshilp-edit/references/patterns.md) |
+| 10 | ✓ | [`skills/skillshilp-edit/references/skill-smells.md`](skills/skillshilp-edit/references/skill-smells.md) |
+| 11 | ✓ | [`skills/skillshilp-edit/scripts/validate-skill.sh`](skills/skillshilp-edit/scripts/validate-skill.sh) |
+| 12 | ✓ | [`skills/skillshilp-edit/SKILL.md`](skills/skillshilp-edit/SKILL.md) |
 
 ---
 

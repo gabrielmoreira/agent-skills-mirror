@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `charmbracelet/crush` — 26 default patterns, 0 followed patterns, 8 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,10 +63,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.agents/skills/shell-builtins/SKILL.md`](.agents/skills/shell-builtins/SKILL.md) |
 | 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 4 | ✓ | [`internal/cmd/stats/AGENTS.md`](internal/cmd/stats/AGENTS.md) |
-| 5 | ✓ | [`internal/skills/builtin/crush-config/SKILL.md`](internal/skills/builtin/crush-config/SKILL.md) |
-| 6 | ✓ | [`internal/skills/builtin/crush-hooks/SKILL.md`](internal/skills/builtin/crush-hooks/SKILL.md) |
-| 7 | ✓ | [`internal/skills/builtin/jq/SKILL.md`](internal/skills/builtin/jq/SKILL.md) |
-| 8 | ✓ | [`internal/ui/AGENTS.md`](internal/ui/AGENTS.md) |
+| 5 | ✓ | [`internal/oauth/callback/AGENTS.md`](internal/oauth/callback/AGENTS.md) |
+| 6 | ✓ | [`internal/skills/builtin/crush-config/SKILL.md`](internal/skills/builtin/crush-config/SKILL.md) |
+| 7 | ✓ | [`internal/skills/builtin/crush-hooks/SKILL.md`](internal/skills/builtin/crush-hooks/SKILL.md) |
+| 8 | ✓ | [`internal/skills/builtin/jq/SKILL.md`](internal/skills/builtin/jq/SKILL.md) |
+| 9 | ✓ | [`internal/ui/AGENTS.md`](internal/ui/AGENTS.md) |
 
 ---
 

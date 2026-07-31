@@ -1,15 +1,40 @@
 ---
 name: html-plan
-description: Create a self-contained HTML plan that is pragmatic, simple, and visually organized. Use when the user wants a plan page in the effective HTML style, wants the writing kept close to what they gave you, or wants the grammar cleaned up without turning it into a whole bigger thing.
-disable-model-invocation: true
+description: Direct-invocation specialist for clear, self-contained HTML plans that preserve source material while improving hierarchy, sequence, ownership, dependencies, and reviewability. Use when the user explicitly invokes html-plan or the broad html skill routes a plan request here. Do not activate independently from a general request.
 ---
 
 # HTML Plan
 
-Review the files throughout `references/html-effectiveness/`.
+Turn source material into a plan people can inspect and act on. Preserve the user's scope, ordering, commitments, and terminology unless they ask for broader synthesis.
 
-After reviewing them, create an HTML file for the plan in a similar style.
+## Shape the document around the work
 
-Keep it pragmatic and simple.
+Read the conversation, project instructions, and supplied plan before designing. Match an existing design language when one is present. Otherwise derive a quiet, workmanlike direction from the audience and subject.
 
-Always include dark mode: hand-rolled CSS variables on `:root` / `html.dark`, a small theme toggle button, `localStorage` persistence, and an apply-before-paint script in `<head>` (default to `prefers-color-scheme`).
+Decide what the plan actually needs:
+
+- phases or sequence;
+- status and decision points;
+- owners and collaborators;
+- dependencies and risks;
+- acceptance checks;
+- unresolved questions.
+
+Do not add a timeline, progress percentage, status badge, or dashboard summary unless the source supports it. Improve grammar and structure without inflating an implementation plan into a strategy document.
+
+## Preserve traceability
+
+- Keep source commitments recognizable.
+- Separate accepted decisions from assumptions and open questions.
+- Show sequence and dependency only where they are real.
+- Use tables for exact mappings, comparisons, or repeated fields.
+- Use a flow or timeline only when it makes order materially easier to understand.
+- Keep long prose readable instead of forcing every paragraph into a card.
+
+## Build and verify
+
+Deliver one responsive, accessible, self-contained HTML file. Use semantic headings, lists, tables, and landmarks. Keep essential CSS and JavaScript inline, avoid external services, and make any navigation or disclosure keyboard-operable.
+
+Inspect the result at wide and narrow widths. Check that no commitment disappeared, that stages remain in the intended order, that ownership and dependencies are legible, and that long content does not overflow.
+
+Return the absolute path and note any structural interpretation you introduced.

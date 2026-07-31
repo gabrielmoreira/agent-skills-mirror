@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
+Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 28 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 28 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -76,17 +76,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 15 | ✓ | [`engine/.claude/skills/ss-page/SKILL.md`](engine/.claude/skills/ss-page/SKILL.md) |
 | 16 | ✓ | [`engine/.claude/skills/ss-pattern/SKILL.md`](engine/.claude/skills/ss-pattern/SKILL.md) |
 | 17 | ✓ | [`engine/.claude/skills/ss-reference/SKILL.md`](engine/.claude/skills/ss-reference/SKILL.md) |
-| 18 | ✓ | [`engine/.claude/skills/ss-restyle/SKILL.md`](engine/.claude/skills/ss-restyle/SKILL.md) |
-| 19 | ✓ | [`engine/.claude/skills/ss-review/SKILL.md`](engine/.claude/skills/ss-review/SKILL.md) |
-| 20 | ✓ | [`engine/.claude/skills/ss-score/SKILL.md`](engine/.claude/skills/ss-score/SKILL.md) |
-| 21 | ✓ | [`engine/.claude/skills/ss-setup/SKILL.md`](engine/.claude/skills/ss-setup/SKILL.md) |
-| 22 | ✓ | [`engine/.claude/skills/ss-tokens/SKILL.md`](engine/.claude/skills/ss-tokens/SKILL.md) |
-| 23 | ✓ | [`engine/.claude/skills/ss-update/SKILL.md`](engine/.claude/skills/ss-update/SKILL.md) |
-| 24 | ✓ | [`engine/.claude/skills/ss-verify/SKILL.md`](engine/.claude/skills/ss-verify/SKILL.md) |
-| 25 | ✓ | [`engine/.cursorrules`](engine/.cursorrules) |
-| 26 | ✓ | [`engine/AGENTS.md`](engine/AGENTS.md) |
-| 27 | ✓ | [`engine/CLAUDE.md`](engine/CLAUDE.md) |
-| 28 | ✓ | [`skills/styleseed-design-review/SKILL.md`](skills/styleseed-design-review/SKILL.md) |
+| 18 | ✓ | [`engine/.claude/skills/ss-resolve/SKILL.md`](engine/.claude/skills/ss-resolve/SKILL.md) |
+| 19 | ✓ | [`engine/.claude/skills/ss-restyle/SKILL.md`](engine/.claude/skills/ss-restyle/SKILL.md) |
+| 20 | ✓ | [`engine/.claude/skills/ss-review/SKILL.md`](engine/.claude/skills/ss-review/SKILL.md) |
+| 21 | ✓ | [`engine/.claude/skills/ss-score/SKILL.md`](engine/.claude/skills/ss-score/SKILL.md) |
+| 22 | ✓ | [`engine/.claude/skills/ss-setup/SKILL.md`](engine/.claude/skills/ss-setup/SKILL.md) |
+| 23 | ✓ | [`engine/.claude/skills/ss-tokens/SKILL.md`](engine/.claude/skills/ss-tokens/SKILL.md) |
+| 24 | ✓ | [`engine/.claude/skills/ss-update/SKILL.md`](engine/.claude/skills/ss-update/SKILL.md) |
+| 25 | ✓ | [`engine/.claude/skills/ss-verify/SKILL.md`](engine/.claude/skills/ss-verify/SKILL.md) |
+| 26 | ✓ | [`engine/.cursorrules`](engine/.cursorrules) |
+| 27 | ✓ | [`engine/AGENTS.md`](engine/AGENTS.md) |
+| 28 | ✓ | [`engine/CLAUDE.md`](engine/CLAUDE.md) |
+| 29 | ✓ | [`skills/styleseed-design-review/SKILL.md`](skills/styleseed-design-review/SKILL.md) |
 
 ---
 

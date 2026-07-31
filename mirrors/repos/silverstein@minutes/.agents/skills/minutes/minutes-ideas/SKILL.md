@@ -13,26 +13,20 @@ This is the recall layer for the cross-device ghost context pipeline.
 1. Search for recent voice memos using the `minutes` CLI:
 
 ```bash
-minutes list --type memo --limit 20 --json 2>/dev/null
+minutes list --content-type memo --limit 20
 ```
 
-2. If no results or CLI unavailable, scan `~/meetings/memos/` directly:
+2. Require exit status 0 and use the JSON written to stdout. If the CLI is
+   unavailable or fails, report the memo source unavailable; never scan the
+   memo directory directly.
 
-```bash
-ls -t ~/meetings/memos/*.md 2>/dev/null | head -20
-```
-
-3. For each memo found, read the frontmatter to get title, date, duration, and device:
-
-```bash
-head -20 "<path>"
-```
-
-4. Present the memos as a clean list:
+3. Present the memos as a clean list:
    - Date, title, duration, device (if from iPhone)
    - Ask: "Want to dig into any of these?"
 
-5. If the user picks one, read the full file and present the transcript/summary.
+4. If the user picks one, run `minutes get "<exact path>" --json`, require exit
+   status 0, and present only the returned transcript/summary. Never reopen the
+   list path through the host filesystem.
 
 ## Ghost Context
 

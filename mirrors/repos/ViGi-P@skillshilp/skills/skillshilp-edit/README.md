@@ -15,6 +15,7 @@ Use this skill to:
 - Simplify or reorganize supporting files.
 - Update a skill to follow the latest Agent Skills specification.
 - Improve discoverability and maintainability while preserving intended behaviour.
+- Validate basic skill structure with the bundled portable Bash validator.
 
 ## When Not to Use
 

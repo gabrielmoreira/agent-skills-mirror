@@ -27,6 +27,7 @@
 **v2.25.x**（2026-07）
 
 - 云托管 / 网关：接 TCP 数据库时的 VPC 指导；Domain/Route，统一 `upstreamResourceType` 与路径透传
+- 云托管 / 网关：重新部署时保留远程 VPC 与环境变量配置；部署后优先返回自定义域名访问地址
 - Plugin：Open Plugin / 市场安装路径更顺
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases

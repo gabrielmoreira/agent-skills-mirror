@@ -130,6 +130,13 @@
 - 已启用的 custom Agent 和存在用户覆盖配置的 built-in Agent 必须作为可分发目标显示，即使其根目录当前还不存在；安装流程负责创建缺失目录。
 - `disabledPlatformIds` 始终优先于检测和显式配置，用于隐藏用户不希望看到的平台。
 - 平台检测仍用于默认 built-in 平台降噪和状态提示，但不得单独作为分发目标可见性的唯一门禁。
+- `agent-skills-global` 是实验性的共享 Skill 分发目标，不是 Agent 平台，
+  因此不得进入 Agent 检测、Agent 数量或 `SKILL_PLATFORMS`。它把完整 package
+  安装到 `~/.agents/skills/<skill-name>/`，使用 PromptHub ownership receipt
+  区分托管、已修改和外部冲突状态，并在卸载前重新验证所有权。
+- 共享目标不得默认参与批量分发。用户同时选择共享目标和已知会发现
+  `.agents/skills` 的平台原生目标时，界面必须提示重复发现风险；未完成运行时
+  验证的平台继续使用其原生目录，不得被宣称为兼容。
 
 ### 3.4 CLI Automation And Asset Topology Contract
 

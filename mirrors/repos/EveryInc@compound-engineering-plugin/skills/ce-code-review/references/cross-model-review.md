@@ -33,7 +33,17 @@ Resolve the preference in this order:
 3. A preference already in your **project instructions** (the active instructions in your context) — consumed from context, **never** read from a named file.
 4. **Default:** first available attested-different target in `codex → claude → grok → composer`; Cursor-default participates only when explicitly preferred.
 
-Before egress, resolve the target to one concrete installed route, verify every recipient against `CROSS_MODEL_PEERS`, announce it, and pass it as `CROSS_MODEL_FIXED_ROUTE`. A failed route returns no artifact and never changes provider or intermediary internally. A retry is a new disclosed and sanctioned dispatch. For backward compatibility, either `cursor` or `composer` in `CROSS_MODEL_PEERS` sanctions Cursor as an intermediary, but selecting Cursor-default requires target `cursor`; `grok` alone never sanctions Grok-via-Cursor.
+Before egress, resolve the target to one concrete installed route, verify every recipient against `CROSS_MODEL_PEERS`, announce it, and pass it as `CROSS_MODEL_FIXED_ROUTE`. `CROSS_MODEL_FIXED_ROUTE` accepts exactly these tokens — the worker fail-closes on anything else (including route-shaped guesses like `codex-cli`):
+
+| Target | Route token(s) |
+|--------|----------------|
+| `codex` | `codex` |
+| `claude` | `claude` |
+| `grok` | `grok-cli` (native CLI) or `grok-cursor` (via Cursor intermediary) |
+| `cursor` | `cursor` |
+| `composer` | `composer` |
+
+A failed route returns no artifact and never changes provider or intermediary internally. A retry is a new disclosed and sanctioned dispatch. For backward compatibility, either `cursor` or `composer` in `CROSS_MODEL_PEERS` sanctions Cursor as an intermediary, but selecting Cursor-default requires target `cursor`; `grok` alone never sanctions Grok-via-Cursor.
 
 `CROSS_MODEL_PEERS` is an optional restriction: when unset, it leaves the resolved route unfiltered and this skill invocation plus the concrete pre-egress disclosure sanctions that route; when set, the selected target/intermediary must appear. Use this contract directly. Do not inspect the worker source to rediscover its allowlist behavior.
 
@@ -84,17 +94,17 @@ PY="$(for c in python3 python py; do command -v "$c" >/dev/null 2>&1 && "$c" -c 
 ```bash
 SKILL_DIR="<absolute path of the directory containing the ce-code-review SKILL.md you read>";
 PY="$(for c in python3 python py; do command -v "$c" >/dev/null 2>&1 && "$c" -c '' >/dev/null 2>&1 && { echo "$c"; break; }; done)"; [ -n "$PY" ] || { echo "no working Python 3 interpreter on PATH" >&2; exit 1; };
-PEER_HARD="${CROSS_MODEL_HARD_SECS:-1200}"; echo "peer-deadline-secs=$(( PEER_HARD + 10 ))";
-CE_PEER_HARD_SECS="$(( PEER_HARD + 30 ))" CROSS_MODEL_HOST_HARNESS="<host-harness>" CROSS_MODEL_FIXED_ROUTE="<fixed-route>" "$PY" "$SKILL_DIR/scripts/peer-job-runner.py" start --skill ce-code-review --run-id "<run-id>" --label adversarial -- env CROSS_MODEL_HOST_HARNESS="<host-harness>" CROSS_MODEL_FIXED_ROUTE="<fixed-route>" bash "$SKILL_DIR/scripts/cross-model-adversarial-review.sh" "<host-serving-family>" "<target>" "<base-ref>" "<run-dir>"
+echo "peer-deadline-secs=$(( ${CROSS_MODEL_HARD_SECS:-1200} + 10 ))";
+CE_PEER_HARD_SECS= CROSS_MODEL_HOST_HARNESS="<host-harness>" CROSS_MODEL_FIXED_ROUTE="<fixed-route>" "$PY" "$SKILL_DIR/scripts/peer-job-runner.py" start --skill ce-code-review --run-id "<run-id>" --label adversarial -- env CROSS_MODEL_HOST_HARNESS="<host-harness>" CROSS_MODEL_FIXED_ROUTE="<fixed-route>" bash "$SKILL_DIR/scripts/cross-model-adversarial-review.sh" "<host-serving-family>" "<target>" "<base-ref>" "<run-dir>"
 ```
 
-The nested windows are one budget with one knob, `CROSS_MODEL_HARD_SECS`. Resolve `PEER_HARD` **in the same shell call as `start`** (as above) — a separate call loses it, and the prefixes would then compute `CE_PEER_HARD_SECS` as `30`. The runner supervisor gets `+30s` and the orchestrator's shared deadline `+10s`, both derived there, so raising the knob widens every outer window. Read the printed `peer-deadline-secs=<n>` and use that `<n>` as the shared deadline below; never hardcode any of these, because when they drift the tightest one silently reaps a healthy peer and its full spend is wasted.
+The nested windows are one budget with one knob, `CROSS_MODEL_HARD_SECS`. The runner derives its supervisor hard window from that ambient knob automatically (`max(1230, knob + 30)`). Clear `CE_PEER_HARD_SECS` on the start prefix (`CE_PEER_HARD_SECS=`) so a stale ambient value from an earlier session or harness export cannot undercut that derivation — an explicit numeric `CE_PEER_HARD_SECS` still wins when a skill deliberately sets one (ce-work / elevation), which this path must not do. Print the orchestrator deadline as `knob + 10` in the same shell as `start` (as above) and use that printed `peer-deadline-secs=<n>` below; never hardcode it, because a literal survives a knob change and then reaps a healthy peer.
 
-**Do not forward `CROSS_MODEL_HARD_SECS` to the worker.** The runner already passes the ambient environment through, so a knob the user actually set reaches the worker on its own. Re-exporting the orchestrator's *resolved* value would convert a fallback into an explicit override and destroy the one distinction the worker needs: it applies the raised default only to the idle-guarded codex route and keeps a lower bound on the routes with no output-idle detection (`UNGUARDED_HARD_SECS` in the worker). Forcing one value would silently restore the doubled hang on those routes. `PEER_HARD` exists only to size the two *outer* windows, and since the worker's effective cap is never larger than `PEER_HARD`, the nesting still holds.
+**Do not forward `CROSS_MODEL_HARD_SECS` to the worker.** The runner already passes the ambient environment through, so a knob the user actually set reaches the worker on its own. Re-exporting the orchestrator's *resolved* value would convert a fallback into an explicit override and destroy the one distinction the worker still needs: idle-guarded routes (codex + streaming claude/cursor-family) use the raised `HARD_SECS` default, while `grok-cli` keeps the lower `UNGUARDED_HARD_SECS` bound because its `--json-schema` path cannot stream. Forcing one value would silently restore the doubled hang on that hard-only route.
 
 - `<run-id>` = the Stage 3d run id (the same one that forms `<run-dir>`); job state lives under `<run-dir>/jobs/<job-id>/`.
 - `<host-serving-family>` is `codex`, `claude`, `grok`, `composer`, or `unknown`; `<host-harness>` is `codex`, `claude`, `grok`, `cursor`, or `unknown`.
-- `<target>` is one of `codex`, `claude`, `grok`, `cursor`, or `composer`; `<fixed-route>` is its already-sanctioned concrete route.
+- `<target>` is one of `codex`, `claude`, `grok`, `cursor`, or `composer`; `<fixed-route>` is its already-sanctioned concrete route token from the Step 1 table (`codex`, `claude`, `grok-cli`, `grok-cursor`, `cursor`, or `composer`).
 - `<base-ref>` = the Stage 1 `BASE` (the diff base the peer reviews via `git diff <base-ref>`).
 - `<run-dir>` = the absolute Stage 4 run dir. The script writes `adversarial-<provider>.json` there **only after** forcing `reviewer` to `adversarial-<provider>` and downgrading peer `safe_auto` → `gated_auto`.
 

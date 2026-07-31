@@ -7,7 +7,7 @@ HAL (Hyper Articles en Ligne) est l'archive ouverte nationale française, géré
 - **Point d'entrée** : `https://api.archives-ouvertes.fr/search/`
 - **Syntaxe** : Apache Solr
 - **Domaine droit** : `1.shs.droit` (~227 000 documents)
-- **Accès** : Via `bash_tool` + `curl`
+- **Accès recommandé** : `scripts/doctrine_search.py` (multi-sources HAL + OpenAlex + Isidore, dédoublonnage DOI via Crossref, identifiant vérifiable par référence) — **outil de première intention pour la doctrine**. `scripts/hal_search.py` pour les requêtes HAL ciblées (notes d'arrêt par numéro de pourvoi via `--pourvoi`, recherche par auteur via `--author`). En dernier recours, `bash_tool` + `curl` directement sur l'API (patrons ci-dessous).
 
 ## Caractéristiques et limites
 

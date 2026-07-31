@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `n8n-io/n8n` — 26 default patterns, 2 followed patterns, 72 file(s) materialized.
+Mirror of `n8n-io/n8n` — 26 default patterns, 2 followed patterns, 73 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `n8n-io/n8n` — 26 default patterns, 2 followed patterns, 72 file(s) 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 72 |
+| Files         | 73 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -89,49 +89,50 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 27 | ✓ | [`.agents/skills/nathan/SKILL.md`](.agents/skills/nathan/SKILL.md) |
 | 28 | ✓ | [`.agents/skills/node-add-oauth/SKILL.md`](.agents/skills/node-add-oauth/SKILL.md) |
 | 29 | ✓ | [`.agents/skills/protect-endpoints/SKILL.md`](.agents/skills/protect-endpoints/SKILL.md) |
-| 30 | ✓ | [`.agents/skills/public-api/SKILL.md`](.agents/skills/public-api/SKILL.md) |
-| 31 | ✓ | [`.agents/skills/reproduce-bug/SKILL.md`](.agents/skills/reproduce-bug/SKILL.md) |
-| 32 | ✓ | [`.agents/skills/spec-driven-development/SKILL.md`](.agents/skills/spec-driven-development/SKILL.md) |
-| 33 | ✓ | [`.agents/skills/telemetry/SKILL.md`](.agents/skills/telemetry/SKILL.md) |
-| 34 | ✓ | [`.claude/plugins/n8n/skills/setup-mcps/SKILL.md`](.claude/plugins/n8n/skills/setup-mcps/SKILL.md) |
-| 35 | ✓ | [`.github/CLAUDE.md`](.github/CLAUDE.md) |
-| 36 | ✓ | [`.github/pull_request_title_conventions.md`](.github/pull_request_title_conventions.md) |
-| 37 | ✓ | [`.github/WORKFLOWS.md`](.github/WORKFLOWS.md) |
-| 38 | ✓ | [`.opencode/skills/setup-mcps/SKILL.md`](.opencode/skills/setup-mcps/SKILL.md) |
-| 39 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 40 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 41 | ✓ | [`packages/@n8n/agents/AGENTS.md`](packages/@n8n/agents/AGENTS.md) |
-| 42 | ✓ | [`packages/@n8n/ai-workflow-builder.ee/AGENTS.md`](packages/@n8n/ai-workflow-builder.ee/AGENTS.md) |
-| 43 | ✓ | [`packages/@n8n/ai-workflow-builder.ee/CLAUDE.md`](packages/@n8n/ai-workflow-builder.ee/CLAUDE.md) |
-| 44 | ✓ | [`packages/@n8n/cli/skills/n8n-cli/SKILL.md`](packages/@n8n/cli/skills/n8n-cli/SKILL.md) |
-| 45 | ✓ | [`packages/@n8n/db/AGENTS.md`](packages/@n8n/db/AGENTS.md) |
-| 46 | ✓ | [`packages/@n8n/engine/AGENTS.md`](packages/@n8n/engine/AGENTS.md) |
-| 47 | ✓ | [`packages/@n8n/instance-ai/CLAUDE.md`](packages/@n8n/instance-ai/CLAUDE.md) |
-| 48 | ✓ | [`packages/@n8n/instance-ai/skills/config-evals/SKILL.md`](packages/@n8n/instance-ai/skills/config-evals/SKILL.md) |
-| 49 | ✓ | [`packages/@n8n/instance-ai/skills/credential-setup-with-computer-use/SKILL.md`](packages/@n8n/instance-ai/skills/credential-setup-with-computer-use/SKILL.md) |
-| 50 | ✓ | [`packages/@n8n/instance-ai/skills/data-table-manager/SKILL.md`](packages/@n8n/instance-ai/skills/data-table-manager/SKILL.md) |
-| 51 | ✓ | [`packages/@n8n/instance-ai/skills/debugging-executions/SKILL.md`](packages/@n8n/instance-ai/skills/debugging-executions/SKILL.md) |
-| 52 | ✓ | [`packages/@n8n/instance-ai/skills/intent-recognition/SKILL.md`](packages/@n8n/instance-ai/skills/intent-recognition/SKILL.md) |
-| 53 | ✓ | [`packages/@n8n/instance-ai/skills/n8n-docs-assistant/SKILL.md`](packages/@n8n/instance-ai/skills/n8n-docs-assistant/SKILL.md) |
-| 54 | ✓ | [`packages/@n8n/instance-ai/skills/planned-task-runtime/SKILL.md`](packages/@n8n/instance-ai/skills/planned-task-runtime/SKILL.md) |
-| 55 | ✓ | [`packages/@n8n/instance-ai/skills/planning/SKILL.md`](packages/@n8n/instance-ai/skills/planning/SKILL.md) |
-| 56 | ✓ | [`packages/@n8n/instance-ai/skills/post-build-flow/SKILL.md`](packages/@n8n/instance-ai/skills/post-build-flow/SKILL.md) |
-| 57 | ✓ | [`packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md`](packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md) |
-| 58 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md`](packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md) |
-| 59 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md`](packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md) |
-| 60 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
-| 61 | ✓ | [`packages/cli/src/modules/n8n-packages/CLAUDE.md`](packages/cli/src/modules/n8n-packages/CLAUDE.md) |
-| 62 | ✓ | [`packages/frontend/AGENTS.md`](packages/frontend/AGENTS.md) |
-| 63 | ✓ | [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) |
-| 64 | ✓ | [`packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md`](packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md) |
-| 65 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
-| 66 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
-| 67 | ✓ | [`packages/testing/janitor/CLAUDE.md`](packages/testing/janitor/CLAUDE.md) |
-| 68 | ✓ | [`packages/testing/playwright/AGENTS.md`](packages/testing/playwright/AGENTS.md) |
-| 69 | ✓ | [`packages/testing/playwright/CLAUDE.md`](packages/testing/playwright/CLAUDE.md) |
-| 70 | ✓ | [`scripts/instance-seeding/AGENTS.md`](scripts/instance-seeding/AGENTS.md) |
-| 71 | → | [`.claude/plugins/n8n/README.md`](.claude/plugins/n8n/README.md) |
-| 72 | → | [`.github/DEVELOPING_V3.md`](.github/DEVELOPING_V3.md) |
+| 30 | ✓ | [`.agents/skills/public-api/reference.md`](.agents/skills/public-api/reference.md) |
+| 31 | ✓ | [`.agents/skills/public-api/SKILL.md`](.agents/skills/public-api/SKILL.md) |
+| 32 | ✓ | [`.agents/skills/reproduce-bug/SKILL.md`](.agents/skills/reproduce-bug/SKILL.md) |
+| 33 | ✓ | [`.agents/skills/spec-driven-development/SKILL.md`](.agents/skills/spec-driven-development/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/telemetry/SKILL.md`](.agents/skills/telemetry/SKILL.md) |
+| 35 | ✓ | [`.claude/plugins/n8n/skills/setup-mcps/SKILL.md`](.claude/plugins/n8n/skills/setup-mcps/SKILL.md) |
+| 36 | ✓ | [`.github/CLAUDE.md`](.github/CLAUDE.md) |
+| 37 | ✓ | [`.github/pull_request_title_conventions.md`](.github/pull_request_title_conventions.md) |
+| 38 | ✓ | [`.github/WORKFLOWS.md`](.github/WORKFLOWS.md) |
+| 39 | ✓ | [`.opencode/skills/setup-mcps/SKILL.md`](.opencode/skills/setup-mcps/SKILL.md) |
+| 40 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 41 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 42 | ✓ | [`packages/@n8n/agents/AGENTS.md`](packages/@n8n/agents/AGENTS.md) |
+| 43 | ✓ | [`packages/@n8n/ai-workflow-builder.ee/AGENTS.md`](packages/@n8n/ai-workflow-builder.ee/AGENTS.md) |
+| 44 | ✓ | [`packages/@n8n/ai-workflow-builder.ee/CLAUDE.md`](packages/@n8n/ai-workflow-builder.ee/CLAUDE.md) |
+| 45 | ✓ | [`packages/@n8n/cli/skills/n8n-cli/SKILL.md`](packages/@n8n/cli/skills/n8n-cli/SKILL.md) |
+| 46 | ✓ | [`packages/@n8n/db/AGENTS.md`](packages/@n8n/db/AGENTS.md) |
+| 47 | ✓ | [`packages/@n8n/engine/AGENTS.md`](packages/@n8n/engine/AGENTS.md) |
+| 48 | ✓ | [`packages/@n8n/instance-ai/CLAUDE.md`](packages/@n8n/instance-ai/CLAUDE.md) |
+| 49 | ✓ | [`packages/@n8n/instance-ai/skills/config-evals/SKILL.md`](packages/@n8n/instance-ai/skills/config-evals/SKILL.md) |
+| 50 | ✓ | [`packages/@n8n/instance-ai/skills/credential-setup-with-computer-use/SKILL.md`](packages/@n8n/instance-ai/skills/credential-setup-with-computer-use/SKILL.md) |
+| 51 | ✓ | [`packages/@n8n/instance-ai/skills/data-table-manager/SKILL.md`](packages/@n8n/instance-ai/skills/data-table-manager/SKILL.md) |
+| 52 | ✓ | [`packages/@n8n/instance-ai/skills/debugging-executions/SKILL.md`](packages/@n8n/instance-ai/skills/debugging-executions/SKILL.md) |
+| 53 | ✓ | [`packages/@n8n/instance-ai/skills/intent-recognition/SKILL.md`](packages/@n8n/instance-ai/skills/intent-recognition/SKILL.md) |
+| 54 | ✓ | [`packages/@n8n/instance-ai/skills/n8n-docs-assistant/SKILL.md`](packages/@n8n/instance-ai/skills/n8n-docs-assistant/SKILL.md) |
+| 55 | ✓ | [`packages/@n8n/instance-ai/skills/planned-task-runtime/SKILL.md`](packages/@n8n/instance-ai/skills/planned-task-runtime/SKILL.md) |
+| 56 | ✓ | [`packages/@n8n/instance-ai/skills/planning/SKILL.md`](packages/@n8n/instance-ai/skills/planning/SKILL.md) |
+| 57 | ✓ | [`packages/@n8n/instance-ai/skills/post-build-flow/SKILL.md`](packages/@n8n/instance-ai/skills/post-build-flow/SKILL.md) |
+| 58 | ✓ | [`packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md`](packages/@n8n/instance-ai/skills/workflow-builder/SKILL.md) |
+| 59 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md`](packages/@n8n/node-cli/src/template/templates/shared/default/AGENTS.md) |
+| 60 | ✓ | [`packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md`](packages/@n8n/node-cli/src/template/templates/shared/default/CLAUDE.md) |
+| 61 | ✓ | [`packages/cli/AGENTS.md`](packages/cli/AGENTS.md) |
+| 62 | ✓ | [`packages/cli/src/modules/n8n-packages/CLAUDE.md`](packages/cli/src/modules/n8n-packages/CLAUDE.md) |
+| 63 | ✓ | [`packages/frontend/AGENTS.md`](packages/frontend/AGENTS.md) |
+| 64 | ✓ | [`packages/frontend/CLAUDE.md`](packages/frontend/CLAUDE.md) |
+| 65 | ✓ | [`packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md`](packages/frontend/editor-ui/src/app/stores/workflowDocument/CLAUDE.md) |
+| 66 | ✓ | [`packages/nodes-base/AGENTS.md`](packages/nodes-base/AGENTS.md) |
+| 67 | ✓ | [`packages/nodes-base/CLAUDE.md`](packages/nodes-base/CLAUDE.md) |
+| 68 | ✓ | [`packages/testing/janitor/CLAUDE.md`](packages/testing/janitor/CLAUDE.md) |
+| 69 | ✓ | [`packages/testing/playwright/AGENTS.md`](packages/testing/playwright/AGENTS.md) |
+| 70 | ✓ | [`packages/testing/playwright/CLAUDE.md`](packages/testing/playwright/CLAUDE.md) |
+| 71 | ✓ | [`scripts/instance-seeding/AGENTS.md`](scripts/instance-seeding/AGENTS.md) |
+| 72 | → | [`.claude/plugins/n8n/README.md`](.claude/plugins/n8n/README.md) |
+| 73 | → | [`.github/DEVELOPING_V3.md`](.github/DEVELOPING_V3.md) |
 
 ---
 

@@ -32,7 +32,17 @@ Resolve the preference in this order:
 3. A preference already in your **project instructions** (the active instructions in your context) — consumed from context, **never** read from a named file.
 4. **Default:** first available attested-different target in `codex → claude → grok → composer`; Cursor-default participates only when explicitly preferred.
 
-Before content egresses, resolve each selected target to one concrete installed route, verify every recipient against `CROSS_MODEL_PEERS`, announce it, and pass it as `CROSS_MODEL_FIXED_ROUTE`. A failed dispatched route returns no artifact; it never changes provider or intermediary internally. A retry is a new host decision and requires disclosure/sanction before dispatch. For backward compatibility, either `cursor` or `composer` in `CROSS_MODEL_PEERS` sanctions Cursor as an intermediary, but selecting a Cursor-default voice itself requires target `cursor`; `grok` alone never sanctions Grok-via-Cursor.
+Before content egresses, resolve each selected target to one concrete installed route, verify every recipient against `CROSS_MODEL_PEERS`, announce it, and pass it as `CROSS_MODEL_FIXED_ROUTE`. `CROSS_MODEL_FIXED_ROUTE` accepts exactly these tokens — the worker fail-closes on anything else (including route-shaped guesses like `codex-cli`):
+
+| Target | Route token(s) |
+|--------|----------------|
+| `codex` | `codex` |
+| `claude` | `claude` |
+| `grok` | `grok-cli` (native CLI) or `grok-cursor` (via Cursor intermediary) |
+| `cursor` | `cursor` |
+| `composer` | `composer` |
+
+A failed dispatched route returns no artifact; it never changes provider or intermediary internally. A retry is a new host decision and requires disclosure/sanction before dispatch. For backward compatibility, either `cursor` or `composer` in `CROSS_MODEL_PEERS` sanctions Cursor as an intermediary, but selecting a Cursor-default voice itself requires target `cursor`; `grok` alone never sanctions Grok-via-Cursor.
 
 Preferred model mappings run first. Only after the preferred ID is observed unavailable, obsolete, or incompatible may the host inspect current CLI capabilities and choose the closest compatible **same-target/same-family** replacement. Bind it with both `CROSS_MODEL_MODEL_OVERRIDE_TARGET=<target>` and `CROSS_MODEL_MODEL_OVERRIDE=<model-id>`. Never substitute across families, apply one target's override to another route, silently change an explicit model, or add a recipient.
 
@@ -77,22 +87,22 @@ SKILL_DIR="<absolute path of the directory containing the ce-doc-review SKILL.md
 PY="$(for c in python3 python py; do command -v "$c" >/dev/null 2>&1 && "$c" -c '' >/dev/null 2>&1 && { echo "$c"; break; }; done)"; [ -n "$PY" ] || { echo "no working Python 3 interpreter on PATH" >&2; exit 1; };
 SCRATCH_ROOT="/tmp/compound-engineering-$(id -u)";
 if [ -L "$SCRATCH_ROOT" ]; then echo "unsafe scratch root symlink: $SCRATCH_ROOT" >&2; exit 1; fi;
-install -d -m 700 "$SCRATCH_ROOT" || exit 1;
+(umask 077; mkdir -p "$SCRATCH_ROOT") || exit 1;
 if [ -L "$SCRATCH_ROOT" ] || [ ! -O "$SCRATCH_ROOT" ]; then echo "scratch root is not owned by the current user: $SCRATCH_ROOT" >&2; exit 1; fi;
 chmod 700 "$SCRATCH_ROOT" || exit 1;
 RUN_DIR="$SCRATCH_ROOT/ce-doc-review/<run-id>"; (umask 077; mkdir -p "$RUN_DIR") || exit 1; chmod 700 "$RUN_DIR" || exit 1;
-PEER_HARD="${CROSS_MODEL_HARD_SECS:-1200}"; echo "peer-deadline-secs=$(( PEER_HARD + 10 ))";
-CE_PEER_HARD_SECS="$(( PEER_HARD + 30 ))" CROSS_MODEL_HOST_HARNESS="<host-harness>" CROSS_MODEL_FIXED_ROUTE="<fixed-route>" "$PY" "$SKILL_DIR/scripts/peer-job-runner.py" start --skill ce-doc-review --run-id "<run-id>" --label "<reviewer-name>" -- env CROSS_MODEL_HOST_HARNESS="<host-harness>" CROSS_MODEL_FIXED_ROUTE="<fixed-route>" bash "$SKILL_DIR/scripts/cross-model-doc-review.sh" "<host-serving-family>" "<target>" "<reviewer-name>" "<document-path>" "<document-type>" "<origin>" "$RUN_DIR"
+echo "peer-deadline-secs=$(( ${CROSS_MODEL_HARD_SECS:-1200} + 10 ))";
+CE_PEER_HARD_SECS= CROSS_MODEL_HOST_HARNESS="<host-harness>" CROSS_MODEL_FIXED_ROUTE="<fixed-route>" "$PY" "$SKILL_DIR/scripts/peer-job-runner.py" start --skill ce-doc-review --run-id "<run-id>" --label "<reviewer-name>" -- env CROSS_MODEL_HOST_HARNESS="<host-harness>" CROSS_MODEL_FIXED_ROUTE="<fixed-route>" bash "$SKILL_DIR/scripts/cross-model-doc-review.sh" "<host-serving-family>" "<target>" "<reviewer-name>" "<document-path>" "<document-type>" "<origin>" "$RUN_DIR"
 ```
 
-The nested windows are one budget with one knob, `CROSS_MODEL_HARD_SECS`. Resolve `PEER_HARD` **in the same shell call as `start`** (as above) — a separate call loses it, and the prefixes would then compute `CE_PEER_HARD_SECS` as `30`. The runner supervisor gets `+30s` and the shared deadline `+10s`, both derived there, so raising the knob widens every outer window. Read the printed `peer-deadline-secs=<n>` and use that `<n>` as the shared deadline below (all legs share the one value; re-use the first leg's number rather than re-deriving per leg). Never hardcode any of these: when they drift, the tightest one silently reaps a healthy peer and its full spend is wasted.
+The nested windows are one budget with one knob, `CROSS_MODEL_HARD_SECS`. The runner derives its supervisor hard window from that ambient knob automatically (`max(1230, knob + 30)`). Clear `CE_PEER_HARD_SECS` on the start prefix (`CE_PEER_HARD_SECS=`) so a stale ambient value from an earlier session or harness export cannot undercut that derivation — an explicit numeric `CE_PEER_HARD_SECS` still wins when a skill deliberately sets one (ce-work / elevation), which this path must not do. Print the orchestrator deadline as `knob + 10` in the same shell as `start` (as above) and use that printed `peer-deadline-secs=<n>` below (all legs share the one value; re-use the first leg's number rather than re-deriving per leg); never hardcode it, because a literal survives a knob change and then reaps a healthy peer.
 
-**Do not forward `CROSS_MODEL_HARD_SECS` to the worker.** The runner already passes the ambient environment through, so a knob the user actually set reaches the worker on its own. Re-exporting the orchestrator's *resolved* value would turn a fallback into an explicit override and destroy the one distinction the worker needs: it applies the raised default only to the idle-guarded codex route and keeps a lower bound on the routes with no output-idle detection (`UNGUARDED_HARD_SECS` in the worker). `PEER_HARD` exists only to size the two *outer* windows, and the worker's effective cap is never larger than it, so the nesting still holds.
+**Do not forward `CROSS_MODEL_HARD_SECS` to the worker.** The runner already passes the ambient environment through, so a knob the user actually set reaches the worker on its own. Re-exporting the orchestrator's *resolved* value would turn a fallback into an explicit override and destroy the one distinction the worker still needs: idle-guarded routes (codex + streaming claude/cursor-family) use the raised `HARD_SECS` default, while `grok-cli` keeps the lower `UNGUARDED_HARD_SECS` bound because its `--json-schema` path cannot stream. Forcing one value would silently restore the doubled hang on that hard-only route.
 
 Omit `--result-path`; `done` means only that the worker exited. The fixed target determines the expected `<reviewer-name>-<target>.json` filename.
 
 - `<host-serving-family>` is `codex`, `claude`, `grok`, `composer`, or `unknown`; `<host-harness>` is `codex`, `claude`, `grok`, `cursor`, or `unknown`.
-- `<target>` is exactly one of `codex`, `claude`, `grok`, `cursor`, or `composer`; `<fixed-route>` is its already-sanctioned route (`grok-cli` and `grok-cursor` remain distinct).
+- `<target>` is exactly one of `codex`, `claude`, `grok`, `cursor`, or `composer`; `<fixed-route>` is its already-sanctioned concrete route token from the Step 1 table (`codex`, `claude`, `grok-cli`, `grok-cursor`, `cursor`, or `composer`).
 - `<reviewer-name>` = the activated lens (`security-lens`, `adversarial`, or `product-lens`). The script derives the persona-brief filename and (per provider) model from this allowlisted value — the brief path is never caller-controlled.
 - `<document-path>` = the document under review.
 - `<document-type>` = the Phase 1 classification (`requirements` / `plan` / `unified-requirements` / `unified-plan`).

@@ -97,5 +97,5 @@ The script auto-detects MIME type from the file extension.
 - `--file-path`: **Required**. Path to the local file to upload.
 - `--api-key`: **Required**. API key for Stitch authorization.
 - `--api-url`: Optional. Base URL of the Stitch API. Defaults to `https://stitch.googleapis.com`.
-- `--title`: Optional. Title for the uploaded screen.
+- `--title`: Optional. Title for the uploaded screen. When uploading extracted HTML from a web app, set this to the **route path** of the page (e.g., `'/dashboard'`, `'/settings/profile'`, `'/inbox'`) so that the screen name/title in Stitch clearly identifies the route.
 - `--generated-by`: Optional. Specify how the uploaded file was generated (e.g., 'stitch::extract-static-html' skill, 'Claude Code', 'Codex', 'Gemini' etc.).

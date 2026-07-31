@@ -1,6 +1,6 @@
 ---
 name: minutes-recap
-description: Generate a daily digest of today's meetings and voice memos — key decisions, action items, and themes across all recordings. Use when the user asks "recap my day", "what happened in my meetings today", "daily summary", "what did I discuss today", "any action items from today", or wants a consolidated view of the day's conversations.
+description: Generate a daily digest of today's policy-authorized meetings and voice memos — key decisions, action items, and themes across available recordings. Use when the user asks "recap my day", "what happened in my meetings today", "daily summary", "what did I discuss today", "any action items from today", or wants a consolidated view of the day's conversations.
 compatibility: opencode
 ---
 
@@ -15,16 +15,22 @@ export MINUTES_SKILL_ROOT="$MINUTES_SKILLS_ROOT/minutes-recap"
 
 # /minutes-recap
 
-Synthesize all of today's meetings and voice memos into a single daily brief.
+Synthesize today's policy-authorized normal meetings and voice memos into a
+single daily brief. Restricted history is excluded from this agent workflow by
+default and must never be treated as absent evidence.
 
 ## How to generate the recap
 
-1. **Find today's recordings** using the `/minutes-search` skill:
+1. **Find today's recordings** from the bounded live list:
    ```bash
-   minutes search "$(date +%Y-%m-%d)" --limit 50
+   minutes list --limit 50
    ```
+   Require exit status 0, parse the JSON written to stdout, and select entries
+   whose `date` is today. A date string is not a search query.
 
-2. **Read each meeting file** using `Read` on the paths returned
+2. **Read each selected recording** with
+   `minutes get "<exact path>" --json`. Require exit status 0 and use only the
+   returned content. Never reopen list paths through the host filesystem.
 
 3. **Synthesize into a daily brief** — use the template in `templates/daily-recap.md` as a starting point, adapting sections based on what actually exists in the day's recordings.
 

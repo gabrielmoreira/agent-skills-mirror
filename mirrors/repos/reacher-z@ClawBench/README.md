@@ -24,13 +24,63 @@
 [![Commit activity](https://img.shields.io/github/commit-activity/m/reacher-z/ClawBench?style=flat-square&logo=github&logoColor=white)](https://github.com/reacher-z/ClawBench/graphs/commit-activity)
 [![License](https://img.shields.io/github/license/reacher-z/ClawBench?style=flat-square&color=A42E2B)](https://github.com/reacher-z/ClawBench/blob/main/LICENSE)
 
-<p align="center"><sub><i>Featured in</i></sub></p>
+<p align="center"><sub><i>Featured in 37 curated lists</i></sub></p>
 <p align="center">
   <a href="https://github.com/walkinglabs/awesome-harness-engineering"><img alt="awesome-harness-engineering" src="https://img.shields.io/badge/Featured-awesome--harness--engineering-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Picrew/awesome-agent-harness"><img alt="awesome-agent-harness" src="https://img.shields.io/badge/Featured-awesome--agent--harness-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/OpenHands/open-operator"><img alt="OpenHands open-operator" src="https://img.shields.io/badge/Featured-OpenHands--open--operator-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
   <a href="https://github.com/Jenqyang/Awesome-AI-Agents"><img alt="Awesome-AI-Agents" src="https://img.shields.io/badge/Featured-Awesome--AI--Agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
   <a href="https://github.com/ranpox/awesome-computer-use"><img alt="awesome-computer-use" src="https://img.shields.io/badge/Featured-awesome--computer--use-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/philfung/awesome-computer-use"><img alt="awesome-computer-use (philfung)" src="https://img.shields.io/badge/Featured-computer--use--papers-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
   <a href="https://github.com/ZJU-REAL/Awesome-GUI-Agents"><img alt="Awesome-GUI-Agents" src="https://img.shields.io/badge/Featured-Awesome--GUI--Agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/OSU-NLP-Group/GUI-Agents-Paper-List"><img alt="GUI-Agents-Paper-List" src="https://img.shields.io/badge/Featured-GUI--Agents--Paper--List-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
   <a href="https://github.com/zhangxjohn/LLM-Agent-Benchmark-List"><img alt="LLM-Agent-Benchmark-List" src="https://img.shields.io/badge/Featured-LLM--Agent--Benchmark--List-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/HHHHHejia/Awesome-AgenticLLM-RL-Papers"><img alt="Awesome-AgenticLLM-RL-Papers" src="https://img.shields.io/badge/Featured-AgenticLLM--RL--Papers-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/RUC-NLPIR/Awesome-Long-Horizon-Agents"><img alt="Awesome-Long-Horizon-Agents" src="https://img.shields.io/badge/Featured-long--horizon--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Lhy723/awesome-ai-agent-evaluation"><img alt="awesome-ai-agent-evaluation" src="https://img.shields.io/badge/Featured-agent--evaluation-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/MLGroupJLU/LLM-eval-survey"><img alt="LLM-eval-survey" src="https://img.shields.io/badge/Featured-LLM--eval--survey-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/SAILResearch/awesome-ai-leaderboard"><img alt="awesome-ai-leaderboard" src="https://img.shields.io/badge/Featured-AI--leaderboard-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/EthicalML/awesome-agentic-engineering-resources"><img alt="awesome-agentic-engineering-resources" src="https://img.shields.io/badge/Featured-agentic--engineering-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/SafeRL-Lab/agentic-web"><img alt="agentic-web" src="https://img.shields.io/badge/Featured-agentic--web-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/VoltAgent/awesome-ai-agent-papers"><img alt="awesome-ai-agent-papers" src="https://img.shields.io/badge/Featured-agent--papers-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/js-lee-AI/awesome-llm-agent-papers"><img alt="awesome-llm-agent-papers" src="https://img.shields.io/badge/Featured-LLM--agent--papers-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Yangyi-Chen/Multimodal-AND-Large-Language-Models"><img alt="Multimodal-AND-Large-Language-Models" src="https://img.shields.io/badge/Featured-multimodal--LLMs-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/cdxeve/awesome-computer-use-agents"><img alt="awesome-computer-use-agents" src="https://img.shields.io/badge/Featured-computer--use--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/ishandutta2007/Awesome-AI-Benchmarking"><img alt="Awesome-AI-Benchmarking" src="https://img.shields.io/badge/Featured-AI--Benchmarking-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/brandonhimpfen/awesome-ai-benchmarks-evaluation"><img alt="awesome-ai-benchmarks-evaluation" src="https://img.shields.io/badge/Featured-AI--benchmark--evaluation-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/pauldebdeep9/awesome-agentic-evaluation"><img alt="awesome-agentic-evaluation" src="https://img.shields.io/badge/Featured-agentic--evaluation-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/skyming/awesome-ai-agent"><img alt="awesome-ai-agent" src="https://img.shields.io/badge/Featured-awesome--AI--agent-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/steel-dev/awesome-web-agents"><img alt="awesome-web-agents" src="https://img.shields.io/badge/Featured-web--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Xnhyacinth/Awesome-LLM-Long-Context-Modeling"><img alt="Awesome-LLM-Long-Context-Modeling" src="https://img.shields.io/badge/Featured-long--context--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/YintongHuo/awesome-agent-trajectory"><img alt="awesome-agent-trajectory" src="https://img.shields.io/badge/Featured-agent--trajectory-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/ARUNAGIRINATHAN-K/awesome-ai-agents-2026"><img alt="awesome-ai-agents-2026" src="https://img.shields.io/badge/Featured-AI--agents--2026-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Steve2457/Awesome-RL-GUI-Agents"><img alt="Awesome-RL-GUI-Agents" src="https://img.shields.io/badge/Featured-RL--GUI--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/aloth/awesome-ai-agents"><img alt="awesome-ai-agents" src="https://img.shields.io/badge/Featured-AI--agent--evaluation-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/FrontisAI/Awesome-Self-Improving-Agents"><img alt="Awesome-Self-Improving-Agents" src="https://img.shields.io/badge/Featured-self--improving--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/zjunlp/LLMAgentPapers"><img alt="LLMAgentPapers" src="https://img.shields.io/badge/Featured-LLM--agent--papers-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/M1n9X/llm_agents_devtools"><img alt="llm_agents_devtools" src="https://img.shields.io/badge/Featured-agent--devtools-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/bojieli/ai-agent-book"><img alt="ai-agent-book" src="https://img.shields.io/badge/Featured-AI--agent--book-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/IcyFeather233/Awesome-LLM-Agent-Trajectory-Analysis"><img alt="Awesome-LLM-Agent-Trajectory-Analysis" src="https://img.shields.io/badge/Featured-agent--trajectory--analysis-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/h9-tec/llm-systems-engineering-roadmap"><img alt="llm-systems-engineering-roadmap" src="https://img.shields.io/badge/Featured-LLM--systems--roadmap-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Necolizer/awesome-rl-for-agents"><img alt="awesome-rl-for-agents" src="https://img.shields.io/badge/Featured-RL--for--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/brandonhimpfen/awesome-ai-benchmarks-evaluation"><img alt="awesome-ai-benchmarks-evaluation" src="https://img.shields.io/badge/Featured-AI--benchmarks--evaluation-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/EthicalML/awesome-agentic-engineering-resources"><img alt="awesome-agentic-engineering-resources" src="https://img.shields.io/badge/Featured-agentic--engineering-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Xnhyacinth/Awesome-LLM-Long-Context-Modeling"><img alt="Awesome-LLM-Long-Context-Modeling" src="https://img.shields.io/badge/Featured-long--context--modeling-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/YintongHuo/awesome-agent-trajectory"><img alt="awesome-agent-trajectory" src="https://img.shields.io/badge/Featured-agent--trajectory-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/ARUNAGIRINATHAN-K/awesome-ai-agents-2026"><img alt="awesome-ai-agents-2026" src="https://img.shields.io/badge/Featured-AI--agents--2026-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Steve2457/Awesome-RL-GUI-Agents"><img alt="Awesome-RL-GUI-Agents" src="https://img.shields.io/badge/Featured-RL--GUI--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/aloth/awesome-ai-agents"><img alt="awesome-ai-agents" src="https://img.shields.io/badge/Featured-awesome--AI--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/FrontisAI/Awesome-Self-Improving-Agents"><img alt="Awesome-Self-Improving-Agents" src="https://img.shields.io/badge/Featured-self--improving--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/zjunlp/LLMAgentPapers"><img alt="LLMAgentPapers" src="https://img.shields.io/badge/Featured-LLM--agent--papers-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/M1n9X/llm_agents_devtools"><img alt="llm_agents_devtools" src="https://img.shields.io/badge/Featured-agent--devtools-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/IcyFeather233/Awesome-LLM-Agent-Trajectory-Analysis"><img alt="Awesome-LLM-Agent-Trajectory-Analysis" src="https://img.shields.io/badge/Featured-trajectory--analysis-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/h9-tec/llm-systems-engineering-roadmap"><img alt="llm-systems-engineering-roadmap" src="https://img.shields.io/badge/Featured-LLM--systems--roadmap-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Necolizer/awesome-rl-for-agents"><img alt="awesome-rl-for-agents" src="https://img.shields.io/badge/Featured-RL--for--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/Picrew/awesome-agent-harness"><img alt="awesome-agent-harness" src="https://img.shields.io/badge/Featured-awesome--agent--harness-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/OpenHands/open-operator"><img alt="OpenHands open-operator" src="https://img.shields.io/badge/Featured-OpenHands--open--operator-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/philfung/awesome-computer-use"><img alt="awesome-computer-use (philfung)" src="https://img.shields.io/badge/Featured-computer--use--papers-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/cdxeve/awesome-computer-use-agents"><img alt="awesome-computer-use-agents" src="https://img.shields.io/badge/Featured-computer--use--agents-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
+  <a href="https://github.com/SafeRL-Lab/agentic-web"><img alt="agentic-web" src="https://img.shields.io/badge/Featured-agentic--web-7C3AED?style=flat-square&logo=awesomelists&logoColor=white"></a>
 </p>
 
 <p align="center">
@@ -916,6 +966,48 @@ Yes. V1 tasks live in `test-cases/v1/`; V2 tasks live in `test-cases/v2/`; Lite 
 
 **How does ClawBench relate to HarnessBench?**
 Same scoring pipeline, orthogonal axis. ClawBench fixes the harness and varies the model; HarnessBench fixes the model and varies the harness. They share the V1 153-task corpus, the five-layer recording, and the agentic evaluator — so numbers are directly comparable.
+
+## <a id="awesome-works-using-clawbench"></a>✨ Awesome Works using ClawBench
+
+We are delighted to see ClawBench used across the research community.
+
+The growing community includes authors from **Google DeepMind, Stanford, UC Berkeley, Google, Microsoft Research, Harvard, ETH Zürich, Oxford, Northwestern, ByteDance Seed, HKUST**, and more.
+
+If we missed your work, please [open an issue](https://github.com/TIGER-AI-Lab/ClawBench/issues/new/choose) or submit a pull request.
+
+😊 **Google DeepMind, University of Oxford & Columbia University**, [The Recipe for Intelligence in Natural and Artificial Systems](https://osf.io/preprints/psyarxiv/x9ktv_v1/) ([DOI](https://doi.org/10.31234/osf.io/x9ktv_v1))
+
+😊 **Stanford, UC Berkeley, Microsoft Research & UCSB**, [Auditing Agent Harness Safety](https://arxiv.org/abs/2605.14271) ([Code](https://github.com/UCSB-AI/HarnessAudit), [Project](https://harnessaudit.github.io/))
+
+😊 **Google**, [Agentic Coding Needs Proactivity, Not Just Autonomy](https://arxiv.org/abs/2605.06717) ([Google Research Blog](https://developers.googleblog.com/en/measuring-what-matters-with-jules/))
+
+😊 **Harvard Kempner Institute, Massachusetts General Hospital & CUHK**, [NeuroClaw Technical Report](https://arxiv.org/abs/2604.24696) ([Code](https://github.com/CUHK-AIM-Group/NeuroClaw), [Project](https://cuhk-aim-group.github.io/NeuroClaw/))
+
+😊 **ETH Zürich & Handshake AI Research**, [Verifying Agents in Rubric-Graded Environments](https://openreview.net/pdf?id=ayA2tJNDET) ([Code](https://github.com/Handshake-AI-Research/gandalf-the-grader), [Workshop](https://rl-eval.github.io/))
+
+😊 **University of Oxford, NUS & Peking University**, [OpenClaw Research: A Systematic Survey of Large Language Model Agents in Open Deployment](https://openreview.net/forum?id=5PMzjzEy6J) ([Project](https://ykc1.github.io/OpenClaw_Survey_Web/), [Resources](https://github.com/shuolucs/Awesome-OpenClaw-Research))
+
+😊 **Northwestern University**, [A Survey of the OpenClaw Ecosystem: From Platform Extensibility to Constraint Design](https://openreview.net/pdf/eab5a52b7bba57e22707282587f78e482b44d9b0.pdf) ([Project & Resources](https://github.com/REAL-Lab-NU/Awesome-OpenClaw-Papers))
+
+😊 **UC Davis & UT Dallas**, [Toward Trustworthy Computer-Use Agents: Risk Propagation, Evaluation Gaps, and Human Governance](https://www.researchgate.net/publication/405422774_Toward_Trustworthy_Computer-Use_Agents_Risk_Propagation_Evaluation_Gaps_and_Human_Governance) ([Code & Project](https://github.com/xu-hu-2002/Toward-Trustworthy-Computer-Use-Agent-A-Survey), [Resources](https://huggingface.co/datasets/Xu-Hu-2002/Toward-Thustworthy-Computer-Use-Agent))
+
+😊 **ByteDance Seed & HKUST**, [Training Long-Context Vision-Language Models Effectively with Generalization Beyond 128K Context](https://arxiv.org/abs/2605.13831) ([Models](https://huggingface.co/collections/ZhaoweiWang/mmprolong))
+
+😊 **Tencent Hunyuan & Fudan University**, [TurnOPD: Making On-Policy Distillation Turn-Aware for Efficient Long-Horizon Agent Training](https://arxiv.org/abs/2607.05804)
+
+😊 **Unipat AI**, [VibeSearchBench: Benchmarking Long-horizon Proactive Search in the Wild](https://arxiv.org/abs/2605.27882) ([Code](https://github.com/VibeBench/VibeSearchBench), [Project](https://vibebench.github.io/VibeSearchBench.github.io/))
+
+😊 **Tsinghua University & CUHK**, [WildClawBench: A Benchmark for Real-World, Long-Horizon Agent Evaluation](https://arxiv.org/abs/2605.10912) ([Code](https://github.com/InternLM/WildClawBench), [Project](https://internlm.github.io/WildClawBench/))
+
+😊 **NUS, HKUST, Tsinghua University & Peking University**, [Towards Long-Horizon Agents: A Survey](https://openreview.net/forum?id=HyhfhlbWGh) ([Project](https://long-horizon-agents.github.io/), [Resources](https://github.com/RUC-NLPIR/Awesome-Long-Horizon-Agents))
+
+😊 **HKU MMLab**, [UniClawBench: A Universal Benchmark for Proactive Agents on Real-World Tasks](https://arxiv.org/abs/2607.08768) ([Code](https://github.com/HKU-MMLab/UniClawBench), [Project](https://uniclawbench.github.io/))
+
+😊 **Tsinghua University & SJTU**, [MacAgentBench: Benchmarking AI Agents on Real-World macOS Desktop](https://arxiv.org/abs/2606.22557) ([Code](https://github.com/JetAstra/MacAgentBench), [Project](https://jetastra.github.io/MacAgentBench/))
+
+😊 **Peking University & CUHK**, [π-Bench: Evaluating Proactive Personal Assistant Agents in Long-Horizon Workflows](https://arxiv.org/abs/2605.14678) ([Code](https://github.com/Simplified-Reasoning/Pi-Bench), [Project](https://simplified-reasoning.github.io/Pi-Bench/))
+
+😊 **SJTU**, [AcademiClaw: When Students Set Challenges for AI Agents](https://arxiv.org/abs/2605.02661) ([Code](https://github.com/GAIR-NLP/AcademiClaw), [Project](https://gair-nlp.github.io/AcademiClaw/))
 
 ## Citation
 

@@ -1,24 +1,94 @@
-# Guide Themia — Données jurimétriques (dommage corporel et droit du travail)
+# Guide Themia — Données jurimétriques (cassation, dommage corporel, droit du travail, baux commerciaux)
+
+<!-- NOYAU-JURIMETRIE v1 — synchronisé mandarinat 1.4.0 / assistant-juridique-fr 7.4.0 -->
 
 ## Déclenchement
 
-Consulter ce guide dès qu'une question appelle des données statistiques, des montants d'indemnisation, ou des pratiques juridictionnelles quantifiées en dommage corporel ou en droit du travail.
+Consulter ce guide dès qu'une question appelle des données statistiques, des montants d'indemnisation, des pratiques juridictionnelles quantifiées, ou une recherche dans la jurisprudence de la Cour de cassation par **voix énonciative** (savoir *qui parle* : la Cour, la cour d'appel, les parties).
 
 | Signal | Module |
 |---|---|
 | Préjudice corporel, Dintilhac, DFP, souffrances endurées, DFT, ATP, barème capitalisation, victime, montant d'indemnisation corporelle | **Dommage corporel (DC)** |
 | Licenciement, rupture, prud'hommes, faute grave, inaptitude, ancienneté, barème Macron, salarié protégé, indemnités prud'homales | **Droit du travail (Travail)** |
-| « combien », « quel montant », « en moyenne », « médiane », « pratique des juridictions » | **Selon contexte DC ou Travail** |
+| Bail commercial, loyer, déspécialisation, indemnité d'éviction, congé, renouvellement, révision, statut des baux commerciaux | **Baux commerciaux (Baux)** |
+| Cour de cassation, pourvoi, visa, chapeau, moyen, motifs, revirement, « ce que dit la Cour », analyse statistique d'arrêts de cassation, recherche par voix de la Cour | **Cour de cassation (Cassation)** |
+| « combien », « quel montant », « en moyenne », « médiane », « pratique des juridictions », « proportion d'arrêts qui… » | **Selon contexte** |
 
-Si ambiguïté sur le module : demander explicitement à l'utilisateur.
+Si ambiguïté sur le module : demander explicitement à l'utilisateur. La liste des modules n'est pas figée : si le MCP expose un module non listé ici, l'utiliser selon le même schéma (`compter_*`, `analyser_insights_*`, `recherche_options_*`, `echantillon_*`).
 
-## Si Themia est indisponible
+## Règle de bascule à trois niveaux (priorité des sources jurimétriques)
 
-Informer l'utilisateur **une seule fois** que des données jurimétriques enrichies seraient disponibles via Themia (themia.pro), puis poursuivre avec les outils disponibles (OpenLegi, HAL, web_search). Ne jamais bloquer l'exécution.
+Pour le **volet jurimétrique ou quantitatif** d'une demande (combien, distribution, médiane, comparaison inter-juridictions, tendance, montants pratiqués) — et, en cassation, pour la **recherche par voix énonciative** —, appliquer cette priorité, dans cet ordre :
+
+1. **Themia disponible → Themia est prioritaire.** Themia est l'outil le plus fin pour ces questions : statistiques agrégées robustes (DC, Travail, Baux) et, en cassation, segmentation par voix de la Cour qu'aucune autre base n'expose.
+2. **Themia indisponible → signaler, puis basculer sur OpenLegi.** Informer l'utilisateur **une seule fois** : « Les résultats seraient plus précis avec Themia (accessible depuis app.themia.pro), qui fournit des statistiques agrégées et, pour la Cour de cassation, la segmentation par voix énonciative. Je poursuis avec OpenLegi. » Puis conduire l'analyse au mieux avec OpenLegi (recherche de décisions, comptage manuel, lecture des arrêts), en signalant que la quantification sera approximative.
+3. **Themia ET OpenLegi indisponibles → signaler, puis faire sans.** Informer l'utilisateur que les résultats seraient bien meilleurs avec OpenLegi (accès officiel Légifrance) et Themia (jurimétrie), puis répondre avec les outils restants (web_search sur sources officielles) en explicitant fortement les limites.
+
+> **Réserve d'articulation Themia / OpenLegi — non substituables au sens strict.**
+> Themia fournit des **statistiques agrégées** et, en cassation, la **voix énonciative** ; il ne fournit pas le texte officiel Légifrance ni un lien Légifrance. OpenLegi fournit le **texte intégral officiel** d'une décision et son **lien Légifrance**.
+> Conséquence : la bascule vaut pour la dimension *statistique / recherche par voix*. Mais **toute décision effectivement citée dans un livrable** reste soumise à la séquence anti-hallucination (§2 du SKILL.md) et doit être confirmée via OpenLegi pour obtenir le lien Légifrance officiel. Ne jamais citer dans un livrable une décision sur la seule foi d'un `themia_url` : récupérer la décision correspondante via OpenLegi et porter le lien Légifrance. Le `themia_url` peut être mentionné en complément, jamais en substitut du lien officiel.
 
 ## Périmètre Themia
 
-Statistiques agrégées uniquement — pas de décisions individuelles (orienter vers OpenLegi), pas de barèmes normatifs. Les données décrivent ce qui a été accordé, pas ce qui doit l'être.
+Statistiques agrégées uniquement — pas de barèmes normatifs. Les données décrivent ce qui a été accordé, pas ce qui doit l'être. Pour le texte intégral et officiel d'une décision : OpenLegi. Pour des exemples concrets de décisions (liens Themia), `echantillon_decisions_*`.
+
+---
+
+# MODULE 0 — COUR DE CASSATION
+
+> Module récent. Différenciateur central : la **segmentation par voix énonciative** — chaque extrait d'arrêt est rattaché à la voix qui l'énonce (la Cour, la cour d'appel, les parties). Aucune autre base ne permet de rechercher en ciblant *qui parle*.
+
+## Outils Cassation
+
+| Outil | Fonction |
+|---|---|
+| `Themia:compter_decisions_cassation` | Compter les décisions (orientation rapide avant analyse) |
+| `Themia:analyser_insights_cassation` | Outil principal d'analyse statistique |
+| `Themia:recherche_options_cassation` | Explorer les valeurs catégorielles (rapide ; ne jamais deviner une valeur) |
+| `Themia:echantillon_decisions_cassation` | Échantillon de décisions (liens Themia) |
+| `Themia Veriguard:selectionner_texte_cassation` | Lire le texte réel d'une décision avant citation (par voix) |
+| `Themia Veriguard:selectionner_cohorte_cassation` | Explorer le corpus par `passage_text` (laboratoire) |
+
+## Champs Cassation (catégoriels)
+
+Pas d'indemnités composites en cassation (aucun poste indemnitaire annoté) : uniquement des champs scalaires + `decision_count`.
+
+| Champ | Valeurs (casse exacte, en français) |
+|---|---|
+| `jurisdiction` | Cour de cassation |
+| `chamber` | Chambre sociale ; Première / Deuxième / Troisième chambre civile ; Chambre commerciale financière et économique ; Chambre criminelle ; Assemblée plénière ; Chambre mixte ; Première présidence (Ordonnance) ; Autre |
+| `formation` | Formation restreinte (hors RNSM/NA) ; Formation restreinte (RNSM/NA) ; Formation de section ; Formation plénière de chambre ; Formation mixte ; Formation restreinte |
+| `type` | Arrêt ; Ordonnance ; Demande d'avis ; Question prioritaire de constitutionnalité (QPC) ; Autre |
+| `solution` | Rejet ; Cassation ; Avis ; QPC renvoi ; QPC autres |
+| `publication` | Publié au Bulletin ; Publié au Rapport ; Publié aux Lettres de chambre ; Communiqué ; Non publié (multi-valeurs) |
+| `date` | filtre `{from, to}` ; `date_histogram_field` pour les tendances |
+
+⚠ **Erreurs de nommage fréquentes** : `court`/`chambre` → `chamber` ; `decision_type`/`kind` → `type` ; `outcome`/`ruling` → `solution` ; `published` → `publication`. Valeurs en français complet, casse exacte. En cas d'hésitation sur une valeur : appeler `recherche_options_cassation` d'abord, ne jamais deviner.
+
+## Filtres par voix énonciative (différenciateur)
+
+Pour cibler *qui parle*, utiliser ces filtres dédiés (chaîne simple = expression cherchée ; la portée zone/tags est appliquée côté serveur) :
+
+| Filtre | Voix ciblée |
+|---|---|
+| `passage_voix_cour` | Voix de la Cour (motifs propres, attendus, dispositif) |
+| `passage_motifs_ca` | Motifs de la cour d'appel cités/paraphrasés |
+| `passage_moyens` | Moyens des parties (arguments du pourvoi) |
+| `passage_moyens_annexes` | Moyens annexés reproduits en fin d'arrêt (pré-2019) |
+| `passage_visas` | Visas (« Vu l'article… ») |
+| `passage_chapeau` | Chapeaux (énoncés de principe) |
+
+Plusieurs voix se composent en ET. Filtre textuel générique alternatif : `passage_text: { text, zones?, tags?, mode? }` avec `zones = [introduction, expose, moyens, motivations, dispositif]`.
+
+> **⚖ Attribution énonciative — règle impérative (anti-hallucination spécifique à la cassation).**
+> Un extrait n'est une **position de la Cour de cassation** que s'il provient de `passage_voix_cour` (ou des sous-parties `passage_visas` / `passage_chapeau`).
+> - ❌ Ne JAMAIS présenter un extrait issu de `passage_motifs_ca`, `passage_moyens` ou `passage_moyens_annexes` comme la position de la Cour : ce sont les motifs de la cour d'appel ou les arguments des parties.
+> - ✅ Lorsqu'on cite, indiquer la voix d'où vient l'extrait (« la Cour retient… », « la cour d'appel avait jugé… », « le demandeur soutenait… »).
+> - En cas de doute sur la voix d'un extrait, le relire via `Themia Veriguard:selectionner_texte_cassation` (chaque chunk porte ses tags : `voix:cour_cassation`, `voix:cour_appel`, `visa`, `chapeau`…) avant toute citation. Une mauvaise attribution énonciative est une hallucination par mauvaise attribution au sens du §2 du SKILL.md.
+
+## Séquence-type Cassation
+
+Comptage d'orientation (`compter_decisions_cassation`) → analyse (`analyser_insights_cassation` : distribution par `chamber`/`solution`, tendance par `date`, etc.) → pour citer un arrêt : `echantillon_decisions_cassation` puis **confirmation OpenLegi** (lien Légifrance) avant toute citation dans un livrable. Si l'on cite un extrait : vérifier la voix via `selectionner_texte_cassation`.
 
 ---
 
@@ -195,6 +265,27 @@ Si poste absent : `recherche_options_travail` (`field="indemnity"` → `parent="
 ⚠ **LIMITATION** : `gross_monthly_salary` ne peut pas être utilisé en `breakdown_field`. Contournement : filtres successifs par fourchettes.
 
 **Booléens** : `is_cdi`, `is_full_time`, `is_protected_employee`, `is_disabled_employee`, `is_pregnant_employee`, `has_children`, `has_employee_disciplinary_dossier`.
+
+---
+
+# MODULE 3 — BAUX COMMERCIAUX
+
+> Module statistique sur le contentieux des baux commerciaux. Mêmes principes que DC et Travail.
+
+## Outils Baux
+
+| Outil | Fonction |
+|---|---|
+| `Themia:compter_decisions_baux_commerciaux` | Compter les décisions (vérifier N avant analyse) |
+| `Themia:analyser_insights_baux_commerciaux` | Outil principal d'analyse |
+| `Themia:recherche_options_baux_commerciaux` | Explorer valeurs et hiérarchie des champs/postes |
+| `Themia:echantillon_decisions_baux_commerciaux` | Échantillon de décisions (liens Themia) |
+
+## Méthode Baux
+
+Le détail des champs et des clés d'indemnité (indemnité d'éviction et ses postes, loyer, etc.) n'est pas figé dans ce guide : l'obtenir dynamiquement via `recherche_options_baux_commerciaux` (`field="indemnity"` puis navigation par `parent`), exactement comme pour DC et Travail. Ne jamais deviner une clé composite : la copier depuis le `key` retourné par `recherche_options_baux_commerciaux`. Pour les valeurs catégorielles (juridiction, type de litige), interroger `recherche_options_baux_commerciaux` avant de filtrer.
+
+Séquence-type : `compter_decisions_baux_commerciaux` (orientation) → `recherche_options_baux_commerciaux` (champs/clés exacts) → `analyser_insights_baux_commerciaux` (distribution, comparaison, tendance, métrique) → `echantillon_decisions_baux_commerciaux` pour des exemples, puis confirmation OpenLegi avant citation.
 
 ---
 

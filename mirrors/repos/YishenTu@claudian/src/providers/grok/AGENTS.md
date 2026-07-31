@@ -5,14 +5,13 @@
 ## Ownership
 
 - Grok process/session lifecycle, xAI protocol extensions, native-history hydration, model catalogs, tool normalization, settings reconciliation, UI, and auxiliary services live here.
-- Shared code consumes Grok only through provider-neutral runtime, capability, registry, and workspace-service contracts.
 - Provider-owned conversation data stays behind `GrokProviderState` helpers; feature code must not inspect it.
 
 ## Protocol and Session Rules
 
 - Account authentication is Grok-native. Never call ACP `authenticate` automatically or persist xAI credentials.
 - Preserve `Conversation.sessionId` and provider state across prompt, CLI-path, and environment changes. Recycle the process and load the same native session.
-- Use Grok's native history read-only. Never delete or mutate a Grok session when a Claudian conversation is deleted.
+- Use Grok's native history under `~/.grok/sessions/` read-only.
 - Send image attachments as ACP image content blocks and rehydrate their persisted native blocks. Use Grok's `x.ai/interject` and `x.ai/session/fork` extensions behind typed provider-owned boundaries for steering and forks.
 - Keep Grok/xAI tools enabled and preserve unknown tool data losslessly. Adapt Grok task-family lifecycle calls into the shared subagent renderer while retaining their raw names and payloads.
 - Expose Safe, Plan, and YOLO. Plan is a native ACP session mode layered over the remembered Safe or YOLO base; native mode updates remain authoritative.

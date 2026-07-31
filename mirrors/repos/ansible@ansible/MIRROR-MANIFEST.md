@@ -7,7 +7,7 @@ ref: devel
 
 # Mirror Manifest
 
-Mirror of `ansible/ansible` — 26 default patterns, 2 followed patterns, 7 file(s) materialized.
+Mirror of `ansible/ansible` — 26 default patterns, 2 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ansible/ansible` — 26 default patterns, 2 followed patterns, 7 file
 | Ref           | `devel` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 7 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,11 +62,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/azp-logs/SKILL.md`](.claude/skills/azp-logs/SKILL.md) |
 | 2 | ✓ | [`.claude/skills/context/SKILL.md`](.claude/skills/context/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/review/SKILL.md`](.claude/skills/review/SKILL.md) |
-| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 6 | → | [`context/licensing.md`](context/licensing.md) |
-| 7 | → | [`context/running-tests.md`](context/running-tests.md) |
+| 3 | ✓ | [`.claude/skills/creating-backports/SKILL.md`](.claude/skills/creating-backports/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/review/SKILL.md`](.claude/skills/review/SKILL.md) |
+| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 7 | → | [`context/licensing.md`](context/licensing.md) |
+| 8 | → | [`context/running-tests.md`](context/running-tests.md) |
 
 ---
 

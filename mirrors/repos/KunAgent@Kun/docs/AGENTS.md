@@ -1,11 +1,29 @@
 # Agent Runtime Notes
 
 The Kun desktop app has one live agent runtime: the bundled **Kun** runtime.
+The same runtime also serves the standalone Kun TUI and non-interactive
+clients. GUI and TUI are independent clients that may be active at the same
+time; neither client owns the runtime lifecycle or the canonical model
+configuration.
 
 Do not add a second live provider, provider switcher, runtime diagnostics panel,
 or legacy CodeWhale/Reasonix process path. Code, Design, Write, and Connect
 phone all enter the same Kun HTTP/SSE boundary. Connect phone still uses the
 internal `claw` name in code for compatibility.
+
+## Client Surface Boundary
+
+- Every turn records its initiating surface (`gui`, `tui`, `cli`, `api`, `im`,
+  or `extension`). Continuations and delegated child turns inherit it.
+- Provider kind `gui` is reserved for capabilities that require the desktop
+  workbench, such as Design canvas mutation or Computer Use. Those providers
+  must not be advertised or executable on TUI/CLI/API/IM turns.
+- Runtime-backed goals, todos, plans, Skills, MCP, attachments, approvals,
+  structured input, and subagents are shared Kun capabilities, not GUI tools.
+- Keep the immutable Kun system prompt client-neutral. Put interface-specific
+  guidance in the dynamic per-turn context after the stable prefix.
+- Never switch a process-global tool registry or prompt based on whichever
+  client connected most recently; GUI and TUI can run concurrently.
 
 ## Allowed Extension Path
 
@@ -26,6 +44,8 @@ internal `claw` name in code for compatibility.
   importer.
 - No legacy drawing/painting starter card outside the current Design mode.
 - No `/usage` or `/runtime` slash command that opens a runtime control panel.
+  The standalone TUI may expose `/usage` as a read-only report backed by
+  `GET /v1/usage`; it must not add runtime diagnostics or control actions.
 
 ## Legacy Data Rule
 

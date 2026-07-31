@@ -40,7 +40,7 @@ Au début de chaque tâche nécessitant des recherches dans les bases officielle
 - Numéro d'article, chemin complet dans le code
 - Texte intégral de l'article
 - Articles cités
-- Lien Legifrance
+- **Lien Légifrance** (à extraire et reproduire dans le livrable, sans transformation)
 
 **Astuce** : Pour rechercher un article par numéro exact, utiliser `champ: "NUM_ARTICLE"` et `type_recherche: "EXACTE"`.
 
@@ -60,7 +60,7 @@ Au début de chaque tâche nécessitant des recherches dans les bases officielle
 - Numéro d'affaire, date de décision, solution
 - Plan de classement, résumé, textes cités
 - Texte intégral (sauf si `panorama: true`)
-- Lien Legifrance
+- **Lien Légifrance** (à extraire et reproduire dans le livrable, sans transformation)
 
 **Astuce** : Pour rechercher par numéro de pourvoi, utiliser `champ: "NUM_AFFAIRE"` et `type_recherche: "EXACTE"`.
 
@@ -124,6 +124,29 @@ Au début de chaque tâche nécessitant des recherches dans les bases officielle
 **Paramètres** : Similaires à `rechercher_dans_texte_legal`, avec `panorama` disponible.
 **Tri** : PERTINENCE, DATE_ASC, DATE_DESC
 
+## Extraction du lien Légifrance par type de réponse
+
+Toute réponse OpenLegi contient un lien Légifrance dans ses métadonnées. Ce lien est l'**unique source légitime** du lien à reproduire dans le livrable : il n'est jamais reconstruit de mémoire ni par analogie. Le tableau ci-dessous récapitule, par outil OpenLegi, le pattern d'URL attendu et le champ de la réponse où le trouver.
+
+| Outil OpenLegi | Pattern d'URL attendu | Identifiant pivot |
+|---|---|---|
+| `rechercher_code` | `https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI…` | `LEGIARTI…` ou `CID article` |
+| `rechercher_jurisprudence_judiciaire` | `https://www.legifrance.gouv.fr/juri/id/JURITEXT…` | `JURITEXT…` |
+| `rechercher_jurisprudence_administrative` | `https://www.legifrance.gouv.fr/ceta/id/CETATEXT…` | `CETATEXT…` |
+| `rechercher_decisions_constitutionnelles` | `https://www.legifrance.gouv.fr/jorf/id/JORFTEXT…` ou page dédiée | `JORFTEXT…` |
+| `rechercher_decisions_cnil` | `https://www.legifrance.gouv.fr/cnil/id/CNILTEXT…` | `CNILTEXT…` |
+| `rechercher_dans_texte_legal` (LODA) | `https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI…` ou `…/loda/id/LEGITEXT…` | `LEGIARTI…` ou `LEGITEXT…` |
+| `recherche_journal_officiel` | `https://www.legifrance.gouv.fr/jorf/id/JORFTEXT…` | `JORFTEXT…` |
+| `rechercher_conventions_collectives` (KALI) | `https://www.legifrance.gouv.fr/conv_coll/id/KALITEXT…` | `KALITEXT…` |
+
+**Règle d'extraction** :
+
+1. Identifier dans la réponse OpenLegi le champ « Lien Légifrance » (ou équivalent).
+2. Reproduire le lien **textuellement**, sans modification.
+3. Ne **jamais** construire un lien à partir d'un identifiant deviné, ni transposer un identifiant d'une session antérieure.
+
+**En cas de lien manquant dans la réponse OpenLegi** : signaler la référence comme « à vérifier » ou la convertir en formulation impersonnelle (cf. `references/principes-cardinaux.md`).
+
 ## Paramètres de tri — Récapitulatif
 
 | Base | Tris disponibles |
@@ -145,6 +168,7 @@ Au début de chaque tâche nécessitant des recherches dans les bases officielle
 1. `rechercher_code` avec `code_name` exact + `search` = numéro d'article + `champ: "NUM_ARTICLE"` + `type_recherche: "EXACTE"`
 2. Vérifier l'état juridique (VIGUEUR/ABROGE) et les dates dans les métadonnées
 3. Si article introuvable dans un code : vérifier le nom exact du code via `lister_codes_juridiques`
+4. **Extraire le lien Légifrance** de la réponse et le reproduire dans le livrable.
 
 ### Recherche jurisprudentielle thématique
 1. `rechercher_jurisprudence_judiciaire` (ou `_administrative`) avec mots-clés thématiques + `sort: "DATE_DESC"` pour les décisions récentes
@@ -154,6 +178,7 @@ Au début de chaque tâche nécessitant des recherches dans les bases officielle
 ### Recherche d'un arrêt précis par numéro
 1. `rechercher_jurisprudence_judiciaire` avec `champ: "NUM_AFFAIRE"` + `type_recherche: "EXACTE"` + `search` = numéro de pourvoi
 2. Si introuvable : tenter web_search sur Judilibre ou Legifrance
+3. **Vérifier la concordance** entre le numéro recherché et la décision retournée (dans le contenu même de la réponse) — précaution essentielle, l'incident-type étant la confusion entre deux arrêts portant un numéro voisin.
 
 ### Veille juridique sur le JORF
 1. `recherche_journal_officiel` avec termes de recherche + `sort: "PUBLI_DATE_DESC"` + filtre `text_types` selon les besoins
@@ -187,14 +212,29 @@ Si OpenLegi est totalement inaccessible :
 ## Intégration avec les règles de la compétence
 
 ### Anti-hallucination
-- Les résultats OpenLegi proviennent directement de Legifrance : **source fiable**
-- La vérification porte sur l'**adéquation** (est-ce le bon texte pour le bon usage ?) et le **statut temporel** (le texte est-il en vigueur ?)
-- L'interdiction d'inventer des références reste absolue : utiliser OpenLegi pour trouver, pas pour « confirmer » une référence imaginée
+
+- Les résultats OpenLegi proviennent directement de Legifrance : **source fiable**.
+- La vérification porte sur l'**adéquation** (est-ce le bon texte pour le bon usage ?), le **statut temporel** (le texte est-il en vigueur ?) et la **traçabilité du lien** (le lien Légifrance reproduit dans le livrable provient-il bien de la réponse OpenLegi obtenue dans la session courante ?).
+- L'interdiction d'inventer des références reste absolue : utiliser OpenLegi pour trouver, jamais pour « confirmer » une référence imaginée.
+- L'interdiction de reconstruire un lien Légifrance de mémoire est également absolue. Le lien est extrait de la réponse OpenLegi, et de nulle part ailleurs.
+- Avant toute livraison, exécuter la `references/checklist-pre-livraison.md` sous la forme du tableau structuré obligatoire à quatre colonnes (citation, outil + identifiant, extrait textuel pertinent, ✓ / ✗ / reformulation), ligne par citation effective. En COWORK / CHAT_CU, `scripts/verify_links.py` alimente le tableau ; en CHAT (et en mode dégradé), le tableau est produit manuellement à partir des fiches OpenLegi. La livraison est conditionnée à la prononciation de la formule de clôture explicite.
+
+### Renumérotations et modifications fréquentes
+
+Les codes et textes consolidés évoluent constamment. La skill ne peut **en aucun cas** présumer de la stabilité d'un numéro d'article ou d'une rédaction, même pour les articles « ultra-classiques » :
+
+- Les anciens articles 1382 et 1384 du Code civil sont devenus 1240 et 1242 par l'ordonnance n° 2016-131 du 10 février 2016 — <https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000032004939>.
+- L'article 1242 al. 4 C. civ. — <https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006437058> — (responsabilité parentale) a été substantiellement modifié par la loi n° 2025-568 du 23 juin 2025 — <https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051782996>.
+- Les recodifications successives produisent des renumérotations analogues dans tous les codes.
+
+**Vérifier systématiquement** la rédaction en vigueur via `rechercher_code` (état juridique, date début/fin vigueur). Mentionner explicitement la version applicable lorsque le texte a connu des modifications récentes susceptibles d'affecter le raisonnement.
 
 ### Applicabilité temporelle (Règle 4 du SKILL.md)
-- **Exploiter systématiquement** les métadonnées « État juridique », « Date début vigueur », « Date fin vigueur » retournées par OpenLegi
-- Ne jamais citer un article sans avoir vérifié ces champs
+
+- **Exploiter systématiquement** les métadonnées « État juridique », « Date début vigueur », « Date fin vigueur » retournées par OpenLegi.
+- Ne jamais citer un article sans avoir vérifié ces champs.
 
 ### Qualification JORF (Règle 5 du SKILL.md)
-- **Vérifier systématiquement** la nature du document dans les résultats de `recherche_journal_officiel`
-- Qualifier la portée juridique dans la citation (normatif vs travaux parlementaires vs administratif)
+
+- **Vérifier systématiquement** la nature du document dans les résultats de `recherche_journal_officiel`.
+- Qualifier la portée juridique dans la citation (normatif vs travaux parlementaires vs administratif).

@@ -70,7 +70,7 @@ The core differentiator: the LLM does **not** call MCP tools directly. It writes
 
 ## Conventions
 
-- **Python 3.12+, async-first.** Ruff for linting (only `E741` ignored globally).
+- **Python 3.13+, async-first.** Ruff for linting (only `E741` ignored globally).
 - **Config split**: `.env` for credentials/URLs, YAML (`agent_config.yaml`, `config.yaml`) for behavioral settings.
 - **Server-side LLM calls** go through `LLMService.complete`, never `create_llm()` directly (skips BYOK/OAuth/per-user prefs) — contract in `src/server/AGENTS.md`.
 - **Package managers**: `uv` (Python), `pnpm` (frontend).

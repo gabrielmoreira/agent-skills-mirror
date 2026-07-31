@@ -191,6 +191,25 @@ multi-GB recording never crosses IPC or lands in the renderer heap.
 | `MEDIA_PLAYBACK_RATES`                    | `readonly number[]`                        | Speed ladder shown in the transport.                                                                 |
 | `normalizePlaybackRate(value)`            | `(unknown) => number`                      | Clamp a persisted/CLI-supplied rate to 0.25-4, falling back to 1.                                    |
 
+### Media File Tabs (`src/renderer/utils/mediaTabs.ts` - Renderer)
+
+| Function                              | Signature                                                        | Purpose                                                                     |
+| ------------------------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| `getFileTabMediaKind(name, content)`  | `(string, string) => MediaKind \| null`                          | The one predicate for "is this previewed file playable media".              |
+| `collectMediaTabs(sessions)`          | `(Session[]) => MediaTabRef[]`                                   | Every media tab across **all** agents, for the app-level playback host.     |
+| `getMediaTabLabel(ref)`               | `(MediaTabRef) => string`                                        | Display filename, extension included.                                       |
+| `stepMediaTab(refs, activeId, steps)` | `(MediaTabRef[], string \| null, number) => MediaTabRef \| null` | Prev/next target for the player. Open order, no wrapping; null at the ends. |
+
+`getFileTabMediaKind` takes the filename and content as separate scalars on
+purpose: a `FilePreviewTab` splits `name` from `extension` (`'song'` + `'.mp3'`)
+while the object handed to `FilePreview` joins them back. Passing either record
+shape directly classifies everything as non-media, which silently kills playback
+outright. Callers must pass a filename that still has its extension.
+
+Floating-widget geometry math lives in `src/renderer/utils/mediaFloatGeometry.ts`
+(`clampMediaFloatRect`, `initialMediaFloatRect`), split out of the component so
+the off-screen-recovery cases are testable without a DOM.
+
 ---
 
 ## Template Variables (`src/shared/templateVariables.ts` - Both)
@@ -474,3 +493,23 @@ the spelled-out platforms.
 | `THEMES`                      | `Record<ThemeId, Theme>` - All 17 theme definitions. |
 | `DEFAULT_CUSTOM_THEME_COLORS` | Dracula colors as default for custom theme.          |
 | `getThemeById(themeId)`       | Look up a theme, returns null if not found.          |
+
+### Color Math & Contrast (`src/shared/colorContrast.ts` - Both)
+
+Use these instead of hand-rolling hex math. **Any time you compute a foreground
+color for a themed surface, run it through `readableTextOn()`** - a theme whose
+accent sits close to its text color will otherwise paint near-identical colors
+on top of each other (this is exactly how Mermaid ER attribute rows became
+unreadable).
+
+| Export                                               | Purpose                                                                                                                   |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `readableTextOn(preferred, backgrounds, threshold?)` | Returns `preferred` when it clears WCAG AA on **every** background; otherwise nudges it toward white/black until it does. |
+| `isReadableOn(fg, backgrounds, threshold?)`          | Boolean form - assert contrast in tests without recomputing ratios.                                                       |
+| `contrastRatio(a, b)`                                | WCAG 2.1 ratio (1-21). Returns 21 for unparseable colors so exotic custom-theme values are left alone.                    |
+| `relativeLuminance(hex)`                             | WCAG relative luminance, or null if unparseable.                                                                          |
+| `hexToRgb(hex)`                                      | `#rrggbb` -> `{r,g,b}` or null (3-digit, `rgb()`, and named colors return null).                                          |
+| `adjustBrightness(hex, percent)`                     | Shift toward white (+) or black (-), hue broadly preserved.                                                               |
+| `blendColors(c1, c2, ratio)`                         | Mix two colors; `ratio` is how much of `c2` lands in the result.                                                          |
+| `transparentize(color, bg, alpha)`                   | Flatten a tint into an opaque color, for renderers that only accept solid fills (SVG/canvas).                             |
+| `AA_CONTRAST` / `AA_LARGE_CONTRAST`                  | 4.5 (normal text) and 3 (large text) thresholds.                                                                          |

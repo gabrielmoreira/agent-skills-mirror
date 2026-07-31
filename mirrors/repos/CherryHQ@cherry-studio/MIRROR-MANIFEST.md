@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 30 followed patterns, 211 file(s) materialized.
+Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 31 followed patterns, 212 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 30 followed patterns
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 30 |
-| Files         | 211 |
+| Followed pats | 31 |
+| Files         | 212 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `CherryHQ/cherry-studio` — 26 default patterns, 30 followed patterns
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `docs/references/testing/frontend-testing.md`
 - `tests/__mocks__/README.md`
 - `docs/references/testing/database-testing.md`
 - `docs/references/shared-layer-architecture.md`
@@ -290,15 +291,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 200 | → | [`docs/references/renderer-architecture.md`](docs/references/renderer-architecture.md) |
 | 201 | → | [`docs/references/shared-layer-architecture.md`](docs/references/shared-layer-architecture.md) |
 | 202 | → | [`docs/references/testing/database-testing.md`](docs/references/testing/database-testing.md) |
-| 203 | → | [`docs/references/ui-semantic-contract.md`](docs/references/ui-semantic-contract.md) |
-| 204 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
-| 205 | → | [`docs/sponsor.md`](docs/sponsor.md) |
-| 206 | → | [`packages/ui/docs/design-token-system.md`](packages/ui/docs/design-token-system.md) |
-| 207 | → | [`packages/ui/docs/variable-catalog.md`](packages/ui/docs/variable-catalog.md) |
-| 208 | → | [`README.md`](README.md) |
-| 209 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
-| 210 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
-| 211 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
+| 203 | → | [`docs/references/testing/frontend-testing.md`](docs/references/testing/frontend-testing.md) |
+| 204 | → | [`docs/references/ui-semantic-contract.md`](docs/references/ui-semantic-contract.md) |
+| 205 | → | [`docs/references/window-manager/README.md`](docs/references/window-manager/README.md) |
+| 206 | → | [`docs/sponsor.md`](docs/sponsor.md) |
+| 207 | → | [`packages/ui/docs/design-token-system.md`](packages/ui/docs/design-token-system.md) |
+| 208 | → | [`packages/ui/docs/variable-catalog.md`](packages/ui/docs/variable-catalog.md) |
+| 209 | → | [`README.md`](README.md) |
+| 210 | → | [`src/main/core/paths/README.md`](src/main/core/paths/README.md) |
+| 211 | → | [`tests/__mocks__/README.md`](tests/__mocks__/README.md) |
+| 212 | → | [`v2-refactor-temp/docs/breaking-changes/README.md`](v2-refactor-temp/docs/breaking-changes/README.md) |
 
 ---
 

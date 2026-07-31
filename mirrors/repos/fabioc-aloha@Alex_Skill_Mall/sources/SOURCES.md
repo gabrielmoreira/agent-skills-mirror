@@ -39,7 +39,7 @@
 | [mongodb-agent-skills](../catalog/stores/mongodb-agent-skills.md) | [mongodb/agent-skills](https://github.com/mongodb/agent-skills) | `.` | mongodb-official | false | Apache-2.0 | 13 |
 | [n-skills](../catalog/stores/n-skills.md) | [numman-ali/n-skills](https://github.com/numman-ali/n-skills) | `skills` | community-curated | false | - | 5 |
 | [planning-with-files](../catalog/stores/planning-with-files.md) | [OthmanAdi/planning-with-files](https://github.com/OthmanAdi/planning-with-files) | `skills` | reference | false | - | 6 |
-| 🏆 [plugin-mall](../catalog/stores/plugin-mall.md) | [fabioc-aloha/Alex_Skill_Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) | `plugins` | first-party | true | PolyForm-Noncommercial-1.0.0 | 365 |
+| 🏆 [plugin-mall](../catalog/stores/plugin-mall.md) | [fabioc-aloha/Alex_Skill_Mall](https://github.com/fabioc-aloha/Alex_Skill_Mall) | `plugins` | first-party | true | PolyForm-Noncommercial-1.0.0 | 362 |
 | [qdrant-skills](../catalog/stores/qdrant-skills.md) | [qdrant/skills](https://github.com/qdrant/skills) | `.` | qdrant-official | false | Apache-2.0 | 11 |
 | [spec-kit](../catalog/stores/spec-kit.md) | [github/spec-kit](https://github.com/github/spec-kit) | `.` | github-official | false | - | 6 |
 | [styleseed](../catalog/stores/styleseed.md) | [bitjaru/styleseed](https://github.com/bitjaru/styleseed) | `engine/.claude/skills` | domain | false | MIT | 20 |

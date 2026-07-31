@@ -2,7 +2,7 @@
 
 ## Project
 
-Claudian is an Obsidian plugin that embeds provider-backed coding agents in a sidebar and inline-edit flow. Claude is the default provider. Codex, OpenCode, and Pi are optional providers that plug into the same conversation model through `Conversation.providerId` and opaque provider-owned `providerState`.
+Claudian is an Obsidian plugin that embeds provider-backed coding agents in a sidebar and inline-edit flow. Claude is the default provider. Codex, Grok, OpenCode, and Pi are optional providers that plug into the same conversation model through `Conversation.providerId` and opaque provider-owned `providerState`.
 
 Do not assume provider parity. Check each provider's `capabilities.ts`, `registration.ts`, and UI config before wiring shared behavior.
 
@@ -15,6 +15,7 @@ Do not assume provider parity. Check each provider's `capabilities.ts`, `registr
   - `src/features/chat/AGENTS.md`
   - `src/providers/claude/AGENTS.md`
   - `src/providers/codex/AGENTS.md`
+  - `src/providers/grok/AGENTS.md`
   - `src/providers/opencode/AGENTS.md`
   - `src/providers/pi/AGENTS.md`
   - `src/style/AGENTS.md`
@@ -62,27 +63,10 @@ The feature layer depends on `core/` contracts, not provider internals. Provider
 - New provider behavior must be expressed through registries and capabilities: `ProviderRegistry`, `ProviderWorkspaceRegistry`, `ProviderChatUIConfig`, provider capabilities, and provider-owned settings reconciliation.
 - Model, permission, plan-mode, command, MCP, skill, and subagent behavior is provider-specific unless the core contract explicitly makes it shared.
 - When provider behavior is uncertain, inspect real runtime output first. Put throwaway scripts, traces, and handoff notes in `.context/`.
-- Shared skill management for Codex, Grok, Pi, and OpenCode owns only `.agents/skills`; composer discovery remains exclusively provider-protocol-driven. Claude stays on `.claude/skills` and `.claude/commands`, and legacy provider roots are never migrated automatically.
-
-## Storage
-
-| Path | Contents |
-| --- | --- |
-| `.claudian/claudian-settings.json` | Shared Claudian settings and provider-specific configuration |
-| `.claudian/sessions/*.meta.json` | Provider-neutral session metadata |
-| `.claude/settings.json` | Claude Code-compatible project settings, permissions, and plugin overrides |
-| `.claude/mcp.json` | Claudian-managed MCP servers for Claude |
-| `.claude/commands/**/*.md` | Claude slash commands |
-| `.claude/skills/*/SKILL.md` | Claude skills |
-| `.claude/agents/*.md` | Claude vault agents |
-| `.agents/skills/*/SKILL.md` | Claudian-managed shared vault skills for Codex, Grok, Pi, and OpenCode |
-| `.codex/skills/*/SKILL.md` | Legacy/provider-native Codex skills; never managed or migrated by Claudian |
-| `.codex/agents/*.toml` | Codex vault subagent definitions |
-| `.opencode/agent`, `.opencode/agents` | OpenCode agent definitions |
-| `.pi/agent/sessions/` | Pi vault-local sessions |
-| `~/.claude/projects/{vault}/*.jsonl` | Claude-native transcripts |
-| `~/.codex/sessions/**/*.jsonl` | Codex-native transcripts |
-| `~/.pi/agent/sessions/` | Pi user-level sessions |
+- Treat provider-native history and transcripts as read-only. Never mutate or delete provider session data when a Claudian conversation changes.
+- Only explicitly enabled models belong in the chat selector: no synthetic provider entries, no hidden session models, and no provider-default fallback when none are enabled.
+- Runtime-discovered commands are read-only in Claudian; providers own their editing and deletion.
+- Auxiliary query runners own their own process and session, independent from the chat runtime.
 
 ## Development Rules
 
@@ -100,6 +84,22 @@ The feature layer depends on `core/` contracts, not provider internals. Provider
 - Make the narrowest implementation change that passes the focused test.
 - Refactor after the test is green, preserving the provider and feature ownership boundaries above.
 - If a change cannot be tested directly, document why and cover the closest stable contract instead.
+
+## Project structure
+
+- Organize code by clear domain responsibility rather than accumulating related files in flat directories.
+- Keep each feature's public entry point small and obvious; place its contracts, state, orchestration, adapters, persistence, and implementation in focused subfolders when the feature warrants them.
+- Use meaningful ownership-based folder names. Do not create catch-all `utils`, `common`, or miscellaneous folders.
+- Mirror the relevant production structure in tests so ownership and coverage remain easy to find.
+- Avoid both flat dumping grounds and unnecessary nesting. Before a material reorganization, propose the target tree and explain each group's responsibility.
+- Preserve project tooling, build configuration, imports, and test discovery when moving files, and verify the affected build and tests afterward.
+
+## Naming Conventions
+
+- **Symbols**: `PascalCase` for classes, interfaces, types, enums, and enum members; `camelCase` for variables, functions, and properties; `SCREAMING_SNAKE_CASE` for module-level constants and values in enum-like const objects. No `I` prefix on interfaces. Treat acronyms as words (`SdkSessionReadResult`), except in types mirroring an external SDK (`SDKMessage`).
+- **Files**: name the file after its primary exported concept in `PascalCase.ts`; use `camelCase.ts` only for utility bags with no dominant export (when in doubt, `PascalCase`). Use `kebab-case.ts` only to mirror an external package name (`tests/__mocks__/claude-agent-sdk.ts`). Barrels stay `index.ts`, type buckets stay `types.ts`, tests mirror the source name plus `.test.ts` (qualifiers allowed: `fileLink.dom.test.ts`).
+- **Folders**: `kebab-case`.
+- **Imports**: no `.ts` extensions; prefer `@/` aliases over deep relative paths.
 
 ## Review Expectations
 

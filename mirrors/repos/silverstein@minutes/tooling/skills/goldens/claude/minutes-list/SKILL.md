@@ -29,7 +29,10 @@ minutes list -t meeting
 Human-readable list to stderr, JSON array to stdout. Each entry has:
 - `title`, `date`, `content_type`, `path`
 
-To read a specific meeting's full transcript, use `Read` on its `path`.
+Treat each returned `path` as a hint, not a retained capability. To read a
+specific meeting, reauthorize it through `minutes get "<exact path>" --json`,
+require exit status 0, and use only that result. Never reopen a result path with
+the host `Read` tool.
 
 ## Gotchas
 

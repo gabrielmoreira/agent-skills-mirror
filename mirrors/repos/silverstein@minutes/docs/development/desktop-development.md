@@ -210,7 +210,7 @@ contract explicit:
 - if the capability is feature-gated, keep the CLI and desktop app aligned on
   `MINUTES_BUILD_FEATURES`
 - keep desktop context in `~/.minutes/context.db`; do not move meetings/memos
-  out of markdown or overload `graph.db` with raw desktop events
+  out of markdown or create a durable relationship-graph cache for raw desktop events
 
 That combination is what keeps a useful macOS-only slice from accidentally
 breaking Windows builds or local build scripts.

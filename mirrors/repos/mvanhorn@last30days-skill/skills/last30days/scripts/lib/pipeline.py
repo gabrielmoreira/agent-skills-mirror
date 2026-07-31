@@ -2109,6 +2109,7 @@ def run(
     _github_person_done = False
     if github_user and "github" in available and not _github_custom_done:
         bundle.mark_attempted("github")
+        _github_person_done = True
         try:
             person_items = github.search_github_person(
                 github_user, from_date, to_date,
@@ -2123,7 +2124,15 @@ def run(
                 # Use the first subquery's label so RRF can look up the weight
                 primary_label = plan.subqueries[0].label if plan.subqueries else "primary"
                 bundle.add_items(primary_label, "github", normalized)
-                _github_person_done = True
+            else:
+                # A pinned --github-user that yields nothing must not be
+                # silently backfilled by generic keyword search: the report
+                # would then present unrelated repos as this person's work.
+                bundle.record_failure(
+                    "github",
+                    "no-results",
+                    f"Person mode found no activity for @{github_user} in the window",
+                )
         except Exception as exc:
             bundle.errors_by_source["github"] = f"Person-mode failed: {exc}"
             state, attempted = _classify_source_failure(exc)

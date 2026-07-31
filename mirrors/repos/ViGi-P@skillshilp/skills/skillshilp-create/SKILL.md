@@ -5,13 +5,13 @@ license: MIT
 metadata:
   author: Vignesh Prasad
   github: https://github.com/ViGi-P/skillshilp
-  version: "2.0.1"
+  version: "2.1.0"
   purpose: meta-skill
 ---
 
 # Skillshilp Create
 
-Design Agent Skills as reusable software components—not as large prompts.
+Design Agent Skills as reusable software components, not large prompts.
 
 Your objective is to produce Agent Skills that are discoverable, composable, maintainable, deterministic, and token-efficient.
 
@@ -30,12 +30,14 @@ If official documentation is available, treat it as the source of truth. Otherwi
 | Modular design | Overlapping responsibilities |
 | Focused references | Duplicate documentation |
 | Searchable descriptions | Generic descriptions |
-| Executable scripts | Large code blocks in Markdown |
+| Minimal Bash scripts | Large code blocks in Markdown |
 | Reusable assets | Embedded templates or schemas |
 | Deterministic workflows | Ambiguous instructions |
 | Token efficiency | Repetition |
 
 Every file should have a clear purpose. Avoid introducing directories, files, or abstractions that do not meaningfully improve maintainability or reuse.
+
+Prefer concise examples over broad explanations. Treat context as a scarce shared resource.
 
 ---
 
@@ -48,6 +50,8 @@ Determine whether the request should become an Agent Skill.
 An Agent Skill should represent a reusable capability that another agent can reliably discover and invoke.
 
 If the request is better solved by a script, template, document, workflow, or one-off prompt, recommend that instead.
+
+If the intended use is unclear, derive or ask for 2–3 realistic user requests before designing the skill. Use those examples to identify the repeatable workflow, activation criteria, required inputs, expected outputs, and reusable resources.
 
 Define:
 
@@ -68,18 +72,35 @@ If multiple unrelated capabilities are identified, split them into separate skil
 
 Design the architecture before writing any files.
 
+Set the right degree of freedom:
+
+- Use `SKILL.md` for flexible workflow guidance.
+- Use `references/` for detailed knowledge that is only sometimes needed.
+- Use `scripts/` for repeated, deterministic, or fragile operations.
+- Use `assets/` for reusable output materials.
+
+Prefer minimal Bash for scripts. If Bash cannot express the operation safely, document the requirement and ask before choosing another runtime.
+
+Map concrete examples to reusable artifacts:
+
+- Repeated command sequence → `scripts/`
+- Long domain/API/schema knowledge → `references/`
+- Template, boilerplate, or sample input → `assets/`
+- Core activation and workflow rules → `SKILL.md`
+
 Create only the directories that add value.
 
-Typical layout:
+Typical portable layout:
 
 ```text
 skill-name/
 ├── SKILL.md
-├── README.md          # optional
 ├── references/
 ├── scripts/
 └── assets/
 ```
+
+Do not create `README.md` or other auxiliary documentation unless the user requests distribution-facing docs.
 
 Decide where each piece of information belongs.
 
@@ -109,9 +130,9 @@ Store information intended to be read by the model, such as:
 
 ### `scripts/`
 
-Store executable logic.
+Store executable logic only when it materially improves reliability or repeatability.
 
-Scripts should validate inputs, document dependencies, fail predictably, and avoid embedding large prompts where executable code is more appropriate.
+Scripts should be minimal Bash, validate inputs, document dependencies, fail predictably, and avoid embedding large prompts where executable code is more appropriate.
 
 ### `assets/`
 
@@ -122,6 +143,8 @@ Store reusable resources, such as:
 - diagrams
 - sample data
 - example documents
+
+Do not add product-specific metadata, client configuration, or product-specific helper scripts when portability is the goal.
 
 ---
 
@@ -144,6 +167,8 @@ Descriptions should clearly explain:
 
 Assume the description will be used for automatic discovery.
 
+Use only portable Agent Skills frontmatter.
+
 ---
 
 ## 4. Validate
@@ -160,6 +185,12 @@ Before finalizing, verify that the skill is:
 - minimally duplicated
 - token-efficient
 
+When a skill directory exists on disk, run:
+
+```bash
+scripts/validate-skill.sh <skill-dir>
+```
+
 Validate against:
 
 `references/constraints.md`
@@ -174,18 +205,28 @@ Check for common design mistakes:
 
 If any issue is found, revise the design before returning the skill.
 
+For complex or fragile skills, forward-test with realistic user requests. Give validators the skill and raw task artifacts, not expected answers or your diagnosis.
+
 ---
 
 # Output
 
-Unless instructed otherwise, provide:
+Prefer creating or modifying files directly when the environment allows it.
+
+If files were written, provide:
+
+1. Changed paths
+2. Validation results
+3. Brief design notes explaining important architectural decisions
+
+If files cannot be written or the user asks for generated content, provide:
 
 1. Complete directory tree
 2. Complete contents of every generated file
 3. Valid relative file references
-4. Brief design notes explaining important architectural decisions
+4. Brief design notes
 
-Do not omit files for brevity unless explicitly requested.
+Do not dump full file contents for files already written unless explicitly requested.
 
 ---
 

@@ -336,6 +336,16 @@ Required answer per section — **one sentence each is the target, two or three 
 
 After every `git push` of a new branch, check whether a PR was auto-created (webpack has this webhook). If so, `update_pull_request` to install the full template — the auto-created body never matches.
 
+### Writing on GitHub — ask first
+
+> [!REQUIRED]
+
+**Never post to GitHub on your own initiative.** Pushing commits to your own branch is fine; publishing text other people read is not. This covers PR comments, review replies, issue comments, edits to the PR body after it is opened, and every reply to a bot — CodSpeed, Codecov, Copilot, Bugbot, EasyCLA.
+
+The rule bans **posting**, not **reading**. What may be skipped is bot noise — a status check, a benchmark that swings on a re-run, a coverage report still waiting on uploads, a changeset/preview echo. Replying to those costs maintainers more attention than the finding did.
+
+Everything that names a possible bug, regression, or improvement must be investigated, whoever raised it — a human reviewer, or an AI reviewer such as Copilot, Bugbot, or CodeRabbit. Being posted by a bot account is no reason to dismiss it; judge the claim, not the author. Reproduce it, then either fix it in code and push (that needs no permission) or, if you believe it is wrong, bring it **into the session**: report what you found, show the reply you would send, and let the requester decide whether it is posted. Never leave such a finding unanswered.
+
 ### After opening the PR — wait for Copilot review
 
 > [!REQUIRED]
@@ -345,7 +355,7 @@ Every webpack PR gets an automated **GitHub Copilot code review** on the initial
 1. After `create_pull_request`, subscribe to the PR (`subscribe_pr_activity`) so Copilot's review wakes the session. Do **not** poll.
 2. When the review arrives, read every comment:
    - If correct, push a fix in a new commit.
-   - If wrong, reply on the thread with a short reason — never ignore silently.
+   - If wrong, draft the reply and ask the requester before posting it (see [Writing on GitHub — ask first](#writing-on-github--ask-first)) — never ignore silently.
 3. After every push, Copilot re-reviews. Repeat step 2. The loop ends when Copilot's latest review has zero outstanding threads.
 4. Only `unsubscribe_pr_activity` once all comments are handled and CI is green, or when the user tells you to stop.
 
@@ -375,6 +385,10 @@ CI's `lint` job verifies these outputs are up to date. The combined `yarn fix` s
 ### Target the Node baseline
 
 `lib/` and `hot/` ship as raw source (no build step) and must run on **Node ≥ 10.13** (the CI matrix goes down to Node 10.x). Don't use syntax or runtime APIs newer than that baseline — e.g. no optional chaining (`?.`) or nullish coalescing (`??`) — or the code passes locally and fails the Node 10 CI job.
+
+### Runtime code ships to every target
+
+Code that emits runtime into the bundle — chunk loading (`lib/web/` JSONP, `lib/esm/`, `lib/node/`, `lib/webworker/`), prefetch/preload/resource hints, library and externals presets — is **per-target**: each preset (browsers/JSONP, ESM `output.module`, `node`, `webworker`, `deno`, `electron`, `bun`, and the **universal** `target: ["web", "node"]` neutral-platform path) has its own runtime module or wiring. Changing one and forgetting the others is the easy mistake here. When you touch runtime-emitting code, apply it to **every** affected target and add an integration case per target (typically `target: "web"`, `experiments.outputModule`, and `target: ["web", "node"]`; add `node`/`webworker`/`bun`/`deno`/`electron` when they're in scope). The universal/neutral-platform runtime guards browser-only APIs behind `typeof document === "undefined"`, so those bundles run Node-side without a DOM — its config case must gate DOM assertions on `typeof document !== "undefined"` (see `configCases/target/universal-prefetch-preload`).
 
 ### Lint covers every file, docs included
 

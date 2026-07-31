@@ -34,7 +34,7 @@ This repo maintains skill outputs in **three locations**:
 **What lives where:**
 - `SKILL.md` files are mirrored 1:1. Content is identical except for path variables and platform-specific references (e.g., "open in desktop app" in the plugin version becomes a CLI command in the agents version).
 - `_runtime/hooks/lib/` contains `minutes-learn.mjs` and `minutes-learn-cli.mjs` — the behavioral learning system. These must stay byte-identical across `.agents/skills/minutes/_runtime/hooks/lib/` and `.opencode/skills/_runtime/hooks/lib/`.
-- Bundled scripts (`scripts/tag_apply.py`, `scripts/graph_build.py`, etc.) are mirrored into both portable trees.
+- Bundled scripts (for example `scripts/tag_apply.py`) are mirrored into both portable trees.
 - `.opencode/commands/*.md` provides native `/minutes-*` slash commands for OpenCode and is generated from the same canonical skill sources.
 
 **When you modify a skill or runtime hook:**

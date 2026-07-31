@@ -94,7 +94,7 @@ CodePilot 的 CSS token 分两层。本节是项目级原则，虽然 design.md 
 - `--platform-font-ui` —— chrome UI 字体（默认 Geist；macOS 切到 SF/system-ui 栈）
 - `--platform-radius-window` / `--platform-radius-control` —— 窗口和控件圆角
 - `--platform-hover-alpha` —— 壳层 hover 强度（默认 1，macOS 软化到 0.7）
-- `--platform-surface-sidebar` / `--platform-surface-bar` / `--platform-surface-popover` / `--platform-surface-hud` / `--platform-surface-tooltip` —— 壳层与浮层表面
+- `--platform-surface-window` / `--platform-surface-sidebar` / `--platform-surface-bar` / `--platform-surface-popover` / `--platform-surface-hud` / `--platform-surface-tooltip` —— 窗口、壳层与浮层表面
 - `--platform-border-subtle` —— chrome 边缘细线
 
 **用在**：窗口 chrome / 顶栏 / 侧栏 / Composer 外壳 / Popover / Menu / HUD / Tooltip 这类"壳层 + 浮层"。
@@ -167,7 +167,7 @@ CodePilot 的 CSS token 分两层。本节是项目级原则，虽然 design.md 
 **规则：**
 - **内容层永远不透明**。玻璃化内容会毁掉可读性和 artifact 保真；Dialog 正文 / 卡片 / 消息一律实色（`bg-background` / `bg-card` / `bg-popover`）。
 - **DOM 浮层只是 CSS 材质模拟**，不是真原生 vibrancy。Electron 的 `vibrancy` 是窗口级（`titleBarStyle: 'hiddenInset'` + `vibrancy: 'sidebar'`）；Radix popover / tooltip / RunCockpit 这些 DOM 面在 webview 里裁剪，不要宣称"原生 popover 行为"。
-- **平台差异一律走 `--platform-*` token，不在组件里写 `isMac` 分支**（见上方「平台 token」节）。darwin profile 把 `--platform-surface-bar` 设 `transparent`、`--platform-surface-sidebar` 设半透明，让 vibrancy 透上来；off-mac 这些 token 退回实色，同一份 DOM 直接当普通块渲染。
+- **平台差异一律走 `--platform-*` token，不在组件里写 `isMac` 分支**（见上方「平台 token」节）。darwin profile 把 `--platform-surface-bar` 设 `transparent`、`--platform-surface-sidebar` 设半透明，让 vibrancy 透上来；深色模式下 `--platform-surface-window` 必须用应用 `--background` 提供确定性的半透明暗色 tint，不能假设 macOS 原生 material 会跟随应用内主题。off-mac 这些 token 退回实色，同一份 DOM 直接当普通块渲染。
 - **顶栏保留拖动区 + 红绿灯安全间距**；嵌套按钮要标 `no-drag`。
 
 实现路径（实现者）：profile 由 `data-platform` / `data-platform-style`（anti-FOUC `<script>` 在 hydration 前盖到 `<html>`）驱动；token 在 `globals.css` 的 darwin profile 块（`--platform-surface-*`）；Electron 窗口在 `electron/main.ts`。
@@ -218,6 +218,18 @@ macOS profile 下，外壳是**几张悬浮卡片**并排：左侧栏 / 主聊�
 - **运行状态（Runtime / Auto / Context 占用）不在 composer 里**——由 ChatView 级的状态读出（`RuntimeSelector` / `ModeIndicator` / 上下文 popover）承担。composer 只管「写什么 + 发送」，只读状态归状态区，别混进输入栏。
 
 实现路径（实现者）：`src/components/chat/MessageInput.tsx`（外壳 + footer），`MessageInputParts.tsx`（胶囊行），`ModelSelectorDropdown` / `EffortSelectorDropdown`；运行状态读出在 `ChatView.tsx`（`ModeIndicator` / `RuntimeSelector`）。
+
+## Radix 菜单事件与焦点交接
+
+Radix DropdownMenu / ContextMenu 的 `onSelect` 收到的是 DOM `Event`，不是 React `MouseEvent`；浮层关闭时还会自动把焦点还给 Trigger。菜单动作若要进入行内重命名、Dialog 或原生确认框，必须显式处理这两个生命周期。
+
+**规则：**
+- 不把 Radix `onSelect` 事件强转为 React `MouseEvent`，业务 handler 只接业务参数；需要阻止默认行为时在适配层直接处理 Radix event。
+- 不在非受控 ContextMenu 的普通动作里调用 `preventDefault()`；这会阻止菜单关闭。仅当产品明确要求菜单保持打开时才允许。
+- 菜单关闭后要把焦点交给行内输入框时，用 intent ref 标记动作，在 `Content.onCloseAutoFocus` 阻止 Trigger 抢焦点，再在下一帧聚焦输入框。
+- 菜单动作打开 Dialog 时，同样在 `onCloseAutoFocus` 阻止焦点回到 Trigger，让 Dialog 自己的 autofocus 接管。
+- 业务行被 `ContextMenuTrigger` 包裹时，行内 `input` 必须停止 `contextmenu` 冒泡，使输入框继续使用 Electron 原生复制、粘贴、剪切菜单。
+- 回归测试至少覆盖：菜单确实关闭、目标输入/Dialog 获得焦点、输入框右键不会重新打开业务菜单。
 
 ## Page shell
 

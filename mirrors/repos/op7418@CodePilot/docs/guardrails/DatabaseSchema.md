@@ -23,7 +23,15 @@
 | 4 | 多步 backfill 必须在一个 SQLite transaction 内完成；任一步失败不得留下半迁移身份 | `db.transaction(...)` |
 | 5 | 身份/协议类 backfill 必须 fail closed：ambiguous 或 fingerprint 不完整时保留空值，不按数组顺序、名称、key 前缀或模型子集猜测 | provider migration helper |
 | 6 | provider schema/catalog 迁移不得删除或改写 `manual`、`user_edited=1` 模型行，也不得删除 provider/session/message | migration + provider model reconciliation |
-| 7 | 测试不得触碰用户数据库；必须使用 `CLAUDE_GUI_DATA_DIR` 隔离目录并关闭并发 Codex runtime | `db-isolation.setup.ts`, `CODEX_DISABLED=1` |
+| 7 | 测试不得触碰用户数据库；全量命令必须预加载 `db-isolation.setup.ts`。任何会被单文件直接运行的 DB 测试还必须把该 setup 作为第一条 import，自行 fail closed，不能依赖操作者记住 `--import`；同时关闭并发 Codex runtime | `db-isolation.setup.ts`, DB 测试首 import, `CODEX_DISABLED=1` |
+| 8 | `messages.stream_status` 的 legacy 默认只能是 `completed`；collector 显式创建 `streaming`，真正的进程重启 recovery 才能将遗留 streaming 收口为 `interrupted`，不能重写历史完成消息或删除内容 | `src/lib/db.ts` + `chat-collect-stream-response.ts` |
+| 9 | Schema bootstrap / on-touch migration 必须是纯结构初始化，不能顺带清理运行态。破坏性的 restart recovery（中断 stream/run、清空 lock、终止 permission）必须先取得进程级 owner，且 owner PID 仍存活时重复 module/route 初始化必须严格 no-op | `src/lib/db.ts` runtime owner guard |
+| 10 | `subagent_runs` 的 running checkpoint 只能更新 `terminal=0` 行的 result/effective model，不得修改 status/completed_at；第一次 terminal 后所有迟到 checkpoint 必须原子 no-op | `checkpointSubagentRun` + `settleSubagentRun` |
+| 11 | `subagent_runs.id` 是物理 attempt；用户任务身份是 `(parent_session_id, logical_run_id)`。同一 logical run 的 `attempt_number` 单调递增且唯一；旧 physical-only 行只能回填为各自独立 logical run / attempt 1，不得按名称或 prompt 猜重试关系。显式复用 logical ID 时，最新 attempt 必须已经 terminal 且不是 completed；running/settling 与 completed 分别以结构化错误拒绝，不能创建隐藏 attempt | `migrateSubagentRunSchema` + `startSubagentRun` |
+| 12 | child 停止输出后必须先进入 `phase=settling`；结构化 result/provenance、effective route 与 terminal event 同事务落库后才写 `phase=terminal, terminal=1`。startup recovery 也必须生成 failed structured result/event，不能只翻 terminal bit | `markSubagentRunSettling` + `settleSubagentRun` + restart recovery |
+| 13 | `subagent_run_events` 只接受枚举 lifecycle type，FK 绑定真实 attempt，logical id 来自 run row；重复 progress 可 coalesce，但 started/settling/terminal 审计事实不得靠模型自由文本推断 | `recordSubagentRunEvent` + `insertSubagentRunEvent` |
+| 14 | workflow edge 是 `(parent_session_id, workflow_id, task_key)` 下的显式身份。依赖 task 在 Provider 启动前以 `dispatch_state=queued` 落库，只有上游同 workflow task 的 durable `completed + result_text` 齐备后才能切 `executing`；重复 key 与 self/indirect cycle 必须在插入/启动前拒绝；旧行保守回填为 `executing/terminal`，不得从 prompt 猜依赖 | `startSubagentRun` + `resolveSubagentDependencies` |
+| 15 | Next dev HMR 会保留进程级 SQLite handle；新代码的 additive migration 不能依赖“重新打开 DB”才执行。`getDb()` 必须比较 code-owned schema revision，并在 revision 变化时只重跑幂等结构初始化；runtime recovery 不得随 HMR 重跑。回归测试必须在 revision refresh 前保留 live streaming row，并确认 refresh 后仍为 streaming，不能只断言 index/column 被补齐 | `DatabaseProcessState.schemaRevision` + `DATABASE_SCHEMA_REVISION` |
 
 ## 关键文件 + 责任
 
@@ -33,6 +41,7 @@
 | `src/types/index.ts` | DB 行类型与 create/update API 请求形状一致 |
 | `src/lib/provider-catalog.ts` | preset identity 的唯一/ambiguous 判定；migration 不自造另一套 matcher |
 | `src/__tests__/db-isolation.setup.ts` | 每个测试进程使用隔离数据库目录 |
+| `src/__tests__/unit/collect-owner-gate.test.ts` | 单文件直跑也先加载 DB isolation，防止 synthetic chat 写入 Dev 最近列表 |
 
 ## 改动检查表
 
@@ -46,12 +55,27 @@
 - [ ] 改字段类型时必须有显式 migration step，不能依赖 SQLite 隐式 coerce
 - [ ] 删字段 / 删表前先确认无用户数据依赖
 - [ ] targeted migration test + `npm run test`；Provider/Runtime 字段再跑 build 与相关 smoke
+- [ ] 流式消息列变更必须验证 bootstrap/on-touch 同形、legacy completed 默认、startup recovery 幂等、同 message id terminal update
+- [ ] 改 startup recovery 时必须验证 schema 初始化不触发 recovery、同一存活 PID 的重复模块初始化不删除 lock/permission/checkpoint、真正遗留 run 才会被回收
+- [ ] 新增或改单文件 DB 测试时，裸跑该文件是否仍先加载 isolation setup，并确认真实 Dev API/DB 行数无变化
+- [ ] 改 `subagent_runs` checkpoint 时验证 running 状态不变、terminal 后迟到写入 no-op、正文有明确大小上限
+- [ ] 改 logical run/attempt 时验证唯一索引、attempt 单调递增、parent/UI latest-attempt 聚合、legacy 行“一行一 logical”保守 backfill，以及 active/completed logical ID 复用不会插入新 attempt
+- [ ] 改 terminal 收口时验证 running→settling→terminal、structured result/provenance、terminal event 同事务和 restart recovery 同形
+- [ ] 改 workflow/task/dependency 时验证 bootstrap + additive migration、queued→executing、missing-upstream 创建宽限与反序 fail-fast、同 workflow task key 防重复、self/indirect cycle 拒绝、dependency failure 不启动下游 Provider
+- [ ] 给 `initDb` / `migrateDb` 新增 migration 时同步 bump `DATABASE_SCHEMA_REVISION`，并验证缓存 DB handle 不重启也能补齐结构、且不触发 runtime recovery
 
 ## 常见坑
 
 - 跨 Worktree / 多进程共用同一份 DB 文件时会抢 SQLite 锁（Phase 5b round 6 的 30 分钟卡死事件根因）。测试要用 `CODEX_DISABLED=1` 隔离。
+- 只在 package script 里写 `--import db-isolation.setup.ts` 不够：开发者常会裸跑一个 DB 测试文件。可独立运行的 DB 测试必须首 import setup；否则 synthetic session 会直接进入 Dev 侧栏并挤掉真实最近会话。
+- 不要按 Agent 名、prompt 文本或时间接近程度把历史 physical run 合并成 logical task；这些字段不具备稳定身份。只有调用方明确复用 `logical_run_id` 才能表示 retry。
+- 不要把“调用方显式传了 `logical_run_id`”直接等同于合法重试。应用层必须在同一事务中检查最新 attempt：running/settling 时拒绝并行 attempt，completed 后拒绝覆盖已交付结果；只能从 failed/partial/timed_out/cancelled 等 terminal 状态追加 attempt。
+- 不要在 child callback 一到就把 `terminal=1`。先写 settling，再把 structured result、provenance 和 terminal event 一次提交；否则刷新/UI 可能看到“已完成但结果尚不存在”。
+- 不要把 tool call 已到达或 SDK 串行执行当作依赖传递。下游 tool input 可能在上游输出产生前已经冻结；必须从同 workflow 的 durable terminal row 编译实际 child prompt。
 - 只改后面的兼容 `CREATE TABLE`、漏改文件开头 bootstrap schema，会让新库与旧库最终形状不同。
 - 只靠 `ALTER TABLE ... DEFAULT` 不等于完成语义迁移；身份字段需要保守 backfill，无法证明时必须留空。
+- 不要在 `initDb()` / route import 的隐式路径执行运行态清理。Next dev 会为不同 route/module 创建重复实例；把“模块第一次加载”误当“应用进程第一次启动”会中断仍在运行的聊天、删除 owner lock，并把权限请求伪装成 `Process restarted`。
+- 不要假设改了 `migrateDb()` 后 dev 热更新会重新打开 SQLite。进程级 handle 会跨 HMR 保留；若不更新 schema revision，新 SQL 会先命中旧表并以 `no such column` 在 Provider 启动前失败。
 - 用 URL first-match 回填同 host 的多个套餐会制造静默 cross-wire；必须先判断候选是否唯一。
 - catalog 更新时直接重建 `provider_models` 会抹掉 manual/user-edited 状态；只能 reconcile catalog 管理行。
 - tech-debt #7 — `claude-settings-credentials.test.ts` 和 `project-mcp-injection.test.ts` 的 DB-related test 在 CI 上 skip，本地通过；疑似 tsx + node 20 ESM module identity 去重在 linux 行为差异。
@@ -64,7 +88,19 @@
 | provider create/update 字段 roundtrip | `src/__tests__/unit/provider-key-lifecycle.test.ts`, `provider-preset-switch-route.test.ts` |
 | DB-wins、hidden/manual/user-edited 保留 | `provider-resolver.test.ts`, `apply-discovery-diff.test.ts`, `align-enabled-with-catalog.test.ts` |
 | 全量类型与单测门禁 | `npm run test` |
+| additive `subagent_runs` / `subagent_run_events`、legacy backfill、logical attempt、workflow queued/dependency handoff/duplicate/cycle、active/completed reuse guard、parent FK/cascade、running checkpoint、settling/terminal immutable | `src/__tests__/unit/subagent-run-persistence.test.ts` |
+| cached handle 在 dev schema revision 变化后重跑幂等 migration，且 live streaming row 不被 recovery 中断 | `src/__tests__/unit/subagent-run-persistence.test.ts` |
+| `messages.stream_status` checkpoint、terminal 原位更新、live-owner 下重复 startup no-op | `src/__tests__/unit/collect-owner-gate.test.ts` |
 
 ## 设计决策日志
 
 - 2026-07-21 — 首次激活 guardrail。为 Qwen personal/team 同 URL 身份新增 `preset_key` 时，规定显式 identity 为真源、legacy 只允许唯一匹配、团队旧 preset 仅按完整 catalog/role fingerprint 回填；不确定行保留空值等待用户确认。
+- 2026-07-23 — 真实 Codex managed Sub-agent 会话证明 side-channel transcript 无法跨回合提供 run 事实，新增 additive `subagent_runs` 表。父 chat FK 是审计 owner；spawn 在调用 Provider 前必须先插入 running，终态 UPDATE 带 `terminal=0` 防迟到事件回退，删除父会话时级联清理。
+- 2026-07-23 — renderer/dev 刷新暴露 assistant 只在流结束时落库会整条丢失。为 `messages` additive 增加 `stream_status`：旧行默认 completed；新流以同一行 streaming→terminal，startup 幂等回收为 interrupted，不删除任何历史内容。
+- 2026-07-23 — `collect-owner-gate.test.ts` 被裸跑时漏带全局 `--import`，12 条 `collect-*` synthetic session 进入真实 Dev DB 并占满最近列表。精确删除这些测试行后，将 isolation setup 固化为该文件第一条 import；DB 测试隔离从“命令约定”提升为“单文件自带门禁”。
+- 2026-07-23 — 真实会话 `ba4855b4c4d272afc85f3a70bbb5b5f4` 证明 Next route/module 的重复 `initDb()` 会在活进程内误执行 restart sweep：两秒内中断 checkpoint/permission、删除 session lock，最终 owner gate 只能拒绝正确终态。Schema 初始化现与 runtime recovery 分离；数据库句柄与 owner 状态按绝对 DB path 进程级共享，只有 owner 缺失或 PID 已死亡时才执行一次 recovery，live owner 下重复初始化不再触碰运行态。
+- 2026-07-24 — Claude 长 child 不能等 terminal 才首次保存结果。新增不改 schema 的 `checkpointSubagentRun`：只更新 `terminal=0` 行的 bounded `result_text` / `effective_model`，不改 status/completed_at；第一次 terminal 后所有迟到 checkpoint 都是 no-op。
+- 2026-07-24 — P0 可信编排把 physical run 拆为 logical run + attempt，并新增 typed lifecycle event 与 structured result。迁移只把每条旧行视为独立 logical attempt 1；新重试必须显式复用 logical id。terminal 前增加 settling 屏障，避免 UI/父模型在结果尚未 durable 时显示完成。
+- 2026-07-24 — Claude P2 复核指出“显式 ID”仍可能被父模型误用。`startSubagentRun` 现于插入前检查同 session/logical 的最新 attempt：active/settling 返回 `LOGICAL_RUN_STILL_RUNNING`，completed 返回 `LOGICAL_RUN_ALREADY_COMPLETED`；两者均不写新 physical row，三 Runtime 在 Provider 启动前返回结构化拒绝。
+- 2026-07-24 — 会话 `3f0085c5fc664deca85005d70b1abfca` 证明 SDK 串行工具执行不会重写已经生成的下游 tool input。新增 additive workflow/task/dependencies/dispatch state：accepted downstream 先 queued，应用只从同 session/workflow 的 durable completed result 编译实际 prompt；duplicate task key、self/indirect cycle 与失败依赖 fail closed。
+- 2026-07-24 — 会话 `f7153c2b01e6a58b31e0406db9be56ec` 暴露 dev HMR schema 漂移：代码已写 `workflow_id`，但进程级缓存 DB handle 没有重新执行新增 migration，两次 child 都在 durable row 创建前报 `no such column: workflow_id`。`getDb()` 现用 code-owned schema revision 在 HMR 后重跑纯结构、幂等 migration；startup recovery 仍只在真正打开/取得进程 owner 时执行。

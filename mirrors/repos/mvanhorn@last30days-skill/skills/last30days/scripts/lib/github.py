@@ -427,6 +427,8 @@ PERSON_DEPTH_LIMITS = {
     "deep": {"pr_pages": 2, "own_repos": 5, "external_repos": 15},
 }
 
+PERSON_EVENTS_PER_PAGE = 100
+
 
 def _fetch_readme_snippet(repo: str, token: str, max_chars: int = 500) -> Optional[str]:
     """Fetch README content for a repo, truncated to first ~max_chars."""
@@ -623,6 +625,17 @@ def search_github_person(
     _log(f"Found {total_prs} total PRs, {merged_count} merged")
 
     if total_prs == 0 and merged_count == 0:
+        # An empty PR search can mean no PRs in the window or an account that
+        # GitHub's issue index cannot search. Public PushEvents provide an
+        # actor-attributed fallback for either case.
+        search_unavailable = total_data is None or merged_data is None
+        recent = _person_recent_pushes(
+            username, from_date, to_date, limits, resolved_token,
+        )
+        if recent:
+            reason = "account not searchable" if search_unavailable else "no PRs in window"
+            _log(f"PR search empty ({reason}); public events returned {len(recent)} items")
+            return recent
         _log("No PRs found, falling back to keyword search")
         return []
 
@@ -819,6 +832,167 @@ def search_github_person(
     # Sort by relevance
     items.sort(key=lambda x: x.get("relevance", 0), reverse=True)
     _log(f"Person-mode returned {len(items)} items")
+    return items
+
+
+def _person_recent_pushes(
+    username: str,
+    from_date: str,
+    to_date: str,
+    limits: Dict[str, int],
+    token: str,
+) -> List[Dict[str, Any]]:
+    """Return repos the selected actor publicly pushed inside the window."""
+    latest_by_repo: Dict[str, Dict[str, str]] = {}
+    encoded_username = urllib.parse.quote(username, safe="")
+
+    page = 1
+    while True:
+        url = (
+            f"https://api.github.com/users/{encoded_username}/events/public"
+            f"?per_page={PERSON_EVENTS_PER_PAGE}&page={page}"
+        )
+        data = _fetch_json(url, token=token, timeout=15)
+        if not data or not isinstance(data, list):
+            break
+
+        reached_before_window = False
+        for event in data:
+            created_at = event.get("created_at")
+            pushed = _parse_date(created_at)
+            if not pushed:
+                continue
+            if pushed < from_date:
+                reached_before_window = True
+                break
+            if pushed > to_date or event.get("type") != "PushEvent":
+                continue
+
+            actor = event.get("actor")
+            actor_login = actor.get("login", "") if isinstance(actor, dict) else ""
+            if actor_login.casefold() != username.casefold():
+                continue
+
+            repo = event.get("repo")
+            full_name = repo.get("name", "") if isinstance(repo, dict) else ""
+            if not re.fullmatch(r"[^/\s]+/[^/\s]+", full_name):
+                continue
+
+            previous = latest_by_repo.get(full_name)
+            if previous is None or created_at > previous["created_at"]:
+                latest_by_repo[full_name] = {
+                    "full_name": full_name,
+                    "pushed": pushed,
+                    "created_at": created_at,
+                    "actor": actor_login,
+                    "event_id": str(event.get("id") or ""),
+                }
+
+        if reached_before_window or len(data) < PERSON_EVENTS_PER_PAGE:
+            break
+        page += 1
+
+    if not latest_by_repo:
+        return []
+
+    recent = sorted(
+        latest_by_repo.values(),
+        key=lambda r: r["created_at"],
+        reverse=True,
+    )
+    _log(
+        f"Public events: {len(recent)} actor-attributed repos pushed in window, "
+        "loading repository metadata for ranking"
+    )
+
+    repo_info: Dict[str, Dict[str, Any]] = {}
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        info_futures = {
+            executor.submit(_fetch_repo_info, r["full_name"], token): r["full_name"]
+            for r in recent
+        }
+        for future in as_completed(info_futures):
+            name = info_futures[future]
+            try:
+                repo_info[name] = future.result(timeout=20) or {}
+            except Exception as exc:
+                _log(f"Push-event repo metadata failed for {name}: {exc}")
+                repo_info[name] = {}
+
+    recent.sort(
+        key=lambda r: (
+            repo_info.get(r["full_name"], {}).get("stars", 0),
+            r["created_at"],
+        ),
+        reverse=True,
+    )
+    selected = recent[:limits["own_repos"]]
+
+    enrichments: Dict[str, Dict[str, Any]] = {}
+    _log(f"Public events: enriching {len(selected)} top-ranked repositories")
+    with ThreadPoolExecutor(max_workers=8) as executor:
+        enrichment_futures = {
+            executor.submit(_enrich_own_repo, r["full_name"], token): r["full_name"]
+            for r in selected
+        }
+        for future in as_completed(enrichment_futures):
+            name = enrichment_futures[future]
+            try:
+                enrichments[name] = future.result(timeout=25)
+            except Exception as exc:
+                _log(f"Push-event enrichment failed for {name}: {exc}")
+                enrichments[name] = {}
+
+    items: List[Dict[str, Any]] = []
+    for idx, repo in enumerate(selected, start=1):
+        name = repo["full_name"]
+        info = repo_info.get(name, {})
+        stars = info.get("stars", 0)
+        stars_str = _format_stars(stars)
+        open_issues = info.get("open_issues", 0)
+        enrichment = enrichments.get(name, {})
+        readme = enrichment.get("readme")
+        releases = enrichment.get("releases", [])
+
+        snippet_parts = [
+            f"@{repo['actor']} pushed {name} on {repo['pushed']} "
+            f"({stars_str} stars, {open_issues} open issues)"
+        ]
+        if info.get("description"):
+            snippet_parts.append(f"  {info['description']}")
+        if readme:
+            snippet_parts.append(f"  README: {readme[:300]}")
+        for rel in releases[:2]:
+            body_preview = f" - {rel['body'][:150]}" if rel.get("body") else ""
+            snippet_parts.append(f"  Release: {rel['name']} ({rel['date']}){body_preview}")
+
+        items.append({
+            "id": f"GH{idx}",
+            "title": f"@{repo['actor']} pushed {name} on {repo['pushed']}",
+            "url": f"https://github.com/{name}",
+            "date": repo["pushed"],
+            "author": repo["actor"],
+            "source": "github",
+            "score": stars,
+            "container": name,
+            "snippet": "\n".join(snippet_parts),
+            "relevance": min(0.9, 0.6 + math.log1p(stars) / 30),
+            "why_relevant": (
+                f"GitHub activity: @{repo['actor']} pushed {name} on {repo['pushed']} "
+                f"({stars_str} stars)"
+            ),
+            "engagement": {"stars": stars, "comments": open_issues},
+            "metadata": {
+                "labels": ["person-profile", "recent-push"],
+                "state": "open",
+                "comment_count": open_issues,
+                "reactions": stars,
+                "is_pr": False,
+                "event_type": "PushEvent",
+                "event_id": repo["event_id"],
+            },
+        })
+
     return items
 
 

@@ -21,6 +21,10 @@ disable-model-invocation: true
 - You are mid-execution of an agreed plan and only need the next concrete step.
 - The ask is outside this catalog (pure coding syntax, tool ops with no judgment call) — NONE.
 
+## Invoking a Model (Skill IDs)
+
+The router outputs bare slugs (e.g. `id: five-whys-plus`). Invoke a routed skill with the Skill tool using the exact ID `thinking-skills:thinking-<slug>` — never invent a slug not cited in Procedure. `NONE` means no invocation.
+
 ## Procedure
 
 1. **Short-circuit.** If one skill clearly fits by mechanism, return that skill alone. If no skill clearly improves the work, return **NONE** and reason directly. Stop.

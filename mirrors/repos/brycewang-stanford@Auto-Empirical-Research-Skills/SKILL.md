@@ -13,7 +13,7 @@ The catalog holds **1,095 skills across 75 vendored collections**. Never read th
 ## Workflow
 
 1. Classify the user's empirical-research task by **stage**, then load the single best-matching skill:
-   - Full pipeline or orchestration: start with `skills/69-Paper-WorkFlow/` or the `skills/00.*` flagship analysis skills (StatsPAI / Python / Stata / R).
+   - Full pipeline or orchestration: start with `skills/69-Paper-WorkFlow/` or the `skills/00*` flagship analysis skills — `skills/00-Full-empirical-analysis-skill_StatsPAI/` (StatsPAI), `skills/00.1-Full-empirical-analysis-skill_Python/` (Python), `skills/00.2-Full-empirical-analysis-skill_Stata/` (Stata), `skills/00.3-Full-empirical-analysis-skill_R/` (R). Note the StatsPAI flagship has no dot in its prefix, so a `skills/00.*` glob misses it.
    - Causal inference and econometrics: pick by method from the table below, or search `catalog/skills.json` / `docs/TAXONOMY.md`.
    - AER or top economics journal work: start with `skills/50-brycewang-aer-skills/`.
    - Replication, citation, or peer review: use `docs/SKILL_CATALOG.md` and `docs/GOLDEN_WORKFLOWS.md` to choose a focused skill.
@@ -32,11 +32,14 @@ The catalog holds **1,095 skills across 75 vendored collections**. Never read th
 
 ## Method → where to start
 
-Match the user's identification strategy or task to a starting collection, then confirm against `catalog/skills.json`:
+Match the user's identification strategy or task to a starting collection, then confirm against `catalog/skills.json`.
+
+This table is a shortcut to the most common starting points, **not a complete index** — it names fewer than half of the vendored collections, and the rest are reachable only through `catalog/skills.json`. A task missing from this table is not a task without a skill: fall through to step 3 and search the catalog before concluding nothing matches.
 
 | Task / method | Start here |
 |---|---|
 | Full paper pipeline (orchestrator) | `skills/69-Paper-WorkFlow/` |
+| Agent-native causal analysis (one call runs DiD / RD / IV / SCM / DML with automatic robustness gates) | `skills/00-Full-empirical-analysis-skill_StatsPAI/` |
 | DiD / staggered DiD / event study | `skills/50-brycewang-aer-skills/`, `skills/10-Jill0099-causal-inference-mixtape/`, `skills/13-scunning1975-MixtapeTools/` |
 | Instrumental variables (IV) | `skills/50-brycewang-aer-skills/`, `skills/40-py-econometrics-pyfixest/` |
 | Regression discontinuity (RDD) | `skills/50-brycewang-aer-skills/`, `skills/10-Jill0099-causal-inference-mixtape/` |
@@ -51,6 +54,7 @@ Match the user's identification strategy or task to a starting collection, then 
 | Survey / questionnaire design | `skills/43-wentorai-research-plugins/`, `skills/25-HosungYou-Diverga/` |
 | DML / CATE / causal forests | `skills/00.1-Full-empirical-analysis-skill_Python/`, `skills/63-tondevrel-scientific-agent-skills/` |
 | Bayesian modeling | `skills/23-Learning-Bayesian-Statistics-baygent-skills/`, `skills/51-pymc-labs-CausalPy/` |
+| Python analysis (full pipeline) | `skills/00.1-Full-empirical-analysis-skill_Python/`, `skills/40-py-econometrics-pyfixest/` |
 | Stata analysis | `skills/00.2-Full-empirical-analysis-skill_Stata/`, `skills/32-dylantmoore-stata-skill/`, `skills/64-tmonk-mcp-stata/` |
 | R analysis | `skills/00.3-Full-empirical-analysis-skill_R/`, `skills/55-ab604-claude-code-r-skills/` |
 | Game theory / theory papers | `skills/65-game-theory-paper-writer/` |
@@ -86,7 +90,7 @@ The orchestrator is **not** the right entry point for a single-task ask (e.g. "f
 
 ## Coverage Notes
 
-- `skills/69-Paper-WorkFlow/` is a **git submodule**. If its folder is empty, the copy or clone skipped submodules (`git submodule update --init` fixes a clone); fall back to the `skills/00.*` flagship pipeline skills, which are vendored directly.
+- `skills/69-Paper-WorkFlow/` is a **git submodule**. If its folder is empty, the copy or clone skipped submodules (`git submodule update --init` fixes a clone); fall back to the `skills/00*` flagship pipeline skills, which are vendored directly.
 - The vendored ARIS collection (`skills/42-wanshuiyin-ARIS/`) also ships its skill set as OpenAI Codex CLI runtime ports (`skills-codex*` subtrees). Those stay on disk but are excluded from `catalog/skills.json` (see `scripts/skill_discovery.py`) — route Claude agents to the primary `skills/` tree only.
 
 ## Install Notes
@@ -104,3 +108,4 @@ The orchestrator is **not** the right entry point for a single-task ask (e.g. "f
 - `docs/TAXONOMY.md`: task and method taxonomy.
 - `docs/GOLDEN_WORKFLOWS.md`: ready-to-use empirical-research prompts.
 - `docs/INSTALL.md`: runtime installation guidance for single-skill and whole-repo use.
+- `docs/CONTENT_ZH.md` and `README-zh-CN.md`: Chinese-language collection index and entry point. Prefer these when the user is working in Chinese — several collections (de-AIGC, SSCI/CSSCI polishing, Chinese academic writing) are documented there in more detail than in the English docs.

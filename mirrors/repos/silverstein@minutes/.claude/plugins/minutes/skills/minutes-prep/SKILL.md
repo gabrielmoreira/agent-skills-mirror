@@ -6,7 +6,10 @@ user_invocable: true
 
 # /minutes-prep
 
-Interactive meeting preparation that searches your entire conversation history with someone, synthesizes a relationship brief, and produces talking points — before you walk into the room.
+Interactive meeting preparation that searches the normal conversation history
+authorized by Minutes, synthesizes a relationship brief, and produces talking
+points — before you walk into the room. Restricted history is excluded from
+this agent workflow by default and must never be treated as absent evidence.
 
 ## How it works
 
@@ -92,14 +95,14 @@ node "${CLAUDE_PLUGIN_ROOT}/hooks/lib/minutes-learn-cli.mjs" aliases "<name>" 2>
 ```
 If aliases exist, search across every returned variant and merge the hits before deciding there is no history.
 
-→ Search all past meetings:
+→ Search authorized normal meeting history:
 ```bash
 minutes search "<name>" --limit 50
 ```
 Also search common variations — first name, last name, nickname.
 
 **If the answer is vague** ("the team", "everyone", "my usual meeting"):
-→ Push back: "Be specific. Name one person who'll be in the room. I'll search everything you've discussed with them."
+→ Push back: "Be specific. Name one person who'll be in the room. I'll search the normal meeting history Minutes is authorized to use."
 
 **If the answer is a topic** ("the pricing meeting", "the Q2 planning call"):
 → Adapt to topic-based prep:
@@ -110,7 +113,7 @@ Skip the relationship brief and go straight to a topic brief instead.
 
 ### Phase 2: Relationship brief
 
-Read each matching meeting file with `Read`. Build a relationship brief:
+Treat search paths as hints, not capabilities. Reauthorize each selected normal meeting through `minutes get "<exact path>" --json`, require exit status 0, and use only its returned content. Never reopen a search path with the host `Read` tool. Build a relationship brief from those bounded native results:
 
 **Meeting history:**
 - Total meetings with this person, first and most recent dates

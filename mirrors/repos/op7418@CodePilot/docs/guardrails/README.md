@@ -14,11 +14,11 @@
 - [`DatabaseSchema.md`](./DatabaseSchema.md) — additive migration、conservative backfill、`preset_key` 稳定身份。改 schema 前必读
 - [`Onboarding.md`](./Onboarding.md) — OpenAI/xAI OAuth refresh、原子 bundle、loopback/device flow、bearer host 防泄漏。改凭据相关代码前必读
 - [`ElectronMain.md`](./ElectronMain.md) — Electron 构建/packaged server 与 OAuth loopback 跨平台门禁。改 `electron/*`、打包脚本或 browser OAuth 前必读
+- [`PermissionBoundary.md`](./PermissionBoundary.md) — `mutationLevel`、子 Agent 权限 ceiling / run 归属、跨 Runtime reviewer 一致性。改权限或 delegation 前必读
+- [`StreamSession.md`](./StreamSession.md) — 双入口 stream、snapshot 生命周期、子 Agent tool id / requested-effective / 卡片分流契约。改 `claude-client.ts` / tool stream / Chat 消息渲染前必读
 
 ### Stub（尚未被真实改动激活的高风险入口；首次 on-touch 时由实施 Agent 填充）
 
-- [`PermissionBoundary.md`](./PermissionBoundary.md) — `mutationLevel` + `PERMISSION_SAFE_TOOLS` 跨 Runtime 暴露一致性（Phase 5e 安全洞修复）。改权限相关代码前必读
-- [`StreamSession.md`](./StreamSession.md) — 双入口（page.tsx 首消息 / ChatView.tsx 后续）独立管理 effort/thinking + snapshot 生命周期。改 `claude-client.ts` / `stream-session-manager.ts` / `useSSEStream.ts` 前必读
 - [`MCP.md`](./MCP.md) — MCP server 加载 / provider resolution / 持久化跨多 API 路由。改 `/api/plugins/mcp/*` 前必读
 - [`Release.md`](./Release.md) — RELEASE_NOTES 格式 / 版本号 / tag / CI 自动发版严格顺序（不能删 tag 否则 Release 变 Draft）。发版前必读
 

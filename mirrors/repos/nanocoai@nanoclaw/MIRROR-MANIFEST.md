@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nanocoai/nanoclaw` — 26 default patterns, 29 followed patterns, 122 file(s) materialized.
+Mirror of `nanocoai/nanoclaw` — 26 default patterns, 29 followed patterns, 121 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 29 followed patterns, 122
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 29 |
-| Files         | 122 |
+| Files         | 121 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -175,40 +175,39 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 86 | ✓ | [`container/skills/frontend-engineer/SKILL.md`](container/skills/frontend-engineer/SKILL.md) |
 | 87 | ✓ | [`container/skills/onecli-gateway/SKILL.md`](container/skills/onecli-gateway/SKILL.md) |
 | 88 | ✓ | [`container/skills/self-customize/SKILL.md`](container/skills/self-customize/SKILL.md) |
-| 89 | ✓ | [`container/skills/vercel-cli/SKILL.md`](container/skills/vercel-cli/SKILL.md) |
-| 90 | ✓ | [`container/skills/welcome/SKILL.md`](container/skills/welcome/SKILL.md) |
-| 91 | ✓ | [`docs/README.md`](docs/README.md) |
-| 92 | ✓ | [`repo-tokens/README.md`](repo-tokens/README.md) |
-| 93 | ✓ | [`templates/README.md`](templates/README.md) |
-| 94 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 95 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 96 | → | [`docs/agent-runner-details.md`](docs/agent-runner-details.md) |
-| 97 | → | [`docs/api-details.md`](docs/api-details.md) |
-| 98 | → | [`docs/architecture-diagram.md`](docs/architecture-diagram.md) |
-| 99 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 100 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
-| 101 | → | [`docs/customizing.md`](docs/customizing.md) |
-| 102 | → | [`docs/db-central.md`](docs/db-central.md) |
-| 103 | → | [`docs/db-session.md`](docs/db-session.md) |
-| 104 | → | [`docs/db.md`](docs/db.md) |
-| 105 | → | [`docs/hardened-image.md`](docs/hardened-image.md) |
-| 106 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
-| 107 | → | [`docs/memory.md`](docs/memory.md) |
-| 108 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
-| 109 | → | [`docs/ncl-tasks-migration.md`](docs/ncl-tasks-migration.md) |
-| 110 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
-| 111 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
-| 112 | → | [`docs/scheduled-tasks.md`](docs/scheduled-tasks.md) |
-| 113 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
-| 114 | → | [`docs/skill-directives.md`](docs/skill-directives.md) |
-| 115 | → | [`docs/skill-engine-seam.md`](docs/skill-engine-seam.md) |
-| 116 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
-| 117 | → | [`docs/skills-model.md`](docs/skills-model.md) |
-| 118 | → | [`docs/templates.md`](docs/templates.md) |
-| 119 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
-| 120 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 121 | → | [`README.md`](README.md) |
-| 122 | → | [`RELEASING.md`](RELEASING.md) |
+| 89 | ✓ | [`container/skills/welcome/SKILL.md`](container/skills/welcome/SKILL.md) |
+| 90 | ✓ | [`docs/README.md`](docs/README.md) |
+| 91 | ✓ | [`repo-tokens/README.md`](repo-tokens/README.md) |
+| 92 | ✓ | [`templates/README.md`](templates/README.md) |
+| 93 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 94 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 95 | → | [`docs/agent-runner-details.md`](docs/agent-runner-details.md) |
+| 96 | → | [`docs/api-details.md`](docs/api-details.md) |
+| 97 | → | [`docs/architecture-diagram.md`](docs/architecture-diagram.md) |
+| 98 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 99 | → | [`docs/build-and-runtime.md`](docs/build-and-runtime.md) |
+| 100 | → | [`docs/customizing.md`](docs/customizing.md) |
+| 101 | → | [`docs/db-central.md`](docs/db-central.md) |
+| 102 | → | [`docs/db-session.md`](docs/db-session.md) |
+| 103 | → | [`docs/db.md`](docs/db.md) |
+| 104 | → | [`docs/hardened-image.md`](docs/hardened-image.md) |
+| 105 | → | [`docs/isolation-model.md`](docs/isolation-model.md) |
+| 106 | → | [`docs/memory.md`](docs/memory.md) |
+| 107 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
+| 108 | → | [`docs/ncl-tasks-migration.md`](docs/ncl-tasks-migration.md) |
+| 109 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
+| 110 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
+| 111 | → | [`docs/scheduled-tasks.md`](docs/scheduled-tasks.md) |
+| 112 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
+| 113 | → | [`docs/skill-directives.md`](docs/skill-directives.md) |
+| 114 | → | [`docs/skill-engine-seam.md`](docs/skill-engine-seam.md) |
+| 115 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
+| 116 | → | [`docs/skills-model.md`](docs/skills-model.md) |
+| 117 | → | [`docs/templates.md`](docs/templates.md) |
+| 118 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 119 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 120 | → | [`README.md`](README.md) |
+| 121 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

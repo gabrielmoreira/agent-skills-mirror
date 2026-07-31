@@ -3,7 +3,15 @@ import type { AgentTool as PiAgentTool } from "@earendil-works/pi-agent-core";
 import { Type } from "@earendil-works/pi-ai";
 import type { Models } from "@earendil-works/pi-ai";
 import { builtinModels } from "@earendil-works/pi-ai/providers/all";
+import { debug } from "../rig.ts";
 import type { AgentFactory, Tool } from "../rig.ts";
+import { objectToolSchema, toolResultText } from "./utils.ts";
+
+const debugCreate = debug("engine:pi:create");
+const debugAsk = debug("engine:pi:ask");
+const debugResponse = debug("engine:pi:response");
+const debugTool = debug("engine:pi:tool");
+const debugClose = debug("engine:pi:close");
 
 export type PiEngineOptions = {
   provider: string;
@@ -17,6 +25,7 @@ export function piEngine(options: PiEngineOptions): AgentFactory {
     if (!model) {
       throw new Error(`Unknown pi-agent model: ${options.provider}/${agentOptions.model}`);
     }
+    debugCreate({ provider: options.provider, model: agentOptions.model, tools: agentOptions.tools?.map((tool) => tool.name) ?? [] });
     const piAgent = new PiAgent({
       streamFn: models.streamSimple.bind(models),
       initialState: {
@@ -28,6 +37,7 @@ export function piEngine(options: PiEngineOptions): AgentFactory {
 
     return {
       async ask(prompt, askOptions = {}) {
+        debugAsk({ model: agentOptions.model, prompt });
         throwIfAborted(askOptions.signal);
         const abort = () => piAgent.abort();
         askOptions.signal?.addEventListener("abort", abort, { once: true });
@@ -37,12 +47,15 @@ export function piEngine(options: PiEngineOptions): AgentFactory {
           if (piAgent.state.errorMessage) {
             throw new Error(piAgent.state.errorMessage);
           }
-          return piResponseText(piAgent.state.messages);
+          const text = piResponseText(piAgent.state.messages);
+          debugResponse({ model: agentOptions.model, response: text });
+          return text;
         } finally {
           askOptions.signal?.removeEventListener("abort", abort);
         }
       },
       async close() {
+        debugClose({ model: agentOptions.model });
         piAgent.abort();
         await piAgent.waitForIdle();
       },
@@ -70,6 +83,7 @@ function toPiTool(tool: Tool<any>): PiAgentTool {
       if (!tool.handler) {
         throw new Error(`${tool.name} tool has no handler`);
       }
+      debugTool({ tool: tool.name, args: params });
       const result = await tool.handler(params);
       return {
         content: [{ type: "text", text: toolResultText(result) }],
@@ -77,24 +91,6 @@ function toPiTool(tool: Tool<any>): PiAgentTool {
       };
     },
   };
-}
-
-function objectToolSchema(tool: Tool<any>): Record<string, unknown> {
-  const parameters = tool.parameters ?? { type: "object", properties: {} };
-  if (parameters["type"] !== "object") {
-    throw new TypeError(`${tool.name} tool parameters must be an object schema`);
-  }
-  return parameters;
-}
-
-function toolResultText(result: unknown): string {
-  if (typeof result === "string") {
-    return result;
-  }
-  if (result === undefined) {
-    return "";
-  }
-  return JSON.stringify(result);
 }
 
 function contentText(content: unknown): string {

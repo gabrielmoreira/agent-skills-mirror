@@ -5,7 +5,6 @@
 ## Ownership
 
 - Runtime lifecycle, prompt encoding, stream transforms, history hydration, CLI resolution, plugin discovery, agent discovery, MCP storage, settings UI, and Claude-specific storage live here.
-- Shared feature code should consume Claude behavior through core contracts and registries.
 
 ## Design Rules
 
@@ -20,6 +19,7 @@
 - `CCSettingsStorage.save()` must merge with existing `.claude/settings.json`; Claudian only owns permissions and plugin enablement.
 - `.claude/mcp.json` has a Claude-compatible `mcpServers` namespace and a Claudian `_claudian.servers` metadata namespace. Keep them separate.
 - Plugin enabled state is dual-written to `.claude/settings.json` and `PluginManager.plugins[].enabled`. Keep both in sync.
+- Native transcripts are read from `{CLAUDE_CONFIG_DIR:-~/.claude}/projects/{vault}/`; resolve the config dir through `resolveClaudeConfigDir`, never hardcode `~/.claude`.
 - Slash command IDs use reversible encoding: dashes become `-_`, slashes become `--`.
 
 ## Runtime Gotchas

@@ -7,6 +7,7 @@ The skill calls this script via Bash and consumes the JSON output.
 
 Usage:
     mirror_metrics.py <meeting_file.md> --self "Mat,Mat S.,MAT_SILVERSTEIN"
+    minutes get <meeting-path> | mirror_metrics.py - --self "Mat"
 
 Self labels are matched case-insensitively against the speaker label inside
 [NAME 0:00] markers in the transcript section. Multiple labels can be passed
@@ -236,9 +237,31 @@ def compute_metrics(turns: list[dict]) -> dict:
     }
 
 
+def extract_outcome(content: str) -> str | None:
+    """Return one supported frontmatter outcome without parsing arbitrary YAML."""
+    lines = content.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return None
+    try:
+        closing = next(index for index, line in enumerate(lines[1:], 1) if line.strip() == "---")
+    except StopIteration:
+        return None
+    frontmatter = "\n".join(lines[1:closing])
+    match = re.search(
+        r"^outcome:\s*(won|lost|stalled|great|noise)\s*$",
+        frontmatter,
+        re.MULTILINE | re.IGNORECASE,
+    )
+    return match.group(1).lower() if match else None
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("meeting_file", type=Path, help="Path to a meeting markdown file")
+    parser.add_argument(
+        "meeting_file",
+        type=Path,
+        help="Path to a meeting markdown file, or - for native-authorized stdin",
+    )
     parser.add_argument(
         "--self",
         required=True,
@@ -247,7 +270,8 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    if not args.meeting_file.exists():
+    stdin_mode = str(args.meeting_file) == "-"
+    if not stdin_mode and not args.meeting_file.exists():
         print(json.dumps({"error": f"file not found: {args.meeting_file}"}), file=sys.stderr)
         return 1
 
@@ -256,7 +280,11 @@ def main() -> int:
         print(json.dumps({"error": "--self must contain at least one label"}), file=sys.stderr)
         return 1
 
-    content = args.meeting_file.read_text(encoding="utf-8", errors="replace")
+    content = (
+        sys.stdin.read()
+        if stdin_mode
+        else args.meeting_file.read_text(encoding="utf-8", errors="strict")
+    )
     transcript = extract_transcript(content)
     turns = parse_turns(transcript, self_labels)
 
@@ -288,6 +316,7 @@ def main() -> int:
         return 3
 
     metrics = compute_metrics(turns)
+    metrics["outcome"] = extract_outcome(content)
     print(json.dumps(metrics, indent=2))
     return 0
 

@@ -10,6 +10,10 @@ import {
   isExpandedVariantSlide,
   resolveContentMap,
 } from '../variant-contract.mjs';
+import {
+  SCHEMA_V2_LOGICAL_SLIDE_FIELDS,
+  pickSchemaV2LogicalSlideFields,
+} from './schema-v2-canonical.mjs';
 
 const SLIDE_MODEL_TYPE = 'dashi.slide-model';
 const VARIANT_STATE_ID_SEPARATOR = '::';
@@ -105,6 +109,13 @@ export function serializeDeckViewModel(viewModel) {
     ...(viewModel.model.variantOutputMode
       ? { variantOutputMode: viewModel.model.variantOutputMode }
       : {}),
+    ...(Number(viewModel.model.schemaVersion) === BESPOKE_SCHEMA_VERSION
+      ? {
+          runtimeSchema: {
+            schemaV2LogicalSlideFields: [...SCHEMA_V2_LOGICAL_SLIDE_FIELDS],
+          },
+        }
+      : {}),
     title: viewModel.model.title,
     themePack: viewModel.themePack.key,
     slides: viewModel.slides.map((slide) => serializeSlideViewModel(
@@ -126,6 +137,23 @@ export function serializeDeckViewModel(viewModel) {
 }
 
 function serializeSlideViewModel(slide, toJson, canonicalContentOnly = false) {
+  if (canonicalContentOnly && slide.variants?.length) {
+    const selected = slide.variants.find(variant => variant.stateId === slide.stateId) || slide.variants[0];
+    return pickSchemaV2LogicalSlideFields({
+      id: slide.id,
+      key: slide.key,
+      label: slide.label,
+      logicalIndex: slide.logicalIndex,
+      ...(slide.content !== undefined ? { content: toJson(slide.content) } : {}),
+      stateId: slide.stateId,
+      selectedVariant: selected?.variantId,
+      variants: slide.variants.map((variant) => serializeVariantViewModel(
+        variant,
+        toJson,
+        canonicalContentOnly,
+      )),
+    });
+  }
   const serialized = {
     id: slide.id,
     key: slide.key,
@@ -156,6 +184,10 @@ function serializeSlideViewModel(slide, toJson, canonicalContentOnly = false) {
 }
 
 function serializeVariantViewModel(variant, toJson, canonicalContentOnly = false) {
+  const media = toJson(variant.media);
+  const hasMedia = media != null
+    && typeof media === 'object'
+    && Object.keys(media).length > 0;
   const shared = {
     id: variant.variantId,
     stateId: variant.stateId,
@@ -164,7 +196,7 @@ function serializeVariantViewModel(variant, toJson, canonicalContentOnly = false
     themePack: variant.themePack,
     label: variant.label,
     logicalIndex: variant.logicalIndex,
-    media: toJson(variant.media),
+    ...(!canonicalContentOnly || hasMedia ? { media } : {}),
     ...(variant.contentMap !== undefined
       ? { contentMap: toJson(variant.contentMap) }
       : {}),

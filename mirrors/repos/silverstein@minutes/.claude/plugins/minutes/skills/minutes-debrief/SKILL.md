@@ -27,7 +27,9 @@ Don't proceed without a recording to debrief.
 
 ### Phase 2: Read the transcript
 
-Use `Read` on the meeting file path. Extract from the transcript and frontmatter:
+Run `minutes get "<exact path>" --json`, require exit status 0, and use only the
+returned transcript and frontmatter. Never reopen the list path with the host
+`Read` tool. Extract:
 
 - **Decisions made** (from `decisions:` frontmatter or `## Decisions` section)
 - **Action items created** (from `action_items:` frontmatter or `## Action Items` section)
@@ -36,24 +38,25 @@ Use `Read` on the meeting file path. Extract from the transcript and frontmatter
 
 ### Phase 2a: No-capture sensitive meetings (capture: none)
 
-If the frontmatter says `capture: none`, there is no transcript by design: the
+If the authorized frontmatter says `capture: none`, there is no transcript by design: the
 meeting was designated sensitive and the recorder never ran. The debrief IS the
 record. Switch to debrief-from-memory mode:
 
-1. Read what exists: the `## Markers` section (timestamped notes typed during
+1. Use the already-authorized response: the `## Markers` section (timestamped notes typed during
    the meeting) and the frontmatter (`title`, `date`, `duration`,
    `debrief:` state).
 2. Ask the user to recount the meeting: who was there, what was discussed,
    decisions, action items. Use the markers as memory joggers.
-3. Write their account into the meeting file itself: fill `## Summary`,
-   `## Decisions`, and `## Action Items` sections (and the matching
-   frontmatter lists), then set the frontmatter `debrief:` key to `complete`.
-4. If the user says it was a test or accidental trigger, set `debrief:` to
-   `not-applicable` and leave the body untouched.
-5. **Sensitivity is binding, not advisory.** When `sensitivity: restricted`,
-   the account lives ONLY in this meeting file. Do not propagate any of it
-   into other notes, summaries, knowledge bases, or week-level rollups unless
-   the user explicitly asks.
+3. Present the account in the conversation, but do not edit the meeting path
+   through a host filesystem tool. Until Minutes exposes a native authorized
+   debrief-update command, ask the user to persist it in the desktop app or a
+   human-operated CLI flow.
+4. If the user says it was a test or accidental trigger, report that conclusion
+   without mutating the source path from this skill.
+5. **Sensitivity is binding, not advisory.** A restricted meeting is not
+   available to this agent skill by default. Do not bypass a failed native
+   read; direct the user to a human-operated Minutes app/CLI flow with the
+   explicit audited restricted-access controls.
 
 Skip Phases 2 and 2b (there is no transcript and no speaker attribution);
 continue with prep matching and the closing ritual as normal.

@@ -531,7 +531,7 @@ url = "http://localhost:{{ branch | hash_port }}"
 
 ## Forge platform
 
-Name the forge explicitly for SSH aliases or self-hosted instances, where it can't be detected from the remote URL:
+The forge is read from the remote's hostname: any host carrying `github`, `gitlab`, or `gitea` anywhere in it, plus the Azure DevOps service domains. Name the forge explicitly for a host carrying none of those, such as a Forgejo instance at `forge.example.com`:
 
 ```toml
 [forge]
@@ -1295,11 +1295,11 @@ Markers appear at the end of the Status column, after git symbols:
 
 ```
 $ wt list
-  Branch       Status        HEAD±    main↕     main…±  Remote⇅  Commit    Age   Message
-@ main             ^⇡                                    ⇡1      33323bc1  1d    Initial commit
-+ feature-api      ↑ 🤖              ↑1        +1                70343f03  1d    Add REST API end…
-+ review-ui      ? ↑ 💬              ↑1        +1                a585d6ed  1d    Add dashboard co…
-+ wip-docs       ? –                                             33323bc1  1d    Initial commit
+  Branch       Status        HEAD±    main↕     main…±  Remote⇅  Commit   Age   Message
+@ main             ^⇡                                    ⇡1      33323bc  1d    Initial commit
++ feature-api      ↑ 🤖              ↑1        +1                70343f0  1d    Add REST API endp…
++ review-ui      ? ↑ 💬              ↑1        +1                a585d6e  1d    Add dashboard com…
++ wip-docs       ? –                                             33323bc  1d    Initial commit
 
 ○ Showing 4 worktrees, 2 with changes, 2 ahead, 1 column hidden
 ```
