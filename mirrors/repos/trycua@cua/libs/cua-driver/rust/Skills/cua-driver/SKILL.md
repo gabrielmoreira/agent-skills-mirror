@@ -1,7 +1,7 @@
 ---
 name: cua-driver
 description: Drive a native GUI app (macOS, Windows, Linux) via the cua-driver CLI (default) or MCP server; snapshot its accessibility tree, click/type/scroll by element_index or pixel coordinates, and verify via re-snapshot without bringing the target to the foreground. Use when the user asks you to operate, drive, automate, or perform a GUI task in a real application on the host.
-version: 0.14.1 # x-release-please-version
+version: 0.14.2 # x-release-please-version
 metadata:
   openclaw:
     requires:
@@ -151,6 +151,7 @@ cua-driver launch_app '{"bundle_id":"..."}'
 # → {pid: 844, windows: [{window_id: 10725, ...}]}
 cua-driver get_window_state '{"pid":844,"window_id":10725}'
 cua-driver click '{"pid":844,"window_id":10725,"element_index":14}'
+cua-driver verify_state '{"pid":844,"window_id":10725,"expect":[{"element":{"selector":{"label_contains":"Saved"},"exists":true}}]}'
 cua-driver stop
 ```
 
@@ -213,11 +214,14 @@ a certified host main-thread adapter returns a structured
 successful cursor move. One-shot CLI adapters do not own an overlay
 themselves.
 
-## The core invariant — snapshot before AND after every action
+## The core invariant — snapshot before and verify after every action
 
-**Every action MUST be bracketed by the state tool for the session's effective
-scope**: `get_window_state(pid, window_id)` in window scope, or
-`get_desktop_state(session)` in desktop scope.
+**Every action MUST be bracketed by observation for the session's effective
+scope.** Use `get_window_state(pid, window_id)` before a window action (or
+`get_desktop_state(session)` in desktop scope), then use `verify_state` for an
+expressible window-scoped postcondition. In effective desktop scope,
+`verify_state` is intentionally refused with `window_scope_disabled`; verify
+with a fresh `get_desktop_state` result and agent-owned visual/semantic reading.
 
 - **Before** — the pre-action snapshot resolves the `element_index`
   you're about to use. Indices from previous turns are stale; the
@@ -226,15 +230,56 @@ scope**: `get_window_state(pid, window_id)` in window scope, or
   N+1, and indices from window A don't resolve against window B of
   the same app. Skip this and element-indexed actions fail with
   `No cached AX state`.
-- **After** — the post-action snapshot verifies the action actually
-  landed. Without it you can't tell a silent no-op from a real
-  effect. The accessibility-tree change (new value, new window,
-  disappeared menu, disabled button, etc.) is your evidence that
-  the action fired. If nothing changed, the action probably failed
-  silently — say so, don't assume success.
+- **After** — `verify_state(pid, window_id, expect)` checks a bounded,
+  deterministic postcondition. Results are `satisfied`, `unsatisfied`, or
+  `unknown`; `unknown` never means success. Set `include_screenshot:true` when
+  the outcome also needs visual reading. The driver returns that final image
+  without interpreting it. A multimodal agent harness reads the image and owns
+  the stop/retry/ladder decision.
 
-This applies to pixel clicks and desktop actions too — re-snapshot after to
-confirm the action landed on the intended target.
+`unknown_reason` distinguishes invalid/unsupported predicates, untrusted web
+content, ambiguous matches, missing targets, unavailable observations, and
+`stability_unproven`. A positive final sample that was not observed for the
+requested consecutive sample count is `stability_unproven`, not success.
+Negative element existence is conservative: when an accessibility projection
+cannot prove its search domain exhaustive, absence remains `unknown`.
+
+Do not make the driver invent task meaning or retry actions automatically.
+For postconditions not expressible by `verify_state`, take a fresh state
+snapshot and let the agent judge the tree and/or image explicitly. This applies
+to pixel clicks and desktop actions too.
+
+### Read action facts without confusing them with task success
+
+A successful action returns `effect` and `route`, with optional typed
+`delivery`, `evidence`, and `escalation`. These fields describe the actuator;
+they do not declare the user's task complete.
+
+- `confirmed` means the driver has publishable value readback or window-change
+  evidence for that action.
+- `partial` means only `delivery.delivered_count` was delivered.
+- `unverifiable` means the driver cannot prove the effect.
+- `suspected_noop` means available evidence suggests no useful change.
+- `refused` means the selected route deliberately did not deliver.
+
+The route vocabulary is intentionally cross-platform:
+`accessibility`, `synthetic_events`, `global_input`, `dom`, and
+`trusted_input`. Do not branch on private OS transport names.
+
+An optional escalation is a harness instruction, never an automatic retry:
+
+- `pixel`: refresh visual state and choose an exact pixel target;
+- `foreground`: explicitly select foreground delivery if session policy allows;
+- `page`: bind the native window to a supported browser page route;
+- `session`: prepare or explicitly widen the session only when policy permits.
+
+Branch on the closed reason vocabulary:
+`route_unavailable`, `delivery_failed`, `effect_unconfirmed`,
+`suspected_noop`, and `permission_required`.
+
+After any action, keep using `verify_state` or a fresh state snapshot for the
+actual task postcondition. The multimodal harness owns visual reading and the
+decision to stop, retry, or advance the ladder.
 
 ## Choose capture scope when the session starts
 
@@ -349,8 +394,9 @@ for Chromium/Electron inputs the AX path can't reach, and
 **Typing default (the ladder).** Call `type_text` directly with
 `element_index` (ax) — it targets the field, no pre-click. On
 Electron/Catalyst the AX layer echoes the write without rendering it,
-so the driver returns `effect:"unverifiable"` + `escalation:"px"`
-there (never a false `verified:true`) — follow it, and cross-check the
+so the driver returns `effect:"unverifiable"` with
+`escalation.target:"pixel"` there (never a false `effect:"confirmed"`) —
+follow it, and cross-check the
 screenshot in the response (the only ground truth). Escalate to the px
 form — `type_text({pid, window_id, x, y, text})` — which pixel-clicks
 to focus, then types. **If the target control is closed** (a search
@@ -365,37 +411,25 @@ pixel counterpart is a `click`/`drag` on the control, not a "set value
 at a pixel." So: text → `type_text` (ax+px); non-text control values →
 `set_value`; pixel-manipulate a control → `click`/`drag`.
 
-**Action responses carry an effect/escalation verdict**
+**Action responses carry closed action facts**
 
-Every action response keeps `verified` (did the driver read back a
-post-condition?) and adds two machine-readable fields so you know
-whether — and where — to climb the ladder:
-
-- `effect`: one of
-  - `"confirmed"` — the driver read back the effect (`ax` rung only).
-  - `"unverifiable"` — dispatched, but the driver has no handle to
-    read back (every `px`/CGEvent path; foreground rung). **You**
-    confirm it off the screenshot — it is not a failure.
-  - `"suspected_noop"` — the `ax` action **likely did nothing** (the
-    element didn't actually advertise the action, or you hit a passive
-    label). This is the explicit **"cross to `px`"** trigger.
-- `escalation`: `{recommended, reason}` when the driver thinks you
-  should change rung —
-  - `"px"` — the element isn't really actionable in `ax`; do an
-    **element px action** off the screenshot you already have.
-  - `"foreground"` — a background insert/click was _dropped_ on
-    delivery; re-call the same action with `delivery_mode:"foreground"`.
+Use the `effect`, `route`, optional `delivery`, `evidence`, and
+`escalation` rules in “Read action facts without confusing them with task
+success” above. The old `verified`, `path`, coordinates, scope, and
+`escalation.recommended` response fields no longer exist.
+The full wire contract and 0.14 migration notes are in
+`../../../docs/action-result-contract.md`.
 
 `get_window_state` itself, when the AX tree comes back empty (a non-AX
 surface like Electron/Chromium/canvas), returns `degraded: true`
-**plus the same `escalation` hint** — normally pointing at `px` (you
+plus an observation-specific escalation hint — normally pointing at pixels (you
 still have the screenshot from the same call to click off).
 
-**Platform nuance for `escalation`.** On **Wayland** an unfocused
+**Platform nuance for action escalation.** On **Wayland** an unfocused
 window cannot be pixel-targeted in the background (libei →
-`background_unavailable`), so there the recommendation is
-**`foreground`, not `px`**. macOS, X11, and most Windows surfaces
-_can_ pixel-target in the background, so they recommend `px`. See
+`background_unavailable`), so the action target is
+**`foreground`, not `pixel`**. macOS, X11, and most Windows surfaces
+can pixel-target in the background, so they target `pixel`. See
 `LINUX.md` / `WINDOWS.md`.
 
 ## The verify-then-escalate ladder (algorithm)
@@ -409,21 +443,30 @@ _dispatch rung_ on a real signal. Walk the rungs:
 # Rung 1 — element ax action, backgrounded (the cheap default)
 get_window_state(pid, window_id)            # tree + screenshot, both, always
 resp = click(pid, window_id, element_index) # or type_text / set_value / press_key
-get_window_state(pid, window_id)            # re-snapshot — did the tree change?
+check = verify_state(                       # bounded structured read-back
+    pid, window_id,
+    expect=[...],
+    include_screenshot=true                 # optional evidence for multimodal harness
+)
 
-if resp.effect == "confirmed" and tree changed:
+if check.status == "satisfied":
     done                                    # driver-verified
+
+if check.status == "unknown" and check has an image:
+    harness reads the image                  # model-owned visual interpretation
+    if visual outcome is satisfied: done
 
 # escalate only on a real signal
 if resp.effect == "suspected_noop"
-   or resp.escalation.recommended == "px"
+   or resp.escalation.target == "pixel"
    or get_window_state.degraded            # empty tree → non-AX surface
+   or check.status != "satisfied"
    or the tree looks wrong vs the screenshot:   # e.g. an h:1 / off-viewport row
 
     # Rung 2 — element px action off the SAME screenshot
     pick the target pixel from the screenshot already in the response
     click(pid, x, y)                        # background pixel — still no foreground
-    get_window_state(pid, window_id)        # re-snapshot, eyeball the result
+    verify_state(..., include_screenshot=true)
     if it landed: done
 
 # Rung 2b — exact browser page tools, when get_browser_state can bind this window
@@ -434,7 +477,7 @@ get_browser_state(session, pid, window_id)     # verify with fresh refs
 if it landed: done
 
 # Rung 3 — background delivery was dropped (insert/click never arrived)
-if resp.escalation.recommended == "foreground"
+if resp.escalation.target == "foreground"
    or the px action still did nothing:
     re-call the same action with delivery_mode:"foreground"
     # on Wayland this is the ONLY escalation — px-bg can't target an
@@ -486,7 +529,7 @@ launch_app(target)
     (or call list_windows(pid) separately)
   → get_window_state(pid, window_id)
     → [act]  # every action also takes (pid, window_id) + your `session`
-  → get_window_state(pid, window_id) → verify
+  → verify_state(pid, window_id, expect)  # structured check; optional image
 end_session(session)              # when the run finishes
 ```
 
@@ -633,6 +676,7 @@ against a specific window.
 | -------------------------------- | --------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | List an app's windows            | `list_windows({pid})`                                                                                           | returns `window_id`, `title`, `bounds`, `z_index`, `is_on_screen`, `on_current_space`. Already included in `launch_app`'s response — only call this for long-lived pids                                               |
 | Snapshot a window                | `get_window_state({pid, window_id})`                                                                            | returns `tree_markdown` + `screenshot_*`; populates the `(pid, window_id)` element_index cache                                                                                                                        |
+| Verify a postcondition           | `verify_state({pid, window_id, expect, include_screenshot?})`                                                   | polls bounded structured predicates; returns `satisfied`, `unsatisfied`, or `unknown`. Optional final image is interpreted by the agent harness, never by the driver                                                 |
 | Left click                       | `click({pid, window_id, element_index})`                                                                        | default `action: "press"`. Pixel form: `click({pid, x, y})` (window_id optional) — `modifier: ["cmd"\|"ctrl"]`                                                                                                        |
 | Double-click / open              | `double_click({pid, window_id, element_index})`                                                                 | Default action when the element advertises one (Open on Finder items / openable rows), else stamped pixel double-click at the element's center                                                                        |
 | Right click / context menu       | `right_click({pid, window_id, element_index})` or `click({pid, window_id, element_index, action: "show_menu"})` | Browser page content should use the typed route where available; see `BROWSER.md`                                                                                                                                     |
@@ -689,8 +733,10 @@ Two consequences for callers:
   prior frontmost: the explicit last resort when a background attempt
   didn't land. **`foreground` is a reaction, never a prediction.** Always
   fire the `background` default first and let the driver tell you it
-  can't (a `background_unavailable` error or `escalation.recommended ==
-"foreground"`) — or observe a verified no-op — _before_ you escalate.
+  can't (a `background_unavailable` error with
+  `escalation.recommended == "foreground"`, or a successful action result
+  with `escalation.target == "foreground"`) — or observe a confirmed no-op —
+  _before_ you escalate.
   Do **not** reason "it's a GTK/Chromium/Electron app, so background will
   drop, so I'll front up-front": the toolkit lists in the tool schemas
   are the _driver's_ internal detectors, not a checklist for you to front
@@ -796,29 +842,34 @@ embedded webview for which exact browser binding is unavailable. The legacy
 `page` tool remains a compatibility surface; do not use it as the starting
 point for new browser workflows.
 
-## Re-snapshot and verify — mandatory
+## Verify after every action — mandatory
 
-**Always** call `get_window_state({pid, window_id})` after the
-action. This isn't optional verification — it's the second half of
-the snapshot invariant.
+**Always** verify after an action. Prefer
+`verify_state({pid, window_id, expect})` for structured state such as a
+window's existence/bounds or a semantic element's existence, value, enabled
+state, or selected state. Use its bounded poll and stable-sample requirement
+instead of hand-written sleeps. `unknown` means the driver could not establish
+the predicate; it is not success. Once a session has effective desktop scope,
+use a fresh `get_desktop_state(session)` result instead—window-scoped
+`verify_state` is denied by that capture policy.
 
-Check the tree diff: a changed value, a new element, a new window,
-or the disappearance of the thing you just clicked (menus collapse
-after selection, buttons may become disabled, etc.). The re-snapshot
-gives you both the tree and the screenshot, so you cross-check the tree
-diff against the pixels in one call — and when you're only confirming a
-tree change, `include_screenshot:false` skips the grab.
+Pass `include_screenshot:true` when visual evidence is useful. The same result
+then contains a fresh final window image. The driver still evaluates only the
+structured predicates; the multimodal agent harness reads the pixels and
+decides whether to stop, retry, or advance the ladder. For a postcondition not
+expressible by the tool, explicitly take a fresh `get_window_state` snapshot
+and have the harness judge its tree and image.
 
 Switch to an **element px action** only on a real signal: the action
-response carried `effect:"suspected_noop"`, the re-snapshot came back
-`degraded` (empty tree → non-AX surface), the tree looks
-unchanged/unreadable or disagrees with the screenshot, or
-`escalation.recommended` points you there (`px`). That's the
+response carried `effect:"suspected_noop"`, verification returned
+`unsatisfied`/`unknown`, the snapshot came back `degraded` (empty tree →
+non-AX surface), the tree looks unchanged/unreadable or disagrees with the screenshot, or
+`escalation.target` points you there (`pixel`). That's the
 verify-then-escalate ladder in the behavior-matrix section. If the tree
 is unchanged AND the screenshot confirms nothing moved, the action
 likely failed silently — **tell the user what you attempted and what
 you observed**, don't paper over with "done" language (and consider
-`delivery_mode:"foreground"` when `escalation.recommended ==
+`delivery_mode:"foreground"` when `escalation.target ==
 "foreground"`). Agents that skip this step report success on
 silently-dropped actions — the single most common failure mode.
 

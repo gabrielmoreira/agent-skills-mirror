@@ -203,6 +203,7 @@ Some tests rely on inline snapshots; see `tests/README.md` for details. Re-run `
 - Type hints must pass `make typecheck`.
 - Write comments as full sentences ending with a period.
 - Imports are managed by Ruff and should stay sorted.
+- Do not hard-wrap prose in Markdown or other non-code text files at a fixed column width. Keep each paragraph on one source line unless the file format or Markdown structure requires a line break, such as for lists, tables, blockquotes, or code fences.
 
 #### Mandatory local run order
 

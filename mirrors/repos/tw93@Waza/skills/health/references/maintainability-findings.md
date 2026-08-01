@@ -27,25 +27,25 @@ Scope by load surface, not just by layer. A rule kept in the project still pays 
 Quick check from the project root, reusing `$HEALTH_SCRIPT` resolved in Step 1:
 
 ```powershell
-powershell.exe -NoLogo -NoProfile -File "$HEALTH_LAUNCHER" maintainability . summary
+& "$POWERSHELL" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "$HEALTH_LAUNCHER" maintainability . summary
 ```
 
 On Linux and macOS:
 
 ```bash
-bash "$(dirname "$HEALTH_SCRIPT")/check-maintainability.sh" . summary
+BASH_ENV= ENV= /bin/bash -p "${HEALTH_SCRIPT%/*}/check-maintainability.sh" . summary
 ```
 
 For deep audits:
 
 ```powershell
-powershell.exe -NoLogo -NoProfile -File "$HEALTH_LAUNCHER" maintainability . deep
+& "$POWERSHELL" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "$HEALTH_LAUNCHER" maintainability . deep
 ```
 
 On Linux and macOS:
 
 ```bash
-bash "$(dirname "$HEALTH_SCRIPT")/check-maintainability.sh" . deep
+BASH_ENV= ENV= /bin/bash -p "${HEALTH_SCRIPT%/*}/check-maintainability.sh" . deep
 ```
 
 Keep actions concrete and non-invasive: add or fix the smallest useful instruction surface, add one executable validation command, document hotspot ownership and tests, split only when the boundary is already clear, or repair the broken reference. Do not propose broad rewrites from the script output alone.
@@ -61,13 +61,13 @@ Common offenders:
 Quick check from the project root, reusing `$HEALTH_SCRIPT` resolved in Step 1:
 
 ```powershell
-powershell.exe -NoLogo -NoProfile -File "$HEALTH_LAUNCHER" doc-refs .
+& "$POWERSHELL" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "$HEALTH_LAUNCHER" doc-refs .
 ```
 
 On Linux and macOS:
 
 ```bash
-bash "$(dirname "$HEALTH_SCRIPT")/check-doc-refs.sh" .
+BASH_ENV= ENV= /bin/bash -p "${HEALTH_SCRIPT%/*}/check-doc-refs.sh" .
 ```
 
 The checker resolves `@...` and `docs/...` from the project root, expands `~`, resolves `references/...` from each `.claude/skills/<name>/SKILL.md` directory, checks every reference on a line, skips fenced code examples, and exits non-zero when any target is missing.
@@ -79,13 +79,13 @@ Report missing references as Structural findings, not Critical, unless the missi
 **Stale verifier cache output.** If validation output points at a deleted temp worktree or non-existent `/tmp` / `/private/tmp` file, parse the captured log with:
 
 ```powershell
-powershell.exe -NoLogo -NoProfile -File "$HEALTH_LAUNCHER" verifier-output . <log-file>
+& "$POWERSHELL" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "$HEALTH_LAUNCHER" verifier-output . <log-file>
 ```
 
 On Linux and macOS:
 
 ```bash
-bash "$(dirname "$HEALTH_SCRIPT")/check-verifier-output.sh" . <log-file>
+BASH_ENV= ENV= /bin/bash -p "${HEALTH_SCRIPT%/*}/check-verifier-output.sh" . <log-file>
 ```
 
 Only use this script for existing command output supplied by the user or generated during the current audit. Do not run project tests just to feed this checker. Known actions include `golangci-lint cache clean`, `go clean -cache -testcache`, and `npm cache verify`; unknown tools get a diagnostic rerun action.

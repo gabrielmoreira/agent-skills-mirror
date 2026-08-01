@@ -40,7 +40,23 @@ This skill requires Alpaca MCP Server to be configured and connected. The MCP se
 - `get_portfolio_history` - Historical portfolio performance data
 - Market data tools for price quotes and fundamentals
 
-If Alpaca MCP Server is not connected, inform the user and provide setup instructions from `references/alpaca_mcp_setup.md`.
+If Alpaca MCP Server is not connected, inform the user and provide setup instructions from `references/alpaca-mcp-setup.md`.
+
+### REST Fallback Connection Check
+
+Run the connection check from the repository root. Use paper credentials first;
+never paste credentials into a report or commit them to the repository.
+
+```bash
+export ALPACA_API_KEY="<alpaca-key-id>"
+export ALPACA_SECRET_KEY="<alpaca-secret-key>"
+export ALPACA_PAPER="true"
+uv run python skills/portfolio-manager/scripts/check_alpaca_connection.py
+```
+
+The command writes a redacted diagnostic summary to stdout and returns zero only
+when the account and positions endpoints succeed. It does not create a report
+file or place orders.
 
 ## Workflow
 
@@ -157,15 +173,14 @@ Analyze current allocation across multiple dimensions:
 - US vs International vs Emerging Markets
 - Domestic concentration risk assessment
 
-**Output Format:**
+**Output Format (illustrative values):**
 ```markdown
 ## Asset Allocation
 
 ### Current Allocation vs Target
 | Asset Class | Current | Target | Variance |
 |-------------|---------|--------|----------|
-| US Equities | XX.X% | YY.Y% | +/- Z.Z% |
-| ... |
+| US Equities | 70.0% | 60.0% | +10.0 pp |
 
 ### Sector Breakdown
 [Pie chart description or table with sector percentages]
@@ -173,8 +188,7 @@ Analyze current allocation across multiple dimensions:
 ### Top 10 Holdings
 | Rank | Symbol | % of Portfolio | Sector |
 |------|--------|----------------|--------|
-| 1 | AAPL | X.X% | Technology |
-| ... |
+| 1 | AAPL | 8.5% | Technology |
 ```
 
 #### 3.2 Diversification Analysis
@@ -202,20 +216,20 @@ Evaluate portfolio diversification quality:
 - Optimal range: 15-30 stocks for individual portfolios
 - Flag if under-diversified (<10 stocks) or over-diversified (>50 stocks)
 
-**Output:**
+**Output (illustrative values):**
 ```markdown
 ## Diversification Assessment
 
 **Concentration Risk:** [Low / Medium / High]
-- Top 5 holdings represent XX% of portfolio
-- Largest single position: [SYMBOL] at XX%
+- Top 5 holdings represent 42% of portfolio
+- Largest single position: AAPL at 12%
 
 **Sector Diversification:** [Excellent / Good / Fair / Poor]
-- Dominant sector: [Sector Name] at XX%
+- Dominant sector: Technology at 31%
 - [Assessment of balance across sectors]
 
 **Position Count:** [Optimal / Under-diversified / Over-diversified]
-- Total positions: XX stocks
+- Total positions: 18 stocks
 - [Recommendation]
 
 **Correlation Concerns:**
@@ -249,29 +263,29 @@ Calculate and interpret key risk metrics:
 - Single-stock concentration risk
 - Sector-specific event risk
 
-**Output:**
+**Output (illustrative values):**
 ```markdown
 ## Risk Assessment
 
 **Overall Risk Profile:** [Conservative / Moderate / Aggressive]
 
-**Portfolio Beta:** X.XX (vs market at 1.00)
+**Portfolio Beta:** 1.12 (vs market at 1.00)
 - Interpretation: Portfolio is [more/less] volatile than market
 
-**Maximum Drawdown:** -XX.X% (from $XXX,XXX to $XXX,XXX)
-- Current drawdown from peak: -XX.X%
+**Maximum Drawdown:** -14.2% (from $125,000 to $107,250)
+- Current drawdown from peak: -6.3%
 
 **High-Risk Positions:**
 | Symbol | % of Portfolio | Beta | Risk Factor |
 |--------|----------------|------|-------------|
-| [TICKER] | XX% | X.XX | [High volatility / Recent loss / etc] |
+| NVDA | 11% | 1.65 | High volatility |
 
 **Risk Concentrations:**
-- XX% in single sector ([Sector])
-- XX% in stocks with beta > 1.5
+- 31% in a single sector (Technology)
+- 18% in stocks with beta above 1.5
 - [Other concentration risks]
 
-**Risk Score:** XX/100 ([Low/Medium/High] risk)
+**Risk Score:** 68/100 (Medium risk)
 ```
 
 #### 3.4 Performance Analysis
@@ -294,30 +308,28 @@ Evaluate portfolio performance using available data:
 - Average loss on losing positions
 - Positions near 52-week highs/lows
 
-**Output:**
+**Output (illustrative values):**
 ```markdown
 ## Performance Review
 
-**Total Portfolio Value:** $XXX,XXX
-**Total Unrealized P&L:** $XX,XXX (+XX.X%)
-**Cash Balance:** $XX,XXX (XX% of portfolio)
+**Total Portfolio Value:** $100,000
+**Total Unrealized P&L:** $8,500 (+9.3%)
+**Cash Balance:** $5,000 (5% of portfolio)
 
 **Best Performers:**
 | Symbol | Gain | Position Value |
 |--------|------|----------------|
-| [TICKER] | +XX.X% | $XX,XXX |
-| ... |
+| AAPL | +22.4% | $12,240 |
 
 **Worst Performers:**
 | Symbol | Loss | Position Value |
 |--------|------|----------------|
-| [TICKER] | -XX.X% | $XX,XXX |
-| ... |
+| INTC | -12.0% | $6,600 |
 
-**Performance vs Benchmark (if available):**
-- Portfolio return: +X.X%
-- S&P 500 return: +Y.Y%
-- Alpha: +/- Z.Z%
+**Performance vs Benchmark (illustrative values):**
+- Portfolio return: +9.3%
+- S&P 500 return: +7.8%
+- Alpha: +1.5 percentage points
 ```
 
 ### Step 4: Individual Position Analysis
@@ -356,27 +368,27 @@ For each significant position:
 - **TRIM** - Overweight or valuation stretched
 - **SELL** - Thesis broken, better opportunities elsewhere
 
-**Output per position:**
+**Output per position (illustrative values):**
 ```markdown
-### [SYMBOL] - [Company Name] (XX.X% of portfolio)
+### AAPL - Apple Inc. (8.5% of portfolio)
 
 **Position Details:**
-- Shares: XXX
-- Avg Cost: $XX.XX
-- Current Price: $XX.XX
-- Market Value: $XX,XXX
-- Unrealized P/L: $X,XXX (+XX.X%)
+- Shares: 50
+- Avg Cost: $150.00
+- Current Price: $170.00
+- Market Value: $8,500
+- Unrealized P/L: $1,000 (+13.3%)
 
 **Fundamental Snapshot:**
 - Sector: [Sector]
-- Market Cap: $XX.XB
-- P/E: XX.X | Dividend Yield: X.X%
+- Market Cap: $3.2T
+- P/E: 31.4 | Dividend Yield: 0.5%
 - Recent developments: [Key news or earnings]
 
 **Technical Status:**
 - Trend: [Uptrend / Downtrend / Sideways]
-- Price vs 50-day MA: [Above/Below by XX%]
-- Support: $XX.XX | Resistance: $XX.XX
+- Price vs 50-day MA: Above by 4.2%
+- Support: $162.00 | Resistance: $176.00
 
 **Position Assessment:**
 - **Thesis Status:** [Intact / Weakening / Broken / Strengthening]
@@ -424,32 +436,32 @@ Rank rebalancing actions by priority:
 3. **Medium Priority** - Moderate drift (5-10% from target)
 4. **Low Priority** - Fine-tuning and opportunistic adjustments
 
-**Output:**
+**Output (illustrative values):**
 ```markdown
 ## Rebalancing Recommendations
 
 ### Summary
 - **Rebalancing Needed:** [Yes / No / Optional]
 - **Primary Reason:** [Concentration risk / Sector drift / Cash deployment / etc]
-- **Estimated Trades:** X sell orders, Y buy orders
+- **Estimated Trades:** 2 sell orders, 3 buy orders
 
 ### Recommended Actions
 
 #### HIGH PRIORITY: Risk Reduction
-**TRIM [SYMBOL]** from XX% to YY% of portfolio
-- **Shares to Sell:** XX shares (~$XX,XXX)
+**TRIM NVDA** from 18% to 12% of portfolio
+- **Shares to Sell:** 25 shares (about $3,000)
 - **Rationale:** [Overweight / Valuation extended / etc]
-- **Tax Impact:** $X,XXX capital gain (est)
+- **Tax Impact:** $600 capital gain (estimate)
 
 #### MEDIUM PRIORITY: Asset Allocation
-**ADD [Sector/Asset Class]** exposure
-- **Target:** Increase from XX% to YY%
-- **Suggested Stocks:** [SYMBOL1, SYMBOL2, SYMBOL3]
-- **Amount to Invest:** ~$XX,XXX
+**ADD investment-grade bond exposure**
+- **Target:** Increase from 10% to 20%
+- **Suggested Securities:** [Select liquid securities that fit the user's mandate]
+- **Amount to Invest:** About $10,000
 
 #### CASH DEPLOYMENT
-**Current Cash:** $XX,XXX (XX% of portfolio)
-- **Recommendation:** [Deploy / Keep for opportunities / Reduce to X%]
+**Current Cash:** $5,000 (5% of portfolio)
+- **Recommendation:** [Deploy / Keep for opportunities / Reduce to target]
 - **Suggested Allocation:** [Distribution across sectors/stocks]
 
 ### Implementation Plan
@@ -475,9 +487,9 @@ Create comprehensive markdown report saved to repository root:
 # Portfolio Analysis Report
 
 **Account:** [Account type if available]
-**Report Date:** YYYY-MM-DD
-**Portfolio Value:** $XXX,XXX
-**Total P&L:** $XX,XXX (+XX.X%)
+**Report Date:** 2026-07-25
+**Portfolio Value:** $100,000
+**Total P&L:** $8,500 (+9.3%)
 
 ---
 
@@ -631,7 +643,7 @@ If user's target allocation is unknown, assess appropriate risk profile based on
 
 **Recommendation Clarity:**
 - Explicit action verbs (TRIM, ADD, HOLD, SELL)
-- Specific quantities (sell XX shares, add $X,XXX)
+- Specific quantities derived from live position sizes and current prices
 - Priority levels (Immediate, High, Medium, Low)
 - Supporting rationale for each recommendation
 
@@ -640,7 +652,7 @@ If user's target allocation is unknown, assess appropriate risk profile based on
 - Sector weights as bar chart equivalents
 - Performance trends with directional indicators (↑ ↓ →)
 
-## Reference Files
+## Resources
 
 Load these references as needed during analysis:
 

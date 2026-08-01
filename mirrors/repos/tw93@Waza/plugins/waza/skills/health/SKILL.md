@@ -28,7 +28,9 @@ Two lanes share one report:
 
 **Output language:** Check in order: (1) project agent instructions (`AGENTS.md` before runtime-specific files); (2) global agent instructions; (3) user's recent language; (4) English.
 
-**Budget posture:** Start with the summary audit. Escalate automatically when the user asks for a deep, full, complete, thorough, "深入", "完整", "彻底", or "继续跑完" audit, when the user explicitly mentions AI coding code rot, Codex/Claude config drift, unclear context, missing verification, verifier output that points at stale paths, or "代码变烂", when current project instructions or remembered user preference says to run deep health checks by default, when the project is Complex, or when the summary pass exposes a critical ambiguity that cannot be resolved locally. Otherwise do not read full conversation extracts or launch inspector subagents. Tell the user before escalating because deep health audits can consume significant token quota.
+**Budget posture:** Start with the summary audit. Escalate automatically when the user asks for a deep, full, complete, thorough, "深入", "完整", "彻底", or "继续跑完" audit, when the user explicitly mentions AI coding code rot, Codex/Claude config drift, unclear context, missing verification, verifier output that points at stale paths, or "代码变烂", when current project instructions or remembered user preference says to run deep health checks by default, when the project is Complex, or when the summary pass exposes a critical ambiguity that cannot be resolved locally. Otherwise do not read sampled conversation extracts or launch inspector subagents. Tell the user before escalating because deep health audits can consume significant token quota.
+
+**Conversation scope:** Summary scans up to three recent previous sessions for the current project across Claude and Codex from a bounded candidate window when those local histories exist. Deep streams every previous current-project session across both runtimes for signals while printing only bounded extracts and a coverage receipt. Other projects remain out of scope by default. Only when the user explicitly asks for all conversations or cross-project capability distillation, invoke the bundled conversation audit with `--all-projects` against the supported local history roots discovered for that runtime (or hand off to an installed full-history retrospective workflow such as `ai-retro`). The explicit global mode excludes files modified in the last five minutes as potentially live and redacts emitted text. Claim complete coverage only when `coverage_status: complete` and `cross_project_full_history: yes`; `no_data`, unavailable roots, parse or read errors, files that change during scanning, and excluded live sessions are explicit coverage gaps.
 
 ## Durable Context Preflight
 
@@ -63,8 +65,12 @@ $HEALTH_LAUNCHER = @(
 if (-not $HEALTH_LAUNCHER) {
   throw "Health launcher not found under the installed skill base; reinstall Waza."
 }
-powershell.exe -NoLogo -NoProfile -File "$HEALTH_LAUNCHER" collect
+$POWERSHELL = Join-Path ([Environment]::SystemDirectory) "WindowsPowerShell\v1.0\powershell.exe"
+& "$POWERSHELL" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "$HEALTH_LAUNCHER" collect
 ```
+
+`-ExecutionPolicy Bypass` applies only to this PowerShell process; do not change
+the user's machine or account execution policy.
 
 On Linux and macOS, keep the direct Bash flow:
 
@@ -79,13 +85,12 @@ if [ ! -f "${HEALTH_SCRIPT:-}" ]; then
   echo "health collect-data.sh not found under the installed skill base; reinstall Waza"
   exit 1
 fi
-bash "$HEALTH_SCRIPT"
+BASH_ENV= ENV= /bin/bash -p "$HEALTH_SCRIPT"
 ```
 
 Sections may show `(unavailable)` when tools are missing:
 
-- `jq` missing → conversation sections unavailable
-- `python3` missing → MCP/hooks/allowedTools sections unavailable
+- trusted `python3` missing → conversation, MCP/hooks/allowedTools, and skill-security sections unavailable
 - `settings.local.json` absent → hooks/MCP may be unavailable (normal for global-only setups)
 
 Treat `(unavailable)` as insufficient data, not a finding. Do not flag those areas.
@@ -131,11 +136,13 @@ Confirm the tier. Then route:
 
 - **Simple:** Analyze locally. No subagents.
 - **Standard:** Analyze locally from the summary output. Do not launch subagents by default. If the user asks for a deep/full/thorough audit, or if local analysis cannot classify a security/control issue, escalate to deep mode and explain the likely token cost.
-- **Complex, remembered deep preference, explicit deep audit, or explicit AI maintainability audit:** Re-run collection with `powershell.exe -NoLogo -NoProfile -File "$HEALTH_LAUNCHER" collect auto deep` on Windows, or `bash "$HEALTH_SCRIPT" auto deep` on Linux and macOS. Then launch the relevant subagents in parallel. Redact credentials to `[REDACTED]`.
+- **Complex, remembered deep preference, explicit deep audit, or explicit AI maintainability audit:** Re-run collection with `& "$POWERSHELL" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "$HEALTH_LAUNCHER" collect auto deep` on Windows, or `BASH_ENV= ENV= /bin/bash -p "$HEALTH_SCRIPT" auto deep` on Linux and macOS. Then launch the relevant subagents in parallel. Redact credentials to `[REDACTED]`.
   - **Agent 1** (Context + Security): Read `agents/inspector-context.md`. Feed `CONVERSATION SIGNALS` section.
   - **Agent 2** (Control + Behavior): Read `agents/inspector-control.md`. Feed detected tier.
   - **Agent 3** (AI Maintainability): Read `agents/inspector-maintainability.md`. Feed only `TIER METRICS`, `AI MAINTAINABILITY SUMMARY` or `AI MAINTAINABILITY DETAIL`, and the script hotspot lists. Launch this agent only for deep health audits, Complex projects, or explicit code-rot/AI-maintainability requests.
 - **Fallback:** If a subagent fails, analyze that layer locally and note "(analyzed locally)".
+
+Before reporting a deep audit as complete, wait for every launched inspector and reconcile its assigned scope. If one remains pending or fails without a local replacement pass, list that scope as unreviewed instead of issuing a whole-scope clean bill.
 
 ## Step 3: Report
 
@@ -176,13 +183,13 @@ Agent instructions in the wrong layer, missing hooks, oversized descriptions, ve
 Quick check from the project root, reusing `$HEALTH_SCRIPT` resolved in Step 1:
 
 ```powershell
-powershell.exe -NoLogo -NoProfile -File "$HEALTH_LAUNCHER" agent-context . summary
+& "$POWERSHELL" -NoLogo -NoProfile -ExecutionPolicy Bypass -File "$HEALTH_LAUNCHER" agent-context . summary
 ```
 
 On Linux and macOS:
 
 ```bash
-bash "$(dirname "$HEALTH_SCRIPT")/check-agent-context.sh" . summary
+BASH_ENV= ENV= /bin/bash -p "${HEALTH_SCRIPT%/*}/check-agent-context.sh" . summary
 ```
 
 **AI-maintainability findings.** For the maintainability lane (verification surface, conversation-derived guidance, concentrated fix chains, hotspot ownership, verifier wrapper, broken doc and Markdown references, stale verifier cache output), load `references/maintainability-findings.md` and work its checks with `AI MAINTAINABILITY SUMMARY` / `DETAIL`.

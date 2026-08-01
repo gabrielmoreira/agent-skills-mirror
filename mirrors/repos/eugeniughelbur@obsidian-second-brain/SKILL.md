@@ -40,7 +40,7 @@ To wire it: `bash scripts/setup.sh "/path/to/vault"` or run `/obsidian-setup`.
 Use standard file tools (Read, Write, Edit, Glob) against the vault path. The vault is plain markdown, so every operation in this skill works this way with no setup. This is the normal path in Claude Code - the commands below use these tools directly.
 
 **Method B - MCP server (optional, mainly for non-Claude-Code clients):**
-This repo ships its own MCP server at `integrations/obsidian-mcp-server/` that exposes the vault as tools (`obsidian_search`, `obsidian_read_note`, `obsidian_save_note`, `obsidian_capture`, plus curator tools). It exists so other MCP clients - Hermes Agent, Claude Desktop, Cursor - can use the vault as a knowledge layer; in Claude Code itself, Method A is simpler and preferred. If those `obsidian_*` tools happen to be available in your client, you may use them instead of raw file tools. Setup lives in `integrations/obsidian-mcp-server/README.md` (it is `uv run --with mcp python .../server.py` with `OBSIDIAN_VAULT_PATH` set, not an `npx` package).
+This repo ships its own MCP server at `integrations/obsidian-mcp-server/` that exposes the vault as tools (`obsidian_search`, `obsidian_read_note`, `obsidian_save_note`, `obsidian_capture`, plus curator tools). It exists so other MCP clients - Hermes Agent, Claude Desktop, Cursor - can use the vault as a knowledge layer; in Claude Code itself, Method A is simpler and preferred. If those `obsidian_*` tools happen to be available in your client, you may use them instead of raw file tools. Setup lives in `integrations/obsidian-mcp-server/README.md` (it is `uv run --with 'mcp<2' python .../server.py` with `OBSIDIAN_VAULT_PATH` set, not an `npx` package).
 
 ### 1. First time in a vault → read `_CLAUDE.md`
 
@@ -112,7 +112,7 @@ The vault is designed for **future-Claude** to read and reason over, not for hum
 6. **Cross-links mandatory** - every person/project/idea/decision uses `[[wikilinks]]`
 7. **Confidence levels** - `stated | high | medium | speculation` where applicable
 
-This rule lives in `_CLAUDE.md` Section 0 of every vault using this skill, and in `references/ai-first-rules.md` (the canonical specification with frontmatter schemas + preamble templates per note type).
+This rule lives in `_CLAUDE.md` Section 0 of every vault using this skill, and in `references/ai-first-rules.md` (the canonical specification with frontmatter schemas + preamble templates per note type). That path is relative to the install root, which is load-bearing: if it does not resolve from your working directory, search upward for it, and if you still cannot read it, say so before writing rather than producing a note that silently skips the rule. The seven requirements above are the floor and apply whether or not the spec is reachable.
 
 ### Never create in isolation
 Every write operation must ask: *where else does this belong?*

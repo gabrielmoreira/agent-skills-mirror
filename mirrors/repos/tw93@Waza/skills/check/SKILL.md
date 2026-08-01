@@ -11,7 +11,7 @@ Prefix your first line with 🥷 inline, not as its own paragraph.
 
 > Note: `/review` is a built-in Anthropic plugin command for PR review. Waza uses `/check` (or the alias `code-review`) instead. Do not re-trigger `/review` from within this skill.
 
-Read the diff, find the problems, fix what can be fixed safely, ask about the rest. Done means verification ran in this session and passed.
+Read the diff and find the problems. Review, audit, triage, and readiness requests are report-only; apply fixes only when the current turn explicitly asks to fix, change, implement, or optimize. Done means the requested review surface is covered and every verification claim comes from this session.
 
 ## Outcome Contract
 
@@ -19,6 +19,7 @@ Read the diff, find the problems, fix what can be fixed safely, ask about the re
 - Done when: findings, fixes, shipped state, or blockers are stated with the commands, artifacts, or remote state that prove them.
 - Evidence: worktree status, diff, public project docs, manifests, CI, package contents, release or registry state, and current command output.
 - Output: concise findings first, then verification and shipped-state summary when applicable. Multi-step or ship-action runs close with a completion ledger (done / not applicable / remaining), never a narrative that leaves the user asking "is everything done".
+- Authorization: read-only intent may inspect the worktree and remote state but may not edit files, apply autofixes, commit, push, publish, comment, close, merge, or change branches. Each write or public action needs current-turn authorization, except when the user explicitly authorizes a named batch that contains it.
 
 ## Worktree Safety Preflight
 
@@ -217,16 +218,18 @@ Merge findings: when two specialists flag the same code location, keep the highe
 
 Every specialist finding is a claim to verify, not a fact to act on. For HIGH and CRITICAL claims, when the agent facility allows it, spawn one independent skeptic per finding whose only brief is to refute it against the actual code; a finding the skeptic refutes on direct read is dropped or downgraded regardless of which persona raised it. Without the facility, run the skeptic pass yourself: re-read the cited code this turn and confirm the claim is real and live, not already handled elsewhere, not consistent-by-design, not a latent-only risk labeled as a live bug. Parallel reviewers over-report from name-based inference and partial context; drop what dissolves on direct read, and cite the verification path before routing anything to Autofix or sign-off.
 
+Before a whole-scope verdict, reconcile a completion ledger for every delegated review: assigned scope, returned status, and uncovered remainder. Wait for every active reviewer, or name its scope as unreviewed. Never say "all read", "full audit complete", or "no issues" while any reviewer or required verification is still pending.
+
 ## Autofix Routing
 
 | Class | Definition | Action |
 |-------|------------|--------|
-| `safe_auto` | Unambiguous, risk-free: typos, missing imports, style inconsistencies | Apply immediately |
+| `safe_auto` | Unambiguous, risk-free: typos, missing imports, style inconsistencies | Apply only after explicit write authorization; otherwise report it |
 | `gated_auto` | Likely correct but changes behavior: null checks, error handling additions | Batch into one user confirmation block |
 | `manual` | Requires judgment: architecture, behavior changes, security tradeoffs | Present in sign-off |
 | `advisory` | Informational only | Note in sign-off |
 
-Apply all `safe_auto` fixes before surfacing the `gated_auto` confirmation block.
+After explicit write authorization, apply `safe_auto` fixes before surfacing the `gated_auto` confirmation block. In report-only mode, do not modify the worktree.
 
 ## Adversarial Pass (Deep only)
 

@@ -52,15 +52,35 @@ Goal: Collect the source material, brand signals, and usable assets for the vide
 
 Classify the input and choose the path. Explicit URL -> capture it and use the site for narration and assets. Pasted script/brief -> save verbatim as `user_script.txt`; `VO_MODE` (verbatim or restructured) comes from `BRIEF.md` — the intent layer asks it when a script arrives (ask once here only if the brief somehow lacks it). Then resolve capture target: URL in text -> use it; brand name only -> `WebSearch`, confirm URL in one line, then crawl; no URL/site (or the brief says don't scrape) -> no-capture path.
 
-Run capture with: `npx hyperframes capture "<URL>" -o ./capture`
+Run capture with: `npx hyperframes capture "<URL>" -o ./capture --json`. Keep the default
+post-navigation budget unless the caller owns a smaller deadline; then pass a positive
+`--capture-budget <milliseconds>` that leaves time for downstream work. `--timeout` controls page
+navigation only. Use `--skip-vision` only when optional image captioning is intentionally disabled.
 
-For a site tour or show-it-as-is brief, the captured page is the visual source of truth. Use the real screenshot instead of rebuilding the full website in HTML. If the shot needs internal movement, keep the screenshot as the base and overlay real captured assets at measured positions, or rebuild only the one component that moves. For a scroll shot, animate the viewport over `capture/screenshots/full-page.png` — the 1x plate of the whole document, pixel-exact for a 1920-wide viewport travelling down it. It is absent when the page was too tall to capture in one piece; fall back to the overlapping scroll-position shots in the same directory. Pushing in past 1:1 wants its own 2x capture of that region instead, since the plate has no headroom above 1x. Recreate the whole page only when the user explicitly asks for a stylized interpretation or the capture is unusable.
+Inspect the command result and output directory immediately. A non-zero exit, JSON `ok: false`, or
+`capture/BLOCKED.md` is a **hard stop** for the capture path: report the recorded reason and do not
+consume partial screenshots, DOM, tokens, or assets. Do not manufacture a synthetic no-capture
+fallback after a failed URL capture. Continue through the no-capture path only when the original
+brief supplied the source material, or when the user explicitly switches to a provided screenshot
+or brief after the failure.
+
+Warnings such as `very little text content` together with an empty asset catalog are not proof of a
+usable page. For a site tour or show-it-as-is brief, require trustworthy captured structure or a
+provided screenshot; if neither exists, stop. Do not invent or rebuild the page merely because the
+capture is unusable.
+
+For a site tour or show-it-as-is brief, the captured page is the visual source of truth. Use the real screenshot instead of rebuilding the full website in HTML. If the shot needs internal movement, keep the screenshot as the base and overlay real captured assets at measured positions, or rebuild only the one component that moves. For a scroll shot, animate the viewport over `capture/screenshots/full-page.png` — the 1x plate of the whole document, pixel-exact for a 1920-wide viewport travelling down it. It is absent when the page was too tall to capture in one piece; fall back to the overlapping scroll-position shots in the same directory. Pushing in past 1:1 wants its own 2x capture of that region instead, since the plate has no headroom above 1x. Recreate the whole page only when the user explicitly asks for a stylized interpretation; an unusable capture alone is not authorization.
 
 If `GEMINI_API_KEY`, `GOOGLE_API_KEY`, or an OpenRouter key exists, capture auto-captions assets into `capture/extracted/asset-descriptions.md`. This is not a review gate. Without a vision key, use DOM context and continue.
 
 No-capture path: create `capture/extracted/tokens.json`, `capture/extracted/visible-text.txt`, `capture/extracted/asset-descriptions.md`, and `capture/assets/` by hand. `tokens.json` should be `{ "title": "", "description": "", "colors": [], "fonts": [] }`; fill title/description from the brief when possible. `visible-text.txt` contains the full brief or script. `asset-descriptions.md` should say no assets were captured unless the user gave asset notes.
 
-**Gate:** `capture/extracted/tokens.json`, `capture/extracted/visible-text.txt`, `capture/extracted/asset-descriptions.md`, and `capture/assets/` exist; you can state the brand in one clear sentence. Treat `asset-descriptions.md` as the main asset inventory. If it is missing after real capture, stop and report capture incomplete. If `capture/BLOCKED.md` exists, follow it.
+**Gate:** capture JSON reported `ok: true`; `capture/BLOCKED.md` does not exist;
+`capture/extracted/tokens.json`, `capture/extracted/visible-text.txt`,
+`capture/extracted/asset-descriptions.md`, and `capture/assets/` exist; and you can state the brand in
+one clear sentence. Treat `asset-descriptions.md` as the main asset inventory. If it is missing after
+real capture, stop and report capture incomplete. Warnings about a degraded optional phase are
+acceptable only when this structural gate still passes.
 
 ---
 

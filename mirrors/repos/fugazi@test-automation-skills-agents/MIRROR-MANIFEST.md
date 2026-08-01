@@ -51,10 +51,10 @@ Mirror of `fugazi/test-automation-skills-agents` — 26 default patterns, 5 foll
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `docs/getting-started.md`
 - `docs/skill-anatomy.md`
 - `docs/references/authoring-agents.md`
 - `docs/references/authoring-skills.md`
+- `docs/getting-started.md`
 - `references/testing-anti-patterns.md`
 
 ## File Index

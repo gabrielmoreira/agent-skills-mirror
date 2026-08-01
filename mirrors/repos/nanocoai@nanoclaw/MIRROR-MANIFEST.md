@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nanocoai/nanoclaw` — 26 default patterns, 29 followed patterns, 121 file(s) materialized.
+Mirror of `nanocoai/nanoclaw` — 26 default patterns, 30 followed patterns, 122 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 29 followed patterns, 121
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 29 |
-| Files         | 121 |
+| Followed pats | 30 |
+| Files         | 122 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,6 +78,7 @@ Mirror of `nanocoai/nanoclaw` — 26 default patterns, 29 followed patterns, 121
 - `docs/onecli-upgrades.md`
 - `docs/memory.md`
 - `docs/ncl-tasks-migration.md`
+- `docs/ollama.md`
 - `docs/upgrade-recovery.md`
 - `RELEASING.md`
 
@@ -195,19 +196,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 106 | → | [`docs/memory.md`](docs/memory.md) |
 | 107 | → | [`docs/migration-dev.md`](docs/migration-dev.md) |
 | 108 | → | [`docs/ncl-tasks-migration.md`](docs/ncl-tasks-migration.md) |
-| 109 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
-| 110 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
-| 111 | → | [`docs/scheduled-tasks.md`](docs/scheduled-tasks.md) |
-| 112 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
-| 113 | → | [`docs/skill-directives.md`](docs/skill-directives.md) |
-| 114 | → | [`docs/skill-engine-seam.md`](docs/skill-engine-seam.md) |
-| 115 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
-| 116 | → | [`docs/skills-model.md`](docs/skills-model.md) |
-| 117 | → | [`docs/templates.md`](docs/templates.md) |
-| 118 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
-| 119 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
-| 120 | → | [`README.md`](README.md) |
-| 121 | → | [`RELEASING.md`](RELEASING.md) |
+| 109 | → | [`docs/ollama.md`](docs/ollama.md) |
+| 110 | → | [`docs/onecli-upgrades.md`](docs/onecli-upgrades.md) |
+| 111 | → | [`docs/provider-migration.md`](docs/provider-migration.md) |
+| 112 | → | [`docs/scheduled-tasks.md`](docs/scheduled-tasks.md) |
+| 113 | → | [`docs/setup-wiring.md`](docs/setup-wiring.md) |
+| 114 | → | [`docs/skill-directives.md`](docs/skill-directives.md) |
+| 115 | → | [`docs/skill-engine-seam.md`](docs/skill-engine-seam.md) |
+| 116 | → | [`docs/skill-guidelines.md`](docs/skill-guidelines.md) |
+| 117 | → | [`docs/skills-model.md`](docs/skills-model.md) |
+| 118 | → | [`docs/templates.md`](docs/templates.md) |
+| 119 | → | [`docs/upgrade-recovery.md`](docs/upgrade-recovery.md) |
+| 120 | → | [`docs/v1-to-v2-changes.md`](docs/v1-to-v2-changes.md) |
+| 121 | → | [`README.md`](README.md) |
+| 122 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

@@ -199,7 +199,7 @@ class Finding:
 
 def check_dash(line: str, mask: list[bool], lineno: int, findings: list[Finding]) -> None:
     """Em/en dashes are banned in both zh and en output, so the rule is shared."""
-    for m in re.finditer("[—–]", line):
+    for m in re.finditer("[\u2014\u2013]", line):
         if overlaps_exempt(mask, m.start(), m.end()):
             continue
         findings.append(Finding(lineno, m.start() + 1, "dash", m.group(), "replace dash with comma / period"))

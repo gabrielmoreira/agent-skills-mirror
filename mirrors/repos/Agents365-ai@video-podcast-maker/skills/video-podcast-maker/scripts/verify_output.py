@@ -2,7 +2,7 @@
 """End-of-pipeline verification + auto-fix for a video project.
 
 Checks that all expected files exist and meet specs, auto-fixes common
-omissions (e.g. final_video.mp4 missing because Step 12 skipped subtitles
+omissions (e.g. final_video.mp4 missing because Step 10.1 skipped subtitles
 without aliasing), and prints a clean acceptance report.
 
 Usage:
@@ -31,22 +31,51 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import cli_envelope  # noqa: E402
 
 
-REQUIRED = [
+CORE_REQUIRED = [
     "podcast.txt",
     "podcast_audio.wav",
     "podcast_audio.srt",
     "timing.json",
-    "output.mp4",
-    "final_video.mp4",
     "publish_info.md",
 ]
 
+# Per-platform artifact requirements: long-form platforms (bilibili/youtube)
+# and xiaohongshu need the horizontal render chain (output.mp4 +
+# final_video.mp4); shorts-only platforms (douyin, weixin-channels) have no
+# long-form video and must ship the shorts/ outputs instead. Keep keys in
+# sync with PLATFORM_SECTIONS.
+PLATFORM_ARTIFACTS = {
+    "bilibili": {
+        "required": ("output.mp4", "final_video.mp4"),
+        "thumbnails": ("16x9", "4x3"),
+    },
+    "youtube": {
+        "required": ("output.mp4", "final_video.mp4"),
+        "thumbnails": ("16x9", "4x3"),
+    },
+    "xiaohongshu": {
+        # Horizontal long-form is optional per platform-matrix.md; the 3:4
+        # thumbnail is the required deliverable alongside the render.
+        "required": ("final_video.mp4",),
+        "thumbnails": ("3x4",),
+    },
+    "douyin": {
+        "required": ("shorts",),
+        "thumbnails": ("9x16",),
+    },
+    "weixin-channels": {
+        "required": ("shorts",),
+        "thumbnails": ("9x16",),
+    },
+}
+
 # Per aspect ratio, accept either the Remotion-generated or AI-generated
-# thumbnail name. Verified separately from REQUIRED so a project that used
-# the imagen backend doesn't get flagged for missing Remotion outputs.
+# thumbnail name. 3x4/9x16 have no AI variant today (Remotion-only).
 THUMBNAIL_ALTERNATIVES = {
     "16x9": ("thumbnail_remotion_16x9.png", "thumbnail_ai_16x9.png"),
     "4x3": ("thumbnail_remotion_4x3.png", "thumbnail_ai_4x3.png"),
+    "3x4": ("thumbnail_remotion_3x4.png",),
+    "9x16": ("thumbnail_remotion_9x16.png",),
 }
 
 OPTIONAL = [
@@ -60,6 +89,8 @@ OPTIONAL = [
 EXPECTED_RES = [(3840, 2160), (2160, 3840)]  # horizontal or vertical 4K
 THUMB_16x9 = (1920, 1080)
 THUMB_4x3 = (1200, 900)
+THUMB_3x4 = (1080, 1440)
+THUMB_9x16 = (1080, 1920)
 
 # Per-platform required publish_info.md section headings. Keep keys in sync
 # with prefs_schema.json::global.platform and the format tables in
@@ -74,16 +105,21 @@ PLATFORM_SECTIONS = {
 DEFAULT_PLATFORM = "bilibili"
 
 
-def _resolve_platform():
+def _resolve_platform(seed=True):
     """Read `global.platform` from user_prefs.json (shared state dir).
 
-    Falls back to bilibili if missing or malformed.
+    Falls back to bilibili if missing or malformed. With seed=False
+    (--no-fix preview) the state file is read without creating it, so a
+    read-only verify never mutates the filesystem.
     """
-    from _state import resolve_state_file
+    from _state import get_state_dir, resolve_state_file
 
-    prefs_path = resolve_state_file(
-        "user_prefs.json", template_filename="user_prefs.template.json"
-    )
+    if seed:
+        prefs_path = resolve_state_file(
+            "user_prefs.json", template_filename="user_prefs.template.json"
+        )
+    else:
+        prefs_path = get_state_dir(create=False) / "user_prefs.json"
     try:
         with open(prefs_path, encoding="utf-8") as f:
             prefs = json.load(f)
@@ -119,7 +155,7 @@ def ffprobe_video(path):
         a = next((s for s in data["streams"] if s["codec_type"] == "audio"), None)
         if not v:
             return None
-        num, _, den = v.get("r_frame_rate", "0/1").partition("/")
+        num, _, den = (v.get("avg_frame_rate") or v.get("r_frame_rate", "0/1")).partition("/")
         return {
             "width": int(v["width"]),
             "height": int(v["height"]),
@@ -203,7 +239,7 @@ def auto_fix(video_dir):
     elif not final_mp4.exists() and output_mp4.exists():
         shutil.copy2(output_mp4, final_mp4)
         fixes.append(
-            "Created final_video.mp4 from output.mp4 (no BGM mix; consider running Step 11)"
+            "Created final_video.mp4 from output.mp4 (no BGM mix; consider running Step 9.5)"
         )
 
     return fixes
@@ -314,8 +350,27 @@ def verify(video_dir, strict=False, do_auto_fix=True):
     else:
         print("\n--- Auto-fix skipped (--no-fix) ---")
 
+    platform = _resolve_platform(seed=do_auto_fix)
+    required = CORE_REQUIRED + list(PLATFORM_ARTIFACTS[platform]["required"])
+
     print("\n--- Required files ---")
-    for fname in REQUIRED:
+    shorts_mp4s = []
+    for fname in required:
+        if fname == "shorts":
+            # shorts-only platforms (douyin, weixin-channels): the deliverable
+            # is the 9:16 shorts set, not a horizontal long-form render.
+            # generate_shorts.py renders to shorts/<section>/<CompId>.mp4.
+            shorts_dir = video_dir / "shorts"
+            shorts_mp4s = (
+                sorted(shorts_dir.rglob("*.mp4")) if shorts_dir.is_dir() else []
+            )
+            if shorts_mp4s:
+                print(f"  ✓ shorts/          {len(shorts_mp4s)} short(s)")
+                result["required_files"]["present"].append("shorts")
+            else:
+                print("  ✗ shorts/          MISSING (no .mp4 shorts — run Step 11)")
+                result["required_files"]["missing"].append("shorts")
+            continue
         p = video_dir / fname
         if p.exists():
             size = p.stat().st_size
@@ -330,9 +385,10 @@ def verify(video_dir, strict=False, do_auto_fix=True):
             print(f"  ✗ {fname:<35} MISSING")
             result["required_files"]["missing"].append(fname)
 
-    # Thumbnails: per aspect ratio, accept Remotion OR AI naming. Each ratio
-    # only counts as missing if both alternatives are absent.
-    for aspect, names in THUMBNAIL_ALTERNATIVES.items():
+    # Thumbnails: per aspect ratio, accept Remotion OR AI naming. Only the
+    # platform's required ratios are checked.
+    for aspect in PLATFORM_ARTIFACTS[platform]["thumbnails"]:
+        names = THUMBNAIL_ALTERNATIVES[aspect]
         present = [n for n in names if (video_dir / n).exists()]
         if present:
             for n in present:
@@ -376,30 +432,94 @@ def verify(video_dir, strict=False, do_auto_fix=True):
             print(
                 f"  ✓ Duration: {info['duration']:.1f}s ({info['duration'] / 60:.1f} min)"
             )
-            print(f"  ✓ Video codec: {info['video_codec']}")
+            # Render contract: h264 + aac at 30fps (workflow-production.md Step 9).
+            codec_ok = info["video_codec"] == "h264"
+            audio_ok = info["audio_codec"] == "aac"
+            fps_ok = info["fps"] is not None and abs(info["fps"] - 30) < 0.5
+            print(f"  {'✓' if codec_ok else '✗'} Video codec: {info['video_codec']} (expected h264)")
             print(
-                f"  {'✓' if info['audio_codec'] else '✗'} Audio codec: {info['audio_codec'] or 'NONE'}"
+                f"  {'✓' if audio_ok else '✗'} Audio codec: {info['audio_codec'] or 'NONE'} (expected aac)"
             )
-            if not info["audio_codec"]:
-                errors.append("final_video.mp4 has no audio track")
+            print(f"  {'✓' if fps_ok else '✗'} FPS: {info['fps']} (expected ~30)")
+            if not codec_ok:
+                errors.append(f"final_video.mp4 video codec {info['video_codec']} != h264")
+            if not audio_ok:
+                errors.append(
+                    f"final_video.mp4 audio codec {info['audio_codec'] or 'NONE'} != aac"
+                )
+            if not fps_ok:
+                errors.append(f"final_video.mp4 fps {info['fps']} != 30")
             result["final_video"] = {
                 "width": info["width"],
                 "height": info["height"],
                 "duration_seconds": round(info["duration"], 2),
                 "video_codec": info["video_codec"],
                 "audio_codec": info["audio_codec"],
+                "fps": info["fps"],
                 "resolution_ok": res_ok,
+                "codec_ok": codec_ok,
+                "audio_ok": audio_ok,
+                "fps_ok": fps_ok,
             }
         else:
             errors.append("ffprobe failed on final_video.mp4")
             print("  ✗ ffprobe failed")
 
+    # Shorts specs — shorts-only platforms ship the 9:16 shorts as the
+    # deliverable, so they get the same render-contract checks as the
+    # final video (vertical 4K, h264 + aac, ~30fps).
+    shorts_records = []
+    if shorts_mp4s:
+        print(f"\n--- Shorts ({len(shorts_mp4s)} file(s)) ---")
+        for sp in shorts_mp4s:
+            info = ffprobe_video(sp)
+            label = sp.relative_to(video_dir)
+            if info is None:
+                errors.append(f"shorts: ffprobe failed on {label}")
+                print(f"  ✗ {label}: unreadable")
+                shorts_records.append({"path": str(label), "ok": False})
+                continue
+            res_ok = (info["width"], info["height"]) in EXPECTED_RES
+            codec_ok = info["video_codec"] == "h264"
+            audio_ok = info["audio_codec"] == "aac"
+            fps_ok = info["fps"] is not None and abs(info["fps"] - 30) < 0.5
+            short_ok = res_ok and codec_ok and audio_ok and fps_ok
+            if not short_ok:
+                errors.append(
+                    f"shorts: {label} not {EXPECTED_RES} h264+aac@30fps "
+                    f"(got {info['width']}x{info['height']} {info['video_codec']}/"
+                    f"{info['audio_codec']} @ {info['fps']}fps)"
+                )
+                print(f"  ✗ {label}: {info['width']}x{info['height']} {info['video_codec']}/"
+                      f"{info['audio_codec']} @ {info['fps']}fps")
+            else:
+                print(f"  ✓ {label}: {info['width']}x{info['height']} h264/aac @ {info['fps']}fps")
+            shorts_records.append({
+                "path": str(label),
+                "resolution_ok": res_ok,
+                "codec_ok": codec_ok,
+                "audio_ok": audio_ok,
+                "fps_ok": fps_ok,
+                "ok": short_ok,
+            })
+        result["shorts"] = {
+            "count": len(shorts_mp4s),
+            "files": shorts_records,
+            "ok": all(r["ok"] for r in shorts_records),
+        }
+
     # Thumbnail specs — check every alternative that's actually on disk.
-    # Both Remotion and AI variants for the same aspect ratio are valid; we
-    # report a missing aspect ratio only if NEITHER variant is present.
+    # Only the platform's required ratios are checked; a ratio is missing
+    # only when NEITHER of its variants is present.
     print("\n--- Thumbnails ---")
-    aspect_specs = {"16x9": THUMB_16x9, "4x3": THUMB_4x3}
-    for aspect, names in THUMBNAIL_ALTERNATIVES.items():
+    aspect_specs = {
+        "16x9": THUMB_16x9,
+        "4x3": THUMB_4x3,
+        "3x4": THUMB_3x4,
+        "9x16": THUMB_9x16,
+    }
+    for aspect in PLATFORM_ARTIFACTS[platform]["thumbnails"]:
+        names = THUMBNAIL_ALTERNATIVES[aspect]
         expected = aspect_specs[aspect]
         any_present = False
         for fname in names:
@@ -414,7 +534,7 @@ def verify(video_dir, strict=False, do_auto_fix=True):
                 any_present = True
                 thumb_record["present"] = True
                 sz = png_size(p)
-                if sz == expected:
+                if sz is not None and sz == expected:
                     print(f"  ✓ {fname}: {sz[0]}x{sz[1]}")
                     thumb_record["size"] = list(sz)
                     thumb_record["ok"] = True
@@ -453,16 +573,16 @@ def verify(video_dir, strict=False, do_auto_fix=True):
             wav_dur = wav_info["duration"]
             timing_dur = timing.get("total_duration", 0)
             drift = wav_dur - timing_dur
-            drift_ok = abs(drift) < 0.5
+            drift_ok = abs(drift) <= 0.5
             if drift_ok:
                 print(
                     f"  ✓ WAV {wav_dur:.2f}s ≈ timing.json {timing_dur:.2f}s (drift {drift:+.2f}s)"
                 )
             else:
                 print(
-                    f"  ⚠ WAV {wav_dur:.2f}s vs timing.json {timing_dur:.2f}s (drift {drift:+.2f}s)"
+                    f"  ✗ WAV {wav_dur:.2f}s vs timing.json {timing_dur:.2f}s (drift {drift:+.2f}s)"
                 )
-                warnings.append(
+                errors.append(
                     f"Audio/timing drift {drift:+.2f}s — last sections may truncate"
                 )
             sec_count = len(timing.get("sections", []))
@@ -478,6 +598,7 @@ def verify(video_dir, strict=False, do_auto_fix=True):
     # Final video vs audio — the rendered/mixed output must match the master clock.
     print("\n--- Final video / audio sync ---")
     if final_mp4.exists() and wav.exists():
+        info = ffprobe_video(final_mp4)
         wav_info_final = ffprobe_audio(wav)
         if info is None:
             print("  ✗ ffprobe failed on final_video.mp4")
@@ -487,7 +608,7 @@ def verify(video_dir, strict=False, do_auto_fix=True):
             final_dur = info["duration"]
             wav_dur = wav_info_final["duration"]
             sync_drift = final_dur - wav_dur
-            sync_ok = abs(sync_drift) < 0.5
+            sync_ok = abs(sync_drift) <= 0.5
             if sync_ok:
                 print(
                     f"  ✓ final_video {final_dur:.2f}s ≈ WAV {wav_dur:.2f}s (drift {sync_drift:+.2f}s)"
@@ -507,7 +628,6 @@ def verify(video_dir, strict=False, do_auto_fix=True):
     # Publish info sanity — required sections depend on which platform the
     # user is targeting. Falls back to bilibili if user_prefs.json is missing
     # or the platform key is unrecognized.
-    platform = _resolve_platform()
     print(f"\n--- publish_info.md (platform: {platform}) ---")
     pub = video_dir / "publish_info.md"
     if pub.exists():
@@ -552,7 +672,7 @@ def verify(video_dir, strict=False, do_auto_fix=True):
         for w in m_warnings:
             print(f"  ⚠ {w}")
             warnings.append(f"asset manifest: {w}")
-        if not m_errors:
+        if not m_errors and m_manifest is not None:
             count = len(m_manifest.get("assets", []))
             print(f"  ✓ {count} assets registered, no errors")
         o_errors, o_warnings, o_details = check_overlay_assets(video_dir, m_manifest)

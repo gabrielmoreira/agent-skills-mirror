@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 11 followed patterns, 18 file(s) materialized.
+Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 18 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 11 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 11 |
-| Files         | 18 |
+| Followed pats | 18 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -53,6 +53,7 @@ Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 11 followed pa
 
 - `packages/core/README.md`
 - `.github/CONTRIBUTING.md`
+- `.github/RELEASING.md`
 - `docs/tool-configuration.md`
 - `docs/context-management.md`
 - `docs/external-agents.md`
@@ -62,6 +63,12 @@ Mirror of `JackChen-me/open-multi-agent` — 26 default patterns, 11 followed pa
 - `docs/shared-memory.md`
 - `docs/checkpoint.md`
 - `docs/cli.md`
+- `docs/model-routing.md`
+- `docs/execution-routing.md`
+- `docs/task-scheduling.md`
+- `docs/consensus.md`
+- `docs/adaptive-recovery.md`
+- `docs/plan-replay.md`
 
 ## File Index
 
@@ -71,22 +78,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/execution-routing.md`](docs/execution-routing.md) |
-| 4 | ✓ | [`docs/observability-migration.md`](docs/observability-migration.md) |
-| 5 | ✓ | [`docs/observability-performance.md`](docs/observability-performance.md) |
-| 6 | ✓ | [`docs/observability-release-readiness.md`](docs/observability-release-readiness.md) |
-| 7 | ✓ | [`packages/create-oma-app/AGENTS.md`](packages/create-oma-app/AGENTS.md) |
+| 3 | ✓ | [`docs/observability-migration.md`](docs/observability-migration.md) |
+| 4 | ✓ | [`docs/observability-performance.md`](docs/observability-performance.md) |
+| 5 | ✓ | [`docs/observability-release-readiness.md`](docs/observability-release-readiness.md) |
+| 6 | ✓ | [`packages/create-oma-app/AGENTS.md`](packages/create-oma-app/AGENTS.md) |
+| 7 | ✓ | [`packages/create-oma-app/CLAUDE.md`](packages/create-oma-app/CLAUDE.md) |
 | 8 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 9 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
-| 10 | → | [`docs/cli.md`](docs/cli.md) |
-| 11 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 12 | → | [`docs/evaluation.md`](docs/evaluation.md) |
-| 13 | → | [`docs/external-agents.md`](docs/external-agents.md) |
-| 14 | → | [`docs/observability.md`](docs/observability.md) |
-| 15 | → | [`docs/providers.md`](docs/providers.md) |
-| 16 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 17 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 18 | → | [`packages/core/README.md`](packages/core/README.md) |
+| 9 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 10 | → | [`docs/adaptive-recovery.md`](docs/adaptive-recovery.md) |
+| 11 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
+| 12 | → | [`docs/cli.md`](docs/cli.md) |
+| 13 | → | [`docs/consensus.md`](docs/consensus.md) |
+| 14 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 15 | → | [`docs/evaluation.md`](docs/evaluation.md) |
+| 16 | → | [`docs/execution-routing.md`](docs/execution-routing.md) |
+| 17 | → | [`docs/external-agents.md`](docs/external-agents.md) |
+| 18 | → | [`docs/model-routing.md`](docs/model-routing.md) |
+| 19 | → | [`docs/observability.md`](docs/observability.md) |
+| 20 | → | [`docs/plan-replay.md`](docs/plan-replay.md) |
+| 21 | → | [`docs/providers.md`](docs/providers.md) |
+| 22 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 23 | → | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
+| 24 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 25 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

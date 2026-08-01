@@ -217,6 +217,22 @@ The check also self-heals on the next non-bot trigger — a push or a
 **review-thread** reply, not a regular PR comment (no `issue_comment`
 subscription).
 
+**If rerunning the passing non-bot instance alone does not clear the
+rollup (`#1745`)**: a HEAD can carry several `idd-advisory-convergence`
+check-run instances at once (the check fires on `pull_request` plus
+`pull_request_review`/`pull_request_review_comment`, and
+`cancel-in-progress` cancels most of them), and GitHub's own required-check
+rollup can stay pinned to a bot-triggered instance whose **conclusion** is
+`CANCELLED` — distinct from the `action_required` case above. Unlike
+`action_required`, a `CANCELLED`-conclusion bot-triggered instance is
+**not** gated: rerunning it completes normally and does not re-enter
+`action_required` (confirmed by direct experiment, `#1745`). If the
+non-bot rerun above does not clear the block, rerun every
+`CANCELLED`-conclusion bot-triggered sibling instance for the same HEAD
+next (`gh run rerun <run-id>` on each, one at a time, per the sequential
+rule in the helper-first plan below) — only an `action_required`-conclusion
+instance stays withheld from rerun.
+
 **Helper-first**: prints this diagnosis and ordered rerun plan, read-only.
 
 ```sh
@@ -274,7 +290,19 @@ condition below accounts for this.
 
 - **No interim polling turns** — schedule one wake at the **expected**
   completion, or background only if the topology is confirmed to route
-  completion back to this turn; otherwise wait synchronously. Never
+  completion back to this turn; otherwise wait synchronously — block
+  with `gh pr checks <pr-number> --watch --required` (works on a
+  fine-grained PAT; `gh run watch <run-id> --exit-status` does not).
+  Both only block, never decide: required-only scoping, duplicate-name
+  collapse, the no-required-checks route, and the
+  `ciWait.runningTimeout`/`generationTimeout` bound all stay with the
+  algorithm above — track elapsed time and apply its rerun-or-hold
+  decision if a watch outlasts it. Neither watches Copilot review
+  state — see `idd-advisory-wait.instructions.md`. A bare `sleep` may
+  be sandboxed or blocked in some runtimes (preventive; no observed
+  incident yet); a `run_in_background` Bash task or other
+  detached/backgrounded mechanism must not be used for this wait
+  unless the topology-safety condition above is confirmed. Never
   insert "is it done yet?" turns or end this turn assuming an
   unconfirmed background/async notification resumes it — that stalls
   silently under supervisor/worker topologies.

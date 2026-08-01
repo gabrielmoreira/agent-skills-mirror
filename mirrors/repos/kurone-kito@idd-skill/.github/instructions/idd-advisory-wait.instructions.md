@@ -40,8 +40,11 @@ one). Enter the full protocol below **only** when
 Keep the wait itself cheap per the
 [wake-up discipline](idd-ci.instructions.md#wake-up-discipline): a
 single wake at the **expected** completion, or background only if the
-topology-safety condition holds; otherwise wait synchronously. Batch
-all post-wait actions into one turn.
+topology-safety condition holds; otherwise wait synchronously — no
+single `gh` command blocks on Copilot review state; run the protocol
+below (helper-first, AW1-AW5 fallback) as a foreground wait, never
+`run_in_background`, absent the confirmed condition. Batch all
+post-wait actions into one turn.
 
 ## 1. Canonical path (helper-first)
 
@@ -272,11 +275,13 @@ verified HEAD within one pass).
 ### AW3-H — Hide superseded advisory-wait markers
 
 After a new `advisory-wait`/`advisory-wait-recovery` marker is verified
-for the current `PR_HEAD_SHA`, minimize every trusted prior
-`advisory-wait*` marker whose embedded HEAD SHA does **not** match, as
-`OUTDATED` (cuts F4 backlog and review-page noise). Find candidate IDs
-(trusted `advisory-wait*` markers with a differing embedded SHA), then
-call the minimize-markers command:
+for the current `PR_HEAD_SHA`, minimize every trusted prior marker of
+the `advisory-wait:`/`advisory-wait-recovery:`/`advisory-reroll:`
+family whose embedded HEAD SHA does **not** match, as `OUTDATED` (cuts
+F4 backlog and review-page noise — a stale-HEAD `advisory-reroll:`
+marker is exactly as much operational noise as a stale advisory-wait
+one). Find candidate IDs (trusted markers of that family with a
+differing embedded SHA), then call the minimize-markers command:
 [shell fallback AW3-H](../../docs/idd-advisory-wait-shell-fallback.md#aw3-h).
 
 Skip entirely if the new marker was not verified, the candidate set is

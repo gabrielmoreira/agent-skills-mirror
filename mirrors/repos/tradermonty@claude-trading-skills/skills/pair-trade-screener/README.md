@@ -26,13 +26,13 @@ The Pair Trade Screener finds statistically significant pair trading opportuniti
 
 ### Prerequisites
 
-- Python 3.8+
+- Python 3.9+
 - FMP API key (free tier: 250 requests/day)
 
 ### Install Dependencies
 
 ```bash
-pip install pandas numpy scipy statsmodels requests
+uv run --with 'statsmodels>=0.14,<0.15' python --version
 ```
 
 ### Get FMP API Key
@@ -54,11 +54,22 @@ Or add to `~/.bashrc` / `~/.zshrc` for persistence.
 
 ```bash
 # Screen Technology sector for pairs
-python scripts/find_pairs.py --sector Technology
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/find_pairs.py \
+  --sector Technology \
+  --output /tmp/pair-trade/technology.json
 
 # Analyze specific pair
-python scripts/analyze_spread.py --stock-a AAPL --stock-b MSFT
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/analyze_spread.py \
+  --stock-a AAPL \
+  --stock-b MSFT
 ```
+
+The screener creates the requested output parent directory and writes a JSON
+object with `metadata` and `pairs`. The analyzer writes its report to stdout.
+Invalid thresholds, duplicate symbols, insufficient lookback, missing
+`statsmodels`, and file-system errors exit nonzero with a concise message.
 
 ### Screening for Pairs
 
@@ -66,35 +77,35 @@ python scripts/analyze_spread.py --stock-a AAPL --stock-b MSFT
 
 ```bash
 # Screen entire sector
-python scripts/find_pairs.py --sector Financials
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/find_pairs.py --sector Financials --output /tmp/pair-trade/financials.json
 
 # Adjust correlation threshold
-python scripts/find_pairs.py --sector Energy --min-correlation 0.75
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/find_pairs.py --sector Energy --min-correlation 0.75 --output /tmp/pair-trade/energy.json
 
 # Longer lookback period
-python scripts/find_pairs.py --sector Healthcare --lookback-days 1095
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/find_pairs.py --sector Healthcare --lookback-days 1095 --output /tmp/pair-trade/healthcare.json
 ```
 
 **Custom Stock List:**
 
 ```bash
 # Test specific stocks
-python scripts/find_pairs.py --symbols AAPL,MSFT,GOOGL,META,NVDA
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/find_pairs.py --symbols AAPL,MSFT,GOOGL,META,NVDA --output /tmp/pair-trade/technology-leaders.json
 
 # Tech giants pair screening
-python scripts/find_pairs.py --symbols JPM,BAC,WFC,C,GS,MS
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/find_pairs.py --symbols JPM,BAC,WFC,C,GS,MS --output /tmp/pair-trade/banks.json
 ```
 
 **Full Options:**
 
 ```bash
-python scripts/find_pairs.py \
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/find_pairs.py \
   --sector Technology \
   --min-correlation 0.70 \
   --min-market-cap 10000000000 \
   --lookback-days 730 \
-  --output tech_pairs.json \
-  --api-key YOUR_KEY
+  --output /tmp/pair-trade/technology.json
 ```
 
 ### Analyzing Individual Pairs
@@ -102,19 +113,19 @@ python scripts/find_pairs.py \
 **Basic Analysis:**
 
 ```bash
-python scripts/analyze_spread.py --stock-a AAPL --stock-b MSFT
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/analyze_spread.py --stock-a AAPL --stock-b MSFT
 ```
 
 **Custom Parameters:**
 
 ```bash
-python scripts/analyze_spread.py \
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/analyze_spread.py \
   --stock-a JPM \
   --stock-b BAC \
   --lookback-days 365 \
   --entry-zscore 2.0 \
-  --exit-zscore 0.5 \
-  --api-key YOUR_KEY
+  --exit-zscore 0.5
 ```
 
 ## Example Output
@@ -223,13 +234,13 @@ PAIR TRADE ANALYSIS: AAPL / MSFT
 
 ```bash
 # Monday: Screen for new opportunities
-python scripts/find_pairs.py --sector Technology --output tech_pairs.json
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/find_pairs.py --sector Technology --output /tmp/pair-trade/technology.json
 
 # Review top pairs in JSON output
-cat tech_pairs.json | jq '.pairs[] | select(.signal != "NONE")'
+jq '.pairs[] | select(.signal != "NONE")' /tmp/pair-trade/technology.json
 
 # Detailed analysis on top candidates
-python scripts/analyze_spread.py --stock-a AAPL --stock-b MSFT
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/analyze_spread.py --stock-a AAPL --stock-b MSFT
 ```
 
 ### 2. Sector Rotation Pairs
@@ -237,21 +248,24 @@ python scripts/analyze_spread.py --stock-a AAPL --stock-b MSFT
 ```bash
 # Screen multiple sectors
 for sector in Technology Financials Healthcare Energy; do
-  python scripts/find_pairs.py --sector $sector --output ${sector}_pairs.json
+  uv run --with 'statsmodels>=0.14,<0.15' python \
+    skills/pair-trade-screener/scripts/find_pairs.py \
+    --sector "$sector" \
+    --output "/tmp/pair-trade/${sector}_pairs.json"
   sleep 5
 done
 
 # Find pairs with strongest signals
-cat *_pairs.json | jq '.pairs[] | select(.current_zscore | . > 2 or . < -2)'
+jq '.pairs[] | select(.current_zscore | . > 2 or . < -2)' /tmp/pair-trade/*_pairs.json
 ```
 
 ### 3. Monitor Existing Pairs
 
 ```bash
 # Update z-scores for current positions
-python scripts/analyze_spread.py --stock-a XOM --stock-b CVX
-python scripts/analyze_spread.py --stock-a JPM --stock-b BAC
-python scripts/analyze_spread.py --stock-a GOOGL --stock-b META
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/analyze_spread.py --stock-a XOM --stock-b CVX
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/analyze_spread.py --stock-a JPM --stock-b BAC
+uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/analyze_spread.py --stock-a GOOGL --stock-b META
 ```
 
 ## API Usage & Rate Limits
@@ -385,5 +399,5 @@ Educational and research use. Trade at your own risk. Past performance does not 
 
 **Version:** 1.0
 **Last Updated:** 2025-11-08
-**Dependencies:** Python 3.8+, pandas, numpy, scipy, statsmodels, requests
+**Dependencies:** Python 3.9+, pandas, numpy, scipy, requests, `statsmodels>=0.14,<0.15`
 **API:** FMP API (free tier sufficient)

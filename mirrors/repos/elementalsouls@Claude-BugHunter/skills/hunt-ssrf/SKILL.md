@@ -40,13 +40,70 @@ OOB means: a Burp Collaborator domain, an `interactsh-client` listener, a canary
 
 ### Default workflow
 
-1. **Plant the Collaborator subdomain first** (sub-tag it per sink: `dlsrcurl.<collab>`, `import.<collab>`, etc., so callbacks tell you which sink fired).
+1. **Plant the Collaborator payload first.** Sub-tagging (`dlsrcurl.<collab>`,
+   `import.<collab>`) only works if your listener actually reports the queried
+   subdomain back to you — **verify that before relying on it.** Burp's
+   `get_collaborator_interactions` keys results by **payload ID, not by subdomain**,
+   so several sub-tags generated from one payload are indistinguishable in the
+   output. When that is the case, **generate a fresh payload per candidate
+   parameter** and send exactly one request per payload.
 2. **Send the request** to the target endpoint.
 3. **Wait 30–120 seconds**, then poll the OOB listener.
 4. **Only after a confirmed callback** do you claim SSRF.
 5. If zero callbacks across all sub-tagged sinks: SSRF claims must be retracted, even if error messages echo URLs.
 
 **Lesson from a authorized engagement:** SharePoint's `/_layouts/15/download.aspx?SourceUrl=` returned 500 with the title `"The Web application at <attacker-URL> could not be found"`. Initial scan flagged this as SSRF (server clearly processed the URL). 38 Collaborator-tagged payloads across 12+ URL-accepting parameters yielded **zero DNS or HTTP interactions**. The "echo" was client-side error-string formatting; the server never made an outbound HTTP request. The path is actually an SP-internal `SPFile`/`SPWebApplication` resolver, not a generic URL fetcher. Reporting this as SSRF would have been N/A'd at triage.
+
+### Attribute the callback to ONE parameter before reporting
+
+A callback proves the server made a request. It does **not** tell you which
+parameter caused it, and the fix depends entirely on that.
+
+```
+BAD   — four candidate fields, one payload, fired in one batch
+        -> callbacks arrive, attribution impossible, retest required
+
+GOOD  — fresh payload per field, one request each, poll between
+        url      -> callbacks    <- this is the sink
+        apiUrl   -> none
+        endpoint -> none
+        target   -> none
+```
+
+**Run the negative control.** A parameter that produces *no* callback is evidence,
+and it belongs in the report — it is what lets the client fix the right field
+instead of allowlisting the wrong one.
+
+**Lesson from an authorized engagement.** A server-side request-forwarding endpoint
+accepted both `url` and `apiUrl`. The application's own stored config used `apiUrl`,
+so that was the obvious suspect — but `apiUrl` was inert and **`url` was the live
+sink**.
+Batch-firing both had produced callbacks with no attribution; only per-payload
+isolation identified the real parameter. A report naming `apiUrl` would have sent
+the client to patch a field that does nothing.
+
+### Blind vs full-read — establish which before scoring
+
+After a callback confirms the request leaves the server, **check whether the
+upstream response body is returned to you.** These are different findings:
+
+- **Blind** (callback only, no body): on the never-submit list standalone. Needs an
+  internal service reached, or data returned, to be reportable.
+- **Full-read** (upstream body in the response): substantially higher severity —
+  read arbitrary internal endpoints directly.
+
+```bash
+# one request settles it: fetch something with a known, recognisable body
+-d '{"url":"https://example.com/"}'
+# {"statusCode":200,"data":"<!doctype html>...<title>Example Domain</title>..."}
+#                          ^ body returned = full-read, not blind
+```
+
+Also body-diff a known-internal target against a known-external one. A **distinct
+status** on a link-local address (e.g. `401` from `169.254.169.254` where every
+other target returns `200`) is the metadata service answering — that proves reach
+to a non-internet-routable address, which a status code alone otherwise cannot.
+
 
 ---
 

@@ -9,7 +9,7 @@ decision is reversed, add a new one that says which record it supersedes.
 2. Add one line to the right section of this index.
 3. Do **not** paste the record body into `AGENTS.md`.
 
-156 records, 2026-05-19 → 2026-07-30.
+165 records, 2026-05-19 → 2026-07-31.
 
 ---
 
@@ -48,8 +48,9 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-06-02** — [Add a `/v1/responses` translation shim to the local proxy so Codex CLI works on llama.cpp models](2026-06-02-add-a-v1-responses-translation-shim-to-the-local-proxy-so-codex.md)
 - **2026-06-01** — [Add a "Launch" page to install + configure external coding agents / assistants against the local OpenAI-compatible API](2026-06-01-add-a-launch-page-to-install-configure-external-coding-agents.md)
 
-## Agent mode — autonomous loop, tools, skills, workspace (39)
+## Agent mode — autonomous loop, tools, skills, workspace (40)
 
+- **2026-07-31** — [Raise the Agent tool-step completion deadline to 600 seconds](2026-07-31-raise-agent-tool-step-completion-deadline-to-600-seconds.md)
 - **2026-07-27** — [Run Windows GAIA evaluation on the selected upstream GPU backend](2026-07-27-run-windows-gaia-evaluation-on-the-selected-upstream-gpu-backend.md)
 - **2026-07-27** — [Keep the GAIA evaluator out of desktop bundles](2026-07-27-keep-the-gaia-evaluator-out-of-desktop-bundles.md)
 - **2026-07-27** — [Evaluate the Rust Agent sequentially on gated GAIA validation](2026-07-27-evaluate-the-rust-agent-sequentially-on-gated-gaia-validation.md)
@@ -121,8 +122,10 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-06-02** — [Surface MLX KV-cache quantization (TurboQuant / uniform) as a provider setting](2026-06-02-surface-mlx-kv-cache-quantization-turboquant-uniform-as-a.md)
 - **2026-05-19** — [Use `AtomicBot-ai/mlx-vlm` as the MLX backend](2026-05-19-use-atomicbot-ai-mlx-vlm-as-the-mlx-backend.md)
 
-## llama.cpp providers & backend selection (37)
+## llama.cpp providers & backend selection (39)
 
+- **2026-07-31** — [Reconcile the TurboQuant release tag automatically on app update](2026-07-31-reconcile-turboquant-release-tag-automatically-on-app-update.md)
+- **2026-07-31** — [Adopt unified TurboQuant release tags and expand the Linux backend matrix to CUDA/ROCm](2026-07-31-adopt-unified-turboquant-releases-and-expand-linux-backends.md)
 - **2026-07-30** — [Cache optimal backends for chat upgrade prompts](2026-07-30-cache-optimal-backends-for-chat-upgrade-prompts.md)
 - **2026-07-29** — [Repair TurboQuant Windows CUDA backends missing cudart by copying from an installed upstream CUDA bin or downloading the ggml-org companion](2026-07-29-repair-turboquant-windows-cuda-missing-cudart-via-upstream-copy-or-ggml-org-companion.md)
 - **2026-07-29** — [Mirror the hot-swap persist-before-unload order into the TurboQuant `llamacpp` provider and lock both orders down with tests](2026-07-29-mirror-the-hot-swap-persist-before-unload-order-into-turboquant.md)
@@ -161,8 +164,9 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-05-19** — [Use `AtomicBot-ai/atomic-llama-cpp-turboquant` as the LLM backend](2026-05-19-use-atomicbot-ai-atomic-llama-cpp-turboquant-as-the-llm-backend.md)
 - **2026-05-19** — [Ship upstream `ggml-org/llama.cpp` as a second macOS provider, no fork](2026-05-19-ship-upstream-ggml-org-llama-cpp-as-a-second-macos-provider-no.md)
 
-## Models, Hub & downloads (12)
+## Models, Hub & downloads (13)
 
+- **2026-07-31** — [Store model catalog snapshots in IndexedDB](2026-07-31-store-model-catalog-snapshots-in-indexeddb.md)
 - **2026-07-14** — [Resume interrupted model downloads from verified persisted offsets](2026-07-14-resume-interrupted-model-downloads-from-verified-persisted.md)
 - **2026-06-16** — [Validate the model/mmproj GGUF (presence + size) before load so a missing/partial download fails fast with an actionable, classified error (ATO-187)](2026-06-16-validate-the-model-mmproj-gguf-presence-size-before-load-so-a.md)
 - **2026-06-16** — [Raise the model-load readiness timeout to a 30-min floor so large/cold-storage loads aren't cut off at 600s (ATO-188, MODEL_LOAD_TIMED_OUT)](2026-06-16-raise-the-model-load-readiness-timeout-to-a-30-min-floor-so.md)
@@ -182,14 +186,16 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-07-15** — [Aggregate Local API Server request telemetry into three-minute summaries (ATO-297)](2026-07-15-aggregate-local-api-server-request-telemetry-into-three-minute.md)
 - **2026-06-09** — [Make the Local API Server "Invalid host header" rejection actionable + fix Trusted Hosts field copy (ATO-118, scope I+II)](2026-06-09-make-the-local-api-server-invalid-host-header-rejection.md)
 
-## Telemetry, crash reporting & error handling (3)
+## Telemetry, crash reporting & error handling (4)
 
+- **2026-07-31** — [Use a valid ADL2 context for Windows AMD VRAM monitoring](2026-07-31-use-a-valid-adl2-context-for-windows-amd-vram-monitoring.md)
 - **2026-06-11** — [ATO-135 (web-app slice): clear the stuck "Failed to load" toast on a successful load (ATO-63) + map classified engine errors to actionable messages (ATO-121)](2026-06-11-ato-135-web-app-slice-clear-the-stuck-failed-to-load-toast-on-a.md)
 - **2026-06-10** — [Throttle crashloop `model_load` failure spam client-side; confirm `model_load.status` / api 404-noise are already-fixed-pending-rollout, not code bugs (ATO-130: ATO-133 + ATO-131 + ATO-132)](2026-06-10-throttle-crashloop-model-load-failure-spam-client-side-confirm.md)
 - **2026-06-09** — [Add zero-PII Sentry crash/error tracking to both the React frontend and the Rust/Tauri desktop, gated behind `productAnalytic` (ATO-113)](2026-06-09-add-zero-pii-sentry-crash-error-tracking-to-both-the-react.md)
 
-## Packaging, installers, autostart & platform policy (8)
+## Packaging, installers, autostart & platform policy (9)
 
+- **2026-07-31** — [Keep Linux AppImage updates compatible with AppImageLauncher](2026-07-31-keep-linux-appimage-updates-compatible-with-appimagelauncher.md)
 - **2026-07-13** — [Run tray status synchronization on Windows](2026-07-13-run-tray-status-synchronization-on-windows.md)
 - **2026-06-16** — [Switch macOS autostart from `LaunchAgent` to `AppleScript` (real Login Item) + one-time choice-preserving migration for existing users](2026-06-16-switch-macos-autostart-from-launchagent-to-applescript-real.md)
 - **2026-06-10** — [Default "Launch at startup" to ON for all users (new + existing), one-time seed, still user-disable-able](2026-06-10-default-launch-at-startup-to-on-for-all-users-new-existing-one.md)
@@ -199,8 +205,9 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-05-22** — [Pin static WiX `upgradeCode` to legacy Jan UUID for in-place MSI upgrades](2026-05-22-pin-static-wix-upgradecode-to-legacy-jan-uuid-for-in-place-msi.md)
 - **2026-05-19** — [Product identity is "Atomic Chat"; new code stops carrying Jan branding](2026-05-19-product-identity-is-atomic-chat-new-code-stops-carrying-jan.md)
 
-## UI / UX (8)
+## UI / UX (9)
 
+- **2026-07-31** — [Disable the transparent Windows window to stop the softbuffer fatal panic](2026-07-31-disable-transparent-windows-window-to-stop-softbuffer-panic.md)
 - **2026-07-30** — [Reveal the Windows window after native setup](2026-07-30-reveal-windows-after-first-frontend-frame.md)
 - **2026-07-27** — [Replace advanced model settings with a focused context control](2026-07-27-replace-advanced-model-settings-with-a-focused-context-control.md)
 - **2026-07-23** — [Present the Agent working directory as the Files root](2026-07-23-present-the-agent-working-directory-as-the-files-root.md)
@@ -210,8 +217,10 @@ decision is reversed, add a new one that says which record it supersedes.
 - **2026-06-11** — [Add a unified "Sampling — {assistant}" popover (assistant switcher + sampling params in one place) (ATO-155)](2026-06-11-add-a-unified-sampling-assistant-popover-assistant-switcher.md)
 - **2026-06-10** — [Render inline image (`file`) parts in the chat thread bubble (ATO-120)](2026-06-10-render-inline-image-file-parts-in-the-chat-thread-bubble-ato-120.md)
 
-## Other (7)
+## Other (9)
 
+- **2026-07-31** — [Surface MCP server runtime errors (ATO-385)](2026-07-31-surface-mcp-server-runtime-errors.md)
+- **2026-07-31** — [Fallback between HTTP-based MCP transports (ATO-384, ATO-385)](2026-07-31-fallback-between-http-based-mcp-transports.md)
 - **2026-07-29** — [Gate agent changes with local contract evidence](2026-07-29-gate-agent-changes-with-local-contract-evidence.md)
 - **2026-07-28** — [Grade tests by critical-flow evidence](2026-07-28-grade-tests-by-critical-flow-evidence.md)
 - **2026-07-28** — [Pin backend artifacts to verified tags](2026-07-28-pin-backend-artifacts-to-verified-tags.md)

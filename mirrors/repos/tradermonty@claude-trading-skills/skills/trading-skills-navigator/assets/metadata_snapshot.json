@@ -754,6 +754,22 @@
     {
       "category": "strategy-research",
       "difficulty": "advanced",
+      "display_name": "Residual Edge Analyzer",
+      "id": "residual-edge-analyzer",
+      "integrations": [
+        {
+          "id": "local_calculation",
+          "requirement": "not_required",
+          "type": "calculation"
+        }
+      ],
+      "status": "beta",
+      "summary": "Separate strategy return performance into declared baseline exposure and residual edge using HAC regression, rolling stability, baseline sensitivity, and regime diagnostics.",
+      "timeframe": "research"
+    },
+    {
+      "category": "strategy-research",
+      "difficulty": "advanced",
       "display_name": "Scenario Analyzer",
       "id": "scenario-analyzer",
       "integrations": [

@@ -96,17 +96,18 @@ def iter_files(root: Path) -> list[Path]:
                 "--cached",
                 "--others",
                 "--exclude-standard",
+                "-z",
             ],
-            encoding="utf-8",
-            errors="replace",
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
             check=False,
         )
-        if proc.returncode == 0 and proc.stdout.strip():
+        if proc.returncode == 0 and proc.stdout:
             files = []
-            for line in proc.stdout.splitlines():
-                path = root / line
+            for raw_path in proc.stdout.split(b"\0"):
+                if not raw_path:
+                    continue
+                path = root / os.fsdecode(raw_path)
                 if path.is_file() and not is_excluded(path, root):
                     files.append(path)
             return files
@@ -155,6 +156,9 @@ def instruction_paths(root: Path) -> list[Path]:
     instructions_dir = root / ".github" / "instructions"
     if instructions_dir.is_dir():
         candidates.extend(sorted(instructions_dir.glob("*.md")))
+    rules_dir = root / ".claude" / "rules"
+    if rules_dir.is_dir():
+        candidates.extend(sorted(rules_dir.glob("*.md")))
     return [path for path in candidates if path.is_file() and not is_excluded(path, root)]
 
 
@@ -237,6 +241,12 @@ def scan_markdown_links(files: list[Path], root: Path) -> list[str]:
                 target = urllib.parse.unquote(target.split("#", 1)[0])
                 if not target:
                     continue
+                # A leading slash is a site-root route, not a filesystem-relative
+                # Markdown reference. Its validity belongs to the site's route or
+                # link checker; treating it as /path/on/the/audit-host is a false
+                # broken-doc finding.
+                if target.startswith("/"):
+                    continue
                 full = (path.parent / target).resolve()
                 if not full.exists():
                     missing.append(f"{rel(path, root)}:{lineno} -> {target}")
@@ -305,15 +315,32 @@ def hotspot_ownership_surface(
     missing: list[str] = []
     for lines, _size, path in records:
         relative = rel(path, root)
+        relative_path = Path(relative)
+        lower_parts = tuple(part.lower() for part in relative_path.parts)
+        if any(part in {"test", "tests", "spec", "specs", "fixtures"} for part in lower_parts):
+            continue
+        lower_name = relative_path.name.lower()
+        if re.search(r"(?:^|[._-])(?:test|tests|spec|specs)(?:[._-]|$)", lower_name):
+            continue
+
         relative_lower = relative.lower()
+        candidates = [relative_lower]
+        # A hotspot entry commonly owns a directory or subsystem rather than
+        # repeating every large filename. Match the deepest documented parent,
+        # but do not accept a single top-level directory as useful ownership.
+        parent = relative_path.parent
+        while len(parent.parts) >= 2:
+            candidates.append(parent.as_posix().lower().rstrip("/") + "/")
+            parent = parent.parent
         indices: list[int] = []
-        start = 0
-        while True:
-            index = lower_text.find(relative_lower, start)
-            if index < 0:
-                break
-            indices.append(index)
-            start = index + len(relative_lower)
+        for candidate in candidates:
+            start = 0
+            while True:
+                index = lower_text.find(candidate, start)
+                if index < 0:
+                    break
+                indices.append(index)
+                start = index + len(candidate)
 
         if not indices:
             missing.append(f"{relative} lines={lines} reason=not mentioned in agent instructions")
@@ -327,7 +354,15 @@ def hotspot_ownership_surface(
             line_no = lower_text[:index].count("\n")
             local_lines = instruction_lines[max(0, line_no - 1): line_no + 4]
             local_context = "\n".join(local_lines)
-            has_hotspot_context = bool(HOTSPOT_WORD_RE.search(window))
+            section_heading = ""
+            for prior_line in reversed(instruction_lines[: line_no + 1]):
+                if prior_line.lstrip().startswith("#"):
+                    section_heading = prior_line
+                    break
+            has_hotspot_context = bool(
+                HOTSPOT_WORD_RE.search(window)
+                or HOTSPOT_WORD_RE.search(section_heading)
+            )
             has_verification_context = bool(VERIFICATION_WORD_RE.search(local_context))
             saw_hotspot_context = saw_hotspot_context or has_hotspot_context
             saw_verification_context = saw_verification_context or has_verification_context
@@ -462,15 +497,10 @@ def main() -> int:
 
     doc_ref_status = "unavailable"
     doc_ref_detail = ""
-    checker = os.environ.get("DOC_REF_CHECKER")
-    if checker and Path(checker).is_file():
-        checker_command = (
-            [sys.executable, checker, str(root)]
-            if Path(checker).suffix == ".py"
-            else ["bash", checker, str(root)]
-        )
+    checker = Path(__file__).with_name("check_doc_refs.py")
+    if checker.is_file():
         proc = subprocess.run(
-            checker_command,
+            [sys.executable, "-I", str(checker), str(root)],
             encoding="utf-8",
             errors="replace",
             stdout=subprocess.PIPE,

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 37 followed patterns, 3712 file(s) materialized.
+Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 26 default patterns, 37 followed patterns, 3738 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `brycewang-stanford/Awesome-Agent-Skills-for-Empirical-Research` — 2
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 37 |
-| Files         | 3712 |
+| Files         | 3738 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -3770,43 +3770,69 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3673 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/literature-review-tools/scripts/litrun.py`](skills/71-brycewang-lit-review-agent-tools/literature-review-tools/scripts/litrun.py) |
 | 3674 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/literature-review-tools/SKILL.md`](skills/71-brycewang-lit-review-agent-tools/literature-review-tools/SKILL.md) |
 | 3675 | ✓ | [`skills/71-brycewang-lit-review-agent-tools/README-original.md`](skills/71-brycewang-lit-review-agent-tools/README-original.md) |
-| 3676 | → | [`CHANGELOG.md`](CHANGELOG.md) |
-| 3677 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 3678 | → | [`docs/archive/EMPIRICAL_TOOLS_2026-06.md`](docs/archive/EMPIRICAL_TOOLS_2026-06.md) |
-| 3679 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
-| 3680 | → | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
-| 3681 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
-| 3682 | → | [`docs/EVALS.md`](docs/EVALS.md) |
-| 3683 | → | [`docs/FAQ.md`](docs/FAQ.md) |
-| 3684 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
-| 3685 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
-| 3686 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
-| 3687 | → | [`docs/INTEROP.md`](docs/INTEROP.md) |
-| 3688 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
-| 3689 | → | [`docs/LONG_SKILL_STATUS.md`](docs/LONG_SKILL_STATUS.md) |
-| 3690 | → | [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) |
-| 3691 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
-| 3692 | → | [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) |
-| 3693 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
-| 3694 | → | [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md) |
-| 3695 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
-| 3696 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
-| 3697 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
-| 3698 | → | [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
-| 3699 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
-| 3700 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
-| 3701 | → | [`docs/TRUST.md`](docs/TRUST.md) |
-| 3702 | → | [`docs/WORKFLOW_MAP.md`](docs/WORKFLOW_MAP.md) |
-| 3703 | → | [`INSTALL.md`](INSTALL.md) |
-| 3704 | → | [`README-en.md`](README-en.md) |
-| 3705 | → | [`README-ja.md`](README-ja.md) |
-| 3706 | → | [`README-ko.md`](README-ko.md) |
-| 3707 | → | [`README-zh-CN.md`](README-zh-CN.md) |
-| 3708 | → | [`README-zh-TW.md`](README-zh-TW.md) |
-| 3709 | → | [`README.md`](README.md) |
-| 3710 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
-| 3711 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
-| 3712 | → | [`tools/README.md`](tools/README.md) |
+| 3676 | ✓ | [`skills/72-kaggle-research/kaggle-research/references/authentication.md`](skills/72-kaggle-research/kaggle-research/references/authentication.md) |
+| 3677 | ✓ | [`skills/72-kaggle-research/kaggle-research/references/competitions.md`](skills/72-kaggle-research/kaggle-research/references/competitions.md) |
+| 3678 | ✓ | [`skills/72-kaggle-research/kaggle-research/references/datasets.md`](skills/72-kaggle-research/kaggle-research/references/datasets.md) |
+| 3679 | ✓ | [`skills/72-kaggle-research/kaggle-research/references/kernels.md`](skills/72-kaggle-research/kaggle-research/references/kernels.md) |
+| 3680 | ✓ | [`skills/72-kaggle-research/kaggle-research/references/models.md`](skills/72-kaggle-research/kaggle-research/references/models.md) |
+| 3681 | ✓ | [`skills/72-kaggle-research/kaggle-research/references/testing-and-safety.md`](skills/72-kaggle-research/kaggle-research/references/testing-and-safety.md) |
+| 3682 | ✓ | [`skills/72-kaggle-research/kaggle-research/scripts/kaggle_research.py`](skills/72-kaggle-research/kaggle-research/scripts/kaggle_research.py) |
+| 3683 | ✓ | [`skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/__init__.py`](skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/__init__.py) |
+| 3684 | ✓ | [`skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/artifacts.py`](skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/artifacts.py) |
+| 3685 | ✓ | [`skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/commands.py`](skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/commands.py) |
+| 3686 | ✓ | [`skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/result.py`](skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/result.py) |
+| 3687 | ✓ | [`skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/runner.py`](skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/runner.py) |
+| 3688 | ✓ | [`skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/security.py`](skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/security.py) |
+| 3689 | ✓ | [`skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/smoke.py`](skills/72-kaggle-research/kaggle-research/scripts/kaggle_runtime/smoke.py) |
+| 3690 | ✓ | [`skills/72-kaggle-research/kaggle-research/SKILL.md`](skills/72-kaggle-research/kaggle-research/SKILL.md) |
+| 3691 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/__init__.py`](skills/72-kaggle-research/kaggle-research/tests/__init__.py) |
+| 3692 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/_support.py`](skills/72-kaggle-research/kaggle-research/tests/_support.py) |
+| 3693 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_artifacts.py`](skills/72-kaggle-research/kaggle-research/tests/test_artifacts.py) |
+| 3694 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_cli.py`](skills/72-kaggle-research/kaggle-research/tests/test_cli.py) |
+| 3695 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_commands.py`](skills/72-kaggle-research/kaggle-research/tests/test_commands.py) |
+| 3696 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_live_readonly.py`](skills/72-kaggle-research/kaggle-research/tests/test_live_readonly.py) |
+| 3697 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_runner.py`](skills/72-kaggle-research/kaggle-research/tests/test_runner.py) |
+| 3698 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_security.py`](skills/72-kaggle-research/kaggle-research/tests/test_security.py) |
+| 3699 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_skill_contract.py`](skills/72-kaggle-research/kaggle-research/tests/test_skill_contract.py) |
+| 3700 | ✓ | [`skills/72-kaggle-research/kaggle-research/tests/test_smoke.py`](skills/72-kaggle-research/kaggle-research/tests/test_smoke.py) |
+| 3701 | ✓ | [`skills/72-kaggle-research/README.md`](skills/72-kaggle-research/README.md) |
+| 3702 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 3703 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 3704 | → | [`docs/archive/EMPIRICAL_TOOLS_2026-06.md`](docs/archive/EMPIRICAL_TOOLS_2026-06.md) |
+| 3705 | → | [`docs/CHOOSING_A_SKILL.md`](docs/CHOOSING_A_SKILL.md) |
+| 3706 | → | [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) |
+| 3707 | → | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) |
+| 3708 | → | [`docs/EVALS.md`](docs/EVALS.md) |
+| 3709 | → | [`docs/FAQ.md`](docs/FAQ.md) |
+| 3710 | → | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) |
+| 3711 | → | [`docs/GOLDEN_WORKFLOWS.md`](docs/GOLDEN_WORKFLOWS.md) |
+| 3712 | → | [`docs/INSTALL.md`](docs/INSTALL.md) |
+| 3713 | → | [`docs/INTEROP.md`](docs/INTEROP.md) |
+| 3714 | → | [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) |
+| 3715 | → | [`docs/LONG_SKILL_STATUS.md`](docs/LONG_SKILL_STATUS.md) |
+| 3716 | → | [`docs/PLAN-2026-07.md`](docs/PLAN-2026-07.md) |
+| 3717 | → | [`docs/QUALITY_GATE.md`](docs/QUALITY_GATE.md) |
+| 3718 | → | [`docs/RELEASE_NOTES.md`](docs/RELEASE_NOTES.md) |
+| 3719 | → | [`docs/RELEASE.md`](docs/RELEASE.md) |
+| 3720 | → | [`docs/RIGOR_COVERAGE.md`](docs/RIGOR_COVERAGE.md) |
+| 3721 | → | [`docs/ROADMAP.md`](docs/ROADMAP.md) |
+| 3722 | → | [`docs/SKILL_AUDIT.md`](docs/SKILL_AUDIT.md) |
+| 3723 | → | [`docs/SKILL_CATALOG.md`](docs/SKILL_CATALOG.md) |
+| 3724 | → | [`docs/SKILL_HYGIENE.md`](docs/SKILL_HYGIENE.md) |
+| 3725 | → | [`docs/SKILL_SUBMISSION_GUIDE.md`](docs/SKILL_SUBMISSION_GUIDE.md) |
+| 3726 | → | [`docs/TAXONOMY.md`](docs/TAXONOMY.md) |
+| 3727 | → | [`docs/TRUST.md`](docs/TRUST.md) |
+| 3728 | → | [`docs/WORKFLOW_MAP.md`](docs/WORKFLOW_MAP.md) |
+| 3729 | → | [`INSTALL.md`](INSTALL.md) |
+| 3730 | → | [`README-en.md`](README-en.md) |
+| 3731 | → | [`README-ja.md`](README-ja.md) |
+| 3732 | → | [`README-ko.md`](README-ko.md) |
+| 3733 | → | [`README-zh-CN.md`](README-zh-CN.md) |
+| 3734 | → | [`README-zh-TW.md`](README-zh-TW.md) |
+| 3735 | → | [`README.md`](README.md) |
+| 3736 | → | [`SECURITY-SCAN-REPORT.md`](SECURITY-SCAN-REPORT.md) |
+| 3737 | → | [`tools/CATALOG.md`](tools/CATALOG.md) |
+| 3738 | → | [`tools/README.md`](tools/README.md) |
 
 ---
 

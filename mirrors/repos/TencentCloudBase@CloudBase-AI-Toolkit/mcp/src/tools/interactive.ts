@@ -73,6 +73,11 @@ export interface EnvSetupFailureInfo {
     createEnvError?: any;
     queryEnvError?: string;
     timeoutDuration?: number;
+    /**
+     * User-facing notice emitted at checkAndCreateFreeEnv entry.
+     * Informational only — no confirm required.
+     */
+    freeEnvUserNotice?: string;
   };
 }
 
@@ -364,6 +369,11 @@ export async function _promptAndSetEnvironmentId(
       inCloudMode,
     });
 
+    // Surface the user-facing notice emitted by checkAndCreateFreeEnv entry.
+    // Informational only — no confirm required. Captured in outer scope so the
+    // CloudMode failure path below can also prepend it to the error message.
+    let freeEnvUserNotice: string | undefined;
+
     // Only try to create free environment if TCB service is initialized successfully
     // If InitTcb failed, skip environment creation
     if (!setupContext.initTcbError && setupContext.tcbServiceInitialized) {
@@ -371,10 +381,17 @@ export async function _promptAndSetEnvironmentId(
 
       // Try to create free environment (both normal and cloud mode)
       debug("[interactive] Calling checkAndCreateFreeEnv...");
-      const { success, envId, context: createContext } =
+      const { success, envId, context: createContext, userNotice } =
         await checkAndCreateFreeEnv(cloudbase, setupContext);
 
+      freeEnvUserNotice = userNotice;
       setupContext = { ...setupContext, ...createContext };
+
+      // Surface the user-facing notice emitted by checkAndCreateFreeEnv.
+      // Informational only — no confirm required.
+      if (userNotice) {
+        debug("[interactive] checkAndCreateFreeEnv user notice:", { userNotice });
+      }
 
       debug("[interactive] checkAndCreateFreeEnv result:", {
         success,
@@ -388,7 +405,8 @@ export async function _promptAndSetEnvironmentId(
         } : undefined,
         promotionalActivities: setupContext.promotionalActivities,
         tcbServiceInitialized: setupContext.tcbServiceInitialized,
-        hasInitTcbError: !!setupContext.initTcbError
+        hasInitTcbError: !!setupContext.initTcbError,
+        hasUserNotice: !!userNotice
       });
 
       // Check all possible scenarios
@@ -523,6 +541,11 @@ export async function _promptAndSetEnvironmentId(
       let failureReason: EnvSetupFailureInfo['reason'] = 'no_environments';
       let errorCode = "NO_ENVIRONMENTS";
 
+      // Prepend the user-facing notice from checkAndCreateFreeEnv entry so the
+      // user knows an automatic free-env creation was attempted (informational).
+      if (freeEnvUserNotice) {
+        errorMsg = `${freeEnvUserNotice}\n${errorMsg}`;
+      }
       if (setupContext.initTcbError) {
         errorMsg += `\nCloudBase 初始化失败: ${setupContext.initTcbError.message}`;
         failureReason = 'tcb_init_failed';
@@ -552,6 +575,7 @@ export async function _promptAndSetEnvironmentId(
           details: {
             initTcbError: setupContext.initTcbError,
             createEnvError: setupContext.createEnvError,
+            freeEnvUserNotice,
           },
         },
       };

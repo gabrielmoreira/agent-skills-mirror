@@ -1,7 +1,7 @@
 ---
 name: xberg
 description: >-
-  Extract text, tables, metadata, and images from 98+ document formats
+  Extract text, tables, metadata, and images from 101 document formats
   (PDF, Office, images, HTML, email, archives, academic) using Xberg.
   Use when writing code that calls Xberg APIs in Python, Node.js/TypeScript,
   Rust, or CLI. Covers installation, extraction (sync/async), configuration
@@ -15,14 +15,14 @@ metadata:
 
 <!--
 AI-RULEZ :: GENERATED FILE — DO NOT EDIT
-Content-Hash: blake3:0b22700fea0a121f9488260cdba4bdb39fcb12a9bb6277c1784b9fc7ab3eddc9
-Source-Hash: blake3:99eaa846435086c1ff05d166f982bb18611930ffddfcc8180d3d5ed38bca0ac2
+Content-Hash: blake3:99de599640f2b3a9128bd4d1b4d281cf91f0d6d70802f8e283c96537a8287ec9
+Source-Hash: blake3:82ab4189295849cf74b6118f718427aa9b35c0c9a43e5c9c19d7de5de9061464
 Schema-Version: v1
 -->
 
 # Xberg Document Extraction
 
-Xberg is a high-performance document intelligence library with a Rust core and native bindings for Python, Node.js/TypeScript, Ruby, Go, Java, C#, PHP, and Elixir. It extracts text, tables, metadata, and images from 98+ file formats including PDF, Office documents, images (with OCR), HTML, email, archives, and academic formats.
+Xberg is a high-performance document intelligence library with a Rust core and native bindings for Python, Node.js/TypeScript, Ruby, Go, Java, C#, PHP, and Elixir. It extracts text, tables, metadata, and images from 101 file formats across 115 file extensions including PDF, Office documents, images (with OCR), HTML, email, archives, and academic formats.
 
 Use this skill when writing code that:
 
@@ -405,7 +405,7 @@ Detailed reference files for specific topics:
 - **[Rust API Reference](references/rust-api.md)** — All functions with feature gates, structs, Cargo.toml examples
 - **[CLI Reference](references/cli-reference.md)** — All commands, flags, config precedence, exit codes
 - **[Configuration Reference](references/configuration.md)** — TOML/YAML/JSON formats, auto-discovery, env vars, full schema
-- **[Supported Formats](references/supported-formats.md)** — All 98+ formats with file extensions and MIME types
+- **[Supported Formats](references/supported-formats.md)** — All 101 formats (115 file extensions) with file extensions and MIME types
 - **[Advanced Features](references/advanced-features.md)** — Plugins, embeddings, MCP server, API server, security limits
 - **[Other Language Bindings](references/other-bindings.md)** — Go, Ruby, Java, C#, PHP, Elixir, WASM, Docker
 

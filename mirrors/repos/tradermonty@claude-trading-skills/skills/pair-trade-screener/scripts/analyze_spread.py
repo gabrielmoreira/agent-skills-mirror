@@ -5,9 +5,12 @@ Pair Trade Spread Analyzer
 Analyzes a specific pair's spread behavior and generates trading signals.
 
 Usage:
-    python analyze_spread.py --stock-a AAPL --stock-b MSFT
+    uv run --with 'statsmodels>=0.14,<0.15' python \
+        skills/pair-trade-screener/scripts/analyze_spread.py \
+        --stock-a AAPL --stock-b MSFT
 
-    python analyze_spread.py \\
+    uv run --with 'statsmodels>=0.14,<0.15' python \
+        skills/pair-trade-screener/scripts/analyze_spread.py \
         --stock-a JPM \\
         --stock-b BAC \\
         --lookback-days 365 \\
@@ -15,13 +18,14 @@ Usage:
         --exit-zscore 0.5
 
 Requirements:
-    pip install pandas numpy scipy statsmodels requests matplotlib
+    Python 3.9+ and statsmodels>=0.14,<0.15
 
 Author: Claude Trading Skills
 Version: 1.0
 """
 
 import argparse
+import math
 import os
 import sys
 import time
@@ -30,8 +34,7 @@ import numpy as np
 import pandas as pd
 import requests
 from scipy import stats
-from statsmodels.tsa.ar_model import AutoReg
-from statsmodels.tsa.stattools import adfuller
+from statsmodels_support import require_statsmodels
 
 # =============================================================================
 # FMP API Functions
@@ -126,6 +129,15 @@ def calculate_hedge_ratio(prices_a, prices_b):
     aligned_a = prices_a.loc[common_dates]
     aligned_b = prices_b.loc[common_dates]
 
+    if (
+        len(common_dates) < 2
+        or aligned_a.nunique() < 2
+        or aligned_b.nunique() < 2
+        or not np.isfinite(aligned_a.to_numpy()).all()
+        or not np.isfinite(aligned_b.to_numpy()).all()
+    ):
+        raise ValueError("at least two finite observations and non-constant prices are required")
+
     # Linear regression
     slope, intercept, r_value, p_value, std_err = stats.linregress(aligned_b, aligned_a)
 
@@ -141,6 +153,8 @@ def calculate_hedge_ratio(prices_a, prices_b):
 
 def test_cointegration(spread):
     """Test for cointegration using ADF test"""
+    _, adfuller = require_statsmodels()
+
     try:
         result = adfuller(spread, maxlag=1, regression="c")
         return {
@@ -156,10 +170,12 @@ def test_cointegration(spread):
 
 def calculate_half_life(spread):
     """Estimate mean reversion half-life"""
+    AutoReg, _ = require_statsmodels()
+
     try:
         model = AutoReg(spread.dropna(), lags=1)
         result = model.fit()
-        phi = result.params[1]
+        phi = result.params.iloc[1]
 
         if phi >= 1.0 or phi <= 0:
             return None
@@ -413,6 +429,17 @@ def main():
 
     args = parser.parse_args()
 
+    if args.stock_a.upper() == args.stock_b.upper():
+        parser.error("--stock-a and --stock-b must be different symbols")
+    if args.lookback_days < 90:
+        parser.error("--lookback-days must be at least 90")
+    if not math.isfinite(args.entry_zscore) or args.entry_zscore <= 0:
+        parser.error("--entry-zscore must be finite and greater than 0")
+    if not math.isfinite(args.exit_zscore) or args.exit_zscore < 0:
+        parser.error("--exit-zscore must be finite and greater than or equal to 0")
+    if args.exit_zscore >= args.entry_zscore:
+        parser.error("--exit-zscore must be less than --entry-zscore")
+
     # Get API key
     api_key = get_api_key(args.api_key)
 
@@ -443,6 +470,8 @@ def main():
     # Calculate z-score
     zscore = calculate_zscore_series(spread, window=90)
     current_zscore = zscore.iloc[-1] if not pd.isna(zscore.iloc[-1]) else None
+    if current_zscore is None or not math.isfinite(current_zscore):
+        raise RuntimeError("could not calculate a finite z-score from the available price history")
 
     # Print report
     print_analysis_report(
@@ -461,5 +490,15 @@ def main():
     )
 
 
+def cli():
+    """Run the command-line interface without exposing a traceback to users."""
+    try:
+        main()
+    except (RuntimeError, ValueError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(cli())

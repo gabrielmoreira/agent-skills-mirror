@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 5 followed patterns, 90 file(s) materialized.
+Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 5 followed patterns, 185 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `open-metadata/OpenMetadata` — 26 default patterns, 5 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 5 |
-| Files         | 90 |
+| Files         | 185 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -146,13 +146,108 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 81 | ✓ | [`skills/test-locally/SKILL.md`](skills/test-locally/SKILL.md) |
 | 82 | ✓ | [`skills/ui-checkstyle/SKILL.md`](skills/ui-checkstyle/SKILL.md) |
 | 83 | ✓ | [`skills/ui-core-components/SKILL.md`](skills/ui-core-components/SKILL.md) |
-| 84 | ✓ | [`skills/verification/SKILL.md`](skills/verification/SKILL.md) |
-| 85 | ✓ | [`skills/writing-playwright-tests/SKILL.md`](skills/writing-playwright-tests/SKILL.md) |
-| 86 | → | [`.claude/rules/migrations.md`](.claude/rules/migrations.md) |
-| 87 | → | [`.claude/rules/schema-first.md`](.claude/rules/schema-first.md) |
-| 88 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 89 | → | [`DEVELOPER.md`](DEVELOPER.md) |
-| 90 | → | [`docs/index.md`](docs/index.md) |
+| 84 | ✓ | [`skills/vendor/composition-patterns/AGENTS.md`](skills/vendor/composition-patterns/AGENTS.md) |
+| 85 | ✓ | [`skills/vendor/composition-patterns/metadata.json`](skills/vendor/composition-patterns/metadata.json) |
+| 86 | ✓ | [`skills/vendor/composition-patterns/README.md`](skills/vendor/composition-patterns/README.md) |
+| 87 | ✓ | [`skills/vendor/composition-patterns/rules/_sections.md`](skills/vendor/composition-patterns/rules/_sections.md) |
+| 88 | ✓ | [`skills/vendor/composition-patterns/rules/_template.md`](skills/vendor/composition-patterns/rules/_template.md) |
+| 89 | ✓ | [`skills/vendor/composition-patterns/rules/architecture-avoid-boolean-props.md`](skills/vendor/composition-patterns/rules/architecture-avoid-boolean-props.md) |
+| 90 | ✓ | [`skills/vendor/composition-patterns/rules/architecture-compound-components.md`](skills/vendor/composition-patterns/rules/architecture-compound-components.md) |
+| 91 | ✓ | [`skills/vendor/composition-patterns/rules/patterns-children-over-render-props.md`](skills/vendor/composition-patterns/rules/patterns-children-over-render-props.md) |
+| 92 | ✓ | [`skills/vendor/composition-patterns/rules/patterns-explicit-variants.md`](skills/vendor/composition-patterns/rules/patterns-explicit-variants.md) |
+| 93 | ✓ | [`skills/vendor/composition-patterns/rules/react19-no-forwardref.md`](skills/vendor/composition-patterns/rules/react19-no-forwardref.md) |
+| 94 | ✓ | [`skills/vendor/composition-patterns/rules/state-context-interface.md`](skills/vendor/composition-patterns/rules/state-context-interface.md) |
+| 95 | ✓ | [`skills/vendor/composition-patterns/rules/state-decouple-implementation.md`](skills/vendor/composition-patterns/rules/state-decouple-implementation.md) |
+| 96 | ✓ | [`skills/vendor/composition-patterns/rules/state-lift-state.md`](skills/vendor/composition-patterns/rules/state-lift-state.md) |
+| 97 | ✓ | [`skills/vendor/composition-patterns/SKILL.md`](skills/vendor/composition-patterns/SKILL.md) |
+| 98 | ✓ | [`skills/vendor/composition-patterns/VENDORED.md`](skills/vendor/composition-patterns/VENDORED.md) |
+| 99 | ✓ | [`skills/vendor/react-best-practices/AGENTS.md`](skills/vendor/react-best-practices/AGENTS.md) |
+| 100 | ✓ | [`skills/vendor/react-best-practices/metadata.json`](skills/vendor/react-best-practices/metadata.json) |
+| 101 | ✓ | [`skills/vendor/react-best-practices/README.md`](skills/vendor/react-best-practices/README.md) |
+| 102 | ✓ | [`skills/vendor/react-best-practices/rules/_sections.md`](skills/vendor/react-best-practices/rules/_sections.md) |
+| 103 | ✓ | [`skills/vendor/react-best-practices/rules/_template.md`](skills/vendor/react-best-practices/rules/_template.md) |
+| 104 | ✓ | [`skills/vendor/react-best-practices/rules/advanced-effect-event-deps.md`](skills/vendor/react-best-practices/rules/advanced-effect-event-deps.md) |
+| 105 | ✓ | [`skills/vendor/react-best-practices/rules/advanced-event-handler-refs.md`](skills/vendor/react-best-practices/rules/advanced-event-handler-refs.md) |
+| 106 | ✓ | [`skills/vendor/react-best-practices/rules/advanced-init-once.md`](skills/vendor/react-best-practices/rules/advanced-init-once.md) |
+| 107 | ✓ | [`skills/vendor/react-best-practices/rules/advanced-use-latest.md`](skills/vendor/react-best-practices/rules/advanced-use-latest.md) |
+| 108 | ✓ | [`skills/vendor/react-best-practices/rules/async-api-routes.md`](skills/vendor/react-best-practices/rules/async-api-routes.md) |
+| 109 | ✓ | [`skills/vendor/react-best-practices/rules/async-cheap-condition-before-await.md`](skills/vendor/react-best-practices/rules/async-cheap-condition-before-await.md) |
+| 110 | ✓ | [`skills/vendor/react-best-practices/rules/async-defer-await.md`](skills/vendor/react-best-practices/rules/async-defer-await.md) |
+| 111 | ✓ | [`skills/vendor/react-best-practices/rules/async-dependencies.md`](skills/vendor/react-best-practices/rules/async-dependencies.md) |
+| 112 | ✓ | [`skills/vendor/react-best-practices/rules/async-parallel.md`](skills/vendor/react-best-practices/rules/async-parallel.md) |
+| 113 | ✓ | [`skills/vendor/react-best-practices/rules/async-suspense-boundaries.md`](skills/vendor/react-best-practices/rules/async-suspense-boundaries.md) |
+| 114 | ✓ | [`skills/vendor/react-best-practices/rules/bundle-analyzable-paths.md`](skills/vendor/react-best-practices/rules/bundle-analyzable-paths.md) |
+| 115 | ✓ | [`skills/vendor/react-best-practices/rules/bundle-barrel-imports.md`](skills/vendor/react-best-practices/rules/bundle-barrel-imports.md) |
+| 116 | ✓ | [`skills/vendor/react-best-practices/rules/bundle-conditional.md`](skills/vendor/react-best-practices/rules/bundle-conditional.md) |
+| 117 | ✓ | [`skills/vendor/react-best-practices/rules/bundle-defer-third-party.md`](skills/vendor/react-best-practices/rules/bundle-defer-third-party.md) |
+| 118 | ✓ | [`skills/vendor/react-best-practices/rules/bundle-dynamic-imports.md`](skills/vendor/react-best-practices/rules/bundle-dynamic-imports.md) |
+| 119 | ✓ | [`skills/vendor/react-best-practices/rules/bundle-preload.md`](skills/vendor/react-best-practices/rules/bundle-preload.md) |
+| 120 | ✓ | [`skills/vendor/react-best-practices/rules/client-event-listeners.md`](skills/vendor/react-best-practices/rules/client-event-listeners.md) |
+| 121 | ✓ | [`skills/vendor/react-best-practices/rules/client-localstorage-schema.md`](skills/vendor/react-best-practices/rules/client-localstorage-schema.md) |
+| 122 | ✓ | [`skills/vendor/react-best-practices/rules/client-passive-event-listeners.md`](skills/vendor/react-best-practices/rules/client-passive-event-listeners.md) |
+| 123 | ✓ | [`skills/vendor/react-best-practices/rules/client-swr-dedup.md`](skills/vendor/react-best-practices/rules/client-swr-dedup.md) |
+| 124 | ✓ | [`skills/vendor/react-best-practices/rules/js-batch-dom-css.md`](skills/vendor/react-best-practices/rules/js-batch-dom-css.md) |
+| 125 | ✓ | [`skills/vendor/react-best-practices/rules/js-cache-function-results.md`](skills/vendor/react-best-practices/rules/js-cache-function-results.md) |
+| 126 | ✓ | [`skills/vendor/react-best-practices/rules/js-cache-property-access.md`](skills/vendor/react-best-practices/rules/js-cache-property-access.md) |
+| 127 | ✓ | [`skills/vendor/react-best-practices/rules/js-cache-storage.md`](skills/vendor/react-best-practices/rules/js-cache-storage.md) |
+| 128 | ✓ | [`skills/vendor/react-best-practices/rules/js-combine-iterations.md`](skills/vendor/react-best-practices/rules/js-combine-iterations.md) |
+| 129 | ✓ | [`skills/vendor/react-best-practices/rules/js-early-exit.md`](skills/vendor/react-best-practices/rules/js-early-exit.md) |
+| 130 | ✓ | [`skills/vendor/react-best-practices/rules/js-flatmap-filter.md`](skills/vendor/react-best-practices/rules/js-flatmap-filter.md) |
+| 131 | ✓ | [`skills/vendor/react-best-practices/rules/js-hoist-regexp.md`](skills/vendor/react-best-practices/rules/js-hoist-regexp.md) |
+| 132 | ✓ | [`skills/vendor/react-best-practices/rules/js-index-maps.md`](skills/vendor/react-best-practices/rules/js-index-maps.md) |
+| 133 | ✓ | [`skills/vendor/react-best-practices/rules/js-length-check-first.md`](skills/vendor/react-best-practices/rules/js-length-check-first.md) |
+| 134 | ✓ | [`skills/vendor/react-best-practices/rules/js-min-max-loop.md`](skills/vendor/react-best-practices/rules/js-min-max-loop.md) |
+| 135 | ✓ | [`skills/vendor/react-best-practices/rules/js-request-idle-callback.md`](skills/vendor/react-best-practices/rules/js-request-idle-callback.md) |
+| 136 | ✓ | [`skills/vendor/react-best-practices/rules/js-set-map-lookups.md`](skills/vendor/react-best-practices/rules/js-set-map-lookups.md) |
+| 137 | ✓ | [`skills/vendor/react-best-practices/rules/js-tosorted-immutable.md`](skills/vendor/react-best-practices/rules/js-tosorted-immutable.md) |
+| 138 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-activity.md`](skills/vendor/react-best-practices/rules/rendering-activity.md) |
+| 139 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-animate-svg-wrapper.md`](skills/vendor/react-best-practices/rules/rendering-animate-svg-wrapper.md) |
+| 140 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-conditional-render.md`](skills/vendor/react-best-practices/rules/rendering-conditional-render.md) |
+| 141 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-content-visibility.md`](skills/vendor/react-best-practices/rules/rendering-content-visibility.md) |
+| 142 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-hoist-jsx.md`](skills/vendor/react-best-practices/rules/rendering-hoist-jsx.md) |
+| 143 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-hydration-no-flicker.md`](skills/vendor/react-best-practices/rules/rendering-hydration-no-flicker.md) |
+| 144 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-hydration-suppress-warning.md`](skills/vendor/react-best-practices/rules/rendering-hydration-suppress-warning.md) |
+| 145 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-resource-hints.md`](skills/vendor/react-best-practices/rules/rendering-resource-hints.md) |
+| 146 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-script-defer-async.md`](skills/vendor/react-best-practices/rules/rendering-script-defer-async.md) |
+| 147 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-svg-precision.md`](skills/vendor/react-best-practices/rules/rendering-svg-precision.md) |
+| 148 | ✓ | [`skills/vendor/react-best-practices/rules/rendering-usetransition-loading.md`](skills/vendor/react-best-practices/rules/rendering-usetransition-loading.md) |
+| 149 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-defer-reads.md`](skills/vendor/react-best-practices/rules/rerender-defer-reads.md) |
+| 150 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-dependencies.md`](skills/vendor/react-best-practices/rules/rerender-dependencies.md) |
+| 151 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-derived-state-no-effect.md`](skills/vendor/react-best-practices/rules/rerender-derived-state-no-effect.md) |
+| 152 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-derived-state.md`](skills/vendor/react-best-practices/rules/rerender-derived-state.md) |
+| 153 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-functional-setstate.md`](skills/vendor/react-best-practices/rules/rerender-functional-setstate.md) |
+| 154 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-lazy-state-init.md`](skills/vendor/react-best-practices/rules/rerender-lazy-state-init.md) |
+| 155 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-memo-with-default-value.md`](skills/vendor/react-best-practices/rules/rerender-memo-with-default-value.md) |
+| 156 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-memo.md`](skills/vendor/react-best-practices/rules/rerender-memo.md) |
+| 157 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-move-effect-to-event.md`](skills/vendor/react-best-practices/rules/rerender-move-effect-to-event.md) |
+| 158 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-no-inline-components.md`](skills/vendor/react-best-practices/rules/rerender-no-inline-components.md) |
+| 159 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-simple-expression-in-memo.md`](skills/vendor/react-best-practices/rules/rerender-simple-expression-in-memo.md) |
+| 160 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-split-combined-hooks.md`](skills/vendor/react-best-practices/rules/rerender-split-combined-hooks.md) |
+| 161 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-transitions.md`](skills/vendor/react-best-practices/rules/rerender-transitions.md) |
+| 162 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-use-deferred-value.md`](skills/vendor/react-best-practices/rules/rerender-use-deferred-value.md) |
+| 163 | ✓ | [`skills/vendor/react-best-practices/rules/rerender-use-ref-transient-values.md`](skills/vendor/react-best-practices/rules/rerender-use-ref-transient-values.md) |
+| 164 | ✓ | [`skills/vendor/react-best-practices/rules/server-after-nonblocking.md`](skills/vendor/react-best-practices/rules/server-after-nonblocking.md) |
+| 165 | ✓ | [`skills/vendor/react-best-practices/rules/server-auth-actions.md`](skills/vendor/react-best-practices/rules/server-auth-actions.md) |
+| 166 | ✓ | [`skills/vendor/react-best-practices/rules/server-cache-lru.md`](skills/vendor/react-best-practices/rules/server-cache-lru.md) |
+| 167 | ✓ | [`skills/vendor/react-best-practices/rules/server-cache-react.md`](skills/vendor/react-best-practices/rules/server-cache-react.md) |
+| 168 | ✓ | [`skills/vendor/react-best-practices/rules/server-dedup-props.md`](skills/vendor/react-best-practices/rules/server-dedup-props.md) |
+| 169 | ✓ | [`skills/vendor/react-best-practices/rules/server-hoist-static-io.md`](skills/vendor/react-best-practices/rules/server-hoist-static-io.md) |
+| 170 | ✓ | [`skills/vendor/react-best-practices/rules/server-no-shared-module-state.md`](skills/vendor/react-best-practices/rules/server-no-shared-module-state.md) |
+| 171 | ✓ | [`skills/vendor/react-best-practices/rules/server-parallel-fetching.md`](skills/vendor/react-best-practices/rules/server-parallel-fetching.md) |
+| 172 | ✓ | [`skills/vendor/react-best-practices/rules/server-parallel-nested-fetching.md`](skills/vendor/react-best-practices/rules/server-parallel-nested-fetching.md) |
+| 173 | ✓ | [`skills/vendor/react-best-practices/rules/server-serialization.md`](skills/vendor/react-best-practices/rules/server-serialization.md) |
+| 174 | ✓ | [`skills/vendor/react-best-practices/SKILL.md`](skills/vendor/react-best-practices/SKILL.md) |
+| 175 | ✓ | [`skills/vendor/react-best-practices/VENDORED.md`](skills/vendor/react-best-practices/VENDORED.md) |
+| 176 | ✓ | [`skills/vendor/README.md`](skills/vendor/README.md) |
+| 177 | ✓ | [`skills/vendor/web-design-guidelines/SKILL.md`](skills/vendor/web-design-guidelines/SKILL.md) |
+| 178 | ✓ | [`skills/vendor/web-design-guidelines/VENDORED.md`](skills/vendor/web-design-guidelines/VENDORED.md) |
+| 179 | ✓ | [`skills/verification/SKILL.md`](skills/verification/SKILL.md) |
+| 180 | ✓ | [`skills/writing-playwright-tests/SKILL.md`](skills/writing-playwright-tests/SKILL.md) |
+| 181 | → | [`.claude/rules/migrations.md`](.claude/rules/migrations.md) |
+| 182 | → | [`.claude/rules/schema-first.md`](.claude/rules/schema-first.md) |
+| 183 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 184 | → | [`DEVELOPER.md`](DEVELOPER.md) |
+| 185 | → | [`docs/index.md`](docs/index.md) |
 
 ---
 

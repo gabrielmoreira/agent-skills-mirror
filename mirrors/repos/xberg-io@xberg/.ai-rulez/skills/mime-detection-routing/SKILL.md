@@ -1,6 +1,6 @@
 ---
 name: mime-detection-routing
-description: MIME type detection and extractor routing in core/mime.rs and core/extractor/bytes.rs — the extension→EXT_TO_MIME→validate→registry→extractor flow, key detection functions, the 118+ case-insensitive extension map, priority-based registry selection, wildcard MIME families, and how to add a new MIME type. Load when adding a format, wiring an extractor to a MIME type, or debugging why a file routes to the wrong (or no) extractor.
+description: MIME type detection and extractor routing in core/mime.rs and core/extractor/bytes.rs — the extension→EXT_TO_MIME→validate→registry→extractor flow, key detection functions, the 115 case-insensitive extension map, priority-based registry selection, wildcard MIME families, and how to add a new MIME type. Load when adding a format, wiring an extractor to a MIME type, or debugging why a file routes to the wrong (or no) extractor.
 ---
 
 # MIME Detection & Routing
@@ -21,7 +21,7 @@ Extension -> EXT_TO_MIME map -> validate -> Registry lookup -> Extractor
 
 ## Extension Mapping
 
-118+ extensions mapped in `EXT_TO_MIME` (`core/mime.rs`). Case-insensitive.
+115 extensions mapped in `EXT_TO_MIME` (`core/mime.rs`). Case-insensitive.
 
 Key mappings: `.pdf` -> `application/pdf`, `.docx` -> `application/vnd.openxmlformats-officedocument.wordprocessingml.document`, `.xlsx` -> spreadsheet variant, `.png`/`.jpg` -> `image/*`
 

@@ -211,18 +211,22 @@ These references are loaded automatically by the skill as needed during analysis
 Before using the skill, test your Alpaca API connection:
 
 ```bash
-python3 skills/portfolio-manager/scripts/check_alpaca_connection.py
+uv run python skills/portfolio-manager/scripts/check_alpaca_connection.py
 ```
 
 Expected output:
 ```
 ✓ Successfully connected to Alpaca API
 Account Status: ACTIVE
+Account Number: ****6789
 Equity: $100,000.00
 Cash: $50,000.00
 Buying Power: $200,000.00
 Positions: 5
 ```
+
+The diagnostic never prints the API key or secret and masks the account number.
+It writes only to stdout and does not create a report or place orders.
 
 If you see errors, consult `references/alpaca-mcp-setup.md` for troubleshooting.
 

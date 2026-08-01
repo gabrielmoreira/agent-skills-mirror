@@ -11,22 +11,26 @@ This script screens for statistically significant pair trading opportunities by:
 
 Usage:
     # Sector-based screening
-    python find_pairs.py --sector Technology --min-correlation 0.70
+    uv run --with 'statsmodels>=0.14,<0.15' python \
+        skills/pair-trade-screener/scripts/find_pairs.py \
+        --sector Technology --min-correlation 0.70
 
     # Custom stock list
-    python find_pairs.py --symbols AAPL,MSFT,GOOGL,META --min-correlation 0.75
+    uv run --with 'statsmodels>=0.14,<0.15' python \
+        skills/pair-trade-screener/scripts/find_pairs.py \
+        --symbols AAPL,MSFT,GOOGL,META --min-correlation 0.75
 
     # Full options
-    python find_pairs.py \\
+    uv run --with 'statsmodels>=0.14,<0.15' python \
+        skills/pair-trade-screener/scripts/find_pairs.py \
         --sector Financials \\
         --min-correlation 0.70 \\
         --min-market-cap 2000000000 \\
         --lookback-days 730 \\
-        --output pairs_analysis.json \\
-        --api-key YOUR_KEY
+        --output /tmp/pair-trade/financials.json
 
 Requirements:
-    pip install pandas numpy scipy statsmodels requests
+    Python 3.9+ and statsmodels>=0.14,<0.15
 
 Author: Claude Trading Skills
 Version: 1.0
@@ -34,18 +38,19 @@ Version: 1.0
 
 import argparse
 import json
+import math
 import os
 import sys
 import time
 from datetime import datetime
 from itertools import combinations
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
 import requests
 from scipy import stats
-from statsmodels.tsa.ar_model import AutoReg
-from statsmodels.tsa.stattools import adfuller
+from statsmodels_support import require_statsmodels
 
 # =============================================================================
 # FMP API Functions
@@ -221,26 +226,42 @@ def fetch_price_data_batch(symbols, api_key, lookback_days=730):
 # =============================================================================
 
 
+def _align_finite_prices(prices_a, prices_b, min_observations=2):
+    """Inner-align two price series and drop every non-finite observation pair."""
+    try:
+        aligned = pd.concat(
+            [pd.Series(prices_a, name="price_a"), pd.Series(prices_b, name="price_b")],
+            axis=1,
+            join="inner",
+        )
+    except (TypeError, ValueError) as exc:
+        raise ValueError("price series could not be aligned") from exc
+
+    aligned = aligned.apply(pd.to_numeric, errors="coerce")
+    finite = np.isfinite(aligned["price_a"].to_numpy()) & np.isfinite(aligned["price_b"].to_numpy())
+    aligned = aligned.loc[finite]
+    if len(aligned) < min_observations:
+        raise ValueError(f"at least {min_observations} paired finite observations are required")
+    return aligned["price_a"], aligned["price_b"]
+
+
 def calculate_correlation(prices_a, prices_b):
     """Calculate Pearson correlation coefficient"""
-    # Align dates
-    common_dates = prices_a.index.intersection(prices_b.index)
-    if len(common_dates) < 100:
+    try:
+        aligned_a, aligned_b = _align_finite_prices(prices_a, prices_b, min_observations=100)
+    except ValueError:
         return None
 
-    aligned_a = prices_a.loc[common_dates]
-    aligned_b = prices_b.loc[common_dates]
-
     correlation = aligned_a.corr(aligned_b)
-    return correlation
+    return correlation if np.isfinite(correlation) else None
 
 
 def calculate_beta(prices_a, prices_b):
     """Calculate hedge ratio (beta) using OLS regression"""
-    # Align dates
-    common_dates = prices_a.index.intersection(prices_b.index)
-    aligned_a = prices_a.loc[common_dates]
-    aligned_b = prices_b.loc[common_dates]
+    aligned_a, aligned_b = _align_finite_prices(prices_a, prices_b)
+
+    if aligned_a.nunique() < 2 or aligned_b.nunique() < 2:
+        raise ValueError("at least two finite observations and non-constant prices are required")
 
     # Linear regression: A = alpha + beta * B
     slope, intercept, r_value, p_value, std_err = stats.linregress(aligned_b, aligned_a)
@@ -250,16 +271,12 @@ def calculate_beta(prices_a, prices_b):
 
 def test_cointegration(prices_a, prices_b, beta):
     """Test for cointegration using Augmented Dickey-Fuller test"""
-    # Align dates
-    common_dates = prices_a.index.intersection(prices_b.index)
-    aligned_a = prices_a.loc[common_dates]
-    aligned_b = prices_b.loc[common_dates]
-
-    # Calculate spread
-    spread = aligned_a - (beta * aligned_b)
+    _, adfuller = require_statsmodels()
 
     # ADF test
     try:
+        aligned_a, aligned_b = _align_finite_prices(prices_a, prices_b)
+        spread = aligned_a - (beta * aligned_b)
         result = adfuller(spread, maxlag=1, regression="c")
         adf_statistic = result[0]
         p_value = result[1]
@@ -280,13 +297,15 @@ def test_cointegration(prices_a, prices_b, beta):
 
 def calculate_half_life(spread):
     """Estimate mean reversion half-life using AR(1) model"""
+    AutoReg, _ = require_statsmodels()
+
     try:
         # Fit AR(1) model
         model = AutoReg(spread.dropna(), lags=1)
         result = model.fit()
 
         # Extract autocorrelation coefficient
-        phi = result.params[1]
+        phi = result.params.iloc[1]
 
         # Calculate half-life
         if phi >= 1.0 or phi <= 0:
@@ -308,13 +327,13 @@ def calculate_current_zscore(spread, window=90):
     mean = spread[-window:].mean()
     std = spread[-window:].std()
 
-    if std == 0:
+    if not np.isfinite(std) or std == 0:
         return None
 
     current_spread = spread.iloc[-1]
     zscore = (current_spread - mean) / std
 
-    return zscore
+    return zscore if np.isfinite(zscore) else None
 
 
 # =============================================================================
@@ -331,7 +350,10 @@ def analyze_pair(symbol_a, symbol_b, prices_a, prices_b, min_correlation=0.70):
         return None
 
     # Step 2: Calculate beta (hedge ratio)
-    beta_result = calculate_beta(prices_a, prices_b)
+    try:
+        beta_result = calculate_beta(prices_a, prices_b)
+    except ValueError:
+        return None
     beta = beta_result["beta"]
 
     # Step 3: Test for cointegration
@@ -373,7 +395,7 @@ def analyze_pair(symbol_a, symbol_b, prices_a, prices_b, min_correlation=0.70):
         "critical_value_5pct": round(coint_result["critical_value_5pct"], 4),
         "is_cointegrated": coint_result["is_cointegrated"],
         "half_life_days": round(half_life, 1) if half_life else None,
-        "current_zscore": round(current_zscore, 2) if current_zscore else None,
+        "current_zscore": round(current_zscore, 2) if current_zscore is not None else None,
         "signal": signal,
         "strength": strength,
         "timestamp": datetime.now().isoformat(),
@@ -400,9 +422,12 @@ def screen_all_pairs(price_data, min_correlation=0.70):
         if pairs_analyzed % 10 == 0 or pairs_analyzed == total_pairs:
             print(f"  [{pairs_analyzed}/{total_pairs}] pairs analyzed...", end="\r", flush=True)
 
-        result = analyze_pair(
-            symbol_a, symbol_b, price_data[symbol_a], price_data[symbol_b], min_correlation
-        )
+        try:
+            result = analyze_pair(
+                symbol_a, symbol_b, price_data[symbol_a], price_data[symbol_b], min_correlation
+            )
+        except (TypeError, ValueError):
+            result = None
 
         if result and result["is_cointegrated"]:
             cointegrated_pairs.append(result)
@@ -423,10 +448,12 @@ def rank_pairs(pairs):
 
     print("  → Top 10 pairs:")
     for i, pair in enumerate(ranked[:10], 1):
+        zscore = pair["current_zscore"]
+        zscore_text = f"{zscore:.2f}" if zscore is not None else "N/A"
         print(
             f"    {i}. {pair['pair']} "
             f"(p={pair['cointegration_pvalue']:.4f}, "
-            f"z={pair['current_zscore']:.2f}, "
+            f"z={zscore_text}, "
             f"{pair['strength']})"
         )
 
@@ -452,8 +479,13 @@ def save_results(pairs, output_file):
         "pairs": pairs,
     }
 
-    with open(output_file, "w", encoding="utf-8") as f:
-        json.dump(output_data, f, indent=2)
+    output_path = Path(output_file)
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        with output_path.open("w", encoding="utf-8") as file_handle:
+            json.dump(output_data, file_handle, indent=2)
+    except OSError as exc:
+        raise RuntimeError(f"could not write output file {output_path}: {exc}") from exc
 
     print(f"  → Saved {len(pairs)} pairs to {output_file}")
     print(f"  → Cointegrated pairs: {output_data['metadata']['cointegrated_pairs']}")
@@ -506,13 +538,13 @@ def main():
         epilog="""
 Examples:
   # Screen Technology sector
-  python find_pairs.py --sector Technology
+  uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/find_pairs.py --sector Technology --output /tmp/pair-trade/technology.json
 
   # Custom stock list
-  python find_pairs.py --symbols AAPL,MSFT,GOOGL,META
+  uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/find_pairs.py --symbols AAPL,MSFT,GOOGL,META --output /tmp/pair-trade/custom.json
 
   # Adjust parameters
-  python find_pairs.py --sector Financials --min-correlation 0.75 --lookback-days 365
+  uv run --with 'statsmodels>=0.14,<0.15' python skills/pair-trade-screener/scripts/find_pairs.py --sector Financials --min-correlation 0.75 --lookback-days 365 --output /tmp/pair-trade/financials.json
         """,
     )
 
@@ -558,6 +590,17 @@ Examples:
 
     if args.sector and args.symbols:
         parser.error("Provide either --sector or --symbols, not both")
+    if not math.isfinite(args.min_correlation) or not 0 <= args.min_correlation <= 1:
+        parser.error("--min-correlation must be finite and between 0 and 1")
+    if args.lookback_days < 250:
+        parser.error("--lookback-days must be at least 250")
+    if not math.isfinite(args.min_market_cap) or args.min_market_cap < 0:
+        parser.error("--min-market-cap must be finite and non-negative")
+    custom_symbols = None
+    if args.symbols:
+        custom_symbols = [symbol.strip().upper() for symbol in args.symbols.split(",")]
+        if any(not symbol for symbol in custom_symbols) or len(set(custom_symbols)) < 2:
+            parser.error("--symbols must contain at least two distinct, non-empty symbols")
 
     # Get API key
     api_key = get_api_key(args.api_key)
@@ -575,7 +618,7 @@ Examples:
         stocks = fetch_sector_stocks(args.sector, api_key, args.min_market_cap)
         symbols = [s["symbol"] for s in stocks]
     else:
-        symbols = [s.strip().upper() for s in args.symbols.split(",")]
+        symbols = custom_symbols
 
     # Fetch price data
     price_data = fetch_price_data_batch(symbols, api_key, args.lookback_days)
@@ -592,10 +635,10 @@ Examples:
         print("  - Lowering --min-correlation threshold")
         print("  - Expanding stock universe (--sector or --symbols)")
         print("  - Increasing --lookback-days")
-        sys.exit(0)
-
-    # Rank pairs
-    ranked_pairs = rank_pairs(pairs)
+        ranked_pairs = []
+    else:
+        # Rank pairs
+        ranked_pairs = rank_pairs(pairs)
 
     # Save results
     save_results(ranked_pairs, args.output)
@@ -604,5 +647,15 @@ Examples:
     print_summary(ranked_pairs)
 
 
+def cli():
+    """Run the command-line interface without exposing a traceback to users."""
+    try:
+        main()
+    except (RuntimeError, ValueError) as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        return 1
+    return 0
+
+
 if __name__ == "__main__":
-    main()
+    raise SystemExit(cli())

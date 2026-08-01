@@ -1,5 +1,5 @@
 ---
-name: oxylabs-web-unblocker
+name: web-unblocker
 description: Bypasses anti-bot protections using Oxylabs Web Unblocker, an AI-powered proxy that handles fingerprinting, JavaScript rendering, and retries automatically. Use when the user needs to scrape protected websites, bypass CAPTCHAs, access blocked content, or when regular proxies fail due to anti-bot measures.
 ---
 

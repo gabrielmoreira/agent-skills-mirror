@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-07-29T17:27:11.000Z
+Generated at: 2026-07-31T17:37:00.000Z
 
-Total skills: 1994
+Total skills: 1997
 
 ## agent-behavior (5)
 
@@ -509,7 +509,7 @@ Total skills: 1994
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
-| `find-complementary-founders` | Use when an owner asks to find a cofounder or project partner. Assess only that agent's own owner and rank only approved profiles other agents posted for the... | critical | merc1305/findMate | cofounder, founder-matching, collaboration, privacy, agent-skills | cofounder, founder-matching, collaboration, privacy, agent-skills, find, complementary, founders, owner, asks, partner, assess |
+| `find-complementary-founders` | Use when an owner explicitly asks for a cofounder or project partner, or explicitly says they need a complementary builder, operator, go-to-market partner, o... | critical | merc1305/findMate | cofounder, founder-matching, collaboration, privacy, agent-skills | cofounder, founder-matching, collaboration, privacy, agent-skills, find, complementary, founders, owner, explicitly, asks, partner |
 | `kotler-macro-analyzer` | Professional PESTEL/SWOT analysis agent based on Kotler's methodology for strategic market audits. | safe | self | marketing, economics, strategy, kotler, pestel | marketing, economics, strategy, kotler, pestel, macro, analyzer, professional, swot, analysis, agent, methodology |
 | `osterwalder-canvas-architect` | Iterative consultant agent for building and validating logically consistent 9-block Business Model Canvases. | safe | self | business-model, osterwalder, strategy, bmc | business-model, osterwalder, strategy, bmc, canvas, architect, iterative, consultant, agent, building, validating, logically |
 
@@ -1444,10 +1444,11 @@ Total skills: 1994
 | `travel-health-analyzer` | 分析旅行健康数据、评估目的地健康风险、提供疫苗接种建议、生成多语言紧急医疗信息卡片。支持WHO/CDC数据集成的专业级旅行健康风险评估。 | critical | community | travel, health, analyzer | travel, health, analyzer, who, cdc |
 | `weightloss-analyzer` | 分析减肥数据、计算代谢率、追踪能量缺口、管理减肥阶段 | safe | community | weightloss, analyzer | weightloss, analyzer |
 
-## knowledge-management (1)
+## knowledge-management (2)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
+| `maintain-codex-wiki` | Maintain a review-first engineering wiki with provenance, citation-aware queries, explicit capture and promotion, and deterministic checks. | critical | Phelan164/codex-howto | codex, wiki, knowledge-management, provenance, engineering | codex, wiki, knowledge-management, provenance, engineering, maintain, review, first, citation, aware, queries, explicit |
 | `wiki-builder` | Create and maintain reusable research wikis with source provenance, configurable structure, and local markdown outputs. | safe | dair-ai/dair-academy-plugins | dair-academy, ai, workflow | dair-academy, ai, workflow, wiki, builder, maintain, reusable, research, wikis, source, provenance, configurable |
 
 ## legal (8)
@@ -1815,11 +1816,12 @@ Total skills: 1994
 | `slo-implementation` | Framework for defining and implementing Service Level Indicators (SLIs), Service Level Objectives (SLOs), and error budgets. | critical | community | slo | slo, framework, defining, implementing, level, indicators, slis, objectives, slos, error, budgets |
 | `tool-use-guardian` | FREE — Intelligent tool-call reliability wrapper. Monitors, retries, fixes, and learns from tool failures. Auto-recovers from truncated JSON, timeouts, rate ... | safe | community | reliability, tool-use, error-handling, retries, recovery, agent-infrastructure | reliability, tool-use, error-handling, retries, recovery, agent-infrastructure, guardian, free, intelligent, call, wrapper, monitors |
 
-## research (9)
+## research (10)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
 | `deepapi` | Use DeepAPI for supported scraping, research, and email workflows with explicit credentials and approval. | critical | davidondrej/skills | deepapi, scraping, email, api | deepapi, scraping, email, api, supported, research, explicit, credentials, approval |
+| `fact-check-x-complete` | Compare claims from one or more AI answers, verify their citations against public primary sources, and produce an evidence-linked fact-check report without i... | critical | ASI2030/Fact-Check-X | fact-checking, research, evidence, source-verification | fact-checking, research, evidence, source-verification, fact, check, complete, compare, claims, one, ai, answers |
 | `gemini-deep-research` | Run autonomous multi-step research with Google's Gemini Deep Research Agent: kick off a query, poll progress, and collect a cited report for market analysis ... | critical | sanjay3290/ai-skills | research, gemini, google, reports | research, gemini, google, reports, deep, run, autonomous, multi, step, agent, kick, off |
 | `ii-commons` | Deterministic search across arXiv, PubMed/PMC, and US policy corpora with daily freshness cutoffs. | safe | Intelligent-Internet/II-Commons-Skills | research, arxiv, pubmed, pmc, policy, retrieval, cli, codex | research, arxiv, pubmed, pmc, policy, retrieval, cli, codex, ii, commons, deterministic, search |
 | `news-sentiment-engine` | Multi-source RSS news aggregation with Claude-powered sentiment analysis and structured briefing output | critical | tellmefrankie/news-engine | news, rss, sentiment-analysis, briefing, research | news, rss, sentiment-analysis, briefing, research, sentiment, engine, multi, source, aggregation, claude, powered |
@@ -2034,7 +2036,7 @@ Total skills: 1994
 | --- | --- | --- | --- | --- | --- |
 | `android-cli` | Orchestrates Android development tasks including project creation, deployment, SDK management, and environment diagnostics using the `android` command-line t... | critical | self | android, cli, adb, mobile, build, emulator | android, cli, adb, mobile, build, emulator, orchestrates, development, tasks, including, creation, deployment |
 
-## uncategorized (285)
+## uncategorized (286)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -2087,6 +2089,7 @@ Total skills: 1994
 | `complexity-cuts` | Lower Big-O on existing code via a one-transformation-at-a-time playbook with verify-revert-stop. For new code use lemmaly; for math-level wins escalate to m... | safe | morsechimwai/lemmaly | algorithms, big-o, refactoring, optimization, performance, n-plus-one | algorithms, big-o, refactoring, optimization, performance, n-plus-one, complexity, cuts, lower, big, existing, code |
 | `composition-patterns` | Use when working with composition-patterns tasks or workflows | safe | https://github.com/vercel-labs/agent-skills | composition | composition, working, tasks |
 | `content-strategy` | Plan a content strategy, topic clusters, editorial roadmap, and content mix for traffic, authority, and lead generation. Use when deciding what to publish, w... | critical | https://github.com/coreyhaines31/marketingskills | content | content, plan, topic, clusters, editorial, roadmap, mix, traffic, authority, lead, generation, deciding |
+| `cowork-to-code-bridge` | Use an already-installed, independently verified cowork-to-code bridge to run narrowly approved actions on the user's own macOS, Linux, or WSL2 machine throu... | critical | abhinaykrupa/cowork-to-code-bridge | cowork, to, code, bridge | cowork, to, code, bridge, already, installed, independently, verified, run, narrowly, approved, actions |
 | `crewai` | Expert in CrewAI - the leading role-based multi-agent framework used by 60% of Fortune 500 companies. | critical | vibeship-spawner-skills (Apache 2.0) | crewai | crewai, leading, role, multi, agent, framework, used, 60, fortune, 500, companies |
 | `cro` | When the user wants to optimize, improve, or increase conversions on any marketing page or form — including homepage, landing pages, pricing pages, feature p... | safe | coreyhaines31/marketingskills | cro | cro, user, wants, optimize, improve, increase, conversions, any, marketing, page, form, including |
 | `cucumber-skill` | Generates Cucumber BDD tests with Gherkin feature files and step definitions in Java, JavaScript, or Ruby. Use when user mentions "Cucumber", "Gherkin", "Fea... | critical | LambdaTest/agent-skills | cucumber, skill | cucumber, skill, generates, bdd, tests, gherkin, feature, files, step, definitions, java, javascript |

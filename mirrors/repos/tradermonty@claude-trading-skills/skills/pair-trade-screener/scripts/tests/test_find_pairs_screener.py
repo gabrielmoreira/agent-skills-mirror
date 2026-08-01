@@ -7,14 +7,8 @@ both take the same params and field names, so extraction is unchanged.
 
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-# find_pairs imports statsmodels at module load (used elsewhere in the module,
-# not by fetch_sector_stocks). statsmodels is not a declared project dependency,
-# so skip cleanly when it's unavailable rather than failing collection.
-pytest.importorskip("statsmodels")
-
 import find_pairs  # noqa: E402
+import statsmodels  # noqa: F401
 
 
 def _resp(status_code, payload):

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Redth/maui-skillz` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `Redth/maui-skillz` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Redth/maui-skillz` — 26 default patterns, 0 followed patterns, 8 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,10 +63,43 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.agents/skills/dotnet-workload-info/references/workload-discovery-process.md`](.agents/skills/dotnet-workload-info/references/workload-discovery-process.md) |
 | 3 | ✓ | [`.agents/skills/dotnet-workload-info/SKILL.md`](.agents/skills/dotnet-workload-info/SKILL.md) |
 | 4 | ✓ | [`.agents/skills/ios-slim-bindings/SKILL.md`](.agents/skills/ios-slim-bindings/SKILL.md) |
-| 5 | ✓ | [`.agents/skills/maui-release-notes/references/links.md`](.agents/skills/maui-release-notes/references/links.md) |
-| 6 | ✓ | [`.agents/skills/maui-release-notes/references/templates.md`](.agents/skills/maui-release-notes/references/templates.md) |
-| 7 | ✓ | [`.agents/skills/maui-release-notes/SKILL.md`](.agents/skills/maui-release-notes/SKILL.md) |
-| 8 | ✓ | [`release-notes/maui-release-notes.md`](release-notes/maui-release-notes.md) |
+| 5 | ✓ | [`.agents/skills/maui-preview-helper/references/download-builds.md`](.agents/skills/maui-preview-helper/references/download-builds.md) |
+| 6 | ✓ | [`.agents/skills/maui-preview-helper/references/nuget-config.md`](.agents/skills/maui-preview-helper/references/nuget-config.md) |
+| 7 | ✓ | [`.agents/skills/maui-preview-helper/references/prerequisites.md`](.agents/skills/maui-preview-helper/references/prerequisites.md) |
+| 8 | ✓ | [`.agents/skills/maui-preview-helper/references/project-properties.md`](.agents/skills/maui-preview-helper/references/project-properties.md) |
+| 9 | ✓ | [`.agents/skills/maui-preview-helper/references/release-lookup.md`](.agents/skills/maui-preview-helper/references/release-lookup.md) |
+| 10 | ✓ | [`.agents/skills/maui-preview-helper/references/vscode-extensions.md`](.agents/skills/maui-preview-helper/references/vscode-extensions.md) |
+| 11 | ✓ | [`.agents/skills/maui-preview-helper/references/workloads.md`](.agents/skills/maui-preview-helper/references/workloads.md) |
+| 12 | ✓ | [`.agents/skills/maui-preview-helper/scripts/Get-AzdoArtifact.ps1`](.agents/skills/maui-preview-helper/scripts/Get-AzdoArtifact.ps1) |
+| 13 | ✓ | [`.agents/skills/maui-preview-helper/scripts/Get-DotNetReleaseStatus.ps1`](.agents/skills/maui-preview-helper/scripts/Get-DotNetReleaseStatus.ps1) |
+| 14 | ✓ | [`.agents/skills/maui-preview-helper/scripts/New-WorkloadRollbackFile.ps1`](.agents/skills/maui-preview-helper/scripts/New-WorkloadRollbackFile.ps1) |
+| 15 | ✓ | [`.agents/skills/maui-preview-helper/scripts/ReleaseTrackerApi.ps1`](.agents/skills/maui-preview-helper/scripts/ReleaseTrackerApi.ps1) |
+| 16 | ✓ | [`.agents/skills/maui-preview-helper/SKILL.md`](.agents/skills/maui-preview-helper/SKILL.md) |
+| 17 | ✓ | [`.agents/skills/maui-release-notes/references/links.md`](.agents/skills/maui-release-notes/references/links.md) |
+| 18 | ✓ | [`.agents/skills/maui-release-notes/references/templates.md`](.agents/skills/maui-release-notes/references/templates.md) |
+| 19 | ✓ | [`.agents/skills/maui-release-notes/SKILL.md`](.agents/skills/maui-release-notes/SKILL.md) |
+| 20 | ✓ | [`.agents/skills/skill-reflect/evals/evals.json`](.agents/skills/skill-reflect/evals/evals.json) |
+| 21 | ✓ | [`.agents/skills/skill-reflect/evals/files/pdf-forms-session.md`](.agents/skills/skill-reflect/evals/files/pdf-forms-session.md) |
+| 22 | ✓ | [`.agents/skills/skill-reflect/evals/trigger-evals.json`](.agents/skills/skill-reflect/evals/trigger-evals.json) |
+| 23 | ✓ | [`.agents/skills/skill-reflect/references/eval-format.md`](.agents/skills/skill-reflect/references/eval-format.md) |
+| 24 | ✓ | [`.agents/skills/skill-reflect/references/friction-rubric.md`](.agents/skills/skill-reflect/references/friction-rubric.md) |
+| 25 | ✓ | [`.agents/skills/skill-reflect/references/privacy-scrub.md`](.agents/skills/skill-reflect/references/privacy-scrub.md) |
+| 26 | ✓ | [`.agents/skills/skill-reflect/references/provenance-routing.md`](.agents/skills/skill-reflect/references/provenance-routing.md) |
+| 27 | ✓ | [`.agents/skills/skill-reflect/references/registry-format.md`](.agents/skills/skill-reflect/references/registry-format.md) |
+| 28 | ✓ | [`.agents/skills/skill-reflect/references/reporting.md`](.agents/skills/skill-reflect/references/reporting.md) |
+| 29 | ✓ | [`.agents/skills/skill-reflect/references/session-sources.md`](.agents/skills/skill-reflect/references/session-sources.md) |
+| 30 | ✓ | [`.agents/skills/skill-reflect/references/skill-improvement-taxonomy.md`](.agents/skills/skill-reflect/references/skill-improvement-taxonomy.md) |
+| 31 | ✓ | [`.agents/skills/skill-reflect/scripts/README.md`](.agents/skills/skill-reflect/scripts/README.md) |
+| 32 | ✓ | [`.agents/skills/skill-reflect/scripts/resolve_provenance.py`](.agents/skills/skill-reflect/scripts/resolve_provenance.py) |
+| 33 | ✓ | [`.agents/skills/skill-reflect/scripts/scrub.py`](.agents/skills/skill-reflect/scripts/scrub.py) |
+| 34 | ✓ | [`.agents/skills/skill-reflect/scripts/stamp_nudge.py`](.agents/skills/skill-reflect/scripts/stamp_nudge.py) |
+| 35 | ✓ | [`.agents/skills/skill-reflect/scripts/test_resolve_provenance.py`](.agents/skills/skill-reflect/scripts/test_resolve_provenance.py) |
+| 36 | ✓ | [`.agents/skills/skill-reflect/scripts/test_scrub.py`](.agents/skills/skill-reflect/scripts/test_scrub.py) |
+| 37 | ✓ | [`.agents/skills/skill-reflect/SKILL.md`](.agents/skills/skill-reflect/SKILL.md) |
+| 38 | ✓ | [`.agents/skills/skill-reflect/templates/github-issue.md`](.agents/skills/skill-reflect/templates/github-issue.md) |
+| 39 | ✓ | [`.agents/skills/skill-reflect/templates/improve-this-skill.md`](.agents/skills/skill-reflect/templates/improve-this-skill.md) |
+| 40 | ✓ | [`.agents/skills/skill-reflect/VERSION`](.agents/skills/skill-reflect/VERSION) |
+| 41 | ✓ | [`release-notes/maui-release-notes.md`](release-notes/maui-release-notes.md) |
 
 ---
 

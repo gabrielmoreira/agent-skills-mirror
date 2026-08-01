@@ -28,6 +28,7 @@ Manifest schema (schema_version 1) — per-asset fields:
 import argparse
 import json
 import os
+import re
 import shutil
 import sys
 import time
@@ -60,15 +61,22 @@ def manifest_path(video_dir):
 
 
 def load_manifest(video_dir):
-    """Return (manifest_dict, error_message). Missing file -> (None, None)."""
+    """Return (manifest_dict, error_message). Missing file -> (None, None).
+
+    A non-object root (e.g. a top-level JSON list) is a validation error so
+    every consumer shares the same boundary.
+    """
     path = manifest_path(video_dir)
     if not path.exists():
         return None, None
     try:
         with open(path, encoding="utf-8") as f:
-            return json.load(f), None
+            manifest = json.load(f)
     except (json.JSONDecodeError, OSError) as e:
         return None, f"manifest unreadable: {e}"
+    if not isinstance(manifest, dict):
+        return None, f"manifest root must be an object, got {type(manifest).__name__}"
+    return manifest, None
 
 
 def save_manifest(video_dir, manifest):
@@ -102,6 +110,9 @@ def validate_manifest(video_dir):
 
     seen_ids = set()
     for i, a in enumerate(assets):
+        if not isinstance(a, dict):
+            errors.append(f"assets[{i}]: not an object")
+            continue
         label = a.get("id") or f"assets[{i}]"
         for field in ("id", "section", "type", "role", "source", "status"):
             if not a.get(field):
@@ -181,6 +192,12 @@ def cmd_add(args, started_at):
         return cli_envelope.emit_error(
             args, "validation_failed",
             f"Asset id '{args.id}' already exists (use --replace to overwrite)",
+            field="id", started_at=started_at)
+
+    if not re.match(r"^[A-Za-z0-9][A-Za-z0-9._-]*$", args.id or ""):
+        return cli_envelope.emit_error(
+            args, "input_invalid",
+            f"Invalid asset id: {args.id!r} (allowed: letters, digits, . _ -)",
             field="id", started_at=started_at)
 
     entry = {

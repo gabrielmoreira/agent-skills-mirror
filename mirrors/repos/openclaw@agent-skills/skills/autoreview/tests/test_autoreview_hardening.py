@@ -65,6 +65,22 @@ def realistic_secret_value() -> str:
     return "A7f9K2m4Q8v6" + "N3x5R1p0T9z8"
 
 
+def installed_java() -> str | None:
+    java = shutil.which("java")
+    if java is None:
+        return None
+    try:
+        probe = subprocess.run(
+            [java, "-version"],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+    except OSError:
+        return None
+    return java if probe.returncode == 0 else None
+
+
 def add_fake_trufflehog(
     helper: dict[str, object],
     root: Path,
@@ -5514,10 +5530,19 @@ class AutoreviewHardeningTests(unittest.TestCase):
                 os.environ.clear()
                 os.environ.update(old)
 
+    def test_installed_java_rejects_launcher_without_runtime(self) -> None:
+        launcher = "/usr/bin/java"
+        unavailable = subprocess.CompletedProcess([launcher, "-version"], 1)
+        with (
+            mock.patch("shutil.which", return_value=launcher),
+            mock.patch("subprocess.run", return_value=unavailable),
+        ):
+            self.assertIsNone(installed_java())
+
     def test_parallel_test_environment_isolates_jvm_user_home(self) -> None:
-        java = shutil.which("java")
+        java = installed_java()
         if java is None:
-            self.skipTest("java is not installed")
+            self.skipTest("a usable Java runtime is not installed")
         with tempfile.TemporaryDirectory() as tempdir:
             root = Path(tempdir)
             repo = init_repo(root)
@@ -5567,9 +5592,9 @@ class AutoreviewHardeningTests(unittest.TestCase):
         )
 
     def test_java_tool_option_quote_round_trips_special_paths(self) -> None:
-        java = shutil.which("java")
+        java = installed_java()
         if java is None:
-            self.skipTest("java is not installed")
+            self.skipTest("a usable Java runtime is not installed")
         names = ["space home", "apostrophe's home"]
         if os.name != "nt":
             names.append('double"quote home')

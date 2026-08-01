@@ -585,15 +585,21 @@ async function prepareAuthEnvironment(params: {
     envSetupActions.push("create_free_env");
   }
 
+  // Surface the user-facing notice emitted at checkAndCreateFreeEnv entry.
+  // Informational only — no confirm required. Prepend to the final message so
+  // the user knows an automatic free-env creation was attempted.
+  const userNotice = createResult.userNotice?.trim() || "";
+
   if (createResult.success && createResult.envId) {
     await envManager.setEnvId(createResult.envId);
+    const successMessage = `当前已登录，已自动创建并绑定环境: ${createResult.envId}`;
     return {
       currentEnvId: createResult.envId,
       envStatus: "READY",
       envCandidates: [],
       envSetupStatus: "AUTO_CREATED",
       envSetupActions: dedupeActions(envSetupActions),
-      message: `当前已登录，已自动创建并绑定环境: ${createResult.envId}`,
+      message: userNotice ? `${userNotice}\n${successMessage}` : successMessage,
       nextStep: buildAuthNextStep("status", {
         suggestedArgs: { action: "status" },
       }),
@@ -614,6 +620,10 @@ async function prepareAuthEnvironment(params: {
         helpUrl: "https://buy.cloud.tencent.com/lowcode?buyType=tcb&channel=mcp",
       });
 
+  const failureMessage = userNotice
+    ? `${userNotice}\n${createFailure.message}`
+    : createFailure.message;
+
   return {
     currentEnvId: null,
     envStatus: "NONE",
@@ -621,7 +631,7 @@ async function prepareAuthEnvironment(params: {
     envSetupStatus: "ACTION_REQUIRED",
     envSetupActions: dedupeActions(envSetupActions),
     envSetupFailure: createFailure,
-    message: createFailure.message,
+    message: failureMessage,
     nextStep: buildAuthNextStep("status", {
       suggestedArgs: { action: "status" },
     }),

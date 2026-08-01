@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 9 followed patterns, 194 file(s) materialized.
+Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 9 followed patterns, 203 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AtomicBot-ai/Atomic-Chat` — 26 default patterns, 9 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 9 |
-| Files         | 194 |
+| Files         | 203 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -228,39 +228,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 159 | ✓ | [`docs/decisions/2026-07-29-repair-turboquant-windows-cuda-missing-cudart-via-upstream-copy-or-ggml-org-companion.md`](docs/decisions/2026-07-29-repair-turboquant-windows-cuda-missing-cudart-via-upstream-copy-or-ggml-org-companion.md) |
 | 160 | ✓ | [`docs/decisions/2026-07-30-cache-optimal-backends-for-chat-upgrade-prompts.md`](docs/decisions/2026-07-30-cache-optimal-backends-for-chat-upgrade-prompts.md) |
 | 161 | ✓ | [`docs/decisions/2026-07-30-reveal-windows-after-first-frontend-frame.md`](docs/decisions/2026-07-30-reveal-windows-after-first-frontend-frame.md) |
-| 162 | ✓ | [`docs/README.md`](docs/README.md) |
-| 163 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
-| 164 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
-| 165 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
-| 166 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
-| 167 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
-| 168 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
-| 169 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
-| 170 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
-| 171 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
-| 172 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
-| 173 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
-| 174 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
-| 175 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
-| 176 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
-| 177 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
-| 178 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
-| 179 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
-| 180 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
-| 181 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
-| 182 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
-| 183 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
-| 184 | ✓ | [`web-app/README.md`](web-app/README.md) |
-| 185 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
-| 186 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 187 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
-| 188 | → | [`DEVELOP.md`](DEVELOP.md) |
-| 189 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
-| 190 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
-| 191 | → | [`README.md`](README.md) |
-| 192 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
-| 193 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
-| 194 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
+| 162 | ✓ | [`docs/decisions/2026-07-31-adopt-unified-turboquant-releases-and-expand-linux-backends.md`](docs/decisions/2026-07-31-adopt-unified-turboquant-releases-and-expand-linux-backends.md) |
+| 163 | ✓ | [`docs/decisions/2026-07-31-disable-transparent-windows-window-to-stop-softbuffer-panic.md`](docs/decisions/2026-07-31-disable-transparent-windows-window-to-stop-softbuffer-panic.md) |
+| 164 | ✓ | [`docs/decisions/2026-07-31-fallback-between-http-based-mcp-transports.md`](docs/decisions/2026-07-31-fallback-between-http-based-mcp-transports.md) |
+| 165 | ✓ | [`docs/decisions/2026-07-31-keep-linux-appimage-updates-compatible-with-appimagelauncher.md`](docs/decisions/2026-07-31-keep-linux-appimage-updates-compatible-with-appimagelauncher.md) |
+| 166 | ✓ | [`docs/decisions/2026-07-31-raise-agent-tool-step-completion-deadline-to-600-seconds.md`](docs/decisions/2026-07-31-raise-agent-tool-step-completion-deadline-to-600-seconds.md) |
+| 167 | ✓ | [`docs/decisions/2026-07-31-reconcile-turboquant-release-tag-automatically-on-app-update.md`](docs/decisions/2026-07-31-reconcile-turboquant-release-tag-automatically-on-app-update.md) |
+| 168 | ✓ | [`docs/decisions/2026-07-31-store-model-catalog-snapshots-in-indexeddb.md`](docs/decisions/2026-07-31-store-model-catalog-snapshots-in-indexeddb.md) |
+| 169 | ✓ | [`docs/decisions/2026-07-31-surface-mcp-server-runtime-errors.md`](docs/decisions/2026-07-31-surface-mcp-server-runtime-errors.md) |
+| 170 | ✓ | [`docs/decisions/2026-07-31-use-a-valid-adl2-context-for-windows-amd-vram-monitoring.md`](docs/decisions/2026-07-31-use-a-valid-adl2-context-for-windows-amd-vram-monitoring.md) |
+| 171 | ✓ | [`docs/README.md`](docs/README.md) |
+| 172 | ✓ | [`extensions/assistant-extension/README.md`](extensions/assistant-extension/README.md) |
+| 173 | ✓ | [`foundation-models-server/README.md`](foundation-models-server/README.md) |
+| 174 | ✓ | [`mlx-server/README.md`](mlx-server/README.md) |
+| 175 | ✓ | [`scripts/concurrent-demo/README.md`](scripts/concurrent-demo/README.md) |
+| 176 | ✓ | [`src-tauri/resources/agent-skills/apple-calendar/SKILL.md`](src-tauri/resources/agent-skills/apple-calendar/SKILL.md) |
+| 177 | ✓ | [`src-tauri/resources/agent-skills/apple-notes/SKILL.md`](src-tauri/resources/agent-skills/apple-notes/SKILL.md) |
+| 178 | ✓ | [`src-tauri/resources/agent-skills/apple-reminders/SKILL.md`](src-tauri/resources/agent-skills/apple-reminders/SKILL.md) |
+| 179 | ✓ | [`src-tauri/resources/agent-skills/audio-transcribe/SKILL.md`](src-tauri/resources/agent-skills/audio-transcribe/SKILL.md) |
+| 180 | ✓ | [`src-tauri/resources/agent-skills/currency/SKILL.md`](src-tauri/resources/agent-skills/currency/SKILL.md) |
+| 181 | ✓ | [`src-tauri/resources/agent-skills/docker/SKILL.md`](src-tauri/resources/agent-skills/docker/SKILL.md) |
+| 182 | ✓ | [`src-tauri/resources/agent-skills/ffmpeg/SKILL.md`](src-tauri/resources/agent-skills/ffmpeg/SKILL.md) |
+| 183 | ✓ | [`src-tauri/resources/agent-skills/github/SKILL.md`](src-tauri/resources/agent-skills/github/SKILL.md) |
+| 184 | ✓ | [`src-tauri/resources/agent-skills/gog-workspace/SKILL.md`](src-tauri/resources/agent-skills/gog-workspace/SKILL.md) |
+| 185 | ✓ | [`src-tauri/resources/agent-skills/imagemagick/SKILL.md`](src-tauri/resources/agent-skills/imagemagick/SKILL.md) |
+| 186 | ✓ | [`src-tauri/resources/agent-skills/notion/SKILL.md`](src-tauri/resources/agent-skills/notion/SKILL.md) |
+| 187 | ✓ | [`src-tauri/resources/agent-skills/obsidian/SKILL.md`](src-tauri/resources/agent-skills/obsidian/SKILL.md) |
+| 188 | ✓ | [`src-tauri/resources/agent-skills/pandoc/SKILL.md`](src-tauri/resources/agent-skills/pandoc/SKILL.md) |
+| 189 | ✓ | [`src-tauri/resources/agent-skills/pdf/SKILL.md`](src-tauri/resources/agent-skills/pdf/SKILL.md) |
+| 190 | ✓ | [`src-tauri/resources/agent-skills/skill-creator/SKILL.md`](src-tauri/resources/agent-skills/skill-creator/SKILL.md) |
+| 191 | ✓ | [`src-tauri/resources/agent-skills/wttr-weather/SKILL.md`](src-tauri/resources/agent-skills/wttr-weather/SKILL.md) |
+| 192 | ✓ | [`src-tauri/resources/agent-skills/xlsx/SKILL.md`](src-tauri/resources/agent-skills/xlsx/SKILL.md) |
+| 193 | ✓ | [`web-app/README.md`](web-app/README.md) |
+| 194 | ✓ | [`web-app/src/services/AGENTS.md`](web-app/src/services/AGENTS.md) |
+| 195 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 196 | → | [`core/CONTRIBUTING.md`](core/CONTRIBUTING.md) |
+| 197 | → | [`DEVELOP.md`](DEVELOP.md) |
+| 198 | → | [`docs/decisions/INDEX.md`](docs/decisions/INDEX.md) |
+| 199 | → | [`extensions/CONTRIBUTING.md`](extensions/CONTRIBUTING.md) |
+| 200 | → | [`README.md`](README.md) |
+| 201 | → | [`src-tauri/CONTRIBUTING.md`](src-tauri/CONTRIBUTING.md) |
+| 202 | → | [`src-tauri/plugins/CONTRIBUTING.md`](src-tauri/plugins/CONTRIBUTING.md) |
+| 203 | → | [`web-app/CONTRIBUTING.md`](web-app/CONTRIBUTING.md) |
 
 ---
 

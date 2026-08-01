@@ -1,0 +1,38 @@
+[
+  {
+    "query": "Review my session for skill friction and give feedback to the skill authors.",
+    "should_trigger": true
+  },
+  {
+    "query": "How well did the distributed skills I used today perform? Any problems?",
+    "should_trigger": true
+  },
+  {
+    "query": "Capture skill friction from this session and draft a local feedback artifact.",
+    "should_trigger": true
+  },
+  {
+    "query": "Give feedback on the pdf-forms skill — it kept failing during my session.",
+    "should_trigger": true
+  },
+  {
+    "query": "Surface any skill issues from today's work and propose fixes.",
+    "should_trigger": true
+  },
+  {
+    "query": "Write me a unit test for the parseExpense helper function.",
+    "should_trigger": false
+  },
+  {
+    "query": "Fix the type error in my TypeScript component on line 42.",
+    "should_trigger": false
+  },
+  {
+    "query": "What is the best way to structure a monorepo with multiple packages?",
+    "should_trigger": false
+  },
+  {
+    "query": "skill-reflect, search for all TODO comments in the codebase and list them.",
+    "should_trigger": false
+  }
+]

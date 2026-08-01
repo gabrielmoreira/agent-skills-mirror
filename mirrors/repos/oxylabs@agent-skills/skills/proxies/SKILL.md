@@ -1,5 +1,5 @@
 ---
-name: oxylabs-proxies
+name: proxies
 description: >-
   Oxylabs proxy networks: Residential, Mobile, shared Datacenter/ISP, and
   Dedicated Datacenter/ISP proxies with geo-targeting, IP rotation, session

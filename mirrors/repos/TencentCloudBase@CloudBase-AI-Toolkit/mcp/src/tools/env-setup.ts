@@ -48,6 +48,13 @@ export interface EnvSetupResult {
   success: boolean;
   envId?: string;
   context: EnvSetupContext;
+  /**
+   * User-facing notice emitted at the entry of `checkAndCreateFreeEnv`.
+   * Informative only — does NOT require user confirmation. Callers SHOULD
+ * surface this message to the user (e.g. merge into the tool result message
+ * or log line) so they know an automatic free-env creation is being attempted.
+ */
+  userNotice?: string;
 }
 
 /**
@@ -310,6 +317,19 @@ export async function checkAndCreateFreeEnv(
     initTcbError: newContext.initTcbError
   });
 
+  // User-facing notice emitted at the entry: inform the user that an automatic
+  // free-env creation is being attempted. Informational only — no confirm.
+  // Built once up-front so every return path can surface the same notice.
+  const userNotice = [
+    "系统检测到您当前没有可用的 CloudBase 环境，将自动尝试为您创建一个免费环境。",
+    "创建依据：通过 NewUser / ReturningUser / BaasFree 等优惠活动资格检查；",
+    "环境别名：ai-native（默认）；",
+    "费用说明：该环境为免费活动赠送，创建过程不会产生费用；如不符合免费条件，将引导您前往购买页；",
+    "流程说明：此为自动流程，无需您确认；创建成功后将自动绑定到当前会话。"
+  ].join("\n");
+
+  debug('[env-setup] User notice prepared:', { userNotice });
+
   try {
     // Step 1: Query promotional activities
     debug('[env-setup] Checking promotional activity eligibility...');
@@ -356,7 +376,8 @@ export async function checkAndCreateFreeEnv(
 
       return {
         success: false,
-        context: newContext
+        context: newContext,
+        userNotice
       };
     }
 
@@ -434,7 +455,8 @@ export async function checkAndCreateFreeEnv(
 
         return {
           success: false,
-          context: newContext
+          context: newContext,
+          userNotice
         };
       }
 
@@ -450,7 +472,8 @@ export async function checkAndCreateFreeEnv(
       return {
         success: true,
         envId: envId.trim(), // Ensure no whitespace
-        context: newContext
+        context: newContext,
+        userNotice
       };
 
     } catch (createErr: any) {
@@ -515,7 +538,8 @@ export async function checkAndCreateFreeEnv(
 
       return {
         success: false,
-        context: newContext
+        context: newContext,
+        userNotice
       };
     }
 
@@ -539,7 +563,8 @@ export async function checkAndCreateFreeEnv(
 
     return {
       success: false,
-      context: newContext
+      context: newContext,
+      userNotice
     };
   }
 }

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `trailofbits/skills` — 26 default patterns, 0 followed patterns, 94 file(s) materialized.
+Mirror of `trailofbits/skills` — 26 default patterns, 0 followed patterns, 93 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `trailofbits/skills` — 26 default patterns, 0 followed patterns, 94 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 94 |
+| Files         | 93 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -149,10 +149,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 88 | ✓ | [`plugins/variant-analysis/skills/variant-analysis/METHODOLOGY.md`](plugins/variant-analysis/skills/variant-analysis/METHODOLOGY.md) |
 | 89 | ✓ | [`plugins/variant-analysis/skills/variant-analysis/SKILL.md`](plugins/variant-analysis/skills/variant-analysis/SKILL.md) |
 | 90 | ✓ | [`plugins/vulnerability-triage-brocards/skills/vulnerability-triage-brocards/SKILL.md`](plugins/vulnerability-triage-brocards/skills/vulnerability-triage-brocards/SKILL.md) |
-| 91 | ✓ | [`plugins/workflow-skill-design/skills/designing-workflow-skills/SKILL.md`](plugins/workflow-skill-design/skills/designing-workflow-skills/SKILL.md) |
-| 92 | ✓ | [`plugins/yara-authoring/skills/yara-rule-authoring/references/testing.md`](plugins/yara-authoring/skills/yara-rule-authoring/references/testing.md) |
-| 93 | ✓ | [`plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md`](plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md) |
-| 94 | ✓ | [`plugins/zeroize-audit/skills/zeroize-audit/SKILL.md`](plugins/zeroize-audit/skills/zeroize-audit/SKILL.md) |
+| 91 | ✓ | [`plugins/yara-authoring/skills/yara-rule-authoring/references/testing.md`](plugins/yara-authoring/skills/yara-rule-authoring/references/testing.md) |
+| 92 | ✓ | [`plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md`](plugins/yara-authoring/skills/yara-rule-authoring/SKILL.md) |
+| 93 | ✓ | [`plugins/zeroize-audit/skills/zeroize-audit/SKILL.md`](plugins/zeroize-audit/skills/zeroize-audit/SKILL.md) |
 
 ---
 

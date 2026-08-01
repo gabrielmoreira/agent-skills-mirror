@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `grafana/grafana` — 26 default patterns, 0 followed patterns, 13 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,18 +60,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/add-e2e-selectors/SKILL.md`](.claude/skills/add-e2e-selectors/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 4 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 5 | ✓ | [`e2e-playwright/alerting-suite/AGENTS.md`](e2e-playwright/alerting-suite/AGENTS.md) |
-| 6 | ✓ | [`e2e-playwright/dashboard-new-layouts/_page_objects_strategy.md`](e2e-playwright/dashboard-new-layouts/_page_objects_strategy.md) |
-| 7 | ✓ | [`e2e-playwright/dashboard-new-layouts/AGENTS.md`](e2e-playwright/dashboard-new-layouts/AGENTS.md) |
-| 8 | ✓ | [`e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md`](e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md) |
-| 9 | ✓ | [`pkg/storage/unified/AGENTS.md`](pkg/storage/unified/AGENTS.md) |
-| 10 | ✓ | [`public/app/core/journeys/AGENTS.md`](public/app/core/journeys/AGENTS.md) |
-| 11 | ✓ | [`public/app/features/alerting/unified/AGENTS.md`](public/app/features/alerting/unified/AGENTS.md) |
-| 12 | ✓ | [`public/app/features/alerting/unified/TESTING.md`](public/app/features/alerting/unified/TESTING.md) |
-| 13 | ✓ | [`public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md`](public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md) |
+| 2 | ✓ | [`.claude/skills/panel-testing-strategy/SKILL.md`](.claude/skills/panel-testing-strategy/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 5 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 6 | ✓ | [`e2e-playwright/alerting-suite/AGENTS.md`](e2e-playwright/alerting-suite/AGENTS.md) |
+| 7 | ✓ | [`e2e-playwright/dashboard-new-layouts/_page_objects_strategy.md`](e2e-playwright/dashboard-new-layouts/_page_objects_strategy.md) |
+| 8 | ✓ | [`e2e-playwright/dashboard-new-layouts/AGENTS.md`](e2e-playwright/dashboard-new-layouts/AGENTS.md) |
+| 9 | ✓ | [`e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md`](e2e-playwright/plugin-e2e/plugin-e2e-api-tests/AGENTS.md) |
+| 10 | ✓ | [`packages/grafana-ui/AGENTS.md`](packages/grafana-ui/AGENTS.md) |
+| 11 | ✓ | [`pkg/storage/unified/AGENTS.md`](pkg/storage/unified/AGENTS.md) |
+| 12 | ✓ | [`public/app/core/journeys/AGENTS.md`](public/app/core/journeys/AGENTS.md) |
+| 13 | ✓ | [`public/app/features/AGENTS.md`](public/app/features/AGENTS.md) |
+| 14 | ✓ | [`public/app/features/alerting/unified/AGENTS.md`](public/app/features/alerting/unified/AGENTS.md) |
+| 15 | ✓ | [`public/app/features/alerting/unified/TESTING.md`](public/app/features/alerting/unified/TESTING.md) |
+| 16 | ✓ | [`public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md`](public/app/features/expressions/components/SqlExpressions/SqlEditor/AGENTS.md) |
+| 17 | ✓ | [`public/app/plugins/panel/AGENTS.md`](public/app/plugins/panel/AGENTS.md) |
 
 ---
 

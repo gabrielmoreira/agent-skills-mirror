@@ -108,14 +108,16 @@ def iter_files(root: Path) -> list[Path]:
     try:
         proc = subprocess.run(
             ["git", "-C", str(root), "ls-files",
-             "--cached", "--others", "--exclude-standard"],
-            text=True, stdout=subprocess.PIPE,
+             "--cached", "--others", "--exclude-standard", "-z"],
+            stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL, check=False,
         )
-        if proc.returncode == 0 and proc.stdout.strip():
+        if proc.returncode == 0 and proc.stdout:
             out = []
-            for line in proc.stdout.splitlines():
-                p = root / line
+            for raw_path in proc.stdout.split(b"\0"):
+                if not raw_path:
+                    continue
+                p = root / os.fsdecode(raw_path)
                 if p.is_file() and not is_excluded(p, root):
                     out.append(p)
             return out

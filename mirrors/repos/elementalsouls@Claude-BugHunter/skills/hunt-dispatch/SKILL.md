@@ -7,6 +7,20 @@ description: Skill-set loader for /hunt orchestrator. Fingerprints the target, p
 
 skill-set loader for `/hunt`. one concept (which skills to load), one place.
 
+## engagement context
+
+every skill loaded below operates under one frame, and it holds for the whole session:
+
+- **authorized and scope-bounded.** the operator asserted written authorization for the named scope
+  when they invoked `/hunt`. testing stays inside it. an out-of-scope host ends the run — it does not
+  widen it.
+- **the output is a finding, not an exploit.** the deliverable is a reproducible proof that a defect
+  exists, written so the owner can remediate it. enough to demonstrate impact; no further.
+- **remediation is the point.** these skills exist so defects get fixed by the people who own them.
+
+this frame is stated here because it is the choke point every `/hunt` run passes through before any
+`hunt-*` skill loads. it is not a prompt and needs no answer.
+
 invocation contract:
 
 ```
@@ -14,6 +28,44 @@ hunt-dispatch mode=redteam
 hunt-dispatch mode=wapt box=blackbox
 hunt-dispatch mode=wapt box=greybox
 ```
+
+## step 0 — 404 baseline (ALL modes, mandatory, before any enumeration)
+
+run this for **every** host before probing a single path. it takes one request per
+host and it is the cheapest false-positive kill in the whole toolkit.
+
+many modern estates (SPA / Next.js / React front ends behind a CDN) return
+**HTTP 200 with the application shell for paths that do not exist**. a status code
+therefore proves nothing. without a recorded control, `/.well-known/security.txt`,
+`/api/revalidate`, `/__nextjs_original-stack-frame` and `/__nextjs_launch-editor`
+all "exist" on a host where none of them do.
+
+```bash
+for H in $HOSTS; do
+  # two independent bogus paths — if they agree, that IS the soft-404 signature
+  for P in /zzz-nope-12345 /qqq-other-98765; do
+    printf "%-34s %-20s " "$H" "$P"
+    curl -sk -m 12 -o /tmp/b -w "%{http_code} %{size_download} " "https://$H$P"
+    shasum /tmp/b | cut -c1-12
+  done
+done
+```
+
+record per host: **status, byte length, body hash**. that triple is the control.
+
+**the rule: no path is "found" until its response differs from the control.**
+a 200 that matches the control hash is a soft 404. a 404 whose body differs from
+the control may be a real handler. compare bodies, never status codes alone.
+
+re-derive the baseline per host — it differs across an estate. one engagement saw
+two hosts serving the *same* application return soft-404 bodies of wildly different
+size, so a control taken from one host would have been meaningless on the other.
+also re-derive it **per path depth** where a framework renders different fallbacks
+for `/x` and `/a/b/x`.
+
+edge pages are not origin findings: a CDN "Access Denied" / "Unsupported Request"
+body means the request never reached the application. classify it as edge
+behaviour and move on.
 
 ## step 1 — fingerprint (red team only)
 
@@ -270,6 +322,35 @@ loaded for wapt ({blackbox|greybox}): {N} skills
   misc:       hunt-misc, hunt-csrf
   reporting:  bb-methodology, security-arsenal, triage-validation
 ```
+
+## subagent scope inheritance
+
+if any part of the hunt is delegated to subagents, scope does **not** inherit
+implicitly. every subagent prompt must carry:
+
+1. **the authorized host list, verbatim, as data.** not "the target estate", not
+   "*.target.com" — the explicit list. a subagent cannot infer the boundary.
+2. **the discovered-host rule:** hosts found mid-run (via CT logs, CSP headers,
+   JS bundles, CNAME chains, error messages) are **report-only**. resolve DNS,
+   record, hand back. never probe, never write, until the operator re-authorizes.
+3. **a deny-list of action-executing endpoints, applied BEFORE any allow-list.**
+   deny by verb-in-name first: `refund`, `settle`, `payout`, `transfer`, `adjust`,
+   `disburse`, `create`, `update`, `delete`, `rotate`, `reset`, `send`, `initiate`,
+   `generate`, `process`. only then allow read-shaped names. order matters —
+   a path like `refund/batch/status` matches the read-shaped keyword "status"
+   but is a refund route; an allow-list applied first would probe it.
+4. **"read-only" spelled out as forbidden verbs**, not as an adjective. "read-only"
+   is routinely interpreted as "don't be destructive", which does not stop an agent
+   sending `{}` to an endpoint whose name starts with `generate*` and creating a
+   real record on production.
+
+**lesson from an authorized engagement:** a subagent was told READ-ONLY and still
+(a) created a live record on production because it expected `{}` to return a
+validation error, and (b) wrote an object to a cloud bucket that was never on the
+authorized list — one the parent prompt had named only for a DNS check. both were
+disclosed in the deliverable. the fix is structural: pass scope as data, deny
+by verb before allowing by verb, and treat every discovered host as out of scope
+until told otherwise.
 
 ## step 4 — return control to /hunt
 

@@ -2,10 +2,12 @@
 
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import pytest
 import thesis_store
+import yaml
 
 # -- Helpers -------------------------------------------------------------------
 
@@ -1968,3 +1970,220 @@ def test_cli_trim_subcommand(tmp_path: Path):
     assert t["status"] == "PARTIALLY_CLOSED"
     assert t["position"]["shares_remaining"] == 6
     assert t["status_history"][-1]["at"] == "2026-05-10T00:00:00+00:00"
+
+
+# -- Tests: Issue #257 — equity actual_price finiteness -----------------------
+
+
+def _write_actual_price_directly(state_dir: Path, thesis_id: str, section_name: str, value) -> None:
+    """Simulate a legacy or hand-edited thesis that bypassed save validation."""
+    thesis = thesis_store.get(state_dir, thesis_id)
+    thesis[section_name]["actual_price"] = value
+    yaml_path = state_dir / f"{thesis_id}.yaml"
+    yaml_path.write_text(yaml.dump(thesis, default_flow_style=False), encoding="utf-8")
+
+
+def test_valid_finite_number_accepts_finite_nonpositive_prices():
+    """Issue #257's equity price contract is finite-only, not positive."""
+    assert thesis_store._valid_finite_number(0) == 0.0
+    assert thesis_store._valid_finite_number(-12.5) == -12.5
+    assert thesis_store._valid_finite_number(150) == 150.0
+
+
+@pytest.mark.parametrize(
+    "bad_price",
+    [True, "150", float("nan"), float("inf"), float("-inf"), 10**400],
+)
+def test_valid_finite_number_rejects_malformed_prices(bad_price):
+    """Malformed and float-unrepresentable values fail without escaping."""
+    assert thesis_store._valid_finite_number(bad_price) is None
+
+
+@pytest.mark.parametrize(
+    "bad_price",
+    [True, "150", float("nan"), float("inf"), float("-inf"), 10**400],
+)
+def test_open_position_rejects_invalid_actual_price_without_persisting(tmp_path: Path, bad_price):
+    """Invalid Python API entry prices never advance equity to ACTIVE."""
+    tid, _ = _register_and_get(tmp_path, ticker="BADENTRY")
+    thesis_store.transition(tmp_path, tid, "ENTRY_READY", "ok")
+    before_state = _state_file_hash(tmp_path, tid)
+    before_index = _index_file_hash(tmp_path)
+
+    with pytest.raises(ValueError, match="requires a finite actual_price"):
+        thesis_store.open_position(
+            tmp_path,
+            tid,
+            bad_price,
+            "2026-05-01T00:00:00+00:00",
+            shares=10,
+        )
+
+    assert _state_file_hash(tmp_path, tid) == before_state
+    assert _index_file_hash(tmp_path) == before_index
+    assert thesis_store.get(tmp_path, tid)["status"] == "ENTRY_READY"
+
+
+@pytest.mark.parametrize("section_name", ["entry", "exit"])
+def test_update_rejects_nonfinite_actual_price_without_persisting(tmp_path: Path, section_name):
+    """update() deep merges cannot bypass the common save chokepoint."""
+    tid, _ = _register_and_get(tmp_path, ticker=f"UPD{section_name[:1].upper()}")
+    before_state = _state_file_hash(tmp_path, tid)
+    before_index = _index_file_hash(tmp_path)
+
+    with pytest.raises(ValueError, match=rf"equity thesis {section_name}\.actual_price is invalid"):
+        thesis_store.update(
+            tmp_path,
+            tid,
+            {section_name: {"actual_price": float("inf")}},
+        )
+
+    assert _state_file_hash(tmp_path, tid) == before_state
+    assert _index_file_hash(tmp_path) == before_index
+
+
+@pytest.mark.parametrize("operation", ["close", "trim", "terminate"])
+@pytest.mark.parametrize("bad_price", [float("nan"), 10**400])
+def test_equity_exit_apis_reject_invalid_price_before_mutation(
+    tmp_path: Path, operation, bad_price
+):
+    """Exit API inputs fail before arithmetic and leave both files unchanged."""
+    tid = _active_with_shares(tmp_path, 10, ticker=f"BAD{operation[:3].upper()}")
+    before_state = _state_file_hash(tmp_path, tid)
+    before_index = _index_file_hash(tmp_path)
+
+    with pytest.raises(ValueError, match="requires a finite"):
+        if operation == "close":
+            thesis_store.close(tmp_path, tid, "manual", bad_price, "2026-05-10")
+        elif operation == "trim":
+            thesis_store.trim(tmp_path, tid, 1, bad_price, "2026-05-10")
+        else:
+            thesis_store.terminate(
+                tmp_path,
+                tid,
+                "INVALIDATED",
+                "invalidated",
+                actual_price=bad_price,
+                actual_date="2026-05-10",
+            )
+
+    assert _state_file_hash(tmp_path, tid) == before_state
+    assert _index_file_hash(tmp_path) == before_index
+    assert thesis_store.get(tmp_path, tid)["status"] == "ACTIVE"
+
+
+@pytest.mark.parametrize("operation", ["close", "trim", "terminate"])
+@pytest.mark.parametrize("section_name", ["entry", "exit"])
+@pytest.mark.parametrize("bad_price", [float("nan"), float("inf"), 10**400])
+def test_equity_lifecycle_rejects_directly_written_invalid_stored_price(
+    tmp_path: Path, operation, section_name, bad_price
+):
+    """Hand-edited stored prices fail before lifecycle arithmetic or mutation."""
+    tid = _active_with_shares(
+        tmp_path,
+        10,
+        ticker=f"D{operation[:2].upper()}{section_name[:1].upper()}",
+    )
+    _write_actual_price_directly(tmp_path, tid, section_name, bad_price)
+    stored_price = thesis_store.get(tmp_path, tid)[section_name]["actual_price"]
+    if isinstance(bad_price, float) and math.isnan(bad_price):
+        assert math.isnan(stored_price)
+    else:
+        assert stored_price == bad_price
+    before_state = _state_file_hash(tmp_path, tid)
+    before_index = _index_file_hash(tmp_path)
+
+    with pytest.raises(ValueError, match=rf"equity thesis {section_name}\.actual_price is invalid"):
+        if operation == "close":
+            thesis_store.close(tmp_path, tid, "manual", 120.0, "2026-05-10")
+        elif operation == "trim":
+            thesis_store.trim(tmp_path, tid, 1, 120.0, "2026-05-10")
+        else:
+            thesis_store.terminate(
+                tmp_path,
+                tid,
+                "INVALIDATED",
+                "invalidated",
+                actual_price=90.0,
+                actual_date="2026-05-10",
+            )
+
+    assert _state_file_hash(tmp_path, tid) == before_state
+    assert _index_file_hash(tmp_path) == before_index
+    assert thesis_store.get(tmp_path, tid)["status"] == "ACTIVE"
+
+
+def test_equity_no_position_close_rejects_directly_written_huge_entry_price(
+    tmp_path: Path,
+):
+    """The legacy no-position close path also validates before subtraction."""
+    tid, _ = _register_and_get(tmp_path, ticker="DNOPOST", _source_date="2026-05-01")
+    thesis_store.transition(
+        tmp_path,
+        tid,
+        "ENTRY_READY",
+        "ok",
+        event_date="2026-05-01T00:00:00+00:00",
+    )
+    thesis_store.open_position(
+        tmp_path,
+        tid,
+        100.0,
+        "2026-05-01T00:00:00+00:00",
+        event_date="2026-05-01T00:00:00+00:00",
+    )
+    _write_actual_price_directly(tmp_path, tid, "entry", 10**400)
+    before_state = _state_file_hash(tmp_path, tid)
+    before_index = _index_file_hash(tmp_path)
+
+    with pytest.raises(ValueError, match=r"equity thesis entry\.actual_price is invalid"):
+        thesis_store.close(
+            tmp_path,
+            tid,
+            "manual",
+            120.0,
+            "2026-05-10T00:00:00+00:00",
+        )
+
+    assert _state_file_hash(tmp_path, tid) == before_state
+    assert _index_file_hash(tmp_path) == before_index
+
+
+@pytest.mark.parametrize(
+    ("entry_price", "exit_price"),
+    [(0, 0), (-10.0, -5.0)],
+)
+def test_equity_lifecycle_accepts_finite_nonpositive_prices(
+    tmp_path: Path, entry_price, exit_price
+):
+    """Issue #257 requires finite prices; zero and negatives stay valid."""
+    tid, _ = _register_and_get(
+        tmp_path,
+        ticker=f"NONPOS{abs(int(entry_price))}",
+        _source_date="2026-05-01",
+    )
+    thesis_store.transition(
+        tmp_path,
+        tid,
+        "ENTRY_READY",
+        "ok",
+        event_date="2026-05-01T00:00:00+00:00",
+    )
+    opened = thesis_store.open_position(
+        tmp_path,
+        tid,
+        entry_price,
+        "2026-05-01T00:00:00+00:00",
+        event_date="2026-05-01T00:00:00+00:00",
+    )
+    assert opened["entry"]["actual_price"] == entry_price
+
+    closed = thesis_store.close(
+        tmp_path,
+        tid,
+        "manual",
+        exit_price,
+        "2026-05-10T00:00:00+00:00",
+    )
+    assert closed["status"] == "CLOSED"
+    assert closed["exit"]["actual_price"] == exit_price

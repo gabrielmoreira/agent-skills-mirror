@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `luochang212/dive-into-langgraph` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `luochang212/dive-into-langgraph` — 26 default patterns, 0 followed patterns, 17 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `luochang212/dive-into-langgraph` — 26 default patterns, 0 followed 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 17 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,22 +59,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/dive-into-langgraph/references/1.quickstart.md`](skills/dive-into-langgraph/references/1.quickstart.md) |
-| 2 | ✓ | [`skills/dive-into-langgraph/references/10.rag.md`](skills/dive-into-langgraph/references/10.rag.md) |
-| 3 | ✓ | [`skills/dive-into-langgraph/references/11.web_search.md`](skills/dive-into-langgraph/references/11.web_search.md) |
-| 4 | ✓ | [`skills/dive-into-langgraph/references/2.stategraph.md`](skills/dive-into-langgraph/references/2.stategraph.md) |
-| 5 | ✓ | [`skills/dive-into-langgraph/references/3.middleware.md`](skills/dive-into-langgraph/references/3.middleware.md) |
-| 6 | ✓ | [`skills/dive-into-langgraph/references/4.human_in_the_loop.md`](skills/dive-into-langgraph/references/4.human_in_the_loop.md) |
-| 7 | ✓ | [`skills/dive-into-langgraph/references/5.memory.md`](skills/dive-into-langgraph/references/5.memory.md) |
-| 8 | ✓ | [`skills/dive-into-langgraph/references/6.context.md`](skills/dive-into-langgraph/references/6.context.md) |
-| 9 | ✓ | [`skills/dive-into-langgraph/references/7.mcp_server.md`](skills/dive-into-langgraph/references/7.mcp_server.md) |
-| 10 | ✓ | [`skills/dive-into-langgraph/references/8.supervisor.md`](skills/dive-into-langgraph/references/8.supervisor.md) |
-| 11 | ✓ | [`skills/dive-into-langgraph/references/9.parallelization.md`](skills/dive-into-langgraph/references/9.parallelization.md) |
-| 12 | ✓ | [`skills/dive-into-langgraph/scripts/examples.py`](skills/dive-into-langgraph/scripts/examples.py) |
-| 13 | ✓ | [`skills/dive-into-langgraph/scripts/tools/__init__.py`](skills/dive-into-langgraph/scripts/tools/__init__.py) |
-| 14 | ✓ | [`skills/dive-into-langgraph/scripts/tools/tool_math.py`](skills/dive-into-langgraph/scripts/tools/tool_math.py) |
-| 15 | ✓ | [`skills/dive-into-langgraph/scripts/utils.py`](skills/dive-into-langgraph/scripts/utils.py) |
-| 16 | ✓ | [`skills/dive-into-langgraph/SKILL.md`](skills/dive-into-langgraph/SKILL.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`skills/dive-into-langgraph/references/1.quickstart.md`](skills/dive-into-langgraph/references/1.quickstart.md) |
+| 3 | ✓ | [`skills/dive-into-langgraph/references/10.rag.md`](skills/dive-into-langgraph/references/10.rag.md) |
+| 4 | ✓ | [`skills/dive-into-langgraph/references/11.web_search.md`](skills/dive-into-langgraph/references/11.web_search.md) |
+| 5 | ✓ | [`skills/dive-into-langgraph/references/2.stategraph.md`](skills/dive-into-langgraph/references/2.stategraph.md) |
+| 6 | ✓ | [`skills/dive-into-langgraph/references/3.middleware.md`](skills/dive-into-langgraph/references/3.middleware.md) |
+| 7 | ✓ | [`skills/dive-into-langgraph/references/4.human_in_the_loop.md`](skills/dive-into-langgraph/references/4.human_in_the_loop.md) |
+| 8 | ✓ | [`skills/dive-into-langgraph/references/5.memory.md`](skills/dive-into-langgraph/references/5.memory.md) |
+| 9 | ✓ | [`skills/dive-into-langgraph/references/6.context.md`](skills/dive-into-langgraph/references/6.context.md) |
+| 10 | ✓ | [`skills/dive-into-langgraph/references/7.mcp_server.md`](skills/dive-into-langgraph/references/7.mcp_server.md) |
+| 11 | ✓ | [`skills/dive-into-langgraph/references/8.supervisor.md`](skills/dive-into-langgraph/references/8.supervisor.md) |
+| 12 | ✓ | [`skills/dive-into-langgraph/references/9.parallelization.md`](skills/dive-into-langgraph/references/9.parallelization.md) |
+| 13 | ✓ | [`skills/dive-into-langgraph/scripts/examples.py`](skills/dive-into-langgraph/scripts/examples.py) |
+| 14 | ✓ | [`skills/dive-into-langgraph/scripts/tools/__init__.py`](skills/dive-into-langgraph/scripts/tools/__init__.py) |
+| 15 | ✓ | [`skills/dive-into-langgraph/scripts/tools/tool_math.py`](skills/dive-into-langgraph/scripts/tools/tool_math.py) |
+| 16 | ✓ | [`skills/dive-into-langgraph/scripts/utils.py`](skills/dive-into-langgraph/scripts/utils.py) |
+| 17 | ✓ | [`skills/dive-into-langgraph/SKILL.md`](skills/dive-into-langgraph/SKILL.md) |
 
 ---
 

@@ -1,5 +1,5 @@
 ---
-name: oxylabs-web-scraper
+name: web-scraper-api
 description: Production-grade web scraping with automatic anti-bot bypass, structured JSON parsing for 40+ targets, and geo-targeting. Use when the user needs to scrape web pages, extract product data, get search results, or collect structured data from supported e-commerce and search platforms without worrying about getting blocked and when geo targeting is required.
 ---
 

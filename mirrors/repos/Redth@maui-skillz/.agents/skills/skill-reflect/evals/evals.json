@@ -1,0 +1,70 @@
+{
+  "skill_name": "skill-reflect",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Using the session log at `evals/files/pdf-forms-session.md`, run skill-reflect to analyze the `pdf-forms` distributed skill's performance and produce a local feedback artifact. The skill is from a fictional repo `acme/pdf-skills` that cannot be resolved.",
+      "expected_output": "A local feedback artifact at `.skill-feedback/<date>-pdf-forms.md` with correct frontmatter fields (`generated_by`, `schema`, `date`, `skill`, `source_repo`, `sessions_reviewed`, `consent`), a Summary section, at least one Findings subsection with `severity`, `confidence`, `outcome`, `category`, a paraphrased `What happened` and `Signal`, a `Proposed fix`, and a `Proposed eval` block, followed by `Privacy` and `Routing` sections.",
+      "files": ["evals/files/pdf-forms-session.md"],
+      "expectations": [
+        "The output artifact includes a frontmatter block with `generated_by: skill-reflect`",
+        "The output artifact includes a frontmatter field `skill: pdf-forms`",
+        "The output artifact includes at least one Findings subsection with a severity label (High, Medium, or Low)",
+        "Each finding subsection includes a `Proposed fix` field with an actionable change",
+        "Each finding subsection includes a `Proposed eval` block with a JSON object",
+        "The output artifact includes a `## Privacy` section",
+        "The output artifact includes a `## Routing` section"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Using the session log at `evals/files/pdf-forms-session.md`, analyze skill friction and prepare a feedback artifact. Show the full draft artifact to the user and ask for confirmation before writing anything. Do not file a GitHub issue — stop after the local artifact is reviewed.",
+      "expected_output": "The full draft artifact text is presented to the user for review with a request for confirmation. No GitHub issue is filed. The artifact's `consent` field is `review-only`.",
+      "files": ["evals/files/pdf-forms-session.md"],
+      "expectations": [
+        "The output presents the full draft artifact text to the user before confirming any write",
+        "The output asks the user to confirm before writing the artifact to disk",
+        "The output does not indicate that a GitHub issue was created or filed",
+        "The output does not include a URL pointing to a filed GitHub issue",
+        "The artifact content shown in the output contains `consent: review-only`"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Analyze the session log at `evals/files/pdf-forms-session.md` for skill friction and produce a feedback artifact. Ensure the artifact is fully paraphrased: it must not contain any email addresses, absolute file paths, authentication tokens, or IP addresses from the session.",
+      "expected_output": "A feedback artifact in which all PII and secrets from the session fixture have been paraphrased or omitted. No raw email addresses, `/Users/...` paths, GitHub tokens, or IP addresses appear anywhere in the artifact.",
+      "files": ["evals/files/pdf-forms-session.md"],
+      "expectations": [
+        "The output artifact does not contain any email address (no `@` in a data context that reveals a user identity)",
+        "The output artifact does not contain any absolute file path beginning with `/Users/` or `/home/`",
+        "The output artifact does not contain any GitHub personal access token pattern (e.g. `ghp_...`)",
+        "The output artifact does not contain any IPv4 address from the session",
+        "Session details are described in paraphrased form, not quoted verbatim from the fixture"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Using the session log at `evals/files/pdf-forms-session.md`, analyze skill friction for the `pdf-forms` skill. The skill's source repository is not in any registry and cannot be resolved. Produce a feedback artifact that correctly reflects the unknown provenance — do not invent or guess a GitHub repository as a filing destination.",
+      "expected_output": "A feedback artifact with `source_repo: unknown` in frontmatter and a Routing section that specifies local-only storage. No GitHub repository URL is fabricated as a destination.",
+      "files": ["evals/files/pdf-forms-session.md"],
+      "expectations": [
+        "The output artifact frontmatter contains `source_repo: unknown`",
+        "The Routing section states that the suggested destination is local only",
+        "The output does not fabricate a GitHub repository URL (e.g. `owner/repo`) as a filing destination",
+        "The `consent` field in the artifact remains `review-only`"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Analyze the session log at `evals/files/pdf-forms-session.md` for skill friction. The session also involved `skill-reflect-auto` (the automation extension) during session-end bookkeeping. Confirm that skill-reflect excludes itself and `skill-reflect-auto` from the findings, and attributes friction only to `pdf-forms`.",
+      "expected_output": "A feedback artifact that covers only `pdf-forms`. No findings are attributed to `skill-reflect` or `skill-reflect-auto`. The scope exclusion is honored silently (no error).",
+      "files": ["evals/files/pdf-forms-session.md"],
+      "expectations": [
+        "The output artifact does not include any finding attributed to `skill-reflect`",
+        "The output artifact does not include any finding attributed to `skill-reflect-auto`",
+        "The output artifact attributes findings only to the `pdf-forms` skill",
+        "The output does not produce an error or warning about the self-exclusion — it is honored silently"
+      ]
+    }
+  ]
+}

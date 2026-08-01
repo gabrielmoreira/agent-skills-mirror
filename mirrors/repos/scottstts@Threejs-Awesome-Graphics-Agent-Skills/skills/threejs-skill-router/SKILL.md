@@ -26,7 +26,7 @@ Treat the model's Three.js knowledge and official documentation as prerequisites
 | authored analytic waves, bounded heightfield pools, object ripples, differential-area caustics, ray-traced pool volume optics, shared normals, heuristic refraction, fallback absorption, crest foam | `$threejs-water-optics` |
 | falling snow, snow accumulation, model snow caps, wet asphalt puddles, procedural ripple normals, splash flipbooks, rain streaks, shared weather envelopes, surface wetness | `$threejs-precipitation-surfaces` |
 | curved-ray black holes, accretion disks, wormholes | `$threejs-raymarched-space-effects` |
-| particles, trails, plasma, shockwaves, holographic projections, Fresnel rim shells, scanline banding, layered event effects | `$threejs-procedural-vfx` |
+| raymarched aurora curtains, finite-footprint emissive slabs, uniform volume integration, equirectangular radiance probes, WebGPU voxel fire and smoke, volumetric fluid fields, mesh-surface emitters, SDF fire collisions, particles, trails, plasma, shockwaves, holographic projections, Fresnel rim shells, scanline banding, layered event effects | `$threejs-procedural-vfx` |
 | accumulated screen frost, touch clearing, wet-window rain, view-aligned droplet refraction and blur | `$threejs-temporal-surfaces` |
 | stable large-world shadows, cascades, clipmaps, cached updates | `$threejs-shadow-systems` |
 | GTAO, bent normals, bilateral reconstruction | `$threejs-screen-space-ambient-occlusion` |

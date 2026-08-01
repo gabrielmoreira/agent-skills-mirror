@@ -46,5 +46,7 @@ atmospheric composition, and package-owned diagnostics.
 ## Routing boundary
 
 Use `$threejs-atmosphere-aerial-perspective` for molecular/aerosol scattering
-without weather density. This skill owns weather-shaped cloud volumes,
-reconstruction, cloud lighting, and cloud shadows.
+without weather density. Use `$threejs-procedural-vfx` for emissive aurora
+curtain slabs or bounded interactive voxel fire and smoke with velocity,
+pressure, emitter, and collision fields. This skill owns weather-shaped cloud
+volumes, reconstruction, cloud lighting, and cloud shadows.

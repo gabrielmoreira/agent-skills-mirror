@@ -112,6 +112,12 @@ helpers below.
 | `stripJsonBom`     | `(value: string) => string`       | Remove a leading UTF-8 BOM from JSON text before parsing.                 |
 | `parseJsonWithBom` | `<T = unknown>(value: string): T` | `JSON.parse` wrapper that tolerates a leading BOM in persisted JSON text. |
 
+### Search Highlighting (`src/renderer/utils/highlightMatches.tsx` - Renderer)
+
+| Function                                     | Signature                               | Purpose                                                                                                                          |
+| -------------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `highlightMatches(text, query, accentColor)` | `(string, string, string) => ReactNode` | Wrap every case-insensitive occurrence of `query` in an accent-colored `<mark>`. Used by the CSV table and its row detail modal. |
+
 ### Main Process (`src/main/utils/stripAnsi.ts`)
 
 | Function         | Signature            | Purpose                                                                            |

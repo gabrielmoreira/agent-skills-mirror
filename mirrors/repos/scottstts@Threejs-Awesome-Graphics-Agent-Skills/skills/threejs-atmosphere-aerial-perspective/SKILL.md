@@ -45,4 +45,6 @@ LUT example.
 
 This skill owns molecular/aerosol sky scattering and surface-segment aerial
 perspective. Use `$threejs-volumetric-clouds` for weather-shaped cloud density,
-temporal cloud reconstruction, and cloud shadows.
+temporal cloud reconstruction, and cloud shadows. Use
+`$threejs-procedural-vfx` for emissive aurora curtain volumes and their
+perspective/equirectangular radiance materials.

@@ -49,6 +49,33 @@ done
 
 ## Phase 2 — Source Map Discovery
 
+> **Always resolve the CURRENT build hash before testing, and again before
+> re-verifying.** Bundle filenames are content-hashed, so they rotate on every
+> deploy. A `.map` URL recorded yesterday can 404 today while the map is still
+> fully exposed under a new name. **A 404 at the old URL is not remediation** —
+> it is a new build.
+>
+> ```bash
+> # ALWAYS derive the hash live, never reuse a recorded URL
+> HASH=$(curl -s "https://$TARGET/" | grep -oE 'main\.[a-f0-9]+\.js' | head -1)
+> curl -s -o /dev/null -w '%{http_code} %{size_download} %{content_type}\n' \
+>   "https://$TARGET/static/js/${HASH}.map"
+> ```
+>
+> **Lesson from an authorized engagement.** A large production map was found at
+> `main.<hashA>.js.map`. On re-verification that URL returned a small HTML
+> soft-404 and the finding was nearly closed as fixed. The bundle had rotated to
+> `main.<hashB>.js` — and the map was still published at `main.<hashB>.js.map`,
+> same size. Nothing had been remediated.
+>
+> Tell the client this explicitly in the report: **redeploying does not fix source
+> map exposure.** Only `GENERATE_SOURCEMAP=false` (or stripping `.map` at deploy)
+> plus a CDN purge closes it. A team that redeploys and re-checks the old link
+> will wrongly declare victory.
+>
+> Same rule applies to any content-hashed artifact: chunk files, CSS maps,
+> `asset-manifest.json`, and staging equivalents.
+
 ```bash
 # Step 1: Get asset manifest to find all JS bundle paths
 curl -s "https://$TARGET/asset-manifest.json" | python3 -m json.tool 2>/dev/null

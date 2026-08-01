@@ -264,6 +264,7 @@ The table below is **auto-generated** from `skills-index.yaml` by `scripts/gener
 | **Portfolio Manager** | ❌ Not used | ❌ Not used | ✅ Required | Alpaca brokerage MCP/API |
 | **Position Sizer** | ❌ Not used | ❌ Not used | ❌ Not used | Pure calculation; works offline |
 | **Pre-Trade Discipline Gate** | ❌ Not used | ❌ Not used | ❌ Not used | Reads local checklist, workflow artifacts, and trader-memory-core state; works offline |
+| **Residual Edge Analyzer** | ❌ Not used | ❌ Not used | ❌ Not used | Analyzes aligned local CSV and JSON inputs; works offline |
 | **Scenario Analyzer** | ❌ Not used | ❌ Not used | ❌ Not used | Headline / news search via WebSearch |
 | **Sector Analyst** | ❌ Not used | ❌ Not used | ❌ Not used | Chart screenshot input |
 | **Signal Postmortem** | ❌ Not used | ❌ Not used | ❌ Not used | Postmortem framework; pure calculation |

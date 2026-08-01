@@ -40,6 +40,28 @@ Example user requests:
 - "Find mean-reversion pairs"
 - "What are good market-neutral trades right now?"
 
+## Prerequisites
+
+- Python 3.9 or newer
+- An FMP API key with access to the company screener and historical-price endpoints
+- `statsmodels>=0.14,<0.15` for ADF and autoregression calculations
+
+Set the API key without placing it on the command line or in a committed file:
+
+```bash
+export FMP_API_KEY="<fmp-api-key>"
+```
+
+Run the scripts from the repository root with the statistical dependency isolated
+to the command:
+
+```bash
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/find_pairs.py \
+  --symbols AAPL,MSFT \
+  --output /tmp/pair-trade/pairs.json
+```
+
 ## Analysis Workflow
 
 ### Step 1: Define Pair Universe
@@ -103,7 +125,11 @@ GET /v3/historical-price-full/{symbol}?apikey=YOUR_API_KEY
 
 **Script Execution:**
 ```bash
-python scripts/fetch_price_data.py --sector Technology --lookback 730
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/find_pairs.py \
+  --sector Technology \
+  --lookback-days 730 \
+  --output /tmp/pair-trade/technology.json
 ```
 
 ### Step 3: Calculate Correlation and Beta
@@ -356,6 +382,19 @@ pair_trade_analysis_[SECTOR]_[YYYY-MM-DD].md
 
 Example: `pair_trade_analysis_Technology_2025-11-08.md`
 
+## Output
+
+`find_pairs.py` creates the requested parent directory and writes one JSON object
+with `metadata` and `pairs` keys. Each pair includes the correlation, hedge ratio,
+ADF result, half-life, current z-score, signal, and generation timestamp. Progress
+and a ranked summary are written to stdout. File-system errors produce a concise
+stderr message and a nonzero exit.
+
+`analyze_spread.py` writes a single-pair statistical report to stdout and does not
+create files. Both commands reject invalid or non-finite thresholds, insufficient
+lookback windows, and duplicate symbols before making API requests. Missing
+`statsmodels` produces an install command on stderr without a traceback.
+
 ## Quality Standards
 
 ### Statistical Rigor
@@ -400,18 +439,27 @@ Example: `pair_trade_analysis_Technology_2025-11-08.md`
 **Usage:**
 ```bash
 # Sector-based screening
-python scripts/find_pairs.py --sector Technology --min-correlation 0.70
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/find_pairs.py \
+  --sector Technology \
+  --min-correlation 0.70 \
+  --output /tmp/pair-trade/technology.json
 
 # Custom stock list
-python scripts/find_pairs.py --symbols AAPL,MSFT,GOOGL,META --min-correlation 0.75
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/find_pairs.py \
+  --symbols AAPL,MSFT,GOOGL,META \
+  --min-correlation 0.75 \
+  --output /tmp/pair-trade/custom.json
 
 # Full options
-python scripts/find_pairs.py \
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/find_pairs.py \
   --sector Financials \
   --min-correlation 0.70 \
   --min-market-cap 2000000000 \
   --lookback-days 730 \
-  --output pairs_analysis.json
+  --output /tmp/pair-trade/financials.json
 ```
 
 **Parameters:**
@@ -420,7 +468,7 @@ python scripts/find_pairs.py \
 - `--min-correlation`: Minimum correlation threshold (default: 0.70)
 - `--min-market-cap`: Minimum market cap filter (default: $2B)
 - `--lookback-days`: Historical data period (default: 730 days)
-- `--output`: Output JSON file (default: stdout)
+- `--output`: Output JSON file (default: `pair_analysis.json`)
 - `--api-key`: FMP API key (or set FMP_API_KEY env var)
 
 **Output:**
@@ -449,10 +497,14 @@ python scripts/find_pairs.py \
 **Usage:**
 ```bash
 # Analyze specific pair
-python scripts/analyze_spread.py --stock-a AAPL --stock-b MSFT
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/analyze_spread.py \
+  --stock-a AAPL \
+  --stock-b MSFT
 
 # Custom lookback period
-python scripts/analyze_spread.py \
+uv run --with 'statsmodels>=0.14,<0.15' python \
+  skills/pair-trade-screener/scripts/analyze_spread.py \
   --stock-a JPM \
   --stock-b BAC \
   --lookback-days 365 \
@@ -533,7 +585,7 @@ Deep dive into cointegration testing:
 - **Market neutral focus**: Minimize directional beta exposure
 - **Data quality critical**: Garbage in, garbage out
 - **Requires FMP API key**: Free tier sufficient for basic screening
-- **Python dependencies**: pandas, numpy, scipy, statsmodels
+- **Python dependencies**: pandas, numpy, scipy, requests, and `statsmodels>=0.14,<0.15`
 
 ## Common Use Cases
 

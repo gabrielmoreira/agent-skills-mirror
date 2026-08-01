@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dceoy/speckit-agent-skills` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
+Mirror of `dceoy/speckit-agent-skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dceoy/speckit-agent-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 22 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -63,24 +63,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.github/prompts/speckit.checklist.prompt.md`](.github/prompts/speckit.checklist.prompt.md) |
 | 3 | ✓ | [`.github/prompts/speckit.clarify.prompt.md`](.github/prompts/speckit.clarify.prompt.md) |
 | 4 | ✓ | [`.github/prompts/speckit.constitution.prompt.md`](.github/prompts/speckit.constitution.prompt.md) |
-| 5 | ✓ | [`.github/prompts/speckit.implement.prompt.md`](.github/prompts/speckit.implement.prompt.md) |
-| 6 | ✓ | [`.github/prompts/speckit.plan.prompt.md`](.github/prompts/speckit.plan.prompt.md) |
-| 7 | ✓ | [`.github/prompts/speckit.specify.prompt.md`](.github/prompts/speckit.specify.prompt.md) |
-| 8 | ✓ | [`.github/prompts/speckit.tasks.prompt.md`](.github/prompts/speckit.tasks.prompt.md) |
-| 9 | ✓ | [`.github/prompts/speckit.taskstoissues.prompt.md`](.github/prompts/speckit.taskstoissues.prompt.md) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`skills/claude-command-converter/SKILL.md`](skills/claude-command-converter/SKILL.md) |
-| 13 | ✓ | [`skills/speckit-analyze/SKILL.md`](skills/speckit-analyze/SKILL.md) |
-| 14 | ✓ | [`skills/speckit-baseline/SKILL.md`](skills/speckit-baseline/SKILL.md) |
-| 15 | ✓ | [`skills/speckit-checklist/SKILL.md`](skills/speckit-checklist/SKILL.md) |
-| 16 | ✓ | [`skills/speckit-clarify/SKILL.md`](skills/speckit-clarify/SKILL.md) |
-| 17 | ✓ | [`skills/speckit-constitution/SKILL.md`](skills/speckit-constitution/SKILL.md) |
-| 18 | ✓ | [`skills/speckit-implement/SKILL.md`](skills/speckit-implement/SKILL.md) |
-| 19 | ✓ | [`skills/speckit-plan/SKILL.md`](skills/speckit-plan/SKILL.md) |
-| 20 | ✓ | [`skills/speckit-specify/SKILL.md`](skills/speckit-specify/SKILL.md) |
-| 21 | ✓ | [`skills/speckit-tasks/SKILL.md`](skills/speckit-tasks/SKILL.md) |
-| 22 | ✓ | [`skills/speckit-taskstoissues/SKILL.md`](skills/speckit-taskstoissues/SKILL.md) |
+| 5 | ✓ | [`.github/prompts/speckit.converge.prompt.md`](.github/prompts/speckit.converge.prompt.md) |
+| 6 | ✓ | [`.github/prompts/speckit.implement.prompt.md`](.github/prompts/speckit.implement.prompt.md) |
+| 7 | ✓ | [`.github/prompts/speckit.plan.prompt.md`](.github/prompts/speckit.plan.prompt.md) |
+| 8 | ✓ | [`.github/prompts/speckit.specify.prompt.md`](.github/prompts/speckit.specify.prompt.md) |
+| 9 | ✓ | [`.github/prompts/speckit.tasks.prompt.md`](.github/prompts/speckit.tasks.prompt.md) |
+| 10 | ✓ | [`.github/prompts/speckit.taskstoissues.prompt.md`](.github/prompts/speckit.taskstoissues.prompt.md) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`skills/claude-command-converter/SKILL.md`](skills/claude-command-converter/SKILL.md) |
+| 14 | ✓ | [`skills/speckit-analyze/SKILL.md`](skills/speckit-analyze/SKILL.md) |
+| 15 | ✓ | [`skills/speckit-baseline/SKILL.md`](skills/speckit-baseline/SKILL.md) |
+| 16 | ✓ | [`skills/speckit-checklist/SKILL.md`](skills/speckit-checklist/SKILL.md) |
+| 17 | ✓ | [`skills/speckit-clarify/SKILL.md`](skills/speckit-clarify/SKILL.md) |
+| 18 | ✓ | [`skills/speckit-constitution/SKILL.md`](skills/speckit-constitution/SKILL.md) |
+| 19 | ✓ | [`skills/speckit-converge/SKILL.md`](skills/speckit-converge/SKILL.md) |
+| 20 | ✓ | [`skills/speckit-implement/SKILL.md`](skills/speckit-implement/SKILL.md) |
+| 21 | ✓ | [`skills/speckit-plan/SKILL.md`](skills/speckit-plan/SKILL.md) |
+| 22 | ✓ | [`skills/speckit-specify/SKILL.md`](skills/speckit-specify/SKILL.md) |
+| 23 | ✓ | [`skills/speckit-tasks/SKILL.md`](skills/speckit-tasks/SKILL.md) |
+| 24 | ✓ | [`skills/speckit-taskstoissues/SKILL.md`](skills/speckit-taskstoissues/SKILL.md) |
 
 ---
 

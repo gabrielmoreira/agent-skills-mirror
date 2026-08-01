@@ -5,7 +5,7 @@ argument-hint: "[topic]"
 effort: high
 author: Agents365-ai
 category: Content Creation
-version: 5.1.0
+version: 5.2.0
 created: 2025-01-27
 updated: 2026-07-30
 permissions:
@@ -30,7 +30,7 @@ metadata:
   openclaw:
     requires:
       bins: [python3, ffmpeg, node, npx]
-      env: []
+      env: [AZURE_SPEECH_KEY, DASHSCOPE_API_KEY, VOLCENGINE_APPID, VOLCENGINE_ACCESS_TOKEN, TENCENT_SECRET_ID, TENCENT_SECRET_KEY, BAIDU_APP_ID, BAIDU_API_KEY, BAIDU_SECRET_KEY, MINIMAX_API_KEY, XUNFEI_APP_ID, XUNFEI_API_KEY, XUNFEI_API_SECRET, ELEVENLABS_API_KEY, OPENAI_API_KEY, GOOGLE_TTS_API_KEY]
     emoji: "🎬"
     homepage: https://github.com/Agents365-ai/video-podcast-maker
     os: ["macos", "linux"]
@@ -60,7 +60,7 @@ Automated pipeline for **4K Bilibili horizontal knowledge videos** from a topic.
 - [Bootstrap](#bootstrap) — prerequisites (run before Step 1)
 - [Execution Modes](#execution-modes) — Auto vs Interactive → [references/workflow-script.md](references/workflow-script.md)
 - [Regenerating an Existing Video](#regenerating-an-existing-video) — iterate on a finished video
-- [Workflow](#workflow) — the 10 steps + phase-file pointers + mandatory stops
+- [Workflow](#workflow) — the 11-step pipeline + phase-file pointers + mandatory stops
 - [Hard Rules](#hard-rules) — non-negotiable production constraints
 - [Audio-Master Clock & Sync](#audio-master-clock--sync)
 - [Per-Video Layout](#per-video-layout)
@@ -94,6 +94,8 @@ Updates flow through the plugin marketplace (`/plugin update`); direct git-clone
 
 **TTS engine** — all 11 backends (`TTS_BACKEND=edge|azure|cosyvoice|doubao|tencent|baidu|minimax|xunfei|elevenlabs|openai|google`) synthesize through the **ttscn component skill**, which is **required**: install it under `~/.claude/skills/ttscn` or point `TTSCN_HOME` at its root ([Agents365-ai/ttsCN](https://github.com/Agents365-ai/ttsCN)). Each backend still needs only its own API keys (Edge needs none); `check_prereqs.py` validates both the install and the keys.
 
+> **Pi users:** `ttscn` is not bundled with Pi — install `Agents365-ai/ttsCN` as a Pi skill (its `skills/ttscn/` layout is auto-detected) or set `TTSCN_HOME`; `check_prereqs.py` verifies the install before TTS.
+
 > **Design Learning shortcut**: If the user provides a reference video/image or asks to save/list/delete style profiles, see [references/design-learning.md](references/design-learning.md) instead of running the workflow below.
 
 ---
@@ -115,7 +117,7 @@ Pick the **smallest** re-run for what actually changed:
 | Narration script (`podcast.txt`) | Step 7 (TTS) → Step 8 preview → render+mix | topic research + section design |
 | Visuals only (components, layout, colors) | Step 8 preview → render+mix | audio (`podcast_audio.wav` / `timing.json`) |
 | Background music only | Re-mix BGM | `output.mp4` (no re-render) |
-| Subtitles only | Step 10 finalize | `output.mp4` / `video_with_bgm.mp4` |
+| Subtitles only | Step 10.1 finalize | `output.mp4` / `video_with_bgm.mp4` |
 
 Any re-run that changes what the viewer **sees or hears** re-enters the Step 8 gate: apply the change, let Studio hot-reload, and wait for a fresh explicit "render 4K" — the previous confirmation does **not** carry over. A **script** change shifts every downstream timestamp, so always regenerate `timing.json` through TTS — never hand-edit it. After any re-run, re-verify:
 
@@ -149,7 +151,7 @@ At Step 1 start, create one task per step in your agent's tracker. Mark `in_prog
 **Mandatory stops** (bold rows above):
 
 - **Step 8 — Studio review.** MUST launch `npx remotion studio` and wait for user feedback before rendering. NEVER render 4K until the user explicitly confirms ("render 4K" / "render final"). A reply containing adjustment requests is **not** confirmation — apply the changes, let Studio hot-reload, and ask again. Every round of adjustments needs its own fresh confirmation before Step 9.
-- **Step 10 — `verify_output.py`.** MUST pass before declaring the video done. Exit 0 = green; exit 2 = warnings still publishable. Auto-fixes common omissions (creates `final_video.mp4` if missing). Generates publish info (title, description, tags, chapter timestamps) from the platform matrix. For machine-readable output add `--format json`.
+- **Step 10 — `verify_output.py`.** MUST pass before declaring the video done. Exit 0 = green; exit 2 = warnings still publishable. Auto-fixes common omissions (creates `final_video.mp4` if missing). Validates publish info (title, description, tags, chapters) against the platform matrix — generate it in Steps 5.5 and 10.2. For machine-readable output add `--format json`.
 
 **Pre-render audit (recommended)** — before Step 8:
 
@@ -188,7 +190,7 @@ Pick frames at: hero title (~10% in), a dense section midpoint, and the outro. R
 | **Studio Before Render** | MUST launch `remotion studio` for review. NEVER render 4K until user explicitly confirms. Adjustment feedback ≠ confirmation — apply, hot-reload, ask again. |
 | **`--public-dir`** | Every Remotion command uses `--public-dir videos/{name}/`. All output files (output.mp4, final_video.mp4, thumbnails) go directly into `videos/{name}/` — never an `out/` or `dist/` dir. |
 
-Visual minimums (text sizes, content width, safe zones, animation safety) live in [references/design-guide.md](references/design-guide.md). **MUST load before Step 9.**
+Visual minimums (text sizes, content width, safe zones, animation safety) live in [references/design-guide.md](references/design-guide.md). **MUST load before Step 8.**
 
 ## Audio-Master Clock & Sync
 
@@ -272,11 +274,11 @@ Load on demand — **do NOT load all at once**:
 | [references/script-polish.md](references/script-polish.md) | **Load after Step 4 draft is written** — deep editing toolkit with 24 EN+ZH before/after patterns, evidence boundaries, quality rubrics |
 | [references/workflow-assets.md](references/workflow-assets.md) | Step 5, or when the user supplies images/clips or wants stock/AI media |
 | [references/workflow-assets.md](references/workflow-assets.md#transparent-overlays-via-hyperframes-free-needs-node-22) | A section needs a data-chart/infographic animation beyond the component library (transparent overlay via Hyperframes) |
-| [references/workflow-production.md](references/workflow-production.md) | Steps 6-9 (thumbnails → TTS → Remotion → render + BGM) |
+| [references/workflow-production.md](references/workflow-production.md) | Steps 5.5-9.5 (publish info draft → thumbnails → TTS → Remotion → render → BGM mix) |
 | [references/workflow-publish.md](references/workflow-publish.md) | Steps 10-11 (publish info, verify, shorts) |
 | [references/platform-matrix.md](references/platform-matrix.md) | Platform-specific behavior (thumbnails, chapters, outro, publish info, shorts) |
-| [references/design-guide.md](references/design-guide.md) | **MUST load before Step 9** — visual minimums, typography, animation safety |
-| [references/visual-taste.md](references/visual-taste.md) | **Load before Step 9** alongside design-guide — design dials, anti-default rules, visual modes, section rhythm |
+| [references/design-guide.md](references/design-guide.md) | **MUST load before Step 8** — visual minimums, typography, animation safety |
+| [references/visual-taste.md](references/visual-taste.md) | **Load before Step 8** alongside design-guide — design dials, anti-default rules, visual modes, section rhythm |
 | [references/design-learning.md](references/design-learning.md) | User provides a reference video/image, or manages style profiles |
 | [references/troubleshooting.md](references/troubleshooting.md#azure-tts-deep-dive) | Choosing Azure voice/style, debugging hoarse/glitchy audio |
 | [references/troubleshooting.md](references/troubleshooting.md) | On error, script/CLI discovery, or user asks about preferences/BGM |

@@ -24,6 +24,8 @@ except ImportError:
     print("Install with: pip install requests")
     sys.exit(1)
 
+REQUEST_TIMEOUT_SECONDS = 30
+
 
 def load_credentials():
     """Load Alpaca API credentials from environment variables."""
@@ -34,8 +36,8 @@ def load_credentials():
     if not api_key or not secret_key:
         print("ERROR: Alpaca API credentials not found")
         print("\nPlease set environment variables:")
-        print("  export ALPACA_API_KEY='your_api_key_id'")
-        print("  export ALPACA_SECRET_KEY='your_secret_key'")
+        print("  export ALPACA_API_KEY='your_api_key_id'")  # pragma: allowlist secret
+        print("  export ALPACA_SECRET_KEY='your_secret_key'")  # pragma: allowlist secret
         print("  export ALPACA_PAPER='true'  # or 'false' for live trading")
         print("\nOr add to your shell config file (~/.bashrc or ~/.zshrc):")
         print("  echo 'export ALPACA_API_KEY=\"your_key\"' >> ~/.bashrc")
@@ -51,8 +53,25 @@ def get_base_url(paper=True):
     """Get appropriate Alpaca API base URL."""
     if paper:
         return "https://paper-api.alpaca.markets"
-    else:
-        return "https://api.alpaca.markets"
+    return "https://api.alpaca.markets"
+
+
+def mask_identifier(value):
+    """Mask an account identifier while preserving its final four characters."""
+    text = str(value or "")
+    if not text:
+        return "N/A"
+    return f"****{text[-4:]}"
+
+
+def require_object(payload, required_fields, label):
+    """Validate an API object without echoing its potentially sensitive content."""
+    if not isinstance(payload, dict):
+        raise ValueError(f"{label} must be an object")
+    missing = required_fields - payload.keys()
+    if missing:
+        raise ValueError(f"{label} is missing required fields")
+    return payload
 
 
 def test_account_info(api_key, secret_key, base_url):
@@ -64,13 +83,28 @@ def test_account_info(api_key, secret_key, base_url):
     headers = {"APCA-API-KEY-ID": api_key, "APCA-API-SECRET-KEY": secret_key}
 
     try:
-        response = requests.get(f"{base_url}/v2/account", headers=headers)
+        response = requests.get(
+            f"{base_url}/v2/account",
+            headers=headers,
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
 
         if response.status_code == 200:
-            account = response.json()
+            account = require_object(
+                response.json(),
+                {
+                    "status",
+                    "account_number",
+                    "equity",
+                    "cash",
+                    "buying_power",
+                    "portfolio_value",
+                },
+                "account response",
+            )
             print("✓ Successfully connected to Alpaca API\n")
             print(f"Account Status: {account.get('status')}")
-            print(f"Account Number: {account.get('account_number')}")
+            print(f"Account Number: {mask_identifier(account.get('account_number'))}")
             print(f"Equity: ${float(account.get('equity', 0)):,.2f}")
             print(f"Cash: ${float(account.get('cash', 0)):,.2f}")
             print(f"Buying Power: ${float(account.get('buying_power', 0)):,.2f}")
@@ -110,15 +144,17 @@ def test_account_info(api_key, secret_key, base_url):
 
         else:
             print(f"✗ Unexpected error: HTTP {response.status_code}")
-            print(f"Response: {response.text}")
             return False
 
-    except requests.exceptions.RequestException as e:
-        print(f"✗ Network error: {e}")
+    except requests.exceptions.RequestException:
+        print("✗ Network error while contacting Alpaca Account API")
         print("\nPossible causes:")
         print("  1. No internet connection")
         print("  2. Alpaca API is down (check status.alpaca.markets)")
         print("  3. Firewall blocking connection")
+        return False
+    except (TypeError, ValueError):
+        print("✗ Invalid or malformed response from Alpaca Account API")
         return False
 
 
@@ -131,10 +167,16 @@ def test_positions(api_key, secret_key, base_url):
     headers = {"APCA-API-KEY-ID": api_key, "APCA-API-SECRET-KEY": secret_key}
 
     try:
-        response = requests.get(f"{base_url}/v2/positions", headers=headers)
+        response = requests.get(
+            f"{base_url}/v2/positions",
+            headers=headers,
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
 
         if response.status_code == 200:
             positions = response.json()
+            if not isinstance(positions, list):
+                raise ValueError("positions response must be a list")
 
             if len(positions) == 0:
                 print("✓ API connection successful")
@@ -147,6 +189,19 @@ def test_positions(api_key, secret_key, base_url):
                 total_pl = 0
 
                 for pos in positions:
+                    pos = require_object(
+                        pos,
+                        {
+                            "symbol",
+                            "qty",
+                            "avg_entry_price",
+                            "current_price",
+                            "market_value",
+                            "unrealized_pl",
+                            "unrealized_plpc",
+                        },
+                        "position",
+                    )
                     symbol = pos.get("symbol")
                     qty = float(pos.get("qty", 0))
                     avg_price = float(pos.get("avg_entry_price", 0))
@@ -177,11 +232,13 @@ def test_positions(api_key, secret_key, base_url):
 
         else:
             print(f"✗ Error fetching positions: HTTP {response.status_code}")
-            print(f"Response: {response.text}")
             return False
 
-    except requests.exceptions.RequestException as e:
-        print(f"✗ Network error: {e}")
+    except requests.exceptions.RequestException:
+        print("✗ Network error while contacting Alpaca Positions API")
+        return False
+    except (TypeError, ValueError):
+        print("✗ Invalid or malformed response from Alpaca Positions API")
         return False
 
 
@@ -198,15 +255,17 @@ def test_market_data(api_key, secret_key):
 
     # Test with a simple quote request for AAPL
     try:
-        response = requests.get(f"{base_url}/v2/stocks/AAPL/quotes/latest", headers=headers)
+        response = requests.get(
+            f"{base_url}/v2/stocks/AAPL/quotes/latest",
+            headers=headers,
+            timeout=REQUEST_TIMEOUT_SECONDS,
+        )
 
         if response.status_code == 200:
+            payload = require_object(response.json(), {"quote"}, "market data response")
+            quote = require_object(payload["quote"], {"bp", "ap"}, "market quote")
             print("✓ Market data API accessible")
-            quote = response.json().get("quote", {})
-            if quote:
-                print(
-                    f"Sample quote (AAPL): Bid ${quote.get('bp', 0):.2f}, Ask ${quote.get('ap', 0):.2f}"
-                )
+            print(f"Sample quote (AAPL): Bid ${quote['bp']:.2f}, Ask ${quote['ap']:.2f}")
         elif response.status_code == 402:
             print("⚠ Market data requires paid subscription")
             print("  Free tier provides delayed data only")
@@ -215,8 +274,11 @@ def test_market_data(api_key, secret_key):
             print(f"⚠ Market data API returned HTTP {response.status_code}")
             print("  This won't affect portfolio management functionality")
 
-    except Exception as e:
-        print(f"⚠ Could not test market data API: {e}")
+    except requests.exceptions.RequestException:
+        print("⚠ Could not contact the market data API")
+        print("  This won't affect portfolio management functionality")
+    except (TypeError, ValueError):
+        print("⚠ Market data API returned invalid or malformed data")
         print("  This won't affect portfolio management functionality")
 
 
@@ -232,7 +294,6 @@ def main():
     mode = "PAPER TRADING" if paper else "LIVE TRADING"
     print(f"\nMode: {mode}")
     print(f"Base URL: {base_url}")
-    print(f"API Key: {api_key[:8]}...{api_key[-4:]}")
 
     # Run tests
     success = True

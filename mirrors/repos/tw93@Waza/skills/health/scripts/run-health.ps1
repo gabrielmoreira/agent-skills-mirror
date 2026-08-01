@@ -9,21 +9,146 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-function Find-GitRoot([string]$Executable) {
+Remove-Item "Env:WAZA_PYTHON" -ErrorAction SilentlyContinue
+Remove-Item "Env:DOC_REF_CHECKER" -ErrorAction SilentlyContinue
+Remove-Item "Env:GIT_INSTALL_ROOT" -ErrorAction SilentlyContinue
+Remove-Item "Env:BASH_ENV" -ErrorAction SilentlyContinue
+Remove-Item "Env:ENV" -ErrorAction SilentlyContinue
+
+function Test-PathWithinRoot([string]$Candidate, [string]$Root) {
+    $candidatePath = [IO.Path]::GetFullPath($Candidate).TrimEnd(
+        [IO.Path]::DirectorySeparatorChar,
+        [IO.Path]::AltDirectorySeparatorChar
+    )
+    $rootPath = [IO.Path]::GetFullPath($Root).TrimEnd(
+        [IO.Path]::DirectorySeparatorChar,
+        [IO.Path]::AltDirectorySeparatorChar
+    )
+    return $candidatePath.Equals(
+        $rootPath,
+        [StringComparison]::OrdinalIgnoreCase
+    ) -or $candidatePath.StartsWith(
+        $rootPath + [IO.Path]::DirectorySeparatorChar,
+        [StringComparison]::OrdinalIgnoreCase
+    )
+}
+
+function Resolve-FinalPath([string]$Candidate) {
+    if (-not $Candidate -or -not [IO.Path]::IsPathRooted($Candidate)) {
+        return $null
+    }
+    try {
+        $fullPath = [IO.Path]::GetFullPath($Candidate)
+        $root = [IO.Path]::GetPathRoot($fullPath)
+        $relative = $fullPath.Substring($root.Length)
+        $parts = $relative.Split(
+            [char[]]@([IO.Path]::DirectorySeparatorChar, [IO.Path]::AltDirectorySeparatorChar),
+            [StringSplitOptions]::RemoveEmptyEntries
+        )
+        $current = $root
+        $linksFollowed = 0
+        foreach ($part in $parts) {
+            $current = Join-Path $current $part
+            $item = Get-Item -LiteralPath $current -Force -ErrorAction Stop
+            while (($item.Attributes -band [IO.FileAttributes]::ReparsePoint) -ne 0) {
+                $linksFollowed += 1
+                if ($linksFollowed -gt 32) {
+                    return $null
+                }
+                $target = $item.Target | Select-Object -First 1
+                if (-not $target) {
+                    return $null
+                }
+                if (-not [IO.Path]::IsPathRooted($target)) {
+                    $target = Join-Path (Split-Path -Parent $item.FullName) $target
+                }
+                $current = [IO.Path]::GetFullPath($target)
+                $item = Get-Item -LiteralPath $current -Force -ErrorAction Stop
+            }
+            $current = $item.FullName
+        }
+        return [IO.Path]::GetFullPath($current)
+    } catch {
+        return $null
+    }
+}
+
+function Resolve-SafePath([string]$Candidate, [string]$TargetRoot) {
+    if (-not $Candidate -or $Candidate.StartsWith("\\")) {
+        return $null
+    }
+    try {
+        $lexical = [IO.Path]::GetFullPath($Candidate)
+        if (Test-PathWithinRoot $lexical $TargetRoot) {
+            return $null
+        }
+        $final = Resolve-FinalPath $lexical
+        if (-not $final -or (Test-PathWithinRoot $final $TargetRoot)) {
+            return $null
+        }
+        return $final
+    } catch {
+        return $null
+    }
+}
+
+function Resolve-Executable([string]$Candidate, [string]$TargetRoot) {
+    if (-not $Candidate) {
+        return $null
+    }
+    $source = $Candidate
+    if (-not [IO.Path]::IsPathRooted($source)) {
+        $command = Get-Command $source -ErrorAction SilentlyContinue
+        if (-not $command) {
+            return $null
+        }
+        $source = $command.Source
+    }
+    if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
+        return $null
+    }
+    return (Resolve-SafePath $source $TargetRoot)
+}
+
+function Test-GitBashRoot([string]$Root, [string]$TargetRoot) {
+    if (-not $Root) {
+        return $false
+    }
+    $safeRoot = Resolve-SafePath $Root $TargetRoot
+    if (-not $safeRoot) {
+        return $false
+    }
+    $bash = Resolve-Executable (Join-Path $safeRoot "bin\bash.exe") $TargetRoot
+    if (-not $bash) {
+        return $false
+    }
+    try {
+        & $bash --version *> $null
+        return $LASTEXITCODE -eq 0
+    } catch {
+        return $false
+    }
+}
+
+function Find-GitRoot([string]$Executable, [string]$TargetRoot) {
     if (-not $Executable) {
         return $null
     }
 
-    $fullPath = [IO.Path]::GetFullPath($Executable)
-    $current = if (Test-Path -LiteralPath $fullPath -PathType Container) {
-        $fullPath
+    $safePath = Resolve-SafePath $Executable $TargetRoot
+    if (-not $safePath) {
+        return $null
+    }
+    $current = if (Test-Path -LiteralPath $safePath -PathType Container) {
+        $safePath
     } else {
-        Split-Path -Parent $fullPath
+        Split-Path -Parent $safePath
     }
     while ($current) {
         if (
             (Test-Path -LiteralPath (Join-Path $current "bin\bash.exe") -PathType Leaf) -and
-            (Test-Path -LiteralPath (Join-Path $current "usr\bin") -PathType Container)
+            (Test-Path -LiteralPath (Join-Path $current "usr\bin") -PathType Container) -and
+            (Test-GitBashRoot $current $TargetRoot)
         ) {
             return $current
         }
@@ -36,41 +161,145 @@ function Find-GitRoot([string]$Executable) {
     return $null
 }
 
-function Resolve-Executable([string]$Candidate) {
-    if (-not $Candidate) {
-        return $null
+function Find-InstalledGitRoot([string]$TargetRoot) {
+    $candidates = @()
+    foreach ($key in @(
+        "HKLM:\SOFTWARE\GitForWindows",
+        "HKLM:\SOFTWARE\WOW6432Node\GitForWindows",
+        "HKCU:\SOFTWARE\GitForWindows"
+    )) {
+        try {
+            $installPath = (Get-ItemProperty -LiteralPath $key -ErrorAction Stop).InstallPath
+            if ($installPath) {
+                $candidates += $installPath
+            }
+        } catch {
+            # A missing registry key is normal.
+        }
     }
-    if (Test-Path -LiteralPath $Candidate -PathType Leaf) {
-        return (Resolve-Path -LiteralPath $Candidate).Path
+
+    $programFiles = [Environment]::GetFolderPath(
+        [Environment+SpecialFolder]::ProgramFiles
+    )
+    $programFilesX86 = [Environment]::GetFolderPath(
+        [Environment+SpecialFolder]::ProgramFilesX86
+    )
+    $localAppData = [Environment]::GetFolderPath(
+        [Environment+SpecialFolder]::LocalApplicationData
+    )
+    foreach ($base in @($programFiles, $programFilesX86)) {
+        if ($base) {
+            $candidates += (Join-Path $base "Git")
+        }
     }
-    $command = Get-Command $Candidate -ErrorAction SilentlyContinue
-    if ($command) {
-        return $command.Source
+    if ($localAppData) {
+        $candidates += (Join-Path $localAppData "Programs\Git")
+    }
+
+    foreach ($candidate in $candidates | Select-Object -Unique) {
+        $root = Find-GitRoot $candidate $TargetRoot
+        if ($root) {
+            return $root
+        }
     }
     return $null
 }
 
-function Find-Python {
-    $override = Resolve-Executable $env:WAZA_PYTHON
-    if ($override) {
-        return $override
+function Get-SafePath([string]$TargetRoot) {
+    $safeEntries = @()
+    foreach ($entry in $env:PATH.Split([IO.Path]::PathSeparator)) {
+        $candidate = $entry.Trim().Trim('"')
+        if (-not $candidate -or -not [IO.Path]::IsPathRooted($candidate)) {
+            continue
+        }
+        if ($candidate.StartsWith("\\")) {
+            continue
+        }
+        try {
+            $fullPath = Resolve-SafePath $candidate $TargetRoot
+            if ($fullPath -and (Test-Path -LiteralPath $fullPath -PathType Container)) {
+                $safeEntries += $fullPath
+            }
+        } catch {
+            # Malformed inherited PATH entries are not executable roots.
+        }
     }
-    foreach ($name in @("python3.exe", "python.exe", "py.exe")) {
-        $executable = Resolve-Executable $name
+    return ($safeEntries -join [IO.Path]::PathSeparator)
+}
+
+function Resolve-WorkingPython([string]$Candidate, [string]$TargetRoot) {
+    $executable = Resolve-Executable $Candidate $TargetRoot
+    if (-not $executable) {
+        return $null
+    }
+    try {
+        & $executable --version *> $null
+        if ($LASTEXITCODE -eq 0) {
+            & $executable -I -c "import sys; raise SystemExit(sys.version_info < (3, 9))" *> $null
+        }
+        if ($LASTEXITCODE -eq 0) {
+            return $executable
+        }
+    } catch {
+        # App Execution Aliases and stale shims can resolve but not run.
+    }
+    return $null
+}
+
+function Find-Python([string]$TargetRoot) {
+    foreach ($name in @("python3.exe", "python.exe")) {
+        $executable = Resolve-WorkingPython $name $TargetRoot
         if ($executable) {
             return $executable
         }
     }
-    $candidates = @(
-        (Join-Path $env:USERPROFILE "anaconda3\python.exe"),
-        (Join-Path $env:USERPROFILE "miniconda3\python.exe"),
-        (Join-Path $env:LOCALAPPDATA "Programs\Python\Python*\python.exe"),
-        (Join-Path $env:ProgramFiles "Python*\python.exe")
+
+    $launcher = Resolve-Executable "py.exe" $TargetRoot
+    if ($launcher) {
+        try {
+            $registered = & $launcher -3 -I -c "import sys; print(sys.executable)" 2>$null |
+                Select-Object -First 1
+            if ($LASTEXITCODE -eq 0 -and $registered) {
+                $executable = Resolve-WorkingPython ($registered.Trim()) $TargetRoot
+                if ($executable) {
+                    return $executable
+                }
+            }
+        } catch {
+            # Continue to registered install locations.
+        }
+    }
+
+    $candidates = @()
+    $userProfile = [Environment]::GetFolderPath(
+        [Environment+SpecialFolder]::UserProfile
     )
+    $localAppData = [Environment]::GetFolderPath(
+        [Environment+SpecialFolder]::LocalApplicationData
+    )
+    $programFiles = [Environment]::GetFolderPath(
+        [Environment+SpecialFolder]::ProgramFiles
+    )
+    if ($userProfile) {
+        $candidates += (Join-Path $userProfile "anaconda3\python.exe")
+        $candidates += (Join-Path $userProfile "miniconda3\python.exe")
+    }
+    if ($localAppData) {
+        $candidates += (Join-Path $localAppData "Programs\Python\Python*\python.exe")
+    }
+    if ($programFiles) {
+        $candidates += (Join-Path $programFiles "Python*\python.exe")
+    }
     foreach ($candidate in $candidates) {
-        $match = Resolve-Path -Path $candidate -ErrorAction SilentlyContinue | Select-Object -First 1
-        if ($match) {
-            return $match.Path
+        $matches = @(
+            Resolve-Path -Path $candidate -ErrorAction SilentlyContinue |
+                Sort-Object Path
+        )
+        foreach ($match in $matches) {
+            $executable = Resolve-WorkingPython $match.Path $TargetRoot
+            if ($executable) {
+                return $executable
+            }
         }
     }
     return $null
@@ -91,54 +320,87 @@ if (-not (Test-Path -LiteralPath $scriptPath -PathType Leaf)) {
 }
 
 $bashPath = $null
-$childPath = $env:PATH
+$targetRoot = Resolve-FinalPath (Get-Location).Path
+if (-not $targetRoot) {
+    [Console]::Error.WriteLine("Health could not resolve the audited project root safely.")
+    exit 1
+}
+if (
+    $Action -ne "collect" -and
+    $ScriptArgs.Count -gt 0 -and
+    (Test-Path -LiteralPath $ScriptArgs[0] -PathType Container)
+) {
+    $targetRoot = Resolve-FinalPath ([IO.Path]::GetFullPath($ScriptArgs[0]))
+    if (-not $targetRoot) {
+        [Console]::Error.WriteLine("Health could not resolve the audited project root safely.")
+        exit 1
+    }
+}
+$childPath = Get-SafePath $targetRoot
+$env:PATH = $childPath
 $pythonPath = $null
-$isWindowsHost = $env:OS -eq "Windows_NT"
+$isWindowsHost = [Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT
 if ($isWindowsHost) {
-    $git = Get-Command git.exe -ErrorAction SilentlyContinue
-    $bash = Get-Command bash.exe -ErrorAction SilentlyContinue
-    $gitRoot = Find-GitRoot $env:GIT_INSTALL_ROOT
-    if (-not $gitRoot) {
-        $gitRoot = Find-GitRoot $(if ($git) { $git.Source } else { $null })
+    $gitRoot = Find-InstalledGitRoot $targetRoot
+    if ($gitRoot -and -not (Test-GitBashRoot $gitRoot $targetRoot)) {
+        $gitRoot = $null
     }
     if (-not $gitRoot) {
-        $gitRoot = Find-GitRoot $(if ($bash) { $bash.Source } else { $null })
-    }
-    if (-not $gitRoot -and $git) {
-        $gitExecPath = & $git.Source --exec-path 2>$null
-        if ($LASTEXITCODE -eq 0) {
-            $gitRoot = Find-GitRoot $gitExecPath
+        $git = Resolve-Executable "git.exe" $targetRoot
+        $bash = Resolve-Executable "bash.exe" $targetRoot
+        $gitRoot = Find-GitRoot $git $targetRoot
+        if (-not $gitRoot) {
+            $gitRoot = Find-GitRoot $bash $targetRoot
+        }
+        if (-not $gitRoot -and $git) {
+            $gitExecPath = & $git --exec-path 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                $gitRoot = Find-GitRoot $gitExecPath $targetRoot
+            }
         }
     }
     if (-not $gitRoot) {
         [Console]::Error.WriteLine(
-            "Health requires Git for Windows with bin\bash.exe; make git.exe or Git Bash discoverable."
+            "Health requires Git for Windows with bin\bash.exe in a standard install or safe PATH."
         )
         exit 1
     }
 
-    $bashPath = Join-Path $gitRoot "bin\bash.exe"
-    $runtimePaths = @(
+    $bashPath = Resolve-Executable (Join-Path $gitRoot "bin\bash.exe") $targetRoot
+    if (-not $bashPath) {
+        [Console]::Error.WriteLine(
+            "Health requires Git for Windows with bin\bash.exe in a standard install or safe PATH."
+        )
+        exit 1
+    }
+    $runtimeCandidates = @(
         (Join-Path $gitRoot "usr\bin"),
         (Join-Path $gitRoot "mingw64\bin"),
         (Join-Path $gitRoot "bin"),
         (Join-Path $gitRoot "cmd")
-    ) | Where-Object { Test-Path -LiteralPath $_ -PathType Container }
-    $childPath = (@($runtimePaths) + @($env:PATH)) -join [IO.Path]::PathSeparator
-    $pythonPath = Find-Python
+    )
+    $runtimePaths = @()
+    foreach ($candidate in $runtimeCandidates) {
+        $safeRuntimePath = Resolve-SafePath $candidate $targetRoot
+        if ($safeRuntimePath -and (Test-Path -LiteralPath $safeRuntimePath -PathType Container)) {
+            $runtimePaths += $safeRuntimePath
+        }
+    }
+    $pythonPath = Find-Python $targetRoot
+    $pythonPaths = @()
+    if ($pythonPath) {
+        $pythonPaths += (Split-Path -Parent $pythonPath)
+    }
+    $childPath = (@($pythonPaths) + @($runtimePaths) + @($env:PATH)) -join [IO.Path]::PathSeparator
 } else {
-    $bash = Get-Command bash -ErrorAction SilentlyContinue
-    if (-not $bash) {
+    $bashPath = Resolve-Executable "bash" $targetRoot
+    if (-not $bashPath) {
         [Console]::Error.WriteLine("Health requires Bash on PATH.")
         exit 1
     }
-    $bashPath = $bash.Source
 }
 
 $env:PATH = $childPath
-if ($pythonPath) {
-    $env:WAZA_PYTHON = $pythonPath.Replace("\", "/")
-}
 
-& $bashPath $scriptPath @ScriptArgs
+& $bashPath -p $scriptPath @ScriptArgs
 exit $LASTEXITCODE

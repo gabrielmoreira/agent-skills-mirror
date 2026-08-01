@@ -1,5 +1,5 @@
 ---
-name: oxylabs-headless-browser
+name: headless-browser
 description: Connects to Oxylabs remote headless browsers via Chrome DevTools Protocol (CDP) using Playwright or Puppeteer. Provides anti-detection, CAPTCHA handling, residential proxies, and geo-targeting built in. Use when browser automation needs remote execution, stealth capabilities, rendered pages, screenshots, PDFs, or complex JavaScript interaction.
 ---
 

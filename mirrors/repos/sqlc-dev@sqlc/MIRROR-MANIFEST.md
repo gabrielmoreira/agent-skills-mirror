@@ -65,7 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`internal/sql/ast/CLAUDE.md`](internal/sql/ast/CLAUDE.md) |
 | 5 | ✓ | [`internal/sql/astutils/CLAUDE.md`](internal/sql/astutils/CLAUDE.md) |
 | 6 | ✓ | [`internal/sql/named/CLAUDE.md`](internal/sql/named/CLAUDE.md) |
-| 7 | ✓ | [`internal/sql/rewrite/CLAUDE.md`](internal/sql/rewrite/CLAUDE.md) |
+| 7 | ✓ | [`internal/sql/preprocess/CLAUDE.md`](internal/sql/preprocess/CLAUDE.md) |
 
 ---
 
