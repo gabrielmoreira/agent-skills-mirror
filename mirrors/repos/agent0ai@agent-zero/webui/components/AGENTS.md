@@ -27,6 +27,7 @@
 - Store state can be read as `$store.name` in templates and through direct module imports in JavaScript; avoid `window.Alpine.store()` lookups in component code.
 - Use `globalThis.xAttrs(element)` only for explicit parent `<x-component>` attribute inheritance.
 - Use shared API, modal, notification, confirmation, and store helpers instead of ad hoc globals.
+- Author Material Symbols as empty `<x-icon name="lowercase_snake_case"></x-icon>` elements. Bind changing icons through `:name`, keep accessible text on the owning control, and do not add new ligature-text spans or `x-text` icon bindings.
 - Components that use polling directives may use `x-every-second`, `x-every-minute`, or `x-every-hour` only while mounted.
 - Use `$confirmClick` for destructive two-click confirmations where the existing UI pattern fits.
 - Name component files `feature-name.html` and stores `feature-store.js` or `feature-name-store.js`.

@@ -127,7 +127,8 @@
       "docsUrl": "https://github.com/radareorg/radare2",
       "canAutoInstall": true,
       "verifyCommand": "r2",
-      "preferApiDigest": true
+      "preferApiDigest": true,
+      "note": "radare2 发版频繁，不 pin assetSha256；改用 GitHub API digest（sha256:...）动态校验，格式已实测兼容 Assert-DownloadedFileIntegrity。"
     },
     {
       "name": "rabin2",
@@ -138,7 +139,8 @@
       "docsUrl": "https://github.com/radareorg/radare2",
       "canAutoInstall": true,
       "verifyCommand": "rabin2",
-      "preferApiDigest": true
+      "preferApiDigest": true,
+      "note": "与 r2 同一发布资产，API digest 动态校验（见 r2.note）。"
     },
     {
       "name": "adb",
@@ -180,7 +182,8 @@
       "mcpUrl": "http://localhost:8765/mcp",
       "servicePort": 8765,
       "verificationMode": "service-or-registration",
-      "preferApiDigest": true
+      "preferApiDigest": true,
+      "note": "Ghidra 发版频繁，不 pin assetSha256；改用 GitHub API digest（sha256:...）动态校验，格式已实测兼容 Assert-DownloadedFileIntegrity。"
     },
     {
       "name": "seclists",
@@ -194,14 +197,14 @@
       "name": "proxycat",
       "bootstrapKind": "git-clone",
       "repo": "https://github.com/honmashironeko/ProxyCat.git",
-      "installDir": "&lt;工具根目录&gt;\\ProxyCat",
+      "installDir": "%USERPROFILE%\\Tools\\ProxyCat",
       "docsUrl": "https://github.com/honmashironeko/ProxyCat",
       "canAutoInstall": true,
       "verifyCommand": "proxycat",
       "postInstallSteps": [
-        "git clone https://github.com/honmashironeko/ProxyCat.git &lt;工具根目录&gt;\\ProxyCat",
-        "pip install -r &lt;工具根目录&gt;\\ProxyCat\\requirements.txt",
-        "使用 &lt;工具根目录&gt;\\bin\\proxycat.bat 启动"
+        "git clone https://github.com/honmashironeko/ProxyCat.git %USERPROFILE%\\Tools\\ProxyCat",
+        "pip install -r %USERPROFILE%\\Tools\\ProxyCat\\requirements.txt",
+        "使用 %USERPROFILE%\\Tools\\bin\\proxycat.bat 启动"
       ]
     },
     {

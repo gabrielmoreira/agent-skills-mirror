@@ -25,6 +25,7 @@
 - Keep New file and New folder controls icon-only across canvas and modal modes while preserving accessible labels.
 - Keep narrow mobile controls compact: Up shares the path row, and New file/New folder share the search row.
 - Preserve surface actions that route supported files to Browser, Desktop, or Editor.
+- Keep native drag moves available outside picker modes: dragging an unselected row moves only that row without changing selection, dragging a selected row moves the selection, folder rows accept drops, and Up moves items to the parent directory. Moves must reject overwrites and self-nesting.
 
 ## Work Guidance
 

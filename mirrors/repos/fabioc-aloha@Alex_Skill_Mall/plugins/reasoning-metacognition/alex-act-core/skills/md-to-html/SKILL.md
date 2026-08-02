@@ -1,6 +1,6 @@
 ---
 name: "md-to-html"
-description: "Convert Markdown to standalone HTML pages with embedded CSS, images, and Mermaid diagrams"
+description: "Convert Markdown to standalone HTML pages with embedded CSS, images, and Mermaid diagrams. Use when the user asks to convert to HTML, make a webpage, or export markdown as an .html file."
 lastReviewed: 2026-07-28
 ---
 

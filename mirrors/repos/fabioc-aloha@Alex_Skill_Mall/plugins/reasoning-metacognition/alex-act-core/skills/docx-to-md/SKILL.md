@@ -1,6 +1,6 @@
 ---
 name: "docx-to-md"
-description: "Convert Word documents (.docx) to clean Markdown with image extraction and pandoc cleanup"
+description: "Convert Word documents (.docx) to clean Markdown with image extraction and pandoc cleanup. Use when the user asks to convert a Word doc, convert docx to md, or import a .docx into markdown."
 lastReviewed: 2026-07-28
 ---
 

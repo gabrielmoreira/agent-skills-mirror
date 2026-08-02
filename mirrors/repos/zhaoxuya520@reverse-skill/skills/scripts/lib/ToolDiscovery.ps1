@@ -268,7 +268,6 @@ function Get-ReverseToolCatalog {
             VersionArgs = @()
             Fallbacks = @(
                 [pscustomobject]@{ Type = 'command'; Value = 'analyzeHeadless' },
-                [pscustomobject]@{ Type = 'path'; Value = '&lt;工具根目录&gt;\ghidra\support\analyzeHeadless.bat' },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\ghidra\support\analyzeHeadless.bat') },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\ghidra\ghidra_11.3_PUBLIC\support\analyzeHeadless.bat') }
             )

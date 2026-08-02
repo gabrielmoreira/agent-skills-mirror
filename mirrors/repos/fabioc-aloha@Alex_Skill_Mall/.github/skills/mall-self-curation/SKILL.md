@@ -1,7 +1,7 @@
 ---
 name: mall-self-curation
-description: How the Plugin Mall scans, scores, and prunes itself. The Mall is a self-curating repo; this skill is its operational playbook for the weekly catalog refresh and trust scoring. Use when working on the scan pipeline, debugging a stuck weekly PR, or onboarding to Mall internals.
-lastReviewed: 2026-05-29
+description: Operate the Plugin Mall's canonical vendor, contribution, scan, score, render, and validation workflows. Use when importing or refreshing curated plugins, reviewing contributor PRs, running first-party maintenance, debugging the weekly catalog refresh, or onboarding to Mall internals.
+lastReviewed: 2026-08-01
 ---
 
 # Mall Self-Curation
@@ -14,7 +14,35 @@ The Plugin Mall is self-curating. Day-to-day operations (inventory, scoring, cat
 - Weekly catalog-refresh PR (`catalog-refresh/YYYY-MM-DD`) is stuck or producing surprising deltas
 - New source added to `sources/supported-stores.json` — verifying it flows through the pipeline
 - New plugin shape encountered (frontmatter convention we haven't seen before)
+- Importing or refreshing a first-party plugin with `npm run vendor`
+- Preparing or reviewing a contributor submission with `submit:prepare` / `submit:validate`
+- Refreshing first-party catalog state with `npm run maintain -- --curated`
 - Onboarding to Mall internals
+
+## Canonical operator commands
+
+| Role | Command | Writes | Approval boundary |
+| --- | --- | --- | --- |
+| Maintainer | `npm run vendor -- --source <path-or-repo> --category <category> --repository <url> --ref <tag-or-sha>` | None by default | Dry-run; add `--apply`, and `--replace` for existing plugins |
+| Maintainer | `npm run maintain -- --curated` | First-party catalog, trust, marketplace, README, rendered pages | Review `git diff` before commit |
+| Maintainer | `npm run maintain -- --full` | Full registered-store catalog surface | Requires `SOURCES_DIR` and GitHub auth |
+| Contributor | `npm run submit:prepare -- ... --apply` | Proposed plugin payload + marketplace entry in contributor branch | Never commits, pushes, merges, or approves |
+| Contributor / CI | `npm run submit:validate -- --plugin <category>/<name>` | None | Structural eligibility only; CODEOWNER decides acceptance |
+
+All plugin packaging routes through `scripts/lib/plugin-package.cjs`. Do not
+author a second copier or validator for one plugin. The shared library owns
+component-path normalization, prompt renaming, metadata generation, secret and
+symlink rejection, the 100-file limit, and atomic replacement.
+
+## Two PR lanes
+
+| Lane | Trigger | Merge behavior |
+| --- | --- | --- |
+| Generated catalog refresh | Weekly or manual `scan-sources.yml` | Auto-merges after deterministic tests and validation; workflow-owned paths only |
+| Curated plugin contribution | Human PR under `plugins/` | `validate-plugin-pr.yml` reports checks; never auto-merges; `@fabioc-aloha` CODEOWNER approval required |
+
+Do not apply the catalog-refresh auto-merge rule to plugin contributions. A
+green contribution is structurally reviewable, not editorially accepted.
 
 ## The pipeline (per `.github/workflows/scan-sources.yml`)
 
@@ -75,7 +103,8 @@ If the formula drifts from this table, update this skill in the same commit. Cha
 - **PR-back**: only when `catalog/`, `scoring/`, `README.md`, or `sources/SOURCES.md` change (timestamp-only deltas filtered)
 - **Manual dispatch**: `workflow_dispatch` available for ad-hoc re-scans (e.g., after adding a store to `supported-stores.json`)
 - **Deterministic pre-merge gate**: `npm test` + `npm run validate` must pass before the catalog-refresh PR can open or merge
-- **Post-merge oversight**: the PR/commit diff is the sampling surface for Supervisor oversight; routine generated changes do not wait on Supervisor approval
+- **Generated refresh oversight**: catalog-refresh PRs auto-merge after gates; the merged diff is the sampling surface for Steward oversight
+- **Contributor approval**: plugin PRs never auto-merge and require CODEOWNER review
 
 ## What the Mall does vs out-of-scope
 
@@ -84,6 +113,7 @@ If the formula drifts from this table, update this skill in the same commit. Cha
 | Add / remove a source store from `supported-stores.json` | **Mall** (this skill + source-inventory) |
 | Tune trust score weights | **Mall** (this skill + compute-trust.cjs) |
 | Scan / score / render / publish pipeline | **Mall** |
+| Curated plugin payload validation | **Mall automation**, followed by **maintainer approval** |
 | Decide a plugin earns a slot in any consumer project's baseline | **Out of scope** (consumer-owned decision) |
 | Coherence with a specific consumer project | **Out of scope** (consumer-owned audit) |
 | Reframe what counts as "curated" | **Out of scope** (editorial decision, not pipeline) |
@@ -100,6 +130,8 @@ Every editorial Mall decision lands in `docs/curation-log.md` in this repo (Mall
 | Anti-pattern | Correction |
 |---|---|
 | Editing brain files (skills/instructions/prompts/agents) under `plugins/` during the workflow | The workflow MUST NOT modify `plugins/` — editorial changes ship via PR review only. The workflow only writes to `catalog/`, `scoring/`, `README.md`, `sources/SOURCES.md`. |
+| Treating a green contributor check as approval | Automation establishes structural eligibility. The CODEOWNER still judges evidence, overlap, license, safety, category, and maintenance. |
+| Hand-copying a source plugin into `plugins/` | Use `npm run vendor` or `npm run submit:prepare`; both use the shared canonical packager. |
 | Bootstrap re-cloning `plugin-mall` from itself | `bootstrap-sources.cjs` MUST filter `name !== "plugin-mall"`. |
 | Scan skipping `plugin-mall` | `scan-sources.cjs` MUST include `plugin-mall` (walks `$REPO_ROOT/plugins/`, not bootstrapped sources). |
 | Trust score without published signals | Every score MUST come with its signal breakdown in `catalog/stores/<store>.json` `trust_signals` field. |

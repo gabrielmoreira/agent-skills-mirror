@@ -1,6 +1,6 @@
 ---
 name: "md-to-word"
-description: "Convert Markdown with Mermaid diagrams and SVG illustrations to professional Word documents"
+description: "Convert Markdown with Mermaid diagrams and SVG illustrations to professional Word documents. Use when the user asks to convert to Word, make a docx, or export markdown as a .docx file."
 lastReviewed: 2026-07-28
 ---
 

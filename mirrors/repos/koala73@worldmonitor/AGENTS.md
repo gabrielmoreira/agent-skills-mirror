@@ -15,7 +15,7 @@ Real-time global intelligence dashboard. TypeScript SPA (Vite + Preact) with 179
 │   ├── bootstrap/          # Startup/recovery (chunk reload, deferred Sentry, SW update)
 │   ├── components/         # 179 top-level TypeScript component files
 │   ├── config/             # Variant configs, panel/layer definitions, market symbols
-│   ├── services/           # Business logic (218 service modules and domain directories)
+│   ├── services/           # Business logic (219 service modules and domain directories)
 │   ├── shared/             # Cross-cutting helpers (premium paths, registries, staleness)
 │   ├── embed/              # Embeddable widget loader
 │   ├── styles/             # Global CSS (layers, themes, panel styles)
@@ -198,7 +198,7 @@ Variant is set via `VITE_VARIANT` env var. Config lives in `src/config/variants/
 | `proto-check.yml` | PR (proto changes) | Generated code freshness |
 | `build-desktop.yml` | `v*` tag, manual | Tauri desktop build |
 | `test-linux-app.yml` | Twice-weekly schedule, manual | Desktop Canary (Linux): release-processed AppImage smoke — crash, sidecar readiness/liveness, rendered content |
-| `test.yml` (`desktop-config`, `desktop-rust` jobs) | PR touching desktop-coupled paths | Desktop version consistency, AppImage post-processing syntax, Tauri config/capability parse, `cargo test --locked` (#5902) |
+| `test.yml` (`desktop-config`, `desktop-rust` jobs) | PR touching desktop-coupled paths | Desktop version consistency, AppImage post-processing syntax, Tauri config/capability parse, desktop build env parity (#5905, also in `unit`), `cargo test --locked` (#5902) |
 
 ## Pre-Push Hook
 

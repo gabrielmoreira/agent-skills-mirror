@@ -12,6 +12,7 @@
 
 - JavaScript modules must export a default function when present.
 - Preserve message DOM stability and avoid duplicate controls on repeated renders.
+- Offscreen live entries in a virtualized chat may appear in `context.results` with `result.virtualized === true` and `result.element === null`; DOM extensions must guard `element`, while args-only side effects may still run.
 
 ## Work Guidance
 

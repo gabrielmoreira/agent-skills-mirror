@@ -1,49 +1,28 @@
 ---
 name: setup-a0-cli
-description: Guide installing, connecting, or troubleshooting the A0 CLI connector on the user's host machine so Dockerized Agent Zero can work on real local files. Use for install A0, set up A0 CLI, connect local files, remote tools, host-vs-container confusion, or CLI connector setup problems.
+description: Briefly guide installing, connecting, or troubleshooting the A0 CLI on the user's host so Dockerized Agent Zero can work with real local files. Use for install A0, enable the host connector, connect local files, remote tools, host-vs-container confusion, or A0 CLI setup problems.
 ---
 
 # A0 CLI Host Setup
 
-Use this skill to guide the user through installing `a0` on their host machine and connecting it to Agent Zero.
+`a0` runs on the user's host machine; Agent Zero stays in Docker or its sandbox.
 
-## Core Boundary
+## Keep The Conversation Short
 
-- Agent Zero stays in Docker or its sandboxed runtime.
-- `a0` installs and runs on the user's host machine.
-- The whole point is to let Agent Zero work on the real files on the user's computer.
+- Match the user's brevity. For a brief question, reply with one short sentence and at most one command block.
+- Give only the next useful step, then wait for the result. Do not dump installation, connection, fallback, troubleshooting, and success details into one response.
+- Ask only for information needed now. For a fresh install, ask only which host OS they use. Ask about previous commands and errors only when they say they already tried or something failed.
+- Do not add headings, checklists, expected-output prose, warnings, alternatives, or explanations unless they help with the user's current step or the user asks for detail.
 
-## Response Flow
+## Fresh Install
 
-### 1. Ask whether they already tried
+If the host OS is unknown, ask only:
 
-Start here:
+> Which computer are you installing it on: Windows, macOS, or Linux?
 
-> Have you already tried installing `a0`? If so, what command did you run, where did you run it, and what happened?
+Once known, give the matching command and tell them to run `a0` when it finishes.
 
-If they already tried, diagnose that attempt before repeating instructions.
-
-### 2. Stop container installs immediately
-
-If the user is inside the Agent Zero container, `/a0`, `docker exec`, or another sandbox shell, stop and say:
-
-> `a0` does not get installed inside the Agent Zero container. Exit to your normal host terminal first. Agent Zero stays in Docker; `a0` belongs on your machine.
-
-Do not keep giving install commands until they are back on the host.
-
-### 3. Identify the host OS only as needed
-
-If the platform is unclear, ask one short question:
-
-> Are you on macOS/Linux shell or Windows PowerShell on the host machine?
-
-Then use the matching installer.
-
-### 4. Use the installer-first flow
-
-Treat these public installer URLs as placeholders for now. Use them first, but be ready to switch to the manual `uv tool install` path if the raw GitHub URL is blocked, private, or unreachable.
-
-macOS / Linux:
+macOS / Linux host terminal:
 
 ```bash
 curl -LsSf https://raw.githubusercontent.com/agent0ai/a0-connector/main/install.sh | sh
@@ -55,110 +34,49 @@ Windows PowerShell:
 irm https://raw.githubusercontent.com/agent0ai/a0-connector/main/install.ps1 | iex
 ```
 
-The installer will install `uv` if needed, then run `uv tool install --upgrade <package-spec>` for the CLI.
+If the user is inside `/a0`, `docker exec`, or another container shell, stop there: tell them to exit and run the installer in their normal computer terminal. Do not give container installation commands.
 
-### 5. Use the manual `uv tool install` fallback when needed
+If `a0` is not found after installation, ask them to open a new terminal and try `a0` again.
 
-If the placeholder installer URL is unavailable, switch to a manual `uv tool install` flow instead of stopping.
+## Connect
 
-Public Git fallback:
+Running `a0` opens a host picker and discovers local Docker instances when possible. Tell the user to select the instance it finds.
 
-```bash
-uv tool install --upgrade git+https://github.com/agent0ai/a0-connector
-```
+If manual entry is needed:
 
-Local checkout or internal mirror examples:
+- Use the exact URL the user currently uses to open Agent Zero, including its actual port.
+- Never guess, prescribe, or describe any port as common or default. Do not turn a documentation example into the user's address.
+- If the URL is unknown, ask the user to copy it from their browser or Docker's published-port mapping.
+- A tunnel URL is pasted exactly as shown and does not need a port appended.
 
-```bash
-uv tool install --upgrade /path/to/a0-connector
-uv tool install --upgrade git+ssh://git.example.com/team/a0-connector.git
-```
+Mention `AGENT_ZERO_HOST` only if the user asks to prefill the picker. Use their exact known URL, never an invented example.
 
-If they want to reuse the stock installer with a custom package source, explain that the installer honors `A0_PACKAGE_SPEC`.
+## Troubleshoot Only When Needed
 
-### 6. Tell them to run `a0`
+- For a failed attempt, ask for the command, whether it ran on the host or in Docker, and the exact output.
+- If the installer URL is unreachable but `uv` works, use:
 
-After install, the next step is always:
+  ```bash
+  uv tool install --upgrade git+https://github.com/agent0ai/a0-connector
+  ```
 
-```bash
-a0
-```
+- A connector `404` usually means the running Agent Zero build lacks the bundled `_a0_connector`; tell the user to update Agent Zero.
+- If discovery fails, ask for the exact Agent Zero URL or suggest a Flare Tunnel only then. The Flare Tunnel flow is `Settings > External Services > Flare Tunnel` → `Create Tunnel` → paste the shown HTTPS URL into `a0`.
 
-If the command is not found yet, tell them to open a new terminal and run `a0` again.
+## Response Examples
 
-### 7. Explain how to connect
+User: "How to enable host connector"
 
-Tell the user what to expect:
+> Which computer are you installing it on: Windows, macOS, or Linux?
 
-- `a0` opens the host picker first.
-- If Agent Zero is running locally, `a0` may discover it automatically.
-- If not, the user can enter the Agent Zero web URL manually in the custom URL field.
-- The custom URL can be either a normal address with a port, such as `http://localhost:50001`, or a tunnel URL.
-- For Flare Tunnel, tell the user to open `Settings > External Services > Flare Tunnel`, click `Create Tunnel`, then copy and paste the HTTPS URL into `a0` exactly as shown.
-- Tunnel URLs such as `https://example.trycloudflare.com` do not need a port appended.
-- `AGENT_ZERO_HOST` can prefill the target host without bypassing the picker.
+User: "Linux"
 
-Example:
+> Run this in your normal Linux terminal, then run `a0` and select the Agent Zero instance it finds.
+>
+> ```bash
+> curl -LsSf https://raw.githubusercontent.com/agent0ai/a0-connector/main/install.sh | sh
+> ```
 
-```bash
-export AGENT_ZERO_HOST=http://localhost:50001
-a0
-```
+User: "It asks for a custom URL"
 
-Tunnel example:
-
-```bash
-export AGENT_ZERO_HOST=https://example.trycloudflare.com
-a0
-```
-
-### 8. Define success clearly
-
-Successful setup looks like this:
-
-- `a0` starts on the host machine.
-- It connects to the user's Agent Zero instance or reaches the login step.
-- The user can open a chat from the terminal.
-- Agent Zero can now act on real files on the host through the connector flow while Agent Zero itself still runs in Docker.
-
-## Troubleshooting
-
-- If the user says they installed inside Docker or shows `/a0` paths, redirect them to the host-machine install.
-- If `a0` gets a connector `404`, explain that the running Agent Zero build likely does not include the builtin `_a0_connector` support yet and should be updated.
-- If the browser UI works but `a0` does not, remind them the web UI can run without connector support but the CLI cannot.
-- If Docker discovery does not find the instance, have them enter the exact Agent Zero URL with `host:port`, or create a Flare Tunnel in `Settings > External Services > Flare Tunnel` and paste that HTTPS URL directly.
-
-## Example Requests And Responses
-
-### Example 1
-
-User: "Help me set up the A0 CLI connector."
-
-Respond like this:
-
-1. Ask whether they already tried and whether they are on the host machine.
-2. If the OS is unknown, ask whether they are in macOS/Linux shell or Windows PowerShell.
-3. Give the matching installer command.
-4. Tell them to run `a0`.
-5. Explain what the host picker and successful connection should look like.
-
-### Example 2
-
-User: "I'm inside the Agent Zero container. How do I install A0?"
-
-Respond like this:
-
-- Stop the flow.
-- Explain that `a0` must be installed on the host, not in the container.
-- Tell them to exit Docker, open a normal terminal on the machine, then continue with the host installer.
-
-### Example 3
-
-User: "The raw GitHub installer URL is blocked on our network."
-
-Respond like this:
-
-- Say the public installer URL is only a placeholder path.
-- Switch to a manual `uv tool install --upgrade <package-spec>` flow.
-- Offer examples for a local checkout, internal Git host, or the public Git URL if that one works.
-- Then tell them to run `a0` and connect to Agent Zero.
+> Paste the exact URL you currently use to open Agent Zero in your browser, including its port.

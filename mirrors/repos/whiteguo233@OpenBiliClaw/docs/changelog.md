@@ -4,9 +4,30 @@
 
 ---
 
+## 未发布：连接与 HTTPS 部署（2026-08-01）
+
+- **修复 GitHub Star 数量请求偶发 403**：桌面 Web 和扩展不再从浏览器匿名直连 GitHub REST API，统一改走公开同源 `GET /api/project-stats`；后端持久化 12 小时缓存、使用 ETag 条件请求，并在 403 / 429、断网或 GitHub 异常时按响应头退避、返回旧缓存或无数量的本地 200。GitHub Pages 静态官网没有可用的同源后端，因此保留 Star CTA、停止动态请求数量；所有浏览器入口都不再产生 GitHub 失败资源日志，点击仓库行为保持不变。
+- **桌面惊喜推荐把“× / 看过了，不再推荐”移到卡片右上角**：关闭动作不再夹在喜欢、不感兴趣、稍后看和收藏之间，避免被误认成同级反馈或误触；按钮保留原有永久已读语义、可见键盘焦点与禁用态，窄屏触控区域不小于 44×44。
+- **修复 X「测试连接」只读旧健康记录的问题**：设置页现在通过 `twitter-cli` 的只读账户状态请求即时验证 `auth_token` / `ct0`，401、403、429 和传输失败分别保持失败或待判定语义，不把网络故障误报成 Cookie 失效。
+- **修复后端启动后 X Cookie 同步滞后**：启用 X 时，扩展每次新建 `/api/runtime-stream` 连接都会收到 `x_cookie_sync_requested`，立即把当前浏览器 Cookie 回传；原有启动、变更监听和小时 alarm 继续作为兜底。
+- **移除扩展临时调试日志中继**：抖音任务仍通过正常的 `task-result` 回传结构化诊断，但不再向 `/api/sources/_debug/log` 额外发起请求；废弃 helper 和后端 relay 路由同步删除。
+- **新增最简公网 HTTPS Compose overlay**：`docker-compose.https.yml` 可叠加到源码或预构建部署，使用固定版本 Caddy 自动申请 / 续期公网证书并转发 REST / WebSocket；Caddy 与后端共享 network namespace，宿主机 `8420` 收紧到 loopback，Uvicorn 仅信任 `127.0.0.1` 的 forwarded headers，证书数据使用 named volumes 持久化。Caddy 在 `/api/auth/status` 明确返回密码门禁已启用前不绑定公网端口，首次配置 fail closed；远程扩展仍使用独立设备密钥，现有 LAN/self-managed `tls` profile 保持独立、默认关闭。
+- **修复桌面 Web 的 HTTPS 手机二维码降级**：从非 loopback 的 HTTPS 页面打开「手机版」时，二维码现在保留当前 scheme、host 和端口，不再被 `/api/qr-info` 的后端私网 IP 覆盖或硬编码成 HTTP；IPv4、裸 IPv6 与 URL 方括号 IPv6 loopback 都继续实时探测 LAN IP，插件和桌面局域网扫码行为保持一致。
+
 ## v0.3.191：对话与实时连接稳定性修复（2026-07-30）
 
+- **修复桌面端夜间模式下账号同步提示过淡**：同步异常提示改用主题前景色和明确的状态底色，深浅主题下都保持可读。
+- **修复桌面端惊喜推荐文字卡在夜间模式下难以辨认**：知乎、Reddit 等无封面内容不再把前景色当作渐变背景，改用主题表面色、轻平台色和明确的主题前景色；普通无封面文字卡也同步收敛到同一套高对比度样式。
+- **补充社区贡献者致谢**：在贡献指南中记录 [@RayeLouis](https://github.com/RayeLouis) 对扩展服务端认证权威判定（[#132](https://github.com/whiteguo233/OpenBiliClaw/pull/132)）和可选 TLS 反代初版（[#136](https://github.com/whiteguo233/OpenBiliClaw/pull/136)）的贡献。
+- **修复 Web 与插件聊天不同步，并补齐长页面回顶入口**：插件、移动 Web、桌面 Web 的主聊天统一使用 `session=popup&scope=chat`；聊天界面可见且在线时约每 2.5 秒增量读取共享 durable history，快照未变化不重绘，用户阅读旧消息时保留滚动位置。移动 Web 与桌面 Web 同时增加固定「顶部」按钮，页面滚动区和聊天内滚动区均可一键回到顶部。
+- **修复桌面端夜间模式下账号同步提示过淡**：同步异常提示改用主题前景色和明确的状态底色，深浅主题下都保持可读。
+- **修复桌面端惊喜推荐文字卡在夜间模式下难以辨认**：知乎、Reddit 等无封面内容不再把前景色当作渐变背景，改用主题表面色、轻平台色和明确的主题前景色；普通无封面文字卡也同步收敛到同一套高对比度样式。
+- **修复桌面「聊聊口味」卡片一多就被压扁、无法继续下滑**：对话记录是一个固定高度的 CSS Grid，新增确认卡后隐式行会共同压缩；卡片自身又是 `overflow:hidden`，真实约 217px 的内容会被压成约 44px 并直接裁掉，滚动容器因此也算不出完整内容高度。现在对话记录和待聊列表都使用内容自然高度行，聊天区保留独立纵向滚动并恢复可见细滚动条；待聊列表限制在视口 32% / 300px 内独立滚动，不再挤掉聊天记录和底部输入框。刷新只在读者原本位于底部时跟随最新消息，向上阅读时保留位置，已展开的「依据」也不会因后台重绘自动合上；对话记录补键盘可聚焦的 region 语义。真实 Chromium 回归覆盖 9 张长卡片、10 条待聊项及 375 / 768 / 1024 / 1440px 四档视口。
+- **「聊聊口味」三端补齐同一套真实卡片体验，并隐藏无意义的 ID 证据**：移动 Web 原先只读取 `session=popup&scope=chat`，会把同一 durable 历史里的 `hypothesis/confusion` 全部过滤掉，因此即使待聊 open 的真实 POST 成功也看不到卡片；现在移动端和插件一样按 session 读取完整对话流，补齐待聊列表、主动打开、四动作、`202` 按需轮询与跨端终态投影。桌面 Web、移动 Web、扩展 side panel 都使用内容自然高度的卡片和有界独立滚动，刷新保留读者位置与已展开依据，移动端同时保留草稿/焦点并采用两列 44px 动作。共享 renderer 会过滤纯数字、UUID、事件 / note 前缀、BVID、裸哈希等只有机器 ID 的依据，若没有可读说明则整块「依据」不显示，durable payload 和内部证据链保持不变。真实后端 + Chromium + 实际 MV3 扩展验收跑通三端 GET/open/action：桌面展开 10 条依据后的记录区 `494/838px` 且滚轮到达 `scrollTop=344`，移动端 3 条待聊独立滚动并打开真实卡片，扩展提交「稍后」后移动端刷新同步显示已结算；三端 composer 都保持在视口内。
 - **修复保存配置时待聊按钮失效、热重载误回滚和 Web 实时流反复报断开**：生产日志显示长达 235 秒的对话学习占住唯一结算 worker，旧热重载会先停接新任务、只等 30 秒，于是连续丢弃 `confusion.open.sync`，再用空白 `TimeoutError` 回滚配置；现在队列保持接单直到真正排空，再原子暂停交接，安全等待窗口与 20 分钟 LLM 上限对齐到 25 分钟，桌面/插件在超过前端 60 秒预算时明确显示“仍在后台热重载”。待聊 open 会在 worker 忙时返回带 `Retry-After` 的 `dialogue_busy`，两端显示等待态并自动重试，required local job 不再留下“已 claim、未建 turn”的半截状态；若已有跨 session 的 `clarifying` 疑惑，列表只给尚未展示该 turn 的 session 暴露当前持有者，不再列出必然 409 的下一条。真实浏览器 E2E 进一步发现 pending-open 卡片仍是 `pending` 状态，点“稍后”虽改成 deferred 却不会走旧 `discussing` 解锚分支；现在会按 origin turn 精确释放同代锚，下一条待聊不再被不可见旧锚挡住。`runtime-stream` 每 20 秒发送空闲心跳，桌面端短暂关闭显示“重连中”、记录 close code/reason 并按原 3 秒节奏续连，不再把 WebSocket 抖动误报成整个后端离线。
+- **修复扩展认证状态以服务端判决为唯一权威**：服务端 `/api/auth/status` 返回 `authenticated: false` 时（如 `auth_epoch` 升级或密钥撤销后），扩展设置页过去因 `readPopupSessionToken()` 仅校验本地过期时间而误显“设备已配对”并隐藏密钥输入栏，与推荐 tab 的 401 状态矛盾。现在 `checkAuthStatus` 以服务端 `authenticated` 为唯一权威，服务端未认证时直接展示输入栏。新增 3 个回归测试。
+- **新增默认关闭的 LAN/self-managed TLS 反代，并补齐可持久化配置/CLI/Docker 入口**：`[tls_proxy]` 现可完整 load/save round-trip，环境变量 / `config.local.toml` 逐字段覆盖不会被无关保存烘焙进基础配置；`tls-proxy enable/disable/status` 会真实持久化。`serve-api --tls-port` 可临时覆盖 8443。源码 Compose 通过 `tls` profile opt-in，使用 `OPENBILICLAW_TLS_SAN_NAMES` 明确传入逗号分隔远程 SAN、`OPENBILICLAW_TLS_PORT` 同步端口映射；非默认 build-time `CERT_DIR` 会作为容器运行时证书根目录完整传入，未提供远程 SAN 的自动证书只承诺 localhost。插件手机版二维码和 `/api/qr-info` 探测现在保留已配置的 HTTPS scheme，不再把明文 HTTP 发往 TLS 端口；未知 scheme 安全回落 HTTP。转发主体使用 Python 标准库，自动证书生成来自可选 `[tls]` extra / 容器内 `cryptography`，不再误称“纯标准库”。
+- **TLS 安全与启动可靠性加固**：HTTPS Web Origin 必须与请求 Host 的 host+port 精确同源（覆盖 IPv4/IPv6/默认端口），合法 Chrome/Firefox 扩展 Origin 继续放行；TLS 出口保留重复 `Set-Cookie` 并补 `Secure`，CA/服务器私钥路径硬拒绝，HTTP/1.1 HEAD/空响应/hop-by-hop header 与真实 WebSocket 双向 relay 有本地集成测试。已有证书缺新 SAN、cert/key 半残、SSL context 或端口 bind 失败都会在 uvicorn 启动前 fail loudly，绝不静默覆盖自有证书或假报 HTTPS 成功。详见 `docs/modules/tls-proxy.md` 与 `docs/https-deployment.md`。
 
 ## v0.3.190：启动体验升级（2026-07-30）
 

@@ -7,7 +7,7 @@ ref: canary
 
 # Mirror Manifest
 
-Mirror of `lobehub/lobehub` — 26 default patterns, 2 followed patterns, 277 file(s) materialized.
+Mirror of `lobehub/lobehub` — 26 default patterns, 2 followed patterns, 278 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lobehub/lobehub` — 26 default patterns, 2 followed patterns, 277 fi
 | Ref           | `canary` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 277 |
+| Files         | 278 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -329,14 +329,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 267 | ✓ | [`e2e/CLAUDE.md`](e2e/CLAUDE.md) |
 | 268 | ✓ | [`GEMINI.md`](GEMINI.md) |
 | 269 | ✓ | [`packages/agent-templates/src/templates/claw/AGENTS.md`](packages/agent-templates/src/templates/claw/AGENTS.md) |
-| 270 | ✓ | [`packages/builtin-skills/src/acceptance/SKILL.md`](packages/builtin-skills/src/acceptance/SKILL.md) |
-| 271 | ✓ | [`packages/builtin-skills/src/acceptance/surfaces/cli.md`](packages/builtin-skills/src/acceptance/surfaces/cli.md) |
-| 272 | ✓ | [`packages/builtin-skills/src/acceptance/surfaces/electron.md`](packages/builtin-skills/src/acceptance/surfaces/electron.md) |
-| 273 | ✓ | [`packages/builtin-skills/src/acceptance/surfaces/web.md`](packages/builtin-skills/src/acceptance/surfaces/web.md) |
-| 274 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
-| 275 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
-| 276 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
-| 277 | → | [`DESIGN.md`](DESIGN.md) |
+| 270 | ✓ | [`packages/builtin-skills/src/acceptance/references/report.md`](packages/builtin-skills/src/acceptance/references/report.md) |
+| 271 | ✓ | [`packages/builtin-skills/src/acceptance/SKILL.md`](packages/builtin-skills/src/acceptance/SKILL.md) |
+| 272 | ✓ | [`packages/builtin-skills/src/acceptance/surfaces/cli.md`](packages/builtin-skills/src/acceptance/surfaces/cli.md) |
+| 273 | ✓ | [`packages/builtin-skills/src/acceptance/surfaces/electron.md`](packages/builtin-skills/src/acceptance/surfaces/electron.md) |
+| 274 | ✓ | [`packages/builtin-skills/src/acceptance/surfaces/web.md`](packages/builtin-skills/src/acceptance/surfaces/web.md) |
+| 275 | ✓ | [`packages/builtin-skills/src/task/SKILL.md`](packages/builtin-skills/src/task/SKILL.md) |
+| 276 | ✓ | [`packages/model-runtime/CLAUDE.md`](packages/model-runtime/CLAUDE.md) |
+| 277 | → | [`DESIGN.dark.md`](DESIGN.dark.md) |
+| 278 | → | [`DESIGN.md`](DESIGN.md) |
 
 ---
 

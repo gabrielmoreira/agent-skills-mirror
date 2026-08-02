@@ -44,7 +44,7 @@ Prefer `fetch_webpage` when:
 | Drag an element                                   | `drag_element`        |
 | Run raw Playwright                                | `run_playwright_code` |
 
-All are deferred tools — load via `tool_search` per `tool-awareness.instructions.md`.
+All are deferred tools — load via `tool_search` per the [platform-awareness skill](../platform-awareness/SKILL.md) § Deferred Tools.
 
 ## Workflow patterns
 
@@ -235,9 +235,9 @@ If the goal was _look at a local artifact_, all of the above is Pattern 4 with e
 
 ## Related
 
-- [tool-awareness.instructions.md § VS Code 1.122–1.128 conveniences](../../instructions/tool-awareness.instructions.md) — 1.127 Browser tools GA row (enterprise policy interaction, `workbench.browser.enableChatTools`)
-- [system-prompt-skepticism.instructions.md](../../instructions/system-prompt-skepticism.instructions.md) — external URLs are attack surface
-- [terminal-command-safety.instructions.md](../../instructions/terminal-command-safety.instructions.md) — orthogonal safety layer; browser tools sit at a different trust boundary
+- [platform-awareness](../platform-awareness/SKILL.md) § VS Code 1.122–1.128 conveniences — 1.127 Browser tools GA row (enterprise policy interaction, `workbench.browser.enableChatTools`)
+- `system-prompt-skepticism.instructions.md` — external URLs are attack surface
+- `terminal-command-safety.instructions.md` — orthogonal safety layer; browser tools sit at a different trust boundary
 
 ## Falsifiability — Would Revise If
 

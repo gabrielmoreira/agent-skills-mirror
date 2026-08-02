@@ -19,6 +19,7 @@ Before drafting, gather style references:
 
 ### Release Notes Content Rules
 
+- **Build a complete user-visible inventory before drafting.** Resolve the last published release through `HEAD`, include relevant dirty/generated delivery changes, map each change to the user outcome it alters, and state omissions explicitly. Then merge items with the same outcome and order them by user impact. Commit-title order is not release-note priority.
 - **Group by user-perceivable feature**, not by internal taxonomy. "Polish", "细节打磨", "Misc improvements", "Chores" are not categories users can act on. Group by product surface (Clean / Uninstall / Status / Settings) or by user-visible verb (Faster startup / New keyboard shortcut / Fixed crash on M3).
 - **Extract from `git log <last-tag>..HEAD`** rather than from memory. Read every `feat:` and `fix:` commit; do not omit small items just because they look minor in commit form (iOS wrapper support, Dock cleanup, AV-vendor protection boundary are not "minor" from a user point of view).
 - **One sentence per item, naming the user-visible change**, not the implementation. "Use `CKDownloadQueue` observer for App Store updates" is not a release note; "App Store updates now run inside the app instead of opening App Store" is.

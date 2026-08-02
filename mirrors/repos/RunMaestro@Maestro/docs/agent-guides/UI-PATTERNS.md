@@ -159,6 +159,32 @@ How it works:
 
 `resizeKey` must be stable across renders - it is the persistence key, not a label.
 
+### Resizable Textareas
+
+Any textarea with a native `resize-y` grip should remember the height the user drags it to. A size someone picked by hand is a preference, so snapping back to the default on the next open (or the next app launch) is a bug, not a reset.
+
+```tsx
+const resize = useResizableTextarea({
+	sizeKey: 'settings-conductor-profile', // stable, unique
+	minHeight: 100, // floor for a remembered height
+});
+
+<textarea
+	ref={resize.textareaRef}
+	className="... resize-y"
+	style={{ borderColor: theme.colors.border, minHeight: '100px', ...resize.style }}
+/>;
+```
+
+How it works:
+
+- `useResizableTextarea` (`src/renderer/hooks/ui/useResizableTextarea.ts`) observes the element and persists the dragged height, debounced. Heights live in one `textareaHeights` map in `settingsStore`, keyed by `sizeKey`, written through to settings and hydrated by `loadAllSettings` on startup.
+- The native grip writes the dragged height onto the element's inline `style.height` - the same property the hook writes when restoring one. The observer just compares the current inline height against the last applied height, so a user drag is the only thing it can see (content, font size and viewport width never move an explicit height).
+- Omit `defaultHeight` to leave the textarea at whatever its `rows` / CSS `min-height` already give it until the user resizes it. Pass one only when the textarea has no natural size worth keeping.
+- `minHeight` / `maxHeight` bound what can be remembered; heights are also clamped to the viewport at read time, so a textarea sized on a large display still opens sanely on a laptop.
+- Spread `resize.style` LAST in the `style` prop, after the caller's own `minHeight`, or the inline height gets overwritten.
+- Pass `externalRef` when the component already owns a ref on the textarea (autocomplete, focus-on-open). Do NOT add a second ref or a second `ResizeObserver`.
+
 ### Escape Key Flow
 
 1. `LayerStackProvider` attaches a **capture-phase** `keydown` listener on `window`.

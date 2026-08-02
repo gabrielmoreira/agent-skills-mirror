@@ -71,6 +71,12 @@ git add -A; git commit -m "checkpoint: before [risky thing]"
 git tag "safe-point-$(date +%Y-%m-%d-%H%M)"
 ```
 
+Three rules that hold regardless of the operation:
+
+1. **Never force-push to a shared branch** (`main`, `develop`, any branch someone else tracks). Rewriting history under a collaborator is not recoverable by them.
+2. **Commit or tag before rebase, reset, or filter operations.** A checkpoint you did not need costs nothing; one you needed and skipped costs the work.
+3. **Run `--dry-run` first when unsure.** `git clean`, `git push`, and `git rm` all support it. Read the output before dropping the flag.
+
 ## Tag-Move-Forward (Pre-Push Only)
 
 When a small follow-on change lands after a release tag but **before the tag is pushed**, move the tag forward rather than cutting a redundant patch release. Two requirements: (1) the tag must not yet exist on `origin`, (2) the follow-on belongs in the same release narrative (typo, doc fix, orphan removal — not new behaviour).
@@ -125,6 +131,27 @@ git reset --hard <tag-name>     # Reset to tagged state
 git log --oneline -20           # Recent history
 git log --oneline .github/ -10  # History for specific folder
 ```
+
+### Recover an Unreachable Commit
+
+`git log` only walks commits reachable from a ref. A commit orphaned by `reset --hard`, a bad rebase, or a deleted branch is invisible to it. `reflog` records where `HEAD` has actually been:
+
+```bash
+git reflog                      # Every HEAD position, newest first
+git reflog show <branch>        # Movements of one branch
+git reset --hard <sha-from-reflog>   # Return to that state
+git cherry-pick <sha-from-reflog>    # Or lift just that commit
+```
+
+Reflog is local-only and expires (90 days by default for reachable entries, 30 for unreachable). It cannot recover work that was never committed.
+
+### Undo a Pushed Commit
+
+```bash
+git revert <sha>    # New commit that inverts the change; safe on shared branches
+```
+
+Prefer `revert` over `reset` once a commit is on `origin` — see the force-push rule above.
 
 ## Branching Strategy
 

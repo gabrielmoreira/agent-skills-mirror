@@ -82,7 +82,7 @@ authoring a spec no one can render.
        "flint": {
          "type": "stdio",
          "command": "npx",
-         "args": ["-y", "flint-chart-mcp@^0.3.0"],
+         "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.3.0"],
        },
      },
    }
@@ -90,22 +90,13 @@ authoring a spec no one can render.
 
    - `"type": "stdio"` is optional in some hosts but always declare it —
      omitting it makes transport-related failures harder to diagnose.
-   - `npx -y` fetches the package on first use and caches it (~5-10 MB in the
-     npm cache; ~1-2 s cold start).
-   - The `^0.3.0` pin was bumped from `^0.2.2` on 2026-07-29 after the
-     Microsoft corporate npm mirror (`packagefeedproxy.microsoft.io/npm/`)
-     caught up to 0.3.0. Caret on `0.x` means `>=0.3.0 <0.4.0`, so 0.4.x is
-     never picked up automatically. Public npm `latest` is 0.4.0, but it has
-     not been verified against this plugin's documented spec patterns from an
-     off-corpnet machine — see `HANDOFF.md` if that verification is worth
-     doing. Do not advise a user to bump the pin past 0.3.x without checking
-     `npm config get registry` first; a corporate mirror can report a
-     different `latest` than public npm, and on some machines a `^0.4.0` pin
-     still fails with `ETARGET`.
-   - **Corporate / air-gapped:** if `npx` cannot reach the npm registry, ask
-     the user to run `npm install -g flint-chart-mcp` once from a machine that
-     can, then change `"command": "npx", "args": ["-y", "flint-chart-mcp"]` to
-     `"command": "flint-chart-mcp", "args": []`.
+   - `--prefer-offline` uses the npm cache first. If absent, npm contacts only
+     the configured registry for the exact `0.3.0` package.
+   - Do not run version-discovery commands, pass `--registry`, edit `.npmrc`,
+     or fall back to a public tarball. Missing packages fail closed.
+   - **Air-gapped:** an administrator may preinstall exact
+     `flint-chart-mcp@0.3.0` through the approved registry, then change
+     `"command": "npx"` to `"command": "flint-chart-mcp"` with empty args.
    - **Hardened deployment** (only inline `data.values` accepted, no local
      `data.url` files): append `"--disable-file-reference"` to `args`.
 
@@ -148,15 +139,17 @@ directly (not to render via MCP).
 1. **Check the project's `package.json`** for `flint-chart` in `dependencies`
    or `devDependencies`. If present, skip to step 3.
 
-2. **If missing, install it and the renderer peer deps for the target backend:**
+2. **If missing, use the project's approved dependency workflow.** Preserve its
+  lockfile and configured registry; never probe another registry or select a
+  newer package version automatically. The Flint library version must match
+  the project's approved compatibility decision.
 
    ```bash
-   npm install flint-chart
-   # Then ONE of these based on the backend you'll actually render:
-   npm install vega vega-lite vega-embed   # Vega-Lite
-   npm install echarts                     # ECharts
-   npm install chart.js                    # Chart.js
+  npm install --save-exact flint-chart@0.3.0
    ```
+
+  Add renderer peer dependencies only through the same project dependency
+  policy; do not use this skill to discover or upgrade their versions.
 
 3. **Import in code:**
 
@@ -194,21 +187,21 @@ First decide which workflow the user is asking for:
   call an assembler in code. Keep the same `ChartAssemblyInput` contract, then
   let the host render the backend result.
 
-For MCP clients, the server can run with `npx`:
+For MCP clients, the server uses an exact cache-first package:
 
 ```bash
-npx -y flint-chart-mcp
+npx -y --prefer-offline flint-chart-mcp@0.3.0
 ```
 
-For JavaScript or TypeScript projects, install Flint first and add only the
-renderer peer dependencies needed by the backend you will render:
+For JavaScript or TypeScript projects, use the approved project dependency
+workflow and preserve the lockfile:
 
 ```bash
-npm install flint-chart
-npm install vega vega-lite vega-embed  # browser Vega-Lite rendering
-npm install echarts                    # ECharts rendering
-npm install chart.js                   # Chart.js rendering
+npm install --save-exact flint-chart@0.3.0
 ```
+
+Do not add or upgrade renderer dependencies unless the user explicitly requests
+project integration and approves the project's dependency changes.
 
 Then compile with the requested backend:
 

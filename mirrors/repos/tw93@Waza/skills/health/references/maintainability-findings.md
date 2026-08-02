@@ -8,6 +8,7 @@ Loaded from `health` Step 3 for the AI-maintainability lane. Summary mode reads 
 
 | Field | Question |
 |---|---|
+| Independent recurrence | Were cloned prompts, retries, automated fan-out sessions, pasted assistant output, and platform-resume messages collapsed into one underlying event? |
 | Repeated failure | Did this recur across fixes, releases, agents, or user reports? |
 | Durable invariant | Can the lesson be stated as a stable rule, not a dated incident summary? |
 | Target layer | Should it live in project instructions, a Waza skill, a global rule, or private memory? |

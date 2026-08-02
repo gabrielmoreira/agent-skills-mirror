@@ -1,3 +1,10 @@
+---
+type: design
+title: IDD Helper Script Evaluation
+description: Records the current adoption decision and trade-offs for IDD's optional helper scripts so future reviews do not re-evaluate them from scratch.
+tags: [helper-scripts, tooling]
+---
+
 # IDD Helper Script Evaluation
 
 This document records the current decision on optional helper scripts for
@@ -19,6 +26,17 @@ In the idd-skill source repository, the following optional helpers were adopted:
   [kurone-kito/idd-skill#1395](https://github.com/kurone-kito/idd-skill/issues/1395))
 - `scripts/discover-roadmap-graph.mjs` for A1.5/A2 recursive roadmap graph
   enumeration and classification
+- `scripts/idd-roadmap-audit-execute.mjs` for the A1.5 roadmap-completion
+  mutation: dry-run gates only the mechanical completion preconditions
+  (all descendants closed/complete, no open/unresolved/nested-roadmap
+  blocker) via the roadmap-graph traversal and emits `{ready, blockers,
+  evidenceBody}` — it does **not** verify the roadmap's free-form success
+  criteria or autonomy-gap items, which the caller must confirm
+  separately before `--apply`; `--apply` re-validates the roadmap-audit
+  claim and the graph immediately before mutating, then posts the
+  evidence comment, closes the completed roadmap, and releases the claim
+  (referenced in
+  [kurone-kito/idd-skill#1071](https://github.com/kurone-kito/idd-skill/issues/1071))
 - `scripts/discover-readiness-check.mjs` for A3 readiness criterion
   evaluation (referenced in
   [kurone-kito/idd-skill#391](https://github.com/kurone-kito/idd-skill/issues/391))
@@ -102,25 +120,35 @@ In the idd-skill source repository, the following optional helpers were adopted:
   sub-gate (#1340): a deterministic `converged`/`ready` verdict with an
   exit-code contract via `--assert`, claim-independent so it also works
   as a required-check-able CI verdict
-- `scripts/rerun-advisory-convergence.mjs` (#1431) for a read-only
-  rerun-plan diagnosis of stuck `idd-advisory-convergence` check-run
-  rollups: fetches every check-run instance for a PR's current HEAD SHA
-  (paged commit check-runs API), classifies each as `pass` / `pending` /
-  `bot-gated-skip` / `unresolved` / `rerun-eligible`, and prints the
-  ordered, deduplicated `gh run rerun <id>` recovery plan for the
-  rerun-eligible instances (each command includes `-R owner/repo` when
-  the repository is known) — referenced from `idd-ci.instructions.md`
-  §Rerun mechanics as the preferred way to produce that plan. When the
-  rollup is stuck on a bot-gated instance alongside an already-passing
-  non-bot pull_request-family instance, it additionally offers a
-  `recoveryRefreshPlan` — populated even alongside a non-empty rerun plan
-  when every rerun-eligible instance there is itself bot-triggered (#1745;
-  rerunning a bot-triggered instance does not supply the non-bot trigger
-  the recovery-refresh option exists to provide): rerunning the
-  already-passing instance is the documented way to force a fresh
-  non-bot evaluation and clear the stale rollup. Never calls
-  `gh run rerun` itself; a mutating `--apply` mode is a deliberate
-  follow-up.
+- `scripts/rerun-advisory-convergence.mjs` (#1431) for a rerun-plan
+  diagnosis of stuck `idd-advisory-convergence` check-run rollups,
+  read-only by default: fetches every check-run instance for a PR's
+  current HEAD SHA (paged commit check-runs API), classifies each as
+  `pass` / `pending` / `bot-gated-skip` / `unresolved` /
+  `awaiting-fresh-review` / `rerun-eligible`, and prints the ordered,
+  deduplicated `gh run rerun <id>` recovery plan for the rerun-eligible
+  instances (each command includes `-R owner/repo` when the repository
+  is known) — referenced from `idd-ci.instructions.md` §Rerun mechanics
+  as the preferred way to produce that plan. An instance whose own
+  advisory-convergence job-log verdict reports that the latest Copilot
+  review does not cover the current HEAD is classified
+  `awaiting-fresh-review` rather than `rerun-eligible` (#1775), so the
+  diagnosis (and `--apply`) never burn the rerun-once budget on a
+  failure only a fresh review can clear. When the rollup is stuck on a
+  bot-gated instance alongside an already-passing non-bot
+  pull_request-family instance, it additionally offers a
+  `recoveryRefreshPlan` — populated even alongside a non-empty rerun
+  plan when every rerun-eligible instance there is itself bot-triggered
+  (#1745; rerunning a bot-triggered instance does not supply the
+  non-bot trigger the recovery-refresh option exists to provide):
+  rerunning the already-passing instance is the documented way to force
+  a fresh non-bot evaluation and clear the stale rollup. Pass `--apply`
+  (#1766) to execute that same plan instead of only diagnosing it:
+  reruns each rerun-eligible instance in order (recovery-refresh first
+  when one applies), waits for each to reach a genuinely new completed
+  attempt before starting the next, and stops early once the recomputed
+  plan is fully resolved — never a `bot-gated-skip`,
+  `awaiting-fresh-review`, or rerun-budget-held instance.
 - `scripts/live-status-digest.mjs` for issue or PR live status digest
   discovery, rendering, dry-run, and claim-checked upsert
 - `scripts/audit-pr-cleanup.mjs` for post-merge comment cleanup auditing
@@ -542,7 +570,14 @@ Node.js helper path.
   <helper-package-spec> idd-*` commands without copying helper files
   into the repository. The default helper package spec is an HTTPS
   archive URL, and `--package-spec` lets adopters pin a reviewed tarball
-  or mirror URL explicitly.
+  or mirror URL explicitly. Persist that same pin in
+  `.github/idd/config.json` as the optional `helperRuntime.packageSpec`
+  field so it is reflected consistently in every helper-emitted
+  `ephemeral-npx` invocation string (including the manifest CLI's own
+  default and idd-doctor's remediation hints), not only a one-shot
+  `--package-spec` flag on a single invocation. An explicit
+  `--package-spec` flag still wins over the configured value when both
+  are present.
 - `instructions-only`: keep helper dependencies, helper files, and helper
   wrapper scripts out of the target repository entirely.
 
@@ -556,6 +591,24 @@ instruction files for no portability gain. Under `package-manager` and
 retained. `instructions-only` uses neither. When an instruction shows a
 `node scripts/...` command, resolve it to your profile's authoritative surface
 rather than maintaining both.
+
+**Authoring rule for instructions/docs.** A mandatory helper step (one
+with no skip/fallback wording) must always name an `instructions-only`
+fallback, since that profile has no helper runtime at all. Every helper
+invocation written into `.github/instructions/**`, `docs/**`, or their
+`idd-template/` sources must use a form the `helper-runtime-manifest`
+command table actually produces for some profile — `node
+scripts/<name>.mjs`, a `package.json` `idd:<name>` script, or the
+`idd-<name>` bin command. Separately, a file that is itself part of the
+distributed template (anything under `idd-template/`, or a generated
+copy of it — see `resolveDistributedFiles()` in
+`tests/helper-invocation-profile.test.mts`) must never prescribe the
+source repository's own `bin/<name>.mjs` build-artifact path, which no
+adopter profile vends; a source-repo-only page (no `idd-template/`
+counterpart) may still discuss that path when its subject genuinely is
+this repository's own tooling.
+`tests/helper-invocation-profile.test.mts` enforces both rules
+mechanically.
 
 To switch profiles later, rerun the manifest with both
 `--profile <target-profile>` and `--from-profile <current-profile>`. The
@@ -773,7 +826,7 @@ The adopted helper boundaries are intentionally narrow:
 - Command: `node scripts/forced-handoff-marker.mjs --issue <number> --plan ...`
 - Published bin: `idd-forced-handoff-marker`
 - Stable contract:
-  [`schemas/forced-handoff-marker.schema.json`](../schemas/forced-handoff-marker.schema.json)
+  [`forced-handoff-marker.schema.json`][forced-handoff-marker-schema]
 - Intended use:
   - render or inspect canonical forced-handoff marker payloads
   - support audited debugging or manual review of the exact body
@@ -1198,32 +1251,52 @@ to post it is the consuming track's job.
   buckets as `failure`, same as `failure`) and `required` flag; and
   `requiredChecks` (`names`, `missingNames`, `allRequiredPresent`,
   `allRequiredPassing`, `anyRequiredPending`, `anyRequiredFailing`,
-  `anyRequiredUnknown`, `requiredCheckSourcePinned`, and a top-level
-  `status` of
+  `anyRequiredUnknown`, `requiredCheckSourcePinned`,
+  `requiredCheckSourcePinnedUnresolved`, and a top-level `status` of
   `success|pending|failing|missing|no-required-checks|source-pinned`)
 - **Source-pinned required checks**: when a ruleset `workflows` rule or an
   app/integration-pinned classic required check is in force but cannot be
   enumerated by name, `requiredCheckSourcePinned` is `true` and `status` is
   `source-pinned` — never `no-required-checks` — so a caller cannot
-  mistake an unresolvable required-check source for a vacuous pass.
+  mistake an unresolvable required-check source for a vacuous pass. When
+  every named required check is instead present and pass-equivalent but a
+  pinned rule entry also names one of them, `status` is still
+  `source-pinned` (not `success`) by default, because no producer-identity
+  data is fetched anywhere in this codebase's check-run reads to verify the
+  pinning (#1689) — set `ciGate.trustSourcePinnedRequiredChecks: true` in
+  `.github/idd/config.json` to opt in once the repository operator has
+  verified the pinned integration out-of-band; see the "Source-pinned
+  required-check trust" row in [Customizing IDD](customization.md).
+  `requiredCheckSourcePinnedUnresolved` is `true` when at least one pinned
+  source has no resolved check name at all (a `workflows` rule, or a
+  pinned classic entry with no `context`/`name`/`check`); the opt-in never
+  clears `status` back to `success` while this is `true`, even when a
+  separate, named-and-pinned check on the same required-check set would
+  itself qualify.
 - it remains read-only; the command performs no reruns and posts no
   GitHub comment
 
 ### Rerun-plan diagnosis (stuck advisory-convergence)
 
 - Source repo / vendored-node command:
-  `node scripts/rerun-advisory-convergence.mjs --pr <pr-number>`
+  `node scripts/rerun-advisory-convergence.mjs --pr <pr-number> [--apply]`
 - Package-manager / ephemeral-npx command: use the
   profile-selected `idd:rerun-advisory-convergence` command from the
-  helper runtime manifest wiring above
-- Read-only rerun-plan diagnosis (#1431) for a stuck `idd-advisory-convergence`
-  required-check rollup: fetches every check-run instance for the PR's
-  current HEAD SHA (paged commit check-runs API, `filter=all`), classifies
-  each as `pass` / `pending` / `bot-gated-skip` / `unresolved` /
-  `rerun-eligible`, and prints the ordered, deduplicated `gh run rerun <id>`
-  recovery plan for the rerun-eligible instances -- referenced from
-  `idd-ci.instructions.md` §Rerun mechanics as the preferred way to produce
-  that plan
+  helper runtime manifest wiring above, with `[--apply]` appended the
+  same way
+- Rerun-plan diagnosis (#1431) for a stuck `idd-advisory-convergence`
+  required-check rollup, read-only by default: fetches every check-run
+  instance for the PR's current HEAD SHA (paged commit check-runs API,
+  `filter=all`), classifies each as `pass` / `pending` / `bot-gated-skip` /
+  `unresolved` / `awaiting-fresh-review` / `rerun-eligible`, and prints
+  the ordered, deduplicated `gh run rerun <id>` recovery plan for the
+  rerun-eligible instances -- referenced from `idd-ci.instructions.md`
+  §Rerun mechanics as the preferred way to produce that plan. An
+  instance whose own advisory-convergence job-log verdict reports that
+  the latest Copilot review does not cover the current HEAD is
+  classified `awaiting-fresh-review` rather than `rerun-eligible`
+  (#1775), so neither the diagnosis nor `--apply` burns the rerun-once
+  budget on a failure only a fresh review can clear
 - Also reports a `recoveryRefreshPlan` when the rollup is stuck on a
   bot-gated instance alongside an already-passing non-bot
   pull_request-family instance — populated even alongside a non-empty
@@ -1235,8 +1308,15 @@ to post it is the consuming track's job.
   `runAttempt` already exhausted the `"rerun-once"` budget, withholds the
   corresponding plan entries with an explanatory `rerunPolicyHoldNotice`
   instead of silently omitting them
-- it never calls `gh run rerun` (or any other mutating command) itself; a
-  mutating `--apply` mode is a deliberate follow-up (out of scope for #1431)
+- Without `--apply`, it never calls `gh run rerun` (or any other mutating
+  command) itself. Pass `--apply` (#1766) to execute the printed plan:
+  it reruns each rerun-eligible instance in order (recovery-refresh first
+  when one applies), waits for each to reach a genuinely new completed
+  attempt (polled via the actions/runs API, not `gh run watch`, to avoid
+  racing a just-issued rerun's stale pre-rerun status) before starting
+  the next, and stops early once the recomputed plan is fully resolved --
+  a `bot-gated-skip`, `awaiting-fresh-review`, or rerun-budget-held
+  instance is never rerun
 
 ### Merge-gate evidence
 
@@ -1300,6 +1380,28 @@ to post it is the consuming track's job.
   (empty array, never omitted, when nothing was discarded) -- it does not
   itself gate F2/F3; a non-empty list is a prompt to double-check the live
   GitHub rollup directly rather than trusting a bare `ci.status: "success"`.
+- `ci.sourcePinnedRequiredCheckNames` (#1689) lists the required check
+  names whose green state was downgraded to `ci.status: "unknown"` because
+  their ruleset/classic-protection entry is source-pinned
+  (`app_id`/`integration_id`) and the `ciGate.trustSourcePinnedRequiredChecks`
+  opt-in was not set. Producer verification itself is not implemented (no
+  GitHub App identity is fetched for a live check-run anywhere in this
+  codebase); the opt-in is a human-authorized trust decision, not a
+  runtime check. Evidence only (empty array, never omitted, when no such
+  downgrade occurred) --
+  `computePreMergeReadinessBlockers` uses it to name the source-pinned
+  cause in the `ci` blocker detail instead of a generic "CI is not
+  all-passing" message; see [Customizing IDD](customization.md)'s
+  "Source-pinned required-check trust" row for the opt-in.
+  `ci.sourcePinnedUnresolved` is a sibling boolean, `true` when the
+  downgrade fired at least partly because of a pinned source with no
+  resolved check name (a ruleset `workflows` rule, or a pinned entry with
+  no `context`/`name`/`check`) -- distinct from
+  `sourcePinnedRequiredCheckNames` being empty, which alone is ambiguous
+  between "no pinning" and "pinning exists but is unnamed." The
+  `trustSourcePinnedRequiredChecks` opt-in never clears this cause, even
+  when a separate, named-and-pinned check on the same required-check set
+  would itself qualify.
 - Authoritative phase role: the live `pre-merge-readiness` run on the
   current HEAD is the **authoritative source for the final-merge CI and
   activity fields** at F2/F3. The `review-activity-snapshot` helper builds
@@ -1533,14 +1635,31 @@ to post it is the consuming track's job.
   applies to every PR or only verified IDD-owned PRs. The default
   `all-prs` keeps the helper applicable everywhere. `idd-claimed`
   narrows it so a verified linked claim with a matching PR head branch
-  is `applicable`; a verified linked claim with a branch mismatch is
-  `not_applicable`; a verified linked claim still stays `applicable`
-  when branch data is unavailable; and PRs without a verified linked
-  claim, including manual/dependency PRs, are `not_applicable`.
+  is `applicable`; a verified linked claim still stays `applicable`
+  when branch data is unavailable; and a PR with no verified linked
+  claim AND no claim-marker history at all (a genuine non-IDD
+  contribution, including manual/dependency PRs) is `not_applicable`.
   Claimless maintainer waivers stay outside this conditional scope; the
   normal deadline-based waiver path still applies only to applicable,
   verified IDD-owned PRs. Invalid or unreadable config values still
   normalize back to `all-prs` in trusted config reads.
+  - `status: "indeterminate"` (#1686): a third outcome, distinct from
+    both `applicable` and `not_applicable`, for a PR that carries real
+    evidence of IDD claim activity but whose claim linkage cannot be
+    resolved cleanly right now -- a claim-branch mismatch against an
+    active trusted claim, closing references ambiguous between two or
+    more actively-claimed issues, or a stale/released claim (claim
+    marker history exists, but no claim currently resolves active).
+    Unlike `not_applicable`, `indeterminate` never lets `ready` become
+    `true` through ordinary convergence -- only the existing
+    deadline/terminal-plus-maintainer-waiver escape hatch can still
+    clear it (and, for the ambiguous/stale-history cases, no
+    `activeClaimId` exists to bind a waiver to in the first place, so
+    those two are effectively not waivable in practice; the
+    branch-mismatch case does have a real `activeClaimId` and stays
+    genuinely waivable). See
+    `computeAdvisoryConvergenceVerdict`'s `AdvisoryConvergenceApplicability`
+    doc comment (advisory-convergence.mts) for the full contract.
 
 #### Bounded same-HEAD advisory reroll (AW6, #1511)
 
@@ -1581,7 +1700,7 @@ structurally unable to disagree.
 <!-- dprint-ignore-start -->
 | Token                                    | Fires when...                                                                                                                                          |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `scope-not-applicable`                    | `applicability.status` is `not_applicable` (`advisoryWait.convergenceScope: "idd-claimed"` and this PR has no matching verified linked claim/branch).   |
+| `scope-not-applicable`                    | `applicability.status` is `not_applicable` OR `indeterminate` (#1686) -- `advisoryWait.convergenceScope: "idd-claimed"` and this PR either has no verified linked claim/branch, or has a broken/ambiguous claim linkage. Offering a same-HEAD reroll is pointless in either case. |
 | `review-pending`                          | The primary bot has not yet reviewed current HEAD (`pending: true`). Always co-occurs with `review-item-count-unknown` below, since an off-HEAD review reports no usable item count. |
 | `unresolved-copilot-threads`              | `threads.satisfied` is `false` -- at least one Copilot-authored thread is neither resolved nor validly dispositioned.                                   |
 | `missing-regular-comment-disposition`     | `dispositionEvidence.missingRegularCommentCount` is non-zero -- an outstanding regular (non-thread) PR comment still lacks a fresh disposition marker.  |
@@ -1809,9 +1928,10 @@ same as `AW4`/`AW5`.
 ### Merged-PR feedback sweep
 
 - Source repo / vendored-node command:
-  `node scripts/merged-pr-feedback-sweep.mjs`
-- Package-manager / ephemeral-npx command: use the profile-selected
-  `idd-merged-pr-feedback-sweep` command
+  `node scripts/merged-pr-feedback-sweep.mjs`. Source-repo internal
+  helper; not distributed via the package-manager / ephemeral-npx
+  profiles (it is a maintainer-run sweep, never an adopter-facing
+  step in the phase instructions).
 - A **manually-invoked**, read-only detector (no schedule, no mutation). It
   scans MERGED PRs and surfaces feedback that was left unattended at merge:
   - **Window selector**: `--since <ISO8601>` and/or `--days <N>`, or
@@ -2048,6 +2168,7 @@ replace the written decision tables.
 [advisory-convergence-schema]: https://kurone-kito.github.io/idd-skill/schemas/advisory-convergence.schema.json
 [advisory-wait-state-schema]: https://kurone-kito.github.io/idd-skill/schemas/advisory-wait-state.schema.json
 [disposition-non-review-notices-schema]: https://kurone-kito.github.io/idd-skill/schemas/disposition-non-review-notices.schema.json
+[forced-handoff-marker-schema]: https://kurone-kito.github.io/idd-skill/schemas/forced-handoff-marker.schema.json
 [idd-merge-execute-schema]: https://kurone-kito.github.io/idd-skill/schemas/idd-merge-execute.schema.json
 [post-idd-marker-schema]: https://kurone-kito.github.io/idd-skill/schemas/post-idd-marker.schema.json
 [pre-merge-readiness-schema]: https://kurone-kito.github.io/idd-skill/schemas/pre-merge-readiness.schema.json

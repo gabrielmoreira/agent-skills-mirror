@@ -1,7 +1,7 @@
-﻿---
+---
 name: orient
-version: 2.0.0
-description: 'Read the trail as a single document and form arc-level claims about the target. What is the target becoming? Where has the loop''s attention been, and is that where the target''s real weight lies? What does the arc reveal that no individual iteration would surface? Writes .acm/orientation.md — the Orient-derived current orientation for the target. Destination (.acm/destination.md, with .acm/vision.md as legacy fallback), if present, is the operator-held destination and is read but never written. USE WHEN: about to declare convergence, recurring finding-class suspected, operator asks "how are we doing?", or an independent arc-read is needed without running a full improve loop.'
+version: 2.4.0
+description: 'Read the trail as a single document and form arc-level claims about the target. What is the target becoming? Where has the loop''s attention been, and is that where the target''s real weight lies? What does the arc reveal that no individual iteration would surface? Writes .acm/orientation.md — the Orient-derived current orientation for the target. Destination (.acm/destination.md), if present, is the operator-held destination and is read but never written. USE WHEN: about to declare convergence, recurring finding-class suspected, operator asks "how are we doing?", or an independent arc-read is needed without running a full improve loop.'
 argument-hint: 'The target and its trail, and optionally the specific arc-question to answer'
 ---
 
@@ -12,6 +12,8 @@ argument-hint: 'The target and its trail, and optionally the specific arc-questi
 *Memory Model role: Synthesizes the trail into `.acm/orientation.md` — the arc-level orientation the next run starts from.*
 
 The Improve loop is optimised for one iteration at a time. Orient is optimised for reading all of them at once. Where Improve asks "what should change next?", Orient asks "what has been changing, where is the weight of this target actually sitting, and is the loop looking at the right thing?"
+
+*Lineage:* this split mirrors Boyd's OODA loop (Observe-Orient-Decide-Act) — Boyd's own insight was that Orientation, not Decision, is the phase that shapes everything downstream and the one most commonly neglected. Cited explicitly in this suite's v1 ancestor but dropped when v2's skills merged into v3; restored here since it is this skill's own namesake.
 
 Run this skill when an arc-level view is more useful than another low-altitude pass: before declaring convergence, when a pattern of similar findings has emerged, when the operator asks "how are we doing?", or any time you want arc-level understanding without committing to a change.
 
@@ -28,11 +30,11 @@ Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it 
 
 ### 0. Read the destination first (all scopes)
 
-Before forming any scope statement, read `.acm/destination.md` **in the target repo root** if it exists (falling back to `.acm/vision.md` if only the legacy name is present). This is the operator-held destination — what the target is for and what constraints hold across all runs. Reading it first ensures the arc is read against what the operator actually cares about, not retrofitted afterward.
+Before forming any scope statement, read `.acm/destination.md` **in the target repo root** if it exists. This is the operator-held destination — what the target is for and what constraints hold across all runs. Reading it first ensures the arc is read against what the operator actually cares about, not retrofitted afterward.
 
-**ACM §4 Scoped Memory — read parent scopes first.** Before reading the repo's `.acm/destination.md`, traverse parent directories upward and read any `.acm/destination.md` found there. Stop when: filesystem root reached; a `.acm-root` marker file is found (operator ceiling — read that directory's `.acm/` then stop); or 4 levels traversed. Higher-scope mandates govern lower-scope ones. Label each scope when reading (e.g., "workspace mandate", "repo mandate"). The workspace destination gives the arc its organizational context; arc-claims made without it may miss cross-repo coordination constraints.
+**ACM §4 Scoped Memory — read parent scopes first.** Before reading the repo's `.acm/destination.md`, traverse parent directories upward and read any `.acm/destination.md` found there. Higher-scope mandates govern lower-scope ones — if a workspace or org destination conflicts with the repo destination, the higher scope wins. Label each scope when reading (e.g., "workspace mandate", "repo mandate"). Stop traversal when any of: filesystem root reached; a `.acm-root` marker file is found in a directory (operator-declared ceiling — read that directory's `.acm/` then stop); or 4 levels traversed (implementation ceiling). The workspace destination gives the arc its organizational context; arc-claims made without it may miss cross-repo coordination constraints.
 
-If no `destination.md` or `vision.md` exists at any scope, proceed — but note the absence. An Orient run on a target without a destination is reading the arc without somewhere to orient against.
+If no `destination.md` exists at any scope, proceed — but note the absence. An Orient run on a target without a destination is reading the arc without somewhere to orient against.
 
 ### 1. Identify the scope
 
@@ -105,9 +107,19 @@ Examples of the right shape:
 
 Avoid: "The target seems to be in good shape." That is an observation without content, not a claim.
 
-### 4. Evaluate loop effectiveness (when the arc warrants it)
+### 3b. Ask whether a recurring arc-claim is a single-loop symptom or a double-loop signal
 
-When the arc-read surfaces questions about whether the loop is achieving what it is for, answer them. The loop's effectiveness is part of the target's story — examining it is a lens, not navel-gazing.
+When step 3 produces a claim describing a *recurring* pattern — the same finding-class across multiple entries, the same kind of correction applied repeatedly, the same corner returned to again and again — ask explicitly whether the recurrence is a single-loop symptom or a double-loop signal. Single-loop correction fixes the action within existing governing variables (a goal, constraint, or quality-bar choice in `.acm/destination.md`, or an unstated assumption the arc has been carrying) while leaving those variables themselves unexamined. If the same finding-class keeps recurring despite repeated correction, the recurrence itself is evidence that the governing variable — not the action — is the actual defect.
+
+This question can resolve to "no." A recurring pattern is not automatically a governing-variable defect — some recurrences are the arc correctly behaving as designed (candidates sitting unpicked across entries while the operator directs attention elsewhere is an explicitly valid pattern, not a defect). Answer honestly in both directions; the question exists to be asked, not to manufacture an escalation.
+
+When it resolves to "yes": name the specific governing variable implicated, write it as a candidate destination-revision — not another arc-claim about the target's surface — and record it as such. Whether to act on it is the operator's decision via [Destination](../destination/SKILL.md); Orient's job is to make the governing-variable question visible, not to resolve it unilaterally.
+
+*Why this belongs in Orient, and not only in Improve's step 6b:* step 6b fires from inside a single iteration, when that iteration happens to notice a recurring pattern. Orient reads the whole arc at once and is positioned to catch governing-variable-level recurrences that no individual iteration had enough surface area to see — exactly the kind of finding an arc-level read exists for. (Argyris, *Organizational Learning*, 1977 — single-loop learning corrects action within existing governing variables; double-loop learning questions and revises the governing variables themselves.)
+
+### 4. Evaluate loop effectiveness (Argyris & Schon's deutero-learning: is the way this loop learns itself sound?)
+
+When the arc-read surfaces questions about whether the loop is achieving what it is for, answer them. The loop's effectiveness is part of the target's story — examining it is a lens, not navel-gazing. Where step 3b asks whether the target's governing variables are wrong (double-loop), this step asks the next-order question: is the mechanism by which this loop itself learns, reflects, and detects errors well designed — or is the reflection process itself what needs revision? (Argyris & Schon, *Organizational Learning II*, 1978 — deutero-learning: learning about the learning system itself, distinct from correcting either the action or the governing variable.)
 
 Ask:
 
@@ -118,6 +130,10 @@ Ask:
 - If the operator could see the arc as a whole, would they say "yes, that is the right focus"?
 
 Run this step when: the loop is about to declare convergence, the finding pattern looks suspiciously tidy, or the operator explicitly asked how the loop is performing.
+
+**If this step surfaces a structural blind spot in how the loop itself learns** — a lens it never applies, a trigger that never fires, a trail format that hides the evidence it should show — that is not a target-level finding to file away among this run's arc-claims. Name the specific mechanism implicated (a lens, a trigger, a check, the trail format itself), state it as a candidate revision to the loop's own design, and route it to the operator via [Destination](../destination/SKILL.md) — the same way step 3b routes governing-variable findings. A blind spot in how the loop learns is at least as load-bearing as a blind spot in the target itself: it silently caps every future run's ability to find anything the current mechanism cannot see.
+
+Acting on the candidate is itself a subsequent [Improve](../improve/SKILL.md) iteration targeting the implicated mechanism — no separate incremental-vs-radical logic is needed here, because that iteration's own Purpose lens and Kaikaku question (step 3) already make that decision generically, for any target. If the outcome is a redesign of how the loop reasons, its validation is Convergence Is Silence, not the agent's own judgment that it improved.
 
 ### 4b. Extract operational rules (Learning)
 
@@ -132,7 +148,7 @@ The arc is the mechanism by which the agent learns how to work within the specif
 
 Write the arc-claims from step 3 (and any loop-effectiveness findings from step 4) to `.acm/orientation.md` in the target repo root. This file is the **orientation.md** — the current Orient-derived orientation: where the loop's attention has been, what the arc currently shows is true of the target, and what the next runs should test.
 
-The orientation.md should make sense in light of the destination (read at step 0) — arc-claims may reference whether the loop has been pursuing what the destination says matters — but must not duplicate destination content. Never write to `.acm/destination.md` (or legacy `.acm/vision.md`) from an Orient run.
+The orientation.md should make sense in light of the destination (read at step 0) — arc-claims may reference whether the loop has been pursuing what the destination says matters — but must not duplicate destination content. Never write to `.acm/destination.md` from an Orient run.
 
 `.acm/orientation.md` is not append-only. Orient replaces it each time it runs. The full reasoning history lives in `audit-trail.md`; the destination is where the target is going; the orientation.md is the current distillation of where the target is along the way.
 
@@ -160,7 +176,7 @@ _Last updated: YYYY-MM-DD (run: <slug>)_
 <From step 4, if triggered. Omit section if step 4 was not run.>
 ```
 
-Commit `.acm/orientation.md` alongside `audit-trail.md`, `history.md`, and `learning.md` after the run. Never commit changes to `.acm/destination.md` (or legacy `.acm/vision.md`) from an Orient run.
+Commit `.acm/orientation.md` alongside `audit-trail.md`, `history.md`, and `learning.md` after the run. Never commit changes to `.acm/destination.md` from an Orient run.
 
 ### 5a. Bound every silence claim
 

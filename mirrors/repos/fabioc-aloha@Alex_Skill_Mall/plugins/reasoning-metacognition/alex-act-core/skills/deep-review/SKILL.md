@@ -45,7 +45,7 @@ Perform thorough code review using three perspectives with opposing mindsets. Th
 
 Run all three perspectives independently. Each sees the same context but asks different questions.
 
-> **Same-model role separation vs cross-model separation** — this three-perspective discipline works on a single model because the *roles* separate the analysis, not the models. For high-stakes reviews where "same-model shares the proposer's blind spots" is a real concern, compose with the **Cross-Model External Critic** method in [adversarial-review](../../instructions/adversarial-review.instructions.md#6-cross-model-external-critic-highest-fidelity) — run this three-perspective analysis with a *different* model on fresh context.
+> **Same-model role separation vs cross-model separation** — this three-perspective discipline works on a single model because the *roles* separate the analysis, not the models. For high-stakes reviews where "same-model shares the proposer's blind spots" is a real concern, compose with the **Cross-Model External Critic** method in [adversarial-review](../adversarial-review/SKILL.md#6-cross-model-external-critic-highest-fidelity) — run this three-perspective analysis with a *different* model on fresh context.
 
 #### Advocate Analysis
 

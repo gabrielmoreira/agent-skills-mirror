@@ -12,7 +12,9 @@ explicitly enables all-project mode.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import re
 import time
 from collections import Counter, deque
@@ -33,6 +35,7 @@ MAX_CONTENT_ITEMS = 256
 MAX_TOOL_NAME_CHARS = 120
 LIVE_WINDOW_SECONDS = 300
 SUMMARY_CANDIDATE_LIMIT = 200
+MIN_CLONE_CONTEXT_MESSAGES = 4
 
 CONTEXT_RE = re.compile(
     r"conversation was compressed|context limit|context window|truncat|/compact|"
@@ -152,6 +155,8 @@ class ConversationFile:
     mtime: float
     mtime_ns: int
     size: int
+    device: int
+    inode: int
     runtime: str = "claude_project_logs"
 
 
@@ -170,6 +175,8 @@ class Signal:
     mtime: float
     ordinal: int
     runtime: str
+    lineage: str
+    message_index: int
 
 
 @dataclass
@@ -336,7 +343,7 @@ def classify(message: Message, japanese_allowed: bool = False) -> Optional[str]:
     text = message.text.strip()
     if message.role == "platform":
         return "PLATFORM INTERRUPTION"
-    if PLATFORM_INTERRUPTION_RE.search(text):
+    if message.role == "system" and PLATFORM_INTERRUPTION_RE.search(text):
         return "PLATFORM INTERRUPTION"
     if CONTEXT_RE.search(text):
         return "CONTEXT SIGNAL"
@@ -357,6 +364,30 @@ def classify(message: Message, japanese_allowed: bool = False) -> Optional[str]:
     return None
 
 
+def independent_signals(signals: list[Signal]) -> tuple[list[Signal], int]:
+    """Collapse shared-history clones while preserving repeated real turns."""
+    ordered = sorted(
+        signals, key=lambda signal: (signal.mtime, signal.ordinal), reverse=True
+    )
+    accepted: list[Signal] = []
+    seen: dict[tuple[str, str, str], set[tuple[str, str]]] = {}
+    collapsed = 0
+    for signal in ordered:
+        normalized = re.sub(r"\s+", " ", signal.text).strip().casefold()
+        key = (signal.label, normalized, signal.lineage)
+        source = (signal.runtime, signal.file)
+        is_clone = (
+            signal.message_index >= MIN_CLONE_CONTEXT_MESSAGES
+            and any(other_source != source for other_source in seen.get(key, set()))
+        )
+        if is_clone:
+            collapsed += 1
+            continue
+        accepted.append(signal)
+        seen.setdefault(key, set()).add(source)
+    return accepted, collapsed
+
+
 def scan_file(
     item: ConversationFile,
     stats: ScanStats,
@@ -371,8 +402,20 @@ def scan_file(
     recent_platform_interruption = False
     japanese_allowed = False
     assistant_seen = False
+    lineage = hashlib.sha256()
+    descriptor = -1
     try:
-        with item.path.open(encoding="utf-8", errors="replace") as handle:
+        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+        descriptor = os.open(item.path, flags)
+        before = os.fstat(descriptor)
+        if (before.st_dev, before.st_ino) != (item.device, item.inode):
+            os.close(descriptor)
+            descriptor = -1
+            stats.read_errors += 1
+            return [], [], False, 0
+        handle = os.fdopen(descriptor, encoding="utf-8", errors="replace")
+        descriptor = -1
+        with handle:
             ordinal = 0
             while True:
                 line = handle.readline(MAX_RECORD_CHARS + 1)
@@ -398,6 +441,10 @@ def scan_file(
                     continue
                 stats.messages += 1
                 message_count += 1
+                lineage.update(message.role.encode("utf-8", errors="replace"))
+                lineage.update(b"\0")
+                lineage.update(message.text.encode("utf-8", errors="replace"))
+                lineage.update(b"\0")
                 if collect_messages:
                     if len(message_head) < EXTRACT_HEAD:
                         message_head.append(message)
@@ -422,17 +469,26 @@ def scan_file(
                         Signal(
                             label,
                             message.text,
-                            item.path.name,
+                            sanitize(item.path.name, 240),
                             item.mtime,
                             ordinal,
                             item.runtime,
+                            lineage.hexdigest(),
+                            message_count,
                         )
                     )
     except OSError:
         stats.read_errors += 1
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
     try:
-        final_stat = item.path.stat()
-        if final_stat.st_size != item.size or final_stat.st_mtime_ns != item.mtime_ns:
+        final_stat = item.path.stat(follow_symlinks=False)
+        if (
+            (final_stat.st_dev, final_stat.st_ino) != (item.device, item.inode)
+            or final_stat.st_size != item.size
+            or final_stat.st_mtime_ns != item.mtime_ns
+        ):
             stats.changed_files += 1
     except OSError:
         stats.read_errors += 1
@@ -442,7 +498,12 @@ def scan_file(
 
 def codex_project_matches(path: Path, project_root: Path) -> bool:
     try:
-        with path.open(encoding="utf-8", errors="replace") as handle:
+        if path.is_symlink():
+            return False
+        flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
+        with os.fdopen(
+            os.open(path, flags), encoding="utf-8", errors="replace"
+        ) as handle:
             for _index in range(40):
                 line = handle.readline(MAX_RECORD_CHARS + 1)
                 if not line:
@@ -481,9 +542,9 @@ def newest_candidates(
     candidate_limit: Optional[int],
 ) -> tuple[list[Path], bool]:
     if not recursive:
-        return list(directory.glob("*.jsonl")), False
+        return [path for path in directory.glob("*.jsonl") if not path.is_symlink()], False
     if candidate_limit is None:
-        return list(directory.rglob("*.jsonl")), False
+        return [path for path in directory.rglob("*.jsonl") if not path.is_symlink()], False
 
     candidates: list[Path] = []
     stack = [directory]
@@ -498,7 +559,9 @@ def newest_candidates(
             (
                 entry
                 for entry in entries
-                if entry.is_file() and entry.suffix == ".jsonl"
+                if not entry.is_symlink()
+                and entry.is_file()
+                and entry.suffix == ".jsonl"
             ),
             key=lambda entry: entry.name,
             reverse=True,
@@ -507,7 +570,7 @@ def newest_candidates(
         candidates.extend(files[:remaining])
         truncated = truncated or len(files) > remaining
         directories = sorted(
-            (entry for entry in entries if entry.is_dir()),
+            (entry for entry in entries if not entry.is_symlink() and entry.is_dir()),
             key=lambda entry: entry.name,
         )
         stack.extend(directories)
@@ -525,14 +588,24 @@ def discover(
     candidate_limit: Optional[int] = None,
 ) -> tuple[list[ConversationFile], int, bool]:
     files: list[ConversationFile] = []
-    if not directory.is_dir():
+    if directory.is_symlink() or not directory.is_dir():
         return files, 0, False
-    candidates, truncated = newest_candidates(directory, recursive, candidate_limit)
+    try:
+        scan_root = directory.resolve(strict=True)
+    except OSError:
+        return files, 0, False
+    candidates, truncated = newest_candidates(scan_root, recursive, candidate_limit)
     for path in candidates:
+        if path.is_symlink():
+            continue
+        try:
+            path.relative_to(scan_root)
+        except ValueError:
+            continue
         if project_root is not None and not codex_project_matches(path, project_root):
             continue
         try:
-            stat = path.stat()
+            stat = path.stat(follow_symlinks=False)
         except OSError:
             continue
         files.append(
@@ -541,6 +614,8 @@ def discover(
                 mtime=stat.st_mtime,
                 mtime_ns=stat.st_mtime_ns,
                 size=stat.st_size,
+                device=stat.st_dev,
+                inode=stat.st_ino,
                 runtime=runtime,
             )
         )
@@ -570,7 +645,8 @@ def print_file_manifest(
     for item in files[:MAX_FILE_LIST]:
         live = "yes" if item.path in live_files else "no"
         print(
-            f"runtime={item.runtime} file={item.path.name} bytes={item.size} "
+            f"runtime={item.runtime} file={sanitize(item.path.name, 240)} "
+            f"bytes={item.size} "
             f"live_by_recent_mtime={live} "
             f"signal_scan={'yes' if item.path in signal_files else 'no'} "
             f"extract={'yes' if item.path in extract_files else 'no'}"
@@ -773,11 +849,12 @@ def audit(
 
     print_file_manifest(files, live_paths, signal_paths, extract_paths)
 
-    ordered_signals = sorted(
-        all_signals, key=lambda signal: (signal.mtime, signal.ordinal), reverse=True
-    )
+    ordered_signals, duplicate_signals_collapsed = independent_signals(all_signals)
     emitted = ordered_signals[:MAX_SIGNALS]
     print("=== CONVERSATION SIGNALS ===")
+    print(f"raw_signals_found: {len(all_signals)}")
+    print(f"independent_signals: {len(ordered_signals)}")
+    print(f"duplicate_signals_collapsed: {duplicate_signals_collapsed}")
     print(f"signals_found: {len(ordered_signals)}")
     print(f"signals_emitted: {len(emitted)}")
     print(
@@ -793,8 +870,8 @@ def audit(
         )
 
     print("=== SIGNAL THEME SUMMARY ===")
-    theme_counts = signal_theme_counts(all_signals)
-    print(f"signals_classified: {len(all_signals)}")
+    theme_counts = signal_theme_counts(ordered_signals)
+    print(f"signals_classified: {len(ordered_signals)}")
     print("theme_counts:")
     if theme_counts:
         for theme, count in theme_counts.most_common():
@@ -811,7 +888,8 @@ def audit(
         for item in extract_selection:
             messages, truncated, total = extracts.get(item.path, ([], False, 0))
             print(
-                f"--- runtime={item.runtime} file={item.path.name} messages={total} "
+                f"--- runtime={item.runtime} "
+                f"file={sanitize(item.path.name, 240)} messages={total} "
                 f"extract_truncated={'yes' if truncated else 'no'} ---"
             )
             for message in messages:

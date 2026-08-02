@@ -5,6 +5,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-08-02
+
+### Added
+
+- **Workspace agent** (#130) — a collapsible chat panel on the right side of
+  the canvas. Describe what you want in natural language (attach images,
+  video, audio or documents straight into the chat) and the agent builds the
+  workflow **live on the canvas**: nodes appear one by one with the camera
+  following, prompts and parameters fill into the node forms, and one Cmd+Z
+  undoes an entire agent turn. It edits incrementally ("make the video 10
+  seconds") rather than rebuilding, validates every step against the ABI
+  (structurally invalid graphs are rejected before they touch the canvas),
+  can health-check a workflow and explain why a run failed, and answers
+  questions about using TongFlow from the bundled docs. Bring your own
+  brain: the agent runs on any installed OpenAI-compatible text plugin
+  (OpenRouter, OpenAI, Gemini, DeepSeek, xAI, Doubao, APIMart, Agnes) with a
+  two-level plugin → model picker.
+- **App Mode** (#124) — present any workflow as a simple form app: inputs on
+  top, results below, canvas hidden. Assets fed through add-nodes become
+  replaceable inputs, so a finished workflow doubles as a reusable tool.
+- **Canvas undo/redo** (#125) — Cmd+Z / Cmd+Shift+Z plus toolbar buttons,
+  with field-level coalescing so a burst of typing is one undo step.
+- **Settings overhaul & first-run onboarding** (#118) — settings are now
+  human-readable cards with a guided first-run banner. Connecting services
+  is a dedicated flow per provider: Modal (with one-shot paste that splits
+  both tokens automatically, #119), Hugging Face (#120), and every provider
+  API key (#121).
+- **Clear, actionable task failures** (#122, #123, #126) — failures now carry
+  stable error codes with localized messages and support links; upstream
+  Modal/deployer error bodies are preserved in the failure details; a
+  missing API key opens a guided dialog that deep-links to the right
+  settings field.
+
+### Changed
+
+- **Python SDK 0.2.20** (#127) — direct-stream terminal callback so
+  browser-direct streaming runs report their terminal state reliably, plus
+  per-call model passthrough. All official Modal plugins repinned to 0.2.20.
+
+### Fixed
+
+- **Completed tasks replay instead of re-running** (#128) — reconnecting to
+  a finished task's wait stream now replays the stored terminal state; a
+  finished slot can no longer be accidentally re-executed.
+- **Undo history stays intact across mount-time defaults** (#129) —
+  programmatic default writes in six more node types no longer pollute the
+  undo stack.
+
 ## [0.2.3] - 2026-07-28
 
 ### Fixed

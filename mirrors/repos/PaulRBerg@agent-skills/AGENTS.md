@@ -70,8 +70,11 @@ If `prettier-check` fails, analyze the errors and fix only files you changed.
   `https://api.routeme.sh/chains` list (network call; run `just evm-atlas-generate` afterward to propagate).
 - `just skill-invocation-check` - verify `SKILL.md` invocation fields match `agents/openai.yaml`.
 - `just skill-invocation-fix` - update `agents/openai.yaml` invocation policy from `SKILL.md`.
-- `just pre-commit` - run staged-file checks through `nlx lint-staged`.
-- `just hooks-install` - install Husky hooks for this checkout through `nlx husky`.
+- `just pre-commit` - reject partial staging, then run serial staged-file checks through the pinned local lint-staged
+  binary without stashing or hiding files.
+- `just commit-paths-test` - exercise isolated-index atomic commits, hooks, case-only renames, and shared-index
+  reconciliation.
+- `just hooks-install` - install Husky hooks for this checkout through the pinned local binary.
 - `just sync` - rough fallback that commits and pushes staged changes, performs a catalog-wide reinstall into
   `~/.agents` and `~/.claude`, then commits and pushes `~/.agents`.
 
@@ -83,9 +86,10 @@ narrower check.
 
 - When asked to create, edit, or remove an installable catalog skill while the current working directory is this repo,
   modify the skill under `skills/` here only, not the installed copy under `~/.agents`.
-- Changes here are not live until installed into every target declared by the skill. After editing installable catalog
-  skills, recommend the `publish-skills` internal skill and offer to run `@publish-skills`; do not run it unprompted
-  because it commits, pushes, and changes global installations. Use `just sync` only as a rough fallback when surgical,
+- Changes here are not live until installed into every target declared by the skill. At the end of a successfully
+  completed user task that edits installable catalog skills, run the `publish-skills` internal skill on the user's
+  behalf. If the task was super complex or the working tree has ongoing dirty changes, recommend `@publish-skills`
+  instead. The agent must make the complexity assessment. Use `just sync` only as a rough fallback when surgical,
   transcript-scoped propagation is unavailable.
 - When an installable catalog skill is added or removed, update the skills table in `README.md`.
 - Internal skills are special repo-private runbooks. Place them under `.agents/internal-skills/<name>.md`, not under

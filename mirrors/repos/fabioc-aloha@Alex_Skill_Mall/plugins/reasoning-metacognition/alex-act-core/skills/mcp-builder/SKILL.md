@@ -299,14 +299,6 @@ Each question must be:
 
 ---
 
-## Related Skills
-
-This skill complements:
-
-- [mcp-development instructions](../../instructions/mcp-development.instructions.md): always-on routing for MCP work; core protocol patterns
-
----
-
 ## References
 
 - [MCP Protocol Specification](https://modelcontextprotocol.io)

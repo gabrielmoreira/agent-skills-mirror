@@ -19,6 +19,7 @@
 - Preserve scoped plugin resolution order and fall back invalid or missing scope/chat references to `Default`.
 - Project Settings `llm` payloads are owned here through the generic `helpers.projects` project extension-data hooks; keep project helper code agnostic to `_model_config` paths, presets, and inheritance rules.
 - Keep provider metadata and API-key checks safe around secrets.
+- Check API-key readiness only for the effective model configuration; unused global presets must not produce Welcome-screen warnings.
 - Coordinate OAuth-backed providers with `_oauth` instead of hardcoding provider-specific auth here.
 - `model_config_get` exposes `model_configured` as a derived chat-model readiness flag from provider, model name, and API-key availability.
 - Non-default presets may inherit omitted slots or durable tuning from `Default`, but must replace or clear per-slot `kwargs` so provider-specific extra params never leak across model providers.

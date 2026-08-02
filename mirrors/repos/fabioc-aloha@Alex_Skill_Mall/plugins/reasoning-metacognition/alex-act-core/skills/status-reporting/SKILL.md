@@ -1,6 +1,6 @@
 ---
 name: "status-reporting"
-description: "Create stakeholder-friendly project status updates and progress reports"
+description: "Create stakeholder-friendly project status updates and progress reports. Use when writing a status update, progress report, weekly or milestone recap, release summary, or any stakeholder-facing account of where work stands."
 lastReviewed: 2026-05-26
 ---
 

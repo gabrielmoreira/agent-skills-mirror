@@ -11,7 +11,7 @@
 - `helpers/commands.py` owns command name sanitization, argument parsing, scope resolution, file persistence, plugin command discovery, and command invocation resolution.
 - `api/commands.py` owns the Commands API actions used by the WebUI.
 - `webui/` owns the manager/editor modal stores, HTML surfaces, and thumbnail asset.
-- `commands/` owns bundled read-only slash command definitions shipped by `_commands`.
+- `commands/` owns bundled read-only slash command definitions shipped by `_commands`, including `/stop` agent-run control.
 - `extensions/` owns the chat composer slash picker and incoming-message command resolution.
 - `extensions/python/startup_migration/` owns one-time migration from the legacy community `commands` plugin namespace.
 - `skills/commands-create-slash-command/` owns the agent-facing authoring workflow for reusable slash commands.
@@ -30,8 +30,9 @@
 - On startup, `_commands` copies legacy `usr/plugins/commands` command and skill files into `usr/plugins/_commands` without overwriting existing files, copies scoped legacy command folders to `_commands`, and disables the legacy `commands` plugin roots to prevent duplicate WebUI popovers.
 - Script commands must expose `run(payload)` and return a string or a dict with `text` and optional `effects`; `show_markdown` effects render as auto-dismissing toast notifications.
 - Script commands may emit `send_message` with `text` to submit the rendered composer text immediately after command resolution.
-- Commands accept prefix syntax (`/goal objective`) and exact postfix syntax (`objective /goal`); ordinary mid-sentence mentions are not invocations.
+- Commands accept prefix syntax (`/goal objective`) and exact postfix syntax (`objective /goal`); ordinary mid-sentence mentions are not invocations. The composer picker opens only for prefix syntax, while postfix commands resolve when sent.
 - WebUI sends resolve through the picker effect path, while backend-originated messages resolve before reaching the agent.
+- `/stop` uses the same shared cancellation operation as the composer Stop button, including progress cleanup and terminal logging.
 - Built-in `/computer-use on|off` emits a bounded `computer_use` effect. WebUI
   only directs the user to Host access in A0 Launcher or the same command in A0
   CLI; it never changes a Launcher gateway lease from Agent Zero page content.

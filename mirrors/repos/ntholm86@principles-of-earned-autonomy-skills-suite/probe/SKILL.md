@@ -1,4 +1,4 @@
-﻿---
+---
 name: probe
 version: 3.3.0
 description: 'Construct a novelty probe that distinguishes genuine situated reasoning from pattern-matching against a checklist. Build a pair of cases that look similar on the surface but differ in a material way; observe whether the agent''s response diverges where it should. Measures Autonomous Reasoning Fidelity. USE WHEN: test reasoning quality, is the agent actually reasoning, distinguish reasoning from compliance, stress test, novelty injection, ARF measurement.'

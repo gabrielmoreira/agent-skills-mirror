@@ -73,6 +73,33 @@ function Resolve-FinalPath([string]$Candidate) {
     }
 }
 
+function ConvertTo-GitBashPath([string]$Candidate) {
+    if (-not $Candidate) {
+        return $null
+    }
+    try {
+        $fullPath = [IO.Path]::GetFullPath($Candidate)
+    } catch {
+        return $null
+    }
+    if ($fullPath.StartsWith("\\")) {
+        return "//" + $fullPath.TrimStart([char]'\').Replace('\', '/')
+    }
+    if (
+        $fullPath.Length -ge 2 -and
+        $fullPath[1] -eq ':' -and
+        [char]::IsLetter($fullPath[0])
+    ) {
+        $drive = [char]::ToLowerInvariant($fullPath[0])
+        $tail = $fullPath.Substring(2).Replace('\', '/').TrimStart('/')
+        if ($tail) {
+            return "/$drive/$tail"
+        }
+        return "/$drive"
+    }
+    return $fullPath.Replace('\', '/')
+}
+
 function Resolve-SafePath([string]$Candidate, [string]$TargetRoot) {
     if (-not $Candidate -or $Candidate.StartsWith("\\")) {
         return $null
@@ -233,11 +260,17 @@ function Resolve-WorkingPython([string]$Candidate, [string]$TargetRoot) {
         return $null
     }
     try {
-        & $executable --version *> $null
-        if ($LASTEXITCODE -eq 0) {
-            & $executable -I -c "import sys; raise SystemExit(sys.version_info < (3, 9))" *> $null
-        }
-        if ($LASTEXITCODE -eq 0) {
+        $probe = @(
+            & $executable -I -c (
+                "import sys; print('waza-health-python-ok') " +
+                "if sys.version_info >= (3, 9) else sys.exit(1)"
+            ) 2>$null
+        )
+        if (
+            $LASTEXITCODE -eq 0 -and
+            $probe.Count -eq 1 -and
+            $probe[0] -eq "waza-health-python-ok"
+        ) {
             return $executable
         }
     } catch {
@@ -248,9 +281,15 @@ function Resolve-WorkingPython([string]$Candidate, [string]$TargetRoot) {
 
 function Find-Python([string]$TargetRoot) {
     foreach ($name in @("python3.exe", "python.exe")) {
-        $executable = Resolve-WorkingPython $name $TargetRoot
-        if ($executable) {
-            return $executable
+        foreach ($entry in $env:PATH.Split([IO.Path]::PathSeparator)) {
+            $directory = $entry.Trim().Trim('"')
+            if (-not $directory -or -not [IO.Path]::IsPathRooted($directory)) {
+                continue
+            }
+            $executable = Resolve-WorkingPython (Join-Path $directory $name) $TargetRoot
+            if ($executable) {
+                return $executable
+            }
         }
     }
 
@@ -402,5 +441,15 @@ if ($isWindowsHost) {
 
 $env:PATH = $childPath
 
-& $bashPath -p $scriptPath @ScriptArgs
+$bashScriptPath = if ($isWindowsHost) {
+    ConvertTo-GitBashPath $scriptPath
+} else {
+    $scriptPath
+}
+if (-not $bashScriptPath) {
+    [Console]::Error.WriteLine("Health could not translate its runtime script path for Git Bash.")
+    exit 1
+}
+
+& $bashPath -p $bashScriptPath @ScriptArgs
 exit $LASTEXITCODE

@@ -174,6 +174,6 @@ Track outcomes in the maintaining repo's curation log.
 
 ## Related
 
-- [`/setup-enterprise`](../../prompts/setup-enterprise.prompt.md) — slash-command entry point
+- `/setup-enterprise` — slash-command entry point
 - `alex-act-msft`'s `setup-msft-stack` skill — sibling for internal-only plugins
 - Steward's user-brain inventory § 184 — source spec for this block

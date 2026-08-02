@@ -17,6 +17,7 @@
 ## Local Contracts
 
 - Every plugin directory must include a valid `plugin.yaml`.
+- Bundled plugin directory names and manifest `name` values must start with `_` to avoid collisions with community plugins.
 - Runtime manifest fields include `name`, `title`, `description`, `version`, `settings_sections`, `per_project_config`, `per_agent_config`, and `always_enabled`.
 - Core plugins may use `plugins.<plugin_name>...` imports when they are shipped from this tree.
 - User plugins under `usr/plugins/` must use `usr.plugins.<plugin_name>...` imports and avoid `sys.path` hacks or persistent symlink-based imports.
@@ -34,6 +35,7 @@
 - Frontend plugin HTML extensions live under `extensions/webui/<point>/`, include a root Alpine scope, and use `x-move-*` directives when targeting static breakpoints.
 - Frontend plugin JS extensions live under `extensions/webui/<point>/` and export a default function.
 - Plugin UI must use the A0 notification system for errors, warnings, success, and info instead of inline success/error boxes.
+- Bundled plugin WebUI must author Material Symbols as empty `<x-icon name="lowercase_snake_case"></x-icon>` elements and use `:name` for Alpine-driven icon names. Legacy `.material-symbols-outlined` and `.material-icons-outlined` spans remain runtime-compatible for community plugins, but bundled plugins must not introduce new ligature-text spans.
 - Banners and discovery cards are provided through Python `banners` extensions by appending dictionaries with unique `id`, `type`, `priority`, and display fields to the `banners` list.
 - Alert banner types are `info`, `warning`, and `error`; discovery card types are `hero` and `feature`.
 - Banner/card fields may include `title`, `html`, `description`, `thumbnail`, `icon`, `cta_text`, `cta_action`, and `dismissible` depending on type.
@@ -70,6 +72,7 @@ Direct child DOX files:
 | [_browser/AGENTS.md](_browser/AGENTS.md) | Playwright browser tool, helpers, viewer, and browser panel UI. |
 | [_chat_branching/AGENTS.md](_chat_branching/AGENTS.md) | Chat branching from an existing message. |
 | [_chat_compaction/AGENTS.md](_chat_compaction/AGENTS.md) | Full-chat compaction into a summary message. |
+| [_chat_naming/AGENTS.md](_chat_naming/AGENTS.md) | Built-in manual and Utility Model-assisted chat naming. |
 | [_commands/AGENTS.md](_commands/AGENTS.md) | Built-in slash command manager, command file discovery, and chat composer slash picker. |
 | [_code_execution/AGENTS.md](_code_execution/AGENTS.md) | Terminal, Python, and Node.js execution tools and shell runtimes. |
 | [_desktop/AGENTS.md](_desktop/AGENTS.md) | Linux desktop runtime, sessions, and desktop surface. |
@@ -87,6 +90,7 @@ Direct child DOX files:
 | [_office/AGENTS.md](_office/AGENTS.md) | LibreOffice office artifacts and office canvas sessions. |
 | [_onboarding/AGENTS.md](_onboarding/AGENTS.md) | First-time model onboarding wizard. |
 | [_orchestrator/AGENTS.md](_orchestrator/AGENTS.md) | External terminal coding-agent orchestration skill, adapter status, and settings UI. |
+| [_pin_to_top/AGENTS.md](_pin_to_top/AGENTS.md) | Built-in chat and task sidebar pinning. |
 | [_plugin_installer/AGENTS.md](_plugin_installer/AGENTS.md) | Plugin install and update flows from ZIP, Git, and Plugin Index. |
 | [_plugin_scan/AGENTS.md](_plugin_scan/AGENTS.md) | LLM-guided security scanner for third-party plugins. |
 | [_plugin_validator/AGENTS.md](_plugin_validator/AGENTS.md) | Plugin manifest, structure, convention, and security validator. |

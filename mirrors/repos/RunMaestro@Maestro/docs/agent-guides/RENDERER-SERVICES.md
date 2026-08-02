@@ -99,6 +99,37 @@ Exported as `processService` object.
 
 ---
 
+### shellCommand.ts (~200 lines)
+
+Command mode ("bang commands"): running a `!command` typed in the AI composer and streaming its output into the transcript. The agent is bypassed entirely - never spawned, never written to, never shown the command or its output.
+
+**Key exports:**
+
+- `runShellCommand({ session, tabId, command })` - append a live output card to the tab and run the command; resolves on exit
+- `cancelShellCommand(logId)` - stop a running command by its card's log id (the card's Stop button)
+- `resolveCommandCwd(session)` - where a bang command runs (agent `cwd`, or the SSH remote's working dir). Deliberately NOT `shellCwd`, which only terminal mode's `cd` moves. The composer's `CommandModeBar` and Tab completion both call this so the advertised directory, the completion source, and the actual run directory can never disagree
+- `isShellCommandRunning(logId)`, `buildShellRunSessionId(sessionId, runId)`, `SHELL_COMMAND_OUTPUT_LIMIT`
+
+**Why a synthetic session id.** `process.runCommand` keys its `data` / `stderr` / `command-exit` events by sessionId. Reusing the agent's real id would route shell output straight into `useAgentDataListener` / `useAgentStderrListener` / `useAgentCommandExitListener`, appending it to the tab as agent output and flipping session state. Each run instead gets `{sessionId}-shell-{runId}`, which matches none of those listeners' patterns (no `-ai-` segment, no `-terminal` suffix, no `-batch-` segment) and no session in the store, so they all no-op and this module owns the stream. Do NOT "simplify" this to the plain session id.
+
+Output is buffered and flushed on an animation frame (one store write per frame, not per chunk) and capped at `SHELL_COMMAND_OUTPUT_LIMIT` characters, because transcript logs are persisted to the sessions file.
+
+Rendered by `components/ShellCommandCard.tsx`, anchored by `LogEntry.shellCommand`. Input detection lives in `utils/shellCommandInput.ts`; routing happens at the top of `useInputProcessing.processInput`.
+
+**The composer's CLI mode.** `utils/shellCommandInput.ts` exports three predicates that must be kept straight:
+
+| Function                    | True for  | Used by                                                                  |
+| --------------------------- | --------- | ------------------------------------------------------------------------ |
+| `isShellCommandDraft(v)`    | `!`, `!x` | UI affordances - the `$` prefix, `CommandModeBar`, Tab-completion gating |
+| `parseShellCommandInput(v)` | `!x` only | Execution - a bare `!` has no command to run                             |
+| `getShellCommandBody(v)`    | `!`, `!x` | Completion - strips the bang, preserving a trailing space                |
+
+The split matters: the composer enters CLI mode on the `!` keystroke (before there's a command), but Enter on a bare `!` must fall through as a normal message. Do not collapse these into one check.
+
+Surfaces that gate on `isShellCommandDraft`: `InputArea` (derives `isCommandModeDraft` / `isShellInput` once and passes both down), `useInputKeyDown` (Tab trigger + dropdown navigation), `useInputHandlers` (which composer slice completion reads), and `useInputAreaTextChange` (suppresses `@` mentions - an `@` in a shell line is ordinary text).
+
+---
+
 ### contextGroomer.ts (~430 lines)
 
 Manages merging multiple conversation contexts across agents.

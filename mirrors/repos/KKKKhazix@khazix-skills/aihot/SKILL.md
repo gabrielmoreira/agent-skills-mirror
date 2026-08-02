@@ -4,7 +4,7 @@ description: 查询 AI HOT 的中文 AI 资讯、精选、当前热点和日报�
 license: MIT. See LICENSE
 metadata:
   author: Virxact
-  version: "1.2.2"
+  version: "1.2.3"
 ---
 
 # AI HOT
@@ -59,7 +59,7 @@ metadata:
 
 ## 请求
 
-- API 匿名、只读、无需 Key。客户端允许时可设置 `User-Agent: aihot-skill/1.2.2 (+https://aihot.virxact.com/aihot-skill/)` 方便诊断，但不得因为无法设置而拒绝查询或伪装浏览器。
+- API 匿名、只读、无需 Key。客户端允许时可设置 `User-Agent: aihot-skill/1.2.3 (+https://aihot.virxact.com/aihot-skill/)` 方便诊断，但不得因为无法设置而拒绝查询或伪装浏览器。
 - 普通查询不做版本检查，也不访问旧兼容层。后端在稳定 v1 契约内升级时，用户无需更新本 Skill。
 - 反复查询同一个 URL 时保存响应的 `ETag`，下次带 `If-None-Match` 发出；`304` 表示内容没变，直接复用上次结果，不要重新总结。
 - 定时任务对同一端点至少间隔 60 秒；资讯类内容没有秒级新鲜度，更密的轮询只是浪费双方带宽。
@@ -88,4 +88,4 @@ metadata:
 - 标题默认链接 `links.aihot`；只有用户明确要出处时再附 `links.original`。
 - 日报 sections／flashes 的 `links.aihot` 可能为空；此时使用 `links.original`，不要寻找旧字段 `permalink` 或 `sourceUrl`。
 - 不展示 endpoint、cursor、ETag、User-Agent、JSON 字段名等实现细节。
-- 对外发布或接入二次产品时保留响应中的 AI HOT attribution 与 canonical；第三方原文版权仍归原作者。缓存、商业增值和再分发边界见 `https://aihot.virxact.com/terms`。
+- 公开产品使用 AI HOT 数据时，只需在页面底部、关于页或数据来源页等正常可发现的位置标注一次「数据来源：AI HOT」并链接本站，无需逐条署名；私人自用或仅内部使用无需界面署名。attribution 与 canonical 继续用于机器识别和追溯；产品级署名不构成纯镜像或批量公开再分发授权，第三方原文权利仍归原作者。完整边界见 `https://aihot.virxact.com/terms`。

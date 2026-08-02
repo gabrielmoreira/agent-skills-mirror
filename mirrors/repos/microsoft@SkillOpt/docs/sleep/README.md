@@ -17,7 +17,7 @@ normal agent requests.
 One "night":
 
 ```
-harvest Claude Code / Codex / Cursor transcripts → mine recurring tasks → replay via the configured backend (isolation varies by backend; mock/handoff make no network calls)
+harvest Claude Code / Codex / VS Code Copilot / Cursor transcripts → mine recurring tasks → replay via the configured backend (isolation varies by backend; mock/handoff make no network calls)
    → consolidate (reflect → bounded edit → GATE on real held-out tasks)
    → stage proposal → (you) adopt
 ```
@@ -43,6 +43,12 @@ experience → long-term competence).
 > Cursor and the model provider selected by Cursor may therefore receive
 > transcript-derived content.
 >
+> The VS Code Copilot source reads local user-entered prompts, visible assistant
+> Markdown, and tool names from confirmed GitHub Copilot Chat requests. It
+> excludes system notifications, reasoning, tool inputs/outputs, rendered
+> context, and account/model metadata. Known secret-shaped strings are
+> redacted, but this remains defense in depth rather than a guarantee.
+>
 > By default, each stateful night also writes a local `evidence.jsonl` under
 > the project staging tree (beside the report when one is staged); dry-runs
 > write evidence under the configured Sleep state directory. The log contains
@@ -66,9 +72,10 @@ skillopt-sleep schedule     # install a nightly cron entry for this project
 ```
 
 > **Version note.** This page tracks `main`. PyPI 0.2.0 provides the base
-> commands above. Cursor source/backend/plugin support, Sleep handoff, non-Azure
-> OpenAI-compatible endpoints, and `--preferences` landed later and require a
-> source install from `main` until the next release.
+> commands above. Cursor source/backend/plugin support, VS Code Copilot
+> transcript harvesting, Sleep handoff, non-Azure OpenAI-compatible endpoints,
+> and `--preferences` landed later and require a source install from `main`
+> until the next release.
 
 The per-agent integrations below still come from the repo; the CLI above is the
 standalone, pip-only way to run a cycle. Claude Code, Codex, Cursor, Copilot, and
@@ -85,6 +92,32 @@ One engine, thin per-agent shells (see [`plugins/`](https://github.com/microsoft
 | **Copilot** | [`plugins/copilot`](https://github.com/microsoft/SkillOpt/tree/main/plugins/copilot) | register `plugins/copilot/mcp_server.py` as an MCP server |
 | **Devin** | [`plugins/devin`](https://github.com/microsoft/SkillOpt/tree/main/plugins/devin) | register `plugins/devin/mcp_server.py` as an MCP server |
 | **OpenClaw** | [`plugins/openclaw`](https://github.com/microsoft/SkillOpt/tree/main/plugins/openclaw) | adapt the reference wrapper and paths for your installation |
+
+### VS Code GitHub Copilot Chat
+
+Use `--source copilot` to harvest local VS Code GitHub Copilot Chat sessions.
+SkillOpt auto-detects stable and Insiders VS Code `User/workspaceStorage`
+roots, plus the portable root when `VSCODE_PORTABLE` is available. Override
+discovery with `--vscode-workspace-storage PATH`. Project scoping comes from
+each storage entry's adjacent `workspace.json`, and entries without a safe
+local mapping are skipped. `--source auto` retains Codex-then-Claude precedence
+and does not select Copilot.
+
+```bash
+skillopt-sleep harvest --project "$(pwd)" --source copilot --progress
+skillopt-sleep dry-run --project "$(pwd)" --source copilot --backend copilot
+```
+
+The source and backend are independent: `--source copilot` reads VS Code's
+local history, while `--backend copilot` uses the separately installed and
+authenticated GitHub Copilot CLI for mining, replay, judging, and reflection.
+Inspect harvested tasks before using a real backend on sensitive projects.
+
+The managed scheduler does not preserve `--source` or
+`--vscode-workspace-storage`. Before scheduling this source, put
+`"transcript_source": "copilot"` and, for a nonstandard root,
+`"vscode_workspace_storage": "/absolute/path/to/workspaceStorage"` in
+`~/.skillopt-sleep/config.json`.
 
 ### Cursor
 

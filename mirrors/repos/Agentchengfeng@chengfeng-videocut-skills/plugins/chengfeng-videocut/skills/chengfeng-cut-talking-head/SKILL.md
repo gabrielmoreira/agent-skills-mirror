@@ -44,6 +44,10 @@ node "$ENSURE" --install-if-missing --json
 - `ready`：继续本 Skill。
 - `missing`：脚本只提示一次“正在从 GitHub Release 安装”，校验完成后自动续跑。
 - `runtime_unhealthy`、安装失败或安装后 doctor 失败：报告结构化诊断并停止。
+  **停止就是停止：禁止用自制的审核页、播放器、时间线或任何替代界面继续流程。**
+  产品不可用时做出的任何产出都不可信（真实案例：Runtime 缺失时 Agent 手搓了一个
+  「审片台」网页，其审核决定与产品的账本格式完全不兼容，用户白做一遍）。
+  正确动作只有一个：把结构化诊断给用户，指引安装或上报 Issue。
 - `runtime_capability_missing`：当前 Runtime 健康但缺少本流程要求的可编辑 EDL 契约；停止并要求升级，禁止回退旧剪辑链。
 - 预检阶段禁止启动服务、打开 Studio 或创建项目。
 

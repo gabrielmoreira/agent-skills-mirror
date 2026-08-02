@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 35 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -71,24 +71,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 10 | ✓ | [`.agents/commands/task-run.md`](.agents/commands/task-run.md) |
 | 11 | ✓ | [`.agents/commands/task.md`](.agents/commands/task.md) |
 | 12 | ✓ | [`.agents/skills/db-migrations/SKILL.md`](.agents/skills/db-migrations/SKILL.md) |
-| 13 | ✓ | [`.agents/skills/ticket-format/SKILL.md`](.agents/skills/ticket-format/SKILL.md) |
-| 14 | ✓ | [`.github/prompts/beautify-screenshot.ts`](.github/prompts/beautify-screenshot.ts) |
-| 15 | ✓ | [`.github/prompts/generate-changelog.md`](.github/prompts/generate-changelog.md) |
-| 16 | ✓ | [`.github/prompts/triage-issue.md`](.github/prompts/triage-issue.md) |
-| 17 | ✓ | [`.github/prompts/update-docs.md`](.github/prompts/update-docs.md) |
-| 18 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 19 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
-| 20 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
-| 21 | ✓ | [`apps/docs/src/app/llms.txt/route.ts`](apps/docs/src/app/llms.txt/route.ts) |
-| 22 | ✓ | [`apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts`](apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts) |
-| 23 | ✓ | [`apps/marketing/src/app/api/llms.txt/route.ts`](apps/marketing/src/app/api/llms.txt/route.ts) |
-| 24 | ✓ | [`apps/marketing/src/app/blog/llms.txt/route.ts`](apps/marketing/src/app/blog/llms.txt/route.ts) |
-| 25 | ✓ | [`apps/marketing/src/app/compare/llms.txt/route.ts`](apps/marketing/src/app/compare/llms.txt/route.ts) |
-| 26 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
-| 27 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
-| 28 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
-| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 30 | ✓ | [`plugins/superset/skills/superset/SKILL.md`](plugins/superset/skills/superset/SKILL.md) |
+| 13 | ✓ | [`.agents/skills/decide/agents/openai.yaml`](.agents/skills/decide/agents/openai.yaml) |
+| 14 | ✓ | [`.agents/skills/decide/SKILL.md`](.agents/skills/decide/SKILL.md) |
+| 15 | ✓ | [`.agents/skills/redesign/agents/openai.yaml`](.agents/skills/redesign/agents/openai.yaml) |
+| 16 | ✓ | [`.agents/skills/redesign/SKILL.md`](.agents/skills/redesign/SKILL.md) |
+| 17 | ✓ | [`.agents/skills/ticket-format/SKILL.md`](.agents/skills/ticket-format/SKILL.md) |
+| 18 | ✓ | [`.github/prompts/beautify-screenshot.ts`](.github/prompts/beautify-screenshot.ts) |
+| 19 | ✓ | [`.github/prompts/generate-changelog.md`](.github/prompts/generate-changelog.md) |
+| 20 | ✓ | [`.github/prompts/triage-issue.md`](.github/prompts/triage-issue.md) |
+| 21 | ✓ | [`.github/prompts/update-docs.md`](.github/prompts/update-docs.md) |
+| 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 23 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
+| 24 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
+| 25 | ✓ | [`apps/docs/src/app/llms.txt/route.ts`](apps/docs/src/app/llms.txt/route.ts) |
+| 26 | ✓ | [`apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts`](apps/marketing/src/app/.well-known/agent-skills/[skill]/SKILL.md/route.ts) |
+| 27 | ✓ | [`apps/marketing/src/app/api/llms.txt/route.ts`](apps/marketing/src/app/api/llms.txt/route.ts) |
+| 28 | ✓ | [`apps/marketing/src/app/blog/llms.txt/route.ts`](apps/marketing/src/app/blog/llms.txt/route.ts) |
+| 29 | ✓ | [`apps/marketing/src/app/compare/llms.txt/route.ts`](apps/marketing/src/app/compare/llms.txt/route.ts) |
+| 30 | ✓ | [`apps/marketing/src/app/llms.txt/route.ts`](apps/marketing/src/app/llms.txt/route.ts) |
+| 31 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
+| 32 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
+| 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 34 | ✓ | [`plugins/superset/skills/superset-orchestration/SKILL.md`](plugins/superset/skills/superset-orchestration/SKILL.md) |
+| 35 | ✓ | [`plugins/superset/skills/superset/SKILL.md`](plugins/superset/skills/superset/SKILL.md) |
 
 ---
 

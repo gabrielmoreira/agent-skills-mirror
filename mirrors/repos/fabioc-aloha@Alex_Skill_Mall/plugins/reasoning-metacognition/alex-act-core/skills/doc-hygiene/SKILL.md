@@ -1,6 +1,6 @@
 ---
 name: doc-hygiene
-description: Documentation hygiene — anti-drift rules, count elimination, and living document maintenance
+description: Documentation hygiene — anti-drift rules, count elimination, and living document maintenance. Use when auditing docs for drift or staleness, fixing hardcoded counts and dead links, checking doc quality, or deciding whether a document is living or historical.
 lastReviewed: 2026-05-31
 ---
 
@@ -114,22 +114,22 @@ import { dirname, resolve, existsSync } from 'path';
 async function checkLinkIntegrity(docsRoot: string): Promise<string[]> {
   const broken: string[] = [];
   const mdFiles = await glob(`${docsRoot}/**/*.md`);
-  
+
   for (const file of mdFiles) {
     const content = await readFile(file, 'utf-8');
     const linkRegex = /\[.*?\]\((?!http)([^)]+)\)/g;
     let match;
-    
+
     while ((match = linkRegex.exec(content)) !== null) {
       const linkPath = match[1].split('#')[0]; // Remove anchors
       const absolutePath = resolve(dirname(file), linkPath);
-      
+
       if (!existsSync(absolutePath)) {
         broken.push(`${file}: ${match[0]} -> ${absolutePath}`);
       }
     }
   }
-  
+
   return broken;
 }
 ```

@@ -23,6 +23,9 @@ COMMAND_BOUNDARIES = COMMAND_SEPARATORS | {"do", "elif", "else", "then"}
 CONTROL_WORDS = set(CONTROL_OPENERS) | CONTROL_CLOSERS
 ASSIGNMENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
 LAUNCH_WRAPPERS = {"builtin", "exec", "nohup", "setsid"}
+APPLET_WRAPPERS = {"busybox", "toybox"}
+DYNAMIC_SHELL_NAMES = {"$BASH", "$SHELL", "${BASH}", "${SHELL}"}
+CHROOT_OPTIONS_WITH_VALUES = {"--groups", "--userspec"}
 SUDO_OPTIONS_WITH_VALUES = {
     "-C", "--chdir", "--close-from", "-D", "-g", "--group", "-h", "--host",
     "-p", "--prompt", "-r", "--role", "-t", "--type", "-u", "--user",
@@ -37,10 +40,27 @@ XARGS_OPTIONS_WITH_VALUES = {
 STDBUF_OPTIONS_WITH_VALUES = {
     "-e", "--error", "-i", "--input", "-o", "--output",
 }
+ENV_OPTIONS_WITH_VALUES = {
+    "-C", "--chdir", "-u", "--unset", "-a", "--argv0",
+}
 
 
 def command_token_names(tokens: list[str]) -> set[str]:
     """Return executable candidates without treating ordinary arguments as commands."""
+    leading = list(tokens)
+    while leading and (
+        leading[0] in CONTROL_WORDS or ASSIGNMENT_RE.match(leading[0])
+    ):
+        leading.pop(0)
+    if leading:
+        first = leading[0]
+        dynamic = " ".join(leading)
+        if first in DYNAMIC_SHELL_NAMES or (
+            (first == "$" or first.startswith("`"))
+            and re.search(r"\b(?:BASH|SHELL|bash|dash|sh|zsh)\b", dynamic)
+        ):
+            return {"sh"}
+
     names: set[str] = set()
     chunks: list[list[str]] = []
     chunk: list[str] = []
@@ -74,9 +94,37 @@ def effective_command_names(tokens: list[str]) -> set[str]:
         if not pending:
             return set()
 
-        name = os.path.basename(pending.pop(0))
+        raw_name = pending.pop(0)
+        if raw_name in DYNAMIC_SHELL_NAMES:
+            return {"sh"}
+        if raw_name == "$" and pending:
+            dynamic = " ".join(pending)
+            if re.search(r"\b(?:BASH|SHELL|bash|dash|sh|zsh)\b", dynamic):
+                return {"sh"}
+        if raw_name.startswith("`"):
+            dynamic = " ".join([raw_name, *pending])
+            if re.search(r"\b(?:bash|dash|sh|zsh)\b", dynamic):
+                return {"sh"}
+        name = os.path.basename(raw_name)
         if name in LAUNCH_WRAPPERS:
             while pending and pending[0].startswith("-"):
+                pending.pop(0)
+            continue
+
+        if name in APPLET_WRAPPERS:
+            while pending and pending[0].startswith("-"):
+                pending.pop(0)
+            continue
+
+        if name == "chroot":
+            while pending and pending[0].startswith("-"):
+                token = pending.pop(0)
+                if token == "--":
+                    break
+                if option_name(token) in CHROOT_OPTIONS_WITH_VALUES and "=" not in token:
+                    if pending:
+                        pending.pop(0)
+            if pending:
                 pending.pop(0)
             continue
 
@@ -157,9 +205,9 @@ def effective_command_names(tokens: list[str]) -> set[str]:
                     except ValueError:
                         return set()
                     break
-                if token in {"-u", "--unset"}:
+                if option_name(token) in ENV_OPTIONS_WITH_VALUES:
                     pending.pop(0)
-                    if pending:
+                    if "=" not in token and pending:
                         pending.pop(0)
                     continue
                 if token.startswith("-") or ASSIGNMENT_RE.match(token):

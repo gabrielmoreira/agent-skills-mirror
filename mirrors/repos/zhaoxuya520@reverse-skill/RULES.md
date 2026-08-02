@@ -212,7 +212,7 @@ After task completion (vulnerability verified / reverse complete / flag captured
 | anything-analyzer | 23816 | Browser automation + HTTP capture | `pnpm dev` (project dir) |
 | jshookmcp | — | JS Hook/CDP/Network/AST | `npx -y @jshookmcp/jshook@0.3.4` (stdio) |
 | ghidra | 8765 | Ghidra free decompiler | Ghidra GUI auto-listens after launch |
-| burpsuite | 9876 | BurpSuite 63-tool full control (Proxy/Intruder/Repeater/Scanner/Collaborator) | Burp extension auto-loads |
+| burpsuite | 9876 | BurpSuite 78-tool full control (Proxy/Intruder/Repeater/Scanner/Collaborator) | Burp extension auto-loads |
 
 ---
 

@@ -1,11 +1,11 @@
 ---
 name: consult-codex
-description: Dual-AI code analysis pairing OpenAI Codex GPT-5.6-terra with Claude code-searcher — the lightest consult variant, two citation-verified perspectives. Use for a quick second opinion on a code question.
+description: Dual-AI code analysis pairing OpenAI Codex with Claude code-searcher — the lightest consult variant, two citation-verified perspectives. Use for a quick second opinion on a code question.
 ---
 
-# Dual-AI Consultation: Codex GPT-5.6-terra vs Code-Searcher
+# Dual-AI Consultation: Codex vs Code-Searcher
 
-You orchestrate consultation between OpenAI's Codex GPT-5.6-terra and Claude's code-searcher to provide comprehensive analysis with comparison.
+You orchestrate consultation between OpenAI's Codex and Claude's code-searcher to provide comprehensive analysis with comparison.
 
 ## When to Use This Skill
 
@@ -153,7 +153,16 @@ echo "TIMEOUT_CMD=$TIMEOUT_CMD"   # substitute into the §Step-2 Codex dispatch 
 
 **Gen-dispatch timeout watchdog (`GEN_TIMEOUT=1200`).** Each `$TIMEOUT_CMD -k 10 1200`-prefixed CLI gen below — SIGTERM at 1200s (20 min), SIGKILL 10s later (`-k 10`, which also reaps orphaned Node/MCP children) — is bounded against a hung provider CLI that would otherwise run unbounded (the harness may auto-background the dispatch, so the Bash tool's own timeout is **not** a reliable cap). **When `TIMEOUT_CMD` is empty** (no `timeout`/`gtimeout`): omit the `$TIMEOUT_CMD -k 10 1200` prefix and dispatch unwrapped (the existing §Setup fallback) — set the Bash tool's own `timeout` parameter to `1300000` ms as a best-effort cap, and `brew install coreutils` to restore the hard guard. **On a timed-out gen** (exit **124** = SIGTERM, **137** = SIGKILL): the output file is empty/truncated, so the existing `[ -z … ]` parse guard already drops the agent — additionally surface `Agent X timed out after 1200s` (distinct from an auth failure, which leaves non-empty stderr) and re-count against the §Setup minimum-agent guard. Do **not** retry. Code-Searcher (Agent tool) carries **no** `$TIMEOUT_CMD -k 10 1200` prefix — it is bounded by its own mechanism, not this watchdog.
 
-- **For Codex GPT-5.6-terra:**
+- **For Codex:**
+
+  **Model ownership — the model is CONFIG-OWNED, never named by this skill.**
+  Do not pass `-m`: inherit the model and reasoning effort from Codex configuration
+  (`~/.codex/config.toml` — this installation is configured for `gpt-5.6-sol`, high effort).
+  Report the agent as plain **"Codex"** everywhere in the report; never a hardcoded version
+  string. A hardcoded label silently misreports the model the moment the config changes:
+  this skill advertised `GPT-5.6-terra` in seven places while every dispatch had been
+  running `gpt-5.6-sol`, because the dispatch carries no `-m` and never did (corrected
+  2026-08-01).
 
   **Step 1:** Write the enhanced prompt to a temp file using the Write tool:
   ```
@@ -204,6 +213,7 @@ echo "TIMEOUT_CMD=$TIMEOUT_CMD"   # substitute into the §Step-2 Codex dispatch 
   Parse `$PROJECT_DIR/tmp/codex-output-RUN_ID.jsonl` with the §2a recipes.
 
 - **For Code-Searcher:** Use Agent tool with `subagent_type: "code-searcher"` with the same enhanced prompt (plus the orchestrator-gated Severity block above on defect-hunt runs)
+  - **No sub-agent fan-out — append this VERBATIM to the code-searcher prompt:** "**Do this analysis YOURSELF — do NOT spawn sub-agents.** Do not use the Agent/Task tool to fan out to `code-searcher`, `Explore`, `general-purpose`, or any other subagent; use Read/Grep/Glob/Bash directly, however many calls that takes." Code-searcher runs with all tools and fans out unprompted on Sonnet 5 (reported live 2026-08-01); a sub-agent inherits none of this run's constraints, and the Agent-tool call carries no dispatch watchdog — a stalled fan-out underneath it stalls the whole consult. (`consult-panel` §1d carries the full form of this guard.)
 
 This parallel execution significantly improves response time.
 
@@ -317,7 +327,7 @@ Use this exact format:
 
 ---
 
-## Codex (GPT-5.6-terra) Response
+## Codex Response
 
 [Raw output from codex-cli agent]
 
@@ -333,7 +343,7 @@ Use this exact format:
 
 (MANDATORY — always render this table on a multi-agent run; it is the at-a-glance visual diff readers rely on, so never skip it. Omit only in a degraded single-AI run, where there is nothing to compare.)
 
-| Aspect | Codex (GPT-5.6-terra) | Code-Searcher (Claude) |
+| Aspect | Codex | Code-Searcher (Claude) |
 |--------|-----------------|------------------------|
 | File paths | [Specific/Generic/None] | [Specific/Generic/None] |
 | Line numbers | [Provided/Missing] | [Provided/Missing] |
@@ -365,7 +375,7 @@ agent-assigned Severity — Critical/Warning/Info.)
 
 ## Key Differences
 
-- **Codex GPT-5.6-terra:** [unique findings, strengths, approach]
+- **Codex:** [unique findings, strengths, approach]
 - **Code-Searcher:** [unique findings, strengths, approach]
 
 ## Synthesized Summary

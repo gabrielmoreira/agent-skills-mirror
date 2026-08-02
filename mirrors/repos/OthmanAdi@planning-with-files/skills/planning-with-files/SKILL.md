@@ -28,7 +28,7 @@ hooks:
         - type: command
           command: "SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
 metadata:
-  version: "3.8.2"
+  version: "3.9.0"
 ---
 
 # Planning with Files
@@ -243,9 +243,26 @@ When working on multiple tasks in the same repo simultaneously:
 
 # Or pin a terminal to a specific plan
 export PLAN_ID=2026-01-10-backend-refactor
+
+# Or pin a thread to a project root, when the shell's cwd is somewhere else
+export PWF_PLAN_ROOT=/workspace/project
 ```
 
 Each session reads from its own isolated plan directory. Hooks resolve the correct plan automatically.
+
+### Shared parent directories (v3.9.0)
+
+`PLAN_ID` is a slug resolved against the current directory, so it can only ever name a plan under `$(pwd)/.planning`. When an agent thread runs with its cwd at a shared parent (`/workspace`) while the real work lives in a nested project (`/workspace/project`), the parent's plan is the only one the hooks can see, and it used to be injected on every fire. `PWF_PLAN_ROOT` takes an absolute path and pins resolution to that root regardless of where the cwd sits. A pin that does not resolve stops injection rather than falling back.
+
+When no pin is set, the plan was picked by the `.active_plan` pointer or by the newest plan directory, and a project directly below the root carries its own planning state, the hooks treat that as ambiguous and inject nothing:
+
+```
+[planning-with-files] Ambiguous plan: this cwd has an active plan and a nested
+project below it has its own (project). Nothing injected. Pin the thread with
+PWF_PLAN_ROOT=<absolute path> or PLAN_ID=<slug>.
+```
+
+Naming the plan explicitly, with either variable or an attached session, skips that check. Detection looks one directory deep, so a project nested further down is not detected.
 - `scripts/session-catchup.py` — Recover context from previous session (v2.2.0). For OpenCode (v2.38.0+), reads the new SQLite store at `${XDG_DATA_HOME:-~/.local/share}/opencode/opencode.db` instead of the legacy JSON tree.
 
 ## Claude Code Turn-Loop Integration (v2.38.0+)
@@ -355,7 +372,7 @@ With no `.mode` file and no other v3 marker, the hooks produce byte-identical ou
 | Attestation | Opt-in | Default-on at init | Default-on at init |
 | Progress injection | Raw `tail -20 progress.md` | `ledger-summary.sh` synthesized block | `ledger-summary.sh` synthesized block |
 
-Autonomous mode answers the recitation question: strong models drift less, so the per-tool-call plan re-injection (the +68% token tax measured in the v2.21 eval) is dropped. Turn-start injection stays because the evidence (arxiv 2603.03258, claudefa.st on Opus 4.7+ subagents) shows drift is real and the full plan file still matters once per turn. Eliminating recitation entirely is not supported by evidence.
+Autonomous mode answers the recitation question: strong models drift less, so the per-tool-call plan re-injection (about 90 tokens per matched tool call, the component that scales with tool use) is dropped. Turn-start injection stays because the evidence (arxiv 2603.03258, claudefa.st on Opus 4.7+ subagents) shows drift is real and the full plan file still matters once per turn. Eliminating recitation entirely is not supported by evidence.
 
 Gated mode adds the completion gate on top of autonomous behavior. The gate is the termination oracle: it judges the plan artifact on disk, not the conversation transcript, which is why it beats a transcript-bound evaluator that can be hallucinated.
 

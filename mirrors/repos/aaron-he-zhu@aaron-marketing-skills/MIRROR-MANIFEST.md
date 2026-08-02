@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 48 followed patterns, 185 file(s) materialized.
+Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 51 followed patterns, 187 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 48 foll
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 48 |
-| Files         | 185 |
+| Followed pats | 51 |
+| Files         | 187 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -65,7 +65,12 @@ Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 48 foll
 - `CONNECTORS.md`
 - `CONTRIBUTING.md`
 - `docs/connector-playbook.md`
-- `docs/repo-family.md`
+- `references/skill-contract.md`
+- `references/policy-kernel.md`
+- `docs/context-engineering.md`
+- `docs/distribution.md`
+- `references/scoring-semantics.md`
+- `references/auditor-runbook.md`
 - `docs/README.de.md`
 - `docs/README.es.md`
 - `docs/README.fr.md`
@@ -75,10 +80,9 @@ Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 48 foll
 - `docs/README.pt.md`
 - `docs/README.zh.md`
 - `docs/README.zh-Hant.md`
+- `docs/repo-family.md`
 - `references/capability-profiles.md`
-- `references/skill-contract.md`
 - `references/state-model.md`
-- `references/auditor-runbook.md`
 - `references/context-resolution.md`
 - `references/runtime-protocol.md`
 - `references/audit-loop-protocol.md`
@@ -97,7 +101,6 @@ Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 48 foll
 - `PRIVACY.md`
 - `CODE_OF_CONDUCT.md`
 - `scripts/connectors/README.md`
-- `docs/distribution.md`
 - `references/scheduling.md`
 
 ## File Index
@@ -208,47 +211,47 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 100 | ✓ | [`references/aaron-product-api-contract.md`](references/aaron-product-api-contract.md) |
 | 101 | ✓ | [`references/registry-event-protocol.md`](references/registry-event-protocol.md) |
 | 102 | ✓ | [`references/runtime-invocation.md`](references/runtime-invocation.md) |
-| 103 | ✓ | [`references/scoring-semantics.md`](references/scoring-semantics.md) |
-| 104 | ✓ | [`seo-geo/evaluate/domain-authority-auditor/SKILL.md`](seo-geo/evaluate/domain-authority-auditor/SKILL.md) |
-| 105 | ✓ | [`seo-geo/evaluate/offsite-signal-analyzer/SKILL.md`](seo-geo/evaluate/offsite-signal-analyzer/SKILL.md) |
-| 106 | ✓ | [`seo-geo/evaluate/performance-monitor/SKILL.md`](seo-geo/evaluate/performance-monitor/SKILL.md) |
-| 107 | ✓ | [`seo-geo/evaluate/rank-tracker/SKILL.md`](seo-geo/evaluate/rank-tracker/SKILL.md) |
-| 108 | ✓ | [`seo-geo/implement/content-writer/SKILL.md`](seo-geo/implement/content-writer/SKILL.md) |
-| 109 | ✓ | [`seo-geo/implement/geo-content-optimizer/SKILL.md`](seo-geo/implement/geo-content-optimizer/SKILL.md) |
-| 110 | ✓ | [`seo-geo/implement/page-play-builder/SKILL.md`](seo-geo/implement/page-play-builder/SKILL.md) |
-| 111 | ✓ | [`seo-geo/implement/serp-markup-builder/SKILL.md`](seo-geo/implement/serp-markup-builder/SKILL.md) |
-| 112 | ✓ | [`seo-geo/README.zh.md`](seo-geo/README.zh.md) |
-| 113 | ✓ | [`seo-geo/survey/competitor-analysis/SKILL.md`](seo-geo/survey/competitor-analysis/SKILL.md) |
-| 114 | ✓ | [`seo-geo/survey/content-gap-analysis/SKILL.md`](seo-geo/survey/content-gap-analysis/SKILL.md) |
-| 115 | ✓ | [`seo-geo/survey/keyword-research/SKILL.md`](seo-geo/survey/keyword-research/SKILL.md) |
-| 116 | ✓ | [`seo-geo/survey/serp-analysis/SKILL.md`](seo-geo/survey/serp-analysis/SKILL.md) |
-| 117 | ✓ | [`seo-geo/tune/content-quality-auditor/SKILL.md`](seo-geo/tune/content-quality-auditor/SKILL.md) |
-| 118 | ✓ | [`seo-geo/tune/on-page-seo-checker/SKILL.md`](seo-geo/tune/on-page-seo-checker/SKILL.md) |
-| 119 | ✓ | [`seo-geo/tune/site-structure-optimizer/SKILL.md`](seo-geo/tune/site-structure-optimizer/SKILL.md) |
-| 120 | ✓ | [`seo-geo/tune/technical-seo-checker/SKILL.md`](seo-geo/tune/technical-seo-checker/SKILL.md) |
-| 121 | ✓ | [`social/craft/advocacy-program-designer/SKILL.md`](social/craft/advocacy-program-designer/SKILL.md) |
-| 122 | ✓ | [`social/craft/short-video-scripter/SKILL.md`](social/craft/short-video-scripter/SKILL.md) |
-| 123 | ✓ | [`social/craft/social-calendar-builder/SKILL.md`](social/craft/social-calendar-builder/SKILL.md) |
-| 124 | ✓ | [`social/craft/social-creative-builder/SKILL.md`](social/craft/social-creative-builder/SKILL.md) |
-| 125 | ✓ | [`social/explore/channel-portfolio-planner/SKILL.md`](social/explore/channel-portfolio-planner/SKILL.md) |
-| 126 | ✓ | [`social/explore/participation-warmup-planner/SKILL.md`](social/explore/participation-warmup-planner/SKILL.md) |
-| 127 | ✓ | [`social/explore/platform-norm-profiler/SKILL.md`](social/explore/platform-norm-profiler/SKILL.md) |
-| 128 | ✓ | [`social/explore/voice-dossier-builder/SKILL.md`](social/explore/voice-dossier-builder/SKILL.md) |
-| 129 | ✓ | [`social/host/crisis-response-planner/SKILL.md`](social/host/crisis-response-planner/SKILL.md) |
-| 130 | ✓ | [`social/host/engagement-inbox-manager/SKILL.md`](social/host/engagement-inbox-manager/SKILL.md) |
-| 131 | ✓ | [`social/host/social-quality-auditor/SKILL.md`](social/host/social-quality-auditor/SKILL.md) |
-| 132 | ✓ | [`social/host/social-selling-planner/SKILL.md`](social/host/social-selling-planner/SKILL.md) |
-| 133 | ✓ | [`social/observe/dark-social-attributor/SKILL.md`](social/observe/dark-social-attributor/SKILL.md) |
-| 134 | ✓ | [`social/observe/share-of-voice-tracker/SKILL.md`](social/observe/share-of-voice-tracker/SKILL.md) |
-| 135 | ✓ | [`social/observe/social-measurement-loop/SKILL.md`](social/observe/social-measurement-loop/SKILL.md) |
-| 136 | ✓ | [`social/observe/social-pulse-monitor/SKILL.md`](social/observe/social-pulse-monitor/SKILL.md) |
-| 137 | ✓ | [`social/README.zh.md`](social/README.zh.md) |
-| 138 | → | [`ad/README.md`](ad/README.md) |
-| 139 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 140 | → | [`CONNECTORS.md`](CONNECTORS.md) |
-| 141 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 142 | → | [`docs/agent-compatibility.md`](docs/agent-compatibility.md) |
-| 143 | → | [`docs/connector-playbook.md`](docs/connector-playbook.md) |
+| 103 | ✓ | [`seo-geo/evaluate/domain-authority-auditor/SKILL.md`](seo-geo/evaluate/domain-authority-auditor/SKILL.md) |
+| 104 | ✓ | [`seo-geo/evaluate/offsite-signal-analyzer/SKILL.md`](seo-geo/evaluate/offsite-signal-analyzer/SKILL.md) |
+| 105 | ✓ | [`seo-geo/evaluate/performance-monitor/SKILL.md`](seo-geo/evaluate/performance-monitor/SKILL.md) |
+| 106 | ✓ | [`seo-geo/evaluate/rank-tracker/SKILL.md`](seo-geo/evaluate/rank-tracker/SKILL.md) |
+| 107 | ✓ | [`seo-geo/implement/content-writer/SKILL.md`](seo-geo/implement/content-writer/SKILL.md) |
+| 108 | ✓ | [`seo-geo/implement/geo-content-optimizer/SKILL.md`](seo-geo/implement/geo-content-optimizer/SKILL.md) |
+| 109 | ✓ | [`seo-geo/implement/page-play-builder/SKILL.md`](seo-geo/implement/page-play-builder/SKILL.md) |
+| 110 | ✓ | [`seo-geo/implement/serp-markup-builder/SKILL.md`](seo-geo/implement/serp-markup-builder/SKILL.md) |
+| 111 | ✓ | [`seo-geo/README.zh.md`](seo-geo/README.zh.md) |
+| 112 | ✓ | [`seo-geo/survey/competitor-analysis/SKILL.md`](seo-geo/survey/competitor-analysis/SKILL.md) |
+| 113 | ✓ | [`seo-geo/survey/content-gap-analysis/SKILL.md`](seo-geo/survey/content-gap-analysis/SKILL.md) |
+| 114 | ✓ | [`seo-geo/survey/keyword-research/SKILL.md`](seo-geo/survey/keyword-research/SKILL.md) |
+| 115 | ✓ | [`seo-geo/survey/serp-analysis/SKILL.md`](seo-geo/survey/serp-analysis/SKILL.md) |
+| 116 | ✓ | [`seo-geo/tune/content-quality-auditor/SKILL.md`](seo-geo/tune/content-quality-auditor/SKILL.md) |
+| 117 | ✓ | [`seo-geo/tune/on-page-seo-checker/SKILL.md`](seo-geo/tune/on-page-seo-checker/SKILL.md) |
+| 118 | ✓ | [`seo-geo/tune/site-structure-optimizer/SKILL.md`](seo-geo/tune/site-structure-optimizer/SKILL.md) |
+| 119 | ✓ | [`seo-geo/tune/technical-seo-checker/SKILL.md`](seo-geo/tune/technical-seo-checker/SKILL.md) |
+| 120 | ✓ | [`social/craft/advocacy-program-designer/SKILL.md`](social/craft/advocacy-program-designer/SKILL.md) |
+| 121 | ✓ | [`social/craft/short-video-scripter/SKILL.md`](social/craft/short-video-scripter/SKILL.md) |
+| 122 | ✓ | [`social/craft/social-calendar-builder/SKILL.md`](social/craft/social-calendar-builder/SKILL.md) |
+| 123 | ✓ | [`social/craft/social-creative-builder/SKILL.md`](social/craft/social-creative-builder/SKILL.md) |
+| 124 | ✓ | [`social/explore/channel-portfolio-planner/SKILL.md`](social/explore/channel-portfolio-planner/SKILL.md) |
+| 125 | ✓ | [`social/explore/participation-warmup-planner/SKILL.md`](social/explore/participation-warmup-planner/SKILL.md) |
+| 126 | ✓ | [`social/explore/platform-norm-profiler/SKILL.md`](social/explore/platform-norm-profiler/SKILL.md) |
+| 127 | ✓ | [`social/explore/voice-dossier-builder/SKILL.md`](social/explore/voice-dossier-builder/SKILL.md) |
+| 128 | ✓ | [`social/host/crisis-response-planner/SKILL.md`](social/host/crisis-response-planner/SKILL.md) |
+| 129 | ✓ | [`social/host/engagement-inbox-manager/SKILL.md`](social/host/engagement-inbox-manager/SKILL.md) |
+| 130 | ✓ | [`social/host/social-quality-auditor/SKILL.md`](social/host/social-quality-auditor/SKILL.md) |
+| 131 | ✓ | [`social/host/social-selling-planner/SKILL.md`](social/host/social-selling-planner/SKILL.md) |
+| 132 | ✓ | [`social/observe/dark-social-attributor/SKILL.md`](social/observe/dark-social-attributor/SKILL.md) |
+| 133 | ✓ | [`social/observe/share-of-voice-tracker/SKILL.md`](social/observe/share-of-voice-tracker/SKILL.md) |
+| 134 | ✓ | [`social/observe/social-measurement-loop/SKILL.md`](social/observe/social-measurement-loop/SKILL.md) |
+| 135 | ✓ | [`social/observe/social-pulse-monitor/SKILL.md`](social/observe/social-pulse-monitor/SKILL.md) |
+| 136 | ✓ | [`social/README.zh.md`](social/README.zh.md) |
+| 137 | → | [`ad/README.md`](ad/README.md) |
+| 138 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 139 | → | [`CONNECTORS.md`](CONNECTORS.md) |
+| 140 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 141 | → | [`docs/agent-compatibility.md`](docs/agent-compatibility.md) |
+| 142 | → | [`docs/connector-playbook.md`](docs/connector-playbook.md) |
+| 143 | → | [`docs/context-engineering.md`](docs/context-engineering.md) |
 | 144 | → | [`docs/distribution.md`](docs/distribution.md) |
 | 145 | → | [`docs/README.de.md`](docs/README.de.md) |
 | 146 | → | [`docs/README.es.md`](docs/README.es.md) |
@@ -277,20 +280,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 169 | → | [`references/echo-benchmark.md`](references/echo-benchmark.md) |
 | 170 | → | [`references/humanizer-slop.md`](references/humanizer-slop.md) |
 | 171 | → | [`references/measurement-protocol.md`](references/measurement-protocol.md) |
-| 172 | → | [`references/ramp-benchmark.md`](references/ramp-benchmark.md) |
-| 173 | → | [`references/roas-benchmark.md`](references/roas-benchmark.md) |
-| 174 | → | [`references/runtime-protocol.md`](references/runtime-protocol.md) |
-| 175 | → | [`references/scheduling.md`](references/scheduling.md) |
-| 176 | → | [`references/send-benchmark.md`](references/send-benchmark.md) |
-| 177 | → | [`references/skill-contract.md`](references/skill-contract.md) |
-| 178 | → | [`references/star-benchmark.md`](references/star-benchmark.md) |
-| 179 | → | [`references/state-model.md`](references/state-model.md) |
-| 180 | → | [`references/tale-benchmark.md`](references/tale-benchmark.md) |
-| 181 | → | [`scripts/connectors/README.md`](scripts/connectors/README.md) |
-| 182 | → | [`SECURITY.md`](SECURITY.md) |
-| 183 | → | [`seo-geo/README.md`](seo-geo/README.md) |
-| 184 | → | [`social/README.md`](social/README.md) |
-| 185 | → | [`VERSIONS.md`](VERSIONS.md) |
+| 172 | → | [`references/policy-kernel.md`](references/policy-kernel.md) |
+| 173 | → | [`references/ramp-benchmark.md`](references/ramp-benchmark.md) |
+| 174 | → | [`references/roas-benchmark.md`](references/roas-benchmark.md) |
+| 175 | → | [`references/runtime-protocol.md`](references/runtime-protocol.md) |
+| 176 | → | [`references/scheduling.md`](references/scheduling.md) |
+| 177 | → | [`references/scoring-semantics.md`](references/scoring-semantics.md) |
+| 178 | → | [`references/send-benchmark.md`](references/send-benchmark.md) |
+| 179 | → | [`references/skill-contract.md`](references/skill-contract.md) |
+| 180 | → | [`references/star-benchmark.md`](references/star-benchmark.md) |
+| 181 | → | [`references/state-model.md`](references/state-model.md) |
+| 182 | → | [`references/tale-benchmark.md`](references/tale-benchmark.md) |
+| 183 | → | [`scripts/connectors/README.md`](scripts/connectors/README.md) |
+| 184 | → | [`SECURITY.md`](SECURITY.md) |
+| 185 | → | [`seo-geo/README.md`](seo-geo/README.md) |
+| 186 | → | [`social/README.md`](social/README.md) |
+| 187 | → | [`VERSIONS.md`](VERSIONS.md) |
 
 ---
 

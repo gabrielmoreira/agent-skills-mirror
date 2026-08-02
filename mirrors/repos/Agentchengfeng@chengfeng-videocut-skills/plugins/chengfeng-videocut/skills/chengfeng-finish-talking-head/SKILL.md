@@ -35,7 +35,7 @@ node "$ENSURE" --install-if-missing --json
 
 `PLUGIN_ROOT` 只来自上面已启用 Plugin 行的 `source.path`。不要依赖未保证存在的 `SKILL_DIR`、硬编码开发机路径或用目录搜索猜测安装位置。
 
-预检是本 Skill 内部步骤，不是第三个 Skill。缺失时提示一句并安装；`runtime_unhealthy`、`runtime_capability_missing` 或安装失败时停止，不覆盖现有安装，也不回退旧剪辑链。预检和无头生成阶段都不得打开 Studio。详细协议见 [Runtime 与产品契约](../../references/runtime-and-product-contract.md)。
+预检是本 Skill 内部步骤，不是第三个 Skill。缺失时提示一句并安装；`runtime_unhealthy`、`runtime_capability_missing` 或安装失败时停止，不覆盖现有安装，也不回退旧剪辑链；**停止就是停止，禁止用自制的审核页、播放器或任何替代界面继续流程**（产品不可用时的产出一律不可信）。预检和无头生成阶段都不得打开 Studio。详细协议见 [Runtime 与产品契约](../../references/runtime-and-product-contract.md)。
 
 Runtime 预检成功后、第一次 `workflow get` 前，立即让 Product 声明式确保常驻服务：
 

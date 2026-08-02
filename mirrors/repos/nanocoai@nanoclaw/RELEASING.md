@@ -25,12 +25,26 @@ A release is cut by a maintainer publishing it. The trigger is a release PR that
 
 ## Publishing the release
 
-Before this workflow lands, a repository administrator must configure its two external safety controls:
+Before any release run, a repository administrator must configure and re-check its external safety controls:
 
 - Create a `release` environment with `gavrielc` and `omri-maya` as its only required reviewers, prevent self-review and administrator bypass, and add a deployment branch policy that permits only `main`. Merely naming a missing environment in a workflow is not protection: GitHub creates it without protection rules on first use.
 - Enable immutable releases under **Settings → General → Releases**. This locks the tag and assets after publication and applies only to releases published after the setting is enabled.
 
 Also create an active tag ruleset for `refs/tags/v*` that restricts updates and deletions, with no bypass. It closes the gap between the workflow pushing a tag and publishing the immutable release while still allowing a new tag to be created.
+
+The workflow's `GITHUB_TOKEN` cannot read the immutable-release setting because GitHub's endpoint requires repository Administration-read permission. An administrator must therefore perform this preflight before the maintainer dispatches `verify`:
+
+```bash
+gh api -H 'X-GitHub-Api-Version: 2026-03-10' \
+  repos/nanocoai/nanoclaw/immutable-releases
+
+gh api repos/nanocoai/nanoclaw/rulesets \
+  --jq '.[] | select(.target == "tag" and .enforcement == "active") | {id, name}'
+```
+
+The first command must return `{"enabled":true,...}`; a 404 is a hard stop. Use the returned tag-ruleset ID to read its full configuration and confirm that it targets `refs/tags/v*`, restricts updates and deletions, and has no bypass actors. Record the administrator, timestamp, immutable-setting response, and ruleset ID in the release tracker. Do not dispatch based only on a “done” message.
+
+The Release workflow independently checks the protected `release` environment in both `verify` and `publish` modes. Its reviewer roster is an exact authorization boundary, not a minimum: roster changes require a reviewed workflow and runbook update. Dispatching from any ref other than `main` fails before verification starts.
 
 1. Open one release PR that:
    - bumps `package.json` to the exact version being released;
@@ -38,12 +52,12 @@ Also create an active tag ruleset for `refs/tags/v*` that restricts updates and 
    - keeps every breaking change's migration path inline;
    - leaves `## [Unreleased]` in place for the next cycle.
 2. Merge the release PR only after normal CI passes.
-3. Copy the full 40-character SHA of the merged release commit. In **Actions → Release**, select `main`, enter that SHA and the exact version without a `v` prefix, choose `verify`, and run the workflow. It checks release metadata, runs the complete host and container CI suite on that exact commit, and makes no repository changes.
+3. After an administrator records the safety-control preflight, copy the full 40-character SHA of the merged release commit. In **Actions → Release**, select `main`, enter that SHA and the exact version without a `v` prefix, choose `verify`, and run the workflow. It checks the protected release environment, release metadata, and the complete host and container CI suite on that exact commit, and makes no repository changes.
 4. Read the verification summary. Confirm the target SHA, previous tag, extracted notes, and absence (or safe recovery state) of the new tag and release.
 5. Run the same workflow again with the same version, the same full SHA, and `publish`. The publish job re-verifies the immutable inputs, creates an annotated `vX.Y.Z` tag on that exact commit, assembles the curated notes plus contributor sections, and publishes the GitHub Release.
 6. Read back the tag target and release body from GitHub. Confirm `package.json`, the tag, the release title, and the changelog all name the same version.
 
-The workflow never commits or pushes to `main`. If publication fails after the tag push, rerun `publish`: it accepts an existing annotated tag only when that tag resolves to the exact workflow SHA, then resumes release creation. If the release was already published, the rerun succeeds without writing only after the tag target, release tag, title, published state, non-prerelease state, and body all exactly match the requested publication. Any mismatch fails closed.
+The workflow never commits or pushes to `main`. If publication fails after the tag push, rerun `publish`: it accepts an existing annotated tag only when that tag resolves to the exact workflow SHA, then resumes release creation. If the release was already published, the rerun succeeds without writing only after the tag target, release tag, title, published state, non-prerelease state, immutable state, and body all exactly match the requested publication. A mutable release never becomes a successful retry; any mismatch fails closed.
 
 ## Rollup releases
 

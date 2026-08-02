@@ -48,7 +48,7 @@ Direct child DOX files:
 | [message_loop_prompts_before/AGENTS.md](message_loop_prompts_before/AGENTS.md) | Pre-prompt-construction message-loop gates. |
 | [message_loop_start/AGENTS.md](message_loop_start/AGENTS.md) | Start-of-message-loop iteration state. |
 | [monologue_end/AGENTS.md](monologue_end/AGENTS.md) | End-of-monologue UI and cleanup behavior. |
-| [monologue_start/AGENTS.md](monologue_start/AGENTS.md) | Start-of-monologue behavior such as chat renaming. |
+| [monologue_start/AGENTS.md](monologue_start/AGENTS.md) | Core start-of-monologue lifecycle extensions. |
 | [process_chain_end/AGENTS.md](process_chain_end/AGENTS.md) | Process-chain completion and queued-message handling. |
 | [reasoning_stream/AGENTS.md](reasoning_stream/AGENTS.md) | Full reasoning stream handling. |
 | [reasoning_stream_chunk/AGENTS.md](reasoning_stream_chunk/AGENTS.md) | Reasoning stream chunk masking. |

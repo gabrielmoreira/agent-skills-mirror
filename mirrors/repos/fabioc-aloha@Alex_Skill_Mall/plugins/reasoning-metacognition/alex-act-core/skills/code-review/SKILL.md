@@ -45,6 +45,19 @@ lastReviewed: 2026-05-05
 | "Why?" | Sounds hostile | "[question] What's the motivation for the custom sort here vs `Array.sort()`? Is there a performance concern?" |
 | "LGTM" (on 500-line PR) | Rubber stamp | "Pass 1: Approach looks right. Pass 2 comments below. Pass 3: naming is clean." |
 
+### Reviewer and Author Posture
+
+Most review friction is posture, not substance. Both sides carry an obligation:
+
+| Reviewer | Author |
+| --- | --- |
+| Assume positive intent | Be open to feedback |
+| Ask questions, don't demand | Explain your reasoning |
+| Focus on the code, not the person | Don't take feedback personally |
+| Offer alternatives, not just criticism | Acknowledge good suggestions |
+
+A review exists to catch bugs before users do, raise code quality through collaboration, spread knowledge across the team, keep patterns consistent, and leave a written record of why a decision was made. If a comment serves none of those, it is noise.
+
 ## Review Checklist
 
 ### Security

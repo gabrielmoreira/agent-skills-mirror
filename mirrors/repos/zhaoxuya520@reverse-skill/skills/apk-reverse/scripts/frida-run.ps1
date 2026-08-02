@@ -111,9 +111,10 @@ if ([string]::IsNullOrWhiteSpace($target) -and -not $ListProcesses) {
 $deviceFlag = if ($Usb) { '-U' } else { '-H' }
 
 if ($ListProcesses) {
-    $escapedRemoteHost = $RemoteHost.Replace("'", "''")
+    $env:FRIDA_REMOTE_HOST = $RemoteHost
     $pythonFlag = if ($Usb) { 'usb' } else { 'remote-host' }
-    & $pythonExe -c "import frida; manager = frida.get_device_manager(); device = frida.get_usb_device() if '$pythonFlag' == 'usb' else manager.add_remote_device('$escapedRemoteHost'); [print(f'{p.pid}`t{p.name}') for p in device.enumerate_processes()]"
+    & $pythonExe -c "import os, frida; host = os.environ.get('FRIDA_REMOTE_HOST'); manager = frida.get_device_manager(); device = frida.get_usb_device() if '$pythonFlag' == 'usb' else manager.add_remote_device(host); [print(f'{p.pid}`t{p.name}') for p in device.enumerate_processes()]"
+    $env:FRIDA_REMOTE_HOST = $null
     exit $LASTEXITCODE
 }
 

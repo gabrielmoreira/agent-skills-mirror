@@ -38,6 +38,7 @@ Direct child DOX files:
 | [bootstrap/AGENTS.md](bootstrap/AGENTS.md) | Vendored Bootstrap JavaScript bundle for collapse and tooltip behavior. |
 | [dompurify/AGENTS.md](dompurify/AGENTS.md) | Vendored DOMPurify sanitizer module. |
 | [flatpickr/AGENTS.md](flatpickr/AGENTS.md) | Vendored Flatpickr date/time picker assets. |
+| [fonts/AGENTS.md](fonts/AGENTS.md) | Vendored Rubik and Roboto Mono WebUI font bundle. |
 | [google/AGENTS.md](google/AGENTS.md) | Vendored Google Material Symbols font and stylesheet. |
 | [katex/AGENTS.md](katex/AGENTS.md) | Vendored KaTeX rendering assets. |
 | [marked/AGENTS.md](marked/AGENTS.md) | Vendored Marked markdown parser module. |

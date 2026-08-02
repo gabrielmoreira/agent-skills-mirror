@@ -1,6 +1,6 @@
 ---
 name: "html-to-md"
-description: "Convert HTML documents to clean Markdown via pandoc"
+description: "Convert HTML documents to clean Markdown via pandoc. Use when the user asks to convert HTML to markdown or import a .html file into markdown."
 lastReviewed: 2026-05-26
 ---
 

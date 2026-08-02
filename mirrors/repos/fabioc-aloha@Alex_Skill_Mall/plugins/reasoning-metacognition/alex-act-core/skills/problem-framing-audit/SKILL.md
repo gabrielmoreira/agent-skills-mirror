@@ -94,13 +94,13 @@ Track the next 20 non-trivial sessions in which this skill activates. In what pe
 | Surface | How frame-audit attaches |
 |---|---|
 | [`critical-thinking/SKILL.md`](../critical-thinking/SKILL.md) | Inserted as **Discipline -1** before the Materiality Gate; this skill is its detailed body |
-| [`critical-thinking.instructions.md`](../../instructions/critical-thinking.instructions.md) | Adds the L1 always-on line: *"Before solving non-trivially, restate the problem in one sentence; if user's framing differs from yours, flag it before proceeding."* |
-| [`act-pass.instructions.md`](../../instructions/act-pass.instructions.md) | Step 1 of the 7-step pass *is* the frame audit |
-| [`/problem-framing-audit.prompt.md`](../../prompts/problem-framing-audit.prompt.md) | User-invokable trigger to force this skill on a stuck problem |
+| `critical-thinking.instructions.md` | Adds the L1 always-on line: *"Before solving non-trivially, restate the problem in one sentence; if user's framing differs from yours, flag it before proceeding."* |
+| `act-pass.instructions.md` | Step 1 of the 7-step pass *is* the frame audit |
+| `/problem-framing-audit.prompt.md` | User-invokable trigger to force this skill on a stuck problem |
 
 ## Background Reading
 
-- [CRITICAL-THINKING-FAILURE-MODES](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/act/CRITICAL-THINKING-FAILURE-MODES.md) — the master failure mode and step-back protocol
+- [CRITICAL-THINKING-FAILURE-MODES](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/architecture/act/CRITICAL-THINKING-FAILURE-MODES.md) — the master failure mode and step-back protocol
 - Russo, J. E., & Schoemaker, P. J. H. (2002). *Winning Decisions*. Doubleday.
 - Mitroff, I. I., & Featheringham, T. R. (1974). On systemic problem solving and the error of the third kind. *Behavioral Science*, 19(6).
 - Polya, G. (1945). *How to Solve It*. Princeton University Press.

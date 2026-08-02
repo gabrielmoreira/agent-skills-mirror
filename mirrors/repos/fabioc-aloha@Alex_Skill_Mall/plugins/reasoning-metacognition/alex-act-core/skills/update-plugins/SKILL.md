@@ -19,7 +19,7 @@ Wrap `copilot plugin update` with the diff-summary + consent-gate discipline eve
 
 For each installed plugin, in order:
 
-1. Query the currently installed version (`copilot plugin info <name>`).
+1. Read installed versions from `copilot plugin list`; use each installed `plugin.json` as the filesystem fallback.
 2. Query the latest available stable version from the plugin's marketplace or GitHub source.
 3. If installed == latest, skip.
 4. If installed < latest, read the plugin's CHANGELOG.md between the two versions.
@@ -30,6 +30,30 @@ For each installed plugin, in order:
 9. Re-verify installed versions after update.
 10. Report what changed.
 
+## Mall catalog fetch (reusable helper)
+
+Exposed for the `greeting-checkin` instruction (added 2026-08-01) to run its silent update-availability check on session greetings. Also used internally by this skill for the pre-update version diff.
+
+**Endpoint**: `https://raw.githubusercontent.com/fabioc-aloha/Alex_Skill_Mall/main/catalog/index.json` (approximately 2 MB, refreshed weekly by the Mall's cron per ADR-008).
+
+**Fetch pattern**:
+
+```powershell
+# PowerShell example — the actual invocation delegates to the LLM tool of choice (web_fetch, curl, etc.)
+$catalog = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/fabioc-aloha/Alex_Skill_Mall/main/catalog/index.json" -TimeoutSec 5 | Select-Object -ExpandProperty Content | ConvertFrom-Json
+```
+
+**Parse pattern**: the catalog's top-level structure is `{ "schema_version": ..., "plugin_count": ..., "plugins": [...] }`. Each `plugins[]` entry carries `{ name, store, version, ... }`. Look up the entry for each installed constellation plugin by name; the catalog's `version` field is the current latest.
+
+**Timeout**: 5 seconds. If the fetch fails (network error, timeout, non-2xx response), treat as "no update info available" and skip the update-diff step entirely. Do NOT tell the user "couldn't check updates" — that's noise for a check they never asked for.
+
+**Caching**: for the `greeting-checkin` use case, cache the result via the session-state hint file (see `plugin-management` skill § Session-state hint file). One fetch per hour per session tops.
+
+**Fallback**: for the interactive `/update-plugins` case, if the catalog fetch
+fails, use the plugin's GitHub Releases page or source repository when known.
+If no verified source is available, mark latest version as unavailable and stop
+before offering an update. Copilot CLI 1.0.77 has no per-plugin `info` command.
+
 ## Version resolution
 
 "Latest stable" means the highest release tag on the plugin's repo default branch that is:
@@ -37,7 +61,7 @@ For each installed plugin, in order:
 - A GitHub Release (not just a git tag)
 - Not marked prerelease
 - Not marked draft
-- Reachable via `copilot plugin info <name>` upstream lookup
+- Present in the registered marketplace catalog or the plugin's verified GitHub Releases feed
 
 Prerelease tags (`v1.2.0-rc.1`, `v1.2.0-beta`) do not qualify. This skill does not opt into prereleases. If a heir explicitly asks to test a prerelease, do it manually via `copilot plugin install <name>@<marketplace>` with the specific version tag; this skill does not automate that path.
 
@@ -109,7 +133,7 @@ copilot plugin update alex-act-core
 copilot plugin update --all
 
 # After update, re-verify
-copilot plugin info alex-act-core
+copilot plugin list
 ```
 
 This skill's Mode 3 always uses per-plugin `update <name>` rather than `update --all` — the `--all` flag bypasses the per-breaking consent step.
@@ -139,7 +163,7 @@ The hint is read-only — it does not itself update anything. The heir invokes t
 - **Never** update a plugin whose CHANGELOG cannot be read without warning the heir "no changelog — cannot preview changes; proceed anyway?"
 - **Never** update on a machine off the corporate network for `alex-act-msft` — its update fetch may work, but the update might change WorkIQ endpoint expectations that need network to verify. Fail closed on off-network updates for internal-only plugins.
 - **Do** re-verify installed version after each update. If the reported version does not match the expected latest, report the discrepancy and stop.
-- **Do** offer to roll back a specific plugin (`copilot plugin install <name>@<marketplace>#<old-version>`) if a post-update issue surfaces.
+- **Do** offer rollback only when the prior source is verified and supported by the current `copilot plugin install --help`. Copilot CLI 1.0.77 has no marketplace version-pin syntax; never invent one.
 
 ## Anti-patterns
 
@@ -172,7 +196,7 @@ Track outcomes in the maintaining repo's curation log.
 
 ## Related
 
-- [`/update-plugins`](../../prompts/update-plugins.prompt.md) — slash-command entry point
+- `/update-plugins` — slash-command entry point
 - [`plugin-management`](../plugin-management/SKILL.md) — general Copilot CLI plugin operations
 - [`install-constellation`](../install-constellation/SKILL.md) — install-time sibling
 - `constellation/PLUGIN-INTEGRATION.md` § 3 in Steward — the update model that grounds this skill

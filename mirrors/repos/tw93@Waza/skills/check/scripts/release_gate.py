@@ -42,14 +42,16 @@ INPUT_LIMITS = {
 def run_git(root: Path, *args: str) -> tuple[int, str]:
     try:
         proc = subprocess.run(
-            ["git", "-C", str(root), *args],
+            ["git", "-c", "core.fsmonitor=false", "-C", str(root), *args],
             capture_output=True,
             text=True,
             timeout=30,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
         return 1, str(exc)
-    return proc.returncode, (proc.stdout or "").strip()
+    # Preserve leading spaces because porcelain status uses them as the index
+    # column. Trimming them turns the first unstaged file into a staged one.
+    return proc.returncode, (proc.stdout or "").rstrip()
 
 
 def block(name: str, lines: list[str], status: str) -> None:

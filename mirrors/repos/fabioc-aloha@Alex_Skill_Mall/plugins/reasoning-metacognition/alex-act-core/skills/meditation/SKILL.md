@@ -39,6 +39,7 @@ Separate signal from noise. For each candidate pattern, ask: *"Is this already c
 | Repeatable workflow / slash command | Prompt (`.github/prompts/<name>.prompt.md`) |
 | Automatable mechanical task (skill-owned) | Skill script (`.github/skills/<name>/scripts/*.cjs`) |
 | Automatable mechanical task (cross-cutting) | Repo script (`scripts/<name>.cjs`) |
+| Shared library imported by other scripts | Library module (`scripts/shared/<name>.cjs`) |
 | User preference (cross-project) | User memory (`/memories/<name>.md`) |
 | Project / repo convention | Repo memory (`/memories/repo/<name>.md`) |
 | Cross-session handoff (next session needs to know) | Repo file (`HANDOFF.md` at repo root) — NOT session memory |
@@ -96,11 +97,34 @@ Last updated: YYYY-MM-DD HH:MM
 - [Where to pick up]
 ```
 
+### 6. Post-Mortem (when something went wrong)
+
+A failure is worth more than a success if you extract the pattern. When the session included a real mistake — a broken build shipped, a wrong assumption acted on, a destructive command run — write the analysis rather than moving past it:
+
+```markdown
+## Failure Post-Mortem
+
+### What happened
+[Concrete description of the failure]
+
+### Root cause
+[The actual reason, not the symptom]
+
+### Pattern
+[The generalizable mistake type]
+
+### Prevention
+[How to avoid this class of error]
+```
+
+Tag it in the chronicle for later retrieval: `#failure #<category>`. The **Pattern** field is the one that matters — a post-mortem that stops at root cause fixes one bug; one that names the pattern fixes a class.
+
 ## Quality Bar
 
 A meditation is complete when:
 
 - New patterns are persisted, not just acknowledged
+- Failures are analyzed, not just noted
 - Nothing important lives only in the context window
 - Existing artifacts were checked for duplication before writing new ones
 - The session can be closed without losing the thread
@@ -126,9 +150,8 @@ Cadence is per-project. Adapt or skip based on the work rhythm. Meditation as a 
 
 ## Related
 
-- [meditation.instructions.md](../../instructions/meditation.instructions.md) — when this skill fires
-- [/meditate prompt](../../prompts/meditate.prompt.md) — slash-command entry
-- [memory-triggers.instructions.md](../../instructions/memory-triggers.instructions.md) — automatic triggers between meditations
+- `/meditate prompt` — slash-command entry
+- `memory-triggers.instructions.md` — automatic triggers between meditations
 
 ## Falsifiability
 

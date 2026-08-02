@@ -328,15 +328,3 @@ TongFlow is **dual-licensed**:
 
 This covers the entire repository, including the `sdk/` directory (the `tongflow`
 PyPI package). Contributions are covered by our [CLA](CLA.md).
-
-## Star History
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=tong-io%2Ftongflow&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=tong-io/tongflow&type=date&theme=dark&legend=top-left&sealed_token=bDvowYTt_5E0Hk_7NXepKNqbJFKd-LqBsmGG0JJlGUR5mxD8IRtNlJSy9kOqCPyxPujolsgG3IxdxXNLDEyMWZ7iv3lPQ-tAjUHdodca3b9s_Qn9Bdfu8qtyW66cEsC4EO3dw2t4R7fq-nNWMEL-j40KoU1ENlJRHuEUeReBhkhu2t4v0MvGKH74f6wV" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=tong-io/tongflow&type=date&legend=top-left&sealed_token=bDvowYTt_5E0Hk_7NXepKNqbJFKd-LqBsmGG0JJlGUR5mxD8IRtNlJSy9kOqCPyxPujolsgG3IxdxXNLDEyMWZ7iv3lPQ-tAjUHdodca3b9s_Qn9Bdfu8qtyW66cEsC4EO3dw2t4R7fq-nNWMEL-j40KoU1ENlJRHuEUeReBhkhu2t4v0MvGKH74f6wV" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=tong-io/tongflow&type=date&legend=top-left&sealed_token=bDvowYTt_5E0Hk_7NXepKNqbJFKd-LqBsmGG0JJlGUR5mxD8IRtNlJSy9kOqCPyxPujolsgG3IxdxXNLDEyMWZ7iv3lPQ-tAjUHdodca3b9s_Qn9Bdfu8qtyW66cEsC4EO3dw2t4R7fq-nNWMEL-j40KoU1ENlJRHuEUeReBhkhu2t4v0MvGKH74f6wV" />
- </picture>
-</a>

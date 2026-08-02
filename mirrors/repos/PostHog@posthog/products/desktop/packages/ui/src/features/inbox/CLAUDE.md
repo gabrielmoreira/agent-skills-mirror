@@ -1,0 +1,1 @@
+cache/repos/github.com/PostHog@posthog/products/desktop/packages/ui/src/features/inbox/AGENTS.md

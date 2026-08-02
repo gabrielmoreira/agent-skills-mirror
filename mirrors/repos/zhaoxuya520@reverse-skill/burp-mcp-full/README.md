@@ -34,7 +34,17 @@ Burp Suite → Extensions → Add → Java → 选择 build/libs/burp-mcp-full.j
 [MCP] Server started on http://127.0.0.1:9876
 ```
 
-### 3. 配置 MCP 客户端
+### 3. 鉴权（v2 起默认启用）
+
+扩展启动时自动生成随机 token 并写入 `~/.burp-mcp-token`。`mcp-bridge.js` 会自动读取该文件并在每个请求携带 `Authorization: Bearer <token>` 头，无需手动配置。
+
+需要固定 token 时（例如多个客户端共享），可用：
+- JVM 参数：`-Dburp.mcp.token=<token>`
+- 环境变量：`BURP_MCP_TOKEN=<token>`（同时用于 bridge 侧）
+
+所有 `/health`、`/tools`、`/`（POST）请求均要求携带该头，否则返回 403。CORS 已收敛为仅允许 `http://127.0.0.1` 来源。
+
+### 4. 配置 MCP 客户端
 
 在任何 MCP 客户端（Claude Code / Kiro / Cursor / Cline / Windsurf）中添加（stdio 模式）：
 
@@ -49,25 +59,25 @@ Burp Suite → Extensions → Add → Java → 选择 build/libs/burp-mcp-full.j
 }
 ```
 
-### 4. 开始使用
+### 5. 开始使用
 
 对 AI 说："分析 Burp 代理历史中的请求，找出安全漏洞"
 
 ## 功能列表
 
-扩展暴露 63 个工具。常用分类如下（完整列表见 `src/main/java/com/burpmcp/McpHttpServer.java` 的 `getToolList()`，或访问 `GET http://127.0.0.1:9876/tools`）：
+扩展暴露 78 个工具。常用分类如下（完整列表见 `src/main/java/com/burpmcp/McpHttpServer.java` 的 `getToolList()`，或访问 `GET http://127.0.0.1:9876/tools`，需携带 Authorization 头）：
 
 | 分类 | 工具 |
 |------|------|
-| Proxy 历史 | `proxy_history`, `proxy_detail`, `proxy_history_filtered`, `proxy_websocket`, `proxy_listeners`, `proxy_match_replace`, `proxy_clear`, `search_history`, `highlight`, `annotate`, `compare` |
+| Proxy 历史 | `proxy_history`, `proxy_detail`, `proxy_history_filtered`, `proxy_websocket`, `proxy_clear`, `search_history`, `highlight`, `annotate`, `compare` |
 | 发送请求 | `send_request`, `send_to_repeater`, `repeater_send`, `repeater_modify_send`, `send_to_intruder` |
 | Intruder 攻击 | `intruder_attack`, `intruder_attack_async`, `intruder_attack_wordlist`, `intruder_pitchfork`, `intruder_cluster_bomb`, `intruder_battering_ram`, `intruder_with_options`, `payload_process` |
 | 扫描 / 爬取 | `scan`(主动/被动), `scan_active`, `scan_results`, `scan_issue_detail`, `crawl`, `sequencer` |
 | Scope / Sitemap | `sitemap`, `target_info`, `get_scope`, `add_to_scope`, `remove_from_scope`, `add_issue` |
-| 拦截 / 规则 | `intercept_toggle`, `intercept_modify`, `register_http_handler`, `remove_http_handler`, `register_proxy_rule`, `remove_proxy_rule` |
+| 拦截 / 规则 | `intercept_toggle`, `register_http_handler`, `remove_http_handler`, `register_proxy_rule`, `remove_proxy_rule` |
 | 编解码 | `encode`, `decode`, `convert_request`, `export_request`, `generate_csrf_poc`, `extract_from_response`, `token_analysis` |
 | Collaborator | `collaborator_generate`, `collaborator_poll` |
-| 配置 | `export_config`, `import_config`, `set_upstream_proxy`, `set_dns_override`, `set_http2`, `cookie_jar`, `export_cert`, `websocket_send`, `save_project`, `burp_version`, `extensions_list`, `log` |
+| 配置 | `export_config`, `import_config`, `set_upstream_proxy`, `set_dns_override`, `set_http2`, `cookie_jar`, `save_project`, `burp_version`, `extensions_list`, `log` |
 
 > 扫描/爬取（`scan`、`scan_active`、`crawl`）需要 **Burp Professional**。Community 版会返回明确的许可证错误。手动添加的 issue（`add_issue`）会写入 Site map。
 

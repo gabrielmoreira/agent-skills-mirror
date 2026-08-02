@@ -20,7 +20,7 @@ A read-mostly marketplace built on a single design principle:
 1. **Bring your own version.** Heirs install plugins directly from upstream at a chosen ref (tag, branch, or commit SHA). The Mall is a search index and trust scorer, not a download proxy.
 2. **Honest signals, no opaque scores.** Every trust score publishes the six signals that compose it (provenance, maintenance, adoption, license, frontmatter, README). A reader sees *why* the score is what it is.
 3. **First-party + third-party in one catalog.** The Mall's own curated plugins live in `plugins/` and rank with everyone else; their +50 provenance signal puts them at the top of category pages because they earned editorial adaptation, not because the code hardcodes a tier flag.
-4. **Self-curating.** A weekly cron scans 46+ sources, recomputes scores, and opens a `catalog-refresh/YYYY-MM-DD` PR for any content delta. The PR is reviewed; everything else runs hands-off.
+4. **Self-curating.** A weekly cron scans registered sources, recomputes scores, and opens a `catalog-refresh/YYYY-MM-DD` PR for any content delta. Generated refreshes auto-merge after deterministic gates. Human plugin contributions use a separate CODEOWNER-reviewed lane and never auto-merge.
 
 ## Duty Stack
 
@@ -32,6 +32,7 @@ A read-mostly marketplace built on a single design principle:
 | 4 | **Store evaluation** — score candidate sources before adding | [store-evaluation](./skills/store-evaluation/SKILL.md) |
 | 5 | **Staleness discipline** — detect and prune stale catalog entries | [staleness-discipline](./skills/staleness-discipline/SKILL.md) |
 | 6 | **Self-improvement** — meditate after substantive changes, audit currency periodically | [meditation](./skills/meditation/SKILL.md), [currency-audit](./skills/currency-audit/SKILL.md) |
+| 7 | **Curated publication** — normalize vendor payloads, validate contributor PRs, and reserve acceptance for the CODEOWNER | `scripts/vendor-plugin.cjs`, `scripts/prepare-plugin-submission.cjs`, `scripts/validate-plugin-submission.cjs` |
 
 ## Cardinal Rules
 
@@ -71,7 +72,7 @@ The Mall does not:
 
 ## Safety Imperatives
 
-- **I1**: PRs from the workflow are reviewed before merge. Auto-merge is not enabled.
+- **I1**: Generated catalog-refresh PRs may auto-merge only after deterministic gates. Curated plugin contribution PRs never auto-merge and require CODEOWNER approval.
 - **I2**: Trust formula changes ship as `[behaviour]` commits with a trimmed ACT pass; signal weight changes that alter the published-signal contract ship as `[constitutional]` with full pass.
 - **I3**: Store removal is reversible — comment out the registry entry first, observe one cron cycle, then delete.
 - **I4**: Never write outside `catalog/`, `scoring/`, `README.md`, or `sources/SOURCES.md` from the workflow. The path discipline is checked at PR time.
@@ -83,11 +84,14 @@ The Mall does not:
 | Add a new source store | [source-inventory](./skills/source-inventory/SKILL.md) + [store-evaluation](./skills/store-evaluation/SKILL.md) → `/add-source` |
 | Remove a stale source store | [staleness-discipline](./skills/staleness-discipline/SKILL.md) → `/prune-source` |
 | Pipeline change (scan, score, render) | [mall-self-curation](./skills/mall-self-curation/SKILL.md) |
-| Weekly PR review | [mall-maintenance-rules](./instructions/mall-maintenance-rules.instructions.md) |
+| Vendor or refresh a curated plugin | `npm run vendor` per [mall-self-curation](./skills/mall-self-curation/SKILL.md) |
+| Prepare / validate contributor plugin PR | `npm run submit:prepare` / `npm run submit:validate`; CODEOWNER review follows |
+| Refresh first-party catalog + README | `npm run maintain -- --curated` |
+| Weekly generated refresh oversight | [mall-maintenance-rules](./instructions/mall-maintenance-rules.instructions.md) |
 | Substantive change worth consolidating | [meditation](./skills/meditation/SKILL.md) |
 | Stale brain file (`lastReviewed` expired) | [currency-audit](./skills/currency-audit/SKILL.md) |
 | Any brain edit | [severity-tagged-commits](./instructions/severity-tagged-commits.instructions.md) |
 
 ## Token Budget
 
-The Mall brain stays lean because the Mall is not interactive. Target: ≤10K tokens of always-on instructions. Current shape is 9 instructions + 6 skills + 2 prompts + 0 agents. If I grow past 10K always-on tokens, I have scope-crept into interactive-agent territory — audit against this charter.
+The Mall brain stays lean because the Mall is not interactive. Target: ≤10K tokens of always-on instructions. If it grows past that threshold, audit against this charter.

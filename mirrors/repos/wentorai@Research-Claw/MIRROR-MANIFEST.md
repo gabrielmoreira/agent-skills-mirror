@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns, 56 file(s) materialized.
+Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns, 62 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wentorai/Research-Claw` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 56 |
+| Files         | 62 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -100,21 +100,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 39 | ✓ | [`skills/output-cards/SKILL.md`](skills/output-cards/SKILL.md) |
 | 40 | ✓ | [`skills/plotting-sop/SKILL.md`](skills/plotting-sop/SKILL.md) |
 | 41 | ✓ | [`skills/ppt-master/SKILL.md`](skills/ppt-master/SKILL.md) |
-| 42 | ✓ | [`skills/sci-papers-downloder/scripts/download_open_access.py`](skills/sci-papers-downloder/scripts/download_open_access.py) |
-| 43 | ✓ | [`skills/sci-papers-downloder/scripts/openalex_batch_download.py`](skills/sci-papers-downloder/scripts/openalex_batch_download.py) |
-| 44 | ✓ | [`skills/sci-papers-downloder/scripts/search_openalex.py`](skills/sci-papers-downloder/scripts/search_openalex.py) |
-| 45 | ✓ | [`skills/sci-papers-downloder/scripts/search_scopus.py`](skills/sci-papers-downloder/scripts/search_scopus.py) |
-| 46 | ✓ | [`skills/sci-papers-downloder/scripts/topic_batch_download.py`](skills/sci-papers-downloder/scripts/topic_batch_download.py) |
-| 47 | ✓ | [`skills/sci-papers-downloder/SKILL.md`](skills/sci-papers-downloder/SKILL.md) |
-| 48 | ✓ | [`skills/search-sop/SKILL.md`](skills/search-sop/SKILL.md) |
-| 49 | ✓ | [`skills/searching-literature/SKILL.md`](skills/searching-literature/SKILL.md) |
-| 50 | ✓ | [`skills/subagent-driven-review/SKILL.md`](skills/subagent-driven-review/SKILL.md) |
-| 51 | ✓ | [`skills/survey-sop/SKILL.md`](skills/survey-sop/SKILL.md) |
-| 52 | ✓ | [`skills/traversing-citations/SKILL.md`](skills/traversing-citations/SKILL.md) |
-| 53 | ✓ | [`skills/wentor-api/SKILL.md`](skills/wentor-api/SKILL.md) |
-| 54 | ✓ | [`skills/workspace-sop/SKILL.md`](skills/workspace-sop/SKILL.md) |
-| 55 | ✓ | [`skills/writing-sop/SKILL.md`](skills/writing-sop/SKILL.md) |
-| 56 | ✓ | [`workspace/.ResearchClaw/AGENTS.md`](workspace/.ResearchClaw/AGENTS.md) |
+| 42 | ✓ | [`skills/research-analysis-router/SKILL.md`](skills/research-analysis-router/SKILL.md) |
+| 43 | ✓ | [`skills/research-domains-router/SKILL.md`](skills/research-domains-router/SKILL.md) |
+| 44 | ✓ | [`skills/research-literature-router/SKILL.md`](skills/research-literature-router/SKILL.md) |
+| 45 | ✓ | [`skills/research-methods-router/SKILL.md`](skills/research-methods-router/SKILL.md) |
+| 46 | ✓ | [`skills/research-tools-router/SKILL.md`](skills/research-tools-router/SKILL.md) |
+| 47 | ✓ | [`skills/research-writing-router/SKILL.md`](skills/research-writing-router/SKILL.md) |
+| 48 | ✓ | [`skills/sci-papers-downloder/scripts/download_open_access.py`](skills/sci-papers-downloder/scripts/download_open_access.py) |
+| 49 | ✓ | [`skills/sci-papers-downloder/scripts/openalex_batch_download.py`](skills/sci-papers-downloder/scripts/openalex_batch_download.py) |
+| 50 | ✓ | [`skills/sci-papers-downloder/scripts/search_openalex.py`](skills/sci-papers-downloder/scripts/search_openalex.py) |
+| 51 | ✓ | [`skills/sci-papers-downloder/scripts/search_scopus.py`](skills/sci-papers-downloder/scripts/search_scopus.py) |
+| 52 | ✓ | [`skills/sci-papers-downloder/scripts/topic_batch_download.py`](skills/sci-papers-downloder/scripts/topic_batch_download.py) |
+| 53 | ✓ | [`skills/sci-papers-downloder/SKILL.md`](skills/sci-papers-downloder/SKILL.md) |
+| 54 | ✓ | [`skills/search-sop/SKILL.md`](skills/search-sop/SKILL.md) |
+| 55 | ✓ | [`skills/searching-literature/SKILL.md`](skills/searching-literature/SKILL.md) |
+| 56 | ✓ | [`skills/subagent-driven-review/SKILL.md`](skills/subagent-driven-review/SKILL.md) |
+| 57 | ✓ | [`skills/survey-sop/SKILL.md`](skills/survey-sop/SKILL.md) |
+| 58 | ✓ | [`skills/traversing-citations/SKILL.md`](skills/traversing-citations/SKILL.md) |
+| 59 | ✓ | [`skills/wentor-api/SKILL.md`](skills/wentor-api/SKILL.md) |
+| 60 | ✓ | [`skills/workspace-sop/SKILL.md`](skills/workspace-sop/SKILL.md) |
+| 61 | ✓ | [`skills/writing-sop/SKILL.md`](skills/writing-sop/SKILL.md) |
+| 62 | ✓ | [`workspace/.ResearchClaw/AGENTS.md`](workspace/.ResearchClaw/AGENTS.md) |
 
 ---
 

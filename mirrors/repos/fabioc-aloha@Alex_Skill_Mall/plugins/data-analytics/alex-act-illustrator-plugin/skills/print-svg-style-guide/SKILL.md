@@ -261,7 +261,7 @@ Used for dashboard-shaped figures. From dashboard-design literature (Wexler / Sh
 - [`flint-chart`](../flint-chart/SKILL.md) § Publication config preset — pins the Vega-Lite `config` block that emits statistical charts obeying this style guide.
 - [`render-verify`](../render-verify/SKILL.md) § Prose-coupling check — verifies the surrounding prose after the figure ships.
 - [`figure-generator`](../figure-generator/SKILL.md) — the engineering discipline that emits SVGs conforming to this guide (`.mjs` generators, `data-sha256` audit hash, contract tests).
-- [`markdown-mermaid`](../markdown-mermaid/SKILL.md) — sibling for Mermaid-authored diagrams (different rendering model, shares palette discipline where colors carry meaning).
+- `markdown-mermaid` — sibling for Mermaid-authored diagrams (different rendering model, shares palette discipline where colors carry meaning).
 
 ## Would revise if
 

@@ -1,0 +1,40 @@
+{
+  "skill": "otel-ottl",
+  "runtime": "Codex CLI",
+  "model": "gpt-5.6-terra",
+  "cases": [
+    {
+      "id": "routing-metadata-fallback",
+      "prompt": "We run OpenTelemetry Collector contrib v0.157. Route OTLP logs by the X-Tenant header to logs/acme, but malformed or missing headers must not lose telemetry. Provide the relevant YAML and explain the failure behavior.",
+      "expectations": [
+        "Uses executable routing YAML with either otelcol.client.metadata[\"X-Tenant\"][0] for HTTP or otelcol.grpc.metadata[\"x-tenant\"][0] for gRPC.",
+        "Enables include_metadata on the OTLP receiver and notes lowercase keys for gRPC metadata.",
+        "Configures default_pipelines and explains that routing error_mode ignore sends evaluation errors there; without it the payload is dropped.",
+        "Does not use the deprecated routing request context.",
+        "Provides a routing condition matching tenant value acme and assigns the match to pipelines: [logs/acme]."
+      ]
+    },
+    {
+      "id": "yaml-backreference-redaction",
+      "prompt": "For Collector contrib v0.157, write a transform processor that redacts token query-parameter values in span URL attributes while preserving the parameter name. Include how you would verify it.",
+      "expectations": [
+        "Uses a span-context transform statement with replace_pattern.",
+        "Uses the Collector-YAML replacement $${1}REDACTED and does not present $1REDACTED as valid.",
+        "Guards a potentially absent or non-string URL input.",
+        "Recommends an end-to-end known-input check such as telemetrygen plus file-exporter output.",
+        "Uses ([?&]token=)[^&]+ or an equivalent capture that preserves the parameter delimiter and name while replacing only its value."
+      ]
+    },
+    {
+      "id": "v0156-json-log-parse",
+      "prompt": "My Collector is pinned to contrib v0.156. Parse JSON-object log bodies and set parsed fields as log attributes only when the body is actually a JSON object. Do I need an alpha lambda feature gate? Give the transform fragment.",
+      "expectations": [
+        "Uses log context with ParseJSON and a type-safe IsString guard.",
+        "Restricts parsing to JSON-object-shaped input rather than arbitrary JSON arrays or strings.",
+        "Does not require or use v0.157 alpha lambda converters.",
+        "Treats function availability as release-dependent and keeps the answer compatible with v0.156.",
+        "Writes or merges the parsed JSON object into log.attributes under the object-type guard rather than discarding the parse result."
+      ]
+    }
+  ]
+}

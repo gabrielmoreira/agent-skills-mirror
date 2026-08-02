@@ -211,6 +211,30 @@ $e = $null
 [void][System.Management.Automation.Language.Parser]::ParseFile((Join-Path $scriptDir 'refresh-tool-index.ps1'), [ref]$null, [ref]$e)
 if ($e -and $e.Count -gt 0) { Bad ("refresh-tool-index parse: {0}" -f $e[0]) } else { Ok 'refresh-tool-index parses' }
 
+# --- bootstrap-manifest parity (skills vs kali) ---
+$skillsManifest = Join-Path $scriptDir 'bootstrap-manifest.json'
+$kaliManifest = Join-Path $packageRoot 'kali\scripts\bootstrap-manifest.json'
+$skillsCaps = @()
+if (Test-Path -LiteralPath $skillsManifest) {
+    $sm = Get-Content -LiteralPath $skillsManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+    $skillsCaps = @($sm.capabilities | ForEach-Object { $_.name })
+    if ($skillsCaps.Count -ge 10) { Ok "skills manifest $($skillsCaps.Count) capabilities" } else { Bad 'skills manifest capability count suspicious' }
+} else {
+    Bad 'skills bootstrap-manifest.json missing'
+}
+if (Test-Path -LiteralPath $kaliManifest) {
+    $km = Get-Content -LiteralPath $kaliManifest -Raw -Encoding UTF8 | ConvertFrom-Json
+    $kaliCaps = @($km.capabilities | ForEach-Object { $_.name })
+    foreach ($missing in ($skillsCaps | Where-Object { $_ -notin $kaliCaps })) {
+        Bad "kali manifest missing capability: $missing"
+    }
+    foreach ($missing in ($kaliCaps | Where-Object { $_ -notin $skillsCaps })) {
+        Ok "kali-only capability: $missing"
+    }
+} else {
+    Bad 'kali bootstrap-manifest.json missing'
+}
+
 # identity: no FastAPI/React requirement in ops IDENTITY
 $id = Get-Content (Join-Path $skillsRoot 'ops\IDENTITY.md') -Raw -Encoding UTF8
 if ($id -match '不是|不做|NOT|not a Z3r0|FastAPI|React') { Ok 'identity distinguishes platform' } else { Bad 'identity weak' }

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ollygarden/opentelemetry-agent-skills` — 26 default patterns, 0 followed patterns, 172 file(s) materialized.
+Mirror of `ollygarden/opentelemetry-agent-skills` — 26 default patterns, 0 followed patterns, 173 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ollygarden/opentelemetry-agent-skills` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 172 |
+| Files         | 173 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -201,36 +201,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 140 | ✓ | [`skills/otel-java/SKILL.md`](skills/otel-java/SKILL.md) |
 | 141 | ✓ | [`skills/otel-js/references/declarative-setup.md`](skills/otel-js/references/declarative-setup.md) |
 | 142 | ✓ | [`skills/otel-js/SKILL.md`](skills/otel-js/SKILL.md) |
-| 143 | ✓ | [`skills/otel-ottl/references/contexts.md`](skills/otel-ottl/references/contexts.md) |
-| 144 | ✓ | [`skills/otel-ottl/references/functions.md`](skills/otel-ottl/references/functions.md) |
-| 145 | ✓ | [`skills/otel-ottl/references/quick-reference.md`](skills/otel-ottl/references/quick-reference.md) |
-| 146 | ✓ | [`skills/otel-ottl/SKILL.md`](skills/otel-ottl/SKILL.md) |
-| 147 | ✓ | [`skills/otel-python/references/api.md`](skills/otel-python/references/api.md) |
-| 148 | ✓ | [`skills/otel-python/references/breaking-changes.md`](skills/otel-python/references/breaking-changes.md) |
-| 149 | ✓ | [`skills/otel-python/references/declarative-setup.md`](skills/otel-python/references/declarative-setup.md) |
-| 150 | ✓ | [`skills/otel-python/references/instrumentation-libraries.md`](skills/otel-python/references/instrumentation-libraries.md) |
-| 151 | ✓ | [`skills/otel-python/references/performance.md`](skills/otel-python/references/performance.md) |
-| 152 | ✓ | [`skills/otel-python/SKILL.md`](skills/otel-python/SKILL.md) |
-| 153 | ✓ | [`skills/otel-sdk-versions/references/generated/otel-version-index.md`](skills/otel-sdk-versions/references/generated/otel-version-index.md) |
-| 154 | ✓ | [`skills/otel-sdk-versions/SKILL.md`](skills/otel-sdk-versions/SKILL.md) |
-| 155 | ✓ | [`skills/otel-semantic-conventions/references/otel-semantic-conventions.md`](skills/otel-semantic-conventions/references/otel-semantic-conventions.md) |
-| 156 | ✓ | [`skills/otel-semantic-conventions/references/semconv-selection.md`](skills/otel-semantic-conventions/references/semconv-selection.md) |
-| 157 | ✓ | [`skills/otel-semantic-conventions/scripts/query-otel-semantic-conventions.sh`](skills/otel-semantic-conventions/scripts/query-otel-semantic-conventions.sh) |
-| 158 | ✓ | [`skills/otel-semantic-conventions/SKILL.md`](skills/otel-semantic-conventions/SKILL.md) |
-| 159 | ✓ | [`skills/otel-span-events-to-logs-migration/references/backward-compat.md`](skills/otel-span-events-to-logs-migration/references/backward-compat.md) |
-| 160 | ✓ | [`skills/otel-span-events-to-logs-migration/references/decision-tree.md`](skills/otel-span-events-to-logs-migration/references/decision-tree.md) |
-| 161 | ✓ | [`skills/otel-span-events-to-logs-migration/references/deprecation-plan.md`](skills/otel-span-events-to-logs-migration/references/deprecation-plan.md) |
-| 162 | ✓ | [`skills/otel-span-events-to-logs-migration/references/migration-patterns.md`](skills/otel-span-events-to-logs-migration/references/migration-patterns.md) |
-| 163 | ✓ | [`skills/otel-span-events-to-logs-migration/scripts/scan-span-events.sh`](skills/otel-span-events-to-logs-migration/scripts/scan-span-events.sh) |
-| 164 | ✓ | [`skills/otel-span-events-to-logs-migration/SKILL.md`](skills/otel-span-events-to-logs-migration/SKILL.md) |
-| 165 | ✓ | [`skills/otel-telemetrygen/references/flags.md`](skills/otel-telemetrygen/references/flags.md) |
-| 166 | ✓ | [`skills/otel-telemetrygen/SKILL.md`](skills/otel-telemetrygen/SKILL.md) |
-| 167 | ✓ | [`skills/otel-weaver/references/ci-integration.md`](skills/otel-weaver/references/ci-integration.md) |
-| 168 | ✓ | [`skills/otel-weaver/references/migration-playbook.md`](skills/otel-weaver/references/migration-playbook.md) |
-| 169 | ✓ | [`skills/otel-weaver/references/registry-authoring.md`](skills/otel-weaver/references/registry-authoring.md) |
-| 170 | ✓ | [`skills/otel-weaver/references/template-authoring.md`](skills/otel-weaver/references/template-authoring.md) |
-| 171 | ✓ | [`skills/otel-weaver/scripts/inspect-resolved.sh`](skills/otel-weaver/scripts/inspect-resolved.sh) |
-| 172 | ✓ | [`skills/otel-weaver/SKILL.md`](skills/otel-weaver/SKILL.md) |
+| 143 | ✓ | [`skills/otel-ottl/evals/evals.json`](skills/otel-ottl/evals/evals.json) |
+| 144 | ✓ | [`skills/otel-ottl/references/contexts.md`](skills/otel-ottl/references/contexts.md) |
+| 145 | ✓ | [`skills/otel-ottl/references/functions.md`](skills/otel-ottl/references/functions.md) |
+| 146 | ✓ | [`skills/otel-ottl/references/quick-reference.md`](skills/otel-ottl/references/quick-reference.md) |
+| 147 | ✓ | [`skills/otel-ottl/SKILL.md`](skills/otel-ottl/SKILL.md) |
+| 148 | ✓ | [`skills/otel-python/references/api.md`](skills/otel-python/references/api.md) |
+| 149 | ✓ | [`skills/otel-python/references/breaking-changes.md`](skills/otel-python/references/breaking-changes.md) |
+| 150 | ✓ | [`skills/otel-python/references/declarative-setup.md`](skills/otel-python/references/declarative-setup.md) |
+| 151 | ✓ | [`skills/otel-python/references/instrumentation-libraries.md`](skills/otel-python/references/instrumentation-libraries.md) |
+| 152 | ✓ | [`skills/otel-python/references/performance.md`](skills/otel-python/references/performance.md) |
+| 153 | ✓ | [`skills/otel-python/SKILL.md`](skills/otel-python/SKILL.md) |
+| 154 | ✓ | [`skills/otel-sdk-versions/references/generated/otel-version-index.md`](skills/otel-sdk-versions/references/generated/otel-version-index.md) |
+| 155 | ✓ | [`skills/otel-sdk-versions/SKILL.md`](skills/otel-sdk-versions/SKILL.md) |
+| 156 | ✓ | [`skills/otel-semantic-conventions/references/otel-semantic-conventions.md`](skills/otel-semantic-conventions/references/otel-semantic-conventions.md) |
+| 157 | ✓ | [`skills/otel-semantic-conventions/references/semconv-selection.md`](skills/otel-semantic-conventions/references/semconv-selection.md) |
+| 158 | ✓ | [`skills/otel-semantic-conventions/scripts/query-otel-semantic-conventions.sh`](skills/otel-semantic-conventions/scripts/query-otel-semantic-conventions.sh) |
+| 159 | ✓ | [`skills/otel-semantic-conventions/SKILL.md`](skills/otel-semantic-conventions/SKILL.md) |
+| 160 | ✓ | [`skills/otel-span-events-to-logs-migration/references/backward-compat.md`](skills/otel-span-events-to-logs-migration/references/backward-compat.md) |
+| 161 | ✓ | [`skills/otel-span-events-to-logs-migration/references/decision-tree.md`](skills/otel-span-events-to-logs-migration/references/decision-tree.md) |
+| 162 | ✓ | [`skills/otel-span-events-to-logs-migration/references/deprecation-plan.md`](skills/otel-span-events-to-logs-migration/references/deprecation-plan.md) |
+| 163 | ✓ | [`skills/otel-span-events-to-logs-migration/references/migration-patterns.md`](skills/otel-span-events-to-logs-migration/references/migration-patterns.md) |
+| 164 | ✓ | [`skills/otel-span-events-to-logs-migration/scripts/scan-span-events.sh`](skills/otel-span-events-to-logs-migration/scripts/scan-span-events.sh) |
+| 165 | ✓ | [`skills/otel-span-events-to-logs-migration/SKILL.md`](skills/otel-span-events-to-logs-migration/SKILL.md) |
+| 166 | ✓ | [`skills/otel-telemetrygen/references/flags.md`](skills/otel-telemetrygen/references/flags.md) |
+| 167 | ✓ | [`skills/otel-telemetrygen/SKILL.md`](skills/otel-telemetrygen/SKILL.md) |
+| 168 | ✓ | [`skills/otel-weaver/references/ci-integration.md`](skills/otel-weaver/references/ci-integration.md) |
+| 169 | ✓ | [`skills/otel-weaver/references/migration-playbook.md`](skills/otel-weaver/references/migration-playbook.md) |
+| 170 | ✓ | [`skills/otel-weaver/references/registry-authoring.md`](skills/otel-weaver/references/registry-authoring.md) |
+| 171 | ✓ | [`skills/otel-weaver/references/template-authoring.md`](skills/otel-weaver/references/template-authoring.md) |
+| 172 | ✓ | [`skills/otel-weaver/scripts/inspect-resolved.sh`](skills/otel-weaver/scripts/inspect-resolved.sh) |
+| 173 | ✓ | [`skills/otel-weaver/SKILL.md`](skills/otel-weaver/SKILL.md) |
 
 ---
 

@@ -2,7 +2,9 @@
 
 # Alex ACT Plugin Mall
 
-**362 curated plugins**, installable as a GitHub Copilot CLI marketplace. Plus a **trust-scored discovery index** across **3848 plugins** in **42 stores** so you can find and install directly from upstream at a version you pick.
+Alex ACT Plugin Mall helps you add trusted capabilities to GitHub Copilot without copying a whole AI setup into every project. Start with **Alex ACT Core** for a dependable working baseline, then add only the specializations that match your work.
+
+The Mall publishes **363 curated plugins** for direct installation and maintains a **trust-scored discovery index** across **3862 plugins** in **42 stores**.
 
 - Installation is **opt-in** and user-invoked. Publication does not mutate your projects.
 - Current release: **[v3.0.0](https://github.com/fabioc-aloha/Alex_Skill_Mall/releases/tag/v3.0.0)**. Rollback anchor: annotated tag `v2.0.0`.
@@ -30,8 +32,8 @@ copilot plugin marketplace browse alex-mall
 # Install a plugin (plugin@marketplace format)
 copilot plugin install <plugin-name>@alex-mall
 
-# Example: install the visualization plugin
-copilot plugin install flint-chart-plugin@alex-mall
+# Recommended first install: Alex ACT Core
+copilot plugin install alex-act-core@alex-mall
 ```
 
 Plugins install into `~/.copilot/installed-plugins/alex-mall/<plugin-name>/`.
@@ -48,12 +50,34 @@ copilot plugin marketplace remove alex-mall      # unregister the marketplace
 
 ---
 
+## Start with Alex ACT Core
+
+Core is the recommended first install for most users. It gives Copilot a consistent way to question assumptions, plan work, protect sensitive data, handle documents, and manage plugins. The other Alex ACT constellation plugins build on that foundation.
+
+| What you want to do | Plugin | What it adds |
+| --- | --- | --- |
+| Give Copilot a reliable baseline across projects | [`alex-act-core`](plugins/reasoning-metacognition/alex-act-core/) | Critical thinking, planning, security and privacy guidance, document workflows, engineering practices, and plugin management |
+| Create charts, print figures, banners, AI images, or browsable documentation | [`alex-act-illustrator-plugin`](plugins/data-analytics/alex-act-illustrator-plugin/) | Visual framing, authoring, generation, and verification workflows |
+| Set up public Microsoft tools for a project | [`alex-act-enterprise`](plugins/cloud-infrastructure/alex-act-enterprise/) | Guided setup for Azure, Fabric, Power BI, and Microsoft 365 Agents Toolkit |
+
+### Recommended path
+
+1. Install Core with `copilot plugin install alex-act-core@alex-mall`.
+2. Reload VS Code, open Copilot Chat, and run `/alex-act-core install-constellation`. Choose only the specializations you need and separately decide whether to activate Core's always-on instructions.
+3. Add an optional plugin directly if you already know what you need:
+   - Visual work: `copilot plugin install alex-act-illustrator-plugin@alex-mall`
+   - Public Microsoft tools: `copilot plugin install alex-act-enterprise@alex-mall`
+
+> **Private specialization:** `alex-act-msft` is private and intended only for Microsoft-internal work. It is not published in this public Mall.
+
+---
+
 ## Use in VS Code
 
 The Copilot CLI plugins integrate with **GitHub Copilot Chat** in VS Code once installed.
 
 1. **Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions** in VS Code (1.117 or later).
-2. **Install plugins via the Copilot CLI** using the steps above. Copilot Chat picks up any plugin components (agents, skills, commands, MCP servers) that ship with it.
+2. **Install plugins via the Copilot CLI** using the steps above. Namespaced commands and agents are the most reliable VS Code surfaces; generic skill-tool exposure depends on the current Copilot Chat runtime.
 3. **Reload VS Code** or run *Developer: Reload Window* so Copilot Chat re-scans the installed plugins.
 4. In Chat, invoke a plugin's commands with `/`, agents with `@`, or skills by describing the task the skill's frontmatter is scoped to.
 
@@ -72,8 +96,8 @@ To make a project auto-install specific plugins for every collaborator, commit a
     }
   },
   "enabledPlugins": {
-    "flint-chart-plugin@alex-mall": true,
-    "document-banner-pastel@alex-mall": true
+    "alex-act-illustrator-plugin@alex-mall": true,
+    "alex-act-enterprise@alex-mall": true
   }
 }
 ```
@@ -95,27 +119,68 @@ The three files are merged in that order; later wins. For `enabledPlugins` and `
 
 ---
 
+## Publish a plugin
+
+Contributors prepare a normalized plugin payload in their fork; automation validates it; the Mall CODEOWNER reviews and approves it. Contributor scripts never commit, push, merge, or publish on their own.
+
+```bash
+npm install --ignore-scripts
+npm run submit:prepare -- --source ../my-plugin --category productivity --repository https://github.com/you/my-plugin --ref v1.0.0 --submitted-by @you --evidence "Used in a real project" --apply
+npm run submit:validate -- --plugin productivity/my-plugin
+npm test
+npm run validate
+```
+
+Open a pull request using the plugin-submission template. Passing checks means the payload is structurally eligible for review; it does not mean acceptance. See [CONTRIBUTING.md](CONTRIBUTING.md) for evidence, licensing, and review requirements.
+Repository admins must configure `main` branch protection to require the **Validate proposed plugins** check and CODEOWNER approval. CODEOWNERS requests review; branch protection enforces it.
+
+## Maintainer operations
+
+Maintainer commands default to dry-run where they write curated payloads:
+
+```bash
+# Import a new plugin or preview an upstream refresh
+npm run vendor -- --source ../my-plugin --category productivity --repository https://github.com/owner/my-plugin --ref v1.0.0
+
+# Apply after reviewing the dry-run; add --replace for an existing plugin
+npm run vendor -- --source ../my-plugin --category productivity --repository https://github.com/owner/my-plugin --ref v1.0.0 --apply
+
+# Refresh first-party catalog, trust, marketplace, README, and gates
+npm run maintain -- --curated
+
+# Preview, then enforce validation + CODEOWNER approval on main
+npm run admin:configure-approval
+npm run admin:configure-approval -- --apply
+
+# Full 42-store network refresh (requires SOURCES_DIR plus GH_TOKEN or GITHUB_TOKEN)
+npm run maintain -- --full
+```
+
+Review `git diff` before committing. `vendor` never commits or pushes; `maintain` never approves contributor PRs.
+
+---
+
 ## Browse the catalog
 
 - [Full catalog index](catalog/INDEX.md) — every plugin, sortable
-- [By category](catalog/categories/) — 21 categories
+- [By category](catalog/categories/) — 21 canonical categories plus uncategorized
 - [By store](catalog/stores/) — per-source drilldown
 - [Trust audit](scoring/TRUST-AUDIT.md) — score distribution and top plugins
-- [Source registry](sources/SOURCES.md) — the 49 upstream stores the discovery catalog aggregates
+- [Source registry](sources/SOURCES.md) — the 42 stores the discovery catalog aggregates
 
 ## Top 10 stores by trust
 
 | Rank | Store | Trust | Plugins | Provenance |
 | ---: | --- | ---: | ---: | --- |
-| 1 | 🏆 [plugin-mall](catalog/stores/plugin-mall.md) | 82 | 362 | 🏆 first-party |
+| 1 | 🏆 [plugin-mall](catalog/stores/plugin-mall.md) | 82 | 363 | 🏆 first-party |
 | 2 | [alirezarezvani-claude-skills](catalog/stores/alirezarezvani-claude-skills.md) | 35 | 38 | third-party |
-| 3 | [antigravity-awesome-skills](catalog/stores/antigravity-awesome-skills.md) | 35 | 1906 | third-party |
-| 4 | [awesome-copilot](catalog/stores/awesome-copilot.md) | 35 | 486 | third-party |
-| 5 | [buildwithclaude](catalog/stores/buildwithclaude.md) | 35 | 110 | third-party |
+| 3 | [antigravity-awesome-skills](catalog/stores/antigravity-awesome-skills.md) | 35 | 1910 | third-party |
+| 4 | [awesome-copilot](catalog/stores/awesome-copilot.md) | 35 | 490 | third-party |
+| 5 | [buildwithclaude](catalog/stores/buildwithclaude.md) | 35 | 111 | third-party |
 | 6 | [claude-code-plugins-plus-skills](catalog/stores/claude-code-plugins-plus-skills.md) | 35 | 24 | third-party |
 | 7 | [context-engineering-kit](catalog/stores/context-engineering-kit.md) | 35 | 13 | third-party |
 | 8 | [daymade-claude-code-skills](catalog/stores/daymade-claude-code-skills.md) | 35 | 92 | third-party |
-| 9 | [dotnet-skills](catalog/stores/dotnet-skills.md) | 35 | 17 | third-party |
+| 9 | [dotnet-skills](catalog/stores/dotnet-skills.md) | 35 | 18 | third-party |
 | 10 | [marketingskills](catalog/stores/marketingskills.md) | 35 | 51 | third-party |
 
 ## Score distribution
@@ -123,10 +188,10 @@ The three files are merged in that order; later wins. For `enabledPlugins` and `
 | Range | Plugins | Share |
 | --- | ---: | ---: |
 | 0-19 | 15 | 0.4% |
-| 20-39 | 689 | 17.9% |
-| 40-59 | 2781 | 72.2% |
+| 20-39 | 691 | 17.9% |
+| 40-59 | 2793 | 72.3% |
 | 60-79 | 0 | 0.0% |
-| 80-100 | 365 | 9.5% |
+| 80-100 | 363 | 9.4% |
 
 ## How trust scoring works
 
@@ -166,4 +231,4 @@ If you use the Alex ACT Edition brain via Copilot Chat, these Edition prompts wr
 The prompts live in Edition's `.github/prompts/` and route through `.github/instructions/mall-installation.instructions.md`.
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-07-29T01:15:05.641Z. Source of truth: `catalog/*.json`. Never hand-edit this README.*
+*Generated by `scripts/render-catalog.cjs` at 2026-08-01T20:41:40.548Z. Source of truth: `catalog/*.json`. Never hand-edit this README.*

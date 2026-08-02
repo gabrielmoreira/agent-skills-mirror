@@ -1,3 +1,10 @@
+---
+type: reference
+title: IDD Comment Minimization
+description: Defines the live status digest contract and the safe procedure for minimizing completed review feedback and stale operational markers after merge.
+tags: [comment-minimization, cleanup]
+---
+
 # IDD Comment Minimization
 
 <!-- cspell:words AAAAB Unminimize Wpaqs unminimized -->
@@ -158,11 +165,15 @@ canonical, mandatory contract. The server-side workflow is a
 backstop, not a replacement: same helper, same candidate rules,
 same evidence comment shape, non-blocking on errors. Double-posting is
 prevented by the cleanup-evidence record itself, not by Actions
-concurrency: the workflow skips when any `<!-- idd-cleanup-evidence:`
-comment already exists, and the agent F4 step skips its own post when a
-prior success record is already present — including the one the workflow
-posted. The workflow's PR-keyed `concurrency` group only serializes
-workflow runs against each other; it does not gate the agent's local F4.
+concurrency: the workflow skips when a trusted-author
+`<!-- idd-cleanup-evidence:` comment already exists (posted by
+`github-actions[bot]` or a configured `trustedMarkerActors` login — an
+untrusted commenter's marker-prefixed comment never counts), and the
+agent F4 step skips its own post under the same trusted-author rule when
+a prior success record is already present — including the one the
+workflow posted. The workflow's PR-keyed `concurrency` group only
+serializes workflow runs against each other; it does not gate the
+agent's local F4.
 
 ## GitHub mechanism
 

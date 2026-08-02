@@ -39,6 +39,8 @@ OpenAkita 的 AI 字幕全生命周期插件 — 一个插件涵盖 **自动字�
   pip install playwright
   python -m playwright install chromium
   ```
+  也可在「设置 → 其他依赖」中点击安装;页面会分别显示系统 Chromium 与
+  Playwright 专用 Chromium 的检测结果。
 - 中文/日韩字体：HTML 烧制依赖系统已安装目标语言字体。Linux 服务器请预装 Noto CJK 系列。
 
 ### 2.3 安装 / 启用
@@ -82,15 +84,16 @@ GET    /settings                         - 当前配置（API key 仅返回掩�
 PUT    /settings                         - 更新配置
 GET    /storage/stats                    - 存储统计
 GET    /modes                            - 模式 / 翻译模型 / 错误码字典
-GET    /healthz                          - 健康检查（4 字段)
+GET    /healthz                          - 健康检查（5 字段)
 ```
 
-`/healthz` 返回固定 4 字段,**永不回显 API key 本体**:
+`/healthz` 返回固定 5 字段,**永不回显 API key 本体**:
 ```json
 {
   "ffmpeg_ok": true,
   "playwright_ok": true,
   "playwright_browser_ready": false,
+  "system_chromium_ok": true,
   "dashscope_api_key_present": true
 }
 ```

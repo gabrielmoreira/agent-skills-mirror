@@ -91,6 +91,18 @@ start.js → electron . → main.js
 
 每个账户有独立的数据目录，通过 `--data-dir` 传给 Python 后端。所有数据（对话、设置、记忆、上传文件、知识库）按账户隔离。
 
+### 前端静态资源缓存与版本号（重要！）
+
+启动"秒开"与"更新即时生效"两全依赖内容版本号缓存机制，改代码/加资源时需遵守以下约定：
+
+- **HTML 文档**（`index.html` 等）：由 `server.py` 中间件 `inject_asset_versions` 重写输出，始终带 `Cache-Control: no-cache`（每次重新校验）。主文档永远是最新的。
+- **资源 URL 版本化**：中间件把 HTML 中引用的 js/css/图片改写为 `path.ext?v=<内容md5前8位>`。文件没变 → hash 不变 → URL 不变 → 缓存命中秒开；文件变了 → URL 变 → 旧缓存作废 → 自动加载新代码（无需强刷）。
+- **Service Worker**（`static/sw.js`）：带 `?v=` 的资源走 cache-first（永不 revalidate），非版本化懒加载库走 stale-while-revalidate，HTML 走 network-first。
+- **升级缓存策略/结构时必须递增 `sw.js` 里的 `CACHE_NAME`**（如 `sap-cache-v2` → `v3`），否则旧缓存不会被 `activate` 清理，用户仍会用老代码。
+- **新增被 HTML 引用的静态资源类型**（如某种新字体/媒体格式）时，需同步更新两处正则：`server.py` 的 `_ASSET_VERSION_RE` 与 `sw.js` 的 `VERSIONED_ASSET_RE`。
+- **新增 HTML 页面**会自动被版本化，无需额外配置。
+- 依赖缓存命中的资源（如修改了 `sw.js` 或引入新的懒加载文件）测试时请用无痕/强刷确认首次生效。
+
 ## 开发命令
 
 ```bash

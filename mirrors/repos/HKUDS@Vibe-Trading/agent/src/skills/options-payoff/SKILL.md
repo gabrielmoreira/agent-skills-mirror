@@ -16,6 +16,15 @@ This skill is designed for option strategy analysis scenarios within the Vibe-Tr
 
 **Constraint**: For research and backtesting only. Do not output live trading instructions, in line with the project's guardrails.
 
+### Built-in execution tool
+
+Load this skill for methodology, then call `options_payoff` for production
+calculations. Pass signed `legs` (`qty > 0` long, `qty < 0` short),
+`entry_spot`, and `expiry_days`; optionally pass actual per-share premiums,
+multiplier, commission, chart bounds, and IV scenarios. The tool returns an
+expiry curve, a spot × IV scenario matrix, and analytic breakeven/max-risk
+results that do not depend on the display grid containing every strike.
+
 ---
 
 ## 1. Supported Strategy Types
@@ -224,24 +233,25 @@ The gap between the theoretical value curve and the expiry curve equals the rema
 
 ### 3.3 Break-Even Points
 
-Numerically solve for the roots of `Payoff(S_T) = 0`:
-- Use `scipy.optimize.brentq` to solve within adjacent intervals where the sign changes
+Expiry payoff is piecewise linear. Solve `Payoff(S_T) = 0` on intervals formed
+by `S=0`, every unique strike, and the right tail. Do not search only the chart
+grid: a narrow grid can miss a valid root beyond its bounds.
+
 - Single-leg strategies:
   - Long Call BEP = K + premium
   - Long Put BEP = K - premium
   - Short Call BEP = K + premium received
   - Short Put BEP = K - premium received
-- Multi-leg strategies: solve numerically, possibly resulting in 0 to 2 BEPs
+- Multi-leg strategies can have more than two breakevens; inspect every strike
+  interval and the unbounded right interval.
 
 ### 3.4 Max Profit / Max Loss
 
-```python
-max_profit = max(payoff_curve)    # If inf, label as "Unlimited"
-max_loss   = min(payoff_curve)    # If -inf, label as "Unlimited"
-
-# Corresponding underlying price region
-profit_range = S_range[payoff_curve > 0]
-```
+Evaluate payoff at `S=0` and every unique strike. Those are all finite points
+where slope can change, so finite extrema occur in that set. Then inspect the
+right-tail slope: positive means unlimited profit, negative means unlimited
+loss, and zero means the payoff remains flat. Never derive max profit/loss only
+from sampled chart points.
 
 ### 3.5 P&L Under Different Volatility Scenarios
 

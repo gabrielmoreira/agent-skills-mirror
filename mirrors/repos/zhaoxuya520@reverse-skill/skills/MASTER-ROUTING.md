@@ -68,6 +68,7 @@ powershell -File skills\scripts\append-evidence.ps1 -CaseRoot work\my-case -Id E
 | **R18** | EDR / 免杀 / syscall | `edr-bypass-re/` |
 | **R19** | 浏览器/桌面自动化 | `browser-automation/` |
 | **R20** | 报告 / writeup | `docs-generator/` |
+| **R39** | 图表 / Mermaid / Graphviz / PlantUML / 架构图 | `diagram-generator/` |
 | **R21** | 协议 / Protobuf / PCAP 协议 | `protocol-reverse/` |
 | **R22** | Ghidra / 开源反编译 | `ghidra-reverse/` |
 | **R23** | 云 / 容器 / K8s | `cloud-k8s/` |

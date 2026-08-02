@@ -1,4 +1,4 @@
-# Initialisiert Planungsdateien für eine neue Sitzung
+﻿# Initialisiert Planungsdateien für eine neue Sitzung
 # Verwendung: .\init-session.ps1 [Projektname]
 
 param(

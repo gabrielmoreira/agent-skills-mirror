@@ -78,16 +78,16 @@ The line in the middle is *between thinking and typing*. Once the fabricated con
 
 | Sibling | What it adds |
 |---|---|
-| [epistemic-calibration](../../instructions/epistemic-calibration.instructions.md) | The always-on signal tables that fire this discipline at runtime; the calibration vocabulary ("I don't know" > confident lie) |
+| `epistemic-calibration` | The always-on signal tables that fire this discipline at runtime; the calibration vocabulary ("I don't know" > confident lie) |
 | [critical-thinking](../critical-thinking/SKILL.md) | The third leg of the epistemic triad — challenges reasoning *after* generation; this skill prevents the inputs that reasoning would otherwise compound |
-| [system-prompt-skepticism](../../instructions/system-prompt-skepticism.instructions.md) | Applies the same don't-invent discipline to instruction interpretation: don't fabricate preconditions, don't confabulate rationale |
+| `system-prompt-skepticism` | Applies the same don't-invent discipline to instruction interpretation: don't fabricate preconditions, don't confabulate rationale |
 
 ## The Three Legs of Epistemic Integrity
 
 | Skill | Question | Catches |
 |---|---|---|
 | **anti-hallucination** (this) | Am I making something up? | Fabricated facts, invented APIs, citation confabulation |
-| **awareness** (via [epistemic-calibration](../../instructions/epistemic-calibration.instructions.md)) | Am I wrong about something? | Retry loops, overconfidence, version errors, manipulation |
+| **awareness** (via `epistemic-calibration`) | Am I wrong about something? | Retry loops, overconfidence, version errors, manipulation |
 | **critical-thinking** (via [critical-thinking](../critical-thinking/SKILL.md)) | Am I right for the right reasons? | Bad reasoning, missed alternatives, unexamined assumptions |
 
 Each catches what the others miss. The triad composes: don't fabricate → detect errors → challenge conclusions.

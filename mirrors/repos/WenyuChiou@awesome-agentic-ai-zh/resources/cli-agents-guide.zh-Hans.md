@@ -2,7 +2,7 @@
 
 # CLI Agents 比较指南
 
-> [← 回主路线 README](../README.md)
+> [← 回主路线 README](../README.zh-Hans.md)
 
 > 📌 **这份是 reference doc**（深度比较、选择逻辑、坑、推荐搭配）。
 > 第一次接触 CLI agent、想要 step-by-step 上手 → 看 [`tracks/cli/A1-cli-intro.zh-Hans.md`](../tracks/cli/A1-cli-intro.zh-Hans.md)（Track A 第一站）。

@@ -1,8 +1,8 @@
 # alex-act-enterprise
 
-Alex ACT config-template plugin for the **public Microsoft ecosystem**. Ships a single scaffolding skill (`setup-enterprise-stack`) that generates the `~/.copilot/settings.json` block for 7 Microsoft plugins any tenant can use.
+Alex ACT config-template plugin for the **public Microsoft ecosystem**. Ships a single scaffolding skill (`setup-enterprise-stack`) that generates a repo-scoped `.github/copilot/settings.json` block for 7 Microsoft plugins any tenant can use, with an explicit `--user` opt-in.
 
-**Status**: v0.1.0 (unreleased) — empty scaffold. Repository created 2026-07-30. Content lands through evidence-gated Steward proposals per [`Alex_ACT_Steward/constellation/act/CURATION-RULES.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/act/CURATION-RULES.md).
+**Status**: v0.1.2, published through `alex-mall`. Repository created 2026-07-30. Content lands through evidence-gated Steward proposals per [`Alex_ACT_Steward/architecture/act/CURATION-RULES.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/architecture/act/CURATION-RULES.md).
 
 **Maintainer**: [`Alex_ACT_Steward`](https://github.com/fabioc-aloha/Alex_ACT_Steward) (top-of-chain in the plugin-architecture lineage since 2026-07-26 fork-and-freeze).
 
@@ -26,7 +26,7 @@ Every entry is **public**. Any tenant with the corresponding Microsoft subscript
 
 - **Not the Copilot CLI itself** — this plugin rides on top of Copilot CLI + Chat.
 - **Not the underlying plugins** — this is a config template. The actual plugins (`azure`, `fabric-*`, `powerbi-authoring`, `microsoft-365-agents-toolkit`) live in their upstream Microsoft repos and marketplaces. This plugin points a heir at the right block to paste.
-- **Not Microsoft-internal** — everything here is publicly available. Microsoft-internal services (WorkIQ, Agency framework, `org-report`) live in a separate private plugin, [`alex-act-msft`](../alex-act-msft) (not published to public Mall).
+- **Not Microsoft-internal** — everything here is publicly available. Microsoft-internal services (WorkIQ, Agency framework, `org-report`) live in a separate private plugin, `alex-act-msft` (not published to public Mall).
 - **Not opinionated about which subset to enable** — the target block enables all 7. Heirs edit their local `enabledPlugins` after the initial paste to drop plugins they don't need.
 
 ## Where this sits
@@ -38,13 +38,13 @@ Three-layer constellation stack:
 | **Baseline** | [`alex-act-core`](https://github.com/fabioc-aloha/Alex_ACT_Core) | Always-on epistemic discipline every heir needs |
 | **Specialization — visual authoring** | [`alex-act-illustrator-plugin`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) | Charts, print figures, SVG banners, AI imagery |
 | **Specialization — Microsoft ecosystem** | **`alex-act-enterprise`** (this repo) | Config template for the public Microsoft plugin set |
-| **Specialization — Microsoft-internal** | [`alex-act-msft`](../alex-act-msft) (private) | Agency framework + WorkIQ + `org-report` scaffolding |
+| **Specialization — Microsoft-internal** | `alex-act-msft` (private) | Agency framework + WorkIQ + `org-report` scaffolding |
 
 Heirs enable whichever specializations apply to their workspace.
 
 ## Target settings block
 
-Once the `setup-enterprise-stack` skill ships, invoking it produces:
+Invoking `setup-enterprise-stack` produces:
 
 ```json
 {
@@ -64,7 +64,7 @@ Once the `setup-enterprise-stack` skill ships, invoking it produces:
 }
 ```
 
-Heirs paste this into their `~/.copilot/settings.json` (or `.github/copilot/settings.json` for repo-scoped enablement) and either wait for declarative auto-install or run `copilot plugin install` per entry.
+Heirs merge this into `.github/copilot/settings.json` by default. Pass `--user` to target `~/.copilot/settings.json` instead.
 
 ## Layout
 
@@ -78,10 +78,8 @@ alex-act-enterprise/
 ├── .markdownlint.json
 ├── .github/                    # Copilot Chat + CLI discovery surface
 │   ├── copilot-instructions.md
-│   ├── skills/                 # empty in v0.1.0 (setup-enterprise-stack lands here)
-│   ├── instructions/           # empty in v0.1.0
-│   ├── prompts/                # empty in v0.1.0
-│   └── agents/                 # empty in v0.1.0 (this plugin ships no agents by design)
+│   ├── skills/                 # setup-enterprise-stack
+│   └── prompts/                # setup-enterprise command
 └── .vscode/                    # workspace settings for self-dogfooding
 ```
 
@@ -111,9 +109,7 @@ Then install Enterprise:
 copilot plugin install alex-act-enterprise@alex-mall
 ```
 
-Installs at user scope — Enterprise's `setup-enterprise-stack` skill and `/setup-enterprise` prompt become available in every workspace.
-
-> **Publication status.** The Mall itself is live (v3.0.0 GA, 2026-07-28). Enterprise's Mall entry lands after Core's does; until it's live, `copilot plugin install alex-act-enterprise@alex-mall` returns "plugin not found." Watch [Alex_Skill_Mall's catalog](https://github.com/fabioc-aloha/Alex_Skill_Mall/blob/main/catalog/plugins.json) or the [Steward curation log](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/operations/ledgers/curation-log.md) for the publication commit.
+Installs at user scope — Enterprise's `setup-enterprise-stack` skill and `/alex-act-enterprise setup-enterprise` prompt become available in every workspace.
 
 ### Verify the install
 
@@ -121,7 +117,7 @@ Installs at user scope — Enterprise's `setup-enterprise-stack` skill and `/set
 copilot plugin list
 ```
 
-You should see `alex-act-enterprise@alex-mall` with the current version. From Copilot Chat, `/setup-enterprise` should appear in the slash-command picker.
+You should see `alex-act-enterprise@alex-mall` with the current version. From Copilot Chat, `/alex-act-enterprise setup-enterprise` should appear in the slash-command picker.
 
 ## Use — configure the Microsoft ecosystem in a workspace
 
@@ -130,7 +126,7 @@ The Microsoft ecosystem plugins (Azure, Fabric-*, Power BI, M365 Agents Toolkit)
 Open your Microsoft-ecosystem workspace and invoke:
 
 ```text
-/setup-enterprise
+/alex-act-enterprise setup-enterprise
 ```
 
 The skill has three modes:
@@ -147,7 +143,7 @@ Pass `--user` to write to user scope instead (`~/.copilot/settings.json`) — us
 copilot plugin update alex-act-enterprise
 ```
 
-Read the [CHANGELOG](CHANGELOG.md) before applying breaking updates. Core's `/update-plugins` prompt reads the CHANGELOG for you and consents-gate breaking changes.
+Read the [CHANGELOG](CHANGELOG.md) before applying breaking updates. Core's `/alex-act-core update-plugins` prompt reads the CHANGELOG for you and consent-gates breaking changes.
 
 ## Uninstall
 
@@ -161,9 +157,7 @@ Uninstalling Enterprise **does not** remove the downstream Microsoft plugins it 
 
 ## Roadmap
 
-Growth happens through evidence-gated proposals per [`Alex_ACT_Steward/constellation/act/CURATION-RULES.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/act/CURATION-RULES.md). Planned first content:
-
-- **`setup-enterprise-stack` skill** — emits the paste-ready settings block, verifies the CLI is installed, optionally runs `copilot plugin install` for each entry after user consent.
+Growth happens through evidence-gated proposals per [`Alex_ACT_Steward/architecture/act/CURATION-RULES.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/architecture/act/CURATION-RULES.md).
 
 Future candidates (evaluated per proposal):
 

@@ -6,17 +6,19 @@
 
 ## Ownership
 
-- `google-icons.css` owns the font-face and icon class definitions.
-- `google-icons.ttf` owns the font binary used by the WebUI.
+- `google-icons.css` owns the font-face plus the shared `<x-icon>` and legacy icon-class definitions.
+- `google-icons.woff2` is the primary compressed font binary; `google-icons.ttf` is its compatibility fallback.
 
 ## Local Contracts
 
-- Keep font filenames and CSS references synchronized.
+- Keep the WOFF2 and TTF fonts equivalent and keep their CSS references synchronized.
+- `<x-icon>` and legacy icon ligature elements must remain exactly one em wide and high, clip fallback text, and stay transparent until the Font Loading API confirms the Material Symbols face after the application document finishes parsing. A failed font may leave a blank square but must never expose a layout-breaking ligature name.
+- Keep `.material-symbols-outlined` and `.material-icons-outlined` rendering compatible for third-party plugins even though first-party markup uses `<x-icon>`.
 - Do not add unrelated remote font assets or tracking references.
 
 ## Work Guidance
 
-- Replace font and stylesheet together when updating icon coverage.
+- Replace both font formats and the stylesheet together when updating icon coverage.
 
 ## Verification
 

@@ -1,6 +1,6 @@
 ---
 name: destination
-version: 2.1.0
+version: 2.3.0
 description: 'Surface the agent''s in-progress guesses about where the operator is heading — what they care about, what they are circling, what the implicit destination might be — and turn those guesses into questions the operator can confirm, correct, or reject. Closes the gap between the destination the operator has explicitly stated and what the agent has picked up from their conversation, reactions, and emphasis. USE WHEN: the destination feels thin or stale, the operator is exploring rather than executing, the agent suspects it is missing implicit direction, or before a long autonomous run that will drift if the destination is unclear.'
 argument-hint: 'Optionally: the area you want hunches about (a specific concern, a recent decision, the project as a whole)'
 ---
@@ -11,7 +11,7 @@ argument-hint: 'Optionally: the area you want hunches about (a specific concern,
 
 *Memory Model role: Maintains `.acm/destination.md` — the operator-held destination that anchors all other memory.*
 
-*Renamed from Vision in v2.0.0. The artifact filename is now `.acm/destination.md`; `.acm/vision.md` is read as a fallback if only the old name exists — see "Artifact name and fallback" below.*
+*Renamed from Vision in v2.0.0 (2026-05-28). The artifact filename is `.acm/destination.md`. The `.acm/vision.md` legacy-fallback support that eased that transition was removed once the fleet migration completed and no repo was found still depending on the old name — see `CHANGELOG.md`.*
 
 This skill exists for one bottleneck the rest of the suite cannot touch: **the operator's articulation cost**. The destination is whatever the human has so far managed to write down. But the human is operating from a much richer interior model — interests, focus, ethics, hunches of their own — most of it implicit. Even they cannot extract it on demand.
 
@@ -29,21 +29,15 @@ Destination enacts the same three principles as the rest of the suite, with one 
 
 Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it if available, but this skill operates fully without it.
 
-## Artifact name and fallback
+## Artifact name
 
-The canonical operator-held destination artifact is `.acm/destination.md`. In v1.x of this skill (when it was named Vision) the artifact was `.acm/vision.md`. To avoid breaking repos that have not migrated yet, every skill that reads this artifact follows the same rule:
-
-1. If `.acm/destination.md` exists, read it. This is the canonical name going forward.
-2. Else if `.acm/vision.md` exists, read it as a fallback and surface a one-line migration hint to the operator: *"Found legacy `.acm/vision.md`. The current canonical name is `.acm/destination.md`. Consider `git mv .acm/vision.md .acm/destination.md` to migrate."*
-3. Else: the repo has no operator-held destination yet. Run this skill to produce one — and write `.acm/destination.md` (never `vision.md`) for any new artifact.
-
-This fallback exists for the transition period. It may be removed in a future major version.
+The operator-held destination artifact is `.acm/destination.md`. If it does not exist, the repo has no operator-held destination yet — run this skill to produce one.
 
 ## When to invoke
 
 Destination is **not** part of the autonomous loop. It is invoked deliberately by the operator (or by another skill that has detected a need) at moments where direction is more valuable than action:
 
-- **The destination feels thin or stale.** The operator-held `.acm/destination.md` (or legacy `.acm/vision.md`) is missing, terse, or no longer matches what the operator has been talking about.
+- **The destination feels thin or stale.** The operator-held `.acm/destination.md` is missing, terse, or no longer matches what the operator has been talking about.
 - **The operator is exploring, not executing.** Recent sessions show the operator turning ideas over rather than narrowing toward a decision.
 - **A long autonomous run is about to start.** The destination is the input that determines whether the run will produce useful work or precisely-executed wrong work.
 - **The agent suspects it is missing something.** During Improve, Orient, or any other skill, an agent that finds itself uncertain about *what the operator actually wants* should be able to pause and run Destination rather than guess silently.
@@ -56,7 +50,9 @@ Destination is fast, conversational, and stops as soon as the operator says "yes
 
 Before forming any hunches, look at what is available in the **target repo's `.acm/` folder** (in the root of the repo being worked on — not the skills install directory):
 
-- `.acm/destination.md` (or legacy `.acm/vision.md`) — what the operator has explicitly said (if it exists). Apply the fallback rule above.
+**ACM §4 Scoped Memory — read parent scopes first.** Before reading the repo's own `.acm/destination.md`, traverse parent directories upward and read any `.acm/destination.md` found there. Higher-scope mandates govern lower-scope ones — if a workspace or org destination conflicts with the repo destination, the higher scope wins. Label each scope when reading (e.g., "workspace mandate", "repo mandate"). Stop traversal when any of: filesystem root reached; a `.acm-root` marker file is found in a directory (operator-declared ceiling — read that directory's `.acm/` then stop); or 4 levels traversed (implementation ceiling). Destination is the skill that authors the repo-level destination.md — a hunch formed or a revision written without first reading the workspace mandate risks proposing something a higher scope has already settled, or duplicating a coordination constraint that belongs one level up.
+
+- `.acm/destination.md` — what the operator has explicitly said (if it exists).
 - `.acm/orientation.md` — what the agent's last arc-read concluded about the target.
 - `.acm/audit-trail.md` — recent decisions, reversals, realisations.
 - `.acm/sessions/` — recent conversation transcripts, if present.
@@ -117,8 +113,6 @@ After the conversation, capture three things:
 **Before writing: create the `.acm/` directory in the target repo root if it does not already exist.** Then write `.acm/destination.md` with the agent's current understanding of the destination. Do not ask the operator to do this — write it as part of completing the run. The destination is operator-held in the sense that the *operator commits it to git* when it reads right, and revises it before committing if anything is off. The agent's job is to produce the file; the operator's job is to decide whether it is ready to commit.
 
 If `.acm/destination.md` already exists, update it in place rather than replacing it wholesale — preserve anything the operator has written that the current inferences do not change.
-
-If only the legacy `.acm/vision.md` exists, do **not** silently rewrite it as `.acm/destination.md`. Either (a) update the legacy file in place and surface the migration hint, or (b) ask the operator to run `git mv .acm/vision.md .acm/destination.md` first so the rename is its own visible commit.
 
 If the conversation produced arc-claims about the target's current state rather than destination claims, those belong in orientation.md — but orientation.md is Orient's to write. Destination surfaces them; Orient (or the next Improve run) decides what to do with them.
 

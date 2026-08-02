@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kurone-kito/idd-skill` — 26 default patterns, 2 followed patterns, 55 file(s) materialized.
+Mirror of `kurone-kito/idd-skill` — 26 default patterns, 2 followed patterns, 54 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kurone-kito/idd-skill` — 26 default patterns, 2 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 55 |
+| Files         | 54 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -108,13 +108,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | ✓ | [`idd-template/docs/idd-helper-scripts.md`](idd-template/docs/idd-helper-scripts.md) |
 | 47 | ✓ | [`idd-template/docs/idd-review-policy-profiles.md`](idd-template/docs/idd-review-policy-profiles.md) |
 | 48 | ✓ | [`idd-template/docs/policy-constants.md`](idd-template/docs/policy-constants.md) |
-| 49 | ✓ | [`skills/issue-authoring/agents/openai.yaml`](skills/issue-authoring/agents/openai.yaml) |
-| 50 | ✓ | [`skills/issue-authoring/references/contract.md`](skills/issue-authoring/references/contract.md) |
-| 51 | ✓ | [`skills/issue-authoring/references/draft-patterns.md`](skills/issue-authoring/references/draft-patterns.md) |
-| 52 | ✓ | [`skills/issue-authoring/references/workflow-boundary.md`](skills/issue-authoring/references/workflow-boundary.md) |
-| 53 | ✓ | [`skills/issue-authoring/SKILL.md`](skills/issue-authoring/SKILL.md) |
-| 54 | → | [`docs/idd-workflow.md`](docs/idd-workflow.md) |
-| 55 | → | [`docs/typescript-sources.md`](docs/typescript-sources.md) |
+| 49 | ✓ | [`skills/issue-authoring/references/contract.md`](skills/issue-authoring/references/contract.md) |
+| 50 | ✓ | [`skills/issue-authoring/references/draft-patterns.md`](skills/issue-authoring/references/draft-patterns.md) |
+| 51 | ✓ | [`skills/issue-authoring/references/workflow-boundary.md`](skills/issue-authoring/references/workflow-boundary.md) |
+| 52 | ✓ | [`skills/issue-authoring/SKILL.md`](skills/issue-authoring/SKILL.md) |
+| 53 | → | [`docs/idd-workflow.md`](docs/idd-workflow.md) |
+| 54 | → | [`docs/typescript-sources.md`](docs/typescript-sources.md) |
 
 ---
 

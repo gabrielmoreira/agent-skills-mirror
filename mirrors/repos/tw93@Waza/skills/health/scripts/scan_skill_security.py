@@ -28,11 +28,6 @@ PATTERNS = {
         r"disregard\s+(?:the\s+)?(?:system|developer)\s+prompt|jailbreak",
         re.IGNORECASE | re.DOTALL,
     ),
-    "secret_exfiltration": re.compile(
-        r"(?:curl|wget|requests\.post|fetch\().{0,240}"
-        r"(?:os\.environ|process\.env|\$\{?[A-Z][A-Z0-9_]{3,}\}?)",
-        re.IGNORECASE | re.DOTALL,
-    ),
     "destructive_command": re.compile(
         r"rm\s+-[A-Za-z]*r[A-Za-z]*f\s+(?:/|~|\$HOME)(?:\s|$)|"
         r"git\s+push\s+[^\n]*--force(?:-with-lease)?",
@@ -44,6 +39,24 @@ PATTERNS = {
         re.IGNORECASE | re.DOTALL,
     ),
 }
+
+SHELL_NETWORK_COMMAND_RE = re.compile(
+    r"\b(?:curl|wget)\b(?:\\\r?\n|[^\r\n;&|]){0,960}",
+    re.IGNORECASE | re.DOTALL,
+)
+CODE_NETWORK_CALL_RE = re.compile(
+    r"\brequests\.(?:get|post|put|patch|delete|request)\s*\([^)]{0,960}\)|"
+    r"\bfetch\s*\([^)]{0,960}\)",
+    re.IGNORECASE | re.DOTALL,
+)
+SENSITIVE_ENV_NAME = (
+    r"[A-Z0-9_]*(?:TOKEN|SECRET|PASSWORD|PASSWD|API_KEY|PRIVATE_KEY|"
+    r"CREDENTIAL|AUTHORIZATION|AUTH_TOKEN|COOKIE|SESSION_KEY)[A-Z0-9_]*"
+)
+SECRET_SOURCE_RE = re.compile(
+    rf"os\.environ\b|process\.env\b|\$\{{?{SENSITIVE_ENV_NAME}\}}?",
+    re.IGNORECASE,
+)
 
 PEM_RE = re.compile(
     r"-----BEGIN [^-\r\n]+-----.*?(?:-----END [^-\r\n]+-----|\Z)",
@@ -332,6 +345,29 @@ def scan_text(text: str) -> list[tuple[str, int, str]]:
             )
             if len(matches) >= MAX_MATCHES + 1:
                 return matches
+    network_calls = list(SHELL_NETWORK_COMMAND_RE.finditer(text))
+    network_calls.extend(CODE_NETWORK_CALL_RE.finditer(text))
+    network_calls.sort(key=lambda match: match.start())
+    for command_match in network_calls:
+        command_text = command_match.group(0)
+        secret_match = SECRET_SOURCE_RE.search(command_text)
+        if secret_match is None:
+            continue
+        line_number = bisect.bisect_right(line_starts, command_match.start())
+        excerpt_start = text.rfind("\n", 0, command_match.start()) + 1
+        absolute_secret_end = command_match.start() + secret_match.end()
+        excerpt_end = text.find("\n", absolute_secret_end)
+        if excerpt_end < 0:
+            excerpt_end = len(text)
+        matches.append(
+            (
+                "secret_exfiltration",
+                line_number,
+                safe_excerpt(text[excerpt_start:excerpt_end]),
+            )
+        )
+        if len(matches) >= MAX_MATCHES + 1:
+            return matches
     return matches
 
 
@@ -458,6 +494,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         if project_root is not None:
             absolute_candidate = candidate if candidate.is_absolute() else Path.cwd() / candidate
             project_skill_roots = (
+                project_root / "skills",
                 project_root / ".claude" / "skills",
                 project_root / ".agents" / "skills",
                 project_root / ".codex" / "skills",

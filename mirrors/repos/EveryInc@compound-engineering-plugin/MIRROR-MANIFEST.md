@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 310 file(s) materialized.
+Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 followed patterns, 311 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `EveryInc/compound-engineering-plugin` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 310 |
+| Files         | 311 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -351,24 +351,25 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 290 | ✓ | [`skills/ce-work/scripts/context.mjs`](skills/ce-work/scripts/context.mjs) |
 | 291 | ✓ | [`skills/ce-work/scripts/cross-model-work.sh`](skills/ce-work/scripts/cross-model-work.sh) |
 | 292 | ✓ | [`skills/ce-work/scripts/peer-job-runner.py`](skills/ce-work/scripts/peer-job-runner.py) |
-| 293 | ✓ | [`skills/ce-work/scripts/unit_workspace_integration.py`](skills/ce-work/scripts/unit_workspace_integration.py) |
-| 294 | ✓ | [`skills/ce-work/scripts/unit_workspace_jobs.py`](skills/ce-work/scripts/unit_workspace_jobs.py) |
-| 295 | ✓ | [`skills/ce-work/scripts/unit_workspace_lifecycle.py`](skills/ce-work/scripts/unit_workspace_lifecycle.py) |
-| 296 | ✓ | [`skills/ce-work/scripts/unit_workspace_state.py`](skills/ce-work/scripts/unit_workspace_state.py) |
-| 297 | ✓ | [`skills/ce-work/scripts/unit_workspace_transaction.py`](skills/ce-work/scripts/unit_workspace_transaction.py) |
-| 298 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
-| 299 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
-| 300 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
-| 301 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
-| 302 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
-| 303 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
-| 304 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
-| 305 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
-| 306 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
-| 307 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
-| 308 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
-| 309 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
-| 310 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
+| 293 | ✓ | [`skills/ce-work/scripts/unit_workspace_ignored.py`](skills/ce-work/scripts/unit_workspace_ignored.py) |
+| 294 | ✓ | [`skills/ce-work/scripts/unit_workspace_integration.py`](skills/ce-work/scripts/unit_workspace_integration.py) |
+| 295 | ✓ | [`skills/ce-work/scripts/unit_workspace_jobs.py`](skills/ce-work/scripts/unit_workspace_jobs.py) |
+| 296 | ✓ | [`skills/ce-work/scripts/unit_workspace_lifecycle.py`](skills/ce-work/scripts/unit_workspace_lifecycle.py) |
+| 297 | ✓ | [`skills/ce-work/scripts/unit_workspace_state.py`](skills/ce-work/scripts/unit_workspace_state.py) |
+| 298 | ✓ | [`skills/ce-work/scripts/unit_workspace_transaction.py`](skills/ce-work/scripts/unit_workspace_transaction.py) |
+| 299 | ✓ | [`skills/ce-work/scripts/unit-workspace.py`](skills/ce-work/scripts/unit-workspace.py) |
+| 300 | ✓ | [`skills/ce-work/SKILL.md`](skills/ce-work/SKILL.md) |
+| 301 | ✓ | [`skills/ce-worktree/SKILL.md`](skills/ce-worktree/SKILL.md) |
+| 302 | ✓ | [`skills/lfg/references/next-work-handoff.md`](skills/lfg/references/next-work-handoff.md) |
+| 303 | ✓ | [`skills/lfg/references/review-followup.md`](skills/lfg/references/review-followup.md) |
+| 304 | ✓ | [`skills/lfg/references/tracker-defer.md`](skills/lfg/references/tracker-defer.md) |
+| 305 | ✓ | [`skills/lfg/SKILL.md`](skills/lfg/SKILL.md) |
+| 306 | ✓ | [`tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md`](tests/fixtures/custom-paths/custom-skills/custom-skill/SKILL.md) |
+| 307 | ✓ | [`tests/fixtures/custom-paths/skills/default-skill/SKILL.md`](tests/fixtures/custom-paths/skills/default-skill/SKILL.md) |
+| 308 | ✓ | [`tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/agent-only-skill/SKILL.md) |
+| 309 | ✓ | [`tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/claude-only-skill/SKILL.md) |
+| 310 | ✓ | [`tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md`](tests/fixtures/sample-plugin/skills/disabled-skill/SKILL.md) |
+| 311 | ✓ | [`tests/fixtures/sample-plugin/skills/skill-one/SKILL.md`](tests/fixtures/sample-plugin/skills/skill-one/SKILL.md) |
 
 ---
 

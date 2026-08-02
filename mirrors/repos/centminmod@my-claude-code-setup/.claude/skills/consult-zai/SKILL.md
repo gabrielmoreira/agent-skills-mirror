@@ -163,7 +163,7 @@ timeout; do NOT retry). Code-Searcher (Agent tool) is not wrapped — it bounds 
   (`$INTERACTIVE_SHELL` = the `zsh`|`bash` literal resolved in Setup):
   ```bash
   cat "$PROJECT_DIR/tmp/zai-prompt-RUN_ID.txt" | \
-    $TIMEOUT_CMD -k 10 1200 $INTERACTIVE_SHELL -i -c "zai --bare --print --output-format json --model 'glm-5.2[1m]' --allowedTools 'Read,Grep,Glob' --add-dir '$PROJECT_DIR'" \
+    $TIMEOUT_CMD -k 10 1200 $INTERACTIVE_SHELL -i -c "zai --bare --print --output-format json --model 'glm-5.2[1m]' --allowedTools 'Read,Grep,Glob' --disallowedTools 'Bash,Edit,Write,NotebookEdit,WebFetch,WebSearch,Task,KillShell,BashOutput' --add-dir '$PROJECT_DIR'" \
     > "$PROJECT_DIR/tmp/zai-output-RUN_ID.json" \
     2> "$PROJECT_DIR/tmp/zai-stderr-RUN_ID.log"
   ```
@@ -173,8 +173,16 @@ timeout; do NOT retry). Code-Searcher (Agent tool) is not wrapped — it bounds 
     parent session's OAuth token shadows it → 401 against the z.ai endpoint.
   - **`--model 'glm-5.2[1m]'` is required** — guarantees GLM 5.2 regardless of which tier
     default resolution would pick (guards against the `glm-5-turbo` subagent default).
-  - **Read-only is hard-enforced** via `--allowedTools 'Read,Grep,Glob'` — consultation is
-    analysis, not modification; never relax these flags.
+  - **Read-only enforcement** = `--allowedTools 'Read,Grep,Glob'` **plus** the load-bearing
+    `--disallowedTools 'Bash,Edit,Write,NotebookEdit,WebFetch,WebSearch,Task,KillShell,BashOutput'`
+    — `--allowedTools` only auto-approves and does NOT deny unlisted tools, so a global
+    `~/.claude/settings.json` allow-list would otherwise re-permit write-capable Bash on the
+    `--bare` path (verified 2026-07-18); consultation is analysis, never modification.
+    **Freeze the reviewed tree while agents run:** you, the orchestrator, must not edit,
+    `git checkout`/`stash`/`reset`, or otherwise mutate the reviewed source (your own
+    `$PROJECT_DIR/tmp` scratch files are exempt) from the first dispatch until the final report —
+    a slow agent still reading would see the tree shift mid-analysis and can rat-hole
+    producing no report.
   - **stdin pipe** (`cat … | …`) instead of `-p "$(cat …)"` avoids shell-quoting breakage
     and ARG_MAX limits on large prompts.
   - **`--add-dir '$PROJECT_DIR'`** — outer-shell single-quote expansion of the absolute
@@ -183,6 +191,7 @@ timeout; do NOT retry). Code-Searcher (Agent tool) is not wrapped — it bounds 
   - stderr captured separately; on a 401/auth failure it carries the diagnostic.
 
 - **For Code-Searcher:** Use Agent tool with `subagent_type: "code-searcher"` with the same enhanced prompt (plus the orchestrator-gated Severity block above on defect-hunt runs)
+  - **No sub-agent fan-out — append this VERBATIM to the code-searcher prompt:** "**Do this analysis YOURSELF — do NOT spawn sub-agents.** Do not use the Agent/Task tool to fan out to `code-searcher`, `Explore`, `general-purpose`, or any other subagent; use Read/Grep/Glob/Bash directly, however many calls that takes." Code-searcher runs with all tools and fans out unprompted on Sonnet 5 (reported live 2026-08-01); a sub-agent inherits none of this run's constraints, and the Agent-tool call carries no dispatch watchdog — a stalled fan-out underneath it stalls the whole consult. (`consult-panel` §1d carries the full form of this guard.)
 
 This parallel execution significantly improves response time.
 

@@ -4,7 +4,7 @@ For diagrams, architecture illustrations, covers, and social cards produced by g
 
 ## Spec Before Pixels
 
-Write the spec and get it approved before generating anything. Six lines, no more:
+Resolve the spec from the user's prompt, accepted references, and destination before generating anything. Surface it in six lines, no more. Use the shared initial preflight clarification round from the UI mode picker, not an additional round; ask only when an unresolved spec field has two materially different interpretations, and do not turn a fully specified request into an approval ceremony.
 
 - **One sentence on what the image says.** Not the topic, the claim. "A terminal tool that cleans a Mac" is a claim; "architecture diagram" is a topic.
 - **Language** of every string in the frame.
@@ -17,7 +17,7 @@ Across sibling repos, carry over only approved visual-system constraints. Rebuil
 
 ## Two Rejections Is A Hard Stop
 
-Count rejections on look, not on content. After the second, stop generating and re-align: restate the one sentence, ask which existing image to sit next to, confirm the exclusion list. A third blind regeneration treats the rejection as parameter noise, and the version after it can be worse than the version before, which is the tell that nothing was anchored.
+Count rejections on look, not on content. After the second, stop generating and re-align: restate the one sentence, ask which existing image to sit next to, confirm the exclusion list. This event-triggered recovery does not consume another preflight round; it reopens only the claim, reference, and exclusion fields for the affected asset. A third blind regeneration treats the rejection as parameter noise, and the version after it can be worse than the version before, which is the tell that nothing was anchored.
 
 When a version is partly right, name the part that survives before generating again. "Keep the composition, change the palette" converges; "make it better" does not.
 

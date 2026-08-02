@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 2 followed patterns, 174 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 2 followed patterns, 175 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 2 followed patterns, 174 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 174 |
+| Files         | 175 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -177,63 +177,64 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 115 | ✓ | [`agents/hermes/mcp-config-transaction.py`](agents/hermes/mcp-config-transaction.py) |
 | 116 | ✓ | [`agents/hermes/patch-cron-execution-runtime.py`](agents/hermes/patch-cron-execution-runtime.py) |
 | 117 | ✓ | [`agents/hermes/patch-discord-recovery-permissions.py`](agents/hermes/patch-discord-recovery-permissions.py) |
-| 118 | ✓ | [`agents/hermes/patch-gateway-runtime-metadata.py`](agents/hermes/patch-gateway-runtime-metadata.py) |
-| 119 | ✓ | [`agents/hermes/patch-langfuse-credentials.mts`](agents/hermes/patch-langfuse-credentials.mts) |
-| 120 | ✓ | [`agents/hermes/patch-profile-policy-defaults.py`](agents/hermes/patch-profile-policy-defaults.py) |
-| 121 | ✓ | [`agents/hermes/patch-session-list-preview.py`](agents/hermes/patch-session-list-preview.py) |
-| 122 | ✓ | [`agents/hermes/plugin/__init__.py`](agents/hermes/plugin/__init__.py) |
-| 123 | ✓ | [`agents/hermes/plugin/plugin.yaml`](agents/hermes/plugin/plugin.yaml) |
-| 124 | ✓ | [`agents/hermes/plugin/test_register_tools.py`](agents/hermes/plugin/test_register_tools.py) |
-| 125 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
-| 126 | ✓ | [`agents/hermes/policy-permissive.yaml`](agents/hermes/policy-permissive.yaml) |
-| 127 | ✓ | [`agents/hermes/runtime-config-guard.py`](agents/hermes/runtime-config-guard.py) |
-| 128 | ✓ | [`agents/hermes/security-dependencies.patch`](agents/hermes/security-dependencies.patch) |
-| 129 | ✓ | [`agents/hermes/seed-dashboard-config.py`](agents/hermes/seed-dashboard-config.py) |
-| 130 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
-| 131 | ✓ | [`agents/hermes/validate-env-secret-boundary.py`](agents/hermes/validate-env-secret-boundary.py) |
-| 132 | ✓ | [`agents/langchain-deepagents-code/dcode-launcher.sh`](agents/langchain-deepagents-code/dcode-launcher.sh) |
-| 133 | ✓ | [`agents/langchain-deepagents-code/dcode-session-supervisor.py`](agents/langchain-deepagents-code/dcode-session-supervisor.py) |
-| 134 | ✓ | [`agents/langchain-deepagents-code/dcode-wrapper.sh`](agents/langchain-deepagents-code/dcode-wrapper.sh) |
-| 135 | ✓ | [`agents/langchain-deepagents-code/dependency-review.md`](agents/langchain-deepagents-code/dependency-review.md) |
-| 136 | ✓ | [`agents/langchain-deepagents-code/Dockerfile`](agents/langchain-deepagents-code/Dockerfile) |
-| 137 | ✓ | [`agents/langchain-deepagents-code/Dockerfile.base`](agents/langchain-deepagents-code/Dockerfile.base) |
-| 138 | ✓ | [`agents/langchain-deepagents-code/generate-config.ts`](agents/langchain-deepagents-code/generate-config.ts) |
-| 139 | ✓ | [`agents/langchain-deepagents-code/managed-dcode-runtime.py`](agents/langchain-deepagents-code/managed-dcode-runtime.py) |
-| 140 | ✓ | [`agents/langchain-deepagents-code/manifest.yaml`](agents/langchain-deepagents-code/manifest.yaml) |
-| 141 | ✓ | [`agents/langchain-deepagents-code/nemoclaw_observability.py`](agents/langchain-deepagents-code/nemoclaw_observability.py) |
-| 142 | ✓ | [`agents/langchain-deepagents-code/patch-managed-deepagents-code.py`](agents/langchain-deepagents-code/patch-managed-deepagents-code.py) |
-| 143 | ✓ | [`agents/langchain-deepagents-code/policy-additions.yaml`](agents/langchain-deepagents-code/policy-additions.yaml) |
-| 144 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/.gitignore`](agents/langchain-deepagents-code/profile-plugin/.gitignore) |
-| 145 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/pyproject.toml`](agents/langchain-deepagents-code/profile-plugin/pyproject.toml) |
-| 146 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/src/nemoclaw_deepagents_profile/__init__.py`](agents/langchain-deepagents-code/profile-plugin/src/nemoclaw_deepagents_profile/__init__.py) |
-| 147 | ✓ | [`agents/langchain-deepagents-code/progressive_tool_disclosure.py`](agents/langchain-deepagents-code/progressive_tool_disclosure.py) |
-| 148 | ✓ | [`agents/langchain-deepagents-code/requirements.in`](agents/langchain-deepagents-code/requirements.in) |
-| 149 | ✓ | [`agents/langchain-deepagents-code/requirements.lock`](agents/langchain-deepagents-code/requirements.lock) |
-| 150 | ✓ | [`agents/langchain-deepagents-code/start.sh`](agents/langchain-deepagents-code/start.sh) |
-| 151 | ✓ | [`agents/langchain-deepagents-code/validate-nemotron-ultra-profile.py`](agents/langchain-deepagents-code/validate-nemotron-ultra-profile.py) |
-| 152 | ✓ | [`agents/langchain-deepagents-code/validate-observability.py`](agents/langchain-deepagents-code/validate-observability.py) |
-| 153 | ✓ | [`agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py`](agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py) |
-| 154 | ✓ | [`agents/openclaw/dependency-review.md`](agents/openclaw/dependency-review.md) |
-| 155 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
-| 156 | ✓ | [`agents/openclaw/mcporter-runtime/package-lock.json`](agents/openclaw/mcporter-runtime/package-lock.json) |
-| 157 | ✓ | [`agents/openclaw/mcporter-runtime/package.json`](agents/openclaw/mcporter-runtime/package.json) |
-| 158 | ✓ | [`agents/openclaw/openclaw-runtime/package-lock.json`](agents/openclaw/openclaw-runtime/package-lock.json) |
-| 159 | ✓ | [`agents/openclaw/openclaw-runtime/package.json`](agents/openclaw/openclaw-runtime/package.json) |
-| 160 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
-| 161 | ✓ | [`agents/openclaw/wechat-runtime/package-lock.json`](agents/openclaw/wechat-runtime/package-lock.json) |
-| 162 | ✓ | [`agents/openclaw/wechat-runtime/package.json`](agents/openclaw/wechat-runtime/package.json) |
-| 163 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 164 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 165 | ✓ | [`fern/AGENTS.md`](fern/AGENTS.md) |
-| 166 | ✓ | [`skills/nemoclaw-user-guide/BENCHMARK.md`](skills/nemoclaw-user-guide/BENCHMARK.md) |
-| 167 | ✓ | [`skills/nemoclaw-user-guide/evals/evals.json`](skills/nemoclaw-user-guide/evals/evals.json) |
-| 168 | ✓ | [`skills/nemoclaw-user-guide/skill-card.md`](skills/nemoclaw-user-guide/skill-card.md) |
-| 169 | ✓ | [`skills/nemoclaw-user-guide/SKILL.md`](skills/nemoclaw-user-guide/SKILL.md) |
-| 170 | ✓ | [`skills/nemoclaw-user-guide/skill.oms.sig`](skills/nemoclaw-user-guide/skill.oms.sig) |
-| 171 | ✓ | [`skills/README.md`](skills/README.md) |
-| 172 | ✓ | [`src/lib/messaging/AGENTS.md`](src/lib/messaging/AGENTS.md) |
-| 173 | → | [`docs/DORI_SETUP.md`](docs/DORI_SETUP.md) |
-| 174 | → | [`WRITING.md`](WRITING.md) |
+| 118 | ✓ | [`agents/hermes/patch-gateway-process-identity.py`](agents/hermes/patch-gateway-process-identity.py) |
+| 119 | ✓ | [`agents/hermes/patch-gateway-runtime-metadata.py`](agents/hermes/patch-gateway-runtime-metadata.py) |
+| 120 | ✓ | [`agents/hermes/patch-langfuse-credentials.mts`](agents/hermes/patch-langfuse-credentials.mts) |
+| 121 | ✓ | [`agents/hermes/patch-profile-policy-defaults.py`](agents/hermes/patch-profile-policy-defaults.py) |
+| 122 | ✓ | [`agents/hermes/patch-session-list-preview.py`](agents/hermes/patch-session-list-preview.py) |
+| 123 | ✓ | [`agents/hermes/plugin/__init__.py`](agents/hermes/plugin/__init__.py) |
+| 124 | ✓ | [`agents/hermes/plugin/plugin.yaml`](agents/hermes/plugin/plugin.yaml) |
+| 125 | ✓ | [`agents/hermes/plugin/test_register_tools.py`](agents/hermes/plugin/test_register_tools.py) |
+| 126 | ✓ | [`agents/hermes/policy-additions.yaml`](agents/hermes/policy-additions.yaml) |
+| 127 | ✓ | [`agents/hermes/policy-permissive.yaml`](agents/hermes/policy-permissive.yaml) |
+| 128 | ✓ | [`agents/hermes/runtime-config-guard.py`](agents/hermes/runtime-config-guard.py) |
+| 129 | ✓ | [`agents/hermes/security-dependencies.patch`](agents/hermes/security-dependencies.patch) |
+| 130 | ✓ | [`agents/hermes/seed-dashboard-config.py`](agents/hermes/seed-dashboard-config.py) |
+| 131 | ✓ | [`agents/hermes/start.sh`](agents/hermes/start.sh) |
+| 132 | ✓ | [`agents/hermes/validate-env-secret-boundary.py`](agents/hermes/validate-env-secret-boundary.py) |
+| 133 | ✓ | [`agents/langchain-deepagents-code/dcode-launcher.sh`](agents/langchain-deepagents-code/dcode-launcher.sh) |
+| 134 | ✓ | [`agents/langchain-deepagents-code/dcode-session-supervisor.py`](agents/langchain-deepagents-code/dcode-session-supervisor.py) |
+| 135 | ✓ | [`agents/langchain-deepagents-code/dcode-wrapper.sh`](agents/langchain-deepagents-code/dcode-wrapper.sh) |
+| 136 | ✓ | [`agents/langchain-deepagents-code/dependency-review.md`](agents/langchain-deepagents-code/dependency-review.md) |
+| 137 | ✓ | [`agents/langchain-deepagents-code/Dockerfile`](agents/langchain-deepagents-code/Dockerfile) |
+| 138 | ✓ | [`agents/langchain-deepagents-code/Dockerfile.base`](agents/langchain-deepagents-code/Dockerfile.base) |
+| 139 | ✓ | [`agents/langchain-deepagents-code/generate-config.ts`](agents/langchain-deepagents-code/generate-config.ts) |
+| 140 | ✓ | [`agents/langchain-deepagents-code/managed-dcode-runtime.py`](agents/langchain-deepagents-code/managed-dcode-runtime.py) |
+| 141 | ✓ | [`agents/langchain-deepagents-code/manifest.yaml`](agents/langchain-deepagents-code/manifest.yaml) |
+| 142 | ✓ | [`agents/langchain-deepagents-code/nemoclaw_observability.py`](agents/langchain-deepagents-code/nemoclaw_observability.py) |
+| 143 | ✓ | [`agents/langchain-deepagents-code/patch-managed-deepagents-code.py`](agents/langchain-deepagents-code/patch-managed-deepagents-code.py) |
+| 144 | ✓ | [`agents/langchain-deepagents-code/policy-additions.yaml`](agents/langchain-deepagents-code/policy-additions.yaml) |
+| 145 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/.gitignore`](agents/langchain-deepagents-code/profile-plugin/.gitignore) |
+| 146 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/pyproject.toml`](agents/langchain-deepagents-code/profile-plugin/pyproject.toml) |
+| 147 | ✓ | [`agents/langchain-deepagents-code/profile-plugin/src/nemoclaw_deepagents_profile/__init__.py`](agents/langchain-deepagents-code/profile-plugin/src/nemoclaw_deepagents_profile/__init__.py) |
+| 148 | ✓ | [`agents/langchain-deepagents-code/progressive_tool_disclosure.py`](agents/langchain-deepagents-code/progressive_tool_disclosure.py) |
+| 149 | ✓ | [`agents/langchain-deepagents-code/requirements.in`](agents/langchain-deepagents-code/requirements.in) |
+| 150 | ✓ | [`agents/langchain-deepagents-code/requirements.lock`](agents/langchain-deepagents-code/requirements.lock) |
+| 151 | ✓ | [`agents/langchain-deepagents-code/start.sh`](agents/langchain-deepagents-code/start.sh) |
+| 152 | ✓ | [`agents/langchain-deepagents-code/validate-nemotron-ultra-profile.py`](agents/langchain-deepagents-code/validate-nemotron-ultra-profile.py) |
+| 153 | ✓ | [`agents/langchain-deepagents-code/validate-observability.py`](agents/langchain-deepagents-code/validate-observability.py) |
+| 154 | ✓ | [`agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py`](agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py) |
+| 155 | ✓ | [`agents/openclaw/dependency-review.md`](agents/openclaw/dependency-review.md) |
+| 156 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
+| 157 | ✓ | [`agents/openclaw/mcporter-runtime/package-lock.json`](agents/openclaw/mcporter-runtime/package-lock.json) |
+| 158 | ✓ | [`agents/openclaw/mcporter-runtime/package.json`](agents/openclaw/mcporter-runtime/package.json) |
+| 159 | ✓ | [`agents/openclaw/openclaw-runtime/package-lock.json`](agents/openclaw/openclaw-runtime/package-lock.json) |
+| 160 | ✓ | [`agents/openclaw/openclaw-runtime/package.json`](agents/openclaw/openclaw-runtime/package.json) |
+| 161 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
+| 162 | ✓ | [`agents/openclaw/wechat-runtime/package-lock.json`](agents/openclaw/wechat-runtime/package-lock.json) |
+| 163 | ✓ | [`agents/openclaw/wechat-runtime/package.json`](agents/openclaw/wechat-runtime/package.json) |
+| 164 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 165 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 166 | ✓ | [`fern/AGENTS.md`](fern/AGENTS.md) |
+| 167 | ✓ | [`skills/nemoclaw-user-guide/BENCHMARK.md`](skills/nemoclaw-user-guide/BENCHMARK.md) |
+| 168 | ✓ | [`skills/nemoclaw-user-guide/evals/evals.json`](skills/nemoclaw-user-guide/evals/evals.json) |
+| 169 | ✓ | [`skills/nemoclaw-user-guide/skill-card.md`](skills/nemoclaw-user-guide/skill-card.md) |
+| 170 | ✓ | [`skills/nemoclaw-user-guide/SKILL.md`](skills/nemoclaw-user-guide/SKILL.md) |
+| 171 | ✓ | [`skills/nemoclaw-user-guide/skill.oms.sig`](skills/nemoclaw-user-guide/skill.oms.sig) |
+| 172 | ✓ | [`skills/README.md`](skills/README.md) |
+| 173 | ✓ | [`src/lib/messaging/AGENTS.md`](src/lib/messaging/AGENTS.md) |
+| 174 | → | [`docs/DORI_SETUP.md`](docs/DORI_SETUP.md) |
+| 175 | → | [`WRITING.md`](WRITING.md) |
 
 ---
 

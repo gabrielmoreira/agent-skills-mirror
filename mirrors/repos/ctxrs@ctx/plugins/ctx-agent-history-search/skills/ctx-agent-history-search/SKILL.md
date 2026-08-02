@@ -12,7 +12,7 @@ attempts, and what worked or failed.
 Use this skill in two modes:
 
 - retrieval before work, when prior sessions may contain decisions, commands,
-  failures, or source citations that affect the current task;
+  failures, or citations that affect the current task;
 - history research reports, when the user asks an agent or read-only subagent to
   research a historical topic across prior local agent sessions.
 
@@ -57,7 +57,7 @@ Use this skill in two modes:
    ```
 
    Use default text output for agent reading. Do not add `--format json` for
-   search, show, or locate unless you are piping it into `jq` or a script, or
+   search or show unless you are piping it into `jq` or a script, or
    you need exact machine-readable fields. JSON output is much larger and can
    quickly consume the context window.
 
@@ -95,7 +95,8 @@ Use this skill in two modes:
    ctx show session <ctx-session-id>
    ```
 
-4. Locate original provider material when source identity or resume hints matter:
+4. Locate original provider material when source identity or resume hints
+   matter. `provider_session_id` is the Codex resume UUID:
 
    ```bash
    ctx locate event <ctx-event-id>
@@ -109,29 +110,26 @@ Use this skill in two modes:
    ctx show session <ctx-session-id> --format markdown --out <output-path>
    ```
 
-## When Search Is Not Enough
+## When Search Needs Narrowing
 
-Use `ctx sql` only when normal search cannot express the question, such as
-counts, joins, audits, or scripts over stable local views. Do not use SQL for
-broad transcript text search; `ctx search` is built for that.
-
-Start with the bundled SQL docs:
+Vary the query and use search filters before drawing conclusions. Useful
+follow-ups include dense event search, session-scoped search, and source
+location checks:
 
 ```bash
-ctx docs show sql
-ctx docs search "stable views"
+ctx search "<query variant>" --events --refresh off
+ctx search "<query>" --session <ctx-session-id> --refresh off
+ctx search "<query>" --include-subagents --refresh off
+ctx show event <ctx-event-id> --window 5
+ctx show session <ctx-session-id>
+ctx locate event <ctx-event-id>
+ctx locate session <ctx-session-id>
 ```
 
-Common SQL examples:
-
-```bash
-ctx sql "SELECT provider, COUNT(*) AS sessions FROM ctx_sessions GROUP BY provider"
-ctx sql "SELECT event_type, COUNT(*) AS events FROM ctx_events GROUP BY event_type ORDER BY events DESC"
-ctx sql "SELECT path, provider, provider_session_id FROM ctx_files_touched WHERE path LIKE '%AGENTS.md%' LIMIT 20"
-```
-
-`ctx sql` is read-only and queries the existing index. It does not refresh,
-import, initialize, or migrate ctx storage.
+Search result windows are bounded. Do not claim exact corpus-wide counts or a
+complete audit from the number of returned hits. If the requested conclusion
+cannot be supported with search, show, and locate evidence, state that limit
+and report the strongest retrieved evidence instead.
 
 ## History Research Reports
 
@@ -161,7 +159,7 @@ material.
 
    Use full or log mode only when default output omits necessary evidence.
 4. Compare evidence across sessions. Note agreements, conflicts, stale results,
-   missing raw sources, and gaps where searches did not find evidence.
+   and gaps where searches did not find evidence.
 5. Produce the report as agent synthesis with citations.
 
 Concise report shape:
@@ -184,11 +182,11 @@ Long report shape:
 
 - Cite ctx material when it affects your answer or implementation.
 - Include the provider, ctx session ID, ctx event ID when available, provider
-  session ID when available, and source path or cursor when present.
+  session ID when available.
 - If you synthesize across multiple snippets, label the conclusion as your
   synthesis and cite the supporting snippets.
-- If a source citation is stale or unavailable, say ctx returned indexed text
-  but the raw source could not be opened.
+- If a cited event or session is absent from the current Core generation, say
+  so and consider whether an explicit `ctx import` is appropriate.
 
 ## Safety Rules
 

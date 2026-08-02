@@ -18,7 +18,7 @@ The review file path is shown by `crit status`.
 
 ## Reading comments
 
-Prefer finish stdout when available: after a review round, unresolved comments are in the `comments` array of `crit`'s JSON stdout (same schema as `crit comments --json`); `prompt` has brief instructions only.
+When `crit` completes a review round, read **stdout** and follow its instructions. Unresolved comments are often embedded in that prompt as JSON. Check **stderr** for `approved: true` or `approved: false`.
 
 When you need to read comments separately:
 
@@ -31,6 +31,18 @@ crit comments [path]     # explicit review.json or .crit directory
 ```
 
 Review-level comments are listed first — easy to miss in raw `review.json`. Uses the same review resolution as `crit comment` (`--output`, `--plan`, daemon session).
+
+## Multiple active sessions
+
+When more than one review session matches the current directory and branch, `crit comment` refuses to guess. Run `crit status` (or `crit status --json`) to list every active session, then target the intended review explicitly:
+
+```bash
+crit comment --session <id> --author <name> <path>:<line> <body>
+crit comment --session <id> --json --file comments.json --author <name>
+```
+
+The JSON status output exposes the candidates in `sessions`.
+
 
 
 <important if="you are reading or parsing the review file">

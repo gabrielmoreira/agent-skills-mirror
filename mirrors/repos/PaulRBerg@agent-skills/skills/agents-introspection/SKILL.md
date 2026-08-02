@@ -39,13 +39,14 @@ consistent evidence bar, and either proposes a concrete prevention step or expla
 Read `references/transcript-sources.md`, resolve the current project with `pwd -P`, and choose 3–6 short, discriminative
 keywords from relevant filenames, commands, tools, errors, package names, issue IDs, and skill names.
 
-1. Run the bundled miner for the current project, active sessions only, with the chosen keywords and `--max-sessions 8`.
+1. Run the bundled miner for the current project, unarchived sessions only, with the chosen keywords and
+   `--max-sessions 8`.
 2. Treat miner scores, themes, and correction, failure, verification, tool, or privacy counts only as candidate-ranking
    signals. They are heuristic and are never evidence by themselves.
 3. Validate project metadata or cwd before opening a candidate. Inspect up to five highest-relevance transcript bodies,
    stopping earlier when the evidence bar is met. Include a comparable successful session when available.
-4. If evidence is insufficient, retry once with broader keywords. If active history still lacks signal, retry once with
-   `--include-archived`.
+4. If evidence is insufficient, retry once with broader keywords. If unarchived history still lacks signal, retry once
+   with `--include-archived`.
 5. Exceed these bounds only to resolve contradictory evidence or satisfy an explicitly exhaustive request. If the helper
    fails, use one project-scoped manual fallback from the reference.
 
@@ -55,8 +56,8 @@ evidence that a failure never occurred.
 For unusually long searches, send sparse progress updates only when a retrieval fallback begins, a finding changes the
 likely intervention, or the search reaches its explicit bound. Use an outcome-first line such as
 `🔎 Broadening transcript search — <verified reason and bound>` or
-`⏳ Checking archived sessions — <verified active/archived coverage>`. Ground counts and coverage claims in miner/tool
-output; do not narrate routine transcript reads.
+`⏳ Checking archived sessions — <verified unarchived/archived coverage>`. Ground counts and coverage claims in
+miner/tool output; do not narrate routine transcript reads.
 
 ## Evidence Contract
 

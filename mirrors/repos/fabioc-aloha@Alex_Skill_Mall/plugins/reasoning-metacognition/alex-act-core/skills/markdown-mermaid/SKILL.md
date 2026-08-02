@@ -1,7 +1,7 @@
 ---
 name: "markdown-mermaid"
 description: "Author Mermaid diagrams that render correctly in GitHub, VS Code, and Mermaid 10+ consumers. Applies a config-driven init directive + linkStyle + semantic classDef vocabulary from `.github/config/brand-palette.json` (default: 6-role semantic palette + typography). Covers renderer pitfalls, mode fragility, and diagram-tool selection. Use when embedding Mermaid in markdown, debugging silent render failures, or choosing between Mermaid / Excalidraw / D2 / PlantUML."
-lastReviewed: 2026-07-30
+lastReviewed: 2026-08-01
 ---
 
 # Markdown & Mermaid
@@ -91,6 +91,24 @@ A[Line one<br/>Line two]:::blue
 A[Line one\nLine two]:::blue
 ```
 
+## Size the graph and its frame together
+
+Author the source so the diagram has a readable natural shape before relying on a renderer:
+
+- Prefer `TD` for sequential flows with several steps or multi-line labels.
+- Split diagrams wider than 4:1 unless horizontal comparison is the point.
+- Keep labels short enough that a node communicates one idea.
+- Do not combine `width: 100%` with a fixed or capped SVG height. That creates a page-wide viewport with a small graph centered inside it.
+
+The Alex docs-shell applies one deterministic fit after Mermaid renders:
+
+1. Crop once to the root graph bounds plus 16–32px of padding.
+2. Derive the ideal SVG width from the cropped viewBox and source font size, targeting 16px labels.
+3. Shrink-wrap compact diagrams instead of stretching every SVG to page width.
+4. Use contained horizontal scrolling only when the graph cannot preserve a 13px desktop or 11px mobile label floor inside the available width.
+
+Runtime fitting removes wasted viewport space; it does not repair an over-dense source diagram. Refactor the Mermaid source first when the graph still needs scrolling or extreme height after fitting.
+
 ## Diagram-tool selection
 
 | Showing                          | Best tool                               | Why                                  |
@@ -119,6 +137,10 @@ Bulk content lives in `references/` — loaded on demand:
 - [`references/tool-ecosystem.md`](references/tool-ecosystem.md) — Mermaid / D2 / PlantUML / Excalidraw comparison + VS Code setup
 - [`references/diagram-reference.md`](references/diagram-reference.md) — diagram types, node shapes, edge styles, per-diagram theming
 - [`references/markdown-best-practices.md`](references/markdown-best-practices.md) — document structure, figure/table conventions, Shields.io
+
+## Related
+
+- [`lint-clean-markdown`](../lint-clean-markdown/SKILL.md) — writing markdown that passes `markdownlint` on the first attempt. Reach for it when the concern is lint compliance rather than diagram rendering.
 
 ## Falsifiability
 

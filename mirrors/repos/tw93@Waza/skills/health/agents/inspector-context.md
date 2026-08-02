@@ -29,13 +29,12 @@ Skill checks:
 - SIMPLE: 0–1 skills is fine.
 - ALL tiers: If skills exist, descriptions should be concise, triggerable, include `Use when`, include `Not for`, and avoid overlapping triggers.
 - STANDARD+: Low-frequency skills may use `disable-model-invocation: true`, but Claude Code plugin skills should not rely on it until upstream invocation bugs are fixed.
-- Use `SKILL ROUTING DUPLICATES` to distinguish an intentional generated source/plugin mirror from unrelated skills that share a name. Exact copies on multiple active routing surfaces are structural duplication even when provenance is first-party; name collisions need description-level review.
+- Use `SKILL ROUTING DUPLICATES` to distinguish same-runtime collisions from cross-runtime installs. Exact copies or name collisions inside one runtime are structural duplication. The same skill name under separate Claude, Agents, and Codex roots is informational unless the descriptions or behavior conflict.
 
 MEMORY.md checks, STANDARD+:
-- Check if project has `.claude/projects/.../memory/MEMORY.md`
-- Verify CLAUDE.md points to MEMORY.md for architecture decisions
-- Ensure key decisions, models, contracts, and tradeoffs are documented
-- Weight urgency by conversation count, 10+ means [!] Critical if MEMORY.md is absent
+- Tracked project instructions and public design docs are the durable source of truth. Memory is optional and its absence is not a finding.
+- If memory exists, flag stale or contradictory decisions, secrets, oversized injected summaries, or project behavior that depends on private memory but is absent from tracked instructions.
+- Never require CLAUDE.md to point at a machine-local memory path.
 
 AGENTS.md checks, COMPLEX multi-module only:
 - Verify CLAUDE.md includes an "AGENTS.md usage guide" section
@@ -54,9 +53,9 @@ MCP live status, ALL tiers:
 - Any required env var that is unset: flag as [!]; tasks depending on that server will fail with 403 or auth errors
 
 Startup context budget, ALL tiers:
-- Compute: (global_claude_words + local_claude_words + rules_words + skill_desc_words) × 1.3 + mcp_tokens
+- Prefer a runtime tokenizer when available. Otherwise use language-neutral context units: non-CJK whitespace words plus individual CJK characters. Add skill-description and MCP estimates separately. `rules_words` is always-loaded context only; assess path-scoped rules by the largest effective file-level overlap, including distinct selectors that match the same project path, rather than adding the whole conditional corpus or grouping only identical selectors.
 - Flag if total >30K tokens, context pressure before the first user message
-- Flag if CLAUDE.md alone > 5K tokens (~3800 words): contract is oversized
+- Flag if either CLAUDE.md alone exceeds roughly 5K estimated tokens: contract is oversized
 
 HANDOFF.md checks, STANDARD+:
 - Check if HANDOFF.md exists or if CLAUDE.md mentions handoff practice

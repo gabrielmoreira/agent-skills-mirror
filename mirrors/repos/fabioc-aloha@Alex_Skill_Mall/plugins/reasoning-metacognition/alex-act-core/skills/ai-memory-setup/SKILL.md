@@ -1,14 +1,15 @@
 ---
 name: ai-memory-setup
-description: "Resolve and use the Alex_ACT_Memory sibling repository without silently cloning, syncing, or exposing protected data. Use for announcements, feedback, shared knowledge, and explicit memory setup."
-lastReviewed: 2026-07-30
+description: "Use Alex_ACT_Memory through its local filesystem contract: resolve an existing clone, read only the requested channel, write atomically, run the repository check, and keep Git sync separately consented. Use for announcements, feedback, shared knowledge, insights, profile operations, and explicit Memory setup."
+lastReviewed: 2026-08-01
 ---
 
 # AI Memory Setup
 
-Use the local `Alex_ACT_Memory` Git repository as the shared memory bus. The
-store has its own contract and release cycle; Core is a consumer and policy
-author, not an implicit sync service.
+Use the local `Alex_ACT_Memory` Git repository through a filesystem client
+contract. The store has its own contract and release cycle; Core discovers and
+operates on local files, but it is not a background service or implicit sync
+layer.
 
 ## Resolve the Store
 
@@ -60,16 +61,20 @@ Before writing:
 
 1. Apply `pii-memory-filter` and `cross-project-isolation`.
 2. Use the destination channel's documented schema and naming convention.
-3. Write the smallest self-contained artifact.
-4. Run the Memory repository's validator from the Memory root:
+3. Write the smallest self-contained artifact atomically: write a temporary
+   sibling file, then rename it into place only after the complete content is
+   available. Never leave a partial destination file.
+4. Run the Memory repository's full check from the Memory root:
 
    ```pwsh
-   npm run validate
+   npm run check
    ```
 
-5. Show the diff. Commit or sync only when explicitly requested.
+5. If the check fails, remove the temporary or newly written file and report
+   the finding. Do not commit an invalid entry.
+6. Show the diff. Commit or sync only when explicitly requested.
 
-Memory writes and Git synchronization are separate decisions. A valid local
+Memory writes and Git synchronization remain separate decisions. A valid local
 write does not authorize a commit, pull, or push.
 
 ## Setup with Consent
@@ -80,7 +85,7 @@ When the user explicitly asks to configure Memory:
    local-only repository.
 2. Never invent the remote URL or audience.
 3. Clone or scaffold only after the user confirms the destination and audience.
-4. Run `npm run validate` after setup.
+4. Run `npm run check` after setup.
 5. Do not configure encrypted profile access unless requested separately.
 
 ## Anti-Patterns
@@ -92,10 +97,11 @@ When the user explicitly asks to configure Memory:
 | Treating missing Memory as an error on every task | Return unavailable and continue |
 | Reading all channels to "get context" | Read the minimum channel needed |
 | Committing a valid write automatically | Validation and publication are separate gates |
+| Expecting an MCP or background service | Use the filesystem client; no Memory MCP is part of the supported design |
 
 ## Would Revise If
 
 Revisit by **2026-10-28** or sooner if the Memory contract changes its channel
 model, the sibling / `ALEX_MEMORY_PATH` discovery order stops matching heir
-layouts, the validator entry point changes, or this skill causes an unrequested
+layouts, the `npm run check` entry point changes, or this skill causes an unrequested
 clone, sync, or protected-profile read.

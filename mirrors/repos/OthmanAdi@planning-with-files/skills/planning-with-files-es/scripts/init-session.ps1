@@ -1,4 +1,4 @@
-# Inicializar archivos de planificación para una nueva sesión
+﻿# Inicializar archivos de planificación para una nueva sesión
 # Uso: .\init-session.ps1 [nombre_del_proyecto]
 
 param(

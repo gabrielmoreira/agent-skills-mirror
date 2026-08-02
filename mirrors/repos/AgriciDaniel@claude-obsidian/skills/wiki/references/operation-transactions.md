@@ -98,7 +98,7 @@ I/O, so replacing a public root, metadata, transaction, operation, or backup
 entry cannot redirect reads, writes, rollback, or cleanup outside the selected
 vault. This confinement requires POSIX directory descriptors and
 `fcntl.flock`; Windows users must run the skill under WSL rather than native
-Windows or Git Bash.
+Windows or Git Bash (setup and troubleshooting: `docs/windows-wsl.md`).
 
 ## Required coupled writes
 

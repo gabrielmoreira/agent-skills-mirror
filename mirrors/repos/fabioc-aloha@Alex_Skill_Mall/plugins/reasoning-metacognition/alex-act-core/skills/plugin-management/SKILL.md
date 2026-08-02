@@ -1,7 +1,7 @@
 ---
 name: plugin-management
 description: "General Copilot CLI plugin operations: install / list / update / remove / marketplace add + remove, scope precedence (user vs repo), the enabledPlugins + extraKnownMarketplaces settings shape, and safe merge-not-overwrite settings edits. Use when a heir asks to install / update / remove any plugin from any Mall, or when auditing what plugins are installed at what scope. Generic — the install-constellation and update-plugins skills delegate to this one for the mechanical commands."
-lastReviewed: 2026-07-30
+lastReviewed: 2026-08-01
 ---
 
 # Plugin Management
@@ -29,12 +29,19 @@ Every command below is a `copilot plugin ...` subcommand. Ordered by frequency o
 | `install <owner>/<repo>` | Direct install from GitHub (no marketplace) | `copilot plugin install fabioc-aloha/org-report` |
 | `update <name>` | Update one plugin to its latest stable version | `copilot plugin update alex-act-core` |
 | `update --all` | Update every installed plugin | `copilot plugin update --all` |
-| `remove <name>` | Uninstall a plugin (removes files + drops from `enabledPlugins`) | `copilot plugin remove alex-act-msft` |
+| `uninstall <name>` | Uninstall a plugin (removes files + drops marketplace entries from `enabledPlugins`) | `copilot plugin uninstall alex-act-msft` |
 | `marketplace add <owner>/<repo>` | Register a marketplace so `<plugin>@<marketplace>` resolves | `copilot plugin marketplace add fabioc-aloha/Alex_Skill_Mall` |
 | `marketplace list` | Show registered marketplaces | `copilot plugin marketplace list` |
+| `marketplace browse <name>` | List plugins published by a registered marketplace | `copilot plugin marketplace browse alex-mall` |
 | `marketplace remove <name>` | Deregister a marketplace | `copilot plugin marketplace remove alex-mall` |
-| `search <query> [--marketplace <name>]` | Search a marketplace catalog for plugins matching a query | `copilot plugin search chart --marketplace alex-mall` |
-| `info <name>` | Show a plugin's manifest, current version, install location | `copilot plugin info alex-act-core` |
+
+Copilot CLI 1.0.77 has no `info`, `remove`, or `search` plugin subcommands. Use
+`list` for installed versions and status, `marketplace browse` for discovery,
+and `uninstall` for removal. When `list` is insufficient, read the installed
+plugin's `plugin.json` as a filesystem fallback:
+
+- Marketplace install: `~/.copilot/installed-plugins/<marketplace>/<plugin>/plugin.json`
+- Direct install: find the plugin under `~/.copilot/installed-plugins/_direct/`
 
 ## Scope precedence
 
@@ -84,7 +91,7 @@ Key shape rules:
 
 - `enabledPlugins` is a map from `<plugin>@<marketplace>` to `true` / `false`. Setting a plugin to `false` disables it without uninstalling.
 - `extraKnownMarketplaces` is a map from marketplace nickname to `{ source: { source: "github", repo: "<owner>/<repo>" } }`. The two default marketplaces (`copilot-plugins`, `awesome-copilot`) do not need registration.
-- Direct-installed plugins (from `<owner>/<repo>` with no marketplace) live in `~/.copilot/installed-plugins/_direct/<source-id>/` — they do not appear in `enabledPlugins` and are managed directly via `install` / `remove`.
+- Direct-installed plugins (from `<owner>/<repo>` with no marketplace) live in `~/.copilot/installed-plugins/_direct/<source-id>/`. On Copilot CLI 1.0.77, install does not add an `enabledPlugins` entry. After explicit consent, merge the plugin's bare manifest name (for example, `"alex-act-msft": true`) into user settings, then verify settings, `plugin list`, and the direct-install tree.
 
 ## Safe settings edits
 
@@ -148,7 +155,7 @@ If a heir is unsure, ask: "Is this plugin about you or about this project?"
 
 Plugins deliver skills, prompts, and agents. They do **not** deliver instructions: `plugin.json` has no `instructions` component field, and the CLI's loading-order model covers only agents, skills, and MCP servers. Claude Code and the Open Plugin Spec draw the same boundary, so treat it as architecture rather than a bug.
 
-The workaround is to copy instruction files into `~/.copilot/instructions/`, which the Copilot CLI and VS Code Chat both read at user scope. `install-constellation` § Step 6 does this for Core's seven always-on files. This section owns the shared rules any plugin bootstrap must follow.
+The workaround is to copy instruction files into `~/.copilot/instructions/`, which the Copilot CLI and VS Code Chat both read at user scope. `install-constellation` § Step 6 does this for Core's seventeen load-bearing always-on files. This section owns the shared rules any plugin bootstrap must follow.
 
 ### Rules
 
@@ -183,8 +190,48 @@ copilot -p "Do you have an instruction named act-pass available in this session?
 
 A "no" means the removal took. Running that check inside a workspace that has its own brain proves nothing, because a repo-scope file can answer.
 
+## Session-state hint file
+
+Added 2026-08-01 to support the `greeting-checkin` instruction's proactive session-start orientation. Not a bootstrap file — it lives in the same folder for co-location convenience but is not managed by the bootstrap receipt.
+
+**Location**: `~/.copilot/instructions/.alex-act-session-hint.json`
+
+**Purpose**: cache the last constellation health-check result so the `greeting-checkin` instruction can avoid nagging within a session (60-minute cache window). Also records the last-known state classification so subsequent greetings can use the cached verdict without re-running the full check.
+
+**Schema**:
+
+```json
+{
+  "lastCheckAt": "2026-08-01T14:23:00Z",
+  "state": "healthy",
+  "installedCoreVersion": "0.3.1",
+  "installedPlugins": [
+    "alex-act-core@alex-mall",
+    "alex-act-illustrator-plugin@alex-mall"
+  ],
+  "updatesAvailable": [
+    { "plugin": "alex-act-illustrator-plugin", "installed": "0.6.0", "latest": "0.6.1" }
+  ]
+}
+```
+
+**Field semantics**:
+
+| Field | Meaning |
+|---|---|
+| `lastCheckAt` | ISO 8601 UTC timestamp of last full state check. If read + within 60 min of current time, treat as cache hit — skip the check. |
+| `state` | One of `healthy` \| `incomplete` \| `drifted` \| `updates-available`. Highest-severity classification wins if multiple apply. |
+| `installedCoreVersion` | Version from `copilot plugin list`, with the installed `plugin.json` as fallback. Used to detect drift on subsequent checks. |
+| `installedPlugins` | Array of `<plugin>@<marketplace>` identifiers currently in `enabledPlugins`. |
+| `updatesAvailable` | Array of pending updates. Empty when healthy. |
+
+**Write pattern**: atomic — write to `.tmp` sibling then rename. This prevents partial reads when the check-in fires mid-write on a slow disk.
+
+**Not touched by uninstall.** The `uninstall-constellation` skill removes the bootstrap receipt (`.alex-act-bootstrap.json`) as part of its sweep, but leaves the hint file. Reason: after uninstall, on next greeting the hint file's stale `installedCoreVersion` triggers a re-check that correctly classifies state as `incomplete` and offers reinstall. Removing the hint file would leave no evidence for that discrimination.
+
 ## Safety rules
 
+- **Emit before apply.** Print the target settings block and the exact command list *before* running anything. Filesystem writes and CLI invocations happen only after explicit heir consent. Applying first and reporting after is a P0 violation, not a shortcut.
 - **Never** overwrite a settings file without explicit consent.
 - **Never** disable a plugin the heir did not ask to disable — merge, don't replace.
 - **Never** silently install a plugin without naming it in the consent prompt.
@@ -193,6 +240,7 @@ A "no" means the removal took. Running that check inside a workspace that has it
 - **Never** modify `.github/copilot/settings.json` in a heir's workspace without also telling them the file gets committed (it belongs in source control; teammates will pull the change).
 - **Do** verify the CLI version (`copilot --version` >= 1.0.75) before offering any install / update / marketplace command that depends on newer syntax.
 - **Do** run `copilot plugin list` before install operations to detect duplicates (installing the same plugin from two marketplaces).
+- **Do** verify that a plugin actually exists in its claimed marketplace before running `copilot plugin install` — especially when the plugin name came from an external agent (LLM, sub-agent, another AI, or an untrusted doc). Use `copilot plugin marketplace browse <marketplace>` and grep for the plugin name. Cheap check; catches CLI-authored install commands pointing at hallucinated plugins. Same anti-hallucination discipline as verifying CLI command syntax before running.
 - **Do** warn if the heir is off-network when installing a plugin whose skills require network at invocation time (WorkIQ, `azure`, etc.).
 
 ## Anti-patterns
@@ -206,6 +254,7 @@ A "no" means the removal took. Running that check inside a workspace that has it
 | Install a plugin at user scope when the heir asked "for this project only" | Repo scope. Read the request. |
 | Skip the CLI-version check | Older CLIs miss `marketplace add`; install commands silently fail. |
 | Uninstall a plugin without confirming it is not referenced by another installed plugin's SKILL body | Composition breakage. Check first. |
+| Run `copilot plugin install <name>@<marketplace>` on an external-agent-recommended plugin without verifying it exists in the marketplace | External agents can hallucinate plugin names. Verify with `marketplace browse` first; install-time failures are noisier than a 2-second pre-check. |
 
 ## Composes with
 
@@ -230,5 +279,4 @@ Track outcomes in the maintaining repo's curation log.
 - `/plugin-status` prompt — read-only audit-mode entry point
 - [install-constellation](../install-constellation/SKILL.md) — Alex ACT-specific install list
 - [update-plugins](../update-plugins/SKILL.md) — safe update flow with breaking-change detection
-- [plugin-management.instructions.md](../../instructions/plugin-management.instructions.md) — always-on routing rules
 - Constellation doc: `constellation/PLUGIN-INTEGRATION.md` in Steward (or your project's equivalent) — the design decisions that ground this skill's scope defaults

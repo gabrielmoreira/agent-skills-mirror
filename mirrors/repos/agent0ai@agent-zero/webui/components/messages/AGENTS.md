@@ -16,6 +16,13 @@
 - Sanitize or safely render model/user-provided content through shared rendering paths.
 - Avoid layout shifts that break long-running message streaming.
 - Keep message action chrome out of text selection so copy/paste captures message content without button labels or icons.
+- Order standard message actions as Detail, Copy, then Speak; omit unavailable actions without changing the relative order of the remaining controls. Plugin-rendered message actions must follow the same order.
+- Keep collapsed process-step detail text out of the DOM; opening a step may materialize its current cached log data and collapsing it must discard that heavy detail again without removing extension action hooks.
+- Preference-driven process detail modes must await the same materialization path as manual expansion and accept an explicit chat-history target for off-screen window staging. `STEP` opens only the current non-utility step at the live tail; historical windows must not invent a current step at their boundary.
+- Keep oversized standalone replay bodies and key/value tables in a bounded preview state until the user expands them; collapsing must remove the full body again.
+- Message-window boundaries must not split process groups. Groups with more than 50 steps initially render their newest 50 steps and prepend earlier steps in 50-step increments through the group-local `Show more` control while retaining stable full-group header metrics.
+- The process-group `Show more` paging control uses the same understated, non-underlined typography and hover-opacity treatment as message-body expansion controls.
+- A root response may attach only to a substantive process render unit. Utility-prefixed units remain visible even while utility steps are hidden; standalone utility-only groups remain separate and hidden while utility messages are disabled, and completed groups must not absorb later utility records. Determine this from full-log render metadata, not partially mounted DOM children.
 
 ## Work Guidance
 

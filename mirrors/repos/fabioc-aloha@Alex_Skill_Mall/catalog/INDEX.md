@@ -1,6 +1,6 @@
 # Plugin Mall Catalog
 
-Search index across **3848 plugins** in **42 stores**. Plugins are ranked by trust score; first-party Mall-curated entries (🏆) rank highest because they earn the highest signals — provenance (+50 for editorial adaptation) plus maintenance, adoption, license clarity, frontmatter completeness, and README presence.
+Search index across **3862 plugins** in **42 stores**. Plugins are ranked by trust score; first-party Mall-curated entries (🏆) rank highest because they earn the highest signals — provenance (+50 for editorial adaptation) plus maintenance, adoption, license clarity, frontmatter completeness, and README presence.
 
 - See [README.md](../README.md) for the storefront and store rankings.
 - See [categories/](categories/) for per-category browse.
@@ -21,9 +21,9 @@ Search index across **3848 plugins** in **42 stores**. Plugins are ranked by tru
 | 95 | 🏆 `ai-agent-design` | plugin-mall | skill | Design autonomous AI agents that reason, plan, and execute tasks |
 | 95 | 🏆 `ai-memory-setup` | plugin-mall | skill | Detect, create, and manage the AI-Memory fleet communication channel across One… |
 | 95 | 🏆 `ai-writing-avoidance` | plugin-mall | skill | Help writers produce content that sounds genuinely human by avoiding telltale A… |
-| 95 | 🏆 `alex-act-core` | plugin-mall | mixed | The Alex ACT baseline plugin. Installs 33 reusable framework skills and 12 slas… |
-| 95 | 🏆 `alex-act-enterprise` | plugin-mall | .SP. | Alex ACT config-template plugin for the public Microsoft ecosystem. Ships the s… |
-| 95 | 🏆 `alex-act-illustrator-plugin` | plugin-mall | mixed | Visual-authoring bundle for AI agents. Eight skills across four feature areas: … |
+| 95 | 🏆 `alex-act-core` | plugin-mall | mixed | The Alex ACT baseline plugin. Installs 41 reusable framework skills and 13 slas… |
+| 95 | 🏆 `alex-act-enterprise` | plugin-mall | mixed | Alex ACT config-template plugin for the public Microsoft ecosystem. Ships the s… |
+| 95 | 🏆 `alex-act-illustrator-plugin` | plugin-mall | mixed | Visual-authoring bundle for AI agents. Ten skills across five feature areas plu… |
 | 95 | 🏆 `alex-banner-generation` | plugin-mall | skill | Generate branded SVG banners for documents (READMEs, plans, changelogs, release… |
 | 95 | 🏆 `allowlist-over-blocklist` | plugin-mall | skill | Validate input against an allowlist of permitted values -- reject everything el… |
 | 95 | 🏆 `anti-hallucination` | plugin-mall | skill | Recognize and prevent confabulation -- when you don't know, say so. |
@@ -66,15 +66,15 @@ Search index across **3848 plugins** in **42 stores**. Plugins are ranked by tru
 
 | Trust | Store | Plugins | Provenance |
 | ---: | --- | ---: | --- |
-| 82 | 🏆 [plugin-mall](stores/plugin-mall.md) | 362 | 🏆 first-party |
+| 82 | 🏆 [plugin-mall](stores/plugin-mall.md) | 363 | 🏆 first-party |
 | 35 | [alirezarezvani-claude-skills](stores/alirezarezvani-claude-skills.md) | 38 | third-party |
-| 35 | [antigravity-awesome-skills](stores/antigravity-awesome-skills.md) | 1906 | third-party |
-| 35 | [awesome-copilot](stores/awesome-copilot.md) | 486 | third-party |
-| 35 | [buildwithclaude](stores/buildwithclaude.md) | 110 | third-party |
+| 35 | [antigravity-awesome-skills](stores/antigravity-awesome-skills.md) | 1910 | third-party |
+| 35 | [awesome-copilot](stores/awesome-copilot.md) | 490 | third-party |
+| 35 | [buildwithclaude](stores/buildwithclaude.md) | 111 | third-party |
 | 35 | [claude-code-plugins-plus-skills](stores/claude-code-plugins-plus-skills.md) | 24 | third-party |
 | 35 | [context-engineering-kit](stores/context-engineering-kit.md) | 13 | third-party |
 | 35 | [daymade-claude-code-skills](stores/daymade-claude-code-skills.md) | 92 | third-party |
-| 35 | [dotnet-skills](stores/dotnet-skills.md) | 17 | third-party |
+| 35 | [dotnet-skills](stores/dotnet-skills.md) | 18 | third-party |
 | 35 | [marketingskills](stores/marketingskills.md) | 51 | third-party |
 | 35 | [microsoft-hve-core](stores/microsoft-hve-core.md) | 17 | third-party |
 | 35 | [microsoft-skills](stores/microsoft-skills.md) | 3 | third-party |
@@ -88,18 +88,18 @@ Search index across **3848 plugins** in **42 stores**. Plugins are ranked by tru
 | 32 | [designer-skills](stores/designer-skills.md) | 9 | third-party |
 | 32 | [dotnet-maui-labs](stores/dotnet-maui-labs.md) | 16 | third-party |
 | 32 | [garden-skills](stores/garden-skills.md) | 5 | third-party |
-| 32 | [github-copilot-plugins](stores/github-copilot-plugins.md) | 1 | third-party |
+| 32 | [github-copilot-plugins](stores/github-copilot-plugins.md) | 2 | third-party |
 | 32 | [microsoft-agentrc](stores/microsoft-agentrc.md) | 4 | third-party |
 | 32 | [microsoft-copilot-studio-skills](stores/microsoft-copilot-studio-skills.md) | 31 | third-party |
-| 32 | [microsoft-fabric-skills](stores/microsoft-fabric-skills.md) | 42 | third-party |
+| 32 | [microsoft-fabric-skills](stores/microsoft-fabric-skills.md) | 43 | third-party |
 | 32 | [microsoft-fasttrack](stores/microsoft-fasttrack.md) | 40 | third-party |
 | 32 | [microsoft-win-dev-skills](stores/microsoft-win-dev-skills.md) | 8 | third-party |
 | 32 | [n-skills](stores/n-skills.md) | 5 | third-party |
-| 32 | [qdrant-skills](stores/qdrant-skills.md) | 11 | third-party |
+| 32 | [qdrant-skills](stores/qdrant-skills.md) | 12 | third-party |
 | 30 | [copilot-agents-dojo](stores/copilot-agents-dojo.md) | 28 | third-party |
 | 30 | [microsoft-dataverse-skills](stores/microsoft-dataverse-skills.md) | 1 | third-party |
 | 30 | [mongodb-agent-skills](stores/mongodb-agent-skills.md) | 13 | third-party |
-| 30 | [styleseed](stores/styleseed.md) | 20 | third-party |
+| 30 | [styleseed](stores/styleseed.md) | 21 | third-party |
 | 29 | [microsoftdocs-agent-skills](stores/microsoftdocs-agent-skills.md) | 191 | third-party |
 | 25 | [claude-skills](stores/claude-skills.md) | 18 | third-party |
 | 25 | [mcp-servers](stores/mcp-servers.md) | 7 | third-party |
@@ -110,4 +110,4 @@ Search index across **3848 plugins** in **42 stores**. Plugins are ranked by tru
 | 12 | [libukai-awesome-agent-skills](stores/libukai-awesome-agent-skills.md) | 1 | third-party |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-07-29T01:15:05.641Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-08-01T20:41:40.548Z*

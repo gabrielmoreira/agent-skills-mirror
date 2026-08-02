@@ -181,11 +181,15 @@ function Get-AnythingAnalyzerUserDataPaths {
 function Ensure-AnythingAnalyzerMcpConfig {
     param([int]$Port = 23816)
 
+    $tokenBytes = New-Object byte[] 32
+    (New-Object Security.Cryptography.RNGCryptoServiceProvider).GetBytes($tokenBytes)
+    $generatedToken = [Convert]::ToBase64String($tokenBytes)
+
     $payload = [ordered]@{
-        enabled = $true
-        port = $Port
-        authEnabled = $false
-        authToken = ''
+        enabled     = $true
+        port        = $Port
+        authEnabled = $true
+        authToken   = $generatedToken
     }
 
     foreach ($userDataPath in Get-AnythingAnalyzerUserDataPaths) {
@@ -998,6 +1002,55 @@ function Ensure-Capability {
                 }
                 return $true
             }
+        }
+        'go-install' {
+            if (-not $definition.PSObject.Properties['goPackage'] -or [string]::IsNullOrWhiteSpace($definition.goPackage)) {
+                throw "go-install capability $Name is missing goPackage in bootstrap-manifest.json."
+            }
+            $goCmd = Get-FirstCommandPath -Names @('go')
+            if ([string]::IsNullOrWhiteSpace($goCmd)) {
+                try {
+                    Ensure-WingetPackage -Id 'GoLang.Go' -Label 'Go'
+                }
+                catch {
+                    Write-Warning "Go runtime unavailable: $($_.Exception.Message)"
+                }
+                $goCmd = Get-FirstCommandPath -Names @('go')
+                if ([string]::IsNullOrWhiteSpace($goCmd)) {
+                    $goCandidates = @(
+                        (Join-Path $env:LOCALAPPDATA 'Programs\Go\bin\go.exe'),
+                        'C:\Program Files\Go\bin\go.exe',
+                        (Join-Path $env:USERPROFILE 'go\bin\go.exe')
+                    ) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+                    if ($goCandidates) { $goCmd = $goCandidates }
+                }
+            }
+            if (-not [string]::IsNullOrWhiteSpace($goCmd)) {
+                & $goCmd install $definition.goPackage
+                if ($LASTEXITCODE -eq 0) {
+                    if ($definition.PSObject.Properties['mcpNames'] -and -not [string]::IsNullOrWhiteSpace($definition.mcpCommand)) {
+                        $serverDefinition = Get-McpCommandServerDefinition -Command $definition.mcpCommand -Arguments @($definition.mcpArgs)
+                        Ensure-McpServer -ServerName $definition.mcpNames[0] -ServerDefinition $serverDefinition
+                    }
+                    return $true
+                }
+                Write-Warning "go install failed for $Name (exit code $LASTEXITCODE)."
+            }
+            # Docker fallback (parity with bootstrap-reverse.sh ensure_pentestswarm)
+            if ($definition.PSObject.Properties['fallbackKind'] -and $definition.fallbackKind -eq 'docker-image' -and $definition.PSObject.Properties['dockerImage']) {
+                $docker = Get-FirstCommandPath -Names @('docker')
+                if (-not [string]::IsNullOrWhiteSpace($docker)) {
+                    $serverDefinition = @{
+                        type = 'stdio'
+                        command = 'docker'
+                        args = @('run', '--rm', '-i', $definition.dockerImage) + @($definition.mcpArgs)
+                    }
+                    Ensure-McpServer -ServerName $definition.mcpNames[0] -ServerDefinition $serverDefinition
+                    Write-Warning "$Name Go install failed; registered Docker fallback $($definition.dockerImage)"
+                    return $true
+                }
+            }
+            throw "Capability $Name requires Go 1.24+ or Docker to install. Docs: $($definition.docsUrl)"
         }
         default {
             throw "Unsupported bootstrap kind: $($definition.bootstrapKind)"

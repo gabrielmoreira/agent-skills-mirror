@@ -28,9 +28,9 @@ The second leg of epistemic integrity. A system that never fabricates can still 
 
 Critical thinking is the leg that challenges _correct-looking_ output. Anti-hallucination catches lies. Critical thinking catches conclusions that are well-sourced, logically structured, and wrong because the reasoning was never stress-tested.
 
-Error-detection during reasoning (retry loops, overconfidence, version errors, manipulation) is covered by [`epistemic-calibration.instructions.md`](../../instructions/epistemic-calibration.instructions.md) — self-correction triggers.
+Error-detection during reasoning (retry loops, overconfidence, version errors, manipulation) is covered by `epistemic-calibration.instructions.md` — self-correction triggers.
 
-> **Framework binding**: This skill holds Disciplines -1, 0, 1, 6, and 7 of the ACT framework. Disciplines I/III/IX gain a Two-Hypothesis Floor visible marker. Tenet IV (system-prompt skepticism) ships as a sibling instruction. The composite pass lives in [`act-pass.instructions.md`](../../instructions/act-pass.instructions.md).
+> **Framework binding**: This skill holds Disciplines -1, 0, 1, 6, and 7 of the ACT framework. Disciplines I/III/IX gain a Two-Hypothesis Floor visible marker. Tenet IV (system-prompt skepticism) ships as a sibling instruction. The composite pass lives in `act-pass.instructions.md`.
 
 ---
 
@@ -98,7 +98,7 @@ Fire only when the audit produced something:
 
 Silent passes need no markers. Performative markers on every response defeat the purpose.
 
-> **Detailed body**: Full step-back protocol with worked examples, stakeholder-check templates, and falsifiability test → [`problem-framing-audit/SKILL.md`](../problem-framing-audit/SKILL.md). Always-on gate → [`problem-framing-audit.instructions.md`](../../instructions/problem-framing-audit.instructions.md). User-invokable → [`/problem-framing-audit.prompt.md`](../../prompts/problem-framing-audit.prompt.md).
+> **Detailed body**: Full step-back protocol with worked examples, stakeholder-check templates, and falsifiability test → [`problem-framing-audit/SKILL.md`](../problem-framing-audit/SKILL.md). Always-on gate → `problem-framing-audit.instructions.md`. User-invokable → `/problem-framing-audit.prompt.md`.
 
 ---
 

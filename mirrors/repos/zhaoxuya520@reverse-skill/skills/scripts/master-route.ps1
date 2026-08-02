@@ -31,6 +31,7 @@ $map = [ordered]@{
     'R18' = 'edr-bypass-re/SKILL.md'
     'R19' = 'browser-automation/SKILL.md'
     'R20' = 'docs-generator/SKILL.md'
+    'R39' = 'diagram-generator/SKILL.md'
     'R21' = 'protocol-reverse/SKILL.md'
     'R22' = 'ghidra-reverse/SKILL.md'
     'R23' = 'cloud-k8s/SKILL.md'
@@ -73,6 +74,7 @@ $labels = [ordered]@{
     'R18' = 'EDR bypass RE'
     'R19' = 'Browser / desktop automation'
     'R20' = 'Docs generator'
+    'R39' = 'Diagram generation'
     'R21' = 'Protocol reverse'
     'R22' = 'Ghidra reverse'
     'R23' = 'Cloud / K8s'
@@ -121,6 +123,7 @@ if ($t -match '\bpwn\b|rop|ret2libc|heap.?overflow|stack.?overflow|pwntools|栈�
 if ($t -match 'edr|av.?bypass|syscall|amsi|etw.?patch|hell.?s.?gate|免杀|反病毒') { [void]$sel.Add('R18') }
 if ($t -match 'playwright|browser.?auto|desktop.?auto|openreverse|fill.?form|浏览器.?自动化|桌面.?自动化|自动.?填表') { [void]$sel.Add('R19') }
 if ($t -match 'writeup|write.?report|generate.?report|\breport\b|写.?报告|出.?报告|渗透.?报告|逆向.?报告') { [void]$sel.Add('R20') }
+if ($t -match 'diagram|mermaid|graphviz|plantuml|flowchart|流程图|架构图|时序图|状态图|数据流图|攻击路径图|er.?图|画图|图表') { [void]$sel.Add('R39') }
 if ($t -match 'protocol.?reverse|custom.?protocol|protobuf|grpc|pcap.?protocol|wireshark.?dissector|协议.?逆向|自定义.?协议|流量.?逆向') { [void]$sel.Add('R21') }
 if ($t -match 'ghidra|ghidra.?mcp|analyzeheadless|无.?ida|开源.?反编译') { [void]$sel.Add('R22') }
 if ($t -match 'kubernetes|\bk8s\b|container.?escape|docker.?escape|kube-?bench|cloud.?secur|imds|169\.254\.169\.254|容器.?逃逸|云.?安全|k8s.?渗透') { [void]$sel.Add('R23') }
@@ -147,14 +150,28 @@ if ($t -match 'reverse|逆向' -and $t -notmatch 'apk|js.?reverse|ios|mobile|\.n
 
 $notes = New-Object System.Collections.Generic.List[string]
 
-$uniq = New-Object System.Collections.Generic.List[string]
-foreach ($d in $sel) { if (-not $uniq.Contains($d)) { [void]$uniq.Add($d) } }
+$scores = [ordered]@{}
+foreach ($item in $sel) {
+    if (-not $scores.Contains($item)) { $scores[$item] = 0 }
+    $scores[$item] = $scores[$item] + 1
+}
 
-# priority high -> low (all R0-R38 must appear)
-$priority = @('R4','R1','R2','R3','R30','R31','R33','R5','R9','R21','R22','R6','R7','R8','R34','R28','R17','R16','R18','R24','R37','R23','R35','R25','R36','R29','R38','R32','R26','R27','R10','R11','R12','R13','R14','R15','R19','R20','R0')
+$uniq = New-Object System.Collections.Generic.List[string]
+foreach ($d in $scores.Keys) { [void]$uniq.Add($d) }
+
+# priority high -> low (all R0-R39 must appear)
+$priority = @('R4','R1','R2','R3','R30','R31','R33','R5','R9','R21','R22','R6','R7','R8','R34','R28','R17','R16','R18','R24','R37','R23','R35','R25','R36','R29','R38','R32','R26','R27','R10','R11','R12','R13','R14','R15','R19','R20','R39','R0')
 $primary = $null
+$maxScore = -1
+
 foreach ($p in $priority) {
-    if ($uniq.Contains($p)) { $primary = $p; break }
+    if ($scores.Contains($p)) {
+        $score = $scores[$p]
+        if ($score -gt $maxScore) {
+            $maxScore = $score
+            $primary = $p
+        }
+    }
 }
 
 $confidence = 'low'

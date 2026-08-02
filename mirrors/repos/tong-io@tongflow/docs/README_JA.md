@@ -318,13 +318,3 @@ TongFlow は **デュアルライセンス（dual-licensing）** モデルを採
 
 上記のライセンスはリポジトリ全体（PyPI に公開される `tongflow` パッケージを含む `sdk/` ディレクトリ）をカバーします。
 コードの貢献は [CLA](../CLA.md) に従います。
-
-## Star 履歴
-
-<a href="https://www.star-history.com/?repos=tong-io%2Ftongflow&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=tong-io/tongflow&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=tong-io/tongflow&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=tong-io/tongflow&type=date&legend=top-left" />
- </picture>
-</a>

@@ -40,11 +40,13 @@ Linux/macOS (Bash) 生成 7 列表格：
 | jadx | — | — | — | — | ✓ | github-release-zip |
 | apktool | — | — | — | — | ✓ | github-release-jar-wrapper |
 | frida | — | — | — | — | ✓ | pip-package |
+| frida-ps | — | — | — | — | ✓ | pip-package |
 | idalib-mcp | — | — | — | — | ✓ | pip-package |
 | jshookmcp | — | ✓ | — | — | ✓ | npm-mcp |
 | anything-analyzer | — | ✓ | — | — | ✓ | local-http-mcp |
 | idapro | — | ✓ | — | — | ✓ | local-http-mcp |
 | r2 | — | — | — | — | ✓ | github-release-zip |
+| rabin2 | — | — | — | — | ✓ | github-release-zip |
 | adb | — | — | — | — | ✓ | winget-package / apt-package |
 | agent-browser | — | — | — | — | ✓ | npm-global |
 | ghidra-mcp | — | ✓ | — | — | ✓ | github-release-zip / apt-package |

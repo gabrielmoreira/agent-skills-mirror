@@ -19,6 +19,8 @@ If the verdict is "release", offer to transition into Ship mode.
 
 Activate when the user asks to commit, tag, release, publish, push, reply on an issue/PR, or close an issue after a change is ready.
 
+Treat an explicitly authorized chain such as review, fix, verify, commit, push, and public follow-through as one delivery ledger. Do not return control between its internal stages while safe authorized work remains. A local commit is not completion when push was included, and a no-op push is not completion when intended local changes remain uncommitted. Do not create an empty commit when the intended scope is already clean; prove the clean/up-to-date state instead.
+
 This mode extends review; it does not skip review. Before any public or irreversible action:
 
 1. Extract release rules from public project context: README, manifests, CI workflows, release notes, package scripts, changelogs, and explicit user instructions in the current thread.
@@ -33,6 +35,8 @@ This mode extends review; it does not skip review. Before any public or irrevers
 6. For issue/PR follow-through, confirm the item identity with the host's read command before posting. On GitHub, use `gh issue view` or `gh pr view`; on other hosts, use the CLI/API named by project docs or the current request. Use `references/public-reply.md` for the maintainer reply template (mention, single thanks, facts, explicit next release or verification step) and its closure criteria.
 7. For GitHub release reaction follow-through, only do it when project context or the current thread asks for it. After the release exists and required assets are verified, resolve the release id from the tag, POST every positive release reaction to `repos/<owner>/<repo>/releases/<id>/reactions` with `gh api` or the available GitHub tool, and re-read reactions to confirm. Positive release reactions are `+1`, `laugh`, `heart`, `hooray`, `rocket`, and `eyes`.
 8. After network or API failures, re-read the end state instead of assuming success or failure.
+
+Before handoff, reconcile every authorized item as `done`, `not applicable`, or `blocked`, then re-read the local `HEAD`, target remote ref/SHA, worktree status, CI or published artifact lane, and any public thread changed in this run. Never collapse source, CI, package, deployed channel, and public-thread state into one "done" claim.
 
 ### Reworked Or Cancelled Release Gate
 

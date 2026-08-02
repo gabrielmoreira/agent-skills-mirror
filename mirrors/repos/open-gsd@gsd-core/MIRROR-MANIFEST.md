@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `open-gsd/gsd-core` — 26 default patterns, 0 followed patterns, 122 file(s) materialized.
+Mirror of `open-gsd/gsd-core` — 26 default patterns, 0 followed patterns, 123 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `open-gsd/gsd-core` — 26 default patterns, 0 followed patterns, 122 
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 122 |
+| Files         | 123 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -181,6 +181,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 120 | ✓ | [`skills/gsd-verify-work/SKILL.md`](skills/gsd-verify-work/SKILL.md) |
 | 121 | ✓ | [`skills/gsd-workspace/SKILL.md`](skills/gsd-workspace/SKILL.md) |
 | 122 | ✓ | [`skills/gsd-workstreams/SKILL.md`](skills/gsd-workstreams/SKILL.md) |
+| 123 | ✓ | [`tests/qa/fixtures/codebase/ARCHITECTURE.md`](tests/qa/fixtures/codebase/ARCHITECTURE.md) |
 
 ---
 

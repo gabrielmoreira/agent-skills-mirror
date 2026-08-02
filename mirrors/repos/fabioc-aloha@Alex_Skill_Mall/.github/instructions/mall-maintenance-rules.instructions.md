@@ -8,11 +8,19 @@ lastReviewed: 2026-05-29
 
 The Plugin Mall is self-curating. This always-on rule routes any Mall-internal work to the right skill at the right moment.
 
+**Always-on rationale**: Mall operations can begin from scripts, workflow files,
+plugin payloads, source-registry changes, or contributor PRs. The ownership and
+approval boundary must be available before any of those paths writes state.
+
 ## Routing Table
 
 | Trigger | Fire skill |
 |---|---|
 | Pipeline operations (scan / score / render / publish) | [mall-self-curation](../skills/mall-self-curation/SKILL.md) |
+| Import or refresh a curated plugin | `npm run vendor` per [mall-self-curation](../skills/mall-self-curation/SKILL.md) § Canonical operator commands |
+| Contributor prepares a plugin PR | `npm run submit:prepare`, then `npm run submit:validate` |
+| Curated plugin PR needs review | Automated checks plus `@fabioc-aloha` CODEOWNER approval; never auto-merge |
+| First-party catalog/README maintenance | `npm run maintain -- --curated` |
 | Add / remove a source store in `supported-stores.json` | [source-inventory](../skills/source-inventory/SKILL.md) |
 | Evaluate a candidate store before adding it to the registry | [store-evaluation](../skills/store-evaluation/SKILL.md) |
 | Source store appears stale (no upstream activity, broken remote, etc.) | [staleness-discipline](../skills/staleness-discipline/SKILL.md) |
@@ -31,6 +39,8 @@ The Plugin Mall is self-curating. This always-on rule routes any Mall-internal w
 3. **Scan MUST include `plugin-mall`.** The self-scan walks `$REPO_ROOT/plugins/` and produces `catalog/stores/plugin-mall.json` like any other store.
 4. **Every commit touching brain artifacts** (skills, instructions, workflow files) carries a severity tag per [severity-tagged-commits](./severity-tagged-commits.instructions.md) — `[typo | clarification | behaviour | constitutional]`. Structural changes to the trust formula or pipeline shape are `[behaviour]`; reframes of the constitutional boundary are `[constitutional]`.
 5. **The Mall does not own downstream policy.** If the question is "should a consumer project use this plugin?" the answer comes from that consumer, not from the Mall. The Mall scores; consumers decide.
+6. **Contributor automation never approves.** `submit:prepare` writes only to the contributor branch; `submit:validate` is read-only; `validate-plugin-pr.yml` never merges. A CODEOWNER makes the editorial decision.
+7. **Canonical packaging only.** Maintainers and contributors use `plugin-package.cjs` through the documented wrappers. No one-off vendor scripts for individual plugins.
 
 ## What the Mall does vs out-of-scope
 
@@ -40,6 +50,7 @@ The Plugin Mall is self-curating. This always-on rule routes any Mall-internal w
 | Scan pipeline (scripts under `scripts/scan-*.cjs`) | Deciding which plugins consumer projects should bundle |
 | Trust scoring + published signals | Coherence with any specific consumer project |
 | Catalog publishing (`catalog/`, `scoring/`, rendered MD) | Constitutional reframes of what counts as "curated" |
+| Structural validation of contributor payloads | Automatic acceptance of contributor payloads |
 | Staleness detection + pruning of catalog entries | Periodic review of how the catalog is used downstream |
 
 The line is: **the Mall owns mechanical and data-driven operations over its own catalog; everything editorial or downstream is out of scope.**

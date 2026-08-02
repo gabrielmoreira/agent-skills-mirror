@@ -251,7 +251,7 @@ Then invoke `flint-chart` §0.2 with the brief as context. The brief locks the f
 
 ## Related skills
 
-- [`big-idea`](../big-idea/SKILL.md) — the generalized Big Idea distillation for any summary-shaped output. `chart-big-idea` is the chart-specific specialization.
+- `big-idea` — the generalized Big Idea distillation for any summary-shaped output. `chart-big-idea` is the chart-specific specialization.
 - [`chart-vocabulary`](../chart-vocabulary/SKILL.md) — 7-goal catalog + CSAR override table. Consumed by Step 5 (Chart Brief) to pick a chart type once the Big Idea is locked; also consumed by the selection tree in `chart-vocabulary` Module 5 which delegates back here for Step 1.
 - [`flint-chart`](../flint-chart/SKILL.md) — §0.2 chart-family-before-type + `ChartAssemblyInput` authoring. Consumes the Chart Brief.
 - [`render-verify`](../render-verify/SKILL.md) — post-render check + Prose-coupling check for the shipped figure.

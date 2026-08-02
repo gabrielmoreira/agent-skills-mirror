@@ -1,6 +1,6 @@
 ---
 name: "md-to-eml"
-description: Convert Markdown to RFC 5322 email (.eml) with inline CSS and CID images
+description: Convert Markdown to RFC 5322 email (.eml) with inline CSS and CID images. Use when the user asks to convert to email, make an eml, or export markdown as an .eml file.
 lastReviewed: 2026-07-28
 ---
 

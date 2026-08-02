@@ -1,4 +1,4 @@
-# planning-with-files: Stop hook for Cursor (PowerShell)
+﻿# planning-with-files: Stop hook for Cursor (PowerShell)
 # Checks if all phases in task_plan.md are complete.
 # Returns followup_message to auto-continue if phases are incomplete.
 # Always exits 0 — uses JSON stdout for control.

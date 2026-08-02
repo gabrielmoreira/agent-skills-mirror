@@ -2,6 +2,15 @@
 
 Editor and converter reference for collector-contrib **v0.157.0**. Editors mutate telemetry; converters return values for use in expressions. See the upstream `pkg/ottl/ottlfuncs/README.md` for the authoritative source.
 
+## Contents
+
+- [Transform-only functions](#transform-processor-only-functions)
+- [Editors](#editors-data-manipulation)
+- [String](#string-converters), [type conversion](#type-conversion), and [type checking](#type-checking)
+- [Lambda converters](#lambda-converters-v0157-alpha), [patterns](#pattern-matching), and [parsing](#data-parsing)
+- [Collections](#collections), [date/time](#datetime), [encoding](#hashing--encoding), and [OpenTelemetry-specific](#opentelemetry-specific)
+- [Safe function patterns](#function-patterns)
+
 ## Transform-processor-only functions
 
 The `transform` processor adds the following functions to the common OTTL
@@ -301,10 +310,13 @@ URL(s)                                        # v0.127+; { url.scheme, url.domai
 UserAgent(s)                                  # v0.134+; { user_agent.name, .version, os.name, os.version, … }
 ```
 
+`ParseJSON`, `IsString`, and `IsMatch` are available in v0.156 and do not require the v0.157
+`ottl.functions.enableLambda` feature gate.
+
 ```ottl
 # Conditional JSON parsing
 set(log.attributes, ParseJSON(log.body.string))
-    where IsString(log.body) and IsMatch(log.body.string, "^\\s*\\{.*\\}\\s*$")
+    where IsString(log.body) and IsMatch(log.body.string, "(?s)^\\s*\\{.*\\}\\s*$")
 
 # URL parsing
 set(span.attributes["http.host"], URL(span.attributes["http.url"])["url.domain"])
@@ -400,7 +412,7 @@ UUID()
 UUIDv7()                                      # v0.138+; time-ordered
 ```
 
-`UUIDv7` is preferable to `UUID()` when the resulting value is used as a primary key or sort key, because v7 is monotonic-ish and storage-friendly.
+`UUIDv7` is time-ordered; choose the identifier form according to the consuming system's requirements.
 
 ---
 
@@ -411,14 +423,6 @@ Log(value)                                    # natural logarithm
 ```
 
 OTTL's basic arithmetic operators (`+`, `-`, `*`, `/`) cover most needs; `Log` is the rare named math converter.
-
----
-
-## Utility
-
-```ottl
-UUID() / UUIDv7()
-```
 
 ---
 
@@ -440,7 +444,7 @@ set(span.attributes["normalized"],
 ### Conditional parsing into cache
 ```ottl
 set(log.cache["parsed"], ParseJSON(log.body.string))
-    where IsString(log.body) and IsMatch(log.body.string, "^\\s*\\{.*\\}\\s*$")
+    where IsString(log.body) and IsMatch(log.body.string, "(?s)^\\s*\\{.*\\}\\s*$")
 ```
 
 Then read from `log.cache["parsed"]` in subsequent statements without paying the parse cost again.

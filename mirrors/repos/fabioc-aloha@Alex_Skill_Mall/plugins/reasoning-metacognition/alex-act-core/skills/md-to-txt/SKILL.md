@@ -1,6 +1,6 @@
 ---
 name: "md-to-txt"
-description: "Strip Markdown formatting and produce clean plain text via pandoc"
+description: "Strip Markdown formatting and produce clean plain text via pandoc. Use when the user asks to convert to plain text or export markdown as a .txt file."
 lastReviewed: 2026-05-26
 ---
 

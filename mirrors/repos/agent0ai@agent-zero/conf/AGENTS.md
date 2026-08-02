@@ -16,6 +16,7 @@
 - Do not commit API keys, provider secrets, local account identifiers, or private endpoints.
 - Keep provider IDs and settings keys stable unless all loaders, UI references, migrations, and tests are updated.
 - Defaults must work in a clean checkout and in Docker.
+- Providers without a native Responses path in the supported LiteLLM runtime, or intentionally standardized on Chat Completions, must set `a0_api_mode: chat`; native Responses providers rely on the Responses default.
 - Templates must avoid accidentally unignoring private runtime content.
 
 ## Work Guidance

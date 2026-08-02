@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 255 file(s) materialized.
+Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 256 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ginlix-ai/LangAlpha` — 26 default patterns, 0 followed patterns, 25
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 255 |
+| Files         | 256 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -244,76 +244,77 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 183 | ✓ | [`skills/pptx/scripts/office/validators/redlining.py`](skills/pptx/scripts/office/validators/redlining.py) |
 | 184 | ✓ | [`skills/pptx/scripts/thumbnail.py`](skills/pptx/scripts/thumbnail.py) |
 | 185 | ✓ | [`skills/pptx/SKILL.md`](skills/pptx/SKILL.md) |
-| 186 | ✓ | [`skills/secretary/SKILL.md`](skills/secretary/SKILL.md) |
-| 187 | ✓ | [`skills/sector-overview/SKILL.md`](skills/sector-overview/SKILL.md) |
-| 188 | ✓ | [`skills/self-improve/SKILL.md`](skills/self-improve/SKILL.md) |
-| 189 | ✓ | [`skills/thesis-tracker/SKILL.md`](skills/thesis-tracker/SKILL.md) |
-| 190 | ✓ | [`skills/THIRD-PARTY-NOTICES.md`](skills/THIRD-PARTY-NOTICES.md) |
-| 191 | ✓ | [`skills/ui-design/SKILL.md`](skills/ui-design/SKILL.md) |
-| 192 | ✓ | [`skills/user-profile/onboarding.md`](skills/user-profile/onboarding.md) |
-| 193 | ✓ | [`skills/user-profile/SKILL.md`](skills/user-profile/SKILL.md) |
-| 194 | ✓ | [`skills/web-scraping/references/api-reference.md`](skills/web-scraping/references/api-reference.md) |
-| 195 | ✓ | [`skills/web-scraping/SKILL.md`](skills/web-scraping/SKILL.md) |
-| 196 | ✓ | [`skills/x-api/reference.md`](skills/x-api/reference.md) |
-| 197 | ✓ | [`skills/x-api/SKILL.md`](skills/x-api/SKILL.md) |
-| 198 | ✓ | [`skills/x-api/TROUBLESHOOTING.md`](skills/x-api/TROUBLESHOOTING.md) |
-| 199 | ✓ | [`skills/xlsx/LICENSE.txt`](skills/xlsx/LICENSE.txt) |
-| 200 | ✓ | [`skills/xlsx/scripts/office/helpers/__init__.py`](skills/xlsx/scripts/office/helpers/__init__.py) |
-| 201 | ✓ | [`skills/xlsx/scripts/office/helpers/merge_runs.py`](skills/xlsx/scripts/office/helpers/merge_runs.py) |
-| 202 | ✓ | [`skills/xlsx/scripts/office/helpers/simplify_redlines.py`](skills/xlsx/scripts/office/helpers/simplify_redlines.py) |
-| 203 | ✓ | [`skills/xlsx/scripts/office/pack.py`](skills/xlsx/scripts/office/pack.py) |
-| 204 | ✓ | [`skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-contentTypes.xsd`](skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-contentTypes.xsd) |
-| 205 | ✓ | [`skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-coreProperties.xsd`](skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-coreProperties.xsd) |
-| 206 | ✓ | [`skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-digSig.xsd`](skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-digSig.xsd) |
-| 207 | ✓ | [`skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-relationships.xsd`](skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-relationships.xsd) |
-| 208 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-chart.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-chart.xsd) |
-| 209 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-chartDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-chartDrawing.xsd) |
-| 210 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-diagram.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-diagram.xsd) |
-| 211 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-lockedCanvas.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-lockedCanvas.xsd) |
-| 212 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-main.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-main.xsd) |
-| 213 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-picture.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-picture.xsd) |
-| 214 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-spreadsheetDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-spreadsheetDrawing.xsd) |
-| 215 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-wordprocessingDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-wordprocessingDrawing.xsd) |
-| 216 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/pml.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/pml.xsd) |
-| 217 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-additionalCharacteristics.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-additionalCharacteristics.xsd) |
-| 218 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-bibliography.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-bibliography.xsd) |
-| 219 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-commonSimpleTypes.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-commonSimpleTypes.xsd) |
-| 220 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlDataProperties.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlDataProperties.xsd) |
-| 221 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlSchemaProperties.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlSchemaProperties.xsd) |
-| 222 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesCustom.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesCustom.xsd) |
-| 223 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesExtended.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesExtended.xsd) |
-| 224 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesVariantTypes.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesVariantTypes.xsd) |
-| 225 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-math.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-math.xsd) |
-| 226 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-relationshipReference.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-relationshipReference.xsd) |
-| 227 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/sml.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/sml.xsd) |
-| 228 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-main.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-main.xsd) |
-| 229 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-officeDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-officeDrawing.xsd) |
-| 230 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-presentationDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-presentationDrawing.xsd) |
-| 231 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-spreadsheetDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-spreadsheetDrawing.xsd) |
-| 232 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-wordprocessingDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-wordprocessingDrawing.xsd) |
-| 233 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/wml.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/wml.xsd) |
-| 234 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/xml.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/xml.xsd) |
-| 235 | ✓ | [`skills/xlsx/scripts/office/schemas/mce/mc.xsd`](skills/xlsx/scripts/office/schemas/mce/mc.xsd) |
-| 236 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-2010.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-2010.xsd) |
-| 237 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-2012.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-2012.xsd) |
-| 238 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-2018.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-2018.xsd) |
-| 239 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-cex-2018.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-cex-2018.xsd) |
-| 240 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-cid-2016.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-cid-2016.xsd) |
-| 241 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-sdtdatahash-2020.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-sdtdatahash-2020.xsd) |
-| 242 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-symex-2015.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-symex-2015.xsd) |
-| 243 | ✓ | [`skills/xlsx/scripts/office/soffice.py`](skills/xlsx/scripts/office/soffice.py) |
-| 244 | ✓ | [`skills/xlsx/scripts/office/unpack.py`](skills/xlsx/scripts/office/unpack.py) |
-| 245 | ✓ | [`skills/xlsx/scripts/office/validate.py`](skills/xlsx/scripts/office/validate.py) |
-| 246 | ✓ | [`skills/xlsx/scripts/office/validators/__init__.py`](skills/xlsx/scripts/office/validators/__init__.py) |
-| 247 | ✓ | [`skills/xlsx/scripts/office/validators/base.py`](skills/xlsx/scripts/office/validators/base.py) |
-| 248 | ✓ | [`skills/xlsx/scripts/office/validators/docx.py`](skills/xlsx/scripts/office/validators/docx.py) |
-| 249 | ✓ | [`skills/xlsx/scripts/office/validators/pptx.py`](skills/xlsx/scripts/office/validators/pptx.py) |
-| 250 | ✓ | [`skills/xlsx/scripts/office/validators/redlining.py`](skills/xlsx/scripts/office/validators/redlining.py) |
-| 251 | ✓ | [`skills/xlsx/scripts/recalc.py`](skills/xlsx/scripts/recalc.py) |
-| 252 | ✓ | [`skills/xlsx/SKILL.md`](skills/xlsx/SKILL.md) |
-| 253 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
-| 254 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
-| 255 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
+| 186 | ✓ | [`skills/run-workflow/SKILL.md`](skills/run-workflow/SKILL.md) |
+| 187 | ✓ | [`skills/secretary/SKILL.md`](skills/secretary/SKILL.md) |
+| 188 | ✓ | [`skills/sector-overview/SKILL.md`](skills/sector-overview/SKILL.md) |
+| 189 | ✓ | [`skills/self-improve/SKILL.md`](skills/self-improve/SKILL.md) |
+| 190 | ✓ | [`skills/thesis-tracker/SKILL.md`](skills/thesis-tracker/SKILL.md) |
+| 191 | ✓ | [`skills/THIRD-PARTY-NOTICES.md`](skills/THIRD-PARTY-NOTICES.md) |
+| 192 | ✓ | [`skills/ui-design/SKILL.md`](skills/ui-design/SKILL.md) |
+| 193 | ✓ | [`skills/user-profile/onboarding.md`](skills/user-profile/onboarding.md) |
+| 194 | ✓ | [`skills/user-profile/SKILL.md`](skills/user-profile/SKILL.md) |
+| 195 | ✓ | [`skills/web-scraping/references/api-reference.md`](skills/web-scraping/references/api-reference.md) |
+| 196 | ✓ | [`skills/web-scraping/SKILL.md`](skills/web-scraping/SKILL.md) |
+| 197 | ✓ | [`skills/x-api/reference.md`](skills/x-api/reference.md) |
+| 198 | ✓ | [`skills/x-api/SKILL.md`](skills/x-api/SKILL.md) |
+| 199 | ✓ | [`skills/x-api/TROUBLESHOOTING.md`](skills/x-api/TROUBLESHOOTING.md) |
+| 200 | ✓ | [`skills/xlsx/LICENSE.txt`](skills/xlsx/LICENSE.txt) |
+| 201 | ✓ | [`skills/xlsx/scripts/office/helpers/__init__.py`](skills/xlsx/scripts/office/helpers/__init__.py) |
+| 202 | ✓ | [`skills/xlsx/scripts/office/helpers/merge_runs.py`](skills/xlsx/scripts/office/helpers/merge_runs.py) |
+| 203 | ✓ | [`skills/xlsx/scripts/office/helpers/simplify_redlines.py`](skills/xlsx/scripts/office/helpers/simplify_redlines.py) |
+| 204 | ✓ | [`skills/xlsx/scripts/office/pack.py`](skills/xlsx/scripts/office/pack.py) |
+| 205 | ✓ | [`skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-contentTypes.xsd`](skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-contentTypes.xsd) |
+| 206 | ✓ | [`skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-coreProperties.xsd`](skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-coreProperties.xsd) |
+| 207 | ✓ | [`skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-digSig.xsd`](skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-digSig.xsd) |
+| 208 | ✓ | [`skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-relationships.xsd`](skills/xlsx/scripts/office/schemas/ecma/fouth-edition/opc-relationships.xsd) |
+| 209 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-chart.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-chart.xsd) |
+| 210 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-chartDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-chartDrawing.xsd) |
+| 211 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-diagram.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-diagram.xsd) |
+| 212 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-lockedCanvas.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-lockedCanvas.xsd) |
+| 213 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-main.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-main.xsd) |
+| 214 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-picture.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-picture.xsd) |
+| 215 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-spreadsheetDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-spreadsheetDrawing.xsd) |
+| 216 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-wordprocessingDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/dml-wordprocessingDrawing.xsd) |
+| 217 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/pml.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/pml.xsd) |
+| 218 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-additionalCharacteristics.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-additionalCharacteristics.xsd) |
+| 219 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-bibliography.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-bibliography.xsd) |
+| 220 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-commonSimpleTypes.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-commonSimpleTypes.xsd) |
+| 221 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlDataProperties.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlDataProperties.xsd) |
+| 222 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlSchemaProperties.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-customXmlSchemaProperties.xsd) |
+| 223 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesCustom.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesCustom.xsd) |
+| 224 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesExtended.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesExtended.xsd) |
+| 225 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesVariantTypes.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-documentPropertiesVariantTypes.xsd) |
+| 226 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-math.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-math.xsd) |
+| 227 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-relationshipReference.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/shared-relationshipReference.xsd) |
+| 228 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/sml.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/sml.xsd) |
+| 229 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-main.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-main.xsd) |
+| 230 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-officeDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-officeDrawing.xsd) |
+| 231 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-presentationDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-presentationDrawing.xsd) |
+| 232 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-spreadsheetDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-spreadsheetDrawing.xsd) |
+| 233 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-wordprocessingDrawing.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/vml-wordprocessingDrawing.xsd) |
+| 234 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/wml.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/wml.xsd) |
+| 235 | ✓ | [`skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/xml.xsd`](skills/xlsx/scripts/office/schemas/ISO-IEC29500-4_2016/xml.xsd) |
+| 236 | ✓ | [`skills/xlsx/scripts/office/schemas/mce/mc.xsd`](skills/xlsx/scripts/office/schemas/mce/mc.xsd) |
+| 237 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-2010.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-2010.xsd) |
+| 238 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-2012.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-2012.xsd) |
+| 239 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-2018.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-2018.xsd) |
+| 240 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-cex-2018.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-cex-2018.xsd) |
+| 241 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-cid-2016.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-cid-2016.xsd) |
+| 242 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-sdtdatahash-2020.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-sdtdatahash-2020.xsd) |
+| 243 | ✓ | [`skills/xlsx/scripts/office/schemas/microsoft/wml-symex-2015.xsd`](skills/xlsx/scripts/office/schemas/microsoft/wml-symex-2015.xsd) |
+| 244 | ✓ | [`skills/xlsx/scripts/office/soffice.py`](skills/xlsx/scripts/office/soffice.py) |
+| 245 | ✓ | [`skills/xlsx/scripts/office/unpack.py`](skills/xlsx/scripts/office/unpack.py) |
+| 246 | ✓ | [`skills/xlsx/scripts/office/validate.py`](skills/xlsx/scripts/office/validate.py) |
+| 247 | ✓ | [`skills/xlsx/scripts/office/validators/__init__.py`](skills/xlsx/scripts/office/validators/__init__.py) |
+| 248 | ✓ | [`skills/xlsx/scripts/office/validators/base.py`](skills/xlsx/scripts/office/validators/base.py) |
+| 249 | ✓ | [`skills/xlsx/scripts/office/validators/docx.py`](skills/xlsx/scripts/office/validators/docx.py) |
+| 250 | ✓ | [`skills/xlsx/scripts/office/validators/pptx.py`](skills/xlsx/scripts/office/validators/pptx.py) |
+| 251 | ✓ | [`skills/xlsx/scripts/office/validators/redlining.py`](skills/xlsx/scripts/office/validators/redlining.py) |
+| 252 | ✓ | [`skills/xlsx/scripts/recalc.py`](skills/xlsx/scripts/recalc.py) |
+| 253 | ✓ | [`skills/xlsx/SKILL.md`](skills/xlsx/SKILL.md) |
+| 254 | ✓ | [`src/server/AGENTS.md`](src/server/AGENTS.md) |
+| 255 | ✓ | [`web/AGENTS.md`](web/AGENTS.md) |
+| 256 | ✓ | [`web/CLAUDE.md`](web/CLAUDE.md) |
 
 ---
 
