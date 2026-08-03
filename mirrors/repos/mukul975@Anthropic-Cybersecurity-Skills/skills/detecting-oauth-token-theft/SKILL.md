@@ -1,13 +1,6 @@
 ---
 name: detecting-oauth-token-theft
-description: 'Detects and responds to OAuth token theft and replay attacks in cloud
-  environments, focusing on Microsoft Entra ID (Azure AD) token protection, conditional
-  access policies, and sign-in anomaly detection. Covers access token theft, refresh
-  token replay, Primary Refresh Token (PRT) abuse, and pass-the-cookie attacks. Activates
-  for requests involving OAuth token theft detection, token replay prevention, Azure
-  AD conditional access token protection, or cloud identity attack investigation.
-
-  '
+description: Detect and respond to OAuth token theft and replay in Microsoft Entra ID (Azure AD), covering access token theft, refresh token replay, Primary Refresh Token (PRT) abuse, pass-the-cookie attacks, and Token Protection conditional access policies. Use for impossible-travel or anomalous token-usage alerts, suspected session hijacking, sign-in log analysis, or configuring token-binding defenses in Azure/M365.
 domain: cybersecurity
 subdomain: cloud-security
 tags:

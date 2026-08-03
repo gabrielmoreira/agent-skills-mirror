@@ -1,8 +1,10 @@
 ---
 name: implementing-google-workspace-sso-configuration
-description: Configure SAML 2.0 single sign-on for Google Workspace with a third-party
-  identity provider, enabling centralized authentication and enforcing organization-wide
-  access policies.
+description: Configures SAML 2.0 single sign-on for Google Workspace against a third-party
+  identity provider (Okta, Azure AD/Entra ID, ADFS), with Workspace as the Service
+  Provider, to centralize authentication and enable immediate access revocation.
+  Use when setting up or troubleshooting Google Workspace SSO/SAML federation or
+  migrating from native Google passwords to an external IdP.
 domain: cybersecurity
 subdomain: identity-access-management
 tags:

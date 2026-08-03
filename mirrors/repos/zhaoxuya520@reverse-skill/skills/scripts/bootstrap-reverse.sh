@@ -38,6 +38,8 @@ esac
 START_SERVICES=false
 SKIP_REFRESH=false
 LIST_ONLY=false
+MANUAL_REQUIRED=false
+LAST_CAPABILITY_MANUAL=false
 CAPABILITIES=()
 
 for arg in "$@"; do
@@ -125,13 +127,13 @@ Usage:
   bash skills/scripts/bootstrap-reverse.sh --list
 
 Capabilities (parity with bootstrap-reverse.ps1):
-  jadx apktool frida frida-ps idalib-mcp jshookmcp anything-analyzer idapro
+  jadx apktool frida frida-ps idalib-mcp jshookmcp reqable-mcp anything-analyzer idapro
   r2 rabin2 adb agent-browser ghidra-mcp seclists proxycat burpsuite-mcp
   nmap pentestswarm binwalk yara pwntools
 
 Examples:
   bash skills/scripts/bootstrap-reverse.sh jadx apktool frida
-  bash skills/scripts/bootstrap-reverse.sh jshookmcp anything-analyzer
+  bash skills/scripts/bootstrap-reverse.sh jshookmcp reqable-mcp
   bash skills/scripts/bootstrap-reverse.sh idapro --start-services
   bash skills/scripts/bootstrap-reverse.sh burpsuite-mcp
 
@@ -144,7 +146,7 @@ EOF
 }
 
 ALL_CAPABILITIES=(
-  jadx apktool frida frida-ps idalib-mcp jshookmcp anything-analyzer idapro
+  jadx apktool jeb-pro frida frida-ps idalib-mcp jshookmcp reqable-mcp anything-analyzer idapro
   r2 rabin2 adb agent-browser ghidra-mcp seclists proxycat burpsuite-mcp
   nmap pentestswarm binwalk yara pwntools
 )
@@ -428,6 +430,17 @@ is_ready_cmd() {
   has_cmd "$cmd"
 }
 
+ensure_jeb_pro() {
+  if has_cmd jeb_wincon || has_cmd jeb; then
+    log_ok "JEB Pro ready: $(cmd_path jeb_wincon)$(cmd_path jeb)"
+    return 0
+  fi
+  manual_required jeb-pro "JEB Pro is commercial. Install it with a valid PNF Software license, then refresh the tool index."
+  LAST_CAPABILITY_MANUAL=true
+  MANUAL_REQUIRED=true
+  return 0
+}
+
 ensure_jadx() {
   if has_cmd jadx; then log_ok "jadx ready: $(cmd_path jadx)"; return 0; fi
   ensure_java_runtime
@@ -484,6 +497,12 @@ ensure_idalib_mcp() {
 ensure_jshookmcp() {
   ensure_node_runtime
   write_mcp_server "jshook" '{"command":"npx","args":["-y","@jshookmcp/jshook@0.3.4"],"env":{"JSHOOK_BASE_PROFILE":"search"}}'
+}
+
+ensure_reqable_mcp() {
+  ensure_node_runtime
+  write_mcp_server "reqable-mcp" '{"command":"npx","args":["-y","reqable-mcp-server@1.0.1"]}'
+  log_warn "Reqable MCP requires the separately installed Reqable desktop application and its local API."
 }
 
 ensure_anything_analyzer() {
@@ -683,11 +702,13 @@ expand_capabilities() {
 ensure_capability() {
   local name="$1"
   case "$name" in
+    jeb-pro) ensure_jeb_pro ;;
     jadx) ensure_jadx ;;
     apktool) ensure_apktool ;;
     frida|frida-ps) ensure_frida_tools ;;
     idalib-mcp) ensure_idalib_mcp ;;
     jshookmcp) ensure_jshookmcp ;;
+    reqable-mcp) ensure_reqable_mcp ;;
     anything-analyzer) ensure_anything_analyzer ;;
     idapro) ensure_idapro ;;
     r2|rabin2) ensure_r2 ;;
@@ -709,14 +730,25 @@ ensure_capability() {
 RESULTS_FILE="$(mktemp)"
 trap 'rm -f "$RESULTS_FILE"' EXIT
 
-mapfile -t EXPANDED < <(expand_capabilities "${CAPABILITIES[@]}")
+# macOS ships Bash 3.2, which has no mapfile/readarray. Keep this path portable
+# instead of requiring users to install a newer Bash just to run the bootstrapper.
+EXPANDED=()
+while IFS= read -r capability; do
+  [[ -n "$capability" ]] || continue
+  EXPANDED+=("$capability")
+done < <(expand_capabilities "${CAPABILITIES[@]}")
 
 log_info "platform=$PLATFORM doc=$(platform_doc) tools_root=$TOOLS_ROOT"
 
 for cap in "${EXPANDED[@]}"; do
   log_info "ensure $cap"
+  LAST_CAPABILITY_MANUAL=false
   if ensure_capability "$cap"; then
-    status_json_line "$cap" "ready" >> "$RESULTS_FILE"
+    if $LAST_CAPABILITY_MANUAL; then
+      status_json_line "$cap" "manual-required" "see $(platform_doc)" >> "$RESULTS_FILE"
+    else
+      status_json_line "$cap" "ready" >> "$RESULTS_FILE"
+    fi
   else
     status_json_line "$cap" "failed" "see $(platform_doc)" >> "$RESULTS_FILE"
   fi
@@ -726,7 +758,13 @@ if ! $SKIP_REFRESH; then
   bash "$SCRIPT_DIR/refresh-tool-index.sh" >/dev/null || log_warn "refresh-tool-index.sh failed"
 fi
 
-python3 - "$RESULTS_FILE" <<'PY'
+FINAL_EXIT_CODE=0
+if $MANUAL_REQUIRED; then
+  FINAL_EXIT_CODE=2
+fi
+
+if has_cmd python3; then
+  python3 - "$RESULTS_FILE" <<'PY'
 import json, sys
 items=[]
 with open(sys.argv[1], encoding='utf-8') as f:
@@ -734,3 +772,9 @@ with open(sys.argv[1], encoding='utf-8') as f:
         if line.strip(): items.append(json.loads(line))
 print(json.dumps(items, ensure_ascii=False, indent=2))
 PY
+else
+  log_warn "Python 3 is unavailable; emitting bootstrap results without JSON formatting"
+  cat "$RESULTS_FILE"
+fi
+
+exit "$FINAL_EXIT_CODE"

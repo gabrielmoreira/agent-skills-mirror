@@ -1,7 +1,10 @@
 ---
 name: scanning-container-images-with-grype
-description: Scan container images for known vulnerabilities using Anchore Grype with
-  SBOM-based matching and configurable severity thresholds.
+description: Scans container images, filesystems, and SBOMs for known CVEs using Anchore
+  Grype, matching Syft-generated SBOM packages against NVD, GitHub Advisories, and
+  OS-specific vulnerability feeds with configurable severity thresholds. Use when running
+  a security assessment or incident-response check that requires scanning container
+  images for known vulnerabilities with Grype.
 domain: cybersecurity
 subdomain: container-security
 tags:

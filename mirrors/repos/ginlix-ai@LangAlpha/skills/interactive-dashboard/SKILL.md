@@ -204,7 +204,7 @@ html = f"""<!DOCTYPE html>
     <title>AAPL Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
     <style>
-        /* See references/ui-components.md for dark theme CSS */
+        /* See references/ui-components.md for the theme foundation CSS */
     </style>
 </head>
 <body>
@@ -365,21 +365,32 @@ hist = ticker.history(period="1y")
 
 Read `.agents/skills/ui-design/SKILL.md` for design quality (typography, color, avoiding generic AI aesthetics).
 
-### Dark Theme (Default)
+### Theming
 
-Match the Ginlix platform aesthetic:
+A dashboard must **follow the theme it is viewed in** — never ship a fixed palette:
 
-| Element | Color |
-|---------|-------|
-| Page background | `#0f1117` |
-| Card background | `#1a1d27` |
-| Primary text | `#e5e7eb` |
-| Secondary text | `#9ca3af` |
-| Accent / links | `#3b82f6` |
-| Positive / gain | `#10b981` |
-| Negative / loss | `#ef4444` |
-| Border | `#2d3748` |
-| Hover highlight | `#252a36` |
+- **In the app**, the viewer injects theme tokens (`--color-bg-page`, `--color-text-primary`, …) that flip with the user's light/dark setting.
+- **Standalone** (downloaded and opened directly) no tokens exist, so the dashboard follows the OS via `prefers-color-scheme`.
+
+The **Theme Foundation block** in [references/ui-components.md](references/ui-components.md) §1 implements both: each bridge variable reads the app token first and falls back to an OS-adaptive value. Include that block **verbatim** in every dashboard, then style only with the bridge variables. Canvas/SVG chart code can't read `var()` — read the resolved value with the `pick()` helper (see [references/chart-patterns.md](references/chart-patterns.md)). **Never hardcode a palette hex in styles.**
+
+| Bridge variable | App token | Role |
+|---|---|---|
+| `--bg-page` | `--color-bg-page` | Page background |
+| `--bg-card` | `--color-bg-card` | Card / panel background |
+| `--bg-elevated` | `--color-bg-elevated` | Raised surface (menus, popovers) |
+| `--bg-subtle` | `--color-bg-subtle` | Zebra rows, quiet fills |
+| `--bg-hover` | `--color-bg-hover` | Hover highlight, table headers |
+| `--text-primary` | `--color-text-primary` | Primary text |
+| `--text-secondary` | `--color-text-secondary` | Labels, captions, axis ticks |
+| `--text-tertiary` | `--color-text-tertiary` | De-emphasized text |
+| `--border` | `--color-border-muted` | Borders, grid lines |
+| `--accent` | `--color-accent-primary` | Links, primary series, active tab |
+| `--positive` | `--color-profit` | Gains |
+| `--negative` | `--color-loss` | Losses |
+| `--warning` | `--color-warning` | Cautions |
+
+Light and dark literal values live **only** in the foundation block — don't restate them elsewhere.
 
 ### Layout
 
@@ -666,7 +677,8 @@ Before calling `GetPreviewUrl`:
 - [ ] Complex tier: FastAPI includes `HEAD /` endpoint (use `server-main.py` template)
 
 **UI Quality**
-- [ ] Dark theme applied consistently (see color table above)
+- [ ] Theme foundation block included verbatim; only bridge variables (and `pick()` for canvas colors) used — no palette hexes in styles
+- [ ] Renders correctly in **both** light and dark
 - [ ] Responsive layout — no horizontal scroll
 - [ ] Financial numbers properly formatted (currency, %, abbreviations)
 - [ ] Title passed to `GetPreviewUrl` is descriptive (e.g., "AAPL Stock Dashboard", not "Preview")

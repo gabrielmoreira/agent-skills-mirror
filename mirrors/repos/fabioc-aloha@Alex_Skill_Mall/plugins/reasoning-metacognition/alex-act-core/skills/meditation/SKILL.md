@@ -10,7 +10,7 @@ Transform session insights into durable knowledge. Most sessions don't need it; 
 
 ## When to Fire
 
-- User says "let's meditate", "consolidate", or invokes `/meditate`
+- User says "let's meditate", "consolidate", or invokes `/alex-act-core meditate`
 - End of a significant work session
 - After solving a hard problem with a reusable insight
 - Before a long break from a project

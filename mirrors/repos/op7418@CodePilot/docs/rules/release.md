@@ -15,7 +15,7 @@
 
 ## 构建
 
-macOS 产出 DMG（arm64 + x64），Windows 产出 NSIS 安装包。`scripts/after-pack.js` 重编译 better-sqlite3 为 Electron ABI。构建前清理 `rm -rf release/ .next/`。
+macOS 产出 DMG（arm64 + x64），Windows 产出 NSIS 安装包（x64），Linux 在原生 Ubuntu 22.04 x64 / arm64 runner 产出 AppImage、deb、rpm。`scripts/after-pack.js` 重编译 better-sqlite3 为 Electron ABI。任一平台/架构的安装包、原生 ABI、packaged server 或 source-map 卫生门禁失败，都会阻断正式 Release。
 
 > Windows 构建机器钉在 `windows-2022`（见 tech-debt #44：`windows-latest` 滚到 VS18 后 node-gyp 编译 native 模块失败）。
 
@@ -48,14 +48,25 @@ macOS 产出 DMG（arm64 + x64），Windows 产出 NSIS 安装包。`scripts/aft
 ### Windows
 - [Windows 安装包](https://github.com/op7418/CodePilot/releases/download/v{版本号}/CodePilot.Setup.{版本号}.exe)
 
+### Linux x64
+- [AppImage](https://github.com/op7418/CodePilot/releases/download/v{版本号}/CodePilot-{版本号}-x86_64.AppImage)
+- [deb](https://github.com/op7418/CodePilot/releases/download/v{版本号}/CodePilot-{版本号}-amd64.deb)
+- [rpm](https://github.com/op7418/CodePilot/releases/download/v{版本号}/CodePilot-{版本号}-x86_64.rpm)
+
+### Linux arm64
+- [AppImage](https://github.com/op7418/CodePilot/releases/download/v{版本号}/CodePilot-{版本号}-arm64.AppImage)
+- [deb](https://github.com/op7418/CodePilot/releases/download/v{版本号}/CodePilot-{版本号}-arm64.deb)
+- [rpm](https://github.com/op7418/CodePilot/releases/download/v{版本号}/CodePilot-{版本号}-aarch64.rpm)
+
 ## 安装说明
 
 **macOS**: 下载 DMG → 拖入 Applications → 首次启动如遇安全提示，在系统设置 > 隐私与安全中点击"仍要打开"
 **Windows**: 下载 exe 安装包 → 双击安装
+**Linux**: AppImage 添加可执行权限后直接运行；Debian/Ubuntu 安装 deb；Fedora/RHEL 系安装 rpm
 
 ## 系统要求
 
-- macOS 12.0+ / Windows 10+ / Linux (glibc 2.31+)
+- macOS 12.0+ / Windows 10+ / Linux (glibc 2.35+)
 - 需要配置 API 服务商（Anthropic / OpenRouter 等）
 - 推荐安装 Claude Code CLI 以获得完整功能
 ```

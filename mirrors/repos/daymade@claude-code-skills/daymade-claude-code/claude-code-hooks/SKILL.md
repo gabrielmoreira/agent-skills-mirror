@@ -50,7 +50,7 @@ match tokens/patterns; it can't judge whether a design is good).
 | **PreToolUse** | before a tool runs | allow | **block** the call (stderr → shown to model as guidance) | any other exit = "non-blocking error" → **the call proceeds** |
 | **PostToolUse** | after a tool ran | quiet **unless it prints a `hookSpecificOutput` JSON on stdout — that is how context injection works, and it happens at exit 0** | feedback to the model (can't un-run the tool) | — |
 | **SessionStart** | session begins | proceed | — | **always exit 0** — never block a session |
-| **Stop** (+ `SubagentStop`) | the model is about to finish responding | let it stop | **block the stop** — forces the model to keep going (stderr → fed back as the reason) | loop safety is **two layers**: the hook checks `stop_hook_active` (necessary, **not** sufficient — rule 7), and the harness itself **ends the turn after 8 consecutive blocks** regardless. All Stop hooks for an event run **in parallel** — one block round can carry several hooks' feedback |
+| **Stop** (+ `SubagentStop`) | the model is about to finish responding | let it stop | **block the stop** — forces the model to keep going (stderr → fed back as the reason) | loop safety: the hook checks `stop_hook_active` (necessary, **not** sufficient — rule 7). The harness's consecutive-block ceiling (default 8) is **not** a general backstop — its counter resets on any continuation that executed tools, so it never arrives for a hook whose remediation involves tool calls, which is most of them (#27). Carry your own bound. All Stop hooks for an event run **in parallel** — one block round can carry several hooks' feedback |
 
 - **PreToolUse** is the workhorse — the only one that can *stop* an action.
   `matcher` selects the tool (`Bash`, `Agent`, `WebFetch`, …). Exit 2 blocks and
@@ -95,11 +95,14 @@ match tokens/patterns; it can't judge whether a design is good).
   hard gates ("this must not stand"). `hookSpecificOutput.additionalContext`
   shows as neutral "Stop hook feedback" with no error notification — for
   coaching and reminders the model should weigh, not gates. Both count toward
-  the same 8-consecutive-block ceiling from the table above, so the choice is
-  tone, not safety. What the ceiling means for message design: a blocked retry
+  the same consecutive-block ceiling from the table above, so the choice is
+  tone, not safety. What that means for message design: a blocked retry
   round (`stop_hook_active: true`) is let through **with whatever violations
-  remain**, and after 8 blocks the harness ends the turn the same way — so a
-  Stop guard gets exactly **one** informed bite. Report *all* findings in that
+  remain** — so a Stop guard gets exactly **one** informed bite. (The ceiling
+  reinforces this only when your remediation is "rewrite the reply"; if it
+  involves tool calls the counter resets and the ceiling never lands — #27.
+  Either way the one-bite conclusion holds, because it rests on the latch, not
+  on the ceiling.) Report *all* findings in that
   one block (a guard that prints only the first loses the rest permanently —
   pitfall #17), and write the message as an escape manual naming the exact
   acceptable fix, not a verdict — the model converges in one round or it burns
@@ -304,7 +307,7 @@ different guard classes.** Take `cd ~/no-such-dir && TRIGGER`:
 |---|---|---|---|
 | **Token matcher** (is this a banned command form?) | the command text alone | **2, block** | `TRIGGER` is right there in the text; an unresolvable `cd` doesn't make it not-a-trigger, and if the guard goes quiet here it will also go quiet on `cd ~/real-dir && TRIGGER` |
 | **State deriver** (does the repo's staged set span domains?) | state read from disk | **0, allow** | `cd` fails, `&&` short-circuits, no commit ever happens — there is nothing to guard |
-| **Termination-state reader** (has the remediation already happened?) | a receipt / counter file (rule 7) | **0, allow** | an unreadable state file means the hook cannot know it already fired; failing closed here blocks forever with no remediation possible and no human-visible cause — that *is* the loop, and it is the one failure worse than a missed case |
+| **Termination-state reader** (has the remediation already happened?) | a receipt / counter file (rule 7) | **0, allow** — *when the state file IS the termination condition* | an unreadable receipt means the hook cannot know it already fired; failing closed here blocks forever with no remediation possible and no human-visible cause — that *is* the loop, and it is the one failure worse than a missed case. **Inverted sub-case — read this before copying the row:** when the state is only a **budget on top of an independent predicate** (the block still clears by doing the work), allow-on-unreadable **silently disables the entire hook** — one unwritable directory makes it mute for every input, forever, which is the worst failure shape there is. There, fail back to *the behavior before the budget existed* (keep evaluating the predicate), not to silence. **Tell the two apart with one question: if the state vanished, would remediation still be possible?** No → receipt case, allow. Yes → budget case, keep checking |
 
 So decide which class your hook is *before* writing the row, and the harness's
 `unresolvable path` template row expects **2** because that template targets the
@@ -367,13 +370,17 @@ condition T is true → hook demands remediation R → model performs R → T ch
 ```
 
 **If completing R can make T true again, the loop does not converge.** Nothing
-errors, nothing crashes; it burns round after round until the harness's
-8-consecutive-block ceiling ends the turn — or a human interrupts first, which
-is what usually happens because each round is a *complete* remediation cycle
-(dispatch, wait, adopt, edit), not a cheap retry. That ceiling is a backstop
-against a runaway session, not a design: reaching it means the turn ends with
-the violation still standing and the model's last 8 rounds spent on work nobody
-asked for. "It eventually stops" is not termination in any sense you want. `stop_hook_active` does *not* save you here — that field covers
+errors, nothing crashes; it burns round after round until a human interrupts —
+which is what usually happens, because each round is a *complete* remediation
+cycle (dispatch, wait, adopt, edit), not a cheap retry. **And that same
+property is why the harness's 8-consecutive-block ceiling will not save you:
+its counter resets on every continuation that executed tools, so a remediation
+cycle made of tool calls keeps it pinned at 1 forever** (measured — #27). Even
+where it does arrive, it is a backstop against a runaway session, not a design:
+the turn ends with the violation still standing, and the harness reports that
+turn as `reason:"completed"` — indistinguishable from genuinely finishing.
+"It eventually stops" is not termination in any sense you want, and here it
+does not even eventually stop. `stop_hook_active` does *not* save you here — that field covers
 exactly **one layer of re-entry** ("the stop I just blocked is being retried").
 It says nothing about the *cross-turn* case, where the model genuinely goes off
 and does R (real work, many tool calls), then stops naturally: that is a brand
@@ -745,3 +752,31 @@ fire, suspect the row before the hook.
 - [references/hook_pitfalls.md](references/hook_pitfalls.md) — every real failure mode with symptom → cause → fix.
 - [scripts/test_hook.sh](scripts/test_hook.sh) — end-to-end test harness; copy it next to any new hook.
 - [scripts/test_hook.group-name-guard.sh](scripts/test_hook.group-name-guard.sh) — a worked harness instance for a real Stop guard (event shapes, `says` rows, both polarities).
+
+## Maintenance — where new content goes
+
+New incident backports land outside this file, in the place that already holds
+their kind: a fresh pitfall or failure anatomy →
+[references/hook_pitfalls.md](references/hook_pitfalls.md); a reusable
+skeleton or pattern → [references/hook_patterns.md](references/hook_patterns.md);
+a worked harness instance (a test script) → `scripts/`. This file only takes
+**contract-level rules**: content every blocking hook consumes (a new hook
+type, a changed exit-code contract, a new rule in the `## Rules that separate
+a working guard from a session-poisoning one` series). The loaded-at-trigger
+surface stays stable while the knowledge base keeps growing; depth lives one
+pointer away. (The "Known pitfalls" headliners above are a highlights list,
+not an index — they have not been extended since pitfall #16; the numbered
+catalog in `hook_pitfalls.md` is the SSOT, and a new pitfall does not owe a
+headliner.)
+
+Why this is written down (2026-08-02): backports have in fact always gone to
+references — what grew this file 10k→50k chars in one week was *rules* prose
+(rules 5–8 landing inline), which this policy deliberately keeps here. The
+policy's job is to make the default explicit for the next session holding a
+fresh incident, so future growth stays limited to contract-level rules. A
+four-frame design review (cost / SSOT / architecture / evidence,
+cross-examined) chose this over a structural split of the existing eight
+rules. Restart-the-split criteria, for the next time someone proposes one: a
+measurement (not a vibe) showing the main file's size degrades rule
+compliance, or the whole skill's churn settling (30 consecutive days with no
+new rule or backport landing anywhere).

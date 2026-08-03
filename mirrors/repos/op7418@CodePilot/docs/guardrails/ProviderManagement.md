@@ -66,6 +66,23 @@ Qwen Token Plan 个人版与团队版共享 endpoint，稳定身份分别是 `qw
 
 旧行回填必须保守：Coding URL 可唯一回填 `bailian`；共享 Token Plan URL 只有精确满足旧团队 fingerprint 才回填团队版，其余保持空并让 UI 要求选择。manual/user-edited 行既不能用作套餐证明，也不能被迁移覆盖。
 
+### 3.3 模型能力与 wire 能力必须分轴
+
+`CatalogModel.capabilities` 是模型/UI 能力；`VendorPreset.wireCapabilities` 是“这个 provider 的这个 endpoint 对这个模型已验证接受哪些 wire 字段”。两者不能互相推导：同一模型经 ClinePass/OpenCode Go 等聚合渠道出现，不代表网关实现了第一方 DeepSeek 的 Responses 或 `output_config.effort`。
+
+不变量：
+
+- runtime transport 必须由 `getVerifiedProviderWireCapabilities(record, modelId)` 解析，经过 preset identity + exact model 双门；禁止只看 hostname、display name 或模型字符串。
+- 未声明 wire capability 时 fail closed，保留原协议或省略 effort；不能因为模型 catalog 显示 `supportsEffort` 就假定任意网关接受该字段。
+- `wireCapabilities.codexResponses` 只给真实走过请求形状 + API smoke 的模型。DeepSeek 当前仅 `deepseek-v4-flash`；V4 Pro 不得顺带放开。
+- AI SDK 对第三方 Responses 模型的内置 capability 判断不可信时，只有 preset-verified transport 才能设置 `forceReasoning`；供应商没声明的附加字段（如 DeepSeek 的 `reasoning.summary`）必须在 fetch 边界移除。
+
+### 3.4 preset 默认 env 是可升级的分层配置
+
+`defaultEnvOverrides` 不是只在“添加服务”那一刻复制一次的快照。`provider-resolver.ts:buildResolution()` 必须按 `preset defaults < stored env_overrides` 合并，让已有 provider 获得后续兼容默认值，同时保留用户显式 override。
+
+所有新增的 managed env key 必须同时加入 `toClaudeCodeEnv()` 的清理集合；否则从一个 provider 切到另一个时会残留跨服务配置。DeepSeek 的 `CLAUDE_CODE_SUBAGENT_MODEL` 是当前回归钉。
+
 ## 4. provider_models 表关系
 
 ### 4.1 三层 model 来源
@@ -137,6 +154,8 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 | Provider 卡片 | `src/components/settings/ProviderCard.tsx` | 头部 2 行：name+actions / 2 个 pill；compat pill `whitespace-nowrap` |
 | Renderer 预设适配 | `src/components/settings/provider-presets.tsx` | 只适配共享 identity resolver 的结果，不复制匹配规则 |
 | Catalog + identity | `src/lib/provider-catalog.ts` | `VENDOR_PRESETS`、identity 合同、歧义/非法状态；`meta.claudeCodeVerified` 仅给实测稳定的 |
+| Verified wire resolver | `src/lib/provider-catalog.ts:getVerifiedProviderWireCapabilities()` | preset identity + exact model；第一方能力不外溢到聚合渠道 |
+| Runtime transport config | `src/lib/provider-resolver.ts:toAiSdkConfig()` | 只消费 verified wire；runtime/model 不匹配时保留默认协议 |
 | Provider DB ops | `src/lib/db.ts` `createProvider/updateProvider/deleteProvider` | 删除联动 active_image_provider；不允许改 provider_type |
 | Provider models DB ops | `src/lib/db.ts` `upsertProviderModel/applyDiscoveryDiff/updateProviderModelUserFields` | 保留 user_edited 行的用户字段；catalog seed 走 `seedCatalogModels` |
 | API: providers CRUD | `src/app/api/providers/route.ts` + `[id]/route.ts` | DELETE 不动 chat_sessions；PUT 拒绝 provider_type 变更 |
@@ -151,6 +170,7 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
   - 决定 `sdkProxyOnly`（必须走 SDK 子进程才标 true）
   - 决定 `iconKey` 并加图标到 `getProviderIcon`
   - 若 endpoint 与现有 preset 相同，补 ambiguous/explicit-switch/migration 测试，不能依赖数组顺序
+  - 若声明 `wireCapabilities`，必须分别回答 exact model、Runtime、endpoint、effort 档位、unsupported fallback，并补第一方正例 + 聚合/近似模型反例 + 真实凭据 smoke
 - 新增 provider 字段（如新 endpoint 信息）：
   - 加 DB 列（用 `PRAGMA table_info` 检测 + ALTER TABLE 模式）
   - 更新 `ApiProvider` type
@@ -172,6 +192,8 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 7. **media provider 进 chat picker** — `MEDIA_PROTOCOLS` set 必须在 `/api/providers/models` route 生效，否则图片 provider 出现在聊天模型选择器
 8. **改 sort_order 不持久** — `getAllModelsForProvider` ORDER BY sort_order ASC，PATCH 必须更新该字段；前端用 swap 邻居 sort_order 实现 reorder
 9. **active image provider stale 不显示警告** — 删除当前 active 后必须 set 回 ''；前端有 `activeImageProviderStale` flag 兜底但显示不显眼
+10. **把模型能力当成网关 wire 能力** — 同名模型经聚合渠道可能拒绝或忽略 effort/Responses；必须用 preset `wireCapabilities` 独立声明
+11. **preset 新 env 只对新连接生效** — resolver 必须层叠 catalog 默认；新增 key 也必须进入 managed 清理集合，避免旧用户缺能力、切 provider 后又串值
 
 ## 9. 测试覆盖
 
@@ -181,6 +203,7 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 | `src/__tests__/unit/provider-preset-identity-migration.test.ts` | `preset_key` 迁移、歧义、保守 backfill |
 | `src/__tests__/unit/provider-preset-switch-route.test.ts` | 显式切套餐、catalog reconcile、非法 endpoint 拒绝 |
 | `src/__tests__/unit/provider-resolver.test.ts` | catalog merge / DB 优先 / hidden 抑制 / role models 拉取 |
+| `src/__tests__/unit/deepseek-v4-flash-adaptation.test.ts` | exact preset/model wire 门、legacy env 默认层叠、DeepSeek Anthropic effort + Codex Responses 请求形状、聚合渠道反例 |
 | `src/__tests__/unit/qwen-token-plan-catalog.test.ts` | Qwen 三套餐白名单、默认角色、usage policy |
 | `src/__tests__/unit/xai-provider.test.ts` | xAI API Key preset、Responses、官方 endpoint 边界 |
 | `src/__tests__/unit/xai-oauth-manager.test.ts` | xAI virtual provider、token 生命周期、header/host 防泄漏 |
@@ -201,3 +224,4 @@ UI 展示在 Models 页 row 上的 source badge。删除按钮**仅**对 `source
 - **2026-04-26** 删 provider 不动 chat_sessions — 误删可恢复，session 自动接回
 - **2026-07-21** `preset_key` 升为 DB 稳定身份，所有 matcher 收口到共享 resolver；同 URL 多套餐返回 ambiguous，不再顺序 first-match。
 - **2026-07-21** xAI API Key 与 xAI OAuth 作为独立渠道并列；OAuth virtual provider 不伪造 DB 行、额度或套餐名称。
+- **2026-08-02** 模型/UI capability 与 provider wire capability 正式分轴。DeepSeek V4 Flash 只有在第一方 preset + exact model + Codex Runtime 时切原生 Responses；Anthropic effort 也只对 preset 声明的模型放行。ClinePass/OpenCode Go 的同名模型保持 tool-use-only，直到各自网关 smoke。preset env 同时改为可升级分层配置，老 provider 行不必删除重加。

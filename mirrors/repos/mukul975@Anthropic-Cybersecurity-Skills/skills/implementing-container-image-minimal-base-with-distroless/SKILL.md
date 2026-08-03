@@ -1,8 +1,11 @@
 ---
 name: implementing-container-image-minimal-base-with-distroless
-description: Reduce container attack surface by building application images on Google
-  distroless base images that contain only the application runtime with no shell,
-  package manager, or unnecessary OS utilities.
+description: Reduces container attack surface by building application images on Google
+  distroless base images that contain only the app runtime with no shell, package
+  manager, or OS utilities, using multi-stage Docker build patterns and debug/scanning
+  techniques for distroless containers. Use when hardening container images, cutting
+  attack surface in a container security architecture, or responding to a security
+  assessment that flags bloated base images.
 domain: cybersecurity
 subdomain: container-security
 tags:

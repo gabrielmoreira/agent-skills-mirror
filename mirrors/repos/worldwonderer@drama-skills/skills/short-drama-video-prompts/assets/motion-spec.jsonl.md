@@ -9,19 +9,19 @@
   "motion_id": "MOTION-<stable-id>",
   "status": "candidate",
   "shot_ref": {
-    "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+    "artifact": "剧集/<EP>/storyboard/shots.jsonl",
     "hash": "<sha256>",
     "record_id": "SHOT-<id>",
     "owner": "short-drama-storyboard"
   },
   "keyframe_ref": {
-    "artifact": "episodes/<EP>/storyboard/keyframes.jsonl",
+    "artifact": "剧集/<EP>/storyboard/keyframes.jsonl",
     "hash": "<sha256>",
     "record_id": "KEY-<id>",
     "owner": "short-drama-storyboard"
   },
   "purpose_ref": {
-    "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+    "artifact": "剧集/<EP>/storyboard/shots.jsonl",
     "hash": "<sha256>",
     "record_id": "SHOT-<id>",
     "field": "/purpose",
@@ -34,7 +34,7 @@
         "kind": "action",
         "source_ref": {
           "owner": "short-drama-write",
-          "artifact": "episodes/<EP>/screenplay-index.jsonl",
+          "artifact": "剧集/<EP>/screenplay-index.jsonl",
           "hash": "<sha256>",
           "record_id": "BLK-<id>"
         },
@@ -45,7 +45,7 @@
         "kind": "reaction",
         "source_ref": {
           "owner": "short-drama-storyboard",
-          "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+          "artifact": "剧集/<EP>/storyboard/shots.jsonl",
           "hash": "<sha256>",
           "record_id": "SHOT-<id>",
           "field": "/purpose"
@@ -57,7 +57,7 @@
         "kind": "dialogue",
         "source_ref": {
           "owner": "short-drama-write",
-          "artifact": "episodes/<EP>/screenplay-index.jsonl",
+          "artifact": "剧集/<EP>/screenplay-index.jsonl",
           "hash": "<sha256>",
           "record_id": "BLK-<EP>-<SC>-D<nn>"
         },
@@ -68,7 +68,7 @@
         "kind": "reveal",
         "source_ref": {
           "owner": "short-drama-storyboard",
-          "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+          "artifact": "剧集/<EP>/storyboard/shots.jsonl",
           "hash": "<sha256>",
           "record_id": "SHOT-<id>",
           "field": "/audience_visibility/0"
@@ -91,7 +91,7 @@
         "kind": "end_boundary",
         "source_ref": {
           "owner": "short-drama-storyboard",
-          "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+          "artifact": "剧集/<EP>/storyboard/shots.jsonl",
           "hash": "<sha256>",
           "record_id": "SHOT-<id>",
           "field": "/end_boundary"
@@ -106,7 +106,7 @@
   },
   "boundary_refs": {
     "duration": {
-      "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+      "artifact": "剧集/<EP>/storyboard/shots.jsonl",
       "hash": "<sha256>",
       "record_id": "SHOT-<id>",
       "field": "/duration_seconds",
@@ -114,21 +114,21 @@
       "owner": "short-drama-storyboard"
     },
     "start": {
-      "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+      "artifact": "剧集/<EP>/storyboard/shots.jsonl",
       "hash": "<sha256>",
       "record_id": "SHOT-<id>",
       "field": "/start_boundary",
       "owner": "short-drama-storyboard"
     },
     "end": {
-      "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+      "artifact": "剧集/<EP>/storyboard/shots.jsonl",
       "hash": "<sha256>",
       "record_id": "SHOT-<id>",
       "field": "/end_boundary",
       "owner": "short-drama-storyboard"
     },
     "next_start": {
-      "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+      "artifact": "剧集/<EP>/storyboard/shots.jsonl",
       "hash": "<sha256>",
       "record_id": "SHOT-<next-id>",
       "field": "/start_boundary",
@@ -140,7 +140,7 @@
     {
       "artifact_ref": {
         "owner": "short-drama-storyboard",
-        "artifact": "episodes/<EP>/storyboard/keyframes.jsonl",
+        "artifact": "剧集/<EP>/storyboard/keyframes.jsonl",
         "hash": "<sha256>",
         "record_id": "KEY-<id>"
       },
@@ -222,13 +222,13 @@
         "record_id": "<dialogue|VO|OS|SFX-id>"
       },
       "speaker_ref": {
-        "artifact": "bible/characters.jsonl",
+        "artifact": "设定集/characters.jsonl",
         "hash": "<sha256>",
         "owner": "short-drama-assets",
         "record_id": "CHAR-<id>"
       },
       "voice_direction_ref": {
-        "artifact": "bible/characters.jsonl",
+        "artifact": "设定集/characters.jsonl",
         "hash": "<sha256>",
         "owner": "short-drama-assets",
         "record_id": "CHAR-<id>",

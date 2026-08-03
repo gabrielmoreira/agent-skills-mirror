@@ -1,7 +1,6 @@
 ---
 name: hardening-docker-daemon-configuration
-description: Harden the Docker daemon by configuring daemon.json with user namespace
-  remapping, TLS authentication, rootless mode, and CIS benchmark controls.
+description: Harden the Docker daemon (dockerd) by configuring /etc/docker/daemon.json with user namespace remapping, TLS client authentication, seccomp profiles, and CIS Docker Benchmark controls such as icc, no-new-privileges, and live-restore. Use when securing a Docker host's daemon configuration to prevent privilege escalation, container breakout, or lateral movement, or when auditing daemon settings against CIS benchmark requirements.
 domain: cybersecurity
 subdomain: container-security
 tags:

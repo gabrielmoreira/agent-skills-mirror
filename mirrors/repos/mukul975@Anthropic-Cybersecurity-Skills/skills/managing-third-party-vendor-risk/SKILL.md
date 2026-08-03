@@ -1,18 +1,12 @@
 ---
 name: managing-third-party-vendor-risk
 description: >-
-  Build and run a third-party / vendor risk management (TPRM) program aligned to NIST
-  SP 800-161 C-SCRM and NIST CSF 2.0 GV.SC: inventory and tier vendors by risk, send the
-  right due-diligence questionnaire (SIG, CAIQ), review evidence (SOC 2, ISO 27001,
-  pen-test reports), set contractual security and right-to-audit clauses, monitor vendors
-  continuously, manage Nth-party / subcontractor risk, and offboard securely. Use when an
-  organization needs to assess a new vendor before onboarding, when standing up or maturing
-  a vendor-risk program, when tiering a vendor portfolio, when reviewing a SOC 2 or CAIQ,
-  when writing security requirements into a contract or DPA, when a vendor suffers a breach,
-  or when managing supply-chain / software supply-chain risk. Keywords: third-party risk,
-  vendor risk management, TPRM, supply chain risk, C-SCRM, NIST 800-161, vendor tiering,
-  SIG questionnaire, CAIQ, SOC 2, ISO 27001, right to audit, continuous monitoring, security
-  ratings, fourth-party risk, Nth-party, vendor offboarding, due diligence.
+  Build and run a third-party/vendor risk management (TPRM) program aligned to NIST SP
+  800-161 C-SCRM: inventory and tier vendors, issue SIG/CAIQ questionnaires, review
+  SOC 2/ISO 27001 evidence, set contractual right-to-audit clauses, monitor vendors
+  continuously, and offboard securely. Use when assessing a new vendor, standing up a
+  vendor-risk program, tiering a portfolio, reviewing a SOC 2/CAIQ, or writing security
+  terms into a contract.
 domain: cybersecurity
 subdomain: compliance-governance
 tags:

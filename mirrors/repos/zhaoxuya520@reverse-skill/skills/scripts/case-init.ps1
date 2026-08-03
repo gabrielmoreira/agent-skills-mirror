@@ -32,6 +32,15 @@ if (-not $CaseName) {
     $CaseName = '{0}-{1}' -f (Get-Date -Format 'yyyyMMdd-HHmmss'), $slug
 }
 
+# CaseName is a directory name, not a path. Keep every case under PackageRoot/work.
+# The pattern allows localized names but excludes Windows path syntax and names that
+# Windows would normalize into a dot segment (for example, '.. ' or 'case.').
+if ([string]::IsNullOrWhiteSpace($CaseName) -or
+    $CaseName -notmatch '^[\p{L}\p{N}][\p{L}\p{N}._ -]{0,79}$' -or
+    $CaseName -match '[.\s]$') {
+    throw "Invalid -CaseName '$CaseName'. Use a 1-80 character directory name beginning with a letter or number; path separators, dot segments, trailing dots/spaces, control characters, and wildcard characters are not allowed."
+}
+
 $caseRoot = Join-Path $PackageRoot ("work\{0}" -f $CaseName)
 $dirs = @('evidence', 'notes', 'report')
 New-Item -ItemType Directory -Force -Path $caseRoot | Out-Null

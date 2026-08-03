@@ -11,7 +11,7 @@ Wrap `copilot plugin update` with the diff-summary + consent-gate discipline eve
 ## When to fire
 
 - Heir asks "update my plugins" / "keep plugins current" / "latest constellation"
-- Heir invokes `/update-plugins`
+- Heir invokes `/alex-act-core update-plugins`
 - Session-start reminder from `install-constellation` when it detects an existing install with available updates
 - Auditing "what would update" without committing (audit mode)
 
@@ -49,7 +49,7 @@ $catalog = Invoke-WebRequest -Uri "https://raw.githubusercontent.com/fabioc-aloh
 
 **Caching**: for the `greeting-checkin` use case, cache the result via the session-state hint file (see `plugin-management` skill § Session-state hint file). One fetch per hour per session tops.
 
-**Fallback**: for the interactive `/update-plugins` case, if the catalog fetch
+**Fallback**: for the interactive `/alex-act-core update-plugins` case, if the catalog fetch
 fails, use the plugin's GitHub Releases page or source repository when known.
 If no verified source is available, mark latest version as unavailable and stop
 before offering an update. Copilot CLI 1.0.77 has no per-plugin `info` command.
@@ -109,7 +109,7 @@ Print the diff summary and stop. No CLI writes, no filesystem changes. Report:
 - N plugins current, no update needed
 - M plugins have updates available
 - K plugins have breaking changes worth reviewing
-- Next step: run `/update-plugins` again with an explicit mode choice
+- Next step: run `/alex-act-core update-plugins` again with an explicit mode choice
 
 ### Mode 2 — Update non-breaking only
 
@@ -152,9 +152,9 @@ The skill maintains no state file. Every invocation queries live state.
 
 If `install-constellation` detects the constellation is installed but has updates available, it can print a one-line hint:
 
-> "Constellation plugins have updates available: 3 non-breaking, 1 breaking. Run `/update-plugins` for the diff summary."
+> "Constellation plugins have updates available: 3 non-breaking, 1 breaking. Run `/alex-act-core update-plugins` for the diff summary."
 
-The hint is read-only — it does not itself update anything. The heir invokes this skill (or `/update-plugins`) to see the details.
+The hint is read-only — it does not itself update anything. The heir invokes this skill (or `/alex-act-core update-plugins`) to see the details.
 
 ## Safety rules
 

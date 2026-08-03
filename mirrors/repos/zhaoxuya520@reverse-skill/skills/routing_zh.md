@@ -16,11 +16,11 @@
 
 | 目标类型 | 推荐入口 | 备选方案 |
 |---------|---------|---------|
-| APK / Android 应用 | `mobile-reverse/SKILL.md` — Frida/Objection/MobSF 全平台移动逆向 | `apk-reverse/` — 仅 Android 静态分析、jadx 反编译 |
+| APK / Android 应用 | `mobile-reverse/SKILL.md` — Frida/Objection/MobSF 全平台移动逆向 | `apk-reverse/` — 静态分析、jadx 反编译；可选已许可的 JEB Pro 交叉验证 |
 | iOS / IPA 应用 | `mobile-reverse/SKILL.md` — iOS 逆向 + Frida/Objection | `mobile-reverse/references/ios-reverse-guide.md` — iOS 专项 |
 | 二进制 exe/dll/so/elf | `ida-reverse/` — IDA Pro 反编译 | `radare2/` — CLI 分析，或 `reverse-engineering/tools.md` — GDB/Unicorn |
 | JavaScript / Web 前端 | `js-reverse/` — 5 阶段工作流 | anything-analyzer MCP 的浏览器工具，或 jshookmcp 的浏览器/CDP/Hook 能力 |
-| HTTP 抓包 / 浏览器采样 / 请求重放 | anything-analyzer MCP（23816） | `js-reverse/`、jshookmcp 或 `competition-web-runtime/` |
+| HTTP 抓包 / 浏览器采样 / 请求重放 | anything-analyzer MCP（23816） | Reqable MCP、`js-reverse/`、jshookmcp 或 `competition-web-runtime/` |
 | 固件 / IoT | `firmware-pentest/` — OWASP FSTM 全链路：提取→仿真→fuzz→利用 | `reverse-engineering/platforms.md` — 仅静态 RE / `reverse-engineering/tools.md` — Ghidra headless |
 | WASM / Python 字节码 / .NET | `reverse-engineering/languages.md` | 按具体语言查对应章节 |
 | macOS / iOS | `reverse-engineering/platforms.md` — Mach-O/ObjC/Swift | — |
@@ -51,6 +51,8 @@
 | "radare2 / r2 分析" | `radare2/SKILL.md` — CLI 工作流 |
 | "找前端签名/加密参数" | `js-reverse/SKILL.md` — Observe→Capture→Rebuild |
 | "jshookmcp / JS hook / CDP 调试" | `js-reverse/SKILL.md` — 仍走同一条 JS/Web 逆向链路；调用前先确认该 MCP server 已下载、已注册到客户端、已启用 |
+| "Reqable / Reqable MCP / 抓包重放" | `pentest-tools/SKILL.md` — 授权范围内的本地抓包与 API 工作流 |
+| "JEB / JEB Pro" | `apk-reverse/SKILL.md` — 已许可的 Android / ARM 交叉验证；先确认本机安装 |
 | "APK 解包/重打包/改 smali" | `apk-reverse/SKILL.md` — decode→rebuild-sign-install |
 | "过反调试/反检测" | `reverse-engineering/anti-analysis.md` |
 | "这是什么混淆/VM" | `reverse-engineering/patterns*.md` — 按模式查 |

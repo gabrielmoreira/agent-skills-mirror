@@ -13,7 +13,7 @@
 
 `short-drama.json#/creator_authority` exists even in script-first/direct-entry
 projects. It owns accepted creator constraints, visual direction, and production
-profile choices; `creator-decisions/<artifact-id>.json` records accept/reject
+profile choices; `创作者决策/<artifact-id>.json` records accept/reject
 decisions against exact candidate hashes, one file per artifact. Do not recover
 these facts from chat memory or a prompt cache. An unset direction/profile
 remains explicitly `unset`, not silently defaulted.
@@ -73,7 +73,7 @@ Route by the creator's actual job, not by an internal pipeline phase.
 | 初始化、继续、恢复、交付 | `short-drama` | project path or desired new path |
 
 Do not fabricate development artifacts merely to satisfy a direct entry. When a
-creator brings a script, preserve the original bytes under `inputs/`, propose a
+creator brings a script, preserve the original bytes under `输入/`, propose a
 canonical Markdown preview and semantic diff, and continue only after acceptance.
 
 ## Checkpoints and branches

@@ -98,16 +98,39 @@ Load chart libraries, fonts, and helpers from these only. Do not call out to dat
 The viewer can inject app `--color-*` variables so the report themes with light/dark mode. **Always author colors in the fallback form** so the document also renders correctly standalone, in a downloaded file, and in print:
 
 ```css
-color: var(--color-text-primary, #1a1a1a);
-background: var(--color-bg-card, #ffffff);
-border: 1px solid var(--color-border-muted, #e4e1dc);
+color: var(--color-text-primary, var(--fb-text-primary));
+background: var(--color-bg-card, var(--fb-bg-card));
+border: 1px solid var(--color-border-muted, var(--fb-border-muted));
 ```
 
-The literal fallback is what shows when no app vars are injected (downloaded file, PDF, plain open). Never write a bare `var(--color-x)` without a fallback, and never hardcode a color with no variable — both break one of the surfaces.
+The fallback is what shows when no app vars are injected (downloaded file, PDF, plain open). Point it at a private `--fb-*` variable from the block below so a standalone document follows the reader's OS light/dark preference instead of guessing one theme. Never write a bare `var(--color-x)` without a fallback, and never hardcode a color with no variable — both break one of the surfaces.
+
+Define the fallback palette once at the top of your `<style>`. The private `--fb-*` names can never collide with — or override — the injected app tokens:
+
+```css
+:root {
+  --fb-bg-page: #fbfaf8; --fb-bg-card: #ffffff; --fb-bg-elevated: #ffffff;
+  --fb-bg-subtle: #f4f2ee; --fb-bg-hover: #efece7;
+  --fb-text-primary: #1a1a1a; --fb-text-secondary: #5a5a5a; --fb-text-tertiary: #8a8a8a;
+  --fb-border-muted: #e4e1dc; --fb-accent-primary: #1f5fb4;
+  --fb-profit: #1a7f4f; --fb-loss: #b42318; --fb-warning: #b7791f;
+  --fb-info: #1f5fb4; --fb-success: #1a7f4f;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fb-bg-page: #0f1117; --fb-bg-card: #1a1d27; --fb-bg-elevated: #20242f;
+    --fb-bg-subtle: #161a24; --fb-bg-hover: #252a36;
+    --fb-text-primary: #e8e8e8; --fb-text-secondary: #9ca3af; --fb-text-tertiary: #6b7280;
+    --fb-border-muted: #262a33; --fb-accent-primary: #5b9bff;
+    --fb-profit: #3fb37a; --fb-loss: #f0685a; --fb-warning: #d69e2e;
+    --fb-info: #5b9bff; --fb-success: #3fb37a;
+  }
+}
+```
 
 Reuse the same variable names as the inline-widget skill:
 
-| Variable | Purpose | Suggested light fallback |
+| Variable | Purpose | Light `--fb-*` value |
 |---|---|---|
 | `--color-bg-page` | Page background | `#fbfaf8` |
 | `--color-bg-card` | Card/panel background | `#ffffff` |
@@ -127,7 +150,7 @@ Reuse the same variable names as the inline-widget skill:
 
 ## Charts
 
-Load Chart.js or ECharts from CDN. Canvas pixels cannot read CSS variables, so resolve colors via `getComputedStyle` with a **literal fallback** for the standalone/print case:
+Load Chart.js or ECharts from CDN. Canvas pixels cannot read CSS variables, so resolve colors via `getComputedStyle` with a **fallback chain** for the standalone/print case:
 
 ```html
 <div style="position: relative; height: 320px;">
@@ -136,8 +159,10 @@ Load Chart.js or ECharts from CDN. Canvas pixels cannot read CSS variables, so r
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
 <script>
   var cs = getComputedStyle(document.documentElement);
+  // App token if injected, else the OS-adaptive --fb-* value, else the literal.
   function pick(name, fallback) {
-    var v = cs.getPropertyValue(name).trim();
+    var v = cs.getPropertyValue(name).trim()
+      || cs.getPropertyValue(name.replace('--color-', '--fb-')).trim();
     return v || fallback;
   }
   var accent = pick('--color-accent-primary', '#1f5fb4');
@@ -159,7 +184,7 @@ Load Chart.js or ECharts from CDN. Canvas pixels cannot read CSS variables, so r
 Rules:
 - **Set height on the wrapper `<div>`, never on the `<canvas>`.**
 - `responsive: true, maintainAspectRatio: false` always.
-- Resolve canvas colors with `getComputedStyle` + literal fallback (the `pick()` helper above) — never bare `var()` in canvas color strings.
+- Resolve canvas colors with `getComputedStyle` + fallback chain (the `pick()` helper above) — never bare `var()` in canvas color strings.
 - Use UMD CDN builds (set the library global).
 - For categorical series, follow the restrained palette in `.agents/skills/ui-design/SKILL.md` — no rainbow defaults.
 

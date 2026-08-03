@@ -18,7 +18,7 @@
   "line_text": "<逐字等于剧本块原文的冒号之后部分>",
   "source_ref": {
     "owner": "short-drama-write",
-    "artifact": "episodes/EP001/screenplay-index.jsonl",
+    "artifact": "剧集/EP001/screenplay-index.jsonl",
     "hash": "<sha256>",
     "record_id": "BLK-EP001-SC001-D03"
   },

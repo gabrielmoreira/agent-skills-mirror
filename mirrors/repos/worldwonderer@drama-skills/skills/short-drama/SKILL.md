@@ -1,6 +1,6 @@
 ---
 name: short-drama
-description: 基于文件系统初始化、继续、恢复和交付短剧或漫剧项目，并把具体工作交给对应的短剧技能。面向编剧、漫剧工作室与编导。用户提出“创建/继续短剧项目”“看进度/下一步”“恢复中断或不完整发布”“交付文本包”，或任务跨多个环节、意图不明确而需要先判断当前状态与负责技能时使用；明确的写作、资产、提示词、分镜或审查请求由对应子 skill 直接处理。
+description: 基于文件系统初始化、继续、恢复和交付短剧或漫剧项目，并提供本地 Dashboard 管理项目文本与预览项目媒体。面向编剧、漫剧工作室与编导。用户提出“创建/继续短剧项目”“看进度/下一步”“打开 dashboard/项目控制台”“恢复中断或不完整发布”“交付文本包”，或任务跨多个环节、意图不明确而需要先判断当前状态与负责技能时使用；明确的写作、资产、提示词、分镜或审查请求由对应子 skill 直接处理。
 license: MIT
 ---
 
@@ -45,6 +45,7 @@ license: MIT
 | 只检查或诊断模板感、AI 味 | fresh `$short-drama-review`，只发带证据 finding |
 | 直接去 AI 味、润色或定点改稿 | `$short-drama-write`，保留作者声音并展示语义差异 |
 | 先检查再改 | fresh review → write owner 定点修订 → fresh re-review |
+| 打开 Dashboard、项目控制台或管理项目文本 | `$short-drama dashboard`：执行下方“本地 Dashboard”启动契约 |
 
 创作者明确意图优先于名义上的“下一检查点”。C2 资产接受后，图片提示词和分镜
 是平行分支；创作者只要其中一支时，不强迫等待另一支。
@@ -75,9 +76,37 @@ reviewer 对新 hash 做 re-review；任何无法取得独立上下文的环节�
 
 初始化不生成故事引擎、剧本或资产设定表。
 
-开发阶段若提交 `development/director-brief.md`，先向创作者展示其相对当前
+开发阶段若提交 `项目开发/director-brief.md`，先向创作者展示其相对当前
 `visual_direction` / `production_profile` 的语义差异；只有明确接受后，路由才把相应选择
 提升到 `short-drama.json#/creator_authority`。候选文件本身不具有 creator authority。
+
+## 本地 Dashboard
+
+当用户调用 `$short-drama dashboard` 时，不再转交子技能，直接启动本技能自带的
+本地项目控制台：
+
+1. 先按 [runtime-preflight.md](references/runtime-preflight.md) 核对套件并恢复未完事务。
+2. 工作目录位于某个项目内时，以该项目根为 `workspace`；否则使用用户明确
+   给出的容器目录，未给出则使用当前目录。不扫描 workspace 之外。
+3. 从本技能安装目录运行：
+
+   ```text
+   python3 <short-drama-skill-dir>/scripts/dashboard_server.py --workspace <workspace> --port 0 --open
+   ```
+
+4. 保持进程运行，回报脚本打印的完整回环地址（包含本次启动的会话片段）和停止方式。
+   浏览器无法自动打开时，保留服务并让用户打开该完整地址。
+
+Dashboard 仅编辑 UTF-8 的 Markdown、JSON、JSONL、TXT、SRT 和 ASS；
+`short-drama.json`、`.short-drama/**` 与 `交付/**` 只读。图片和视频仅预览。
+文件按“全部 / 项目开发 / 剧本 / 资产设定 / 分镜视频 / 审查交付”浏览；媒体跟随所属
+制作产物，非标准目录保留在“全部”，不被提升为套件阶段。
+Markdown 与结构化数据默认安全预览；JSON/JSONL 保存前由浏览器和服务端双重校验；
+媒体标签必须把“本地预演”与“正式成片”分开，不从文件存在推断创作者已经接受。
+它不连接外部数据源、不调用媒体生成接口，也不向浏览器注入密钥。
+每次启动生成独立会话凭证和 API 路径；浏览器用地址片段换取 `HttpOnly` 本机会话，
+项目 API 仅接受该会话。
+具体参数见 [lifecycle-commands.md](references/lifecycle-commands.md#dashboard-启动)。
 
 ## 确定性工具
 

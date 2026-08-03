@@ -701,7 +701,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
     def test_powershell_harness_exposes_runnable_engines_only(self) -> None:
         harness = SCRIPT.with_name("test-review-harness.ps1").read_text(encoding="utf-8")
 
-        self.assertIn("[ValidateSet('codex', 'claude', 'pi')]", harness)
+        self.assertIn("[ValidateSet('codex', 'claude', 'pi', 'kimi')]", harness)
         for disabled_engine in ("droid", "copilot", "opencode", "cursor"):
             self.assertNotIn(f"'{disabled_engine}'", harness)
 
@@ -1314,6 +1314,29 @@ class AutoreviewHardeningTests(unittest.TestCase):
             )
         )
         self.assertTrue(all("Oversized review bundle chunk:" in prompt for prompt in prompts))
+
+    def test_kimi_prompt_budget_partitions_before_argv_limits(self) -> None:
+        if os.name == "nt":
+            self.skipTest("the 30 KiB Windows argv budget cannot fit the chunk-context reservation")
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            prompts = self.helper["build_review_prompts"](
+                repo,
+                "commit",
+                "HEAD",
+                "# Commit Diff\n" + "safe review content\n" * 12_000,
+                "",
+                "",
+                self.helper["KIMI_MAX_PROMPT_BYTES"],
+            )
+
+        self.assertGreater(len(prompts), 1)
+        self.assertTrue(
+            all(
+                len(prompt.encode("utf-8")) <= self.helper["KIMI_MAX_PROMPT_BYTES"]
+                for prompt in prompts
+            )
+        )
 
     def test_review_prompt_preserves_bundle_ending_whitespace(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -4598,6 +4621,133 @@ class AutoreviewHardeningTests(unittest.TestCase):
                 argparse.Namespace(engine="droid", tools=False),
                 True,
             )
+        with self.assertRaisesRegex(SystemExit, "kimi engine refused truncated review input"):
+            self.helper["ensure_reviewer_input_complete"](
+                argparse.Namespace(engine="kimi", tools=False),
+                True,
+            )
+
+    def test_kimi_config_is_sanitized_without_losing_model_auth(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            share = root / "kimi-home"
+            share.mkdir()
+            (share / "config.toml").write_text(
+                "\n".join(
+                    [
+                        'default_model = "review-model"',
+                        'extra_skill_dirs = ["/tmp/unsafe-skills"]',
+                        "",
+                        "[models.review-model]",
+                        'provider = "review-provider"',
+                        'model = "kimi-k2"',
+                        "max_context_size = 100000",
+                        "",
+                        "[providers.review-provider]",
+                        'type = "kimi"',
+                        'base_url = "https://api.example.invalid"',
+                        'api_key = "test-token"',
+                        "",
+                        "[services.moonshot_search]",
+                        'base_url = "http://localhost"',
+                        "",
+                        "[thinking]",
+                        "enabled = false",
+                        "",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            with mock.patch.dict(
+                os.environ,
+                {"KIMI_CODE_HOME": str(share)},
+                clear=False,
+            ):
+                config, source_share = self.helper["load_kimi_review_config"](repo)
+
+        self.assertEqual(source_share, share.resolve())
+        self.assertEqual(config["default_model"], "review-model")
+        self.assertEqual(
+            config["providers"]["review-provider"]["api_key"],
+            "test-token",
+        )
+        self.assertNotIn("services", config)
+        self.assertNotIn("extra_skill_dirs", config)
+        self.assertNotIn("thinking", config)
+        self.assertNotIn("hooks", config)
+
+    def test_kimi_oauth_credentials_are_linked_outside_runtime_state(self) -> None:
+        if os.name == "nt":
+            self.skipTest("directory symlink privileges vary on Windows")
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source_share = root / "source-kimi"
+            credentials = source_share / "credentials"
+            credentials.mkdir(parents=True)
+            device_id = "0123456789abcdef0123456789abcdef"
+            (source_share / "device_id").write_text(device_id, encoding="utf-8")
+            runtime_share = root / "runtime-kimi"
+            runtime_share.mkdir()
+
+            self.helper["prepare_kimi_runtime_auth"](
+                repo,
+                source_share,
+                runtime_share,
+            )
+
+            linked = runtime_share / "credentials"
+            self.assertTrue(linked.is_symlink())
+            self.assertEqual(linked.resolve(), credentials.resolve())
+            self.assertEqual(
+                (runtime_share / "device_id").read_text(encoding="utf-8"),
+                device_id,
+            )
+
+    def test_kimi_rejects_repo_controlled_config_symlink(self) -> None:
+        if os.name == "nt":
+            self.skipTest("directory symlink privileges vary on Windows")
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            hostile_config = repo / "kimi-config.toml"
+            hostile_config.write_text("default_model = \"x\"\n", encoding="utf-8")
+            share = root / "kimi-home"
+            share.mkdir()
+            (share / "config.toml").symlink_to(hostile_config)
+
+            with mock.patch.dict(
+                os.environ,
+                {"KIMI_CODE_HOME": str(share)},
+                clear=False,
+            ), self.assertRaisesRegex(
+                SystemExit,
+                "must resolve outside",
+            ):
+                self.helper["load_kimi_review_config"](repo)
+
+    def test_kimi_engine_env_preserves_only_supported_runtime_overrides(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = init_repo(Path(tempdir))
+            with mock.patch.dict(
+                os.environ,
+                {
+                    "KIMI_API_KEY": "test-token",
+                    "KIMI_BASE_URL": "https://api.example.invalid",
+                    "KIMI_MODEL_NAME": "kimi-model",
+                    "KIMI_CODE_HOME": str(repo / ".hostile-kimi"),
+                    "PYTHONPATH": "/tmp/hostile-python",
+                },
+                clear=False,
+            ):
+                env = self.helper["safe_engine_env"](repo, engine="kimi")
+
+        self.assertEqual(env["KIMI_API_KEY"], "test-token")
+        self.assertEqual(env["KIMI_BASE_URL"], "https://api.example.invalid")
+        self.assertEqual(env["KIMI_MODEL_NAME"], "kimi-model")
+        self.assertNotIn("KIMI_CODE_HOME", env)
+        self.assertNotIn("PYTHONPATH", env)
 
     def test_safe_git_env_preserves_trusted_platform_and_helper_paths(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -4637,7 +4787,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
 
             with self.assertRaisesRegex(
                 SystemExit,
-                r"droid engine is unavailable.*use codex, claude, or pi",
+                r"droid engine is unavailable.*use codex, claude, pi, or kimi",
             ) as error:
                 self.helper["run_droid"](argparse.Namespace(), repo, "prompt")
             self.assertNotIn("opencode", str(error.exception))
@@ -6600,7 +6750,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
             repo = init_repo(Path(tempdir))
             with self.assertRaisesRegex(
                 SystemExit,
-                r"ignored repository secrets; use codex, claude, or pi",
+                r"ignored repository secrets; use codex, claude, pi, or kimi",
             ) as error:
                 self.helper["run_copilot"](
                     args,
@@ -7368,6 +7518,200 @@ class AutoreviewHardeningTests(unittest.TestCase):
             self.assertIn(r"\x1b", displayed)
             self.assertIn(r"\x07", displayed)
             self.assertTrue(displayed.endswith("\n"))
+
+    def test_repeatable_scan_finds_multiline_arrow_fallback_literal(self) -> None:
+        secret = "fallback-secret-123"
+        content = (
+            "password = (() => {\n"
+            "  const value = source;\n"
+            "  return value;\n"
+            f'}})() || "{secret}";\n'
+            f'log("{secret}");\n'
+            "runDangerousOperation();\n"
+        )
+
+        spans = self.helper["review_repeatable_secret_spans"](
+            content,
+            javascript_dialect="typescript",
+        )
+
+        self.assertIn(secret, {content[start:end] for start, end in spans})
+
+    def test_assignment_prefix_fallback_scan_is_bounded(self) -> None:
+        for separator in ("\n", ""):
+            with self.subTest(separator=repr(separator)):
+                content = separator.join(
+                    f"password = value_{index};" for index in range(5_000)
+                )
+
+                started = time.monotonic()
+                spans = self.helper["review_repeatable_secret_spans"](content)
+
+                self.assertLess(time.monotonic() - started, 5.0)
+                self.assertEqual(spans, [])
+
+    def test_assignment_prefix_scan_stops_at_raw_diff_line_boundary(self) -> None:
+        content = (
+            "+password = cachedPassword\n"
+            '+role = suppliedRole || "admin";\n'
+        )
+
+        spans = self.helper["review_repeatable_secret_spans"](
+            content,
+            javascript_dialect="typescript",
+        )
+
+        self.assertNotIn("admin", {content[start:end] for start, end in spans})
+
+    def test_assignment_prefix_scan_continues_after_trailing_operator(self) -> None:
+        content = (
+            "+password = supplied ||\n"
+            '+  "real-secret";\n'
+        )
+
+        spans = self.helper["review_repeatable_secret_spans"](
+            content,
+            javascript_dialect="typescript",
+        )
+
+        self.assertIn(
+            "real-secret",
+            {content[start:end] for start, end in spans},
+        )
+        prefix_match = next(
+            self.helper["SECRET_ASSIGNMENT_PREFIX_PATTERN"].finditer(content)
+        )
+        assignment_match = next(
+            self.helper["SECRET_ASSIGNMENT_PATTERN"].finditer(content)
+        )
+        for collector, match in (
+            ("assignment_prefix_fallback_literal_spans", prefix_match),
+            ("assignment_fallback_literal_spans", assignment_match),
+        ):
+            with self.subTest(collector=collector):
+                collected = self.helper[collector](
+                    content,
+                    match,
+                    javascript_dialect="typescript",
+                )
+                self.assertIn(
+                    "real-secret",
+                    {content[start:end] for start, end in collected},
+                )
+
+    def test_assignment_prefix_scan_accepts_raw_diff_context_line(self) -> None:
+        content = (
+            "+password = newSource\n"
+            '  || "real-secret";\n'
+        )
+
+        spans = self.helper["review_repeatable_secret_spans"](
+            content,
+            javascript_dialect="typescript",
+        )
+
+        self.assertIn(
+            "real-secret",
+            {content[start:end] for start, end in spans},
+        )
+
+    def test_generic_assignment_scan_stops_at_next_diff_line(self) -> None:
+        content = (
+            "+password = source or fallback\n"
+            '+(grant_role("admin"))\n'
+        )
+
+        spans = self.helper["review_repeatable_secret_spans"](content)
+
+        self.assertNotIn(
+            "admin",
+            {content[start:end] for start, end in spans},
+        )
+
+    def test_generic_literal_scan_stops_at_next_diff_line(self) -> None:
+        content = (
+            '+password = "foo"\n'
+            '+grant_role("admin")\n'
+        )
+
+        spans = self.helper["review_repeatable_secret_spans"](content)
+
+        self.assertNotIn(
+            "admin",
+            {content[start:end] for start, end in spans},
+        )
+
+    def test_generic_assignment_scan_continues_after_fallback_operator(self) -> None:
+        content = (
+            '+password = ENV["PASSWORD"] ||\n'
+            '+  "production-secret"\n'
+        )
+
+        spans = self.helper["review_repeatable_secret_spans"](content)
+
+        self.assertIn(
+            "production-secret",
+            {content[start:end] for start, end in spans},
+        )
+
+    def test_assignment_scan_bounds_encoded_source_fixture(self) -> None:
+        content = "'password = source || \"production-secret\";'"
+
+        spans = self.helper["review_repeatable_secret_spans"](content)
+
+        self.assertIn(
+            "production-secret",
+            {content[start:end] for start, end in spans},
+        )
+
+    def test_assignment_scan_redacts_command_payload_fallback(self) -> None:
+        content = 'run("password = ENV.PASSWORD || \'tenant-default\'")'
+
+        spans = self.helper["review_repeatable_secret_spans"](content)
+
+        self.assertIn(
+            "tenant-default",
+            {content[start:end] for start, end in spans},
+        )
+
+    def test_assignment_scan_redacts_serialized_string_payload(self) -> None:
+        secret = realistic_secret_value()
+        content = f"const body = '{{\"password\":\"{secret}\"}}'"
+
+        spans = self.helper["review_repeatable_secret_spans"](content)
+
+        self.assertIn(secret, {content[start:end] for start, end in spans})
+
+    def test_reference_scan_stops_before_independent_statement(self) -> None:
+        content = (
+            "password = process.env.PASSWORD\n"
+            'value || "public"\n'
+        )
+
+        spans = self.helper["review_repeatable_secret_spans"](
+            content,
+            javascript_dialect="typescript",
+        )
+
+        self.assertNotIn(
+            "public",
+            {content[start:end] for start, end in spans},
+        )
+
+    def test_assignment_scan_stops_at_hunk_boundary_with_open_call(self) -> None:
+        boundary = self.helper["DIFF_HUNK_CONTENT_BOUNDARY"]
+        content = (
+            "password = choose(\n"
+            f"{boundary}\n"
+            'grant_role("admin"))\n'
+        )
+
+        spans = self.helper["review_repeatable_secret_spans"](content)
+
+        self.assertNotIn(
+            "admin",
+            {content[start:end] for start, end in spans},
+        )
 
     def test_self_test_shortcut_runs_deterministic_checks(self) -> None:
         command = [str(SCRIPT), "--self-test"]

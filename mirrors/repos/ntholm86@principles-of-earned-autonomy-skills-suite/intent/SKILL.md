@@ -1,7 +1,7 @@
 ---
 name: intent
-version: 1.4.0
-description: 'Apply Operator''s Intent to the user''s own prompt before acting. Interpret what the user is trying to achieve, not what they literally wrote. Narrate the interpretation so the user can correct drift before work begins. USE WHEN: any substantive request that implies work (build, fix, improve, explain, investigate, decide). SKIP WHEN: the request is unambiguous and mechanical (a specific file read, a one-line command, a yes/no confirmation).'
+version: 1.6.0
+description: 'Automatic ingress service for substantive work. Apply Operator''s Intent to the user''s own prompt before acting: interpret what the user is trying to achieve, not what they literally wrote, and narrate it so the user can correct drift before work begins. The operator should never need to invoke this skill separately. SKIP WHEN: the request is unambiguous and mechanical (a specific file read, a one-line command, a yes/no confirmation).'
 argument-hint: 'Triggered automatically by any substantive user prompt; can also be invoked explicitly: "apply intent to this request"'
 ---
 
@@ -9,13 +9,15 @@ argument-hint: 'Triggered automatically by any substantive user prompt; can also
 
 *Act on what the user means. Not on what they typed.*
 
-*Memory Model role: Ensures each session is aimed correctly — so the memory accumulates progress, not drift.*
+*ACM role: Ensures each session is aimed correctly — so the memory accumulates progress, not drift.*
 
 > **Governing principle:** [Operator's Intent](../PRINCIPLES.md#principle-1-operators-intent) — *Define the destination. Never prescribe the route.* This skill applies that principle in reverse: the user is the operator, the agent is the subordinate, and imprecise prompts are the norm, not the exception.
 
 A prompt is a compressed statement of intent. The user has a destination in mind and has picked words to point at it. Those words are almost always under-specified, occasionally contradictory, and sometimes literally wrong about details the user doesn't care about. An agent that executes the literal text produces technically-correct work that misses the point. An agent that interprets the intent, states the interpretation, and then executes gets to the destination.
 
 This skill makes that interpretation explicit and visible.
+
+**Automatic composition contract:** In the full suite, Intent runs before Destination, Improve, Orient, Probe, and any other substantive work. The operator should never have to remember or be told to invoke `/intent`. A direct invocation remains available for testing, debugging, or an interpretation-only conversation.
 
 ---
 
@@ -43,6 +45,8 @@ A single prompt is a thin signal. Before extracting intent, read what already ex
 - **The trail** (`.acm/audit-trail.md`) — past decisions, reversals, and realisations reveal what the user has consistently cared about, what they rejected, and where things went wrong before. A pattern of `[!REVERSAL]` entries around a particular approach is stronger evidence of intent than any single prompt.
 - **The conversation** — corrections, approvals, and the moments the user stepped in all carry intent signal. A user who keeps redirecting toward simplicity is telling you something that no single prompt states explicitly.
 - **Past sessions** (`.acm/sessions/`) — if earlier sessions exist, read their intent sections. Accumulated learnings about how this user frames problems, what they consider done, and what they care about carry over.
+
+**Bounded destination reads.** If a destination contains the exact comments `<!-- current-destination: complete -->` and `<!-- destination-history -->` in that order, the content between them is the operator-confirmed complete current mandate. Read that bounded section for routine work. Read the full file when running Destination, when the current section is ambiguous or conflicts with other evidence, or when historical provenance is material to the request. If either comment is absent, malformed, or out of order, read the full file. Never infer a boundary from headings, dates, horizontal rules, or file position.
 
 If none of these exist yet — no `.acm/` at all — run **Destination** first to establish the destination before the loop starts. A loop that begins without a destination is navigating without one.
 
@@ -90,6 +94,6 @@ This skill runs first. When Improve or Probe is also active, Intent operates on 
 
 When Destination or Orient is also active, their output files (`destination.md` and `orientation.md`) are already read as part of Intent's own 'Read the accumulated context' step — no additional ordering is needed. Intent reads these files; it never writes them.
 
-When Trail is also active, paste the Intent narration verbatim into the "Interpretation of the ask" section of the log entry. A session with Intent but no Trail means the next session starts cold — the interpretation was visible once and is now gone.
+Trail is the automatic egress service paired with Intent. When Intent prefixes another skill, that downstream skill records one combined entry and includes the Intent narration verbatim in "Interpretation of the ask" — do not create a separate entry for the prefix. When Intent is the only active skill and the interaction itself produces a decision, realization, or finding, apply Trail automatically at the end so the next session does not start cold.
 
-Neither Trail nor any other skill is required. Intent works standalone.
+Intent still works as a standalone installation; automatic composition is the full-suite contract, not a hard runtime dependency.

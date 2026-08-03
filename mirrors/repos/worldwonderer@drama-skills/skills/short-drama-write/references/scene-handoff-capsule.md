@@ -17,7 +17,7 @@
 ```yaml
 scene_handoff_capsule:
   authority: derived
-  screenplay_ref: {owner: short-drama-write, artifact: episodes/<EP>/screenplay.md, hash: <sha256>}
+  screenplay_ref: {owner: short-drama-write, artifact: 剧集/<EP>/screenplay.md, hash: <sha256>}
   current_scene:
     scene_id: EPxxx-SCxxx
     agenda: 当前人物正在争取什么
@@ -34,7 +34,7 @@ scene_handoff_capsule:
   unresolved: [不得由续写者自行补齐的选择]
 ```
 
-只记录变化和下一步依赖，不复制整段正文、角色小传、资产 bible 或所有旧节拍。`tail_locator`
+只记录变化和下一步依赖，不复制整段正文、角色小传、资产 设定集 或所有旧节拍。`tail_locator`
 必须指向当前已接受剧本尾部；如果只完成 candidate，明确保留 candidate authority，不能写成
 accepted。
 

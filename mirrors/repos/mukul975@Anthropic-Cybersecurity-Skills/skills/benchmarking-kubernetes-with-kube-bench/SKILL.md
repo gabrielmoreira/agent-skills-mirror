@@ -1,6 +1,6 @@
 ---
 name: benchmarking-kubernetes-with-kube-bench
-description: Run CIS Kubernetes Benchmark checks and remediate findings with kube-bench.
+description: Run kube-bench (Aqua Security) against a Kubernetes cluster's control-plane, kubelet, and node configuration to check compliance with the CIS Kubernetes Benchmark and remediate PASS/FAIL/WARN findings. Use when establishing a security baseline for a new cluster, performing periodic hardening audits, validating remediation after configuration changes, or gathering compliance evidence for SOC 2/PCI DSS.
 domain: cybersecurity
 subdomain: container-security
 tags:

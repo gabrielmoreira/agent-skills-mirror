@@ -97,8 +97,8 @@ license: MIT
 
 先展示人能读懂的预览：绑定对象、关键选择、警告与可复制提示词。接受后写：
 
-- `episodes/<EP>/assets/image-prompt-specs.jsonl`：权威规格；
-- `episodes/<EP>/assets/image-prompts.md`：由已接受规格和配方 `hash` 重新生成的文本版本。
+- `剧集/<EP>/assets/image-prompt-specs.jsonl`：权威规格；
+- `剧集/<EP>/assets/image-prompts.md`：由已接受规格和配方 `hash` 重新生成的文本版本。
 
 跨文件发布遵循主技能的提交与恢复流程；不得以半成品覆盖已接受版本。
 

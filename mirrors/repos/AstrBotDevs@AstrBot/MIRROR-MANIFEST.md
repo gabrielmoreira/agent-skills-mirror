@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `AstrBotDevs/AstrBot` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `AstrBotDevs/AstrBot` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AstrBotDevs/AstrBot` — 26 default patterns, 0 followed patterns, 4 
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,8 +61,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`docs/en/use/skills.md`](docs/en/use/skills.md) |
-| 4 | ✓ | [`docs/zh/use/skills.md`](docs/zh/use/skills.md) |
+| 3 | ✓ | [`astrbot/builtin_stars/astrbot/skills/documents/SKILL.md`](astrbot/builtin_stars/astrbot/skills/documents/SKILL.md) |
+| 4 | ✓ | [`astrbot/builtin_stars/astrbot/skills/pdf/SKILL.md`](astrbot/builtin_stars/astrbot/skills/pdf/SKILL.md) |
+| 5 | ✓ | [`astrbot/builtin_stars/astrbot/skills/skill-creator/SKILL.md`](astrbot/builtin_stars/astrbot/skills/skill-creator/SKILL.md) |
+| 6 | ✓ | [`astrbot/builtin_stars/astrbot/skills/spreadsheets/SKILL.md`](astrbot/builtin_stars/astrbot/skills/spreadsheets/SKILL.md) |
+| 7 | ✓ | [`docs/en/use/skills.md`](docs/en/use/skills.md) |
+| 8 | ✓ | [`docs/zh/use/skills.md`](docs/zh/use/skills.md) |
 
 ---
 

@@ -130,7 +130,7 @@ git clone https://github.com/zhaoxuya520/reverse-skill.git
 | .NET / C# | `skills/dotnet-reverse/` |
 | 前端 JS 签名 / 加密参数 | `skills/js-reverse/` |
 | DSL VM / 风控自定义 VM | `skills/reverse-engineering/dsl-vm-reverse/` |
-| HTTP 抓包 / 请求重放 | anything-analyzer + `js-reverse/` |
+| HTTP 抓包 / 请求重放 | anything-analyzer、Reqable MCP + `js-reverse/` |
 | 恶意软件 / YARA | `skills/malware-analysis/` |
 | 渗透测试 / 漏洞扫描 | `skills/pentest-tools/` |
 | 攻击链 / 红队编排 | `skills/attack-chain/` |

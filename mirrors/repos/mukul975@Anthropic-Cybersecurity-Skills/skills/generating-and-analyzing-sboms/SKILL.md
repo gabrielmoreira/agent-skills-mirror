@@ -1,6 +1,6 @@
 ---
 name: generating-and-analyzing-sboms
-description: Produce and ingest CycloneDX and SPDX SBOMs and correlate them to vulnerability intelligence.
+description: Generate CycloneDX and SPDX SBOMs from container images and filesystems with Syft, correlate them to CVEs with Grype, and sign/attest them with Cosign. Use when you need a machine-readable dependency inventory for supply-chain risk, want to scan images or SBOMs for known vulnerabilities, or are embedding SBOM generation and vulnerability gating into CI/CD.
 domain: cybersecurity
 subdomain: supply-chain-security
 tags:

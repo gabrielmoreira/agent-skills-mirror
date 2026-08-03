@@ -105,8 +105,8 @@ license: MIT
 
 ```bash
 python3 <skill-dir>/scripts/container_check.py \
-  episodes/EP001/storyboard/delivery-containers.jsonl \
-  --shots episodes/EP001/storyboard/shots.jsonl
+  剧集/EP001/storyboard/delivery-containers.jsonl \
+  --shots 剧集/EP001/storyboard/shots.jsonl
 ```
 
 逐个容器都正确不代表全集的账是对的：一个镜头同时进两个容器会让全集时长凭空多一段，
@@ -122,8 +122,8 @@ python3 <skill-dir>/scripts/container_check.py \
 
 ```bash
 python3 <skill-dir>/scripts/motion_timing_check.py \
-  episodes/EP001/storyboard/motion-specs.jsonl \
-  --shots episodes/EP001/storyboard/shots.jsonl
+  剧集/EP001/storyboard/motion-specs.jsonl \
+  --shots 剧集/EP001/storyboard/shots.jsonl
 ```
 
 超出与不足都算违约，且不足的后果更重：未分配的余量不会渲染成静止画面，执行端会用
@@ -140,11 +140,11 @@ alternate`，用同一文件内稳定的运动记录 ID 说明母版和补充关
 
 先向创作者展示起止边界摘要、动作/表演顺序、摄影/声音选择、时长警告和可复制提示词。接受后写：
 
-- `episodes/<EP>/storyboard/motion-specs.jsonl`：运动规格字段和只读来源引用；
-- `episodes/<EP>/storyboard/delivery-containers.jsonl`：**仅当项目声明了多镜交付容器时**，
+- `剧集/<EP>/storyboard/motion-specs.jsonl`：运动规格字段和只读来源引用；
+- `剧集/<EP>/storyboard/delivery-containers.jsonl`：**仅当项目声明了多镜交付容器时**，
   记录容器成员顺序、各成员已接受时长的只读引用与容器时长，模板见
   [delivery-container.jsonl.md](assets/delivery-container.jsonl.md)；
-- `episodes/<EP>/storyboard/video-prompts.md`：由已接受规格、容器记录和配方 `hash` 生成的文本版本。
+- `剧集/<EP>/storyboard/video-prompts.md`：由已接受规格、容器记录和配方 `hash` 生成的文本版本。
 
 自然语言改提示词时，先展示规格字段怎样变化和重新生成的文本预览；若改动触碰分镜或
 剧本负责的内容，保持当前文件不变，并把修改请求交给对应技能。跨文件发布遵循主技能的

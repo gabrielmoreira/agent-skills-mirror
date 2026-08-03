@@ -60,7 +60,7 @@
   ],
   "source_ref": {
     "owner": "creator",
-    "artifact": "creator-decisions/<artifact-id>.json",
+    "artifact": "创作者决策/<artifact-id>.json",
     "hash": "<sha256>",
     "record_id": "<接受该声明的决定记录>"
   }

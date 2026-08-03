@@ -59,7 +59,7 @@ content.
 
 Before writing:
 
-1. Apply `pii-memory-filter` and `cross-project-isolation`.
+1. Apply `pii-memory-filter` and the project-boundary stripping rules below.
 2. Use the destination channel's documented schema and naming convention.
 3. Write the smallest self-contained artifact atomically: write a temporary
    sibling file, then rename it into place only after the complete content is
@@ -76,6 +76,27 @@ Before writing:
 
 Memory writes and Git synchronization remain separate decisions. A valid local
 write does not authorize a commit, pull, or push.
+
+### Project-boundary stripping
+
+Shared Memory channels serve multiple projects. Before every write, remove or
+generalize context that identifies the current project:
+
+| Project-specific content | Shared-safe form |
+| --- | --- |
+| Project or product names | A generic domain descriptor, or omit |
+| File paths and repository structure | A generic module or artifact description |
+| Domain-specific identifiers, ticket IDs, account IDs, and commit SHAs | Omit |
+| Niche libraries, service names, and stack details that identify the project | Generalize to the technology category |
+
+Keep shared ACT vocabulary such as skill names, categories, severity, and
+reusable failure patterns. The result must be actionable to someone working in
+a different repository without revealing which project produced it.
+
+A direct file write request does not bypass this contract. Route it through this
+skill, strip the project context, write atomically, and run `npm run check`. If
+the user asks to publish raw project details or says not to strip them, refuse
+the shared write and offer a project-local file instead.
 
 ## Setup with Consent
 
@@ -94,6 +115,7 @@ When the user explicitly asks to configure Memory:
 | --- | --- |
 | Pulling on session start | Discovery is read-only; sync requires explicit intent |
 | Writing feedback with project names or paths | Generalize before writing |
+| Treating a direct file write as outside this skill | Every shared Memory write routes through this contract |
 | Treating missing Memory as an error on every task | Return unavailable and continue |
 | Reading all channels to "get context" | Read the minimum channel needed |
 | Committing a valid write automatically | Validation and publication are separate gates |

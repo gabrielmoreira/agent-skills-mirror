@@ -1,6 +1,6 @@
 ---
 name: detecting-malicious-npm-packages
-description: Triage npm packages for install-script malware, exfiltration, and worming behavior.
+description: Triage npm packages and lockfiles for install-script malware, credential exfiltration, and worming behavior using GuardDog, manual tarball inspection, and dynamic detonation with network/filesystem monitoring. Use when vetting a new dependency, reviewing a package.json/package-lock.json during code review, checking lockfiles against a supply-chain advisory's known-bad versions, or investigating a host suspected of installing a trojanized package.
 domain: cybersecurity
 subdomain: supply-chain-security
 tags:

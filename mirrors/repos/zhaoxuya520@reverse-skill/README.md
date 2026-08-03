@@ -134,7 +134,7 @@ Platform-specific docs:
 | .NET / C# | `skills/dotnet-reverse/` |
 | Frontend JS / encrypted params | `skills/js-reverse/` |
 | DSL VM / custom JS opcode VM | `skills/reverse-engineering/dsl-vm-reverse/` |
-| HTTP capture / request replay | anything-analyzer + `js-reverse/` |
+| HTTP capture / request replay | anything-analyzer, Reqable MCP + `js-reverse/` |
 | Malware / YARA | `skills/malware-analysis/` |
 | Penetration testing / scanning | `skills/pentest-tools/` |
 | Attack chain / red-team orchestration | `skills/attack-chain/` |

@@ -58,7 +58,7 @@ A02（摊手与蓝线头）。
 ~~~json
 {
   "owner": "short-drama-write",
-  "artifact": "episodes/EP004/screenplay-index.jsonl",
+  "artifact": "剧集/EP004/screenplay-index.jsonl",
   "hash": "<sha256>",
   "record_id": "BLK-EP004-SC002-A01"
 }
@@ -140,7 +140,7 @@ A02（摊手与蓝线头）。
 ~~~json
 {
   "owner": "short-drama-write",
-  "artifact": "episodes/EP002/screenplay-index.jsonl",
+  "artifact": "剧集/EP002/screenplay-index.jsonl",
   "hash": "<sha256>",
   "record_id": "BLK-EP002-SC004-D01"
 }

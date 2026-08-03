@@ -8,7 +8,7 @@
       "shot_refs": [
         {
           "owner": "short-drama-storyboard",
-          "artifact": "episodes/EP001/storyboard/shots.jsonl",
+          "artifact": "剧集/EP001/storyboard/shots.jsonl",
           "hash": "<sha256>",
           "record_id": "SHOT-EXAMPLE",
           "authority": "candidate"
@@ -32,7 +32,7 @@
   },
   "screenplay_ref": {
     "owner": "short-drama-write",
-    "artifact": "episodes/EP001/screenplay-index.jsonl",
+    "artifact": "剧集/EP001/screenplay-index.jsonl",
     "hash": "<sha256>"
   },
   "status": "candidate"

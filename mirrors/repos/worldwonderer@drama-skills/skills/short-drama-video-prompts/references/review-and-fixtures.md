@@ -52,7 +52,7 @@ Finding 必须含 artifact/hash、引用片段、影响、required fix、owner�
 | VID_ACTION_INFEASIBLE | reviewed_invariant | reviewer | error | video-prompts/storyboard | 一般动作负载不可行或掩盖故事变化 |
 | VID_SEMANTIC_INVENTION | reviewed_invariant | reviewer | error | video-prompts | 新造故事、关系、知识、状态或音频事实 |
 | VID_CAMERA_UNMOTIVATED | craft_default | reviewer | warning | video-prompts | movement 无助于目的/注意变化 |
-| VID_REFERENCE_DUMP | craft_default | reviewer | warning | video-prompts | bound frame 已带外观却重复整本 bible |
+| VID_REFERENCE_DUMP | craft_default | reviewer | warning | video-prompts | bound frame 已带外观却重复整本 设定集 |
 | VID_HIDDEN_CUT_IN_SEGMENT | reviewed_invariant | reviewer | error | video-prompts | 单个计时段内藏入视角或空间跳变，等于一次未申报的剪辑 |
 | VID15_SHOT_PACKED_TWICE | structural_invariant | validator | error | video-prompts | 同一镜头被两个容器认领，全集时长凭空多一段 |
 | VID15_MEMBER_IS_NOT_AN_EPISODE_SHOT | structural_invariant | validator | error | video-prompts | 容器成员不属于本集镜头集合 |

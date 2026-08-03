@@ -35,7 +35,7 @@ WASM/Android-safe variants:
 
 - `ocr` (native) → `ocr-wasm` (uses `tesseract-wasm` + safe image deps) — Android keeps native `ocr`
 - `excel` (native) → `excel-wasm` (drops `tokio-runtime`) — Android keeps native `excel`
-- `tree-sitter` (native dlopen) → `tree-sitter-wasm` (statically-linked grammar pack). NOT in `wasm-target`: the 306-language grammar pack pushes the browser `.wasm` past jsDelivr's 50 MB per-file cap, breaking the CDN-hosted demo. WASM has no code intelligence; Android keeps native `tree-sitter`.
+- `tree-sitter` (native dlopen) → `tree-sitter-wasm` (statically-linked grammar pack). NOT in `wasm-target`: the 371-language grammar pack pushes the browser `.wasm` past jsDelivr's 50 MB per-file cap, breaking the CDN-hosted demo. WASM has no code intelligence; Android keeps native `tree-sitter`.
 - `liter-llm` — works on WASM via the upstream `wasm-http` feature; included in `no-ort-target`
 - `stopwords` — pure-Rust, included in `no-ort-target`
 - `keywords` — pure-Rust YAKE/RAKE, included in `no-ort-target`

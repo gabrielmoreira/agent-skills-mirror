@@ -14,6 +14,33 @@ never gets that rendering; the structured round does.
 Rule of thumb: **plan exists → per-criterion submit; you author the checks →
 structured round ingest.** Never mix both for the same delivery round.
 
+## No operation id needed
+
+`--operation` is optional on every command in this skill. Without one you have
+two ways to own a round, and both are first-class (the server records them as
+`standalone`):
+
+```bash
+# A. one directory, one command — preferred when you have assets on disk
+lh acceptance run ingest topic:tpc_xxx --json < report-dir > --subject
+
+# B. create the round first, then submit into it with --run
+RUN=$(lh acceptance run create --title "…" --goal "…" --json | jq -r .id)
+lh acceptance run result submit --run "$RUN" --item < checkItemId > …
+```
+
+Prefer **A**: per-criterion submits without a plan produce checks with no
+declared intent, so the page has nothing to pair the outcome against.
+
+## Rounds are immutable
+
+Each ingest creates a **new** round. After fixing something, never edit or
+re-submit into the previous round to make it look green — publish the
+re-verification as the next round. The acceptance
+(`/acceptance/<acceptanceId>`) aggregates the rounds in order, so the repair
+history is the point, not something to hide. Reuse the same `--subject` across
+rounds; that is what groups them.
+
 ## Directory layout
 
 Any directory works — no repo convention required:
@@ -49,7 +76,7 @@ Any directory works — no repo convention required:
 6. **Publish:**
 
    ```bash
-   lh acceptance run ingest <report-dir> --subject topic:tpc_xxx --source agent-testing --json
+   lh acceptance run ingest topic:tpc_xxx --source agent-testing --json < report-dir > --subject
    ```
 
    Inside a LobeHub topic `--subject` may be omitted (defaults to the current
@@ -63,9 +90,18 @@ Any directory works — no repo convention required:
 
 ```json
 {
-  "title": "Verify task tree API",
+  "cases": [
+    {
+      "id": "1",
+      "category": "Task hierarchy",
+      "name": "task tree returns nested children",
+      "surface": "cli",
+      "status": "pass",
+      "observation": "root returned 3 nested children, depth 2",
+      "evidence": ["assets/task-tree.txt"]
+    }
+  ],
   "createdAt": "2026-06-11T15:30:00+08:00",
-  "surfaces": ["cli"],
   "entry": "<cli> task list --tree",
   "plan": [
     {
@@ -78,22 +114,16 @@ Any directory works — no repo convention required:
       "requiredEvidence": ["text"]
     }
   ],
-  "cases": [
-    {
-      "id": "1",
-      "category": "Task hierarchy",
-      "name": "task tree returns nested children",
-      "surface": "cli",
-      "status": "pass",
-      "observation": "root returned 3 nested children, depth 2",
-      "evidence": ["assets/task-tree.txt"]
-    }
-  ],
   "summary": {
-    "total": 1, "passed": 1, "failed": 0, "blocked": 0,
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "blocked": 0,
     "verdict": "pass",
     "conclusion": "One-paragraph verdict the page shows under the title."
-  }
+  },
+  "surfaces": ["cli"],
+  "title": "Verify task tree API"
 }
 ```
 
@@ -104,11 +134,11 @@ Optional fields: `branch` / `commit` / `pullRequest` (provenance line; when
 
 ### Closed vocabularies — the pipeline acts on these, they are not labels
 
-| field | values | what it does |
-| --- | --- | --- |
-| `verifier` | `program` \| `agent` \| `llm` (default `agent`) | How the verdict is reached. A command-asserted check is `program`; calling it `agent` hides what actually judged it. |
-| `requiredEvidence` | `screenshot` \| `gif` \| `video` \| `text` \| `dom_snapshot` \| `transcript` | The artifact this check **must** produce. The coverage gate **fails** an item whose required medium is missing. |
-| `surfaces` / per-case `surface` | `web` \| `desktop` \| `cli` \| `mobile` \| `bot` (`electron` → `desktop`) | The product surface a check ran **on**. A test kind (`unit`, `backend`) or runtime mode is not a surface. |
+| field                           | values                                                                       | what it does                                                                                                         |
+| ------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `verifier`                      | `program` \| `agent` \| `llm` (default `agent`)                              | How the verdict is reached. A command-asserted check is `program`; calling it `agent` hides what actually judged it. |
+| `requiredEvidence`              | `screenshot` \| `gif` \| `video` \| `text` \| `dom_snapshot` \| `transcript` | The artifact this check **must** produce. The coverage gate **fails** an item whose required medium is missing.      |
+| `surfaces` / per-case `surface` | `web` \| `desktop` \| `cli` \| `mobile` \| `bot` (`electron` → `desktop`)    | The product surface a check ran **on**. A test kind (`unit`, `backend`) or runtime mode is not a surface.            |
 
 `category` names the user-facing requirement area (e.g. `Task hierarchy`,
 `Rate-limit recovery`) — never a technical surface. `method` / `expected` stay

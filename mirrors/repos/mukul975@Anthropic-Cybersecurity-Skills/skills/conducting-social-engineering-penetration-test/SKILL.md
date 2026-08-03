@@ -1,8 +1,6 @@
 ---
 name: conducting-social-engineering-penetration-test
-description: Design and execute a social engineering penetration test including phishing,
-  vishing, smishing, and physical pretexting campaigns to measure human security resilience
-  and identify training gaps.
+description: Design and execute a social engineering penetration test combining OSINT-driven target profiling with phishing, vishing, smishing, and physical pretexting campaigns using tools like GoPhish, the Social Engineer Toolkit (SET), and Evilginx to measure human security resilience. Use when scoping or running an authorized human-attack-surface test and reporting results to identify security awareness training gaps.
 domain: cybersecurity
 subdomain: penetration-testing
 tags:

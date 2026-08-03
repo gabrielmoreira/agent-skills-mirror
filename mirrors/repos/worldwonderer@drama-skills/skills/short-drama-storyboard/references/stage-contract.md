@@ -28,7 +28,7 @@
    提供精确 input hash。上游接受引用不继承候选状态。创作者接受、独立审查与内容修订是
    不同动作。每次修订后重新运行适用的结构校验，并让下游刷新旧 hash。打包是最终交付闸门，
    不是接受或审查命令；仍有阻断项时不打包。
-4. **读共享 JSON/JSONL 时同时声明读了哪几条记录**：`bible/*.jsonl` 与项目文件是全项目
+4. **读共享 JSON/JSONL 时同时声明读了哪几条记录**：`设定集/*.jsonl` 与项目文件是全项目
    共享输入，只按整文件 hash 绑定会让后续任何一次增补把此前引用过它的产物全部标为
    `stale`。发布时对这类输入补 `--input-record <path>=<selector>`（JSONL 用记录 ID，
    JSON 用 RFC 6901 指针，每条一次），此后只有被绑定的记录变化才会影响本产物。
@@ -107,7 +107,7 @@
 |---|---|---|
 | CON-01 | structural_invariant | Linked end and next start states match or have an explicit owner revision. |
 | CON-02 | reviewed_invariant | Knowledge, injury, ownership, weather, light, or physical state does not teleport/regress without story cause. |
-| CON-03 | craft_default | Track downstream-relevant deltas, not the whole bible in every shot. |
+| CON-03 | craft_default | Track downstream-relevant deltas, not the whole 设定集 in every shot. |
 | CON-04 | structural_invariant | A delta records before, after, cause/source, effective range, and affected bindings. |
 | CON-05 | taste_option | Declared montage, ellipsis, dream, or subjective imagery may intentionally break ordinary continuity. |
 | CON-06 | structural_invariant | A delta's affected refs cover all existing consumers; future consumers remain locators until materialized. |

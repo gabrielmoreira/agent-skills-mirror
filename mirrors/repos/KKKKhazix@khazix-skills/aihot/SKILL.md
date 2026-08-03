@@ -4,7 +4,7 @@ description: 查询 AI HOT 的中文 AI 资讯、精选、当前热点和日报�
 license: MIT. See LICENSE
 metadata:
   author: Virxact
-  version: "1.2.3"
+  version: "1.3.0"
 ---
 
 # AI HOT
@@ -47,7 +47,7 @@ metadata:
 - 只取用户需要的条数：默认 `limit=50` 是给客户端用的，做简报时 7 天窗口传 `limit=10` 就够，不要默认拉满。
 - 只有用户明确说“日报”才用 dailies；日报是固定日切成品，不等同滚动时间窗。
 - 最新日报返回 404 时，只查询一次有界的 `/api/v1/dailies?limit=7`；索引有结果时，再用其中实际返回的最近日期请求一次 `/api/v1/dailies/{date}`，索引为空就停止。绝不猜“昨天”或自行拼日期。
-- “现在最热”只用 hot-topics；items 按时间倒序，不能替代热度排序。
+- “现在最热／热点榜”只用 hot-topics；items 按时间倒序，不能替代热点榜。按 `rank` 从小到大展示「第 N 名」，不得展示、推算或索要内部热度值，也不得拿信源数冒充热度。
 - 用户追问某个热点的来龙去脉、时间线或最新进展时，只有 hot-topics 条目实际含 `links.story` 才继续：确认 URL 属于 `https://aihot.virxact.com/story/{publicId}`，从路径末段提取实际 `publicId`，再请求 `/api/v1/stories/{publicId}`。`links.story` 本身是给人阅读的 HTML 网页，不得直接请求，也不得把网页响应当 API 数据。事件 API 响应含逆序报道时间线、AI 综述（`digest`，随事件演化更新，矛盾会显式标注）与最新进展一句话（`latest`）。字段缺失、URL 不符合上述格式或事件 API 返回 404，表示事件层当前不可用；改用标题关键词查询 items。除此之外没有获取 story id 的检索端点，不得猜测或拼造 id。
 - v1 原生时间窗是 `24h` 或 `7d`。用户指定其它七天内范围时，取最小覆盖窗后本地收窄，并如实写明范围。收窄要用与服务端一致的时间轴值，可由返回字段直接算出：`publishedAt` 为空时取 `discoveredAt`；`discoveredAt - publishedAt > 72 小时`（历史回填）时取 `publishedAt`；其余取 `discoveredAt`。直接拿 `publishedAt` 收窄会把慢推信源误删。
 - “最近一周资讯”是滚动 7 天查询，不等同 AI HOT 的编辑成品周报。用户明确要 AI HOT 周报或月报时，如实说明当前只有 `https://aihot.virxact.com/weekly` 与 `https://aihot.virxact.com/monthly` 网页，尚无 Skill／API／RSS 端点；不得调用猜测的 weeklies／monthlies 路径。
@@ -59,7 +59,7 @@ metadata:
 
 ## 请求
 
-- API 匿名、只读、无需 Key。客户端允许时可设置 `User-Agent: aihot-skill/1.2.3 (+https://aihot.virxact.com/aihot-skill/)` 方便诊断，但不得因为无法设置而拒绝查询或伪装浏览器。
+- API 匿名、只读、无需 Key。客户端允许时可设置 `User-Agent: aihot-skill/1.3.0 (+https://aihot.virxact.com/aihot-skill/)` 方便诊断，但不得因为无法设置而拒绝查询或伪装浏览器。
 - 普通查询不做版本检查，也不访问旧兼容层。后端在稳定 v1 契约内升级时，用户无需更新本 Skill。
 - 反复查询同一个 URL 时保存响应的 `ETag`，下次带 `If-None-Match` 发出；`304` 表示内容没变，直接复用上次结果，不要重新总结。
 - 定时任务对同一端点至少间隔 60 秒；资讯类内容没有秒级新鲜度，更密的轮询只是浪费双方带宽。
@@ -82,7 +82,9 @@ metadata:
 ```
 
 - 先给结论和最重要的 3—8 条；用户明确要求完整列表时再按 cursor 继续。
+- 热点榜是例外：hot-topics 最多只有 10 条，默认一次完整输出当前实际返回的全部条目。
 - 默认保持 API 顺序。`score` 不是默认排序依据，不能擅自重排成“排行榜”。
+- 热点榜按 `rank` 保持 hot-topics 的既有顺序，用「第 N 名」展示；不展示或推算热度值，也不与普通资讯的 `score` 混用。
 - 使用 `source.name`。把 ISO 时间明确转换到 `Asia/Shanghai` 后再写成北京时间。
 - `publishedAt` 是第三方原文发布时间；它为空时可以回退 `discoveredAt`，但必须标成“AI HOT 收录时间”，不能伪称原文发布时间。
 - 标题默认链接 `links.aihot`；只有用户明确要出处时再附 `links.original`。

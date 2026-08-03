@@ -39,9 +39,9 @@ Shipped in commits [`d598e37`](https://github.com/WenyuChiou/awesome-agentic-ai-
 
 3. **starter.py = complete solution pedagogy gap** — flagged in `docs/HOW_TO_USE.md`. v2 would split into `starter_template.py` (TODO) + `starter_reference.py` (solution); v1 is doc-only meta-instruction.
 
-4. **Trilingual mirror of 🎓 callout incomplete** — v1 only added the 學習模式 callout to zh-TW READMEs. en + zh-Hans exercise READMEs still need the same callout. Low priority since most learners use zh-TW.
+4. ~~**Trilingual mirror of 🎓 callout incomplete**~~ — **RESOLVED 2026-08-02**. The 🎓 callout and the 📚 deeper-material block are now in the `.en.md` + `.zh-Hans.md` mirrors of **21 of the 22** exercise READMEs (202 blockquote lines). The 22nd, `examples/stage-1/04-cross-provider`, is **not a callout gap** — it is the only example folder with **no mirror files at all**, so it needs a full trilingual translation first, not a callout port. A blocking CI gate (`scripts/check-mirror-parity.py`) now stops this class of gap reappearing.
 
-5. **Pilot exercise drift** (pre-session, still open) — `examples/stage-3/03-react-from-scratch/README.en.md` + `.zh-Hans.md` are pre-dual-path; the zh-TW canonical is current. Stage 3 polish pass should fix.
+5. ~~**Pilot exercise drift**~~ — **RESOLVED 2026-08-02**. `examples/stage-3/03-react-from-scratch/README.en.md` + `.zh-Hans.md` were missing the entire free local Path A (Ollama) and ran the Ollama script under the Anthropic heading; both now match the dual-path canonical.
 
 ## 🔵 Stage 5 + Track A — current coverage
 

@@ -162,21 +162,23 @@ If you use IDA MCP, document the actual app path in your client rules or local e
 From the repository root, list the same core capability names as the Windows PowerShell bootstrap:
 
 ```bash
-bash skills/scripts/bootstrap-reverse.sh --list
+/bin/bash skills/scripts/bootstrap-reverse.sh --list
 ```
+
+The generic bootstrap is compatible with the system `/bin/bash` shipped by macOS (Bash 3.2); Homebrew Bash is not required.
 
 Install or configure supported capabilities with the generic Bash bootstrap:
 
 ```bash
-bash skills/scripts/bootstrap-reverse.sh jadx apktool frida
-bash skills/scripts/bootstrap-reverse.sh jshookmcp anything-analyzer
-bash skills/scripts/bootstrap-reverse.sh burpsuite-mcp
+/bin/bash skills/scripts/bootstrap-reverse.sh jadx apktool frida
+/bin/bash skills/scripts/bootstrap-reverse.sh jshookmcp anything-analyzer
+/bin/bash skills/scripts/bootstrap-reverse.sh burpsuite-mcp
 ```
 
 Refresh the local tool index only:
 
 ```bash
-bash skills/scripts/refresh-tool-index.sh
+/bin/bash skills/scripts/refresh-tool-index.sh
 ```
 
 This writes:

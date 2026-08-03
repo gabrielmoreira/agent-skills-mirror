@@ -175,6 +175,8 @@ Interactive messages require an active 24-hour session window. For outbound noti
 2. Pick payload from `assets/send-interactive-*.json`
 3. Send: `node scripts/send-interactive.mjs --phone-number-id <ID> --file <payload.json>`
 
+For a contact information request, use `interactive.type: "request_contact_info"` with `action.name: "request_contact_info"`. Include `body`, but omit `header` and `footer`.
+
 ### Read inbox data
 
 Preferred path:
@@ -224,6 +226,7 @@ Creation:
 - Use `language` (not `language_code`)
 - Don't interleave QUICK_REPLY with URL/PHONE_NUMBER buttons
 - URL button variables must be at the end of the URL and use positional `{{1}}`
+- For a `REQUEST_CONTACT_INFO` button, omit `text`; WhatsApp supplies the label
 
 Send-time:
 - For NAMED templates, include `parameter_name` in header/body params

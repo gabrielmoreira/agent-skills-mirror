@@ -231,7 +231,7 @@ Full dependency table with paths in the original [README.md](README.md).
 | Main controller entry | `SKILL.md` | Read the global map first, then decide which sub-skill to enter |
 | Routing table | `routing.md` | Dispatch by target type, user intent, and toolchain |
 | Tool index | `tool-index.md` | Check whether local tools exist, where they are, and which scripts call them |
-| APK reverse engineering | `apk-reverse\` | Unpack, jadx, smali, repackaging, Frida, native dispatch |
+| APK reverse engineering | `apk-reverse\` | Unpack, jadx, smali, repackaging, Frida, native dispatch; optional licensed JEB Pro cross-check |
 | IDA Pro | `ida-reverse\` | Deep binary RE and `idapro_*` workflows |
 | JS / Web | `js-reverse\` | Frontend signatures, request chains, environment simulation, SourceMap / AST / Hook |
 | radare2 | `radare2\` | CLI reconnaissance, strings, imports/exports, patching |
@@ -242,7 +242,7 @@ Full dependency table with paths in the original [README.md](README.md).
 | RE → exploit chain | `pwn-chain\` | From reverse engineering to usable exploit: stack/heap/kernel pwn |
 | Firmware penetration chain | `firmware-pentest\` | OWASP FSTM full chain |
 | EDR bypass RE | `edr-bypass-re\` | Reverse EDR hook tables / ETW / AMSI → direct syscall |
-| Penetration-testing toolchain | `pentest-tools\` | Nmap / Nuclei / SQLMap / FFUF / Hashcat and 20+ tool MCP workflows |
+| Penetration-testing toolchain | `pentest-tools\` | Nmap / Nuclei / SQLMap / FFUF / Hashcat, Reqable MCP, and 20+ tool MCP workflows |
 | Diagram generation | `diagram-generator\` | Mermaid / Graphviz / PlantUML diagrams |
 | Technical documents | `docs-generator\` | Automatically generate RE / pentest / CTF reports |
 | LLM/AI security | `llm-security\` | OWASP LLM + ASI Top 10 |
@@ -253,7 +253,7 @@ Full dependency table with paths in the original [README.md](README.md).
 - APK / Android → `apk-reverse\SKILL.md`
 - exe / dll / so / elf → `ida-reverse\SKILL.md` or `radare2\SKILL.md`
 - Frontend signature / encrypted parameters → `js-reverse\SKILL.md`
-- HTTP capture / browser sampling / request replay → anything-analyzer + `js-reverse`
+- HTTP capture / browser sampling / request replay → anything-analyzer, Reqable MCP + `js-reverse`
 - Penetration testing / port scanning / vulnerability scanning → `pentest-tools\SKILL.md`
 - Firmware / IoT / router pentesting → `firmware-pentest\SKILL.md`
 - N-day / patch diff / CVE PoC writing → `patch-diff-exploit\SKILL.md`

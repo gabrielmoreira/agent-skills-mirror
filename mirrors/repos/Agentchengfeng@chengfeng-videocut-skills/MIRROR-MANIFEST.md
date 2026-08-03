@@ -60,13 +60,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-check-videocut-updates/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-check-videocut-updates/SKILL.md) |
-| 3 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-cut-talking-head/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-cut-talking-head/SKILL.md) |
-| 4 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-export-talking-head/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-export-talking-head/SKILL.md) |
-| 5 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-finish-talking-head/animation-styles/ian-xiaohei-svg-motion/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-finish-talking-head/animation-styles/ian-xiaohei-svg-motion/SKILL.md) |
-| 6 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-finish-talking-head/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-finish-talking-head/SKILL.md) |
-| 7 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-report-videocut-bug/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-report-videocut-bug/SKILL.md) |
-| 8 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-subtitle-talking-head/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-subtitle-talking-head/SKILL.md) |
+| 2 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-check-updates/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-check-updates/SKILL.md) |
+| 3 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-cut/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-cut/SKILL.md) |
+| 4 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-export/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-export/SKILL.md) |
+| 5 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-report-bug/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-report-bug/SKILL.md) |
+| 6 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-subtitle/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-subtitle/SKILL.md) |
+| 7 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-visual/animation-styles/ian-xiaohei-svg-motion/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-visual/animation-styles/ian-xiaohei-svg-motion/SKILL.md) |
+| 8 | ✓ | [`plugins/chengfeng-videocut/skills/chengfeng-visual/SKILL.md`](plugins/chengfeng-videocut/skills/chengfeng-visual/SKILL.md) |
 
 ---
 

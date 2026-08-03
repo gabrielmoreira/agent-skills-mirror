@@ -1,6 +1,6 @@
 ---
 name: operationalizing-misp-threat-feeds
-description: Run MISP, curate feeds, and auto-generate detections for Wazuh, Sigma, and Suricata.
+description: Stand up MISP, enable and cache curated threat feeds (CIRCL, abuse.ch, Feodo Tracker), apply warninglists to suppress false positives, query indicators with PyMISP, and export attributes as auto-generated Suricata/Sigma/Wazuh detection rules. Use when maturing a MISP instance to actively drive detection, curating threat feeds with quality controls, or automating IOC-to-detection pipelines for the SIEM/IDS.
 domain: cybersecurity
 subdomain: threat-intelligence
 tags:

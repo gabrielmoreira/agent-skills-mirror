@@ -1,6 +1,10 @@
 ---
 name: detecting-indirect-prompt-injection
-description: Detect and defend against prompt injection hidden in documents, web pages, and images consumed by an agent.
+description: Detect and defend against indirect prompt injection hidden in web pages, documents,
+  and images consumed by an agent, via content extraction (HTML/PDF/OCR), normalization,
+  and scanning with LLM Guard's PromptInjection scanner or Hugging Face Prompt Guard 2.
+  Use when an agent ingests untrusted external content and you need to screen it for
+  injected instructions before the LLM processes it.
 domain: cybersecurity
 subdomain: ai-security
 tags:
@@ -15,9 +19,9 @@ tags:
 version: '1.0'
 author: mahipal
 license: Apache-2.0
-nist_csf:
+nist_ai_rmf:
 - MEASURE-2.7
-mitre_attack:
+atlas_techniques:
 - AML.T0051.001
 ---
 # Detecting Indirect Prompt Injection

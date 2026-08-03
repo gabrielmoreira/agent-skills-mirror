@@ -1,7 +1,11 @@
 ---
 name: detecting-qr-code-phishing-with-email-security
-description: Detect and prevent QR code phishing (quishing) attacks that bypass traditional
-  email security by embedding malicious URLs in QR code images within emails.
+description: Detect and prevent QR code phishing (quishing) attacks that embed
+  malicious URLs inside QR code images to bypass link-based email security,
+  using image-based threat detection, OCR/QR decoding, and mobile-side scanning
+  (Microsoft Defender for O365, Proofpoint TAP, Barracuda Multimodal AI). Use
+  when configuring gateway rules against QR phishing or investigating suspicious
+  emails containing QR codes.
 domain: cybersecurity
 subdomain: phishing-defense
 tags:

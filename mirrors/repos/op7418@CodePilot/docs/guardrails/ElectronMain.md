@@ -31,12 +31,16 @@
 | 12 | bundled Codex 的 Windows system-proxy-only 路径必须以 packaged smoke 证明；静态 source pin 不能替代 | Windows release smoke |
 | 13 | macOS 原生窗口材质必须跟随 app 的 `system/light/dark` 模式；IPC 只接受这三个枚举，renderer 外围保持透明，不能用高不透明度 CSS 遮罩伪造主题同步 | `ThemeProvider` + preload/main bridge + tests |
 | 14 | macOS 整窗默认材质为 `under-window`；比较其他材质时用 `ELECTRON_VIBRANCY` 诊断开关，不能靠恢复高不透明 tint 调整磨砂强度 | `electron/main.ts` + `platform-marker` source-pin |
+| 15 | HTML 缩略图 IPC 只接受当前 renderer 同源、无 interactive 参数且首段为一个完整 canonical `ws.<base64url absolute path>` 的 strict preview URL。派生后的精确 scope 才能进入 `webRequest` allowlist；包含性 token、前后缀和编码分隔符都 fail closed | `electron/html-thumbnail-security.ts` + main IPC |
+| 16 | AI 输出的本地路径不得进入通用 `shell.openPath`。`/api/files/inspect` 只接受绝对路径 + `sessionId` 或固定 `home` scope，由服务端推导根并返回 canonical `realPath`；主进程在 OS 调用前再次 realpath/stat。目录只能 `showItemInFolder`，bundle 目录拒绝；文件只允许 workspace `.html/.htm` 走专用 open IPC | `local-path-security` + DevOutput / PreviewPanel / DiffSummary + inspect route + main IPC |
+| 17 | `/api/files/open` fallback 不得拼 shell 字符串；可执行文件固定、路径只能作为单个 argv，`shell: false`，且 scope/realpath/bundle 规则与主进程一致 | files/open route + tests |
 
 ## 关键文件 + 责任
 
 | 文件 | 责任 |
 |---|---|
 | `electron/main.ts` | 主窗口生命周期、导航拦截、原生编辑右键、托盘与系统集成 |
+| `electron/html-thumbnail-security.ts` | HTML 缩略图 strict URL 解析、精确 request scope 与串行 deadline |
 | `scripts/clean-electron-build.mjs` | 清理边界与 standalone allowlist |
 | `scripts/build-electron.mjs` | Next standalone 复制与脱敏 |
 | `scripts/after-pack.js` | better-sqlite3 ABI rebuild |
@@ -46,6 +50,8 @@
 | `src/lib/xai-oauth-manager.ts` | loopback server 生命周期与端口策略 |
 | `src/lib/env-proxy-fetch.ts` | packaged server 上游 HTTP(S) system-proxy bridge |
 | `src/lib/process-proxy-env.ts` | child-process proxy 优先级、Windows key 归一与 bypass |
+| `src/lib/local-path-security.ts` | 主进程/Next fallback 共用的绝对路径、bundle、HTML 扩展与固定 argv 策略 |
+| `src/lib/local-path-navigation.ts` + `/api/files/inspect` | Renderer 本地路径 file/directory 分流；服务端从 session/home 推导 scope 并返回 canonical `realPath` |
 
 ## 改动检查表
 
@@ -58,6 +64,9 @@
 - [ ] 审计 packaged standalone 不含 DB、uploads、`.codepilot`、`.claude`、`.git` 或嵌套 release
 - [ ] OAuth/代理改动在 macOS 与 Windows 分别验证 browser/device/cancel/端口占用和外网代理
 - [ ] 改 macOS vibrancy / theme bridge 时运行 `native-theme-sync` 与 `platform-marker`，并在真实 Electron 窗口分别切换浅色、深色；两种模式的 body/window surface 都保持 transparent
+- [ ] 改 HTML thumbnail IPC/preview route 时运行 `electron-main-security`，覆盖 canonical token、包含性 token、编码分隔符、同源 scope、超时释放与外部请求拒绝
+- [ ] 改聊天本地链接或系统路径消费方时覆盖：HTTP(S)、相对路径、工作区文件/目录、外部确认、symlink escape、`.app/.workflow` bundle、`.command` 非 HTML 与 Electron 错误字符串
+- [ ] Renderer 不得新增通用 `openPath(path)` bridge；目录意图使用 scoped `revealPath`，HTML 使用 scoped `openHtmlFile`
 
 ## 常见坑
 
@@ -71,6 +80,7 @@
 - Windows env key 是大小写不敏感语义；禁止用对象 spread 顺序决定 proxy。
 - 不要用 `session.setProxy({ mode: 'direct' })` 解决 Codex loopback；它会关闭 Chromium 外网代理且管不到 app-server。
 - `scripts/after-pack.js` 会把工作区 better-sqlite3 重编成 Electron ABI；之后跑 Node/Next 前需 `npm rebuild better-sqlite3` 恢复 Node ABI。
+- 不要用 `pathname.startsWith('/api/files/html-preview/ws.')` 代替 workspace token parser；前缀命中不是完整 segment，也不能证明 canonical base64url 或绝对 workspace root。
 
 ## 测试覆盖
 
@@ -83,6 +93,8 @@
 | packaged version + native ABI + server health | `scripts/verify-packaged-server.mjs`, build workflow |
 | xAI loopback / proxy / child env | 对应 xAI、env-proxy、process-proxy 单测 + packaged smoke |
 | 原生主题枚举、preload/main bridge、透明 surface | `src/__tests__/unit/native-theme-sync.test.ts` + `platform-marker.test.ts` |
+| HTML thumbnail canonical scope、外联阻断与 deadline queue | `src/__tests__/unit/electron-main-security.test.ts` |
+| 聊天本地路径分类、canonical inspect、bundle/协议拦截与窄系统能力 | `local-link-detector.test.ts` + `local-path-navigation.test.ts` + `markdown-contract.test.ts` + `electron-main-security.test.ts` + `asset-library-ui.test.ts` |
 
 ## 设计决策日志
 
@@ -93,3 +105,6 @@
 - 2026-07-29 — 输入框右键统一放在主进程 `webContents.context-menu`，业务对象右键仍由 Renderer 负责。
 - 2026-07-30 — 用户否决用 82% window / 88% sidebar renderer tint 解决深色可读性：它会遮住浅/深两种模式的原生磨砂。改为 app mode 经窄 IPC 同步 `nativeTheme.themeSource`，外围透明、侧栏只保留 40% tint；见 `569b117d`。
 - 2026-07-30 — Electron 没有可调的 vibrancy blur radius；用户反馈 `menu` 过糊后，以隔离 Electron 窗口对比材质并将默认值改为轮廓更清楚的 `under-window`，保留透明 backing 与环境变量诊断矩阵；见 `83e041cd`。
+- 2026-07-31 — HTML thumbnail IPC 的初始 URL gate 从字符串前缀升级为 canonical workspace-segment parser。只有完整 `ws.<base64url absolute path>` 可派生 request scope；非法/包含性/编码分隔符输入在创建隐藏窗口前拒绝。
+- 2026-07-31 — Codex Markdown 本地目录不再按“绝对路径 = 文件”送入 PreviewPanel。用户点击后由 scoped inspect 判型：文件进侧栏、目录进系统文件管理器；工作区外仍先确认。HTML DiffSummary 卡新增 workspace-only 系统浏览器图标。
+- 2026-08-01 — Claude 复审发现目录 `shell.openPath` 可启动 macOS bundle、generic IPC 可被 AI 路径利用且 inspect/raw path 不同源。删除通用 bridge：目录只定位、bundle 拒绝、HTML 专用打开；inspect 根由 session/home 推导并返回 canonical path，主进程二次校验。既有 files/open shell 拼接同步改为固定 argv。

@@ -1,7 +1,10 @@
 ---
 name: performing-kubernetes-cis-benchmark-with-kube-bench
-description: Audit Kubernetes cluster security posture against CIS benchmarks using
-  kube-bench with automated checks for control plane, worker nodes, and RBAC.
+description: Audit Kubernetes cluster security posture against the CIS Kubernetes
+  Benchmark using kube-bench, running automated pass/fail/warn checks against the
+  control plane, etcd, worker nodes, and RBAC/policy configuration. Use when performing
+  compliance audits, cluster hardening reviews, or scheduled security assessments
+  of a Kubernetes environment.
 domain: cybersecurity
 subdomain: container-security
 tags:

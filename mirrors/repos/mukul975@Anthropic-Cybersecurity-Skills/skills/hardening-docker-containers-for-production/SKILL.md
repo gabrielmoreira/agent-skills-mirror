@@ -1,8 +1,12 @@
 ---
 name: hardening-docker-containers-for-production
-description: Hardening Docker containers for production involves applying security
-  best practices aligned with CIS Docker Benchmark v1.8.0 to minimize attack surface,
-  prevent privilege escalation, and enforce leas
+description: >
+  Harden Dockerfiles, images, and container runtime settings against the CIS
+  Docker Benchmark v1.8.0: non-root users, dropped capabilities, read-only
+  rootfs, seccomp/AppArmor, and minimal multi-stage images, validated with
+  docker-bench-security, Hadolint, and Dockle. Use when preparing a container
+  or Dockerfile for production, or auditing images/runtime configs against
+  CIS Docker controls.
 domain: cybersecurity
 subdomain: container-security
 tags:

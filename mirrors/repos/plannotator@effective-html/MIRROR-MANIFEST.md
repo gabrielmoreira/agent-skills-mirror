@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `plannotator/effective-html` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `plannotator/effective-html` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `plannotator/effective-html` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,21 +60,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
-| 2 | ✓ | [`skills/html-diagram/agents/openai.yaml`](skills/html-diagram/agents/openai.yaml) |
-| 3 | ✓ | [`skills/html-diagram/SKILL.md`](skills/html-diagram/SKILL.md) |
-| 4 | ✓ | [`skills/html-plan/agents/openai.yaml`](skills/html-plan/agents/openai.yaml) |
-| 5 | ✓ | [`skills/html-plan/SKILL.md`](skills/html-plan/SKILL.md) |
-| 6 | ✓ | [`skills/html-prototype/agents/openai.yaml`](skills/html-prototype/agents/openai.yaml) |
-| 7 | ✓ | [`skills/html-prototype/SKILL.md`](skills/html-prototype/SKILL.md) |
-| 8 | ✓ | [`skills/html-wireframe/agents/openai.yaml`](skills/html-wireframe/agents/openai.yaml) |
-| 9 | ✓ | [`skills/html-wireframe/SKILL.md`](skills/html-wireframe/SKILL.md) |
-| 10 | ✓ | [`skills/html/agents/openai.yaml`](skills/html/agents/openai.yaml) |
-| 11 | ✓ | [`skills/html/references/charts-and-data.md`](skills/html/references/charts-and-data.md) |
-| 12 | ✓ | [`skills/html/references/creative-direction.md`](skills/html/references/creative-direction.md) |
-| 13 | ✓ | [`skills/html/references/diagrams.md`](skills/html/references/diagrams.md) |
-| 14 | ✓ | [`skills/html/references/documents-and-presentations.md`](skills/html/references/documents-and-presentations.md) |
-| 15 | ✓ | [`skills/html/references/interfaces.md`](skills/html/references/interfaces.md) |
-| 16 | ✓ | [`skills/html/SKILL.md`](skills/html/SKILL.md) |
+| 2 | ✓ | [`skills/design-artifact/agents/openai.yaml`](skills/design-artifact/agents/openai.yaml) |
+| 3 | ✓ | [`skills/design-artifact/SKILL.md`](skills/design-artifact/SKILL.md) |
+| 4 | ✓ | [`skills/html-diagram/agents/openai.yaml`](skills/html-diagram/agents/openai.yaml) |
+| 5 | ✓ | [`skills/html-diagram/SKILL.md`](skills/html-diagram/SKILL.md) |
+| 6 | ✓ | [`skills/html-plan/agents/openai.yaml`](skills/html-plan/agents/openai.yaml) |
+| 7 | ✓ | [`skills/html-plan/SKILL.md`](skills/html-plan/SKILL.md) |
+| 8 | ✓ | [`skills/html-prototype/agents/openai.yaml`](skills/html-prototype/agents/openai.yaml) |
+| 9 | ✓ | [`skills/html-prototype/SKILL.md`](skills/html-prototype/SKILL.md) |
+| 10 | ✓ | [`skills/html-wireframe/agents/openai.yaml`](skills/html-wireframe/agents/openai.yaml) |
+| 11 | ✓ | [`skills/html-wireframe/SKILL.md`](skills/html-wireframe/SKILL.md) |
+| 12 | ✓ | [`skills/html/agents/openai.yaml`](skills/html/agents/openai.yaml) |
+| 13 | ✓ | [`skills/html/references/charts-and-data.md`](skills/html/references/charts-and-data.md) |
+| 14 | ✓ | [`skills/html/references/creative-direction.md`](skills/html/references/creative-direction.md) |
+| 15 | ✓ | [`skills/html/references/diagrams.md`](skills/html/references/diagrams.md) |
+| 16 | ✓ | [`skills/html/references/documents-and-presentations.md`](skills/html/references/documents-and-presentations.md) |
+| 17 | ✓ | [`skills/html/references/interfaces.md`](skills/html/references/interfaces.md) |
+| 18 | ✓ | [`skills/html/SKILL.md`](skills/html/SKILL.md) |
 
 ---
 

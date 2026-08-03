@@ -1,6 +1,6 @@
 ---
 name: destination
-version: 2.3.0
+version: 2.6.0
 description: 'Surface the agent''s in-progress guesses about where the operator is heading — what they care about, what they are circling, what the implicit destination might be — and turn those guesses into questions the operator can confirm, correct, or reject. Closes the gap between the destination the operator has explicitly stated and what the agent has picked up from their conversation, reactions, and emphasis. USE WHEN: the destination feels thin or stale, the operator is exploring rather than executing, the agent suspects it is missing implicit direction, or before a long autonomous run that will drift if the destination is unclear.'
 argument-hint: 'Optionally: the area you want hunches about (a specific concern, a recent decision, the project as a whole)'
 ---
@@ -9,7 +9,7 @@ argument-hint: 'Optionally: the area you want hunches about (a specific concern,
 
 *Say what you are starting to think the human means, before they have to say it again.*
 
-*Memory Model role: Maintains `.acm/destination.md` — the operator-held destination that anchors all other memory.*
+*ACM role: Maintains `.acm/destination.md` — the operator-held destination that anchors all other memory.*
 
 *Renamed from Vision in v2.0.0 (2026-05-28). The artifact filename is `.acm/destination.md`. The `.acm/vision.md` legacy-fallback support that eased that transition was removed once the fleet migration completed and no repo was found still depending on the old name — see `CHANGELOG.md`.*
 
@@ -37,7 +37,8 @@ The operator-held destination artifact is `.acm/destination.md`. If it does not 
 
 Destination is **not** part of the autonomous loop. It is invoked deliberately by the operator (or by another skill that has detected a need) at moments where direction is more valuable than action:
 
-- **The destination feels thin or stale.** The operator-held `.acm/destination.md` is missing, terse, or no longer matches what the operator has been talking about.
+- **Work on a target is beginning.** Establish the destination before the first Improve iteration so autonomous work has somewhere explicit to aim.
+- **The destination changed or feels thin.** The operator-held `.acm/destination.md` is missing, terse, or no longer matches what the operator has been talking about.
 - **The operator is exploring, not executing.** Recent sessions show the operator turning ideas over rather than narrowing toward a decision.
 - **A long autonomous run is about to start.** The destination is the input that determines whether the run will produce useful work or precisely-executed wrong work.
 - **The agent suspects it is missing something.** During Improve, Orient, or any other skill, an agent that finds itself uncertain about *what the operator actually wants* should be able to pause and run Destination rather than guess silently.
@@ -45,6 +46,8 @@ Destination is **not** part of the autonomous loop. It is invoked deliberately b
 Destination is fast, conversational, and stops as soon as the operator says "yes, that's right" or "no, I don't want to do this now."
 
 ## The work
+
+**Apply [Intent](../intent/SKILL.md) automatically before beginning.** Intent aligns this specific request; Destination examines the broader direction behind requests. The operator should never have to invoke Intent separately. If this is a standalone Destination installation and Intent is unavailable, narrate the interpretation of this request before forming destination-hunches.
 
 ### 1. Gather signal
 
@@ -114,11 +117,22 @@ After the conversation, capture three things:
 
 If `.acm/destination.md` already exists, update it in place rather than replacing it wholesale — preserve anything the operator has written that the current inferences do not change.
 
+Keep the active mandate cheap and unambiguous to read as the destination evolves. When the current destination is complete on its own, enclose it with these exact comments and preserve superseded or historical layers below the second comment:
+
+```markdown
+<!-- current-destination: complete -->
+[The complete current scope, success criteria, constraints, priorities, and open questions]
+<!-- destination-history -->
+[Preserved evolution]
+```
+
+`complete` is a governance claim, not a formatting convenience. Before adding or retaining it, reconcile every earlier destination layer: carry each still-active commitment into the current section, or make its rejection or supersession explicit there. If that reconciliation has not been performed, omit the comments; every consuming skill will then read the full file. Never infer that a heading, horizontal rule, date, or position in the file marks a complete current destination.
+
 If the conversation produced arc-claims about the target's current state rather than destination claims, those belong in orientation.md — but orientation.md is Orient's to write. Destination surfaces them; Orient (or the next Improve run) decides what to do with them.
 
 ### 6. Record the run in the trail
 
-*If [Trail](../trail/SKILL.md) is installed, apply it now — it handles this step in full.*
+**Apply [Trail](../trail/SKILL.md) automatically now.** The operator should never have to invoke Trail separately. If this is a standalone Destination installation and Trail is unavailable, use the entry contract below directly.
 
 The trail entry for a Destination run is shorter than an Improve entry. It must include:
 
@@ -130,11 +144,19 @@ The trail entry for a Destination run is shorter than an Improve entry. It must 
 
 A Destination run that produced no inferences is still recorded — silence is signal too.
 
+### 7. Refresh orientation when direction changed
+
+If this run created `.acm/destination.md` or materially changed its direction, constraints, priorities, or quality bars, **apply [Orient](../orient/SKILL.md) automatically after the Trail entry is durable.** The existing orientation was formed against an older destination and is now stale by definition. Scope the arc-read to: "Re-orient the accumulated work against the changed destination." Do not ask the operator to invoke `/orient`.
+
+Do not run Orient when Destination produced no change, only corrected wording without changing meaning, or ended in silence. A destination edit is not automatically a destination change; material meaning is the trigger.
+
+This automatic handoff preserves ownership: Destination changes where the work is going; Orient passively recomputes where the work now stands relative to it. Orient must not revise the destination or change the target.
+
 ## What this skill does not do
 
 - **It does not act on unconfirmed inferences.** A confirmed destination becomes input to the next run; it does not become the next run. The separation matters: an agent that acts on its own inferences without confirmation has stopped being autonomous-with-oversight and started being autonomous-without-it.
 - **It does not replace Intent.** Intent surfaces interpretation of *one specific request*. Destination surfaces interpretation of *the broader direction* across requests. Run Intent at the start of a request; run Destination when the broader direction itself is unclear.
-- **It does not replace Orient.** Orient reads the trail and forms claims about what the target *is becoming*. Destination reads conversation and forms claims about what the operator *wants the target to become*. The two converge when the loop is working; the gap between them is where Destination is most useful.
+- **It does not replace Orient.** Orient reads the trail and forms claims about what the target *is becoming*. Destination reads conversation and forms claims about what the operator *wants the target to become*. A material Destination change automatically schedules Orient so the current orientation is recomputed against the new direction.
 - **It does not score the operator's clarity.** No rubric for "destination quality." If the operator is exploring, that is a legitimate state — the skill helps them externalise the exploration, not grade it.
 
 ## Self-targeting

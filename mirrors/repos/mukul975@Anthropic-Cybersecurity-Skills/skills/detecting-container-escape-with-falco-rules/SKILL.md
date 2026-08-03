@@ -1,7 +1,6 @@
 ---
 name: detecting-container-escape-with-falco-rules
-description: Detect container escape attempts in real-time using Falco runtime security
-  rules that monitor syscalls, file access, and privilege escalation.
+description: Write and tune Falco rules that monitor Linux syscalls to detect container escape techniques in real time, including host filesystem mounts, sensitive host path access, kernel module loading, and abuse of privileged container capabilities. Use when deploying or tuning Falco for a Kubernetes/container environment, or when investigating an alert tied to syscall-level escape behavior.
 domain: cybersecurity
 subdomain: container-security
 tags:

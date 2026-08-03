@@ -21,7 +21,7 @@
 
 ```yaml
 reference_mechanism:
-  source_ref: inputs/references/<locator-and-hash>
+  source_ref: 输入/references/<locator-and-hash>
   purpose: 本次参考要回答的问题
   direct_observation: 对功能的转述，不复制原句
   audience_state: 观众进入这一段时知道、期待或误信什么
@@ -40,7 +40,7 @@ reference_mechanism:
 
 ## 3. 下游只读取去引用候选
 
-原材料与 observation 留在非公开 `inputs/` 边界；develop/write 只消费经创作者接受的
+原材料与 observation 留在非公开 `输入/` 边界；develop/write 只消费经创作者接受的
 机制候选：当前问题、适用条件、可选机制、可见效果、失效边界与禁止复制项。不要把原文、
 “语感片段”、整段对话、独特反转顺序或多部作品的风格摘要塞进写作 prompt。
 

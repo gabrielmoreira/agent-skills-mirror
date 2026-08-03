@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ntholm86/principles-of-earned-autonomy-skills-suite` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
+Mirror of `ntholm86/principles-of-earned-autonomy-skills-suite` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ntholm86/principles-of-earned-autonomy-skills-suite` — 26 default p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 13 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,11 +67,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`archive/v2/kiroku/SKILL.md`](archive/v2/kiroku/SKILL.md) |
 | 7 | ✓ | [`archive/v2/shiken/SKILL.md`](archive/v2/shiken/SKILL.md) |
 | 8 | ✓ | [`destination/SKILL.md`](destination/SKILL.md) |
-| 9 | ✓ | [`improve/SKILL.md`](improve/SKILL.md) |
-| 10 | ✓ | [`intent/SKILL.md`](intent/SKILL.md) |
-| 11 | ✓ | [`orient/SKILL.md`](orient/SKILL.md) |
-| 12 | ✓ | [`probe/SKILL.md`](probe/SKILL.md) |
-| 13 | ✓ | [`trail/SKILL.md`](trail/SKILL.md) |
+| 9 | ✓ | [`experiments/layered-improve/CONDITIONAL_PROTOCOLS.md`](experiments/layered-improve/CONDITIONAL_PROTOCOLS.md) |
+| 10 | ✓ | [`experiments/layered-improve/SKILL.md`](experiments/layered-improve/SKILL.md) |
+| 11 | ✓ | [`improve/SKILL.md`](improve/SKILL.md) |
+| 12 | ✓ | [`intent/SKILL.md`](intent/SKILL.md) |
+| 13 | ✓ | [`orient/SKILL.md`](orient/SKILL.md) |
+| 14 | ✓ | [`probe/SKILL.md`](probe/SKILL.md) |
+| 15 | ✓ | [`trail/SKILL.md`](trail/SKILL.md) |
 
 ---
 

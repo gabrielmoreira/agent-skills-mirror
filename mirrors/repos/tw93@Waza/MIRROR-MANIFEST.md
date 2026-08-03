@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 84 file(s) materialized.
+Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 85 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tw93/Waza` — 26 default patterns, 0 followed patterns, 84 file(s) m
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 84 |
+| Files         | 85 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,25 +124,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`skills/think/SKILL.md`](skills/think/SKILL.md) |
 | 64 | ✓ | [`skills/ui/references/design-aesthetic-quality.md`](skills/ui/references/design-aesthetic-quality.md) |
 | 65 | ✓ | [`skills/ui/references/design-data-viz.md`](skills/ui/references/design-data-viz.md) |
-| 66 | ✓ | [`skills/ui/references/design-reference.md`](skills/ui/references/design-reference.md) |
-| 67 | ✓ | [`skills/ui/references/durable-context.md`](skills/ui/references/durable-context.md) |
-| 68 | ✓ | [`skills/ui/references/mode-generated-asset.md`](skills/ui/references/mode-generated-asset.md) |
-| 69 | ✓ | [`skills/ui/references/mode-quick-fix.md`](skills/ui/references/mode-quick-fix.md) |
-| 70 | ✓ | [`skills/ui/references/mode-screenshot-iteration.md`](skills/ui/references/mode-screenshot-iteration.md) |
-| 71 | ✓ | [`skills/ui/SKILL.md`](skills/ui/SKILL.md) |
-| 72 | ✓ | [`skills/write/references/durable-context.md`](skills/write/references/durable-context.md) |
-| 73 | ✓ | [`skills/write/references/mode-long-form.md`](skills/write/references/mode-long-form.md) |
-| 74 | ✓ | [`skills/write/references/mode-public-reply.md`](skills/write/references/mode-public-reply.md) |
-| 75 | ✓ | [`skills/write/references/mode-release-notes.md`](skills/write/references/mode-release-notes.md) |
-| 76 | ✓ | [`skills/write/references/write-en.md`](skills/write/references/write-en.md) |
-| 77 | ✓ | [`skills/write/references/write-product-localization.md`](skills/write/references/write-product-localization.md) |
-| 78 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
-| 79 | ✓ | [`skills/write/references/write-zh-prose.md`](skills/write/references/write-zh-prose.md) |
-| 80 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
-| 81 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
-| 82 | ✓ | [`skills/write/scripts/check_punctuation.py`](skills/write/scripts/check_punctuation.py) |
-| 83 | ✓ | [`skills/write/scripts/check-punctuation.sh`](skills/write/scripts/check-punctuation.sh) |
-| 84 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
+| 66 | ✓ | [`skills/ui/references/design-native-motion.md`](skills/ui/references/design-native-motion.md) |
+| 67 | ✓ | [`skills/ui/references/design-reference.md`](skills/ui/references/design-reference.md) |
+| 68 | ✓ | [`skills/ui/references/durable-context.md`](skills/ui/references/durable-context.md) |
+| 69 | ✓ | [`skills/ui/references/mode-generated-asset.md`](skills/ui/references/mode-generated-asset.md) |
+| 70 | ✓ | [`skills/ui/references/mode-quick-fix.md`](skills/ui/references/mode-quick-fix.md) |
+| 71 | ✓ | [`skills/ui/references/mode-screenshot-iteration.md`](skills/ui/references/mode-screenshot-iteration.md) |
+| 72 | ✓ | [`skills/ui/SKILL.md`](skills/ui/SKILL.md) |
+| 73 | ✓ | [`skills/write/references/durable-context.md`](skills/write/references/durable-context.md) |
+| 74 | ✓ | [`skills/write/references/mode-long-form.md`](skills/write/references/mode-long-form.md) |
+| 75 | ✓ | [`skills/write/references/mode-public-reply.md`](skills/write/references/mode-public-reply.md) |
+| 76 | ✓ | [`skills/write/references/mode-release-notes.md`](skills/write/references/mode-release-notes.md) |
+| 77 | ✓ | [`skills/write/references/write-en.md`](skills/write/references/write-en.md) |
+| 78 | ✓ | [`skills/write/references/write-product-localization.md`](skills/write/references/write-product-localization.md) |
+| 79 | ✓ | [`skills/write/references/write-zh-bilingual.md`](skills/write/references/write-zh-bilingual.md) |
+| 80 | ✓ | [`skills/write/references/write-zh-prose.md`](skills/write/references/write-zh-prose.md) |
+| 81 | ✓ | [`skills/write/references/write-zh-release-notes.md`](skills/write/references/write-zh-release-notes.md) |
+| 82 | ✓ | [`skills/write/references/write-zh.md`](skills/write/references/write-zh.md) |
+| 83 | ✓ | [`skills/write/scripts/check_punctuation.py`](skills/write/scripts/check_punctuation.py) |
+| 84 | ✓ | [`skills/write/scripts/check-punctuation.sh`](skills/write/scripts/check-punctuation.sh) |
+| 85 | ✓ | [`skills/write/SKILL.md`](skills/write/SKILL.md) |
 
 ---
 

@@ -11,7 +11,8 @@
 | jadx / apktool / adb / frida / frida-ps | Android |
 | r2 / rabin2 | 二进制 CLI |
 | idalib-mcp / idapro | IDA MCP |
-| jshookmcp / anything-analyzer / agent-browser | Web/JS/浏览器 |
+| jeb-pro | 商业 Android / ARM 反编译器（手动许可安装） |
+| jshookmcp / reqable-mcp / anything-analyzer / agent-browser | Web/JS/抓包/浏览器 |
 | ghidra-mcp | Ghidra |
 | nmap / seclists / proxycat / burpsuite-mcp / pentestswarm | 渗透 |
 | binwalk / pwntools / yara | 固件/pwn/恶意 |
@@ -29,6 +30,8 @@ powershell -File skills\scripts\refresh-tool-index.ps1
 | Ghidra GUI 全量 | ghidra-mcp 能力 + 手动插件步骤 |
 | gdb / pwndbg | 平台文档手动；pwntools 可 bootstrap |
 | hydra / hashcat | 手动或 Kali |
+| JEB Pro | 用户持有许可证后手动安装；第三方 MCP bridge 必须先完成供应链审查 |
+| Reqable 桌面客户端 | 用户手动安装；`reqable-mcp` 仅登记官方固定版本的 MCP 运行时 |
 | SecLists | seclists 能力 |
 
 ## 推荐「轻量 Docker 作战」profile（可选，非依赖）

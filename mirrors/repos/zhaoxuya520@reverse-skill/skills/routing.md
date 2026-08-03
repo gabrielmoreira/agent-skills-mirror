@@ -17,10 +17,10 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 
 | Target Type | Recommended Entry | Alternative |
 |-------------|------------------|-------------|
-| APK / Android app | `apk-reverse/` — jadx decompile + apktool unpack | If core is in .so → `ida-reverse/` or `radare2/` |
+| APK / Android app | `apk-reverse/` — jadx decompile + apktool unpack | Optional licensed JEB Pro cross-check; if core is in .so → `ida-reverse/` or `radare2/` |
 | Binary exe/dll/so/elf | `ida-reverse/` — IDA Pro decompile | `radare2/` — CLI analysis, or `reverse-engineering/tools.md` — GDB/Unicorn |
 | JavaScript / Web frontend | `js-reverse/` — 5-stage workflow | anything-analyzer MCP browser tools, or jshookmcp CDP/Hook |
-| HTTP capture / browser sampling / request replay | anything-analyzer MCP (23816) | `js-reverse/`, jshookmcp, or `competition-web-runtime/` |
+| HTTP capture / browser sampling / request replay | anything-analyzer MCP (23816) | Reqable MCP, `js-reverse/`, jshookmcp, or `competition-web-runtime/` |
 | Firmware / IoT | `firmware-pentest/` — extract → EMBA → emulate → fuzz | `reverse-engineering/platforms.md` — static RE only |
 | WASM / Python bytecode / .NET / **DSL VM / 自定义虚拟机** | `reverse-engineering/dsl-vm-reverse/SKILL.md` — IIFE + switch-case opcode JS VM | `reverse-engineering/languages.md` — real WASM binaries |
 | Malware / virus sample | `malware-analysis/SKILL.md` — six-stage + YARA/Sigma | `ida-reverse/` deep dive |
@@ -76,6 +76,8 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | "radare2 / r2 analyze" | `radare2/SKILL.md` — CLI workflow |
 | "find frontend signature / encrypted params" | `js-reverse/SKILL.md` — Observe→Capture→Rebuild |
 | "jshookmcp / JS hook / CDP debug" | `js-reverse/SKILL.md` — same JS/Web chain |
+| "Reqable / Reqable MCP / capture replay" | `pentest-tools/SKILL.md` — authorized local capture and API workflow |
+| "JEB / JEB Pro" | `apk-reverse/SKILL.md` — licensed Android / ARM cross-check; verify local install first |
 | "APK unpack / repack / modify smali" | `apk-reverse/SKILL.md` — decode→rebuild-sign-install |
 | "bypass anti-debug / anti-detection" | `reverse-engineering/anti-analysis.md` |
 | "OLLVM deobfuscate / 控制流平坦化去除 / deflat / 脱混淆" | `reverse-engineering/references/ollvm-deobfuscation.md` — 完整工作流 |

@@ -23,6 +23,11 @@ python3 <core>/scripts/project_tool.py status <project>
 
 `recover` 可重复执行。若它报告 blocked，保持创作者文件原样并先处理冲突；不要绕过 WAL、手改状态文件或假定上次写入成功。`status` 中的 accepted/candidate 指针和阻断项是后续工作的当前事实。
 
+同时读取 `status.layout`。`mode=canonical` 使用返回的中文 `roots`，`mode=legacy`
+使用返回的旧版英文 `roots`；`mode=mixed` 时停止发布，先合并平行目录。所有负责技能都沿用
+同一份 `roots`，不得根据自身模板另建另一种语言的阶段目录。`pinned=false` 的空项目使用
+返回的中文根，第一次阶段发布会把布局固定进项目状态。
+
 ## 3. 只通过公开生命周期写入
 
 - 负责人用 `publish` 原子发布候选，并给每个外部结构化引用提供精确 input hash。

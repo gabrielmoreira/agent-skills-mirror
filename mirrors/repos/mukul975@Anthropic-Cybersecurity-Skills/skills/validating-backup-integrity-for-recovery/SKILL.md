@@ -1,8 +1,11 @@
 ---
 name: validating-backup-integrity-for-recovery
-description: Validate backup integrity through cryptographic hash verification, automated
-  restore testing, corruption detection, and recoverability checks to ensure backups
-  are reliable for disaster recovery and ransomware response scenarios.
+description: Validates backup integrity through cryptographic hash verification,
+  automated restore testing, corruption detection, and recoverability checks to
+  confirm backups are reliable for disaster recovery and ransomware response. Use
+  before relying on backups for recovery, when building post-backup validation
+  pipelines, auditing backup infrastructure for compliance, or checking immutable/air-gapped
+  backups for silent corruption or tampering.
 domain: cybersecurity
 subdomain: incident-response
 tags:

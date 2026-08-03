@@ -1,6 +1,11 @@
 ---
 name: detecting-secure-boot-bypass
-description: Detect bootkits such as BlackLotus and Bootkitty and Secure Boot bypass via DBX and binary checks.
+description: Detect UEFI Secure Boot bypasses and bootkits such as BlackLotus and
+  Bootkitty by verifying Secure Boot state, checking dbx revocation currency, and
+  hashing EFI boot binaries against known-bad sets using mokutil, efi-readvar/dbxtool,
+  CHIPSEC, sbverify/pesign, and Windows Confirm-SecureBootUEFI. Use when auditing
+  fleet dbx rollout after a bootkit advisory or hunting for pre-OS persistence on
+  a suspected-compromised endpoint.
 domain: cybersecurity
 subdomain: hardware-firmware-security
 tags:

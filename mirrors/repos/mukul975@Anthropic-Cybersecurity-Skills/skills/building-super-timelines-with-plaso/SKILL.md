@@ -1,6 +1,10 @@
 ---
 name: building-super-timelines-with-plaso
-description: Generate log2timeline and Plaso super-timelines and triage them in Timesketch.
+description: Generate forensic super-timelines with Plaso's log2timeline.py, pinfo.py,
+  psort.py, and psteal.py CLI tools (fusing file-system MACB, registry, EVTX, browser
+  history, prefetch, LNK, and more), then triage and filter the results in Timesketch.
+  Use when reconstructing the full sequence of events on a compromised or forensically
+  imaged host during a DFIR investigation.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

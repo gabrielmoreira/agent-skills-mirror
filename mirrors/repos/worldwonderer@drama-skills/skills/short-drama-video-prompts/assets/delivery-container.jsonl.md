@@ -22,19 +22,19 @@
       "order": 1,
       "shot_ref": {
         "owner": "short-drama-storyboard",
-        "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+        "artifact": "剧集/<EP>/storyboard/shots.jsonl",
         "hash": "<sha256>",
         "record_id": "SHOT-<id>"
       },
       "motion_ref": {
         "owner": "short-drama-video-prompts",
-        "artifact": "episodes/<EP>/storyboard/motion-specs.jsonl",
+        "artifact": "剧集/<EP>/storyboard/motion-specs.jsonl",
         "hash": "<sha256>",
         "record_id": "MOTION-<stable-id>"
       },
       "accepted_duration_ref": {
         "owner": "short-drama-storyboard",
-        "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+        "artifact": "剧集/<EP>/storyboard/shots.jsonl",
         "hash": "<sha256>",
         "record_id": "SHOT-<id>",
         "field": "/duration_seconds"
@@ -42,14 +42,14 @@
       "accepted_duration": "<从 accepted_duration_ref 读到的值，投影不改写>",
       "location_binding_ref": {
         "owner": "short-drama-storyboard",
-        "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+        "artifact": "剧集/<EP>/storyboard/shots.jsonl",
         "hash": "<sha256>",
         "record_id": "SHOT-<id>",
         "field": "/location_binding"
       },
       "asset_bindings_ref": {
         "owner": "short-drama-storyboard",
-        "artifact": "episodes/<EP>/storyboard/shots.jsonl",
+        "artifact": "剧集/<EP>/storyboard/shots.jsonl",
         "hash": "<sha256>",
         "record_id": "SHOT-<id>",
         "field": "/asset_bindings"

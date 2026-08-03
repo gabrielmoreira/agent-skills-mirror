@@ -1,8 +1,10 @@
 ---
 name: detecting-t1003-credential-dumping-with-edr
-description: Detect OS credential dumping techniques targeting LSASS memory, SAM database,
-  NTDS.dit, and cached credentials using EDR telemetry, Sysmon process access monitoring,
-  and Windows security event correlation.
+description: Detect OS credential dumping (MITRE T1003) targeting LSASS memory, the SAM
+  database, NTDS.dit, and cached credentials by correlating EDR telemetry, Sysmon process-access
+  events, and Windows security event logs. Use when hunting for Mimikatz-style credential
+  theft, triaging an EDR alert on LSASS access, or scoping an incident after suspected
+  credential dumping.
 domain: cybersecurity
 subdomain: threat-hunting
 tags:

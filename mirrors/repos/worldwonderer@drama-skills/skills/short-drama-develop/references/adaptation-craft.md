@@ -32,7 +32,7 @@
 人物称谓、地点、生产相关物件、信息权限、戏剧功能和低置信歧义。统计/正则可帮助定位
 重复称谓或候选段落，但不能判断人物同一性、关系、场景功能或分集边界。
 
-原始小说或散稿始终保存在不交付的 `inputs/`；`development/adaptation-map.jsonl` 只保存
+原始小说或散稿始终保存在不交付的 `输入/`；`项目开发/adaptation-map.jsonl` 只保存
 输入文件的 locator、byte/line span、hash、去引用的功能摘要、未解析称谓/物件，以及该功能
 保留、合并、换载体、删减或进入哪个候选分集与可能损失。不得把来源原句或连续段落复制到
 development，避免交付包把输入材料带出边界。
@@ -40,7 +40,7 @@ development，避免交付包把输入材料带出边界。
 分集候选按局部戏剧结果和准确交接组织，不按章节号、字数或关键词机械切分。创作者接受
 改编与分集决定后，write owner 才写/规范化 canonical `screenplay.md`，assets owner 再从
 接受剧本生成可发布 occurrence 与资产决策。导入阶段可以展示人物/场景/物品**候选预览**，
-但它只是 develop-owned proposal，必须带来源与 `unresolved`，不能写入资产 bible，也不能在
+但它只是 develop-owned proposal，必须带来源与 `unresolved`，不能写入资产 设定集，也不能在
 角色合并、删场或道具换载体之前冒充最终资产库。
 
 ## 2. 用功能账本压缩

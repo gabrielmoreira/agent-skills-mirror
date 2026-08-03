@@ -73,7 +73,7 @@ Supported commands:
 - `runtime-status`
 - `recommend --limit 5`
 - `recommend --limit 5 --refresh-if-needed`
-- `submit-feedback --recommendation-id 7 --feedback-type like --note "很对胃口"`
+- `submit-feedback --recommendation-id 7 --feedback-type like --request-id feedback-7-like-1 --note "很对胃口"`
 - `listen` — long-running WebSocket stream for real-time push events (see below)
 
 ## Proactive Push (WebSocket)
@@ -154,7 +154,8 @@ Use this order for routine work:
 2. If the JSON payload is `{ "ok": false, ... }`, surface the error and stop.
 3. Prefer `recommend --limit <n>` for normal recommendation fetches. This is the fast path and does not trigger runtime refresh by default.
 4. Use `--refresh-if-needed` only when the user explicitly wants a heavier freshness check before recommendation fetch.
-5. For `comment` feedback, always include `--note`.
+5. For every feedback action, create one stable non-empty `--request-id` (maximum 400 characters) and reuse it for every retry of that same action. Never reuse it for a different recommendation/type/note.
+6. For `comment` feedback, always include `--note`.
 
 ## Examples
 
@@ -174,6 +175,7 @@ uv run python -m openbiliclaw.integrations.openclaw.cli recommend --limit 3 --re
 uv run python -m openbiliclaw.integrations.openclaw.cli submit-feedback \
   --recommendation-id 12 \
   --feedback-type comment \
+  --request-id feedback-12-comment-1 \
   --note "方向对，但我想看更深一点。"
 ```
 

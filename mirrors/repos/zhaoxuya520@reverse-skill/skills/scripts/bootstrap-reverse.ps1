@@ -939,8 +939,10 @@ function Ensure-Capability {
         'npm-mcp' {
             Ensure-NodeRuntime
             $envMap = @{}
-            foreach ($property in $definition.mcpEnv.PSObject.Properties) {
-                $envMap[$property.Name] = $property.Value
+            if ($definition.PSObject.Properties['mcpEnv'] -and $null -ne $definition.mcpEnv) {
+                foreach ($property in $definition.mcpEnv.PSObject.Properties) {
+                    $envMap[$property.Name] = $property.Value
+                }
             }
             $serverDefinition = Get-McpCommandServerDefinition -Command $definition.mcpCommand -Arguments @($definition.mcpArgs) -Env $envMap
             Ensure-McpServer -ServerName $definition.mcpNames[0] -ServerDefinition $serverDefinition
@@ -1102,6 +1104,7 @@ foreach ($name in $expandedCapabilities) {
     }
 
     try {
+        $manualRequired = $false
         switch ($name) {
             'adb' {
                 Ensure-AndroidPlatformTools | Out-Null
@@ -1117,18 +1120,21 @@ foreach ($name in $expandedCapabilities) {
                         hint = $hint
                         docs_url = [string]$def.docsUrl
                     }
-                    continue
+                    $manualRequired = $true
                 }
             }
         }
 
-        $state = Get-ReverseCapabilityState -Name $name
-        $results += [pscustomobject]@{
-            name = $name
-            status = 'ready'
-            ready = if ($state) { $state.Ready } else { $null }
-            registered = if ($state) { $state.Registered } else { $null }
-            service_online = if ($state) { $state.ServiceOnline } else { $null }
+        if (-not $manualRequired) {
+            $state = Get-ReverseCapabilityState -Name $name
+            $status = if ($state -and -not $state.Ready) { 'configured-not-ready' } else { 'ready' }
+            $results += [pscustomobject]@{
+                name = $name
+                status = $status
+                ready = if ($state) { $state.Ready } else { $null }
+                registered = if ($state) { $state.Registered } else { $null }
+                service_online = if ($state) { $state.ServiceOnline } else { $null }
+            }
         }
     }
     catch {

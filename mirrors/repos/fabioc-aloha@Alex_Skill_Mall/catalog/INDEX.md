@@ -21,7 +21,7 @@ Search index across **3862 plugins** in **42 stores**. Plugins are ranked by tru
 | 95 | 🏆 `ai-agent-design` | plugin-mall | skill | Design autonomous AI agents that reason, plan, and execute tasks |
 | 95 | 🏆 `ai-memory-setup` | plugin-mall | skill | Detect, create, and manage the AI-Memory fleet communication channel across One… |
 | 95 | 🏆 `ai-writing-avoidance` | plugin-mall | skill | Help writers produce content that sounds genuinely human by avoiding telltale A… |
-| 95 | 🏆 `alex-act-core` | plugin-mall | mixed | The Alex ACT baseline plugin. Installs 41 reusable framework skills and 13 slas… |
+| 95 | 🏆 `alex-act-core` | plugin-mall | mixed | The Alex ACT baseline plugin. Installs 42 reusable framework skills and 14 slas… |
 | 95 | 🏆 `alex-act-enterprise` | plugin-mall | mixed | Alex ACT config-template plugin for the public Microsoft ecosystem. Ships the s… |
 | 95 | 🏆 `alex-act-illustrator-plugin` | plugin-mall | mixed | Visual-authoring bundle for AI agents. Ten skills across five feature areas plu… |
 | 95 | 🏆 `alex-banner-generation` | plugin-mall | skill | Generate branded SVG banners for documents (READMEs, plans, changelogs, release… |

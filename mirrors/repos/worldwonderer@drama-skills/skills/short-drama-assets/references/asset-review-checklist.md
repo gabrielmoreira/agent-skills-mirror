@@ -30,7 +30,7 @@
 
 ## B. 语义审查（`reviewed_invariant`）
 
-逐条引用剧本/bible 证据回答：
+逐条引用剧本/设定集 证据回答：
 
 - [ ] 含混代词、匿名人、同款多件物没有被猜成某个已有 ID。
 - [ ] Character 身份锚点与服装、伤势、湿污、姿势等临时状态分离。
@@ -49,7 +49,7 @@ status；不能只说“资产不够细”或“看起来 AI”。
 
 - [ ] 身份未变时优先复用或 variant，没有追求“一场一资产”。
 - [ ] 瞬时 pose/camera/framing 留给 storyboard，没有制造 Look/View/State 爆炸。
-- [ ] bible 只保留识别、复用、prompt、镜头和连续性所需事实。
+- [ ] 设定集 只保留识别、复用、prompt、镜头和连续性所需事实。
 - [ ] Location 先有地理/入口/固定锚点，再有氛围；Prop 有尺度/形制/材料/功能；
   Character 有可观察的区分锚点。
 - [ ] outgoing 精简但足以让下一场/集无脑内补全地继续。

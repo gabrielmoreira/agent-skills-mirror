@@ -70,7 +70,7 @@ apply type-specific criteria:
 ## Prompt quality failures
 
 - quality/style boilerplate appears before or instead of identity/geography/scale;
-- prompt copies the whole bible rather than the needed variant;
+- prompt copies the whole 设定集 rather than the needed variant;
 - character description mixes immutable anchors with accidental pose;
 - location prose is rich but cannot orient entrances/zones;
 - one character or prop is assigned to mutually exclusive positions, hands, or

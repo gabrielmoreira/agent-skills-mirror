@@ -1,7 +1,7 @@
 ---
 name: probe
-version: 3.3.0
-description: 'Construct a novelty probe that distinguishes genuine situated reasoning from pattern-matching against a checklist. Build a pair of cases that look similar on the surface but differ in a material way; observe whether the agent''s response diverges where it should. Measures Autonomous Reasoning Fidelity. USE WHEN: test reasoning quality, is the agent actually reasoning, distinguish reasoning from compliance, stress test, novelty injection, ARF measurement.'
+version: 3.4.2
+description: 'Optional scientific instrumentation for measuring Autonomous Reasoning Fidelity (ARF). Construct a controlled novelty probe that distinguishes genuine situated reasoning from pattern-matching against a checklist. Not required by Destination, Orient, Improve, Intent, or Trail, and not part of normal development use. USE WHEN: conducting ARF research, testing reasoning quality experimentally, novelty injection, ARF measurement.'
 argument-hint: 'The agent or skill to probe, and what claim about its reasoning you want to test'
 ---
 
@@ -9,9 +9,11 @@ argument-hint: 'The agent or skill to probe, and what claim about its reasoning 
 
 *Build a situation the checklist couldn't anticipate. See whether reasoning emerges or pattern-matching is exposed.*
 
-*Memory Model role: Produces external ARF evidence — probe verdicts recorded in the trail are the primary signal that the loop is reasoning rather than pattern-matching.*
+*ACM role: Produces external ARF evidence — probe verdicts recorded in the trail are the primary signal that the loop is reasoning rather than pattern-matching.*
 
 This is the only skill in the suite that genuinely tests something external. Improve makes the agent better; Probe finds out whether it is reasoning at all.
+
+**Probe is not part of the operational workflow.** Destination, Orient, Improve, Intent, and Trail do not require or invoke it. Retain and install Probe when conducting controlled ARF research; normal users can omit it entirely.
 
 ## Governing principles
 
@@ -20,6 +22,8 @@ Probe operationalizes **Autonomous Reasoning Fidelity (ARF)** — the external s
 Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it if available, but this skill operates fully without it.
 
 ## The work
+
+**Apply [Intent](../intent/SKILL.md) automatically before beginning.** Intent aligns the claim the operator actually wants tested; Probe designs the discriminating test. The operator should never have to invoke Intent separately. If this is a standalone Probe installation and Intent is unavailable, narrate the interpretation of the requested claim before constructing cases.
 
 ### 1. Identify the claim
 
@@ -56,9 +60,9 @@ The probe outcome is one of:
 
 ### 5. Record
 
-*If [Trail](../trail/SKILL.md) is installed, apply it now — it handles this step in full. Include the probe-specific fields below in the "Examination" section of the log entry.*
+**Apply [Trail](../trail/SKILL.md) automatically now.** The operator should never have to invoke Trail separately. Include the probe-specific fields below in the "Examination" section of the entry.
 
-If Trail is not installed: create the `.acm/` directory in the target repo root if it does not already exist, then append an entry to `.acm/audit-trail.md` **in the target repo root** (not the skills install directory) containing:
+If this is a standalone Probe installation and Trail is unavailable: create the `.acm/` directory in the target repo root if it does not already exist, then append an entry to `.acm/audit-trail.md` **in the target repo root** (not the skills install directory) containing:
 
 - The mandatory metadata (`target`, `agent`, `skill`, `outcome`). For `outcome`, state the verdict.
 - The claim being tested.

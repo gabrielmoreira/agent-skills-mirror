@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `worldwonderer/drama-skills` — 26 default patterns, 0 followed patterns, 127 file(s) materialized.
+Mirror of `worldwonderer/drama-skills` — 26 default patterns, 0 followed patterns, 131 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `worldwonderer/drama-skills` — 26 default patterns, 0 followed patte
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 127 |
+| Files         | 131 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -172,20 +172,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 111 | ✓ | [`skills/short-drama-write/suite-ref.json`](skills/short-drama-write/suite-ref.json) |
 | 112 | ✓ | [`skills/short-drama/agents/openai.yaml`](skills/short-drama/agents/openai.yaml) |
 | 113 | ✓ | [`skills/short-drama/assets/creator-decision.example.jsonl`](skills/short-drama/assets/creator-decision.example.jsonl) |
-| 114 | ✓ | [`skills/short-drama/assets/project-template/short-drama.json`](skills/short-drama/assets/project-template/short-drama.json) |
-| 115 | ✓ | [`skills/short-drama/assets/reference-observation.example.jsonl`](skills/short-drama/assets/reference-observation.example.jsonl) |
-| 116 | ✓ | [`skills/short-drama/references/contract-and-ownership.md`](skills/short-drama/references/contract-and-ownership.md) |
-| 117 | ✓ | [`skills/short-drama/references/creator-workflow.md`](skills/short-drama/references/creator-workflow.md) |
-| 118 | ✓ | [`skills/short-drama/references/knowhow-index.md`](skills/short-drama/references/knowhow-index.md) |
-| 119 | ✓ | [`skills/short-drama/references/lifecycle-commands.md`](skills/short-drama/references/lifecycle-commands.md) |
-| 120 | ✓ | [`skills/short-drama/references/production-form-profiles.md`](skills/short-drama/references/production-form-profiles.md) |
-| 121 | ✓ | [`skills/short-drama/references/reference-media-and-pickups.md`](skills/short-drama/references/reference-media-and-pickups.md) |
-| 122 | ✓ | [`skills/short-drama/references/routing-examples.md`](skills/short-drama/references/routing-examples.md) |
-| 123 | ✓ | [`skills/short-drama/references/runtime-preflight.md`](skills/short-drama/references/runtime-preflight.md) |
-| 124 | ✓ | [`skills/short-drama/scripts/project_tool.py`](skills/short-drama/scripts/project_tool.py) |
-| 125 | ✓ | [`skills/short-drama/scripts/suite_verify.py`](skills/short-drama/scripts/suite_verify.py) |
-| 126 | ✓ | [`skills/short-drama/SKILL.md`](skills/short-drama/SKILL.md) |
-| 127 | ✓ | [`skills/short-drama/suite-manifest.json`](skills/short-drama/suite-manifest.json) |
+| 114 | ✓ | [`skills/short-drama/assets/dashboard/app.js`](skills/short-drama/assets/dashboard/app.js) |
+| 115 | ✓ | [`skills/short-drama/assets/dashboard/index.html`](skills/short-drama/assets/dashboard/index.html) |
+| 116 | ✓ | [`skills/short-drama/assets/dashboard/styles.css`](skills/short-drama/assets/dashboard/styles.css) |
+| 117 | ✓ | [`skills/short-drama/assets/project-template/short-drama.json`](skills/short-drama/assets/project-template/short-drama.json) |
+| 118 | ✓ | [`skills/short-drama/assets/reference-observation.example.jsonl`](skills/short-drama/assets/reference-observation.example.jsonl) |
+| 119 | ✓ | [`skills/short-drama/references/contract-and-ownership.md`](skills/short-drama/references/contract-and-ownership.md) |
+| 120 | ✓ | [`skills/short-drama/references/creator-workflow.md`](skills/short-drama/references/creator-workflow.md) |
+| 121 | ✓ | [`skills/short-drama/references/knowhow-index.md`](skills/short-drama/references/knowhow-index.md) |
+| 122 | ✓ | [`skills/short-drama/references/lifecycle-commands.md`](skills/short-drama/references/lifecycle-commands.md) |
+| 123 | ✓ | [`skills/short-drama/references/production-form-profiles.md`](skills/short-drama/references/production-form-profiles.md) |
+| 124 | ✓ | [`skills/short-drama/references/reference-media-and-pickups.md`](skills/short-drama/references/reference-media-and-pickups.md) |
+| 125 | ✓ | [`skills/short-drama/references/routing-examples.md`](skills/short-drama/references/routing-examples.md) |
+| 126 | ✓ | [`skills/short-drama/references/runtime-preflight.md`](skills/short-drama/references/runtime-preflight.md) |
+| 127 | ✓ | [`skills/short-drama/scripts/dashboard_server.py`](skills/short-drama/scripts/dashboard_server.py) |
+| 128 | ✓ | [`skills/short-drama/scripts/project_tool.py`](skills/short-drama/scripts/project_tool.py) |
+| 129 | ✓ | [`skills/short-drama/scripts/suite_verify.py`](skills/short-drama/scripts/suite_verify.py) |
+| 130 | ✓ | [`skills/short-drama/SKILL.md`](skills/short-drama/SKILL.md) |
+| 131 | ✓ | [`skills/short-drama/suite-manifest.json`](skills/short-drama/suite-manifest.json) |
 
 ---
 

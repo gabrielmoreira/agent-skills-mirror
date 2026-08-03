@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `reacher-z/ClawBench` — 26 default patterns, 8 followed patterns, 11 file(s) materialized.
+Mirror of `reacher-z/ClawBench` — 26 default patterns, 9 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `reacher-z/ClawBench` — 26 default patterns, 8 followed patterns, 11
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 8 |
-| Files         | 11 |
+| Followed pats | 9 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -56,6 +56,7 @@ Mirror of `reacher-z/ClawBench` — 26 default patterns, 8 followed patterns, 11
 - `CONTRIBUTING.md`
 - `eval/README.md`
 - `eval/agentic_eval.md`
+- `CHANGELOG.md`
 - `docs/scoring.md`
 - `eval/scoring.md`
 - `src/clawbench/runtime/chrome-extension/README.md`
@@ -69,14 +70,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`llms.txt`](llms.txt) |
 | 3 | ✓ | [`src/README.md`](src/README.md) |
-| 4 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 5 | → | [`docs/scoring.md`](docs/scoring.md) |
-| 6 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
-| 7 | → | [`eval/README.md`](eval/README.md) |
-| 8 | → | [`eval/scoring.md`](eval/scoring.md) |
-| 9 | → | [`README.md`](README.md) |
-| 10 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
-| 11 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
+| 4 | → | [`CHANGELOG.md`](CHANGELOG.md) |
+| 5 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 6 | → | [`docs/scoring.md`](docs/scoring.md) |
+| 7 | → | [`eval/agentic_eval.md`](eval/agentic_eval.md) |
+| 8 | → | [`eval/README.md`](eval/README.md) |
+| 9 | → | [`eval/scoring.md`](eval/scoring.md) |
+| 10 | → | [`README.md`](README.md) |
+| 11 | → | [`src/clawbench/runtime/chrome-extension/README.md`](src/clawbench/runtime/chrome-extension/README.md) |
+| 12 | → | [`src/clawbench/runtime/runtime-server/README.md`](src/clawbench/runtime/runtime-server/README.md) |
 
 ---
 

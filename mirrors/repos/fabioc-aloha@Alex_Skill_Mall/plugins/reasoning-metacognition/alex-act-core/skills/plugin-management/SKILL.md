@@ -1,7 +1,7 @@
 ---
 name: plugin-management
 description: "General Copilot CLI plugin operations: install / list / update / remove / marketplace add + remove, scope precedence (user vs repo), the enabledPlugins + extraKnownMarketplaces settings shape, and safe merge-not-overwrite settings edits. Use when a heir asks to install / update / remove any plugin from any Mall, or when auditing what plugins are installed at what scope. Generic — the install-constellation and update-plugins skills delegate to this one for the mechanical commands."
-lastReviewed: 2026-08-01
+lastReviewed: 2026-08-02
 ---
 
 # Plugin Management
@@ -15,7 +15,7 @@ General Copilot CLI plugin operations skill. Every install / list / update / rem
 - Heir asks "update X plugin" / "keep X current" (delegate to `update-plugins` for the diff / breaking-change flow; use this skill for the raw update commands)
 - Heir asks "remove X plugin" / "uninstall Y"
 - Heir asks about a marketplace: "add the Alex mall" / "register a new plugin source"
-- Heir invokes `/plugin-status` (audit mode)
+- Heir invokes `/alex-act-core plugin-status` (audit mode)
 - Auditing whether a plugin is at user scope vs repo scope
 
 ## Command reference
@@ -42,6 +42,34 @@ plugin's `plugin.json` as a filesystem fallback:
 
 - Marketplace install: `~/.copilot/installed-plugins/<marketplace>/<plugin>/plugin.json`
 - Direct install: find the plugin under `~/.copilot/installed-plugins/_direct/`
+
+## Plugin-skill file fallback
+
+Installed plugin skills can appear in session inventory while the generic skill tool still rejects their names. Treat that as a host/runtime bridge limitation, not proof that the package is missing.
+
+For a namespaced plugin command:
+
+1. Resolve the installed plugin root from its `plugin.json` under the marketplace or direct-install tree.
+2. Follow the command's linked skill path under that root.
+3. Read the installed `SKILL.md` directly and continue the command's numbered fallback.
+4. Report generic skill-tool status as `host-limited` when direct reading works. Do not call it `missing`.
+
+Self-contained prompts do not need a skill read; they continue their numbered steps and state that the generic tool was not required.
+
+## Deterministic marketplace versions
+
+`copilot plugin marketplace browse` is a discovery surface. Its flattened output does not reliably expose versions. Use the exact plugin records in `alex-mall`'s `.github/plugin/marketplace.json` for current-version checks.
+
+The bundled resolver returns only requested records:
+
+```powershell
+node <plugin-management-skill>/scripts/core-operations.cjs marketplace-versions `
+  --plugins alex-act-core,alex-act-illustrator-plugin,alex-act-enterprise
+```
+
+By default it reads the immutable raw path for the current `alex-mall` manifest. `--file <path>` provides an offline or test input. Missing, duplicate, or incomplete records fail closed. Compare those exact versions with `copilot plugin list` and installed `plugin.json` files.
+
+For private direct-installed MSFT, use authenticated source metadata through `gh api repos/fabioc-aloha/alex-act-msft/contents/plugin.json`; do not expect a public Mall record.
 
 ## Scope precedence
 
@@ -121,8 +149,8 @@ Use when: the heir wants a preview, or is off-network, or wants to review before
 Only after explicit "yes, apply it" from the heir:
 
 1. Merge the target block into the destination `settings.json` (user or repo scope, per the heir's choice or the caller's default).
-2. Run `copilot plugin install` for each newly-enabled plugin.
-3. Run `copilot plugin marketplace add` for any new marketplace.
+2. Run `copilot plugin marketplace add` for any new marketplace.
+3. Run `copilot plugin install` for each newly-enabled plugin.
 4. Report what was added and what pre-existing entries were preserved.
 
 Use when: the heir has reviewed and approved the target state.
@@ -276,7 +304,7 @@ Track outcomes in the maintaining repo's curation log.
 
 ## Related
 
-- `/plugin-status` prompt — read-only audit-mode entry point
+- `/alex-act-core plugin-status` prompt — read-only audit-mode entry point
 - [install-constellation](../install-constellation/SKILL.md) — Alex ACT-specific install list
 - [update-plugins](../update-plugins/SKILL.md) — safe update flow with breaking-change detection
 - Constellation doc: `constellation/PLUGIN-INTEGRATION.md` in Steward (or your project's equivalent) — the design decisions that ground this skill's scope defaults

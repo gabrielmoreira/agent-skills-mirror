@@ -1,6 +1,6 @@
 ---
 name: detecting-model-extraction-attacks
-description: Detect model stealing, model inversion, and membership inference performed through inference-API abuse by monitoring query patterns, applying output perturbation, and red-teaming your own model's extractability.
+description: Detect MITRE ATLAS AML.T0024 attacks (model stealing, inversion, membership inference) performed via inference-API abuse, by monitoring per-principal query volume/distribution, rate-limiting and perturbing outputs, and red-teaming your model's extractability. Use for a public or partner inference API needing cloning/inversion/membership-inference detection, or a pre-deployment red-team exercise to measure extraction risk.
 domain: cybersecurity
 subdomain: ai-security
 tags:
@@ -15,9 +15,9 @@ tags:
 version: '1.0'
 author: mahipal
 license: Apache-2.0
-nist_csf:
+nist_ai_rmf:
 - MEASURE-2.6
-mitre_attack:
+atlas_techniques:
 - AML.T0024
 ---
 # Detecting Model Extraction Attacks

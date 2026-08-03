@@ -1,7 +1,7 @@
 ---
 name: orient
-version: 2.4.0
-description: 'Read the trail as a single document and form arc-level claims about the target. What is the target becoming? Where has the loop''s attention been, and is that where the target''s real weight lies? What does the arc reveal that no individual iteration would surface? Writes .acm/orientation.md — the Orient-derived current orientation for the target. Destination (.acm/destination.md), if present, is the operator-held destination and is read but never written. USE WHEN: about to declare convergence, recurring finding-class suspected, operator asks "how are we doing?", or an independent arc-read is needed without running a full improve loop.'
+version: 2.7.0
+description: 'Passive orientation service. Automatically read the trail as a single document when Destination changes or Improve determines that accumulated evidence has made the current orientation stale. Form arc-level claims and refresh .acm/orientation.md without changing the target. Manual invocation remains available for diagnostics or an explicit "how are we doing?" request.'
 argument-hint: 'The target and its trail, and optionally the specific arc-question to answer'
 ---
 
@@ -9,13 +9,15 @@ argument-hint: 'The target and its trail, and optionally the specific arc-questi
 
 *Read the whole arc. See what no single iteration can.*
 
-*Memory Model role: Synthesizes the trail into `.acm/orientation.md` — the arc-level orientation the next run starts from.*
+*ACM role: Synthesizes the trail into `.acm/orientation.md` — the arc-level orientation the next run starts from.*
 
 The Improve loop is optimised for one iteration at a time. Orient is optimised for reading all of them at once. Where Improve asks "what should change next?", Orient asks "what has been changing, where is the weight of this target actually sitting, and is the loop looking at the right thing?"
 
 *Lineage:* this split mirrors Boyd's OODA loop (Observe-Orient-Decide-Act) — Boyd's own insight was that Orientation, not Decision, is the phase that shapes everything downstream and the one most commonly neglected. Cited explicitly in this suite's v1 ancestor but dropped when v2's skills merged into v3; restored here since it is this skill's own namesake.
 
-Run this skill when an arc-level view is more useful than another low-altitude pass: before declaring convergence, when a pattern of similar findings has emerged, when the operator asks "how are we doing?", or any time you want arc-level understanding without committing to a change.
+Orient is normally scheduled automatically, not invoked as an operator workflow step. Destination schedules it after a material direction change. Improve schedules it when accumulated evidence makes the current orientation stale: a meaningful cluster has emerged, orientation claims no longer explain the trail, or convergence is approaching. There is no universal iteration count — cadence follows evidence, not a fixed timer. Manual `/orient` remains available as a diagnostic override or when the operator explicitly asks "how are we doing?"
+
+**Passive-service contract:** Orient observes and refreshes derived orientation. It never changes the target, chooses work on the operator's behalf, or revises `.acm/destination.md`. Automatic scheduling changes when the arc is read, not what authority Orient has.
 
 ## Governing principles
 
@@ -28,6 +30,8 @@ Full statement of the principles: [PRINCIPLES.md](../PRINCIPLES.md) — read it 
 
 ## The work
 
+**Apply [Intent](../intent/SKILL.md) automatically before beginning.** For an automatically scheduled run, Intent aligns the trigger and scope inherited from Destination or Improve; for a manual diagnostic run, it aligns the operator's arc-question. The operator should never have to invoke Intent separately. If this is a standalone Orient installation and Intent is unavailable, narrate the trigger and scope before continuing.
+
 ### 0. Read the destination first (all scopes)
 
 Before forming any scope statement, read `.acm/destination.md` **in the target repo root** if it exists. This is the operator-held destination — what the target is for and what constraints hold across all runs. Reading it first ensures the arc is read against what the operator actually cares about, not retrofitted afterward.
@@ -35,6 +39,8 @@ Before forming any scope statement, read `.acm/destination.md` **in the target r
 **ACM §4 Scoped Memory — read parent scopes first.** Before reading the repo's `.acm/destination.md`, traverse parent directories upward and read any `.acm/destination.md` found there. Higher-scope mandates govern lower-scope ones — if a workspace or org destination conflicts with the repo destination, the higher scope wins. Label each scope when reading (e.g., "workspace mandate", "repo mandate"). Stop traversal when any of: filesystem root reached; a `.acm-root` marker file is found in a directory (operator-declared ceiling — read that directory's `.acm/` then stop); or 4 levels traversed (implementation ceiling). The workspace destination gives the arc its organizational context; arc-claims made without it may miss cross-repo coordination constraints.
 
 If no `destination.md` exists at any scope, proceed — but note the absence. An Orient run on a target without a destination is reading the arc without somewhere to orient against.
+
+**Bounded destination reads.** If a destination contains the exact comments `<!-- current-destination: complete -->` and `<!-- destination-history -->` in that order, the content between them is the operator-confirmed complete current mandate. Read that bounded section for routine orientation. Read the full file when Orientation must explain a destination change, resolve ambiguity or conflicting evidence, or establish historical provenance. If either comment is absent, malformed, or out of order, read the full file. Never infer a boundary from headings, dates, horizontal rules, or file position.
 
 ### 1. Identify the scope
 
@@ -194,7 +200,7 @@ If the orient run cannot name the bar, the silence claim is not yet ready to be 
 
 ### 6. Record
 
-*If [Trail](../trail/SKILL.md) is installed, apply it now — it handles this step in full.*
+**Apply [Trail](../trail/SKILL.md) automatically now.** The operator should never have to invoke Trail separately. If this is a standalone Orient installation and Trail is unavailable, use the entry contract below directly.
 
 If Trail is not installed: append a single entry to `.acm/audit-trail.md` containing:
 
@@ -208,5 +214,5 @@ There is no separate "decision" or "action" field unless a follow-up action was 
 ## What this skill does not do
 
 - **It does not make changes to the target.** Orient reads and claims; Improve changes. If the arc reveals a specific finding, hand off to Improve.
-- **It does not replace Improve's step 6b.** Step 6b is a lightweight in-loop check that fires inside an improve iteration when a trigger condition is met. Orient is a standalone arc-read run instead of an improve iteration when a high-altitude view is what is needed. Use both.
+- **It does not replace Improve's step 6b.** Step 6b is a lightweight in-loop reflection. Improve's orientation-freshness check schedules this full arc-read only when accumulated evidence warrants it; most Improve runs should not trigger Orient.
 - **It does not score the trail.** No number, no rubric, no grade. Claims are the output — claims a future run can test.

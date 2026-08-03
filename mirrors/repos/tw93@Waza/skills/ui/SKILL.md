@@ -74,6 +74,8 @@ Only attach the target component folder or package. Exclude `.git`, `node_module
 
 When the target is an existing macOS / iOS / Android native app that already has a coherent visual direction, do not propose a wholesale port to a newer platform style (macOS 26 Liquid Glass, iOS 18 frosted material, Material You, Fluent Design, etc.) as the default improvement plan. Wholesale restyling reads as "I do not have a specific design intent, here is the platform's." Default to incremental polish on the existing direction: spacing, alignment, hover and focus states, typography hierarchy, copy tightening, motion timing. Only propose a platform-style migration when the user has explicitly asked for it in this turn, or when the existing direction is broken in a way that incremental polish cannot fix. State the existing direction in one sentence before proposing changes so the user can correct the read.
 
+When the change touches motion, press states, or animation timing on that native surface, load `references/design-native-motion.md`: the judgment carries over from the web rules, the idioms and the platform's default curves do not.
+
 ### App shell exception (sidebar + main workspace)
 
 If question 1 is an app shell (Slack, Linear, Notion class), load the "App shell rules" section in `references/design-reference.md` and apply those constraints before proceeding.
@@ -98,6 +100,8 @@ Give at least 3 variations across genuinely different dimensions (density, typog
 ## Hard Rules
 
 Always-on bans for every mode: no thick side-border accents, gradient text, default glass cards, reflex purple-to-blue/cyan-on-dark palettes, generic rounded shadow-card grids, modal escapes for ordinary overflow, `transition: all`, or layout-property animation. Before handoff, scan the first viewport for default-prompt tells and remove any that were not an explicit part of the product's direction.
+
+Two motion rules apply in every mode, including the ones that skip the full reference. Frequency decides whether something animates at all: nothing keyboard-initiated animates, and anything the user triggers hundreds of times a day reads motion as lag, so it gets none. And every pressable thing moves on press, not only on hover, because hover is pointer-only and an unmoved control leaves the click unacknowledged.
 
 Direction lock loads `references/design-reference.md` for the full rewrites, typography, OKLCH color, motion timings, layout defaults, accessibility baseline, and complexity matching. Screenshot and quick-fix paths use the compact bans above instead of paying for that full reference. These rules keep output off the generic default, not to run as a lint pass: when the committed direction genuinely calls for breaking one, break it deliberately and name the tradeoff in the handoff. The accessibility baseline and CSS-pattern bans stay non-negotiable.
 

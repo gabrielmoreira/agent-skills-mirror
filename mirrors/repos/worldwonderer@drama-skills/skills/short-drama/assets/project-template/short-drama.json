@@ -9,7 +9,7 @@
     "target_seconds_per_episode": null
   },
   "creator_authority": {
-    "decisions_artifact": "creator-decisions/",
+    "decisions_artifact": "创作者决策/",
     "constraints": [],
     "visual_direction": {
       "status": "unset",

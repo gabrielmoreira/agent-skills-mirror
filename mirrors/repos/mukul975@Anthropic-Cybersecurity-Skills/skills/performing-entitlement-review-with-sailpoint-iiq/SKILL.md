@@ -1,12 +1,10 @@
 ---
 name: performing-entitlement-review-with-sailpoint-iiq
-description: 'Performs entitlement review and access certification campaigns using
-  SailPoint IdentityIQ including manager certifications, targeted entitlement reviews,
-  role-based access validation, SOD violation remediation, and automated revocation
-  workflows. Activates for requests involving access reviews, entitlement certifications,
-  SailPoint IIQ governance, or periodic user access recertification.
-
-  '
+description: 'Runs entitlement review and access certification campaigns in SailPoint
+  IdentityIQ, covering manager certifications, targeted entitlement reviews, role-based
+  access validation, segregation-of-duties violation remediation, and automated
+  revocation workflows. Use when performing periodic user access recertification,
+  auditing SailPoint IIQ access governance, or investigating SOD violations.'
 domain: cybersecurity
 subdomain: identity-access-management
 tags:

@@ -6,6 +6,7 @@
 2. 独立审查记录
 3. 过期影响与依赖检查（含把共享文件的失效半径收窄到记录）
 4. 恢复与打包（含交付完整性枚举与交付后复核）
+5. Dashboard 启动
 
 只在实际调用 `project_tool.py`、诊断命令失败或核对审核记录时读取本文。
 从 `short-drama` 技能安装目录调用脚本，不依赖当前工作目录：
@@ -14,12 +15,32 @@
 python3 <short-drama-skill-dir>/scripts/project_tool.py init <project> --title <title>
 python3 <short-drama-skill-dir>/scripts/project_tool.py status <project>
 python3 <short-drama-skill-dir>/scripts/project_tool.py recover <project>
-python3 <short-drama-skill-dir>/scripts/project_tool.py publish <project> --owner short-drama-write --artifact-id EP001:script --output episodes/EP001/screenplay.md=inputs/EP001-screenplay.candidate.md [--input <upstream-path>=<sha256> ...] [--input-record <upstream-path>=<record-id> ...]
-python3 <short-drama-skill-dir>/scripts/project_tool.py accept <project> --artifact-id EP001:script --decision accepted --target episodes/EP001/screenplay.md=<candidate-sha256> --evidence-artifact creator-decisions/EP001-script.json --evidence-hash <decision-file-sha256> --evidence-record-id <decision-id>
-python3 <short-drama-skill-dir>/scripts/project_tool.py review <project> --artifact-id EP001:script --verdict approve --target episodes/EP001/screenplay.md=<accepted-sha256> --verdict-owner short-drama-review --verdict-artifact reviews/EP001-verdict.json --verdict-hash <verdict-file-sha256>
+python3 <short-drama-skill-dir>/scripts/project_tool.py publish <project> --owner short-drama-write --artifact-id EP001:script --output 剧集/EP001/screenplay.md=输入/EP001-screenplay.candidate.md [--input <upstream-path>=<sha256> ...] [--input-record <upstream-path>=<record-id> ...]
+python3 <short-drama-skill-dir>/scripts/project_tool.py accept <project> --artifact-id EP001:script --decision accepted --target 剧集/EP001/screenplay.md=<candidate-sha256> --evidence-artifact 创作者决策/EP001-script.json --evidence-hash <decision-file-sha256> --evidence-record-id <decision-id>
+python3 <short-drama-skill-dir>/scripts/project_tool.py review <project> --artifact-id EP001:script --verdict approve --target 剧集/EP001/screenplay.md=<accepted-sha256> --verdict-owner short-drama-review --verdict-artifact 审查/EP001-verdict.json --verdict-hash <verdict-file-sha256>
 python3 <short-drama-skill-dir>/scripts/project_tool.py package <project> --episode EP001 --include <accepted-path> [...] [--omit <accepted-path> ...]
 python3 <short-drama-skill-dir>/scripts/project_tool.py verify <project> --episode EP001
 ```
+
+## Dashboard 启动
+
+`$short-drama dashboard` 将下列命令作为长时运行进程启动。`--port 0` 由操作系统选择
+未占用的回环端口，`--open` 在绑定成功后打开默认浏览器：
+
+```text
+python3 <short-drama-skill-dir>/scripts/dashboard_server.py --workspace <workspace> --port 0 --open
+```
+
+如果需要固定地址，可省略 `--port 0`，默认端口为 `8765`。`--host` 只接受回环
+主机；服务会检查 Host 与 Origin，拒绝符号链接、路径越界和超出大小限制的文件。
+脚本打印的地址包含本次启动专属的会话片段；浏览器用它建立独立 API 路径及
+`HttpOnly`、`SameSite=Strict` 会话，所有项目 API 都要求该会话。
+文本保存携带读取时的 SHA-256 版本；文件被其他页面或工具修改后，旧页面保存会
+返回冲突而不是覆盖。Markdown 预览不执行项目 HTML；JSON/JSONL 保存会在浏览器和
+服务端分别解析，任一层发现格式错误都拒绝替换原文件。媒体区使用生命周期证据标记
+正式成片；文件名只能产生“本地预演”“音画演示”或“待审”等中性标签。
+控制台要求运行平台支持安全目录文件描述符（macOS/Linux）；不支持时服务直接拒绝启动
+并说明原因，不使用存在符号链接竞态的降级路径。
 
 ## 发布与创作者确认
 
@@ -31,23 +52,25 @@ Markdown、JSON 或 JSONL。命令把来源文件和 `--input` 依赖的准确�
 ### `publish` 拒绝写入的目标
 
 以下目标在发布阶段直接报错，不进入预写日志，创作者文件保持原样。全部按**忽略大小写**
-比对：本套件常运行在大小写不敏感的文件系统上，`Delivery/x` 与 `delivery/x` 是同一个
+比对：旧版工程常运行在大小写不敏感的文件系统上，`Delivery/x` 与 `delivery/x` 是同一个
 文件，区分大小写的判断在那里等于没有判断。
 
 | 目标 | 原因 |
 |---|---|
-| `inputs/**` | 创作者交来的来源材料不可变 |
+| `输入/**` | 创作者交来的来源材料不可变 |
 | `.short-drama/**` | 机器状态，只由工具自身维护 |
 | 任意位置的 `short-drama.json` | 承载 `creator_authority`。按**文件名**拦截而不只是根目录那一份：`find_project` 向上查找，被放进子目录的同名文件会让该子目录冒充项目根 |
-| `delivery/**` | 只由 `package` 闸门写入；否则已交付的 `manifest.json` 可被事后替换 |
+| `交付/**` | 只由 `package` 闸门写入；否则已交付的 `manifest.json` 可被事后替换 |
 
-**只能发布到标准阶段目录**：`development`、`bible`、`episodes`、`creator-decisions`、
-`reviews`。写错一个字母（`epsiodes/`）此前会建出一棵平行目录树，而 `status` 从不报告它。
+**只能发布到标准阶段目录**：`项目开发`、`设定集`、`剧集`、`创作者决策`、
+`审查`。旧版英文目录继续兼容。`status.layout.roots` 给出当前项目采用的完整目录映射；
+第一次阶段发布会固定布局，之后创建另一种语言的平行阶段树会被拒绝。`mode=mixed`
+表示已有平行树，需要先迁移合并。
 确实需要放在别处的临时文件加 `--allow-unregistered-path`：仍然可行，但不再是静默的。
 
-**分集目录必须写成 `episodes/<EP>/`，`<EP>` 是 `EP` + 三位数字**（`EP001`；超过
+**分集目录必须写成 `剧集/<EP>/`，`<EP>` 是 `EP` + 三位数字**（`EP001`；超过
 `EP999` 之后不再补零，写 `EP1000`）。`ep1`、`EP1`、`EP0001` 都会被拒绝——`EP0001`
-被拒是因为它会成为 `EP001` 的第二种拼写，而交付完整性闸门按 `episodes/<EP>/` 前缀
+被拒是因为它会成为 `EP001` 的第二种拼写，而交付完整性闸门按 `剧集/<EP>/` 前缀
 枚举本集产物，另一种拼写下的产物会被静默跳过，于是闸门在一个它从未清点过的分集上通过。
 `package --include` 同样按这条规则校验。同一形式也用于剧本的 `# EP001` 集标题。
 
@@ -55,7 +78,7 @@ Markdown、JSON 或 JSONL。命令把来源文件和 `--input` 依赖的准确�
 模板会报 `structured ref hash is unfilled or invalid`。此前这类引用被静默丢弃，导致
 填得越少、依赖检查越宽松——正好与 hash 绑定的目的相反。
 
-**已声明产物的负责技能是固定的**：`episodes/<EP>/screenplay.md` 只能由
+**已声明产物的负责技能是固定的**：`剧集/<EP>/screenplay.md` 只能由
 `short-drama-write` 发布，`storyboard/motion-specs.jsonl` 只能由
 `short-drama-video-prompts` 发布，其余见
 [contract-and-ownership.md](contract-and-ownership.md) 的单一负责人登记表。表里没有
@@ -65,16 +88,16 @@ Markdown、JSON 或 JSONL。命令把来源文件和 `--input` 依赖的准确�
 布局政策会让回滚直接报错而不是还原创作者的上一版，`recover` 每次都重复报阻塞，项目
 再也退不出来。所以布局只在新路径产生的地方校验。
 
-**已有不合规目录的项目怎么迁移**：`episodes/ep1/` 里的产物仍可 `accept`，但不能再发布
-新版本，也不能打包交付。把内容按 `episodes/EP001/` 重新发布一次并重新接受即可；交付枚举
-按 `episodes/<EP>/` 前缀匹配，旧路径本来就不在 `EP001` 的清点范围内，磁盘上的旧文件
+**已有不合规目录的项目怎么迁移**：`剧集/ep1/` 里的产物仍可 `accept`，但不能再发布
+新版本，也不能打包交付。把内容按 `剧集/EP001/` 重新发布一次并重新接受即可；交付枚举
+按 `剧集/<EP>/` 前缀匹配，旧路径本来就不在 `EP001` 的清点范围内，磁盘上的旧文件
 不会被自动删除，确认新版本无误后自行清理。
 
 `accept` 使用创作者决定记录，把所有准确的 `candidate` 目标 `hash` 推进为
 `accepted`；记录的负责人固定为 `creator`。
 
-**决定与审查证据按产物分文件存放**：默认约定是 `creator-decisions/<artifact-id>.json`
-与 `reviews/<EP>-findings.jsonl`，**一个产物一份**。原因是证据引用绑定的是**整文件
+**决定与审查证据按产物分文件存放**：默认约定是 `创作者决策/<artifact-id>.json`
+与 `审查/<EP>-findings.jsonl`，**一个产物一份**。原因是证据引用绑定的是**整文件
 hash**：把全项目的决定追加进同一个 `creator-decisions.jsonl` 时，接受第二集会改变该
 文件的 hash，于是第一集那条已经冻结的证据引用永久指向一个不再存在的字节状态。
 
@@ -108,16 +131,16 @@ JSONL 记录必须用 `--evidence-record-id` 唯一定位同名 `decision_id`；
 
 ### 把共享文件的失效半径收窄到记录
 
-`bible/*.jsonl` 这类文件是全项目共享输入。只按整文件 `hash` 绑定时，第 48 集新增一个
+`设定集/*.jsonl` 这类文件是全项目共享输入。只按整文件 `hash` 绑定时，第 48 集新增一个
 配角会把此前 47 集引用过该文件的产物全部标为 `stale`——它们其实一个字都没受影响。
 
 发布时用 `--input-record <path>=<selector>` 声明**这份候选实际读了哪几条记录**
 （可重复；仍需同时用 `--input` 绑定该文件的整文件 `hash`）：
 
 ```text
---input bible/characters.jsonl=<sha256> \
---input-record bible/characters.jsonl=CHAR-GUHE \
---input-record bible/characters.jsonl=CHAR-LINYE
+--input 设定集/characters.jsonl=<sha256> \
+--input-record 设定集/characters.jsonl=CHAR-GUHE \
+--input-record 设定集/characters.jsonl=CHAR-LINYE
 ```
 
 此后该文件的其余部分怎么改都不影响这份产物；只有被绑定的记录本身变化、消失或变得
@@ -172,7 +195,7 @@ python3 <short-drama-skill-dir>/scripts/project_tool.py verify <project> --episo
 ### 完整性由工具枚举，取舍由创作者声明
 
 手写的 `--include` 清单**漏了东西时和没漏时长得一模一样**。状态文件里已经记着本集有哪些
-已接受文件，所以这份枚举由 `package` 来做：本集 `episodes/<EP>/` 下每一个已接受路径，
+已接受文件，所以这份枚举由 `package` 来做：本集 `剧集/<EP>/` 下每一个已接受路径，
 要么在 `--include` 里，要么在 `--omit` 里，否则拒绝打包并逐条列出。
 
 `--omit` 不是绕过，是留痕：清单的 `omitted` 段会记下每条被排除的路径、它的负责产物，

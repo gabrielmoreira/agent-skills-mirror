@@ -58,7 +58,7 @@ Before the Materiality Gate, before any of the seven disciplines, before any sol
 | Trivial — single-file edit, < 15 min, mechanical                                                                                | **Skip**    |
 | Non-trivial — 3+ files, architectural choice, > 15 min, or symptom-frame language ("fix", "make faster", "broken", "just do X") | **Run**     |
 | User restated the same request after a failed attempt                                                                           | **Run**     |
-| User invokes `/problem-framing-audit` or asks "what am I missing?"                                                              | **Run**     |
+| User invokes `/alex-act-core problem-framing-audit` or asks "what am I missing?"                                              | **Run**     |
 
 ### The minimum viable audit
 

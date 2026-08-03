@@ -10,7 +10,7 @@ Detect current constellation state → generate a machine-tailored PowerShell sc
 
 ## When to fire
 
-- Heir invokes `/uninstall-constellation`
+- Heir invokes `/alex-act-core uninstall-constellation`
 - Heir asks to "uninstall Alex ACT", "remove the constellation", "reset the discipline", "clean slate"
 - Reset before reinstalling a specific plugin version for troubleshooting
 - Migrating away from Alex ACT to a different Copilot configuration
@@ -20,9 +20,9 @@ Detect current constellation state → generate a machine-tailored PowerShell sc
 
 | Situation | Route to |
 |---|---|
-| Update to a newer plugin version | `/update-plugins` |
+| Update to a newer plugin version | `/alex-act-core update-plugins` |
 | Remove just one plugin | Direct `copilot plugin uninstall <name>` — no need for full teardown |
-| Diagnose drift without removing | `/plugin-status` (audit only, no modifications) |
+| Diagnose drift without removing | `/alex-act-core plugin-status` (audit only, no modifications) |
 | Change per-project scope of a plugin | Edit `.github/copilot/settings.json` in the project |
 
 ## The design constraint

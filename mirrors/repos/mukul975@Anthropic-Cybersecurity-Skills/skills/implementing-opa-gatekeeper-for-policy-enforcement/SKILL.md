@@ -1,7 +1,10 @@
 ---
 name: implementing-opa-gatekeeper-for-policy-enforcement
-description: Enforce Kubernetes admission policies using OPA Gatekeeper with ConstraintTemplates,
-  Rego rules, and the Gatekeeper policy library.
+description: Deploys OPA Gatekeeper via Helm as a Kubernetes admission controller and writes
+  ConstraintTemplates with Rego rules plus instantiated Constraints to validate,
+  mutate, or deny resource requests at admission time. Use when enforcing policy-as-code
+  admission control in a Kubernetes cluster (v1.24+), such as blocking non-compliant
+  workloads before they are scheduled.
 domain: cybersecurity
 subdomain: container-security
 tags:

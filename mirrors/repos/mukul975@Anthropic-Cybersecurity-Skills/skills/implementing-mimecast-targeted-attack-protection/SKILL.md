@@ -1,8 +1,12 @@
 ---
 name: implementing-mimecast-targeted-attack-protection
-description: Deploy Mimecast Targeted Threat Protection including URL Protect, Attachment
-  Protect, Impersonation Protect, and Internal Email Protect to defend against advanced
-  phishing and spearphishing attacks.
+description: >-
+  Deploys and configures Mimecast Targeted Threat Protection (TTP) modules --
+  URL Protect (click-time URL rewriting/analysis), Attachment Protect (sandbox
+  detonation), Impersonation Protect (BEC/whaling detection), and Internal Email
+  Protect -- for Microsoft 365 or Google Workspace. Use when defending against
+  phishing, spearphishing, or business email compromise, or configuring TTP
+  policies in the Mimecast Administration Console.
 domain: cybersecurity
 subdomain: phishing-defense
 tags:

@@ -1,8 +1,10 @@
 ---
 name: configuring-ldap-security-hardening
-description: Harden LDAP directory services against common attacks including credential
-  harvesting, LDAP injection, anonymous binding, and channel binding bypass. Covers
-  LDAPS enforcement, channel binding, LDAP si
+description: Hardens LDAP directory services against credential harvesting, LDAP
+  injection, anonymous binding, and channel-binding bypass by enforcing LDAPS, channel
+  binding, and LDAP signing. Use when securing an LDAP or Active Directory environment
+  against these attack classes or auditing directory service configurations for
+  these vulnerabilities.
 domain: cybersecurity
 subdomain: identity-access-management
 tags:

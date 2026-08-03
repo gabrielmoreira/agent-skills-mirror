@@ -3,14 +3,14 @@
   "decision_id": "SUPERSESSION-EXAMPLE",
   "alternate_ref": {
     "owner": "short-drama-video-prompts",
-    "artifact": "episodes/EP001/storyboard/motion-specs.jsonl",
+    "artifact": "剧集/EP001/storyboard/motion-specs.jsonl",
     "hash": "<candidate-sha256>",
     "record_id": "MOTION-ALTERNATE",
     "authority": "candidate"
   },
   "master_ref": {
     "owner": "short-drama-video-prompts",
-    "artifact": "episodes/EP001/storyboard/motion-specs.jsonl",
+    "artifact": "剧集/EP001/storyboard/motion-specs.jsonl",
     "hash": "<accepted-sha256>",
     "record_id": "MOTION-MASTER",
     "authority": "accepted"
@@ -19,7 +19,7 @@
     {
       "source_ref": {
         "owner": "short-drama-storyboard",
-        "artifact": "episodes/EP001/storyboard/shots.jsonl",
+        "artifact": "剧集/EP001/storyboard/shots.jsonl",
         "hash": "<sha256>",
         "record_id": "SHOT-EXAMPLE",
         "field": "/end_boundary",

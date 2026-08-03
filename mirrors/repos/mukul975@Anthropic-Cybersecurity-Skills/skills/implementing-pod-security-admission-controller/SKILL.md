@@ -1,7 +1,10 @@
 ---
 name: implementing-pod-security-admission-controller
-description: Implement Kubernetes Pod Security Admission to enforce baseline and restricted
-  security profiles at namespace level using built-in admission controller.
+description: Implement Kubernetes Pod Security Admission (PSA), the built-in admission
+  controller stable since v1.25, to enforce Privileged, Baseline, and Restricted
+  Pod Security Standards at the namespace level with enforce, audit, and warn modes,
+  replacing the deprecated PodSecurityPolicy. Use when hardening Kubernetes namespaces,
+  migrating off PodSecurityPolicy, or enforcing pod-level security baselines.
 domain: cybersecurity
 subdomain: container-security
 tags:

@@ -297,7 +297,9 @@ public final class DamengAgent extends AbstractJdbcAgent {
                 boolean metadataObject = normalized.contains("all_objects")
                     || normalized.contains("sysobjects")
                     || normalized.contains("all_dependencies")
-                    || normalized.contains("all_tab_comments");
+                    || normalized.contains("all_tab_comments")
+                    || normalized.contains("dbms_metadata")
+                    || normalized.contains("get_ddl");
                 boolean permissionDenied = normalized.contains("权限")
                     || normalized.contains("privilege")
                     || normalized.contains("permission denied")
@@ -795,25 +797,37 @@ public final class DamengAgent extends AbstractJdbcAgent {
 
     @Override
     public String getTableDdl(String schema, String table) {
-        return unchecked(() -> {
-            String sql = "SELECT /*+ PARALLEL(1) */ DBMS_METADATA.GET_DDL(?, ?, ?) FROM DUAL";
-            String ddl = null;
-            try (PreparedStatement stmt = requireConnected().prepareStatement(sql)) {
-                stmt.setString(1, "TABLE");
-                stmt.setString(2, table);
-                stmt.setString(3, schema);
-                try (ResultSet rs = stmt.executeQuery()) {
-                    if (rs.next()) {
-                        ddl = coalesce(readTextColumn(rs, 1));
+        try {
+            return unchecked(() -> {
+                String sql = "SELECT /*+ PARALLEL(1) */ DBMS_METADATA.GET_DDL(?, ?, ?) FROM DUAL";
+                String ddl = null;
+                try (PreparedStatement stmt = requireConnected().prepareStatement(sql)) {
+                    stmt.setString(1, "TABLE");
+                    stmt.setString(2, table);
+                    stmt.setString(3, schema);
+                    try (ResultSet rs = stmt.executeQuery()) {
+                        if (rs.next()) {
+                            ddl = coalesce(readTextColumn(rs, 1));
+                        }
                     }
                 }
+                if (ddl != null) {
+                    ddl = appendTableAndColumnComments(ddl, schema, table);
+                    return appendIndependentIndexDdl(ddl, schema, table);
+                }
+                throw new IllegalArgumentException("Table not found: " + schema + "." + table);
+            });
+        } catch (RuntimeException error) {
+            if (!isDamengMetadataPermissionError(error)) {
+                throw error;
             }
-            if (ddl != null) {
-                ddl = appendTableAndColumnComments(ddl, schema, table);
-                return appendIndependentIndexDdl(ddl, schema, table);
+            try {
+                return super.getTableDdl(schema, table);
+            } catch (RuntimeException fallbackError) {
+                fallbackError.addSuppressed(error);
+                throw fallbackError;
             }
-            throw new IllegalArgumentException("Table not found: " + schema + "." + table);
-        });
+        }
     }
 
     @Override

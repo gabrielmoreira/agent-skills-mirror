@@ -40,7 +40,7 @@
 | 交付容器与分段算术 | `$short-drama-video-prompts` | 项目声明了分段或多镜打包的交付方式 | 打包方式不改写镜头边界与可审查性 |
 | 表演动作与时长 | `$short-drama-video-prompts` | 动作、台词与落点可能超载 | 不用每秒动作数设通用阈值 |
 | 摄影机、声音与相连边界 | `$short-drama-video-prompts` | 写运镜、环境运动、口型或声音方向 | 不添加无来源的音乐/事件 |
-| 跨场与跨镜连续性 | `$short-drama-assets` | 状态变化会传给下一场/镜/集 | 不复制整本 bible 到每镜 |
+| 跨场与跨镜连续性 | `$short-drama-assets` | 状态变化会传给下一场/镜/集 | 不复制整本 设定集 到每镜 |
 | 制作形态翻译 | `$short-drama` | 把实拍、二维、三维、水墨等方向投影到各阶段 | 风格名或模型代码不是生产决策 |
 | 独立证据审查 | `$short-drama-review` | 冻结目标后写 finding 与 verdict | reviewer 不编辑 owner 来源 |
 | 模板感诊断 | `$short-drama-review` | 至少两个位置出现同构机制或表达损失 | 不用禁词或单次类型惯例定罪 |

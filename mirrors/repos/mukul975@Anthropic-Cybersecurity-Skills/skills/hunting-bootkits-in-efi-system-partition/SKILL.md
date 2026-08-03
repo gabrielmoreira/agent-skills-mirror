@@ -1,6 +1,6 @@
 ---
 name: hunting-bootkits-in-efi-system-partition
-description: Baseline the EFI System Partition and hunt malicious EFI binaries (ESPecter, BlackLotus, Bootkitty, Glupteba) by mounting the ESP, hashing and verifying boot loaders, scanning with YARA, and detecting anomalous non-EFI files.
+description: Baseline the EFI System Partition and hunt malicious EFI binaries such as ESPecter, BlackLotus, Bootkitty, and Glupteba by mounting the ESP, hashing and verifying boot loaders, scanning with YARA, and flagging anomalous non-EFI files or out-of-band bootloader changes. Use during proactive threat hunts for firmware/bootkit persistence (MITRE ATT&CK T1542.003) or when investigating suspected UEFI-level compromise that survives OS reinstall.
 domain: cybersecurity
 subdomain: hardware-firmware-security
 tags:

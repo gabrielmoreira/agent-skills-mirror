@@ -252,6 +252,16 @@ function Get-ReverseToolCatalog {
             )
         }
         [pscustomobject]@{
+            Name = 'reqable-mcp'
+            Skill = 'pentest-tools'
+            Purpose = '通过 npx 启动 Reqable 桌面客户端 MCP（仍需先安装并启动 Reqable）'
+            FixedVersion = 'reqable-mcp-server@1.0.1'
+            VersionArgs = @()
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'npx' }
+            )
+        }
+        [pscustomobject]@{
             Name = 'agent-browser'
             Skill = 'browser-automation'
             Purpose = '浏览器自动化（Playwright）：打开页面、点击、填表、爬取、截图'
@@ -270,6 +280,17 @@ function Get-ReverseToolCatalog {
                 [pscustomobject]@{ Type = 'command'; Value = 'analyzeHeadless' },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\ghidra\support\analyzeHeadless.bat') },
                 [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\ghidra\ghidra_11.3_PUBLIC\support\analyzeHeadless.bat') }
+            )
+        }
+        [pscustomobject]@{
+            Name = 'jeb-pro'
+            Skill = 'apk-reverse'
+            Purpose = 'JEB Pro 商业 Android / ARM 反编译器（需用户自备有效许可证）'
+            VersionArgs = @()
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'jeb_wincon' },
+                [pscustomobject]@{ Type = 'command'; Value = 'jeb' },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\JEB\jeb_wincon.exe') }
             )
         }
         [pscustomobject]@{

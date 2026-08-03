@@ -47,8 +47,9 @@ an importable `skillopt_sleep` module. Install with `uv tool install skillopt` o
 
 > **Version note.** This integration reference tracks `main`. PyPI 0.2.0
 > supports the base Sleep CLI, while Cursor source/backend/plugin support,
-> handoff, Sleep support for non-Azure OpenAI-compatible endpoints, and
-> `--preferences` require a source checkout from `main` until the next release.
+> Pi source/backend support, handoff, Sleep support for non-Azure
+> OpenAI-compatible endpoints, and `--preferences` require a source checkout
+> from `main` until the next release.
 
 ## One sleep cycle
 
@@ -64,10 +65,10 @@ optimization.
 
 ## Data boundary
 
-- Harvesting is local and read-only. The `mock` backend has no model-provider
-  data path and no API spend.
-- A real backend sends truncated transcript excerpts and derived task content to
-  the provider selected for mining, replay, judging, and reflection.
+- Harvesting is local and read-only. The `mock` and `handoff` backends make no
+  network calls; handoff writes prompts for separate, user-controlled completion.
+- A real backend sends mining, replay, judging, and reflection prompts derived
+  from truncated transcript excerpts and tasks to the selected provider.
 - The Cursor source reads local user/assistant message text, explicit turn
   errors, and tool names from `~/.cursor/projects/*/agent-transcripts`; it does
   not retain tool arguments, tool outputs, or other record types. Known
@@ -79,6 +80,19 @@ optimization.
   `tool_called` validation fail before Agent mode starts; use another backend for
   those tasks. Cursor and the model provider selected by Cursor can receive the
   resulting prompt content.
+- The Pi backend sends prompts through the installed, authenticated Pi CLI to
+  the provider configured by the user. It disables tools, skills, context files,
+  extensions, prompt templates, themes, and session writes for these calls, but
+  retains the user's Pi authentication and model configuration. Pi's offline
+  startup mode prevents configured npm/git package installation, package
+  updates, and model-catalog refresh; it does not prevent the selected provider
+  call. These controls are not a guarantee of permanent or complete isolation.
+- The Pi source retains user/assistant text, tool names, and lexical feedback
+  found in user text. It excludes thinking, tool arguments, tool outputs, images,
+  and unrelated metadata. The absolute project `cwd` from the session header is
+  retained for scope filtering and may appear in miner prompts sent to a real
+  backend and its provider. Known secret-shaped strings in retained message text
+  are redacted only as defense in depth.
 - Outbound prompts are not currently guaranteed to be free of secrets. Do not
   use a third-party provider on sensitive transcripts without reviewing the data
   source and the provider's retention policy.
@@ -114,11 +128,13 @@ Common implemented flags include:
 
 | Flag | Default | Purpose |
 |---|---|---|
-| `--backend mock\|claude\|codex\|cursor\|copilot\|handoff\|azure_openai` | `mock` | select who performs model calls |
+| `--backend mock\|claude\|codex\|cursor\|copilot\|pi\|handoff\|azure_openai` | `mock` | select who performs model calls |
 | `--model NAME` | backend default | select a backend-specific model |
-| `--source claude\|codex\|cursor\|auto` | `claude` | select the transcript source; `auto` retains Codex-then-Claude precedence and does not select Cursor |
+| `--source claude\|codex\|copilot\|cursor\|pi\|auto` | `claude` | select the transcript source; `auto` retains Codex-then-Claude precedence and does not select Copilot, Cursor, or Pi |
 | `--cursor-home PATH` | `~/.cursor` | override the Cursor transcript home |
 | `--cursor-path PATH` | auto-detect `cursor-agent` | select the Cursor Agent CLI executable |
+| `--pi-home PATH` | `~/.pi` | select the parent directory containing `agent/sessions` |
+| `--pi-path PATH` | auto-detect `pi` | select the Pi coding-agent CLI executable |
 | `--project PATH` | current directory | select the project and invoked harvest scope |
 | `--scope invoked\|all` | `invoked` | limit transcript harvesting |
 | `--target-skill-path PATH` | managed skill | select a specific `SKILL.md` to stage/adopt |
@@ -152,6 +168,45 @@ python -m skillopt_sleep run --backend codex --project "$(pwd)" \
 ```
 
 Preferences guide reflection but remain subject to the validation gate.
+
+### Pi source and backend
+
+Pi transcript harvesting is explicit: `--source pi` reads session JSONL files
+below `~/.pi/agent/sessions`; use `--pi-home` to select the parent directory
+that contains `agent/sessions`. This source does not require the Pi CLI or
+provider authentication. It retains user/assistant text, tool names, and lexical
+feedback found in user text, while excluding thinking, tool arguments, tool
+outputs, images, and unrelated metadata. The absolute project `cwd` from the
+session header is retained for scope filtering and may appear in miner prompts
+sent to a real backend and its provider. Known secret-shaped strings in retained
+message text are redacted as defense in depth, not as a guarantee. `--source auto` keeps Codex-then-Claude
+precedence and does not select Pi.
+
+The source and backend are independent. `--backend pi` uses a locally installed,
+authenticated Pi CLI to make real model-provider calls for mining, replay,
+judging, and reflection. Select another executable with `--pi-path` and a model
+with `--model`:
+
+```bash
+python -m skillopt_sleep run --project "$(pwd)" \
+  --source pi --backend pi --pi-path /absolute/path/to/pi \
+  --model provider/model --max-sessions 5 --max-tasks 3 --progress
+```
+
+Pi calls disable tools, skills, context files, extensions, prompt templates,
+themes, and session writes. They still use the user's Pi authentication and
+model configuration. Pi's offline startup mode also prevents configured npm/git
+package installation, package updates, and model-catalog refresh; it does not
+prevent the selected provider call. This is bounded invocation setup rather
+than permanent or complete isolation. Transcript-derived prompts reach the
+provider configured in Pi; review that provider's data-retention and privacy
+policy before using sensitive sessions.
+
+The managed scheduler stores the selected backend but does not persist
+`--source`, `--pi-home`, `--pi-path`, or `--model`. Before scheduling Pi, set
+`transcript_source`, `pi_home`, `pi_path`, and `model` in
+`~/.skillopt-sleep/config.json`; prefer an absolute `pi_path` and verify that the
+scheduled account is authenticated.
 
 ### Cursor source and backend
 
@@ -221,7 +276,7 @@ the shipping CLI defaults.
 ## Safety summary
 
 - Session harvesting is read-only.
-- `mock` replay makes no provider calls.
+- `mock` and `handoff` make no network calls.
 - `run` stages proposals; `adopt` is the normal live-change boundary.
 - Adoption backs up existing target files.
 - `--max-sessions` and `--max-tasks` bound work, but the main CLI does not yet

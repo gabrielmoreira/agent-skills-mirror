@@ -1,7 +1,11 @@
 ---
 name: securing-helm-chart-deployments
-description: Secure Helm chart deployments by validating chart integrity, scanning
-  templates for misconfigurations, and enforcing security contexts in Kubernetes releases.
+description: Secures Helm chart deployments by verifying chart signatures and provenance,
+  rendering and scanning templates for misconfigurations with helm lint, enforcing
+  pod security contexts in values.yaml, managing secrets via external stores instead
+  of Helm values, and scoping RBAC for Helm operations in a CI/CD pipeline. Use when
+  deploying Helm charts to Kubernetes or when a security review of chart provenance,
+  templates, or release RBAC is needed.
 domain: cybersecurity
 subdomain: container-security
 tags:

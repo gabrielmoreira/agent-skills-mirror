@@ -1,6 +1,6 @@
 ---
 name: hunting-saas-sso-token-abuse
-description: Detect SSO and OAuth token replay and SaaS lateral movement.
+description: Hunts for stolen-session and OAuth/PRT token replay (T1550.001) by correlating Microsoft Entra ID SigninLogs SessionId/UniqueTokenIdentifier fields and Okta System Log sso/session events to spot impossible travel, refresh-token reuse, and token use from anomalous ASNs. Use when hunting MFA-bypass via stolen cookies/tokens, investigating impossible-travel alerts, or scoping SaaS lateral movement after phishing.
 domain: cybersecurity
 subdomain: soc-operations
 tags:

@@ -66,7 +66,7 @@ Agent-specific configuration lookup:
 MCP permission resolution:
 1. Check agent override: config.agents[agentName]?.mcps
 2. Fall back to DEFAULT_AGENT_MCPS[agentName]
-3. Parse wildcard/exclusion syntax: ["*", "!context7"] → ["websearch", "gh_grep"]
+3. Parse wildcard/exclusion syntax: ["*", "!context7"] → ["context7", "gh_grep"]
 ```
 
 ### Preset Resolution
@@ -155,7 +155,6 @@ This allows consumers to import directly from `src/config` rather than individua
 - `disabled_skills`: List of skills to disable
 - `multiplexer`: Unified pane management config (type, layout, sizes)
 - `tmux`: Legacy tmux configuration (migrated to multiplexer)
-- `websearch`: Websearch provider configuration
 - `interview`: Interview feature configuration
 - `backgroundJobs`: Background job configuration
 - `fallback`: Failover/retry configuration

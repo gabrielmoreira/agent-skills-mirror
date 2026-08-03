@@ -88,7 +88,7 @@ license: MIT
 
 这些是所有者自检，不是终审。展示创作者可读的新增/修改摘要，请创作者接受后再作为下游来源；需要质量结论时交给独立的 `$short-drama-review`。本技能不得批准自己的产物。
 
-若项目需要导演阐述，本技能只产出 `development/director-brief.md` 候选，并标明它准备
+若项目需要导演阐述，本技能只产出 `项目开发/director-brief.md` 候选，并标明它准备
 写入的 `visual_direction` / `production_profile` 语义差异。创作者接受后，由
 `$short-drama` 路由把选择提升到 creator authority；开发技能不直接改写该权威配置。
 
@@ -105,14 +105,14 @@ license: MIT
 
 本技能只拥有：
 
-- `development/creative-brief.md`
-- `development/story-engine.md`
-- `development/director-brief.md`（项目需要时；仅为 creator authority 候选）
-- `development/adaptation-map.jsonl`（长材料改编时；只保留输入 locator/span/hash、
+- `项目开发/creative-brief.md`
+- `项目开发/story-engine.md`
+- `项目开发/director-brief.md`（项目需要时；仅为 creator authority 候选）
+- `项目开发/adaptation-map.jsonl`（长材料改编时；只保留输入 locator/span/hash、
   去引用的功能摘要、候选去向与未决项，不复制原文；例见
   [adaptation-map.example.jsonl](assets/adaptation-map.example.jsonl)）
-- `development/series-arc.json`（项目需要时）
-- `development/episode-map.jsonl`
+- `项目开发/series-arc.json`（项目需要时）
+- `项目开发/episode-map.jsonl`
 
 它不写场景动作与台词，不拆资产，不写图片/视频提示词，不生成媒体，也不签发终审结论。剧本语义由 `$short-drama-write` 接管。
 

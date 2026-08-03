@@ -1,8 +1,6 @@
 ---
 name: detecting-container-escape-attempts
-description: Container escape is a critical attack technique where an adversary breaks
-  out of container isolation to access the host system or other containers. Detection
-  involves monitoring for escape indicators
+description: Detect container escape attempts where an adversary breaks out of container isolation to reach the host or other containers, by monitoring namespace manipulation, capability abuse, kernel exploits, sensitive mounted paths, and anomalous syscalls with tools like Falco, Sysdig, and seccomp/audit rules. Use when hunting for privilege escalation from containerized workloads or investigating suspected breakout from a Docker/Kubernetes environment.
 domain: cybersecurity
 subdomain: container-security
 tags:

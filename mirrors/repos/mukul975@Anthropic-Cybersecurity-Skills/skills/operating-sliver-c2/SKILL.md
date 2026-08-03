@@ -1,6 +1,6 @@
 ---
 name: operating-sliver-c2
-description: Stand up a Sliver C2 server and listeners, generate cross-platform implants and beacons, and run post-exploitation, pivoting, and BOF/.NET tooling via the armory for adversary emulation.
+description: Stand up a Sliver C2 server and mTLS listeners, generate cross-platform implants and beacons, and run post-exploitation, pivoting, and BOF/.NET tooling via the Armory for adversary emulation. Use during authorized, rules-of-engagement-bound red-team engagements that need a full open-source C2 lifecycle spanning server setup, implant generation, and post-exploitation tradecraft.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

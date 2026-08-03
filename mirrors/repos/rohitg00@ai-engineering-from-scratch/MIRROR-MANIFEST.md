@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
+Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 4 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,9 +60,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/check-understanding/SKILL.md`](.claude/skills/check-understanding/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/find-your-level/SKILL.md`](.claude/skills/find-your-level/SKILL.md) |
-| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 4 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
+| 2 | ✓ | [`.claude/skills/course-guide/SKILL.md`](.claude/skills/course-guide/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/find-your-level/SKILL.md`](.claude/skills/find-your-level/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/learn/SKILL.md`](.claude/skills/learn/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/start-learning/SKILL.md`](.claude/skills/start-learning/SKILL.md) |
+| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 7 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
+| 8 | ✓ | [`skills/check-understanding/SKILL.md`](skills/check-understanding/SKILL.md) |
+| 9 | ✓ | [`skills/course-guide/SKILL.md`](skills/course-guide/SKILL.md) |
+| 10 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
+| 11 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
+| 12 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
 
 ---
 

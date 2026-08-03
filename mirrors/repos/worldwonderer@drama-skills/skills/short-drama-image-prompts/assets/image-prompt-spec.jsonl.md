@@ -12,20 +12,20 @@
   "asset_binding": {
     "identity_ref": {
       "owner": "short-drama-assets",
-      "artifact": "bible/<identity-owner-file>.jsonl",
+      "artifact": "设定集/<identity-owner-file>.jsonl",
       "hash": "<sha256>",
       "record_id": "CHAR/LOC/PROP-<id>"
     },
     "variant_ref": {
       "owner": "short-drama-assets",
-      "artifact": "bible/<variant-owner-file>.jsonl",
+      "artifact": "设定集/<variant-owner-file>.jsonl",
       "hash": "<sha256>",
       "record_id": "LOOK/VIEW/PSTATE-<id>"
     }
   },
   "source_refs": [
     {
-      "artifact": "bible/<owner-file>.jsonl",
+      "artifact": "设定集/<owner-file>.jsonl",
       "hash": "<sha256>",
       "field": "/<field>",
       "role": "identity_anchor | variant_delta | geography | scale | text_policy",
@@ -37,7 +37,7 @@
     {
       "artifact_ref": {
         "owner": "short-drama-assets",
-        "artifact": "bible/<owner-file>.jsonl",
+        "artifact": "设定集/<owner-file>.jsonl",
         "hash": "<sha256>",
         "record_id": "<accepted-reference-record>"
       },
@@ -97,7 +97,7 @@
   },
   "text_handling": {
     "source_policy_ref": {
-      "artifact": "bible/props.jsonl",
+      "artifact": "设定集/props.jsonl",
       "hash": "<sha256>",
       "field": "/text_policy",
       "owner": "short-drama-assets",

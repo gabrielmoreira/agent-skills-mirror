@@ -1,7 +1,7 @@
 ---
 name: trail
-version: 2.4.1
-description: 'Evidence trail management. Append a structured entry to .acm/audit-trail.md IN THE TARGET REPO ROOT at the end of every substantive session — recording the interpretation of the ask, examination, decisions, actions, and reflection. The implementation of Observable Autonomy — autonomy without evidence is not delegation, it is abdication. USE WHEN: any session that produces a decision, realization, or finding — including conversations. There is no such thing as "just conversation" if a decision was made in it.'
+version: 2.5.1
+description: 'Automatic egress service for substantive work. Append a structured entry to .acm/audit-trail.md IN THE TARGET REPO ROOT — recording the interpretation, examination, decisions, actions, and reflection. Destination, Improve, Orient, and Probe apply Trail automatically; the operator should never need to invoke it separately. Direct use remains available for consequential work outside those workflows and independent-writer mode.'
 argument-hint: 'The target being worked on (repo, file, system) — used to populate the log entry header'
 ---
 
@@ -9,13 +9,15 @@ argument-hint: 'The target being worked on (repo, file, system) — used to popu
 
 *The record of what actually happened.*
 
-*Memory Model role: Writes the core of the memory layer — `.acm/audit-trail.md`, the append-only record every other skill reads.*
+*ACM role: Writes the core of the memory layer — `.acm/audit-trail.md`, the append-only record every other skill reads.*
 
 > **Governing principle:** [Observable Autonomy](../PRINCIPLES.md#principle-2-observable-autonomy) — *The degree of autonomy a system deserves is bounded by the degree of transparency it provides.* This skill is how that transparency is produced.
 
 Autonomy without evidence is abdication. When an agent does work autonomously, the question is never "did it do something?" but "can someone who wasn't there reconstruct what happened, why, and whether to trust it?"
 
 A trail that answers this earns the right to more autonomy. A trail that doesn't — or doesn't exist — means autonomy must be constrained regardless of how competent the work was.
+
+**Automatic composition contract:** In the full suite, Destination, Improve, Orient, and Probe apply Trail automatically whenever they produce a substantive result. The operator should never have to remember or be told to invoke `/trail`. Direct invocation remains available for consequential conversations or manual work outside those workflows, repairing a missing record, and High-Fidelity Mode where the recorder must be independent from the agent that acted.
 
 ```
 Evidence → Trust → Autonomy
@@ -48,13 +50,13 @@ Append-only ledger of autonomous operations on this repo. Newest entries at the 
 ---
 ```
 
-That's it. Nothing else gets installed into the target repo. `record.py` lives in the skills install (`tools/record.py` next to this SKILL.md) and is invoked from there — it writes into the current working directory by default, or whatever `$TRAIL_ROOT` points to.
+That's it. Nothing else gets installed into the target repo. The skills repository includes an optional helper at `harness/tools/record.py`; the one-line skill installer does not copy it. Invoke it from the clone as `<skills-repo>/harness/tools/record.py` — it writes into the current working directory by default, or whatever `$TRAIL_ROOT` points to.
 
 After appending to `audit-trail.md`, regenerate the derived artifacts and commit them together:
 
 ```
-python <skills>/tools/record.py history --write
-python <skills>/tools/record.py learning --write
+python <skills-repo>/harness/tools/record.py history --write
+python <skills-repo>/harness/tools/record.py learning --write
 git add .acm/audit-trail.md .acm/history.md .acm/learning.md
 git commit -m "trail: <slug>"
 ```
@@ -66,9 +68,9 @@ If Orient ran this session and updated `.acm/orientation.md`, include it in the 
 `history.md` and `learning.md` are derived from `audit-trail.md` and are **regenerated as part of every Trail commit** — they must not lag behind the source. `record.py` exposes both as standalone subcommands too:
 
 ```
-python <skills>/tools/record.py history           # timeline to stdout (no write)
-python <skills>/tools/record.py learning          # markers to stdout (no write)
-python <skills>/tools/record.py summary           # digest of the most recent run
+python <skills-repo>/harness/tools/record.py history           # timeline to stdout (no write)
+python <skills-repo>/harness/tools/record.py learning          # markers to stdout (no write)
+python <skills-repo>/harness/tools/record.py summary           # digest of the most recent run
 ```
 
 ```
@@ -281,7 +283,7 @@ A transcript written by the audited party is evidence, but it is not independent
 
 Every session that produces a decision, realization, or finding. This includes conversations. **There is no such thing as "just conversation" if a decision was made in it.**
 
-The distinction between "doing work" and "having a conversation" is false. A conversation that names a threat, approves a design direction, or rejects an approach is work. If it isn't logged, the next session cannot inherit it. The Memory Model breaks at exactly that boundary.
+The distinction between "doing work" and "having a conversation" is false. A conversation that names a threat, approves a design direction, or rejects an approach is work. If it isn't logged, the next session cannot inherit it. ACM breaks at exactly that boundary.
 
 Write during the session, not after. A trail written from memory compresses and rationalises. The markers belong in context, at the moment the decision or reversal occurs.
 
@@ -298,15 +300,15 @@ The mandatory sequence per iteration:
 ```
 iteration 1:
   1. append entry to .acm/audit-trail.md
-  2. python <skills>/tools/record.py history --write    ← updates .acm/history.md
-  3. python <skills>/tools/record.py learning --write   ← updates .acm/learning.md
+  2. python <skills-repo>/harness/tools/record.py history --write    ← updates .acm/history.md
+  3. python <skills-repo>/harness/tools/record.py learning --write   ← updates .acm/learning.md
   4. git add .acm/audit-trail.md .acm/history.md .acm/learning.md && git commit -m "trail: <slug>-1"
   ↓ only now begin iteration 2
 
 iteration 2:
   1. append entry to .acm/audit-trail.md
-  2. python <skills>/tools/record.py history --write
-  3. python <skills>/tools/record.py learning --write
+  2. python <skills-repo>/harness/tools/record.py history --write
+  3. python <skills-repo>/harness/tools/record.py learning --write
   4. git add .acm/audit-trail.md .acm/history.md .acm/learning.md && git commit -m "trail: <slug>-2"
   ↓ only now begin iteration 3
 ...
@@ -336,10 +338,12 @@ If yes, the trail is sufficient. If no, something is missing.
 
 ## Composing with other skills
 
-Trail works standalone. When Intent is also active, paste its narration verbatim into the "Interpretation of the ask" section of the log entry — this is how context carries across sessions. When Improve or Probe is also active, the log entry records what that skill examined and decided.
+Trail is the automatic egress service for the full suite. Destination, Improve, Orient, and Probe invoke it without operator orchestration. When Intent is active, paste its narration verbatim into the "Interpretation of the ask" section of the same entry — Intent and Trail form the ingress/egress envelope around one substantive operation, not two separate records.
 
-The `<skills>/tools/record.py` script can stub a new entry for you:
+Trail also works standalone for consequential conversations, manual operations, or decisions outside another skill's workflow, and as the independent writer in Improve's High-Fidelity Mode.
+
+The optional `<skills-repo>/harness/tools/record.py` helper can stub a new entry for you:
 
 ```sh
-python <skills>/tools/record.py new --slug=<slug> --target=<target> --skill=trail
+python <skills-repo>/harness/tools/record.py new --slug=<slug> --target=<target> --skill=trail
 ```

@@ -24,7 +24,7 @@ The frame audit runs **before** the materiality gate. Materiality asks "if I get
 | Task spans 3+ files, requires architectural choice, or estimates > 15 minutes | **Always audit** |
 | User restates the same request after a failed attempt | **Always audit** — repeated failure is a signal the frame is wrong |
 | User says "just" do X, or "simply" Y, or "all you have to do is" | **Always audit** — these phrases mark unexamined frames |
-| User explicitly invokes `/problem-framing-audit` or asks "what am I missing?" | **Always audit** |
+| User explicitly invokes `/alex-act-core problem-framing-audit` or asks "what am I missing?" | **Always audit** |
 
 The rule is asymmetric on purpose: trivial tasks pass through; non-trivial tasks audit first.
 

@@ -17,7 +17,7 @@ normal agent requests.
 One "night":
 
 ```
-harvest Claude Code / Codex / VS Code Copilot / Cursor transcripts → mine recurring tasks → replay via the configured backend (isolation varies by backend; mock/handoff make no network calls)
+harvest Claude Code / Codex / VS Code Copilot / Cursor / Pi transcripts → mine recurring tasks → replay via the configured backend (isolation varies by backend; mock/handoff make no network calls)
    → consolidate (reflect → bounded edit → GATE on real held-out tasks)
    → stage proposal → (you) adopt
 ```
@@ -49,6 +49,22 @@ experience → long-term competence).
 > context, and account/model metadata. Known secret-shaped strings are
 > redacted, but this remains defense in depth rather than a guarantee.
 >
+> The Pi source reads local sessions below `~/.pi/agent/sessions`, retaining
+> user/assistant text, tool names, and lexical feedback found in user text. It
+> excludes thinking, tool arguments, tool outputs, images, and unrelated
+> metadata. The absolute project `cwd` from the session header is retained for
+> scope filtering and may appear in miner prompts sent to a real backend and its
+> provider. Known secret-shaped strings in retained message text are redacted
+> only as defense in depth.
+> The Pi backend uses the installed, authenticated Pi CLI to contact the user's
+> selected model provider. Calls disable tools, skills, context files, extensions, prompt
+> templates, themes, and session writes, while retaining Pi authentication and
+> model configuration. Pi's offline startup mode also prevents configured
+> npm/git package installation, package updates, and model-catalog refresh; it
+> does not prevent the selected provider call. This is not a guarantee of
+> permanent or complete isolation. Review the provider's retention and privacy
+> policy before sending transcript-derived prompts from sensitive sessions.
+>
 > By default, each stateful night also writes a local `evidence.jsonl` under
 > the project staging tree (beside the report when one is staged); dry-runs
 > write evidence under the configured Sleep state directory. The log contains
@@ -73,9 +89,9 @@ skillopt-sleep schedule     # install a nightly cron entry for this project
 
 > **Version note.** This page tracks `main`. PyPI 0.2.0 provides the base
 > commands above. Cursor source/backend/plugin support, VS Code Copilot
-> transcript harvesting, Sleep handoff, non-Azure OpenAI-compatible endpoints,
-> and `--preferences` landed later and require a source install from `main`
-> until the next release.
+> transcript harvesting, Pi source/backend support, Sleep handoff, non-Azure
+> OpenAI-compatible endpoints, and `--preferences` landed later and require a
+> source install from `main` until the next release.
 
 The per-agent integrations below still come from the repo; the CLI above is the
 standalone, pip-only way to run a cycle. Claude Code, Codex, Cursor, Copilot, and
@@ -118,6 +134,41 @@ The managed scheduler does not preserve `--source` or
 `"transcript_source": "copilot"` and, for a nonstandard root,
 `"vscode_workspace_storage": "/absolute/path/to/workspaceStorage"` in
 `~/.skillopt-sleep/config.json`.
+
+### Pi
+
+Pi transcript harvesting and model execution are independent. Use `--source pi`
+to read local session JSONL files below `~/.pi/agent/sessions`, or set
+`--pi-home` to the parent directory that contains `agent/sessions` (the default
+is `~/.pi`). The source alone does not require Pi CLI installation or provider
+authentication. Pi is never selected implicitly:
+`--source auto` retains Codex-then-Claude precedence.
+
+`--backend pi` uses a locally installed and authenticated Pi CLI for real
+model-provider calls during mining, replay, judging, and reflection. Select its
+executable with `--pi-path` and override its configured model with `--model`:
+
+```bash
+skillopt-sleep run --project "$(pwd)" \
+  --source pi --backend pi --pi-path /absolute/path/to/pi \
+  --model provider/model --max-sessions 5 --max-tasks 3 --progress
+```
+
+These calls disable tools, skills, context files, extensions, prompt templates,
+themes, and session writes, but still use the user's Pi authentication and model
+configuration. They also enable Pi's offline startup mode to prevent configured
+npm/git package installation, package updates, and model-catalog refresh; the
+selected model provider is still contacted. Treat those controls as bounded
+invocation setup, not permanent or complete isolation. A real Pi backend sends
+transcript-derived prompts to the provider configured in Pi; inspect that
+provider's retention and privacy policy first. The `mock` and `handoff` backends
+make no network calls.
+
+The managed scheduler records the backend but does not preserve `--source`,
+`--pi-home`, `--pi-path`, or `--model`. Before scheduling Pi, set
+`transcript_source`, `pi_home`, `pi_path`, and `model` in
+`~/.skillopt-sleep/config.json`. Use an absolute `pi_path` and verify the
+scheduled account's Pi authentication.
 
 ### Cursor
 

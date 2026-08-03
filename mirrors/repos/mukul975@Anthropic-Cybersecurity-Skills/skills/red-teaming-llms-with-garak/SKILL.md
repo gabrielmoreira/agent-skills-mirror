@@ -1,6 +1,11 @@
 ---
 name: red-teaming-llms-with-garak
-description: Run NVIDIA garak probe suites against an LLM endpoint to test for jailbreaks, prompt injection, data leakage, and toxic generation, then interpret the hit-rate report for triage and reporting.
+description: Runs NVIDIA garak probe suites (jailbreak, prompt injection, data
+  leakage, toxicity, and more) against an LLM endpoint - Hugging Face models, OpenAI-compatible
+  APIs, or Bedrock - then interprets the resulting hit-rate report for triage. Use
+  when baselining LLM security before/after deployment, validating that a guardrail
+  or fine-tune reduces jailbreak/injection success rates, or producing evidence
+  for an AI risk assessment.
 domain: cybersecurity
 subdomain: ai-security
 tags:
@@ -15,9 +20,9 @@ tags:
 version: '1.0'
 author: mahipal
 license: Apache-2.0
-nist_csf:
+nist_ai_rmf:
 - MEASURE-2.7
-mitre_attack:
+atlas_techniques:
 - AML.T0051
 - AML.T0054
 ---

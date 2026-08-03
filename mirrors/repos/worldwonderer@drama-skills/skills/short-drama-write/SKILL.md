@@ -30,7 +30,7 @@ license: MIT
 
 ### 2. 确定单集契约的唯一 owner
 
-- **有 accepted `development/episode-map.jsonl` 记录**：复制
+- **有 accepted `项目开发/episode-map.jsonl` 记录**：复制
   [episode-card.json](assets/episode-card.json)。它只保存上游 artifact/hash/record
   pointer 和写作执行选择；不复制、不改写 incoming/objective/turn/payoff/handoff。
 - **没有 development map 的 script-first 项目**：复制
@@ -98,9 +98,9 @@ diff，让创作者明确选择 authority 迁移，将 standalone 契约标记 s
 正文发布后，用 [screenplay_index.py](scripts/screenplay_index.py) 生成只读派生索引；工具只识别格式契约中的场景标题、动作、对白、六种生产标签和注释，并保留 UTF-8 byte offsets、行范围与 source/content hash：
 
 ```bash
-python3 <skill-dir>/scripts/screenplay_index.py episodes/EP001/screenplay.md \
-  --output episodes/EP001/screenplay-index.jsonl \
-  --source-ref episodes/EP001/screenplay.md \
+python3 <skill-dir>/scripts/screenplay_index.py 剧集/EP001/screenplay.md \
+  --output 剧集/EP001/screenplay-index.jsonl \
+  --source-ref 剧集/EP001/screenplay.md \
   --speaker 葛晴 --speaker 游森
 ```
 
@@ -129,9 +129,9 @@ source issue 的 refs 都保持 candidate；accepted 剧本发布后再以默认
 写完后用 [voice_sheet_check.py](scripts/voice_sheet_check.py) 核对它仍然是投影：
 
 ```bash
-python3 <skill-dir>/scripts/voice_sheet_check.py episodes/EP001/voice-record-sheet.jsonl \
-  --index episodes/EP001/screenplay-index.jsonl \
-  --screenplay episodes/EP001/screenplay.md
+python3 <skill-dir>/scripts/voice_sheet_check.py 剧集/EP001/voice-record-sheet.jsonl \
+  --index 剧集/EP001/screenplay-index.jsonl \
+  --screenplay 剧集/EP001/screenplay.md
 ```
 
 脚本按块 ID 定位、切出剧本原字节、核对内容 hash，再逐字比对台词与说话人。剧本改过而
@@ -172,10 +172,10 @@ python3 <skill-dir>/scripts/voice_sheet_check.py episodes/EP001/voice-record-she
 
 本技能只拥有：
 
-- `episodes/<EP>/episode-card.json`（上游 pointer + write execution，或显式
+- `剧集/<EP>/episode-card.json`（上游 pointer + write execution，或显式
   `write_standalone` 契约；二者不并存）
-- `episodes/<EP>/beats.jsonl`
-- `episodes/<EP>/screenplay.md`
+- `剧集/<EP>/beats.jsonl`
+- `剧集/<EP>/screenplay.md`
 - 由剧本生成的 `screenplay-index.jsonl`
 - 规范化预览与语义修订差异
 

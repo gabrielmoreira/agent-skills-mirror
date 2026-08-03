@@ -50,7 +50,7 @@
 - Does the end report match storyboard `end_boundary` and feed no unauthorized
   write into the next shot?
 - When a reference frame carries appearance/composition, does motion prose avoid
-  dumping the full visual bible?
+  dumping the full visual 设定集?
 - Does every claim about text-bearing reference pixels cite a creator/reference-owner
   description or an authorized input-reference observation? Without that evidence,
   is admission still `unverified` instead of pretending a negative prompt solved it?

@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Defines Model Context Protocol (MCP) server configurations and integrations for the OpenCode plugin. This module provides built-in MCP servers for web search, code search, and documentation lookup, enabling agents to access external tools and resources via the MCP standard.
+Defines Model Context Protocol (MCP) server configurations and integrations for the OpenCode plugin. This module provides built-in MCP servers for documentation lookup and code search, enabling agents to access external tools and resources via the MCP standard.
 
 ## Design
 
@@ -16,23 +16,17 @@ The `src/mcp/` directory implements a modular MCP configuration system with the 
 
 | Type | Purpose | Example Use Case |
 |------|---------|----------------|
-| RemoteMcpConfig | Connects to hosted MCP servers via URL | Web search, documentation lookup |
+| RemoteMcpConfig | Connects to hosted MCP servers via URL | Documentation lookup, code search |
 | LocalMcpConfig | Spawns local processes as MCP servers | Custom tool integrations |
 
 ### Built-in MCP Servers
 
-1. **websearch** (`websearch.ts`)
-   - Provider: Exa (default) or Tavily
-   - Purpose: Web search and information retrieval
-   - Configuration: Supports API key overrides via environment variables
-   - Flow: Accepts WebsearchConfig → creates RemoteMcpConfig with provider-specific endpoints
-
-2. **context7** (`context7.ts`)
+1. **context7** (`context7.ts`)
    - Purpose: Official documentation lookup for libraries
    - Endpoint: https://mcp.context7.com/mcp
    - Authentication: CONTEXT7_API_KEY environment variable
 
-3. **gh_grep** (`grep-app.ts`)
+2. **gh_grep** (`grep-app.ts`)
    - Purpose: Ultra-fast code search across GitHub repositories
    - Endpoint: https://mcp.grep.app
    - Use case: Finding code examples and patterns in public repositories
@@ -42,13 +36,11 @@ The `src/mcp/` directory implements a modular MCP configuration system with the 
 ### Initialization Flow
 
 ```
-Plugin loads → createBuiltinMcps() called with disabledMcps list and optional websearchConfig
+Plugin loads → createBuiltinMcps() called with disabledMcps list
   ↓
 Filters built-in MCP list to exclude disabled servers
   ↓
 Creates RemoteMcpConfig instances for each enabled server
-  ↓
-Overrides websearch config if custom websearchConfig provided
   ↓
 Returns record of McpConfig objects to main plugin
 ```
@@ -59,7 +51,6 @@ Returns record of McpConfig objects to main plugin
    - `createBuiltinMcps()` is called from `src/index.ts`
    - User configuration is merged with defaults
    - Disabled MCPs are filtered out
-   - Custom websearch provider is applied if specified
 
 2. **Integration phase** (during agent execution):
    - MCP servers are registered with the MCP runtime
@@ -75,7 +66,7 @@ Returns record of McpConfig objects to main plugin
   - Calls `createBuiltinMcps()` during plugin initialization
   - Receives McpConfig record and registers MCPs with OpenCode
 
-- **Configuration layer**: `src/config/` - Provides McpName type and WebsearchConfig schema
+- **Configuration layer**: `src/config/` - Provides McpName type and MCP configuration schemas
   - Defines MCP names and configuration schemas
   - Validates user-provided MCP configurations
 
@@ -83,8 +74,6 @@ Returns record of McpConfig objects to main plugin
 ### Dependencies
 
 - **Environment variables**:
-  - `EXA_API_KEY` - API key for Exa web search provider
-  - `TAVILY_API_KEY` - API key for Tavily web search provider
   - `CONTEXT7_API_KEY` - API key for Context7 documentation lookup
 
 
@@ -95,7 +84,7 @@ Returns record of McpConfig objects to main plugin
 
 - **Exported types**: `RemoteMcpConfig`, `LocalMcpConfig`, `McpConfig` from `types.ts`
 - **Exported functions**: `createBuiltinMcps()` from `index.ts`
-- **Pre-configured servers**: `websearch`, `context7`, `gh_grep` constants
+- **Pre-configured servers**: `context7`, `gh_grep` constants
 
 ### Configuration Overrides
 
@@ -107,10 +96,7 @@ The system supports runtime configuration overrides:
 // In user configuration (e.g., ~/.config/opencode/oh-my-opencode-slim.json)
 {
   "mcp": {
-    "disabled": ["websearch"],
-    "websearch": {
-      "provider": "tavily"
-    }
+    "disabled": ["gh_grep"]
   }
 }
 ```
@@ -118,14 +104,13 @@ The system supports runtime configuration overrides:
 
 This allows users to:
 - Disable specific MCP servers
-- Switch web search providers (Exa ↔ Tavily)
 - Customize API keys and endpoints
 
 
 ## Error Handling
 
 
-- **Missing API keys**: Throws descriptive errors for required keys (e.g., TAVILY_API_KEY)
+- **Missing API keys**: Throws descriptive errors for required keys (e.g., CONTEXT7_API_KEY)
 - **Invalid configurations**: TypeScript type system prevents invalid configurations at compile time
 - **Disabled servers**: Gracefully filtered from output without errors
 

@@ -8,7 +8,7 @@ Provides automatic JSON error detection and recovery for OpenCode plugin tool ex
 
 ### Core Components
 
-- **JSON_ERROR_TOOL_EXCLUDE_LIST**: Set of tools excluded from JSON error checking (bash, read, glob, webfetch, gh_grep_searchgithub, websearch_web_search_exa)
+- **JSON_ERROR_TOOL_EXCLUDE_LIST**: Set of tools excluded from JSON error checking (bash, read, glob, webfetch, gh_grep_searchgithub)
 - **JSON_ERROR_PATTERNS**: Array of regex patterns for detecting various JSON error messages
 - **JSON_ERROR_REMINDER**: Standardized error message template instructing users on JSON correction
 - **createJsonErrorRecoveryHook()**: Factory function that returns the OpenCode plugin hook

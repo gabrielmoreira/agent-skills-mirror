@@ -1,8 +1,8 @@
 # Skill Catalog
 
-Generated at: 2026-07-31T17:37:00.000Z
+Generated at: 2026-08-02T16:27:13.000Z
 
-Total skills: 1998
+Total skills: 2001
 
 ## agent-behavior (5)
 
@@ -76,7 +76,7 @@ Total skills: 1998
 | `pilot-protocol` | Give an AI agent a permanent network address, encrypted P2P messaging, and an installable app store via Pilot Protocol | critical | pilot-protocol/pilotprotocol | agent-networking, p2p, nat-traversal, overlay-network, agent-apps | agent-networking, p2p, nat-traversal, overlay-network, agent-apps, pilot, protocol, give, ai, agent, permanent, network |
 | `pydantic-ai` | Build production-ready AI agents with PydanticAI — type-safe tool use, structured outputs, dependency injection, and multi-model support. | safe | community | pydantic-ai, ai-agents, llm, openai, anthropic, gemini, tool-use, structured-output, python | pydantic-ai, ai-agents, llm, openai, anthropic, gemini, tool-use, structured-output, python, pydantic, ai, agents |
 
-## ai-ml (129)
+## ai-ml (130)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -201,6 +201,7 @@ Total skills: 1998
 | `train-sentence-transformers` | Train or fine-tune sentence-transformers models across `SentenceTransformer` (bi-encoder; dense or static embedding model; for retrieval, similarity, cluster... | critical | huggingface/skills | train, sentence, transformers | train, sentence, transformers, fine, tune, models, sentencetransformer, bi, encoder, dense, static, embedding |
 | `trl-training` | Train and fine-tune transformer language models using TRL (Transformers Reinforcement Learning). Supports SFT, DPO, GRPO, KTO, RLOO and Reward Model training... | critical | huggingface/skills | trl, training | trl, training, train, fine, tune, transformer, language, models, transformers, reinforcement, learning, supports |
 | `ui-skills` | Opinionated, evolving constraints to guide agents when building interfaces | safe | https://github.com/ibelick/ui-skills | ui, skills | ui, skills, opinionated, evolving, constraints, agents, building, interfaces |
+| `unified-ai-gateway` | Operate and evaluate Unified AI System through eight governed MCP tools while preserving fake-provider, authorization, and evidence boundaries. | critical | happy520ai/unified-ai-system | ai-gateway, codex, mcp, self-hosted, governance | ai-gateway, codex, mcp, self-hosted, governance, unified, ai, gateway, operate, evaluate, through, eight |
 | `unslop-commit` | Rewrites commit messages so they sound like a careful human engineer wrote them. Strips AI/marketing slop ("comprehensive solution", "robust implementation",... | critical | MohamedAbdallah-14/unslop | unslop, commit | unslop, commit, rewrites, messages, so, sound, like, careful, human, engineer, wrote, them |
 | `unslop-file` | Humanize natural-language memory files (CLAUDE.md, todos, preferences, docs) by removing AI-isms and adding burstiness while preserving every code block, URL... | critical | MohamedAbdallah-14/unslop | unslop, file | unslop, file, humanize, natural, language, memory, files, claude, md, todos, preferences, docs |
 | `voice-agents` | Voice agents represent the frontier of AI interaction - humans speaking naturally with AI systems. | safe | vibeship-spawner-skills (Apache 2.0) | voice, agents | voice, agents, represent, frontier, ai, interaction, humans, speaking, naturally |
@@ -1003,10 +1004,11 @@ Total skills: 1998
 | `design-it/widget-based-design` | Web and App implementation guide for Widget-Based Design. Trigger when user wants modular blocks, iOS Home Screen aesthetics, and customizable mini-apps. | safe | self | it/widget, based | it/widget, based, widget, web, app, trigger, user, wants, modular, blocks, ios, home |
 | `design-it/y2k-design` | Web and App implementation guide for Y2K Design. Trigger when user wants chrome effects, futuristic 2000s look, blob shapes, and tech optimism. | safe | self | it/y2k | it/y2k, y2k, web, app, trigger, user, wants, chrome, effects, futuristic, 2000s, look |
 
-## developer-tools (4)
+## developer-tools (5)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
+| `agents-generator` | Generate project-specific AGENTS.md and companion rules by analyzing a codebase. Supports full, minimal, update, and dry-run modes with package-manager detec... | critical | OJPalenzuela/agents-generator | agents-md, project-conventions, developer-tools, codebase-analysis, ai-agents | agents-md, project-conventions, developer-tools, codebase-analysis, ai-agents, agents, generator, generate, specific, md, companion, rules |
 | `gh-attach` | Upload and download GitHub user-attachments (screenshots, PDFs, zips, videos) from the terminal; use when asked to attach or embed a file in a PR, issue, or ... | critical | sudosubin/gh-attach | github, attachments, screenshots, gh-extension, cli | github, attachments, screenshots, gh-extension, cli, gh, attach, upload, download, user, pdfs, zips |
 | `gh-image` | Upload local images to GitHub and get canonical user-attachments embed URLs; use when asked to attach a screenshot to a PR, issue, or comment, or to embed be... | critical | drogers0/gh-image | github, images, screenshots, gh-extension, cli | github, images, screenshots, gh-extension, cli, gh, image, upload, local, get, canonical, user |
 | `mcp-tool-developer` | Build Model Context Protocol (MCP) servers and tools from scratch. Full-stack MCP development with TypeScript/Python, testing, deployment, and registry publi... | safe | demo112/yunqu-ai-skills | mcp, ai-agent, tool-development, typescript, python, llm, model-context-protocol | mcp, ai-agent, tool-development, typescript, python, llm, model-context-protocol, developer, model, context, protocol, servers |
@@ -1476,7 +1478,7 @@ Total skills: 1998
 | `leiloeiro-mercado` | Analise de mercado imobiliario para leiloes. Liquidez, desagio tipico, ROI, estrategias de saida (flip/reforma/renda), Selic 2025 e benchmark CDI/FII. | safe | community | market-analysis, real-estate, roi, brazilian | market-analysis, real-estate, roi, brazilian, leiloeiro, mercado, analise, de, imobiliario, para, leiloes, liquidez |
 | `leiloeiro-risco` | Analise de risco em leiloes de imoveis. Score 36 pontos, riscos juridicos/financeiros/operacionais, stress test 4 cenarios e ROI ponderado por risco. | safe | community | risk-analysis, scoring, stress-test, brazilian | risk-analysis, scoring, stress-test, brazilian, leiloeiro, risco, analise, de, em, leiloes, imoveis, score |
 
-## marketing (55)
+## marketing (56)
 
 | Skill | Description | Risk | Source | Tags | Triggers |
 | --- | --- | --- | --- | --- | --- |
@@ -1528,6 +1530,7 @@ Total skills: 1998
 | `social-orchestrator` | Orquestrador unificado de canais sociais — coordena Instagram, Telegram e WhatsApp em um unico fluxo de trabalho. Publicacao cross-channel, metricas unificad... | critical | community | social-media, cross-channel, scheduling, campaigns | social-media, cross-channel, scheduling, campaigns, social, orchestrator, orquestrador, unificado, de, canais, sociais, coordena |
 | `socialclaw` | Agent-first social media publishing skill — schedule and publish posts across 13 platforms (X, LinkedIn, Instagram, Facebook Pages, TikTok, Discord, Telegram... | critical | ndesv21/socialclaw | social-media, publishing, scheduling, marketing, twitter, linkedin, instagram, tiktok, discord, telegram, reddit, wordpress, pinterest | social-media, publishing, scheduling, marketing, twitter, linkedin, instagram, tiktok, discord, telegram, reddit, wordpress |
 | `taisly-social-media-posting` | Use Taisly Agent Kit to prepare and publish approved short-form video posts across TikTok, Instagram Reels, YouTube Shorts, X, and Facebook. | critical | taisly/agent | social-media, video, publishing, mcp, cli, sdk, tiktok, instagram, youtube-shorts, x, facebook | social-media, video, publishing, mcp, cli, sdk, tiktok, instagram, youtube-shorts, x, facebook, taisly |
+| `talivia-agent-kit` | Set up and verify Talivia revenue analytics through MCP, with explicit confirmation for website changes and payment attribution. | critical | talivia-group/agent | analytics, revenue, attribution, mcp, talivia, marketing | analytics, revenue, attribution, mcp, talivia, marketing, agent, kit, set, up, verify, through |
 | `tiktok-automation` | Automate TikTok tasks via Rube MCP (Composio): upload/publish videos, post photos, manage content, and view user profiles/stats. Always search tools first fo... | critical | community | tiktok | tiktok, automation, automate, tasks, via, rube, mcp, composio, upload, publish, videos, post |
 | `twitter-automation` | Automate Twitter/X tasks via Rube MCP (Composio): posts, search, users, bookmarks, lists, media. Always search tools first for current schemas. | critical | community | twitter | twitter, automation, automate, tasks, via, rube, mcp, composio, posts, search, users, bookmarks |
 | `viral-generator-builder` | Expert in building shareable generator tools that go viral - name generators, quiz makers, avatar creators, personality tests, and calculator tools. Covers t... | critical | vibeship-spawner-skills (Apache 2.0) | viral, generator, builder | viral, generator, builder, building, shareable, go, name, generators, quiz, makers, avatar, creators |

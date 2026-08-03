@@ -6,13 +6,13 @@
   "reviewed_artifacts": [
     {
       "owner": "short-drama-write",
-      "artifact": "episodes/EP001/screenplay.md",
+      "artifact": "剧集/EP001/screenplay.md",
       "hash": "<sha256>"
     }
   ],
   "findings_ref": {
     "owner": "short-drama-review",
-    "artifact": "reviews/findings.jsonl",
+    "artifact": "审查/findings.jsonl",
     "hash": "<sha256>"
   },
   "requested_review_mode": "independent_agent",

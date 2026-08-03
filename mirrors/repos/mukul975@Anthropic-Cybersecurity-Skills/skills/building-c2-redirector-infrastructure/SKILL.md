@@ -1,7 +1,6 @@
 ---
 name: building-c2-redirector-infrastructure
-description: Architect redirectors with nginx and Apache, malleable profiles, and OPSEC
-  for resilient C2.
+description: Build dumb-pipe and traffic-filtering C2 redirectors with nginx (proxy_pass) and Apache (mod_rewrite), deriving filter rules from a Malleable C2 profile, layering Let's Encrypt TLS, and applying OPSEC controls like domain fronting and UA/geo filtering. Use when standing up red-team C2 that must survive blue-team triage or ensuring only profile-matching implant traffic reaches the hidden team server.
 domain: cybersecurity
 subdomain: red-teaming
 tags:

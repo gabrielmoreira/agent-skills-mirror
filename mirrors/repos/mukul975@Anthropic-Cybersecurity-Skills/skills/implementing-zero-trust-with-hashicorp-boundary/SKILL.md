@@ -1,8 +1,6 @@
 ---
 name: implementing-zero-trust-with-hashicorp-boundary
-description: Implement HashiCorp Boundary for identity-aware zero trust infrastructure
-  access management with dynamic credential brokering, session recording, and Vault
-  integration.
+description: Installs and configures HashiCorp Boundary as a default-deny, identity-aware proxy for infrastructure access, including controller/worker setup, Vault-backed credential brokering, session recording, and OIDC/LDAP auth across an org/project scope hierarchy. Use when replacing VPN or direct network access with just-in-time, credential-less Boundary sessions, or standing up Boundary controllers and workers.
 domain: cybersecurity
 subdomain: zero-trust-architecture
 tags:

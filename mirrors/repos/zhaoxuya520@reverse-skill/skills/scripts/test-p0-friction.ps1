@@ -275,6 +275,28 @@ Set-Content (Join-Path $ghostCase 'scope.md') $ghostScope -Encoding UTF8
 if ($LASTEXITCODE -eq 2) { Ok 'case-guard rejects empty assets despite ops_refs URLs' }
 else { Bad "case-guard should fail empty assets; exit=$LASTEXITCODE" }
 
+# 14b) CaseName must remain a single safe directory name under work/.
+$invalidCaseNames = @('..\case-escape', '../case-escape', 'case/name', 'case:name', '.. ', 'case.')
+$workRoot = Join-Path $PackageRoot 'work'
+foreach ($invalidCaseName in $invalidCaseNames) {
+    $beforeCases = @(Get-ChildItem -LiteralPath $workRoot -Force -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name)
+    $process = Start-Process -FilePath 'powershell.exe' -ArgumentList @(
+        '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', $ci,
+        '-CaseName', $invalidCaseName, '-PackageRoot', $PackageRoot
+    ) -Wait -PassThru -NoNewWindow
+    $exitCode = $process.ExitCode
+    $afterCases = @(Get-ChildItem -LiteralPath $workRoot -Force -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Name)
+    $newCases = @($afterCases | Where-Object { $_ -notin $beforeCases })
+    if ($exitCode -ne 0 -and $newCases.Count -eq 0) {
+        Ok "case-init rejects unsafe CaseName '$invalidCaseName'"
+    } else {
+        Bad "case-init accepted or wrote unsafe CaseName '$invalidCaseName'"
+        foreach ($newCase in $newCases) {
+            Remove-Item -LiteralPath (Join-Path $workRoot $newCase) -Recurse -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 # 13) copy smoke primary log alias for harness
 $smokeLogs = Join-Path $ScratchDir 'smoke-logs'
 if (Test-Path (Join-Path $smokeLogs 'SUMMARY.txt')) {

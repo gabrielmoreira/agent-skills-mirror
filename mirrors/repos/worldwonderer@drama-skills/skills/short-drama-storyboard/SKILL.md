@@ -45,7 +45,7 @@ license: MIT
 ### 1. 先确认每段原文由谁落实
 
 从 [coverage-template.json](assets/coverage-template.json) 开始，接受后发布为
-`episodes/<EP>/storyboard/coverage.json`。每个与制作有关的剧本段落都必须标明一种处理：
+`剧集/<EP>/storyboard/coverage.json`。每个与制作有关的剧本段落都必须标明一种处理：
 
 - `covered`：由一个或多个镜头落实；
 - `intentional_repeat`：因表演或剪辑需要而有意重复，并写明理由；
@@ -59,7 +59,7 @@ license: MIT
 ### 2. 先写镜头目的
 
 使用 [shot-template.jsonl](assets/shot-template.jsonl)，接受后发布为
-`episodes/<EP>/storyboard/shots.jsonl`。每个镜头先用一句话回答：
+`剧集/<EP>/storyboard/shots.jsonl`。每个镜头先用一句话回答：
 
 - 观众此刻必须注意什么、感到什么；
 - 信息、情绪、观众立场或权力关系发生什么变化；
@@ -101,7 +101,7 @@ license: MIT
 ### 5. 默认每镜一个冻结关键帧
 
 使用 [keyframe-template.jsonl](assets/keyframe-template.jsonl) 写结构化来源，发布为
-`episodes/<EP>/storyboard/keyframes.jsonl`；再用
+`剧集/<EP>/storyboard/keyframes.jsonl`；再用
 [keyframe-prompts.md](assets/keyframe-prompts.md) 渲染可复制的派生文本。结构化关键帧
 保存只属于单帧的选择；Markdown 不是第二份事实来源。
 
@@ -119,9 +119,9 @@ license: MIT
 [storyboard_check.py](scripts/storyboard_check.py) 核对，不要用人工目测代替：
 
 ```bash
-python3 <skill-dir>/scripts/storyboard_check.py episodes/EP001/storyboard/coverage.json \
-  --shots episodes/EP001/storyboard/shots.jsonl \
-  --keyframes episodes/EP001/storyboard/keyframes.jsonl \
+python3 <skill-dir>/scripts/storyboard_check.py 剧集/EP001/storyboard/coverage.json \
+  --shots 剧集/EP001/storyboard/shots.jsonl \
+  --keyframes 剧集/EP001/storyboard/keyframes.jsonl \
   --project short-drama.json
 ```
 
@@ -160,7 +160,7 @@ python3 <skill-dir>/scripts/storyboard_check.py episodes/EP001/storyboard/covera
 
 ## 所有产物
 
-- `episodes/<EP>/storyboard/coverage.json`
-- `episodes/<EP>/storyboard/shots.jsonl`
-- `episodes/<EP>/storyboard/keyframes.jsonl`
-- `episodes/<EP>/storyboard/keyframe-prompts.md`（仅派生文本）
+- `剧集/<EP>/storyboard/coverage.json`
+- `剧集/<EP>/storyboard/shots.jsonl`
+- `剧集/<EP>/storyboard/keyframes.jsonl`
+- `剧集/<EP>/storyboard/keyframe-prompts.md`（仅派生文本）

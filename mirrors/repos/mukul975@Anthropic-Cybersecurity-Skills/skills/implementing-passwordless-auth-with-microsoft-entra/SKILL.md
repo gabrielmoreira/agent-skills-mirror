@@ -2,9 +2,9 @@
 name: implementing-passwordless-auth-with-microsoft-entra
 description: 'Implements passwordless authentication using Microsoft Entra ID with
   FIDO2 security keys, Windows Hello for Business, Microsoft Authenticator passkeys,
-  and certificate-based authentication to eliminate password-based attacks. Activates
-  for requests involving passwordless deployment, FIDO2 passkey configuration, phishing-resistant
-  MFA, or Microsoft Entra authentication method policies.
+  and certificate-based authentication to eliminate password-based attacks. Use when
+  deploying passwordless sign-in, configuring FIDO2 passkeys, enforcing phishing-resistant
+  MFA, or setting Microsoft Entra authentication method policies.
 
   '
 domain: cybersecurity

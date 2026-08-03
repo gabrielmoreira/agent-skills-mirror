@@ -52,6 +52,8 @@ Kali 专属入口不是 Windows README 的简单复制，而是 **同一套核�
 - Kali：`kali/scripts/bootstrap-reverse.sh`
 - 普通 Linux/macOS：`skills/scripts/bootstrap-reverse.sh`
 
+JEB Pro 是用户自行许可和安装的商业工具；Reqable MCP 使用官方固定版本的 `reqable-mcp-server`，但仍要求单独安装 Reqable 桌面客户端。
+
 Kali 脚本应覆盖 Windows manifest 中的核心能力名，例如 `jadx`、`apktool`、`frida`、`jshookmcp`、`anything-analyzer`、`idapro`、`r2`、`adb`、`ghidra-mcp`、`seclists`、`burpsuite-mcp`、`nmap`、`pentestswarm`；同时可以额外支持 Kali 原生工具，例如 `mcp-kali-server`、`metasploitmcp`、`hexstrike-ai`、`sstimap`、`xsstrike`、`netexec` 等。
 
 **共享的部分**（不需要改动）：

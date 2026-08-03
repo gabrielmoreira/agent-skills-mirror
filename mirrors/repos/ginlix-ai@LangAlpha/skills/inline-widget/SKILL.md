@@ -51,7 +51,7 @@ The **outermost HTML element** must have:
 ```html
 <!-- CORRECT: transparent outer shell -->
 <div>
-  <div style="background: var(--color-bg-card); border-radius: 8px; padding: 16px; ...">
+  <div style="background: var(--color-bg-card, #ffffff); border-radius: 8px; padding: 16px; ...">
     ...inner card content...
   </div>
 </div>
@@ -64,20 +64,22 @@ The **outermost HTML element** must have:
 
 ### Inner Elements — Use Theme Variables
 
-Inner cards, sections, and components should use CSS variables for styling:
+Inner cards, sections, and components should use CSS variables for styling, always in the fallback form:
 
 ```css
 /* Card */
-background: var(--color-bg-card);
-border: 0.5px solid var(--color-border-muted);
+background: var(--color-bg-card, #ffffff);
+border: 0.5px solid var(--color-border-muted, #e4e1dc);
 border-radius: 8px;
 padding: 16px;
 
 /* Metric card */
-background: var(--color-bg-subtle);
-border: 0.5px solid var(--color-border-muted);
+background: var(--color-bg-subtle, #f4f2ee);
+border: 0.5px solid var(--color-border-muted, #e4e1dc);
 border-radius: 8px;
 ```
+
+In chat the variables are always injected, so the fallback never shows there — it is what renders when the widget is saved as a workspace `.html` file and previewed before theme injection or opened standalone. Use the light literals from the html-report skill's table.
 
 ### Positioning
 
@@ -107,7 +109,7 @@ These CSS variables are automatically injected and resolve correctly in both lig
 | `--color-info` | Info (blue) |
 | `--color-success` | Success (green) |
 
-**Never hardcode colors** like `#333` or `rgb(...)` for text, backgrounds, or borders — they break in dark mode. Use CSS variables for everything except chart canvas colors (Chart.js canvas cannot read CSS variables — use computed hex values via `getComputedStyle`).
+**Never hardcode colors** like `#333` or `rgb(...)` for text, backgrounds, or borders — they break in dark mode. Author every color as `var(--color-x, #lightLiteral)`: the injected variable always wins in chat, and the fallback keeps the widget legible on its secondary surfaces. The only exception is chart canvas colors — Chart.js canvas cannot read CSS variables; resolve them via `getComputedStyle` with a literal fallback.
 
 ## Charts (Chart.js)
 
@@ -121,10 +123,12 @@ Load Chart.js from CDN and follow these rules:
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Read CSS variables for chart colors (canvas can't use var())
+  // Read CSS variables for chart colors (canvas can't use var());
+  // the literal fallback covers the widget opened outside the chat surface.
   var cs = getComputedStyle(document.documentElement);
-  var accent = cs.getPropertyValue('--color-accent-primary').trim();
-  var border = cs.getPropertyValue('--color-border-muted').trim();
+  function pick(name, fallback) { return cs.getPropertyValue(name).trim() || fallback; }
+  var accent = pick('--color-accent-primary', '#1f5fb4');
+  var border = pick('--color-border-muted', '#e4e1dc');
 
   new Chart(document.getElementById('myChart'), {
     type: 'line',
@@ -155,7 +159,7 @@ Load Chart.js from CDN and follow these rules:
 - Set height on the **wrapper div**, never on the canvas
 - Always use `responsive: true, maintainAspectRatio: false`
 - Use UMD build from CDN (sets `window.Chart` global)
-- Read CSS variables via `getComputedStyle` for chart colors
+- Read CSS variables via `getComputedStyle` with a literal fallback (`pick()`) for chart colors
 
 ## Typography
 

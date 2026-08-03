@@ -1,8 +1,10 @@
 ---
 name: performing-kubernetes-etcd-security-assessment
 description: Assess the security posture of Kubernetes etcd clusters by evaluating
-  encryption at rest, TLS configuration, access controls, backup encryption, and network
-  isolation.
+  encryption at rest, TLS transport configuration, access controls, backup encryption,
+  and network isolation for the cluster's backing key-value store. Use when auditing
+  or hardening a Kubernetes control plane, since etcd holds Secrets, RBAC policies,
+  and ConfigMaps in plaintext by default and is a high-value target if left unassessed.
 domain: cybersecurity
 subdomain: container-security
 tags:

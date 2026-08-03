@@ -14,7 +14,7 @@
 
 ```text
 development? -> screenplay.md -> screenplay-index.jsonl
-                                  -> asset occurrences -> decisions -> accepted bible
+                                  -> asset occurrences -> decisions -> accepted 设定集
                                                                /              \
                                                     image prompt specs        coverage
                                                            |                    |
@@ -36,7 +36,7 @@ no motion-to-shot or rendered-Markdown-to-spec authority edge.
 | Fact | Authority | Projection behavior |
 |---|---|---|
 | creator constraints, visual direction, production profile | creator fields in `short-drama.json` | all Skills reference exact accepted project hash/field; direct-entry projects do not rely on chat memory |
-| creator accept/reject decisions | creator `creator-decisions/<artifact-id>.json` | lifecycle proof binds exact candidate targets and decision record/hash; `decided_by` names the creator or an authorized delegate, never a skill or agent |
+| creator accept/reject decisions | creator `创作者决策/<artifact-id>.json` | lifecycle proof binds exact candidate targets and decision record/hash; `decided_by` names the creator or an authorized delegate, never a skill or agent |
 | series promise, engine, arc, planned episode contract | develop | episode-card points to the accepted map record/hash |
 | script-first standalone episode contract | write | active only when no develop-owned record exists; explicit authority migration if one is later adopted |
 | scene execution plan, beats, screenplay | write | may project but not duplicate a develop-owned contract |
@@ -82,7 +82,7 @@ Every cross-artifact pointer uses one shape; stage-specific aliases such as
 ```json
 {
   "owner": "short-drama-write",
-  "artifact": "episodes/EP001/screenplay-index.jsonl",
+  "artifact": "剧集/EP001/screenplay-index.jsonl",
   "hash": "<sha256>",
   "record_id": "BLK-EP001-SC001-A01",
   "field": "/optional/nested/field"
@@ -184,7 +184,7 @@ lifecycle state together.
 A consumer of a shared `.json`/`.jsonl` input may additionally freeze
 `accepted_input_records`: the canonical hash of each record it actually read. Its
 `accepted_inputs` hash then records the binding-time snapshot, while validity is
-judged record by record, so appending an unrelated character to a series bible no
+judged record by record, so appending an unrelated character to a series 设定集 no
 longer invalidates every episode that referenced that file. A bound record that
 changes, disappears, or stops resolving uniquely still invalidates its consumers,
 and so does any change to a whole-file-bound input. Markdown carries no

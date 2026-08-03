@@ -4,7 +4,7 @@
       "name": "jadx",
       "bootstrapKind": "github-release-zip",
       "repo": "skylot/jadx",
-      "assetRegex": "^jadx-1\\\\.5\\\\.6\\\\.zip$",
+      "assetRegex": "^jadx-1\\.5\\.6\\.zip$",
       "installDir": "%USERPROFILE%\\Tools\\jadx",
       "docsUrl": "https://github.com/skylot/jadx",
       "canAutoInstall": true,
@@ -16,7 +16,7 @@
       "name": "apktool",
       "bootstrapKind": "github-release-jar-wrapper",
       "repo": "iBotPeaches/Apktool",
-      "assetRegex": "^apktool_3\\\\.0\\\\.2\\\\.jar$",
+      "assetRegex": "^apktool_3\\.0\\.2\\.jar$",
       "installDir": "%USERPROFILE%\\Tools\\apktool",
       "wrapperName": "apktool.bat",
       "docsUrl": "https://apktool.org/",
@@ -24,6 +24,14 @@
       "verifyCommand": "apktool",
       "releaseTag": "v3.0.2",
       "assetSha256": "eee4669a704a14e0623407e6701b0b91887e61e1e4049cb7a82833e14ae8b5fd"
+    },
+    {
+      "name": "jeb-pro",
+      "bootstrapKind": "manual",
+      "docsUrl": "https://www.pnfsoftware.com/jeb/",
+      "canAutoInstall": false,
+      "verifyCommand": "jeb_wincon",
+      "manualInstallHint": "JEB Pro is commercial. Obtain a valid license from PNF Software, install it manually, then run refresh-tool-index.ps1. Optional community MCP bridges must pass the skill-supply-chain review before registration."
     },
     {
       "name": "frida",
@@ -54,6 +62,27 @@
         "重启 IDA Pro 使插件生效",
         "IDA 打开文件后 MCP 自动监听 127.0.0.1:13337"
       ]
+    },
+    {
+      "name": "reqable-mcp",
+      "bootstrapKind": "npm-mcp",
+      "npmPackage": "reqable-mcp-server@1.0.1",
+      "mcpNames": [
+        "reqable-mcp"
+      ],
+      "mcpCommand": "npx",
+      "mcpArgs": [
+        "-y",
+        "reqable-mcp-server@1.0.1",
+        "--scope",
+        "minimal"
+      ],
+      "mcpEnv": {},
+      "docsUrl": "https://github.com/reqable/reqable-mcp-server",
+      "canAutoInstall": true,
+      "verifyCommand": "npx",
+      "pinnedVersion": "1.0.1",
+      "note": "Requires the separately installed Reqable desktop application. The MCP server uses Reqable's local API; scope and authorization rules still apply to captured or replayed traffic."
     },
     {
       "name": "jshookmcp",

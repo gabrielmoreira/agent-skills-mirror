@@ -13,7 +13,13 @@ memory says to use CCB `ask` for collaboration.
 Before every ask, decide:
 
 1. Need delegation? If no, answer directly.
-2. Result intent:
+2. Dependency gate:
+   - Default: do not use `--chain`.
+   - Use `--chain` only when the current active CCB task cannot finish until
+     this exact child result arrives. Then stop for continuation.
+   - Communication tests, batch sends, notifications, and independent work do
+     not become chain dependencies merely because replies are requested.
+3. Result intent:
    - `--silence`: publish/execute task; success result not needed. Failures,
      blockers, risks, or required next actions still surface.
    - `--compact`: result wanted, but only distilled
@@ -21,10 +27,7 @@ Before every ask, decide:
    - `+ --artifact-reply`: consultation/analysis/report where full text should
      be preserved.
    - plain `ask`: short question or short handoff where inline text is enough.
-   - `--chain`: active CCB parent job + child result required to finish.
-     Combine with `--compact` or `--artifact-reply` as needed. Submit, then
-     stop for continuation.
-3. Request fidelity:
+4. Request fidelity:
    - `+ --artifact-request`: exact transient input
      (logs/output/diffs/copied contents/config/JSON/YAML/table/structured text).
      Prefer repo paths when the target can read files directly.
@@ -36,13 +39,17 @@ Before every ask, decide:
   `ask`.
 - If CCB says `ask --chain requires an active parent job`, retry once with
   plain `ask` for user-requested delegation.
+- Never add `--chain` merely to make a rejected plain ask succeed. If the work
+  is independent and no success result is needed, use `--silence`; otherwise
+  report the routing limitation instead of inventing a dependency.
 - `--chain` and `--silence` usually conflict; avoid mixing unless explicit.
 - Avoid `--silence --artifact-reply`; silence means no caller result needed; artifact-reply preserves one.
 - Artifact flags are orthogonal to `--chain`, `--silence`, and `--compact`.
   They preserve content, not dependency shape.
 - Automatic spill for text over 4 KiB is a fallback, not the primary rule.
 - `--artifact-*` modes are CCB/daemon managed; targets do not write artifact reply files.
-- Plain nested `ask` from an active CCB task is rejected; use `--chain` or `--silence`.
+- Plain nested `ask` from an active CCB task is rejected. Use `--chain` only
+  for a real child dependency; use `--silence` for independent no-result work.
 - In `A --silence -> B`, B still runs an active job. B-to-C depends on whether B needs C's result.
 - In task chains, each needed-result hop uses `--chain`; CCB then propagates continuations.
 - Finish an inbound CCB task in its current turn.

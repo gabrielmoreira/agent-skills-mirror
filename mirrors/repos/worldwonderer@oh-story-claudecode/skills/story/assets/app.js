@@ -9,6 +9,11 @@ const state = {
   loadingFile: false,
   saving: false,
   deleting: false,
+  searching: false,
+  searchResults: [],
+  searchTruncation: null,
+  searchSequence: 0,
+  searchTimer: null,
   // 记住作者手动展开/收起过的目录，重绘文件树时不要把人正在翻的章节文件夹关掉
   expandedDirs: new Set(),
   collapsedDirs: new Set(),
@@ -169,25 +174,16 @@ function iconSvg(kind) {
   return `<svg class="tree-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h8l4 4v13H6z"></path><path d="M14 3.5v4h4M9 12h6M9 16h5"></path></svg>`;
 }
 
-function nodeMatches(node, query) {
-  if (!query) return true;
-  if (node.name.toLocaleLowerCase("zh-CN").includes(query)) return true;
-  return node.type === "directory" && node.children.some((child) => nodeMatches(child, query));
-}
-
 function createTreeEntry(node, depth = 0) {
-  const query = state.filter.trim().toLocaleLowerCase("zh-CN");
-  if (!nodeMatches(node, query)) return null;
-
   const item = document.createElement("li");
   if (node.type === "directory") {
     const details = document.createElement("details");
-    const shouldOpen = query
-      ? true
-      : state.expandedDirs.has(node.path) ||
-        (depth === 0 && !state.collapsedDirs.has(node.path));
+    details.dataset.path = node.path;
+    const shouldOpen =
+      state.expandedDirs.has(node.path) ||
+      (depth === 0 && !state.collapsedDirs.has(node.path));
     details.open = shouldOpen;
-    // 只记录作者亲手的展开/收起；渲染时的程序化展开（首层、搜索命中）不算偏好
+    // 只记录作者亲手的展开/收起；首层程序化展开不算偏好。
     let recorded = shouldOpen;
     details.addEventListener("toggle", () => {
       if (details.open === recorded) return;
@@ -195,6 +191,7 @@ function createTreeEntry(node, depth = 0) {
       if (details.open) {
         state.expandedDirs.add(node.path);
         state.collapsedDirs.delete(node.path);
+        if (!node.loaded && !node.loading) loadDirectory(node);
       } else {
         state.expandedDirs.delete(node.path);
         state.collapsedDirs.add(node.path);
@@ -213,8 +210,45 @@ function createTreeEntry(node, depth = 0) {
       const childItem = createTreeEntry(child, depth + 1);
       if (childItem) list.append(childItem);
     });
+    if (node.loading) {
+      const loading = document.createElement("li");
+      loading.className = "tree-inline-status";
+      loading.textContent = "正在读取目录…";
+      list.append(loading);
+    } else if (node.loadError) {
+      const retry = document.createElement("li");
+      retry.className = "tree-inline-status";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "目录加载失败，点击重试";
+      button.addEventListener("click", () => loadDirectory(node));
+      retry.append(button);
+      list.append(retry);
+    } else if (node.loaded && node.children.length === 0) {
+      const empty = document.createElement("li");
+      empty.className = "tree-inline-status";
+      empty.textContent = "空目录";
+      list.append(empty);
+    }
+    if (node.nextCursor && !node.loading) {
+      const more = document.createElement("li");
+      more.className = "tree-inline-status";
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = "加载更多";
+      button.addEventListener("click", () => loadDirectory(node, { append: true }));
+      more.append(button);
+      list.append(more);
+    }
     details.append(list);
     item.append(details);
+    if (shouldOpen && !node.loaded && !node.loading && !node.loadError && !node.loadQueued) {
+      node.loadQueued = true;
+      window.queueMicrotask(() => {
+        node.loadQueued = false;
+        if (!node.loaded && !node.loading && !node.loadError) loadDirectory(node);
+      });
+    }
     return item;
   }
 
@@ -243,6 +277,57 @@ function createTreeEntry(node, depth = 0) {
   return item;
 }
 
+function mergeDirectoryEntries(node, entries, append) {
+  if (!append) {
+    node.children = entries;
+    return;
+  }
+  const existingPaths = new Set(node.children.map((entry) => entry.path));
+  node.children.push(...entries.filter((entry) => !existingPaths.has(entry.path)));
+}
+
+async function loadDirectory(node, { append = false } = {}) {
+  if (node.loading) return;
+  node.loading = true;
+  node.loadError = "";
+  renderTree();
+  try {
+    const cursor = append && node.nextCursor ? `&cursor=${encodeURIComponent(node.nextCursor)}` : "";
+    const page = await requestJson(`/api/tree?path=${encodeURIComponent(node.path)}${cursor}`);
+    mergeDirectoryEntries(node, page.entries, append);
+    node.nextCursor = page.nextCursor;
+    node.loaded = true;
+  } catch (error) {
+    node.loadError = error.message;
+    showToast(error.message, "error");
+  } finally {
+    node.loading = false;
+    renderLoadedFileCount();
+    renderTree();
+  }
+}
+
+function loadedFileCount() {
+  const paths = new Set();
+  function visit(node) {
+    if (node.type === "file") {
+      paths.add(node.path);
+      return;
+    }
+    node.children.forEach(visit);
+  }
+  state.workspace?.libraries.forEach(visit);
+  state.workspace?.projects.forEach(visit);
+  return paths.size;
+}
+
+function renderLoadedFileCount() {
+  if (!state.workspace) return;
+  const count = loadedFileCount();
+  elements.fileCount.textContent = count ? `${formatNumber(count)}+` : "按需";
+  elements.fileCount.title = "文稿随目录展开按需加载，不预先遍历整个工作区";
+}
+
 // 只改当前高亮行，不重建整棵树——重建会把作者正在翻的目录全部收起
 function syncActiveRow() {
   const activePath = state.activeFile?.path;
@@ -251,79 +336,103 @@ function syncActiveRow() {
   });
 }
 
+function searchTruncationMessage() {
+  const status = state.searchTruncation;
+  if (!status) return "";
+  const messages = [];
+  if (status.byResults) {
+    messages.push(
+      `匹配结果超过 ${formatNumber(status.limits.maxResults)} 条，仅显示最先找到的部分，请输入更精确的文件名`,
+    );
+  }
+  if (status.byNodes) {
+    messages.push(
+      `搜索达到 ${formatNumber(status.limits.maxNodes)} 个节点的扫描上限，后续目录尚未检查，请直接展开目标目录查找`,
+    );
+  }
+  if (status.byDepth) {
+    messages.push(
+      `部分目录超过 ${formatNumber(status.limits.maxDepth)} 层，更深处未搜索；其他项目已继续搜索`,
+    );
+  }
+  if (status.byReadError) {
+    const paths = status.scanErrors.map((entry) => entry.path).filter(Boolean);
+    const shown = paths.slice(0, 3).join("、") || "部分目录";
+    const more = paths.length > 3 ? `等 ${formatNumber(paths.length)} 处` : "";
+    messages.push(
+      `${shown}${more}无法读取，搜索结果可能不完整。请检查目录访问权限或外挂盘挂载状态`,
+    );
+  }
+  return messages.join("；");
+}
+
 function renderTree() {
   elements.fileTree.replaceChildren();
   elements.treeLoading.hidden = true;
-  const collection = state.workspace?.[state.activeView] || [];
-  const matching = collection.filter((node) =>
-    nodeMatches(node, state.filter.trim().toLocaleLowerCase("zh-CN")),
-  );
+  const query = state.filter.trim();
+  const collection = query
+    ? state.searchResults
+    : state.workspace?.[state.activeView] || [];
 
-  if (!matching.length) {
+  if (query && state.searching) {
     const message = document.createElement("div");
     message.className = "tree-message";
     const text = document.createElement("p");
-    text.textContent = state.filter
-      ? `没有找到“${state.filter}”`
-      : state.activeView === "libraries"
-        ? "工作区里还没有拆文库。运行拆文 skill 后，档案会出现在这里。"
-        : "还没有识别到写作项目。包含正文、大纲、设定或追踪目录的书会显示在这里。";
+    text.textContent = `正在搜索“${query}”…`;
     message.append(text);
     elements.fileTree.append(message);
     return;
   }
 
+  if (!collection.length) {
+    const message = document.createElement("div");
+    message.className = "tree-message";
+    const text = document.createElement("p");
+    text.textContent = query
+      ? state.searchTruncation
+        ? `搜索未完成，暂时无法确认是否存在“${query}”`
+        : `没有找到“${query}”`
+      : state.activeView === "libraries"
+        ? "工作区里还没有拆文库。运行拆文 skill 后，档案会出现在这里。"
+        : "还没有识别到写作项目。长篇需包含正文、大纲、设定或追踪目录；短篇需包含正文.md，并同时包含小节大纲.md或设定.md。";
+    message.append(text);
+    elements.fileTree.append(message);
+    const truncation = searchTruncationMessage();
+    if (query && truncation) {
+      const status = document.createElement("div");
+      status.className = "tree-message";
+      status.setAttribute("role", "status");
+      const statusText = document.createElement("p");
+      statusText.textContent = truncation;
+      status.append(statusText);
+      elements.fileTree.append(status);
+    }
+    return;
+  }
+
   const list = document.createElement("ul");
-  matching.forEach((node) => {
+  collection.forEach((node) => {
     const item = createTreeEntry(node);
     if (item) list.append(item);
   });
+  const truncation = searchTruncationMessage();
+  if (query && truncation) {
+    const status = document.createElement("li");
+    status.className = "tree-inline-status";
+    status.setAttribute("role", "status");
+    status.textContent = truncation;
+    list.append(status);
+  }
   elements.fileTree.append(list);
 }
 
-// 节点预算打满要减量，目录套太深要把嵌套拍平：两种截断的处置办法不同，
-// 混成同一句话等于让作者照着错的办法搬文稿，所以按后端报的成因分别成句。
-function truncationMessage(limits, scanErrors = []) {
-  const byDepth = Boolean(limits.truncatedByDepth);
-  const byReadError = Boolean(limits.truncatedByReadError);
-  // 老版本后端只给 truncated 一个布尔值，没有成因时按节点上限解释，保持旧文案不回退成空话。
-  const byNodes = typeof limits.truncatedByNodes === "boolean" ? limits.truncatedByNodes : !byDepth;
-  const reasons = [];
-  if (byNodes) {
-    const categoryFlags = limits.truncatedByNodesByCategory;
-    const categories = [];
-    if (categoryFlags?.projects) categories.push("写作项目");
-    if (categoryFlags?.libraries) categories.push("拆文库");
-    const subject = categories.length ? `${categories.join("和")}文件太多` : "工作区文件太多";
-    const budget = Number.isFinite(limits.maxTreeNodesPerCategory)
-      ? `写作项目和拆文库每类最多列出 ${formatNumber(limits.maxTreeNodesPerCategory)} 个节点`
-      : `目录树只列到 ${formatNumber(limits.maxTreeNodes)} 条上限`;
-    reasons.push(`${subject}，${budget}，部分文稿没有列出`);
-  }
-  if (byDepth) {
-    const depthLimit = Number.isFinite(limits.maxTreeDepth)
-      ? `（超过 ${formatNumber(limits.maxTreeDepth)} 层）`
-      : "";
-    reasons.push(`有目录套得太深${depthLimit}，更深处的文稿没有列出`);
-  }
-  if (byReadError) {
-    const paths = scanErrors.map((entry) => entry.path).filter(Boolean);
-    const shown = paths.slice(0, 3).join("、") || "部分目录";
-    const more = paths.length > 3 ? `等 ${formatNumber(paths.length)} 处` : "";
-    reasons.push(`${shown}${more}无法读取，其中的文稿没有列出`);
-  }
-  let advice = "请把旧卷或拆文库挪到别处，或直接在编辑器里打开缺失的文件。";
-  if (byReadError) {
-    advice = "请检查这些目录的访问权限和外挂盘挂载状态，恢复后刷新目录。";
-  } else if (byNodes && byDepth) {
-    advice = "请把旧卷或拆文库挪到别处、并把过深的子目录拍平，或直接在编辑器里打开缺失的文件。";
-  } else if (byDepth) {
-    advice = "请把过深的子目录拍平，或直接在编辑器里打开缺失的文件。";
-  }
-  return `${reasons.join("；")}，搜索也只覆盖已列出的部分。${advice}`;
+function truncationMessage(scanErrors = []) {
+  const paths = scanErrors.map((entry) => entry.path).filter(Boolean);
+  const shown = paths.slice(0, 3).join("、") || "部分目录";
+  const more = paths.length > 3 ? `等 ${formatNumber(paths.length)} 处` : "";
+  return `${shown}${more}无法读取，其中的文稿没有列出。请检查这些目录的访问权限和外挂盘挂载状态，恢复后刷新目录。`;
 }
 
-// 扫描碰到上限时目录树和搜索都只覆盖已列出的部分，必须明说，不能让作者以为文件不存在
 function renderTruncationNotice(limits, scanErrors) {
   if (!limits?.truncated) {
     elements.truncationNotice?.remove();
@@ -339,7 +448,7 @@ function renderTruncationNotice(limits, scanErrors) {
     elements.treePanel.insertBefore(notice, elements.fileTree);
     elements.truncationNotice = notice;
   }
-  elements.truncationNotice.querySelector("p").textContent = truncationMessage(limits, scanErrors);
+  elements.truncationNotice.querySelector("p").textContent = truncationMessage(scanErrors);
 }
 
 function renderWorkspace() {
@@ -349,9 +458,7 @@ function renderWorkspace() {
   elements.workspacePath.title = workspace.path;
   elements.libraryCount.textContent = formatNumber(stats.libraries);
   elements.projectCount.textContent = formatNumber(stats.projects);
-  // 树被截断时统计只是下限，用 + 标出来，别把残缺数字当成真相
-  elements.fileCount.textContent = formatNumber(stats.editableFiles) + (limits?.truncated ? "+" : "");
-  elements.fileCount.title = limits?.truncated ? "目录树已截断，实际文稿数多于此" : "";
+  renderLoadedFileCount();
   elements.librariesBadge.textContent = formatNumber(libraries.length);
   elements.projectsBadge.textContent = formatNumber(projects.length);
   renderTruncationNotice(limits, scanErrors);
@@ -359,12 +466,18 @@ function renderWorkspace() {
 }
 
 async function loadWorkspace({ announce = false } = {}) {
+  window.clearTimeout(state.searchTimer);
+  state.searchSequence += 1;
   elements.treeLoading.hidden = false;
   elements.fileTree.replaceChildren();
   setConnection("", "连接中");
   try {
     state.workspace = await requestJson("/api/workspace");
+    state.searchResults = [];
+    state.searchTruncation = null;
+    state.searching = Boolean(state.filter.trim());
     renderWorkspace();
+    if (state.filter.trim()) scheduleSearch();
     if (announce) showToast("工作区目录已刷新");
   } catch (error) {
     elements.treeLoading.hidden = true;
@@ -641,6 +754,57 @@ async function deleteFile() {
   }
 }
 
+async function searchWorkspace(query, sequence) {
+  state.searching = true;
+  renderTree();
+  try {
+    const result = await requestJson(
+      `/api/search?q=${encodeURIComponent(query)}&scope=${encodeURIComponent(state.activeView)}`,
+    );
+    if (sequence !== state.searchSequence) return;
+    state.searchResults = result.results;
+    state.searchTruncation = result.truncated
+      ? {
+          ...(result.truncation || {
+            byResults: true,
+            byNodes: false,
+            byDepth: false,
+            byReadError: false,
+          }),
+          scanErrors: result.scanErrors || [],
+          limits: result.limits,
+        }
+      : null;
+  } catch (error) {
+    if (sequence !== state.searchSequence) return;
+    state.searchResults = [];
+    state.searchTruncation = null;
+    showToast(error.message, "error");
+  } finally {
+    if (sequence === state.searchSequence) {
+      state.searching = false;
+      renderTree();
+    }
+  }
+}
+
+function scheduleSearch() {
+  window.clearTimeout(state.searchTimer);
+  const query = state.filter.trim();
+  state.searchSequence += 1;
+  const sequence = state.searchSequence;
+  if (!query) {
+    state.searching = false;
+    state.searchResults = [];
+    state.searchTruncation = null;
+    renderTree();
+    return;
+  }
+  state.searching = true;
+  renderTree();
+  state.searchTimer = window.setTimeout(() => searchWorkspace(query, sequence), 180);
+}
+
 function setActiveView(view) {
   state.activeView = view;
   elements.archiveTabs.forEach((tab) => {
@@ -652,7 +816,11 @@ function setActiveView(view) {
     "aria-labelledby",
     view === "libraries" ? "librariesTab" : "projectsTab",
   );
-  renderTree();
+  if (state.filter.trim()) {
+    scheduleSearch();
+  } else {
+    renderTree();
+  }
 }
 
 elements.archiveTabs.forEach((tab) => {
@@ -672,14 +840,14 @@ elements.archiveTabs.forEach((tab) => {
 
 elements.treeSearch.addEventListener("input", (event) => {
   state.filter = event.currentTarget.value;
-  renderTree();
+  scheduleSearch();
 });
 
 elements.treeSearch.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     event.currentTarget.value = "";
     state.filter = "";
-    renderTree();
+    scheduleSearch();
   }
 });
 

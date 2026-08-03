@@ -10,11 +10,11 @@ An [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Steward) pl
 
 Five authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and verification pass (`render-verify` Prose-coupling check):
 
-1. **Flint — statistical chart authoring.** `chart-big-idea` → `chart-vocabulary` (7-goal catalog + CSAR loop) → `flint-chart` (§0 selection router + `ChartAssemblyInput` spec) → render via `flint-chart-mcp` (Vega-Lite / ECharts / Chart.js, local) → `render-verify`. Data never leaves the machine. Entry point: the `/render-chart` slash command.
+1. **Flint — statistical chart authoring.** `chart-big-idea` → `chart-vocabulary` (7-goal catalog + CSAR loop) → `flint-chart` (§0 selection router + `ChartAssemblyInput` spec) → render via `flint-chart-mcp` (Vega-Lite / ECharts / Chart.js, local) → `render-verify`. Data never leaves the machine. Entry point: `/alex-act-illustrator-plugin render-chart`.
 2. **Print figures — hand-authored SVG for books and reports.** `chart-big-idea` (Step 0.5 earn-a-figure gate) → `print-svg-style-guide` (canvas + typography grammar, print-legibility floor with math, Tailwind semantic palette, four composition idioms) → `figure-generator` (`.mjs` generator + `data/<slug>.json` + `data-sha256` audit hash + contract tests + dataset inversion). Book-tested across 53 figures in *The Defensible Decision* (Fabio Correa).
 3. **Replicate — AI image generation.** `chart-big-idea` → `replicate-imagery` (model routing + brand alignment + cost awareness) → upstream `replicate/skills` for prompting → `replicate` MCP calls the Replicate HTTP API. FLUX / Ideogram / Recraft / Imagen + editing / inpaint / upscale / background-removal. Requires `REPLICATE_API_TOKEN`; nothing spins up until you use it.
 4. **Shell — browsable / gallery / catalog surface.** `docs-shell` skill + `starter/` bundle (index.html + manifest.json + about.md) render concatenated markdown as a single-page HTML shell with two-line topnav, sticky page header, and sidebar TOC. HTML-source docs (pre-built Flint reports, exported dashboards) bypass the shell wrapper.
-5. **Banner — deterministic brand identity.** `svg-banner` reads the active palette and brand structure, then generates a reproducible 1200×320 SVG for READMEs, plans, notes, and release artifacts. Entry point: the `banner` prompt.
+5. **Banner — deterministic brand identity.** `svg-banner` reads the active palette and brand structure, then generates a reproducible 1200×320 SVG for READMEs, plans, notes, and release artifacts. Entry point: `/alex-act-illustrator-plugin banner`.
 
 **Install composition** is adjacent rather than a sixth authoring area: `install-visual-companions` offers the visual runtime shelf per plugin, with explicit consent and marketplace verification before installation.
 
@@ -25,7 +25,7 @@ Five authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and
 That one sentence — the load-bearing output of the `chart-big-idea` skill — is what makes this a chart _with meaning_ instead of _decoration_. Everything downstream is a direct consequence of it: the story arc (Relationship with quadrant annotation), the audience read (Read / General / Persuasive), the TRADITIONAL-vs-INNOVATIVE stance (INNOVATIVE, because the heart-as-mnemonic argument is irreducibly geometric), the chartType (layered `scatter_plot`), the 12-layer composition (shaded quadrants → midpoint rules → parametric heart curve → archetype dots → axis subtitles), and the archetype placement (each of the heart's four lobes lands in its matching semantic quadrant).
 
 <p align="center">
-  <img src="assets/heart-chart.svg" alt="A heart-shaped curve traced onto an Intimacy × Passion plane, rendered as a layered Vega-Lite chart via the flint-chart MCP server. The x-axis is Intimacy (subtitle: trust, vulnerability, shared meaning), the y-axis is Passion (subtitle: desire, chemistry, excitement). Both axes run from low to high. Dashed lines partition the plot into four quadrants labeled INFATUATION (top left), CONSUMMATE LOVE (top right, on a warm cream background), INDIFFERENCE (bottom left, on a cool gray background), and FRIENDSHIP (bottom right). A red heart curve fills the plane; four bold dots sit at the heart's lobes, each labeled with an archetype that matches its semantic quadrant." width="480" />
+  <img src="https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/heart-chart.svg" alt="A heart-shaped curve traced onto an Intimacy × Passion plane, rendered as a layered Vega-Lite chart via the flint-chart MCP server. The x-axis is Intimacy (subtitle: trust, vulnerability, shared meaning), the y-axis is Passion (subtitle: desire, chemistry, excitement). Both axes run from low to high. Dashed lines partition the plot into four quadrants labeled INFATUATION (top left), CONSUMMATE LOVE (top right, on a warm cream background), INDIFFERENCE (bottom left, on a cool gray background), and FRIENDSHIP (bottom right). A red heart curve fills the plane; four bold dots sit at the heart's lobes, each labeled with an archetype that matches its semantic quadrant." width="480" />
 </p>
 
 **Skill-to-chart flow** — what the `chart-big-idea` skill did before the first line of the Vega-Lite spec was authored:
@@ -33,9 +33,9 @@ That one sentence — the load-bearing output of the `chart-big-idea` skill — 
 1. **Step 0 — read context.** The Big Idea was distilled from a written essay on the orthogonality of intimacy and passion, not asked cold from the user.
 2. **Step 1 — draft the sentence.** Subject (heart silhouette) + verb (_is_) + implication (the four-archetype map). No 3-question elicitation ladder needed because Step 0 surfaced enough.
 3. **Steps 2–4 — story arc + audience + style stance.** Relationship-with-annotation, general-audience read, INNOVATIVE (justified because the argument itself is 2D-geometric).
-4. **Step 5 — emit the Chart Brief.** The brief is what `/render-chart` then handed to the `flint-chart` skill for chartType selection and rendering.
+4. **Step 5 — emit the Chart Brief.** The brief is what `/alex-act-illustrator-plugin render-chart` then handed to the `flint-chart` skill for chartType selection and rendering.
 
-The rendered demo ships in `demos/heart-with-axes/` — an interactive `report.html` you can open in any browser, plus a folder README with the Chart Brief and layer breakdown. Design decisions and the plugin's own genesis live in `docs/`.
+The source repository includes the [`demos/heart-with-axes/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/demos/heart-with-axes) interactive report and its Chart Brief. Design decisions and the plugin's genesis live in the source [`docs/`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/tree/main/docs) tree; neither directory is part of the installable Mall payload.
 
 ## Architecture — one framing gate, five authoring routes
 
@@ -78,10 +78,10 @@ Each authoring skill can still run independently when the framing or verificatio
 | `.github/skills/docs-shell/SKILL.md`            | Single-page HTML shell for browsable documentation, chart galleries, and illustration catalogs. HTML-source docs supported for pre-built reports.                                |
 | `.github/skills/replicate-imagery/SKILL.md`     | Route AI image generation and editing to Replicate (FLUX, Ideogram, Recraft, imagen) via the bundled `replicate` MCP server. Delegates prompting to Replicate's upstream skills. |
 | `.github/skills/svg-banner/SKILL.md`            | 1200×320 SVG brand banner generator with pluggable brand config (default: Alex ACT). For READMEs, plans, notes, release artifacts. Absorbed from `Alex_ACT_Steward` 2026-07-30.  |
-| `.github/skills/install-visual-companions/SKILL.md` | Consent-gated installer for nine independently maintained visual-workflow companion plugins; verifies marketplace identity before offering each install. |
-| `.github/prompts/render-chart.prompt.md`        | `/render-chart <request>` slash-command entry point (loads the three chart skills)                                                                                               |
-| `.github/prompts/banner.prompt.md`              | `/banner` slash-command entry point (invokes the svg-banner skill)                                                                                                               |
-| `.github/prompts/install-visual-companions.prompt.md` | Entry point for choosing and installing visual companions one at a time. |
+| `install-visual-companions` skill               | Consent-gated installer for nine independently maintained visual-workflow companion plugins; verifies marketplace identity before offering each install.                         |
+| `.github/prompts/render-chart.prompt.md`        | `/alex-act-illustrator-plugin render-chart <request>` entry point (loads the three chart skills)                                                                                 |
+| `.github/prompts/banner.prompt.md`              | `/alex-act-illustrator-plugin banner` entry point (invokes the svg-banner skill)                                                                                                 |
+| `install-visual-companions` prompt              | `/alex-act-illustrator-plugin install-visual-companions` entry point for choosing and installing companions one at a time.                                                       |
 | `.vscode/mcp.json`                              | MCP server registration — `flint` (required) + `replicate` (optional, needs `REPLICATE_API_TOKEN`) + `playwright` (optional; see Install)                                        |
 | `.vscode/settings.json`                         | Registers the `local/` skill + prompt discovery roots                                                                                                                            |
 | `manifest.json`                                 | Plugin manifest — declares all shipping assets, install paths, prerequisites                                                                                                     |
@@ -151,6 +151,8 @@ The plugin follows the Alex ACT constellation brand palette. Canonical machine-r
 - **GitHub CLI authenticated** — `gh auth login` and confirm with `gh auth status`.
 
 Full brand-new-user walkthrough (four personas, five install stages, anti-patterns): see [`Alex_ACT_Steward/constellation/USER-EXPERIENCE.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/USER-EXPERIENCE.md).
+
+**Complete end-user installation**: [`INSTALL.md`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/blob/main/INSTALL.md).
 
 ### Install from the Alex ACT Mall
 
@@ -367,7 +369,7 @@ first one that fails tells you where the fault is.
    chart types, and a render should produce an image.
 
 This repo runs the same four checks against its own `.vscode/` config —
-last verified 2026-07-29 against `flint-chart-mcp` 0.3.0 (MCP protocol
+last verified 2026-08-02 against `flint-chart-mcp` 0.3.0 (MCP protocol
 `2024-11-05`).
 
 For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI reference), see the canonical [Flint MCP doc](https://microsoft.github.io/flint-chart/#/mcp).

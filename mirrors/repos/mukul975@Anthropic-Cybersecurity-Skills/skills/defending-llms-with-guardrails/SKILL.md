@@ -1,6 +1,6 @@
 ---
 name: defending-llms-with-guardrails
-description: Deploy Llama Guard, NeMo Guardrails, and LLM Guard input/output scanners as runtime defenses.
+description: Deploys Llama Guard 3 safety classification, NeMo Guardrails programmable dialogue rails, and LLM Guard input/output scanner pipelines as complementary runtime defenses that inspect and constrain LLM prompts and responses. Use when adding a production runtime safety layer to an LLM, RAG, or agent application to block jailbreaks, prompt injection (OWASP LLM01), toxic content, or sensitive-data leakage before it reaches or leaves the model.
 domain: cybersecurity
 subdomain: ai-security
 tags:
@@ -15,9 +15,9 @@ tags:
 version: '1.0'
 author: mahipal
 license: Apache-2.0
-nist_csf:
+nist_ai_rmf:
 - MANAGE-2.1
-mitre_attack:
+atlas_techniques:
 - AML.T0054
 ---
 # Defending LLMs with Guardrails

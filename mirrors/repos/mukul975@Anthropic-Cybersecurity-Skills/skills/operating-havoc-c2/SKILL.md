@@ -1,6 +1,6 @@
 ---
 name: operating-havoc-c2
-description: Deploy a Havoc team server with Yaotl profiles, generate evasive Demon agents with indirect syscalls and sleep obfuscation, and run post-exploitation and pivoting for adversary emulation.
+description: Deploy a Havoc C2 team server with Yaotl malleable profiles, generate evasive Demon agents using indirect syscalls and sleep obfuscation, and run post-exploitation and pivoting operations. Use during authorized, rules-of-engagement-bound red-team engagements for adversary emulation requiring a full C2 lifecycle (server setup, evasive implant generation, tasking, and lateral pivoting).
 domain: cybersecurity
 subdomain: red-teaming
 tags:

@@ -1,6 +1,11 @@
 ---
 name: triaging-windows-with-kape
-description: Run targeted forensic artifact collection and module parsing with KAPE.
+description: Runs KAPE (Kroll Artifact Parser and Extractor) to collect targeted
+  forensic artifacts (registry hives, $MFT, event logs, prefetch, browser data)
+  via Targets and parse them with Modules wrapping Eric Zimmerman's EZ Tools (PECmd,
+  MFTECmd, RECmd). Use during early incident containment/triage when full disk
+  imaging is impractical but a defensible, parseable Windows artifact set is needed
+  quickly, including at-scale remote collection.
 domain: cybersecurity
 subdomain: digital-forensics
 tags:

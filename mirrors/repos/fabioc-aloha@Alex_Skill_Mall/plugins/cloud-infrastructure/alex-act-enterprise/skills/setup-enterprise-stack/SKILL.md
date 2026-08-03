@@ -1,7 +1,7 @@
 ---
 name: setup-enterprise-stack
 description: "Emit and (with consent) install the Copilot CLI settings block for the public Microsoft ecosystem — Azure, Fabric (consumption/skills/operations/authoring), Power BI, and Microsoft 365 Agents Toolkit. Defaults to **repo scope** (`.github/copilot/settings.json`) per constellation PLUGIN-INTEGRATION § 2 — these are project-specific tools; a Python data-analysis workspace does not need Azure skills loaded. `--user` opt-in for heirs who want the plugins available in every workspace. Use when a heir on any Microsoft-subscribed tenant wants the seven public plugins enabled for the current project, or when auditing / repairing the Microsoft ecosystem enablement in a workspace or user profile."
-lastReviewed: 2026-07-30
+lastReviewed: 2026-08-02
 ---
 
 # Setup Enterprise Stack
@@ -11,7 +11,7 @@ Emit the paste-ready `enabledPlugins` + `extraKnownMarketplaces` block for the s
 ## When to fire
 
 - Heir asks to enable the Microsoft ecosystem — "set up Azure + Fabric + Power BI + M365 for Copilot"
-- Heir invokes the `/setup-enterprise` prompt
+- Heir invokes `/alex-act-enterprise setup-enterprise`
 - Heir asks what block goes into `~/.copilot/settings.json` for the public Microsoft plugins
 - Auditing or repairing a workspace where some of the seven are missing / disabled / stale
 
@@ -92,7 +92,7 @@ Three modes. Ask the heir which they want; default to (1). Every mode uses the s
 
 Print the JSON block above with instructions targeted at the chosen scope:
 
-> **Repo scope (default)**: Paste this block into `.github/copilot/settings.json` in the current workspace. Create the file if it does not exist. If the file already has `extraKnownMarketplaces` or `enabledPlugins` keys, merge — do not overwrite existing entries. Commit the file (it belongs in source control; teammates will inherit the setup on clone). After paste, run `copilot plugin install --all` to install every enabled plugin, or run `copilot plugin install <name>@<marketplace>` for each one individually.
+> **Repo scope (default)**: Paste this block into `.github/copilot/settings.json` in the current workspace. Create the file if it does not exist. If the file already has `extraKnownMarketplaces` or `enabledPlugins` keys, merge — do not overwrite existing entries. Commit the file (it belongs in source control; teammates will inherit the setup on clone). Then run the seven individual `copilot plugin install <name>@<marketplace>` commands shown in consent-gated auto-install mode.
 >
 > **User scope (`--user` opt-in)**: Paste this block into `~/.copilot/settings.json` on this machine. If the file already has keys, merge. The block will apply to every workspace you open on this machine.
 
@@ -174,6 +174,6 @@ Track outcomes in the maintaining repo's curation log.
 
 ## Related
 
-- `/setup-enterprise` — slash-command entry point
+- `/alex-act-enterprise setup-enterprise` — namespaced slash-command entry point
 - `alex-act-msft`'s `setup-msft-stack` skill — sibling for internal-only plugins
 - Steward's user-brain inventory § 184 — source spec for this block

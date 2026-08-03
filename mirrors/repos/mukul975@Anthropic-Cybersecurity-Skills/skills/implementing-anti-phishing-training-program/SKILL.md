@@ -1,8 +1,6 @@
 ---
 name: implementing-anti-phishing-training-program
-description: Security awareness training is the human layer of phishing defense. An
-  effective anti-phishing training program combines regular simulations, interactive
-  learning modules, metric tracking, and positiv
+description: Guides designing, deploying, and measuring an anti-phishing security awareness program - baseline phishing simulations, interactive training modules, just-in-time learning, and metric tracking - using platforms like KnowBe4, Proofpoint Security Awareness, or Cofense. Use when building or maturing a phishing awareness program, establishing training controls for compliance, or measuring phishing susceptibility and reporting rates over time.
 domain: cybersecurity
 subdomain: phishing-defense
 tags:

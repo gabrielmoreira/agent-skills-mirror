@@ -19,7 +19,7 @@ license: MIT
 
 ## 边界
 
-- 资产事实只来自已接受剧本、已有 bible、连续性和创作者补充；不擅改剧情。
+- 资产事实只来自已接受剧本、已有 设定集、连续性和创作者补充；不擅改剧情。
 - 始终读取 `short-drama.json#/creator_authority/{visual_direction,production_profile}` 中状态为
   `accepted` 的视觉方向与制作形态：形态决定哪些身份锚点在本项目里根本可被表达——以剪影为
   识别通道的形态与以面部结构为识别通道的形态需要不同的锚点集合；若状态为 `unset`，就向
@@ -39,8 +39,8 @@ license: MIT
 ## 入口判断
 
 1. **已有已接受的 `screenplay.md` 与 index**：直接拆解。
-2. **已有资产 bible，只需补集内出现与状态**：读取旧 ID，先判复用，再提新项。
-3. **只有非 canonical 的中文剧本**：保留原字节到 `inputs/`；调用 write owner
+2. **已有资产 设定集，只需补集内出现与状态**：读取旧 ID，先判复用，再提新项。
+3. **只有非 canonical 的中文剧本**：保留原字节到 `输入/`；调用 write owner
    产生最小规范化预览、语义 diff 和未映射片段。创作者接受前不发布
    `screenplay.md`，拒绝也不改变原稿。接受后直接回来拆资产，不虚构 development。
 4. **用户只要局部结果**（如“拆本场道具”）：仍执行 occurrence → decision，
@@ -52,7 +52,7 @@ license: MIT
 
 ### 1. 先读事实边界
 
-读取本集剧本/index、已有 bible、上集 outgoing、创作者参考与文本政策，以及已接受的
+读取本集剧本/index、已有 设定集、上集 outgoing、创作者参考与文本政策，以及已接受的
 视觉方向与制作形态。标记哪个版本已被接受。不要把旧 prompt、旧分镜或文件名当成资产真相。
 
 ### 2. 逐块提 occurrence，暂不创建资产
@@ -72,7 +72,7 @@ license: MIT
 
 ### 3. 再做身份判断
 
-把 occurrence 与已有 bible 逐项比对，只给四种提案：
+把 occurrence 与已有 设定集 逐项比对，只给四种提案：
 
 - `reuse`：持续身份和本次所需变体均已存在；
 - `new_variant`：同一身份，新增 Look/View/State；
@@ -84,7 +84,7 @@ license: MIT
 不要为了少建记录而合并真正不同的资产。详见
 `references/identity-vs-variant.md` 与 `assets/decisions.example.jsonl`。
 
-### 4. 写最小可识别 bible
+### 4. 写最小可识别 设定集
 
 按类别沉淀，身份锚点与临时状态绝不混写：
 
@@ -98,7 +98,7 @@ license: MIT
 每个新变体记录 base、变化、原因与有效范围。只写能帮助再次认出、复用、提示词
 编写或连续性检查的事实；不堆砌“高级、精致、电影感”等泛化修饰。
 
-### 5. 写变化，不复制整本 bible
+### 5. 写变化，不复制整本 设定集
 
 为交接所需的资产状态变化记录 before、after、剧本原因、开始/结束边界和受影响 binding。
 重点检查造型/伤势、持物/所有权、道具状态、地点时段/天气/光态以及跨集 outgoing。
@@ -127,7 +127,7 @@ accepted snapshot，且不得交付。
 
 ### 7. 发布与修订
 
-发布至 `bible/*.jsonl` 及 `episodes/<EP>/assets/{occurrences,decisions,continuity}.jsonl`。
+发布至 `设定集/*.jsonl` 及 `剧集/<EP>/assets/{occurrences,decisions,continuity}.jsonl`。
 每个非权威重复值都携带 owner artifact/hash/field pointer。资产修改后只标记依赖该
 ID/variant 的提示词、镜头和 review 为 stale；不要重写无关资产或 screenplay。
 

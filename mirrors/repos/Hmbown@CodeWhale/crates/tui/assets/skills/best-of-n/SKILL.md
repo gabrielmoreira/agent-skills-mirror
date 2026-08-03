@@ -18,7 +18,10 @@ the user has already chosen the approach.
 1. Define one task, one evidence packet, and one explicit scoring rubric before
    launching candidates. Include correctness, fit to the request, simplicity,
    risk, and verification.
-2. Choose `N` from 2 to 4. Default to 3. More candidates need a concrete reason.
+2. Choose `N` from 2 to 4 for a quick comparison (default 3). For an explicit
+   experimental search, use the Workflow search option: 2–16 live candidates,
+   with larger validated populations queued at the Workflow host's 16-worker
+   concurrency gate rather than launched at once.
 3. Give every candidate the same task and rubric. Add only a candidate number;
    do not steer candidates toward different conclusions unless diversity is an
    explicit part of the request.
@@ -54,20 +57,21 @@ When candidates must implement code, give each one:
 - the same bounded `write_roots` or `exact_files`
 
 Never run parallel writers in the parent checkout. Each implementer must return
-`VERDICT: PASS|FAIL` with command evidence (tests/lint) — a diff alone is not
-completion.
+the structured candidate contract (candidate id, hypothesis, paths, commands,
+self-verdict, risks, and artifact references). A self-verdict is evidence to
+inspect, not a hard-gate result.
 
 Optional diversity: pin different `model` / Fleet `fleet_profile` values when
 the project has multiple capable routes; otherwise keep model strength `same`.
 
 ## Judge Once
 
-Use one read-only reviewer/verifier worker, or the parent when the result is
-small, to score all candidates against the original rubric. The judge must:
+Use one read-only reviewer worker, or the parent when the result is small, to
+score all candidates against the original rubric. The judge must:
 
 - cite evidence from each candidate rather than vote by style;
 - reject candidates that violate authority, scope, or verification gates;
-- reject any code candidate without PASS evidence (or re-verify it);
+- treat candidate-reported commands and PASS claims as untrusted until replay;
 - name the winner and the decisive reasons;
 - identify useful pieces worth combining, if any;
 - say when the candidates are tied or all fail.
@@ -80,12 +84,22 @@ approaches into a new unreviewed solution.
 For proposal-only work, return the winning answer with a compact score summary.
 For code work:
 
-1. Inspect the winning worktree diff.
-2. Apply/merge the winner into the parent checkout only after the judge (or a
-   follow-up verifier) reports PASS with real checks.
-3. Re-run the repository's checks in the parent after apply. Candidate
-   self-reports and style scores are not final verification.
-4. Leave losing worktrees unmerged; do not pollute the parent with partials.
+1. Freeze the baseline, evaluator, hard gates, score rule, and authority before
+   a larger search admits candidates. Any evaluator change starts a revision.
+2. After a worker loses write authority, apply its patch to a clean baseline
+   and let the runtime—not that worker—run hard gates and scoring.
+3. Inspect the winning worktree diff and independently replay it on the clean
+   baseline. A different read-only model may look for gaming, but deterministic
+   tests remain the authority.
+4. Present the verified winner for review. Applying or merging is a separate,
+   explicit user action; `NONE` is valid when every candidate fails.
+5. Preserve losing and failed candidate receipts as useful negative results.
+
+The checked-in `operate_best_of_n.workflow.js` recipe supports
+`strategy: "search"` for structured 2–16 candidate generation and review. It
+does **not** yet turn prompt-listed commands into hidden runtime gates. Do not
+advertise those gates until the runtime evaluator host consumes a frozen
+`WorkflowSearchSpec`.
 
 Stop early when one candidate reveals a hard constraint that invalidates the
 tournament. Report the negative result rather than spending the remaining

@@ -17,7 +17,7 @@ WASM target in `crates/xberg-wasm/`. Uses wasm-bindgen with sync-only internal A
 # RT-DETR layout detection and PP-LCNet document-orientation run in WASM through
 # the pure-Rust `tract` engine (layout-tract + auto-rotate-tract); weights are
 # streamed in via load_from_memory (detectLayout / detectOrientation). Deliberately
-# NO tree-sitter — the 306-language grammar pack pushes the browser .wasm past
+# NO tree-sitter — the 371-language grammar pack pushes the browser .wasm past
 # jsDelivr's 50 MB per-file cap, so code intelligence is unavailable in WASM.
 wasm-target = ["no-ort-target", "excel-wasm", "ocr-wasm", "layout-tract", "auto-rotate-tract"]
 wasm-threads = ["dep:wasm-bindgen-rayon"]  # Optional

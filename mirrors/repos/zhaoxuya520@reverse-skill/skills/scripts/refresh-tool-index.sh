@@ -67,7 +67,10 @@ install_hint() {
     linux:ghidra) echo "GitHub release ZIP or Flatpak; Java required" ;;
     linux:burpsuite) echo "manual installer/jar; then load burp-mcp-full jar" ;;
     linux:jshookmcp) echo "npx: npx -y @jshookmcp/jshook@0.3.4" ;;
+    linux:reqable-mcp) echo "npx: npx -y reqable-mcp-server@1.0.1; install Reqable desktop separately" ;;
+    linux:jeb-pro) echo "manual licensed install: https://www.pnfsoftware.com/jeb/" ;;
     linux:anything-analyzer) echo "git clone + pnpm install + pnpm dev" ;;
+
     linux:nuclei) echo "GitHub release or go install; apt may be unavailable" ;;
     linux:seclists) echo "git clone https://github.com/danielmiessler/SecLists ~/tools/SecLists" ;;
 
@@ -82,6 +85,8 @@ install_hint() {
     macos:ghidra) echo "brew: brew install ghidra or brew install --cask ghidra" ;;
     macos:burpsuite) echo "brew cask/manual: brew install --cask burp-suite" ;;
     macos:jshookmcp) echo "npx: npx -y @jshookmcp/jshook@0.3.4" ;;
+    macos:reqable-mcp) echo "npx: npx -y reqable-mcp-server@1.0.1; install Reqable desktop separately" ;;
+    macos:jeb-pro) echo "manual licensed install: https://www.pnfsoftware.com/jeb/" ;;
     macos:anything-analyzer) echo "git clone + corepack enable + pnpm install + pnpm dev" ;;
     macos:nuclei) echo "brew: brew install nuclei" ;;
     macos:seclists) echo "git clone https://github.com/danielmiessler/SecLists ~/tools/SecLists" ;;
@@ -125,6 +130,8 @@ TOOLS=(
   "binwalk|firmware-pentest|Firmware extraction and analysis|binwalk|binwalk --version|"
   "seclists|pentest-tools|Security wordlists|none|none|$HOME/tools/SecLists;/usr/share/seclists"
   "jshookmcp|js-reverse|JS/CDP/Hook MCP runtime via npx|npx|npx --version|"
+  "reqable-mcp|pentest-tools|Reqable desktop MCP runtime via npx|npx|npx --version|"
+  "jeb-pro|apk-reverse|Commercial Android/ARM decompiler (manual licensed install)|jeb,jeb_wincon|jeb --version|$HOME/tools/JEB/jeb;$HOME/JEB/jeb;/opt/jeb/jeb"
   "anything-analyzer|browser-automation|Browser/HTTP analyzer MCP project|none|none|$HOME/tools/anything-analyzer;$REPO_ROOT/../anything-analyzer"
   "burp-mcp-full|burp-mcp|Local Burp MCP extension and stdio bridge|none|none|$REPO_ROOT/burp-mcp-full/mcp-bridge.js"
   "binwalk|firmware-pentest|Firmware extraction and analysis|binwalk|binwalk --version|"

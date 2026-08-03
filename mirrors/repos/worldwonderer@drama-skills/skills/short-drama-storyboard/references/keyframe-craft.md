@@ -109,7 +109,7 @@ A single held pose may imply tension, but it must not require several moments.
 
 ## Prompt economy
 
-Do not restate full character or location bibles. Bind accepted variants and
+Do not restate full character or location 设定集s. Bind accepted variants and
 repeat only facts the frame needs to prevent ambiguity: distinguishing anchor,
 current Look, crucial spatial anchor, held prop, light direction, text state.
 

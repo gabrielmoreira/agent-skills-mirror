@@ -29,6 +29,8 @@
 | 13 | CodePilot Provider proxy 下的精确模型委派只能暴露 `codepilot_spawn_subagent`；Codex 原生 `multi_agent_v1` 会继承另一条 Provider/Model route，不能与 managed bridge 同时暴露。Codex Account 不经过 proxy，继续保留原生 collab | `codex/proxy/namespace-tools.ts` + `codex/proxy/builtin-bridge.ts` |
 | 14 | Claude managed child 复用父 `canUseTool` 时必须额外携带唯一 `agentRunId`、实际 child session id 与 `agentName`；权限 UI 显示发起者，批准/拒绝仍由唯一 permissionRequestId 定向。**当前只有 Claude adapter** 能根据必填 `required_capabilities=write_workspace` 识别写任务并按真实 working-directory 串行；Native / Codex 没有等价声明与跨 Runtime 共享锁，不能把本条描述成三 Runtime 通用防护 | `claude-subagent-mcp.ts` + `claude-client.ts` + `PermissionPrompt.tsx` |
 | 15 | 破坏性进程重启 recovery 只有在上一 runtime owner 已死亡时才能中止 pending permission / 清理 lock；Next route/module 重复初始化或用户切换聊天不能把仍存活的 child 审批改成 `Process restarted` | `src/lib/db.ts` runtime owner guard |
+| 16 | 标为 `safe_read` / `PERMISSION_SAFE_TOOLS` 的工具不得把模型输入拼入 shell 字符串；调用外部只读程序必须使用固定 executable + argv 数组，`shell:false`，并以恶意分号、引号、命令替换反例证明没有副作用 | `src/lib/tools/grep.ts`、`src/lib/tools/glob.ts` |
+| 17 | 本地 HTTP 路由只要能安装/卸载软件或启动进程，就必须在解析 body 前要求 loopback Host、同源 `Origin`、`application/json`，并对请求参数采用闭合语法；跨平台兼容不得把未验证参数重新送回 shell。Windows 的固定 `cmd.exe /d /s /c npx.cmd` bridge 会重新解析 argv，其安全性显式依赖当前 `SAFE_PATH_SEGMENT` 闭合语法；任何放宽都必须先补 Windows metachar 反例并重新审查该边界 | `src/lib/skills-marketplace-command.ts` + Skills Marketplace install/remove routes |
 
 ## 关键文件 + 责任
 
@@ -45,12 +47,16 @@
 | `src/lib/codex/proxy/builtin-bridge.ts` | Codex child Provider+Model 路由、depth 1；不得要求父模型分类 child capability |
 | `src/lib/tools/agent.ts` | Native child 父工具/权限继承、depth=1、并发=2、abort 下传 |
 | `src/lib/agent-tools.ts` | permission request 的 child run 归属 metadata |
+| `src/lib/tools/grep.ts`、`src/lib/tools/glob.ts` | Native `safe_read` 搜索工具的无 shell 进程边界 |
+| `src/lib/skills-marketplace-command.ts` | Marketplace 同源 mutation、输入语法与跨平台进程 argv 边界 |
 | `src/lib/provider-call-policy.ts` | delegated_interactive 场景分类 |
 | `src/components/chat/PermissionPrompt.tsx` | 子 Agent 权限发起者的用户可见归属 |
 
 ## 改动检查表
 
 - [ ] 加新工具时确认默认是 unsafe，明确决定是否加入 PERMISSION_SAFE_TOOLS
+- [ ] safe_read 工具若调用外部程序，只能固定 executable + argv + `shell:false`；用模型可控 metachar 输入跑副作用反例
+- [ ] 新增本地安装/卸载/进程 route 时，先做 loopback Host、同源 JSON 门禁和闭合输入语法，再启动进程；Windows `.cmd` 兼容不得接受任意 shell token，放宽 `SAFE_PATH_SEGMENT` 前必须重跑 Windows metachar 反例
 - [ ] 改 mutationLevel 分类时跑 harness-capability-contract.test.ts
 - [ ] 新 Runtime 接入时填能力矩阵；不支持的能力标 `unsupported` 不能假装支持
 - [ ] 改 reviewer capability 时覆盖 UI route 与运行时 shipping boundary；不得只在下拉框禁用
@@ -72,6 +78,8 @@
 ## 常见坑
 
 - `codepilot_*` 工具名前缀曾被当作"内部工具自动放行"——这是 Phase 5e 修的真实安全洞，不要再引入类似的"按 prefix 放行"逻辑。
+- “只读工具”只是产品语义，不会自动让实现安全。Grep/Glob 曾把模型 pattern 拼入 `execSync`，因此能在免审批 surface 上执行任意命令；shell 字符串与 `safe_read` 分类绝不能共存。
+- `spawn(command, args, { shell: true })` 不会因为参数放在数组里就安全，Node 仍会把它们交给 shell。Marketplace 这类进程 route 还必须防跨源 simple POST，不能只修引号转义。
 - live smoke 前必须先过 contract test；不要用 live smoke 驱动逐个补丁（Phase 5b round 6 教训）。
 - 不要用 Claude Agent SDK 的版本或 MCP 探测结果判断 Codex reviewer；两者没有依赖关系。
 - 仅依赖“请求没有报错”不能证明 Codex 接受 reviewer 字段；旧 app-server 可能忽略未知字段，必须检查响应回显。
@@ -101,6 +109,8 @@
 | delegated scene、模型白名单、child attribution | `provider-call-policy.test.ts`、`subagent-orchestration.test.ts` |
 | Claude Memory MCP capability 反例、permission attribution、同目录写串行 | `subagent-orchestration.test.ts` |
 | live process 重复初始化不终止 pending child permission | `collect-owner-gate.test.ts` |
+| Native Grep/Glob 模型输入不会产生 shell 副作用 | `native-search-tools-security.test.ts` |
+| Skills Marketplace loopback + 同源 JSON、闭合输入和 shell-free argv | `skills-marketplace-security.test.ts` |
 
 ## 设计决策日志
 
@@ -117,3 +127,4 @@
 - 2026-07-23 — 会话 `0b385950a86ec7fbeff5bb44508ec76c` 暴露 namespace 全展开的冲突：proxied 父模型同时调用 managed bridge 与 `multi_agent_v1.spawn_agent/wait_agent`，三个原生 worker 继承父 route，却被正文冒充成 Qwen/DeepSeek/Kimi；UI 又把每个 collab 控制调用显示成 “Codex worker” 胶囊。proxy 现移除原生 collab namespace，并在 tool/system instruction 双重声明 managed entry point 唯一性；Codex Account native path 不变。
 - 2026-07-23 — Claude review 发现 capability preflight 用 `hasMcp` 同时授予 read/network/write，导致常驻 `codepilot-memory` 让 live research 永远通过；同时 managed child 裸复用父 approval callback、两个写 child 可并发改同一工作树。修复为 built-in surface 逐能力证明、MCP 仅继承不作能力证明、权限事件增加 run/session/name 归属、`write_workspace` 按 realpath 串行。
 - 2026-07-23 — 会话 `ba4855b4c4d272afc85f3a70bbb5b5f4` 的两个 child permission 在创建两秒后被写成 `Process restarted`，但 Electron/Next 主进程并未退出。原因是 route/module 重复 `initDb()` 执行了 restart sweep。现由数据库路径级进程 owner 隔离 schema init 与 recovery；live owner 下 permission/lock/checkpoint 保持不变。
+- 2026-08-02 — Claude 收尾审查发现 Native `safe_read` Grep/Glob 用 `execSync` 拼接模型 pattern，可绕过 Bash 审批执行命令；Skills Marketplace install/remove 同时以 `shell:true` 消费本地 POST 参数。搜索工具改为固定 `rg`/`grep`/`find` argv，Marketplace 增加 loopback Host、同源 JSON + GitHub source/skill id 闭合语法，Unix 直启 `npx`、Windows 只用固定 `cmd.exe → npx.cmd` bridge，外层始终 `shell:false`；恶意 metachar 行为测试钉住零副作用。
