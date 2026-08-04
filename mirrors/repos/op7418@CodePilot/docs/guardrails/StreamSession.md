@@ -38,6 +38,8 @@
 | 22 | Claude managed child 的超时 owner 是 child 内部可续期 idle deadline + hard cap；父回合通用 tool timeout 不得在 300 秒整 abort managed spawn。详情 API 的 404/5xx/网络异常先做有界快速探测，随后进入低频冷却恢复；不得永久每秒请求，也不得因首次 transient error 永久吞掉真实 terminal run。404 可标 missing，transient 只能是 unknown；stream Error 必须先序列化后写日志，不能只留下 `{}` | `claude-client.ts` + `claude-stream-diagnostics.ts` + `subagent-detail-probe.ts` + `SubagentCard.tsx` |
 | 23 | managed tool_use 到达不等于 Agent run 已接受。胶囊只为 durable `subagent_runs` row 展示；生产渲染链传入的 transcript `run` view 本身不是 durable evidence，必须由 session-scoped details API 200 证明。workflow dependency accepted 后显示 queued，只有 app-side handoff compiler 注入上游 terminal result 并切 dispatch_state=executing 后才显示运行中。schema/initial-route/capability 预检失败不得制造幽灵胶囊或占用 workflow task key | `subagent-orchestration.ts` + `subagent-view.ts` + `SubagentCard.tsx` + `codex/proxy/builtin-bridge.ts` |
 | 24 | Codex Account 有两条明确分离的委派通道：用户指定 CodePilot Provider / Model 时，只能通过 app-server `dynamicTools` 暴露的 managed `codepilot_spawn_subagent` 精确路由并落 durable fact；Codex 原生 `spawn_agent` 只表示继承父 Codex route 的 native worker，不能冒充指定模型。动态工具仅在 `thread/start` 注册，initialize 必须声明 `experimentalApi`，旧 thread 由 feature fingerprint 切到新 thread；每个真实 Codex thread 使用独立 dispatcher route，不能用进程级单 handler 互相抢占。managed local tool 的 app-server mirror lifecycle 必须抑制，聊天只能出现一次调用/结果；最终 wire result 必须重读 terminal-immutable durable row，晚到的 child completion 不得覆盖先发生的取消 | `codex/runtime.ts` + `codex/app-server-manager.ts` + `codex/dynamic-tool-bridge.ts` + `codex/proxy/builtin-bridge.ts` + `db.ts` |
+| 25 | Thinking 动画只增强已有事实，不自行声称模型在 reasoning。首 token 前的普通等待使用 `working`，只有真实 thinking delta 行使用 `solving`；可访问语义仍由现有文字承担，canvas 必须 decorative，并尊重组件的 reduced-motion / visibility pause | `StreamingMessage.tsx` + `tool-actions-group.tsx` |
+| 26 | Runtime 内部 lifecycle envelope 不得经通用 status fallback 原样出现在聊天中。已知成功/瞬态事件默认静默；真正影响能力的失败保留结构化诊断事实但只展示本地化人类提示；未知 Codex kind 降级为通用人类状态。双聊天入口均不得暴露 server id、payload JSON 或协议 kind | `codex/event-mapper.ts` + `useSSEStream.ts` + `chat/page.tsx` |
 
 ## 关键文件 + 责任
 
@@ -50,6 +52,7 @@
 | `src/components/chat/ChatView.tsx` | 后续消息入口 |
 | `src/components/chat/MessageItem.tsx` | 历史 tool 配对；保持真实 tool id；子 Agent 分流 |
 | `src/components/chat/StreamingMessage.tsx` | 流式子 Agent 卡片分流 |
+| `src/components/ai-elements/tool-actions-group.tsx` | 流式 reasoning 行与工具活动折叠展示 |
 | `src/lib/subagent-view.ts` | requested/effective/runtime/status 的诚实归一化 |
 | `src/lib/subagent-status.ts` | Claude task lifecycle → last-wins tool_result 状态标记；async launch 非终态 |
 | `src/lib/subagent-run-context.ts` | Codex durable run 快照与只读查询结果；system snapshot 不包含 prompt/result |
@@ -95,6 +98,9 @@
 - [ ] 改 managed tool 渲染或依赖编排时覆盖：无 durable row 不显示、queued 与 executing 分离、上游失败时下游 Provider 未启动、下游实际 prompt 含上游 durable result
 - [ ] 改 Codex Account dynamic tool 时覆盖：initialize `experimentalApi`、`thread/start.dynamicTools`、旧 thread fingerprint、不同 thread 并发路由、local lifecycle 去重、Stop 同时 abort parent controller + `turn/interrupt`
 - [ ] 改 terminal settle wrapper 时覆盖“durable cancelled 之后 handler 晚到 completed”：wire、DB 与胶囊都必须保持 cancelled
+- [ ] 改 Thinking 动画时保持 first-token wait 与真实 reasoning 语义分离，并验证 20px inline preset、decorative canvas、reduced-motion 不回退成无限动画
+- [ ] 升级 `thinking-orbs` 前重新人工审阅发布 diff（网络/eval/storage、浏览器 API guard、reduced-motion、visibility/offscreen pause、unmount cleanup），不得只放宽版本范围后依赖 lockfile
+- [ ] 新增 Runtime status kind 时明确 quiet / human-copy / actionable-UI 三选一，并同时覆盖 `/chat` 首轮和 `/chat/[id]` 后续流；禁止落入原始 JSON 展示
 
 ## 常见坑
 
@@ -127,6 +133,8 @@
 - 不要把 Error 对象作为 Next dev logger 的第二参数期待它能展开；先归一化并输出单个 JSON 字符串。
 - 不要在收到 managed `tool_use` 时立即宣称“运行中”。参数可能尚未通过 SDK/app 校验，也可能是等待依赖的 queued node；UI 必须先命中 durable row。
 - 不要依赖父模型把 A 的结果写进同一 turn 内预先生成的 B prompt。那段输入已经冻结；必须在 B 真正执行前由应用从 durable result 编译。
+- 不要因为加载动画叫 Thinking Orb，就把普通首 token 等待标成模型推理；视觉 state 必须跟已有状态事实走，文字仍是语义真源。
+- 不要把 `unknown_item` 的 `{ kind, payload }` 直接当用户文案。fallback 保证事件可诊断，不代表内部协议适合进入聊天正文。
 
 ## 测试覆盖
 
@@ -152,6 +160,7 @@
 | Codex Account dynamic tool surface、per-thread dispatch、mirror lifecycle 去重、feature fingerprint、initialize capability 与 parent Stop | `codex-builtin-bridge.test.ts`、`codex-dynamic-tool-bridge.test.ts`、`codex-builtin-codex-account-guardrail.test.ts`、`codex-interrupt-contract.test.ts` |
 | Codex protocol selector 的 exact-route 校验、用户模型归一化与 raw lifecycle breadcrumb | `subagent-orchestration.test.ts` |
 | durable cancellation 不被晚到 completion 覆盖 | `subagent-run-persistence.test.ts` |
+| 20px Thinking Orb 的 React 兼容、decorative 语义与 wait/reasoning state 接线 | `chat-thinking-orb.test.ts` |
 
 ## 设计决策日志
 
@@ -174,3 +183,5 @@
 - 2026-07-25：Claude follow-up 证明 durable gate 的 fail-closed 不能等同于永久隐藏：terminal managed run 首次 details 500 会停在 unknown，五次 404 后迟到 row 也无法恢复。现统一为 5 次快速 probe 后每 30 秒一次低频恢复，成功即清空冷却；Codex bridge 以行为测试证明 queued parent Stop 收口 durable cancelled。dependency deadline 最后查询一次以区分 never-created 与 active upstream；Codex signal 组合为 Node 18 增加兼容 fallback，turn registry/wire 改为行为测试、只把真实 app-server 集成留给 smoke。
 - 2026-07-26：Codex Account 原生 collab 只能可靠表达 inherited-route worker，无法兑现用户指定的 CodePilot Provider+Model。产品采用双通道：保留 native collab 的 identity-bearing 诚实展示；指定外部 route 时由 app-server dynamic `codepilot_spawn_subagent` 进入既有 managed workflow/durable bridge。真实 smoke 发现 experimental capability 缺失、local/mirror lifecycle 重复、Stop 只中断 app-server turn 以及晚到 completion 覆盖取消，现分别用 initialize capability、per-thread dispatcher 去重、父 turn AbortController registry 和 terminal durable reread 收口。
 - 2026-07-27：真实 Codex Account Kimi smoke 证明 exact route 成功仍不等于用户可见模型正确：app-server 会回报协议 selector `sonnet`。Codex 现与 Claude 共用同一语义——raw selector 先用于 route 核验并写 lifecycle breadcrumb，核验通过后 `effective_model` 使用具体 route display identity；真实 mismatch 保留 raw 值并 fail-closed。
+- 2026-08-04：聊天等待与真实 reasoning 行接入 MIT `thinking-orbs@0.2.0` 的 20px Canvas preset。首 token 前使用 `working`，thinking delta 使用 `solving`；orb 标为 decorative，保留现有文字语义，并由上游组件负责 reduced-motion、离屏与后台暂停。该包采用时仍年轻，版本保持精确 pin；任何升级必须重新人工审阅发布 diff，不能把当前审计结论沿用到未来版本。reasoning 行用固定 20px 图标框，避免 streaming orb 切到完成图标时产生位移。
+- 2026-08-04：用户实机发现 Codex `mcpServerReady` 经 `unknown_item → status` 显示成原始 JSON。现将 ready/starting 在 mapper 静默，startup failed 仍保留结构化诊断，但由共享 resolver 在首轮与后续流转换为本地化人类提示；旧 server 发来的 ready envelope 也由 renderer 防御性消费。generic fallback 只允许普通人类字符串直通，结构化对象及以 `{` / `[` 开头的残缺 JSON 统一降级为本地化状态，防止同类问题换 Runtime 复发。

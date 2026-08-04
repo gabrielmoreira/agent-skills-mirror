@@ -627,18 +627,46 @@ ensure_nmap() {
   case "$PLATFORM" in macos) install_brew nmap ;; linux) install_apt nmap ;; esac
 }
 
+register_pentestswarm_mcp() {
+  local executable="$1"
+  local definition
+  definition=$(python3 - "$executable" <<'PY'
+import json, sys
+print(json.dumps({"command": sys.argv[1], "args": ["mcp", "serve"]}))
+PY
+)
+  write_mcp_server "pentestswarm" "$definition"
+}
+
 ensure_pentestswarm() {
-  if has_cmd pentestswarm; then log_ok "pentestswarm ready"; return 0; fi
+  local pentestswarm_path
+  pentestswarm_path="$(cmd_path pentestswarm)"
+  if [[ -n "$pentestswarm_path" ]]; then
+    register_pentestswarm_mcp "$pentestswarm_path"
+    log_ok "pentestswarm ready"
+    return 0
+  fi
   if ! has_cmd go; then
     case "$PLATFORM" in macos) install_brew go ;; linux) install_apt golang-go ;; esac
   fi
-  if ! go install github.com/Armur-Ai/Pentest-Swarm-AI/cmd/pentestswarm@v0.1.0; then
-    if has_cmd docker; then
-      write_mcp_server "pentestswarm" '{"command":"docker","args":["run","--rm","-i","ghcr.io/armur-ai/pentestswarm:v0.1.0","mcp","serve"]}'
-      log_warn "pentestswarm Go install failed; registered Docker fallback ghcr.io/armur-ai/pentestswarm:v0.1.0"
-    else
-      manual_required pentestswarm "Install Go 1.24+ or Docker, then install Pentest-Swarm-AI and ensure pentestswarm is on PATH."
+  if go install github.com/Armur-Ai/Pentest-Swarm-AI/cmd/pentestswarm@v0.1.0; then
+    local go_bin
+    go_bin="$(go env GOBIN 2>/dev/null || true)"
+    if [[ -z "$go_bin" ]]; then
+      go_bin="$(go env GOPATH 2>/dev/null || true)/bin"
     fi
+    if [[ -x "$go_bin/pentestswarm" ]]; then
+      register_pentestswarm_mcp "$go_bin/pentestswarm"
+      log_ok "pentestswarm installed and registered"
+      return 0
+    fi
+    log_warn "pentestswarm installed but no executable was found in GOBIN/GOPATH; trying Docker fallback"
+  fi
+  if has_cmd docker; then
+    write_mcp_server "pentestswarm" '{"command":"docker","args":["run","--rm","-i","ghcr.io/armur-ai/pentestswarm:v0.1.0","mcp","serve"]}'
+    log_warn "pentestswarm Go install failed or produced no runnable binary; registered Docker fallback ghcr.io/armur-ai/pentestswarm:v0.1.0"
+  else
+    manual_required pentestswarm "Install Go 1.24+ or Docker, then install Pentest-Swarm-AI and ensure pentestswarm is on PATH."
   fi
 }
 

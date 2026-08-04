@@ -8,6 +8,8 @@ param(
     [string] $Hint = '',
     [string] $CaseName = '',
     [string] $PackageRoot = '',
+    [AllowEmptyString()]
+    [string] $ProjectRoot = '',
     [switch] $AuthGranted,
     [string] $AuthStatus = '',
     [string] $AuthBasis = 'own_system',
@@ -23,6 +25,15 @@ $scriptDir = $PSScriptRoot
 if (-not $scriptDir) { $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path }
 $skillsRoot = Split-Path -Parent $scriptDir
 if (-not $PackageRoot) { $PackageRoot = Split-Path -Parent $skillsRoot }
+. (Join-Path (Join-Path $scriptDir 'lib') 'WorkRoot.ps1')
+$requestedProjectRoot = if (-not [string]::IsNullOrWhiteSpace($ProjectRoot)) {
+    $ProjectRoot
+} elseif ($PSBoundParameters.ContainsKey('PackageRoot')) {
+    $PackageRoot
+} else {
+    ''
+}
+$projectRoot = Resolve-ReverseProjectRoot -RequestedRoot $requestedProjectRoot
 
 if (-not $CaseName) {
     $slug = if ($Hint) {
@@ -32,7 +43,7 @@ if (-not $CaseName) {
     $CaseName = '{0}-{1}' -f (Get-Date -Format 'yyyyMMdd-HHmmss'), $slug
 }
 
-# CaseName is a directory name, not a path. Keep every case under PackageRoot/work.
+# CaseName is a directory name, not a path. Keep every case under projectRoot/work.
 # The pattern allows localized names but excludes Windows path syntax and names that
 # Windows would normalize into a dot segment (for example, '.. ' or 'case.').
 if ([string]::IsNullOrWhiteSpace($CaseName) -or
@@ -41,7 +52,8 @@ if ([string]::IsNullOrWhiteSpace($CaseName) -or
     throw "Invalid -CaseName '$CaseName'. Use a 1-80 character directory name beginning with a letter or number; path separators, dot segments, trailing dots/spaces, control characters, and wildcard characters are not allowed."
 }
 
-$caseRoot = Join-Path $PackageRoot ("work\{0}" -f $CaseName)
+$workRoot = Join-Path $projectRoot 'work'
+$caseRoot = Join-Path $workRoot $CaseName
 $dirs = @('evidence', 'notes', 'report')
 New-Item -ItemType Directory -Force -Path $caseRoot | Out-Null
 foreach ($d in $dirs) {
@@ -166,6 +178,7 @@ $scope = @"
 - case_id: $CaseName
 - created: $created
 - operator: local
+- project_root: $projectRoot
 - primary_skill: $primary
 - primary_id: $primaryId
 - lead_role: lead
@@ -288,6 +301,7 @@ $readmeNext
 [System.IO.File]::WriteAllText((Join-Path $caseRoot 'README.md'), $readme, $utf8)
 
 Write-Host ("CASE -> {0}" -f $caseRoot) -ForegroundColor Green
+Write-Host ("PROJECT -> {0}" -f $projectRoot)
 Write-Host ("PRIMARY skill: skills/{0} ({1})" -f $primary, $primaryId)
 Write-Host ("auth.status={0} network_profile={1} ready_for_act={2}" -f $authStatusResolved, $networkMode, $readyStr)
 if ($ready) {

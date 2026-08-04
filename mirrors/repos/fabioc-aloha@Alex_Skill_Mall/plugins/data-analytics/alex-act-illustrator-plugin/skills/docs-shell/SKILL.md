@@ -199,13 +199,13 @@ Revise this skill by **2026-10-29** (90 days) or sooner if any of the following 
 
 ## Origin
 
-Authored 2026-07-26 in the [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward) repo, evolved through the folder-shell pattern (2026-07-26 to 2026-07-28), unified into a single root shell 2026-07-28, and ported to this plugin (`Alex_ACT_Illustrator_Plugin`) on 2026-07-29 as the canonical source-of-truth going forward. Adopted before the port by [CX-Vitals](https://github.com/fabioc-aloha/CX-Vitals) and [QuestionnaireFlow](https://github.com/fabioc-aloha/QuestionnaireFlow); both heirs still run the per-folder pattern out of their `local/docs-shell/` skill installs.
+Authored 2026-07-26 in the [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core) repo, evolved through the folder-shell pattern (2026-07-26 to 2026-07-28), unified into a single root shell 2026-07-28, and ported to this plugin (`Alex_ACT_Illustrator_Plugin`) on 2026-07-29 as the canonical source-of-truth going forward. Adopted before the port by [CX-Vitals](https://github.com/fabioc-aloha/CX-Vitals) and [QuestionnaireFlow](https://github.com/fabioc-aloha/QuestionnaireFlow); both heirs still run the per-folder pattern out of their `local/docs-shell/` skill installs.
 
 ## Cross-links
 
 - `../../../docs/shell/README.md` — canonical technical reference (manifest schema, theme, path rewriting, optional features, adoption, local rendering, troubleshooting)
 - [`starter/`](starter/) — the adopter-facing starter kit
 - **Related skills (external, sourced from Steward baseline)**:
-  - [big-idea](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/skills/big-idea/SKILL.md) — how to author `hero.subtitle` copy
-  - [markdown-mermaid](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/skills/markdown-mermaid/SKILL.md) — Mermaid diagram authoring rules that fire when a doc contains a `mermaid` code block
-  - [svg-banner](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/skills/svg-banner/SKILL.md) — routes branded SVG banner authoring to this plugin
+  - [big-idea](https://github.com/fabioc-aloha/Alex_ACT_Core) — how to author `hero.subtitle` copy
+  - [markdown-mermaid](https://github.com/fabioc-aloha/Alex_ACT_Core) — Mermaid diagram authoring rules that fire when a doc contains a `mermaid` code block
+  - [svg-banner](https://github.com/fabioc-aloha/Alex_ACT_Core) — routes branded SVG banner authoring to this plugin

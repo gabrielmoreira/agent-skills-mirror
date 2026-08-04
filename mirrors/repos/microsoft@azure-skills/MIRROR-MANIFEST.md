@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/azure-skills` — 26 default patterns, 0 followed patterns, 1284 file(s) materialized.
+Mirror of `microsoft/azure-skills` — 26 default patterns, 0 followed patterns, 1286 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/azure-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1284 |
+| Files         | 1286 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1329,20 +1329,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1268 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/template-index.md`](skills/microsoft-foundry/resource/private-network/references/template-index.md) |
 | 1269 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep) |
 | 1270 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md) |
-| 1271 | ✓ | [`skills/microsoft-foundry/SKILL.md`](skills/microsoft-foundry/SKILL.md) |
-| 1272 | ✓ | [`skills/python-appservice-deploy/references/create-app.md`](skills/python-appservice-deploy/references/create-app.md) |
-| 1273 | ✓ | [`skills/python-appservice-deploy/references/deploy-azcli.md`](skills/python-appservice-deploy/references/deploy-azcli.md) |
-| 1274 | ✓ | [`skills/python-appservice-deploy/references/deploy-azd.md`](skills/python-appservice-deploy/references/deploy-azd.md) |
-| 1275 | ✓ | [`skills/python-appservice-deploy/references/detect.md`](skills/python-appservice-deploy/references/detect.md) |
-| 1276 | ✓ | [`skills/python-appservice-deploy/references/errors.md`](skills/python-appservice-deploy/references/errors.md) |
-| 1277 | ✓ | [`skills/python-appservice-deploy/references/post-deploy-message.md`](skills/python-appservice-deploy/references/post-deploy-message.md) |
-| 1278 | ✓ | [`skills/python-appservice-deploy/references/startup-commands.md`](skills/python-appservice-deploy/references/startup-commands.md) |
-| 1279 | ✓ | [`skills/python-appservice-deploy/references/transient-retry.md`](skills/python-appservice-deploy/references/transient-retry.md) |
-| 1280 | ✓ | [`skills/python-appservice-deploy/scripts/generate-app-name.ps1`](skills/python-appservice-deploy/scripts/generate-app-name.ps1) |
-| 1281 | ✓ | [`skills/python-appservice-deploy/scripts/generate-app-name.sh`](skills/python-appservice-deploy/scripts/generate-app-name.sh) |
-| 1282 | ✓ | [`skills/python-appservice-deploy/scripts/retry-az-create.ps1`](skills/python-appservice-deploy/scripts/retry-az-create.ps1) |
-| 1283 | ✓ | [`skills/python-appservice-deploy/scripts/retry-az-create.sh`](skills/python-appservice-deploy/scripts/retry-az-create.sh) |
-| 1284 | ✓ | [`skills/python-appservice-deploy/SKILL.md`](skills/python-appservice-deploy/SKILL.md) |
+| 1271 | ✓ | [`skills/microsoft-foundry/scripts/check-and-setup-dependencies.ps1`](skills/microsoft-foundry/scripts/check-and-setup-dependencies.ps1) |
+| 1272 | ✓ | [`skills/microsoft-foundry/scripts/check-and-setup-dependencies.sh`](skills/microsoft-foundry/scripts/check-and-setup-dependencies.sh) |
+| 1273 | ✓ | [`skills/microsoft-foundry/SKILL.md`](skills/microsoft-foundry/SKILL.md) |
+| 1274 | ✓ | [`skills/python-appservice-deploy/references/create-app.md`](skills/python-appservice-deploy/references/create-app.md) |
+| 1275 | ✓ | [`skills/python-appservice-deploy/references/deploy-azcli.md`](skills/python-appservice-deploy/references/deploy-azcli.md) |
+| 1276 | ✓ | [`skills/python-appservice-deploy/references/deploy-azd.md`](skills/python-appservice-deploy/references/deploy-azd.md) |
+| 1277 | ✓ | [`skills/python-appservice-deploy/references/detect.md`](skills/python-appservice-deploy/references/detect.md) |
+| 1278 | ✓ | [`skills/python-appservice-deploy/references/errors.md`](skills/python-appservice-deploy/references/errors.md) |
+| 1279 | ✓ | [`skills/python-appservice-deploy/references/post-deploy-message.md`](skills/python-appservice-deploy/references/post-deploy-message.md) |
+| 1280 | ✓ | [`skills/python-appservice-deploy/references/startup-commands.md`](skills/python-appservice-deploy/references/startup-commands.md) |
+| 1281 | ✓ | [`skills/python-appservice-deploy/references/transient-retry.md`](skills/python-appservice-deploy/references/transient-retry.md) |
+| 1282 | ✓ | [`skills/python-appservice-deploy/scripts/generate-app-name.ps1`](skills/python-appservice-deploy/scripts/generate-app-name.ps1) |
+| 1283 | ✓ | [`skills/python-appservice-deploy/scripts/generate-app-name.sh`](skills/python-appservice-deploy/scripts/generate-app-name.sh) |
+| 1284 | ✓ | [`skills/python-appservice-deploy/scripts/retry-az-create.ps1`](skills/python-appservice-deploy/scripts/retry-az-create.ps1) |
+| 1285 | ✓ | [`skills/python-appservice-deploy/scripts/retry-az-create.sh`](skills/python-appservice-deploy/scripts/retry-az-create.sh) |
+| 1286 | ✓ | [`skills/python-appservice-deploy/SKILL.md`](skills/python-appservice-deploy/SKILL.md) |
 
 ---
 

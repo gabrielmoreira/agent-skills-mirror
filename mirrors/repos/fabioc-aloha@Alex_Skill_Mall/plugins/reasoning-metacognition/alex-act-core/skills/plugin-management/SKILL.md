@@ -69,7 +69,7 @@ node <plugin-management-skill>/scripts/core-operations.cjs marketplace-versions 
 
 By default it reads the immutable raw path for the current `alex-mall` manifest. `--file <path>` provides an offline or test input. Missing, duplicate, or incomplete records fail closed. Compare those exact versions with `copilot plugin list` and installed `plugin.json` files.
 
-For private direct-installed MSFT, use authenticated source metadata through `gh api repos/fabioc-aloha/alex-act-msft/contents/plugin.json`; do not expect a public Mall record.
+For private direct-installed MSFT, use authenticated source metadata through `gh api repos/fabioc_microsoft/alex-act-msft/contents/plugin.json`; do not expect a public Mall record.
 
 ## Scope precedence
 

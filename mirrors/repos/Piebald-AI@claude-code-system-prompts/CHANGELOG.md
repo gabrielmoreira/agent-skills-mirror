@@ -4,6 +4,33 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.221](https://github.com/Piebald-AI/claude-code-system-prompts/commit/ff459f4)
+
+_+11,813 tokens_
+
+- **NEW:** Data: MCP HTTP client capability, parameter-header, and standard-header validation rationales — Document the SEP-2243 pre-dispatch capability and `Mcp-Method`/`Mcp-Name`/`Mcp-Param-*` checks, including parameter-header 400 / -32020 failures, registry dependencies, and cases where observed HTTP precedence differs from the documented dispatch ladder.
+- **NEW:** Data: Sandbox TLS termination setting and Data: Sandbox credential mask empty injectHosts warning — Document experimental in-process HTTPS body inspection and CA handling, including native Windows behavior, and warn that masks without injection hosts expose only sentinel values that cannot authenticate.
+- **NEW:** System Prompt: Forked conversation worktree isolation guidance — Prevents forked background conversations from entering the original session's linked worktree and directs them to create a separate worktree based on the original branch when needed.
+- **NEW:** Skill: Prompt audit — Adds a non-interactive, provenance-aware audit for dated prompt, skill, tool-description, and request patterns that preserves explicitly keep-listed content, produces both a findings report and proposed diff, and applies edits only when requested.
+- **NEW:** Skill: Prototype, Skill: Prototype runtime capabilities guidance, and System Reminder: Plan mode prototype artifact option — Add a greenfield proof-of-concept workflow with short intake, stated assumptions, a working self-contained Artifact, same-page iteration, and disclosed use of real runtime capabilities versus fakes; plan mode may offer it once but defers building until plan approval.
+- **NEW:** Skill: Artifact diagramming — Adds guidance for choosing diagrams that expose real mechanisms and differences, then drawing accessible, theme-aware, self-contained inline SVG with labeled flows and restrained complexity.
+- **NEW:** System Prompt: Artifact comment edit composer, System Prompt: Artifact comment reply composer, System Prompt: Artifact comment thread framing, and Tool Description: Artifact comments guidance — Add injection-safe handling for activated viewer comment threads, with anchored context treated as untrusted data, reply-only and deterministic full-source edit-and-reply paths, and manual comment read/reply guidance.
+- **REMOVED:** Skill: Artifact workshop — Removes the dedicated iterative decision-workshop skill prompt that applied reader choices and republished the Artifact until build kickoff.
+- Data: Sandbox filesystem disabled setting — Clarifies that disabling filesystem containment drops credential-file deny protections while preserving credential-file mask sentinel binds and environment-variable deny/mask protections.
+- Skill: Build with Claude API (reference guide), Skill: Building LLM-powered applications with Claude, and Skill: Model migration guide — Route prompt-cleanup requests to the new prompt-audit guide, make its subcommand non-interactive, and include an in-scope prompt audit after model migrations.
+- Tool Description: Artifact — Exempts template-based workshop pages from the general Artifact design skill and directs their diagrams through the Artifact diagramming skill instead.
+- Agent Prompt: Security monitor for autonomous agent actions (first part) — Treats embedded review content as data, requires relayed approval claims and selected question options to be checked against the user's own words, adds Synthetic Input Self Drive to adversarial-pattern handling, and evaluates subagent hand-backs as actions rather than empty endings.
+- System Prompt: Auto memory durable lesson instructions — Replaces the broader persistent-memory guidance with per-reply checks that save only durable, applicable lessons taught or corrected by the user, exclude self-discovered code and environment facts, require same-turn writes, and cap globally pinned memories at four.
+- System Prompt: Background session instructions and System Prompt: Background session worktree persistence guidance — Replace generic isolated-worktree shipping with background-specific retention: keep user-owned outputs outside ephemeral job storage, commit and push entered worktrees unless the user reserves git control, open a draft PR only when the task calls for one, and finish with an actionable location and next command while exempting subagent handoffs.
+- System Prompt: Chrome browser MCP tools and System Prompt: Claude in Chrome browser automation — Add `tabs_close_mcp` to the core deferred browser tools loaded together at the start of a browser task.
+- Skill: Building LLM-powered applications with Claude — Treats `stop_details.category` as an open set that can include `reasoning_extraction` and `frontier_llm`, and adds Sonnet 5 to the models that reject assistant-message prefilling.
+- Data: Workshop artifact HTML template — Moves the working draft before the decision context, adds card separation and theme-aware shadows, and stabilizes footer and status heights across interaction states.
+- Skill: Whiteboard — Renames the Artifact whiteboard skill, distinguishes silent viewer saves from sends that need a response, keeps board replies diagrammatic with reasoning in brief chat text, and tightens text sizing, connector targets, and generated-ID constraints.
+- Skill: Artifact PR review and Skill: Artifact PR review (composed publish flow) — Add a gated “Approve on GitHub” stamp that submits one approval as the viewer only after a fresh head check, explicit disclosure, consent, and connector validation; pin and permit revocation of the exact connector manifest while keeping the non-composed flow's stamp empty.
+- Tool Description: Artifact publishing and update guidance and Tool Description: Artifact supporting files guidance — Add rendered-page, text-file, binary-file, supporting-file-count, and total-version limits, count embedded data URIs toward the budget, and require standard web media types.
+- Tool Description: claude.ai Project — Downloads images, spreadsheets, and other non-document uploads intact to local files for file-appropriate tooling instead of returning empty content.
+- Tool Description: SearchPlugins and Tool Description: SearchSkills — Use suggestion cards only when their rendering tools are available and otherwise relay relevant plugin or skill results in text.
+
 #### [2.1.220](https://github.com/Piebald-AI/claude-code-system-prompts/commit/5aef43e)
 
 <sub>_No changes to the system prompts in v2.1.220._</sub>

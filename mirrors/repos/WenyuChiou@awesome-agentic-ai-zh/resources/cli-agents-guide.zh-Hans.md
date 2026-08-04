@@ -17,14 +17,14 @@
 
 | 工具 | 提供者 | License | 主推 LLM | 认证 / 计费 | Stars |
 |---|---|---|---|---|---|
-| [Claude Code](https://github.com/anthropics/claude-code) | Anthropic（官方） | NOASSERTION | Claude | Claude 订阅 **或** Anthropic Console API key | ★ 132k+ |
+| [Claude Code](https://github.com/anthropics/claude-code) | Anthropic（官方） | NOASSERTION | Claude | Claude 订阅 **或** Anthropic Console API key | ★ 140k+ |
 | [Codex](https://github.com/openai/codex) | OpenAI（官方） | Apache-2.0 | GPT 系列 | ChatGPT 账号登录 **或** OpenAI API key | ★ 100k+ |
 | [OpenCode](https://github.com/sst/opencode) | 社群（repo 已迁至 `anomalyco/opencode`） | MIT | 任意（多 provider） | BYO API key 或 OpenCode Zen 内建 hosted | ★ 190k+ |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Google（官方） | Apache-2.0 | Gemini | 免费额度宽，超出收费 | ★ 103k+ |
 | [goose](https://github.com/block/goose) | Agentic AI Foundation（repo 已迁至 `aaif-goose/goose`） | Apache-2.0 | 15+ provider（含 Ollama） | BYO API key 或既有 Claude / ChatGPT / Gemini 订阅（ACP） | ★ 51k+ |
-| [Aider](https://github.com/Aider-AI/aider) | Aider-AI（社群） | Apache-2.0 | 任意 | BYO API key | ★ 44k+ |
-| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | Nous Research | MIT | 200+ via OpenRouter / NVIDIA NIM / 智谱 GLM / Kimi / 小米 MiMo / MiniMax / HF / OpenAI | BYO API key（多 provider） | ★ 213k+ |
-| [Grok Build](https://github.com/xai-org/grok-build) | SpaceXAI（xAI，官方） | Apache-2.0 | Grok | 首次启动开浏览器完成登录 | ★ 22k+ |
+| [Aider](https://github.com/Aider-AI/aider) | Aider-AI（社群） | Apache-2.0 | 任意 | BYO API key | ★ 47k+ |
+| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | Nous Research | MIT | 200+ via OpenRouter / NVIDIA NIM / 智谱 GLM / Kimi / 小米 MiMo / MiniMax / HF / OpenAI | BYO API key（多 provider） | ★ 224k+ |
+| [Grok Build](https://github.com/xai-org/grok-build) | SpaceXAI（xAI，官方） | Apache-2.0 | Grok | 首次启动开浏览器完成登录 | ★ 23k+ |
 
 ---
 
@@ -53,6 +53,7 @@
 
 ### 想跑在 cloud VM、用 Telegram / Slack 等多平台跟它聊 + 用中国大陆 LLM
 **首推**：Hermes Agent。差异化在三件事：
+
 - **不绑 laptop**——agent 跑在 $5 VPS / Modal serverless，你从 Telegram / Discord / Slack / WhatsApp / Signal 任一个介面对话
 - **多 LLM 中性**——支持 GLM / Kimi / 小米 MiMo / MiniMax，刚好对应 11 中文圈生态
 - **内建 self-improving skill loop + cron 排程**——agent 跟你互动久了会自动生成 skill，跨 session 持续优化
@@ -124,7 +125,7 @@
 - **LLM endpoint** 用 Ollama（`http://localhost:11434/v1`），也可以改接 z.ai GLM / Kimi 等 provider
 - **聊天入口** 用 Telegram / Slack / Discord；Hermes 负责把平台消息转进 agent workflow
 - **完全不想接 Anthropic / OpenAI** 时，这条路线适合做离线、隐私资料、低成本重复实验
-- Step-by-step 做法看 [`resources/cookbook.md` Recipe 6](cookbook.zh-Hans.md#6-本地-llm--cli-agent-快速-walkthrough)
+- Step-by-step 做法看 [`resources/cookbook.zh-Hans.md` Recipe 6](cookbook.zh-Hans.md#6-本地-llm--cli-agent-快速-walkthrough)
 
 ---
 

@@ -29,12 +29,13 @@ The deterministic runtime is shared at `../plugin-management/scripts/core-operat
 Command surface:
 
 ```text
-node <plugin-management-skill>/scripts/core-operations.cjs bootstrap-workspace [--target <path>] [--apply]
+node <plugin-management-skill>/scripts/core-operations.cjs bootstrap-workspace [--target <path>] [--refresh-css] [--apply]
 ```
 
 Rules:
 
 - No `--apply` means preview only
+- `--refresh-css` changes a differing existing CSS action from `preserve` to `refresh`; it still writes only with `--apply`
 - Unknown arguments or a missing `--target` value fail fast
 - Default target is `process.cwd()`
 - The script prints the exact JSON plan before any write
@@ -50,11 +51,13 @@ The plan must remain a JSON object with this shape:
   "target": "<absolute workspace path>",
   "apply": false,
   "css": {
-    "action": "create | preserve",
+    "action": "create | preserve | refresh",
     "source": "<absolute source path>",
     "destination": "<absolute destination path>",
     "bytes": 0,
-    "sha256": "<hex>"
+    "sha256": "<hex>",
+    "currentSha256": "<hex-or-null>",
+    "matchesSource": false
   },
   "settings": {
     "action": "create | merge | preserve",
@@ -82,6 +85,7 @@ Only run `--apply` after an explicit yes.
 - Source is the bundled `markdown-mermaid/markdown-light.css`
 - If `.vscode/markdown-light.css` is absent, create it
 - If it already exists, preserve it byte-for-byte
+- If it differs, report both hashes; refresh it only after explicit approval by rerunning with `--refresh-css --apply`
 - Verify the destination SHA-256 after a copy
 
 ### Settings behavior
@@ -150,6 +154,7 @@ Rules:
 | --- | --- |
 | Applying without preview | Preview first, always show the JSON plan, then ask for explicit consent. |
 | Replacing an existing workspace stylesheet | Preserve existing CSS byte-for-byte. |
+| Hiding CSS drift behind `preserve` | Report both hashes and offer the explicit `--refresh-css` preview. |
 | Overwriting a custom or null `markdown.styles` value | Set the key only when absent; preserve existing values exactly. |
 | Rewriting `.gitignore` broadly | Narrow only the broad `.vscode` rule that blocks the two managed files. |
 | Treating this as a user-settings repair | Repository scope only. Route user-scope work to `configure-vscode`. |

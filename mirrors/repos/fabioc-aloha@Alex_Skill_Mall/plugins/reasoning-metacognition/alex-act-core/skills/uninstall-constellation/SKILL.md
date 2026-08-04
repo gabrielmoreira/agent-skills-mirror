@@ -253,5 +253,5 @@ Track outcomes in Steward `operations/ledgers/curation-log.md` tagged `[UNINSTAL
 - [`plugin-management`](../plugin-management/SKILL.md) — general Copilot CLI plugin operations and safety rules
 - [`install-constellation`](../install-constellation/SKILL.md) — sibling install flow that this skill undoes
 - [`update-plugins`](../update-plugins/SKILL.md) — sibling update flow; if the heir is trying to fix a broken plugin, update may be the right route before uninstall
-- Steward [`USER-EXPERIENCE.md` § Stage 6](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/USER-EXPERIENCE.md) — user-facing walkthrough of the uninstall procedure
-- Steward [`PLUGIN-INTEGRATION.md` § 4](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/PLUGIN-INTEGRATION.md) — the plugin-management operational surface this skill sits within
+- Steward [`USER-EXPERIENCE.md` § Stage 6](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/INSTALL.md) — user-facing walkthrough of the uninstall procedure
+- Steward [`PLUGIN-INTEGRATION.md` § 4](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/INSTALL.md) — the plugin-management operational surface this skill sits within

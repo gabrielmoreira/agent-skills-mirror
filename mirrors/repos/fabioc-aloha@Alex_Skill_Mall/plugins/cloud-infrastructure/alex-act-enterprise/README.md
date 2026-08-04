@@ -2,16 +2,16 @@
 
 Alex ACT config-template plugin for the **public Microsoft ecosystem**. Ships a single scaffolding skill (`setup-enterprise-stack`) that generates a repo-scoped `.github/copilot/settings.json` block for 7 Microsoft plugins any tenant can use, with an explicit `--user` opt-in.
 
-**Status**: v0.1.5, published through `alex-mall`. Repository created 2026-07-30. Content lands through evidence-gated Steward proposals per [`Alex_ACT_Steward/architecture/act/CURATION-RULES.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/architecture/act/CURATION-RULES.md).
+**Status**: v0.1.5, published through `alex-mall`. Repository created 2026-07-30. The plugin composes with the public [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) runtime and remains evidence-gated before release.
 
-**Maintainer**: [`Alex_ACT_Steward`](https://github.com/fabioc-aloha/Alex_ACT_Steward) (top-of-chain in the plugin-architecture lineage since 2026-07-26 fork-and-freeze).
+**Public runtime baseline**: [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core).
 
 ## What this is
 
 `alex-act-enterprise` is a **config-template plugin** — it ships one skill, not a large surface. The skill emits a paste-ready `enabledPlugins` + `extraKnownMarketplaces` block for the seven public Microsoft ecosystem plugins:
 
 | Plugin | Marketplace | Marketplace source | Purpose |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `azure` | `azure-skills` | `microsoft/azure-skills` | Azure resource authoring + ops + diagnostics + RBAC + storage + compute |
 | `fabric-consumption` | `copilot-plugins` (default) | (built-in) | Fabric semantic model / warehouse / SQL / dataflow consumption |
 | `fabric-skills` | `copilot-plugins` (default) | (built-in) | Cross-Fabric workload utility skills |
@@ -34,7 +34,7 @@ Every entry is **public**. Any tenant with the corresponding Microsoft subscript
 Three-layer constellation stack:
 
 | Layer | Plugin | Role |
-|---|---|---|
+| --- | --- | --- |
 | **Baseline** | [`alex-act-core`](https://github.com/fabioc-aloha/Alex_ACT_Core) | Always-on epistemic discipline every heir needs |
 | **Specialization — visual authoring** | [`alex-act-illustrator-plugin`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) | Charts, print figures, SVG banners, AI imagery |
 | **Specialization — Microsoft ecosystem** | **`alex-act-enterprise`** (this repo) | Config template for the public Microsoft plugin set |
@@ -93,7 +93,7 @@ Same layout as [`alex-act-core`](https://github.com/fabioc-aloha/Alex_ACT_Core) 
 - **GitHub CLI authenticated** — `gh auth login` and confirm with `gh auth status`.
 - **Alex ACT Core installed first** — `alex-act-enterprise` composes on top of Core's plugin-management framework.
 
-Full brand-new-user walkthrough (four personas, five install stages, anti-patterns): see [`Alex_ACT_Steward/constellation/USER-EXPERIENCE.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/USER-EXPERIENCE.md).
+Full brand-new-user walkthrough (four personas, five install stages, anti-patterns): see [Alex ACT Core install guide](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/INSTALL.md).
 
 **Complete end-user installation**: [`INSTALL.md`](https://github.com/fabioc-aloha/alex-act-enterprise/blob/main/INSTALL.md).
 
@@ -123,7 +123,7 @@ You should see `alex-act-enterprise@alex-mall` with the current version. From Co
 
 ## Use — configure the Microsoft ecosystem in a workspace
 
-The Microsoft ecosystem plugins (Azure, Fabric-*, Power BI, M365 Agents Toolkit) are **project-specific** per [`PLUGIN-INTEGRATION.md` § 2](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/PLUGIN-INTEGRATION.md). Enterprise defaults to **repo scope** — the target block gets written to `.github/copilot/settings.json` in whatever workspace you're in, so teammates inherit the setup on next `git pull`.
+The Microsoft ecosystem plugins (Azure, Fabric-*, Power BI, M365 Agents Toolkit) are **project-specific** per [`PLUGIN-INTEGRATION.md` § 2](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/INSTALL.md). Enterprise defaults to **repo scope** — the target block gets written to `.github/copilot/settings.json` in whatever workspace you're in, so teammates inherit the setup on next `git pull`.
 
 Open your Microsoft-ecosystem workspace and invoke:
 
@@ -155,11 +155,11 @@ copilot plugin uninstall alex-act-enterprise
 
 Uninstalling Enterprise **does not** remove the downstream Microsoft plugins it configured. Those stay enabled in their respective `settings.json` files until you uninstall them individually (`copilot plugin uninstall azure@azure-skills`, etc.) or edit the `enabledPlugins` block.
 
-**Troubleshooting.** If uninstall fails with `Access is denied` (close VS Code first) or `Plugin "..." is not installed` while the plugin still shows in `plugin list` (zombie entry in `~/.copilot/config.json`), see [`USER-EXPERIENCE.md § Optional — start from a clean slate`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/USER-EXPERIENCE.md) for the two-file cleanup pattern.
+**Troubleshooting.** If uninstall fails with `Access is denied` (close VS Code first) or `Plugin "..." is not installed` while the plugin still shows in `plugin list` (zombie entry in `~/.copilot/config.json`), see [`USER-EXPERIENCE.md § Optional — start from a clean slate`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/INSTALL.md) for the two-file cleanup pattern.
 
 ## Roadmap
 
-Growth happens through evidence-gated proposals per [`Alex_ACT_Steward/architecture/act/CURATION-RULES.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/architecture/act/CURATION-RULES.md).
+Growth happens through evidence-gated proposals per [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core).
 
 Future candidates (evaluated per proposal):
 
@@ -170,7 +170,7 @@ Each proposal requires explicit Fabio approval before landing.
 
 ## Related
 
-- [`Alex_ACT_Steward`](https://github.com/fabioc-aloha/Alex_ACT_Steward) — authoring authority and top-of-chain
+- [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core) — authoring authority and top-of-chain
 - [`Alex_ACT_Core`](https://github.com/fabioc-aloha/Alex_ACT_Core) — the baseline plugin every heir installs
 - [`alex-act-illustrator-plugin`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) — sibling specialization (visual authoring)
 - `alex-act-msft` — sibling specialization (Microsoft-internal Agency + WorkIQ), private-only

@@ -60,7 +60,9 @@ Key capability families to look for in the output:
 | `analysis` | — | Mixed providers |
 | `character_animation` | — | Local character specs, SVG rigs, pose libraries, action timelines, previews, and QA |
 | `graphics` | — | Local rendering tools |
-| `music_generation` | — | Single-provider |
+| `music_library` | — | Discovers user-provided local tracks |
+| `music_search` | — | Discovers royalty-free search/download providers |
+| `music_generation` | — | Discovers paid/local generation providers |
 | `subtitle` | — | Pure Python |
 | `avatar` | — | Local GPU models |
 | `video_post` | — | FFmpeg-based local tools |

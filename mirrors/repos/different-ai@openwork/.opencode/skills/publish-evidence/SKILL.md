@@ -1,6 +1,6 @@
 ---
 name: publish-evidence
-description: Post the proof, publish the fraimz, put evidence on the PR. Use to publish an existing testkit tape without rerunning tests.
+description: Publish an existing testkit evidence tape on a PR without rerunning tests.
 ---
 
 # Skill: Publish Evidence
@@ -11,10 +11,15 @@ Run:
 pnpm fraimz:publish -- --pr <n> [--roll <dir|name>] [--force] [--open]
 ```
 
+`fraimz:publish` is an implementation-compatibility command name. It publishes
+an existing `@openwork/testkit` evidence tape; it does not run a legacy flow.
+
 ## Publishing contract
 
-- The publisher selects the newest tape and prints what it selected; use
-  `--roll` only to choose a specific tape.
+- The publisher selects the newest ambient tape and prints what it selected.
+- Use `--roll <dir|name>` only when needed to select a specific existing tape.
+  This publisher selector is not the prohibited test-author roll-handle API.
+- Test authors do not create, pass, or manage roll handles.
 - It refuses a tape whose SHA differs from the PR head. Use `--force` only when
   intentional; the published result is annotated.
 - Red tapes are publishable and often should be published.

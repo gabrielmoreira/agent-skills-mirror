@@ -51,7 +51,7 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 1. Plugin initializes logger with session ID via initLogger(sessionId)
 2. Logs are appended to `~/.local/share/opencode/log/oh-my-opencode-slim.<sessionId>.log`
 3. Old logs (>7 days) are automatically cleaned up on initialization
-4. Log writes are queued to avoid blocking, with errors silently ignored
+4. Log writes are queued to avoid blocking. File logging falls back to stderr after initialization failure or a write failure in the active generation; stale queued writes cannot replace a newer sink
 
 ### Session Operations
 1. Council dispatch uses `promptWithTimeout()` to send prompts with configurable timeout

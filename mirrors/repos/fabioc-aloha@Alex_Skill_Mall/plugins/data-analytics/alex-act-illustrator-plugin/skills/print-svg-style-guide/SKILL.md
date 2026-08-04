@@ -106,7 +106,7 @@ Both share the 2.9pt floor. The taxonomy exists because a coverage scanner other
 
 Color carries meaning — pick from this palette rather than introducing new hues. Consistency across chapters is the reader's cross-reference tool.
 
-> **Relationship to the constellation brand palette.** These are the **print variants** of the Alex ACT semantic role coding — darker Tailwind values (gray-800, blue-800, amber-700) tuned for high-contrast on white paper. The **screen variants** (`ddf4ff` pastels for mermaid classDefs, banner emerald `#10b981`) live in [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Steward`. Same semantic roles across both variants (Input / Output / Processing / Decision / Error / Neutral); different lightness for the target surface.
+> **Relationship to the constellation brand palette.** These are the **print variants** of the Alex ACT semantic role coding — darker Tailwind values (gray-800, blue-800, amber-700) tuned for high-contrast on white paper. The **screen variants** (`ddf4ff` pastels for mermaid classDefs, banner emerald `#10b981`) live in [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Core`. Same semantic roles across both variants (Input / Output / Processing / Decision / Error / Neutral); different lightness for the target surface.
 
 ### Grays (neutral scaffolding)
 
@@ -272,6 +272,6 @@ The floor formula, palette, or composition idioms have failed if any of the foll
 - The `data-print-role="note"` auto-promote rule (≥40 chars) misses a class of content it should catch
 - The 5-Visual Rule dashboard blurred-thumbnail test is skipped ≥3 times because the tooling is too heavy
 
-Track outcomes at [`operations/ledgers/curation-log.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/operations/ledgers/curation-log.md) in Alex_ACT_Steward.
+Track outcomes at [`operations/ledgers/curation-log.md`](https://github.com/fabioc-aloha/Alex_ACT_Core) in Alex_ACT_Steward.
 
 Adapted from *The Defensible Decision* (Fabio Correa) via the `dd-book-illustrator` skill in Alex_DDA. The floor math, palette semantics, and composition idioms are book-tested across 53 shipped figures and 368 pages.

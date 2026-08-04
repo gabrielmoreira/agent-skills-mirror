@@ -25,6 +25,7 @@
 Recognized late in the session: every `starter.py` is a **complete solution**, not a TODO skeleton. A learner who clones and runs `python test.py` passes without writing any code.
 
 v1 fix (doc-only, no code rename):
+
 - `docs/HOW_TO_USE.md` — full active-vs-passive learning method (~200 lines, zh-TW)
 - 22 exercise READMEs — 🎓 callout pointing to `mv starter.py starter_reference.py` shortcut + link to HOW_TO_USE
 - Main README × 3 langs — surface the meta-instruction at the top-level
@@ -56,6 +57,7 @@ Shipped in commits [`d598e37`](https://github.com/WenyuChiou/awesome-agentic-ai-
 | `tracks/cli/A3-cli-production.md` | 134 | CLI-9 MCP server 接 CLI / CLI-10 GitHub Actions / CLI-11 cost tracking / CLI-12 plugin 跨 team 分享 |
 
 **No `examples/track-a/` folder built — and this is intentional**. CLI exercises are:
+
 - Bash commands (`ollama pull`, `claude` install, MCP-server install)
 - Markdown authoring (CLAUDE.md, slash command `.md` files, SKILL.md)
 - YAML / JSON config (GitHub Actions `.yml`, `plugin.json`, `marketplace.json`)
@@ -83,6 +85,7 @@ For v2, sub-stages 5.1 / 5.2 / 5.4 could ship sample artifacts (sample `CLAUDE.m
 ## v2 path (deferred)
 
 Per `docs/HOW_TO_USE.md` "給維護者：v2 path":
+
 - Split each `starter.py` → `starter_template.py` (TODO skeleton) + `starter_reference.py` (solution)
 - Make `test.py` behavioral (input → output contract) instead of implementation-bound
 - ~20 folders × 3 file changes = ~60 file changes

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `crafter-station/petdex` — 26 default patterns, 0 followed patterns, 65 file(s) materialized.
+Mirror of `crafter-station/petdex` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `crafter-station/petdex` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 65 |
+| Files         | 67 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -124,6 +124,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 63 | ✓ | [`.agents/skills/coss/SKILL.md`](.agents/skills/coss/SKILL.md) |
 | 64 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 65 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 66 | ✓ | [`packages/petdex-cli/AGENTS.md`](packages/petdex-cli/AGENTS.md) |
+| 67 | ✓ | [`packages/petdex-cli/CLAUDE.md`](packages/petdex-cli/CLAUDE.md) |
 
 ---
 

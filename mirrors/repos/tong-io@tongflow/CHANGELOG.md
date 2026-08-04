@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-08-03
+
+### Added
+
+- **Omni-reference video generation** (#135) — new `refs-gen-video` node:
+  mix up to 9 reference images, 3 video clips and 3 audio clips (12 files
+  max) with a prompt to generate one video. Select any mix of image / video /
+  audio nodes and the smart island offers it in one click. Address references
+  in the prompt as `<Picture 1>` / `<Video 1>` / `<Audio 1>`.
+- **MiniMax-H3 official plugin**
+  ([tongflow-modal-minimax-h3](https://github.com/tong-io/tongflow-modal-minimax-h3))
+  — self-hosted 33B video generation with **native stereo audio** (dialogue,
+  SFX and music in one pass; 24 fps, 768p, ~5–15 s) on Modal via headless
+  ComfyUI, using the Comfy-Org optimized weights (~63 GB instead of 498 GB).
+  Serves six video slots including the new omni-reference; measured 4 min 17 s
+  per 5 s clip on B200 (≈ $0.45).
+- **Seedance omni-reference** — the Doubao (ByteDance) plugin implements the
+  new `refs-gen-video` slot via Seedance 2.0 multimodal references.
+- **Consistent node spacing + one-click auto-layout** (#134) — spawn gaps are
+  now uniform across agent builds, manual adds and run-result spawning, and a
+  toolbar button tidies the whole canvas into layered columns.
+
+### Changed
+
+- **Python SDK 0.2.21** — generated models for the new `refs-gen-video` slot.
+  All official Modal plugins repinned to 0.2.21.
+
+### Fixed
+
+- **Docker image build keeps the agent manual in context** (#132).
+
 ## [0.3.0] - 2026-08-02
 
 ### Added

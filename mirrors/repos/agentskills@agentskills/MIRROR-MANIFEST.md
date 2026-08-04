@@ -59,8 +59,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 2 | ✓ | [`skills-ref/CLAUDE.md`](skills-ref/CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -133,6 +133,14 @@ is needed, and your own live gateway's contents are irrelevant.
 [ ] mcp-servers/<name>/README.md created
 [ ] scripts/reconcile-mcp.py exits 0
 [ ] GAIT session logged
+
+--- only if an iN2N member should use it (see the section below) ---
+[ ] Server registered in the MEMBER's own config (OPENCLAW_CONFIG_PATH)
+[ ] Credentials added to the member's .env slice
+[ ] SKILL.md synced into the member's workspace
+[ ] N2N_MEMBER_SCOPE updated in .env AND the member.scope column in federation.db
+[ ] scripts/in2n-profiles.py prefixes match SKILL names (not tool names)
+[ ] systemctl --user restart netclaw-mesh.service  (Border caches the roster)
 ```
 
 ---
@@ -147,6 +155,96 @@ is needed, and your own live gateway's contents are irrelevant.
 | `docs: README.md:N: claims 198` | Counts not updated | Update them |
 | `docs: could not locate 'installer prose'` | Prose was reworded so the check can no longer find it | Restore a matchable phrasing or update the pattern |
 | Server not visible after install | Missing `cwd` | Confirm `normalize-mcp-cwd.py` ran |
+
+---
+
+## If an iN2N member should use it (five more artifacts)
+
+**Established by spec 080 (R3), after three live Slack attempts failed with
+`IN2N_ERR_NO_CAPABLE_MEMBER` on a server that was correctly registered.**
+
+Steps 1–7 above wire a server into the **Border Claw**. They do nothing for a member.
+
+**An iN2N member is a separate claw.** It has its own config, its own `.env`, its own workspace, and its
+capabilities are recorded in the Border's database — not read from the repo at request time. Registering a
+server on the Border makes it invisible to every member.
+
+Worse, the Border **caches the member roster in memory**, so even a correct database row does not take
+effect until the mesh daemon reloads.
+
+### The five
+
+**1. Register the server in the member's own config**
+
+```bash
+# The member's config path is in its .env as OPENCLAW_CONFIG_PATH
+grep OPENCLAW_CONFIG_PATH migration-staging/members/<member>/.env
+```
+
+Add the same `mcp.servers` entry you added to the Border's config, including `cwd`. A member config
+typically contains only `memory-mcp` until you do this.
+
+**2. Add credentials to the member's `.env`**
+
+The member does not inherit the Border's environment. Its `.env` is a least-privilege slice, and the
+integration's variables must be added to it explicitly.
+
+**3. Sync the skills into the member's workspace**
+
+```bash
+cp workspace/skills/<skill>/SKILL.md ~/.openclaw-<risk>-<member>/workspace/skills/<skill>/
+```
+
+**4. Widen the member's scope — in TWO places**
+
+`N2N_MEMBER_SCOPE` in the member's `.env` **and** the `scope` column of the `member` table in
+`~/.openclaw/n2n/federation.db`. The `.env` governs what the member announces; the database is what
+`n2n_route` consults when deciding who can answer.
+
+If the skill belongs to a profile, update `scripts/in2n-profiles.py` so a future regeneration keeps it.
+**`prefixes` there matches SKILL NAMES, not tool names** — setting it to tool prefixes silently resolves to
+zero specialty skills, which is worse than leaving it alone.
+
+```bash
+python3 scripts/in2n-profiles.py scope <profile>   # verify it resolves to the skills you expect
+```
+
+**5. Restart the mesh daemon**
+
+```bash
+systemctl --user restart netclaw-mesh.service
+```
+
+Without this the Border keeps routing against the stale in-memory roster and returns
+`IN2N_ERR_NO_CAPABLE_MEMBER` for a capability that is, on disk, present.
+
+### Verify
+
+```bash
+python3 -c "
+import sqlite3, os, json
+c = sqlite3.connect(os.path.expanduser('~/.openclaw/n2n/federation.db'))
+r = c.execute('SELECT state, scope FROM member WHERE member_id=?', ('<risk>/<member>',)).fetchone()
+print('state:', r[0])
+print('specialty:', [x['name'] for x in json.loads(r[1]) if x.get('tier')=='specialty'])
+"
+```
+
+State must read `active` and the specialty list must contain your skills.
+
+### Why this is not in the checklist above
+
+None of it is caught by `reconcile-mcp.py`. That gate verifies a *fresh installer* can obtain the
+integration, which is the property it was built for — and `migration-staging/` is untracked local state, so
+it is correctly outside the gate's remit. Nothing statically verifies that a member which *should* have a
+capability actually does.
+
+Members are also **cold-started on demand** and idle-exit after 900s, so a member being absent from
+`systemctl --user list-units` is normal and not evidence of a problem.
+
+**A refusal from a member is not necessarily a bug.** In spec 080's case the member correctly declined a
+device-plane question because it only owned a manager-plane skill, and named the right skill in its
+refusal. That is the plane discipline working. The bug was that no member carried the named skill.
 
 ## Pinning rules (spec 077 — enforced by the gate)
 

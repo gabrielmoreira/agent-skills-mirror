@@ -19,14 +19,14 @@ Only terminal-based CLI agents are included. IDE-based agents (Cursor / Cline / 
 
 | Tool | Provider | License | Primary LLM | Auth / Pricing | Stars |
 |---|---|---|---|---|---|
-| [Claude Code](https://github.com/anthropics/claude-code) | Anthropic (official) | NOASSERTION | Claude | Claude subscription **OR** Anthropic Console API key | ★ 132k+ |
+| [Claude Code](https://github.com/anthropics/claude-code) | Anthropic (official) | NOASSERTION | Claude | Claude subscription **OR** Anthropic Console API key | ★ 140k+ |
 | [Codex](https://github.com/openai/codex) | OpenAI (official) | Apache-2.0 | GPT family | ChatGPT account sign-in **OR** OpenAI API key | ★ 100k+ |
 | [OpenCode](https://github.com/sst/opencode) | community (repo now at `anomalyco/opencode`) | MIT | Any (multi-provider) | BYO API key, or built-in OpenCode Zen hosted | ★ 190k+ |
 | [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Google (official) | Apache-2.0 | Gemini | Generous free tier, paid above quota | ★ 103k+ |
 | [goose](https://github.com/block/goose) | Agentic AI Foundation (repo now at `aaif-goose/goose`) | Apache-2.0 | 15+ providers (incl. Ollama) | BYO API key, or existing Claude / ChatGPT / Gemini subscription via ACP | ★ 51k+ |
-| [Aider](https://github.com/Aider-AI/aider) | Aider-AI (community) | Apache-2.0 | Any | BYO API key | ★ 44k+ |
-| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | Nous Research | MIT | 200+ via OpenRouter / NVIDIA NIM / Zhipu GLM / Kimi / Xiaomi MiMo / MiniMax / HF / OpenAI | BYO API key (multi-provider) | ★ 213k+ |
-| [Grok Build](https://github.com/xai-org/grok-build) | SpaceXAI (xAI, official) | Apache-2.0 | Grok | Browser sign-in on first launch | ★ 22k+ |
+| [Aider](https://github.com/Aider-AI/aider) | Aider-AI (community) | Apache-2.0 | Any | BYO API key | ★ 47k+ |
+| [Hermes Agent](https://github.com/NousResearch/hermes-agent) | Nous Research | MIT | 200+ via OpenRouter / NVIDIA NIM / Zhipu GLM / Kimi / Xiaomi MiMo / MiniMax / HF / OpenAI | BYO API key (multi-provider) | ★ 224k+ |
+| [Grok Build](https://github.com/xai-org/grok-build) | SpaceXAI (xAI, official) | Apache-2.0 | Grok | Browser sign-in on first launch | ★ 23k+ |
 
 ---
 
@@ -55,6 +55,7 @@ Only terminal-based CLI agents are included. IDE-based agents (Cursor / Cline / 
 
 ### Want it running on a cloud VM, talking to it via Telegram / Slack / Discord, with mainland China LLMs as primary
 **Top pick**: Hermes Agent. Three differentiators:
+
 - **Decoupled from your laptop** — agent runs on a $5 VPS / Modal serverless / Vercel Sandbox; you message it from Telegram / Discord / Slack / WhatsApp / Signal
 - **Model-neutral** — supports GLM / Kimi / Xiaomi MiMo / MiniMax, matching the 11 Chinese-ecosystem catalog entries
 - **Built-in self-improving skill loop + cron scheduler** — agent autonomously generates skills from interaction, refines them across sessions, runs scheduled jobs unattended
@@ -126,7 +127,7 @@ Three common combinations; pick one that fits:
 - **LLM endpoint** can be Ollama (`http://localhost:11434/v1`), or swapped to providers such as z.ai GLM / Kimi
 - **Chat entrypoint** can be Telegram / Slack / Discord; Hermes routes platform messages into the agent workflow
 - **When you want zero Anthropic / OpenAI dependency**, this setup fits offline, privacy-sensitive, and low-cost repeat experiments
-- Step-by-step walkthrough: [`resources/cookbook.md` Recipe 6](cookbook.en.md#6-local-llm--cli-agent-quick-walkthrough)
+- Step-by-step walkthrough: [`resources/cookbook.en.md` Recipe 6](cookbook.en.md#6-local-llm--cli-agent-quick-walkthrough)
 
 ---
 

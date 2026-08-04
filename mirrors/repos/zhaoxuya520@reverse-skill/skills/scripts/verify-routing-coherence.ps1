@@ -37,6 +37,7 @@ $opsFiles = @(
     'MASTER-ROUTING.md',
     'scripts\master-route.ps1',
     'scripts\case-init.ps1',
+    'scripts\lib\WorkRoot.ps1',
     'docs-generator\references\security-report-templates.md',
     'field-journal\_template.md'
 )
@@ -179,6 +180,37 @@ $def = & powershell -NoProfile -ExecutionPolicy Bypass -File $masterRoute -Hint 
 $def | Set-Content (Join-Path $ScratchDir 'default-out.txt') -Encoding UTF8
 if ($def -match 'work[\\/]master-route-') { Ok 'default OutDir under work/' } else { Bad 'default OutDir not under work/' }
 
+# project-root output must stay with the analysis project when the skill is invoked elsewhere
+$projectRoot = Join-Path $ScratchDir 'analysis-project'
+New-Item -ItemType Directory -Force -Path $projectRoot | Out-Null
+$projectRoute = & powershell -NoProfile -ExecutionPolicy Bypass -File $masterRoute `
+    -Hint 'radare2 analyze' -ProjectRoot $projectRoot 2>&1 | Out-String
+$projectWork = Join-Path $projectRoot 'work'
+$projectRouteDirs = @(Get-ChildItem -LiteralPath $projectWork -Directory -Filter 'master-route-*' -ErrorAction SilentlyContinue)
+if ($projectRouteDirs.Count -eq 1 -and (Test-Path (Join-Path $projectRouteDirs[0].FullName 'route-scope.md'))) {
+    Ok 'explicit ProjectRoot keeps route artifacts in analysis project'
+} else {
+    Bad 'explicit ProjectRoot did not receive route artifacts'
+}
+
+$defaultProjectRoot = Join-Path $ScratchDir 'default-analysis-project'
+New-Item -ItemType Directory -Force -Path $defaultProjectRoot | Out-Null
+$previousLocation = Get-Location
+try {
+    Set-Location -LiteralPath $defaultProjectRoot
+    $defaultProjectRoute = & powershell -NoProfile -ExecutionPolicy Bypass -File $masterRoute `
+        -Hint 'radare2 analyze' 2>&1 | Out-String
+} finally {
+    Set-Location -LiteralPath $previousLocation
+}
+$defaultProjectWork = Join-Path $defaultProjectRoot 'work'
+$defaultProjectRoutes = @(Get-ChildItem -LiteralPath $defaultProjectWork -Directory -Filter 'master-route-*' -ErrorAction SilentlyContinue)
+if ($defaultProjectRoutes.Count -eq 1 -and (Test-Path (Join-Path $defaultProjectRoutes[0].FullName 'route-scope.md'))) {
+    Ok 'default route artifacts follow the caller project'
+} else {
+    Bad 'default route artifacts did not follow the caller project'
+}
+
 # case-init real path
 $caseName = 'verify-ops-' + (Get-Date -Format 'HHmmss')
 $ci = & powershell -NoProfile -ExecutionPolicy Bypass -File $caseInit -Hint 'apk jadx reverse' -CaseName $caseName -PackageRoot $packageRoot 2>&1 | Out-String
@@ -193,6 +225,36 @@ if (Test-Path (Join-Path $caseRoot 'scope.md')) {
     foreach ($k in @('auth', 'network_profile', 'in_scope', 'ready_for_act')) {
         if ($sc -match $k) { Ok "case scope has $k" } else { Bad "case scope missing $k" }
     }
+}
+
+$projectCaseName = 'verify-project-root-' + (Get-Date -Format 'HHmmss')
+& powershell -NoProfile -ExecutionPolicy Bypass -File $caseInit `
+    -Hint 'apk jadx reverse' -CaseName $projectCaseName -PackageRoot $packageRoot `
+    -ProjectRoot $projectRoot 2>&1 | Out-Null
+$projectCaseRoot = Join-Path $projectWork $projectCaseName
+if ((Test-Path (Join-Path $projectCaseRoot 'scope.md')) -and
+    (Test-Path (Join-Path $projectCaseRoot 'timeline.md')) -and
+    (Test-Path (Join-Path $projectCaseRoot 'workitems.md'))) {
+    Ok 'explicit ProjectRoot keeps case artifacts in analysis project'
+} else {
+    Bad 'explicit ProjectRoot did not receive case artifacts'
+}
+
+$defaultCaseName = 'verify-default-project-' + (Get-Date -Format 'HHmmss')
+try {
+    Set-Location -LiteralPath $defaultProjectRoot
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $caseInit `
+        -Hint 'apk jadx reverse' -CaseName $defaultCaseName 2>&1 | Out-Null
+} finally {
+    Set-Location -LiteralPath $previousLocation
+}
+$defaultCaseRoot = Join-Path (Join-Path $defaultProjectRoot 'work') $defaultCaseName
+if ((Test-Path (Join-Path $defaultCaseRoot 'scope.md')) -and
+    (Test-Path (Join-Path $defaultCaseRoot 'timeline.md')) -and
+    (Test-Path (Join-Path $defaultCaseRoot 'workitems.md'))) {
+    Ok 'default case artifacts follow the caller project'
+} else {
+    Bad 'default case artifacts did not follow the caller project'
 }
 
 # ghost dsl

@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `webiny/webiny-js` — 26 default patterns, 0 followed patterns, 82 file(s) materialized.
+Mirror of `webiny/webiny-js` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `webiny/webiny-js` — 26 default patterns, 0 followed patterns, 82 fi
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 82 |
+| Files         | 105 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,77 +70,100 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 10 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 11 | ✓ | [`packages/webiny/AGENTS.md`](packages/webiny/AGENTS.md) |
-| 12 | ✓ | [`skills/repo-skills/README.md`](skills/repo-skills/README.md) |
-| 13 | ✓ | [`skills/user-skills/admin/admin-architect/SKILL.md`](skills/user-skills/admin/admin-architect/SKILL.md) |
-| 14 | ✓ | [`skills/user-skills/admin/admin-permissions/SKILL.md`](skills/user-skills/admin/admin-permissions/SKILL.md) |
-| 15 | ✓ | [`skills/user-skills/admin/file-url-formatter.md`](skills/user-skills/admin/file-url-formatter.md) |
-| 16 | ✓ | [`skills/user-skills/admin/form-model/SKILL.md`](skills/user-skills/admin/form-model/SKILL.md) |
-| 17 | ✓ | [`skills/user-skills/admin/new-entry-wizard/SKILL.md`](skills/user-skills/admin/new-entry-wizard/SKILL.md) |
-| 18 | ✓ | [`skills/user-skills/admin/ui-extensions/SKILL.md`](skills/user-skills/admin/ui-extensions/SKILL.md) |
-| 19 | ✓ | [`skills/user-skills/admin/website-builder/page-settings/SKILL.md`](skills/user-skills/admin/website-builder/page-settings/SKILL.md) |
-| 20 | ✓ | [`skills/user-skills/admin/website-builder/wb-preview-url-modifier/SKILL.md`](skills/user-skills/admin/website-builder/wb-preview-url-modifier/SKILL.md) |
-| 21 | ✓ | [`skills/user-skills/api-bundle-size-limit/SKILL.md`](skills/user-skills/api-bundle-size-limit/SKILL.md) |
-| 22 | ✓ | [`skills/user-skills/api/api-architect/SKILL.md`](skills/user-skills/api/api-architect/SKILL.md) |
-| 23 | ✓ | [`skills/user-skills/api/custom-field-type/SKILL.md`](skills/user-skills/api/custom-field-type/SKILL.md) |
-| 24 | ✓ | [`skills/user-skills/api/event-handler-pattern/SKILL.md`](skills/user-skills/api/event-handler-pattern/SKILL.md) |
-| 25 | ✓ | [`skills/user-skills/api/graphql-api/SKILL.md`](skills/user-skills/api/graphql-api/SKILL.md) |
-| 26 | ✓ | [`skills/user-skills/api/http-route/SKILL.md`](skills/user-skills/api/http-route/SKILL.md) |
-| 27 | ✓ | [`skills/user-skills/api/permissions/SKILL.md`](skills/user-skills/api/permissions/SKILL.md) |
-| 28 | ✓ | [`skills/user-skills/api/use-case-pattern/SKILL.md`](skills/user-skills/api/use-case-pattern/SKILL.md) |
-| 29 | ✓ | [`skills/user-skills/api/v5-to-v6-migration/SKILL.md`](skills/user-skills/api/v5-to-v6-migration/SKILL.md) |
-| 30 | ✓ | [`skills/user-skills/cli-extensions/SKILL.md`](skills/user-skills/cli-extensions/SKILL.md) |
-| 31 | ✓ | [`skills/user-skills/configure-auth0/SKILL.md`](skills/user-skills/configure-auth0/SKILL.md) |
-| 32 | ✓ | [`skills/user-skills/configure-okta/SKILL.md`](skills/user-skills/configure-okta/SKILL.md) |
-| 33 | ✓ | [`skills/user-skills/content-models/SKILL.md`](skills/user-skills/content-models/SKILL.md) |
-| 34 | ✓ | [`skills/user-skills/dependency-injection/SKILL.md`](skills/user-skills/dependency-injection/SKILL.md) |
-| 35 | ✓ | [`skills/user-skills/full-stack-architect/SKILL.md`](skills/user-skills/full-stack-architect/SKILL.md) |
-| 36 | ✓ | [`skills/user-skills/generated/admin/aco/SKILL.md`](skills/user-skills/generated/admin/aco/SKILL.md) |
-| 37 | ✓ | [`skills/user-skills/generated/admin/build-params/SKILL.md`](skills/user-skills/generated/admin/build-params/SKILL.md) |
-| 38 | ✓ | [`skills/user-skills/generated/admin/cms/SKILL.md`](skills/user-skills/generated/admin/cms/SKILL.md) |
-| 39 | ✓ | [`skills/user-skills/generated/admin/configs/SKILL.md`](skills/user-skills/generated/admin/configs/SKILL.md) |
-| 40 | ✓ | [`skills/user-skills/generated/admin/env-config/SKILL.md`](skills/user-skills/generated/admin/env-config/SKILL.md) |
-| 41 | ✓ | [`skills/user-skills/generated/admin/form/SKILL.md`](skills/user-skills/generated/admin/form/SKILL.md) |
-| 42 | ✓ | [`skills/user-skills/generated/admin/graphql-client/SKILL.md`](skills/user-skills/generated/admin/graphql-client/SKILL.md) |
-| 43 | ✓ | [`skills/user-skills/generated/admin/languages/SKILL.md`](skills/user-skills/generated/admin/languages/SKILL.md) |
-| 44 | ✓ | [`skills/user-skills/generated/admin/lexical/SKILL.md`](skills/user-skills/generated/admin/lexical/SKILL.md) |
-| 45 | ✓ | [`skills/user-skills/generated/admin/local-storage/SKILL.md`](skills/user-skills/generated/admin/local-storage/SKILL.md) |
-| 46 | ✓ | [`skills/user-skills/generated/admin/router/SKILL.md`](skills/user-skills/generated/admin/router/SKILL.md) |
-| 47 | ✓ | [`skills/user-skills/generated/admin/security/SKILL.md`](skills/user-skills/generated/admin/security/SKILL.md) |
-| 48 | ✓ | [`skills/user-skills/generated/admin/SKILL.md`](skills/user-skills/generated/admin/SKILL.md) |
-| 49 | ✓ | [`skills/user-skills/generated/admin/tenancy/SKILL.md`](skills/user-skills/generated/admin/tenancy/SKILL.md) |
-| 50 | ✓ | [`skills/user-skills/generated/admin/ui/SKILL.md`](skills/user-skills/generated/admin/ui/SKILL.md) |
-| 51 | ✓ | [`skills/user-skills/generated/admin/website-builder/SKILL.md`](skills/user-skills/generated/admin/website-builder/SKILL.md) |
-| 52 | ✓ | [`skills/user-skills/generated/api/aco/SKILL.md`](skills/user-skills/generated/api/aco/SKILL.md) |
-| 53 | ✓ | [`skills/user-skills/generated/api/build-params/SKILL.md`](skills/user-skills/generated/api/build-params/SKILL.md) |
-| 54 | ✓ | [`skills/user-skills/generated/api/cms/SKILL.md`](skills/user-skills/generated/api/cms/SKILL.md) |
-| 55 | ✓ | [`skills/user-skills/generated/api/db/SKILL.md`](skills/user-skills/generated/api/db/SKILL.md) |
-| 56 | ✓ | [`skills/user-skills/generated/api/event-publisher/SKILL.md`](skills/user-skills/generated/api/event-publisher/SKILL.md) |
-| 57 | ✓ | [`skills/user-skills/generated/api/file-manager/SKILL.md`](skills/user-skills/generated/api/file-manager/SKILL.md) |
-| 58 | ✓ | [`skills/user-skills/generated/api/graphql/SKILL.md`](skills/user-skills/generated/api/graphql/SKILL.md) |
-| 59 | ✓ | [`skills/user-skills/generated/api/key-value-store/SKILL.md`](skills/user-skills/generated/api/key-value-store/SKILL.md) |
-| 60 | ✓ | [`skills/user-skills/generated/api/languages/SKILL.md`](skills/user-skills/generated/api/languages/SKILL.md) |
-| 61 | ✓ | [`skills/user-skills/generated/api/logger/SKILL.md`](skills/user-skills/generated/api/logger/SKILL.md) |
-| 62 | ✓ | [`skills/user-skills/generated/api/mailer/SKILL.md`](skills/user-skills/generated/api/mailer/SKILL.md) |
-| 63 | ✓ | [`skills/user-skills/generated/api/opensearch/SKILL.md`](skills/user-skills/generated/api/opensearch/SKILL.md) |
-| 64 | ✓ | [`skills/user-skills/generated/api/scheduler/SKILL.md`](skills/user-skills/generated/api/scheduler/SKILL.md) |
-| 65 | ✓ | [`skills/user-skills/generated/api/security/SKILL.md`](skills/user-skills/generated/api/security/SKILL.md) |
-| 66 | ✓ | [`skills/user-skills/generated/api/SKILL.md`](skills/user-skills/generated/api/SKILL.md) |
-| 67 | ✓ | [`skills/user-skills/generated/api/system/SKILL.md`](skills/user-skills/generated/api/system/SKILL.md) |
-| 68 | ✓ | [`skills/user-skills/generated/api/tasks/SKILL.md`](skills/user-skills/generated/api/tasks/SKILL.md) |
-| 69 | ✓ | [`skills/user-skills/generated/api/tenancy/SKILL.md`](skills/user-skills/generated/api/tenancy/SKILL.md) |
-| 70 | ✓ | [`skills/user-skills/generated/api/tenant-manager/SKILL.md`](skills/user-skills/generated/api/tenant-manager/SKILL.md) |
-| 71 | ✓ | [`skills/user-skills/generated/api/webhooks/SKILL.md`](skills/user-skills/generated/api/webhooks/SKILL.md) |
-| 72 | ✓ | [`skills/user-skills/generated/api/website-builder/SKILL.md`](skills/user-skills/generated/api/website-builder/SKILL.md) |
-| 73 | ✓ | [`skills/user-skills/generated/cli/command/SKILL.md`](skills/user-skills/generated/cli/command/SKILL.md) |
-| 74 | ✓ | [`skills/user-skills/generated/cli/SKILL.md`](skills/user-skills/generated/cli/SKILL.md) |
-| 75 | ✓ | [`skills/user-skills/generated/extensions/SKILL.md`](skills/user-skills/generated/extensions/SKILL.md) |
-| 76 | ✓ | [`skills/user-skills/generated/infra/SKILL.md`](skills/user-skills/generated/infra/SKILL.md) |
-| 77 | ✓ | [`skills/user-skills/infrastructure-extensions/SKILL.md`](skills/user-skills/infrastructure-extensions/SKILL.md) |
-| 78 | ✓ | [`skills/user-skills/local-development/SKILL.md`](skills/user-skills/local-development/SKILL.md) |
-| 79 | ✓ | [`skills/user-skills/mailer-smtp/SKILL.md`](skills/user-skills/mailer-smtp/SKILL.md) |
-| 80 | ✓ | [`skills/user-skills/project-structure/SKILL.md`](skills/user-skills/project-structure/SKILL.md) |
-| 81 | ✓ | [`skills/user-skills/webiny-sdk/SKILL.md`](skills/user-skills/webiny-sdk/SKILL.md) |
-| 82 | ✓ | [`skills/user-skills/website-builder/SKILL.md`](skills/user-skills/website-builder/SKILL.md) |
+| 12 | ✓ | [`skills/repo-skills/agents/admin-developer/AGENT.md`](skills/repo-skills/agents/admin-developer/AGENT.md) |
+| 13 | ✓ | [`skills/repo-skills/agents/api-developer/AGENT.md`](skills/repo-skills/agents/api-developer/AGENT.md) |
+| 14 | ✓ | [`skills/repo-skills/agents/auth-specialist/AGENT.md`](skills/repo-skills/agents/auth-specialist/AGENT.md) |
+| 15 | ✓ | [`skills/repo-skills/agents/full-stack-developer/AGENT.md`](skills/repo-skills/agents/full-stack-developer/AGENT.md) |
+| 16 | ✓ | [`skills/repo-skills/agents/infra-engineer/AGENT.md`](skills/repo-skills/agents/infra-engineer/AGENT.md) |
+| 17 | ✓ | [`skills/repo-skills/agents/webiny/AGENT.md`](skills/repo-skills/agents/webiny/AGENT.md) |
+| 18 | ✓ | [`skills/repo-skills/agents/website-builder-developer/AGENT.md`](skills/repo-skills/agents/website-builder-developer/AGENT.md) |
+| 19 | ✓ | [`skills/repo-skills/README.md`](skills/repo-skills/README.md) |
+| 20 | ✓ | [`skills/user-skills/admin/admin-architect/SKILL.md`](skills/user-skills/admin/admin-architect/SKILL.md) |
+| 21 | ✓ | [`skills/user-skills/admin/admin-permissions/SKILL.md`](skills/user-skills/admin/admin-permissions/SKILL.md) |
+| 22 | ✓ | [`skills/user-skills/admin/file-url-formatter.md`](skills/user-skills/admin/file-url-formatter.md) |
+| 23 | ✓ | [`skills/user-skills/admin/form-model/SKILL.md`](skills/user-skills/admin/form-model/SKILL.md) |
+| 24 | ✓ | [`skills/user-skills/admin/new-entry-wizard/SKILL.md`](skills/user-skills/admin/new-entry-wizard/SKILL.md) |
+| 25 | ✓ | [`skills/user-skills/admin/ui-extensions/SKILL.md`](skills/user-skills/admin/ui-extensions/SKILL.md) |
+| 26 | ✓ | [`skills/user-skills/admin/website-builder/page-settings/SKILL.md`](skills/user-skills/admin/website-builder/page-settings/SKILL.md) |
+| 27 | ✓ | [`skills/user-skills/admin/website-builder/wb-preview-url-modifier/SKILL.md`](skills/user-skills/admin/website-builder/wb-preview-url-modifier/SKILL.md) |
+| 28 | ✓ | [`skills/user-skills/agents/admin-developer/AGENT.md`](skills/user-skills/agents/admin-developer/AGENT.md) |
+| 29 | ✓ | [`skills/user-skills/agents/api-developer/AGENT.md`](skills/user-skills/agents/api-developer/AGENT.md) |
+| 30 | ✓ | [`skills/user-skills/agents/auth-specialist/AGENT.md`](skills/user-skills/agents/auth-specialist/AGENT.md) |
+| 31 | ✓ | [`skills/user-skills/agents/full-stack-developer/AGENT.md`](skills/user-skills/agents/full-stack-developer/AGENT.md) |
+| 32 | ✓ | [`skills/user-skills/agents/infra-engineer/AGENT.md`](skills/user-skills/agents/infra-engineer/AGENT.md) |
+| 33 | ✓ | [`skills/user-skills/agents/webiny/AGENT.md`](skills/user-skills/agents/webiny/AGENT.md) |
+| 34 | ✓ | [`skills/user-skills/agents/website-builder-developer/AGENT.md`](skills/user-skills/agents/website-builder-developer/AGENT.md) |
+| 35 | ✓ | [`skills/user-skills/api-bundle-size-limit/SKILL.md`](skills/user-skills/api-bundle-size-limit/SKILL.md) |
+| 36 | ✓ | [`skills/user-skills/api/ai-powerups-content/SKILL.md`](skills/user-skills/api/ai-powerups-content/SKILL.md) |
+| 37 | ✓ | [`skills/user-skills/api/api-architect/SKILL.md`](skills/user-skills/api/api-architect/SKILL.md) |
+| 38 | ✓ | [`skills/user-skills/api/cms-bulk-actions/SKILL.md`](skills/user-skills/api/cms-bulk-actions/SKILL.md) |
+| 39 | ✓ | [`skills/user-skills/api/custom-field-type/SKILL.md`](skills/user-skills/api/custom-field-type/SKILL.md) |
+| 40 | ✓ | [`skills/user-skills/api/event-handler-pattern/SKILL.md`](skills/user-skills/api/event-handler-pattern/SKILL.md) |
+| 41 | ✓ | [`skills/user-skills/api/graphql-api/SKILL.md`](skills/user-skills/api/graphql-api/SKILL.md) |
+| 42 | ✓ | [`skills/user-skills/api/http-route/SKILL.md`](skills/user-skills/api/http-route/SKILL.md) |
+| 43 | ✓ | [`skills/user-skills/api/permissions/SKILL.md`](skills/user-skills/api/permissions/SKILL.md) |
+| 44 | ✓ | [`skills/user-skills/api/use-case-pattern/SKILL.md`](skills/user-skills/api/use-case-pattern/SKILL.md) |
+| 45 | ✓ | [`skills/user-skills/api/v5-to-v6-migration/SKILL.md`](skills/user-skills/api/v5-to-v6-migration/SKILL.md) |
+| 46 | ✓ | [`skills/user-skills/api/websocket-notifications/SKILL.md`](skills/user-skills/api/websocket-notifications/SKILL.md) |
+| 47 | ✓ | [`skills/user-skills/cli-extensions/SKILL.md`](skills/user-skills/cli-extensions/SKILL.md) |
+| 48 | ✓ | [`skills/user-skills/cognito-federation/SKILL.md`](skills/user-skills/cognito-federation/SKILL.md) |
+| 49 | ✓ | [`skills/user-skills/configure-auth0/SKILL.md`](skills/user-skills/configure-auth0/SKILL.md) |
+| 50 | ✓ | [`skills/user-skills/configure-entraid/SKILL.md`](skills/user-skills/configure-entraid/SKILL.md) |
+| 51 | ✓ | [`skills/user-skills/configure-okta/SKILL.md`](skills/user-skills/configure-okta/SKILL.md) |
+| 52 | ✓ | [`skills/user-skills/content-models/SKILL.md`](skills/user-skills/content-models/SKILL.md) |
+| 53 | ✓ | [`skills/user-skills/dependency-injection/SKILL.md`](skills/user-skills/dependency-injection/SKILL.md) |
+| 54 | ✓ | [`skills/user-skills/full-stack-architect/SKILL.md`](skills/user-skills/full-stack-architect/SKILL.md) |
+| 55 | ✓ | [`skills/user-skills/generated/admin/aco/SKILL.md`](skills/user-skills/generated/admin/aco/SKILL.md) |
+| 56 | ✓ | [`skills/user-skills/generated/admin/ai-powerups/SKILL.md`](skills/user-skills/generated/admin/ai-powerups/SKILL.md) |
+| 57 | ✓ | [`skills/user-skills/generated/admin/build-params/SKILL.md`](skills/user-skills/generated/admin/build-params/SKILL.md) |
+| 58 | ✓ | [`skills/user-skills/generated/admin/cms/SKILL.md`](skills/user-skills/generated/admin/cms/SKILL.md) |
+| 59 | ✓ | [`skills/user-skills/generated/admin/configs/SKILL.md`](skills/user-skills/generated/admin/configs/SKILL.md) |
+| 60 | ✓ | [`skills/user-skills/generated/admin/env-config/SKILL.md`](skills/user-skills/generated/admin/env-config/SKILL.md) |
+| 61 | ✓ | [`skills/user-skills/generated/admin/form/SKILL.md`](skills/user-skills/generated/admin/form/SKILL.md) |
+| 62 | ✓ | [`skills/user-skills/generated/admin/graphql-client/SKILL.md`](skills/user-skills/generated/admin/graphql-client/SKILL.md) |
+| 63 | ✓ | [`skills/user-skills/generated/admin/graphql-playground/SKILL.md`](skills/user-skills/generated/admin/graphql-playground/SKILL.md) |
+| 64 | ✓ | [`skills/user-skills/generated/admin/languages/SKILL.md`](skills/user-skills/generated/admin/languages/SKILL.md) |
+| 65 | ✓ | [`skills/user-skills/generated/admin/lexical/SKILL.md`](skills/user-skills/generated/admin/lexical/SKILL.md) |
+| 66 | ✓ | [`skills/user-skills/generated/admin/local-storage/SKILL.md`](skills/user-skills/generated/admin/local-storage/SKILL.md) |
+| 67 | ✓ | [`skills/user-skills/generated/admin/router/SKILL.md`](skills/user-skills/generated/admin/router/SKILL.md) |
+| 68 | ✓ | [`skills/user-skills/generated/admin/security/SKILL.md`](skills/user-skills/generated/admin/security/SKILL.md) |
+| 69 | ✓ | [`skills/user-skills/generated/admin/SKILL.md`](skills/user-skills/generated/admin/SKILL.md) |
+| 70 | ✓ | [`skills/user-skills/generated/admin/tenancy/SKILL.md`](skills/user-skills/generated/admin/tenancy/SKILL.md) |
+| 71 | ✓ | [`skills/user-skills/generated/admin/ui/SKILL.md`](skills/user-skills/generated/admin/ui/SKILL.md) |
+| 72 | ✓ | [`skills/user-skills/generated/admin/website-builder/SKILL.md`](skills/user-skills/generated/admin/website-builder/SKILL.md) |
+| 73 | ✓ | [`skills/user-skills/generated/admin/websockets/SKILL.md`](skills/user-skills/generated/admin/websockets/SKILL.md) |
+| 74 | ✓ | [`skills/user-skills/generated/api/aco/SKILL.md`](skills/user-skills/generated/api/aco/SKILL.md) |
+| 75 | ✓ | [`skills/user-skills/generated/api/ai-powerups/SKILL.md`](skills/user-skills/generated/api/ai-powerups/SKILL.md) |
+| 76 | ✓ | [`skills/user-skills/generated/api/build-params/SKILL.md`](skills/user-skills/generated/api/build-params/SKILL.md) |
+| 77 | ✓ | [`skills/user-skills/generated/api/cms/SKILL.md`](skills/user-skills/generated/api/cms/SKILL.md) |
+| 78 | ✓ | [`skills/user-skills/generated/api/db/SKILL.md`](skills/user-skills/generated/api/db/SKILL.md) |
+| 79 | ✓ | [`skills/user-skills/generated/api/event-publisher/SKILL.md`](skills/user-skills/generated/api/event-publisher/SKILL.md) |
+| 80 | ✓ | [`skills/user-skills/generated/api/file-manager/SKILL.md`](skills/user-skills/generated/api/file-manager/SKILL.md) |
+| 81 | ✓ | [`skills/user-skills/generated/api/graphql/SKILL.md`](skills/user-skills/generated/api/graphql/SKILL.md) |
+| 82 | ✓ | [`skills/user-skills/generated/api/key-value-store/SKILL.md`](skills/user-skills/generated/api/key-value-store/SKILL.md) |
+| 83 | ✓ | [`skills/user-skills/generated/api/languages/SKILL.md`](skills/user-skills/generated/api/languages/SKILL.md) |
+| 84 | ✓ | [`skills/user-skills/generated/api/logger/SKILL.md`](skills/user-skills/generated/api/logger/SKILL.md) |
+| 85 | ✓ | [`skills/user-skills/generated/api/mailer/SKILL.md`](skills/user-skills/generated/api/mailer/SKILL.md) |
+| 86 | ✓ | [`skills/user-skills/generated/api/opensearch/SKILL.md`](skills/user-skills/generated/api/opensearch/SKILL.md) |
+| 87 | ✓ | [`skills/user-skills/generated/api/scheduler/SKILL.md`](skills/user-skills/generated/api/scheduler/SKILL.md) |
+| 88 | ✓ | [`skills/user-skills/generated/api/security/SKILL.md`](skills/user-skills/generated/api/security/SKILL.md) |
+| 89 | ✓ | [`skills/user-skills/generated/api/SKILL.md`](skills/user-skills/generated/api/SKILL.md) |
+| 90 | ✓ | [`skills/user-skills/generated/api/system/SKILL.md`](skills/user-skills/generated/api/system/SKILL.md) |
+| 91 | ✓ | [`skills/user-skills/generated/api/tasks/SKILL.md`](skills/user-skills/generated/api/tasks/SKILL.md) |
+| 92 | ✓ | [`skills/user-skills/generated/api/tenancy/SKILL.md`](skills/user-skills/generated/api/tenancy/SKILL.md) |
+| 93 | ✓ | [`skills/user-skills/generated/api/tenant-manager/SKILL.md`](skills/user-skills/generated/api/tenant-manager/SKILL.md) |
+| 94 | ✓ | [`skills/user-skills/generated/api/webhooks/SKILL.md`](skills/user-skills/generated/api/webhooks/SKILL.md) |
+| 95 | ✓ | [`skills/user-skills/generated/api/website-builder/SKILL.md`](skills/user-skills/generated/api/website-builder/SKILL.md) |
+| 96 | ✓ | [`skills/user-skills/generated/cli/command/SKILL.md`](skills/user-skills/generated/cli/command/SKILL.md) |
+| 97 | ✓ | [`skills/user-skills/generated/cli/SKILL.md`](skills/user-skills/generated/cli/SKILL.md) |
+| 98 | ✓ | [`skills/user-skills/generated/extensions/SKILL.md`](skills/user-skills/generated/extensions/SKILL.md) |
+| 99 | ✓ | [`skills/user-skills/generated/infra/SKILL.md`](skills/user-skills/generated/infra/SKILL.md) |
+| 100 | ✓ | [`skills/user-skills/infrastructure-extensions/SKILL.md`](skills/user-skills/infrastructure-extensions/SKILL.md) |
+| 101 | ✓ | [`skills/user-skills/local-development/SKILL.md`](skills/user-skills/local-development/SKILL.md) |
+| 102 | ✓ | [`skills/user-skills/mailer-smtp/SKILL.md`](skills/user-skills/mailer-smtp/SKILL.md) |
+| 103 | ✓ | [`skills/user-skills/project-structure/SKILL.md`](skills/user-skills/project-structure/SKILL.md) |
+| 104 | ✓ | [`skills/user-skills/webiny-sdk/SKILL.md`](skills/user-skills/webiny-sdk/SKILL.md) |
+| 105 | ✓ | [`skills/user-skills/website-builder/SKILL.md`](skills/user-skills/website-builder/SKILL.md) |
 
 ---
 

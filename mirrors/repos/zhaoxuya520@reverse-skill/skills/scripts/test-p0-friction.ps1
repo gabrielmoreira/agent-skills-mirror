@@ -141,11 +141,15 @@ if ($LASTEXITCODE -eq 2) { Ok 'case-guard pending exit 2' } else { Bad "case-gua
 if ($LASTEXITCODE -eq 0) { Ok 'case-guard -Force exit 0' } else { Bad "case-guard -Force exit $LASTEXITCODE" }
 
 # 10) AuthGranted must not be clobbered by junk AuthStatus / multi-asset lab init
+# Note: -ProjectRoot is passed explicitly to prevent the -InScopeAssets array
+# from being flattened by powershell -File and binding its second element to the
+# -ProjectRoot positional parameter slot.
 $labName = 'p0-lab-' + (Get-Date -Format 'HHmmss')
 & powershell -NoProfile -ExecutionPolicy Bypass -File $ci `
     -Hint 'gin juice lab pentest' `
     -CaseName $labName `
     -PackageRoot $PackageRoot `
+    -ProjectRoot $PackageRoot `
     -AuthGranted `
     -AuthBasis 'public_training_lab' `
     -EvidenceOfAuth 'PortSwigger intentionally vulnerable public site example' `

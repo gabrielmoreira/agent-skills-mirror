@@ -1,0 +1,4 @@
+interface:
+  display_name: "TikTok 账号诊断"
+  short_description: "分析公开账号的运营逻辑、可复用起号流程与带货指南。"
+  default_prompt: "使用 $tiktok-account-audit 分析这个公开 TikTok 账号的运营逻辑，并给出可复用起号流程和带货指南。"

@@ -12,6 +12,8 @@
 - **packaged server smoke**：用产物内 Electron runtime 启动 `standalone/server.js` 并请求 `/api/health`。
 - **FileSet destination**：electron-builder 把源文件复制到 `resources/` 下的目标路径；目标不得重叠。
 - **native editing context menu**：主进程通过 Electron `role` 为 input / textarea / contenteditable 提供复制、粘贴等系统编辑动作。
+- **native delivery owner**：始终由 Electron Main 领取 `electron-native` delivery；窗口可见性不会把 ownership 转给 Renderer。
+- **OS accepted**：Electron `Notification` 发出 `show` lifecycle event。它证明系统接受展示请求，不等于用户看见或已读。
 
 ## 不变量 / 契约表
 
@@ -34,6 +36,12 @@
 | 15 | HTML 缩略图 IPC 只接受当前 renderer 同源、无 interactive 参数且首段为一个完整 canonical `ws.<base64url absolute path>` 的 strict preview URL。派生后的精确 scope 才能进入 `webRequest` allowlist；包含性 token、前后缀和编码分隔符都 fail closed | `electron/html-thumbnail-security.ts` + main IPC |
 | 16 | AI 输出的本地路径不得进入通用 `shell.openPath`。`/api/files/inspect` 只接受绝对路径 + `sessionId` 或固定 `home` scope，由服务端推导根并返回 canonical `realPath`；主进程在 OS 调用前再次 realpath/stat。目录只能 `showItemInFolder`，bundle 目录拒绝；文件只允许 workspace `.html/.htm` 走专用 open IPC | `local-path-security` + DevOutput / PreviewPanel / DiffSummary + inspect route + main IPC |
 | 17 | `/api/files/open` fallback 不得拼 shell 字符串；可执行文件固定、路径只能作为单个 argv，`shell: false`，且 scope/realpath/bundle 规则与主进程一致 | files/open route + tests |
+| 18 | 默认助理路径 IPC 无输入，只返回 `path.join(app.getPath('documents'), 'CodePilot', 'Assistant')`；不得演变成 Renderer 可控的通用路径 resolver | `default-assistant-home.ts` + main/preload |
+| 19 | `electron-native` 只有 Main 一个 consumer，visible/hidden/tray 不切 owner；Renderer 只能 claim `renderer-toast` | native delivery service + route policy |
+| 20 | native delivery 只有收到 `show` event 才 ack delivered；共同 throw/unsupported/timeout 收口 error，Windows 额外监听 `failed`，macOS/Linux 不等待不存在的事件 | `notification-lifecycle.ts` |
+| 21 | 提示音服从系统 policy：macOS 使用 `sound:'default'` 且 `silent:false`，Windows/Linux 使用平台默认且不自播放音频；最终能力必须由对应 packaged smoke 证明 | native options builder + release smoke |
+| 22 | 已 show 的 Notification 对象在 click/close 前由有界 retention 保活；点击在 Renderer ready 前进入有界队列，ready handshake 后按 event id 幂等投递。action 只能解析为应用内 route 或已验证的 task/session fallback | `notification-lifecycle.ts` + `notification-click-queue.ts` + main/preload/hooks |
+| 23 | native delivery 的 stale claim lease 必须长于单次通知 lifecycle timeout，并保留可观测余量；调整 show timeout 时必须同步复核 lease，避免仍在等待系统回调的 delivery 被第二个 consumer 重新领取 | notification claim policy + native delivery service |
 
 ## 关键文件 + 责任
 
@@ -52,6 +60,9 @@
 | `src/lib/process-proxy-env.ts` | child-process proxy 优先级、Windows key 归一与 bypass |
 | `src/lib/local-path-security.ts` | 主进程/Next fallback 共用的绝对路径、bundle、HTML 扩展与固定 argv 策略 |
 | `src/lib/local-path-navigation.ts` + `/api/files/inspect` | Renderer 本地路径 file/directory 分流；服务端从 session/home 推导 scope 并返回 canonical `realPath` |
+| `electron/default-assistant-home.ts` | 默认助理 Documents 路径的无副作用纯解析 |
+| `electron/notification-lifecycle.ts` | 平台 notification options 与 show/error/timeout 终态 |
+| `electron/notification-click-queue.ts` | 点击 action 校验、有界 pending queue 与 event-id 去重 |
 
 ## 改动检查表
 
@@ -67,6 +78,12 @@
 - [ ] 改 HTML thumbnail IPC/preview route 时运行 `electron-main-security`，覆盖 canonical token、包含性 token、编码分隔符、同源 scope、超时释放与外部请求拒绝
 - [ ] 改聊天本地链接或系统路径消费方时覆盖：HTTP(S)、相对路径、工作区文件/目录、外部确认、symlink escape、`.app/.workflow` bundle、`.command` 非 HTML 与 Electron 错误字符串
 - [ ] Renderer 不得新增通用 `openPath(path)` bridge；目录意图使用 scoped `revealPath`，HTML 使用 scoped `openHtmlFile`
+- [ ] 改 native notification 时验证 Main 单 owner、visible/hidden 不切 owner、server restart stale claim 可恢复
+- [ ] 文案把 delivered 描述为“系统已接受”，不写“用户已读”
+- [ ] notification click 覆盖 before-ready、reload 和 duplicate event；队列必须有上限
+- [ ] 已 show notification 的 JS 对象在 click/close/TTL 前保持引用，retention 必须有数量与时间上限
+- [ ] 调整 native notification lifecycle timeout 时同步核对 stale claim lease；当前 12s timeout / 30s lease 不得被改成 timeout ≥ lease
+- [ ] 默认助理 fixed-path IPC 保持无参数，路径 fixture 覆盖 macOS/Windows/Linux 分隔符
 
 ## 常见坑
 
@@ -81,6 +98,10 @@
 - 不要用 `session.setProxy({ mode: 'direct' })` 解决 Codex loopback；它会关闭 Chromium 外网代理且管不到 app-server。
 - `scripts/after-pack.js` 会把工作区 better-sqlite3 重编成 Electron ABI；之后跑 Node/Next 前需 `npm rebuild better-sqlite3` 恢复 Node ABI。
 - 不要用 `pathname.startsWith('/api/files/html-preview/ws.')` 代替 workspace token parser；前缀命中不是完整 segment，也不能证明 canonical base64url 或绝对 workspace root。
+- 不要根据 `mainWindow.isVisible()` 在 Renderer 和 Main 间切换 native consumer；切换窗口会产生重复或漏投。
+- 不要在调用 `notification.show()` 后立刻写 delivered；生命周期终态来自 `show` event，且需要有界 timeout。
+- 不要只调大 native notification 的 show timeout；它必须始终短于 stale claim lease，否则同一 delivery 可能在首次消费尚未结束时被再次领取。
+- 不要用 Web Notification 或 renderer toast 作为 packaged Electron native notification 的成功证据。
 
 ## 测试覆盖
 
@@ -95,6 +116,7 @@
 | 原生主题枚举、preload/main bridge、透明 surface | `src/__tests__/unit/native-theme-sync.test.ts` + `platform-marker.test.ts` |
 | HTML thumbnail canonical scope、外联阻断与 deadline queue | `src/__tests__/unit/electron-main-security.test.ts` |
 | 聊天本地路径分类、canonical inspect、bundle/协议拦截与窄系统能力 | `local-link-detector.test.ts` + `local-path-navigation.test.ts` + `markdown-contract.test.ts` + `electron-main-security.test.ts` + `asset-library-ui.test.ts` |
+| 默认助理 fixed-path、native lifecycle、点击队列与 Main 单 owner | `default-assistant-bootstrap.test.ts` + `electron-notification-lifecycle.test.ts` + `bg-poller-channel-parity.test.ts` + `bridge-delivery-visibility.test.ts` |
 
 ## 设计决策日志
 
@@ -108,3 +130,4 @@
 - 2026-07-31 — HTML thumbnail IPC 的初始 URL gate 从字符串前缀升级为 canonical workspace-segment parser。只有完整 `ws.<base64url absolute path>` 可派生 request scope；非法/包含性/编码分隔符输入在创建隐藏窗口前拒绝。
 - 2026-07-31 — Codex Markdown 本地目录不再按“绝对路径 = 文件”送入 PreviewPanel。用户点击后由 scoped inspect 判型：文件进侧栏、目录进系统文件管理器；工作区外仍先确认。HTML DiffSummary 卡新增 workspace-only 系统浏览器图标。
 - 2026-08-01 — Claude 复审发现目录 `shell.openPath` 可启动 macOS bundle、generic IPC 可被 AI 路径利用且 inspect/raw path 不同源。删除通用 bridge：目录只定位、bundle 拒绝、HTML 专用打开；inspect 根由 session/home 推导并返回 canonical path，主进程二次校验。既有 files/open shell 拼接同步改为固定 argv。
+- 2026-08-03 — 默认助理路径改为无输入的 fixed-path IPC；native notification 改为 Main 单 owner 的 durable claim/ack。`show` 只表示 OS accepted，点击通过有界 pending queue 等待 Renderer ready，提示音服从系统设置且仍以各平台 packaged smoke 为发布证据。

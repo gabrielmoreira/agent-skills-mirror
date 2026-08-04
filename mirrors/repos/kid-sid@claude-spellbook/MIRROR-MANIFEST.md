@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed patterns, 66 file(s) materialized.
+Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed patterns, 67 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 66 |
+| Files         | 67 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,11 +120,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | ✓ | [`skills/temporal/skill.md`](skills/temporal/skill.md) |
 | 60 | ✓ | [`skills/test-strategy/skill.md`](skills/test-strategy/skill.md) |
 | 61 | ✓ | [`skills/typescript/skill.md`](skills/typescript/skill.md) |
-| 62 | ✓ | [`skills/unit-testing/skill.md`](skills/unit-testing/skill.md) |
-| 63 | ✓ | [`skills/webhooks/skill.md`](skills/webhooks/skill.md) |
-| 64 | ✓ | [`skills/websockets-sse/skill.md`](skills/websockets-sse/skill.md) |
-| 65 | ✓ | [`skills/writing-plans/skill.md`](skills/writing-plans/skill.md) |
-| 66 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 62 | ✓ | [`skills/ui-ux-pro-max/skill.md`](skills/ui-ux-pro-max/skill.md) |
+| 63 | ✓ | [`skills/unit-testing/skill.md`](skills/unit-testing/skill.md) |
+| 64 | ✓ | [`skills/webhooks/skill.md`](skills/webhooks/skill.md) |
+| 65 | ✓ | [`skills/websockets-sse/skill.md`](skills/websockets-sse/skill.md) |
+| 66 | ✓ | [`skills/writing-plans/skill.md`](skills/writing-plans/skill.md) |
+| 67 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

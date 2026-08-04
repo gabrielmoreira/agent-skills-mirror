@@ -59,9 +59,16 @@ llama = []  llama-cuda = []  llama-vulkan = []  llama-opencl = []
 ## Release Process
 
 Load the `release` skill (`.opencode/skills/release/SKILL.md`) before cutting a release.
-Releases are coordinated with Airframe via `scripts/release-coordinated.sh` in the
-workspace root. One command handles version bumps, commits, tags, crates.io publish,
+Releases are coordinated with Airframe via `scripts/deploy.sh` in the
+workspace root (see workspace AGENTS.md for the full deploy process).
+One command handles version bumps, commits, tags, crates.io publish,
 and GitHub Releases for both repos. Never bump versions or tag manually.
+
+## Branch model
+
+- **Single live branch: `main`.** No `master` branch exists on any remote.
+- All work merges into `main` locally; push main + tag to `origin` (public) and
+  `private` (working copy). No cloud PRs, no cloud merges.
 
 ## What NOT To Do
 

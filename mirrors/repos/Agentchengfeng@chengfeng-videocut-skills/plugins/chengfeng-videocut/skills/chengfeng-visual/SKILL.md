@@ -21,20 +21,19 @@ user-invocable: true
 模块写法的硬规矩见 [模块契约](references/visual-module-contract.md)，
 判断规则见 [画面判断](references/visual-judgment.md)。
 
-## 0. Runtime 预检
+## 0. 就绪
 
-先读取并执行 [Runtime 预检](../../references/runtime-preflight.md)——它是预检的唯一真本：
-定义 `$PLUGIN_ROOT` / `$ENSURE` / `$RUNNING` / `$STUDIO` / `$VC` 工具变量，安装缺失的
-Runtime，并规定每种失败结果的处置（含「禁止自制替代界面」禁令）。任何非 `ready`
-结果都按它的规定停止。
+先执行 [检查更新](../chengfeng-check-updates/SKILL.md) 的「就绪检查」——skills 是否
+最新、Runtime 是否配套；**插件根**也在那里定位（本文命令里的 `<插件根>` 都代入
+那个字面路径）。只有「就绪」才继续；「需新会话」或「停」按它的处置执行
+（含「禁止自制替代界面」禁令），业务 Skill 不自带环境逻辑。
 ## 命令
 
 ```bash
-node "$VC" visual get   <project> --json
-node "$VC" visual frame <project> --cues sub-0004,sub-0005 --count 12 --out <dir> --json
-node "$VC" visual add   <project> --module modules/01-xx/index.html \
-  --cues sub-0004,sub-0005 [--zoom x,y,w,h] [--id vis-0001] --json
-node "$VC" visual remove <project> --id vis-0001 --json
+node "<插件根>/scripts/videocut-cli.cjs" visual get   <project> --json
+node "<插件根>/scripts/videocut-cli.cjs" visual frame <project> --cues sub-0004,sub-0005 --count 12 --out <dir> --json
+node "<插件根>/scripts/videocut-cli.cjs" visual add   <project> --module modules/01-xx/index.html --cues sub-0004,sub-0005 [--zoom x,y,w,h] [--id vis-0001] --json
+node "<插件根>/scripts/videocut-cli.cjs" visual remove <project> --id vis-0001 --json
 ```
 
 层绑**字幕屏**（`--cues`），产品自己换算成词 id——层永远不可能绑上没人说的词，

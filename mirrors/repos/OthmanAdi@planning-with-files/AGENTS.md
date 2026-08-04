@@ -60,7 +60,7 @@ All 19 files must be bumped to the same version string every release.
 
 **NOT bumped automatically**: `scripts/bump-version.py`'s `LAGGING_FILES` list currently excludes four files, not two — this table only tracked two until this correction:
 - `.continue/skills/planning-with-files/SKILL.md`, `.gemini/skills/planning-with-files/SKILL.md` — intentionally behind. Do not bump without an explicit scope decision.
-- `.pi/skills/planning-with-files/SKILL.md` — carries its own npm package version (`@tomxprime/planning-with-files`), not the canonical `metadata.version` field the parity set shares.
+- `.pi/skills/planning-with-files/SKILL.md` — carries no `version` field at all; the Pi channel's version lives in `.pi/skills/planning-with-files/package.json` (the npm package `planning-with-files`), which since v3.9.0 IS part of the parity set and bumped by `bump-version.py`. Publishing to npm (`npm publish` from that folder) is a manual step after each release, like the ClawHub upload.
 - `.kiro/skills/planning-with-files/SKILL.md` — carries its own `-kiro`-suffixed scheme (e.g. `3.0.0-kiro`), bumped on Kiro-relevant changes rather than every canonical release.
 
 Recent CHANGELOG entries (v3.1.1–v3.1.3) already describe this 4-file exclusion as "per AGENTS.md release scope" — this section previously did not actually say so. It does now.

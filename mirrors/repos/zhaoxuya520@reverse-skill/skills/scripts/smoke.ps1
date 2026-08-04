@@ -46,6 +46,7 @@ $scripts = @(
     'verify-routing-coherence.ps1',
     'master-route.ps1',
     'case-init.ps1',
+    'lib\WorkRoot.ps1',
     'bootstrap-reverse.ps1',
     'refresh-tool-index.ps1',
     'smoke.ps1',

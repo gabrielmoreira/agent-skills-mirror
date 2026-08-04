@@ -210,6 +210,25 @@ function buildLoginConfigNextStep(loginMethods: ReturnType<typeof buildLoginMeth
   };
 }
 
+/**
+ * 短信验证码默认通道提示：开启 phone 登录后即可用云开发默认短信通道收发验证码，
+ * 不需要配置短信签名/模板/自定义 Provider。仅当需要自定义模板、签名或更换短信服务商时，
+ * 才需要配置 SmsVerificationConfig / 自定义短信通道。
+ */
+function buildSmsHint(loginMethods: ReturnType<typeof buildLoginMethods>) {
+  if (!loginMethods.phone) {
+    return undefined;
+  }
+
+  return {
+    defaultChannelReady: true,
+    message:
+      "短信验证码登录已开启，可直接使用云开发默认短信通道收发验证码，无需配置短信签名/模板/自定义 Provider。" +
+      "前端调用 auth.getVerification({ phone_number }) 发送验证码、auth.signInWithSms({ verificationInfo, verificationCode, phoneNum }) 登录。" +
+      "仅当需要自定义短信模板/签名或更换短信服务商时，才需要配置 SmsVerificationConfig 或接入自定义短信通道。",
+  };
+}
+
 function extractProviders(value: unknown): Array<Record<string, unknown>> {
   const payload = normalizePlainObject(value, "providersResult");
   const providers = payload?.Providers ?? payload?.ProviderList ?? payload?.Data ?? [];
@@ -355,6 +374,40 @@ export function registerAppAuthTools(server: ExtendedMcpServer) {
     }
   };
 
+  // Best-effort inventory read used to verify whether CreateApiKey really produced a new key.
+  // A failure here must not block key creation, so it returns null to mark "unknown"
+  // rather than an empty list, which would be indistinguishable from "no keys exist".
+  const listApiKeyRecords = async (
+    cloudbase: Awaited<ReturnType<typeof getManager>>,
+    keyType: AppAuthKeyType,
+  ): Promise<Array<Record<string, unknown>> | null> => {
+    try {
+      const result = await cloudbase.env.describeApiKeyList({
+        KeyType: keyType,
+        PageNumber: 1,
+        PageSize: 50,
+      });
+      return extractApiKeyList(result);
+    } catch {
+      return null;
+    }
+  };
+
+  const listApiKeyIds = async (
+    cloudbase: Awaited<ReturnType<typeof getManager>>,
+    keyType: AppAuthKeyType,
+  ) => {
+    const records = await listApiKeyRecords(cloudbase, keyType);
+    if (records === null) {
+      return null;
+    }
+    return new Set(
+      records
+        .map((item) => (typeof item.KeyId === "string" ? item.KeyId : null))
+        .filter((item): item is string => item !== null),
+    );
+  };
+
   const describePublishableKey = async (cloudbase: Awaited<ReturnType<typeof getManager>>, envId: string) => {
     const result = await cloudbase.env.describeApiKeyList({ KeyType: "publish_key", PageNumber: 1, PageSize: 10 });
 
@@ -416,12 +469,14 @@ export function registerAppAuthTools(server: ExtendedMcpServer) {
             const loginMethods = buildLoginMethods(result);
             const nextStep = buildLoginConfigNextStep(loginMethods);
             const webSdkHint = buildWebSdkHint(loginMethods);
+            const smsHint = buildSmsHint(loginMethods);
             return buildSupabaseLikeAuthResponse({
               success: true,
               envId,
               loginMethods,
               ...(nextStep ? { next_step: nextStep } : {}),
               ...(webSdkHint ? { webSdkHint } : {}),
+              ...(smsHint ? { smsHint } : {}),
             });
           }
           case "listProviders": {
@@ -509,7 +564,7 @@ export function registerAppAuthTools(server: ExtendedMcpServer) {
     {
       title: "管理 CloudBase 应用认证配置",
       description:
-        "CloudBase 应用侧认证配置写入口。用于修改登录方式、provider、client 配置，确保 publishable key，以及创建或删除 API key、自定义登录密钥。⚠️ 本工具为管理端配置工具，不执行用户登录。当任务要求编写客户端登录代码时（例如「用 JS SDK 登录」），应先通过本工具完成配置（如启用 usernamePassword、获取 publishable key），再在项目代码中编写 @cloudbase/js-sdk 客户端登录代码（如 auth.signInWithPassword()），而非使用本工具完成登录。若前端要接受普通用户名样式标识符，应先执行 action=patchLoginStrategy 并传入 patch={ usernamePassword: true }，再实现对应前端登录逻辑。",
+        "CloudBase 应用侧认证配置写入口。用于修改登录方式、provider、client 配置，确保 publishable key，以及创建或删除 API key、自定义登录密钥。⚠️ 本工具为管理端配置工具，不执行用户登录。当任务要求编写客户端登录代码时（例如「用 JS SDK 登录」），应先通过本工具完成配置（如启用 usernamePassword、获取 publishable key），再在项目代码中编写 @cloudbase/js-sdk 客户端登录代码（如 auth.signInWithPassword()），而非使用本工具完成登录。若前端要接受普通用户名样式标识符，应先执行 action=patchLoginStrategy 并传入 patch={ usernamePassword: true }，再实现对应前端登录逻辑。⚠️ 短信验证码登录（patch={ phone: true }）使用云开发默认短信通道，开启后即可收发验证码，不需要配置短信签名/模板/自定义 Provider；仅当需要自定义模板/签名或更换短信服务商时才需配置 SmsVerificationConfig 或自定义短信通道。⚠️ action=createApiKey 返回体中的 created 字段表示是否真正新建：created=false 说明复用了环境中已存在的 key，此时 keyName/expireIn 入参不会生效，返回的 keyName/expireAt 均为服务端真实值，并会附带 warnings，切勿把它当作临时凭证分发。",
       inputSchema: {
         action: z.enum(MANAGE_APP_AUTH_ACTIONS),
         patch: z
@@ -534,8 +589,20 @@ export function registerAppAuthTools(server: ExtendedMcpServer) {
           .enum(APP_AUTH_KEY_TYPES)
           .optional()
           .describe("createApiKey 时的 API key 类型，默认 publish_key"),
-        keyName: z.string().optional().describe("createApiKey 时的 API key 名称"),
-        expireIn: z.number().int().min(0).optional().describe("createApiKey 时的有效期，单位秒；0 表示不过期"),
+        keyName: z
+          .string()
+          .optional()
+          .describe(
+            "createApiKey 时的 API key 名称；服务端可能忽略该值（如 publish_key 每环境唯一时），返回体中的 keyName 一律为服务端实际存储的名称",
+          ),
+        expireIn: z
+          .number()
+          .int()
+          .min(0)
+          .optional()
+          .describe(
+            "createApiKey 时的有效期，单位秒；0 表示不过期。复用已有 key 时该值不生效，此时返回体会带 created=false 与 warnings",
+          ),
         keyId: z.string().optional().describe("deleteApiKey 时的 API key 唯一标识"),
       },
       annotations: {
@@ -596,12 +663,14 @@ export function registerAppAuthTools(server: ExtendedMcpServer) {
             const loginMethods = buildLoginMethods(confirmed);
             const nextStep = buildLoginConfigNextStep(loginMethods);
             const webSdkHint = buildWebSdkHint(loginMethods);
+            const smsHint = buildSmsHint(loginMethods);
             return buildSupabaseLikeAuthResponse({
               success: true,
               envId,
               loginMethods,
               ...(nextStep ? { next_step: nextStep } : {}),
               ...(webSdkHint ? { webSdkHint } : {}),
+              ...(smsHint ? { smsHint } : {}),
             });
           }
           case "addProvider": {
@@ -704,6 +773,8 @@ export function registerAppAuthTools(server: ExtendedMcpServer) {
           }
           case "createApiKey": {
             const effectiveKeyType = keyType ?? "publish_key";
+            const before = await listApiKeyIds(cloudbase, effectiveKeyType);
+
             const result = await cloudbase.env.createApiKey({
               KeyType: effectiveKeyType,
               ...(keyName ? { KeyName: keyName } : {}),
@@ -712,20 +783,62 @@ export function registerAppAuthTools(server: ExtendedMcpServer) {
             logCloudBaseResult(server.logger, result);
             const createApiKeyResult = normalizePlainObject(result, "createApiKeyResult") ?? {};
 
+            const resultKeyId =
+              typeof createApiKeyResult.KeyId === "string" ? createApiKeyResult.KeyId : null;
+            const created =
+              before === null || resultKeyId === null ? null : !before.has(resultKeyId);
+
+            // The backend is the only source of truth for the stored name / expiry:
+            // re-read the key record instead of echoing back the request parameters.
+            const serverRecord = resultKeyId
+              ? (await listApiKeyRecords(cloudbase, effectiveKeyType))?.find(
+                  (item) => item.KeyId === resultKeyId,
+                ) ?? null
+              : null;
+
+            const keyNameSource = serverRecord ?? createApiKeyResult;
+            const resolvedKeyName =
+              getNonEmptyString(keyNameSource.Name) ??
+              getNonEmptyString(keyNameSource.KeyName) ??
+              null;
+            const resolvedExpireAt =
+              getNonEmptyString(serverRecord?.ExpireAt) ??
+              getNonEmptyString(createApiKeyResult.ExpireAt) ??
+              null;
+            const resolvedCreatedAt =
+              getNonEmptyString(serverRecord?.CreateAt) ??
+              getNonEmptyString(createApiKeyResult.CreateAt) ??
+              null;
+
+            const warnings: string[] = [];
+            if (created === false) {
+              warnings.push(
+                `keyType=${effectiveKeyType} 未创建新的 key，返回的是环境中已存在的 key（keyId=${resultKeyId}）。若该类型每个环境唯一，请改用 action=ensurePublishableKey 语义理解此结果。`,
+              );
+            }
+            if (keyName && resolvedKeyName !== null && resolvedKeyName !== keyName) {
+              warnings.push(
+                `请求的 keyName="${keyName}" 未生效，服务端实际存储的名称为 "${resolvedKeyName}"。`,
+              );
+            }
+            if (typeof expireIn === "number" && created === false) {
+              warnings.push(
+                `请求的 expireIn=${expireIn} 未生效，返回的 key 使用其原有过期时间 ${resolvedExpireAt ?? "unknown"}。请勿将其视为临时凭证。`,
+              );
+            }
+
             return {
               success: true,
               envId,
               keyType: effectiveKeyType,
-              keyId: typeof result.KeyId === "string" ? result.KeyId : null,
-              keyName:
-                typeof result.Name === "string"
-                  ? result.Name
-                  : typeof createApiKeyResult.KeyName === "string"
-                    ? createApiKeyResult.KeyName
-                    : keyName ?? null,
-              apiKey: typeof result.ApiKey === "string" ? result.ApiKey : null,
-              expireAt: typeof result.ExpireAt === "string" ? result.ExpireAt : null,
-              createdAt: typeof result.CreateAt === "string" ? result.CreateAt : null,
+              keyId: resultKeyId,
+              keyName: resolvedKeyName,
+              apiKey:
+                typeof createApiKeyResult.ApiKey === "string" ? createApiKeyResult.ApiKey : null,
+              expireAt: resolvedExpireAt,
+              createdAt: resolvedCreatedAt,
+              ...(typeof created === "boolean" ? { created } : {}),
+              ...(warnings.length > 0 ? { warnings } : {}),
             };
           }
           case "deleteApiKey": {

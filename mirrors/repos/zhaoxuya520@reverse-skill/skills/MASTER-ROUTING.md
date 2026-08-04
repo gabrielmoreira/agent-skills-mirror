@@ -17,8 +17,11 @@
 
 ```powershell
 powershell -File skills\scripts\master-route.ps1 -Hint "<用户任务>"
-# 默认写出 work/master-route-<ts>/route-scope.md
+# 默认写出当前项目的 work/master-route-<ts>/route-scope.md；从其他目录调用时显式指定项目根
+powershell -File skills\scripts\master-route.ps1 -Hint "<用户任务>" -ProjectRoot "C:\path\to\analysis-project"
 powershell -File skills\scripts\case-init.ps1 -Hint "<用户任务>" -CaseName "my-case"
+# case 默认写入当前项目的 work/<case>/；-PackageRoot 保持兼容，-ProjectRoot 优先级更高
+powershell -File skills\scripts\case-init.ps1 -Hint "<用户任务>" -CaseName "my-case" -ProjectRoot "C:\path\to\analysis-project"
 # 一次成型可 ACT（授权 + 目标 + 网络档）：
 powershell -File skills\scripts\case-init.ps1 -Hint "<任务>" -CaseName "my-case" -AuthGranted -TargetUrl "https://target/" -NetworkProfile authorized_target_only
 # 冒烟：verify + 脚本解析 + 路由矩阵（含中文 Hint）

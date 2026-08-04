@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed patterns, 163 file(s) materialized.
+Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed patterns, 164 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shinpr/claude-code-workflows` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 163 |
+| Files         | 164 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -214,14 +214,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 153 | ✓ | [`skills/requirement-convergence/references/criteria.md`](skills/requirement-convergence/references/criteria.md) |
 | 154 | ✓ | [`skills/requirement-convergence/SKILL.md`](skills/requirement-convergence/SKILL.md) |
 | 155 | ✓ | [`skills/subagents-orchestration-guide/references/monorepo-flow.md`](skills/subagents-orchestration-guide/references/monorepo-flow.md) |
-| 156 | ✓ | [`skills/subagents-orchestration-guide/SKILL.md`](skills/subagents-orchestration-guide/SKILL.md) |
-| 157 | ✓ | [`skills/task-analyzer/references/skills-index.yaml`](skills/task-analyzer/references/skills-index.yaml) |
-| 158 | ✓ | [`skills/task-analyzer/SKILL.md`](skills/task-analyzer/SKILL.md) |
-| 159 | ✓ | [`skills/test-implement/references/e2e.md`](skills/test-implement/references/e2e.md) |
-| 160 | ✓ | [`skills/test-implement/references/frontend.md`](skills/test-implement/references/frontend.md) |
-| 161 | ✓ | [`skills/test-implement/SKILL.md`](skills/test-implement/SKILL.md) |
-| 162 | ✓ | [`skills/testing-principles/SKILL.md`](skills/testing-principles/SKILL.md) |
-| 163 | ✓ | [`skills/typescript-rules/SKILL.md`](skills/typescript-rules/SKILL.md) |
+| 156 | ✓ | [`skills/subagents-orchestration-guide/references/review-resolution.md`](skills/subagents-orchestration-guide/references/review-resolution.md) |
+| 157 | ✓ | [`skills/subagents-orchestration-guide/SKILL.md`](skills/subagents-orchestration-guide/SKILL.md) |
+| 158 | ✓ | [`skills/task-analyzer/references/skills-index.yaml`](skills/task-analyzer/references/skills-index.yaml) |
+| 159 | ✓ | [`skills/task-analyzer/SKILL.md`](skills/task-analyzer/SKILL.md) |
+| 160 | ✓ | [`skills/test-implement/references/e2e.md`](skills/test-implement/references/e2e.md) |
+| 161 | ✓ | [`skills/test-implement/references/frontend.md`](skills/test-implement/references/frontend.md) |
+| 162 | ✓ | [`skills/test-implement/SKILL.md`](skills/test-implement/SKILL.md) |
+| 163 | ✓ | [`skills/testing-principles/SKILL.md`](skills/testing-principles/SKILL.md) |
+| 164 | ✓ | [`skills/typescript-rules/SKILL.md`](skills/typescript-rules/SKILL.md) |
 
 ---
 

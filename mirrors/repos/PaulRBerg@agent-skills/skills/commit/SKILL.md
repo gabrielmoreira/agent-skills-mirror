@@ -65,8 +65,8 @@ changes the shared index. If preparation fails, stop with its error and a concis
     step 4
   - **Renames**: pass both the old and new name as session paths, including for case-only file or directory renames
 - **Unrelated changes**: session-modified files may contain pre-existing uncommitted changes (hunks not from this
-  session). Include the entire file—partial staging is impractical. Never revert, discard, or `git checkout` unrelated
-  changes.
+  session). Preserve `stale-dirt:` baselines as described in step 4. Without a baseline, include the entire file. Never
+  revert, discard, or `git checkout` unrelated changes.
 
 ### 3) Analyze + compose message
 
@@ -79,8 +79,8 @@ Read the helper output and produce the commit message in a single pass.
 
 Read only the selected format reference before composing the message.
 
-**Unrelated hunks** — ignore pre-existing changes when determining type/scope/description. If unrelated changes are in
-the same file as session changes, they are included in the commit scope but should not influence the message.
+**Unrelated hunks** — ignore pre-existing changes when determining type/scope/description. Without a baseline exclusion,
+unrelated changes in the same file are included in the commit scope but should not influence the message.
 
 **Issue linking** — scan the chat transcript for GitHub issue references (e.g. `#123`, `owner/repo#123`, issue URLs)
 that the current changes resolve. For each match, append a `Closes #N` trailer. Skip issues merely mentioned in passing;
@@ -101,22 +101,28 @@ include only ones the commit actually closes.
 **Agent-Session attribution** — run once, independent of the diff:
 
 ```bash
-~/.codex/hooks/AgentSessionStatus/agent_session_status.py identity
+ai-coord trailer
 ```
 
-When the script exists and this exits `0`, parse `client=<claude|codex> session=<id>` from stdout and append an
-`Agent-Session: <client>/<id>` trailer alongside any `Closes #N` trailers. When the script is missing or `identity`
-exits nonzero, skip silently — the catalog skill must keep working on machines without it. This makes committed changes
-attributable to an agent session (`git log` shows which session authored what).
+When the CLI exists and this exits `0`, append its `Agent-Session: <client>/<id>` output alongside any `Closes #N`
+trailers. When the CLI is missing or the command exits nonzero, skip silently — the catalog skill must keep working on
+machines without it. This makes committed changes attributable to an agent session (`git log` shows which session
+authored what).
 
 ### 4) Commit
 
 - Default mode (no `--all`/`--staged`): run the helper from the target repository cwd:
 
   ```bash
-  bash "<skill-dir>/scripts/commit-paths.sh" commit -m "subject" [-m "body"] -- \
+  bash "<skill-dir>/scripts/commit-paths.sh" commit -m "subject" [-m "body"] \
+    [--exclude-baseline "<path>=<oid>"]... -- \
     <paths from the "## commit paths" section>
   ```
+
+  When `ai-coord start` returned a `stale-dirt:<paths>` advisory covering an intended path, run `ai-coord baseline` and
+  pass `--exclude-baseline "<path>=<oid>"` for each affected intended path. The helper applies only the
+  baseline-to-worktree change onto locked `HEAD`; if any patch does not apply cleanly, it aborts the whole commit and
+  leaves the worktree and shared index unchanged.
 
   The helper rejects an inherited `GIT_INDEX_FILE`, waits only on an explicit default-index lock, and holds that lock
   through the commit. It builds the commit from locked `HEAD` in a separate index whose name does not end in `.lock`, so

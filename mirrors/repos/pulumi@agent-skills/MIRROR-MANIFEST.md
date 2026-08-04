@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `pulumi/agent-skills` — 26 default patterns, 2 followed patterns, 27 file(s) materialized.
+Mirror of `pulumi/agent-skills` — 26 default patterns, 2 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `pulumi/agent-skills` — 26 default patterns, 2 followed patterns, 27
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 27 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,19 +74,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/cdk-importer.md`](migration/skills/pulumi-cdk-to-pulumi/cdk-importer.md) |
 | 13 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/cloudformation-id-lookup.md`](migration/skills/pulumi-cdk-to-pulumi/cloudformation-id-lookup.md) |
 | 14 | ✓ | [`migration/skills/pulumi-cdk-to-pulumi/SKILL.md`](migration/skills/pulumi-cdk-to-pulumi/SKILL.md) |
-| 15 | ✓ | [`migration/skills/pulumi-terraform-to-pulumi/SKILL.md`](migration/skills/pulumi-terraform-to-pulumi/SKILL.md) |
-| 16 | ✓ | [`package-maintenance/skills/pulumi-upgrade-provider/SKILL.md`](package-maintenance/skills/pulumi-upgrade-provider/SKILL.md) |
-| 17 | ✓ | [`package-maintenance/skills/upstream-patches/SKILL.md`](package-maintenance/skills/upstream-patches/SKILL.md) |
-| 18 | ✓ | [`pulumi/skills/package-usage/SKILL.md`](pulumi/skills/package-usage/SKILL.md) |
-| 19 | ✓ | [`pulumi/skills/provider-upgrade/SKILL.md`](pulumi/skills/provider-upgrade/SKILL.md) |
-| 20 | ✓ | [`pulumi/skills/pulumi-automation-api/SKILL.md`](pulumi/skills/pulumi-automation-api/SKILL.md) |
-| 21 | ✓ | [`pulumi/skills/pulumi-best-practices/SKILL.md`](pulumi/skills/pulumi-best-practices/SKILL.md) |
-| 22 | ✓ | [`pulumi/skills/pulumi-component/SKILL.md`](pulumi/skills/pulumi-component/SKILL.md) |
-| 23 | ✓ | [`pulumi/skills/pulumi-debug-failed-operation/SKILL.md`](pulumi/skills/pulumi-debug-failed-operation/SKILL.md) |
-| 24 | ✓ | [`pulumi/skills/pulumi-esc/SKILL.md`](pulumi/skills/pulumi-esc/SKILL.md) |
-| 25 | ✓ | [`pulumi/skills/pulumi-overview/SKILL.md`](pulumi/skills/pulumi-overview/SKILL.md) |
-| 26 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 27 | → | [`README.md`](README.md) |
+| 15 | ✓ | [`migration/skills/pulumi-migrate-from-discovered-stack/arm.md`](migration/skills/pulumi-migrate-from-discovered-stack/arm.md) |
+| 16 | ✓ | [`migration/skills/pulumi-migrate-from-discovered-stack/cloudformation.md`](migration/skills/pulumi-migrate-from-discovered-stack/cloudformation.md) |
+| 17 | ✓ | [`migration/skills/pulumi-migrate-from-discovered-stack/refactor.md`](migration/skills/pulumi-migrate-from-discovered-stack/refactor.md) |
+| 18 | ✓ | [`migration/skills/pulumi-migrate-from-discovered-stack/SKILL.md`](migration/skills/pulumi-migrate-from-discovered-stack/SKILL.md) |
+| 19 | ✓ | [`migration/skills/pulumi-terraform-to-pulumi/SKILL.md`](migration/skills/pulumi-terraform-to-pulumi/SKILL.md) |
+| 20 | ✓ | [`package-maintenance/skills/pulumi-upgrade-provider/SKILL.md`](package-maintenance/skills/pulumi-upgrade-provider/SKILL.md) |
+| 21 | ✓ | [`package-maintenance/skills/upstream-patches/SKILL.md`](package-maintenance/skills/upstream-patches/SKILL.md) |
+| 22 | ✓ | [`pulumi/skills/package-usage/SKILL.md`](pulumi/skills/package-usage/SKILL.md) |
+| 23 | ✓ | [`pulumi/skills/provider-upgrade/SKILL.md`](pulumi/skills/provider-upgrade/SKILL.md) |
+| 24 | ✓ | [`pulumi/skills/pulumi-automation-api/SKILL.md`](pulumi/skills/pulumi-automation-api/SKILL.md) |
+| 25 | ✓ | [`pulumi/skills/pulumi-best-practices/SKILL.md`](pulumi/skills/pulumi-best-practices/SKILL.md) |
+| 26 | ✓ | [`pulumi/skills/pulumi-component/SKILL.md`](pulumi/skills/pulumi-component/SKILL.md) |
+| 27 | ✓ | [`pulumi/skills/pulumi-debug-failed-operation/SKILL.md`](pulumi/skills/pulumi-debug-failed-operation/SKILL.md) |
+| 28 | ✓ | [`pulumi/skills/pulumi-esc/SKILL.md`](pulumi/skills/pulumi-esc/SKILL.md) |
+| 29 | ✓ | [`pulumi/skills/pulumi-overview/SKILL.md`](pulumi/skills/pulumi-overview/SKILL.md) |
+| 30 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 31 | → | [`README.md`](README.md) |
 
 ---
 

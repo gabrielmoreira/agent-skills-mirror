@@ -12,7 +12,7 @@ Install the Alex ACT constellation plugins at their correct default scope, in th
 
 - Heir asks "install Alex ACT" / "set up the constellation" / "install the Alex plugins"
 - Heir invokes `/alex-act-core install-constellation`
-- First run after a fresh Core install on a new machine. The heir must invoke `/alex-act-core install-constellation` explicitly because `greeting-checkin` is not available until Step 6 has run once.
+- First run after a fresh Core install on a new machine. The heir must invoke `/alex-act-core install-constellation` explicitly because `greeting-checkin` is not available until Step 7 has run once.
 - Repairing a partial install (some constellation plugins present, others missing)
 - **Auto-invoked from `greeting-checkin` instruction** on session start when constellation state is incomplete (added 2026-08-01)
 
@@ -22,29 +22,29 @@ The skill runs in one of three modes depending on how it was invoked:
 
 | Mode | Trigger | Behavior |
 |---|---|---|
-| **Manual** (default) | Heir types `/alex-act-core install-constellation` explicitly | Full consent flow: print 4-plugin table, ask which to install, tenant-check MSFT, bootstrap discipline, verify. All Steps 1-7 fire. |
-| **Auto-invoked from greeting-checkin** | `greeting-checkin` instruction detected incomplete state on a session greeting and user replied Y to the consolidated consent gate | Single Y already covers Steps 1-2. Skip re-asking. Go directly to Step 3 (marketplace) → Step 4 (installs) → Step 5 (settings) → Step 6 (bootstrap) → Step 7 (report). Streamlined but same actions. Report at Step 7 also confirms "Setup complete — reload VS Code to activate all skills" if any new plugins landed. |
+| **Manual** (default) | Heir types `/alex-act-core install-constellation` explicitly | Compatibility flow: install plugins, configure stable user settings, bootstrap discipline, preview current-workspace CSS, and verify. Manager is preferred when installed. All Steps 1-9 fire. |
+| **Auto-invoked from greeting-checkin** | `greeting-checkin` instruction detected incomplete state on a session greeting and user replied Y to the consolidated consent gate | Single Y covers plugin selection only. User settings, instruction bootstrap, and workspace files retain separate consent gates because they affect different scopes. Report at Step 9 confirms what remains incomplete. |
 | **Repair** | Heir invoked manually AND state check finds partial residue (bootstrap files without matching plugin, orphan receipt) | Confirm intent to complete partial install; skip installs of plugins already present at target version. |
-| **Bootstrap-only repair** | All plugin versions, enabled keys, and manifests match, but the receipt or one of its seventeen files is missing, stale, or hash-mismatched | Skip plugin selection, marketplace registration, installation, and settings merge. Show the bootstrap delta and go directly to the separate Step 6 consent gate. |
+| **Bootstrap-only repair** | All plugin versions, enabled keys, manifests, stable user settings, and current-workspace files match, but the receipt or one of its seventeen files is missing, stale, or hash-mismatched | Skip plugin selection, marketplace registration, installation, user-settings audit, and workspace bootstrap. Show the bootstrap delta and go directly to the separate Step 7 consent gate. |
 
 The three modes converge on the same underlying steps. What differs is which consent gates fire and how the report frames the outcome.
 
 `greeting-checkin` is a post-bootstrap convenience, not a first-install entry
-point. It is one of the seventeen files copied by Step 6, so a machine with no
+point. It is one of the seventeen files copied by Step 7, so a machine with no
 prior bootstrap cannot route a greeting through this skill.
 
-For the greeting-checkin auto-invocation path specifically, the user has already answered ONE question ("Complete setup? Y/N/details"). Do not re-prompt for plugin selection, bootstrap consent, or marketplace registration — the greeting Y is treated as consent for the default full-setup path. Only the MSFT tenant check remains (if MSFT is in scope), because tenant-check is a factual eligibility question, not a preference.
+For the greeting-checkin auto-invocation path specifically, the user has already answered ONE question ("Complete setup? Y/N/details"). Do not re-prompt for plugin selection or marketplace registration. The greeting Y covers plugin selection only; user settings, instruction bootstrap, and workspace files retain separate consent gates. The MSFT tenant check also remains because tenant eligibility is factual, not a preference.
 
 ## The four constellation plugins
 
-Per [`PLUGIN-INTEGRATION.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/PLUGIN-INTEGRATION.md) § 2, all four install at **user scope** (they describe *who the heir is*, not *what any single project needs*):
+Per [`PLUGIN-INTEGRATION.md`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/INSTALL.md) § 2, all four install at **user scope** (they describe *who the heir is*, not *what any single project needs*):
 
 | Order | Plugin | Distribution | Tenant check | Purpose |
 |---|---|---|---|---|
 | 1 | `alex-act-core` | `alex-mall` marketplace | None | Always-on epistemic discipline — every heir installs Core first |
 | 2 | `alex-act-illustrator-plugin` | `alex-mall` marketplace | None | Visual authoring: charts, docs shells, SVG banners, print figures, AI imagery |
 | 3 | `alex-act-enterprise` | `alex-mall` marketplace | None | Config-template plugin for the public Microsoft ecosystem (Azure, Fabric, Power BI, M365) |
-| 4 | `alex-act-msft` | **Direct install** from private GitHub (`fabioc-aloha/alex-act-msft`), gated by `gh auth` | **Microsoft-internal only** | Agency framework + config template for internal Microsoft plugins (WorkIQ, org-report). Never published to any mall. |
+| 4 | `alex-act-msft` | **Direct install** from private GitHub (`fabioc_microsoft/alex-act-msft`), gated by `gh auth` | **Microsoft-internal only** | Agency framework + config template for internal Microsoft plugins (WorkIQ, org-report). Never published to any mall. |
 
 ## Install order
 
@@ -68,13 +68,13 @@ This reads exact records from `alex-mall`'s `.github/plugin/marketplace.json`. `
 
 ## Optional: visual workflow companions
 
-Nine marketplace plugins compose to deliver visual-authoring workflows (chart rendering, screenshot verification, whiteboard iteration, PR annotation). **Ownership of the install offer for these companions moved from this skill to `alex-act-illustrator-plugin`'s `install-visual-companions` skill in Illustrator v0.6.0 (2026-08-01)** — the visual-workflow shelf now lives with the visual-authoring plugin that anchors it, per Fabio directive ("The visual companions should be bundled with the illustrator"). This reverses the 2026-07-31 Option A (route-only) decision recorded in [Steward's illustrator/plan.md](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md).
+Nine marketplace plugins compose to deliver visual-authoring workflows (chart rendering, screenshot verification, whiteboard iteration, PR annotation). **Ownership of the install offer for these companions moved from this skill to `alex-act-illustrator-plugin`'s `install-visual-companions` skill in Illustrator v0.6.0 (2026-08-01)** — the visual-workflow shelf now lives with the visual-authoring plugin that anchors it, per Fabio directive ("The visual companions should be bundled with the illustrator"). This reverses the 2026-07-31 Option A (route-only) decision recorded in Steward's illustrator/plan.md (private governance record).
 
 **How to offer them now**: after `install-constellation` completes and Illustrator is installed, invoke `/alex-act-illustrator-plugin install-visual-companions` or ask Illustrator's `install-visual-companions` skill directly. That skill carries the 9-plugin catalog, the vision-loop composition pattern (`storytelling-requirements → visual-artifact-qa → chart-interpretation → eyeball`), the install-time caveats (Playwright downloads, Python-vs-Node independence, OneDrive-redirect on Windows), and the consent flow.
 
 **Do not** attempt to offer the companions from this skill — the catalog + caveats + verified-status list are maintained in one place (Illustrator) to avoid drift.
 
-**Discovery + verification history**: the 9-plugin catalog + vision-loop composition were discovered and Round-4 verified via the [Steward GH-APP-SUPPORT feedback loop](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/architecture/GH-APP-SUPPORT.md) on 2026-07-31 (ledger row `[GH-APP-FEEDBACK]` closure). This skill originally shipped the catalog in Core v0.3.0 (via commit `a2de9d4`); Illustrator v0.6.0 took ownership 2026-08-01.
+**Discovery + verification history**: the 9-plugin catalog + vision-loop composition were discovered and Round-4 verified via the Steward GH-APP-SUPPORT feedback loop (private governance record) on 2026-07-31 (ledger row `[GH-APP-FEEDBACK]` closure). This skill originally shipped the catalog in Core v0.3.0 (via commit `a2de9d4`); Illustrator v0.6.0 took ownership 2026-08-01.
 
 ## Consent flow
 
@@ -86,7 +86,7 @@ Print the four-plugin table above. Ask the heir:
 
 Default to "all four" if the heir just says "yes". Never install `alex-act-msft` without an explicit tenant confirmation in Step 2.
 
-**Do not** offer visual-workflow companions in Step 1 — they are a Step 7 follow-up **via Illustrator's `/alex-act-illustrator-plugin install-visual-companions` command (owner: `alex-act-illustrator-plugin` v0.6.0+)**. Bundling them into the constellation install dilutes the consent flow.
+**Do not** offer visual-workflow companions in Step 1 — they are a Step 9 follow-up **via Illustrator's `/alex-act-illustrator-plugin install-visual-companions` command (owner: `alex-act-illustrator-plugin` v0.6.0+)**. Bundling them into the constellation install dilutes the consent flow.
 
 ### Step 2 — Tenant check for `alex-act-msft`
 
@@ -102,7 +102,7 @@ Register the `alex-mall` marketplace in `~/.copilot/settings.json` `extraKnownMa
 
 - `alex-mall` → `copilot plugin marketplace add fabioc-aloha/Alex_Skill_Mall`
 
-`alex-act-msft` does **not** need a marketplace — it installs directly from its private GitHub repo, gated by the heir's `gh auth` session. Verify with `gh auth status` that the heir is authenticated before including MSFT in the install.
+`alex-act-msft` does **not** need a marketplace — it installs directly from the private `fabioc_microsoft` managed-user repository. Verify with `gh auth status` that the active account is the heir's Microsoft-managed identity, then require `gh api repos/fabioc_microsoft/alex-act-msft` to succeed before including MSFT. If another account is active, use `gh auth switch -u <managed-login>`; never fall back to an external personal account.
 
 If the heir has never installed anything from `alex-mall`, run `copilot plugin marketplace list` first to confirm — do not re-register.
 
@@ -115,7 +115,7 @@ copilot plugin install alex-act-core@alex-mall
 copilot plugin install alex-act-illustrator-plugin@alex-mall
 copilot plugin install alex-act-enterprise@alex-mall
 # Only if MSFT check passed both (Microsoft employee AND on corp network):
-copilot plugin install fabioc-aloha/alex-act-msft
+copilot plugin install fabioc_microsoft/alex-act-msft
 ```
 
 After each install, run `copilot plugin list` and verify the plugin name, version,
@@ -144,7 +144,23 @@ merge; an on-disk direct install without this key can go dark on restart.
 
 Delegate to [`plugin-management`](../plugin-management/SKILL.md) § Safe settings edits for the merge algorithm — preserve any pre-existing `enabledPlugins` or `extraKnownMarketplaces` entries the heir has.
 
-### Step 6 — ACT discipline bootstrap
+### Step 6 — VS Code user baseline
+
+Audit VS Code user settings against `.github/config/welcome-baseline.json`, the
+same portable source used by `/alex-act-core configure-vscode-verify` and
+`/alex-act-core configure-vscode`. Show missing and drifted keys and ask for
+separate user-settings consent before applying them.
+
+The baseline includes stable ACT host settings plus framework-required local
+skill, prompt, agent, and hook discovery roots. It excludes Fabio-specific
+editor preferences, extension-version paths, Azure identifiers, credentials,
+and `markdown.styles`.
+
+If user settings contain `markdown.styles` with an absolute local filesystem
+path, report it and separately ask whether to remove the key. Never replace it
+with another local absolute path. Local CSS belongs to Step 8.
+
+### Step 7 — ACT discipline bootstrap
 
 **Why this step exists.** A `copilot plugin install` delivers Core's skills, prompts, and agents. It does **not** deliver Core's instructions. `plugin.json` has no `instructions` component field, so the ACT discipline layer that governs *how* the skills fire stays dark. This is the platform's intended architecture, not a defect, and Claude Code and the Open Plugin Spec draw the same boundary.
 
@@ -268,9 +284,20 @@ copilot -p "Do you have an instruction named act-pass available in this session?
 
 An empty directory matters. Running inside a workspace with its own brain proves nothing about user scope. The optional smoke is confirmation of host behavior, not a prerequisite for deterministic bootstrap success.
 
-### Step 7 — Report
+### Step 8 — Current-workspace bootstrap
 
-Print a summary with four activation planes:
+Preview `/alex-act-core bootstrap-workspace` for the current repository. Show
+the exact JSON plan and ask for separate workspace consent before applying it.
+The workspace owns `.vscode/markdown-light.css`, relative `markdown.styles`,
+and any narrow `.gitignore` exception needed for those files.
+
+If existing CSS differs from the bundled canonical asset, preserve it by
+default, report the SHA-256 drift, and ask explicitly before refreshing it.
+After apply, verify the CSS hash and an idempotent second preview.
+
+### Step 9 — Report
+
+Print a summary with six activation planes:
 
 | Plane | Evidence | Status vocabulary |
 |---|---|---|
@@ -278,17 +305,20 @@ Print a summary with four activation planes:
 | **enabled** | exact user or repo `enabledPlugins` key is true | pass / fail |
 | **instruction-loaded** | receipt, file count, Core version, and source-to-target hashes | pass / declined / stale / fail |
 | **skill-invokable** | namespaced command executes; generic skill tool is probed only when available | pass / host-limited / fail |
+| **user-settings** | stable baseline comparison and read-back | pass / declined / drift / fail |
+| **workspace** | CSS hash, relative `markdown.styles`, and idempotent preview | pass / declined / custom-preserved / fail |
 
 Then report:
 
 - Plugins installed and at what version
 - Plugins skipped (with reason: already-present, tenant-mismatch, off-network, user-declined)
 - Discipline bootstrap: applied, declined, or skipped-as-current — and if applied, the file count and the overlap-scan result
-- Files modified: `~/.copilot/settings.json` — show a diff of what changed. If the bootstrap ran, also `~/.copilot/instructions/` plus its receipt
+- Files modified: `~/.copilot/settings.json` and VS Code user settings — show a diff of what changed. If instruction bootstrap ran, also report `~/.copilot/instructions/` and its receipt. If workspace bootstrap ran, report `.vscode/markdown-light.css`, `.vscode/settings.json`, and `.gitignore` actions separately
 - Next steps: enabling Microsoft ecosystem plugins per project → `/alex-act-enterprise setup-enterprise` in that project's workspace; enabling Microsoft-internal signals → `/alex-act-msft setup-msft` (if MSFT installed)
 - **Visual-workflow companions** (see § "Optional: visual workflow companions" above for ownership + rationale): if the heir mentioned chart authoring, dashboards, reports with visuals, PR screenshots, or any workload involving visual verification, tell them to invoke `/alex-act-illustrator-plugin install-visual-companions` after this install completes. Do NOT list the 9 plugins from here — the catalog + install-time caveats + verified-status list live in Illustrator's `install-visual-companions` skill to keep them from drifting across two plugins.
 - If the bootstrap was declined, say plainly that Core's skills are available but the ACT discipline layer is not, and that `/alex-act-core install-constellation` can be re-run later to add it
-- If all plugin and settings checks passed before Step 6, label the run `bootstrap-only repair`; do not replay or narrate skipped installation work as if it ran
+- If user settings or workspace bootstrap were declined, name the corresponding namespaced repair command instead of calling setup fully complete
+- If all plugin, user-settings, and workspace checks passed before Step 7, label the run `bootstrap-only repair`; do not replay or narrate skipped installation work as if it ran
 
 ## Idempotency
 
@@ -297,7 +327,8 @@ The skill is safe to re-run. On subsequent runs:
 - If all four (or three) plugins are already installed at their latest version, report "constellation is current — nothing to install" and exit.
 - If some are missing, install only the missing ones.
 - If any are at a lower version than what the marketplace currently ships, defer to `update-plugins` — this skill installs, it does not update.
-- The discipline bootstrap has its own idempotency check, keyed on the receipt's `coreVersion`. A current constellation with a stale bootstrap receipt still warrants re-running Step 6.
+- The discipline bootstrap has its own idempotency check, keyed on the receipt's `coreVersion`. A current constellation with a stale bootstrap receipt still warrants re-running Step 7.
+- User settings and current-workspace bootstrap have independent idempotency checks. Current plugins do not prove either settings scope is current.
 
 ## Anti-patterns
 
@@ -309,13 +340,16 @@ The skill is safe to re-run. On subsequent runs:
 | Install MSFT on a public tenant | MSFT is Microsoft-internal only. Fail closed on the tenant check. |
 | Overwrite pre-existing `enabledPlugins` entries | Merge, preserve. Delegate to `plugin-management` for the algorithm. |
 | Report "installed successfully" without checking `copilot plugin list`, settings, and the install tree | Verify all three signals after each install. |
-| Bootstrap the instructions silently as part of the install | Step 6 is separately consent-gated. User scope affects every workspace on the machine; that needs its own yes. |
+| Bootstrap the instructions silently as part of the install | Step 7 is separately consent-gated. User scope affects every workspace on the machine; that needs its own yes. |
 | Write bootstrap files without the `alex-act-` prefix | A bare `act-pass.instructions.md` can clobber the heir's own file. Prefix always. |
 | Skip the overlap scan because the workspace "probably" has no brain | Scopes compose. Scan, then report the real number. |
 | Uninstall by globbing `~/.copilot/instructions/*` | Read the receipt. The heir's own instructions live in that folder too. |
 | Bootstrap all of Core's unconditional instructions | Seventeen only. The remaining instructions do not earn unconditional user-scope cost. |
 | Assume the instruction files are somewhere on disk without checking | Resolve the source explicitly per the Source table. A Mall install vendors no `.github/instructions/`; only the skill-bundled `bootstrap/` is guaranteed. This shipped broken in v0.2.0. |
 | Fetch the instruction files from GitHub when the local source is missing | Never. A missing source is a packaging defect and must be reported as one, not papered over with a network call that can fail, hang, or pull an unpinned version. |
+| Copy Steward's full `.vscode/settings.json` into every user profile | Apply only the portable baseline; Fabio-specific preferences and extension paths are not constellation policy. |
+| Put a local absolute CSS path in user `markdown.styles` | Remove it with consent or leave it user-owned. Use workspace-relative CSS in each repository. |
+| Call setup complete after plugin installation alone | Report user-settings and workspace scopes independently. |
 
 ## Composes with
 
@@ -323,7 +357,8 @@ The skill is safe to re-run. On subsequent runs:
 - [`update-plugins`](../update-plugins/SKILL.md) — after install, this skill's sibling handles keeping the constellation current
 - `setup-enterprise-stack` (in `alex-act-enterprise`) — invoked after this skill inside a Microsoft-ecosystem project
 - `setup-msft-stack` (in `alex-act-msft`) — invoked after this skill inside Microsoft-internal work
-- `configure-vscode` (Batch 10) — complementary; that skill sets VS Code settings, this one sets Copilot CLI plugins
+- `configure-vscode` — Step 6 applies the portable VS Code user baseline after separate consent
+- `bootstrap-workspace` — Step 8 provisions repository-relative CSS and Markdown settings after separate consent
 
 ## Falsifiability
 
@@ -332,7 +367,7 @@ Sunset or revise this skill by **2027-01-30** (6 months) if:
 - The Alex ACT constellation gains or loses a plugin — the four-plugin table goes stale on emit.
 - The default scope decision changes for any constellation plugin — the install-at-user default is wrong.
 - The tenant check for MSFT proves inadequate (heirs off-network complete the install and hit failures) — the check needs tightening.
-- **Copilot CLI or VS Code ships plugin-scope instruction discovery.** Step 6 becomes dead weight; delete it and the receipt machinery outright.
+- **Copilot CLI or VS Code ships plugin-scope instruction discovery.** Step 7 becomes dead weight; delete it and the receipt machinery outright.
 - **The overlap scan reports a conflict on more than half of observed installs.** User scope is the wrong target for heirs who already run a repo brain; make the bootstrap opt-in per workspace instead.
 - **Heirs report ACT discipline or personality firing where they did not want it, twice or more.** The seventeen-file set is too broad; remove the lowest-value unconditional additions or make personality opt-in.
 - The install order proves wrong (dependency inversion surfaces) — the order needs adjustment.

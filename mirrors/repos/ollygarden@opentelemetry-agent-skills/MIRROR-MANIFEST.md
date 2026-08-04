@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ollygarden/opentelemetry-agent-skills` — 26 default patterns, 0 followed patterns, 186 file(s) materialized.
+Mirror of `ollygarden/opentelemetry-agent-skills` — 26 default patterns, 1 followed patterns, 187 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ollygarden/opentelemetry-agent-skills` — 26 default patterns, 0 fol
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 186 |
+| Followed pats | 1 |
+| Files         | 187 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `ollygarden/opentelemetry-agent-skills` — 26 default patterns, 0 fol
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/preferred-workflow.md`
 
 ## File Index
 
@@ -245,6 +245,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 184 | ✓ | [`skills/otel-weaver/references/template-authoring.md`](skills/otel-weaver/references/template-authoring.md) |
 | 185 | ✓ | [`skills/otel-weaver/scripts/inspect-resolved.sh`](skills/otel-weaver/scripts/inspect-resolved.sh) |
 | 186 | ✓ | [`skills/otel-weaver/SKILL.md`](skills/otel-weaver/SKILL.md) |
+| 187 | → | [`docs/preferred-workflow.md`](docs/preferred-workflow.md) |
 
 ---
 

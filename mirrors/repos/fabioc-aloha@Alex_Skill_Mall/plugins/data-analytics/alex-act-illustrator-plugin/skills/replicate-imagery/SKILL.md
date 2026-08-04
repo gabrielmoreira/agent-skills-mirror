@@ -91,7 +91,7 @@ Model list evolves fast. If a recommendation here is stale, the upstream `find-m
 
 ## Brand alignment
 
-For illustrations that should feel on-brand with the Alex ACT constellation, weave color hex codes from the constellation's [`brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/config/brand-palette.json) into the prompt. Example:
+For illustrations that should feel on-brand with the Alex ACT constellation, weave color hex codes from the constellation's [`brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/config/brand-palette.json) into the prompt. Example:
 
 > "A minimalist illustration of a person coding at a desk, dominant color emerald `#10b981` with deep slate `#0f172a` accents, cyan `#06b6d4` highlight on the monitor, clean vector style, no text."
 

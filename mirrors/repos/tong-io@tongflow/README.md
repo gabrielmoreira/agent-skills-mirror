@@ -114,6 +114,7 @@ Sign in with Google or WeChat and start creating — the cloud studio manages pl
 - ✅ **Image-to-video**: animate a still into motion.
 - ✅ **First/last-frame video**: two key images to interpolate a clip.
 - ✅ **Images → video**: multi-image reference fusion — several reference images plus text into a new video.
+- ✅ **Omni-reference video**: mix image, video, and audio references (plus text) into one video with native stereo audio.
 - ✅ **Video understanding**: summaries or descriptions from video.
 - ✅ **Video upscaling**: higher-resolution output.
 - ✅ **Extract first / last frame**: grab a frame as an image.
@@ -202,6 +203,7 @@ Aggregators — one key, many third-party models across labs:
 - [tongflow-modal-infinitetalk](https://github.com/tong-io/tongflow-modal-infinitetalk) — InfiniteTalk audio-driven lip-sync (audio + image / video → talking-head video)
 - [tongflow-modal-wan-animate](https://github.com/tong-io/tongflow-modal-wan-animate) — Wan-Animate character swap & motion transfer (video + reference)
 - [tongflow-modal-scail2](https://github.com/tong-io/tongflow-modal-scail2) — SCAIL-2 controlled character animation (image + driving video; same two slots as wan-animate)
+- [tongflow-modal-minimax-h3](https://github.com/tong-io/tongflow-modal-minimax-h3) — MiniMax-H3 33B video generation with native stereo audio (text / first- & last-frame / multi-image / omni-reference)
 - [tongflow-modal-bernini](https://github.com/tong-io/tongflow-modal-bernini) — Bernini-R 1.3B unified video renderer (text/image → image/video, video editing, subtitle / watermark removal)
 - [tongflow-modal-sam3](https://github.com/tong-io/tongflow-modal-sam3) — SAM 3 / SAM 3.1 text-guided matting: cut every instance of a described concept out of an image (transparent PNG) or track it through a video (green-screen matte)
 - [tongflow-modal-triposplat](https://github.com/tong-io/tongflow-modal-triposplat) — TripoSplat single image → 3D Gaussian splat

@@ -127,7 +127,17 @@ The directory listings below are the canonical map of the repository. **Whenever
 3. **Normalization** — `lib/config/normalization.js`.
 4. **Implementation** — the site that consumes the option.
 
+5. **Generated output and snapshots** — run `yarn fix:special`, then update the snapshots the option's _name_ leaks into. A schema property is read back by several tests that no `configCases/` pattern will match:
+   - `test/__snapshots__/Cli.basictest.js.snap` — the CLI flags are derived from the schema, so every new property adds one.
+   - `test/configCases/ecmaVersion/browserslist*/webpack.config.js` — these carry an **inline** snapshot of the resolved `output.environment`, so an entry there must be added to nine config files.
+   - `test/__snapshots__/target-browserslist.unittest.js.snap` — same, per browserslist query.
+
 Skipping any layer silently breaks the option. After editing schemas, run `yarn fix:special` so `lib/` code can reference the updated types. If you added or modified options, consider updating `examples/` and run `yarn build:examples` to verify.
+
+> [!REQUIRED]
+> **Never hand-edit what `yarn fix:special` generates**, even when it also reformats files you did not touch. That churn means your local toolchain resolved differently from CI's — the fix is to commit only your own hunks, then **verify them against the generator** (re-run it and diff), never to hand-write what you think it would emit. A hand-written JSDoc block that omits the `@since` line the schema's `added` keyword produces, or a `types.d.ts` member the JSDoc implies, fails `lint` with `… need to be updated` and nothing else.
+
+**A nested minifier needs the same options as the outer one.** `lib/html/htmlMinify.js` runs the CSS minifier over an inline `<style>` and every `style=""`, so `output.environment` has to be handed to both — otherwise a `.css` asset and the same declaration inline disagree about what the target can read. Any future HTML-minifies-JS hook has the same obligation.
 
 **Schema documentation keywords** — option entries in the schemas support these annotation keywords, which become JSDoc tags in the generated declarations:
 
@@ -162,6 +172,14 @@ Spell names out in full — functions, variables, parameters, properties. Prefer
 
 The only exceptions are (1) established abbreviations webpack already uses pervasively (`ast`, `ns` for namespace, `id`, `url`, `css`, `js`, `dir`, `env`, `fs`) or spec-defined ones (`afe` for the HTML spec's "active formatting elements"), and (2) throwaway loop indices (`i`, `j`, `k`). When an abbreviation isn't already common in the codebase or the relevant spec, write the full word.
 
+### Path regexps and helpers live in one file
+
+> [!REQUIRED]
+
+`lib/util/identifier.js` is the single home for path-shape regexps (`ABSOLUTE_PATH_REGEXP`, `WINDOWS_ABS_PATH_REGEXP`, `WINDOWS_PATH_SEPARATOR_REGEXP`, …) and for the helpers built on them (`parseResource`, `makePathsRelative`, `contextify`, `absolutify`, `getUndoPath`, …). **Import them from there — never re-declare a local copy**, even a one-liner like `/^[a-z]:[\\/]/i` or `/\\/g`. Duplicates drift apart, and each one becomes a second, subtly different definition of "absolute path" or "path separator" for the same codebase.
+
+Before writing any regexp that matches a path shape, read the top of `lib/util/identifier.js` and its `module.exports` block. If the regexp you need is defined there but not exported, **export it and import it** rather than copying it. Only define a new one locally when nothing there fits — and then keep it next to the single function that uses it.
+
 ### Source file headers
 
 Every source file under `lib/` (and `hot/`, `tooling/`) opens with the MIT license header. When adding a **new** file, set the `Author` line to its actual author (`Author <Name> @<github-handle>`) — don't copy another file's author line.
@@ -184,7 +202,14 @@ For directory structure, naming, and how to run a single case, see [TESTING_DOCS
 
 Run targeted tests — `yarn test:base --testPathPatterns="<pattern>"` or `yarn test:base -t "<name>"`. Never invoke `yarn jest`/`npx jest` directly: the required `--experimental-vm-modules` node flag lives only in the `test:base` wrapper, and bare jest crashes ESM/test262 suites. Don't run `yarn test` unless asked. When updating snapshots (`yarn test:base -u`), eyeball the diff first.
 
-**Run only tests specific to your change — leave the broad suites to CI.** Pick the cases that cover the touched code (`--testPathPatterns` / `--testNamePattern`) instead of sweeping whole suites. In particular, do **not** run the spec-conformance suites (`yarn test:test262` / `yarn test:html5lib` / `yarn test:css-parsing`) as a routine local verification step — `test262` alone takes tens of minutes — and don't run the full `test:integration` matrix locally. CI runs all of them on every push; locally, run the `configCases/` relevant to your change.
+**Run only tests specific to your change — leave the broad suites to CI.** Pick the cases that cover the touched code (`--testPathPatterns` / `--testNamePattern`) instead of sweeping whole suites.
+
+> [!REQUIRED]
+> **Two kinds of change are exempt, because "the tests for my change" is the wrong frame for them.** Touch `schemas/**`, `lib/config/**`, or anything `yarn fix:special` generates, and the blast radius is the whole option surface, not the feature: run `yarn lint` and `yarn test:basic` in full before pushing. `basic` is also what gates the `integration` matrix in `.github/workflows/test.yml` (`integration: needs: basic`), so a red `basic` stops every integration upload and leaves Codecov reporting a patch coverage computed from `unit` alone — a failure that reads like a coverage problem but is not one.
+
+`yarn lint` is a `&&` chain, so the first stage that trips on sandbox drift hides every stage after it. When `lint:special` reports declarations "need to be updated" that `main` reports too, do not stop there — run the rest by hand (`lint:types`, `lint:types-test`, `lint:types-benchmark`, `lint:types-module-test`, `lint:types-hot`, `fmt:check`, `lint:spellcheck`). `lint:types-test` is the one that catches `tsc` errors in `test/`, and skipping it is how a red `lint` survives a "lint passed locally".
+
+Also note that a local failure is only yours if it does not reproduce on `main`. Check with a worktree (`git worktree add <dir> origin/main`) before spending time on it: sandboxes routinely fail `Cli createColors`, `profiling-plugin` and the `many-replacements` cases for environment reasons, and the generated-declaration check flags files CI is perfectly happy with. In particular, do **not** run the spec-conformance suites (`yarn test:test262` / `yarn test:html5lib` / `yarn test:css-parsing`) as a routine local verification step — `test262` alone takes tens of minutes — and don't run the full `test:integration` matrix locally. CI runs all of them on every push; locally, run the `configCases/` relevant to your change.
 
 **Run one integration case** by name (`<category> <case-name>`, e.g. `css basic`):
 
@@ -371,7 +396,14 @@ These files are produced by `yarn fix:special` and must not be edited by hand:
 - `declarations/**/*.d.ts` — per-schema/plugin declarations emitted from `schemas/**/*.json`.
 - `schemas/**/*.check.{js,d.ts}` — precompiled schema validators.
 - Generated runtime code under `lib/` (driven by `tooling/generate-runtime-code.js`).
-- `lib/css/data.js` — the CSS minifier's derived tables (box shorthands, color-argument functions, named colors), built from `mdn-data` + `color-name` by `tooling/generate-css-data.js`.
+- `lib/css/data.js` — every table the CSS minifier looks a name up in, and the arithmetic its math-function descriptors bind to: derived from `mdn-data` + `color-name` (box shorthands, color-argument and math functions, named colors) plus the generator's `SUPPLEMENT` of spec-prose tables and math primitives, by `tooling/generate-css-data.js` — which also holds the value-definition-syntax parser those grammars are read with, and runs the generation only as the entry point so its tests can require it.
+- `lib/html/data.js` — every table the HTML parser and minifier look a name up in: the reflected-attribute tables distilled from webref's HTML IDL (vendored as `tooling/html-reflect.json`), plus the generator's `SUPPLEMENT` and `PARSER_TABLES` of §13.2 tree-construction vocabulary, by `tooling/generate-html-data.js`.
+
+Both `syntax.js` files are algorithm only — a new lookup table belongs in the matching generator, not next to the code that reads it.
+
+**And in the generator, derive it — do not type it out.** Read the table out of a published dataset (`mdn-data`, `color-name`, the vendored webref IDL) whenever it is derivable at all, _including by analyzing a grammar rather than by listing names_: the value-definition syntax states which properties take an `<integer>`, so that set is computed, never enumerated. A table already in `SUPPLEMENT` counts as a source too — cosine at each eighth turn is sine two eighths along, and each inverse trig table is its forward one read back, so one stated table can carry several.
+
+**Per-construct behaviour is a table as well.** Where the minifier does something different for each name — each math function, and whatever comes next for properties or at-rules — the per-name part belongs in the generator as a descriptor and the shared part in `syntax.js` as an engine keyed by it. `MATH_FUNCTION_FOLD` is the worked example: it says how each function's arguments are read, which arithmetic runs and what unit the answer carries, so `syntax.js` implements neither and names no function of its own. The arithmetic is emitted alongside the descriptors and bound to them by reference rather than by name, so a name nothing defines fails generation rather than folding nothing. Adding a function is then adding a line, and a name whose arithmetic already exists needs nothing else. A test must still drive every descriptor — one input per entry is enough to turn a wrong-but-existing binding into a failure instead of a silent decline. Listing names by hand into a generator's `SUPPLEMENT` is the last resort, and every entry there carries the reason it cannot be derived — spec prose, an equivalence between two spellings, a judgement no dataset states. A hand-typed list goes stale the next time a spec moves and nothing in CI notices; a derived one turns the same spec change into a reviewable diff.
 
 The hand-maintained type declarations (`declarations.d.ts`, `declarations.test.d.ts`, `module.d.ts`) _are_ editable.
 
@@ -379,7 +411,7 @@ Re-run `yarn fix:special` **before the next commit** whenever you touch:
 
 - `schemas/**/*.json` — reshapes validators, declarations, and `types.d.ts`.
 - `lib/**/*.js` JSDoc on anything reachable from a public export — regenerates `types.d.ts`.
-- `tooling/generate-runtime-code.js`, `tooling/generate-wasm-code.js`, `tooling/generate-css-data.js`, or any file they consume (including the `mdn-data` / `color-name` versions in `package.json`).
+- `tooling/generate-runtime-code.js`, `tooling/generate-wasm-code.js`, `tooling/generate-css-data.js`, `tooling/generate-html-data.js`, or any file they consume (including the `mdn-data` / `color-name` versions in `package.json` and the vendored `tooling/html-reflect.json`).
 
 CI's `lint` job verifies these outputs are up to date. The combined `yarn fix` script runs `fix:code` + `fix:special` + `fmt` in one go; prefer it as the final step.
 

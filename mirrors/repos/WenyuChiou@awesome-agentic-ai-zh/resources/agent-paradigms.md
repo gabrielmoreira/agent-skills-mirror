@@ -77,7 +77,7 @@
 
 ## Type 4: Cloud-deployed — 例：Hermes Agent
 
-**代表**：[Hermes Agent](https://github.com/NousResearch/hermes-agent)（Nous Research、★ 213k+、MIT）
+**代表**：[Hermes Agent](https://github.com/NousResearch/hermes-agent)（Nous Research、★ 224k+、MIT）
 
 **Hero example**：
 你坐在地鐵、手機開 Telegram、對 Hermes bot 說「整理今天 arXiv ML 新 paper、給我 3 個 highlights、傳回 Telegram」。Hermes agent 在你 $5 DigitalOcean VPS 上跑、收訊息、決定該用 GPT-5（找 paper）+ Claude Opus（寫 summary）+ Gemini Flash（壓縮成 3 條）、執行完傳結果回 Telegram。整個過程你沒碰 laptop。
@@ -95,6 +95,7 @@
 **特色**：deployment cost ~$5/月 VPS + API；中國圈 LLM 支援（GLM / Kimi）—— 國際服務中斷時可以改用這些接力。
 
 **Trade-off**：
+
 - ⚠️ 自我學習技能是新功能、還沒經過獨立安全檢驗；用在會造成嚴重後果的任務（醫療 / 法律 / 金流）前先別開
 - 失去 IDE / terminal 的 file system 直接讀寫便利、變成 chat-first workflow
 - 需要會 self-host VPS（Linux / docker / systemd 基礎）
@@ -124,6 +125,7 @@
 **特色**：一次硬體投資、之後 API 0 元；對應 NVIDIA 邊緣硬體生態；Jetson Thor 跑 30B model 也 OK。
 
 **Trade-off**：
+
 - 模型受邊緣 hardware 限制（Orin Nano 跑 7B 上限、Thor 才到 30B）
 - Setup 比 cloud 複雜（要會 NVIDIA Jetson 環境、JetPack、Docker、Ollama）
 - 沒有 cloud-deployed 的 24/7 跨平台便利
@@ -145,6 +147,7 @@
 | **Claude Code 原生**（Stage 5.5） | 寫 `.claude/agents/<name>.md`、主 session 用 Task tool invoke | Claude Code subagent + Claude Agent SDK |
 
 **差別在 runtime ownership**：
+
 - Framework path：你用 Python 寫一支主程式（orchestrator）來調度、每個 sub-agent 都是這支程式裡的物件
 - Claude path：Claude Code 自動建立新的子 agent、主 agent 只拿到子 agent 的最終結果、不用管它的內部過程（context 自動隔離、互不干擾）
 
@@ -161,6 +164,7 @@
 ![個人 power-user 多 type workflow](../resources/diagrams/power-user-multi-type-workflow.png)
 
 **為什麼這樣搭**：
+
 - Type 2 處理 code（terminal 介面最自然）
 - Type 4 處理 routine + 跨平台（laptop 沒開時也工作）
 - Type 5 處理隱私（不可上 cloud）

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 25 file(s) materialized.
+Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `op7418/CodePilot` — 26 default patterns, 7 followed patterns, 25 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 25 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -68,28 +68,29 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`docs/CLAUDE.md`](docs/CLAUDE.md) |
-| 4 | ✓ | [`docs/guardrails/ComposerModelSelection.md`](docs/guardrails/ComposerModelSelection.md) |
-| 5 | ✓ | [`docs/guardrails/DatabaseSchema.md`](docs/guardrails/DatabaseSchema.md) |
-| 6 | ✓ | [`docs/guardrails/ElectronMain.md`](docs/guardrails/ElectronMain.md) |
-| 7 | ✓ | [`docs/guardrails/HarnessHome.md`](docs/guardrails/HarnessHome.md) |
-| 8 | ✓ | [`docs/guardrails/i18n.md`](docs/guardrails/i18n.md) |
-| 9 | ✓ | [`docs/guardrails/MCP.md`](docs/guardrails/MCP.md) |
-| 10 | ✓ | [`docs/guardrails/ModelDiscovery.md`](docs/guardrails/ModelDiscovery.md) |
-| 11 | ✓ | [`docs/guardrails/Onboarding.md`](docs/guardrails/Onboarding.md) |
-| 12 | ✓ | [`docs/guardrails/PermissionBoundary.md`](docs/guardrails/PermissionBoundary.md) |
-| 13 | ✓ | [`docs/guardrails/ProviderManagement.md`](docs/guardrails/ProviderManagement.md) |
-| 14 | ✓ | [`docs/guardrails/Release.md`](docs/guardrails/Release.md) |
-| 15 | ✓ | [`docs/guardrails/Runtime.md`](docs/guardrails/Runtime.md) |
-| 16 | ✓ | [`docs/guardrails/SentryTelemetry.md`](docs/guardrails/SentryTelemetry.md) |
-| 17 | ✓ | [`docs/guardrails/StreamSession.md`](docs/guardrails/StreamSession.md) |
-| 18 | ✓ | [`src/lib/bridge/CLAUDE.md`](src/lib/bridge/CLAUDE.md) |
-| 19 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
-| 20 | → | [`docs/design.md`](docs/design.md) |
-| 21 | → | [`docs/exec-plans/README.md`](docs/exec-plans/README.md) |
-| 22 | → | [`docs/guardrails/README.md`](docs/guardrails/README.md) |
-| 23 | → | [`docs/rules/README.md`](docs/rules/README.md) |
-| 24 | → | [`docs/rules/release.md`](docs/rules/release.md) |
-| 25 | → | [`docs/rules/reporting.md`](docs/rules/reporting.md) |
+| 4 | ✓ | [`docs/guardrails/AssistantWorkspace.md`](docs/guardrails/AssistantWorkspace.md) |
+| 5 | ✓ | [`docs/guardrails/ComposerModelSelection.md`](docs/guardrails/ComposerModelSelection.md) |
+| 6 | ✓ | [`docs/guardrails/DatabaseSchema.md`](docs/guardrails/DatabaseSchema.md) |
+| 7 | ✓ | [`docs/guardrails/ElectronMain.md`](docs/guardrails/ElectronMain.md) |
+| 8 | ✓ | [`docs/guardrails/HarnessHome.md`](docs/guardrails/HarnessHome.md) |
+| 9 | ✓ | [`docs/guardrails/i18n.md`](docs/guardrails/i18n.md) |
+| 10 | ✓ | [`docs/guardrails/MCP.md`](docs/guardrails/MCP.md) |
+| 11 | ✓ | [`docs/guardrails/ModelDiscovery.md`](docs/guardrails/ModelDiscovery.md) |
+| 12 | ✓ | [`docs/guardrails/Onboarding.md`](docs/guardrails/Onboarding.md) |
+| 13 | ✓ | [`docs/guardrails/PermissionBoundary.md`](docs/guardrails/PermissionBoundary.md) |
+| 14 | ✓ | [`docs/guardrails/ProviderManagement.md`](docs/guardrails/ProviderManagement.md) |
+| 15 | ✓ | [`docs/guardrails/Release.md`](docs/guardrails/Release.md) |
+| 16 | ✓ | [`docs/guardrails/Runtime.md`](docs/guardrails/Runtime.md) |
+| 17 | ✓ | [`docs/guardrails/SentryTelemetry.md`](docs/guardrails/SentryTelemetry.md) |
+| 18 | ✓ | [`docs/guardrails/StreamSession.md`](docs/guardrails/StreamSession.md) |
+| 19 | ✓ | [`src/lib/bridge/CLAUDE.md`](src/lib/bridge/CLAUDE.md) |
+| 20 | → | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
+| 21 | → | [`docs/design.md`](docs/design.md) |
+| 22 | → | [`docs/exec-plans/README.md`](docs/exec-plans/README.md) |
+| 23 | → | [`docs/guardrails/README.md`](docs/guardrails/README.md) |
+| 24 | → | [`docs/rules/README.md`](docs/rules/README.md) |
+| 25 | → | [`docs/rules/release.md`](docs/rules/release.md) |
+| 26 | → | [`docs/rules/reporting.md`](docs/rules/reporting.md) |
 
 ---
 

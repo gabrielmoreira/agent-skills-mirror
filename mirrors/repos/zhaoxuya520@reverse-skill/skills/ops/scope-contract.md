@@ -8,7 +8,8 @@
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File skills\scripts\case-init.ps1 -Hint "<任务一句话>" -CaseName "my-case"
-# 产出：work/<case>/scope.md 等
+# 默认产出：当前分析项目的 work/<case>/scope.md 等
+# 从其他目录调用 skill 时显式指定：-ProjectRoot "C:\path\to\analysis-project"
 ```
 
 ## scope.md 完整模板

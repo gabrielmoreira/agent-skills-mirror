@@ -106,6 +106,7 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - ✅ **画像から動画**: 静止画を動かす。
 - ✅ **最初/最後のフレームから動画**: 2枚のキーフレームを補間してクリップを生成。
 - ✅ **複数画像から動画**: 複数の参照画像とテキストを融合して新しい動画を生成。
+- ✅ **マルチ参照から動画**: 画像・動画・音声の参照を組み合わせ（テキスト付き）、ステレオ音声入りの動画を一度に生成。
 - ✅ **動画理解**: 動画から要約や説明を生成。
 - ✅ **動画超解像**: より高解像度の動画を出力。
 - ✅ **最初/最後のフレームを抽出**: フレームを画像として抽出。
@@ -194,6 +195,7 @@ Google または WeChat でサインインすれば、すぐに創作を始め�
 - [tongflow-modal-infinitetalk](https://github.com/tong-io/tongflow-modal-infinitetalk) — InfiniteTalk 音声駆動リップシンク（音声 + 画像 / 動画 → デジタルヒューマン動画）
 - [tongflow-modal-wan-animate](https://github.com/tong-io/tongflow-modal-wan-animate) — Wan-Animate キャラクター置換とモーション転送（動画 + 参照）
 - [tongflow-modal-scail2](https://github.com/tong-io/tongflow-modal-scail2) — SCAIL-2 制御可能なキャラクターアニメーション（画像 + 駆動動画；wan-animate と同じ 2 スロット）
+- [tongflow-modal-minimax-h3](https://github.com/tong-io/tongflow-modal-minimax-h3) — MiniMax-H3 33B 動画生成、ネイティブステレオ音声（テキスト / 最初と最後のフレーム / 複数画像 / マルチ参照）
 - [tongflow-modal-bernini](https://github.com/tong-io/tongflow-modal-bernini) — Bernini-R 1.3B 統合動画レンダラー（テキスト/画像 → 画像/動画、動画編集、字幕 / ウォーターマーク除去）
 - [tongflow-modal-sam3](https://github.com/tong-io/tongflow-modal-sam3) — SAM 3 / SAM 3.1 テキスト誘導マッティング：記述した概念の全インスタンスを画像から切り抜き（透過 PNG）、動画では全編トラッキング（グリーンバック出力）
 - [tongflow-modal-triposplat](https://github.com/tong-io/tongflow-modal-triposplat) — TripoSplat 1 枚の画像から 3D ガウシアンスプラット

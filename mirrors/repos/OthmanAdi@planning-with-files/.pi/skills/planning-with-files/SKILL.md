@@ -207,7 +207,7 @@ Each session reads from its own isolated plan directory. Hooks resolve the corre
 
 ## Pi Extension Hooks (mode-based)
 
-When installed via `pi install npm:@tomxprime/planning-with-files`, this package also loads a Pi extension that maps lifecycle events to hook-equivalent behavior.
+When installed via `pi install npm:planning-with-files`, this package also loads a Pi extension that maps lifecycle events to hook-equivalent behavior.
 
 Modes:
 - `auto` (default): DeepSeek -> `cache-safe`, other models -> `parity`

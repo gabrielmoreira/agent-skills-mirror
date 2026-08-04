@@ -5,6 +5,7 @@ set -euo pipefail
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 runner="$script_dir/run-codex-handoff.sh"
 schema="$script_dir/../references/result.schema.json"
+research_schema="$script_dir/../references/research-result.schema.json"
 tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/codex-handoff-test.XXXXXX")"
 fake_bin="$tmp_dir/bin"
 repo="$tmp_dir/repo with spaces"
@@ -36,7 +37,7 @@ assert_arg() {
   grep -Fxq -- "$needle" "$args_file" || fail "missing argument: $needle"
 }
 
-grep -Fq -- '"uniqueItems"' "$schema" && fail "result schema uses unsupported uniqueItems"
+rg -F --quiet '"uniqueItems"' "$schema" "$research_schema" && fail "result schemas use unsupported uniqueItems"
 
 expect_failure() {
   expected_rc="$1"
@@ -73,11 +74,12 @@ fi
 
 if [[ "${1:-}" == "--help" ]]; then
   print_flag --dangerously-bypass-approvals-and-sandbox
+  print_flag --sandbox
   exit 0
 fi
 
 if [[ "${1:-}" == "exec" && "${2:-}" == "--help" ]]; then
-  for flag in --ephemeral --color --cd --model --output-schema --output-last-message --json; do
+  for flag in --color --cd --model --output-schema --output-last-message --json; do
     print_flag "$flag"
   done
   exit 0
@@ -143,7 +145,11 @@ export FAKE_PROMPT_FILE="$prompt_file"
 fake_path="$fake_bin:$PATH"
 expected_result='{"status":"completed","summary":"done","changed_files":[],"verification":[],"residual_risks":[],"blockers":[]}'
 
-for model in gpt-5.6-sol gpt-5.6-terra; do
+help_output="$("$runner" --help)"
+[[ "$help_output" == *'Allowed models: gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna'* ]] ||
+  fail "runner help omits a supported model"
+
+for model in gpt-5.6-sol gpt-5.6-terra gpt-5.6-luna; do
   for effort in medium high xhigh max; do
     actual_result="$(
       cd "$repo"
@@ -158,26 +164,42 @@ done
 
 assert_arg --dangerously-bypass-approvals-and-sandbox
 assert_arg exec
-assert_arg --ephemeral
 assert_arg --color
 assert_arg never
 assert_arg -C
 assert_arg "$repo_root"
 assert_arg -m
-assert_arg gpt-5.6-terra
+assert_arg gpt-5.6-luna
 assert_arg -c
 assert_arg 'model_reasoning_effort="max"'
 assert_arg 'service_tier="default"'
 assert_arg 'notify=[]'
 assert_arg --output-schema
+assert_arg "$schema"
 assert_arg --output-last-message
 assert_arg -
 grep -Fxq -- '--ask-for-approval' "$args_file" && fail "runner configured a separate approval policy"
 grep -Fxq -- '--sandbox' "$args_file" && fail "runner configured a sandbox alongside dangerous bypass"
 grep -Fxq -- '--search' "$args_file" && fail "runner enabled search"
 grep -Fxq -- '--ignore-user-config' "$args_file" && fail "runner ignored user config"
+grep -Fxq -- '--ephemeral' "$args_file" && fail "runner disabled session persistence"
 grep -Fxq -- '--json' "$args_file" && fail "runner passed --json without --progress-file"
 [[ "$(cat "$prompt_file")" == 'approved implementation' ]] || fail "prompt was not forwarded exactly"
+
+# Read-only research mode uses the sandbox and research schema.
+readonly_result="$(
+  cd "$repo"
+  printf '%s\n' 'approved research' | PATH="$fake_path" "$runner" \
+    --model gpt-5.6-sol --effort high --timeout-seconds 5 --read-only
+)"
+[[ "$readonly_result" == "$expected_result" ]] || fail "read-only mode returned an unexpected result"
+assert_arg --sandbox
+assert_arg read-only
+assert_arg exec
+assert_arg --output-schema
+assert_arg "$research_schema"
+rg -Fx --quiet -- '--dangerously-bypass-approvals-and-sandbox' "$args_file" &&
+  fail "read-only mode passed dangerous bypass"
 
 # Artifact mode keeps raw result JSON out of background-task output.
 (
@@ -196,8 +218,8 @@ exec_line="$(grep -nFx -- 'exec' "$args_file" | cut -d: -f1)"
 
 (
   cd "$repo"
-  expect_failure 64 'must be gpt-5.6-sol or gpt-5.6-terra' env PATH="$fake_path" \
-    "$runner" --model gpt-5.6-luna --effort high --timeout-seconds 5
+  expect_failure 64 'must be gpt-5.6-sol, gpt-5.6-terra, or gpt-5.6-luna' env PATH="$fake_path" \
+    "$runner" --model gpt-5.6-unknown --effort high --timeout-seconds 5
   expect_failure 64 'must be medium, high, xhigh, or max' env PATH="$fake_path" \
     "$runner" --model gpt-5.6-sol --effort low --timeout-seconds 5
   expect_failure 64 'must be medium, high, xhigh, or max' env PATH="$fake_path" \
@@ -209,6 +231,8 @@ exec_line="$(grep -nFx -- 'exec' "$args_file" | cut -d: -f1)"
   expect_failure 69 'lacks --dangerously-bypass-approvals-and-sandbox' env PATH="$fake_path" \
     FAKE_HELP_MISSING=--dangerously-bypass-approvals-and-sandbox \
     "$runner" --model gpt-5.6-sol --effort high --timeout-seconds 5
+  expect_failure 69 'lacks --sandbox' env PATH="$fake_path" FAKE_HELP_MISSING=--sandbox \
+    "$runner" --model gpt-5.6-sol --effort high --timeout-seconds 5 --read-only
   expect_failure 69 'lacks required flag: --output-schema' env PATH="$fake_path" FAKE_HELP_MISSING=--output-schema \
     "$runner" --model gpt-5.6-sol --effort high --timeout-seconds 5
   expect_failure 64 'must be different paths' env PATH="$fake_path" \

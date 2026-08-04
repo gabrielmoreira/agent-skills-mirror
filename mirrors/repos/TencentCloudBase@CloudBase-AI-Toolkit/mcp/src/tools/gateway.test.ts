@@ -12,6 +12,8 @@ const {
   mockGetCloudBaseManager,
   mockLogCloudBaseResult,
   mockGetEnvId,
+  mockCommonServiceCall,
+  mockSwitchAuth,
 } = vi.hoisted(() => ({
   mockDescribeHttpServiceRoute: vi.fn(),
   mockCreateHttpServiceRoute: vi.fn(),
@@ -22,6 +24,8 @@ const {
   mockGetCloudBaseManager: vi.fn(),
   mockLogCloudBaseResult: vi.fn(),
   mockGetEnvId: vi.fn(),
+  mockCommonServiceCall: vi.fn(),
+  mockSwitchAuth: vi.fn(),
 }));
 
 vi.mock("../cloudbase-manager.js", () => ({
@@ -70,6 +74,7 @@ describe("gateway tools", () => {
       Domains: [
         {
           Domain: "env-test.service.tcloudbase.com",
+          DomainType: "HTTPSERVICE",
           IsDefault: true,
           Enable: true,
           Status: "SUCCESS",
@@ -85,6 +90,7 @@ describe("gateway tools", () => {
         },
         {
           Domain: "api.example.com",
+          DomainType: "CUSTOM",
           IsDefault: false,
           Enable: true,
           Status: "SUCCESS",
@@ -109,6 +115,13 @@ describe("gateway tools", () => {
     mockDeleteCustomDomain.mockResolvedValue({
       RequestId: "req-domain-delete",
     });
+    mockCommonServiceCall.mockResolvedValue({
+      EnableService: true,
+      EnableAuth: false,
+    });
+    mockSwitchAuth.mockResolvedValue({
+      RequestId: "req-switch-auth",
+    });
     mockGetCloudBaseManager.mockResolvedValue({
       env: {
         describeHttpServiceRoute: mockDescribeHttpServiceRoute,
@@ -117,6 +130,12 @@ describe("gateway tools", () => {
         deleteHttpServiceRoute: mockDeleteHttpServiceRoute,
         bindCustomDomain: mockBindCustomDomain,
         deleteCustomDomain: mockDeleteCustomDomain,
+      },
+      commonService: vi.fn(() => ({
+        call: mockCommonServiceCall,
+      })),
+      access: {
+        switchAuth: mockSwitchAuth,
       },
     });
 
@@ -128,13 +147,20 @@ describe("gateway tools", () => {
     const manageActions = tools.manageGateway.meta.inputSchema.action._def.values;
     const schema = tools.manageGateway.meta.inputSchema;
 
-    expect(queryActions).toEqual(["listRoutes", "getRoute", "listCustomDomains"]);
+    expect(queryActions).toEqual([
+      "listRoutes",
+      "getRoute",
+      "listCustomDomains",
+      "getPrivilege",
+    ]);
     expect(manageActions).toEqual([
       "createRoute",
       "updateRoute",
       "deleteRoute",
       "bindCustomDomain",
       "deleteCustomDomain",
+      "enableService",
+      "authSwitch",
     ]);
     expect(schema.targetType).toBeUndefined();
     expect(schema.type).toBeUndefined();
@@ -176,8 +202,14 @@ describe("gateway tools", () => {
     expect(schema.route.description).toContain("staticstore");
     expect(description).toContain("listCustomDomains");
     expect(description).toContain("certificateId");
+    expect(description).toContain("HTTPSERVICE");
+    expect(description).toContain("tcloudbaseapp.com");
+    expect(description).toContain("listRoutes");
+    expect(description).toContain("不是 STATIC_STORE 上游绑定");
     expect(schema.action.description).toContain("已有自定义域名");
     expect(schema.domain.description).toContain("无需证书");
+    expect(schema.domain.description).toContain("HTTPSERVICE");
+    expect(schema.domain.description).toContain("listRoutes");
     expect(schema.certificateId.description).toContain("createRoute");
   });
 
@@ -317,7 +349,7 @@ describe("gateway tools", () => {
   });
 
   it("manageGateway(action=createRoute) should not use OriginDomain as public domain", async () => {
-    mockDescribeHttpServiceRoute.mockResolvedValueOnce({
+    mockDescribeHttpServiceRoute.mockResolvedValue({
       OriginDomain: "origin.service.tcloudbase.com",
       TotalCount: 0,
       Domains: [],
@@ -335,7 +367,112 @@ describe("gateway tools", () => {
     expect(mockCreateHttpServiceRoute).not.toHaveBeenCalled();
     expect(payload.success).toBe(false);
     expect(payload.message).toContain("默认 HTTP 访问域名未就绪");
+    expect(payload.message).toContain("HTTPSERVICE");
     expect(payload.message).not.toContain("origin.service.tcloudbase.com");
+  });
+
+  it("manageGateway(action=createRoute) should prefer the HTTPSERVICE default domain over the static hosting one", async () => {
+    mockDescribeHttpServiceRoute.mockResolvedValue({
+      OriginDomain: "env-test.tcbaccess-in.tencentcloudbase.com",
+      TotalCount: 2,
+      Domains: [
+        {
+          Domain: "env-test-1251119057.tcloudbaseapp.com",
+          DomainType: "STATIC_STORE",
+          IsDefault: true,
+          Enable: true,
+          Status: "SUCCESS",
+          Routes: [
+            {
+              Path: "/",
+              UpstreamResourceType: "STATIC_STORE",
+              UpstreamResourceName: "staticstore",
+            },
+          ],
+        },
+        {
+          Domain: "env-test-1251119057.ap-shanghai.app.tcloudbase.com",
+          DomainType: "HTTPSERVICE",
+          IsDefault: true,
+          Enable: true,
+          Status: "SUCCESS",
+        },
+      ],
+      RequestId: "req-multi-default",
+    });
+
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
+      targetName: "activity_api",
+      path: "/api",
+      upstreamResourceType: "WEB_SCF",
+      auth: false,
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockDescribeHttpServiceRoute).toHaveBeenCalledWith(
+      expect.objectContaining({
+        EnvId: "env-test",
+        Filters: [
+          {
+            Name: "DomainType",
+            Values: ["HTTPSERVICE"],
+          },
+        ],
+      }),
+    );
+    expect(mockCreateHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "env-test-1251119057.ap-shanghai.app.tcloudbase.com",
+        Routes: [
+          {
+            Path: "/api",
+            UpstreamResourceType: "WEB_SCF",
+            UpstreamResourceName: "activity_api",
+            EnableAuth: false,
+          },
+        ],
+      },
+    });
+    expect(payload.data.domain).toBe(
+      "env-test-1251119057.ap-shanghai.app.tcloudbase.com",
+    );
+    expect(payload.data.accessUrl).toBe(
+      "https://env-test-1251119057.ap-shanghai.app.tcloudbase.com/api",
+    );
+  });
+
+  it("manageGateway(action=createRoute) should reject static hosting default domain when HTTPSERVICE is missing", async () => {
+    mockDescribeHttpServiceRoute.mockResolvedValue({
+      TotalCount: 1,
+      Domains: [
+        {
+          Domain: "env-test-1251119057.tcloudbaseapp.com",
+          DomainType: "STATIC_STORE",
+          IsDefault: true,
+          Enable: true,
+          Status: "SUCCESS",
+          Routes: [],
+        },
+      ],
+      RequestId: "req-static-only",
+    });
+
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
+      targetName: "activity_api",
+      path: "/api",
+      upstreamResourceType: "WEB_SCF",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockCreateHttpServiceRoute).not.toHaveBeenCalled();
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("HTTPSERVICE");
+    expect(payload.message).toContain("tcloudbaseapp.com");
   });
 
   it("manageGateway(action=updateRoute) should modify route auth", async () => {
@@ -594,6 +731,7 @@ describe("gateway tools", () => {
       Domain: {
         Domain: "api.example.com",
         CertId: "cert-1",
+        AccessType: "DIRECT",
       },
     });
     expect(payload).toMatchObject({
@@ -601,7 +739,352 @@ describe("gateway tools", () => {
       data: {
         action: "bindCustomDomain",
         domain: "api.example.com",
+        accessType: "DIRECT",
       },
     });
+  });
+
+  it("manageGateway(action=bindCustomDomain) should pass accessType and enable", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "bindCustomDomain",
+      domain: "api.example.com",
+      certificateId: "cert-1",
+      accessType: "CDN",
+      enable: false,
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockBindCustomDomain).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "api.example.com",
+        CertId: "cert-1",
+        AccessType: "CDN",
+        Enable: false,
+      },
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "bindCustomDomain",
+        accessType: "CDN",
+        enable: false,
+      },
+    });
+  });
+
+  it("manageGateway(action=bindCustomDomain) should pass customCname for CUSTOM access", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "bindCustomDomain",
+      domain: "api.example.com",
+      certificateId: "cert-1",
+      accessType: "CUSTOM",
+      customCname: "origin.example.com",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockBindCustomDomain).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: {
+        Domain: "api.example.com",
+        CertId: "cert-1",
+        AccessType: "CUSTOM",
+        CustomCname: "origin.example.com",
+      },
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "bindCustomDomain",
+        accessType: "CUSTOM",
+        customCname: "origin.example.com",
+      },
+    });
+  });
+
+  it("manageGateway(action=bindCustomDomain) should require customCname for CUSTOM access", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "bindCustomDomain",
+      domain: "api.example.com",
+      certificateId: "cert-1",
+      accessType: "CUSTOM",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("customCname");
+    expect(mockBindCustomDomain).not.toHaveBeenCalled();
+  });
+
+  it("manageGateway(action=bindCustomDomain) should reject customCname without CUSTOM access", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "bindCustomDomain",
+      domain: "api.example.com",
+      certificateId: "cert-1",
+      customCname: "origin.example.com",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("customCname");
+    expect(mockBindCustomDomain).not.toHaveBeenCalled();
+  });
+
+  it("manageGateway(action=deleteCustomDomain) should guide deleting routes first", async () => {
+    mockDeleteCustomDomain.mockRejectedValue(
+      new Error(
+        "Domain api.example.com has 2 route binding(s) (/a, /b). Please delete the routes before deleting the domain.",
+      ),
+    );
+
+    const result = await tools.manageGateway.handler({
+      action: "deleteCustomDomain",
+      domain: "api.example.com",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("先删除路由");
+    expect(payload.nextActions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          tool: "manageGateway",
+          action: "deleteRoute",
+        }),
+      ]),
+    );
+  });
+
+  it("manageGateway(action=deleteCustomDomain) should delete custom domain", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "deleteCustomDomain",
+      domain: "api.example.com",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockDeleteCustomDomain).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Domain: "api.example.com",
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "deleteCustomDomain",
+        domain: "api.example.com",
+      },
+    });
+  });
+
+  it("queryGateway(action=getPrivilege) should return service and auth status", async () => {
+    mockCommonServiceCall.mockResolvedValue({
+      EnableService: false,
+      EnableAuth: true,
+    });
+
+    const result = await tools.queryGateway.handler({
+      action: "getPrivilege",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockCommonServiceCall).toHaveBeenCalledWith({
+      Action: "DescribeCloudBaseGWPrivilege",
+      Param: { ServiceId: "env-test" },
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "getPrivilege",
+        enableService: false,
+        enableAuth: true,
+      },
+    });
+    expect(payload.message).toContain("未开启");
+    expect(payload.nextActions).toEqual([
+      expect.objectContaining({
+        tool: "manageGateway",
+        action: "enableService",
+      }),
+    ]);
+  });
+
+  it("queryGateway(action=getPrivilege) should report unknown status when API returns missing fields", async () => {
+    mockCommonServiceCall.mockResolvedValue({});
+
+    const result = await tools.queryGateway.handler({
+      action: "getPrivilege",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(true);
+    expect(payload.data.enableService).toBe(false);
+    expect(payload.data.enableAuth).toBe(false);
+    expect(payload.message).toContain("未知");
+  });
+
+  it("queryGateway(action=getPrivilege) should not suggest enable when service is on", async () => {
+    mockCommonServiceCall.mockResolvedValue({
+      EnableService: true,
+      EnableAuth: false,
+    });
+
+    const result = await tools.queryGateway.handler({
+      action: "getPrivilege",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(true);
+    expect(payload.data.enableService).toBe(true);
+    expect(payload.message).toContain("已开启");
+    expect(payload.nextActions).toBeUndefined();
+  });
+
+  it("manageGateway(action=enableService) should turn on the gateway service", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "enableService",
+      enable: true,
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockSwitchAuth).toHaveBeenCalledWith(true);
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "enableService",
+        enable: true,
+      },
+    });
+    expect(payload.message).toContain("开启成功");
+    expect(payload.nextActions).toEqual([
+      expect.objectContaining({
+        tool: "queryGateway",
+        action: "getPrivilege",
+      }),
+    ]);
+  });
+
+  it("manageGateway(action=enableService) should require enable parameter", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "enableService",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("enable");
+    expect(mockSwitchAuth).not.toHaveBeenCalled();
+  });
+
+  it("manageGateway(action=authSwitch) should switch auth via ModifyCloudBaseGWPrivilege", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "authSwitch",
+      enable: true,
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockCommonServiceCall).toHaveBeenCalledWith({
+      Action: "ModifyCloudBaseGWPrivilege",
+      Param: {
+        ServiceId: "env-test",
+        EnableService: true,
+        Options: [{ Key: "authswitch", Value: "true" }],
+      },
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      data: {
+        action: "authSwitch",
+        enable: true,
+      },
+    });
+    expect(payload.message).toContain("鉴权开启成功");
+  });
+
+  it("manageGateway(action=authSwitch) should require enable parameter", async () => {
+    const result = await tools.manageGateway.handler({
+      action: "authSwitch",
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(false);
+    expect(payload.message).toContain("enable");
+    expect(mockCommonServiceCall).not.toHaveBeenCalled();
+  });
+
+  it("manageGateway(action=createRoute) should warn when gateway service is off", async () => {
+    mockCommonServiceCall.mockResolvedValue({
+      EnableService: false,
+      EnableAuth: false,
+    });
+
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
+      targetName: "helloFn",
+      path: "api/hello",
+      upstreamResourceType: "WEB_SCF",
+      auth: false,
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(true);
+    expect(payload.message).toContain("HTTP 网关总开关未开启");
+    expect(payload.message).toContain("HTTPSERVICE_NONACTIVATED");
+    expect(payload.nextActions[0]).toEqual(
+      expect.objectContaining({
+        tool: "manageGateway",
+        action: "enableService",
+      }),
+    );
+  });
+
+  it("manageGateway(action=createRoute) should not warn when gateway service is on", async () => {
+    mockCommonServiceCall.mockResolvedValue({
+      EnableService: true,
+      EnableAuth: false,
+    });
+
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
+      targetName: "helloFn",
+      path: "api/hello",
+      upstreamResourceType: "WEB_SCF",
+      auth: false,
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(true);
+    expect(payload.message).not.toContain("总开关未开启");
+    expect(payload.message).not.toContain("HTTPSERVICE_NONACTIVATED");
+  });
+
+  it("manageGateway(action=createRoute) should not fail when privilege probe errors", async () => {
+    mockCommonServiceCall.mockRejectedValue(new Error("probe failed"));
+
+    const result = await tools.manageGateway.handler({
+      action: "createRoute",
+      targetName: "helloFn",
+      path: "api/hello",
+      upstreamResourceType: "WEB_SCF",
+      auth: false,
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(payload.success).toBe(true);
+    expect(payload.message).toContain("无法确认 HTTP 网关开关状态");
+    expect(mockCreateHttpServiceRoute).toHaveBeenCalled();
   });
 });

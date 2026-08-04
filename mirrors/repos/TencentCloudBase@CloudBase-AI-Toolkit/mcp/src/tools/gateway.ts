@@ -16,6 +16,7 @@ const QUERY_GATEWAY_ACTIONS = [
   "listRoutes",
   "getRoute",
   "listCustomDomains",
+  "getPrivilege",
 ] as const;
 
 const MANAGE_GATEWAY_ACTIONS = [
@@ -24,7 +25,12 @@ const MANAGE_GATEWAY_ACTIONS = [
   "deleteRoute",
   "bindCustomDomain",
   "deleteCustomDomain",
+  "enableService",
+  "authSwitch",
 ] as const;
+
+/** DomainType of the environment default HTTP service (gateway) domain. */
+const HTTP_SERVICE_DOMAIN_TYPE = "HTTPSERVICE";
 
 const UPSTREAM_RESOURCE_TYPES = [
   "SCF",
@@ -73,6 +79,16 @@ type ManageGatewayInput = {
   };
   domain?: string;
   certificateId?: string;
+  accessType?: "DIRECT" | "CDN" | "CUSTOM";
+  customCname?: string;
+  enable?: boolean;
+};
+
+/** HTTP 网关总开关与访问鉴权状态（DescribeCloudBaseGWPrivilege）。 */
+type GatewayPrivilege = {
+  EnableService?: boolean;
+  EnableAuth?: boolean;
+  [key: string]: unknown;
 };
 
 type FlatRoute = {
@@ -126,21 +142,26 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
     }
   };
 
-  const listHttpServiceRoutes = async (domain?: string) => {
+  const listHttpServiceRoutes = async (options?: {
+    domain?: string;
+    domainType?: string;
+  }) => {
+    const filters: Array<{
+      Name: "Domain" | "Path" | "DomainType" | "UpstreamResourceType";
+      Values: string[];
+    }> = [];
+    if (options?.domain) {
+      filters.push({ Name: "Domain", Values: [options.domain] });
+    }
+    if (options?.domainType) {
+      filters.push({ Name: "DomainType", Values: [options.domainType] });
+    }
+
     const cloudbase = await getManager();
     const result = await cloudbase.env.describeHttpServiceRoute({
       EnvId: await resolveEnvId(),
       Limit: 1000,
-      ...(domain
-        ? {
-            Filters: [
-              {
-                Name: "Domain",
-                Values: [domain],
-              },
-            ],
-          }
-        : {}),
+      ...(filters.length ? { Filters: filters } : {}),
     });
     logCloudBaseResult(server.logger, result);
     return result;
@@ -194,22 +215,83 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
     };
   };
 
-  const resolveDefaultHttpDomain = async () => {
-    const routeInfo = await listHttpServiceRoutes();
-    const domains = routeInfo.Domains ?? [];
-    const defaultCandidates = domains.filter(
+  const pickUsableDefaultDomain = (
+    domains: Array<{
+      Domain?: string;
+      DomainType?: string;
+      IsDefault?: boolean;
+      Enable?: boolean;
+      Status?: string;
+    }>,
+  ) => {
+    const candidates = domains.filter(
       (item) => item.IsDefault === true && item.Domain,
     );
-    const preferred =
-      defaultCandidates.find(
+    return (
+      candidates.find(
         (item) => item.Enable !== false && item.Status === "SUCCESS",
       ) ??
-      defaultCandidates.find((item) => item.Enable !== false) ??
-      defaultCandidates[0];
+      candidates.find((item) => item.Enable !== false) ??
+      candidates[0]
+    );
+  };
+
+  const getGatewayPrivilege = async (): Promise<GatewayPrivilege> => {
+    const cloudbase = await getManager();
+    const result = await cloudbase
+      .commonService("tcb", "2018-06-08")
+      .call({
+        Action: "DescribeCloudBaseGWPrivilege",
+        Param: {
+          ServiceId: await resolveEnvId(),
+        },
+      });
+    logCloudBaseResult(server.logger, result);
+    return result ?? {};
+  };
+
+  const buildPrivilegeDescription = (privilege: GatewayPrivilege) => {
+    const serviceStatus =
+      privilege.EnableService === undefined
+        ? "未知"
+        : privilege.EnableService === true
+          ? "已开启"
+          : "未开启";
+    const authStatus =
+      privilege.EnableAuth === undefined
+        ? "未知"
+        : privilege.EnableAuth === true
+          ? "已开启"
+          : "未开启";
+    return `HTTP 网关${serviceStatus}，访问鉴权${authStatus}`;
+  };
+
+  const resolveDefaultHttpDomain = async () => {
+    // Match console DescribeHTTPServiceRoute usage: filter DomainType=HTTPSERVICE.
+    // Envs often also expose an IsDefault STATIC_STORE domain (*.tcloudbaseapp.com);
+    // that is NOT the default HTTP access entry (*.{region}.app.tcloudbase.com).
+    const httpServiceRoutes = await listHttpServiceRoutes({
+      domainType: HTTP_SERVICE_DOMAIN_TYPE,
+    });
+    // Always re-filter client-side: some SDKs/mocks may ignore Filters.
+    let preferred = pickUsableDefaultDomain(
+      (httpServiceRoutes.Domains ?? []).filter(
+        (item) => item.DomainType === HTTP_SERVICE_DOMAIN_TYPE,
+      ),
+    );
+
+    if (!preferred?.Domain) {
+      const allRoutes = await listHttpServiceRoutes();
+      preferred = pickUsableDefaultDomain(
+        (allRoutes.Domains ?? []).filter(
+          (item) => item.DomainType === HTTP_SERVICE_DOMAIN_TYPE,
+        ),
+      );
+    }
 
     if (!preferred?.Domain) {
       throw new Error(
-        "环境默认 HTTP 访问域名未就绪或未开通。请先在控制台开通 HTTP 访问服务，或用 queryGateway(action=\"listRoutes\") 确认 Domains 中是否存在 IsDefault=true 的域名；也可以显式传入 domain 后重试 createRoute/updateRoute/deleteRoute。",
+        "环境默认 HTTP 访问域名未就绪或未开通。请先在控制台开通 HTTP 访问服务，或用 queryGateway(action=\"listRoutes\") 确认 Domains 中是否存在 DomainType=HTTPSERVICE 且 IsDefault=true 的域名（形如 *.{region}.app.tcloudbase.com）；不要使用静态托管域名（*.tcloudbaseapp.com）。也可以显式传入 domain 后重试 createRoute/updateRoute/deleteRoute。",
       );
     }
 
@@ -370,7 +452,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
         );
       }
       case "listRoutes": {
-        const result = await listHttpServiceRoutes(input.domain);
+        const result = await listHttpServiceRoutes({ domain: input.domain });
         const routes = flattenRoutes(result);
 
         return buildEnvelope(
@@ -392,7 +474,7 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           );
         }
 
-        const result = await listHttpServiceRoutes(input.domain);
+        const result = await listHttpServiceRoutes({ domain: input.domain });
         const normalizedPath = input.path
           ? normalizeAccessPath(input.path)
           : undefined;
@@ -449,6 +531,34 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           ],
         );
       }
+      case "getPrivilege": {
+        const privilege = await getGatewayPrivilege();
+        const enableService = privilege.EnableService === true;
+        const enableAuth = privilege.EnableAuth === true;
+
+        return buildEnvelope(
+          {
+            action: input.action,
+            enableService,
+            enableAuth,
+            raw: privilege,
+          },
+          buildPrivilegeDescription(privilege) +
+            (enableService
+              ? ""
+              : "；若路由创建成功但访问报 HTTPSERVICE_NONACTIVATED（403），请先开启 HTTP 网关"),
+          enableService
+            ? undefined
+            : [
+                {
+                  tool: "manageGateway",
+                  action: "enableService",
+                  reason:
+                    "开启 HTTP 网关总开关（EnableService），开启后路由即可通过默认域访问",
+                },
+              ],
+        );
+      }
       default:
         throw new Error(`不支持的操作类型: ${input.action}`);
     }
@@ -485,6 +595,31 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
         }
         logCloudBaseResult(server.logger, result);
 
+        // 探测 HTTP 网关总开关：未开启时提示 HTTPSERVICE_NONACTIVATED 风险并引导开启。
+        // 探测失败不阻断路由创建结果，仅追加弱提示。
+        let privilegeHint = "";
+        let privilegeNextActions: NonNullable<
+          GatewayToolEnvelope["nextActions"]
+        > = [];
+        try {
+          const privilege = await getGatewayPrivilege();
+          if (privilege.EnableService !== true) {
+            privilegeHint =
+              "⚠️ HTTP 网关总开关未开启，路由创建成功后访问仍将返回 HTTPSERVICE_NONACTIVATED（403）；请先调用 manageGateway(action=\"enableService\", enable=true) 开启，再等待 30 秒到 3 分钟访问。";
+            privilegeNextActions = [
+              {
+                tool: "manageGateway",
+                action: "enableService",
+                reason:
+                  "开启 HTTP 网关总开关（EnableService），否则访问路由会报 HTTPSERVICE_NONACTIVATED（403）",
+              },
+            ];
+          }
+        } catch {
+          privilegeHint =
+            "（无法确认 HTTP 网关开关状态；若访问报 HTTPSERVICE_NONACTIVATED，请用 queryGateway(action=\"getPrivilege\") 查询后用 manageGateway(action=\"enableService\") 开启）";
+        }
+
         return buildEnvelope(
           {
             action: input.action,
@@ -511,8 +646,13 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
               : payload.resolved.enablePathTransmission === false
                 ? "；路径透传关闭（网关会剥掉触发路径前缀后再转发给后端）"
                 : "；路径透传未显式设置（平台默认 false，会剥掉触发路径前缀）") +
-            `。注意：路由配置传播通常需要等待 30 秒到 3 分钟，请勿立即访问。该操作只创建网关入口，不会自动放开上游权限；若上游是云函数且需要匿名或浏览器直接访问，请继续检查函数资源权限。`,
-          routeMutationNextActions(payload.resolved.upstreamResourceName),
+            `。注意：路由配置传播通常需要等待 30 秒到 3 分钟，请勿立即访问。该操作只创建网关入口，不会自动放开上游权限；若上游是云函数且需要匿名或浏览器直接访问，请继续检查函数资源权限。` +
+            (privilegeHint ? ` ${privilegeHint}` : ""),
+          [
+            ...privilegeNextActions,
+            ...(routeMutationNextActions(payload.resolved.upstreamResourceName) ??
+              []),
+          ],
         );
       }
       case "updateRoute": {
@@ -585,12 +725,32 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             "action=bindCustomDomain 时必须提供 domain 和 certificateId",
           );
         }
+        const accessType = input.accessType ?? "DIRECT";
+        if (accessType === "CUSTOM" && !input.customCname) {
+          throw new Error(
+            "action=bindCustomDomain 且 accessType=CUSTOM 时必须提供 customCname（自有 CDN/WAF 的回源/回填地址，不是 DNS 解析目标）。" +
+              "说明：https://docs.cloudbase.net/service/custom-domain",
+          );
+        }
+        if (accessType !== "CUSTOM" && input.customCname) {
+          throw new Error(
+            "customCname 仅在 accessType=CUSTOM 时可用；普通绑定用默认 DIRECT，不要传 customCname。" +
+              "说明：https://docs.cloudbase.net/service/custom-domain",
+          );
+        }
         const cloudbase = await getManager();
         const result = await cloudbase.env.bindCustomDomain({
           EnvId: await resolveEnvId(),
           Domain: {
             Domain: input.domain,
             CertId: input.certificateId,
+            AccessType: accessType,
+            ...(input.enable !== undefined
+              ? { Enable: input.enable }
+              : {}),
+            ...(input.customCname
+              ? { CustomCname: input.customCname }
+              : {}),
           },
         } as any);
         logCloudBaseResult(server.logger, result);
@@ -600,9 +760,24 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
             action: input.action,
             domain: input.domain,
             certificateId: input.certificateId,
+            accessType,
+            ...(input.customCname
+              ? { customCname: input.customCname }
+              : {}),
+            ...(input.enable !== undefined
+              ? { enable: input.enable }
+              : {}),
             raw: result,
           },
-          "自定义域名绑定成功",
+          `自定义域名绑定成功（${accessType}）`,
+          [
+            {
+              tool: "manageGateway",
+              action: "createRoute",
+              reason:
+                "绑定后需 createRoute 添加访问路径，并完成 DNS CNAME 解析后才可访问",
+            },
+          ],
         );
       }
       case "deleteCustomDomain": {
@@ -610,19 +785,116 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           throw new Error("action=deleteCustomDomain 时必须提供 domain");
         }
         const cloudbase = await getManager();
-        const result = await cloudbase.env.deleteCustomDomain({
-          EnvId: await resolveEnvId(),
-          Domain: input.domain,
-        });
+        try {
+          const result = await cloudbase.env.deleteCustomDomain({
+            EnvId: await resolveEnvId(),
+            Domain: input.domain,
+          });
+          logCloudBaseResult(server.logger, result);
+
+          return buildEnvelope(
+            {
+              action: input.action,
+              domain: input.domain,
+              raw: result,
+            },
+            "自定义域名删除成功",
+          );
+        } catch (error) {
+          const message =
+            error instanceof Error ? error.message : String(error);
+          // SDK 在域名下仍有路由绑定时抛错，需先删路由再删域名
+          if (/route binding/i.test(message)) {
+            return {
+              success: false,
+              data: { action: input.action, domain: input.domain },
+              message:
+                `域名 ${input.domain} 下仍有路由绑定，需先删除路由再删除域名。` +
+                `原始错误：${message}`,
+              nextActions: [
+                {
+                  tool: "queryGateway",
+                  action: "listRoutes",
+                  reason: "查看该域名下的路由，确认需要删除的路径",
+                },
+                {
+                  tool: "manageGateway",
+                  action: "deleteRoute",
+                  reason:
+                    "先删除该域名下的全部路由（逐个 deleteRoute），再重试 deleteCustomDomain",
+                },
+              ],
+            };
+          }
+          throw error;
+        }
+      }
+      case "enableService": {
+        if (typeof input.enable !== "boolean") {
+          throw new Error(
+            'action=enableService 时必须提供 enable 参数（boolean），如 enable=true 开启 HTTP 网关总开关、enable=false 关闭；禁止省略或传非布尔值。',
+          );
+        }
+        const cloudbase = await getManager();
+        const result = await cloudbase.access.switchAuth(input.enable);
         logCloudBaseResult(server.logger, result);
 
+        const serviceText = input.enable ? "开启" : "关闭";
         return buildEnvelope(
           {
             action: input.action,
-            domain: input.domain,
+            enable: input.enable,
             raw: result,
           },
-          "自定义域名删除成功",
+          `HTTP 网关总开关${serviceText}成功`,
+          [
+            {
+              tool: "queryGateway",
+              action: "getPrivilege",
+              reason: "复核 HTTP 网关总开关与访问鉴权状态",
+            },
+          ],
+        );
+      }
+      case "authSwitch": {
+        if (typeof input.enable !== "boolean") {
+          throw new Error(
+            'action=authSwitch 时必须提供 enable 参数（boolean），如 enable=true 开启访问鉴权、enable=false 关闭；禁止省略或传非布尔值。',
+          );
+        }
+        const cloudbase = await getManager();
+        const result = await cloudbase
+          .commonService("tcb", "2018-06-08")
+          .call({
+            Action: "ModifyCloudBaseGWPrivilege",
+            Param: {
+              ServiceId: await resolveEnvId(),
+              EnableService: input.enable,
+              Options: [
+                {
+                  Key: "authswitch",
+                  Value: input.enable ? "true" : "false",
+                },
+              ],
+            },
+          });
+        logCloudBaseResult(server.logger, result);
+
+        const serviceText = input.enable ? "开启" : "关闭";
+        return buildEnvelope(
+          {
+            action: input.action,
+            enable: input.enable,
+            raw: result,
+          },
+          `HTTP 访问服务鉴权${serviceText}成功`,
+          [
+            {
+              tool: "queryGateway",
+              action: "getPrivilege",
+              reason: "复核 HTTP 网关总开关与访问鉴权状态",
+            },
+          ],
         );
       }
       default:
@@ -637,13 +909,15 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
       description:
         "CloudBase HTTP 网关统一只读入口（Domain/Route）。查询域名下路径路由及其上游：" +
         "WEB_SCF/SCF=云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器。" +
-        "主键为 Domain + Path；listRoutes / getRoute / listCustomDomains。" +
+        "主键为 Domain + Path；listRoutes / getRoute / listCustomDomains / getPrivilege。" +
+        "getPrivilege 查询 HTTP 网关总开关（enableService）与访问鉴权（enableAuth）状态。" +
         "实现自定义域名访问前，先 listCustomDomains：若已有自定义域名，优先 createRoute 挂路由（无需证书 ID）；仅在没有可用自定义域名时才 bindCustomDomain。",
       inputSchema: {
         action: z
           .enum(QUERY_GATEWAY_ACTIONS)
           .describe(
-            "只读操作类型：listRoutes、getRoute、listCustomDomains。" +
+            "只读操作类型：listRoutes、getRoute、listCustomDomains、getPrivilege。" +
+              "getPrivilege 无需其他参数，直接返回 HTTP 网关总开关与访问鉴权状态。" +
               "自定义域名访问场景先 listCustomDomains 确认是否已有域名可复用。",
           ),
         targetName: z
@@ -677,22 +951,27 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
     {
       title: "管理 CloudBase 网关",
       description:
-        "CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute/deleteRoute 把域名下的 path 转到上游；未传 domain 时用 IsDefault 默认域名。" +
+        "CloudBase HTTP 网关统一写入口（Domain/Route）。createRoute/updateRoute/deleteRoute 把域名下的 path 转到上游；未传 domain 时用 DomainType=HTTPSERVICE 的 IsDefault 默认 HTTP 域名（形如 *.{region}.app.tcloudbase.com），不会使用静态托管 CDN 域名（*.tcloudbaseapp.com，DomainType=STATIC_STORE）。" +
+        "这是网关默认域上的路径路由，不是 STATIC_STORE 上游绑定；STATIC_STORE 上游必须显式传 upstreamResourceType=STATIC_STORE。" +
+        "创建后可用 queryGateway(action=\"listRoutes\") 核对 Domain / DomainType / Path / UpstreamResourceType。" +
         "上游类型只用一个参数 upstreamResourceType（也可写在 route.upstreamResourceType，route 优先）：" +
         "WEB_SCF=HTTP云函数，SCF=Event云函数，CBR=云托管，STATIC_STORE=静态托管，LH=轻量应用服务器；" +
         "配合 targetName 或 route.serviceName（云函数名/云托管服务名/静态托管实例名，常见 staticstore）。" +
         "createRoute 只建网关入口，不改上游权限。" +
         "enablePathTransmission：默认 false 剥触发路径前缀；true 透传完整路径（CBR 多路由、WEB_SCF 自管子路径常需 true；STATIC_STORE 自定义触发路径映射站点根通常 false）。" +
         "⚠️ 自定义域名访问：若环境已有自定义域名（先 queryGateway listCustomDomains），优先 createRoute 并显式传入该 domain，无需 certificateId；" +
-        "仅首次绑定全新自定义域名时用 bindCustomDomain（需 certificateId）。CORS/安全域名用 envDomainManagement。",
+        "仅首次绑定全新自定义域名时用 bindCustomDomain（需 certificateId）。CORS/安全域名用 envDomainManagement。" +
+        "enableService/authSwitch：HTTP 网关总开关与访问鉴权开关；createRoute 后若访问报 HTTPSERVICE_NONACTIVATED，通常是总开关未开启（用 queryGateway getPrivilege 查询、enableService 开启）。",
       inputSchema: {
         action: z
           .enum(MANAGE_GATEWAY_ACTIONS)
           .describe(
-            "写操作：createRoute/updateRoute/deleteRoute 管理路由；bindCustomDomain/deleteCustomDomain 管理自定义域名。" +
+            "写操作：createRoute/updateRoute/deleteRoute 管理路由；bindCustomDomain/deleteCustomDomain 管理自定义域名；" +
+              "enableService/authSwitch 开关 HTTP 网关总开关与访问鉴权（需配合 enable 参数）。" +
               "createRoute/updateRoute 必须提供 upstreamResourceType。" +
               "已有自定义域名时优先 createRoute(domain=已有域名) 实现访问，不必再次 bindCustomDomain / 传入 certificateId；" +
-              "bindCustomDomain 仅用于首次绑定新域名。",
+              "bindCustomDomain 仅用于首次绑定新域名（需 certificateId；可选 accessType=DIRECT|CDN|CUSTOM，CUSTOM 需 customCname；普通场景用默认 DIRECT）。" +
+              "接入说明：https://docs.cloudbase.net/service/custom-domain",
           ),
         targetName: z
           .string()
@@ -766,7 +1045,8 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           .string()
           .optional()
           .describe(
-            "域名。省略时自动使用环境 IsDefault 默认 HTTP 域名。" +
+            "域名。省略时自动使用环境 DomainType=HTTPSERVICE 的 IsDefault 默认 HTTP 域名（*.{region}.app.tcloudbase.com），不会回退到静态托管 CDN 域名（*.tcloudbaseapp.com，DomainType=STATIC_STORE）；也不是 STATIC_STORE 上游绑定。" +
+              "可用 queryGateway(action=\"listRoutes\") 核对实际 Domain / DomainType。" +
               "已有自定义域名时请显式传入该域名并 createRoute/updateRoute/deleteRoute，即可实现自定义域名访问且无需证书 ID；" +
               "仅 bindCustomDomain 时表示要新绑定的域名。",
           ),
@@ -776,6 +1056,30 @@ export function registerGatewayTools(server: ExtendedMcpServer) {
           .describe(
             "证书 ID。仅首次 bindCustomDomain 必填。" +
               "在已有自定义域名上 createRoute / updateRoute / deleteRoute 不需要 certificateId。",
+          ),
+        accessType: z
+          .enum(["DIRECT", "CDN", "CUSTOM"])
+          .optional()
+          .describe(
+            "绑定类型（仅 bindCustomDomain，默认 DIRECT）。" +
+              "DIRECT=直连（普通绑域名用这个）；CDN=云开发 CDN；CUSTOM=自有 CDN/WAF（需 customCname）。" +
+              "详见 https://docs.cloudbase.net/service/custom-domain",
+          ),
+        customCname: z
+          .string()
+          .optional()
+          .describe(
+            "自有 CDN/WAF 的回源/回填地址（仅 bindCustomDomain 且 accessType=CUSTOM）。" +
+              "不是 DNS 里用户域名要解析到的那个 CNAME；DIRECT/CDN 不要传。" +
+              "详见 https://docs.cloudbase.net/service/custom-domain",
+          ),
+        enable: z
+          .boolean()
+          .optional()
+          .describe(
+            "开关目标状态（enableService / authSwitch 必填）：enable=true 开启，enable=false 关闭。" +
+              "bindCustomDomain 可选：enable=false 表示绑定后禁用域名（默认启用）。" +
+              "省略或非布尔值会返回参数错误。",
           ),
       },
       annotations: {

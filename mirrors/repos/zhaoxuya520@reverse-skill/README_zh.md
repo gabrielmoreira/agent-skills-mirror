@@ -247,3 +247,4 @@ git clone https://github.com/zhaoxuya520/reverse-skill.git
 ## 联系方式
 
 - **邮箱**：[24781737@qq.com](mailto:24781737@qq.com)
+- **QQ 群**：942400892

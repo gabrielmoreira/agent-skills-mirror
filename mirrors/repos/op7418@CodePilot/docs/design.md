@@ -219,6 +219,14 @@ macOS profile 下，外壳是**几张悬浮卡片**并排：左侧栏 / 主聊�
 
 实现路径（实现者）：`src/components/chat/MessageInput.tsx`（外壳 + footer），`MessageInputParts.tsx`（胶囊行），`ModelSelectorDropdown` / `EffortSelectorDropdown`；运行状态读出在 `ChatView.tsx`（`ModeIndicator` / `RuntimeSelector`）。
 
+### 助理入口卡视觉 QA
+
+新聊天输入框下方的“项目对话 / 个人助理”入口使用紧凑的整卡点击层级：内容卡使用产品 token，只保留描边、不画投影，双卡总宽跟随 Composer。卡片本身已经表达两种入口，不再重复展示解释段落或最近项目快捷胶囊；只有 Provider 不可用时才在下方保留必要的恢复入口。左侧栏助理引导不再画独立卡片边界或头像，直接落在侧栏内容流中，关闭图标顶对齐，操作使用轻量 ghost 入口。
+
+本地需要同时预览两种助理引导状态时，以
+`NEXT_PUBLIC_CODEPILOT_UI_PREVIEW=assistant-onboarding npm run electron:dev`
+启动。该开关只改变 dev 构建中的可见性，不修改助理 workspace、onboarding 状态或 dismiss 持久化值；生产构建不应设置它。
+
 ## Radix 菜单事件与焦点交接
 
 Radix DropdownMenu / ContextMenu 的 `onSelect` 收到的是 DOM `Event`，不是 React `MouseEvent`；浮层关闭时还会自动把焦点还给 Trigger。菜单动作若要进入行内重命名、Dialog 或原生确认框，必须显式处理这两个生命周期。

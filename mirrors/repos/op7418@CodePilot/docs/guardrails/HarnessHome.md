@@ -42,6 +42,7 @@ Harness Home is the framework-neutral, user-owned source of truth for portable i
 | 18 | A read-only consistency check may cache hashes only behind stat identity (`dev/ino/size/mtimeNs/ctimeNs`) and a bounded generation cache. Any stat change, symlink, out-of-root path or journal mismatch forces revalidation/fail-closed; no cache may hide an external edit. |
 | 19 | Invalid persisted Taste Memory is isolated per record and returned as metadata diagnostics; it cannot block valid Taste projection. Import validates Taste evidence before commit, while update/revoke of the same invalid identity fails closed until repaired. |
 | 20 | Creative Method trigger/non-trigger phrases are bounded, non-empty after trim and free of control characters. Write, import and historical read all fail closed; an empty phrase can never activate or suppress every prompt. |
+| 21 | Default Assistant → Heartbeat → Native Notification is a user-visible vertical slice over the existing Assistant Workspace. It does not make that directory the Harness Home canonical repository, migrate Memory, or complete Memory vNext. |
 
 ## 3. 关键文件 + 责任
 
@@ -150,3 +151,4 @@ Run full `npm run test` before closing a phase or changing existing Runtime/DB/M
 - 2026-07-31 — Repository consistency now uses streaming hashes plus a 32-generation stat-backed cache. This removes full-file hashing from unchanged read-only turns while preserving external-edit, symlink and journal fail-closed behavior.
 - 2026-07-31 — Journal replacement is file-fsynced and directory-synced where the platform supports it; recovery handles transaction directories independently and releases the lease on every failed open. Taste Memory import validates evidence, while read/projection isolates invalid persisted records with diagnostics instead of poisoning the whole collection.
 - 2026-07-31 — Writer leases persist only an opaque hashed machine identity. Dead-holder recovery is limited to the same identity before the local PID probe; legacy leases without identity and synced locks from another machine remain conflicts. Creative Method activation phrases now use one fail-closed validator across write/import/read.
+- 2026-08-03 — P0 default assistant/heartbeat/native notification ships as a longitudinal product slice without auto-merging Assistant Workspace into Harness Home. User-owned files and no-touch migration principles apply, but canonical repository convergence remains a separate Program A migration decision.

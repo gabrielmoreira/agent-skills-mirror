@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `YishenTu/claudian` — 26 default patterns, 0 followed patterns, 18 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 20 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,22 +61,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`src/core/AGENTS.md`](src/core/AGENTS.md) |
-| 4 | ✓ | [`src/core/CLAUDE.md`](src/core/CLAUDE.md) |
-| 5 | ✓ | [`src/features/chat/AGENTS.md`](src/features/chat/AGENTS.md) |
-| 6 | ✓ | [`src/features/chat/CLAUDE.md`](src/features/chat/CLAUDE.md) |
-| 7 | ✓ | [`src/providers/claude/AGENTS.md`](src/providers/claude/AGENTS.md) |
-| 8 | ✓ | [`src/providers/claude/CLAUDE.md`](src/providers/claude/CLAUDE.md) |
-| 9 | ✓ | [`src/providers/codex/AGENTS.md`](src/providers/codex/AGENTS.md) |
-| 10 | ✓ | [`src/providers/codex/CLAUDE.md`](src/providers/codex/CLAUDE.md) |
-| 11 | ✓ | [`src/providers/grok/AGENTS.md`](src/providers/grok/AGENTS.md) |
-| 12 | ✓ | [`src/providers/grok/CLAUDE.md`](src/providers/grok/CLAUDE.md) |
-| 13 | ✓ | [`src/providers/opencode/AGENTS.md`](src/providers/opencode/AGENTS.md) |
-| 14 | ✓ | [`src/providers/opencode/CLAUDE.md`](src/providers/opencode/CLAUDE.md) |
-| 15 | ✓ | [`src/providers/pi/AGENTS.md`](src/providers/pi/AGENTS.md) |
-| 16 | ✓ | [`src/providers/pi/CLAUDE.md`](src/providers/pi/CLAUDE.md) |
-| 17 | ✓ | [`src/style/AGENTS.md`](src/style/AGENTS.md) |
-| 18 | ✓ | [`src/style/CLAUDE.md`](src/style/CLAUDE.md) |
+| 3 | ✓ | [`src/app/AGENTS.md`](src/app/AGENTS.md) |
+| 4 | ✓ | [`src/app/CLAUDE.md`](src/app/CLAUDE.md) |
+| 5 | ✓ | [`src/core/AGENTS.md`](src/core/AGENTS.md) |
+| 6 | ✓ | [`src/core/CLAUDE.md`](src/core/CLAUDE.md) |
+| 7 | ✓ | [`src/features/chat/AGENTS.md`](src/features/chat/AGENTS.md) |
+| 8 | ✓ | [`src/features/chat/CLAUDE.md`](src/features/chat/CLAUDE.md) |
+| 9 | ✓ | [`src/providers/claude/AGENTS.md`](src/providers/claude/AGENTS.md) |
+| 10 | ✓ | [`src/providers/claude/CLAUDE.md`](src/providers/claude/CLAUDE.md) |
+| 11 | ✓ | [`src/providers/codex/AGENTS.md`](src/providers/codex/AGENTS.md) |
+| 12 | ✓ | [`src/providers/codex/CLAUDE.md`](src/providers/codex/CLAUDE.md) |
+| 13 | ✓ | [`src/providers/grok/AGENTS.md`](src/providers/grok/AGENTS.md) |
+| 14 | ✓ | [`src/providers/grok/CLAUDE.md`](src/providers/grok/CLAUDE.md) |
+| 15 | ✓ | [`src/providers/opencode/AGENTS.md`](src/providers/opencode/AGENTS.md) |
+| 16 | ✓ | [`src/providers/opencode/CLAUDE.md`](src/providers/opencode/CLAUDE.md) |
+| 17 | ✓ | [`src/providers/pi/AGENTS.md`](src/providers/pi/AGENTS.md) |
+| 18 | ✓ | [`src/providers/pi/CLAUDE.md`](src/providers/pi/CLAUDE.md) |
+| 19 | ✓ | [`src/style/AGENTS.md`](src/style/AGENTS.md) |
+| 20 | ✓ | [`src/style/CLAUDE.md`](src/style/CLAUDE.md) |
 
 ---
 

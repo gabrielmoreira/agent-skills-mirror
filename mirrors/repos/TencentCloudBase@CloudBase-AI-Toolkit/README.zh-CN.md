@@ -29,6 +29,10 @@
 - 云托管 / 网关：接 TCP 数据库时的 VPC 指导；Domain/Route，统一 `upstreamResourceType` 与路径透传
 - 云托管 / 网关：重新部署时保留远程 VPC 与环境变量配置；部署后优先返回自定义域名访问地址
 - Plugin：Open Plugin / 市场安装路径更顺
+- 环境 / 数据库：创建环境时计费信息更清晰；数据库接入优先引导 SDK，不再直接暴露 TCP 连接信息
+- 认证 / 数据库：修复 createApiKey 复用 key 时误报成功；PG 迁移未落地时安全失败
+- 网关 / 认证：新增 HTTP 网关总开关与访问鉴权查询/切换（`getPrivilege` / `enableService` / `authSwitch`）；短信验证码登录默认通道开箱即用，无需配置签名
+- PG 迁移：applyMigration 现在会先补全远端迁移历史并轮询 DescribeTaskResult，修复异步迁移任务静默失败不落库的问题（#857、#859）
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases
 

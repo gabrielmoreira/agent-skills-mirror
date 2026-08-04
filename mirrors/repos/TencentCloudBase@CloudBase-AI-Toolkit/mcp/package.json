@@ -1,6 +1,6 @@
 {
   "name": "@cloudbase/cloudbase-mcp",
-  "version": "2.25.2",
+  "version": "2.25.5",
   "packageManager": "pnpm@10.8.0",
   "description": "CloudBase MCP Server — operate Tencent CloudBase (database, auth, functions, storage, hosting) from AI coding tools via the Model Context Protocol. Part of CloudBase AI Toolkit.",
   "main": "./dist/index.cjs",
@@ -68,7 +68,7 @@
   "dependencies": {
     "@cloudbase/cals": "^1.2.23",
     "@cloudbase/functions-framework": "^1.14.0",
-    "@cloudbase/manager-node": "5.6.4",
+    "@cloudbase/manager-node": "5.6.6",
     "@cloudbase/mcp": "1.0.0-beta.25",
     "@cloudbase/toolbox": "^0.8.1",
     "@modelcontextprotocol/sdk": "1.13.1",

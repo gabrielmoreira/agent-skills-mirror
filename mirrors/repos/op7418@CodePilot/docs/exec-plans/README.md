@@ -102,6 +102,7 @@
 | 文件 | 主题 | 状态 |
 |------|------|------|
 | [active/harness-home-user-owned-core.md](active/harness-home-user-owned-core.md) | **Harness Home Umbrella**：用户所有、与框架/模型解耦的领域聚合根；维护共享定义、v0.62 事实底座、Full Reference 约束、跨 program 依赖与 Shared Phase 0 门禁，不再混放工程、DB 和设计 R&D 的实施状态 | 🔄 Shared Phase 0 + A/B/C foundation + Claude review hardening 完成；真实凭据/packaged/Design Method human gates 待执行 |
+| [active/default-assistant-heartbeat-system-notification.md](active/default-assistant-heartbeat-system-notification.md) | **P0 默认助理 → 心跳 → 系统通知纵向闭环**：新用户默认用户自有助理目录、老路径 no-touch、零会话侧栏入口、heartbeat desired/actual 自愈、Electron Main 单 owner 的 durable native notification、系统提示音与点击回会话 | 🟡 Code complete + Tests pass + Review passed（本地范围）；三平台 packaged native/sound/click smoke 待用户验收与发布门禁 |
 | [active/harness-home-core-adapters.md](active/harness-home-core-adapters.md) | **Program A — Harness Core / Repository / Adapter Kits**：file-backed canonical repository、单写者/事务写/外部编辑对账、SecretStore、L0/L1 HarnessAdapter conformance、L2/L3 RuntimeAdapter 与 CodePilot Full Reference | 🟡 A1–A4 code/tests + recursive neutrality/repository hardening 完成；真实凭据 Tier 2 smoke 待最终验收 |
 | [active/harness-home-asset-library.md](active/harness-home-asset-library.md) | **Program B — Producer-backed Asset Library**：复用 Gallery/media pipeline，按真实 producer 注册 kind，完成 backfill、lineage、typed reference、HTML bundle materialization 与 trust/CSP；无 producer 的 component/document 不进首版 schema/UI | 🟡 B0–B3、Codex media 去重、真实本地 Browser smoke 与 review hardening 完成；packaged/human UI gate 待最终验收 |
 | [active/harness-home-design-method.md](active/harness-home-design-method.md) | **Program C — CodePilot Design Method**：从真实案例、反例和用户选择沉淀可版本化 Method；Taste Memory evidence-only、分 scope、可撤销；图片→视频→HTML 编排使用 producer-backed Asset lineage | 🟡 4 组 candidate evidence + Method/Taste/creative-project foundation/API/tests 完成；真实 Method pack、golden producer run 与人工审美门禁待用户 |
@@ -158,6 +159,7 @@
 
 | 文件 | 主题 | 完成日期 |
 |------|------|----------|
+| [completed/codex-thread-storage-isolation.md](completed/codex-thread-storage-isolation.md) | **Codex 会话存储隔离**：CodePilot-owned `CODEX_HOME` / SQLite、只迁移 `codex_codepilot` 历史、Harness live mirror 与凭据降级模式可观察；真实 app-server resume/索引 smoke 通过 | 2026-08-03 |
 | [completed/document-system-governance.md](completed/document-system-governance.md) | **文档体系治理**：基于 2026-06-05 文档健康审计清理 active 语义污染，建立 deferred / superseded 目录，归档合并与 preview 旧计划，升级 docs drift 防线（结构化 banner + 归档桶内部链接完整性），并修复归档桶 21 处失效相对链接 | 2026-06-05 |
 | [completed/refactor-closeout.md](completed/refactor-closeout.md) | **重构收口总控板（历史归档）**：6 大主线 Phase 0-8 收口；重构主体随 v0.55.0 / v0.55.1 发布 | 2026-06-04 |
 | [completed/main-merge-readiness.md](completed/main-merge-readiness.md) | **重构分支合并主分支**：integration 演练 + 4 冲突手解 + 回归，main ff-only 合并并发布 | 2026-06-04 |

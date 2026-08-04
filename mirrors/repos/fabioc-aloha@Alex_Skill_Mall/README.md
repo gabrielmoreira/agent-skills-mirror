@@ -1,10 +1,10 @@
-<img src="assets/banner.svg" alt="Alex ACT Plugin Mall" width="100%"/>
-
 # Alex ACT Plugin Mall
 
-Alex ACT Plugin Mall helps you add trusted capabilities to GitHub Copilot without copying a whole AI setup into every project. Start with **Alex ACT Core** for a dependable working baseline, then add only the specializations that match your work.
+![Alex ACT Plugin Mall](assets/banner.svg)
 
-The Mall publishes **363 curated plugins** for direct installation and maintains a **trust-scored discovery index** across **3862 plugins** in **42 stores**.
+Alex ACT Plugin Mall lets users add trusted capabilities without copying a whole AI setup into every project. Start with Core, then install only the specializations the work actually earns.
+
+The Mall publishes **365 curated plugins** for direct installation and maintains a **trust-scored discovery index** across **3868 plugins** in **42 stores**.
 
 - Installation is **opt-in** and user-invoked. Publication does not mutate your projects.
 - Current release: **[v3.0.0](https://github.com/fabioc-aloha/Alex_Skill_Mall/releases/tag/v3.0.0)**. Rollback anchor: annotated tag `v2.0.0`.
@@ -32,7 +32,8 @@ copilot plugin marketplace browse alex-mall
 # Install a plugin (plugin@marketplace format)
 copilot plugin install <plugin-name>@alex-mall
 
-# Recommended first install: Alex ACT Core
+# Recommended lifecycle install: Manager, then Core
+copilot plugin install alex-act-manager@alex-mall
 copilot plugin install alex-act-core@alex-mall
 ```
 
@@ -52,18 +53,19 @@ copilot plugin marketplace remove alex-mall      # unregister the marketplace
 
 ## Start with Alex ACT Core
 
-Core is the recommended first install for most users. It gives Copilot a consistent way to question assumptions, plan work, protect sensitive data, handle documents, and manage plugins. The other Alex ACT constellation plugins build on that foundation.
+Core is the baseline every Alex ACT installation needs. Install **Manager and Core** for the full lifecycle: Manager owns setup, repair, update, and removal, while Core provides the working baseline for reasoning, planning, safety, documents, and plugins. The other Alex ACT constellation plugins build on that foundation.
 
 | What you want to do | Plugin | What it adds |
 | --- | --- | --- |
+| Run the Alex ACT lifecycle across projects | `alex-act-manager` | Lifecycle setup, repair, update, removal, user settings, and workspace bootstrap |
 | Give Copilot a reliable baseline across projects | [`alex-act-core`](plugins/reasoning-metacognition/alex-act-core/) | Critical thinking, planning, security and privacy guidance, document workflows, engineering practices, and plugin management |
 | Create charts, print figures, banners, AI images, or browsable documentation | [`alex-act-illustrator-plugin`](plugins/data-analytics/alex-act-illustrator-plugin/) | Visual framing, authoring, generation, and verification workflows |
 | Set up public Microsoft tools for a project | [`alex-act-enterprise`](plugins/cloud-infrastructure/alex-act-enterprise/) | Guided setup for Azure, Fabric, Power BI, and Microsoft 365 Agents Toolkit |
 
 ### Recommended path
 
-1. Install Core with `copilot plugin install alex-act-core@alex-mall`.
-2. Reload VS Code, open Copilot Chat, and run `/alex-act-core install-constellation`. Choose only the specializations you need and separately decide whether to activate Core's always-on instructions.
+1. Install Manager with `copilot plugin install alex-act-manager@alex-mall`, then install Core with `copilot plugin install alex-act-core@alex-mall`.
+2. Reload VS Code, open Copilot Chat, and run `/alex-act-manager install-constellation`. This is the preferred lifecycle command; `/alex-act-core install-constellation` remains available for compatibility.
 3. Add an optional plugin directly if you already know what you need:
    - Visual work: `copilot plugin install alex-act-illustrator-plugin@alex-mall`
    - Public Microsoft tools: `copilot plugin install alex-act-enterprise@alex-mall`
@@ -77,7 +79,15 @@ Core is the recommended first install for most users. It gives Copilot a consist
 The Copilot CLI plugins integrate with **GitHub Copilot Chat** in VS Code once installed.
 
 1. **Install the [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot) and [Copilot Chat](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot-chat) extensions** in VS Code (1.117 or later).
-2. **Install plugins via the Copilot CLI** using the steps above. Namespaced commands and agents are the most reliable VS Code surfaces; generic skill-tool exposure depends on the current Copilot Chat runtime.
+2. **Install plugins via the Copilot CLI** using the steps above. In VS Code 1.131, keep Agent Skills enabled, disable the broken generic plugin-skill resolver, and disable automatic next-change reveal to avoid editor conflicts:
+
+   ```jsonc
+   "chat.useAgentSkills": true,
+   "github.copilot.chat.skillTool.enabled": false,
+   "chat.editing.revealNextChangeOnResolve": false
+   ```
+
+   Namespaced commands and agents remain available while the resolver workaround is active.
 3. **Reload VS Code** or run *Developer: Reload Window* so Copilot Chat re-scans the installed plugins.
 4. In Chat, invoke a plugin's commands with `/`, agents with `@`, or skills by describing the task the skill's frontmatter is scoped to.
 
@@ -172,9 +182,9 @@ Review `git diff` before committing. `vendor` never commits or pushes; `maintain
 
 | Rank | Store | Trust | Plugins | Provenance |
 | ---: | --- | ---: | ---: | --- |
-| 1 | 🏆 [plugin-mall](catalog/stores/plugin-mall.md) | 82 | 363 | 🏆 first-party |
+| 1 | 🏆 [plugin-mall](catalog/stores/plugin-mall.md) | 82 | 365 | 🏆 first-party |
 | 2 | [alirezarezvani-claude-skills](catalog/stores/alirezarezvani-claude-skills.md) | 35 | 38 | third-party |
-| 3 | [antigravity-awesome-skills](catalog/stores/antigravity-awesome-skills.md) | 35 | 1910 | third-party |
+| 3 | [antigravity-awesome-skills](catalog/stores/antigravity-awesome-skills.md) | 35 | 1914 | third-party |
 | 4 | [awesome-copilot](catalog/stores/awesome-copilot.md) | 35 | 490 | third-party |
 | 5 | [buildwithclaude](catalog/stores/buildwithclaude.md) | 35 | 111 | third-party |
 | 6 | [claude-code-plugins-plus-skills](catalog/stores/claude-code-plugins-plus-skills.md) | 35 | 24 | third-party |
@@ -189,9 +199,9 @@ Review `git diff` before committing. `vendor` never commits or pushes; `maintain
 | --- | ---: | ---: |
 | 0-19 | 15 | 0.4% |
 | 20-39 | 691 | 17.9% |
-| 40-59 | 2793 | 72.3% |
+| 40-59 | 2797 | 72.3% |
 | 60-79 | 0 | 0.0% |
-| 80-100 | 363 | 9.4% |
+| 80-100 | 365 | 9.4% |
 
 ## How trust scoring works
 
@@ -214,7 +224,7 @@ First-party plugins (🏆) rank highest because they earn the +50 provenance bon
 - **Edition 3.x and 4.1** heirs are explicitly outside the Mall 3 compatibility claim. Upgrade to Edition v4.2.0 first.
 - **Standalone Copilot CLI / Copilot Chat users** (no Edition brain) use the plugin marketplace directly per the steps above.
 
-Governance references: [ADR-014](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/docs/adrs/ADR-014-mall-in-place-cli-native-3.0.0.md) (in-place migration), [ADR-015](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/docs/adrs/ADR-015-decouple-mall-ga-from-heir-rollout.md) (publication vs rollout).
+Public runtime and installation reference: [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core). Historical Mall governance records are maintained privately.
 
 ## For Edition heirs (advanced)
 
@@ -231,4 +241,4 @@ If you use the Alex ACT Edition brain via Copilot Chat, these Edition prompts wr
 The prompts live in Edition's `.github/prompts/` and route through `.github/instructions/mall-installation.instructions.md`.
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-08-01T20:41:40.548Z. Source of truth: `catalog/*.json`. Never hand-edit this README.*
+*Generated by `scripts/render-catalog.cjs` at 2026-08-03T19:38:40.818Z. Source of truth: `catalog/*.json`. Never hand-edit this README.*

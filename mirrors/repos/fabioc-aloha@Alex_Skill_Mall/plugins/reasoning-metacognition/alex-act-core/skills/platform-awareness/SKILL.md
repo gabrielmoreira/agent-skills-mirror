@@ -1,7 +1,7 @@
 ---
 name: platform-awareness
 description: "VS Code Copilot platform changes affecting how tools are used: deferred-tool categories with example search queries (GitHub, Azure MCP, Fabric, Microsoft docs, browser, notebook, mermaid, Bicep, Figma, Microsoft Graph), the VS Code 1.117-1.128 platform-change table (models, BYOK, sandboxing, browser tools GA, Ollama, Claude BYOK), and skill-picker surfacing behavior (github.copilot.chat.skillTool.enabled). Use when working with deferred tools, MCP servers, GitHub APIs, notebooks, browser automation, when asking about VS Code Copilot Chat platform features, or when a tool_search call needs a category suggestion."
-lastReviewed: 2026-07-31
+lastReviewed: 2026-08-03
 ---
 
 # Platform Awareness
@@ -76,7 +76,20 @@ The SKILL.md `description` field has three consumers and the slash-picker toolti
 2. **Brain QA enforcement** — where a brain-qa script exists (Alex_ACT_Steward ships one as `scripts/brain-qa.cjs`), it hard-fails on missing/empty description
 3. **Chat picker tooltip** — the surface visible to humans
 
-**Never strip the description to declutter the picker.** If picker noise is the problem, the user-level `github.copilot.chat.skillTool.enabled = false` setting is the lever.
+**Keep Agent Skills enabled, but disable the experimental generic resolver.**
+VS Code 1.131 advertises plugin-contributed skills that its generic `skill`
+tool cannot resolve. Until
+[microsoft/vscode#314772](https://github.com/microsoft/vscode/issues/314772)
+closes and a plugin-skill probe passes, use this user-level shape:
+
+```jsonc
+"chat.useAgentSkills": true,
+"github.copilot.chat.skillTool.enabled": false
+```
+
+This restores file-based loading and namespaced command fallbacks. Never strip
+the skill description as a workaround; descriptions remain the discovery
+signal.
 
 ## Related
 
@@ -88,4 +101,4 @@ The SKILL.md `description` field has three consumers and the slash-picker toolti
 
 Revise if the categories table goes stale (VS Code adds new deferred tool families not listed), if the search-query patterns produce zero results for tools that `availableDeferredTools` lists as present, if the platform-changes table drifts more than 2 VS Code releases behind current, or if VS Code renames `github.copilot.chat.skillTool.enabled`.
 
-**Skill picker section falsifier**: revise by 2026-08-24 (90 days) or sooner if any of the following fires: (a) VS Code renames or removes `github.copilot.chat.skillTool.enabled`; (b) setting the flag to `false` does not reduce skill-name entries in the slash picker; (c) the brain restructures SKILL.md frontmatter such that `description` ceases to be the agent-discovery signal. First observed contradiction wins.
+**Skill resolver section falsifier**: revise by 2026-11-03 or sooner if VS Code renames or removes `github.copilot.chat.skillTool.enabled`, closes microsoft/vscode#314772, or an enabled plugin skill succeeds through the generic `skill` tool in a clean Agent mode session. First observed contradiction wins.

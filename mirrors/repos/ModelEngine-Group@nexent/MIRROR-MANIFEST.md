@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
+Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ModelEngine-Group/nexent` — 26 default patterns, 0 followed pattern
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 24 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,8 +81,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`.cursor/skills/spec-coding/references/pseudocode-patterns.md`](.cursor/skills/spec-coding/references/pseudocode-patterns.md) |
 | 21 | ✓ | [`.cursor/skills/spec-coding/SKILL.md`](.cursor/skills/spec-coding/SKILL.md) |
 | 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 23 | ✓ | [`doc/docs/en/user-guide/skills.md`](doc/docs/en/user-guide/skills.md) |
-| 24 | ✓ | [`doc/docs/zh/user-guide/skills.md`](doc/docs/zh/user-guide/skills.md) |
 
 ---
 

@@ -23,20 +23,20 @@ user-invocable: true
 里的「结论等级」一节。**导出不进剪辑状态机**：它不改任何项目文件、不做 CAS 写入、
 不推进 stage，产出是一个新文件，重跑一次就覆盖。所以它不需要确认卡。
 
-## 0. Runtime 预检
+## 0. 就绪
 
-先读取并执行 [Runtime 预检](../../references/runtime-preflight.md)——它是预检的唯一真本：
-定义 `$PLUGIN_ROOT` / `$ENSURE` / `$RUNNING` / `$STUDIO` / `$VC` 工具变量，安装缺失的
-Runtime，并规定每种失败结果的处置（含「禁止自制替代界面」禁令）。任何非 `ready`
-结果都按它的规定停止。
+先执行 [检查更新](../chengfeng-check-updates/SKILL.md) 的「就绪检查」——skills 是否
+最新、Runtime 是否配套；**插件根**也在那里定位（本文命令里的 `<插件根>` 都代入
+那个字面路径）。只有「就绪」才继续；「需新会话」或「停」按它的处置执行
+（含「禁止自制替代界面」禁令），业务 Skill 不自带环境逻辑。
 ## 命令
 
 ```bash
-node "$VC" export <project> --dry-run --json          # 先看计划，不编码
-node "$VC" export <project> --json                    # 出成片（默认 2 倍、源帧率）
-node "$VC" export <project> --out /path/成片.mp4 --json
-node "$VC" export <project> --scale 1 --json          # 只要源尺寸
-node "$VC" export <project> --keep-work --json        # 留下中间片和逐帧 PNG，供排查
+node "<插件根>/scripts/videocut-cli.cjs" export <project> --dry-run --json          # 先看计划，不编码
+node "<插件根>/scripts/videocut-cli.cjs" export <project> --json                    # 出成片（默认 2 倍、源帧率）
+node "<插件根>/scripts/videocut-cli.cjs" export <project> --out /path/成片.mp4 --json
+node "<插件根>/scripts/videocut-cli.cjs" export <project> --scale 1 --json          # 只要源尺寸
+node "<插件根>/scripts/videocut-cli.cjs" export <project> --keep-work --json        # 留下中间片和逐帧 PNG，供排查
 ```
 
 ## 两步，别只跑第二步
@@ -87,7 +87,8 @@ ffmpeg -v error -i <文件> -map 0:a:0 -c copy -f md5 -                  # 音�
 
 ```text
 ① 换文件      input/source.mp4 和 uploads/source.mp4 是硬链接对 ——
-              rm 两个，cp 新文件到 input/，再 ln 回 uploads/
+              删两个，拷新文件到 input/，再建硬链接回 uploads/
+              （macOS 用 ln；Windows 用 New-Item -ItemType HardLink）
 ② 更新指纹    project.json 的 source.sha256 改成新文件的
 ③ 再查一处    workbench.json 的 sourceSha256 也记着源片指纹，
               剪辑预览管道校验的恰恰是这本 —— 漏了它，预览拒绝生成
@@ -95,7 +96,7 @@ ffmpeg -v error -i <文件> -map 0:a:0 -c copy -f md5 -                  # 音�
 ④ 重导        --scale 1 —— 换源就是为了原生像素，别再放大
 ```
 
-保险做法：`grep -rl <旧指纹前8位> <项目目录> --include="*.json"`，
+保险做法：用你的搜索工具在 <项目目录> 的全部 *.json 里找旧指纹前 8 位，
 列出来的每一处都要处理（缓存记录如 preview-edited/current.json 会自动重算，不用手动改）。
 
 音频不同（重新录了一遍、剪过、时长不一样）就**不是换源**，是新项目：

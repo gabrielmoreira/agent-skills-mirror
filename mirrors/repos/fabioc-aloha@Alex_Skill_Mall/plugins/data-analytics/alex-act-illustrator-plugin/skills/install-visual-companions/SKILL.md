@@ -28,7 +28,7 @@ Nine marketplace plugins compose to deliver visual-authoring workflows around Il
 
 ## The nine companion plugins
 
-Discovered and verified via the [Steward GH-APP-SUPPORT feedback loop](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/architecture/GH-APP-SUPPORT.md) (4-round A/B test on user's brain, 2026-07-31; ledger row `[GH-APP-FEEDBACK]` closure). Ownership moved from `alex-act-core`'s `install-constellation` Step 7 to this skill in Illustrator v0.6.0 (2026-08-01) so the visual-workflow shelf lives with the visual-authoring plugin that anchors it.
+Discovered and verified via the Steward GH-APP-SUPPORT feedback loop (private governance record) (4-round A/B test on user's brain, 2026-07-31; ledger row `[GH-APP-FEEDBACK]` closure). Ownership moved from `alex-act-core`'s `install-constellation` Step 7 to this skill in Illustrator v0.6.0 (2026-08-01) so the visual-workflow shelf lives with the visual-authoring plugin that anchors it.
 
 | Plugin | Marketplace | Purpose | Round-4 verified? |
 |---|---|---|---|
@@ -159,8 +159,8 @@ This skill is decorative if by 2026-11-01 (90 days):
 - The vision-loop composition pattern proves brittle in practice (Round 4 verified it on 2026-07-31, but sustained use may surface issues)
 - The move from Core Step 7 to Illustrator produces reader confusion about where the install offer lives — heirs keep asking Core to install visual companions
 
-Track outcomes in [Steward's curation-log](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/operations/ledgers/curation-log.md) tagged `[INSTALL-VISUAL-COMPANIONS]`.
+Track outcomes in Steward's curation-log (private governance record) tagged `[INSTALL-VISUAL-COMPANIONS]`.
 
 ## Origin
 
-Ownership moved from `alex-act-core`'s `install-constellation` Step 7 to this skill in Illustrator v0.6.0 (2026-08-01) per Fabio directive: *"The visual companions should be bundled with the illustrator."* Reverses the 2026-07-31 Option A (route-only) decision in [Steward's illustrator/plan.md](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/illustrator/plan.md) because "visual-workflow ownership belongs with the visual-authoring plugin" is a stronger fit than "constellation-installer offers all downstream companions".
+Ownership moved from `alex-act-core`'s `install-constellation` Step 7 to this skill in Illustrator v0.6.0 (2026-08-01) per Fabio directive: *"The visual companions should be bundled with the illustrator."* Reverses the 2026-07-31 Option A (route-only) decision in Steward's illustrator/plan.md (private governance record) because "visual-workflow ownership belongs with the visual-authoring plugin" is a stronger fit than "constellation-installer offers all downstream companions".

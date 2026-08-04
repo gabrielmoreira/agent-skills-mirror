@@ -243,6 +243,6 @@ Before hoisting, the figure count typically lives scattered across three or four
 - Figure-count hoist is skipped ≥3 times in favor of scattered constants (rule is not landing)
 - The generator-vs-SVG-patch rule is violated ≥2 times where the manual patch survived because "the generator will never re-run" (rule too soft)
 
-Track outcomes at [`operations/ledgers/curation-log.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/operations/ledgers/curation-log.md) in Alex_ACT_Steward.
+Track outcomes at [`operations/ledgers/curation-log.md`](https://github.com/fabioc-aloha/Alex_ACT_Core) in Alex_ACT_Steward.
 
 Adapted from *The Defensible Decision* (Fabio Correa) via the `dd-book-illustrator` skill in Alex_DDA. The generator pattern, contract-test discipline, and dataset-inversion procedure are book-tested across 53 shipped figures.

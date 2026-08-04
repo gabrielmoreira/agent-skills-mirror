@@ -87,7 +87,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`.claude/skills/sglang-runtime-context/SKILL.md`](.claude/skills/sglang-runtime-context/SKILL.md) |
 | 27 | ✓ | [`.claude/skills/speculative-naming/SKILL.md`](.claude/skills/speculative-naming/SKILL.md) |
 | 28 | ✓ | [`.claude/skills/write-sglang-test/SKILL.md`](.claude/skills/write-sglang-test/SKILL.md) |
-| 29 | ✓ | [`docs_new/AGENTS.md`](docs_new/AGENTS.md) |
+| 29 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 30 | ✓ | [`python/sglang/multimodal_gen/.claude/CLAUDE.md`](python/sglang/multimodal_gen/.claude/CLAUDE.md) |
 | 31 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-add-model/SKILL.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-add-model/SKILL.md) |
 | 32 | ✓ | [`python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md`](python/sglang/multimodal_gen/.claude/skills/sglang-diffusion-benchmark-profile/benchmark-and-profile.md) |

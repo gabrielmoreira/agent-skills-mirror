@@ -11,6 +11,7 @@ The directory follows a **Facade + Strategy** pattern where `index.ts` acts as t
 - **index.ts**: Main facade that wires hooks into OpenCode's lifecycle and coordinates between the job board, pending calls, task context tracking, and explicit user waits. Implements the plugin hook interface (`tool.execute.before`, `tool.execute.after`, `experimental.chat.messages.transform`, `event`) and exposes `beginUserWait()` to the `wait_for_user` tool.
 - **input-wait-tracker.ts**: Provides the single `hasInputWait()` seam used by idle reconciliation and continuation evaluation. It combines local question/permission waits with the process-global explicit user-wait latch.
 - **continuation-attempt-gate.ts**: Owns process-global continuation epochs, reservations, and explicit user waits across hook recreation. The wait is encoded as an `attempts` sentinel so pre-upgrade #856 hooks sharing the store also fail closed. Distinct external user-message identity rearms both states.
+- **continuation-model-selection.ts**: Normalizes current-session and chat-hook model shapes before forwarding runtime model and variant choices to idle continuation prompts.
 - **pending-call-tracker.ts**: Tracks in-flight task calls using a capped ordered map (`MAX_PENDING_TASK_CALLS`) to correlate launch output safely. Provides call ID generation, storage, retrieval, and cleanup for pending task invocations.
 - **task-context-tracker.ts**: Manages read context from child sessions with line-count and file caps. Stores context per task ID and provides pruning to prevent unbounded growth.
 
@@ -48,15 +49,16 @@ All modules depend on `BackgroundJobBoard` from `src/utils/background-job-board.
    - Prunes stale context during lifecycle events and status transitions
 
 4. **Message Injection (`experimental.chat.messages.transform`)**
-   - Injects a `<system-reminder>` part containing the `### Background Job Board` section into user messages for managed sessions
-   - Lists active, unreconciled, and reusable sessions
-   - Remembers injected terminal jobs to reconcile them on parent idle events
+    - Injects a `<system-reminder>` part containing the `### Background Job Board` section into user messages for managed sessions
+    - Lists active, unreconciled, and reusable sessions
+    - Remembers injected terminal jobs to reconcile them on the next request after the completion was surfaced to the model (via `reconcileConsumedTerminalJobs`)
+    - The idle timer remains a backstop for when the model ends its turn without further requests; after reconciling injected terminal results, the opt-in continuation evaluator can run in the same idle cycle under its existing guards
 
 5. **Lifecycle Events (`event`)**
-   - `session.created`: Adds new task IDs to pending managed set
-   - `session.idle` / `session.status` (idle): Reconciles injected terminal jobs for the parent session
-   - `session.status` (busy): Marks sessions as running from live session state
-   - `session.deleted`: Clears job state, child jobs, and pending call records for the session
+    - `session.created`: Adds new task IDs to pending managed set
+    - `session.idle` / `session.status` (idle): Reconciles injected terminal jobs for the parent session (backstop path), then can run the opt-in continuation evaluator in the same idle cycle under its existing guards
+    - `session.status` (busy): Marks sessions as running from live session state
+    - `session.deleted`: Clears job state, child jobs, and pending call records for the session
 
 6. **Human-in-the-loop Waits**
    - `wait_for_user` calls the facade's `beginUserWait()` only after tool validation
@@ -71,6 +73,7 @@ User task call → tool.execute.before → PendingTaskCall created → task ID r
 → tool.execute.after → BackgroundJobBoard.registerLaunch() → context extracted/added
 → Message transform → BackgroundJobBoard.formatForPrompt() injected as a system-reminder message part
 → session.idle → reconcileInjectedTerminalJobs() → BackgroundJobBoard.markReconciled()
+→ opt-in continuation evaluator (same idle cycle, existing guards)
 ```
 
 ## Integration

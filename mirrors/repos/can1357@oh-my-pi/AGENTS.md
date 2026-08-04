@@ -17,6 +17,7 @@ This repo contains multiple packages, but **`packages/coding-agent/`** is the pr
 | `packages/tui`          | Terminal UI library with differential rendering                                         |
 | `packages/natives`      | Bindings for native text/image/grep operations                                          |
 | `packages/stats`        | Local observability dashboard (`omp stats`)                                             |
+| `packages/omptype`      | ArkType-compatible schema validation with a lazy JIT runtime                            |
 | `packages/utils`        | Shared utilities (logger, streams, temp files)                                          |
 | `crates/pi-natives`     | Rust crate for performance-critical text/grep ops                                       |
 

@@ -196,12 +196,22 @@ A stagger delay is applied between job starts since during container startup it 
 | `--cases-dir PATH`        | Custom case directory                                     | none                                            |
 | `--all-cases`             | Use all task directories in the selected suite/dir        | false                                            |
 | `--case-range START-END`  | Filter by numeric case ID prefix                          | none                                             |
-| `--max-concurrent N`      | Max parallel jobs; a recommended value is 1/3 - 1/2 n CPU | 2                                                |
+| `--max-concurrent N`      | Max parallel jobs; Browserbase defaults to 1               | 2 locally, 1 with Browserbase                    |
 | `--output-dir PATH`       | Base output directory                                     | `test-output`                                    |
 | `--stagger-delay SECONDS` | Minimum gap between consecutive container starts          | 15                                               |
 | `--dry-run`               | Print job matrix without running                          | false                                            |
 | `--no-upload`             | Skip HuggingFace upload for all runs                      | false                                            |
 | `--harness NAME`          | Harness image to use                                      | `openclaw`                                       |
+| `--browser-runtime NAME`  | Browser runtime (`local`, `remote-cdp`, or `browserbase`)  | `local`                                          |
+| `--browser-cdp-url URL`   | CDP endpoint used with `--browser-runtime remote-cdp`      | none                                             |
+| `--browser-runtime-options JSON` | Provider options such as Browserbase region or proxies | none                                          |
+
+Browserbase reads `BROWSERBASE_API_KEY` from `.env.local` or the process
+environment. Its provider-hosted Session Inspector recording URL is stored in
+`browser_runtime.recording_url` in `run-meta.json`; local MP4 recording is
+thus omitted to save space and bandwidth. The signed provider CDP URL is mounted into the runtime
+container through a temporary read-only secret file and redacted from saved
+metadata.
 
 Signal handling:
 

@@ -1303,7 +1303,7 @@ notebooklm download <type> [OUTPUT_PATH] [OPTIONS]
 
 | Type | Default Extension | Description |
 |------|-------------------|-------------|
-| `audio` | `.mp3` | Audio overview (podcast) as MP3 |
+| `audio` | `.m4a` | Audio overview (podcast) — AAC audio in an MP4 container |
 | `video` | `.mp4` | Video overview |
 | `slide-deck` | `.pdf` or `.pptx` | Slide deck as PDF (default) or PowerPoint |
 | `infographic` | `.png` | Infographic image |
@@ -1326,7 +1326,7 @@ notebooklm download <type> [OUTPUT_PATH] [OPTIONS]
 **Examples:**
 ```bash
 # Download the latest podcast
-notebooklm download audio ./podcast.mp3
+notebooklm download audio ./podcast.m4a
 
 # Download all infographics
 notebooklm download infographic --all
@@ -1639,7 +1639,7 @@ notebooklm source add-research "climate change policy 2024" --mode deep --import
 notebooklm generate audio "Focus on policy solutions and future outlook" --format debate --wait
 
 # 5. Download the result
-notebooklm download audio ./climate-podcast.mp3
+notebooklm download audio ./climate-podcast.m4a
 ```
 
 ### Research → Podcast (Non-blocking with Subagent)

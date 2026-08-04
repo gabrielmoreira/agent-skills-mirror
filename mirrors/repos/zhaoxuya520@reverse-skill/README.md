@@ -247,5 +247,6 @@ Special thanks to the OLLVM deobfuscation ecosystem contributors and everyone wh
 ## Contact
 
 - **Email:** [24781737@qq.com](mailto:24781737@qq.com)
+- **QQ Group:** 942400892
 - **Discord:**
 [reverse-skill](https://discord.gg/TECd3bMRR)

@@ -12,7 +12,7 @@ cargo test --test integration                                      # integration
 cargo test --test integration --features shell-integration-tests   # + shell tests
 ```
 
-A target filter (`--lib`, `--test integration`, …) never builds `mock-stub`, so the run gets whatever sits in `target/`: a fresh tree has none and panics with "mock-stub binary not found", and a warm one runs the tests against a stale stub, whose failures reflect the code it was built from rather than the change under test. Fix: `cargo build -p mock-stub`, or use `cargo nextest run` / `cargo llvm-cov nextest`.
+Every binary the suite spawns is `wt` itself — the mock commands are the same binary linked under other names, dispatching on argv[0] (`testing::mock_stub`) — so no run can spawn missing or stale code: cargo rebuilds a package's own binaries whenever its integration tests build, under every runner and filter, and the `CARGO_BIN_EXE_wt` the harness resolves at runtime names that just-built binary; outside a cargo runner the suite panics ("CARGO_BIN_EXE_wt not set") rather than guessing a path. `cargo build --bin wt` recompiling right after a test run is the bin-only build being a separate cached unit (a different feature graph), not evidence the tests ran stale code.
 
 **Claude Code web:** `task setup-web` installs zsh/fish/nushell, `gh`, and dev tools. Install `task` first if needed: `sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b ~/bin` then `export PATH="$HOME/bin:$PATH"`. The permission tests (`test_permission_error_prevents_save`, `test_approval_prompt_permission_error`) skip automatically when running as root.
 
@@ -24,11 +24,9 @@ A target filter (`--lib`, `--test integration`, …) never builds `mock-stub`, s
 
 Five runners execute this suite — `cargo test`, `cargo nextest run`, `cargo llvm-cov nextest`, `cargo bench`, and the Nix `worktrunk-tests` derivation — and CI uses several of them on the same commit. **A test's result must not depend on which one started it.**
 
-So `.config/nextest.toml` carries no setting that changes what a test observes: no `[env]`, and no setup script exporting through `$NEXTEST_ENV`. Anything load-bearing goes where every runner sees it — the harness-latched floor in `shell_exec` for git environment (see Git Config Isolation), `.cargo/config.toml` for `COLUMNS`, the fixture for behavior.
+So `.config/nextest.toml` carries no setting that changes what a test observes: no `[env]`, no setup scripts. Anything load-bearing goes where every runner sees it — the harness-latched floor in `shell_exec` for git environment (see Git Config Isolation), `.cargo/config.toml` for `COLUMNS`, the fixture for behavior.
 
 A nextest-only knob doesn't fail loudly when another runner misses it. It yields a *different result*, and the runner that disagrees is typically `cargo llvm-cov` — whose numbers gate a merge, and whose disagreement therefore reads as a coverage regression rather than as missing configuration.
-
-The one setup script here, `build-bins`, is a build step rather than a behavior setting: it compiles the `mock-stub` helper a target-filtered run would otherwise skip, and the same gap under plain `cargo test` is handled by `default-members` (see Running the Suite). It carries its own TODO to disappear once cargo-dist supports per-binary exclusion. It is not precedent.
 
 ## Profiling the Suite
 
@@ -167,10 +165,11 @@ somewhere else.
 **Name it `WORKTRUNK_TEST_*`.** `isolate_subprocess_env` scrubs the parent
 environment by prefix — `GIT_*` and `WORKTRUNK_*` — so the prefix is what makes
 a variable hermetic; an unprefixed name inherits from whatever shell ran the
-suite. The rule covers the test-only protocol between the harness and its helper
-binaries, not just knobs `wt` itself reads: the harness sets
-`WORKTRUNK_TEST_MOCK_CONFIG_DIR` and only `mock-stub` reads it. A variable `wt`
-reads in production drops `TEST` and keeps `WORKTRUNK_`.
+suite. The rule covers the test-only protocol between the harness and the mock
+playback, not just knobs that change wt's own behavior:
+`WORKTRUNK_TEST_MOCK_CONFIG_DIR` is read only by the playback dispatch
+(`testing::mock_stub`). A variable `wt` reads in production drops `TEST` and
+keeps `WORKTRUNK_`.
 
 ## Git Config Isolation
 
@@ -389,6 +388,7 @@ Tests run once. Worktrunk configures no nextest `retries` and writes no retry lo
 
 - A racy assertion is a timing bug. Make it deterministic, per Timing Tests above: poll for the event, or drive it causally through a callback.
 - Resource pressure is a concurrency bug. Windows process creation intermittently fails with STATUS_DLL_INIT_FAILED (exit `-1073741502`) when many tests spawn git/wt children at once. Bound how many heavy tests run together; that removes the pressure instead of retrying past it.
+- A shared channel with more than one producer is an attribution bug. Counting events drained from a channel between steps only measures the step that produced them if nothing *else* can produce them: a background task's event landing after its step's drain is charged to the next step, so the assertion that fails names the wrong step and the wrong cause. The events are usually indistinguishable (skim's `Event::RunPreview` carries no payload), so identity assertions aren't available — quiesce the other producers instead, before the step sequence arms whatever they'd match. `on_update_pokes_run_preview_only_when_the_visible_pane_changes` is the worked example: `PreviewOrchestrator::wait_for_idle()` before each `note_awaiting`, so the skeleton precompute lands while no key matches it.
 - A shared namespace is a collision bug. **Never `NamedTempFile::new()`** for a file a test needs by name: `tempfile` retries a name collision only when it surfaces as `AlreadyExists`, and on Windows `create_new` against a name already held by a *directory* — or by a file in delete-pending state — comes back `PermissionDenied`, which it hands straight back to the caller. A full suite run leaves the temp directory full of `.tmpXXXXXX` entries (every `TestRepo` makes one), and under that load the call fails ~1% of the time with `Access is denied.` — a panic that has nothing to do with what the test asserts. Take a `TempDir` and give the files fixed names inside it (`worktrunk::testing::directive_files` is the pattern); a directory collision surfaces as `AlreadyExists`, which tempfile retries.
 
 **Reproducing a Windows-only flake** means reproducing its *neighbours*, not starving it: run the suspect tests in a loop on a Windows runner with a full `cargo nextest run` going alongside. Pinning the CPU instead models the wrong thing whenever the failing run's own timing was normal (compare its duration against the same test passing — nextest prints it, and the `test` job uploads `junit.xml` with every test's time). Measured both ways on the same five tests: 80 iterations under a concurrent full suite reproduced a 1-in-100 Windows failure that no local run had ever shown, while pinning all four cores with busy loops instead just pushed nearly every iteration past the 30s waits — artificial failures that say nothing about the flake.

@@ -1,4 +1,4 @@
-# Client configuration (19+ MCP clients)
+# Client configuration (22 MCP clients)
 
 Part of the Godot AI agent guide — see [AGENTS.md](../AGENTS.md) for the always-loaded rules.
 
@@ -7,7 +7,7 @@ The registry + strategy system that auto-configures MCP clients.
 
 ## Client configuration
 
-The plugin auto-configures 19+ MCP clients via a registry + strategy system in
+The plugin auto-configures 22 MCP clients via a registry + strategy system in
 `plugin/addons/godot_ai/clients/`. Read that directory for the mechanics; two
 rules are not visible in the code:
 
@@ -26,14 +26,46 @@ MCP tools `client_configure`, `client_remove`, and `client_status` expose this t
 AI clients.
 
 Client-owned attach entries carry a launch command rather than only an HTTP
-URL. The dock captures ports, canonical excluded domains, plugin version, and
-dev/user mode on the main thread, then workers resolve the same three launch
-tiers used by server startup (dev venv → exact-version uvx → matching system
-install). Package pins, command paths, ports, exclusions, and required uv
-options are verified as launch drift; **Configure all** is the repair path after
-a self-update, port change, or tool-domain change. Never silently fall back to a
-bare `uvx` command for these entries—report ERROR and leave the config untouched
-when no verified tier exists.
+URL. As of #838 every registered client is command-shape except
+`cherry_studio` (its `mcp_servers.json` path is not read by the app at all —
+servers live in an internal database — so a file-based migration would be a
+no-op; it stays URL-mode pending a deep-link design). The dock captures
+ports, canonical excluded domains, plugin version, dev/user mode, and the
+telemetry preference on the main thread, then workers resolve the same three
+launch tiers used by server startup (dev venv → exact-version uvx → matching
+system install). A disabled telemetry preference renders as
+`--disable-telemetry` on the attach argv — the env-injection path that covers
+plugin-spawned servers never runs for a client-spawned bridge or its backend
+(see docs/TELEMETRY.md). Package pins, command paths, ports, exclusions,
+telemetry, and required uv options are verified as launch drift;
+**Configure all** is the repair path after a self-update, port change,
+telemetry toggle, or tool-domain change. Never silently fall back to a bare `uvx`
+command for these entries—report ERROR and leave the config untouched when no
+verified tier exists.
+
+Per-strategy command rendering (`CommandShape` docs in `_base.gd`):
+
+- **JSON** — FLAT (`command` string + `args` array, optional
+  `command_transport_key` pin: VS Code's `type: "stdio"`, Claude Code's
+  fallback file) and COMMAND_ARRAY (OpenCode: the `command` field IS the argv
+  array, pinned `type: "local"`, env under `environment`).
+- **TOML** — COMMAND_ARRAY renders `command = "…"` + `args = […]` lines
+  (Codex, Grok).
+- **YAML** — FLAT with flow-style `args` (Hermes); `url`/`headers` are the
+  legacy keys there because Hermes infers transport from key presence.
+- **CLI** — `cli_register_template` uses the whole-element tokens
+  `{command}` / `{args...}` (Claude Code:
+  `mcp add --scope user {name} -- {command} {args...}`). Status for
+  command-shape CLI clients reads the JSON fallback file the CLI itself
+  writes — exact drift detection that `mcp list` stdout scanning cannot give.
+
+Per-client sharp edges (each is descriptor data, cited in the descriptor):
+Kilo Code stdio entries must stay TYPELESS (`type` is a legacy key — its v7
+migrator drops http-typed command entries); Zed's untagged entry enum makes
+removing `url`/`headers`/`oauth` load-bearing; VS Code's stdio schema is
+`additionalProperties: false`; gemini-cli/qwen configs are one-of
+`command`|`url`|`httpUrl`, so both URL keys are legacy; kimi_code also
+removes its legacy `transport` key and honors `$KIMI_CODE_HOME`.
 
 Command migrations deep-copy existing JSON entries before replacing pinned
 launch fields. `command_user_fields` documents known client-owned settings but

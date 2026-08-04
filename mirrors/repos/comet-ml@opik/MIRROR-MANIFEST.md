@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 86 file(s) materialized.
+Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 87 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `comet-ml/opik` — 26 default patterns, 0 followed patterns, 86 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 86 |
+| Files         | 87 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -136,15 +136,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 75 | ✓ | [`.agents/skills/write-docs/SKILL.md`](.agents/skills/write-docs/SKILL.md) |
 | 76 | ✓ | [`.agents/skills/writing-e2e-tests/conventions.md`](.agents/skills/writing-e2e-tests/conventions.md) |
 | 77 | ✓ | [`.agents/skills/writing-e2e-tests/SKILL.md`](.agents/skills/writing-e2e-tests/SKILL.md) |
-| 78 | ✓ | [`.claude/rules/sdks/python/testing.md`](.claude/rules/sdks/python/testing.md) |
-| 79 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 80 | ✓ | [`.github/instructions/python_sdk.instructions.md`](.github/instructions/python_sdk.instructions.md) |
-| 81 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 82 | ✓ | [`apps/opik-backend/AGENTS.md`](apps/opik-backend/AGENTS.md) |
-| 83 | ✓ | [`apps/opik-documentation/AGENTS.md`](apps/opik-documentation/AGENTS.md) |
-| 84 | ✓ | [`sdks/opik_optimizer/AGENTS.md`](sdks/opik_optimizer/AGENTS.md) |
-| 85 | ✓ | [`sdks/python/AGENTS.md`](sdks/python/AGENTS.md) |
-| 86 | ✓ | [`sdks/typescript/AGENTS.md`](sdks/typescript/AGENTS.md) |
+| 78 | ✓ | [`.agents/skills/writing-visual-tests/SKILL.md`](.agents/skills/writing-visual-tests/SKILL.md) |
+| 79 | ✓ | [`.claude/rules/sdks/python/testing.md`](.claude/rules/sdks/python/testing.md) |
+| 80 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 81 | ✓ | [`.github/instructions/python_sdk.instructions.md`](.github/instructions/python_sdk.instructions.md) |
+| 82 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 83 | ✓ | [`apps/opik-backend/AGENTS.md`](apps/opik-backend/AGENTS.md) |
+| 84 | ✓ | [`apps/opik-documentation/AGENTS.md`](apps/opik-documentation/AGENTS.md) |
+| 85 | ✓ | [`sdks/opik_optimizer/AGENTS.md`](sdks/opik_optimizer/AGENTS.md) |
+| 86 | ✓ | [`sdks/python/AGENTS.md`](sdks/python/AGENTS.md) |
+| 87 | ✓ | [`sdks/typescript/AGENTS.md`](sdks/typescript/AGENTS.md) |
 
 ---
 

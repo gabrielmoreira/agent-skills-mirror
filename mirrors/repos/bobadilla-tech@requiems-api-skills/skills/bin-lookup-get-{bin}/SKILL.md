@@ -36,7 +36,7 @@ Returns card metadata for the given 6–8 digit BIN prefix.
     "country_code": "US",
     "country_name": "United States",
     "prepaid": false,
-    "luhn": true,
+    "luhn_prefix_valid": true,
     "confidence": 0.92
   },
   "metadata": {
@@ -59,7 +59,7 @@ Returns card metadata for the given 6–8 digit BIN prefix.
 | `country_code` | string | ISO 3166-1 alpha-2 country code of the issuing bank (e.g. US, GB, DE) |
 | `country_name` | string | Full country name of the issuing bank |
 | `prepaid` | boolean | Whether the card is a prepaid card |
-| `luhn` | boolean | Whether the BIN prefix passes the Luhn algorithm check |
+| `luhn_prefix_valid` | boolean | Whether the BIN prefix (not a full card number) passes the Luhn algorithm check |
 | `confidence` | number | Data quality score (0.00–1.00). Multi-source confirmed records score higher. |
 
 ## Errors

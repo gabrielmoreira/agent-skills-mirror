@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed patterns, 8 file(s) materialized.
+Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed patterns, 11 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ComposioHQ/agent-orchestrator` — 26 default patterns, 1 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 8 |
+| Files         | 11 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,14 +59,17 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`backend/internal/skillassets/using-ao/references.md`](backend/internal/skillassets/using-ao/references.md) |
-| 3 | ✓ | [`backend/internal/skillassets/using-ao/SKILL.md`](backend/internal/skillassets/using-ao/SKILL.md) |
-| 4 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 5 | ✓ | [`frontend/src/landing/src/app/blog/llms.txt/route.ts`](frontend/src/landing/src/app/blog/llms.txt/route.ts) |
-| 6 | ✓ | [`frontend/src/landing/src/app/llms.txt/route.ts`](frontend/src/landing/src/app/llms.txt/route.ts) |
-| 7 | ✓ | [`skills/bug-triage/SKILL.md`](skills/bug-triage/SKILL.md) |
-| 8 | → | [`DESIGN.md`](DESIGN.md) |
+| 1 | ✓ | [`.agents/skills/ao-desktop-dev/agents/openai.yaml`](.agents/skills/ao-desktop-dev/agents/openai.yaml) |
+| 2 | ✓ | [`.agents/skills/ao-desktop-dev/SKILL.md`](.agents/skills/ao-desktop-dev/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/ao-desktop-dev/SKILL.md`](.claude/skills/ao-desktop-dev/SKILL.md) |
+| 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 5 | ✓ | [`backend/internal/skillassets/using-ao/references.md`](backend/internal/skillassets/using-ao/references.md) |
+| 6 | ✓ | [`backend/internal/skillassets/using-ao/SKILL.md`](backend/internal/skillassets/using-ao/SKILL.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`frontend/src/landing/src/app/blog/llms.txt/route.ts`](frontend/src/landing/src/app/blog/llms.txt/route.ts) |
+| 9 | ✓ | [`frontend/src/landing/src/app/llms.txt/route.ts`](frontend/src/landing/src/app/llms.txt/route.ts) |
+| 10 | ✓ | [`skills/bug-triage/SKILL.md`](skills/bug-triage/SKILL.md) |
+| 11 | → | [`DESIGN.md`](DESIGN.md) |
 
 ---
 

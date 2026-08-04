@@ -46,7 +46,7 @@ Validate and cross-check BIN, IBAN, and SWIFT identifiers in one call. Returns p
       "country_code": "US",
       "issuer": "JPMorgan Chase",
       "prepaid": false,
-      "luhn": true
+      "luhn_prefix_valid": true
     },
     "iban": {
       "valid": true,
@@ -75,7 +75,7 @@ Validate and cross-check BIN, IBAN, and SWIFT identifiers in one call. Returns p
 
 | Field | Type | Description |
 | ----- | ---- | ----------- |
-| `bin` | object or null | BIN result. Null when bin was not provided. Contains valid, scheme, card_type, card_level, country_code, issuer, prepaid, luhn. |
+| `bin` | object or null | BIN result. Null when bin was not provided. Contains valid, scheme, card_type, card_level, country_code, issuer, prepaid, luhn_prefix_valid. |
 | `iban` | object or null | IBAN result. Null when iban was not provided. Contains valid, country_code, bank_code, account_number. |
 | `swift` | object or null | SWIFT result. Null when swift was not provided. Contains valid, institution, country, branch. |
 | `consistency.ok` | boolean | True when no cross-field mismatches were detected |

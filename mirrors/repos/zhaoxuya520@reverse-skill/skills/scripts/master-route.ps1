@@ -2,7 +2,8 @@
 # reverse-skill PRIMARY router. EN + ZH keyword patterns; UTF-8 BOM source for Windows PowerShell 5.1.
 param(
     [string] $Hint = '',
-    [string] $OutDir = ''
+    [string] $OutDir = '',
+    [string] $ProjectRoot = ''
 )
 $ErrorActionPreference = 'Stop'
 
@@ -187,15 +188,13 @@ $scriptDir = $PSScriptRoot
 if (-not $scriptDir) { $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path }
 $skillsRoot = Split-Path -Parent $scriptDir
 $packageRoot = Split-Path -Parent $skillsRoot
+. (Join-Path (Join-Path $scriptDir 'lib') 'WorkRoot.ps1')
+$projectRoot = Resolve-ReverseProjectRoot -RequestedRoot $ProjectRoot
 
 if ([string]::IsNullOrWhiteSpace($OutDir)) {
     $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-    if ($packageRoot -and (Test-Path -LiteralPath $packageRoot)) {
-        $OutDir = Join-Path $packageRoot ("work\master-route-{0}" -f $stamp)
-    } else {
-        $tmpBase = if ($env:TEMP) { $env:TEMP } else { [System.IO.Path]::GetTempPath() }
-        $OutDir = Join-Path $tmpBase ("reverse-skill-route\master-route-{0}" -f $stamp)
-    }
+    $workRoot = Join-Path $projectRoot 'work'
+    $OutDir = Join-Path $workRoot ("master-route-{0}" -f $stamp)
 }
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
 
@@ -215,6 +214,7 @@ $sb = New-Object System.Text.StringBuilder
 [void]$sb.AppendLine(("- primary_label: {0}" -f $labels[$primary]))
 [void]$sb.AppendLine(("- primary_skill: skills/{0}" -f $primaryPath))
 [void]$sb.AppendLine(("- confidence: {0}" -f $confidence))
+[void]$sb.AppendLine(("- project_root: {0}" -f $projectRoot))
 $sec = New-Object System.Collections.Generic.List[string]
 foreach ($d in $uniq) {
     if ($d -ne $primary) { [void]$sec.Add(("skills/{0}" -f $map[$d])) }

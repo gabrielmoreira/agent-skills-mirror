@@ -1,39 +1,14 @@
-# gh-aw Prompt Surface
-
-This repository builds **gh-aw** (GitHub Agentic Workflows), a GitHub CLI extension for writing workflows in markdown and compiling them to GitHub Actions.
-
-## What this surface does
-
-- Converts markdown workflow specs (`.md`) into compiled lock files (`.lock.yml`)
-- Supports multiple AI engines (`copilot`, `claude`, `codex`, `custom`)
-- Integrates tools, including GitHub MCP servers and safe-output tooling
-- Provides CLI commands to compile, run, inspect, and audit workflows
-
-## Key concepts
-
-1. **Workflow compilation**: edit workflow markdown, then recompile lock files
-2. **Engine selection**: set `engine` in frontmatter to control runtime agent behavior
-3. **MCP tools**: configure GitHub/MCP toolsets in frontmatter for repository operations
-4. **Safe outputs**: workflow-safe issue/comment output paths and constraints
-
-## Representative usage examples
-
+---
+name: GitHub Agentic Workflows
+description: GitHub Agentic Workflows (`gh-aw`) is a GitHub CLI extension for writing Agentic Workflows in markdown and compiling them to GitHub Actions.
+---
+## Install
 ```bash
-# Compile markdown workflows to lock files
-gh aw compile
-
-# Run a workflow manually
-gh aw run .github/workflows/daily-skill-optimizer.md
-
-# Inspect MCP server usage in workflows
-gh aw mcp list
-gh aw mcp inspect daily-skill-optimizer
-
-# Audit a workflow run
-gh aw audit 24814681146
+gh extension install github/gh-aw
 ```
-
-## Where to learn more in this repo
-
-- `/AGENTS.md` for development/agent workflow conventions
-- `/skills/*/SKILL.md` for focused domain guidance (GitHub MCP, docs, errors, etc.)
+If failed,
+```
+curl -sL https://raw.githubusercontent.com/github/gh-aw/main/install-gh-aw.sh | bash
+```
+## Load
+Load https://github.com/github/gh-aw/blob/main/.github/skills/agentic-workflows/SKILL.md to learn how to create/update/debug/optimize Agentic Workflows.

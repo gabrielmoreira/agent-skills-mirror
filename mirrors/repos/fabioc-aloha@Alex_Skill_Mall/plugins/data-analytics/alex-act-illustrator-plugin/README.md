@@ -2,7 +2,7 @@
 
 **One plugin frames, authors, verifies, and extends visual workflows, so heirs choose the right visual surface without stitching together competing guidance.**
 
-An [Alex ACT constellation](https://github.com/fabioc-aloha/Alex_ACT_Steward) plugin for five visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, and branded SVG banners. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers nine independently maintained runtime inspection and annotation plugins, consent-gated one at a time. Maintained by [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward) and distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
+An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for five visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, and branded SVG banners. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers nine independently maintained runtime inspection and annotation plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
 > **Renamed and released.** The repository was renamed from `flint-chart-plugin` on 2026-07-29; v0.6.0 ships under `alex-act-illustrator-plugin@alex-mall`. A legacy install remains pinned under its old ID and does not migrate automatically: install the current ID, verify it, then remove the old entry.
 
@@ -17,6 +17,8 @@ Five authoring areas share the same framing gate (`chart-big-idea` Step 0.5) and
 5. **Banner — deterministic brand identity.** `svg-banner` reads the active palette and brand structure, then generates a reproducible 1200×320 SVG for READMEs, plans, notes, and release artifacts. Entry point: `/alex-act-illustrator-plugin banner`.
 
 **Install composition** is adjacent rather than a sixth authoring area: `install-visual-companions` offers the visual runtime shelf per plugin, with explicit consent and marketplace verification before installation.
+
+<!-- markdownlint-disable MD033 MD049 -->
 
 ### Demo — the heart chart, with meaning (Flint feature walkthrough)
 
@@ -90,7 +92,7 @@ Each authoring skill can still run independently when the framing or verificatio
 
 ## Brand palette
 
-The plugin follows the Alex ACT constellation brand palette. Canonical machine-readable source: [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Steward`. The tables below are a human-readable snapshot; edit the JSON file to rebrand the constellation.
+The plugin follows the Alex ACT constellation brand palette. Canonical machine-readable source: [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Steward`. The tables below are a human-readable snapshot; edit the JSON file to rebrand the constellation.
 
 **Brand identity** — banners, marks, hero surfaces (`brand.*` + `gradient[]`):
 
@@ -138,7 +140,7 @@ The plugin follows the Alex ACT constellation brand palette. Canonical machine-r
   (1.118+), **GitHub Copilot CLI**, and the **GitHub Copilot app**. Other MCP
   stdio clients (Claude Desktop, Cursor, …) should work and their config paths
   are listed below as a courtesy, but they are not verified against each release.
-- **A configured Alex ACT installation** — either an [Alex_ACT_Steward](https://github.com/fabioc-aloha/Alex_ACT_Steward)-maintained brain (primary, plugin-native lineage) or an [Alex_ACT_Edition](https://github.com/fabioc-aloha/Alex_ACT_Edition) heir (v4.1.0 compatibility line, frozen), with `.github/skills/local/` and `.github/prompts/local/` registered as discovery roots (default in both). Older Edition heirs see [`mall-installation.instructions.md`](https://github.com/fabioc-aloha/Alex_ACT_Edition/blob/main/.github/instructions/mall-installation.instructions.md) for the manual settings fallback
+- **A configured Alex ACT installation** — either [Alex_ACT_Core](https://github.com/fabioc-aloha/Alex_ACT_Core) (primary, plugin-native runtime) or an [Alex_ACT_Edition](https://github.com/fabioc-aloha/Alex_ACT_Edition) heir (v4.1.0 compatibility line, frozen), with `.github/skills/local/` and `.github/prompts/local/` registered as discovery roots (default in both). Older Edition heirs see [`mall-installation.instructions.md`](https://github.com/fabioc-aloha/Alex_ACT_Edition/blob/main/.github/instructions/mall-installation.instructions.md) for the manual settings fallback
 - **An installed browser** — _only_ if you enable the optional `playwright` server. Edge, Chrome, Firefox, or WebKit. Nothing is bundled; see [Registering the MCP servers](#registering-the-mcp-servers). Not needed on hosts with built-in browser tools (e.g. VS Code Copilot).
 - **A `REPLICATE_API_TOKEN`** — _only_ if you use the `replicate-imagery` skill for AI-generated illustrations. Get one at [replicate.com/account/api-tokens](https://replicate.com/account/api-tokens) and set it in your shell environment: `$env:REPLICATE_API_TOKEN = 'r8_...'` (PowerShell) or `export REPLICATE_API_TOKEN=r8_...` (bash). The plugin's `.vscode/mcp.json` references `${env:REPLICATE_API_TOKEN}` so the token stays out of source control. Users who never generate AI imagery pay no cost and see no failure; the `replicate` MCP server starts on demand and only fails auth if invoked without a token.
 - Recommended one-shot install of Replicate's upstream agent skills (`find-models`, `compare-models`, `run-models`, `prompt-images`, `prompt-videos`) for the substantive prompting knowledge the `replicate-imagery` skill delegates to: `npx skills add replicate/skills`
@@ -150,7 +152,7 @@ The plugin follows the Alex ACT constellation brand palette. Canonical machine-r
 - **Copilot CLI ≥ 1.0.75** — [install docs](https://docs.github.com/copilot/how-tos/set-up/install-copilot-cli). Update with `winget upgrade --id GitHub.CopilotCLI` on Windows.
 - **GitHub CLI authenticated** — `gh auth login` and confirm with `gh auth status`.
 
-Full brand-new-user walkthrough (four personas, five install stages, anti-patterns): see [`Alex_ACT_Steward/constellation/USER-EXPERIENCE.md`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/USER-EXPERIENCE.md).
+Full brand-new-user walkthrough (four personas, five install stages, anti-patterns): see [Alex ACT Core install guide](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/INSTALL.md).
 
 **Complete end-user installation**: [`INSTALL.md`](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/blob/main/INSTALL.md).
 
@@ -392,7 +394,7 @@ copilot plugin uninstall alex-act-illustrator-plugin
 
 Uninstalling the plugin removes its skills and prompts but does **not** touch the MCP server registrations you added to `.vscode/mcp.json` or `~/.copilot/mcp-config.json` — those are your host's config, not the plugin's. Remove the `flint`, `replicate`, and `playwright` entries manually if you want a fully clean slate. Remove a legacy `flint-chart-plugin` installation separately if it is still present.
 
-**Troubleshooting.** If uninstall fails with `Access is denied` on Windows (close every VS Code window first — Copilot Chat holds file handles on plugin binaries) or `Plugin "..." is not installed` while the plugin still shows in `plugin list` as `[disabled]` (zombie entry in `~/.copilot/config.json`'s `installedPlugins` array), see [`USER-EXPERIENCE.md § Optional — start from a clean slate`](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/constellation/USER-EXPERIENCE.md) for the working two-file config cleanup pattern.
+**Troubleshooting.** If uninstall fails with `Access is denied` on Windows (close every VS Code window first — Copilot Chat holds file handles on plugin binaries) or `Plugin "..." is not installed` while the plugin still shows in `plugin list` as `[disabled]` (zombie entry in `~/.copilot/config.json`'s `installedPlugins` array), see [`USER-EXPERIENCE.md § Optional — start from a clean slate`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/INSTALL.md) for the working two-file config cleanup pattern.
 
 ## Usage patterns
 
@@ -574,7 +576,7 @@ Issues and PRs welcome. See `.github/copilot-instructions.md` for the repo's con
 
 This repo pairs with:
 
-- Alex ACT Steward (plugin lineage host + maintainer): <https://github.com/fabioc-aloha/Alex_ACT_Steward>
+- Alex ACT Steward (plugin lineage host + maintainer): <https://github.com/fabioc-aloha/Alex_ACT_Core>
 - Alex ACT Edition (v4.1.0 compatibility host): <https://github.com/fabioc-aloha/Alex_ACT_Edition>
 - Alex ACT Plugin Mall (distribution): <https://github.com/fabioc-aloha/Alex_Skill_Mall>
 - Upstream flint-chart (Microsoft): <https://github.com/microsoft/flint-chart>
@@ -607,7 +609,7 @@ For live examples of every Flint `chartType` across all backends, organized by s
 **Adapted with attribution**:
 
 - `chart-vocabulary` skill — adapted from [`fabioc-aloha/Alex_ACT_Visual_Storytelling`](https://github.com/fabioc-aloha/Alex_ACT_Visual_Storytelling) v1.2.0 `visual-vocabulary` skill on 2026-07-30
-- `docs-shell` skill + `starter/` bundle — ported from [`fabioc-aloha/Alex_ACT_Steward`](https://github.com/fabioc-aloha/Alex_ACT_Steward) on 2026-07-29; this plugin is now the canonical source-of-truth (Steward + CX-Vitals + QuestionnaireFlow + airs-enterprise pull from here)
+- `docs-shell` skill + `starter/` bundle — ported from fabioc-aloha/Alex_ACT_Steward (private provenance) on 2026-07-29; this plugin is now the canonical source-of-truth (Steward + CX-Vitals + QuestionnaireFlow + airs-enterprise pull from here)
 
 **Upstream primitives** (installed separately, not vendored):
 

@@ -9,8 +9,8 @@ confidence: high
 sensitivity: public
 evidence_grade: A
 review_state: self-reviewed
-last_reviewed: 2026-08-02
-ai_provenance: GPT-5 via Codex on 2026-08-02; based on checked-in Kungfu, Buildchain, and Build Images contracts plus exact workflow evidence visible to this task; no claim is made for a render that has not passed the retained Gate
+last_reviewed: 2026-08-04
+ai_provenance: GPT-5 via Codex on 2026-08-02; updated by GPT-5 via Codex on 2026-08-03 to separate non-interactive artifact transport verification from native PTY playback after an exact Build failure, and on 2026-08-04 to split the Project Tour into two independently captured 1x episodes; based on checked-in Kungfu, Buildchain, and Build Images contracts plus exact workflow evidence visible to this task; no claim is made for a render that has not passed the retained Gate
 ---
 
 # Declarative Multi-demo Animation Pipeline
@@ -21,16 +21,24 @@ Buildchain owns capture, Gate qualification, native rendering, evidence,
 README materialization, and the update pull request.
 
 The single source of scenario intent is
-`.buildchain/auditable-demo.json`. It declares two demos:
+`.buildchain/auditable-demo.json`. It declares three demos:
 
 | Demo | Exact installed-binary argv | Bound |
 | --- | --- | --- |
 | Agent Work Lab autoplay | `kungfu agent-work-lab autoplay` | 90 seconds |
-| Guided Project Tour | `kungfu agent-work-lab project-tour --speed 0.8` | 180 seconds |
+| Guided Project Tour episode 1 | `kungfu agent-work-lab project-tour --episode 1 --speed 1` | 180 seconds |
+| Guided Project Tour episode 2 | `kungfu agent-work-lab project-tour --episode 2 --speed 1` | 180 seconds |
 
-Both commands are non-interactive, deterministic under the declared isolated
-environment, credential-free, and bounded by the `long-form` duration class.
-They are executed directly as argv, never through a shell command string.
+All three playback commands are self-driving, deterministic under the declared
+isolated environment, credential-free, and bounded by the `long-form` duration
+class. They intentionally run inside native PTYs and are executed directly as
+argv, never through a shell command string.
+
+Before upload, a distinct non-interactive transport smoke runs
+`kungfu agent-work-lab demo --json` from the copied standalone distribution and
+requires the `kungfu.agent-work-lab.report/v1` sentinel. This verifies that
+transport retained an executable product without pretending that a pipe is a
+PTY or replacing either native playback capture.
 
 ## One reusable path
 
@@ -80,7 +88,8 @@ For a multi-demo scenario, Buildchain owns one README block per demo:
 
 ```text
 kungfu:auditable-demo:agent-work-lab-autoplay
-kungfu:auditable-demo:project-tour-08x
+kungfu:auditable-demo:project-tour-episode-1
+kungfu:auditable-demo:project-tour-episode-2
 ```
 
 Qualified media is copied under the content-addressed root

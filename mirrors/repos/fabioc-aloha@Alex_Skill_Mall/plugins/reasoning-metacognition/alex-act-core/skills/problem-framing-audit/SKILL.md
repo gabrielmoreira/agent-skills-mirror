@@ -100,7 +100,7 @@ Track the next 20 non-trivial sessions in which this skill activates. In what pe
 
 ## Background Reading
 
-- [CRITICAL-THINKING-FAILURE-MODES](https://github.com/fabioc-aloha/Alex_ACT_Steward/blob/main/architecture/act/CRITICAL-THINKING-FAILURE-MODES.md) — the master failure mode and step-back protocol
+- [CRITICAL-THINKING-FAILURE-MODES](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/skills/problem-framing-audit/SKILL.md) — the master failure mode and step-back protocol
 - Russo, J. E., & Schoemaker, P. J. H. (2002). *Winning Decisions*. Doubleday.
 - Mitroff, I. I., & Featheringham, T. R. (1974). On systemic problem solving and the error of the third kind. *Behavioral Science*, 19(6).
 - Polya, G. (1945). *How to Solve It*. Princeton University Press.

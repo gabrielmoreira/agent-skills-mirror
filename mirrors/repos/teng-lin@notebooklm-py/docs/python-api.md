@@ -36,7 +36,7 @@ async def main():
         # Generate a podcast
         status = await client.artifacts.generate_audio(nb.id)
         await client.artifacts.wait_for_completion(nb.id, status.task_id)
-        output_path = await client.artifacts.download_audio(nb.id, "podcast.mp3")
+        output_path = await client.artifacts.download_audio(nb.id, "podcast.m4a")
         print(f"Audio saved to: {output_path}")
 
 asyncio.run(main())
@@ -1393,7 +1393,7 @@ except ArtifactTimeoutError as exc:
     raise
 
 if final.is_complete:
-    path = await client.artifacts.download_audio(nb_id, "podcast.mp3")
+    path = await client.artifacts.download_audio(nb_id, "podcast.m4a")
     print(f"Saved to: {path}")
 else:
     print(f"Failed or timed out: {final.status}")

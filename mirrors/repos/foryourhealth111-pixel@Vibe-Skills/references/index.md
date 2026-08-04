@@ -1,6 +1,6 @@
 # VCO References Index
 
-`references/` 是长期 contracts、registries、ledgers 和 playbooks 的入口，不是 operator console。
+`references/` 是长期 contracts、registries、ledgers 和 playbooks 的入口。Operator 状态由 CI、Release 和本地 `check` 提供。
 
 ## Start Here
 
@@ -39,13 +39,12 @@
 
 ## Adjacent Surfaces
 
-这些入口保持可达，但不属于 `references/` spine：
+以下入口位于 `references/` spine 之外：
 
-- [`../docs/status/current-state.md`](../docs/status/current-state.md)
-- [`../docs/status/non-regression-proof-bundle.md`](../docs/status/non-regression-proof-bundle.md)
+- [当前 CI 与 proof](https://github.com/foryourhealth111-pixel/Vibe-Skills/actions/workflows/vco-gates.yml)
+- [最新 GitHub Release](https://github.com/foryourhealth111-pixel/Vibe-Skills/releases/latest)
 - [`../scripts/verify/gate-family-index.md`](../scripts/verify/gate-family-index.md)
-- [`../docs/plans/README.md`](../docs/plans/README.md)
-- [`../docs/requirements/README.md`](../docs/requirements/README.md)
+- [`../config/live-document-contract.json`](../config/live-document-contract.json)
 
 ## Reading Order
 
@@ -59,4 +58,4 @@
 - 新增长期 reference 资产必须更新本页。
 - time-bound execution 正文不进 `references/`；若某批次材料不再承担契约作用，应优先退出 GitHub 可见 `docs/` 面，而不是长期堆在 `references/`。
 - reference 资产新增后至少补一条 docs 或 gate 锚点。
-- 稳定路径如果因为历史长尾而需要瘦身，应优先拆成 current + archive volume，而不是让 stable path 消失。
+- 历史长尾需要瘦身时，稳定入口保留在 registry，历史材料进入 release artifact 或 git history。

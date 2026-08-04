@@ -179,7 +179,7 @@ order food, book travel, apply for jobs, write reviews, manage projects.<br/>
 </table>
 
 ## News
-
+- **[2026.08.03]** - Added support for using [Browserbase](https://www.browserbase.com) as a remote browser runtime for ClawBench.
 - **[2026.07.30]** — v0.8.0 released: Gemini-as-judge, random-click baseline harness, EdgeBench/SForge adapter, remote-browser CDP support. [Details →](CHANGELOG.md)
 - **[2026.07.25]** — 🏆 Our paper has been accepted by [COLM 2026 WAB](https://www.aiagentbehavior.com/).
 - **[2026.06.22]** — v0.7.0 released: Harbor-adapter task export; action recording moved into the CDP server. [Details →](CHANGELOG.md)
@@ -365,11 +365,31 @@ Once the container starts, the script prints a **noVNC URL** (e.g. `http://local
 
 Results land in `./test-output/<model>/<harness>-<case>-<model>-<timestamp>/` with the full five-layer recording. The default harness is `openclaw`; pass `--harness opencode` to use [opencode](https://opencode.ai), `--harness claude-code` to use [Claude Code](https://docs.anthropic.com/en/docs/claude-code), `--harness claude-code-chrome-extension` to use Claude Code + the [Claude in Chrome](https://code.claude.com/docs/en/chrome) extension (Microsoft Edge + local bridge, bypass stack so any LiteLLM-routed provider works), `--harness codex` to use [OpenAI Codex CLI](https://github.com/openai/codex), `--harness claw-code` to use [claw-code](https://github.com/ultraworkers/claw-code), `--harness browser-use` to use [browser-use](https://github.com/browser-use/browser-use) (Python framework, routed via LiteLLM), `--harness hermes` to use [Hermes Agent](https://github.com/NousResearch/hermes-agent) with native browser tools attached to ClawBench Chrome via CDP, or `--harness pi` to use [Pi](https://pi.dev/) with pinned [pi-browser-harness](https://pi.dev/packages/pi-browser-harness) browser tools attached to the same ClawBench Chrome CDP endpoint.
 
+To use a managed Browserbase browser, put the key in `.env.local` and select the
+runtime on a single or batch run:
+
+```dotenv
+BROWSERBASE_API_KEY=bb_...
+```
+
+```bash
+uv run clawbench-run test-cases/v1/<case> your-model \
+  --browser-runtime browserbase
+
+uv run clawbench-batch --models your-model --all-cases \
+  --browser-runtime browserbase
+```
+
+Browserbase runs reuse the same CDP action capture, screenshots, HTTP logging,
+and request interception as local runs. The provider records the video; the
+Browserbase Session Inspector URL is stored as `browser_runtime.recording_url`
+in `run-meta.json`, so a local `recording.mp4` is not required. Provider options such as region or proxy can be passed as JSON, for example `--browser-runtime-options '{"region":"us-west-2","proxies":true}'`.
+
 **(c) Evaluate a model across a whole corpus** — one command runs every task in a suite:
 ```bash
 clawbench-batch --models your-model --cases-suite v2 --all-cases
 ```
-`your-model` is a key you configured in step 1; `--cases-suite v2` runs the full V2 corpus (swap in `v1-lite` for the 20-task subset). Add `--max-concurrent N` to run tasks in parallel (default 2) and `--harness <name>` to pick an agent (default `openclaw`). Each task is intercepted and scored by the `deepseek-v4-pro` judge you set up in step 1 — pass `--no-judge` to skip scoring. A `batch-summary.json` plus per-run recordings land under `./test-output/`. From a source checkout, prefix the command with `uv run`. See [Reproduce the leaderboard](#-reproduce-the-leaderboard) for the end-to-end scoring workflow.
+`your-model` is a key you configured in step 1; `--cases-suite v2` runs the full V2 corpus (swap in `v1-lite` for the 20-task subset). Add `--max-concurrent N` to run tasks in parallel (default 2 locally and 1 with Browserbase) and `--harness <name>` to pick an agent (default `openclaw`). Each task is intercepted and scored by the `deepseek-v4-pro` judge you set up in step 1 — pass `--no-judge` to skip scoring. A `batch-summary.json` plus per-run recordings land under `./test-output/`. From a source checkout, prefix the command with `uv run`. See [Reproduce the leaderboard](#-reproduce-the-leaderboard) for the end-to-end scoring workflow.
 
 **(d) Drive the browser yourself via noVNC** — produces a human reference run:
 ```bash
@@ -741,6 +761,9 @@ ClawBench's niche: **live consumer websites, everyday tasks, end-to-end recordin
 # Single run:
 uv run clawbench-run test-cases/v1/001-daily-life-food-uber-eats claude-sonnet-4-6
 
+# Single run with a Browserbase browser (key from .env.local):
+uv run clawbench-run test-cases/v1/001-daily-life-food-uber-eats claude-sonnet-4-6 --browser-runtime browserbase
+
 # Human mode (you control the browser via noVNC):
 uv run clawbench-run test-cases/v1/001-daily-life-food-uber-eats --human
 
@@ -803,8 +826,8 @@ Each session records five layers of synchronized data under `/data/`:
 
 | Layer              | File                   | Description                                                     |
 | ------------------ | ---------------------- | --------------------------------------------------------------- |
-| Session replay     | `recording.mp4`        | Full session video (H.264, 15fps)                               |
-| Action screenshots | `screenshots/*.png`    | Timestamped PNG per browser action                              |
+| Session replay     | `recording.mp4` or `run-meta.json` recording URL | Local H.264 video or Browserbase Session Inspector replay |
+| Action screenshots | `screenshots/*.png`    | Throttled timestamped PNGs captured after browser actions       |
 | Browser actions    | `actions.jsonl`        | Every DOM event (click, keydown, input, pageLoad, scroll, etc.) |
 | HTTP traffic       | `requests.jsonl`       | Every HTTP request with headers, body, and query params         |
 | Agent messages     | `agent-messages.jsonl` | Full agent conversation transcript (thinking, text, tool calls) |

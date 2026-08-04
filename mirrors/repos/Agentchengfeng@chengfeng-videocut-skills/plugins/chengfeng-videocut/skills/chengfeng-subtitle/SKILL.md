@@ -40,17 +40,17 @@ user-invocable: true
 标点、去掉的口头禅、专名的正式写法，这些本来就该不一样。逼一份字符串同时干两件事，
 字幕就永远加不了逗号。
 
-## 0. Runtime 预检
+## 0. 就绪
 
-先读取并执行 [Runtime 预检](../../references/runtime-preflight.md)——它是预检的唯一真本：
-定义 `$PLUGIN_ROOT` / `$ENSURE` / `$RUNNING` / `$STUDIO` / `$VC` 工具变量，安装缺失的
-Runtime，并规定每种失败结果的处置（含「禁止自制替代界面」禁令）。任何非 `ready`
-结果都按它的规定停止。
+先执行 [检查更新](../chengfeng-check-updates/SKILL.md) 的「就绪检查」——skills 是否
+最新、Runtime 是否配套；**插件根**也在那里定位（本文命令里的 `<插件根>` 都代入
+那个字面路径）。只有「就绪」才继续；「需新会话」或「停」按它的处置执行
+（含「禁止自制替代界面」禁令），业务 Skill 不自带环境逻辑。
 ## 1. 入口断言
 
 ```bash
-node "$RUNNING" --json
-node "$VC" inspect "$jobDir" --json
+node "<插件根>/scripts/ensure-running.cjs" --json
+node "<插件根>/scripts/videocut-cli.cjs" inspect "<项目目录>" --json
 ```
 
 | 断言 | 不成立时 |
@@ -79,10 +79,10 @@ node "$VC" inspect "$jobDir" --json
 
 ```bash
 # 词典：这个说话人的固定写法，不需要证据
-node "$VC" transcript dictionary "$jobDir" --dictionary "$DICT" --json
+node "<插件根>/scripts/videocut-cli.cjs" transcript dictionary "<项目目录>" --dictionary "<插件根>/references/ai-term-dictionary.md" --json
 
 # 文稿：作者手上有稿子时才做，逐处要证据
-node "$VC" transcript align "$jobDir" --script "$scriptPath" --json
+node "<插件根>/scripts/videocut-cli.cjs" transcript align "<项目目录>" --script "<口播稿文件>" --json
 ```
 
 ```text
@@ -105,7 +105,7 @@ node "$VC" transcript align "$jobDir" --script "$scriptPath" --json
 `transcript align` 只报不改。要应用它的提案，把 `corrections` 转成 `[{wordId, text}]` 再跑：
 
 ```bash
-node "$VC" transcript correct "$jobDir" --file "$correctionsPath" --json
+node "<插件根>/scripts/videocut-cli.cjs" transcript correct "<项目目录>" --file "<修正文件>" --json
 ```
 
 改完转录，**引用了这些词的字幕屏会在同一步里跟着改写**，回报 `subtitles.updated`。
@@ -117,7 +117,7 @@ node "$VC" transcript correct "$jobDir" --file "$correctionsPath" --json
 ## 3. 分屏
 
 ```bash
-node "$VC" subtitle build "$jobDir" --json
+node "<插件根>/scripts/videocut-cli.cjs" subtitle build "<项目目录>" --json
 ```
 
 四条规则，按顺序：
@@ -167,7 +167,7 @@ transcriptMoved    转录已经不是当初那一份了
 ## 4. 复核：在 Studio 里逐屏看
 
 ```bash
-node "$VC" open "$jobDir" --json
+node "<插件根>/scripts/videocut-cli.cjs" open "<项目目录>" --json
 ```
 
 打开后切到左栏的**「字幕」标签页**。一行一屏：左边序号和时间，右边就是字，点进去直接改。
