@@ -75,7 +75,8 @@ egress rules where the direct origin is blocked but NewsNow is not).
           └── finpulse_errors       (9 error_kind classifier)
 ```
 
-Every LLM call goes through the host `api.get_brain()` — we do **not**
+Every LLM call goes through the safe host `api.get_llm()` facade — plugins
+never receive model credentials, and a selected endpoint never silently falls back. We do **not**
 ship an IM SDK, we call `api.send_message(channel, chat_id, content)`.
 Scheduled tasks run on the host `TaskScheduler`; the plugin only
 registers a match predicate for `fin-pulse:` prefixed tasks.
@@ -129,8 +130,8 @@ Open the plugin UI → **Settings** tab, in order:
    Hot Radar) open an in-page dialog that writes straight into the host
    Agent Scheduler. The row list below supports **Run now / Pause / Resume
    / Delete** without leaving the plugin — see §6 for the REST surface.
-4. **AI Brain** — fin-pulse reuses the host LLM factory; configure
-   provider / model / temperature in OpenAkita → Settings → Models.
+4. **OpenAkita text model** — choose “follow current” or strictly lock one
+   configured endpoint from the plugin settings page.
 
 ---
 

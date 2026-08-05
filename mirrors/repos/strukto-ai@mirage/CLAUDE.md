@@ -46,6 +46,35 @@ Command history is a recording, not a command log. A hidden `Observer` records e
 - **Snapshots.** History is captured as events into snapshot state and restored on load.
 - **Format is GNU bash, not zsh** (`#<epoch>`, not `: <ts>:<dur>;<cmd>`).
 
+## CLIs
+
+An installed CLI is a typed program tree (`CLISpec`) bound to a head word on the
+workspace. It is **dispatched by name, never by operand path**, and consults no
+mount: the VFS is how an agent discovers state, the CLI is how it acts.
+
+- **The lifecycle is host-side only.** `register_cli`/`unregister_cli`
+  (`workspace.py`, `workspace.ts`) are called by the embedding program, never by
+  a line the agent types, and there is no `install`/`uninstall` shell builtin.
+  Keep it that way: an agent must not be able to take away the tools it was
+  given. Shadowing is the one thing it can do (define a shell function with the
+  same name), which is bash's own rule, reversible with `unset -f`, bypassable
+  with `command <name>`, and visible in `type -a`. A deployment that needs a head
+  word pinned enforces that in the policy layer's `pre_execute`, not in the CLI
+  registry.
+- **Precedence is written down once**, in `_layers`/`layers`
+  (`workspace/route/route.py`, `route.ts`): shell builtin, namespace command,
+  function, CLI, mount. `route` takes the first match (the winner, which is what
+  dispatch runs) and `route_all`/`routeAll` takes all of them (every layer, which
+  is what `type -a` prints). The generator is lazy so the winner still costs one
+  probe. Do not add a second precedence list.
+- **Discoverability is part of shipping a CLI**, and it comes from the spec, so
+  it works for a user's own registered CLI exactly as for a builtin one. `man <cli>` and `man <cli> <verb>...` render through `node_help`/`nodeHelp`, the
+  same renderer `--help` uses, so a manual cannot drift from the program; bare
+  `man` lists installs under `# clis`. `type` reports an installed CLI as its own
+  kind (`type -t` prints `cli`, a sixth word beside bash's five, because reusing
+  `file` would promise `type -p` a path that does not exist). `which` prints the
+  bare name, never a fabricated path.
+
 ## Symlinks
 
 Symlinks are **namespace state, not backend state**. The `Namespace` node table
@@ -238,6 +267,7 @@ Invoke the venv's `pre-commit` binary directly (not via `uv --directory python r
 
 - **Shell-style commands** (cat, grep, du, find, head, tail, wc, ls, etc.) follow POSIX / Unix coreutils semantics as much as possible; match BSD/GNU behavior and document any deliberate divergence. Pin exact GNU behavior with docker (`debian:stable-slim`) before changing command semantics.
 - **`find -size` is strict and rounds up.** GNU `+N` keeps `ceil(size/unit) > N`, `-N` keeps `ceil(size/unit) < N`, bare `N` keeps `ceil(size/unit) == N` (so `-size -1k` matches only empty files and `+0c` excludes empty ones). The parsers (`_parse_size` / `parseSize`) translate this once into inclusive byte bounds; backend cores just keep `min_size <= size <= max_size` and must not re-interpret the spec. Deliberate divergence: directories count as size 0 (GNU compares the inode size, e.g. 4096 on ext4), which matches what `find` sees over a mirage FUSE mount.
+- **`find`'s row for the start point is the generic's, not the backend's.** GNU lists a start point before descending into it, and every native find op used to decide that row from its own listing, which is only a proxy for existence: an object store holding no keys under the prefix and no directory marker reported nothing at all for a directory `test -d` and `tree` both saw, and ssh called every directory non-empty so `-empty` never matched one. The generic stats the start point through the dispatcher (`resolve_start`, which asks both channels a backend can answer on via `resolve_path_stat`, since on a prefix store a directory is the set of keys under it rather than an object), takes one readdir for `-empty` (`dir_empty`, wired by the builder), and then replaces whatever row the backend produced for it (`with_root_row` / `withRootRow`). A native find op may still emit the start path and they all do, because it is the answer when no dispatcher probe is wired (a command constructed outside a workspace); with one wired it is discarded. A new backend only has to report descendants.
 - **`du` has one backend contract: `size` and `entries`.** Each backend exposes `core/<backend>/du/size.py` (recursive byte total for one path) and `core/<backend>/du/entries.py` (per-file breakdown), wired as `du_size` / `du_entries` on the adapter. `entries` returns `(entries, total)` where entries are **leaf files only, in mount-relative path space, with no summary row**; the generic lifts them onto virtual paths (`to_virtual`, via `mount_prefix_of`) and re-spells them as the operand was typed (`respell_raw`). A backend that returns backend-key paths, or appends its own roll-up row, makes two mounts holding the same filename render identical lines. Do not reintroduce a second shape; the old flat-list `du_multi` contract is gone.
 - **`du` prints a line per directory, derived not walked.** GNU prints one line per directory with its recursive total, post-order (children before parents), plus one per file under `-a`. Backends only ever report leaf files, so the generic derives the directory rows by summing each leaf into every ancestor (`rollup`, same name both languages), then emits post-order with siblings sorted. Two deliberate divergences: GNU orders siblings by `readdir` (filesystem-dependent), mirage sorts them; and an empty directory is invisible to mirage because no leaf points at it. Sizes are bytes, not GNU's 1 KiB blocks, since an object store has no block size. `--max-depth` prunes only what is printed, never the walk, because every printed total still covers the whole subtree. Verify changes with the differential harness against `debian:stable-slim`: paths, exit codes and stderr must match GNU exactly.
 - **`du` usage errors exit 1, not 2.** `du` is absent from `USAGE_EXIT`, which is correct: GNU du exits 1 for `-s` with `-a` ("cannot both summarize and show all entries"), `-s` with `--max-depth` ("warning: summarizing conflicts with --max-depth=N"), and a bad depth ("invalid maximum depth 'x'"). All three are raised by `parse_flags` / `parseDuFlags` *before* any I/O, mirroring GNU's option-parse order: the depth is parsed as the option is read, so a bad depth wins over the conflict checks. An unreadable operand is not a usage error: GNU names it (`du: cannot access 'x': No such file or directory`), prints every other operand, and exits 1, and still prints `0 total` under `-c` when every operand failed. With no operand at all, du measures the working directory; it never says "missing operand".

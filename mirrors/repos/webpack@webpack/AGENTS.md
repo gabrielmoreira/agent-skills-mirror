@@ -42,7 +42,7 @@ All commands are defined in `package.json` `scripts`.
 
 Never invoke `yarn jest`/`npx jest` directly: the required `--experimental-vm-modules` node flag lives only in the `test:base` wrapper, and bare jest crashes ESM/test262 suites. See [TESTING_DOCS.md](TESTING_DOCS.md) for how to run a single case.
 
-**CI checks that must pass:** `lint`, `unit`, `basic`, `integration` (Node 10→26 × ubuntu/macOS/windows, sharded `a`/`b`), `test262`, plus **CodSpeed** (performance + memory mode) and a **Bun** job. CodSpeed memory mode is sensitive to fixture size, and the Bun job runs under `--smol` and surfaces OOMs the Node suites don't — watch both when touching hot paths or large test fixtures.
+**CI must come back green in full** — see [After opening the PR](#after-opening-the-pr--every-check-ends-green); the jobs are defined in `.github/workflows/`, which is the list to read rather than one memorized here. Two of them behave unlike the rest and are worth knowing about: the benchmark job's memory mode is sensitive to fixture size and to which cases share its process, and the Bun job runs under `--smol` and surfaces OOMs the Node suites don't. Watch both when touching hot paths or large test fixtures.
 
 ## Architecture
 
@@ -134,8 +134,7 @@ The directory listings below are the canonical map of the repository. **Whenever
 
 Skipping any layer silently breaks the option. After editing schemas, run `yarn fix:special` so `lib/` code can reference the updated types. If you added or modified options, consider updating `examples/` and run `yarn build:examples` to verify.
 
-> [!REQUIRED]
-> **Never hand-edit what `yarn fix:special` generates**, even when it also reformats files you did not touch. That churn means your local toolchain resolved differently from CI's — the fix is to commit only your own hunks, then **verify them against the generator** (re-run it and diff), never to hand-write what you think it would emit. A hand-written JSDoc block that omits the `@since` line the schema's `added` keyword produces, or a `types.d.ts` member the JSDoc implies, fails `lint` with `… need to be updated` and nothing else.
+> [!REQUIRED] > **Never hand-edit what `yarn fix:special` generates**, even when it also reformats files you did not touch. That churn means your local toolchain resolved differently from CI's — the fix is to commit only your own hunks, then **verify them against the generator** (re-run it and diff), never to hand-write what you think it would emit. A hand-written JSDoc block that omits the `@since` line the schema's `added` keyword produces, or a `types.d.ts` member the JSDoc implies, fails `lint` with `… need to be updated` and nothing else.
 
 **A nested minifier needs the same options as the outer one.** `lib/html/htmlMinify.js` runs the CSS minifier over an inline `<style>` and every `style=""`, so `output.environment` has to be handed to both — otherwise a `.css` asset and the same declaration inline disagree about what the target can read. Any future HTML-minifies-JS hook has the same obligation.
 
@@ -200,16 +199,44 @@ For directory structure, naming, and how to run a single case, see [TESTING_DOCS
 
 **Prefer integration tests over unit tests.** Cover behavior with an integration case (`configCases/`, `watchCases/`, `hotCases/`, `statsCases/`, …) that drives a real `webpack()` build whenever the behavior can be exercised that way — they catch real-world regressions a mocked unit test misses. Reach for a `*.unittest.js` only for pure helpers/utilities that a build can't naturally reach.
 
+**Snapshot printed code; assert everything else.** When what a test checks _is_ generated output — emitted bundles, minified CSS / HTML, serialized ASTs, stats text — use `toMatchSnapshot()` rather than hand-written `expect(...).toBe(...)` on fragments of it. A hand-written expectation over printed code pins one substring and silently ignores every other byte the printer emits, so a regression next to it passes; a snapshot shows the whole diff and is reviewed as one. The reverse holds for everything that is not printed output — behavior, invariants, equivalences, error paths — where an explicit `expect` states the contract and a snapshot only records whatever happened to be true.
+
+Two things follow. Never snapshot a value a test cannot produce on every machine: a snapshot that is skipped when an optional tool (a browser, a native binary) is absent is reported as obsolete and fails the run there. And keep control characters out of a snapshot — one NUL makes git treat the file as binary and stop showing its diff, which is the only reason the snapshot exists.
+
 Run targeted tests — `yarn test:base --testPathPatterns="<pattern>"` or `yarn test:base -t "<name>"`. Never invoke `yarn jest`/`npx jest` directly: the required `--experimental-vm-modules` node flag lives only in the `test:base` wrapper, and bare jest crashes ESM/test262 suites. Don't run `yarn test` unless asked. When updating snapshots (`yarn test:base -u`), eyeball the diff first.
 
 **Run only tests specific to your change — leave the broad suites to CI.** Pick the cases that cover the touched code (`--testPathPatterns` / `--testNamePattern`) instead of sweeping whole suites.
 
-> [!REQUIRED]
-> **Two kinds of change are exempt, because "the tests for my change" is the wrong frame for them.** Touch `schemas/**`, `lib/config/**`, or anything `yarn fix:special` generates, and the blast radius is the whole option surface, not the feature: run `yarn lint` and `yarn test:basic` in full before pushing. `basic` is also what gates the `integration` matrix in `.github/workflows/test.yml` (`integration: needs: basic`), so a red `basic` stops every integration upload and leaves Codecov reporting a patch coverage computed from `unit` alone — a failure that reads like a coverage problem but is not one.
+> [!REQUIRED] > **Two kinds of change are exempt, because "the tests for my change" is the wrong frame for them.** Touch `schemas/**`, `lib/config/**`, or anything `yarn fix:special` generates, and the blast radius is the whole option surface, not the feature: run `yarn lint` and `yarn test:basic` in full before pushing. `basic` is also what gates the `integration` matrix in `.github/workflows/test.yml` (`integration: needs: basic`), so a red `basic` stops every integration upload and leaves the coverage report computing patch coverage from the unit suite alone — a failure that reads like a coverage problem but is not one.
 
 `yarn lint` is a `&&` chain, so the first stage that trips on sandbox drift hides every stage after it. When `lint:special` reports declarations "need to be updated" that `main` reports too, do not stop there — run the rest by hand (`lint:types`, `lint:types-test`, `lint:types-benchmark`, `lint:types-module-test`, `lint:types-hot`, `fmt:check`, `lint:spellcheck`). `lint:types-test` is the one that catches `tsc` errors in `test/`, and skipping it is how a red `lint` survives a "lint passed locally".
 
 Also note that a local failure is only yours if it does not reproduce on `main`. Check with a worktree (`git worktree add <dir> origin/main`) before spending time on it: sandboxes routinely fail `Cli createColors`, `profiling-plugin` and the `many-replacements` cases for environment reasons, and the generated-declaration check flags files CI is perfectly happy with. In particular, do **not** run the spec-conformance suites (`yarn test:test262` / `yarn test:html5lib` / `yarn test:css-parsing`) as a routine local verification step — `test262` alone takes tens of minutes — and don't run the full `test:integration` matrix locally. CI runs all of them on every push; locally, run the `configCases/` relevant to your change.
+
+This is a hard rule, not a preference: a broad local sweep costs many minutes, and on a busy machine it manufactures timeout failures that look like regressions but reproduce nowhere else. Narrow the pattern until the run is seconds. Two habits keep this honest:
+
+- **Never read a pass/fail verdict through a pipe.** `yarn test:base … | grep …` discards jest's exit code, so a red run reads as green. Check the exit status, or read the `Tests:` summary line directly.
+- **Never attribute a failure without a base run.** Before assuming a failing case is yours, re-run that exact case on the unmodified files. Most surprises are pre-existing or contention flakes.
+
+### Verifying a performance or memory change
+
+> [!REQUIRED]
+
+A perf/memory claim needs evidence, and the cheap kinds are the trustworthy ones. Prefer, in this order:
+
+1. **Counting** — call counts, allocation counts, retained object counts. Deterministic; run it once.
+2. **CPU-profile attribution** — `node --cpu-prof`, then sum self time per bucket. Robust to a loaded machine.
+3. **Retained heap** — `node --expose-gc`, GC several times, read `v8.getHeapStatistics().used_heap_size`.
+4. **Wall/CPU timing** — last resort. Interleave the arms in one process, report `n` and dispersion, and treat a difference smaller than the run-to-run spread as no result.
+
+`FILTER="<case-name>" yarn benchmark` drives the repo's own cases; `test/benchmarkCases/` is the fixture set.
+
+Pitfalls that have produced wrong conclusions here:
+
+- **Micro-benchmarks of one function lie.** V8's escape analysis deletes non-escaping allocations and the compilation cache hides repeated `new Function` cost. Measure inside a real build.
+- **Changing async structure is not neutral.** Adding a `process.nextTick`/`setImmediate`, or collapsing callbacks, reorders module processing and drags order-dependent work with it. Prove the order is unchanged before believing the delta.
+- **Pick a fixture that actually emits.** `three-long` tree-shakes to a 0-byte bundle in production, so it skips codegen/render/minify entirely and inflates any front-end phase's share. Corroborate on a case that emits code.
+- **Verify semantics every time** — module count, hash of the emitted files on disk, and errors/warnings counts must be unchanged. Comparing two empty outputs proves nothing.
 
 **Run one integration case** by name (`<category> <case-name>`, e.g. `css basic`):
 
@@ -221,7 +248,7 @@ Swap `ConfigTestCases` for `StatsTestCases`, `HotTestCases`, `WatchTestCases`, �
 
 **Writing a `configCases/` case:** a case is a mini project — `index.js` (runs assertions; a thrown error fails the test) plus `webpack.config.js`. The emitted bundle is actually executed, so it must run. Optional per-case files: `errors.js` / `warnings.js` export arrays of matchers for expected build diagnostics (without them, any error/warning fails the case); `test.filter.js` returns `false` to skip the case (e.g. gate by Node version); `test.config.js` customizes the run (e.g. `findBundle`).
 
-**Cover every line you add or change.** A commit must not lower coverage: each new branch, fast path, and fallback needs a test that exercises it (Codecov enforces this on the patch, target 90%+). Cover new branches with `configCases/` whenever a real build can reach them; fall back to a focused `*.unittest.js` only when a config case can't reasonably drive the branch (or a build-level test adds nothing) — e.g. tokenizer cold-path fallbacks, where each branch (fast and delegated) still needs exercising. Check `yarn cover:unit` locally, or the PR's Codecov "patch" report, and add cases until no changed line is missing.
+**Cover every line you add or change.** A commit must not lower coverage: each new branch, fast path, and fallback needs a test that exercises it (CI's coverage report enforces this on the patch, target 90%+). Cover new branches with `configCases/` whenever a real build can reach them; fall back to a focused `*.unittest.js` only when a config case can't reasonably drive the branch (or a build-level test adds nothing) — e.g. tokenizer cold-path fallbacks, where each branch (fast and delegated) still needs exercising. Check `yarn cover:unit` locally, or the PR's "patch" coverage report, and add cases until no changed line is missing.
 
 **Don't lower type coverage either.** webpack tracks how much of `lib/` is precisely typed; CI collects it (`yarn types:cover:report`) and reports the delta on the PR. Keep it from dropping — prefer real types over `EXPECTED_ANY` (see [Type annotations](#type-annotations)), and run `yarn types:cover` locally if you widened any annotations.
 
@@ -284,7 +311,7 @@ If the task harness pre-created a branch with a different prefix, rename it befo
 
 > [!REQUIRED]
 
-**Author identity (CLA):** EasyCLA matches the commit author email to a GitHub account with a signed CLA. Set the author to the requester's GitHub account — never to a bot identity. Resolve in this order:
+**Author identity (CLA):** the CLA check matches the commit author email to a GitHub account with a signed CLA. Set the author to the requester's GitHub account — never to a bot identity. Resolve in this order:
 
 1. An identity the user explicitly states in the task.
 2. The requester's GitHub login + their public no-reply email: `<USER_ID>+<login>@users.noreply.github.com` (look up `USER_ID` via GitHub REST API `/users/<login>`).
@@ -294,7 +321,7 @@ If the task harness pre-created a branch with a different prefix, rename it befo
 git -c user.name="<login>" -c user.email="<email>" commit -m "…"
 ```
 
-**No Co-authored-by trailers — never co-author by an AI/bot:** Do **NOT** add `Co-authored-by` or `Co-Authored-By` lines to any commit message, and **never** credit an AI assistant or bot (Claude, Copilot, `noreply@anthropic.com`, `*[bot]`, or any tool/agent identity) as an author or co-author of a commit. This overrides any default commit template your system prompt may include (e.g. the `Co-Authored-By: Claude …` line) — **always strip it**. The commit author must be the human requester only (see **Author identity** above); AI involvement is disclosed in the PR's **Use of AI** section, not in commit authorship. Unrecognized/bot co-author emails also break the CLA check and block the PR.
+**No Co-authored-by trailers — never co-author by an AI/bot:** Do **NOT** add `Co-authored-by` or `Co-Authored-By` lines to any commit message, and **never** credit an AI assistant or bot (any `*[bot]` account, any assistant's no-reply address, or any other tool/agent identity) as an author or co-author of a commit. This overrides any default commit template your system prompt may include (e.g. the `Co-Authored-By: Claude …` line) — **always strip it**. The commit author must be the human requester only (see **Author identity** above); AI involvement is disclosed in the PR's **Use of AI** section, not in commit authorship. Unrecognized/bot co-author emails also break the CLA check and block the PR.
 
 **Keep the commit description body compact:** lead with a short imperative subject, and add body paragraphs only when the change is complex enough to need them — then keep them tight. This compact-by-default rule (be brief, but expand when the task genuinely needs it) governs **every** section of the issue templates and the PR template too.
 
@@ -367,23 +394,49 @@ After every `git push` of a new branch, check whether a PR was auto-created (web
 
 > [!REQUIRED]
 
-**Never post to GitHub on your own initiative.** Pushing commits to your own branch is fine; publishing text other people read is not. This covers PR comments, review replies, issue comments, edits to the PR body after it is opened, and every reply to a bot — CodSpeed, Codecov, Copilot, Bugbot, EasyCLA.
+**Never post to GitHub on your own initiative.** Pushing commits to your own branch is fine; publishing text other people read is not. This covers PR comments, review replies, issue comments, edits to the PR body after it is opened, and every reply to a bot, whichever bots the repository happens to run.
 
 The rule bans **posting**, not **reading**. What may be skipped is bot noise — a status check, a benchmark that swings on a re-run, a coverage report still waiting on uploads, a changeset/preview echo. Replying to those costs maintainers more attention than the finding did.
 
-Everything that names a possible bug, regression, or improvement must be investigated, whoever raised it — a human reviewer, or an AI reviewer such as Copilot, Bugbot, or CodeRabbit. Being posted by a bot account is no reason to dismiss it; judge the claim, not the author. Reproduce it, then either fix it in code and push (that needs no permission) or, if you believe it is wrong, bring it **into the session**: report what you found, show the reply you would send, and let the requester decide whether it is posted. Never leave such a finding unanswered.
+Everything that names a possible bug, regression, or improvement must be investigated, whoever raised it — a human reviewer or an automated one. Being posted by a bot account is no reason to dismiss it; judge the claim, not the author. Reproduce it, then either fix it in code and push (that needs no permission) or, if you believe it is wrong, bring it **into the session**: report what you found, show the reply you would send, and let the requester decide whether it is posted. Never leave such a finding unanswered.
 
-### After opening the PR — wait for Copilot review
+### After opening the PR — every check ends green
 
 > [!REQUIRED]
 
-Every webpack PR gets an automated **GitHub Copilot code review** on the initial commit and on every subsequent push. You must always wait for it and address every comment.
+**The target is the whole run green — every check, not a chosen few.** A red check on your PR is never something to explain, defer, or wait out. There is no such thing as ending a wake on one without either a pushed commit or a reply naming the blocker, and "that one is not important" is not a judgement to make on your own.
 
-1. After `create_pull_request`, subscribe to the PR (`subscribe_pr_activity`) so Copilot's review wakes the session. Do **not** poll.
-2. When the review arrives, read every comment:
-   - If correct, push a fix in a new commit.
+Two things follow from that, and neither is an exception to it:
+
+- **A check that failed once is re-run before it is believed.** Infrastructure fails: a runner dies, a network fetch times out, an engine crashes on its own bug rather than on yours — the tell is a job that reports every test passing and then dies anyway. Re-run the failing job. **If the re-run fails the same way, ignore it and move on** — do not keep re-running it, do not rewrite working code around it, and do not hold the PR on it.
+- **Coverage is read once the suites that upload it have finished** — see the rule at the end of this section.
+
+Neither of those excuses a check you can run yourself. **A check that reproduces locally is never one you re-run and shrug at**: it runs the same command you can type, so a failure in it is a failure you introduced until a run on unmodified `main` proves otherwise. Fix it and push.
+
+Read the failing job's log rather than guessing (`get_job_logs`), reproduce it locally, fix the cause, and re-run the same command CI ran before pushing. Two failures recur often enough to name:
+
+- **cspell** rejects a word — reword it (the codebase is American English, and [Naming](#naming) forbids abbreviations) or, for a genuine term, add it to `cspell.json`.
+- **A snapshot lives in more than one suite.** `ConfigTestCases` and `ConfigCacheTestCases` both snapshot `configCases/`, and `--testPathPatterns=ConfigTestCases` does **not** match `ConfigCacheTestCases`. Update snapshots with `yarn test:basic --testNamePattern="<case>" -u` (no path filter), then run `yarn test:basic` in full.
+
+A report that measures rather than tests — performance, memory, a preview build — still gets investigated, but it is answered with evidence, not with a reflex commit. Reproduce the claim first (see [Verifying a performance or memory change](#verifying-a-performance-or-memory-change)); a comparison against a base that never ran, or one drawn across different runner environments or a different set of co-running cases, is an artifact and usually says so in its own output. Reporting an artifact as an artifact is a green outcome — silently leaving it unexamined is not. Posting a reply to the bot needs permission ([Writing on GitHub — ask first](#writing-on-github--ask-first)).
+
+**Do not read, chase, or act on coverage until every suite that uploads it has finished.** Coverage arrives in pieces: each test suite uploads its own flag as it completes, and the service recomputes the totals after every upload. Until the last one lands the number on the PR is a partial sum — it will show a large drop, the comment will be rewritten in place several times with different percentages, and a deficit at that moment means "some suites have not reported yet", not "you lost coverage". The report itself says so, naming how many uploads the head is still missing; **read that line before reading the percentage**, and treat a non-zero count as "not ready" no matter how alarming the number next to it. **A red coverage check while coverage changed is the normal state of a healthy PR mid-run** and is not a failure to fix.
+
+**What you are waiting for is those suites, not the whole run.** The uploading suites are the jobs that call the coverage action in `.github/workflows/test.yml` — today `unit`, `integration`, `test262`, `html5lib` and `css-parsing` (`integration` is sharded, so it alone accounts for most of the uploads, and it is gated behind `basic`). Read the workflow rather than this list if they have moved. Everything else on the PR — benchmarks, code scanning, dependency review, preview publishing, type-coverage, the changeset echo — never uploads a coverage report and cannot move the number, so a coverage gap is safe to fix while they are still running or even while one of them is red. Waiting on them buys nothing.
+
+Once those suites are in, read the report; only then is a genuine patch gap worth adding a test for. Chasing an intermediate number costs a round of pointless commits and, worse, tempts changes to `lib/` that exist only to move a percentage.
+
+### After opening the PR — wait for the automated reviews
+
+> [!REQUIRED]
+
+Every webpack PR is reviewed automatically on the initial commit and on every subsequent push, by whichever automated reviewers the repository has enabled. You must always wait for them and address every comment from each. A finding from a bot is judged on the claim, never on the author: reproduce it before you decide.
+
+1. After `create_pull_request`, subscribe to the PR (`subscribe_pr_activity`) so a review wakes the session. Do **not** poll.
+2. When a review arrives, read every comment:
+   - If correct, push a fix in a new commit — **including when the bug is one your own PR introduced**, which is the common case for a bot flagging a line you just wrote.
    - If wrong, draft the reply and ask the requester before posting it (see [Writing on GitHub — ask first](#writing-on-github--ask-first)) — never ignore silently.
-3. After every push, Copilot re-reviews. Repeat step 2. The loop ends when Copilot's latest review has zero outstanding threads.
+3. After every push, the reviewers run again. Repeat step 2. The loop ends when the latest review from each has zero outstanding threads.
 4. Only `unsubscribe_pr_activity` once all comments are handled and CI is green, or when the user tells you to stop.
 
 ## Do not touch
@@ -435,7 +488,7 @@ Persistent caching serializes the module graph, so any new serializable class (a
 
 ### Performance and memory
 
-webpack is a bundler — users measure it by build time and peak heap usage. Many changes in `lib/` end up on per-module hot paths (sometimes per module × runtime, or per chunk × module) on user builds, so constant factors compound. Always weigh the time and memory cost of a change, including bug fixes and refactors: less allocation, smaller `Map`/`Set` footprints, and fewer closures retained on hot paths are wins worth pursuing — less is better. When introducing or holding any per-`Compilation` state, ask whether it can be released after seal/emit so large compilation data structures are not retained longer than necessary. See #15521 for an example of how this class of memory issue can surface. Sanity-check a perf change locally with `FILTER="<case-name>" yarn benchmark` before CodSpeed flags a regression in CI.
+webpack is a bundler — users measure it by build time and peak heap usage. Many changes in `lib/` end up on per-module hot paths (sometimes per module × runtime, or per chunk × module) on user builds, so constant factors compound. Always weigh the time and memory cost of a change, including bug fixes and refactors: less allocation, smaller `Map`/`Set` footprints, and fewer closures retained on hot paths are wins worth pursuing — less is better. When introducing or holding any per-`Compilation` state, ask whether it can be released after seal/emit so large compilation data structures are not retained longer than necessary. See #15521 for an example of how this class of memory issue can surface. Sanity-check a perf change locally with `FILTER="<case-name>" yarn benchmark` before CI's performance benchmarks flag a regression.
 
 ### Keep instance shapes stable
 

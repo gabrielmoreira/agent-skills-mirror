@@ -177,7 +177,7 @@ Tauri ↔ COMMAND_MAP 差集为 22 条合法非通用映射命令：5 条 Deskto
 |---|---|
 | `core_memory_updated` / `memory_extracted` | tools/memory.rs 及自动提取 |
 | `dreaming:cycle_started` / `dreaming:cycle_complete` | dreaming 固化周期开始 / 结束（payload 含 `runId`） |
-| `cron:run_completed` | cron/executor.rs |
+| `cron:run_completed` | ha-cron 的 cron/executor.rs |
 | `cron:unread_changed` | cron 未读聚合数变化（`cron_mark_all_read` 清除时发 `{ total: 0 }`）；前端 cron 未读 store 收到后刷新侧边栏角标 |
 | `session:unread_changed` | assistant 消息落库或任一会话水位线更新；payload `{ sessionId?: string, domain?: "regular"\|"channel"\|"cron" }` 只作精准失效提示，消费者必须重查各域权威值 |
 | `job:created` / `job:updated` / `job:progress` / `job:completed` / `job:mark_injected_failed` | **统一后台任务事件（R3，替代旧 `async_tool_job:*`）**。`async_jobs::events` 发射；kind-tagged（payload `{ job_id, kind: "tool"\|"group", tool, status, session_id }`），覆盖后台**工具 + Group** 生命周期。`created`=新任务出现（running/queued）；`updated`=非终态变化（如 cancelling）；`progress`=`{ job_id, kind, session_id, current, total }`（目前 Group 报 N/M 子完成）；`completed`=终态；`mark_injected_failed`=结果注入主对话失败告警 `{ job_id, error }`。**`subagent` kind 沿用 `subagent:*` 流**（不双发），R4 面板合并两路 + `job_status list`。 |
@@ -194,7 +194,7 @@ Tauri ↔ COMMAND_MAP 差集为 22 条合法非通用映射命令：5 条 Deskto
 
 | 事件名 | 触发点 | Payload 关键字段 |
 |---|---|---|
-| `pet:config_changed` | `ha_core::pet::update_config` | `{ enabled, selectedPetRef, source }`（不含素材或路径） |
+| `pet:config_changed` | `ha_pet::update_config` | `{ enabled, selectedPetRef, source }`（不含素材或路径） |
 | `pet:library_changed` | pet install/delete/restore | library 失效提示，消费者重拉 |
 | `pet:activity_changed` | 合格 chat turn / pending / read watermark 变化 | activity 失效提示，消费者重拉 snapshot |
 | `pet:navigate` | PetWindow 点击 activity | typed `PetNavigationTarget`；Tauri 直发给主 App |
@@ -256,8 +256,8 @@ Artifact 创建或 show 仍复用 `canvas_show`，当前投影变化复用 `canv
 
 | 事件名 | 触发点 | Payload |
 |---|---|---|
-| `slash:effort_changed` / `slash:plan_changed` / `slash:session_cleared` | `crates/ha-core/src/channel/worker/slash.rs` 经 `bus.emit(...)` | effort 字段 / sessionId 等（具体见各调用点） |
-| `session:model_updated` | `crates/ha-core/src/channel/worker/slash.rs` (IM `/model`)、`src-tauri/src/commands/session.rs::set_session_model`、`crates/ha-server/src/routes/sessions.rs::set_session_model` | `{ sessionId, providerId, modelId }` — 桌面 GUI 仅在 `sessionId == currentSessionId` 时同步 ModelPicker UI |
+| `slash:effort_changed` / `slash:plan_changed` / `slash:session_cleared` | `crates/ha-channel/src/channel/worker/slash.rs` 经 `bus.emit(...)` | effort 字段 / sessionId 等（具体见各调用点） |
+| `session:model_updated` | `crates/ha-channel/src/channel/worker/slash.rs` (IM `/model`)、`src-tauri/src/commands/session.rs::set_session_model`、`crates/ha-server/src/routes/sessions.rs::set_session_model` | `{ sessionId, providerId, modelId }` — 桌面 GUI 仅在 `sessionId == currentSessionId` 时同步 ModelPicker UI |
 | `terminal:created` / `output` / `exit` / `closed` | `ha_core::terminal::TerminalManager` | created 带 snapshot；output 为 `{ terminalId, seq, dataBase64 }`；exit 为 `{ terminalId, exitCode, error }`；closed 带 terminalId |
 
 > 这些事件经 EventBus 广播，HTTP / Tauri 两条桥都会转发。
@@ -328,6 +328,7 @@ Artifact 创建或 show 仍复用 `canvas_show`，当前投影变化复用 `canv
 | `pet_candidate_thumbnail_cmd` | `GET /api/pets/codex-candidates/{candidateId}/thumbnail` | ✅ |
 | `pet_preview_thumbnail_cmd` | `GET /api/pets/import/previews/{previewToken}/thumbnail` | ✅（1536×208 idle 动画条） |
 | `pet_create_preview_cmd` | `POST /api/pets/create/preview` | ✅（显式 media generation） |
+| `pet_upgrade_v2_cmd` | `POST /api/pets/upgrade-v2` | ✅（保留 v1、安装 v2 副本；持久化成功后仅当 v1 仍被选中时切换到 v2） |
 | `pet_import_preview_cmd` | `POST /api/pets/import/preview` | ✅（HTTP 拒绝 LocalPath，只接受 upload/link/candidate capability） |
 | `pet_import_preview_cancel_cmd` | `POST /api/pets/import/preview/cancel` | ✅（token 只放 JSON body；幂等释放 preview cache 与其 upload leases） |
 | `pet_import_commit_cmd` | `POST /api/pets/import/commit` | ✅（HTTP 拒绝 `enableAfterImport=true`，不能启用桌面 overlay） |
@@ -803,7 +804,7 @@ Loop owner API 管理 session-scoped recurring triggers。`create_loop_schedule`
 | `chat` | Bundled Transport：`POST /api/chat/ui`（浏览器来源校验；非 incognito 返回 202 ACK 后服务端托管）；公共 owner API：`POST /api/chat`（忽略 `uiSurface`、同步完成）；流式输出均经 `/ws/events` | ✅（已有会话可带 `editMessageId`，仅允许最后一条非排队 user 且旧 turn 已终止；旧分支回退、replacement user 落库、新 turn 登记同一事务提交并保留 Bundled UI surface） |
 | — | `GET /api/chat/turns/{turnId}` | ✅ 查询精确 ChatTurn 终态，供 202 ACK 后断线/竞态恢复 |
 | `queue_turn_user_message` | `POST /api/chat/turn-message` | ✅ 持久入队，附件在入队时转 session-owned 引用 |
-| `list_queued_turn_user_messages` | `GET /api/chat/turn-message/{sessionId}` | ✅ UI/恢复单一查询入口 |
+| `list_queued_turn_user_messages` | `GET /api/chat/turn-message/{sessionId}` | ✅ UI/恢复单一查询入口；backend-owned IM 行带 `managedBy: "channel"`，可展示但不可由客户端 edit/delete/insert/claim |
 | `update_queued_turn_user_message` | `PATCH /api/chat/turn-message` | ✅ CAS 拒绝 inserting/dispatching |
 | `delete_queued_turn_user_message` | `DELETE /api/chat/turn-message/{sessionId}/{requestId}` | ✅ CAS 拒绝 inserting/dispatching |
 | `insert_queued_turn_user_message` | `POST /api/chat/turn-message/insert` | ✅ 绑定活跃 turn 的工具边界 |
@@ -1257,7 +1258,7 @@ Agent 执行准入采用两层 guard：Desktop / HTTP / Channel / Cron 等调用
 
 #### Dashboard Learning
 
-`session.db.learning_events` 表 + `dashboard::learning` 查询，支持 7/14/30/60/90 天窗口。埋点来自 `skills::author` CRUD 与 `tool_recall_memory` 命中等。前端 Dashboard "Learning" Tab 消费。
+`session.db.learning_events` 表 + `dashboard::learning` 只读聚合查询（写入面 `learning_events::emit`），支持 7/14/30/60/90 天窗口。埋点来自 `skills::author` CRUD 与 `tool_recall_memory` 命中等。前端 Dashboard "Learning" Tab 消费。
 
 | Tauri Command | HTTP | 状态 |
 |---|---|---|
@@ -1449,7 +1450,7 @@ Agent 执行准入采用两层 guard：Desktop / HTTP / Channel / Cron 等调用
 
 ### Local model auto-maintenance
 
-后台 watchdog（[`crates/ha-core/src/local_llm/auto_maintainer.rs`](../../crates/ha-core/src/local_llm/auto_maintainer.rs)）监测默认 chat / embedding 模型。模型停止时自动 preload；模型文件丢失时 emit `local_model:missing_alert` 事件，前端顶层 `MissingModelDialog` 弹窗。
+后台 watchdog（[`crates/ha-local-llm/src/local_llm/auto_maintainer.rs`](../../crates/ha-local-llm/src/local_llm/auto_maintainer.rs)）监测默认 chat / embedding 模型。模型停止时自动 preload；模型文件丢失时 emit `local_model:missing_alert` 事件，前端顶层 `MissingModelDialog` 弹窗。
 
 | Tauri Command | HTTP | 状态 |
 |---|---|---|

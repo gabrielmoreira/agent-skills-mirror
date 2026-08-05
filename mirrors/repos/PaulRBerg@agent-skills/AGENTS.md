@@ -75,12 +75,21 @@ If `prettier-check` fails, analyze the errors and fix only files you changed.
 - `just commit-paths-test` - exercise isolated-index atomic commits, hooks, case-only renames, and shared-index
   reconciliation.
 - `just hooks-install` - install Husky hooks for this checkout through the pinned local binary.
-- `just sync` - rough fallback that commits and pushes staged changes, performs a catalog-wide reinstall into
-  `~/.agents` and `~/.claude`, then commits and pushes `~/.agents`.
 
 `package.json` exists only for local formatting and hook wiring; there is no build step. Treat Markdown formatting,
 invocation metadata checks, and skill-specific helper scripts as the verification surface unless a task introduces a
 narrower check.
+
+## Resource-Safe Search
+
+- Scope `fd`, `rg`, `grep`, and similar searches to the narrowest useful root. Exclude known dependency, build, cache,
+  generated, and state directories before broadening; plain bounded searches with these tools are appropriate.
+- Do not run per-result commands over unknown or high-cardinality sets with `fd -x`/`--exec`, `find -exec`, parallel or
+  unbounded `xargs`, or shell loops that launch one tool per path. Prefer native predicates or metadata output; preview
+  or sample cardinality, then use a bounded batch when downstream execution is necessary.
+- Stream and bound large search results instead of capturing arbitrary full lines, JSON events, or generated-file output
+  in memory or repeatedly rescanning it. Long-running helpers must propagate cancellation and terminate or clean up
+  child processes.
 
 ## Rules
 
@@ -94,7 +103,7 @@ narrower check.
   overlaps the current session's active claim, do not run this step. Commit and release the claim promptly; the promoted
   follow-on agent will publish the accumulated changes automatically. Otherwise, if the task was super complex or the
   working tree has ongoing dirty changes, recommend `@publish-skills` instead. The agent must make the complexity
-  assessment. Use `just sync` only as a rough fallback when surgical, range-scoped propagation is unavailable.
+  assessment.
 - When an installable catalog skill is added or removed, update the skills table in `README.md`.
 - Internal skills are special repo-private runbooks. Place them under `.agents/internal-skills/<name>.md`, not under
   `skills/`. Do not add them to `README.md`, do not create `agents/openai.yaml`, and do not treat them as installable
@@ -111,7 +120,8 @@ narrower check.
   version the docs were last refreshed against: no leading `v`, prose, comments, ranges, prerelease labels, or extra
   lines. The wakeup automation maps `skills/cli-<name>` to binary `<name>` and refreshes the skill when the installed
   binary is newer than this file.
-- Bash scripts must be compatible with Bash v3.2 (`/bin/bash`), because Codex uses the built-in Bash by default.
+- Bash scripts must be compatible with Bash v3.2 (`/bin/bash`) because macOS ships that system version and skills may
+  run in Bash-based environments.
 - In `SKILL.md` frontmatter, sort fields alphabetically but always place `description` last.
 - Keep generated docs terse, imperative, and expert-to-expert.
 - Never leak personal crypto (EVM) addresses in any skill. Use well-known public addresses (e.g. Multicall3, token
@@ -213,3 +223,23 @@ When `context: fork` is set, `agent` selects the subagent type.
 | `Explore`     | Read-only tools optimized for codebase exploration |
 | `Plan`        | Read-only tools for implementation plans           |
 | Custom agent  | Any subagent defined in `.claude/agents/`          |
+
+### Coordination Exemption
+
+`coordination: exempt` is a repository-specific field, not a Claude Code or Codex feature: the agent reads it from the
+skill body at invocation time, and the global agent instructions define its meaning.
+
+Set it only for skills that can never write repository files: pure read-only or reporting skills, skills that write only
+external or out-of-repository state (GitHub, Notion, on-chain), or repository-local metadata-only skills such as
+`task-handoff`. Skills that edit repository files must not set it.
+
+An exempt skill skips the ai-coord coordination gate (`git status` / `ai-coord status` / `ai-coord start`) for its own
+work. Pair the field with one standard body sentence near the top of the skill so the executing agent sees the exemption
+without consulting the frontmatter:
+
+```markdown
+This skill is coordination-exempt: skip the ai-coord gate (`git status` / `ai-coord status` / `ai-coord start`) for this
+skill's own work.
+```
+
+If a skill's work escalates beyond its declared write behavior, the gate applies again.

@@ -14,7 +14,7 @@ Treat the model's Three.js knowledge and official documentation as prerequisites
 | shot composition, chase/side/orbit rigs, camera handoffs, projection ownership, pointer look, floating origins | `$threejs-camera-direction` |
 | launch and docking timelines, procedural transform phases, springs, staging, rotating-frame alignment, debris motion | `$threejs-procedural-animation` |
 | reusable scalar/vector fields, domain warping, causal masks, procedural normals | `$threejs-procedural-fields` |
-| atlas-filtered blocks, planetary surfaces, hybrid texture-backed PBR soil/moss with procedural displacement and masks, ground and model moss accumulation, terrain wetness, lava/emissive surfaces, authored frame PBR, specular AA | `$threejs-procedural-materials` |
+| atlas-filtered blocks, planetary surfaces, hybrid texture-backed PBR soil/moss with procedural displacement and masks, ground and model moss accumulation, terrain wetness, lava/emissive surfaces, raytraced diamond/gem refraction, dispersive glass transmission with internal reflection and volume absorption, authored frame PBR, specular AA | `$threejs-procedural-materials` |
 | height-field ray marching, silhouette-aware POM, curved relief shells, relief self-shadowing | `$threejs-parallax-occlusion-mapping` |
 | complete hard-surface object assemblies, procedural vehicles, parameter-curve section tracks, tilted shell lofts, UV-owned apertures, spanwise airfoil lofts, sculpted rails/frames, branch rings, fin lofts, semantic mesh writers, material slots and groups | `$threejs-procedural-geometry` |
 | trees, surface-following ivy, painted vines, stylized grass, GPU-computed grass, roots, foliage, rooted wind deformation | `$threejs-procedural-vegetation` |
@@ -25,7 +25,7 @@ Treat the model's Three.js knowledge and official documentation as prerequisites
 | FFT oceans, hybrid FFT/Gerstner clear water, stylized above/below ocean optics, submerged Snell windows, total internal reflection, forward-refracted structures, pixel-footprint spectral LOD, aquatic perspective, caustic god rays, spectral cascades, choppy derivatives, Jacobian whitecaps | `$threejs-spectral-ocean` |
 | authored analytic waves, bounded heightfield pools, object ripples, differential-area caustics, ray-traced pool volume optics, shared normals, heuristic refraction, fallback absorption, crest foam | `$threejs-water-optics` |
 | falling snow, snow accumulation, model snow caps, wet asphalt puddles, procedural ripple normals, splash flipbooks, rain streaks, shared weather envelopes, surface wetness | `$threejs-precipitation-surfaces` |
-| curved-ray black holes, accretion disks, wormholes | `$threejs-raymarched-space-effects` |
+| curved-ray black holes, accretion disks, wormholes and throat transits, null-geodesic integration, lensed celestial spheres and star fields | `$threejs-raymarched-space-effects` |
 | raymarched aurora curtains, finite-footprint emissive slabs, uniform volume integration, equirectangular radiance probes, WebGPU voxel fire and smoke, volumetric fluid fields, mesh-surface emitters, SDF fire collisions, particles, trails, plasma, shockwaves, holographic projections, Fresnel rim shells, scanline banding, layered event effects | `$threejs-procedural-vfx` |
 | accumulated screen frost, touch clearing, wet-window rain, view-aligned droplet refraction and blur | `$threejs-temporal-surfaces` |
 | stable large-world shadows, cascades, clipmaps, cached updates | `$threejs-shadow-systems` |

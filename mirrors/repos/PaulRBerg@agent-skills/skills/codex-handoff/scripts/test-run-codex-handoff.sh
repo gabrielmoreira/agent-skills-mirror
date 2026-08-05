@@ -103,8 +103,19 @@ if [[ $emit_json -eq 1 ]]; then
 {"type":"turn.started"}
 {"type":"item.completed","item":{"id":"item_1","type":"command_execution","command":"echo hi","status":"completed"}}
 {"type":"item.completed","item":{"id":"item_2","type":"agent_message","text":"implementation done"}}
-{"type":"turn.completed","usage":{"input_tokens":100,"cached_input_tokens":50,"output_tokens":42}}
+{"type":"item.completed","output_tokens":999,"item":{"id":"item_3","type":"agent_message","text":"token estimate"}}
+{"type":"turn.completed","usage":{"input_tokens":80,"cached_input_tokens":40,"output_tokens":42}}
+{"type":"turn.completed","usage":{"input_tokens":100,"cached_input_tokens":50,"output_tokens":70}}
 EVENTS
+fi
+
+if [[ "${FAKE_IGNORE_TERM_FOR:-0}" -gt 0 ]]; then
+  trap '' TERM
+  ignore_started_at=$SECONDS
+  while ((SECONDS - ignore_started_at < FAKE_IGNORE_TERM_FOR)); do
+    sleep 0.1
+  done
+  : >"${FAKE_IGNORE_COMPLETED_FILE:?}"
 fi
 
 if [[ -n "${FAKE_SLEEP:-}" ]]; then
@@ -148,6 +159,8 @@ expected_result='{"status":"completed","summary":"done","changed_files":[],"veri
 help_output="$("$runner" --help)"
 [[ "$help_output" == *'Allowed models: gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna'* ]] ||
   fail "runner help omits a supported model"
+[[ "$help_output" != *'ephemeral'* ]] || fail "runner help incorrectly describes sessions as ephemeral"
+[[ "$help_output" == *'--resume SESSION_ID'* ]] || fail "runner help omits --resume"
 
 for model in gpt-5.6-sol gpt-5.6-terra gpt-5.6-luna; do
   for effort in medium high xhigh max; do
@@ -185,6 +198,31 @@ grep -Fxq -- '--ignore-user-config' "$args_file" && fail "runner ignored user co
 grep -Fxq -- '--ephemeral' "$args_file" && fail "runner disabled session persistence"
 grep -Fxq -- '--json' "$args_file" && fail "runner passed --json without --progress-file"
 [[ "$(cat "$prompt_file")" == 'approved implementation' ]] || fail "prompt was not forwarded exactly"
+
+# Resume keeps exec-owned flags before the subcommand and passes the session ID before resume-owned flags.
+resume_session='019fcb20-ada2-79c1-9628-6ef651b80414'
+resume_result="$(
+  cd "$repo"
+  printf '%s\n' 'approved continuation' | PATH="$fake_path" "$runner" \
+    --model gpt-5.6-sol --effort high --timeout-seconds 5 --resume "$resume_session"
+)"
+[[ "$resume_result" == "$expected_result" ]] || fail "resume mode returned an unexpected result"
+exec_line="$(grep -nFx -- 'exec' "$args_file" | cut -d: -f1)"
+color_line="$(grep -nFx -- '--color' "$args_file" | cut -d: -f1)"
+resume_line="$(grep -nFx -- 'resume' "$args_file" | cut -d: -f1)"
+session_line="$(grep -nFx -- "$resume_session" "$args_file" | cut -d: -f1)"
+model_line="$(grep -nFx -- '-m' "$args_file" | cut -d: -f1)"
+[[ $exec_line -lt $color_line && $color_line -lt $resume_line ]] || fail "exec-owned flags must precede resume"
+[[ $session_line -eq $((resume_line + 1)) ]] || fail "resume session ID must immediately follow resume"
+[[ $session_line -lt $model_line ]] || fail "resume-owned flags must follow the session ID"
+[[ "$(cat "$prompt_file")" == 'approved continuation' ]] || fail "resume prompt was not forwarded exactly"
+
+(
+  cd "$repo"
+  printf '%s\n' 'approved continuation' | PATH="$fake_path" "$runner" \
+    --model gpt-5.6-sol --effort high --timeout-seconds 5 --resume=thread-name >/dev/null
+)
+assert_arg thread-name
 
 # Read-only research mode uses the sandbox and research schema.
 readonly_result="$(
@@ -226,6 +264,8 @@ exec_line="$(grep -nFx -- 'exec' "$args_file" | cut -d: -f1)"
     "$runner" --model gpt-5.6-sol --effort ultra --timeout-seconds 5
   expect_failure 64 'must be a positive integer' env PATH="$fake_path" \
     "$runner" --model gpt-5.6-sol --effort high --timeout-seconds 0
+  expect_failure 64 'session ID must be non-empty' env PATH="$fake_path" \
+    "$runner" --model gpt-5.6-sol --effort high --timeout-seconds 5 --resume=
   expect_failure 69 'not authenticated' env PATH="$fake_path" FAKE_AUTH_FAIL=1 \
     "$runner" --model gpt-5.6-sol --effort high --timeout-seconds 5
   expect_failure 69 'lacks --dangerously-bypass-approvals-and-sandbox' env PATH="$fake_path" \
@@ -297,8 +337,9 @@ assert_file_contains '"type":"thread.started"' "$success_progress"
 assert_file_contains '"type":"turn.completed"' "$success_progress"
 assert_file_contains 'codex-handoff: elapsed=' "$stderr_file"
 sentinel_line="$(grep '"type":"handoff.completed"' "$success_progress")"
+# The last turn.completed value wins: usage totals are thread-cumulative.
 case "$sentinel_line" in
-*'"elapsed_seconds":'*'"output_tokens":42'*) ;;
+*'"elapsed_seconds":'*'"output_tokens":70'*) ;;
 *) fail "sentinel missing elapsed_seconds/output_tokens: $sentinel_line" ;;
 esac
 sentinel_count="$(grep -c '"type":"handoff\.' "$success_progress")"
@@ -345,9 +386,11 @@ done
 
 # Cancellation (TERM, e.g. the user stopping the background task) still writes a sentinel.
 cancel_progress="$tmp_dir/cancel.progress.jsonl"
+ignore_completed="$tmp_dir/ignore-term-completed"
 (
   cd "$repo"
-  printf '%s\n' 'approved implementation' | PATH="$fake_path" FAKE_SLEEP=10 \
+  printf '%s\n' 'approved implementation' | PATH="$fake_path" FAKE_IGNORE_TERM_FOR=9 \
+    FAKE_IGNORE_COMPLETED_FILE="$ignore_completed" \
     "$runner" --model gpt-5.6-sol --effort high --timeout-seconds 30 \
     --progress-file "$cancel_progress" >"$stdout_file" 2>"$stderr_file" &
   runner_pid=$!
@@ -359,6 +402,7 @@ cancel_progress="$tmp_dir/cancel.progress.jsonl"
   set -e
   [[ $cancel_rc -eq 143 ]] || fail "expected exit 143 on TERM, got $cancel_rc"
 )
+[[ ! -e "$ignore_completed" ]] || fail "cleanup waited for a Codex child that ignored TERM instead of killing it"
 assert_file_contains '"type":"handoff.failed","reason":"cancelled"' "$cancel_progress"
 sentinel_count="$(grep -c '"type":"handoff\.' "$cancel_progress")"
 [[ "$sentinel_count" == "1" ]] || fail "expected exactly one sentinel after cancel, got $sentinel_count"

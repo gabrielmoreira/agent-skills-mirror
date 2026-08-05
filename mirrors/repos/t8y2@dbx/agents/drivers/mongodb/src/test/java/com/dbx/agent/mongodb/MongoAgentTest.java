@@ -13,6 +13,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mongodb.MongoClientSettings;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -169,6 +170,74 @@ class MongoAgentTest {
         assertEquals(15, json.get("id").getAsInt());
         assertEquals("Not connected", json.getAsJsonObject("error").get("message").getAsString());
         assertFalse(json.getAsJsonObject("error").get("message").getAsString().contains("Unknown method"));
+    }
+
+    @Test
+    void findOneUsesOneBoundedReadWithoutCounting() {
+        List<String> calls = new ArrayList<>();
+        MongoClient client = recordingFindOneMongoClient(
+            calls,
+            new Document("name", "latest").append("createdAt", 2)
+        );
+        String response = MongoAgent.handleRequest(
+            "{\"jsonrpc\":\"2.0\",\"id\":16,\"method\":\"find_one\","
+                + "\"params\":{\"database\":\"app\",\"collection\":\"orders\","
+                + "\"filter\":\"{\\\"status\\\":\\\"open\\\"}\","
+                + "\"projection\":\"{\\\"secret\\\":0}\","
+                + "\"options\":\"{\\\"sort\\\":{\\\"createdAt\\\":-1}}\"}}",
+            client
+        );
+
+        JsonObject json = JsonParser.parseString(response).getAsJsonObject();
+        assertFalse(json.has("error"), json.toString());
+        JsonObject result = json.getAsJsonObject("result");
+        assertEquals(1, result.get("total").getAsInt());
+        assertFalse(result.has("total_is_exact"));
+        assertEquals("latest", result.getAsJsonArray("documents").get(0).getAsJsonObject().get("name").getAsString());
+        assertEquals(1, result.getAsJsonArray("extended_documents").size());
+        assertEquals(
+            List.of(
+                "find:{\"status\": \"open\"}",
+                "projection:{\"secret\": 0}",
+                "sort:{\"createdAt\": -1}",
+                "limit:1",
+                "first"
+            ),
+            calls
+        );
+    }
+
+    @Test
+    void findOneReturnsEmptyResultWhenNoDocumentMatches() {
+        List<String> calls = new ArrayList<>();
+        MongoClient client = recordingFindOneMongoClient(calls, null);
+        String response = MongoAgent.handleRequest(
+            "{\"jsonrpc\":\"2.0\",\"id\":17,\"method\":\"find_one\","
+                + "\"params\":{\"database\":\"app\",\"collection\":\"orders\"}}",
+            client
+        );
+
+        JsonObject result = JsonParser.parseString(response).getAsJsonObject().getAsJsonObject("result");
+        assertEquals(0, result.get("total").getAsInt());
+        assertEquals(0, result.getAsJsonArray("documents").size());
+        assertEquals(0, result.getAsJsonArray("extended_documents").size());
+        assertEquals(List.of("find:{}", "limit:1", "first"), calls);
+    }
+
+    @Test
+    void findOneRejectsUnsupportedOptionsBeforeReading() {
+        List<String> calls = new ArrayList<>();
+        MongoClient client = recordingFindOneMongoClient(calls, null);
+        String response = MongoAgent.handleRequest(
+            "{\"jsonrpc\":\"2.0\",\"id\":18,\"method\":\"find_one\","
+                + "\"params\":{\"database\":\"app\",\"collection\":\"orders\","
+                + "\"options\":\"{\\\"hint\\\":{\\\"createdAt\\\":1}}\"}}",
+            client
+        );
+
+        JsonObject error = JsonParser.parseString(response).getAsJsonObject().getAsJsonObject("error");
+        assertEquals("Unsupported findOne option: hint", error.get("message").getAsString());
+        assertTrue(calls.isEmpty());
     }
 
     @Test
@@ -905,6 +974,66 @@ class MongoAgentTest {
                 if ("updateOne".equals(method.getName()) || "updateMany".equals(method.getName())) {
                     calls.add(method.getName() + ":" + (args[1] instanceof List<?> ? "pipeline" : "document"));
                     return UpdateResult.acknowledged(1, 1L, null);
+                }
+                throw new UnsupportedOperationException(method.getName());
+            }
+        );
+        MongoDatabase database = (MongoDatabase) Proxy.newProxyInstance(
+            MongoDatabase.class.getClassLoader(),
+            new Class<?>[] {MongoDatabase.class},
+            (proxy, method, args) -> {
+                if ("getCollection".equals(method.getName())) {
+                    return collection;
+                }
+                throw new UnsupportedOperationException(method.getName());
+            }
+        );
+        return (MongoClient) Proxy.newProxyInstance(
+            MongoClient.class.getClassLoader(),
+            new Class<?>[] {MongoClient.class},
+            (proxy, method, args) -> {
+                if ("getDatabase".equals(method.getName())) {
+                    return database;
+                }
+                if ("close".equals(method.getName())) {
+                    return null;
+                }
+                throw new UnsupportedOperationException(method.getName());
+            }
+        );
+    }
+
+    @SuppressWarnings("unchecked")
+    private static MongoClient recordingFindOneMongoClient(List<String> calls, Document firstDocument) {
+        FindIterable<Document>[] iterableRef = new FindIterable[1];
+        FindIterable<Document> iterable = (FindIterable<Document>) Proxy.newProxyInstance(
+            FindIterable.class.getClassLoader(),
+            new Class<?>[] {FindIterable.class},
+            (proxy, method, args) -> {
+                if ("projection".equals(method.getName()) || "sort".equals(method.getName())) {
+                    calls.add(method.getName() + ":" + ((Document) args[0]).toJson());
+                    return iterableRef[0];
+                }
+                if ("limit".equals(method.getName())) {
+                    calls.add("limit:" + args[0]);
+                    return iterableRef[0];
+                }
+                if ("first".equals(method.getName())) {
+                    calls.add("first");
+                    return firstDocument;
+                }
+                throw new UnsupportedOperationException(method.getName());
+            }
+        );
+        iterableRef[0] = iterable;
+
+        MongoCollection<Document> collection = (MongoCollection<Document>) Proxy.newProxyInstance(
+            MongoCollection.class.getClassLoader(),
+            new Class<?>[] {MongoCollection.class},
+            (proxy, method, args) -> {
+                if ("find".equals(method.getName())) {
+                    calls.add("find:" + ((Document) args[0]).toJson());
+                    return iterable;
                 }
                 throw new UnsupportedOperationException(method.getName());
             }

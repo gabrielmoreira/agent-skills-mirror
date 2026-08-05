@@ -8,14 +8,14 @@ publishing assets — covers, vertical recompose, SEO copy, chapter cards.
 ## 1. Overview
 
 `media-post` ships **four** post-edit modes wired to DashScope Qwen-VL-max
-(vision) and Qwen-Plus (text), all driven from a single React UI that
+for vision and the selected OpenAkita endpoint for SEO text, all driven from a single React UI that
 mirrors `tongyi-image`'s look and feel.
 
 | Mode | What it does | Vendor model | Local tool |
 |------|--------------|--------------|------------|
 | `cover_pick` | 6-axis aesthetic scoring, picks top covers | Qwen-VL-max | ffmpeg `thumbnail` |
 | `multi_aspect` | Smart 16:9 → 9:16 / 1:1 with EMA-smoothed subject tracking | Qwen-VL-max | ffmpeg crop expression |
-| `seo_pack` | 5-platform SEO bundle (TikTok / Bilibili / WeChat / Xiaohongshu / YouTube) | Qwen-Plus | — |
+| `seo_pack` | 5-platform SEO bundle (TikTok / Bilibili / WeChat / Xiaohongshu / YouTube) | OpenAkita text model | — |
 | `chapter_cards` | Chapter PNGs from HTML templates | — | Playwright (primary) + ffmpeg `drawtext` (fallback) |
 
 Single source of truth: [`docs/media-post-plan.md`](../../docs/media-post-plan.md) v1.0.

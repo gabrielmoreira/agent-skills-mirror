@@ -99,7 +99,22 @@ To check one surface while iterating:
 ```bash
 scripts/reconcile-mcp.py --surface catalog
 scripts/reconcile-mcp.py --surface portability
+scripts/reconcile-mcp.py --surface startup      # actually launches your server
+scripts/reconcile-mcp.py --surface packages     # npx/uvx packages your skill invokes
 ```
+
+The `startup` surface (spec 088) launches every registered stdio server and reports the ones that
+cannot start. Use it on your own server before pushing:
+
+```bash
+scripts/check-server-startup.py --only <your-server-key>
+```
+
+A **timeout is success** — a server that imports cleanly and then blocks reading stdio is behaving
+correctly. Only a fatal startup error (missing module, absent entry point, syntax error) is a
+finding. This surface currently reports as `WARN` rather than failing the build, because seven
+pre-existing servers cannot start and two of them need an SDK that is not publicly distributable;
+see `specs/088-server-startup-check/spec.md` for the exit condition.
 
 To confirm a skill's chain resolves:
 
@@ -109,9 +124,16 @@ scripts/trace-skill.py <skill-name>
 
 ### 7. Confirm installability
 
-The property that actually matters is that a *fresh user* can obtain this. `reconcile-mcp.py`
-verifies it statically: installer coverage exists and no path is machine-specific. No running agent
-is needed, and your own live gateway's contents are irrelevant.
+The property that actually matters is that a *fresh user* can obtain this — and that what they
+obtain can actually run. `reconcile-mcp.py` checks both:
+
+- **Statically** (`catalog`, `docs`, `portability`, `dependencies`): installer coverage exists, no
+  path is machine-specific, counts agree, pins are bounded.
+- **Dynamically** (`startup`, spec 088): your server is launched and must not die on import.
+
+No running agent is needed, and your own live gateway's contents are irrelevant. The static surfaces
+alone were not enough: they compare declarations against each other, so for four specs' worth of
+history they all passed while seven registered servers could not start.
 
 ---
 
@@ -128,6 +150,8 @@ is needed, and your own live gateway's contents are irrelevant.
 [ ] README.md updated INCLUDING counts
 [ ] SOUL.md updated INCLUDING counts
 [ ] SKILL.md created (if adding a skill)
+[ ] check-server-startup.py --only <key> reports no finding (timeout is success)
+[ ] If a skill invokes a package via npx/uvx: python3 scripts/check-package-references.py --refresh
 [ ] .env.example updated (names only)
 [ ] TOOLS.md updated
 [ ] mcp-servers/<name>/README.md created

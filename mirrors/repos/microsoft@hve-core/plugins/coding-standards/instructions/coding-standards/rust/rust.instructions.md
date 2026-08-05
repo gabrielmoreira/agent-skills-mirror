@@ -1,1 +1,0 @@
-cache/repos/github.com/microsoft@hve-core/plugins/coding-standards/instructions/coding-standards/rust/../../../../../.github/instructions/coding-standards/rust/rust.instructions.md

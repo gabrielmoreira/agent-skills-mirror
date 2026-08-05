@@ -82,7 +82,7 @@ If two signals fire, route component. If only the page flow fires (multi-section
 ### What Component-scope skips
 
 - **Step 2 · Macrostructure pick.** Components don't have macrostructures. State this explicitly: *"Component-scope: skipping macrostructure."*
-- **Nav and footer archetype picks.** N1–N9 and Ft1–Ft8 are page-scope only. A component is one element; it has no nav, no footer. Skip both.
+- **Nav and footer archetype picks.** N1a–N13 and Ft1–Ft8 are page-scope only. A component is one element; it has no nav, no footer. Skip both.
 - **Hero polish patterns (HP1–HP4).** Page-scope only. A button or card has no hero.
 - **Step 4 · Enrichment.** No hero illustration, no demo video, no abstract background. The component IS the artifact.
 - **Step 5 · Multi-section preview.** Replaced by the 8-state demo wrapper (below).

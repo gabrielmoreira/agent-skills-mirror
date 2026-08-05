@@ -124,9 +124,11 @@ from openakita_plugin_sdk.scaffold import scaffold_plugin
 from openakita_plugin_sdk.testing import MockPluginAPI, assert_plugin_loads
 from openakita_plugin_sdk.hooks import HOOK_NAMES, HOOK_SIGNATURES
 from openakita_plugin_sdk.channel import ChannelAdapter, ChannelPluginMixin
-from openakita_plugin_sdk.llm import LLMProvider, ProviderRegistry
+from openakita_plugin_sdk.llm import (
+    LLMCompletion, LLMModel, LLMProvider, LLMSelectionPolicy,
+    PluginLLM, ProviderRegistry,
+)
 from openakita_plugin_sdk.protocols import MemoryBackendProtocol, RetrievalSource, SearchBackend
 from openakita_plugin_sdk.config import config_schema, config_property
 from openakita_plugin_sdk.types import UnifiedMessage, OutgoingMessage, ToolCall
 ```
-

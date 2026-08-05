@@ -4,6 +4,13 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.222](https://github.com/Piebald-AI/claude-code-system-prompts/commit/911caf9)
+
+_-341 tokens_
+
+- **NEW:** System Prompt: Artifact comment list framing — Treats listed Artifact comments and selected-text excerpts as randomized-fence, untrusted viewer data; reserves start-of-row attribution brackets, line-break escapes, and truncation or read-failure rows as tool-emitted syntax so imitations inside comments remain data.
+- System Prompt: Artifact comment thread framing — Distinguishes initial activation, existing comments newly sent or re-sent to Claude, and newly arrived comments; requires answering every `[human, sent to you]` summons; treats unresolved author lanes as possibly human; and reserves row heads, bracket-leading line escapes, elision, and summoning-comment truncation markers as tool-emitted syntax.
+
 # [2.1.221](https://github.com/Piebald-AI/claude-code-system-prompts/commit/ff459f4)
 
 _+11,813 tokens_

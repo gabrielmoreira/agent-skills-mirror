@@ -95,7 +95,7 @@ Do NOT create auxiliary documentation files:
 
 ## Installing a Skill
 
-Install target directory: `<workspace>/skills/<name>/` (the `<workspace>` is from the "工作空间" section).
+Install target directory: `<workspace>/skills/<name>/` (the `<workspace>` is from the "Workspace" section).
 
 ### Step 1 — Obtain skill content
 
@@ -204,7 +204,7 @@ scripts/init_skill.py my-skill --path <workspace>/skills --resources scripts,ref
 scripts/init_skill.py my-skill --path <workspace>/skills --resources scripts --examples
 ```
 
-Where `<workspace>` is your workspace directory shown in the "工作空间" section of the system prompt.
+Where `<workspace>` is your workspace directory shown in the "Workspace" section of the system prompt.
 
 The script:
 
@@ -215,7 +215,7 @@ The script:
 
 After initialization, customize the SKILL.md and add resources as needed. If you used `--examples`, replace or delete placeholder files.
 
-**Important**: Always create skills in workspace skills directory (`<workspace>/skills`), NOT in project directory. Check the "工作空间" section for the actual workspace path.
+**Important**: Always create skills in workspace skills directory (`<workspace>/skills`), NOT in project directory. Check the "Workspace" section for the actual workspace path.
 
 ### Step 4: Edit the Skill
 

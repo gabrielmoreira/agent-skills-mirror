@@ -44,7 +44,7 @@ Studio 状态的唯一写入者。
 
 ```bash
 # 云端逐词转录（生成任务目录内的 transcript 候选）之后：
-node "<插件根>/scripts/videocut-cli.cjs" project create "<项目目录>" --video "<任务目录内的视频文件>" --transcript "<任务目录内的逐词稿>" --aspect-ratio "<画幅比>" --json
+node "<插件根>/scripts/videocut-cli.cjs" project create "<项目目录>" --video "<任务目录内的视频文件>" --transcript "<任务目录内的逐词稿>" --json
 
 node "<插件根>/scripts/ensure-running.cjs" --json          # 产品声明式确保常驻服务（5190）
 
@@ -58,8 +58,9 @@ node "<插件根>/scripts/videocut-cli.cjs" cuts get "<项目目录>" --json
   占位视频顶替
 - 转录只用当前环境已获准的**云端 ASR**；禁止回退本地 ASR；没有可用云端 ASR 时报告
   `missing_cloud_transcription_adapter`，不开 Studio、不伪造 transcript
-- `--video` / `--transcript` 必须是任务目录内的真实文件；`aspectRatio` 只能是
-  `3:4 / 4:3 / 16:9`，默认 `4:3`
+- `--video` / `--transcript` 必须是任务目录内的真实文件；画幅比不要传——产品会
+  从视频实际尺寸自动推导（Runtime 0.4.4+）。只有用户明确要求特殊画幅时才加
+  `--aspect-ratio W:H`
 - 已有规范项目先 `inspect` 确认并复用，不重复创建 `projectId`；同一个视频剪过时
   问用户：继续上次，还是重来（这是三个说话点之一）。`project prepare` 是幂等
   编译器，只在恢复中断或明确刷新时用，中断了直接重跑即可

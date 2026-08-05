@@ -2,7 +2,7 @@
 
 ![Alex ACT Plugin Mall](assets/banner.svg)
 
-Alex ACT Plugin Mall lets users add trusted capabilities without copying a whole AI setup into every project. Start with Core, then install only the specializations the work actually earns.
+Alex ACT Plugin Mall lets users add trusted capabilities to GitHub Copilot without copying a whole AI setup into every project. Start with **Alex ACT Core** for a dependable working baseline, then add only the specializations that match your work.
 
 The Mall publishes **365 curated plugins** for direct installation and maintains a **trust-scored discovery index** across **3868 plugins** in **42 stores**.
 

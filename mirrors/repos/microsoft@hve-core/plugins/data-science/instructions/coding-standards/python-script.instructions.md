@@ -1,1 +1,0 @@
-cache/repos/github.com/microsoft@hve-core/plugins/data-science/instructions/coding-standards/../../../../.github/instructions/coding-standards/python-script.instructions.md

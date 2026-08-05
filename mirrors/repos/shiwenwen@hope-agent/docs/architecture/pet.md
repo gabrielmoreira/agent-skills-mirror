@@ -8,7 +8,7 @@ Pet 是一个桌面优先、被动常驻零 LLM 的状态表现层。它把已�
 
 | 层 | 唯一职责与入口 |
 | --- | --- |
-| Core | `crates/ha-core/src/pet/`：`activity` 负责主对话投影，`atlas` 负责 Codex 格式与图片校验，`import` 负责发现和 preview capability，`store` 负责原子安装、删除/恢复与导出，`asset` 负责安全资源解析，`creator` 负责显式创作流程；这里不依赖 Tauri |
+| Core（契约） | `crates/ha-core/src/pet.rs`：`ChatUiSurface`（chat_turns.ui_surface 列 wire 类型）、`emit_activity_changed`、`update_config` trampoline；宠物机器（`activity` 主对话投影 / `atlas` Codex 格式与图片校验 / `import` 发现 + preview capability / `store` 原子安装-删除-恢复-导出 / `asset` 安全资源解析 / `creator` 显式创作流程）随第四刀迁到 `crates/ha-pet/`；这里不依赖 Tauri |
 | 桌面壳 | `src-tauri/src/commands/pet.rs` 只做命令适配；`src-tauri/src/pet_window.rs` 负责透明窗口生命周期、原生 geometry、失焦指针桥和位置恢复；`src-tauri/src/pet_deep_link.rs` 只接收 Hope 自有协议并转交预览 |
 | HTTP 壳 | `crates/ha-server/src/routes/pet.rs` 只做 Bearer 鉴权、参数/结果映射和同源资源响应，不能重写 Core 的导入、hash、状态资格或优先级 |
 | React | `src/PetWindow.tsx` 是独立轻量入口；`src/components/pet/` 承载精灵、气泡、交互卡和布局 hooks；`src/components/settings/PetSettingsPanel.tsx` 是 owner 管理面 |
@@ -101,20 +101,22 @@ typed navigation 由主 App 壳消费：Regular 回主聊天 session；Knowledge
 
 ## 精灵图、存储与导入
 
-Core 显式支持 Codex v1 `1536×1872`（8×9）和 v2 `1536×2288`（8×11），单格 `192×208`。渲染使用 SVG `viewBox` + atlas 坐标，不用 Canvas/WebGL，不复制 Codex 内置专有素材。内置 Hope pet 编译进应用；自定义包位于 `~/.hope-agent/pets/`，`pet.json` 只保留 Codex 兼容的 `id`、`displayName`、`description`、`spriteVersionNumber`、`spritesheetPath`，后两项缺省为 `1` 和 `spritesheet.webp`；Hope provenance、source 与 hash 单独放 `hope.json`。v2 末两行保持原样，不赋予未经确认的业务语义。
+Core 显式支持 Codex v1 `1536×1872`（8×9）和 v2 `1536×2288`（8×11），单格 `192×208`。v2 前 9 行与 v1 动作完全相同，第 9–10 行（零基）按「正上方 0° 起、顺时针」保存 16 个注视方向。渲染使用 SVG `viewBox` + atlas 坐标，不用 Canvas/WebGL，不复制 Codex 内置专有素材。内置 Hope pet 编译进应用；自定义包位于 `~/.hope-agent/pets/`，`pet.json` 只保留 Codex 兼容的 `id`、`displayName`、`description`、`spriteVersionNumber`、`spritesheetPath`，后两项缺省为 `1` 和 `spritesheet.webp`；Hope provenance、source 与 hash 单独放 `hope.json`。
 
 Debug 构建额外注入内置 `builtin:hope-debug`，其 v1 atlas 每格使用纯色背景，并精确标注英文状态、中文状态、零基 row/frame；同一行的各帧用同色系明暗变化，便于同时观察 action 仲裁和计时器是否推进。行契约固定为 `Idle/空闲`、`Run Right/向右跑`、`Run Left/向左跑`、`Wave/挥手`、`Jump/跳跃`、`Sad/难过`、`Waiting/等待`、`Working/工作中`、`Celebrate/庆祝`。资源由 `scripts/generate-debug-pet.py` 确定性生成。Core 的注册、内嵌 asset resolver 和导出分支必须受 Rust `debug_assertions` 编译门控；renderer 的直连 asset 必须受 `import.meta.env.DEV` 门控。Release library、选择校验和 asset API 均不能识别该 pet；若开发配置残留其引用，Release 按既有 selected-unavailable 逻辑回退 Hope，不迁移用户配置。
 
 ### Create Pet 生成管线
 
-Create 是 Settings 内 owner 显式触发的媒体生成，不注册 Agent tool/skill，也不从一张图继续发起逐帧模型调用。它先经 `media_gen::execute_image` 生成单个角色源图，再由 Core 确定性构造 Codex v1 atlas：
+Create 是 Settings 内 owner 显式触发的媒体生成，不注册 Agent tool/skill，也不从一张图继续发起逐帧模型调用。它先经 `media_gen::execute_image` 生成单个角色源图，再由 Core 确定性构造 Codex atlas；请求未带版本时默认 v2，Settings 可显式选择 v1：
 
 1. 按 magic bytes 解码并限制源图尺寸；已有明显透明度时保留原 alpha。
 2. 只有四角背景色一致且图像基本不透明时，才移除与图像边缘连通的近似背景色；不做全图颜色抠除，避免误删角色内部的同色细节。
-3. 按 alpha 内容边界裁剪并缩放到单格安全区，随后使用固定的位移、缩放、翻转和 bob 参数合成 9 行 × 8 帧动作。动作行顺序与上面的 v1 契约一致，结果恒为 `1536×1872` PNG。
+3. 按 alpha 内容边界裁剪并缩放到单格安全区，随后使用固定的位移、缩放、翻转和 bob 参数合成 9 行 × 8 帧动作。选择 v1 时结果为 `1536×1872` PNG；默认 v2 时完整保留这 9 行，再以 alpha 内容最多的 Idle 帧为基准，保持下半身锚定、仅将上部轮廓向目标方向渐进形变，确定性合成 16 个顺时针注视姿态，结果为 `1536×2288` PNG。方向帧不平移或镜像整只宠物，避免光标跨方向时发生整体跳动。
 4. 生成包继续走与外部导入相同的 atlas validator、preview capability 和人工确认；校验失败不安装，用户取消不留下最终包。
 
-因此 Creator 的“动画”是本地可复现的 pose 合成，不表示媒体模型分别生成了 72 帧；修改背景判定、裁剪、pose 或行顺序时必须同步 creator/atlas 单测和本节。
+因此 Creator 的“动画”是本地可复现的 pose 合成，不表示媒体模型分别生成了 72/88 帧；修改背景判定、裁剪、pose、方向顺序或行顺序时必须同步 creator/atlas 单测和本节。
+
+已有 v1 的「升级到 v2」同样走确定性 atlas 变换：先检查客户端传入的 `expectedPackageHash` 防陈旧操作，逐像素保留原 9 行，再追加 16 个方向格并通过统一 validator。升级安装为 content-addressed v2 副本而不覆盖 v1；若 v1 原本被选中，只有 v2 副本持久化成功后才切换选择。重复点击命中同一 package hash，幂等复用已有 v2 副本。
 
 所有导入入口都走 preview → validate → commit：Codex current/legacy 扫描、目录、zip、manifest + image、PNG/WebP、浏览器 upload、HTTPS sprite、粘贴 `codex://` / `hope-agent://`，以及系统注册的 `hope-agent://` 协议。系统协议只把主窗口带到 Settings 的预览确认页；`codex://` 只支持粘贴解析，因为该 scheme 属于 Codex。任何入口都不能静默安装或启用。
 

@@ -59,11 +59,9 @@ dependency feedback without running package installation from the plugin.
 
 The same responses include `brain_status`, which separates permission issues
 from host LLM availability: `permission_denied` means the plugin lacks
-`brain.access`, while `host_brain_unavailable` means OpenAkita has not injected
-a Brain client, usually because the main LLM endpoint is not configured. Brain
-calls use the host-provided client only, preferring `think_lightweight`, then
-`think`, then `compiler_think`, and fall back to deterministic behavior when
-the response is empty or cannot be parsed as the expected JSON shape.
+`brain.access`, while `host_brain_unavailable` means OpenAkita has no usable
+text endpoint. Text calls use `api.get_llm()` only; the settings selector can
+follow the current OpenAkita model or strictly require one configured endpoint.
 
 ## Template Variables
 

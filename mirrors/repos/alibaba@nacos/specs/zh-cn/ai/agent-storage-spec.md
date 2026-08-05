@@ -465,17 +465,17 @@ metadata。
 
 ## 7. Runtime Source Revision
 
-针对每个 `(namespaceId, agentName, targetVersion, protocol, source=RUNTIME)`，服务端在完成
-以下步骤后生成 opaque `sourceRevision`：
+针对每个 Runtime 发现投影，服务端在完成以下步骤后生成 opaque `sourceRevision`：
 
 1. 从 `ServiceStorage` 读取完整的 Naming 内部 Service 投影；
-2. 选择包含目标 Version 的 binding；
+2. 选择至少包含一个兼容目标 Version 的 binding；
 3. 规范每个 Endpoint URI，校验并保持 transport，显式写入有效默认值 `priority=0` 和
    `weight=1`，并要求 `healthy` 存在；
 4. 校验每个自然键只有一个 canonical payload；
 5. 移除 `enabled=false`，并保留两种健康状态；
-6. 按自然键排序 Endpoint，并按 UTF-16 code-unit ordinal 顺序排序 metadata key；
-7. 对下文定义的 revision bytes 计算 MurmurHash3 x64 128。
+6. 为每个 enabled Endpoint 附加有序去重的命中 binding 并集；
+7. 按自然键排序 Endpoint，并按 UTF-16 code-unit ordinal 顺序排序 metadata key；
+8. 对下文定义的 revision bytes 计算 MurmurHash3 x64 128。
 
 在同一个投影中，自然键依次按 `normalizedHost` 的 UTF-16 code-unit ordinal 顺序、
 `effectivePort` 的数值顺序、transport 的 UTF-16 code-unit ordinal 顺序比较。实现不得使用
@@ -487,11 +487,11 @@ locale-sensitive collation。URI path 和 query 不属于自然键，因此不�
 murmur3-x64-128-v1:<32 lowercase hex>
 ```
 
-Revision 输入包含 URI、transport、effective priority 和 weight、公开 Endpoint metadata 和
-`healthy`。它不包含 runtimeVersion、versionRange、publisher identity 和 count、heartbeat
-时间、last-updated time 或 Naming 内部 revision。Runtime Version 和 range 不进入 hash，
-因为目标投影已经完成过滤。Range 或 enabled 变化会改变成员；health 变化会改变返回内容。
-目标投影变化时，两者都会推进 revision。
+Revision 输入包含 URI、transport、effective priority 和 weight、公开 Endpoint metadata、
+`healthy`，以及返回的每个 `runtimeVersion` 和规范化 `versionRange` binding。它不包含
+publisher identity 和 count、heartbeat 时间、last-updated time 或 Naming 内部 revision。
+binding 或在线兼容目标集合变化时，只要发现可见投影改变，即使 Endpoint payload 未变也会
+推进 revision。
 
 公开 Endpoint metadata 缺失或为空时，metadata entry count 均编码为零。
 
@@ -508,10 +508,11 @@ Watch 去重，不用于身份、鉴权、CAS 或防篡改。
 | `weight` | 八字节 IEEE-754 binary64 bits；negative zero 规范为 positive zero。 |
 | metadata | unsigned 四字节 entry count；随后按上述 string 编码依次写入有序 key 和 value。 |
 | `healthy` | 一个 byte：false 为 `0`，true 为 `1`。 |
+| bindings | unsigned 四字节 binding count；随后按上述 string 编码写入每个有序 `runtimeVersion` 和规范化 `versionRange`。 |
 
 空集合恰好为 `uint32be(0)`。Murmur 结果先输出 `h1` 再输出 `h2`，每个都是 unsigned
-八字节 big-endian 值，最后编码为小写十六进制。内部 Storage Schema version 1 同时以
-机器可读形式记录这些规则。
+八字节 big-endian 值，最后编码为小写十六进制。内部 Storage Schema 同时以机器可读
+形式记录这些规则。
 
 Naming `ServiceStorage` 提供当前已缓存的 Service 投影。Agent 读取路径直接从该结果派生公开
 Endpoint set 及其 revision，不维护第二份投影缓存。
@@ -595,9 +596,12 @@ A2A Adapter 是本存储契约的首个使用方：
 | Runtime 调用 protocol | 规范 Agent protocol token `a2a`。 |
 | 旧 Endpoint transport 和 URI 部分 | 通用 Endpoint 和 Naming 保留 metadata。 |
 
-首个兼容阶段中，旧 A2A Runtime 注册继续使用现有的按 Version 划分 Naming layout。在 A2A 客户端
-或 Adapter 能够维护并提交新 Service 的完整期望批次之前，不得把旧注册直接重定向到新的
-Version-neutral Service，否则一个旧 Version 的注册会覆盖另一个 Version。
+`CANONICAL` 兼容分支把旧 A2A Runtime 注册写入公共 Version-neutral Service。为满足本规范
+“每个 publisher 对一个 Service 只有一份完整 singular binding 批次”的约束，Adapter 按
+`(原 connection, namespaceId, agentName, exactVersion)` 派生内部子 publisher。每个子 publisher
+提交该精确 Version 的完整批次，因此不同 Version 不会覆盖，也不需要服务端 read-merge-write；
+原 connection 断开时释放全部子 publisher。
 
-后续切换到公共 Naming layout、历史 Naming Service、混合集群双读或双写、回滚和异常历史身份处理
-属于独立的滚动升级与迁移契约。
+`LEGACY` 分支仍完整使用历史按 Version 划分的 Naming layout。Beta 的 `CANONICAL` 分支不向历史
+Service 双写。直接依赖旧 Naming serviceName 的 Gateway 调用方兼容、混合集群双读或双写、回滚、
+旧 Service 清理和异常历史身份处理属于独立的 Beta 后滚动升级与迁移契约。

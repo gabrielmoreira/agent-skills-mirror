@@ -23,9 +23,11 @@ Follow project testing rules in `.cursor/rules`:
    - tabs/menu items/submenu triggers
    - modal/drawer open and confirm actions
 4. For config-driven UI (for example `menu.items`), add `"data-testid"` in config and forward it to the real clickable DOM node in renderer/wrapper components.
-5. For repeated list rows/items, prefer one shared id queried with `getAllByTestId`; if uniqueness is required, append a stable business key (never array index when order can change).
-6. Keep existing ids unchanged unless user explicitly asks to rename; never remove existing ids in migration tasks.
-7. For interaction changes, add or update Vitest/RTL tests in colocated `__tests__` where feasible.
+5. For repeated list rows/items, put the stable `data-testid` on the row/item container first. Do not add separate unique ids to every child element by default.
+6. Inside a list row/item, reuse the row scope in tests: locate the row by shared row id plus text/business data, then query child controls with `within(row)` or role/label selectors.
+7. Add child-level `data-testid` inside repeated rows only when the child cannot be reliably selected from the row scope; if needed, keep the child id shared across rows instead of appending row ids.
+8. Keep existing ids unchanged unless user explicitly asks to rename; never remove existing ids in migration tasks.
+9. For interaction changes, add or update Vitest/RTL tests in colocated `__tests__` where feasible.
 
 ## Naming Rules
 
@@ -45,6 +47,7 @@ For every newly created UI component, include at least:
 - test ids for each secondary action button
 - test ids for each form field group/control
 - test ids for menu item triggers when menus are present
+- for repeated lists/tables, one list container id and one row/item container id; avoid per-cell/per-action dynamic ids unless row-scoped selectors are insufficient
 - preserved historical `data-testid` in touched files
 - loading/empty/error test ids for async UIs
 
@@ -66,8 +69,10 @@ Apply these patterns for stable and accurate element targeting:
    - add ids for form container, inputs, submit/cancel buttons, and validation errors
 2. Lists and tables
    - add list container id and row container id
-   - use stable business key for row id suffix when uniqueness is required
-   - query child actions with `within(row)` scope
+   - prefer a shared row id, then select the intended row by text/business data
+   - use stable business key for row id suffix only when there is a concrete need for direct row lookup
+   - do not add separate dynamic ids to every field/action inside the row; query child actions with `within(row)` scope
+   - if a child action needs a `data-testid`, use one shared id such as `collaborator-remove-button` and resolve it from the row scope
 3. Menus and dropdowns
    - add ids for trigger, popup content, and each actionable menu item
    - if menu is config-driven, forward item-level `data-testid` to rendered node
@@ -82,6 +87,7 @@ Apply these patterns for stable and accurate element targeting:
 - Never generate ids from random values or timestamps.
 - Keep singleton ids unique on a page.
 - For repeated components, keep shared child ids and scope with `within(...)`.
+- Prefer row-level uniqueness over child-level uniqueness in repeated rows; child ids should not encode row ids unless there is no row container to scope from.
 
 ## Patterns
 
@@ -92,6 +98,30 @@ Apply these patterns for stable and accurate element targeting:
   <button type="button" data-testid="user-menus-upgrade-button" />
   <button type="button" data-testid="user-menus-recharge-button" />
 </div>
+```
+
+### Repeated list row
+
+```tsx
+<div data-testid="collaborator-list-content">
+  {collaborators.map((collaborator) => (
+    <div
+      key={collaborator.id}
+      data-testid="collaborator-item"
+      data-collaborator-id={collaborator.id}
+    >
+      <span>{collaborator.name}</span>
+      <button type="button" data-testid="collaborator-remove-button" />
+    </div>
+  ))}
+</div>
+
+const row = page
+  .getByTestId("collaborator-list-content")
+  .locator('[data-testid="collaborator-item"]')
+  .filter({ hasText: receiverName })
+
+await row.getByTestId("collaborator-remove-button").click()
 ```
 
 ### Config + renderer forwarding
@@ -106,5 +136,5 @@ const items = [
 
 ## Done Criteria
 
-Complete only when all new interactive nodes in touched UI files have stable `data-testid` values and any wrapper layer correctly forwards them to rendered DOM elements.
+Complete only when all new singleton interactive nodes in touched UI files have stable `data-testid` values and repeated list/table rows have row-level selectors that allow child controls to be found from the row scope.
 Confirm no existing `data-testid` was removed unintentionally in migration/refactor diffs.

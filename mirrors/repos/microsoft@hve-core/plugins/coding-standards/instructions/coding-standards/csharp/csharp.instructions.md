@@ -1,1 +1,0 @@
-cache/repos/github.com/microsoft@hve-core/plugins/coding-standards/instructions/coding-standards/csharp/../../../../../.github/instructions/coding-standards/csharp/csharp.instructions.md

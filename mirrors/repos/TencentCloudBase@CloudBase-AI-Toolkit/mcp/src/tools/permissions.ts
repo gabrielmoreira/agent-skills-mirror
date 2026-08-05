@@ -41,7 +41,7 @@ function buildWriteVerificationHint(resourceId: string) {
 }
 
 function buildPermissionPropagationHint(resourceId: string) {
-  return `刚更新完 ${resourceId} 的安全规则时，后端权限可能需要一小段传播时间。若紧接着的真实写操作仍返回 DATABASE_PERMISSION_DENIED，请先等待一小段时间，再用同一登录态重试同一条 .doc(id).update() / .doc(id).remove()；不要立刻连续重写规则，也不要在传播窗口里把旧拒绝直接当成规则表达式仍然错误。`;
+  return `刚更新完 ${resourceId} 的安全规则时，后端权限通常在数秒到约 30 秒内生效。若紧接着的真实写操作仍返回 DATABASE_PERMISSION_DENIED，请先间隔数秒用同一登录态重试同一条 .doc(id).update() / .doc(id).remove()；不要盲等数分钟，也不要立刻连续重写规则，更不要在短暂传播窗口里把旧拒绝直接当成规则表达式仍然错误。`;
 }
 
 type CreateRuleHint = {
@@ -109,6 +109,223 @@ function mapResourceType(resourceType: LegacyResourceType) {
   } as const;
 
   return resourceTypeMap[resourceType];
+}
+
+/**
+ * Platform ModifyResourcePermission / DescribeResourcePermission reject PG envs.
+ * CLI migrated `tcb permission` → `tcb policy` (OPA Rego via
+ * permission.modifyEnvAuthzConfig / describeEnvAuthzConfig).
+ */
+function isPostgresqlPermissionApiUnsupported(error: unknown): boolean {
+  const message = error instanceof Error ? error.message : String(error);
+  return /does not support PostgreSQL type environments/i.test(message);
+}
+
+const AUTHZ_USER_REGO_KEY = "authz.user.rego" as const;
+
+function looksLikeUserRego(value: string): boolean {
+  return /^\s*package\s+authz\.user\b/m.test(value);
+}
+
+/** Detect legacy function securityRule shapes that mean "public invoke". */
+function isPublicFunctionInvokeRule(securityRule: string | undefined): boolean {
+  if (!securityRule || securityRule.trim() === "") {
+    return false;
+  }
+  const trimmed = securityRule.trim();
+  if (trimmed === "true") {
+    return true;
+  }
+  try {
+    const parsed = JSON.parse(trimmed) as unknown;
+    if (parsed === true || parsed === "true") {
+      return true;
+    }
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return false;
+    }
+    const obj = parsed as Record<string, unknown>;
+    if (obj.invoke === true || obj.invoke === "true") {
+      return true;
+    }
+    for (const value of Object.values(obj)) {
+      if (
+        value &&
+        typeof value === "object" &&
+        !Array.isArray(value) &&
+        ((value as { invoke?: unknown }).invoke === true ||
+          (value as { invoke?: unknown }).invoke === "true")
+      ) {
+        return true;
+      }
+    }
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+/**
+ * Build a CLI-aligned user Rego that opens cloud-function access for
+ * anonymous + unauthenticated callers (tcb policy set example + HTTP no-token).
+ */
+function buildPublicFunctionsUserRego(resourceId: string): string {
+  const comment =
+    resourceId && resourceId !== "*"
+      ? `# Public HTTP/API access for function ${resourceId} (aligned with tcb policy set)`
+      : `# Public HTTP/API access for cloud functions (aligned with tcb policy set)`;
+  return [
+    "package authz.user",
+    "",
+    "default allow := false",
+    "",
+    comment,
+    "allow if {",
+    '  input.cloudbase.resource_type == "functions"',
+    '  input.subject.auth_type in {"anonymous", "unauthenticated"}',
+    "}",
+    "",
+  ].join("\n");
+}
+
+function resolveFunctionAuthzRegoInput(
+  securityRule: string | undefined,
+  resourceId: string,
+): string {
+  if (securityRule && looksLikeUserRego(securityRule)) {
+    return securityRule;
+  }
+  if (isPublicFunctionInvokeRule(securityRule)) {
+    return buildPublicFunctionsUserRego(resourceId);
+  }
+  throw new Error(
+    `PostgreSQL environments manage HTTP/function gateway auth via OPA Rego ` +
+      `(same as CLI \`tcb policy set\`), not ModifyResourcePermission / function security-rule JSON. ` +
+      `Pass either:\n` +
+      `1) permission="CUSTOM" with securityRule as a full Rego document starting with \`package authz.user\`, or\n` +
+      `2) permission="CUSTOM" with securityRule='{"invoke":true}' to generate a public-functions allow policy.\n` +
+      `See https://docs.cloudbase.net/cli-v1/policy/management`,
+  );
+}
+
+async function describeEnvAuthzUserRego(
+  cloudbase: any,
+): Promise<{ value: string; raw: unknown }> {
+  if (!cloudbase?.permission?.describeEnvAuthzConfig) {
+    throw new Error(
+      "Current @cloudbase/manager-node does not expose permission.describeEnvAuthzConfig. Upgrade manager-node (>= 5.5.5) to align with CLI tcb policy get.",
+    );
+  }
+  const result = await cloudbase.permission.describeEnvAuthzConfig({
+    key: AUTHZ_USER_REGO_KEY,
+  });
+  const value =
+    typeof result?.Item?.Value === "string"
+      ? result.Item.Value
+      : typeof result?.Value === "string"
+        ? result.Value
+        : "";
+  return { value, raw: result };
+}
+
+async function modifyEnvAuthzUserRego(
+  cloudbase: any,
+  value: string,
+): Promise<unknown> {
+  if (!cloudbase?.permission?.modifyEnvAuthzConfig) {
+    throw new Error(
+      "Current @cloudbase/manager-node does not expose permission.modifyEnvAuthzConfig. Upgrade manager-node (>= 5.5.5) to align with CLI tcb policy set.",
+    );
+  }
+  return cloudbase.permission.modifyEnvAuthzConfig({
+    key: AUTHZ_USER_REGO_KEY,
+    value,
+  });
+}
+
+async function describeResourcePermissionWithFunctionPgFallback(options: {
+  cloudbase: any;
+  envId: string;
+  resourceType: LegacyResourceType;
+  resources?: string[];
+}): Promise<{
+  Data: {
+    TotalCount: number;
+    PermissionList: Array<{
+      ResourceType: string;
+      Resource: string;
+      Permission: string;
+      SecurityRule?: string;
+    }>;
+  };
+  RequestId?: string;
+  fallback?: "describeEnvAuthzConfig";
+  raw?: unknown;
+}> {
+  const { cloudbase, envId, resourceType, resources } = options;
+  try {
+    const result = await cloudbase.permission.describeResourcePermission({
+      resourceType: mapResourceType(resourceType),
+      resources,
+    });
+    return result;
+  } catch (error) {
+    if (resourceType !== "function" || !isPostgresqlPermissionApiUnsupported(error)) {
+      throw error;
+    }
+    const fallback = await describeEnvAuthzUserRego(cloudbase);
+    const targets =
+      resources && resources.length > 0 ? resources : ["*"];
+    const permissionList = targets.map((resourceId) => ({
+      ResourceType: "function",
+      Resource: resourceId,
+      Permission: "CUSTOM" as const,
+      SecurityRule: fallback.value || "",
+    }));
+    return {
+      Data: {
+        TotalCount: permissionList.length,
+        PermissionList: permissionList,
+      },
+      RequestId: (fallback.raw as { RequestId?: string } | undefined)?.RequestId,
+      fallback: "describeEnvAuthzConfig",
+      raw: fallback.raw,
+    };
+  }
+}
+
+async function modifyFunctionPermissionWithPgFallback(options: {
+  cloudbase: any;
+  envId: string;
+  resourceId: string;
+  permission: "READONLY" | "PRIVATE" | "ADMINWRITE" | "ADMINONLY" | "CUSTOM";
+  securityRule?: string;
+}): Promise<{ result: unknown; fallback?: "modifyEnvAuthzConfig"; rego?: string }> {
+  const { cloudbase, resourceId, permission, securityRule } = options;
+  try {
+    const result = await cloudbase.permission.modifyResourcePermission({
+      resourceType: "function",
+      resource: resourceId,
+      permission,
+      securityRule,
+    });
+    return { result };
+  } catch (error) {
+    if (!isPostgresqlPermissionApiUnsupported(error)) {
+      throw error;
+    }
+    if (permission !== "CUSTOM") {
+      throw new Error(
+        `PostgreSQL environments do not support ModifyResourcePermission. ` +
+          `Align with CLI \`tcb policy set\`: use permission="CUSTOM" and pass OPA Rego ` +
+          `(package authz.user) or securityRule='{"invoke":true}' for public functions. ` +
+          `Underlying error: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+    const rego = resolveFunctionAuthzRegoInput(securityRule, resourceId);
+    const result = await modifyEnvAuthzUserRego(cloudbase, rego);
+    return { result, fallback: "modifyEnvAuthzConfig", rego };
+  }
 }
 
 function normalizeRecordArray(value: unknown, label: string) {
@@ -341,7 +558,7 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
     "queryPermissions",
     {
       title: "查询 CloudBase 权限与用户配置",
-      description: "查询 CloudBase 权限与用户配置，支持查询资源权限（数据库/云函数/存储桶等）、角色列表/详情、应用用户列表/详情。\n\n示例：\n- 查询存储桶权限：`action=\"getResourcePermission\", resourceType=\"storage\", resourceId=\"bucket-name\"`\n\n📌 跨后端边界提示：调用前先用 `envQuery(action=\"info\", envId=...)` 看 `EnvInfo.RuntimeBackends`。`resourceType=\"noSqlDatabase\"` 查询的是 CloudBase NoSQL 集合规则，与 CloudBase PostgreSQL（PG）表的行级安全（RLS）是两套独立机制——同一个 PG 环境里 NoSQL 集合若仍在使用，对那些集合查询本工具结果**仍然有效**。要查 PG 表 RLS，请改用 `queryPgDatabase(action=\"sql\", sql=\"SELECT * FROM pg_policies WHERE tablename=...\")`。本工具不涉及 MySQL 权限。",
+      description: "查询 CloudBase 权限与用户配置，支持查询资源权限（数据库/云函数/存储桶等）、角色列表/详情、应用用户列表/详情。\n\n示例：\n- 查询存储桶权限：`action=\"getResourcePermission\", resourceType=\"storage\", resourceId=\"bucket-name\"`\n\n📌 跨后端边界提示：调用前先用 `envQuery(action=\"info\", envId=...)` 看 `EnvInfo.RuntimeBackends`。`resourceType=\"noSqlDatabase\"` 查询的是 CloudBase NoSQL 集合规则，与 CloudBase PostgreSQL（PG）表的行级安全（RLS）是两套独立机制——同一个 PG 环境里 NoSQL 集合若仍在使用，对那些集合查询本工具结果**仍然有效**。要查 PG 表 RLS，请改用 `queryPgDatabase(action=\"sql\", sql=\"SELECT * FROM pg_policies WHERE tablename=...\")`。本工具不涉及 MySQL 权限。\n\n⚠️ PostgreSQL 环境：平台 `DescribeResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType=\"function\"` 时，本工具会自动回退到 Manager SDK `describeEnvAuthzConfig`（与 CLI `tcb policy get` 一致，读取 `authz.user.rego`）。",
       inputSchema: {
         action: z.enum(QUERY_PERMISSION_ACTIONS),
         resourceType: z
@@ -400,8 +617,10 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
             if (resourceType === "storage") {
               await ensureStorageBucketsExist(cloudbase, [resourceId]);
             }
-            const result = await cloudbase.permission.describeResourcePermission({
-              resourceType: mapResourceType(resourceType),
+            const result = await describeResourcePermissionWithFunctionPgFallback({
+              cloudbase,
+              envId,
+              resourceType,
               resources: [resourceId],
             });
             logCloudBaseResult(server.logger, result);
@@ -420,9 +639,12 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
                 aclTag: matchedPermission?.Permission,
                 permissions,
                 hints,
-                raw: result,
+                ...(result.fallback ? { fallback: result.fallback } : {}),
+                raw: result.raw ?? result,
               },
-              "资源权限查询成功",
+              result.fallback
+                ? "资源权限查询成功（PostgreSQL 环境已回退到 describeEnvAuthzConfig / tcb policy get）"
+                : "资源权限查询成功",
             );
           }
           case "listResourcePermissions": {
@@ -432,8 +654,10 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
             if (resourceType === "storage" && resourceIds?.length) {
               await ensureStorageBucketsExist(cloudbase, resourceIds);
             }
-            const result = await cloudbase.permission.describeResourcePermission({
-              resourceType: mapResourceType(resourceType),
+            const result = await describeResourcePermissionWithFunctionPgFallback({
+              cloudbase,
+              envId,
+              resourceType,
               resources: resourceIds,
             });
             logCloudBaseResult(server.logger, result);
@@ -456,9 +680,12 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
                 permissions,
                 resourceHints,
                 total: result.Data.TotalCount ?? 0,
-                raw: result,
+                ...(result.fallback ? { fallback: result.fallback } : {}),
+                raw: result.raw ?? result,
               },
-              "资源权限列表查询成功",
+              result.fallback
+                ? "资源权限列表查询成功（PostgreSQL 环境已回退到 describeEnvAuthzConfig / tcb policy get）"
+                : "资源权限列表查询成功",
             );
           }
           case "listRoles": {
@@ -562,7 +789,7 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
     {
       title: "管理 CloudBase 权限与用户配置",
       description:
-        "管理 CloudBase 权限与用户配置，支持修改资源权限（数据库/云函数/存储桶等）、角色管理、成员与策略增删、应用用户 CRUD。\n\n示例：\n- 设置存储桶为私有：`action=\"updateResourcePermission\", resourceType=\"storage\", resourceId=\"bucket-name\", permission=\"PRIVATE\"`\n- 创建角色：`action=\"createRole\", roleName=\"admin\", roleIdentity=\"admin\"`\n\n注意：`createUser` / `updateUser` 是环境侧应用用户管理能力，适合测试账号、管理员或预置用户，不应替代浏览器里的 Web SDK 注册表单；前端用户名密码注册应使用 `auth.signUp({ username, password })`，登录应使用 `auth.signInWithPassword({ username, password })`。直接在浏览器里用 `auth.signUp` 创建用户名密码用户取决于 SDK/provider 支持，使用前必须验证；不支持时应走后端或管理端边界，不能在浏览器暴露密钥。`securityRule` 的详细语义取决于 `resourceType`：`doc._openid`、`auth.openid`、查询条件子集校验，以及 `create` / `update` / `delete` JSON 模板仅适用于 `resourceType=\"noSqlDatabase\"` 的文档数据库安全规则；配置 `function` 或 `storage` 时，请参考各自官方安全规则文档，而不是复用 NoSQL 模板。\n\n📌 跨后端边界提示：调用前先用 `envQuery(action=\"info\", envId=...)` 看 `EnvInfo.RuntimeBackends`：\n- `resourceType=\"noSqlDatabase\"` 仅作用于 CloudBase NoSQL 文档数据库的集合；CloudBase PostgreSQL（PG）表的行级权限**不**受它控制——PG 表请改用 RLS：`managePgDatabase(action=\"execute\", confirm=true)` 跑 `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` 与 `CREATE POLICY ...`。同一个 PG 环境里如果还有 NoSQL 集合在用，对那些**集合**继续使用 `noSqlDatabase` 规则是正确的——不是\"PG 环境就禁用本工具\"。\n- `resourceType=\"storage\"` 控制的是 NoSQL/COS 存储桶 ACL；PG 的 `pgstore` bucket 不在此 `resourceType` 覆盖范围内。\n- 本工具不涉及 MySQL；MySQL 数据库权限请走 MySQL 自身的 GRANT/REVOKE 语句（通过 `manageMysqlDatabase`）。",
+        "管理 CloudBase 权限与用户配置，支持修改资源权限（数据库/云函数/存储桶等）、角色管理、成员与策略增删、应用用户 CRUD。\n\n示例：\n- 设置存储桶为私有：`action=\"updateResourcePermission\", resourceType=\"storage\", resourceId=\"bucket-name\", permission=\"PRIVATE\"`\n- 创建角色：`action=\"createRole\", roleName=\"admin\", roleIdentity=\"admin\"`\n- 放开云函数匿名/未登录访问（PG 会走 OPA，对齐 CLI `tcb policy set`）：`action=\"updateResourcePermission\", resourceType=\"function\", resourceId=\"myFn\", permission=\"CUSTOM\", securityRule='{\"invoke\":true}'`\n\n注意：`createUser` / `updateUser` 是环境侧应用用户管理能力，适合测试账号、管理员或预置用户，不应替代浏览器里的 Web SDK 注册表单；前端用户名密码注册应使用 `auth.signUp({ username, password })`，登录应使用 `auth.signInWithPassword({ username, password })`。直接在浏览器里用 `auth.signUp` 创建用户名密码用户取决于 SDK/provider 支持，使用前必须验证；不支持时应走后端或管理端边界，不能在浏览器暴露密钥。`securityRule` 的详细语义取决于 `resourceType`：`doc._openid`、`auth.openid`、查询条件子集校验，以及 `create` / `update` / `delete` JSON 模板仅适用于 `resourceType=\"noSqlDatabase\"` 的文档数据库安全规则；配置 `function` 或 `storage` 时，请参考各自官方安全规则文档，而不是复用 NoSQL 模板。\n\n📌 跨后端边界提示：调用前先用 `envQuery(action=\"info\", envId=...)` 看 `EnvInfo.RuntimeBackends`：\n- `resourceType=\"noSqlDatabase\"` 仅作用于 CloudBase NoSQL 文档数据库的集合；CloudBase PostgreSQL（PG）表的行级权限**不**受它控制——PG 表请改用 RLS：`managePgDatabase(action=\"execute\", confirm=true)` 跑 `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` 与 `CREATE POLICY ...`。同一个 PG 环境里如果还有 NoSQL 集合在用，对那些**集合**继续使用 `noSqlDatabase` 规则是正确的——不是\"PG 环境就禁用本工具\"。\n- `resourceType=\"storage\"` 控制的是 NoSQL/COS 存储桶 ACL；PG 的 `pgstore` bucket 不在此 `resourceType` 覆盖范围内。\n- 本工具不涉及 MySQL；MySQL 数据库权限请走 MySQL 自身的 GRANT/REVOKE 语句（通过 `manageMysqlDatabase`）。\n\n⚠️ PostgreSQL 环境：平台 `ModifyResourcePermission` 对 PG 环境会直接拒绝。当 `resourceType=\"function\"` 时，本工具会自动回退到 Manager SDK `modifyEnvAuthzConfig`（与 CLI `tcb policy set` 一致，写入 `authz.user.rego`）。`securityRule` 可传完整 Rego（`package authz.user`）或 `'{\"invoke\":true}'`（自动生成放通 anonymous/unauthenticated 调 functions 的策略）。设置 Rego 后旧网关鉴权会失效，行为与 CLI 相同。",
       inputSchema: {
         action: z.enum(MANAGE_PERMISSION_ACTIONS),
         resourceType: z
@@ -653,12 +880,28 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
             if (!resourceType || !resourceId || !permission) {
               throw new Error("action=updateResourcePermission 时必须提供 resourceType、resourceId 和 permission");
             }
-            const result = await cloudbase.permission.modifyResourcePermission({
-              resourceType: mapResourceType(resourceType),
-              resource: resourceId,
-              permission,
-              securityRule,
-            });
+            let result: unknown;
+            let fallback: "modifyEnvAuthzConfig" | undefined;
+            let appliedRego: string | undefined;
+            if (resourceType === "function") {
+              const updated = await modifyFunctionPermissionWithPgFallback({
+                cloudbase,
+                envId,
+                resourceId,
+                permission,
+                securityRule,
+              });
+              result = updated.result;
+              fallback = updated.fallback;
+              appliedRego = updated.rego;
+            } else {
+              result = await cloudbase.permission.modifyResourcePermission({
+                resourceType: mapResourceType(resourceType),
+                resource: resourceId,
+                permission,
+                securityRule,
+              });
+            }
             logCloudBaseResult(server.logger, result);
             const hints = permission === "CUSTOM" ? buildPermissionHints(securityRule, resourceId) : [];
             return buildEnvelope(
@@ -669,6 +912,8 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
                 resourceId,
                 permission,
                 hints,
+                ...(fallback ? { fallback } : {}),
+                ...(appliedRego ? { rego: appliedRego } : {}),
                 verificationHint:
                   resourceType === "noSqlDatabase" && permission === "CUSTOM"
                     ? buildWriteVerificationHint(resourceId)
@@ -679,7 +924,9 @@ export function registerPermissionTools(server: ExtendedMcpServer) {
                     : undefined,
                 raw: result,
               },
-              "资源权限更新成功",
+              fallback
+                ? "资源权限更新成功（PostgreSQL 环境已回退到 modifyEnvAuthzConfig / tcb policy set）"
+                : "资源权限更新成功",
             );
           }
           case "createRole": {

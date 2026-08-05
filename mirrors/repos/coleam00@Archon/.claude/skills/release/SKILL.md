@@ -35,12 +35,36 @@ Creates a release by comparing dev to main, generating changelog entries from co
 ```bash
 # Must be on dev branch with clean working tree
 git checkout dev
-git pull origin dev
+git pull origin dev --no-rebase
 git status --porcelain  # must be empty
 git fetch origin main
 ```
 
 If not on dev or working tree is dirty, abort with a clear message.
+
+**Then check that dev actually contains main.** Anything committed directly to
+main — a docs typo fix, a hotfix, the previous release's formula commit — stays
+stranded there until someone merges it back. The release PR would then propose
+*reverting* it, and the next release inherits the drift.
+
+```bash
+if git merge-base --is-ancestor origin/main origin/dev; then
+  echo "dev contains main — OK"
+else
+  echo "DRIFT: commits exist on main that dev does not have:"
+  git log origin/dev..origin/main --oneline
+  echo ""
+  echo "Resync before releasing:"
+  echo "  git checkout dev && git pull origin main --no-rebase && git push origin dev"
+  exit 1
+fi
+```
+
+Observed on the 0.7.1 release: `ae704a73 Update docs.mdx (#2155)` had been
+committed straight to main after 0.7.0 and never merged back. Someone had
+noticed the *content* gap and hand-forward-ported it via a separate PR (#2403),
+so dev had the change but not the commit — and `main` was still not an ancestor
+of `dev`. Resolve this before Step 2; do not carry it into the release PR.
 
 ### Step 1.5: Pre-flight compiled-binary smoke test (MANDATORY before any other step)
 
@@ -125,16 +149,93 @@ Read the current version from the detected file.
 
 ### Step 4: Collect Commits
 
+> **Do NOT use `git log main..dev`.** This repo **squash**-merges the release PR
+> into main, so main receives one new commit per release and never contains dev's
+> individual commits. `main..dev` therefore accumulates *every commit ever
+> squashed* and grows release over release. On 0.7.1 it returned **61** commits
+> when only **25** were new — the other 36 were already shipped in 0.7.0 and
+> already written into its changelog. Followed literally, it re-logs most of the
+> previous release.
+
+The real boundary is dev's own last `Release x.y.z` commit:
+
 ```bash
-# Get all commits on dev that aren't on main
-git log main..dev --oneline --no-merges
+# The previous release commit ON DEV (not the squashed one on main).
+#
+# The `$` anchor is load-bearing. Both commits exist on dev after Step 9's sync:
+#   6c6945ce  Release 0.7.1           <- dev's own version-bump commit  (WANT)
+#   c71f7f52  Release 0.7.1 (#2435)   <- main's squash, pulled back     (WRONG)
+# Picking the squash commit is catastrophic: its ancestry does not include dev's
+# individual history, so the range balloons to the whole repo (383 commits when
+# tested). Match the bare subject only.
+LAST_RELEASE=$(git log origin/dev \
+  --grep='^Release [0-9]+\.[0-9]+\.[0-9]+$' --extended-regexp \
+  --format='%H' -n 1)
+
+# First-ever release: fall back to the root commit. Without this the range
+# becomes `..origin/dev`, which git resolves against HEAD and which returns
+# ZERO commits — the skill would report "nothing to release" and stop.
+if [ -z "$LAST_RELEASE" ]; then
+  LAST_RELEASE=$(git rev-list --max-parents=0 origin/dev | tail -n 1)
+fi
+echo "Previous release commit: $(git log -1 --oneline "$LAST_RELEASE")"
+
+# Everything after it is genuinely new, minus the release-plumbing commits
+# described below.
+git log "$LAST_RELEASE"..origin/dev --oneline --no-merges \
+  --grep='^Release [0-9]+\.[0-9]+\.[0-9]+' \
+  --grep='^chore: update Homebrew formula for v' \
+  --grep='^chore\(homebrew\):' \
+  --extended-regexp --invert-grep
 ```
+
+> The backslashes in `^chore\(homebrew\):` are required. Under `--extended-regexp`
+> bare `(` and `)` are grouping operators, so the unescaped form matches the
+> literal text `chorehomebrew:` and silently fails to filter anything.
+
+Two commit kinds in that range are **release plumbing, not changelog material**,
+and the `--invert-grep` above drops them:
+
+- `Release x.y.z (#NNNN)` — main's squash commit, pulled back by Step 9's sync
+- `chore: update Homebrew formula for vx.y.z` / `chore(homebrew): …` — the CI job
+  and the Step 10 commit; note these appear as *two different SHAs* with the same
+  content, one per branch
+
+> The `Release` pattern is anchored to a full `x.y.z` version deliberately. A bare
+> `^Release ` would also swallow a legitimate feature commit whose subject starts
+> with that word. If a real commit is ever dropped, widen the range by hand rather
+> than loosening the pattern.
+
+**Sanity-check the boundary before drafting.** Cross-reference against what the
+previous version already documented — any overlap means the range is wrong.
+Derive both headings from the current version so this does not rot:
+
+```bash
+# CURRENT_VERSION is the value read in Step 2, before the bump (e.g. 0.7.1)
+PREV_MAJOR_MINOR_PATCH="$CURRENT_VERSION"
+# The heading immediately above the one we are about to write:
+awk -v prev="## [$PREV_MAJOR_MINOR_PATCH]" '
+  index($0, prev) == 1 { on = 1; next }
+  on && /^## \[/       { exit }
+  on                   { print }
+' CHANGELOG.md | grep -oE '#[0-9]{3,5}' | sort -u
+```
+
+If a PR number in your commit range appears in that list, stop and re-derive the
+boundary — do not write it twice.
 
 If no new commits, abort: "Nothing to release — dev is up to date with main."
 
 ### Step 5: Draft Changelog Entries
 
-Read the commit messages and the actual diffs (`git diff main..dev`) to understand what changed.
+Read the commit messages and the actual diffs (`git diff "$LAST_RELEASE"..origin/dev`) to understand what changed.
+
+Prefer the PR title and its `## Summary` section over the raw commit subject —
+they state the user-visible problem, which is what a changelog entry needs:
+
+```bash
+gh pr view <N> --repo coleam00/Archon --json title,body
+```
 
 **Categorize into Keep a Changelog sections:**
 - **Added** — new features, new files, new capabilities
@@ -246,14 +347,38 @@ gh release create vx.y.z --title "vx.y.z" --notes "{changelog section content wi
 
 # Sync dev with main so both branches are identical
 git checkout dev
-git pull origin main
+git pull origin main --no-rebase
 git push origin dev
+
+# Verify the sync actually converged — do not assume it did. FAIL CLOSED:
+# continuing past a failed sync publishes a formula and tap from a tree that
+# does not match what was released.
+git fetch origin
+if git merge-base --is-ancestor origin/main origin/dev; then
+  echo "dev contains main — OK"
+else
+  echo "STILL DIVERGED — stranded on main:"
+  git log origin/dev..origin/main --oneline
+  exit 1
+fi
 ```
+
+> **`--no-rebase` is required, not optional.** Without it, git aborts with
+> `fatal: Need to specify how to reconcile divergent branches` on any machine
+> that has not set `pull.rebase`. It also pins the behaviour to the merge this
+> step actually wants — a `pull.rebase=true` config would otherwise rewrite dev's
+> history, which is exactly what the warning below forbids.
+
+> **Expect to run this twice.** The CI `update-homebrew` job pushes its own
+> formula commit to dev while you are working, so the `git push origin dev` here
+> (and again in Step 10) can be rejected with `Updates were rejected`. That is
+> normal: `git pull origin dev --no-rebase`, then push again. On 0.7.1 both this
+> step and Step 10 required a second pass.
 
 > **Important**: This sync ensures dev has the merge commit from main. Without it,
 > dev and main diverge. The CI `update-homebrew` job only pushes the formula
 > commit to dev — it does not bring the PR merge commit onto dev. This manual
-> `git pull origin main` is what ensures dev has the merge commit.
+> `git pull origin main --no-rebase` is what ensures dev has the merge commit.
 
 > **Do NOT** use `git pull origin main --ff-only` or `git reset --hard origin/main`
 > for this sync. Fast-forward is impossible across a squash merge — main's squash
@@ -262,7 +387,7 @@ git push origin dev
 > which severs every open PR's merge-base from its original commit and balloons
 > their diffs to thousands of lines (confirmed against v0.3.10's release: PRs
 > went from `+80/-1` to `+6626/-300` after a `git reset --hard origin/main` on
-> dev). The plain `git pull origin main` above creates a regular merge commit on
+> dev). The plain `git pull origin main --no-rebase` above creates a regular merge commit on
 > dev. The merge bubble in dev's `git log` is the right cost for preserving
 > open-PR sanity. If the merge produces a `homebrew/archon.rb` conflict during a
 > recovery flow, resolve with `git checkout origin/main -- homebrew/archon.rb`
@@ -427,15 +552,90 @@ EOF
 
 ```bash
 git checkout main
-git pull origin main
+git pull origin main --no-rebase
 git add homebrew/archon.rb
 git commit -m "chore(homebrew): update formula to vx.y.z"
 git push origin main
 
 # Sync dev with main so the formula update is on both branches
 git checkout dev
-git pull origin main
+git pull origin main --no-rebase
+git push origin dev   # may be rejected — see below
+```
+
+**The CI `update-homebrew` job races you here.** It writes its own formula commit
+directly to dev (e.g. `chore: update Homebrew formula for vx.y.z`) while you are
+committing the same change to main. Both touch the same four `sha256` lines. The
+push above then fails with `Updates were rejected`:
+
+```bash
+git pull origin dev --no-rebase   # merges CI's commit; usually resolves clean
 git push origin dev
+```
+
+**A clean merge is not proof the SHAs are right.** Two commits editing the same
+lines can merge without conflict and still leave the wrong values. Verify against
+the published checksums before pushing — this is the one file where a wrong value
+breaks every user's install:
+
+```bash
+VERSION=x.y.z   # without the leading v
+gh release download "v$VERSION" --repo coleam00/Archon --pattern checksums.txt --dir /tmp/rel
+
+fail=0
+
+# Assert the formula version matches the release. A stale version points every
+# URL at the wrong release while carrying the new digests.
+formula_version=$(awk -F'"' '/^[[:space:]]*version "/ {print $2; exit}' homebrew/archon.rb)
+if [ "$formula_version" != "$VERSION" ]; then
+  echo "  BAD version: formula says '$formula_version', release is '$VERSION'"
+  fail=1
+fi
+
+# Compare each digest against the sha256 that FOLLOWS ITS OWN url line. A naive
+# `grep -q "$digest" formula` only asks whether the value appears anywhere, so
+# two platforms with swapped hashes both pass — and an empty digest degenerates
+# to `grep -q ""`, which matches every file.
+for p in archon-darwin-arm64 archon-darwin-x64 archon-linux-arm64 archon-linux-x64; do
+  real=$(awk -v p="$p" '$2 ~ "(^|/)" p "$" {print $1}' /tmp/rel/checksums.txt | head -1)
+  if ! printf '%s' "$real" | grep -qE '^[0-9a-f]{64}$'; then
+    echo "  BAD $p: no 64-char digest in checksums.txt (got '$real')"
+    fail=1
+    continue
+  fi
+  in_formula=$(awk -v p="$p" '
+    index($0, "/" p "\"") { seen = 1; next }
+    seen && /sha256 "/    { gsub(/.*sha256 "|".*/, ""); print; exit }
+  ' homebrew/archon.rb)
+  if [ "$in_formula" = "$real" ]; then
+    echo "  OK   $p"
+  else
+    echo "  BAD  $p: formula has '$in_formula', release has '$real'"
+    fail=1
+  fi
+done
+
+[ "$fail" -eq 0 ] || { echo "formula verification FAILED — do not push"; exit 1; }
+echo "formula verified against v$VERSION checksums"
+```
+
+Every line must print `OK` and the version must match. On any `BAD`, regenerate
+the formula from the Step 10 template rather than hand-editing — a hand edit is
+how a digest ends up under the wrong platform in the first place.
+
+Finally, confirm convergence. **Fail closed** — Step 11 publishes to the tap that
+users install from, so do not proceed on an unconverged tree:
+
+```bash
+git fetch origin
+converged=1
+git merge-base --is-ancestor origin/main origin/dev \
+  || { echo "DIVERGED: dev does not contain main"; converged=0; }
+stranded=$(git log origin/dev..origin/main --oneline | wc -l | tr -d ' ')
+[ "$stranded" -eq 0 ] || { echo "STRANDED: $stranded commit(s) on main not on dev:"; \
+  git log origin/dev..origin/main --oneline; converged=0; }
+[ "$converged" -eq 1 ] || { echo "sync incomplete — resolve before Step 11"; exit 1; }
+echo "branches converged — OK"
 ```
 
 ### Step 11: Sync the Homebrew Tap Repo
@@ -557,6 +757,25 @@ Include a line in the new release's CHANGELOG that references the broken prior v
 ## Important Rules
 
 - NEVER force push
+- **NEVER derive the changelog from `git log main..dev`.** main squash-merges, so
+  that range accumulates every previously-released commit and grows each release
+  (61 vs 25 actual on 0.7.1). Use dev's last `Release x.y.z` commit as the
+  boundary, and cross-check the result against the previous version's changelog
+  entries — any PR number appearing in both means the boundary is wrong.
+- **ALWAYS pass `--no-rebase` to `git pull`.** The bare form aborts with
+  `Need to specify how to reconcile divergent branches` unless `pull.rebase` is
+  configured, and a `pull.rebase=true` config would rewrite dev's history.
+- **ALWAYS verify sync convergence rather than assuming it.**
+  `git merge-base --is-ancestor origin/main origin/dev` after every sync step.
+  A commit made directly to main stays stranded silently otherwise.
+- **NEVER trust a clean `homebrew/archon.rb` merge.** The CI `update-homebrew`
+  job edits the same `sha256` lines on dev that you edit on main; the merge can
+  succeed and still be wrong. Diff the four values against the published
+  `checksums.txt` before pushing.
+- **Flag a version bump that contradicts the commit range.** If `patch` was
+  requested but the range contains `feat:` commits or new user-facing CLI
+  surface, say so at the Step 7 review and let the user decide — do not silently
+  ship features as a patch.
 - **NEVER skip Step 1.5 (pre-flight compiled-binary smoke).** If the stack is a Bun/Node project with a build-binaries script, the `bun build --compile` smoke test runs before version bump, PR, or tag. Skipping it means every bundler regression or module-init crash only surfaces after the tag is pushed — by which point `releases/latest` is already 404-ing for every user. The ~30s cost is paid to keep the failure mode local.
 - If Step 1.5 fails, **abort the release** and fix the underlying issue on a feature branch. Do not "just skip it" and hope CI doesn't repro the problem.
 - NEVER skip the review step — always show the changelog before committing

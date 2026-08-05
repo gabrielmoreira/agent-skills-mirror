@@ -39,6 +39,16 @@ uv run scripts/fix_transcription.py --input meeting.md --stage 1
 # (safe run -> review sidecar -> --apply-all rerun).
 uv run scripts/fix_transcription.py --input meeting.md --stage 1 --domain myproject --apply-domain
 
+# Sibling domains load together (comma-separated) — one project's vocabulary
+# often lives in several domains that grew at different times (myproject,
+# myproject-alt, ...), and a transcript that straddles them should be fixed in
+# ONE pass, not one rerun each. --apply-domain trusts the whole union.
+uv run scripts/fix_transcription.py --input meeting.md --stage 1 --domain myproject,myproject-alt --apply-domain
+
+# Which domains does this project even have? A 0-correction run prints the
+# hint listing every OTHER domain with its rule count — read it, then rerun
+# with the siblings added. (Write commands like --add stay single-domain.)
+
 # Apply EVERY risk level regardless of origin (the pre-safe-mode behavior).
 # Higher false-positive risk — only when you've reviewed ALL loaded rules.
 uv run scripts/fix_transcription.py --input meeting.md --stage 1 --apply-all
@@ -94,7 +104,7 @@ Two-phase pipeline with persistent learning:
 - **Machine-readable status for callers** (`--json`): prints ONE line of `{applied, deferred, output_path, needs_review_path, input_unchanged, review_enqueued}` on stdout (the human-readable log is routed to stderr for that run). Consumers read this instead of inferring a no-op from whether `*_stage1.md` exists on disk — `input_unchanged: true` (or `output_path: null`) **is** the authoritative no-op signal for a domain. This is a cross-skill contract (a caller's pre-classify chain consumes it); keep the field names and semantics stable (`review_enqueued` was added additively: how many safe-mode deferrals landed in the persistent review queue — see "Review Queue & Dashboard"). Without `--json` the human-readable output is unchanged.
 - **Extract uncertain ASR tokens**: `--extract-uncertain -i file.md` writes `*_uncertain.md` with likely errors (short all-caps tokens, transliteration fragments, repeated words) without changing the file.
 - **Load domain presets**: `--load-presets tech` imports a curated set of tech/Claude Code ASR corrections.
-- **Report false positives**: `--report-false-positive "错误词" "正确词" -d domain` disables a bad dictionary rule and lowers its confidence.
+- **Report false positives**: `--report-false-positive "<from_text>" "<to_text>" -d domain` disables a bad dictionary rule (pass the rule's stored from→to pair — for a false-positive rule that's the reverse of semantic wrong→right; see Native AI Correction step 2).
 - **Audit for risky rules**: `--audit` flags existing rules that look like false-positive sources (common words, ≤2-char, substring collisions, and — with jieba — 4+ char real-word phrases). **It is advisory: it surfaces candidates, it does NOT disable anything.** Disabling is a human decision — review each hit by hand and back up the DB first, because the audit cannot know your context and mislabels a large fraction of good rules (e.g. `GDP 5.5→GPT 5.5` looks wrong generically but is a correct fix for an AI-heavy user). See `references/false_positive_guide.md`.
 
 ### When called by another skill (cross-skill invocation contract)
@@ -170,6 +180,31 @@ particular sentence never matches again — it costs a dictionary row, compounds
 nothing, and dead rows are what make a domain slow to load and hard to audit.
 When even a collocation would be too narrow, the trap belongs in the domain
 context file with its disambiguating cue.
+
+**Measure the corpus before you add — the validators can't see your project.**
+The built-in safety checks answer "is this a real word in Chinese"; they cannot
+answer the question that actually decides a project-domain rule: *"when this
+word appears in THIS project's transcripts, is it ever the real meaning?"* That
+is empirical, and the evidence is one command away:
+
+```bash
+# How does this term actually appear across the project's transcripts?
+uv run scripts/fix_transcription.py --probe "候选误识词" --corpus /path/to/transcripts/
+
+# Or probe as part of the add itself (prints the evidence before writing):
+uv run scripts/fix_transcription.py --add "候选误识词" "正确词" --domain myproject \
+  --check-corpus --corpus /path/to/transcripts/
+```
+
+The probe prints per-file counts plus sampled context windows, with the
+decision rule attached: every sampled occurrence an ASR error → a bare rule is
+safe; any real meaning present → anchored form, or don't add (record the trap
+in the domain context file instead); zero occurrences → a bare rule is
+zero-risk but compounds nothing. The surprise this kills: intuition says "this
+is obviously an error form", and a 30-second sweep finds the word carrying
+perfectly real meanings all over the corpus — or the reverse, a "real word"
+whose every single in-corpus occurrence is the mishearing, making the bare
+rule safe where a word-checker would have scared you off it.
 
 Batch add multiple corrections in one session:
 ```bash
@@ -489,7 +524,7 @@ Adding wrong dictionary rules silently corrupts future transcripts. **Read `refe
 
 ## Project-Specific & Person-Name Corrections (`--domain` isolation)
 
-The most important pattern for **recurring, project-specific errors** — person names, project jargon, product codenames — is the `--domain` flag. It is also the *answer* to the false-positive worry above: a person-name fix that's right **in your project** (a teammate's name the ASR keeps garbling) might collide with a real, differently-spelled person in someone else's transcript — so it must NOT go into the global (`general`) dictionary.
+The most important pattern for **recurring, project-specific errors** — person names, project jargon, shelf codenames — is the `--domain` flag. It is also the *answer* to the false-positive worry above: a person-name fix that's right **in your project** (a teammate's name the ASR keeps garbling) might collide with a real, differently-spelled person in someone else's transcript — so it must NOT go into the global (`general`) dictionary.
 
 `--domain` makes such rules safe by isolating them:
 
@@ -602,8 +637,14 @@ A recording can be long but still fast-tier (two known speakers, plain language)
 **Correction scope includes the metadata lines, not just the body.** A filed transcript usually carries ASR-derived metadata — a `Keywords:` line, frontmatter, a title — and those lines contain the *same* recognition errors as the spoken body (e.g. a `Keywords:` line still listing `克劳锐` when every body mention was already corrected to `Claude`). Fix them with the same rules. There is no "metadata is sacred, leave it" exception: the metadata is a search/grep surface too, and a keyword left in its ASR-garbled form will silently fail every future `grep Claude` while the body looks clean. When you re-grep the final file to confirm a correction landed, include the metadata lines in that check.
 
 1. Run Stage 1 (dictionary) on all files (parallel if multiple)
-2. Verify Stage 1 — diff against the original. If the dictionary introduced false positives, work from the **original** file instead and apply your edits there.
+2. Verify Stage 1 — diff against the original. If the dictionary introduced false positives, work from the **original** file instead and apply your edits there. **A false positive here is debt you owe the dictionary**: the same bad rule fires on every future transcript until retired, so the moment you spot one — a rule that turned correct speech wrong, especially "real-word → real-word" rules (both sides are valid-word-shaped, so the non-word guard doesn't catch them; and under `--apply-domain` every matching rule applies regardless of its risk class) — e.g. a `买买→卖卖` rule rewrote a correct "买买工作流" into "卖卖工作流" — disable it in the same session with `--report-false-positive <from_text> <to_text> -d <domain>` — pass the rule's stored from→to pair exactly as Stage 1's `*_changes.md` shows it (the From/To columns) or as it sits in the dictionary, NOT "wrong-word → right-word" semantics. The direction is counter-intuitive for a false positive: the `买买→卖卖` rule stored `from=买买, to=卖卖` (it rewrote a correct 买买 into a wrong 卖卖), so you pass `"买买" "卖卖"` — the rule's stored from→to pair, which is what the tool keys on. One call disables the rule and lowers its confidence (the tool prints "The rule has been disabled"); it will not fire on the next transcript. If the word is genuinely *ambiguous* (correct in some contexts, wrong only here) rather than plain wrong, don't disable the rule — record the disambiguating cue in the domain context file instead. Fixing this transcript while leaving the trap armed guarantees the next one trips it too.
    **And when the input already passed through an automated corrector** (a sync pipeline's pre-classify stage, a previous Stage 3 API run), your input is NOT raw ASR — upstream corrections are baked in with no evidence trail. Before triaging, diff against the raw source (the caller's raw transcript — sync engines typically keep one alongside the corrected copy, e.g. `transcript_raw.txt` — or re-pull from the source API). Two things fall out of that diff, in opposite directions: **(a)** every upstream entity swap is itself a suspect in step 4's triage, because an upstream AI "correction" can be a fluent wrong guess — real case: raw ASR 「新的车辆」 was "smoothed" by a pipeline AI into 「新出来的反馈」 (grammatical, plausible, wrong: the speaker said a near-homophone name), and only the raw diff caught it; **(b)** what upstream already fixed correctly is settled — check the diff *before* proposing a fix that's already applied, or you redo work and risk "fixing" a correct form back to a wrong one
+
+   **How to judge each upstream change — the one test that works, and the one that doesn't.** Run the *sound-distance* test from step 6 on every upstream edit, in the direction it is written there: **if the two sides are too far apart phonetically for any ASR to have produced the swap, it is not a correction — it is the model rewriting what the speaker said, and it gets reverted.** An ASR mishears sounds; it does not exchange a word for a synonym, and it does not change a pronoun. Two shapes recur, and neither looks like an error on the page:
+   - **A term swapped for a plausible near-synonym.** The two words share no sounds, so no engine could have confused them — and the give-away is corpus-level: the replacement appears nowhere else in the project's material, while the original is that project's standard vocabulary (a term an earlier meeting defined). Grep both forms across the corpus before accepting either.
+   - **A pronoun or subject rewritten.** Reads *more* logical than the original, and silently reassigns who a statement is about — which is a fact change, not a transcription fix. Pronouns in most languages are phonetically unrelated to each other; an engine that mishears one for another would be mangling the whole sentence.
+
+   **Why this needs its own test rather than your judgment: an upstream corrector optimizes for fluency, so everything it emits reads well — which makes "does the result make sense?" a check with zero discriminating power against exactly this failure.** You cannot read your way to catching it, and the smoother the pipeline, the more confident the wrong text looks. The diff is the only instrument that sees it. Two consequences worth planning around: run the diff *before* your own read-through, so upstream's edits arrive as candidates rather than as the text you are proof-reading; and when you do revert one, sweep whatever you have already written that quoted the corrupted form (step 9's derived-document sweep — notes and summaries written from the pre-revert text carry the same corruption, and unlike the transcript they carry no marker saying so).
 3. **Load the domain's priors, then read the entire transcript.** If `~/.transcript-fixer/contexts/<domain>.md` exists for this transcript's domain, read it first — it primes which homophone traps to suspect and names the authoritative sources for step 4's ladder (see "Domain Correction Contexts" above). Then read the **entire** transcript before proposing corrections — later context disambiguates earlier errors (a name garbled near the start often becomes obvious later). For large files, read in chunks but finish the whole thing before deciding anything
 4. **Triage each candidate error into one of three buckets** — this triage is the part that takes judgment. **First override three reflexes that repeatedly misfile names** (all three are real, recurring failures — they send a fixable name straight to "ask the user"):
    - **Speaker labels first — the transcript usually already holds the names.**
@@ -662,8 +703,10 @@ A recording can be long but still fast-tier (two known speakers, plain language)
       1. **All domains of `corrections.db`, not just the current `--domain`.** The same entity shatters into different ASR variants across projects, and every prior fix already collapsed them to the canonical name — so the answer is often sitting in another domain you didn't pass to `--stage 1`. Checking only the current domain and giving up is the recurring failure mode.
          `sqlite3 ~/.transcript-fixer/corrections.db "SELECT from_text, to_text, domain FROM active_corrections WHERE to_text LIKE '%<fragment>%' OR from_text LIKE '%<fragment>%';"`
       2. **Project delivery docs & the alias ledger** — cost reports, review sheets, deliverables, PKM notes for that project. These are human-written correct spellings, the strongest possible source. `grep -rl "<fragment>" <project-dir>` then read the hits. (The domain context file you loaded before triage usually names the project's alias ledger explicitly — start there.) **Read every name table the ledger holds, not just the one that looks like "the speaker list."** A project's people are almost always split across role-based tables — internal speakers, external collaborators, client-side, vendor/dealer-side, attendees — and the person you're chasing often lives in a sibling table you didn't open. If a name you end up confirming wasn't reachable from the context file's name-source manifest, that manifest is incomplete: add the missing table to it so the next run can't miss it. (See `domain_context_guide.md` Rule 6 for the failure case this prevents.)
-      3. **Memory** (`~/.claude/.../memory/`) — project relationship maps and person profiles often record canonical names explicitly.
-      4. **WebSearch** — only for genuinely public entities (a public-company ticker, a known researcher, a drug name). Skip for anything project-internal.
+      3. **Local tool / gateway / client configs — for product, model, and tool-vocabulary garbles.** A transcript full of product/model/endpoint talk usually has its ground truth sitting in the user's own client configs on this machine: LLM gateway profiles (model IDs, base URLs), editor/IDE settings, CLI config stores, API client presets. These are machine-readable, current, and exact — a model name garbled five different ways resolves byte-for-byte against the config's own model list, including non-obvious suffixes (real case: `cloud fiber5` / `飞豹五` / `FIVE5EM` in a call about configuring a model-gateway client; the client's local DB listed `claude-fable-5` with a 1M-context flag — every variant collapsed, including `EM`→`1M`). Generic recipe: locate the config for the tool being discussed (well-known config home, its sqlite/json store), match the garbled token against its real identifiers by sound, and treat a config entry as near-authoritative — the user reads IDs off that screen while speaking; ASR only hears sounds. ⚠️ Config stores can hold secrets: read the fields you need (model names, URLs), never copy keys/tokens into the transcript, the dictionary, or your summary.
+      4. **Chat-history timeline cross-reference — for who-was-actually-on-the-call.** When participant identity matters (a diarization label is a bare English first name, or `Speaker N`, and the body never says the full name), the strongest local evidence is the user's own chat history *around the meeting window*: people send each other the meeting link and the artifacts discussed mid-call (config strings, files, links). Search the chat archive for a **distinctive string the transcript itself contains** (a domain, a model ID, a codename spoken during the call), restricted to the meeting's date window; the chat that holds it at that time is almost certainly the other party, and the messages around it ("joining now", the invite one minute before start) settle identity **without inferring anything from transcript content** — this is timeline evidence, not guessing who a speaker sounds like. It also byte-verifies any exact string the chat contains (an ID pasted mid-call confirms its own spelling). Reserve for identity/label questions — ordinary spelling needs are cheaper through rungs 0–2. Real shape: diarization said `Kevin`; searching the gateway URL spoken in the call surfaced a DM that received the invite one minute before start and the three exact config strings mid-call — `Kevin` resolved to the DM's full display name, and two garbled surname addressings in the body were corrected to the evidenced surname.
+      5. **Memory** (`~/.claude/.../memory/`) — project relationship maps and person profiles often record canonical names explicitly.
+      6. **WebSearch** — only for genuinely public entities (a public-company ticker, a known researcher, a drug name). Skip for anything project-internal.
 
       Only after all of these strike out do you ask the user — and by then you've shown the entity isn't already recorded on this machine, which makes the ask legitimate. A confirmed result becomes a Confident fix; if the search *can't* confirm it, it drops to Uncertain. **Batch these**: collect the unique unknowns and run the ladder once per unique entity, not once per occurrence.
 
@@ -674,8 +717,16 @@ A recording can be long but still fast-tier (two known speakers, plain language)
 5. Apply the confident fixes efficiently:
    - **Global replacements** (unique non-words like "克劳锐"→"Claude"): if it recurs across transcripts — most product/name garbles do — `--add` it to a `--domain` so it compounds to every future run; for a genuinely one-off term, one `sed -i ''` with multiple `-e` flags
    - **Context-dependent** (a word that's only wrong in one context, like "争"→"蒸" in a distillation discussion): sed with a longer surrounding phrase for uniqueness, or the Edit tool
+   - **Common-word batch where most occurrences are the domain term but a few are genuine** (a high-frequency word the domain repurposes in *most* of its occurrences, yet not all — the residual real uses are exactly what a common word is for). Never blind `replace_all`. First `grep -n` every occurrence and judge each from its sentence. When the large majority share the domain meaning and only one or two are real, the efficient shape is: `replace_all` the word to the domain term, then `Edit` those one or two genuine-usage sites back — faster and less error-prone than N separate Edits, and the re-grep below catches any misjudgment. Real case: `公开` across 11 lines of a sales call — 10 were 工勘 (the field-survey sales-funnel stage) and one was a real "公开的渠道"; `replace_all` → 工勘, then revert the single "公开的渠道". (The domain term itself still doesn't go in the dictionary when the source word is common — record it as a context trap per "Domain Correction Contexts"; this bullet is only about *applying* the fix within one transcript.)
    - Re-grep each changed term afterward to confirm it landed and didn't hit look-alikes you meant to keep
-6. **Second pass — catch what one read missed.** A single linear read reliably leaves residue: an idiom degraded into a near-homophone, a term wrong in just one spot among many correct ones, an acronym misheard as another. Always re-scan once for leftovers. A cheap targeted variant comes first: **trap-scan** — grep the file for every trap pattern the domain's context file documents (the recurring homophones this domain is known to produce). Thirty seconds checks exactly the errors this domain makes; a clean trap-scan plus your first pass is enough for fast tier. For a long or high-stakes transcript, *also* spawn an independent subagent (Task) to re-read the corrected file cold — fresh eyes with no memory of your first pass catch what you've read past. **The subagent's job is to *return a residual list*, not to re-narrate the transcript.** Give it an output format and a hard cap, because a subagent that thinks aloud line-by-line will blow its own context window before finishing (one real second-pass run on a 1131-line transcript hit the 32k token ceiling mid-scan and returned nothing usable). The correct prompt shape:
+6. **Second pass — catch what one read missed.** A single linear read reliably leaves residue: an idiom degraded into a near-homophone, a term wrong in just one spot among many correct ones, an acronym misheard as another. Always re-scan once for leftovers. A cheap targeted variant comes first: **trap-scan** — scan the file for every trap pattern the domain's context file documents (the recurring homophones this domain is known to produce). Run it mechanically, not as a hand-rolled grep loop (a 30-trap context file is 30+ greps by hand, and the list is exactly what a tired operator truncates):
+
+   ```bash
+   uv run scripts/fix_transcription.py --scan-traps \
+     --context-file ~/.transcript-fixer/contexts/<domain>.md -i meeting.md
+   ```
+
+   Every documented trap comes back with line number + context window, confirmed-correct records (`**X = 真实实体，勿修**`) are reported as keep-as-is so you stop re-investigating settled questions, and the no-hit list makes "scanned and absent" distinguishable from "never scanned". Thirty seconds checks exactly the errors this domain makes; a clean trap-scan plus your first pass is enough for fast tier. For a long or high-stakes transcript, *also* spawn an independent subagent (Task) to re-read the corrected file cold — fresh eyes with no memory of your first pass catch what you've read past. **The subagent's job is to *return a residual list*, not to re-narrate the transcript.** Give it an output format and a hard cap, because a subagent that thinks aloud line-by-line will blow its own context window before finishing (one real second-pass run on a 1131-line transcript hit the 32k token ceiling mid-scan and returned nothing usable). The correct prompt shape:
    - Scope it to exactly one file, forbid editing and cross-file grep.
    - Hand it the already-corrected terms as a do-not-re-report list (you fixed those; only *new* residuals are useful).
    - Demand a compact table only — `line | original ≤20 chars | suspected | one-line reason | confidence` — and tell it to stop after the list, no prose preamble, no per-line stream-of-consciousness, no re-deriving corrections it has already made.
@@ -686,10 +737,26 @@ A recording can be long but still fast-tier (two known speakers, plain language)
    - **Reject — intelligible real words.** `一撮` is a perfectly good measure word; don't rewrite readable speech just to make a running metaphor consistent. Only fix what the speaker plausibly didn't say.
    - **Reject — evidence-free reconstruction.** A proposed fix with no phonetic basis (`半`→`分`) is a guess about meaning, not a correction.
    - **Minimal edit.** Fix the misrecognized word; never insert unspoken words (`打完`→`打算` ✓; rewriting as `打算怎么` inserts a `怎么` the speaker never uttered ✗).
+   - **Prefer the smallest edit that explains the error — rank candidates by phonetic distance before you judge any of them.** The rule above bounds how *much* one candidate may change; this one decides *which* candidate wins when several would read fine. ASR errors are small perturbations — the engine maps a heard sound to the nearest word it knows — so among candidates that all make sense, the one changing the fewest phonemes is almost always what was said. Useful fingerprint in Mandarin: **a reduplicated or multi-syllable tail surviving intact while only the leading syllable differs** points at an initial-consonant confusion (retroflex/alveolar `sh`/`s`, `zh`/`z`, `ch`/`c`, and the `n`/`l`, `f`/`h` pairs), so search same-final/different-initial candidates *before* concluding the whole word was misheard.
+     **Where this fails is not while you generate candidates — it's while you audit text that is already there** (an upstream correction, or a fix you accepted on the first pass). Reviewing existing text puts you in verify-mode: you ask "is this reasonable?", it is, and you move on — never noticing you were handed one candidate rather than a ranked set. A candidate that rewrites three syllables can be perfectly idiomatic *and* be a rewrite; the only thing that separates it from the one-phoneme candidate is that you generated both and compared. So when auditing any already-applied correction, force the question: **is there a smaller edit that also explains this?** If you cannot answer it, you have validated rather than verified.
    A second-pass subagent that returns 8 sharp rows beats one that returns 8000 tokens of narration every time. Task works when you're in the main context; if it isn't available — e.g. these instructions are themselves running inside a subagent, which can't spawn another — just do one more thorough independent re-read yourself. Never skip the second pass over a missing tool.
-7. **Emit a needs-checking list AND enqueue it** — the chat summary alone evaporates when the session ends, so every *Uncertain* item gets dual-written: (a) in your chat summary to the human — line number, the original text you left in place, what you suspect, why you couldn't confirm it; (b) into the persistent review queue via `--enqueue-review items.json` (see "Review Queue & Dashboard" above; item field/alias schema: `references/script_parameters.md` §Review Queue Item Schema — unknown keys are silently dropped, so write `line`, not `line_hint`) with the same fields plus a proposed action pack, so the human can one-keystroke-resolve it later in the dashboard — or a later agent session can close it with new evidence (`--resolve-review ID --decision … --note "<evidence>"`). Entity/name questions get `kind: entity` (they compound into the dictionary/roster, so they lead the queue); pure phrasing doubts get `kind: wording`. If nothing is uncertain, say so.
+7. **Emit a needs-checking list AND enqueue it** — the chat summary alone evaporates when the session ends, so every *Uncertain* item gets dual-written: (a) in your chat summary to the human — line number, the original text you left in place, what you suspect, why you couldn't confirm it; (b) into the persistent review queue via `--enqueue-review items.json` (see "Review Queue & Dashboard" above; item field/alias schema: `references/script_parameters.md` §Review Queue Item Schema — unknown keys are silently dropped, so write `line`, not `line_hint`) with the same fields plus a proposed action pack, so the human can one-keystroke-resolve it later in the dashboard — or a later agent session can close it with new evidence (`--resolve-review ID --decision … --note "<evidence>"`). Entity/name questions get `kind: entity` (they compound into the dictionary/roster, so they lead the queue); pure phrasing doubts get `kind: wording`. If nothing is uncertain, say so. A minimal `items.json` for `--enqueue-review` (one object per uncertain item; `suggested` may be empty when you have no candidate — the dashboard lets a human fill it later):
 
-   **`original` carries only the suspect token, never the whole sentence** — the sentence goes in `context`. Whatever you put in `original` is what a dashboard verdict will *replace wholesale*: an accept does `file_edit(old=original, new=suggestion)`, and an override swaps the entire `original` span for the human's typed text. If `original` is a full clause like 「我们的民宿就完了」 and the human types the two-character brand 「栖云」, the clause is gone — that is a real 2026-07 incident (#24), and the lost words had to be re-added by hand. `original: "民宿的误写词"` + `context: "…我们的民宿就完了"` would have made the same verdict correct by default. (The dashboard now shows the full replacement span above the override input and warns on suspiciously short replacements — but the right granularity at enqueue is the fix that costs nothing.)
+   ```json
+   [
+     {"file": "/abs/path/to/the/transcript.md", "line": 142,
+      "original": "<garbled-name>", "suggested": "", "kind": "entity",
+      "context": "<the whole sentence the token sits in, copied VERBATIM from the file>",
+      "evidence": "speaker-label fragment near line 142; not in roster or project alias ledger — needs user confirmation"}
+   ]
+   ```
+   **`file` is the key that makes the other two work, and omitting it fails silently in the worst direction.** Both guarantees below are gated on it (`review_queue.py:212` and `:793` each test `file_path` first):
+   - *Verbatim-anchor rejection.* With `file` set, a `context` that is not a literal substring of that file is **rejected at enqueue** (exit 3) — so an authoring error dies immediately instead of at verdict time. With `file` absent there is no file to check against, so a paraphrased `context` is accepted and the drift surfaces much later.
+   - *The default edit.* With `file` set and no explicit action pack, an accept runs a single `file_edit(old=original, new=suggested)`. With `file` absent the accept still records the verdict and still exits 0 — **and never touches the transcript.** Nothing errors; the queue just says `accepted` while the file is unchanged.
+
+   Two key names, both of which the silent-drop rule above catches one field over: the verdict is `suggested` (alias of `suggested_text`), **not `suggestion`** — the wrong spelling costs you the dashboard's Accept button, and `--resolve-review` then refuses with *"item N has no suggestion to accept"*. The action pack's key is `actions`, **not `action_pack`**; it is optional — supply it only when accept should also `dict_add` / `append_note`. Full field/alias table: `references/script_parameters.md` §Review Queue Item Schema.
+
+   **`original` carries only the suspect token, never the whole sentence** — the sentence goes in `context`. Whatever you put in `original` is what a dashboard verdict will *replace wholesale*: an accept does `file_edit(old=original, new=suggested)`, and an override swaps the entire `original` span for the human's typed text. If `original` is a full clause like 「我们的民宿就完了」 and the human types the two-character brand 「栖云」, the clause is gone — that is a real 2026-07 incident (#24), and the lost words had to be re-added by hand. `original: "民宿的误写词"` + `context: "…我们的民宿就完了"` would have made the same verdict correct by default. (The dashboard now shows the full replacement span above the override input and warns on suspiciously short replacements — but the right granularity at enqueue is the fix that costs nothing.)
 8. Verify with diff against the file you actually edited (`diff <original> <your-working-file>`) — every change should trace back to a triage decision
 9. Finalize and archive:
    - **Primary path (recommended):** Re-run `--stage 1` on the original `file.md` — **plain, without `--apply-all`** (an explicit `--apply-all` always runs corrections and never finalizes, so a stale sidecar can't silently swallow the run). If `file_stage1.md` is newer than `file.md`, transcript-fixer automatically promotes it to `file.md` and removes the intermediate sidecars (`_stage1.md`, `_stage2.md`, `_dryrun.md`, `_changes.md`, `_needs_review.md`, `_uncertain.md`, `_对比.html`). This is the default way to finalize; it is atomic, preserves manual edits (it skips promotion when `file.md` is newer), and avoids macOS `mv` alias hazards.
@@ -731,6 +798,82 @@ AI product names are frequently garbled. These patterns recur across transcripts
 | prototype | Pre top |
 
 Person names and company names also produce consistent ASR errors across sessions — always add confirmed name corrections to the dictionary, and for project-specific names use `--domain <project>` to keep them isolated (see "Project-Specific & Person-Name Corrections").
+
+### Numbers: the category the dictionary structurally cannot fix
+
+A dictionary rule needs the error to be *stable* — one wrong string, one right
+string. Numeric errors have no stable mapping (`80` becomes `800` in one
+recording and `18` in the next), so no amount of dictionary work reaches them.
+They are also the errors that cost the most. The ASR literature on
+entity-level error consistently ranks numbers and named entities as the worst
+categories — far worse than headline WER suggests — and reports numeral
+*continuation* tokens (the digits after the first) as worse still than the
+leading digit. That ordering is the load-bearing claim here, and it matches what
+you will see in practice: the first digit group is usually right and the tail is
+where it breaks, which is exactly why a wrong number still reads fluently.
+(Specific percentages circulate in secondary summaries of this literature; they
+are not reproduced here because they were not verified against the primary
+sources. Search "ASR named entity error rate" / "entity-preserved ASR" if you
+want the numbers with their datasets attached.)
+
+Three sub-classes, each needing a different check. None can be auto-applied —
+a number can only be resolved by evidence, never by pattern:
+
+| Sub-class | What it looks like | How to settle it |
+|---|---|---|
+| **Magnitude** | the same amount restated with an extra or missing zero | arithmetic against a figure stated elsewhere in the same passage; or the second recording (below) |
+| **Measure word dropped** | `30+` where the speaker said "30 家/个" (nobody says "plus" aloud) | the scanner below finds these (`orphan-plus`); the measure word is then usually recoverable from the object in the same clause |
+| **Polarity inverted** | a stated *ceiling* transcribed as a *floor* — "只能给 N" arriving as "超过 N…保底" | scan the same session for the other statements of that number; the one carrying a limiting modal (只能/最多/至多/封顶/不超过/至少/起码/超过/保底/最少 — the script prints this same list) is almost always the true one, because a speaker states a bound once and paraphrases it loosely afterwards |
+
+Polarity is the dangerous one and the one no tool catches: the sentence is
+grammatical, the number is right, and the meaning is reversed. It is worth a
+deliberate read whenever a number in the transcript will end up in a decision
+document — a price, a cap, a share, a deadline.
+
+**Two recordings of one meeting are the strongest evidence you will get.** When
+a session was captured by two independent systems (two platforms, or a platform
+plus a local recorder), their numeric errors are uncorrelated, so disagreement
+localises the error and agreement settles it. This is the manual, two-system
+case of ROVER (Recognizer Output Voting Error Reduction, NIST 1997) — worth
+knowing by name, because the published work explains why voting across systems
+beats improving any one of them. Do not discard a "redundant" second recording
+of a meeting you already have; it is a reference transcript for exactly the
+values that matter most. If only one recording exists and a number is
+load-bearing, settle it by ear through the path this skill already has: wire the
+transcript's `audio:` frontmatter (see "Wiring audio for a Feishu-minute
+transcript"), enqueue the number as a review item, and press `Q` in the review
+dashboard — it plays exactly the anchored utterance, so you hear the digits
+spoken instead of re-reading them.
+
+**Numeric-slot damage — when a replacement overshoots into a number.** A
+distinct failure with the same symptom: a global replace aimed at something else
+lands inside a numeral. The classic trigger is relabelling a speaker whose
+diarization label is a bare digit — replacing that digit globally fixes the
+speaker lines and quietly corrupts every number containing it (`21 册`,
+`3+1`, `8.8 折`, and the date in the title all lose a digit to a name). The
+transcript still reads fluently; only the numbers are wrong. A dictionary rule
+that overshoots produces the same signature.
+
+```bash
+# Scan for canonical terms sitting where a digit belongs. The needle list is the
+# dictionary's own to_text values — the strings this toolchain writes INTO
+# transcripts are exactly the ones that shouldn't be inside a number.
+uv run scripts/scan_numeric_consistency.py transcript.md --domain <project>
+```
+
+Everything it prints is a **candidate to read**, never an edit to apply — and
+the polarity class is deliberately not automated, because a check that fires on
+healthy input is one people stop running.
+
+What you can verify yourself: `scripts/tests/test_numeric_consistency.py` pins
+both halves of that promise on synthetic fixtures — every damage shape above is
+detected, and the healthy-input shapes that killed two earlier versions of this
+scanner (a term merely co-occurring with digits, a term *before* a digit, a
+title's leading date, a timezone offset) stay silent. Run it with
+`uv run --with pytest python -m pytest scripts/tests/test_numeric_consistency.py`.
+The false-positive *rate* behind those choices was measured on a private
+transcript corpus that cannot ship, so the rate is not reproducible here — the
+behaviour it bought is.
 
 ### Efficient Batch Fix Strategy
 

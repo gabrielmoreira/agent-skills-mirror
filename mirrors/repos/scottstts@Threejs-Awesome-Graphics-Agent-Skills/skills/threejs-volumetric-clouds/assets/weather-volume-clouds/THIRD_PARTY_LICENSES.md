@@ -1,8 +1,7 @@
 # Third-party licenses
 
-The atmosphere lookup tables and cloud textures in this directory are derived
-from [jeantimex/geospatial](https://github.com/jeantimex/geospatial), revision
-`d166316ad38f9a21f6d7a3293b808bc7f920283e`.
+The atmosphere lookup tables and cloud textures in this directory are
+third-party assets used under the MIT License reproduced below.
 
 MIT License
 

@@ -4,13 +4,38 @@
 
 ---
 
+## v0.3.194 / extension v0.3.195：小红书真实搜索修复与首启可靠性（2026-08-05）
+
+- **修复小红书真实搜索的隐藏页与失效登录双重误诊**：更新后的工作区插件第一次回执显示 `document.hidden=true`、46 个普通 anchor 但 0 个 note anchor；切到前台后 `hidden=false` 仍为空，随后在同一真实浏览器手动提交搜索，页面明确弹出“登录后查看搜索结果”，证明残留 `web_session` Cookie 把失效会话误报成已登录，而非搜索频率直接触发风控。dispatcher 现在先记录当前活动标签，search 短暂以前台标签渲染并在结束后恢复原标签；executor 看到可见登录弹层会立即返回 `xhs_login_required`，后端再把这份真实页面证据写回登录态为 false。creator 保持后台，默认 20 分钟目标间隔（稳定 ±25% 抖动）、每日 20 次预算、队列积压门控和 `1h → 24h` 指数退避全部保留。
+- **搜索路由与空结果诊断继续收口**：task、bootstrap、被动采集共用 `/explore/{id}`、`/discovery/item/{id}`、`/search_result/{id}` 三路由 selector；搜索 SPA 最多等待 12 秒。真实空结果仍只回传 pathname、可见性、viewport 与 anchor 计数，不上传搜索词、页面正文、链接、Cookie 或 state 内容。
+- **修复首启 bge-m3 下载进度不实时更新（Issue #142）**：安装包在启动拉取线程前发布进程全局 running 状态，setup、桌面 Web 与 popup 在初始化前即可接管并持续轮询下载进度，慢速 Windows 下载不再只显示静态等待。
+- **候选评估使用真实发布时间**：单条、批量和补分类路径统一携带来源 `published_at` 与真实 UTC `evaluated_at`，缓存同时绑定发布时间摘要和评估小时桶；缺失或无效发布时间保持中性，不再让模型按知识截止时间猜测当前日期。
+- **发现关键词轮换与积压保护增强**：planner 避免重复消费同一关键词，XHS producer 按默认 20 分钟节奏检查，并在 pending + in-progress 搜索达到 5 条时停止 claim 与 LLM 生成。
+- **发布版本与 AMO channel 冲突处理**：后端、桌面和首轮 GitHub 插件包发布为 `0.3.194`；该扩展标签的既有自动签名流程先在 AMO 占用了 unlisted `0.3.194`，AMO 因此拒绝同版本转 listed。商店补丁版本提升为 `0.3.195`，Chrome 用它替换刚提交的 `0.3.194` 审核包，Firefox 以全新 listed 版本重提；仓库变量 `FIREFOX_SIGNING_ENABLED` 同步关闭，今后 GitHub 扩展发布不再抢占正式 AMO listed 版本号。
+
 ## extension v0.3.193：Firefox AMO 公开商店提审（2026-08-03）
 
+- **修复首启 bge-m3 下载进度不实时更新（Issue #142）**：桌面 `/setup/`、`/web` 与 popup 在初始化前就会接管后台 embedding 拉取并持续轮询；安装包启动拉取前先发布进程全局 running 状态，慢速 Windows 下载无需先点击「开始初始化」即可看到实时进度。
+- **PC Web「聊聊口味」补上持续可见的模型等待态**：消息刚提交时立即显示「阿B 正在思考，等待模型回复…」与三点动效；后端创建 durable `pending/processing` turn、历史刷新接管后继续按真实状态显示，不再因临时提示被刷新覆盖而只剩用户消息。回复完成或失败时等待气泡由终态原位替换；状态使用 polite live region、`aria-busy` 并遵守 reduced-motion。
+- **修复小红书搜索任务整页 0 条的路由漂移**：2026-08-04 真实插件请求复现 `Python` 搜索 0 条且无风控命中，随后确认 Chrome 商店 0.3.192 的通用适配器已经识别 `/search_result/{note_id}`，但 task executor、被动采集和共享 note selector 仍只认 `/explore/{id}` / `/discovery/item/{id}`。三条采集链路现统一使用同一选择器与 URL parser，后端 observed-urls、内容页分类和原生保存身份校验同步接受第三种 note 路由；搜索 SPA 等待上限由 5 秒调整为 12 秒（仍低于 30 秒 dispatcher timeout）。真实空结果会写 `xhs_empty_result`，并只回传 pathname、生命周期标志和各路由 anchor 数量，不包含搜索词、标题、正文、href、Cookie 或页面 state。真机对照确认在测试浏览器实际运行的是商店包 0.3.192；工作区 0.3.193 构建与回归已通过，修复版真实请求须先把该浏览器更新到新包，`chrome.runtime.reload()` 只会重启当前商店包、不会加载工作区 `/dist`。
 - **Firefox 首次公开上架不再复用 unlisted 签名链路**：新增手动 `Submit Firefox AMO Listed Package` workflow，以全局唯一的扩展版本构建 `dist-firefox/`，携带双语名称、摘要、描述、MIT license、合法 Firefox / Android 分类和审核说明提交 `web-ext sign --channel=listed`；0.3.192 已作为 unlisted 版本存在，故公开提审使用独立扩展版本 0.3.193，后端与桌面版本仍保持 0.3.192。
 - **审核所需源码与隐私资料和提交包同源**：workflow 从同一 Git commit 打包 `extension/`、共享 Web 模块、lockfile、构建说明和 `docs/privacy.md`，主动通过 `--upload-source-code` 附上可复现源码；提交后查询版本列表并要求 0.3.193 的 channel 真实为 `listed`，避免把上传成功误报成已提审。
 - **AMO 隐私字段故障不再反向阻断版本提审**：连续真实请求证明 `eula_policy` PATCH 无论补齐与 `web-ext` 一致的 JSON headers、使用 Gecko GUID 还是 canonical 数字 add-on ID，当前 developer JWT 都只收到无正文 HTTP 406；该非必需字段因此移动到 listed 版本已受理并核验之后 best-effort 同步，失败会在 workflow 留下显式 warning 和 Developer Hub 手动回填指引。manifest 数据类别、reviewer notes、双语 listing 描述、随 reviewer source 附带的 `docs/privacy.md` 仍随提审送达，不会把隐私披露静默省略。
 
 ## v0.3.192：多模态推荐、可靠反馈与连接增强（2026-08-03）
+
+### 用户日志暴露的推荐空窗与后台振荡修复
+
+- **候选评估使用真实发布时间**：单条、批量及推荐池补分类 evaluator 都携带来源已有的 `published_at`，并用精确 UTC `evaluated_at` 作为热点、时事和版本更新等时效性判断的权威基准；模型不再根据自身知识截止时间推测当前日期，缺失或无效时间保持中性。单条 / 批量评分缓存同时绑定发布时间摘要与独立评估小时桶，来源后补时间或 daemon 跨小时后不会继续复用旧分数。
+- **避雷画像不再把推荐永久杀空**：正常情况下仍用 `disliked_topics` 对结构化 topic 与标题/简介/作者/标签/正文做即时出口过滤；只有模糊子串规则将整个 serve 窗口过滤为零时，才对该窗口降级为 `topic_key/topic_group/pool_topic_label` 精确硬禁用并记录诊断，显式类别避雷不恢复。
+- **候选池维护不再恢复/裁剪振荡**：suppressed 恢复受 raw headroom 限制，raw 已满或超限时先裁剪；protected/token-owned excess 已无 victim 时返回 `has_more=False` 并把原 ERROR 风暴降为稳定 WARNING。用户日志中的 AB raw 状态不再每 tick 反复切换。
+- **错误模型路由快速失败**：OpenAI-compatible 的 400/403/404/405/422 不再做三次无效 provider 重试；`404 model route not found` 保留完整原因交给 fallback/配置诊断，5xx、timeout 与传输错误继续按原策略重试。
+- **稳定画像不再回放同一批搜索词**：关键词 generation cache key 纳入实时 `recent_keywords`，写入前再按大小写/空白/标点做近期词硬去重；候选预过滤若发现某个 `source_keyword_id` 的返回结果全部已存在，会立即把该词退役并保留冷却历史。`recycle_oldest_used` 只允许超过 `history_window_hours` 的历史有效词兜底，避免画像 digest 不变时在 `plan_ttl_hours` 内反复搜索相同内容。
+- **灵感词按真实产出轮换并拦截换皮/错归因**：`materialize_platform_keywords()` 先覆盖每个选中兴趣再给同兴趣补第二轴，避免少量兴趣抢完平台配额；selection ledger 延后到装配与近期过滤之后，只记录实际留下关键词的兴趣。输出若冒用未选兴趣、或 core 明确命中另一个画像兴趣会被拒绝；只给旧 query 增加「复盘 / 解析 / 教程 / 盘点 / 测评」等尾缀也归入同一冷却 family。
+
+### 小红书访问节奏与风控背压
+
+- **小红书主动搜索改用保守默认节奏，并补齐四层背压**：新配置或缺键配置的 `daily_search_budget / task_interval_seconds / min_interval_minutes` 从 `0 / 300 / 3` 调整为 `20 / 1200 / 20`；20 分钟是目标值，legacy search / creator 每次 claim 按任务 ID 施加稳定 ±25% 抖动（约 15–25 分钟）并把实际 `next_claim_at` 落 SQLite，避免后端、MV3 或多浏览器 profile 重启绕过，也避免固定周期访问。`XhsTaskProducer` 在 pending + in-progress search 达 5 条时直接返回 `backlog`，不 claim planner 词、不调用 LLM，只按空位补队列；默认每日 20 次与该积压门共同限制高缺口时的持续搜索。风险回调新增持久 `rate_limit_strikes`，独立风控轮次按 `1h → 2h → 4h → 8h → 16h → 24h` 指数退避并封顶；同一活动冷却内重复报告不加轮次，冷却后的正常 search / creator 成功才重置，晚到成功不能取消其它任务刚打开的冷却。状态 API 同步显示连续轮次与剩余时间。插件、桌面 Web、CLI、配置样例、模块文档和架构图已统一默认值；**这些数值是工程安全起点，不是小红书官方阈值，已有显式 `config.toml` 值不迁移、不覆盖**。
 
 ### 多模态推荐与高级配置
 
@@ -22,6 +47,7 @@
 - **弹幕摘要严格遵守字符预算**：`condense_danmaku` 将 ` | ` 分隔符计入 `danmaku_max_chars`，保留完整弹幕，单条超限跳过，避免摘要实际长度超过配置预算。
 - **桌面 Web 与插件设置页新增统一的「高级功能」Tab**：桌面端 7 个 Tab、插件端 6 个 Tab 都固定提供「推荐增强 / 多模态处理 / 搜索词生成」三个 section；P1/P2/P3 依赖关系、关闭无副作用、七个 discovery 字段的 round-trip 和搜索词三档 option 契约保持一致，调度 Tab 只保留真正的调度项。
 - **设置页保存按钮只在有改动时启用**：桌面 Web 与插件 side panel 在配置无变化或保存请求进行中都会禁用保存，避免无操作的完整 `PUT /api/config` 和无意义热重载；输入、LLM 实例/调用链草稿及候选池建议比例等程序化修改都会进入脏状态。保存成功后按钮重新禁用，失败则保留改动并允许重试。
+- **配置保存不再被长对话拖到 60 秒超时**：`PUT /api/config` 仍先校验、快照并落盘；检测到对话、结算或事件 owner 正忙时改为立即返回 `202 apply_state="queued"`，由 app-owned latest-wins 队列在后台安全 drain 后热重载。连续保存只保留最新待应用修订，旧修订失败不会覆盖新文件；最终成功/失败通过 `config_reloaded` / `config_reload_failed` 推送，并可由 `GET /api/config/apply-status` 回读。最新修订失败会恢复最后一次已生效配置，初始化在应用完成前返回 `409 config_applying`，插件与桌面 Web 分别展示“已排队”及最终失败回执。
 - **插件配置保存栏固定在视口底部**：side panel 不再把位于长表单末尾的 sticky 保存栏留在页面底部；保存状态和按钮始终固定在扩展视口底边，滚动容器同步预留安全区与操作栏高度，最后一项配置仍可完整滚到按钮上方，不会被遮挡。
 - **高级功能默认值统一**：新配置的搜索词生成默认使用“混合”（经典 merged planner + search-backed 灵感轴），桌面 Web、插件和 API 缺省回退同步为 `hybrid`；图像 Embedding、候选封面 LLM 评估、P1 视觉画像和 P3 关键帧继续全部默认关闭，已有显式配置不被覆盖。
 - **补充 PR #135 贡献者致谢**：README 中英文与贡献指南正式记录 [@wuwafly3](https://github.com/wuwafly3) 对用户视觉画像（P1）、B 站弹幕语义（P2）、视频关键帧（P3）和跨平台视觉加权管线的贡献，并保留其此前在 [#100](https://github.com/whiteguo233/OpenBiliClaw/pull/100) 中完成的 DashScope 多模态 embedding 与封面 image-only 向量归属。

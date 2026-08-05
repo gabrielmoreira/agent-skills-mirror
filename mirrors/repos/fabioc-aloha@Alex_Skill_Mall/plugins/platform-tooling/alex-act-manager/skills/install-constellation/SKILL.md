@@ -1,6 +1,6 @@
 ---
 name: install-constellation
-description: "Install the four Alex ACT constellation plugins (alex-act-core, alex-act-illustrator-plugin, alex-act-enterprise, alex-act-msft) at their correct default scope (user for all four) with the correct install order (Core first), then optionally bootstrap Core's always-on ACT discipline instructions to ~/.copilot/instructions/ because plugin installs do not deliver instructions. Consent-gated. Idempotent — skips plugins already installed at the target version. Asks about tenant scope before installing alex-act-msft (Microsoft-internal only). Delegates to `plugin-management` for the mechanical CLI commands."
+description: "Install and repair the Alex ACT brain spine and optional plugins, bootstrap Core's instructions, configure stable host settings, and offer workspace-scoped optional capability defaults. Use for first setup, greeting-time repair, or partial-install recovery. Manager and Core can never be disabled by workspace configuration."
 lastReviewed: 2026-08-01
 ---
 
@@ -22,8 +22,8 @@ The skill runs in one of three modes depending on how it was invoked:
 
 | Mode | Trigger | Behavior |
 |---|---|---|
-| **Manual** (default) | Heir types `/alex-act-manager install-constellation` explicitly | Full consent flow: print 4-plugin table, ask which to install, tenant-check MSFT, configure stable user settings, bootstrap discipline, preview current-workspace CSS, verify. All Steps 1-9 fire. |
-| **Auto-invoked from greeting-checkin** | `greeting-checkin` instruction detected incomplete state on a session greeting and user replied Y to the consolidated consent gate | Single Y already covers Steps 1-2. Skip re-asking. Go directly to Step 3 (marketplace) → Step 4 (installs) → Step 5 (plugin enablement). User settings, instruction bootstrap, and workspace files retain their separate consent gates in Steps 6-8 because they affect different scopes. Report at Step 9 also confirms "Setup complete — reload VS Code to activate all skills" if any new plugins or settings landed. |
+| **Manual** (default) | Heir types `/alex-act-manager install-constellation` explicitly | Full consent flow: install selection, tenant check, user settings, bootstrap, repository CSS, and verification. All Steps 1-9 fire. |
+| **Auto-invoked from greeting-checkin** | Greeting detected incomplete brain state and user approved repair | Greeting Y covers brain-spine repair only. User settings, bootstrap, and repository files retain separate consent gates because they affect different scopes. |
 | **Repair** | Heir invoked manually AND state check finds partial residue (bootstrap files without matching plugin, orphan receipt) | Confirm intent to complete partial install; skip installs of plugins already present at target version. |
 | **Bootstrap-only repair** | All plugin versions, enabled keys, manifests, stable user settings, and current-workspace files match, but the receipt or one of its seventeen files is missing, stale, or hash-mismatched | Skip plugin selection, marketplace registration, installation, user-settings audit, and workspace bootstrap. Show the bootstrap delta and go directly to the separate Step 7 consent gate. |
 
@@ -33,7 +33,10 @@ The three modes converge on the same underlying steps. What differs is which con
 point. It is one of the seventeen files copied by Step 7, so a machine with no
 prior bootstrap cannot route a greeting through this skill.
 
-For the greeting-checkin auto-invocation path specifically, the user has already answered ONE question ("Complete setup? Y/N/details"). Do not re-prompt for plugin selection or marketplace registration. The greeting Y covers plugin selection only; user settings, instruction bootstrap, and workspace files retain separate consent gates. The MSFT tenant check also remains because tenant eligibility is factual, not a preference.
+For greeting-time brain repair, do not treat optional plugins as missing brain
+components. Manager, Core, and the seventeen-file bootstrap are the spine.
+Optional plugins selected by the user remain installed and enabled at user
+scope. Alex ACT does not manage per-workspace plugin activation.
 
 ## The four constellation plugins
 
@@ -125,22 +128,24 @@ and stop. Do not attempt to continue past a broken install.
 
 ### Step 5 — Settings merge
 
-For each installed plugin, add an entry to `~/.copilot/settings.json` `enabledPlugins`:
+Enable every selected installed constellation plugin at user scope:
 
 ```json
 {
   "enabledPlugins": {
+    "alex-act-manager@alex-mall": true,
     "alex-act-core@alex-mall": true,
     "alex-act-illustrator-plugin@alex-mall": true,
     "alex-act-enterprise@alex-mall": true,
+    "alex-act-document-tools@alex-mall": true,
     "alex-act-msft": true
   }
 }
 ```
 
 The bare `alex-act-msft` key is required on Copilot CLI 1.0.77 because direct
-installs do not populate `enabledPlugins` automatically. Verify it after the
-merge; an on-disk direct install without this key can go dark on restart.
+installs do not populate `enabledPlugins` automatically. Verify the explicit
+`true` after the merge so MSFT remains active after restart.
 
 Delegate to [`plugin-management`](../plugin-management/SKILL.md) § Safe settings edits for the merge algorithm — preserve any pre-existing `enabledPlugins` or `extraKnownMarketplaces` entries the heir has.
 
@@ -394,6 +399,7 @@ Sunset or revise this skill by **2027-01-30** (6 months) if:
 - ≥2 heirs report the idempotent re-run pattern doing damage (deleting pre-existing entries, re-installing when already current) — merge algorithm needs a regression fix.
 - **The bundled `bootstrap/` drifts from `.github/instructions/`.** The seventeen files are copies, and copies rot. If a source instruction is edited without the bundled copy following, heirs bootstrap a stale rule. Either add a release check that diffs the two sets, or replace the copies with a build step that generates them.
 - **Direct GitHub installs stop working or are removed by Copilot CLI.** The interim MSFT distribution path must move before the breaking release; do not wait for users to discover it during setup.
+- A workspace profile disables Manager or Core even once, or private identifiers are written without explicit acknowledgement.
 
 Track outcomes in the maintaining repo's curation log.
 

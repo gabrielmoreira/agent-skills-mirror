@@ -7,7 +7,7 @@ ref: dev
 
 # Mirror Manifest
 
-Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anomalyco/opencode` — 26 default patterns, 0 followed patterns, 18 
 | Ref           | `dev` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,23 +60,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.opencode/skills/effect/SKILL.md`](.opencode/skills/effect/SKILL.md) |
-| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 3 | ✓ | [`packages/app/AGENTS.md`](packages/app/AGENTS.md) |
-| 4 | ✓ | [`packages/app/e2e/performance/AGENTS.md`](packages/app/e2e/performance/AGENTS.md) |
-| 5 | ✓ | [`packages/codemode/AGENTS.md`](packages/codemode/AGENTS.md) |
-| 6 | ✓ | [`packages/core/src/tool/AGENTS.md`](packages/core/src/tool/AGENTS.md) |
-| 7 | ✓ | [`packages/desktop/AGENTS.md`](packages/desktop/AGENTS.md) |
-| 8 | ✓ | [`packages/effect-drizzle-sqlite/AGENTS.md`](packages/effect-drizzle-sqlite/AGENTS.md) |
-| 9 | ✓ | [`packages/llm/AGENTS.md`](packages/llm/AGENTS.md) |
-| 10 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
-| 11 | ✓ | [`packages/opencode/src/server/routes/instance/httpapi/AGENTS.md`](packages/opencode/src/server/routes/instance/httpapi/AGENTS.md) |
-| 12 | ✓ | [`packages/opencode/src/session/llm/AGENTS.md`](packages/opencode/src/session/llm/AGENTS.md) |
-| 13 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
-| 14 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
-| 15 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
-| 16 | ✓ | [`packages/opencode/test/server/AGENTS.md`](packages/opencode/test/server/AGENTS.md) |
-| 17 | ✓ | [`packages/schema/AGENTS.md`](packages/schema/AGENTS.md) |
-| 18 | ✓ | [`packages/stats/AGENTS.md`](packages/stats/AGENTS.md) |
+| 2 | ✓ | [`.opencode/skills/rtl-aware-development/SKILL.md`](.opencode/skills/rtl-aware-development/SKILL.md) |
+| 3 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 4 | ✓ | [`packages/app/AGENTS.md`](packages/app/AGENTS.md) |
+| 5 | ✓ | [`packages/app/e2e/AGENTS.md`](packages/app/e2e/AGENTS.md) |
+| 6 | ✓ | [`packages/app/e2e/performance/AGENTS.md`](packages/app/e2e/performance/AGENTS.md) |
+| 7 | ✓ | [`packages/codemode/AGENTS.md`](packages/codemode/AGENTS.md) |
+| 8 | ✓ | [`packages/core/src/tool/AGENTS.md`](packages/core/src/tool/AGENTS.md) |
+| 9 | ✓ | [`packages/desktop/AGENTS.md`](packages/desktop/AGENTS.md) |
+| 10 | ✓ | [`packages/effect-drizzle-sqlite/AGENTS.md`](packages/effect-drizzle-sqlite/AGENTS.md) |
+| 11 | ✓ | [`packages/llm/AGENTS.md`](packages/llm/AGENTS.md) |
+| 12 | ✓ | [`packages/opencode/AGENTS.md`](packages/opencode/AGENTS.md) |
+| 13 | ✓ | [`packages/opencode/src/server/routes/instance/httpapi/AGENTS.md`](packages/opencode/src/server/routes/instance/httpapi/AGENTS.md) |
+| 14 | ✓ | [`packages/opencode/src/session/llm/AGENTS.md`](packages/opencode/src/session/llm/AGENTS.md) |
+| 15 | ✓ | [`packages/opencode/test/AGENTS.md`](packages/opencode/test/AGENTS.md) |
+| 16 | ✓ | [`packages/opencode/test/fixture/skills/agents-sdk/SKILL.md`](packages/opencode/test/fixture/skills/agents-sdk/SKILL.md) |
+| 17 | ✓ | [`packages/opencode/test/fixture/skills/cloudflare/SKILL.md`](packages/opencode/test/fixture/skills/cloudflare/SKILL.md) |
+| 18 | ✓ | [`packages/opencode/test/server/AGENTS.md`](packages/opencode/test/server/AGENTS.md) |
+| 19 | ✓ | [`packages/schema/AGENTS.md`](packages/schema/AGENTS.md) |
+| 20 | ✓ | [`packages/session-ui/AGENTS.md`](packages/session-ui/AGENTS.md) |
+| 21 | ✓ | [`packages/stats/AGENTS.md`](packages/stats/AGENTS.md) |
+| 22 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
 
 ---
 

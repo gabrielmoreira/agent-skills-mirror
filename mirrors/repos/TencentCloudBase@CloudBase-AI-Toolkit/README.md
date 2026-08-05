@@ -24,15 +24,16 @@ The CloudBase integration layer for AI coding tools: Plugin installs the stack, 
 
 ## Recent updates
 
-**v2.25.x** (2026-07)
+**v2.25.x** (2026-08)
 
+- Permissions: PG environments can set cloud function access via managePermissions — falls back to OPA / `tcb policy` (`modifyEnvAuthzConfig`) when ModifyResourcePermission is unsupported (#865)
 - CloudRun / Gateway: VPC guidance when using TCP databases; Domain/Route with `upstreamResourceType` and path transmission
 - CloudRun / Gateway: preserve remote VPC & env config on redeploy; prefer custom-domain access URLs after deploy
 - Plugin: easier install via Open Plugin / marketplace packaging
 - Env / Database: clearer billing summary when creating an env; SDK-first guidance instead of raw TCP database info
 - Auth / Database: fix createApiKey false success; fail closed when a PG migration does not land
 - Gateway / Auth: query and switch HTTP gateway master switch & access auth (`getPrivilege` / `enableService` / `authSwitch`); SMS login works out of the box via the default channel
-- PG Migration: applyMigration now hydrates remote migration history and polls DescribeTaskResult, fixing silently failing async migration tasks (#857, #859)
+- PG Migration: applyMigration now hydrates remote migration history and polls DescribeTaskResult; prefer local migration tree and native manager-node APIs (#857, #859, #863, #864)
 
 [Releases][changelog] · [Star][github-stars-link] · Watch → Releases
 

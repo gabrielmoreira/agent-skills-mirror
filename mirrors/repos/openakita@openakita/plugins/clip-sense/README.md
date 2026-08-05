@@ -4,7 +4,7 @@ AI-powered video editing plugin for OpenAkita — upload a long video, AI transc
 
 ## 1. Overview
 
-ClipSense combines cloud AI intelligence (DashScope Paraformer for ASR, Qwen for content analysis) with local FFmpeg execution to deliver intelligent video editing directly within OpenAkita.
+ClipSense combines DashScope Paraformer for ASR, OpenAkita-configured models for text analysis, and local FFmpeg execution.
 
 **4 Editing Modes:**
 | Mode | Description | Requires API Key |
@@ -20,7 +20,8 @@ ClipSense is a built-in OpenAkita plugin. It requires:
 
 - **OpenAkita** >= 1.27.0 with SDK >= 0.7.0
 - **FFmpeg** >= 4.0 installed and accessible via PATH
-- **DashScope API Key** (for modes other than Silence Clean)
+- **DashScope API Key** (for ASR; Silence Clean is local-only)
+- **OpenAkita text model** (for Highlight Extract, Topic Split, and Talking Polish analysis)
 
 ## 3. Configuration
 
@@ -143,7 +144,7 @@ python -m pytest tests/ -q -m "not integration"
 | API | Rate | 30-min Video |
 |-----|------|-------------|
 | Paraformer-v2 (ASR) | ¥0.0008/sec | ¥1.44 |
-| Qwen-Plus (analysis) | ¥0.004/K tokens | ~¥0.05 |
+| Selected OpenAkita endpoint (analysis) | Endpoint billing | Depends on selected endpoint |
 | FFmpeg (local) | Free | Free |
 | **Silence Clean total** | | **¥0** |
 | **Full pipeline total** | | **~¥1.5** |

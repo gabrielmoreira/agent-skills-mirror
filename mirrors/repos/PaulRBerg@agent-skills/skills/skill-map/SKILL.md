@@ -2,6 +2,7 @@
 argument-hint:
   "[--skill NAME] [--root PATH] [--format text|json|dot] [--include-catalog-sources] [--include-self]
   [--include-snippets] [--show-skipped]"
+coordination: exempt
 disable-model-invocation: false
 name: skill-map
 user-invocable: true
@@ -11,6 +12,9 @@ description:
 ---
 
 # Skill Map
+
+This skill is coordination-exempt: skip the ai-coord gate (`git status` / `ai-coord status` / `ai-coord start`) for this
+skill's own work.
 
 Find skill installs and references across local files without scanning macOS protected home paths or obvious transcript,
 cache, dependency, and backup noise.
@@ -24,7 +28,7 @@ cache, dependency, and backup noise.
   `~/sablier/sablier-skills`, and `~/sablier/agent-skills` during broad scans. Explicit `--root` values inside those
   trees are always scanned.
 - `--include-self`: Include self-references in dependency output.
-- `--include-snippets`: Include matched line text. Default output omits snippets to avoid leaking transcript or
+- `--include-snippets`: Include matched reference text. Default output omits snippets to avoid leaking transcript or
   secret-adjacent content.
 - `--show-skipped`: Include ignored path summaries in text or JSON output.
 

@@ -30,6 +30,7 @@ Everything else should be loaded **lazily** through skills only when needed.
 5. Do not add `.lock.yml` files to `.gitignore`.
 6. Never attempt to trigger a workflow run (e.g., `gh run`, `gh aw run`) as part of a Copilot cloud agent run. The token does not have the required access. Always fail with an error — do not task the user or ask them to run it manually.
 7. **Large-file guard**: before reading any file with `github-mcp-server-get_file_contents`, check its size. Files larger than 20 KB must be read with targeted tools (`grep`, `glob`, `bash`, or `view` with `view_range`) instead of full-file reads. See [token-optimization.md](.github/aw/token-optimization.md) for the full technique.
+8. Never ask the user to confirm the plan. Always execute the plan.
 
 ## Upstream-managed workflow sources (read-only in this repo)
 
@@ -46,10 +47,11 @@ Workflows that declare a `source:` frontmatter entry (for example `source: githu
 
 Use skills only when the task requires specialized guidance. Do not pre-load every skill.
 
-When the relevant skill is not obvious, first discover candidates and then load only the minimal guidance needed:
+All skills are local to this repository under `.github/skills/`. **NEVER** use GitHub Agent Finder (`agentfinder.github.com`) or any other remote skill discovery service to look for skills.
 
-- Query GitHub Agent Finder directly with the built-in REST API at `https://agentfinder.github.com/api/v1/search`.
-- Send an ARD search request with the user's task in `query.text`; do not ask the user for the endpoint.
+When the relevant skill is not obvious, first discover candidates locally and then load only the minimal guidance needed:
+
+- Discover skills by listing or searching `.github/skills/*/SKILL.md` in this repository.
 - Use **skill fusion** after discovery: read only the specific skill sections or fragments needed instead of loading full skills broadly.
 
 ### Use these skills by intent

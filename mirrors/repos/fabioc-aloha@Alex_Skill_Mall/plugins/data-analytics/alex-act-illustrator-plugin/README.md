@@ -92,39 +92,74 @@ Each authoring skill can still run independently when the framing or verificatio
 
 ## Brand palette
 
-The plugin follows the Alex ACT constellation brand palette. Canonical machine-readable source: [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Steward`. The tables below are a human-readable snapshot; edit the JSON file to rebrand the constellation.
+The plugin follows the Alex ACT constellation brand palette. Canonical machine-readable source: [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Core`. The tables below are a human-readable snapshot; edit the JSON file to rebrand the constellation.
 
 **Brand identity** — banners, marks, hero surfaces (`brand.*` + `gradient[]`):
 
-| Swatch | Hex | Role |
-| :---: | --- | --- |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#0f172a"/></svg> | `#0f172a` | Deep slate — background (`brand.primaryDark`) |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#10b981"/></svg> | `#10b981` | Emerald — primary accent, gradient start (`brand.primary`, `gradient[0]`) |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#14b8a6"/></svg> | `#14b8a6` | Teal — gradient mid (`gradient[1]`) |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#06b6d4"/></svg> | `#06b6d4` | Cyan — gradient end (`gradient[2]`) |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#f1f5f9"/></svg> | `#f1f5f9` | Near-white — text on dark (`brand.primaryLight`, `typography.textOnDark`) |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#94a3b8"/></svg> | `#94a3b8` | Muted — secondary text (`brand.muted`) |
+![Alex ACT brand identity swatches](https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/swatches-brand.svg)
+
+| Hex | Role |
+| --- | --- |
+| `#0f172a` | Deep slate — background (`brand.primaryDark`) |
+| `#10b981` | Emerald — primary accent, gradient start (`brand.primary`, `gradient[0]`) |
+| `#14b8a6` | Teal — gradient mid (`gradient[1]`) |
+| `#06b6d4` | Cyan — gradient end (`gradient[2]`) |
+| `#f1f5f9` | Near-white — text on dark (`brand.primaryLight`, `typography.textOnDark`) |
+| `#94a3b8` | Muted — secondary text (`brand.muted`) |
 
 **Semantic role coding** — screen-first diagram node fills (mermaid classDef vocabulary, `semantic.*`):
 
-| Swatch | Class | Fill | Stroke | Text | Role |
-| :---: | --- | --- | --- | --- | --- |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#ddf4ff" stroke="#80ccff"/></svg> | `:::blue` | `#ddf4ff` | `#80ccff` | `#0550ae` | Input, source, start |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#d3f5db" stroke="#6fdd8b"/></svg> | `:::green` | `#d3f5db` | `#6fdd8b` | `#1a7f37` | Output, result, success |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#d8b9ff" stroke="#bf8aff"/></svg> | `:::purple` | `#d8b9ff` | `#bf8aff` | `#6639ba` | Processing, model, transformation |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#fff8c5" stroke="#d4a72c"/></svg> | `:::gold` | `#fff8c5` | `#d4a72c` | `#9a6700` | Decision, condition, gate |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#ffebe9" stroke="#f5a3a3"/></svg> | `:::red` | `#ffebe9` | `#f5a3a3` | `#cf222e` | Error, warning, failure |
-| <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#eaeef2" stroke="#d0d7de"/></svg> | `:::neutral` | `#eaeef2` | `#d0d7de` | `#24292f` | Context, optional, out-of-scope |
+![Alex ACT semantic role swatches](https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/swatches-semantic.svg)
+
+| Class | Fill | Stroke | Text | Role |
+| --- | --- | --- | --- | --- |
+| `:::blue` | `#ddf4ff` | `#80ccff` | `#0550ae` | Input, source, start |
+| `:::green` | `#d3f5db` | `#6fdd8b` | `#1a7f37` | Output, result, success |
+| `:::purple` | `#d8b9ff` | `#bf8aff` | `#6639ba` | Processing, model, transformation |
+| `:::gold` | `#fff8c5` | `#d4a72c` | `#9a6700` | Decision, condition, gate |
+| `:::red` | `#ffebe9` | `#f5a3a3` | `#cf222e` | Error, warning, failure |
+| `:::neutral` | `#eaeef2` | `#d0d7de` | `#24292f` | Context, optional, out-of-scope |
 
 **Chart categorical** — screen-quality data-series colors (`chart.categorical[]`):
 
-| # | Swatch | Hex | Role hint |
-| :---: | :---: | --- | --- |
-| 0 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#10b981"/></svg> | `#10b981` | Primary / focus (matches brand accent) |
-| 1 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#0ea5e9"/></svg> | `#0ea5e9` | Secondary series |
-| 2 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#f59e0b"/></svg> | `#f59e0b` | Tertiary / comparison |
-| 3 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#8b5cf6"/></svg> | `#8b5cf6` | Quaternary |
-| 4 | <svg xmlns="http://www.w3.org/2000/svg" width="48" height="24"><rect width="48" height="24" rx="3" fill="#ef4444"/></svg> | `#ef4444` | Quinary / warning |
+![Alex ACT chart categorical swatches](https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/swatches-chart.svg)
+
+| # | Hex | Role hint |
+| :---: | --- | --- |
+| 0 | `#10b981` | Primary / focus (matches brand accent) |
+| 1 | `#0ea5e9` | Secondary series |
+| 2 | `#f59e0b` | Tertiary / comparison |
+| 3 | `#8b5cf6` | Quaternary |
+| 4 | `#ef4444` | Quinary / warning |
+
+### Default palette options (evaluation)
+
+![Default categorical palette options](https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/swatches-palette-options.svg)
+
+| Option | Approx. weakest CVD separation | Minimum contrast on white | Recommendation |
+| --- | ---: | ---: | --- |
+| Current canonical | 4.7 | 2.15:1 | Legacy comparison; do not retain as the default |
+| **Brand Accessible** | **20.5** | 1.32:1 | **Recommended default** for filled marks with black outlines plus symbols or labels |
+| Universal Balanced | 21.0 | 1.32:1 | Strongest simulated separation; use when neutral color-universal identity matters more than Alex emerald |
+| Contrast First | 7.3 | **3.06:1** | Use for thin lines, small marks, print, or strict white-background contrast |
+
+The separation values are approximate screening measurements across normal vision plus protanopia, deuteranopia, and tritanopia simulations; higher is better. They are not certification. Brand Accessible is the recommended default because it preserves Alex emerald while giving up only `0.5` separation versus Universal Balanced. Yellow and sky blue still require dark outlines and redundant symbols on white. Contrast First is the safer alternate where outlines or large filled areas are unavailable.
+
+### Accessible categorical candidate (evaluation)
+
+This candidate does **not** replace `chart.categorical[]` yet. It uses five colors from Okabe and Ito's [Color Universal Design palette](https://jfly.uni-koeln.de/color/) and adds a distinct symbol and direct label to every series. Color is never the only signal: charts using this candidate must preserve the circle, triangle, square, diamond, and cross through marks, line styles, direct labels, or hatching.
+
+![Accessible categorical palette candidate](https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/swatches-accessible.svg)
+
+| Series | Color | Redundant symbol |
+| --- | --- | --- |
+| 0 | Sky blue `#56B4E9` | Circle |
+| 1 | Bluish green `#009E73` | Triangle |
+| 2 | Yellow `#F0E442` | Square |
+| 3 | Vermilion `#D55E00` | Diamond |
+| 4 | Reddish purple `#CC79A7` | Cross |
+
+The swatch has an opaque white backing so its captions remain readable in light and dark GitHub themes. Its black symbols exceed WCAG AA contrast against all five fills. Approximate protanopia, deuteranopia, and tritanopia simulations are screening evidence, not certification; final adoption still requires human evaluation and color-independent chart encoding.
 
 ### Print variants ship in the plugin
 

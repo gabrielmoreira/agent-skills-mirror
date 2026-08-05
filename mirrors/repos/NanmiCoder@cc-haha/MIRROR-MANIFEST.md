@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NanmiCoder/cc-haha` — 26 default patterns, 0 followed patterns, 15 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,7 +73,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
 | 13 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
 | 14 | ✓ | [`src/skills/bundled/claude-api/SKILL.md`](src/skills/bundled/claude-api/SKILL.md) |
-| 15 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
+| 15 | ✓ | [`src/skills/bundled/imagegen/SKILL.md`](src/skills/bundled/imagegen/SKILL.md) |
+| 16 | ✓ | [`src/skills/bundled/verify/SKILL.md`](src/skills/bundled/verify/SKILL.md) |
 
 ---
 

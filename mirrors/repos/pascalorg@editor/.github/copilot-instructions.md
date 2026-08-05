@@ -1,0 +1,1 @@
+cache/repos/github.com/pascalorg@editor/.github/../AGENTS.md

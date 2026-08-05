@@ -69,7 +69,8 @@ winget install Gyan.FFmpeg     # 或 choco install ffmpeg
 
 进入 Settings Tab → AI Keys：
 
-- **DashScope API Key**（必填）— 用于 VLM / LLM；获取地址 https://dashscope.aliyun.com
+- **DashScope API Key**（按需）— 仅用于 ASR / VLM 等媒体能力；纯文本分析使用下方 OpenAkita 模型选择器
+- **OpenAkita 文本模型**（必填）— 可跟随当前模型，或严格锁定一个已配置端点
 - **YouTube Data API Key**（可选）— 引擎 A 拉 YouTube trending 用；缺失走 RSS Hub 降级
 - **RSS Hub 实例 URL**（可选）— 默认 `https://rsshub.app`，建议自部署提速
 
@@ -172,7 +173,7 @@ idea-research 是 OpenAkita 第 1 个真正使用 MDRM 4 SDK 接入口的一线�
 
 | SDK 接入口 | 权限 | 用法 |
 |---|---|---|
-| `api.get_brain()` | `brain.access` | DashScope 故障兜底 / 复用宿主 LLM |
+| `api.get_llm()` | `brain.access` | 通过安全 Facade 使用宿主已配置的文本模型，不暴露密钥 |
 | `api.get_memory_manager()` | `memory.read` / `memory.write` | 记录「该赛道历史 hook 模式 / 该 persona 偏好」 |
 | `api.get_vector_store()` | `vector.access` | 向量化 hook 文本，下次推荐检索相似 |
 | `api.register_memory_backend()` | `memory.write` | **不用**（idea-research 是参与者不是替代者） |
@@ -188,7 +189,7 @@ idea-research 是 OpenAkita 第 1 个真正使用 MDRM 4 SDK 接入口的一线�
 进入 OpenAkita Plugin Manager → idea-research → Permissions 面板，逐个勾选：
 
 ```
-☑ brain.access     # DashScope 故障兜底
+☑ brain.access     # OpenAkita 文本模型 Facade
 ☑ vector.access    # hook 向量检索（推荐越用越准）
 ☑ memory.write     # hook 结构化记忆（跨 persona 复用）
 ☑ memory.read      # 反查历史决策

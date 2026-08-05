@@ -46,7 +46,7 @@ A one-stop AI manga-drama pipeline: story → script → panels → animated vid
 
 | 步骤 / Step    | `direct` 直接后端                     | `runninghub` / `comfyui_local` 工作流后端 |
 |---|---|---|
-| 剧本拆分       | `brain.access` (Qwen-Plus 优先)        | 同左 (LLM 不依赖后端选择)                 |
+| 剧本拆分       | `brain.access`（所选 OpenAkita 模型）  | 同左（LLM 不依赖媒体后端选择）            |
 | panel_image    | DashScope `wan2.7-image` (多参考图)    | ComfyKit 提交 `runninghub_workflow_image` / 本地工作流 JSON |
 | panel_video    | Ark `seedance-1.0-lite-i2v`            | ComfyKit 提交 `runninghub_workflow_animate` / 本地工作流 JSON |
 | t2v fallback   | Ark `seedance-1.0-lite-t2v`            | ComfyKit 提交 `runninghub_workflow_t2v` / 本地工作流 JSON |

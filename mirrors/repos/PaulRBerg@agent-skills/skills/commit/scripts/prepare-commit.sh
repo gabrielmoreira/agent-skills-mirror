@@ -17,6 +17,11 @@ physical_dir() {
   (cd "$_dir" 2>/dev/null && pwd -P)
 }
 
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P) || die 'cannot resolve commit helper directory'
+references_dir=$(cd "$script_dir/../references" 2>/dev/null && pwd -P) || die 'cannot resolve commit references directory'
+
+. "$script_dir/natural-language-repos.sh"
+
 # Runs a git command that takes the index lock, retrying if another agent is
 # mid-operation. Retries up to 5 attempts (4 retries) with a 1s pause between
 # attempts, but only when the failure is an index.lock contention; any other
@@ -53,20 +58,7 @@ resolve_message_format() {
   _repo_root=$(git rev-parse --show-toplevel 2>/dev/null) || die 'cannot resolve git repository root'
   _repo_root=$(physical_dir "$_repo_root") || die 'cannot resolve git repository root'
 
-  _always_natural_language_repos=(
-    "$HOME/.agents"
-    "$HOME/.claude"
-    "$HOME/.codex"
-    "$HOME/.local/share/chezmoi"
-    "$HOME/projects/agent-skills"
-    "$HOME/projects/evm-sweeper"
-    "$HOME/projects/home-control"
-    "$HOME/projects/prb-chats"
-    "$HOME/projects/prb-finance"
-    "$HOME/work/mailops"
-  )
-
-  for _natural_repo in "${_always_natural_language_repos[@]}"; do
+  for _natural_repo in "${always_natural_language_repos[@]}"; do
     _natural_repo_root=$(physical_dir "$_natural_repo") || continue
     if [ "$_repo_root" = "$_natural_repo_root" ]; then
       printf 'natural\n'
@@ -169,7 +161,6 @@ elif [ "$staged" = true ]; then
   : # commit the current index as-is; the empty-index guard below applies
 else
   [ "${#session_paths[@]}" -gt 0 ] || die 'No files modified in this session'
-  script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P) || die 'cannot resolve commit helper directory'
   preview_output=$(
     bash "$script_dir/commit-paths.sh" preview --diff "$diff_mode" -- "${session_paths[@]}"
   ) || exit 1
@@ -183,6 +174,26 @@ fi
 
 printf '## message format\n'
 printf '%s\n\n' "$message_format"
+
+case "$message_format" in
+  conventional) message_rules=$references_dir/conventional-prefix-format.md ;;
+  natural) message_rules=$references_dir/natural-language-format.md ;;
+  *) die "unsupported message format: $message_format" ;;
+esac
+[ -f "$message_rules" ] || die "message format reference is missing: $message_rules"
+
+printf '## message format rules\n'
+cat "$message_rules" || die "failed to read message format reference: $message_rules"
+printf '\n'
+
+if command -v ai-coord >/dev/null 2>&1; then
+  trailer_output=$(ai-coord trailer 2>/dev/null)
+  trailer_rc=$?
+  if [ "$trailer_rc" -eq 0 ]; then
+    printf '## trailer\n'
+    printf '%s\n\n' "$trailer_output"
+  fi
+fi
 
 printf '## branch\n'
 printf '%s\n\n' "$branch"

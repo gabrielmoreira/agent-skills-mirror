@@ -68,8 +68,16 @@ node "<插件根>/scripts/ensure-runtime.cjs" --install-if-missing --json
 
 ### 机器前置依赖
 
-缺任何一个，安装会在对应环节明确停下（不静默跳过）：
-Bun ≥ 1.2、Node.js、curl、ffmpeg ≥ 6、Google Chrome（导出用）。
+支持 **macOS** 与 **Windows 10/11**。缺任何一个依赖，安装会在对应环节明确停下
+（不静默跳过）：Bun ≥ 1.2、Node.js、ffmpeg ≥ 6、Google Chrome（导出用）。
+
+```text
+macOS     brew install bun ffmpeg          Chrome 从官网装
+Windows   winget install Oven-sh.Bun       winget install Gyan.FFmpeg
+          winget install OpenJS.NodeJS.LTS Google.Chrome
+          装完新开一个终端/会话，PATH 才生效
+```
+
 云端转录另需火山引擎凭证：`node "<插件根>/scripts/videocut-cli.cjs" config set transcription.apiKey <key>`。
 
 详细协议见 [Runtime 与产品契约](../../references/runtime-and-product-contract.md)。

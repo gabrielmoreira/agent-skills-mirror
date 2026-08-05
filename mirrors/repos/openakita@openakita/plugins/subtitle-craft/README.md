@@ -2,7 +2,7 @@
 
 OpenAkita 的 AI 字幕全生命周期插件 — 一个插件涵盖 **自动字幕 → 翻译 → 修复 → 烧制** 的完整链路。
 
-后端基于阿里云百炼 DashScope（Paraformer-v2 词级 ASR + Qwen-MT 多语言翻译 + Qwen-VL 角色识别），本地依赖 FFmpeg + Playwright（HTML 字幕渲染时按需启动），全部通过 4 张 SQLite 表持久化任务、转录、资产、配置。
+后端使用阿里云百炼 DashScope Paraformer-v2 做词级 ASR，翻译、角色识别与 Hook 文本分析统一使用 OpenAkita 已配置模型；本地依赖 FFmpeg + Playwright（HTML 字幕渲染时按需启动），全部通过 4 张 SQLite 表持久化任务、转录、资产、配置。
 
 ---
 
@@ -11,13 +11,13 @@ OpenAkita 的 AI 字幕全生命周期插件 — 一个插件涵盖 **自动字�
 | Mode | 中文名 | 输入 | 输出 | 主要 API |
 |---|---|---|---|---|
 | `auto_subtitle` | 自动字幕 | 视频/音频 | SRT + VTT（可选烧制） | Paraformer-v2 |
-| `translate` | 字幕翻译 | SRT | 译制 SRT（支持双语） | Qwen-MT (flash/plus/lite) |
+| `translate` | 字幕翻译 | SRT | 译制 SRT（支持双语） | OpenAkita 文本模型 |
 | `repair` | 字幕修复 | SRT | 修复后 SRT | 本地（无 API 费用） |
 | `burn` | 字幕烧制 | 视频 + SRT | 烧入字幕的视频 | 本地 FFmpeg / Playwright |
 
 可选增量功能：
 
-- **角色识别**（Qwen-VL）：`auto_subtitle` 模式下,在开启 `diarization_enabled` 后可切换 `character_identify_enabled` 开关,把 `SPEAKER_00/01/02` 自动映射为角色名。识别失败保留原标签,**不阻塞流程**（P1-12）。
+- **角色识别**（OpenAkita 文本模型）：`auto_subtitle` 模式下,在开启 `diarization_enabled` 后可切换 `character_identify_enabled` 开关,把 `SPEAKER_00/01/02` 自动映射为角色名。识别失败保留原标签,**不阻塞流程**（P1-12）。
 - **双语字幕**：翻译模式打开 `bilingual` 后,原文与译文同时呈现。
 - **缓存复用**：同一文件第二次跑 `auto_subtitle` 走本地缓存,不再调用 Paraformer。
 
@@ -30,7 +30,8 @@ OpenAkita 的 AI 字幕全生命周期插件 — 一个插件涵盖 **自动字�
 - OpenAkita 主程序（SDK ≥ 0.7.0,< 0.8.0）
 - Python 3.11+,以及 `aiosqlite`、`httpx`、`fastapi`、`pydantic` (主程序自带)
 - `ffmpeg`（任意 4.x+）：放进系统 PATH 或在「设置 → 运行时」填入绝对路径
-- DashScope API Key（用于 ASR 与翻译）
+- DashScope API Key（仅用于 ASR）
+- OpenAkita 文本模型（用于翻译、角色识别与 Hook 分析）
 
 ### 2.2 可选
 

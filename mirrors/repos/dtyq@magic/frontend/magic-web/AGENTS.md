@@ -32,22 +32,23 @@ Guidance for autonomous or semi-autonomous coding agents contributing to the Mag
   - Always use 16px size for consistent visual alignment
 - **State**: MobX for global stores (`src/stores/`)
 - **UI Layers**:
-  - `src/` — main (commercial) application.
-  - `src/opensource/` — open-source edition; mirror patterns but reduced scope.
+  - `src/` — primary application source; baseline for the open-source edition build.
+  - `enterprise/src/` — enterprise overlay: mirror the same relative paths as `src/` where behavior differs (`vitePluginLayeredOverlay` in `vite/config/enterprise/index.ts`).
 - **Components**: Base components in `src/components/base/`, business widgets in `src/components/business/`, node/TipTap extensions under `src/components/tiptap-*`.
 - **APIs & Services**: REST/WebSocket clients in `src/apis/`, business logic in `src/services/`.
-- **Internationalization**: `react-i18next` with locales in `src/opensource/assets/locales/{zh_CN,en_US}/`.
+- **Internationalization**: `react-i18next` with locales in `src/assets/locales/{zh_CN,en_US}/`.
 - **Testing**: Vitest with `__tests__/` colocated alongside source.
 
 ## Implementation Standards
 - Maintain strict TypeScript typing; add or update types when altering APIs or props.
 - Keep React components modular: separate `styles.ts`, `types.ts`, `hooks/`, and `index.tsx` where the pattern already exists.
+- For every file change, explicitly check whether `enterprise/` contains a corresponding implementation, adapter, test, or config that must be updated in sync. Treat this as a required review step before finishing any code change.
 - **Styling conventions**:
-  - **For new components**: Use Tailwind CSS utility classes and shadcn/ui components from `@/opensource/components/shadcn-ui`
+  - **For new components**: Use Tailwind CSS utility classes and shadcn/ui components from `@/components/shadcn-ui`
   - **For existing components**: Use `createStyles` and `cx` helpers from `antd-style`; never import `classnames` or `clsx`
   - **Never mix**: Do not use Tailwind and antd-style in the same component
   - Tailwind config: `tailwind.config.ts`, CSS variables in `src/index.css`
-  - shadcn/ui config: `components.json` with aliases pointing to `@/opensource/`
+  - shadcn/ui config: `components.json` with aliases pointing to `@/components/shadcn-ui`, `@/lib/utils`, etc.
 - All user-visible strings must use i18n keys. Update both `zh_CN` and `en_US` dictionaries together.
 - **i18n — React**: After `const { t } = useTranslation("namespace")`, only use **literal** keys, e.g. `t("common.confirm")`. Do not pass `t` as props or helper args typed as generic `string` keys—static tools lose track. Long copy: same file, inline right after `useTranslation`, or a `use*` hook that calls `useTranslation` itself.
 - **i18n — keys**: Keys must be **static full strings** (`t("a.b.c")`). Avoid building keys from variables, `+`, or template literals—tooling cannot see those. Use dynamic keys **only** when there is no workable literal-based design; add a short comment explaining why.
@@ -82,6 +83,7 @@ Guidance for autonomous or semi-autonomous coding agents contributing to the Mag
   - For existing components: Mirror component structure, extend styles via `createStyles`, maintain consistency
   - Never convert existing antd-style components to Tailwind unless explicitly requested
 - **Data/Store Changes**: Modify MobX/Zustand stores cautiously, update dependent selectors, and add tests or storybook notes if behaviour shifts.
+- **Super Magic File-System Performance**: Before touching Super Magic attachments, file trees, file preview tabs, PPT rendering, or folder upload, read `docs/file-dependency-development-pitfalls.md` and `docs/file-system-optimization-summary.md`. Treat 10k files as the baseline: do not `JSON.stringify`, deep-clone, deep-compare, or log full `attachments` / `attachmentList` / `renderProps` in render paths; use `loadProjectAttachments`, `attachmentIndex` / `treeIndex`, primitive cache keys, abortable requests, and explicit MobX annotations for large input configs.
 - **Docs & Configuration**: Keep documentation bilingual when user-facing, and update related config or example snippets.
 - **Bug Fixes**: Reproduce, add a failing test when practical, fix, and confirm the test passes.
 

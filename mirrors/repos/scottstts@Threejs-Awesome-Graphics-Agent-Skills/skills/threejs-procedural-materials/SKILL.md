@@ -1,6 +1,6 @@
 ---
 name: threejs-procedural-materials
-description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, lava and emissive surfaces, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
+description: Author production procedural materials in Three.js. Use for hybrid texture-backed PBR soil and moss with procedural displacement and masks, upward-facing model moss accumulation, atlas filtering, specular AA, planet-space fields, terrain wetness, lava and emissive surfaces, raytraced diamond and gem refraction with internal reflection and dispersion, image-space glass transmission with spectral dispersion and volume absorption, per-instance dissolve, authored PBR identities, derivative normals, and custom direct-light shadow modulation.
 ---
 
 # Procedural Materials
@@ -43,12 +43,42 @@ Read the
 for raymarched procedural height fields whose normals, rock/lava identity,
 emission, glow, embers, fog, and grain are coupled to one material cause stack.
 
+Read the
+[raytraced diamond material](examples/raytraced-diamond/diamond-material.js)
+for a gem whose mesh is its own optical volume: camera-ray entry refraction, a
+GPU BVH first-hit loop with bounded total-internal-reflection bounces,
+per-channel IOR dispersion, mip-correct environment exit sampling, and live
+camera-matrix uniforms.
+
+Read the
+[spectral dispersive glass material](examples/spectral-dispersive-glass/spectral-glass-material.js)
+for a transmissive body solved in image space: a double-sided back-face data
+pass with inverted depth, an iterative interior exit search, bounded total
+internal reflection, Beer-Lambert absorption over the true path length, and a
+per-wavelength Cauchy index recombined through CIE 1931. Its reusable optical
+primitives — exact unpolarised Fresnel, Cauchy coefficients, spectral weights,
+the rotatable environment probe, and the buffer projection — live in
+[glass optics](examples/spectral-dispersive-glass/glass-optics.js), and
+[references/dielectric-glass-optics.md](references/dielectric-glass-optics.md)
+carries the two-pass contract, buffer format, search bounds, and transmission
+diagnostics.
+
+Pick between the two transmissive paths by geometry, not by quality. A closed
+faceted gem whose exit facet must be exact even when it faces away from the
+camera takes the BVH path. A scanned, assembled, open-sheet, or multi-shell
+body takes the image-space path, which tolerates inconsistent winding and
+authored normals pointing either way but cannot see a surface outside the
+frame.
+
 ## Required controls
 
 - real or perceptual texture scale;
 - material identity weights;
 - roughness range and micro-normal strength;
 - the causal fields required by the selected material pattern;
+- for a transmissive body, the physical constants that define it — index and
+Abbe pair, interior path budget, extinction depth — named rather than buried
+inside expressions;
 - distance/derivative filtering;
 - specular antialiasing;
 - channel and mask debug modes.
@@ -82,4 +112,6 @@ Use `$threejs-procedural-fields` when the main problem is designing shared
 scalar/vector causes. Use `$threejs-procedural-planets` for a complete
 orbit-to-close-approach body, not merely its material. Use
 `$threejs-parallax-occlusion-mapping` when a height field must own ray-marched
-intersection, silhouette coverage, or relief-aware shadows.
+intersection, silhouette coverage, or relief-aware shadows. Use
+`$threejs-temporal-surfaces` for view-aligned wet-glass optics and screen-space
+history; this skill owns the optical path through a transmissive body itself.

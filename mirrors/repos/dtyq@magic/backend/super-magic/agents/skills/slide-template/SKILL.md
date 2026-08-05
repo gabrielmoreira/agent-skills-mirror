@@ -1,103 +1,132 @@
 ---
 name: slide-template
-description: "Use when the user asks to create slides with a specific style, wants to see available PPT templates before creating, describes a custom template style, or wants to extract a template from an existing PPT project."
-description-cn: "当用户想查看PPT模板、用特定风格制作幻灯片、描述自定义模板风格，或从现有PPT项目中抽象模板时使用。"
+description: "Use when the user asks to create slides with a specific style, wants to use or inspect a slide template by code, wants to see platform-provided slide template options before creating, describes a custom template style, provides a PPTX/PPT file to convert into a platform template, or wants to extract a template from an existing Super Magic slide project."
 ---
 
 # Slide Template Manager
 
-Use this skill to choose a built-in slide template,create a custom template from a style description,or extract one from an existing PPT project.
+Use this skill to retrieve platform templates by exact code, create a custom template from a style description, extract one from a PPTX/PPT file, or extract one from an existing Super Magic slide project.
 
-## Templates
+## Template Metadata
 
-| dir | name | visual cue | trigger keywords |
-| --- | --- | --- | --- |
-| `business-minimal` | Corporate Whitepaper/职场白皮书 | white + McKinsey-style deep blue (#1A56DB); dark cover/section pages; SWOT, KPI dashboard, waterfall chart layouts; strict whitespace; no decoration | business report,quarterly review,annual report,strategy deck,investor pitch,proposal,roadshow,financial analysis,corporate,企业汇报,季度报告,年报,商业分析,战略,投资人,财务,麦肯锡风格 |
-| `tech-dark` | Midnight Code Lab/深夜代码室 | near-black deep navy (#070B14) + electric cyan (#00E5FF); glassmorphism cards; scan-line texture; code demo and architecture diagram layouts; gradient glow titles | tech talk,AI/ML product,engineering architecture,code demo,product launch,developer keynote,system design,技术分享,AI产品,架构设计,代码演示,工程师演讲,产品发布,开发者 |
-| `creative-flat` | Neon Geometry/霓虹几何派 | flame orange (#FF4D1C) + creative purple (#6C27D9); zero shadows; hard-edged flat; diagonal color-block cuts; offset-shadow cards; dot-matrix texture | creative campaign,brand identity,advertising,design showcase,bold visual,new media,mood board,创意设计,品牌形象,广告方案,新媒体,视觉冲击,大胆配色 |
-| `academic-research` | Academic Blueprint/论文蓝图册 | white + deep navy (#0F2444) + teal (#1A8A7A); Noto Serif SC titles; numbered sections, citation cards, experiment comparison tables; rigorous academic structure | thesis defense,academic paper,research presentation,conference paper,dissertation,SOTA comparison,methodology,论文答辩,学术汇报,研究报告,科研,学术会议,毕业答辩 |
-| `gradient-fashion` | Glass Candy/玻璃糖果风 | deep purple to matte gold gradient (#4A00E0→#E8C96A); glassmorphism with top-edge highlight; nebula purple dark cover (#0D0825); large radii (16–24px); feature cards with gradient top lines | internet product,app launch,consumer SaaS,fashion brand,youth lifestyle,gradient style,互联网产品,App发布,消费品,时尚,年轻用户,渐变风格,玻璃拟态 |
-| `aicon-tech-blue` | Orbit Tech Blue/旋转光环蓝 | white + professional blue (#2F80ED) + rotating dashed rings; dual conference logo areas; speaker introduction and code/architecture layout | AI conference,tech summit,engineering talk,speaker introduction,technical forum,AI大会,技术峰会,工程师分享,会议演讲,技术论坛 |
-| `gotc-open-orange` | Open Source Triangle/开源三角橙 | white + open-source orange (#FF9933); left triangle accent bar (GOTC signature); code blocks and terminal components; dual conference logos | open source,developer community,GitHub,OSS conference,programming talk,developer event,开源社区,开发者大会,GitHub,程序员,开源峰会,技术贡献 |
-| `charity-dark-green` | Deep Sea Green/深海绿光 | abyss ink (#010B14) + jade green (#2DD4A0) to dark jade cyan (#0EA5C9); multi-level glassmorphism; gold accent (#D4AF6A) for high-value numbers; restrained premium dark | charity,NGO,public welfare,social impact,environmental,sustainability,impact report,公益,慈善,NGO,社会影响力,环保,可持续发展,年度报告 |
-| `neo-brutalism-bold` | Neo-Brutalism Bold/黑框硬核派 | gray-white (#F4F4F0) + pure black borders (4–8px) + flame red (#D92D20); offset solid shadows; ultra-heavy 900-weight titles; editorial collage rotations | internal training,startup pitch,founder deck,bold brand strategy,neo-brutalism,edgy design,内训,创业路演,野兽派设计,硬核品牌,强视觉冲击,创始人分享 |
-| `museum-art-edu` | Museum Academy/米色学院堂 | warm ivory beige (#FAF8F5) + ink black + academy red (#C0392B); Noto Serif SC titles; light/dark page rhythm; museum label aesthetic; low-radius academic feel | art course,humanities,art appreciation,museum,cultural education,liberal arts,art history,classic literature,艺术课程,人文,美育,博物馆,艺术鉴赏,通识课,文化历史 |
-| `edu-activity-orange` | Vibrant Classroom/活力课堂橙 | white content pages + dark navy cover; vivid orange (#F97316) sole accent; left-border principle cards; SBI framework cards; activity overview grids; dark goal boxes | classroom activity,workshop,team training,experiential learning,course design,interactive teaching,activity guide,课堂活动,工作坊,团队培训,体验式学习,课程设计,互动教学,活动手册 |
-| `ink-classic` | Ink on Paper/洇墨纸张风 | ink black (#0A0A0B) + paper white (#F1EFEA); Playfair Display + IBM Plex Mono labels; zero rounded corners/shadows; WebGL noise texture; mandatory photo cover | academic research,ecology,policy report,think tank,science communication,high-quality report,humanities,学术报告,生态研究,政策分析,智库,科学传播,人文研究,高品质报告 |
-| `monocle-editorial` | Editorial Redline/编辑室红线 | pure white + charcoal (#1A1A1A) + editorial red (#C8102E); Cormorant Garamond + DM Sans + DM Mono; magazine column grid system; masthead top bar | global affairs,cultural media,city report,editorial,journalism,brand magazine,Monocle style,全球事务,文化媒体,城市报告,编辑风格,高端杂志风,新闻叙事 |
-| `blueprint` | Engineer's Blueprint/工程格线蓝 | off-white (#FAF8F5) + engineering blue (#2563EB); background grid lines simulate drafting paper; technical connector lines; flowchart and architecture diagram layouts | architecture design,engineering doc,system design,infrastructure,data analysis,technical review,blueprint,工程文档,架构设计,系统设计,基础设施,数据分析,技术评审,蓝图 |
-| `notion` | Clean Dashboard/灰白看板风 | Notion light gray (#F7F7F5) + blue (#2383E2) + white cards; product-grade SaaS UI; Inter font; status tags, progress bars, property rows | SaaS product,B2B demo,dashboard,product roadmap,project overview,metrics,data board,产品演示,数据看板,SaaS,B2B,项目概览,指标报告,产品路线图 |
-| `hand-drawn-edu` | Macaron Doodle/马卡龙涂鸦 | warm cream (#F5F0E8) + macaron color blocks (sky blue/mint/lavender/peach); ZCOOL KuaiLe relaxed font; hand-drawn borders with wobble; cartoon doodle decorations | popular science,course tutorial,process explanation,educational explainer,friendly training,doodle style,科普,课程教学,流程讲解,趣味培训,手绘风格,手账 |
-| `vector-illustration` | Retro Picture Book/复古绘本风 | cream beige (#F5F0E6) + unified 2–3px black outlines; retro palette (coral/mint/mustard/slate); Playfair Display serif; geometric simplified characters; panoramic narrative scenes | brand story,product intro,warm narrative,retro illustration,picture book,heritage brand,品牌故事,产品介绍,温暖叙事,复古插画,品牌历史,文化传承 |
-| `chalkboard` | Chalkboard Lettering/黑板粉笔字 | blackboard black (#1A1A1A) or green (#1C2B1C) + chalk white/yellow/pink/blue; Caveat handwritten font; doodle arrows and circled annotations; teaching narrative layout | teaching,classroom explanation,knowledge sharing,lecture,tutorial,educational keynote,黑板讲解,知识分享,课堂教学,粉笔风,手写字,教学演示 |
-| `scientific` | Lab Diagram/实验室图解 | off-white (#FAFAFA) + color-coded pathways (teal/blue/purple); serif academic titles; annotation-driven; pathway/flow diagrams with arrows and labeled components | biology,chemistry,medicine,life sciences,pathway diagram,molecular biology,scientific explanation,生物,化学,医学,生命科学,通路图,分子生物学,实验讲解,科学示意图 |
-| `vintage` | Parchment Scroll/羊皮卷古籍 | aged parchment (#F5E6D3) + deep brown + gold (#C9A227); Playfair Display + EB Garamond; antique map elements; compass ornaments; handwritten annotations | history,geography,cultural heritage,travel,museum,exploration,legacy brand,classical,历史,地理,文化遗产,旅行,博物馆,探险,传承品牌,古典风格 |
-| `watercolor` | Coral Watercolor/珊瑚水彩晕 | warm white (#FAF8F0) + coral (#F4A261) + sage green (#87A96B); Dancing Script handwritten font; watercolor wash textures; organic shapes; natural element decorations | lifestyle,health,wellness,food,travel,personal brand,artisan,watercolor,生活方式,健康,美食,旅行,个人品牌,水彩,手工感,感性温暖 |
-| `intuition-machine` | Cream Infographic/奶油信息图 | aged cream (#F5F0E6) + teal (#2F7373) + maroon (#7A2F37); bilingual labels (English term + Chinese); black outlines; technical print aesthetic; information-dense split layouts | concept breakdown,infographic,bilingual presentation,deep explanation,knowledge explainer,technical education,概念拆解,信息图,双语说明,深度解析,知识科普,技术教育 |
-| `fantasy-animation` | Ghibli Fairy Tale/吉卜力童话 | soft sky blue (#E8F4FC) + deep forest green (#2D5A3D) + gold (#F4D03F); Ghibli/Disney narrative; character-driven layouts; watercolor wash background; magical star and sparkle decorations | children,story,fantasy,animation,fairy tale,kids education,storybook,imagination,儿童,故事,奇幻,动画,童话,绘本,想象力,亲子 |
-| `dark-atmospheric` | Dark Neon Glow/暗夜霓虹光 | void black (#060610) + deep purple (#9D6FFF) + ice cyan (#22D3EE); cinematic spotlight gradients; 5-layer background depth; dramatic focal design; restrained lower-saturation neon | music event,entertainment,concert,gaming,premium product launch,brand reveal,nightlife,film,音乐活动,娱乐,演唱会,游戏,高端发布会,品牌揭幕,夜场,电影感 |
+Every downloaded or generated template package should use `template.json` as the metadata entry. Current template packages use the HTML slide template project format:
+
+- `schema_version`: fixed to `"1.0"`.
+- `template_id`: `PPT-xxxx` format.
+- `category_code`: optional `PPT-CATE-xxxx` format from the platform category list. It may be omitted when classification is maintained outside the template.
+- `label.zh_CN`, `label.en_US`, `description.zh_CN`, and `description.en_US`: display metadata.
+- `files.theme_css`, `files.slides_dir`, and `files.images_dir`: shared CSS, reusable slide pages, and local assets. `files.visual_spec` is optional in a draft and should be added after the visual spec is generated.
+- `slides[].file`, `slides[].title`, `slides[].layout`, and `slides[].description`: reusable page index and default order.
+- `source.kind`: `original`, `converted`, or `derived`, with a 1920x1080 canvas.
+
+Do not write or rely on legacy fields such as `name`, `template_dir`, `package_type`, `slides[].slots`, `slides[].source_slide`, `slides[].best_for`, or `slides[].risks`. Use the paths declared by `template.json`; do not assume a fixed directory layout beyond the metadata.
+
+## Template Source
+
+- This skill does not bundle built-in templates. Do not read, list, or copy templates from `<skill_dir>/assets/templates/`.
+- Platform templates are external resources identified by exact template `code`.
+- Template `code` must come from a platform-provided template list, a user selection, a user-provided value, or explicit upstream context. Do not invent codes, rewrite casing, or map old local directory names to codes.
+- If the user asks to see templates and no platform template list or code is available in context, ask the user to select a template in the UI or provide the template code. Do not fabricate local options.
 
 ## Decision
 
-- Explicit template name/dir/alias:use it directly.
-- User describes concrete visual style(colors,materials,layout,decorative elements,visual keywords;配色/材质/版式/装饰/视觉关键词):generate a custom template first,then use it.
-- User only describes scenario/topic/audience(场景/主题/受众) without enough visual specs:recommend 3-5 built-in templates with `ask_user`.
-- `ask_user` options must include name+short description+dir,and include "no template/default style".
-- If the user asks to see templates,show suitable options and mention previews at `<skill_dir>/assets/templates/<dir>/preview.html` (see Built-In Template Workflow for `<skill_dir>`).
+- Explicit template `code`: install the template package with `install_slides_template`, then inspect the installed template files.
+- Platform template list is available but no template is selected: recommend 3-5 suitable options with `ask_user`. Each option must include name, short description, and exact `code`, plus "no template/default style".
+- User only describes scenario/topic/audience without enough visual specs and no platform template list is available: ask for a platform template code or confirm no template/default style.
+- User provides a PPTX/PPT/presentation template file or URL and asks to convert it into a platform template: read `references/pptx-template-workflow.md` and follow the PPTX Template Workflow first.
+- User provides an existing Super Magic slide project directory that contains `magic.project.js` with `type: "slide"` and asks to convert or extract it into a reusable template: read `references/project-template-workflow.md` and follow the Project Template Workflow. Do not modify the source project, and do not create the final ZIP until the user confirms.
+- User describes concrete visual style (colors, materials, layout, decorative elements, visual keywords; 配色/材质/版式/装饰/视觉关键词): generate a custom template first, then use it.
 - Editing/fixing/refactoring existing slides does not trigger template selection unless the user asks for a new PPT/project.
 
-## Built-In Template Workflow
+## Platform Template Retrieval
 
-Do not resolve this skill's bundled templates under `.magic/skills/slide-template/`. After `read_skills(skill_names=["slide-template"])`, read the absolute skill root from the `<skill_dir>` tag (or parent of `<location>`). In examples below, `<skill_dir>` is that directory. Use `read_files` and `cp` sources only as fully qualified paths: `<skill_dir>/` plus the relative paths listed in this skill.
+When a template code is selected and you need to read the template package, first call `install_slides_template` through Code Mode, then inspect the installed directory.
 
-1.Load selected spec and preview gallery:
+```python
+from sdk.tool import tool
 
-```
-read_files(files=[
-  {"file_path":"<skill_dir>/assets/templates/<dir>/visual-spec.md"},
-  {"file_path":"<skill_dir>/assets/templates/<dir>/preview.html"}
-])
-```
+result = tool.call("install_slides_template", {
+    "code": template_code
+})
 
-2.Treat `preview.html` as the template example gallery. Before writing slides, inspect its Color Palette/Color System, Layout Page Types, and Core/Extended Components sections. Extract concrete page structures, component patterns, color-role usage, spacing rhythm, and visual anchors. For each slide, choose the closest preview layout or component pattern and adapt it to the user's content.
-
-3.Do not copy preview wrapper styles such as `preview-header`, `slides-grid`, `slide-wrap`, or tiny thumbnail sizing into final slide pages. Do not link `preview.html` from generated slides. The preview demonstrates composition and proportions; final slides must still be fixed 1920x1080 pages using local `theme.css`, template CSS variables/classes, and the Google Fonts link from `visual-spec.md`.
-
-4.Authority order: `theme.css` owns final CSS variables, fonts, decorations, components, layout helpers, and fixed canvas reset. `visual-spec.md` owns design rules, typography, Google Fonts link, layout types, ECharts rules, and image style guidance. `preview.html` demonstrates how to apply them. If `preview.html` conflicts with `theme.css` or `visual-spec.md`, follow `theme.css`/`visual-spec.md` and use preview only as composition guidance.
-
-5.Before creating slide pages, summarize the template internally: palette roles, layout inventory from `.slide-label`, component inventory from Core/Extended Components, composition rules such as header/footer, grid columns, visual anchors, and the adaptation rule for replacing demo content while preserving structure, color roles, and rhythm.
-
-6.Create project with `create_slide_project`,then copy CSS to project root before creating slide pages (use absolute source path):
-
-```
-shell_exec(command="cp <skill_dir>/assets/templates/<dir>/theme.css <project>/theme.css")
+installed_directory = result.data["installed_directory"]
 ```
 
-7.Each slide HTML must include local CSS and the Google Fonts `<link>` declared in `visual-spec.md`:
+After receiving `installed_directory`:
+
+1. Use the returned `installed_directory`; the tool extracts the package into a temporary directory to avoid occupying workspace storage.
+2. Read `template.json` from `installed_directory` first.
+3. Read all available resources declared by `template.json` that are useful for the deck:
+   - Always read `files.theme_css` when present.
+   - Read `files.visual_spec` for design rules, typography, layout types, chart rules, and image guidance when present.
+   - Read representative `slides[].file` files or representative HTML files under `files.slides_dir`, when present.
+4. Treat `theme.css` as the authoritative CSS. Treat `template.json`, `visual-spec.md`, and `slides/*.html` as complementary sources for reusable layouts, edit hints, components, composition patterns, visual rhythm, and asset references.
+5. Read image paths or assets only when needed for the target deck.
+6. Do not link to installed template files from generated slides. Copy the required CSS and assets into the PPT project after `create_slide_project`.
+
+## PPTX-Derived Template Contract
+
+This skill owns the template package contract and conversion/refinement guidance. It may describe how a PPTX-derived template should signal reuse intent, but detailed page-by-page slide authoring belongs to the slide creation agent.
+
+Identify a PPTX-derived template with these rules:
+
+- Strong signal: `template.json.source.kind` is `"converted"` and `template.json.source.file` ends with `.pptx`, `.ppt`, `.potx`, `.pot`, or `.ppsx` case-insensitively.
+- Medium signal: `visual-spec.md`, the template description, or the package notes explicitly say the template was converted from PPTX/PPT.
+- Weak signals such as absolute-positioned HTML, `data-slot*` attributes, local image-heavy pages, or page-level converted styles can support the decision, but must not trigger PPTX-derived handling by themselves.
+
+When a template is PPTX-derived, preserve and document this reuse contract:
+
+- Treat `slides/*.html` as concrete page masters, not loose visual inspiration.
+- Make page selection possible through specific `template.json.slides[].title`, `layout`, and `description`; descriptions should mention visible structure, content areas, image/chart/table roles, and notable constraints.
+- Keep `data-slot`, `data-slot-type`, and `data-slot-role` in slide HTML as downstream editing hints, but do not add `template.json.slides[].slots`.
+- Preserve source DOM structure, page-level CSS, local asset references, image/SVG/chart containers, absolute positioning, typography hierarchy, color system, and visual elements unless they are broken, sensitive, or clearly renderer-only noise.
+- Document locked elements and editable boundaries in `visual-spec.md`, especially backgrounds, decorative images, textures, hero visuals, SVGs, shapes, page positioning, typography scale, palette, text fitting, content-image replacement, and chart-data replacement.
+- Template-preserving reuse does not bypass sanitization. Logos, QR codes, screenshots, real-person photos, internal dashboards, and other ambiguous sensitive assets still require user confirmation before final packaging.
+
+## Template Application Workflow
+
+1. Resolve the selected template code from user choice or upstream context. If there is no exact code, ask for it or proceed with no template if the user confirms.
+2. Call `install_slides_template` with the exact code, then use `result.data["installed_directory"]`.
+3. Read `template.json` from the installed directory, then read the available resources it declares (`theme_css`, `visual_spec`, `slides_dir`, `images_dir`, and `slides[].file`) before creating slide pages.
+4. Decide whether the package is PPTX-derived using the rules above. If yes, preserve the PPTX-derived template contract for downstream slide creation.
+5. Before writing slides, summarize internally: package resources, palette roles, typography, layout inventory, reusable components, slot/page patterns, composition rules, asset dependencies, adaptation rules, and whether the selected package is PPTX-derived.
+6. Create the slide project with `create_slide_project`.
+7. Copy `theme.css` and any required assets from the installed template into the PPT project. Keep all slide references local to that project.
+8. Each slide HTML must include the local CSS:
 
 ```html
 <link rel="stylesheet" href="theme.css" />
 ```
 
-8.Load `creating-slides` and generate slides. Keep every slide fixed at 1920x1080; do not use responsive design. Use only template CSS variables,components,dedicated layout types,ECharts rules,and image guidance from `visual-spec.md`/`theme.css`. Prefer a matching dedicated layout from `visual-spec.md` or `preview.html`; if none fits, compose the page from template components,decorations,and layout helpers instead of generic centered text. Each slide should have one clear visual anchor, such as an image area,chart,matrix,large number,color block,or template-specific decoration.
-
-9.Never link to skill files or assets outside the PPT project. All images/assets used by slides must be inside the PPT project,usually under `images/`.
+9. For PPTX-derived templates, downstream slide creation should apply the template-preserving contract instead of treating converted pages as loose style references.
+10. For non-PPTX-derived templates, load `creating-slides` and generate slides. Keep every slide fixed at 1920x1080; do not use responsive design. Use only the installed template's CSS variables, components, dedicated layout patterns, chart colors, and image guidance inferred from the template package. If no installed layout fits, compose the page from template components, decorations, and layout helpers instead of generic centered text.
+11. Each slide should have one clear visual anchor, such as an image area, chart, matrix, large number, color block, or template-specific decoration.
+12. Use `data-slot`, `data-slot-type`, and `data-slot-role` from slide HTML as editing hints when present, but do not expect slot metadata in `template.json`.
 
 ## Image Rules
 
-- First decide whether the page needs images. Use images for visual layouts,cover/section/closing pages,specific person/product/scene/case,or sparse text.
-- Skip image search for dense comparison,card grid,timeline/process,data dashboard,or chart pages.
-- Prefer `image_search`. Try at least 2 content-relevant keyword groups and include template style keywords from `visual-spec.md`.
-- If search results are poor,use `generate_images` and save output under the PPT project `images/` folder.
-- Apply template style only to creative illustrations(concept visuals,atmosphere,decorative or abstract images). Do not stylize factual photos,real people,real places,products,history/science references,brand marks,screenshots,QR codes,or data graphics.
+- First decide whether the page needs images. Use images for visual layouts, cover/section/closing pages, specific person/product/scene/case, or sparse text.
+- Skip image search for dense comparison, card grid, timeline/process, data dashboard, or chart pages.
+- When the selected template includes local image or illustration assets and the target slide needs an image, or the user has not provided a required image, inspect and reuse suitable assets from the template first. Prefer these assets for decorative illustrations, cover/section visuals, backgrounds, motifs, and style-consistent placeholders.
+- Use `image_search` only after checking template assets, or when the slide needs a factual photo, specific person/product/place, screenshot, brand mark, or another exact image the template cannot supply. Try at least 2 content-relevant keyword groups and include style keywords inferred from the installed template.
+- If search results are poor, use `generate_images` and save output under the PPT project `images/` folder.
+- Apply template style only to creative illustrations (concept visuals, atmosphere, decorative or abstract images). Do not stylize factual photos, real people, real places, products, history/science references, brand marks, screenshots, QR codes, or data graphics.
 - Images should occupy meaningful visual space; do not use them as tiny icons.
 - Images can be used as local section backgrounds with an overlay when they support the content and template style.
-- If a slide skips images,use a non-image visual anchor instead of leaving sparse text floating in empty space.
+- If a slide skips images, use a non-image visual anchor instead of leaving sparse text floating in empty space.
 - Do not repeat the same background-image treatment on most consecutive slides.
 
 ## Custom Template Workflow
 
-Use when the user describes a style in text, provides screenshots, or gives an existing PPT project. Read `<skill_dir>/references/custom-template-workflow.md` and follow it before generating custom template files.
+Use when the user describes a style in text, provides screenshots, or provides an existing template package. Read `<skill_dir>/references/custom-template-workflow.md` and follow it before generating custom template files.
+
+## PPTX Template Workflow
+
+Use when the user provides a presentation file such as `.pptx`, `.ppt`, `.potx`, `.pot`, `.ppsx`, a WPS presentation, or a URL to a presentation template and asks to convert it into this platform's reusable template format. Read `<skill_dir>/references/pptx-template-workflow.md`, then call `convert_pptx_to_slide_template`. After the tool returns, keep working: analyze the converted content, write `visual-spec.md`, sanitize obvious sensitive content, confirm ambiguous sensitive assets through `ask_user`, refine `template.json`, `theme.css`, `images/`, and `slides/*.html`, run lightweight QA, then ask whether to package the refined draft as the final template ZIP. Do not call the old raw HTML renderer tool or run this skill's old PPTX extraction scripts.
+
+## Project Template Workflow
+
+Use when the user provides an existing Super Magic slide project directory that contains `magic.project.js` with `type: "slide"` and asks to convert or extract it into a reusable platform template. Read `<skill_dir>/references/project-template-workflow.md` and follow it before creating template draft files.
 
 ## Style Specificity & Template Scope
 
@@ -108,6 +137,10 @@ Use when the user describes a style in text, provides screenshots, or gives an e
 
 ## Output
 
-- Built-in/custom workflow output:a complete slide project generated through `creating-slides`.
-- Custom template output must include `visual-spec.md`,`theme.css`,`preview.html`.
+- Platform template workflow output: a complete template package generated through `creating-slides`, using template files installed through `install_slides_template`.
+- Built-in local template workflow output: none; local bundled templates are no longer supported.
+- Custom workflow output: a complete template package generated through `creating-slides`.
+- PPTX template conversion output: first create a draft template folder containing `template.json`, optional `magic.project.js`, `theme.css`, `images/`, and `slides/*.html`; use the model to analyze the converted visual style, write `visual-spec.md`, sanitize obvious sensitive content, confirm ambiguous sensitive assets through `ask_user`, refine the folder, run lightweight QA, then ask the user whether to create the final sibling `<template-id>-template.zip`. If a ZIP is created, exclude `magic.project.js` and unconfirmed sensitive assets.
+- Project template conversion output: first create a new standalone draft template folder containing `template.json`, `visual-spec.md`, `theme.css`, `images/`, and deduplicated `slides/*.html`; sanitize sensitive content and ask the user through `ask_user` before keeping ambiguous sensitive assets such as logos or internal screenshots. Only after user confirmation, create the sibling `<template-id>-template.zip`.
+- Preview images may be generated by a script from `slides/*.html`, but they must be stored in build or publishing artifacts and must not be included in the template ZIP.
 - Do not paste raw HTML in chat.

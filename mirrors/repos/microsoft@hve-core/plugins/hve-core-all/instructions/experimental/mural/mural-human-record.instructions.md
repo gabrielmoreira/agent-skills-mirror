@@ -1,1 +1,0 @@
-cache/repos/github.com/microsoft@hve-core/plugins/hve-core-all/instructions/experimental/mural/../../../../../.github/instructions/experimental/mural/mural-human-record.instructions.md

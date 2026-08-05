@@ -1,17 +1,22 @@
 ---
 name: install-constellation
-description: "Install the four Alex ACT constellation plugins (alex-act-core, alex-act-illustrator-plugin, alex-act-enterprise, alex-act-msft) at their correct default scope (user for all four) with the correct install order (Core first), then optionally bootstrap Core's always-on ACT discipline instructions to ~/.copilot/instructions/ because plugin installs do not deliver instructions. Consent-gated. Idempotent — skips plugins already installed at the target version. Asks about tenant scope before installing alex-act-msft (Microsoft-internal only). Delegates to `plugin-management` for the mechanical CLI commands."
+description: "Routes legacy Core constellation setup requests to Alex ACT Manager, which protects the Manager/Core/bootstrap brain spine and configures optional capabilities per workspace. Use only when an older workflow invokes Core's compatibility skill."
 lastReviewed: 2026-08-01
 ---
 
 # Install Constellation
+
+> **Compatibility boundary**: Manager owns this workflow. Invoke
+> `/alex-act-manager install-constellation` and stop. The procedure below is
+> retained as packaged rollback evidence for older Core hosts; do not execute it
+> when Manager is available.
 
 Install the Alex ACT constellation plugins at their correct default scope, in the correct order, with the correct tenant checks. Everything else about plugin mechanics (commands, scope rules, settings shape, safety) lives in [`plugin-management`](../plugin-management/SKILL.md) — this skill is the Alex ACT-specific overlay.
 
 ## When to fire
 
 - Heir asks "install Alex ACT" / "set up the constellation" / "install the Alex plugins"
-- Heir invokes `/alex-act-core install-constellation`
+- Older workflow invokes `/alex-act-core install-constellation`; redirect to Manager
 - First run after a fresh Core install on a new machine. The heir must invoke `/alex-act-core install-constellation` explicitly because `greeting-checkin` is not available until Step 7 has run once.
 - Repairing a partial install (some constellation plugins present, others missing)
 - **Auto-invoked from `greeting-checkin` instruction** on session start when constellation state is incomplete (added 2026-08-01)

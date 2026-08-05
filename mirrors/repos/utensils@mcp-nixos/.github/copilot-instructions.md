@@ -55,9 +55,9 @@ return json.dumps({"name": name, "version": version})
 
 ### 2. Channel Resolution System
 
-Channels are dynamically discovered on startup by probing Elasticsearch generations (43-46) across versions (unstable, 25.05, 25.11, etc.). The `ChannelCache` class maintains this state.
+Channels are dynamically discovered on startup via Elasticsearch's `_cat/aliases` endpoint, which lists every `latest-<gen>-nixos-<channel>` alias currently live on search.nixos.org. The `ChannelCache` class picks the highest generation per channel (so `unstable` always resolves to the freshest index, even mid-rollover) and maintains this state.
 
-- `"stable"` always maps to current stable release (e.g., "latest-44-nixos-25.11")
+- `"stable"` always maps to current stable release (e.g., `latest-<gen>-nixos-<version>`)
 - `FALLBACK_CHANNELS` dict used when API discovery fails
 - Override via `ELASTICSEARCH_URL` environment variable for local testing
 
@@ -107,9 +107,9 @@ async def nix(...) -> str:
 ## CI/CD & Release Process
 
 - **CI runs on all PRs:** flake check, Nix build, Python distribution build, package validation (twine), lint, typecheck, tests
-- **Automated PyPI releases:** Version tags (v*) trigger publish workflow
+- **Automated releases:** Release Please creates the version tag and GitHub Release; the authenticated release event publishes PyPI, Docker Hub, GHCR, and FlakeHub from that exact tag
 - **Commit convention:** `type: summary` format (feat:, fix:, docs:, refactor:, test:, chore:)
-- **Use `/release` skill:** Automates version bumps in pyproject.toml, changelog updates in RELEASE_NOTES.md, and Git tagging
+- **Use `/release` command:** Review and merge the generated release PR, then verify every registry; do not bump versions or create tags manually
 
 ## Common Pitfalls
 

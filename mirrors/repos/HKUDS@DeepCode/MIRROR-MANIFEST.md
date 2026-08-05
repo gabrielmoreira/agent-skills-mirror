@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `HKUDS/DeepCode` — 26 default patterns, 0 followed patterns, 2 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 3 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,8 +59,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`prompts/__init__.py`](prompts/__init__.py) |
-| 2 | ✓ | [`prompts/code_prompts.py`](prompts/code_prompts.py) |
+| 1 | ✓ | [`core/skills/builtin/skill-creator/SKILL.md`](core/skills/builtin/skill-creator/SKILL.md) |
+| 2 | ✓ | [`prompts/__init__.py`](prompts/__init__.py) |
+| 3 | ✓ | [`prompts/code_prompts.py`](prompts/code_prompts.py) |
 
 ---
 

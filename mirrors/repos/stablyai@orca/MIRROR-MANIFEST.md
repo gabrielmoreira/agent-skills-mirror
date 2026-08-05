@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `stablyai/orca` — 26 default patterns, 3 followed patterns, 14 file(s) materialized.
+Mirror of `stablyai/orca` — 26 default patterns, 4 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `stablyai/orca` — 26 default patterns, 3 followed patterns, 14 file(
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 3 |
-| Files         | 14 |
+| Followed pats | 4 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `stablyai/orca` — 26 default patterns, 3 followed patterns, 14 file(
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/STYLEGUIDE.md`
+- `docs/reference/windows-setup-shell.md`
 - `docs/reference/linux-glibc-compatibility.md`
 - `docs/reference/git-compatibility.md`
 
@@ -74,7 +75,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`tests/e2e/AGENTS.md`](tests/e2e/AGENTS.md) |
 | 12 | → | [`docs/reference/git-compatibility.md`](docs/reference/git-compatibility.md) |
 | 13 | → | [`docs/reference/linux-glibc-compatibility.md`](docs/reference/linux-glibc-compatibility.md) |
-| 14 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
+| 14 | → | [`docs/reference/windows-setup-shell.md`](docs/reference/windows-setup-shell.md) |
+| 15 | → | [`docs/STYLEGUIDE.md`](docs/STYLEGUIDE.md) |
 
 ---
 

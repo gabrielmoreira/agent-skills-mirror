@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   buildFunctionOperationErrorMessage,
   DEFAULT_RUNTIME,
+  pickManageFunctionName,
   registerFunctionTools,
   resolveEventFunctionRuntime,
   shouldInstallDependencyForFunction,
@@ -334,5 +335,33 @@ describe("functions tool helpers", () => {
     expect(protocolType.safeParse("HTTP").success).toBe(false);
     expect(protocolType.description).toContain("WS");
     expect(protocolType.description).toContain("WebSocket");
+  });
+
+  it("falls back to func.name when top-level functionName is missing", () => {
+    expect(pickManageFunctionName({ functionName: "top" })).toBe("top");
+    expect(pickManageFunctionName({ func: { name: "nested" } })).toBe("nested");
+    expect(
+      pickManageFunctionName({ functionName: "top", func: { name: "nested" } }),
+    ).toBe("top");
+  });
+
+  it("accepts updateFunctionCode when name is only provided via func.name", async () => {
+    const result = await tools.manageFunctions.handler({
+      action: "updateFunctionCode",
+      func: { name: "imageDemo" },
+      imageConfig: {
+        imageType: "personal",
+        imageUri: "ccr.ccs.tencentyun.com/your-ns/demo-app:demo-app-003",
+      },
+    });
+
+    const payload = JSON.parse(result.content[0].text);
+    expect(payload.success).toBe(true);
+    expect(mockUpdateFunctionCode).toHaveBeenCalledWith(
+      expect.objectContaining({
+        deployMode: "image",
+        func: expect.objectContaining({ name: "imageDemo" }),
+      }),
+    );
   });
 });

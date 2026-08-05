@@ -364,6 +364,23 @@ const MANAGE_LAYER_SCHEMA = z.object({
   layerVersion: z.number().describe("层版本号"),
 });
 
+/**
+ * Prefer top-level functionName; fall back to func.name for the common
+ * mistake of nesting the target name under func (createFunction shape).
+ */
+export function pickManageFunctionName(input: {
+  functionName?: string;
+  func?: { name?: unknown } | null;
+}): string | undefined {
+  if (typeof input.functionName === "string" && input.functionName.trim()) {
+    return input.functionName.trim();
+  }
+  if (typeof input.func?.name === "string" && input.func.name.trim()) {
+    return input.func.name.trim();
+  }
+  return undefined;
+}
+
 function normalizeFunctionLayers(layers: unknown): FunctionLayerInput[] {
   if (!Array.isArray(layers)) {
     return [];
@@ -1010,8 +1027,14 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
   };
 
   const handleManageFunctions = async (
-    input: ManageFunctionsInput,
+    rawInput: ManageFunctionsInput,
   ): Promise<FunctionToolEnvelope> => {
+    // Accept func.name as a fallback for top-level functionName (common agent mistake).
+    const pickedName = pickManageFunctionName(rawInput);
+    const input: ManageFunctionsInput =
+      pickedName && rawInput.functionName !== pickedName
+        ? { ...rawInput, functionName: pickedName }
+        : rawInput;
     ensureActionAllowedInCloudMode(input);
 
     switch (input.action) {
@@ -1919,7 +1942,14 @@ export function registerFunctionTools(server: ExtendedMcpServer) {
           "SDK 会自动拼接函数名子目录，无需预先压缩 zip 或 base64 编码。",
         ),
         force: z.boolean().optional().describe("createFunction 时是否覆盖"),
-        functionName: z.string().optional().describe("函数名称。大多数 action 使用该字段作为统一目标"),
+        functionName: z
+          .string()
+          .optional()
+          .describe(
+            "目标函数名称（顶层）。updateFunctionCode / updateFunctionConfig / invokeFunction 等 action 使用此字段。" +
+              "不要只写在 func.name：createFunction 用 func.name，其它 action 用顶层 functionName。" +
+              "若误传 func.name，也会被识别为 functionName。",
+          ),
         zipFile: z.string().optional().describe(
           "仅兼容特殊场景：预先准备好的代码包 base64 编码。普通 createFunction/updateFunctionCode 默认不要先压缩 zip，优先使用 functionRootPath。",
         ),

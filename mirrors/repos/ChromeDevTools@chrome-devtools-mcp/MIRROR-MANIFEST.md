@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ChromeDevTools/chrome-devtools-mcp` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `ChromeDevTools/chrome-devtools-mcp` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ChromeDevTools/chrome-devtools-mcp` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -72,9 +72,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`skills/debug-optimize-lcp/SKILL.md`](skills/debug-optimize-lcp/SKILL.md) |
 | 12 | ✓ | [`skills/memory-leak-debugging/references/common-leaks.md`](skills/memory-leak-debugging/references/common-leaks.md) |
 | 13 | ✓ | [`skills/memory-leak-debugging/references/compare_snapshots.js`](skills/memory-leak-debugging/references/compare_snapshots.js) |
-| 14 | ✓ | [`skills/memory-leak-debugging/references/memlab.md`](skills/memory-leak-debugging/references/memlab.md) |
-| 15 | ✓ | [`skills/memory-leak-debugging/SKILL.md`](skills/memory-leak-debugging/SKILL.md) |
-| 16 | ✓ | [`skills/troubleshooting/SKILL.md`](skills/troubleshooting/SKILL.md) |
+| 14 | ✓ | [`skills/memory-leak-debugging/SKILL.md`](skills/memory-leak-debugging/SKILL.md) |
+| 15 | ✓ | [`skills/troubleshooting/SKILL.md`](skills/troubleshooting/SKILL.md) |
 
 ---
 

@@ -455,6 +455,50 @@ public final class MongoAgent {
         return documentQueryResult(documents, total);
     }
 
+    private static Object findOne(JsonObject params) {
+        MongoClient c = requireClient();
+        String database = params.get("database").getAsString();
+        String collection = params.get("collection").getAsString();
+        Document filter = documentOrNull(params, "filter");
+        Document projection = documentOrNull(params, "projection");
+        Document options = documentOrNull(params, "options");
+        Document sort = null;
+
+        if (options != null) {
+            for (String key : options.keySet()) {
+                if (!"sort".equals(key)) {
+                    throw new IllegalArgumentException("Unsupported findOne option: " + key);
+                }
+            }
+            Object rawSort = options.get("sort");
+            if (rawSort != null) {
+                if (!(rawSort instanceof Document sortDocument)) {
+                    throw new IllegalArgumentException("Invalid findOne option sort: expected an object");
+                }
+                sort = sortDocument;
+            }
+        }
+
+        var iterable = c.getDatabase(database).getCollection(collection).find(filter == null ? new Document() : filter);
+        if (projection != null) {
+            iterable = iterable.projection(projection);
+        }
+        if (sort != null) {
+            iterable = iterable.sort(sort);
+        }
+        Document document = iterable.limit(1).first();
+
+        List<Map<String, Object>> documents = new ArrayList<>();
+        List<JsonObject> extendedDocuments = new ArrayList<>();
+        if (document != null) {
+            documents.add(bsonToJson(document));
+            extendedDocuments.add(bsonToExtendedJson(document));
+        }
+        Map<String, Object> result = documentQueryResult(documents, new CollectionTotal(documents.size(), true));
+        result.put("extended_documents", extendedDocuments);
+        return result;
+    }
+
     /**
      * MongoDB Extended JSON read path for transfer; output follows the driver's
      * relaxed Extended JSON representation rather than the UI display format.
@@ -1249,6 +1293,7 @@ public final class MongoAgent {
             case AgentProtocol.MONGO_METHOD_LIST_COLLECTIONS -> listCollections(params);
             case AgentProtocol.METHOD_LIST_INDEXES -> listIndexes(params);
             case AgentProtocol.MONGO_METHOD_FIND_DOCUMENTS -> findDocuments(params);
+            case AgentProtocol.MONGO_METHOD_FIND_ONE -> findOne(params);
             case AgentProtocol.MONGO_METHOD_FIND_DOCUMENTS_EXTENDED_JSON -> findDocumentsExtendedJson(params);
             case AgentProtocol.MONGO_METHOD_COUNT_DOCUMENTS -> countDocuments(params);
             case AgentProtocol.MONGO_METHOD_SERVER_VERSION -> serverVersion(params);

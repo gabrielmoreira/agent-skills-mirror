@@ -12,6 +12,8 @@ const {
   mockCreateRole,
   mockDescribeUserList,
   mockCreateUser,
+  mockDescribeEnvAuthzConfig,
+  mockModifyEnvAuthzConfig,
 } = vi.hoisted(() => ({
   mockGetCloudBaseManager: vi.fn(),
   mockGetEnvId: vi.fn(),
@@ -22,6 +24,8 @@ const {
   mockCreateRole: vi.fn(),
   mockDescribeUserList: vi.fn(),
   mockCreateUser: vi.fn(),
+  mockDescribeEnvAuthzConfig: vi.fn(),
+  mockModifyEnvAuthzConfig: vi.fn(),
 }));
 
 vi.mock("../cloudbase-manager.js", () => ({
@@ -118,6 +122,8 @@ describe("permission tools", () => {
         describeRoleList: mockDescribeRoleList,
         modifyResourcePermission: mockModifyResourcePermission,
         createRole: mockCreateRole,
+        describeEnvAuthzConfig: mockDescribeEnvAuthzConfig,
+        modifyEnvAuthzConfig: mockModifyEnvAuthzConfig,
       },
       user: {
         describeUserList: mockDescribeUserList,
@@ -386,7 +392,8 @@ describe("permission tools", () => {
       }),
     ]);
     expect(payload.data.verificationHint).toContain("updated / deleted 是否大于 0");
-    expect(payload.data.propagationHint).toContain("等待一小段时间");
+    expect(payload.data.propagationHint).toContain("数秒到约 30 秒");
+    expect(payload.data.propagationHint).toContain("不要盲等数分钟");
     expect(payload.data.propagationHint).toContain("DATABASE_PERMISSION_DENIED");
   });
 
@@ -453,5 +460,85 @@ describe("permission tools", () => {
         }),
       ]),
     );
+  });
+
+  it("queryPermissions(action=getResourcePermission) falls back to describeEnvAuthzConfig on PG function API rejection", async () => {
+    mockDescribeResourcePermission.mockRejectedValueOnce(
+      new Error("[DescribeResourcePermission] The current API does not support PostgreSQL type environments."),
+    );
+    mockDescribeEnvAuthzConfig.mockResolvedValueOnce({
+      Item: {
+        Key: "authz.user.rego",
+        Value: 'package authz.user\n\ndefault allow := false\n',
+      },
+      RequestId: "req-describe-env-authz",
+    });
+
+    const result = await tools.queryPermissions.handler({
+      action: "getResourcePermission",
+      resourceType: "function",
+      resourceId: "atoPgPermProbe",
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockDescribeEnvAuthzConfig).toHaveBeenCalledWith({
+      key: "authz.user.rego",
+    });
+    expect(payload).toMatchObject({
+      success: true,
+      message: expect.stringContaining("describeEnvAuthzConfig"),
+      data: {
+        action: "getResourcePermission",
+        resourceType: "function",
+        resourceId: "atoPgPermProbe",
+        aclTag: "CUSTOM",
+        fallback: "describeEnvAuthzConfig",
+      },
+    });
+    expect(payload.data.permissions[0]).toMatchObject({
+      Resource: "atoPgPermProbe",
+      Permission: "CUSTOM",
+      SecurityRule: expect.stringContaining("package authz.user"),
+    });
+  });
+
+  it("managePermissions(action=updateResourcePermission) falls back to modifyEnvAuthzConfig on PG function API rejection", async () => {
+    mockModifyResourcePermission.mockRejectedValueOnce(
+      new Error("[ModifyResourcePermission] The current API does not support PostgreSQL type environments."),
+    );
+    mockModifyEnvAuthzConfig.mockResolvedValueOnce({
+      AffectedRows: 1,
+      RequestId: "req-modify-env-authz",
+    });
+
+    const result = await tools.managePermissions.handler({
+      action: "updateResourcePermission",
+      resourceType: "function",
+      resourceId: "atoPgPermProbe",
+      permission: "CUSTOM",
+      securityRule: JSON.stringify({ invoke: true }),
+    });
+    const payload = JSON.parse(result.content[0].text);
+
+    expect(mockModifyEnvAuthzConfig).toHaveBeenCalledWith({
+      key: "authz.user.rego",
+      value: expect.stringContaining("package authz.user"),
+    });
+    expect(mockModifyEnvAuthzConfig.mock.calls[0][0].value).toContain(
+      'input.cloudbase.resource_type == "functions"',
+    );
+    expect(mockModifyEnvAuthzConfig.mock.calls[0][0].value).toContain("anonymous");
+    expect(payload).toMatchObject({
+      success: true,
+      message: expect.stringContaining("modifyEnvAuthzConfig"),
+      data: {
+        action: "updateResourcePermission",
+        resourceType: "function",
+        resourceId: "atoPgPermProbe",
+        permission: "CUSTOM",
+        fallback: "modifyEnvAuthzConfig",
+      },
+    });
+    expect(payload.data.rego).toContain("package authz.user");
   });
 });

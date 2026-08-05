@@ -38,4 +38,6 @@ reference before adding selective bloom to a composed scene.
 
 Use `$threejs-exposure-color-grading` for metering, adaptation, tone mapping,
 and LUTs. Load `$threejs-image-pipeline` only when bloom must be composed with
-several shared image-space systems.
+several shared image-space systems. A per-pixel ray integrator that owns its own
+reduced-resolution target and accumulation history keeps its bloom internal;
+route that to `$threejs-raymarched-space-effects`.

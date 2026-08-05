@@ -91,8 +91,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`.claude/skills/storybook-startup-benchmark/SKILL.md`](.claude/skills/storybook-startup-benchmark/SKILL.md) |
 | 31 | ✓ | [`.claude/skills/storybook-upgrade/SKILL.md`](.claude/skills/storybook-upgrade/SKILL.md) |
 | 32 | ✓ | [`.claude/skills/update-pr-description/SKILL.md`](.claude/skills/update-pr-description/SKILL.md) |
-| 33 | ✓ | [`.cursor/environment.json`](.cursor/environment.json) |
-| 34 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
+| 33 | ✓ | [`.cursor/mcp.json`](.cursor/mcp.json) |
+| 34 | ✓ | [`.cursor/rules/cursor-cloud.mdc`](.cursor/rules/cursor-cloud.mdc) |
 | 35 | ✓ | [`.cursor/rules/spy-mocking.mdc`](.cursor/rules/spy-mocking.mdc) |
 | 36 | ✓ | [`.cursorrules`](.cursorrules) |
 | 37 | ✓ | [`AGENTS.md`](AGENTS.md) |

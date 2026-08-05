@@ -51,6 +51,7 @@ Design projects are uniquely identified by `project_path`. All canvas tools requ
 - Image content changes → `generate_canvas_images` (creates new element; keep original)
 - Web image search for canvas → read [reference/image/image-search.md](reference/image/image-search.md) first, then `search_canvas_images`
 - Video generation → `generate_canvas_videos` (see Video Generation section below)
+- Recover missing canvas layers from local project media files → only use `restore_canvas_media` when the user explicitly asks to restore/rebuild canvas layers or `magic.project.js` from existing `images/` / `videos/` files
 - Original elements and media files must remain unchanged
 
 **Tool priority:**
@@ -88,6 +89,45 @@ Returns: `{ project_path, project_name }`
 | `element_id` | No | Existing element ID to overwrite (for retrying a failed placeholder) |
 
 Returns: succeeded element names via `result.content`; when a task fails, `result.content` includes the `element_id` of the failed placeholder for retry.
+
+### restore_canvas_media
+
+Recover missing image/video canvas elements by scanning the current canvas project's local `images/` and `videos/` folders and adding media files that are not already referenced in `magic.project.js`.
+
+**Strict trigger boundary:** Only call this tool when the user clearly and specifically asks to restore/recover/rebuild canvas layers or `magic.project.js` from existing local media files, such as:
+- "magic.project.js was overwritten; scan images/videos and add the layers back"
+- "restore canvas media from the images folder"
+- "recover missing canvas layers from local images/videos"
+
+Do not call `restore_canvas_media` for normal image generation, video generation, image search, canvas editing, layout changes, missing-file debugging, or vague requests like "fix the canvas" unless the user explicitly identifies this local-media recovery need.
+
+**Confirmation rule:** The tool defaults to `dry_run=true`. First call it in dry-run mode and show the user what would be restored. Only call it with `dry_run=false` after the user confirms the recovery.
+
+**Do not operate the canvas during recovery:** From the dry-run preview through the confirmed restore completion, do not call other canvas-modifying tools or edit the canvas project. Recovery compares local media files against the latest `magic.project.js`; concurrent canvas changes can make the preview stale or cause unexpected layer ordering.
+
+| Parameter | Required | Description |
+|---|---|---|
+| `project_path` | Yes | Canvas project path |
+| `dry_run` | No | Defaults to `true`. Keep `true` for preview; set to `false` only after user confirmation |
+
+Example preview:
+
+```python
+result = tool.call('restore_canvas_media', {
+    "project_path": "my-design"
+})
+print(result.content)
+```
+
+Example confirmed restore:
+
+```python
+result = tool.call('restore_canvas_media', {
+    "project_path": "my-design",
+    "dry_run": False
+})
+print(result.content)
+```
 
 ---
 
@@ -535,17 +575,15 @@ Processing steps:
 > For full video generation workflow, read the matching reference before proceeding:
 >
 > - **Generation** → [reference/video/generation.md](reference/video/generation.md)
-> - **Follow-up / status sync** → [reference/video/follow-up.md](reference/video/follow-up.md)
 > - **Parameter selection / error handling** → [reference/video/parameters-and-errors.md](reference/video/parameters-and-errors.md)
 
 **Use video tools when:**
 - User wants dynamic output on canvas: video, animation, shot, clip, short film, motion poster
-- User is following up on an existing canvas video task ("is it done / continue / refresh / check progress")
 - User provides reference images or start/end frames and wants a video element on canvas
 
 **Do not use video tools for:**
 - Static output such as poster, cover, screenshot, or illustration → use image workflow above
-- General non-canvas video generation → use the video tools directly
+- Follow-up/status sync for an existing canvas video task → frontend tracks status by video_id
 - Only adjusting element position, size, or layer → use canvas element editing tools
 
 ---
@@ -566,7 +604,7 @@ Generate AI images?
 
 Generate video?
 ├─ Yes → read reference/video/generation.md first, then generate_canvas_videos
-│   └─ Follow up? → read reference/video/follow-up.md, then query_video_generation
+│   └─ Follow up? → do not call another video tool; video status is tracked by the frontend using video_id
 └─ No → continue
 
 Search web images?

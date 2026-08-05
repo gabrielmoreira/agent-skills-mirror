@@ -1,9 +1,7 @@
 # Third-party asset licenses
 
-The four stone albedo and normal textures in this directory are distributed
-under the MIT License from
-[`vibe-stack/procedural-bank`](https://github.com/vibe-stack/procedural-bank)
-at revision `0034e80a61f02b88dbe13a385bdab734a365b82d`.
+The four stone albedo and normal textures in this directory are third-party
+assets used under the MIT License reproduced below.
 
 MIT License
 

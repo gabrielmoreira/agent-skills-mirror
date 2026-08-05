@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lawvable/awesome-legal-skills` — 26 default patterns, 2 followed patterns, 2705 file(s) materialized.
+Mirror of `lawvable/awesome-legal-skills` — 26 default patterns, 1 followed patterns, 2704 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `lawvable/awesome-legal-skills` — 26 default patterns, 2 followed pa
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 2705 |
+| Followed pats | 1 |
+| Files         | 2704 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,6 @@ Mirror of `lawvable/awesome-legal-skills` — 26 default patterns, 2 followed pa
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `README.md`
-- `CONTRIBUTING.md`
 
 ## File Index
 
@@ -2763,8 +2762,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2701 | ✓ | [`skills/yc-saas-drafter-victor-wang/references/intake-questions.md`](skills/yc-saas-drafter-victor-wang/references/intake-questions.md) |
 | 2702 | ✓ | [`skills/yc-saas-drafter-victor-wang/references/supplementary-language.md`](skills/yc-saas-drafter-victor-wang/references/supplementary-language.md) |
 | 2703 | ✓ | [`skills/yc-saas-drafter-victor-wang/SKILL.md`](skills/yc-saas-drafter-victor-wang/SKILL.md) |
-| 2704 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 2705 | → | [`README.md`](README.md) |
+| 2704 | → | [`README.md`](README.md) |
 
 ---
 

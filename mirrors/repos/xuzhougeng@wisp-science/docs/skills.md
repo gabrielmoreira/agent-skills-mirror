@@ -34,11 +34,13 @@ Skills that the user explicitly disabled remain disabled. Idle conversation
 Agents are rebuilt on their next turn, so the new index is used without losing
 conversation history or restarting the persistent Python/R runtime.
 
-The **Add skill** action installs or updates a global Skill. A project Skill can
-be managed with the project files under `.wisp/skills` and then loaded with
-**Reload skills**. Only global Skills can be deleted from the Skills settings
-page; project and extra-path files remain owned by their project or source
-directory. Plugin Skills are managed from their plugin card.
+The **Add skill** action installs or updates a global Skill from a `SKILL.md`
+file, a Skill folder, or a ZIP archive. A ZIP may contain `SKILL.md` directly or
+wrap one Skill in a single top-level folder. A project Skill can be managed with
+the project files under `.wisp/skills` and then loaded with **Reload skills**.
+Only global Skills can be deleted from the Skills settings page; project and
+extra-path files remain owned by their project or source directory. Plugin
+Skills are managed from their plugin card.
 
 Tags declared in `SKILL.md` appear automatically. Tags edited in Settings are a
 user override and are also applied to Agent `search_skills` queries after the
