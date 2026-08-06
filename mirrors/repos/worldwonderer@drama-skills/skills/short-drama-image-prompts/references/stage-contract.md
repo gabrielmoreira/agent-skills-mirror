@@ -36,8 +36,9 @@
 
 ## 所有权边界
 
-- **本阶段拥有**：资产图片的构图与定点修改选择；渲染出的提示词文本是缓存。
-- **本阶段继承**：已接受的资产身份与变体、当前用途、文字政策。
+- **本阶段拥有**：项目级 lookdev 风格帧、资产图片的构图与定点修改选择；渲染出的提示词文本是缓存。
+- **本阶段继承**：已接受的视觉方向与制作配置、资产身份与变体、当前用途、文字政策；高压力
+  lookdev frame 还继承准确剧本 block 的场次事实与信息权限。
 - **本阶段不越权**：不承载有先后顺序的剧情动作，不改写资产身份、地理或故事状态，不决定
   镜头边界。
 
@@ -71,8 +72,8 @@
   被检查的字节。两者都没有时保持 `unverified`，负面提示词不能代替证据。
 - **观众揭示时机**：某一事实何时可被观众看到，由已接受的可见性决定绑定其来源、载体、
   权限、触发与保护方式。构图既不能提前泄露该事实，也不能遮掉本环节必须传达的载体。
-- **母版、补拍与替代**：补拍默认只补充、不替代母版。声明 `master | pickup | alternate`，
-  用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
+- **母版、补拍与替代**：补拍默认只补充、不替代母版。普通母版不增加版本范围字段；只有
+  补拍/替代版才声明 `pickup | alternate`，用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
   去向。只有下游独立审查结论才能绑定固定 hash 并批准替代，不得回写形成循环引用。
 
 ## 本阶段规则
@@ -91,6 +92,8 @@
 | IMG-08 | reviewed_invariant | A claim about reference pixels requires a creator/reference-owner description or authorized input-reference observation bound to the inspected bytes; otherwise admission stays unresolved, and a negative prompt cannot stand in for evidence. |
 | IMG-09 | reviewed_invariant | Each reference states its purpose, what may be copied, and what must not be copied; a composition-, scale-, or effect-only reference cannot redefine identity, content, text, or story state. |
 | IMG-10 | reviewed_invariant | Views of one Location in the same time/weather state share key-light source, colour-temperature relation, and contrast direction; any difference cites a recorded cause and its delta. |
+| IMG-11 | reviewed_invariant | A lookdev frame binds accepted visual direction and production profile across a declared character-expression, core-location, or high-pressure test axis; a high-pressure frame also binds exact screenplay blocks for story state and information permission, while style references may control only declared surface treatment and never identity, fixed geography, story state, cast count, or prop text. |
+| IMG-12 | reviewed_invariant | Every multi-reference binding carries a stable `slot_id` and explicit unique `order`, so array reordering or insertion cannot silently change a reference's role; until a project validator owns this check, the reviewer cites conflicting slots/orders rather than claiming mechanical enforcement. |
 
 规则分级由高到低：`structural_invariant`（结构缺陷，阻断）、
 `reviewed_invariant`（需证据判断）、`craft_default`（常用做法，可覆盖）、

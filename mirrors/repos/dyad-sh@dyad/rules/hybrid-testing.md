@@ -17,6 +17,12 @@ or the renderer+IPC chat harness without needing the packaged Electron app.
 These tests are faster, easier to debug, and avoid Electron launch/package
 overhead.
 
+When moving a workflow from Build mode to Agent mode, update its fake-LLM
+response from `<dyad-write>` XML to a local-Agent fixture that invokes
+`write_file` or `search_replace`, then run the integration path that exercises
+the real chat stream. Build-mode text responses are not processed as Agent tool
+calls.
+
 In a fresh worktree, the root `npm install` does not install the nested
 `testing/fake-llm-server` package. Before chat-flow or hybrid suites that load
 its Git routes, run `npm ci --prefix testing/fake-llm-server`; otherwise test
@@ -152,6 +158,11 @@ For asynchronous Git actions driven through the renderer, file existence can
 change before the underlying Git subprocess finishes. Wait for the expected
 branch and a clean `git status --porcelain` before making follow-up mutations or
 ending the test.
+
+The fake GitHub server records push events when it parses the receive-pack
+request, before `git-receive-pack` finishes. Use them as evidence of a push
+attempt, then wait for the authoritative operation-success UI/state before
+asserting local and remote refs.
 
 When a hybrid surface can temporarily return to a loading state during query
 invalidation, await the exact control with `findByRole` before interacting.

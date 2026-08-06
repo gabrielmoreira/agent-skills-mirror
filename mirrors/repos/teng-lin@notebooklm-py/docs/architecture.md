@@ -455,7 +455,7 @@ the executor on direct collaborator dependencies.
 
 | Collaborator | Module | Responsibility |
 |--------------|--------|----------------|
-| `NotebookLMClient` | [`client.py`](../src/notebooklm/client.py) | Public surface and composition root. Owns `_auth`, `_seams`, `_composed`, `_collaborators`, `_rpc_executor`, and the ten feature API attributes (`notebooks`, `sources`, `artifacts`, `chat`, `notes`, `mind_maps`, `research`, `settings`, `sharing`, `labels`). `__aenter__`, `close`, `drain`, `is_connected`, `metrics_snapshot`, and `rpc_call` route directly to the owning collaborator. |
+| `NotebookLMClient` | [`client.py`](../src/notebooklm/client.py) | Public surface and composition root. Owns `_auth`, `_seams`, `_composed`, `_collaborators`, `_rpc_executor`, and the ten feature API attributes (`notebooks`, `sources`, `artifacts`, `chat`, `notes`, `mind_maps`, `research`, `settings`, `sharing`, `labels`). `__aenter__`, `close`, `drain`, `is_connected`, `metrics_snapshot`, and `rpc_call` route directly to the owning collaborator. **Split candidate:** at ~999 lines it sits one line under the 1000-line `MODULE_SIZE_BUDGET` ceiling (`tests/_guardrails/test_module_size_ratchet.py`); the next non-trivial addition should extract a seam (e.g. the `refresh_auth` / drain plumbing) rather than push it over budget. |
 | `ClientSeams` | [`_client_seams.py`](../src/notebooklm/_client_seams.py) | Mutable holder for runtime callables that closures re-read after construction: `decode_response`, `sleep`, and `is_auth_error`. Construction-only seams such as `async_client_factory` stay on `compose_client_internals(...)` and the client-shell test helper, not on the public constructor. |
 | `ClientComposed` | [`_client_composed.py`](../src/notebooklm/_client_composed.py) | Write-once holder for composition state: `transport`, `executor`, `chain_host`, `chain_builder`, `middlewares`, lazy RPC semaphore, and `runtime_collaborators`. Pre-binding access raises a clear `RuntimeError`; the holder deliberately does not expose a broad `.collaborators` alias. |
 | `RpcExecutor` | [`_rpc_executor.py`](../src/notebooklm/_rpc_executor.py) | Single logical batchexecute RPC dispatch path. Owns request-id/started-metric bracketing, idempotency policy lookup, method-ID resolution, request encoding, response decode, RPC error mapping, and decode-time auth refresh retry. Takes its `Kernel`, `RuntimeTransport`, `AuthRefreshCoordinator`, and `ClientMetrics` collaborators directly via keyword-only constructor parameters (ADR-0014 Rule 5). Enters transport through `RuntimeTransport.perform_authed_post`. |
@@ -524,7 +524,8 @@ the default dependency.
 |--------|----------------|
 | [`_auth/tokens.py`](../src/notebooklm/_auth/tokens.py) | Token dataclass + storage-loading helpers. |
 | [`_auth/paths.py`](../src/notebooklm/_auth/paths.py) | Storage paths and filesystem helpers. |
-| [`_auth/storage.py`](../src/notebooklm/_auth/storage.py) | Profile/state persistence on disk. |
+| [`_auth/storage.py`](../src/notebooklm/_auth/storage.py) | Profile/state persistence on disk: cookie snapshot/delta CAS math + the file-lock primitive; `save_cookies_to_storage` is the monkeypatchable delegate seam onto `storage_writer`. |
+| [`_auth/storage_writer.py`](../src/notebooklm/_auth/storage_writer.py) | Canonical `storage_state.json` writer (ADR-0029): the only `_auth` module that performs the atomic write; intent-shaped API (CAS merge, account metadata, master-token persist) on the unified bounded storage lock. |
 | [`_auth/extraction.py`](../src/notebooklm/_auth/extraction.py) | Cookie/token extraction from browser sessions. |
 | [`_auth/headers.py`](../src/notebooklm/_auth/headers.py) | HTTP header construction. |
 | [`_auth/cookies.py`](../src/notebooklm/_auth/cookies.py) | Cookie maps + `_update_cookie_input` helper. |
@@ -537,12 +538,13 @@ the default dependency.
 | [`_auth/browser_launch_errors.py`](../src/notebooklm/_auth/browser_launch_errors.py) | Transport-neutral leaf for `browser_capture`: the `CHANNEL_BROWSERS` channel registry plus `classify_launch_failure`, which maps a Playwright launch failure to actionable help (system browser not installed, bundled Chromium not downloaded, or a Windows `spawn UNKNOWN` execution veto from AppLocker/WDAC/Defender) or to `None` so the original exception propagates. Pure string-in/string-out — no Playwright, no I/O, no CLI. |
 | [`_auth/login_wait_trace.py`](../src/notebooklm/_auth/login_wait_trace.py) | Transport-neutral leaf for `browser_capture`: `log_observed_navigations`, a context manager that logs each main-frame navigation observed during the five-minute interactive login wait at DEBUG so `notebooklm -vv login` is self-diagnosing when a login never lands. Inert unless DEBUG is enabled (no listener attached) and swallows every listener exception so it can never destabilise the wait. Redaction goes through its own `trace_url`, which keeps **only** scheme + host — deliberately stricter than `extraction._safe_url` (which preserves the path outside a Google-OAuth allowlist), because this traces arbitrary SSO redirects where a federated IdP can carry a one-time assertion in the path. |
 | [`_auth/headless_reauth.py`](../src/notebooklm/_auth/headless_reauth.py) | Layer-3 (deepest) auth recovery: when first-party cookies are dead, drive a headless browser against the persistent profile to silently re-mint cookies. Typed honest outcomes (`HeadlessReauthStatus` UNAVAILABLE/FAILED/SUCCESS — never silent `None`). Opt-in only (`refresh_auth(allow_headless=True)` or `NOTEBOOKLM_HEADLESS_REAUTH=1`); local-unattended-only, never the remote/MCP auth path. Alternative credential source: `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` (or `attempt_headless_reauth(cdp_url=...)`) attaches to an operator-pointed running Chrome instead of the dedicated profile (freshness mitigation). Also exposes `headless_reauth_readiness()` — a credential-free, browser-free probe (profile present + playwright installed) surfaced by `doctor`. |
-| [`_auth/recovery.py`](../src/notebooklm/_auth/recovery.py) | Client-neutral L3/L4 recovery adapters plus same-loop cold-start coordination. Equivalent callers share one complete task; heterogeneous policies serialize mutation by canonical storage path. |
+| [`_auth/recovery.py`](../src/notebooklm/_auth/recovery.py) | Client-neutral L3/L4 recovery adapters; consumes the `single_flight` core for cross-loop cold-start + master-token coalescing. Keeps the per-loop revalidate-on-bump epoch (`_COLD_SUCCESS_GENERATIONS`) and per-loop mutation lock as consumer-side policy. |
+| [`_auth/single_flight.py`](../src/notebooklm/_auth/single_flight.py) | Cross-loop single-flight coalescing core (c-PR2; [ADR-0030](./adr/0030-one-recovery-ladder.md)): a process-global `(canonical path, rung policy)` flight registry (leader `asyncio.Task` mirrored into a `concurrent.futures.Future`; followers on any loop bridge via `shield(wrap_future)` + settle-before-propagate) plus a per-canonical-PATH `success_epoch` (relocated `_REFRESH_GENERATIONS` semantics). Consumed by `refresh.py` (refresh-cmd) and `recovery.py` (cold/L4). One `threading.Lock` guards only brief claim/registry/epoch sections, never across an await. |
 | [`_auth/account.py`](../src/notebooklm/_auth/account.py) | Account profile + multi-account switching. |
 | [`_auth/session.py`](../src/notebooklm/_auth/session.py) | `refresh_auth_session(auth=..., kernel=..., auth_coord=..., lifecycle=..., cookie_persistence=...)` implementation called by `AuthRefreshCoordinator`. Takes five explicit keyword-only collaborators instead of a Session-shaped owner Protocol; the previous `RefreshAuthCore` Protocol and the `update_auth_tokens` / `update_auth_headers` Session-level forwards have been removed. |
-| [`_auth/refresh.py`](../src/notebooklm/_auth/refresh.py) | Token refresh driver (external login command, coalesced runs, secret redaction). |
+| [`_auth/refresh.py`](../src/notebooklm/_auth/refresh.py) | Token refresh driver (external login command, secret redaction). Coalesces refresh-cmd runs across loops via the `single_flight` core and serializes the subprocess across processes with a per-path refresh flock ([refresh-2]). |
 | [`_auth/keepalive.py`](../src/notebooklm/_auth/keepalive.py) | Cookie keepalive + `__Secure-1PSIDTS` rotation. |
-| [`_auth/psidts_recovery.py`](../src/notebooklm/_auth/psidts_recovery.py) | Inline PSIDTS recovery for cold-start (see issue #865). |
+| [`_auth/psidts_recovery.py`](../src/notebooklm/_auth/psidts_recovery.py) | Inline PSIDTS recovery for cold-start (see issue #865). Invoked from the loader **wrapper** bodies, never the network-free pure loader ([ADR-0030](./adr/0030-one-recovery-ladder.md)); its env-var check shares `paths.resolve_auth_json_env`. |
 | [`_auth/master_token.py`](../src/notebooklm/_auth/master_token.py) | Headless master-token auth: mint/persist web cookies from a durable Google master token; layer-4 re-mint recovery (ADR-0023). |
 
 The cookie lifecycle — what gets written, who rotates, what the
@@ -1075,7 +1077,8 @@ src/notebooklm/
 │   ├── auth_check.py            # Click-free `auth check` diagnostics core: run_auth_check(plan, read_env_auth_json=…) -> AuthCheckResult (storage-exists/json-valid/cookies-present/SID + optional token-fetch); AuthCheckPlan carries pre-resolved values + the auth_source display label; inline-auth read injected (CLI owns the AuthSource plan-build + Rich table + exit code)
 │   ├── chat.py                  # Click-free chat core: conversation-id selection ladder + configure mode/goal/length dispatch + history fetch/format-as-data + ask save-as-note workflow (raises public ValidationError; status emitted into injected ProgressSink)
 │   ├── doctor.py                # Click-free doctor core: run_checks(*, fix, paths) -> DoctorReport (five checks incl. headless-reauth readiness + fixes + has_failures; DoctorPaths injects the path helpers; CLI owns rendering/exit codes)
-│   ├── download.py              # Click-free download core: DownloadPlan/Result/TypeSpec + build_download_plan/execute_download (injected resolvers; CLI builds the --json envelope from the typed DownloadResult)
+│   ├── download.py              # Click-free download core: DownloadPlan/Result + build_download_plan/execute_download (injected resolvers; CLI builds the --json envelope from the typed DownloadResult)
+│   ├── download_specs.py        # Canonical artifact-download registry: type/binding + per-format extension/MIME descriptors; derives DownloadTypeSpec projections, MIME lookup, and adapter schema enums
 │   ├── errors.py                # classify(exc) -> ClassifiedError (category + retriable); class-sensitive
 │   ├── events.py                # ProgressEvent + ProgressSink Protocol (neutral progress seam)
 │   ├── generate.py              # Click-free `generate` executor: execute_generation (injected notebook/source resolvers preserve the RPC fast paths) + GenerationExecutionResult; re-exports the plan/retry surface so `_app.generate` is the single import point
@@ -1186,12 +1189,14 @@ src/notebooklm/
 │   ├── headless_reauth.py       # Layer-3 headless re-auth (opt-in; typed outcomes; local-unattended-only)
 │   ├── account.py               # Account profile + multi-account switching
 │   ├── session.py               # Auth-session refresh implementation via `refresh_auth_session()` and explicit collaborators
-│   ├── storage.py               # Profile/state persistence on disk
+│   ├── storage.py               # Profile/state persistence: CAS merge math + file-lock primitive + save_cookies_to_storage delegate seam
+│   ├── storage_writer.py        # Canonical storage_state.json writer (ADR-0029): sole atomic-write owner, unified bounded lock
 │   ├── keepalive.py             # Cookie keepalive + __Secure-1PSIDTS rotation
 │   ├── psidts_recovery.py       # Inline PSIDTS recovery for cold-start (issue #865)
 │   ├── master_token.py          # Headless master-token auth: mint cookies + layer-4 re-mint (ADR-0023)
-│   ├── recovery.py              # Client-neutral cold-start L3/L4 adapters + same-loop coordination
-│   ├── refresh.py               # Token refresh driver (external login cmd, coalesced runs, redaction)
+│   ├── recovery.py              # Client-neutral cold-start L3/L4 adapters (consume single_flight; keep per-loop revalidate epoch)
+│   ├── single_flight.py         # Cross-loop coalescing core: (path, policy) flight registry + per-path success_epoch
+│   ├── refresh.py               # Token refresh driver (external login cmd, redaction; coalesces via single_flight + per-path flock)
 │   └── tokens.py                # AuthTokens container + load_auth_from_storage loader
 ├── _types/                      # Dataclass implementation package re-exported by types.py
 │   ├── __init__.py
@@ -1241,7 +1246,7 @@ src/notebooklm/
 │       ├── _passthrough.py      # Shared pass-through resolvers (passthrough_notebook_id/passthrough_child_id) for the CLI-shaped _app executors
 │       ├── _preview.py          # title_for_id() — shared id→title lookup for the delete tools' needs_confirmation previews
 │       ├── _studio_items.py     # cross-type Studio plumbing: studio_items (merge notes+artifacts into one items list) + resolve_studio_item (cross-type ref → StudioResolvedItem) for studio_list/studio_rename/studio_delete (split from studio.py for the ADR-0008 size budget)
-│       ├── _studio_download.py  # download plumbing shared by studio.py + _fileroutes.py: _DOWNLOAD_SPECS registry (rebuilt from _app.download) + DownloadType + _resolve_artifact_id / _broker_download / _is_http_transport / _passthrough_download_notebook (split from studio.py for the ADR-0008 size budget)
+│       ├── _studio_download.py  # download plumbing shared by studio.py + _fileroutes.py: consumes _app.download_specs directly; registry-derived DownloadType/DownloadFormat schema aliases + _resolve_artifact_id / _broker_download / transport helpers (split from studio.py for the ADR-0008 size budget)
 │       ├── _studio_payloads.py  # wire-shape projection helpers for the Studio generate/rename tools: _generation_payload (GenerationExecutionResult → response dict; mind-map → bare node tree + mind_map_id via _mind_map_tree/_mind_map_id) + _artifact_rename_payload (split from studio.py for the ADR-0008 size budget)
 │       ├── _waitagg.py          # source-wait outcome aggregation shared by source_wait + source_add(wait=True): _wait_all_sources (concurrent per-source wait) + _aggregate_wait_outcomes (typed SourceWaitOutcome → {ok, ready, timed_out, failed, not_found} + thin-warning annotation) (split from sources.py for the ADR-0008 size budget)
 │       ├── notebooks.py         # notebook_list/create/describe/rename/delete over _app.notebooks
@@ -1263,7 +1268,7 @@ src/notebooklm/
     ├── __init__.py              # Re-exports click groups under historical names from *_cmd modules
     ├── _chromium_profiles.py    # Multi-user-data-profile cookie extraction for Chromium browsers
     ├── _cookie_import.py        # `auth import-cookies` helpers: parse/normalize/validate cookie JSON + backup-then-atomic-write storage_state
-    ├── _download_specs.py       # Registry data for `download <type>` leaf commands
+    ├── _download_specs.py       # Click projection of the shared download registry: help/examples + legacy slide_format parameter only
     ├── _encoding.py             # Encoding-safe CLI output helpers
     ├── _firefox_containers.py   # Container-aware Firefox cookie extraction
     ├── _session_render.py       # Session-command render helpers (status/auth tables)
@@ -1309,7 +1314,7 @@ src/notebooklm/
         ├── auth_refresh.py      # Missing-storage bootstrap from the exact sibling master token
         ├── auth_source.py       # Single source of truth for the active CLI auth source (Click-context precedence resolver; stays in cli/ — reads ctx.obj + NOTEBOOKLM_AUTH_JSON)
         ├── confirming_mutation.py # Shared confirmed-mutation pipeline for CLI resources
-        ├── download.py          # CLI adapter over _app/download.py: re-exports plan types, injects cli.resolve resolvers (keeps resolve_notebook_id patch seam), projects DownloadResult → envelope dict
+        ├── download.py          # CLI adapter over _app/download.py: re-exports plan/spec types, injects cli.resolve resolvers (keeps resolve_notebook_id patch seam), projects DownloadResult → envelope dict
         ├── generate.py          # `generate` CLI adapter over `_app/generate.py` — re-exports plan/result/error + build_generation_plan; injects cli.resolve resolve_notebook_id/resolve_source_ids (read at call time, preserving the resolve_module monkeypatch seam) into the neutral execute_generation; re-exports _INFOGRAPHIC_STYLE_MAP from `_app/generate_plans.py` for generate_cmd
         ├── label_listing.py     # `label list` members→titles join service; re-exports resolve_label_id + LabelResolutionError from _app/labels.py
         ├── listing.py           # Shared list-command pipeline for CLI resources

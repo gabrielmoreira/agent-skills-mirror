@@ -72,7 +72,8 @@ The registry is only consulted after steps 1–3 all fail.
 
 Registry entries are classified as **Likely** (not **Confirmed**) because they are
 user-maintained and not cryptographically attested by an installer. This is still
-sufficient to proceed with the send flow once the user passes the second consent gate.
+sufficient to proceed with a strict send flow once the user grants destination-specific
+remote-send authorization.
 
 ---
 
@@ -83,6 +84,11 @@ Add an entry when:
 - A skill was installed without provenance metadata (no `source_repo` in SKILL.md).
 - The skill author's repo is known but absent from any manifest.
 - You use a skill frequently and want reliable routing without being prompted.
+
+When `skill-reflect` offers to persist a repo supplied during remote routing, that registry
+change is a separate local-write action. It must preview the exact skill-name → `owner/repo`
+mapping and receive explicit confirmation; approval to send an issue does not authorize a
+registry edit.
 
 Edit the file directly — it is plain JSON:
 

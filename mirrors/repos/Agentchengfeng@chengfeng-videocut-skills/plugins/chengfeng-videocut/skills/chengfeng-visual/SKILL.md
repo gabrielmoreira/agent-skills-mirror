@@ -27,14 +27,23 @@ user-invocable: true
 最新、Runtime 是否配套；**插件根**也在那里定位（本文命令里的 `<插件根>` 都代入
 那个字面路径）。只有「就绪」才继续；「需新会话」或「停」按它的处置执行
 （含「禁止自制替代界面」禁令），业务 Skill 不自带环境逻辑。
+
+若就绪结果为 `runtime.kind=desktop-managed`，直接复用桌面 App 已安装的稳定 CLI 与
+同一 `launchd/windows-task` 服务；不要解析 Electron 路径、另装依赖或起第二个
+Runtime。
+
 ## 命令
 
 ```bash
+node "<插件根>/scripts/ensure-running.cjs" --json
 node "<插件根>/scripts/videocut-cli.cjs" visual get   <project> --json
 node "<插件根>/scripts/videocut-cli.cjs" visual frame <project> --cues sub-0004,sub-0005 --count 12 --out <dir> --json
 node "<插件根>/scripts/videocut-cli.cjs" visual add   <project> --module modules/01-xx/index.html --cues sub-0004,sub-0005 [--zoom x,y,w,h] [--id vis-0001] --json
 node "<插件根>/scripts/videocut-cli.cjs" visual remove <project> --id vis-0001 --json
 ```
+
+`ensure-running` 必须先证明 canonical 5190 属于当前平台的托管服务；失败就透传并
+停止，不回退 foreground 或自选端口。
 
 层绑**字幕屏**（`--cues`），产品自己换算成词 id——层永远不可能绑上没人说的词，
 剪辑变了层自己跟着挪。**不存秒数。**

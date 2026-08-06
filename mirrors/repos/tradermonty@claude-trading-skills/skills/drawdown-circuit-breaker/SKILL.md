@@ -43,6 +43,8 @@ The script scans every `th_*.yaml` file and reads realized P&L from each thesis 
 
 If the state directory is missing or empty, the skill returns `TRADING_ALLOWED` with `data_quality: EMPTY_STATE` so a new user is not blocked by the absence of history.
 
+If state exists but a thesis, ledger event, or terminal result must be skipped or conflicts with another recorded value, the skill fails closed with `data_quality: PARTIAL`, `recommendation: HALTED`, and an `incomplete_state_data` rule. Repair the warnings and rerun before taking new risk. The one recoverable exception is a finite terminal `outcome.pnl_dollars` fallback for a legacy thesis with no realized-P&L ledger entry; it remains visible as `PARTIAL` but does not by itself override the calculated recommendation. A non-object history event, or a ledger-shaped one whose `realized_pnl` is missing, unparsable, or non-finite, disqualifies that fallback and halts instead; a history event carrying no ledger markers is ignored as a non-ledger event.
+
 ### Step 2: Evaluate Circuit Breaker Rules
 
 The default rules are:
@@ -103,9 +105,11 @@ Use the generated decision as a gate for new trade risk:
 |----------------|---------|
 | TRADING_ALLOWED | No circuit breaker rule is active; new trade risk may proceed through the rest of the workflow |
 | COOLDOWN | Do not open new positions; continue managing existing positions and review the recent losses |
-| HALTED | Stop new entries and focus on review until the active halt expires |
+| HALTED | Stop new entries because a drawdown limit is active or account-state data is incomplete; repair/rerun any data warnings before proceeding |
 
 Existing position management remains a human decision. The circuit breaker is designed to prevent new risk escalation after realized damage, not to force liquidation.
+
+Time-based rules carry an ISO 8601 `active_until`. The non-time-based `incomplete_state_data` rule uses `active_until: null`; its Markdown report says the halt lasts until the state is repaired and the decision is rerun.
 
 ## Output Format
 
@@ -159,4 +163,4 @@ The script writes `circuit_breaker_decision_YYYY-MM-DD_HHMMSS.json` and, unless 
 1. **Realized damage only** - Use recorded realized P&L, not unrealized P&L or thesis-level cumulative fields for daily calculations.
 2. **Survival first** - A circuit breaker exists to prevent escalation after losses.
 3. **Advisory, not automatic execution** - The output informs the workflow gate; it does not place, cancel, or block broker orders.
-4. **Graceful degradation** - Empty state allows trading; malformed local files degrade data quality to `PARTIAL` without crashing the planning flow.
+4. **Fail closed on incomplete state** - Empty state allows a new user to begin, but malformed, discarded, conflicting, or non-finite risk data returns `PARTIAL` + `HALTED` without crashing. A finite legacy outcome fallback is reported as recoverable `PARTIAL` and remains non-blocking.

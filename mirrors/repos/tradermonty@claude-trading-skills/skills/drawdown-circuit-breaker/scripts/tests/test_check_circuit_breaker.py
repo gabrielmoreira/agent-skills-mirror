@@ -4,15 +4,19 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import math
 from pathlib import Path
 
+import pytest
 import yaml
 from check_circuit_breaker import (
     CircuitConfig,
     evaluate_circuit_breaker,
+    generate_markdown_report,
     load_theses,
     main,
     parse_as_of,
+    write_reports,
 )
 
 
@@ -289,7 +293,7 @@ def test_future_events_after_as_of_time_are_excluded(tmp_path: Path):
     assert end_of_day_result["recommendation"] == "HALTED"
 
 
-def test_malformed_yaml_sets_partial_quality_without_blocking(tmp_path: Path):
+def test_malformed_yaml_sets_partial_quality_and_halts(tmp_path: Path):
     state_dir = tmp_path / "theses"
     (state_dir).mkdir()
     (state_dir / "th_bad.yaml").write_text("status: [", encoding="utf-8")
@@ -310,9 +314,56 @@ def test_malformed_yaml_sets_partial_quality_without_blocking(tmp_path: Path):
     result = evaluate_state(state_dir)
 
     assert result["data_quality"] == "PARTIAL"
-    assert result["recommendation"] == "TRADING_ALLOWED"
+    assert result["recommendation"] == "HALTED"
     assert result["metrics"]["theses_scanned"] == 1
     assert result["warnings"]
+    incomplete_rule = next(
+        rule for rule in result["triggered_rules"] if rule["rule"] == "incomplete_state_data"
+    )
+    assert incomplete_rule == {
+        "rule": "incomplete_state_data",
+        "threshold": "OK_OR_EMPTY_STATE",
+        "observed": "PARTIAL",
+        "active_until": None,
+        "detail": (
+            "Trader-memory state is incomplete; repair the reported data warnings "
+            "and rerun the circuit breaker before taking new trade risk."
+        ),
+    }
+
+    markdown = generate_markdown_report(result)
+    assert "active until state is repaired and the decision is rerun" in markdown
+    assert "active until None" not in markdown
+    assert "active until null" not in markdown
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize(
+    "thesis",
+    [
+        {},
+        {
+            "thesis_id": "th_partial_without_ledger_gm_20260702_0001",
+            "status": "PARTIALLY_CLOSED",
+            "status_history": [],
+        },
+    ],
+)
+def test_semantically_malformed_thesis_is_skipped_and_halts(tmp_path: Path, thesis: dict):
+    state_dir = tmp_path / "theses"
+    state_dir.mkdir()
+    (state_dir / "th_malformed.yaml").write_text(
+        yaml.safe_dump(thesis, sort_keys=False), encoding="utf-8"
+    )
+
+    result = evaluate_state(state_dir)
+
+    assert result["recommendation"] == "HALTED"
+    assert result["data_quality"] == "PARTIAL"
+    assert result["metrics"]["theses_scanned"] == 0
+    assert any("Skipped" in warning for warning in result["warnings"])
+    assert any(rule["rule"] == "incomplete_state_data" for rule in result["triggered_rules"])
+    json.dumps(result, allow_nan=False)
 
 
 def test_losing_streak_triggers_cooldown(tmp_path: Path):
@@ -335,9 +386,11 @@ def test_losing_streak_triggers_cooldown(tmp_path: Path):
     result = evaluate_state(state_dir, as_of="2026-07-02T10:00:00-04:00")
 
     assert result["recommendation"] == "COOLDOWN"
+    assert result["data_quality"] == "PARTIAL"
     assert result["metrics"]["consecutive_losses"] == 2
     assert result["triggered_rules"][0]["rule"] == "losing_streak_cooldown"
     assert result["triggered_rules"][0]["active_until"] == "2026-07-02T15:30:00-04:00"
+    assert all(rule["rule"] != "incomplete_state_data" for rule in result["triggered_rules"])
 
 
 def test_losing_streak_resets_on_break_even_and_expires_after_24h(tmp_path: Path):
@@ -593,7 +646,7 @@ def test_exit_null_does_not_crash_terminal_scan(tmp_path: Path):
     assert result["metrics"]["realized_pnl_today"] == -100.0
 
 
-def test_terminal_non_list_history_still_uses_outcome_fallback(tmp_path: Path):
+def test_terminal_non_list_history_blocks_outcome_fallback(tmp_path: Path):
     state_dir = tmp_path / "theses"
     write_thesis(
         state_dir,
@@ -608,10 +661,10 @@ def test_terminal_non_list_history_still_uses_outcome_fallback(tmp_path: Path):
 
     result = evaluate_state(state_dir, as_of="2026-07-02")
 
-    assert result["metrics"]["realized_pnl_today"] == -100.0
+    assert result["recommendation"] == "HALTED"
+    assert result["metrics"]["realized_pnl_today"] == 0
     assert result["data_quality"] == "PARTIAL"
-    assert any("expected list" in warning for warning in result["warnings"])
-    assert any("Inferred missing realized_pnl" in warning for warning in result["warnings"])
+    assert any("status_history must be a list" in warning for warning in result["warnings"])
 
 
 def test_terminal_exit_null_and_non_list_history_degrades_to_partial(tmp_path: Path):
@@ -636,11 +689,191 @@ def test_terminal_exit_null_and_non_list_history_degrades_to_partial(tmp_path: P
 
     result = evaluate_state(state_dir, as_of="2026-07-02")
 
-    assert result["recommendation"] == "TRADING_ALLOWED"
+    assert result["recommendation"] == "HALTED"
     assert result["data_quality"] == "PARTIAL"
     assert result["metrics"]["realized_pnl_today"] == 0
-    assert any("expected list" in warning for warning in result["warnings"])
-    assert any("no valid terminal date" in warning for warning in result["warnings"])
+    assert any("status_history must be a list" in warning for warning in result["warnings"])
+
+
+@pytest.mark.parametrize("bad_pnl", [float("nan"), float("inf"), float("-inf")])
+def test_non_finite_ledger_pnl_halts_without_contaminating_metrics(tmp_path: Path, bad_pnl: float):
+    state_dir = tmp_path / "theses"
+    write_thesis(
+        state_dir,
+        "th_non_finite_ledger_gm_20260702_0001",
+        status="PARTIALLY_CLOSED",
+        history=[
+            {
+                "status": "PARTIALLY_CLOSED",
+                "at": "2026-07-02T11:00:00-04:00",
+                "reason": "trim",
+                "realized_pnl": bad_pnl,
+            }
+        ],
+    )
+
+    result = evaluate_state(state_dir)
+
+    assert result["recommendation"] == "HALTED"
+    assert result["data_quality"] == "PARTIAL"
+    assert result["metrics"]["realized_pnl_today"] == 0
+    assert all(
+        math.isfinite(result["metrics"][field])
+        for field in ("realized_pnl_today", "realized_pnl_wtd", "realized_pnl_mtd")
+    )
+    assert any("non-finite" in warning for warning in result["warnings"])
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize("bad_pnl", [float("nan"), float("inf"), float("-inf")])
+def test_non_finite_terminal_outcome_halts_without_counting_result(tmp_path: Path, bad_pnl: float):
+    state_dir = tmp_path / "theses"
+    write_thesis(
+        state_dir,
+        "th_non_finite_outcome_gm_20260702_0001",
+        pnl_dollars=bad_pnl,
+        exit_date="2026-07-02T10:00:00-04:00",
+    )
+
+    result = evaluate_state(state_dir)
+
+    assert result["recommendation"] == "HALTED"
+    assert result["data_quality"] == "PARTIAL"
+    assert result["metrics"]["realized_pnl_today"] == 0
+    assert result["metrics"]["consecutive_losses"] == 0
+    assert any("non-finite" in warning for warning in result["warnings"])
+    json.dumps(result, allow_nan=False)
+
+
+@pytest.mark.parametrize(
+    "malformed_event",
+    [
+        None,
+        {
+            "status": "PARTIALLY_CLOSED",
+            "at": "2026-07-02T10:00:00-04:00",
+            "reason": "trim",
+            "shares_sold": 10,
+            "price": 90.0,
+            "proceeds": 900.0,
+        },
+        {
+            "status": "CLOSED",
+            "at": "2026-07-02T10:00:00-04:00",
+            "reason": "final leg",
+            "quantity_sold": 1,
+            "price": 90.0,
+            "proceeds": 90.0,
+        },
+    ],
+)
+def test_malformed_or_incomplete_ledger_event_halts_even_with_outcome_fallback(
+    tmp_path: Path, malformed_event: object
+):
+    state_dir = tmp_path / "theses"
+    write_thesis(
+        state_dir,
+        "th_incomplete_ledger_gm_20260702_0001",
+        history=[malformed_event],
+        pnl_dollars=-100.0,
+        exit_date="2026-07-02T10:00:00-04:00",
+    )
+
+    result = evaluate_state(state_dir)
+
+    assert result["recommendation"] == "HALTED"
+    assert result["data_quality"] == "PARTIAL"
+    assert any("status_history event" in warning for warning in result["warnings"])
+    assert any(rule["rule"] == "incomplete_state_data" for rule in result["triggered_rules"])
+
+
+def test_overflowing_ledger_aggregate_halts_with_finite_metrics(tmp_path: Path):
+    state_dir = tmp_path / "theses"
+    write_thesis(
+        state_dir,
+        "th_overflowing_ledger_gm_20260702_0001",
+        status="PARTIALLY_CLOSED",
+        history=[
+            {
+                "status": "PARTIALLY_CLOSED",
+                "at": "2026-07-02T10:00:00-04:00",
+                "reason": "trim",
+                "realized_pnl": 1e308,
+            },
+            {
+                "status": "PARTIALLY_CLOSED",
+                "at": "2026-07-02T11:00:00-04:00",
+                "reason": "trim",
+                "realized_pnl": 1e308,
+            },
+        ],
+    )
+
+    result = evaluate_state(state_dir)
+
+    assert result["recommendation"] == "HALTED"
+    assert result["data_quality"] == "PARTIAL"
+    assert result["metrics"]["realized_pnl_today"] == 0
+    assert all(
+        math.isfinite(result["metrics"][field])
+        for field in ("realized_pnl_today", "realized_pnl_wtd", "realized_pnl_mtd")
+    )
+    assert any("aggregate is non-finite" in warning for warning in result["warnings"])
+    json.dumps(result, allow_nan=False)
+
+
+def test_oversized_terminal_outcome_becomes_blocking_warning(tmp_path: Path):
+    state_dir = tmp_path / "theses"
+    state_dir.mkdir()
+    thesis = {
+        "thesis_id": "th_oversized_outcome_gm_20260702_0001",
+        "ticker": "HUGE",
+        "status": "CLOSED",
+        "status_history": [],
+        "exit": {
+            "actual_date": "2026-07-02T10:00:00-04:00",
+            "actual_price": 100.0,
+            "exit_reason": "manual",
+        },
+        "outcome": {"pnl_dollars": 10**400, "pnl_pct": 0},
+    }
+    (state_dir / "th_oversized_outcome_gm_20260702_0001.yaml").write_text(
+        yaml.safe_dump(thesis, sort_keys=False), encoding="utf-8"
+    )
+
+    result = evaluate_state(state_dir)
+
+    assert result["recommendation"] == "HALTED"
+    assert result["data_quality"] == "PARTIAL"
+    assert result["metrics"]["realized_pnl_today"] == 0
+    assert result["metrics"]["consecutive_losses"] == 0
+    assert any("too large" in warning or "overflow" in warning for warning in result["warnings"])
+
+
+def test_large_finite_account_uses_finite_loss_threshold(tmp_path: Path):
+    state_dir = tmp_path / "theses"
+    write_thesis(
+        state_dir,
+        "th_large_finite_loss_gm_20260702_0001",
+        status="PARTIALLY_CLOSED",
+        history=[
+            {
+                "status": "PARTIALLY_CLOSED",
+                "at": "2026-07-02T10:00:00-04:00",
+                "reason": "trim",
+                "realized_pnl": -1e308,
+            }
+        ],
+    )
+
+    result = evaluate_state(state_dir, account_size=1e308)
+
+    assert result["recommendation"] == "HALTED"
+    daily_rule = next(
+        rule for rule in result["triggered_rules"] if rule["rule"] == "max_daily_loss"
+    )
+    assert math.isfinite(daily_rule["threshold"])
+    assert daily_rule["threshold"] == 2e306
 
 
 def test_weekly_and_monthly_drawdown_rules_use_calendar_boundaries(tmp_path: Path):
@@ -813,3 +1046,158 @@ def test_unknown_config_key_fails_closed(tmp_path: Path):
     )
 
     assert exit_code == 1
+
+
+@pytest.mark.parametrize("bad_value", ["nan", "inf", "0", "-1"])
+def test_account_size_rejects_non_finite_or_non_positive_values(tmp_path: Path, bad_value: str):
+    output_dir = tmp_path / "reports"
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(
+            [
+                "--state-dir",
+                str(tmp_path / "missing"),
+                "--account-size",
+                bad_value,
+                "--output-dir",
+                str(output_dir),
+                "--json-only",
+            ]
+        )
+
+    assert exc_info.value.code == 2
+    assert not output_dir.exists()
+
+
+@pytest.mark.parametrize(
+    ("flag", "bad_value"),
+    [
+        ("--max-daily-loss-pct", "nan"),
+        ("--cooldown-hours", "inf"),
+        ("--weekly-drawdown-pct", "0"),
+        ("--monthly-drawdown-pct", "-1"),
+    ],
+)
+def test_cli_thresholds_reject_non_finite_or_non_positive_values(
+    tmp_path: Path, flag: str, bad_value: str
+):
+    output_dir = tmp_path / "reports"
+
+    with pytest.raises(SystemExit) as exc_info:
+        main(
+            [
+                "--state-dir",
+                str(tmp_path / "missing"),
+                "--account-size",
+                "100000",
+                flag,
+                bad_value,
+                "--output-dir",
+                str(output_dir),
+                "--json-only",
+            ]
+        )
+
+    assert exc_info.value.code == 2
+    assert not output_dir.exists()
+
+
+@pytest.mark.parametrize(
+    ("key", "bad_value"),
+    [
+        ("max_daily_loss_pct", float("nan")),
+        ("cooldown_hours", float("inf")),
+        ("weekly_drawdown_pct", 0),
+        ("monthly_drawdown_pct", -1),
+    ],
+)
+def test_config_thresholds_reject_non_finite_or_non_positive_values(
+    tmp_path: Path, key: str, bad_value: float
+):
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps({key: bad_value}), encoding="utf-8")
+    output_dir = tmp_path / "reports"
+
+    exit_code = main(
+        [
+            "--state-dir",
+            str(tmp_path / "missing"),
+            "--account-size",
+            "100000",
+            "--config",
+            str(config_path),
+            "--output-dir",
+            str(output_dir),
+            "--json-only",
+        ]
+    )
+
+    assert exit_code == 1
+    assert not output_dir.exists()
+
+
+@pytest.mark.parametrize(
+    ("key", "bad_value"),
+    [
+        ("max_daily_loss_pct", True),
+        ("cooldown_hours", False),
+        ("losing_streak_n", True),
+        ("losing_streak_n", 1.9),
+        ("losing_streak_n", 3.0),
+    ],
+)
+def test_config_rejects_boolean_and_non_integer_coercion(
+    tmp_path: Path, key: str, bad_value: bool | float
+):
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps({key: bad_value}), encoding="utf-8")
+    output_dir = tmp_path / "reports"
+
+    exit_code = main(
+        [
+            "--state-dir",
+            str(tmp_path / "missing"),
+            "--account-size",
+            "100000",
+            "--config",
+            str(config_path),
+            "--output-dir",
+            str(output_dir),
+            "--json-only",
+        ]
+    )
+
+    assert exit_code == 1
+    assert not output_dir.exists()
+
+
+def test_write_reports_rejects_non_finite_output(tmp_path: Path):
+    result = evaluate_state(tmp_path / "missing")
+    result["metrics"]["realized_pnl_today"] = float("nan")
+    output_dir = tmp_path / "reports"
+
+    with pytest.raises(ValueError):
+        write_reports(result, output_dir, json_only=True)
+
+    assert list(output_dir.glob("circuit_breaker_decision_*.json")) == []
+
+
+def test_overflowing_derived_threshold_fails_without_report(tmp_path: Path):
+    output_dir = tmp_path / "reports"
+
+    exit_code = main(
+        [
+            "--state-dir",
+            str(tmp_path / "missing"),
+            "--account-size",
+            "1e308",
+            "--max-daily-loss-pct",
+            "1e308",
+            "--output-dir",
+            str(output_dir),
+            "--json-only",
+        ]
+    )
+
+    assert exit_code == 1
+    assert not output_dir.exists()

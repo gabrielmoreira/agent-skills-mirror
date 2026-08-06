@@ -61,9 +61,11 @@ reimplement ledger arithmetic.
    resolved scope, and any deadline and validation window.
 2. Initialize the ledger for the requested scope. The agent may additionally inspect shared configuration and
    instructions needed to understand that scope; do not silently widen the ledger. If `init` maps more than roughly
-   2,000 files and the user gave no `[paths]`, stop and ask for a partition or explicit confirmation before inspecting
-   anything; recommend per-directory slices run as separate sweeps, because unscoped whole-repo sweeps of that size do
-   not finish.
+   2,000 files and the user gave no `[paths]`, partition the mapped ledger into bounded, system-aware directory or
+   subsystem slices and continue without asking solely because of file count. Keep the complete requested scope in the
+   ledger and preserve cross-slice invariants through the system map and aggregate validation. When a supplied deadline
+   cannot cover every slice, stop at its validation window and report the resumable frontier; ask only when no safe
+   partition can preserve a material invariant and the user must choose a narrower outcome.
 3. Classify generated, vendored, minified, binary, and bulk-data artifacts. Validate them through their generator,
    schema, or invariants when line-by-line review is inappropriate, then mark them with the agent's reason.
 4. Build a compact system map: executable entry points, workspace or package dependency directions, public interfaces,
@@ -103,8 +105,8 @@ next session.
   only one process touches the Git index.
 - A lint-staged `Failed to get staged files!` or bare `"lint-staged" exited with code 1` is not enough to diagnose index
   contention. Retry as contention only when the same output explicitly names an index lock; otherwise inspect the hook
-  output or lint-staged debug trace before deciding whether to fix, report, or apply `$commit`'s unrelated-hook bypass
-  rule.
+  diagnostics emitted by `ai-commit` or the lint-staged debug trace before deciding whether to fix, report, or use
+  `$commit` to apply `ai-commit`'s transaction-aware unrelated-hook recovery.
 
 ## Inspect and Fix
 

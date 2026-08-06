@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shiwenwen/hope-agent` — 26 default patterns, 41 followed patterns, 179 file(s) materialized.
+Mirror of `shiwenwen/hope-agent` — 26 default patterns, 41 followed patterns, 160 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 41 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 41 |
-| Files         | 179 |
+| Files         | 160 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,45 +52,45 @@ Mirror of `shiwenwen/hope-agent` — 26 default patterns, 41 followed patterns, 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/README.md`
-- `docs/architecture/capability-eval.md`
+- `docs/architecture/agent/capability-eval.md`
 - `docs/release-process.md`
-- `docs/architecture/live-model-evaluation.md`
-- `docs/architecture/config-system.md`
-- `docs/architecture/api-reference.md`
-- `docs/architecture/process-model.md`
-- `docs/architecture/logging.md`
-- `docs/architecture/backend-separation.md`
-- `docs/architecture/platform.md`
-- `docs/architecture/transport-modes.md`
-- `docs/architecture/memory.md`
-- `docs/architecture/dreaming.md`
-- `docs/architecture/subagent.md`
-- `docs/architecture/agent-team.md`
-- `docs/architecture/cron.md`
-- `docs/architecture/background-jobs.md`
-- `docs/architecture/provider-system.md`
-- `docs/architecture/failover.md`
-- `docs/architecture/side-query.md`
-- `docs/architecture/agent-config.md`
-- `docs/architecture/automation-model.md`
-- `docs/architecture/chat-engine.md`
-- `docs/architecture/session.md`
-- `docs/architecture/pet.md`
-- `docs/architecture/context-compact.md`
-- `docs/architecture/knowledge-base.md`
-- `docs/architecture/design-space.md`
-- `docs/architecture/hooks.md`
-- `docs/architecture/plan-mode.md`
-- `docs/architecture/skill-system.md`
-- `docs/architecture/mcp.md`
-- `docs/architecture/mcp-server.md`
-- `docs/architecture/im-channel.md`
-- `docs/architecture/project.md`
-- `docs/architecture/self-update.md`
-- `docs/architecture/dashboard.md`
-- `docs/architecture/recap.md`
-- `docs/architecture/local-model-loading.md`
-- `docs/architecture/cli.md`
+- `docs/architecture/agent/live-model-evaluation.md`
+- `docs/architecture/infra/config-system.md`
+- `docs/architecture/system/api-reference.md`
+- `docs/architecture/system/process-model.md`
+- `docs/architecture/infra/logging.md`
+- `docs/architecture/system/backend-separation.md`
+- `docs/architecture/infra/platform.md`
+- `docs/architecture/system/transport-modes.md`
+- `docs/architecture/core/memory.md`
+- `docs/architecture/core/dreaming.md`
+- `docs/architecture/agent/subagent.md`
+- `docs/architecture/agent/agent-team.md`
+- `docs/architecture/infra/cron.md`
+- `docs/architecture/agent/background-jobs.md`
+- `docs/architecture/core/provider-system.md`
+- `docs/architecture/agent/failover.md`
+- `docs/architecture/agent/side-query.md`
+- `docs/architecture/core/agent-config.md`
+- `docs/architecture/core/automation-model.md`
+- `docs/architecture/core/chat-engine.md`
+- `docs/architecture/core/session.md`
+- `docs/architecture/core/pet.md`
+- `docs/architecture/core/context-compact.md`
+- `docs/architecture/core/knowledge-base.md`
+- `docs/architecture/infra/design-space.md`
+- `docs/architecture/agent/hooks.md`
+- `docs/architecture/agent/plan-mode.md`
+- `docs/architecture/agent/skill-system.md`
+- `docs/architecture/integration/mcp.md`
+- `docs/architecture/integration/mcp-server.md`
+- `docs/architecture/integration/im-channel.md`
+- `docs/architecture/core/project.md`
+- `docs/architecture/infra/self-update.md`
+- `docs/architecture/infra/dashboard.md`
+- `docs/architecture/infra/recap.md`
+- `docs/architecture/core/local-model-loading.md`
+- `docs/architecture/system/cli.md`
 - `docs/deployment/docker.md`
 
 ## File Index
@@ -101,183 +101,164 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`docs/architecture/acp.md`](docs/architecture/acp.md) |
-| 4 | ✓ | [`docs/architecture/artifacts.md`](docs/architecture/artifacts.md) |
-| 5 | ✓ | [`docs/architecture/behavior-awareness.md`](docs/architecture/behavior-awareness.md) |
-| 6 | ✓ | [`docs/architecture/canvas.md`](docs/architecture/canvas.md) |
-| 7 | ✓ | [`docs/architecture/coding-eval.md`](docs/architecture/coding-eval.md) |
-| 8 | ✓ | [`docs/architecture/coding-improvement-loop.md`](docs/architecture/coding-improvement-loop.md) |
-| 9 | ✓ | [`docs/architecture/context-retrieval.md`](docs/architecture/context-retrieval.md) |
-| 10 | ✓ | [`docs/architecture/domain-eval.md`](docs/architecture/domain-eval.md) |
-| 11 | ✓ | [`docs/architecture/domain-quality.md`](docs/architecture/domain-quality.md) |
-| 12 | ✓ | [`docs/architecture/domain-workflow.md`](docs/architecture/domain-workflow.md) |
-| 13 | ✓ | [`docs/architecture/file-operations.md`](docs/architecture/file-operations.md) |
-| 14 | ✓ | [`docs/architecture/git-control.md`](docs/architecture/git-control.md) |
-| 15 | ✓ | [`docs/architecture/goal.md`](docs/architecture/goal.md) |
-| 16 | ✓ | [`docs/architecture/loop.md`](docs/architecture/loop.md) |
-| 17 | ✓ | [`docs/architecture/lsp.md`](docs/architecture/lsp.md) |
-| 18 | ✓ | [`docs/architecture/macos-control.md`](docs/architecture/macos-control.md) |
-| 19 | ✓ | [`docs/architecture/macos-permissions.md`](docs/architecture/macos-permissions.md) |
-| 20 | ✓ | [`docs/architecture/media-generation.md`](docs/architecture/media-generation.md) |
-| 21 | ✓ | [`docs/architecture/permission-system.md`](docs/architecture/permission-system.md) |
-| 22 | ✓ | [`docs/architecture/prompt-system.md`](docs/architecture/prompt-system.md) |
-| 23 | ✓ | [`docs/architecture/reliability.md`](docs/architecture/reliability.md) |
-| 24 | ✓ | [`docs/architecture/review-engine.md`](docs/architecture/review-engine.md) |
-| 25 | ✓ | [`docs/architecture/security.md`](docs/architecture/security.md) |
-| 26 | ✓ | [`docs/architecture/slash-commands.md`](docs/architecture/slash-commands.md) |
-| 27 | ✓ | [`docs/architecture/terminal.md`](docs/architecture/terminal.md) |
-| 28 | ✓ | [`docs/architecture/tool-system.md`](docs/architecture/tool-system.md) |
-| 29 | ✓ | [`docs/architecture/verification-engine.md`](docs/architecture/verification-engine.md) |
-| 30 | ✓ | [`docs/architecture/workflow.md`](docs/architecture/workflow.md) |
-| 31 | ✓ | [`docs/architecture/worktree.md`](docs/architecture/worktree.md) |
-| 32 | ✓ | [`docs/deployment/docker.en.md`](docs/deployment/docker.en.md) |
-| 33 | ✓ | [`docs/macos-self-signing.md`](docs/macos-self-signing.md) |
-| 34 | ✓ | [`skills/email-draft/SKILL.md`](skills/email-draft/SKILL.md) |
-| 35 | ✓ | [`skills/feishu/SKILL.md`](skills/feishu/SKILL.md) |
-| 36 | ✓ | [`skills/ha-browser/SKILL.md`](skills/ha-browser/SKILL.md) |
-| 37 | ✓ | [`skills/ha-code-review/SKILL.md`](skills/ha-code-review/SKILL.md) |
-| 38 | ✓ | [`skills/ha-coding-common/SKILL.md`](skills/ha-coding-common/SKILL.md) |
-| 39 | ✓ | [`skills/ha-coding-plan/SKILL.md`](skills/ha-coding-plan/SKILL.md) |
-| 40 | ✓ | [`skills/ha-data-analytics/agents/openai.yaml`](skills/ha-data-analytics/agents/openai.yaml) |
-| 41 | ✓ | [`skills/ha-data-analytics/references/analysis-artifact-v1.md`](skills/ha-data-analytics/references/analysis-artifact-v1.md) |
-| 42 | ✓ | [`skills/ha-data-analytics/references/artifact-templates.md`](skills/ha-data-analytics/references/artifact-templates.md) |
-| 43 | ✓ | [`skills/ha-data-analytics/references/data-quality.md`](skills/ha-data-analytics/references/data-quality.md) |
-| 44 | ✓ | [`skills/ha-data-analytics/scripts/fixture_recompute.py`](skills/ha-data-analytics/scripts/fixture_recompute.py) |
-| 45 | ✓ | [`skills/ha-data-analytics/scripts/validate_analysis_artifact.py`](skills/ha-data-analytics/scripts/validate_analysis_artifact.py) |
-| 46 | ✓ | [`skills/ha-data-analytics/SKILL.md`](skills/ha-data-analytics/SKILL.md) |
-| 47 | ✓ | [`skills/ha-data-stores/SKILL.md`](skills/ha-data-stores/SKILL.md) |
-| 48 | ✓ | [`skills/ha-debug/SKILL.md`](skills/ha-debug/SKILL.md) |
-| 49 | ✓ | [`skills/ha-find-skills/SKILL.md`](skills/ha-find-skills/SKILL.md) |
-| 50 | ✓ | [`skills/ha-knowledge/SKILL.md`](skills/ha-knowledge/SKILL.md) |
-| 51 | ✓ | [`skills/ha-logs/SKILL.md`](skills/ha-logs/SKILL.md) |
-| 52 | ✓ | [`skills/ha-mac-control/SKILL.md`](skills/ha-mac-control/SKILL.md) |
-| 53 | ✓ | [`skills/ha-manual/SKILL.md`](skills/ha-manual/SKILL.md) |
-| 54 | ✓ | [`skills/ha-multi-agent-coding/SKILL.md`](skills/ha-multi-agent-coding/SKILL.md) |
-| 55 | ✓ | [`skills/ha-self-diagnosis/references/diagnostic-playbook.md`](skills/ha-self-diagnosis/references/diagnostic-playbook.md) |
-| 56 | ✓ | [`skills/ha-self-diagnosis/references/issue-template.md`](skills/ha-self-diagnosis/references/issue-template.md) |
-| 57 | ✓ | [`skills/ha-self-diagnosis/SKILL.md`](skills/ha-self-diagnosis/SKILL.md) |
-| 58 | ✓ | [`skills/ha-self-update/SKILL.md`](skills/ha-self-update/SKILL.md) |
-| 59 | ✓ | [`skills/ha-settings/SKILL.md`](skills/ha-settings/SKILL.md) |
-| 60 | ✓ | [`skills/ha-skill-creator/agents/analyzer.md`](skills/ha-skill-creator/agents/analyzer.md) |
-| 61 | ✓ | [`skills/ha-skill-creator/agents/comparator.md`](skills/ha-skill-creator/agents/comparator.md) |
-| 62 | ✓ | [`skills/ha-skill-creator/agents/grader.md`](skills/ha-skill-creator/agents/grader.md) |
-| 63 | ✓ | [`skills/ha-skill-creator/eval-viewer/generate_review.py`](skills/ha-skill-creator/eval-viewer/generate_review.py) |
-| 64 | ✓ | [`skills/ha-skill-creator/eval-viewer/viewer.html`](skills/ha-skill-creator/eval-viewer/viewer.html) |
-| 65 | ✓ | [`skills/ha-skill-creator/references/schemas.md`](skills/ha-skill-creator/references/schemas.md) |
-| 66 | ✓ | [`skills/ha-skill-creator/scripts/__init__.py`](skills/ha-skill-creator/scripts/__init__.py) |
-| 67 | ✓ | [`skills/ha-skill-creator/scripts/aggregate_benchmark.py`](skills/ha-skill-creator/scripts/aggregate_benchmark.py) |
-| 68 | ✓ | [`skills/ha-skill-creator/scripts/generate_report.py`](skills/ha-skill-creator/scripts/generate_report.py) |
-| 69 | ✓ | [`skills/ha-skill-creator/scripts/improve_description.py`](skills/ha-skill-creator/scripts/improve_description.py) |
-| 70 | ✓ | [`skills/ha-skill-creator/scripts/init_skill.py`](skills/ha-skill-creator/scripts/init_skill.py) |
-| 71 | ✓ | [`skills/ha-skill-creator/scripts/package_skill.py`](skills/ha-skill-creator/scripts/package_skill.py) |
-| 72 | ✓ | [`skills/ha-skill-creator/scripts/quick_validate.py`](skills/ha-skill-creator/scripts/quick_validate.py) |
-| 73 | ✓ | [`skills/ha-skill-creator/scripts/run_eval.py`](skills/ha-skill-creator/scripts/run_eval.py) |
-| 74 | ✓ | [`skills/ha-skill-creator/scripts/run_loop.py`](skills/ha-skill-creator/scripts/run_loop.py) |
-| 75 | ✓ | [`skills/ha-skill-creator/scripts/test_package_skill.py`](skills/ha-skill-creator/scripts/test_package_skill.py) |
-| 76 | ✓ | [`skills/ha-skill-creator/scripts/test_quick_validate.py`](skills/ha-skill-creator/scripts/test_quick_validate.py) |
-| 77 | ✓ | [`skills/ha-skill-creator/scripts/utils.py`](skills/ha-skill-creator/scripts/utils.py) |
-| 78 | ✓ | [`skills/ha-skill-creator/SKILL.md`](skills/ha-skill-creator/SKILL.md) |
-| 79 | ✓ | [`skills/ha-test-strategy/SKILL.md`](skills/ha-test-strategy/SKILL.md) |
-| 80 | ✓ | [`skills/ha-verify/SKILL.md`](skills/ha-verify/SKILL.md) |
-| 81 | ✓ | [`skills/ha-workflow-script/SKILL.md`](skills/ha-workflow-script/SKILL.md) |
-| 82 | ✓ | [`skills/meeting-notes/SKILL.md`](skills/meeting-notes/SKILL.md) |
-| 83 | ✓ | [`skills/mermaid-diagram/SKILL.md`](skills/mermaid-diagram/SKILL.md) |
-| 84 | ✓ | [`skills/office-docx/agents/openai.yaml`](skills/office-docx/agents/openai.yaml) |
-| 85 | ✓ | [`skills/office-docx/scripts/a11y_audit.py`](skills/office-docx/scripts/a11y_audit.py) |
-| 86 | ✓ | [`skills/office-docx/scripts/accept_tracked_changes.py`](skills/office-docx/scripts/accept_tracked_changes.py) |
-| 87 | ✓ | [`skills/office-docx/scripts/add_tracked_replacements.py`](skills/office-docx/scripts/add_tracked_replacements.py) |
-| 88 | ✓ | [`skills/office-docx/scripts/append_docx.py`](skills/office-docx/scripts/append_docx.py) |
-| 89 | ✓ | [`skills/office-docx/scripts/build_docx.py`](skills/office-docx/scripts/build_docx.py) |
-| 90 | ✓ | [`skills/office-docx/scripts/check_env.py`](skills/office-docx/scripts/check_env.py) |
-| 91 | ✓ | [`skills/office-docx/scripts/comments_extract.py`](skills/office-docx/scripts/comments_extract.py) |
-| 92 | ✓ | [`skills/office-docx/scripts/comments_strip.py`](skills/office-docx/scripts/comments_strip.py) |
-| 93 | ✓ | [`skills/office-docx/scripts/compare_docx.py`](skills/office-docx/scripts/compare_docx.py) |
-| 94 | ✓ | [`skills/office-docx/scripts/content_controls.py`](skills/office-docx/scripts/content_controls.py) |
-| 95 | ✓ | [`skills/office-docx/scripts/docx_table_to_csv.py`](skills/office-docx/scripts/docx_table_to_csv.py) |
-| 96 | ✓ | [`skills/office-docx/scripts/fields_report.py`](skills/office-docx/scripts/fields_report.py) |
-| 97 | ✓ | [`skills/office-docx/scripts/google_docs_title_sanitize.py`](skills/office-docx/scripts/google_docs_title_sanitize.py) |
-| 98 | ✓ | [`skills/office-docx/scripts/insert_note.py`](skills/office-docx/scripts/insert_note.py) |
-| 99 | ✓ | [`skills/office-docx/scripts/insert_toc.py`](skills/office-docx/scripts/insert_toc.py) |
-| 100 | ✓ | [`skills/office-docx/scripts/inspect_docx.py`](skills/office-docx/scripts/inspect_docx.py) |
-| 101 | ✓ | [`skills/office-docx/scripts/internal_nav.py`](skills/office-docx/scripts/internal_nav.py) |
-| 102 | ✓ | [`skills/office-docx/scripts/markdown_to_docx.py`](skills/office-docx/scripts/markdown_to_docx.py) |
-| 103 | ✓ | [`skills/office-docx/scripts/merge_docx_append.py`](skills/office-docx/scripts/merge_docx_append.py) |
-| 104 | ✓ | [`skills/office-docx/scripts/privacy_scrub_metadata.py`](skills/office-docx/scripts/privacy_scrub_metadata.py) |
-| 105 | ✓ | [`skills/office-docx/scripts/redact_docx.py`](skills/office-docx/scripts/redact_docx.py) |
-| 106 | ✓ | [`skills/office-docx/scripts/render_pdf.py`](skills/office-docx/scripts/render_pdf.py) |
-| 107 | ✓ | [`skills/office-docx/scripts/render_preview.py`](skills/office-docx/scripts/render_preview.py) |
-| 108 | ✓ | [`skills/office-docx/scripts/set_protection.py`](skills/office-docx/scripts/set_protection.py) |
-| 109 | ✓ | [`skills/office-docx/scripts/watermark_add.py`](skills/office-docx/scripts/watermark_add.py) |
-| 110 | ✓ | [`skills/office-docx/scripts/watermark_audit_remove.py`](skills/office-docx/scripts/watermark_audit_remove.py) |
-| 111 | ✓ | [`skills/office-docx/SKILL.md`](skills/office-docx/SKILL.md) |
-| 112 | ✓ | [`skills/office-pptx/agents/openai.yaml`](skills/office-pptx/agents/openai.yaml) |
-| 113 | ✓ | [`skills/office-pptx/scripts/append_pptx.py`](skills/office-pptx/scripts/append_pptx.py) |
-| 114 | ✓ | [`skills/office-pptx/scripts/build_pptx.py`](skills/office-pptx/scripts/build_pptx.py) |
-| 115 | ✓ | [`skills/office-pptx/scripts/check_env.py`](skills/office-pptx/scripts/check_env.py) |
-| 116 | ✓ | [`skills/office-pptx/scripts/deck_reorder.py`](skills/office-pptx/scripts/deck_reorder.py) |
-| 117 | ✓ | [`skills/office-pptx/scripts/duplicate_slide.py`](skills/office-pptx/scripts/duplicate_slide.py) |
-| 118 | ✓ | [`skills/office-pptx/scripts/inspect_pptx.py`](skills/office-pptx/scripts/inspect_pptx.py) |
-| 119 | ✓ | [`skills/office-pptx/scripts/layout_audit.py`](skills/office-pptx/scripts/layout_audit.py) |
-| 120 | ✓ | [`skills/office-pptx/scripts/make_contact_sheet.py`](skills/office-pptx/scripts/make_contact_sheet.py) |
-| 121 | ✓ | [`skills/office-pptx/scripts/outline_to_pptx.py`](skills/office-pptx/scripts/outline_to_pptx.py) |
-| 122 | ✓ | [`skills/office-pptx/scripts/patch_pptx.py`](skills/office-pptx/scripts/patch_pptx.py) |
-| 123 | ✓ | [`skills/office-pptx/scripts/render_pdf.py`](skills/office-pptx/scripts/render_pdf.py) |
-| 124 | ✓ | [`skills/office-pptx/scripts/render_preview.py`](skills/office-pptx/scripts/render_preview.py) |
-| 125 | ✓ | [`skills/office-pptx/SKILL.md`](skills/office-pptx/SKILL.md) |
-| 126 | ✓ | [`skills/office-xlsx/agents/openai.yaml`](skills/office-xlsx/agents/openai.yaml) |
-| 127 | ✓ | [`skills/office-xlsx/scripts/build_xlsx.py`](skills/office-xlsx/scripts/build_xlsx.py) |
-| 128 | ✓ | [`skills/office-xlsx/scripts/check_env.py`](skills/office-xlsx/scripts/check_env.py) |
-| 129 | ✓ | [`skills/office-xlsx/scripts/csv_to_xlsx.py`](skills/office-xlsx/scripts/csv_to_xlsx.py) |
-| 130 | ✓ | [`skills/office-xlsx/scripts/formula_audit.py`](skills/office-xlsx/scripts/formula_audit.py) |
-| 131 | ✓ | [`skills/office-xlsx/scripts/inspect_xlsx.py`](skills/office-xlsx/scripts/inspect_xlsx.py) |
-| 132 | ✓ | [`skills/office-xlsx/scripts/patch_xlsx.py`](skills/office-xlsx/scripts/patch_xlsx.py) |
-| 133 | ✓ | [`skills/office-xlsx/scripts/recalculate_xlsx.py`](skills/office-xlsx/scripts/recalculate_xlsx.py) |
-| 134 | ✓ | [`skills/office-xlsx/scripts/render_pdf.py`](skills/office-xlsx/scripts/render_pdf.py) |
-| 135 | ✓ | [`skills/office-xlsx/scripts/render_preview.py`](skills/office-xlsx/scripts/render_preview.py) |
-| 136 | ✓ | [`skills/office-xlsx/SKILL.md`](skills/office-xlsx/SKILL.md) |
-| 137 | ✓ | [`skills/status-report/SKILL.md`](skills/status-report/SKILL.md) |
-| 138 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 139 | → | [`docs/architecture/agent-config.md`](docs/architecture/agent-config.md) |
-| 140 | → | [`docs/architecture/agent-team.md`](docs/architecture/agent-team.md) |
-| 141 | → | [`docs/architecture/api-reference.md`](docs/architecture/api-reference.md) |
-| 142 | → | [`docs/architecture/automation-model.md`](docs/architecture/automation-model.md) |
-| 143 | → | [`docs/architecture/backend-separation.md`](docs/architecture/backend-separation.md) |
-| 144 | → | [`docs/architecture/background-jobs.md`](docs/architecture/background-jobs.md) |
-| 145 | → | [`docs/architecture/capability-eval.md`](docs/architecture/capability-eval.md) |
-| 146 | → | [`docs/architecture/chat-engine.md`](docs/architecture/chat-engine.md) |
-| 147 | → | [`docs/architecture/cli.md`](docs/architecture/cli.md) |
-| 148 | → | [`docs/architecture/config-system.md`](docs/architecture/config-system.md) |
-| 149 | → | [`docs/architecture/context-compact.md`](docs/architecture/context-compact.md) |
-| 150 | → | [`docs/architecture/cron.md`](docs/architecture/cron.md) |
-| 151 | → | [`docs/architecture/dashboard.md`](docs/architecture/dashboard.md) |
-| 152 | → | [`docs/architecture/design-space.md`](docs/architecture/design-space.md) |
-| 153 | → | [`docs/architecture/dreaming.md`](docs/architecture/dreaming.md) |
-| 154 | → | [`docs/architecture/failover.md`](docs/architecture/failover.md) |
-| 155 | → | [`docs/architecture/hooks.md`](docs/architecture/hooks.md) |
-| 156 | → | [`docs/architecture/im-channel.md`](docs/architecture/im-channel.md) |
-| 157 | → | [`docs/architecture/knowledge-base.md`](docs/architecture/knowledge-base.md) |
-| 158 | → | [`docs/architecture/live-model-evaluation.md`](docs/architecture/live-model-evaluation.md) |
-| 159 | → | [`docs/architecture/local-model-loading.md`](docs/architecture/local-model-loading.md) |
-| 160 | → | [`docs/architecture/logging.md`](docs/architecture/logging.md) |
-| 161 | → | [`docs/architecture/mcp-server.md`](docs/architecture/mcp-server.md) |
-| 162 | → | [`docs/architecture/mcp.md`](docs/architecture/mcp.md) |
-| 163 | → | [`docs/architecture/memory.md`](docs/architecture/memory.md) |
-| 164 | → | [`docs/architecture/pet.md`](docs/architecture/pet.md) |
-| 165 | → | [`docs/architecture/plan-mode.md`](docs/architecture/plan-mode.md) |
-| 166 | → | [`docs/architecture/platform.md`](docs/architecture/platform.md) |
-| 167 | → | [`docs/architecture/process-model.md`](docs/architecture/process-model.md) |
-| 168 | → | [`docs/architecture/project.md`](docs/architecture/project.md) |
-| 169 | → | [`docs/architecture/provider-system.md`](docs/architecture/provider-system.md) |
-| 170 | → | [`docs/architecture/recap.md`](docs/architecture/recap.md) |
-| 171 | → | [`docs/architecture/self-update.md`](docs/architecture/self-update.md) |
-| 172 | → | [`docs/architecture/session.md`](docs/architecture/session.md) |
-| 173 | → | [`docs/architecture/side-query.md`](docs/architecture/side-query.md) |
-| 174 | → | [`docs/architecture/skill-system.md`](docs/architecture/skill-system.md) |
-| 175 | → | [`docs/architecture/subagent.md`](docs/architecture/subagent.md) |
-| 176 | → | [`docs/architecture/transport-modes.md`](docs/architecture/transport-modes.md) |
-| 177 | → | [`docs/deployment/docker.md`](docs/deployment/docker.md) |
-| 178 | → | [`docs/README.md`](docs/README.md) |
-| 179 | → | [`docs/release-process.md`](docs/release-process.md) |
+| 3 | ✓ | [`docs/architecture/agent/loop.md`](docs/architecture/agent/loop.md) |
+| 4 | ✓ | [`docs/architecture/core/file-operations.md`](docs/architecture/core/file-operations.md) |
+| 5 | ✓ | [`docs/architecture/core/prompt-system.md`](docs/architecture/core/prompt-system.md) |
+| 6 | ✓ | [`docs/architecture/core/tool-system.md`](docs/architecture/core/tool-system.md) |
+| 7 | ✓ | [`docs/architecture/infra/backup-autosave.md`](docs/architecture/infra/backup-autosave.md) |
+| 8 | ✓ | [`docs/architecture/infra/canvas.md`](docs/architecture/infra/canvas.md) |
+| 9 | ✓ | [`docs/architecture/infra/media-generation.md`](docs/architecture/infra/media-generation.md) |
+| 10 | ✓ | [`docs/architecture/infra/security.md`](docs/architecture/infra/security.md) |
+| 11 | ✓ | [`docs/architecture/integration/slash-commands.md`](docs/architecture/integration/slash-commands.md) |
+| 12 | ✓ | [`docs/architecture/system/terminal.md`](docs/architecture/system/terminal.md) |
+| 13 | ✓ | [`docs/deployment/docker.en.md`](docs/deployment/docker.en.md) |
+| 14 | ✓ | [`docs/macos-self-signing.md`](docs/macos-self-signing.md) |
+| 15 | ✓ | [`skills/email-draft/SKILL.md`](skills/email-draft/SKILL.md) |
+| 16 | ✓ | [`skills/feishu/SKILL.md`](skills/feishu/SKILL.md) |
+| 17 | ✓ | [`skills/ha-browser/SKILL.md`](skills/ha-browser/SKILL.md) |
+| 18 | ✓ | [`skills/ha-code-review/SKILL.md`](skills/ha-code-review/SKILL.md) |
+| 19 | ✓ | [`skills/ha-coding-common/SKILL.md`](skills/ha-coding-common/SKILL.md) |
+| 20 | ✓ | [`skills/ha-coding-plan/SKILL.md`](skills/ha-coding-plan/SKILL.md) |
+| 21 | ✓ | [`skills/ha-data-analytics/agents/openai.yaml`](skills/ha-data-analytics/agents/openai.yaml) |
+| 22 | ✓ | [`skills/ha-data-analytics/references/analysis-artifact-v1.md`](skills/ha-data-analytics/references/analysis-artifact-v1.md) |
+| 23 | ✓ | [`skills/ha-data-analytics/references/artifact-templates.md`](skills/ha-data-analytics/references/artifact-templates.md) |
+| 24 | ✓ | [`skills/ha-data-analytics/references/data-quality.md`](skills/ha-data-analytics/references/data-quality.md) |
+| 25 | ✓ | [`skills/ha-data-analytics/scripts/fixture_recompute.py`](skills/ha-data-analytics/scripts/fixture_recompute.py) |
+| 26 | ✓ | [`skills/ha-data-analytics/scripts/validate_analysis_artifact.py`](skills/ha-data-analytics/scripts/validate_analysis_artifact.py) |
+| 27 | ✓ | [`skills/ha-data-analytics/SKILL.md`](skills/ha-data-analytics/SKILL.md) |
+| 28 | ✓ | [`skills/ha-data-stores/SKILL.md`](skills/ha-data-stores/SKILL.md) |
+| 29 | ✓ | [`skills/ha-debug/SKILL.md`](skills/ha-debug/SKILL.md) |
+| 30 | ✓ | [`skills/ha-find-skills/SKILL.md`](skills/ha-find-skills/SKILL.md) |
+| 31 | ✓ | [`skills/ha-knowledge/SKILL.md`](skills/ha-knowledge/SKILL.md) |
+| 32 | ✓ | [`skills/ha-logs/SKILL.md`](skills/ha-logs/SKILL.md) |
+| 33 | ✓ | [`skills/ha-mac-control/SKILL.md`](skills/ha-mac-control/SKILL.md) |
+| 34 | ✓ | [`skills/ha-manual/SKILL.md`](skills/ha-manual/SKILL.md) |
+| 35 | ✓ | [`skills/ha-multi-agent-coding/SKILL.md`](skills/ha-multi-agent-coding/SKILL.md) |
+| 36 | ✓ | [`skills/ha-self-diagnosis/references/diagnostic-playbook.md`](skills/ha-self-diagnosis/references/diagnostic-playbook.md) |
+| 37 | ✓ | [`skills/ha-self-diagnosis/references/issue-template.md`](skills/ha-self-diagnosis/references/issue-template.md) |
+| 38 | ✓ | [`skills/ha-self-diagnosis/SKILL.md`](skills/ha-self-diagnosis/SKILL.md) |
+| 39 | ✓ | [`skills/ha-self-update/SKILL.md`](skills/ha-self-update/SKILL.md) |
+| 40 | ✓ | [`skills/ha-settings/SKILL.md`](skills/ha-settings/SKILL.md) |
+| 41 | ✓ | [`skills/ha-skill-creator/agents/analyzer.md`](skills/ha-skill-creator/agents/analyzer.md) |
+| 42 | ✓ | [`skills/ha-skill-creator/agents/comparator.md`](skills/ha-skill-creator/agents/comparator.md) |
+| 43 | ✓ | [`skills/ha-skill-creator/agents/grader.md`](skills/ha-skill-creator/agents/grader.md) |
+| 44 | ✓ | [`skills/ha-skill-creator/eval-viewer/generate_review.py`](skills/ha-skill-creator/eval-viewer/generate_review.py) |
+| 45 | ✓ | [`skills/ha-skill-creator/eval-viewer/viewer.html`](skills/ha-skill-creator/eval-viewer/viewer.html) |
+| 46 | ✓ | [`skills/ha-skill-creator/references/schemas.md`](skills/ha-skill-creator/references/schemas.md) |
+| 47 | ✓ | [`skills/ha-skill-creator/scripts/__init__.py`](skills/ha-skill-creator/scripts/__init__.py) |
+| 48 | ✓ | [`skills/ha-skill-creator/scripts/aggregate_benchmark.py`](skills/ha-skill-creator/scripts/aggregate_benchmark.py) |
+| 49 | ✓ | [`skills/ha-skill-creator/scripts/generate_report.py`](skills/ha-skill-creator/scripts/generate_report.py) |
+| 50 | ✓ | [`skills/ha-skill-creator/scripts/improve_description.py`](skills/ha-skill-creator/scripts/improve_description.py) |
+| 51 | ✓ | [`skills/ha-skill-creator/scripts/init_skill.py`](skills/ha-skill-creator/scripts/init_skill.py) |
+| 52 | ✓ | [`skills/ha-skill-creator/scripts/package_skill.py`](skills/ha-skill-creator/scripts/package_skill.py) |
+| 53 | ✓ | [`skills/ha-skill-creator/scripts/quick_validate.py`](skills/ha-skill-creator/scripts/quick_validate.py) |
+| 54 | ✓ | [`skills/ha-skill-creator/scripts/run_eval.py`](skills/ha-skill-creator/scripts/run_eval.py) |
+| 55 | ✓ | [`skills/ha-skill-creator/scripts/run_loop.py`](skills/ha-skill-creator/scripts/run_loop.py) |
+| 56 | ✓ | [`skills/ha-skill-creator/scripts/test_package_skill.py`](skills/ha-skill-creator/scripts/test_package_skill.py) |
+| 57 | ✓ | [`skills/ha-skill-creator/scripts/test_quick_validate.py`](skills/ha-skill-creator/scripts/test_quick_validate.py) |
+| 58 | ✓ | [`skills/ha-skill-creator/scripts/utils.py`](skills/ha-skill-creator/scripts/utils.py) |
+| 59 | ✓ | [`skills/ha-skill-creator/SKILL.md`](skills/ha-skill-creator/SKILL.md) |
+| 60 | ✓ | [`skills/ha-test-strategy/SKILL.md`](skills/ha-test-strategy/SKILL.md) |
+| 61 | ✓ | [`skills/ha-verify/SKILL.md`](skills/ha-verify/SKILL.md) |
+| 62 | ✓ | [`skills/ha-workflow-script/SKILL.md`](skills/ha-workflow-script/SKILL.md) |
+| 63 | ✓ | [`skills/meeting-notes/SKILL.md`](skills/meeting-notes/SKILL.md) |
+| 64 | ✓ | [`skills/mermaid-diagram/SKILL.md`](skills/mermaid-diagram/SKILL.md) |
+| 65 | ✓ | [`skills/office-docx/agents/openai.yaml`](skills/office-docx/agents/openai.yaml) |
+| 66 | ✓ | [`skills/office-docx/scripts/a11y_audit.py`](skills/office-docx/scripts/a11y_audit.py) |
+| 67 | ✓ | [`skills/office-docx/scripts/accept_tracked_changes.py`](skills/office-docx/scripts/accept_tracked_changes.py) |
+| 68 | ✓ | [`skills/office-docx/scripts/add_tracked_replacements.py`](skills/office-docx/scripts/add_tracked_replacements.py) |
+| 69 | ✓ | [`skills/office-docx/scripts/append_docx.py`](skills/office-docx/scripts/append_docx.py) |
+| 70 | ✓ | [`skills/office-docx/scripts/build_docx.py`](skills/office-docx/scripts/build_docx.py) |
+| 71 | ✓ | [`skills/office-docx/scripts/check_env.py`](skills/office-docx/scripts/check_env.py) |
+| 72 | ✓ | [`skills/office-docx/scripts/comments_extract.py`](skills/office-docx/scripts/comments_extract.py) |
+| 73 | ✓ | [`skills/office-docx/scripts/comments_strip.py`](skills/office-docx/scripts/comments_strip.py) |
+| 74 | ✓ | [`skills/office-docx/scripts/compare_docx.py`](skills/office-docx/scripts/compare_docx.py) |
+| 75 | ✓ | [`skills/office-docx/scripts/content_controls.py`](skills/office-docx/scripts/content_controls.py) |
+| 76 | ✓ | [`skills/office-docx/scripts/docx_table_to_csv.py`](skills/office-docx/scripts/docx_table_to_csv.py) |
+| 77 | ✓ | [`skills/office-docx/scripts/fields_report.py`](skills/office-docx/scripts/fields_report.py) |
+| 78 | ✓ | [`skills/office-docx/scripts/google_docs_title_sanitize.py`](skills/office-docx/scripts/google_docs_title_sanitize.py) |
+| 79 | ✓ | [`skills/office-docx/scripts/insert_note.py`](skills/office-docx/scripts/insert_note.py) |
+| 80 | ✓ | [`skills/office-docx/scripts/insert_toc.py`](skills/office-docx/scripts/insert_toc.py) |
+| 81 | ✓ | [`skills/office-docx/scripts/inspect_docx.py`](skills/office-docx/scripts/inspect_docx.py) |
+| 82 | ✓ | [`skills/office-docx/scripts/internal_nav.py`](skills/office-docx/scripts/internal_nav.py) |
+| 83 | ✓ | [`skills/office-docx/scripts/markdown_to_docx.py`](skills/office-docx/scripts/markdown_to_docx.py) |
+| 84 | ✓ | [`skills/office-docx/scripts/merge_docx_append.py`](skills/office-docx/scripts/merge_docx_append.py) |
+| 85 | ✓ | [`skills/office-docx/scripts/privacy_scrub_metadata.py`](skills/office-docx/scripts/privacy_scrub_metadata.py) |
+| 86 | ✓ | [`skills/office-docx/scripts/redact_docx.py`](skills/office-docx/scripts/redact_docx.py) |
+| 87 | ✓ | [`skills/office-docx/scripts/render_pdf.py`](skills/office-docx/scripts/render_pdf.py) |
+| 88 | ✓ | [`skills/office-docx/scripts/render_preview.py`](skills/office-docx/scripts/render_preview.py) |
+| 89 | ✓ | [`skills/office-docx/scripts/set_protection.py`](skills/office-docx/scripts/set_protection.py) |
+| 90 | ✓ | [`skills/office-docx/scripts/watermark_add.py`](skills/office-docx/scripts/watermark_add.py) |
+| 91 | ✓ | [`skills/office-docx/scripts/watermark_audit_remove.py`](skills/office-docx/scripts/watermark_audit_remove.py) |
+| 92 | ✓ | [`skills/office-docx/SKILL.md`](skills/office-docx/SKILL.md) |
+| 93 | ✓ | [`skills/office-pptx/agents/openai.yaml`](skills/office-pptx/agents/openai.yaml) |
+| 94 | ✓ | [`skills/office-pptx/scripts/append_pptx.py`](skills/office-pptx/scripts/append_pptx.py) |
+| 95 | ✓ | [`skills/office-pptx/scripts/build_pptx.py`](skills/office-pptx/scripts/build_pptx.py) |
+| 96 | ✓ | [`skills/office-pptx/scripts/check_env.py`](skills/office-pptx/scripts/check_env.py) |
+| 97 | ✓ | [`skills/office-pptx/scripts/deck_reorder.py`](skills/office-pptx/scripts/deck_reorder.py) |
+| 98 | ✓ | [`skills/office-pptx/scripts/duplicate_slide.py`](skills/office-pptx/scripts/duplicate_slide.py) |
+| 99 | ✓ | [`skills/office-pptx/scripts/inspect_pptx.py`](skills/office-pptx/scripts/inspect_pptx.py) |
+| 100 | ✓ | [`skills/office-pptx/scripts/layout_audit.py`](skills/office-pptx/scripts/layout_audit.py) |
+| 101 | ✓ | [`skills/office-pptx/scripts/make_contact_sheet.py`](skills/office-pptx/scripts/make_contact_sheet.py) |
+| 102 | ✓ | [`skills/office-pptx/scripts/outline_to_pptx.py`](skills/office-pptx/scripts/outline_to_pptx.py) |
+| 103 | ✓ | [`skills/office-pptx/scripts/patch_pptx.py`](skills/office-pptx/scripts/patch_pptx.py) |
+| 104 | ✓ | [`skills/office-pptx/scripts/render_pdf.py`](skills/office-pptx/scripts/render_pdf.py) |
+| 105 | ✓ | [`skills/office-pptx/scripts/render_preview.py`](skills/office-pptx/scripts/render_preview.py) |
+| 106 | ✓ | [`skills/office-pptx/SKILL.md`](skills/office-pptx/SKILL.md) |
+| 107 | ✓ | [`skills/office-xlsx/agents/openai.yaml`](skills/office-xlsx/agents/openai.yaml) |
+| 108 | ✓ | [`skills/office-xlsx/scripts/build_xlsx.py`](skills/office-xlsx/scripts/build_xlsx.py) |
+| 109 | ✓ | [`skills/office-xlsx/scripts/check_env.py`](skills/office-xlsx/scripts/check_env.py) |
+| 110 | ✓ | [`skills/office-xlsx/scripts/csv_to_xlsx.py`](skills/office-xlsx/scripts/csv_to_xlsx.py) |
+| 111 | ✓ | [`skills/office-xlsx/scripts/formula_audit.py`](skills/office-xlsx/scripts/formula_audit.py) |
+| 112 | ✓ | [`skills/office-xlsx/scripts/inspect_xlsx.py`](skills/office-xlsx/scripts/inspect_xlsx.py) |
+| 113 | ✓ | [`skills/office-xlsx/scripts/patch_xlsx.py`](skills/office-xlsx/scripts/patch_xlsx.py) |
+| 114 | ✓ | [`skills/office-xlsx/scripts/recalculate_xlsx.py`](skills/office-xlsx/scripts/recalculate_xlsx.py) |
+| 115 | ✓ | [`skills/office-xlsx/scripts/render_pdf.py`](skills/office-xlsx/scripts/render_pdf.py) |
+| 116 | ✓ | [`skills/office-xlsx/scripts/render_preview.py`](skills/office-xlsx/scripts/render_preview.py) |
+| 117 | ✓ | [`skills/office-xlsx/SKILL.md`](skills/office-xlsx/SKILL.md) |
+| 118 | ✓ | [`skills/status-report/SKILL.md`](skills/status-report/SKILL.md) |
+| 119 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
+| 120 | → | [`docs/architecture/agent/agent-team.md`](docs/architecture/agent/agent-team.md) |
+| 121 | → | [`docs/architecture/agent/background-jobs.md`](docs/architecture/agent/background-jobs.md) |
+| 122 | → | [`docs/architecture/agent/capability-eval.md`](docs/architecture/agent/capability-eval.md) |
+| 123 | → | [`docs/architecture/agent/failover.md`](docs/architecture/agent/failover.md) |
+| 124 | → | [`docs/architecture/agent/hooks.md`](docs/architecture/agent/hooks.md) |
+| 125 | → | [`docs/architecture/agent/live-model-evaluation.md`](docs/architecture/agent/live-model-evaluation.md) |
+| 126 | → | [`docs/architecture/agent/plan-mode.md`](docs/architecture/agent/plan-mode.md) |
+| 127 | → | [`docs/architecture/agent/side-query.md`](docs/architecture/agent/side-query.md) |
+| 128 | → | [`docs/architecture/agent/skill-system.md`](docs/architecture/agent/skill-system.md) |
+| 129 | → | [`docs/architecture/agent/subagent.md`](docs/architecture/agent/subagent.md) |
+| 130 | → | [`docs/architecture/core/agent-config.md`](docs/architecture/core/agent-config.md) |
+| 131 | → | [`docs/architecture/core/automation-model.md`](docs/architecture/core/automation-model.md) |
+| 132 | → | [`docs/architecture/core/chat-engine.md`](docs/architecture/core/chat-engine.md) |
+| 133 | → | [`docs/architecture/core/context-compact.md`](docs/architecture/core/context-compact.md) |
+| 134 | → | [`docs/architecture/core/dreaming.md`](docs/architecture/core/dreaming.md) |
+| 135 | → | [`docs/architecture/core/knowledge-base.md`](docs/architecture/core/knowledge-base.md) |
+| 136 | → | [`docs/architecture/core/local-model-loading.md`](docs/architecture/core/local-model-loading.md) |
+| 137 | → | [`docs/architecture/core/memory.md`](docs/architecture/core/memory.md) |
+| 138 | → | [`docs/architecture/core/pet.md`](docs/architecture/core/pet.md) |
+| 139 | → | [`docs/architecture/core/project.md`](docs/architecture/core/project.md) |
+| 140 | → | [`docs/architecture/core/provider-system.md`](docs/architecture/core/provider-system.md) |
+| 141 | → | [`docs/architecture/core/session.md`](docs/architecture/core/session.md) |
+| 142 | → | [`docs/architecture/infra/config-system.md`](docs/architecture/infra/config-system.md) |
+| 143 | → | [`docs/architecture/infra/cron.md`](docs/architecture/infra/cron.md) |
+| 144 | → | [`docs/architecture/infra/dashboard.md`](docs/architecture/infra/dashboard.md) |
+| 145 | → | [`docs/architecture/infra/design-space.md`](docs/architecture/infra/design-space.md) |
+| 146 | → | [`docs/architecture/infra/logging.md`](docs/architecture/infra/logging.md) |
+| 147 | → | [`docs/architecture/infra/platform.md`](docs/architecture/infra/platform.md) |
+| 148 | → | [`docs/architecture/infra/recap.md`](docs/architecture/infra/recap.md) |
+| 149 | → | [`docs/architecture/infra/self-update.md`](docs/architecture/infra/self-update.md) |
+| 150 | → | [`docs/architecture/integration/im-channel.md`](docs/architecture/integration/im-channel.md) |
+| 151 | → | [`docs/architecture/integration/mcp-server.md`](docs/architecture/integration/mcp-server.md) |
+| 152 | → | [`docs/architecture/integration/mcp.md`](docs/architecture/integration/mcp.md) |
+| 153 | → | [`docs/architecture/system/api-reference.md`](docs/architecture/system/api-reference.md) |
+| 154 | → | [`docs/architecture/system/backend-separation.md`](docs/architecture/system/backend-separation.md) |
+| 155 | → | [`docs/architecture/system/cli.md`](docs/architecture/system/cli.md) |
+| 156 | → | [`docs/architecture/system/process-model.md`](docs/architecture/system/process-model.md) |
+| 157 | → | [`docs/architecture/system/transport-modes.md`](docs/architecture/system/transport-modes.md) |
+| 158 | → | [`docs/deployment/docker.md`](docs/deployment/docker.md) |
+| 159 | → | [`docs/README.md`](docs/README.md) |
+| 160 | → | [`docs/release-process.md`](docs/release-process.md) |
 
 ---
 

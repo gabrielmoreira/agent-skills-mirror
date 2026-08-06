@@ -115,6 +115,36 @@ longer exists or has changed in the version the agent is using.
 
 ---
 
+### `scope-boundary-blind-spot`
+
+**Definition:** The skill fails to state, preserve, or reason within a material evidence
+or execution boundary. It produces a successful-looking result that silently under-covers
+the requested scope or overclaims what was checked.
+
+**Detection heuristics:**
+- The result generalizes from changed lines to a whole file/repository, selected CI jobs to
+  the full pipeline, current-session evidence to historical behavior, or one target platform
+  to all platforms.
+- Inputs or evidence just outside an assumed boundary are ignored without the limitation
+  being disclosed.
+- The skill performs only the narrow operation successfully, but its conclusion implies
+  broader coverage.
+- The user must point out that the review or action covered only a subset of the announced
+  scope.
+
+**Distinguishing rules:**
+- Unlike `workaround-chain`, no workaround or obvious execution failure is required.
+- Unlike `unclear-routing`, the correct skill was invoked; the problem is the boundary of its
+  analysis/action.
+- Use category `missing-detail` when the skill needs to declare and preserve the boundary.
+  Use `missing-case` when it lacks support for an adjacent, valid scope variant.
+- Use `wrong-or-stale-guidance` only when the documented boundary is affirmatively false.
+
+**Typical severity:** Medium; High when the overclaim can cause an unsafe or materially
+incorrect decision.
+
+---
+
 ### `unclear-routing`
 
 **Definition:** The agent was unsure which skill (or which step within a skill) to invoke
@@ -197,11 +227,10 @@ Before asserting a finding, apply these checks:
 
 ### Optional: local A/B confidence boost
 
-If the session store is available (Copilot CLI), an optional autoresearch-style check can
-raise confidence before asserting `Confirmed` or `Likely`: compare sessions where the same
-skill was invoked successfully for the same task type against sessions where it failed. If
-the failure pattern is isolated to a specific skill version or usage pattern, confidence may
-be raised by one level. This check is optional and must not block the workflow.
+The current Copilot journal is deliberately per-session and value-free; it cannot establish
+same-task successful controls. Do not infer an A/B confidence boost from journal counts or
+probe unavailable local session-store tables. Cross-session comparison is future v2 work and
+must not block or inflate a v1 finding.
 
 ### Summary
 

@@ -288,6 +288,37 @@ enqueued with a PARAPHRASED context could never be verdicted — the human's
 override died at the guard and the file got hand-edited around the queue
 before this command existed.)
 
+**Promote each `decision_note`; the queue only stores it.** The dashboard's
+备注 field and the CLI's `--note` record the reviewer's reason, but neither
+turns that reason into a reusable rule. After a review batch, inspect the full
+queue JSON:
+
+```bash
+uv run scripts/fix_transcription.py --list-review --review-status all --json
+```
+
+The human-readable list never prints `decision_note`. Human-readable
+`--show-review` prints it only after an item leaves `pending`; JSON always
+carries the field, including on an item that `reopen` returned to `pending`.
+Inspect every item with a non-empty note, regardless of status, and do not
+pre-project a field list that could discard a field the reviewer supplied.
+
+Route the note by meaning rather than by verdict:
+
+| The note says | Promote it to | Do not |
+|---|---|---|
+| an apparent error is an intentional, context-dependent substitution | the domain context file, with the cue that distinguishes when to preserve it | use `--add`, which would rewrite the text |
+| a dictionary rule fired where it should not | `--report-false-positive "<from>" "<to>" -d <domain>` | leave the rule active behind a context note |
+| a stable FROM→TO correction will recur in this domain | `--add "<from>" "<to>" --domain <project>`, subject to the real-word rules below | |
+| a recurring person's name has a non-obvious spelling | the people roster, which is hand-edited | |
+
+A `decision_note` is never an action. A preplanned `append_note` action runs
+only when its item is `accepted`; `overridden` drops suggestion-specific
+`dict_add` and `append_note` actions, while `kept_original` and `skipped` run
+no actions. Explicitly promote the note after the verdict. This is the same
+gap as **"An override does not compound on its own"** below: corrected text
+stops at `resolved_text`, and the reason stops at `decision_note`.
+
 **Enqueue validates anchors verbatim — authoring errors die at enqueue, not
 at verdict.** When an item declares a readable `file`, `--enqueue-review`
 checks that `original` (and `context`, if given) literally appears in it, and
@@ -584,6 +615,25 @@ After this, every `--stage 1` run automatically merges roster corrections
 (in-memory only — never written to DB). The DB always wins on conflicts, so the
 roster fills gaps without overriding hand-tuned entries. See
 `scripts/core/people_roster.py` for the parser.
+
+**Precedence has three layers, and the third one is domain-scoped while the
+roster is global** — the asymmetry is what surprises people:
+
+1. A DB rule active in the run's domain wins.
+2. Otherwise the roster supplies the pair.
+3. **Unless** the pair is disabled in the run's domain — then the roster copy is
+   suppressed too, and the run prints `🚫 People roster: N variant(s) suppressed`.
+
+Layer 3 is per-domain, so retiring a pair with `--report-false-positive
+--domain A` does **not** retire it under `--domain B`: the roster is global and
+nothing vetoes it there, so the rule keeps firing in B. That is intended (a
+false positive in one domain is often correct in another), but it means "I
+disabled it and it still fires" almost always means *a different domain* —
+check that before editing the roster, which stops the pair everywhere at once,
+including in other projects sharing the same file. `--report-false-positive`
+now names the domains where the pair is still active, and exits `3` (already
+disabled here) or `4` (roster-only, no DB row to disable) so automation can
+tell those apart from a real failure.
 
 **When to use the roster vs `--add` to DB:**
 

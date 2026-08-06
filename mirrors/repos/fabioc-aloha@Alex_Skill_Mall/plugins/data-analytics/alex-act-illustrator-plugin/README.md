@@ -1,10 +1,21 @@
 # Alex ACT Illustrator Plugin
 
-**One plugin frames, authors, verifies, and extends visual workflows, so heirs choose the right visual surface without stitching together competing guidance.**
+![Alex ACT Illustrator Plugin](https://raw.githubusercontent.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin/main/assets/banner.svg)
+
+[Core](https://github.com/fabioc-aloha/Alex_ACT_Core) · [Manager](https://github.com/fabioc-aloha/Alex_ACT_Manager) · [Illustrator](https://github.com/fabioc-aloha/Alex_ACT_Illustrator_Plugin) · [Document Tools](https://github.com/fabioc-aloha/Alex_ACT_Document_Tools) · [Enterprise](https://github.com/fabioc-aloha/alex-act-enterprise)
+
+Alex ACT Illustrator turns visual work into one governed workflow: frame the idea, choose the right medium, author the artifact, and verify what readers actually see. Charts, figures, imagery, documentation shells, and banners share one communication standard instead of competing guidance.
 
 An [Alex ACT Core](https://github.com/fabioc-aloha/Alex_ACT_Core) specialization for five visual-authoring areas: Flint charts, deterministic print SVG, Replicate imagery, browsable shells, and branded SVG banners. Shared `chart-big-idea` framing and `render-verify` verification hold those paths to one communication standard. `install-visual-companions` separately offers nine independently maintained runtime inspection and annotation plugins, consent-gated one at a time. Distributed as [`alex-act-illustrator-plugin@alex-mall`](https://github.com/fabioc-aloha/Alex_Skill_Mall/tree/main/plugins/data-analytics/alex-act-illustrator-plugin).
 
-> **Renamed and released.** The repository was renamed from `flint-chart-plugin` on 2026-07-29; v0.6.0 ships under `alex-act-illustrator-plugin@alex-mall`. A legacy install remains pinned under its old ID and does not migrate automatically: install the current ID, verify it, then remove the old entry.
+> **Current release: v0.6.5.** The repository was renamed from
+> `flint-chart-plugin` on 2026-07-29; v0.6.0 was the first release under
+> `alex-act-illustrator-plugin@alex-mall`. A legacy install remains pinned
+> under its old ID and does not migrate automatically: install the current ID,
+> verify it, then remove the old entry.
+
+**Current compatibility:** Core `v0.6.7` provides the baseline runtime, and
+Manager `v0.1.1` provides the preferred lifecycle commands.
 
 ## What it does
 
@@ -92,7 +103,7 @@ Each authoring skill can still run independently when the framing or verificatio
 
 ## Brand palette
 
-The plugin follows the Alex ACT constellation brand palette. Canonical machine-readable source: [`.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/config/brand-palette.json) in `Alex_ACT_Core`. The tables below are a human-readable snapshot; edit the JSON file to rebrand the constellation.
+The plugin follows the Alex ACT constellation brand palette. The public machine-readable source is [Core's `.github/config/brand-palette.json`](https://github.com/fabioc-aloha/Alex_ACT_Core/blob/main/.github/config/brand-palette.json). The tables below are a human-readable snapshot; edit the JSON file to rebrand the constellation.
 
 **Brand identity** — banners, marks, hero surfaces (`brand.*` + `gradient[]`):
 
@@ -392,7 +403,7 @@ first one that fails tells you where the fault is.
 
   Installed from the Alex Mall instead? The Mall payload does not include this
   repository's verification script. Either clone this repo to run the
-  checker, or ask your agent to probe `npx -y --prefer-offline flint-chart-mcp@0.3.0` over stdio with
+  checker, or ask your agent to probe `npx -y --prefer-offline flint-chart-mcp@0.4.1` over stdio with
    an `initialize` handshake followed by `tools/list`; a `serverInfo` block plus
    a `tools` array means the same thing.
 2. **Client.** Ask the agent whether it can see `render_chart`, `compile_chart`,
@@ -402,11 +413,11 @@ first one that fails tells you where the fault is.
   appear under `alex-act-illustrator-plugin`; describe a chart, print figure,
   image, shell, or banner task to verify skill discovery. If MCP tools work but
   plugin prompts and skills do not, the plugin or discovery roots are missing.
-4. **Render.** Ask for any chart. `list_chart_types` should return 34 Vega-Lite
+4. **Render.** Ask for any chart. `list_chart_types` should return 35 Vega-Lite
    chart types, and a render should produce an image.
 
 This repo runs the same four checks against its own `.vscode/` config —
-last verified 2026-08-02 against `flint-chart-mcp` 0.3.0 (MCP protocol
+last verified 2026-08-05 against `flint-chart-mcp` 0.4.1 (MCP protocol
 `2024-11-05`).
 
 For deep MCP config (HTTP transport, allowed hosts, deployment, full CLI reference), see the canonical [Flint MCP doc](https://microsoft.github.io/flint-chart/#/mcp).
@@ -516,7 +527,7 @@ The bundled `mcp.json` fragment is minimal:
   "servers": {
     "flint": {
       "command": "npx",
-      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.3.0"],
+      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1"],
     },
   },
 }
@@ -531,7 +542,7 @@ The bundled `mcp.json` fragment is minimal:
   "servers": {
     "flint": {
       "command": "npx",
-      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.3.0", "--disable-file-reference"],
+      "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1", "--disable-file-reference"],
     },
   },
 }
@@ -547,7 +558,7 @@ The bundled `mcp.json` fragment is minimal:
       "args": [
         "-y",
         "--prefer-offline",
-        "flint-chart-mcp@0.3.0",
+        "flint-chart-mcp@0.4.1",
         "--backends",
         "vegalite,echarts",
       ],
@@ -559,7 +570,7 @@ The bundled `mcp.json` fragment is minimal:
 **Air-gapped / corporate npm firewall** — install once when online, then run without npx download:
 
 ```bash
-npm install -g flint-chart-mcp@0.3.0
+npm install -g flint-chart-mcp@0.4.1
 ```
 
 Then update the fragment:
@@ -568,7 +579,7 @@ Then update the fragment:
 { "servers": { "flint": { "command": "flint-chart-mcp", "args": [] } } }
 ```
 
-**Registry and version policy** — the plugin pins `flint-chart-mcp@0.3.0`, `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` exactly. `--prefer-offline` uses cached packages first. Missing packages resolve only through npm's configured registry; there is no public-registry fallback and no automatic version-discovery request. Version changes are explicit release decisions backed by the compatibility verifier.
+**Registry and version policy** — the plugin pins `flint-chart-mcp@0.4.1`, `replicate-mcp@0.9.0`, and `@playwright/mcp@0.0.78` exactly. `--prefer-offline` uses cached packages first. Missing packages resolve only through npm's configured registry; there is no public-registry fallback and no automatic version-discovery request. Version changes are explicit release decisions backed by the compatibility verifier. If npm reports `ETARGET` for a pinned version the registry does carry, `--prefer-offline` served a stale packument — re-run the same command once without that flag to refresh metadata rather than adding `--registry`.
 
 **Naming conflict** — if you already have a `flint` server registered, rename this one to `flint-chart` in your merged config. The skill and prompt reference the server by tool inventory, not by name.
 

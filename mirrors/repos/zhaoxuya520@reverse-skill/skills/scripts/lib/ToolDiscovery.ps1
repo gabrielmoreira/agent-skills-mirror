@@ -377,6 +377,18 @@ function Get-ReverseToolCatalog {
                 [pscustomobject]@{ Type = 'command'; Value = 'pwn' }
             )
         }
+        [pscustomobject]@{
+            Name = 'bkcrack'
+            Skill = 'reverse-engineering'
+            Purpose = 'CTF ZIP/PKZIP ZipCrypto 已知明文攻击'
+            FixedVersion = 'v1.8.1'
+            VersionArgs = @('--version')
+            Fallbacks = @(
+                [pscustomobject]@{ Type = 'command'; Value = 'bkcrack' },
+                [pscustomobject]@{ Type = 'path'; Value = (Join-Path $userProfile 'Tools\bkcrack\bkcrack.exe') },
+                [pscustomobject]@{ Type = 'path'; Value = 'C:\Tools\bkcrack\bkcrack.exe' }
+            )
+        }
     )
 }
 

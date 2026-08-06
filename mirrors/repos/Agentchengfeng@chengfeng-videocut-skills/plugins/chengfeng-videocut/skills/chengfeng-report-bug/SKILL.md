@@ -31,7 +31,7 @@ user-invocable: true
 - 功能建议：产品从未承诺该能力；不要伪装成 Bug。
 - 使用疑问：先回答或诊断，不自动上报。
 
-只收集复现所需的最小事实。不得安装 Runtime、启动 Studio、改项目、重新剪片或上传媒体来“补证据”。Runtime 存在时，可从插件根目录执行 `node scripts/ensure-runtime.cjs --json` 做只读探测，只保留 `state / kind / version / healthy / error.code`；不要附完整 doctor 输出。不存在就写“未检测到”。
+只收集复现所需的最小事实。不得安装 Runtime、启动 Studio、改项目、重新剪片或上传媒体来“补证据”。Runtime 存在时，可从插件根目录执行 `node scripts/ensure-runtime.cjs --json` 做只读探测，只保留 `state / kind / version / healthy / error.code`；不要附完整 doctor 输出。`kind=desktop-managed` 只表示安装来源是桌面 App，不授权本 Skill 启动 App、服务或重新安装。不存在就写“未检测到”。
 
 ## 2. 选择固定仓库
 
@@ -79,8 +79,8 @@ user-invocable: true
 从当前 `SKILL.md` 定位脚本：
 
 先按[检查更新](../chengfeng-check-updates/SKILL.md)「就绪检查」第一步定位**插件根**
-（跑 `codex plugin list --json`，取 enabled 且 name 为 chengfeng-videocut 那行的
-`source.path`；下述 `<插件根>` 都代入该字面路径）。本 Skill 只用它定位脚本，
+（从本 Skill 的实际源文件路径向上两级；不得跑 `codex plugin list` 或搜索其他
+cache；下述 `<插件根>` 都代入该字面路径）。本 Skill 只用它定位脚本，
 不装 Runtime、不起服务：
 
 ```bash

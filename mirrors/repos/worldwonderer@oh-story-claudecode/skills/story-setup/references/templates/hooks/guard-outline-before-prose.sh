@@ -110,8 +110,12 @@ case "$BASE" in
     NUM="$(printf '%s' "$BASE" | sed -n 's/^第0*\([0-9][0-9]*\)章.*/\1/p')"
     [ -z "$NUM" ] && exit 0
     BOOK_DIR="$(dirname "$(dirname "$ABS")")"
-    # story-import 迁移：已有 拆文库/{书名}/ 分析源时放行（细纲由章节摘要反推、晚于正文迁移）
-    [ -d "$ROOT/拆文库/$(basename "$BOOK_DIR")" ] && exit 0
+    # story-import 迁移：已有 拆文库/{书名}/ 分析源时放行（细纲由章节摘要反推、晚于正文迁移）。
+    # 一旦 追踪/_tracking-state.json 存在即进入当前追踪协议，不再因为保留了 拆文库/ 分析资产
+    # 而永久绕过守卫（与 story_hook_core.js 的同一判定保持一致）。
+    if [ -d "$ROOT/拆文库/$(basename "$BOOK_DIR")" ] && [ ! -f "$BOOK_DIR/追踪/_tracking-state.json" ]; then
+      exit 0
+    fi
     OUTLINE_DIR="$BOOK_DIR/大纲"
     FOUND=""
     if [ -d "$OUTLINE_DIR" ]; then
@@ -135,8 +139,11 @@ case "$BASE" in
     if [ "$PREV" -ge 1 ] && node -e "" >/dev/null 2>&1 && [ -f "$CLI" ]; then
       PROSE_DIR="$(dirname "$ABS")"
       PREV_FILE=""
+      # glob 已按字典序，但同章号的原稿备份（workflow-revision 的「备份原稿」产物）
+      # 也会命中；显式跳过 _原稿_，与 JS 核 / codex py 取同一个「上一章」。
       for f in "$PROSE_DIR"/第*章*.md; do
         [ -e "$f" ] || continue
+        case "$(basename "$f")" in *_原稿_*) continue ;; esac
         pnum="$(basename "$f" | sed -n 's/^第0*\([0-9][0-9]*\)章.*/\1/p')"
         if [ "$pnum" = "$PREV" ]; then PREV_FILE="$f"; break; fi
       done

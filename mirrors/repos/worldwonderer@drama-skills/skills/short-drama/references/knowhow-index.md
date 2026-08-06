@@ -25,8 +25,10 @@
 | 单题材执行细节 | `$short-drama-develop` | 已确定题材、要落到场面颗粒与打法 | 一次只读一张卡；卡片不产生可阻断约束 |
 | 前提装置（先知或外部授权） | `$short-drama-develop` | 主角带着已知结果开局，或获得一套外部规则给的能力 | 装置叠加在题材之上，不替代题材卡，也不新建题材 |
 | 单形态执行细节 | `$short-drama` | 已确定制作形态、要按表定位一张形态卡 | 一次只读一张卡；形态不改写身份与地理 |
+| Look Development 与风格帧 | `$short-drama` | 把视觉方向变成人物、地点和高压力代表帧的可观察规则 | `$short-drama-image-prompts` 只投影提示词；风格不接管身份、地理或剧情 |
 | 场景与可表演行动 | `$short-drama-write` | 把单集节拍落实成场景 | 不决定分镜景别和运镜 |
 | 对白行动与人物声音 | `$short-drama-write` | 写、改或诊断对白 | 不按句长、口癖数量判权力 |
+| 场次声音戏剧 | `$short-drama-write` | 声源、留白或 sound bridge 承担故事信息与压力 | 不替逐镜实现或混音，不让配乐替代表演 |
 | 剧本生产标签 | `$short-drama-write` | 规范化对白、动作、VO/OS、文字与连续性 | 不借格式补造剧情 |
 | 资产出现证据 | `$short-drama-assets` | 从剧本拆角色、地点、道具与状态 | 不用名词/人名匹配直接建资产 |
 | 身份、变体与复用 | `$short-drama-assets` | 决定复用、新变体、新身份或未决 | 相机角度通常不是资产变体 |
@@ -34,6 +36,7 @@
 | 场景板光线与跨 View 一致 | `$short-drama-image-prompts` | 同一地点要拆多个观察方向、且这些板会被互相剪接 | 朝向造成的逆光/落影差异不需拉平 |
 | 图片提示词定点修改 | `$short-drama-image-prompts` | 修改局部并冻结 preserve set | 不把重写整图伪装成局部编辑 |
 | 镜头目的与覆盖 | `$short-drama-storyboard` | 从剧本建立有动机的镜头 | 不为景别多样性硬拆镜 |
+| 场次视觉计划与 Coverage Audition | `$short-drama-storyboard` | 关键场次需先比较观众立场、信息时机、空间、摄影与声音运动 | 可选中间层，不拥有剧本事实或 shot 边界，不规定宫格/镜头数 |
 | 冻结关键帧 | `$short-drama-storyboard` | 写镜头起点的可冻结瞬间 | 不写动作链或镜头终态 |
 | 多人场面调度与交付面遮挡 | `$short-drama-storyboard` | 多人、群体、证据揭示、动态物体场面，或竖屏播放面会叠加遮挡 | 不把一个布局复用于所有题材；遮挡区来自已声明交付方案，不设通用安全框 |
 | 视频运动规格 | `$short-drama-video-prompts` | 把已接受镜头边界写成时间变化 | 不改镜头、资产或剧本权威 |
@@ -43,6 +46,7 @@
 | 跨场与跨镜连续性 | `$short-drama-assets` | 状态变化会传给下一场/镜/集 | 不复制整本 设定集 到每镜 |
 | 制作形态翻译 | `$short-drama` | 把实拍、二维、三维、水墨等方向投影到各阶段 | 风格名或模型代码不是生产决策 |
 | 独立证据审查 | `$short-drama-review` | 冻结目标后写 finding 与 verdict | reviewer 不编辑 owner 来源 |
+| 项目生产观察与校准 | `$short-drama-review` | 有授权文字观察且需定位到准确 prompt/spec/reference/config | 只在当前项目和版本有效；未观察结果保持未知 |
 | 模板感诊断 | `$short-drama-review` | 至少两个位置出现同构机制或表达损失 | 不用禁词或单次类型惯例定罪 |
 
 ## 规则分级

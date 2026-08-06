@@ -72,8 +72,8 @@
   被检查的字节。两者都没有时保持 `unverified`，负面提示词不能代替证据。
 - **观众揭示时机**：某一事实何时可被观众看到，由已接受的可见性决定绑定其来源、载体、
   权限、触发与保护方式。构图既不能提前泄露该事实，也不能遮掉本环节必须传达的载体。
-- **母版、补拍与替代**：补拍默认只补充、不替代母版。声明 `master | pickup | alternate`，
-  用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
+- **母版、补拍与替代**：补拍默认只补充、不替代母版。普通母版不增加版本范围字段；只有
+  补拍/替代版才声明 `pickup | alternate`，用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
   去向。只有下游独立审查结论才能绑定固定 hash 并批准替代，不得回写形成循环引用。
 
 ## 本阶段规则
@@ -83,13 +83,13 @@
 | ID | Class | Knowledge |
 |---|---|---|
 | VID-01 | structural_invariant | Motion reads but cannot rewrite shot start/end/duration/dialogue and next-shot state. |
-| VID-02 | craft_default | Write start anchor, ordered subject motion, performance change, camera behavior, environment/audio, timing, and end report. |
+| VID-02 | craft_default | Write start anchor, ordered subject motion, camera behavior, timing, and end report; add performance change and environment/audio only when this shot actually carries them. |
 | VID-03 | craft_default | When a reference frame carries appearance/composition, focus prose on change instead of repeating the 设定集. |
 | VID-04 | structural_invariant | Explicit segment timing sums exactly to its shot's accepted duration—neither exceeding it nor leaving an unallocated remainder. |
 | VID-05 | reviewed_invariant | Untimed action load must be feasible enough to preserve the intended performance and story change. |
 | VID-06 | structural_invariant | Locked and moving camera instructions cannot govern the same interval without an explicit transition. |
 | VID-07 | taste_option | Camera may be locked or moving; audio/lip-sync detail follows the chosen production profile. |
-| VID-08 | reviewed_invariant | Structured motion names this shot's exact actor, action, contact, performance path, and result rather than reusable placeholders. |
+| VID-08 | reviewed_invariant | Structured motion names this shot's exact subjects, actions, contacts, and results rather than reusable placeholders; when a performance path is present, it names only the actors and visible changes this shot actually carries. |
 | VID-09 | structural_invariant | Next-start is an existing canonical ref or an explicit provisional locator, never an invented record/hash. |
 | VID-10 | craft_default | Resolve one accepted production profile for the current delivery scope; local variants may coexist when their range and precedence are explicit, without overriding source coverage or exact-readable obligations. |
 | VID-11 | reviewed_invariant | A selective transform names its trigger, exact target scope, end geometry/state, and preserve set so non-target people, props, text surfaces, and spatial anchors do not change with it. |
@@ -97,6 +97,9 @@
 | VID-13 | structural_invariant | A delivery container carries one or more accepted shots that are contiguous in source order, share one accepted geography/asset binding chain, and do not cross a scene boundary—a Location/View change ends the container. Its duration equals the sum of their accepted durations, and packing changes neither shot boundaries nor per-shot reviewability. |
 | VID-14 | craft_default | Music intent may be annotated per shot as a relative entry/exit/duck against neighbours, but its realization belongs to the timeline layer; no deliverable—single-shot or multi-shot container—carries a baked-in music bed unless the project accepted otherwise or the source is diegetic. Dialogue, off-screen sources, ambience, and event effects stay with the deliverable. |
 | VID-15 | structural_invariant | Within one episode a shot belongs to at most one container, so container durations sum without double-billing. Containers need not cover every shot, but the containers plus the shots left loose must account for the episode's shot set exactly once; an unaccounted or twice-counted shot is a defect, not a packing preference. |
+| VID-16 | reviewed_invariant | When performance changes, multi-character motion differentiates the actors who actually carry it and keeps each chosen signal readable in the accepted framing; it does not require an arc for non-performing shots, force every craft field, or duplicate one emotion across the cast. |
+| VID-17 | reviewed_invariant | Every multi-reference binding carries a stable `slot_id` and explicit unique `order`, so array reordering or insertion cannot silently change a reference's role; until a project validator owns this check, the reviewer cites conflicting slots/orders rather than claiming mechanical enforcement. |
+| VID-18 | reviewed_invariant | Per-shot text readiness is a scope-aware review/status projection derived from current accepted refs and real blocking gaps, not a persisted motion fact. A missing input blocks only dependent claims; overall delivery-ready requires all applicable scopes. Readiness never claims generated identity, performance, lip-sync, mix, edit, or market quality. |
 
 ### `CON`
 

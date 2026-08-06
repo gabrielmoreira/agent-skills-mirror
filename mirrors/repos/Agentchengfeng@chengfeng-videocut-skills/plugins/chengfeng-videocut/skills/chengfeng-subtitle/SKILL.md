@@ -46,6 +46,11 @@ user-invocable: true
 最新、Runtime 是否配套；**插件根**也在那里定位（本文命令里的 `<插件根>` 都代入
 那个字面路径）。只有「就绪」才继续；「需新会话」或「停」按它的处置执行
 （含「禁止自制替代界面」禁令），业务 Skill 不自带环境逻辑。
+
+若就绪结果为 `runtime.kind=desktop-managed`，直接复用桌面 App 已安装的稳定 CLI 与
+同一 `launchd/windows-task` 服务；不要解析 Electron 路径、另装依赖或起第二个
+Runtime。
+
 ## 1. 入口断言
 
 ```bash

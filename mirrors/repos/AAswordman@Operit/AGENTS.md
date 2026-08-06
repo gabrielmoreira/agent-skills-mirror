@@ -4,6 +4,7 @@
 ## 执行准则
 - 默认不要执行编译、构建或测试命令。
 - 只有在用户明确要求时，才执行编译/构建/测试（例如 `./gradlew :app:compileDebugKotlin`、`npm run build`、`pnpm run build`）。
+- 创建分支时，必须遵守 `docs/doc-src/dev-core/CONTRIBUTING.md` 中“创建 Pull Request”的分支命名规范。
 
 当针对用户接口的方案更换时，一定要询问用户是否该版本为已发布版本。如果是，请做向前兼容。如果不是，请彻彻底底把老的方案的一切代码全部清理，除非是还能用到的一些部分就继续留着。
 Don't Break Userspace ，但是开发中能内部消解的方案更换不算，只要用户能尽可能拿到一样的接口就行
@@ -35,4 +36,4 @@ ts的报错catch后需要log出来
 
 代码的更改应维护相称的文档，注意docs\doc-src\before_docing.md
 debug的时候注释记录你的修改意图（为什么，不这么做后果是什么）
-完成初步计划后，使用docs\TODO\README.md来细化计划 
+完成初步计划后，使用docs\TODO\README.md来细化计划

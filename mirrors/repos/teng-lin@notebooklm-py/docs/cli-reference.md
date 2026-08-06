@@ -493,7 +493,7 @@ notebooklm auth import-cookies JSON_PATH [OPTIONS]
 
 Accepts either a Playwright `storage_state` object (`{"cookies": [...]}`) or a bare JSON list of cookie objects (the shape most browser cookie-export tools produce). Use `-` to read JSON from stdin. Common export fields are normalized (e.g. `expirationDate` → `expires`), `__Secure-`/`__Host-` cookies are forced `Secure`, and any `storage_state` `origins` (localStorage/sessionStorage) are dropped.
 
-Imported cookies are filtered through the **same domain allowlist** used by browser login, validated locally for the NotebookLM-required cookies (and a usable secondary binding — `OSID`, or `APISID`+`SAPISID`), and written atomically with private (`0o600`) permissions. Invalid input never overwrites an existing session, and an existing `storage_state.json` is first copied to `storage_state.json.bak` so a stale import can be rolled back (one step — each run overwrites the previous `.bak`).
+Imported cookies are filtered through the **same domain allowlist** used by browser login and validated locally for the Tier 1 NotebookLM-required cookies. The required `__Secure-1PSIDTS` entry must also be live and RFC 6265-routable to the `accounts.google.com/RotateCookies` endpoint. If any secondary-binding cookie is present, the supplied set must form a usable binding — `OSID`, or `APISID`+`SAPISID` together with bare `LSID`; a completely absent Tier 2 set is preserved after a warning for compatibility with unablated account flows. The result is written atomically with private (`0o600`) permissions. Invalid input never overwrites an existing session, and an existing `storage_state.json` is first copied to `storage_state.json.bak` so a stale import can be rolled back (one step — each run overwrites the previous `.bak`).
 
 Incompatible with `NOTEBOOKLM_AUTH_JSON`: unset that env var first, or the command exits with an error (it does not silently fall back to the env auth).
 
@@ -740,7 +740,7 @@ notebooklm auth check --json
 **Checks performed:**
 1. Storage file exists and is readable
 2. JSON structure is valid
-3. Required cookies (`SID` + `__Secure-1PSIDTS`) are present (the Tier 1 `MINIMUM_REQUIRED_COOKIES` set; either `OSID` or the `APISID`+`SAPISID` pair is also needed for the secondary-binding check — see [auth-cookie-lifecycle.md](auth-cookie-lifecycle.md) §3.5)
+3. Required cookies (`SID` + `__Secure-1PSIDTS`) are present (the Tier 1 `MINIMUM_REQUIRED_COOKIES` set). The loader also evaluates the warning-only secondary-binding check — `OSID`, or `APISID`+`SAPISID` together with bare `LSID` — but `auth check` does not mark a Tier 2 warning as failure; see [auth-cookie-lifecycle.md](auth-cookie-lifecycle.md#33-empirical-cookie-requirements)
 4. Cookie domains are correct (.google.com vs regional)
 5. (With `--test`) Token fetch succeeds
 

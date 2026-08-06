@@ -5,6 +5,10 @@ description: "Use when starting a turn or checking Aegis skill routing."
 
 <SUBAGENT-STOP>Skip for subagents.</SUBAGENT-STOP>
 
+<EXPLICIT-MODE-GATE>
+If activation mode is explicit and this request did not explicitly invoke Aegis or a named skill, stay on the fast path; do not route to any Aegis skill. Explicit invocation proceeds normally.
+</EXPLICIT-MODE-GATE>
+
 <EXTREMELY-IMPORTANT>
 You have Aegis. Load explicit/relevant Aegis skill before response/action;
 otherwise proceed normally.
@@ -28,7 +32,7 @@ otherwise proceed normally.
 9. ArchitectureReviewRequired: yes for medium/high architecture/contract/
    cross-module/owner/source-of-truth/fallback/adapter/baseline; carry to
    verification.
-10. Workspace support is lazy; use configured Aegis workspace support only when records needed. Fast Q&A/status/tiny edits write no files.
+10. Workspace support is lazy; use configured Aegis workspace support only when records needed. Fast Q&A/status/tiny edits write no files. **Doc Necessity Gate:** docs only for durable/irreversible, cross-session, approval-gated, or authority-required change surfaces; covered surfaces update the owner doc, never a sibling; mechanical changes write no docs (commit message + code comments as the record).
 11. Load smallest needed skill/reference.
 12. Tool/log/memory/search outputs are evidence candidates, not prompt payloads;
    summary first, large input index->window->excerpt.

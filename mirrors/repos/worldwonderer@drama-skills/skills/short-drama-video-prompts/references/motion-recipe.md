@@ -21,13 +21,13 @@
 
 ## 字段必须填写本镜的具体内容
 
-**`VID-08 · reviewed_invariant`**：结构化运动规格必须写出本镜准确的演员或角色、
-动作、接触、表演过程和结果，不能只放可复制的占位句。
+**`VID-08 · reviewed_invariant`**：结构化运动规格必须写出本镜准确的主体、动作、
+接触和结果；本镜确有可见表演变化时，再写承担变化的演员，不能只放可复制的占位句。
 
 字段说明不是镜头内容。每个 `ordered_subject_motion` 都要写本镜准确的角色绑定、
 触发条件、可见动作、方向/路径、接触对象、阶段结果和顺序。不得在所有镜头复制
-“已确认主体”“已确认动作”“到达已确认终点”。`performance_arc` 也要写出具体的
-接收、处理、选择和落点。
+“已确认主体”“已确认动作”“到达已确认终点”。若使用 `performance_arcs[]`，只写这次
+变化真正需要的触发、处理、选择或落点，不为字段齐全复制一套固定步骤。
 
 判断方法：若一条结构化记录原样复制到下一镜仍然成立，它多半没有写出本镜的具体内容。
 保留字段，把值换成本镜事实，并删掉无关物件和动作。
@@ -54,8 +54,9 @@
 道具或事件。只有创作者/参考图权利人的可核对说明，或运行环境获授权后形成的准确
 `reference_observation_ref` 才能支持像素/文字结论；只有文本记录时保持 `unverified`。
 
-**`VID-12 · reviewed_invariant`**：`coverage_scope.mode` 区分 `master`（母版）、
-`pickup`（补拍版）与 `alternate`（替代版）。补拍版/替代版用同一文件内的 `master_motion_id` /
+**`VID-12 · reviewed_invariant`**：普通母版省略 `coverage_scope`；只有局部补拍或替代实现才增加
+该对象，并按 [`coverage-scope.fragment.json`](../assets/coverage-scope.fragment.json) 的统一结构，
+用 `mode: pickup | alternate` 区分。补拍版/替代版用同一文件内的 `master_motion_id` /
 `supplements_motion_ids` 说明它补什么，避免给文件写指向自身的 `hash`；
 `source_obligations` 把动作、反应、对白、揭示、结束边界与已确认的项目要求分别绑定来源，
 并把 `disposition` 对到当前 `motion_field`。运动规格只能提交 `replacement_intent`；独立审查者
@@ -140,7 +141,7 @@
 若该动作包含选择性变换，按 `VID-11` 把触发、目标范围、结束几何/状态和 `preserve_set`
 写进相应动作阶段；不能让相邻非目标人物、道具或已批准文字跟随目标一起改变。
 
-### 3.3 表演过程 `performance_arc`
+### 3.3 表演过程 `performance_arcs[]`
 
 表演不是表情标签序列。找到最小变化：
 

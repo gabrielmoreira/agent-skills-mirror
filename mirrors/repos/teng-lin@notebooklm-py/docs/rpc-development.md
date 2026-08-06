@@ -588,31 +588,32 @@ The same nightly run also probes the post-rebrand host — batchexecute and
   `compute_exit_code` cannot see them. This is deliberate and load-bearing: the
   "Non-transient ERROR detected" issue is deduped **by title alone**, so a probe
   that legitimately fails every night would open one issue and then suppress
-  every later legacy-degradation issue filed under the same title.
-- It reports a **state change** (`batchexecute: ABSENT->PRESENT`), not a
-  recurring error, against the previous run's state (cached between runs; a
-  cache miss falls back to the documented `ABSENT` baseline). A host that never
-  serves RPC therefore files nothing, ever.
+  every later main-lane degradation issue filed under the same title.
+- It reports a **state change** (for example, `batchexecute:
+  PRESENT->ABSENT`), not a recurring error, against the previous run's state.
+  That state is cached between runs; a cache miss falls back to the checked-in
+  last-acknowledged status for each capability. An unchanged capability files
+  nothing.
 - On a change it opens its own issue, **"Rebrand host RPC availability
   changed"** (label `automated`), with its own dedup search.
 - `UNKNOWN` (transport failure, 429, 5xx) is never recorded: a flake carries the
   previous state forward instead of manufacturing a transition.
 - It runs **last** in the check and is paced like the method loop, so its two
   extra requests cannot push the account into a rate limit that would then be
-  attributed to a legacy probe.
+  attributed to a main-lane probe.
 
-**Recorded decision:** this lane is the first time the project's CI credentials
-are presented to `notebook.google.com`. Both hosts are Google's and both are
-already origins of the same app, so the exposure is the same credential to the
-same operator — but it is a deliberate choice, written down rather than arriving
-as a side effect.
+**Recorded decision (when the lane was introduced):** this was the first time
+the project's CI credentials were presented to `notebook.google.com`. Both
+hosts are Google's and are origins of the same app, so the exposure was the same
+credential to the same operator — but it was a deliberate choice, written down
+rather than arriving as a side effect.
 
 Two flags support it:
 
 ```bash
 # Point the WHOLE run at a specific personal app host. Manual investigation
 # only — validated against notebooklm._env.PERSONAL_APP_HOSTS, and the nightly
-# must stay on the default so the legacy signal keeps being collected.
+# stays on the default so the main, exit-coded signal exercises that host.
 uv run python scripts/check_rpc_health.py --base-url https://notebook.google.com
 
 # Where the lane reads/writes its previous state (omit: baseline-only, no write).

@@ -14,7 +14,7 @@
 - **规格**：`IMG-<id>`
 - **绑定**：`<asset-id>` + `<variant-id>`
 - **用途**：<后续复用目标>
-- **参考图用途**：`<reference>` 只决定 `<role / may_control>`；不得导入 `<must_not_control>`；检查状态 `<observation ref | unverified + risks>`；无参考则写“无”
+- **参考图用途**：`<slot_id / order / reference>` 只决定 `<role / may_control>`；不得导入 `<must_not_control>`；检查状态 `<observation ref | unverified + risks>`；无参考则写“无”
 - **文字来源政策**：`exact_readable | graphic_only | no_readable_text | pending_creator_text`
 - **本次呈现**：`readable | symbolic | blank | postproduction`（附 source → treatment 映射）
 - **注意**：<未阻断的警告 / 创作者明确调整；无则写“无”>

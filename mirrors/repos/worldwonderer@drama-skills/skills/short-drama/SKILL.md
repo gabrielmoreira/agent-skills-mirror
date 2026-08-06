@@ -1,6 +1,6 @@
 ---
 name: short-drama
-description: 基于文件系统初始化、继续、恢复和交付短剧或漫剧项目，并提供本地 Dashboard 管理项目文本与预览项目媒体。面向编剧、漫剧工作室与编导。用户提出“创建/继续短剧项目”“看进度/下一步”“打开 dashboard/项目控制台”“恢复中断或不完整发布”“交付文本包”，或任务跨多个环节、意图不明确而需要先判断当前状态与负责技能时使用；明确的写作、资产、提示词、分镜或审查请求由对应子 skill 直接处理。
+description: 基于文件系统初始化、继续、恢复和交付短剧或漫剧项目，并提供本地 Dashboard 管理项目文本与预览项目媒体；也负责组织项目级 Look Development / 风格帧方向与授权生产观察校准。面向编剧、漫剧工作室与编导。用户提出“创建/继续短剧项目”“看进度/下一步”“做 Look Development”“用生产观察校准本项目”“打开 dashboard/项目控制台”“恢复中断或不完整发布”“交付文本包”，或任务跨多个环节、意图不明确而需要先判断当前状态与负责技能时使用；明确的写作、资产、提示词、分镜或审查请求由对应子 skill 直接处理。
 license: MIT
 ---
 
@@ -28,6 +28,8 @@ license: MIT
 涉及参考图可以决定什么、观众揭示时机或补拍/替代提示词时读
 [reference-media-and-pickups.md](references/reference-media-and-pickups.md)。
 不同制作形态的执行翻译见 [production-form-profiles.md](references/production-form-profiles.md)。
+需要在正式分镜前用人物、地点和高压力代表帧统一视觉语言时读
+[look-development.md](references/look-development.md)。
 
 ## 意图路由
 
@@ -41,14 +43,16 @@ license: MIT
 | 做原文覆盖、镜头或冻结关键帧 | `$short-drama-storyboard` |
 | 写动作/表演/运镜/声音视频提示词 | `$short-drama-video-prompts` |
 | 定画风、制作形态或视觉方向 | `$short-drama` 本身：按 [production-form-profiles.md](references/production-form-profiles.md) 定位一张形态卡，产出候选并请创作者接受，再提升到 `creator_authority`。资产、图片提示词、分镜与视频提示词都要求形态已定，且都不自行选择，所以这一步必须在这里完成 |
+| 做 Look Development / 风格帧 | `$short-drama` 先明确并接受可观察视觉方向 → `$short-drama-image-prompts` 写 `lookdev_frame` 文本规格；不生成图片，也不让风格参考接管身份、地理或剧情状态 |
+| 用授权生产观察校准本项目 | `$short-drama-review` 绑定准确版本并诊断 → 对应 owner 做有 `preserve_set` 的定点修订 → 重新接受与 fresh re-review；没有授权观察时只报文字风险 |
 | 校验、审查或发修订请求 | `$short-drama-review` |
 | 只检查或诊断模板感、AI 味 | fresh `$short-drama-review`，只发带证据 finding |
 | 直接去 AI 味、润色或定点改稿 | `$short-drama-write`，保留作者声音并展示语义差异 |
 | 先检查再改 | fresh review → write owner 定点修订 → fresh re-review |
 | 打开 Dashboard、项目控制台或管理项目文本 | `$short-drama dashboard`：执行下方“本地 Dashboard”启动契约 |
 
-创作者明确意图优先于名义上的“下一检查点”。C2 资产接受后，图片提示词和分镜
-是平行分支；创作者只要其中一支时，不强迫等待另一支。
+创作者明确意图优先于名义上的“下一检查点”。Look Development 是可选的项目级分支，不是通用前置；
+C2 资产接受后，图片提示词和分镜是平行分支；创作者只要其中一支时，不强迫等待另一支。
 
 若当前上下文参与过目标文件的创作，审查路由必须优先启动 fresh reviewer agent/context，
 只传目标、已接受限制和审查表；运行环境不支持 fresh agent 时透明降级为 `PROVISIONAL`

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 49 file(s) materialized.
+Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 49 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -105,9 +105,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 44 | ✓ | [`skills/unity-cli/references/editors-install.md`](skills/unity-cli/references/editors-install.md) |
 | 45 | ✓ | [`skills/unity-cli/references/integration-advanced.md`](skills/unity-cli/references/integration-advanced.md) |
 | 46 | ✓ | [`skills/unity-cli/references/projects-templates.md`](skills/unity-cli/references/projects-templates.md) |
-| 47 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
-| 48 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
-| 49 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
+| 47 | ✓ | [`skills/unity-cli/SECURITY.md`](skills/unity-cli/SECURITY.md) |
+| 48 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
+| 49 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
+| 50 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
 
 ---
 

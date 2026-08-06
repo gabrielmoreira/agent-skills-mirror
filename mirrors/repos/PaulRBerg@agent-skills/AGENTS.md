@@ -62,6 +62,11 @@ If `prettier-check` fails, analyze the errors and fix only files you changed.
 - `just` - list recipes.
 - `just prettier-check` - check Markdown formatting with Prettier.
 - `just prettier-write` - format Markdown in place.
+- `just python-test` - execute every `tests/*/test*.py` script with `uv run`.
+- `just shell-test` - execute every legacy `tests/*/test-*.sh` script.
+- `just bats-test [paths...]` - recursively run Bats suites, defaulting to `tests/`.
+- `just shell-check [paths...]` - lint repository shell scripts and tests with ShellCheck.
+- `just test` - run the Python, legacy shell, and Bats suites.
 - `just evm-atlas-check` - verify generated `evm-atlas` references match `@prb/crypto-registry`'s canonical chain JSON
   plus atlas overlays.
 - `just evm-atlas-generate` - regenerate generated `evm-atlas` references from `@prb/crypto-registry`'s canonical chain
@@ -70,10 +75,10 @@ If `prettier-check` fails, analyze the errors and fix only files you changed.
   `https://api.routeme.sh/chains` list (network call; run `just evm-atlas-generate` afterward to propagate).
 - `just skill-invocation-check` - verify `SKILL.md` invocation fields match `agents/openai.yaml`.
 - `just skill-invocation-fix` - update `agents/openai.yaml` invocation policy from `SKILL.md`.
+- `just publish-skills-check` - fail when source-owned global skill content, target layout, or CLI metadata has drifted.
+- `just publish-skills-test` - exercise publisher fixtures, apply guards, batching, and partial-failure reporting.
 - `just pre-commit` - reject partial staging, then run serial staged-file checks through the pinned local lint-staged
   binary without stashing or hiding files.
-- `just commit-paths-test` - exercise isolated-index atomic commits, hooks, case-only renames, and shared-index
-  reconciliation.
 - `just hooks-install` - install Husky hooks for this checkout through the pinned local binary.
 
 `package.json` exists only for local formatting and hook wiring; there is no build step. Treat Markdown formatting,
@@ -96,8 +101,8 @@ narrower check.
 - When asked to create, edit, or remove an installable catalog skill while the current working directory is this repo,
   modify the skill under `skills/` here only, not the installed copy under `~/.agents`.
 - Changes here are not live until installed into every target declared by the skill. By default, `publish-skills`
-  publishes every catalog-skill change since the most recent successfully published source change or commit, including
-  changes from other agents; the current transcript is not the publication boundary.
+  reconciles all current source-owned drift. An explicit commit range narrows that reconciliation to the affected skill
+  names; neither Git-history boundary reconstruction nor the current transcript defines default scope.
 - At the end of a successfully completed user task that edits installable catalog skills, run the `publish-skills`
   internal skill on the user's behalf. First inspect `ai-coord status --json`: if another agent has a queued claim that
   overlaps the current session's active claim, do not run this step. Commit and release the claim promptly; the promoted

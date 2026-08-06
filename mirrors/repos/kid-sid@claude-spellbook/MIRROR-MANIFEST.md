@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed patterns, 67 file(s) materialized.
+Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed patterns, 121 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `kid-sid/claude-spellbook` — 26 default patterns, 1 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 67 |
+| Files         | 121 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -120,12 +120,66 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 59 | ✓ | [`skills/temporal/skill.md`](skills/temporal/skill.md) |
 | 60 | ✓ | [`skills/test-strategy/skill.md`](skills/test-strategy/skill.md) |
 | 61 | ✓ | [`skills/typescript/skill.md`](skills/typescript/skill.md) |
-| 62 | ✓ | [`skills/ui-ux-pro-max/skill.md`](skills/ui-ux-pro-max/skill.md) |
-| 63 | ✓ | [`skills/unit-testing/skill.md`](skills/unit-testing/skill.md) |
-| 64 | ✓ | [`skills/webhooks/skill.md`](skills/webhooks/skill.md) |
-| 65 | ✓ | [`skills/websockets-sse/skill.md`](skills/websockets-sse/skill.md) |
-| 66 | ✓ | [`skills/writing-plans/skill.md`](skills/writing-plans/skill.md) |
-| 67 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 62 | ✓ | [`skills/ui-ux-pro-max/data/_sync_all.py`](skills/ui-ux-pro-max/data/_sync_all.py) |
+| 63 | ✓ | [`skills/ui-ux-pro-max/data/app-interface.csv`](skills/ui-ux-pro-max/data/app-interface.csv) |
+| 64 | ✓ | [`skills/ui-ux-pro-max/data/charts.csv`](skills/ui-ux-pro-max/data/charts.csv) |
+| 65 | ✓ | [`skills/ui-ux-pro-max/data/colors.csv`](skills/ui-ux-pro-max/data/colors.csv) |
+| 66 | ✓ | [`skills/ui-ux-pro-max/data/design.csv`](skills/ui-ux-pro-max/data/design.csv) |
+| 67 | ✓ | [`skills/ui-ux-pro-max/data/draft.csv`](skills/ui-ux-pro-max/data/draft.csv) |
+| 68 | ✓ | [`skills/ui-ux-pro-max/data/google-fonts.csv`](skills/ui-ux-pro-max/data/google-fonts.csv) |
+| 69 | ✓ | [`skills/ui-ux-pro-max/data/icons.csv`](skills/ui-ux-pro-max/data/icons.csv) |
+| 70 | ✓ | [`skills/ui-ux-pro-max/data/landing.csv`](skills/ui-ux-pro-max/data/landing.csv) |
+| 71 | ✓ | [`skills/ui-ux-pro-max/data/products.csv`](skills/ui-ux-pro-max/data/products.csv) |
+| 72 | ✓ | [`skills/ui-ux-pro-max/data/react-performance.csv`](skills/ui-ux-pro-max/data/react-performance.csv) |
+| 73 | ✓ | [`skills/ui-ux-pro-max/data/stacks/angular.csv`](skills/ui-ux-pro-max/data/stacks/angular.csv) |
+| 74 | ✓ | [`skills/ui-ux-pro-max/data/stacks/astro.csv`](skills/ui-ux-pro-max/data/stacks/astro.csv) |
+| 75 | ✓ | [`skills/ui-ux-pro-max/data/stacks/flutter.csv`](skills/ui-ux-pro-max/data/stacks/flutter.csv) |
+| 76 | ✓ | [`skills/ui-ux-pro-max/data/stacks/html-tailwind.csv`](skills/ui-ux-pro-max/data/stacks/html-tailwind.csv) |
+| 77 | ✓ | [`skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv`](skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv) |
+| 78 | ✓ | [`skills/ui-ux-pro-max/data/stacks/laravel.csv`](skills/ui-ux-pro-max/data/stacks/laravel.csv) |
+| 79 | ✓ | [`skills/ui-ux-pro-max/data/stacks/nextjs.csv`](skills/ui-ux-pro-max/data/stacks/nextjs.csv) |
+| 80 | ✓ | [`skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv`](skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv) |
+| 81 | ✓ | [`skills/ui-ux-pro-max/data/stacks/nuxtjs.csv`](skills/ui-ux-pro-max/data/stacks/nuxtjs.csv) |
+| 82 | ✓ | [`skills/ui-ux-pro-max/data/stacks/react-native.csv`](skills/ui-ux-pro-max/data/stacks/react-native.csv) |
+| 83 | ✓ | [`skills/ui-ux-pro-max/data/stacks/react.csv`](skills/ui-ux-pro-max/data/stacks/react.csv) |
+| 84 | ✓ | [`skills/ui-ux-pro-max/data/stacks/shadcn.csv`](skills/ui-ux-pro-max/data/stacks/shadcn.csv) |
+| 85 | ✓ | [`skills/ui-ux-pro-max/data/stacks/svelte.csv`](skills/ui-ux-pro-max/data/stacks/svelte.csv) |
+| 86 | ✓ | [`skills/ui-ux-pro-max/data/stacks/swiftui.csv`](skills/ui-ux-pro-max/data/stacks/swiftui.csv) |
+| 87 | ✓ | [`skills/ui-ux-pro-max/data/stacks/threejs.csv`](skills/ui-ux-pro-max/data/stacks/threejs.csv) |
+| 88 | ✓ | [`skills/ui-ux-pro-max/data/stacks/vue.csv`](skills/ui-ux-pro-max/data/stacks/vue.csv) |
+| 89 | ✓ | [`skills/ui-ux-pro-max/data/styles.csv`](skills/ui-ux-pro-max/data/styles.csv) |
+| 90 | ✓ | [`skills/ui-ux-pro-max/data/typography.csv`](skills/ui-ux-pro-max/data/typography.csv) |
+| 91 | ✓ | [`skills/ui-ux-pro-max/data/ui-reasoning.csv`](skills/ui-ux-pro-max/data/ui-reasoning.csv) |
+| 92 | ✓ | [`skills/ui-ux-pro-max/data/ux-guidelines.csv`](skills/ui-ux-pro-max/data/ux-guidelines.csv) |
+| 93 | ✓ | [`skills/ui-ux-pro-max/scripts/core.py`](skills/ui-ux-pro-max/scripts/core.py) |
+| 94 | ✓ | [`skills/ui-ux-pro-max/scripts/design_system.py`](skills/ui-ux-pro-max/scripts/design_system.py) |
+| 95 | ✓ | [`skills/ui-ux-pro-max/scripts/search.py`](skills/ui-ux-pro-max/scripts/search.py) |
+| 96 | ✓ | [`skills/ui-ux-pro-max/skill.md`](skills/ui-ux-pro-max/skill.md) |
+| 97 | ✓ | [`skills/ui-ux-pro-max/templates/base/quick-reference.md`](skills/ui-ux-pro-max/templates/base/quick-reference.md) |
+| 98 | ✓ | [`skills/ui-ux-pro-max/templates/base/skill-content.md`](skills/ui-ux-pro-max/templates/base/skill-content.md) |
+| 99 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/agent.json`](skills/ui-ux-pro-max/templates/platforms/agent.json) |
+| 100 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/augment.json`](skills/ui-ux-pro-max/templates/platforms/augment.json) |
+| 101 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/claude.json`](skills/ui-ux-pro-max/templates/platforms/claude.json) |
+| 102 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/codebuddy.json`](skills/ui-ux-pro-max/templates/platforms/codebuddy.json) |
+| 103 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/codex.json`](skills/ui-ux-pro-max/templates/platforms/codex.json) |
+| 104 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/continue.json`](skills/ui-ux-pro-max/templates/platforms/continue.json) |
+| 105 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/copilot.json`](skills/ui-ux-pro-max/templates/platforms/copilot.json) |
+| 106 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/cursor.json`](skills/ui-ux-pro-max/templates/platforms/cursor.json) |
+| 107 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/droid.json`](skills/ui-ux-pro-max/templates/platforms/droid.json) |
+| 108 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/gemini.json`](skills/ui-ux-pro-max/templates/platforms/gemini.json) |
+| 109 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/kilocode.json`](skills/ui-ux-pro-max/templates/platforms/kilocode.json) |
+| 110 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/kiro.json`](skills/ui-ux-pro-max/templates/platforms/kiro.json) |
+| 111 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/opencode.json`](skills/ui-ux-pro-max/templates/platforms/opencode.json) |
+| 112 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/qoder.json`](skills/ui-ux-pro-max/templates/platforms/qoder.json) |
+| 113 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/roocode.json`](skills/ui-ux-pro-max/templates/platforms/roocode.json) |
+| 114 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/trae.json`](skills/ui-ux-pro-max/templates/platforms/trae.json) |
+| 115 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/warp.json`](skills/ui-ux-pro-max/templates/platforms/warp.json) |
+| 116 | ✓ | [`skills/ui-ux-pro-max/templates/platforms/windsurf.json`](skills/ui-ux-pro-max/templates/platforms/windsurf.json) |
+| 117 | ✓ | [`skills/unit-testing/skill.md`](skills/unit-testing/skill.md) |
+| 118 | ✓ | [`skills/webhooks/skill.md`](skills/webhooks/skill.md) |
+| 119 | ✓ | [`skills/websockets-sse/skill.md`](skills/websockets-sse/skill.md) |
+| 120 | ✓ | [`skills/writing-plans/skill.md`](skills/writing-plans/skill.md) |
+| 121 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 
 ---
 

@@ -9,7 +9,7 @@ metadata:
 name: codex-handoff
 user-invocable: true
 description:
-  Orchestrate read-only planning research and one to five Codex agents to implement approved plans from Claude Code or
+  Orchestrate read-only planning research and one to eight Codex agents to implement approved plans from Claude Code or
   Codex CLI.
 ---
 
@@ -45,12 +45,21 @@ selected adapter may specialize host mechanics and manifest configuration, but i
 - Each implementation agent implements its assigned part of the approved plan. It may inspect, edit, and validate, but
   must not redesign the solution or return another plan.
 - Use the smallest effective implementation team. One implementation agent remains valid; use additional agents only
-  when decomposition materially improves latency, correctness, or verification. Never exceed five implementation agents
+  when decomposition materially improves latency, correctness, or verification. Never exceed eight implementation agents
   across the handoff.
-- Use at most three research agents with stable IDs `R1` through `R3`. Count them separately from the five
+- Size every implementation brief before finalizing the team: estimate its wall-clock agent time, and split any brief
+  likely to exceed roughly 25-30 minutes into parallel disjoint scopes or dependency waves, adding an integration agent
+  when needed, instead of one monolithic agent. Steering, follow-up, and interrupt churn on an oversized agent costs
+  more than decomposition.
+- Use at most three research agents with stable IDs `R1` through `R3`. Count them separately from the eight
   implementation agents.
 - Keep the parent agent's implementation work to orchestration, integrity checks, failure handling, and the conditional
-  polish pass.
+  polish passes.
+- Treat the approved outcome, not the initial agent manifest or its write scopes, as the authorization boundary. When
+  implementation reveals a related in-repository fix or evidence change required to achieve that outcome, the parent is
+  fully authorized to extend the handoff and launch follow-on implementation agents for the newly discovered scope
+  without asking the user again. The worker that discovered the need must still stop at its assigned scope and return
+  evidence; the parent owns the scope expansion, repository coordination, and delegation.
 
 Use `$ARGUMENTS` as the task when present; otherwise use the active user request.
 
@@ -83,12 +92,13 @@ Produce a decision-complete plan with this section and the selected adapter's ex
 
 - Research: `<none | R1..Rn — key findings used>`
 - Strategy: `<sequential|parallel|hybrid>`
-- Agents: `<1-5>` — `<why this is the smallest effective count>`
+- Agents: `<1-8>` — `<why this is the smallest effective count>`
 - Validation owner: `<agent-id|parent>` — `<aggregate checks it runs once>`
 
 <host-adapter manifest table>
 
 - Code polish: `<required|not required>` — `<reason>`
+- Agent-context polish: `<required|not required>` — `<reason>`
 ```
 
 Choose the execution shape from repository evidence and the approved work:
@@ -112,6 +122,11 @@ Duplicate aggregate runs across a wave are wasted wall-clock time, not extra ass
 Require `$code-polish` for nonlocal invariants, concurrency or state machines, migrations or parsing, auth or security,
 retry or error semantics, and public API or data-contract changes. File count alone is not a trigger.
 
+Require `$agents-brain polish` when approved work changes a target supported by its polish workflow: README.md,
+AGENTS.md or CLAUDE.md, a durable context doc, or an existing project-installed skill under `.agents/skills`. Source
+catalog skills under `skills/` remain outside that workflow. Mark both passes required when both trigger rules apply;
+mark neither when neither applies.
+
 Do not launch implementation agents until the user approves the plan and the host leaves Plan mode. Read-only research
 is the only pre-approval exception.
 
@@ -123,14 +138,16 @@ Build a self-contained, outcome-first prompt for every implementation agent. Inc
 2. Its exact write scope, relevant repository constraints, known dirty-work boundaries, and prerequisite agent results.
 3. Its validation assignment: scoped checks it must run and, unless it owns validation, aggregate checks it must not run
    because the validation owner runs them once.
-4. This authority boundary: inspect, edit only within the assigned scope, and validate locally; do not commit, push,
+4. A soft time budget matching its manifest sizing, with the instruction to return `blocked` with partial evidence
+   rather than grinding past it.
+5. This authority boundary: inspect, edit only within the assigned scope, and validate locally; do not commit, push,
    deploy, make external writes, or broaden scope, even when repository or host instructions favor committing finished
    work promptly. Committing stays with the parent after reconciliation.
-5. The selected adapter's delegation and coordination context, including why the parent session and disjoint siblings
+6. The selected adapter's delegation and coordination context, including why the parent session and disjoint siblings
    are not conflicting work and what unrelated exact-scope claim would justify returning `blocked`.
-6. This stopping rule: implement the approved plan exactly; if it is infeasible or requires redesign, return `blocked`
+7. This stopping rule: implement the approved plan exactly; if it is infeasible or requires redesign, return `blocked`
    with evidence instead of proposing a replacement plan.
-7. A requirement to return every result field: `status` (`completed` or `blocked`), `summary`, `changed_files` listing
+8. A requirement to return every result field: `status` (`completed` or `blocked`), `summary`, `changed_files` listing
    only files actually touched, `verification` listing every command and outcome, `residual_risks`, and `blockers`.
 
 Add the selected adapter's command, permission, transport, and host-tool constraints without restating this contract.
@@ -138,7 +155,10 @@ Add the selected adapter's command, permission, transport, and host-tool constra
 ## Execution and Reconciliation
 
 Launch agents through the selected adapter in the approved strategy and dependency waves. Do not add agents or change
-models, efforts, scopes, or validation ownership after approval merely because a worker is slow or quiet.
+models, efforts, scopes, or validation ownership merely because a worker is slow or quiet. Do revise the manifest and
+launch a narrowly scoped follow-on agent when completed work discovers an unplanned prerequisite covered by the approved
+outcome. Preserve stable IDs, dependency order, the eight-agent handoff limit, and one aggregate-validation owner;
+include follow-on agents in the final counts and report.
 
 For each completed agent:
 
@@ -147,7 +167,7 @@ For each completed agent:
   matching the assignment; and
 - pass relevant completed results to dependent agents.
 
-After every implementation wave, reconcile all results with the approved manifest and visible working tree without
+After every implementation wave, reconcile all results with the current manifest and visible working tree without
 folding in unrelated concurrent changes. When the parent owns validation, run the assigned aggregate checks once during
 this reconciliation. Attribute aggregate-check failures before blocking: a failure confined to files outside every
 agent's scope is unrelated concurrent work, so confirm the handoff's files still pass and continue. Unexpected
@@ -156,26 +176,63 @@ polish, and do not silently take over implementation.
 
 ## Failure Classification
 
-- Treat returned `status: blocked` as a plan problem. Let already-started independent agents finish, gate dependents,
-  report the evidence, and let the user decide. Never silently take over or relaunch on a larger model.
+- When `status: blocked` identifies a related in-repository fix or evidence change outside the worker's scope that is
+  necessary for the approved outcome, treat it as follow-on work rather than a request for fresh authorization. Let
+  already-started independent agents finish, gate dependents, extend the manifest with the smallest sufficient scope,
+  satisfy repository coordination for that scope, and launch a new or reused implementation agent. Repeat this process
+  until the approved outcome is complete or a genuine authorization boundary is reached.
+- Ask the user only when continuation would change the approved outcome, require a material redesign or unrelated work,
+  or cross an existing confirmation boundary such as destructive action, purchase, deployment, or external write. Never
+  silently take over implementation or relaunch solely on a larger model.
 - Treat a tool or infrastructure failure as retryable only when adapter-specific evidence supports that classification.
   Inspect partial edits first, then use the adapter's same-agent mechanism for exactly one verify-and-continue attempt.
-  This continuation is not a new agent against the five-agent limit. A second infrastructure failure blocks that agent
+  This continuation is not a new agent against the eight-agent limit. A second infrastructure failure blocks that agent
   and its dependents.
 - Never classify an ordinary timeout, a returned blocker, silence, or task-level validation failure as infrastructure
   failure. Continue only work proven independent.
+
+## Skill Evolution Review
+
+After every required implementation agent has completed successfully and the overall complex task is verified, the
+parent agent reviews the user's completed task for skill-evolution opportunities. Do not run or report this review for a
+blocked, failed, or partial handoff. The parent agent makes the judgment itself; research and implementation agents
+never make the user-facing recommendation.
+
+Recommend skill work only when the completed task exposes a stable, reusable workflow credibly likely to recur. Task
+size or difficulty alone does not establish recurrence; reject one-off work, rare contingencies, incidental cleanup, and
+patterns whose future value is speculative.
+
+- For a new skill, state whether it belongs in the repository where the work was done because its reuse is
+  project-specific or globally in `~/projects/agent-skills` because it is useful across projects.
+- For a revision, name every exact existing skill and briefly state why each needs to change.
+
+When a proposal clears this bar, append at most one compact suggestion of no more than two short sentences to the
+selected adapter's existing completion report without otherwise changing its format. State the reusable need and the
+proposed create or revise target, then offer `$task-handoff` as the next action for capturing a decision-complete
+implementation handoff. Leave design choices, file-level changes, acceptance details, and other low-level material to
+that future handoff.
+
+Never invoke `$task-handoff`, create a handoff, create a skill, or revise a skill automatically during this review. When
+no proposal clears the recurrence bar, remain silent: add no placeholder section and do not report that no skill
+opportunity was found.
 
 ## Completion
 
 - After every required agent completes, deduplicate the union of reported `changed_files` and confirm the combined
   verification evidence proves the approved plan.
-- When the plan marked polish as required, invoke `$code-polish` once with exactly that union and its default
-  simplify-then-review mode. Skip polish if any required agent failed; do not recompute or broaden scope.
+- If any required agent failed, skip every planned polish pass. Otherwise, invoke each required pass once with only its
+  applicable paths from that union: `$code-polish` first in its default simplify-then-review mode, then
+  `$agents-brain polish` with its eligible context targets. When only one pass is required, invoke only that one. Do not
+  seed either pass with paths outside the union or let it broaden beyond its declared workflow authority.
+- Reconcile in-scope files actually changed by each polish pass into the final changed-files set and verification. A
+  required polish pass that blocks, fails, or writes outside its supported scope blocks later polish and
+  cross-repository commits.
 - If approved work changes repositories on this machine other than the repository where the handoff began, invoke
-  `$commit` from each additional repository after its work, validation, and required polish complete. Scope each
-  invocation to files changed there; do not commit incomplete, blocked, unexpected, or out-of-scope changes. Push only
-  when the user explicitly requested it.
+  `$commit` from each additional repository after its work, validation, and required polish complete. `$commit` owns
+  semantic message composition; its `ai-commit` backend owns deterministic transaction, commit, and push mechanics.
+  Scope each invocation to files changed there; do not commit incomplete, blocked, unexpected, or out-of-scope changes.
+  Push only when the user explicitly requested it.
 - Finish with the selected adapter's completion report. It must include the strategy, wave and agent counts, each
   agent's requested configuration, status, and summary, plus combined changed files, verification, polish when run,
-  automatic cross-repository commit hashes when any, blockers, and residual risks. Write `none` for applicable empty
-  values and never expose machine result payloads.
+  listing each pass and outcome, automatic cross-repository commit hashes when any, blockers, and residual risks. Write
+  `none` for applicable empty values and never expose machine result payloads.

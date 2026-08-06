@@ -1,0 +1,23 @@
+{
+  "coverage_scope": {
+    "mode": "pickup | alternate",
+    "master_motion_id": "MOTION-<master-id>",
+    "supplements_motion_ids": [
+      "MOTION-<same-file-record-id>"
+    ],
+    "source_obligations": [
+      {
+        "kind": "action | reaction | dialogue | reveal | directive | end_boundary",
+        "source_ref": {
+          "owner": "short-drama-write",
+          "artifact": "剧集/<EP>/screenplay-index.jsonl",
+          "hash": "<sha256>",
+          "record_id": "BLK-<EP>-<SC>-<kind><nn>"
+        },
+        "disposition": "covered_now | retained_in_master | separate_pickup | requires_storyboard_revision",
+        "motion_field": "/<current-motion-field-or-none>"
+      }
+    ],
+    "replacement_intent": "does_not_replace_master | requests_supersession"
+  }
+}

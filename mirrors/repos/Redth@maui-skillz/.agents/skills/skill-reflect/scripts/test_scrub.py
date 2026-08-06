@@ -384,17 +384,24 @@ class TestFailOnSecret(unittest.TestCase):
     _SCRIPT = str(Path(__file__).parent / "scrub.py")
     # Temp file written adjacent to the test — never /tmp.
     _TMP = Path(__file__).parent / "_scrub_test_input.txt"
+    _OUT = Path(__file__).parent / "_scrub_test_output.txt"
 
-    def _run(self, content: str, extra_args: list = None) -> int:
-        """Write *content* to a local temp file and run scrub.py; return exit code."""
+    def _run_result(self, content: str, extra_args: list = None):
+        """Write *content* locally and run scrub.py."""
         self._TMP.write_text(content, encoding="utf-8")
         try:
             cmd = [sys.executable, self._SCRIPT, str(self._TMP)] + (extra_args or [])
-            result = subprocess.run(cmd, capture_output=True, text=True)
-            return result.returncode
+            return subprocess.run(cmd, capture_output=True, text=True)
         finally:
             if self._TMP.exists():
                 self._TMP.unlink()
+
+    def _run(self, content: str, extra_args: list = None) -> int:
+        return self._run_result(content, extra_args).returncode
+
+    def _run_stdin(self, content: str, extra_args: list = None):
+        cmd = [sys.executable, self._SCRIPT, "-"] + (extra_args or [])
+        return subprocess.run(cmd, input=content, capture_output=True, text=True)
 
     def test_github_token_causes_exit_1(self):
         token = "ghp_" + "A" * 20 + "b" * 10 + "1" * 6
@@ -402,6 +409,35 @@ class TestFailOnSecret(unittest.TestCase):
 
     def test_aws_key_causes_exit_1(self):
         self.assertEqual(self._run("AKIAIOSFODNN7EXAMPLE", ["--fail-on-secret"]), 1)
+
+    def test_secret_failure_emits_no_stdout(self):
+        token = "ghp_" + "A" * 20 + "b" * 10 + "1" * 6
+        result = self._run_result(token, ["--fail-on-secret"])
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stdout, "")
+
+    def test_secret_failure_does_not_write_output_file(self):
+        token = "ghp_" + "A" * 20 + "b" * 10 + "1" * 6
+        try:
+            result = self._run_result(
+                token, ["--fail-on-secret", "--out", str(self._OUT)]
+            )
+            self.assertEqual(result.returncode, 1)
+            self.assertFalse(self._OUT.exists())
+        finally:
+            if self._OUT.exists():
+                self._OUT.unlink()
+
+    def test_stdin_clean_text_is_scrubbed_to_stdout(self):
+        result = self._run_stdin("contact user@example.com")
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, "contact [REDACTED:email]")
+
+    def test_stdin_secret_failure_emits_no_stdout(self):
+        token = "ghp_" + "A" * 20 + "b" * 10 + "1" * 6
+        result = self._run_stdin(token, ["--fail-on-secret"])
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(result.stdout, "")
 
     def test_clean_text_exits_0(self):
         self.assertEqual(
@@ -434,6 +470,60 @@ class TestFailOnSecret(unittest.TestCase):
         _, findings = scrub_text("user@example.com and /Users/bob/file.txt")
         hit = any(f["category"] in SECRET_CATEGORIES for f in findings)
         self.assertFalse(hit)
+
+
+# ---------------------------------------------------------------------------
+# Domain/product terms and custom patterns (confidentiality backstop)
+# ---------------------------------------------------------------------------
+
+class TestDomainTermRedaction(unittest.TestCase):
+    def test_literal_product_name_redacted(self):
+        text, findings = scrub_text(
+            "The AcmePay checkout flow failed.", extra_terms=["AcmePay"]
+        )
+        self.assertIn("[REDACTED:domain-term]", text)
+        self.assertNotIn("AcmePay", text)
+        self.assertEqual(_cats(findings).get("domain-term"), 1)
+
+    def test_term_match_is_case_insensitive(self):
+        text, _ = scrub_text("we shipped acmepay today", extra_terms=["AcmePay"])
+        self.assertNotIn("acmepay", text)
+        self.assertIn("[REDACTED:domain-term]", text)
+
+    def test_multiword_term_redacted(self):
+        text, findings = scrub_text(
+            "Contoso Cloud Sync broke.", extra_terms=["Contoso Cloud Sync"]
+        )
+        self.assertNotIn("Contoso Cloud Sync", text)
+        self.assertEqual(_cats(findings).get("domain-term"), 1)
+
+    def test_term_does_not_match_substring_inside_word(self):
+        # 'pay' must not redact 'payment' / 'repayment'.
+        text, _ = scrub_text("the payment repayment path", extra_terms=["pay"])
+        self.assertNotIn("[REDACTED:domain-term]", text)
+
+    def test_no_terms_leaves_text_intact(self):
+        text, findings = scrub_text("The AcmePay checkout flow failed.")
+        self.assertEqual(text, "The AcmePay checkout flow failed.")
+        self.assertNotIn("domain-term", _cats(findings))
+
+    def test_domain_term_not_a_secret_category(self):
+        """Domain terms are confidential context, not 'secrets' for fail-on-secret."""
+        self.assertNotIn("domain-term", SECRET_CATEGORIES)
+
+    def test_custom_pattern_redacted(self):
+        text, findings = scrub_text(
+            "ticket PROJ-1234 filed", extra_patterns=[r"PROJ-\d+"]
+        )
+        self.assertIn("[REDACTED:custom]", text)
+        self.assertNotIn("PROJ-1234", text)
+        self.assertEqual(_cats(findings).get("custom"), 1)
+
+    def test_invalid_pattern_is_skipped(self):
+        # An unbalanced group must not raise; text is returned unchanged.
+        text, findings = scrub_text("hello world", extra_patterns=["(unterminated"])
+        self.assertEqual(text, "hello world")
+        self.assertNotIn("custom", _cats(findings))
 
 
 if __name__ == "__main__":

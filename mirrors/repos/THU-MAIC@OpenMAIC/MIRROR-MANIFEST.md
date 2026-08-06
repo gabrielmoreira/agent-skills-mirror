@@ -62,7 +62,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`packages/@openmaic/importer/SKILL.md`](packages/@openmaic/importer/SKILL.md) |
 | 2 | ✓ | [`skills/openmaic/references/clone.md`](skills/openmaic/references/clone.md) |
 | 3 | ✓ | [`skills/openmaic/references/generate-flow.md`](skills/openmaic/references/generate-flow.md) |
-| 4 | ✓ | [`skills/openmaic/references/hosted-mode.md`](skills/openmaic/references/hosted-mode.md) |
+| 4 | ✓ | [`skills/openmaic/references/live-demo.md`](skills/openmaic/references/live-demo.md) |
 | 5 | ✓ | [`skills/openmaic/references/provider-keys.md`](skills/openmaic/references/provider-keys.md) |
 | 6 | ✓ | [`skills/openmaic/references/startup-modes.md`](skills/openmaic/references/startup-modes.md) |
 | 7 | ✓ | [`skills/openmaic/SKILL.md`](skills/openmaic/SKILL.md) |

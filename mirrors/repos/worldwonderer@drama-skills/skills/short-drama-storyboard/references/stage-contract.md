@@ -27,7 +27,9 @@
 3. **只通过公开生命周期写入**：负责人用 `publish` 原子发布候选，并给每个外部结构化引用
    提供精确 input hash。上游接受引用不继承候选状态。创作者接受、独立审查与内容修订是
    不同动作。每次修订后重新运行适用的结构校验，并让下游刷新旧 hash。打包是最终交付闸门，
-   不是接受或审查命令；仍有阻断项时不打包。
+   不是接受或审查命令；仍有阻断项时不打包。逐场 `coverage-auditions/<SC>.jsonl` 与
+   `scene-visual-plans/<SC>.jsonl` 的 `<SC>` 必须采用 `SC001` 式规范 ID，且文件名必须和记录中
+   可解析的 `scene_ref` 一致；`publish` 只机械核对这项路径/引用一致性，不借此扩张成创作内容 schema。
 4. **读共享 JSON/JSONL 时同时声明读了哪几条记录**：`设定集/*.jsonl` 与项目文件是全项目
    共享输入，只按整文件 hash 绑定会让后续任何一次增补把此前引用过它的产物全部标为
    `stale`。发布时对这类输入补 `--input-record <path>=<selector>`（JSONL 用记录 ID，
@@ -36,8 +38,8 @@
 
 ## 所有权边界
 
-- **本阶段拥有**：覆盖处置、镜头目的、镜头时长、绑定、起止边界；关键帧的注意焦点、
-  构图、机位/镜头与冻结站位。渲染出的关键帧提示词是缓存。
+- **本阶段拥有**：可选 coverage audition 与场次视觉计划、覆盖处置、镜头目的、镜头时长、
+  绑定、起止边界；关键帧的注意焦点、构图、机位/镜头与冻结站位。渲染出的关键帧提示词是缓存。
 - **本阶段继承**：剧本的信息权限与原文要求；资产的身份与变体绑定。
 - **本阶段不越权**：不用风格词改写人物状态，不新建资产身份，不改写剧本事实。镜头边界
   拥有起止位置、姿态、目光、双手、持物与可见连续性；关键帧只投影这些事实，永不覆盖它们。
@@ -73,8 +75,8 @@
   被检查的字节。两者都没有时保持 `unverified`，负面提示词不能代替证据。
 - **观众揭示时机**：某一事实何时可被观众看到，由已接受的可见性决定绑定其来源、载体、
   权限、触发与保护方式。构图既不能提前泄露该事实，也不能遮掉本环节必须传达的载体。
-- **母版、补拍与替代**：补拍默认只补充、不替代母版。声明 `master | pickup | alternate`，
-  用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
+- **母版、补拍与替代**：补拍默认只补充、不替代母版。普通母版不增加版本范围字段；只有
+  补拍/替代版才声明 `pickup | alternate`，用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
   去向。只有下游独立审查结论才能绑定固定 hash 并批准替代，不得回写形成循环引用。
 
 ## 本阶段规则
@@ -100,6 +102,9 @@
 | SHT-15 | reviewed_invariant | When the creator has declared delivery-surface overlay regions with their permanence and source, what a shot must be read for—face and gaze, readable evidence text, the decisive hand action—does not sit only inside those regions, and shots bind the declared version. An undeclared surface leaves the rule inactive: record it as unresolved and do not restage against a guessed region. |
 | SHT-16 | structural_invariant | Coverage carries an episode duration total that is the arithmetic sum of its shots' accepted `duration_seconds`; every shot the coverage lists either contributes a number or is named in `unresolved_durations`, so no shot leaves the total silently. When the project declares a target per episode, the record binds that field and states the signed delta; the delta is reported to the creator and never blocks on its own. |
 | SHT-17 | structural_invariant | A keyframe declares which boundary it freezes and binds that shot's matching boundary field. An end keyframe is a projection of `end_boundary`, never a second end-state authority, and per-shot keyframe count stays open: one start frame by default, an end frame only when the delivery workflow consumes it. Handing over a start/end pair delegates the motion between them to interpolation, so an action the shot exists for cannot rest on that gap alone. |
+| SHT-18 | craft_default | For a scene where directing choice materially changes audience knowledge, alignment, spatial pressure, performance ownership, or the landing, an accepted scene visual plan may bridge project direction and shots; it binds exact screenplay blocks, direction/profile, Location/View and relevant asset states, ordinary scenes skip it, and it never owns screenplay facts or shot boundaries. |
+| SHT-19 | reviewed_invariant | When a coverage audition is used, its approaches genuinely differ by knowledge timing, alignment, performance space, strongest image, landing, losses, or production fit; it uses no fixed option, grid, framing, or shot-count formula, and an independent creator acceptance record binds the exact audition hash and names an existing selected approach before the formal plan or shots. |
+| SHT-20 | reviewed_invariant | Shot revision identity follows directing responsibility rather than array position or text similarity: reorder preserves IDs, insertion creates one, split/merge retires replaced IDs and creates successors, and active coverage plus downstream refs are reconciled before delivery. |
 
 ### `CON`
 

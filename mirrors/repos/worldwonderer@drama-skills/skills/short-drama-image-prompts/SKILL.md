@@ -1,6 +1,6 @@
 ---
 name: short-drama-image-prompts
-description: 为已确认的短剧角色、造型、场景、视角、道具和状态编写或修改可复制的通用资产图片提示词。用户提到角色设定图、三视图、人物参考图、场景设定图、场景空镜、场景板、道具图、造型或状态变体、局部编辑提示词，或要求用自然语言修改现有图片提示词时直接使用；只产出结构化规格与 Markdown 文本，不生成图片，也不调用模型或供应商接口。
+description: 为已确认的短剧角色、造型、场景、视角、道具和状态编写或修改可复制的通用资产图片提示词，并把已接受视觉方向投影成 Look Development 人物、地点或高压力风格帧。用户提到角色设定图、三视图、人物参考图、场景设定图、场景空镜、场景板、道具图、风格帧、Look Development、造型或状态变体、局部编辑提示词，或要求用自然语言修改现有图片提示词时直接使用；只产出结构化规格与 Markdown 文本，不生成图片，也不调用模型或供应商接口。
 license: MIT
 ---
 
@@ -37,6 +37,7 @@ license: MIT
 | 任务 | 必读资料 |
 |---|---|
 | 新建任意资产提示词 | [通用配方与视觉锚点](references/common-recipe.md) |
+| Look Development / 人物、地点、高压力风格帧 | [Lookdev 风格帧](references/lookdev-frame.md) |
 | 人物设定图 | 加读 [人物与造型](references/character-and-look.md) |
 | 造型、视角或道具状态的版本 | 加读 [造型与状态变体](references/look-and-state-variant.md) |
 | 场景空镜或不同观察方向 | 加读 [场景与地理](references/location-plate.md) |
@@ -46,7 +47,10 @@ license: MIT
 | 生产端三视图/场景方位/物品版式配方 | [生产资产图配方](references/production-sheet-recipes.md) |
 | 参考图只决定身份、构图或尺度等指定内容 | [阶段契约](references/stage-contract.md) 的参考媒体与补拍 |
 
-写规格时使用 [结构化规格模板](assets/image-prompt-spec.jsonl.md)，交付文本使用 [Markdown 模板](assets/image-prompts.md)。只加载当前类型所需资料。
+普通资产规格使用 [结构化规格模板](assets/image-prompt-spec.jsonl.md)；Look Development 改用
+[独立风格帧模板](assets/lookdev-frame-spec.jsonl.md) 与
+[风格帧 Markdown 模板](assets/lookdev-prompts.md)，不先加载普通资产超集再删字段。普通资产交付文本
+使用 [Markdown 模板](assets/image-prompts.md)。只加载当前类型所需资料。
 
 ## 工作流
 
@@ -59,8 +63,10 @@ license: MIT
 - `prop_plate`：固定道具的尺度、形制、功能和当前状态；
 - `look_state_variant`：在同一身份上突出有因果与有效范围的差异；
 - `edit_delta`：对精确目标做有边界的修改，同时声明保留集。
+- `lookdev_frame`：把已接受视觉方向投影成人物表现、核心地点或高压力场景的代表性文本规格。
 
-一个规格只承担一个主要复用目的。需要不同造型、观察方向或状态时分开写，不把互相冲突的状态揉成“大全图”。
+一个规格只承担一个主要复用目的。需要不同造型、观察方向、状态或 lookdev 测试轴时分开写，
+不把互相冲突的状态揉成“大全图”。风格帧不获得角色身份、场景地理或剧情状态的权威。
 
 ### 2. 整理输入
 
@@ -73,6 +79,7 @@ license: MIT
 5. 每张参考图的准确引用、单一作用、可参考内容、不可照搬内容与检查状态；只有
    创作者/参考图权利人的说明，或经过授权的输入参考图检查，才能给出像素/文字结论；
    前者写 `creator_described`，后者写 `visually_inspected`，都没有时保持 `unverified` 并列出风险；
+   多参考还要保留稳定 `slot_id` 与显式 `order`，不能让数组重排改变用途；
 6. 必须出现、必须保持和明确排除的内容；
 7. 未决定项以及创作者的明确选择。
 
@@ -97,6 +104,8 @@ license: MIT
 
 先展示人能读懂的预览：绑定对象、关键选择、警告与可复制提示词。接受后写：
 
+- `项目开发/lookdev-image-prompt-specs.jsonl` 与 `项目开发/lookdev-prompts.md`：仅项目级
+  Look Development 使用，后者为派生文本；
 - `剧集/<EP>/assets/image-prompt-specs.jsonl`：权威规格；
 - `剧集/<EP>/assets/image-prompts.md`：由已接受规格和配方 `hash` 重新生成的文本版本。
 

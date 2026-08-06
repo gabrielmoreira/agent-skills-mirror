@@ -3,12 +3,25 @@ name: writing-plans
 description: "Use when you have a spec or requirements for a multi-step task, before touching code"
 ---
 
+<EXPLICIT-MODE-GATE>
+If activation mode is explicit (`~/.config/aegis/config.toml` has
+`activation_mode = "explicit"`, or `AEGIS_ACTIVATION_MODE=explicit` is visible
+in the environment) and the current user request did not explicitly invoke
+Aegis or this skill by name, exit back to the fast path: answer concisely
+without this workflow's checklist, ceremony, or document requirements. If the
+user explicitly named Aegis or this skill, proceed normally.
+</EXPLICIT-MODE-GATE>
+
 # Execute
 
 → Have an existing parent plan/spec and a tiny execution slice? → **Use Planless Slice Lane.**
   1. Emit a compact Slice Card: goal, parent plan/spec, files, boundary, verification, stop
   2. Update the parent workstream checkpoint/evidence/drift state if persistent state is needed
   3. Do not save a new plan for the micro-slice
+→ Mechanical or bounded change with no durable boundary (no new owner,
+  contract, schema, public API, migration, or compat surface)? → **Use
+  Planless Slice Lane without a parent document.** Emit the compact Slice Card,
+  skip the plan file, and record the change in the commit message.
 → Have approved spec/requirements for a new workstream or an escalation trigger? → **Write implementation plan. Assume engineer has zero context.**
   1. Scope check: fact/assumption/unknown, baseline, Requirement Ready Check, Ripple Signal Triage, compatibility boundary, dual-track needs
   2. File map: what files created/modified, clear boundaries, follow existing patterns

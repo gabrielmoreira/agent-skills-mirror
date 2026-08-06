@@ -16,8 +16,9 @@ user-invocable: true
 产出   成片.mp4
 ```
 
-前提工具：机器上有 **Google Chrome**（用来把字幕和动画画成图）和 **ffmpeg**。
-缺 Chrome 会明确报错，不要试图绕过——没有它就没有字幕层和动画层。
+前提工具：机器上有 **Google Chrome**（用来把字幕和动画画成图）。桌面安装来源的
+FFmpeg / FFprobe 已随 App 进入 Product 受管目录；纯 CLI 安装仍要求系统
+`ffmpeg ≥ 6`。缺 Chrome 会明确报错，不要试图绕过——没有它就没有字幕层和动画层。
 
 先读取并执行 [业务 Skill 的阶段合同](../../references/business-workflow-contract.md)
 里的「结论等级」一节。**导出不进剪辑状态机**：它不改任何项目文件、不做 CAS 写入、
@@ -29,15 +30,24 @@ user-invocable: true
 最新、Runtime 是否配套；**插件根**也在那里定位（本文命令里的 `<插件根>` 都代入
 那个字面路径）。只有「就绪」才继续；「需新会话」或「停」按它的处置执行
 （含「禁止自制替代界面」禁令），业务 Skill 不自带环境逻辑。
+
+若就绪结果为 `runtime.kind=desktop-managed`，直接复用桌面 App 已安装的稳定 CLI、
+媒体工具与同一 `launchd/windows-task` 服务；不要解析 Electron 路径、另装
+FFmpeg/Bun 或起第二个 Runtime。
+
 ## 命令
 
 ```bash
+node "<插件根>/scripts/ensure-running.cjs" --json
 node "<插件根>/scripts/videocut-cli.cjs" export <project> --dry-run --json          # 先看计划，不编码
 node "<插件根>/scripts/videocut-cli.cjs" export <project> --json                    # 出成片（默认 2 倍、源帧率）
 node "<插件根>/scripts/videocut-cli.cjs" export <project> --out /path/成片.mp4 --json
 node "<插件根>/scripts/videocut-cli.cjs" export <project> --scale 1 --json          # 只要源尺寸
 node "<插件根>/scripts/videocut-cli.cjs" export <project> --keep-work --json        # 留下中间片和逐帧 PNG，供排查
 ```
+
+`ensure-running` 身份不匹配、端口冲突或服务不健康时立即停止；不允许用 foreground
+临时顶替后继续导出。
 
 ## 两步，别只跑第二步
 

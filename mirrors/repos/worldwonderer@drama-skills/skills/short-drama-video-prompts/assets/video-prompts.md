@@ -12,9 +12,9 @@
 ## `SHOT-<id>` · <镜头目的短句>
 
 - **运动规格**：`MOTION-<id>`
-- **覆盖范围**：`master | pickup | alternate`；母版/补充 `<master_motion_id / supplements_motion_ids>`；逐项内容 `<source_ref → motion_field/disposition>`；替代请求 `<replacement_intent>`
+- **覆盖范围（仅补拍/替代版）**：`pickup | alternate`；母版/补充 `<master_motion_id / supplements_motion_ids>`；逐项内容 `<source_ref → motion_field/disposition>`；替代请求 `<replacement_intent>`
 - **起始帧**：`KEY-<id>` @ `<hash>`
-- **参考图用途**：`<reference>` 只决定 `<role / may_control>`；不得导入 `<must_not_control>`；检查状态 `<observation ref | unverified + risks>`；无附加参考则写“无”
+- **参考图用途**：`<slot_id / order / reference>` 只决定 `<role / may_control>`；不得导入 `<must_not_control>`；检查状态 `<observation ref | unverified + risks>`；无附加参考则写“无”
 - **时长（只读）**：`<seconds>s`
 - **边界核对**：`end match | mismatch | unrealized`
 - **声音引用**：`<dialogue/VO/OS/SFX ids>`
@@ -22,7 +22,7 @@
 
 ### 可复制通用提示词
 
-> 从<最少但够用的起点信息>开始。<按因果和物理顺序写主体动作>；<触发—处理—选择—落点的可见表演变化>。摄影机<有动机地固定或移动，并写清节奏和终点>。<必要环境运动>。对白/声音：<逐字文本/引用、表演方式、声源与层级>。在<已确认时长>内<安排节奏>，最终<逐项实现已确认终点，不写下一镜>。
+> 从<最少但够用的起点信息>开始。<按因果和物理顺序写主体动作>。<本镜确有表演变化时，写承担变化者可见的触发、选择或落点；否则删除本句。>摄影机<有动机地固定或移动，并写清节奏和终点>。<必要环境运动>。对白/声音：<逐字文本/引用、表演方式、声源与层级>。在<已确认时长>内<安排节奏>，最终<逐项实现已确认终点，不写下一镜>。
 
 ### 只读结束报告
 
@@ -33,6 +33,8 @@
 
 ---
 ```
+
+普通母版省略“覆盖范围”一行；没有补拍或替代关系时，不用 `master` 占位制造版本账目。
 
 每个已经设计好的镜头独立一节，即使被打包进同一个交付容器，也不合并原镜头边界。
 项目声明多镜容器时，容器一节**由 `delivery-containers.jsonl` 的对应记录派生**（模板见

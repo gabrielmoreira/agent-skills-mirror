@@ -300,6 +300,18 @@
       "docsUrl": "https://github.com/Gallopsled/pwntools",
       "canAutoInstall": true,
       "verifyCommand": "pwntools"
+    },
+    {
+      "name": "bkcrack",
+      "bootstrapKind": "github-release-zip",
+      "repo": "kimci86/bkcrack",
+      "assetRegex": "^bkcrack-1\\.8\\.1-win64\\.zip$",
+      "installDir": "%USERPROFILE%\\Tools\\bkcrack",
+      "docsUrl": "https://github.com/kimci86/bkcrack",
+      "canAutoInstall": true,
+      "verifyCommand": "bkcrack",
+      "releaseTag": "v1.8.1",
+      "preferApiDigest": true
     }
   ]
 }

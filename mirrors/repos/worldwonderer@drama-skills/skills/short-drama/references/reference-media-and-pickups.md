@@ -39,10 +39,17 @@
 检查输入参考不等于生成图片/视频，也不等于验收成片。负面提示词不能擦除参考图已经
 携带的像素，构图参考也不能因为“看起来像”就用来决定角色身份。
 
+输入准入记录固定写 `observation_kind: input_reference`。若创作者另行提供了某个准确提示词/
+规格版本的授权生产观察，使用独立的
+[production-observation.example.jsonl](../assets/production-observation.example.jsonl)，写
+`observation_kind: generated_result`、`evidence_state: active` 并绑定 prompt/spec、稳定参考槽位与
+制作配置；这里的 active 只表示证据仍可使用，不表示产物通过或被接受。两种观察
+不能混为一条；任务成功、结果地址或文件存在都不能代替任何一种观察证据。
+
 合成示例：
 
 ```json
-{"artifact_ref":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/keyframes.jsonl","hash":"<sha256>","record_id":"KEY-X","authority":"candidate"},"role":"composition","may_control":["subject occupancy","camera side","negative space"],"must_not_control":["character identity","wardrobe","prop text","story state"],"admission_status":"unverified","reference_observation_ref":null,"unresolved_risks":["输入参考尚无可审查的文字/水印观察记录"]}
+{"slot_id":"REF-COMPOSITION-01","order":1,"artifact_ref":{"owner":"short-drama-storyboard","artifact":"剧集/<EP>/storyboard/keyframes.jsonl","hash":"<sha256>","record_id":"KEY-X","authority":"candidate"},"role":"composition","may_control":["subject occupancy","camera side","negative space"],"must_not_control":["character identity","wardrobe","prop text","story state"],"admission_status":"unverified","reference_observation_ref":null,"unresolved_risks":["输入参考尚无可审查的文字/水印观察记录"]}
 ```
 
 项目可以使用更准确的角色名，但审查者必须能看出哪些内容可以参考、哪些不能照搬。
@@ -61,6 +68,8 @@
 | `scale` | 主体之间或主体与环境的相对尺度 | 风格、身份、数量、动作结果 |
 | `effect` | 已接受效果的形态、范围或材质表现 | 非目标对象的消失、复制或变形 |
 | `start_frame` | 本镜已接受的起始构图与可见状态 | 尚未发生的动作、终态或下一镜事实 |
+| `end_frame` | 本镜 `end_boundary` 已接受的投影 | 新终点、未由镜头承担的动作结果 |
+| `style` | 色彩层级、材质处理、阴影边缘、景深倾向、画面密度 | 角色身份、固定地理、剧情状态、道具文字 |
 
 “只参考构图”是有效而重要的边界：可以借用前景/背景占比和压迫关系，同时明确
 不导入图中角色、服装、道具、文字与事件。尺度也优先写成可比较的空间关系、遮挡和
@@ -70,16 +79,17 @@
 ### 多图与首尾边界
 
 多图可以是参考绑定集合、方便人工浏览的联系表，也可以是同一运动的起止边界；三者不能
-只因放在一张版面里就混成一个资产。联系表/多格板只是交付包装，每格继续保留自己的
-artifact/hash、顺序、用途和文字政策，不能把固定九格当作叙事密度公式，也不能让格间顺序
+只因放在一张版面里就混成一个资产。每条绑定使用稳定 `slot_id` 和显式 `order`；数组重排、
+插入新参考或联系表换版时不得改变已有槽位语义。联系表/多格板只是交付包装，每格继续保留
+自己的 artifact/hash、用途和文字政策，不能把固定九格当作叙事密度公式，也不能让格间顺序
 替代独立镜头的起止边界。
 
-当前套件只定义绑定 accepted shot start 的关键帧记录，**尚不提供可绑定的尾帧 artifact**。
-因此视频提示词不能把任意第二张图声明为 `end_frame`，也不能从动作说明自行发明尾帧。
-项目确需首尾帧交付时，先向 storyboard owner 请求扩展契约：为 end boundary 定义独立记录、
-准确 boundary ref、所有权与相邻镜一致性，再由 video-prompts 只读绑定；在该契约落地前保持
-未解决。动作跨度过大时先拆镜；若多张图只是不同用途，则逐张填写 `role` / `may_control` /
-`must_not_control`，不猜哪张负责身份、构图、尺度或终点。
+首尾帧契约是“默认 start，按需 end”：关键帧默认 `boundary_role: start`。执行方式明确需要
+首尾帧时，storyboard owner 可以增加
+`boundary_role: end` 的关键帧；它只投影同一镜头已接受的 `end_boundary`，不是第二个终点
+权威，也不能从动作说明自行发明。视频提示词可按 `role: end_frame` 只读绑定这条记录，终点
+报告仍对照 shot 的 `end_boundary`。动作跨度过大或关键动作只存在于首尾插值空隙时先拆镜，
+不能让尾帧替镜头承担动作本身。
 
 ## 三、说明观众何时能知道什么
 
@@ -107,7 +117,7 @@ artifact/hash、顺序、用途和文字政策，不能把固定九格当作叙�
 - `alternate`（替代版）：同一项要求的另一种实现，是否替代必须另行决定。
 
 缩小提示词范围往往是合理的修复：把内容太多的群像、复合动作或大范围变化收成一个可控瞬间。
-危险不在“变短”，而在把它悄悄当成完整母版。`coverage_scope` 因此需要：
+危险不在“变短”，而在把它悄悄当成完整母版。普通母版省略 `coverage_scope`；补拍或替代版才需要：
 
 1. 同一运动规格文件内的 `master_motion_id` 与本版本实际补充的
    `supplements_motion_ids`；

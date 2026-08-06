@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bitjaru/styleseed` — 26 default patterns, 0 followed patterns, 29 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,13 +81,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`engine/.claude/skills/ss-review/SKILL.md`](engine/.claude/skills/ss-review/SKILL.md) |
 | 21 | ✓ | [`engine/.claude/skills/ss-score/SKILL.md`](engine/.claude/skills/ss-score/SKILL.md) |
 | 22 | ✓ | [`engine/.claude/skills/ss-setup/SKILL.md`](engine/.claude/skills/ss-setup/SKILL.md) |
-| 23 | ✓ | [`engine/.claude/skills/ss-tokens/SKILL.md`](engine/.claude/skills/ss-tokens/SKILL.md) |
-| 24 | ✓ | [`engine/.claude/skills/ss-update/SKILL.md`](engine/.claude/skills/ss-update/SKILL.md) |
-| 25 | ✓ | [`engine/.claude/skills/ss-verify/SKILL.md`](engine/.claude/skills/ss-verify/SKILL.md) |
-| 26 | ✓ | [`engine/.cursorrules`](engine/.cursorrules) |
-| 27 | ✓ | [`engine/AGENTS.md`](engine/AGENTS.md) |
-| 28 | ✓ | [`engine/CLAUDE.md`](engine/CLAUDE.md) |
-| 29 | ✓ | [`skills/styleseed-design-review/SKILL.md`](skills/styleseed-design-review/SKILL.md) |
+| 23 | ✓ | [`engine/.claude/skills/ss-studio/SKILL.md`](engine/.claude/skills/ss-studio/SKILL.md) |
+| 24 | ✓ | [`engine/.claude/skills/ss-tokens/SKILL.md`](engine/.claude/skills/ss-tokens/SKILL.md) |
+| 25 | ✓ | [`engine/.claude/skills/ss-update/SKILL.md`](engine/.claude/skills/ss-update/SKILL.md) |
+| 26 | ✓ | [`engine/.claude/skills/ss-verify/SKILL.md`](engine/.claude/skills/ss-verify/SKILL.md) |
+| 27 | ✓ | [`engine/.cursorrules`](engine/.cursorrules) |
+| 28 | ✓ | [`engine/AGENTS.md`](engine/AGENTS.md) |
+| 29 | ✓ | [`engine/CLAUDE.md`](engine/CLAUDE.md) |
+| 30 | ✓ | [`skills/styleseed-design-review/SKILL.md`](skills/styleseed-design-review/SKILL.md) |
 
 ---
 

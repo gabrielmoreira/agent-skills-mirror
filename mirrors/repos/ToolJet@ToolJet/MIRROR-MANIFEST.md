@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 9 file(s) materialized.
+Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 10 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ToolJet/ToolJet` — 26 default patterns, 0 followed patterns, 9 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 9 |
+| Files         | 10 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,12 +62,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 2 | ✓ | [`.github/instructions/appbuilder-review.instructions.md`](.github/instructions/appbuilder-review.instructions.md) |
 | 3 | ✓ | [`.github/instructions/data-migrations.instructions.md`](.github/instructions/data-migrations.instructions.md) |
-| 4 | ✓ | [`.github/instructions/frontend-typescript.instructions.md`](.github/instructions/frontend-typescript.instructions.md) |
-| 5 | ✓ | [`.github/instructions/server-widget-config-review.instructions.md`](.github/instructions/server-widget-config-review.instructions.md) |
-| 6 | ✓ | [`.github/instructions/widget-components-review.instructions.md`](.github/instructions/widget-components-review.instructions.md) |
-| 7 | ✓ | [`.github/instructions/widget-config-review.instructions.md`](.github/instructions/widget-config-review.instructions.md) |
-| 8 | ✓ | [`docs/docs/marketplace/plugins/gemini.md`](docs/docs/marketplace/plugins/gemini.md) |
-| 9 | ✓ | [`docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md`](docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md) |
+| 4 | ✓ | [`.github/instructions/event-action-remapping.instructions.md`](.github/instructions/event-action-remapping.instructions.md) |
+| 5 | ✓ | [`.github/instructions/frontend-typescript.instructions.md`](.github/instructions/frontend-typescript.instructions.md) |
+| 6 | ✓ | [`.github/instructions/server-widget-config-review.instructions.md`](.github/instructions/server-widget-config-review.instructions.md) |
+| 7 | ✓ | [`.github/instructions/widget-components-review.instructions.md`](.github/instructions/widget-components-review.instructions.md) |
+| 8 | ✓ | [`.github/instructions/widget-config-review.instructions.md`](.github/instructions/widget-config-review.instructions.md) |
+| 9 | ✓ | [`docs/docs/marketplace/plugins/gemini.md`](docs/docs/marketplace/plugins/gemini.md) |
+| 10 | ✓ | [`docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md`](docs/versioned_docs/version-3.0.0-LTS/marketplace/plugins/gemini.md) |
 
 ---
 

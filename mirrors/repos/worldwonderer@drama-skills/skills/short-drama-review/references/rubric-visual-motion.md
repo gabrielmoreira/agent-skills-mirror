@@ -19,6 +19,12 @@
 
 ## Shot purpose and geography
 
+- For a high-value scene with an accepted coverage audition, did the approaches genuinely differ in
+  knowledge timing, audience alignment, performance space, strongest image, landing, losses, or production
+  fit—and does the formal plan bind the creator-selected approach rather than the first draft?
+- When a `scene_visual_plan` exists, do the scene start/end audience positions, spatial pressure, camera
+  rhythm, reaction landing, and sound movement carry one dramatic turn without taking ownership of shot
+  boundaries? Ordinary scenes need no plan merely to satisfy a form.
 - What changes for audience or character by the shot end?
 - Why is this a new shot?
 - Do framing and camera behavior serve attention, alignment, pressure, reveal, or
@@ -45,6 +51,11 @@
 - Does it start from the accepted frame/boundary?
 - Are subject actions ordered and small enough to preserve intended performance?
 - Does performance change express the story move rather than stack synonyms?
+- In multi-character motion, do the actors who actually change have distinct readable triggers, choices,
+  leaks or landings as needed, with `attention_handoffs` only where attention truly transfers rather than
+  synchronized reaction or one identical arc per actor?
+- Does the derived text-readiness view cite accepted inputs and real blocking gaps while explicitly avoiding
+  any claim about generated media quality, without persisting a second readiness truth in each motion record?
 - Is camera behavior coherent and motivated?
 - Are environment motion, dialogue, SFX, and audio included only when relevant?
 - Does the end report match storyboard `end_boundary` and feed no unauthorized
@@ -120,6 +131,10 @@ ellipsis, dream, or deliberate disorientation.
 执行歧义或违背已接受约束；只有创作者提供了授权的文字观察记录时，才能称为已观察缺陷，
 并把该记录作为外部证据引用。没有观察记录时保持结果未知，不从任务成功、结果地址或提示词
 存在推断成片质量。
+
+需要项目校准时，先区分 `input_reference` 与 `generated_result`。后一种观察只有在绑定准确
+prompt/spec hash、稳定 reference slots、production profile/config、观察方法和限制时才可引用；
+finding 同时给出最小 `change_set` 与 `preserve_set`，并保持结论只在该项目和版本条件下有效。
 
 短剧生产中需要防范的文字风险或获授权观察包括：
 

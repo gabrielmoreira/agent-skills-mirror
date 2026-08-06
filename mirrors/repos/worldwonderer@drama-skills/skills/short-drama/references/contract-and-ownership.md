@@ -25,6 +25,11 @@ development? -> screenplay.md -> screenplay-index.jsonl
                                                                               motions
                                                                \              /
                                                                  review -> delivery
+
+key scenes only: coverage -> audition? -> scene plan? -> shots
+visual direction -> lookdev prompt specs (optional)
+accepted 设定集 ----------------------^ when a frame depicts those assets
+accepted screenplay blocks ----------^ when a high-pressure frame carries story state
 ```
 
 All repeated values outside their owner carry an artifact hash and field pointer.
@@ -36,6 +41,7 @@ no motion-to-shot or rendered-Markdown-to-spec authority edge.
 | Fact | Authority | Projection behavior |
 |---|---|---|
 | creator constraints, visual direction, production profile | creator fields in `short-drama.json` | all Skills reference exact accepted project hash/field; direct-entry projects do not rely on chat memory |
+| look-development frame composition and prompt projection | image-prompts project-level specs | binds accepted creator direction and source facts; style references cannot own identity, geography, or story state |
 | creator accept/reject decisions | creator `创作者决策/<artifact-id>.json` | lifecycle proof binds exact candidate targets and decision record/hash; `decided_by` names the creator or an authorized delegate, never a skill or agent |
 | series promise, engine, arc, planned episode contract | develop | episode-card points to the accepted map record/hash |
 | script-first standalone episode contract | write | active only when no develop-owned record exists; explicit authority migration if one is later adopted |
@@ -49,11 +55,13 @@ no motion-to-shot or rendered-Markdown-to-spec authority edge.
 | asset-state delta and scene/episode asset ledger | assets | story-state entries are read-only develop/write projections |
 | occurrence extraction | assets | points to source block/hash |
 | asset image composition/edit choices | image-prompts spec | rendered prompt is cached |
+| optional coverage audition and scene visual plan | storyboard | compares/records directing choices and scene visual/sound movement; only creator-selected accepted plans project into shots, never overwrite screenplay/assets or own shot boundaries |
 | coverage, shot purpose, duration, binding, start/end boundary | storyboard | keyframe/motion reference boundary |
 | keyframe focal point, composition, camera/lens, frozen staging | storyboard | rendered keyframe prompt is cached |
 | motion order, performance path, camera/audio realization | video-prompts | end report compares with shot out-state |
 | delivery container membership, order, and container duration | video-prompts `delivery-containers.jsonl` | member accepted durations are read-only storyboard projections carrying refs; container duration equals their sum; rendered container text is cached |
 | finding, verdict, revision request | review | evidence points to reviewed artifact/hash |
+| input-reference or generated-result production observation | creator or authorized observer in project-private evidence | exact project/prompt/spec/reference slots/config only; review may diagnose and route a bounded revision, never generalize it automatically |
 | lifecycle, transactions, snapshots | shared core | metadata and hashes only |
 
 Shot boundary owns start/end position, pose, gaze, hands, held props, and visible

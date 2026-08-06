@@ -97,6 +97,49 @@ function discoverAllBooks(root) {
   return [...books.values()]
 }
 
+function trackingCheckpointIssue(book, requireState = false, expectedLastCommitted = null) {
+  const state = path.join(book, "追踪", "_tracking-state.json")
+  if (!fs.existsSync(state)) {
+    return requireState
+      ? `追踪/_tracking-state.json 缺失；已有正文项目走 /story-import 的「旧追踪项目迁移」重建追踪（不必重跑全书拆解），新书先用 tracking_commit.py init 初始化`
+      : null
+  }
+  let document
+  try {
+    document = JSON.parse(fs.readFileSync(state, "utf8"))
+  } catch {
+    return `追踪/_tracking-state.json 无法解析；停止写正文并重新 /story-import，不能猜测或手补状态`
+  }
+  if (!document || typeof document !== "object" || Array.isArray(document) || document.schema_version !== 4) {
+    return `追踪/_tracking-state.json 不是当前 schema_version=4；停止写正文并重新 /story-import，不保留旧结构兼容路径`
+  }
+  if (!Number.isInteger(document.state_revision)) {
+    return `追踪/_tracking-state.json 缺少整数 state_revision；停止写正文并重新 /story-import`
+  }
+  const context = path.join(book, "追踪", "上下文.md")
+  let contextRevision = null
+  try {
+    const match = fs.readFileSync(context, "utf8").match(/状态修订：(\d+)/)
+    if (match) contextRevision = Number(match[1])
+  } catch {}
+  if (contextRevision !== document.state_revision) {
+    const shown = contextRevision === null ? "缺失" : contextRevision
+    return `追踪/上下文.md 状态修订 ${shown} 与 _tracking-state.json 的 ${document.state_revision} 不一致；重新提交该章的 mode=revision 事务重建派生视图（expected_state_revision 取 追踪/_tracking-state.json 的 state_revision 字段（check 失败时不输出 JSON））`
+  }
+  if (expectedLastCommitted !== null) {
+    if (!Number.isInteger(document.last_committed_chapter)) {
+      return `追踪/_tracking-state.json 缺少整数 last_committed_chapter；停止写正文并重新 /story-import`
+    }
+    // 章号已在追踪范围内 = 回炉/改名/留原稿备份，不是首建新章：文件名新但章节早已提交过，
+    // 顺序校验对它恒为假（workflow-revision 的「备份原稿」步骤必然命中），跳过。
+    if (expectedLastCommitted < document.last_committed_chapter) return null
+    if (document.last_committed_chapter !== expectedLastCommitted) {
+      return `追踪已提交到第${document.last_committed_chapter}章，首建第${expectedLastCommitted + 1}章前必须先提交第${expectedLastCommitted}章追踪事务`
+    }
+  }
+  return null
+}
+
 function continuityFindings(root) {
   const messages = []
   for (const book of discoverAllBooks(root)) {
@@ -109,13 +152,27 @@ function continuityFindings(root) {
     } catch {}
 
     const context = path.join(book, "追踪", "上下文.md")
+    const checkpointIssue = trackingCheckpointIssue(book, chapters.length > 0)
+    if (checkpointIssue) {
+      messages.push(`[continuity] ${safeRelative(root, book)}：${checkpointIssue}。`)
+    }
     if (chapters.length && fs.existsSync(context)) {
       try {
         const newest = Math.max(...chapters.map((file) => fs.statSync(file).mtimeMs))
         const contextTime = fs.statSync(context).mtimeMs
         if (newest > contextTime + 1000) {
           const latest = chapters.reduce((left, right) => fs.statSync(left).mtimeMs > fs.statSync(right).mtimeMs ? left : right)
-          messages.push(`[continuity] ${safeRelative(root, book)}：正文已更新到「${path.basename(latest)}」但 追踪/上下文.md 更早，续写会断线——补更 上下文.md/伏笔.md 再继续。`)
+          messages.push(`[continuity] ${safeRelative(root, book)}：正文已更新到「${path.basename(latest)}」但续写状态卡更早——为该章提交 tracking_commit.py 事务、check 通过后再续写，禁止分别手改 上下文.md/伏笔.md。`)
+        }
+      } catch {}
+    }
+
+    // 续写状态卡预算：上下文.md 由事务工具整份重建，硬上限 12288 字节。
+    if (fs.existsSync(context)) {
+      try {
+        const contextSize = fs.statSync(context).size
+        if (contextSize > 12288) {
+          messages.push(`[continuity] ${safeRelative(root, book)}：追踪/上下文.md 已 ${contextSize} 字节，超出续写状态卡预算 12288 字节——提交一份 mode=revision 事务让 tracking_commit.py 整份重建，不要手改也不要继续追加。`)
         }
       } catch {}
     }
@@ -217,26 +274,37 @@ function proseBlockReason(root, absolute) {
     }
     return null
   }
-  if (parent !== "正文" || !/^第.*章.*\.md$/.test(base) || fs.existsSync(absolute)) return null
+  if (parent !== "正文" || !/^第.*章.*\.md$/.test(base)) return null
   const match = base.match(/^第0*(\d+)章/)
   if (!match) return null
   const chapter = match[1]
   const book = path.dirname(path.dirname(absolute))
+  const state = path.join(book, "追踪", "_tracking-state.json")
   // 这是守卫的 canonical case：agent 可能在任何脚手架存在前就首建 {书}/正文/第N章.md。
   // 是否“像一本书”不能作为放行条件；相对路径误判应在宿主 adapter 按 cwd 正确解析，而不是
   // 让核心守卫 fail open。
-  if (fs.existsSync(path.join(root, "拆文库", path.basename(book)))) return null
+  // story-import 在复制既有正文、尚未执行 tracking init 的窗口可以写；一旦 state 存在，
+  // 即进入当前追踪协议，不再因为保留了 拆文库/ 分析资产而永久绕过守卫。
+  if (fs.existsSync(path.join(root, "拆文库", path.basename(book))) && !fs.existsSync(state)) return null
+  const exists = fs.existsSync(absolute)
   const outlineDir = path.join(book, "大纲")
   let found = false
-  try {
-    found = fs.readdirSync(outlineDir).some((file) => {
-      const candidate = file.match(/^细纲_第0*(\d+)章.*\.md$/)
-      return candidate && candidate[1] === chapter
-    })
-  } catch {}
-  if (!found) {
-    return `⛔ 写正文被拦截：第 ${chapter} 章缺少细纲（${safeRelative(root, outlineDir)}/细纲_第${chapter}章.md）。先按 story-long-write 单章流程补建细纲再写正文。`
+  if (!exists) {
+    try {
+      found = fs.readdirSync(outlineDir).some((file) => {
+        const candidate = file.match(/^细纲_第0*(\d+)章.*\.md$/)
+        return candidate && candidate[1] === chapter
+      })
+    } catch {}
+    if (!found) {
+      return `⛔ 写正文被拦截：第 ${chapter} 章缺少细纲（${safeRelative(root, outlineDir)}/细纲_第${chapter}章.md）。先按 story-long-write 单章流程补建细纲再写正文。`
+    }
   }
+  const checkpointIssue = trackingCheckpointIssue(book, true, exists ? null : Number(chapter) - 1)
+  if (checkpointIssue) {
+    return `⛔ 写正文被拦截：${safeRelative(root, book)} 的${checkpointIssue}。`
+  }
+  if (exists) return null
   // 欠账门（无状态）：写第 N 章（首建）前，上一章有未清毒句式且未标「去味:跳过」豁免时先清再写。
   // 判据现算自上一章文件本身，不落任何状态文件；找不到上一章/读取失败一律放行（宁可漏拦不可误伤）。
   // js↔py 文案由 check-hook-regex-sync.sh 锁同步，判定由 test-prose-net-parity.sh Part E 锁 parity。
@@ -244,13 +312,16 @@ function proseBlockReason(root, absolute) {
   if (prevNum >= 1) {
     let prevFile = null
     try {
-      for (const file of fs.readdirSync(path.dirname(absolute))) {
-        const pm = file.match(/^第0*(\d+)章.*\.md$/)
-        if (pm && Number(pm[1]) === prevNum) {
-          prevFile = path.join(path.dirname(absolute), file)
-          break
-        }
-      }
+      // readdir 顺序在 ext4/overlayfs 上是哈希序：不排序就可能挑中同章号的原稿备份
+      // （workflow-revision 的「备份原稿」产物），拿早已被改写掉的旧文本报欠账。
+      // 显式排除 _原稿_ 备份并排序，保证四端与各文件系统上取到同一个「上一章」。
+      const candidates = fs.readdirSync(path.dirname(absolute))
+        .filter((file) => {
+          const pm = file.match(/^第0*(\d+)章.*\.md$/)
+          return pm && Number(pm[1]) === prevNum && !file.includes("_原稿_")
+        })
+        .sort()
+      if (candidates.length) prevFile = path.join(path.dirname(absolute), candidates[0])
     } catch {}
     if (prevFile) {
       let prevText = null
@@ -707,6 +778,7 @@ module.exports = {
   findFirst,
   discoverActiveBook,
   discoverAllBooks,
+  trackingCheckpointIssue,
   continuityFindings,
   extractProseTargets,
   extractPatchTargets,

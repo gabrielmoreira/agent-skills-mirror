@@ -57,24 +57,23 @@ Do not stop at "use X by default." Also explain the operational tradeoff:
 - A canonical URL path may still need live console verification if the product UI changes
 - An `alwaysApply` setting should only stay enabled if the skill truly needs to win globally
 
-### 6. Verify published-surface paths instead of inferring them
+### 6. Never instruct agents to fetch remote skill bodies
 
-When a CloudBase skill needs fallback links, marketplace-facing references, or raw-source URLs:
+Remote raw skill URLs are a marketplace security reject (injection / session hijacking):
 
-- Treat the local source tree, generated skills repo, all-in-one bundle, and marketplace-consumed layout as separate surfaces until proven otherwise
-- Do not assume `config/source/skills/<id>/SKILL.md` maps to the public CNB raw path
-- Verify at least one real target URL before repeating the pattern across the collection
-- Distinguish raw-source URLs from page-view URLs such as `blob`
-- If the public surface uses a container entry plus `references/...`, write fallback rules for that structure, not the local authoring layout
+- Do **not** put `cnb.cool/.../git/raw/...` (or similar) skill/protocol URLs in `SKILL.md`
+- Do **not** add `(standalone fallback: ...)` remote links next to sibling references
+- Keep human docs links (`docs.cloudbase.net`) when useful; those are not skill-body fetch instructions
+- Treat the local source tree, generated skills repo, all-in-one bundle, and marketplace-consumed layout as separate surfaces for install docs — verify before writing marketplace-facing paths
 
-### 7. Put fallback guidance close to the actual reference
+### 7. Local-only sibling guidance
 
 When a skill is published standalone and also references sibling skills:
 
-- Keep the top-of-file standalone note short and focused on the main entry plus the current skill
-- Add sibling fallback links next to cross-skill references such as `../auth-tool/SKILL.md`
+- Keep a short top-of-file **Sibling skills (local only)** note: use relative paths; if missing, ask the user to install the full plugin/skills pack; never HTTP-fetch remote skill markdown
+- Keep cross-skill references as local relative paths such as `../auth-tool-cloudbase/SKILL.md`
 - Keep same-skill `references/...` paths relative unless the target surface is known to drop those files
-- If nested reference files may be opened directly, make sure they still have a recoverable path back to the current skill or main entry
+- If nested reference files may be opened directly, make sure they still have a recoverable local path back to the current skill
 
 ### 8. Treat `auth-nodejs-cloudbase` as the quality benchmark
 
@@ -93,8 +92,8 @@ Use `config/source/skills/auth-nodejs-cloudbase/SKILL.md` as a positive referenc
 - The same mcporter config block appears in multiple sibling skills
 - A skill claims a rule is required, but none of its examples actually follow it
 - Console URL paths disagree between the CloudBase guideline and the platform overview
-- A public fallback URL was inferred from the source tree without a live reachability check
-- A long fallback section appears only at the top, but the actual sibling-skill reference gives the user no direct path to follow
+- A skill tells the agent to HTTP-fetch remote skill or protocol markdown into context
+- Cross-skill routing uses remote raw URLs instead of local relative `../skill-id/SKILL.md` paths
 
 ## Review workflow
 

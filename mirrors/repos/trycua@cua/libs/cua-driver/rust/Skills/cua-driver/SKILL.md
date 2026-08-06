@@ -1,7 +1,7 @@
 ---
 name: cua-driver
 description: Drive a native GUI app (macOS, Windows, Linux) via the cua-driver CLI (default) or MCP server; snapshot its accessibility tree, act through snapshot-bound element tokens, native menu paths, exact window geometry, or pixel coordinates, and verify from fresh state. Use when the user asks you to operate, drive, automate, or perform a GUI task in a real application on the host.
-version: 0.17.0 # x-release-please-version
+version: 0.18.0 # x-release-please-version
 metadata:
   openclaw:
     requires:
@@ -501,6 +501,13 @@ success” above. The old `verified`, `path`, coordinates, scope, and
 `escalation.recommended` response fields no longer exist.
 The full wire contract and 0.14 migration notes are in
 `../../../docs/action-result-contract.md`.
+
+A successful accessibility value write can still return
+`effect:"unverifiable"` when the provider publishes its new value only after
+the action call unwinds. Take a fresh snapshot before retrying; an immediate
+retry can duplicate text. An explicit pixel escalation is reserved for a web
+surface whose accessibility layer echoed the write without proving that the
+renderer observed it.
 
 `get_window_state` itself, when the AX tree comes back empty (a non-AX
 surface like Electron/Chromium/canvas), returns `degraded: true`

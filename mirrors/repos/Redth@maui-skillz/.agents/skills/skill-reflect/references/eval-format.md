@@ -67,8 +67,10 @@ Critical rules:
 }
 ```
 
-Written to `.skill-feedback/evals/<slug>.portable.json`. Works with any lightweight harness
-or manual inspection; not consumed by skill-creator directly.
+When the user separately requests and authorizes a portable eval file, write it to
+`.skill-feedback/evals/<slug>.portable.json`. In Artifact mode, embed this form in the report;
+report-only authorization does not authorize an additional eval file. The separate file works
+with any lightweight harness or manual inspection; it is not consumed by skill-creator directly.
 
 **Portable → expectations string mapping:**
 ```
@@ -110,6 +112,11 @@ skill across multiple runs and reports a trigger rate.
   Do not write a test assertion or a description of the problem.
 - Must be **self-contained**: no placeholders, no assumed context.
 - Strip all PII: fictional service names, synthetic paths, generic role descriptions.
+- **Invent an analogous domain.** The prompt must exercise the skill's friction without
+  revealing the real product/app/project, its type or purpose, or its implementation. Move
+  the scenario into a neutral, made-up context that shares none of the original specifics
+  (CONTRACT §0.3; `references/privacy-scrub.md` §2a). Example: a payments-portal bug becomes
+  a generic "scaffold a data model with a foreign key" task.
 
 ### 5.2 `expectations` strings (task evals)
 
@@ -126,10 +133,22 @@ skill across multiple runs and reports a trigger rate.
 
 ### 5.4 Content rules (PII / privacy)
 
+For strict analysis, strict artifacts, and every remote candidate:
+
 - `prompt`, `expected_output`, `files`, and all expectation strings must be
   synthetic/paraphrased.
 - Never embed real file paths, hostnames, user aliases, or token values.
-- The scrubber (`scripts/scrub.py`) runs as a backstop; author-side caution is primary.
+- Never embed product/app/project names, the app's type or purpose, or domain-specific
+  entity/feature names — use invented, analogous stand-ins (`references/privacy-scrub.md` §2a).
+
+For an explicitly authorized `technical-local` review of a user-owned/local skill, the
+local-only task eval may retain repository-relative paths, symbols, API/flag names, and CI job
+boundaries when those details are required to reproduce the finding. It must still exclude
+PII, secrets, runtime values, absolute paths, private URLs, and raw transcript excerpts. Do
+not copy a technical-local eval into a remote issue; regenerate a strict, synthetic version.
+
+The scrubber (`scripts/scrub.py`) runs as a backstop in every mode; author-side caution is
+primary.
 
 ---
 
@@ -220,6 +239,6 @@ No `evals/evals.json` entry is emitted for `trigger-problem` findings.
 - [ ] `expectations` is a **flat array of plain strings** — NOT `{type, value}` objects
 - [ ] At least one positive expectation captures the corrected behaviour
 - [ ] At least one negative expectation (`"The output does not …"`) guards the observed regression
-- [ ] Portable form accompanies each task eval (or config disables it)
+- [ ] Portable form accompanies each task eval (embedded in the report or in a separately
+      authorized file; config may disable it)
 - [ ] No PII, real paths, real hostnames, real token values anywhere
-

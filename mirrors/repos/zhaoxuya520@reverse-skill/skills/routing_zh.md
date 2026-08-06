@@ -29,6 +29,7 @@
 | 协议逆向 / 自定义协议 | `reverse-engineering/platforms.md` — 网络协议 | `js-reverse/`（如果是 WebSocket/HTTP） |
 | Go / Rust 二进制 | `reverse-engineering/languages-compiled.md` + `go-reverse.md` | `ida-reverse/` 或 `radare2/` |
 | **CTF 竞赛全栈** | `../CTF-Sandbox-Orchestrator/ctf-sandbox-orchestrator/SKILL.md` — 总控入口 | 按证据面路由到 40+ 子技能 |
+| **CTF ZIP / PKZIP 压缩包题** | `../CTF-Sandbox-Orchestrator/competition-zip-archive/SKILL.md` — legacy ZipCrypto + `bkcrack` 明文攻击 | 优先于密码暴力破解 |
 | Web 运行时 / API | `../CTF-Sandbox-Orchestrator/competition-web-runtime/SKILL.md` | — |
 | 云 / 容器 / K8s | `../CTF-Sandbox-Orchestrator/competition-agent-cloud/SKILL.md` | — |
 | Windows / AD / 身份 | `../CTF-Sandbox-Orchestrator/competition-identity-windows/SKILL.md` | — |
@@ -65,6 +66,7 @@
 | "模拟执行/Unicorn" | `reverse-engineering/tools.md` — Unicorn 章节 |
 | "补环境/Node 复现" | `js-reverse/references/env-patching.md` |
 | "CTF 题/竞赛逆向" | `reverse-engineering/patterns-ctf*.md` |
+| "CTF ZIP/PKZIP/bkcrack/压缩包明文攻击" | `../CTF-Sandbox-Orchestrator/competition-zip-archive/SKILL.md` |
 | "写报告/写文档/出报告" | `docs-generator/` — 技术文档编写 |
 | "写 writeup" | `docs-generator/` — CTF writeup 模板 |
 | "打开网页/浏览器自动化/填表" | `browser-automation/SKILL.md` — Playwright 浏览器操作 |

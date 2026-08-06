@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 35 file(s) materialized.
+Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `superset-sh/superset` — 26 default patterns, 0 followed patterns, 3
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 35 |
+| Files         | 41 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,27 +59,27 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`.agents/commands/ci-check.md`](.agents/commands/ci-check.md) |
-| 2 | ✓ | [`.agents/commands/clean-neon-branches.md`](.agents/commands/clean-neon-branches.md) |
-| 3 | ✓ | [`.agents/commands/create-plan.md`](.agents/commands/create-plan.md) |
-| 4 | ✓ | [`.agents/commands/create-pr.md`](.agents/commands/create-pr.md) |
-| 5 | ✓ | [`.agents/commands/deslop.md`](.agents/commands/deslop.md) |
-| 6 | ✓ | [`.agents/commands/draft.md`](.agents/commands/draft.md) |
-| 7 | ✓ | [`.agents/commands/pr/create-pr.md`](.agents/commands/pr/create-pr.md) |
-| 8 | ✓ | [`.agents/commands/refresh-compare-pages.md`](.agents/commands/refresh-compare-pages.md) |
-| 9 | ✓ | [`.agents/commands/respond-to-pr-comments.md`](.agents/commands/respond-to-pr-comments.md) |
-| 10 | ✓ | [`.agents/commands/task-run.md`](.agents/commands/task-run.md) |
-| 11 | ✓ | [`.agents/commands/task.md`](.agents/commands/task.md) |
-| 12 | ✓ | [`.agents/skills/db-migrations/SKILL.md`](.agents/skills/db-migrations/SKILL.md) |
-| 13 | ✓ | [`.agents/skills/decide/agents/openai.yaml`](.agents/skills/decide/agents/openai.yaml) |
-| 14 | ✓ | [`.agents/skills/decide/SKILL.md`](.agents/skills/decide/SKILL.md) |
-| 15 | ✓ | [`.agents/skills/redesign/agents/openai.yaml`](.agents/skills/redesign/agents/openai.yaml) |
-| 16 | ✓ | [`.agents/skills/redesign/SKILL.md`](.agents/skills/redesign/SKILL.md) |
-| 17 | ✓ | [`.agents/skills/ticket-format/SKILL.md`](.agents/skills/ticket-format/SKILL.md) |
-| 18 | ✓ | [`.github/prompts/beautify-screenshot.ts`](.github/prompts/beautify-screenshot.ts) |
-| 19 | ✓ | [`.github/prompts/generate-changelog.md`](.github/prompts/generate-changelog.md) |
+| 1 | ✓ | [`.agents/commands/canaryrelease.md`](.agents/commands/canaryrelease.md) |
+| 2 | ✓ | [`.agents/commands/ci-check.md`](.agents/commands/ci-check.md) |
+| 3 | ✓ | [`.agents/commands/clean-neon-branches.md`](.agents/commands/clean-neon-branches.md) |
+| 4 | ✓ | [`.agents/commands/create-plan.md`](.agents/commands/create-plan.md) |
+| 5 | ✓ | [`.agents/commands/create-pr.md`](.agents/commands/create-pr.md) |
+| 6 | ✓ | [`.agents/commands/deslop.md`](.agents/commands/deslop.md) |
+| 7 | ✓ | [`.agents/commands/draft.md`](.agents/commands/draft.md) |
+| 8 | ✓ | [`.agents/commands/pr/create-pr.md`](.agents/commands/pr/create-pr.md) |
+| 9 | ✓ | [`.agents/commands/refresh-compare-pages.md`](.agents/commands/refresh-compare-pages.md) |
+| 10 | ✓ | [`.agents/commands/respond-to-pr-comments.md`](.agents/commands/respond-to-pr-comments.md) |
+| 11 | ✓ | [`.agents/commands/task-run.md`](.agents/commands/task-run.md) |
+| 12 | ✓ | [`.agents/commands/task.md`](.agents/commands/task.md) |
+| 13 | ✓ | [`.agents/skills/db-migrations/SKILL.md`](.agents/skills/db-migrations/SKILL.md) |
+| 14 | ✓ | [`.agents/skills/decide/agents/openai.yaml`](.agents/skills/decide/agents/openai.yaml) |
+| 15 | ✓ | [`.agents/skills/decide/SKILL.md`](.agents/skills/decide/SKILL.md) |
+| 16 | ✓ | [`.agents/skills/redesign/agents/openai.yaml`](.agents/skills/redesign/agents/openai.yaml) |
+| 17 | ✓ | [`.agents/skills/redesign/SKILL.md`](.agents/skills/redesign/SKILL.md) |
+| 18 | ✓ | [`.agents/skills/ticket-format/SKILL.md`](.agents/skills/ticket-format/SKILL.md) |
+| 19 | ✓ | [`.github/prompts/beautify-screenshot.ts`](.github/prompts/beautify-screenshot.ts) |
 | 20 | ✓ | [`.github/prompts/triage-issue.md`](.github/prompts/triage-issue.md) |
-| 21 | ✓ | [`.github/prompts/update-docs.md`](.github/prompts/update-docs.md) |
+| 21 | ✓ | [`.github/prompts/update-roadmap.md`](.github/prompts/update-roadmap.md) |
 | 22 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 23 | ✓ | [`apps/desktop/AGENTS.md`](apps/desktop/AGENTS.md) |
 | 24 | ✓ | [`apps/desktop/CLAUDE.md`](apps/desktop/CLAUDE.md) |
@@ -92,8 +92,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`apps/mobile/AGENTS.md`](apps/mobile/AGENTS.md) |
 | 32 | ✓ | [`apps/mobile/CLAUDE.md`](apps/mobile/CLAUDE.md) |
 | 33 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 34 | ✓ | [`plugins/superset/skills/superset-orchestration/SKILL.md`](plugins/superset/skills/superset-orchestration/SKILL.md) |
-| 35 | ✓ | [`plugins/superset/skills/superset/SKILL.md`](plugins/superset/skills/superset/SKILL.md) |
+| 34 | ✓ | [`plugins/superset/skills/10x/SKILL.md`](plugins/superset/skills/10x/SKILL.md) |
+| 35 | ✓ | [`plugins/superset/skills/automate/SKILL.md`](plugins/superset/skills/automate/SKILL.md) |
+| 36 | ✓ | [`plugins/superset/skills/contribute/SKILL.md`](plugins/superset/skills/contribute/SKILL.md) |
+| 37 | ✓ | [`plugins/superset/skills/doctor/SKILL.md`](plugins/superset/skills/doctor/SKILL.md) |
+| 38 | ✓ | [`plugins/superset/skills/feedback/SKILL.md`](plugins/superset/skills/feedback/SKILL.md) |
+| 39 | ✓ | [`plugins/superset/skills/orchestrate/SKILL.md`](plugins/superset/skills/orchestrate/SKILL.md) |
+| 40 | ✓ | [`plugins/superset/skills/setup/SKILL.md`](plugins/superset/skills/setup/SKILL.md) |
+| 41 | ✓ | [`plugins/superset/skills/standup/SKILL.md`](plugins/superset/skills/standup/SKILL.md) |
 
 ---
 

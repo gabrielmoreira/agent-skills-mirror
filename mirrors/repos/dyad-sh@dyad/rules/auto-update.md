@@ -7,3 +7,12 @@ Debugging update failures reported by users, or changing updater/debug-report co
 - The full .NET inner-exception chain persists across restarts in Squirrel's own log next to `Update.exe`: `%LocalAppData%\dyad\SquirrelSetup.log`. Debug bundles capture its tail via `readUpdaterLogs()` in `src/ipc/handlers/debug_handlers.ts` (`updaterLogs` field).
 - Bug-report bodies travel in the GitHub issue-creation URL (`openGitHubIssue` in `HelpDialog.tsx`), so any new log section added there must be tightly size-capped (~1-2k chars) to avoid overlong URLs. When capping updater logs, reserve space for the `Last updater error (this session)` block; blindly taking the tail can keep only Squirrel stack tails and drop the root cause. Do not split updater log sections on arbitrary blank lines because .NET exception text can contain internal blank lines; use known section headers such as `Squirrel*.log (tail):`.
 - Session upload bundles are POSTed and can carry larger updater log tails, but every new uploaded debug field must also be rendered in the `HelpDialog` review screen so users can inspect it before submitting.
+
+## Trusted releases
+
+- Auto-update clients must only receive releases accepted by the provenance verifier in `dyad-cloud/apps/api/src/app/v1/update/release_trust.ts`; a GitHub release and its asset digests are not sufficient trust signals by themselves.
+- The verifier allowlists the exact SHA-256 of `.github/workflows/release.yml`. Any intentional workflow edit must be coordinated with that allowlist or new releases will fail closed and disappear from update/landing feeds.
+- Generate platform provenance from Electron Forge's publishable artifacts under `out/make`, not all of `out`; the latter also contains unpackaged application files that are not release assets.
+- GitHub's releases-list API only returns draft releases to tokens with push access. Keep post-upload draft verification inside a `contents: write` job (currently `publish`); a read-only follow-up job reports the draft as missing even when every asset uploaded successfully.
+- Electron Forge sanitizes GitHub release asset basenames before upload (for example, spaces and `~` become `.`). Record that sanitized name in provenance, and keep post-upload verification comparing every exact name, digest, and size so publisher behavior cannot drift silently.
+- Validate attestation policy fixtures against a real `actions/attest` statement: its workflow path has no leading slash, and its builder ID is the workflow identity URL rather than a generic hosted-runner URL.

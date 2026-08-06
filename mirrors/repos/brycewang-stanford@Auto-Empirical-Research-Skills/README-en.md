@@ -592,11 +592,11 @@ Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and the [`docs/
 
 If AERS helps your work, please **cite it** ([CITATION.cff](CITATION.cff)) and **star the repo** so more researchers can find it.
 
-<a href="https://www.star-history.com/#brycewang-stanford/Auto-Empirical-Research-Skills&Date">
+<a href="https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/stargazers">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=brycewang-stanford%2FAuto-Empirical-Research-Skills&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=brycewang-stanford%2FAuto-Empirical-Research-Skills&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=brycewang-stanford%2FAuto-Empirical-Research-Skills&type=Date" width="600" />
+   <source media="(prefers-color-scheme: dark)" srcset="images/star-history-dark.svg" />
+   <source media="(prefers-color-scheme: light)" srcset="images/star-history.svg" />
+   <img alt="Star History Chart" src="images/star-history.svg" width="600" />
  </picture>
 </a>
 

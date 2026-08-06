@@ -870,24 +870,30 @@ The `RedactingFilter` preserves `record.exc_info` (the live exception object) so
 
 ### Setting Up Nightly E2E Tests
 
-1. Get storage state: `cat ~/.notebooklm/profiles/default/storage_state.json`
+1. Bootstrap a master token once: `notebooklm login --master-token --account <you@gmail.com>`
+   (needs the `[headless]` extra; see
+   [installation.md → master-token auth](installation.md#alternative-master-token-auth-no-cookie-file-to-ship-survives-expiry)).
 2. Add GitHub secrets:
-   - `NOTEBOOKLM_AUTH_JSON`: Storage state JSON
+   - `NOTEBOOKLM_MASTER_TOKEN_JSON` (**required**): contents of
+     `~/.notebooklm/profiles/default/master_token.json`. The workflows exit `1`
+     when it is empty — it is the only credential they ship.
    - `NOTEBOOKLM_READ_ONLY_NOTEBOOK_ID`: Your test notebook ID
-   - `NOTEBOOKLM_MASTER_TOKEN_JSON` (optional but recommended): contents of
-     `~/.notebooklm/profiles/default/master_token.json`, produced by a one-time
-     `notebooklm login --master-token` bootstrap (see
-     [installation.md → master-token auth](installation.md#alternative-master-token-auth-no-cookie-file-to-ship-survives-expiry)).
 
-The live-E2E workflows (`verify-package.yml`, `nightly.yml`, `rpc-health.yml`)
-do not hand pytest an inline `NOTEBOOKLM_AUTH_JSON` env var. Their
-"Materialize auth profile" step writes the secrets to a real on-disk profile
-(`~/.notebooklm/profiles/default/storage_state.json` + `master_token.json`,
-mode `0600`) because the layer-4 master-token re-mint only engages when
-`master_token.json` sits beside the profile's `storage_state.json` — env-var
-auth bypasses it entirely. With the master-token secret set, the step then
-runs the legacy forced route `notebooklm login --master-token-refresh` to pre-mint fresh cookies
-before any test touches them, preserving a deterministic fresh-jar CI setup;
+   `NOTEBOOKLM_AUTH_JSON` is **no longer used by any workflow**. Any other
+   active client supersedes a cookie snapshot within ~10 minutes (the ~600 s
+   rotation cadence), and a *superseded* value has been observed failing
+   within roughly half an hour — so a snapshot exported on a workstation was
+   routinely dead before a scheduled run started (see
+   [auth-cookie-lifecycle.md §2.5](auth-cookie-lifecycle.md#25-four-timers-people-confuse)).
+
+The live-E2E workflows (`verify-package.yml`, `nightly.yml`, `rpc-health.yml`,
+`verify-artifacts.yml`) ship no inline credential at all. Their "Materialize
+auth profile" step writes `master_token.json` to a real on-disk profile (mode
+`0600`) because the layer-4 re-mint only engages when the token sits beside the
+profile's `storage_state.json` — env-var auth bypasses it entirely. The step
+then runs `notebooklm login --master-token-refresh`, which **bootstraps**
+`storage_state.json` from the token, preserving a deterministic fresh-jar CI
+setup;
 ordinary file-backed cold loading now also reaches layer 4 after a confirmed
 login redirect, and layer 4 continues to cover mid-run expiry. So as long as
 the pre-mint succeeds, a cookie secret that Google has rotated no longer fails

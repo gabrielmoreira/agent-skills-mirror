@@ -6,9 +6,9 @@
 
 ## 统计
 
-- 真实项目数：9
+- 真实项目数：11
 - 种子参考数：17
-- 总条目数：25
+- 总条目数：28
 
 ## 按场景分类
 
@@ -29,6 +29,8 @@
 - [[种子] seed-015_iot-firmware-uart](./seed-015_iot-firmware-uart.md)
 
 ### Web / API / 渗透测试
+
+- [2026-08-01_pentest-encryption-oracle-public-template-sql-admin-takeover: .NET CMS 通用加密 oracle、公开密文模板消费者、完整 STL/模板解析、原始 SQL `UPDATE RETURNING`、官方管理员验证器新旧口令差分与隔离 PostgreSQL 清理闭环](./2026-08-01_pentest-encryption-oracle-public-template-sql-admin-takeover.md)
 
 - [2026-07-18_gin-juice-client-friction](./2026-07-18_gin-juice-client-friction.md)
 - [2026-07-05_dsl-vm-captcha-reverse](./2026-07-05_dsl-vm-captcha-reverse.md)

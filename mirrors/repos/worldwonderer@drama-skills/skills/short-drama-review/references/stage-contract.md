@@ -70,8 +70,8 @@
   被检查的字节。两者都没有时保持 `unverified`，负面提示词不能代替证据。
 - **观众揭示时机**：某一事实何时可被观众看到，由已接受的可见性决定绑定其来源、载体、
   权限、触发与保护方式。构图既不能提前泄露该事实，也不能遮掉本环节必须传达的载体。
-- **母版、补拍与替代**：补拍默认只补充、不替代母版。声明 `master | pickup | alternate`，
-  用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
+- **母版、补拍与替代**：补拍默认只补充、不替代母版。普通母版不增加版本范围字段；只有
+  补拍/替代版才声明 `pickup | alternate`，用同一文件内稳定的记录 ID 说明母版与补充关系，并把每项原文要求对应到当前字段或说明
   去向。只有下游独立审查结论才能绑定固定 hash 并批准替代，不得回写形成循环引用。
 
 ## 本阶段规则
@@ -89,6 +89,7 @@
 | REV-07 | structural_invariant | An end-to-end drafting request cannot impersonate creator acceptance; preview chains remain provisional and undeliverable. |
 | REV-08 | craft_default | When authorized text notes report production defects, trace text/subtitle residue, music-boundary violations, wardrobe drift, axis breaks, or lip-sync mismatch to the exact prompt/spec text and keep unobserved outcomes unknown. |
 | REV-09 | reviewed_invariant | After prompt revision or repackaging, recheck source coverage and every applicable accepted directive; correct asset bindings alone do not prove compliance. |
+| REV-10 | reviewed_invariant | A project-calibration finding distinguishes input-reference from generated-result observation, binds the exact project, prompt/spec hashes, stable reference slots, production configuration, method and limits, and proposes the smallest owner-routed change with a preserve set; it does not generalize across projects or infer quality from task state. |
 
 规则分级由高到低：`structural_invariant`（结构缺陷，阻断）、
 `reviewed_invariant`（需证据判断）、`craft_default`（常用做法，可覆盖）、

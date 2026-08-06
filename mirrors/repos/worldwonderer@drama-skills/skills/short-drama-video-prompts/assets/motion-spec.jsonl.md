@@ -20,89 +20,11 @@
     "record_id": "KEY-<id>",
     "owner": "short-drama-storyboard"
   },
-  "purpose_ref": {
-    "artifact": "剧集/<EP>/storyboard/shots.jsonl",
+  "production_profile_ref": {
+    "owner": "creator",
+    "artifact": "short-drama.json",
     "hash": "<sha256>",
-    "record_id": "SHOT-<id>",
-    "field": "/purpose",
-    "owner": "short-drama-storyboard"
-  },
-  "coverage_scope": {
-    "mode": "master",
-    "source_obligations": [
-      {
-        "kind": "action",
-        "source_ref": {
-          "owner": "short-drama-write",
-          "artifact": "剧集/<EP>/screenplay-index.jsonl",
-          "hash": "<sha256>",
-          "record_id": "BLK-<id>"
-        },
-        "disposition": "covered_now",
-        "motion_field": "/ordered_subject_motion/0"
-      },
-      {
-        "kind": "reaction",
-        "source_ref": {
-          "owner": "short-drama-storyboard",
-          "artifact": "剧集/<EP>/storyboard/shots.jsonl",
-          "hash": "<sha256>",
-          "record_id": "SHOT-<id>",
-          "field": "/purpose"
-        },
-        "disposition": "covered_now | retained_in_master | separate_pickup | requires_storyboard_revision",
-        "motion_field": "/<current motion field or none>"
-      },
-      {
-        "kind": "dialogue",
-        "source_ref": {
-          "owner": "short-drama-write",
-          "artifact": "剧集/<EP>/screenplay-index.jsonl",
-          "hash": "<sha256>",
-          "record_id": "BLK-<EP>-<SC>-D<nn>"
-        },
-        "disposition": "covered_now | retained_in_master | separate_pickup | requires_storyboard_revision",
-        "motion_field": "/audio/0"
-      },
-      {
-        "kind": "reveal",
-        "source_ref": {
-          "owner": "short-drama-storyboard",
-          "artifact": "剧集/<EP>/storyboard/shots.jsonl",
-          "hash": "<sha256>",
-          "record_id": "SHOT-<id>",
-          "field": "/audience_visibility/0"
-        },
-        "disposition": "covered_now | retained_in_master | separate_pickup | requires_storyboard_revision",
-        "motion_field": "/performance_arc"
-      },
-      {
-        "kind": "directive",
-        "source_ref": {
-          "owner": "creator",
-          "artifact": "short-drama.json",
-          "hash": "<sha256>",
-          "field": "/creator_authority/production_profile"
-        },
-        "disposition": "covered_now | retained_in_master | separate_pickup | requires_storyboard_revision",
-        "motion_field": "/<field that carries this project requirement>"
-      },
-      {
-        "kind": "end_boundary",
-        "source_ref": {
-          "owner": "short-drama-storyboard",
-          "artifact": "剧集/<EP>/storyboard/shots.jsonl",
-          "hash": "<sha256>",
-          "record_id": "SHOT-<id>",
-          "field": "/end_boundary"
-        },
-        "disposition": "covered_now | retained_in_master | separate_pickup | requires_storyboard_revision",
-        "motion_field": "/end_report"
-      }
-    ],
-    "replacement_intent": "does_not_replace_master | requests_supersession",
-    "master_motion_id": null,
-    "supplements_motion_ids": []
+    "field": "/creator_authority/production_profile"
   },
   "boundary_refs": {
     "duration": {
@@ -138,6 +60,8 @@
   },
   "reference_bindings": [
     {
+      "slot_id": "REF-<stable-slot>",
+      "order": 1,
       "artifact_ref": {
         "owner": "short-drama-storyboard",
         "artifact": "剧集/<EP>/storyboard/keyframes.jsonl",
@@ -187,13 +111,6 @@
       }
     }
   ],
-  "performance_arc": {
-    "trigger": "<source cue>",
-    "receive": "<注意变化>",
-    "process_visible": "<可见处理>",
-    "choice": "<行动/抑制>",
-    "landing": "<与 accepted end 相容>"
-  },
   "camera": {
     "behavior": "locked | move | transition",
     "motivation": "reveal | pressure | alignment | relationship | transition | deliberate_stillness",
@@ -216,10 +133,10 @@
   "audio": [
     {
       "source_ref": {
-        "artifact": "<screenplay/shot>",
+        "artifact": "剧集/<EP>/screenplay-index.jsonl",
         "hash": "<sha256>",
         "owner": "short-drama-write",
-        "record_id": "<dialogue|VO|OS|SFX-id>"
+        "record_id": "BLK-<EP>-<SC>-D<nn>"
       },
       "speaker_ref": {
         "artifact": "设定集/characters.jsonl",
@@ -296,7 +213,16 @@
 可发布的稳定快照。要找某个镜头属于哪个容器，从容器记录的 `members[]` 反查，不在本文件里
 存副本。容器记录见 [delivery-container.jsonl.md](delivery-container.jsonl.md)。
 
-复制后删除不适用的可选字段和占位引用。`reported_end` 只作比较；末镜没有真实下一镜时改用
+默认 master 不重复 `purpose_ref` 或 `coverage_scope`：镜头目的、场次计划与原文覆盖从准确
+`shot_ref` 及其上游读取。只有 pickup/alternate 才按
+[motion-recipe.md](../references/motion-recipe.md) 增加 `coverage_scope`，记录相对母版的补充、保留与去向。
+`boundary_refs` 只保留结构校验需要的 duration/start/end/next-start 精确字段投影，不再重复镜头目的、
+场次计划或原文职责；删除它前必须先让 timing 与 continuity 校验器能从 `shot_ref` 安全解析同一快照。
+
+普通记录省略 `performance_arcs[]` 与 `attention_handoffs[]`；存在可见表演变化或注意交接时，按
+[`performance.fragment.json`](performance.fragment.json) 插入完整字段。空镜、道具细节、纯空间
+转场和只有物理动作的镜头不编造 arc。多参考的 `slot_id` 稳定且 `order` 唯一。
+`reported_end` 只作比较；末镜没有真实下一镜时改用
 `next_start_locator`。附加参考为空时使用空数组；对白说话者与声音方向只有在已接受引用存在时才填写。
 母版、补拍和替代关系保留在同一规格文件内，替代决定由独立审查结论拥有。具体取舍按
 `references/motion-recipe.md` 与 `references/review-and-fixtures.md` 判断。

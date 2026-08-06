@@ -145,6 +145,13 @@
 文字政策不是对模型效果的保证，而是创作和后期工作的要求。专名、号码或网址尚未获得
 明确接受时，不要编造。
 
+“语义上必须出现签名”不等于已经拥有可复制的正式签名字形。只有签名归属或剧情职责、没有
+创作者接受的字形资产时，保留准确来源引用并阻断 `readable`；仅在已接受文字政策允许
+`postproduction` 时可预留承载区，不得用姓名、伪签名或自行设计的笔画冒充正式字形。
+若人物的接收或反转依赖这项文字，不得一面保留空白承载区、一面让人物认出签名；候选文本
+保留 `<正式签名字形-ref>` 未决引用，并把涉及可读识别的帧/提示词范围标为 `blocked`，直到
+字形或已接受的合成处理真正到位。
+
 ### 检查输入参考图（`IMG-08`）
 
 文字政策同时管输出意图和输入参考。只有创作者/参考图权利人给出可以核对的画面
@@ -167,9 +174,10 @@
 
 ### 参考图可以决定哪些内容（`IMG-09`）
 
-`reference_bindings` 为每张参考记录准确的 `artifact_ref`、一个主要 `role`、
-`may_control`、`must_not_control`、`admission_status`、可选的准确
-`reference_observation_ref` 与 `unresolved_risks`。常见用途包括身份、造型/状态、
+`reference_bindings` 为每张参考记录稳定 `slot_id`、显式唯一 `order`、准确的 `artifact_ref`、
+一个主要 `role`、`may_control`、`must_not_control`、`admission_status`、可选的准确
+`reference_observation_ref` 与 `unresolved_risks`。数组重排或插入新参考不能改变已有槽位语义。
+常见用途包括身份、造型/状态、
 地理、构图、尺度和效果；项目也可以增加更具体的用途。
 
 - 身份参考不自动决定姿势、构图或临时造型；

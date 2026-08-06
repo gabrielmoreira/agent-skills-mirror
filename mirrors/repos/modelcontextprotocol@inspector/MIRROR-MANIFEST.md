@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 10 followed patterns, 24 file(s) materialized.
+Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 11 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 10 followed 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 10 |
-| Files         | 24 |
+| Followed pats | 11 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,7 +52,8 @@ Mirror of `modelcontextprotocol/inspector` — 26 default patterns, 10 followed 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `specification/v2_cli_tui_launcher.md`
-- `CONTRIBUTORS.md`
+- `CONTRIBUTING.md`
+- `SECURITY.md`
 - `README.md`
 - `clients/web/README.md`
 - `clients/cli/README.md`
@@ -68,30 +69,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 3 | ✓ | [`clients/cli/__tests__/README.md`](clients/cli/__tests__/README.md) |
-| 4 | ✓ | [`specification/README.md`](specification/README.md) |
-| 5 | ✓ | [`specification/v1_problems.md`](specification/v1_problems.md) |
-| 6 | ✓ | [`specification/v2_auth.md`](specification/v2_auth.md) |
-| 7 | ✓ | [`specification/v2_catalog_launch_config.md`](specification/v2_catalog_launch_config.md) |
-| 8 | ✓ | [`specification/v2_new_spec_impact.md`](specification/v2_new_spec_impact.md) |
-| 9 | ✓ | [`specification/v2_scope.md`](specification/v2_scope.md) |
-| 10 | ✓ | [`specification/v2_server.md`](specification/v2_server.md) |
-| 11 | ✓ | [`specification/v2_servers_file.md`](specification/v2_servers_file.md) |
-| 12 | ✓ | [`specification/v2_storage.md`](specification/v2_storage.md) |
-| 13 | ✓ | [`specification/v2_ux.md`](specification/v2_ux.md) |
-| 14 | ✓ | [`specification/v2_web_client.md`](specification/v2_web_client.md) |
-| 15 | → | [`clients/cli/README.md`](clients/cli/README.md) |
-| 16 | → | [`clients/launcher/README.md`](clients/launcher/README.md) |
-| 17 | → | [`clients/tui/README.md`](clients/tui/README.md) |
-| 18 | → | [`clients/web/README.md`](clients/web/README.md) |
-| 19 | → | [`CONTRIBUTORS.md`](CONTRIBUTORS.md) |
-| 20 | → | [`docs/launcher-config-consolidation-plan.md`](docs/launcher-config-consolidation-plan.md) |
-| 21 | → | [`docs/mcp-app-review.md`](docs/mcp-app-review.md) |
-| 22 | → | [`docs/mcp-server-configuration.md`](docs/mcp-server-configuration.md) |
-| 23 | → | [`README.md`](README.md) |
-| 24 | → | [`specification/v2_cli_tui_launcher.md`](specification/v2_cli_tui_launcher.md) |
+| 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 4 | ✓ | [`clients/cli/__tests__/README.md`](clients/cli/__tests__/README.md) |
+| 5 | ✓ | [`specification/README.md`](specification/README.md) |
+| 6 | ✓ | [`specification/v1_problems.md`](specification/v1_problems.md) |
+| 7 | ✓ | [`specification/v2_auth.md`](specification/v2_auth.md) |
+| 8 | ✓ | [`specification/v2_catalog_launch_config.md`](specification/v2_catalog_launch_config.md) |
+| 9 | ✓ | [`specification/v2_new_spec_impact.md`](specification/v2_new_spec_impact.md) |
+| 10 | ✓ | [`specification/v2_scope.md`](specification/v2_scope.md) |
+| 11 | ✓ | [`specification/v2_server.md`](specification/v2_server.md) |
+| 12 | ✓ | [`specification/v2_servers_file.md`](specification/v2_servers_file.md) |
+| 13 | ✓ | [`specification/v2_storage.md`](specification/v2_storage.md) |
+| 14 | ✓ | [`specification/v2_ux.md`](specification/v2_ux.md) |
+| 15 | ✓ | [`specification/v2_web_client.md`](specification/v2_web_client.md) |
+| 16 | → | [`clients/cli/README.md`](clients/cli/README.md) |
+| 17 | → | [`clients/launcher/README.md`](clients/launcher/README.md) |
+| 18 | → | [`clients/tui/README.md`](clients/tui/README.md) |
+| 19 | → | [`clients/web/README.md`](clients/web/README.md) |
+| 20 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 21 | → | [`docs/launcher-config-consolidation-plan.md`](docs/launcher-config-consolidation-plan.md) |
+| 22 | → | [`docs/mcp-app-review.md`](docs/mcp-app-review.md) |
+| 23 | → | [`docs/mcp-server-configuration.md`](docs/mcp-server-configuration.md) |
+| 24 | → | [`README.md`](README.md) |
+| 25 | → | [`SECURITY.md`](SECURITY.md) |
+| 26 | → | [`specification/v2_cli_tui_launcher.md`](specification/v2_cli_tui_launcher.md) |
 
 ---
 

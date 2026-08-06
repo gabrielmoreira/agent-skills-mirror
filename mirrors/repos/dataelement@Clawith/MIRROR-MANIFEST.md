@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dataelement/Clawith` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `dataelement/Clawith` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dataelement/Clawith` — 26 default patterns, 0 followed patterns, 3 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,7 +61,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`backend/agent_template/skills/mcp-installer/SKILL.md`](backend/agent_template/skills/mcp-installer/SKILL.md) |
-| 3 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 3 | ✓ | [`backend/AGENTS.md`](backend/AGENTS.md) |
+| 4 | ✓ | [`backend/alembic/AGENTS.md`](backend/alembic/AGENTS.md) |
+| 5 | ✓ | [`backend/app/dao/AGENTS.md`](backend/app/dao/AGENTS.md) |
+| 6 | ✓ | [`backend/scripts/AGENTS.md`](backend/scripts/AGENTS.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`frontend/AGENTS.md`](frontend/AGENTS.md) |
 
 ---
 

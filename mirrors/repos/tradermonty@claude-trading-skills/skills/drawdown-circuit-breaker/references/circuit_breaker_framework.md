@@ -60,9 +60,13 @@ Include every active triggered rule in the JSON artifact even when a stricter ru
 |-------|---------|
 | `OK` | State directory existed, thesis files loaded, and no malformed ledger or terminal records were skipped |
 | `EMPTY_STATE` | State directory was missing or contained no `th_*.yaml` files |
-| `PARTIAL` | At least one thesis file, ledger entry, or terminal result was malformed and skipped |
+| `PARTIAL` | At least one data warning was emitted, including skipped/conflicting risk data or a recovered finite legacy outcome |
 
 `EMPTY_STATE` returns `TRADING_ALLOWED`. The skill should not block a new user just because no trader-memory-core state exists yet.
+
+`PARTIAL` fails closed with `HALTED` and an `incomplete_state_data` rule whenever a thesis, ledger entry, or terminal result is skipped, malformed, non-finite, missing, or conflicts with another P&L source. Its `active_until` is `null` because release requires state repair and a rerun, not elapsed time. The sole recoverable warning is a finite `outcome.pnl_dollars` value used for a legacy terminal thesis that has no realized-P&L ledger entry. A history event that is not an object, or that is ledger-shaped — `status: PARTIALLY_CLOSED`, or any of `shares_sold`, `quantity_sold`, `price`, `proceeds` — yet carries a missing, unparsable, or non-finite `realized_pnl`, disqualifies the fallback and halts instead. A history event carrying none of those markers is treated as a non-ledger event and ignored, so it neither contributes P&L nor disqualifies the fallback. The recoverable fallback remains `PARTIAL` for audit visibility but does not by itself change the calculated recommendation.
+
+Account size and all percentage/hour thresholds must be positive and finite. Non-finite P&L never enters metrics or terminal streak calculations, and JSON output is serialized with non-finite values disabled.
 
 ## Configuration
 

@@ -35,6 +35,8 @@
   ],
   "reference_bindings": [
     {
+      "slot_id": "REF-<stable-slot>",
+      "order": 1,
       "artifact_ref": {
         "owner": "short-drama-assets",
         "artifact": "设定集/<owner-file>.jsonl",
@@ -155,6 +157,9 @@
 ```
 
 
-复制后按 `purpose` 删除不适用字段和悬空引用；每条参考只声明一个用途。类型取舍、文字政策与
+复制后按 `purpose` 删除不适用字段和悬空引用。Look Development 不使用本超集模板，改读
+[`lookdev-frame-spec.jsonl.md`](lookdev-frame-spec.jsonl.md)，避免普通人物、地点和道具规格加载
+风格帧专属字段。
+每条参考只声明一个用途，多参考的 `slot_id` 稳定且 `order` 显式。类型取舍、文字政策与
 参考准入由技能按 `references/common-recipe.md` 判断。候选与已接受对象分开发布；自然语言修改先形成
 候选和内容差异，不直接覆盖原记录。

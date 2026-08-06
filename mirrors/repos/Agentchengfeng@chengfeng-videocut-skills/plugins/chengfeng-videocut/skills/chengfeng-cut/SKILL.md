@@ -38,6 +38,10 @@ Studio 状态的唯一写入者。
 那个字面路径）。只有拿到「就绪」才继续；「需新会话」或「停」都按它的处置执行
 （含「禁止自制替代界面」禁令）。
 
+若就绪结果为 `runtime.kind=desktop-managed`，它与 CLI 安装共用同一稳定入口和
+`launchd/windows-task` 服务，直接继续；不要查找 Electron 安装目录、另装 Bun /
+FFmpeg，或启动第二个 Runtime。
+
 ## 1. 建档：真实输入 → 转录 → 产品建项目
 
 **干什么**：把用户的本地真实视频和云端逐词稿交给产品，原子建档，起服务，读回状态。
@@ -66,7 +70,8 @@ node "<插件根>/scripts/videocut-cli.cjs" cuts get "<项目目录>" --json
   编译器，只在恢复中断或明确刷新时用，中断了直接重跑即可
 - `project create` 是唯一入口：不经过素材库、上传会话或额外 Skill；Skill 不得先写
   `project.json`
-- 服务必须由脚本确认 `healthy=true`、`runtimeMode=launchd`、版本兼容、URL 为
+- 服务必须由脚本确认 `healthy=true`、`runtimeMode=launchd`（macOS）或
+  `runtimeMode=windows-task`（Windows）、版本兼容、URL 为
   canonical 5190 后才继续；失败透传结构化错误并停止，禁止回退 foreground、换端口、
   杀未知进程
 - 两份 readback 必须指向同一个 `projectId`，保存 workflow stage 与

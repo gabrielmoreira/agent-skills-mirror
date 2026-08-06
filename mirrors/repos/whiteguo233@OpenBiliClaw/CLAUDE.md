@@ -105,16 +105,44 @@ byte-identical across calls**. So:
 2. ALL per-call variables (profile, content, source_platform, tone, …)
    live in `user_prompt`, ordered from most stable (persona) to most
    variable (this batch's items).
-3. JSON serialization MUST be deterministic: always pass
+3. JSON serialization MUST be deterministic: normally pass
    `ensure_ascii=False, indent=2, sort_keys=True` to `json.dumps`. A
-   dict-key reordering is enough to break the cache prefix.
+   dict-key reordering is enough to break the cache prefix. The production
+   batch-evaluator candidate block is the deliberate exception: it must use
+   `render_sparse_evaluation_json()` (canonical sorted compact JSON) and must
+   never be reserialized ad hoc at the prompt call site.
 4. Reference the system prompt's "see user message for X / Y / Z"
    contract explicitly so the LLM knows where to find each variable.
+5. Any prompt that carries the user profile MUST serialize it through a
+   named view in `src/openbiliclaw/soul/profile_views.py`
+   (`build_profile_summary` / `compact_content_prompt_profile_summary` /
+   `build_query_generation_profile_summary`, or a new view added there) —
+   **never hand-roll a profile serializer at the call site**. Views are
+   pure, deterministic functions of the effective profile and the portrait
+   boundary + caps live in one place. Consult `docs/profile-usage.md`
+   first; the structural guard in `tests/test_profile_views.py` fails if a
+   serializer is defined outside that module. The legacy
+   `discovery/strategies/_utils.py` import path is a compat re-export only.
+
+**Batch evaluator transport**: `ContentDiscoveryEngine` defaults to canonical
+`sparse-json`. Its system message is the byte-static module constant
+`_SPARSE_BATCH_CONTENT_EVALUATION_SYSTEM_PROMPT`; profile and candidate data
+remain in the user message, and results bind through request-local IDs.
+`_BATCH_CONTENT_EVALUATION_SYSTEM_PROMPT` plus
+`evaluation_candidate_transport="production"` is the frozen pretty-JSON /
+global-ID rollback contract. `row-wire-v1` is replay-only. Changing either
+production contract requires a cache-namespace bump and a fixed prompt golden.
 
 **Exception**: `build_socratic_dialogue_prompt` keeps tone / friend
 label / core memory in system. That's intentional for OpenBiliClaw's
 single-user model — per-user state is stable across that user's calls,
 so cache still fires. Multi-user deployments would refactor it.
+Note the actual core-memory injection point is
+`LLMService.complete_with_core_memory` in `llm/service.py` (and its
+`complete_with_tools` sibling), **not** the builder: the builder's
+`core_memory_text` parameter is a test-only seam and the dialogue caller
+always passes `""`. There is no `_build_core_memory_block` method on any
+service — do not add a getattr probe for one.
 
 **Enforcement**: `tests/test_llm_prompts.py::test_prompt_builder_system_messages_are_call_invariant`
 calls every covered builder with two distinct inputs and asserts the

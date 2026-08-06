@@ -27,16 +27,24 @@ If you open a PR, you must run tests and report what you ran (commands + result)
 
 For runtime-observable changes, include the `@openwork/testkit` evidence tape.
 Custom screenshots and recordings may supplement that tape, but never determine the
-pass/fail verdict. If validation cannot run, say why and give exact repro steps.
+pass/fail verdict. The orchestrator owns publishing the tape, and a runtime-observable
+change is not done until its tape is visible on the PR. If validation cannot run,
+say why and give exact repro steps.
 
 ## Validate Every Experience
 
 Almost everything we change affects the filesystem, runtime DB, server API,
-provisioning, sessions, config, or UI. New executable end-to-end coverage has
-one path: `evals/specs/**/*.test.ts`, with `test` imported from
-`@openwork/testkit`. Specs that drive the app use `.slow.test.ts`.
+provisioning, sessions, config, or UI. Validation has two layers:
 
-Use the skills in this order: `write-a-spec` → `run-tests` →
+1. **Agent-first verification** produces the verdict. New executable end-to-end
+   coverage has one path: `evals/specs/**/*.test.ts`, with `test` imported from
+   `@openwork/testkit`. Specs that drive the app use `.slow.test.ts`. Prose is
+   never proof.
+2. **Human verification** publishes the testkit tape on the PR so a person can
+   audit the verdict without rerunning it. It never decides pass/fail. The
+   orchestrator owns this step.
+
+Use the skills in this order: `prove-a-pr` → `write-a-spec` → `run-tests` →
 `diagnose-a-red-run` when failing → `publish-evidence` for an existing ambient
 evidence tape. Evidence is ambient: do not create or pass roll handles. Report
 `Passed` only when every claim has an observable assertion in the tape;

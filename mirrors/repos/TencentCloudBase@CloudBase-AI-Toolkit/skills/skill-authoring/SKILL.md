@@ -30,9 +30,10 @@ This section is the repo-managed CloudBase skill review baseline for this reposi
 - Keep shared operational rules in one canonical source instead of copying large blocks across neighboring skills
 - If the skill claims a rule is mandatory, show that rule in at least one example
 - When giving a recommended default, also explain the tradeoff behind it
-- Do not infer public CNB / OpenClaw / ClawHub paths from the source tree; verify the actual published structure before writing fallback links or marketplace-facing URLs
-- If a skill mentions raw URLs, blob URLs, or marketplace-consumed paths, check live reachability before finalizing the text
-- Put standalone-install fallback guidance where the user needs it: keep the top-level note short, and place sibling-skill fallback links next to the actual cross-skill reference
+- Do not add agent-directed remote skill-fetch URLs (for example `cnb.cool/.../git/raw/...` skill bodies or `(standalone fallback: ...)` raw links). Marketplace reviewers treat those as injection / session-hijack risk.
+- Prefer local relative sibling paths (`../other-skill/SKILL.md`). If a sibling is missing, tell the agent to ask the user to install the full CloudBase plugin or skills pack — never to HTTP-fetch remote skill markdown into context.
+- Human documentation URLs (`docs.cloudbase.net`, console pages) remain allowed when they are not skill-body fetch instructions.
+- Do not infer public CNB / OpenClaw / ClawHub paths from the source tree when writing marketplace-facing install docs; verify the actual published structure first.
 
 **Do NOT use for:**
 - General documentation writing that is not about skills
@@ -83,7 +84,7 @@ This section is the repo-managed CloudBase skill review baseline for this reposi
 1. Identify the skill's job, boundary, and closest neighboring skills.
 2. Draft `name` and `description` with realistic trigger language.
 3. If the task targets `config/source/skills`, read `references/repo-skill-review.md`, then load `references/cloudbase-skill-review.md` for CloudBase-specific standards before proposing rewrites.
-4. If the skill text will mention published URLs or fallback paths, verify the public structure and at least one real URL before writing.
+4. Keep sibling routing local-only; do not add remote skill-fetch URLs.
 5. Write the main `SKILL.md` so it changes agent behavior after trigger.
 6. Move deep detail into `references/`, `assets/`, or `scripts/` as needed.
 7. Run evaluation prompts and revise until trigger quality and behavior are stable.
@@ -95,7 +96,7 @@ This section is the repo-managed CloudBase skill review baseline for this reposi
 - Does the main `SKILL.md` change agent behavior after trigger?
 - Are non-applicable scenarios explicit?
 - Does routing point to the right reference file for each task?
-- If the skill references public URLs or standalone-install fallback paths, were those URLs verified against the actual published surface instead of guessed from local directories?
+- Does the skill avoid agent-directed remote skill-fetch URLs and keep sibling routing local-only?
 - Are evaluation prompts present for both should-trigger and should-not-trigger cases?
 - Can you explain why this skill stays distinct from its nearest neighbors?
 - If reviewing a skill collection, can you point to redundancy, overlap, and missing boundaries with concrete evidence?

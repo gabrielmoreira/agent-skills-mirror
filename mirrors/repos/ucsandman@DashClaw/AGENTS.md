@@ -73,14 +73,14 @@ The global `~/.codex/AGENTS.md` covers core behavior; these are DashClaw-specifi
 
 This repository is indexed by Repowise. Use the Repowise MCP tools for codebase orientation, discovery, implementation context, modification risk, design rationale, and cleanup planning. MCP data reflects the last index run; verify against source files before editing.
 
-Last indexed: 2026-07-29 (commit 841d5fb8). Confidence: 100%.
+Last indexed: 2026-08-06 (commit d15a9bc8). Confidence: 100%.
 ### Architecture
-This repository is a codebase documentation and “governed agent” platform: it ingests source files and contract/policy inputs, builds an internal representation via indexing and analysis, and produces generated documentation artifacts (including LLM-synthesised wiki pages) that are exposed through an MCP server and supporting SDKs/UI integrations.
+This repository is an end-to-end “governed agent” documentation and tooling platform: it ingests source code and contract/policy inputs (e.g., repository files, contracts/index.json, and policy/skill YAML), transforms them through indexing/analysis and governance-aware agent/tool orchestration, and outputs generated artifacts such as an MCP server tool surface, SDKs (JavaScript + Python), and runnable example agents/pipelines (plus a web-facing UI layer via the app/ modules).
 ### Key Modules
 | Module | Purpose | Owner |
 |--------|---------|-------|
 | `app` | The **app** module is the **React/Next.js front-end layer of repowise’s… | - |
-| `__tests__/unit` | The __tests__/unit module is the unit-test stage of repowise’s quality gate for… | - |
+| `__tests__/unit` | The __tests__/unit module is the unit-testing stage of repowise’s generation… | - |
 | `app/components` | The **app/components** module is the **UI composition layer** in repowise’s web… | - |
 | `app/lib` | The app/lib module is the core “service-layer” utility layer in repowise’s… | - |
 | `application` | The **Application (top-level)** module is the entry-stage orchestration layer… | - |
@@ -103,11 +103,11 @@ This repository is a codebase documentation and “governed agent” platform: i
 ### Risk Hotspots
 | File | Churn | 90d Commits | Owner |
 |------|-------|-------------|-------|
-| `docs/maintainer-log.md` | 100.0th percentile | 137 | Wes Sander |
+| `docs/maintainer-log.md` | 100.0th percentile | 143 | Wes Sander |
 | `mcp-server/lib/routes-inventory.generated.json` | 100.0th percentile | 34 | Wes Sander |
 | `app/lib/doctor/generated/last-snapshot.json` | 99.9th percentile | 71 | Wes Sander |
 | `app/lib/doctor/generated/shape.json` | 99.9th percentile | 71 | Wes Sander |
-| `CHANGELOG.md` | 99.9th percentile | 105 | Wes Sander |
+| `CHANGELOG.md` | 99.9th percentile | 109 | Wes Sander |
 
 ### Repowise MCP Workflow
 

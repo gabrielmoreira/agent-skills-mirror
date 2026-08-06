@@ -43,6 +43,8 @@ Camera behavior 要回答“观众注意为什么在此刻改变”。常见动�
 5. 结束 framing 或空间关系（必须在 storyboard 边界内）。
 
 “轻微推近”若不说明触发和落点，仍然含糊。“镜头在他把钥匙放上桌时开始短促推近，钥匙落下后停在双手与钥匙的近景”才有可执行注意路径。
+移动不能重置地理：若机位沿同一场景移动，仍要保持已接受的工作侧、入口—主体—出口关系
+和屏幕方向；确需越轴时沿用 storyboard 已接受的重新建立方法，不把一次漂亮移动写成新的空间。
 
 - **`craft_default`**：一个 authored shot 优先一个主要 camera idea；细小修正服务同一 idea。
 - **`reviewed_invariant`**：move 必须与 shot purpose、表演和 blocking 相容，不能穿过墙体或错过关键动作。
@@ -89,9 +91,18 @@ pan 同时微调焦点、handheld 带自然呼吸、dolly 配合轻微 tilt 未�
 
 ## 4. 对白、口型与声音
 
+若上游有 accepted `scene_visual_plan.sound_strategy`，先把整场主导声源、撤出/恢复、距离变化、
+主动留白与 sound bridge 分配到准确镜头，再写本镜 audio。逐镜实现必须能与相邻镜接上，不能
+让每镜各自重新启动一套环境音。场次计划没有登记的故事声源不得由本层发明；音乐仍服从下文的
+时间线边界，也不能替代表演或转向。
+
 ### 精确引用
 
 Motion spec 存 dialogue/VO/SFX/audio 的 artifact/hash/field refs；copyable prompt 可呈现 exact accepted line 或引用标记，取决于交付需要，但不得改字、增删、交换说话人或把对白改 VO。
+
+同一句 accepted dialogue 跨镜延续时，把相邻提示词串读，说明它在本镜是开始、画外延续、
+被打断还是到此结束；不得在前镜声称已经说完，后镜又让同一句继续。没有逐字原句时只保留
+准确引用和延续关系，不为填满节奏补写台词。
 
 若 source 写 `[VO]`、`[OS]`、`[SFX]`，保持声源性质：
 

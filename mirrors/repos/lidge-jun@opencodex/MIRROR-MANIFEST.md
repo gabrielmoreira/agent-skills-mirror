@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lidge-jun/opencodex` — 26 default patterns, 2 followed patterns, 8 file(s) materialized.
+Mirror of `lidge-jun/opencodex` — 26 default patterns, 3 followed patterns, 9 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 2 followed patterns, 8 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 2 |
-| Files         | 8 |
+| Followed pats | 3 |
+| Files         | 9 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,6 +51,7 @@ Mirror of `lidge-jun/opencodex` — 26 default patterns, 2 followed patterns, 8 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
+- `AGENTS_INSTALL.md`
 - `MAINTAINERS.md`
 - `SECURITY.md`
 
@@ -66,8 +67,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`gui/AGENTS.md`](gui/AGENTS.md) |
 | 5 | ✓ | [`scripts/AGENTS.md`](scripts/AGENTS.md) |
 | 6 | ✓ | [`src/AGENTS.md`](src/AGENTS.md) |
-| 7 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
-| 8 | → | [`SECURITY.md`](SECURITY.md) |
+| 7 | → | [`AGENTS_INSTALL.md`](AGENTS_INSTALL.md) |
+| 8 | → | [`MAINTAINERS.md`](MAINTAINERS.md) |
+| 9 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

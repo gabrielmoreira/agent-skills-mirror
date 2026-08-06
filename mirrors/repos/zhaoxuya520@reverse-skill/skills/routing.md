@@ -55,6 +55,7 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | Supply chain / SBOM / CI-CD | `supply-chain-security/` — Trivy/Syft/Gitleaks | — |
 | iOS app (IPA) | `mobile-reverse/` — class-dump/Hopper/Frida iOS | `reverse-engineering/platforms.md` |
 | **CTF competition (full stack)** | `../CTF-Sandbox-Orchestrator/ctf-sandbox-orchestrator/SKILL.md` — master entry | Route to 40+ sub-skills by evidence |
+| **CTF ZIP / PKZIP archive** | `../CTF-Sandbox-Orchestrator/competition-zip-archive/SKILL.md` — legacy ZipCrypto + `bkcrack` known plaintext | Use before password brute force |
 | Web runtime / API | `../CTF-Sandbox-Orchestrator/competition-web-runtime/SKILL.md` | — |
 | Cloud / Container / K8s | `../CTF-Sandbox-Orchestrator/competition-agent-cloud/SKILL.md` | — |
 | Windows / AD / Identity | `../CTF-Sandbox-Orchestrator/competition-identity-windows/SKILL.md` | — |
@@ -93,6 +94,7 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | "symbol execution / angr" | `reverse-engineering/tools-dynamic.md` — angr section |
 | "patch environment / Node reproduce" | `js-reverse/references/env-patching.md` |
 | "CTF challenge / competition reverse" | `reverse-engineering/patterns-ctf*.md` |
+| "CTF ZIP / PKZIP / bkcrack / 压缩包明文攻击" | `../CTF-Sandbox-Orchestrator/competition-zip-archive/SKILL.md` |
 | "write report / documentation" | `docs-generator/` — technical documentation |
 | "write writeup" | `docs-generator/` — CTF writeup template |
 | "open webpage / browser automation / fill form" | `browser-automation/SKILL.md` — Playwright |

@@ -4,6 +4,26 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.223](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4c8806a)
+
+_+3,316 tokens_
+
+- **NEW:** Data: SDK query result `modelUsage` field — Documents cumulative per-model token and cost estimates across main-loop, subagent, sidechain, compaction, and Workflow-agent calls; explains streaming-session accumulation and reset behavior, excluded helper calls, and zero-usage edge cases.
+- **NEW:** System Prompt: Artifact comment decision reformat retry — Retries malformed comment-composer output by treating the previous response as fenced untrusted data and requiring exactly one valid bare JSON decision object.
+- **NEW:** System Reminder: Artifact comment reply activation failure — Explains that replies cannot be posted without active thread access, avoids guessing why access is absent, distinguishes activation from resolution state, and directs the user to reactivate Claude before retrying.
+- **NEW:** Tool Description: `memory_list` prompt — Lists connected memory stores when called without arguments or path-sorted document metadata for a selected store, with prefix filtering and pagination while reserving content reads for `memory_read`.
+- **REMOVED:** Agent Prompt: `/review` slash command — Removes the dedicated GitHub pull-request review workflow that gathered PR metadata and diffs through `gh`, excluded local working-tree changes, and produced a concise correctness, quality, performance, testing, and security review.
+- **REMOVED:** System Prompt: Clarifying question research first — Removes standalone guidance to spend up to a minute on read-only codebase, documentation, or memory research before asking the user a more specific clarifying question.
+- **REMOVED:** System Prompt: Executing actions with care (fragment) — Removes the short-form safety variant that separated free read-only investigation from risky or hard-to-reverse actions requiring fresh or durable authorization; the full executing-actions-with-care prompt remains.
+- Data: Plan artifact HTML template and Data: Workshop artifact HTML template — Expand embedded design-token maintenance guidance to cover plan, workshop, and whiteboard template copies and the whiteboard drift test.
+- Skill: Artifact PR review — Allows stale-branch detection to bind a name-pinned `pull_request_read` tool from a GitHub-presenting connector when serving paths strip its read-only annotation.
+- Skill: Artifact PR review (composed publish flow) — Recasts briefings as a three-tier drill-down with shorter answer-first prose and a required visual when the change has drawable structure; supports method-routed GitHub reads and approval submissions; and limits chat handoff to the recommendation, deciding finding, link or payload location, and capability disclosures.
+- Skill: Prototype — Separates clear product ideas that should be built immediately with stated assumptions from open-ended outcomes that require concise questions first; narrows implementation to the smallest working proof, limits validation to one source reread instead of browser or server harnesses, and falls back to the local file when Artifact publishing is unavailable.
+- System Prompt: Artifact comment edit composer — Replaces full-document output for localized edits with ordered, uniquely matched exact-string patches and permits complete rewrites only when available and a requested change touches most of the document.
+- Tool Description: Code review command — Expands review targets from the current diff to explicit PR numbers, branches, or paths and reuses the last user-selected effort level when none is supplied.
+- Tool Description: Edit and Tool Description: Write — Make read-before-edit and read-before-overwrite guidance conditional when the active tool runtime omits those requirements, and unify exact Read-output line-prefix guidance for replacement matching.
+- Tool Description: SendFeedback drafting guidance — Requires short `What happened`, quoted `What the user said`, `Repro`, and optional `Evidence` bullets in that order; permits a `Cause` only when verified in-session; and distinguishes model-behavior `failure_mode` classification from product bugs while recording the session's `task_category` when known.
+
 # [2.1.222](https://github.com/Piebald-AI/claude-code-system-prompts/commit/911caf9)
 
 _-341 tokens_

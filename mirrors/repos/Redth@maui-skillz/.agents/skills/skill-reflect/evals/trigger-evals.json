@@ -1,34 +1,62 @@
 [
   {
-    "query": "Review my session for skill friction and give feedback to the skill authors.",
+    "query": "Analyze how the pdf-forms skill performed in this session and give me the findings in chat.",
     "should_trigger": true
   },
   {
-    "query": "How well did the distributed skills I used today perform? Any problems?",
+    "query": "Review the performance of the deployment-helper skill I just used. Do not save a report.",
     "should_trigger": true
   },
   {
-    "query": "Capture skill friction from this session and draft a local feedback artifact.",
+    "query": "How well did the distributed skills I used today perform? Identify any skill-caused friction.",
     "should_trigger": true
   },
   {
-    "query": "Give feedback on the pdf-forms skill — it kept failing during my session.",
+    "query": "The skill feedback nudge mentioned two failures for release-helper. Yes, review them now.",
     "should_trigger": true
   },
   {
-    "query": "Surface any skill issues from today's work and propose fixes.",
+    "query": "Capture skill friction from this session and save a local feedback report.",
     "should_trigger": true
+  },
+  {
+    "query": "Prepare privacy-safe field feedback for the author of the skill that kept failing in this session.",
+    "should_trigger": true
+  },
+  {
+    "query": "Review my project-local pipeline-auditor skill's behavior in this session with technical-local detail.",
+    "should_trigger": true
+  },
+  {
+    "query": "Why did the pipeline-auditor skill miss the validation assumption in this session? Analyze only; do not save or send anything.",
+    "should_trigger": true
+  },
+  {
+    "query": "Audit this SKILL.md file for clarity, structure, and best practices before I publish it.",
+    "should_trigger": false
+  },
+  {
+    "query": "Improve the trigger description and instructions in my skill source.",
+    "should_trigger": false
+  },
+  {
+    "query": "Review the changed lines in this pull request and leave code review comments.",
+    "should_trigger": false
+  },
+  {
+    "query": "Analyze why the linux-unit CI job failed in the latest pipeline run.",
+    "should_trigger": false
+  },
+  {
+    "query": "Review this service architecture and propose a better event-driven design.",
+    "should_trigger": false
+  },
+  {
+    "query": "Write synthetic eval cases for a new skill before it has been used.",
+    "should_trigger": false
   },
   {
     "query": "Write me a unit test for the parseExpense helper function.",
-    "should_trigger": false
-  },
-  {
-    "query": "Fix the type error in my TypeScript component on line 42.",
-    "should_trigger": false
-  },
-  {
-    "query": "What is the best way to structure a monorepo with multiple packages?",
     "should_trigger": false
   },
   {

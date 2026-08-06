@@ -240,7 +240,7 @@ List all projects that have been indexed.
 - Session resume: watcher restarts on first tool use for previously indexed projects
 
 ### Supported file extensions
-**Built-in:** `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`, `.py`, `.pyw`, `.pyi`, `.java`, `.kt`, `.kts`, `.scala`, `.c`, `.h`, `.cpp`, `.hpp`, `.cc`, `.hh`, `.cxx`, `.cs`, `.go`, `.rs`, `.rb`, `.php`, `.swift`, `.sh`, `.bash`, `.zsh`, `.html`, `.htm`, `.css`, `.scss`, `.sass`, `.less`, `.vue`, `.svelte`, `.json`, `.yaml`, `.yml`, `.toml`, `.xml`, `.ini`, `.cfg`, `.md`, `.mdx`, `.rst`, `.txt`, `.sql`, `.dart`, `.lua`, `.r`, `.R`, `.dockerfile`
+**Built-in:** `.js`, `.jsx`, `.ts`, `.tsx`, `.mjs`, `.cjs`, `.py`, `.pyw`, `.pyi`, `.java`, `.kt`, `.kts`, `.scala`, `.c`, `.h`, `.cpp`, `.hpp`, `.cc`, `.hh`, `.cxx`, `.cs`, `.go`, `.rs`, `.rb`, `.php`, `.swift`, `.sh`, `.bash`, `.zsh`, `.html`, `.htm`, `.css`, `.scss`, `.sass`, `.less`, `.styl`, `.vue`, `.svelte`, `.json`, `.yaml`, `.yml`, `.toml`, `.xml`, `.ini`, `.cfg`, `.md`, `.mdx`, `.rst`, `.txt`, `.sql`, `.dart`, `.lua`, `.r`, `.R`, `.dockerfile`
 
 **Special files:** `Dockerfile`, `Makefile`, `Rakefile`, `Gemfile`, `Procfile`, `.env.example`, `.gitignore`, `.dockerignore`
 

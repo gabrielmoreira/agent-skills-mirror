@@ -82,7 +82,7 @@ authoring a spec no one can render.
        "flint": {
          "type": "stdio",
          "command": "npx",
-         "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.3.0"],
+         "args": ["-y", "--prefer-offline", "flint-chart-mcp@0.4.1"],
        },
      },
    }
@@ -91,11 +91,16 @@ authoring a spec no one can render.
    - `"type": "stdio"` is optional in some hosts but always declare it —
      omitting it makes transport-related failures harder to diagnose.
    - `--prefer-offline` uses the npm cache first. If absent, npm contacts only
-     the configured registry for the exact `0.3.0` package.
+     the configured registry for the exact `0.4.1` package.
    - Do not run version-discovery commands, pass `--registry`, edit `.npmrc`,
      or fall back to a public tarball. Missing packages fail closed.
+   - **`ETARGET` / "No matching version found" on a version the registry does
+     carry** is a stale cached packument, not a missing package.
+     `--prefer-offline` served the old metadata. Run the same command **once
+     without `--prefer-offline`** to refresh it, then restore the flag. Do not
+     conclude the version is unavailable and do not add `--registry`.
    - **Air-gapped:** an administrator may preinstall exact
-     `flint-chart-mcp@0.3.0` through the approved registry, then change
+     `flint-chart-mcp@0.4.1` through the approved registry, then change
      `"command": "npx"` to `"command": "flint-chart-mcp"` with empty args.
    - **Hardened deployment** (only inline `data.values` accepted, no local
      `data.url` files): append `"--disable-file-reference"` to `args`.
@@ -145,7 +150,7 @@ directly (not to render via MCP).
   the project's approved compatibility decision.
 
    ```bash
-  npm install --save-exact flint-chart@0.3.0
+  npm install --save-exact flint-chart@0.4.1
    ```
 
   Add renderer peer dependencies only through the same project dependency
@@ -190,14 +195,14 @@ First decide which workflow the user is asking for:
 For MCP clients, the server uses an exact cache-first package:
 
 ```bash
-npx -y --prefer-offline flint-chart-mcp@0.3.0
+npx -y --prefer-offline flint-chart-mcp@0.4.1
 ```
 
 For JavaScript or TypeScript projects, use the approved project dependency
 workflow and preserve the lockfile:
 
 ```bash
-npm install --save-exact flint-chart@0.3.0
+npm install --save-exact flint-chart@0.4.1
 ```
 
 Do not add or upgrade renderer dependencies unless the user explicitly requests
@@ -464,7 +469,7 @@ chart choice.
 | Change over continuous time?   | Trend        | `Line Chart`                                                                                                      | `Area Chart` (volume emphasis), `Bar Chart` + `Line Chart` combo via multi-encoding `y: ["bars", "line"]` (dual metric with different scales), `Sparkline` (in-table trend)                                                                                                              |
 | How are values distributed?    | Distribution | `Histogram` (one variable)                                                                                        | `Boxplot` (compare groups + stats), `Violin Plot` (compare + shape, Vega-Lite), `Strip Plot` (every point matters), `Density Plot` (smooth shape), `ECDF Plot` (cumulative)                                                                                                              |
 | Correlation between variables? | Relationship | `Scatter Plot`                                                                                                    | `Scatter Plot` with `size` channel (3 vars, aka Bubble), `Regression` (with fit line), `Connected Scatter Plot` (trajectory over time), `Parallel Coordinates` (many vars, ECharts)                                                                                                      |
-| Part of a whole?               | Proportion   | `Bar Chart` (most accurate) or `Stacked Bar Chart` with `stackMode: normalize`                                    | `Pie Chart` (**only** if one slice dominates ≥60% OR comparing to 50%), `Pie Chart` with `innerRadius` > 0 (Donut — use center for a KPI), `Treemap` (many/hierarchy, ECharts), `Sunburst` (interactive hierarchy, ECharts), `Funnel` (sequential stages, ECharts)                       |
+| Part of a whole?               | Proportion   | `Bar Chart` (most accurate) or `Stacked Bar Chart` with `stackMode: normalize`                                    | `Pie Chart` (**only** if one slice dominates ≥60% OR comparing to 50%), donut (use the center for a KPI) — `Donut Chart` on Vega-Lite, `Doughnut Chart` on Chart.js, `Pie Chart` + `innerRadius` on ECharts, `Treemap` (many/hierarchy, ECharts), `Sunburst` (interactive hierarchy, ECharts), `Funnel` (sequential stages, ECharts)                       |
 | Flow between stages?           | Flow         | `Sankey` (linear flow, ECharts)                                                                                   | `Streamgraph` (aesthetic, precision sacrificed), `Heatmap` (matrix pattern), `Chord`-like flows → use `Sankey` instead                                                                                                                                                                   |
 | Progress toward a target?      | KPI          | `Bullet Chart` (Few's superior alternative to gauges: actual + target + qualitative ranges in one horizontal bar) | `KPI Card` (single number with delta), `Sparkline` (in-table trend), `Gauge` (ECharts — reserve for high-visibility single-KPI tiles only)                                                                                                                                               |
 
@@ -521,7 +526,7 @@ Two runtime paths that need no fetch and always reflect the actual server the us
 
 Prefer these over external references when the question is "does the server I'm actually talking to render `<chartType>` on `<backend>`?" They cost nothing and cannot go stale.
 
-> **0.3.0 note.** The underlying `flint-chart` library ships **backend-neutral chart-type recommendation** and **chart-type transformation** APIs (public since 0.3.0), but these are NOT yet exposed as distinct MCP tools — they surface only through the interactive `create_chart_view` MCP App UI. On hosts that render the MCP App (Claude Desktop today; VS Code Copilot expected to follow), the user can switch between compatible chart types in the rendered view without rewriting the spec (e.g., dense Line Chart → compact Sparkline rows; the data roles are preserved). For headless workflows, keep using §0.2 and the `list_chart_types` catalog.
+> **0.4.1 note.** The underlying `flint-chart` library ships **backend-neutral chart-type recommendation** and **chart-type transformation** APIs (public since 0.3.0), but these are NOT yet exposed as distinct MCP tools — they surface only through the interactive `create_chart_view` MCP App UI. On hosts that render the MCP App (Claude Desktop today; VS Code Copilot expected to follow), the user can switch between compatible chart types in the rendered view without rewriting the spec (e.g., dense Line Chart → compact Sparkline rows; the data roles are preserved). For headless workflows, keep using §0.2 and the `list_chart_types` catalog.
 
 **Chart capability — gallery (canonical live examples)**
 
@@ -536,17 +541,19 @@ This is the authoritative reference for **what Flint actually does**; §0.2–0.
 
 **Chart capability — deep reference (per-backend catalogs + semantic types + API)**
 
-When the gallery is ambiguous or you need to compare all supported charts side-by-side in source form, fetch the upstream markdown at the `0.3.0` tag (matches the currently pinned server):
+When the gallery is ambiguous or you need to compare all supported charts side-by-side in source form, fetch the upstream markdown at the `0.4.0` tag:
 
-- [`docs/reference-vegalite.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/reference-vegalite.md) — every Vega-Lite chart type with encoding channels and chart-property matrix (27 KB)
-- [`docs/reference-echarts.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/reference-echarts.md) — ECharts equivalent (14 KB)
-- [`docs/reference-chartjs.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/reference-chartjs.md) — Chart.js equivalent (8 KB)
-- [`docs/design-semantics.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/design-semantics.md) — the 70+ semantic types (`Rank`, `Temperature`, `Price`, `Country`, etc.) that drive Flint's automatic layout; reach for this when Step 3 (semantic type annotation) needs a value the inline list does not cover (45 KB)
-- [`docs/api-reference.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/api-reference.md) — canonical `ChartAssemblyInput` structure and every top-level field
-- [`docs/overview.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/overview.md) — high-level tour of the compilation pipeline; useful when explaining what Flint does to a new user
-- [`docs/README.md`](https://github.com/microsoft/flint-chart/blob/0.3.0/docs/README.md) — the docs index; walks all of the above and more
+- [`docs/reference-vegalite.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/reference-vegalite.md) — all 35 Vega-Lite chart types with encoding channels and the per-chart `chartProperties` matrix (control type, domain, default, availability)
+- [`docs/reference-echarts.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/reference-echarts.md) — the 37 ECharts chart types
+- [`docs/reference-chartjs.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/reference-chartjs.md) — the 21 Chart.js chart types
+- [`docs/design-semantics.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/design-semantics.md) — the semantic type system (46 registered types across 6 families) that drives Flint's automatic layout; reach for this when Step 3 needs a value the inline list does not cover
+- [`docs/api-reference.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/api-reference.md) — canonical `ChartAssemblyInput` structure and every top-level field
+- [`docs/overview.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/overview.md) — high-level tour of the compilation pipeline; useful when explaining what Flint does to a new user
+- [`docs/README.md`](https://github.com/microsoft/flint-chart/blob/0.4.0/docs/README.md) — the docs index; also documents the abstract channel vocabulary and the two-stage compiler
 
-These are pinned to `0.3.0` so what you read matches what the server renders. If the plugin pin moves past `0.3.0`, refresh the URLs to the new tag (or drop the tag suffix to track `main` — with the caveat that `main` runs ahead of the pinned server: 0.4.0 added the Excel backend with 18 chart templates and expanded the Plotly backend from 4 to 38 chart types, neither of which is reachable via the `^0.3.0` pin).
+> **Why `0.4.0` and not `0.4.1`.** The `flint-chart` library repository tags releases independently of the `flint-chart-mcp` npm package. Its tags are `0.1.1`, `0.2.1`, `0.3.0`, `0.4.0` — **there is no `0.4.1` tag**, so `/blob/0.4.1/` URLs 404. The `0.4.0` generated references report 35 Vega-Lite / 37 ECharts / 21 Chart.js chart types, which matches the pinned 0.4.1 server's `list_chart_types` output exactly, so they are the accurate reference for what this plugin runs.
+
+> **The library has more backends than the MCP server exposes.** The upstream docs also ship `reference-plotly.md` (38 chart types) and `reference-excel.md` (18 templates). Neither is reachable through this MCP server: `list_chart_types` accepts only `vegalite`, `echarts`, and `chartjs`, and rejects `plotly` or `excel` with an enum validation error (verified against 0.4.1). Treat Plotly/Excel material in the upstream docs as out of scope for anything you author here.
 
 **Rule of thumb**: Defensible Decision answers "should I use a bar or a boxplot?"; `list_chart_types` and the Flint gallery answer "will Flint's `Bar Chart` on ECharts backend do what I need?"; the deep reference (`docs/reference-*.md`) answers "what exact channels and properties does that combination support?".
 
@@ -600,6 +607,7 @@ properties"). Required channels are noted.
 | `"Streamgraph"`            | x, y, color, column, row                              | center-stacked areas                                                                                                                                                          |
 | `"Density Plot"`           | x, color, column, row                                 | prop `bandwidth`                                                                                                                                                              |
 | `"Pie Chart"`              | size, color, column, row                              | `size` = slice value (→ angle), `color` = category; props `innerRadius`, `sortSlices`                                                                                         |
+| `"Donut Chart"`            | size, color, column, row                              | same channels as Pie; **Vega-Lite only** (Chart.js spells it `"Doughnut Chart"`; ECharts has neither); `innerRadius` defaults to **0**, so set it or you get a pie                |
 | `"Rose Chart"`             | x, y, color, column, row                              | polar bars; props `alignment`, `padAngle`, `sortSlices`                                                                                                                       |
 | `"Radar Chart"`            | x, y, color, column, row                              | props `filled`, `fillOpacity`, `strokeWidth`                                                                                                                                  |
 | `"Candlestick Chart"`      | x, open, high, low, close, column, row                | OHLC all required                                                                                                                                                             |
@@ -608,7 +616,17 @@ properties"). Required channels are noted.
 | `"Map"`                    | longitude, latitude, color, size, opacity             | bubble map; props `region`, `projection`                                                                                                                                      |
 | `"Choropleth"`             | id, color, detail                                     | `id` = geographic key                                                                                                                                                         |
 
-**Donut chart:** use `"Pie Chart"` with `chartProperties.innerRadius > 0`.
+**Donut chart — the type name differs per backend.** There is no single donut
+type that works everywhere; pick by backend:
+
+| Backend | Use | Hole behavior |
+| --- | --- | --- |
+| Vega-Lite | `"Donut Chart"` (added in 0.4.1) | `innerRadius` defaults to **0** — without it the compiled `arc` mark has no hole and looks like a pie. Always set `chartProperties.innerRadius`. |
+| Chart.js | `"Doughnut Chart"` (note the spelling) | `innerRadius` defaults to **55**, so it is a donut out of the box |
+| ECharts | `"Pie Chart"` + `chartProperties.innerRadius > 0` | no donut type is registered; the hole compiles to a `radius` range |
+
+`"Pie Chart"` with `innerRadius` remains valid on all three backends, so it is
+the safe choice when the backend is not yet decided.
 
 **Choosing a bar chart (most common mix-up).** All three take one discrete
 category on `x` (or `y`) plus one measure. They differ in how a **second**
@@ -646,9 +664,11 @@ support a subset (verify if targeting a non-VL backend):
 - **ECharts** adds: `"Calendar Heatmap"`, `"Gauge"`,
   `"Funnel"`, `"Treemap"`, `"Sunburst"`, `"Sankey"`,
   `"Parallel Coordinates"`, `"Graph"`, `"Tree"`.
-- **Chart.js** supports: Scatter, Bubble, Bar, Grouped Bar, Stacked Bar,
-  Combo, Line, Area, Range Area, Pie, Doughnut, Histogram, Radar, Rose, Slope,
-  Connected Scatter.
+- **Chart.js** supports these 21: Scatter Plot, Connected Scatter Plot, Bubble
+  Chart, Strip Plot, Bar Chart, Grouped Bar Chart, Stacked Bar Chart, Combo
+  Chart, Histogram, Waterfall Chart, Gantt Chart, Line Chart, Bump Chart, Slope
+  Chart, Area Chart, Range Area Chart, ECDF Plot, Pie Chart, Doughnut Chart,
+  Radar Chart, Rose Chart.
 
 You do not need to call the library or inspect its source to author the
 input — pick from this table.
@@ -753,9 +773,11 @@ derived). Values are clamped to the ranges shown.
 | Strip Plot              | `stepWidth`        | 10–100 (20)                                                                                                            | Jitter spread                                                                                                                  |
 | Strip Plot              | `pointSize`        | 0–150 (0=auto)                                                                                                         | Point size                                                                                                                     |
 | Strip Plot              | `opacity`          | 0–1 (0=auto)                                                                                                           | Point opacity                                                                                                                  |
-| Histogram               | `binCount`         | 5–50 (10)                                                                                                              | Number of bins                                                                                                                 |
+| Histogram               | `binCount`         | 5–50 (Auto)                                                                                                           | Maximum bin cap; Auto lets the backend choose                                                                                  |
 | Density Plot            | `bandwidth`        | 0.05–2 (0=auto)                                                                                                        | Kernel bandwidth                                                                                                               |
 | Pie Chart               | `innerRadius`      | 0–100 (0)                                                                                                              | Donut hole size (>0 → donut)                                                                                                   |
+| Donut Chart             | `innerRadius`      | 0–100 (0)                                                                                                              | Hole size on the Vega-Lite donut type; **defaults to 0**, so set it explicitly                                                  |
+| Doughnut Chart          | `innerRadius`      | 20–80 (55)                                                                                                             | Hole size on the Chart.js doughnut type; already a donut by default                                                            |
 | Pie / Rose              | `sortSlices`       | `none` \| `descending` \| `ascending` (`none`)                                                                         | Order wedges and their legend by slice value                                                                                   |
 | Rose Chart              | `alignment`        | `left` \| `center` (`left`)                                                                                            | Wedge alignment                                                                                                                |
 | Rose Chart              | `padAngle`         | 0–0.1 (0)                                                                                                              | Gap between slices                                                                                                             |
@@ -764,7 +786,7 @@ derived). Values are clamped to the ranges shown.
 | Waterfall               | `totals`           | `auto` \| `none` \| `first` \| `last` \| `both` (`auto`)                                                               | Which bars anchor to zero as totals (only when no Type column)                                                                 |
 | Waterfall               | `showTextLabels`   | boolean (false)                                                                                                        | Render value labels on bars                                                                                                    |
 | Regression              | `regressionMethod` | `linear` \| `log` \| `exp` \| `pow` \| `quad` \| `poly` (`linear`)                                                     | Fit method                                                                                                                     |
-| Regression              | `polyOrder`        | 1–5 (3)                                                                                                                | Polynomial order (when `poly`)                                                                                                 |
+| Regression              | `polyOrder`        | 2–10 (3)                                                                                                               | Polynomial order (when `poly`)                                                                                                 |
 | Radar                   | `filled`           | boolean (true)                                                                                                         | Fill the polygon                                                                                                               |
 | Radar                   | `fillOpacity`      | 0–0.5 (0.15)                                                                                                           | Polygon fill opacity                                                                                                           |
 | Radar                   | `strokeWidth`      | 0.5–4 (1.5)                                                                                                            | Line width                                                                                                                     |
@@ -885,12 +907,16 @@ User: "Line chart of monthly sales and profit."
 }
 ```
 
-### Donut chart (Pie + innerRadius), value on `size`
+### Donut chart, value on `size`
 
 User: "Show market share by vendor as a donut."
 
 Pie/donut maps the slice value to `size` (rendered as angle) and the
 category to `color`. Data is already long (one row per vendor).
+
+On **Vega-Lite**, use the first-class `"Donut Chart"` type. `innerRadius`
+defaults to 0, so set it — without it the chart compiles to a plain `arc` mark
+with no hole:
 
 ```json
 {
@@ -900,12 +926,28 @@ category to `color`. Data is already long (one row per vendor).
     "share": "Percentage"
   },
   "chart_spec": {
-    "chartType": "Pie Chart",
+    "chartType": "Donut Chart",
     "encodings": {
       "size": { "field": "share" },
       "color": { "field": "vendor" }
     },
     "chartProperties": { "innerRadius": 60 }
+  }
+}
+```
+
+On **ECharts**, no donut type is registered — use `"Pie Chart"` with the same
+`innerRadius`. On **Chart.js**, use `"Doughnut Chart"` (that spelling), which
+already has a hole by default:
+
+```json
+{
+  "chart_spec": {
+    "chartType": "Doughnut Chart",
+    "encodings": {
+      "size": { "field": "share" },
+      "color": { "field": "vendor" }
+    }
   }
 }
 ```
@@ -973,10 +1015,10 @@ Before returning, verify:
 Revise this skill by 2026-10-22 (90 days) or sooner if any of the following fires:
 
 - [_The Defensible Decision_ chart gallery](https://www.thedefensibledecision.com/gallery/chart-gallery.html) 404s or restructures such that the §0.5 deep-reference URLs no longer resolve — refresh the escalation targets or fold the needed tips into §0 directly.
-- Any of the §0.5 upstream deep-reference URLs (`docs/reference-vegalite.md`, `docs/reference-echarts.md`, `docs/reference-chartjs.md`, `docs/design-semantics.md`, `docs/api-reference.md`, `docs/overview.md`, `docs/README.md` at the `0.3.0` tag) 404 or move — refresh the URLs to the current pinned tag, or drop the tag suffix and accept `main` drift.
+- Any of the §0.5 upstream deep-reference URLs (`docs/reference-vegalite.md`, `docs/reference-echarts.md`, `docs/reference-chartjs.md`, `docs/design-semantics.md`, `docs/api-reference.md`, `docs/overview.md`, `docs/README.md` at the `0.4.0` tag) 404 or move — refresh the URLs to the newest tag that exists (check `https://api.github.com/repos/microsoft/flint-chart/tags`; the library tags independently of the MCP package, so a matching tag may not exist).
 - `flint-chart-mcp` ships a breaking change (chart-type rename, `ChartAssemblyInput` shape change, tool signature change) that this skill doesn't account for — sync §0.4 (Flint coverage) and the worked examples to the new version.
 - Any recommendation in §0.2 (question → family → chartType) is refuted by a source we trust (a case study, a Knaflic/Kirk/Few/Wexler update, or field feedback from ≥2 heir workspaces) — retire or rework that row.
 - The plugin gets ≥3 heir installs and none of them exercise §0.5 (deep-reference escalation) — that signals the compact table alone is sufficient and §0.5 is decorative; prune it.
-- The upstream fork base ([`microsoft/flint-chart/agent-skills/flint-chart-author/SKILL.md`](https://github.com/microsoft/flint-chart/blob/main/agent-skills/flint-chart-author/SKILL.md)) publishes a materially revised body — decide whether to rebase §1-N onto the new upstream or hold on the current fork point.
-- **Upstream absorbs chart selection itself.** `flint-chart` 0.3.0 shipped backend-neutral chart-type recommendations and transformations — the capability §0 exists to provide. The pin moved to `^0.3.0` on 2026-07-29 (see this plugin's `CHANGELOG.md`); the re-test that this falsifier calls for is now due. If those recommendations become reachable through the MCP tools and match or beat §0.2 on the same question, §0 is redundant: call the upstream recommender and keep only the framing this plugin adds on top.
-- **The backend list changes.** §0.4 and the worked examples assume Vega-Lite / ECharts / Chart.js. 0.4.0 adds Plotly (38 chart types, including Funnel, Gauge, and Density Contour) and Excel (18 native Office.js templates), which expands what "Flint can't express this" means. Re-check the coverage rules whenever `list_chart_types` reports a backend this skill does not name.
+- The upstream fork base ([`microsoft/flint-chart/agent-skills/flint-chart-author/SKILL.md`](https://github.com/microsoft/flint-chart/blob/main/agent-skills/flint-chart-author/SKILL.md)) publishes a materially revised body — decide whether to rebase §1-N onto the new upstream or hold on the current fork point. **Do not rebase blindly.** As of 2026-08-05 upstream's skill is itself behind its own generated references: it still teaches "Donut chart: use `Pie Chart` with `innerRadius`" and never names the `Donut Chart` type that `reference-vegalite.md` documents. A straight rebase would regress the backend-specific donut guidance and the corrected `binCount` / `polyOrder` ranges in §Chart-level properties. Diff against the generated `reference-*.md` files, not against upstream's skill.
+- **Upstream absorbs chart selection itself.** `flint-chart` 0.3.0 shipped backend-neutral chart-type recommendations and transformations — the capability §0 exists to provide. The pin moved to `0.4.1` on 2026-08-05 after a handshake + catalog + 6-spec compatibility re-test; those recommendations are still reachable only through the `create_chart_view` MCP App UI, not as distinct MCP tools, so §0 stands. If they become tool-reachable and match or beat §0.2 on the same question, §0 is redundant: call the upstream recommender and keep only the framing this plugin adds on top.
+- **The backend list changes.** §0.4 and the worked examples assume Vega-Lite / ECharts / Chart.js. The `flint-chart` library carries Plotly (38 chart types, including Funnel, Gauge, and Density Contour) and Excel (18 native Office.js templates), but as of the pinned `0.4.1` server neither is reachable: `list_chart_types` rejects `plotly` and `excel` with an enum validation error. If a future server accepts either, the coverage rules and the "Flint can't express this" escape hatch both need reworking — re-check whenever `list_chart_types` accepts a backend this skill does not name.

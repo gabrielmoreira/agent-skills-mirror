@@ -230,19 +230,18 @@ Common outcomes and where they come from (grep the `*.log`):
 ## 6. The `gh` account gotcha
 
 PR / issue creation on `tradermonty/claude-trading-skills` requires the
-**`tradermonty`** `gh` account to be active. Both `tradermonty` and
-`takusaotome` are logged in; the active one is global `gh` state and may be
-either at session start. Before any `gh pr create` / `gh issue` / scheduled
-job that opens a PR:
+**`tradermonty`** `gh` account to be active. If more than one account is logged
+in, the active one is global `gh` state and may be any of them at session
+start. Before any `gh pr create` / `gh issue` / scheduled job that opens a PR:
 
 ```bash
 gh auth switch --hostname github.com --user tradermonty
 gh auth status | grep -A1 'Active account: true'
 ```
 
-With the wrong account, PR creation fails with
-`GraphQL: must be a collaborator (createPullRequest)` (`takusaotome` is not a
-collaborator). Reverting afterward is optional (local preference only).
+With a non-collaborator account active, PR creation fails with
+`GraphQL: must be a collaborator (createPullRequest)`. Reverting afterward is
+optional (local preference only).
 
 ---
 

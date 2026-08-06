@@ -28,10 +28,12 @@ friends) extracted from a real browser sign-in. Two clocks govern their validity
 
 - **`__Secure-1PSIDTS` has a *recommended* rotation cadence of ~600 s**
   (self-reported by Google as `["identity.hfcr",600]` on the `RotateCookies`
-  response). This is a *hint*, not a hard rejection TTL: the prior value keeps
-  authenticating far longer — commonly hours to days on a stable IP / non-Workspace
-  account. Worst-case profiles (datacenter egress, cross-IP, Workspace policy,
-  incomplete extraction) can collapse that to hours or less.
+  response). This is a *hint*, not a hard rejection TTL — but see §2.5: once a
+  newer value has been issued, the **superseded** one is now rejected within
+  roughly half an hour. The "hours to days" figure below applies only while no
+  other client has rotated the session out from under you; a copied snapshot
+  does not qualify. Worst-case profiles (datacenter egress, cross-IP, Workspace
+  policy, incomplete extraction) collapse it further.
 - **`SID` and `__Secure-1PSID`** have very long server-side lifetimes (months to
   years) and effectively don't expire under normal usage.
 - **Cookie set completeness matters more than freshness.** Google rejects cookie
@@ -155,7 +157,9 @@ on a schedule:
    (off-minute schedule avoids fleet collision).
 4. Keeping the source browser running with a Google tab adds resilience, but even
    a closed browser works for hours-to-days while `RotateCookies` keeps
-   succeeding from `SID` alone.
+   succeeding from `SID` alone — provided this is the only client using the
+   session. A second client rotating the same session supersedes your value;
+   see §2.5.
 
 > **Browser support:** `--browser-cookies` accepts any of the ~16 browsers rookiepy
 > reads on the host (`arc`, `brave`, `chrome`, `edge`, `firefox`, `opera`, `safari`,
@@ -326,17 +330,39 @@ Playwright-minted one. Extraction asks for the full multi-domain set
 specific paths (e.g. losing `.notebooklm.google.com` cookies breaks artifact
 downloads).
 
-### 2.5 Three timers people confuse
+### 2.5 Four timers people confuse
 
 | Timer | Magnitude | Lives in | Meaning |
 |---|---|---|---|
-| **`*PSIDTS` rotation cadence** | ~600 s | Google's identity surface | Recommended active-client refresh interval (`["identity.hfcr",600]`). Not a hard rejection TTL — prior values stay valid much longer on stable profiles. |
+| **`*PSIDTS` rotation cadence** | ~600 s | Google's identity surface | Recommended active-client refresh interval, advertised in the `RotateCookies` response body as `["identity.hfcr",600]`. Re-measured 2026-08-05: still 600. |
+| **`*PSIDTS` supersede grace** | **short, and not ours to set** | Google's identity surface | How long a *superseded* value keeps working after a newer one is issued. Undocumented, server-side, and observed to have tightened sharply — see the warning below. |
 | **`*SIDCC` sliding window** | ~5 min | Google's RPC surface | A different cookie family; rotates on nearly every request; not load-bearing for our auth. |
 | **Client-side rotation throttle** | 60 s | `_auth/keepalive.py` | Don't fire two `RotateCookies` POSTs within a minute (avoids 429). Unrelated to how often Google *requires* rotation. |
 
-Reports that "cookies are expiring faster" usually trace to the session entering a
-risk-flagged state (§3.1) or to the rotation mechanism failing until `*SID` finally
-ages out — not to a shorter hard rejection TTL.
+> **The supersede grace collapsed (observed 2026-08).** This document used to
+> assert that "prior values stay valid much longer on stable profiles," and that
+> reports of faster expiry trace to a risk-flagged session (§3.1) rather than a
+> shorter TTL. That advice is no longer safe to follow. A cookie snapshot copied
+> out of a working profile has been observed dying **within ~30 minutes**, while
+> the cadence (600 s) and the cookie's own `expires` stamp (365 days, verified
+> across every local profile) are both unchanged.
+>
+> Two consequences worth internalising:
+>
+> * **The expiry field tells you nothing.** A snapshot whose `__Secure-1PSIDTS`
+>   is a year from expiring can already be rejected. Nothing client-side can
+>   detect this in advance — the only signal is the request failing.
+> * **Any other active client kills your copy.** At a 600 s cadence, a
+>   workstation, a second CI job, or a keepalive supersedes the value you
+>   shipped within ten minutes; the grace period then decides how long your copy
+>   limps on. That is why a cookie snapshot is no longer a viable CI credential
+>   and why the ladder's persistence steps are load-bearing rather than an
+>   optimisation.
+>
+> The durable answer is a credential that does not rotate: ship
+> `master_token.json` and let §4.4 mint a session per run. All four of this
+> repo's secret-bearing workflows do exactly that and ship no cookie snapshot at
+> all.
 
 ### 2.6 Domain tiering: REQUIRED vs OPTIONAL cookie domains
 
@@ -386,7 +412,7 @@ Cookie decay clocks by class:
 
 | Cookie | Rotation / expiry signal | Lifecycle |
 |---|---|---|
-| `__Secure-1PSIDTS` / `*-3PSIDTS` | Recommended cadence ~600 s (`["identity.hfcr",600]`); not a hard TTL | Refreshed opportunistically; stale values work for hours-to-days, then drift into sign-in redirects |
+| `__Secure-1PSIDTS` / `*-3PSIDTS` | Recommended cadence ~600 s (`["identity.hfcr",600]`); not a hard TTL | Refreshed opportunistically. An *un-superseded* stale value works for hours-to-days; a **superseded** one dies within ~30 min (§2.5) |
 | `SIDCC` / `__Secure-*SIDCC` | ~5 min sliding window | Ephemeral; generally not load-bearing for auth |
 | `SID`, `HSID`, `SSID`, `APISID`, `SAPISID` (+ `__Secure-` cousins) | Months → ~1 year | Long-lived identity; not rotated by us |
 | `OSID`, `__Secure-OSID` | Per-product session | Re-issued on each sign-in |
@@ -408,16 +434,18 @@ anything.
 ### 3.3 Empirical cookie requirements
 
 Which cookies does Google *actually* require? This backs the library's two-tier
-`_validate_required_cookies()` pre-flight (see `_auth/cookies.py` —
+`_validate_required_cookies()` pre-flight (see `_auth/cookie_policy.py` —
 `MINIMUM_REQUIRED_COOKIES` and `_has_valid_secondary_binding()` for the
 authoritative values; the historical permissive `{"SID"}` check was replaced in
 [#371](https://github.com/teng-lin/notebooklm-py/issues/371)).
 
-Method: take a known-good `storage_state.json`, drop one or two cookies at a time,
-run `notebooklm list`, and record whether Google accepts the call or redirects to
-login. Single-cookie removal is highly recoverable — every cookie except `SID` can
-be dropped individually with the call still succeeding (Google reissues most of
-them mid-call). Pair-wise removal exposes a precise accept-rule.
+Method: take a known-good `storage_state.json`, drop one, two, or three cookies
+at a time, run `notebooklm list`, and record whether Google accepts the call or
+redirects to login. Single-cookie removal is highly recoverable — every cookie
+except `SID` can be dropped individually with the call still succeeding (Google
+reissues most of them mid-call). Pair-wise removal exposed the original
+accept-rule; a follow-up three-way ablation of `OSID`, the `APISID`/`SAPISID`
+pair, and bare `LSID` corrected its secondary-binding branch.
 
 **The accept-rule model.** Google accepts the NotebookLM homepage GET when both
 hold:
@@ -425,8 +453,11 @@ hold:
 1. **Identity present:** `SID` is valid, and `__Secure-1PSIDTS` is either directly
    present or recoverable via a `RotateCookies` POST — which itself requires the
    full ambient cookie set to authenticate.
-2. **At least one secondary binding present:** `OSID`, OR both `APISID` and
-   `SAPISID`.
+2. **At least one secondary binding present:** `OSID`, OR all three of
+   `APISID`, `SAPISID`, and bare `LSID`.
+
+The singleton and pair-wise ablations established Tier 1 and the two candidate
+secondary-binding routes:
 
 | Variant | `SID` | `OSID` | `APISID+SAPISID` | `__Secure-1PSIDTS` (or recoverable) | Result |
 |---|:-:|:-:|:-:|:-:|:-:|
@@ -438,6 +469,23 @@ hold:
 | Drop `APISID + OSID` | ✓ | ✗ | ✗ | ✓ | FAIL |
 | Drop `SAPISID + OSID` | ✓ | ✗ | ✗ | ✓ | FAIL |
 
+Holding `SID` and a live (or recoverable) `__Secure-1PSIDTS` constant, the
+corrected three-way ablation is:
+
+| `OSID` | `APISID` + `SAPISID` | bare `LSID` | Result |
+|:-:|:-:|:-:|:-:|
+| present | absent | absent | OK |
+| present | present | absent | OK |
+| absent | present | present | OK |
+| absent | present | absent | **FAIL** |
+| absent | absent | present | FAIL |
+
+The first row confirms that `OSID` alone is sufficient, even when every
+`accounts.google.com` cookie (including `LSID`) is absent. `LSID` is required
+only for the `APISID`/`SAPISID` branch. The fourth row retains
+`__Host-1PLSID` and `__Host-3PLSID`, so neither host-prefixed cookie substitutes
+for bare `LSID`.
+
 Before #371 the library trusted any storage with `SID` present, which let
 Google-rejected cookie sets reach the wire — the "auth expires immediately after
 `notebooklm login`" pattern
@@ -448,7 +496,14 @@ catches it with a two-tier check:
 ```python
 MINIMUM_REQUIRED_COOKIES = {"SID", "__Secure-1PSIDTS"}  # Tier 1: raise
 
+
 def _has_valid_secondary_binding(cookie_names: set[str]) -> bool:  # Tier 2: warn
+    if "OSID" in cookie_names:
+        return True
+    return {"APISID", "SAPISID", "LSID"} <= cookie_names
+
+
+def _has_rotatable_secondary_binding(cookie_names: set[str]) -> bool:  # recovery only
     if "OSID" in cookie_names:
         return True
     return {"APISID", "SAPISID"} <= cookie_names
@@ -458,11 +513,13 @@ Tier 1 raises on unambiguous evidence; Tier 2 warns once per process so partial
 extractions surface without breaking edge-case flows (e.g. Workspace SSO) that
 haven't been ablated.
 
-**Caveats.** These observations came from a single non-Workspace, stable-IP
-profile, testing `notebooks.list`. Workspace accounts may have different
-accept-rules. This is a model fit, not a confirmed server mechanism, and the
-freshness clock (§3.1) still applies on top of it — a session with a valid
-accept-tuple can still be killed by Google's risk model.
+**Caveats.** The singleton and pair-wise observations came from a single
+non-Workspace, stable-IP profile, testing `notebooks.list`. The corrected
+three-way secondary-binding ablation was replicated on two unrelated accounts
+(2026-08-04, issue #1977). Workspace accounts may have different accept-rules.
+This is a model fit, not a confirmed server mechanism, and the freshness clock
+(§3.1) still applies on top of it — a session with a valid accept-tuple can still
+be killed by Google's risk model.
 
 ---
 
@@ -640,9 +697,10 @@ When a profile has the persistent `__Secure-1PSID` but no transient
 `__Secure-1PSIDTS` (a common cold-start snapshot), `_recover_psidts_inline`
 (`_auth/psidts_recovery.py`) makes a preflight `RotateCookies` POST during client
 startup to mint the missing cookie before the first RPC. It fires only when `SID`
-is present, a secondary binding is intact (`OSID`, or `APISID` + `SAPISID`), and
-no live `__Secure-1PSIDTS` would be **sent to** `accounts.google.com` — that is,
-the cookie is absent, expired, or scoped to a domain that does not route to the
+is present, a **rotatable** secondary binding is intact (`OSID`, or `APISID` +
+`SAPISID`), and no live `__Secure-1PSIDTS` would be **sent to**
+`accounts.google.com` — that is, the cookie is absent, expired, or scoped to a
+domain that does not route to the
 rotate URL. That last condition is RFC 6265 selection against the URL the
 decision is about, not a domain-priority ranking: a `__Secure-1PSIDTS` scoped to
 `.notebooklm.google.com` (or, post-rebrand, `.notebook.google.com`) never reaches
@@ -680,9 +738,17 @@ The net effect is a heal *attempt* in states that previously went straight to a
 failing RPC, and no new terminal failures: every state that loaded before still
 loads.
 
+This is deliberately the weaker `_has_rotatable_secondary_binding()` recovery
+precondition: unlike the strict post-recovery predicate in §3.3, it does not
+require bare `LSID`, because the rotation hop may restore that accounts-side
+cookie. See `_auth/cookie_policy.py` for why
+`_has_rotatable_secondary_binding` and `_has_valid_secondary_binding` must
+remain distinct.
+
 The separate "did the heal land?" check (`_psidts_is_live`) is deliberately
 domain-blind instead, because it must predict the retrying preflight rather than
-the request jar. **Do not merge the two predicates.** Their differences are
+the request jar. **Do not merge `_psidts_routes_to_rotate` and
+`_psidts_is_live`.** Their differences are
 intentional, and each one has a failure mode behind it:
 
 | | should we fire? (`_psidts_routes_to_rotate`) | did it land? (`_psidts_is_live`) |

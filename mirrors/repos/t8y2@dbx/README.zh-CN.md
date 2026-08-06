@@ -439,6 +439,19 @@ DBX 是免费开源项目，但持续维护、数据库兼容性测试、基础�
       <a href="https://easysearch.cn" target="_blank">访问 Easysearch</a>
     </td>
   </tr>
+  <tr>
+    <td align="center" width="180">
+      <a href="https://www.atlascloud.ai/?ref=6YYXWA" target="_blank">
+        <img src="https://www.atlascloud.ai/logo.svg" alt="Atlas Cloud" width="150" />
+      </a>
+    </td>
+    <td>
+      Atlas Cloud 为开发者提供统一的多模态 AI API，可通过一个接口访问聊天、图像、视频和音频等 400+ 模型。
+    </td>
+    <td align="center" width="140">
+      <a href="https://www.atlascloud.ai/?ref=6YYXWA" target="_blank">访问 Atlas Cloud</a>
+    </td>
+  </tr>
 </table>
 
 - [支持 DBX](https://my.feishu.cn/wiki/WMTkwdATDiiu4rk14JMcoyhTnoh) —— 通过微信或支付宝自愿捐助

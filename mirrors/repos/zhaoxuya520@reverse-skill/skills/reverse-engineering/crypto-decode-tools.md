@@ -200,7 +200,9 @@ xortool-xor -f encrypted -s "known_plaintext"
 
 6. 如果是 XOR → xortool 分析 key
 
-7. 如果是自定义加密 → IDA/Ghidra 逆向算法 → 手写解密脚本
+7. 如果是传统 ZIP 加密 → 优先使用 `bkcrack` 已知明文攻击，不要先做无证据的密码暴力
+
+8. 如果是自定义加密 → IDA/Ghidra 逆向算法 → 手写解密脚本
 ```
 
 ---

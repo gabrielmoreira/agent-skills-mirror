@@ -23,6 +23,9 @@ the decision shape. Only a creator acceptance operation may advance the
 `creator_acceptance` axis. Artifact acceptance records bind
 `decision_kind: artifact_acceptance`, the lifecycle `artifact_id`, and the complete
 candidate `target_hashes`; owner publish and independent review cannot impersonate it.
+当接受记录还承担 Coverage Audition 方案选择时，同一独立决定额外写
+`selected_audition_record_id` 与 `selected_approach_id`；正式场次计划分别绑定 audition 与该决定，
+不得把决定引用写回 audition 本体后再接受，以免形成 hash 循环。
 
 ### Who `decided_by` may name
 
@@ -66,6 +69,7 @@ Route by the creator's actual job, not by an internal pipeline phase.
 | 从想法开发短剧 | `short-drama-develop` | creator brief or conversation |
 | 写/改一集剧本 | `short-drama-write` | idea, episode card, outline, or existing project |
 | 从剧本拆人物场景道具 | `short-drama-assets` | accepted canonical script, or a source script to normalize with preview |
+| 做 Look Development / 风格帧提示词 | `short-drama` → `short-drama-image-prompts` | accepted observable visual direction; asset facts when the frame depicts them |
 | 写角色/场景/道具图片提示词 | `short-drama-image-prompts` | accepted asset decisions |
 | 拆分镜/写关键帧 | `short-drama-storyboard` | accepted script/index and assets |
 | 写视频提示词 | `short-drama-video-prompts` | accepted shots and keyframes |
@@ -79,18 +83,23 @@ canonical Markdown preview and semantic diff, and continue only after acceptance
 ## Checkpoints and branches
 
 ```text
-C0 direction/story engine accepted (optional for script-first)
+C0 direction/story engine accepted as applicable (optional for script-first)
 C1 episode card + screenplay accepted
 C2 asset identities/variants/continuity accepted
+   ├─ optional Look Development after the depicted character/location facts exist
+   │    └─ high-pressure frame after its scene facts also exist
    ├─ C3a asset image prompts accepted
    └─ C3b coverage + shots + keyframes accepted
 C4 video prompts accepted against C3b boundaries
 C5 independent review approved + delivery verified
 ```
 
-After C2, image prompts and storyboard are sibling branches. Never require asset
-image prompts before designing coverage or shots. Video prompts project the shot
-boundaries defined by storyboard; they cannot redefine the next shot.
+Look Development is a branch, not a universal checkpoint. Direction-only exploration remains a creator choice
+inside the accepted visual direction; it is not a `lookdev_frame` artifact. Every frame waits for the accepted
+character or location facts it depicts, and a high-pressure frame also waits for the relevant accepted scene facts.
+It never blocks an ordinary scene. After C2, asset image prompts and storyboard are sibling branches. Never require asset
+image prompts before designing coverage or shots. Video prompts project the shot boundaries defined by
+storyboard; they cannot redefine the next shot.
 
 Each checkpoint combines separate facts:
 

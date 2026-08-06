@@ -581,11 +581,11 @@ Replication → Submission → Peer Review Response → Defense
 
 AERS가 당신의 작업에 도움이 된다면, **인용해 주시고**([CITATION.cff](CITATION.cff)) **저장소에 스타를 눌러** 더 많은 연구자가 찾을 수 있게 해주세요.
 
-<a href="https://www.star-history.com/#brycewang-stanford/Auto-Empirical-Research-Skills&Date">
+<a href="https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/stargazers">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=brycewang-stanford%2FAuto-Empirical-Research-Skills&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=brycewang-stanford%2FAuto-Empirical-Research-Skills&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=brycewang-stanford%2FAuto-Empirical-Research-Skills&type=Date" width="600" />
+   <source media="(prefers-color-scheme: dark)" srcset="images/star-history-dark.svg" />
+   <source media="(prefers-color-scheme: light)" srcset="images/star-history.svg" />
+   <img alt="Star History Chart" src="images/star-history.svg" width="600" />
  </picture>
 </a>
 

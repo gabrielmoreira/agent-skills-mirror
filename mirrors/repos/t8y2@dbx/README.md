@@ -443,6 +443,19 @@ DBX is free and open source, but ongoing maintenance, database compatibility tes
       <a href="https://easysearch.cn" target="_blank">Visit Easysearch</a>
     </td>
   </tr>
+  <tr>
+    <td align="center" width="180">
+      <a href="https://www.atlascloud.ai/?ref=6YYXWA" target="_blank">
+        <img src="https://www.atlascloud.ai/logo.svg" alt="Atlas Cloud" width="150" />
+      </a>
+    </td>
+    <td>
+      Atlas Cloud gives developers one unified API for 400+ AI models across chat, image, video, and audio.
+    </td>
+    <td align="center" width="140">
+      <a href="https://www.atlascloud.ai/?ref=6YYXWA" target="_blank">Visit Atlas Cloud</a>
+    </td>
+  </tr>
 </table>
 
 - [Support DBX](https://my.feishu.cn/wiki/WMTkwdATDiiu4rk14JMcoyhTnoh) — voluntary donations via WeChat or Alipay

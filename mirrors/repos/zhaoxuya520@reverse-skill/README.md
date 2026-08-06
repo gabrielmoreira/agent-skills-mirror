@@ -190,6 +190,7 @@ Platform-specific docs:
 <a id="sponsors"></a>
 
 ## Sponsors
+<a href="https://www.atlascloud.ai/?ref=W3Q77C"><img src="https://www.atlascloud.ai/oss-program/powered-by-atlas-cloud.svg" alt="Powered by Atlas Cloud" height="28" /></a>
 
 For sponsorship or business inquiries:
 

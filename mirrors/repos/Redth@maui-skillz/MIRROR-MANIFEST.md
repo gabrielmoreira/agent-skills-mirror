@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Redth/maui-skillz` — 26 default patterns, 0 followed patterns, 41 file(s) materialized.
+Mirror of `Redth/maui-skillz` — 26 default patterns, 0 followed patterns, 47 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Redth/maui-skillz` — 26 default patterns, 0 followed patterns, 41 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 41 |
+| Files         | 47 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,27 +79,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`.agents/skills/maui-release-notes/references/templates.md`](.agents/skills/maui-release-notes/references/templates.md) |
 | 19 | ✓ | [`.agents/skills/maui-release-notes/SKILL.md`](.agents/skills/maui-release-notes/SKILL.md) |
 | 20 | ✓ | [`.agents/skills/skill-reflect/evals/evals.json`](.agents/skills/skill-reflect/evals/evals.json) |
-| 21 | ✓ | [`.agents/skills/skill-reflect/evals/files/pdf-forms-session.md`](.agents/skills/skill-reflect/evals/files/pdf-forms-session.md) |
-| 22 | ✓ | [`.agents/skills/skill-reflect/evals/trigger-evals.json`](.agents/skills/skill-reflect/evals/trigger-evals.json) |
-| 23 | ✓ | [`.agents/skills/skill-reflect/references/eval-format.md`](.agents/skills/skill-reflect/references/eval-format.md) |
-| 24 | ✓ | [`.agents/skills/skill-reflect/references/friction-rubric.md`](.agents/skills/skill-reflect/references/friction-rubric.md) |
-| 25 | ✓ | [`.agents/skills/skill-reflect/references/privacy-scrub.md`](.agents/skills/skill-reflect/references/privacy-scrub.md) |
-| 26 | ✓ | [`.agents/skills/skill-reflect/references/provenance-routing.md`](.agents/skills/skill-reflect/references/provenance-routing.md) |
-| 27 | ✓ | [`.agents/skills/skill-reflect/references/registry-format.md`](.agents/skills/skill-reflect/references/registry-format.md) |
-| 28 | ✓ | [`.agents/skills/skill-reflect/references/reporting.md`](.agents/skills/skill-reflect/references/reporting.md) |
-| 29 | ✓ | [`.agents/skills/skill-reflect/references/session-sources.md`](.agents/skills/skill-reflect/references/session-sources.md) |
-| 30 | ✓ | [`.agents/skills/skill-reflect/references/skill-improvement-taxonomy.md`](.agents/skills/skill-reflect/references/skill-improvement-taxonomy.md) |
-| 31 | ✓ | [`.agents/skills/skill-reflect/scripts/README.md`](.agents/skills/skill-reflect/scripts/README.md) |
-| 32 | ✓ | [`.agents/skills/skill-reflect/scripts/resolve_provenance.py`](.agents/skills/skill-reflect/scripts/resolve_provenance.py) |
-| 33 | ✓ | [`.agents/skills/skill-reflect/scripts/scrub.py`](.agents/skills/skill-reflect/scripts/scrub.py) |
-| 34 | ✓ | [`.agents/skills/skill-reflect/scripts/stamp_nudge.py`](.agents/skills/skill-reflect/scripts/stamp_nudge.py) |
-| 35 | ✓ | [`.agents/skills/skill-reflect/scripts/test_resolve_provenance.py`](.agents/skills/skill-reflect/scripts/test_resolve_provenance.py) |
-| 36 | ✓ | [`.agents/skills/skill-reflect/scripts/test_scrub.py`](.agents/skills/skill-reflect/scripts/test_scrub.py) |
-| 37 | ✓ | [`.agents/skills/skill-reflect/SKILL.md`](.agents/skills/skill-reflect/SKILL.md) |
-| 38 | ✓ | [`.agents/skills/skill-reflect/templates/github-issue.md`](.agents/skills/skill-reflect/templates/github-issue.md) |
-| 39 | ✓ | [`.agents/skills/skill-reflect/templates/improve-this-skill.md`](.agents/skills/skill-reflect/templates/improve-this-skill.md) |
-| 40 | ✓ | [`.agents/skills/skill-reflect/VERSION`](.agents/skills/skill-reflect/VERSION) |
-| 41 | ✓ | [`release-notes/maui-release-notes.md`](release-notes/maui-release-notes.md) |
+| 21 | ✓ | [`.agents/skills/skill-reflect/evals/files/ordinary-missing-case-session.md`](.agents/skills/skill-reflect/evals/files/ordinary-missing-case-session.md) |
+| 22 | ✓ | [`.agents/skills/skill-reflect/evals/files/pdf-forms-session.md`](.agents/skills/skill-reflect/evals/files/pdf-forms-session.md) |
+| 23 | ✓ | [`.agents/skills/skill-reflect/evals/files/scope-boundary-session.md`](.agents/skills/skill-reflect/evals/files/scope-boundary-session.md) |
+| 24 | ✓ | [`.agents/skills/skill-reflect/evals/trigger-evals.json`](.agents/skills/skill-reflect/evals/trigger-evals.json) |
+| 25 | ✓ | [`.agents/skills/skill-reflect/references/eval-format.md`](.agents/skills/skill-reflect/references/eval-format.md) |
+| 26 | ✓ | [`.agents/skills/skill-reflect/references/friction-rubric.md`](.agents/skills/skill-reflect/references/friction-rubric.md) |
+| 27 | ✓ | [`.agents/skills/skill-reflect/references/privacy-scrub.md`](.agents/skills/skill-reflect/references/privacy-scrub.md) |
+| 28 | ✓ | [`.agents/skills/skill-reflect/references/provenance-routing.md`](.agents/skills/skill-reflect/references/provenance-routing.md) |
+| 29 | ✓ | [`.agents/skills/skill-reflect/references/registry-format.md`](.agents/skills/skill-reflect/references/registry-format.md) |
+| 30 | ✓ | [`.agents/skills/skill-reflect/references/reporting.md`](.agents/skills/skill-reflect/references/reporting.md) |
+| 31 | ✓ | [`.agents/skills/skill-reflect/references/session-sources.md`](.agents/skills/skill-reflect/references/session-sources.md) |
+| 32 | ✓ | [`.agents/skills/skill-reflect/references/skill-improvement-taxonomy.md`](.agents/skills/skill-reflect/references/skill-improvement-taxonomy.md) |
+| 33 | ✓ | [`.agents/skills/skill-reflect/scripts/consume_pending.py`](.agents/skills/skill-reflect/scripts/consume_pending.py) |
+| 34 | ✓ | [`.agents/skills/skill-reflect/scripts/read_journal.py`](.agents/skills/skill-reflect/scripts/read_journal.py) |
+| 35 | ✓ | [`.agents/skills/skill-reflect/scripts/README.md`](.agents/skills/skill-reflect/scripts/README.md) |
+| 36 | ✓ | [`.agents/skills/skill-reflect/scripts/resolve_provenance.py`](.agents/skills/skill-reflect/scripts/resolve_provenance.py) |
+| 37 | ✓ | [`.agents/skills/skill-reflect/scripts/scrub.py`](.agents/skills/skill-reflect/scripts/scrub.py) |
+| 38 | ✓ | [`.agents/skills/skill-reflect/scripts/stamp_nudge.py`](.agents/skills/skill-reflect/scripts/stamp_nudge.py) |
+| 39 | ✓ | [`.agents/skills/skill-reflect/scripts/test_consume_pending.py`](.agents/skills/skill-reflect/scripts/test_consume_pending.py) |
+| 40 | ✓ | [`.agents/skills/skill-reflect/scripts/test_read_journal.py`](.agents/skills/skill-reflect/scripts/test_read_journal.py) |
+| 41 | ✓ | [`.agents/skills/skill-reflect/scripts/test_resolve_provenance.py`](.agents/skills/skill-reflect/scripts/test_resolve_provenance.py) |
+| 42 | ✓ | [`.agents/skills/skill-reflect/scripts/test_scrub.py`](.agents/skills/skill-reflect/scripts/test_scrub.py) |
+| 43 | ✓ | [`.agents/skills/skill-reflect/SKILL.md`](.agents/skills/skill-reflect/SKILL.md) |
+| 44 | ✓ | [`.agents/skills/skill-reflect/templates/github-issue.md`](.agents/skills/skill-reflect/templates/github-issue.md) |
+| 45 | ✓ | [`.agents/skills/skill-reflect/templates/improve-this-skill.md`](.agents/skills/skill-reflect/templates/improve-this-skill.md) |
+| 46 | ✓ | [`.agents/skills/skill-reflect/VERSION`](.agents/skills/skill-reflect/VERSION) |
+| 47 | ✓ | [`release-notes/maui-release-notes.md`](release-notes/maui-release-notes.md) |
 
 ---
 

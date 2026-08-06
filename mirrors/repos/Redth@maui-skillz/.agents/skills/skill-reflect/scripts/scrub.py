@@ -9,17 +9,27 @@ Importable API
 --------------
     from scrub import scrub_text
 
-    scrubbed, findings = scrub_text(text)
+    scrubbed, findings = scrub_text(text, extra_terms=[...], extra_patterns=[...])
     # scrubbed : str  — text with sensitive spans replaced by typed placeholders
     # findings : list[{"category": str, "count": int}]
+    # extra_terms    : literal confidential strings (product/project/brand names,
+    #                  internal codewords) to redact as `domain-term`.
+    # extra_patterns : additional regexes (config `privacy.extraScrubPatterns`)
+    #                  to redact as `custom`.
 
 CLI
 ---
     python3 scrub.py <infile> [--out <outfile>] [--report] [--fail-on-secret]
+                     [--term TERM ...] [--terms-file FILE] [--pattern REGEX ...]
 
     --out FILE        Write scrubbed output to FILE (default: stdout).
     --report          Print per-category redaction counts to stderr (never values).
     --fail-on-secret  Exit 1 if a high-entropy or known-token secret was found.
+    --term TERM       A literal confidential term (product/brand/project name) to
+                      redact as `domain-term`. Repeatable. Case-insensitive.
+    --terms-file FILE File with one confidential term per line ('#' comments and
+                      blank lines ignored).
+    --pattern REGEX   An extra regex to redact as `custom`. Repeatable.
 """
 from __future__ import annotations
 
@@ -183,8 +193,22 @@ def _has_mixed_classes(s: str) -> bool:
 # Public API
 # ---------------------------------------------------------------------------
 
-def scrub_text(s: str) -> tuple:
+def scrub_text(s: str, extra_terms=None, extra_patterns=None) -> tuple:
     """Redact PII and secret material from *s*.
+
+    Parameters
+    ----------
+    s : str
+        The text to scrub.
+    extra_terms : list[str] | None
+        Literal confidential strings (product/project/brand names, internal
+        codewords) to redact as ``domain-term``. Matched case-insensitively on
+        token boundaries. This is a deterministic backstop for domain/product
+        leakage; the model's paraphrasing scrub is the primary defense for the
+        open-ended, semantic version of this problem.
+    extra_patterns : list[str] | None
+        Additional regexes (e.g. from config ``privacy.extraScrubPatterns``) to
+        redact as ``custom``. Invalid patterns are skipped.
 
     Returns
     -------
@@ -198,6 +222,32 @@ def scrub_text(s: str) -> tuple:
     """
     counter: Counter = Counter()
     text = s
+
+    # --- 0. Author/user-supplied confidential terms and patterns ---
+    # Applied first so product/project/brand names win over generic passes.
+    for term in (extra_terms or []):
+        term = (term or "").strip()
+        if not term:
+            continue
+        term_re = re.compile(r"(?<!\w)" + re.escape(term) + r"(?!\w)", re.IGNORECASE)
+
+        def _sub_term(m, _c=counter):
+            _c["domain-term"] += 1
+            return "[REDACTED:domain-term]"
+        text = term_re.sub(_sub_term, text)
+
+    for pat in (extra_patterns or []):
+        if not pat:
+            continue
+        try:
+            pat_re = re.compile(pat)
+        except re.error:
+            continue
+
+        def _sub_custom(m, _c=counter):
+            _c["custom"] += 1
+            return "[REDACTED:custom]"
+        text = pat_re.sub(_sub_custom, text)
 
     # --- 1. PEM private-key blocks ---
     def _sub_pem(m):
@@ -320,7 +370,10 @@ def main(argv: list = None) -> int:
             "Never the sole line of defense; never emits any redacted value."
         ),
     )
-    parser.add_argument("infile", help="File to scrub (text, Markdown, or JSON).")
+    parser.add_argument(
+        "infile",
+        help="File to scrub (text, Markdown, or JSON), or '-' to read stdin.",
+    )
     parser.add_argument(
         "--out", metavar="FILE",
         help="Write scrubbed output to FILE (default: stdout).",
@@ -333,17 +386,37 @@ def main(argv: list = None) -> int:
         "--fail-on-secret", action="store_true",
         help="Exit 1 if a high-entropy or known-token secret category was found.",
     )
+    parser.add_argument(
+        "--term", action="append", default=[], metavar="TERM",
+        help=(
+            "A literal confidential term (product/brand/project name, internal "
+            "codeword) to redact as 'domain-term'. Repeatable; case-insensitive."
+        ),
+    )
+    parser.add_argument(
+        "--terms-file", metavar="FILE",
+        help="File with one confidential term per line ('#' comments/blank lines ignored).",
+    )
+    parser.add_argument(
+        "--pattern", action="append", default=[], metavar="REGEX",
+        help="An extra regex to redact as 'custom'. Repeatable.",
+    )
     args = parser.parse_args(argv)
 
-    with Path(args.infile).open("r", encoding="utf-8", errors="replace") as fh:
-        raw = fh.read()
-
-    scrubbed, findings = scrub_text(raw)
-
-    if args.out:
-        Path(args.out).write_text(scrubbed, encoding="utf-8")
+    if args.infile == "-":
+        raw = sys.stdin.read()
     else:
-        sys.stdout.write(scrubbed)
+        with Path(args.infile).open("r", encoding="utf-8", errors="replace") as fh:
+            raw = fh.read()
+
+    terms = list(args.term)
+    if args.terms_file:
+        for line in Path(args.terms_file).read_text(encoding="utf-8").splitlines():
+            line = line.strip()
+            if line and not line.startswith("#"):
+                terms.append(line)
+
+    scrubbed, findings = scrub_text(raw, extra_terms=terms, extra_patterns=args.pattern)
 
     if args.report:
         print("\n=== scrub report ===", file=sys.stderr)
@@ -353,14 +426,20 @@ def main(argv: list = None) -> int:
         else:
             print("  (no redactions)", file=sys.stderr)
 
-    if args.fail_on_secret:
-        if any(f["category"] in SECRET_CATEGORIES for f in findings):
-            print(
-                "scrub: FAIL — secret-category content detected "
-                "(use --report to see categories; no values are shown)",
-                file=sys.stderr,
-            )
-            return 1
+    if args.fail_on_secret and any(
+        f["category"] in SECRET_CATEGORIES for f in findings
+    ):
+        print(
+            "scrub: FAIL — secret-category content detected "
+            "(use --report to see categories; no values are shown)",
+            file=sys.stderr,
+        )
+        return 1
+
+    if args.out:
+        Path(args.out).write_text(scrubbed, encoding="utf-8")
+    else:
+        sys.stdout.write(scrubbed)
 
     return 0
 

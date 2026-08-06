@@ -79,10 +79,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`.claude/skills/author-migration/deprecated-patterns.md`](.claude/skills/author-migration/deprecated-patterns.md) |
 | 19 | ✓ | [`.claude/skills/author-migration/runtime-contract.md`](.claude/skills/author-migration/runtime-contract.md) |
 | 20 | ✓ | [`.claude/skills/author-migration/SKILL.md`](.claude/skills/author-migration/SKILL.md) |
-| 21 | ✓ | [`.claude/skills/dist-build-migration/SKILL.md`](.claude/skills/dist-build-migration/SKILL.md) |
-| 22 | ✓ | [`.claude/skills/docs-website-update/SKILL.md`](.claude/skills/docs-website-update/SKILL.md) |
-| 23 | ✓ | [`.claude/skills/multi-version-compliance/SKILL.md`](.claude/skills/multi-version-compliance/SKILL.md) |
-| 24 | ✓ | [`.claude/skills/nx-docs-style-check/SKILL.md`](.claude/skills/nx-docs-style-check/SKILL.md) |
+| 21 | ✓ | [`.claude/skills/check-docs-style/SKILL.md`](.claude/skills/check-docs-style/SKILL.md) |
+| 22 | ✓ | [`.claude/skills/dist-build-migration/SKILL.md`](.claude/skills/dist-build-migration/SKILL.md) |
+| 23 | ✓ | [`.claude/skills/docs-website-update/SKILL.md`](.claude/skills/docs-website-update/SKILL.md) |
+| 24 | ✓ | [`.claude/skills/multi-version-compliance/SKILL.md`](.claude/skills/multi-version-compliance/SKILL.md) |
 | 25 | ✓ | [`.claude/skills/nx-gradle-plugin-version-bump/SKILL.md`](.claude/skills/nx-gradle-plugin-version-bump/SKILL.md) |
 | 26 | ✓ | [`.claude/skills/nx-multi-repo-migrate/SKILL.md`](.claude/skills/nx-multi-repo-migrate/SKILL.md) |
 | 27 | ✓ | [`.claude/skills/reproduce-issue/SKILL.md`](.claude/skills/reproduce-issue/SKILL.md) |

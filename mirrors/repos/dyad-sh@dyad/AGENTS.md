@@ -25,6 +25,7 @@ Detailed rules and learnings are in the `rules/` directory. Read the relevant fi
 | [rules/adding-settings.md](rules/adding-settings.md)                 | Adding a new user-facing setting or toggle to the Settings page                                                                                                                |
 | [rules/chat-mentions.md](rules/chat-mentions.md)                     | Modifying chat input mention parsing, `@app:` formatting, Lexical mention sync, or referenced app extraction                                                                   |
 | [rules/chat-message-indicators.md](rules/chat-message-indicators.md) | Using `<dyad-status>` tags in chat messages for system indicators                                                                                                              |
+| [rules/chat-modes.md](rules/chat-modes.md)                           | Adding or modifying features that select, create, persist, or fall back between Agent, Build, Ask, and Plan modes                                                              |
 | [rules/supabase-functions.md](rules/supabase-functions.md)           | Deploying, bundling, or queueing Supabase Edge Functions                                                                                                                       |
 | [rules/product-principles.md](rules/product-principles.md)           | Planning new features, especially via `dyad:swarm-to-plan`, to guide design trade-offs                                                                                         |
 | [rules/jotai-testing.md](rules/jotai-testing.md)                     | Unit-testing Jotai atoms/hooks with `renderHook`, especially across unmount/remount                                                                                            |
@@ -134,6 +135,10 @@ Our project relies on a combination of unit tests, Vitest integration tests, and
 Use unit testing for pure business logic and util functions.
 
 Target a Vitest file with `npm test -- path/to/file.test.ts`. Do not pass Jest-only flags such as `--runInBand`; Vitest will fail with `Unknown option '--runInBand'`.
+
+The pinned Vitest version does not support `--repeat`; it fails with `Unknown option '--repeat'`. Stress-run a target by repeating the supported `npm test -- path/to/file.test.ts` command externally.
+
+Tests that inspect repository text files must account for Git's platform-specific line endings. Normalize newlines or match `\r?\n`; for a Windows-only failure, exercise synthetic LF and CRLF inputs locally so the regression does not depend on the runner OS.
 
 When mocking a widely imported module such as `@/lib/schemas`, prefer a partial mock with `importOriginal` and override only the target exports. A full replacement can make unrelated transitive imports fail with `No "<export>" export is defined` as the module graph evolves.
 

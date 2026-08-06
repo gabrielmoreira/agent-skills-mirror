@@ -22,6 +22,7 @@ Essential Datadog skills for AI agents.
 | **dd-browser-sdk** | Browser SDK setup, RUM, Logs, Session Replay, version migration |
 | **dd-software-delivery** | CI/CD workflow skills — unblock PR, triage flaky tests |
 | **dd-apps**              | Build Datadog Apps — scaffold, run, upload, publish, CI/CD |
+| **dd-product-recommender** | Recommend the right Datadog products for a codebase and/or goal (recommendation only) |
 
 ## Install
 

@@ -7,15 +7,14 @@ provenance cannot be resolved with at least `Likely` confidence, fall back to a 
 
 ---
 
-## Distributed-Skill Gate (CONTRACT §9)
+## Scope gate (CONTRACT §9)
 
-Before entering the resolution order, confirm the skill is **distributed** — installed
-from a plugin, marketplace, or external repo with resolvable provenance outside the
-user's own project. Never file feedback about the user's own in-repo skills unless
-explicitly scoped in via `scope.skills`. The skills `skill-reflect` and
-`skill-reflect-auto` are always excluded per `scope.excludeSkills`.
+Automatic review candidates must be **distributed** — installed from a plugin,
+marketplace, or external repo. An explicit user request may review a local/user-owned
+skill. The skills `skill-reflect` and `skill-reflect-auto` are always excluded.
 
-If the skill does not qualify as distributed, skip the entire send flow.
+Local review does not imply remote eligibility. Technical-local output is always
+`remote_eligible: false`; regenerate strict content before any later send.
 
 ---
 
@@ -58,7 +57,17 @@ Parse the `---`-delimited YAML frontmatter at the top of the file. Extract
 **Confidence: `Confirmed` (if `source_repo` field written by installer) / `Likely` (if `repository` or other author-set field)**
 
 Different agents ship a manifest file alongside installed skills/plugins. Check the
-following files in the skill's installation directory for a repo URL:
+following files in the skill's installation directory for a repo URL. The resolver accepts
+explicit manifest paths and also performs a bounded, local-only search from the supplied
+`SKILL.md` up through at most eight ancestors (or to an explicit installation root):
+
+- `.claude-plugin/plugin.json`
+- `plugin.json`
+- `.claude-plugin/marketplace.json`
+- `marketplace.json`
+
+Do not probe package managers, search unrelated global directories, make network calls, or
+display any installation path.
 
 #### Copilot CLI — no runtime manifest (use frontmatter or registry)
 
@@ -86,17 +95,29 @@ Consequently, for a skill installed under Copilot CLI, provenance comes from:
 
 **Verified** against real `.claude-plugin/marketplace.json` files:
 
-A marketplace file is an object with a **`plugins[]` array**; each entry looks like:
+A marketplace file is an object with a **`plugins[]` array**. It may identify the
+marketplace repository at the top level; each plugin may list multiple skills:
 
 ```json
-{ "plugins": [
-  { "name": "my-skill", "source": "./plugins/my-skill",
-    "description": "...", "version": "1.0.0", "author": "...", "category": "..." }
-] }
+{
+  "name": "example-marketplace",
+  "repository": "https://github.com/owner/skills",
+  "plugins": [
+    {
+      "name": "skill-bundle",
+      "source": "./",
+      "skills": ["./skills/my-skill", "./skills/other-skill"],
+      "version": "1.0.0"
+    }
+  ]
+}
 ```
 
-Match the entry whose **`name`** equals the skill/plugin name, then read its
-`source` (or an explicit `repository`/`homepage`, which win if present):
+Match the entry whose **`name`** equals the requested skill/plugin name. For multi-skill
+plugins, also match the basename of each string in `skills[]` (for example,
+`./skills/my-skill` or `./skills/my-skill/SKILL.md`). Never use a marketplace's top-level
+repository unless an entry matches. Then read the entry's `source` (or an explicit
+`repository`/`homepage`, which win if present):
 
 | `source` form | Meaning | Result |
 |---|---|---|
@@ -104,11 +125,11 @@ Match the entry whose **`name`** equals the skill/plugin name, then read its
 | `{ "source": "github", "repo": "owner/repo" }` (object) | absolute repo | `owner/repo` → **Likely** |
 | `"./plugins/x"` / `"../x"` / `"/abs/x"` (**relative path**) | plugin lives **inside the marketplace repo itself** | provenance = the **marketplace repo** |
 
-**Relative `source` is the common case** and needs a second step, because the
-`owner/repo` is *not in the file*. Resolve the marketplace repo by either:
+**Relative `source` is the common case.** Resolve the marketplace repo in this order:
 
-1. passing `--marketplace-repo owner/repo` (if you already know it), or
-2. `--allow-git` so the resolver derives it from `git -C <dir-of-marketplace.json>
+1. `--marketplace-repo owner/repo` (if already known),
+2. the top-level marketplace `repository` or `homepage` field, or
+3. `--allow-git` so the resolver derives it from `git -C <dir-of-marketplace.json>
    config --get remote.origin.url`.
 
 If neither is available, the resolver returns
@@ -118,6 +139,12 @@ which does **not** clear the never-guess bar; ask the user before sending.
 Per-plugin **`.claude-plugin/plugin.json`** (when present) may carry `repository`,
 `source`, or `homepage`; treat those as **Likely**. If both a `plugin.json` and a
 `marketplace.json` are available, prefer an explicit `repository` on `plugin.json`.
+
+The resolver may return display-safe metadata alongside the repository:
+`install_scope`, `plugin`, `marketplace`, `version`, `ref`, and `sha`. It validates and
+bounds those values and never returns the installation root or manifest path. Callers may
+provide a trusted `project`, `user`, `vendored`, or `unknown` install scope; otherwise the
+resolver classifies only known project/user locations and reports `unknown` when uncertain.
 
 #### URL → `owner/repo` extraction rule (all manifest sources)
 
@@ -165,16 +192,21 @@ user-maintained (not installer-attested), confidence is **Likely**.
 
 ---
 
-### Step 5 — Ask the User / Local-Only Fallback
+### Step 5 — Remote-intent clarification / local fallback
 
 **Confidence: `None` → human input**
 
 If no prior step yielded a result:
 
-1. **Ask the user.** Display what was found (if anything partial) and ask them to
-   confirm or supply an `owner/repo` destination.
-2. If the user provides one → treat as **Likely**; continue with the send flow.
-3. If the user declines or is unsure → write a **local-only artifact** in
+1. In analysis/artifact mode, report `unknown` and continue locally. Do not interrupt
+   the review with a provenance question.
+2. Only after explicit remote-send intent, display what was checked and ask the user
+   to confirm or supply an `owner/repo` destination.
+3. If the user provides one → treat as **Likely** and continue with the send flow.
+4. Offer registry persistence only as a separate local-write action. Show the exact skill
+   name and `owner/repo` mapping and obtain explicit confirmation before changing the
+   registry; send authorization does not authorize this write.
+5. If the user declines or is unsure → keep or write a **local-only artifact** in
    `.skill-feedback/` with the `## Routing` section set to
    `Suggested destination: unknown — manual send required`.
 
@@ -190,15 +222,15 @@ If no prior step yielded a result:
 | `None` | No provenance found |
 
 **Never-guess rule:** Confidence of `Possible` or `None` blocks the send flow.
-Require at least `Likely` + explicit second-consent approval before any `gh` call.
+Require at least `Likely` + destination-specific remote-send authorization before any `gh` call.
 When in doubt, produce a local artifact only.
 
 ---
 
 ## The Send Flow
 
-After provenance is resolved **and** the user passes the **second consent gate**
-(first gate = "review this feedback?"; second gate = "send to the skill author?"):
+After provenance is resolved, strict content is ready, and the user has explicitly
+requested remote filing:
 
 ### 1. Render the issue body
 
@@ -215,10 +247,14 @@ python3 skill-reflect/scripts/scrub.py .skill-feedback/<artifact>.md \
   --fail-on-secret
 ```
 
-Show the scrub report to the user. If `--fail-on-secret` exits non-zero, abort and
-tell the user.
+If `--fail-on-secret` exits non-zero, no output file is written; redraft. Otherwise
+show the exact scrubbed issue body, title, destination, provenance confidence, and
+scrub report.
 
-### 3. File the issue
+### 3. Obtain remote-send authorization and file
+
+Ask for fresh authorization for that exact body and destination. Silence or ambiguity
+means no send. Then run:
 
 ```sh
 gh issue create \
@@ -254,25 +290,24 @@ retry automatically. Inform the user; leave `consent: review-only` in the artifa
 ## Decision Tree
 
 ```
-Is the skill distributed (§9)?
-├─ No  → skip entirely (or prompt user to scope in)
+Review authorized for announced scope?
+├─ No  → stop; write and send nothing
 └─ Yes
-    └─ Resolve provenance (steps 1–4)
-        ├─ Confidence ≥ Likely?
-        │   ├─ No  → Step 5: ask user
-        │   │           ├─ User supplies repo → treat as Likely, continue ↓
-        │   │           └─ User declines     → LOCAL ARTIFACT ONLY
-        │   │                                   Routing: "destination unknown"
-        │   └─ Yes ↓
-        └─ User passes first consent gate?
-            ├─ No  → LOCAL ARTIFACT ONLY
-            └─ Yes → generate & scrub artifact
-                        └─ User passes second consent gate?
-                            ├─ No  → LOCAL ARTIFACT ONLY
-                            └─ Yes → gh issue create --repo <owner/repo> …
-                                       update artifact: consent: sent:<owner/repo>#<n>
-                                       delete ephemeral issue-body file
+    ├─ Analysis mode → scrubbed chat findings; stop
+    └─ Artifact/remote mode
+        └─ Local-write authorized?
+            ├─ No  → show summary preview; ask once
+            └─ Yes → write scrubbed artifact
+                └─ Explicit remote intent?
+                    ├─ No  → stop locally
+                    └─ Yes
+                        └─ strict + remote_eligible + provenance ≥ Likely?
+                            ├─ No  → regenerate/resolve or remain local
+                            └─ Yes → show exact body + destination
+                                └─ remote-send authorized?
+                                    ├─ No  → remain local
+                                    └─ Yes → gh issue create
 ```
 
-> A local artifact is **always** created first. The send step is additive, not a
-> replacement.
+Remote mode uses a strict local artifact as the durable source. Analysis mode never
+creates one.

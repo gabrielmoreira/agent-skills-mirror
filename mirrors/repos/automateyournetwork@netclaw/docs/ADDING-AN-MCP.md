@@ -11,6 +11,23 @@ NetClaw risk.** Every step exists because omitting it has broken that at least o
 
 ---
 
+## Before you start — the spec comes first
+
+**Constitution Principle XVI**: `specify → plan → task → implement`, and *"ad-hoc or undocumented
+feature additions ('cowboy coding') are not permitted."*
+
+Your spec directory needs `spec.md`, `plan.md`, a task list, and `research.md` **before**
+implementation. `scripts/verify-spec-artifacts.py` enforces it and CI runs it.
+
+A combined `plan.md` carrying a `## Tasks` section satisfies the task requirement — spec 084 does
+exactly that, deliberately. Do not create a stub `tasks.md` to satisfy the checker.
+
+> **This was not being followed.** An audit on 2026-08-05 found **ten consecutive specs (087–096)**
+> shipped with `spec.md` alone, against 72 of 86 that carried the full set. The drift was
+> self-reinforcing: an author checking the three most recent specs saw `spec.md` alone and concluded
+> that was the convention. It was the drift. The gate exists so the next person cannot make the same
+> inference.
+
 ## Before you start
 
 Decide which kind of integration this is, because it determines whether it gets a config entry at

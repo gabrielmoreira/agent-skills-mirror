@@ -118,6 +118,7 @@ listed, choose the one that better matches the specific evidence.
 | `repeated-command-loop` | `wrong-or-stale-guidance` | `missing-detail` |
 | `workaround-chain` | `missing-case` | `wrong-or-stale-guidance` |
 | `stale-guidance` | `wrong-or-stale-guidance` | — |
+| `scope-boundary-blind-spot` | `missing-detail` | `missing-case` |
 | `unclear-routing` | `unclear-routing` | `trigger-problem` |
 | `trigger-miss` | `trigger-problem` | `unclear-routing` |
 | `false-trigger` | `trigger-problem` | `unclear-routing` |
@@ -135,6 +136,10 @@ listed, choose the one that better matches the specific evidence.
 - **`workaround-chain` → `wrong-or-stale-guidance`**: prefer `wrong-or-stale-guidance` when
   each workaround step was a direct substitute for a skill-documented step that failed, not
   just an absent case.
+
+- **`scope-boundary-blind-spot` → `missing-case`**: use `missing-case` when the skill clearly
+  declares its current boundary but lacks handling for an adjacent, valid variant. Prefer
+  `missing-detail` when the skill silently assumes or overclaims the boundary.
 
 - **`unclear-routing` ↔ `trigger-problem`**: if the confusion is between skills
   (inter-skill), use `unclear-routing`. If the confusion is about when to invoke this skill

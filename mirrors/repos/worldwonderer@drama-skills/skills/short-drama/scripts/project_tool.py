@@ -106,6 +106,9 @@ PROJECT_DIRS = (
 # then unpadded. EP0001 is refused because it would be a second, invisible
 # spelling of EP001 rather than a distinct episode.
 EPISODE_ID_RE = re.compile(r"EP(?:[0-9]{3}|[1-9][0-9]{3,})")
+SCENE_ID_TOKEN_RE = re.compile(
+    r"(?<![A-Z0-9])SC(?:[0-9]{3}|[1-9][0-9]{3,})(?![A-Z0-9])"
+)
 # Roots no stage may publish into, each with the reason a creator needs. Matched
 # case-insensitively: this suite is developed on case-insensitive filesystems,
 # where `Inputs/x.md` and `inputs/x.md` are the same file on disk, so a
@@ -137,13 +140,11 @@ PUBLISHABLE_ROOTS = tuple(
 # references/contract-and-ownership.md. Keys are casefolded; see
 # _expected_path_owner.
 #
-# Deliberately keyed on exact declared names rather than on directory prefixes.
-# A prefix rule would have to answer "who owns episodes/EP001/anything.json",
-# and the contract does not: an episode directory holds artifacts from four
-# different skills, and a creator may legitimately place their own file beside
-# them. Inventing an answer would refuse those while claiming contract
-# authority the contract never granted. Everything not named here is
-# layout-checked but owner-unconstrained.
+# General artifacts are deliberately keyed on exact declared names rather than
+# stage-directory prefixes. An episode directory holds artifacts from four
+# skills, and a creator may legitimately place their own file beside them.
+# Only the two explicitly declared per-scene families below use bounded
+# subdirectory ownership; everything else unnamed stays owner-unconstrained.
 DECLARED_PROJECT_ARTIFACT_OWNERS: dict[str, str] = {
     "development/creative-brief.md": "short-drama-develop",
     "development/story-engine.md": "short-drama-develop",
@@ -151,6 +152,8 @@ DECLARED_PROJECT_ARTIFACT_OWNERS: dict[str, str] = {
     "development/adaptation-map.jsonl": "short-drama-develop",
     "development/series-arc.json": "short-drama-develop",
     "development/episode-map.jsonl": "short-drama-develop",
+    "development/lookdev-image-prompt-specs.jsonl": "short-drama-image-prompts",
+    "development/lookdev-prompts.md": "short-drama-image-prompts",
     # Cross-episode identity ledgers. Every skill that names these reads them;
     # `short-drama-assets/SKILL.md:130` is the only declared writer.
     "bible/characters.jsonl": "short-drama-assets",
@@ -179,6 +182,17 @@ DECLARED_EPISODE_ARTIFACT_OWNERS: dict[str, str] = {
     "storyboard/motion-specs.jsonl": "short-drama-video-prompts",
     "storyboard/delivery-containers.jsonl": "short-drama-video-prompts",
     "storyboard/video-prompts.md": "short-drama-video-prompts",
+}
+# These two optional layers have one independently accepted file per scene, so
+# their `<SC>.jsonl` members are a safe owner namespace: unlike the episode or
+# storyboard root, that declared filename carries no creator-defined or
+# cross-skill artifact. Ownership is claimed for those members only, not for the
+# directory as a whole — a `.json`, `.md`, or more deeply nested file beside them
+# stays owner-unconstrained like any other undeclared path, because the contract
+# names `<SC>.jsonl` and nothing else.
+DECLARED_EPISODE_ARTIFACT_FAMILY_OWNERS: dict[str, str] = {
+    "storyboard/coverage-auditions": "short-drama-storyboard",
+    "storyboard/scene-visual-plans": "short-drama-storyboard",
 }
 
 LIFECYCLE_STATES: dict[str, tuple[str, ...]] = {
@@ -1007,7 +1021,14 @@ def _expected_path_owner(relative: str) -> str | None:
     folded_parts = tuple(part.casefold() for part in pure.parts)
     if role == "episodes" and len(pure.parts) >= 3:
         remainder = PurePosixPath(*folded_parts[2:]).as_posix()
-        return DECLARED_EPISODE_ARTIFACT_OWNERS.get(remainder)
+        exact = DECLARED_EPISODE_ARTIFACT_OWNERS.get(remainder)
+        if exact is not None:
+            return exact
+        remainder_parts = PurePosixPath(remainder).parts
+        if len(remainder_parts) == 3 and remainder_parts[-1].endswith(".jsonl"):
+            family = PurePosixPath(*remainder_parts[:2]).as_posix()
+            return DECLARED_EPISODE_ARTIFACT_FAMILY_OWNERS.get(family)
+        return None
     if role is None:
         return None
     normalized = PurePosixPath(role, *folded_parts[1:]).as_posix()
@@ -1931,6 +1952,51 @@ def recover_project(path: Path) -> dict[str, Any]:
     }
 
 
+def _validate_scene_scoped_record_path(relative: str, record: Any) -> None:
+    """Keep the two per-scene directing layers attached to their filename.
+
+    This is deliberately a narrow path/ref consistency check, not a schema
+    validator. Blank JSONL files, non-object records, and records without a
+    usable ``scene_ref`` keep their existing behavior.
+    """
+
+    pure = PurePosixPath(relative)
+    if _root_role(pure.parts[0]) != "episodes" or len(pure.parts) != 5:
+        return
+    family = PurePosixPath(*[part.casefold() for part in pure.parts[2:4]]).as_posix()
+    if family not in DECLARED_EPISODE_ARTIFACT_FAMILY_OWNERS:
+        return
+    expected_scene = pure.stem
+    if SCENE_ID_TOKEN_RE.fullmatch(expected_scene) is None:
+        raise ValueError(
+            "scene-scoped directing filename must use an SC001-style identifier: "
+            f"{relative}"
+        )
+    if not isinstance(record, dict):
+        return
+    scene_ref = record.get("scene_ref")
+    values: list[str] = []
+    if isinstance(scene_ref, str):
+        values.append(scene_ref)
+    elif isinstance(scene_ref, dict):
+        values.extend(
+            value
+            for key in ("scene_id", "record_id")
+            if isinstance((value := scene_ref.get(key)), str)
+        )
+    referenced_scenes = {
+        match.group(0)
+        for value in values
+        for match in SCENE_ID_TOKEN_RE.finditer(value)
+    }
+    mismatches = sorted(referenced_scenes - {expected_scene})
+    if mismatches:
+        raise ValueError(
+            f"filename {expected_scene} does not match scene_ref {mismatches[0]}: "
+            f"{relative}"
+        )
+
+
 def _validate_candidate_content(relative: str, content: bytes) -> None:
     suffix = PurePosixPath(relative).suffix.lower()
     if suffix not in DELIVERY_SUFFIXES:
@@ -1945,15 +2011,18 @@ def _validate_candidate_content(relative: str, content: bytes) -> None:
         except json.JSONDecodeError as error:
             raise ValueError(f"invalid candidate JSON: {relative}") from error
     elif suffix == ".jsonl":
+        # Validate the path even when the JSONL is intentionally blank.
+        _validate_scene_scoped_record_path(relative, None)
         for number, line in enumerate(text.splitlines(), 1):
             if not line.strip():
                 continue
             try:
-                json.loads(line)
+                record = json.loads(line)
             except json.JSONDecodeError as error:
                 raise ValueError(
                     f"invalid candidate JSONL at {relative}:{number}"
                 ) from error
+            _validate_scene_scoped_record_path(relative, record)
 
 
 def _structured_candidate_refs(

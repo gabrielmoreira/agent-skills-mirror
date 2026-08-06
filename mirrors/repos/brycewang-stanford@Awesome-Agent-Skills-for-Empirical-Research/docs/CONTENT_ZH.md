@@ -640,11 +640,11 @@ make check       # 完整 gate：validate + Python 编译 + 单元测试 + eval 
 
 如果 AERS 对你的工作有帮助，请**引用它**（[CITATION.cff](../CITATION.cff)）并**点个 Star**，让更多研究者看到。
 
-<a href="https://www.star-history.com/#brycewang-stanford/Auto-Empirical-Research-Skills&Date">
+<a href="https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/stargazers">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=brycewang-stanford%2FAuto-Empirical-Research-Skills&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=brycewang-stanford%2FAuto-Empirical-Research-Skills&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=brycewang-stanford%2FAuto-Empirical-Research-Skills&type=Date" width="600" />
+   <source media="(prefers-color-scheme: dark)" srcset="../images/star-history-dark.svg" />
+   <source media="(prefers-color-scheme: light)" srcset="../images/star-history.svg" />
+   <img alt="Star History Chart" src="../images/star-history.svg" width="600" />
  </picture>
 </a>
 
