@@ -63,6 +63,61 @@
 
 ---
 
+## ⚡ 安装与使用（30 秒上手）
+
+### 最省事的一招：把 URL 丢给 Agent
+
+**把项目 URL 地址 `https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills` 丢给 Claude Code / Codex，并指定是目录 / 项目 / 全局安装** —— 剩下的让它自己做。例如：
+
+```text
+帮我安装 https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills
+装到「全局」（~/.claude/skills/），我想在所有项目里都能用
+```
+
+把最后一行换成你要的作用域即可：
+
+| 作用域 | 说给 Agent 的话 | 落到哪里 |
+|:--|:--|:--|
+| **目录**（当前会话临时用） | "只在当前目录用，不要全局安装" | 当前工作目录下的 `.claude/skills/` |
+| **项目**（团队共享，可提交进 git） | "装到本项目" | 项目根目录 `.claude/skills/` |
+| **全局**（所有项目可用） | "装到全局" | `~/.claude/skills/`（Codex 为 `~/.codex/skills/`） |
+
+### 手动安装（两种，任选其一）
+
+**A. 插件市场（Claude Code v2.1+，推荐，可升级）**
+
+```bash
+claude plugin marketplace add brycewang-stanford/Auto-Empirical-Research-Skills
+claude plugin install aer-skills@auto-empirical-research-skills                 # 顶刊投稿全流程（9 skills）
+claude plugin install empirical-analysis-python@auto-empirical-research-skills  # Python 计量流水线
+claude plugin install empirical-analysis-stata@auto-empirical-research-skills   # Stata 计量流水线
+claude plugin install empirical-analysis-r@auto-empirical-research-skills       # R + Quarto 流水线
+```
+
+**B. 只要某一个 skill —— 直接拷文件夹**
+
+```bash
+git clone --recurse-submodules https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills.git
+cd Auto-Empirical-Research-Skills
+
+cp -R skills/00.1-Full-empirical-analysis-skill_Python  .claude/skills/   # 项目级
+cp -R skills/00.1-Full-empirical-analysis-skill_Python  ~/.claude/skills/ # 全局
+```
+
+拷进去的文件夹必须自带 `SKILL.md`（部分合集的 `SKILL.md` 在下一层，拷那一层）。
+
+### 怎么用
+
+新开一个会话，**直接用自然语言说要做什么**，Agent 会按 `description` 自动挑 skill；说不动就点名方法或 skill：
+
+```text
+用面板数据跑一个 Callaway–Sant'Anna 事件研究，并出 HonestDiD 稳健性和期刊级表格
+```
+
+> 完整安装说明（Codex / CodeBuddy 整库导入、`--plugin-dir` 单次加载、常见故障排查）见 [`INSTALL.md`](INSTALL.md)。
+
+---
+
 ## 中文文档结构
 
 中文内容分两级维护，各司其职：
@@ -144,85 +199,87 @@
 > **主题图例 —** 🚀 全流程与编排器 · 🎯 因果推断与计量经济学 · 📚 文献与研究设计 · ✍️ 写作 / 编辑 / 去 AIGC · 📑 引用 / 复现 / 同行评审 · 🛠️ 数据 / 工具 / 基础设施
 >
 > **点击【→】** 跳转到 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) 中该合集的完整描述；**点击合集名** 直接打开其目录。
+>
+> **🙏 尊重原作者 —** **「来源」列直接链回上游原始仓库**（`owner/repo`）。本仓库里的社区合集都是**上游快照**：请去原仓库点 star、提 issue、看 LICENSE。完整的许可证与来源置信度审计见 [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md)，机器可读版本在 [`catalog/provenance.json`](catalog/provenance.json)。
 
-| # | 合集 | 一句话 | 详情 |
-|--:|:--|:--|:--|
-| ⭐ [00](skills/00-Full-empirical-analysis-skill_StatsPAI/) | **StatsPAI** 🔥 | 因果引擎 · Agent-native Python DSL：`sp.causal(...)` 一行跑闭环（DID/RD/IV/SCM/DML，900+ 函数） | [→](docs/CONTENT_ZH.md#skill-00) |
-| ⭐ [00.1](skills/00.1-Full-empirical-analysis-skill_Python/) | **Full Empirical · Python** 📘 | 显式栈：`pandas` · `statsmodels` · `linearmodels` · `pyfixest` | [→](docs/CONTENT_ZH.md#skill-00-1) |
-| ⭐ [00.2](skills/00.2-Full-empirical-analysis-skill_Stata/) | **Full Empirical · Stata** 📊 | `reghdfe` · `ivreg2` · `csdid` · `sdid` · `rdrobust` 复现包 | [→](docs/CONTENT_ZH.md#skill-00-2) |
-| ⭐ [00.3](skills/00.3-Full-empirical-analysis-skill_R/) | **Full Empirical · R** 📗 | tidyverse · `fixest` · `did` · `HonestDiD` + Quarto 渲染 | [→](docs/CONTENT_ZH.md#skill-00-3) |
-| [01](skills/01-lishix520-academic-paper-skills/) | academic-paper-skills | 大纲 → 手稿写作 + 7 维审稿人模拟 | [→](docs/CONTENT_ZH.md#skill-01) |
-| [02](skills/02-luwill-research-skills/) | research-skills | 医学影像综述、提案、论文转幻灯片 | [→](docs/CONTENT_ZH.md#skill-02) |
-| [03](skills/03-K-Dense-AI-claude-scientific-skills/) | scientific-skills | 假设生成 + 28 个科学数据库 | [→](docs/CONTENT_ZH.md#skill-03) |
-| [04](skills/04-K-Dense-AI-claude-scientific-writer/) | scientific-writer | 引用管理 + 科学写作 | [→](docs/CONTENT_ZH.md#skill-04) |
-| [05](skills/05-kthorn-research-superpower/) | research-superpower | 系统化检索、筛选与引文溯源 | [→](docs/CONTENT_ZH.md#skill-05) |
-| [06](skills/06-fuhaoda-stats-paper-writing/) | stats-paper-writing | 端到端 LaTeX 统计论文写作 | [→](docs/CONTENT_ZH.md#skill-06) |
-| [07](skills/07-Orchestra-Research-AI-Research-SKILLs/) | AI-Research-SKILLs | 发表级 ML 图表、LaTeX、引文核验 | [→](docs/CONTENT_ZH.md#skill-07) |
-| [08](skills/08-ndpvt-web-latex-document-skill/) | latex-document-skill | 创建 / 编译任意 LaTeX 文档为 PDF | [→](docs/CONTENT_ZH.md#skill-08) |
-| [09](skills/09-meleantonio-awesome-econ-ai-stuff/) | awesome-econ-ai | Python 面板数据分析（`linearmodels`） | [→](docs/CONTENT_ZH.md#skill-09) |
-| [10](skills/10-Jill0099-causal-inference-mixtape/) | causal-inference-mixtape | DID / IV / RDD / SCM 模板（Cunningham） | [→](docs/CONTENT_ZH.md#skill-10) |
-| [11](skills/11-James-Traina-compound-science/) | compound-science | 面向定量社会科学的贝叶斯估计 | [→](docs/CONTENT_ZH.md#skill-11) |
-| [12](skills/12-pedrohcgs-claude-code-my-workflow/) | claude-code-my-workflow | 提交 → PR → 合并的研究工作流（Emory） | [→](docs/CONTENT_ZH.md#skill-12) |
-| [13](skills/13-scunning1975-MixtapeTools/) | MixtapeTools | Cunningham 的因果推断工具集与讲义 | [→](docs/CONTENT_ZH.md#skill-13) |
-| [14](skills/14-luischanci-claude-code-research-starter/) | research-starter | R 中的 IV / DiD / RDD，含完整诊断 | [→](docs/CONTENT_ZH.md#skill-14) |
-| [15](skills/15-Felpix-Studios-social-science-research/) | social-science-research | R 或 Python 端到端数据分析 | [→](docs/CONTENT_ZH.md#skill-15) |
-| [16](skills/16-hsantanna88-clo-author/) | clo-author | 多代理数据分析（R / Stata / Python） | [→](docs/CONTENT_ZH.md#skill-16) |
-| [17](skills/17-DAAF-Contribution-Community-daaf/) | DAAF | 安全意识代理框架（32 条 deny rule） | [→](docs/CONTENT_ZH.md#skill-17) |
-| [18](skills/18-jusi-aalto-stata-accounting-research/) | stata-accounting | 来自 126 篇 *JAR* 论文的实测 Stata 范式 | [→](docs/CONTENT_ZH.md#skill-18) |
-| [19](skills/19-CuellarC05-vera-economic-intelligence/) | vera-economic-intelligence | 经济情报 / 政策研究情报工作流 | [→](docs/CONTENT_ZH.md#skill-19) |
-| [20](skills/20-wenddymacro-python-econ-skill/) | python-econ-skill | DSGE / HANK 与定量经济计算 | [→](docs/CONTENT_ZH.md#skill-20) |
-| [21](skills/21-claesbackman-AI-research-feedback/) | AI-research-feedback | 用 AI 同行评审生成结构化反馈 | [→](docs/CONTENT_ZH.md#skill-21) |
-| [22](skills/22-christopherkenny-skills/) | christopherkenny-skills | 面向 Quarto（`.qmd`）的 APSA 风格检查器 | [→](docs/CONTENT_ZH.md#skill-22) |
-| [23](skills/23-Learning-Bayesian-Statistics-baygent-skills/) | baygent | 带护栏的 PyMC / Arviz 贝叶斯工作流 | [→](docs/CONTENT_ZH.md#skill-23) |
-| [24](skills/24-Imbad0202-academic-research-skills/) | academic-research-skills | 5 审稿人多视角论文评审 | [→](docs/CONTENT_ZH.md#skill-24) |
-| [25](skills/25-HosungYou-Diverga/) | Diverga | 研究问题精炼器（抗模式坍缩） | [→](docs/CONTENT_ZH.md#skill-25) |
-| [26](skills/26-Data-Wise-scholar/) | scholar | 统计算法设计与文档 | [→](docs/CONTENT_ZH.md#skill-26) |
-| [27](skills/27-dariia-m-my_claude_skills/) | my_claude_skills | 经济学摘要写作指南 | [→](docs/CONTENT_ZH.md#skill-27) |
-| [28](skills/28-maxwell2732-paper-replicate-agent-demo/) | paper-replicate-agent | 论文复现代理演示 | [→](docs/CONTENT_ZH.md#skill-28) |
-| [29](skills/29-quarcs-lab-project20XXy/) | project20XXy | 可复现手稿 + notebook 项目 | [→](docs/CONTENT_ZH.md#skill-29) |
-| [30](skills/30-zirui-song-claude-skills/) | zirui-song-claude-skills | Zirui Song 的研究辅助 Claude 技能集 | [→](docs/CONTENT_ZH.md#skill-30) |
-| [31](skills/31-thalysandratos-claude-code-skills/) | claude-code-skills | Python 面板数据分析 | [→](docs/CONTENT_ZH.md#skill-31) |
-| [32](skills/32-dylantmoore-stata-skill/) | stata-skill | 高性能 Stata C/C++ 插件 | [→](docs/CONTENT_ZH.md#skill-32) |
-| [33](skills/33-Galaxy-Dawn-claude-scholar/) | claude-scholar | 研究全生命周期：选题 → 综述 → 实验 → 审稿回复 | [→](docs/CONTENT_ZH.md#skill-33) |
-| [34](skills/34-andrehuang-research-companion/) | research-companion | 头脑风暴、评估并决策研究方向 | [→](docs/CONTENT_ZH.md#skill-34) |
-| [35](skills/35-bahayonghang-academic-writing-skills/) | academic-writing-skills | 面向投稿场所的工业 AI 文献研究 | [→](docs/CONTENT_ZH.md#skill-35) |
-| [36](skills/36-taoyunudt-literature-review-skill/) | literature-review-skill | 完整文献综述工作流（中文） | [→](docs/CONTENT_ZH.md#skill-36) |
-| [37](skills/37-IlanStrauss-ai-skills/) | IlanStrauss-ai-skills | Ilan Strauss 经济学研究 AI 工作流 | [→](docs/CONTENT_ZH.md#skill-37) |
-| [38](skills/38-peternka-academic-proofreader/) | academic-proofreader | 学术校对 | [→](docs/CONTENT_ZH.md#skill-38) |
-| [39](skills/39-vincentarelbundock-marginaleffects/) | marginaleffects | 预测、斜率与比较（R / Python） | [→](docs/CONTENT_ZH.md#skill-39) |
-| [40](skills/40-py-econometrics-pyfixest/) | pyfixest | Python 中的快速固定效应估计 | [→](docs/CONTENT_ZH.md#skill-40) |
-| [41](skills/41-sticerd-eee-sewage-econometrics-check/) | sewage-econometrics-check | 10 项复现包审计 | [→](docs/CONTENT_ZH.md#skill-41) |
-| [42](skills/42-wanshuiyin-ARIS/) | ARIS | 自主「research-in-sleep」代理，端到端 | [→](docs/CONTENT_ZH.md#skill-42) |
-| [43](skills/43-wentorai-research-plugins/) | research-plugins | 478 个研究插件：数据可视化、领域、基础设施 | [→](docs/CONTENT_ZH.md#skill-43) |
-| [44](skills/44-matsuikentaro1-humanizer_academic/) | humanizer_academic | 为医学/学术手稿去 AI 味（23 类模式） | [→](docs/CONTENT_ZH.md#skill-44) |
-| [45](skills/45-stephenturner-skill-deslop/) | deslop | 去除 AI 写作痕迹（5 维评分） | [→](docs/CONTENT_ZH.md#skill-45) |
-| [46](skills/46-hardikpandya-stop-slop/) | stop-slop | 三层 AI 痕迹检测与改写 | [→](docs/CONTENT_ZH.md#skill-46) |
-| [47](skills/47-conorbronsdon-avoid-ai-writing/) | avoid-ai-writing | 审计 → 改写 → 二次审计 AI 味（留痕） | [→](docs/CONTENT_ZH.md#skill-47) |
-| ⭐ [48](skills/48-de-AIGC-skills/) | **de-AIGC-skills** 🇨🇳🇬🇧 | 中英双语学术降 AIGC（Turnitin AI / GPTZero / 知网 / 万方） | [→](docs/CONTENT_ZH.md#skill-48) |
-| [49](skills/49-voidborne-d-humanize-chinese/) | humanize-chinese | 检测并人性化 AI 生成的中文文本 | [→](docs/CONTENT_ZH.md#skill-49) |
-| ⭐ [50](skills/50-brycewang-aer-skills/) | **AER-skills** 📕 | Top-5 经济学投稿套件：识别 → 稳健性 → R&R | [→](docs/CONTENT_ZH.md#skill-50) |
-| [51](skills/51-pymc-labs-CausalPy/) | CausalPy | 贝叶斯准实验（PyMC Labs） | [→](docs/CONTENT_ZH.md#skill-51) |
-| [52](skills/52-keemanxp-slr-prisma/) | slr-prisma | 系统文献综述，PRISMA 2020 | [→](docs/CONTENT_ZH.md#skill-52) |
-| [53](skills/53-keemanxp-thematic-analysis-skill/) | thematic-analysis | Braun & Clarke 六阶段定性主题分析 | [→](docs/CONTENT_ZH.md#skill-53) |
-| [54](skills/54-scdenney-open-science-skills/) | open-science-skills | 引用一致性、DOI 与论据支撑审计 | [→](docs/CONTENT_ZH.md#skill-54) |
-| [55](skills/55-ab604-claude-code-r-skills/) | r-skills | R 中用 `brms` 做贝叶斯推断 | [→](docs/CONTENT_ZH.md#skill-55) |
-| [56](skills/56-hanlulong-econ-writing-skill/) | econ-writing-skill | 综合 50+ 顶级指南的经济学写作 | [→](docs/CONTENT_ZH.md#skill-56) |
-| [57](skills/57-dgunning-edgartools/) | edgartools | 查询与分析 SEC 文件 | [→](docs/CONTENT_ZH.md#skill-57) |
-| [58](skills/58-charlescoverdale-econstack/) | econstack | 政策简报（UK GES / AU Treasury） | [→](docs/CONTENT_ZH.md#skill-58) |
-| [59](skills/59-shiquda-openalex-skill/) | openalex-skill | 通过 OpenAlex 查询 2.4 亿+ 学术作品 | [→](docs/CONTENT_ZH.md#skill-59) |
-| [60](skills/60-regisely-superpapers/) | superpapers | 综合性实证研究支持套件 | [→](docs/CONTENT_ZH.md#skill-60) |
-| [61](skills/61-phdemotions-research-methods/) | research-methods | 与预注册匹配的验证性检验 | [→](docs/CONTENT_ZH.md#skill-61) |
-| [62](skills/62-PHY041-claude-skill-citation-checker/) | citation-checker | 对照 CrossRef / S2 / OpenAlex 核验引用 | [→](docs/CONTENT_ZH.md#skill-62) |
-| [63](skills/63-tondevrel-scientific-agent-skills/) | scientific-agent-skills | DoWhy 识别–估计–反驳框架 | [→](docs/CONTENT_ZH.md#skill-63) |
-| [64](skills/64-tmonk-mcp-stata/) | mcp-stata | 20 个 Stata 因果推断与复现 skill | [→](docs/CONTENT_ZH.md#skill-64) |
-| [65](skills/65-game-theory-paper-writer/) | game-theory-paper-writer | 生成并压力测试博弈论论文 | [→](docs/CONTENT_ZH.md#skill-65) |
-| [66](skills/66-zheng-siyao-empirical-research-skills/) | empirical-research-skills | 面向大型面板的 R 性能优化 | [→](docs/CONTENT_ZH.md#skill-66) |
-| [67](skills/67-econfin-workflow-toolkit/) | econfin-workflow-toolkit | 中国公司金融实证工作流，从提案到论文 | [→](docs/CONTENT_ZH.md#skill-67) |
-| [68](skills/68-research-productivity-skills/) | research-productivity-skills | 论文检索、SSRN、DOI 查询、下载 | [→](docs/CONTENT_ZH.md#skill-68) |
-| ⭐ [69](skills/69-Paper-WorkFlow/) | **Paper-WorkFlow** 🧭 | 元编排器，串起整个社会科学论文流水线 | [→](docs/CONTENT_ZH.md#skill-69) |
-| [70](skills/70-ssci-polish/) | ssci-polish ✍️ | SSCI / SCI 英文论文语言润色（语法、可读性、学术语气） | [→](docs/CONTENT_ZH.md#skill-70) |
-| ⭐ [71](skills/71-brycewang-lit-review-agent-tools/) | **lit-review-agent-tools** 🔍 | 文献综述工具选型 + 一键安装运行（MinerU / PaperQA2 / ASReview / STORM / MCP 服务器） | [→](docs/CONTENT_ZH.md#skill-71) |
-| ⭐ [72](skills/72-kaggle-research/) | **Kaggle Research** 🧪 | 通过官方 CLI 安全检索 Kaggle 资源、限界下载公开数据并保留审计证据 | [→](docs/CONTENT_ZH.md#skill-72) |
+| # | 合集 | 一句话 | 详情 | 来源 |
+|--:|:--|:--|:--|:--|
+| ⭐ [00](skills/00-Full-empirical-analysis-skill_StatsPAI/) | **StatsPAI** 🔥 | 因果引擎 · Agent-native Python DSL：`sp.causal(...)` 一行跑闭环（DID/RD/IV/SCM/DML，900+ 函数） | [→](docs/CONTENT_ZH.md#skill-00) | [brycewang-stanford/StatsPAI](https://github.com/brycewang-stanford/StatsPAI) |
+| ⭐ [00.1](skills/00.1-Full-empirical-analysis-skill_Python/) | **Full Empirical · Python** 📘 | 显式栈：`pandas` · `statsmodels` · `linearmodels` · `pyfixest` | [→](docs/CONTENT_ZH.md#skill-00-1) | [⭐ 本仓库](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ [00.2](skills/00.2-Full-empirical-analysis-skill_Stata/) | **Full Empirical · Stata** 📊 | `reghdfe` · `ivreg2` · `csdid` · `sdid` · `rdrobust` 复现包 | [→](docs/CONTENT_ZH.md#skill-00-2) | [⭐ 本仓库](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ [00.3](skills/00.3-Full-empirical-analysis-skill_R/) | **Full Empirical · R** 📗 | tidyverse · `fixest` · `did` · `HonestDiD` + Quarto 渲染 | [→](docs/CONTENT_ZH.md#skill-00-3) | [⭐ 本仓库](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| [01](skills/01-lishix520-academic-paper-skills/) | academic-paper-skills | 大纲 → 手稿写作 + 7 维审稿人模拟 | [→](docs/CONTENT_ZH.md#skill-01) | [lishix520/academic-paper-skills](https://github.com/lishix520/academic-paper-skills) |
+| [02](skills/02-luwill-research-skills/) | research-skills | 医学影像综述、提案、论文转幻灯片 | [→](docs/CONTENT_ZH.md#skill-02) | [luwill/research-skills](https://github.com/luwill/research-skills) |
+| [03](skills/03-K-Dense-AI-claude-scientific-skills/) | scientific-skills | 假设生成 + 28 个科学数据库 | [→](docs/CONTENT_ZH.md#skill-03) | [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) |
+| [04](skills/04-K-Dense-AI-claude-scientific-writer/) | scientific-writer | 引用管理 + 科学写作 | [→](docs/CONTENT_ZH.md#skill-04) | [K-Dense-AI/claude-scientific-writer](https://github.com/K-Dense-AI/claude-scientific-writer) |
+| [05](skills/05-kthorn-research-superpower/) | research-superpower | 系统化检索、筛选与引文溯源 | [→](docs/CONTENT_ZH.md#skill-05) | [kthorn/research-superpower](https://github.com/kthorn/research-superpower) |
+| [06](skills/06-fuhaoda-stats-paper-writing/) | stats-paper-writing | 端到端 LaTeX 统计论文写作 | [→](docs/CONTENT_ZH.md#skill-06) | [fuhaoda/stats-paper-writing-agent-skills](https://github.com/fuhaoda/stats-paper-writing-agent-skills) |
+| [07](skills/07-Orchestra-Research-AI-Research-SKILLs/) | AI-Research-SKILLs | 发表级 ML 图表、LaTeX、引文核验 | [→](docs/CONTENT_ZH.md#skill-07) | [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-Research-SKILLs) |
+| [08](skills/08-ndpvt-web-latex-document-skill/) | latex-document-skill | 创建 / 编译任意 LaTeX 文档为 PDF | [→](docs/CONTENT_ZH.md#skill-08) | [ndpvt-web/latex-document-skill](https://github.com/ndpvt-web/latex-document-skill) |
+| [09](skills/09-meleantonio-awesome-econ-ai-stuff/) | awesome-econ-ai | Python 面板数据分析（`linearmodels`） | [→](docs/CONTENT_ZH.md#skill-09) | [meleantonio/awesome-econ-ai-stuff](https://github.com/meleantonio/awesome-econ-ai-stuff) |
+| [10](skills/10-Jill0099-causal-inference-mixtape/) | causal-inference-mixtape | DID / IV / RDD / SCM 模板（Cunningham） | [→](docs/CONTENT_ZH.md#skill-10) | [Jill0099/causal-inference-mixtape](https://github.com/Jill0099/causal-inference-mixtape) |
+| [11](skills/11-James-Traina-compound-science/) | compound-science | 面向定量社会科学的贝叶斯估计 | [→](docs/CONTENT_ZH.md#skill-11) | [James-Traina/compound-science](https://github.com/James-Traina/compound-science) |
+| [12](skills/12-pedrohcgs-claude-code-my-workflow/) | claude-code-my-workflow | 提交 → PR → 合并的研究工作流（Emory） | [→](docs/CONTENT_ZH.md#skill-12) | [pedrohcgs/claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow) |
+| [13](skills/13-scunning1975-MixtapeTools/) | MixtapeTools | Cunningham 的因果推断工具集与讲义 | [→](docs/CONTENT_ZH.md#skill-13) | [scunning1975/MixtapeTools](https://github.com/scunning1975/MixtapeTools) |
+| [14](skills/14-luischanci-claude-code-research-starter/) | research-starter | R 中的 IV / DiD / RDD，含完整诊断 | [→](docs/CONTENT_ZH.md#skill-14) | [luischanci/claude-code-research-starter](https://github.com/luischanci/claude-code-research-starter) |
+| [15](skills/15-Felpix-Studios-social-science-research/) | social-science-research | R 或 Python 端到端数据分析 | [→](docs/CONTENT_ZH.md#skill-15) | [Felpix-Studios/social-science-research](https://github.com/Felpix-Studios/social-science-research) |
+| [16](skills/16-hsantanna88-clo-author/) | clo-author | 多代理数据分析（R / Stata / Python） | [→](docs/CONTENT_ZH.md#skill-16) | [hsantanna88/clo-author](https://github.com/hsantanna88/clo-author) |
+| [17](skills/17-DAAF-Contribution-Community-daaf/) | DAAF | 安全意识代理框架（32 条 deny rule） | [→](docs/CONTENT_ZH.md#skill-17) | [DAAF-Contribution-Community/daaf](https://github.com/DAAF-Contribution-Community/daaf) |
+| [18](skills/18-jusi-aalto-stata-accounting-research/) | stata-accounting | 来自 126 篇 *JAR* 论文的实测 Stata 范式 | [→](docs/CONTENT_ZH.md#skill-18) | [jusi-aalto/stata-accounting-research](https://github.com/jusi-aalto/stata-accounting-research) |
+| [19](skills/19-CuellarC05-vera-economic-intelligence/) | vera-economic-intelligence | 经济情报 / 政策研究情报工作流 | [→](docs/CONTENT_ZH.md#skill-19) | [CuellarC05/vera-economic-intelligence](https://github.com/CuellarC05/vera-economic-intelligence) |
+| [20](skills/20-wenddymacro-python-econ-skill/) | python-econ-skill | DSGE / HANK 与定量经济计算 | [→](docs/CONTENT_ZH.md#skill-20) | [wenddymacro/python-econ-skill](https://github.com/wenddymacro/python-econ-skill) |
+| [21](skills/21-claesbackman-AI-research-feedback/) | AI-research-feedback | 用 AI 同行评审生成结构化反馈 | [→](docs/CONTENT_ZH.md#skill-21) | [claesbackman/AI-research-feedback](https://github.com/claesbackman/AI-research-feedback) |
+| [22](skills/22-christopherkenny-skills/) | christopherkenny-skills | 面向 Quarto（`.qmd`）的 APSA 风格检查器 | [→](docs/CONTENT_ZH.md#skill-22) | [christopherkenny/skills](https://github.com/christopherkenny/skills) |
+| [23](skills/23-Learning-Bayesian-Statistics-baygent-skills/) | baygent | 带护栏的 PyMC / Arviz 贝叶斯工作流 | [→](docs/CONTENT_ZH.md#skill-23) | [Learning-Bayesian-Statistics/baygent-skills](https://github.com/Learning-Bayesian-Statistics/baygent-skills) |
+| [24](skills/24-Imbad0202-academic-research-skills/) | academic-research-skills | 5 审稿人多视角论文评审 | [→](docs/CONTENT_ZH.md#skill-24) | [Imbad0202/academic-research-skills](https://github.com/Imbad0202/academic-research-skills) |
+| [25](skills/25-HosungYou-Diverga/) | Diverga | 研究问题精炼器（抗模式坍缩） | [→](docs/CONTENT_ZH.md#skill-25) | [HosungYou/Diverga](https://github.com/HosungYou/Diverga) |
+| [26](skills/26-Data-Wise-scholar/) | scholar | 统计算法设计与文档 | [→](docs/CONTENT_ZH.md#skill-26) | [Data-Wise/claude-plugins](https://github.com/Data-Wise/claude-plugins) |
+| [27](skills/27-dariia-m-my_claude_skills/) | my_claude_skills | 经济学摘要写作指南 | [→](docs/CONTENT_ZH.md#skill-27) | [dariia-m/my_claude_skills](https://github.com/dariia-m/my_claude_skills) |
+| [28](skills/28-maxwell2732-paper-replicate-agent-demo/) | paper-replicate-agent | 论文复现代理演示 | [→](docs/CONTENT_ZH.md#skill-28) | [maxwell2732/paper-replicate-agent-demo](https://github.com/maxwell2732/paper-replicate-agent-demo) |
+| [29](skills/29-quarcs-lab-project20XXy/) | project20XXy | 可复现手稿 + notebook 项目 | [→](docs/CONTENT_ZH.md#skill-29) | [quarcs-lab/project20XXy](https://github.com/quarcs-lab/project20XXy) |
+| [30](skills/30-zirui-song-claude-skills/) | zirui-song-claude-skills | Zirui Song 的研究辅助 Claude 技能集 | [→](docs/CONTENT_ZH.md#skill-30) | [zirui-song/claude-skills](https://github.com/zirui-song/claude-skills) |
+| [31](skills/31-thalysandratos-claude-code-skills/) | claude-code-skills | Python 面板数据分析 | [→](docs/CONTENT_ZH.md#skill-31) | [thalysandratos/claude-code-skills](https://github.com/thalysandratos/claude-code-skills) |
+| [32](skills/32-dylantmoore-stata-skill/) | stata-skill | 高性能 Stata C/C++ 插件 | [→](docs/CONTENT_ZH.md#skill-32) | [dylantmoore/stata-skill](https://github.com/dylantmoore/stata-skill) |
+| [33](skills/33-Galaxy-Dawn-claude-scholar/) | claude-scholar | 研究全生命周期：选题 → 综述 → 实验 → 审稿回复 | [→](docs/CONTENT_ZH.md#skill-33) | [Galaxy-Dawn/claude-scholar](https://github.com/Galaxy-Dawn/claude-scholar) |
+| [34](skills/34-andrehuang-research-companion/) | research-companion | 头脑风暴、评估并决策研究方向 | [→](docs/CONTENT_ZH.md#skill-34) | [andrehuang/research-companion](https://github.com/andrehuang/research-companion) |
+| [35](skills/35-bahayonghang-academic-writing-skills/) | academic-writing-skills | 面向投稿场所的工业 AI 文献研究 | [→](docs/CONTENT_ZH.md#skill-35) | [bahayonghang/academic-writing-skills](https://github.com/bahayonghang/academic-writing-skills) |
+| [36](skills/36-taoyunudt-literature-review-skill/) | literature-review-skill | 完整文献综述工作流（中文） | [→](docs/CONTENT_ZH.md#skill-36) | [taoyunudt/literature-review-skill](https://github.com/taoyunudt/literature-review-skill) |
+| [37](skills/37-IlanStrauss-ai-skills/) | IlanStrauss-ai-skills | Ilan Strauss 经济学研究 AI 工作流 | [→](docs/CONTENT_ZH.md#skill-37) | [IlanStrauss/ai-skills](https://github.com/IlanStrauss/ai-skills) |
+| [38](skills/38-peternka-academic-proofreader/) | academic-proofreader | 学术校对 | [→](docs/CONTENT_ZH.md#skill-38) | [peternka/academic_proofreader](https://github.com/peternka/academic_proofreader) |
+| [39](skills/39-vincentarelbundock-marginaleffects/) | marginaleffects | 预测、斜率与比较（R / Python） | [→](docs/CONTENT_ZH.md#skill-39) | [vincentarelbundock/marginaleffects](https://github.com/vincentarelbundock/marginaleffects) |
+| [40](skills/40-py-econometrics-pyfixest/) | pyfixest | Python 中的快速固定效应估计 | [→](docs/CONTENT_ZH.md#skill-40) | [py-econometrics/pyfixest](https://github.com/py-econometrics/pyfixest) |
+| [41](skills/41-sticerd-eee-sewage-econometrics-check/) | sewage-econometrics-check | 10 项复现包审计 | [→](docs/CONTENT_ZH.md#skill-41) | [sticerd-eee/sewage](https://github.com/sticerd-eee/sewage) |
+| [42](skills/42-wanshuiyin-ARIS/) | ARIS | 自主「research-in-sleep」代理，端到端 | [→](docs/CONTENT_ZH.md#skill-42) | [wanshuiyin/Auto-claude-code-research-in-sleep](https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep) |
+| [43](skills/43-wentorai-research-plugins/) | research-plugins | 478 个研究插件：数据可视化、领域、基础设施 | [→](docs/CONTENT_ZH.md#skill-43) | [wentorai/research-plugins](https://github.com/wentorai/research-plugins) |
+| [44](skills/44-matsuikentaro1-humanizer_academic/) | humanizer_academic | 为医学/学术手稿去 AI 味（23 类模式） | [→](docs/CONTENT_ZH.md#skill-44) | [matsuikentaro1/humanizer_academic](https://github.com/matsuikentaro1/humanizer_academic) |
+| [45](skills/45-stephenturner-skill-deslop/) | deslop | 去除 AI 写作痕迹（5 维评分） | [→](docs/CONTENT_ZH.md#skill-45) | [stephenturner/skill-deslop](https://github.com/stephenturner/skill-deslop) |
+| [46](skills/46-hardikpandya-stop-slop/) | stop-slop | 三层 AI 痕迹检测与改写 | [→](docs/CONTENT_ZH.md#skill-46) | [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop) |
+| [47](skills/47-conorbronsdon-avoid-ai-writing/) | avoid-ai-writing | 审计 → 改写 → 二次审计 AI 味（留痕） | [→](docs/CONTENT_ZH.md#skill-47) | [conorbronsdon/avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing) |
+| ⭐ [48](skills/48-de-AIGC-skills/) | **de-AIGC-skills** 🇨🇳🇬🇧 | 中英双语学术降 AIGC（Turnitin AI / GPTZero / 知网 / 万方） | [→](docs/CONTENT_ZH.md#skill-48) | [⭐ 本仓库](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| [49](skills/49-voidborne-d-humanize-chinese/) | humanize-chinese | 检测并人性化 AI 生成的中文文本 | [→](docs/CONTENT_ZH.md#skill-49) | [swaylq/humanize-chinese](https://github.com/swaylq/humanize-chinese) |
+| ⭐ [50](skills/50-brycewang-aer-skills/) | **AER-skills** 📕 | Top-5 经济学投稿套件：识别 → 稳健性 → R&R | [→](docs/CONTENT_ZH.md#skill-50) | [brycewang-stanford/AER-skills](https://github.com/brycewang-stanford/AER-skills) |
+| [51](skills/51-pymc-labs-CausalPy/) | CausalPy | 贝叶斯准实验（PyMC Labs） | [→](docs/CONTENT_ZH.md#skill-51) | [pymc-labs/CausalPy](https://github.com/pymc-labs/CausalPy) |
+| [52](skills/52-keemanxp-slr-prisma/) | slr-prisma | 系统文献综述，PRISMA 2020 | [→](docs/CONTENT_ZH.md#skill-52) | [keemanxp/slr-prisma](https://github.com/keemanxp/slr-prisma) |
+| [53](skills/53-keemanxp-thematic-analysis-skill/) | thematic-analysis | Braun & Clarke 六阶段定性主题分析 | [→](docs/CONTENT_ZH.md#skill-53) | [keemanxp/thematic-analysis-skill](https://github.com/keemanxp/thematic-analysis-skill) |
+| [54](skills/54-scdenney-open-science-skills/) | open-science-skills | 引用一致性、DOI 与论据支撑审计 | [→](docs/CONTENT_ZH.md#skill-54) | [scdenney/open-science-skills](https://github.com/scdenney/open-science-skills) |
+| [55](skills/55-ab604-claude-code-r-skills/) | r-skills | R 中用 `brms` 做贝叶斯推断 | [→](docs/CONTENT_ZH.md#skill-55) | [ab604/claude-code-r-skills](https://github.com/ab604/claude-code-r-skills) |
+| [56](skills/56-hanlulong-econ-writing-skill/) | econ-writing-skill | 综合 50+ 顶级指南的经济学写作 | [→](docs/CONTENT_ZH.md#skill-56) | [hanlulong/econ-writing-skill](https://github.com/hanlulong/econ-writing-skill) |
+| [57](skills/57-dgunning-edgartools/) | edgartools | 查询与分析 SEC 文件 | [→](docs/CONTENT_ZH.md#skill-57) | [dgunning/edgartools](https://github.com/dgunning/edgartools) |
+| [58](skills/58-charlescoverdale-econstack/) | econstack | 政策简报（UK GES / AU Treasury） | [→](docs/CONTENT_ZH.md#skill-58) | [charlescoverdale/econstack](https://github.com/charlescoverdale/econstack) |
+| [59](skills/59-shiquda-openalex-skill/) | openalex-skill | 通过 OpenAlex 查询 2.4 亿+ 学术作品 | [→](docs/CONTENT_ZH.md#skill-59) | [shiquda/openalex-skill](https://github.com/shiquda/openalex-skill) |
+| [60](skills/60-regisely-superpapers/) | superpapers | 综合性实证研究支持套件 | [→](docs/CONTENT_ZH.md#skill-60) | [regisely/superpapers](https://github.com/regisely/superpapers) |
+| [61](skills/61-phdemotions-research-methods/) | research-methods | 与预注册匹配的验证性检验 | [→](docs/CONTENT_ZH.md#skill-61) | [phdemotions/research-methods](https://github.com/phdemotions/research-methods) |
+| [62](skills/62-PHY041-claude-skill-citation-checker/) | citation-checker | 对照 CrossRef / S2 / OpenAlex 核验引用 | [→](docs/CONTENT_ZH.md#skill-62) | [PHY041/claude-skill-citation-checker](https://github.com/PHY041/claude-skill-citation-checker) |
+| [63](skills/63-tondevrel-scientific-agent-skills/) | scientific-agent-skills | DoWhy 识别–估计–反驳框架 | [→](docs/CONTENT_ZH.md#skill-63) | [tondevrel/scientific-agent-skills](https://github.com/tondevrel/scientific-agent-skills) |
+| [64](skills/64-tmonk-mcp-stata/) | mcp-stata | 20 个 Stata 因果推断与复现 skill | [→](docs/CONTENT_ZH.md#skill-64) | [tmonk/mcp-stata](https://github.com/tmonk/mcp-stata) |
+| [65](skills/65-game-theory-paper-writer/) | game-theory-paper-writer | 生成并压力测试博弈论论文 | [→](docs/CONTENT_ZH.md#skill-65) | [本仓库 PR #17](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/17) |
+| [66](skills/66-zheng-siyao-empirical-research-skills/) | empirical-research-skills | 面向大型面板的 R 性能优化 | [→](docs/CONTENT_ZH.md#skill-66) | [SiyaoZheng/ai4ss-skills](https://github.com/SiyaoZheng/ai4ss-skills) |
+| [67](skills/67-econfin-workflow-toolkit/) | econfin-workflow-toolkit | 中国公司金融实证工作流，从提案到论文 | [→](docs/CONTENT_ZH.md#skill-67) | [本仓库 PR #22](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/22) |
+| [68](skills/68-research-productivity-skills/) | research-productivity-skills | 论文检索、SSRN、DOI 查询、下载 | [→](docs/CONTENT_ZH.md#skill-68) | [本仓库 PR #21](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/21) |
+| ⭐ [69](skills/69-Paper-WorkFlow/) | **Paper-WorkFlow** 🧭 | 元编排器，串起整个社会科学论文流水线 | [→](docs/CONTENT_ZH.md#skill-69) | [brycewang-stanford/Paper-WorkFlow](https://github.com/brycewang-stanford/Paper-WorkFlow) |
+| [70](skills/70-ssci-polish/) | ssci-polish ✍️ | SSCI / SCI 英文论文语言润色（语法、可读性、学术语气） | [→](docs/CONTENT_ZH.md#skill-70) | [⭐ 本仓库](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ [71](skills/71-brycewang-lit-review-agent-tools/) | **lit-review-agent-tools** 🔍 | 文献综述工具选型 + 一键安装运行（MinerU / PaperQA2 / ASReview / STORM / MCP 服务器） | [→](docs/CONTENT_ZH.md#skill-71) | [brycewang-stanford/lit-review-agent-tools](https://github.com/brycewang-stanford/lit-review-agent-tools) |
+| ⭐ [72](skills/72-kaggle-research/) | **Kaggle Research** 🧪 | 通过官方 CLI 安全检索 Kaggle 资源、限界下载公开数据并保留审计证据 | [→](docs/CONTENT_ZH.md#skill-72) | [⭐ 本仓库](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
 
 > **想看更详细的描述（主题分类、字段、统计）？** 见 [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md) 中标注 `#skill-NN` 锚点的同一张表 —— 它是每个合集的完整描述所在的扩展正文。
 

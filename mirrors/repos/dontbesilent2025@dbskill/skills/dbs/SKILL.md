@@ -1,10 +1,6 @@
 ---
 name: dbs
-description: |
-  dontbesilent 商业工具箱主入口。三种模式：新手教程、任务前路由、任务后导航。
-  触发方式：/dbs、/dbs 新手入门、/商业、「帮我看看」、「下一步怎么走」
-  Main entry point for dontbesilent business toolkit. Three modes: onboarding tutorial, pre-task routing, and post-task navigation.
-  Trigger: /dbs, /dbs 新手入门, "help me with my business", "what's next"
+description: dontbesilent 商业工具箱主入口，提供新手教程、任务前路由和任务后导航。用户不知道该用哪个 dbs Skill、要求分析商业问题或询问下一步时使用。
 ---
 
 # dbs：商业工具箱

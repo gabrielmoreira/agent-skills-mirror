@@ -29,6 +29,7 @@ requested. Runnable from the repo root.
 from __future__ import annotations
 
 import json
+import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -86,13 +87,34 @@ def _place(frag, cx: float, cy: float):
         n.set("p", f"{x + cx} {y + cy}")
 
 
-def _cell_center(i: int, cols: int, cell_w: float, cell_h: float):
-    """Boustrophedon (snake) grid: row 0 left->right, row 1 right->left, ..."""
-    row, col = divmod(i, cols)
-    vis_col = col if row % 2 == 0 else (cols - 1 - col)
-    cx = MARGIN + vis_col * cell_w + cell_w / 2
-    cy = MARGIN + row * cell_h + cell_h / 2
-    return cx, cy, row, vis_col
+def _chem_runs(text: str):
+    """Split text into (segment, face) runs for ChemDraw <s>: a digit right after a
+    letter or ')' becomes a subscript (face 32); everything else stays normal (0).
+    Charges (+/-) are left inline rather than superscripted — Indigo does not render
+    superscript (face 64) correctly (it drops the preceding text). Keeps step numbers
+    ('1)'), temperatures ('0 C') and a leading '+ reagent' un-styled."""
+    runs, cur, cur_face = [], "", 0
+    for i, ch in enumerate(text):
+        prev = text[i - 1] if i else ""
+        face = 32 if (ch.isdigit() and (prev.isalpha() or prev == ")")) else 0
+        if face != cur_face and cur:
+            runs.append((cur, cur_face))
+            cur = ""
+        cur_face = face
+        cur += ch
+    if cur:
+        runs.append((cur, cur_face))
+    return runs or [(text, 0)]
+
+
+_TEMP_C = re.compile(r"(\d)\s*°?C\b")
+_HEAT = re.compile(r"\bheat\b", re.I)
+
+
+def _symbolize(text: str):
+    """Conditions typography: '<n> C' -> '<n> °C' (degree sign, Latin-1) and the
+    word 'heat' -> 'Δ'. Both render in Indigo with the Arial font table."""
+    return _HEAT.sub("Δ", _TEMP_C.sub(r"\1 °C", text))
 
 
 def build_scheme(steps, out_cdxml, out_png=None, title=None, cols=4):
@@ -126,37 +148,64 @@ def build_scheme(steps, out_cdxml, out_png=None, title=None, cols=4):
         frag, next_id, bbox = _fragment_for(step["smiles"], fid, next_id)
         built.append((fid, frag, bbox, step))
     max_w = max(2 * b[0] for _, _, b, _ in built)
-    max_h = max(2 * b[1] for _, _, b, _ in built)
-    cell_w = max(CELL_W, max_w + 150)   # + room for the arrow and conditions text
-    cell_h = max(CELL_H, max_h + 130)   # + room for the name label and conditions
+    cell_w = max(CELL_W, max_w + 150)   # global column pitch (+ arrow and text room)
+
+    # Row heights are sized to each row's OWN tallest structure, not the global
+    # maximum: otherwise a row of small molecules sits in tall cells and the
+    # vertical transition arrow stretches across a large empty band.
+    n = len(built)
+    n_rows = (n + cols - 1) // cols
+    row_members = [[j for j in range(n) if j // cols == r] for r in range(n_rows)]
+    row_h = [max(2 * built[j][2][1] for j in members) + 96 for members in row_members]
+    row_cy, acc = [], MARGIN
+    for r in range(n_rows):
+        row_cy.append(acc + row_h[r] / 2)
+        acc += row_h[r]
+
+    def cell_pos(i):
+        r, col = divmod(i, cols)
+        m = len(row_members[r])
+        # Boustrophedon (snake): even rows run left->right, odd rows right->left.
+        # A partial last row is spread across the full width so it doesn't leave a
+        # gaping column empty; the first member stays at the snake-start column so
+        # the vertical arrow from the row above still lands on it.
+        start, opp = (0, cols - 1) if r % 2 == 0 else (cols - 1, 0)
+        vis = float(start) if m <= 1 else start + (opp - start) * col / (m - 1)
+        return MARGIN + vis * cell_w + cell_w / 2, row_cy[r], vis
+
+    def add_text(x, y, s, size, just, bold=False):
+        t = ET.SubElement(page, "t", {"id": str(new_obj()), "p": f"{x} {y}",
+                                      "Justification": just})
+        for seg, face in _chem_runs(s):   # subscript/superscript chemical formulas
+            ET.SubElement(t, "s", {"font": "21", "size": str(size), "color": "0",
+                                   "face": str(face | (1 if bold else 0))}).text = seg
+        return t
 
     # Pass 2: place each fragment at its cell center; add the name label.
-    frag_ids, centers, bboxes = [], [], []
+    frag_ids, centers, bboxes, vcols = [], [], [], []
     for i, (fid, frag, bbox, step) in enumerate(built):
-        cx, cy, _, _ = _cell_center(i, cols, cell_w, cell_h)
+        cx, cy, vcol = cell_pos(i)
         _place(frag, cx, cy)
         page.append(frag)
         frag_ids.append(fid)
         centers.append((cx, cy))
         bboxes.append(bbox)
+        vcols.append(vcol)
         if step.get("name"):
-            # A structure that ends a row gets a vertical arrow out of its bottom;
+            # A structure that ends a row emits a vertical arrow from its bottom;
             # put its name ABOVE so the label never sits on that arrow.
-            vertical_source = (i % cols == cols - 1) and (i < len(built) - 1)
+            vertical_source = (i % cols == cols - 1) and (i < n - 1)
             name_y = cy - bbox[1] - 22 if vertical_source else cy + bbox[1] + 34
-            t = ET.SubElement(page, "t", {"id": str(new_obj()),
-                                          "p": f"{cx} {name_y}", "Justification": "Center"})
-            ET.SubElement(t, "s", {"font": "21", "size": "10", "color": "0",
-                                   "face": "0"}).text = step["name"]
+            add_text(cx, name_y, step["name"], 10, "Center")
 
     # Arrows + conditions between consecutive structures.
-    for i in range(len(steps) - 1):
+    for i in range(n - 1):
         (ax, ay), (bx, by) = centers[i], centers[i + 1]
         (ahw, ahh), (bhw, bhh) = bboxes[i], bboxes[i + 1]
         cond = steps[i + 1].get("conditions", [])
         arrow_id = new_obj()
         if abs(ay - by) < 1.0:          # same row -> horizontal arrow in the gap
-            if bx > ax:                 # pointing right
+            if bx > ax:
                 tail_x, head_x = ax + ahw + ARROW_GAP, bx - bhw - ARROW_GAP
             else:                       # snake row: pointing left
                 tail_x, head_x = ax - ahw - ARROW_GAP, bx + bhw + ARROW_GAP
@@ -166,11 +215,7 @@ def build_scheme(steps, out_cdxml, out_png=None, title=None, cols=4):
                 "Head3D": f"{head_x} {ay} 0", "Tail3D": f"{tail_x} {ay} 0"})
             mid_x = (tail_x + head_x) / 2
             for k, line in enumerate(cond):
-                t = ET.SubElement(page, "t", {"id": str(new_obj()),
-                                              "p": f"{mid_x} {ay - COND_DY - 14 * (len(cond) - 1 - k)}",
-                                              "Justification": "Center"})
-                ET.SubElement(t, "s", {"font": "21", "size": "9", "color": "0",
-                                       "face": "0"}).text = line
+                add_text(mid_x, ay - COND_DY - 14 * (len(cond) - 1 - k), _symbolize(line), 9, "Center")
         else:                           # row change -> vertical arrow (same column)
             tail_y, head_y = ay + ahh + ARROW_GAP, by - bhh - ARROW_GAP
             ET.SubElement(page, "arrow", {
@@ -178,12 +223,14 @@ def build_scheme(steps, out_cdxml, out_png=None, title=None, cols=4):
                 "ArrowheadHead": "Full", "HeadSize": "1500",
                 "Head3D": f"{ax} {head_y} 0", "Tail3D": f"{ax} {tail_y} 0"})
             mid_y = (tail_y + head_y) / 2
+            # Put conditions on the side toward the page center so a long reagent
+            # name never runs off the right (or left) edge of the canvas.
+            if vcols[i] > (cols - 1) / 2:
+                xt, just = ax - 16, "Right"
+            else:
+                xt, just = ax + 16, "Left"
             for k, line in enumerate(cond):
-                t = ET.SubElement(page, "t", {"id": str(new_obj()),
-                                              "p": f"{ax + 16} {mid_y - 7 + 14 * k}",
-                                              "Justification": "Left"})
-                ET.SubElement(t, "s", {"font": "21", "size": "9", "color": "0",
-                                       "face": "0"}).text = line
+                add_text(xt, mid_y - 7 + 14 * k, _symbolize(line), 9, just)
         # Wire the reaction step (ids only; geometry lives on the page objects).
         ET.SubElement(scheme, "step", {
             "id": str(new_obj()),
@@ -192,9 +239,7 @@ def build_scheme(steps, out_cdxml, out_png=None, title=None, cols=4):
             "ReactionStepArrows": str(arrow_id)})
 
     if title:
-        t = ET.SubElement(page, "t", {"id": str(new_obj()),
-                                      "p": f"{MARGIN} {MARGIN - 34}", "Justification": "Left"})
-        ET.SubElement(t, "s", {"font": "21", "size": "16", "color": "0", "face": "1"}).text = title
+        add_text(MARGIN, MARGIN - 34, title, 16, "Left", bold=True)
 
     cdxml = ET.tostring(root, encoding="unicode")
     # Fail loudly on malformed XML instead of writing a file ChemDraw would reject.

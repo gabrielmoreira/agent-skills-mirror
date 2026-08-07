@@ -4,79 +4,63 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark">
-  <title>短剧项目控制台</title>
+  <title>短剧创作台</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
   <header class="app-header">
-    <div class="brand">
-      <span class="eyebrow">短剧创作套件</span>
-      <div class="brand-line"><h1>项目控制台</h1><span class="local-badge">仅本机</span></div>
+    <a class="brand" href="/" aria-label="回到创作台顶部">
+      <span class="brand-mark" aria-hidden="true">场</span>
+      <span><small>导演工作稿</small><h1 class="brand-title">短剧创作台</h1></span>
+    </a>
+    <div class="project-tools">
+      <div id="workspaceStatus" aria-live="polite"></div>
+      <label class="project-picker">
+        <span>正在创作</span>
+        <select id="projects" aria-label="选择短剧项目"></select>
+      </label>
     </div>
-    <label class="project-picker">
-      <span>当前工程</span>
-      <select id="projects" aria-label="选择项目"></select>
-    </label>
   </header>
 
-  <main>
-    <aside class="navigator" aria-label="项目文件">
-      <div class="search-row">
-        <input id="search" type="search" placeholder="搜索文件…" aria-label="搜索项目文件">
-        <kbd>/</kbd>
-      </div>
-      <div id="warnings" class="warnings" aria-live="polite"></div>
-      <nav class="domains" aria-label="创作阶段">
-        <button class="domain active" data-section="all" aria-pressed="true"><span>全部</span><b id="allCount">0</b></button>
-        <button class="domain" data-section="development" aria-pressed="false"><span>项目开发</span><b id="developmentCount">0</b></button>
-        <button class="domain" data-section="writing" aria-pressed="false"><span>剧本</span><b id="writingCount">0</b></button>
-        <button class="domain" data-section="assets" aria-pressed="false"><span>资产设定</span><b id="assetsCount">0</b></button>
-        <button class="domain" data-section="storyboard" aria-pressed="false"><span>分镜视频</span><b id="storyboardCount">0</b></button>
-        <button class="domain" data-section="review" aria-pressed="false"><span>审查交付</span><b id="reviewCount">0</b></button>
-      </nav>
-      <div class="list-heading"><span id="resultLabel">文件</span><span id="resultCount">0</span></div>
-      <div id="tree" class="tree" aria-live="polite"></div>
-    </aside>
-
-    <section class="workspace" aria-label="文件工作区">
-      <div class="toolbar">
-        <div class="file-identity">
-          <span id="fileKind" class="file-kind">等待选择</span>
-          <strong id="filename">选择一个文件</strong>
-          <span id="fileMeta" class="file-meta"></span>
+  <main id="mainContent" tabindex="-1">
+    <section class="creator-desk" aria-label="创作内容">
+      <aside class="content-nav">
+        <div class="content-nav-heading">
+          <div><span class="kicker">内容目录</span><h2>本剧内容</h2></div>
+          <label class="creator-search"><span class="sr-only">搜索内容标题或集数</span><input id="search" type="search" placeholder="搜索标题或集数"></label>
         </div>
-        <div class="toolbar-actions">
-          <button id="refresh" class="icon-button" title="重新载入当前工程" aria-label="重新载入当前工程">↻</button>
-          <div class="view-switch" aria-label="查看模式">
-            <button id="editMode" aria-pressed="false">编辑</button>
-            <button id="previewMode" aria-pressed="true">预览</button>
+        <div id="contentList" class="content-list" aria-live="polite"></div>
+      </aside>
+
+      <section id="documentPane" class="document-pane" aria-labelledby="filename">
+        <div class="document-toolbar">
+          <div class="file-identity">
+            <span id="fileKind" class="kicker">创作正文</span>
+            <h2 id="filename">创作内容</h2>
+            <span id="fileMeta" class="file-meta"></span>
           </div>
-          <button id="save" class="primary" disabled>保存</button>
+          <div class="toolbar-actions">
+            <button id="editMode" class="secondary" aria-pressed="false" disabled>修改正文</button>
+            <button id="save" class="primary" disabled>已保存</button>
+          </div>
         </div>
-      </div>
-
-      <textarea id="editor" hidden disabled spellcheck="false" aria-label="文本编辑器"></textarea>
-      <article id="preview" class="document-preview" aria-label="文件预览"></article>
-      <div id="media" class="media" hidden>选择图片或视频以只读预览。</div>
-      <div class="workspace-footer">
-        <div id="message" role="status" aria-live="polite"></div>
-        <span class="shortcut">⌘/Ctrl + S 保存</span>
-      </div>
+        <div class="content-stage">
+          <textarea id="editor" hidden disabled spellcheck="false" aria-label="内容编辑器"></textarea>
+          <article id="preview" class="document-preview empty-document" aria-label="内容预览"></article>
+          <div id="media" class="media" hidden></div>
+        </div>
+        <footer class="document-footer"><div id="message" role="status" aria-live="polite"></div><span>⌘/Ctrl + S 保存</span></footer>
+      </section>
     </section>
 
-    <aside class="status" aria-label="项目状态">
-      <div class="status-heading">
-        <span class="eyebrow">项目健康度</span>
-        <h2 id="projectTitle">项目状态</h2>
-        <span id="projectPath" class="project-path"></span>
-      </div>
-      <div id="summary" class="summary-cards"></div>
-      <div class="section-heading"><h3>生命周期</h3><span id="axisCount">0 个状态轴</span></div>
-      <div id="lifecycle" class="lifecycle"></div>
-    </aside>
+    <section id="assistRow" class="assist-row" aria-label="创作辅助" hidden>
+      <article id="taskSummary" class="assist-card" aria-live="polite"></article>
+      <article id="exportSummary" class="assist-card" aria-live="polite"></article>
+    </section>
   </main>
 
+  <div id="notices" class="notices" aria-live="polite"></div>
   <script src="/app.js"></script>
 </body>
 </html>

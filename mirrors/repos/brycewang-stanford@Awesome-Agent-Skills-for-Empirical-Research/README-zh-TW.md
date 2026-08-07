@@ -58,85 +58,87 @@
 > **打開倉庫 → 看見整座資料庫。** 全部 **76 個合集 · 1,096 個 skill**，編號 `00 → 72`，每一個都**自有進本倉庫**（不只是對外連結），並在 [`catalog/skills.json`](catalog/skills.json) 裡追蹤。**點任一列即可打開其資料夾。** **⭐ = 由 Stanford REAP × CoPaper.AI 團隊自研的旗艦 skill**；其餘皆為精選、經安全稽核的社群成果。
 >
 > **主題對照 ——** 🚀 全流程與調度器 · 🎯 因果推斷與計量 · 📚 文獻與研究設計 · ✍️ 寫作、編修與去 AIGC · 📑 引用、重現與同儕審稿 · 🛠️ 資料、工具與基礎設施
+>
+> **🙏 尊重原作者 ——** **「來源」欄直接連回上游原始倉庫**（`owner/repo`）。本倉庫收錄的社群合集都是**上游快照**：請到原倉庫按 star、開 issue、看 LICENSE。完整的授權與來源信心稽核見 [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md)，機器可讀版本在 [`catalog/provenance.json`](catalog/provenance.json)。
 
-| # | 合集 | 它能做什麼 | 主題 | Skills |
-|:--|:--|:--|:--:|--:|
-| ⭐ **00** | **[StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/)** 🔥 | Agent-native Python **DSL** —— 一個 `sp.causal(...)` 跑 DID/RD/IV/SCM/DML | 🚀 | 1 |
-| ⭐ **00.1** | **[Full Empirical · Python](skills/00.1-Full-empirical-analysis-skill_Python/)** 📘 | 顯式棧：`pandas` · `statsmodels` · `linearmodels` · `pyfixest` | 🚀 | 1 |
-| ⭐ **00.2** | **[Full Empirical · Stata](skills/00.2-Full-empirical-analysis-skill_Stata/)** 📊 | `reghdfe` · `ivreg2` · `csdid` · `sdid` · `rdrobust` 重現包 | 🚀 | 1 |
-| ⭐ **00.3** | **[Full Empirical · R](skills/00.3-Full-empirical-analysis-skill_R/)** 📗 | tidyverse · `fixest` · `did` · `HonestDiD`，透過 Quarto 算繪 | 🚀 | 1 |
-| **01** | [academic-paper-skills](skills/01-lishix520-academic-paper-skills/) | 大綱 → 手稿寫作 + 7 維審稿人模擬 | ✍️ | 2 |
-| **02** | [research-skills](skills/02-luwill-research-skills/) | 醫學影像綜述、研究提案、論文轉投影片 | 📚 | 3 |
-| **03** | [scientific-skills](skills/03-K-Dense-AI-claude-scientific-skills/) | 假設生成 + 28 個科學資料庫 | 📚 | 4 |
-| **04** | [scientific-writer](skills/04-K-Dense-AI-claude-scientific-writer/) | 引用管理 + 科學寫作 | ✍️ | 8 |
-| **05** | [research-superpower](skills/05-kthorn-research-superpower/) | 系統化檢索、篩選與引用溯源 | 📚 | 10 |
-| **06** | [stats-paper-writing](skills/06-fuhaoda-stats-paper-writing/) | 端到端 LaTeX 統計論文寫作 | ✍️ | 1 |
-| **07** | [AI-Research-SKILLs](skills/07-Orchestra-Research-AI-Research-SKILLs/) | 發表級 ML 圖形、LaTeX、引用驗證 | 🛠️ | 3 |
-| **08** | [latex-document-skill](skills/08-ndpvt-web-latex-document-skill/) | 建立 / 編譯任意 LaTeX 文件為 PDF | 🛠️ | 1 |
-| **09** | [awesome-econ-ai](skills/09-meleantonio-awesome-econ-ai-stuff/) | Python 面板資料分析（`linearmodels`） | 🎯 | 17 |
-| **10** | [causal-inference-mixtape](skills/10-Jill0099-causal-inference-mixtape/) | DID / IV / RDD / SCM 範本（Cunningham） | 🎯 | 1 |
-| **11** | [compound-science](skills/11-James-Traina-compound-science/) | 量化社會科學的貝氏估計 | 🎯 | 20 |
-| **12** | [claude-code-my-workflow](skills/12-pedrohcgs-claude-code-my-workflow/) | Commit → PR → merge 研究工作流（Emory） | 🛠️ | 22 |
-| **13** | [MixtapeTools](skills/13-scunning1975-MixtapeTools/) | Cunningham 的因果推斷工具箱與講義 | 🎯 | 5 |
-| **14** | [research-starter](skills/14-luischanci-claude-code-research-starter/) | R 中的 IV / DiD / RDD，配套完整診斷 | 🎯 | 16 |
-| **15** | [social-science-research](skills/15-Felpix-Studios-social-science-research/) | R 或 Python 端到端資料分析 | 🎯 | 12 |
-| **16** | [clo-author](skills/16-hsantanna88-clo-author/) | 多代理資料分析（R / Stata / Python） | 🎯 | 10 |
-| **17** | [DAAF](skills/17-DAAF-Contribution-Community-daaf/) | 安全意識代理框架（32 條 deny 規則） | 🛠️ | 35 |
-| **18** | [stata-accounting](skills/18-jusi-aalto-stata-accounting-research/) | 取自 126 篇 *JAR* 論文的實測 Stata 範式 | 🎯 | 1 |
-| **19** | [vera-economic-intelligence](skills/19-CuellarC05-vera-economic-intelligence/) | 經濟情報 / 政策研究情報工作流 | 🎯 | 5 |
-| **20** | [python-econ-skill](skills/20-wenddymacro-python-econ-skill/) | DSGE / HANK 與量化經濟計算 | 🎯 | 1 |
-| **21** | [AI-research-feedback](skills/21-claesbackman-AI-research-feedback/) | 用 AI 同行評審生成結構化回饋 | 📑 | 5 |
-| **22** | [christopherkenny-skills](skills/22-christopherkenny-skills/) | Quarto（`.qmd`）的 APSA 風格檢查器 | ✍️ | 11 |
-| **23** | [baygent](skills/23-Learning-Bayesian-Statistics-baygent-skills/) | 帶護欄的 PyMC / ArviZ 貝氏工作流 | 🎯 | 2 |
-| **24** | [academic-research-skills](skills/24-Imbad0202-academic-research-skills/) | 5 審稿人多視角論文審查 | 📑 | 4 |
-| **25** | [Diverga](skills/25-HosungYou-Diverga/) | 研究問題精煉器（抗模式坍縮） | 📚 | 34 |
-| **26** | [scholar](skills/26-Data-Wise-scholar/) | 統計演算法設計與文件化 | 🎯 | 17 |
-| **27** | [my_claude_skills](skills/27-dariia-m-my_claude_skills/) | 經濟學摘要寫作指南 | ✍️ | 6 |
-| **28** | [paper-replicate-agent](skills/28-maxwell2732-paper-replicate-agent-demo/) | 論文重現代理 demo | 📑 | 11 |
-| **29** | [project20XXy](skills/29-quarcs-lab-project20XXy/) | 可重現的手稿 + notebook 專案 | 📑 | 24 |
-| **30** | [zirui-song-claude-skills](skills/30-zirui-song-claude-skills/) | Zirui Song 的研究輔助 Claude 技能集 | 🛠️ | 6 |
-| **31** | [claude-code-skills](skills/31-thalysandratos-claude-code-skills/) | Python 面板資料分析 | 🎯 | 13 |
-| **32** | [stata-skill](skills/32-dylantmoore-stata-skill/) | 高效能 Stata C/C++ plugin | 🛠️ | 3 |
-| **33** | [claude-scholar](skills/33-Galaxy-Dawn-claude-scholar/) | 研究全生命週期：選題 → 審查 → 實驗 → 回覆 | 🚀 | 47 |
-| **34** | [research-companion](skills/34-andrehuang-research-companion/) | 腦力激盪、評估與決定研究方向 | 📚 | 1 |
-| **35** | [academic-writing-skills](skills/35-bahayonghang-academic-writing-skills/) | 場景感知的工業 AI 文獻研究 | 📚 | 5 |
-| **36** | [literature-review-skill](skills/36-taoyunudt-literature-review-skill/) | 完整文獻綜述工作流（中文） | 📚 | 1 |
-| **37** | [IlanStrauss-ai-skills](skills/37-IlanStrauss-ai-skills/) | Ilan Strauss 經濟學研究 AI 工作流 | 🎯 | 1 |
-| **38** | [academic-proofreader](skills/38-peternka-academic-proofreader/) | 學術校對 | ✍️ | 1 |
-| **39** | [marginaleffects](skills/39-vincentarelbundock-marginaleffects/) | 預測、斜率與比較（R / Python） | 🎯 | 1 |
-| **40** | [pyfixest](skills/40-py-econometrics-pyfixest/) | Python 中的快速固定效應估計 | 🎯 | 1 |
-| **41** | [sewage-econometrics-check](skills/41-sticerd-eee-sewage-econometrics-check/) | 10 項檢查的重現包稽核 | 📑 | 22 |
-| **42** | [ARIS](skills/42-wanshuiyin-ARIS/) | 自主「睡眠中做研究」代理，端到端 | 🚀 | 42 |
-| **43** | [research-plugins](skills/43-wentorai-research-plugins/) | 478 個研究外掛：資料視覺化、領域、基礎設施 | 🛠️ | 478 |
-| **44** | [humanizer_academic](skills/44-matsuikentaro1-humanizer_academic/) | 去 AI 化醫學/學術手稿（23 種模式） | ✍️ | 1 |
-| **45** | [deslop](skills/45-stephenturner-skill-deslop/) | 移除 AI 寫作模式（5 維評分） | ✍️ | 1 |
-| **46** | [stop-slop](skills/46-hardikpandya-stop-slop/) | 3 層 AI 痕跡偵測與改寫 | ✍️ | 1 |
-| **47** | [avoid-ai-writing](skills/47-conorbronsdon-avoid-ai-writing/) | 稽核 → 改寫 → 複稽 AI 腔（留痕） | ✍️ | 1 |
-| ⭐ **48** | **[de-AIGC-skills](skills/48-de-AIGC-skills/)** 🇨🇳🇬🇧 | 中英雙語學術降 AIGC（Turnitin AI / GPTZero / 知網 / 萬方） | ✍️ | 1 |
-| **49** | [humanize-chinese](skills/49-voidborne-d-humanize-chinese/) | 偵測並擬人化 AI 生成的中文文字 | ✍️ | 1 |
-| ⭐ **50** | **[AER-skills](skills/50-brycewang-aer-skills/)** 📕 | Top-5 經濟學投稿棧：識別 → 穩健性 → R&R | 🚀 | 9 |
-| **51** | [CausalPy](skills/51-pymc-labs-CausalPy/) | 貝氏準實驗（PyMC Labs） | 🎯 | 3 |
-| **52** | [slr-prisma](skills/52-keemanxp-slr-prisma/) | 系統性文獻綜述，PRISMA 2020 | 📚 | 1 |
-| **53** | [thematic-analysis](skills/53-keemanxp-thematic-analysis-skill/) | Braun & Clarke 六階段質性主題分析 | 📚 | 1 |
-| **54** | [open-science-skills](skills/54-scdenney-open-science-skills/) | 引用一致性、DOI 與主張佐證稽核 | 📑 | 24 |
-| **55** | [r-skills](skills/55-ab604-claude-code-r-skills/) | R 中以 `brms` 做貝氏推論 | 🎯 | 8 |
-| **56** | [econ-writing-skill](skills/56-hanlulong-econ-writing-skill/) | 綜合 50+ 頂級指南的經濟學寫作 | ✍️ | 1 |
-| **57** | [edgartools](skills/57-dgunning-edgartools/) | 查詢與分析 SEC 申報文件 | 🛠️ | 1 |
-| **58** | [econstack](skills/58-charlescoverdale-econstack/) | 政策簡報（UK GES / AU Treasury） | ✍️ | 7 |
-| **59** | [openalex-skill](skills/59-shiquda-openalex-skill/) | 透過 OpenAlex 查詢 2.4 億+ 學術成果 | 📚 | 1 |
-| **60** | [superpapers](skills/60-regisely-superpapers/) | 全面的實證研究支援套件 | 📚 | 16 |
-| **61** | [research-methods](skills/61-phdemotions-research-methods/) | 與預註冊對齊的驗證性檢驗 | 🎯 | 9 |
-| **62** | [citation-checker](skills/62-PHY041-claude-skill-citation-checker/) | 對照 CrossRef / S2 / OpenAlex 驗證引用 | 📑 | 1 |
-| **63** | [scientific-agent-skills](skills/63-tondevrel-scientific-agent-skills/) | DoWhy 識別–估計–反駁框架 | 🎯 | 2 |
-| **64** | [mcp-stata](skills/64-tmonk-mcp-stata/) | 20 個 Stata 因果推斷與重現 skill | 🎯 | 20 |
-| **65** | [game-theory-paper-writer](skills/65-game-theory-paper-writer/) | 生成並壓力測試賽局理論論文 | ✍️ | 1 |
-| **66** | [empirical-research-skills](skills/66-zheng-siyao-empirical-research-skills/) | 大型面板的 R 效能最佳化 | 🛠️ | 7 |
-| **67** | [econfin-workflow-toolkit](skills/67-econfin-workflow-toolkit/) | 中國公司金融實證工作流，提案 → 論文 | 🚀 | 46 |
-| **68** | [research-productivity-skills](skills/68-research-productivity-skills/) | 論文檢索、SSRN、DOI 查詢、下載 | 🛠️ | 5 |
-| ⭐ **69** | **[Paper-WorkFlow](skills/69-Paper-WorkFlow/)** 🧭 | 串起整條社會科學流水線的元調度器 | 🚀 | 1 |
-| **70** | [ssci-polish](skills/70-ssci-polish/) | SSCI/SCI 英文論文語言潤色（語法、可讀性、學術語氣） | ✍️ | 1 |
-| ⭐ **71** | **[lit-review-agent-tools](skills/71-brycewang-lit-review-agent-tools/)** 🔍 | 文獻綜述工具選型 + 一鍵安裝執行（MinerU / PaperQA2 / ASReview / STORM / MCP 伺服器） | 📚 | 1 |
-| ⭐ **72** | **[Kaggle Research](skills/72-kaggle-research/)** 🧪 | 透過官方 CLI 安全、可稽核地檢索 Kaggle 並限界下載公開資料 | 🛠️ | 1 |
+| # | 合集 | 它能做什麼 | 主題 | Skills | 來源 |
+|:--|:--|:--|:--:|--:|:--|
+| ⭐ **00** | **[StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/)** 🔥 | Agent-native Python **DSL** —— 一個 `sp.causal(...)` 跑 DID/RD/IV/SCM/DML | 🚀 | 1 | [brycewang-stanford/StatsPAI](https://github.com/brycewang-stanford/StatsPAI) |
+| ⭐ **00.1** | **[Full Empirical · Python](skills/00.1-Full-empirical-analysis-skill_Python/)** 📘 | 顯式棧：`pandas` · `statsmodels` · `linearmodels` · `pyfixest` | 🚀 | 1 | [⭐ 本倉庫](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ **00.2** | **[Full Empirical · Stata](skills/00.2-Full-empirical-analysis-skill_Stata/)** 📊 | `reghdfe` · `ivreg2` · `csdid` · `sdid` · `rdrobust` 重現包 | 🚀 | 1 | [⭐ 本倉庫](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ **00.3** | **[Full Empirical · R](skills/00.3-Full-empirical-analysis-skill_R/)** 📗 | tidyverse · `fixest` · `did` · `HonestDiD`，透過 Quarto 算繪 | 🚀 | 1 | [⭐ 本倉庫](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| **01** | [academic-paper-skills](skills/01-lishix520-academic-paper-skills/) | 大綱 → 手稿寫作 + 7 維審稿人模擬 | ✍️ | 2 | [lishix520/academic-paper-skills](https://github.com/lishix520/academic-paper-skills) |
+| **02** | [research-skills](skills/02-luwill-research-skills/) | 醫學影像綜述、研究提案、論文轉投影片 | 📚 | 3 | [luwill/research-skills](https://github.com/luwill/research-skills) |
+| **03** | [scientific-skills](skills/03-K-Dense-AI-claude-scientific-skills/) | 假設生成 + 28 個科學資料庫 | 📚 | 4 | [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) |
+| **04** | [scientific-writer](skills/04-K-Dense-AI-claude-scientific-writer/) | 引用管理 + 科學寫作 | ✍️ | 8 | [K-Dense-AI/claude-scientific-writer](https://github.com/K-Dense-AI/claude-scientific-writer) |
+| **05** | [research-superpower](skills/05-kthorn-research-superpower/) | 系統化檢索、篩選與引用溯源 | 📚 | 10 | [kthorn/research-superpower](https://github.com/kthorn/research-superpower) |
+| **06** | [stats-paper-writing](skills/06-fuhaoda-stats-paper-writing/) | 端到端 LaTeX 統計論文寫作 | ✍️ | 1 | [fuhaoda/stats-paper-writing-agent-skills](https://github.com/fuhaoda/stats-paper-writing-agent-skills) |
+| **07** | [AI-Research-SKILLs](skills/07-Orchestra-Research-AI-Research-SKILLs/) | 發表級 ML 圖形、LaTeX、引用驗證 | 🛠️ | 3 | [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-Research-SKILLs) |
+| **08** | [latex-document-skill](skills/08-ndpvt-web-latex-document-skill/) | 建立 / 編譯任意 LaTeX 文件為 PDF | 🛠️ | 1 | [ndpvt-web/latex-document-skill](https://github.com/ndpvt-web/latex-document-skill) |
+| **09** | [awesome-econ-ai](skills/09-meleantonio-awesome-econ-ai-stuff/) | Python 面板資料分析（`linearmodels`） | 🎯 | 17 | [meleantonio/awesome-econ-ai-stuff](https://github.com/meleantonio/awesome-econ-ai-stuff) |
+| **10** | [causal-inference-mixtape](skills/10-Jill0099-causal-inference-mixtape/) | DID / IV / RDD / SCM 範本（Cunningham） | 🎯 | 1 | [Jill0099/causal-inference-mixtape](https://github.com/Jill0099/causal-inference-mixtape) |
+| **11** | [compound-science](skills/11-James-Traina-compound-science/) | 量化社會科學的貝氏估計 | 🎯 | 20 | [James-Traina/compound-science](https://github.com/James-Traina/compound-science) |
+| **12** | [claude-code-my-workflow](skills/12-pedrohcgs-claude-code-my-workflow/) | Commit → PR → merge 研究工作流（Emory） | 🛠️ | 22 | [pedrohcgs/claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow) |
+| **13** | [MixtapeTools](skills/13-scunning1975-MixtapeTools/) | Cunningham 的因果推斷工具箱與講義 | 🎯 | 5 | [scunning1975/MixtapeTools](https://github.com/scunning1975/MixtapeTools) |
+| **14** | [research-starter](skills/14-luischanci-claude-code-research-starter/) | R 中的 IV / DiD / RDD，配套完整診斷 | 🎯 | 16 | [luischanci/claude-code-research-starter](https://github.com/luischanci/claude-code-research-starter) |
+| **15** | [social-science-research](skills/15-Felpix-Studios-social-science-research/) | R 或 Python 端到端資料分析 | 🎯 | 12 | [Felpix-Studios/social-science-research](https://github.com/Felpix-Studios/social-science-research) |
+| **16** | [clo-author](skills/16-hsantanna88-clo-author/) | 多代理資料分析（R / Stata / Python） | 🎯 | 10 | [hsantanna88/clo-author](https://github.com/hsantanna88/clo-author) |
+| **17** | [DAAF](skills/17-DAAF-Contribution-Community-daaf/) | 安全意識代理框架（32 條 deny 規則） | 🛠️ | 35 | [DAAF-Contribution-Community/daaf](https://github.com/DAAF-Contribution-Community/daaf) |
+| **18** | [stata-accounting](skills/18-jusi-aalto-stata-accounting-research/) | 取自 126 篇 *JAR* 論文的實測 Stata 範式 | 🎯 | 1 | [jusi-aalto/stata-accounting-research](https://github.com/jusi-aalto/stata-accounting-research) |
+| **19** | [vera-economic-intelligence](skills/19-CuellarC05-vera-economic-intelligence/) | 經濟情報 / 政策研究情報工作流 | 🎯 | 5 | [CuellarC05/vera-economic-intelligence](https://github.com/CuellarC05/vera-economic-intelligence) |
+| **20** | [python-econ-skill](skills/20-wenddymacro-python-econ-skill/) | DSGE / HANK 與量化經濟計算 | 🎯 | 1 | [wenddymacro/python-econ-skill](https://github.com/wenddymacro/python-econ-skill) |
+| **21** | [AI-research-feedback](skills/21-claesbackman-AI-research-feedback/) | 用 AI 同行評審生成結構化回饋 | 📑 | 5 | [claesbackman/AI-research-feedback](https://github.com/claesbackman/AI-research-feedback) |
+| **22** | [christopherkenny-skills](skills/22-christopherkenny-skills/) | Quarto（`.qmd`）的 APSA 風格檢查器 | ✍️ | 11 | [christopherkenny/skills](https://github.com/christopherkenny/skills) |
+| **23** | [baygent](skills/23-Learning-Bayesian-Statistics-baygent-skills/) | 帶護欄的 PyMC / ArviZ 貝氏工作流 | 🎯 | 2 | [Learning-Bayesian-Statistics/baygent-skills](https://github.com/Learning-Bayesian-Statistics/baygent-skills) |
+| **24** | [academic-research-skills](skills/24-Imbad0202-academic-research-skills/) | 5 審稿人多視角論文審查 | 📑 | 4 | [Imbad0202/academic-research-skills](https://github.com/Imbad0202/academic-research-skills) |
+| **25** | [Diverga](skills/25-HosungYou-Diverga/) | 研究問題精煉器（抗模式坍縮） | 📚 | 34 | [HosungYou/Diverga](https://github.com/HosungYou/Diverga) |
+| **26** | [scholar](skills/26-Data-Wise-scholar/) | 統計演算法設計與文件化 | 🎯 | 17 | [Data-Wise/claude-plugins](https://github.com/Data-Wise/claude-plugins) |
+| **27** | [my_claude_skills](skills/27-dariia-m-my_claude_skills/) | 經濟學摘要寫作指南 | ✍️ | 6 | [dariia-m/my_claude_skills](https://github.com/dariia-m/my_claude_skills) |
+| **28** | [paper-replicate-agent](skills/28-maxwell2732-paper-replicate-agent-demo/) | 論文重現代理 demo | 📑 | 11 | [maxwell2732/paper-replicate-agent-demo](https://github.com/maxwell2732/paper-replicate-agent-demo) |
+| **29** | [project20XXy](skills/29-quarcs-lab-project20XXy/) | 可重現的手稿 + notebook 專案 | 📑 | 24 | [quarcs-lab/project20XXy](https://github.com/quarcs-lab/project20XXy) |
+| **30** | [zirui-song-claude-skills](skills/30-zirui-song-claude-skills/) | Zirui Song 的研究輔助 Claude 技能集 | 🛠️ | 6 | [zirui-song/claude-skills](https://github.com/zirui-song/claude-skills) |
+| **31** | [claude-code-skills](skills/31-thalysandratos-claude-code-skills/) | Python 面板資料分析 | 🎯 | 13 | [thalysandratos/claude-code-skills](https://github.com/thalysandratos/claude-code-skills) |
+| **32** | [stata-skill](skills/32-dylantmoore-stata-skill/) | 高效能 Stata C/C++ plugin | 🛠️ | 3 | [dylantmoore/stata-skill](https://github.com/dylantmoore/stata-skill) |
+| **33** | [claude-scholar](skills/33-Galaxy-Dawn-claude-scholar/) | 研究全生命週期：選題 → 審查 → 實驗 → 回覆 | 🚀 | 47 | [Galaxy-Dawn/claude-scholar](https://github.com/Galaxy-Dawn/claude-scholar) |
+| **34** | [research-companion](skills/34-andrehuang-research-companion/) | 腦力激盪、評估與決定研究方向 | 📚 | 1 | [andrehuang/research-companion](https://github.com/andrehuang/research-companion) |
+| **35** | [academic-writing-skills](skills/35-bahayonghang-academic-writing-skills/) | 場景感知的工業 AI 文獻研究 | 📚 | 5 | [bahayonghang/academic-writing-skills](https://github.com/bahayonghang/academic-writing-skills) |
+| **36** | [literature-review-skill](skills/36-taoyunudt-literature-review-skill/) | 完整文獻綜述工作流（中文） | 📚 | 1 | [taoyunudt/literature-review-skill](https://github.com/taoyunudt/literature-review-skill) |
+| **37** | [IlanStrauss-ai-skills](skills/37-IlanStrauss-ai-skills/) | Ilan Strauss 經濟學研究 AI 工作流 | 🎯 | 1 | [IlanStrauss/ai-skills](https://github.com/IlanStrauss/ai-skills) |
+| **38** | [academic-proofreader](skills/38-peternka-academic-proofreader/) | 學術校對 | ✍️ | 1 | [peternka/academic_proofreader](https://github.com/peternka/academic_proofreader) |
+| **39** | [marginaleffects](skills/39-vincentarelbundock-marginaleffects/) | 預測、斜率與比較（R / Python） | 🎯 | 1 | [vincentarelbundock/marginaleffects](https://github.com/vincentarelbundock/marginaleffects) |
+| **40** | [pyfixest](skills/40-py-econometrics-pyfixest/) | Python 中的快速固定效應估計 | 🎯 | 1 | [py-econometrics/pyfixest](https://github.com/py-econometrics/pyfixest) |
+| **41** | [sewage-econometrics-check](skills/41-sticerd-eee-sewage-econometrics-check/) | 10 項檢查的重現包稽核 | 📑 | 22 | [sticerd-eee/sewage](https://github.com/sticerd-eee/sewage) |
+| **42** | [ARIS](skills/42-wanshuiyin-ARIS/) | 自主「睡眠中做研究」代理，端到端 | 🚀 | 42 | [wanshuiyin/Auto-claude-code-research-in-sleep](https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep) |
+| **43** | [research-plugins](skills/43-wentorai-research-plugins/) | 478 個研究外掛：資料視覺化、領域、基礎設施 | 🛠️ | 478 | [wentorai/research-plugins](https://github.com/wentorai/research-plugins) |
+| **44** | [humanizer_academic](skills/44-matsuikentaro1-humanizer_academic/) | 去 AI 化醫學/學術手稿（23 種模式） | ✍️ | 1 | [matsuikentaro1/humanizer_academic](https://github.com/matsuikentaro1/humanizer_academic) |
+| **45** | [deslop](skills/45-stephenturner-skill-deslop/) | 移除 AI 寫作模式（5 維評分） | ✍️ | 1 | [stephenturner/skill-deslop](https://github.com/stephenturner/skill-deslop) |
+| **46** | [stop-slop](skills/46-hardikpandya-stop-slop/) | 3 層 AI 痕跡偵測與改寫 | ✍️ | 1 | [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop) |
+| **47** | [avoid-ai-writing](skills/47-conorbronsdon-avoid-ai-writing/) | 稽核 → 改寫 → 複稽 AI 腔（留痕） | ✍️ | 1 | [conorbronsdon/avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing) |
+| ⭐ **48** | **[de-AIGC-skills](skills/48-de-AIGC-skills/)** 🇨🇳🇬🇧 | 中英雙語學術降 AIGC（Turnitin AI / GPTZero / 知網 / 萬方） | ✍️ | 1 | [⭐ 本倉庫](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| **49** | [humanize-chinese](skills/49-voidborne-d-humanize-chinese/) | 偵測並擬人化 AI 生成的中文文字 | ✍️ | 1 | [swaylq/humanize-chinese](https://github.com/swaylq/humanize-chinese) |
+| ⭐ **50** | **[AER-skills](skills/50-brycewang-aer-skills/)** 📕 | Top-5 經濟學投稿棧：識別 → 穩健性 → R&R | 🚀 | 9 | [brycewang-stanford/AER-skills](https://github.com/brycewang-stanford/AER-skills) |
+| **51** | [CausalPy](skills/51-pymc-labs-CausalPy/) | 貝氏準實驗（PyMC Labs） | 🎯 | 3 | [pymc-labs/CausalPy](https://github.com/pymc-labs/CausalPy) |
+| **52** | [slr-prisma](skills/52-keemanxp-slr-prisma/) | 系統性文獻綜述，PRISMA 2020 | 📚 | 1 | [keemanxp/slr-prisma](https://github.com/keemanxp/slr-prisma) |
+| **53** | [thematic-analysis](skills/53-keemanxp-thematic-analysis-skill/) | Braun & Clarke 六階段質性主題分析 | 📚 | 1 | [keemanxp/thematic-analysis-skill](https://github.com/keemanxp/thematic-analysis-skill) |
+| **54** | [open-science-skills](skills/54-scdenney-open-science-skills/) | 引用一致性、DOI 與主張佐證稽核 | 📑 | 24 | [scdenney/open-science-skills](https://github.com/scdenney/open-science-skills) |
+| **55** | [r-skills](skills/55-ab604-claude-code-r-skills/) | R 中以 `brms` 做貝氏推論 | 🎯 | 8 | [ab604/claude-code-r-skills](https://github.com/ab604/claude-code-r-skills) |
+| **56** | [econ-writing-skill](skills/56-hanlulong-econ-writing-skill/) | 綜合 50+ 頂級指南的經濟學寫作 | ✍️ | 1 | [hanlulong/econ-writing-skill](https://github.com/hanlulong/econ-writing-skill) |
+| **57** | [edgartools](skills/57-dgunning-edgartools/) | 查詢與分析 SEC 申報文件 | 🛠️ | 1 | [dgunning/edgartools](https://github.com/dgunning/edgartools) |
+| **58** | [econstack](skills/58-charlescoverdale-econstack/) | 政策簡報（UK GES / AU Treasury） | ✍️ | 7 | [charlescoverdale/econstack](https://github.com/charlescoverdale/econstack) |
+| **59** | [openalex-skill](skills/59-shiquda-openalex-skill/) | 透過 OpenAlex 查詢 2.4 億+ 學術成果 | 📚 | 1 | [shiquda/openalex-skill](https://github.com/shiquda/openalex-skill) |
+| **60** | [superpapers](skills/60-regisely-superpapers/) | 全面的實證研究支援套件 | 📚 | 16 | [regisely/superpapers](https://github.com/regisely/superpapers) |
+| **61** | [research-methods](skills/61-phdemotions-research-methods/) | 與預註冊對齊的驗證性檢驗 | 🎯 | 9 | [phdemotions/research-methods](https://github.com/phdemotions/research-methods) |
+| **62** | [citation-checker](skills/62-PHY041-claude-skill-citation-checker/) | 對照 CrossRef / S2 / OpenAlex 驗證引用 | 📑 | 1 | [PHY041/claude-skill-citation-checker](https://github.com/PHY041/claude-skill-citation-checker) |
+| **63** | [scientific-agent-skills](skills/63-tondevrel-scientific-agent-skills/) | DoWhy 識別–估計–反駁框架 | 🎯 | 2 | [tondevrel/scientific-agent-skills](https://github.com/tondevrel/scientific-agent-skills) |
+| **64** | [mcp-stata](skills/64-tmonk-mcp-stata/) | 20 個 Stata 因果推斷與重現 skill | 🎯 | 20 | [tmonk/mcp-stata](https://github.com/tmonk/mcp-stata) |
+| **65** | [game-theory-paper-writer](skills/65-game-theory-paper-writer/) | 生成並壓力測試賽局理論論文 | ✍️ | 1 | [本倉庫 PR #17](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/17) |
+| **66** | [empirical-research-skills](skills/66-zheng-siyao-empirical-research-skills/) | 大型面板的 R 效能最佳化 | 🛠️ | 7 | [SiyaoZheng/ai4ss-skills](https://github.com/SiyaoZheng/ai4ss-skills) |
+| **67** | [econfin-workflow-toolkit](skills/67-econfin-workflow-toolkit/) | 中國公司金融實證工作流，提案 → 論文 | 🚀 | 46 | [本倉庫 PR #22](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/22) |
+| **68** | [research-productivity-skills](skills/68-research-productivity-skills/) | 論文檢索、SSRN、DOI 查詢、下載 | 🛠️ | 5 | [本倉庫 PR #21](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/21) |
+| ⭐ **69** | **[Paper-WorkFlow](skills/69-Paper-WorkFlow/)** 🧭 | 串起整條社會科學流水線的元調度器 | 🚀 | 1 | [brycewang-stanford/Paper-WorkFlow](https://github.com/brycewang-stanford/Paper-WorkFlow) |
+| **70** | [ssci-polish](skills/70-ssci-polish/) | SSCI/SCI 英文論文語言潤色（語法、可讀性、學術語氣） | ✍️ | 1 | [⭐ 本倉庫](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ **71** | **[lit-review-agent-tools](skills/71-brycewang-lit-review-agent-tools/)** 🔍 | 文獻綜述工具選型 + 一鍵安裝執行（MinerU / PaperQA2 / ASReview / STORM / MCP 伺服器） | 📚 | 1 | [brycewang-stanford/lit-review-agent-tools](https://github.com/brycewang-stanford/lit-review-agent-tools) |
+| ⭐ **72** | **[Kaggle Research](skills/72-kaggle-research/)** 🧪 | 透過官方 CLI 安全、可稽核地檢索 Kaggle 並限界下載公開資料 | 🛠️ | 1 | [⭐ 本倉庫](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
 
 > ⭐ **我們親手打造的主幹：** [StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/)（因果引擎） · 顯式的 [Python](skills/00.1-Full-empirical-analysis-skill_Python/) / [Stata](skills/00.2-Full-empirical-analysis-skill_Stata/) / [R](skills/00.3-Full-empirical-analysis-skill_R/) 全流程移植 · [AER-skills](skills/50-brycewang-aer-skills/)（Top-5 投稿棧） · [de-AIGC-skills](skills/48-de-AIGC-skills/) · [Paper-WorkFlow](skills/69-Paper-WorkFlow/)（元調度器）。這些就是 AERS 的主幹 —— 完整對比見 [旗艦流水線 skills ↓](#旗艦流水線-skills)。想按用途瀏覽？參見 [同樣這 76 個、按用途分組 ↓](#76-個合集--按用途分組)。
 

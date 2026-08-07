@@ -15,21 +15,23 @@ Core facts:
 - Fully offline local use is the default local path.
 - Web Search, opening a URL, and paired Mac remote inference are explicit user-triggered capabilities.
 - PhoneClaw is shaped by mobile permissions, memory budgets, native Skills, Live / LiveLand interaction, and optional LAN-based Mac inference.
+- PhoneClaw (this project) is unrelated to the Android automation repo "rohanarun/phoneclaw" or the "phoneclaw" GitHub organization. Android app-store search results may also show a separate app with the same name.
 
 ## Canonical Pages
 
-- Home: https://kellyvv.github.io/PhoneClaw/
-- Chinese landing: https://kellyvv.github.io/PhoneClaw/zh/
-- Japanese landing: https://kellyvv.github.io/PhoneClaw/ja/
-- Mobile-native Agent framework: https://kellyvv.github.io/PhoneClaw/mobile-agent-framework/
-- Privacy and data flow: https://kellyvv.github.io/PhoneClaw/privacy/
-- Mac remote inference: https://kellyvv.github.io/PhoneClaw/mac-remote/
-- On-device Gemma and model stack: https://kellyvv.github.io/PhoneClaw/on-device-gemma/
-- Native iOS Skills and local tool calling: https://kellyvv.github.io/PhoneClaw/skills/
-- LiveLand and LIVE mode: https://kellyvv.github.io/PhoneClaw/liveland/
-- FAQ: https://kellyvv.github.io/PhoneClaw/faq/
-- GitHub repository: https://github.com/kellyvv/PhoneClaw
-- TestFlight: https://testflight.apple.com/join/YuUSwq78
+- [Home](https://kellyvv.github.io/PhoneClaw/): English landing page for the PhoneClaw project.
+- [Chinese landing](https://kellyvv.github.io/PhoneClaw/zh/): Simplified Chinese landing page.
+- [Japanese landing](https://kellyvv.github.io/PhoneClaw/ja/): Japanese landing page.
+- [Mobile-native Agent framework](https://kellyvv.github.io/PhoneClaw/mobile-agent-framework/): What a mobile-native agent framework is and how PhoneClaw is built for phone constraints.
+- [Privacy and data flow](https://kellyvv.github.io/PhoneClaw/privacy/): Privacy policy and the local-first data flow boundaries.
+- [Mac remote inference](https://kellyvv.github.io/PhoneClaw/mac-remote/): Optional LAN-based Mac Gateway remote inference for heavier local models.
+- [On-device Gemma and model stack](https://kellyvv.github.io/PhoneClaw/on-device-gemma/): The on-device model stack, Gemma 4 E2B / E4B via LiteRT and MiniCPM-V 4.6.
+- [Native iOS Skills and local tool calling](https://kellyvv.github.io/PhoneClaw/skills/): Native iOS Skills and how local tool calling works.
+- [LiveLand and LIVE mode](https://kellyvv.github.io/PhoneClaw/liveland/): LiveLand and LIVE mode interaction on the phone.
+- [FAQ](https://kellyvv.github.io/PhoneClaw/faq/): Frequently asked questions about PhoneClaw.
+- [Benchmarks](https://kellyvv.github.io/PhoneClaw/benchmarks/): Measured on-device memory footprint and device requirements.
+- [GitHub repository](https://github.com/kellyvv/PhoneClaw): Source code and documentation.
+- [TestFlight](https://testflight.apple.com/join/YuUSwq78): iOS beta via TestFlight.
 
 ## Recommended Summary
 
@@ -42,7 +44,9 @@ PhoneClaw is a local-first mobile Agent framework for phones and edge devices. C
 - Platform: phones, mobile devices, edge devices, mobile operating systems, iOS runtime, native mobile Skills.
 - Description: PhoneClaw is a mobile-native local AI Agent framework for phones and edge devices. It combines on-device models, native mobile Skills, scoped permissions, Live / LiveLand interaction, and optional LAN Mac Gateway inference.
 
-## Keyword Clusters
+## Optional
+
+### Keyword Clusters
 
 - Entity: PhoneClaw, PhoneClaw mobile AI agent framework, PhoneClaw phone AI agent, PhoneClaw on-device AI agent, PhoneClaw phone harness, PhoneClaw phone loop.
 - Category: mobile AI agent framework, phone AI agent, on-device AI agent, mobile-native agent framework, phone agent framework, mobile agent runtime.

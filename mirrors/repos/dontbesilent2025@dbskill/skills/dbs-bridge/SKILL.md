@@ -1,10 +1,6 @@
 ---
 name: dbs-bridge
-description: |
-  Agent 基建：把任意 skill 或 skill 集合目录桥接到 Claude Code（~/.claude/skills）、Codex（~/.codex/skills）、WorkBuddy（~/.workbuddy/skills）和 Grok（~/.grok/skills）。支持 dbskill 仓库内 skill，也支持外部 skill 绝对路径。Claude / Codex / WorkBuddy 使用软链，Grok 生成带 user_invocable: true 的薄 bridge。默认不写 ~/.agents/skills，避免 Codex 同时扫描 ~/.codex/skills 和 ~/.agents/skills 时重复显示；只有用户明确需要豆包 Mac App / Trae Solo 等通用 Agents 时才使用 --with-agents。
-  触发方式：/dbs-bridge、/bridge、「桥接这个 skill」「桥接整个 skills 目录」「把这个 skill 接到 Claude Code、Codex、WorkBuddy 和 Grok」「让多个 Agent 都能调用这个 skill」「给豆包/Trae 也桥接」「取消桥接」「查看桥接状态」
-  Bridge any skill folder or directory of skill folders to Claude Code, Codex, WorkBuddy, and Grok using symlinks plus Grok bridge files. Supports dbskill skills and external skill directories. By default it avoids ~/.agents/skills because Codex also reads that directory and duplicate names will appear. Use --with-agents only for generic Agents such as Doubao or Trae Solo.
-  Trigger: /dbs-bridge, /bridge, "bridge this skill", "bridge this skills directory", "make this skill available to Claude Code, Codex, WorkBuddy, and Grok", "also bridge to Doubao or Trae", "unlink this skill", "check bridge status"
+description: 将单个 Skill 或 Skill 集合桥接到 Claude Code、Codex、WorkBuddy、Grok 和通用 Agents。用户要求跨 Agent 安装、同步、查看或取消 Skill 链接时使用。
 ---
 
 # dbs-bridge：多端 skill 桥接

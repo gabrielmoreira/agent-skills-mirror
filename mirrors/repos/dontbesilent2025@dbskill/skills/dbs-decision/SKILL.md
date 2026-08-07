@@ -1,10 +1,6 @@
 ---
 name: dbs-decision
-description: |
-  dontbesilent 个人决策系统。把任何一个需要长期跟踪的领域（业务、关系、健康、职业、学习、投资……）做成一个本地知识工程：四层结构、来源标签、写完不改的快照、能炼出规律的概念库。
-  触发方式：/dbs-decision、/决策系统、/决策立案、/结果回填、/状态画像
-  Personal decision system. Turns any long-running domain into a local knowledge project with four layers, source tags, immutable snapshots, and a concept library that learns patterns over time.
-  Trigger: /dbs-decision, /决策系统, /决策立案, /结果回填, /状态画像
+description: 把需要长期跟踪的业务、关系、健康、职业、学习或投资问题建成本地决策知识工程。用户要求决策立案、结果回填、状态画像或长期复盘时使用。
 ---
 
 # dbs-decision：个人决策系统

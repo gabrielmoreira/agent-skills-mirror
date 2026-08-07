@@ -62,8 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`plugins/bundle/cloudpaw/skills/alicloud_cli/SKILL.md`](plugins/bundle/cloudpaw/skills/alicloud_cli/SKILL.md) |
 | 2 | ✓ | [`plugins/bundle/cloudpaw/skills/terraform-cli-setup/SKILL.md`](plugins/bundle/cloudpaw/skills/terraform-cli-setup/SKILL.md) |
 | 3 | ✓ | [`plugins/bundle/cloudpaw/skills/terraform-skill/SKILL.md`](plugins/bundle/cloudpaw/skills/terraform-skill/SKILL.md) |
-| 4 | ✓ | [`plugins/bundle/omp_workflows/skills/omp-roles/SKILL.md`](plugins/bundle/omp_workflows/skills/omp-roles/SKILL.md) |
-| 5 | ✓ | [`plugins/tool/computer-use/skills/computer_use/SKILL.md`](plugins/tool/computer-use/skills/computer_use/SKILL.md) |
+| 4 | ✓ | [`plugins/bundle/computer-use/skills/computer_use/SKILL.md`](plugins/bundle/computer-use/skills/computer_use/SKILL.md) |
+| 5 | ✓ | [`plugins/bundle/omp_workflows/skills/omp-roles/SKILL.md`](plugins/bundle/omp_workflows/skills/omp-roles/SKILL.md) |
 | 6 | ✓ | [`src/qwenpaw/agents/md_files/en/AGENTS.md`](src/qwenpaw/agents/md_files/en/AGENTS.md) |
 | 7 | ✓ | [`src/qwenpaw/agents/md_files/id/AGENTS.md`](src/qwenpaw/agents/md_files/id/AGENTS.md) |
 | 8 | ✓ | [`src/qwenpaw/agents/md_files/qa/en/AGENTS.md`](src/qwenpaw/agents/md_files/qa/en/AGENTS.md) |

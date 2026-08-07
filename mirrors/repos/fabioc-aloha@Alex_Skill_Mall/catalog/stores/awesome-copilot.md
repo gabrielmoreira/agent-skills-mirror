@@ -5,7 +5,7 @@
 **Signals:** maintenance 15 · adoption 10 · license 10 (MIT) · 37384 stars · 436 contributors
 **Scanned ref:** `336af71f1b7d`
 
-## Plugins (490)
+## Plugins (481)
 
 | Trust | Plugin | Shape | Version | Description |
 | ---: | --- | --- | --- | --- |
@@ -115,7 +115,6 @@
 | 40 | [`agent-skill-stack`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/agent-skill-stack) | mixed | - | Find, evaluate, and assemble the smallest compatible set of AI Agent Skills for an end-to-end natur… |
 | 40 | [`ai-prompt-engineering-safety-review`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/ai-prompt-engineering-safety-review) | skill | - | Comprehensive AI prompt engineering safety review and improvement prompt. Analyzes prompts for safe… |
 | 40 | [`ai-ready`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/ai-ready) | skill | - | Make any repo AI-ready — analyzes your codebase and generates AGENTS.md, copilot-instructions.md, C… |
-| 40 | [`ai-team-orchestration`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/ai-team-orchestration) | skill | - | Bootstrap and run a lightweight multi-agent development team. Use when starting or adopting a proje… |
 | 40 | [`anti-ui-slop`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/anti-ui-slop) | skill | - | Stop Codex, GitHub Copilot, Claude Code, and Cursor from shipping generic UI. Use UIZZE’s public ca… |
 | 40 | [`appinsights-instrumentation`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/appinsights-instrumentation) | skill | - | Instrument a webapp to send useful telemetry data to Azure App Insights |
 | 40 | [`apple-appstore-reviewer`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/apple-appstore-reviewer) | skill | - | Serves as a reviewer of the codebase with instructions on looking for Apple App Store optimizations… |
@@ -134,7 +133,6 @@
 | 40 | [`aspire`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/aspire) | skill | - | Aspire skill covering the Aspire CLI, AppHost orchestration, service discovery, integrations, MCP s… |
 | 40 | [`aspnet-minimal-api-openapi`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/aspnet-minimal-api-openapi) | skill | - | Create ASP.NET Minimal API endpoints with proper OpenAPI documentation |
 | 40 | [`audit-integrity`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/audit-integrity) | skill | - | Shared audit integrity framework for all AppSec agents — enforces output quality, intellectual hone… |
-| 40 | [`automate-this`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/automate-this) | skill | - | Analyze a screen recording of a manual process and produce targeted, working automation scripts. Ex… |
 | 40 | [`autoresearch`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/autoresearch) | skill | - | Autonomous iterative experimentation loop for any programming task. Guides the user through definin… |
 | 40 | [`aws-cdk-python-setup`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/aws-cdk-python-setup) | skill | - | Setup and initialization guide for developing AWS CDK (Cloud Development Kit) applications in Pytho… |
 | 40 | [`aws-cost-optimize`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/aws-cost-optimize) | skill | - | Analyze AWS resources used in the app (IaC files and/or resources in a target account/region) and o… |
@@ -185,7 +183,6 @@
 | 40 | [`convert-word-to-md`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/convert-word-to-md) | skill | - | Converts Word (.docx) documents into Markdown so their contents can be accurately analyzed, summari… |
 | 40 | [`copilot-instructions-blueprint-generator`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/copilot-instructions-blueprint-generator) | skill | - | Technology-agnostic blueprint generator for creating comprehensive copilot-instructions.md files th… |
 | 40 | [`copilot-pr-autopilot`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/copilot-pr-autopilot) | skill | - | Copilot left 14 review comments on your PR — half are nits. Hours of fix → reply → resolve → re-req… |
-| 40 | [`copilot-sdk`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/copilot-sdk) | skill | - | Build agentic applications with GitHub Copilot SDK. Use when embedding AI agents in apps, creating … |
 | 40 | [`copilot-spaces`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/copilot-spaces) | skill | - | Use Copilot Spaces to provide project-specific context to conversations. Use this skill when users … |
 | 40 | [`copilot-usage-metrics`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/copilot-usage-metrics) | skill | - | Retrieve and display GitHub Copilot usage metrics for organizations and enterprises using the GitHu… |
 | 40 | [`cosmosdb-datamodeling`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/cosmosdb-datamodeling) | skill | - | Step-by-step guide for capturing key application requirements for NoSQL use-case and produce Azure … |
@@ -231,7 +228,6 @@
 | 40 | [`dotnet-mcp-builder`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/dotnet-mcp-builder) | skill | - | Build Model Context Protocol (MCP) servers in C#/.NET against the current ModelContextProtocol 2.x … |
 | 40 | [`dotnet-timezone`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/dotnet-timezone) | skill | - | .NET timezone handling guidance for C# applications. Use when working with TimeZoneInfo, DateTimeOf… |
 | 40 | [`dotnet-upgrade`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/dotnet-upgrade) | skill | - | Ready-to-use prompts for comprehensive .NET framework upgrade analysis and execution |
-| 40 | [`doublecheck`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/doublecheck) | skill | - | Three-layer verification pipeline for AI output. Extracts verifiable claims, finds supporting or co… |
 | 40 | [`draw-io-diagram-generator`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/draw-io-diagram-generator) | skill | - | Use when creating, editing, or generating draw.io diagram files (.drawio, .drawio.svg, .drawio.png)… |
 | 40 | [`drawio`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/drawio) | skill | - | Generate draw.io diagrams as .drawio files and export to PNG/SVG/PDF with embedded XML |
 | 40 | [`editorconfig`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/editorconfig) | skill | - | Generates a comprehensive and best-practice-oriented .editorconfig file based on project analysis a… |
@@ -241,7 +237,6 @@
 | 40 | [`email-drafter`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/email-drafter) | skill | - | Draft and review professional emails that match your personal writing style. Analyzes your sent ema… |
 | 40 | [`entra-agent-user`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/entra-agent-user) | skill | - | Create Agent Users in Microsoft Entra ID from Agent Identities, enabling AI agents to act as digita… |
 | 40 | [`excalidraw-diagram-generator`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/excalidraw-diagram-generator) | skill | - | Generate Excalidraw diagrams from natural language descriptions. Use when asked to "create a diagra… |
-| 40 | [`eyeball`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/eyeball) | skill | - | Document analysis with inline source screenshots. When you ask Copilot to analyze a document, Eyeba… |
 | 40 | [`fabric-lakehouse`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/fabric-lakehouse) | skill | - | Use this skill to get context about Fabric Lakehouse and its features for software systems and AI-p… |
 | 40 | [`fedora-linux-triage`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/fedora-linux-triage) | skill | - | Triage and resolve Fedora issues with dnf, systemd, and SELinux-aware guidance. |
 | 40 | [`finalize-agent-prompt`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/finalize-agent-prompt) | skill | - | Finalize prompt file using the role of an AI agent to polish the prompt for the end user. |
@@ -331,9 +326,7 @@
 | 40 | [`mvvm-toolkit-messenger`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/mvvm-toolkit-messenger) | skill | - | CommunityToolkit.Mvvm Messenger pub/sub for decoupled communication between ViewModels (or any obje… |
 | 40 | [`namecheap`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/namecheap) | skill | - | Manage DNS records for domains registered with Namecheap via their API. List domains, view/add/upda… |
 | 40 | [`nano-banana-pro-openrouter`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/nano-banana-pro-openrouter) | skill | - | Generate or edit images via OpenRouter with the Gemini 3 Pro Image model. Use for prompt-only image… |
-| 40 | [`napkin`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/napkin) | skill | - | Visual whiteboard collaboration for Copilot CLI. Creates an interactive whiteboard that opens in yo… |
 | 40 | [`next-intl-add-language`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/next-intl-add-language) | skill | - | Add new language to a Next.js + next-intl application |
-| 40 | [`noob-mode`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/noob-mode) | skill | - | Plain-English translation layer for non-technical Copilot CLI users. Translates every approval prom… |
 | 40 | [`nuget-manager`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/nuget-manager) | skill | - | Manage NuGet packages in .NET projects/solutions. Use this skill when adding, removing, or updating… |
 | 40 | [`onboard-context-matic`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/onboard-context-matic) | skill | - | Interactive onboarding tour for the context-matic MCP server. Walks the user through what the serve… |
 | 40 | [`oo-component-documentation`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/oo-component-documentation) | skill | - | Create or update standardized object-oriented component documentation using a shared template plus … |
@@ -359,7 +352,6 @@
 | 40 | [`power-bi-model-design-review`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/power-bi-model-design-review) | skill | - | Comprehensive Power BI data model design review prompt for evaluating model architecture, relations… |
 | 40 | [`power-bi-performance-troubleshooting`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/power-bi-performance-troubleshooting) | skill | - | Systematic Power BI performance troubleshooting prompt for identifying, diagnosing, and resolving p… |
 | 40 | [`power-bi-report-design-consultation`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/power-bi-report-design-consultation) | skill | - | Power BI report visualization design prompt for creating effective, user-friendly, and accessible r… |
-| 40 | [`power-platform-architect`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/power-platform-architect) | skill | - | Use this skill when the user needs to transform business requirements, use case descriptions, or me… |
 | 40 | [`power-platform-mcp-connector-suite`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/power-platform-mcp-connector-suite) | skill | - | Generate complete Power Platform custom connector with MCP integration for Copilot Studio - include… |
 | 40 | [`powerbi-modeling`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/powerbi-modeling) | skill | - | Power BI semantic modeling assistant for building optimized data models. Use when working with Powe… |
 | 40 | [`pr-dashboard`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/pr-dashboard) | skill | - | Open a GitHub PR dashboard in the browser. Use when the user asks to see their pull requests, open … |
@@ -405,7 +397,6 @@
 | 40 | [`review-and-refactor`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/review-and-refactor) | skill | - | Review and refactor code in your project according to defined instructions |
 | 40 | [`reviewing-oracle-to-postgres-migration`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/reviewing-oracle-to-postgres-migration) | skill | - | Identifies Oracle-to-PostgreSQL migration risks by cross-referencing code against known behavioral … |
 | 40 | [`rhino3d-scripts`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/rhino3d-scripts) | skill | - | Authoring and debugging scripts for Rhinoceros 3D (Rhino 8 and later). Use when asked to write Rhin… |
-| 40 | [`roundup`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/roundup) | skill | - | Generate personalized status briefings on demand. Pulls from your configured data sources (GitHub, … |
 | 40 | [`roundup-setup`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/roundup-setup) | skill | - | Interactive onboarding that learns your communication style, audiences, and data sources to configu… |
 | 40 | [`ruby-mcp-server-generator`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/ruby-mcp-server-generator) | skill | - | Generate a complete Model Context Protocol server project in Ruby using the official MCP Ruby SDK g… |
 | 40 | [`ruff-recursive-fix`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/ruff-recursive-fix) | skill | - | Run Ruff checks with optional scope and rule overrides, apply safe and unsafe autofixes iteratively… |
@@ -501,4 +492,4 @@
 | 35 | [`setup-my-iq`](https://github.com/github/awesome-copilot/tree/336af71f1b7d2e6e15a8a986ba79ca031a40549b/skills/setup-my-iq) | skill | - |  |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-08-05T20:18:38.275Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-08-06T18:30:07.682Z*

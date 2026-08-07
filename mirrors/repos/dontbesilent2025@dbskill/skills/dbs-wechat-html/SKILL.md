@@ -1,9 +1,6 @@
 ---
 name: dbs-wechat-html
-description: |
-  微信公众号 HTML 生成。把 Markdown 转成可粘贴到微信公众号后台的 HTML，内置 15 种经典媒体/科技产品/中文公众号风格。
-  触发方式：/dbs-wechat-html、/公众号HTML、「生成公众号 HTML」「做微信公众号版本」「微信排版」
-  WeChat Official Account HTML generator. Converts Markdown into WeChat-ready HTML with 15 built-in publishing styles.
+description: 把 Markdown 转成可粘贴到微信公众号后台的 HTML，并提供 15 种内置风格。用户要求生成公众号 HTML、制作微信版本或排版公众号文章时使用。
 ---
 
 # dbs-wechat-html：微信公众号 HTML 生成

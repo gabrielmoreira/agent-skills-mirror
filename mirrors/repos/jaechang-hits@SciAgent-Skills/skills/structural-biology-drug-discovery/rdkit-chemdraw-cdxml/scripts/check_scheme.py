@@ -47,6 +47,8 @@ ON_ARROW = 10.0                      # text-anchor-to-arrow-line distance that r
 CHAR_W = 5.5                         # approx width of one size-9 character (units)
 # Decorative stereo flags to keep out of schemes — draw wedge bonds instead.
 FLAG_WORDS = {"chiral", "achiral", "racemic", "(+/-)", "(±)", "meso"}
+# Non-ASCII characters intentionally allowed in text (degree, delta for heat).
+ALLOWED_NONASCII = {"°", "Δ", "∆"}
 
 
 def _atoms(frag):
@@ -213,11 +215,9 @@ def geometry_check(cdxml_path, perspective_ids=()):
         s = "".join(x.text or "" for x in t.iter("s"))
         if s.strip().lower() in FLAG_WORDS:
             problems.append(f"decorative flag text '{s.strip()}' — remove it; show stereo with wedge bonds")
-        try:
-            s.encode("ascii")
-        except UnicodeEncodeError:
-            bad = [ch for ch in s if ord(ch) > 127]
-            problems.append(f"text '{s[:25]}' has non-ASCII {bad} (font table is iso-8859-1)")
+        bad = [ch for ch in s if ord(ch) > 127 and ch not in ALLOWED_NONASCII]
+        if bad:
+            problems.append(f"text '{s[:25]}' has unsupported non-ASCII {bad} (font table is iso-8859-1)")
         if t.get("p"):
             tx, ty = map(float, t.get("p").split())
             for p0, p1 in arrow_segs:                       # text anchor sitting on an arrow line

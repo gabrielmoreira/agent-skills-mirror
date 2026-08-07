@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 106 file(s) materialized.
+Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 107 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Nutlope/hallmark` — 26 default patterns, 0 followed patterns, 106 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 106 |
+| Files         | 107 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -159,12 +159,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 98 | ✓ | [`skills/hallmark/references/study.md`](skills/hallmark/references/study.md) |
 | 99 | ✓ | [`skills/hallmark/references/themes/carnival.md`](skills/hallmark/references/themes/carnival.md) |
 | 100 | ✓ | [`skills/hallmark/references/themes/cobalt.md`](skills/hallmark/references/themes/cobalt.md) |
-| 101 | ✓ | [`skills/hallmark/references/themes/hum.md`](skills/hallmark/references/themes/hum.md) |
-| 102 | ✓ | [`skills/hallmark/references/themes/lumen.md`](skills/hallmark/references/themes/lumen.md) |
-| 103 | ✓ | [`skills/hallmark/references/typography.md`](skills/hallmark/references/typography.md) |
-| 104 | ✓ | [`skills/hallmark/references/verbs/audit.md`](skills/hallmark/references/verbs/audit.md) |
-| 105 | ✓ | [`skills/hallmark/references/verbs/redesign.md`](skills/hallmark/references/verbs/redesign.md) |
-| 106 | ✓ | [`skills/hallmark/SKILL.md`](skills/hallmark/SKILL.md) |
+| 101 | ✓ | [`skills/hallmark/references/themes/grid.md`](skills/hallmark/references/themes/grid.md) |
+| 102 | ✓ | [`skills/hallmark/references/themes/hum.md`](skills/hallmark/references/themes/hum.md) |
+| 103 | ✓ | [`skills/hallmark/references/themes/lumen.md`](skills/hallmark/references/themes/lumen.md) |
+| 104 | ✓ | [`skills/hallmark/references/typography.md`](skills/hallmark/references/typography.md) |
+| 105 | ✓ | [`skills/hallmark/references/verbs/audit.md`](skills/hallmark/references/verbs/audit.md) |
+| 106 | ✓ | [`skills/hallmark/references/verbs/redesign.md`](skills/hallmark/references/verbs/redesign.md) |
+| 107 | ✓ | [`skills/hallmark/SKILL.md`](skills/hallmark/SKILL.md) |
 
 ---
 

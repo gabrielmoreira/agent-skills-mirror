@@ -1,6 +1,6 @@
 # Plugin Mall Catalog
 
-Search index across **3869 plugins** in **42 stores**. Plugins are ranked by trust score; first-party Mall-curated entries (🏆) rank highest because they earn the highest signals — provenance (+50 for editorial adaptation) plus maintenance, adoption, license clarity, frontmatter completeness, and README presence.
+Search index across **3854 plugins** in **42 stores**. Plugins are ranked by trust score; first-party Mall-curated entries (🏆) rank highest because they earn the highest signals — provenance (+50 for editorial adaptation) plus maintenance, adoption, license clarity, frontmatter completeness, and README presence.
 
 - See [README.md](../README.md) for the storefront and store rankings.
 - See [categories/](categories/) for per-category browse.
@@ -15,17 +15,11 @@ Search index across **3869 plugins** in **42 stores**. Plugins are ranked by tru
 | 95 | 🏆 `academic-paper-drafting` | plugin-mall | skill | End-to-end academic paper drafting for CHI, HBR, journals, and conferences with… |
 | 95 | 🏆 `academic-research` | plugin-mall | skill | Research project scaffolding, thesis/dissertation writing, literature reviews, … |
 | 95 | 🏆 `act-pass` | plugin-mall | skill | Run the 7-step Artificial Critical Thinking pass -- Materiality → Hypothesise →… |
-| 95 | 🏆 `agent-evaluation` | plugin-mall | skill | Testing and benchmarking LLM agents including behavioral testing, |
+| 95 | 🏆 `agent-evaluation` | plugin-mall | skill | Test and benchmark LLM agents through behavioral evaluation, capability assessm… |
 | 95 | 🏆 `agent-evaluation-rubrics` | plugin-mall | skill | This skill should be used when building agent evaluation systems: deterministic… |
 | 95 | 🏆 `agent-tool-design` | plugin-mall | skill | This skill should be used for the tool-interface layer of an agent system speci… |
 | 95 | 🏆 `ai-agent-design` | plugin-mall | skill | Design autonomous AI agents that reason, plan, and execute tasks |
-| 95 | 🏆 `ai-memory-setup` | plugin-mall | skill | Detect, create, and manage the AI-Memory fleet communication channel across One… |
 | 95 | 🏆 `ai-writing-avoidance` | plugin-mall | skill | Help writers produce content that sounds genuinely human by avoiding telltale A… |
-| 95 | 🏆 `alex-act-core` | plugin-mall | mixed | The Alex ACT baseline runtime plugin. Installs 42 reusable framework skills and… |
-| 95 | 🏆 `alex-act-document-tools` | plugin-mall | mixed | Document conversion bundle for AI agents. Converts among Markdown, Word, HTML, … |
-| 95 | 🏆 `alex-act-enterprise` | plugin-mall | mixed | Alex ACT config-template plugin for the public Microsoft ecosystem. Ships the s… |
-| 95 | 🏆 `alex-act-illustrator-plugin` | plugin-mall | mixed | Visual-authoring bundle for AI agents. Ten skills across five feature areas plu… |
-| 95 | 🏆 `alex-act-manager` | plugin-mall | mixed | Lifecycle control plane for the Alex ACT constellation. Installs and globally e… |
 | 95 | 🏆 `alex-banner-generation` | plugin-mall | skill | Generate branded SVG banners for documents (READMEs, plans, changelogs, release… |
 | 95 | 🏆 `allowlist-over-blocklist` | plugin-mall | skill | Validate input against an allowlist of permitted values -- reject everything el… |
 | 95 | 🏆 `anti-hallucination` | plugin-mall | skill | Recognize and prevent confabulation -- when you don't know, say so. |
@@ -61,15 +55,21 @@ Search index across **3869 plugins** in **42 stores**. Plugins are ranked by tru
 | 95 | 🏆 `career-development` | plugin-mall | skill | Resume crafting, interview preparation, job search strategy, and professional g… |
 | 95 | 🏆 `change-management` | plugin-mall | skill | Patterns for organizational change, ADKAR methodology, stakeholder engagement, … |
 | 95 | 🏆 `chart-interpretation` | plugin-mall | skill | Read any chart (image, HTML, screenshot) and extract insights, patterns, anomal… |
+| 95 | 🏆 `citation-management` | plugin-mall | skill | APA 7th formatting, citation integration, reference validation, and bibliograph… |
+| 95 | 🏆 `cloud-solution-architect` | plugin-mall | skill | Design well-architected Azure cloud systems -- 10 design principles, 6 architec… |
+| 95 | 🏆 `cloud-storage-paths` | plugin-mall | skill | Cross-platform cloud storage path resolution -- OneDrive, iCloud, Dropbox path … |
+| 95 | 🏆 `coaching-techniques` | plugin-mall | skill | GROW model, active listening, developmental feedback, and team growth approaches |
+| 95 | 🏆 `code-review` | plugin-mall | skill | Systematic code review for correctness, security, and growth -- not just style … |
+| 95 | 🏆 `cognitive-load` | plugin-mall | skill | Don't overwhelm -- chunk, scaffold, summarize first. |
 
 ## All stores by trust
 
 | Trust | Store | Plugins | Provenance |
 | ---: | --- | ---: | --- |
-| 82 | 🏆 [plugin-mall](stores/plugin-mall.md) | 366 | 🏆 first-party |
+| 82 | 🏆 [plugin-mall](stores/plugin-mall.md) | 362 | 🏆 first-party |
 | 35 | [alirezarezvani-claude-skills](stores/alirezarezvani-claude-skills.md) | 38 | third-party |
 | 35 | [antigravity-awesome-skills](stores/antigravity-awesome-skills.md) | 1914 | third-party |
-| 35 | [awesome-copilot](stores/awesome-copilot.md) | 490 | third-party |
+| 35 | [awesome-copilot](stores/awesome-copilot.md) | 481 | third-party |
 | 35 | [buildwithclaude](stores/buildwithclaude.md) | 111 | third-party |
 | 35 | [claude-code-plugins-plus-skills](stores/claude-code-plugins-plus-skills.md) | 24 | third-party |
 | 35 | [context-engineering-kit](stores/context-engineering-kit.md) | 13 | third-party |
@@ -98,7 +98,7 @@ Search index across **3869 plugins** in **42 stores**. Plugins are ranked by tru
 | 32 | [qdrant-skills](stores/qdrant-skills.md) | 12 | third-party |
 | 30 | [copilot-agents-dojo](stores/copilot-agents-dojo.md) | 28 | third-party |
 | 30 | [microsoft-dataverse-skills](stores/microsoft-dataverse-skills.md) | 1 | third-party |
-| 30 | [mongodb-agent-skills](stores/mongodb-agent-skills.md) | 13 | third-party |
+| 30 | [mongodb-agent-skills](stores/mongodb-agent-skills.md) | 11 | third-party |
 | 30 | [styleseed](stores/styleseed.md) | 21 | third-party |
 | 29 | [microsoftdocs-agent-skills](stores/microsoftdocs-agent-skills.md) | 191 | third-party |
 | 25 | [claude-skills](stores/claude-skills.md) | 18 | third-party |
@@ -110,4 +110,4 @@ Search index across **3869 plugins** in **42 stores**. Plugins are ranked by tru
 | 12 | [libukai-awesome-agent-skills](stores/libukai-awesome-agent-skills.md) | 1 | third-party |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-08-05T20:18:38.275Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-08-06T18:30:07.682Z*

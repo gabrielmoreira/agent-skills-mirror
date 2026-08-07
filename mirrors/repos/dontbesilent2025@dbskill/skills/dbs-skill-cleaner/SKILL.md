@@ -1,10 +1,6 @@
 ---
 name: dbs-skill-cleaner
-description: |
-  本地 skill 清理器。扫描 Claude Code、Codex、Grok、通用 Agents 及指定目录中的 skill，识别广告导流、隐蔽商业意图、任务劫持、可疑外部调用、敏感数据读取等违背用户授权的内容；默认只出报告，经用户确认后隔离问题 skill。
-  触发方式：/dbs-skill-cleaner、/清理 skill、/检查 skill、「扫描本地 skill」「检测 skill 广告」「清除有问题的 skill」「审查我的 skill」
-  Local skill cleaner. Scans installed or specified skills for advertising, covert commercial intent, task hijacking, suspicious external calls, and sensitive-data access. Reports first and quarantines only after explicit confirmation.
-  Trigger: /dbs-skill-cleaner, /clean skills, /check skills, "scan my local skills", "detect skill ads", "clean problematic skills"
+description: 扫描本地 Skill 中的广告导流、隐蔽商业意图、任务劫持、可疑外部调用和敏感数据读取，默认只报告。用户要求审查、清理或隔离问题 Skill 时使用。
 ---
 
 # dbs-skill-cleaner：本地 skill 清理器

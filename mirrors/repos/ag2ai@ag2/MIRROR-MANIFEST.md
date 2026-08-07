@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ag2ai/ag2` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `ag2ai/ag2` — 26 default patterns, 1 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `ag2ai/ag2` — 26 default patterns, 0 followed patterns, 6 file(s) ma
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 6 |
+| Followed pats | 1 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `ag2ai/ag2` — 26 default patterns, 0 followed patterns, 6 file(s) ma
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/adr/0002-tool-composite-hierarchy.md`
 
 ## File Index
 
@@ -65,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`test/CLAUDE.md`](test/CLAUDE.md) |
 | 5 | ✓ | [`website/AGENTS.md`](website/AGENTS.md) |
 | 6 | ✓ | [`website/CLAUDE.md`](website/CLAUDE.md) |
+| 7 | → | [`docs/adr/0002-tool-composite-hierarchy.md`](docs/adr/0002-tool-composite-hierarchy.md) |
 
 ---
 

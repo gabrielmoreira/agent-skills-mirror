@@ -39,7 +39,7 @@ them read-only:
   "action": "start",
   "name": "candidate_1",
   "prompt": "Produce candidate 1 for the task below. Return the proposal, evidence, risks, and rubric self-score. Do not edit files.\n\n<TASK AND RUBRIC>",
-  "type": "general",
+  "type": "worker",
   "model_strength": "same",
   "write_authority": "read_only"
 }
@@ -51,12 +51,12 @@ candidate's answer before generation finishes.
 
 When candidates must implement code, give each one:
 
-- `type: "implementer"`
+- `type: "builder"`
 - `worktree: true`
 - `write_authority: "worktree_write"`
 - the same bounded `write_roots` or `exact_files`
 
-Never run parallel writers in the parent checkout. Each implementer must return
+Never run parallel writers in the parent checkout. Each builder must return
 the structured candidate contract (candidate id, hypothesis, paths, commands,
 self-verdict, risks, and artifact references). A self-verdict is evidence to
 inspect, not a hard-gate result.

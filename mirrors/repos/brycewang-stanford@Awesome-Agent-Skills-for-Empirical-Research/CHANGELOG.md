@@ -5,6 +5,62 @@ This is the project's narrative changelog. `README.md` keeps only a short
 
 ## Unreleased
 
+- **Upstream attribution is now on the front page.** Every row of the
+  all-collections table in all six locale entry documents (`README.md`, the
+  four locale READMEs, and [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md)) gained a
+  localized **来源 / Source / 出典 / 출처 / 來源** column linking straight back
+  to the original author's repository as `owner/repo`. Until now that
+  information only existed in the generated
+  [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md) and in
+  `catalog/provenance.json`, so a reader browsing the README had no one-click
+  path back to the people whose work is vendored here. Each table also carries
+  a short "credit upstream" note pointing at the licence audit.
+- **Every collection now resolves to a reachable upstream.** The four
+  collections carrying `source_url: null` since 2026-05-31 were identified by
+  comparing vendored bytes against live repositories, not by guessing from
+  folder names: `18-jusi-aalto-stata-accounting-research` →
+  [jusi-aalto/stata-accounting-research](https://github.com/jusi-aalto/stata-accounting-research)
+  (SKILL.md byte-identical), `29-quarcs-lab-project20XXy` →
+  [quarcs-lab/project20XXy](https://github.com/quarcs-lab/project20XXy),
+  `38-peternka-academic-proofreader` →
+  [peternka/academic_proofreader](https://github.com/peternka/academic_proofreader)
+  (underscore, not hyphen — which is why the folder name never resolved), and
+  `49-voidborne-d-humanize-chinese` →
+  [swaylq/humanize-chinese](https://github.com/swaylq/humanize-chinese) (the
+  author renamed the account after the snapshot). Separately,
+  `26-Data-Wise-scholar` was re-pointed from the now-404 `Data-Wise/scholar` to
+  its live successor
+  [Data-Wise/claude-plugins](https://github.com/Data-Wise/claude-plugins),
+  where the content moved. All 76 upstream URLs were verified to return HTTP
+  200. Source-confidence buckets moved from high=41 / low=10 / medium=21 /
+  unresolved=4 to high=44 / medium=22 / low=10.
+- **New generated index: [`skills/README.md`](skills/README.md).** GitHub
+  renders it under the `skills/` directory listing, so it is the first thing
+  anyone browsing the vendored collections sees — and until now that view
+  credited nobody (only collections 01–08 carry the old CoPaper.AI
+  `来源仓库:` banner; the other 68 have no attribution header at all). The
+  index is bilingual, lists all 76 collections with upstream URL, skill count,
+  source confidence, and licence, and is written by
+  `scripts/build-provenance.py` (freshness-gated by `make validate`, like the
+  other generated artifacts). It is the one generated file outside `docs/`.
+- **The new column is drift-proofed.** `scripts/check-readme-stats.py` gained a
+  third check family: every row of the widest collection table in each entry
+  document must link the `source_url` that `catalog/provenance.json` records
+  for that collection. The check locates the table structurally rather than by
+  header text, so it works across all five locales, and it fails
+  `make validate` if an upstream moves and only one table is updated.
+- Fixed the Python 3.9 leg of `make python-compat`, which had been failing on
+  `main` since the star-history chart landed: `scripts/build-star-history.py`
+  used a nested f-string with escaped quotes, which is only legal from 3.12
+  (PEP 701), so the 3.12 leg passed and the 3.9 leg did not. Rendered SVG
+  output is unchanged.
+- Fixed a rendering bug in [`docs/CONTENT_ZH.md`](docs/CONTENT_ZH.md): the
+  76-row collection table was present **twice** — once with a header and once
+  (the copy carrying the `#skill-NN` anchors that `README.md` links into)
+  with no header or delimiter row, so GitHub rendered 76 rows as literal
+  pipe-delimited text and every `#skill-NN` id was duplicated. The two copies
+  are now merged into a single anchored table; the unanchored copy was also
+  missing collection `00`.
 - Renamed and rewrote collection 48: **`48-copaper-ai-chinese-de-aigc` →
   [`48-de-AIGC-skills`](skills/48-de-AIGC-skills/)**, extending the
   Chinese-only academic de-AIGC skill to **bilingual EN+ZH coverage** for

@@ -244,8 +244,21 @@ class ProjectStore:
                     and entry.name == "short-drama.json"
                 ):
                     relative = "/".join(parts) or "."
+                    title = "未命名短剧"
+                    try:
+                        raw, _mode = self._read_regular_at(directory_fd, entry.name)
+                        manifest = json.loads(raw.decode("utf-8"))
+                        candidate = manifest.get("title") if isinstance(manifest, dict) else None
+                        if isinstance(candidate, str) and candidate.strip():
+                            title = " ".join(candidate.split())[:200]
+                    except (DashboardError, OSError, UnicodeError, json.JSONDecodeError):
+                        pass
                     projects.append(
-                        {"id": self._project_id(relative), "path": relative}
+                        {
+                            "id": self._project_id(relative),
+                            "path": relative,
+                            "title": title,
+                        }
                     )
                     continue
                 if not entry.is_dir(follow_symlinks=False):

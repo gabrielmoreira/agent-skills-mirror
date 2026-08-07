@@ -104,7 +104,7 @@ export function getAgentConfigs(config?: PluginConfig): Record<string, SDKAgentC
     
     // Handle display names: create both displayName and hidden alias
     if (a.displayName) {
-      entries.push([normalizeDisplayName(a.displayName), sdkConfig]);
+      entries.push([normalizeAgentName(a.displayName), sdkConfig]);
       entries.push([a.name, { ...sdkConfig, hidden: true }]);
     } else {
       entries.push([a.name, sdkConfig]);

@@ -1,7 +1,13 @@
 ---
+type: skill
+lifecycle: stable
+inheritance: inheritable
 name: datasource-connectors
 description: "Ingestion patterns for CSV, JSON, REST API, SQL, Excel, and Parquet -- guides an LLM through loading data from any common source"
-lastReviewed: 2026-05-02
+tier: standard
+applyTo: "**/*data*,**/*ingest*,**/*connect*,**/*csv*,**/*json*,**/*sql*,**/*excel*,**/*parquet*,**/*api*"
+currency: 2026-08-06
+lastReviewed: 2026-08-06
 ---
 
 # Datasource Connectors
@@ -25,14 +31,14 @@ what to watch for, and how to handle each format's quirks.
 
 Ask the user what format the data is in, or infer from the path/URL:
 
-| Signal | Connector |
-| --- | --- |
-| `.csv`, `.tsv`, `.txt` (tabular) | CSV |
-| `.json`, `.jsonl`, `.ndjson` | JSON |
-| `http://`, `https://` + returns JSON/XML | REST API |
-| Connection string, `.sql`, database name | SQL |
-| `.xlsx`, `.xls` | Excel |
-| `.parquet`, `.arrow` | Parquet |
+| Signal                                   | Connector |
+| ---------------------------------------- | --------- |
+| `.csv`, `.tsv`, `.txt` (tabular)         | CSV       |
+| `.json`, `.jsonl`, `.ndjson`             | JSON      |
+| `http://`, `https://` + returns JSON/XML | REST API  |
+| Connection string, `.sql`, database name | SQL       |
+| `.xlsx`, `.xls`                          | Excel     |
+| `.parquet`, `.arrow`                     | Parquet   |
 
 If ambiguous, ask. Do not guess the format.
 
@@ -46,14 +52,27 @@ If ambiguous, ask. Do not guess the format.
 
 ### Quirks to handle
 
-| Problem | Detection | Fix |
-| --- | --- | --- |
-| Wrong delimiter | First row has one column | Try tab, semicolon, pipe |
-| Encoding garbled | Non-ASCII chars show as `?` or `Ã©` | Re-read as Latin-1 or Windows-1252 |
-| Trailing commas | Row has one extra empty column | Strip trailing delimiter |
-| Quoted fields with commas | Standard CSV; most parsers handle it | Use RFC 4180 compliant parser |
-| Mixed line endings | `\r\n` and `\n` in same file | Normalize to `\n` |
-| BOM marker | `\xEF\xBB\xBF` at file start | Strip or let parser handle |
+| Problem                   | Detection                            | Fix                                |
+| ------------------------- | ------------------------------------ | ---------------------------------- |
+| Wrong delimiter           | First row has one column             | Try tab, semicolon, pipe           |
+| Encoding garbled          | Non-ASCII chars show as `?` or `Ã©`  | Re-read as Latin-1 or Windows-1252 |
+| Trailing commas           | Row has one extra empty column       | Strip trailing delimiter           |
+| Quoted fields with commas | Standard CSV; most parsers handle it | Use RFC 4180 compliant parser      |
+| Mixed line endings        | `\r\n` and `\n` in same file         | Normalize to `\n`                  |
+| BOM marker                | `\xEF\xBB\xBF` at file start         | Strip or let parser handle         |
+
+### Required Column Contract
+
+When the brief or downstream metric lineage names required fields, validate the
+parsed header before aggregation or transformation.
+
+1. Normalize header casing only if the mapping is explicit.
+2. Compare the parsed columns with the required-field list.
+3. Stop on absence with a specific message: `Missing required columns: <names>`.
+4. Do not convert a missing measure to zero or allow an aggregate to proceed
+   against an absent property.
+5. Report unexpected columns as profile information, not as failures, unless a
+   strict schema was requested.
 
 ### Output
 
@@ -69,12 +88,12 @@ detected encoding.
 
 ### Quirks to handle
 
-| Problem | Detection | Fix |
-| --- | --- | --- |
-| Nested objects | Column values are objects, not scalars | Flatten with dot notation (`address.city`) |
-| Mixed types in array | Some items have extra/missing keys | Union all keys; fill missing with null |
-| Large file (> 100MB) | Slow to parse | Stream with JSONL or chunk |
-| Date strings | ISO 8601 or Unix timestamps | Parse to date; state the format detected |
+| Problem              | Detection                              | Fix                                        |
+| -------------------- | -------------------------------------- | ------------------------------------------ |
+| Nested objects       | Column values are objects, not scalars | Flatten with dot notation (`address.city`) |
+| Mixed types in array | Some items have extra/missing keys     | Union all keys; fill missing with null     |
+| Large file (> 100MB) | Slow to parse                          | Stream with JSONL or chunk                 |
+| Date strings         | ISO 8601 or Unix timestamps            | Parse to date; state the format detected   |
 
 ### Output
 
@@ -92,34 +111,34 @@ count, nesting depth, keys found.
 
 ### Authentication patterns
 
-| Method | How to use | Security |
-| --- | --- | --- |
-| **API key in header** | `Authorization: Api-Key <key>` or custom header | Never log the key |
-| **Bearer token** | `Authorization: Bearer <token>` | Store in env var or secret |
-| **OAuth 2.0** | Client credentials or authorization code flow | Use refresh tokens |
-| **No auth** | Public API | Still rate-limit respectfully |
+| Method                | How to use                                      | Security                      |
+| --------------------- | ----------------------------------------------- | ----------------------------- |
+| **API key in header** | `Authorization: Api-Key <key>` or custom header | Never log the key             |
+| **Bearer token**      | `Authorization: Bearer <token>`                 | Store in env var or secret    |
+| **OAuth 2.0**         | Client credentials or authorization code flow   | Use refresh tokens            |
+| **No auth**           | Public API                                      | Still rate-limit respectfully |
 
 Never hardcode credentials. Use environment variables or secret storage.
 
 ### Pagination patterns
 
-| Pattern | Detection | Handling |
-| --- | --- | --- |
-| **Offset** | `?offset=0&limit=100` | Increment offset until empty page |
-| **Cursor** | Response has `next_cursor` field | Pass cursor to next request |
-| **Link header** | `Link: <url>; rel="next"` | Follow `rel="next"` until absent |
-| **Page number** | `?page=1&per_page=50` | Increment page until empty |
+| Pattern         | Detection                        | Handling                          |
+| --------------- | -------------------------------- | --------------------------------- |
+| **Offset**      | `?offset=0&limit=100`            | Increment offset until empty page |
+| **Cursor**      | Response has `next_cursor` field | Pass cursor to next request       |
+| **Link header** | `Link: <url>; rel="next"`        | Follow `rel="next"` until absent  |
+| **Page number** | `?page=1&per_page=50`            | Increment page until empty        |
 
 Set a maximum page limit (default: 100 pages) to prevent runaway loops.
 
 ### Retry and timeout
 
-| Rule | Value |
-| --- | --- |
-| Timeout per request | 30 seconds |
-| Retries on 429/5xx | 3 with exponential backoff (1s, 2s, 4s) |
-| Retries on network error | 2 |
-| Never retry | 400, 401, 403, 404 (client errors are not transient) |
+| Rule                     | Value                                                |
+| ------------------------ | ---------------------------------------------------- |
+| Timeout per request      | 30 seconds                                           |
+| Retries on 429/5xx       | 3 with exponential backoff (1s, 2s, 4s)              |
+| Retries on network error | 2                                                    |
+| Never retry              | 400, 401, 403, 404 (client errors are not transient) |
 
 ### Output
 
@@ -136,12 +155,12 @@ any errors skipped.
 
 ### Security rules
 
-| Rule | Reason |
-| --- | --- |
-| **Always use parameterized queries** | Prevents SQL injection |
+| Rule                                      | Reason                               |
+| ----------------------------------------- | ------------------------------------ |
+| **Always use parameterized queries**      | Prevents SQL injection               |
 | **Never interpolate user input into SQL** | Even for table names; use allowlists |
-| **Read-only connection** | The pipeline only reads; never write |
-| **Credentials in env vars** | Never in code, never in logs |
+| **Read-only connection**                  | The pipeline only reads; never write |
+| **Credentials in env vars**               | Never in code, never in logs         |
 
 ### Query patterns
 
@@ -175,14 +194,14 @@ A table. Report: row count, column count, query execution time, database engine.
 
 ### Quirks to handle
 
-| Problem | Detection | Fix |
-| --- | --- | --- |
-| Multiple sheets | Workbook has > 1 sheet | Ask which sheet; default to first |
-| Header not in row 1 | First rows are title/metadata | Ask for header row number |
-| Merged cells | Values span multiple rows/columns | Unmerge and fill down |
-| Formulas | Cells contain formulas, not values | Read values, not formulas |
-| Mixed types in column | Numbers and text in same column | Coerce to string; flag for data-preparation |
-| Date serial numbers | Dates stored as integers (e.g., 45678) | Convert using Excel epoch (1899-12-30) |
+| Problem               | Detection                              | Fix                                         |
+| --------------------- | -------------------------------------- | ------------------------------------------- |
+| Multiple sheets       | Workbook has > 1 sheet                 | Ask which sheet; default to first           |
+| Header not in row 1   | First rows are title/metadata          | Ask for header row number                   |
+| Merged cells          | Values span multiple rows/columns      | Unmerge and fill down                       |
+| Formulas              | Cells contain formulas, not values     | Read values, not formulas                   |
+| Mixed types in column | Numbers and text in same column        | Coerce to string; flag for data-preparation |
+| Date serial numbers   | Dates stored as integers (e.g., 45678) | Convert using Excel epoch (1899-12-30)      |
 
 ### Output
 
@@ -202,11 +221,11 @@ delimiter guessing, no encoding issues, no header detection.
 
 ### Quirks to handle
 
-| Problem | Detection | Fix |
-| --- | --- | --- |
-| Partitioned directory | Path is a directory with `part-*.parquet` files | Read all partitions |
-| Nested columns (struct/list) | Schema shows complex types | Flatten or ask user which fields |
-| Large file | > 1M rows | Sample or filter before loading all |
+| Problem                      | Detection                                       | Fix                                 |
+| ---------------------------- | ----------------------------------------------- | ----------------------------------- |
+| Partitioned directory        | Path is a directory with `part-*.parquet` files | Read all partitions                 |
+| Nested columns (struct/list) | Schema shows complex types                      | Flatten or ask user which fields    |
+| Large file                   | > 1M rows                                       | Sample or filter before loading all |
 
 ### Output
 
@@ -215,13 +234,13 @@ the Parquet metadata).
 
 ## Error Handling (all connectors)
 
-| Situation | Action |
-| --- | --- |
-| File not found | Report the exact path tried. Ask user to verify. |
-| Permission denied | Report the error. Do not retry. Ask user to fix permissions. |
-| Empty dataset (0 rows) | Report it. Push back: "file exists but has no data rows." |
-| Partial data (truncated) | Report row count. Ask if this is expected. |
-| Unsupported format | State what was detected. Ask user for the correct format. |
+| Situation                | Action                                                       |
+| ------------------------ | ------------------------------------------------------------ |
+| File not found           | Report the exact path tried. Ask user to verify.             |
+| Permission denied        | Report the error. Do not retry. Ask user to fix permissions. |
+| Empty dataset (0 rows)   | Report it. Push back: "file exists but has no data rows."    |
+| Partial data (truncated) | Report row count. Ask if this is expected.                   |
+| Unsupported format       | State what was detected. Ask user for the correct format.    |
 
 Never fail silently. Every error must produce a specific, actionable message.
 

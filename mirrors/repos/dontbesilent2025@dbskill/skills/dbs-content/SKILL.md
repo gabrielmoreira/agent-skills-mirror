@@ -1,10 +1,6 @@
 ---
 name: dbs-content
-description: |
-  dontbesilent 内容创作诊断。选题通过后，诊断怎么把这个选题做成好内容。
-  触发方式：/dbs-content、/内容诊断、「这个内容怎么做」「帮我看看这个文案」
-  Content creation diagnosis. After topic passes, diagnose how to turn it into good content.
-  Trigger: /dbs-content, "how should I create this content", "review my copy"
+description: 诊断如何把已经确定的选题做成好内容。用户要求设计内容、检查文案或改善内容表达时使用。
 ---
 
 # dbs-content：内容创作诊断

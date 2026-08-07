@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shuvonsec/claude-bug-bounty` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `shuvonsec/claude-bug-bounty` — 26 default patterns, 0 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shuvonsec/claude-bug-bounty` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,21 +81,24 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`mcp/hackerone-mcp/server.py`](mcp/hackerone-mcp/server.py) |
 | 21 | ✓ | [`mcp/README.md`](mcp/README.md) |
 | 22 | ✓ | [`SKILL.md`](SKILL.md) |
-| 23 | ✓ | [`skills/bb-methodology/SKILL.md`](skills/bb-methodology/SKILL.md) |
-| 24 | ✓ | [`skills/bug-bounty/SKILL.md`](skills/bug-bounty/SKILL.md) |
-| 25 | ✓ | [`skills/cicd-security/SKILL.md`](skills/cicd-security/SKILL.md) |
-| 26 | ✓ | [`skills/credential-attack/SKILL.md`](skills/credential-attack/SKILL.md) |
-| 27 | ✓ | [`skills/graphql-audit/SKILL.md`](skills/graphql-audit/SKILL.md) |
-| 28 | ✓ | [`skills/meme-coin-audit/SKILL.md`](skills/meme-coin-audit/SKILL.md) |
-| 29 | ✓ | [`skills/mobile-pentest/SKILL.md`](skills/mobile-pentest/SKILL.md) |
-| 30 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
-| 31 | ✓ | [`skills/security-arsenal/METHODOLOGY_CHEATSHEET.md`](skills/security-arsenal/METHODOLOGY_CHEATSHEET.md) |
-| 32 | ✓ | [`skills/security-arsenal/REFERENCES.md`](skills/security-arsenal/REFERENCES.md) |
-| 33 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
-| 34 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
-| 35 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
-| 36 | ✓ | [`skills/web2-vuln-classes/SKILL.md`](skills/web2-vuln-classes/SKILL.md) |
-| 37 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
+| 23 | ✓ | [`skills/argus/SKILL.md`](skills/argus/SKILL.md) |
+| 24 | ✓ | [`skills/bb-methodology/SKILL.md`](skills/bb-methodology/SKILL.md) |
+| 25 | ✓ | [`skills/bug-bounty/SKILL.md`](skills/bug-bounty/SKILL.md) |
+| 26 | ✓ | [`skills/cicd-security/SKILL.md`](skills/cicd-security/SKILL.md) |
+| 27 | ✓ | [`skills/client-reverse/references/browser-js-signing.md`](skills/client-reverse/references/browser-js-signing.md) |
+| 28 | ✓ | [`skills/client-reverse/SKILL.md`](skills/client-reverse/SKILL.md) |
+| 29 | ✓ | [`skills/credential-attack/SKILL.md`](skills/credential-attack/SKILL.md) |
+| 30 | ✓ | [`skills/graphql-audit/SKILL.md`](skills/graphql-audit/SKILL.md) |
+| 31 | ✓ | [`skills/meme-coin-audit/SKILL.md`](skills/meme-coin-audit/SKILL.md) |
+| 32 | ✓ | [`skills/mobile-pentest/SKILL.md`](skills/mobile-pentest/SKILL.md) |
+| 33 | ✓ | [`skills/report-writing/SKILL.md`](skills/report-writing/SKILL.md) |
+| 34 | ✓ | [`skills/security-arsenal/METHODOLOGY_CHEATSHEET.md`](skills/security-arsenal/METHODOLOGY_CHEATSHEET.md) |
+| 35 | ✓ | [`skills/security-arsenal/REFERENCES.md`](skills/security-arsenal/REFERENCES.md) |
+| 36 | ✓ | [`skills/security-arsenal/SKILL.md`](skills/security-arsenal/SKILL.md) |
+| 37 | ✓ | [`skills/triage-validation/SKILL.md`](skills/triage-validation/SKILL.md) |
+| 38 | ✓ | [`skills/web2-recon/SKILL.md`](skills/web2-recon/SKILL.md) |
+| 39 | ✓ | [`skills/web2-vuln-classes/SKILL.md`](skills/web2-vuln-classes/SKILL.md) |
+| 40 | ✓ | [`skills/web3-audit/SKILL.md`](skills/web3-audit/SKILL.md) |
 
 ---
 

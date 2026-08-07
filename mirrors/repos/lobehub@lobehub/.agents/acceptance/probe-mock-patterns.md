@@ -204,6 +204,42 @@ a source-order regression test, and say in the report that the runtime path need
 packaged build (`DESKTOP_RENDERER_STATIC` / `resolveRendererFilePath` maps
 `apps/desktop/index.html`, `popup.html`, `overlay.html`).
 
+### Measuring production-bundle startup behavior without packaging the app
+
+**Situation:** a claim depends on the built renderer (chunk splitting, lazy-route
+boundaries, startup paint timing), which dev-mode Vite cannot reproduce.
+
+**Doesn't work:** measuring in the dev instance (unbundled modules make lazy vs
+eager indistinguishable), or trusting `performance.getEntriesByType('resource')`
+to identify what loaded — the `app://` protocol emits no resource-timing entries
+at all (0 JS resources on a fully loaded page).
+
+**Works:** build the renderer (`cd apps/desktop && vite build --config
+vite.renderer.config.ts`), then launch a pool instance with the static override:
+
+```bash
+DESKTOP_RENDERER_STATIC=1 .agents/acceptance/scripts/electron-dev.sh start 1
+```
+
+The dev main process serves `apps/desktop/dist/renderer` over `app://renderer/`
+with the seeded login. Prove which build is loaded via the modulepreload hashes
+in the live DOM, not resource timing:
+
+```js
+[...document.querySelectorAll('link[rel=modulepreload]')]
+  .map((l) => l.href)
+  .find((h) => h.includes('<chunk-under-test>'));
+```
+
+Paint metrics survive post-hoc collection: a buffered
+`PerformanceObserver({ type: 'largest-contentful-paint', buffered: true })` plus
+`performance.getEntriesByType('paint')` read after load give FCP/DCL and the full
+LCP-candidate timeline. `restart 1` re-seeds userData, so each restart is a
+comparable cold start; `location.reload()` gives low-variance warm samples. For
+A/B builds, swap `dist/renderer` directories between restarts — remote-image LCP
+entries are network-noisy, so compare text-paint candidates and DCL across ≥5
+cold samples per variant before attributing a delta.
+
 ### Driving and probing a real Electron popup window
 
 **Situation:** verifying `entry.popup.tsx` behavior (its own HTML shell, no `BootShell`).
@@ -719,9 +755,44 @@ const aside = drawer && [...drawer.parentElement.children].find((c) => c.tagName
 ```
 
 Then assert on `aside.innerText` line count plus a count of text-free rounded boxes
-(the skeleton rows). Distinguish the two skeleton states explicitly: the whole panel
-collapsing to \~8 text-free rows is the nav-panel fallback, while fixed items present
-with only the list area shimmering is ordinary data loading.
+(the skeleton rows). Distinguish the two skeleton states explicitly: a text-free panel
+carrying `[data-testid="nav-sidebar-skeleton"]` is the nav-panel fallback, while fixed
+items present with only the list area shimmering is ordinary data loading. Do NOT
+identify the fallback by a row count — it is shaped per navKey now
+(`NAV_SKELETON_SHAPES`), so memory/discover render header plus a nav list and no body
+at all, while settings renders a search box plus four accordion groups.
+
+### Park a route's lazy chunk to hold its pending sidebar on screen
+
+**Situation:** verifying what a route's `NavPanel` fallback (or any `dynamicElement`
+Suspense fallback) actually renders. The pending state lasts a few hundred ms, so no
+screenshot or `agent-browser eval` catches it.
+
+**Doesn't work:** network throttling, or adding a debug flag that force-renders the
+fallback. Throttling does not bound the module fetch predictably, and a force-render
+flag proves the component renders, not that the product path reaches it.
+
+**Works:** raw CDP `Fetch.enable` intercepts `app://renderer/...` module requests in
+the Electron renderer. Park the route's layout chunk and the portal never registers,
+so the fallback stays up indefinitely — measure and screenshot at leisure, then kill
+the CDP connection to release the request and measure the settled sidebar in the same
+session.
+
+```js
+Fetch.enable({ patterns: [{ requestStage: 'Request', urlPattern: '*settings/_layout*' }] });
+// on Fetch.requestPaused: keep the requestId, never continueRequest
+// [paused] app://renderer/src/routes/(main)/settings/_layout/index.tsx?t=1785957215039
+```
+
+Two traps. The pattern must name the **layout** chunk only: a broad `*settings*`
+also parks `store/user/slices/settings/*` and the router's own `routeMeta`, which
+stalls boot instead of the route. And the layout module is not always under the path
+you guess — the agent sidebar registers from `(main)/agent/_layout`, not
+`(main)/agent/(chat)/_layout`; when the measurement comes back `mode: real`, the
+pattern missed, it is not a product finding.
+
+Drive the navigation with `app-probe.sh goto <route>` (a full reload, so the module
+is re-requested and re-parked).
 
 ### Boot-phase UI cannot be observed by CDP polling — sample in-page, and mirror the timer
 
@@ -975,6 +1046,24 @@ and the panel shrinks only \~1.5% (the `scale(0.98)` exit transform) instead of 
 compositor paints, so they cluster inside the animation — \~9 frames in the 120ms window) and replay
 those unmodified frames slowly with ffmpeg. Do not slow the product's own transition: the exit is a
 JS animation, so a CSS `transition-duration` override does nothing anyway.
+
+### Day-scoped fixtures must use the browser's measured timezone, not an assumed one
+
+**Situation:** seeding backdated rows (briefs, activity, digests) whose UI grouping is
+by the viewer's _local calendar day_ (`dayjs().startOf('day')` on the client).
+
+**Doesn't work:** computing the day boundaries from an assumed timezone (the user's
+usual locale, the server tz, or the shell's). On this harness the agent-browser
+Chromium reports `America/Los_Angeles`, so a "today 14:00 CST" timestamp lands on the
+browser's _yesterday_ — the day view renders empty and reads exactly like the
+feature not fetching, while the server endpoint returns the rows when probed with
+the "correct" (assumed-tz) window.
+
+**Works:** before seeding, read the tz the grouping actually uses —
+`agent-browser eval 'Intl.DateTimeFormat().resolvedOptions().timeZone'` — and derive
+every `[startAt, endAt)` from that. When a day view comes back empty, diff the
+client's real request window (fetch wrapper on the batch URL) against the seeded
+timestamps before suspecting the query.
 
 ## Detailed references
 

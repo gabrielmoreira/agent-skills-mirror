@@ -1,6 +1,6 @@
 # netclaw Development Guidelines
 
-Auto-generated from all feature plans. Last updated: 2026-08-03
+Auto-generated from all feature plans. Last updated: 2026-08-06
 
 ## Active Technologies
 - N/A (stateless server; subscription state held in-memory during runtime) (003-gnmi-mcp-server)
@@ -114,6 +114,8 @@ Auto-generated from all feature plans. Last updated: 2026-08-03
 - none. Files land in `workspace/output/document-mcp/` (gitignored, feature 046's convention). (082-document-generation)
 - Python 3.10+. The vendored server runs from **its own virtualenv**; NetClaw authors no (083-zabbix-nms)
 - none. The NMS holds the history. (083-zabbix-nms)
+- Dart 3.x / Flutter (SDK constraint `^3.12.2`, matching `mobile/netclaw-mobile/pubspec.yaml`); Swift 5.0 (existing `ios/Runner/*.swift`, `ios/WatchApp Watch App/*.swift`); Bash (CI workflow is declarative YAML, no new scripting language) + No new Dart packages — reuses `flutter_local_notifications`, `firebase_messaging`, `firebase_core`, `local_auth`, `app_links`, `web_socket_channel`, `flutter_secure_storage` already in `pubspec.yaml`. New native-only surface: Apple's **ActivityKit** (Live Activity, Story 7) and **WidgetKit** (watchOS complication, Story 8) — both system frameworks, zero new third-party dependencies, consistent with every prior mobile spec (066-073) adding no new packages beyond what a given story strictly needs. (099-mobile-prerelease-sweep)
+- N/A — reuses existing on-device stores (`MessageFeedStore`, `ConversationStore`, `ApprovalClient` in-memory state, `flutter_secure_storage` for enrollment) for Dashboard data; no new persistence introduced. (099-mobile-prerelease-sweep)
 
 - Python 3.10+ + FastMCP (MCP framework), grpcio + grpcio-tools (gRPC transport), pygnmi (gNMI client library), protobuf, cryptography (TLS handling) (003-gnmi-mcp-server)
 
@@ -133,9 +135,9 @@ cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLO
 Python 3.10+: Follow standard conventions
 
 ## Recent Changes
+- 099-mobile-prerelease-sweep: Added Dart 3.x / Flutter (SDK constraint `^3.12.2`, matching `mobile/netclaw-mobile/pubspec.yaml`); Swift 5.0 (existing `ios/Runner/*.swift`, `ios/WatchApp Watch App/*.swift`); Bash (CI workflow is declarative YAML, no new scripting language) + No new Dart packages — reuses `flutter_local_notifications`, `firebase_messaging`, `firebase_core`, `local_auth`, `app_links`, `web_socket_channel`, `flutter_secure_storage` already in `pubspec.yaml`. New native-only surface: Apple's **ActivityKit** (Live Activity, Story 7) and **WidgetKit** (watchOS complication, Story 8) — both system frameworks, zero new third-party dependencies, consistent with every prior mobile spec (066-073) adding no new packages beyond what a given story strictly needs.
 - 083-zabbix-nms: Added Python 3.10+. The vendored server runs from **its own virtualenv**; NetClaw authors no
 - 082-document-generation: Added Python 3.10+, system interpreter. No dedicated venv — the four libraries are already
-- 081-bgp-registry-intel: Added Python 3.10+, system interpreter. No dedicated venv — two pure-HTTP packages move + `mcp>=1.2.0,<2` and `httpx>=0.27.0,<1`. Identical to specs 078 and 080. The `mcp`
 
 
 <!-- MANUAL ADDITIONS START -->

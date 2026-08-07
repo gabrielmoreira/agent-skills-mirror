@@ -43,12 +43,27 @@ Adding a string is a four-part change: see `locales/AGENTS.md`.
 ## Verification
 
 ```sh
-cargo test -p codewhale-tui --bins --locked            # full unit suite
+cargo test -p codewhale-tui --bins --locked            # unit suite (bin targets only)
+cargo test -p codewhale-tui --tests --locked           # every crates/tui/tests/ target
+cargo clippy --workspace --all-targets --locked -- -D warnings
+```
+
+Narrower reruns of the slow acceptance targets, once `--tests` has told you
+which one moved:
+
+```sh
 cargo test -p codewhale-tui --test qa_pty --locked     # PTY snapshots
 cargo test -p codewhale-tui --test release_runtime_qa --locked
 cargo test -p codewhale-tui --test terminal_matrix_qa --locked
-cargo clippy --workspace --all-targets --locked -- -D warnings
 ```
+
+**`--bins` and `--tests` are disjoint target sets.** `crates/tui/tests/` holds
+two dozen process-level acceptance targets that a `--bins` run never compiles,
+let alone executes, so a green `cargo test -p codewhale-tui --bin codewhale-tui`
+says nothing about them. `adaptive_evidence_acceptance` sat red across two
+releases for exactly that reason: every routine command anyone ran was a `--bins`
+run, and only `cargo test --workspace` reached it. Run both, or run the
+workspace gate.
 
 Run clippy with `--all-targets`: `--bin` alone skips test targets and lets lints
 reach CI.

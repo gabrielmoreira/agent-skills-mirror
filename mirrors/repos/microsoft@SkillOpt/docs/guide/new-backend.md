@@ -84,8 +84,11 @@ python scripts/train.py --config configs/searchqa/default.yaml \
   model.target=llama-3.3-70b-versatile
 ```
 
-Do not rely on the legacy high-level `model.backend` label to replace the two
-role-specific fields in a structured config.
+`model.backend` is a high-level shorthand for SkillOpt's built-in role
+pairings. It replaces role fields that are still at the shipped
+`openai_chat` default, while non-default role fields are preserved. For a
+custom optimizer/target split, set both role-specific fields and do not combine
+them with a conflicting high-level label.
 
 The generic backend uses the official `openai` SDK and the Chat Completions
 API. It records token usage through the shared tracker, supports provider tool
@@ -170,9 +173,11 @@ A new backend normally requires all of the following:
 6. Update `router.py` only when legacy single-backend compatibility is part of
    the intended feature.
 
-Backend selection in `scripts/train.py` must use
-`model.optimizer_backend` and `model.target_backend`. A high-level
-`model.backend` alias alone is not a substitute for this explicit split.
+Backend selection in `scripts/train.py` must support
+`model.optimizer_backend` and `model.target_backend`. If the backend also has a
+high-level `model.backend` alias, resolve its built-in role pairing before
+applying backend-specific model defaults, without replacing non-default role
+fields.
 
 ## Step 3: test the integration
 

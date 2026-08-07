@@ -6,6 +6,7 @@ description: >-
   is ending, context is running low, the user asks for a handoff / "pass the
   baton" / "hand off", or a long-running operation needs a durable state
   checkpoint.
+invocation: model+user
 ---
 
 # Handoff
@@ -55,13 +56,21 @@ Invocation: `model+user`
      preserved (worktrees, uncommitted files, receipts)>
    ```
 
-3. **Persist it.** Write the handoff to the agreed location:
+3. **Persist it.** Always write `.codewhale/handoff.md` in the workspace — that
+   is the only path the runtime reads back. On the next session's first turn it
+   is injected as the "## Previous Session Relay" block
+   (`HANDOFF_RELATIVE_PATH`, `crates/tui/src/prompts.rs:85`; loader at
+   `prompts.rs:301-315`). A handoff written anywhere else is never picked up,
+   so the next session starts cold no matter how good the note is.
+
+   Optionally also write a human-discoverable copy:
    - If the workspace has an ops/notes convention (e.g. `codewhale-ops/notes/`
      with a living handoff file), update the living handoff's dated facts and
      snapshot, or create `<topic>-handoff-<date>.md` next to it.
-   - Otherwise write to the repo root as `HANDOFF.md` or
-     `docs/handoff/<topic>-<date>.md`; never overwrite someone else's
-     uncommitted handoff without reading it first.
+   - Otherwise the repo root as `HANDOFF.md` or
+     `docs/handoff/<topic>-<date>.md`. These are for people; nothing in the
+     runtime reads them. Never overwrite someone else's uncommitted handoff
+     without reading it first.
 4. **Clear the way for the new session ("clears context").** A skill cannot
    delete the current context, but it can make the context disposable:
    - Ensure nothing is left only in memory: dirty work is either committed

@@ -64,85 +64,87 @@ This repository can be imported from its root as one skill in Codex, CodeBuddy, 
 > **Open the repo → see the whole library.** All **76 collections · 1,096 skills**, numbered `00 → 72`, every one **vendored into this repo** (not just linked out) and tracked in [`catalog/skills.json`](catalog/skills.json). **Click any row to open its folder.** **⭐ = first-party skills built by the Stanford REAP × CoPaper.AI team**; everything else is curated, security-audited community work.
 >
 > **Theme key —** 🚀 full-pipeline & orchestrators · 🎯 causal inference & econometrics · 📚 literature & research design · ✍️ writing, editing & de-AIGC · 📑 citation, replication & peer review · 🛠️ data, tooling & infrastructure
+>
+> **🙏 Credit upstream —** the **Source** column links straight back to the original repository (`owner/repo`). Community collections here are **snapshots of upstream work**: please star them, file issues there, and read their LICENSE. Full licence and source-confidence audit: [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md); machine-readable in [`catalog/provenance.json`](catalog/provenance.json).
 
-| # | Collection | What it does | Theme | Skills |
-|:--|:--|:--|:--:|--:|
-| ⭐ **00** | **[StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/)** 🔥 | Agent-native Python **DSL** — one `sp.causal(...)` runs DID/RD/IV/SCM/DML | 🚀 | 1 |
-| ⭐ **00.1** | **[Full Empirical · Python](skills/00.1-Full-empirical-analysis-skill_Python/)** 📘 | Explicit stack: `pandas` · `statsmodels` · `linearmodels` · `pyfixest` | 🚀 | 1 |
-| ⭐ **00.2** | **[Full Empirical · Stata](skills/00.2-Full-empirical-analysis-skill_Stata/)** 📊 | `reghdfe` · `ivreg2` · `csdid` · `sdid` · `rdrobust` replication pack | 🚀 | 1 |
-| ⭐ **00.3** | **[Full Empirical · R](skills/00.3-Full-empirical-analysis-skill_R/)** 📗 | tidyverse · `fixest` · `did` · `HonestDiD`, rendered via Quarto | 🚀 | 1 |
-| **01** | [academic-paper-skills](skills/01-lishix520-academic-paper-skills/) | Outline → manuscript writing + 7-dim reviewer sim | ✍️ | 2 |
-| **02** | [research-skills](skills/02-luwill-research-skills/) | Medical-imaging reviews, proposals, paper-to-slides | 📚 | 3 |
-| **03** | [scientific-skills](skills/03-K-Dense-AI-claude-scientific-skills/) | Hypothesis generation + 28 scientific databases | 📚 | 4 |
-| **04** | [scientific-writer](skills/04-K-Dense-AI-claude-scientific-writer/) | Citation management + scientific writing | ✍️ | 8 |
-| **05** | [research-superpower](skills/05-kthorn-research-superpower/) | Systematic search, screening & citation traversal | 📚 | 10 |
-| **06** | [stats-paper-writing](skills/06-fuhaoda-stats-paper-writing/) | End-to-end LaTeX statistical-paper writing | ✍️ | 1 |
-| **07** | [AI-Research-SKILLs](skills/07-Orchestra-Research-AI-Research-SKILLs/) | Publication ML figures, LaTeX, citation verify | 🛠️ | 3 |
-| **08** | [latex-document-skill](skills/08-ndpvt-web-latex-document-skill/) | Create / compile any LaTeX doc to PDF | 🛠️ | 1 |
-| **09** | [awesome-econ-ai](skills/09-meleantonio-awesome-econ-ai-stuff/) | Python panel-data analysis (`linearmodels`) | 🎯 | 17 |
-| **10** | [causal-inference-mixtape](skills/10-Jill0099-causal-inference-mixtape/) | DID / IV / RDD / SCM templates (Cunningham) | 🎯 | 1 |
-| **11** | [compound-science](skills/11-James-Traina-compound-science/) | Bayesian estimation for quantitative social science | 🎯 | 20 |
-| **12** | [claude-code-my-workflow](skills/12-pedrohcgs-claude-code-my-workflow/) | Commit → PR → merge research workflow (Emory) | 🛠️ | 22 |
-| **13** | [MixtapeTools](skills/13-scunning1975-MixtapeTools/) | Cunningham's causal-inference toolkit & decks | 🎯 | 5 |
-| **14** | [research-starter](skills/14-luischanci-claude-code-research-starter/) | IV / DiD / RDD in R with proper diagnostics | 🎯 | 16 |
-| **15** | [social-science-research](skills/15-Felpix-Studios-social-science-research/) | End-to-end data analysis in R or Python | 🎯 | 12 |
-| **16** | [clo-author](skills/16-hsantanna88-clo-author/) | Multi-agent data analysis (R / Stata / Python) | 🎯 | 10 |
-| **17** | [DAAF](skills/17-DAAF-Contribution-Community-daaf/) | Security-conscious agent framework (32 deny rules) | 🛠️ | 35 |
-| **18** | [stata-accounting](skills/18-jusi-aalto-stata-accounting-research/) | Tested Stata patterns from 126 *JAR* papers | 🎯 | 1 |
-| **19** | [vera-economic-intelligence](skills/19-CuellarC05-vera-economic-intelligence/) | Economic-intelligence & policy-research workflows | 🎯 | 5 |
-| **20** | [python-econ-skill](skills/20-wenddymacro-python-econ-skill/) | DSGE / HANK & quantitative economic computation | 🎯 | 1 |
-| **21** | [AI-research-feedback](skills/21-claesbackman-AI-research-feedback/) | Structured feedback via AI peer review | 📑 | 5 |
-| **22** | [christopherkenny-skills](skills/22-christopherkenny-skills/) | APSA style checker for Quarto (`.qmd`) | ✍️ | 11 |
-| **23** | [baygent](skills/23-Learning-Bayesian-Statistics-baygent-skills/) | PyMC / ArviZ Bayesian workflow with guardrails | 🎯 | 2 |
-| **24** | [academic-research-skills](skills/24-Imbad0202-academic-research-skills/) | 5-reviewer multi-perspective paper review | 📑 | 4 |
-| **25** | [Diverga](skills/25-HosungYou-Diverga/) | Research-question refiner (anti mode-collapse) | 📚 | 34 |
-| **26** | [scholar](skills/26-Data-Wise-scholar/) | Statistical-algorithm design & documentation | 🎯 | 17 |
-| **27** | [my_claude_skills](skills/27-dariia-m-my_claude_skills/) | Economics-abstract writing guide | ✍️ | 6 |
-| **28** | [paper-replicate-agent](skills/28-maxwell2732-paper-replicate-agent-demo/) | Paper-replication agent demo | 📑 | 11 |
-| **29** | [project20XXy](skills/29-quarcs-lab-project20XXy/) | Reproducible manuscript + notebook project | 📑 | 24 |
-| **30** | [zirui-song-claude-skills](skills/30-zirui-song-claude-skills/) | Zirui Song's research-assistant Claude skills | 🛠️ | 6 |
-| **31** | [claude-code-skills](skills/31-thalysandratos-claude-code-skills/) | Python panel-data analysis | 🎯 | 13 |
-| **32** | [stata-skill](skills/32-dylantmoore-stata-skill/) | High-performance Stata C/C++ plugins | 🛠️ | 3 |
-| **33** | [claude-scholar](skills/33-Galaxy-Dawn-claude-scholar/) | Full research lifecycle: ideation → review → experiments → response | 🚀 | 47 |
-| **34** | [research-companion](skills/34-andrehuang-research-companion/) | Brainstorm, evaluate & decide research directions | 📚 | 1 |
-| **35** | [academic-writing-skills](skills/35-bahayonghang-academic-writing-skills/) | Venue-aware industrial-AI literature research | 📚 | 5 |
-| **36** | [literature-review-skill](skills/36-taoyunudt-literature-review-skill/) | Full literature-review workflow (Chinese) | 📚 | 1 |
-| **37** | [IlanStrauss-ai-skills](skills/37-IlanStrauss-ai-skills/) | Ilan Strauss's AI workflows for economics research | 🎯 | 1 |
-| **38** | [academic-proofreader](skills/38-peternka-academic-proofreader/) | Academic proofreading | ✍️ | 1 |
-| **39** | [marginaleffects](skills/39-vincentarelbundock-marginaleffects/) | Predictions, slopes & comparisons (R / Python) | 🎯 | 1 |
-| **40** | [pyfixest](skills/40-py-econometrics-pyfixest/) | Fast fixed-effects estimation in Python | 🎯 | 1 |
-| **41** | [sewage-econometrics-check](skills/41-sticerd-eee-sewage-econometrics-check/) | 10-check replication-package audit | 📑 | 22 |
-| **42** | [ARIS](skills/42-wanshuiyin-ARIS/) | Autonomous "research-in-sleep" agent, end-to-end | 🚀 | 42 |
-| **43** | [research-plugins](skills/43-wentorai-research-plugins/) | 478 research plugins: dataviz, domains, infra | 🛠️ | 478 |
-| **44** | [humanizer_academic](skills/44-matsuikentaro1-humanizer_academic/) | De-AI medical/academic manuscripts (23 patterns) | ✍️ | 1 |
-| **45** | [deslop](skills/45-stephenturner-skill-deslop/) | Remove AI writing patterns (5-dim scoring) | ✍️ | 1 |
-| **46** | [stop-slop](skills/46-hardikpandya-stop-slop/) | 3-layer AI-tell detection & rewrite | ✍️ | 1 |
-| **47** | [avoid-ai-writing](skills/47-conorbronsdon-avoid-ai-writing/) | Audit → rewrite → re-audit AI-isms (paper trail) | ✍️ | 1 |
-| ⭐ **48** | **[de-AIGC-skills](skills/48-de-AIGC-skills/)** 🇨🇳🇬🇧 | Bilingual (EN+ZH) academic de-AIGC for Turnitin AI / GPTZero / CNKI / Wanfang | ✍️ | 1 |
-| **49** | [humanize-chinese](skills/49-voidborne-d-humanize-chinese/) | Detect & humanize AI-generated Chinese text | ✍️ | 1 |
-| ⭐ **50** | **[AER-skills](skills/50-brycewang-aer-skills/)** 📕 | Top-5 econ submission stack: identification → robustness → R&R | 🚀 | 9 |
-| **51** | [CausalPy](skills/51-pymc-labs-CausalPy/) | Bayesian quasi-experiments (PyMC Labs) | 🎯 | 3 |
-| **52** | [slr-prisma](skills/52-keemanxp-slr-prisma/) | Systematic literature review, PRISMA 2020 | 📚 | 1 |
-| **53** | [thematic-analysis](skills/53-keemanxp-thematic-analysis-skill/) | Braun & Clarke six-phase qualitative TA | 📚 | 1 |
-| **54** | [open-science-skills](skills/54-scdenney-open-science-skills/) | Citation parity, DOI & claim-support audit | 📑 | 24 |
-| **55** | [r-skills](skills/55-ab604-claude-code-r-skills/) | Bayesian inference in R with `brms` | 🎯 | 8 |
-| **56** | [econ-writing-skill](skills/56-hanlulong-econ-writing-skill/) | Econ writing synthesizing 50+ top guides | ✍️ | 1 |
-| **57** | [edgartools](skills/57-dgunning-edgartools/) | Query & analyze SEC filings | 🛠️ | 1 |
-| **58** | [econstack](skills/58-charlescoverdale-econstack/) | Policy briefing notes (UK GES / AU Treasury) | ✍️ | 7 |
-| **59** | [openalex-skill](skills/59-shiquda-openalex-skill/) | Query 240M+ scholarly works via OpenAlex | 📚 | 1 |
-| **60** | [superpapers](skills/60-regisely-superpapers/) | Comprehensive empirical-research support suite | 📚 | 16 |
-| **61** | [research-methods](skills/61-phdemotions-research-methods/) | Confirmatory testing matched to pre-registration | 🎯 | 9 |
-| **62** | [citation-checker](skills/62-PHY041-claude-skill-citation-checker/) | Verify citations vs CrossRef / S2 / OpenAlex | 📑 | 1 |
-| **63** | [scientific-agent-skills](skills/63-tondevrel-scientific-agent-skills/) | DoWhy identify–estimate–refute framework | 🎯 | 2 |
-| **64** | [mcp-stata](skills/64-tmonk-mcp-stata/) | 20 Stata causal-inference & replication skills | 🎯 | 20 |
-| **65** | [game-theory-paper-writer](skills/65-game-theory-paper-writer/) | Generate & stress-test game-theory papers | ✍️ | 1 |
-| **66** | [empirical-research-skills](skills/66-zheng-siyao-empirical-research-skills/) | R performance optimization for large panels | 🛠️ | 7 |
-| **67** | [econfin-workflow-toolkit](skills/67-econfin-workflow-toolkit/) | China corporate-finance empirical workflow, proposal → paper | 🚀 | 46 |
-| **68** | [research-productivity-skills](skills/68-research-productivity-skills/) | Paper search, SSRN, DOI lookup, downloads | 🛠️ | 5 |
-| ⭐ **69** | **[Paper-WorkFlow](skills/69-Paper-WorkFlow/)** 🧭 | Meta-orchestrator chaining the whole social-science pipeline | 🚀 | 1 |
-| **70** | [ssci-polish](skills/70-ssci-polish/) | SSCI/SCI English academic-paper language polishing — grammar, readability, academic tone | ✍️ | 1 |
-| ⭐ **71** | **[lit-review-agent-tools](skills/71-brycewang-lit-review-agent-tools/)** 🔍 | Pick *and run* open-source lit-review tools — MinerU / PaperQA2 / ASReview / STORM + MCP servers | 📚 | 1 |
-| ⭐ **72** | **[Kaggle Research](skills/72-kaggle-research/)** 🧪 | Safe, audited Kaggle discovery and bounded public-data downloads through the official CLI | 🛠️ | 1 |
+| # | Collection | What it does | Theme | Skills | Source |
+|:--|:--|:--|:--:|--:|:--|
+| ⭐ **00** | **[StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/)** 🔥 | Agent-native Python **DSL** — one `sp.causal(...)` runs DID/RD/IV/SCM/DML | 🚀 | 1 | [brycewang-stanford/StatsPAI](https://github.com/brycewang-stanford/StatsPAI) |
+| ⭐ **00.1** | **[Full Empirical · Python](skills/00.1-Full-empirical-analysis-skill_Python/)** 📘 | Explicit stack: `pandas` · `statsmodels` · `linearmodels` · `pyfixest` | 🚀 | 1 | [⭐ this repo](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ **00.2** | **[Full Empirical · Stata](skills/00.2-Full-empirical-analysis-skill_Stata/)** 📊 | `reghdfe` · `ivreg2` · `csdid` · `sdid` · `rdrobust` replication pack | 🚀 | 1 | [⭐ this repo](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ **00.3** | **[Full Empirical · R](skills/00.3-Full-empirical-analysis-skill_R/)** 📗 | tidyverse · `fixest` · `did` · `HonestDiD`, rendered via Quarto | 🚀 | 1 | [⭐ this repo](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| **01** | [academic-paper-skills](skills/01-lishix520-academic-paper-skills/) | Outline → manuscript writing + 7-dim reviewer sim | ✍️ | 2 | [lishix520/academic-paper-skills](https://github.com/lishix520/academic-paper-skills) |
+| **02** | [research-skills](skills/02-luwill-research-skills/) | Medical-imaging reviews, proposals, paper-to-slides | 📚 | 3 | [luwill/research-skills](https://github.com/luwill/research-skills) |
+| **03** | [scientific-skills](skills/03-K-Dense-AI-claude-scientific-skills/) | Hypothesis generation + 28 scientific databases | 📚 | 4 | [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) |
+| **04** | [scientific-writer](skills/04-K-Dense-AI-claude-scientific-writer/) | Citation management + scientific writing | ✍️ | 8 | [K-Dense-AI/claude-scientific-writer](https://github.com/K-Dense-AI/claude-scientific-writer) |
+| **05** | [research-superpower](skills/05-kthorn-research-superpower/) | Systematic search, screening & citation traversal | 📚 | 10 | [kthorn/research-superpower](https://github.com/kthorn/research-superpower) |
+| **06** | [stats-paper-writing](skills/06-fuhaoda-stats-paper-writing/) | End-to-end LaTeX statistical-paper writing | ✍️ | 1 | [fuhaoda/stats-paper-writing-agent-skills](https://github.com/fuhaoda/stats-paper-writing-agent-skills) |
+| **07** | [AI-Research-SKILLs](skills/07-Orchestra-Research-AI-Research-SKILLs/) | Publication ML figures, LaTeX, citation verify | 🛠️ | 3 | [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-Research-SKILLs) |
+| **08** | [latex-document-skill](skills/08-ndpvt-web-latex-document-skill/) | Create / compile any LaTeX doc to PDF | 🛠️ | 1 | [ndpvt-web/latex-document-skill](https://github.com/ndpvt-web/latex-document-skill) |
+| **09** | [awesome-econ-ai](skills/09-meleantonio-awesome-econ-ai-stuff/) | Python panel-data analysis (`linearmodels`) | 🎯 | 17 | [meleantonio/awesome-econ-ai-stuff](https://github.com/meleantonio/awesome-econ-ai-stuff) |
+| **10** | [causal-inference-mixtape](skills/10-Jill0099-causal-inference-mixtape/) | DID / IV / RDD / SCM templates (Cunningham) | 🎯 | 1 | [Jill0099/causal-inference-mixtape](https://github.com/Jill0099/causal-inference-mixtape) |
+| **11** | [compound-science](skills/11-James-Traina-compound-science/) | Bayesian estimation for quantitative social science | 🎯 | 20 | [James-Traina/compound-science](https://github.com/James-Traina/compound-science) |
+| **12** | [claude-code-my-workflow](skills/12-pedrohcgs-claude-code-my-workflow/) | Commit → PR → merge research workflow (Emory) | 🛠️ | 22 | [pedrohcgs/claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow) |
+| **13** | [MixtapeTools](skills/13-scunning1975-MixtapeTools/) | Cunningham's causal-inference toolkit & decks | 🎯 | 5 | [scunning1975/MixtapeTools](https://github.com/scunning1975/MixtapeTools) |
+| **14** | [research-starter](skills/14-luischanci-claude-code-research-starter/) | IV / DiD / RDD in R with proper diagnostics | 🎯 | 16 | [luischanci/claude-code-research-starter](https://github.com/luischanci/claude-code-research-starter) |
+| **15** | [social-science-research](skills/15-Felpix-Studios-social-science-research/) | End-to-end data analysis in R or Python | 🎯 | 12 | [Felpix-Studios/social-science-research](https://github.com/Felpix-Studios/social-science-research) |
+| **16** | [clo-author](skills/16-hsantanna88-clo-author/) | Multi-agent data analysis (R / Stata / Python) | 🎯 | 10 | [hsantanna88/clo-author](https://github.com/hsantanna88/clo-author) |
+| **17** | [DAAF](skills/17-DAAF-Contribution-Community-daaf/) | Security-conscious agent framework (32 deny rules) | 🛠️ | 35 | [DAAF-Contribution-Community/daaf](https://github.com/DAAF-Contribution-Community/daaf) |
+| **18** | [stata-accounting](skills/18-jusi-aalto-stata-accounting-research/) | Tested Stata patterns from 126 *JAR* papers | 🎯 | 1 | [jusi-aalto/stata-accounting-research](https://github.com/jusi-aalto/stata-accounting-research) |
+| **19** | [vera-economic-intelligence](skills/19-CuellarC05-vera-economic-intelligence/) | Economic-intelligence & policy-research workflows | 🎯 | 5 | [CuellarC05/vera-economic-intelligence](https://github.com/CuellarC05/vera-economic-intelligence) |
+| **20** | [python-econ-skill](skills/20-wenddymacro-python-econ-skill/) | DSGE / HANK & quantitative economic computation | 🎯 | 1 | [wenddymacro/python-econ-skill](https://github.com/wenddymacro/python-econ-skill) |
+| **21** | [AI-research-feedback](skills/21-claesbackman-AI-research-feedback/) | Structured feedback via AI peer review | 📑 | 5 | [claesbackman/AI-research-feedback](https://github.com/claesbackman/AI-research-feedback) |
+| **22** | [christopherkenny-skills](skills/22-christopherkenny-skills/) | APSA style checker for Quarto (`.qmd`) | ✍️ | 11 | [christopherkenny/skills](https://github.com/christopherkenny/skills) |
+| **23** | [baygent](skills/23-Learning-Bayesian-Statistics-baygent-skills/) | PyMC / ArviZ Bayesian workflow with guardrails | 🎯 | 2 | [Learning-Bayesian-Statistics/baygent-skills](https://github.com/Learning-Bayesian-Statistics/baygent-skills) |
+| **24** | [academic-research-skills](skills/24-Imbad0202-academic-research-skills/) | 5-reviewer multi-perspective paper review | 📑 | 4 | [Imbad0202/academic-research-skills](https://github.com/Imbad0202/academic-research-skills) |
+| **25** | [Diverga](skills/25-HosungYou-Diverga/) | Research-question refiner (anti mode-collapse) | 📚 | 34 | [HosungYou/Diverga](https://github.com/HosungYou/Diverga) |
+| **26** | [scholar](skills/26-Data-Wise-scholar/) | Statistical-algorithm design & documentation | 🎯 | 17 | [Data-Wise/claude-plugins](https://github.com/Data-Wise/claude-plugins) |
+| **27** | [my_claude_skills](skills/27-dariia-m-my_claude_skills/) | Economics-abstract writing guide | ✍️ | 6 | [dariia-m/my_claude_skills](https://github.com/dariia-m/my_claude_skills) |
+| **28** | [paper-replicate-agent](skills/28-maxwell2732-paper-replicate-agent-demo/) | Paper-replication agent demo | 📑 | 11 | [maxwell2732/paper-replicate-agent-demo](https://github.com/maxwell2732/paper-replicate-agent-demo) |
+| **29** | [project20XXy](skills/29-quarcs-lab-project20XXy/) | Reproducible manuscript + notebook project | 📑 | 24 | [quarcs-lab/project20XXy](https://github.com/quarcs-lab/project20XXy) |
+| **30** | [zirui-song-claude-skills](skills/30-zirui-song-claude-skills/) | Zirui Song's research-assistant Claude skills | 🛠️ | 6 | [zirui-song/claude-skills](https://github.com/zirui-song/claude-skills) |
+| **31** | [claude-code-skills](skills/31-thalysandratos-claude-code-skills/) | Python panel-data analysis | 🎯 | 13 | [thalysandratos/claude-code-skills](https://github.com/thalysandratos/claude-code-skills) |
+| **32** | [stata-skill](skills/32-dylantmoore-stata-skill/) | High-performance Stata C/C++ plugins | 🛠️ | 3 | [dylantmoore/stata-skill](https://github.com/dylantmoore/stata-skill) |
+| **33** | [claude-scholar](skills/33-Galaxy-Dawn-claude-scholar/) | Full research lifecycle: ideation → review → experiments → response | 🚀 | 47 | [Galaxy-Dawn/claude-scholar](https://github.com/Galaxy-Dawn/claude-scholar) |
+| **34** | [research-companion](skills/34-andrehuang-research-companion/) | Brainstorm, evaluate & decide research directions | 📚 | 1 | [andrehuang/research-companion](https://github.com/andrehuang/research-companion) |
+| **35** | [academic-writing-skills](skills/35-bahayonghang-academic-writing-skills/) | Venue-aware industrial-AI literature research | 📚 | 5 | [bahayonghang/academic-writing-skills](https://github.com/bahayonghang/academic-writing-skills) |
+| **36** | [literature-review-skill](skills/36-taoyunudt-literature-review-skill/) | Full literature-review workflow (Chinese) | 📚 | 1 | [taoyunudt/literature-review-skill](https://github.com/taoyunudt/literature-review-skill) |
+| **37** | [IlanStrauss-ai-skills](skills/37-IlanStrauss-ai-skills/) | Ilan Strauss's AI workflows for economics research | 🎯 | 1 | [IlanStrauss/ai-skills](https://github.com/IlanStrauss/ai-skills) |
+| **38** | [academic-proofreader](skills/38-peternka-academic-proofreader/) | Academic proofreading | ✍️ | 1 | [peternka/academic_proofreader](https://github.com/peternka/academic_proofreader) |
+| **39** | [marginaleffects](skills/39-vincentarelbundock-marginaleffects/) | Predictions, slopes & comparisons (R / Python) | 🎯 | 1 | [vincentarelbundock/marginaleffects](https://github.com/vincentarelbundock/marginaleffects) |
+| **40** | [pyfixest](skills/40-py-econometrics-pyfixest/) | Fast fixed-effects estimation in Python | 🎯 | 1 | [py-econometrics/pyfixest](https://github.com/py-econometrics/pyfixest) |
+| **41** | [sewage-econometrics-check](skills/41-sticerd-eee-sewage-econometrics-check/) | 10-check replication-package audit | 📑 | 22 | [sticerd-eee/sewage](https://github.com/sticerd-eee/sewage) |
+| **42** | [ARIS](skills/42-wanshuiyin-ARIS/) | Autonomous "research-in-sleep" agent, end-to-end | 🚀 | 42 | [wanshuiyin/Auto-claude-code-research-in-sleep](https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep) |
+| **43** | [research-plugins](skills/43-wentorai-research-plugins/) | 478 research plugins: dataviz, domains, infra | 🛠️ | 478 | [wentorai/research-plugins](https://github.com/wentorai/research-plugins) |
+| **44** | [humanizer_academic](skills/44-matsuikentaro1-humanizer_academic/) | De-AI medical/academic manuscripts (23 patterns) | ✍️ | 1 | [matsuikentaro1/humanizer_academic](https://github.com/matsuikentaro1/humanizer_academic) |
+| **45** | [deslop](skills/45-stephenturner-skill-deslop/) | Remove AI writing patterns (5-dim scoring) | ✍️ | 1 | [stephenturner/skill-deslop](https://github.com/stephenturner/skill-deslop) |
+| **46** | [stop-slop](skills/46-hardikpandya-stop-slop/) | 3-layer AI-tell detection & rewrite | ✍️ | 1 | [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop) |
+| **47** | [avoid-ai-writing](skills/47-conorbronsdon-avoid-ai-writing/) | Audit → rewrite → re-audit AI-isms (paper trail) | ✍️ | 1 | [conorbronsdon/avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing) |
+| ⭐ **48** | **[de-AIGC-skills](skills/48-de-AIGC-skills/)** 🇨🇳🇬🇧 | Bilingual (EN+ZH) academic de-AIGC for Turnitin AI / GPTZero / CNKI / Wanfang | ✍️ | 1 | [⭐ this repo](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| **49** | [humanize-chinese](skills/49-voidborne-d-humanize-chinese/) | Detect & humanize AI-generated Chinese text | ✍️ | 1 | [swaylq/humanize-chinese](https://github.com/swaylq/humanize-chinese) |
+| ⭐ **50** | **[AER-skills](skills/50-brycewang-aer-skills/)** 📕 | Top-5 econ submission stack: identification → robustness → R&R | 🚀 | 9 | [brycewang-stanford/AER-skills](https://github.com/brycewang-stanford/AER-skills) |
+| **51** | [CausalPy](skills/51-pymc-labs-CausalPy/) | Bayesian quasi-experiments (PyMC Labs) | 🎯 | 3 | [pymc-labs/CausalPy](https://github.com/pymc-labs/CausalPy) |
+| **52** | [slr-prisma](skills/52-keemanxp-slr-prisma/) | Systematic literature review, PRISMA 2020 | 📚 | 1 | [keemanxp/slr-prisma](https://github.com/keemanxp/slr-prisma) |
+| **53** | [thematic-analysis](skills/53-keemanxp-thematic-analysis-skill/) | Braun & Clarke six-phase qualitative TA | 📚 | 1 | [keemanxp/thematic-analysis-skill](https://github.com/keemanxp/thematic-analysis-skill) |
+| **54** | [open-science-skills](skills/54-scdenney-open-science-skills/) | Citation parity, DOI & claim-support audit | 📑 | 24 | [scdenney/open-science-skills](https://github.com/scdenney/open-science-skills) |
+| **55** | [r-skills](skills/55-ab604-claude-code-r-skills/) | Bayesian inference in R with `brms` | 🎯 | 8 | [ab604/claude-code-r-skills](https://github.com/ab604/claude-code-r-skills) |
+| **56** | [econ-writing-skill](skills/56-hanlulong-econ-writing-skill/) | Econ writing synthesizing 50+ top guides | ✍️ | 1 | [hanlulong/econ-writing-skill](https://github.com/hanlulong/econ-writing-skill) |
+| **57** | [edgartools](skills/57-dgunning-edgartools/) | Query & analyze SEC filings | 🛠️ | 1 | [dgunning/edgartools](https://github.com/dgunning/edgartools) |
+| **58** | [econstack](skills/58-charlescoverdale-econstack/) | Policy briefing notes (UK GES / AU Treasury) | ✍️ | 7 | [charlescoverdale/econstack](https://github.com/charlescoverdale/econstack) |
+| **59** | [openalex-skill](skills/59-shiquda-openalex-skill/) | Query 240M+ scholarly works via OpenAlex | 📚 | 1 | [shiquda/openalex-skill](https://github.com/shiquda/openalex-skill) |
+| **60** | [superpapers](skills/60-regisely-superpapers/) | Comprehensive empirical-research support suite | 📚 | 16 | [regisely/superpapers](https://github.com/regisely/superpapers) |
+| **61** | [research-methods](skills/61-phdemotions-research-methods/) | Confirmatory testing matched to pre-registration | 🎯 | 9 | [phdemotions/research-methods](https://github.com/phdemotions/research-methods) |
+| **62** | [citation-checker](skills/62-PHY041-claude-skill-citation-checker/) | Verify citations vs CrossRef / S2 / OpenAlex | 📑 | 1 | [PHY041/claude-skill-citation-checker](https://github.com/PHY041/claude-skill-citation-checker) |
+| **63** | [scientific-agent-skills](skills/63-tondevrel-scientific-agent-skills/) | DoWhy identify–estimate–refute framework | 🎯 | 2 | [tondevrel/scientific-agent-skills](https://github.com/tondevrel/scientific-agent-skills) |
+| **64** | [mcp-stata](skills/64-tmonk-mcp-stata/) | 20 Stata causal-inference & replication skills | 🎯 | 20 | [tmonk/mcp-stata](https://github.com/tmonk/mcp-stata) |
+| **65** | [game-theory-paper-writer](skills/65-game-theory-paper-writer/) | Generate & stress-test game-theory papers | ✍️ | 1 | [this repo PR #17](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/17) |
+| **66** | [empirical-research-skills](skills/66-zheng-siyao-empirical-research-skills/) | R performance optimization for large panels | 🛠️ | 7 | [SiyaoZheng/ai4ss-skills](https://github.com/SiyaoZheng/ai4ss-skills) |
+| **67** | [econfin-workflow-toolkit](skills/67-econfin-workflow-toolkit/) | China corporate-finance empirical workflow, proposal → paper | 🚀 | 46 | [this repo PR #22](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/22) |
+| **68** | [research-productivity-skills](skills/68-research-productivity-skills/) | Paper search, SSRN, DOI lookup, downloads | 🛠️ | 5 | [this repo PR #21](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/21) |
+| ⭐ **69** | **[Paper-WorkFlow](skills/69-Paper-WorkFlow/)** 🧭 | Meta-orchestrator chaining the whole social-science pipeline | 🚀 | 1 | [brycewang-stanford/Paper-WorkFlow](https://github.com/brycewang-stanford/Paper-WorkFlow) |
+| **70** | [ssci-polish](skills/70-ssci-polish/) | SSCI/SCI English academic-paper language polishing — grammar, readability, academic tone | ✍️ | 1 | [⭐ this repo](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ **71** | **[lit-review-agent-tools](skills/71-brycewang-lit-review-agent-tools/)** 🔍 | Pick *and run* open-source lit-review tools — MinerU / PaperQA2 / ASReview / STORM + MCP servers | 📚 | 1 | [brycewang-stanford/lit-review-agent-tools](https://github.com/brycewang-stanford/lit-review-agent-tools) |
+| ⭐ **72** | **[Kaggle Research](skills/72-kaggle-research/)** 🧪 | Safe, audited Kaggle discovery and bounded public-data downloads through the official CLI | 🛠️ | 1 | [⭐ this repo](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
 
 > ⭐ **The spine we built ourselves:** [StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/) (the causal engine) · the explicit [Python](skills/00.1-Full-empirical-analysis-skill_Python/) / [Stata](skills/00.2-Full-empirical-analysis-skill_Stata/) / [R](skills/00.3-Full-empirical-analysis-skill_R/) full-pipeline ports · [AER-skills](skills/50-brycewang-aer-skills/) (top-5 submission stack) · [de-AIGC-skills](skills/48-de-AIGC-skills/) · [Paper-WorkFlow](skills/69-Paper-WorkFlow/) (meta-orchestrator). These are the spine of AERS — full comparison in [The flagship pipeline skills ↓](#the-flagship-pipeline-skills). Prefer to browse by purpose? See [the same 76 grouped by what they do ↓](#the-76-grouped-by-what-they-do).
 

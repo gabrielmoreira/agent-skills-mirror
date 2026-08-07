@@ -1,6 +1,12 @@
 ---
+type: skill
+lifecycle: stable
+inheritance: inheritable
 name: delivery-ascii-dashboard
-description: "Render data dashboards as pure ASCII art in monospace text -- the cheapest, most portable delivery method. No rendering engine, no SVG, no browser. LLM-native output with predictable character geometry."
+description: Render data dashboards as pure ASCII art in monospace text -- the cheapest, most portable delivery method. No rendering engine, no SVG, no browser. LLM-native output with predictable character geometry.
+tier: standard
+applyTo: '**/*ascii*,**/*text*dashboard*,**/*terminal*,**/*console*,**/*plain*'
+currency: 2026-05-02
 lastReviewed: 2026-05-02
 ---
 

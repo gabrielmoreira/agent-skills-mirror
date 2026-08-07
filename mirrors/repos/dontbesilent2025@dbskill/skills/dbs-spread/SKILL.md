@@ -1,10 +1,6 @@
 ---
 name: dbs-spread
-description: |
-  传播心理解码。给定一段内容，用 5 个经典传播学理论解码它为什么能引起受众共鸣，分析受众情绪底层和有效立场，输出聊天室的讨论方向。
-  触发方式：/dbs-spread、「传播心理解码」、「为什么这个能火」、「受众想听什么」、「这个内容打中了什么情绪」
-  Transmission psychology decoder. Given a piece of content, analyze the psychological mechanism that makes it resonate, identify the emotional core and effective stance, and output direction for chatroom discussion.
-  Trigger: /dbs-spread, "why does this resonate", "what emotion does this hit", "decode this content"
+description: 用 5 个经典传播学理论解码内容的共鸣机制、受众情绪和有效立场。用户要求分析内容为什么能火、打中什么情绪或受众想听什么时使用。
 ---
 
 # dbs-spread：传播心理解码

@@ -6,7 +6,11 @@
 
 ## v0.7.2 (current)
 
+- 收窄知识库状态边界：读取模型统一收口至 `read_models.py`；创建、列表、详情与更新由 Manager 统一返回 `KnowledgeBaseSummary/Detail`，Router 只转换 HTTP 响应；Manager 协调查询配置、主记录与聚合统计，Repository 在行锁内合并统计投影；executor 接收 frozen `KnowledgeBaseConfig`，负责类型资源、文档操作与类型专属一致性检测，不再写知识库主记录。
+- 修复 Agent worker 知识库运行配置不一致：`get_kb_config` 从 Redis 读取最小 Config 快照，未命中时在 KB 级分布式锁内回源 PostgreSQL，Redis 连接故障时只读请求直接回源且不回填；更新与删除先可靠失效缓存再提交数据库，避免旧请求回填过期配置。查询参数在数据库行锁内合并，并发保存不再互相覆盖。
 - 精简知识库文档内容接口响应：`GET /api/knowledge/databases/{kb_id}/documents/{doc_id}/content` 不再返回分块内部的实体 ID 与抽取结果，避免向文档预览请求传输仅供知识图谱构建使用的数据。
+- 清理未使用的共享访问级别常量模块，移除 Agent、Skill 与知识库中的冗余导入和别名；共享范围校验继续由统一权限模块负责。
+- 统一 Agent、Skill 与知识库共享权限：配置拆分读取/管理范围并统一解析 `none/read/manage`；启动时将旧 `share_config` 幂等迁移为 v2 且只回填只读范围、不追溯授予管理权，运行时代码仅接受 v2；创建者与超管保留管理权。非管理员创建或编辑 Agent 时共享范围与 Skill 一致收敛为仅个人可见，避免越权扩大到部门或全局；共享 Skill 仅管理员可安装，普通用户固定安装到个人工作区。知识库路由统一按 READ/MANAGE ACL 校验，配置弹窗按基础信息、权限、检索分栏，非检索保存不再覆盖检索参数，编辑表单不再残留已移除的“自动生成问题”开关；用户编辑不允许修改角色身份。同步修复 Agent/Skill `share_config` 列实际类型为 `json` 而非预期 `jsonb` 导致迁移语句报错、后端无法启动的问题。
 - 收敛消息型 AgentRun 提交：Web Chat 与 Agent Call/Eval 共用 `run_submission_service.submit_run_command`，Call/Eval 拆为独立 Router；Request/Run 固化 `source/channel/external_id/origin_metadata` 来源快照，Eval 评估上下文继续透传到 worker 与 Langfuse，保留现有接口与响应兼容性，Resume、Subagent 生命周期不变。
 - 新增个人工作区 Skill：安装确认可选择个人或共享位置；个人 Skill 保存到 `workspace/agents/skills` 且不入库，元数据按用户缓存 5 分钟并在安装、删除、手动刷新后立即更新；Card List 与 Agent 运行时统一按个人版本覆盖同名共享版本，卡片与聊天技能选择列表共用 slug 到 Lucide 图标映射；Agent 直接读取工作区真实路径，不再复制到线程 `/home/gem/skills` 投影；共享 Skill 投影统一以来源映射为单一数据源。
 - 统一后端真实路径根目录校验：Skill、工作区和沙盒复用 `ensure_within_root`，保持原有越界拒绝语义并减少重复安全判断。
@@ -63,6 +67,8 @@
 - 工作区 `agents` 目录新增 `USER.md` 与 `MEMORY.md` 上下文文件，并与 `AGENTS.md` 一起在 Agent 运行开始时加载；三个默认文件首次创建时均写入对应标题和说明，不再生成空文件，已有内容保持不变。
 - 新增 Summary 上下文压缩实时状态流式同步：`YuxiSummarizationMiddleware` 触发压缩时通过 `langgraph.config.get_stream_writer()` 推送 `yuxi.context_compression` 自定义事件（started/completed/failed），复用 DeepAgents 已有 `_summarization_event` 作为完成数据源；`base.py` 通过 `astream_events(version="v3")` 的 `CustomTransformer` 透传 custom 流，`chat_service`/`agent_run_service` 将事件映射为 `context_compression` chunk 并透传到前端；前端收到 `started` 时将"正在生成回复"加载态文案切换为"正在压缩上下文"，压缩结束（`completed`/`finished`）即切回，不额外渲染分隔符、不保留压缩完成态。为避免摘要 LLM 调用的 token 流被 LangGraph messages stream 捕获并广播成 phantom 摘要消息，重写 `_create_summary`/`_acreate_summary` 在摘要模型 invoke 的 config 上挂 `TAG_NOSTREAM`，让流式层在源头跳过该调用，主 messages 流天然只含用户可见回复，无需 `chat_service` 下游过滤（参考 DeerFlow 实现）。异步 L2 压缩路径的 `_aoffload_to_backend` 与 `_acreate_summary` 改回 `asyncio.gather` 并发执行，与 DeepAgents 父类一致，避免串行等待一次文件 I/O 与一次摘要 LLM 调用；两路复用 `_SUMMARY_SANITIZED_MESSAGES` 的 id 缓存。L1-only 调用若仍触发 provider context overflow，会回落到 L2 summary 后重试；`summary_tool_result_token_limit` 默认改为 300，并同时作为 L1 工具结果 offload 阈值和预览上限，L2 只消费 L1 视图，不再对工具结果做第二轮 offload；L2 摘要模型的待摘要历史输入上限改为与 `summary_threshold` 对齐，避免固定 4000 token 裁剪丢失早期历史；新增 `summary_l2_trigger_ratio` 管理 L1 后进入 L2 的比例阈值，默认 `0.4`。
 
+- 知识库文件列表新增文件级 Token 内容量与创建人头像、用户名展示，内容量悬浮可查看 Chunk 数量；创建人复用全局用户头像解析规则，长用户名省略且悬浮可查看完整名称。
+- 知识库编辑配置表单移除“自动生成问题”开关，不再由前端编辑或提交该配置。
 - 知识库详情页新增整页内容加载态：切换或首次进入详情时，在知识库信息返回前仅展示居中 loading，避免标题、标签页和文件区域先渲染旧数据或空状态。
 - 修复知识库文件处理中频繁刷新时，旧目录请求覆盖当前子目录列表并造成列表抖动的问题。
 - `InfoCard` 新增统一的 `card-more-action-corner` 菜单插槽，并在组件内部固定渲染横向三点按钮；更多操作从卡片绝对定位改为进入 header 的正常 flex 布局，与图标、标题和 `status` 共享同一垂直中心线，业务页面只能提供菜单内容；智能体、知识库和用户管理卡片均改为复用该组件与菜单能力，用户部门/角色标签使用现有 `status` 插槽展示在标题区右侧，菜单图标与文字使用统一行高居中，知识库菜单支持复制 ID、直接打开编辑弹窗，以及确认后删除并刷新列表。

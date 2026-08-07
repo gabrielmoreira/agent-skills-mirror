@@ -1,0 +1,4 @@
+interface:
+  display_name: "GC Still Image Motion Director"
+  short_description: "Analyze still images and write restrained motion prompts"
+  default_prompt: "Use $gc-still-image-motion-director to analyze this image and write a restrained image-to-video prompt."

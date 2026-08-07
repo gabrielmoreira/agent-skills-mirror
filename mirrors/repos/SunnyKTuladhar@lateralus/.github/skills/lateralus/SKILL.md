@@ -1,9 +1,11 @@
 ---
 name: lateralus
-description: "Lateral-thinking escape hatch for stalled debugging. Surfaces the user's end goal and solution horizon (long-term, MVP, POC, workaround), then generates goal-appropriate alternatives in two tiers. Use only after normal debugging has genuinely stalled."
-argument-hint: "What was tried, what failed, current error, end goal"
-user-invocable: true
-license: MIT
+description: >
+  Lateral-thinking escape hatch for stalled debugging. Surfaces end goal and solution horizon,
+  generates alternatives in three tiers: Grounded (testable causes), Balanced (assumption-questioning),
+  Wild (speculative reframes), plus Workaround (bypass now, fix later).
+  Use when user invokes /lateralus, says "stuck", "going in circles", "already tried", "still broken",
+  or normal debugging has genuinely stalled after 2+ failed attempts.
 ---
 
 Understand the goal first. Break tunnel vision. Generate from outside the failed approach.

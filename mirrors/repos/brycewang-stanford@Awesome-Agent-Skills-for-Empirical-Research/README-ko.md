@@ -58,85 +58,87 @@
 > **저장소를 열면 → 전체 라이브러리가 보입니다.** 모든 **76개 컬렉션 · 1,096개 스킬**을 `00 → 72`로 번호를 매겼으며, 하나도 빠짐없이 **본 저장소에 벤더링**되어(단순 외부 링크가 아님) [`catalog/skills.json`](catalog/skills.json)에서 추적됩니다. **아무 행이나 클릭하면 해당 폴더가 열립니다.** **⭐ = Stanford REAP × CoPaper.AI 팀이 직접 만든 자체 제작 스킬**이며, 나머지는 모두 큐레이션하고 보안 감사를 거친 커뮤니티 작업물입니다.
 >
 > **테마 범례 —** 🚀 전체 파이프라인 & 오케스트레이터 · 🎯 인과추론 & 계량경제 · 📚 문헌 & 연구 설계 · ✍️ 글쓰기, 편집 & 탈AIGC · 📑 인용, 재현 & 동료 심사 · 🛠️ 데이터, 도구 & 인프라
+>
+> **🙏 원작자에게 크레딧을 —** **「출처」 열은 원본 저장소(`owner/repo`)로 바로 연결됩니다.** 여기 담긴 커뮤니티 컬렉션은 모두 **원본 저장소의 스냅샷**입니다. 스타와 이슈는 원본 저장소에 남겨 주시고, LICENSE도 그곳에서 확인해 주세요. 라이선스·출처 신뢰도 전체 감사는 [`docs/LICENSE_AUDIT.md`](docs/LICENSE_AUDIT.md), 기계 판독용은 [`catalog/provenance.json`](catalog/provenance.json)에 있습니다.
 
-| # | 컬렉션 | 하는 일 | 테마 | 스킬 |
-|:--|:--|:--|:--:|--:|
-| ⭐ **00** | **[StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/)** 🔥 | 에이전트 네이티브 Python **DSL** — 단 하나의 `sp.causal(...)`로 DID/RD/IV/SCM/DML 실행 | 🚀 | 1 |
-| ⭐ **00.1** | **[Full Empirical · Python](skills/00.1-Full-empirical-analysis-skill_Python/)** 📘 | 명시적 스택: `pandas` · `statsmodels` · `linearmodels` · `pyfixest` | 🚀 | 1 |
-| ⭐ **00.2** | **[Full Empirical · Stata](skills/00.2-Full-empirical-analysis-skill_Stata/)** 📊 | `reghdfe` · `ivreg2` · `csdid` · `sdid` · `rdrobust` 재현 팩 | 🚀 | 1 |
-| ⭐ **00.3** | **[Full Empirical · R](skills/00.3-Full-empirical-analysis-skill_R/)** 📗 | tidyverse · `fixest` · `did` · `HonestDiD`, Quarto로 렌더링 | 🚀 | 1 |
-| **01** | [academic-paper-skills](skills/01-lishix520-academic-paper-skills/) | 개요 → 원고 작성 + 7차원 심사위원 시뮬레이션 | ✍️ | 2 |
-| **02** | [research-skills](skills/02-luwill-research-skills/) | 의료영상 리뷰, 제안서, 논문→슬라이드 변환 | 📚 | 3 |
-| **03** | [scientific-skills](skills/03-K-Dense-AI-claude-scientific-skills/) | 가설 생성 + 28개 과학 데이터베이스 | 📚 | 4 |
-| **04** | [scientific-writer](skills/04-K-Dense-AI-claude-scientific-writer/) | 인용 관리 + 과학 글쓰기 | ✍️ | 8 |
-| **05** | [research-superpower](skills/05-kthorn-research-superpower/) | 체계적 검색, 스크리닝 & 인용 추적 | 📚 | 10 |
-| **06** | [stats-paper-writing](skills/06-fuhaoda-stats-paper-writing/) | 엔드투엔드 LaTeX 통계 논문 작성 | ✍️ | 1 |
-| **07** | [AI-Research-SKILLs](skills/07-Orchestra-Research-AI-Research-SKILLs/) | 출판용 ML 그림, LaTeX, 인용 검증 | 🛠️ | 3 |
-| **08** | [latex-document-skill](skills/08-ndpvt-web-latex-document-skill/) | 임의의 LaTeX 문서를 PDF로 생성/컴파일 | 🛠️ | 1 |
-| **09** | [awesome-econ-ai](skills/09-meleantonio-awesome-econ-ai-stuff/) | Python 패널 데이터 분석 (`linearmodels`) | 🎯 | 17 |
-| **10** | [causal-inference-mixtape](skills/10-Jill0099-causal-inference-mixtape/) | DID / IV / RDD / SCM 템플릿 (Cunningham) | 🎯 | 1 |
-| **11** | [compound-science](skills/11-James-Traina-compound-science/) | 정량 사회과학을 위한 베이지안 추정 | 🎯 | 20 |
-| **12** | [claude-code-my-workflow](skills/12-pedrohcgs-claude-code-my-workflow/) | 커밋 → PR → 머지 연구 워크플로 (Emory) | 🛠️ | 22 |
-| **13** | [MixtapeTools](skills/13-scunning1975-MixtapeTools/) | Cunningham의 인과추론 툴킷 & 강의 자료 | 🎯 | 5 |
-| **14** | [research-starter](skills/14-luischanci-claude-code-research-starter/) | 적절한 진단을 갖춘 R 기반 IV / DiD / RDD | 🎯 | 16 |
-| **15** | [social-science-research](skills/15-Felpix-Studios-social-science-research/) | R 또는 Python 엔드투엔드 데이터 분석 | 🎯 | 12 |
-| **16** | [clo-author](skills/16-hsantanna88-clo-author/) | 멀티 에이전트 데이터 분석 (R / Stata / Python) | 🎯 | 10 |
-| **17** | [DAAF](skills/17-DAAF-Contribution-Community-daaf/) | 보안을 고려한 에이전트 프레임워크 (32개 거부 규칙) | 🛠️ | 35 |
-| **18** | [stata-accounting](skills/18-jusi-aalto-stata-accounting-research/) | 126편의 *JAR* 논문에서 검증된 Stata 패턴 | 🎯 | 1 |
-| **19** | [vera-economic-intelligence](skills/19-CuellarC05-vera-economic-intelligence/) | 경제 인텔리전스 / 정책 연구 워크플로 | 🎯 | 5 |
-| **20** | [python-econ-skill](skills/20-wenddymacro-python-econ-skill/) | DSGE / HANK & 정량 경제 계산 | 🎯 | 1 |
-| **21** | [AI-research-feedback](skills/21-claesbackman-AI-research-feedback/) | AI 동료 평가로 구조화된 피드백 생성 | 📑 | 5 |
-| **22** | [christopherkenny-skills](skills/22-christopherkenny-skills/) | Quarto(`.qmd`)용 APSA 스타일 검사기 | ✍️ | 11 |
-| **23** | [baygent](skills/23-Learning-Bayesian-Statistics-baygent-skills/) | 가드레일을 갖춘 PyMC / ArviZ 베이지안 워크플로 | 🎯 | 2 |
-| **24** | [academic-research-skills](skills/24-Imbad0202-academic-research-skills/) | 5인 심사위원 다관점 논문 리뷰 | 📑 | 4 |
-| **25** | [Diverga](skills/25-HosungYou-Diverga/) | 연구 질문 정련기 (모드 붕괴 방지) | 📚 | 34 |
-| **26** | [scholar](skills/26-Data-Wise-scholar/) | 통계 알고리즘 설계 & 문서화 | 🎯 | 17 |
-| **27** | [my_claude_skills](skills/27-dariia-m-my_claude_skills/) | 경제학 초록 작성 가이드 | ✍️ | 6 |
-| **28** | [paper-replicate-agent](skills/28-maxwell2732-paper-replicate-agent-demo/) | 논문 재현 에이전트 데모 | 📑 | 11 |
-| **29** | [project20XXy](skills/29-quarcs-lab-project20XXy/) | 재현 가능한 원고 + 노트북 프로젝트 | 📑 | 24 |
-| **30** | [zirui-song-claude-skills](skills/30-zirui-song-claude-skills/) | Zirui Song의 연구 보조 Claude 스킬 모음 | 🛠️ | 6 |
-| **31** | [claude-code-skills](skills/31-thalysandratos-claude-code-skills/) | Python 패널 데이터 분석 | 🎯 | 13 |
-| **32** | [stata-skill](skills/32-dylantmoore-stata-skill/) | 고성능 Stata C/C++ 플러그인 | 🛠️ | 3 |
-| **33** | [claude-scholar](skills/33-Galaxy-Dawn-claude-scholar/) | 전체 연구 라이프사이클: 발상 → 리뷰 → 실험 → 응답 | 🚀 | 47 |
-| **34** | [research-companion](skills/34-andrehuang-research-companion/) | 연구 방향 브레인스토밍, 평가 & 결정 | 📚 | 1 |
-| **35** | [academic-writing-skills](skills/35-bahayonghang-academic-writing-skills/) | 학회 맞춤형 산업 AI 문헌 조사 | 📚 | 5 |
-| **36** | [literature-review-skill](skills/36-taoyunudt-literature-review-skill/) | 전체 문헌 검토 워크플로 (중국어) | 📚 | 1 |
-| **37** | [IlanStrauss-ai-skills](skills/37-IlanStrauss-ai-skills/) | Ilan Strauss의 경제학 연구 AI 워크플로 | 🎯 | 1 |
-| **38** | [academic-proofreader](skills/38-peternka-academic-proofreader/) | 학술 교정 | ✍️ | 1 |
-| **39** | [marginaleffects](skills/39-vincentarelbundock-marginaleffects/) | 예측, 기울기 & 비교 (R / Python) | 🎯 | 1 |
-| **40** | [pyfixest](skills/40-py-econometrics-pyfixest/) | Python의 빠른 고정효과 추정 | 🎯 | 1 |
-| **41** | [sewage-econometrics-check](skills/41-sticerd-eee-sewage-econometrics-check/) | 10단계 점검 재현 패키지 감사 | 📑 | 22 |
-| **42** | [ARIS](skills/42-wanshuiyin-ARIS/) | 자율 "수면 중 연구" 에이전트, 엔드투엔드 | 🚀 | 42 |
-| **43** | [research-plugins](skills/43-wentorai-research-plugins/) | 478개 연구 플러그인: 데이터 시각화, 도메인, 인프라 | 🛠️ | 478 |
-| **44** | [humanizer_academic](skills/44-matsuikentaro1-humanizer_academic/) | 의학/학술 원고 탈AI화 (23개 패턴) | ✍️ | 1 |
-| **45** | [deslop](skills/45-stephenturner-skill-deslop/) | AI 글쓰기 패턴 제거 (5차원 채점) | ✍️ | 1 |
-| **46** | [stop-slop](skills/46-hardikpandya-stop-slop/) | 3계층 AI 흔적 탐지 & 재작성 | ✍️ | 1 |
-| **47** | [avoid-ai-writing](skills/47-conorbronsdon-avoid-ai-writing/) | 감사 → 재작성 → 재감사 AI 흔적 (감사 추적) | ✍️ | 1 |
-| ⭐ **48** | **[de-AIGC-skills](skills/48-de-AIGC-skills/)** 🇨🇳🇬🇧 | 중·영 이중언어 학술 탈AIGC (Turnitin AI / GPTZero / CNKI / Wanfang) | ✍️ | 1 |
-| **49** | [humanize-chinese](skills/49-voidborne-d-humanize-chinese/) | AI 생성 중국어 텍스트 탐지 & 인간화 | ✍️ | 1 |
-| ⭐ **50** | **[AER-skills](skills/50-brycewang-aer-skills/)** 📕 | Top-5 경제학 투고 스택: 식별 → 강건성 → R&R | 🚀 | 9 |
-| **51** | [CausalPy](skills/51-pymc-labs-CausalPy/) | 베이지안 준실험 (PyMC Labs) | 🎯 | 3 |
-| **52** | [slr-prisma](skills/52-keemanxp-slr-prisma/) | 체계적 문헌 검토, PRISMA 2020 | 📚 | 1 |
-| **53** | [thematic-analysis](skills/53-keemanxp-thematic-analysis-skill/) | Braun & Clarke 6단계 질적 주제 분석 | 📚 | 1 |
-| **54** | [open-science-skills](skills/54-scdenney-open-science-skills/) | 인용 일치, DOI & 주장-근거 감사 | 📑 | 24 |
-| **55** | [r-skills](skills/55-ab604-claude-code-r-skills/) | `brms`를 이용한 R 베이지안 추론 | 🎯 | 8 |
-| **56** | [econ-writing-skill](skills/56-hanlulong-econ-writing-skill/) | 50개 이상 최고 가이드를 종합한 경제학 글쓰기 | ✍️ | 1 |
-| **57** | [edgartools](skills/57-dgunning-edgartools/) | SEC 공시 조회 & 분석 | 🛠️ | 1 |
-| **58** | [econstack](skills/58-charlescoverdale-econstack/) | 정책 브리핑 노트 (UK GES / AU Treasury) | ✍️ | 7 |
-| **59** | [openalex-skill](skills/59-shiquda-openalex-skill/) | OpenAlex로 2억 4천만+ 학술 저작물 조회 | 📚 | 1 |
-| **60** | [superpapers](skills/60-regisely-superpapers/) | 종합 실증 연구 지원 스위트 | 📚 | 16 |
-| **61** | [research-methods](skills/61-phdemotions-research-methods/) | 사전 등록에 맞춘 확증적 검정 | 🎯 | 9 |
-| **62** | [citation-checker](skills/62-PHY041-claude-skill-citation-checker/) | CrossRef / S2 / OpenAlex 대비 인용 검증 | 📑 | 1 |
-| **63** | [scientific-agent-skills](skills/63-tondevrel-scientific-agent-skills/) | DoWhy 식별–추정–반증 프레임워크 | 🎯 | 2 |
-| **64** | [mcp-stata](skills/64-tmonk-mcp-stata/) | 20개 Stata 인과추론 & 재현 스킬 | 🎯 | 20 |
-| **65** | [game-theory-paper-writer](skills/65-game-theory-paper-writer/) | 게임이론 논문 생성 & 스트레스 테스트 | ✍️ | 1 |
-| **66** | [empirical-research-skills](skills/66-zheng-siyao-empirical-research-skills/) | 대규모 패널을 위한 R 성능 최적화 | 🛠️ | 7 |
-| **67** | [econfin-workflow-toolkit](skills/67-econfin-workflow-toolkit/) | 중국 기업재무 실증 워크플로, 제안서 → 논문 | 🚀 | 46 |
-| **68** | [research-productivity-skills](skills/68-research-productivity-skills/) | 논문 검색, SSRN, DOI 조회, 다운로드 | 🛠️ | 5 |
-| ⭐ **69** | **[Paper-WorkFlow](skills/69-Paper-WorkFlow/)** 🧭 | 사회과학 파이프라인 전체를 연결하는 메타 오케스트레이터 | 🚀 | 1 |
-| **70** | [ssci-polish](skills/70-ssci-polish/) | SSCI/SCI 영어 논문 언어 폴리싱(문법·가독성·학술 톤) | ✍️ | 1 |
-| ⭐ **71** | **[lit-review-agent-tools](skills/71-brycewang-lit-review-agent-tools/)** 🔍 | 문헌 리뷰 도구 선택 및 실행(MinerU / PaperQA2 / ASReview / STORM / MCP 서버) | 📚 | 1 |
-| ⭐ **72** | **[Kaggle Research](skills/72-kaggle-research/)** 🧪 | 공식 CLI 기반의 안전하고 감사 가능한 Kaggle 검색 및 제한된 공개 데이터 다운로드 | 🛠️ | 1 |
+| # | 컬렉션 | 하는 일 | 테마 | 스킬 | 출처 |
+|:--|:--|:--|:--:|--:|:--|
+| ⭐ **00** | **[StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/)** 🔥 | 에이전트 네이티브 Python **DSL** — 단 하나의 `sp.causal(...)`로 DID/RD/IV/SCM/DML 실행 | 🚀 | 1 | [brycewang-stanford/StatsPAI](https://github.com/brycewang-stanford/StatsPAI) |
+| ⭐ **00.1** | **[Full Empirical · Python](skills/00.1-Full-empirical-analysis-skill_Python/)** 📘 | 명시적 스택: `pandas` · `statsmodels` · `linearmodels` · `pyfixest` | 🚀 | 1 | [⭐ 이 저장소](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ **00.2** | **[Full Empirical · Stata](skills/00.2-Full-empirical-analysis-skill_Stata/)** 📊 | `reghdfe` · `ivreg2` · `csdid` · `sdid` · `rdrobust` 재현 팩 | 🚀 | 1 | [⭐ 이 저장소](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ **00.3** | **[Full Empirical · R](skills/00.3-Full-empirical-analysis-skill_R/)** 📗 | tidyverse · `fixest` · `did` · `HonestDiD`, Quarto로 렌더링 | 🚀 | 1 | [⭐ 이 저장소](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| **01** | [academic-paper-skills](skills/01-lishix520-academic-paper-skills/) | 개요 → 원고 작성 + 7차원 심사위원 시뮬레이션 | ✍️ | 2 | [lishix520/academic-paper-skills](https://github.com/lishix520/academic-paper-skills) |
+| **02** | [research-skills](skills/02-luwill-research-skills/) | 의료영상 리뷰, 제안서, 논문→슬라이드 변환 | 📚 | 3 | [luwill/research-skills](https://github.com/luwill/research-skills) |
+| **03** | [scientific-skills](skills/03-K-Dense-AI-claude-scientific-skills/) | 가설 생성 + 28개 과학 데이터베이스 | 📚 | 4 | [K-Dense-AI/claude-scientific-skills](https://github.com/K-Dense-AI/claude-scientific-skills) |
+| **04** | [scientific-writer](skills/04-K-Dense-AI-claude-scientific-writer/) | 인용 관리 + 과학 글쓰기 | ✍️ | 8 | [K-Dense-AI/claude-scientific-writer](https://github.com/K-Dense-AI/claude-scientific-writer) |
+| **05** | [research-superpower](skills/05-kthorn-research-superpower/) | 체계적 검색, 스크리닝 & 인용 추적 | 📚 | 10 | [kthorn/research-superpower](https://github.com/kthorn/research-superpower) |
+| **06** | [stats-paper-writing](skills/06-fuhaoda-stats-paper-writing/) | 엔드투엔드 LaTeX 통계 논문 작성 | ✍️ | 1 | [fuhaoda/stats-paper-writing-agent-skills](https://github.com/fuhaoda/stats-paper-writing-agent-skills) |
+| **07** | [AI-Research-SKILLs](skills/07-Orchestra-Research-AI-Research-SKILLs/) | 출판용 ML 그림, LaTeX, 인용 검증 | 🛠️ | 3 | [Orchestra-Research/AI-Research-SKILLs](https://github.com/Orchestra-Research/AI-Research-SKILLs) |
+| **08** | [latex-document-skill](skills/08-ndpvt-web-latex-document-skill/) | 임의의 LaTeX 문서를 PDF로 생성/컴파일 | 🛠️ | 1 | [ndpvt-web/latex-document-skill](https://github.com/ndpvt-web/latex-document-skill) |
+| **09** | [awesome-econ-ai](skills/09-meleantonio-awesome-econ-ai-stuff/) | Python 패널 데이터 분석 (`linearmodels`) | 🎯 | 17 | [meleantonio/awesome-econ-ai-stuff](https://github.com/meleantonio/awesome-econ-ai-stuff) |
+| **10** | [causal-inference-mixtape](skills/10-Jill0099-causal-inference-mixtape/) | DID / IV / RDD / SCM 템플릿 (Cunningham) | 🎯 | 1 | [Jill0099/causal-inference-mixtape](https://github.com/Jill0099/causal-inference-mixtape) |
+| **11** | [compound-science](skills/11-James-Traina-compound-science/) | 정량 사회과학을 위한 베이지안 추정 | 🎯 | 20 | [James-Traina/compound-science](https://github.com/James-Traina/compound-science) |
+| **12** | [claude-code-my-workflow](skills/12-pedrohcgs-claude-code-my-workflow/) | 커밋 → PR → 머지 연구 워크플로 (Emory) | 🛠️ | 22 | [pedrohcgs/claude-code-my-workflow](https://github.com/pedrohcgs/claude-code-my-workflow) |
+| **13** | [MixtapeTools](skills/13-scunning1975-MixtapeTools/) | Cunningham의 인과추론 툴킷 & 강의 자료 | 🎯 | 5 | [scunning1975/MixtapeTools](https://github.com/scunning1975/MixtapeTools) |
+| **14** | [research-starter](skills/14-luischanci-claude-code-research-starter/) | 적절한 진단을 갖춘 R 기반 IV / DiD / RDD | 🎯 | 16 | [luischanci/claude-code-research-starter](https://github.com/luischanci/claude-code-research-starter) |
+| **15** | [social-science-research](skills/15-Felpix-Studios-social-science-research/) | R 또는 Python 엔드투엔드 데이터 분석 | 🎯 | 12 | [Felpix-Studios/social-science-research](https://github.com/Felpix-Studios/social-science-research) |
+| **16** | [clo-author](skills/16-hsantanna88-clo-author/) | 멀티 에이전트 데이터 분석 (R / Stata / Python) | 🎯 | 10 | [hsantanna88/clo-author](https://github.com/hsantanna88/clo-author) |
+| **17** | [DAAF](skills/17-DAAF-Contribution-Community-daaf/) | 보안을 고려한 에이전트 프레임워크 (32개 거부 규칙) | 🛠️ | 35 | [DAAF-Contribution-Community/daaf](https://github.com/DAAF-Contribution-Community/daaf) |
+| **18** | [stata-accounting](skills/18-jusi-aalto-stata-accounting-research/) | 126편의 *JAR* 논문에서 검증된 Stata 패턴 | 🎯 | 1 | [jusi-aalto/stata-accounting-research](https://github.com/jusi-aalto/stata-accounting-research) |
+| **19** | [vera-economic-intelligence](skills/19-CuellarC05-vera-economic-intelligence/) | 경제 인텔리전스 / 정책 연구 워크플로 | 🎯 | 5 | [CuellarC05/vera-economic-intelligence](https://github.com/CuellarC05/vera-economic-intelligence) |
+| **20** | [python-econ-skill](skills/20-wenddymacro-python-econ-skill/) | DSGE / HANK & 정량 경제 계산 | 🎯 | 1 | [wenddymacro/python-econ-skill](https://github.com/wenddymacro/python-econ-skill) |
+| **21** | [AI-research-feedback](skills/21-claesbackman-AI-research-feedback/) | AI 동료 평가로 구조화된 피드백 생성 | 📑 | 5 | [claesbackman/AI-research-feedback](https://github.com/claesbackman/AI-research-feedback) |
+| **22** | [christopherkenny-skills](skills/22-christopherkenny-skills/) | Quarto(`.qmd`)용 APSA 스타일 검사기 | ✍️ | 11 | [christopherkenny/skills](https://github.com/christopherkenny/skills) |
+| **23** | [baygent](skills/23-Learning-Bayesian-Statistics-baygent-skills/) | 가드레일을 갖춘 PyMC / ArviZ 베이지안 워크플로 | 🎯 | 2 | [Learning-Bayesian-Statistics/baygent-skills](https://github.com/Learning-Bayesian-Statistics/baygent-skills) |
+| **24** | [academic-research-skills](skills/24-Imbad0202-academic-research-skills/) | 5인 심사위원 다관점 논문 리뷰 | 📑 | 4 | [Imbad0202/academic-research-skills](https://github.com/Imbad0202/academic-research-skills) |
+| **25** | [Diverga](skills/25-HosungYou-Diverga/) | 연구 질문 정련기 (모드 붕괴 방지) | 📚 | 34 | [HosungYou/Diverga](https://github.com/HosungYou/Diverga) |
+| **26** | [scholar](skills/26-Data-Wise-scholar/) | 통계 알고리즘 설계 & 문서화 | 🎯 | 17 | [Data-Wise/claude-plugins](https://github.com/Data-Wise/claude-plugins) |
+| **27** | [my_claude_skills](skills/27-dariia-m-my_claude_skills/) | 경제학 초록 작성 가이드 | ✍️ | 6 | [dariia-m/my_claude_skills](https://github.com/dariia-m/my_claude_skills) |
+| **28** | [paper-replicate-agent](skills/28-maxwell2732-paper-replicate-agent-demo/) | 논문 재현 에이전트 데모 | 📑 | 11 | [maxwell2732/paper-replicate-agent-demo](https://github.com/maxwell2732/paper-replicate-agent-demo) |
+| **29** | [project20XXy](skills/29-quarcs-lab-project20XXy/) | 재현 가능한 원고 + 노트북 프로젝트 | 📑 | 24 | [quarcs-lab/project20XXy](https://github.com/quarcs-lab/project20XXy) |
+| **30** | [zirui-song-claude-skills](skills/30-zirui-song-claude-skills/) | Zirui Song의 연구 보조 Claude 스킬 모음 | 🛠️ | 6 | [zirui-song/claude-skills](https://github.com/zirui-song/claude-skills) |
+| **31** | [claude-code-skills](skills/31-thalysandratos-claude-code-skills/) | Python 패널 데이터 분석 | 🎯 | 13 | [thalysandratos/claude-code-skills](https://github.com/thalysandratos/claude-code-skills) |
+| **32** | [stata-skill](skills/32-dylantmoore-stata-skill/) | 고성능 Stata C/C++ 플러그인 | 🛠️ | 3 | [dylantmoore/stata-skill](https://github.com/dylantmoore/stata-skill) |
+| **33** | [claude-scholar](skills/33-Galaxy-Dawn-claude-scholar/) | 전체 연구 라이프사이클: 발상 → 리뷰 → 실험 → 응답 | 🚀 | 47 | [Galaxy-Dawn/claude-scholar](https://github.com/Galaxy-Dawn/claude-scholar) |
+| **34** | [research-companion](skills/34-andrehuang-research-companion/) | 연구 방향 브레인스토밍, 평가 & 결정 | 📚 | 1 | [andrehuang/research-companion](https://github.com/andrehuang/research-companion) |
+| **35** | [academic-writing-skills](skills/35-bahayonghang-academic-writing-skills/) | 학회 맞춤형 산업 AI 문헌 조사 | 📚 | 5 | [bahayonghang/academic-writing-skills](https://github.com/bahayonghang/academic-writing-skills) |
+| **36** | [literature-review-skill](skills/36-taoyunudt-literature-review-skill/) | 전체 문헌 검토 워크플로 (중국어) | 📚 | 1 | [taoyunudt/literature-review-skill](https://github.com/taoyunudt/literature-review-skill) |
+| **37** | [IlanStrauss-ai-skills](skills/37-IlanStrauss-ai-skills/) | Ilan Strauss의 경제학 연구 AI 워크플로 | 🎯 | 1 | [IlanStrauss/ai-skills](https://github.com/IlanStrauss/ai-skills) |
+| **38** | [academic-proofreader](skills/38-peternka-academic-proofreader/) | 학술 교정 | ✍️ | 1 | [peternka/academic_proofreader](https://github.com/peternka/academic_proofreader) |
+| **39** | [marginaleffects](skills/39-vincentarelbundock-marginaleffects/) | 예측, 기울기 & 비교 (R / Python) | 🎯 | 1 | [vincentarelbundock/marginaleffects](https://github.com/vincentarelbundock/marginaleffects) |
+| **40** | [pyfixest](skills/40-py-econometrics-pyfixest/) | Python의 빠른 고정효과 추정 | 🎯 | 1 | [py-econometrics/pyfixest](https://github.com/py-econometrics/pyfixest) |
+| **41** | [sewage-econometrics-check](skills/41-sticerd-eee-sewage-econometrics-check/) | 10단계 점검 재현 패키지 감사 | 📑 | 22 | [sticerd-eee/sewage](https://github.com/sticerd-eee/sewage) |
+| **42** | [ARIS](skills/42-wanshuiyin-ARIS/) | 자율 "수면 중 연구" 에이전트, 엔드투엔드 | 🚀 | 42 | [wanshuiyin/Auto-claude-code-research-in-sleep](https://github.com/wanshuiyin/Auto-claude-code-research-in-sleep) |
+| **43** | [research-plugins](skills/43-wentorai-research-plugins/) | 478개 연구 플러그인: 데이터 시각화, 도메인, 인프라 | 🛠️ | 478 | [wentorai/research-plugins](https://github.com/wentorai/research-plugins) |
+| **44** | [humanizer_academic](skills/44-matsuikentaro1-humanizer_academic/) | 의학/학술 원고 탈AI화 (23개 패턴) | ✍️ | 1 | [matsuikentaro1/humanizer_academic](https://github.com/matsuikentaro1/humanizer_academic) |
+| **45** | [deslop](skills/45-stephenturner-skill-deslop/) | AI 글쓰기 패턴 제거 (5차원 채점) | ✍️ | 1 | [stephenturner/skill-deslop](https://github.com/stephenturner/skill-deslop) |
+| **46** | [stop-slop](skills/46-hardikpandya-stop-slop/) | 3계층 AI 흔적 탐지 & 재작성 | ✍️ | 1 | [hardikpandya/stop-slop](https://github.com/hardikpandya/stop-slop) |
+| **47** | [avoid-ai-writing](skills/47-conorbronsdon-avoid-ai-writing/) | 감사 → 재작성 → 재감사 AI 흔적 (감사 추적) | ✍️ | 1 | [conorbronsdon/avoid-ai-writing](https://github.com/conorbronsdon/avoid-ai-writing) |
+| ⭐ **48** | **[de-AIGC-skills](skills/48-de-AIGC-skills/)** 🇨🇳🇬🇧 | 중·영 이중언어 학술 탈AIGC (Turnitin AI / GPTZero / CNKI / Wanfang) | ✍️ | 1 | [⭐ 이 저장소](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| **49** | [humanize-chinese](skills/49-voidborne-d-humanize-chinese/) | AI 생성 중국어 텍스트 탐지 & 인간화 | ✍️ | 1 | [swaylq/humanize-chinese](https://github.com/swaylq/humanize-chinese) |
+| ⭐ **50** | **[AER-skills](skills/50-brycewang-aer-skills/)** 📕 | Top-5 경제학 투고 스택: 식별 → 강건성 → R&R | 🚀 | 9 | [brycewang-stanford/AER-skills](https://github.com/brycewang-stanford/AER-skills) |
+| **51** | [CausalPy](skills/51-pymc-labs-CausalPy/) | 베이지안 준실험 (PyMC Labs) | 🎯 | 3 | [pymc-labs/CausalPy](https://github.com/pymc-labs/CausalPy) |
+| **52** | [slr-prisma](skills/52-keemanxp-slr-prisma/) | 체계적 문헌 검토, PRISMA 2020 | 📚 | 1 | [keemanxp/slr-prisma](https://github.com/keemanxp/slr-prisma) |
+| **53** | [thematic-analysis](skills/53-keemanxp-thematic-analysis-skill/) | Braun & Clarke 6단계 질적 주제 분석 | 📚 | 1 | [keemanxp/thematic-analysis-skill](https://github.com/keemanxp/thematic-analysis-skill) |
+| **54** | [open-science-skills](skills/54-scdenney-open-science-skills/) | 인용 일치, DOI & 주장-근거 감사 | 📑 | 24 | [scdenney/open-science-skills](https://github.com/scdenney/open-science-skills) |
+| **55** | [r-skills](skills/55-ab604-claude-code-r-skills/) | `brms`를 이용한 R 베이지안 추론 | 🎯 | 8 | [ab604/claude-code-r-skills](https://github.com/ab604/claude-code-r-skills) |
+| **56** | [econ-writing-skill](skills/56-hanlulong-econ-writing-skill/) | 50개 이상 최고 가이드를 종합한 경제학 글쓰기 | ✍️ | 1 | [hanlulong/econ-writing-skill](https://github.com/hanlulong/econ-writing-skill) |
+| **57** | [edgartools](skills/57-dgunning-edgartools/) | SEC 공시 조회 & 분석 | 🛠️ | 1 | [dgunning/edgartools](https://github.com/dgunning/edgartools) |
+| **58** | [econstack](skills/58-charlescoverdale-econstack/) | 정책 브리핑 노트 (UK GES / AU Treasury) | ✍️ | 7 | [charlescoverdale/econstack](https://github.com/charlescoverdale/econstack) |
+| **59** | [openalex-skill](skills/59-shiquda-openalex-skill/) | OpenAlex로 2억 4천만+ 학술 저작물 조회 | 📚 | 1 | [shiquda/openalex-skill](https://github.com/shiquda/openalex-skill) |
+| **60** | [superpapers](skills/60-regisely-superpapers/) | 종합 실증 연구 지원 스위트 | 📚 | 16 | [regisely/superpapers](https://github.com/regisely/superpapers) |
+| **61** | [research-methods](skills/61-phdemotions-research-methods/) | 사전 등록에 맞춘 확증적 검정 | 🎯 | 9 | [phdemotions/research-methods](https://github.com/phdemotions/research-methods) |
+| **62** | [citation-checker](skills/62-PHY041-claude-skill-citation-checker/) | CrossRef / S2 / OpenAlex 대비 인용 검증 | 📑 | 1 | [PHY041/claude-skill-citation-checker](https://github.com/PHY041/claude-skill-citation-checker) |
+| **63** | [scientific-agent-skills](skills/63-tondevrel-scientific-agent-skills/) | DoWhy 식별–추정–반증 프레임워크 | 🎯 | 2 | [tondevrel/scientific-agent-skills](https://github.com/tondevrel/scientific-agent-skills) |
+| **64** | [mcp-stata](skills/64-tmonk-mcp-stata/) | 20개 Stata 인과추론 & 재현 스킬 | 🎯 | 20 | [tmonk/mcp-stata](https://github.com/tmonk/mcp-stata) |
+| **65** | [game-theory-paper-writer](skills/65-game-theory-paper-writer/) | 게임이론 논문 생성 & 스트레스 테스트 | ✍️ | 1 | [이 저장소 PR #17](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/17) |
+| **66** | [empirical-research-skills](skills/66-zheng-siyao-empirical-research-skills/) | 대규모 패널을 위한 R 성능 최적화 | 🛠️ | 7 | [SiyaoZheng/ai4ss-skills](https://github.com/SiyaoZheng/ai4ss-skills) |
+| **67** | [econfin-workflow-toolkit](skills/67-econfin-workflow-toolkit/) | 중국 기업재무 실증 워크플로, 제안서 → 논문 | 🚀 | 46 | [이 저장소 PR #22](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/22) |
+| **68** | [research-productivity-skills](skills/68-research-productivity-skills/) | 논문 검색, SSRN, DOI 조회, 다운로드 | 🛠️ | 5 | [이 저장소 PR #21](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills/pull/21) |
+| ⭐ **69** | **[Paper-WorkFlow](skills/69-Paper-WorkFlow/)** 🧭 | 사회과학 파이프라인 전체를 연결하는 메타 오케스트레이터 | 🚀 | 1 | [brycewang-stanford/Paper-WorkFlow](https://github.com/brycewang-stanford/Paper-WorkFlow) |
+| **70** | [ssci-polish](skills/70-ssci-polish/) | SSCI/SCI 영어 논문 언어 폴리싱(문법·가독성·학술 톤) | ✍️ | 1 | [⭐ 이 저장소](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
+| ⭐ **71** | **[lit-review-agent-tools](skills/71-brycewang-lit-review-agent-tools/)** 🔍 | 문헌 리뷰 도구 선택 및 실행(MinerU / PaperQA2 / ASReview / STORM / MCP 서버) | 📚 | 1 | [brycewang-stanford/lit-review-agent-tools](https://github.com/brycewang-stanford/lit-review-agent-tools) |
+| ⭐ **72** | **[Kaggle Research](skills/72-kaggle-research/)** 🧪 | 공식 CLI 기반의 안전하고 감사 가능한 Kaggle 검색 및 제한된 공개 데이터 다운로드 | 🛠️ | 1 | [⭐ 이 저장소](https://github.com/brycewang-stanford/Auto-Empirical-Research-Skills) |
 
 > ⭐ **우리가 직접 구축한 척추:** [StatsPAI](skills/00-Full-empirical-analysis-skill_StatsPAI/) (인과 엔진) · 명시적 [Python](skills/00.1-Full-empirical-analysis-skill_Python/) / [Stata](skills/00.2-Full-empirical-analysis-skill_Stata/) / [R](skills/00.3-Full-empirical-analysis-skill_R/) 전체 파이프라인 포트 · [AER-skills](skills/50-brycewang-aer-skills/) (top-5 투고 스택) · [de-AIGC-skills](skills/48-de-AIGC-skills/) · [Paper-WorkFlow](skills/69-Paper-WorkFlow/) (메타 오케스트레이터). 이들이 AERS의 척추입니다 — 전체 비교는 [플래그십 파이프라인 스킬 ↓](#플래그십-파이프라인-스킬)에서 확인하세요. 용도별로 둘러보고 싶으신가요? [동일한 76개를 하는 일별로 정리 ↓](#76개-컬렉션--용도별-분류)를 참고하세요.
 

@@ -2,7 +2,7 @@
 
 Pure ASCII art dashboards. The cheapest, most portable delivery method.
 
-**Status**: Published (v1.0.0)
+**Status**: Published (v1.0.1)
 
 ## Why ASCII
 

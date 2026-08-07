@@ -1,9 +1,6 @@
 ---
 name: dbs-standard-answer
-description: |
-  历史同构与标准答案研究。把用户正在经历的复杂困境抽象成结构指纹，在商业史、管理史、技术史、职业史和制度史中寻找真正同构的成功案例、失败案例与反例，比较当事人的约束、决策和结果，提炼反复出现的解法、适用条件与失效边界。
-  触发方式：/dbs-standard-answer、/标准答案、「历史上谁遇到过类似问题」「这种情况以前有人经历过吗」「他们当时怎么解决的」「这个问题有没有经典解法」「先帮我找历史类比」「曾经的标准答案是什么」。
-  Find structurally analogous historical cases and evidence-backed standard answers. Use when the user wants to locate a present dilemma in history, compare how others handled it, and extract recurring mechanisms with conditions and limits.
+description: 从商业史、管理史、技术史、职业史和制度史中寻找与现实困境同构的成功、失败和反例，提炼带条件的重复机制。用户要求历史类比、经典解法或标准答案时使用。
 ---
 
 # dbs-standard-answer：历史同构与标准答案研究

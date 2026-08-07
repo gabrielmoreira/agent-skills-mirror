@@ -244,41 +244,66 @@ from those catalogues rather than introducing parallel patterns.
 Multiple `notebooklm` processes (parallel CLI runs, an in-process keepalive
 beside a cron-driven `notebooklm auth refresh`, container start-up races,
 `xargs -P` fan-outs) can target the same `NOTEBOOKLM_HOME` simultaneously.
-The library coordinates with **cross-process file locks** (POSIX `flock` /
-Windows `LockFileEx`, via the [`filelock`](https://pypi.org/project/filelock/)
-package) so reads and writes against shared on-disk state never tear or
-clobber a sibling's update.
+The library coordinates with **cross-process file locks** — a project-internal
+`flock`/`LockFileEx` primitive (`_auth/storage.py::_file_lock`) for
+`storage_state.json` and its sibling credential file, and the
+[`filelock`](https://pypi.org/project/filelock/) package for `migration.py` and
+`context.json` — so reads and writes against shared on-disk state never tear or
+clobber a sibling's update. See
+[ADR-0029](adr/0029-canonical-storage-writer.md) for why the split exists.
 
 All locks are sibling files next to the resource they guard (zero-byte,
-left on disk after release — `filelock` reuses them).
+left on disk after release — both lock implementations reuse them).
 
 | Lock file | Owner | Scope | Acquisition |
 |---|---|---|---|
-| `<profile>/storage_state.json.lock` | `_auth/storage.py::save_cookies_to_storage` | Read-merge-write of `storage_state.json` (cookie sync after a rotation or 302) | Blocking exclusive |
+| `<profile>/.storage_state.json.lock` | `_auth/storage_writer.py` (the sole canonical writer; `storage.save_cookies_to_storage` is the monkeypatchable delegate seam onto it) | Every mutation of `storage_state.json`: the cookie CAS delta merge, in-band account-metadata read-modify-write, and the L3/L4 re-mint full-replace | CAS merge: blocking exclusive, fail-open. Full-replace intents (account metadata, re-mint): platform-neutral bounded acquire — non-blocking probe + deadline/jitter retry, 90s deadline, fail-closed (raises `LockUnavailableError`) |
+| `<profile>/.master_token.json.lock` | `_auth/storage_writer.py::write_master_token` | Writes to `master_token.json` (the durable L4 credential) | Same bounded acquire as above (90s deadline), fail-closed. Previously lockless. |
 | `<profile>/.storage_state.json.rotate.lock` | `_auth/keepalive.py::_poke_session` | Cross-process dedup of the `accounts.google.com/RotateCookies` keepalive POST | Non-blocking exclusive (`LOCK_NB`); skip on contention |
+| `<profile>/.storage_state.json.refresh.lock` | `_auth/refresh.py` (via `_auth/single_flight.py`) | Cross-process dedup of the `NOTEBOOKLM_REFRESH_CMD` subprocess (cold-start, and mid-session when `NOTEBOOKLM_REFRESH_CMD_MIDSESSION=1`) | Non-blocking exclusive (`LOCK_NB`); skip on contention, waiter polls with jittered backoff |
 | `<home>/.migration.lock` | `migration.py::migrate_to_profiles` | One-shot legacy→profile layout migration on startup | Blocking exclusive, 30s timeout (raises `MigrationLockTimeoutError`) |
-| `<profile>/context.json.lock` | `_atomic_io.py::atomic_update_json` through CLI context helpers | Read-modify-write of the active-notebook/account-routing context for a profile | Blocking exclusive, 10s timeout |
+| `<profile>/context.json.lock` | `_atomic_io.py::atomic_update_json` through CLI context helpers; also `_auth/account.py::_drop_legacy_account_key` for the legacy `account` key cleanup | Read-modify-write of the active-notebook/account-routing context for a profile | Blocking exclusive, 10s timeout (`filelock`) |
 
 Design notes:
 
-- **Two layered storage locks (not one).** The `.lock` and `.rotate.lock`
-  files protect the *same* `storage_state.json` but serve different access
-  patterns: a long-running save must not block — or be blocked by — a
-  best-effort rotation poke. Keeping them separate prevents the keepalive
-  from queueing behind a slow cookie write (and vice-versa).
-- **Fail-open on lock infrastructure failure.** When the lock file itself
-  cannot be created (read-only home dir, NFS without `flock`, permission
-  denied), `_poke_session` proceeds *without* coordination rather than
-  wedging forever. A duplicate rotation across processes is bounded and
-  harmless; a permanently-suppressed rotation is not.
-- **Locks are sibling files, never the resource itself.** `filelock` reuses
-  the sentinel across invocations, so cleanup is not required — and a
-  TOCTOU race between unlink and reacquire is avoided.
+- **Three layered storage locks (not one).** The `.lock`, `.rotate.lock`, and
+  `.refresh.lock` files protect the *same* `storage_state.json` but serve
+  different access patterns: a full-replace write must not block — or be
+  blocked by — a best-effort rotation poke or a refresh-cmd subprocess.
+  Keeping them separate prevents any one from queueing behind another.
+- **Only the rotation and refresh-cmd locks canonicalize their path.** The
+  rotate (`.rotate.lock`) and refresh-cmd (`.refresh.lock`) sentinels are
+  derived from `_auth/paths.py::canonical_storage_key`, so relative /
+  symlinked / `~`-expanded spellings of one profile collapse onto the same
+  lock. The main `.storage_state.json.lock` does **not**: `storage_writer`'s
+  writers (`merge_cookie_delta` and the full-replace intents) derive
+  `_storage_state_lock_path` from the caller's raw path, so two processes
+  reaching the same file through different path spellings (e.g. a symlink vs.
+  its resolved target) can take different main-write locks and race. Callers
+  are expected to reach a profile's storage file through one consistent path
+  (`paths.py`'s resolvers), which holds in every in-tree call site today.
+- **Per-intent fail-open/fail-closed split ([ADR-0029](adr/0029-canonical-storage-writer.md)).**
+  The cookie CAS merge and the rotation/refresh-cmd pokes fail **open** on lock
+  infrastructure failure (read-only home dir, NFS without `flock`, permission
+  denied) rather than wedging forever — availability wins, and the CAS guard
+  (or the reactive nature of a poke) keeps correctness. Full-file
+  read-modify-write intents (account metadata, master-token persist/re-mint)
+  fail **closed**, raising `LockUnavailableError`, because failing open there
+  could silently overwrite a concurrent CAS delta.
+- **In-process lock before OS lock.** `storage._file_lock` takes an in-process
+  `threading.Lock` keyed per canonical lock-path *before* the OS-level flock, so
+  threads within one process serialize before ever touching the OS primitive —
+  layered under the per-loop `asyncio.Lock` dedup described below.
+- **Locks are sibling files, never the resource itself.** Both lock
+  implementations reuse the sentinel across invocations, so cleanup is not
+  required — and a TOCTOU race between unlink and reacquire is avoided.
 - **In-process serializers complement, not replace, file locks.**
-  `_auth/keepalive.py::_poke_session` also takes an `asyncio.Lock` keyed on
-  `(event_loop, profile)` to dedupe an `asyncio.gather` fan-out before
-  reaching the cross-process flock — the file lock only sees one
-  contender per process per rate-limit window.
+  `_auth/keepalive.py::_poke_session` takes an `asyncio.Lock` keyed on
+  `(event_loop, profile)` to dedupe an `asyncio.gather` fan-out before reaching
+  the cross-process flock; the refresh-cmd path does the same but *across event
+  loops in one process* via `_auth/single_flight.py`
+  ([ADR-0030](adr/0030-one-recovery-ladder.md)) — the file lock only sees one
+  contender per process per rate-limit window either way.
 
 Path resolution for all locked resources flows through `paths.py`
 (`get_storage_path`, `get_context_path`, `get_home_dir`), so a `--storage`
@@ -351,6 +376,62 @@ docstring/install-doc drift guards, version-sync, and CI-script audits.
 These are valuable release/CI guardrails but cost ~30–45s locally. See
 [`CONTRIBUTING.md`](../CONTRIBUTING.md#fast-local-loop-skip-repo-wide-audit-checks)
 for the canonical fast-loop guidance.
+
+### Testing across boundaries and against reality
+
+The test pyramid has three distinct jobs:
+
+1. **Unit/component tests** use deterministic collaborators and synthetic
+   outputs to cover branches, error handling, and security contracts.
+2. **Composition/replay tests** cross the real in-process boundary, such as
+   CLI → client → RPC, REST → client → RPC, or MCP → client. VCR replay proves
+   that the recorded wire shape is handled; it does not prove that a fixture
+   reflects the current external service.
+3. **Reality probes** run an external executable or environment that production
+   code interprets. They are required for assumptions about subprocess output,
+   browser/tool availability, platform behavior, or third-party strings.
+
+Synthetic subprocess output is still appropriate for tier-1 tests. It is not
+evidence that the real executable emits that output. The initial runtime seam
+audit is intentionally bounded to production behavior that interprets external
+results:
+
+| Seam | Evidence/disposition |
+| --- | --- |
+| `NotebookLMClient.notebooks.list()` → RPC executor → decoder | `tests/integration/test_rpc_seam_matrix.py` asserts the RPC ID, encoded `f.req` envelope, CSRF form field, and typed adapter result; response RPC-ID drift fails through the same path. |
+| CLI `source list` → source service → client | `tests/unit/cli/test_source.py::TestSourceList::test_source_list_composes_cli_service_and_client_boundary` invokes the real Click command and verifies the client-backed result, so fabricated command output cannot pass. |
+| MCP `notebook_list` → app/client → RPC | `tests/integration/mcp_vcr/test_notebooks.py::test_mcp_notebook_list_crosses_adapter_to_client_boundary` drives an in-memory FastMCP client through the real client and an existing RPC cassette. |
+| REST `POST /v1/notebooks/{id}/sources/url` → source service → client | `tests/server/test_integration_real_client.py::TestRestSeamMatrix::test_url_add_crosses_rest_to_client_boundary` drives the real FastAPI route, client, decoder, and response projection through an existing cassette. |
+| `cli/services/playwright_login.py::ensure_chromium_installed` | The programmatic probe is checked against real Playwright, and a separate required Chromium launch smoke checks usability. |
+| Playwright launch/error classification | Synthetic classification tests remain valid; add a reality probe only when claiming a specific third-party message shape. |
+| `_auth/refresh.py` custom refresh command | Classification/security contract only; the command is operator-supplied, so there is no fixed third-party output contract. |
+| Auth refresh composition (`AuthRefreshCoordinator` → `NotebookLMClient.refresh_auth` → `_auth/session.py`) | `tests/unit/test_auth_refresh_seam.py` crosses the production assembly with a deterministic homepage response; the existing VCR test covers the stale-RPC → homepage-refresh → retry path. No live reality probe is used because it would require mutable authenticated external state and would not provide a stable CI contract. |
+| `_version_info.py` git lookup | Local-tool lookup with fallback behavior; synthetic and fallback tests are sufficient. |
+| `scripts/` subprocesses | Audited `audit_public_api_compat.py`, `regen_baselines.py`, and `audit_test_suite.py`: each invokes a local developer/CI tool, not a product boundary. Their wrappers are covered by `tests/unit/test_ci_audit_scripts.py` and related audit tests; no external-output reality probe is claimed. |
+
+The bounded MCP seam-matrix slice is
+[`tests/integration/mcp_vcr/test_notebooks.py::test_mcp_notebook_list_crosses_adapter_to_client_boundary`](../tests/integration/mcp_vcr/test_notebooks.py).
+It drives the in-memory FastMCP client through the registered MCP tool, the
+real `NotebookLMClient.notebooks.list()` service, RPC decoding, and the MCP
+structured-content projection. VCR replays the existing notebook-list
+recording, so this composition check uses no live credentials or network while
+still failing if the adapter bypasses or mis-wires the client boundary.
+
+The two Playwright probes are marked `reality` and named in the required-mode
+contract. In the browser-enabled CI lane, run them explicitly and serially:
+
+```bash
+uv run pytest tests/unit/cli/test_playwright_login_coverage.py \
+  -m reality --require-reality
+```
+
+`--require-reality` fails when an expected probe is missing, filtered out,
+skipped, xfailed, errors during setup/teardown, or does not produce exactly one
+passing call-phase result. Ordinary local runs retain actionable dependency
+skips. The required lane is deliberately serial and rejects xdist, because the
+controller must own complete collection and phase accounting. This distinction
+is deliberate: a skipped reality probe must never look like evidence that the
+external assumption was tested.
 
 ### Selecting a profile for E2E tests
 

@@ -206,7 +206,7 @@ The library respects these environment variables for authentication:
 2. `NOTEBOOKLM_AUTH_JSON` environment variable
 3. Explicit `profile` argument to `from_storage(profile="work")`
 4. `NOTEBOOKLM_PROFILE` environment variable (resolves to `~/.notebooklm/profiles/<name>/storage_state.json`)
-5. Active profile from `~/.notebooklm/active_profile`
+5. Active profile from `default_profile` in `~/.notebooklm/config.json`
 6. `~/.notebooklm/profiles/default/storage_state.json`
 7. `~/.notebooklm/storage_state.json` (legacy fallback)
 
@@ -558,7 +558,7 @@ follow-up context.
 
 **Cookies in storage are eventually-consistent across processes.** When
 multiple processes share a storage path, an OS-level file lock plus a
-snapshot/delta merge (see `docs/auth-cookie-lifecycle.md` §3.4) keep concurrent
+snapshot/delta merge (see `docs/auth-cookie-lifecycle.md` Appendix A2) keep concurrent
 writers from corrupting the file. They may, however, observe brief
 staleness — a write committed by process A may not be visible to a
 sibling read in process B until the next refresh cycle. Within a single
@@ -840,6 +840,9 @@ class NotebookLMClient:
         upload_timeout: httpx.Timeout | None = None,
         on_rpc_event: Callable[[RpcTelemetryEvent], object] | None = None,
         chat_timeout: float | None = DEFAULT_CHAT_TIMEOUT,                   # 180
+        chat_response_max_bytes: int | None = DEFAULT_CHAT_RESPONSE_MAX_BYTES, # 256 MiB
+        *,
+        allow_headless: bool = False,
     ) -> "_FromStorageContext":
         # Returns an awaitable async-context-manager wrapper. Use as
         # `async with NotebookLMClient.from_storage(...) as client:`.
@@ -861,6 +864,7 @@ class NotebookLMClient:
         cookie_saver: CookieSaver | None = None,
         cookie_rotator: CookieRotator | None = None,
         chat_timeout: float | None = DEFAULT_CHAT_TIMEOUT,                   # 180
+        chat_response_max_bytes: int | None = DEFAULT_CHAT_RESPONSE_MAX_BYTES, # 256 MiB
     ):
 
     async def refresh_auth(self, *, allow_headless: bool = False) -> AuthTokens:
@@ -1010,7 +1014,7 @@ print(metadata.title)
 
 # Enable public sharing and fetch the URL
 await client.sharing.set_public(nb.id, public=True)
-url = await client.notebooks.get_share_url(nb.id)
+url = client.notebooks.get_share_url(nb.id)  # sync — formats the URL, no RPC
 print(url)
 ```
 
@@ -1034,7 +1038,7 @@ print(url)
 | `add_url(notebook_id, url, *, wait=False, wait_timeout=120.0)` | `str, str, *, bool, float` | `Source` | Add URL source (autodetects YouTube URLs and routes them appropriately). `wait` / `wait_timeout` are keyword-only (the positional-wait shim was removed in v0.7.0). |
 | `add_text(notebook_id, title, content, *, wait=False, wait_timeout=120.0, idempotent=False)` | `str, str, str, *, bool, float, bool` | `Source` | Add text content. `wait` / `wait_timeout` are keyword-only (the positional-wait shim was removed in v0.7.0). |
 | `add_file(notebook_id, file_path, mime_type=None, *, wait=False, wait_timeout=120.0, title=None, on_progress=None)` | `str, str \| Path, str \| None, *, bool, float, str \| None, Callable \| None` | `Source` | Upload file. `mime_type` is a **supported** parameter — it overrides filename-extension inference to set the resumable-upload content-type header (omit it to infer from the extension). `wait` / `wait_timeout` are keyword-only (the positional-wait shim was removed in v0.7.0). `title` sets the display name via a post-upload `UPDATE_SOURCE` and forces a brief registration wait even when `wait=False`. `on_progress(bytes_sent, total_bytes)` may be sync or async. |
-| `add_drive(notebook_id, file_id, title, mime_type="application/vnd.google-apps.document", *, wait=False, wait_timeout=120.0)` | `str, str, str, str, *, bool, float` | `Source` | Add Google Drive doc. `mime_type` defaults to Google Docs; override for Slides/Sheets/PDF via `DriveMimeType` (see `notebooklm.types`). `wait` / `wait_timeout` are keyword-only (the positional-wait shim was removed in v0.7.0). **`title` is ignored** by NotebookLM for native Drive imports — the backend re-derives the display title from live Drive metadata; call `rename(...)` after the add if you need a specific title. |
+| `add_drive(notebook_id, file_id, title, mime_type="application/vnd.google-apps.document", *, wait=False, wait_timeout=120.0)` | `str, str, str, str, *, bool, float` | `Source` | Add Google Drive doc. `mime_type` defaults to Google Docs; override for Slides/Sheets/PDF via `DriveMimeType` (see `notebooklm.types`). `wait` / `wait_timeout` are keyword-only (the positional-wait shim was removed in v0.7.0). NotebookLM's backend re-derives the display title from live Drive metadata for native Drive imports, discarding the requested `title`; the method now issues an automatic best-effort follow-up `rename()` so an explicit `title` still wins (non-fatal — a rename failure logs a warning and keeps the added source under its upstream title; issue #1960). |
 | `rename(notebook_id, source_id, new_title, *, return_object=True)` | `str, str, str` | `Source \| None` | Rename source (prefers the `UPDATE_SOURCE` echo, else re-fetched; raises `SourceNotFoundError` if missing). `return_object=False` returns `None` without hydrating. |
 | `refresh(notebook_id, source_id)` | `str, str` | `None` | Refresh URL/Drive source |
 | `check_freshness(notebook_id, source_id)` | `str, str` | `bool` | Check if source needs refresh |
@@ -1042,6 +1046,7 @@ print(url)
 | `wait_until_ready(notebook_id, source_id, timeout=120.0, ...)` | `str, str, float, ...` | `Source` | Poll until `status == READY` (fully processed). Raises `SourceTimeoutError`/`SourceProcessingError`/`SourceNotFoundError`. |
 | `wait_until_registered(notebook_id, source_id, timeout=30.0, ...)` | `str, str, float, ...` | `Source` | Poll until the source is visible server-side (any non-ERROR status). Completes quickly (seconds for typical sources); intended for narrow follow-up RPCs (e.g. `UPDATE_SOURCE`) that only require registration, not full processing. |
 | `wait_for_sources(notebook_id, source_ids, timeout=120.0, **kwargs)` | `str, list[str], float, ...` | `list[Source]` | Wait for multiple sources to become ready **in parallel**. Per-source timeout; `**kwargs` are forwarded to `wait_until_ready`. |
+| `wait_all_until_ready(notebook_id, source_ids, timeout=120.0, initial_interval=1.0, max_interval=10.0, backoff_factor=1.5, transient_error_types=None)` | `str, list[str], float, ...` | `list[SourceWaitResult]` | Wait for many sources with **one notebook snapshot per poll tick** (cheaper than `wait_for_sources`'s per-source polling for large batches). Terminal per-source failures (`SourceNotFoundError` / `SourceProcessingError` / `SourceTimeoutError`) are **returned**, not raised — one result per id, in input order. |
 
 **Example:**
 ```python
@@ -2087,6 +2092,7 @@ class Artifact:
     created_at: Optional[datetime]
     url: Optional[str]
     _variant: int | None = None     # Internal variant for type-4 artifacts (1=flashcards, 2=quiz, 4=interactive mind map).
+    generation_prompt: str | None = None  # Free-text prompt this artifact was generated from, if any (see get_prompt()).
 
     @property
     def kind(self) -> ArtifactType:
@@ -2621,7 +2627,7 @@ async with NotebookLMClient.from_storage() as client:
     # source_path; mirror the higher-level APIs when in doubt.
     result = await client.rpc_call(
         RPCMethod.CREATE_NOTEBOOK,
-        params=["My Notebook", None, None, [2], [1]],
+        params=["My Notebook", None, None, [2, None, None, [1, None, None, None, None, None, None, None, None, None, [1]]]],
     )
 ```
 

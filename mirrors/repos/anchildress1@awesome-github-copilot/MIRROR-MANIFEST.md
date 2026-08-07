@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `anchildress1/awesome-github-copilot` — 26 default patterns, 0 followed patterns, 20 file(s) materialized.
+Mirror of `anchildress1/awesome-github-copilot` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `anchildress1/awesome-github-copilot` — 26 default patterns, 0 follo
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,12 +73,13 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 12 | ✓ | [`skills/eslint-plugin-configuring/reference/validation.md`](skills/eslint-plugin-configuring/reference/validation.md) |
 | 13 | ✓ | [`skills/eslint-plugin-configuring/SKILL.md`](skills/eslint-plugin-configuring/SKILL.md) |
 | 14 | ✓ | [`skills/generate-commit-message/SKILL.md`](skills/generate-commit-message/SKILL.md) |
-| 15 | ✓ | [`skills/readme-generator/assets/mermaid-examples.md`](skills/readme-generator/assets/mermaid-examples.md) |
-| 16 | ✓ | [`skills/readme-generator/assets/template.md`](skills/readme-generator/assets/template.md) |
-| 17 | ✓ | [`skills/readme-generator/references/mermaid-guide.md`](skills/readme-generator/references/mermaid-guide.md) |
-| 18 | ✓ | [`skills/readme-generator/references/sections.md`](skills/readme-generator/references/sections.md) |
-| 19 | ✓ | [`skills/readme-generator/SKILL.md`](skills/readme-generator/SKILL.md) |
-| 20 | ✓ | [`skills/test-writer/SKILL.md`](skills/test-writer/SKILL.md) |
+| 15 | ✓ | [`skills/pr-comment-review/SKILL.md`](skills/pr-comment-review/SKILL.md) |
+| 16 | ✓ | [`skills/readme-generator/assets/mermaid-examples.md`](skills/readme-generator/assets/mermaid-examples.md) |
+| 17 | ✓ | [`skills/readme-generator/assets/template.md`](skills/readme-generator/assets/template.md) |
+| 18 | ✓ | [`skills/readme-generator/references/mermaid-guide.md`](skills/readme-generator/references/mermaid-guide.md) |
+| 19 | ✓ | [`skills/readme-generator/references/sections.md`](skills/readme-generator/references/sections.md) |
+| 20 | ✓ | [`skills/readme-generator/SKILL.md`](skills/readme-generator/SKILL.md) |
+| 21 | ✓ | [`skills/test-writer/SKILL.md`](skills/test-writer/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed patterns, 67 file(s) materialized.
+Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed patterns, 68 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `fcakyon/claude-codex-settings` — 26 default patterns, 0 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 67 |
+| Files         | 68 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -123,9 +123,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md`](plugins/supabase-skills/skills/supabase-postgres-best-practices/SKILL.md) |
 | 63 | ✓ | [`plugins/tavily-tools/skills/setup/SKILL.md`](plugins/tavily-tools/skills/setup/SKILL.md) |
 | 64 | ✓ | [`plugins/tavily-tools/skills/tavily-usage/SKILL.md`](plugins/tavily-tools/skills/tavily-usage/SKILL.md) |
-| 65 | ✓ | [`plugins/ultralytics-dev/skills/ultralytics-platform/SKILL.md`](plugins/ultralytics-dev/skills/ultralytics-platform/SKILL.md) |
-| 66 | ✓ | [`plugins/ultralytics-dev/skills/yolo-training/SKILL.md`](plugins/ultralytics-dev/skills/yolo-training/SKILL.md) |
-| 67 | ✓ | [`plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md`](plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md) |
+| 65 | ✓ | [`plugins/ultralytics-branding/skills/ultralytics-branding/SKILL.md`](plugins/ultralytics-branding/skills/ultralytics-branding/SKILL.md) |
+| 66 | ✓ | [`plugins/ultralytics-dev/skills/ultralytics-platform/SKILL.md`](plugins/ultralytics-dev/skills/ultralytics-platform/SKILL.md) |
+| 67 | ✓ | [`plugins/ultralytics-dev/skills/yolo-training/SKILL.md`](plugins/ultralytics-dev/skills/yolo-training/SKILL.md) |
+| 68 | ✓ | [`plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md`](plugins/web-performance-skills/skills/web-performance-optimization/SKILL.md) |
 
 ---
 

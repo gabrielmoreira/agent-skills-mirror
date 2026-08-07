@@ -320,7 +320,7 @@ from notebooklm import NotebookLMClient
 - The override is applied at BOTH the URL `rpcids=` query parameter AND the
   request body `f.req` payload, so the wire format stays consistent.
 - The override is gated on the configured base host being a known Google
-  NotebookLM endpoint (`notebooklm.google.com` or
+  NotebookLM endpoint (`notebook.google.com`, `notebooklm.google.com`, or
   `notebooklm.cloud.google.com`). Overrides do NOT apply to non-Google
   hosts, so this env var cannot be weaponised to leak custom RPC IDs to a
   hostile endpoint.

@@ -1,8 +1,6 @@
 ---
 name: dbs-update
-description: |
-  dbskill 更新器。用户说「更新 dbskill」「升级 dbskill」「把 dbskill 更新到最新版」「检查 dbskill 更新」或输入 /dbs-update 时使用。只同步 dontbesilent2025/dbskill，不更新用户安装的其他 Skill，不修改用户的 dbskill 存档。
-  Update dbskill when the user asks to update, upgrade, or check updates for dbskill.
+description: 更新官方 dbskill，并保留其他 Skill 与用户存档。用户要求更新、升级或检查 dbskill 版本时使用。
 ---
 
 # dbs-update：更新 dbskill

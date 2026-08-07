@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `SlavaSexton/ComfyUI-Agent-Kit` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
+Mirror of `SlavaSexton/ComfyUI-Agent-Kit` — 26 default patterns, 0 followed patterns, 19 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `SlavaSexton/ComfyUI-Agent-Kit` — 26 default patterns, 0 followed pa
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 15 |
+| Files         | 19 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -70,10 +70,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 9 | ✓ | [`agents/qwen/install.sh`](agents/qwen/install.sh) |
 | 10 | ✓ | [`claude-code/skills/comfyui/AGENTS.md`](claude-code/skills/comfyui/AGENTS.md) |
 | 11 | ✓ | [`claude-code/skills/comfyui/SKILL.md`](claude-code/skills/comfyui/SKILL.md) |
-| 12 | ✓ | [`claude-code/skills/seedance/SKILL.md`](claude-code/skills/seedance/SKILL.md) |
-| 13 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 14 | ✓ | [`shared/comfyui/SKILL.md`](shared/comfyui/SKILL.md) |
-| 15 | ✓ | [`shared/seedance/SKILL.md`](shared/seedance/SKILL.md) |
+| 12 | ✓ | [`claude-code/skills/krea/SKILL.md`](claude-code/skills/krea/SKILL.md) |
+| 13 | ✓ | [`claude-code/skills/minimax-h3/SKILL.md`](claude-code/skills/minimax-h3/SKILL.md) |
+| 14 | ✓ | [`claude-code/skills/seedance/SKILL.md`](claude-code/skills/seedance/SKILL.md) |
+| 15 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 16 | ✓ | [`shared/comfyui/SKILL.md`](shared/comfyui/SKILL.md) |
+| 17 | ✓ | [`shared/krea/SKILL.md`](shared/krea/SKILL.md) |
+| 18 | ✓ | [`shared/minimax-h3/SKILL.md`](shared/minimax-h3/SKILL.md) |
+| 19 | ✓ | [`shared/seedance/SKILL.md`](shared/seedance/SKILL.md) |
 
 ---
 

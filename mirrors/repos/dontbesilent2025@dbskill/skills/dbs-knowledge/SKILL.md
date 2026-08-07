@@ -1,8 +1,6 @@
 ---
 name: dbs-knowledge
-description: |
-  dontbesilent 文件夹知识库。把用户已有的本地文件夹变成 Agent 能稳定查找、收录和维护的知识库；用户没有资料时建立最小知识库，有资料时生成知识库导航，后续支持放入新资料、查找答案、识别当前版本、检查知识库、精确更新导航，以及对膨胀的知识库导航进行瘦身和分层治理。用户提到「搭建知识库」「我的文件夹就是知识库」「让 AI 读懂这些文件」「把资料放进知识库」「从知识库找东西」「更新知识库」「更新知识库导航」「优化 SOT」「SOT 太大」「瘦身 Source of Truth」「知识库导航太长」「把明细下沉到 README」「刚才的文件加入知识库」「这条路径写错了」「把这个设为最新版」「哪个文件是最新版」「资料太乱」「建立 Source of Truth」时都应使用。用户无需理解 Source of Truth、RAG 或 Agent 配置。
-  Folder-based knowledge base for AI agents. Use whenever the user wants to build, populate, query, organize, audit, slim, or connect a local folder as a knowledge base, including source-of-truth navigation, layered indexing, and version resolution.
+description: 把本地文件夹建成 Agent 可稳定查找、收录和维护的知识库，并支持导航、版本判断、健康检查及 SOT 分层治理。用户要求搭建、查询、更新、整理或瘦身知识库时使用。
 ---
 
 # dbs-knowledge：文件夹知识库

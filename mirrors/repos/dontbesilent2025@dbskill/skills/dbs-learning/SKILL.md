@@ -1,10 +1,6 @@
 ---
 name: dbs-learning
-description: |
-  dontbesilent 交互式学习。把一个课题拆成连续学习文章，根据用户在上一篇中的反馈调整下一篇的深度、角度和节奏。
-  触发方式：/dbs-learning、/dbs-learn、/交互式学习、「带我学一个课题」「继续下一篇」「根据我的反馈写下一篇」
-  Interactive learning workflow. Builds an adaptive sequence of learning articles based on user feedback.
-  Trigger: /dbs-learning, /dbs-learn, "teach me a topic", "continue the next lesson"
+description: 把课题拆成连续学习文章，并根据用户反馈调整后续深度、角度和节奏。用户要求系统学习一个主题、继续下一篇或按反馈调整课程时使用。
 ---
 
 # dbs-learning：交互式学习

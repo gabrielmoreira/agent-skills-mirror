@@ -20,7 +20,7 @@ argument-hint: "[PR ref] [mode:pipeline] [archive:on|off] [branding:on|off] [bab
 
 **Opt-in only.** Enter stack mode when user intent or standing preference wants a multi-PR stack. Prefer intent over keyword matching. **Do not** proactively suggest PR stacks. **Refuse** nonsense stacks (one logical change, artificial slices) and stay on the single-PR path.
 
-When stack mode is active, load `references/stack-submit.md` and follow its probe / topology / submit recipes. Soft-depend on `gh stack` CLI only. On missing/unavailable CLI: required stack intent → hard-stop with residual; soft intent → residual + ordinary single-PR create.
+When stack mode is active, load `references/stack-submit.md` **before Step 3**. At this point follow only its Probe, Topology, and, when needed, Retrospective construction sections; do not submit. When that reference constructs a retrospective stack, its layer-by-layer commit flow replaces ordinary Step 3. Step 5 exclusively owns stack submission and the reference's post-submit metadata route for PRs created in this run. Soft-depend on `gh stack` CLI only. On missing/unavailable CLI: required stack intent → hard-stop with residual; soft intent → residual + ordinary single-PR create.
 
 After successful submit with ready (non-draft) PRs, continue to the babysit handoff below using the **bottom open non-draft** PR. Derive babysit posture from ship intent: default `posture:stack-ready`; use `posture:stack-land` only when land/merge-when-green intent is explicit. Pass that posture on the `ce-babysit-pr` invocation (do not put `posture:` on this skill's argument-hint). Draft-only submit → hard residual before babysit when babysit is on.
 
@@ -80,6 +80,8 @@ Match repo style for commit messages and PR titles (project instructions in cont
 
 ## Step 3: Commit and push
 
+If the stack reference constructed and committed retrospective layers before this step, skip ordinary single-branch commit/push and continue to Step 4; `gh stack submit` in Step 5 pushes the stack.
+
 If on the default branch, branch creation needs to handle stale local `<base>`, unpushed commits on local `<base>`, and uncommitted changes that collide with the fresh remote base. Read `references/branch-creation.md` and follow its decision flow before continuing.
 
 Scan changed files for naturally distinct concerns. If they clearly group into separate logical changes, create separate commits (2-3 max). Group at file level only — no `git add -p`. When ambiguous, one commit is fine.
@@ -103,7 +105,7 @@ If the working tree is clean and all commits are already pushed, this step is a 
 
 ## Step 4: Compose the PR title and body
 
-**You MUST read `references/pr-description-writing.md`** in full — it owns value-first framing, sizing, program altitude, related-work references (preserve existing `Related:` / `Fixes` on rewrite), branding body rules, and the pre-apply audit. The only input it needs from this skill is the PR ref, if one was identified by mode dispatch (description-only with a pasted URL, description update, or confirmed existing-PR rewrite in full workflow). If Step 1 found an existing PR, pass its URL to Step 4 when rewriting so PR mode fetches the existing body.
+**You MUST read `references/pr-description-writing.md`** in full — it owns value-first framing, sizing, program altitude, related-work references (preserve existing `Related:` / `Fixes` on rewrite), branding body rules, and the pre-apply audit. The only input it needs from this skill is the PR ref, if one was identified by mode dispatch (description-only with a pasted URL, description update, or confirmed existing-PR rewrite in full workflow). If Step 1 found an existing PR, pass its URL to Step 4 when rewriting so PR mode fetches the existing body. In Stack mode, Step 5 follows the post-submit route in `references/stack-submit.md` instead of composing one default-base body here.
 
 **Evidence decision** before composition. CE does not own a capture workflow — use harness capture tools or user-supplied artifacts, never invent/upload evidence or launch another CE skill.
 
@@ -125,9 +127,9 @@ Then continue with the reference (Steps A–E, including Step B2 when the teachi
 
 **Description-only mode** — print the title and body. Stop unless the user asks to apply.
 
-**New PR** (full workflow, no existing PR from Step 1) — if **Stack mode** is active, follow `references/stack-submit.md` (probe, topology, submit) instead of `gh pr create`; then report the bottom open non-draft PR URL and continue to babysit handoff. Otherwise, immediately before creating, **always** re-run `gh pr list --head <branch> --state open --json number,url,isDraft,headRefName,headRepositoryOwner` (branch name only; target the base repo on a fork, per Context) so a PR that appeared since Step 1, or was missed because the Step 1 check came back **unknown**, is not duplicated. If it now shows a PR whose `headRepositoryOwner`/`headRefName` match the current head, switch to the existing-PR path; disambiguate multi-fork matches by head owner as in Step 1 rather than assuming index 0. If this re-check itself exits non-zero, resolve `gh auth status` / connectivity before creating rather than assuming none exists. Otherwise apply per "Applying via gh" below using `gh pr create`. Report the URL.
+**New PR** (full workflow, no existing PR from Step 1) — if **Stack mode** is active, follow the Submit section of `references/stack-submit.md` instead of `gh pr create`; then report the bottom open non-draft PR URL and continue to babysit handoff. Otherwise, immediately before creating, **always** re-run `gh pr list --head <branch> --state open --json number,url,isDraft,headRefName,headRepositoryOwner` (branch name only; target the base repo on a fork, per Context) so a PR that appeared since Step 1, or was missed because the Step 1 check came back **unknown**, is not duplicated. If it now shows a PR whose `headRepositoryOwner`/`headRefName` match the current head, switch to the existing-PR path; disambiguate multi-fork matches by head owner as in Step 1 rather than assuming index 0. If this re-check itself exits non-zero, resolve `gh auth status` / connectivity before creating rather than assuming none exists. Otherwise apply per "Applying via gh" below using `gh pr create`. Report the URL.
 
-**Existing PR** (full workflow, found in Step 1) — if **Stack mode** is active, still follow `references/stack-submit.md` so remaining stack layers submit / sync (mid-stack ship is normal); then report the bottom open non-draft PR URL and continue to babysit handoff with derived posture. Otherwise the new commits are already on the PR from Step 3. Report the PR URL, then ask whether to rewrite the description.
+**Existing PR** (full workflow, found in Step 1) — if **Stack mode** is active, still follow the Submit section of `references/stack-submit.md` so remaining stack layers submit / sync (mid-stack ship is normal); then report the bottom open non-draft PR URL and continue to babysit handoff with derived posture. Otherwise the new commits are already on the PR from Step 3. Report the PR URL, then ask whether to rewrite the description.
 
 - **No** — done.
 - **Yes** — run Step 4 if not already done, then preview and apply (see below).

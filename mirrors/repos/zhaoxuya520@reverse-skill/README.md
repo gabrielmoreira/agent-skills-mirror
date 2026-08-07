@@ -68,9 +68,7 @@ PRIMARY ladder: [skills/MASTER-ROUTING.md](skills/MASTER-ROUTING.md) · Full mat
 <br/>
 
 <div align="center">
-  <a href="https://star-history.com/#zhaoxuya520/reverse-skill&Date">
-    <img src="docs/assets/star-history.svg" alt="Star History" width="650" />
-  </a>
+  <a href="https://afterglow.watch"><img src="https://afterglow.watch/badge/zhaoxuya520/reverse-skill" alt="star velocity"></a>
 </div>
 
 <br/>
@@ -247,7 +245,7 @@ Special thanks to the OLLVM deobfuscation ecosystem contributors and everyone wh
 
 ## Contact
 
-- **Email:** [24781737@qq.com](mailto:24781737@qq.com)
+- **Email:** [ww7517437@gmail.com](mailto:ww7517437@gmail.com)
 - **QQ Group:** 942400892
 - **Discord:**
 [reverse-skill](https://discord.gg/TECd3bMRR)

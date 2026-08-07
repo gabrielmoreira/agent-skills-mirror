@@ -1,7 +1,7 @@
 # Configuration
 
 **Status:** Active
-**Last Updated:** 2026-07-04
+**Last Updated:** 2026-08-05
 
 This guide covers storage locations, environment settings, and configuration options for `notebooklm-py`.
 
@@ -107,7 +107,7 @@ Stores the current CLI context, such as the active notebook:
 Field summary:
 
 - `notebook_id` — currently selected notebook, written by `notebooklm use` and read by every command that takes `-n/--notebook`.
-- `title`, `is_owner`, `created_at` — optional notebook metadata captured at selection time so `status` / display commands don't need an extra round-trip. Omitted when the CLI didn't have the values to write (see `src/notebooklm/cli/helpers.py:623-651`).
+- `title`, `is_owner`, `created_at` — optional notebook metadata captured at selection time so `status` / display commands don't need an extra round-trip. Omitted when the CLI didn't have the values to write (see `set_current_notebook` in `src/notebooklm/cli/context.py`).
 
 This file is managed automatically by `notebooklm use`, `notebooklm clear`, and the `auth` commands.
 
@@ -167,7 +167,7 @@ remains an unconditional forced re-mint.
 | `NOTEBOOKLM_AUTH_JSON` | Inline authentication JSON (for CI/CD) | - |
 | `NOTEBOOKLM_NOTEBOOK` | Default notebook ID for commands without `-n/--notebook` | - |
 | `NOTEBOOKLM_HL` | Default interface/output language code (e.g. `en`, `ja`, `zh_Hans`) | `en` |
-| `NOTEBOOKLM_BASE_URL` | Gemini Notebook base URL. Constrained to `https://notebook.google.com` or `https://notebooklm.google.com` (personal) or `https://notebooklm.cloud.google.com` (enterprise) | `https://notebook.google.com` |
+| `NOTEBOOKLM_BASE_URL` | Gemini Notebook base URL. Constrained to `https://notebook.google.com` (default) or `https://notebooklm.google.com` (pre-rebrand personal, still served) or `https://notebooklm.cloud.google.com` (enterprise) | `https://notebook.google.com` |
 | `NOTEBOOKLM_BL` | `bl` (build label) URL parameter for the chat streaming endpoint; override when chasing a regression tied to a specific frontend build snapshot | built-in default in `_env.DEFAULT_BL` (drift-monitored nightly) |
 | `NOTEBOOKLM_TRANSPORT` | HTTP transport backend: `httpx` (default) or `curl_cffi` (opt-in browser-TLS impersonation; requires the `curl_cffi` package). Use `curl_cffi` where the default transport is TLS-fingerprint-blocked. | `httpx` |
 | `NOTEBOOKLM_LOG_LEVEL` | Logging level: `DEBUG`, `INFO`, `WARNING`, `ERROR` | `WARNING` |
@@ -515,16 +515,17 @@ notebooklm status --paths
 
 Output:
 ```
-                Configuration Paths
-┏━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┓
-┃ File            ┃ Path                                     ┃ Source    ┃
-┡━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━┩
-│ Profile         │ default                                  │ active    │
-│ Home Directory  │ /home/user/.notebooklm                   │ default   │
-│ Storage State   │ .../profiles/default/storage_state.json  │           │
-│ Context         │ .../profiles/default/context.json        │           │
-│ Browser Profile │ .../profiles/default/browser_profile     │           │
-└─────────────────┴──────────────────────────────────────────┴───────────┘
+                 Configuration Paths
+┏━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━┓
+┃ File             ┃ Path                                     ┃ Source    ┃
+┡━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━┩
+│ Profile          │ default                                  │ default   │
+│ Home Directory   │ /home/user/.notebooklm                   │ default   │
+│ Profile Directory│ /home/user/.notebooklm/profiles/default  │           │
+│ Storage State    │ .../profiles/default/storage_state.json  │           │
+│ Context          │ .../profiles/default/context.json        │           │
+│ Browser Profile  │ .../profiles/default/browser_profile     │           │
+└──────────────────┴──────────────────────────────────────────┴───────────┘
 ```
 
 ## Session Management

@@ -34,14 +34,11 @@ The implementation follows a layered architecture:
   - Handles permissions and cleanup
 
 - **Environment & Constants** (`constants.ts`):
-  - `checkEnvironment()`: Validates CLI availability at startup for early feedback
-  - `formatEnvironmentCheck()`: User-friendly status reporting
   - Defines supported languages, default limits (timeout, max output bytes, max matches), and language-to-extension mappings
   - Implements path resolution logic that checks: cached binary → npm package → platform-specific package → Homebrew → PATH
 
 - **Public API** (`index.ts`):
-  - Exports built-in tools for OpenCode integration
-  - Re-exports types, constants, and CLI utilities for external consumers
+  - Re-exports `ast_grep_replace`/`ast_grep_search` tools, types, and constants for external consumers
 
 ## Flow
 

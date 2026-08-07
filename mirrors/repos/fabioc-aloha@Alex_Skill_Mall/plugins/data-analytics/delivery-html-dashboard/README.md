@@ -1,8 +1,9 @@
 # delivery-html-dashboard
 
-Self-contained HTML dashboard powered by Apache ECharts.
+Single-file HTML dashboard shell powered by an integrity-pinned Apache ECharts
+CDN resource.
 
-**Status**: Published (v1.0.0)
+**Status**: Published (v1.0.1)
 
 ## Technology
 
@@ -21,16 +22,18 @@ Key advantages over Chart.js:
 - Accessibility: auto-generated chart descriptions, decal patterns
 - Rich tooltips, legend interactions, data zoom, brush selection
 
-Loaded via single CDN `<script>` tag (no build step):
+Loaded via one exact CDN `<script>` tag (no build step):
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"
+    integrity="sha384-C2iskrW/uPW46KzOjrvJIQo4YkV8lkD+QS0CrDN18IIPIpT/g2USu8bTP3nvmIAD"
+    crossorigin="anonymous"></script>
 ```
 
 ## Scope
 
 - Single HTML file, zero build step, open in any browser
-- ECharts 6.x via CDN for interactive charts
+- ECharts 6.1.0 via an integrity-pinned CDN resource for interactive charts
 - KPI card components with metric + delta + sparkline
 - CSS Grid responsive layout with auto-fit breakpoints
 - Filter architecture (global, chart-level, cross-filter via ECharts connect)

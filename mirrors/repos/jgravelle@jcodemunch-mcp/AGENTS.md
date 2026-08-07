@@ -56,8 +56,7 @@ Always use jCodemunch-MCP tools for code navigation. Never fall back to Read, Gr
 - For bulk edits (5+ files), always use `register_edit` with all paths to batch-invalidate
 
 **Token efficiency:**
-- If `_meta` contains `budget_warning`: stop exploring and work with what you have
-- If `auto_compacted: true` appears: results were automatically compressed due to turn budget
+- If `_meta` contains `budget_warning`: stop exploring and work with what you have. Results are never silently shortened — the warning is advisory, and what you got is complete
 - Use `get_session_context` to check what you've already read — avoid re-reading the same files
 
 **Reading the response envelope (v1.74.0+):**

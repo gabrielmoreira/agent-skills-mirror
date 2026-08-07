@@ -4,7 +4,7 @@
 
 ### Issue tracker
 
-Issues and PRDs for this repo live in GitHub Issues for `qixing-jk/all-api-hub`. See `docs/agents/issue-tracker.md`.
+Issues and specs for this repo live as local Markdown files under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
 
 ### Triage labels
 

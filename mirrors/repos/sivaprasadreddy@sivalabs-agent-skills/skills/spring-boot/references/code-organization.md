@@ -14,10 +14,11 @@ dev.sivalabs.projectname/
 │   ├── domain/                      # Domain logic
 │   │   ├── models/                  # Domain models
 │   │   │   ├── package-info.java
+│   │   ├── exceptions/              # Domain custom Exception classes
+│   │   │   ├── package-info.java
 │   │   ├── {entities, repositories, mappers, services}
-│   ├── rest/                        # REST API layer
-│   │   ├── controllers/             # REST controllers
-│   │   ├── dtos/                    # Request, Response payload DTOs
+│   ├── api/                         # REST API layer
+│   │   ├── {controllers, DTOs}      # REST controllers, Request, Response payload DTOs
 │   └── UsersAPI.java                # Module's public API (facade)
 │
 ├── catalog/                         # Catalog module
@@ -40,15 +41,16 @@ Explanation of the above package structure:
   - **config/**: Module-specific configuration classes annotated with `@Configuration` for beans, properties, or third-party integrations relevant only to this module.
 
   - **domain/**: Core business logic layer containing:
-    - **models/**: Domain model classes (Command, Query objects, Enums, Result objects, etc) representing business concepts (not JPA entities). These are pure Java objects that encapsulate business rules.
+    - **models/**: Domain model classes (Command, Query objects, Enums, Value Objects, Result objects, etc) representing business concepts (not JPA entities). These are pure Java objects that encapsulate business rules.
+    - **exceptions/**: Domain specific custom Exception classes.
     - **entities**: JPA entity classes annotated with `@Entity` that map to database tables. These should not be `public` to prevent direct instantiation and ensure encapsulation.
     - **repositories**: Spring Data JPA repository interfaces extending `JpaRepository` or `CrudRepository` for data access. These should not be `public`.
     - **mappers**: Mapper classes/interfaces (e.g., MapStruct mappers) for converting between entities, domain models, and DTOs. These should not be `public`.
     - **services**: Service classes annotated with `@Service` containing business logic, converting beans using mappers, transaction management, and orchestration of repository calls.
 
-  - **rest/**: REST API layer containing:
-    - **controllers/**: REST controller classes annotated with `@RestController` that handle HTTP requests, validate input, and delegate to services.
-    - **dtos/**: Data Transfer Objects including request payloads (data coming from clients) and response payloads (data sent to clients).
+  - **api/**: REST API layer containing:
+    - **controllers**: REST controller classes annotated with `@RestController` that handle HTTP requests, validate input, and delegate to services.
+    - **DTOs**: Data Transfer Objects including request payloads (data coming from clients) and response payloads (data sent to clients).
 
   - **{Module}API.java**: A facade class that serves as the module's public API, delegating calls to services, exposing only what other modules should access while hiding internal implementation details.
 
@@ -66,7 +68,7 @@ Explanation of the above package structure:
 | **Value Objects**     | Domain name (record) | `Email`, `UserCode`, `UserId`                               |
 | **Commands**          | `*Cmd`               | `CreateUserCmd`, `UpdateAddressCmd`                         |
 | **Command Response**  | `*Result`            | `LoginResult`, `RegistrationResult`                         |
-| **ViewModels**        | `*VM`                | `UserVM`, `AddressVM`                                       |
+| **DTOs**              | `*Dto`               | `UserDto`, `AddressDto`                                     |
 | **HTTP Request**      | `*Request`           | `CreateUserRequest`, `CreateAddressRequest`                 |
 | **HTTP Response**     | `*Response`          | `CreateUserResponse`, `CreateAddressResponse`               |
 | **Repositories**      | `*Repository`        | `UserRepository`, `AddressBookRepository`                   |

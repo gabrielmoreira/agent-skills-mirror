@@ -2,7 +2,7 @@
 
 Guided requirements template for data storytelling projects.
 
-**Status**: Published (v1.0.0)
+**Status**: Published (v1.0.1)
 
 ## What It Does
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `opensquilla/opensquilla` — 26 default patterns, 0 followed patterns, 96 file(s) materialized.
+Mirror of `opensquilla/opensquilla` — 26 default patterns, 0 followed patterns, 105 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `opensquilla/opensquilla` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 96 |
+| Files         | 105 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -94,67 +94,76 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 33 | ✓ | [`src/opensquilla/skills/bundled/nano-pdf/SKILL.md`](src/opensquilla/skills/bundled/nano-pdf/SKILL.md) |
 | 34 | ✓ | [`src/opensquilla/skills/bundled/openrouter-video-generator/SKILL.md`](src/opensquilla/skills/bundled/openrouter-video-generator/SKILL.md) |
 | 35 | ✓ | [`src/opensquilla/skills/bundled/paper-abstract-author/SKILL.md`](src/opensquilla/skills/bundled/paper-abstract-author/SKILL.md) |
-| 36 | ✓ | [`src/opensquilla/skills/bundled/paper-citation-planner/SKILL.md`](src/opensquilla/skills/bundled/paper-citation-planner/SKILL.md) |
-| 37 | ✓ | [`src/opensquilla/skills/bundled/paper-experiment-stub/SKILL.md`](src/opensquilla/skills/bundled/paper-experiment-stub/SKILL.md) |
-| 38 | ✓ | [`src/opensquilla/skills/bundled/paper-outline-author/SKILL.md`](src/opensquilla/skills/bundled/paper-outline-author/SKILL.md) |
-| 39 | ✓ | [`src/opensquilla/skills/bundled/paper-plot-stub/SKILL.md`](src/opensquilla/skills/bundled/paper-plot-stub/SKILL.md) |
-| 40 | ✓ | [`src/opensquilla/skills/bundled/paper-preference-planner/SKILL.md`](src/opensquilla/skills/bundled/paper-preference-planner/SKILL.md) |
-| 41 | ✓ | [`src/opensquilla/skills/bundled/paper-refbib-stub/SKILL.md`](src/opensquilla/skills/bundled/paper-refbib-stub/SKILL.md) |
-| 42 | ✓ | [`src/opensquilla/skills/bundled/paper-revision-author/SKILL.md`](src/opensquilla/skills/bundled/paper-revision-author/SKILL.md) |
-| 43 | ✓ | [`src/opensquilla/skills/bundled/paper-section-author/SKILL.md`](src/opensquilla/skills/bundled/paper-section-author/SKILL.md) |
-| 44 | ✓ | [`src/opensquilla/skills/bundled/paper-source-curator/SKILL.md`](src/opensquilla/skills/bundled/paper-source-curator/SKILL.md) |
-| 45 | ✓ | [`src/opensquilla/skills/bundled/pdf-toolkit/SKILL.md`](src/opensquilla/skills/bundled/pdf-toolkit/SKILL.md) |
-| 46 | ✓ | [`src/opensquilla/skills/bundled/pptx/SKILL.md`](src/opensquilla/skills/bundled/pptx/SKILL.md) |
-| 47 | ✓ | [`src/opensquilla/skills/bundled/seedance-2-prompt/SKILL.md`](src/opensquilla/skills/bundled/seedance-2-prompt/SKILL.md) |
-| 48 | ✓ | [`src/opensquilla/skills/bundled/skill-creator-linter/SKILL.md`](src/opensquilla/skills/bundled/skill-creator-linter/SKILL.md) |
-| 49 | ✓ | [`src/opensquilla/skills/bundled/skill-creator-proposals/SKILL.md`](src/opensquilla/skills/bundled/skill-creator-proposals/SKILL.md) |
-| 50 | ✓ | [`src/opensquilla/skills/bundled/skill-creator-smoke-test/SKILL.md`](src/opensquilla/skills/bundled/skill-creator-smoke-test/SKILL.md) |
-| 51 | ✓ | [`src/opensquilla/skills/bundled/skill-creator/SKILL.md`](src/opensquilla/skills/bundled/skill-creator/SKILL.md) |
-| 52 | ✓ | [`src/opensquilla/skills/bundled/srt-from-script/SKILL.md`](src/opensquilla/skills/bundled/srt-from-script/SKILL.md) |
-| 53 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-generic-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-generic-probe/SKILL.md) |
-| 54 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-go-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-go-probe/SKILL.md) |
-| 55 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-js-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-js-probe/SKILL.md) |
-| 56 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-python-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-python-probe/SKILL.md) |
-| 57 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-rust-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-rust-probe/SKILL.md) |
-| 58 | ✓ | [`src/opensquilla/skills/bundled/sub-agent/SKILL.md`](src/opensquilla/skills/bundled/sub-agent/SKILL.md) |
-| 59 | ✓ | [`src/opensquilla/skills/bundled/subtitle-burner/SKILL.md`](src/opensquilla/skills/bundled/subtitle-burner/SKILL.md) |
-| 60 | ✓ | [`src/opensquilla/skills/bundled/summarize/SKILL.md`](src/opensquilla/skills/bundled/summarize/SKILL.md) |
-| 61 | ✓ | [`src/opensquilla/skills/bundled/swe-bench/SKILL.md`](src/opensquilla/skills/bundled/swe-bench/SKILL.md) |
-| 62 | ✓ | [`src/opensquilla/skills/bundled/text-file-read/SKILL.md`](src/opensquilla/skills/bundled/text-file-read/SKILL.md) |
-| 63 | ✓ | [`src/opensquilla/skills/bundled/title-card-image/SKILL.md`](src/opensquilla/skills/bundled/title-card-image/SKILL.md) |
-| 64 | ✓ | [`src/opensquilla/skills/bundled/tmux/SKILL.md`](src/opensquilla/skills/bundled/tmux/SKILL.md) |
-| 65 | ✓ | [`src/opensquilla/skills/bundled/video-merger/SKILL.md`](src/opensquilla/skills/bundled/video-merger/SKILL.md) |
-| 66 | ✓ | [`src/opensquilla/skills/bundled/video-still-animator/SKILL.md`](src/opensquilla/skills/bundled/video-still-animator/SKILL.md) |
-| 67 | ✓ | [`src/opensquilla/skills/bundled/voice-clone-lab/SKILL.md`](src/opensquilla/skills/bundled/voice-clone-lab/SKILL.md) |
-| 68 | ✓ | [`src/opensquilla/skills/bundled/voice-conversion-studio/SKILL.md`](src/opensquilla/skills/bundled/voice-conversion-studio/SKILL.md) |
-| 69 | ✓ | [`src/opensquilla/skills/bundled/voiceover-studio/SKILL.md`](src/opensquilla/skills/bundled/voiceover-studio/SKILL.md) |
-| 70 | ✓ | [`src/opensquilla/skills/bundled/weather/SKILL.md`](src/opensquilla/skills/bundled/weather/SKILL.md) |
-| 71 | ✓ | [`src/opensquilla/skills/bundled/web-search/SKILL.md`](src/opensquilla/skills/bundled/web-search/SKILL.md) |
-| 72 | ✓ | [`src/opensquilla/skills/bundled/xlsx/SKILL.md`](src/opensquilla/skills/bundled/xlsx/SKILL.md) |
-| 73 | ✓ | [`src/opensquilla/skills/exp/meta-arxiv-daily-digest-deck/SKILL.md`](src/opensquilla/skills/exp/meta-arxiv-daily-digest-deck/SKILL.md) |
-| 74 | ✓ | [`src/opensquilla/skills/exp/meta-codereview-current-diff/SKILL.md`](src/opensquilla/skills/exp/meta-codereview-current-diff/SKILL.md) |
-| 75 | ✓ | [`src/opensquilla/skills/exp/meta-compliance-audit-bundle/SKILL.md`](src/opensquilla/skills/exp/meta-compliance-audit-bundle/SKILL.md) |
-| 76 | ✓ | [`src/opensquilla/skills/exp/meta-content-publish-pipeline/SKILL.md`](src/opensquilla/skills/exp/meta-content-publish-pipeline/SKILL.md) |
-| 77 | ✓ | [`src/opensquilla/skills/exp/meta-diagram-triangulation/SKILL.md`](src/opensquilla/skills/exp/meta-diagram-triangulation/SKILL.md) |
-| 78 | ✓ | [`src/opensquilla/skills/exp/meta-github-pr-watch-digest/SKILL.md`](src/opensquilla/skills/exp/meta-github-pr-watch-digest/SKILL.md) |
-| 79 | ✓ | [`src/opensquilla/skills/exp/meta-home-it-rescue/SKILL.md`](src/opensquilla/skills/exp/meta-home-it-rescue/SKILL.md) |
-| 80 | ✓ | [`src/opensquilla/skills/exp/meta-issue-to-pr-autopilot/SKILL.md`](src/opensquilla/skills/exp/meta-issue-to-pr-autopilot/SKILL.md) |
-| 81 | ✓ | [`src/opensquilla/skills/exp/meta-knowledge-base-bootstrap/SKILL.md`](src/opensquilla/skills/exp/meta-knowledge-base-bootstrap/SKILL.md) |
-| 82 | ✓ | [`src/opensquilla/skills/exp/meta-long-running-build-watchdog/SKILL.md`](src/opensquilla/skills/exp/meta-long-running-build-watchdog/SKILL.md) |
-| 83 | ✓ | [`src/opensquilla/skills/exp/meta-meeting-to-workflow/SKILL.md`](src/opensquilla/skills/exp/meta-meeting-to-workflow/SKILL.md) |
-| 84 | ✓ | [`src/opensquilla/skills/exp/meta-migration-assistant/SKILL.md`](src/opensquilla/skills/exp/meta-migration-assistant/SKILL.md) |
-| 85 | ✓ | [`src/opensquilla/skills/exp/meta-multi-format-export-pack/SKILL.md`](src/opensquilla/skills/exp/meta-multi-format-export-pack/SKILL.md) |
-| 86 | ✓ | [`src/opensquilla/skills/exp/meta-pdf-intelligence/SKILL.md`](src/opensquilla/skills/exp/meta-pdf-intelligence/SKILL.md) |
-| 87 | ✓ | [`src/opensquilla/skills/exp/meta-pdf-reformat-pipeline/SKILL.md`](src/opensquilla/skills/exp/meta-pdf-reformat-pipeline/SKILL.md) |
-| 88 | ✓ | [`src/opensquilla/skills/exp/meta-pre-commit-quality-gate/SKILL.md`](src/opensquilla/skills/exp/meta-pre-commit-quality-gate/SKILL.md) |
-| 89 | ✓ | [`src/opensquilla/skills/exp/meta-research-to-slide-deck/SKILL.md`](src/opensquilla/skills/exp/meta-research-to-slide-deck/SKILL.md) |
-| 90 | ✓ | [`src/opensquilla/skills/exp/meta-sales-lead-researcher/SKILL.md`](src/opensquilla/skills/exp/meta-sales-lead-researcher/SKILL.md) |
-| 91 | ✓ | [`src/opensquilla/skills/exp/meta-scheduled-morning-digest/SKILL.md`](src/opensquilla/skills/exp/meta-scheduled-morning-digest/SKILL.md) |
-| 92 | ✓ | [`src/opensquilla/skills/exp/meta-security-review-bundle/SKILL.md`](src/opensquilla/skills/exp/meta-security-review-bundle/SKILL.md) |
-| 93 | ✓ | [`src/opensquilla/skills/exp/meta-spreadsheet-insight/SKILL.md`](src/opensquilla/skills/exp/meta-spreadsheet-insight/SKILL.md) |
-| 94 | ✓ | [`src/opensquilla/skills/exp/meta-stack-trace-investigator/SKILL.md`](src/opensquilla/skills/exp/meta-stack-trace-investigator/SKILL.md) |
-| 95 | ✓ | [`src/opensquilla/skills/exp/meta-travel-planner/SKILL.md`](src/opensquilla/skills/exp/meta-travel-planner/SKILL.md) |
-| 96 | ✓ | [`src/opensquilla/skills/exp/meta-web-to-pdf-briefing/SKILL.md`](src/opensquilla/skills/exp/meta-web-to-pdf-briefing/SKILL.md) |
+| 36 | ✓ | [`src/opensquilla/skills/bundled/paper-artifact-runtime/SKILL.md`](src/opensquilla/skills/bundled/paper-artifact-runtime/SKILL.md) |
+| 37 | ✓ | [`src/opensquilla/skills/bundled/paper-citation-integrity-gate/SKILL.md`](src/opensquilla/skills/bundled/paper-citation-integrity-gate/SKILL.md) |
+| 38 | ✓ | [`src/opensquilla/skills/bundled/paper-citation-planner/SKILL.md`](src/opensquilla/skills/bundled/paper-citation-planner/SKILL.md) |
+| 39 | ✓ | [`src/opensquilla/skills/bundled/paper-delivery-summary/SKILL.md`](src/opensquilla/skills/bundled/paper-delivery-summary/SKILL.md) |
+| 40 | ✓ | [`src/opensquilla/skills/bundled/paper-experiment-stub/SKILL.md`](src/opensquilla/skills/bundled/paper-experiment-stub/SKILL.md) |
+| 41 | ✓ | [`src/opensquilla/skills/bundled/paper-latex-sanitizer/SKILL.md`](src/opensquilla/skills/bundled/paper-latex-sanitizer/SKILL.md) |
+| 42 | ✓ | [`src/opensquilla/skills/bundled/paper-length-gate/SKILL.md`](src/opensquilla/skills/bundled/paper-length-gate/SKILL.md) |
+| 43 | ✓ | [`src/opensquilla/skills/bundled/paper-outline-author/SKILL.md`](src/opensquilla/skills/bundled/paper-outline-author/SKILL.md) |
+| 44 | ✓ | [`src/opensquilla/skills/bundled/paper-plot-stub/SKILL.md`](src/opensquilla/skills/bundled/paper-plot-stub/SKILL.md) |
+| 45 | ✓ | [`src/opensquilla/skills/bundled/paper-preference-planner/SKILL.md`](src/opensquilla/skills/bundled/paper-preference-planner/SKILL.md) |
+| 46 | ✓ | [`src/opensquilla/skills/bundled/paper-quality-gate/SKILL.md`](src/opensquilla/skills/bundled/paper-quality-gate/SKILL.md) |
+| 47 | ✓ | [`src/opensquilla/skills/bundled/paper-refbib-stub/SKILL.md`](src/opensquilla/skills/bundled/paper-refbib-stub/SKILL.md) |
+| 48 | ✓ | [`src/opensquilla/skills/bundled/paper-revision-author/SKILL.md`](src/opensquilla/skills/bundled/paper-revision-author/SKILL.md) |
+| 49 | ✓ | [`src/opensquilla/skills/bundled/paper-section-author/SKILL.md`](src/opensquilla/skills/bundled/paper-section-author/SKILL.md) |
+| 50 | ✓ | [`src/opensquilla/skills/bundled/paper-source-curator/SKILL.md`](src/opensquilla/skills/bundled/paper-source-curator/SKILL.md) |
+| 51 | ✓ | [`src/opensquilla/skills/bundled/paper-source-readiness-gate/SKILL.md`](src/opensquilla/skills/bundled/paper-source-readiness-gate/SKILL.md) |
+| 52 | ✓ | [`src/opensquilla/skills/bundled/pdf-toolkit/SKILL.md`](src/opensquilla/skills/bundled/pdf-toolkit/SKILL.md) |
+| 53 | ✓ | [`src/opensquilla/skills/bundled/pptx/SKILL.md`](src/opensquilla/skills/bundled/pptx/SKILL.md) |
+| 54 | ✓ | [`src/opensquilla/skills/bundled/seedance-2-prompt/SKILL.md`](src/opensquilla/skills/bundled/seedance-2-prompt/SKILL.md) |
+| 55 | ✓ | [`src/opensquilla/skills/bundled/short-drama-delivery-audit/SKILL.md`](src/opensquilla/skills/bundled/short-drama-delivery-audit/SKILL.md) |
+| 56 | ✓ | [`src/opensquilla/skills/bundled/short-drama-review-normalizer/SKILL.md`](src/opensquilla/skills/bundled/short-drama-review-normalizer/SKILL.md) |
+| 57 | ✓ | [`src/opensquilla/skills/bundled/skill-creator-linter/SKILL.md`](src/opensquilla/skills/bundled/skill-creator-linter/SKILL.md) |
+| 58 | ✓ | [`src/opensquilla/skills/bundled/skill-creator-proposals/SKILL.md`](src/opensquilla/skills/bundled/skill-creator-proposals/SKILL.md) |
+| 59 | ✓ | [`src/opensquilla/skills/bundled/skill-creator-smoke-test/SKILL.md`](src/opensquilla/skills/bundled/skill-creator-smoke-test/SKILL.md) |
+| 60 | ✓ | [`src/opensquilla/skills/bundled/skill-creator/SKILL.md`](src/opensquilla/skills/bundled/skill-creator/SKILL.md) |
+| 61 | ✓ | [`src/opensquilla/skills/bundled/srt-from-script/SKILL.md`](src/opensquilla/skills/bundled/srt-from-script/SKILL.md) |
+| 62 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-generic-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-generic-probe/SKILL.md) |
+| 63 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-go-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-go-probe/SKILL.md) |
+| 64 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-js-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-js-probe/SKILL.md) |
+| 65 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-python-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-python-probe/SKILL.md) |
+| 66 | ✓ | [`src/opensquilla/skills/bundled/stack-trace-rust-probe/SKILL.md`](src/opensquilla/skills/bundled/stack-trace-rust-probe/SKILL.md) |
+| 67 | ✓ | [`src/opensquilla/skills/bundled/sub-agent/SKILL.md`](src/opensquilla/skills/bundled/sub-agent/SKILL.md) |
+| 68 | ✓ | [`src/opensquilla/skills/bundled/subtitle-burner/SKILL.md`](src/opensquilla/skills/bundled/subtitle-burner/SKILL.md) |
+| 69 | ✓ | [`src/opensquilla/skills/bundled/summarize/SKILL.md`](src/opensquilla/skills/bundled/summarize/SKILL.md) |
+| 70 | ✓ | [`src/opensquilla/skills/bundled/swe-bench/SKILL.md`](src/opensquilla/skills/bundled/swe-bench/SKILL.md) |
+| 71 | ✓ | [`src/opensquilla/skills/bundled/text-file-read/SKILL.md`](src/opensquilla/skills/bundled/text-file-read/SKILL.md) |
+| 72 | ✓ | [`src/opensquilla/skills/bundled/title-card-image/SKILL.md`](src/opensquilla/skills/bundled/title-card-image/SKILL.md) |
+| 73 | ✓ | [`src/opensquilla/skills/bundled/tmux/SKILL.md`](src/opensquilla/skills/bundled/tmux/SKILL.md) |
+| 74 | ✓ | [`src/opensquilla/skills/bundled/video-merger/SKILL.md`](src/opensquilla/skills/bundled/video-merger/SKILL.md) |
+| 75 | ✓ | [`src/opensquilla/skills/bundled/video-still-animator/SKILL.md`](src/opensquilla/skills/bundled/video-still-animator/SKILL.md) |
+| 76 | ✓ | [`src/opensquilla/skills/bundled/voice-clone-lab/SKILL.md`](src/opensquilla/skills/bundled/voice-clone-lab/SKILL.md) |
+| 77 | ✓ | [`src/opensquilla/skills/bundled/voice-conversion-studio/SKILL.md`](src/opensquilla/skills/bundled/voice-conversion-studio/SKILL.md) |
+| 78 | ✓ | [`src/opensquilla/skills/bundled/voiceover-studio/SKILL.md`](src/opensquilla/skills/bundled/voiceover-studio/SKILL.md) |
+| 79 | ✓ | [`src/opensquilla/skills/bundled/weather/SKILL.md`](src/opensquilla/skills/bundled/weather/SKILL.md) |
+| 80 | ✓ | [`src/opensquilla/skills/bundled/web-search/SKILL.md`](src/opensquilla/skills/bundled/web-search/SKILL.md) |
+| 81 | ✓ | [`src/opensquilla/skills/bundled/xlsx/SKILL.md`](src/opensquilla/skills/bundled/xlsx/SKILL.md) |
+| 82 | ✓ | [`src/opensquilla/skills/exp/meta-arxiv-daily-digest-deck/SKILL.md`](src/opensquilla/skills/exp/meta-arxiv-daily-digest-deck/SKILL.md) |
+| 83 | ✓ | [`src/opensquilla/skills/exp/meta-codereview-current-diff/SKILL.md`](src/opensquilla/skills/exp/meta-codereview-current-diff/SKILL.md) |
+| 84 | ✓ | [`src/opensquilla/skills/exp/meta-compliance-audit-bundle/SKILL.md`](src/opensquilla/skills/exp/meta-compliance-audit-bundle/SKILL.md) |
+| 85 | ✓ | [`src/opensquilla/skills/exp/meta-content-publish-pipeline/SKILL.md`](src/opensquilla/skills/exp/meta-content-publish-pipeline/SKILL.md) |
+| 86 | ✓ | [`src/opensquilla/skills/exp/meta-diagram-triangulation/SKILL.md`](src/opensquilla/skills/exp/meta-diagram-triangulation/SKILL.md) |
+| 87 | ✓ | [`src/opensquilla/skills/exp/meta-github-pr-watch-digest/SKILL.md`](src/opensquilla/skills/exp/meta-github-pr-watch-digest/SKILL.md) |
+| 88 | ✓ | [`src/opensquilla/skills/exp/meta-home-it-rescue/SKILL.md`](src/opensquilla/skills/exp/meta-home-it-rescue/SKILL.md) |
+| 89 | ✓ | [`src/opensquilla/skills/exp/meta-issue-to-pr-autopilot/SKILL.md`](src/opensquilla/skills/exp/meta-issue-to-pr-autopilot/SKILL.md) |
+| 90 | ✓ | [`src/opensquilla/skills/exp/meta-knowledge-base-bootstrap/SKILL.md`](src/opensquilla/skills/exp/meta-knowledge-base-bootstrap/SKILL.md) |
+| 91 | ✓ | [`src/opensquilla/skills/exp/meta-long-running-build-watchdog/SKILL.md`](src/opensquilla/skills/exp/meta-long-running-build-watchdog/SKILL.md) |
+| 92 | ✓ | [`src/opensquilla/skills/exp/meta-meeting-to-workflow/SKILL.md`](src/opensquilla/skills/exp/meta-meeting-to-workflow/SKILL.md) |
+| 93 | ✓ | [`src/opensquilla/skills/exp/meta-migration-assistant/SKILL.md`](src/opensquilla/skills/exp/meta-migration-assistant/SKILL.md) |
+| 94 | ✓ | [`src/opensquilla/skills/exp/meta-multi-format-export-pack/SKILL.md`](src/opensquilla/skills/exp/meta-multi-format-export-pack/SKILL.md) |
+| 95 | ✓ | [`src/opensquilla/skills/exp/meta-pdf-intelligence/SKILL.md`](src/opensquilla/skills/exp/meta-pdf-intelligence/SKILL.md) |
+| 96 | ✓ | [`src/opensquilla/skills/exp/meta-pdf-reformat-pipeline/SKILL.md`](src/opensquilla/skills/exp/meta-pdf-reformat-pipeline/SKILL.md) |
+| 97 | ✓ | [`src/opensquilla/skills/exp/meta-pre-commit-quality-gate/SKILL.md`](src/opensquilla/skills/exp/meta-pre-commit-quality-gate/SKILL.md) |
+| 98 | ✓ | [`src/opensquilla/skills/exp/meta-research-to-slide-deck/SKILL.md`](src/opensquilla/skills/exp/meta-research-to-slide-deck/SKILL.md) |
+| 99 | ✓ | [`src/opensquilla/skills/exp/meta-sales-lead-researcher/SKILL.md`](src/opensquilla/skills/exp/meta-sales-lead-researcher/SKILL.md) |
+| 100 | ✓ | [`src/opensquilla/skills/exp/meta-scheduled-morning-digest/SKILL.md`](src/opensquilla/skills/exp/meta-scheduled-morning-digest/SKILL.md) |
+| 101 | ✓ | [`src/opensquilla/skills/exp/meta-security-review-bundle/SKILL.md`](src/opensquilla/skills/exp/meta-security-review-bundle/SKILL.md) |
+| 102 | ✓ | [`src/opensquilla/skills/exp/meta-spreadsheet-insight/SKILL.md`](src/opensquilla/skills/exp/meta-spreadsheet-insight/SKILL.md) |
+| 103 | ✓ | [`src/opensquilla/skills/exp/meta-stack-trace-investigator/SKILL.md`](src/opensquilla/skills/exp/meta-stack-trace-investigator/SKILL.md) |
+| 104 | ✓ | [`src/opensquilla/skills/exp/meta-travel-planner/SKILL.md`](src/opensquilla/skills/exp/meta-travel-planner/SKILL.md) |
+| 105 | ✓ | [`src/opensquilla/skills/exp/meta-web-to-pdf-briefing/SKILL.md`](src/opensquilla/skills/exp/meta-web-to-pdf-briefing/SKILL.md) |
 
 ---
 

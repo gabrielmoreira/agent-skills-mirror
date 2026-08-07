@@ -1,6 +1,6 @@
 # Auth cookie lifecycle — design notes and field findings
 
-**Last Updated:** 2026-07-04
+**Last Updated:** 2026-08-05
 
 > **Status:** current design notes for the auth refresh stack in `main`.
 > The numbered recovery ladder below is the canonical taxonomy, shared with
@@ -58,9 +58,15 @@ fully-automatic layer that revives a fully-expired session with no browser.**
 **L4 (master-token re-mint) is the standout for headless/unattended use.** Unlike
 L3 it needs no browser at refresh time, and unlike L5/L6 it is fully automatic.
 One durable master token — one human sign-in, then good for months — re-mints web
-cookies on demand and self-heals an expired session in-process, coalesced through
-the `AuthRefreshCoordinator` single-flight. See [§4.4](#44-l4--master-token-re-mint)
-and [ADR-0023](adr/0023-master-token-headless-auth.md).
+cookies on demand and self-heals an expired session in-process, coalesced across
+event loops **within one process** through the `single_flight` core
+([ADR-0030](adr/0030-one-recovery-ladder.md)) — re-mint rungs deliberately take
+no cross-process flock, so concurrent processes each still re-mint their own
+session (unlike the L5 refresh-cmd rung, §6.2, which is cross-process
+serialized); live mid-session RPCs keep their own, deliberately untouched
+`AuthRefreshCoordinator` single-flight. See
+[§4.4](#44-l4--master-token-re-mint) and
+[ADR-0023](adr/0023-master-token-headless-auth.md).
 
 `NOTEBOOKLM_REFRESH_CMD` ([#336](https://github.com/teng-lin/notebooklm-py/pull/336))
 is a complementary, reactive hook: it runs a user-supplied recovery command on
@@ -425,7 +431,9 @@ its own cookie state during the read-merge-write cycle. Historically several suc
 hazards existed (a stale-in-memory-clobbers-fresh-disk race, `(name, domain)`
 path-collapse, sibling-domain allow-list asymmetry, round-trip attribute erosion).
 **All of them are resolved in-tree** — the persistence path is now snapshot/delta,
-CAS-guarded, cross-process flocked, and fully `(name, domain, path)`-aware. If users
+CAS-guarded, cross-process flocked, fully `(name, domain, path)`-aware, and funneled
+through the single canonical `storage_writer.py` module
+([ADR-0029](adr/0029-canonical-storage-writer.md)). If users
 report cookies "expiring fast", walk the
 [diagnostic checklist](#a2--diagnosing-cookies-expire-fast) in the Appendix (which
 also records the historical hazards and their fixes) before assuming Google changed
@@ -529,8 +537,22 @@ The library escalates progressively as cheaper mechanisms fail (see the ladder
 table in the [TL;DR](#tldr)). Each layer is a fallback for the one below it: L1/L2
 are HTTP-only and cheap; L3 drives a browser and only helps if the profile's Google
 session is still alive; **L4 re-mints from a durable master token with no browser —
-the best unattended recovery**; L5 delegates policy to the operator; L6 is manual;
-L7 is proactive scheduling for idle profiles.
+the best unattended recovery**; L5 delegates policy to the operator, and — opt-in —
+can now fire mid-session as well as at cold start (§4.5); L6 is manual; L7 is
+proactive scheduling for idle profiles.
+
+Cold-start L3/L4 recovery and the L5 refresh-cmd both coalesce duplicate work
+through one process-global core, `_auth/single_flight.py`
+([ADR-0030](adr/0030-one-recovery-ladder.md)): a leader on one event loop drives
+the attempt as an `asyncio.Task`, followers on *any* loop in the process bridge to
+its result, and a per-canonical-path success epoch lets a late waiter skip a
+redundant attempt entirely once a sibling has already succeeded. This replaced two
+independently hand-rolled same-loop-only coalescing implementations that had
+drifted apart between `refresh.py` and `recovery.py`. It is a formalisation of the
+existing cross-loop pattern, not a change to the mid-session
+`AuthRefreshCoordinator`, which ADR-0030 deliberately leaves untouched (ADR-0004
+loop-affinity still governs the client itself: coalescing the *recovery attempt*
+across loops does not make a `NotebookLMClient` shareable across loops).
 
 ### 4.1 L1 — per-call `RotateCookies` POST
 
@@ -589,10 +611,15 @@ headless-browser ladder can't provide off-device.
 - **Where it fires.** `_auth/recovery.py::try_master_token_reauth`, as layer 4
   after L1 (homepage), L2 (`RotateCookies`), and L3 (headless browser) are
   exhausted. Both cold token loading and mid-session `refresh_auth_session`
-  delegate to this adapter. It mints a new session, persists it under the
-  storage lock, reloads the jar, and retries the homepage GET once. Equivalent
-  same-loop cold callers share one complete recovery task; live-client RPCs
-  retain their `AuthRefreshCoordinator` single-flight.
+  delegate to this adapter. It mints a new session, persists it through the
+  canonical `storage_writer` (§A2, [ADR-0029](adr/0029-canonical-storage-writer.md)),
+  reloads the jar, and retries the homepage GET once. Cold-start callers on
+  **any** event loop — not just the same one — now coalesce onto one recovery
+  attempt via the `single_flight` core; `recovery.py` layers its own per-loop
+  revalidate-on-bump epoch on top so a fresh loop still runs the full ladder
+  rather than trusting a stale cross-loop success blindly. Live-client
+  mid-session RPCs retain their separate, untouched `AuthRefreshCoordinator`
+  single-flight.
 - **Cold start.** The normal file-backed token loader invokes the same L4 adapter
   after a confirmed login redirect, so a session already dead at process start
   recovers without a forced pre-mint.
@@ -611,8 +638,14 @@ headless-browser ladder can't provide off-device.
 ### 4.5 L5–L7
 
 - **L5 — `NOTEBOOKLM_REFRESH_CMD`.** An operator-supplied recovery command run on
-  an auth-expiry signal, with one retry. Same-loop callers coalesce on one
-  subprocess and cancellation-safe. See [§6.2](#62-notebooklm_refresh_cmdcommand-line-l5).
+  an auth-expiry signal, with one retry. Fires at cold start by default; set
+  `NOTEBOOKLM_REFRESH_CMD_MIDSESSION=1` to opt into firing mid-session too
+  (rung "L2.5" in the code's internal escalation order — [ADR-0030](adr/0030-one-recovery-ladder.md)).
+  Callers on any loop coalesce on one subprocess (cancellation-safe) via
+  `single_flight`, and a per-canonical-path flock now also serializes the
+  subprocess **across processes**, closing the earlier stampede where N
+  processes each spawned their own recovery command. See
+  [§6.2](#62-notebooklm_refresh_cmdcommand-line-l5).
 - **L6 — `notebooklm login`.** Baseline manual recovery: interactive browser
   sign-in, or `--browser-cookies <browser>` extraction (§2.4).
 - **L7 — `notebooklm auth refresh`.** A one-shot token fetch driven by cron /
@@ -689,14 +722,33 @@ Together the three guards cover sequential CLI invocations (mtime fast-path), an
 racing the L2 loop (per-profile monotonic stamp), and simultaneous processes
 (cross-process flock). The per-`(loop, profile)` lock dict is a `WeakKeyDictionary`
 keyed on the loop object, so a short-lived `asyncio.run()` loop's inner dict is
-reclaimed on GC.
+reclaimed on GC. All three guards, plus the refresh-cmd flock in
+[§6.2](#62-notebooklm_refresh_cmdcommand-line-l5), key on
+`canonical_storage_key(storage_path)` (`_auth/paths.py`) rather than the raw path,
+so two spellings of one profile (relative vs. absolute, symlinked, `~`-expanded)
+collapse onto a single throttle slot instead of each getting its own budget.
 
 ### 5.4 Inline `__Secure-1PSIDTS` cold-start recovery
 
 When a profile has the persistent `__Secure-1PSID` but no transient
 `__Secure-1PSIDTS` (a common cold-start snapshot), `_recover_psidts_inline`
 (`_auth/psidts_recovery.py`) makes a preflight `RotateCookies` POST during client
-startup to mint the missing cookie before the first RPC. It fires only when `SID`
+startup to mint the missing cookie before the first RPC.
+
+**This recovery now runs off the event loop for async callers ([ADR-0030](adr/0030-one-recovery-ladder.md)).**
+The loaders split into a pure inner loader (file I/O + validation, never network)
+and a public wrapper (`build_httpx_cookies_from_storage`, `load_auth_from_storage`)
+that composes the pure load with this recovery. The pure loader raises
+`RequiredCookieValidationError` tagged with a closed-enum `reason`
+(`missing_cookie` | `psidts_unroutable`) instead of invoking recovery itself; the
+wrapper decides whether to call `_recover_psidts_inline` based on that reason.
+Sync (CLI) callers keep the inline recovery behavior verbatim; async callers
+offload the whole wrapper onto `asyncio.to_thread`, so the ~15 s `RotateCookies`
+POST below can no longer stall an async caller's event loop the way a same-thread
+inline call could. The decision rules that follow are unchanged byte-for-byte —
+only *where* they execute changed.
+
+It fires only when `SID`
 is present, a **rotatable** secondary binding is intact (`OSID`, or `APISID` +
 `SAPISID`), and no live `__Secure-1PSIDTS` would be **sent to**
 `accounts.google.com` — that is, the cookie is absent, expired, or scoped to a
@@ -831,22 +883,46 @@ library:
 2. Sets `NOTEBOOKLM_REFRESH_PROFILE` / `NOTEBOOKLM_REFRESH_STORAGE_PATH` in the
    child env so the script knows which profile to refresh.
 3. Sets `_NOTEBOOKLM_REFRESH_ATTEMPTED=1` to prevent recursive refresh loops.
-4. Scrubs `NOTEBOOKLM_AUTH_JSON` from the child env (credential-equivalent; the
-   script gets the on-disk path via step 2 instead).
+4. Scrubs credential/secret env vars from the child env — `NOTEBOOKLM_AUTH_JSON`,
+   `NOTEBOOKLM_SERVER_TOKEN`, `NOTEBOOKLM_SERVER_TOKEN_FILE`,
+   `NOTEBOOKLM_MCP_TOKEN`, `NOTEBOOKLM_MCP_OAUTH_PASSWORD`,
+   `NOTEBOOKLM_MCP_OAUTH_STATE_PATH` — so a long-lived server's own secrets can't
+   leak into every refresh subprocess and its grandchildren; the script gets the
+   on-disk storage path via step 2 instead. Widened from the single
+   `NOTEBOOKLM_AUTH_JSON` scrub once this rung became reachable mid-session
+   ([ADR-0030](adr/0030-one-recovery-ladder.md)).
 5. Reloads cookies from `storage_state.json` and replays the token fetch once.
 
 > **SECURITY — inherited environment.** The refresh command inherits the **full
-> parent environment** (minus the `NOTEBOOKLM_AUTH_JSON` scrub) so it can find
+> parent environment** (minus the scrubbed vars above) so it can find
 > `PATH`/`HOME`/proxy settings and re-invoke this library. There is deliberately no
 > allowlist. Any other secret in the launching shell is inherited by the command and
 > every grandchild, and is visible via `/proc/<pid>/environ` to the same UID.
 > Operators MUST NOT keep unrelated secrets in the launching environment
 > ([#1274](https://github.com/teng-lin/notebooklm-py/issues/1274)).
 
-Same-loop fan-out coalesces on one shielded in-flight subprocess, so cancellation of
-one caller doesn't cancel the shared command; cross-loop coalescing is best-effort
-(cross-loop client reuse is unsupported per
-[ADR-0004](adr/0004-loop-affinity-contract.md)).
+**Mid-session firing (opt-in, [ADR-0030](adr/0030-one-recovery-ladder.md)).** By
+default the command only fires at cold start — client construction /
+`AuthTokens.from_storage`. Set `NOTEBOOKLM_REFRESH_CMD_MIDSESSION=1` to also fire
+it **mid-session**, e.g. inside a long-lived server whose cookies expired after the
+client was already constructed. This is opt-in for one release — de-risking
+operators whose command assumes cold-start-only invocation — and is expected to
+flip to default-on in a later release. Passive readiness probes (`auth check --test
+--passive`) never invoke it regardless of this flag: they use the strict,
+no-recovery loader. Set `NOTEBOOKLM_REFRESH_CMD_LOG_OUTPUT=1` to route the
+command's captured stdout/stderr into the DEBUG logger; the default DEBUG line
+records only the command basename, exit code, and byte counts, so promoting this
+rung into a long-lived server doesn't widen exposure of whatever the command
+prints.
+
+Callers coalesce on one shielded in-flight subprocess via the cross-loop
+`single_flight` core ([ADR-0030](adr/0030-one-recovery-ladder.md)), so cancellation
+of one caller doesn't cancel the shared command — this now holds **across event
+loops in one process**, not just within one loop. A per-canonical-path flock
+(mirroring the keepalive rotation lock, [§5.3](#53-rate-limiting-and-the-three-guard-throttle))
+additionally serializes the subprocess **across processes**. This coalescing is
+about the refresh-cmd subprocess only; cross-loop `NotebookLMClient` reuse is still
+unsupported per [ADR-0004](adr/0004-loop-affinity-contract.md).
 
 This is **orthogonal to L1–L4**: those proactively keep the session fresh (L1/L2) or
 re-mint it in-process (L3/L4), while `NOTEBOOKLM_REFRESH_CMD` runs only after auth
@@ -913,6 +989,8 @@ Tripwires that would signal the threat model shifting:
 
 **In-repo**
 
+- [ADR-0029 — canonical storage writer](adr/0029-canonical-storage-writer.md)
+- [ADR-0030 — one recovery ladder](adr/0030-one-recovery-ladder.md)
 - [ADR-0023 — master-token headless auth](adr/0023-master-token-headless-auth.md)
 - [ADR-0013 — composable session capabilities](adr/0013-composable-session-capabilities.md)
 - [ADR-0004 — loop-affinity contract](adr/0004-loop-affinity-contract.md)
@@ -980,6 +1058,22 @@ reports still make sense:
 - **`expires=-1` flattens age.** `*PSIDTS` rotations arrive without `Max-Age` and are
   stored as session cookies, so on-disk age is unknowable — the only staleness signal
   is the file mtime. By design, not a bug.
+- **Divergent writers, divergent locks (write consolidation).** Cookie saves,
+  in-band account-metadata writes, and master-token persistence each hand-rolled
+  their own write path: cookie saves used the project's own `flock` primitive,
+  `_auth/account.py` and `_auth/master_token.py` used `filelock.FileLock` with a
+  10 s timeout, and `write_master_token` had no lock at all. Resolved by
+  [ADR-0029](adr/0029-canonical-storage-writer.md): `_auth/storage_writer.py` is
+  now the only module permitted to perform the atomic write to
+  `storage_state.json` — enforced by an AST guardrail
+  (`tests/_guardrails/test_storage_writer_boundary.py`) — on one unified,
+  platform-neutral bounded lock (90 s deadline, up from 10 s). Full-replace
+  writers (account metadata, master-token persist) now **fail closed**, raising
+  `LockUnavailableError` rather than silently skipping the write, while the CAS
+  cookie merge keeps its status-quo **fail-open** behavior (availability is safe
+  there; the CAS guard itself prevents a lost update). A save-ordering guard
+  (`CookiePersistence.save()`) additionally makes a stale queued save drop itself
+  instead of overwriting a save that already landed.
 
 Across the OSS ecosystem this is the most defensive cookie-persistence implementation
 surveyed: peers (Gemini-API, yt-dlp, CookieCloud) are "last writer wins" with no
@@ -1055,6 +1149,24 @@ gate their writes correctly.
 
 ## Changelog
 
+- **2026-08-05 (storage-writer / recovery-ladder refactor sync)** — Reflects the
+  auth-audit refactor in [#2091](https://github.com/teng-lin/notebooklm-py/pull/2091)
+  (companion [ADR-0029](adr/0029-canonical-storage-writer.md) canonical storage
+  writer + [ADR-0030](adr/0030-one-recovery-ladder.md) one recovery ladder):
+  `_auth/storage_writer.py` is now the sole writer of `storage_state.json` on one
+  unified 90 s lock, fail-closed for full-replace writes and fail-open for the CAS
+  cookie merge (§A2); cold-start L3/L4 recovery and the `NOTEBOOKLM_REFRESH_CMD`
+  rung now coalesce across event loops **and** processes through the new
+  `_auth/single_flight.py` core instead of two independently hand-rolled,
+  same-loop-only implementations (§4, §5.3, §6.2); `NOTEBOOKLM_REFRESH_CMD` gained
+  an opt-in mid-session firing mode (`NOTEBOOKLM_REFRESH_CMD_MIDSESSION`) plus
+  output-logging and secret-scrub hardening (§6.2); and the inline PSIDTS
+  cold-start recovery (§5.4) now runs off the event loop for async callers via a
+  pure-loader/wrapper split, with its decision rules unchanged byte-for-byte. The
+  public L1–L7 taxonomy, the empirical cookie-requirements findings (§3.3), and the
+  cookie-policy predicates are unaffected — this was an internal
+  coalescing/locking consolidation, not a change to what Google accepts or how the
+  ladder is presented to users.
 - **2026-07-04 (v0.8.0 rewrite)** — Restructured and trimmed for the v0.8.0
   release. Now leads with the master-token headless path (L4) as the recommended
   approach for unattended / headless / server / CI use, adds an early

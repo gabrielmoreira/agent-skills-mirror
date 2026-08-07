@@ -1,7 +1,13 @@
 ---
+type: skill
+lifecycle: stable
+inheritance: inheritable
 name: delivery-svg-markdown
-description: "Render data dashboards as static SVG panels embeddable in Markdown. Uses D3.js v7 mental model for scales, shapes, and axes. No runtime JS; output is pure SVG with inline styles for GitHub compatibility."
-lastReviewed: 2026-05-04
+description: Render data dashboards as static SVG panels embeddable in Markdown. Uses D3.js v7 mental model for scales, shapes, and axes. No runtime JS; output is pure SVG with inline styles for GitHub compatibility.
+tier: standard
+applyTo: "**/*svg*,**/*markdown*dashboard*,**/*visual*,**/*chart*render*"
+currency: 2026-08-06
+lastReviewed: 2026-08-06
 ---
 
 # Delivery: SVG in Markdown
@@ -35,34 +41,34 @@ SVG uses a top-left origin with y increasing downward. All positioning uses the 
      width="800" height="600" font-family="system-ui, -apple-system, sans-serif">
 ```
 
-| Constant | Default | Rationale |
-| --- | --- | --- |
-| Dashboard width | 800px | Fits GitHub's max content width (~888px) with margin |
-| Panel height | 200-300px | Comfortable for a single chart |
-| Margin (top) | 40px | Room for title |
-| Margin (right) | 20px | Breathing room |
-| Margin (bottom) | 50px | Room for x-axis labels |
-| Margin (left) | 60px | Room for y-axis labels |
-| Font size (title) | 16px | Readable, not dominant |
-| Font size (labels) | 12px | Legible at default zoom |
-| Font size (data) | 11px | Compact, scannable |
+| Constant           | Default   | Rationale                                            |
+| ------------------ | --------- | ---------------------------------------------------- |
+| Dashboard width    | 800px     | Fits GitHub's max content width (~888px) with margin |
+| Panel height       | 200-300px | Comfortable for a single chart                       |
+| Margin (top)       | 40px      | Room for title                                       |
+| Margin (right)     | 20px      | Breathing room                                       |
+| Margin (bottom)    | 50px      | Room for x-axis labels                               |
+| Margin (left)      | 60px      | Room for y-axis labels                               |
+| Font size (title)  | 16px      | Readable, not dominant                               |
+| Font size (labels) | 12px      | Legible at default zoom                              |
+| Font size (data)   | 11px      | Compact, scannable                                   |
 
 ### GitHub Compatibility Rules
 
 GitHub's SVG sanitizer strips many features. These constraints are non-negotiable:
 
-| Feature | Allowed? | Alternative |
-| --- | --- | --- |
-| Inline `style` attributes | Yes | Use these exclusively |
-| `<style>` blocks | No (stripped) | Inline styles instead |
-| External CSS | No | Inline styles |
-| JavaScript | No (stripped) | Not applicable (static) |
-| `<foreignObject>` | No (stripped) | Use `<text>` elements |
-| `xlink:href` for images | Partial | Avoid; use inline paths |
-| Gradients (`<linearGradient>`) | Yes | Keep `<defs>` simple |
-| Filters (`<filter>`) | Limited | Avoid complex filters |
-| `clip-path` | Yes | Works for chart area clipping |
-| Web fonts | No | Use system font stack |
+| Feature                        | Allowed?      | Alternative                   |
+| ------------------------------ | ------------- | ----------------------------- |
+| Inline `style` attributes      | Yes           | Use these exclusively         |
+| `<style>` blocks               | No (stripped) | Inline styles instead         |
+| External CSS                   | No            | Inline styles                 |
+| JavaScript                     | No (stripped) | Not applicable (static)       |
+| `<foreignObject>`              | No (stripped) | Use `<text>` elements         |
+| `xlink:href` for images        | Partial       | Avoid; use inline paths       |
+| Gradients (`<linearGradient>`) | Yes           | Keep `<defs>` simple          |
+| Filters (`<filter>`)           | Limited       | Avoid complex filters         |
+| `clip-path`                    | Yes           | Works for chart area clipping |
+| Web fonts                      | No            | Use system font stack         |
 
 ### Inline Style Pattern
 
@@ -84,6 +90,7 @@ The agent does not run D3. It uses D3's conceptual framework to compute SVG coor
 A scale maps a data domain to a visual range.
 
 **Linear scale** (continuous values):
+
 ```
 domain: [0, maxValue]
 range: [marginLeft, width - marginRight]
@@ -91,6 +98,7 @@ map(value) = range[0] + (value - domain[0]) / (domain[1] - domain[0]) * (range[1
 ```
 
 **Band scale** (categorical values):
+
 ```
 domain: [categories...]
 range: [marginLeft, width - marginRight]
@@ -100,6 +108,7 @@ map(category) = range[0] + index * step + (step - bandwidth) / 2
 ```
 
 **Ordinal scale** (category to color):
+
 ```
 domain: [categories...]
 range: [color1, color2, ...]
@@ -109,6 +118,7 @@ map(category) = range[index % range.length]
 ### Shape Generators (D3-shape concepts)
 
 **Arc generator** (pie/donut):
+
 ```
 arc(startAngle, endAngle, innerRadius, outerRadius):
   x1 = cx + outerRadius * sin(startAngle)
@@ -118,12 +128,14 @@ arc(startAngle, endAngle, innerRadius, outerRadius):
 ```
 
 **Line generator** (line charts):
+
 ```
 points: [(x1,y1), (x2,y2), ...]
 path = "M x1,y1 L x2,y2 L x3,y3 ..."
 ```
 
 **Area generator** (area charts):
+
 ```
 path = "M x1,y1_top L x2,y2_top ... L xN,yN_top L xN,yN_bottom ... L x1,y1_bottom Z"
 ```
@@ -152,40 +164,40 @@ Tick count heuristic: 4-7 ticks for most charts. Use round numbers (multiples of
 
 For dark backgrounds (terminal themes, dark-mode READMEs):
 
-| Role | Hex | Usage |
-| --- | --- | --- |
-| Background | `#1E1E2E` | Dashboard background |
-| Panel background | `#2A2A3E` | Chart panel fill |
-| Text primary | `#E0E0E0` | Titles, values |
-| Text secondary | `#999999` | Axis labels, captions |
-| Grid lines | `#3A3A4E` | Background grid |
-| Border | `#3A3A4E` | Panel borders |
-| Accent 1 | `#4A90D9` | Primary data series (blue) |
-| Accent 2 | `#50C878` | Secondary series (green) |
-| Accent 3 | `#FFB347` | Tertiary series (orange) |
-| Accent 4 | `#FF6B6B` | Quaternary / alert (red) |
-| Accent 5 | `#BB86FC` | Quinary series (purple) |
-| Positive | `#50C878` | Up, growth, good |
-| Negative | `#FF6B6B` | Down, decline, bad |
-| Neutral | `#999999` | Unchanged, baseline |
+| Role             | Hex       | Usage                      |
+| ---------------- | --------- | -------------------------- |
+| Background       | `#1E1E2E` | Dashboard background       |
+| Panel background | `#2A2A3E` | Chart panel fill           |
+| Text primary     | `#E0E0E0` | Titles, values             |
+| Text secondary   | `#999999` | Axis labels, captions      |
+| Grid lines       | `#3A3A4E` | Background grid            |
+| Border           | `#3A3A4E` | Panel borders              |
+| Accent 1         | `#4A90D9` | Primary data series (blue) |
+| Accent 2         | `#50C878` | Secondary series (green)   |
+| Accent 3         | `#FFB347` | Tertiary series (orange)   |
+| Accent 4         | `#FF6B6B` | Quaternary / alert (red)   |
+| Accent 5         | `#BB86FC` | Quinary series (purple)    |
+| Positive         | `#50C878` | Up, growth, good           |
+| Negative         | `#FF6B6B` | Down, decline, bad         |
+| Neutral          | `#999999` | Unchanged, baseline        |
 
 ### Light Theme
 
 For light backgrounds (printed docs, light-mode preview):
 
-| Role | Hex | Usage |
-| --- | --- | --- |
-| Background | `#FFFFFF` | Dashboard background |
-| Panel background | `#F8F9FA` | Chart panel fill |
-| Text primary | `#212529` | Titles, values |
-| Text secondary | `#6C757D` | Axis labels, captions |
-| Grid lines | `#E9ECEF` | Background grid |
-| Border | `#DEE2E6` | Panel borders |
-| Accent 1 | `#2563EB` | Primary data series (blue) |
-| Accent 2 | `#16A34A` | Secondary series (green) |
-| Accent 3 | `#D97706` | Tertiary series (orange) |
-| Accent 4 | `#DC2626` | Quaternary / alert (red) |
-| Accent 5 | `#7C3AED` | Quinary series (purple) |
+| Role             | Hex       | Usage                      |
+| ---------------- | --------- | -------------------------- |
+| Background       | `#FFFFFF` | Dashboard background       |
+| Panel background | `#F8F9FA` | Chart panel fill           |
+| Text primary     | `#212529` | Titles, values             |
+| Text secondary   | `#6C757D` | Axis labels, captions      |
+| Grid lines       | `#E9ECEF` | Background grid            |
+| Border           | `#DEE2E6` | Panel borders              |
+| Accent 1         | `#2563EB` | Primary data series (blue) |
+| Accent 2         | `#16A34A` | Secondary series (green)   |
+| Accent 3         | `#D97706` | Tertiary series (orange)   |
+| Accent 4         | `#DC2626` | Quaternary / alert (red)   |
+| Accent 5         | `#7C3AED` | Quinary series (purple)    |
 
 ### Color Assignment Rules
 
@@ -227,7 +239,7 @@ Formula: `cardWidth = (dashWidth - (n-1) * gap) / n`
 </g>
 ```
 
-Bar spacing: bandwidth = step * 0.7 (30% gap between bars).
+Bar spacing: bandwidth = step \* 0.7 (30% gap between bars).
 
 ### Vertical Bar Chart
 
@@ -276,11 +288,11 @@ Minimal line chart without axes, embedded in KPI cards:
 
 ### Grid Layouts
 
-| Layout | Columns | Panel width | Use when |
-| --- | --- | --- | --- |
-| Single | 1 | 800px | One hero chart, or detailed view |
-| Two-column | 2 | 384px (16px gap) | Comparison, two related charts |
-| Three-column | 3 | 252px (22px gap) | KPI strip, multiple small charts |
+| Layout       | Columns | Panel width      | Use when                         |
+| ------------ | ------- | ---------------- | -------------------------------- |
+| Single       | 1       | 800px            | One hero chart, or detailed view |
+| Two-column   | 2       | 384px (16px gap) | Comparison, two related charts   |
+| Three-column | 3       | 252px (22px gap) | KPI strip, multiple small charts |
 
 ### Dashboard Structure
 
@@ -300,12 +312,12 @@ Minimal line chart without axes, embedded in KPI cards:
 
 ### Vertical Spacing
 
-| Element | Height | Spacing after |
-| --- | --- | --- |
-| Title bar | 50px | 16px |
-| KPI strip | 90px | 24px |
-| Chart panel | 200-300px | 24px |
-| Footer | 40px | 0 |
+| Element     | Height    | Spacing after |
+| ----------- | --------- | ------------- |
+| Title bar   | 50px      | 16px          |
+| KPI strip   | 90px      | 24px          |
+| Chart panel | 200-300px | 24px          |
+| Footer      | 40px      | 0             |
 
 Total height = sum of all elements + spacing. Set `viewBox` height accordingly.
 
@@ -367,15 +379,17 @@ For each panel:
 Two output modes:
 
 **Inline SVG** (for GitHub README):
-````markdown
+
+```markdown
 ## Dashboard
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" ...>
-  ...
+...
 </svg>
-````
+```
 
 **External file** (for linking):
+
 ```markdown
 ## Dashboard
 
@@ -384,32 +398,49 @@ Two output modes:
 
 ## Module 7: Anti-Patterns
 
-| Anti-pattern | Fix |
-| --- | --- |
-| Using `<style>` blocks | GitHub strips them. Use inline `style` or direct attributes |
-| Using `<foreignObject>` for text | GitHub strips it. Use `<text>` with `<tspan>` for wrapping |
+| Anti-pattern                                  | Fix                                                                 |
+| --------------------------------------------- | ------------------------------------------------------------------- |
+| Using `<style>` blocks                        | GitHub strips them. Use inline `style` or direct attributes         |
+| Using `<foreignObject>` for text              | GitHub strips it. Use `<text>` with `<tspan>` for wrapping          |
 | Hardcoding pixel positions without scale math | Compute from data domain and range. Charts should rescale with data |
-| More than 5 colors in one chart | Split into panels or use a highlight-vs-context pattern |
-| Tiny text (< 10px) | Minimum 11px for labels, 12px for axis text |
-| Missing `xmlns` attribute | Required for standalone SVG files |
-| Using `em`/`rem` units | Use `px` only. SVG doesn't inherit document font size |
-| Complex gradients or filters | GitHub may strip or misrender. Keep `<defs>` simple |
-| Relying on hover/animation | No interactivity in static SVG. Design for static consumption |
-| Setting width/height without viewBox | Always include viewBox for responsive scaling |
+| More than 5 colors in one chart               | Split into panels or use a highlight-vs-context pattern             |
+| Tiny text (< 10px)                            | Minimum 11px for labels, 12px for axis text                         |
+| Missing `xmlns` attribute                     | Required for standalone SVG files                                   |
+| Using `em`/`rem` units                        | Use `px` only. SVG doesn't inherit document font size               |
+| Complex gradients or filters                  | GitHub may strip or misrender. Keep `<defs>` simple                 |
+| Relying on hover/animation                    | No interactivity in static SVG. Design for static consumption       |
+| Setting width/height without viewBox          | Always include viewBox for responsive scaling                       |
 
 ## Module 8: Validation Checklist
 
 Before delivering SVG output, verify:
 
-| Check | Criteria |
-| --- | --- |
-| GitHub-safe | No `<style>`, no `<script>`, no `<foreignObject>`, has `xmlns` |
-| Readable | All text >= 11px, contrast ratio >= 3:1 against background |
-| Correct data | Spot-check 2-3 values: bar height / position matches data |
-| Responsive | `viewBox` present, width/height match, scales properly |
-| Color accessible | Not relying on color alone (use labels or patterns) |
-| File size | < 100KB for typical dashboards (pure SVG is compact) |
-| Clean markup | No unnecessary whitespace, no commented-out elements |
+| Check            | Criteria                                                       |
+| ---------------- | -------------------------------------------------------------- |
+| GitHub-safe      | No `<style>`, no `<script>`, no `<foreignObject>`, has `xmlns` |
+| Readable         | All text >= 11px, contrast ratio >= 3:1 against background     |
+| Correct data     | Spot-check 2-3 values: bar height / position matches data      |
+| Responsive       | `viewBox` present, width/height match, scales properly         |
+| Color accessible | Not relying on color alone (use labels or patterns)            |
+| File size        | < 100KB for typical dashboards (pure SVG is compact)           |
+| Clean markup     | No unnecessary whitespace, no commented-out elements           |
+
+### Prose-Fit Gate
+
+Valid XML can still render clipped or misleading prose. After structural
+validation:
+
+1. Render the SVG at its declared viewBox and inspect every panel.
+2. Check each `<text>` and `<tspan>` against its panel boundary for clipped or
+   overflowing text. SVG does not wrap plain `<text>` automatically.
+3. Split short labels into explicit `<tspan>` lines when needed.
+4. Move sentence-length exposition to the surrounding document body; keep only
+   compact annotations and evidence boundaries inside the SVG.
+5. Confirm titles, captions, visible values, and surrounding prose carry the
+   same claim and rounding.
+
+A screenshot of the whole page can hide a clipped lower panel. Capture or zoom
+each text-heavy panel before declaring readability passed.
 
 ## Cross-References
 

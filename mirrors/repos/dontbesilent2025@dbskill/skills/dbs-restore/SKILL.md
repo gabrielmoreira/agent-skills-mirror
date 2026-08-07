@@ -1,10 +1,6 @@
 ---
 name: dbs-restore
-description: |
-  把上次诊断的状态拉出来，接着用。配合 dbs-save 使用。
-  触发方式：/dbs-restore、/续上、「接着上次」「之前的结论」「上次诊断到哪了」
-  Restore the most recent diagnosis snapshot saved by dbs-save.
-  Trigger: /dbs-restore, "continue from last time", "where did we leave off"
+description: 恢复由 dbs-save 保存的最近诊断状态。用户要求接着上次、查看此前结论或继续未完成诊断时使用。
 ---
 
 # dbs-restore：接续诊断

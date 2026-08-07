@@ -1,10 +1,6 @@
 ---
 name: dbs-action
-description: |
-  dontbesilent 执行力诊断。用阿德勒心理学框架诊断你「知道该做什么但就是不做」的真正原因。
-  触发方式：/dbs-action、/action、「我知道该怎么做但就是不做」「为什么我总是拖延」
-  Execution block diagnosis using Adlerian psychology framework.
-  Trigger: /dbs-action, "I know what to do but can't do it", "why do I procrastinate"
+description: 用阿德勒心理学框架诊断执行阻滞。用户知道该做什么却迟迟不做、反复拖延或行动中断时使用。
 ---
 
 # dbs-action：执行力诊断

@@ -1,10 +1,6 @@
 ---
 name: dbs-content-system
-description: |
-  dontbesilent 内容结构化系统。把本地大量文稿、推文、选题、案例和课程稿搭成一个可持续生长的内容结构化工程：先审计内容规模与边界，再建立新工程、复制素材、抽取内容单元、生成主题地图与选题装配稿。
-  触发方式：/dbs-content-system、/内容结构化系统、「把我的内容做成结构化系统」「把本地素材变成可重组系统」「帮我搭内容资产工程」「我想把旧内容变成可复用资产」
-  Content structuring system. Audits local content volume, then builds a reusable content knowledge project with units, topic maps, and assembly drafts.
-  Trigger: /dbs-content-system, "build a content structuring system", "turn my archive into reusable assets"
+description: 把本地文稿、推文、选题、案例和课程稿整理成可持续生长、可重组复用的内容工程。用户要求结构化内容资产、整理旧素材或建立主题地图时使用。
 ---
 
 # dbs-content-system：内容结构化系统

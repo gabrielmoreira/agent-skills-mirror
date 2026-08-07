@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `img2threejs/img2threejs` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `img2threejs/img2threejs` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `img2threejs/img2threejs` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`SKILL.md`](SKILL.md) |
-| 2 | ✓ | [`skills/cs2_technical_analysis.md`](skills/cs2_technical_analysis.md) |
-| 3 | ✓ | [`skills/cs2-knife.md`](skills/cs2-knife.md) |
-| 4 | ✓ | [`skills/cs2-pistol.md`](skills/cs2-pistol.md) |
-| 5 | ✓ | [`skills/generic-extract-skill.md`](skills/generic-extract-skill.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 3 | ✓ | [`skills/cs2_technical_analysis.md`](skills/cs2_technical_analysis.md) |
+| 4 | ✓ | [`skills/cs2-knife.md`](skills/cs2-knife.md) |
+| 5 | ✓ | [`skills/cs2-pistol.md`](skills/cs2-pistol.md) |
+| 6 | ✓ | [`skills/generic-extract-skill.md`](skills/generic-extract-skill.md) |
 
 ---
 

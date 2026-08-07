@@ -26,13 +26,19 @@ approval, template apply).
   pathological database/filesystem state from blocking a user action
   indefinitely. Exhausting the cap must surface a `DyadErrorKind.Conflict`
   with actionable context; auto-suffixing is not an unbounded guarantee.
+- App creation/import flows must serialize display-name checking, folder
+  allocation, filesystem creation, and the database insert under one
+  name-keyed lock. Otherwise auto-suffixing can let concurrent same-name
+  requests create duplicate display-name rows in different folders.
 - A case-only folder rename (`MyApp` → `myapp`) must use `fs.rename`, never
   copy-then-delete: on case-insensitive filesystems (macOS/Windows defaults)
   source and destination are the same physical directory, so the delete step
   destroys the app.
-- Long-running operations that write inside an app must acquire the same
-  per-app `withLock(appId, ...)` used by rename/location changes and re-read
-  `apps.path` after acquiring it. A path captured before network or other async
-  work can become stale and recreate files in the app's former directory. If a
-  workflow releases the lock across an `await` (for example, while cancelling
-  streams), re-fetch the row and recompute the path after reacquiring it.
+- Long-running operations that access files inside an app must acquire
+  `app-path` read access through `appOperationCoordinator`, plus write access
+  to every resource domain they mutate, and re-read `apps.path` after
+  admission. Rename and location changes acquire `app-path` write access. A
+  path captured before network or other async work can become stale and
+  recreate files in the app's former directory. If a workflow releases its
+  coordinated resources across an `await` (for example, while cancelling
+  streams), reacquire them, re-fetch the row, and recompute the path.

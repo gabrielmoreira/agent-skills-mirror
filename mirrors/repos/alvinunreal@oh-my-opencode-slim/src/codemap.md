@@ -102,7 +102,7 @@ Key event flows:
    - `experimental.chat.messages.transform` → phase reminders, skill filtering, image attachment processing
 
 5. **Command Execution**:
-   - `command.execute.before` → interview, preset, deepwork, and reflect command hooks
+   - `command.execute.before` → deepwork, reflect, and loop command hooks
 
 ## Integration
 

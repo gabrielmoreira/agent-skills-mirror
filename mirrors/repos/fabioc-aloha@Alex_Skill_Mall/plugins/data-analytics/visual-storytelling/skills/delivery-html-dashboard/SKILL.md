@@ -1,12 +1,20 @@
 ---
+type: skill
+lifecycle: stable
+inheritance: inheritable
 name: delivery-html-dashboard
-description: "Render data dashboards as self-contained HTML files using Apache ECharts v6. Single file, zero build step, interactive charts with tooltips and data zoom. Declarative JSON option config optimized for AI generation."
-lastReviewed: 2026-05-04
+description: Render data dashboards as single-file HTML shells using integrity-pinned Apache ECharts 6.1.0. Zero build step, interactive charts with tooltips and data zoom. Declarative JSON option config optimized for AI generation.
+tier: standard
+applyTo: "**/*html*dashboard*,**/*echarts*,**/*interactive*chart*"
+currency: 2026-08-06
+lastReviewed: 2026-08-06
 ---
 
 # Delivery: HTML Dashboard (ECharts)
 
-Render dashboards as self-contained HTML files with interactive charts. One file, one CDN script tag, zero build step. Open in any browser.
+Render dashboards as single-file HTML shells with interactive charts. One HTML
+file, one integrity-pinned CDN script, zero build step. Open in any browser with
+network access, or vendor ECharts for offline delivery.
 
 The agent writes ECharts option objects (declarative JSON), not imperative drawing code. This makes the format ideal for AI generation: the model reasons about data mapping and visual encoding, ECharts handles rendering, animation, and interaction.
 
@@ -35,53 +43,68 @@ Every dashboard is a single `.html` file with this structure:
 ```html
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{Dashboard Title}</title>
-  <script src="https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js"></script>
-  <style>
-    /* CSS custom properties, grid layout, KPI cards, print styles */
-  </style>
-</head>
-<body>
-  <header>
-    <h1>{Title}</h1>
-    <p class="subtitle">{Big Idea sentence}</p>
-    <button id="theme-toggle" aria-label="Toggle theme">Toggle Theme</button>
-  </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{Dashboard Title}</title>
+    <script
+      src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"
+      integrity="sha384-C2iskrW/uPW46KzOjrvJIQo4YkV8lkD+QS0CrDN18IIPIpT/g2USu8bTP3nvmIAD"
+      crossorigin="anonymous"
+    ></script>
+    <style>
+      /* CSS custom properties, grid layout, KPI cards, print styles */
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>{Title}</h1>
+      <p class="subtitle">{Big Idea sentence}</p>
+      <button id="theme-toggle" aria-label="Toggle theme">Toggle Theme</button>
+    </header>
 
-  <section class="kpi-strip">
-    <!-- KPI cards -->
-  </section>
+    <section class="kpi-strip">
+      <!-- KPI cards -->
+    </section>
 
-  <section class="chart-grid">
-    <!-- Chart containers -->
-    <div class="chart-panel" id="chart1"></div>
-    <div class="chart-panel" id="chart2"></div>
-  </section>
+    <section class="chart-grid">
+      <!-- Chart containers -->
+      <div class="chart-panel" id="chart1"></div>
+      <div class="chart-panel" id="chart2"></div>
+    </section>
 
-  <footer>
-    <p>{Action / recommendation sentence}</p>
-  </footer>
+    <footer>
+      <p>{Action / recommendation sentence}</p>
+    </footer>
 
-  <script>
-    // ECharts initialization and options
-  </script>
-</body>
+    <script>
+      // ECharts initialization and options
+    </script>
+  </body>
 </html>
 ```
 
 ### CDN Strategy
 
-Primary CDN with fallback:
+Use an exact version and Subresource Integrity. If it fails, show a visible
+message instead of executing a mutable fallback:
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/echarts@6/dist/echarts.min.js"></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"
+  integrity="sha384-C2iskrW/uPW46KzOjrvJIQo4YkV8lkD+QS0CrDN18IIPIpT/g2USu8bTP3nvmIAD"
+  crossorigin="anonymous"
+></script>
 <script>
-  if (typeof echarts === 'undefined') {
-    document.write('<script src="https://unpkg.com/echarts@6/dist/echarts.min.js"><\/script>');
-  }
+  document.addEventListener("DOMContentLoaded", function () {
+    if (typeof echarts === "undefined") {
+      document.querySelectorAll(".chart-panel").forEach(function (panel) {
+        panel.textContent = "Charts unavailable: ECharts did not load.";
+      });
+      return;
+    }
+    // Initialize charts here.
+  });
 </script>
 ```
 
@@ -92,7 +115,8 @@ For offline use, the user can download `echarts.min.js` and reference it locally
 ### Custom Properties (Theme System)
 
 ```css
-:root, [data-theme="light"] {
+:root,
+[data-theme="light"] {
   --bg-primary: #ffffff;
   --bg-secondary: #f8f9fa;
   --bg-card: #ffffff;
@@ -106,7 +130,7 @@ For offline use, the user can download `echarts.min.js` and reference it locally
   --accent-5: #7c3aed;
   --positive: #16a34a;
   --negative: #dc2626;
-  --shadow: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   --radius: 8px;
 }
 
@@ -124,7 +148,7 @@ For offline use, the user can download `echarts.min.js` and reference it locally
   --accent-5: #bb86fc;
   --positive: #50c878;
   --negative: #ff6b6b;
-  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   --radius: 8px;
 }
 ```
@@ -133,7 +157,11 @@ For offline use, the user can download `echarts.min.js` and reference it locally
 
 ```css
 body {
-  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
   margin: 0;
@@ -163,6 +191,7 @@ body {
   box-shadow: var(--shadow);
   padding: 16px;
   min-height: 300px;
+  min-width: 0;
 }
 
 /* Full-width panel override */
@@ -202,18 +231,35 @@ body {
   margin-top: 4px;
 }
 
-.kpi-card .delta.positive { color: var(--positive); }
-.kpi-card .delta.negative { color: var(--negative); }
+.kpi-card .delta.positive {
+  color: var(--positive);
+}
+.kpi-card .delta.negative {
+  color: var(--negative);
+}
 ```
 
 ### Print Styles
 
 ```css
 @media print {
-  body { background: white; color: black; padding: 0; }
-  .chart-panel { break-inside: avoid; box-shadow: none; border: 1px solid #ccc; }
-  #theme-toggle { display: none; }
-  .kpi-card { box-shadow: none; border: 1px solid #ccc; }
+  body {
+    background: white;
+    color: black;
+    padding: 0;
+  }
+  .chart-panel {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  #theme-toggle {
+    display: none;
+  }
+  .kpi-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
 }
 ```
 
@@ -221,14 +267,24 @@ body {
 
 ```css
 @media (max-width: 768px) {
-  .chart-grid { grid-template-columns: 1fr; }
-  .kpi-strip { grid-template-columns: repeat(2, 1fr); }
-  .chart-panel { min-height: 250px; }
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+  .kpi-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .chart-panel {
+    min-height: 250px;
+  }
 }
 
 @media (max-width: 480px) {
-  .kpi-strip { grid-template-columns: 1fr; }
-  body { padding: 12px; }
+  .kpi-strip {
+    grid-template-columns: 1fr;
+  }
+  body {
+    padding: 12px;
+  }
 }
 ```
 
@@ -240,15 +296,15 @@ body {
 const charts = [];
 function initChart(id, option) {
   const dom = document.getElementById(id);
-  const chart = echarts.init(dom, null, { renderer: 'canvas' });
+  const chart = echarts.init(dom, null, { renderer: "canvas" });
   chart.setOption(option);
   charts.push(chart);
   return chart;
 }
 
 // Responsive resize
-window.addEventListener('resize', () => {
-  charts.forEach(c => c.resize());
+window.addEventListener("resize", () => {
+  charts.forEach((c) => c.resize());
 });
 ```
 
@@ -333,14 +389,16 @@ window.addEventListener('resize', () => {
 
 ```javascript
 {
-  series: [{
-    type: 'gauge',
-    progress: { show: true, width: 12 },
-    detail: { formatter: '{value}%', fontSize: 20 },
-    data: [{ value: 72, name: 'Margin' }],
-    axisLine: { lineStyle: { width: 12 } },
-    max: 100
-  }]
+  series: [
+    {
+      type: "gauge",
+      progress: { show: true, width: 12 },
+      detail: { formatter: "{value}%", fontSize: 20 },
+      data: [{ value: 72, name: "Margin" }],
+      axisLine: { lineStyle: { width: 12 } },
+      max: 100,
+    },
+  ];
 }
 ```
 
@@ -413,9 +471,9 @@ Use when data has > 12 time periods or > 20 categories:
 
 ```javascript
 dataZoom: [
-  { type: 'inside', start: 0, end: 100 },      // scroll/pinch
-  { type: 'slider', start: 0, end: 100, height: 20 }  // visible slider
-]
+  { type: "inside", start: 0, end: 100 }, // scroll/pinch
+  { type: "slider", start: 0, end: 100, height: 20 }, // visible slider
+];
 ```
 
 ### Legend Toggle
@@ -445,22 +503,26 @@ This creates linked tooltips across charts sharing the same axis categories.
 ### Dark/Light Toggle
 
 ```javascript
-document.getElementById('theme-toggle').addEventListener('click', () => {
+document.getElementById("theme-toggle").addEventListener("click", () => {
   const html = document.documentElement;
-  const current = html.getAttribute('data-theme');
-  const next = current === 'dark' ? 'light' : 'dark';
-  html.setAttribute('data-theme', next);
+  const current = html.getAttribute("data-theme");
+  const next = current === "dark" ? "light" : "dark";
+  html.setAttribute("data-theme", next);
 
   // Update ECharts theme colors
-  const textColor = next === 'dark' ? '#e0e0e0' : '#212529';
-  const axisColor = next === 'dark' ? '#666' : '#ccc';
-  charts.forEach(chart => {
+  const textColor = next === "dark" ? "#e0e0e0" : "#212529";
+  const axisColor = next === "dark" ? "#666" : "#ccc";
+  charts.forEach((chart) => {
     chart.setOption({
       title: { textStyle: { color: textColor } },
-      xAxis: { axisLine: { lineStyle: { color: axisColor } },
-               axisLabel: { color: textColor } },
-      yAxis: { axisLine: { lineStyle: { color: axisColor } },
-               axisLabel: { color: textColor } }
+      xAxis: {
+        axisLine: { lineStyle: { color: axisColor } },
+        axisLabel: { color: textColor },
+      },
+      yAxis: {
+        axisLine: { lineStyle: { color: axisColor } },
+        axisLabel: { color: textColor },
+      },
     });
   });
 });
@@ -472,12 +534,12 @@ Set globally for consistent series colors:
 
 ```javascript
 const PALETTE = {
-  dark: ['#4a90d9', '#50c878', '#ffb347', '#ff6b6b', '#bb86fc'],
-  light: ['#2563eb', '#16a34a', '#d97706', '#dc2626', '#7c3aed']
+  dark: ["#4a90d9", "#50c878", "#ffb347", "#ff6b6b", "#bb86fc"],
+  light: ["#2563eb", "#16a34a", "#d97706", "#dc2626", "#7c3aed"],
 };
 
 // Apply in each chart option:
-color: PALETTE[document.documentElement.getAttribute('data-theme') || 'dark']
+color: PALETTE[document.documentElement.getAttribute("data-theme") || "dark"];
 ```
 
 ## Module 6: Accessibility
@@ -500,14 +562,14 @@ Enable automatic chart descriptions for screen readers:
 
 ### Additional a11y Requirements
 
-| Requirement | Implementation |
-| --- | --- |
+| Requirement                   | Implementation                           |
+| ----------------------------- | ---------------------------------------- |
 | Color not sole differentiator | Enable `decal` patterns; add data labels |
-| Keyboard navigation | ECharts supports Tab/Arrow by default |
-| Focus indicators | ECharts highlight on focus built-in |
-| Alt text for KPI cards | Use `aria-label` on `.kpi-card` elements |
-| Semantic structure | Use `<header>`, `<section>`, `<footer>` |
-| Sufficient contrast | All text passes WCAG AA (4.5:1 ratio) |
+| Keyboard navigation           | ECharts supports Tab/Arrow by default    |
+| Focus indicators              | ECharts highlight on focus built-in      |
+| Alt text for KPI cards        | Use `aria-label` on `.kpi-card` elements |
+| Semantic structure            | Use `<header>`, `<section>`, `<footer>`  |
+| Sufficient contrast           | All text passes WCAG AA (4.5:1 ratio)    |
 
 ## Module 7: Data Embedding
 
@@ -518,20 +580,20 @@ Data lives in a `<script>` block inside the HTML. No external fetch, no CORS iss
 ```javascript
 const DATA = {
   monthly: [
-    { month: 'Jan', revenue: 36800, units: 536, cost: 25760 },
-    { month: 'Feb', revenue: 39000, units: 568, cost: 27300 },
+    { month: "Jan", revenue: 36800, units: 536, cost: 25760 },
+    { month: "Feb", revenue: 39000, units: 568, cost: 27300 },
     // ...
   ],
   segments: [
-    { name: 'N. Widget A', revenue: 83300, margin: 24990 },
+    { name: "N. Widget A", revenue: 83300, margin: 24990 },
     // ...
   ],
   kpis: {
     totalRevenue: 246400,
     totalMargin: 73920,
     marginPct: 30.0,
-    totalUnits: 5448
-  }
+    totalUnits: 4928,
+  },
 };
 ```
 
@@ -540,12 +602,14 @@ const DATA = {
 For datasets > 10,000 rows, use ECharts dataset with `large: true`:
 
 ```javascript
-series: [{
-  type: 'scatter',
-  large: true,
-  largeThreshold: 5000,
-  data: bigArray
-}]
+series: [
+  {
+    type: "scatter",
+    large: true,
+    largeThreshold: 5000,
+    data: bigArray,
+  },
+];
 ```
 
 ## Module 8: Construction Process
@@ -562,6 +626,7 @@ From the dashboard plan (structured data from orchestrator):
 ### Step 2: Generate HTML Shell
 
 Write the `<!DOCTYPE html>` through `<body>` with:
+
 - CSS custom properties for chosen theme
 - Grid layout matching the panel plan
 - Empty `<div>` containers with IDs for each chart
@@ -569,6 +634,7 @@ Write the `<!DOCTYPE html>` through `<body>` with:
 ### Step 3: Generate ECharts Options
 
 For each chart:
+
 1. Build the option object from the data
 2. Map data values to the appropriate ECharts series type
 3. Configure tooltip, legend, and color
@@ -577,9 +643,9 @@ For each chart:
 ### Step 4: Wire Up Initialization
 
 ```javascript
-document.addEventListener('DOMContentLoaded', () => {
-  initChart('chart1', option1);
-  initChart('chart2', option2);
+document.addEventListener("DOMContentLoaded", () => {
+  initChart("chart1", option1);
+  initChart("chart2", option2);
   // ...
   echarts.connect(charts);
 });
@@ -587,40 +653,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
 ### Step 5: Validate
 
-| Check | Criteria |
-| --- | --- |
-| Opens in browser | No console errors, charts render |
-| Single file | No external resources besides ECharts CDN |
-| Responsive | Resize browser; charts adapt, grid reflows |
-| Theme toggle | Button switches dark/light correctly |
-| Print | Ctrl+P shows clean layout, no cutoff charts |
-| Accessible | Tab through charts; aria labels present |
-| Data correct | Tooltip values match source data |
+| Check            | Criteria                                    |
+| ---------------- | ------------------------------------------- |
+| Opens in browser | No console errors, charts render            |
+| Single file      | No external resources besides ECharts CDN   |
+| Responsive       | Resize browser; charts adapt, grid reflows  |
+| Theme toggle     | Button switches dark/light correctly        |
+| Print            | Ctrl+P shows clean layout, no cutoff charts |
+| Accessible       | Tab through charts; aria labels present     |
+| Data correct     | Tooltip values match source data            |
+
+### Runtime Render Gate
+
+Static HTML inspection cannot prove that a JavaScript dashboard works. Open the
+real artifact and measure behavior:
+
+1. Read console, page, and failed-request errors before judging the picture.
+2. Wait until the expected canvas/SVG count appears; an early capture can look
+   identical to an empty data binding.
+3. At desktop and a 390px mobile viewport, assert
+   `document.documentElement.scrollWidth <= clientWidth`. A single-column media
+   query is not sufficient if a grid item retains `min-width: auto`.
+4. Inspect every chart separately. Count expected marks and confirm every chart
+   category label remains visible after responsive resize.
+5. Toggle themes and verify chart options, not only CSS cards, update.
+6. Block the ECharts CDN request once. Every chart panel must display the
+   visible `Charts unavailable` state; a blank panel is a failure.
+7. Check rendered claims and aria descriptions against the same metric lineage
+   as visible labels and tooltips.
+
+Record the origin and viewport used. A `file://` pass is adequate for this
+inline-data shell, but pages that fetch sibling files also require a normal
+`http://` browser-origin check.
 
 ## Module 9: Anti-Patterns
 
-| Anti-pattern | Fix |
-| --- | --- |
-| Multiple CDN scripts | Use only ECharts; it has all chart types built-in |
-| Imperative canvas drawing | Use declarative option objects; let ECharts render |
-| External data fetch (CORS issues) | Embed data inline in `<script>` |
-| Fixed pixel heights on charts | Use `min-height` + resize handler |
-| Missing `resize()` listener | Charts won't adapt to window changes |
-| Inline styles on chart containers | Use CSS classes; inline only for theme vars |
-| Over-animating (slow load) | Set `animation: false` for > 10 series |
-| No tooltip | Tooltips are the primary exploration tool; always enable |
-| Forgetting `init` after DOM ready | Wrap in `DOMContentLoaded` event |
-| Using ECharts themes API | Stick to CSS vars + inline color; simpler to generate |
+| Anti-pattern                      | Fix                                                      |
+| --------------------------------- | -------------------------------------------------------- |
+| Multiple CDN scripts              | Use only ECharts; it has all chart types built-in        |
+| Imperative canvas drawing         | Use declarative option objects; let ECharts render       |
+| External data fetch (CORS issues) | Embed data inline in `<script>`                          |
+| Fixed pixel heights on charts     | Use `min-height` + resize handler                        |
+| Missing `resize()` listener       | Charts won't adapt to window changes                     |
+| Inline styles on chart containers | Use CSS classes; inline only for theme vars              |
+| Over-animating (slow load)        | Set `animation: false` for > 10 series                   |
+| No tooltip                        | Tooltips are the primary exploration tool; always enable |
+| Forgetting `init` after DOM ready | Wrap in `DOMContentLoaded` event                         |
+| Using ECharts themes API          | Stick to CSS vars + inline color; simpler to generate    |
 
 ## Module 10: File Size Guidelines
 
-| Component | Approximate Size |
-| --- | --- |
-| HTML shell + CSS | 3-5 KB |
-| ECharts CDN (cached) | ~1 MB (first load only) |
-| ECharts options (4 charts) | 2-4 KB |
-| Inline data (small dataset) | 1-3 KB |
-| Total HTML file size | 8-15 KB (excluding CDN) |
+| Component                   | Approximate Size        |
+| --------------------------- | ----------------------- |
+| HTML shell + CSS            | 3-5 KB                  |
+| ECharts CDN (cached)        | ~1 MB (first load only) |
+| ECharts options (4 charts)  | 2-4 KB                  |
+| Inline data (small dataset) | 1-3 KB                  |
+| Total HTML file size        | 8-15 KB (excluding CDN) |
 
 Target: keep the `.html` file under 50KB. If data exceeds 30KB, consider pagination or server-side rendering.
 

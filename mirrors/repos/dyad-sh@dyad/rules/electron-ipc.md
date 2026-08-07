@@ -164,6 +164,7 @@ pre-hydration atoms can erase unrelated restored entities.
   focused-window, and delivery-target cleanup; otherwise a closed window can
   remain the authoritative target.
 - Electron lifecycle events do not await async handlers. When `before-quit` must finish asynchronous cleanup, call `event.preventDefault()` synchronously, wait with a hard timeout, then call `app.quit()` again behind a re-entry guard so cleanup cannot hang or recursively restart shutdown.
+- Treat the main process as terminal once `before-quit` starts disposing process-lifetime services. macOS `activate`/`open-url` and Electron `second-instance` can still arrive during that asynchronous gap; never create a replacement window or dispatch protocol work in the half-disposed process. A prevented quit can leave existing windows present, so count `activate` as a reopen request only when the normal activation policy would create a window. Preserve any new protocol URL in one shared relaunch request, strip stale protocol URLs from explicit relaunch arguments even for payload-free reopens, and call `app.relaunch()` exactly once immediately before the final guarded `app.quit()` instead of scheduling it in individual restart paths.
 - When main awaits a correlated renderer decision that can auto-settle on timeout or abort, emit a request-specific terminal event for every settlement path. Key every actionable renderer projection (including native notifications) by that request ID, consume the terminal event in each projection, and guard async UI setup so it cannot create stale UI after settlement; stream-end cleanup alone may be delayed or never run.
 - When splitting large handlers behind service boundaries, leave the handler responsible for IPC registration and request orchestration while moving runtime/policy logic into `src/ipc/services/*`. Preserve any intentional module side effects in the extracted service, such as `fixPath()` for child process PATH setup.
 - Electron `net.request()` response typings do not expose every runtime stream event. If download code needs a `close` guard in addition to `aborted`/`error`, cast the response through `EventEmitter` instead of dropping the guard to appease `npm run ts`.
@@ -261,6 +262,22 @@ Automated `pnpm add` commands that run in an app root with a generated `pnpm-wor
 
 When creating hooks/components that call IPC handlers:
 
+- When diagnosing a preview stuck at `Waiting for server logs…`, distinguish the
+  ordinary selection IPC from the app-run actor transport: `App <id> selected for preview`
+  without a later `Starting app`, `already running`, or
+  `Restarting app` entry means selection succeeded but lifecycle dispatch never
+  reached main. Switching apps cannot repair a renderer-owned app-run manager
+  that is stuck in that state.
+- Treat a window-session ID as potentially durable even when BrowserWindow
+  layout is process-local: renderer storage may use it as a namespace. Keep the
+  primary ID stable or migrate its storage before pruning old session keys.
+- On macOS, `activate` can arrive while asynchronous startup is still running.
+  Gate Dock window creation until the initial window exists, or use one
+  idempotent ensure-window path, so startup cannot create stacked renderers.
+- Before destroying a BrowserWindow during creation rollback, remove its
+  session descriptor from authoritative state. Electron may emit `closed`
+  synchronously, and close handlers must not retain a failed window for Dock
+  activation.
 - Treat request/correlation IDs as identifiers, not capabilities. If an ID can
   appear in a shared snapshot, operation wait and cancellation paths must also
   verify the invoking window-session ownership before exposing or mutating the

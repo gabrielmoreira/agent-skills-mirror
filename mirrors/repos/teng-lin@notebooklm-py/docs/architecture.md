@@ -31,7 +31,7 @@ this layering) lives in [`docs/refactor-history.md`](./refactor-history.md).
 |   NotebookLMClient + namespaced sub-clients:             |
 |     .notebooks  .sources  .artifacts  .chat              |
 |     .notes      .mind_maps .research   .settings         |
-|     .sharing    .labels                                  |
+|     .sharing    .labels    .collections                  |
 +----------------------------------------------------------+
                             ▼
 +----------------------------------------------------------+
@@ -455,7 +455,7 @@ the executor on direct collaborator dependencies.
 
 | Collaborator | Module | Responsibility |
 |--------------|--------|----------------|
-| `NotebookLMClient` | [`client.py`](../src/notebooklm/client.py) | Public surface and composition root. Owns `_auth`, `_seams`, `_composed`, `_collaborators`, `_rpc_executor`, and the ten feature API attributes (`notebooks`, `sources`, `artifacts`, `chat`, `notes`, `mind_maps`, `research`, `settings`, `sharing`, `labels`). `__aenter__`, `close`, `drain`, `is_connected`, `metrics_snapshot`, and `rpc_call` route directly to the owning collaborator. **Split candidate:** at ~999 lines it sits one line under the 1000-line `MODULE_SIZE_BUDGET` ceiling (`tests/_guardrails/test_module_size_ratchet.py`); the next non-trivial addition should extract a seam (e.g. the `refresh_auth` / drain plumbing) rather than push it over budget. |
+| `NotebookLMClient` | [`client.py`](../src/notebooklm/client.py) | Public surface and composition root. Owns `_auth`, `_seams`, `_composed`, `_collaborators`, `_rpc_executor`, and the eleven feature API attributes (`notebooks`, `sources`, `artifacts`, `chat`, `notes`, `mind_maps`, `research`, `settings`, `sharing`, `labels`, `collections`). `__aenter__`, `close`, `drain`, `is_connected`, `metrics_snapshot`, and `rpc_call` route directly to the owning collaborator. **Split candidate:** at ~999 lines it sits one line under the 1000-line `MODULE_SIZE_BUDGET` ceiling (`tests/_guardrails/test_module_size_ratchet.py`); the next non-trivial addition should extract a seam (e.g. the `refresh_auth` / drain plumbing) rather than push it over budget. |
 | `ClientSeams` | [`_client_seams.py`](../src/notebooklm/_client_seams.py) | Mutable holder for runtime callables that closures re-read after construction: `decode_response`, `sleep`, and `is_auth_error`. Construction-only seams such as `async_client_factory` stay on `compose_client_internals(...)` and the client-shell test helper, not on the public constructor. |
 | `ClientComposed` | [`_client_composed.py`](../src/notebooklm/_client_composed.py) | Write-once holder for composition state: `transport`, `executor`, `chain_host`, `chain_builder`, `middlewares`, lazy RPC semaphore, and `runtime_collaborators`. Pre-binding access raises a clear `RuntimeError`; the holder deliberately does not expose a broad `.collaborators` alias. |
 | `RpcExecutor` | [`_rpc_executor.py`](../src/notebooklm/_rpc_executor.py) | Single logical batchexecute RPC dispatch path. Owns request-id/started-metric bracketing, idempotency policy lookup, method-ID resolution, request encoding, response decode, RPC error mapping, and decode-time auth refresh retry. Takes its `Kernel`, `RuntimeTransport`, `AuthRefreshCoordinator`, and `ClientMetrics` collaborators directly via keyword-only constructor parameters (ADR-0014 Rule 5). Enters transport through `RuntimeTransport.perform_authed_post`. |
@@ -973,6 +973,7 @@ Per-file index plus the full `src/notebooklm` + `tests` repository tree. The tre
 | `_source/add.py` | Core service layer for adding text, URL, or Google Drive sources |
 | `_source/drive_import.py` | Auto-route add-from-Drive (#1884): download + upload the upload-only Drive types (epub/docx/txt/…); native import (`add_drive`) instead takes Docs/Slides/Sheets + PDF by reference; header-first cookie-authed streaming fetch behind injected seams |
 | `_source/content.py` | Core service layer for fetching source HTML/markdown content |
+| `_source/markdown.py` | Source fulltext HTML-to-Markdown conversion policy, including Markdown-source and LaTeX/table handling |
 | `_source/listing.py` | Core service layer for listing notebook sources |
 | `_source/polling.py` | Poll coordination service for active source conversions |
 | `_source/upload.py` | Concurrency-gated upload pipeline for source files |
@@ -1134,6 +1135,7 @@ src/notebooklm/
 │   ├── _upload_decode.py        # Pure URL/source-id/content-type decode + validation helpers (extracted from upload.py)
 │   ├── add.py                   # Source addition coordinator
 │   ├── content.py               # Source content fetcher
+│   ├── markdown.py               # Source fulltext HTML-to-Markdown conversion policy
 │   ├── drive_import.py          # Auto-route add-from-Drive (#1884): DriveImportService + DriveFetcher — parse id/URL, cookie-authed header-first streaming download of the upload-only Drive types (epub/docx/txt/…), confirm-token handling + 0600 temp cleanup, then hand to add_file (native Docs/Slides/Sheets → pointer error)
 │   ├── listing.py               # Source listing helper
 │   ├── polling.py               # Source polling coordinator
@@ -1393,6 +1395,9 @@ src/notebooklm/
 - [ADR-0024](./adr/0024-mcp-remote-file-transfer.md) — Remote-MCP file transfer via signed-URL side-channel (Accepted).
 - [ADR-0025](./adr/0025-mcp-tool-granularity.md) — MCP tool granularity (Accepted).
 - [ADR-0026](./adr/0026-mcp-studio-surface.md) — MCP Studio surface — notes + artifacts unified (Accepted).
+- [ADR-0027](./adr/0027-mcp-app-upload-widget.md) — In-app MCP-App upload widget (Accepted; experimental / opt-in, `NOTEBOOKLM_MCP_UPLOAD_WIDGET=1`).
+- [ADR-0029](./adr/0029-canonical-storage-writer.md) — Single canonical `storage_state.json` writer (Accepted; rolling out).
+- [ADR-0030](./adr/0030-one-recovery-ladder.md) — One recovery ladder for auth cold-start/refresh (Accepted; rolling out; companion to ADR-0029).
 
 ## See also
 

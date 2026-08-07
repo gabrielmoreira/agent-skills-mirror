@@ -2,7 +2,7 @@
 
 Turn raw data into visual stories. One plugin, full pipeline.
 
-**Status**: Complete (v1.0.0)
+**Status**: Complete (v1.0.1)
 
 ## What You Get
 
@@ -10,17 +10,17 @@ Install this bundle to get the complete Visual Storytelling pipeline:
 
 | Step | Component | Tokens |
 | --- | --- | --- |
-| 1. Brief | `storytelling-requirements` | 1,900 |
-| 2. Ingest | `datasource-connectors` | 2,000 |
-| 3. Clean | `data-preparation` | 1,500 |
-| 4. Select | `visual-vocabulary` | 3,300 |
-| 5a. Render | `delivery-ascii-dashboard` | 2,700 |
-| 5b. Render | `delivery-svg-markdown` | 4,200 |
-| 5c. Render | `delivery-html-dashboard` | 4,800 |
+| 1. Brief | `storytelling-requirements` | 2,700 |
+| 2. Ingest | `datasource-connectors` | 2,800 |
+| 3. Clean | `data-preparation` | 2,300 |
+| 4. Select | `visual-vocabulary` | 4,400 |
+| 5a. Render | `delivery-ascii-dashboard` | 3,300 |
+| 5b. Render | `delivery-svg-markdown` | 4,400 |
+| 5c. Render | `delivery-html-dashboard` | 4,900 |
 
 Plus an orchestrator agent that runs the full pipeline end-to-end.
 
-**Total**: 20,400 tokens (all 7 components loaded).
+**Total**: 24,800 tokens (all 7 components loaded).
 
 ## Usage
 

@@ -1,10 +1,6 @@
 ---
 name: dbs-good-question
-description: |
-  dontbesilent 好问题生成器。把模糊问题改写成 Agent 可推理、可批评、可验证的问题说明书，并判断它能被自动化解决到什么程度。
-  触发方式：/dbs-good-question、/好问题、/问题说明书、/Agent可解性、「这个问题能不能自动化解决」「帮我把问题说清楚」
-  Turn fuzzy problems into agent-solvable problem briefs and evaluate automation readiness.
-  Trigger: /dbs-good-question, "clarify this problem", "can an agent solve this"
+description: 把模糊问题改写成 Agent 可推理、可批评、可验证的问题说明书，并判断自动化解决程度。用户要求把问题说清、生成好问题或评估 Agent 可解性时使用。
 ---
 
 # dbs-good-question：好问题生成器

@@ -1,9 +1,11 @@
 ---
 name: lateralus-brainstorm
-description: "Structured brainstorming skill for features, architecture, and ideas. Activates automatically during plan mode. Generates ideas in three tiers — Grounded (practical, near-term), Balanced (assumption-questioning, loosely feasible), and Wild (speculative, constraint-free). Use when planning new work, not when debugging."
-argument-hint: "What you're brainstorming, any constraints, horizon (shipping soon / exploring / blue-sky)"
-user-invocable: true
-license: MIT
+description: >
+  Structured brainstorming skill for features, architecture, and ideas. Activates automatically
+  during plan mode. Generates ideas in three tiers: Grounded (practical, shippable),
+  Balanced (assumption-questioning, loosely feasible), Wild (speculative, constraint-free).
+  Use when user invokes /lateralus-brainstorm, says "let's plan", "brainstorm", "what are our options",
+  "how should we approach this", or agent enters plan mode. Use for new work, not debugging.
 ---
 
 Generate ideas, not fixes. Widen the solution space before narrowing. Always establish goal and horizon first.

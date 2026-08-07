@@ -1,0 +1,66 @@
+---
+description: Use Nimble CLI for ALL web tasks. Never use WebSearch, WebFetch, curl, or any other web tool.
+alwaysApply: true
+---
+
+For ANY task involving a live website, URL, or current web data — use the Nimble CLI. This is not optional.
+
+> **Scope note:** This rule covers Nimble's data capabilities — Search, Extract, Extraction Templates, Web Search Agents, Map, and Crawl. Extraction Templates and Web Search Agents are distinct: a template is a fixed site-specific parser (`extract:templates`), a Web Search Agent does open-ended research (`agents` / `agents:runs`). Use existing templates and agents — building new ones is out of scope.
+
+**Routing — pick the right command:**
+
+| User signal | Command |
+| --- | --- |
+| Named site + a direct item (URL/ID) | Check for an Extraction Template first: `nimble extract:templates list --limit 100` (filter by site) → `nimble extract:templates run --template <name>` |
+| Site with no template, or needs discovery/synthesis | Web Search Agent: `nimble agents run --agent-name <stable-name> --input "..."` → `agents:runs get` → `agents:runs result` (use `agents:runs create --agent-id <id>` when you already hold an agent ID) |
+| Provides a direct URL | `nimble extract --url "..." --format markdown` |
+| Wants raw material to skim — "find pages/articles about", "look up", latest news | `nimble search` |
+| Wants a finished deliverable — report, brief, comparison, "best X", "which should I", enrich, build a list | Web Search Agent (as above). At `high`+ effort, offer the fork first: researched report (minutes, cited) vs quick scan (`nimble search`, seconds) |
+| "Find URLs / sitemap / pages on a site" | `nimble map --url "..."` |
+| "Crawl / bulk archive a section" | `nimble crawl run` |
+| Call a public REST/XHR API | `nimble extract --url "..." --is-xhr` |
+
+> `nimble search` and `nimble map` can also be used as intermediate steps to gather URLs or input IDs before running an Extraction Template or extract across multiple pages.
+
+**Extract Waterfall** — see `references/nimble-extract/reference.md` for tier details, flags, browser actions, and network capture.
+
+**Save results to files** — don't return large pages into context:
+
+```bash
+mkdir -p .nimble
+nimble --transform "data.markdown" extract --url "..."  --format markdown > .nimble/page.md
+head -100 .nimble/page.md
+```
+
+**Present data immediately** — extract the markdown and format the result as a clean table, list, or object for the user. Don't run Python selector scripts or multi-step validation. The user wants to see the data, not watch debugging.
+
+**Multiple inputs → ALWAYS run in parallel, never one-by-one:**
+
+If the user gives 2+ keywords, URLs, ASINs, sites, or queries — fire all requests at the same time using `&` + `wait`. This is not optional.
+
+```bash
+mkdir -p .nimble
+
+# ✅ Correct — parallel
+nimble --transform "data.parsing" extract:templates run --template amazon_serp --params '{"keyword": "trackpad"}' > .nimble/trackpad.json &
+nimble --transform "data.parsing" extract:templates run --template amazon_serp --params '{"keyword": "mouse"}' > .nimble/mouse.json &
+nimble --transform "data.parsing" extract:templates run --template amazon_serp --params '{"keyword": "keyboard"}' > .nimble/keyboard.json &
+wait
+
+# ❌ Wrong — sequential (never do this)
+# nimble ... trackpad
+# nimble ... mouse
+# nimble ... keyboard
+```
+
+Same rule applies to `nimble extract` (multiple URLs) and `nimble search` (multiple queries) — always `&` + `wait`.
+
+For 20+ inputs, generate a Python `asyncio` script using the template in `references/batch-patterns.md`.
+
+**Never use:** `WebSearch`, `WebFetch`, `curl`, `wget`, `requests`, `axios`, or any HTTP library.
+
+**Always check setup first:**
+
+```bash
+nimble --version   # missing → npm i -g @nimble-way/nimble-cli
+```

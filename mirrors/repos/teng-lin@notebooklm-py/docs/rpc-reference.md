@@ -1645,7 +1645,7 @@ params = [
 - The server appears to apply a "smart title" pass for `[2]`-mode notes — the captured response title differed from the captured request title (the request sent `"New Saved Note"`; the response stored `"Le Verger de la Connaissance : Le Cas de la Pomme"`). `ChatAPI.save_answer_as_note()` surfaces the server-stored title in the returned `Note`.
 
 **Known gaps**:
-- The `passage_id` UUID at slot `[3][0][5][0][0]` does NOT appear in the streaming chat response shape we currently parse. `_build_source_passage_descriptor` falls back to `chunk_id` as a placeholder when `ChatReference.passage_id` is unset (which is always, in production today). Empirically the server accepts this and the web UI still renders hover anchors. If a future capture reveals where this UUID comes from, populate `ChatReference.passage_id` in `_chat_wire.py::parse_single_citation()` and the encoder will use it automatically.
+- The `passage_id` UUID at slot `[3][0][5][0][0]` does NOT appear in the streaming chat response shape we currently parse. `_build_source_passage_descriptor` falls back to `chunk_id` as a placeholder when `ChatReference.passage_id` is unset (which is always, in production today). Empirically the server accepts this and the web UI still renders hover anchors. If a future capture reveals where this UUID comes from, populate `ChatReference.passage_id` in `_chat/wire.py::parse_single_citation()` and the encoder will use it automatically.
 - Multi-citation segmentation uses a *cumulative-span* heuristic (each `[N]` anchors `clean_text[0..position]` rather than a per-segment span). This matches the captured single-citation payload exactly but is unverified against multi-citation captures. See issue #660 PR description.
 
 ### RPC: UPDATE_NOTE (cYAfTb)
@@ -2331,9 +2331,10 @@ await rpc_call(
 # Source limit at: result[0][1][2]
 # Max characters per source at: result[0][1][3]  (e.g. 500000)
 # Tier enum at: result[0][1][4]  — OPAQUE key, not an ordinal rank.
-#   1=Standard/Free, 2=Pro, 4=Plus, 3=Ultra(20TB), 6=Ultra(30TB); 5=Expanded (legacy/
-#   unconfirmed); Enterprise separate. Live-confirmed 1 & 2 (source limits match Google's
-#   published 50 / 300). Full per-tier limits: docs/quota-limits.md
+#   1=Standard/Free, 2=Pro, 4=Plus, 3=Ultra(20TB), 6=Ultra(30TB); 5=Expanded (aligns
+#   with the Workspace "Expanded" access level, not a consumer plan). Live-confirmed
+#   1 & 2 (source limits match Google's published 50 / 300). Full per-tier limits:
+#   docs/quota-limits.md
 ```
 
 The full per-tier notebook/source/studio limits these enum values map to are documented in
@@ -2376,7 +2377,7 @@ await rpc_call(
 Common language codes include:
 - `en` (English), `ja` (日本語), `zh_Hans` (中文简体), `zh_Hant` (中文繁體)
 - `ko` (한국어), `es` (Español), `fr` (Français), `de` (Deutsch), `pt_BR` (Português)
-- See `cli/language_cmd.py::SUPPORTED_LANGUAGES` for the full list of 80+ languages
+- See `_app/language.py::SUPPORTED_LANGUAGES` for the full list of 80+ languages
 
 ---
 

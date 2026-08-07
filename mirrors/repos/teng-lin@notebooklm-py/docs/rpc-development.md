@@ -1,7 +1,7 @@
 # RPC Development Guide
 
 **Status:** Active
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-08-05
 
 This guide covers everything about NotebookLM's RPC protocol: capturing calls, debugging issues, and implementing new methods.
 
@@ -359,7 +359,7 @@ async def test_new_method_e2e(client, read_only_notebook_id):
 Update `docs/rpc-reference.md`:
 
 ```markdown
-### NEW_METHOD (`AbCdEf`)
+### RPC: NEW_METHOD (`AbCdEf`)
 
 **Purpose:** Short description
 
@@ -374,7 +374,7 @@ params = [
 
 **Response:** Description of response structure
 
-**Source:** `_some_api.py:123`
+**Source:** `_some_api.py::new_method()`
 ```
 
 ---

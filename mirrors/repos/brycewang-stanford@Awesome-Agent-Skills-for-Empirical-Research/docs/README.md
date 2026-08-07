@@ -11,6 +11,7 @@ and `make validate` will flag the staleness either way.
 | `SKILL_CATALOG.md`, `SKILL_QUALITY.md`, `TAXONOMY.md` | `scripts/build-catalog-enrich.py` | `make catalog` |
 | `SKILL_AUDIT.md`, `SKILL_HYGIENE.md` | `scripts/build-skill-audit.py` | `make catalog` |
 | `LICENSE_AUDIT.md` | `scripts/build-provenance.py` | `make catalog` |
+| `../skills/README.md` (outside this dir) | `scripts/build-provenance.py` | `make catalog` |
 | `EVALS.md` | `scripts/build-evals.py` | `make catalog` |
 | `RIGOR_COVERAGE.md` | `scripts/build-coverage-map.py` | `make catalog` |
 | `RELEASE_NOTES.md`, `badges/`, `releases/` | `scripts/build-release-notes.py` | `make catalog` |

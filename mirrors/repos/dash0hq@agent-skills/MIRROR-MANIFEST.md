@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dash0hq/agent-skills` — 26 default patterns, 3 followed patterns, 52 file(s) materialized.
+Mirror of `dash0hq/agent-skills` — 26 default patterns, 3 followed patterns, 53 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dash0hq/agent-skills` — 26 default patterns, 3 followed patterns, 5
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 3 |
-| Files         | 52 |
+| Files         | 53 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -98,21 +98,22 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`skills/otel-instrumentation/rules/spans.md`](skills/otel-instrumentation/rules/spans.md) |
 | 36 | ✓ | [`skills/otel-instrumentation/rules/telemetry.md`](skills/otel-instrumentation/rules/telemetry.md) |
 | 37 | ✓ | [`skills/otel-instrumentation/rules/validation.md`](skills/otel-instrumentation/rules/validation.md) |
-| 38 | ✓ | [`skills/otel-instrumentation/SKILL.md`](skills/otel-instrumentation/SKILL.md) |
-| 39 | ✓ | [`skills/otel-ottl/rules/cardinality.md`](skills/otel-ottl/rules/cardinality.md) |
-| 40 | ✓ | [`skills/otel-ottl/rules/components.md`](skills/otel-ottl/rules/components.md) |
-| 41 | ✓ | [`skills/otel-ottl/rules/enrichment.md`](skills/otel-ottl/rules/enrichment.md) |
-| 42 | ✓ | [`skills/otel-ottl/rules/function-reference.md`](skills/otel-ottl/rules/function-reference.md) |
-| 43 | ✓ | [`skills/otel-ottl/rules/patterns.md`](skills/otel-ottl/rules/patterns.md) |
-| 44 | ✓ | [`skills/otel-ottl/rules/redaction.md`](skills/otel-ottl/rules/redaction.md) |
-| 45 | ✓ | [`skills/otel-ottl/SKILL.md`](skills/otel-ottl/SKILL.md) |
-| 46 | ✓ | [`skills/otel-semantic-conventions/rules/attributes.md`](skills/otel-semantic-conventions/rules/attributes.md) |
-| 47 | ✓ | [`skills/otel-semantic-conventions/rules/dash0.md`](skills/otel-semantic-conventions/rules/dash0.md) |
-| 48 | ✓ | [`skills/otel-semantic-conventions/rules/versioning.md`](skills/otel-semantic-conventions/rules/versioning.md) |
-| 49 | ✓ | [`skills/otel-semantic-conventions/SKILL.md`](skills/otel-semantic-conventions/SKILL.md) |
-| 50 | → | [`evals/custom/fixtures/README.md`](evals/custom/fixtures/README.md) |
-| 51 | → | [`evals/custom/README.md`](evals/custom/README.md) |
-| 52 | → | [`evals/tessl/README.md`](evals/tessl/README.md) |
+| 38 | ✓ | [`skills/otel-instrumentation/rules/verify-dependencies.md`](skills/otel-instrumentation/rules/verify-dependencies.md) |
+| 39 | ✓ | [`skills/otel-instrumentation/SKILL.md`](skills/otel-instrumentation/SKILL.md) |
+| 40 | ✓ | [`skills/otel-ottl/rules/cardinality.md`](skills/otel-ottl/rules/cardinality.md) |
+| 41 | ✓ | [`skills/otel-ottl/rules/components.md`](skills/otel-ottl/rules/components.md) |
+| 42 | ✓ | [`skills/otel-ottl/rules/enrichment.md`](skills/otel-ottl/rules/enrichment.md) |
+| 43 | ✓ | [`skills/otel-ottl/rules/function-reference.md`](skills/otel-ottl/rules/function-reference.md) |
+| 44 | ✓ | [`skills/otel-ottl/rules/patterns.md`](skills/otel-ottl/rules/patterns.md) |
+| 45 | ✓ | [`skills/otel-ottl/rules/redaction.md`](skills/otel-ottl/rules/redaction.md) |
+| 46 | ✓ | [`skills/otel-ottl/SKILL.md`](skills/otel-ottl/SKILL.md) |
+| 47 | ✓ | [`skills/otel-semantic-conventions/rules/attributes.md`](skills/otel-semantic-conventions/rules/attributes.md) |
+| 48 | ✓ | [`skills/otel-semantic-conventions/rules/dash0.md`](skills/otel-semantic-conventions/rules/dash0.md) |
+| 49 | ✓ | [`skills/otel-semantic-conventions/rules/versioning.md`](skills/otel-semantic-conventions/rules/versioning.md) |
+| 50 | ✓ | [`skills/otel-semantic-conventions/SKILL.md`](skills/otel-semantic-conventions/SKILL.md) |
+| 51 | → | [`evals/custom/fixtures/README.md`](evals/custom/fixtures/README.md) |
+| 52 | → | [`evals/custom/README.md`](evals/custom/README.md) |
+| 53 | → | [`evals/tessl/README.md`](evals/tessl/README.md) |
 
 ---
 

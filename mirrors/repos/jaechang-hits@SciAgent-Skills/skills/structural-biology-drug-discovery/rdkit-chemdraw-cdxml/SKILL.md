@@ -32,10 +32,11 @@ A `.cdxml` is not viewable without ChemDraw, and **you cannot run ChemDraw here*
 
 - **Python packages**: `rdkit` (2023.03+, built with ChemDraw support), `epam.indigo` (renders CDXML→PNG); `xml.etree.ElementTree` (stdlib) handles all XML editing.
 - **Inputs**: SMILES/Mol for writing; `.cdxml` (UTF-8 text) or `.cdx` (binary) for reading.
-- **Check before installing.** RDKit is usually already present in a managed env — run `python -c "import rdkit"` first; inside pixi use `pixi run python ...`.
+- **Check before installing.** RDKit is usually already present — run `python -c "import rdkit"` first; inside pixi use `pixi run python ...`.
+- **Install `epam.indigo` into the interpreter that runs your code.** A bare `pip install` can land in a different Python than the kernel (e.g. system `/usr/local` vs the pixi env that has rdkit), so `import indigo` still fails even though the install "succeeded" — and no single interpreter then has both rdkit and indigo. In a Jupyter/IPython kernel use `%pip install epam.indigo`; otherwise `python -m pip install epam.indigo` (the running interpreter), or add it to the project env (`pixi add epam.indigo`). For the same reason, **do not run the build/render in a fresh `subprocess`** (`["python", …]` may resolve yet another interpreter) — import the helper and run it in the current process.
 
 ```bash
-pip install rdkit epam.indigo   # only if missing
+python -m pip install epam.indigo   # the running interpreter; or  %pip install epam.indigo  in Jupyter
 python -c "from rdkit import Chem; print('ChemDraw write support:', Chem.HasChemDrawCDXSupport())"
 ```
 
@@ -164,7 +165,7 @@ print(ET.tostring(scheme, encoding="unicode"))
 
 ### Module 7: Adding text and labels
 
-Free text is a `<t>` at `p="x y"` holding one or more `<s>` styled-string children. `<s>` references a `font` id (`<fonttable>`) and `color` index (`<colortable>`); `face` is a bitmask (1=bold, 2=italic, 32=subscript, 64=superscript). Split a `<t>` into multiple `<s>` runs for subscripts (`Br₂`, `CO₂H`). **Keep text ASCII** — the font table is iso-8859-1, so write `hv` not `hν`, `25 C` not `25 °C`, `heat` not `Δ`.
+Free text is a `<t>` at `p="x y"` holding one or more `<s>` styled-string children. `<s>` references a `font` id (`<fonttable>`) and `color` index (`<colortable>`); `face` is a bitmask (1=bold, 2=italic, 32=subscript, 64=superscript). Split a `<t>` into multiple `<s>` runs for subscripts (`Br₂`, `CO₂H`). Indigo renders **subscript (32) but not superscript (64)** — it drops the run's leading text — so keep charges inline (`H+`, `OH-`). `°C` (temperatures) and `Δ` (heat) render with the Arial font; avoid other non-Latin-1 characters (`hν`, en-dashes).
 
 ```python
 import xml.etree.ElementTree as ET
@@ -332,18 +333,15 @@ tree.write("output_reaction.cdxml", encoding="unicode", xml_declaration=True)
 
 `scripts/build_reaction_scheme.py` turns `(smiles, name, conditions)` steps into a laid-out scheme **and its PNG in one call**, handling grid layout, globally unique ids, single arrows, and conditions text placed clear of structures — the defects that recur when schemes are hand-built. Cells auto-size to the largest structure, so big molecules never overlap. Model convergent/multi-component steps by folding co-reactants into `conditions` (e.g. `["+ (MeO2C)2C=CHOMe", "Base, MeCN"]`), keeping one main-chain structure per cell.
 
-The `scripts/` files can be **read** from the skill path but **not imported** from there — they are not on the execution sandbox's import path. Copy the two you need into your working directory first, then import. Each script depends only on rdkit (+ epam.indigo), never on the other, so copy them independently:
+**Copy the scripts into your working directory with your file tools — not from Python.** Inside the execution sandbox the `/SciAgent-Skills/...` path is reachable **only through your read-file tool**; it is not on the sandbox filesystem, so a Python `open()` or `import` of that path fails with `FileNotFoundError`/`ModuleNotFoundError`. For each of `build_reaction_scheme.py` and `check_scheme.py` (each is self-contained — rdkit + epam.indigo only — copy just what you need):
+
+1. **Read-file tool** on `/SciAgent-Skills/skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts/<name>` (the leading slash routes to the skills backend) → returns the script text.
+2. **Write-file tool** → save it to `./<name>` in the working directory.
+
+Then import the local copies. (Importing writes a harmless `__pycache__/`; set `PYTHONDONTWRITEBYTECODE=1` to suppress it.)
 
 ```python
-# 1) Copy the helpers into the workdir. Use the LEADING-SLASH skill path so the
-#    read routes to the skills backend (a path without the leading "/" is looked
-#    up in the sandbox workdir, where the file does not exist):
-_SKILL = "/SciAgent-Skills/skills/structural-biology-drug-discovery/rdkit-chemdraw-cdxml/scripts"
-for name in ("build_reaction_scheme.py", "check_scheme.py"):
-    open(name, "w").write(read_file(f"{_SKILL}/{name}"))   # read_file = your file tool
-
-# 2) Now they import normally from the workdir:
-from build_reaction_scheme import build_scheme
+from build_reaction_scheme import build_scheme    # local copies, already in the workdir
 from check_scheme import check_all
 
 steps = [
@@ -378,7 +376,7 @@ print(f"Deliverables: {cdxml} + {png}")
 3. **Keep object ids globally unique.** Merging RDKit outputs (each starts at 1) collides and breaks `<step>` references and doubles arrows; renumber into disjoint blocks.
 4. **Prefer CDXML (text) over CDX (binary).** CDX write via `rdChemDraw` raises `UnicodeDecodeError`; only legacy `Chem.MolToCDXMLBlock(mol, CDXMLFormat.CDX)` returns valid CDX bytes.
 5. **Write a complete document header** — `<CDXML BondLength=...>` plus a standard `<fonttable>`/`<colortable>` and page dimensions. See `references/cdxml-schema-reference.md`.
-6. **Keep text ASCII** (font table is iso-8859-1); render heteroatoms via `<n Element=...>`, never as redundant free `<t>` text. Do **not** add decorative flag words like "Chiral"/"racemic" — show stereochemistry with wedge bonds. Keep every label clear of the arrow line: compound names go under their structure, conditions go offset above/beside the arrow, never on it.
+6. **Text**: use `°C` for temperatures and `Δ` for heat (both render); keep charges inline (`H+`, `OH-`) since Indigo has no superscript; avoid other non-Latin-1 characters. Render heteroatoms via `<n Element=...>`, not free `<t>` text; don't add decorative flags ("Chiral"/"racemic") — use wedge bonds. Keep labels clear of the arrow line: names under the structure, conditions offset above/beside the arrow. (`build_scheme` does all of this — `0 C`→`0 °C`, `heat`→`Δ`, subscripts, spacing — automatically.)
 7. **Deliver the CDXML and PNG together, and run `check_scheme.check_all` first.** The render and the critic catch overlaps, duplicate/degenerate arrows, dropped intermediates, and connectivity errors before the user sees them.
 
 ## Common Recipes
@@ -423,6 +421,9 @@ print(minidom.parseString(open("esterification.cdxml", encoding="utf-8").read())
 | "Chiral"/"racemic" printed above structures | Decorative flag text added as `<t>` | Remove it — stereochemistry is shown by wedge bonds; `check_scheme` flags it |
 | A name or label sits on an arrow | Text placed on the arrow line | Names go under the structure, conditions offset above/beside the arrow; `check_scheme` flags text on an arrow |
 | `stoi: no conversion` loading in Indigo | `<CDXML BondLength="">` empty | Set a numeric `BondLength` (e.g. `30`) before rendering |
+| `ModuleNotFoundError`/`FileNotFoundError` on a helper script | `import`ed or `open()`ed the `/SciAgent-Skills/...` path from Python | That path is reachable only via the read-file tool, not the sandbox filesystem — copy the script into the workdir first (Workflow 4), then import |
+| `import indigo` fails after a "successful" `pip install` | pip installed into a different Python than the runtime (system `/usr/local` vs the pixi/kernel env) | Install into the running interpreter (`%pip install` or `python -m pip install`), or `pixi add epam.indigo`; don't shell out to a different `python` |
+| A charge (`H+`) renders as a giant `+` | Indigo draws a standalone `+` as a reaction-plus symbol, and superscript (face 64) mangles ion text | Keep charges inline (`H+`, `OH-`), face 0 — a true raised superscript is not achievable in the Indigo preview. Subscripts (face 32) and `°C`/`Δ` render fine |
 
 ## Bundled Resources
 

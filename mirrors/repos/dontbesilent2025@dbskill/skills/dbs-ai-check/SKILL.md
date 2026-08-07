@@ -1,10 +1,6 @@
 ---
 name: dbs-ai-check
-description: |
-  dontbesilent AI 写作特征识别。扫描文案中的 AI 生成痕迹，输出检测报告。默认只诊断不改。
-  触发方式：/dbs-ai-check、/AI检测、「帮我看看有没有 AI 味」「检测一下 AI 特征」
-  AI writing fingerprint detection. Scans copy for AI-generated patterns and outputs a diagnostic report. Diagnosis only by default.
-  Trigger: /dbs-ai-check, "check for AI writing", "does this sound like AI"
+description: 扫描文案中的 AI 写作特征并输出检测报告，默认只诊断不改写。用户要求检查 AI 味、AI 痕迹或机器化表达时使用。
 ---
 
 # dbs-ai-check：AI 写作特征识别

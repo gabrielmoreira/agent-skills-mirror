@@ -13,6 +13,8 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 ---
 
 > Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude/OpenCode 兼容面保留 `subagent_type`。
+>
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 23` 不一致时（标记缺失、字段缺失/非整数、小于或大于 23）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 23）` 并提示重新运行 `/story-setup` 后新开会话；大于 23 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
 ## 拆解边界声明（主线程同样适用）
 
@@ -126,7 +128,10 @@ Stage 0 完成概要 + 章节索引之后、转入 Stage 1 之前，**必须**�
 
 操作：
 - 用 `style-profile-generator.md` Step 4 的章节正则（含 千/两，覆盖 1000+ 章）grep 出全部章节行号
+- **先剔掉目录块**：不少原文开头带一段目录，目录里的 `第N章` 同样顶行，会和正文章节行重复命中，不处理就会切出两个「第一章」。判据是行距——目录块内相邻命中只隔一两行，正文章节之间隔着整章篇幅。算相邻命中的行号差，把文件开头那段「行距持续远小于全体中位数」的连续命中整块丢弃
+- **剔完仍有重复章号时不要自行取其一**：多卷书每卷从「第一章」重起是合法结构。这种情况在标题列保留卷号消歧（如 `卷二 第一章`），章号列按全书连续序号重编
 - 按 `| 章号 | 标题 | 起始行 | 字数 |` 四列写入 `_progress.md` 的「章节边界」section（见 [pipeline-ops.md](references/pipeline-ops.md) 模板）
+- 落表前校验章号连续、无重复、无跳号；不满足就停下报告，不要带着错表进 Stage 1——Stage 1/2/6 都以这张表为唯一切片真值，错一次会一路错到底
 - `_progress.md` 顶部 `schema_version: 2` 同时落盘
 
 **恢复前置条件**：续跑只接受 `schema_version: 2` 且包含「章节边界」表的 `_progress.md`。缺失或结构不完整时停止续跑，提示从 Stage 0 章节边界子步骤重建进度文件，避免不同阶段使用不同切片真值。

@@ -1,7 +1,13 @@
 ---
+type: skill
+lifecycle: stable
+inheritance: inheritable
 name: storytelling-requirements
-description: "Guided requirements template for data storytelling projects -- walks users through audience, Big Idea, questions, data sources, and delivery target before any chart is created"
-lastReviewed: 2026-05-02
+description: Guided requirements template for data storytelling projects -- walks users through audience, Big Idea, questions, data sources, and delivery target before any chart is created
+tier: standard
+applyTo: "**/*story*,**/*requirements*,**/*brief*,**/*dashboard*,**/*report*"
+currency: 2026-08-06
+lastReviewed: 2026-08-06
 ---
 
 # Storytelling Requirements
@@ -23,13 +29,13 @@ Copy this template to your project and fill it out with the user. Each section m
 
 ### Section 1: Audience and Purpose
 
-| Field | Answer |
-| --- | --- |
-| **Primary audience** | (e.g., "CFO and finance leadership team") |
-| **Audience expertise** | Executive / Manager / Analyst / General |
-| **Time budget** | 30 seconds / 2 minutes / Unlimited |
-| **Decision this supports** | (e.g., "Whether to increase Q4 marketing spend") |
-| **How they will consume it** | Screen / Print / Presentation / Email / Mobile |
+| Field                        | Answer                                           |
+| ---------------------------- | ------------------------------------------------ |
+| **Primary audience**         | (e.g., "CFO and finance leadership team")        |
+| **Audience expertise**       | Executive / Manager / Analyst / General          |
+| **Time budget**              | 30 seconds / 2 minutes / Unlimited               |
+| **Decision this supports**   | (e.g., "Whether to increase Q4 marketing spend") |
+| **How they will consume it** | Screen / Print / Presentation / Email / Mobile   |
 
 ### Section 2: The Big Idea
 
@@ -41,52 +47,72 @@ Example: "The exec team should double Q4 email marketing spend because every $1 
 
 If you cannot write this sentence, the analysis is not done yet. Go back to exploration.
 
+### Claim Computability Gate
+
+Before accepting a Big Idea or decision sentence, make its evidence executable.
+Record one row for every decision-bearing claim:
+
+| Claim                                | Required fields          | Formula          | Grain            | Status                     |
+| ------------------------------------ | ------------------------ | ---------------- | ---------------- | -------------------------- |
+| (e.g., "Email returns $3.20 per $1") | pipeline, campaign spend | pipeline / spend | campaign-quarter | Computable / Missing input |
+
+Rules:
+
+- Required fields must exist in the named data source at the stated grain.
+- A ratio, rate, or "per" claim requires its denominator to be present; a
+  larger numerator is not evidence of greater efficiency.
+- State time baselines explicitly: "Jan to Jun" is not "versus prior period."
+- Separate observations, calculations, scenarios, and forecasts. Do not present
+  a scenario as an observed result.
+- If a decision claim is not computable, replace it with an evidence boundary
+  that names the missing input. Do not estimate silently.
+
 ### Section 3: Questions the Visuals Must Answer
 
 List 3-5 questions, ranked by priority. Each question becomes one visual.
 
-| # | Question | Communication Goal | Priority |
-| --- | --- | --- | --- |
-| 1 | (e.g., "How has revenue trended quarterly?") | Change Over Time | Must-have |
-| 2 | (e.g., "Which regions contribute most?") | Comparison | Must-have |
-| 3 | (e.g., "What share does each product line hold?") | Proportion | Should-have |
-| 4 | | | |
-| 5 | | | |
+| #   | Question                                          | Communication Goal | Priority    |
+| --- | ------------------------------------------------- | ------------------ | ----------- |
+| 1   | (e.g., "How has revenue trended quarterly?")      | Change Over Time   | Must-have   |
+| 2   | (e.g., "Which regions contribute most?")          | Comparison         | Must-have   |
+| 3   | (e.g., "What share does each product line hold?") | Proportion         | Should-have |
+| 4   |                                                   |                    |             |
+| 5   |                                                   |                    |             |
 
 Communication goals map to chart types via `visual-vocabulary` Module 1.
 
 ### Section 4: Data Sources
 
-| Source | Format | Location | Refresh Cadence | Notes |
-| --- | --- | --- | --- | --- |
-| (e.g., "Sales CRM export") | CSV | SharePoint folder | Monthly | Filter: last 8 quarters |
-| | | | | |
+| Source                     | Format | Location          | Refresh Cadence | Notes                   |
+| -------------------------- | ------ | ----------------- | --------------- | ----------------------- |
+| (e.g., "Sales CRM export") | CSV    | SharePoint folder | Monthly         | Filter: last 8 quarters |
+|                            |        |                   |                 |                         |
 
 ### Section 5: Data Quality Concerns
 
-| Concern | Impact | Mitigation |
-| --- | --- | --- |
+| Concern                                           | Impact                      | Mitigation                    |
+| ------------------------------------------------- | --------------------------- | ----------------------------- |
 | (e.g., "Missing region codes for 12% of records") | Proportions will undercount | Map nulls to "Unknown" region |
-| | | |
+|                                                   |                             |                               |
 
 ### Section 6: Delivery Target
 
-| Field | Answer |
-| --- | --- |
-| **Output format** | SVG in Markdown / HTML dashboard / Power BI report / Slides / Email |
-| **Branding** | Dark slate / Light / Custom palette |
-| **Interactivity** | Static / Filters / Drill-through / Cross-filter |
-| **Hosting** | GitHub README / SharePoint / Power BI Service / Local file |
-| **Update frequency** | One-time / Weekly refresh / Real-time |
+| Field                | Answer                                                              |
+| -------------------- | ------------------------------------------------------------------- |
+| **Output format**    | SVG in Markdown / HTML dashboard / Power BI report / Slides / Email |
+| **Branding**         | Dark slate / Light / Custom palette                                 |
+| **Interactivity**    | Static / Filters / Drill-through / Cross-filter                     |
+| **Hosting**          | GitHub README / SharePoint / Power BI Service / Local file          |
+| **Update frequency** | One-time / Weekly refresh / Real-time                               |
 
 ### Section 7: Constraints
 
-| Constraint | Detail |
-| --- | --- |
+| Constraint        | Detail                                                                  |
+| ----------------- | ----------------------------------------------------------------------- |
 | **5-visual rule** | Executive audience: max 5 visuals per page (3 KPIs + hero + supporting) |
-| **Accessibility** | WCAG 2.1 AA: 4.5:1 contrast, no color-only encoding |
-| **Token budget** | (if rendering in AI context: max tokens for the output artifact) |
-| **Deadline** | (when is this needed?) |
+| **Accessibility** | WCAG 2.1 AA: 4.5:1 contrast, no color-only encoding                     |
+| **Token budget**  | (if rendering in AI context: max tokens for the output artifact)        |
+| **Deadline**      | (when is this needed?)                                                  |
 
 ## How to Use This Template
 
@@ -108,19 +134,22 @@ When a user says "build me a dashboard" or "make a report from this data", walk 
 
 When users struggle to name the communication goal for a question, use these trigger words:
 
-| Trigger Words in the Question | Communication Goal |
-| --- | --- |
-| "rank", "compare", "versus", "top", "best/worst" | Comparison |
-| "over time", "trend", "growth", "decline", "monthly" | Change Over Time |
-| "share", "proportion", "breakdown", "percent of" | Proportion |
-| "spread", "range", "outlier", "distribution" | Distribution |
-| "correlation", "relationship", "predict", "affects" | Relationship |
-| "flow", "path", "conversion", "funnel", "from X to Y" | Flow |
-| "deviation", "variance", "above/below target" | Deviation |
+| Trigger Words in the Question                         | Communication Goal |
+| ----------------------------------------------------- | ------------------ |
+| "rank", "compare", "versus", "top", "best/worst"      | Comparison         |
+| "over time", "trend", "growth", "decline", "monthly"  | Change Over Time   |
+| "share", "proportion", "breakdown", "percent of"      | Proportion         |
+| "spread", "range", "outlier", "distribution"          | Distribution       |
+| "correlation", "relationship", "predict", "affects"   | Relationship       |
+| "flow", "path", "conversion", "funnel", "from X to Y" | Flow               |
+| "deviation", "variance", "above/below target"         | Deviation          |
 
 ### The CSAR Check
 
 After filling the brief and before building, run one CSAR pass:
+
+In this collection, **CSAR always means Clarify, Summarize, Act, Reflect**. It is
+a review workflow, not a substitute for the Claim Computability Gate above.
 
 - **Clarify**: Does the Big Idea sentence actually match the questions listed?
 - **Summarize**: Do the communication goals match what the audience needs?
@@ -147,13 +176,13 @@ delivery-*                 (render per Section 6 target)
 
 ## Anti-Patterns
 
-| Anti-pattern | Fix |
-| --- | --- |
-| Building charts before writing the Big Idea | The Big Idea is the filter. Without it, you build 20 charts and keep 5. |
-| Skipping the audience section | Executive dashboards and analyst reports are different artifacts. The audience determines everything. |
-| Listing 10+ questions for an executive dashboard | 5-visual rule. Cut to 3-5 questions or split into multiple pages. |
-| No data quality section | Surprises in the data surface during the demo, not the build. Document concerns early. |
-| Filling the template alone (without the stakeholder) | The brief is a conversation tool. Fill it together. |
+| Anti-pattern                                         | Fix                                                                                                   |
+| ---------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Building charts before writing the Big Idea          | The Big Idea is the filter. Without it, you build 20 charts and keep 5.                               |
+| Skipping the audience section                        | Executive dashboards and analyst reports are different artifacts. The audience determines everything. |
+| Listing 10+ questions for an executive dashboard     | 5-visual rule. Cut to 3-5 questions or split into multiple pages.                                     |
+| No data quality section                              | Surprises in the data surface during the demo, not the build. Document concerns early.                |
+| Filling the template alone (without the stakeholder) | The brief is a conversation tool. Fill it together.                                                   |
 
 ## Cross-References
 

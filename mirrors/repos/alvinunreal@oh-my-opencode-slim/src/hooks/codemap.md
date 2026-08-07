@@ -22,7 +22,6 @@ Implements OpenCode lifecycle hooks that transform, process, and manage chat mes
 2. **State Management**: Hooks like `createTaskSessionManagerHook` that manage session state and lifecycle.
 3. **Error Recovery**: Hooks like `createJsonErrorRecoveryHook` that detect and recover from JSON parsing errors.
 4. **UI/UX Enhancement**: Hooks like `createPhaseReminderHook` that add contextual reminders to messages.
-5. **Task Management**: Hooks like `createDelegateTaskRetryHook` that handle task retry logic.
 
 ## Flow
 

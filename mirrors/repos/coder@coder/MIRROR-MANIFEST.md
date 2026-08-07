@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 58 file(s) materialized.
+Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 59 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `coder/coder` — 26 default patterns, 16 followed patterns, 58 file(s
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 16 |
-| Files         | 58 |
+| Files         | 59 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -111,27 +111,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 35 | ✓ | [`docs/.style/style-guide/editor-setup.md`](docs/.style/style-guide/editor-setup.md) |
 | 36 | ✓ | [`docs/.style/style-guide/formatting.md`](docs/.style/style-guide/formatting.md) |
 | 37 | ✓ | [`docs/.style/style-guide/numbers-units-and-dates.md`](docs/.style/style-guide/numbers-units-and-dates.md) |
-| 38 | ✓ | [`docs/.style/style-guide/voice-and-tone.md`](docs/.style/style-guide/voice-and-tone.md) |
-| 39 | ✓ | [`docs/.style/style-guide/word-choice.md`](docs/.style/style-guide/word-choice.md) |
-| 40 | ✓ | [`docs/admin/templates/template-permissions.md`](docs/admin/templates/template-permissions.md) |
-| 41 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
-| 42 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
-| 43 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |
-| 44 | → | [`.claude/docs/ARCHITECTURE.md`](.claude/docs/ARCHITECTURE.md) |
-| 45 | → | [`.claude/docs/DATABASE.md`](.claude/docs/DATABASE.md) |
-| 46 | → | [`.claude/docs/DEV_ISOLATION.md`](.claude/docs/DEV_ISOLATION.md) |
-| 47 | → | [`.claude/docs/DOCS_STYLE_GUIDE.md`](.claude/docs/DOCS_STYLE_GUIDE.md) |
-| 48 | → | [`.claude/docs/FRONTEND_PATTERNS.md`](.claude/docs/FRONTEND_PATTERNS.md) |
-| 49 | → | [`.claude/docs/GO.md`](.claude/docs/GO.md) |
-| 50 | → | [`.claude/docs/OAUTH2.md`](.claude/docs/OAUTH2.md) |
-| 51 | → | [`.claude/docs/OBSERVABILITY.md`](.claude/docs/OBSERVABILITY.md) |
-| 52 | → | [`.claude/docs/PR_STYLE_GUIDE.md`](.claude/docs/PR_STYLE_GUIDE.md) |
-| 53 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
-| 54 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
-| 55 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
-| 56 | → | [`coderd/x/chatd/ARCHITECTURE.md`](coderd/x/chatd/ARCHITECTURE.md) |
-| 57 | → | [`docs/.style/content-guidelines.md`](docs/.style/content-guidelines.md) |
-| 58 | → | [`docs/.style/style-guide/README.md`](docs/.style/style-guide/README.md) |
+| 38 | ✓ | [`docs/.style/style-guide/procedural-writing.md`](docs/.style/style-guide/procedural-writing.md) |
+| 39 | ✓ | [`docs/.style/style-guide/voice-and-tone.md`](docs/.style/style-guide/voice-and-tone.md) |
+| 40 | ✓ | [`docs/.style/style-guide/word-choice.md`](docs/.style/style-guide/word-choice.md) |
+| 41 | ✓ | [`docs/admin/templates/template-permissions.md`](docs/admin/templates/template-permissions.md) |
+| 42 | ✓ | [`site/AGENTS.md`](site/AGENTS.md) |
+| 43 | ✓ | [`site/CLAUDE.md`](site/CLAUDE.md) |
+| 44 | → | [`.claude/docs/AGENT_FAILURES.md`](.claude/docs/AGENT_FAILURES.md) |
+| 45 | → | [`.claude/docs/ARCHITECTURE.md`](.claude/docs/ARCHITECTURE.md) |
+| 46 | → | [`.claude/docs/DATABASE.md`](.claude/docs/DATABASE.md) |
+| 47 | → | [`.claude/docs/DEV_ISOLATION.md`](.claude/docs/DEV_ISOLATION.md) |
+| 48 | → | [`.claude/docs/DOCS_STYLE_GUIDE.md`](.claude/docs/DOCS_STYLE_GUIDE.md) |
+| 49 | → | [`.claude/docs/FRONTEND_PATTERNS.md`](.claude/docs/FRONTEND_PATTERNS.md) |
+| 50 | → | [`.claude/docs/GO.md`](.claude/docs/GO.md) |
+| 51 | → | [`.claude/docs/OAUTH2.md`](.claude/docs/OAUTH2.md) |
+| 52 | → | [`.claude/docs/OBSERVABILITY.md`](.claude/docs/OBSERVABILITY.md) |
+| 53 | → | [`.claude/docs/PR_STYLE_GUIDE.md`](.claude/docs/PR_STYLE_GUIDE.md) |
+| 54 | → | [`.claude/docs/TESTING.md`](.claude/docs/TESTING.md) |
+| 55 | → | [`.claude/docs/TROUBLESHOOTING.md`](.claude/docs/TROUBLESHOOTING.md) |
+| 56 | → | [`.claude/docs/WORKFLOWS.md`](.claude/docs/WORKFLOWS.md) |
+| 57 | → | [`coderd/x/chatd/ARCHITECTURE.md`](coderd/x/chatd/ARCHITECTURE.md) |
+| 58 | → | [`docs/.style/content-guidelines.md`](docs/.style/content-guidelines.md) |
+| 59 | → | [`docs/.style/style-guide/README.md`](docs/.style/style-guide/README.md) |
 
 ---
 

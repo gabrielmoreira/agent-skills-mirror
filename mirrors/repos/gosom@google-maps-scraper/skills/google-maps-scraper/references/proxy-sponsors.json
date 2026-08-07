@@ -1,12 +1,5 @@
 [
   {
-    "id": "netnut",
-    "name": "NetNut",
-    "description": "Premium residential proxy network and web data collection infrastructure.",
-    "referral_url": "https://netnut.io/?ref=y2fmmzz",
-    "active": true
-  },
-  {
     "id": "rapidproxy",
     "name": "RapidProxy",
     "description": "Residential proxy provider supporting the Google Maps Scraper project.",

@@ -1,20 +1,20 @@
 ---
 name: birdclaw
-description: "Search X/Twitter archives and DMs: historical conversations, identity lookups, shared links, yearly summaries, and quality filters. Use automatically whenever the user mentions Twitter/X DMs; prefer Birdclaw on clawmac unless they explicitly request live or recent DMs."
+description: "Search X/Twitter archives and DMs: historical conversations, identity lookups, shared links, yearly summaries, and quality filters. Use automatically whenever the user mentions Twitter/X DMs; prefer Birdclaw on clawstudio unless they explicitly request live or recent DMs."
 ---
 
 # Birdclaw
 
 Use this for X/Twitter archive questions before web/API lookup. Local archive first; live X only when explicitly needed for current account state.
 
-Any mention of Twitter DMs or X DMs defaults here. Run Birdclaw on `clawmac`, where the complete archive normally lives, unless the user explicitly asks for live/current/recent DMs or names another host.
+Any mention of Twitter DMs or X DMs defaults here. Run Birdclaw on `clawstudio`, where the production archive lives since the 2026-08-06 consolidation, unless the user explicitly asks for live/current/recent DMs or names another host. `clawmac` no longer has birdclaw installed.
 
 ```bash
-ssh -o RequestTTY=no -o RemoteCommand=none steipete@clawmac \
+ssh -o RequestTTY=no -o RemoteCommand=none steipete@clawstudio \
   'zsh -lc "birdclaw --json db stats"'
 ```
 
-Use the same SSH/login-shell shape for searches. If `clawmac` is unavailable, report that before falling back to a local archive because coverage may differ.
+Use the same SSH/login-shell shape for searches. If `clawstudio` is unavailable, report that before falling back to a local archive because coverage may differ. Production web UI: `https://app.birdclaw.sh`.
 
 ## Data
 

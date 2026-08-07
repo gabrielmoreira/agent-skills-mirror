@@ -134,7 +134,6 @@ This allows consumers to import directly from `src/config` rather than individua
 - `setActiveRuntimePreset(name)`: Set currently active preset
 - `getActiveRuntimePreset()`: Get currently active preset
 - `getPreviousRuntimePreset()`: Get previously active preset
-- `setActiveRuntimePresetWithPrevious(name)`: Set active with previous tracking
 
 ### MCP Management
 
@@ -155,7 +154,6 @@ This allows consumers to import directly from `src/config` rather than individua
 - `disabled_skills`: List of skills to disable
 - `multiplexer`: Unified pane management config (type, layout, sizes)
 - `tmux`: Legacy tmux configuration (migrated to multiplexer)
-- `interview`: Interview feature configuration
 - `backgroundJobs`: Background job configuration
 - `fallback`: Failover/retry configuration
 - `council`: Council configuration with presets and execution modes

@@ -116,7 +116,11 @@ agent-browser --cdp 9222 type "<sel>" "<text>"
 
 ## 停止 / 清理
 
-- 关掉 debug Chrome 窗口即可（或 `pkill -9 -x 'Google Chrome'` / `taskkill /F /IM chrome.exe`）。
+- 关掉 debug Chrome 窗口即可。若窗口无响应，先按 `--user-data-dir` 核验出 debug 实例的 PID 再只结束它：
+  - macOS / Linux：`pgrep -af chrome-debug-profile`
+  - Windows：`wmic process where "name='chrome.exe'" get ProcessId,CommandLine | findstr chrome-debug-profile`
+  拿到 PID 后 `kill -9 {PID}` / `taskkill /F /PID {PID}`。核验不出归属时停止，**手工清理不得按 Chrome 可执行文件名批量结束进程**——那会连带杀掉用户的日常 Chrome。
+  例外：`setup-cdp-chrome.js --reset` 内部确实会做一次按可执行名的清理，它属于本 skill 自带的、需 `--yes` 显式同意的启动流程；手工排障不要复制该做法。
 - 登录态失效：`node {SKILL_DIR}/scripts/setup-cdp-chrome.js 9222 --reset --yes`（注意 `--yes` 同样需要先问用户）。
 
 ---
@@ -151,7 +155,7 @@ timeout 30 agent-browser --cdp 9222 eval "window.location.replace('https://www.q
 |------|------|------|
 | 页面加载超时 | eval 命令等待永不返回 | 设置 30s 超时，超时后重试 |
 | 大批量数据抓取 | 多页翻页时累计等待过长 | 每页独立超时，失败后从断点继续 |
-| Chrome 进程僵死 | CDP 连接断开但进程未退出 | 用 `pkill` / `taskkill` 清理后重连 |
+| Chrome 进程僵死 | CDP 连接断开但进程未退出 | 先核验 debug profile 对应 PID，只结束该 debug 实例后重连；不得连带普通 Chrome |
 | 网络波动 | 请求挂起无超时 | 超时后自动重试一次 |
 
 如遇到持续卡死的操作，在 opencode 中按 `ESC` 手动打断。

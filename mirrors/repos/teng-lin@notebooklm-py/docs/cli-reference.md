@@ -1,7 +1,7 @@
 # CLI Reference
 
 **Status:** Active
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-08-05
 
 Complete command reference for the `notebooklm` CLI—providing full programmatic access to all NotebookLM features, including capabilities not exposed in the web UI.
 
@@ -158,6 +158,7 @@ Supported source types: URLs, YouTube videos, files (PDF, text, Markdown, Word, 
 | `list` | - | `--json`, `--limit N`, `--no-truncate` | `source list --limit 20 --no-truncate` |
 | `add <content>` | URL/file/text (use `-` for stdin) | `--title`, `--type`, `--timeout`, `--follow-symlinks`, `--allow-internal` (URL sources only), `--json` (file-source `--mime-type` overrides extension inference — see [detailed section](#source-add-mime-type-file-sources)) | `source add "https://..." --timeout 90` |
 | `add-drive <id> <title>` | Drive file ID, title | `--mime-type [google-doc\|google-slides\|google-sheets\|pdf]`, `--json` | `source add-drive abc123 "Doc" --mime-type google-slides` |
+| `add-drive-file <id>` | Drive file ID or share URL | `--title`, `--wait`, `--json` | `source add-drive-file abc123 --title "Notes" --wait` |
 | `add-research [query]` | Search query (or `--prompt-file -` for stdin) | `--mode [fast\|deep]`, `--from [web\|drive]`, `--import-all`, `--cited-only`, `--no-wait`, `--timeout`, `--prompt-file PATH` | `source add-research "AI" --mode deep --no-wait` |
 | `get <id>` | Source ID | `--json` | `source get src123` |
 | `fulltext <id>` | Source ID | `--json`, `-o FILE`, `--force`, `--no-clobber`, `-f [text\|markdown]` | `source fulltext src123 -f markdown -o out.md` (`-f markdown` requires the `markdown` extra: `pip install "notebooklm-py[markdown]"` — full extras matrix: [docs/installation.md#optional-extras-matrix](installation.md#optional-extras-matrix)) |
@@ -426,6 +427,7 @@ By default, opens a Chromium browser with a persistent profile. Complete the Goo
 - `--browser-cookies <auto|chrome|edge|firefox|safari|brave|arc|...>` - Read cookies from an installed browser instead of launching Playwright. Pass an explicit browser name, or `auto` to let rookiepy auto-detect. For Chromium-family user profiles, use `chrome::<profile-name-or-directory>` (for example `chrome::Profile 1` or `brave::Work`) to extract from one profile explicitly. For Firefox Multi-Account Containers, use `firefox::<container-name>` to extract from a single container, or `firefox::none` for the no-container default — unscoped `firefox` merges every container's cookies (and emits a warning when that's happening). Requires `pip install "notebooklm-py[cookies]"` (full extras matrix: [docs/installation.md#optional-extras-matrix](installation.md#optional-extras-matrix)).
 - `--account EMAIL` - Pick a signed-in Google account by email when several are present in the browser. Saves to the active profile by default; use `--profile-name` for a separate named profile or `--storage` for an exact path. Only valid with `--browser-cookies`.
 - `--all-accounts` - Extract every Google account signed in to the browser into separate profiles named from each account email. Only valid with `--browser-cookies`.
+- `--update` - With `--all-accounts`: when an account's natural profile name (e.g. `alice` for `alice@gmail.com`) already exists but has no account metadata, update that profile in place instead of creating a suffixed `alice-2`. Profiles that already bind a different email still get a suffix to avoid clobbering. Only valid with `--all-accounts`.
 - `--profile-name NAME` - Write a targeted `--account` import to this named profile instead of the active profile. Only valid with `--browser-cookies`.
 - `--fresh` - Start with a clean browser session (deletes the cached browser profile). Use to switch Google accounts. With explicit `--storage`, a pre-existing browser sidecar is deleted only when it carries NotebookLM's ownership marker or is the canonical legacy/named-profile layout; arbitrary unowned directories are refused. Has no effect with `--browser-cookies`.
 - `--include-domains LABEL[,LABEL...]` - Opt in to extracting sibling-product cookies (default: required Google auth/Drive cookies only). Supported labels: `youtube`, `docs`, `myaccount`, `mail`, `all`. Pass labels comma-separated or repeat the flag.
@@ -1474,10 +1476,10 @@ notebooklm profile <list|create|switch|delete|rename> [OPTIONS]
 | Subcommand | Required arguments | Options |
 |---|---|---|
 | `list` | (none) | `--json` |
-| `create` | `NAME` | — |
-| `switch` | `NAME` | — |
-| `delete` | `NAME` | `--yes`/`-y` (skip prompt; `--confirm` is a deprecated alias; the active default profile cannot be deleted) |
-| `rename` | `OLD_NAME NEW_NAME` | — |
+| `create` | `NAME` | `--json` |
+| `switch` | `NAME` | `--json` |
+| `delete` | `NAME` | `--yes`/`-y` (skip prompt; `--confirm` is a deprecated alias; the active default profile cannot be deleted), `--json` |
+| `rename` | `OLD_NAME NEW_NAME` | `--json` |
 
 **Examples:**
 ```bash
@@ -1574,7 +1576,7 @@ Codex does not consume the `skill` subcommand. In this repository it reads the r
 
 Add a Google Drive document, slide deck, sheet, or PDF as a source. The Drive `--mime-type` selects which Drive document type to import (Google Doc / Slides / Sheets / PDF). This is distinct from the file-source `--mime-type` documented above, which sets the resumable-upload content-type for a locally-uploaded file.
 
-> **By-reference vs upload-only:** NotebookLM's Drive import only ingests Google-native Docs/Slides/Sheets + PDF by reference — the four `--mime-type` choices above. An upload-only file that merely *lives* in Drive (e.g. `epub`/`docx`/`txt`/`md`/`rtf`/`odt`/`csv`) cannot be imported this way; download it and add it with `source add <path> --type file` instead.
+> **By-reference vs upload-only:** NotebookLM's Drive import only ingests Google-native Docs/Slides/Sheets + PDF by reference — the four `--mime-type` choices above. An upload-only file that merely *lives* in Drive (e.g. `epub`/`docx`/`txt`/`md`/`rtf`/`odt`/`csv`/`tsv`) cannot be imported this way; use `source add-drive-file <id>` instead, which downloads it server-side (using your session) and uploads it — no local download step needed.
 >
 > **Python equivalent:** [`client.sources.add_drive(nb_id, file_id, title, mime_type=...)`](python-api.md#sourcesapi-clientsources).
 
@@ -1597,6 +1599,29 @@ notebooklm source add-drive 1AbcD...XyZ "Quarterly Deck" --mime-type google-slid
 
 # Import a Drive-hosted PDF
 notebooklm source add-drive 1AbcD...XyZ "Whitepaper" --mime-type pdf --json
+```
+
+### Source: `add-drive-file`
+
+Add an upload-only Google Drive file (`epub`/`docx`/`txt`/`md`/`rtf`/`odt`/`csv`/`tsv`/`pdf`) by id or share URL. NotebookLM's native Drive import (`source add-drive`) only ingests Google-native Docs/Slides/Sheets + PDF by reference; for every other Drive-hosted file type, this command downloads the file server-side (using your session) and uploads it through the resumable-upload path — a Drive PDF can go either way.
+
+```bash
+notebooklm source add-drive-file [OPTIONS] DOCUMENT_ID
+```
+
+**Options:**
+- `-n, --notebook ID` - Notebook ID (uses current if not set; supports partial IDs)
+- `--title TEXT` - Custom title (default: the file's Drive name)
+- `--wait` - Wait for processing to finish
+- `--json` - Output as JSON
+
+**Examples:**
+```bash
+# Download + upload an upload-only Drive file (e.g. a .docx)
+notebooklm source add-drive-file 1AbcD...XyZ
+
+# Custom title, wait for processing to complete
+notebooklm source add-drive-file 1AbcD...XyZ --title "Meeting Notes" --wait
 ```
 
 ### Source: `stale`, `clean`

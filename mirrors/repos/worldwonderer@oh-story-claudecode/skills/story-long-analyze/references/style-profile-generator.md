@@ -1,6 +1,6 @@
 # 文风生成 SOP
 
-> **何时加载**：story-long-analyze Stage 6 执行时。前置依赖：Stage 0-5 已完成，`拆文报告.md` + `章节/*_摘要.md` + `章节/第1-3章_深度拆解.md` + `原文/原文.txt`（或 `.md`）齐全。
+> **何时加载**：story-long-analyze Stage 6 执行时。`拆文报告.md` 是阻断级前置依赖；`章节/*_摘要.md`、`章节/第1-3章_深度拆解.md` 与 `原文/原文.txt`（或 `.md`）是质量输入，缺失时严格按下方「失败模式与降级」逐项处理。
 >
 > **输出**：`拆文库/{书名}/文风.md`（模板见 [style-profile-protocol.md](style-profile-protocol.md)）。
 
@@ -69,17 +69,21 @@ grep -nE '^第[一二三四五六七八九十百千两零0-9]+章' 原文/原文
 
 - 拿到 grep 的 `行号:第N章` 列表后，选第 1 章、第 10 章、第 20 章（如总章数 <20，按 1/3、2/3、收尾比例挑）
 - 每章用 `Read offset={该章起始行} limit=50` 切出约 1000 字
-- 把 3 段拼接写入 `/tmp/style-sample.txt`（追加 `>>`，不要换文件名）
+- 把 3 段拼接写入 `拆文库/{书名}/_style-sample.txt`（固定这个文件名，不要换）：**第一段用 `>` 覆盖写，后两段才用 `>>` 追加**。全程用 `>>` 会让重跑 Stage 6 时把上一轮的样本累积进来，统计出的句长分布是两轮混合的结果
 
 **确定性句长/标点统计**（替代主观「眼测」）：
 
-Stage 6 由**主线程**执行，Bash 工具可用。把上一步拼好的 `/tmp/style-sample.txt` 喂给下面的脚本（heredoc 作 Python 源，脚本内 open 样本文件，避免 stdin heredoc 与 `< file` 双重重定向冲突）。先探测可用解释器再跑——**勿直接用 `python3`**，Windows 上它会触发 Microsoft Store 占位程序、exit 49 失败：
+Stage 6 由**主线程**执行，Bash 工具可用。把上一步拼好的 `_style-sample.txt` 喂给下面的脚本（heredoc 作 Python 源，样本路径按 argv 传入，避免 stdin heredoc 与 `< file` 双重重定向冲突）。先探测可用解释器再跑——**勿直接用 `python3`**，Windows 上它会触发 Microsoft Store 占位程序、exit 49 失败。
+
+样本路径**必须用项目内相对路径**，不要写 `/tmp/...`：下面探测到的解释器可能是 Windows 原生 python（`py` 启动器），它把 `/tmp/x.txt` 解析成 `C:\tmp\x.txt`，和 Git Bash 写入的位置不是同一个文件，脚本会直接 FileNotFoundError。
 
 ```bash
+SAMPLE="拆文库/{书名}/_style-sample.txt"   # {书名} 换成实际书名，别照抄占位符
 for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
-"$PYBIN" <<'PYEOF'
+"$PYBIN" - "$SAMPLE" <<'PYEOF'
 import re
-with open('/tmp/style-sample.txt', 'r', encoding='utf-8') as f:
+import sys
+with open(sys.argv[1], 'r', encoding='utf-8') as f:
     text = f.read()
 sents = [s for s in re.split(r'[。！？]+', text) if s.strip()]
 total = max(len(sents), 1)
@@ -123,7 +127,7 @@ PYEOF
 
 按 [style-profile-protocol.md](style-profile-protocol.md) 模板填写 `拆文库/{书名}/文风.md`：
 
-- **文风文件必须留在拆文库**（`拆文库/{书名}/文风.md`），**永不写入** `对标/` 或写作项目目录——拆文库是 analyze 的数据源，写作项目的 `对标/{书名}/` 由 story-import 从拆文库同步
+- **文风文件必须留在拆文库**（`拆文库/{书名}/文风.md`），**永不由 analyze 直接写入** `对标/` 或写作项目目录——拆文库是数据源；只有该书被明确选为另一项目的外部对标时，才由 story-import 或 story-long-write 首次引用同步到 `对标/{书名}/`
 - 每段标 `confidence: high/med/low`（内部给写作 agent 判断强弱，普通用户可忽略）：
   - `high`：数据直接来自拆文产物（如「写法技巧」直接引用拆文报告）
   - `med`：从样本归纳且样本充足（如基调序列从 ≥10 章摘要统计）
@@ -150,7 +154,7 @@ PYEOF
 ## 与写作端的关系
 
 - analyze Stage 6 写 `拆文库/{书名}/文风.md`
-- story-import 把整个 `拆文库/{书名}/` 同步到项目 `{项目}/对标/{书名}/` 时**自动包含**文风（与拆文报告同等待遇）
+- story-import 显式绑定外部对标或 story-long-write 首次引用 `拆文库/{书名}/` 时，同步到项目 `{项目}/对标/{书名}/` 并**包含**文风（与拆文报告同等待遇）；不得把正在导入的本书自身作为该外部对标
 - 写作端（story-long-write）的日更循环读 `{项目}/对标/{书名}/文风.md`（按对标书路径查找规则，回退 `拆文库/{书名}/`）
 
 ## 单独重建文风

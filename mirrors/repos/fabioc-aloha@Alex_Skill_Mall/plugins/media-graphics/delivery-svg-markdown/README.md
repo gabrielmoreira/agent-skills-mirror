@@ -2,7 +2,7 @@
 
 SVG dashboard composition for Markdown and GitHub, powered by D3.js patterns.
 
-**Status**: Published (v1.0.0)
+**Status**: Published (v1.0.1)
 
 ## Technology
 

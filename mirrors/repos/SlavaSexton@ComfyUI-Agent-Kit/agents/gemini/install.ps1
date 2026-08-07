@@ -23,8 +23,39 @@ $skill = Get-Content "$Shared\SKILL.md" -Raw
 $body = [regex]::Replace($skill, '(?s)^\s*---.*?---\s*', '')
 $gemini = "# ComfyUI media generation (always-on context for Gemini CLI)`n`nUse this whenever a task involves generating or rendering images, video, or audio with ComfyUI, or building/`nrunning a ComfyUI workflow. The per-model prompting reference is MODELS.md next to this file.`n`n$body"
 Set-Content "$Ext\GEMINI.md" $gemini -Encoding utf8
-Copy-Item "$Shared\MODELS.md"       "$Ext\MODELS.md" -Force
-Copy-Item "$Shared\comfy_client.py" "$Ext\comfy_client.py" -Force
+# RESPONSIBLE FOR (2026-08-06 audit): only MODELS.md + the client were copied, so every docs/ and
+# NODE_LIBRARY route in the context file pointed at nothing. Ship the BUILT bundle.
+$Bundle = Join-Path $RepoRoot "claude-code\skills"
+if (-not (Test-Path $Bundle)) { throw "bundle missing at $Bundle - run: python tools/build_plugin.py" }
+# MIGRATION (3.0.0): the machine block used to live inside GEMINI.md, which this installer regenerates on every
+# run. Lift it out first or the upgrade destroys the bootstrap.
+$ctxFile = Join-Path $Ext "GEMINI.md"
+$machineOut = Join-Path $Ext "machine.md"
+if ((-not (Test-Path $machineOut)) -and (Test-Path $ctxFile)) {
+  $old = Get-Content $ctxFile -Raw
+  if ($old -match '(?m)^## Your machine') {
+    $buf = @(); $on = $false
+    foreach ($l in ($old -split "`r?`n")) {
+      if ($l -match '^## Your machine') { $on = $true }
+      elseif ($on -and $l -match '^## ') { break }
+      if ($on) { $buf += $l }
+    }
+    if ($buf.Count -gt 1) {
+      Set-Content $machineOut ("# Your machine`n`nMigrated out of GEMINI.md by the 3.0.0 installer. Created once, never overwritten.`n`n" + ($buf -join "`n")) -Encoding utf8
+      Ok "machine block migrated out of GEMINI.md -> machine.md"
+    }
+  }
+}
+$keep = Join-Path $Ext "machine.md"; $tmpKeep = $null
+if (Test-Path $keep) { $tmpKeep = [IO.Path]::GetTempFileName(); Copy-Item $keep $tmpKeep -Force }
+Copy-Item (Join-Path $Bundle "comfyui\*") $Ext -Recurse -Force
+if ($tmpKeep) { Copy-Item $tmpKeep $keep -Force; Remove-Item $tmpKeep -Force }
+foreach ($sk in Get-ChildItem $Bundle -Directory | Where-Object { $_.Name -ne "comfyui" }) {
+  $d = Join-Path $Ext $sk.Name; New-Item -ItemType Directory -Force -Path $d | Out-Null
+  Copy-Item (Join-Path $sk.FullName "*") $d -Recurse -Force
+}
+Ok "full kit (docs, NODE_LIBRARY, MODELS/, sibling skills) -> $Ext"
+
 Ok "GEMINI.md + MODELS.md + client -> $Ext"
 
 # gemini-extension.json (MCP server + context file)
