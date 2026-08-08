@@ -45,10 +45,10 @@ All workspace packages (7). Prefer package `ARCHITECTURE.md` / `AGENTS.md` / `do
 | [`packages/octocode-config`](packages/octocode-config) | `@octocodeai/config` | Zero-dep env + config loader — single source for `getOctocodeHome`, `parseEnv`, `loadOctocodeEnv`, `propagateOctocodeEnv`, `loadOctocoderc`, `PROTECTED_KEYS`. Used by every package (`workspace:*`) and injected into skill scripts as `octocode-config.mjs`. CLI: `npx @octocodeai/config [--keys\|--check KEY]`. | package `src/` |
 | [`packages/octocode-tools-core`](packages/octocode-tools-core) | `@octocodeai/octocode-tools-core` | Brain. All tool runners, GitHub/Octokit client, security, providers, credentials, session, config. Registry: `src/tools/toolConfig.ts`. Delegates home/env to `@octocodeai/config`; native work to engine. | [ARCHITECTURE](packages/octocode-tools-core/ARCHITECTURE.md) |
 | [`packages/octocode-engine`](packages/octocode-engine) | `@octocodeai/octocode-engine` | Only Rust package (napi-rs) + TS LSP/security wrappers. Minify, ripgrep, AST structural search, secret detection, LSP pool. | [ARCHITECTURE](packages/octocode-engine/ARCHITECTURE.md) · [LSP lifecycle](packages/octocode-engine/docs/LSP_SERVER_LIFECYCLE.md) |
-| [`packages/octocode-mcp`](packages/octocode-mcp) | `@octocodeai/mcp` | Thin MCP stdio server: lifecycle → security → tool registration → sanitized output. No business logic. | [ARCHITECTURE](packages/octocode-mcp/ARCHITECTURE.md) · [docs/OCTOCODE_MCP.md](docs/OCTOCODE_MCP.md) |
+| [`packages/octocode-mcp`](packages/octocode-mcp) | `octocode-mcp` | Thin MCP stdio server: lifecycle → security → tool registration → sanitized output. No business logic. | [ARCHITECTURE](packages/octocode-mcp/ARCHITECTURE.md) · [docs/OCTOCODE_MCP.md](docs/OCTOCODE_MCP.md) |
 | [`packages/octocode`](packages/octocode) | `octocode` | CLI — same tool runners as MCP via raw `tools <name>`, plus install/auth/MCP-marketplace, `skill`, `context`, `lsp-server`. Prefer `node packages/octocode/out/octocode.js` in this monorepo. | [ARCHITECTURE](packages/octocode/ARCHITECTURE.md) · [CLI](packages/octocode/docs/OCTOCODE_CLI.md) |
 | [`packages/octocode-vscode`](packages/octocode-vscode) | `octocode-mcp-vscode` | VS Code / multi-editor management extension: GitHub OAuth, MCP install into Cursor/Windsurf/etc., token sync. | package README |
-| [`packages/octocode-benchmark`](packages/octocode-benchmark) | `@octocodeai/octocode-benchmark` | Internal benchmarks/evals — head-to-head tool comparisons (octocode vs gh / gh+rtk / ast-grep), VRPT scoring. | [BENCHMARK](packages/octocode-benchmark/BENCHMARK.md) |
+| [`packages/octocode-benchmark`](packages/octocode-benchmark) | `@octocodeai/octocode-benchmark` | Internal benchmarks/evals — head-to-head tool comparisons (octocode vs gh / gh+rtk / ast-grep), VRPT scoring. | [BENCHMARK](packages/octocode-benchmark/skills/octocode-benchmark/references/BENCHMARK.md) |
 
 External (not in this workspace): `@octocodeai/octocode-core` (sibling `octocode-mcp-host`) — single source for tool descriptions, schemas, and system prompt text. Never hand-write tool guidance in interface packages.
 
@@ -83,7 +83,7 @@ Local end-to-end (when changing engine, tools-core, or CLI):
 ```bash
 yarn workspace @octocodeai/octocode-engine build:dev
 yarn workspace @octocodeai/octocode-tools-core build
-yarn workspace octocode build:dev            # also: yarn workspace @octocodeai/mcp build:dev
+yarn workspace octocode build:dev            # also: yarn workspace octocode-mcp build:dev
 OCTO='node packages/octocode/out/octocode.js'
 $OCTO --help
 $OCTO context --compact
@@ -147,7 +147,7 @@ yarn prepublish                       # runs prepublish + shared final guard + r
 | Global | [`docs/OCTOCODE_MCP.md`](docs/OCTOCODE_MCP.md) · [`docs/CONFIGURATION.md`](docs/CONFIGURATION.md) · [`docs/OCTOCODE_TOOLS.md`](docs/OCTOCODE_TOOLS.md) · [`docs/SECURITY.md`](docs/SECURITY.md) · [`docs/OCTOCODE_RESEARCH_MANIFEST.md`](docs/OCTOCODE_RESEARCH_MANIFEST.md) · [`docs/ROUTING_EVIDENCE_POSITION_PAPER.md`](docs/ROUTING_EVIDENCE_POSITION_PAPER.md) |
 | CLI | [`OCTOCODE_CLI.md`](packages/octocode/docs/OCTOCODE_CLI.md) |
 | Engine | [`LSP_SERVER_LIFECYCLE.md`](packages/octocode-engine/docs/LSP_SERVER_LIFECYCLE.md) · [`SUPPORTED_LANGUAGES_AND_FEATURES.md`](packages/octocode-engine/docs/SUPPORTED_LANGUAGES_AND_FEATURES.md) |
-| Benchmarks | [`BENCHMARK.md`](packages/octocode-benchmark/BENCHMARK.md) · [`README.md`](packages/octocode-benchmark/README.md) · [`SCORING.md`](packages/octocode-benchmark/SCORING.md) |
+| Benchmarks | [`BENCHMARK.md`](packages/octocode-benchmark/skills/octocode-benchmark/references/BENCHMARK.md) · [`README.md`](packages/octocode-benchmark/README.md) · [`SCORING.md`](packages/octocode-benchmark/skills/octocode-benchmark/references/SCORING.md) |
 | Context | [`docs/context/`](docs/context/) — [SEARCH_GUIDE](docs/context/SEARCH_GUIDE.md) · [LSP_GUIDE](docs/context/LSP_GUIDE.md) · [AGENT_RESEARCH_WORKFLOWS](docs/context/AGENT_RESEARCH_WORKFLOWS.md) · [RUST_BEST_PRACTICES](docs/context/RUST_BEST_PRACTICES.md) |
 | Skills (repo) | [`skills/`](skills/) — linked into [`.agents/skills/`](.agents/skills/); all `octocode-*` skills dogfood from here |
 

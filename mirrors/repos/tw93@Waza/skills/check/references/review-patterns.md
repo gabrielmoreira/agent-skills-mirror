@@ -26,6 +26,12 @@ When a diff restores a recently removed symbol, string, asset, enum case, locali
 
 Before making an outlier match its siblings, inspect the change or comment that introduced the divergence. The asymmetry may deliberately avoid a known defect; normalization must preserve that protection.
 
+## Non-atomic replacement of user files
+
+When a diff writes to a path the user already has (`curl -o`, `>`, `tee`, open-truncate-write), ask what survives a failure partway through. Truncating the destination first means a dropped connection, timeout, or non-zero exit leaves a corrupt file and no original. Require staging into a sibling temp file, swapped in only once the content is complete.
+
+Staging covers the paths the code tests for. It does not cover signals: with no trap, an interrupt mid-write can both strand the temp file and let the shell run past the interrupt to install partial content. A fetch running with `-fsSL`, `2>/dev/null`, or a swallowed exit code compounds this by telling the user nothing about what broke or what was left intact.
+
 ## Destructive matcher breadth
 
 For recursion, mass deletion, traversal, ID-prefix wildcards, or fallback regex branches feeding a destructive sink, inspect:

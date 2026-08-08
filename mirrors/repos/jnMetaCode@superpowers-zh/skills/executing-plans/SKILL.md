@@ -16,16 +16,17 @@ metadata:
 
 **开始时宣布：** "我正在使用 executing-plans 技能来实现此计划。"
 
-**注意：** 告诉你的人类伙伴，Superpowers 在有子代理支持时效果好得多。如果在支持子代理的平台上运行（如 Claude Code 或 Codex），其工作质量会显著提高。如果子代理可用，请使用 superpowers:subagent-driven-development 而非此技能。
+**注意：** 告诉你的人类伙伴，Superpowers 在有子代理支持时效果好得多（Claude Code、Codex CLI、Codex App、Copilot CLI 与 Gemini CLI 都算；见 `../using-superpowers/references/` 下的各平台工具参考）。如果子代理可用，请使用 superpowers:subagent-driven-development 而非此技能。
 
 ## 流程
 
 ### 步骤 1：加载并审查计划
 
-1. 读取计划文件
-2. 批判性审查——识别计划中的任何问题或疑虑
-3. 如果有疑虑：在开始之前向你的人类伙伴提出
-4. 如果没有疑虑：创建 TodoWrite 并继续
+1. 确保有一个隔离的工作区：用 superpowers:using-git-worktrees 创建一个，或者核实已有的那个
+2. 读取计划文件
+3. 批判性审查——识别计划中的任何问题或疑虑
+4. 如果有疑虑：在开始之前向你的人类伙伴提出
+5. 如果没有疑虑：创建 TodoWrite 并继续
 
 **审查时重点检查：**
 - 步骤之间是否有依赖遗漏？（A 依赖 B，但 B 排在 A 之后）
@@ -172,9 +173,3 @@ $ git commit -m "feat: 添加用户输入验证（任务 2/5）"
 - 遇到阻塞时停下来，不要猜测
 - 未经用户明确同意，绝不在 main/master 分支上开始实现
 
-## 集成
-
-**必需的工作流技能：**
-- **superpowers:using-git-worktrees** - 必需：开始前建立隔离的工作空间
-- **superpowers:writing-plans** - 创建此技能要执行的计划
-- **superpowers:finishing-a-development-branch** - 所有任务完成后收尾开发

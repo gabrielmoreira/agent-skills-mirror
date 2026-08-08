@@ -370,7 +370,7 @@ Pet 的主对话身份由 chat 请求可选 `uiSurface` 传播并落 `chat_turns
 | `save_project_instructions_cmd` | `PUT /api/projects/{id}/instructions` | ✅（owner 设置面，原子写入，不受通用文件写闸门影响） |
 | `delete_project_cmd` | `DELETE /api/projects/{id}` | ✅ |
 | `archive_project_cmd` | `POST /api/projects/{id}/archive` | ✅ |
-| `list_project_sessions_cmd` | `GET /api/projects/{id}/sessions` | ✅ |
+| `list_project_sessions_cmd` | `GET /api/projects/{id}/sessions?pinned=` | ✅（`pinned=true/false` 在分页前筛选置顶状态） |
 | `move_session_to_project_cmd` | `PATCH /api/sessions/{sessionId}/project` | ✅ |
 | `list_project_memories_cmd` | `GET /api/projects/{id}/memories` | ✅ |
 | `list_project_memory_files_cmd` | `GET /api/projects/{id}/memory-files` | ✅ |
@@ -515,7 +515,7 @@ KB 文件预览端点**仅面向用户本人，无 session 参数、无 owner fa
 
 | Tauri Command | HTTP | 状态 |
 |---|---|---|
-| `list_sessions_cmd` | `GET /api/sessions?agentId=&projectId=&unassigned=&parentSession=&limit=&offset=&activeSessionId=` | ✅（`parentSession=true/false` 分别只取子会话/顶层会话，过滤发生在分页前） |
+| `list_sessions_cmd` | `GET /api/sessions?agentId=&projectId=&unassigned=&parentSession=&pinned=&limit=&offset=&activeSessionId=` | ✅（`parentSession=true/false` 与 `pinned=true/false` 均在分页前筛选；置顶分组用 `pinned=true` 跨项目读取） |
 | `list_archived_sessions_cmd` | `GET /api/sessions/archived?limit=&offset=` | ✅（跨普通 / 项目 / IM / Subagent / Cron / Knowledge / Design 的归档管理列表） |
 | `create_session_cmd` | `POST /api/sessions` | ✅ |
 | `get_session_cmd` | `GET /api/sessions/{id}` | ✅ |
@@ -1608,6 +1608,8 @@ Context / Cache 共用单 SQL `get_session_last_assistant_token_row`，避免渲
 | `list_team_templates` | `GET /api/team-templates` | ✅ |
 | `save_team_template` | `POST /api/team-templates` | ✅ |
 | `delete_team_template` | `DELETE /api/team-templates/{templateId}` | ✅ |
+
+Team 生命周期 HTTP 响应保持原有 `status` 字段并追加可观测结果：pause 为 `status="paused"`，dissolve 为 `status="dissolved"`；两者的 `cancellation` 会区分 `requestedCount`、`terminalCount`、`pendingCount` 与逐 run 状态，取消请求获接受不等于 run 已终止。成员启动走 durable prepare → roster attach → roster-aware launch CAS；pause/dissolve 先提交时不会 fire `SubagentStart` 或启动模型，排队项也保留同一 Team fence。resume 仅在所有被引用的旧成员 run 已终态（或成员 `run_id=NULL`）时启动 fresh attempt；任一旧 run 仍 `queued|spawning|running` 时整队保持 Paused、零 spawn，返回 `status="paused", disposition="refused", retryable=true` 及 `failures[].reason="old_attempt_still_active"`。非空 run_id 对应记录缺失时同样 fail-closed，reason 为 `old_attempt_unknown`、oldAttemptStatus 为 `missing_run_record`。若旧 run 在 pause 提交后的取消竞态中变成 Completed，resume 会把成员惰性对齐为 Completed 并排除重跑；对齐后仅当 roster 非空且全员 Completed 时返回 `status="already_complete", teamStatus="paused", disposition="no_op"`，带完整且重试稳定的 `completedDuringPauseCount/completedMembers`，可发幂等 `member_status=completed`，但不发 `resumed`、不 spawn。兼容字段名 `completedDuringPauseCount` 在该 no-op 中等于 `completedMembers.length`，表示本次 resume 已完成并被跳过的完整 roster 数（含 pause 前已完成成员），不是本次新对齐增量；刷新或重复调用保持同一 no-op。空 roster 或含任意非 Completed 成员的混合 roster 不得归入该结果。通过 gate 后，全成功为 `status="resumed", teamStatus="active", disposition="resumed"`；启动部分成功为 `status="partially_resumed", teamStatus="active", disposition="partial"` 并带 `resumedMembers/failures`；未启动任何成员时为 `status="paused"|"refused", disposition="refused"`。Tauri `resume_team` 与 HTTP 返回同一份结构化 `ResumeTeamResult`；`resumed/partial/refused/no_op` 都是成功传输的领域结果，UI 必须读取 `disposition` 与 durable `teamStatus`，只有传输或系统错误才返回 `CmdError`。`team_event` 仍负责刷新已经发生的 durable 状态变化。
 
 ### Weather / URL preview / Embedded browser
 

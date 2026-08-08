@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `AvdLee/Swift-Concurrency-Agent-Skill` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `AvdLee/Swift-Concurrency-Agent-Skill` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `AvdLee/Swift-Concurrency-Agent-Skill` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 2 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,7 +60,26 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
-| 2 | ✓ | [`swift-concurrency/SKILL.md`](swift-concurrency/SKILL.md) |
+| 2 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
+| 3 | ✓ | [`skills/swift-concurrency/agents/openai.yaml`](skills/swift-concurrency/agents/openai.yaml) |
+| 4 | ✓ | [`skills/swift-concurrency/assets/logo-small.png`](skills/swift-concurrency/assets/logo-small.png) |
+| 5 | ✓ | [`skills/swift-concurrency/assets/logo.png`](skills/swift-concurrency/assets/logo.png) |
+| 6 | ✓ | [`skills/swift-concurrency/references/_index.md`](skills/swift-concurrency/references/_index.md) |
+| 7 | ✓ | [`skills/swift-concurrency/references/actors.md`](skills/swift-concurrency/references/actors.md) |
+| 8 | ✓ | [`skills/swift-concurrency/references/async-algorithms.md`](skills/swift-concurrency/references/async-algorithms.md) |
+| 9 | ✓ | [`skills/swift-concurrency/references/async-await-basics.md`](skills/swift-concurrency/references/async-await-basics.md) |
+| 10 | ✓ | [`skills/swift-concurrency/references/async-sequences.md`](skills/swift-concurrency/references/async-sequences.md) |
+| 11 | ✓ | [`skills/swift-concurrency/references/core-data.md`](skills/swift-concurrency/references/core-data.md) |
+| 12 | ✓ | [`skills/swift-concurrency/references/glossary.md`](skills/swift-concurrency/references/glossary.md) |
+| 13 | ✓ | [`skills/swift-concurrency/references/linting.md`](skills/swift-concurrency/references/linting.md) |
+| 14 | ✓ | [`skills/swift-concurrency/references/memory-management.md`](skills/swift-concurrency/references/memory-management.md) |
+| 15 | ✓ | [`skills/swift-concurrency/references/migration.md`](skills/swift-concurrency/references/migration.md) |
+| 16 | ✓ | [`skills/swift-concurrency/references/performance.md`](skills/swift-concurrency/references/performance.md) |
+| 17 | ✓ | [`skills/swift-concurrency/references/sendable.md`](skills/swift-concurrency/references/sendable.md) |
+| 18 | ✓ | [`skills/swift-concurrency/references/tasks.md`](skills/swift-concurrency/references/tasks.md) |
+| 19 | ✓ | [`skills/swift-concurrency/references/testing.md`](skills/swift-concurrency/references/testing.md) |
+| 20 | ✓ | [`skills/swift-concurrency/references/threading.md`](skills/swift-concurrency/references/threading.md) |
+| 21 | ✓ | [`skills/swift-concurrency/SKILL.md`](skills/swift-concurrency/SKILL.md) |
 
 ---
 

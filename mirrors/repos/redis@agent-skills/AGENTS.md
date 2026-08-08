@@ -44,22 +44,26 @@ Use [skills/redis-core/](skills/redis-core/) as the reference layout. Editorial 
    ---
    ```
 2. Add long-form examples under `references/`.
-3. If the skill needs internal eval coverage, add `evals/<suite-name>/{evals.json, model-matrix.json}`.
+3. If the skill needs internal eval coverage, add `evals/<suite-name>/{evals.json, model-matrix.json}`, run the suite, and promote a baseline (`npm run eval:baseline`) — validation requires every suite to carry a current baseline.
 4. Create `.cursor-plugin/plugin.json` (`name`, `version`, `description`, `license`, `keywords` — see any existing skill).
 5. To publish via the marketplaces:
    - Claude Code: symlink the new skill into `plugins/redis-development/skills/`.
    - Cursor: add an entry to `.cursor-plugin/marketplace.json` pointing at `<skill-name>`.
-6. Validate: `npm run validate` (covers plugin manifests + agentskills.io spec).
+6. Validate: `npm run validate` (covers plugin manifests, eval baselines, and the agentskills.io spec).
 
 ## Running Validators
 
 ```bash
-npm run validate                   # plugin manifests + agentskills.io spec validation
+npm run validate                   # plugin manifests + eval baselines + agentskills.io spec
+npm run validate:eval-baselines    # every eval suite has a baseline matching its evals and matrix
 npm run validate:skill-structure   # spec validation only (across all skills)
 npm run validate:plugins           # claude + cursor plugin manifests only
 ```
 
-`validate` is wired into the husky pre-commit hook and runs in CI on every PR.
+CI runs the full `validate` on every PR. The husky pre-commit hook runs only the
+plugin-manifest and eval-baseline checks — skill-structure validation needs the
+`skill-validator` Go binary and network access for link checking (see
+CONTRIBUTING.md).
 
 ## Running Evals
 

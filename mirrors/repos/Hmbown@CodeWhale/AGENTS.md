@@ -1,8 +1,8 @@
 # Repository Agent Guidance
 
 Durable rules only. Perishable lane state — branch, milestone, known flakes,
-closed investigations — lives in `docs/ops/CURRENT.md`; read it, don't trust
-memory of it.
+closed investigations — lives in the private `codewhale-ops` repo, not here.
+Read it there; don't trust memory of it.
 
 ## Intent is the artifact
 
@@ -93,6 +93,6 @@ and every model/provider first-class — none privileged.
 - Keep gates warm and dry-run unless Hunter explicitly approves enforcement.
 - Leave unrelated edits by other people or agents intact.
 
-Full ethos: `docs/AGENT_ETHOS.md`. Issue triage standard:
-`docs/AGENT_READY_ISSUES.md`. Release queue and harvest procedure:
-`docs/RELEASE_QUEUE.md`.
+Full ethos: `docs/AGENT_ETHOS.md`. Issue-triage standard, release queue, and
+harvest procedure live in the private `codewhale-ops` repo — they are
+maintainer process, not contributor-facing contract.

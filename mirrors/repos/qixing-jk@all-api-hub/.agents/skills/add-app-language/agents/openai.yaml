@@ -1,0 +1,4 @@
+interface:
+  display_name: "Add App Language"
+  short_description: "Add complete application and extension locales safely"
+  default_prompt: "Use $add-app-language to add a complete new application language to all-api-hub."

@@ -586,6 +586,68 @@ couple more tightly to implementation than a static linter — a
 behavior-preserving refactor can still trip one. That coupling is deliberate: it
 catches architecture drift that ruff and mypy structurally cannot see.
 
+### The wire contract (`test_wire_contract.py`)
+
+`batchexecute` responses are positional JSON: index `3` carries no clue what it
+means, so a wrong index is *silent* — it yields a plausible value of the wrong
+thing. Worse, a unit test written from the same misunderstanding will confirm the
+mistake rather than catch it. That has happened here: two constants named
+"failed-artifact error text" and "nested error payload" actually pointed at
+`sources` and `isPubliclyReadable`, and had passing tests built around the
+imaginary shape.
+
+The gate closes that loop using two recovered reference artifacts, both checked
+into `docs/`:
+
+| file | what it pins |
+|---|---|
+| `mobile/schema.proto` | 282 messages / 767 fields with real names and tag numbers |
+| `mobile/enums.txt` | 77 enums / ~1900 values with exact integers |
+
+Both come from the official Android app, which speaks the *same backend messages*
+over gRPC — where fields are tag-addressed rather than positional. The two line up
+exactly: **JSON index `i` == protobuf tag `i + 1`**. That equivalence is what lets
+a positional client be checked against a named schema.
+
+Four checks run:
+
+- **Declared mappings hold** — for each entry in `_wire_contract.MAPPINGS`,
+  `constant == tag - 1`. Known-wrong entries are `xfail` with an issue reference;
+  the fixing PR removes the marker.
+- **Nothing escapes review** — every `_*_POS`-style constant in the scanned
+  modules must appear in `MAPPINGS`, `UNMAPPED`, or `PINNED`. A new positional
+  read cannot land without someone recording what it points at.
+- **Pinned values stay frozen** — entries in `PINNED` read `addUnused()` slots the
+  proto cannot confirm, so the check freezes the value rather than validating it.
+  A change-detector, not a validation.
+- **Enums agree** — client enum members match the recovered backend enum, and
+  declared gaps stay honest.
+
+**Adding a constant.** Three destinations, in descending order of strength:
+
+| destination | when | what the test does |
+|---|---|---|
+| `MAPPINGS` | you can name the protobuf field it reads | asserts `constant == tag - 1` |
+| `PINNED` | the proto has no name for the slot (`addUnused()`), but live evidence establishes the meaning | freezes the value; record the evidence |
+| `UNMAPPED` | you don't know | nothing — but the reason is on the record |
+
+*An honest `UNMAPPED`
+entry is better than a guessed mapping* — a wrong mapping lends false confidence
+to exactly the defect class this gate exists to catch. Several `UNMAPPED` reasons
+carry hard-won warnings (e.g. one index collides with a block that is only safe
+because rows happen to arrive in a particular order); read them before assuming an
+index is fine.
+
+Widening `_SCANNED_DIRS` / `_SCANNED_FILES` in the test is the intended way to
+bring more of the client under the contract — the coverage check will then demand
+a registry entry for each newly-visible constant.
+
+**Caveats.** The proto declares several messages twice (wire vs the app's local
+persistence schema, with *different* tags), so lookups take a section hint and
+refuse ambiguous matches rather than guessing. And the upstream extractor emits
+the literal placeholder `fieldType` where it could not recover a name — those
+fields can only be pinned by tag, with provenance recorded in the mapping's note.
+
 ### Updating baselines
 
 Some gates freeze a *snapshot* of a value the code already derives, so a public

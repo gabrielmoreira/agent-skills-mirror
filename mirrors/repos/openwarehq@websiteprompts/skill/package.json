@@ -1,0 +1,10 @@
+{
+  "name": "cinematic-sites-harness",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Dependencies for the headless verification harness (verify.mjs, capture-stops.mjs). Not needed to use the skill — only to screenshot a running site. Run `npm install` here, plus `npx puppeteer browsers install chrome` once.",
+  "dependencies": {
+    "puppeteer-core": "^23.11.1"
+  }
+}

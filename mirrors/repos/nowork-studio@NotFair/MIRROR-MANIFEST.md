@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `nowork-studio/NotFair` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
+Mirror of `nowork-studio/NotFair` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `nowork-studio/NotFair` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 31 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,34 +62,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`gemini/SKILL.md`](gemini/SKILL.md) |
-| 4 | ✓ | [`google-ads/audit/SKILL.md`](google-ads/audit/SKILL.md) |
-| 5 | ✓ | [`google-ads/copy/SKILL.md`](google-ads/copy/SKILL.md) |
-| 6 | ✓ | [`google-ads/landing/SKILL.md`](google-ads/landing/SKILL.md) |
-| 7 | ✓ | [`google-ads/manage/SKILL.md`](google-ads/manage/SKILL.md) |
-| 8 | ✓ | [`meta-ads/audit/SKILL.md`](meta-ads/audit/SKILL.md) |
-| 9 | ✓ | [`meta-ads/manage/SKILL.md`](meta-ads/manage/SKILL.md) |
-| 10 | ✓ | [`notfair-upgrade-skill/SKILL.md`](notfair-upgrade-skill/SKILL.md) |
-| 11 | ✓ | [`notfair/CLAUDE.md`](notfair/CLAUDE.md) |
-| 12 | ✓ | [`seo/backlink-audit/SKILL.md`](seo/backlink-audit/SKILL.md) |
-| 13 | ✓ | [`seo/broken-link-checker/SKILL.md`](seo/broken-link-checker/SKILL.md) |
-| 14 | ✓ | [`seo/competitor-pages/SKILL.md`](seo/competitor-pages/SKILL.md) |
-| 15 | ✓ | [`seo/content-planner/SKILL.md`](seo/content-planner/SKILL.md) |
-| 16 | ✓ | [`seo/content-writer/SKILL.md`](seo/content-writer/SKILL.md) |
-| 17 | ✓ | [`seo/ecommerce-seo/SKILL.md`](seo/ecommerce-seo/SKILL.md) |
-| 18 | ✓ | [`seo/geo-optimizer/SKILL.md`](seo/geo-optimizer/SKILL.md) |
-| 19 | ✓ | [`seo/hreflang-international/SKILL.md`](seo/hreflang-international/SKILL.md) |
-| 20 | ✓ | [`seo/image-seo/SKILL.md`](seo/image-seo/SKILL.md) |
-| 21 | ✓ | [`seo/keyword-research/SKILL.md`](seo/keyword-research/SKILL.md) |
-| 22 | ✓ | [`seo/local-seo/SKILL.md`](seo/local-seo/SKILL.md) |
-| 23 | ✓ | [`seo/meta-tags-optimizer/SKILL.md`](seo/meta-tags-optimizer/SKILL.md) |
-| 24 | ✓ | [`seo/programmatic-seo/SKILL.md`](seo/programmatic-seo/SKILL.md) |
-| 25 | ✓ | [`seo/schema-markup-generator/SKILL.md`](seo/schema-markup-generator/SKILL.md) |
-| 26 | ✓ | [`seo/seo-analysis/SKILL.md`](seo/seo-analysis/SKILL.md) |
-| 27 | ✓ | [`seo/seo-drift/SKILL.md`](seo/seo-drift/SKILL.md) |
-| 28 | ✓ | [`seo/seo-page/SKILL.md`](seo/seo-page/SKILL.md) |
-| 29 | ✓ | [`seo/setup-cms/SKILL.md`](seo/setup-cms/SKILL.md) |
-| 30 | ✓ | [`seo/sitemap-audit/SKILL.md`](seo/sitemap-audit/SKILL.md) |
-| 31 | ✓ | [`seo/sxo/SKILL.md`](seo/sxo/SKILL.md) |
+| 4 | ✓ | [`google-ads/assets/SKILL.md`](google-ads/assets/SKILL.md) |
+| 5 | ✓ | [`google-ads/audit/SKILL.md`](google-ads/audit/SKILL.md) |
+| 6 | ✓ | [`google-ads/copy/SKILL.md`](google-ads/copy/SKILL.md) |
+| 7 | ✓ | [`google-ads/landing/SKILL.md`](google-ads/landing/SKILL.md) |
+| 8 | ✓ | [`google-ads/manage/SKILL.md`](google-ads/manage/SKILL.md) |
+| 9 | ✓ | [`meta-ads/audit/SKILL.md`](meta-ads/audit/SKILL.md) |
+| 10 | ✓ | [`meta-ads/creative/SKILL.md`](meta-ads/creative/SKILL.md) |
+| 11 | ✓ | [`meta-ads/manage/SKILL.md`](meta-ads/manage/SKILL.md) |
+| 12 | ✓ | [`notfair-upgrade-skill/SKILL.md`](notfair-upgrade-skill/SKILL.md) |
+| 13 | ✓ | [`notfair/CLAUDE.md`](notfair/CLAUDE.md) |
+| 14 | ✓ | [`paid-ads/paid-ads-amazon/SKILL.md`](paid-ads/paid-ads-amazon/SKILL.md) |
+| 15 | ✓ | [`paid-ads/paid-ads-chatgpt/SKILL.md`](paid-ads/paid-ads-chatgpt/SKILL.md) |
+| 16 | ✓ | [`paid-ads/paid-ads-creative/SKILL.md`](paid-ads/paid-ads-creative/SKILL.md) |
+| 17 | ✓ | [`paid-ads/paid-ads-guide/SKILL.md`](paid-ads/paid-ads-guide/SKILL.md) |
+| 18 | ✓ | [`paid-ads/paid-ads-integrations/SKILL.md`](paid-ads/paid-ads-integrations/SKILL.md) |
+| 19 | ✓ | [`paid-ads/paid-ads-launch/SKILL.md`](paid-ads/paid-ads-launch/SKILL.md) |
+| 20 | ✓ | [`paid-ads/paid-ads-linkedin/SKILL.md`](paid-ads/paid-ads-linkedin/SKILL.md) |
+| 21 | ✓ | [`paid-ads/paid-ads-optimize/SKILL.md`](paid-ads/paid-ads-optimize/SKILL.md) |
+| 22 | ✓ | [`paid-ads/paid-ads-review/SKILL.md`](paid-ads/paid-ads-review/SKILL.md) |
+| 23 | ✓ | [`paid-ads/paid-ads-setup/SKILL.md`](paid-ads/paid-ads-setup/SKILL.md) |
+| 24 | ✓ | [`paid-ads/paid-ads-tiktok/SKILL.md`](paid-ads/paid-ads-tiktok/SKILL.md) |
+| 25 | ✓ | [`paid-ads/paid-ads/SKILL.md`](paid-ads/paid-ads/SKILL.md) |
+| 26 | ✓ | [`seo/backlink-audit/SKILL.md`](seo/backlink-audit/SKILL.md) |
+| 27 | ✓ | [`seo/broken-link-checker/SKILL.md`](seo/broken-link-checker/SKILL.md) |
+| 28 | ✓ | [`seo/competitor-pages/SKILL.md`](seo/competitor-pages/SKILL.md) |
+| 29 | ✓ | [`seo/content-planner/SKILL.md`](seo/content-planner/SKILL.md) |
+| 30 | ✓ | [`seo/content-writer/SKILL.md`](seo/content-writer/SKILL.md) |
+| 31 | ✓ | [`seo/ecommerce-seo/SKILL.md`](seo/ecommerce-seo/SKILL.md) |
+| 32 | ✓ | [`seo/geo-optimizer/SKILL.md`](seo/geo-optimizer/SKILL.md) |
+| 33 | ✓ | [`seo/hreflang-international/SKILL.md`](seo/hreflang-international/SKILL.md) |
+| 34 | ✓ | [`seo/image-seo/SKILL.md`](seo/image-seo/SKILL.md) |
+| 35 | ✓ | [`seo/keyword-research/SKILL.md`](seo/keyword-research/SKILL.md) |
+| 36 | ✓ | [`seo/local-seo/SKILL.md`](seo/local-seo/SKILL.md) |
+| 37 | ✓ | [`seo/meta-tags-optimizer/SKILL.md`](seo/meta-tags-optimizer/SKILL.md) |
+| 38 | ✓ | [`seo/programmatic-seo/SKILL.md`](seo/programmatic-seo/SKILL.md) |
+| 39 | ✓ | [`seo/schema-markup-generator/SKILL.md`](seo/schema-markup-generator/SKILL.md) |
+| 40 | ✓ | [`seo/seo-analysis/SKILL.md`](seo/seo-analysis/SKILL.md) |
+| 41 | ✓ | [`seo/seo-drift/SKILL.md`](seo/seo-drift/SKILL.md) |
+| 42 | ✓ | [`seo/seo-page/SKILL.md`](seo/seo-page/SKILL.md) |
+| 43 | ✓ | [`seo/setup-cms/SKILL.md`](seo/setup-cms/SKILL.md) |
+| 44 | ✓ | [`seo/sitemap-audit/SKILL.md`](seo/sitemap-audit/SKILL.md) |
+| 45 | ✓ | [`seo/sxo/SKILL.md`](seo/sxo/SKILL.md) |
 
 ---
 

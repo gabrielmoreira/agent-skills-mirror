@@ -166,6 +166,38 @@ def _compute_relevance(
     return round(relevance, 2)
 
 
+# GitHub search qualifiers the planner sometimes writes straight into the topic
+# string (e.g. "open source AI stars:>1000 created:>2025-03-20"). They must not
+# reach the query builder in `search_github`: it appends its own
+# `created:>{from_date}`, and when two `created:` qualifiers collide GitHub
+# honours the FIRST and silently ignores ours. The API then returns
+# out-of-window items that `parse_github_response`'s date filter drops
+# wholesale — a source that fetches results and reports zero (issue #949).
+QUALIFIER_KEYS = frozenset({
+    "archived", "assignee", "author", "base", "closed", "comments", "commenter",
+    "created", "fork", "forks", "head", "in", "interactions", "involves", "is",
+    "label", "language", "license", "linked", "mentions", "merged", "milestone",
+    "no", "org", "project", "pushed", "reactions", "repo", "review",
+    "review-requested", "reviewed-by", "size", "sort", "stars", "state", "team",
+    "topic", "topics", "type", "updated", "user",
+})
+
+_QUALIFIER_RE = re.compile(
+    r"(?:(?<=[\s,;])|^)(?:" + "|".join(sorted(QUALIFIER_KEYS)) + r"):(?:[<>]=?)?(?:\"[^\"]*\"|[^\s,;()\[\]]+)[,;]?",
+    re.IGNORECASE,
+)
+
+
+def strip_search_qualifiers(text: str) -> str:
+    """Strip GitHub search qualifiers from a topic, leaving plain-language text.
+
+    Whitespace is collapsed. Returns an empty string when the topic was nothing
+    but qualifiers; callers must handle that rather than searching on an empty
+    term, which would match the entire site.
+    """
+    return " ".join(_QUALIFIER_RE.sub(" ", text).split())
+
+
 def search_github(
     topic: str,
     from_date: str,
@@ -193,6 +225,24 @@ def search_github(
     """
     count = DEPTH_LIMITS.get(depth, DEPTH_LIMITS["default"])
     core = extract_core_subject(topic)
+    plain_core = strip_search_qualifiers(core)
+    if plain_core != core:
+        _log(f"Stripped search qualifiers: '{core}' -> '{plain_core}'")
+    if not plain_core:
+        # A qualifier-only (or empty) topic leaves nothing to search on.
+        # Report it instead of querying an empty term, which would match the
+        # whole site and then be discarded by the date filter as a bogus
+        # "no results" (issue #949).
+        _log("Topic contained only search qualifiers or was empty; nothing to search")
+        return {
+            "items": [],
+            "context": {"core": core, "from_date": from_date,
+                        "to_date": to_date, "count": count},
+            "error": (
+                f"GitHub topic contained only search qualifiers or was empty: {topic!r}"
+            ),
+        }
+    core = plain_core
     resolved_token = _resolve_token(token)
     authed = bool(resolved_token)
     if not authed:

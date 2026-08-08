@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
+Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 31 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ucsandman/DashClaw` — 26 default patterns, 0 followed patterns, 30 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 30 |
+| Files         | 31 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -84,11 +84,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 23 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 24 | ✓ | [`.hermes/skills/dashclaw-governance/SKILL.md`](.hermes/skills/dashclaw-governance/SKILL.md) |
 | 25 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 26 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 27 | ✓ | [`examples/codex-review-agent/AGENTS.md`](examples/codex-review-agent/AGENTS.md) |
-| 28 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 29 | ✓ | [`plugins/dashclaw/skills/dashclaw-governance/SKILL.md`](plugins/dashclaw/skills/dashclaw-governance/SKILL.md) |
-| 30 | ✓ | [`public/downloads/dashclaw-governance/SKILL.md`](public/downloads/dashclaw-governance/SKILL.md) |
+| 26 | ✓ | [`app/llms.txt/route.ts`](app/llms.txt/route.ts) |
+| 27 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 28 | ✓ | [`examples/codex-review-agent/AGENTS.md`](examples/codex-review-agent/AGENTS.md) |
+| 29 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 30 | ✓ | [`plugins/dashclaw/skills/dashclaw-governance/SKILL.md`](plugins/dashclaw/skills/dashclaw-governance/SKILL.md) |
+| 31 | ✓ | [`public/downloads/dashclaw-governance/SKILL.md`](public/downloads/dashclaw-governance/SKILL.md) |
 
 ---
 

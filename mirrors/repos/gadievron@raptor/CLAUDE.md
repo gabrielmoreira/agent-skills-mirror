@@ -30,23 +30,26 @@ When a `/command` fires:
 
 1. Read `.claude/commands/<name>.md` frontmatter.
 2. If `dispatch: <command-line>`: substitute placeholders (operator arguments verbatim; `$OUTPUT_DIR` from RUN LIFECYCLE; `$TARGET_PATH` from DEFAULT TARGET DIRECTORY), then run the substituted command. EXECUTION RULES apply — no pipes / flags / wrappers added.
-3. If `dispatch: skill`: this is a multi-step workflow. Follow the body of the .md; there is no single libexec to run.
+3. If `dispatch: skill`: this is a multi-step workflow. **Read the full body of the .md** — it contains the execution steps, mode detection, and the actual libexec commands to run. The body is the source of truth; do not guess CLI commands or libexec script names from training memory.
 4. Operator arguments pass through **verbatim**. If a subcommand isn't in the .md's documented surface, run it anyway and let the dispatch's own error surface. Do NOT silently rewrite to a similar subcommand.
 5. Never infer the dispatch from the description or from training-memory. The .md is authoritative; CI (`.github/scripts/check_command_metadata.py`) enforces every command has a parseable `dispatch:` field whose target exists on disk.
+6. When unsure which libexec script exists, check `ls libexec/raptor-<name>*` — do not guess names.
+7. When a skill body references another `/command` (e.g. `/understand --map` inside `/audit`), resolve it through the same dispatch lookup: read `.claude/commands/<name>.md` to find the actual CLI and its flag syntax. Do not invent flags — if unsure, run the dispatch target with `--help`.
 
 ---
 
 ## COMMANDS
 
-/project - Project management: create, list, status, coverage, findings, diff, merge, report, clean, export
-/scan /fuzz /web /agentic /codeql /analyze - Security testing
-/exploit /patch - Generate PoCs and fixes (beta)
-/validate - Exploitability validation pipeline (see below)
-/understand - Code understanding: map attack surface, trace flows, hunt variants (see below)
-/diagram - Generate Mermaid visual maps from /understand or /validate output (see below)
-/audit - Hypothesis-driven code audit with tool verification (see below)
-/review - Unified operator CLI for navigating audit results across runs
-/annotate - Per-function prose annotations (human-only) attached to source files
+/project - Project management — `libexec/raptor-project-manager <subcommand> [args]`
+/scan /fuzz /web /codeql /analyze - Security testing — `python3 raptor.py <command>`
+/agentic - Scan → dedup → analysis pipeline — `libexec/raptor-agentic --repo <path>`
+/exploit /patch - Generate PoCs and fixes (beta) — `python3 raptor.py agentic`
+/validate - Exploitability validation pipeline — `dispatch: skill`, see below
+/understand - Code understanding — `libexec/raptor-understand [args]`
+/diagram - Mermaid visual maps — `libexec/raptor-render-diagrams <out-dir> [args]`
+/audit - Hypothesis-driven code audit — `dispatch: skill`, see below
+/review - Navigate audit results — `libexec/raptor-review $ARGUMENTS`
+/annotate - Per-function prose annotations (human-only) — `libexec/raptor-annotate <subcommand> [args]`
 
 **Coverage:** When asked about coverage, run `libexec/raptor-coverage-summary` (no args = active project). Use `--detailed` for per-file table, `--gaps` for unreviewed functions. See `.claude/skills/coverage.md` for mark/unmark and the full API.
 
@@ -236,6 +239,8 @@ The `/validate` command validates that vulnerability findings are real, reachabl
 The `/audit` command runs a hypothesis-driven code audit with tool verification. The LLM forms hypotheses about assumption violations; deterministic tools (Semgrep, Coccinelle, CodeQL, SMT, Joern) validate. The LLM never directly classifies code as vulnerable — tool output is the verdict.
 
 **Usage:** `/audit <target> [--model <name>] [--max-cost <usd>] [--review-passes N] [--adversarial]`
+
+**Dispatch:** `dispatch: skill` — `.claude/commands/audit.md` contains execution steps including mode routing (`--model` → orchestrator, `--local` / default → in-session).
 
 See `docs/audit.md` for the full pipeline, gates, strategies, and tool menu. `/review` is the companion operator CLI for navigating results across all four layers (coverage, journal, context-map, annotations).
 

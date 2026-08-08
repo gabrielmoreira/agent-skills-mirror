@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patterns, 64 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Unity-Technologies/skills` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 64 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -97,18 +97,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 36 | ✓ | [`skills/levelplay-unity-integration/references/rewarded-api.md`](skills/levelplay-unity-integration/references/rewarded-api.md) |
 | 37 | ✓ | [`skills/levelplay-unity-integration/SKILL.md`](skills/levelplay-unity-integration/SKILL.md) |
 | 38 | ✓ | [`skills/new-unity-project/SKILL.md`](skills/new-unity-project/SKILL.md) |
-| 39 | ✓ | [`skills/unity-cli/CHANGELOG.md`](skills/unity-cli/CHANGELOG.md) |
-| 40 | ✓ | [`skills/unity-cli/references/auth-license-cloud.md`](skills/unity-cli/references/auth-license-cloud.md) |
-| 41 | ✓ | [`skills/unity-cli/references/build-run-test.md`](skills/unity-cli/references/build-run-test.md) |
-| 42 | ✓ | [`skills/unity-cli/references/config-hub.md`](skills/unity-cli/references/config-hub.md) |
-| 43 | ✓ | [`skills/unity-cli/references/diagnostics-maintenance.md`](skills/unity-cli/references/diagnostics-maintenance.md) |
-| 44 | ✓ | [`skills/unity-cli/references/editors-install.md`](skills/unity-cli/references/editors-install.md) |
-| 45 | ✓ | [`skills/unity-cli/references/integration-advanced.md`](skills/unity-cli/references/integration-advanced.md) |
-| 46 | ✓ | [`skills/unity-cli/references/projects-templates.md`](skills/unity-cli/references/projects-templates.md) |
-| 47 | ✓ | [`skills/unity-cli/SECURITY.md`](skills/unity-cli/SECURITY.md) |
-| 48 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
-| 49 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
-| 50 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
+| 39 | ✓ | [`skills/ui-imgui/references/gui-elements.md`](skills/ui-imgui/references/gui-elements.md) |
+| 40 | ✓ | [`skills/ui-imgui/references/templates.md`](skills/ui-imgui/references/templates.md) |
+| 41 | ✓ | [`skills/ui-imgui/SKILL.md`](skills/ui-imgui/SKILL.md) |
+| 42 | ✓ | [`skills/ui-ugui/references/scrollview-setup.md`](skills/ui-ugui/references/scrollview-setup.md) |
+| 43 | ✓ | [`skills/ui-ugui/SKILL.md`](skills/ui-ugui/SKILL.md) |
+| 44 | ✓ | [`skills/ui-uitk/references/common-issues.md`](skills/ui-uitk/references/common-issues.md) |
+| 45 | ✓ | [`skills/ui-uitk/references/custom-elements.md`](skills/ui-uitk/references/custom-elements.md) |
+| 46 | ✓ | [`skills/ui-uitk/references/painter2d.md`](skills/ui-uitk/references/painter2d.md) |
+| 47 | ✓ | [`skills/ui-uitk/references/pointermanipulator-guide.md`](skills/ui-uitk/references/pointermanipulator-guide.md) |
+| 48 | ✓ | [`skills/ui-uitk/references/svg-icons.md`](skills/ui-uitk/references/svg-icons.md) |
+| 49 | ✓ | [`skills/ui-uitk/references/ui-runtime-binding.md`](skills/ui-uitk/references/ui-runtime-binding.md) |
+| 50 | ✓ | [`skills/ui-uitk/references/uss-guide.md`](skills/ui-uitk/references/uss-guide.md) |
+| 51 | ✓ | [`skills/ui-uitk/SKILL.md`](skills/ui-uitk/SKILL.md) |
+| 52 | ✓ | [`skills/ui/SKILL.md`](skills/ui/SKILL.md) |
+| 53 | ✓ | [`skills/unity-cli/CHANGELOG.md`](skills/unity-cli/CHANGELOG.md) |
+| 54 | ✓ | [`skills/unity-cli/references/auth-license-cloud.md`](skills/unity-cli/references/auth-license-cloud.md) |
+| 55 | ✓ | [`skills/unity-cli/references/build-run-test.md`](skills/unity-cli/references/build-run-test.md) |
+| 56 | ✓ | [`skills/unity-cli/references/config-hub.md`](skills/unity-cli/references/config-hub.md) |
+| 57 | ✓ | [`skills/unity-cli/references/diagnostics-maintenance.md`](skills/unity-cli/references/diagnostics-maintenance.md) |
+| 58 | ✓ | [`skills/unity-cli/references/editors-install.md`](skills/unity-cli/references/editors-install.md) |
+| 59 | ✓ | [`skills/unity-cli/references/integration-advanced.md`](skills/unity-cli/references/integration-advanced.md) |
+| 60 | ✓ | [`skills/unity-cli/references/projects-templates.md`](skills/unity-cli/references/projects-templates.md) |
+| 61 | ✓ | [`skills/unity-cli/SECURITY.md`](skills/unity-cli/SECURITY.md) |
+| 62 | ✓ | [`skills/unity-cli/SKILL.md`](skills/unity-cli/SKILL.md) |
+| 63 | ✓ | [`skills/unity-package-management/references/select-packages.md`](skills/unity-package-management/references/select-packages.md) |
+| 64 | ✓ | [`skills/unity-package-management/SKILL.md`](skills/unity-package-management/SKILL.md) |
 
 ---
 

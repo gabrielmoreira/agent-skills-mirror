@@ -35,6 +35,7 @@ All commands are defined in `package.json` `scripts`.
 | `yarn test:integration`                                              | Run the integration suites (`basictest`/`longtest`/`test`).                                                     |
 | `yarn test:test262` / `yarn test:html5lib` / `yarn test:css-parsing` | Spec-conformance suites.                                                                                        |
 | `yarn test:base -u`                                                  | Update snapshots (eyeball the diff first).                                                                      |
+| `yarn test:size`                                                     | Size of the generated code over all `configCases/` (per asset, plus runtime module counts per runtime).         |
 | `yarn cover:unit`                                                    | Unit-test coverage.                                                                                             |
 | `yarn types:cover`                                                   | Type-coverage report (share of `lib/` that is precisely typed).                                                 |
 | `yarn build:examples`                                                | Build the `examples/` (verify after changing options).                                                          |
@@ -207,7 +208,7 @@ Run targeted tests — `yarn test:base --testPathPatterns="<pattern>"` or `yarn 
 
 **Run only tests specific to your change — leave the broad suites to CI.** Pick the cases that cover the touched code (`--testPathPatterns` / `--testNamePattern`) instead of sweeping whole suites.
 
-> [!REQUIRED] > **Two kinds of change are exempt, because "the tests for my change" is the wrong frame for them.** Touch `schemas/**`, `lib/config/**`, or anything `yarn fix:special` generates, and the blast radius is the whole option surface, not the feature: run `yarn lint` and `yarn test:basic` in full before pushing. `basic` is also what gates the `integration` matrix in `.github/workflows/test.yml` (`integration: needs: basic`), so a red `basic` stops every integration upload and leaves the coverage report computing patch coverage from the unit suite alone — a failure that reads like a coverage problem but is not one.
+> [!REQUIRED] > **Two kinds of change widen the blast radius past "the tests for my change".** Touch `schemas/**`, `lib/config/**`, or anything `yarn fix:special` generates, and what moves is the whole option surface, not the feature. That does **not** mean sweeping the suites locally — push and let CI sweep them, then [read the failing job's log](#read-ci-rather-than-re-running-it). Locally, run only the cheap targeted stages: the `configCases/` your change touches, plus `yarn lint:code` and `yarn fix:special` (whose own output tells you whether a generated file is stale). `basic` gates the `integration` matrix in `.github/workflows/test.yml` (`integration: needs: basic`), so a red `basic` stops every integration upload and leaves the coverage report computing patch coverage from the unit suite alone — a failure that reads like a coverage problem but is not one.
 
 `yarn lint` is a `&&` chain, so the first stage that trips on sandbox drift hides every stage after it. When `lint:special` reports declarations "need to be updated" that `main` reports too, do not stop there — run the rest by hand (`lint:types`, `lint:types-test`, `lint:types-benchmark`, `lint:types-module-test`, `lint:types-hot`, `fmt:check`, `lint:spellcheck`). `lint:types-test` is the one that catches `tsc` errors in `test/`, and skipping it is how a red `lint` survives a "lint passed locally".
 
@@ -217,6 +218,14 @@ This is a hard rule, not a preference: a broad local sweep costs many minutes, a
 
 - **Never read a pass/fail verdict through a pipe.** `yarn test:base … | grep …` discards jest's exit code, so a red run reads as green. Check the exit status, or read the `Tests:` summary line directly.
 - **Never attribute a failure without a base run.** Before assuming a failing case is yours, re-run that exact case on the unmodified files. Most surprises are pre-existing or contention flakes.
+
+### Read CI rather than re-running it
+
+> [!REQUIRED]
+
+**When CI is red, read its log — do not reproduce the whole job locally.** The run already holds the answer, and re-running `yarn lint` or a whole suite to rediscover one line costs minutes and a great many tokens. Filter the run to its failing jobs (`gh run view <run-id> --json jobs --jq '.jobs[] | select(.conclusion=="failure")'`, or `list_workflow_jobs`), read that job's log (`gh run view --job <id> --log-failed`, or `get_job_logs` with `return_content` — its tail is mostly `Post job cleanup`, so ask for enough lines to clear that), then reproduce **only the case it names**: `yarn test:base --testPathPatterns="<file>"`, `yarn test:basic --testNamePattern="<category> <case>"`, or `npx eslint <file>`.
+
+Two traps: a step is not a job — `Run yarn lint` sits inside the `lint` job, and a step's id fetches the wrong log, so select the object with a `steps` array. And `yarn lint` stops at its first stage, so a CI failure in `lint:code` says nothing about the later ones, just as a local `lint:special` complaint `main` also makes says nothing about CI.
 
 ### Verifying a performance or memory change
 
@@ -230,6 +239,8 @@ A perf/memory claim needs evidence, and the cheap kinds are the trustworthy ones
 4. **Wall/CPU timing** — last resort. Interleave the arms in one process, report `n` and dispersion, and treat a difference smaller than the run-to-run spread as no result.
 
 `FILTER="<case-name>" yarn benchmark` drives the repo's own cases; `test/benchmarkCases/` is the fixture set.
+
+A claim about the **size of what webpack emits** is the counting kind, and `yarn test:size` is how it is counted: it builds every `configCases/` case with the defaults a user gets and reports the raw/gzip/brotli/zstd size of every asset, so a change to `lib/runtime/` or to a dependency template shows up as bytes on the wire. Compare two runs with `--baseline <report>`; the `Code Size` CI job does the same against the report `main` last uploaded and comments the diff on the pull request.
 
 Pitfalls that have produced wrong conclusions here:
 
@@ -413,10 +424,10 @@ Two things follow from that, and neither is an exception to it:
 
 Neither of those excuses a check you can run yourself. **A check that reproduces locally is never one you re-run and shrug at**: it runs the same command you can type, so a failure in it is a failure you introduced until a run on unmodified `main` proves otherwise. Fix it and push.
 
-Read the failing job's log rather than guessing (`get_job_logs`), reproduce it locally, fix the cause, and re-run the same command CI ran before pushing. Two failures recur often enough to name:
+Read the failing job's log rather than guessing — see [Read CI rather than re-running it](#read-ci-rather-than-re-running-it) for how to get to it in three calls — then reproduce **only the case it names**, fix the cause, and re-run that one case before pushing. Re-running the whole job locally to find what the log already says is the waste that section exists to stop. Two failures recur often enough to name:
 
 - **cspell** rejects a word — reword it (the codebase is American English, and [Naming](#naming) forbids abbreviations) or, for a genuine term, add it to `cspell.json`.
-- **A snapshot lives in more than one suite.** `ConfigTestCases` and `ConfigCacheTestCases` both snapshot `configCases/`, and `--testPathPatterns=ConfigTestCases` does **not** match `ConfigCacheTestCases`. Update snapshots with `yarn test:basic --testNamePattern="<case>" -u` (no path filter), then run `yarn test:basic` in full.
+- **A snapshot lives in more than one suite.** `ConfigTestCases` and `ConfigCacheTestCases` both snapshot `configCases/`, and `--testPathPatterns=ConfigTestCases` does **not** match `ConfigCacheTestCases`. Update snapshots with `yarn test:basic --testNamePattern="<case>" -u` (no path filter) — the name filter keeps it to that case in both suites, so there is no need to follow it with a full `test:basic`.
 
 A report that measures rather than tests — performance, memory, a preview build — still gets investigated, but it is answered with evidence, not with a reflex commit. Reproduce the claim first (see [Verifying a performance or memory change](#verifying-a-performance-or-memory-change)); a comparison against a base that never ran, or one drawn across different runner environments or a different set of co-running cases, is an artifact and usually says so in its own output. Reporting an artifact as an artifact is a green outcome — silently leaving it unexamined is not. Posting a reply to the bot needs permission ([Writing on GitHub — ask first](#writing-on-github--ask-first)).
 
@@ -478,13 +489,44 @@ CI's `lint` job verifies these outputs are up to date. The combined `yarn fix` s
 
 Code that emits runtime into the bundle — chunk loading (`lib/web/` JSONP, `lib/esm/`, `lib/node/`, `lib/webworker/`), prefetch/preload/resource hints, library and externals presets — is **per-target**: each preset (browsers/JSONP, ESM `output.module`, `node`, `webworker`, `deno`, `electron`, `bun`, and the **universal** `target: ["web", "node"]` neutral-platform path) has its own runtime module or wiring. Changing one and forgetting the others is the easy mistake here. When you touch runtime-emitting code, apply it to **every** affected target and add an integration case per target (typically `target: "web"`, `experiments.outputModule`, and `target: ["web", "node"]`; add `node`/`webworker`/`bun`/`deno`/`electron` when they're in scope). The universal/neutral-platform runtime guards browser-only APIs behind `typeof document === "undefined"`, so those bundles run Node-side without a DOM — its config case must gate DOM assertions on `typeof document !== "undefined"` (see `configCases/target/universal-prefetch-preload`).
 
+**Then look at what it costs on the wire.** `yarn test:size` — and the `Code Size` CI job, which compares against the report `main` last uploaded and comments the diff on the pull request — builds every `configCases/` case and reports **one row per changed asset**: raw before → after, plus what each of gzip/brotli/zstd makes of it. **It is information, never a verdict: it does not fail, and a change that moves the numbers is not a defect.** It exists to answer two questions, so answer them:
+
+- **Which files changed, and by how much?** The asset table is the headline, so a generator or minifier change reads as the files it moved rather than as one number over the suite. A suite-wide total is deliberately not reported: it says nothing you can act on. Raw is what the generator wrote; the compressed columns are what a user downloads, and the two disagree often enough to be worth reading together — a rewrite that saves raw bytes but not gzip bytes has mostly moved entropy around.
+- **Which way did it go?** A row is marked 🔴 ↑ when it grew and 🟢 ↓ when it shrank, so the direction reads before the number does.
+- **Did a runtime gain or lose a runtime module?** A second table counts the runtime modules each runtime carries and names the ones that came or went. Bytes are deliberately not reported per runtime module — what one weighs in isolation is not what anyone downloads, and the asset table already carries the real number. The count is: it catches a runtime module added for one target and forgotten for another, which is the mistake this section is about.
+
+Read the "emitted nothing" note before the numbers: a case whose build now errors contributes no bytes, which otherwise reads as an improvement.
+
+Say what it reported in the PR when the numbers moved.
+
 ### Lint covers every file, docs included
 
 The `lint` job runs Prettier (`fmt:check`) and cspell (`lint:spellcheck`) across the **whole repo** — Markdown and this guide too, not just `lib/`. Run `yarn fix` before pushing even a docs-only change: an unaligned Markdown table or a word cspell doesn't know fails `lint` on its own. For a new/unusual word, add it to the `words` list in `cspell.json` (or reword); Prettier reformats Markdown tables, so hand-written columns must match its output.
 
-### Register serializable classes
+### The persistent cache has to keep working
 
-Persistent caching serializes the module graph, so any new serializable class (a `Module`, `Dependency`, or error subclass, a cached value, …) must call `makeSerializable(...)` — the pattern is used across ~140 files. Run `yarn fix:serializables` to regenerate `internalSerializables`; forgetting silently breaks the persistent cache.
+> [!REQUIRED]
+
+Persistent caching is a shipped feature, not a test mode. `ConfigCacheTestCases` re-runs **every** `configCases/` case with `cache.type: "filesystem"` and fails it if the second or third run writes anything back into the pack. The log line is:
+
+```
+Pack got invalid because of write to: <identifier>
+```
+
+and `<identifier>` is the thing that was **not** restored — it was rebuilt instead. On a user's machine that is work redone on every incremental build, so **treat this as a defect and find the cause**. Do not silence it.
+
+Persistent caching serializes the module graph, so any new serializable class (a `Module`, `Dependency`, or error subclass, a cached value, …) must call `makeSerializable(...)` — the pattern is used across ~140 files — and `yarn fix:serializables` regenerates `internalSerializables`. Forgetting is the most common cause, and it is silent apart from the line above.
+
+The cache suite runs with `infrastructureLogging.debug`, so the log usually names the real cause a few lines earlier. What each one means:
+
+- `No serializer registered for <Class>` — that class never called `makeSerializable(...)`.
+- `Skipped not serializable cache item '<key>'` — something reachable from the value cannot be written.
+- `Restoring failed for <identifier> from pack: <err>` — it _was_ written, and deserialization threw. Deserialization re-enters the constructor with **no arguments**, so a constructor that dereferences a parameter (`err.message`) must guard (`err ? err.message : ""`).
+- Nothing at all — the identifier is not stable between runs, or the module reports that it needs rebuilding.
+
+**Never silence it with `test.filter.js`.** `module.exports = (config) => !config.cache` drops the case from the cache suite entirely, so nothing about that feature is cache-tested any more — including the parts that did work. A new case must pass under both suites.
+
+The one expected write webpack ships today is a module carrying a **build error**: `NormalModule.needBuild` returns true whenever `this.error` is set, because webpack retries errors on every build. A case whose subject _is_ an error therefore invalidates the pack by design, and states so with an `infrastructure-log.js` returning `[/Pack got invalid because of write to/]` when `cache.type === "filesystem"` (~20 cases already do). That is the only mechanism that needs no further justification; any other expectation carries the reason it is not a bug, written next to it — and "it is noise here" is not a reason.
 
 ### Performance and memory
 

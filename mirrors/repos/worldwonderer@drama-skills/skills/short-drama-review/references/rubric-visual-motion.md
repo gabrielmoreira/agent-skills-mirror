@@ -19,12 +19,14 @@
 
 ## Shot purpose and geography
 
-- For a high-value scene with an accepted coverage audition, did the approaches genuinely differ in
-  knowledge timing, audience alignment, performance space, strongest image, landing, losses, or production
-  fit—and does the formal plan bind the creator-selected approach rather than the first draft?
-- When a `scene_visual_plan` exists, do the scene start/end audience positions, spatial pressure, camera
-  rhythm, reaction landing, and sound movement carry one dramatic turn without taking ownership of shot
-  boundaries? Ordinary scenes need no plan merely to satisfy a form.
+- For a high-value scene with an accepted coverage audition: did the approaches
+  genuinely differ — in knowledge timing, audience alignment, performance space,
+  strongest image, landing, losses, or production fit?
+- Does the formal plan bind the approach the creator selected, rather than the first draft?
+- When a `scene_visual_plan` exists: do its start/end audience positions, spatial
+  pressure, camera rhythm, reaction landing, and sound movement carry **one** dramatic turn?
+- Does that plan stay clear of owning shot boundaries? (Ordinary scenes need no plan
+  merely to satisfy a form.)
 - What changes for audience or character by the shot end?
 - Why is this a new shot?
 - Do framing and camera behavior serve attention, alignment, pressure, reveal, or
@@ -51,11 +53,14 @@
 - Does it start from the accepted frame/boundary?
 - Are subject actions ordered and small enough to preserve intended performance?
 - Does performance change express the story move rather than stack synonyms?
-- In multi-character motion, do the actors who actually change have distinct readable triggers, choices,
-  leaks or landings as needed, with `attention_handoffs` only where attention truly transfers rather than
-  synchronized reaction or one identical arc per actor?
-- Does the derived text-readiness view cite accepted inputs and real blocking gaps while explicitly avoiding
-  any claim about generated media quality, without persisting a second readiness truth in each motion record?
+- In multi-character motion: do the actors who actually change have distinct,
+  readable triggers, choices, leaks, or landings — as this shot needs, not one
+  identical arc per actor?
+- Is `attention_handoffs` used only where attention truly transfers, rather than for
+  synchronized reaction?
+- Does the derived text-readiness view cite accepted inputs and real blocking gaps?
+- Does it avoid any claim about generated media quality, and avoid persisting a second
+  readiness truth inside each motion record?
 - Is camera behavior coherent and motivated?
 - Are environment motion, dialogue, SFX, and audio included only when relevant?
 - Does the end report match storyboard `end_boundary` and feed no unauthorized
@@ -70,18 +75,25 @@
   text surfaces, and spatial anchors keep their required position, count, and state?
 - Does each media reference state its exact purpose, what may be copied, and what
   must not be copied, rather than treating all visible pixels as authority?
-- For a pickup or alternate, does `coverage_scope` bind each exact source obligation,
-  map it to a current motion field or explicit disposition, and identify the exact
-  master/supplement record IDs? A motion may request supersession, but only a
-  downstream verdict may bind fixed alternate/master hashes and decide it. Use
-  the [supersession decision example](../assets/supersession-decision.example.json)
-  when that decision is needed.
-- Is music intent written as a relative entry/exit/duck against neighbouring shots
-  rather than an independent cue per shot, and do adjacent annotations actually join
-  (`VID-14`)? Does the prompt or spec text ask for a per-shot music bed against an
-  accepted timeline-layer plan? Whether a rendered clip actually carries a baked-in
-  track is not decidable here—cite it only from an authorized text observation record,
-  otherwise keep it `unverified` and never infer a mix result from prose.
+
+For a pickup or alternate, ask these separately:
+
+- Does `coverage_scope` bind each exact source obligation?
+- Is every obligation mapped to a current motion field or an explicit disposition?
+- Are the exact master/supplement record IDs named?
+- Is supersession only *requested* here? Only a downstream verdict may bind fixed
+  alternate/master hashes and decide it — see the
+  [supersession decision example](../assets/supersession-decision.example.json).
+
+For music, ask these separately (`VID-14`):
+
+- Is intent written as a relative entry/exit/duck against neighbouring shots,
+  rather than an independent cue per shot?
+- Do adjacent annotations actually join?
+- Does the text ask for a per-shot music bed against an accepted timeline-layer plan?
+- Whether a rendered clip carries a baked-in track is **not decidable here**. Cite it
+  only from an authorized text observation record; otherwise keep it `unverified`
+  and never infer a mix result from prose.
 
 Explicit timing that does not sum exactly to its shot's accepted duration—over or
 under—is a structural error. Untimed overload is a
@@ -96,10 +108,11 @@ scene boundary, and each remains independently reviewable. A space or subject ju
 belongs on a member boundary; the same jump inside a member's timed segment is a
 hidden cut. Report an arithmetic mismatch and a hidden cut as two findings, not one.
 
-- Is the axis recorded as two named anchors plus a stated working side and per-character
-  screen position, rather than a placeholder? In a shot-reverse-shot pair, are the two
-  screen directions complementary? Bare left/right always means screen left/right; a
-  subject's own side must name the subject.
+- Is the axis recorded as two named anchors, a stated working side, and a per-character
+  screen position — rather than a placeholder?
+- In a shot-reverse-shot pair, are the two screen directions complementary?
+- Bare left/right always means **screen** left/right. Where a subject's own side is
+  meant, does the text name the subject?
 
 ## Cross-shot continuity
 

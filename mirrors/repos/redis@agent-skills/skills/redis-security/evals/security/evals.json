@@ -1,0 +1,82 @@
+{
+  "skill_name": "redis-security",
+  "eval_suite": "security",
+  "description": "Evals for the redis-security skill: authentication with ACL users over legacy requirepass, TLS with certificate verification, least-privilege ACL rules, and restricting network exposure. Prompts favor cases where the common answer is incomplete (password only, TLS without cert verification, overly broad ACL grants).",
+  "evals": [
+    {
+      "id": 1,
+      "name": "acl-users-over-requirepass",
+      "prompt": "Prepping our Redis for the production launch. Right now redis.conf has requirepass with a decent generated password and every service shares it - the web app, the analytics exporter that only reads, and an admin script that occasionally runs FLUSHDB on a scratch db. Is a strong shared password enough or should we be doing something else?",
+      "expected_output": "Recommends replacing the single shared requirepass with per-application ACL users scoped to the commands and key patterns each one needs, noting requirepass is effectively the legacy default-user shortcut, and shows ACL SETUSER rules including a read-only user for the exporter.",
+      "covered_rules": ["sec-auth", "sec-acls"],
+      "expectations": [
+        "The output recommends per-application ACL users instead of one shared password.",
+        "The output notes that requirepass corresponds to the default user and is the legacy or weaker approach compared to ACL users.",
+        "The output shows concrete ACL SETUSER syntax.",
+        "The output defines a read-only user for the analytics exporter restricted to read commands.",
+        "The output explains that scoped ACLs limit the blast radius if a credential leaks.",
+        "The output does not conclude that a sufficiently strong shared password is adequate on its own."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "tls-certificate-verification",
+      "prompt": "Security review flagged that our Redis traffic is in the clear. The instance is at cache.internal.example.com and I've got a cert and key from our internal CA. I need the redis.conf side and the redis-py connection code. Just needs to work with our internal CA.",
+      "expected_output": "Configures tls-port with tls-cert-file and tls-key-file in redis.conf, and connects from redis-py with ssl=True plus ssl_cert_reqs=\"required\" and the CA bundle, so the certificate is actually verified rather than blindly accepted.",
+      "covered_rules": ["sec-auth"],
+      "expectations": [
+        "The output configures TLS in redis.conf using tls-port together with tls-cert-file and tls-key-file.",
+        "The output connects from redis-py with TLS enabled, for example ssl=True.",
+        "The output requires certificate verification, for example ssl_cert_reqs=\"required\", rather than disabling or omitting it.",
+        "The output references the CA certificate so the internal CA can be validated.",
+        "The output keeps authentication in place alongside TLS rather than treating TLS as a replacement for a password.",
+        "The output does not suggest ssl_cert_reqs=\"none\" or disabling verification as the way to make it work."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "least-privilege-acl-scoping",
+      "prompt": "Need an ACL user for a new service. It only ever touches keys under session: - reads them, writes them, sets TTLs, and occasionally scans that prefix to clean up. My first draft was `ACL SETUSER svc_sessions on >pw ~* +@all` and I'd tighten it later. Can you write the tight version now?",
+      "expected_output": "Writes an ACL user restricted to the session:* key pattern with only the command categories or commands it needs, and explains why ~* +@all is dangerous even as a temporary placeholder.",
+      "covered_rules": ["sec-acls"],
+      "expectations": [
+        "The output restricts the user to the session: key pattern, for example ~session:*, rather than ~*.",
+        "The output grants only the commands or categories the service needs rather than +@all.",
+        "The output covers the stated operations: reads, writes, TTL/expiry, and scanning the prefix.",
+        "The output explains the risk of the ~* +@all draft, such as allowing FLUSHALL or access to unrelated keys.",
+        "The output shows valid ACL SETUSER syntax with the on flag and a password directive."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "internet-exposed-instance",
+      "prompt": "Got a scanner finding: our Redis on 6379 is answering from the public internet with no auth. Current config has bind 0.0.0.0 and protected-mode no, which a previous engineer set because the app in a different VPC couldn't connect. App subnet is 10.20.0.0/24. Need to close this properly today.",
+      "expected_output": "Identifies bind 0.0.0.0 with protected-mode no as the anti-pattern, binds to specific interfaces with protected-mode yes, adds authentication, restricts port 6379 to the 10.20.0.0/24 app subnet at the firewall, and recommends renaming or disabling destructive commands.",
+      "covered_rules": ["sec-network", "sec-auth"],
+      "expectations": [
+        "The output identifies bind 0.0.0.0 combined with protected-mode no as the cause of the exposure.",
+        "The output sets protected-mode yes and binds to specific interfaces rather than 0.0.0.0.",
+        "The output adds authentication, since the instance currently has none.",
+        "The output restricts access to the 10.20.0.0/24 app subnet with firewall rules and denies other sources.",
+        "The output recommends renaming or disabling destructive commands such as FLUSHALL, DEBUG, or CONFIG.",
+        "The output addresses the original connectivity need rather than only telling the user to bind to localhost."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "security-audit-checklist",
+      "prompt": "Inherited a Redis box from a team that got reorged. No documentation. Walk me through auditing it - I can get a shell and redis-cli access. What do I check, in what order, and what does a bad answer look like for each?",
+      "expected_output": "Gives an ordered audit covering network exposure (bind, protected-mode, firewall), authentication and whether ACL users exist beyond default, TLS, ACL scope for each user, and whether destructive commands are reachable, naming the specific commands to run and the bad finding for each.",
+      "covered_rules": ["sec-network", "sec-auth", "sec-acls"],
+      "expectations": [
+        "The output checks network exposure, covering bind, protected-mode, and firewall reachability.",
+        "The output checks whether authentication is enabled and whether ACL users exist beyond the default user.",
+        "The output checks whether TLS is configured.",
+        "The output checks the scope of existing ACL users for over-broad key patterns or command grants.",
+        "The output checks whether destructive commands such as FLUSHALL, CONFIG, or DEBUG are reachable.",
+        "The output names specific commands to run, such as CONFIG GET, ACL LIST, or ACL WHOAMI.",
+        "The output describes what a bad result looks like for the checks rather than only listing topics."
+      ]
+    }
+  ]
+}

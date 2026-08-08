@@ -40,6 +40,7 @@
 | 24 | Codex Account 有两条明确分离的委派通道：用户指定 CodePilot Provider / Model 时，只能通过 app-server `dynamicTools` 暴露的 managed `codepilot_spawn_subagent` 精确路由并落 durable fact；Codex 原生 `spawn_agent` 只表示继承父 Codex route 的 native worker，不能冒充指定模型。动态工具仅在 `thread/start` 注册，initialize 必须声明 `experimentalApi`，旧 thread 由 feature fingerprint 切到新 thread；每个真实 Codex thread 使用独立 dispatcher route，不能用进程级单 handler 互相抢占。managed local tool 的 app-server mirror lifecycle 必须抑制，聊天只能出现一次调用/结果；最终 wire result 必须重读 terminal-immutable durable row，晚到的 child completion 不得覆盖先发生的取消 | `codex/runtime.ts` + `codex/app-server-manager.ts` + `codex/dynamic-tool-bridge.ts` + `codex/proxy/builtin-bridge.ts` + `db.ts` |
 | 25 | Thinking 动画只增强已有事实，不自行声称模型在 reasoning。首 token 前的普通等待使用 `working`，只有真实 thinking delta 行使用 `solving`；可访问语义仍由现有文字承担，canvas 必须 decorative，并尊重组件的 reduced-motion / visibility pause | `StreamingMessage.tsx` + `tool-actions-group.tsx` |
 | 26 | Runtime 内部 lifecycle envelope 不得经通用 status fallback 原样出现在聊天中。已知成功/瞬态事件默认静默；真正影响能力的失败保留结构化诊断事实但只展示本地化人类提示；未知 Codex kind 降级为通用人类状态。双聊天入口均不得暴露 server id、payload JSON 或协议 kind | `codex/event-mapper.ts` + `useSSEStream.ts` + `chat/page.tsx` |
+| 27 | 持久化并重放给 AI SDK 的每个非 provider-executed tool-call，在下一条 user/system 或 transcript 结束前必须有匹配 tool-result。回合结束仍未收到结果时，只能补 app-owned、`is_error:true` 的“未收到结果”事实，不能伪造工具成功/执行失败；legacy history 同样修复。无调用来源的 orphan result 可留在 UI/DB 审计，但不得原样送进模型 prompt | `stream-session-manager.ts` + `message-builder.ts` + `tool-history-integrity.ts` + Native loops |
 
 ## 关键文件 + 责任
 
@@ -67,6 +68,7 @@
 | `src/lib/codex/app-server-manager.ts` | Codex initialize capabilities；dynamic tools 所需 experimental API 声明 |
 | `src/lib/chat-collect-stream-response.ts` | assistant checkpoint 增量写入、owner gate、同 id 终态收口 |
 | `src/components/chat/PermissionPrompt.tsx` | child permission attribution 展示 |
+| `src/lib/tool-history-integrity.ts` | Stop/partial delivery 后的 call/result 完整性、legacy replay 修复与 orphan model-input 隔离 |
 
 ## 改动检查表
 
@@ -101,6 +103,7 @@
 - [ ] 改 Thinking 动画时保持 first-token wait 与真实 reasoning 语义分离，并验证 20px inline preset、decorative canvas、reduced-motion 不回退成无限动画
 - [ ] 升级 `thinking-orbs` 前重新人工审阅发布 diff（网络/eval/storage、浏览器 API guard、reduced-motion、visibility/offscreen pause、unmount cleanup），不得只放宽版本范围后依赖 lockfile
 - [ ] 新增 Runtime status kind 时明确 quiet / human-copy / actionable-UI 三选一，并同时覆盖 `/chat` 首轮和 `/chat/[id]` 后续流；禁止落入原始 JSON 展示
+- [ ] 改 tool persistence/replay 时覆盖正常 pair、Stop 后 missing result、多 call、provider-executed call 与 orphan result；synthetic marker 只能陈述“CodePilot 未收到结果”，不得冒充工具执行结论。
 
 ## 常见坑
 
@@ -161,6 +164,7 @@
 | Codex protocol selector 的 exact-route 校验、用户模型归一化与 raw lifecycle breadcrumb | `subagent-orchestration.test.ts` |
 | durable cancellation 不被晚到 completion 覆盖 | `subagent-run-persistence.test.ts` |
 | 20px Thinking Orb 的 React 兼容、decorative 语义与 wait/reasoning state 接线 | `chat-thinking-orb.test.ts` |
+| terminal missing result、legacy repair 与真实 AI SDK `MissingToolResults` 正/反对照 | `codex-tool-only-completion.test.ts` + `agent-loop-messages.test.ts` + `tool-history-integrity.test.ts` |
 
 ## 设计决策日志
 
@@ -185,3 +189,4 @@
 - 2026-07-27：真实 Codex Account Kimi smoke 证明 exact route 成功仍不等于用户可见模型正确：app-server 会回报协议 selector `sonnet`。Codex 现与 Claude 共用同一语义——raw selector 先用于 route 核验并写 lifecycle breadcrumb，核验通过后 `effective_model` 使用具体 route display identity；真实 mismatch 保留 raw 值并 fail-closed。
 - 2026-08-04：聊天等待与真实 reasoning 行接入 MIT `thinking-orbs@0.2.0` 的 20px Canvas preset。首 token 前使用 `working`，thinking delta 使用 `solving`；orb 标为 decorative，保留现有文字语义，并由上游组件负责 reduced-motion、离屏与后台暂停。该包采用时仍年轻，版本保持精确 pin；任何升级必须重新人工审阅发布 diff，不能把当前审计结论沿用到未来版本。reasoning 行用固定 20px 图标框，避免 streaming orb 切到完成图标时产生位移。
 - 2026-08-04：用户实机发现 Codex `mcpServerReady` 经 `unknown_item → status` 显示成原始 JSON。现将 ready/starting 在 mapper 静默，startup failed 仍保留结构化诊断，但由共享 resolver 在首轮与后续流转换为本地化人类提示；旧 server 发来的 ready envelope 也由 renderer 防御性消费。generic fallback 只允许普通人类字符串直通，结构化对象及以 `{` / `[` 开头的残缺 JSON 统一降级为本地化状态，防止同类问题换 Runtime 复发。
+- 2026-08-07：0.65 真实 Sentry stack 证明 `AI_MissingToolResultsError` 发生在下一轮 prompt conversion；根因是终止回合可持久化只有 tool_use 的 transcript。未来收口补诚实 missing-result，legacy replay 再防御性修复；真实 AI SDK 正/反对照证明修复前拒绝、修复后进入模型调用。

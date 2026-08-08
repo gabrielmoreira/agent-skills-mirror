@@ -96,7 +96,7 @@ Every commit MUST use one of these types. CI and `/release` derive the SemVer bu
 | `ci`       | CI config only.                              | PATCH              |
 | `revert`   | Revert a prior commit.                       | no bump by default |
 
-- **Scope** — one per commit, naming the area touched: `cli`, `sdk`, `python`, `android`, `go`, `server`, `build`, `release`, `ci`, `dx`, `docs`. Introduce a new scope in the same PR that introduces the area.
+- **Scope** — one per commit, naming the area touched: `cli`, `sdk`, `python`, `android`, `go`, `bindings`, `server`, `build`, `release`, `ci`, `dx`, `docs`. Use `bindings` only when a change spans more than one language binding at once; a single-language change uses `go` / `python` / `android`. Introduce a new scope in the same PR that introduces the area.
 - **Subject** — imperative mood (`add`, not `added`), ≤ 72 characters, no trailing period, describes *what* not *why*. Banned subjects (reviewers reject them — they make version derivation impossible): `update code`, `fix bug`, `misc`, `wip`, `tmp`, empty, placeholder, non-ASCII.
 - **Body** — omit by default; add only when the "why" is non-obvious. Don't restate the diff. No co-authors, no emojis.
 - **Breaking changes** — mark with `!` after the type/scope (`feat(cli)!: rename --model flag`) or a `BREAKING CHANGE:` footer. **Pre-1.0 rule:** the leading `X` in `vX.Y.Z` stays `0` until the first stable public release, so breaking changes bump **MINOR**, not MAJOR, while `X = 0`.

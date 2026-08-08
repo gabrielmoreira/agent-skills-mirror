@@ -7,6 +7,7 @@ import {
   ensureLogin,
   getAuthConfigValidationError,
   getAuthProgressState,
+  getCloudBaseApiKeyFromEnv,
   logout,
   peekLoginState,
   rejectAuthProgressState,
@@ -32,6 +33,10 @@ import {
   buildJsonToolResult,
   toolPayloadErrorToResult,
 } from "../utils/tool-result.js";
+import {
+  flattenHttpServiceRoutes,
+  isDomainPathReachableViaGateway,
+} from "../utils/gateway-access-urls.js";
 import {
   checkAndCreateFreeEnv,
   checkAndInitTcbService,
@@ -984,6 +989,107 @@ async function enrichEnvInfoWithMissingFields(
   }
 }
 
+/**
+ * Project gateway Route.Enable onto envQuery(info) without mutating StaticDomain.
+ *
+ * StaticStorages[].StaticDomain stays the cloud-API nominal hostname.
+ * Sibling field staticDomainRouteEnabled (and EnvInfo-level mirrors for the
+ * primary store) tell callers whether the default hosting domain route is
+ * actually reachable (Enable !== false). Matches queryHosting websiteConfig.
+ */
+async function enrichEnvInfoWithStaticDomainRouteEnabled(
+  manager: any,
+  result: any,
+  envId?: string,
+): Promise<any> {
+  const envInfo = result?.EnvInfo;
+  if (!envInfo || typeof envInfo !== "object") {
+    return result;
+  }
+
+  const staticStorages = Array.isArray(envInfo.StaticStorages)
+    ? envInfo.StaticStorages
+    : null;
+  if (!staticStorages || staticStorages.length === 0) {
+    return result;
+  }
+
+  if (typeof manager?.env?.describeHttpServiceRoute !== "function") {
+    return result;
+  }
+
+  const resolvedEnvId =
+    (typeof envId === "string" && envId.trim()) ||
+    (typeof envInfo.EnvId === "string" && envInfo.EnvId.trim()) ||
+    undefined;
+  if (!resolvedEnvId) {
+    return result;
+  }
+
+  try {
+    const routeResult = await manager.env.describeHttpServiceRoute({
+      EnvId: resolvedEnvId,
+      Limit: 1000,
+    });
+    const routes = flattenHttpServiceRoutes(routeResult);
+
+    let primaryRouteEnabled: boolean | null = null;
+    const enrichedStorages = staticStorages.map(
+      (store: unknown, index: number) => {
+        if (!store || typeof store !== "object" || Array.isArray(store)) {
+          return store;
+        }
+        const record = store as Record<string, unknown>;
+        const domain =
+          typeof record.StaticDomain === "string" ? record.StaticDomain : "";
+        if (!domain) {
+          return store;
+        }
+        const reachable = isDomainPathReachableViaGateway(routes, domain, "/");
+        if (index === 0) {
+          primaryRouteEnabled = reachable;
+        }
+        return {
+          ...record,
+          staticDomainRouteEnabled: reachable,
+        };
+      },
+    );
+
+    const enrichment: Record<string, unknown> = {
+      StaticStorages: enrichedStorages,
+    };
+    if (primaryRouteEnabled !== null) {
+      enrichment.staticDomainRouteEnabled = primaryRouteEnabled;
+      enrichment.accessUrlReachable = primaryRouteEnabled !== false;
+      if (primaryRouteEnabled === false) {
+        const primaryDomain =
+          typeof (enrichedStorages[0] as Record<string, unknown> | undefined)
+            ?.StaticDomain === "string"
+            ? String(
+                (enrichedStorages[0] as Record<string, unknown>).StaticDomain,
+              )
+            : "";
+        enrichment.routeDisabled = true;
+        if (primaryDomain) {
+          enrichment.disabledAccessUrls = [`https://${primaryDomain}/`];
+        }
+      }
+    }
+
+    return {
+      ...result,
+      EnvInfo: {
+        ...envInfo,
+        ...enrichment,
+      },
+    };
+  } catch {
+    // Gateway route lookup is best-effort enrichment only.
+    return result;
+  }
+}
+
 function normalizeOptionalToolString(value: unknown) {
   return typeof value === "string" && value.trim().length > 0
     ? value.trim()
@@ -1589,8 +1695,9 @@ export function registerEnvTools(server: ExtendedMcpServer) {
           const loginState = await peekLoginState();
           const authFlowState = await getAuthProgressState();
 
-          // 判断是否为 API Key 模式
-          const isApiKeyMode = !!(process.env.CLOUDBASE_API_KEY && process.env.CLOUDBASE_ENV_ID);
+          // Detect API Key mode (CLOUDBASE_API_KEY preferred, CLOUDBASE_APIKEY fallback)
+          const apiKeyFromEnv = getCloudBaseApiKeyFromEnv();
+          const isApiKeyMode = !!(apiKeyFromEnv && process.env.CLOUDBASE_ENV_ID);
 
           const authStatus = loginState
             ? "READY"
@@ -1647,8 +1754,9 @@ export function registerEnvTools(server: ExtendedMcpServer) {
         }
 
         if (action === "start_auth") {
-          // API Key 模式：尝试换取临时密钥
-          if (process.env.CLOUDBASE_API_KEY && process.env.CLOUDBASE_ENV_ID) {
+          // API Key mode: exchange for temporary credentials
+          const apiKeyFromEnv = getCloudBaseApiKeyFromEnv();
+          if (apiKeyFromEnv && process.env.CLOUDBASE_ENV_ID) {
             try {
               const existingLoginState = await peekLoginState();
               if (existingLoginState) {
@@ -1661,23 +1769,22 @@ export function registerEnvTools(server: ExtendedMcpServer) {
                 });
               }
             } catch (e) {
-              // peekLoginState 内部异常，记录后 fall through
+              // peekLoginState threw; log and fall through to diagnostic
               debug("start_auth: peekLoginState threw", { error: e instanceof Error ? e.message : String(e) });
             }
 
-            // API Key 换取失败：返回详细诊断信息
-            // 尝试获取更详细的错误信息
+            // API Key exchange failed: return diagnostic details
             let diagMessage = "当前配置了 API Key 认证模式，但换取临时密钥失败。";
             const endpoint = process.env.CLOUDBASE_API_ENDPOINT || `https://${process.env.CLOUDBASE_ENV_ID}.ap-shanghai.tcb-api.tencentcloudapi.com`;
             diagMessage += `\n\n诊断信息：`;
             diagMessage += `\n- CLOUDBASE_ENV_ID: ${process.env.CLOUDBASE_ENV_ID}`;
-            diagMessage += `\n- CLOUDBASE_API_KEY: ${process.env.CLOUDBASE_API_KEY.slice(0, 20)}...（已截断）`;
+            diagMessage += `\n- CLOUDBASE_API_KEY: ${apiKeyFromEnv.slice(0, 20)}...（已截断）`;
             diagMessage += `\n- Endpoint: ${endpoint}`;
             diagMessage += `\n\n可能原因：`;
             diagMessage += `\n1. API Key 已过期或被删除`;
             diagMessage += `\n2. Endpoint 不可达（网络/DNS 问题）`;
             diagMessage += `\n3. CLOUDBASE_ENV_ID 与 API Key 所属环境不匹配`;
-            diagMessage += `\n\n建议：检查 MCP 配置中的 CLOUDBASE_API_KEY 和 CLOUDBASE_ENV_ID 环境变量是否正确。`;
+            diagMessage += `\n\n建议：检查 MCP 配置中的 CLOUDBASE_API_KEY（或兼容的 CLOUDBASE_APIKEY）和 CLOUDBASE_ENV_ID 环境变量是否正确。`;
 
             return buildJsonToolResult({
               ok: false,
@@ -1991,12 +2098,12 @@ export function registerEnvTools(server: ExtendedMcpServer) {
         }
 
         if (action === "logout") {
-          // API Key 模式下不允许 logout
-          if (process.env.CLOUDBASE_API_KEY && process.env.CLOUDBASE_ENV_ID) {
+          // Disallow logout in API Key mode
+          if (getCloudBaseApiKeyFromEnv() && process.env.CLOUDBASE_ENV_ID) {
             return buildJsonToolResult({
               ok: false,
               code: "LOGOUT_NOT_ALLOWED",
-              message: "当前使用 API Key 认证模式，不支持退出登录。如需切换认证方式，请移除 CLOUDBASE_API_KEY 环境变量后重启。",
+              message: "当前使用 API Key 认证模式，不支持退出登录。如需切换认证方式，请移除 CLOUDBASE_API_KEY（或兼容的 CLOUDBASE_APIKEY）环境变量后重启。",
               auth_mode: "api_key",
             });
           }
@@ -2240,6 +2347,12 @@ export function registerEnvTools(server: ExtendedMcpServer) {
             if (envId) {
               result = await enrichEnvInfoWithMissingFields(cloudbaseInfo, result, envId);
             }
+            // Project gateway Route.Enable next to StaticDomain (do not rewrite StaticDomain).
+            result = await enrichEnvInfoWithStaticDomainRouteEnabled(
+              cloudbaseInfo,
+              result,
+              envId,
+            );
             result = await enrichEnvInfoWithRuntimeMode(result, cloudbaseInfo);
             break;
 
@@ -2318,7 +2431,7 @@ export function registerEnvTools(server: ExtendedMcpServer) {
   const queryEnvToolSchema = {
     title: "CloudBase 环境查询",
     description:
-      "查询 CloudBase 环境相关信息，支持查询环境列表、指定环境详情和安全域名。（曾用名：envQuery、listEnvs、getEnvInfo、getEnvAuthDomains）当 action=list 时，会按 DescribeEnvs 语义做列表/筛选，标准返回字段为 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，并支持通过 fields 白名单裁剪这些字段；aliasExact=true 时会按别名精确筛选，避免把前缀相近的环境误当作候选；即使传入 envId，action=list 也只返回摘要，不会返回完整资源明细或 expiry。如需查询某个已知 EnvId 对应环境的详细信息（包括资源字段和计费信息），必须使用 action=info 并传入目标环境的 envId 参数。action=info 会在可用时补充 BillingInfo（如 ExpireTime、PayMode、IsAutoRenew 等计费字段）。\n\n🔍 action=info 还会派生三个用于后端选型的字段：\n- `EnvInfo.RuntimeMode`：'postgresql' 或 'nosql'，表示新业务建议默认使用的后端（PG 已开通时为 postgresql，否则为 nosql）。\n- `EnvInfo.RuntimeBackends`：`{postgresql, nosql, mysql}` 三个布尔值，描述当前环境实际并存的后端。\n- `EnvInfo.RuntimeModeHints`：每个后端对应的 API/工具/skill 提示。\n\nAI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业务推荐 `app.rdb()` + RLS（`managePgDatabase action=execute` 跑 `CREATE POLICY`）+ pgstore；已存在的 NoSQL 集合 / 旧 storage / `managePermissions(resourceType=\"noSqlDatabase\")` 在 PG 环境下仍然有效。真正不适用的是 MySQL：当 `RuntimeBackends.mysql === false` 时，`manageMysqlDatabase` / `queryMysqlDatabase` / `relational-database-mcp-cloudbase` skill 都不该使用。",
+      "查询 CloudBase 环境相关信息，支持查询环境列表、指定环境详情和安全域名。（曾用名：envQuery、listEnvs、getEnvInfo、getEnvAuthDomains）当 action=list 时，会按 DescribeEnvs 语义做列表/筛选，标准返回字段为 EnvId、Alias、Status、EnvType、Region、PackageId、PackageName、IsDefault，并支持通过 fields 白名单裁剪这些字段；aliasExact=true 时会按别名精确筛选，避免把前缀相近的环境误当作候选；即使传入 envId，action=list 也只返回摘要，不会返回完整资源明细或 expiry。如需查询某个已知 EnvId 对应环境的详细信息（包括资源字段和计费信息），必须使用 action=info 并传入目标环境的 envId 参数。action=info 会在可用时补充 BillingInfo（如 ExpireTime、PayMode、IsAutoRenew 等计费字段）。\n\n🔍 action=info 还会派生三个用于后端选型的字段：\n- `EnvInfo.RuntimeMode`：'postgresql' 或 'nosql'，表示新业务建议默认使用的后端（PG 已开通时为 postgresql，否则为 nosql）。\n- `EnvInfo.RuntimeBackends`：`{postgresql, nosql, mysql}` 三个布尔值，描述当前环境实际并存的后端。\n- `EnvInfo.RuntimeModeHints`：每个后端对应的 API/工具/skill 提示。\n\n🌐 action=info 还会在不改写 `StaticStorages[].StaticDomain`（云 API 名义域名）的前提下，投影网关路由 Enable 状态：`StaticStorages[].staticDomainRouteEnabled` 与 `EnvInfo.staticDomainRouteEnabled`（与 queryHosting websiteConfig 同源）。`false` 表示默认静态域名根路由已禁用（访问会返回 GATEWAY_ROUTE_DISABLED），勿把名义域名当成可达 URL。\n\nAI 在写业务/权限/存储代码前必须先看这三项：PG 模式下新业务推荐 `app.rdb()` + RLS（`managePgDatabase action=execute` 跑 `CREATE POLICY`）+ pgstore；已存在的 NoSQL 集合 / 旧 storage / `managePermissions(resourceType=\"noSqlDatabase\")` 在 PG 环境下仍然有效。真正不适用的是 MySQL：当 `RuntimeBackends.mysql === false` 时，`manageMysqlDatabase` / `queryMysqlDatabase` / `relational-database-mcp-cloudbase` skill 都不该使用。",
     inputSchema: {
       action: z
         .enum(["list", "info", "domains"])

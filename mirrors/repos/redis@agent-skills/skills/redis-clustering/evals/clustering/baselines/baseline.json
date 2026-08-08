@@ -1,0 +1,15 @@
+{
+  "baseline_name": "current",
+  "updated_at": "2026-08-06T09:50:52.510Z",
+  "skill_name": "redis-clustering",
+  "eval_suite": "clustering",
+  "iteration": "iteration-1",
+  "input_root": "eval-workspaces/redis-clustering/clustering/iteration-1",
+  "included_files": [
+    "aggregate-benchmark.json",
+    "aggregate-benchmark.md",
+    "model-matrix.json",
+    "baseline.json",
+    "README.md"
+  ]
+}

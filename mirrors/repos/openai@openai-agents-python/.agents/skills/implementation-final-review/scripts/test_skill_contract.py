@@ -118,6 +118,21 @@ class SkillContractTest(unittest.TestCase):
             with self.subTest(text=text):
                 self.assertIn(text, self.skill)
 
+    def test_iterative_review_can_skip_unaffected_slow_subsystems(self) -> None:
+        required_text = (
+            "for changes unrelated to every `review_optional` owner, run `make tests-review`",
+            "for a leaf subsystem change, run `make tests-review` plus that subsystem's "
+            "complete test file or directory",
+            "for cross-cutting core or shared test-infrastructure changes, run `make tests`",
+            "The reduced check earns no final-gate credit",
+            "the exact clean-reviewed fingerprint must still pass the complete `make tests` gate",
+            "If the affected boundary is uncertain, run `make tests`",
+        )
+
+        for text in required_text:
+            with self.subTest(text=text):
+                self.assertIn(text, self.skill)
+
     def test_final_gate_deltas_are_classified_by_component(self) -> None:
         required_text = (
             "Runtime, public API, behavior-impacting docs",

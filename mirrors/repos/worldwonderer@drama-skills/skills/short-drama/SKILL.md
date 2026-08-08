@@ -25,8 +25,9 @@ license: MIT
 意图含混时读 [routing-examples.md](references/routing-examples.md)。
 只在需要把规则 ID 定位到负责技能时读
 [knowhow-index.md](references/knowhow-index.md)；路由只负责分派，不代替创作技能判断。
-涉及参考图可以决定什么、观众揭示时机或补拍/替代提示词时读
-[reference-media-and-pickups.md](references/reference-media-and-pickups.md)。
+一张参考图可以决定什么、以及首尾帧契约见 [reference-roles.md](references/reference-roles.md)；
+观众此刻可以知道什么见 [audience-reveal.md](references/audience-reveal.md)；
+补拍与替代版和母版的关系见 [pickup-and-alternate.md](references/pickup-and-alternate.md)。
 不同制作形态的执行翻译见 [production-form-profiles.md](references/production-form-profiles.md)。
 需要在正式分镜前用人物、地点和高压力代表帧统一视觉语言时读
 [look-development.md](references/look-development.md)。

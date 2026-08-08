@@ -59,7 +59,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/agent/SKILL.md`](skills/agent/SKILL.md) |
+| 1 | ✓ | [`skills/exa-agent/SKILL.md`](skills/exa-agent/SKILL.md) |
 | 2 | ✓ | [`skills/search/references/extraction.md`](skills/search/references/extraction.md) |
 | 3 | ✓ | [`skills/search/references/filtering.md`](skills/search/references/filtering.md) |
 | 4 | ✓ | [`skills/search/references/patterns-code.md`](skills/search/references/patterns-code.md) |

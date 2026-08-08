@@ -60,6 +60,7 @@ metadata:
 
 - Codex：`references/codex-tools.md`
 - Pi：`references/pi-tools.md`
+- Antigravity：`references/antigravity-tools.md`
 - Copilot CLI：`references/copilot-tools.md`
 - Hermes Agent：`references/hermes-tools.md`
 - Qoder：`references/qoder-tools.md`

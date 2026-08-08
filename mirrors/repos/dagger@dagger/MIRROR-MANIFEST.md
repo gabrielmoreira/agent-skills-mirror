@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
+Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 15 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `dagger/dagger` — 26 default patterns, 0 followed patterns, 14 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 14 |
+| Files         | 15 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,18 +61,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.dagger/modules/engine-lab/skills/engine-lab/SKILL.md`](.dagger/modules/engine-lab/skills/engine-lab/SKILL.md) |
 | 2 | ✓ | [`.dagger/modules/tui-qa/skills/tui-qa/SKILL.md`](.dagger/modules/tui-qa/skills/tui-qa/SKILL.md) |
-| 3 | ✓ | [`engine/ebpf/AGENTS.md`](engine/ebpf/AGENTS.md) |
-| 4 | ✓ | [`skills/adding-pragmas/SKILL.md`](skills/adding-pragmas/SKILL.md) |
-| 5 | ✓ | [`skills/dagger-chores/SKILL.md`](skills/dagger-chores/SKILL.md) |
-| 6 | ✓ | [`skills/dagger-design-proposals/SKILL.md`](skills/dagger-design-proposals/SKILL.md) |
-| 7 | ✓ | [`skills/engine-debugging/scripts/dagql-cache-analyzer.go`](skills/engine-debugging/scripts/dagql-cache-analyzer.go) |
-| 8 | ✓ | [`skills/engine-debugging/SKILL.md`](skills/engine-debugging/SKILL.md) |
-| 9 | ✓ | [`skills/telemetry-capture/SKILL.md`](skills/telemetry-capture/SKILL.md) |
-| 10 | ✓ | [`skills/tui-console/SKILL.md`](skills/tui-console/SKILL.md) |
-| 11 | ✓ | [`skills/tui-qa/agents/openai.yaml`](skills/tui-qa/agents/openai.yaml) |
-| 12 | ✓ | [`skills/tui-qa/scripts/tui_qa.py`](skills/tui-qa/scripts/tui_qa.py) |
-| 13 | ✓ | [`skills/tui-qa/SKILL.md`](skills/tui-qa/SKILL.md) |
-| 14 | ✓ | [`skills/tui-surfacing/SKILL.md`](skills/tui-surfacing/SKILL.md) |
+| 3 | ✓ | [`core/skills/dang-dagger-modules/SKILL.md`](core/skills/dang-dagger-modules/SKILL.md) |
+| 4 | ✓ | [`engine/ebpf/AGENTS.md`](engine/ebpf/AGENTS.md) |
+| 5 | ✓ | [`skills/adding-pragmas/SKILL.md`](skills/adding-pragmas/SKILL.md) |
+| 6 | ✓ | [`skills/dagger-chores/SKILL.md`](skills/dagger-chores/SKILL.md) |
+| 7 | ✓ | [`skills/dagger-design-proposals/SKILL.md`](skills/dagger-design-proposals/SKILL.md) |
+| 8 | ✓ | [`skills/engine-debugging/scripts/dagql-cache-analyzer.go`](skills/engine-debugging/scripts/dagql-cache-analyzer.go) |
+| 9 | ✓ | [`skills/engine-debugging/SKILL.md`](skills/engine-debugging/SKILL.md) |
+| 10 | ✓ | [`skills/telemetry-capture/SKILL.md`](skills/telemetry-capture/SKILL.md) |
+| 11 | ✓ | [`skills/tui-console/SKILL.md`](skills/tui-console/SKILL.md) |
+| 12 | ✓ | [`skills/tui-qa/agents/openai.yaml`](skills/tui-qa/agents/openai.yaml) |
+| 13 | ✓ | [`skills/tui-qa/scripts/tui_qa.py`](skills/tui-qa/scripts/tui_qa.py) |
+| 14 | ✓ | [`skills/tui-qa/SKILL.md`](skills/tui-qa/SKILL.md) |
+| 15 | ✓ | [`skills/tui-surfacing/SKILL.md`](skills/tui-surfacing/SKILL.md) |
 
 ---
 

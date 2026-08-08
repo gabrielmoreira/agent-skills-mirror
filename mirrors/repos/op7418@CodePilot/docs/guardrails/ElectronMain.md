@@ -42,6 +42,9 @@
 | 21 | 提示音服从系统 policy：macOS 使用 `sound:'default'` 且 `silent:false`，Windows/Linux 使用平台默认且不自播放音频；最终能力必须由对应 packaged smoke 证明 | native options builder + release smoke |
 | 22 | 已 show 的 Notification 对象在 click/close 前由有界 retention 保活；点击在 Renderer ready 前进入有界队列，ready handshake 后按 event id 幂等投递。action 只能解析为应用内 route 或已验证的 task/session fallback | `notification-lifecycle.ts` + `notification-click-queue.ts` + main/preload/hooks |
 | 23 | native delivery 的 stale claim lease 必须长于单次通知 lifecycle timeout，并保留可观测余量；调整 show timeout 时必须同步复核 lease，避免仍在等待系统回调的 delivery 被第二个 consumer 重新领取 | notification claim policy + native delivery service |
+| 24 | 浏览器可触发的 HTML preview URL 只接受本机 POSIX 或 Windows drive 路径；UNC、SMB 与 Windows device namespace 必须在任何 `stat/realpath/readFile` 前拒绝，避免任意网页通过 loopback GET 诱发网络认证出站 | `html-preview-url.ts` + preview route |
+| 25 | macOS 默认钥匙串缺失/未配置时，不得直接进入 Claude Code 的凭据 item 探测或 Electron `safeStorage`，避免系统 modal 阻塞会话。探测只能读取 default-keychain 配置与文件存在性；仅在确认不可用时给 Claude subprocess 前置窄 `security` shim，且只拒绝 `Claude Code*` service 与无参数 `show-keychain-info`，其他 argv 必须原样转发 `/usr/bin/security` | `macos-keychain-guard.ts` + packaged shim + Main/SDK env |
+| 26 | 所有 `shell.openExternal` 返回的 Promise 必须由同一个边界消费。失败时只记稳定 reason code，不得记录 URL/query 或原始 OS 文本；用户必须收到按系统 locale 选择的默认浏览器修复提示，提示本身失败也不得产生 unhandled rejection | `external-navigation.ts` + `electron/main.ts` |
 
 ## 关键文件 + 责任
 
@@ -63,6 +66,8 @@
 | `electron/default-assistant-home.ts` | 默认助理 Documents 路径的无副作用纯解析 |
 | `electron/notification-lifecycle.ts` | 平台 notification options 与 show/error/timeout 终态 |
 | `electron/notification-click-queue.ts` | 点击 action 校验、有界 pending queue 与 event-id 去重 |
+| `electron/external-navigation.ts` | HTTP(S) system-browser Promise 所有权、本地化失败提示与隐私边界 |
+| `src/lib/macos-keychain-guard.ts` + `resources/macos-keychain-guard/security` | default-keychain 只读探测、Claude credential 非交互降级与 packaged shim |
 
 ## 改动检查表
 
@@ -84,6 +89,9 @@
 - [ ] 已 show notification 的 JS 对象在 click/close/TTL 前保持引用，retention 必须有数量与时间上限
 - [ ] 调整 native notification lifecycle timeout 时同步核对 stale claim lease；当前 12s timeout / 30s lease 不得被改成 timeout ≥ lease
 - [ ] 默认助理 fixed-path IPC 保持无参数，路径 fixture 覆盖 macOS/Windows/Linux 分隔符
+- [ ] HTML preview wire 变更覆盖 forged workspace token 与 Windows root token；`\\server\share`、`//server/share`（Windows）和 `\\?\` 必须在文件 I/O 前 fail closed
+- [ ] 改 macOS 凭据启动链时覆盖：健康 default keychain 不改 PATH；缺失/未配置时不调用 `safeStorage`；shim 只拦 `Claude Code*` credential service、其余命令固定 `exec /usr/bin/security "$@"`；不得用 `password-store=basic` 或 `CLAUDE_CODE_SIMPLE` 扩大降级面
+- [ ] 改外链导航时两个入口（`setWindowOpenHandler` / `will-navigate`）都走 `openExternalSafely`；拒绝 Promise 与失败 dialog 自身拒绝均必须被消费，日志/提示不得回显目标 URL 或 OS error。
 
 ## 常见坑
 
@@ -117,10 +125,14 @@
 | HTML thumbnail canonical scope、外联阻断与 deadline queue | `src/__tests__/unit/electron-main-security.test.ts` |
 | 聊天本地路径分类、canonical inspect、bundle/协议拦截与窄系统能力 | `local-link-detector.test.ts` + `local-path-navigation.test.ts` + `markdown-contract.test.ts` + `electron-main-security.test.ts` + `asset-library-ui.test.ts` |
 | 默认助理 fixed-path、native lifecycle、点击队列与 Main 单 owner | `default-assistant-bootstrap.test.ts` + `electron-notification-lifecycle.test.ts` + `bg-poller-channel-parity.test.ts` + `bridge-delivery-visibility.test.ts` |
+| HTML preview 本机路径限制、UNC/device token 拒绝 | `html-preview-url.test.ts` + `html-preview-route.test.ts` |
+| macOS default-keychain 探测、Claude credential shim、safeStorage 前置门禁、packaged resource | `macos-keychain-guard.test.ts` + `provider-secret-electron-contract.test.ts` + `electron-packaging-hygiene.test.ts` |
+| 外链默认应用失败、反馈失败与隐私日志边界 | `electron-external-navigation.test.ts` + `electron-main-security.test.ts` |
 
 ## 设计决策日志
 
 - 2026-07-20 — standalone 最小 root allowlist，并在打包边界 sanitize + fail-closed。
+- 2026-08-07 — Windows 0.64 真实 `shell.openExternal` association failure 被全局 unhandled-rejection 捕获；两个外链入口统一进入可测试 Promise owner，失败给本地化默认浏览器提示且不记录动态 URL/系统正文。
 - 2026-07-20 — Windows 重叠 FileSet 改为互斥资源组；packaged server health 升为发布门禁。
 - 2026-07-21 — xAI OAuth 采用固定 loopback browser PKCE + device-code 双路径。
 - 2026-07-27 — Electron child env 改为显式 proxy 优先 + system fallback + loopback bypass。
@@ -131,3 +143,5 @@
 - 2026-07-31 — Codex Markdown 本地目录不再按“绝对路径 = 文件”送入 PreviewPanel。用户点击后由 scoped inspect 判型：文件进侧栏、目录进系统文件管理器；工作区外仍先确认。HTML DiffSummary 卡新增 workspace-only 系统浏览器图标。
 - 2026-08-01 — Claude 复审发现目录 `shell.openPath` 可启动 macOS bundle、generic IPC 可被 AI 路径利用且 inspect/raw path 不同源。删除通用 bridge：目录只定位、bundle 拒绝、HTML 专用打开；inspect 根由 session/home 推导并返回 canonical path，主进程二次校验。既有 files/open shell 拼接同步改为固定 argv。
 - 2026-08-03 — 默认助理路径改为无输入的 fixed-path IPC；native notification 改为 Main 单 owner 的 durable claim/ack。`show` 只表示 OS accepted，点击通过有界 pending queue 等待 Renderer ready，提示音服从系统设置且仍以各平台 packaged smoke 为发布证据。
+- 2026-08-07 — 独立安全审查确认 preview token 能表达 UNC/device root，跨站页面虽读不到响应仍可诱发 loopback 文件探测与 SMB/NTLM 出站。Preview wire 收紧为 local-only；UNC workspace 的 HTML 预览暂不支持，普通文件能力不受影响。
+- 2026-08-07 — B-018 再次收到真实截图后推翻旧 Chromium 归因：当前 Claude CLI 会在每个 subprocess 启动时用用户名探测 `Claude Code*` Keychain item，且 v0.65+ Electron 还会初始化 `safeStorage`。采用 default-keychain 配置的只读前置探测；确认缺失时跳过 safeStorage，并用 packaged 窄 shim 让 Claude 走既有回退。拒绝 `password-store=basic`（macOS 无效且会误导安全边界）和 `CLAUDE_CODE_SIMPLE`（会关闭正常 hooks/插件/项目指令能力）。

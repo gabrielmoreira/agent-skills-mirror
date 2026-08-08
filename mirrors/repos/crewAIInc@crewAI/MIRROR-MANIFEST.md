@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `crewAIInc/crewAI` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `crewAIInc/crewAI` — 26 default patterns, 1 followed patterns, 7 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `crewAIInc/crewAI` — 26 default patterns, 0 followed patterns, 6 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 6 |
+| Followed pats | 1 |
+| Files         | 7 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `crewAIInc/crewAI` — 26 default patterns, 0 followed patterns, 6 fil
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `DOCS_TRANSLATIONS.md`
 
 ## File Index
 
@@ -65,6 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md`](lib/crewai/tests/skills/fixtures/invalid-name/SKILL.md) |
 | 5 | ✓ | [`lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/minimal-skill/SKILL.md) |
 | 6 | ✓ | [`lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md`](lib/crewai/tests/skills/fixtures/valid-skill/SKILL.md) |
+| 7 | → | [`DOCS_TRANSLATIONS.md`](DOCS_TRANSLATIONS.md) |
 
 ---
 

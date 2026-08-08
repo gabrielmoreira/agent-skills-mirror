@@ -206,6 +206,18 @@ Hooks installed today: **PreToolUse**, **PreCompact**, **Stop**,
 prime the first turn with graph orientation; PreCompact fires on
 summary boundaries.
 
+> **Daemon outage = per-call enforcement stands down.** Every per-call
+> surface (PreToolUse denies and graph advisories, PostToolUse follow-ups,
+> and the Codex / Kimi / Pi / Hermes mirrors) checks daemon reachability
+> first and stays quiet while the daemon socket cannot be dialed — guidance
+> that mandates Gortex MCP tools is untrue the moment the daemon cannot
+> serve them. The SessionStart briefing announces rule-only enforcement to a
+> session that starts mid-outage; a session the outage begins in gets one
+> PreToolUse notice (once per session) carrying the same stance. The
+> localization terminal deny is daemon-independent and deliberately stays
+> live. Enforcement resumes automatically on the next tool call once the
+> daemon is back.
+
 ### aider
 
 Aider has no native MCP client today. We install an `.aiderignore`

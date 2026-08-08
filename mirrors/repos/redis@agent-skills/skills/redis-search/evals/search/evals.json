@@ -1,0 +1,120 @@
+{
+  "skill_name": "redis-search",
+  "eval_suite": "search",
+  "description": "Evals for the redis-search skill: field type selection, DIALECT 2, command selection across FT.SEARCH / FT.AGGREGATE / FT.HYBRID, the FT.HYBRID version gate, vector configuration matched to the embedding model, pre-filtered KNN, and zero-downtime index changes via aliases.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "field-type-selection",
+      "prompt": "Designing an FT.CREATE for a products index on hashes with prefix product:. Fields are: title (want real full-text search), status (values are exactly active/discontinued/draft, filter on it constantly), price (range filters and sorting), warehouse_location (lat/long), and sku (exact lookups, values look like ABC-123-XY). I made everything TEXT to keep it simple. What should the schema actually be?",
+      "expected_output": "Assigns TEXT only to title, TAG to status and sku, NUMERIC SORTABLE to price, GEO to warehouse_location, sets PREFIX 1 product:, and explains TEXT is tokenized and stemmed so it is wrong for exact-match fields, with TAG being far faster for filtering.",
+      "covered_rules": ["search-field-types", "search-index-creation"],
+      "expectations": [
+        "The output assigns TAG to the status field rather than TEXT.",
+        "The output assigns TAG to the sku field rather than TEXT.",
+        "The output assigns NUMERIC to price and marks it SORTABLE.",
+        "The output assigns GEO to warehouse_location.",
+        "The output keeps TEXT for title only.",
+        "The output explains that TEXT is tokenized and stemmed and therefore unsuitable for exact-match filtering.",
+        "The output includes ON HASH with PREFIX 1 product: in the FT.CREATE.",
+        "The output notes that escaping is needed for hyphenated TAG values like the sku, or otherwise addresses the hyphen."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "hybrid-version-gate",
+      "prompt": "I want to blend BM25 keyword relevance with vector similarity and fuse the two rankings for our document search - proper hybrid, not just filtering. We're pinned to Redis 8.0 in prod for at least another two quarters. What's the command and how do I write it?",
+      "expected_output": "States that FT.HYBRID with explicit SEARCH and VSIM legs and a COMBINE fusion stage requires Redis 8.4.0 or later, so it is unavailable on 8.0, and gives the pre-filtered KNN FT.SEARCH approach as the approach that works today while noting it is not true score fusion.",
+      "covered_rules": ["search-command-selection", "search-hybrid"],
+      "expectations": [
+        "The output identifies FT.HYBRID as the command for true lexical plus vector fusion.",
+        "The output states that FT.HYBRID requires Redis 8.4.0 or later.",
+        "The output explicitly concludes that FT.HYBRID is not available on the user's Redis 8.0.",
+        "The output provides a workable alternative on 8.0 using FT.SEARCH with a pre-filter and =>[KNN ...].",
+        "The output is honest that the alternative narrows candidates rather than performing true score fusion of BM25 and vector ranks.",
+        "The output includes DIALECT 2 in the vector query.",
+        "The output does not present FT.HYBRID syntax as something the user can deploy on 8.0."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "vector-config-matches-embedding-model",
+      "prompt": "Adding vector search over our support articles. Using OpenAI text-embedding-3-small for the embeddings. We'll have maybe 300k articles indexed and search needs to feel instant. Write me the FT.CREATE vector field and the KNN query for top 5.",
+      "expected_output": "Defines a VECTOR field with HNSW, TYPE FLOAT32, DIM 1536 to match text-embedding-3-small, and DISTANCE_METRIC COSINE for normalized text embeddings, then writes the KNN query with PARAMS and DIALECT 2, choosing HNSW over FLAT given 300k vectors and latency requirements.",
+      "covered_rules": ["search-vector-query", "search-algorithm-choice"],
+      "expectations": [
+        "The output sets DIM to 1536 to match text-embedding-3-small.",
+        "The output sets DISTANCE_METRIC to COSINE.",
+        "The output sets TYPE to FLOAT32.",
+        "The output chooses HNSW rather than FLAT and justifies it by the corpus size and latency requirement.",
+        "The output writes a KNN query using the =>[KNN 5 @field $vec AS score] form.",
+        "The output passes the query vector via PARAMS rather than inlining it.",
+        "The output includes DIALECT 2 on the query.",
+        "The output warns that a DIM mismatch against the embedding model produces wrong or meaningless results."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "prefilter-instead-of-client-side-filtering",
+      "prompt": "Our RAG retrieval is slow and sometimes returns documents the user shouldn't see. Current approach: run a KNN over the whole index for the top 200, pull them back into Python, then filter by tenant_id and drop anything older than 2024, then take the top 10 that survive. tenant_id is a TAG and published_year is NUMERIC in the index.",
+      "expected_output": "Moves the tenant and recency filters into the query as a pre-filter on the left of the KNN clause so Redis narrows candidates before the vector comparison, which is both faster and avoids the case where all 200 candidates get filtered out and the user sees too few or no results.",
+      "covered_rules": ["search-hybrid", "search-query-optimization"],
+      "expectations": [
+        "The output moves the tenant and year filters into the FT.SEARCH query itself.",
+        "The output places the filter expression to the left of the =>[KNN ...] clause as a pre-filter.",
+        "The output uses TAG syntax for tenant_id and NUMERIC range syntax for published_year.",
+        "The output explains that pre-filtering shrinks the candidate set before the vector comparison and is therefore faster.",
+        "The output identifies a correctness problem with the client-side approach, such as ending up with fewer than 10 results after filtering.",
+        "The output includes PARAMS and DIALECT 2.",
+        "The output does not endorse over-fetching and filtering in application code as an acceptable pattern here."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "aggregate-stage-order",
+      "prompt": "This aggregation is supposed to give me average discounted price per brand for new bicycles, but the numbers are wrong - the averages look like they're over the whole catalogue, not just the new ones, and sale_price comes back empty. No error though, which is what's confusing me.\n\n```\nFT.AGGREGATE idx:bicycle \"*\"\n    GROUPBY 1 @brand\n        REDUCE AVG 1 @sale_price AS avg_sale\n    APPLY \"@price * 0.9\" AS sale_price\n    FILTER \"@condition == 'new'\"\n    SORTBY 2 @avg_sale DESC\n```",
+      "expected_output": "Explains that FT.AGGREGATE executes stages in written order and silently computes something different when they are misordered, so APPLY and FILTER must run before GROUPBY, and that fields must be LOADed to be visible to APPLY and FILTER; gives the corrected LOAD, APPLY, FILTER, GROUPBY, SORTBY pipeline.",
+      "covered_rules": ["search-aggregate-pipeline"],
+      "expectations": [
+        "The output explains that FT.AGGREGATE runs stages in the order written, like a pipeline.",
+        "The output states that a misordered pipeline does not error and instead silently computes the wrong result.",
+        "The output identifies that APPLY creating sale_price must come before the GROUPBY that aggregates it.",
+        "The output identifies that FILTER on condition must run before GROUPBY to restrict which documents are aggregated.",
+        "The output adds a LOAD stage for the fields APPLY and FILTER reference.",
+        "The output gives a corrected pipeline ordered LOAD, APPLY, FILTER, GROUPBY/REDUCE, SORTBY.",
+        "The output explains that GROUPBY discards fields not carried through the reducers, which is why sale_price came back empty."
+      ]
+    },
+    {
+      "id": 6,
+      "name": "zero-downtime-schema-change",
+      "prompt": "Need to add two SORTABLE fields and change a field from TEXT to TAG on idx:listings. It has about 8 million documents. This is a live index serving the main search page - I can't have a window where queries return nothing or error. How do I roll it out?",
+      "expected_output": "Builds a new index with the corrected schema alongside the old one, lets it finish indexing, then atomically repoints an alias with FT.ALIASUPDATE so application queries never change, and drops the old index afterwards - noting queries should already target the alias rather than a concrete index name.",
+      "covered_rules": ["search-index-management"],
+      "expectations": [
+        "The output creates a new index with the new schema rather than mutating the existing one in place.",
+        "The output uses an alias so application queries do not reference a concrete index name.",
+        "The output uses FT.ALIASUPDATE to repoint the alias atomically.",
+        "The output waits for the new index to finish backfilling before the swap, and mentions how to check, such as FT.INFO.",
+        "The output drops the old index after the swap, for example with FT.DROPINDEX.",
+        "The output explains that changing a field's type is not possible via FT.ALTER and therefore requires a rebuild.",
+        "The output notes the app must query the alias for this to be transparent."
+      ]
+    },
+    {
+      "id": 7,
+      "name": "debug-empty-results",
+      "prompt": "FT.SEARCH idx:articles \"@category:{Machine Learning}\" returns zero results but I can see documents with that exact category value when I HGETALL them. Other queries on the same index work fine. What's going on?",
+      "expected_output": "Diagnoses the TAG value containing a space needing escaping (or the tag separator splitting it), and walks through FT.EXPLAIN to see how the query parsed plus FT.INFO to confirm the field is indexed as TAG, rather than assuming the documents are missing.",
+      "covered_rules": ["search-debugging", "search-query-syntax"],
+      "expectations": [
+        "The output identifies the space inside the TAG value as the likely cause.",
+        "The output shows the corrected query with the space escaped or the value otherwise handled.",
+        "The output recommends FT.EXPLAIN to see how the query was parsed.",
+        "The output recommends FT.INFO to confirm the field's type and indexing state.",
+        "The output mentions the tag separator or tokenization as the mechanism behind the failure.",
+        "The output does not conclude that the documents are simply not indexed without offering the escaping diagnosis."
+      ]
+    }
+  ]
+}

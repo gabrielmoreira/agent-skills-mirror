@@ -4,6 +4,48 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+#### [2.1.226](https://github.com/Piebald-AI/claude-code-system-prompts/commit/daeea64)
+
+<sub>_No changes to the system prompts in v2.1.226._</sub>
+
+# [2.1.225](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4b82ebc)
+
+_+1,314 tokens_
+
+- **NEW:** Tool Description: Bash (pre-commit skill checks) — Requires a visible `RAN`/`NOT RUN` status for each applicable verification, simplification, and code-review skill immediately before nontrivial commits, runs checks that are not still valid for the current diff, and limits skips to explicit user instructions or enumerated trivial-only changes.
+- Data: Workshop artifact HTML template — Shows the waiting painter when the opening version has no decisions and, after three minutes without a newer version, warns that Claude may no longer be watching and suggests reloading.
+- System Prompt: Artifact comment reply composer — Answers questions and feedback directly, flags requested artifact changes for the owning session without discussing its own limitations, and avoids claiming or promising that edits will happen.
+- Tool Description: Artifact — Treats finished audience-facing deliverables such as team reports, shared plans, and reference documents as incomplete until they are published as private artifacts and handed off with a link.
+- Tool Description: ListAgents — Reframes Remote Control connectivity as listing the user's Remote Control sessions on other machines when connected here, replacing the previous reply-only remote-bridge guidance.
+- Tool Description: RemoteTrigger prompt — Adds webhook-trigger creation for wiring a scoped, filtered event source to an existing routine and returns that routine's Claude.ai link without a scheduled run time.
+
+# [2.1.224](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1079f62)
+
+_+32,958 tokens_
+
+- **NEW:** Data: Cross-session inbound and dialog expiry settings — Document `accept`/`hold`/`refuse` handling for peer-session messages, permission-mode parity defaults, and a shared trusted-source timeout for remote dialogs and held messages that resolves to safe cancel/drop behavior.
+- **NEW:** System Prompt: Coordinator cross-session peer guidance and Tool Description: SendMessage cross-session guidance — Add peer discovery and `name [ref]` addressing, reply routing from `<cross-session-message>` wrappers, remote-bridge reply-only constraints, and explicit protection against treating peers as workers, authority, or a way around permission decisions.
+- **NEW:** Data: Sandbox credential environment no-match and file mask-claims settings — Add fail-open warning, fail-closed deny, and setup-error behavior when an environment extraction matches nothing, plus selective masking of named claims inside decoded file credentials while preserving non-secret claims.
+- **NEW:** Data: Self-hosted runner command, token-decoding, orchestrator, and lifecycle-metrics help — Document runner connection, lifecycle, trust, confinement, repository-rewrite, outcome-retention, autoscaling, watchdog, and observability flags; verified JWT claim inspection; spawn-hint orchestration and SCM tunneling; and precise started/completed/failed/interrupted session metrics.
+- **NEW:** System Prompt: Self-hosted runner setup — Adds a guided Admin UI onboarding flow that creates and verifies an environment, starts a local runner, proves it appears in the UI, teaches the operational surfaces, writes a reusable cheat sheet, and closes the lifecycle by stopping it.
+- **NEW:** System Prompt: Self-hosted runner doctor and Tool Description: Self-hosted runner requeue session — Add evidence-driven diagnosis for auth, network, lifecycle, execution, placement, compatibility, observability, webhook, and orchestrator failures; safe redacted escalation bundles; and targeted retry of a stuck session on a different runner.
+- **NEW:** Tool Description: Artifact database guidance — Documents shared durable Artifact database reads, paginated queries, writes, updates, and deletes while treating viewer-written rows as untrusted data and making the user-visible scope of writes explicit.
+- **NEW:** Tool Description: `memory_write` prompt and update triggers/timing — Adds full-document, optimistic-concurrency writes to connected shared memory stores, including conflict recovery, secret rejection, and same-reply persistence of durable user corrections, preferences, and non-transient environment lessons.
+- **REMOVED:** Tool Description: Artifact (brief) and Tool Description: Artifact supporting files summary — Remove the standalone short Artifact-rendering and supporting-file-count descriptions; the full publishing and supporting-file guidance remains.
+- Agent Prompt: `/code-review` workflow routing — Adds guidance for `/code-review ultra`, identifying `/ultrareview` as a deprecated alias, explaining its billed multi-agent cloud review behavior and Git requirements, and preventing Claude from trying to launch this user-triggered command itself.
+- Agent Prompt: Dream memory consolidation, System Prompts: Memory instructions, index pointers, and auto-memory durable lessons, and Tool Description: `memory_list` — Support generated per-store indexes and expose each store's index path, keep dream consolidation local instead of copying shared-store content, and remove the requirement to narrate a one-line save/no-save verdict before execution.
+- Data: Managed Agents session, event, webhook, outcome, deployment, endpoint, cURL, and client-pattern references, plus Agent Prompt: Managed Agents onboarding flow and Skill: Building LLM-powered applications with Claude — Add hard dollar-denominated session budgets, list-cost and usage accounting, `budget_reached` pause semantics, settle-only events at the cap, automatic resume after changing or removing a cap, shared multiagent limits, and deployment budgets that are copied onto each newly fired session and can be updated, cleared, or re-added for future runs.
+- Data: Managed Agents core, endpoint, overview, and multiagent references, plus Skill: Building LLM-powered applications with Claude — Add `model.inference_geo` residency pins, workspace-allowlist validation, create-time session override and clearing behavior, fixed per-session semantics, and uniform-pin requirements across multiagent rosters while distinguishing the nested Managed Agents field from the Messages API's top-level parameter.
+- Data: Managed Agents multiagent, event, endpoint, overview, live-source, and webhook references, plus Skill: Agent Design Patterns and Skill: Building LLM-powered applications with Claude — Expand practical orchestration guidance from a minimal `self` roster through cheaper reading workers and dedicated specialists, clarify context, concurrency, thread, cost, and delegation limits, and update the canonical live documentation route.
+- Data: Managed Agents multiagent and tool-use references — Add roster-configured advisors with pairing rules, primary-thread-only consultations, lifecycle and delivery events, plaintext versus redacted client output, interruption and billing behavior, and automatic caching; also document Messages API advisor `max_uses`, `max_tokens`, and `caching` options.
+- Data: Managed Agents environments, tools, and overview references — Load skills from a mounted repository's root `.claude/skills/<name>/` directories in cloud sandboxes, with one-time session-start discovery, coexistence rules, and an explicit trust warning for repository-authored instructions.
+- Data: Managed Agents core, endpoint, cURL, overview, and tools references — Correct agent versions from timestamp-like strings to sequential integers, align session-update guidance around `title`, `metadata`, and session-local `agent.tools`/`agent.mcp_servers` overrides, and clarify that `vault_ids` are create-only even though SDK update parameters may expose them.
+- Skill: Artifact design and Tool Description: Artifact publishing and update guidance — Harden three-state theme support for explicit light, explicit dark, and unstamped system mode with complete root tokens, guarded media overrides, explicit body backgrounds, and checks against colors defined only inside conditional theme blocks.
+- Skill: Artifact PR review, Skill: Whiteboard, and Data: Workshop artifact HTML template — Remove obsolete claims that self-updating decision pages require a one-time browser prompt, reflecting server-enforced per-write authorization while keeping page scripts as affordances rather than authority.
+- Skill: Artifact PR review (composed publish flow) — Tightens review payloads and handoffs by reducing blind-spot and follow-up caps, rejecting padded inventories and misplaced process narration, making validation silent, limiting chat to a short page handoff, and distinguishing GitHub connector consent for in-page approval from ordinary page updates.
+- Skill: Plugin eval authoring interview — Corrects pilot result fields from `plugins` to `suite.plugins` and from `cost_usd` to `costUsd` when validating plugin loading and estimating full-suite cost.
+- Tool Description: SendFeedback drafting guidance — Expands queued feedback beyond product failures to model-behavior issues such as incorrect confidence, premature handoff, unwarranted refusal, over-delegation, poor tone, excessive clarification, and scope creep while preserving explicit user approval before submission.
+
 # [2.1.223](https://github.com/Piebald-AI/claude-code-system-prompts/commit/4c8806a)
 
 _+3,316 tokens_

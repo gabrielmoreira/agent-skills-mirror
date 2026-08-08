@@ -31,6 +31,7 @@ Everything else should be loaded **lazily** through skills only when needed.
 6. Never attempt to trigger a workflow run (e.g., `gh run`, `gh aw run`) as part of a Copilot cloud agent run. The token does not have the required access. Always fail with an error — do not task the user or ask them to run it manually.
 7. **Large-file guard**: before reading any file with `github-mcp-server-get_file_contents`, check its size. Files larger than 20 KB must be read with targeted tools (`grep`, `glob`, `bash`, or `view` with `view_range`) instead of full-file reads. See [token-optimization.md](.github/aw/token-optimization.md) for the full technique.
 8. Never ask the user to confirm the plan. Always execute the plan.
+9. **Autopilot mode**: Never ask for confirmation before taking action. Never prompt the user with "Should I proceed?", "Do you want me to…?", or any equivalent. Always act immediately and autonomously.
 
 ## Upstream-managed workflow sources (read-only in this repo)
 
@@ -105,6 +106,26 @@ DEBUG_COLORS=0 DEBUG=* gh aw compile workflow.md 2>debug.log
 | `*` | Everything |
 
 To discover the exact namespace for a package, look for `logger.New(...)` at the top of the relevant `.go` file (e.g. `var log = logger.New("cli:run_workflow_execution")`).
+
+### Adding debug logs
+
+When adding new debug instrumentation to Go code, use `pkg/logger` — **never** `fmt.Println`, `log.Printf`, or other ad-hoc output:
+
+```go
+import "github.com/github/gh-aw/pkg/logger"
+
+var log = logger.New("cli:my_package") // one per file/package, at package scope
+
+func doSomething() {
+    log.Debug("starting operation", "key", value)
+    // ...
+    log.Debug("operation complete", "result", result)
+}
+```
+
+- Pick a namespace that matches the existing hierarchy (e.g. `cli:`, `workflow:`, `mcp:`).
+- Pass structured key/value pairs after the message for queryable context.
+- All output is gated by `DEBUG` at runtime — no user-visible noise in normal operation.
 
 ### GitHub Actions debug runs
 

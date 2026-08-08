@@ -138,6 +138,9 @@ Every log is a yes/no question: "if this prints X before Y, hypothesis A survive
 | Broke after toggling theme / mode / locale, fine after restart | State not re-applied on the toggle path. Trace the toggle's recompute or invalidation route first; do not tune styles pixel by pixel while the state path is broken. |
 | Changed the algorithm but the output stayed wrong | The reader may be hitting persisted output written by the old code (scan results, analysis cache, snapshot with a TTL). Changing generated-then-persisted data requires invalidating or version-bumping the old cache in the same change; before re-diagnosing, confirm the runtime is not reading stale data. |
 | Reporter reproduces, local machine is fine, agent patched blind | Produce one copy-paste diagnostic command first (single command, silent collection, one output file, a privacy note), diagnose from the returned evidence, then fix. |
+| Fixed the one cause that reproduced, shipped, and the same gate blocked the next user for a different reason | A guard that refuses has a set of causes, not one. Enumerate every branch that can refuse before shipping, and give each a distinguishable code, a one-line reason, and a next command. |
+| User counted N occurrences, the log showed M, and the log won | Trust the observation and treat the gap as an un-instrumented path. A probe that passes on the happy path says nothing about the failing one; a probe that cannot reproduce is an invalid probe, not an absent defect. |
+| Patched a capability-gated feature on a surface that never offered the capability | Confirm the run surface (simulator, device, sandbox, restricted entitlement) supports it before writing a fix. If it does not, say so and stop; no source change makes it appear. |
 
 ## Rendering Bug Mode
 

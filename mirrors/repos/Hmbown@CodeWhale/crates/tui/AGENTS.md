@@ -2,7 +2,7 @@
 
 Scope: the TUI, the runtime engine embedded in it, and everything a user sees.
 Read the repo-root `AGENTS.md` first. Current flakes and known debt are in
-`docs/ops/CURRENT.md`, not here.
+the `codewhale-ops` repo, not here.
 
 ## The shell grammar (do not regress it)
 

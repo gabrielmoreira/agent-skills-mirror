@@ -1,6 +1,6 @@
 # Harness Home Guardrail
 
-Harness Home is the framework-neutral, user-owned source of truth for portable identity, Memory, Skills, MCP descriptors, creative methods and references to durable Assets. Read this file before changing `src/lib/harness-home/**`, adding a Harness adapter, or wiring canonical data into a Runtime.
+Harness Home is the framework-neutral, user-owned source of truth for portable identity, Assistant files/services, unified Capability Packages and references to durable Assets. A Package may contain Skills, MCP/CLI/builtin actions, renderers and model adapters; those surfaces compose through the Capability Broker. Read this file before changing `src/lib/harness-home/**`, adding a Harness adapter, or wiring canonical data into a Runtime. Creative Method/Taste records remain supported compatibility data, but new workflows and design methods default to Skills inside a Package rather than a parallel product system.
 
 ## 1. 词汇表
 
@@ -36,13 +36,17 @@ Harness Home is the framework-neutral, user-owned source of truth for portable i
 | 12 | Creative Method and durable Taste Memory require evidence. A durable user preference requires explicit confirmation and remains revocable. |
 | 13 | Runtime wire IDs, Settings labels, capability rows and packaged drivers derive from the explicit Runtime catalog. Unknown IDs fail closed; a missing packaged driver fails startup. |
 | 14 | Canonical projection reads exactly one hash-consistent generation. Missing provenance, external edits, oversized context or Secret material abort projection before prompt assembly. |
-| 15 | Canonical Skill/MCP definitions are catalogued as perception-only until a Runtime-specific mounter proves a real executable wire. Their bodies are not injected as fake tools. |
+| 15 | A Capability Package becomes `ready` only after its manifest/dependencies validate and every enabled Runtime bridge can expose its public actions through a real wire. Internal adapter evidence remains inspectable; prompt text, readable files or catalog rows cannot impersonate execution. |
 | 16 | Runtime switching is read-only with respect to canonical files. It may select a matching overlay but cannot rewrite the base manifest or external Harness source. |
 | 17 | Canonical core files remain product/framework neutral. Product Runtime identities and integration imports belong only in adapter/runtime/product binding files; the recursive canonical boundary guard is a required test and pre-commit gate. |
 | 18 | A read-only consistency check may cache hashes only behind stat identity (`dev/ino/size/mtimeNs/ctimeNs`) and a bounded generation cache. Any stat change, symlink, out-of-root path or journal mismatch forces revalidation/fail-closed; no cache may hide an external edit. |
 | 19 | Invalid persisted Taste Memory is isolated per record and returned as metadata diagnostics; it cannot block valid Taste projection. Import validates Taste evidence before commit, while update/revoke of the same invalid identity fails closed until repaired. |
 | 20 | Creative Method trigger/non-trigger phrases are bounded, non-empty after trim and free of control characters. Write, import and historical read all fail closed; an empty phrase can never activate or suppress every prompt. |
 | 21 | Default Assistant → Heartbeat → Native Notification is a user-visible vertical slice over the existing Assistant Workspace. It does not make that directory the Harness Home canonical repository, migrate Memory, or complete Memory vNext. |
+| 22 | Assistant service activation uses an explicit persisted assistant binding, never cwd equality alone. The binding controls automatic identity synthesis, Memory hint/search/index/writeback/extraction and heartbeat routing; it is not a filesystem ACL. If a project deliberately uses the assistant directory, `AGENTS.md`, `CLAUDE.md`, `memory.md` and other files remain normally readable, while Assistant services stay off unless explicitly bound. |
+| 23 | Skill, MCP, CLI, builtin, renderer and model-adapter surfaces belong to one user-managed Capability Package. Package actions may invoke declared dependencies only through the Capability Broker, which rechecks permission/secret/scope/policy on every hop and enforces cycle, depth, budget, timeout and cancellation limits. |
+| 24 | Capability Package installation writes the canonical repository first and creates only managed, provenance/hash-checked Runtime projections. Source/bridge/provider adapters are internal diagnostics, not separate user installation objects. They never overwrite or delete unmanaged external files; Runtime switching is read-only. |
+| 25 | Workflow, design and visualization behavior defaults to a progressive-disclosure Skill inside a Capability Package. Creative actions use declared MCP/CLI/builtin/renderer/model dependencies, typed Artifact/Asset lineage, model capability descriptors and policy resolution. Do not create a parallel workflow engine or persist one-off aesthetic choices as durable cross-project preference. |
 
 ## 3. 关键文件 + 责任
 
@@ -79,7 +83,13 @@ Harness Home is the framework-neutral, user-owned source of truth for portable i
 - [ ] New Runtime descriptor keeps unsupported capabilities explicit and passes permission/event conformance.
 - [ ] New Runtime registration includes a real packaged driver and keeps DB/HTTP wire validation fail-closed.
 - [ ] Canonical projection includes source provenance and does not expose Memory/identity bodies through diagnostics.
-- [ ] Skill/MCP discovery remains perception-only until a conformance-tested mounter is passed explicitly.
+- [ ] Assistant service binding is persisted and enforced before any automatic identity/Memory hint, tool, indexer, extractor, writeback or heartbeat target is selected; cwd equality is not an activation fallback.
+- [ ] The same tests prove `AGENTS.md`, `CLAUDE.md`, `memory.md` and other files remain normally readable when a project explicitly uses the assistant directory; binding cannot become a filesystem denial rule.
+- [ ] Capability Package actions are exposed only through conformance-tested Runtime bridges and retain internal execution evidence without splitting into multiple user installation objects.
+- [ ] Package install/update/uninstall writes canonical first, reports aggregate ready/auth/repair state honestly and touches only managed projections with matching provenance/hash.
+- [ ] Cross-package invocation passes through the Broker and rechecks permissions, secrets, scope, policy, cycle/depth/budget/cancel on every hop.
+- [ ] A new workflow/design surface is represented as a Skill plus explicit brokered action/renderer/model dependencies unless the user has separately approved a new product system.
+- [ ] New image/video models declare operations, input slots, job behavior, cost/safety policy and normalized Artifact/Asset output through the shared media descriptor/adapter contract.
 - [ ] New Asset kind is producer-backed and is registered in Program B, not added as a speculative enum here.
 - [ ] New Taste/Method persistence includes evidence, scope and revoke behavior.
 - [ ] Taste readers isolate legacy/import poison per record and keep a visible diagnostic breadcrumb.
@@ -97,7 +107,12 @@ Harness Home is the framework-neutral, user-owned source of truth for portable i
 - Calling an L0/L1 scanner a Runtime integration, then branching in Context Compiler and Settings.
 - Adding a new product/framework word to a portable provenance value, MIME type, secret namespace or canonical import.
 - Rehashing every Harness file on every read-only turn, or caching by pathname/mtime alone and missing an external edit.
-- Treating a canonical Skill/MCP file as mounted because it was successfully read.
+- Treating a readable Skill/MCP/CLI file or prompt description as proof that a Package action executed.
+- Treating `working_directory === assistant_workspace_path` as sufficient activation for automatic Memory services, or fixing that bug by hiding ordinary files from the project.
+- Splitting one Package into user-facing per-Runtime installation copies, or aggregating it green while a required bridge/action has no real wire.
+- Letting Skill/MCP/CLI/model actions call each other outside the Broker and inherit the caller's permissions or Secret access.
+- Hardcoding one image/video form across providers whose operations, references, durations or job semantics differ.
+- Recreating design workflow orchestration outside Skills when the task can be expressed as a Skill plus MCP/CLI/renderer dependencies.
 - Returning canonical section bodies or resolved Secret values from diagnostics.
 - Adding a selectable Runtime descriptor without registering its packaged driver.
 - Treating a selected image or one-off edit as a permanent user preference.
@@ -152,3 +167,6 @@ Run full `npm run test` before closing a phase or changing existing Runtime/DB/M
 - 2026-07-31 — Journal replacement is file-fsynced and directory-synced where the platform supports it; recovery handles transaction directories independently and releases the lease on every failed open. Taste Memory import validates evidence, while read/projection isolates invalid persisted records with diagnostics instead of poisoning the whole collection.
 - 2026-07-31 — Writer leases persist only an opaque hashed machine identity. Dead-holder recovery is limited to the same identity before the local PID probe; legacy leases without identity and synced locks from another machine remain conflicts. Creative Method activation phrases now use one fail-closed validator across write/import/read.
 - 2026-08-03 — P0 default assistant/heartbeat/native notification ships as a longitudinal product slice without auto-merging Assistant Workspace into Harness Home. User-owned files and no-touch migration principles apply, but canonical repository convergence remains a separate Program A migration decision.
+- 2026-08-04 — User correction: an assistant directory remains an ordinary user-owned directory. Project sessions may read its rules and Memory files explicitly; only automatic Assistant identity/Memory services and Heartbeat require a persisted binding. The binding is not a filesystem permission boundary.
+- 2026-08-04 — Skill/MCP/CLI/builtin/renderer/model adapters share one user-managed Capability Package. Internal bridge evidence remains separate for safety, while invocation and dependency composition are unified through the Capability Broker.
+- 2026-08-04 — The standalone Design Method product track is superseded. The `creative` reference package uses progressive Skills, brokered actions, curated visualization primitives, media model descriptors, policy resolution and producer-backed Assets; recommendations/Marketplace are deferred.

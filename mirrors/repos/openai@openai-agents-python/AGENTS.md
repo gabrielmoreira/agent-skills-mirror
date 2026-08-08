@@ -255,6 +255,7 @@ make tests
 ### Pull Request & Commit Guidelines
 
 - Use the template at `.github/PULL_REQUEST_TEMPLATE/pull_request_template.md`; include a summary, test plan, and issue number if applicable.
+- In copy-ready GitHub text, use native issue and pull-request references: exactly `#123` for this repository and `owner/repo#123` for another repository. Do not qualify same-repository references as `openai/openai-agents-python#123`. Preserve closing forms such as `Fixes #123` or `Resolves #123`. Never wrap these references in Markdown links such as `[PR #123](https://github.com/owner/repo/pull/123)` or `[#123](...)`; those Codex-friendly links require manual cleanup after pasting into GitHub. Use descriptive Markdown links only for external resources or GitHub targets that cannot be expressed as a native issue or pull-request reference.
 - Add tests for new behavior when feasible and update documentation for user-facing changes.
 - Run `make format`, `make lint`, `make typecheck`, and `make tests` before marking work ready.
 - Commit messages should be concise and written in the imperative mood. Small, focused commits are preferred.

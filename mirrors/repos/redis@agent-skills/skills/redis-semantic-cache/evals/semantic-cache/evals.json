@@ -1,0 +1,79 @@
+{
+  "skill_name": "redis-semantic-cache",
+  "eval_suite": "semantic-cache",
+  "description": "Evals for the redis-semantic-cache skill: using the LangCache managed service rather than hand-rolling a vector index, the cache-aside search/set flow, similarity threshold tuning, and per-task cache separation. The strongest discriminator here is whether the model reaches for LangCache at all instead of building a bespoke embedding cache.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "langcache-cache-aside-flow",
+      "prompt": "Our support assistant on Redis Cloud calls Claude for every user question and the bill is getting silly - loads of the questions are near-duplicates ('how do I reset my password' vs 'i forgot my password'). I want a semantic cache in front of the model call. We're already on Redis Cloud. Python.",
+      "expected_output": "Uses the LangCache service - a LangCache client configured with server_url, cache_id and api_key - in a cache-aside flow: search on the incoming prompt, return the stored response on a hit, otherwise call the LLM and set the result.",
+      "covered_rules": ["cache-aside-flow"],
+      "expectations": [
+        "The output uses Redis LangCache as the semantic cache rather than hand-building a vector index with FT.CREATE and manual embeddings.",
+        "The output constructs the LangCache client with a server URL, a cache id, and an API key.",
+        "The output calls search with the incoming prompt before calling the LLM.",
+        "The output returns the cached response on a hit and calls the LLM only on a miss.",
+        "The output calls set (or the equivalent store operation) with the prompt and the LLM response after a miss.",
+        "The output does not require the user to generate or manage embeddings themselves."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "threshold-tuning-for-precision",
+      "prompt": "Semantic cache is live and the hit rate is great, about 60%. Problem: QA found a case where someone asked 'how do I cancel my subscription' and got served the cached answer for 'how do I change my subscription'. That's a customer-facing answer so it's not acceptable. Currently on the default threshold.",
+      "expected_output": "Explains the similarity threshold controls how close a prompt must be to count as a hit and raises it from the 0.9 default toward 0.95+ for customer-facing answers, accepting a lower hit rate, with guidance to watch hit rate and spot-check relevance while tuning.",
+      "covered_rules": ["cache-threshold"],
+      "expectations": [
+        "The output identifies the similarity threshold as the parameter to change.",
+        "The output raises the threshold rather than lowering it.",
+        "The output recommends a stricter value around 0.95 or higher for this customer-facing case.",
+        "The output explains the trade-off that a higher threshold reduces the hit rate.",
+        "The output recommends monitoring hit rate and spot-checking returned answers while tuning.",
+        "The output shows the threshold passed to the search call."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "separate-caches-per-task",
+      "prompt": "We have three LLM features sharing one semantic cache to keep things simple: a support Q&A bot, a code-explanation tool for our docs site, and a product-description generator. Occasionally a request gets an answer that clearly belongs to a different feature. Threshold is 0.9.",
+      "expected_output": "Explains that unrelated task types should not share one cache because prompts from different workloads can land within the similarity threshold, and recommends distinct cache ids per task, with custom attributes as the finer-grained alternative.",
+      "covered_rules": ["cache-separation"],
+      "expectations": [
+        "The output identifies sharing one cache across unrelated task types as the root cause.",
+        "The output recommends separate cache ids, one per task type or feature.",
+        "The output shows separate client instances or per-task routing to the right cache.",
+        "The output mentions custom attributes as an alternative for isolating workloads within a single cache.",
+        "The output does not present raising the similarity threshold as the complete fix."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "rest-api-without-sdk",
+      "prompt": "Same LangCache setup but the service that needs it is written in Elixir and there's no SDK for us. Can we still use it, and what do the calls look like?",
+      "expected_output": "Confirms LangCache is reachable over REST without an SDK and names the endpoints - POST to the cache's entries/search path to look up and POST to the entries path to store - with the cache id in the path and the API key as a bearer credential.",
+      "covered_rules": ["cache-aside-flow"],
+      "expectations": [
+        "The output confirms the service can be used over its REST API without an official SDK.",
+        "The output names the search endpoint as a POST to the cache entries search path including the cache id.",
+        "The output names the store endpoint as a POST to the cache entries path including the cache id.",
+        "The output shows the API key being sent as an authorization credential.",
+        "The output keeps the same cache-aside ordering of search before the LLM call and store after a miss."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "preview-status-and-fit",
+      "prompt": "Writing the design doc for putting LangCache in front of our LLM calls. Need a short 'risks and constraints' section - what should I honestly flag to the reviewers, and are there workloads where this is the wrong tool?",
+      "expected_output": "Flags that LangCache is in preview on Redis Cloud so behavior may change, and notes semantic caching fits deterministic or repeat-heavy workloads while being a poor fit for prompts whose answers must be fresh or are highly personalized.",
+      "covered_rules": ["cache-best-practices"],
+      "expectations": [
+        "The output states that LangCache is currently in preview and that behavior or features may change.",
+        "The output identifies workloads that fit semantic caching, such as repeated or deterministic questions, RAG answers, or classification.",
+        "The output identifies at least one poor fit, such as answers that must be fresh, highly personalized, or user-specific.",
+        "The output mentions the false-positive risk of returning a semantically close but wrong answer and ties it to the threshold.",
+        "The output does not present the service as generally available with no caveats."
+      ]
+    }
+  ]
+}

@@ -37,6 +37,7 @@
 | 18 | Notification claim 只使用 additive lease/attempt columns，不扩展既有 delivery status CHECK。claim 在 transaction 中完成；settle 用 owner/status 条件 UPDATE，stale ack 不能覆盖新 owner；retry backoff 有界且 terminal delivered/error 不回滚 | notification delivery migration + CRUD |
 | 19 | Notification action 以受限 `action_type/action_payload` additive 保存；route consumer 只能按 channel claim，不能恢复 destructive GET drain | notification event/delivery schema + claim routes |
 | 20 | 首次启用 durable notification consumer 时不得重放旧内存队列遗留的历史 `queued` 行。超过迁移安全窗口的 native/toast delivery 只改为可审计 `skipped`，保留 event/delivery；one-time marker 与 cutoff 必须同事务写入 | `suppressLegacyQueuedNotificationBacklog` |
+| 21 | Provider secret 行同时含非空明文与密文时，明文代表回滚/旧版重写后的当前用户值，必须优先 materialize 并重新生成 envelope；不得信任旧密文复活旧 key。单行加密/验证/UPDATE 失败必须保留该行可恢复数据并记录脱敏诊断，不能穿透 `getDb()` 阻断应用启动或回滚其它健康行 | `materializeProvider` + `migrateProviderSecrets` |
 
 ## 关键文件 + 责任
 
@@ -72,6 +73,7 @@
 - [ ] 改 heartbeat migration 时验证 duplicate consolidation 保留 run→event 关联、user-source task 不变、partial UNIQUE index 幂等
 - [ ] 改 notification delivery 时保持 status 枚举冻结，验证双 claimant、owner mismatch、stale reclaim、retry cap 和 terminal immutability
 - [ ] 从内存队列迁到 durable consumer 时验证历史 backlog 不会在升级后集中弹出，同时新近通知仍保持 queued、event 审计行不被删除、migration 重跑 no-op
+- [ ] 改 Provider secret migration 时覆盖：纯 legacy 明文、明文 + 旧密文冲突、单行 UPDATE 失败后健康行继续迁移、失败行仍可在 Settings 修复；不得在 diagnostics 中回显明文/密文
 
 ## 常见坑
 
@@ -107,6 +109,7 @@
 | `asset_records.tags` additive column、legacy media tags 逐项保守回填、重复 migration 幂等、poison row 不阻塞后续行、transient 冷却重试与 byte/time budget | `src/__tests__/unit/asset-library-conformance.test.ts` |
 | Heartbeat duplicate consolidation、partial UNIQUE、cadence/reconcile | `heartbeat-reconcile.test.ts`, `scheduler-trigger-unification.test.ts` |
 | Notification additive claim、并发/stale/retry/terminal、legacy backlog 抑制 | `notification-delivery-claim.test.ts`, `notification-claim-policy.test.ts` |
+| Provider secret 明文迁移、回滚冲突、per-row 启动容错 | `provider-secret-storage.test.ts` |
 
 ## 设计决策日志
 
@@ -121,6 +124,7 @@
 - 2026-07-24 — 会话 `3f0085c5fc664deca85005d70b1abfca` 证明 SDK 串行工具执行不会重写已经生成的下游 tool input。新增 additive workflow/task/dependencies/dispatch state：accepted downstream 先 queued，应用只从同 session/workflow 的 durable completed result 编译实际 prompt；duplicate task key、self/indirect cycle 与失败依赖 fail closed。
 - 2026-07-24 — 会话 `f7153c2b01e6a58b31e0406db9be56ec` 暴露 dev HMR schema 漂移：代码已写 `workflow_id`，但进程级缓存 DB handle 没有重新执行新增 migration，两次 child 都在 durable row 创建前报 `no such column: workflow_id`。`getDb()` 现用 code-owned schema revision 在 HMR 后重跑纯结构、幂等 migration；startup recovery 仍只在真正打开/取得进程 owner 时执行。
 - 2026-07-31 — Asset 标签从 legacy `media_generations.tags` 提升为 `asset_records.tags`，覆盖 HTML 与所有已注册 kind。迁移只在新列默认空数组时复制可验证的 legacy JSON array；写入 Asset 标签时对 source media 双写，兼容旧消费者且不删除原字段。
+- 2026-08-07 — 独立审查发现回滚/换机可形成“当前明文 + 旧密文”混合行，原迁移会信任旧密文并让任一失败穿透启动。合同改为当前明文优先、fresh envelope、per-row 保留失败数据并继续；数据密钥损坏/DEV owner 的产品级恢复另记 tech-debt #78。
 - 2026-07-31 — Gallery 的 100 条/请求渐进 backfill 曾可能被同一坏行永久占住进度。新增 `asset_backfill_failures` 与 code-owned failure revision：坏行可审计、同 revision 跳过、后续行继续；修复迁移逻辑时 bump revision 才重试。schema revision 同步更新，HMR cached handle 会补建该表。
 - 2026-07-31 — Backfill failure journal 增加 permanent/transient/deferred 语义。瞬态 I/O 错误冷却 30 秒后重试；Gallery 在线迁移限制 32 MiB 累计/单文件与 75ms 调度预算；超预算行先 deferred 让后续行继续，显式无界迁移仍可恢复它，不把预算判断变成永久数据结论。
 - 2026-08-03 — Heartbeat system task 增加 exact-source partial UNIQUE index；历史 duplicate 先在事务中重关联 run/event 再合并。Notification delivery 使用 additive claim owner/time/attempt/backoff 字段，冻结现有 status CHECK，以 durable row 取代进程内 drain queue。

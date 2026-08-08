@@ -67,6 +67,10 @@ agent discovers state, the CLI is how it acts.
   rather than a parameter list the dispatcher inspects, because every leaf takes
   exactly one `CLIInvocation` and nothing is threaded through keyword injection.
   Do not give an account CLI a mount, and do not give `git` a `config_model`.
+  Nuance: an account CLI verb MAY read an unrelated workspace file the user
+  named on the line through `inv.ops.dispatch` (himalaya's `--attach` reads the
+  attachment path this way); what it must not do is treat a mount as a second
+  view of its own account's data.
 
 - **The lifecycle is host-side only.** `register_cli`/`unregister_cli`
   (`workspace.py`, `workspace.ts`) are called by the embedding program, never by

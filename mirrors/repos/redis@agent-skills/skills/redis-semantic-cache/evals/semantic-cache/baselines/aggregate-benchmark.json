@@ -1,0 +1,583 @@
+{
+  "generated_at": "2026-08-06T09:51:04.380Z",
+  "input_root": "eval-workspaces/redis-semantic-cache/semantic-cache/iteration-1",
+  "context": {
+    "skill_name": "redis-semantic-cache",
+    "suite_name": "semantic-cache"
+  },
+  "models": [
+    {
+      "model_dir": "anthropic__claude-haiku-4-5-20251001",
+      "model": "claude-haiku-4-5-20251001",
+      "provider": "anthropic",
+      "analyzer_model": "<model-name>",
+      "runs_per_configuration": 3,
+      "evals_run": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "without_skill": {
+        "count": 10,
+        "pass_rate": 0.42333333333333334,
+        "time_seconds": 14.494900000000001,
+        "tokens": 1479.2
+      },
+      "with_skill": {
+        "count": 10,
+        "pass_rate": 0.9466666666666667,
+        "time_seconds": 32.5149,
+        "tokens": 1554.6
+      },
+      "delta": {
+        "pass_rate": 0.5233333333333333,
+        "time_seconds": 18.019999999999996,
+        "tokens": 75.39999999999986
+      },
+      "cost": {
+        "generation_usd": 1.752811,
+        "grading_usd": 3.516423,
+        "total_usd": 5.269234,
+        "with_skill_usd": 3.315514,
+        "without_skill_usd": 1.95372,
+        "delta_usd": 0.136179,
+        "runs_with_cost": 20
+      },
+      "verdict": "improves"
+    },
+    {
+      "model_dir": "anthropic__claude-opus-5",
+      "model": "claude-opus-5",
+      "provider": "anthropic",
+      "analyzer_model": "<model-name>",
+      "runs_per_configuration": 3,
+      "evals_run": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "without_skill": {
+        "count": 10,
+        "pass_rate": 0.7333333333333333,
+        "time_seconds": 56.68879999999999,
+        "tokens": 4801.6
+      },
+      "with_skill": {
+        "count": 10,
+        "pass_rate": 0.9233333333333335,
+        "time_seconds": 47.23650000000001,
+        "tokens": 3282.1
+      },
+      "delta": {
+        "pass_rate": 0.19000000000000017,
+        "time_seconds": -9.452299999999987,
+        "tokens": -1519.5000000000005
+      },
+      "cost": {
+        "generation_usd": 9.300325,
+        "grading_usd": 3.045355,
+        "total_usd": 12.34568,
+        "with_skill_usd": 6.900558,
+        "without_skill_usd": 5.445122,
+        "delta_usd": 0.145544,
+        "runs_with_cost": 20
+      },
+      "verdict": "improves"
+    },
+    {
+      "model_dir": "anthropic__claude-sonnet-5",
+      "model": "claude-sonnet-5",
+      "provider": "anthropic",
+      "analyzer_model": "<model-name>",
+      "runs_per_configuration": 3,
+      "evals_run": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "without_skill": {
+        "count": 10,
+        "pass_rate": 0.71,
+        "time_seconds": 31.651400000000002,
+        "tokens": 2184.1
+      },
+      "with_skill": {
+        "count": 10,
+        "pass_rate": 0.9433333333333336,
+        "time_seconds": 45.2024,
+        "tokens": 1759.7
+      },
+      "delta": {
+        "pass_rate": 0.23333333333333361,
+        "time_seconds": 13.550999999999995,
+        "tokens": -424.39999999999986
+      },
+      "cost": {
+        "generation_usd": 6.994293,
+        "grading_usd": 2.487134,
+        "total_usd": 9.481427,
+        "with_skill_usd": 5.303455,
+        "without_skill_usd": 4.177972,
+        "delta_usd": 0.112548,
+        "runs_with_cost": 20
+      },
+      "verdict": "improves"
+    }
+  ],
+  "evals": [
+    {
+      "eval_id": 1,
+      "eval_name": "langcache-cache-aside-flow",
+      "without_skill": {
+        "count": 6,
+        "pass_rate": 0.5,
+        "time_seconds": 38.216,
+        "tokens": 2521.8333333333335
+      },
+      "with_skill": {
+        "count": 6,
+        "pass_rate": 1,
+        "time_seconds": 39.80266666666667,
+        "tokens": 2215
+      },
+      "delta": {
+        "pass_rate": 0.5,
+        "time_seconds": 1.586666666666666,
+        "tokens": -306.8333333333335
+      },
+      "mean_delta_pass_rate": 0.5,
+      "models": [
+        {
+          "model": "claude-haiku-4-5-20251001",
+          "eval_name": "langcache-cache-aside-flow",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 25.3365,
+            "tokens": 1767.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.41666666666666663,
+            "time_seconds": 16.38,
+            "tokens": 1958.5
+          },
+          "delta": {
+            "pass_rate": 0.5833333333333334,
+            "time_seconds": 8.956500000000002,
+            "tokens": -191
+          }
+        },
+        {
+          "model": "claude-opus-5",
+          "eval_name": "langcache-cache-aside-flow",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 55.53,
+            "tokens": 3170.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.5833333333333333,
+            "time_seconds": 63.3495,
+            "tokens": 3665.5
+          },
+          "delta": {
+            "pass_rate": 0.41666666666666674,
+            "time_seconds": -7.819499999999998,
+            "tokens": -495
+          }
+        },
+        {
+          "model": "claude-sonnet-5",
+          "eval_name": "langcache-cache-aside-flow",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 38.5415,
+            "tokens": 1707
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.5,
+            "time_seconds": 34.9185,
+            "tokens": 1941.5
+          },
+          "delta": {
+            "pass_rate": 0.5,
+            "time_seconds": 3.6229999999999976,
+            "tokens": -234.5
+          }
+        }
+      ]
+    },
+    {
+      "eval_id": 2,
+      "eval_name": "threshold-tuning-for-precision",
+      "without_skill": {
+        "count": 6,
+        "pass_rate": 0.611111111111111,
+        "time_seconds": 27.225666666666665,
+        "tokens": 2188.5
+      },
+      "with_skill": {
+        "count": 6,
+        "pass_rate": 0.888888888888889,
+        "time_seconds": 31.283333333333335,
+        "tokens": 1182.6666666666667
+      },
+      "delta": {
+        "pass_rate": 0.2777777777777779,
+        "time_seconds": 4.05766666666667,
+        "tokens": -1005.8333333333333
+      },
+      "mean_delta_pass_rate": 0.2777777777777779,
+      "models": [
+        {
+          "model": "claude-haiku-4-5-20251001",
+          "eval_name": "threshold-tuning-for-precision",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 0.8333333333333334,
+            "time_seconds": 21.239,
+            "tokens": 688
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.5,
+            "time_seconds": 10.794,
+            "tokens": 607
+          },
+          "delta": {
+            "pass_rate": 0.33333333333333337,
+            "time_seconds": 10.445,
+            "tokens": 81
+          }
+        },
+        {
+          "model": "claude-opus-5",
+          "eval_name": "threshold-tuning-for-precision",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 0.9166666666666667,
+            "time_seconds": 33.3515,
+            "tokens": 1806.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.5833333333333333,
+            "time_seconds": 44.678,
+            "tokens": 3821
+          },
+          "delta": {
+            "pass_rate": 0.3333333333333335,
+            "time_seconds": -11.326499999999996,
+            "tokens": -2014.5
+          }
+        },
+        {
+          "model": "claude-sonnet-5",
+          "eval_name": "threshold-tuning-for-precision",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 0.9166666666666667,
+            "time_seconds": 39.2595,
+            "tokens": 1053.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.75,
+            "time_seconds": 26.205,
+            "tokens": 2137.5
+          },
+          "delta": {
+            "pass_rate": 0.16666666666666674,
+            "time_seconds": 13.054500000000004,
+            "tokens": -1084
+          }
+        }
+      ]
+    },
+    {
+      "eval_id": 3,
+      "eval_name": "separate-caches-per-task",
+      "without_skill": {
+        "count": 6,
+        "pass_rate": 0.6000000000000001,
+        "time_seconds": 23.349499999999995,
+        "tokens": 1846.3333333333333
+      },
+      "with_skill": {
+        "count": 6,
+        "pass_rate": 0.9666666666666667,
+        "time_seconds": 46.161,
+        "tokens": 1744.5
+      },
+      "delta": {
+        "pass_rate": 0.3666666666666666,
+        "time_seconds": 22.811500000000006,
+        "tokens": -101.83333333333326
+      },
+      "mean_delta_pass_rate": 0.3666666666666666,
+      "models": [
+        {
+          "model": "claude-haiku-4-5-20251001",
+          "eval_name": "separate-caches-per-task",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 61.613,
+            "tokens": 1533.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.4,
+            "time_seconds": 14.3145,
+            "tokens": 1065
+          },
+          "delta": {
+            "pass_rate": 0.6,
+            "time_seconds": 47.2985,
+            "tokens": 468.5
+          }
+        },
+        {
+          "model": "claude-opus-5",
+          "eval_name": "separate-caches-per-task",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 0.9,
+            "time_seconds": 32.047,
+            "tokens": 2386.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.8,
+            "time_seconds": 31.604999999999997,
+            "tokens": 3080
+          },
+          "delta": {
+            "pass_rate": 0.09999999999999998,
+            "time_seconds": 0.44200000000000017,
+            "tokens": -693.5
+          }
+        },
+        {
+          "model": "claude-sonnet-5",
+          "eval_name": "separate-caches-per-task",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 44.823,
+            "tokens": 1313.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.6000000000000001,
+            "time_seconds": 24.128999999999998,
+            "tokens": 1394
+          },
+          "delta": {
+            "pass_rate": 0.3999999999999999,
+            "time_seconds": 20.694000000000003,
+            "tokens": -80.5
+          }
+        }
+      ]
+    },
+    {
+      "eval_id": 4,
+      "eval_name": "rest-api-without-sdk",
+      "without_skill": {
+        "count": 6,
+        "pass_rate": 0.7000000000000001,
+        "time_seconds": 37.82266666666666,
+        "tokens": 3084.6666666666665
+      },
+      "with_skill": {
+        "count": 6,
+        "pass_rate": 0.9666666666666667,
+        "time_seconds": 49.547333333333334,
+        "tokens": 2582.5
+      },
+      "delta": {
+        "pass_rate": 0.2666666666666666,
+        "time_seconds": 11.724666666666671,
+        "tokens": -502.1666666666665
+      },
+      "mean_delta_pass_rate": 0.2666666666666666,
+      "models": [
+        {
+          "model": "claude-haiku-4-5-20251001",
+          "eval_name": "rest-api-without-sdk",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 0.9,
+            "time_seconds": 21.990499999999997,
+            "tokens": 1629
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.1,
+            "time_seconds": 12.9905,
+            "tokens": 1546
+          },
+          "delta": {
+            "pass_rate": 0.8,
+            "time_seconds": 8.999999999999996,
+            "tokens": 83
+          }
+        },
+        {
+          "model": "claude-opus-5",
+          "eval_name": "rest-api-without-sdk",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 61.178,
+            "tokens": 3986.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 65.38,
+            "tokens": 6332
+          },
+          "delta": {
+            "pass_rate": 0,
+            "time_seconds": -4.201999999999998,
+            "tokens": -2345.5
+          }
+        },
+        {
+          "model": "claude-sonnet-5",
+          "eval_name": "rest-api-without-sdk",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 65.4735,
+            "tokens": 2132
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 35.0975,
+            "tokens": 1376
+          },
+          "delta": {
+            "pass_rate": 0,
+            "time_seconds": 30.376000000000005,
+            "tokens": 756
+          }
+        }
+      ]
+    },
+    {
+      "eval_id": 5,
+      "eval_name": "preview-status-and-fit",
+      "without_skill": {
+        "count": 6,
+        "pass_rate": 0.6999999999999998,
+        "time_seconds": 44.778,
+        "tokens": 4466.833333333333
+      },
+      "with_skill": {
+        "count": 6,
+        "pass_rate": 0.8666666666666667,
+        "time_seconds": 41.461999999999996,
+        "tokens": 3269.3333333333335
+      },
+      "delta": {
+        "pass_rate": 0.16666666666666685,
+        "time_seconds": -3.3160000000000025,
+        "tokens": -1197.4999999999995
+      },
+      "mean_delta_pass_rate": 0.16666666666666685,
+      "models": [
+        {
+          "model": "claude-haiku-4-5-20251001",
+          "eval_name": "preview-status-and-fit",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 1,
+            "time_seconds": 32.3955,
+            "tokens": 2155
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.7,
+            "time_seconds": 17.9955,
+            "tokens": 2219.5
+          },
+          "delta": {
+            "pass_rate": 0.30000000000000004,
+            "time_seconds": 14.399999999999999,
+            "tokens": -64.5
+          }
+        },
+        {
+          "model": "claude-opus-5",
+          "eval_name": "preview-status-and-fit",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 0.8,
+            "time_seconds": 54.076,
+            "tokens": 5060.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.7,
+            "time_seconds": 78.4315,
+            "tokens": 7109.5
+          },
+          "delta": {
+            "pass_rate": 0.10000000000000009,
+            "time_seconds": -24.3555,
+            "tokens": -2049
+          }
+        },
+        {
+          "model": "claude-sonnet-5",
+          "eval_name": "preview-status-and-fit",
+          "with_skill": {
+            "count": 2,
+            "pass_rate": 0.8,
+            "time_seconds": 37.914500000000004,
+            "tokens": 2592.5
+          },
+          "without_skill": {
+            "count": 2,
+            "pass_rate": 0.7,
+            "time_seconds": 37.907,
+            "tokens": 4071.5
+          },
+          "delta": {
+            "pass_rate": 0.10000000000000009,
+            "time_seconds": 0.00750000000000739,
+            "tokens": -1479
+          }
+        }
+      ]
+    }
+  ],
+  "overall": {
+    "models": 3,
+    "total_cost_usd": 27.096341,
+    "generation_cost_usd": 18.047429,
+    "grading_cost_usd": 9.048912,
+    "mean_delta_pass_rate": 0.3155555555555557,
+    "mean_delta_tokens": -622.8333333333335,
+    "mean_delta_time_seconds": 7.372900000000001,
+    "mean_delta_cost_usd": 0.13142366666666666,
+    "models_improved": 3,
+    "models_neutral": 0,
+    "models_degraded": 0
+  }
+}

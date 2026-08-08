@@ -1,6 +1,6 @@
 # core Baseline
 
-Updated: 2026-05-22T10:36:23.051Z
+Updated: 2026-08-06T09:51:24.859Z
 
 Skill: `redis-core`
 
@@ -24,5 +24,5 @@ when comparing future skill changes against the current accepted behavior.
 ## Update Command
 
 ```bash
-npm run eval:baseline -- --skill redis-core --suite core --iteration iteration-1
+npm run eval:baseline -- --skill redis-core --suite core
 ```

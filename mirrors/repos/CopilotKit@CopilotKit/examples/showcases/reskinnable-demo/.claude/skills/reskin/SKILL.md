@@ -8,7 +8,7 @@ description: >-
   the user says "add a skin", "create a skin", "new skin", "reskin the app",
   "make a <domain> skin", or wants the app re-themed as a new product. Do NOT
   use for editing the shell itself (src/shell/**), the shared token vocabulary
-  (src/app/globals.css), or the four shipped skins unless explicitly asked.
+  (src/app/globals.css), or the five shipped skins unless explicitly asked.
 ---
 
 # Authoring a reskinnable-demo skin
@@ -26,13 +26,15 @@ contract in `src/skins/<id>/`, (3) put its **server-only** agent in
 the identical `id`.
 
 > Before writing anything, re-open `src/shell/skin-contract.ts` (the source of
-> truth) and read the shipped skins as worked references. Four are registered —
-> `banking`, `airline`, `logistics`, `keel` — and they are good at different
-> things; **[demo-beats.md](./demo-beats.md) § "Which skin to copy for what"**
-> is the routing table. The short version: `banking` is the maximal end and the
-> only demo-complete skin, `logistics` is the debugged layout reference,
-> `airline` is the minimal contract surface, `keel` is the only one with
-> parameterized routes. Those files win on any conflict with this skill.
+> truth) and read the shipped skins as worked references. Five are registered —
+> `banking`, `airline`, `logistics`, `keel`, `people` — and they are good at
+> different things; **[demo-beats.md](./demo-beats.md) § "Which skin to copy for
+> what"** is the routing table. The short version: `banking` and `people` are the
+> two demo-complete skins (`banking` is the original reference; `people` is the
+> newer one, and the only one whose beat map is written out in its
+> `suggestions.ts`), `logistics` is the debugged layout reference, `airline` is
+> the minimal contract surface, `keel` is the only one with parameterized routes.
+> Those files win on any conflict with this skill.
 
 ---
 
@@ -225,6 +227,55 @@ overflow-hidden` on the root, plus `h-full` on the `<aside>`, so only `<main>`
 > a card at the top of the assistant column, so it occupies a slot and never
 > overlaps anything. Do not add those publishers to a new skin; nothing reads them.
 
+## The URL contract (never hardcode the skin prefix)
+
+**Every in-skin link and `router.push` must go through `useSkinHref`**
+(`src/shell/skin-path.ts`), and every "which nav entry is active" derivation
+through its companion `useSkinSegments`. Both are in the layout template.
+
+Skins live under `/[skin]` on the normal four-skin demo, but a `LOCK_SKIN` deploy
+is served **at `/`** with the segment gone from the URL space entirely —
+`src/proxy.ts` rewrites the prefix-free space onto the route tree. So:
+
+- `skinHref("cards")` → `/banking/cards` unlocked, `/cards` locked.
+- A hardcoded `` `/${skin.id}/cards` `` still RESOLVES under a lock, which is why
+  this is easy to miss: it just puts `/banking` back in the address bar on the
+  first nav click, and the single-tenant illusion is gone.
+- A hand-rolled `pathname.split("/").slice(2)` is worse — it silently eats the
+  first real segment when there is no prefix to skip, so under a lock every page
+  reports itself as the index and the wrong nav entry highlights.
+
+Deep links append their own hash:
+`` `${skinHref(`knowledge/${docId}`)}#${sectionId}` ``. A skin with many
+parameterized links should wrap the hook once for itself — see
+`src/skins/keel/href.ts`, which exists so keel's id appears in exactly one place
+instead of the eleven string literals it had before.
+
+The one legitimate exception is a link to a DIFFERENT skin (the shell's skin
+switcher), which must keep the prefix and only ever renders unlocked.
+
+**`pnpm lint` enforces this** via `no-restricted-syntax` selectors in
+`eslint.config.mjs` (scoped to `src/skins/**`, tests exempt). They fail and NAME
+YOUR FILE if an in-skin path literal (i) opens with a skin id segment
+(`"/banking/cards"`, `` `/keel/runs/${id}` ``), (ii) concatenates a path onto an
+interpolated base (`` `${base}/charges` `` — the `//` shape) **when that template is
+a navigation target**, or (iii) opens with a leading-slash interpolation
+(`` `/${skin.id}/…` ``). The rule reads the AST, so a skin prefix inside a comment or
+prose string is fine and a `$` in a variable name cannot fool it.
+
+Selector (ii) is deliberately narrowed to navigation contexts: the `` `${x}/${y}` ``
+shape is AST-identical to an ordinary date `` `${month}/${day}` `` or ratio
+`` `${used}/${total} used` ``, so flagging it everywhere false-positives on any skin
+component that formats a date or fraction. It therefore fires only when the template
+is passed to `router.push`/`router.replace`, to `location.assign`, assigned to
+`location.href`, or set as a JSX `href={...}`. Trade-off, stated honestly: a URL
+built into a variable first and then navigated (`const u = `${base}/x`;
+router.push(u)`) is NOT caught by (ii) — the literal-prefix guards (i)/(iii) still
+catch the common hardcoding shapes regardless of use site. Because (ii) is now
+nav-scoped, REST/data-layer files (`actions.ts`, `intelligence/**`) that build
+absolute SERVER urls (`` `${BASE}/shipments` ``) never trip it anyway; they stay
+explicitly scoped out as belt-and-suspenders.
+
 ## The meta-utility strip
 
 The presenter/dev utilities — Reset, theme toggle, Help — are **skin-authored
@@ -282,7 +333,8 @@ status, respond }`. Airline has no parameterized `useComponent`, so don't learn
   renders blank or wrong the moment anyone revisits the thread — which is exactly
   when beat 2 ("reload and the chart is still there") is being shown. Re-derive
   display state from the replayed result, and never depend on client state that
-  only existed during the live call. Banking is the only skin written this way:
+  only existed during the live call. Banking and people are the only skins
+  written this way; banking's is the canonical example:
   `setCardPin` re-derives its card from the replayed result plus a module map
   holding only `brand`/`last4` — never the PIN (`tools.tsx:70-89`, `418-451`) —
   and `showCharges` keys off `result` not `status` (`tools.tsx:553-572`).
@@ -292,11 +344,14 @@ status, respond }`. Airline has no parameterized `useComponent`, so don't learn
   each _page_ component tell it what is visibly on screen (active filters, the
   rows actually rendered, the figures shown). Without both, "what's on my
   screen?" (beat 3b) returns the same answer on every page and the beat dies.
-  Banking is the only skin that does this — route readable at
+  Banking and people are the only skins that do this. Banking: route readable at
   `layout.tsx:141-143`, page-scoped readables in `dashboard.tsx:148`,
-  `cards.tsx:376`, `team.tsx:54`, and the richest in `charges.tsx:139`. Pair them
-  with a prompt clause telling the agent its context IS its view of the screen
-  and that it must never claim it cannot see (`agent.ts:61-71`).
+  `cards.tsx:376`, `team.tsx:54`, and the richest in `charges.tsx:139`. People
+  does the same across all four of its pages, and is the tighter read if you want
+  one worked example — the route readable maps the index segment to a real page
+  NAME (`layout.tsx`'s `ROUTE_READABLE_NAME`) rather than reporting `""`. Pair
+  them either way with a prompt clause telling the agent its context IS its view
+  of the screen and that it must never claim it cannot see (`agent.ts:61-71`).
 
 ---
 
@@ -382,11 +437,11 @@ human phrases ("Pulling up your flight") instead of raw tool names (`showFlight`
 — treat `toolLabels` as expected for any skin with named frontend tools, not
 optional in practice. `RuntimeProviders`/`useRuntimeProperties`/`identifyUser`
 are for a skin with its own end-user identity (see the identity section above);
-banking, logistics and keel all three ship them, airline none.
+banking, logistics, keel and people all four ship them, airline none.
 
 `intelligence/seed-memories.ts` is **not** optional if you are building beats 4
 and 5 — "it already knows me" is a seeded file, not emergent behaviour, and only
-banking has one. It seeds the topical preference (beat 4) and the operational
+banking and people have one. It seeds the topical preference (beat 4) and the operational
 procedure (beat 5), and deliberately does NOT seed beat 6's procedure — that is
 the one the agent has to learn on stage. See
 **[demo-beats.md](./demo-beats.md) § "Seeding memories"**.
@@ -492,11 +547,26 @@ Do NOT touch anything else in the shell.
    `id === agentId` and that the agent registered correctly).
 6. Your suggestion pills appear, and if you registered frontend tools / HITL /
    gen-UI, the agent can drive them.
+7. **`pnpm lint`** — green. This includes the URL-contract guard: the
+   `no-restricted-syntax` skin-prefix selectors in `eslint.config.mjs`, which fail
+   and NAME YOUR FILE if any link in your skin hardcodes its route prefix or
+   hand-concatenates onto a builder result (a leading `//`). It is the cheap check
+   for the contract above; step 8 is the real one. (`pnpm test:unit` should also be
+   green — it just no longer carries this particular guard, which moved to lint.)
+8. **Run your skin locked**: stop the dev server, then
+   `LOCK_SKIN=<id> pnpm dev`, and open **`/`** (not `/<id>`). Your skin must
+   render at the root, every nav href in the DOM must be prefix-free, and
+   clicking through must keep the address bar prefix-free. `/<id>` itself should 404. If the prefix survives anywhere, a link in your skin is bypassing
+   `useSkinHref` — see "The URL contract" above.
+   `pnpm test:e2e --project=locked` covers this shape for `banking`; extend
+   `e2e/locked-skin.spec.ts` if your skin is the one being shipped locked.
 
 If the skin 404s: check `resolvePage` returns a component for `[]` (the index
 segment). If the theme doesn't apply: confirm `themeClass === "theme-<id>"` and
 that `layout.tsx` side-effect-imports `./theme.css`. If chat errors with an
 unknown agent: confirm the agent is in `agent-registry.ts` under the same `id`.
+If the whole app 404s under a lock: `LOCK_SKIN` must be one of the registered
+ids — an unrecognised value throws at boot naming the typo.
 
 ### Then walk the demo (this is the part that actually gates "done")
 

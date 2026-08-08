@@ -13,8 +13,8 @@
 | 编号 | 契约 |
 |---|---|
 | ST-01 | 只有 production + stable + DSN + 未 opt-out 才能初始化；dev/preview/fork 默认 no-op。 |
-| ST-02 | U0 只有 Electron `MainProcessSession`；renderer `BrowserSession`、server `ProcessSession` 必须过滤，Node `Http` 必须以 `trackIncomingRequestsAsSessions:false` 替换默认实例（保留 Http 本身）。 |
-| ST-03 | U0 不设置 user、did、安装 ID、设备名或永久指纹。 |
+| ST-02 | U0 只有一个 Electron `MainProcessSession`，且 tray-resident 应用必须用 `sendOnCreate:true` 在启动时立即发送；renderer `BrowserSession`、server `ProcessSession` 必须过滤，Node `Http` 必须以 `trackIncomingRequestsAsSessions:false` 替换默认实例（保留 Http 本身）。 |
+| ST-03 | U0 不设置 user identity、did、安装 ID、设备名或永久指纹。三层 error event 必须发送 `user.ip_address:null` tombstone，禁止 Relay 按连接补 IP/Geo；除该 null 字段外不得保留任何 user 字段。 |
 | ST-04 | 三层 `sendDefaultPii:false`、traces=0；截图、console breadcrumb、local variables 禁止。 |
 | ST-05 | 所有事件必须经过 `sanitizeTelemetryEvent`；禁止全量 `setExtras(object)`。 |
 | ST-06 | message、URL、model/session/request id、provider name/base URL 不得进入 fingerprint。 |
@@ -49,6 +49,8 @@
 - [ ] NoOutput wrapper 与 resolved in-band error 是否先解包 cause/status/code/type；空响应与 partial-content 两种 stream 是否都经过 one-shot terminal capture；新增字段是否在 allow-list、深度/节点/字符串预算内，且未读取 body/chunk/request/data？
 - [ ] “必须 0 event”的 transport/envelope 测试是否在同文件包含至少一个已知应产生 event 的阳性对照，证明 SDK carrier 与捕获链路实际接通？
 - [ ] SDK 升级后用真实 SDK client 重新枚举三层 default integrations，并以 request 行为确认只有 main session。
+- [ ] sanitizer transport 是否真的序列化 `user.ip_address:null`，且 Sentry project 的 Prevent Storing IP Addresses 仍开启？不要把代码 tombstone 冒充 project 设置已核验。
+- [ ] Electron session 是否替换默认实例而非追加第二个 `MainProcessSession`，并以新 stable release 验证 `hasHealthData:true`？
 - [ ] official build 的 release/channel 与 package version 一致。
 - [ ] upload 使用最终 bundle，package 扫描仍为 0 map。
 - [ ] Linux x64/arm64 均由原生 runner 产出三种格式，且架构/ABI/server/0-map 门禁没有被降级为文件存在检查。
@@ -57,7 +59,8 @@
 
 ## 5. 常见坑
 
-- `sendDefaultPii:false` 不是完整脱敏；request body、breadcrumb、extra 仍需 allow-list。
+- `sendDefaultPii:false` 不是完整脱敏；server event 删除 `user` 后 Relay 仍可能按连接补 IP/Geo，必须保留 null tombstone，并把 project IP scrubbing 作为纵深防御。
+- Electron `MainProcessSession` 默认可只在退出/异常时发送；长驻托盘应用不能把“最终会退出”当及时 Release Health 证据，也不能为修复空数据并存两个 session producer。
 - Sentry SDK 默认集成会随版本变化，不能把“当前默认”当合同。
 - Node `Http` integration 自带 request-mode Release Health session；只过滤 `ProcessSession` 并不能得到 main-only 分母。
 - `captureMessage(..., 'info')` 仍会形成 Issue，不能拿它冒充无成本 metrics/activity。
@@ -71,8 +74,8 @@
 
 ## 6. 测试覆盖
 
-- `telemetry-contract.test.ts`：enable、main-only session、outcome、fingerprint。
-- `telemetry-sanitizer.test.ts`：PII/content/path/debug_meta 清洗。
+- `telemetry-contract.test.ts`：enable、main-only eager session、outcome、fingerprint。
+- `telemetry-sanitizer.test.ts`：PII/content/path/debug_meta 清洗与真实 Node transport null-IP tombstone。
 - `telemetry-provider-failure.test.ts`：全 4xx、5xx/DNS/timeout retry、NoOutput 解包、循环/深度/恶意对象、safe stack 与 anti-double-capture。
 - `telemetry-native-stream-boundary.test.ts`：真实 AI SDK error-part 生命周期、resolved promise、partial content、one-shot terminal/catch 去重。
 - `telemetry-native-stream-loop.test.ts`：真实 Native/ToolLoop + Anthropic SSE/初始 HTTP 失败 + Sentry transport，锁定 resolved/rejected 两种生命周期下 5xx exactly-once 与 4xx zero-Issue；零事件断言与阳性 5xx 对照共用同一 carrier。
@@ -95,3 +98,4 @@
 - 2026-08-04：Phase 6 P1 统一 shared/native normalizer；429 随全部 4xx 固定为 user action，移除 `telemetry-health-v1.json`/info Issue 代码；不新增 user/did、metrics 或行为遥测。
 - 2026-08-04：Claude 独立复核证明 AI SDK 的 in-band error 可在 `response`/`finishReason` 均 resolve 时绕过 catch；Native 两条 loop 改为 shared per-step terminal state，在 response/finish-step 与 catch 之间 exactly-once capture。只接受有界 provider `type` enum 映射，不读取 SSE body/chunk；同时只保留 V8 frame line，避免多行 Error message 混入 safe stack。
 - 2026-08-05：Claude 同 tip 复审补出 ToolLoop POC 的 rejected-promise P2：fullStream 后过早执行 fallback，会先标 reported，再把 fresh NoOutput 当无关故障二报。POC 改为先 await `result.response`，仅在 promise resolve 后执行 defensive terminal fallback；真实初始 403/503 对照锁定两条 loop 为 0/1 event。
+- 2026-08-07：0.65 真实 server event 证明删除 `user` 后仍出现 IP/Geo；三层 sanitizer 改发 `ip_address:null`，真实 Node transport 锁定序列化结果。Electron 唯一 main session 改为 `sendOnCreate:true`，解决 tray-resident 应用等待退出导致的 `hasHealthData:false`；外部 project IP scrub 与新 stable cohort 仍需发布侧验证。

@@ -1,0 +1,92 @@
+{
+  "skill_name": "redis-connections",
+  "eval_suite": "connections",
+  "description": "Evals for the redis-connections skill: pooling vs multiplexing, pipelining, incremental iteration, RESP3 client-side caching, and timeout tuning. Prompts favor cases where the naive answer is confidently wrong (multiplexed connections and blocking commands, client-side caching without RESP3, treating BLPOP as a slow command).",
+  "evals": [
+    {
+      "id": 1,
+      "name": "blocking-command-on-multiplexed-connection",
+      "prompt": "We're on Java with Lettuce, sharing one RedisClient/StatefulRedisConnection across the whole service like the docs suggest. I'm now adding a worker that pulls jobs off a queue with BLPOP and a 5 second timeout. Can I just reuse that shared connection for the worker, or do I need something else?",
+      "expected_output": "Explains that a blocking command must not run on the shared multiplexed Lettuce connection because it stalls every other command sharing it, and recommends a separate dedicated connection for the BLPOP consumer while keeping the multiplexed connection for normal traffic.",
+      "covered_rules": ["conn-blocking", "conn-pooling"],
+      "expectations": [
+        "The output states that the shared multiplexed connection must not be reused for the BLPOP worker.",
+        "The output explains that a blocking command occupies the multiplexed connection and therefore stalls or delays other commands sharing it.",
+        "The output recommends a separate or dedicated connection (or connection pool) for the blocking consumer.",
+        "The output confirms that BLPOP itself is a legitimate choice for a queue consumer rather than telling the user to replace it with a polling loop.",
+        "The output does not claim that the fix is to stop using blocking commands entirely."
+      ]
+    },
+    {
+      "id": 2,
+      "name": "client-side-cache-requires-resp3",
+      "prompt": "Our feature-flag config lives in Redis and every single HTTP request reads the same ~40 keys. Writes happen maybe twice a day when someone flips a flag. Someone mentioned redis-py can cache locally so we skip the round trip. How do I set that up?",
+      "expected_output": "Shows redis-py client-side caching enabled with protocol=3 (RESP3) plus a CacheConfig, and explains that the server invalidates the local copy on writes, making this a good fit for read-heavy rarely-written data like feature flags.",
+      "covered_rules": ["conn-client-cache"],
+      "expectations": [
+        "The output enables client-side caching in redis-py using a cache configuration such as CacheConfig or an equivalent cache argument.",
+        "The output specifies RESP3 explicitly, for example protocol=3, and does not omit the protocol version.",
+        "The output states that RESP3 is required for client-side caching to work.",
+        "The output explains that the server pushes invalidation to the client when a cached key is written.",
+        "The output confirms this workload is a good fit because reads vastly outnumber writes."
+      ]
+    },
+    {
+      "id": 3,
+      "name": "client-side-cache-wrong-fit",
+      "prompt": "Client-side caching sounded great for our flags so now I want to turn it on for everything, including the counters we INCR on basically every request and the live cart contents. Same CacheConfig, just applied globally. Any reason not to?",
+      "expected_output": "Advises against client-side caching for write-heavy keys like per-request counters and live cart data, because constant invalidation traffic cancels out the savings, and recommends scoping caching to hot read-mostly keys.",
+      "covered_rules": ["conn-client-cache"],
+      "expectations": [
+        "The output advises against enabling client-side caching for the write-heavy counters and live cart data.",
+        "The output explains that frequent writes generate invalidation traffic that offsets or exceeds the round-trip savings.",
+        "The output recommends limiting client-side caching to data that is read often and written rarely.",
+        "The output does not simply endorse applying the same cache configuration globally."
+      ]
+    },
+    {
+      "id": 4,
+      "name": "pipeline-is-not-atomic",
+      "prompt": "Two of our workers occasionally both grant the same signup bonus. The check is inside a redis-py pipeline so I assumed it ran as one atomic unit:\n\n```python\npipe = r.pipeline()\npipe.get(f\"bonus:{user_id}\")\npipe.set(f\"bonus:{user_id}\", \"granted\")\nresults = pipe.execute()\nif results[0] is None:\n    grant_bonus(user_id)\n```\n\nWhy is this still racing?",
+      "expected_output": "Explains that the missing ingredient is not a transaction (redis-py pipelines are transactional by default) but that MULTI/EXEC cannot express read-then-decide at all, because queued commands return results only after execute() and the SET therefore always runs; recommends an atomic primitive such as SET NX, or WATCH-based optimistic locking, or a Lua script.",
+      "covered_rules": ["conn-pipelining"],
+      "expectations": [
+        "The output identifies that the SET always executes regardless of the GET result, because both commands are queued and sent before any result is inspected.",
+        "The output explains that results[0] is only available after execute() returns, so the `if` check happens after the write has already landed.",
+        "The output explains that MULTI/EXEC cannot implement read-then-decide, because conditional logic based on a value read inside the transaction is not possible.",
+        "The output recommends an atomic alternative: SET with NX, WATCH-based optimistic locking, or a Lua script.",
+        "The output shows corrected code for the recommended approach.",
+        "The output does not claim that adding or enabling transaction=True on the pipeline fixes the logic as written."
+      ]
+    },
+    {
+      "id": 5,
+      "name": "scan-loop-termination",
+      "prompt": "This cleanup job is only deleting a fraction of the keys it should - we know there are ~2 million session keys and it reports finishing after a few hundred. Redis has about 40 million keys total.\n\n```python\ncursor = 0\nwhile True:\n    cursor, keys = r.scan(cursor, match=\"session:expired:*\", count=100)\n    if not keys:\n        break\n    for key in keys:\n        r.delete(key)\n```\n\nWhat's wrong?",
+      "expected_output": "Identifies that breaking when a batch comes back empty is wrong because MATCH filters within each COUNT-sized batch, so empty batches are normal while the cursor is still mid-iteration; the loop must continue until the cursor returns to 0.",
+      "covered_rules": ["conn-slow-commands"],
+      "expectations": [
+        "The output identifies `if not keys: break` as the bug.",
+        "The output explains that SCAN can legitimately return an empty batch while iteration is still in progress.",
+        "The output explains that the MATCH pattern filters within each COUNT-sized batch, so non-matching batches come back empty.",
+        "The output states the loop must run until the returned cursor is 0.",
+        "The output provides a corrected loop that terminates on cursor 0 rather than on an empty batch.",
+        "The output does not attribute the problem to the COUNT value being too low as the primary cause."
+      ]
+    },
+    {
+      "id": 6,
+      "name": "timeout-tuning",
+      "prompt": "Redis client in our payment path has no timeouts set at all. During a failover last week requests just hung until the upstream gateway killed them at 30s. What timeouts should I actually set, and does the same answer apply to our nightly batch export job that pulls a lot of data?",
+      "expected_output": "Sets an explicit short socket_connect_timeout and a longer socket_timeout for the latency-sensitive payment path with retry_on_timeout, and explains that the batch job wants more generous timeouts, since the right values follow the application's failure model rather than one global default.",
+      "covered_rules": ["conn-timeouts"],
+      "expectations": [
+        "The output sets an explicit connect timeout and an explicit read/socket timeout rather than relying on client defaults.",
+        "The output keeps the connect timeout shorter than the read/socket timeout.",
+        "The output recommends tighter timeouts for the latency-sensitive payment path so it fails fast during a failover.",
+        "The output recommends more generous timeouts for the batch export job instead of reusing the payment path values.",
+        "The output shows concrete client configuration code with named timeout parameters."
+      ]
+    }
+  ]
+}

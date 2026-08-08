@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `sivaprasadreddy/sivalabs-agent-skills` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `sivaprasadreddy/sivalabs-agent-skills` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `sivaprasadreddy/sivalabs-agent-skills` — 26 default patterns, 0 fol
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 29 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,9 +79,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 18 | ✓ | [`skills/spring-boot/references/spring-service-layer.md`](skills/spring-boot/references/spring-service-layer.md) |
 | 19 | ✓ | [`skills/spring-boot/references/spring-webmvc-rest-api.md`](skills/spring-boot/references/spring-webmvc-rest-api.md) |
 | 20 | ✓ | [`skills/spring-boot/references/taskfile.md`](skills/spring-boot/references/taskfile.md) |
-| 21 | ✓ | [`skills/spring-boot/references/thymeleaf.md`](skills/spring-boot/references/thymeleaf.md) |
-| 22 | ✓ | [`skills/spring-boot/SKILL.md`](skills/spring-boot/SKILL.md) |
-| 23 | ✓ | [`skills/spring-modulith-verifier/SKILL.md`](skills/spring-modulith-verifier/SKILL.md) |
+| 21 | ✓ | [`skills/spring-boot/references/testcontainers-wiring.md`](skills/spring-boot/references/testcontainers-wiring.md) |
+| 22 | ✓ | [`skills/spring-boot/references/testing-integration.md`](skills/spring-boot/references/testing-integration.md) |
+| 23 | ✓ | [`skills/spring-boot/references/testing-slices-persistence.md`](skills/spring-boot/references/testing-slices-persistence.md) |
+| 24 | ✓ | [`skills/spring-boot/references/testing-slices-web.md`](skills/spring-boot/references/testing-slices-web.md) |
+| 25 | ✓ | [`skills/spring-boot/references/testing-strategy.md`](skills/spring-boot/references/testing-strategy.md) |
+| 26 | ✓ | [`skills/spring-boot/references/testing-unit-mocking.md`](skills/spring-boot/references/testing-unit-mocking.md) |
+| 27 | ✓ | [`skills/spring-boot/references/thymeleaf.md`](skills/spring-boot/references/thymeleaf.md) |
+| 28 | ✓ | [`skills/spring-boot/SKILL.md`](skills/spring-boot/SKILL.md) |
+| 29 | ✓ | [`skills/spring-modulith-verifier/SKILL.md`](skills/spring-modulith-verifier/SKILL.md) |
 
 ---
 

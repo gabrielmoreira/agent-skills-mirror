@@ -115,6 +115,8 @@ vi.mock("../auth.js", () => ({
   buildVerificationUriComplete: mockBuildVerificationUriComplete,
   ensureLogin: mockEnsureLogin,
   getAuthConfigValidationError: mockGetAuthConfigValidationError,
+  getCloudBaseApiKeyFromEnv: () =>
+    process.env.CLOUDBASE_API_KEY || process.env.CLOUDBASE_APIKEY || undefined,
   peekLoginState: mockPeekLoginState,
   getAuthProgressState: mockGetAuthProgressState,
   logout: mockLogout,
@@ -859,6 +861,49 @@ describe("env tools - auth", () => {
     expect(process.env.CLOUDBASE_API_KEY).toBeUndefined();
     expect(process.env.CLOUDBASE_ENV_ID).toBeUndefined();
   });
+
+  it("auth(action=status) should detect api_key mode from CLOUDBASE_APIKEY fallback", async () => {
+    process.env.CLOUDBASE_APIKEY = "compat-api-key";
+    process.env.CLOUDBASE_ENV_ID = "env-test";
+    mockPeekLoginState.mockResolvedValue({
+      secretId: "sid",
+      secretKey: "skey",
+      envId: "env-test",
+    });
+    mockGetCachedEnvId.mockReturnValue("env-test");
+
+    try {
+      const result = await tools.auth.handler({ action: "status" });
+      const payload = JSON.parse(result.content[0].text);
+
+      expect(payload).toHaveProperty("ok", true);
+      expect(payload).toHaveProperty("auth_mode", "api_key");
+      expect(payload).toHaveProperty("auth_status", "READY");
+    } finally {
+      delete process.env.CLOUDBASE_APIKEY;
+      delete process.env.CLOUDBASE_ENV_ID;
+    }
+  });
+
+  it("auth(action=logout) should block when only CLOUDBASE_APIKEY is set", async () => {
+    process.env.CLOUDBASE_APIKEY = "compat-api-key";
+    process.env.CLOUDBASE_ENV_ID = "env-test";
+
+    try {
+      const result = await tools.auth.handler({
+        action: "logout",
+        confirm: "yes",
+      });
+      const payload = JSON.parse(result.content[0].text);
+
+      expect(payload).toHaveProperty("ok", false);
+      expect(payload).toHaveProperty("code", "LOGOUT_NOT_ALLOWED");
+      expect(payload).toHaveProperty("auth_mode", "api_key");
+    } finally {
+      delete process.env.CLOUDBASE_APIKEY;
+      delete process.env.CLOUDBASE_ENV_ID;
+    }
+  });
 });
 
 describe("env tools - envQuery", () => {
@@ -1127,6 +1172,120 @@ describe("env tools - envQuery", () => {
         EnvId: "env-test",
       },
     });
+  });
+
+  it("envQuery(info) should project staticDomainRouteEnabled without rewriting StaticDomain", async () => {
+    const describeHttpServiceRoute = vi.fn().mockResolvedValue({
+      Domains: [
+        {
+          Domain: "env-test.tcloudbaseapp.com",
+          IsDefault: true,
+          Routes: [
+            {
+              Path: "/",
+              Enable: false,
+              UpstreamResourceType: "STATIC_STORE",
+              UpstreamResourceName: "staticstore",
+            },
+          ],
+        },
+      ],
+    });
+    mockGetCloudBaseManager.mockResolvedValue({
+      env: {
+        getEnvInfo: vi.fn().mockResolvedValue({
+          EnvInfo: {
+            EnvId: "env-test",
+            StaticStorages: [
+              {
+                StaticDomain: "env-test.tcloudbaseapp.com",
+                Bucket: "hosting-bucket",
+              },
+            ],
+          },
+        }),
+        describeHttpServiceRoute,
+      },
+      commonService: vi.fn(() => ({
+        call: vi.fn().mockResolvedValue({}),
+      })),
+    });
+
+    const { tools } = createMockServer();
+    const payload = JSON.parse(
+      (
+        await tools.queryEnv.handler({ action: "info", envId: "env-test" })
+      ).content[0].text,
+    );
+
+    expect(payload.EnvInfo.StaticStorages[0].StaticDomain).toBe(
+      "env-test.tcloudbaseapp.com",
+    );
+    expect(payload.EnvInfo.StaticStorages[0].staticDomainRouteEnabled).toBe(
+      false,
+    );
+    expect(payload.EnvInfo.staticDomainRouteEnabled).toBe(false);
+    expect(payload.EnvInfo.accessUrlReachable).toBe(false);
+    expect(payload.EnvInfo.routeDisabled).toBe(true);
+    expect(payload.EnvInfo.disabledAccessUrls).toEqual([
+      "https://env-test.tcloudbaseapp.com/",
+    ]);
+    expect(describeHttpServiceRoute).toHaveBeenCalledWith({
+      EnvId: "env-test",
+      Limit: 1000,
+    });
+  });
+
+  it("envQuery(info) should set staticDomainRouteEnabled=true when default hosting route is enabled", async () => {
+    mockGetCloudBaseManager.mockResolvedValue({
+      env: {
+        getEnvInfo: vi.fn().mockResolvedValue({
+          EnvInfo: {
+            EnvId: "env-test",
+            StaticStorages: [
+              {
+                StaticDomain: "env-test.tcloudbaseapp.com",
+                Bucket: "hosting-bucket",
+              },
+            ],
+          },
+        }),
+        describeHttpServiceRoute: vi.fn().mockResolvedValue({
+          Domains: [
+            {
+              Domain: "env-test.tcloudbaseapp.com",
+              IsDefault: true,
+              Routes: [
+                {
+                  Path: "/",
+                  Enable: true,
+                  UpstreamResourceType: "STATIC_STORE",
+                  UpstreamResourceName: "staticstore",
+                },
+              ],
+            },
+          ],
+        }),
+      },
+      commonService: vi.fn(() => ({
+        call: vi.fn().mockResolvedValue({}),
+      })),
+    });
+
+    const { tools } = createMockServer();
+    const payload = JSON.parse(
+      (
+        await tools.queryEnv.handler({ action: "info", envId: "env-test" })
+      ).content[0].text,
+    );
+
+    expect(payload.EnvInfo.StaticStorages[0]).toMatchObject({
+      StaticDomain: "env-test.tcloudbaseapp.com",
+      staticDomainRouteEnabled: true,
+    });
+    expect(payload.EnvInfo.staticDomainRouteEnabled).toBe(true);
+    expect(payload.EnvInfo.accessUrlReachable).toBe(true);
+    expect(payload.EnvInfo.routeDisabled).toBeUndefined();
   });
 
   it("envQuery(info) RuntimeBackends.nosql should require usable Databases InstanceId", async () => {

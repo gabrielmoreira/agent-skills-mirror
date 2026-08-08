@@ -49,7 +49,9 @@ def build_final_response(
     """Build a response, treating intentional termination as success."""
     exit_code = returncode if returncode is not None else 1
 
-    if result and result.get("status") == "partial":
+    if result and (result.get("status") == "error" or result.get("is_error") is True):
+        status = "error"
+    elif result and result.get("status") == "partial":
         status = "partial"
     elif result and (terminated_by_us or exit_code in _SUCCESS_EXIT_CODES):
         status = "success"
@@ -65,7 +67,19 @@ def build_final_response(
         "cli": cli,
     }
     if status == "error":
-        msg = f"CLI exited with code {exit_code}"
+        result_error = result.get("error") if result else None
+        result_subtype = result.get("subtype") if result else None
+        result_text = result.get("result") if result else None
+        if isinstance(result_error, str) and result_error.strip():
+            msg = result_error.strip()
+        elif isinstance(result_subtype, str) and result_subtype.startswith("error_"):
+            msg = f"CLI reported {result_subtype.strip()}"
+        elif isinstance(result_text, str) and result_text.strip():
+            msg = result_text.strip()
+        elif result:
+            msg = "CLI reported an error"
+        else:
+            msg = f"CLI exited with code {exit_code}"
         if stderr and stderr.strip():
             msg += f": {stderr.strip()}"
         response["error"] = msg
@@ -116,7 +130,7 @@ def _drain_to_eof(line_q: queue.Queue, budget_sec: float = 0.5) -> None:
 
 def _drive_process(process: subprocess.Popen, cli: str, timeout_ms: int) -> dict:
     deadline = time.monotonic() + timeout_ms / 1000
-    processor = StreamProcessor()
+    processor = StreamProcessor(cli)
     stdout_lines: list = []
     accumulated_chars = 0
     line_q = _spawn_reader(process)

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agentlas-ai/Agentlas-OS` — 26 default patterns, 0 followed patterns, 86 file(s) materialized.
+Mirror of `agentlas-ai/Agentlas-OS` — 26 default patterns, 0 followed patterns, 88 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agentlas-ai/Agentlas-OS` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 86 |
+| Files         | 88 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -102,49 +102,51 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 41 | ✓ | [`agents/30-agentlas-packager/agent.md`](agents/30-agentlas-packager/agent.md) |
 | 42 | ✓ | [`agents/README.md`](agents/README.md) |
 | 43 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 44 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-build/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-build/SKILL.md) |
-| 45 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-cloud/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-cloud/SKILL.md) |
-| 46 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-network/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-network/SKILL.md) |
-| 47 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-storm/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-storm/SKILL.md) |
-| 48 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-upload/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-upload/SKILL.md) |
-| 49 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/routing-card-authoring/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/routing-card-authoring/SKILL.md) |
-| 50 | ✓ | [`cursor/plugin/skills/hephaestus-cloud/SKILL.md`](cursor/plugin/skills/hephaestus-cloud/SKILL.md) |
-| 51 | ✓ | [`cursor/plugin/skills/hephaestus-network/SKILL.md`](cursor/plugin/skills/hephaestus-network/SKILL.md) |
-| 52 | ✓ | [`cursor/plugin/skills/hephaestus-upload/SKILL.md`](cursor/plugin/skills/hephaestus-upload/SKILL.md) |
-| 53 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 54 | ✓ | [`gemini/extension/GEMINI.md`](gemini/extension/GEMINI.md) |
-| 55 | ✓ | [`gemini/extension/skills/hephaestus-cloud/SKILL.md`](gemini/extension/skills/hephaestus-cloud/SKILL.md) |
-| 56 | ✓ | [`gemini/extension/skills/hephaestus-network/SKILL.md`](gemini/extension/skills/hephaestus-network/SKILL.md) |
-| 57 | ✓ | [`gemini/extension/skills/hephaestus-upload/SKILL.md`](gemini/extension/skills/hephaestus-upload/SKILL.md) |
-| 58 | ✓ | [`hermes/skills/hephaestus-cloud/SKILL.md`](hermes/skills/hephaestus-cloud/SKILL.md) |
-| 59 | ✓ | [`hermes/skills/hephaestus-network/SKILL.md`](hermes/skills/hephaestus-network/SKILL.md) |
-| 60 | ✓ | [`hermes/skills/hephaestus-storm/SKILL.md`](hermes/skills/hephaestus-storm/SKILL.md) |
-| 61 | ✓ | [`hermes/skills/hephaestus-upload/SKILL.md`](hermes/skills/hephaestus-upload/SKILL.md) |
-| 62 | ✓ | [`openclaw/skills/hephaestus-cloud/SKILL.md`](openclaw/skills/hephaestus-cloud/SKILL.md) |
-| 63 | ✓ | [`openclaw/skills/hephaestus-network/SKILL.md`](openclaw/skills/hephaestus-network/SKILL.md) |
-| 64 | ✓ | [`openclaw/skills/hephaestus-storm/SKILL.md`](openclaw/skills/hephaestus-storm/SKILL.md) |
-| 65 | ✓ | [`skills/agent-team-design/SKILL.md`](skills/agent-team-design/SKILL.md) |
-| 66 | ✓ | [`skills/agentlas-auto-activation/SKILL.md`](skills/agentlas-auto-activation/SKILL.md) |
-| 67 | ✓ | [`skills/agentlas-packaging/SKILL.md`](skills/agentlas-packaging/SKILL.md) |
-| 68 | ✓ | [`skills/agentlas-security-scan/SKILL.md`](skills/agentlas-security-scan/SKILL.md) |
-| 69 | ✓ | [`skills/clarify-question-loop/SKILL.md`](skills/clarify-question-loop/SKILL.md) |
-| 70 | ✓ | [`skills/hephaestus-cloud/SKILL.md`](skills/hephaestus-cloud/SKILL.md) |
-| 71 | ✓ | [`skills/hephaestus-network/SKILL.md`](skills/hephaestus-network/SKILL.md) |
-| 72 | ✓ | [`skills/hephaestus-storm/SKILL.md`](skills/hephaestus-storm/SKILL.md) |
-| 73 | ✓ | [`skills/hephaestus-upload/SKILL.md`](skills/hephaestus-upload/SKILL.md) |
-| 74 | ✓ | [`skills/install-verification/SKILL.md`](skills/install-verification/SKILL.md) |
-| 75 | ✓ | [`skills/llm-runtime-architecture/SKILL.md`](skills/llm-runtime-architecture/SKILL.md) |
-| 76 | ✓ | [`skills/memory-ticketing/SKILL.md`](skills/memory-ticketing/SKILL.md) |
-| 77 | ✓ | [`skills/mode-classification/SKILL.md`](skills/mode-classification/SKILL.md) |
-| 78 | ✓ | [`skills/pm-soul/SKILL.md`](skills/pm-soul/SKILL.md) |
-| 79 | ✓ | [`skills/public-plugin-packaging/SKILL.md`](skills/public-plugin-packaging/SKILL.md) |
-| 80 | ✓ | [`skills/README.md`](skills/README.md) |
-| 81 | ✓ | [`skills/routing-card-authoring/SKILL.md`](skills/routing-card-authoring/SKILL.md) |
-| 82 | ✓ | [`skills/runtime-adapters/SKILL.md`](skills/runtime-adapters/SKILL.md) |
-| 83 | ✓ | [`skills/self-evolving-single-agent/SKILL.md`](skills/self-evolving-single-agent/SKILL.md) |
-| 84 | ✓ | [`skills/sitemap-task-bias/SKILL.md`](skills/sitemap-task-bias/SKILL.md) |
-| 85 | ✓ | [`skills/skill-lifecycle-promotion/SKILL.md`](skills/skill-lifecycle-promotion/SKILL.md) |
-| 86 | ✓ | [`skills/team-builder-packaging/SKILL.md`](skills/team-builder-packaging/SKILL.md) |
+| 44 | ✓ | [`claude/plugins/agentlas-core-engine-meta-agent/AGENTS.md`](claude/plugins/agentlas-core-engine-meta-agent/AGENTS.md) |
+| 45 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/AGENTS.md`](codex/plugins/agentlas-core-engine-meta-agent/AGENTS.md) |
+| 46 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-build/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-build/SKILL.md) |
+| 47 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-cloud/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-cloud/SKILL.md) |
+| 48 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-network/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-network/SKILL.md) |
+| 49 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-storm/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-storm/SKILL.md) |
+| 50 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-upload/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/hephaestus-upload/SKILL.md) |
+| 51 | ✓ | [`codex/plugins/agentlas-core-engine-meta-agent/skills/routing-card-authoring/SKILL.md`](codex/plugins/agentlas-core-engine-meta-agent/skills/routing-card-authoring/SKILL.md) |
+| 52 | ✓ | [`cursor/plugin/skills/hephaestus-cloud/SKILL.md`](cursor/plugin/skills/hephaestus-cloud/SKILL.md) |
+| 53 | ✓ | [`cursor/plugin/skills/hephaestus-network/SKILL.md`](cursor/plugin/skills/hephaestus-network/SKILL.md) |
+| 54 | ✓ | [`cursor/plugin/skills/hephaestus-upload/SKILL.md`](cursor/plugin/skills/hephaestus-upload/SKILL.md) |
+| 55 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 56 | ✓ | [`gemini/extension/GEMINI.md`](gemini/extension/GEMINI.md) |
+| 57 | ✓ | [`gemini/extension/skills/hephaestus-cloud/SKILL.md`](gemini/extension/skills/hephaestus-cloud/SKILL.md) |
+| 58 | ✓ | [`gemini/extension/skills/hephaestus-network/SKILL.md`](gemini/extension/skills/hephaestus-network/SKILL.md) |
+| 59 | ✓ | [`gemini/extension/skills/hephaestus-upload/SKILL.md`](gemini/extension/skills/hephaestus-upload/SKILL.md) |
+| 60 | ✓ | [`hermes/skills/hephaestus-cloud/SKILL.md`](hermes/skills/hephaestus-cloud/SKILL.md) |
+| 61 | ✓ | [`hermes/skills/hephaestus-network/SKILL.md`](hermes/skills/hephaestus-network/SKILL.md) |
+| 62 | ✓ | [`hermes/skills/hephaestus-storm/SKILL.md`](hermes/skills/hephaestus-storm/SKILL.md) |
+| 63 | ✓ | [`hermes/skills/hephaestus-upload/SKILL.md`](hermes/skills/hephaestus-upload/SKILL.md) |
+| 64 | ✓ | [`openclaw/skills/hephaestus-cloud/SKILL.md`](openclaw/skills/hephaestus-cloud/SKILL.md) |
+| 65 | ✓ | [`openclaw/skills/hephaestus-network/SKILL.md`](openclaw/skills/hephaestus-network/SKILL.md) |
+| 66 | ✓ | [`openclaw/skills/hephaestus-storm/SKILL.md`](openclaw/skills/hephaestus-storm/SKILL.md) |
+| 67 | ✓ | [`skills/agent-team-design/SKILL.md`](skills/agent-team-design/SKILL.md) |
+| 68 | ✓ | [`skills/agentlas-auto-activation/SKILL.md`](skills/agentlas-auto-activation/SKILL.md) |
+| 69 | ✓ | [`skills/agentlas-packaging/SKILL.md`](skills/agentlas-packaging/SKILL.md) |
+| 70 | ✓ | [`skills/agentlas-security-scan/SKILL.md`](skills/agentlas-security-scan/SKILL.md) |
+| 71 | ✓ | [`skills/clarify-question-loop/SKILL.md`](skills/clarify-question-loop/SKILL.md) |
+| 72 | ✓ | [`skills/hephaestus-cloud/SKILL.md`](skills/hephaestus-cloud/SKILL.md) |
+| 73 | ✓ | [`skills/hephaestus-network/SKILL.md`](skills/hephaestus-network/SKILL.md) |
+| 74 | ✓ | [`skills/hephaestus-storm/SKILL.md`](skills/hephaestus-storm/SKILL.md) |
+| 75 | ✓ | [`skills/hephaestus-upload/SKILL.md`](skills/hephaestus-upload/SKILL.md) |
+| 76 | ✓ | [`skills/install-verification/SKILL.md`](skills/install-verification/SKILL.md) |
+| 77 | ✓ | [`skills/llm-runtime-architecture/SKILL.md`](skills/llm-runtime-architecture/SKILL.md) |
+| 78 | ✓ | [`skills/memory-ticketing/SKILL.md`](skills/memory-ticketing/SKILL.md) |
+| 79 | ✓ | [`skills/mode-classification/SKILL.md`](skills/mode-classification/SKILL.md) |
+| 80 | ✓ | [`skills/pm-soul/SKILL.md`](skills/pm-soul/SKILL.md) |
+| 81 | ✓ | [`skills/public-plugin-packaging/SKILL.md`](skills/public-plugin-packaging/SKILL.md) |
+| 82 | ✓ | [`skills/README.md`](skills/README.md) |
+| 83 | ✓ | [`skills/routing-card-authoring/SKILL.md`](skills/routing-card-authoring/SKILL.md) |
+| 84 | ✓ | [`skills/runtime-adapters/SKILL.md`](skills/runtime-adapters/SKILL.md) |
+| 85 | ✓ | [`skills/self-evolving-single-agent/SKILL.md`](skills/self-evolving-single-agent/SKILL.md) |
+| 86 | ✓ | [`skills/sitemap-task-bias/SKILL.md`](skills/sitemap-task-bias/SKILL.md) |
+| 87 | ✓ | [`skills/skill-lifecycle-promotion/SKILL.md`](skills/skill-lifecycle-promotion/SKILL.md) |
+| 88 | ✓ | [`skills/team-builder-packaging/SKILL.md`](skills/team-builder-packaging/SKILL.md) |
 
 ---
 

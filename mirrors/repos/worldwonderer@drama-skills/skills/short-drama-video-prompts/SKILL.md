@@ -39,7 +39,7 @@ license: MIT
 | 运镜、环境、对白、声音、边界冲突 | [摄影声音与连续性](references/camera-audio-continuity.md) |
 | 自检、独立复核、正反案例 | [审查量表与合成案例](references/review-and-fixtures.md) |
 | 生产端提示词写法、台词绑定、负面清单 | [生产提示词语法惯例](references/production-prompt-grammar.md) |
-| 分段交付、槽位职责、时长分配 | [交付档案与槽位语义](references/delivery-profile.md) |
+| 分段交付、槽位职责、时长分配、交付路由与执行触发词 | [交付档案与槽位语义](references/delivery-profile.md) |
 | 多张参考图的用途、补拍或替代版范围 | [阶段契约](references/stage-contract.md) 的参考媒体与补拍 |
 
 规格使用 [运动规格模板](assets/motion-spec.jsonl.md)；末镜或下一集记录尚未建立时参考

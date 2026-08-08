@@ -6,9 +6,9 @@
 
 ## 统计
 
-- 真实项目数：11
+- 真实项目数：12
 - 种子参考数：17
-- 总条目数：28
+- 总条目数：29
 
 ## 按场景分类
 
@@ -19,6 +19,7 @@
 
 ### 二进制 / 固件 / CTF
 
+- [2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor](./2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor.md)
 - [2026-07-14_android-arm64-self-extract-source-recovery](./2026-07-14_android-arm64-self-extract-source-recovery.md)
 - [2026-05-15_lumine-go-reverse](./2026-05-15_lumine-go-reverse.md)
 - [[种子] seed-001_elf-packed-loader](./seed-001_elf-packed-loader.md)
@@ -58,6 +59,18 @@
 ### 其他
 
 - [[种子] seed-012_log4shell-jndi-rce](./seed-012_log4shell-jndi-rce.md)
+
+## 高频成功模式（按技术）
+
+### 固件自定义封装
+
+- [1 KiB 自带掩码 ROR/XOR、Cortex-M 向量 crib、跨固件验证](./2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor.md)
+
+## 实体倒排（按目标特征）
+
+### Cortex-M USB MSC 升级器
+
+- [应用/驻留 bootloader 边界与虚拟磁盘写入链路](./2026-08-06_cortex-m-msc-firmware-self-keyed-rotate-xor.md)
 
 ## 使用说明
 

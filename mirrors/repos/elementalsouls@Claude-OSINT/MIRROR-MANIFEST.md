@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 25 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -75,8 +75,15 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 14 | ✓ | [`skills/offensive-osint/SKILL.md`](skills/offensive-osint/SKILL.md) |
 | 15 | ✓ | [`skills/org-attack-surface/README.md`](skills/org-attack-surface/README.md) |
 | 16 | ✓ | [`skills/org-attack-surface/SKILL.md`](skills/org-attack-surface/SKILL.md) |
-| 17 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
-| 18 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
+| 17 | ✓ | [`skills/osint-autopilot/README.md`](skills/osint-autopilot/README.md) |
+| 18 | ✓ | [`skills/osint-autopilot/scripts/build_xlsx.py`](skills/osint-autopilot/scripts/build_xlsx.py) |
+| 19 | ✓ | [`skills/osint-autopilot/scripts/findings_gen.py`](skills/osint-autopilot/scripts/findings_gen.py) |
+| 20 | ✓ | [`skills/osint-autopilot/scripts/host_enum.workflow.js`](skills/osint-autopilot/scripts/host_enum.workflow.js) |
+| 21 | ✓ | [`skills/osint-autopilot/scripts/recon_pipeline.sh`](skills/osint-autopilot/scripts/recon_pipeline.sh) |
+| 22 | ✓ | [`skills/osint-autopilot/scripts/wordlist.txt`](skills/osint-autopilot/scripts/wordlist.txt) |
+| 23 | ✓ | [`skills/osint-autopilot/SKILL.md`](skills/osint-autopilot/SKILL.md) |
+| 24 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
+| 25 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
 
 ---
 

@@ -7,7 +7,7 @@ ref: develop
 
 # Mirror Manifest
 
-Mirror of `elizaOS/eliza` — 26 default patterns, 6 followed patterns, 351 file(s) materialized.
+Mirror of `elizaOS/eliza` — 26 default patterns, 6 followed patterns, 353 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elizaOS/eliza` — 26 default patterns, 6 followed patterns, 351 file
 | Ref           | `develop` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 351 |
+| Files         | 353 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -409,12 +409,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 343 | ✓ | [`plugins/plugin-x/CLAUDE.md`](plugins/plugin-x/CLAUDE.md) |
 | 344 | ✓ | [`plugins/plugin-zai/AGENTS.md`](plugins/plugin-zai/AGENTS.md) |
 | 345 | ✓ | [`plugins/plugin-zai/CLAUDE.md`](plugins/plugin-zai/CLAUDE.md) |
-| 346 | → | [`.github/ISSUE_TEMPLATE/agent_work_item.md`](.github/ISSUE_TEMPLATE/agent_work_item.md) |
-| 347 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
-| 348 | → | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) |
-| 349 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 350 | → | [`packages/docs/development/shared-dev-server.md`](packages/docs/development/shared-dev-server.md) |
-| 351 | → | [`packages/docs/security.md`](packages/docs/security.md) |
+| 346 | ✓ | [`plugins/plugin-zerollama/AGENTS.md`](plugins/plugin-zerollama/AGENTS.md) |
+| 347 | ✓ | [`plugins/plugin-zerollama/CLAUDE.md`](plugins/plugin-zerollama/CLAUDE.md) |
+| 348 | → | [`.github/ISSUE_TEMPLATE/agent_work_item.md`](.github/ISSUE_TEMPLATE/agent_work_item.md) |
+| 349 | → | [`.github/ISSUE_TEMPLATE/bug_report.md`](.github/ISSUE_TEMPLATE/bug_report.md) |
+| 350 | → | [`.github/ISSUE_TEMPLATE/feature_request.md`](.github/ISSUE_TEMPLATE/feature_request.md) |
+| 351 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 352 | → | [`packages/docs/development/shared-dev-server.md`](packages/docs/development/shared-dev-server.md) |
+| 353 | → | [`packages/docs/security.md`](packages/docs/security.md) |
 
 ---
 
