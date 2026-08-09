@@ -705,7 +705,7 @@ If you are looping on the same diagnostic, same file, or failed fix variants, ST
 
 ## Question Tuning (skip entirely if `QUESTION_TUNING: false`)
 
-Before each AskUserQuestion, choose `question_id` from `scripts/question-registry.ts` or `{skill}-{slug}`, then run `~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>"`. `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
+Before each AskUserQuestion, choose `question_id` from `scripts/question-registry.ts` or `{skill}-{slug}`, then run `printf '%s' "<question summary>" | ~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>" --summary-stdin` (piped summary feeds the one-way keyword net, #2024). `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
 
 **Embed the question_id as a marker in the question text** so hooks can identify it deterministically (plan-tune cathedral T14 / D18 progressive markers). Append `<gstack-qid:{question_id}>` somewhere in the rendered question (the leading line or trailing line is fine; the marker doesn't render visibly to the user when wrapped in HTML-style angle brackets, but the hook strips it). Without the marker the PreToolUse enforcement hook treats the AUQ as observed-only and never auto-decides — so always include it when the question matches a registered `question_id`.
 
@@ -893,6 +893,14 @@ BEFORE invoking the orchestrator:
   slow (cold pooler connection, #1964). Tell the user in one line: "Engine
   probe timed out (>15s) — proceeding; raise `GSTACK_GBRAIN_PROBE_TIMEOUT_MS`
   if your pooler is slow." Do NOT treat this as a broken config.
+- **`thin-client`**: proceed to Step 2 — this machine is a thin client of a
+  remote-HTTP MCP brain (#2051): no local engine BY DESIGN, so the code,
+  memory, and dream stages will SKIP with a thin-client reason (code indexing
+  runs on the brain server; memory syncs via the remote brain's artifacts
+  pull). Only the brain-sync push runs locally. Tell the user in one line:
+  "Thin client of a remote brain — local stages skip by design; brain queries
+  work via remote MCP (reachability is verified at use time, not probed
+  here)." Do NOT route this into the broken-config remediation.
 - **`engine-locked`**: STOP. "The local PGLite database is busy, usually
   because `gbrain serve` from a live Claude session owns it. Stop that process
   or run `/sync-gbrain` outside the live session, then retry. This identifies

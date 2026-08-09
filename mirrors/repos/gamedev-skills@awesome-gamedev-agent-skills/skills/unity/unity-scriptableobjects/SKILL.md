@@ -1,23 +1,17 @@
 ---
 name: unity-scriptableobjects
 description: >
-  Architect Unity 6 data and decoupling with ScriptableObjects: config/data assets, shared
+  Architect Unity 6.3 LTS data and decoupling with ScriptableObjects: config/data assets, shared
   runtime variables, event channels, and runtime sets/registries. Use when designing
   data-driven systems, replacing singletons/managers, creating .asset data with
   CreateAssetMenu, or when the user mentions ScriptableObject, SO architecture, or data assets.
-license: Apache-2.0
-compatibility: Unity 6 (6000.0 LTS); UnityEngine.ScriptableObject
-metadata:
-  engine: unity
-  category: unity
-  difficulty: intermediate
 ---
 
 # Unity ScriptableObject Architecture
 
-Use `ScriptableObject` assets to store shared data and decouple systems in Unity 6 —
+Use `ScriptableObject` assets to store shared data and decouple systems in Unity 6.3 LTS —
 configuration, event channels, and registries that live as project assets instead of being
-hard-wired into scenes or singletons. Targets **Unity 6 (6000.0 LTS)**.
+hard-wired into scenes or singletons. Targets **Unity 6.3 LTS (6000.3)**.
 
 ## When to use
 
@@ -102,7 +96,7 @@ temp.damage = 25;
   reset in `OnEnable`, or it will surprise you. (In a _build_, asset edits do not persist
   across launches.)
 - **Disabled Domain Reload skips your `OnEnable` reset** — with **Enter Play Mode Options**
-  enabled and **Reload Domain** off (a Unity 6 fast-iteration setting), already-loaded SOs are
+  enabled and **Reload Domain** off (a Unity 6.3 LTS fast-iteration setting), already-loaded SOs are
   _not_ re-created when you press Play, so `OnEnable` never fires and `runtimeValue` keeps its
   value from the previous session. Reset explicitly from an `ISerializationCallbackReceiver` or
   a scene-load hook instead of relying on `OnEnable` alone.

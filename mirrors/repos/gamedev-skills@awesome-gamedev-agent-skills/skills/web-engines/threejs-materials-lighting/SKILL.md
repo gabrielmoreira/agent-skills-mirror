@@ -8,18 +8,12 @@ description: >
   three.js materials, MeshStandardMaterial, lights, shadows, envMap, or PBR. For
   renderer/loop setup use threejs-scene-setup; for loading models use
   threejs-gltf-loading.
-license: Apache-2.0
-compatibility: three.js r165+ (verified against r184; physically based lighting)
-metadata:
-  engine: threejs
-  category: web-engines
-  difficulty: intermediate
 ---
 
 # three.js Materials & Lighting
 
 Make three.js surfaces look right: pick the correct material, light the scene,
-enable shadows, and add image-based lighting. Patterns target **r165+**, verified
+enable shadows, and add image-based lighting. Patterns target **r184**, verified
 against **r184** (lighting is physically based by default since r155).
 
 ## When to use

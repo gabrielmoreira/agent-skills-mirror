@@ -7,19 +7,13 @@ description: >
   debugging PixiJS v8 — when the user mentions PixiJS, Pixi, Application, app.stage,
   Container, Sprite, Assets.load, app.ticker, or eventMode. Pins the v8 async
   init() API.
-license: Apache-2.0
-compatibility: PixiJS v8 (npm pixi.js@8; Node 20+; WebGL/WebGPU)
-metadata:
-  engine: pixijs
-  category: web-engines
-  difficulty: intermediate
 ---
 
-# PixiJS v8 Rendering
+# PixiJS 8.19 Rendering
 
-Set up and structure a PixiJS **v8** application: the async `Application`, asset
+Set up and structure a PixiJS **8.19** application: the async `Application`, asset
 loading via `Assets`, the `Container`/`Sprite` scene graph, the ticker loop,
-pointer events, and render groups. Pins the v8 API (async `init`, unified
+pointer events, and render groups. Pins the 8.19 API (async `init`, unified
 `Assets`, `eventMode`).
 
 ## When to use

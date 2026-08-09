@@ -39,7 +39,7 @@ Config at `skills/elevenlabs/config.json`:
 
 Only `api_key` is required. Or set `ELEVENLABS_API_KEY` env var.
 
-Dependencies: `pip install PyPDF2 python-docx` (only needed for PDF/DOCX files).
+Dependencies: `pip install pypdf python-docx` (only needed for PDF/DOCX files).
 
 Requires `ffmpeg` for multi-chunk narration and podcasts.
 

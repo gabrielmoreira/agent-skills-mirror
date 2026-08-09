@@ -1,4 +1,4 @@
-# Control layout & theming reference (Godot 4.3+)
+# Control layout & theming reference (Godot 4.7)
 
 Depth companion to `godot-ui-control`.
 

@@ -6,12 +6,6 @@ description: >
   scroll, dissolve, outline, fresnel rim, vignette) in GLSL with HLSL
   equivalents. Use when the user mentions shaders, fragment/pixel shader, vertex
   shader, UV, GLSL, HLSL, or effects like dissolve, outline, or rim light.
-license: Apache-2.0
-compatibility: Concepts engine-agnostic; examples in GLSL-style (Godot gdshader / OpenGL) with HLSL (Unity/Unreal) equivalents noted. Pairs with godot-shaders.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: advanced
 ---
 
 # Shader programming (cross-engine)

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 0 followed patterns, 97 file(s) materialized.
+Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 0 followed patterns, 102 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `xuzhougeng/wisp-science` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 97 |
+| Files         | 102 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -104,58 +104,63 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 43 | ✓ | [`skills/fair-esm2/SKILL.md`](skills/fair-esm2/SKILL.md) |
 | 44 | ✓ | [`skills/figure-composer/kernel.py`](skills/figure-composer/kernel.py) |
 | 45 | ✓ | [`skills/figure-composer/SKILL.md`](skills/figure-composer/SKILL.md) |
-| 46 | ✓ | [`skills/figure-style/kernel.py`](skills/figure-style/kernel.py) |
-| 47 | ✓ | [`skills/figure-style/SKILL.md`](skills/figure-style/SKILL.md) |
-| 48 | ✓ | [`skills/indication-dossier/references/00-research-standards.md`](skills/indication-dossier/references/00-research-standards.md) |
-| 49 | ✓ | [`skills/indication-dossier/references/01-meta-initialization.md`](skills/indication-dossier/references/01-meta-initialization.md) |
-| 50 | ✓ | [`skills/indication-dossier/references/02-epidemiology-research.md`](skills/indication-dossier/references/02-epidemiology-research.md) |
-| 51 | ✓ | [`skills/indication-dossier/references/03-biology-soc-research.md`](skills/indication-dossier/references/03-biology-soc-research.md) |
-| 52 | ✓ | [`skills/indication-dossier/references/04-regulatory-trials-research.md`](skills/indication-dossier/references/04-regulatory-trials-research.md) |
-| 53 | ✓ | [`skills/indication-dossier/references/05-synthesis.md`](skills/indication-dossier/references/05-synthesis.md) |
-| 54 | ✓ | [`skills/indication-dossier/references/06-writing-style.md`](skills/indication-dossier/references/06-writing-style.md) |
-| 55 | ✓ | [`skills/indication-dossier/references/waypoint-schemas.md`](skills/indication-dossier/references/waypoint-schemas.md) |
-| 56 | ✓ | [`skills/indication-dossier/SKILL.md`](skills/indication-dossier/SKILL.md) |
-| 57 | ✓ | [`skills/journal-club-ppt/SKILL.md`](skills/journal-club-ppt/SKILL.md) |
-| 58 | ✓ | [`skills/ligandmpnn/SKILL.md`](skills/ligandmpnn/SKILL.md) |
-| 59 | ✓ | [`skills/literature-review/kernel.py`](skills/literature-review/kernel.py) |
-| 60 | ✓ | [`skills/literature-review/SKILL.md`](skills/literature-review/SKILL.md) |
-| 61 | ✓ | [`skills/local-env-setup/SKILL.md`](skills/local-env-setup/SKILL.md) |
-| 62 | ✓ | [`skills/managed-model-endpoints/SKILL.md`](skills/managed-model-endpoints/SKILL.md) |
-| 63 | ✓ | [`skills/openfold3/SKILL.md`](skills/openfold3/SKILL.md) |
-| 64 | ✓ | [`skills/paper-narrative/kernel.py`](skills/paper-narrative/kernel.py) |
-| 65 | ✓ | [`skills/paper-narrative/SKILL.md`](skills/paper-narrative/SKILL.md) |
-| 66 | ✓ | [`skills/pdf-explore/kernel.py`](skills/pdf-explore/kernel.py) |
-| 67 | ✓ | [`skills/pdf-explore/SKILL.md`](skills/pdf-explore/SKILL.md) |
-| 68 | ✓ | [`skills/probe-compute-environment/agents/openai.yaml`](skills/probe-compute-environment/agents/openai.yaml) |
-| 69 | ✓ | [`skills/probe-compute-environment/SKILL.md`](skills/probe-compute-environment/SKILL.md) |
-| 70 | ✓ | [`skills/product-self-knowledge/SKILL.md`](skills/product-self-knowledge/SKILL.md) |
-| 71 | ✓ | [`skills/proteinmpnn/SKILL.md`](skills/proteinmpnn/SKILL.md) |
-| 72 | ✓ | [`skills/remote-compute-modal/SKILL.md`](skills/remote-compute-modal/SKILL.md) |
-| 73 | ✓ | [`skills/remote-compute-ssh/SKILL.md`](skills/remote-compute-ssh/SKILL.md) |
-| 74 | ✓ | [`skills/scgpt/SKILL.md`](skills/scgpt/SKILL.md) |
-| 75 | ✓ | [`skills/scvi-tools/kernel.py`](skills/scvi-tools/kernel.py) |
-| 76 | ✓ | [`skills/scvi-tools/SKILL.md`](skills/scvi-tools/SKILL.md) |
-| 77 | ✓ | [`skills/self-awareness/SKILL.md`](skills/self-awareness/SKILL.md) |
-| 78 | ✓ | [`skills/skill-creator/agents/analyzer.md`](skills/skill-creator/agents/analyzer.md) |
-| 79 | ✓ | [`skills/skill-creator/agents/comparator.md`](skills/skill-creator/agents/comparator.md) |
-| 80 | ✓ | [`skills/skill-creator/agents/grader.md`](skills/skill-creator/agents/grader.md) |
-| 81 | ✓ | [`skills/skill-creator/assets/eval_review.html`](skills/skill-creator/assets/eval_review.html) |
-| 82 | ✓ | [`skills/skill-creator/eval-viewer/generate_review.py`](skills/skill-creator/eval-viewer/generate_review.py) |
-| 83 | ✓ | [`skills/skill-creator/eval-viewer/viewer.html`](skills/skill-creator/eval-viewer/viewer.html) |
-| 84 | ✓ | [`skills/skill-creator/references/schemas.md`](skills/skill-creator/references/schemas.md) |
-| 85 | ✓ | [`skills/skill-creator/scripts/__init__.py`](skills/skill-creator/scripts/__init__.py) |
-| 86 | ✓ | [`skills/skill-creator/scripts/aggregate_benchmark.py`](skills/skill-creator/scripts/aggregate_benchmark.py) |
-| 87 | ✓ | [`skills/skill-creator/scripts/generate_report.py`](skills/skill-creator/scripts/generate_report.py) |
-| 88 | ✓ | [`skills/skill-creator/scripts/improve_description.py`](skills/skill-creator/scripts/improve_description.py) |
-| 89 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
-| 90 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
-| 91 | ✓ | [`skills/skill-creator/scripts/run_eval.py`](skills/skill-creator/scripts/run_eval.py) |
-| 92 | ✓ | [`skills/skill-creator/scripts/run_loop.py`](skills/skill-creator/scripts/run_loop.py) |
-| 93 | ✓ | [`skills/skill-creator/scripts/utils.py`](skills/skill-creator/scripts/utils.py) |
-| 94 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
-| 95 | ✓ | [`skills/solublempnn/SKILL.md`](skills/solublempnn/SKILL.md) |
-| 96 | ✓ | [`skills/THIRD_PARTY_LICENSES.md`](skills/THIRD_PARTY_LICENSES.md) |
-| 97 | ✓ | [`skills/using-model-endpoint/SKILL.md`](skills/using-model-endpoint/SKILL.md) |
+| 46 | ✓ | [`skills/figure-duplicate-audit/references/review-protocol.md`](skills/figure-duplicate-audit/references/review-protocol.md) |
+| 47 | ✓ | [`skills/figure-duplicate-audit/scripts/audit_figures.py`](skills/figure-duplicate-audit/scripts/audit_figures.py) |
+| 48 | ✓ | [`skills/figure-duplicate-audit/SKILL.md`](skills/figure-duplicate-audit/SKILL.md) |
+| 49 | ✓ | [`skills/figure-duplicate-audit/tests/fixtures/known-reuse-panels.json`](skills/figure-duplicate-audit/tests/fixtures/known-reuse-panels.json) |
+| 50 | ✓ | [`skills/figure-duplicate-audit/tests/test_audit_figures.py`](skills/figure-duplicate-audit/tests/test_audit_figures.py) |
+| 51 | ✓ | [`skills/figure-style/kernel.py`](skills/figure-style/kernel.py) |
+| 52 | ✓ | [`skills/figure-style/SKILL.md`](skills/figure-style/SKILL.md) |
+| 53 | ✓ | [`skills/indication-dossier/references/00-research-standards.md`](skills/indication-dossier/references/00-research-standards.md) |
+| 54 | ✓ | [`skills/indication-dossier/references/01-meta-initialization.md`](skills/indication-dossier/references/01-meta-initialization.md) |
+| 55 | ✓ | [`skills/indication-dossier/references/02-epidemiology-research.md`](skills/indication-dossier/references/02-epidemiology-research.md) |
+| 56 | ✓ | [`skills/indication-dossier/references/03-biology-soc-research.md`](skills/indication-dossier/references/03-biology-soc-research.md) |
+| 57 | ✓ | [`skills/indication-dossier/references/04-regulatory-trials-research.md`](skills/indication-dossier/references/04-regulatory-trials-research.md) |
+| 58 | ✓ | [`skills/indication-dossier/references/05-synthesis.md`](skills/indication-dossier/references/05-synthesis.md) |
+| 59 | ✓ | [`skills/indication-dossier/references/06-writing-style.md`](skills/indication-dossier/references/06-writing-style.md) |
+| 60 | ✓ | [`skills/indication-dossier/references/waypoint-schemas.md`](skills/indication-dossier/references/waypoint-schemas.md) |
+| 61 | ✓ | [`skills/indication-dossier/SKILL.md`](skills/indication-dossier/SKILL.md) |
+| 62 | ✓ | [`skills/journal-club-ppt/SKILL.md`](skills/journal-club-ppt/SKILL.md) |
+| 63 | ✓ | [`skills/ligandmpnn/SKILL.md`](skills/ligandmpnn/SKILL.md) |
+| 64 | ✓ | [`skills/literature-review/kernel.py`](skills/literature-review/kernel.py) |
+| 65 | ✓ | [`skills/literature-review/SKILL.md`](skills/literature-review/SKILL.md) |
+| 66 | ✓ | [`skills/local-env-setup/SKILL.md`](skills/local-env-setup/SKILL.md) |
+| 67 | ✓ | [`skills/managed-model-endpoints/SKILL.md`](skills/managed-model-endpoints/SKILL.md) |
+| 68 | ✓ | [`skills/openfold3/SKILL.md`](skills/openfold3/SKILL.md) |
+| 69 | ✓ | [`skills/paper-narrative/kernel.py`](skills/paper-narrative/kernel.py) |
+| 70 | ✓ | [`skills/paper-narrative/SKILL.md`](skills/paper-narrative/SKILL.md) |
+| 71 | ✓ | [`skills/pdf-explore/kernel.py`](skills/pdf-explore/kernel.py) |
+| 72 | ✓ | [`skills/pdf-explore/SKILL.md`](skills/pdf-explore/SKILL.md) |
+| 73 | ✓ | [`skills/probe-compute-environment/agents/openai.yaml`](skills/probe-compute-environment/agents/openai.yaml) |
+| 74 | ✓ | [`skills/probe-compute-environment/SKILL.md`](skills/probe-compute-environment/SKILL.md) |
+| 75 | ✓ | [`skills/product-self-knowledge/SKILL.md`](skills/product-self-knowledge/SKILL.md) |
+| 76 | ✓ | [`skills/proteinmpnn/SKILL.md`](skills/proteinmpnn/SKILL.md) |
+| 77 | ✓ | [`skills/remote-compute-modal/SKILL.md`](skills/remote-compute-modal/SKILL.md) |
+| 78 | ✓ | [`skills/remote-compute-ssh/SKILL.md`](skills/remote-compute-ssh/SKILL.md) |
+| 79 | ✓ | [`skills/scgpt/SKILL.md`](skills/scgpt/SKILL.md) |
+| 80 | ✓ | [`skills/scvi-tools/kernel.py`](skills/scvi-tools/kernel.py) |
+| 81 | ✓ | [`skills/scvi-tools/SKILL.md`](skills/scvi-tools/SKILL.md) |
+| 82 | ✓ | [`skills/self-awareness/SKILL.md`](skills/self-awareness/SKILL.md) |
+| 83 | ✓ | [`skills/skill-creator/agents/analyzer.md`](skills/skill-creator/agents/analyzer.md) |
+| 84 | ✓ | [`skills/skill-creator/agents/comparator.md`](skills/skill-creator/agents/comparator.md) |
+| 85 | ✓ | [`skills/skill-creator/agents/grader.md`](skills/skill-creator/agents/grader.md) |
+| 86 | ✓ | [`skills/skill-creator/assets/eval_review.html`](skills/skill-creator/assets/eval_review.html) |
+| 87 | ✓ | [`skills/skill-creator/eval-viewer/generate_review.py`](skills/skill-creator/eval-viewer/generate_review.py) |
+| 88 | ✓ | [`skills/skill-creator/eval-viewer/viewer.html`](skills/skill-creator/eval-viewer/viewer.html) |
+| 89 | ✓ | [`skills/skill-creator/references/schemas.md`](skills/skill-creator/references/schemas.md) |
+| 90 | ✓ | [`skills/skill-creator/scripts/__init__.py`](skills/skill-creator/scripts/__init__.py) |
+| 91 | ✓ | [`skills/skill-creator/scripts/aggregate_benchmark.py`](skills/skill-creator/scripts/aggregate_benchmark.py) |
+| 92 | ✓ | [`skills/skill-creator/scripts/generate_report.py`](skills/skill-creator/scripts/generate_report.py) |
+| 93 | ✓ | [`skills/skill-creator/scripts/improve_description.py`](skills/skill-creator/scripts/improve_description.py) |
+| 94 | ✓ | [`skills/skill-creator/scripts/package_skill.py`](skills/skill-creator/scripts/package_skill.py) |
+| 95 | ✓ | [`skills/skill-creator/scripts/quick_validate.py`](skills/skill-creator/scripts/quick_validate.py) |
+| 96 | ✓ | [`skills/skill-creator/scripts/run_eval.py`](skills/skill-creator/scripts/run_eval.py) |
+| 97 | ✓ | [`skills/skill-creator/scripts/run_loop.py`](skills/skill-creator/scripts/run_loop.py) |
+| 98 | ✓ | [`skills/skill-creator/scripts/utils.py`](skills/skill-creator/scripts/utils.py) |
+| 99 | ✓ | [`skills/skill-creator/SKILL.md`](skills/skill-creator/SKILL.md) |
+| 100 | ✓ | [`skills/solublempnn/SKILL.md`](skills/solublempnn/SKILL.md) |
+| 101 | ✓ | [`skills/THIRD_PARTY_LICENSES.md`](skills/THIRD_PARTY_LICENSES.md) |
+| 102 | ✓ | [`skills/using-model-endpoint/SKILL.md`](skills/using-model-endpoint/SKILL.md) |
 
 ---
 

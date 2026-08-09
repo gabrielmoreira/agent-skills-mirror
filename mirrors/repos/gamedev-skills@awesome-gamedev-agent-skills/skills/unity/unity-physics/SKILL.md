@@ -1,25 +1,19 @@
 ---
 name: unity-physics
 description: >
-  Set up 3D physics in Unity 6: Rigidbody movement and forces, colliders, triggers vs
+  Set up 3D physics in Unity 6.3 LTS: Rigidbody movement and forces, colliders, triggers vs
   collisions, layer-based collision, raycasts, and joints. Use when adding a Rigidbody,
   handling OnCollisionEnter/OnTriggerEnter, tuning collision layers, casting rays, or when
   the user mentions Unity physics, AddForce, isKinematic, or linearVelocity.
-license: Apache-2.0
-compatibility: Unity 6 (6000.0 LTS), built-in PhysX. Note the velocity → linearVelocity rename.
-metadata:
-  engine: unity
-  category: unity
-  difficulty: intermediate
 ---
 
 # Unity Physics (Rigidbody / PhysX)
 
-Make objects move, collide, and detect each other with Unity 6's built-in 3D physics
+Make objects move, collide, and detect each other with Unity 6.3 LTS's built-in 3D physics
 (PhysX). Get the `FixedUpdate` discipline, trigger-vs-collision rules, and collision layers
-right. Targets **Unity 6 (6000.0 LTS)**.
+right. Targets **Unity 6.3 LTS (6000.3)**.
 
-> **Unity 6 rename:** `Rigidbody.velocity` is now **`Rigidbody.linearVelocity`** (the old
+> **Unity 6.3 LTS rename:** `Rigidbody.velocity` is now **`Rigidbody.linearVelocity`** (the old
 > name is deprecated). Code copied from older tutorials will warn or fail to compile.
 
 ## When to use
@@ -68,7 +62,7 @@ public class Mover : MonoBehaviour
     private void FixedUpdate()
     {
         _rb.AddForce(_input * accel, ForceMode.Acceleration);     // mass-independent accel
-        // Unity 6: linearVelocity (was 'velocity'). Clamp horizontal speed.
+        // Unity 6.3 LTS: linearVelocity (was 'velocity'). Clamp horizontal speed.
         Vector3 flat = new(_rb.linearVelocity.x, 0, _rb.linearVelocity.z);
         if (flat.magnitude > maxSpeed)
         {
@@ -121,7 +115,7 @@ private void FixedUpdate() => _rb.MovePosition(_rb.position + Vector3.right * (2
 
 ## Pitfalls
 
-- **`Rigidbody.velocity` doesn't exist in Unity 6** — use `linearVelocity` (and
+- **`Rigidbody.velocity` doesn't exist in Unity 6.3 LTS** — use `linearVelocity` (and
   `angularVelocity` is unchanged).
 - **Setting `transform.position` on a dynamic Rigidbody** — teleports it, skips collision.
   Use `MovePosition` (kinematic/interpolated) or apply forces.

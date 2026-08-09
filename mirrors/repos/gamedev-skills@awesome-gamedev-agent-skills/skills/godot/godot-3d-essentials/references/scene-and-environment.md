@@ -1,4 +1,4 @@
-# 3D scene & environment reference (Godot 4.3+)
+# 3D scene & environment reference (Godot 4.7)
 
 Depth companion to `godot-3d-essentials`.
 

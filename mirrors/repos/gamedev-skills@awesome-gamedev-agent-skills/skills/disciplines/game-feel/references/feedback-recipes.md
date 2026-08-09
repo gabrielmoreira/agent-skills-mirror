@@ -2,7 +2,7 @@
 
 Detail the `game-feel` body defers here: the shake math, easing cheat sheet, the rest of the
 feedback menu (knockback, flash, number pop, freeze), importance-tier presets, and the
-per-engine bindings for tweens and particles. All snippets target **Godot 4.x** and **Unity 6**.
+per-engine bindings for tweens and particles. All snippets target **Godot 4.7** and **Unity 6.3 LTS**.
 
 ## 1. The trauma model (why shake feels good)
 
@@ -35,13 +35,13 @@ Tunable starting points: `max_offset = (8..16, 6..10) px`, `max_roll = 0.05..0.1
 | Anticipation / wind-up | ease-in | `TRANS_CUBIC`, `EASE_IN` | slow start before a fast action |
 | Smooth A→B both ends | ease-in-out | `TRANS_SINE`, `EASE_IN_OUT` | camera moves, menu slides |
 
-Unity 6 has no built-in tween library; options in order of preference: `Vector3.SmoothDamp`
+Unity 6.3 LTS has no built-in tween library; options in order of preference: `Vector3.SmoothDamp`
 for spring-like follow, `Mathf.SmoothStep`/hand-rolled ease in a coroutine, Animator curves,
 or a third-party tween package if the project already uses one. Keep the *curve choice* the
 same regardless of tool.
 
 ```csharp
-// Unity 6: a minimal eased scale "pop" in a coroutine (no external deps).
+// Unity 6.3 LTS: a minimal eased scale "pop" in a coroutine (no external deps).
 IEnumerator Pop(Transform t, float dur = 0.18f) {
     t.localScale = new Vector3(1.3f, 0.7f, 1f);            // squash on the event
     for (float e = 0; e < dur; e += Time.deltaTime) {
@@ -91,9 +91,9 @@ These pair with `game-ui-ux` (settings menu) and `input-systems` (accessibility 
 
 ## 6. Per-engine binding summary
 
-- **Godot 4.x:** `create_tween()` + `tween_property().set_trans().set_ease()`; `GPUParticles2D/3D`
+- **Godot 4.7:** `create_tween()` + `tween_property().set_trans().set_ease()`; `GPUParticles2D/3D`
   one-shot; `Engine.time_scale` + `ignore_time_scale` timer; shake on `Camera2D.offset`.
-- **Unity 6:** coroutines + `SmoothDamp`/curves (or a tween package); `ParticleSystem.Play()`;
+- **Unity 6.3 LTS:** coroutines + `SmoothDamp`/curves (or a tween package); `ParticleSystem.Play()`;
   `Time.timeScale` + `WaitForSecondsRealtime`; shake via `CinemachineBasicMultiChannelPerlin`
   amplitude/frequency driven by `trauma^2` (see `camera-systems`).
 - **Web (Phaser/Pixi/three):** tween via the engine/library tween; `this.cameras.main.shake()`

@@ -8,7 +8,7 @@
 <p align="center"><em style="font-family: Georgia, serif; font-size: 1.2em; color: #777;">Navigate the dark waters, sail against the stream.</em></p>
 
 <p align="center">
-  <a href="https://github.com/zhaoxuya520/reverse-skill/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/release-v1.0.0-blue" alt="release"></a>
+  <a href="https://github.com/zhaoxuya520/reverse-skill/releases"><img src="https://img.shields.io/badge/release-v1.0.1-blue" alt="release v1.0.1"></a>
   <a href="https://github.com/zhaoxuya520/reverse-skill/stargazers"><img src="https://img.shields.io/github/stars/zhaoxuya520/reverse-skill?style=flat&logo=github" alt="stars"></a>
   <a href="https://github.com/zhaoxuya520/reverse-skill/forks"><img src="https://img.shields.io/github/forks/zhaoxuya520/reverse-skill?style=flat&logo=github" alt="forks"></a>
   <a href="https://github.com/zhaoxuya520/reverse-skill/issues"><img src="https://img.shields.io/github/issues/zhaoxuya520/reverse-skill?style=flat&logo=github" alt="issues"></a>
@@ -26,6 +26,7 @@
   <a href="#about">About</a> ·
   <a href="#getting-started">Getting Started</a> ·
   <a href="#usage">Usage</a> ·
+  <a href="https://reverse.apivix.com/docs/">Tutorial</a> ·
   <a href="skills/MASTER-ROUTING.md">Fast route</a> ·
   <a href="skills/routing.md">Routing</a> ·
   <a href="skills/ops/">Ops contracts</a> ·
@@ -35,7 +36,9 @@
 </p>
 
 <p align="center">
-  🌐 <a href="README_zh.md">中文</a>
+  🌐 <a href="README_zh.md">中文</a> ·
+  <a href="https://reverse.apivix.com/">Project website</a> ·
+  <a href="https://reverse.apivix.com/docs/">Online tutorial</a>
 </p>
 
 <br/>
@@ -46,7 +49,7 @@
 
 > **If you are an AI Agent, jump to [README_AI.md](README_AI.md) and follow the instructions strictly.**
 
-When an AI agent (Claude Code, Codex CLI, Cursor, etc.) encounters an APK, a binary, frontend JS encryption, a CTF challenge, or a pentesting target, this package routes it to the right methodology, checks available tools, and executes a repeatable workflow instead of guessing commands.
+When an AI agent (Claude Code, Codex, Cursor, OpenCode, or another compatible client) encounters an APK, a binary, frontend JS encryption, a CTF challenge, or a pentesting target, this package routes it to the right methodology, checks available tools, and executes a repeatable workflow instead of guessing commands.
 
 ```
 User task
@@ -62,6 +65,14 @@ User task
 - APK, ELF, JS, PCAP, and CTF tasks each need different playbooks
 - Tools, MCP servers, and scripts are scattered across machines
 - The same mistakes get repeated because experience isn't reused
+
+### Current status
+
+| Routing rules | Regression benchmark | Core skill modules | CI platforms | Client model |
+|---:|---:|---:|---|---|
+| 41 (R0–R40) | 163 cases | 42 tracked modules | Windows + Ubuntu | Client-neutral |
+
+The routing core is driven by one structured configuration, validated by cross-platform CI, and kept separate from optional client adapters.
 
 PRIMARY ladder: [skills/MASTER-ROUTING.md](skills/MASTER-ROUTING.md) · Full matrix: [skills/routing.md](skills/routing.md) · Ops: [skills/ops/](skills/ops/)
 
@@ -93,7 +104,7 @@ PRIMARY ladder: [skills/MASTER-ROUTING.md](skills/MASTER-ROUTING.md) · Full mat
 - **Java / JDK** — for jadx and apktool
 - **Node.js 22.12+** — for JS toolchain and MCP servers
 - **Python 3.x** — for Frida and helper scripts
-- **A code AI client** — Claude Code, Codex CLI, Cursor, etc.
+- **A code AI client** — Claude Code, Codex, Cursor, OpenCode, or another compatible client
 
 ### Installation
 
@@ -136,7 +147,8 @@ Platform-specific docs:
 | Malware / YARA | `skills/malware-analysis/` |
 | Penetration testing / scanning | `skills/pentest-tools/` |
 | Attack chain / red-team orchestration | `skills/attack-chain/` |
-| CTF competition | `CTF-Sandbox-Orchestrator/` (40+ sub-skills) |
+| Case evidence review / report handoff | `skills/case-review/` |
+| CTF competition | `CTF-Sandbox-Orchestrator/` (42 sub-skills) |
 | Firmware / IoT | `skills/firmware-pentest/` |
 | Patch diff / N-day | `skills/patch-diff-exploit/` |
 | Pwn / exploit development | `skills/pwn-chain/` |
@@ -156,10 +168,36 @@ Platform-specific docs:
 | [skills/MASTER-ROUTING.md](skills/MASTER-ROUTING.md) | PRIMARY fast ladder |
 | [skills/routing.md](skills/routing.md) | Task → skill routing matrix |
 | [skills/SKILL.md](skills/SKILL.md) | Master entry point |
+| [skills/INDEX.md](skills/INDEX.md) | Auto-generated, client-neutral skill navigation index |
+| [skills/config/routing.json](skills/config/routing.json) | **Routing single source of truth** (41 rules, R0–R40) |
 | [skills/tool-index.md](skills/tool-index.md) | Local tool status (auto-generated) |
-| [skills/scripts/master-route.ps1](skills/scripts/master-route.ps1) | One-shot PRIMARY triage |
+| [skills/scripts/master-route.ps1](skills/scripts/master-route.ps1) | One-shot PRIMARY triage (reads routing.json) |
 | [skills/scripts/case-init.ps1](skills/scripts/case-init.ps1) | Case dir: scope / timeline / workitems |
+| [skills/case-review/](skills/case-review/) | Read-only Evidence graph review and artifact fixity checks |
+| [skills/scripts/test-routing.ps1](skills/scripts/test-routing.ps1) | Routing regression runner (163 benchmark cases) |
+| [skills/scripts/verify-routing-coherence.ps1](skills/scripts/verify-routing-coherence.ps1) | Structure + supply-chain pin gate checks |
+| [skills/scripts/extract-summaries.ps1](skills/scripts/extract-summaries.ps1) | Regenerates INDEX.md from skill frontmatter |
+| [AGENTS.md](AGENTS.md) | Platform-neutral repository instructions |
 | [skills/ops/](skills/ops/) | Scope, Evidence chain, roles, timeline (skill-router form) |
+
+### Testing (run after any routing/config change)
+
+```powershell
+# 1. Routing regression — 163 (hint → expected PRIMARY) cases, fails CI on any mismatch
+powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/test-routing.ps1
+# 2. Structure coherence + supply-chain pin gate (unpinned auto-install fails)
+powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/verify-routing-coherence.ps1
+# 3. Smoke: verify + script parse + quick route matrix
+powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/smoke.ps1
+# 4. INDEX.md drift check (regenerate with extract-summaries.ps1 if dirty)
+powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/extract-summaries.ps1 -Check
+```
+
+GitHub Actions CI runs all of the above on **Windows + Ubuntu** for every push/PR.
+
+### Client-neutral integration
+
+The routing core, regression suite, manifests, and case workflow do not depend on a specific AI client. Claude Code, Codex, Cursor, OpenCode, and other clients should load the repository through their own adapter or project-instruction mechanism. Client-specific configuration must remain optional and outside the core routing contract.
 
 ### Repository layout
 
@@ -188,15 +226,34 @@ Platform-specific docs:
 <a id="sponsors"></a>
 
 ## Sponsors
-<a href="https://www.atlascloud.ai/?ref=W3Q77C"><img src="https://www.atlascloud.ai/oss-program/powered-by-atlas-cloud.svg" alt="Powered by Atlas Cloud" height="28" /></a>
 
-For sponsorship or business inquiries:
+Sponsorship helps maintain routing benchmarks, cross-platform CI, documentation, and the public security workflow library.
+
+### Current sponsor
+
+<table align="center">
+  <tr>
+    <td align="center" width="440">
+      <a href="https://www.atlascloud.ai/?ref=W3Q77C">
+        <img src="https://www.atlascloud.ai/oss-program/powered-by-atlas-cloud.svg" alt="Powered by Atlas Cloud" height="44" />
+      </a>
+      <br />
+      <strong>Atlas Cloud</strong>
+      <br />
+      <sub>Large language model service provider</sub>
+    </td>
+  </tr>
+</table>
+
+### Sponsor this project
 
 <p align="center">
-  <a href="mailto:24781737@qq.com?subject=%5BSponsorship%5D%20reverse-skill">
-    <img src="https://img.shields.io/badge/Email%20us-24781737%40qq.com-0A66C2?style=for-the-badge&logo=maildotru&logoColor=white" alt="Email us — 24781737@qq.com" />
+  <a href="mailto:ww7517437@gmail.com?subject=%5BSponsorship%5D%20reverse-skill">
+    <img src="https://img.shields.io/badge/Email%20us-ww7517437%40gmail.com-0A66C2?style=for-the-badge&logo=gmail&logoColor=white" alt="Email us — ww7517437@gmail.com" />
   </a>
 </p>
+
+<p align="center"><sub>Confirmed sponsors can be acknowledged here with a name, logo, and project link.</sub></p>
 
 <p align="right">(<a href="#sponsors">back to top</a>)</p>
 
@@ -247,5 +304,5 @@ Special thanks to the OLLVM deobfuscation ecosystem contributors and everyone wh
 
 - **Email:** [ww7517437@gmail.com](mailto:ww7517437@gmail.com)
 - **QQ Group:** 942400892
-- **Discord:**
-[reverse-skill](https://discord.gg/TECd3bMRR)
+- **Discord:** [reverse-skill community](https://discord.gg/TECd3bMRR)
+- **Issues:** [GitHub Issues](https://github.com/zhaoxuya520/reverse-skill/issues)

@@ -1,4 +1,4 @@
-# Resource patterns reference (Godot 4.3+)
+# Resource patterns reference (Godot 4.7)
 
 Depth companion to `godot-resources`.
 

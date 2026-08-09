@@ -44,7 +44,7 @@ Treat a new language as a cross-runtime compatibility feature. Define one locale
    - Run `pnpm run i18n:status` and require the new locale to have the complete current key set.
    - Run `pnpm run i18n:extract:ci`. Inspect the task-scoped locale diff and account for every unexpected deletion, plural rewrite, empty value, source-language copy, or key-shaped translation value.
    - Run `pnpm build` when browser manifest resources or runtime locale imports changed, and verify the built extension contains the expected `_locales` directories.
-   - Stage only task-scoped files, then run `pnpm run validate:staged` and `pnpm run validate:push` before committing.
+   - Stage only task-scoped files and let the repository hooks run their owned gates: `validate:staged` during commit and `validate:push` during a requested push. Do not manually duplicate a matching hook on an unchanged index or file tree.
 
 5. Close the release-readiness decisions.
    - Reuse the existing normalized-language settings telemetry when `SUPPORTED_UI_LANGUAGES` already feeds its privacy allow-list; add no event solely for the presence of another locale.
@@ -59,7 +59,7 @@ Treat a new language as a cross-runtime compatibility feature. Define one locale
 - Date formatting uses the closest verified locale behavior. Natural-language input uses verified mature parser support when available; any unsupported scope is explicit, and custom fallback covers only reproduced gaps.
 - Documentation links resolve to a shipped locale or the explicit fallback.
 - Locale-keyed runtime data outside i18next resolves to the intended language or a deliberate fallback.
-- Focused tests, i18n status and extraction, the production build when applicable, staged validation, and push validation pass on the final task-scoped diff.
+- Focused tests, i18n status and extraction, and the production build when applicable pass on the final task-scoped diff; hook-owned gates pass when the corresponding commit or push is performed.
 
 ## Common omissions
 

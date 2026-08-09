@@ -705,7 +705,7 @@ If you are looping on the same diagnostic, same file, or failed fix variants, ST
 
 ## Question Tuning (skip entirely if `QUESTION_TUNING: false`)
 
-Before each AskUserQuestion, choose `question_id` from `scripts/question-registry.ts` or `{skill}-{slug}`, then run `~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>"`. `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
+Before each AskUserQuestion, choose `question_id` from `scripts/question-registry.ts` or `{skill}-{slug}`, then run `printf '%s' "<question summary>" | ~/.claude/skills/gstack/bin/gstack-question-preference --check "<id>" --summary-stdin` (piped summary feeds the one-way keyword net, #2024). `AUTO_DECIDE` means choose the recommended option and say "Auto-decided [summary] → [option] (your preference). Change with /plan-tune." `ASK_NORMALLY` means ask.
 
 **Embed the question_id as a marker in the question text** so hooks can identify it deterministically (plan-tune cathedral T14 / D18 progressive markers). Append `<gstack-qid:{question_id}>` somewhere in the rendered question (the leading line or trailing line is fine; the marker doesn't render visibly to the user when wrapped in HTML-style angle brackets, but the hook strips it). Without the marker the PreToolUse enforcement hook treats the AUQ as observed-only and never auto-decides — so always include it when the question matches a registered `question_id`.
 
@@ -820,9 +820,13 @@ Capture the JSON output. It contains: `gbrain_on_path`, `gbrain_version`,
 `gbrain_config_exists`, `gbrain_engine`, `gbrain_doctor_ok`, `gbrain_mcp_mode`,
 `gstack_brain_sync_mode`, `gstack_brain_git`, `gstack_artifacts_remote`, and
 the v1.34.0.0+ `gbrain_local_status` field (one of: `ok`, `no-cli`,
-`missing-config`, `broken-config`, `broken-db`, `engine-locked`, `timeout`). Treat `timeout`
-like `ok` (slow-but-healthy engine, #1964) — it never triggers Step 1.5
-remediation.
+`missing-config`, `broken-config`, `broken-db`, `engine-locked`, `timeout`,
+`thin-client`). Treat `timeout` like `ok` (slow-but-healthy engine, #1964) — it
+never triggers Step 1.5 remediation. Treat `thin-client` like `ok` too (#2051):
+the machine is a thin client of a remote-HTTP MCP brain, no local engine by
+design — brain-aware blocks render, and the detect JSON carries
+`gbrain_thin_client: {probed: false}` (config verified; remote reachability
+is checked at use time, where gbrain calls degrade gracefully).
 
 Skip downstream steps that are already done. Report the detected state in
 one line so the user knows what you found:

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `agentforce314/clawcodex` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `agentforce314/clawcodex` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `agentforce314/clawcodex` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -62,6 +62,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`tests/fixtures/skills/commit-helper/SKILL.md`](tests/fixtures/skills/commit-helper/SKILL.md) |
 | 2 | ✓ | [`tests/fixtures/skills/frontend/add-component/SKILL.md`](tests/fixtures/skills/frontend/add-component/SKILL.md) |
 | 3 | ✓ | [`tests/fixtures/skills/lint-py/SKILL.md`](tests/fixtures/skills/lint-py/SKILL.md) |
+| 4 | ✓ | [`ui-desktop/AGENTS.md`](ui-desktop/AGENTS.md) |
+| 5 | ✓ | [`ui-desktop/DESIGN.md`](ui-desktop/DESIGN.md) |
 
 ---
 

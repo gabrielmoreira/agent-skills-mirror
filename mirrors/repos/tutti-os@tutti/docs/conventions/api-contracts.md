@@ -1,0 +1,332 @@
+# API Contracts
+
+Use OpenAPI as the single source of truth for daemon HTTP contracts.
+
+## Source Of Truth
+
+The canonical daemon API contract lives at:
+
+```text
+services/tuttid/api/openapi/tuttid.v1.yaml
+```
+
+Generated outputs derive from that spec for:
+
+- Go transport types and server contract code under `services/tuttid/api/generated`
+- TypeScript client output under `packages/clients/tuttid-ts/src/generated`
+
+Shared workbench snapshot schemas are the one exception inside the OpenAPI
+components section. Their canonical source lives at:
+
+```text
+packages/workbench/snapshot/src/schema.json
+```
+
+The OpenAPI `WorkbenchSnapshot*` component schemas are synchronized from that
+shared package so the open-source desktop and TSH can reuse the same workbench
+snapshot contract while `tuttid` still exposes a normal OpenAPI transport
+contract. The daemon workspace service also consumes a generated Go contract
+file derived from the same shared snapshot sources for schema-version, enum,
+and limit validation.
+
+`WorkbenchSnapshot*` is an explicit shared-contract exception to the usual
+"generated code stays in transport" default. When it avoids duplicate
+hand-maintained mirrors, the synchronized Go snapshot contract may be reused
+inside `packages/workbench/service`, with `services/tuttid/service/workspace`
+consuming that shared package as a host adapter. This exception applies to the
+shared workbench snapshot contract only, not to arbitrary generated request or
+response DTOs.
+
+The shared business event stream contract is the other explicit repository
+exception to the HTTP OpenAPI source-of-truth rule. Its canonical sources live
+at:
+
+```text
+packages/events/protocol/schemas/**/*.json
+packages/events/protocol/definitions/**/*.event.json
+```
+
+Those file-based sources generate:
+
+- TypeScript protocol contracts, validators, and topic registry metadata under
+  `packages/events/protocol/src/generated`
+- Go transport contracts and topic registry metadata under
+  `services/tuttid/api/events/generated`
+
+This exception is limited to the shared business event protocol boundary. The
+shared package owns the schema-first event sources and the generated
+TypeScript-facing protocol surface. The daemon still owns its WebSocket route,
+its authoritative event catalog composition, and the generated Go transport
+outputs that live under `services/tuttid/api/events/generated`.
+
+This exception does not create a second source of truth for daemon HTTP routes
+or a license to hand-maintain competing event DTOs in desktop or daemon code.
+
+## Repository Rules
+
+- change the OpenAPI spec before changing daemon HTTP request or response shapes
+- change `packages/workbench/snapshot/src/schema.json` before changing
+  `WorkbenchSnapshot*` component schemas in the OpenAPI spec
+- do not hand-maintain parallel transport DTOs once the generated boundary exists
+- do not hand-edit OpenAPI `WorkbenchSnapshot*` schemas; run the sync command
+  instead
+- do not hand-edit the daemon workbench snapshot contract constants; run the Go
+  sync command instead
+- do not hand-edit generated business event protocol TypeScript or Go outputs;
+  run the event protocol generator instead
+- do not assume generated Go structs enforce every OpenAPI or JSON Schema
+  constraint at runtime
+- keep generated code limited to the transport layer
+- exception: the synchronized Go `WorkbenchSnapshot*` contract may be reused in
+  `packages/workbench/service`, with host adapters such as
+  `services/tuttid/service/workspace` consuming that shared package, because it
+  is a repository-owned shared contract rather than an arbitrary route-local DTO
+- exception: the shared business event protocol sources live in
+  `packages/events/protocol`, while daemon-owned generated Go transport outputs
+  live in `services/tuttid/api/events/generated`; keep daemon-side event-route
+  orchestration, catalog composition, and business workflows hand-written
+- keep business rules, orchestration, and persistence hand-written
+- keep compatibility aliases such as `/healthz` out of the versioned generated client surface unless they are part of the intended public contract
+
+## Agent Provider And Target Identity
+
+Agent `provider` values are an open, validated execution identity. OpenAPI,
+generated clients, AgentGUI, and Workbench must preserve an unknown valid
+provider string instead of coercing it to a built-in provider. Closed enums are
+appropriate only for preferences that intentionally select among built-in
+defaults.
+
+`AgentTarget.launchRef` is a discriminated union. `builtin_local` is the
+canonical built-in discriminator and `agent_extension` identifies a fixed,
+verified extension installation. The daemon may accept legacy `local_cli` data
+while reading durable state, but API output and new writes must never emit it.
+Add a new union member before adding a new launch mechanism; do not overload a
+provider string with launch or installation state.
+
+## Agent Provider CLI Update Status
+
+Provider status is local by default. `includeUpdates` is the explicit opt-in for
+cached remote update discovery. `refresh` bypasses only local readiness;
+`refreshUpdates` bypasses only update metadata and has no effect unless
+`includeUpdates` is also true. Keep `includeNetwork` independent from both.
+
+Every provider status carries a provider-neutral `update` object. Nullable
+`updateAvailable` distinguishes unchecked or non-comparable state from a known
+up-to-date result. Remote discovery errors belong in update `reasonCode` and
+must not turn a valid local readiness snapshot into an HTTP failure.
+
+`update` is an explicit action id, not an alias for `install`. The daemon may
+offer it only when both the provider descriptor and the resolved installation
+prove a supported managed source. See [Agent Provider CLI Updates](../architecture/agent-provider-cli-updates.md).
+
+## Error Contract
+
+Daemon API failures should use the shared protocol-error shape in
+`ApiErrorDetails` instead of relying on raw natural-language messages.
+
+Rules:
+
+- classify daemon-facing API failures through `services/tuttid/apierrors`
+- treat `code` as the stable top-level contract for programmatic handling
+- use `reason` to narrow copy lookup within a stable `code`
+- use `params` only for structured interpolation or machine-readable context
+- keep `developerMessage` diagnostic; it is not a user-facing copy contract
+- use `correlationId` for cross-layer diagnostics when a request needs traceable failure context
+- do not make renderer UX depend on exact `developerMessage` strings
+- keep status-code mapping and transport validation at the `api` seam even when `apierrors` classifies the failure
+
+Current canonical `ApiErrorDetails` fields are:
+
+- `code`
+- `reason`
+- `params`
+- `retryable`
+- `developerMessage`
+- `correlationId`
+
+TypeScript consumers should normalize transport failures through
+`@tutti-os/client-tuttid-ts` instead of re-inspecting raw response payloads in
+each feature. Renderer and preload code may use `code`, `reason`, `params`, and
+`retryable` for behavior and i18n lookup, while `developerMessage` and
+`correlationId` remain diagnostic support fields.
+
+## Resolved Defaults
+
+When a route returns resolved defaults or effective settings, the response must
+carry daemon-owned truth rather than echoing request input back to the client.
+
+Rules:
+
+- use explicit fields such as `effectiveSettings` for daemon-resolved values
+- do not mirror request `settings` back in a response just to help clients keep
+  local fallback state alive
+- return `null` or omit a field when the daemon cannot resolve it
+- do not synthesize fallback defaults in renderer code when the daemon leaves a
+  field unresolved
+
+`composer-options` follows this rule: request `settings` are input overrides,
+while response `effectiveSettings` is the only contract for resolved homepage
+composer defaults.
+
+## Desktop Agent Conversation Detail Mode
+
+`agentConversationDetailMode` is a global desktop preference, not a provider-specific
+composer default. Keep it on the top-level desktop preferences contract and the
+matching desktop preferences event payload; do not place it under
+`agentComposerDefaultsByProvider`.
+
+The stored value is the enum `coding | general`. Daemon and desktop shared
+normalizers must treat missing, empty, or unknown values as `coding` so migrated
+profiles keep the engineering-oriented default. `coding` does not inject extra
+prompt guidance; it leaves provider defaults intact. `general` injects the
+Codex-style `Non-technical UI` developer instruction section for new agent
+sessions. For Codex app-server sessions, inject this through the session-scoped
+Codex config before thread creation, not as a repeated per-turn
+`turn/start.collaborationMode.settings.developer_instructions` override. The
+same Codex session config should also include a Tutti-owned diagnostic marker
+under `[tutti] conversationDetailMode = "coding" | "general"` so runtime
+inspection can distinguish the global Tutti setting from Codex's own desktop
+preferences. Do not confuse that with Codex collaboration mode presets: when
+`collaborationMode/list` returns Default or Plan `developer_instructions`, the
+Codex app-server adapter must pass the active preset instructions in
+`turn/start.collaborationMode.settings.developer_instructions` so the active
+mode matches Codex App behavior. Plan Mode and explicit planning-only flows
+remain higher priority than conversation detail mode prompt guidance.
+
+## Deleted Agent Conversation Retention
+
+`deletedAgentConversationRetentionDays` is a device-global desktop preference
+and must stay aligned across the OpenAPI `DesktopPreferences` schema and the
+desktop preferences event schema. It is the closed integer set `15 | 30`; the
+daemon normalizes missing durable values to 30 and rejects other transport
+values. The renderer must publish the complete preference object through the
+existing authoritative preference event flow rather than storing this setting
+locally.
+
+The Workspace deleted-conversation collection is
+`/v1/workspaces/{workspaceID}/deleted-agent-sessions`:
+
+- `GET` lists topmost deleted Session components: either a canonical root or a
+  child whose parent is not deleted. `searchQuery` searches titles only;
+  `projectPath` selects one exact original project, while
+  `projectScope=unscoped` selects Sessions without a project. Omitting both is
+  the all-project default. `cursor` and `limit` provide stable
+  `updatedAtUnixMs DESC, agentSessionId ASC` paging.
+- The list response includes filtered `totalCount`, unfiltered
+  `workspaceTotalCount`, and all original non-empty project paths as
+  `projectOptions`, including paths whose project registration is unavailable.
+  A row explicitly reports whether it is restorable and why a legacy tombstone
+  is unavailable.
+- `POST .../{agentSessionID}/restore` restores the exact complete component without
+  starting provider work. `DELETE .../{agentSessionID}` permanently removes one
+  topmost deleted component, and collection `DELETE` permanently removes every
+  topmost deleted component in that Workspace regardless of visible filters.
+
+Permanent-delete endpoints return only aggregate Session, Message, and payload
+byte counts. They use the daemon idle gate; restore does not. The API reports an
+idle conflict as service unavailable and a maintenance failure as a Workspace
+operation failure. Ordinary and typed high-risk confirmations are desktop
+interactions, not HTTP request fields. Canonical deletion, Tutti Mode cleanup,
+and the durable Session-scoped runtime/copied-attachment cleanup item commit
+together. Because the current runtime and copied-attachment roots are keyed
+only by Session ID, a pending item fences reuse of that ID across all
+Workspaces; filesystem cleanup failure does not change the successful HTTP
+result and is retried in a later idle window.
+
+`POST /v1/agent-maintenance/deleted-conversations/purge` remains the
+daemon-wide maintenance sweep without a Workspace path. Automatic retention is
+daemon-owned and is not exposed as a second client scheduler. After an explicit
+daemon-wide sweep, the daemon may make a strictly bounded best-effort
+compaction attempt for a small database with substantial free pages; this
+optional post-step is not run by automatic maintenance and is not part of the
+aggregate response contract.
+
+## Desktop Lab Preferences
+
+`lab` is a top-level desktop preference group and must stay on both the
+`DesktopPreferences` OpenAPI schema and the matching desktop preferences event
+payload. It is not renderer-local state and it is not part of provider-specific
+composer defaults.
+
+The group owns:
+
+- `enabled`: whether the hidden Lab settings tab is exposed after the developer
+  panel is visible.
+- `features`: per-experiment toggles such as AgentGUI composer worktree launch
+  and workbench lab shortcuts.
+- `shortcuts`: user-configured workbench shortcut bindings. Missing, empty, or
+  over-length bindings normalize to unbound/null before publishing.
+
+Renderer settings may optimistically update Lab preferences, but the daemon
+desktop preferences store and `preferences.desktop.updated` event remain the
+authoritative durability and broadcast path.
+
+## Runtime Validation
+
+OpenAPI and generated files define the transport interface, but generated Go
+decoding is not a complete schema validator. In particular, ordinary struct
+decoding does not reject unknown JSON fields just because a schema says
+`additionalProperties: false`.
+
+When a request schema relies on constraints that generated code does not enforce,
+choose one explicit validation strategy at the `api` seam:
+
+- configure the generated decoder or runtime to enforce the constraint
+- validate the raw request body against the canonical schema before mapping it to
+  generated types
+- add a narrow hand-written transport validator in `api` that checks only the
+  missing generated-runtime guarantees
+
+Do not push transport-shape validation into `service`. The service interface
+should receive transport-agnostic input that has already crossed the HTTP
+contract seam.
+
+For `WorkbenchSnapshot*`, transport ownership still remains in `api`: HTTP
+decoding, route-specific validation strategy, and status-code mapping stay at
+the API seam even when host services consume the synchronized shared snapshot
+contract through `packages/workbench/service`.
+
+Add route tests for schema constraints that matter to daemon behavior and are
+not obviously enforced by the generated runtime. Examples include unknown-field
+rejection, object closure, array size limits, and numeric min/max constraints.
+
+## Tooling Rules
+
+- run `pnpm generate:api` when the OpenAPI contract changes
+- run `pnpm check:api-generated` before finishing API contract changes; this
+  also runs `pnpm check:agent-protocol-enums`, which fails when the closed
+  agent turn/interaction enums in `tuttid.v1.yaml` drift from the
+  `activity.updated` event schema
+  (`packages/events/protocol/definitions/agent/activity.updated.event.json`)
+- run `pnpm sync:workbench-openapi-schema` after changing the shared workbench
+  snapshot schema
+- run `pnpm check:workbench-openapi-schema` when you only need to check that
+  the shared snapshot schema and OpenAPI component schemas are aligned
+- run `pnpm sync:workbench-go-contract` after changing shared workbench snapshot
+  schema or limits that daemon validation depends on
+- run `pnpm check:workbench-go-contract` when you only need to check that the
+  generated shared Go workbench snapshot contract is aligned with the shared
+  snapshot sources
+- run `pnpm generate:event-protocol` after changing shared business event
+  protocol schemas or event-definition files
+- run `pnpm check:event-protocol-generated` when you only need to check that
+  the generated TypeScript and Go event protocol outputs are aligned with the
+  shared event sources
+- keep generator versions pinned in repository-managed dependencies or Go tool directives
+
+## Scope Guidance
+
+Generate:
+
+- path and method contracts
+- transport request and response models
+- server interfaces and route glue
+- shared TypeScript SDK surface
+
+Do not generate:
+
+- daemon business logic
+- daemon persistence adapters
+- Electron lifecycle code
+- renderer workflows
+- desktop IPC contracts that are not direct HTTP projections

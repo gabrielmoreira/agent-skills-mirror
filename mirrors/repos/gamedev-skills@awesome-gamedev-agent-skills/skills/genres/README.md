@@ -1,7 +1,7 @@
 # Genre skills
 
 Cross-engine Agent Skills organized by game genre — for example platformers,
-top-down/RPG, shooters, puzzle, tower defense, roguelike, and racing — covering the
+RPGs, shooters, puzzles, tower defense, roguelikes, card games, visual novels, and survival—covering the
 mechanics and systems characteristic of each.
 
 Each subdirectory is one skill: a folder containing a `SKILL.md` (and optional

@@ -6,19 +6,13 @@ description: >
   Sprite/Group management with collision. Use when building or debugging a pygame
   game — when the user mentions pygame, pygame-ce, the game loop, blit, Surface,
   Rect, sprite groups, or clock.tick. Targets pygame-ce.
-license: Apache-2.0
-compatibility: pygame-ce 2.5+ (verified 2.5.7) / pygame 2.6; Python 3.10+
-metadata:
-  engine: pygame
-  category: other-engines
-  difficulty: beginner
 ---
 
 # pygame Core
 
 Build the foundation of a pygame game in Python: the main loop, delta-time
 movement, drawing with `Surface`/`Rect`, input, and `Sprite`/`Group` management.
-Targets **pygame-ce 2.5+** (the actively maintained community fork; same
+Targets **pygame-ce 2.5.7** (the actively maintained community fork; same
 `import pygame`).
 
 ## When to use

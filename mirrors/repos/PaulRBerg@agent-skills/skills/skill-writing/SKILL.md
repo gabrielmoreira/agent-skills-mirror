@@ -169,7 +169,9 @@ Read [references/writing-great-skills.md](references/writing-great-skills.md) be
 defines the predictability levers and the prose-versus-code-or-schema decision.
 
 Then define the observable outcome, invariants, preferred defaults, authority, routing, stop conditions, and completion
-evidence. Decide what belongs where:
+evidence. While defining routing, identify every skill that the workflow requires, invokes, or hands off to on any
+supported branch. Exclude suggestions, examples, related-skill references, and underlying tool capabilities. Decide what
+belongs where:
 
 - Will the workflow invoke helper code? → Prefer `scripts/<name>.ts` run with `bun run`; use `scripts/<name>.py` through
   `uv run` when Python is a better fit.
@@ -193,6 +195,9 @@ Write `<scope>/.agents/skills/<name>/SKILL.md` with:
 
 - Frontmatter sorted alphabetically, with `description` last. The `description` is the only field seen at discovery time
   — front-load trigger phrases there, not in the body.
+- A `skill-dependencies` array when routing identified dependencies. Use bare names for skills in the same repository
+  and `ORG/REPO#SKILL` for external skills. Sort by the target skill name (the bare name or substring after `#`), then
+  by the complete identifier. Omit the field when no dependencies exist.
 - A short `# Title`.
 - A one-line summary of what the skill does.
 - `disable-model-invocation` and `user-invocable` fields set for Claude behavior. Omit only when intentionally relying
@@ -248,8 +253,11 @@ ln -s "../../.agents/skills/<name>" "<scope>/.claude/skills/<name>"
 ## Notes
 
 - Frontmatter rule: sort fields alphabetically, but always place `description` last.
-- Codex parses `SKILL.md` frontmatter as YAML before loading a skill. Avoid unquoted colon-space tokens in scalar values
-  such as `Triggers: "foo"` inside `description`; either omit the label or quote the whole value.
+- `skill-dependencies` entries must be strings, unique, and must not name the owning skill as a bare dependency. Every
+  bare dependency must resolve to a skill in the same repository; external repository existence is not validated.
+- The skills CLI parses `SKILL.md` frontmatter as YAML before publishing. A colon followed by a space inside a plain
+  scalar, such as `leave: freeze` in `description`, makes that parser fail. Use an em dash or another safe separator, or
+  quote the entire scalar.
 - "When to use" information belongs in `description` (discovery-time), not in the body (activation-time only).
 - Use imperative / infinitive form throughout `SKILL.md`.
 - All paths inside `SKILL.md` (e.g., `references/placeholder.md`, `scripts/example.sh`) are relative to the skill

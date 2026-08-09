@@ -45,7 +45,7 @@ shortcut:
 
 - Allow the shortcut only for exact `ethereum-eoa`.
 - Default-deny it for `native-account-abstraction`, `cross-vm`, `unknown`, a missing field, or an unrecognized value.
-- Under the prb-finance bootstrap profile, the exact `ethereum-eoa` zero-state invariant may omit both `txlist` and
+- Under the `bootstrap-discovery` profile, the exact `ethereum-eoa` zero-state invariant may omit both `txlist` and
   `txlistinternal` wholesale. That profile counts a successful outgoing normal row or a successful positive-value
   normal/internal row touching the address; zero-value inbound normal/internal noise is outside it. The invariant never
   covers token/NFT transfers. Apply the profile rules in `references/workflows/address-sweeps.md` before calling an
@@ -132,6 +132,12 @@ Ronin's explorer (`app.roninchain.com`) also blocks scripted access, so open it 
 than `curl` or `WebFetch`, the same way `references/workflows/blockscan-balances.md` requires Chromium for Blockscan.
 
 ## Exceptional History
+
+For HyperEVM (`999`) exact historical native-balance and nonce reads, do not use public JSON-RPC or RouteMesh: those
+routes can silently serve latest state for historical selectors. At the verified checkpoint, use Etherscan V2 `account`
+module's `balancehistory` action for the native balance and the `proxy` module's `eth_getTransactionCount` action with
+the checkpoint's hex block tag for the nonce. If an Etherscan route is unavailable or plan-limited, report that fact as
+unknown; do not fall back to RPC.
 
 For Fantom Opera (`250`) account history, do not use the unsafe FTMScout route returned by Chainscout. Read
 `references/explorers/fantom-opera.md` and preserve its partial-index boundary: GraphQL rows can provide positive

@@ -33,14 +33,14 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "anthropic>=0.40.0",
-    "pydantic>=2.0.0",
+    "pydantic>=2.13.4,<3",
     "rich>=13.0.0",
-    "python-dotenv>=1.0.0",
+    "python-dotenv>=1.2.2,<2",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.0.0",
+    "pytest>=9.1.1,<10",
     "pytest-asyncio>=0.23.0",
     "ruff>=0.1.0",
 ]

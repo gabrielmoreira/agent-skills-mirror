@@ -7,12 +7,6 @@ description: >
   when saving or loading persistent data in a Roblox experience — when the user
   mentions DataStore, DataStoreService, GetAsync, SetAsync, UpdateAsync, save player
   data, or leaderboards. For general Luau scripting use roblox-luau.
-license: Apache-2.0
-compatibility: Roblox (current engine) DataStoreService; server-side Scripts only
-metadata:
-  engine: roblox
-  category: other-engines
-  difficulty: intermediate
 ---
 
 # Roblox DataStores

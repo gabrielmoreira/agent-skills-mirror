@@ -13,6 +13,9 @@ param(
     [string]$McpHostTarget = 'Both'
 )
 
+# 临时目录统一入口（$env:TEMP 在 Linux/macOS 上可能未设置）
+$tmpBase = if ($env:TEMP) { $env:TEMP } else { [System.IO.Path]::GetTempPath() }
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 [Console]::InputEncoding = [System.Text.UTF8Encoding]::new($false)
@@ -181,15 +184,40 @@ function Get-AnythingAnalyzerUserDataPaths {
 function Ensure-AnythingAnalyzerMcpConfig {
     param([int]$Port = 23816)
 
-    $tokenBytes = New-Object byte[] 32
-    (New-Object Security.Cryptography.RNGCryptoServiceProvider).GetBytes($tokenBytes)
-    $generatedToken = [Convert]::ToBase64String($tokenBytes)
+    $token = ''
+    foreach ($userDataPath in Get-AnythingAnalyzerUserDataPaths) {
+        $configPath = Join-Path $userDataPath 'mcp-server-config.json'
+        if (-not (Test-Path -LiteralPath $configPath)) {
+            continue
+        }
+        try {
+            $existing = Get-Content -LiteralPath $configPath -Raw -Encoding utf8 | ConvertFrom-Json
+            if (-not [string]::IsNullOrWhiteSpace([string]$existing.authToken)) {
+                $token = [string]$existing.authToken
+                break
+            }
+        }
+        catch {
+            $token = ''
+        }
+    }
+    if ([string]::IsNullOrWhiteSpace($token)) {
+        $tokenBytes = New-Object byte[] 32
+        $rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+        try {
+            $rng.GetBytes($tokenBytes)
+        }
+        finally {
+            $rng.Dispose()
+        }
+        $token = [Convert]::ToBase64String($tokenBytes)
+    }
 
     $payload = [ordered]@{
         enabled     = $true
         port        = $Port
         authEnabled = $true
-        authToken   = $generatedToken
+        authToken   = $token
     }
 
     foreach ($userDataPath in Get-AnythingAnalyzerUserDataPaths) {
@@ -199,6 +227,8 @@ function Ensure-AnythingAnalyzerMcpConfig {
         $configPath = Join-Path $userDataPath 'mcp-server-config.json'
         $payload | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath $configPath -Encoding utf8
     }
+
+    return $token
 }
 
 function Test-VsBuildToolsInstalled {
@@ -411,7 +441,7 @@ function Expand-ArchiveIntoDirectory {
         [Parameter(Mandatory = $true)][string]$Destination
     )
 
-    $tempExtract = Join-Path $env:TEMP ("reverse-bootstrap-" + [System.Guid]::NewGuid().ToString('N'))
+    $tempExtract = Join-Path $tmpBase ("reverse-bootstrap-" + [System.Guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $tempExtract -Force | Out-Null
     Expand-Archive -LiteralPath $ZipPath -DestinationPath $tempExtract -Force
 
@@ -458,7 +488,7 @@ function Ensure-GitHubZipInstall {
     $releaseTag = if ($Definition.PSObject.Properties['releaseTag']) { [string]$Definition.releaseTag } else { '' }
     $asset = Get-GitHubLatestReleaseAsset -Repo $Definition.repo -AssetRegex $Definition.assetRegex -ReleaseTag $releaseTag
     $downloadUrl = if ($asset.PSObject.Properties['browser_download_url']) { $asset.browser_download_url } else { $asset.url }
-    $downloadPath = Join-Path $env:TEMP $asset.name
+    $downloadPath = Join-Path $tmpBase $asset.name
     Invoke-WebRequest -Uri $downloadUrl -OutFile $downloadPath -Headers @{ 'Accept' = 'application/octet-stream' }
     Assert-DownloadedFileIntegrity -Path $downloadPath -Definition $Definition -Asset $asset | Out-Null
     Ensure-DownloadDirectory -Path (Split-Path -Path $TargetPath -Parent)
@@ -675,11 +705,23 @@ function Ensure-McpServer {
         switch ($target) {
             'Claude' {
                 $config = Get-ClaudeMcpConfig
-                $config.json.mcpServers[$ServerName] = $ServerDefinition
+                $claudeDefinition = @{}
+                foreach ($key in $ServerDefinition.Keys) {
+                    if ($key -ne 'bearer_token_env_var') {
+                        $claudeDefinition[$key] = $ServerDefinition[$key]
+                    }
+                }
+                $config.json.mcpServers[$ServerName] = $claudeDefinition
                 Save-ClaudeMcpConfig -Config $config
             }
             'Codex' {
-                Set-CodexMcpServer -ServerName $ServerName -ServerDefinition $ServerDefinition
+                $codexDefinition = @{}
+                foreach ($key in $ServerDefinition.Keys) {
+                    if ($key -ne 'headers') {
+                        $codexDefinition[$key] = $ServerDefinition[$key]
+                    }
+                }
+                Set-CodexMcpServer -ServerName $ServerName -ServerDefinition $codexDefinition
             }
         }
     }
@@ -726,7 +768,14 @@ function Wait-ForPort {
 }
 
 function Start-AnythingAnalyzerService {
-    param([Parameter(Mandatory = $true)]$Definition)
+    param(
+        [Parameter(Mandatory = $true)]$Definition,
+        [string]$AuthToken = ''
+    )
+
+    if ([string]::IsNullOrWhiteSpace($AuthToken)) {
+        $AuthToken = Ensure-AnythingAnalyzerMcpConfig -Port ([int]$Definition.servicePort)
+    }
 
     if (Test-ReverseTcpPort -Port ([int]$Definition.servicePort)) {
         return
@@ -763,8 +812,6 @@ if (Test-ReverseIsWindows) {
         }
         $repoDir = $installDir
     }
-
-    Ensure-AnythingAnalyzerMcpConfig -Port ([int]$Definition.servicePort)
 
     $pnpm = Get-NodeCommandPath -Name 'pnpm'
     if ([string]::IsNullOrWhiteSpace($pnpm)) {
@@ -851,7 +898,19 @@ function Ensure-GitCloneInstall {
         [Parameter(Mandatory = $true)][string]$TargetPath
     )
 
+    $pinnedCommit = if ($Definition.PSObject.Properties['pinnedCommit']) { [string]$Definition.pinnedCommit } else { '' }
+    $git = Get-FirstCommandPath -Names @('git')
+    if ([string]::IsNullOrWhiteSpace($git)) {
+        throw "Cannot clone $($Definition.repo) because git is not available."
+    }
+
     if ((Test-Path -LiteralPath $TargetPath -PathType Container) -and (Test-Path -LiteralPath (Join-Path $TargetPath '.git'))) {
+        if (-not [string]::IsNullOrWhiteSpace($pinnedCommit)) {
+            $currentCommit = (& $git -C $TargetPath rev-parse HEAD).Trim()
+            if ($LASTEXITCODE -ne 0 -or $currentCommit -ne $pinnedCommit) {
+                throw "Existing checkout is not at pinned commit $pinnedCommit. Move it aside explicitly, then retry: $TargetPath"
+            }
+        }
         return $true
     }
 
@@ -862,14 +921,21 @@ function Ensure-GitCloneInstall {
 
     Ensure-DownloadDirectory -Path (Split-Path -Path $TargetPath -Parent)
 
-    $git = Get-FirstCommandPath -Names @('git')
-    if ([string]::IsNullOrWhiteSpace($git)) {
-        throw "Cannot clone $($Definition.repo) because git is not available."
+    if ([string]::IsNullOrWhiteSpace($pinnedCommit)) {
+        & $git clone --depth 1 $Definition.repo $TargetPath
+        if ($LASTEXITCODE -ne 0) {
+            throw "git clone failed for $($Definition.repo)"
+        }
     }
-
-    & $git clone --depth 1 $Definition.repo $TargetPath
-    if ($LASTEXITCODE -ne 0) {
-        throw "git clone failed for $($Definition.repo)"
+    else {
+        & $git init --quiet $TargetPath
+        & $git -C $TargetPath remote add origin $Definition.repo
+        & $git -C $TargetPath fetch --depth 1 origin $pinnedCommit
+        & $git -C $TargetPath checkout --quiet --detach FETCH_HEAD
+        $resolvedCommit = (& $git -C $TargetPath rev-parse HEAD).Trim()
+        if ($LASTEXITCODE -ne 0 -or $resolvedCommit -ne $pinnedCommit) {
+            throw "Pinned checkout verification failed for $($Definition.repo): expected $pinnedCommit, got $resolvedCommit"
+        }
     }
 
     return $true
@@ -990,9 +1056,22 @@ function Ensure-Capability {
         }
         'local-http-mcp' {
             if ($Name -eq 'anything-analyzer') {
-                Ensure-McpServer -ServerName 'anything-analyzer' -ServerDefinition @{ url = $definition.mcpUrl }
+                $authToken = Ensure-AnythingAnalyzerMcpConfig -Port ([int]$definition.servicePort)
+                $env:ANYTHING_ANALYZER_MCP_TOKEN = $authToken
+                try {
+                    [Environment]::SetEnvironmentVariable('ANYTHING_ANALYZER_MCP_TOKEN', $authToken, 'User')
+                }
+                catch {
+                    Write-Warning "Could not persist ANYTHING_ANALYZER_MCP_TOKEN for future MCP clients: $($_.Exception.Message)"
+                }
+                $serverDefinition = @{
+                    url                  = $definition.mcpUrl
+                    headers              = @{ Authorization = "Bearer $authToken" }
+                    bearer_token_env_var = 'ANYTHING_ANALYZER_MCP_TOKEN'
+                }
+                Ensure-McpServer -ServerName 'anything-analyzer' -ServerDefinition $serverDefinition
                 if ($StartServices) {
-                    Start-AnythingAnalyzerService -Definition $definition
+                    Start-AnythingAnalyzerService -Definition $definition -AuthToken $authToken
                 }
                 return $true
             }

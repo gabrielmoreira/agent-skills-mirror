@@ -6,12 +6,6 @@ description: >
   Yarn Spinner or a custom data-driven runner. Engine-neutral. Use when the user
   mentions dialogue system, branching dialogue, conversation tree, choices,
   Ink (.ink), Yarn Spinner (.yarn), or NPC dialogue.
-license: Apache-2.0
-compatibility: Engine-agnostic. Ink (inkle) and Yarn Spinner 2.x syntax; runner snippets in GDScript-like / Python pseudocode.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: intermediate
 ---
 
 # Dialogue systems

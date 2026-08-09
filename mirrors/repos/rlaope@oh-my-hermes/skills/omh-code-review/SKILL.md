@@ -1,0 +1,122 @@
+---
+name: omh-code-review
+description: [omh] Hermes Code Review workflow: bug-first review with evidence. Use when the user says: code-review, review, audit, find bugs, release gate, claim audit, evidence audit, README claim.
+metadata:
+  hermes:
+    tags: [workflow, oh-my-hermes, review]
+    category: review
+    phase: critique
+    role: reviewer
+    quality_tier: finding-evidence-gated
+---
+
+# Code Review
+
+This is a Hermes-native `code-review` workflow skill.
+
+## Why This Exists
+
+`code-review` exists to make review bug-first and evidence-grounded: findings must cite concrete files, diffs, commands, or artifacts before any summary or fix proposal.
+
+## Do Not Use When
+
+- The user asks to implement the fix rather than review existing code or claims.
+- There is no diff, file set, claim, artifact, or expected behavior to review.
+- The request is broad product critique, strategy, or planning rather than code or evidence review.
+
+## Examples
+
+Good example:
+
+- Prompt: $code-review review this PR for install/update UX regressions and missing tests.
+- Expected behavior: Lead with ranked findings, cite concrete evidence, then list open questions and test gaps.
+- Why: The task is explicitly review-shaped and has a behavioral risk surface.
+
+Bad example:
+
+- Prompt: $code-review add the missing setup flag and commit it.
+- Expected behavior: Route implementation to a selected executor/runtime after review findings are established.
+- Why: Review can identify the issue, but code mutation is a separate execution step.
+
+## Completion Checklist
+
+- Findings come first and are ranked by severity before summary or praise.
+- Every finding cites file, diff, command output, artifact, or expected behavior evidence.
+- No-issue reviews still name residual risk, missing tests, and independent review evidence if unavailable.
+- Fix implementation, architecture follow-up, and CI/merge claims stay separate from the review result.
+
+## Recovery Notes
+
+- If no diff, file set, PR, or artifact is available, inspect the requested target or ask one target question before reviewing.
+- If tests fail or are missing, cite the exact command gap and do not approve the change as verified.
+- If independent review evidence is unavailable, say so directly instead of implying a second reviewer passed it.
+
+## Workflow Lane
+
+- Current lane: **Coding handoff** (`idea-to-deploy`, `cto-loop`, `deploy-and-monitor`, `code-review`, `build-failure-triage`, `verification-gate`, `security-safety-review`, `ultrawork`, `+7 more`) - coding owners, handoffs, review, CI, and merge evidence.
+- If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
+- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+
+## Use When
+
+Use for review-shaped requests; findings come first and must cite concrete evidence.
+
+    Strong routing signals: `code-review`, `$code-review`, `review`, `audit`, `find bugs`, `release gate`, `claim audit`, `evidence audit`, `README claim`, `what actually happened`, `code review`, `review gate`, `리뷰`, `코드 리뷰`, `리뷰까지`, `릴리즈 전`, `실제 코드와 맞는가`, `실제로 뭐 했는지`, `검증된 결과`
+
+## Catalog Metadata
+
+Category: `review`
+Phase: `critique`
+Hermes role: `reviewer`
+Quality tier: `finding-evidence-gated`
+Reasoning demand: `standard`
+
+Quality bar:
+
+- Lead with ranked findings grounded in file, diff, command, or artifact evidence.
+- Separate review findings from fix implementation; fixes become executor work.
+- For Hermes-owned coding work, inspect `hermes_coding_harness/v1` and require review evidence before upgrading the reviewer lane.
+- Say clearly when no actionable issue is found and name remaining test gaps.
+
+Handoff policy:
+
+Hermes may frame and summarize review evidence; fixes or code mutations found during review should be delegated to the selected coding executor.
+
+Required inputs:
+
+- diff or files
+- expected behavior
+- test evidence
+
+Expected outputs:
+
+- ranked findings
+- open questions
+- test gaps
+
+Artifact expectations:
+
+- critic run record when review evidence is captured
+
+Safety rules:
+
+- Findings come before summaries.
+- Cite concrete evidence for every finding.
+- Say clearly when no issue is found.
+
+## Runtime Evidence
+
+Preferred harness for this skill: `critic`.
+
+```sh
+omh runtime record --skill code-review --harness critic --status started
+```
+
+Record observed delegation results; otherwise return `not_available` or `not_observed`.
+Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.
+- When wrapper metadata includes `memory_review_card/v1` or `handoff_context_pack/v1`, treat it as reviewed OMH-local or wrapper-supplied context only. Use conflict-free context summaries to shape plans and handoffs, but do not claim Hermes internal memory was read or changed.
+Preserve workflow intent and stop conditions; verify before claiming completion.
+
+Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
+
+Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.

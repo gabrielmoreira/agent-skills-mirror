@@ -7,12 +7,6 @@ description: >
   AI, an FSM or behavior tree, steering/flocking, or pathfinding, or when the
   user mentions state machine, behavior tree, blackboard, A*, navmesh, seek, or
   patrol/chase.
-license: Apache-2.0
-compatibility: Engine-agnostic (algorithms). Concrete snippets in GDScript-like / Python pseudocode; pairs with unity-navmesh, unreal-behavior-trees, or Godot NavigationServer.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: advanced
 ---
 
 # Game AI: decisions, steering, and pathfinding

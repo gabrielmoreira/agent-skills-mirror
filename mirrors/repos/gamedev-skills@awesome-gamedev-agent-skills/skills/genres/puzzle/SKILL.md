@@ -3,12 +3,6 @@ name: puzzle
 description: >
   Build a puzzle game: grid/board state, move input, rule-based resolution (match-3 cascades, sokoban
   pushes, tile logic), scoring, and undo. Use for a match-3, sokoban, or grid-logic puzzle.
-license: Apache-2.0
-compatibility: Engine-agnostic design patterns; snippets are pseudocode (port to your engine)
-metadata:
-  engine: none
-  category: genres
-  difficulty: intermediate
 ---
 
 # Puzzle

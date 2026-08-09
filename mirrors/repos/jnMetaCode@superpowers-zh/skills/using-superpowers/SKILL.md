@@ -69,6 +69,9 @@ Gemini CLI 用户通过 GEMINI.md 自动获得 `references/gemini-tools.md` 的�
 
 ## 中国特色技能路由
 
+> 🇨🇳 **本节是 superpowers-zh 的增量内容，上游 obra/superpowers 没有。**
+> 用于把中文场景路由到本 fork 原创的 chinese-* 系列 skill。其余各节均为逐节翻译。
+
 当检测到以下场景时，**必须**优先调用对应的中国特色技能：
 
 | 场景 | 调用技能 |

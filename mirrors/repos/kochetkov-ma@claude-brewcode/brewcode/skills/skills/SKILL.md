@@ -104,6 +104,12 @@ A bare one-line task is never enough. See Phase 2 for the canonical spawn shape.
   (two-phase: review -> double-check findings -> report).
 - `sync` -> read `${CLAUDE_SKILL_DIR}/references/mode-sync.md` and follow it end to end
   (S1 scope -> S6 report). It replaces Steps 5-6 for this mode.
+- **After `create` / `improve` returns** -> run that same `mode-sync.md` SCOPED TO THE WRITTEN SKILL ONLY
+  (its `SKILL.md` + `references/`): S3 ground truth -> S5 verdicts -> S6 row folded into the Step 6 output.
+  Never a full-roster sweep, never a second `SPECIALIST` spawn — **YOU, the coordinator, apply every S5 verdict
+  yourself with targeted `Edit` calls** (S4's fan-out is the only step that edits, and it is skipped here, so
+  without this nothing would be corrected). Non-growth holds — the new file ends `<=` where the specialist left
+  it. Nothing to correct -> say `sync: no drift` in one line.
 
 ## Step 5 — Real status (NOT a flat list)
 
@@ -207,13 +213,13 @@ Replace `TARGET_HERE` with the resolved target name/path from Step 4.
 Spawn 2-3 Explore agents in parallel (single message).
 
 **create** — spawn in ONE message:
-1. `Explore`: Research skill patterns in `$BC_PLUGIN_ROOT/skills/` and `~/.claude/skills/` — structure, naming, frontmatter, references, scripts.
+1. `Explore`: Research skill patterns in `${CLAUDE_PLUGIN_ROOT}/skills/` and `~/.claude/skills/` — structure, naming, frontmatter, references, scripts.
 2. `Explore`: Analyze target project structure for `{TOPIC}` — code, APIs, configs, tooling.
 3. (Optional) `general-purpose`: Web research for `{TOPIC}` — best practices, similar tools. Use WebSearch/WebFetch.
 
 **improve** — spawn in ONE message:
 1. `Explore`: Analyze skill at `{SKILL_PATH}` — SKILL.md, references/, scripts/, tests/, README.md. Report quality and gaps.
-2. `Explore`: Compare `{SKILL_PATH}` against patterns in `$BC_PLUGIN_ROOT/skills/`. Output improvement recommendations.
+2. `Explore`: Compare `{SKILL_PATH}` against patterns in `${CLAUDE_PLUGIN_ROOT}/skills/`. Output improvement recommendations.
 
 ### Phase 1: User Interaction
 

@@ -3,12 +3,6 @@ name: roguelike
 description: >
   Build a roguelike: turn-based grid movement, procedural dungeons, permadeath, field-of-view,
   and loot tables. Use for a roguelike/roguelite or turn-based grid dungeon crawler with procedural levels.
-license: Apache-2.0
-compatibility: Engine-agnostic design patterns; snippets are pseudocode (port to your engine)
-metadata:
-  engine: none
-  category: genres
-  difficulty: advanced
 ---
 
 # Roguelike

@@ -2,7 +2,7 @@
 
 Detail the `camera-systems` body defers here: the smoothing math, a full 2D rig, 3D orbit/first-
 person specifics, multi-target framing, cinematic blends, and the per-engine rig mapping.
-Snippets target **Godot 4.x** and **Unity 6 / Cinemachine 3**.
+Snippets target **Godot 4.7** and **Unity 6.3 LTS / Cinemachine 3**.
 
 ## 1. Why `1 - exp(-rate*dt)` (frame-rate-independent smoothing)
 
@@ -32,7 +32,7 @@ Order of operations each frame, after the target moves:
    `[min + halfView, max - halfView]` per axis (clamp the view, not the center).
 
 ```gdscript
-# Godot 4.x: clamp the VIEW, accounting for zoom and viewport size.
+# Godot 4.7: clamp the VIEW, accounting for zoom and viewport size.
 func _clamp_to_level(center: Vector2) -> Vector2:
     var half := get_viewport_rect().size * 0.5 / zoom
     return Vector2(
@@ -52,7 +52,7 @@ Tunables: deadzone `32–64 px`, look-ahead `40–120 px` eased over `0.2–0.4 
   camera position and shortens to the first hit so the camera never clips through walls.
 - **Pitch clamp:** ~`[-80°, +45°]` so the camera can't flip or bury into the floor.
 - **Sensitivity & invert:** expose look sensitivity and invert-Y (see `input-systems`).
-- **Cinemachine 3 (Unity 6):** a `CinemachineCamera` (namespace `Unity.Cinemachine`) with an
+- **Cinemachine 3 (Unity 6.3 LTS):** a `CinemachineCamera` (namespace `Unity.Cinemachine`) with an
   **Orbital Follow** component and a **Cinemachine Deoccluder** (collision); the
   `CinemachineBrain` on the `Camera` blends between cameras. This replaces the v2
   `CinemachineVirtualCamera` / `CinemachineCollider` names.
@@ -82,7 +82,7 @@ Tunables: deadzone `32–64 px`, look-ahead `40–120 px` eased over `0.2–0.4 
 
 ## 7. Per-engine rig summary
 
-| Need | Godot 4.x | Unity 6 |
+| Need | Godot 4.7 | Unity 6.3 LTS |
 |------|-----------|---------|
 | 2D follow + smoothing + limits | `Camera2D` (`position_smoothing_*`, `limit_*`, `drag_*`) | Cinemachine `CinemachineCamera` (2D) + Confiner2D |
 | 3D follow/orbit | pivot + `SpringArm3D` + `Camera3D` | `CinemachineCamera` + Orbital Follow + Deoccluder |

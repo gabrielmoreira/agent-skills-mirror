@@ -51,6 +51,10 @@ if ([string]::IsNullOrWhiteSpace($CaseName) -or
     $CaseName -match '[.\s]$') {
     throw "Invalid -CaseName '$CaseName'. Use a 1-80 character directory name beginning with a letter or number; path separators, dot segments, trailing dots/spaces, control characters, and wildcard characters are not allowed."
 }
+if (-not [string]::IsNullOrWhiteSpace($NetworkProfile) -and
+    $NetworkProfile.Trim().ToLowerInvariant() -notin @('offline', 'lab_only', 'authorized_target_only', 'unrestricted_lab', 'lab', 'authorized', 'auth', 'offline_only')) {
+    throw "Invalid -NetworkProfile '$NetworkProfile'. Allowed: offline, lab_only, authorized_target_only, unrestricted_lab (aliases: lab, authorized, auth, offline_only)."
+}
 
 $workRoot = Join-Path $projectRoot 'work'
 $caseRoot = Join-Path $workRoot $CaseName
@@ -113,6 +117,10 @@ $netAliases = @{
 if ($netAliases.ContainsKey($networkMode.ToLowerInvariant())) {
     $networkMode = $netAliases[$networkMode.ToLowerInvariant()]
 }
+$allowedNetworkModes = @('offline', 'lab_only', 'authorized_target_only', 'unrestricted_lab')
+if ($networkMode -notin $allowedNetworkModes) {
+    throw "Invalid -NetworkProfile '$NetworkProfile'. Allowed: offline, lab_only, authorized_target_only, unrestricted_lab (aliases: lab, authorized, auth, offline_only)."
+}
 
 # ready_for_act requires auth granted + assets + non-offline network.
 # -ReadyForAct cannot skip auth (would bypass hard gate).
@@ -135,7 +143,8 @@ $primary = 'reverse-engineering/SKILL.md'
 $primaryId = 'R0'
 $routeScript = Join-Path $scriptDir 'master-route.ps1'
 if ((Test-Path $routeScript) -and $Hint) {
-    $tmp = Join-Path $env:TEMP ("case-init-route-" + [guid]::NewGuid().ToString('n'))
+    $tmpBase = if ($env:TEMP) { $env:TEMP } else { [System.IO.Path]::GetTempPath() }
+    $tmp = Join-Path $tmpBase ("case-init-route-" + [guid]::NewGuid().ToString('n'))
     try {
         & powershell -NoProfile -ExecutionPolicy Bypass -File $routeScript -Hint $Hint -OutDir $tmp 2>$null | Out-Null
         $scopeRoute = Join-Path $tmp 'route-scope.md'

@@ -1,24 +1,19 @@
 ---
 name: phaser-arcade-physics
 description: >
-  Use Phaser 3 Arcade Physics: enable the world, give sprites bodies, set
+  Use Phaser 4 Arcade Physics: enable the world, give sprites bodies, set
   velocity/acceleration/gravity, and resolve collisions with colliders, overlaps,
   groups, and world bounds. Use when a Phaser game needs movement or collisions —
   when the user mentions Arcade Physics, this.physics, setVelocity, collider,
   overlap, gravity, onFloor, or a platformer/top-down controller. For game config,
   scenes, and the loader use phaser-core.
-license: Apache-2.0
-compatibility: Phaser 3.90 (Arcade Physics; JavaScript/TypeScript)
-metadata:
-  engine: phaser
-  category: web-engines
-  difficulty: intermediate
 ---
 
-# Phaser 3 Arcade Physics
+# Phaser 4 Arcade Physics
 
-Add movement and collision to a Phaser 3 game with the lightweight **Arcade
-Physics** engine (AABB rectangles and circles only). Targets **Phaser 3.90**.
+Add movement and collision to a Phaser game with the lightweight **Arcade
+Physics** engine (AABB rectangles and circles only). Targets **Phaser 4.2** for
+new projects; inspect the installed major before editing an existing project.
 
 ## When to use
 

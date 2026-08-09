@@ -6,12 +6,6 @@ description: >
   SFX variation, and beat synchronization. Engine-neutral. Use when the user
   mentions audio mixing, audio buses, adaptive/dynamic music, ducking, SFX
   variation, music layers, or syncing gameplay to the beat.
-license: Apache-2.0
-compatibility: Engine-agnostic concepts. Pairs with godot-audio (AudioServer/buses), Unity AudioMixer, Wwise/FMOD; snippets in GDScript-like pseudocode.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: intermediate
 ---
 
 # Audio design

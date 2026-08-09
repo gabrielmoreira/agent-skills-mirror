@@ -13,7 +13,9 @@
     "constraints": [],
     "visual_direction": {
       "status": "unset",
-      "choices": {}
+      "choices": {
+        "look_development": null
+      }
     },
     "production_profile": {
       "status": "unset",

@@ -1,0 +1,126 @@
+---
+name: omh-production-audit
+description: [omh] Hermes Production Audit workflow: evaluate release, deploy, security, observability, rollback, docs, and support readiness without claiming production access. Use when the user says: production-audit, production audit, production readiness, prod audit, prod readiness, ready for production, ready to ship, ship readiness.
+metadata:
+  hermes:
+    tags: [workflow, oh-my-hermes, review]
+    category: review
+    phase: production-readiness
+    role: reviewer
+    quality_tier: production-readiness-gated
+---
+
+# Production Audit
+
+This is a Hermes-native `production-audit` workflow skill.
+
+## Why This Exists
+
+`production-audit` gives OMH a preflight release surface so operators can see production risks before launch while OMH stays out of deploy and infrastructure execution.
+
+## Do Not Use When
+
+- The user wants to implement a feature or fix; prepare a coding handoff first.
+- The user wants incident/SLO analysis after production behavior; use `reliability-review`.
+- The user wants a narrow code diff review; use `code-review`.
+
+## Examples
+
+Good example:
+
+- Prompt: production-audit 이 릴리즈가 운영에 나가도 되는지 테스트, CI, 롤백, 모니터링 기준으로 봐줘.
+- Expected behavior: Prepare readiness_matrix/v1, release_gate_verdict/v1, rollback_and_monitoring_plan/v1, and missing-evidence list.
+- Why: The request is release-readiness review, not implementation or deploy execution.
+
+Bad example:
+
+- Prompt: production-audit 지금 바로 prod 배포하고 정상이라고 말해줘.
+- Expected behavior: Block deploy/health claims without observed operator evidence and route deploy to an explicit authorized workflow.
+- Why: Production audit can assess readiness, but it cannot secretly deploy or observe live health.
+
+## Completion Checklist
+
+- Findings or no-issue results are grounded in concrete file, artifact, command, or source evidence.
+- Open questions, residual risk, and missing verification are named.
+- Fixes or follow-up work are separate handoffs unless the user explicitly asked to implement them.
+
+## Recovery Notes
+
+- If the reviewed target is missing, inspect the requested artifact or ask one target question.
+- If independent verification is unavailable, report the gap and avoid an approval-style claim.
+
+## Workflow Lane
+
+- Current lane: **Automation and status** (`achievements`, `workspace-audit`, `production-audit`, `automation-blueprint`, `github-event-ops`, `agent-board`, `gateway-intent-card`, `voice-operator`, `+33 more`) - schedules, status, health, and ops review.
+- If intent belongs to another lane, hand back to `oh-my-hermes` or name the adjacent workflow.
+- Shared product, routing, compatibility, and evidence rules: `omh-routing/references/skill-common-rail.md`.
+
+## Use When
+
+Use before launch, deploy, release, or public delivery when Hermes should check operational readiness and expose missing production evidence.
+
+    Strong routing signals: `production-audit`, `production audit`, `production readiness`, `prod audit`, `prod readiness`, `ready for production`, `ready to ship`, `ship readiness`, `release readiness`, `launch readiness`, `preflight audit`, `operational readiness`, `rollback readiness`, `프로덕션 준비`, `출시 준비`, `운영 준비`, `릴리즈 준비`, `롤백 준비`
+
+## Catalog Metadata
+
+Category: `review`
+Phase: `production-readiness`
+Hermes role: `reviewer`
+Quality tier: `production-readiness-gated`
+Reasoning demand: `standard`
+
+Quality bar:
+
+- Name scope, environment, release channel, owners, and acceptable risk threshold.
+- Check build/test/CI, security/privacy, performance, observability, rollback, docs/support, and release communication.
+- Return GO, HOLD, or BLOCK only with evidence IDs and missing evidence.
+- Convert remediation into explicit follow-up workflows instead of silently patching.
+
+Handoff policy:
+
+Keep readiness synthesis in Hermes. Code fixes, deploys, infrastructure changes, security scans, and platform actions require selected executor/runtime or operator evidence.
+
+Required inputs:
+
+- product, service, release, or artifact scope
+- target environment and release channel
+- known test, CI, deploy, observability, security, and support evidence
+- rollback owner and acceptable risk threshold
+
+Expected outputs:
+
+- production_audit_plan/v1
+- readiness_matrix/v1
+- release_gate_verdict/v1
+- rollback_and_monitoring_plan/v1
+- risk_register/v1
+- not-evidence boundary
+
+Artifact expectations:
+
+- readiness_matrix/v1 covering build, tests, CI, security, performance, accessibility when relevant, deploy, rollback, observability, docs, support, and owners
+- release_gate_verdict/v1 with GO, HOLD, or BLOCK plus missing evidence
+- rollback_and_monitoring_plan/v1 with health signals, owner, threshold, and recovery path
+
+Safety rules:
+
+- Do not claim production deploy, security scan, live traffic, monitoring health, rollback readiness, or support readiness without observed evidence.
+- Do not perform deploy, infra, credential, production, or external-platform actions from the audit lane.
+- Keep readiness verdict separate from implementation, CI, incident closure, or merge evidence.
+
+## Runtime Evidence
+
+Preferred harness for this skill: `production-audit`.
+
+```sh
+omh runtime record --skill production-audit --harness production-audit --status started
+```
+
+Record observed delegation results; otherwise return `not_available` or `not_observed`.
+Prepared OMH routing is not execution, review, CI, merge-readiness, or merge evidence.
+- Treat wrapper memory/context summaries as advisory local context, not proof of opaque Hermes memory reads or changes.
+Preserve workflow intent and stop conditions; verify before claiming completion.
+
+Use Hermes-native subagent/delegation features when available: native subagents -> Hermes delegation when available, otherwise sequential lanes.
+
+Shared product, compatibility, topology, memory, harness, and execution rules: `omh-routing/references/skill-common-rail.md`. Load it when applicable; otherwise name an unavailable capability.

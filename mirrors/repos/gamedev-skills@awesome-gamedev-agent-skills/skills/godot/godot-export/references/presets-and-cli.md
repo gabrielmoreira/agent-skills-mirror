@@ -1,4 +1,4 @@
-# Export presets & CLI reference (Godot 4.3+)
+# Export presets & CLI reference (Godot 4.7)
 
 Depth companion to `godot-export`.
 

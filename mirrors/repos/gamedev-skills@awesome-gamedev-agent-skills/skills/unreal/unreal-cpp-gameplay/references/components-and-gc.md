@@ -1,4 +1,4 @@
-# Components, garbage collection & replication primer (UE 5.4+ C++)
+# Components, garbage collection & replication primer (UE 5.8 C++)
 
 Depth for `unreal-cpp-gameplay`. Verified against the Gameplay Framework docs and the UE5
 C++ programming references. Covers component creation/attachment, the UPROPERTY/GC ownership

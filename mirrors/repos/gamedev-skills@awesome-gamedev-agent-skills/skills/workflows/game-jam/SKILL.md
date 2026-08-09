@@ -4,12 +4,6 @@ description: >
   Plan and ship a game under a jam deadline: lock scope to the clock, schedule the hours,
   cut features, and submit on time. Use for a game jam (Ludum Dare, GMTK Jam, Global Game
   Jam), a 48-hour or weekend build, or scoping and submitting a jam entry.
-license: Apache-2.0
-compatibility: Engine-agnostic process skill; submission steps assume itch.io-hosted jams.
-metadata:
-  engine: none
-  category: workflows
-  difficulty: beginner
 ---
 
 # Game Jam

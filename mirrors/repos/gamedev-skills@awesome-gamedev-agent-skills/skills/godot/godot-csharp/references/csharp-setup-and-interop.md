@@ -1,11 +1,11 @@
-# Godot C# setup & interop reference (Godot 4.3+ .NET)
+# Godot C# setup & interop reference (Godot 4.7 .NET)
 
 Depth companion to `godot-csharp`.
 
 ## Project setup
 
 - Use the **Godot .NET** editor build (labeled ".NET"/"Mono").
-- Install the matching **.NET SDK** (Godot 4.3 targets **.NET 8**).
+- Install the matching **.NET SDK** (Godot 4.7 targets **.NET 8**).
 - The first C# script creates `<Project>.csproj` and `<Project>.sln`. The `.csproj` sets
   `<TargetFramework>net8.0</TargetFramework>` and references `GodotSharp`.
 - Build via the editor (it builds on play) or `dotnet build`. Editor Settings let you pick

@@ -41,7 +41,8 @@ AI Community: https://linux.do
 7. **Ops gate (MUST):** `powershell -File skills/scripts/case-init.ps1 -Hint "<task>"` (or hand-write `work/<case>/scope.md` per `skills/ops/scope-contract.md`).  
    Set `auth.status=granted` + `network_profile` before any target ACT. Evidence chain: `skills/ops/evidence-finding-path.md`. Roles: `skills/ops/role-map.md`. Identity: `skills/ops/IDENTITY.md`.
 8. Open PRIMARY SKILL.md → execute ACTION REQUIRED. Append timeline/workitems under the case dir.
-9. Continue the behavior chain → report via docs-generator + field-journal.
+9. Before report handoff, run `python3 skills/case-review/scripts/review_case.py work/<case> --verify-hashes --strict` and resolve every error.
+10. Continue the behavior chain → report via docs-generator + field-journal.
 ```
 
 ### Platform deployment routing table
@@ -125,7 +126,7 @@ At present, it is recommended to understand the whole package as two layers:
 ```text
 <package root>\
 ├── README_AI.md                  # The AI bootstrap file you are reading now
-├── CTF-Sandbox-Orchestrator\     # Full CTF competition stack (40+ sub-skills)
+├── CTF-Sandbox-Orchestrator\     # Full CTF competition stack (42 sub-skills)
 └── skills\                       # Main skills directory
     ├── SKILL.md                  # Main controller entry point
     ├── routing.md                # Scenario → skill dispatching (routing matrix)
@@ -155,7 +156,7 @@ If you also use the CTF knowledge base, it is recommended to place it under the 
 ```text
 <package root>\
 ├── skills\                       # Main skills directory
-├── CTF-Sandbox-Orchestrator\     # CTF competition sub-skills (40+)
+├── CTF-Sandbox-Orchestrator\     # CTF competition sub-skills (42)
 └── README_AI.md
 ```
 
@@ -352,13 +353,18 @@ Whether you use Claude Code, Codex CLI, Cursor, Cline, Windsurf, or another code
 ```json
 {
   "mcpServers": {
-    "anything-analyzer": { "url": "http://localhost:23816/mcp" },
+    "anything-analyzer": {
+      "url": "http://localhost:23816/mcp",
+      "headers": { "Authorization": "Bearer <token from local mcp-server-config.json>" }
+    },
     "idapro": { "url": "http://127.0.0.1:13337/mcp" },
     "jshook": { "command": "npx", "args": ["-y", "@jshookmcp/jshook@0.3.4"], "env": { "JSHOOK_BASE_PROFILE": "search" } },
     "burpsuite": { "command": "node", "args": ["<package root>/burp-mcp-full/mcp-bridge.js"] }
   }
 }
 ```
+
+The bootstrap command enables bearer authentication for Anything Analyzer and registers the generated token for supported clients. Manual configurations must include the `Authorization` header shown above.
 
 ### Minimum Prompt Requirements
 

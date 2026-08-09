@@ -257,6 +257,36 @@ can map safely; `mcp.write` requires an explicit tool allowlist and live
 order-guard handling. If IBKR issues a pre-registered OAuth client, add
 `clientId` and `clientSecret` inside `auth`.
 
+### Official eToro Public API MCP (discovery + dev)
+
+eToro ships a hosted MCP at `https://mcp.public-api.etoro.com` with live OpenAPI
+route discovery (`get-all-routes`, `get-route-spec`) and optional execution
+(`execute-read`, `execute-write`). Use it for **API exploration and codegen** —
+production agent trading in Vibe-Trading goes through the built-in `etoro-*`
+connector profiles and `trading_*` / `etoro_*` tools (mandate gate on live writes).
+
+Add to `~/.vibe-trading/agent.json` (credentials on the connection, not in chat):
+
+```json
+{
+  "mcpServers": {
+    "etoro-public-api": {
+      "type": "streamableHttp",
+      "url": "https://mcp.public-api.etoro.com",
+      "headers": {
+        "x-api-key": "YOUR_PUBLIC_API_KEY",
+        "x-user-key": "YOUR_USER_KEY"
+      },
+      "enabledTools": ["get-all-routes", "get-route-spec", "execute-read"]
+    }
+  }
+}
+```
+
+Omit `execute-write` unless you want the MCP to place trades directly (bypasses
+Vibe-Trading's live mandate gate). Install skill:
+`https://mcp.public-api.etoro.com/skill`
+
 ### Trading connector profiles
 
 The public trading surface is connector-first. Choose a connector profile, then

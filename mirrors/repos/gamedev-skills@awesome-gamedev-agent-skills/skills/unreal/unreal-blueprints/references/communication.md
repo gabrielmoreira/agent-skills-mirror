@@ -1,4 +1,4 @@
-# Blueprint communication: Cast vs Interface vs Event Dispatcher (UE 5.4+)
+# Blueprint communication: Cast vs Interface vs Event Dispatcher (UE 5.8)
 
 Depth for `unreal-blueprints`. The three ways Blueprints talk to each other, when to use each,
 and the gotchas. Verified against the Blueprints Visual Scripting and Blueprint Communications

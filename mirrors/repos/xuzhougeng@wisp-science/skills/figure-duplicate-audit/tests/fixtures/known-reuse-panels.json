@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "panels": [
+    {
+      "id": "F2D-AR-H1WT",
+      "source_id": "p0032-img01",
+      "label": "Figure 2D Alizarin Red H1 WT",
+      "bbox": [103, 940, 295, 1130],
+      "kind": "plate",
+      "compare": true,
+      "derivation_group": null,
+      "proposal": false
+    },
+    {
+      "id": "F2D-AR-H1KO",
+      "source_id": "p0032-img01",
+      "label": "Figure 2D Alizarin Red H1 B2M-KO",
+      "bbox": [293, 936, 485, 1127],
+      "kind": "plate",
+      "compare": true,
+      "derivation_group": null,
+      "proposal": false
+    },
+    {
+      "id": "F2D-AR-H9WT",
+      "source_id": "p0032-img01",
+      "label": "Figure 2D Alizarin Red H9 WT",
+      "bbox": [485, 939, 667, 1123],
+      "kind": "plate",
+      "compare": true,
+      "derivation_group": null,
+      "proposal": false
+    },
+    {
+      "id": "F2D-AR-H9KO",
+      "source_id": "p0032-img01",
+      "label": "Figure 2D Alizarin Red H9 B2M-KO",
+      "bbox": [668, 940, 850, 1131],
+      "kind": "plate",
+      "compare": true,
+      "derivation_group": null,
+      "proposal": false
+    },
+    {
+      "id": "F3F-H1-WT",
+      "source_id": "p0034-img01",
+      "label": "Figure 3F H1 WT",
+      "bbox": [78, 1720, 288, 1910],
+      "kind": "plate",
+      "compare": true,
+      "derivation_group": null,
+      "proposal": false
+    },
+    {
+      "id": "F3F-H1-shSCRAM",
+      "source_id": "p0034-img01",
+      "label": "Figure 3F H1 B2M-KO shSCRAM",
+      "bbox": [270, 1715, 450, 1915],
+      "kind": "plate",
+      "compare": true,
+      "derivation_group": null,
+      "proposal": false
+    },
+    {
+      "id": "F3F-H9-WT",
+      "source_id": "p0034-img01",
+      "label": "Figure 3F H9 WT",
+      "bbox": [85, 1905, 283, 2085],
+      "kind": "plate",
+      "compare": true,
+      "derivation_group": null,
+      "proposal": false
+    },
+    {
+      "id": "F3F-H9-shSCRAM",
+      "source_id": "p0034-img01",
+      "label": "Figure 3F H9 B2M-KO shSCRAM",
+      "bbox": [268, 1905, 448, 2088],
+      "kind": "plate",
+      "compare": true,
+      "derivation_group": null,
+      "proposal": false
+    }
+  ]
+}

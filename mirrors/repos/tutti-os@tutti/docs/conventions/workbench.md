@@ -1,0 +1,205 @@
+# Workbench
+
+This document defines durable Workbench ownership rules across shared packages,
+the desktop renderer host, and `tuttid` snapshot persistence.
+
+## Purpose
+
+Workbench is a reusable shell for workspace tools. It owns window-like
+interaction mechanics, layout, dock identity, node shell lifecycle, and snapshot
+sanitation.
+
+It must not become a product workflow core.
+
+## Ownership
+
+Current ownership:
+
+- `packages/workbench/snapshot` owns the canonical TypeScript snapshot contract,
+  migrations, normalization, validation, and JSON Schema.
+- `packages/workbench/service` owns shared Go snapshot validation,
+  canonicalization, and the storage-facing service contract.
+- `packages/workbench/electron` owns product-neutral Electron main-process Dock
+  preview capture and bounded filesystem cache mechanics.
+- `packages/workbench/surface` owns reusable Workbench mechanics:
+  controller commands, host/session reconciliation, placement, stacking,
+  dock rendering, window chrome, render context plumbing, and shell snapshot
+  sanitation.
+- `apps/desktop/src/renderer/src/features/workspace-workbench` owns the Tutti
+  desktop host adapter: product contributions, tuttid clients, preload
+  adapters, workspace context, close policy, launch policy, and desktop-owned
+  Workbench copy.
+- `services/tuttid/service/workspace` owns daemon-side Workbench snapshot load,
+  save, and host-specific snapshot reconciliation before a snapshot is returned
+  to desktop.
+
+## Shared Package Rules
+
+`packages/workbench/*` should stay product-neutral.
+
+Rules:
+
+- keep product-specific node bodies, daemon clients, preload calls, host path
+  selection, unrestricted filesystem access, and workflow policy out of shared
+  Workbench packages
+- let `@tutti-os/workbench-electron` accept a host-selected cache directory and
+  Electron `webContents`; IPC authorization, BrowserWindow ownership, product
+  logging, and `app.getPath("userData")` stay in the consuming desktop app
+- keep product-specific CSS selectors and host globals out of
+  `@tutti-os/workbench-surface`
+- restore a minimized node from its in-memory Genie texture before launching
+  the mounted node when the cached texture and Dock anchor are usable; allow
+  that first texture frame to paint before host launch work begins
+- attempt the host-provided native Dock preview capture before cloning live DOM;
+  clone DOM only after native capture fails or exceeds the bounded wait, and
+  persist a late result's Dock image immediately but defer its full-size decode
+  until the active Genie animation settles and the browser is idle
+- for Electron hosts, derive the full-size Genie image and bounded Dock image
+  from one region capture; never upscale the Dock image into a Genie texture
+- bound retained Genie Canvas textures by both entry count and estimated RGBA
+  bytes; retain restored-node textures for later minimizes, and remove them
+  when their nodes no longer exist
+- publish Genie-hidden state through per-node subscriptions so changing one
+  window does not invalidate every mounted Workbench window
+- use per-node operation tokens for Genie hiding; global animation generation
+  may control the shared Canvas but must not block another node from becoming
+  visible
+- project normal-window visibility through the mounted body context; it is
+  false while minimized, Genie-hidden, or in Mission Control, so heavy child
+  presentation can wait without importing Workbench animation state
+- project Mission Control preview visibility separately from normal-window
+  visibility. A preview that Workbench paints must keep its body rendering even
+  when normal-window visibility is false; a preview filtered out of the
+  presentation must remain paused
+- separate a node's own exposure from whether it may occlude lower nodes.
+  Scale restore, shell frame transitions, and onboarding entry keep their own
+  body visible but do not cover lower bodies until the matching DOM animation
+  or transition settles; overlapping transitions release independently
+- order geometric occlusion by rendered surface layer before normal window
+  stack order. A `dialog-popover` node remains above default-layer nodes even
+  when the normal focus stack changes
+- keep window chrome hit zones unambiguous; floating-window resize handles
+  should render outside the clipped window surface so corner handles remain
+  reachable and take precedence over header drag regions; interactive controls
+  inside or near draggable chrome must opt out with the product no-drag classes
+  and `-webkit-app-region: no-drag`, but noninteractive wrappers should not
+  shrink the draggable hot zone
+- inject debug diagnostics, product callbacks, and host-specific behavior
+  through explicit props or adapters
+- keep `WorkbenchHostHandle` narrow; product consumers should call public host
+  commands instead of reaching into the raw controller
+- expose raw controller access only through an internal runtime handle used by
+  Workbench surface internals
+- keep package root exports intentionally small; exporting a symbol makes it a
+  stable interface, not just a convenient file shortcut
+
+Shared packages may own narrow default copy for generic Workbench mechanics,
+such as chrome and dock labels. Product-owned copy stays in the consuming host
+i18n layer.
+
+## Snapshot State Rules
+
+Workbench snapshots persist shell-owned presentation state plus explicit
+host-owned node state.
+
+Rules:
+
+- `snapshotNodeState` is the only persisted node extension field for host-owned
+  node state
+- `externalNodeState` is runtime render input, not a persisted compatibility
+  field
+- node state sources should expose snapshot state through
+  `getSnapshotNodeState(...)`
+- snapshot sanitizers and session serialization must strip transient runtime
+  render data before persistence
+- snapshot serialization must persist `layoutBasis` from the same Workbench
+  state as the frames. On initial restore, map `frame`, `restoreFrame`, space
+  frames, and reusable closed-window frames from that basis into the current
+  safe layout before exposing a restored floating frame
+- keep `layoutBasis` additive within schema version 1. Snapshots that predate it
+  remain valid and use conservative bounds normalization; do not invent a
+  historical surface size because that would turn unknown geometry into a
+  misleading proportional migration
+- persist `lockedLayout` with the same snapshot as its node frames. On restore,
+  retain it only when at least two locked nodes are restored, so Mission Control
+  keeps its proportional grid and any user-adjusted divider geometry after a
+  Workspace reopen
+- canonicalize locked frame coordinates to three decimal places, then clamp
+  width and height to the normalized right and bottom edges. The daemon may
+  accept only bounded `float32` transport noise before storing this canonical
+  form
+- adapter-specific durable state should remain behind generic contract fields
+  unless the adapter detail is part of the shared snapshot contract
+- desktop-owned workspace Dock retention is product metadata in the workspace
+  Workbench snapshot. Preserve explicit `false` values as user choices and
+  merge them through the repository's product-owner path so ordinary host
+  saves cannot overwrite them
+- treat retention as a Dock presentation override. Product hosts must pass it
+  through `dockEntryPresentationOverrides`; they must not rewrite contribution
+  Dock entries or let presentation state flow into contribution nodes/runtime
+  configuration. WorkbenchHost applies overrides in place after Dock entries
+  are merged so presentation changes preserve entry order and host sessions
+
+Breaking migration rule:
+
+- when the snapshot contract intentionally removes a compatibility field, do not
+  keep silent fallback code in the renderer or daemon; make the break explicit
+  and update tests around the new durable contract
+
+## Desktop Host Rules
+
+The desktop workspace Workbench is a host adapter, not a React page that owns
+Workbench workflows.
+
+Rules:
+
+- keep product contribution factories and host adapter assembly in
+  `workspace-workbench/services/internal/**`
+- expose public service/controller seams from
+  `workspace-workbench/services/*` when UI needs model data or commands
+- keep `workspace-workbench/ui/**` shallow: render snapshots, subscribe through
+  hooks, and forward DOM events to services or controllers
+- do not import `workspace-workbench/services/internal/**` from
+  `workspace-workbench/ui/**`
+- keep daemon reads, writes, save requests, object URL lifecycle, and similar
+  side effects in feature services or controllers, not node body React files
+- keep launchpad option projection, provider catalog shaping, and stable
+  Workbench node id helpers behind public desktop service seams
+
+The mechanical guard for the Workbench UI-to-internal rule is:
+
+```sh
+pnpm check:renderer-boundaries
+```
+
+## Daemon Reconciliation Rules
+
+`services/tuttid/service/workspace` may reconcile Workbench snapshots with
+daemon-owned runtime state before returning them to desktop.
+
+Rules:
+
+- keep the core `WorkbenchService` focused on load, save, validation,
+  canonicalization, and calling the configured reconciler
+- put node-kind-specific cleanup behind a `WorkbenchSnapshotReconciler`
+  implementation
+- wire host-specific reconcilers explicitly in `services/tuttid/wiring.go`
+- do not hide a fallback to a concrete node-kind service inside
+  `WorkbenchService`
+
+This keeps the service interface small while preserving locality for daemon
+runtime cleanup such as terminal session reconciliation.
+
+## Review Questions
+
+When reviewing Workbench changes, ask:
+
+1. Is this generic Workbench mechanics, or product workflow policy?
+2. Is durable state going through `snapshotNodeState`, or is runtime
+   `externalNodeState` leaking into persistence?
+3. Does UI depend on a public service/controller seam instead of
+   `services/internal/**`?
+4. Does a product consumer need a narrow host command, or is it trying to grab
+   the raw controller?
+5. Is daemon reconciliation behind an explicit reconciler, or is node-specific
+   logic being added to the core Workbench service?

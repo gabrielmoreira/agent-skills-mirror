@@ -1,4 +1,4 @@
-# Event channels & runtime sets (Unity 6 ScriptableObjects)
+# Event channels & runtime sets (Unity 6.3 LTS ScriptableObjects)
 
 Depth for `unity-scriptableobjects`: two decoupling patterns that are the main reason teams
 adopt SO architecture. Verified against the Unity Manual ScriptableObject docs; the design is

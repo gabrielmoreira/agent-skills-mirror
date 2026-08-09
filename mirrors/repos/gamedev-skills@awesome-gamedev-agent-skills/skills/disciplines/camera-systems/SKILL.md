@@ -7,12 +7,6 @@ description: >
   camera node and rigs like Unity Cinemachine or Godot Camera2D/PhantomCamera. Use when the user
   mentions camera follow, follow camera, deadzone, look-ahead, camera smoothing, camera bounds/
   limits, third-person camera, orbit camera, first-person look, Cinemachine, or camera jitter.
-license: Apache-2.0
-compatibility: Engine-agnostic camera techniques; snippets in GDScript (Godot 4.x Camera2D/Camera3D) and C# (Unity 6 / Cinemachine 3). Pairs with godot-2d-movement, godot-3d-essentials, and game-feel.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: intermediate
 ---
 
 # Camera systems
@@ -62,7 +56,7 @@ performance of many cameras/render targets, see `performance-optimization`.
 ### 1. Godot 2D built-in follow: smoothing + bounds (don't hand-roll first)
 
 ```gdscript
-# Godot 4.x Camera2D. Engine-provided smoothing + hard limits + drag margins.
+# Godot 4.7 Camera2D. Engine-provided smoothing + hard limits + drag margins.
 @onready var cam := $Camera2D
 func _ready() -> void:
     cam.make_current()
@@ -82,7 +76,7 @@ func _follow(dt: float) -> void:
     global_position = global_position.lerp(target.global_position, t)
 # WRONG: global_position = global_position.lerp(target.global_position, 0.1)
 #        → faster smoothing at higher FPS; different feel on every machine.
-# Unity 6: Vector3.SmoothDamp(transform.position, target.position, ref vel, smoothTime) in
+# Unity 6.3 LTS: Vector3.SmoothDamp(transform.position, target.position, ref vel, smoothTime) in
 # LateUpdate gives the same spring behavior with built-in frame-rate correction.
 ```
 
@@ -103,7 +97,7 @@ func _camera_target(dt: float) -> Vector2:
 ### 4. 3D third-person orbit with collision push-in
 
 ```gdscript
-# Godot 4.x. Yaw/pitch a pivot; a SpringArm3D auto-pulls the camera in when blocked.
+# Godot 4.7. Yaw/pitch a pivot; a SpringArm3D auto-pulls the camera in when blocked.
 func _unhandled_input(e):
     if e is InputEventMouseMotion:
         _yaw -= e.relative.x * sensitivity
@@ -112,7 +106,7 @@ func _process(_dt):
     pivot.rotation = Vector3(_pitch, _yaw, 0)
     # $SpringArm3D handles wall collision: set spring_length + collision_mask; the child
     # Camera3D slides in automatically. RIGHT: spring arm. WRONG: camera clips through walls.
-# Unity 6: a Cinemachine 3 CinemachineCamera (namespace Unity.Cinemachine) with an Orbital
+# Unity 6.3 LTS: a Cinemachine 3 CinemachineCamera (namespace Unity.Cinemachine) with an Orbital
 # Follow + Cinemachine Deoccluder; the CinemachineBrain on the Camera blends automatically.
 ```
 

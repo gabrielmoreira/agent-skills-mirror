@@ -1,4 +1,4 @@
-# MonoBehaviour lifecycle & coroutines (Unity 6)
+# MonoBehaviour lifecycle & coroutines (Unity 6.3 LTS)
 
 Depth for the `unity-csharp-scripting` skill: the full execution order and the coroutine
 patterns that don't fit in the main playbook. Verified against the Unity Manual

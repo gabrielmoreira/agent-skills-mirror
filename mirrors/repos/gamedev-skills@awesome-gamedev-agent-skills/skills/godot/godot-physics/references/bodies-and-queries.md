@@ -1,4 +1,4 @@
-# Physics bodies & space queries reference (Godot 4.3+)
+# Physics bodies & space queries reference (Godot 4.7)
 
 Depth companion to `godot-physics`. Use the `2D`/`3D` suffix to match your world.
 

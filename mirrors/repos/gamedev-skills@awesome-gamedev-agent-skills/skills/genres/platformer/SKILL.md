@@ -3,12 +3,6 @@ name: platformer
 description: >
   Build a 2D platformer: run/jump control with coyote time, jump buffering, and variable jump
   height, plus tiled levels and hazards. Use for a platformer or Mario/Celeste-like, or tuning jump feel.
-license: Apache-2.0
-compatibility: Engine-agnostic design patterns; snippets are pseudocode (port to your engine)
-metadata:
-  engine: none
-  category: genres
-  difficulty: intermediate
 ---
 
 # Platformer

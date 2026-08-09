@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
   Regenerate docs/assets/star-history.svg from GitHub stargazers API.

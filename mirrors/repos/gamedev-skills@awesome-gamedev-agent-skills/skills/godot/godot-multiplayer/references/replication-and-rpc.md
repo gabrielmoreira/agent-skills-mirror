@@ -1,4 +1,4 @@
-# Replication & RPC reference (Godot 4.3+)
+# Replication & RPC reference (Godot 4.7)
 
 Depth companion to `godot-multiplayer`.
 

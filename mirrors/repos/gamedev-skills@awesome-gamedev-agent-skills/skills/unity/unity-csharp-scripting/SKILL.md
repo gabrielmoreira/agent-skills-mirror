@@ -1,24 +1,18 @@
 ---
 name: unity-csharp-scripting
 description: >
-  Write Unity 6 C# gameplay scripts: the MonoBehaviour lifecycle
+  Write Unity 6.3 LTS C# gameplay scripts: the MonoBehaviour lifecycle
   (Awake/OnEnable/Start/Update/FixedUpdate/LateUpdate), GameObject and component
   access, coroutines, and Inspector serialization. Use when creating or editing .cs
   scripts in a Unity project, or when the user mentions MonoBehaviour, Start/Update,
   GetComponent, SerializeField, coroutines, or "Unity script".
-license: Apache-2.0
-compatibility: Unity 6 (6000.0 LTS); also valid for 2022 LTS
-metadata:
-  engine: unity
-  category: unity
-  difficulty: beginner
 ---
 
 # Unity C# Scripting (MonoBehaviour)
 
 Write correct, idiomatic gameplay scripts in Unity 6. Get the lifecycle, component
 access, serialization, and coroutines right so behaviour is deterministic and the
-Inspector stays useful. Targets **Unity 6 (6000.0 LTS)**, C# / .NET Standard 2.1.
+Inspector stays useful. Targets **Unity 6.3 LTS (6000.3)**, C# / .NET Standard 2.1.
 
 ## When to use
 

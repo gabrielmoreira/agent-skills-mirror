@@ -5,19 +5,13 @@ description: >
   (Selector/Sequence), tasks, decorators, services, and running the tree from an AIController.
   Use when creating enemy/NPC AI, BT_/BB_ assets, custom BTTask or BTService nodes, or when
   the user mentions Behavior Tree, Blackboard, AIController, BTTask, decorator, or service.
-license: Apache-2.0
-compatibility: Unreal Engine 5.4+ (AIModule; Behavior Tree + Blackboard; NavMesh for movement)
-metadata:
-  engine: unreal
-  category: unreal
-  difficulty: advanced
 ---
 
 # Unreal Behavior Trees
 
 Author NPC decision-making in UE5 with Behavior Trees driven by a Blackboard: structure the
 tree with composites, gate branches with decorators, keep state current with services, and run
-it from an AIController. Targets **UE 5.4+**.
+it from an AIController. Targets **UE 5.8**.
 
 ## When to use
 

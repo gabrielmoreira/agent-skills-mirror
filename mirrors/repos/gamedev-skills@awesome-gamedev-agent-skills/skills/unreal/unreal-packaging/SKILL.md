@@ -6,19 +6,13 @@ description: >
   Default Map, and command-line builds with RunUAT BuildCookRun. Use when packaging a build,
   making a shipping build, cooking content, configuring packaging settings, or when the user
   mentions package Unreal, cook content, shipping build, or BuildCookRun.
-license: Apache-2.0
-compatibility: Unreal Engine 5.4+; desktop/console/mobile packaging via UAT
-metadata:
-  engine: unreal
-  category: unreal
-  difficulty: intermediate
 ---
 
 # Unreal Packaging & Cooking
 
 Turn a UE5 project into a runnable, distributable build: choose the right build configuration,
 cook content, set the launch map, and package — from the editor or the command line. Targets
-**UE 5.4+**.
+**UE 5.8**.
 
 ## When to use
 

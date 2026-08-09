@@ -1,4 +1,4 @@
-# Godot Shading Language reference (Godot 4.3+)
+# Godot Shading Language reference (Godot 4.7)
 
 Depth companion to `godot-shaders`. The language is GLSL-like with engine built-ins.
 

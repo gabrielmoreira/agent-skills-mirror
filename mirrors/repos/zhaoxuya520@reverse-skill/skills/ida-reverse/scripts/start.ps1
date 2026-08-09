@@ -142,8 +142,8 @@ if ([string]::IsNullOrWhiteSpace($ServerPath)) {
 $old = Get-Process -Name "ida-pro-mcp" -ErrorAction SilentlyContinue
 if (-not $old) { $old = Get-Process -Name "idalib-mcp" -ErrorAction SilentlyContinue }
 if ($old) {
-    foreach ($proc in $old) {
-        Stop-Process -Id $proc.Id -Force -ErrorAction SilentlyContinue
+    foreach ($process in @($old)) {
+        & taskkill.exe /F /T /PID $process.Id 2>$null | Out-Null
     }
     Start-Sleep 2
 }

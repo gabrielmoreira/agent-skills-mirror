@@ -4,8 +4,8 @@ Load this adapter only when `SKILL.md` selects the Claude Code orchestration sur
 adapter in the same handoff.
 
 This adapter requires Git, `/bin/bash`, Python 3, and an authenticated Codex CLI with dangerous bypass support. Claude
-Code 2.1.98 or newer is recommended for live progress through the Monitor tool. Stop with a compatibility error when a
-required runner prerequisite is unavailable.
+Code 2.1.98+ is recommended for live progress through the Monitor tool. Stop with a compatibility error when a required
+runner prerequisite is unavailable.
 
 ## Research Mechanics
 
@@ -13,13 +13,14 @@ For each research agent selected by the shared contract, resolve `../scripts/run
 and use the implementation launch template with `--read-only`. Give every agent separate `<agent-id>.progress.jsonl`,
 `<agent-id>.result.json`, and `<agent-id>.stderr.log` artifacts. Start all selected agents as background Bash tasks
 (`run_in_background: true`) in the same turn, then watch the wave through the implementation watcher and Monitor flow
-below. The runner-enforced read-only sandbox makes this launch legitimate during Plan mode.
+below. The runner-enforced read-only sandbox legitimizes this launch in any mode, including Plan mode.
 
 Give each research agent a self-contained prompt containing the open questions, exact investigation scope, read-only
 boundary, relevant repository constraints, and stopping rule from the shared prompt contract. Require every field in
 `research-result.schema.json`; prohibit plans, design decisions, and edits.
 
-Select research configuration from these tiers:
+When the user has not explicitly included research agents in a model preference, select research configuration from
+these tiers:
 
 | Investigation                          | Model           | Effort             | Baseline timeout |
 | -------------------------------------- | --------------- | ------------------ | ---------------- |
@@ -28,10 +29,11 @@ Select research configuration from these tiers:
 
 Use Luna for bounded surveys and Terra for involved ones; research never uses Sol — research gathers evidence, the
 parent synthesizes. Never select `low`, `ultra`, or `max`. Research should normally use shorter budgets than
-implementation; keep the baseline between 10 and 15 minutes unless repository evidence requires otherwise.
+implementation; keep the baseline between 10 and 15 minutes unless repository evidence says otherwise.
 
 When the research wave settles, parse each result against `research-result.schema.json`, read its stderr artifact for
-failure forensics, and return the findings to the shared Research Phase. Do not reconcile the working tree.
+failure forensics, and return the findings to the shared Research Phase for the plan or research-only response. Do not
+reconcile the working tree.
 
 ## Plan Manifest and Configuration
 
@@ -43,7 +45,7 @@ Use this exact host-specific table inside the shared `## Codex Handoff` plan sec
 | `A1`  | `1`  | `none`     | `<files/behavior>` | `<gpt-5.6-luna\|gpt-5.6-terra\|gpt-5.6-sol>` | `<medium\|high\|xhigh>` | `<minutes> minutes` | `<outcome, edits, constraints, and stopping criteria>` | `<commands and observable results>` |
 ```
 
-Select implementation configuration deliberately:
+When the user has not specified a model preference, select implementation configuration from these tiers:
 
 | Work                                     | Model           | Effort             | Baseline timeout |
 | ---------------------------------------- | --------------- | ------------------ | ---------------- |
@@ -51,9 +53,10 @@ Select implementation configuration deliberately:
 | Everyday or involved implementation      | `gpt-5.6-terra` | `medium` or `high` | 20 minutes       |
 | Semantic or cross-cutting implementation | `gpt-5.6-sol`   | `xhigh`            | 40 minutes       |
 
-Never select `low`, `ultra`, or `max`. Adjust a timeout when repository evidence shows that required validation needs
-materially more or less time. The timeout is a kill-switch, not pacing: Codex never sees it and an early finish costs
-nothing, so size it only to bound how long a hung agent can block its wave.
+An explicit user model preference replaces this task-complexity model selection, but effort and timeout still follow the
+applicable work tier. Never select `low`, `ultra`, or `max`. Adjust a timeout when repository evidence shows that
+required validation needs materially more or less time. The timeout is a kill-switch, not pacing: Codex never sees it
+and an early finish costs nothing, so size it only to bound how long a hung agent can block its wave.
 
 Keep the highest-tier agent's scope minimal and move deferrable validation to the validation owner.
 

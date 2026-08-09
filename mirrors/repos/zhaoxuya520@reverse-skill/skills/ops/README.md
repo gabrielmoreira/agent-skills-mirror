@@ -11,6 +11,7 @@ Z3r0 启发、**本包形态**实现：
 | [timeline-workitem.md](timeline-workitem.md) | 时间线与覆盖 |
 | [sandbox-profile.md](sandbox-profile.md) | 工具对照 |
 | [skill-supply-chain.md](skill-supply-chain.md) | Agent Skill/MCP 供应链安全（AST10 精简） |
+| [case-review/](../case-review/) | Evidence 图完整性审查与报告交接 |
 
 相关 references（非孤儿，从本 hub / MASTER / SKILL 可达）：
 
@@ -20,5 +21,6 @@ Z3r0 启发、**本包形态**实现：
 - `../reverse-engineering/references/re-agent-workflow.md` — RE 四阶段  
 - `../pentest-tools/references/recon-pipeline.md` — 授权侦察 + Evidence 门  
 
-脚本：`../scripts/case-init.ps1`  
-校验：`../scripts/verify-routing-coherence.ps1`（含 ops 契约检查）
+- 脚本：`../scripts/case-init.ps1`
+- 校验：`../scripts/verify-routing-coherence.ps1`（含 ops 契约检查）
+- 审查：`../case-review/scripts/review_case.py`（只读 Evidence 图检查）

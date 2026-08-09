@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `github/gh-aw` — 26 default patterns, 4 followed patterns, 67 file(s) materialized.
+Mirror of `github/gh-aw` — 26 default patterns, 1 followed patterns, 64 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `github/gh-aw` — 26 default patterns, 4 followed patterns, 67 file(s
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 4 |
-| Files         | 67 |
+| Followed pats | 1 |
+| Files         | 64 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,9 +51,6 @@ Mirror of `github/gh-aw` — 26 default patterns, 4 followed patterns, 67 file(s
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-- `actions/setup/md/safe_outputs_push_to_pr_branch.md`
-- `docs/src/content/docs/reference/checkout.md`
-- `docs/sparseness.md`
 - `.github/aw/token-optimization.md`
 
 ## File Index
@@ -126,9 +123,6 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 62 | ✓ | [`pkg/workflow/data/engines/gemini.md`](pkg/workflow/data/engines/gemini.md) |
 | 63 | ✓ | [`SKILL.md`](SKILL.md) |
 | 64 | → | [`.github/aw/token-optimization.md`](.github/aw/token-optimization.md) |
-| 65 | → | [`actions/setup/md/safe_outputs_push_to_pr_branch.md`](actions/setup/md/safe_outputs_push_to_pr_branch.md) |
-| 66 | → | [`docs/sparseness.md`](docs/sparseness.md) |
-| 67 | → | [`docs/src/content/docs/reference/checkout.md`](docs/src/content/docs/reference/checkout.md) |
 
 ---
 

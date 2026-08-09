@@ -1,10 +1,9 @@
 # Web engine skills
 
-Agent Skills for browser/JavaScript game engines and frameworks such as
-[Phaser](https://phaser.io/), [PixiJS](https://pixijs.com/), [three.js](https://threejs.org/),
-and [Babylon.js](https://www.babylonjs.com/).
+Six Agent Skills for browser games: Phaser 4.2 core and Arcade Physics, PixiJS
+8.19 rendering, and three.js r184 scene, glTF, material, and lighting workflows.
 
-Each subdirectory is one skill: a folder containing a `SKILL.md` (and optional
-`references/`). Folder name must equal the skill's `name` frontmatter field.
+Each subdirectory is one skill. Existing projects keep their locked dependency
+versions; see [`VERSION-SUPPORT.md`](../../docs/VERSION-SUPPORT.md).
 
 See [`docs/SKILL-FORMAT.md`](../../docs/SKILL-FORMAT.md) for the authoring standard.

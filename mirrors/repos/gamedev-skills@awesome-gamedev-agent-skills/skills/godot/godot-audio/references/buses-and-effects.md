@@ -1,4 +1,4 @@
-# Audio buses & effects reference (Godot 4.3+)
+# Audio buses & effects reference (Godot 4.7)
 
 Depth companion to `godot-audio`.
 
@@ -53,7 +53,7 @@ Add `AudioEffect*` resources to a bus (editor or `add_bus_effect`):
 - `AudioStreamPolyphonic` — one player that can play many overlapping streams; grab a
   `AudioStreamPlaybackPolyphonic` from `get_stream_playback()` and call `play_stream(...)`.
 - `AudioStreamInteractive` — define clips and transitions for adaptive music that switches
-  between sections on cue (4.3+). `AudioStreamSynchronized` plays layered stems together.
+  between sections on cue (4.7). `AudioStreamSynchronized` plays layered stems together.
 - `AudioStreamRandomizer` — pick a random stream/pitch per play (great for footsteps).
 
 ## Positional audio (2D/3D)

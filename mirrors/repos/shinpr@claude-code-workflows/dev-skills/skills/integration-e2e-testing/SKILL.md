@@ -43,7 +43,15 @@ One input Design Doc is one budget scope: apply each lane budget once across all
 
 ROI is used to **rank candidates within the same test type** (integration candidates against each other, E2E candidates against each other). Cross-type comparison is unnecessary because integration and E2E budgets are selected independently.
 
-Score every input before calculating ROI. For the three numeric inputs, use exactly `0`, `5`, or `10`. Legal Requirement remains boolean:
+For every candidate, record the governing evidence for each ROI input before assigning a value. Use an approved PRD, confirmed requirement context, accepted contract or legal obligation, user-confirmed test value context, Design Doc boundary, and existing-test evidence as applicable. A missing value is `unknown`, not `0`, and an inference is not observed evidence.
+
+When ROI can change candidate ranking, a lane threshold, or budget selection, return the exact missing product input and its decision effect when the caller has not yet supplied `test_value_context`. After that single input round, apply the supplied facts and retain every remaining value as decision-relevant `unknown` with its numeric score unset. Defect Detection remains an agent-owned repository judgment resolved from the proof boundary and existing tests. When selection is invariant because the candidate is removed before ROI, is the sole eligible candidate for a reserved journey slot, or all surviving candidates fit an unthresholded budget, record the unknown as `not_decision_relevant` and keep its numeric score unset.
+
+### Unknown-Value Ordering
+
+For candidates with a decision-relevant `unknown` after the value-input round, use accepted legal or contractual obligation, explicit connection to the confirmed user or business outcome, distinct Defect Detection evidence, lower lane ownership cost, then source AC order. Select the smallest set that proves the accepted obligations and confirmed outcome boundaries, within the normal lane budgets. Numeric lane thresholds apply to fully scored candidates; this evidence ordering supplies the selection decision for affected candidates. Record the unknown input, evidence checked, and selection effect.
+
+For resolved numeric inputs, use exactly `0`, `5`, or `10`. Legal Requirement remains boolean; a governing-source check that finds no accepted legal, regulatory, contractual, or audit obligation supports `false` and records that checked source.
 
 | Input | Scale |
 |---|---|
@@ -68,7 +76,7 @@ The two E2E lanes have different ownership costs and use independent standard th
 | fixture-e2e | ROI ≥ 20 (beyond reserved slot) | Cost is comparable to integration tests once the harness exists; the floor avoids filling MAX 3 with low-signal tests when fewer would suffice |
 | service-integration-e2e | ROI > 50 (beyond reserved slot) | Live-service setup, state cleanup, and failure diagnosis add material ownership cost; reserve for journeys whose value cannot be proven any other way |
 
-Reserved slot rules (see Multi-Step User Journey Definition below) apply per lane and override the threshold (the reserved candidate is emitted regardless of its ROI score). Below-floor candidates beyond the reserved slot are not emitted unless an accepted requirement or distinct uncovered failure mode justifies an exception. Leave budget intentionally unfilled rather than padding with low-value tests; record any threshold or budget exception in the skeleton and generation report.
+Reserved slot rules (see Multi-Step User Journey Definition below) apply per lane and override the threshold (the reserved candidate is emitted regardless of its ROI score). Emit a below-floor candidate beyond the reserved slot only when an accepted requirement or a distinct uncovered failure mode justifies the exception. Leave budget intentionally unfilled rather than padding with low-value tests; record any threshold or budget exception in the skeleton that carries the exception.
 
 ### ROI Calculation Examples
 

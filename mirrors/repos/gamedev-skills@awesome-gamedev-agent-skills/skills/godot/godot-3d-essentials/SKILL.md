@@ -1,23 +1,17 @@
 ---
 name: godot-3d-essentials
 description: >
-  Set up a Godot 4.x 3D scene: Node3D transforms, Camera3D, lighting
+  Set up a Godot 4.7 3D scene: Node3D transforms, Camera3D, lighting
   (DirectionalLight3D/OmniLight3D), WorldEnvironment for sky/ambient/tonemap/post,
   MeshInstance3D materials, and GridMap for tile-based 3D levels. Use when building
   a 3D scene in a Godot project, placing cameras/lights, configuring environment and
   post-processing, or working with Node3D/.tscn 3D content and GridMap.
-license: Apache-2.0
-compatibility: Godot 4.3+
-metadata:
-  engine: godot
-  category: godot
-  difficulty: intermediate
 ---
 
 # Godot 3D Essentials (4.x)
 
 Assemble a working 3D scene: transforms, camera, lights, environment/post, materials, and
-`GridMap` blockouts. Targets **Godot 4.3+**.
+`GridMap` blockouts. Targets **Godot 4.7**.
 
 ## When to use
 

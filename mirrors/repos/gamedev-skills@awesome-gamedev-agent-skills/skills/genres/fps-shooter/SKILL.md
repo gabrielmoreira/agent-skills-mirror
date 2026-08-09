@@ -3,12 +3,6 @@ name: fps-shooter
 description: >
   Build a first-person shooter: move+mouse-look controller, hitscan or projectile shooting, weapons,
   health, and enemy AI. Use for an FPS, or tuning aim feel, time-to-kill, recoil, or spread.
-license: Apache-2.0
-compatibility: Engine-agnostic design patterns; snippets are pseudocode (port to your engine)
-metadata:
-  engine: none
-  category: genres
-  difficulty: advanced
 ---
 
 # FPS Shooter

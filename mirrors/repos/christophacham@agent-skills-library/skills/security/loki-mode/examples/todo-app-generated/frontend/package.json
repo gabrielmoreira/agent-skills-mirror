@@ -17,10 +17,17 @@
     "@vitejs/plugin-react": "^4.7.0",
     "@vitejs/plugin-react-swc": "^3.11.0",
     "typescript": "^5.9.3",
-    "vite": "^6.4.1"
+    "vite": "6.4.3"
   },
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3"
+  },
+  "overrides": {
+    "postcss": "8.5.26",
+    "rollup": "4.62.4",
+    "nanoid": "3.3.18",
+    "picomatch": "4.0.5",
+    "@babel/core": "7.29.7"
   }
 }

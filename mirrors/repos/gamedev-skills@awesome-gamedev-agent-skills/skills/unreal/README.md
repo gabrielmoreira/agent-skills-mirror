@@ -1,9 +1,9 @@
 # Unreal Engine skills
 
-Agent Skills for [Unreal Engine](https://www.unrealengine.com/) — C++ and Blueprints,
-Actors and components, the gameplay framework, rendering, and packaging.
+Six Agent Skills targeting Unreal Engine 5.8—Blueprints, C++ gameplay, Enhanced
+Input, behavior trees, Niagara, and packaging.
 
-Each subdirectory is one skill: a folder containing a `SKILL.md` (and optional
-`references/`). Folder name must equal the skill's `name` frontmatter field.
+Each subdirectory is one skill. Existing projects keep the version in their
+`.uproject`; see [`VERSION-SUPPORT.md`](../../docs/VERSION-SUPPORT.md).
 
 See [`docs/SKILL-FORMAT.md`](../../docs/SKILL-FORMAT.md) for the authoring standard.

@@ -14,6 +14,7 @@
 - source_type: command | screenshot | file | log | memory | network | manual
 - source_ref: {path or command id}
 - content_hash: {sha256 of artifact if file, else n/a}
+- artifact_path: {relative path under case root when content_hash is recorded, else n/a}
 - repro_command: |
     {exact command}
 - raw_excerpt: |
@@ -30,6 +31,14 @@
 powershell -File skills/scripts/append-evidence.ps1 -CaseRoot work/<case> `
   -Id E-001 -Title "..." -ReproCommand "..." -Severity info -Status observed
 ```
+
+When the evidence is a case-local file, pass `-ArtifactPath` to record a SHA-256 fixity value and a relative artifact path. Review the complete case graph before handoff:
+
+```bash
+python3 skills/case-review/scripts/review_case.py work/<case> --verify-hashes --strict
+```
+
+The review is read-only and checks scope fields, Evidence records, work item and timeline references, structured Findings, Paths, and artifact hash matches.
 
 ## 2. Finding（安全/逆向结论）
 

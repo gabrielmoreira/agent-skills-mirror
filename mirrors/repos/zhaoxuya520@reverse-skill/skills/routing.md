@@ -27,6 +27,7 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | macOS / iOS | `reverse-engineering/platforms.md` — Mach-O/ObjC/Swift | `mobile-reverse/` for iOS-specific |
 | Game (Unity) | `reverse-engineering/` — engine reverse, anti-cheat, IL2CPP/Mono (see seed-014) | `ida-reverse/` deep analysis |
 | Memory dump / PCAP | `digital-forensics/` — memory/timeline/PCAP IR | `protocol-reverse/` for protocol recovery |
+| Existing case package / evidence handoff | `case-review/`: Evidence graph and fixity review | `docs-generator/` for final report writing |
 | Custom protocol / Protobuf / gRPC | `protocol-reverse/` | `js-reverse/` if pure browser WS crypto |
 | Cloud / Container / K8s | `cloud-k8s/` | CTF: `../CTF-Sandbox-Orchestrator/competition-agent-cloud/` |
 | Windows AD / Kerberos / AD CS | `windows-ad/` | multi-stage: `attack-chain/` |
@@ -96,6 +97,7 @@ Route tasks to the most appropriate skill module by target type, user intent, an
 | "CTF challenge / competition reverse" | `reverse-engineering/patterns-ctf*.md` |
 | "CTF ZIP / PKZIP / bkcrack / 压缩包明文攻击" | `../CTF-Sandbox-Orchestrator/competition-zip-archive/SKILL.md` |
 | "write report / documentation" | `docs-generator/` — technical documentation |
+| "review case / evidence chain / traceability" | `case-review/`: read-only Evidence Graph Review |
 | "write writeup" | `docs-generator/` — CTF writeup template |
 | "open webpage / browser automation / fill form" | `browser-automation/SKILL.md` — Playwright |
 | "crawl page / screenshot / auto login" | `browser-automation/SKILL.md` |
@@ -216,6 +218,7 @@ Do NOT force the user to repeatedly confirm "this is CTF/local." Carry the CTF/l
 | Frida | `reverse-engineering/tools-dynamic.md` |
 | GDB / GEF / pwndbg / rr | `reverse-engineering/tools.md` |
 | Ghidra (headless) | `reverse-engineering/tools.md` + Ghidra MCP |
+| Python 3 standard library | `case-review/`: read-only case evidence graph review |
 | angr / Qiling / Unicorn | `reverse-engineering/tools-dynamic.md` |
 | D-810 / d810-ng | `reverse-engineering/references/ollvm-deobfuscation.md` — IDA Pro 反混淆插件，OLLVM/Tigress/Hodur/Approov + Z3 SMT |
 | obpo-plugin | `reverse-engineering/references/ollvm-deobfuscation.md` — Hex-Rays microcode 云插件，效果最强 |

@@ -6,19 +6,13 @@ description: >
   communication (Cast, Interfaces, Event Dispatchers). Use when working in Blueprints, wiring
   an event graph, deciding how Blueprints talk to each other, or when the user mentions
   Blueprint, BP, event graph, construction script, or a Blueprint .uasset.
-license: Apache-2.0
-compatibility: Unreal Engine 5.4+ (docs verified against current UE5; Blueprint VM)
-metadata:
-  engine: unreal
-  category: unreal
-  difficulty: beginner
 ---
 
 # Unreal Blueprints (Visual Scripting)
 
 Structure gameplay logic in Unreal Engine 5 Blueprints: pick the right graph, expose data
 cleanly, and choose a communication method that doesn't create hard-reference spaghetti.
-Targets **UE 5.4+**. (Blueprints are node graphs; the snippets below describe node flows.)
+Targets **UE 5.8**. (Blueprints are node graphs; the snippets below describe node flows.)
 
 ## When to use
 

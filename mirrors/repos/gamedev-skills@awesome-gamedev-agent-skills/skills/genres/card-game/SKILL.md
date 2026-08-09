@@ -3,12 +3,6 @@ name: card-game
 description: >
   Build a card game: card data, deck/hand/discard zones, draw/shuffle/reshuffle, a turn structure,
   costs, and effect resolution. Use for a deckbuilder, TCG/CCG, or roguelike deckbuilder.
-license: Apache-2.0
-compatibility: Engine-agnostic design patterns; snippets are pseudocode (port to your engine)
-metadata:
-  engine: none
-  category: genres
-  difficulty: intermediate
 ---
 
 # Card Game

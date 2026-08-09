@@ -25,7 +25,7 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 | `AUDIENCE` | 직급·직무·사전지식에 맞춰 내용과 표현 조정 |
 | `PURPOSE` | 설명·의사결정·설득·교육·영업·보고 중 결정 |
 | `SLIDE_COUNT` | 지정하면 정확히 준수, 없으면 목적에 맞게 결정 |
-| `LANG` | 사용자 언어 사용 |
+| `LANG` | 사용자 언어 사용. 한국어 덱은 설명 문장을 한글 우선으로 쓰되 서비스명·공식 기능명·정착된 기술 용어는 영문 유지 |
 | `TEMPLATE/BRAND` | 제공되면 profile을 추출하고 master·layout·font·color·canvas를 보존 |
 | `OUTPUT` | 사용자 지정 파일명·경로·형식 준수 |
 
@@ -54,11 +54,44 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 - 사용할 Fact Ledger 근거와 출처
 - 정보 관계에 맞는 시각 형태
 - 이전·다음 슬라이드와의 논리적 연결
+- 발표자가 말할 핵심 메시지·발표 설명·질문/전환·출처/상태
 
 제목만 연속해서 읽어도 논리가 완성되어야 한다. 결론이나 판단을 바꾸지 않는 장은 제거·통합하고,
 고정 장수를 채워야 하면 반복 문구 대신 근거·사례·비교·실행 기준을 추가한다.
 코드 작성 후에는 새 근거나 시각적 blocker가 있을 때만 storyline과 deck spec을 함께 갱신한다.
 목적별 서사 패턴은 [`reference/narrative-patterns.md`](./reference/narrative-patterns.md)를 참고한다.
+
+### 한국어·영문 균형 계약
+
+- 한국어 덱의 기본 목표는 **설명용 영문 문자 약 40%**다. `protectedTerms`의 공식명은 계산에서
+  중립 처리하며, 원시 영문 비율은 참고값으로만 기록한다.
+- 고객 결과·설명·판단·행동·KPI 의미는 자연스러운 한국어를 우선한다.
+- **서비스명, 제품명, 공식 기능명, 명령·API·SDK·프로토콜·표준 약어는 번역하지 않는다.**
+  예: `GitHub Copilot`, `Microsoft Foundry`, `Hosted Agents`, `Code Review`, `Browser Tools`,
+  `Managed Settings`, `Session Streaming`, `Control Plane`, `AKS`, `ACA`, `MCP`.
+- `deck-spec.json`의 `languagePolicy.protectedTerms`에는 해당 덱에서 반드시 영문으로 유지할 공식 용어를
+  기록한다. Verifier는 이 용어가 최종 PPTX에 실제로 존재하는지 확인한다.
+- 한국어 문장 안에서 공식 영문명을 억지로 번역하거나, 반대로 설명 전체를 영어 catalog로 쓰지 않는다.
+  `Code Review로 결함을 조기에 찾습니다`처럼 역할 설명만 한국어로 연결한다.
+
+### 비기술 청중에게 기술을 설명하는 계약
+
+- 비기술 청중이라고 서비스·기능·architecture component를 제거하거나 모호한 한국어로 바꾸지 않는다.
+  기술 이름은 정확한 공식 영문과 capitalization을 유지한다.
+- 기본 읽기 순서는 `고객 질문/결론(쉬운 한글) → English 기술명 → 역할 설명(쉬운 한글) →
+  고객 가치·판단`이다.
+- 한 슬라이드에서 새로 소개하는 핵심 technical term은 원칙적으로 3~5개로 제한하고, 첫 등장 시
+  한 줄 역할 설명을 붙인다.
+- 권장 예:
+  - `Hosted Agents` — 격리된 환경에서 Agent를 실행
+  - `Foundry IQ` — 사용자 권한을 반영해 근거를 찾음
+  - `Toolboxes` — 허용된 업무 action을 연결
+  - `Code Review` — 코드 품질을 검증
+  - `Control Plane` — 여러 Agent의 상태·비용·위험을 관리
+- 금지 예:
+  - 공식명 `Hosted Agents`를 주 라벨에서 `호스팅 실행환경`으로 대체
+  - 서비스명만 나열하고 고객에게 무엇이 달라지는지 설명하지 않음
+  - 설명 문장까지 `permission-aware knowledge layer`처럼 불필요하게 영어로 작성
 
 ### 3. 제작
 
@@ -66,6 +99,19 @@ argument-hint: "주제, 청중, 목적, 슬라이드 수를 알려주세요 — 
 - 템플릿이 있으면 `scripts/inspect_template.py`로 profile을 만들고 template-aware initializer로
   master·layout·theme·canvas를 보존한다. 없으면 고정 템플릿을 강제하지 않는다.
 - `scripts/toolcheck.py`가 선택한 언어·환경별 설치 폰트를 `deck-spec.json`에 기록하고 제작에 사용한다.
+- 한국어 덱은 `languagePolicy` 기본값(`targetLatinRatio=0.40`, `maxLatinRatio=0.55`,
+  `maxSlideLatinRatio=0.75`)을 사용하고 관련 `protectedTerms`를 채운다.
+- `protectedTerms`에는 서비스명·공식 기능명뿐 아니라 해당 덱의 주요 architecture component와
+  안정적으로 통용되는 technical term을 포함한다. 해당 용어가 있는 장에는 쉬운 한글 역할 설명을 둔다.
+- 한국어 덱은 모든 슬라이드에 speaker notes를 작성한다. 기존 notes가 있더라도 먼저 완전히 지우고
+  storyline·현재 slide visual·Fact Ledger만 기준으로 새로 생성한다. 기본 형식은 아래 4개 블록이며
+  `speakerNotesPolicy`가 이를 검증한다.
+  - `핵심 메시지:` 청중이 기억할 결론 1문장
+  - `발표 설명:` 화면 읽는 순서·왜 중요한지·필요한 조건/예외를 3~5문장
+  - `질문/전환:` 고객 질문, 다음 장 연결 또는 다음 행동 1문장
+  - `출처/상태:` Fact ID·발행자·문서명과 GA/Preview/가정 상태 1문장
+- 노트는 슬라이드 문구를 그대로 반복하지 않고 발표에 필요한 설명을 보강한다. 한국어 기본 목표는
+  **약 60초**, 400~750자이며 `발표 설명` 블록은 240자·3문장 이상으로 작성한다.
 - 한 슬라이드는 질문 하나, 결론 하나, 핵심 근거 2~4개를 기본으로 한다.
 - 첫 본문 슬라이드에서 핵심 결론·가치·다음 행동을 보여준다.
 - 제목+불릿만 반복하지 않고 숫자·표·차트·흐름·비교·계층·타임라인 중 적합한 native visual을 사용한다.
@@ -109,6 +155,9 @@ python3 -B .github/skills/adaptive-presentation/scripts/verify_deck.py <deck>.pp
 - 자동 검증 범위의 geometry·rendered text 결함이 0이며, 미지원 객체는 finding 단위 검토 근거가 있다.
 - 텍스트가 경계와 컨테이너 안에 있고 발표 거리에서 읽힌다.
 - 외부 사실을 사용하는 슬라이드에 출처가 있고 Preview·가정·시연 데이터가 표시된다.
+- 한국어 덱은 설명 문구가 한글 우선이고, `protectedTerms`의 서비스·공식 기능명이 영문으로 유지되며,
+  language balance QA를 통과한다.
+- 모든 슬라이드 notes가 `핵심 메시지/발표 설명/질문·전환/출처·상태`를 포함하고 notes QA를 통과한다.
 - 최종 PPTX revision과 일치하는 전체 시각 검토 증거가 있다.
 - PPTX가 정상적으로 열리고 압축 구조 오류가 없다.
 - 저장소와 최종 출력 폴더에 임시 `.py`, `.pyc`, `__pycache__`, PDF, QA 이미지가 남지 않는다.

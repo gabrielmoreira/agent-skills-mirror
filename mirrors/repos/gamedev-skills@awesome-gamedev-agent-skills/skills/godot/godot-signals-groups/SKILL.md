@@ -1,23 +1,17 @@
 ---
 name: godot-signals-groups
 description: >
-  Build event-driven, decoupled Godot 4.x gameplay with signals and node groups:
+  Build event-driven, decoupled Godot 4.7 gameplay with signals and node groups:
   declare and emit custom signals, connect with Callables (incl. bind/one-shot),
   and broadcast to many nodes via groups and call_group. Use when wiring node
   communication in a Godot project, replacing tight references with signals,
   emitting/connecting events, or porting 3.x connect("sig", self, "method") code.
-license: Apache-2.0
-compatibility: Godot 4.3+
-metadata:
-  engine: godot
-  category: godot
-  difficulty: beginner
 ---
 
 # Godot Signals & Groups (4.x)
 
 Decouple nodes with the observer pattern (signals) and act on many nodes at once
-(groups), instead of hard-coding references between scenes. Targets **Godot 4.3+**.
+(groups), instead of hard-coding references between scenes. Targets **Godot 4.7**.
 
 ## When to use
 

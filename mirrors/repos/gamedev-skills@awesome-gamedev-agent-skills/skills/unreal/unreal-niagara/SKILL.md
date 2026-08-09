@@ -6,19 +6,13 @@ description: >
   Blueprints or C++. Use when building particle effects, NS_/NE_ assets, spawning a Niagara
   system at runtime, setting User parameters, or when the user mentions Niagara, VFX, or a
   particle system in Unreal.
-license: Apache-2.0
-compatibility: Unreal Engine 5.4+ (Niagara is the current VFX system; Cascade is legacy)
-metadata:
-  engine: unreal
-  category: unreal
-  difficulty: advanced
 ---
 
 # Unreal Niagara VFX
 
 Build and control real-time visual effects in UE5 with Niagara: understand the
 System/Emitter/Module hierarchy, expose parameters you can drive from gameplay, and spawn
-effects at runtime. Targets **UE 5.4+**. (Niagara replaces the legacy Cascade system.)
+effects at runtime. Targets **UE 5.8**. (Niagara replaces the legacy Cascade system.)
 
 ## When to use
 

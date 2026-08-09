@@ -1,4 +1,4 @@
-# Blend trees, layers & humanoid IK (Unity 6)
+# Blend trees, layers & humanoid IK (Unity 6.3 LTS)
 
 Depth for `unity-animation`. Verified against the Unity Manual Animation section and
 `ScriptReference/Animator`.

@@ -10,7 +10,7 @@ Usage:
     python extract.py /path/to/document.docx
 
 Dependencies:
-    PyPDF2>=3.0.0 (for PDF extraction)
+    pypdf>=6.15.0 (for PDF extraction)
     python-docx>=1.0.0 (for DOCX extraction)
 """
 
@@ -22,10 +22,10 @@ from pathlib import Path
 def extract_pdf(path: Path) -> str:
     """Extract text from a PDF file."""
     try:
-        from PyPDF2 import PdfReader
+        from pypdf import PdfReader
     except ImportError:
-        print("Error: PyPDF2 is required for PDF extraction.", file=sys.stderr)
-        print("Install it with: pip install 'PyPDF2>=3.0.0'", file=sys.stderr)
+        print("Error: pypdf is required for PDF extraction.", file=sys.stderr)
+        print("Install it with: pip install 'pypdf>=6.15.0'", file=sys.stderr)
         sys.exit(1)
 
     reader = PdfReader(str(path))

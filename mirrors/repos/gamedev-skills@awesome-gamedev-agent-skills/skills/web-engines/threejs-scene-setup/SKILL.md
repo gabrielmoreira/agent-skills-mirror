@@ -7,19 +7,14 @@ description: >
   app — when the user mentions three.js, THREE.Scene, WebGLRenderer,
   PerspectiveCamera, the render loop, resizing, or OrbitControls. For models use
   threejs-gltf-loading; for materials/lights use threejs-materials-lighting.
-license: Apache-2.0
-compatibility: three.js r165+ (verified against r184; ES modules + import maps)
-metadata:
-  engine: threejs
-  category: web-engines
-  difficulty: beginner
 ---
 
 # three.js Scene Setup
 
 Create the foundation of a three.js app: module loading, the
 scene/camera/renderer trio, the render loop, responsive resizing, and camera
-controls. Patterns target **r165+** and are verified against **r184**.
+controls. Patterns target **r184**. Read the installed `three` version before
+changing an existing project because examples and addons move across releases.
 
 ## When to use
 

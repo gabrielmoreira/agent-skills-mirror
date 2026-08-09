@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 7 followed patterns, 205 file(s) materialized.
+Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 7 followed patterns, 208 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `NVIDIA/NemoClaw` — 26 default patterns, 7 followed patterns, 205 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 7 |
-| Files         | 205 |
+| Files         | 208 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -242,34 +242,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 175 | ✓ | [`agents/langchain-deepagents-code/validate-observability.py`](agents/langchain-deepagents-code/validate-observability.py) |
 | 176 | ✓ | [`agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py`](agents/langchain-deepagents-code/validate-progressive-tool-disclosure.py) |
 | 177 | ✓ | [`agents/openclaw/dependency-review.md`](agents/openclaw/dependency-review.md) |
-| 178 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
-| 179 | ✓ | [`agents/openclaw/mcporter-runtime/package-lock.json`](agents/openclaw/mcporter-runtime/package-lock.json) |
-| 180 | ✓ | [`agents/openclaw/mcporter-runtime/package.json`](agents/openclaw/mcporter-runtime/package.json) |
-| 181 | ✓ | [`agents/openclaw/openclaw-runtime/package-lock.json`](agents/openclaw/openclaw-runtime/package-lock.json) |
-| 182 | ✓ | [`agents/openclaw/openclaw-runtime/package.json`](agents/openclaw/openclaw-runtime/package.json) |
-| 183 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
-| 184 | ✓ | [`agents/openclaw/state-lock-plan.json`](agents/openclaw/state-lock-plan.json) |
-| 185 | ✓ | [`agents/openclaw/wechat-runtime/package-lock.json`](agents/openclaw/wechat-runtime/package-lock.json) |
-| 186 | ✓ | [`agents/openclaw/wechat-runtime/package.json`](agents/openclaw/wechat-runtime/package.json) |
-| 187 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 188 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
-| 189 | ✓ | [`docs/DORI_SETUP.md`](docs/DORI_SETUP.md) |
-| 190 | ✓ | [`fern/AGENTS.md`](fern/AGENTS.md) |
-| 191 | ✓ | [`skills/nemoclaw-user-guide/BENCHMARK.md`](skills/nemoclaw-user-guide/BENCHMARK.md) |
-| 192 | ✓ | [`skills/nemoclaw-user-guide/evals/evals.json`](skills/nemoclaw-user-guide/evals/evals.json) |
-| 193 | ✓ | [`skills/nemoclaw-user-guide/skill-card.md`](skills/nemoclaw-user-guide/skill-card.md) |
-| 194 | ✓ | [`skills/nemoclaw-user-guide/SKILL.md`](skills/nemoclaw-user-guide/SKILL.md) |
-| 195 | ✓ | [`skills/nemoclaw-user-guide/skill.oms.sig`](skills/nemoclaw-user-guide/skill.oms.sig) |
-| 196 | ✓ | [`skills/README.md`](skills/README.md) |
-| 197 | ✓ | [`src/lib/messaging/AGENTS.md`](src/lib/messaging/AGENTS.md) |
-| 198 | ✓ | [`test/e2e/docs/RETIREMENT.md`](test/e2e/docs/RETIREMENT.md) |
-| 199 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 200 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 201 | → | [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) |
-| 202 | → | [`scripts/bench/README.md`](scripts/bench/README.md) |
-| 203 | → | [`SECURITY.md`](SECURITY.md) |
-| 204 | → | [`test/e2e/docs/README.md`](test/e2e/docs/README.md) |
-| 205 | → | [`WRITING.md`](WRITING.md) |
+| 178 | ✓ | [`agents/openclaw/managed-image-messaging-runtime/npm-cache-seed/.gitkeep`](agents/openclaw/managed-image-messaging-runtime/npm-cache-seed/.gitkeep) |
+| 179 | ✓ | [`agents/openclaw/managed-image-messaging-runtime/package-lock.json`](agents/openclaw/managed-image-messaging-runtime/package-lock.json) |
+| 180 | ✓ | [`agents/openclaw/managed-image-messaging-runtime/package.json`](agents/openclaw/managed-image-messaging-runtime/package.json) |
+| 181 | ✓ | [`agents/openclaw/manifest.yaml`](agents/openclaw/manifest.yaml) |
+| 182 | ✓ | [`agents/openclaw/mcporter-runtime/package-lock.json`](agents/openclaw/mcporter-runtime/package-lock.json) |
+| 183 | ✓ | [`agents/openclaw/mcporter-runtime/package.json`](agents/openclaw/mcporter-runtime/package.json) |
+| 184 | ✓ | [`agents/openclaw/openclaw-runtime/package-lock.json`](agents/openclaw/openclaw-runtime/package-lock.json) |
+| 185 | ✓ | [`agents/openclaw/openclaw-runtime/package.json`](agents/openclaw/openclaw-runtime/package.json) |
+| 186 | ✓ | [`agents/openclaw/policy-permissive.yaml`](agents/openclaw/policy-permissive.yaml) |
+| 187 | ✓ | [`agents/openclaw/state-lock-plan.json`](agents/openclaw/state-lock-plan.json) |
+| 188 | ✓ | [`agents/openclaw/wechat-runtime/package-lock.json`](agents/openclaw/wechat-runtime/package-lock.json) |
+| 189 | ✓ | [`agents/openclaw/wechat-runtime/package.json`](agents/openclaw/wechat-runtime/package.json) |
+| 190 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 191 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
+| 192 | ✓ | [`docs/DORI_SETUP.md`](docs/DORI_SETUP.md) |
+| 193 | ✓ | [`fern/AGENTS.md`](fern/AGENTS.md) |
+| 194 | ✓ | [`skills/nemoclaw-user-guide/BENCHMARK.md`](skills/nemoclaw-user-guide/BENCHMARK.md) |
+| 195 | ✓ | [`skills/nemoclaw-user-guide/evals/evals.json`](skills/nemoclaw-user-guide/evals/evals.json) |
+| 196 | ✓ | [`skills/nemoclaw-user-guide/skill-card.md`](skills/nemoclaw-user-guide/skill-card.md) |
+| 197 | ✓ | [`skills/nemoclaw-user-guide/SKILL.md`](skills/nemoclaw-user-guide/SKILL.md) |
+| 198 | ✓ | [`skills/nemoclaw-user-guide/skill.oms.sig`](skills/nemoclaw-user-guide/skill.oms.sig) |
+| 199 | ✓ | [`skills/README.md`](skills/README.md) |
+| 200 | ✓ | [`src/lib/messaging/AGENTS.md`](src/lib/messaging/AGENTS.md) |
+| 201 | ✓ | [`test/e2e/docs/RETIREMENT.md`](test/e2e/docs/RETIREMENT.md) |
+| 202 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 203 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 204 | → | [`docs/CONTRIBUTING.md`](docs/CONTRIBUTING.md) |
+| 205 | → | [`scripts/bench/README.md`](scripts/bench/README.md) |
+| 206 | → | [`SECURITY.md`](SECURITY.md) |
+| 207 | → | [`test/e2e/docs/README.md`](test/e2e/docs/README.md) |
+| 208 | → | [`WRITING.md`](WRITING.md) |
 
 ---
 

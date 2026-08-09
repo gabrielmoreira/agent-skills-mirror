@@ -1,23 +1,17 @@
 ---
 name: godot-nodes-scenes
 description: >
-  Structure a Godot 4.x project with the scene tree and node composition: build
+  Structure a Godot 4.7 project with the scene tree and node composition: build
   reusable scenes, instance PackedScenes at runtime, navigate the tree safely,
   and register autoload singletons. Use when designing .tscn scenes, deciding how
   to split nodes, spawning instances with instantiate(), wiring autoloads, or
   fixing "node not found"/freed-node errors in a Godot project.
-license: Apache-2.0
-compatibility: Godot 4.3+
-metadata:
-  engine: godot
-  category: godot
-  difficulty: beginner
 ---
 
 # Godot Nodes & Scenes (4.x)
 
 Compose games from nodes and scenes, instance them at runtime, and access the tree
-without crashing on freed or missing nodes. Targets **Godot 4.3+**.
+without crashing on freed or missing nodes. Targets **Godot 4.7**.
 
 ## When to use
 

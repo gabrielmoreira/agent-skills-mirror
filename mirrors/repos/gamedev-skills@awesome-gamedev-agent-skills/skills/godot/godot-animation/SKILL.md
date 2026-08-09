@@ -1,23 +1,17 @@
 ---
 name: godot-animation
 description: >
-  Animate in Godot 4.x three ways: AnimationPlayer for keyframed clips (incl. call
+  Animate in Godot 4.7 three ways: AnimationPlayer for keyframed clips (incl. call
   and signal tracks), AnimationTree with state machines and blend spaces for
   character animation, and Tween for short procedural/UI tweens via create_tween().
   Use when working with AnimationPlayer/AnimationTree nodes in a .tscn, blending
   character states, sprite-sheet animation, or code-driven Tweens.
-license: Apache-2.0
-compatibility: Godot 4.3+
-metadata:
-  engine: godot
-  category: godot
-  difficulty: intermediate
 ---
 
 # Godot Animation (4.x)
 
 Choose and drive the right animation tool: `AnimationPlayer` (clips), `AnimationTree`
-(blending/state machines), or `Tween` (short procedural moves). Targets **Godot 4.3+**.
+(blending/state machines), or `Tween` (short procedural moves). Targets **Godot 4.7**.
 
 ## When to use
 

@@ -1,4 +1,4 @@
-# Custom BTTask in C++ (UE 5.4+)
+# Custom BTTask in C++ (UE 5.8)
 
 Depth for `unreal-behavior-trees`: writing a custom Behavior Tree task node in C++. Verified
 against the Behavior Trees documentation and the `UBTTaskNode` API. Requires the `AIModule`

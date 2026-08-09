@@ -1,23 +1,17 @@
 ---
 name: godot-resources
 description: >
-  Design data-driven Godot 4.x games with custom Resource classes: define typed
+  Design data-driven Godot 4.7 games with custom Resource classes: define typed
   data with class_name + @export, save/load .tres/.res files, instance and duplicate
   resources, and load on demand with ResourceLoader (incl. threaded loading). Use
   when modeling items/stats/configs as data in a Godot project, creating .tres
   resources, or working with custom Resource subclasses and ResourceLoader/ResourceSaver.
-license: Apache-2.0
-compatibility: Godot 4.3+
-metadata:
-  engine: godot
-  category: godot
-  difficulty: intermediate
 ---
 
 # Godot Resources (4.x)
 
 Model game data as reusable, Inspector-editable `Resource` objects instead of hard-coded
-values, and load/save them as `.tres`/`.res`. Targets **Godot 4.3+**.
+values, and load/save them as `.tres`/`.res`. Targets **Godot 4.7**.
 
 ## When to use
 

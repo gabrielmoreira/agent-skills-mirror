@@ -257,12 +257,13 @@ left on disk after release — both lock implementations reuse them).
 
 | Lock file | Owner | Scope | Acquisition |
 |---|---|---|---|
-| `<profile>/.storage_state.json.lock` | `_auth/storage_writer.py` (the sole canonical writer; `storage.save_cookies_to_storage` is the monkeypatchable delegate seam onto it) | Every mutation of `storage_state.json`: the cookie CAS delta merge, in-band account-metadata read-modify-write, and the L3/L4 re-mint full-replace | CAS merge: blocking exclusive, fail-open. Full-replace intents (account metadata, re-mint): platform-neutral bounded acquire — non-blocking probe + deadline/jitter retry, 90s deadline, fail-closed (raises `LockUnavailableError`) |
-| `<profile>/.master_token.json.lock` | `_auth/storage_writer.py::write_master_token` | Writes to `master_token.json` (the durable L4 credential) | Same bounded acquire as above (90s deadline), fail-closed. Previously lockless. |
+| `<profile>/.storage_state.json.lock` | `_auth/storage.py` (the sole canonical writer; `storage.save_cookies_to_storage` is the monkeypatchable delegate seam onto it) | Every mutation of `storage_state.json`: the cookie CAS delta merge, in-band account-metadata read-modify-write, and the L3/L4 re-mint full-replace | CAS merge: blocking exclusive, fail-open. Full-replace intents (account metadata, re-mint): platform-neutral bounded acquire — non-blocking probe + deadline/jitter retry, 90s deadline, fail-closed (raises `LockUnavailableError`) |
+| `<profile>/.master_token.json.lock` | `_auth/storage.py::write_master_token` | Writes to `master_token.json` (the durable L4 credential) | Same bounded acquire as above (90s deadline), fail-closed. Previously lockless. |
 | `<profile>/.storage_state.json.rotate.lock` | `_auth/keepalive.py::_poke_session` | Cross-process dedup of the `accounts.google.com/RotateCookies` keepalive POST | Non-blocking exclusive (`LOCK_NB`); skip on contention |
 | `<profile>/.storage_state.json.refresh.lock` | `_auth/refresh.py` (via `_auth/single_flight.py`) | Cross-process dedup of the `NOTEBOOKLM_REFRESH_CMD` subprocess (cold-start, and mid-session when `NOTEBOOKLM_REFRESH_CMD_MIDSESSION=1`) | Non-blocking exclusive (`LOCK_NB`); skip on contention, waiter polls with jittered backoff |
+| `<profile>/.storage_state.json.lock.bootstrap` | `_auth/master_token.py::bootstrap_storage_from_master_token` | Cross-process exclusion for the FIRST-TIME mint of a profile that has only a `master_token.json` — held across the mint, whose persist takes `.storage_state.json.lock` *inside* this section (so the two must never share a path) | Non-blocking exclusive (`filelock`), retried on a 50ms sleep so the event loop keeps running |
 | `<home>/.migration.lock` | `migration.py::migrate_to_profiles` | One-shot legacy→profile layout migration on startup | Blocking exclusive, 30s timeout (raises `MigrationLockTimeoutError`) |
-| `<profile>/context.json.lock` | `_atomic_io.py::atomic_update_json` through CLI context helpers; also `_auth/account.py::_drop_legacy_account_key` for the legacy `account` key cleanup | Read-modify-write of the active-notebook/account-routing context for a profile | Blocking exclusive, 10s timeout (`filelock`) |
+| `<profile>/context.json.lock` | `_atomic_io.py::atomic_update_json` through CLI context helpers; also `_auth/storage.py::_drop_legacy_account_key` for the legacy `account` key cleanup | Read-modify-write of the active-notebook/account-routing context for a profile | Blocking exclusive, 10s timeout (`filelock`) |
 
 Design notes:
 
@@ -270,18 +271,43 @@ Design notes:
   `.refresh.lock` files protect the *same* `storage_state.json` but serve
   different access patterns: a full-replace write must not block — or be
   blocked by — a best-effort rotation poke or a refresh-cmd subprocess.
-  Keeping them separate prevents any one from queueing behind another.
-- **Only the rotation and refresh-cmd locks canonicalize their path.** The
-  rotate (`.rotate.lock`) and refresh-cmd (`.refresh.lock`) sentinels are
-  derived from `_auth/paths.py::canonical_storage_key`, so relative /
-  symlinked / `~`-expanded spellings of one profile collapse onto the same
-  lock. The main `.storage_state.json.lock` does **not**: `storage_writer`'s
-  writers (`merge_cookie_delta` and the full-replace intents) derive
-  `_storage_state_lock_path` from the caller's raw path, so two processes
-  reaching the same file through different path spellings (e.g. a symlink vs.
-  its resolved target) can take different main-write locks and race. Callers
-  are expected to reach a profile's storage file through one consistent path
-  (`paths.py`'s resolvers), which holds in every in-tree call site today.
+  Keeping them separate prevents any one from queueing behind another. The
+  fourth sibling, `.lock.bootstrap`, is separate for a harder reason than
+  throughput: the mint it guards acquires `.storage_state.json.lock` *inside*
+  its critical section — and the two sides use different mechanisms
+  (`filelock.FileLock` outside, `storage._file_lock` inside), so the in-process
+  lock registry never sees the outer hold. What makes sharing one path fatal is
+  the OS lock: both take an exclusive `flock` on the sentinel, and `flock`
+  conflicts between two open file descriptions even inside one process, so the
+  inner acquire would be guaranteed-unavailable rather than merely contended.
+- **One derivation, four files, three different base-path policies.** Every
+  credential lock path is `.<name>.<kind>` next to the storage file, computed in
+  exactly one place (`_auth/paths.py::_lock_sibling`). What differs per lock is
+  the *base* it is derived from, and that choice decides whether two spellings
+  of one profile collapse onto the same lock:
+  - `.storage_state.json.lock.bootstrap` canonicalizes **inside** the helper
+    (`_bootstrap_lock_path` -> `canonical_storage_key`, degrading to
+    `expanduser()` on a symlink loop), because its cold-start callers get
+    whatever spelling the CLI was handed and two processes must not both mint.
+  - `.refresh.lock` is alias-proof **by its callers**: both production sites
+    (`refresh._fetch_tokens_with_refresh`, `refresh.try_refresh_cmd_reauth`)
+    pass the already-canonicalized path they key the single flight on.
+  - `.rotate.lock` is alias-proof only on the keepalive route, where
+    `_client_assembly` canonicalizes the keepalive storage path once at client
+    assembly; the PSIDTS rotation-recovery route passes its load path through
+    unchanged.
+  - `.storage_state.json.lock` never canonicalizes: `_auth/storage.py`'s
+    writers (`merge_cookie_delta` and the full-replace intents) derive
+    `_storage_state_lock_path` from the caller's raw path, so two processes
+    reaching the same file through different path spellings (e.g. a symlink vs.
+    its resolved target) can take different main-write locks and race. Callers
+    are expected to reach a profile's storage file through one consistent path
+    (`paths.py`'s resolvers), which holds in every in-tree call site today.
+
+  These filenames are a cross-version contract — a mixed-version window (old CLI
+  + new server on one profile) loses updates the moment two versions disagree on
+  a lock name — so all four are pinned against hard-coded strings in
+  `tests/unit/test_auth_lock_path_derivation.py`.
 - **Per-intent fail-open/fail-closed split ([ADR-0029](adr/0029-canonical-storage-writer.md)).**
   The cookie CAS merge and the rotation/refresh-cmd pokes fail **open** on lock
   infrastructure failure (read-only home dir, NFS without `flock`, permission
@@ -571,7 +597,10 @@ A representative slice (run `ls tests/_guardrails/` for the full set):
   only shrinks (e.g. `test_module_size_ratchet.py`,
   `tests/scripts/check_method_coverage.py`). The rule lands without a giant
   cleanup PR, and the gate fails when an allowlisted entry becomes clean so it
-  gets removed.
+  gets removed. (One recorded exception:
+  [ADR-0033](adr/0033-auth-consolidation-policy.md) sanctioned-merge entries
+  under `src/notebooklm/_auth/`, where a consolidation may add or raise an
+  annotated entry at its measured LOC — see that gate's own docstring.)
 - **Scan yourself too.** A gate that shows the *wrong* form in its examples
   should use placeholders (or build them at runtime) rather than excluding its
   own file, so it still polices its own references

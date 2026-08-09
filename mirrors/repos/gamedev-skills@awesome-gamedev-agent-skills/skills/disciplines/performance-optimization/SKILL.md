@@ -7,12 +7,6 @@ description: >
   neutral method that pairs with each engine's profiler. Use when the user mentions performance,
   optimize, low/dropping FPS, frame drops, stutter, lag, profiler, frame budget, draw calls,
   batching, garbage collection/GC spikes, object pooling, or "the game runs slow".
-license: Apache-2.0
-compatibility: Engine-agnostic methodology; profiler/tooling notes for Godot 4.x, Unity 6, and Unreal 5. Pairs with physics-tuning and the engine skills.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: advanced
 ---
 
 # Performance optimization
@@ -78,10 +72,10 @@ If one subsystem blows its slice, that's your target — not whatever you assume
 ### 2. Measure with the engine profiler (do this before any fix)
 
 ```text
-Godot 4.x : Debugger ▸ Profiler (script/physics time) and Monitors tab (FPS, draw calls, memory).
+Godot 4.7 : Debugger ▸ Profiler (script/physics time) and Monitors tab (FPS, draw calls, memory).
             In code: Performance.get_monitor(Performance.TIME_PROCESS) and
             Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME).
-Unity 6   : Profiler window (CPU/GPU/Memory/Rendering modules) + Frame Debugger for draw calls.
+Unity 6.3 LTS   : Profiler window (CPU/GPU/Memory/Rendering modules) + Frame Debugger for draw calls.
             In code: a ProfilerRecorder tracking "CPU Main Thread Frame Time" for a HUD/log.
 Unreal 5  : `stat unit` (Frame/Game/Draw/GPU ms), `stat fps`, `stat scenerendering` (draw calls);
             Unreal Insights for deep traces.
@@ -120,7 +114,7 @@ Measure draw calls before and after — the count should drop, and so should GPU
 ### 5. Kill per-frame allocations (GC spikes = stutter)
 
 ```csharp
-// Unity 6 (C#). Allocating every frame fills the managed heap; the GC then stalls a frame.
+// Unity 6.3 LTS (C#). Allocating every frame fills the managed heap; the GC then stalls a frame.
 // WRONG (allocates each call): foreach (var e in FindObjectsOfType<Enemy>()) ...  // + LINQ, new[]
 // RIGHT: cache references once, reuse buffers, avoid LINQ/boxing in Update.
 void Update() {

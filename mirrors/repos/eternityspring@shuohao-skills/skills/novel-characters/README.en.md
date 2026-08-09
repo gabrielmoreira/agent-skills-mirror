@@ -6,19 +6,26 @@ Feed it a novel or a short story, and get a complete design bible for every char
 
 - **Cast list** — who appears, how central they are, with every name a character is called by folded into one person
 - **Profile** — gender, age, standing, appearance, temperament, motivation, arc, relationships, each backed by **verbatim quotes from the source**
-- **Cartoon-design prompts** — bilingual image prompt + negative prompt + style tags, ready for Midjourney / SD / GPT-Image
-- **Voice prompts** — timbre, pitch, pace, accent, emotion, plus a bilingual voice-design prompt for Qwen3-TTS / ElevenLabs Voice Design
-- **Turnaround sheets** — front / side / back on a white background for clean cut-out, generated through codex's built-in image tool (optional)
+- **Design prompts** — semi-realistic painterly direction, bilingual image prompt + negative prompt + style tags, ready for Midjourney / SD / GPT-Image
+- **Voice prompts** — timbre, pitch, pace, accent, emotion, plus a voice-design prompt for Qwen3-TTS / ElevenLabs Voice Design
+- **A character model sheet** — one 16:9 image in three zones: an ID-photo-style bust on the left (~34%, the reference for the face design), a full-body turnaround top-right, and a strip of key-detail close-ups bottom-right. White background for clean cut-out, generated through codex's built-in image tool (optional)
 
 Outputs `cast.json`, a Markdown report, and a self-contained `report.html` you can just double-click.
 
+**Any output language**, Chinese by default:
+
+```
+/novel-characters ./book.txt --lang en
+/novel-characters ./book.txt --lang ja
+```
+
+Chinese, English and Japanese UI strings ship built in. **Other languages work too** — the skill translates the UI labels on the fly into the target language and stores them in `cast.json` under `ui`, so French, Korean or Spanish reports come out fully localized rather than half-English.
+
 ![report.html](assets/report.png)
 
-A turnaround sheet (Shen Zhiwei, from the bundled sample story):
+A character model sheet (Shen Zhiwei, from the bundled sample story):
 
-![turnaround](assets/turnaround.jpg)
-
-> ⚠️ **Output is Chinese-first.** The `persona` and `voice` description fields are written in Chinese and the validator rejects English there — even when the source novel is in English. Changing that means editing `references/` and the validation rules. See [Limits](#limits).
+![model sheet](assets/sheet.jpg)
 
 ## Use
 
@@ -29,6 +36,41 @@ For installation see the [repository README](../../README.en.md). Then:
 ```
 
 Or just say "break this book down into characters" and give it the path.
+
+### Report language
+
+Chinese by default. Use `--lang`, or just ask in words:
+
+```
+/novel-characters ./book.txt --lang en
+/novel-characters ./book.txt --lang ja
+```
+
+Chinese, English and Japanese UI strings ship built in. **Any other language works too** — the skill translates the UI labels into the target language on the fly and stores them in `cast.json` under `ui`, so French, Korean or Spanish reports come out fully localized rather than half-English.
+
+Two things never follow the language: **image and TTS prompts stay English** (those engines work best that way), and **source quotes stay in the original language** (translate them and they stop being evidence).
+
+### Image style
+
+`realistic` by default (semi-realistic painterly). For an animation look:
+
+```
+/novel-characters ./book.txt --style ghibli
+```
+
+| id | What it is |
+| --- | --- |
+| `realistic` | Semi-realistic painterly — skin with pores and texture, fabric with weave and wear. Default |
+| `ghibli` | Ghibli-like hand-painted cel — even ink linework, a single soft shadow tone, flat colour |
+
+They combine: `--lang ja --style ghibli`.
+
+```bash
+node scripts/novel-characters.mjs styles          # list all presets
+node scripts/novel-characters.mjs styles ghibli   # dump one in full
+```
+
+**Switching style swaps the whole set**, not just one line — each preset carries its own rendering clause, surface treatment, lighting, negative prompt and tags. See [`references/style-presets.md`](references/style-presets.md).
 
 ## How it works
 
@@ -50,7 +92,8 @@ Four hard rules, all checked deterministically by a script rather than trusted t
 | --- | --- |
 | `evidence` must be a **verbatim, contiguous** span of the source | Stops invention. Dialogue split by a narration beat may not be stitched back together |
 | Image prompts must **not contain character names** | Image models bias hard on names and will draw the character they remember instead of yours |
-| **Language split** per field | `voice.*` descriptions must be Chinese, `image.prompt` must be English — the model drifts otherwise |
+| **Language split** per field | Human-readable fields follow `--lang`, image and TTS prompts are always English — the model drifts otherwise |
+| **Style matches its negative prompt** | `realistic` must not ban `photorealistic`, `ghibli` must — get it backwards and the whole batch is wasted |
 | Structure and enums | `importance` is one of exactly four values |
 
 None of these were written up front. Each one exists because real model output violated it and the validator caught it.
@@ -70,9 +113,9 @@ node scripts/novel-characters.mjs slug "胡二爷"                  # filesystem
 ## Limits
 
 - Caps at 24 chunks (~330k characters) per run. Beyond that it reports `truncated` explicitly — it does **not** silently drop the tail
-- **Chinese-first output**, as noted above. An English novel still yields Chinese profiles
-- Turnarounds are generated automatically only for `protagonist` and `major`; everyone else gets the prompt only
-- **Art style drifts across a cast.** Each character is generated independently, and in practice the same `flat vector cartoon style` instruction produced anime-ish, semi-realistic, and ink-wash-realistic results in one run. Feeding the first sheet back as a style reference helps (see `references/turnaround.md`) but does not fully fix it
+- Human-readable fields follow `--lang`; image and TTS prompts are **always English**, since those engines work best that way regardless of report language
+- Sheets are generated automatically only for `protagonist` and `major`; everyone else gets the prompts only
+- **Art style can still vary across a cast**, since each character is generated independently. It used to drift badly under the old "flat vector cartoon" wording — one run produced anime-ish, semi-realistic and ink-wash results side by side. The explicit style presets fixed most of that, but not all of it. Feeding the first sheet back as a reference helps; see `references/sheet.md`
 
 > ⚠️ **If you have more than one codex installed, mind the version.** An older one fails outright with `requires a newer version of Codex` instead of degrading. The skill probes for the highest version it can find; if yours is simply old, run `npm i -g @openai/codex`.
 
@@ -82,13 +125,14 @@ node scripts/novel-characters.mjs slug "胡二爷"                  # filesystem
 SKILL.md                 the workflow the agent reads
 scripts/
   novel-characters.mjs   chunk / merge / validate / render / slug
-  selftest.mjs           73 assertions, never calls a model
+  selftest.mjs           220 assertions, never calls a model
 references/
   roster-pass.md         pass 1: scanning for characters
   profile-pass.md        pass 2: building a character sheet (8 hard rules)
   schema.md              sheet structure and which language each field takes
-  turnaround.md          the codex contract for turnaround generation
+  sheet.md               the codex contract for model-sheet generation
   report-style.md        design conventions for report.html
+  style-presets.md       image style presets (realistic / ghibli)
 examples/
   渡口.txt                bundled short story, 4 characters
   渡口-cast.json          its output, doubling as the validation fixture
@@ -103,6 +147,6 @@ In `examples/渡口.txt` the peddler is only ever referred to by a nickname and 
 node scripts/selftest.mjs
 ```
 
-73 assertions across chunking, alias merging, validation, and rendering. No model calls, no quota, runs in about a second. Run it before anything else after touching the scripts.
+220 assertions across chunking, alias merging, localization, validation, and rendering. No model calls, no quota, runs in about a second. Run it before anything else after touching the scripts.
 
-**Only tested on macOS with Node 24.** There is no platform-specific code, so Linux and older Node releases should be fine, but that is **unverified** — the repository's CI (`ci/selftest.yml`) is not enabled yet.
+**Only tested on macOS with Node 24.** There is no platform-specific code, so Linux and older Node releases should be fine, but that is **unverified**.

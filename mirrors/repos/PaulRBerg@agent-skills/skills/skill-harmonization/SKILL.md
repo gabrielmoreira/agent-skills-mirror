@@ -3,6 +3,8 @@ argument-hint: "[task]"
 compatibility: Requires Git, ripgrep (rg), uv, and an installed skill-map skill with --portfolio-root support.
 disable-model-invocation: true
 name: skill-harmonization
+skill-dependencies:
+  - skill-map
 user-invocable: true
 description: Harmonize a repository's skill portfolio across catalog and user-installed skills.
 ---
@@ -112,6 +114,17 @@ Cluster plausible candidates before deeper comparison using:
 Do not perform an exhaustive all-pairs body comparison. Equal hashes establish content identity, not design intent;
 different hashes establish divergence, not a defect. Resolve symlinks and client exposure before interpreting either.
 
+### Externally Managed User Installations
+
+A user-installed skill can intentionally have an external canonical source rather than a matching directory in the
+current repository. When documentation or installation automation for the relevant user root identifies an upstream
+source and the inventory resolves the skill for the affected client, treat the reference as a valid externally managed
+dependency.
+
+Classify that relationship as deliberate no-change. Do not call it load-bearing drift, recommend vendoring it into the
+current catalog, or infer removal risk from this catalog's publication workflow. Report a defect only when the target is
+absent for the affected client, broken, or contradicts its declared external source or installation contract.
+
 ## Classify Every Material Finding
 
 Classify each material relationship exactly once:
@@ -134,8 +147,8 @@ relationship, the inference behind the recommendation, affected paths and client
 ### Deliberate no-change relationships
 
 Record relationships that should remain as-is, including same-target aliases, aligned source/publication mirrors,
-platform adaptations, and duplication required to keep independently installed skills self-contained. Cite both the
-mechanical relationship and the design constraint.
+platform adaptations, externally managed global installations, and duplication required to keep independently installed
+skills self-contained. Cite both the mechanical relationship and the design constraint.
 
 Do not convert an uncertain observation into a defect. Return to the bounded evidence or retain it as a judgment
 candidate with explicit uncertainty.
@@ -148,6 +161,9 @@ workflow. Never hand-edit a published global copy when a source catalog or symli
 
 If a global copy has no provable source owner, treat ownership as unknown. Read-only and planning work may report it;
 implementation must stop for confirmation before adopting, replacing, renaming, or removing it.
+
+An explicit external source declaration in the relevant user-root documentation or installation automation proves
+external ownership. The current repository's lack of a matching catalog source does not make that ownership unknown.
 
 For authorized implementation, preserve unrelated work, follow the host's repository coordination and commit rules, run
 the narrowest skill-specific checks, and re-run the portfolio inventory when needed to prove the intended relationship.

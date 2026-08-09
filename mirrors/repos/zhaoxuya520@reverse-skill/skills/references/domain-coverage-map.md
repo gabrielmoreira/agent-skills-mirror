@@ -46,7 +46,7 @@
 | 符号迁移 | `binary-diff/` | |
 | 作战契约 | `ops/` | **特色** |
 | CTF 编排 | `CTF-Sandbox-Orchestrator/` | |
-| 密码学广覆盖 | 本地可选 `crypto-analysis`（gitignore） | 公开核心以 RE 模式文档为主 |
+| 密码学模式识别 | `reverse-engineering` 模式文档 | 与逆向任务共用，不维护独立扩展包 |
 
 ## 明确不整库并入的域（路由未命中时的策略）
 

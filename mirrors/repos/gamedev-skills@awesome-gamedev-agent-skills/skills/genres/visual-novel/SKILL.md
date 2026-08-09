@@ -3,12 +3,6 @@ name: visual-novel
 description: >
   Build a visual novel: a branching script, character and background display, a text box with choices,
   save/load, backlog, and skip/auto. Use for a VN, dating sim, or branching story game.
-license: Apache-2.0
-compatibility: Engine-agnostic design patterns; snippets are pseudocode (port to your engine)
-metadata:
-  engine: none
-  category: genres
-  difficulty: beginner
 ---
 
 # Visual Novel

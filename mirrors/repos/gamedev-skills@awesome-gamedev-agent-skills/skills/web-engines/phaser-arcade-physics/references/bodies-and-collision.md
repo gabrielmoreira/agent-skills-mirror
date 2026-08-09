@@ -1,4 +1,4 @@
-# Arcade body anatomy & collision detail (Phaser 3.90)
+# Arcade body anatomy & collision detail (Phaser 4.2)
 
 Depth on the Arcade `Body` and the collision system. The `SKILL.md` covers the
 common path; reach for this when tuning feel, shaping hitboxes, or filtering

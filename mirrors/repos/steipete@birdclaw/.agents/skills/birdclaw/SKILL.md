@@ -14,7 +14,7 @@ ssh -o RequestTTY=no -o RemoteCommand=none steipete@clawstudio \
   'zsh -lc "birdclaw --json db stats"'
 ```
 
-Use the same SSH/login-shell shape for searches. If `clawstudio` is unavailable, report that before falling back to a local archive because coverage may differ. Production web UI: `https://app.birdclaw.sh`.
+Use the same SSH/login-shell shape for searches. If `clawstudio` is unavailable, report that before falling back to a local archive because coverage may differ. Production web UI: `https://bird.steipete.dev/`.
 
 ## Data
 
@@ -188,25 +188,25 @@ Not backed up intentionally: `sync_cache`, `identity_search_index`, FTS tables/s
 After query/filter changes, run focused tests first:
 
 ```bash
-pnpm test src/lib/queries.test.ts src/cli.test.ts src/routes/api/query.test.ts
+./scripts/bun-canary.sh ./scripts/run-vitest.mjs run src/lib/queries.test.ts src/cli.test.ts src/routes/api/query.test.ts
 ```
 
 After link-index or backup changes:
 
 ```bash
-pnpm test src/lib/url-expansion.test.ts src/lib/link-index.test.ts src/lib/backup.test.ts
+./scripts/bun-canary.sh ./scripts/run-vitest.mjs run src/lib/url-expansion.test.ts src/lib/link-index.test.ts src/lib/backup.test.ts
 ```
 
 Then run the broader release-relevant gate:
 
 ```bash
-pnpm run check
-pnpm test
-pnpm build
+./scripts/bun-canary.sh run --bun check
+./scripts/bun-canary.sh run --bun test
+./scripts/bun-canary.sh run --bun build
 ```
 
 Smoke the CLI with a real year query:
 
 ```bash
-pnpm --silent cli --json search tweets --since 2020-01-01 --until 2021-01-01 --originals-only --hide-low-quality --limit 20000
+./scripts/bun-canary.sh src/cli.ts --json search tweets --since 2020-01-01 --until 2021-01-01 --originals-only --hide-low-quality --limit 20000
 ```

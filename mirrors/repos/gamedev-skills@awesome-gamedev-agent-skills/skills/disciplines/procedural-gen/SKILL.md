@@ -6,12 +6,6 @@ description: >
   corridors, BSP, random walk), and weighted loot/drop tables. Engine-neutral
   algorithms. Use when the user mentions procedural generation, perlin/simplex
   noise, random seed, dungeon generator, heightmap/terrain, or loot tables.
-license: Apache-2.0
-compatibility: Engine-agnostic (algorithms). Snippets in Python/GDScript-like pseudocode; uses a noise library (FastNoiseLite, opensimplex, Unity.Mathematics.noise).
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: advanced
 ---
 
 # Procedural generation

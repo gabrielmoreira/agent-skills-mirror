@@ -1,4 +1,4 @@
-# Raycasting variants & joints (Unity 6 PhysX)
+# Raycasting variants & joints (Unity 6.3 LTS PhysX)
 
 Depth for `unity-physics`. All types are in `UnityEngine`. Verified against
 `ScriptReference/Physics` and the joint component pages.

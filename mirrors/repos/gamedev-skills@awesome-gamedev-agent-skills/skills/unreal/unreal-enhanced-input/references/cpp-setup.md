@@ -1,4 +1,4 @@
-# Enhanced Input — complete C++ Character (UE 5.4+)
+# Enhanced Input — complete C++ Character (UE 5.8)
 
 Depth for `unreal-enhanced-input`: a self-contained third-person Character that adds a mapping
 context and binds move/look/jump. Verified against the Enhanced Input documentation.

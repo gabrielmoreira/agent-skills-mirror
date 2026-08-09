@@ -25,6 +25,7 @@
 | WASM / Python 字节码 / .NET | `reverse-engineering/languages.md` | 按具体语言查对应章节 |
 | macOS / iOS | `reverse-engineering/platforms.md` — Mach-O/ObjC/Swift | — |
 | 内存转储 / PCAP | `reverse-engineering/platforms.md` | `reverse-engineering/patterns*.md` |
+| 已有 case / 证据交接审查 | `case-review/SKILL.md`: Evidence 图与 fixity 校验 | `docs-generator/`: 最终报告 |
 | 密码学 / 加解密算法 | `reverse-engineering/patterns*.md` — 密码学模式 | `js-reverse/`（如果是前端加密） |
 | 协议逆向 / 自定义协议 | `reverse-engineering/platforms.md` — 网络协议 | `js-reverse/`（如果是 WebSocket/HTTP） |
 | Go / Rust 二进制 | `reverse-engineering/languages-compiled.md` + `go-reverse.md` | `ida-reverse/` 或 `radare2/` |
@@ -68,6 +69,7 @@
 | "CTF 题/竞赛逆向" | `reverse-engineering/patterns-ctf*.md` |
 | "CTF ZIP/PKZIP/bkcrack/压缩包明文攻击" | `../CTF-Sandbox-Orchestrator/competition-zip-archive/SKILL.md` |
 | "写报告/写文档/出报告" | `docs-generator/` — 技术文档编写 |
+| "审查 case / 证据链 / 可追溯性" | `case-review/SKILL.md`: 只读 Evidence 图审查 |
 | "写 writeup" | `docs-generator/` — CTF writeup 模板 |
 | "打开网页/浏览器自动化/填表" | `browser-automation/SKILL.md` — Playwright 浏览器操作 |
 | "爬取页面/截图/自动化登录" | `browser-automation/SKILL.md` — 浏览器自动化 |
@@ -214,6 +216,7 @@
 | Frida | `reverse-engineering/tools-dynamic.md` |
 | GDB / rr（通用调试） | `reverse-engineering/tools.md` |
 | Ghidra (headless) | `reverse-engineering/tools.md` + Ghidra MCP（免费 IDA 替代，可通过 bootstrap 自动注册） |
+| Python 3 标准库 | `case-review/`: 只读 case Evidence 图审查 |
 | angr / Qiling / Unicorn | `reverse-engineering/tools-dynamic.md` |
 | BinDiff / Diaphora | `reverse-engineering/tools-advanced.md` |
 | anything-analyzer MCP | 端口 23816 的 MCP 服务器（浏览器+HTTP 捕获+AI 分析） |

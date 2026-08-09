@@ -1,23 +1,17 @@
 ---
 name: godot-2d-movement
 description: >
-  Implement 2D kinematic character movement in Godot 4.x with CharacterBody2D and
+  Implement 2D kinematic character movement in Godot 4.7 with CharacterBody2D and
   move_and_slide(): platformer run/jump with gravity, top-down 8-direction motion,
   slope handling, and reading collisions. Use when coding a 2D player or enemy
   controller, a platformer or top-down character, or fixing move_and_slide()/
   is_on_floor() behavior in a .tscn with a CharacterBody2D.
-license: Apache-2.0
-compatibility: Godot 4.3+
-metadata:
-  engine: godot
-  category: godot
-  difficulty: intermediate
 ---
 
 # Godot 2D Movement (4.x)
 
 Build responsive 2D character controllers with `CharacterBody2D` and the argument-less
-`move_and_slide()`. Targets **Godot 4.3+**.
+`move_and_slide()`. Targets **Godot 4.7**.
 
 ## When to use
 

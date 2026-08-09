@@ -3,12 +3,6 @@ name: tower-defense
 description: >
   Build a tower defense: enemies pathing along lanes, wave spawning, towers that auto-target and fire,
   an economy, and lives. Use for a tower-defense/wave-defense game, or balancing waves and economy.
-license: Apache-2.0
-compatibility: Engine-agnostic design patterns; snippets are pseudocode (port to your engine)
-metadata:
-  engine: none
-  category: genres
-  difficulty: intermediate
 ---
 
 # Tower Defense

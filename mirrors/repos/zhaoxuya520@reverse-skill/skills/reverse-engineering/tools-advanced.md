@@ -372,7 +372,7 @@ while pc:
 
 ## Manticore (Symbolic Execution)
 
-Trail of Bits' symbolic execution tool. Similar to angr but with native EVM (Ethereum) support.
+Trail of Bits' symbolic execution tool for native binaries. Its API is similar in spirit to angr.
 
 ```python
 from manticore.native import Manticore

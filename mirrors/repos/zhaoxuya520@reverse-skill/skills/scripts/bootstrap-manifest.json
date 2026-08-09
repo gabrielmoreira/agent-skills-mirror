@@ -36,7 +36,8 @@
     {
       "name": "frida",
       "bootstrapKind": "pip-package",
-      "pipPackage": "frida-tools",
+      "pipPackage": "frida-tools==14.10.4",
+      "pinnedVersion": "14.10.4",
       "docsUrl": "https://frida.re/",
       "canAutoInstall": true,
       "verifyCommand": "frida"
@@ -44,7 +45,8 @@
     {
       "name": "frida-ps",
       "bootstrapKind": "pip-package",
-      "pipPackage": "frida-tools",
+      "pipPackage": "frida-tools==14.10.4",
+      "pinnedVersion": "14.10.4",
       "docsUrl": "https://frida.re/",
       "canAutoInstall": true,
       "verifyCommand": "frida-ps"
@@ -53,7 +55,8 @@
       "name": "idalib-mcp",
       "bootstrapKind": "pip-package",
       "pipPackage": "ida-pro-mcp",
-      "pipSource": "git+https://github.com/mrexodia/ida-pro-mcp.git",
+      "pipSource": "git+https://github.com/mrexodia/ida-pro-mcp.git@f82e6e2517a161b77e738951c3071cd446480ba0",
+      "pinnedCommit": "f82e6e2517a161b77e738951c3071cd446480ba0",
       "docsUrl": "https://github.com/mrexodia/ida-pro-mcp",
       "canAutoInstall": true,
       "verifyCommand": "ida-pro-mcp",
@@ -175,6 +178,7 @@
       "name": "adb",
       "bootstrapKind": "winget-package",
       "wingetId": "Google.PlatformTools",
+      "pinPolicy": "winget-latest",
       "installDir": "%LOCALAPPDATA%\\Android\\Sdk\\platform-tools",
       "docsUrl": "https://developer.android.com/tools/releases/platform-tools",
       "canAutoInstall": true,
@@ -183,7 +187,8 @@
     {
       "name": "agent-browser",
       "bootstrapKind": "npm-global",
-      "npmPackage": "agent-browser",
+      "npmPackage": "agent-browser@0.31.1",
+      "pinnedVersion": "0.31.1",
       "postInstall": "npx playwright install chromium",
       "installDir": "%LOCALAPPDATA%\\ms-playwright",
       "docsUrl": "https://github.com/nicepkg/agent-browser",
@@ -218,6 +223,7 @@
       "name": "seclists",
       "bootstrapKind": "git-clone",
       "repo": "https://github.com/danielmiessler/SecLists.git",
+      "pinnedCommit": "e5e49caa6fb648476f3bca391b26a45a4f5d3f13",
       "installDir": "%USERPROFILE%\\Tools\\SecLists",
       "docsUrl": "https://github.com/danielmiessler/SecLists",
       "canAutoInstall": true
@@ -226,6 +232,7 @@
       "name": "proxycat",
       "bootstrapKind": "git-clone",
       "repo": "https://github.com/honmashironeko/ProxyCat.git",
+      "pinnedCommit": "2309b713e2e4f574df14c2ace7e8fa6c00eb6941",
       "installDir": "%USERPROFILE%\\Tools\\ProxyCat",
       "docsUrl": "https://github.com/honmashironeko/ProxyCat",
       "canAutoInstall": true,
@@ -253,6 +260,7 @@
       "name": "nmap",
       "bootstrapKind": "winget-package",
       "wingetId": "Insecure.Nmap",
+      "pinPolicy": "winget-latest",
       "docsUrl": "https://nmap.org/",
       "canAutoInstall": true,
       "verifyCommand": "nmap"
@@ -281,6 +289,7 @@
       "name": "binwalk",
       "bootstrapKind": "winget-package",
       "wingetId": "ReFirmLabs.binwalk",
+      "pinPolicy": "winget-latest",
       "docsUrl": "https://github.com/ReFirmLabs/binwalk",
       "canAutoInstall": true,
       "verifyCommand": "binwalk"
@@ -289,6 +298,7 @@
       "name": "yara",
       "bootstrapKind": "winget-package",
       "wingetId": "VirusTotal.YARA",
+      "pinPolicy": "winget-latest",
       "docsUrl": "https://github.com/VirusTotal/yara",
       "canAutoInstall": true,
       "verifyCommand": "yara"
@@ -296,7 +306,8 @@
     {
       "name": "pwntools",
       "bootstrapKind": "pip-package",
-      "pipPackage": "pwntools",
+      "pipPackage": "pwntools==4.15.0",
+      "pinnedVersion": "4.15.0",
       "docsUrl": "https://github.com/Gallopsled/pwntools",
       "canAutoInstall": true,
       "verifyCommand": "pwntools"

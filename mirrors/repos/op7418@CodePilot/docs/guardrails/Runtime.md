@@ -104,6 +104,11 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
   对这些 live entry 的写入有意回到用户的官方 Codex Harness，因此 project trust
   等配置可能同时出现在官方客户端。若上游以 atomic rename 替换文件而断开链接，
   下次启动必须识别为 snapshot 并告警；禁止自动覆盖或伪装仍在实时同步。
+- 镜像配置文件时必须保留 Codex 的相对路径解析语义：`model_catalog_json`、指令文件
+  以及 `agents.*.config_file` 等声明的被动文件依赖，必须在隔离目录的相同相对位置
+  继续镜像，并在每次启动补齐先前缺失的 entry。只处理同时位于源 Codex home 与
+  隔离 home 内的相对文件；绝对路径继续由 Codex 直接读取，`..` 越界路径不得复制。
+  该规则不能扩大成复制整个 `~/.codex`，runtime 状态仍受上一条禁止项约束。
 - 首次初始化只复制 `session_meta.originator === 'codex_codepilot'` 的旧 rollout；
   禁止把用户的全部 Codex 历史导入 CodePilot。rollout 必须复制而非链接，保证后续
   CodePilot turn 不会继续改写官方客户端的历史文件。
@@ -196,6 +201,7 @@ CodePilot Provider 会话把 Codex app-server 的 Responses endpoint 指向
 | `src/__tests__/unit/subagent-orchestration.test.ts` | Provider+Model route、三 Runtime 工具/权限继承、hosted search、requested/effective view |
 | `src/__tests__/unit/subagent-virtual-provider-routes.test.ts` | OAuth virtual Provider 的 picker/Sub-agent route 同源；xAI/OpenAI 正例、未认证/disabled/Claude Code 负例 |
 | `src/__tests__/unit/process-proxy-env.test.ts` | Electron/Codex 两道 child env、显式/system proxy 优先级、Windows casing、loopback bypass |
+| `src/__tests__/unit/codex-home-isolation.test.ts` | Codex runtime state 隔离、凭据/Harness 镜像模式、相对 model catalog/指令/agent 配置依赖递归补齐与越界拒绝 |
 | `src/__tests__/unit/codex-proxy-foundation.test.ts` | streaming Provider error 的 HTTP 200 `response.failed` 与 non-stream HTTP status 合同 |
 | `src/__tests__/unit/codex-event-mapper.test.ts` | loopback transport 502 专用诊断、原文保留与 managed upstream envelope 反例 |
 | `src/__tests__/unit/opus-5-model.test.ts` | Opus 5 显式目录与旧 alias pin、1M context、adaptive/sampling/effort、disabled-thinking 上限、Auto compatibility-default provenance、本地化调整提示和 Claude managed Sub-agent route |

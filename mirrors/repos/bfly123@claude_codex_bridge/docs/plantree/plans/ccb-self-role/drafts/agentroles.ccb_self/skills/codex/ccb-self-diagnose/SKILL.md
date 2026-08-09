@@ -55,6 +55,32 @@ graph, not disk config, tmux panes, or `.ccb/agents/*` residue.
    - job/message/reply/artifact/callback lineage -> `ccb-self-chain`
    - config design/edit/reload readiness -> built-in `ccb-config`
 
+## Named-Agent Pane Deep Dive
+
+When the user names an Agent, or says that an Agent is visibly stuck, pane
+inspection is required whenever the current daemon graph exposes a pane. Do
+not conclude `ok` from successful `ccb` command exit codes alone.
+
+1. Resolve the target pane and socket from current runtime authority. Do not
+   discover a restart target from an arbitrary tmux listing or residue.
+2. Capture the bottom/current pane text first. Capture bounded recent scrollback
+   if the request, provider prompt, error, or update marker is not visible.
+3. Take a second bounded capture after a short interval and compare normalized
+   text fingerprints/metadata to classify progress versus a frozen screen.
+4. Recognize provider-specific visible states such as active work, waiting for
+   user input, stale prompt, update/install prompt, authentication/quota/rate
+   limit/API error, dead/blank pane, and misframed layout.
+5. Correlate the visible request or anchor with `ccb trace`, queue head, and
+   mailbox state. Old pane text is evidence of residue until the current
+   lineage is proven.
+6. Use a screenshot only when text is blank, misleading, or insufficient for
+   a visual/layout diagnosis; capture only a CCB-owned target.
+
+Return pane evidence as a compact classification and artifact reference, not a
+large raw dump. Redact before creating any incident bundle or GitHub issue.
+Pane text never overrides mounted-agent, lifecycle, runtime, mailbox, or trace
+authority.
+
 ## Failure Domains
 
 Use the smallest domain that explains the evidence:

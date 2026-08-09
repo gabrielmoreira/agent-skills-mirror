@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patterns, 25 file(s) materialized.
+Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 25 |
+| Files         | 26 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,31 +59,32 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/cloud-saas-exposure/README.md`](skills/cloud-saas-exposure/README.md) |
-| 2 | ✓ | [`skills/cloud-saas-exposure/SKILL.md`](skills/cloud-saas-exposure/SKILL.md) |
-| 3 | ✓ | [`skills/continuous-exposure-monitoring/README.md`](skills/continuous-exposure-monitoring/README.md) |
-| 4 | ✓ | [`skills/continuous-exposure-monitoring/SKILL.md`](skills/continuous-exposure-monitoring/SKILL.md) |
-| 5 | ✓ | [`skills/email-domain-security/README.md`](skills/email-domain-security/README.md) |
-| 6 | ✓ | [`skills/email-domain-security/SKILL.md`](skills/email-domain-security/SKILL.md) |
-| 7 | ✓ | [`skills/exposure-risk-quantification/README.md`](skills/exposure-risk-quantification/README.md) |
-| 8 | ✓ | [`skills/exposure-risk-quantification/SKILL.md`](skills/exposure-risk-quantification/SKILL.md) |
-| 9 | ✓ | [`skills/identity-provider-recon/README.md`](skills/identity-provider-recon/README.md) |
-| 10 | ✓ | [`skills/identity-provider-recon/SKILL.md`](skills/identity-provider-recon/SKILL.md) |
-| 11 | ✓ | [`skills/offensive-osint/README.md`](skills/offensive-osint/README.md) |
-| 12 | ✓ | [`skills/offensive-osint/scripts/h1_reference.py`](skills/offensive-osint/scripts/h1_reference.py) |
-| 13 | ✓ | [`skills/offensive-osint/scripts/secret_scan.py`](skills/offensive-osint/scripts/secret_scan.py) |
-| 14 | ✓ | [`skills/offensive-osint/SKILL.md`](skills/offensive-osint/SKILL.md) |
-| 15 | ✓ | [`skills/org-attack-surface/README.md`](skills/org-attack-surface/README.md) |
-| 16 | ✓ | [`skills/org-attack-surface/SKILL.md`](skills/org-attack-surface/SKILL.md) |
-| 17 | ✓ | [`skills/osint-autopilot/README.md`](skills/osint-autopilot/README.md) |
-| 18 | ✓ | [`skills/osint-autopilot/scripts/build_xlsx.py`](skills/osint-autopilot/scripts/build_xlsx.py) |
-| 19 | ✓ | [`skills/osint-autopilot/scripts/findings_gen.py`](skills/osint-autopilot/scripts/findings_gen.py) |
-| 20 | ✓ | [`skills/osint-autopilot/scripts/host_enum.workflow.js`](skills/osint-autopilot/scripts/host_enum.workflow.js) |
-| 21 | ✓ | [`skills/osint-autopilot/scripts/recon_pipeline.sh`](skills/osint-autopilot/scripts/recon_pipeline.sh) |
-| 22 | ✓ | [`skills/osint-autopilot/scripts/wordlist.txt`](skills/osint-autopilot/scripts/wordlist.txt) |
-| 23 | ✓ | [`skills/osint-autopilot/SKILL.md`](skills/osint-autopilot/SKILL.md) |
-| 24 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
-| 25 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
+| 1 | ✓ | [`.claude/skills/run-claude-osint/SKILL.md`](.claude/skills/run-claude-osint/SKILL.md) |
+| 2 | ✓ | [`skills/cloud-saas-exposure/README.md`](skills/cloud-saas-exposure/README.md) |
+| 3 | ✓ | [`skills/cloud-saas-exposure/SKILL.md`](skills/cloud-saas-exposure/SKILL.md) |
+| 4 | ✓ | [`skills/continuous-exposure-monitoring/README.md`](skills/continuous-exposure-monitoring/README.md) |
+| 5 | ✓ | [`skills/continuous-exposure-monitoring/SKILL.md`](skills/continuous-exposure-monitoring/SKILL.md) |
+| 6 | ✓ | [`skills/email-domain-security/README.md`](skills/email-domain-security/README.md) |
+| 7 | ✓ | [`skills/email-domain-security/SKILL.md`](skills/email-domain-security/SKILL.md) |
+| 8 | ✓ | [`skills/exposure-risk-quantification/README.md`](skills/exposure-risk-quantification/README.md) |
+| 9 | ✓ | [`skills/exposure-risk-quantification/SKILL.md`](skills/exposure-risk-quantification/SKILL.md) |
+| 10 | ✓ | [`skills/identity-provider-recon/README.md`](skills/identity-provider-recon/README.md) |
+| 11 | ✓ | [`skills/identity-provider-recon/SKILL.md`](skills/identity-provider-recon/SKILL.md) |
+| 12 | ✓ | [`skills/offensive-osint/README.md`](skills/offensive-osint/README.md) |
+| 13 | ✓ | [`skills/offensive-osint/scripts/h1_reference.py`](skills/offensive-osint/scripts/h1_reference.py) |
+| 14 | ✓ | [`skills/offensive-osint/scripts/secret_scan.py`](skills/offensive-osint/scripts/secret_scan.py) |
+| 15 | ✓ | [`skills/offensive-osint/SKILL.md`](skills/offensive-osint/SKILL.md) |
+| 16 | ✓ | [`skills/org-attack-surface/README.md`](skills/org-attack-surface/README.md) |
+| 17 | ✓ | [`skills/org-attack-surface/SKILL.md`](skills/org-attack-surface/SKILL.md) |
+| 18 | ✓ | [`skills/osint-autopilot/README.md`](skills/osint-autopilot/README.md) |
+| 19 | ✓ | [`skills/osint-autopilot/scripts/build_xlsx.py`](skills/osint-autopilot/scripts/build_xlsx.py) |
+| 20 | ✓ | [`skills/osint-autopilot/scripts/findings_gen.py`](skills/osint-autopilot/scripts/findings_gen.py) |
+| 21 | ✓ | [`skills/osint-autopilot/scripts/host_enum.workflow.js`](skills/osint-autopilot/scripts/host_enum.workflow.js) |
+| 22 | ✓ | [`skills/osint-autopilot/scripts/recon_pipeline.sh`](skills/osint-autopilot/scripts/recon_pipeline.sh) |
+| 23 | ✓ | [`skills/osint-autopilot/scripts/wordlist.txt`](skills/osint-autopilot/scripts/wordlist.txt) |
+| 24 | ✓ | [`skills/osint-autopilot/SKILL.md`](skills/osint-autopilot/SKILL.md) |
+| 25 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
+| 26 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
 
 ---
 

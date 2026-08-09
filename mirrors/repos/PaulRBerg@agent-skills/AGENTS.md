@@ -81,6 +81,7 @@ If `prettier-check` fails, analyze the errors and fix only files you changed.
   plus atlas overlays.
 - `just evm-atlas-generate` - regenerate generated `evm-atlas` references from `@prb/crypto-registry`'s canonical chain
   JSON plus atlas overlays.
+- `just skill-dependencies-check` - validate every catalog `skill-dependencies` declaration.
 - `just evm-atlas-discover-routemesh` - refresh `atlas-overlays.json` `routeMesh` flags against RouteMesh's live
   `https://api.routeme.sh/chains` list (network call; run `just evm-atlas-generate` afterward to propagate).
 - `just skill-invocation-check` - verify `SKILL.md` invocation fields match `agents/openai.yaml`.
@@ -127,6 +128,9 @@ narrower check.
   data.
 - Keep skills self-contained. Do not de-duplicate content across skills by extracting shared references or canonical
   files; users install skills individually.
+- Keep globally installed skills self-contained. Do not refer to or depend on another repository; put reusable guidance
+  directly in the owning skill and discover target-project conventions at runtime. Refer to an external repository only
+  when it is genuinely required to perform the skill's task.
 - Write skill content for end users and other repos, not for this repo. Skills must not assume this repo's own tooling
   (e.g. `just prettier-write`, `just skill-invocation-check`) is present elsewhere; have skills detect and use whatever
   the target repo provides instead of naming this repo's recipes.
@@ -143,6 +147,23 @@ narrower check.
   contracts) or the standard Etherscan doc example (`0xde0B295669a9FD93d5F28D9Ec85E40f4cb697BAe`) for examples; never
   hardcode a real user, maintainer, or personal wallet address. The same applies to private keys, mnemonics, and API
   keys — reference env-var placeholders (`$ETH_PRIVATE_KEY`), never literal secrets.
+
+### Skill Dependencies
+
+Declare every skill required, invoked, or handed off to on a supported branch in the custom top-level
+`skill-dependencies` array. Conditional operational branches count; suggestions, examples, related-skill references, and
+underlying tool capabilities do not.
+
+```yaml
+skill-dependencies:
+  - local-skill
+  - OrgName/RepositoryName#external-skill
+```
+
+- Omit the field when there are no dependencies; empty arrays are invalid.
+- Use unique string entries. Bare names must resolve anywhere in the same repository and must not name the owning skill.
+  External dependencies must use `ORG/REPO#SKILL`; validation checks their shape without fetching the repository.
+- Sort by target skill name—the bare name or substring after `#`—then by the complete identifier as a tie-breaker.
 
 ## Platform Targets
 

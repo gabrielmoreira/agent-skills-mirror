@@ -9,7 +9,7 @@ usage() {
 Usage:
   bash <skill-dir>/scripts/task-handoff.sh prepare \
     --repo <candidate-repository> [--repo <candidate-repository> ...] \
-    --plan <owner-candidate> <HANDOFF_NAME.md> <task-category> <concise-task> [--plan ...]
+    --plan <launch-repository> <HANDOFF_NAME.md> <task-category> <concise-task>
   bash <skill-dir>/scripts/task-handoff.sh finalize [--no-clipboard] <run-dir>
   bash <skill-dir>/scripts/task-handoff.sh cancel <run-dir>
 EOF
@@ -73,6 +73,27 @@ canonical_git_root() {
   printf '%s\n' "$_physical_root"
 }
 
+handoff_base=
+handoff_root=
+
+resolve_handoff_root() {
+  if [ "${#repo_roots[@]}" -eq 1 ]; then
+    handoff_base=${repo_roots[0]}
+    handoff_root=$handoff_base/.ai/task-handoffs
+    return
+  fi
+
+  _desktop_candidate=${TASK_HANDOFF_TEST_DESKTOP:-"${HOME:-}/Desktop"}
+  has_line_break "$_desktop_candidate" && die 'Desktop path must not contain line breaks'
+  [ -d "$_desktop_candidate" ] && [ ! -L "$_desktop_candidate" ] ||
+    die "Desktop directory is unavailable: $_desktop_candidate"
+
+  _desktop_root=$(cd "$_desktop_candidate" 2>/dev/null && pwd -P) ||
+    die "cannot canonicalize Desktop directory: $_desktop_candidate"
+  handoff_base=$_desktop_root
+  handoff_root=$handoff_base/.ai/task-handoffs
+}
+
 directory_mode() {
   stat -f '%Lp' "$1" 2>/dev/null || stat -c '%a' "$1" 2>/dev/null
 }
@@ -115,9 +136,8 @@ resolve_tools() {
   fi
 }
 
-validate_owner_parent() {
-  _owner=$1
-  for _directory in "$_owner/.ai" "$_owner/.ai/task-handoffs"; do
+validate_handoff_parent() {
+  for _directory in "$handoff_base/.ai" "$handoff_root"; do
     if [ -e "$_directory" ] || [ -L "$_directory" ]; then
       [ -d "$_directory" ] && [ ! -L "$_directory" ] ||
         die "handoff parent must be a physical directory: $_directory"
@@ -126,8 +146,9 @@ validate_owner_parent() {
 }
 
 validate_plan_metadata() {
+  resolve_handoff_root
   [ "${#repo_roots[@]}" -gt 0 ] || die 'at least one repository is required'
-  [ "${#plan_owners[@]}" -gt 0 ] || die 'at least one plan is required'
+  [ "${#plan_owners[@]}" -eq 1 ] || die 'exactly one handoff plan is required'
 
   _seen_roots=()
   for _root in "${repo_roots[@]}"; do
@@ -147,7 +168,7 @@ validate_plan_metadata() {
     _relative=${plan_relpaths[$_index]}
     _target=${plan_targets[$_index]}
 
-    contains_value "$_owner" "${repo_roots[@]}" || die "plan owner is not an involved repository: $_owner"
+    contains_value "$_owner" "${repo_roots[@]}" || die "launch repository is not an involved repository: $_owner"
     valid_plan_filename "$_filename" || die "invalid plan filename: $_filename"
     contains_value "$_filename" "${_seen_filenames[@]}" && die "duplicate plan filename: $_filename"
     _seen_filenames[${#_seen_filenames[@]}]=$_filename
@@ -156,7 +177,7 @@ validate_plan_metadata() {
     [ -n "$_task" ] || die "concise task is empty for $_filename"
     has_line_break "$_task" && die "concise task must be one line for $_filename"
     [ "$_relative" = ".ai/task-handoffs/$_filename" ] || die "invalid relative target for $_filename"
-    [ "$_target" = "$_owner/$_relative" ] || die "invalid absolute target for $_filename"
+    [ "$_target" = "$handoff_root/$_filename" ] || die "invalid absolute target for $_filename"
 
     _index=$((_index + 1))
   done
@@ -169,15 +190,16 @@ preflight_plan_set() {
 
   _index=0
   while [ "$_index" -lt "${#plan_owners[@]}" ]; do
-    _owner=${plan_owners[$_index]}
-    _relative=${plan_relpaths[$_index]}
     _target=${plan_targets[$_index]}
 
-    validate_owner_parent "$_owner"
+    validate_handoff_parent
     if [ -e "$_target" ] || [ -L "$_target" ]; then
       die "plan target already exists: $_target"
     fi
-    git -C "$_owner" check-ignore -q -- "$_relative" || die "plan target is not ignored: $_target"
+    if [ "${#repo_roots[@]}" -eq 1 ]; then
+      git -C "${repo_roots[0]}" check-ignore -q -- "${plan_relpaths[$_index]}" ||
+        die "plan target is not ignored: $_target"
+    fi
 
     _index=$((_index + 1))
   done
@@ -239,6 +261,7 @@ prepare() {
 
   [ "${#_raw_repos[@]}" -gt 0 ] || usage_error 'prepare requires at least one --repo'
   [ "${#_raw_owners[@]}" -gt 0 ] || usage_error 'prepare requires at least one --plan'
+  [ "${#_raw_owners[@]}" -eq 1 ] || usage_error 'prepare creates exactly one handoff plan'
 
   for _candidate in "${_raw_repos[@]}"; do
     _root=$(canonical_git_root "$_candidate") || die "not a Git worktree: $_candidate"
@@ -247,12 +270,14 @@ prepare() {
     fi
   done
 
+  resolve_handoff_root
+
   _index=0
   while [ "$_index" -lt "${#_raw_owners[@]}" ]; do
     _owner=$(canonical_git_root "${_raw_owners[$_index]}") ||
-      die "plan owner is not a Git worktree: ${_raw_owners[$_index]}"
+      die "launch repository is not a Git worktree: ${_raw_owners[$_index]}"
     contains_value "$_owner" "${repo_roots[@]}" ||
-      die "plan owner is not among the involved repositories: ${_raw_owners[$_index]}"
+      die "launch repository is not among the involved repositories: ${_raw_owners[$_index]}"
 
     _filename=${_raw_filenames[$_index]}
     _category=${_raw_categories[$_index]}
@@ -262,7 +287,7 @@ prepare() {
     plan_categories[${#plan_categories[@]}]=$_category
     plan_tasks[${#plan_tasks[@]}]=$_task
     plan_relpaths[${#plan_relpaths[@]}]=".ai/task-handoffs/$_filename"
-    plan_targets[${#plan_targets[@]}]="$_owner/.ai/task-handoffs/$_filename"
+    plan_targets[${#plan_targets[@]}]="$handoff_root/$_filename"
 
     _index=$((_index + 1))
   done
@@ -277,7 +302,7 @@ prepare() {
   trap cleanup_failed_prepare EXIT
 
   mkdir "$prepare_run_dir/repos" "$prepare_run_dir/plans" || die 'cannot initialize temporary run state'
-  printf 'task-handoff-run-v2\n%s\n%s\n%s\n' \
+  printf 'task-handoff-run-v4\n%s\n%s\n%s\n' \
     "$prepare_run_dir" "${#repo_roots[@]}" "${#plan_owners[@]}" >"$prepare_run_dir/.task-handoff-run" ||
     die 'cannot write temporary run marker'
 
@@ -294,7 +319,7 @@ prepare() {
     printf -v _id '%04d' "$((_index + 1))"
     _plan_dir=$prepare_run_dir/plans/$_id
     mkdir "$_plan_dir" || die 'cannot create plan draft state'
-    write_state_value "$_plan_dir/owner" "${plan_owners[$_index]}" || die 'cannot write plan owner state'
+    write_state_value "$_plan_dir/owner" "${plan_owners[$_index]}" || die 'cannot write plan launch repository state'
     write_state_value "$_plan_dir/filename" "${plan_filenames[$_index]}" || die 'cannot write plan filename state'
     write_state_value "$_plan_dir/category" "${plan_categories[$_index]}" || die 'cannot write plan category state'
     write_state_value "$_plan_dir/task" "${plan_tasks[$_index]}" || die 'cannot write plan task state'
@@ -347,9 +372,8 @@ validate_run_dir() {
   [ "$(wc -l <"$_marker" | tr -d '[:space:]')" = 4 ] || die 'run marker has an invalid shape'
   _marker_version=$(sed -n '1p' "$_marker")
   case $_marker_version in
-    task-handoff-run-v1) _plan_state_entries=6 ;;
-    task-handoff-run-v2) _plan_state_entries=7 ;;
-    *) die 'run marker version is invalid' ;;
+    task-handoff-run-v4) _plan_state_entries=7 ;;
+    *) die 'run marker version is incompatible with the current handoff placement policy' ;;
   esac
   [ "$(sed -n '2p' "$_marker")" = "$_candidate_run_dir" ] || die 'run marker path does not match'
   _repo_count=$(sed -n '3p' "$_marker")
@@ -401,13 +425,9 @@ validate_run_dir() {
     [ -d "$_plan_dir" ] && [ ! -L "$_plan_dir" ] || die "invalid plan state directory: $_plan_dir"
     [ "$(entry_count "$_plan_dir")" = "$_plan_state_entries" ] ||
       die "plan state contains unexpected entries: $_plan_dir"
-    _owner=$(read_state_value "$_plan_dir/owner") || die "invalid plan owner state: $_plan_dir"
+    _owner=$(read_state_value "$_plan_dir/owner") || die "invalid plan launch repository state: $_plan_dir"
     _filename=$(read_state_value "$_plan_dir/filename") || die "invalid plan filename state: $_plan_dir"
-    if [ "$_marker_version" = task-handoff-run-v1 ]; then
-      _category=implementation
-    else
-      _category=$(read_state_value "$_plan_dir/category") || die "invalid plan category state: $_plan_dir"
-    fi
+    _category=$(read_state_value "$_plan_dir/category") || die "invalid plan category state: $_plan_dir"
     _task=$(read_state_value "$_plan_dir/task") || die "invalid plan task state: $_plan_dir"
     _relative=$(read_state_value "$_plan_dir/relative") || die "invalid plan path state: $_plan_dir"
     _target=$(read_state_value "$_plan_dir/target") || die "invalid plan target state: $_plan_dir"
@@ -520,13 +540,15 @@ validate_drafts() {
     if grep -F -e '## Handoff category' -e '## Execution status' -e '## Handoff cleanup' "$_draft" >/dev/null; then
       die "plan draft contains a reserved heading: $_filename"
     fi
+    if [ "${#repo_roots[@]}" -gt 1 ] && ! grep -Fqx '## Repository order' "$_draft"; then
+      die "cross-repository draft is missing a Repository order section: $_filename"
+    fi
     _index=$((_index + 1))
   done
 }
 
 ensure_target_directory() {
-  _owner=$1
-  for _directory in "$_owner/.ai" "$_owner/.ai/task-handoffs"; do
+  for _directory in "$handoff_base/.ai" "$handoff_root"; do
     if [ -e "$_directory" ] || [ -L "$_directory" ]; then
       [ -d "$_directory" ] && [ ! -L "$_directory" ] ||
         die "handoff parent must be a physical directory: $_directory"
@@ -566,10 +588,12 @@ action.
 
 EOF
     printf '%s%s%s\n' 'Run `/usr/bin/trash ' "$_quoted_target" \
-      '` only after every success criterion is satisfied and every required validation passes,'
+      '` only after the requested work is complete and task-scoped validation passes.'
     cat <<'EOF'
-then verify the original path no longer exists. Keep this handoff when work remains, the requested task or validation fails,
-or required validation is skipped. Never trash `.ai/task-handoffs/` or any other handoff.
+A broader required check may remain non-green only when evidence attributes every failure to pre-existing or unrelated
+work outside this task's scope. Record each non-green command, its outcome, and that attribution in the final report,
+then verify the original path no longer exists. Keep this handoff when work remains, task-scoped validation fails or is
+skipped, or any broader failure may have been caused by this task. Never trash `.ai/task-handoffs/` or any other handoff.
 EOF
   } >"$_footer"
 }
@@ -590,13 +614,12 @@ validate_complete_file() {
 build_staged_plans() {
   _index=0
   while [ "$_index" -lt "${#plan_drafts[@]}" ]; do
-    _owner=${plan_owners[$_index]}
     _filename=${plan_filenames[$_index]}
     _category=${plan_categories[$_index]}
     _target=${plan_targets[$_index]}
     _draft=${plan_drafts[$_index]}
-    _target_dir=$_owner/.ai/task-handoffs
-    ensure_target_directory "$_owner"
+    _target_dir=$handoff_root
+    ensure_target_directory
 
     _stage=$(mktemp "$_target_dir/.task-handoff.$_filename.XXXXXX") || die "cannot stage plan: $_filename"
     stage_files[${#stage_files[@]}]=$_stage
@@ -645,20 +668,28 @@ publish_staged_plans() {
     [ -f "$_target" ] && [ ! -L "$_target" ] || die "published plan is missing: $_target"
     [ "$_target" -ef "$_stage" ] || die "published plan changed during validation: $_target"
     cmp -s "$_target" "$_stage" || die "published plan bytes changed during validation: $_target"
-    git -C "${plan_owners[$_index]}" check-ignore -q -- "${plan_relpaths[$_index]}" ||
-      die "published plan is no longer ignored: $_target"
     _index=$((_index + 1))
   done
 }
 
 build_commands() {
   commands=()
+  claude_commands=()
   _index=0
   while [ "$_index" -lt "${#plan_owners[@]}" ]; do
     _category=${plan_categories[$_index]}
-    _prompt="A previous agent prepared a ${_category} task handoff for ${plan_tasks[$_index]} under ${plan_relpaths[$_index]}. Read the handoff, then complete its requested ${_category} task. Follow its stated outcome, boundaries, authority constraints, and validation requirements."
+    if [ "${#repo_roots[@]}" -eq 1 ]; then
+      _location="under ${plan_relpaths[$_index]}"
+      _instructions='Follow its stated outcome, boundaries, authority constraints, and validation requirements.'
+    else
+      _location="at ${plan_targets[$_index]}"
+      _instructions='Start in the selected first repository and follow its stated repository order, outcome, boundaries, authority constraints, and validation requirements.'
+    fi
+    _prompt="A previous agent prepared a ${_category} task handoff for ${plan_tasks[$_index]} $_location. Read the handoff, then complete its requested ${_category} task. $_instructions"
     _command="codex -C $(shell_quote "${plan_owners[$_index]}") $(shell_quote "$_prompt")"
     commands[${#commands[@]}]=$_command
+    _claude_command="cd $(shell_quote "${plan_owners[$_index]}") && claude $(shell_quote "$_prompt")"
+    claude_commands[${#claude_commands[@]}]=$_claude_command
     _index=$((_index + 1))
   done
 }
@@ -725,11 +756,12 @@ finalize() {
 
   _index=0
   while [ "$_index" -lt "${#commands[@]}" ]; do
-    printf 'plan relative=%s owner=%s category=%s command=%s\n' \
-      "$(shell_quote "${plan_relpaths[$_index]}")" \
+    printf 'plan handoff=%s launch_repo=%s category=%s command=%s claude_command=%s\n' \
+      "$(shell_quote "${plan_targets[$_index]}")" \
       "$(shell_quote "${plan_owners[$_index]}")" \
       "$(shell_quote "${plan_categories[$_index]}")" \
-      "${commands[$_index]}" || die 'cannot emit finalized plan record'
+      "${commands[$_index]}" \
+      "${claude_commands[$_index]}" || die 'cannot emit finalized plan record'
     _index=$((_index + 1))
   done
 

@@ -7,12 +7,6 @@ description: >
   neutral patterns that pair with the detected engine's UI skill. Use when the user mentions
   HUD, health bar, main menu, pause menu, settings screen, UI layout, anchors, UI scaling,
   aspect ratio, safe area, controller/keyboard menu navigation, or wiring UI to game state.
-license: Apache-2.0
-compatibility: Engine-agnostic UI/UX patterns; snippets in GDScript (Godot 4.x Control) and C# (Unity 6 uGUI/UI Toolkit). Pairs with godot-ui-control, Unity UI, and game-feel.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: intermediate
 ---
 
 # Game UI/UX
@@ -62,23 +56,23 @@ rebinding screens). For card/board layout specifics, the `card-game` genre compo
 ### 1. Anchors + containers, not absolute coordinates
 
 ```gdscript
-# Godot 4.x. Anchor a HUD label to the TOP-LEFT; let a container flow a row of hearts.
+# Godot 4.7. Anchor a HUD label to the TOP-LEFT; let a container flow a row of hearts.
 func _ready() -> void:
     $Score.set_anchors_preset(Control.PRESET_TOP_LEFT)   # sticks to the corner at any size
     # An HBoxContainer auto-lays-out children left-to-right; never position hearts by hand.
     for i in lives:
         $Hearts.add_child(make_heart())                   # HBoxContainer spaces them for you
-# Unity 6 uGUI: set RectTransform anchors to the corner; use a HorizontalLayoutGroup.
+# Unity 6.3 LTS uGUI: set RectTransform anchors to the corner; use a HorizontalLayoutGroup.
 # RIGHT: anchors + layout groups. WRONG: rect.anchoredPosition = new Vector2(640, 360) (1080p-only).
 ```
 
 ### 2. Scale to a reference resolution (one UI, many screens)
 
 ```text
-# Godot 4.x — Project Settings > Display > Window > Stretch:
+# Godot 4.7 — Project Settings > Display > Window > Stretch:
 #   Mode = "canvas_items", Aspect = "expand", reference size e.g. 1920x1080.
 #   UI scales to the window; "expand" reveals extra space you anchor HUD corners into.
-# Unity 6 — Canvas > CanvasScaler:
+# Unity 6.3 LTS — Canvas > CanvasScaler:
 #   UI Scale Mode = "Scale With Screen Size", Reference Resolution = 1920x1080,
 #   Match = 0.5 (blend width/height) — pick 1.0 if your HUD is height-critical.
 ```
@@ -86,7 +80,7 @@ func _ready() -> void:
 ### 3. Safe-area inset for notches / overscan
 
 ```gdscript
-# Godot 4.x. Inset a margin container to the OS-reported safe rect (phones, TVs).
+# Godot 4.7. Inset a margin container to the OS-reported safe rect (phones, TVs).
 func _apply_safe_area() -> void:
     var safe: Rect2i = DisplayServer.get_display_safe_area()
     var win := DisplayServer.window_get_size()
@@ -94,19 +88,19 @@ func _apply_safe_area() -> void:
     $Margin.add_theme_constant_override("margin_top",  safe.position.y)
     $Margin.add_theme_constant_override("margin_right", win.x - safe.end.x)
     $Margin.add_theme_constant_override("margin_bottom", win.y - safe.end.y)
-# Unity 6: read Screen.safeArea (Rect in pixels) and set a panel's anchorMin/anchorMax to
+# Unity 6.3 LTS: read Screen.safeArea (Rect in pixels) and set a panel's anchorMin/anchorMax to
 # safeArea.position / (position+size) normalized by Screen.width/height.
 ```
 
 ### 4. Gamepad/keyboard focus (UI is unusable on a controller without it)
 
 ```gdscript
-# Godot 4.x. Give each screen a default focus and wire neighbors so a stick/d-pad walks it.
+# Godot 4.7. Give each screen a default focus and wire neighbors so a stick/d-pad walks it.
 func _on_screen_shown() -> void:
     $PlayButton.grab_focus()                               # always focus SOMETHING on open
 $PlayButton.focus_neighbor_bottom = $SettingsButton.get_path()
 $SettingsButton.focus_neighbor_top = $PlayButton.get_path()
-# Unity 6: EventSystem.SetSelectedGameObject(playButton) on enable; set each Selectable's
+# Unity 6.3 LTS: EventSystem.SetSelectedGameObject(playButton) on enable; set each Selectable's
 # Navigation (Explicit or Automatic). RIGHT: a control is focused on open. WRONG: nothing
 # selected → the gamepad does nothing and the player is stuck.
 ```

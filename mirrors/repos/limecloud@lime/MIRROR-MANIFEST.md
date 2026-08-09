@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 50 file(s) materialized.
+Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 45 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `limecloud/lime` — 26 default patterns, 0 followed patterns, 50 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 50 |
+| Files         | 45 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -99,16 +99,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 38 | ✓ | [`lime-rs/resources/default-skills/url_parse/SKILL.md`](lime-rs/resources/default-skills/url_parse/SKILL.md) |
 | 39 | ✓ | [`lime-rs/resources/default-skills/video_generate/SKILL.md`](lime-rs/resources/default-skills/video_generate/SKILL.md) |
 | 40 | ✓ | [`lime-rs/resources/default-skills/webpage_generate/SKILL.md`](lime-rs/resources/default-skills/webpage_generate/SKILL.md) |
-| 41 | ✓ | [`src/features/plugin/testing/fixtures/package-root/skills/article-editing/SKILL.md`](src/features/plugin/testing/fixtures/package-root/skills/article-editing/SKILL.md) |
-| 42 | ✓ | [`src/features/plugin/testing/fixtures/package-root/skills/article-image-plan/SKILL.md`](src/features/plugin/testing/fixtures/package-root/skills/article-image-plan/SKILL.md) |
-| 43 | ✓ | [`src/features/plugin/testing/fixtures/package-root/skills/article-research/SKILL.md`](src/features/plugin/testing/fixtures/package-root/skills/article-research/SKILL.md) |
-| 44 | ✓ | [`src/features/plugin/testing/fixtures/package-root/skills/article-strategy/SKILL.md`](src/features/plugin/testing/fixtures/package-root/skills/article-strategy/SKILL.md) |
-| 45 | ✓ | [`src/features/plugin/testing/fixtures/package-root/skills/article-writing/SKILL.md`](src/features/plugin/testing/fixtures/package-root/skills/article-writing/SKILL.md) |
-| 46 | ✓ | [`tools/lime-cli/domains/broadcast/SKILL.md`](tools/lime-cli/domains/broadcast/SKILL.md) |
-| 47 | ✓ | [`tools/lime-cli/domains/resource-search/SKILL.md`](tools/lime-cli/domains/resource-search/SKILL.md) |
-| 48 | ✓ | [`tools/lime-cli/domains/typesetting/SKILL.md`](tools/lime-cli/domains/typesetting/SKILL.md) |
-| 49 | ✓ | [`tools/lime-cli/domains/url-parse/SKILL.md`](tools/lime-cli/domains/url-parse/SKILL.md) |
-| 50 | ✓ | [`tools/lime-cli/SKILL.md`](tools/lime-cli/SKILL.md) |
+| 41 | ✓ | [`tools/lime-cli/domains/broadcast/SKILL.md`](tools/lime-cli/domains/broadcast/SKILL.md) |
+| 42 | ✓ | [`tools/lime-cli/domains/resource-search/SKILL.md`](tools/lime-cli/domains/resource-search/SKILL.md) |
+| 43 | ✓ | [`tools/lime-cli/domains/typesetting/SKILL.md`](tools/lime-cli/domains/typesetting/SKILL.md) |
+| 44 | ✓ | [`tools/lime-cli/domains/url-parse/SKILL.md`](tools/lime-cli/domains/url-parse/SKILL.md) |
+| 45 | ✓ | [`tools/lime-cli/SKILL.md`](tools/lime-cli/SKILL.md) |
 
 ---
 

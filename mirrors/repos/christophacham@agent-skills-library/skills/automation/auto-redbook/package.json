@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "marked": "^11.0.0",
-    "yaml": "^2.3.0",
-    "playwright": "^1.40.0"
+    "yaml": "^2.9.0",
+    "playwright": "^1.62.1"
   }
 }

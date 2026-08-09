@@ -4,12 +4,6 @@ description: >
   Structure and debug a LÖVE (Love2D) game in Lua: the love.load/update/draw loop,
   delta-time movement, input, and screen states. Use when building a LÖVE 11.x game
   (main.lua, conf.lua, .love).
-license: Apache-2.0
-compatibility: LÖVE 11.5 (Lua 5.1 / LuaJIT)
-metadata:
-  engine: love2d
-  category: other-engines
-  difficulty: beginner
 ---
 
 # LÖVE (Love2D) Core

@@ -6,12 +6,6 @@ description: >
   detection (CCD) to stop tunneling, fixing jitter, and collision layers/masks.
   Engine-neutral. Use when the user mentions physics feel, jitter, tunneling,
   fixed timestep, FixedUpdate, CCD, bouncing/unstable physics, or collision layers.
-license: Apache-2.0
-compatibility: Engine-agnostic concepts. Pairs with godot-physics (_physics_process) and unity-physics (FixedUpdate, Rigidbody); snippets in GDScript/C#-like pseudocode.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: intermediate
 ---
 
 # Physics tuning

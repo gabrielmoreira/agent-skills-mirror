@@ -5,12 +5,6 @@ description: >
   packages, upload builds with steamcmd, set a build live on a branch, and run the release
   checklists. Use for Steam publishing, app_build.vdf/steamcmd uploads, depots, beta branches,
   or a store page release.
-license: Apache-2.0
-compatibility: Steamworks SDK + SteamPipe/steamcmd (current). Requires a Steamworks partner account and an App ID.
-metadata:
-  engine: none
-  category: workflows
-  difficulty: intermediate
 ---
 
 # Steam Publish (Steamworks + SteamPipe)
@@ -95,7 +89,7 @@ tools/ContentBuilder/
   scripts/         <- your *.vdf build scripts live here
 ```
 
-### 2. Minimal app build script — `scripts/app_build_1000.vdf`
+### 2. Minimal app build script — `app_build_1000.vdf`
 
 ```text
 // AppID 1000 with one depot (1001): upload everything under ../content recursively.

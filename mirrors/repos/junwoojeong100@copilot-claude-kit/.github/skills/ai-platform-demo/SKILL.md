@@ -29,7 +29,7 @@ Puppeteer·Chromium만 외부 공용 캐시에 유지하고, 최종 출력 위�
 | `AUDIENCE` | 임원 직무와 관심사 |
 | `DEMO_FOCUS` | `균형형`, `AI 중심`, `App Platform·CI/CD 중심` |
 | `EMPHASIS` | 강조할 Microsoft·GitHub 서비스 |
-| `LANG` | 지정 언어를 준수. 미지정 시 한국어, 공식 제품명·일반 약어는 원문 유지 |
+| `LANG` | 지정 언어를 준수. 미지정 시 한국어. 설명은 한글 우선, 서비스명·공식 기능명·정착된 기술 용어는 영문 유지 |
 | `APP_NAME` | 기본 `<CUSTOMER> IQ` |
 | `ROUTE_SCOPE` | dashboard를 포함한 업무 3~5개 + 플랫폼 2~3개, 총 5~8개를 canonical 순서로 선택 |
 | `BRAND_TOKENS` | 선택적 `brand`·`accent` 6자리 hex. 나머지 layout·type·motion은 Runtime 유지 |
@@ -48,6 +48,11 @@ Puppeteer·Chromium만 외부 공용 캐시에 유지하고, 최종 출력 위�
 - 고객의 현재 도입이 확인되지 않은 서비스는 `목표 아키텍처` 또는 `시연 가정`으로 표시한다.
 - 임원이 보는 메뉴·제목·버튼·상태·표·Agent 문구는 `LANG`를 따른다. 한국어일 때만 자연스러운
   한국어를 우선하고 공식 제품명·일반 약어는 원문을 유지한다.
+- 한국어 데모는 `protectedTerms`를 제외한 설명용 영문 문자 비율 약 40%를 목표로 한다. 서비스명·기능명은
+  계산에서 중립 처리하고 반드시 영문으로 유지한다.
+- Customer Overlay의 `meta.languagePolicy.protectedTerms`에 실제 사용하는 서비스·공식 기능명을
+  원문으로 기록한다. 예: `GitHub Copilot`, `GitHub Actions`, `GitHub Advanced Security`,
+  `Microsoft Foundry`, `Hosted Agents`, `Toolboxes`, `AKS`, `ACA`, `MCP`.
 
 플랫폼 역할은 고객 과제에 필요한 화면에서만 연결한다: Foundry·Agent Framework는 모델·Agent·평가,
 GitHub는 계획·코드·PR·Actions·Advanced Security, AKS·ACA는 배포·확장·운영, Entra·Purview·Defender·
@@ -101,6 +106,7 @@ Overlay는 고객 `meta`·`story`·route·Agent와 선택적 `design.tokens.bran
    `demo-spec.json`과 HTML을 생성한다.
 4. 직접 작성한 Spec은 먼저 `scripts/lint_spec.py`로 검사한 뒤 `scripts/render_demo.py`로 렌더한다.
 5. 기본 수정 surface는 HTML이 아니라 `customer-overlay.json`이다.
+   한국어 Overlay에는 `meta.languagePolicy`와 관련 `protectedTerms`를 포함한다.
 6. Golden Runtime으로 핵심 장면을 표현할 수 없을 때만 해당 route를 세션 작업 폴더에서 확장한다.
    고객 전용 분기를 공용 runtime이나 Pack에 추가하지 않는다.
 
@@ -116,6 +122,7 @@ Overlay는 고객 `meta`·`story`·route·Agent와 선택적 `design.tokens.bran
 
 1. 노출된 모든 route를 한 browser/page 세션에서 전체 렌더한다.
 2. 레이아웃·겹침·깨짐·`LANG` 위반을 화면별로 확인한다.
+   한국어 데모는 설명 문구의 language balance와 `protectedTerms` 영문 보존도 함께 lint한다.
 3. 콘솔/페이지 오류와 빠른 route 전환 오류가 0인지 확인한다.
 4. 모든 클릭 대상의 handler binding과 슬라이더·action button·Agent 전환·채팅의 핵심 상태 변화를 검증한다.
 5. 청중 journey preset, 다음 장면 CTA, 공통 scenario trace를 검증한다.
@@ -136,6 +143,7 @@ QA를 생략하지 않는다.
 - 노출된 모든 route의 클릭 handler가 연결되고 버튼·슬라이더·Agent 전환·채팅의 핵심 상태 변화가 동작한다.
 - 콘솔/페이지 오류와 route 전환 시 null 접근·listener 누수가 없다.
 - 고객 사실은 Fact Ledger와 연결되고 가정 수치는 `시연 데이터`로 표시된다.
+- 한국어 설명은 한글 우선이며 서비스명·공식 기능명은 영문으로 유지되고 language balance lint를 통과한다.
 - 디자인은 공용 Golden Runtime을 유지하고 고객 전용 내용이 runtime·Pack에 섞이지 않았다.
 - 저장소와 최종 출력 폴더에는 결과 HTML 외 임시 파일이 남지 않는다.
 

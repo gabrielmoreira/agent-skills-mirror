@@ -7,20 +7,14 @@ description: >
   motion. Use when building or debugging a Bevy game in Rust — when the user
   mentions Bevy, ECS, App::new, add_systems, Query, Commands, components/systems,
   or a Cargo.toml depending on bevy.
-license: Apache-2.0
-compatibility: Bevy 0.16+ (Rust; pin Cargo.toml — APIs shift each minor release)
-metadata:
-  engine: bevy
-  category: other-engines
-  difficulty: advanced
 ---
 
 # Bevy ECS
 
 Structure a Bevy game in Rust around the Entity Component System: the `App` and
 plugins, components and resources, systems with queries, scheduling, and
-frame-rate-independent updates. Pins **Bevy 0.16+** (code targets 0.16; Bevy's API
-shifts each minor release — match your `Cargo.toml`).
+frame-rate-independent updates. New examples target **Bevy 0.19**. If the project
+already pins another release, keep that release and use its matching migration guide.
 
 ## When to use
 
@@ -36,15 +30,15 @@ procedural algorithms, pair with `game-ai` / `procedural-gen`.
 
 ## Core workflow
 
-1. **Pin the version.** Bevy's API changes every minor release. Set
-   `bevy = "0.16"` (or your target) in `Cargo.toml` and treat the matching docs as
-   truth. Enable `dynamic_linking` in dev for faster iterative builds.
+1. **Detect and pin the version.** Read `Cargo.toml` and `Cargo.lock` first. For a
+   new project use `bevy = "0.19"`; never silently migrate an existing project
+   across a Bevy minor release. Treat the matching docs and migration guides as truth.
 2. **Build the `App`.** `App::new().add_plugins(DefaultPlugins)` gives windowing,
    input, rendering, time, etc. Register systems into schedules: `Startup` (once)
    and `Update` (every frame).
 3. **Model data as components, globals as resources.** `#[derive(Component)]` for
    per-entity data; `#[derive(Resource)]` for one-of-a-kind data (score, settings,
-   the `Time` clock).
+   the `Time` clock). In 0.19 `Resource` extends `Component`, so do not derive both.
 4. **Write systems as plain functions.** Parameters declare data access: `Query<...>`
    for entities, `Res<T>`/`ResMut<T>` for resources, `Commands` for deferred
    spawn/despawn. Systems run in parallel when their accesses don't conflict.
@@ -60,9 +54,7 @@ procedural algorithms, pair with `game-ai` / `procedural-gen`.
 ```toml
 # Cargo.toml — pin the version; the API differs across minor releases.
 [dependencies]
-bevy = "0.16"
-# Dev-only: faster recompiles. (Add the matching dynamic linking setup per the book.)
-# bevy = { version = "0.16", features = ["dynamic_linking"] }
+bevy = "0.19"
 ```
 
 ```rust
@@ -191,9 +183,11 @@ impl Plugin for GameplayPlugin {
   not the one that spawned it.
 - **System order assumed but not enforced** → systems run in parallel by default.
   If `B` must follow `A`, add `(A, B).chain()` or an explicit ordering constraint.
-- **Copy-pasting older Bevy snippets** → APIs shift between minor versions (e.g.
-  the buffered-event API was reworked after 0.16). Verify against the docs for
-  *your* pinned version; don't mix versions.
+- **Deriving both `Resource` and `Component` in 0.19** → `Resource` now extends
+  `Component`; derive `Resource` alone to avoid conflicting implementations.
+- **Copy-pasting older Bevy snippets** → APIs shift between minor versions. The
+  buffered event system became the message system in recent releases. Verify against
+  the docs and migration guide for *your* pinned version; don't mix versions.
 
 ## References
 

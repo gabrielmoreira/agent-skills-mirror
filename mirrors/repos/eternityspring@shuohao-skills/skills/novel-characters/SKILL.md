@@ -1,9 +1,11 @@
 ---
 name: novel-characters
-version: 1.0.0
+version: 1.4.0
 description: |
-  从小说或短故事里拆出角色表、人物画像、卡通形象提示词、音色提示词，
-  并给主要角色出三视图，产出 JSON + Markdown + 可交互的 report.html。
+  从小说或短故事里拆出角色表、人物画像、形象提示词、音色提示词，
+  并给主要角色出角色设定图（左半身像 + 右全身三视图 + 细节条），产出 JSON + Markdown + 可交互的 report.html。
+  报告语言可指定（--lang），默认中文，任意语言都支持；
+  出图风格可指定（--style），默认半写实，也可以出吉卜力动画风。
   零依赖、零 API key，用当前会话额度；出图走 codex 内置 $imagegen（可选）。
   Use when asked to 拆小说角色、分析人物、生成角色卡、character sheets from a novel。
 allowed-tools:
@@ -35,13 +37,48 @@ metadata:
 
 ## novel-characters
 
-输入一篇小说/短故事，输出每个角色的：人物画像、卡通形象提示词、音色提示词、三视图。
+输入一篇小说/短故事，输出每个角色的：人物画像、形象提示词、音色提示词、角色设定图。
 
 `{baseDir}` = 本文件所在目录。脚本 `{baseDir}/scripts/novel-characters.mjs`，零依赖，`node` 直接跑。
 
-**运行环境**：Claude Code 和 codex 都能跑。差别只在第 8 步出图——见 `references/turnaround.md`。
+**运行环境**：Claude Code 和 codex 都能跑。差别只在第 8 步出图——见 `references/sheet.md`。
 
 ---
+
+### Step 0 — 确定报告语言
+
+用户可以指定语言，比如「用英文」「--lang en」「日本語で」。**没说就是中文（`zh`）。**
+
+这个 `lang` 会一路传下去：第二趟生成角色卡时决定人类可读字段用什么语言，`validate` 和 `render` 也都要带上。
+
+**界面文案分两种情况：**
+
+- `zh` / `en` / `ja` —— 内置，不用管
+- **其他任何语言** —— 你要现场翻一份。跑
+
+  ```bash
+  node {baseDir}/scripts/novel-characters.mjs ui-template <lang>
+  ```
+
+  它打印一份英文骨架，把每个值翻译成目标语言，整块放进 `cast.json` 顶层的 `ui` 字段。渲染时会合并进内置表。
+
+  **不给 `ui` 的话 `validate` 会直接报错**——否则报告会是「角色内容是法语、界面标签是英文」的半吊子状态。
+
+支持的语言不受内置表限制，法语韩语西班牙语都能出完整报告。
+
+### Step 0.5 — 确定画风
+
+用户可以指定出图风格：**默认 `realistic`**（半写实厚涂），想要动画质感就用 `ghibli`（吉卜力式手绘赛璐璐）。
+
+```bash
+node {baseDir}/scripts/novel-characters.mjs styles   # 打印预设的完整内容
+```
+
+读 `{baseDir}/references/style-presets.md`。**换风格是整套换**——每个预设自带 render / surface / lighting / negative / tags 五块，整块取用，不要混搭。
+
+最容易搞反的是反向提示词：`realistic` 绝不能禁 `photorealistic`，`ghibli` 必须禁。`validate` 会拦这个。
+
+版面规则（16:9 三区、比例、细节让位）**不随风格变**，变的只有渲染质感。
 
 ### Step 1 — 定位输入
 
@@ -89,17 +126,18 @@ node {baseDir}/scripts/novel-characters.mjs merge <workdir>
 
 每份任务拿到：
 - `{baseDir}/references/profile-pass.md` 和 `{baseDir}/references/schema.md`（读它们，照着做）
+- **报告语言 `lang`**（Step 0 定的）
 - 该角色归并后的 `name` / `aliases` / `notes` / `quotes`
 - **同批其他角色的名字**（避免长相声线撞车）
 
 角色卡 JSON 写到 `<workdir>/card-<slug>.json`。
 
-**同时写一段故事摘要**：中文 3–5 句，交代时空背景、核心情境、这几个人聚在一起的由头。短篇直接从原文写；长篇从各块的 roster note 归纳。不剧透结局，不写成推荐语。
+**同时写一段故事摘要**：用 `lang` 指定的语言，3–5 句，交代时空背景、核心情境、这几个人聚在一起的由头。短篇直接从原文写；长篇从各块的 roster note 归纳。不剧透结局，不写成推荐语。
 
 合成 `<输出目录>/<书名>-cast.json`：
 
 ```json
-{ "source": "书名", "summary": "……", "characters": [ ... ] }
+{ "source": "书名", "lang": "zh", "style": "realistic", "summary": "……", "characters": [ ... ] }
 ```
 
 ### Step 7 — 校验 ⛔ 不能跳
@@ -108,19 +146,31 @@ node {baseDir}/scripts/novel-characters.mjs merge <workdir>
 node {baseDir}/scripts/novel-characters.mjs validate <cast.json> <book.txt>
 ```
 
-检查：结构、`importance` 枚举、**引文逐字**、**出图提示词不含人名**、**语言分工（voice 该中文、image 该英文）**。
+记得带上 `--lang`（Step 0 定的）。检查：结构、`importance` 枚举、**引文逐字**、**出图提示词不含人名**、**语言分工**（人类字段跟随 `lang`、出图/TTS 提示词永远英文）、以及**非内置语言必须带 `ui`**。
 
 **有违规就按报错逐条修，改完重跑，直到通过。** 这四类错模型真的会犯——这套检查就是被真实输出打出来的。
 
-### Step 8 — 三视图（可选，只给 protagonist 和 major）
+### Step 8 — 出图（可选，只给 protagonist 和 major）
 
-读 `{baseDir}/references/turnaround.md`，照它的调用契约做。要点：
+**每个角色一张**，用 `image.sheet`，落到 `./images/<slug>-sheet.png`。一张横构图内部左右分栏：
+
+```
+┌──────────┬────────────────────────────┐
+│  半身像   │   正视    侧视    背视       │
+│ （证件照） ├────────────────────────────┤
+│  面部基准  │  细节 · 细节 · 细节 · 细节   │
+│   ~34%   │            16:9            │
+└──────────┴────────────────────────────┘
+```
+
+左栏半身像是面部设计基准，右上三视图的脸照它画，右下是关键细节的小特写。**两条硬要求**：三视图的脸必须与半身像一致（否则一张图两个长相）；三个全身像的比例必须协调（模型会为了塞下细节把人压扁）。
+
+读 `{baseDir}/references/sheet.md`，照它的调用契约做。要点：
 
 - **没有 codex 就整步跳过**，只交提示词，后面照常走
 - 跑在 codex 里就直接用 `$imagegen`；跑在别处就 shell 调 codex，先按那里的脚本探测版本最高的 binary（旧版会直接报错）
 - **一个角色一次调用，绝不批量**
-- 必须写明 copy 到 `./images/<slug>-turnaround.png`
-- 单个角色失败就跳过，不阻断；最后汇总说明
+- 单个失败就跳过，不阻断；最后汇总说明
 
 `supporting` / `minor` 只给提示词不出图。用户明确要求全出就全出。
 
@@ -132,7 +182,9 @@ node {baseDir}/scripts/novel-characters.mjs render <cast.json> --md   > <书名>
 node {baseDir}/scripts/novel-characters.mjs render <cast.json> --html > report.html
 ```
 
-`render` 会自动去 `images/<slug>-turnaround.png` 找图，找到就嵌进 report.html。所以**先出图再 render**。
+语言取 `cast.json` 里的 `lang`，要临时覆盖就加 `--lang <code>`。
+
+`render` 会自动去 `images/<slug>-sheet.png` 找图。所以**先出图再 render**。
 
 report.html 的样式约定见 `{baseDir}/references/report-style.md`——要改样式先读它，别把它改回通用卡片墙。
 
@@ -142,8 +194,9 @@ report.html 的样式约定见 `{baseDir}/references/report-style.md`——要�
 <输出目录>/
 ├── <书名>-cast.json
 ├── <书名>-cast.md
-├── report.html          ← 双击就能开
-└── images/*.png         ← 有 codex 才有
+├── report.html                    ← 双击就能开
+└── images/
+    └── <slug>-sheet.png           ← 有 codex 才有
 ```
 
 ### Step 10 — 汇报
@@ -155,7 +208,8 @@ report.html 的样式约定见 `{baseDir}/references/report-style.md`——要�
 ## 边界
 
 - 单次上限 24 块（约 33 万字符），超了会明确报 `truncated`，不静默截断
-- **输出是中文优先**：`persona` 和 `voice` 的描述字段强制中文，校验器会拦英文。分析英文原著也照样出中文角色卡
+- 人类可读字段跟随 `--lang`（默认中文）；出图和 TTS 提示词**永远英文**，那些引擎吃英文最稳
+- 设定图最容易出的两个问题：**一张图里两个长相**、**为了塞细节把人物压扁**。拿到图先扫一眼，见 `references/sheet.md`
 - 出图只走 codex built-in `$imagegen`。**不用它的 CLI fallback**（要 `OPENAI_API_KEY`）
 - 想要能实时编辑、边跑边看的交互界面，那是另一个东西，不在这个 skill 里
 
@@ -165,7 +219,7 @@ report.html 的样式约定见 `{baseDir}/references/report-style.md`——要�
 node {baseDir}/scripts/selftest.mjs
 ```
 
-不调模型、不花额度，覆盖分块 / 归并 / 校验 / 渲染的全部确定性逻辑。改完脚本先跑这个。
+220 项断言，不调模型、不花额度，覆盖分块 / 归并 / 多语言 / 校验 / 渲染的全部确定性逻辑。改完脚本先跑这个。
 
 ## 自带样例
 

@@ -6,19 +6,13 @@ description: >
   ETriggerEvent. Use when wiring movement/look/jump input, creating IA_/IMC_ assets, binding
   in C++ or Blueprints, or when the user mentions Enhanced Input, Input Mapping Context,
   Input Action, IA_/IMC_, or ETriggerEvent.
-license: Apache-2.0
-compatibility: Unreal Engine 5.4+ (Enhanced Input is the default UE5 input system)
-metadata:
-  engine: unreal
-  category: unreal
-  difficulty: intermediate
 ---
 
 # Unreal Enhanced Input
 
 Wire player input the modern UE5 way with the **Enhanced Input** system: data-driven Input
 Actions and Mapping Contexts instead of the legacy Project Settings axis/action mappings.
-Targets **UE 5.4+** (Enhanced Input is the default; legacy input is deprecated).
+Targets **UE 5.8** (Enhanced Input is the default; legacy input is deprecated).
 
 ## When to use
 

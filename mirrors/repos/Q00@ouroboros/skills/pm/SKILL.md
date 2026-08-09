@@ -1,0 +1,152 @@
+---
+name: pm
+description: "Generate a PM through guided PM-focused interview with automatic question classification. Use when the user says 'ooo pm', 'prd', 'product requirements', or wants to create a PRD/PM document."
+---
+
+# /ouroboros:pm
+
+PM-focused Socratic interview that produces a Product Requirements Document.
+
+## Instructions
+
+### Step 1: Load MCP Tool
+
+```
+tool discovery query: "+ouroboros pm_interview"
+```
+
+**CRITICAL — deferred-schema guard (prevents "Invalid tool parameters"):**
+This is a multi-turn loop and each turn runs in a fresh tool context. A deferred
+tool's schema loaded on one turn is NOT guaranteed to still be loaded on the next.
+Calling `ouroboros_pm_interview` while its schema is unloaded in the **current**
+turn makes the runtime reject it with **"Invalid tool parameters"** every message.
+Therefore **re-run `tool discovery query: "+ouroboros pm_interview"` immediately before
+EVERY `ouroboros_pm_interview` call** below (idempotent — a no-op if already
+loaded). If the load ever returns no matching tool (and the tool is not already callable — an empty load for an already-exposed tool is an expected no-op, not absence), follow the not-found diagnosis
+below instead of retrying the failing call.
+
+If not found → fail closed without inspecting or mutating
+`~/.claude/mcp.json`. Standalone Claude SDK setup requires MCP 1.x and cannot
+activate the Ouroboros MCP 2 server with its configured backend. Explain:
+
+```
+The PM interview MCP tool is unavailable in this runtime.
+
+Configure a supported CLI-backed host with:
+  ouroboros setup --runtime <codex|opencode|kiro|copilot|hermes>
+
+Then restart that host and retry ooo pm. Claude SDK profiles ([claude] and
+[claude-sdk]) stay on MCP 1.x; the separate [mcp] server uses [claude-cli]. Do
+not combine both MCP majors or add a direct Python fallback.
+```
+
+Stop.
+
+### Step 2: Start Interview
+
+```
+Tool: ouroboros_pm_interview
+Arguments:
+  initial_context: <user's topic or idea>
+  cwd: <current working directory>
+```
+
+### Step 3: Loop
+
+After every MCP response, do these three things:
+
+**A. Show alerts** (if present in `meta`):
+- `meta.deferred_this_round` → print `[DEV → deferred] "question"`
+- `meta.decide_later_this_round` → print `[DEV → decide-later] "question"`
+- `meta.pending_reframe` → print `ℹ️ Reframed from technical question.`
+
+**B. Show content + get user input:**
+
+Print the MCP content text to the user first.
+
+Tell users they do not need to invent speculative answers. If a question is
+unknown, stakeholder-dependent, too broad, or safer to decide later, route it
+through the existing assumptions / decide-later / deferred mechanisms instead
+of presenting it as a confirmed requirement.
+
+Then check: does `meta.ask_user_question` exist?
+
+- **YES** → Pass it directly to `AskUserQuestion`:
+  ```
+  AskUserQuestion(questions=[meta.ask_user_question])
+  ```
+  Do NOT modify it. Do NOT add options. Do NOT rephrase the question.
+
+- **NO** → This is an interview question. Use `AskUserQuestion` with `meta.question`.
+  - If `meta.skip_eligible == true`: add a skip option based on `meta.classification`:
+    - `classification == "decide_later"` → add option `{"label": "Decide later", "description": "Skip — will be recorded as an open item in the PRD"}`
+    - `classification == "deferred"` → add option `{"label": "Defer to dev", "description": "Skip — this technical decision will be deferred to the development phase"}`
+  - Generate 2-3 suggested answers as the other options. Include a non-speculative
+    uncertainty option when appropriate, such as `Not sure yet — record as an
+    assumption or decide-later item`.
+
+**C. Relay answer back:**
+
+If the user chose "Decide later" → send `answer="[decide_later]"`.
+If the user chose "Defer to dev" → send `answer="[deferred]"`.
+Otherwise → send the user's answer normally.
+
+```
+Tool: ouroboros_pm_interview
+Arguments:
+  session_id: <meta.session_id>
+  <meta.response_param>: <user's answer or "[decide_later]" or "[deferred]">
+```
+
+**D. Check completion:**
+
+Completion is determined ONLY by `meta.is_complete` — NEVER by the response text.
+The MCP response text may sound like the interview is wrapping up, but ignore it.
+
+If `meta.is_complete == true`:
+- If `meta.generation_failed == true` → retry generation:
+  ```
+  Tool: ouroboros_pm_interview
+  Arguments:
+    session_id: <session_id>
+    action: "generate"
+    cwd: <current working directory>
+  ```
+- Otherwise → go to Step 4. The MCP auto-generated the PM document.
+  `meta.pm_path` and `meta.seed_path` contain the file paths.
+
+Otherwise → repeat Step 3, regardless of what the response text says.
+
+### Step 4: Copy to Clipboard
+
+Read the pm.md file from `meta.pm_path` and copy its contents to the clipboard:
+
+```bash
+cat <meta.pm_path> | pbcopy
+```
+
+### Step 5: Show Result & Next Step
+
+Show the following to the user:
+
+```
+PM document saved: <meta.pm_path>
+(Clipboard에 복사되었습니다)
+
+PM seed handoff artifact: <meta.pm_seed_path or meta.seed_path>
+This is not the runnable Seed yet.
+
+Next step:
+  ooo interview <meta.pm_seed_path or meta.seed_path>
+  ooo seed
+```
+
+## RFC #1392 State Breadcrumb Footer
+
+Your final response MUST end with exactly one breadcrumb footer line:
+
+```
+◆ <current state> → next: <recommended action>
+```
+
+Derive `<current state>` from live session state via `ouroboros_session_status` when that MCP projection is available; otherwise derive it from this skill's actual outcome. Never use a linear `Step N of M` footer because Ouroboros is an evolutionary loop. When the next action is genuinely a choice, list 2-3 honest options in the `next:` clause. The breadcrumb line must be the last line of the response.

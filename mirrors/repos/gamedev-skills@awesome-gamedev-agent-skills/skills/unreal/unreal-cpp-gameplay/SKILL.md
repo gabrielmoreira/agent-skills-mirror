@@ -6,18 +6,12 @@ description: >
   the module Build.cs. Use when writing or debugging UE C++, deriving from AActor/ACharacter/
   AGameModeBase, exposing properties to the editor or Blueprints, or when the user mentions
   Unreal C++, UCLASS, GENERATED_BODY, GameMode, ACharacter, or .Build.cs.
-license: Apache-2.0
-compatibility: Unreal Engine 5.4+ (docs verified against current UE5); C++17 toolchain
-metadata:
-  engine: unreal
-  category: unreal
-  difficulty: advanced
 ---
 
 # Unreal C++ Gameplay
 
 Write correct UE5 gameplay C++: the reflection macros that connect C++ to the editor and
-Blueprints, the Gameplay Framework class roles, and module dependencies. Targets **UE 5.4+**.
+Blueprints, the Gameplay Framework class roles, and module dependencies. Targets **UE 5.8**.
 
 ## When to use
 

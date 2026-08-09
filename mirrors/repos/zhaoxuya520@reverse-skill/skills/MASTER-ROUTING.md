@@ -30,6 +30,7 @@ powershell -File skills\scripts\smoke.ps1
 powershell -File skills\scripts\case-guard.ps1 -CaseRoot work\my-case
 # Evidence 追加
 powershell -File skills\scripts\append-evidence.ps1 -CaseRoot work\my-case -Id E-001 -Title "..." -ReproCommand "..."
+python3 skills/case-review/scripts/review_case.py work/<case> --verify-hashes --strict
 ```
 
 ## 作战契约（ops）
@@ -39,6 +40,7 @@ powershell -File skills\scripts\append-evidence.ps1 -CaseRoot work\my-case -Id E
 | `ops/IDENTITY.md` | 我们是路由包，不是 Z3r0 平台 |
 | `ops/scope-contract.md` | 启动门槛 |
 | `ops/evidence-finding-path.md` | 证据链 |
+| `case-review/SKILL.md` | Evidence 图审查与报告交接 |
 | `ops/role-map.md` | 角色→skill |
 | `ops/timeline-workitem.md` | 时间线与覆盖 |
 | `ops/sandbox-profile.md` | 工具对照 |
@@ -72,6 +74,7 @@ powershell -File skills\scripts\append-evidence.ps1 -CaseRoot work\my-case -Id E
 | **R19** | 浏览器/桌面自动化 | `browser-automation/` |
 | **R20** | 报告 / writeup | `docs-generator/` |
 | **R39** | 图表 / Mermaid / Graphviz / PlantUML / 架构图 | `diagram-generator/` |
+| **R40** | Case / Evidence 图审查 | `case-review/` |
 | **R21** | 协议 / Protobuf / PCAP 协议 | `protocol-reverse/` |
 | **R22** | Ghidra / 开源反编译 | `ghidra-reverse/` |
 | **R23** | 云 / 容器 / K8s | `cloud-k8s/` |

@@ -7,19 +7,13 @@ description: >
   mentions glTF, GLB, GLTFLoader, AnimationMixer, animation clips, DRACOLoader, or
   "load a 3D model". For scene/camera/renderer setup use threejs-scene-setup; for
   materials and lights use threejs-materials-lighting.
-license: Apache-2.0
-compatibility: three.js r165+ (verified against r184; GLTFLoader from three/addons)
-metadata:
-  engine: threejs
-  category: web-engines
-  difficulty: intermediate
 ---
 
 # three.js glTF Loading
 
 Load `.gltf`/`.glb` models and play their animations in three.js, including
 compressed geometry (DRACO/Meshopt) and textures (KTX2). Patterns target
-**r165+**, verified against **r184**.
+**r184**; preserve an existing project's pinned release unless migration is requested.
 
 ## When to use
 

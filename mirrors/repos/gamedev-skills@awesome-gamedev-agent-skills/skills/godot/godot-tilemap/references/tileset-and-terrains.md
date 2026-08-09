@@ -1,4 +1,4 @@
-# TileSet & terrains reference (Godot 4.3+)
+# TileSet & terrains reference (Godot 4.7)
 
 Depth companion to `godot-tilemap`.
 

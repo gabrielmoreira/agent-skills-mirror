@@ -1,4 +1,4 @@
-# CI / headless build script (Unity 6)
+# CI / headless build script (Unity 6.3 LTS)
 
 Depth for `unity-build-pipeline`: a reusable editor build script that takes command-line
 arguments, switches platform, stamps a version, and returns a proper exit code. Verified

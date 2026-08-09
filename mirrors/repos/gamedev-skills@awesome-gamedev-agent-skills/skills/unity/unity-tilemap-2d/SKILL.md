@@ -1,22 +1,16 @@
 ---
 name: unity-tilemap-2d
 description: >
-  Build and script 2D tilemaps in Unity 6: the Grid + Tilemap components, the Tile Palette,
+  Build and script 2D tilemaps in Unity 6.3 LTS: the Grid + Tilemap components, the Tile Palette,
   tilemap colliders, rule tiles, and runtime SetTile/GetTile painting. Use when painting tile
   levels, adding a TilemapCollider2D, using rule or animated tiles, generating tilemaps from
   code, or when the user mentions Unity tilemap, tile palette, rule tile, or Grid.
-license: Apache-2.0
-compatibility: Unity 6 (6000.0 LTS); UnityEngine.Tilemaps. RuleTile needs the 2D Tilemap Extras package.
-metadata:
-  engine: unity
-  category: unity
-  difficulty: intermediate
 ---
 
 # Unity 2D Tilemap
 
-Author and script tile-based 2D levels in Unity 6 with the `Grid`/`Tilemap` system, the Tile
-Palette, colliders, and runtime painting. Targets **Unity 6 (6000.0 LTS)**.
+Author and script tile-based 2D levels in Unity 6.3 LTS with the `Grid`/`Tilemap` system, the Tile
+Palette, colliders, and runtime painting. Targets **Unity 6.3 LTS (6000.3)**.
 
 > **Package note:** the core Tilemap (`Grid`, `Tilemap`, `Tile`, `TilemapCollider2D`) is
 > built in. **Rule Tiles, Animated Tiles, and Tile Palette brushes live in the separate

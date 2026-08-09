@@ -4,17 +4,12 @@ description: >
   Routes any game-development request to the right specialized skill(s): it detects the engine
   (Godot, Unity, Unreal, Bevy, Phaser, PixiJS, three.js, LÖVE, pygame, Roblox) and the task, then
   reads the chosen skill before acting. Use to make a game or to decide which skill applies — for
-  players, levels, enemies, shaders, UI/UX, cameras, game feel, physics, input, audio, saving,
-  multiplayer, AI, dialogue, procedural generation, or performance, for genres (platformer,
+  players, levels, enemies, shaders, art direction, sprites, tiles, textures, 3D assets, UI/UX,
+  cameras, game feel, physics, input, audio, saving, multiplayer, AI, dialogue, procedural
+  generation, or performance, for genres (platformer,
   roguelike, RPG, FPS, tower-defense, card game, visual novel, survival-crafting, puzzle), and for
   shipping (game jam, Steam, itch). Start here
   when unsure which gamedev skill to use.
-license: Apache-2.0
-compatibility: Engine-agnostic dispatcher over the skills/ collection (66 skills, 8 categories)
-metadata:
-  engine: none
-  category: router
-  difficulty: beginner
 ---
 
 # Master Router — Game-Development Skill Dispatcher
@@ -26,8 +21,8 @@ you to read them before acting. It **dispatches and composes** — it does not r
 ## When to use
 
 - Use at the **start of any game-development request** — building or debugging a game, level,
-  player, enemy, shader, UI, save system, multiplayer, input, audio, AI, dialogue, or procedural
-  content — to decide which skill(s) to load.
+  player, enemy, shader, UI, save system, multiplayer, input, audio, AI, dialogue, procedural
+  content, or visual asset set — to decide which skill(s) to load.
 - Use when the user names an engine or genre, says "make a game", or asks "which skill should I
   use?".
 
@@ -37,7 +32,8 @@ new engine or concern (router step 6).
 
 ## Routing algorithm
 
-1. **Detect engine** — project fingerprint → at most one engine skill set (or "unknown"). §1.
+1. **Detect engine and version** — project fingerprint → at most one engine skill set (or
+   "unknown"), then read the project's version source. §1.
 2. **Classify task** — phrasing → discipline(s) + at most one genre + workflow(s). §2.
 3. **Resolve** — the minimal set: engine skill(s) + discipline(s) + genre + workflow(s). §3.
 4. **Read (disclosure)** — open only the chosen `SKILL.md` bodies; `references/` only on demand. §4.
@@ -66,15 +62,21 @@ Scan for the highest-confidence signal; **choose exactly one** engine. Stop at t
 For secondary signals, the Godot-C#/Unity/Bevy and multi-web disambiguation rules, monorepos,
 and plain-text engine mentions, read `references/engine-detection.md`.
 
+After identifying the engine, read its version from project metadata or dependency locks before
+choosing APIs. Existing projects keep their pinned version unless migration is requested; the
+catalog baseline is only for new projects. The exact version sources are in the detection reference
+and `../docs/VERSION-SUPPORT.md`.
+
 ## 2. Task classification (phrasing → category)
 
 After the engine, read the request for task signals (three **additive** categories):
 
-- **disciplines** (cross-engine concepts): `game-ai`, `procedural-gen`, `dialogue-systems`,
+- **disciplines** (cross-engine concepts): `create-game-assets`, `game-ai`, `procedural-gen`, `dialogue-systems`,
   `save-systems`, `audio-design`, `shader-programming`, `physics-tuning`, `level-design`,
   `input-systems`, `game-feel`, `camera-systems`, `game-ui-ux`, `performance-optimization`.
-  Triggered by concept words ("pathfinding", "save slots", "fragment shader", "screen shake",
-  "camera follow", "HUD/menu", "optimize/low FPS").
+  Triggered by concept words ("sprite sheet", "art direction", "texture", "pathfinding",
+  "save slots", "fragment shader", "screen shake", "camera follow", "HUD/menu",
+  "optimize/low FPS").
 - **genres** (whole-game templates): `platformer`, `roguelike`, `rpg`, `fps-shooter`,
   `tower-defense`, `card-game`, `visual-novel`, `survival-crafting`, `puzzle`. Triggered by genre
   words ("make a roguelike", "deckbuilder").
@@ -108,6 +110,7 @@ File signals sharpen this: `*.yarn`/`*.ink` → `dialogue-systems`/`visual-novel
 
 | Concept (`says:`) | Discipline skill | Pairs with (engine API) |
 |-------------------|------------------|-------------------------|
+| art direction, game assets, sprites, tilesets, textures, icons, 3D props | `create-game-assets` | engine importer/rendering skill; `imagegen` when available |
 | enemy AI, behavior tree, pathfinding, steering | `game-ai` | `unity-navmesh` / `unreal-behavior-trees` / Godot nav |
 | procedural, noise, seed, dungeon generator | `procedural-gen` | engine tilemap/grid skill |
 | dialogue, Yarn, Ink, conversation tree | `dialogue-systems` | engine UI skill |
@@ -164,7 +167,9 @@ skill's `feel-tuning.md` reference if you want coyote-time/buffering."*
 
 - **One engine set, additive concepts.** Exactly one engine skill set; add the disciplines the
   task needs and usually **at most one** genre. Workflows attach independently.
-- **Order:** engine fundamentals → discipline concept → genre orchestration → workflow.
+- **Order:** engine fundamentals → discipline concept → genre orchestration → workflow. For asset
+  production, approve the visual target before generating a family, then finish with the engine
+  import settings and an in-context capture.
 - **Ownership on overlap:** the **engine** skill owns API/syntax; the **discipline** skill owns
   the portable concept/algorithm and defers to the engine skill for code; the **genre** skill owns
   structure/glue and links out instead of re-teaching a primitive.
@@ -205,6 +210,7 @@ and offer to load it if the user confirms.
 | "make hits feel punchy in my Godot game" | Godot (`project.godot`) | `game-feel` (+ `camera-systems` for shake) |
 | "the camera should follow my player smoothly" | (detected engine) | `camera-systems` (+ engine movement skill) |
 | "my Unity game drops to 30 FPS, optimize it" | Unity (`Assets/`+`ProjectSettings/`) | `performance-optimization` (profile first) → engine skill |
+| "make a cohesive pixel-art player and enemy set" | (detected engine) | `create-game-assets` → relevant engine import/rendering skill |
 
 ## References
 

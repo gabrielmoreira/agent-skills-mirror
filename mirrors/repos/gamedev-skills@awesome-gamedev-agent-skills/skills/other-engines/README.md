@@ -1,10 +1,9 @@
 # Other engine skills
 
-Agent Skills for additional engines and frameworks such as
-[Bevy](https://bevyengine.org/), [GameMaker](https://gamemaker.io/),
-[LÖVE](https://love2d.org/), [MonoGame](https://monogame.net/), and others.
+Five Agent Skills for Bevy 0.19, pygame-ce 2.5.7, LÖVE 11.5, and Roblox
+(Luau plus DataStore persistence).
 
-Each subdirectory is one skill: a folder containing a `SKILL.md` (and optional
-`references/`). Folder name must equal the skill's `name` frontmatter field.
+Each subdirectory is one skill. Existing projects keep their pinned engine or
+dependency version; see [`VERSION-SUPPORT.md`](../../docs/VERSION-SUPPORT.md).
 
 See [`docs/SKILL-FORMAT.md`](../../docs/SKILL-FORMAT.md) for the authoring standard.

@@ -6,12 +6,6 @@ description: >
   and the critical path, and encounter design. Engine-neutral practice. Use when
   the user mentions level design, blockout/whitebox/greybox, level layout, level
   pacing, encounter design, or the critical path through a level.
-license: Apache-2.0
-compatibility: Engine-agnostic practice. Pairs with godot-tilemap / unity-tilemap-2d for 2D and gridmaps for 3D; data snippets in GDScript-like pseudocode.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: intermediate
 ---
 
 # Level design

@@ -1,29 +1,24 @@
 ---
 name: phaser-core
 description: >
-  Set up and debug a Phaser 3 game: the Game config, the Scene lifecycle
+  Set up and debug a Phaser 4 game: the Game config, the Scene lifecycle
   (init/preload/create/update), the asset loader, cameras, and cross-scene
-  communication. Use when building or debugging a Phaser 3 game — when the user
+  communication. Use when building or debugging a Phaser game — when the user
   mentions Phaser, Phaser.Game, Phaser.Scene, preload/create/update, this.load,
   this.add, or scene transitions. For Arcade Physics movement/collisions use
   phaser-arcade-physics.
-license: Apache-2.0
-compatibility: Phaser 3.90 (JavaScript/TypeScript, ES modules or script tag)
-metadata:
-  engine: phaser
-  category: web-engines
-  difficulty: beginner
 ---
 
-# Phaser 3 Core
+# Phaser 4 Core
 
-Set up the foundation of a Phaser 3 game: the `Game` config, the `Scene`
+Set up the foundation of a Phaser game: the `Game` config, the `Scene`
 lifecycle, asset loading, cameras, and passing data between scenes. Targets
-**Phaser 3.90**.
+**Phaser 4.2** for new projects; keep an existing Phaser 3.90 project on its
+pinned major unless the user explicitly asks for a migration.
 
 ## When to use
 
-- Use when starting a Phaser 3 game, wiring the `Phaser.Game` config, structuring
+- Use when starting a Phaser game, wiring the `Phaser.Game` config, structuring
   `Scene`s, loading assets in `preload`, or fixing scene transitions and shared
   state.
 - Use when the project has `phaser` in `package.json` or `import Phaser from 'phaser'`,
@@ -35,19 +30,21 @@ separate concern). For cross-engine save/load patterns use `save-systems`.
 
 ## Core workflow
 
-1. **Create the game from a config.** `new Phaser.Game(config)` with `type:
+1. **Detect the installed major first.** Read `package.json` and the lockfile. Use
+   Phaser 4.2 for new work; do not silently rewrite a Phaser 3 project as Phaser 4.
+2. **Create the game from a config.** `new Phaser.Game(config)` with `type:
    Phaser.AUTO` (WebGL with Canvas fallback), a `width`/`height`, and a `scene`
    array. The first scene (and any with `active: true`) starts automatically.
-2. **Model each screen as a `Scene`.** Subclass `Phaser.Scene`, pass a unique
+3. **Model each screen as a `Scene`.** Subclass `Phaser.Scene`, pass a unique
    `key` to `super`, and implement the lifecycle: `init(data)` → `preload()` →
    `create(data)` → `update(time, delta)`.
-3. **Load assets in `preload`, use them in `create`.** Queued assets are not
+4. **Load assets in `preload`, use them in `create`.** Queued assets are not
    available until `create`. The loader is per-scene; the cache it fills is global.
-4. **Reset per-run state in `init()`, not the constructor.** A scene instance is
+5. **Reset per-run state in `init()`, not the constructor.** A scene instance is
    reused across restarts, so constructor-set fields keep stale values.
-5. **Move between screens** with `this.scene.start/launch/switch/sleep/wake`.
+6. **Move between screens** with `this.scene.start/launch/switch/sleep/wake`.
    Share data through `this.registry` (global) or a sibling scene's event emitter.
-6. **Run and observe.** Serve the page, open it, and confirm assets load (watch the
+7. **Run and observe.** Serve the page, open it, and confirm assets load (watch the
    Network tab and console) and scenes switch as expected before assuming success.
 
 ## Patterns
@@ -158,6 +155,9 @@ this.cameras.main.setZoom(1.5);
 - **Phaser 2 tutorials don't work** → "States" were renamed to "Scenes" in Phaser 3,
   and each Scene owns its own systems (input, cameras, tweens) rather than a global
   Game World.
+- **Phaser 3 custom pipelines fail in Phaser 4** → Phaser 4 rebuilt the renderer and
+  replaced the old FX/pipeline extension points. Migrate custom shaders and renderer
+  plugins against the Phaser 4 guide; do not mechanically copy internal renderer code.
 - **Nothing renders / black screen** → confirm the canvas mounted, `width`/`height`
   are set, and a scene actually started (check `game.scene.dump()` output).
 

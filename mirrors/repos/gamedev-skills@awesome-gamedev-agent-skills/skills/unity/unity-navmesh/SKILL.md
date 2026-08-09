@@ -1,22 +1,16 @@
 ---
 name: unity-navmesh
 description: >
-  Add AI navigation in Unity 6: bake a NavMesh with the AI Navigation package (NavMeshSurface),
+  Add AI navigation in Unity 6.3 LTS: bake a NavMesh with the AI Navigation package (NavMeshSurface),
   move agents with NavMeshAgent.SetDestination, and handle dynamic obstacles. Use when setting
   up pathfinding, making an enemy chase the player, baking navigation, or when the user
   mentions NavMesh, NavMeshAgent, NavMeshSurface, NavMeshObstacle, or Unity pathfinding.
-license: Apache-2.0
-compatibility: Unity 6 (6000.0 LTS); AI Navigation package 2.x (com.unity.ai.navigation); UnityEngine.AI runtime.
-metadata:
-  engine: unity
-  category: unity
-  difficulty: intermediate
 ---
 
 # Unity NavMesh (AI Navigation)
 
-Give NPCs pathfinding in Unity 6: bake walkable surfaces and move agents around obstacles.
-Targets **Unity 6 (6000.0 LTS)** with the **AI Navigation package 2.x**.
+Give NPCs pathfinding in Unity 6.3 LTS: bake walkable surfaces and move agents around obstacles.
+Targets **Unity 6.3 LTS (6000.3)** with the **AI Navigation package 2.x**.
 
 > **Version trap (Unity 2022+/6):** the old built-in **Navigation window** (Object/Bake tabs)
 > is gone. Baking is now **component-based** via the **AI Navigation package**

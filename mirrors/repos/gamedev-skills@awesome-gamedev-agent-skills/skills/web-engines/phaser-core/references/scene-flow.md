@@ -1,4 +1,4 @@
-# Phaser 3 scene flow (Phaser 3.90)
+# Phaser scene flow (Phaser 4.2; core lifecycle also applies to 3.90)
 
 The Scene Manager runs every scene through a small state machine. Knowing which
 transition verb does what prevents the most common Phaser bugs: hidden scenes,

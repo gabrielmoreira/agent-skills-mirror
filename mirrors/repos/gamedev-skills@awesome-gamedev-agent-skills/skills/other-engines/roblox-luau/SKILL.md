@@ -7,12 +7,6 @@ description: >
   Use when building or debugging Roblox Studio scripts — when the user mentions
   Roblox, Luau, services, RemoteEvent, Instance.new, PlayerAdded, or client vs
   server. For saving player data use roblox-datastores.
-license: Apache-2.0
-compatibility: Roblox (current engine) / Luau; server-authoritative model
-metadata:
-  engine: roblox
-  category: other-engines
-  difficulty: beginner
 ---
 
 # Roblox Luau Scripting

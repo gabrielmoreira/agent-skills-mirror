@@ -7,12 +7,6 @@ description: >
   particle, and camera APIs. Use when the user mentions game feel, juice, "make it feel
   good/punchy", screen shake, hit stop, screen freeze, easing, squash and stretch, impact
   frames, or feedback/polish on hits, jumps, pickups, and deaths.
-license: Apache-2.0
-compatibility: Engine-agnostic techniques; snippets in GDScript (Godot 4.x) and C# (Unity 6) with pseudocode. Pairs with godot-animation/godot-audio, unity-animation, camera-systems, and audio-design.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: intermediate
 ---
 
 # Game feel (juice)
@@ -69,7 +63,7 @@ state); **(2)** scale juice to event importance — a footstep is not a boss dea
 ### 1. Screen shake by decaying "trauma" (smooth, not a random jitter)
 
 ```gdscript
-# Godot 4.x. Store trauma 0..1; shake = trauma^2 so small hits barely move, big hits punch.
+# Godot 4.7. Store trauma 0..1; shake = trauma^2 so small hits barely move, big hits punch.
 # Drives a Camera2D OFFSET (the visual), never the player body. Decays every frame.
 @export var decay := 1.2          # trauma lost per second
 @export var max_offset := Vector2(12, 8)
@@ -89,14 +83,14 @@ func _process(dt: float) -> void:
     offset = Vector2(max_offset.x * shake * sin(_t * 1.7),
                      max_offset.y * shake * sin(_t * 2.3))
     rotation = max_roll * shake * sin(_t * 1.1)
-# Unity 6: identical model on a CinemachineCamera via CinemachineBasicMultiChannelPerlin
+# Unity 6.3 LTS: identical model on a CinemachineCamera via CinemachineBasicMultiChannelPerlin
 # (set AmplitudeGain/FrequencyGain from trauma^2) — see camera-systems.
 ```
 
 ### 2. Hit-stop / freeze frame (sell impact by briefly stopping time)
 
 ```gdscript
-# Godot 4.x. Drop time scale, then restore after a REAL-TIME delay (unaffected by time_scale).
+# Godot 4.7. Drop time scale, then restore after a REAL-TIME delay (unaffected by time_scale).
 func hit_stop(duration := 0.08, scale := 0.05) -> void:
     Engine.time_scale = scale
     # 4th arg ignore_time_scale=true → the timer still fires while the game is frozen.
@@ -105,7 +99,7 @@ func hit_stop(duration := 0.08, scale := 0.05) -> void:
 ```
 
 ```csharp
-// Unity 6 (C#). WaitForSecondsRealtime ignores Time.timeScale, so the timer still elapses.
+// Unity 6.3 LTS (C#). WaitForSecondsRealtime ignores Time.timeScale, so the timer still elapses.
 IEnumerator HitStop(float duration = 0.08f, float scale = 0.05f) {
     Time.timeScale = scale;
     yield return new WaitForSecondsRealtime(duration);
@@ -116,7 +110,7 @@ IEnumerator HitStop(float duration = 0.08f, float scale = 0.05f) {
 ### 3. Squash & stretch + overshoot via an eased tween (the "pop")
 
 ```gdscript
-# Godot 4.x. Conserve volume: stretch one axis, squash the other, then spring back with overshoot.
+# Godot 4.7. Conserve volume: stretch one axis, squash the other, then spring back with overshoot.
 func pop(node: Node2D) -> void:
     node.scale = Vector2(1.3, 0.7)                       # instant squash on the event
     var tw := create_tween()

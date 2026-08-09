@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 34 followed patterns, 49 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 35 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 34 followed patterns, 49 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 34 |
-| Files         | 49 |
+| Followed pats | 35 |
+| Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -85,6 +85,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 34 followed patterns, 49 fil
 - `docs/release.md`
 - `docs/terminal-activity.md`
 - `SECURITY.md`
+- `public-docs/hub/security.md`
 
 ## File Index
 
@@ -140,7 +141,8 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 46 | → | [`docs/terminal-performance.md`](docs/terminal-performance.md) |
 | 47 | → | [`docs/testing.md`](docs/testing.md) |
 | 48 | → | [`docs/unistyles.md`](docs/unistyles.md) |
-| 49 | → | [`SECURITY.md`](SECURITY.md) |
+| 49 | → | [`public-docs/hub/security.md`](public-docs/hub/security.md) |
+| 50 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

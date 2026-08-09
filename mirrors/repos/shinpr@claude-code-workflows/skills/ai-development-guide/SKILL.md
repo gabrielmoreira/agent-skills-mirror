@@ -10,6 +10,7 @@ description: Applies language-agnostic and backend technical decision criteria, 
 Explore broadly, then converge on the lowest-lifecycle-cost solution that delivers the required user, operator, or maintainer value while keeping the system correct and maintainable.
 - Resolve verified problems within confirmed scope or dependencies required for the outcome; report other findings with evidence for a scope decision.
 - Introduce capabilities, infrastructure, abstractions, or speculative edge-case handling when a current outcome, verified constraint, or evidence-backed material risk requires them.
+- Treat behavior-preserving maintenance inside the confirmed responsibility as current maintainer value when repository evidence shows it reduces change ambiguity, duplicate ownership, defect risk, or future implementation and verification cost without expanding observable product scope.
 
 ## Technical Anti-patterns (Red Flag Patterns)
 
@@ -153,7 +154,7 @@ How to handle duplicate code based on Martin Fowler's "Refactoring":
 - Similar functionality found → Verify that its contract, lifecycle, and repository usage are representative; reuse or extend it when compatible, otherwise record why it is not a valid model
 - Similar functionality is technical debt → Repair it when it blocks the current outcome, was caused by the current change, or lies in confirmed scope; otherwise report it separately. Create an ADR when the repair requires an architectural decision
 - No similar functionality exists → Implement new functionality following existing design philosophy
-- Record all decisions and rationale in "Existing Codebase Analysis" section of Design Doc
+- Record each reuse, extend, separate, or repair decision with its evidence in the artifact this agent owns
 - **Reference representativeness check**: When adopting a pattern or dependency from nearby code, verify it is representative across the repository before adopting — nearby files alone are an insufficient basis
 
 ## Quality Assurance Mechanism Awareness

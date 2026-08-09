@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `bojieli/ai-agent-book` — 26 default patterns, 0 followed patterns, 3 file(s) materialized.
+Mirror of `bojieli/ai-agent-book` — 26 default patterns, 0 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `bojieli/ai-agent-book` — 26 default patterns, 0 followed patterns, 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,8 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`chapter2/agent-skills-ppt/skills/pptx/SKILL.md`](chapter2/agent-skills-ppt/skills/pptx/SKILL.md) |
-| 2 | ✓ | [`chapter8/ai-style-skill/skill/SKILL.md`](chapter8/ai-style-skill/skill/SKILL.md) |
-| 3 | ✓ | [`chapter8/browser-use-rpa/browser-use/CLAUDE.md`](chapter8/browser-use-rpa/browser-use/CLAUDE.md) |
+| 2 | ✓ | [`chapter7/curly-quote-sft/SKILL.md`](chapter7/curly-quote-sft/SKILL.md) |
+| 3 | ✓ | [`chapter8/ai-style-skill/skill/SKILL.md`](chapter8/ai-style-skill/skill/SKILL.md) |
+| 4 | ✓ | [`chapter8/browser-use-rpa/browser-use/CLAUDE.md`](chapter8/browser-use-rpa/browser-use/CLAUDE.md) |
 
 ---
 

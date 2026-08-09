@@ -2,7 +2,7 @@
 
 Detail the body defers here: per-engine profiler walkthroughs, the CPU-vs-GPU triage flow, a
 pooling manager, batching/instancing rules, allocation/GC guidance, LOD/culling, and asset
-budgets. Targets **Godot 4.x**, **Unity 6**, **Unreal 5**.
+budgets. Targets **Godot 4.7**, **Unity 6.3 LTS**, **Unreal 5.8**.
 
 ## 1. CPU-vs-GPU triage (decide before you fix)
 
@@ -21,7 +21,7 @@ calls. This split is the single most important decision in performance work.
 
 ## 2. Per-engine profiler quick start
 
-**Godot 4.x**
+**Godot 4.7**
 - Editor: **Debugger ▸ Profiler** (per-function script + physics time, frame time), and the
   **Monitors** tab (FPS, draw calls, video/static memory, object/node counts).
 - Code: `Performance.get_monitor(Performance.TIME_PROCESS)` (process ms),
@@ -29,11 +29,11 @@ calls. This split is the single most important decision in performance work.
   `Performance.RENDER_TOTAL_PRIMITIVES_IN_FRAME`, `Performance.MEMORY_STATIC`.
 - Visual debugging: viewport **View Information / View Frame Time** overlays.
 
-**Unity 6**
+**Unity 6.3 LTS**
 - **Profiler** window: CPU Usage, GPU Usage, Rendering, Memory modules. Use **Deep Profile**
   sparingly (high overhead, skews numbers).
 - **Frame Debugger** to step draw calls and see what breaks batching (SetPass calls, batches).
-- Code: `ProfilerRecorder` tracking `"CPU Main Thread Frame Time"` (Unity 6000 manual) for an
+- Code: `ProfilerRecorder` tracking `"CPU Main Thread Frame Time"` (Unity 6.3 LTS000 manual) for an
   in-build HUD/CSV; `FrameTimingManager` for CPU/GPU frame times.
 - **Profile a Development build on device** (`Autoconnect Profiler`), not just the editor.
 

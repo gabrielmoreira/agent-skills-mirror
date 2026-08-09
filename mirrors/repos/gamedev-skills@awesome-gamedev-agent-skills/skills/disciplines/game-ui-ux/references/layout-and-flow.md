@@ -2,11 +2,11 @@
 
 Detail the `game-ui-ux` body defers here: per-engine scaling modes, safe-area math, a complete
 focus + screen-stack pattern, diegetic UI, accessibility, and localization-ready layout. Snippets
-target **Godot 4.x** and **Unity 6**.
+target **Godot 4.7** and **Unity 6.3 LTS**.
 
 ## 1. Scaling modes per engine
 
-**Godot 4.x** (Project Settings → Display → Window → Stretch):
+**Godot 4.7** (Project Settings → Display → Window → Stretch):
 
 | Setting | Choose | Effect |
 |---------|--------|--------|
@@ -17,7 +17,7 @@ target **Godot 4.x** and **Unity 6**.
 Anchor HUD corners so `expand` puts the extra space where you want it. `keep_width`/`keep_height`
 pin one axis for hard 16:9 designs.
 
-**Unity 6** (`CanvasScaler` on each Canvas):
+**Unity 6.3 LTS** (`CanvasScaler` on each Canvas):
 
 - `UI Scale Mode = Scale With Screen Size`.
 - `Reference Resolution = 1920×1080` (or your art's design size).
@@ -57,7 +57,7 @@ Requirements for controller/keyboard usability:
    focused control. Don't clear focus when the mouse moves.
 
 ```gdscript
-# Godot 4.x: trap focus inside a modal so the stick can't escape to the game behind it.
+# Godot 4.7: trap focus inside a modal so the stick can't escape to the game behind it.
 func open_modal() -> void:
     _prev_focus = get_viewport().gui_get_focus_owner()
     $Modal.show(); $Modal/OK.grab_focus()
@@ -72,7 +72,7 @@ Model screens as a stack of UI states; the top owns input and is visible. Push f
 pop for "back". This generalizes pause, settings-over-pause, and confirm dialogs.
 
 ```gdscript
-# Godot 4.x sketch (a CanvasLayer per screen; pausing the tree under an overlay):
+# Godot 4.7 sketch (a CanvasLayer per screen; pausing the tree under an overlay):
 var _stack: Array[Control] = []
 func push(screen: Control) -> void:
     if _stack.size() > 0: _stack.back().set_process_input(false)

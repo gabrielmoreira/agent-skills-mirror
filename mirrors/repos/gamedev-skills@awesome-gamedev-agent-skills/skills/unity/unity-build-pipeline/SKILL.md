@@ -1,23 +1,17 @@
 ---
 name: unity-build-pipeline
 description: >
-  Build and ship Unity 6 players: build settings and scenes, player/quality settings, the
+  Build and ship Unity 6.3 LTS players: build settings and scenes, player/quality settings, the
   IL2CPP vs Mono scripting backend, managed code stripping, scripted BuildPipeline.BuildPlayer,
   and CI/headless builds. Use when configuring or automating a build, choosing a scripting
   backend, shrinking build size, or when the user mentions Unity build, player settings,
   IL2CPP, code stripping, or Addressables.
-license: Apache-2.0
-compatibility: Unity 6 (6000.0 LTS); UnityEditor.BuildPipeline. Addressables is a separate package.
-metadata:
-  engine: unity
-  category: unity
-  difficulty: intermediate
 ---
 
 # Unity Build Pipeline
 
-Configure, script, and automate Unity 6 player builds: scenes, platform target, scripting
-backend, stripping, and headless/CI builds. Targets **Unity 6 (6000.0 LTS)**.
+Configure, script, and automate Unity 6.3 LTS player builds: scenes, platform target, scripting
+backend, stripping, and headless/CI builds. Targets **Unity 6.3 LTS (6000.3)**.
 
 ## When to use
 

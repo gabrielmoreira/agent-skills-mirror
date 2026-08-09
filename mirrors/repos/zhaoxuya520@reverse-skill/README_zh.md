@@ -11,7 +11,7 @@
 逆向/渗透/安全技能路由包 — AI 自动路由 · 按需自举工具链 · 自动进化经验库</p>
 
 <p align="center">
-  <a href="https://github.com/zhaoxuya520/reverse-skill/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/release-v1.0.0-blue" alt="release"></a>
+  <a href="https://github.com/zhaoxuya520/reverse-skill/releases"><img src="https://img.shields.io/badge/release-v1.0.1-blue" alt="release v1.0.1"></a>
   <a href="https://github.com/zhaoxuya520/reverse-skill/stargazers"><img src="https://img.shields.io/github/stars/zhaoxuya520/reverse-skill?style=flat&logo=github" alt="stars"></a>
   <a href="https://github.com/zhaoxuya520/reverse-skill/forks"><img src="https://img.shields.io/github/forks/zhaoxuya520/reverse-skill?style=flat&logo=github" alt="forks"></a>
   <a href="https://github.com/zhaoxuya520/reverse-skill/issues"><img src="https://img.shields.io/github/issues/zhaoxuya520/reverse-skill?style=flat&logo=github" alt="issues"></a>
@@ -29,6 +29,7 @@
   <a href="#关于项目">关于</a> ·
   <a href="#快速开始">快速开始</a> ·
   <a href="#使用说明">使用说明</a> ·
+  <a href="https://reverse.apivix.com/docs/">教学文档</a> ·
   <a href="skills/MASTER-ROUTING.md">快路径</a> ·
   <a href="skills/routing.md">路由矩阵</a> ·
   <a href="skills/ops/">作战契约</a> ·
@@ -38,7 +39,9 @@
 </p>
 
 <p align="center">
-  🌐 <a href="README.md">English</a>
+  🌐 <a href="README.md">English</a> ·
+  <a href="https://reverse.apivix.com/">项目官网</a> ·
+  <a href="https://reverse.apivix.com/docs/">在线教学</a>
 </p>
 
 <br/>
@@ -49,7 +52,7 @@
 
 > **如果你是 AI Agent，直接跳转到 [README_AI.md](README_AI.md)，严格按照内容要求执行。**
 
-当 AI Agent（Claude Code、Codex CLI、Cursor 等）遇到 APK、二进制、前端 JS 加密、CTF 或渗透测试任务时，这套系统能让它先路由到正确的方法论，再调用本机工具执行，而不是盲目猜命令。
+当 AI Agent（Claude Code、Codex、Cursor、OpenCode 或其他兼容客户端）遇到 APK、二进制、前端 JS 加密、CTF 或渗透测试任务时，这套系统能让它先路由到正确的方法论，再调用本机工具执行，而不是盲目猜命令。
 
 ```
 用户任务
@@ -64,6 +67,14 @@
 - AI Agent 面对 APK、ELF、JS、PCAP 不知道该用 jadx 还是 Frida 还是 IDA
 - 工具路径、MCP 服务、脚本入口分散在不同机器，迁移困难
 - 同样的问题每次重新踩坑，经验无法复用
+
+### 当前状态
+
+| 路由规则 | 回归基准 | 核心 Skill | CI 平台 | 客户端模型 |
+|---:|---:|---:|---|---|
+| 41 条（R0–R40） | 163 条用例 | 42 个已跟踪模块 | Windows + Ubuntu | 平台无关 |
+
+路由核心由单一结构化配置驱动，通过跨平台 CI 验证，并与各客户端的可选适配层保持分离。
 
 PRIMARY 快路径：[skills/MASTER-ROUTING.md](skills/MASTER-ROUTING.md) · 全表：[skills/routing.md](skills/routing.md) · 作战契约：[skills/ops/](skills/ops/)
 
@@ -97,7 +108,7 @@ PRIMARY 快路径：[skills/MASTER-ROUTING.md](skills/MASTER-ROUTING.md) · 全�
 - **Java / JDK** — 运行 jadx、apktool
 - **Node.js 22.12+** — JS 工具链和 MCP 服务
 - **Python 3.x** — Frida 和辅助脚本
-- **代码 AI 客户端** — Claude Code、Codex CLI、Cursor 等
+- **代码 AI 客户端** — Claude Code、Codex、Cursor、OpenCode 或其他兼容客户端
 
 ### 安装
 
@@ -107,7 +118,7 @@ git clone https://github.com/zhaoxuya520/reverse-skill.git
 
 ### 初次使用
 
-> **初次下载只需让Ai阅读[README_AI.md](README_AI.md)即可，无需其他操作。**
+> **初次下载后，只需让 AI 阅读 [README_AI.md](README_AI.md)，即可按当前环境完成路由与工具检查。**
 
 各平台详细部署文档：
 - **Kali Linux** → [kali/README-kali.md](kali/README-kali.md)
@@ -134,7 +145,8 @@ git clone https://github.com/zhaoxuya520/reverse-skill.git
 | 恶意软件 / YARA | `skills/malware-analysis/` |
 | 渗透测试 / 漏洞扫描 | `skills/pentest-tools/` |
 | 攻击链 / 红队编排 | `skills/attack-chain/` |
-| CTF 竞赛 | `CTF-Sandbox-Orchestrator/` (40+ 子技能) |
+| Case 证据审查 / 报告交接 | `skills/case-review/` |
+| CTF 竞赛 | `CTF-Sandbox-Orchestrator/`（42 个子技能） |
 | 固件 / IoT | `skills/firmware-pentest/` |
 | 补丁差分 / N-day | `skills/patch-diff-exploit/` |
 | Pwn / 漏洞利用 | `skills/pwn-chain/` |
@@ -154,11 +166,30 @@ git clone https://github.com/zhaoxuya520/reverse-skill.git
 | [skills/MASTER-ROUTING.md](skills/MASTER-ROUTING.md) | PRIMARY 快路径 |
 | [skills/routing.md](skills/routing.md) | 路由矩阵（场景 → Skill） |
 | [skills/SKILL.md](skills/SKILL.md) | 总控入口 |
+| [skills/INDEX.md](skills/INDEX.md) | 自动生成的平台无关 Skill 导航索引 |
+| [skills/config/routing.json](skills/config/routing.json) | 路由单一事实源（41 条规则，R0–R40） |
 | [skills/tool-index.md](skills/tool-index.md) | 本机工具索引（自动生成） |
 | [skills/scripts/master-route.ps1](skills/scripts/master-route.ps1) | 一键分诊 |
 | [skills/scripts/case-init.ps1](skills/scripts/case-init.ps1) | 作战 case 目录（scope/timeline） |
+| [skills/case-review/](skills/case-review/) | 只读 Evidence 图审查与 artifact fixity 校验 |
+| [skills/scripts/test-routing.ps1](skills/scripts/test-routing.ps1) | 163 条路由回归基准 |
+| [skills/scripts/verify-routing-coherence.ps1](skills/scripts/verify-routing-coherence.ps1) | 结构一致性与供应链版本固定门禁 |
 | [skills/ops/](skills/ops/) | Scope / 证据链 / 角色 / 时间线 / skill 供应链安全 |
 | [skills/references/community-security-skills.md](skills/references/community-security-skills.md) | 社区安全 skill 生态对照（借鉴不并库） |
+
+### 修改后验证
+
+```powershell
+# 路由回归（163 条）
+powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/test-routing.ps1
+# 结构一致性 + 供应链版本固定门禁
+powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/verify-routing-coherence.ps1
+# 冒烟与 INDEX 漂移检查
+powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/smoke.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File skills/scripts/extract-summaries.ps1 -Check
+```
+
+GitHub Actions 会在 Windows 与 Ubuntu 上执行同一套核心检查。
 
 ### 仓库结构
 
@@ -191,13 +222,33 @@ git clone https://github.com/zhaoxuya520/reverse-skill.git
 
 ## 赞助
 
-商务 / 赞助合作：
+赞助将用于维护路由基准、跨平台 CI、文档和公开安全工作流。
+
+### 当前赞助方
+
+<table align="center">
+  <tr>
+    <td align="center" width="440">
+      <a href="https://www.atlascloud.ai/?ref=W3Q77C">
+        <img src="https://www.atlascloud.ai/oss-program/powered-by-atlas-cloud.svg" alt="Atlas Cloud 赞助" height="44" />
+      </a>
+      <br />
+      <strong>Atlas Cloud</strong>
+      <br />
+      <sub>大模型服务提供商</sub>
+    </td>
+  </tr>
+</table>
+
+### 赞助本项目
 
 <p align="center">
-  <a href="mailto:24781737@qq.com?subject=%5BSponsorship%5D%20reverse-skill">
-    <img src="https://img.shields.io/badge/%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6-24781737%40qq.com-0A66C2?style=for-the-badge&logo=maildotru&logoColor=white" alt="发送邮件 — 24781737@qq.com" />
+  <a href="mailto:ww7517437@gmail.com?subject=%5BSponsorship%5D%20reverse-skill">
+    <img src="https://img.shields.io/badge/%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6-ww7517437%40gmail.com-0A66C2?style=for-the-badge&logo=gmail&logoColor=white" alt="发送邮件 — ww7517437@gmail.com" />
   </a>
 </p>
+
+<p align="center"><sub>确认后的赞助方可在这里展示名称、Logo 与项目链接。</sub></p>
 
 <p align="right">(<a href="#赞助">返回顶部</a>)</p>
 
@@ -246,5 +297,7 @@ git clone https://github.com/zhaoxuya520/reverse-skill.git
 
 ## 联系方式
 
-- **邮箱**：[24781737@qq.com](mailto:24781737@qq.com)
+- **邮箱**：[ww7517437@gmail.com](mailto:ww7517437@gmail.com)
 - **QQ 群**：942400892
+- **Discord**：[reverse-skill 社区](https://discord.gg/TECd3bMRR)
+- **问题反馈**：[GitHub Issues](https://github.com/zhaoxuya520/reverse-skill/issues)

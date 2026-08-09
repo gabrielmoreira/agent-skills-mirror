@@ -1,24 +1,17 @@
 ---
 name: godot-csharp
 description: >
-  Use C#/.NET in Godot 4.x: partial classes extending nodes, the PascalCase lifecycle
+  Use C#/.NET in Godot 4.7: partial classes extending nodes, the PascalCase lifecycle
   (_Ready/_Process/_PhysicsProcess), [Export] fields, [Signal] delegates as C# events,
-  GetNode<T>, and calling between C# and GDScript. Use when writing Godot game code in
+  type-safe node lookup, and calling between C# and GDScript. Use when writing Godot game code in
   C# (.cs files, .csproj), needing the Godot .NET build, converting GDScript patterns
   to C#, or wiring Godot signals as C# events.
-license: Apache-2.0
-compatibility: Godot 4.3+ .NET (C#); .NET 6.0 SDK for 4.3/4.4, .NET 8 for 4.5+
-metadata:
-  engine: godot
-  category: godot
-  difficulty: intermediate
 ---
 
 # Godot C# / .NET (4.x)
 
 Write Godot game code in C#: node subclasses, the engine lifecycle, exports, signals as
-events, and GDScript interop. Targets **Godot 4.3+ (.NET / C#)**; install the .NET SDK that
-matches your Godot version — **.NET 6.0** for 4.3/4.4, **.NET 8** for 4.5+.
+events, and GDScript interop. Targets **Godot 4.7 (.NET / C#)** and **.NET 8**.
 
 ## When to use
 
@@ -31,8 +24,7 @@ the **Godot .NET build** + the .NET SDK installed; the standard build can't run 
 
 ## Core workflow
 
-1. **Use the Godot .NET editor build** and install the matching .NET SDK (.NET 6.0 for
-   Godot 4.3/4.4, .NET 8 for 4.5+). Creating the first C#
+1. **Use the Godot .NET editor build** and install the matching .NET 8 SDK. Creating the first C#
    script generates a `.csproj`/`.sln`. Build with the editor or `dotnet build`.
 2. **Every node script is a `partial` class** extending a Godot type (the source generator
    relies on `partial`). The file/class name should match the node script.
@@ -157,8 +149,8 @@ private void OnDied() => GD.Print("entity died");
   copy (`var v = Velocity; v.X = ...; Velocity = v;`); editing `Velocity.X` directly won't
   compile/persist.
 - **Needs the .NET build + SDK.** The non-.NET editor can't run C#; mismatched/missing
-  .NET SDK causes build failures. Match the SDK to the Godot version (4.3/4.4 → .NET 6.0,
-  4.5+ → .NET 8; Android export on 4.5 needs .NET 9).
+  .NET SDK causes build failures. Godot 4.7 targets .NET 8; check current platform
+  export notes because Android and other AOT targets can require newer SDK tooling.
 - **`QueueFree()` vs `Free()`** — same rules as GDScript; prefer `QueueFree()`. Disposed
   objects throw `ObjectDisposedException` if used after freeing.
 - **Export to some platforms differs for .NET** (e.g. extra steps for web/mobile); check

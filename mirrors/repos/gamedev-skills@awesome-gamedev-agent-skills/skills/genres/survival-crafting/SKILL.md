@@ -3,12 +3,6 @@ name: survival-crafting
 description: >
   Build a survival-crafting game: resource gathering, inventory, crafting and a tech tree,
   needs (hunger/thirst/temperature), and base building. Use for a survival or crafting/base-building game.
-license: Apache-2.0
-compatibility: Engine-agnostic design patterns; snippets are pseudocode (port to your engine)
-metadata:
-  engine: none
-  category: genres
-  difficulty: advanced
 ---
 
 # Survival Crafting

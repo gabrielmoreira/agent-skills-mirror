@@ -7,12 +7,6 @@ description: >
   buffering and coyote time, plus accessibility. Engine-neutral. Use when the
   user mentions input mapping, rebind controls, gamepad support, deadzone, input
   buffering, coyote time, or accessible controls.
-license: Apache-2.0
-compatibility: Engine-agnostic. Pairs with unity-input-system, unreal-enhanced-input, and Godot InputMap; snippets in GDScript-like pseudocode.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: intermediate
 ---
 
 # Input systems

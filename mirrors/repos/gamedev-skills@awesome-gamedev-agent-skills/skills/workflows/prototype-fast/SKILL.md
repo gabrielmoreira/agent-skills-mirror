@@ -4,12 +4,6 @@ description: >
   Build a playable prototype in about an hour to answer one question — is it fun? — with
   greybox primitives, a hard timebox, and explicit keep/kill criteria. Use when prototyping
   a mechanic, making a vertical slice or MVP, greyboxing/blockout, or judging throwaway vs keep.
-license: Apache-2.0
-compatibility: Engine-agnostic process skill (applies to any engine or framework).
-metadata:
-  engine: none
-  category: workflows
-  difficulty: beginner
 ---
 
 # Prototype Fast

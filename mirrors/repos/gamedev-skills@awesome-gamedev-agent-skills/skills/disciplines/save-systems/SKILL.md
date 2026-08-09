@@ -6,12 +6,6 @@ description: >
   autosave. Engine-neutral. Use when the user mentions save system, save/load,
   game state persistence, save slots, autosave, save file corruption, or
   migrating old saves to a new version.
-license: Apache-2.0
-compatibility: Engine-agnostic. Snippets in GDScript-like / Python pseudocode; pairs with Godot FileAccess/ResourceSaver, Unity serialization, or roblox-datastores.
-metadata:
-  engine: none
-  category: disciplines
-  difficulty: intermediate
 ---
 
 # Save systems

@@ -1,4 +1,4 @@
-# Bevy queries & scheduling detail (0.16+)
+# Bevy queries & scheduling detail (0.19)
 
 Depth behind the ECS skill: query filters and access, schedules and ordering,
 states, change detection, and the `Commands` lifecycle. Verify any borderline API
@@ -151,10 +151,9 @@ For immediate, exclusive access to the whole `World` (one-off setup, complex
 queries), use an exclusive system `fn(&mut World)` — it can't run in parallel, so
 use sparingly.
 
-## Events / messages — version caution
+## Messages / observers — version caution
 
-Bevy's buffered-event and observer APIs were reworked around 0.16→0.17 (including
-naming changes for buffered "messages" vs observer "events"). If you need
-event-style communication between systems, look up the exact `EventReader`/
-`EventWriter` (or message/observer) API for your pinned version rather than
-copying an example from a different release.
+Bevy's buffered event API evolved into the message API in recent releases, while
+observers remain event-oriented. If systems need buffered communication, look up
+the exact message/observer API for the pinned release rather than copying an
+example from a different version.
