@@ -3,14 +3,6 @@ name: godot-mechanic-revival
 description: "Expert blueprint for player mortality loops: progress-index checkpoints, soul graves, ghost/spirit layers, I-frame restitution, world-progress persistence, and death analytics. Use when implementing respawn, shrine checkpoints, corpse-run retrieval, or second-chance mechanics. Keywords revival, respawn, checkpoint, soul grave, ghost mode, I-frames, death analytics, progress index."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Revival & Resurrection Mechanics
-
 ## Overview
 Mortality beyond Game Over: **progress-index checkpoints**, **soul graves**, **ghost/spirit collision layers**, **I-frame restitution**, **world-progress bitmasks**, and **death analytics** (Sekiro / Hades / Souls-like).
 
@@ -121,24 +113,24 @@ Use **Death Analytics** to find "Difficulty Spikes".
 ### Related Skills
 
 #### Prerequisites
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Death, revive-available, and true-death events need clear ownership so UI, graves, and analytics stay decoupled from the player node.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Checkpoint state and world-progress bitmasks belong in typed Resources with safe save/load, not mutable singletons alone.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Checkpoint activation should trigger a durable auto-save path (`user://`) so progress survives crashes mid-run.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Keep revival charges, I-frames, and grave droppers as components rather than baking mortality into a monolithic Character script.
+- [godot-signal-architecture](signal-architecture.md) — Death, revive-available, and true-death events need clear ownership so UI, graves, and analytics stay decoupled from the player node.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Checkpoint state and world-progress bitmasks belong in typed Resources with safe save/load, not mutable singletons alone.
+- [godot-save-load-systems](save-load-systems.md) — Checkpoint activation should trigger a durable auto-save path (`user://`) so progress survives crashes mid-run.
+- [godot-composition](composition.md) — Keep revival charges, I-frames, and grave droppers as components rather than baking mortality into a monolithic Character script.
 
 #### Complements
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Combat `died` / health-zero signals are the usual entry into revival charges, true death, and corpse-run drops.
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Post-revive health/mana restitution and invincibility flags should write through the same stats layer combat reads.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Async restorers and I-frame modulate loops need interruptible Tween lifecycles, not stacked parallel flashes.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Spectral/ghost materials and spirit-realm post-process cues live in the shader skill once the revive state machine exists.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Corpse-run currency loss and soul-grave recovery must reconcile with the wallet/ledger so pickups cannot duplicate funds.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Prefer disabling/hiding the existing player instance over reloading the whole level; graves and world progress must outlive the death transition.
+- [godot-combat-system](combat-system.md) — Combat `died` / health-zero signals are the usual entry into revival charges, true death, and corpse-run drops.
+- [godot-rpg-stats](rpg-stats.md) — Post-revive health/mana restitution and invincibility flags should write through the same stats layer combat reads.
+- [godot-tweening](tweening.md) — Async restorers and I-frame modulate loops need interruptible Tween lifecycles, not stacked parallel flashes.
+- [godot-shaders-basics](shaders-basics.md) — Spectral/ghost materials and spirit-realm post-process cues live in the shader skill once the revive state machine exists.
+- [godot-economy-system](economy-system.md) — Corpse-run currency loss and soul-grave recovery must reconcile with the wallet/ledger so pickups cannot duplicate funds.
+- [godot-scene-management](scene-management.md) — Prefer disabling/hiding the existing player instance over reloading the whole level; graves and world progress must outlive the death transition.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Feed `revival_death_analytics` cause/position logs into Monte Carlo runs to prove difficulty spikes and I-frame TTK bands before shipping.
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Souls-like shrine, ghost, and soul-retrieval loops assemble this skill with combat, stats, and save systems.
-- [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md) — Run-ending deaths, meta penalties, and consequence trackers consume revival/true-death outcomes for permadeath or mercy variants.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Feed `revival_death_analytics` cause/position logs into Monte Carlo runs to prove difficulty spikes and I-frame TTK bands before shipping.
+- [godot-genre-action-rpg](genre-action-rpg.md) — Souls-like shrine, ghost, and soul-retrieval loops assemble this skill with combat, stats, and save systems.
+- [godot-genre-roguelike](genre-roguelike.md) — Run-ending deaths, meta penalties, and consequence trackers consume revival/true-death outcomes for permadeath or mercy variants.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
 

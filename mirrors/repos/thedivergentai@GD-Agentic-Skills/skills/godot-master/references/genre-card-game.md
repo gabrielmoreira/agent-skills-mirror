@@ -3,16 +3,6 @@ name: godot-genre-card-game
 description: "Expert blueprint for digital card games (CCG/Deckbuilders) including card data structures (Resource-based), deck management (draw/discard/reshuffle), turn logic, hand layout (arcing), drag-and-drop UI, effect resolution (Command pattern), and visual polish (godot-tweening, shaders). Use for CCG, deckbuilders, or tactical card games. Trigger keywords: card_game, deck_manager, card_data, hand_layout, drag_drop_cards, effect_resolution, command_pattern, draw_pile, discard_pile."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Card Game
-
-Expert blueprint for digital card games with data-driven design and juicy UI.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Logic & Architecture
@@ -114,7 +104,6 @@ Expert blueprint for digital card games with data-driven design and juicy UI.
 - [card_history_logger.gd](../scripts/genre_card_game_card_history_logger.gd)
 - [hand_manager.gd](../scripts/genre_card_game_hand_manager.gd)
 
-
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
@@ -136,23 +125,23 @@ Expert blueprint for digital card games with data-driven design and juicy UI.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Autoloads, and import basics before wiring DeckManager and card scenes.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — `.tres` ownership, duplication, and `emit_changed` so match buffs never leak into authored card files.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed Arrays, Callables/Commands, and `match` phases used by effect stacks and turn machines.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Control layout, anchors, and mouse_filter habits required for hand/board hit-testing.
+- [godot-project-foundations](project-foundations.md) — scene tree, Autoloads, and import basics before wiring DeckManager and card scenes.
+- [godot-resource-data-patterns](resource-data-patterns.md) — `.tres` ownership, duplication, and `emit_changed` so match buffs never leak into authored card files.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed Arrays, Callables/Commands, and `match` phases used by effect stacks and turn machines.
+- [godot-ui-containers](ui-containers.md) — Control layout, anchors, and mouse_filter habits required for hand/board hit-testing.
 
 #### Complements
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — kill/parallel Tween patterns so rapid plays do not teleport or stack dead tweens.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — bus/signal graphs for draw, play, resolve, and discard without UI owning game rules.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — pointer vs action maps when cards share the viewport with keyboard shortcuts and accessibility drag.
-- [godot-turn-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md) — Draw/Main/Combat/End phase ownership that this skill's turn state machine plugs into.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — canvas_item rarity foils and highlight materials beyond the skill's starter hologram snippet.
+- [godot-tweening](tweening.md) — kill/parallel Tween patterns so rapid plays do not teleport or stack dead tweens.
+- [godot-signal-architecture](signal-architecture.md) — bus/signal graphs for draw, play, resolve, and discard without UI owning game rules.
+- [godot-input-handling](input-handling.md) — pointer vs action maps when cards share the viewport with keyboard shortcuts and accessibility drag.
+- [godot-turn-system](turn-system.md) — Draw/Main/Combat/End phase ownership that this skill's turn state machine plugs into.
+- [godot-shaders-basics](shaders-basics.md) — canvas_item rarity foils and highlight materials beyond the skill's starter hologram snippet.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate mulligans, mana curves, and win-rate vs cost/power so card stats stay fair under RNG.
-- [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md) — run-based deckbuilders that consume CardData, shops, and per-act draft pools.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — collection/deck-builder UIs that persist owned cards separately from the in-match piles.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — keyword/status effects (Poison, Taunt, Shield) resolved as reusable ability resources on the stack.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate mulligans, mana curves, and win-rate vs cost/power so card stats stay fair under RNG.
+- [godot-genre-roguelike](genre-roguelike.md) — run-based deckbuilders that consume CardData, shops, and per-act draft pools.
+- [godot-inventory-system](inventory-system.md) — collection/deck-builder UIs that persist owned cards separately from the in-match piles.
+- [godot-ability-system](ability-system.md) — keyword/status effects (Poison, Taunt, Shield) resolved as reusable ability resources on the stack.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

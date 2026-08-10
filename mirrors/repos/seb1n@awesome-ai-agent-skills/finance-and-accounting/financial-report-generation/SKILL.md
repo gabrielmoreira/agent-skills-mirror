@@ -1,6 +1,6 @@
 ---
 name: financial-report-generation
-description: Generate balance sheets, cash flow statements, P&L reports, and executive financial summaries
+description: Generate balance sheets, cash flow statements, P&L reports, and executive financial summaries. Use when the user requests financial report generation or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community
@@ -128,6 +128,13 @@ Revenue grew 22.7% year-over-year to $3.3M, driven by strong product demand and 
 - Present ratios alongside raw numbers. Margins, turns, and coverage ratios are how experienced readers evaluate financial health.
 - Keep the executive summary under one page and lead with the conclusion, not the methodology.
 - Round appropriately for the audience — board presentations use thousands or millions, operational reviews may need exact figures.
+
+## Safety Boundaries
+
+- Treat the output as analytical support, not individualized financial, tax, investment, or accounting advice.
+- Preserve source data and expose assumptions, formulas, units, and reconciliation checks so a reviewer can reproduce the result.
+- Do not initiate payments, transactions, journal entries, filings, or account changes without explicit user authorization.
+- Require a qualified professional to review material decisions, regulated filings, or conclusions based on incomplete data.
 
 ## Edge Cases
 

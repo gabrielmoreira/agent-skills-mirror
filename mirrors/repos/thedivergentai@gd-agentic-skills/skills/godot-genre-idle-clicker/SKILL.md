@@ -3,16 +3,6 @@ name: godot-genre-idle-clicker
 description: "Expert blueprint for idle/clicker games including big number handling (mantissa + exponent system), exponential growth curves (cost_growth_factor 1.15x), generator systems (auto-producers), offline progress calculation, prestige systems (reset for permanent multipliers), number formatting (K/M/B suffixes, scientific notation). Use for incremental games, idle games, or cookie clicker derivatives. Trigger keywords: idle_game, big_number, exponential_growth, generator_system, offline_progress, prestige_system, number_formatting."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Idle / Clicker
-
-Expert blueprint for idle/clicker games with exponential progression and prestige mechanics.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Economics & Math
@@ -110,7 +100,6 @@ Do **not** re-inline BigNumber/Offline tutorials in the skill body — load the 
 - [big_real.gd](scripts/big_real.gd)
 - [offline_progression_manager.gd](scripts/offline_progression_manager.gd)
 - [click_juice_manager.gd](scripts/click_juice_manager.gd)
-
 
 ## Reference
 

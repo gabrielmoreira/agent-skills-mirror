@@ -31,10 +31,6 @@ Controller-first design, certification compliance, and locked frame rates define
 
 ---
 
-## Godot 4.7: Console Input
-
-- Use `InputEvent.DEVICE_ID_*` constants — never assume device `0` is mouse/keyboard.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
@@ -142,24 +138,24 @@ Use `Input.joy_connection_changed` + `Input.get_joy_info()` via [controller_tele
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, Input Map, and export/user paths before certification hooks and console boot overrides.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Joypad actions, deadzones, and device remapping that controller-first UI and prompt mappers build on.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed notifications, signals, and thread-safe call patterns used by compliance and async save managers.
+- [godot-project-foundations](project-foundations.md) — Project layout, Input Map, and export/user paths before certification hooks and console boot overrides.
+- [godot-input-handling](input-handling.md) — Joypad actions, deadzones, and device remapping that controller-first UI and prompt mappers build on.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed notifications, signals, and thread-safe call patterns used by compliance and async save managers.
 
 #### Complements
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Export presets, feature tags, and template discipline (console SDKs stay NDA-bound outside this skill).
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Atomic rename, cloud-ready slots, and save UX that TRC save indicators wrap.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Focusable Control trees and D-Pad neighbor graphs for gamepad-only menus.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Frame budgets, FSR scaling, and Server-side entity patterns that keep locked FPS under TCR.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Memory/profiler tabs and monitors used to enforce Switch-class RAM ceilings.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Aggressive queue_free / load queues so scene transitions stay inside console RAM budgets.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource caching and unload strategies paired with memory budget guards.
+- [godot-export-builds](export-builds.md) — Export presets, feature tags, and template discipline (console SDKs stay NDA-bound outside this skill).
+- [godot-save-load-systems](save-load-systems.md) — Atomic rename, cloud-ready slots, and save UX that TRC save indicators wrap.
+- [godot-ui-containers](ui-containers.md) — Focusable Control trees and D-Pad neighbor graphs for gamepad-only menus.
+- [godot-performance-optimization](performance-optimization.md) — Frame budgets, FSR scaling, and Server-side entity patterns that keep locked FPS under TCR.
+- [godot-debugging-profiling](debugging-profiling.md) — Memory/profiler tabs and monitors used to enforce Switch-class RAM ceilings.
+- [godot-scene-management](scene-management.md) — Aggressive queue_free / load queues so scene transitions stay inside console RAM budgets.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Resource caching and unload strategies paired with memory budget guards.
 
 #### Downstream / consumers
-- [godot-platform-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md) — Dual-ship PC builds that must share Input Map/actions while keeping console mouse-hidden and FPS-locked paths.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Shared focus-loss / suspend pause patterns when the same title also targets handhelds.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Online matchmaking/friends hooks that sit beside achievement queues and platform overlays.
-- [godot-genre-party](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-party/SKILL.md) — Multi-pad local play that consumes dynamic joypad slot discovery and prompt mapping.
+- [godot-platform-desktop](platform-desktop.md) — Dual-ship PC builds that must share Input Map/actions while keeping console mouse-hidden and FPS-locked paths.
+- [godot-platform-mobile](platform-mobile.md) — Shared focus-loss / suspend pause patterns when the same title also targets handhelds.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Online matchmaking/friends hooks that sit beside achievement queues and platform overlays.
+- [godot-genre-party](genre-party.md) — Multi-pad local play that consumes dynamic joypad slot discovery and prompt mapping.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

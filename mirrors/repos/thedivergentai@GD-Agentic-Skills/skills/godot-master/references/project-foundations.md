@@ -73,11 +73,6 @@ Group by feature (`/entities/player`, `/ui/main_menu`), not by file type. Keep `
 ### 3. Version Control
 Godot-aware `.gitignore` (ignore `.godot/`) + `.gdignore` on raw design sources.
 
-## Godot 4.7: Foundations
-
-- **Asset Store** replaces Asset Library for third-party content discovery.
-- New projects use `canvas_items` + `expand` stretch defaults — account for in UI layout tests.
-
 ## Workflow: Scaffolding a New Project
 
 1. Ensure `project.godot` exists → run `project_bootstrapper.gd` / create `entities/`, `ui/`, `levels/`, `common/`.
@@ -86,7 +81,7 @@ Godot-aware `.gitignore` (ignore `.godot/`) + `.gdignore` on raw design sources.
 
 ## Typed GDScript strictness (foundations-only)
 
-Full typed-GDScript migration lives in [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md).
+Full typed-GDScript migration lives in [godot-gdscript-mastery](gdscript-mastery.md).
 For new foundations projects: **Project Settings → Debug → GDScript → Untyped Declaration** = `Warn` or `Error`.
 
 ## Expert Foundation Architectures
@@ -125,21 +120,21 @@ Full naming table, typed-GDScript migration, EventBus/SceneManager/metadata samp
 ### Related Skills
 
 #### Prerequisites
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed GDScript, style, and warning-system fluency before enforcing naming and scaffold conventions.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed GDScript, style, and warning-system fluency before enforcing naming and scaffold conventions.
 
 #### Complements
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Boot order and ownership rules for Managed Autoload / EventBus singletons registered from a clean project root.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Feature folders become composable scene modules; parents wire children instead of growing monolithic managers.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Extends `BaseDataResource`-style reactive Resources into full data-driven catalogs without shared mutation.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Typed EventBus signals and connect lifetime once Autoloads and scene ownership are in place.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Threaded loaders and scene swaps build on this skill’s async ResourceLoader boilerplate.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Deepens `_unhandled_input` buffering into full action maps and device routing.
+- [godot-autoload-architecture](autoload-architecture.md) — Boot order and ownership rules for Managed Autoload / EventBus singletons registered from a clean project root.
+- [godot-composition](composition.md) — Feature folders become composable scene modules; parents wire children instead of growing monolithic managers.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Extends `BaseDataResource`-style reactive Resources into full data-driven catalogs without shared mutation.
+- [godot-signal-architecture](signal-architecture.md) — Typed EventBus signals and connect lifetime once Autoloads and scene ownership are in place.
+- [godot-scene-management](scene-management.md) — Threaded loaders and scene swaps build on this skill’s async ResourceLoader boilerplate.
+- [godot-input-handling](input-handling.md) — Deepens `_unhandled_input` buffering into full action maps and device routing.
 
 #### Downstream / consumers
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Export presets and feature tags assume a clean folder layout, `.gitignore`, and build metadata hooks.
-- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — Feature-based scenes and deterministic Autoloads make unit/integration harnesses easier to mount.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Custom Logger telemetry and dependency audits feed editor-time diagnostics once structure is stable.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Node pools, WorkerThreadPool, and runtime profiles escalate here when foundations hit CPU/memory ceilings.
+- [godot-export-builds](export-builds.md) — Export presets and feature tags assume a clean folder layout, `.gitignore`, and build metadata hooks.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — Feature-based scenes and deterministic Autoloads make unit/integration harnesses easier to mount.
+- [godot-debugging-profiling](debugging-profiling.md) — Custom Logger telemetry and dependency audits feed editor-time diagnostics once structure is stable.
+- [godot-performance-optimization](performance-optimization.md) — Node pools, WorkerThreadPool, and runtime profiles escalate here when foundations hit CPU/memory ceilings.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.

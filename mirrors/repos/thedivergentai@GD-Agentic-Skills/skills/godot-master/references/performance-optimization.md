@@ -2,16 +2,6 @@
 name: godot-performance-optimization
 description: "Expert blueprint for performance profiling and optimization (frame drops, memory leaks, draw calls) using Godot Profiler, object pooling, visibility culling, and bottleneck identification. Use when diagnosing lag, optimizing for target FPS, or reducing memory usage. Keywords profiling, Godot Profiler, bottleneck, object pooling, VisibleOnScreenNotifier, draw calls, MultiMesh."
 ---
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Performance Optimization
-
-Profiler-first bottleneck routing to pooling, culling, servers, MultiMesh, and threads — not generic pool tutorials.
-
 ## NEVER Do in Performance Optimization
 
 - **NEVER optimize without profiling first** — "I think physics is slow" without data? Premature optimization. ALWAYS use Debug → Profiler (F3) to identify actual bottleneck [20].
@@ -118,23 +108,23 @@ Staggered path updates for crowds.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, resources, and import basics required before profiling or pooling patterns make sense.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed hot paths, callables, and @onready caching that keep optimization scripts correct.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — shared vs local-to-scene resource ownership that drives memory and unique-instance tradeoffs.
+- [godot-project-foundations](project-foundations.md) — scene tree, resources, and import basics required before profiling or pooling patterns make sense.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed hot paths, callables, and @onready caching that keep optimization scripts correct.
+- [godot-resource-data-patterns](resource-data-patterns.md) — shared vs local-to-scene resource ownership that drives memory and unique-instance tradeoffs.
 
 #### Complements
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — collision layers, queries, and body counts that show up as Physics profiler spikes.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — 3D shape cost and RigidBody budgets when optimizing simulation-heavy scenes.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — direct space-state query patterns that replace heavy RayCast node stacks.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — material/shader complexity and Texture2DArray batching that reduce GPU state changes.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded loads and scene packing that prevent hitch spikes during streaming.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — agent path budgets and async bake that pair with staggered AI updates.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap/LOD/occlusion level layout that sets the ceiling for draw-call budgets.
+- [godot-2d-physics](2d-physics.md) — collision layers, queries, and body counts that show up as Physics profiler spikes.
+- [godot-physics-3d](physics-3d.md) — 3D shape cost and RigidBody budgets when optimizing simulation-heavy scenes.
+- [godot-raycasting-queries](raycasting-queries.md) — direct space-state query patterns that replace heavy RayCast node stacks.
+- [godot-shaders-basics](shaders-basics.md) — material/shader complexity and Texture2DArray batching that reduce GPU state changes.
+- [godot-scene-management](scene-management.md) — threaded loads and scene packing that prevent hitch spikes during streaming.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — agent path budgets and async bake that pair with staggered AI updates.
+- [godot-3d-world-building](3d-world-building.md) — GridMap/LOD/occlusion level layout that sets the ceiling for draw-call budgets.
 
 #### Downstream / consumers
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — resolution/shader fallbacks and battery modes that apply these budgets on weaker GPUs.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — export presets and renderer choices where compression and Compatibility pre-warm matter.
-- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — chunk streaming and HLOD systems that consume MultiMesh, culling, and thread-pool patterns at scale.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — resolution/shader fallbacks and battery modes that apply these budgets on weaker GPUs.
+- [godot-export-builds](export-builds.md) — export presets and renderer choices where compression and Compatibility pre-warm matter.
+- [godot-genre-open-world](genre-open-world.md) — chunk streaming and HLOD systems that consume MultiMesh, culling, and thread-pool patterns at scale.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

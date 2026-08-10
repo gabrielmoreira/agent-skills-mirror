@@ -85,7 +85,7 @@ C4Context
 - [Considerations for future scaling]
 
 ### Accessibility (when feature includes UI)
-- Compliance standard: [Use the organization standard when defined; otherwise default to WCAG 2.2 AA]
+- Compliance standard (when established by an accepted organizational, legal, contractual, or confirmed product source): [standard]
 - Target assistive technologies: [Screen reader, keyboard operation, voice control, etc.]
 - Platform requirements: [e.g., app store review requirements]
 - Known constraints: [e.g., external library limitations]
@@ -120,6 +120,8 @@ C4Context
 - [Prerequisite requiring validation 2]
 
 ### Risks and Mitigation
+Include only evidenced product or delivery risks that can change scope, success criteria, sequencing, or acceptance.
+
 | Risk | Impact | Probability | Mitigation |
 |------|--------|-------------|------------|
 | [Risk 1] | High/Medium/Low | High/Medium/Low | [Countermeasure] |

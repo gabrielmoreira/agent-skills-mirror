@@ -3,16 +3,6 @@ name: godot-ui-containers
 description: "Expert blueprint for responsive UI layouts using Container nodes (HBoxContainer, VBoxContainer, GridContainer, MarginContainer, ScrollContainer, HFlowContainer, SubViewportContainer). Covers size flags, anchors, split containers, virtual_list pooling, stretch_shrink previews, and dynamic layouts. Use when building adaptive interfaces OR implementing responsive menus. Keywords: Container, HBoxContainer, VBoxContainer, GridContainer, HFlowContainer, SubViewportContainer, virtual_list, stretch_shrink, size_flags, EXPAND_FILL, anchors, responsive."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# UI Containers
-
-Container auto-layout, size flags, anchors, and split ratios define responsive UI systems.
-
 ## Decision Tree: Container type → script
 
 | Need | Prefer | MANDATORY script |
@@ -25,7 +15,6 @@ Container auto-layout, size flags, anchors, and split ratios define responsive U
 | 3D character/item preview in UI | `SubViewportContainer` | [viewport_3d_preview.gd](scripts/viewport_3d_preview.gd) |
 | Deep nesting causing layout spikes | Anchors/offsets instead | [performance_anchor_layout.gd](scripts/performance_anchor_layout.gd) |
 | Radial/wheel menus | Custom `Container` | [custom_radial_container.gd](scripts/custom_radial_container.gd) |
-
 
 ## Do-NOT-Load (by scenario)
 
@@ -98,12 +87,6 @@ Advanced sizing logic using `SIZE_EXPAND_FILL` and `stretch_ratio` for weighted 
 
 ---
 
-## Godot 4.7: Control
-
-- **Offset transform** on Control nodes — visual offset without breaking layout constraints.
-- **TextureRect** can tile **AtlasTexture** regions as repeating textures.
-- Line drawing: antialiasing feather removed — lines render thinner; increase width if needed.
-
 ## Expert Layout Patterns
 
 ### 1. Split-Screen-Container (Dynamic)
@@ -143,7 +126,6 @@ func add_card(texture: Texture2D):
 ```
 
 > Size-flag recipes: **MANDATORY** [container_size_flags_pro.gd](scripts/container_size_flags_pro.gd) — do not paste beginner `SIZE_EXPAND_FILL` tutorials inline.
-
 
 ## Deep recipes (on demand)
 

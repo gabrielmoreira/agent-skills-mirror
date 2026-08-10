@@ -20,16 +20,10 @@ Expert guidance for level design with GridMaps, CSG bake, and occlusion — not 
 
 ---
 
-## Godot 4.7: 3D Editor Workflow
-
-- **Path3D** supports snap-to-colliders for path point placement on geometry.
-- **3D vertex snapping** with vertex/origin base setting (editor B key workflow).
-- `EditorSceneFormatImporter` uses **ImportFlags** enum for import constants.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
-> **Do NOT Load** lighting/sky/fog scripts or deep Environment tutorials here — route to [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md).
+> **Do NOT Load** lighting/sky/fog scripts or deep Environment tutorials here — route to [godot-3d-lighting](3d-lighting.md).
 
 ### [collision_gen.gd](../scripts/3d_world_building_collision_gen.gd)
 Automatic collision shape generation from meshes. Use when importing models without collision or for procedural geometry.
@@ -107,7 +101,7 @@ Brush types (Box/Cylinder/Sphere/Polygon) are editor greybox tools only — not 
 | Need | Action |
 |------|--------|
 | Runtime GridMap tiles / chunk rebuild + nav bake | **MANDATORY** [gridmap_runtime_builder.gd](../scripts/3d_world_building_gridmap_runtime_builder.gd) |
-| Large open-world scene streaming | Peer [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) |
+| Large open-world scene streaming | Peer [godot-genre-open-world](genre-open-world.md) |
 | Ad-hoc WorldStreamer inline stub | **Cut** — do not reintroduce incomplete load-from-file TODOs |
 
 ---
@@ -121,7 +115,7 @@ Partition dense props into regional `MultiMeshInstance3D` nodes so frustum/occlu
 Use invisible proxy tile IDs for spawns/triggers; at `_ready`, `get_used_cells_by_item`, instantiate logic scenes, clear proxy cells. Keep logic off the GridMap itself.
 
 ### Interior-Mapping
-For city-scale fake interiors, use a spatial shader on window planes — peer [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md). Do not paste full shader recipes here.
+For city-scale fake interiors, use a spatial shader on window planes — peer [godot-shaders-basics](shaders-basics.md). Do not paste full shader recipes here.
 
 ### Edge Cases
 - **No collision**: empty `get_item_shapes` → fix MeshLibrary source.
@@ -156,23 +150,23 @@ For city-scale fake interiors, use a spatial shader on window planes — peer [g
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, resources, and import basics before MeshLibrary conversion and WorldEnvironment setup.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — StaticBody3D/CollisionShape3D patterns that must land in MeshLibrary source scenes or players fall through tiles.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed GridMap/CSG scripting, signals, and await/process_frame patterns used in bake and runtime builders.
+- [godot-project-foundations](project-foundations.md) — scene tree, resources, and import basics before MeshLibrary conversion and WorldEnvironment setup.
+- [godot-physics-3d](physics-3d.md) — StaticBody3D/CollisionShape3D patterns that must land in MeshLibrary source scenes or players fall through tiles.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed GridMap/CSG scripting, signals, and await/process_frame patterns used in bake and runtime builders.
 
 #### Complements
-- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — DirectionalLight3D and GI that volumetric fog scatters; pair env with real light setup.
-- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — StandardMaterial3D/ORM on tiles and baked CSG meshes after greybox.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — bake and update NavigationMesh from GridMap geometry after cell edits.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — interior-mapping and other spatial tricks for fake building interiors at city scale.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — camera distance drives visibility ranges, LOD swaps, and chunk load radii.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — scene packing and threaded load queues for stutter-free world streaming.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — draw-call budgets, occlusion strategy, and MultiMesh partitioning for large levels.
+- [godot-3d-lighting](3d-lighting.md) — DirectionalLight3D and GI that volumetric fog scatters; pair env with real light setup.
+- [godot-3d-materials](3d-materials.md) — StandardMaterial3D/ORM on tiles and baked CSG meshes after greybox.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — bake and update NavigationMesh from GridMap geometry after cell edits.
+- [godot-shaders-basics](shaders-basics.md) — interior-mapping and other spatial tricks for fake building interiors at city scale.
+- [godot-camera-systems](camera-systems.md) — camera distance drives visibility ranges, LOD swaps, and chunk load radii.
+- [godot-scene-management](scene-management.md) — scene packing and threaded load queues for stutter-free world streaming.
+- [godot-performance-optimization](performance-optimization.md) — draw-call budgets, occlusion strategy, and MultiMesh partitioning for large levels.
 
 #### Downstream / consumers
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — dungeon/terrain generators that write cells into GridMap as the placement backend.
-- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — chunk streaming, floating origin, and HLOD built on these world-building primitives.
-- [godot-genre-sandbox](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md) — player-driven building and editable voxel/grid worlds that reuse GridMap/CSG bake flows.
+- [godot-procedural-generation](procedural-generation.md) — dungeon/terrain generators that write cells into GridMap as the placement backend.
+- [godot-genre-open-world](genre-open-world.md) — chunk streaming, floating origin, and HLOD built on these world-building primitives.
+- [godot-genre-sandbox](genre-sandbox.md) — player-driven building and editable voxel/grid worlds that reuse GridMap/CSG bake flows.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

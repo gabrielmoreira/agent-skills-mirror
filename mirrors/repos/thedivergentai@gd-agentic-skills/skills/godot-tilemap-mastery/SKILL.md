@@ -3,16 +3,6 @@ name: godot-tilemap-mastery
 description: "Expert blueprint for TileMapLayer and TileSet systems for efficient 2D level design. Covers terrain autotiling, physics layers, custom data, navigation integration, and runtime manipulation. Use when building grid-based levels OR implementing destructible tiles. Keywords TileMapLayer, TileSet, terrain, autotiling, atlas, physics layer, custom data."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# TileMap Mastery
-
-TileMapLayer routing + trade-offs — not TileSet editor Steps 1–3 tutorials (see Official Docs).
-
 ## NEVER Do in TileMaps
 
 - **NEVER call `set_cell()` in huge loops without batching** — Prefer terrain connect, patterns, or chunk batchers.
@@ -62,7 +52,6 @@ Editor atlas/physics paint setup: Official Documentation in Reference — **Do N
 - **Isometric Y-sort:** enable `y_sort_enabled` on parent and each TileMapLayer; tune `y_sort_origin` on tall tiles — see [sorting_Z_layering.gd](scripts/sorting_Z_layering.gd).
 - **Procgen:** stamp patterns or batch terrain; avoid per-cell `set_cell` storms — [tile_pattern_stamper.gd](scripts/tile_pattern_stamper.gd) / [procedural_chunk_batcher.gd](scripts/procedural_chunk_batcher.gd).
 - **Diff / save deltas:** compare `get_used_cells()` source_id/atlas between layers; persist deltas via [tilemap_data_manager.gd](scripts/tilemap_data_manager.gd) rather than full maps when possible.
-
 
 ## Deep recipes (on demand)
 

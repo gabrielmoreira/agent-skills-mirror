@@ -95,6 +95,14 @@ Notable packs: peon (Warcraft III orc), glados (Portal), sc_kerrigan (StarCraft)
 
 Full list: https://openpeon.com/packs
 
+## Creating Packs (eval gate)
+
+`peon create` (interactive, or `--name/--flavor/--vibe`) spawns your own Claude Code running the `peon-ping-create-pack` skill to draft a brand-new pack — all 7 CESP categories, rendered via your ElevenLabs key — into `~/.peon-ping/drafts/<name>/`, then auto-opens the eval gate.
+
+A pack does not exist until it is approved: `peon eval <name-or-path>` starts a localhost (127.0.0.1) UI to play every sound by category, reroll a single sound or the whole pack with a one-line caption ("too harsh, want something softer"), and Approve. Each reroll spawns your own Claude Code (the `peon-ping-remix` skill) to rewrite that sound's prompt honoring the caption and re-render it. Approve strips the draft stamp and moves the pack to `~/.peon-ping/packs/<name>` (optionally installing it). `peon packs use` refuses draft-stamped packs. `peon eval <installed-pack>` re-drafts an existing pack for another remix round.
+
+ElevenLabs key lookup: `ELEVENLABS_API_KEY` env var, then `~/.config/peon-ping/credentials`.
+
 ## Key Features
 
 - Volume control (0.0–1.0)
@@ -154,6 +162,8 @@ peon logs [--last N] [--session ID] [--clear]
 peon mobile ntfy <topic> [--server=URL] [--token=TOKEN] [--priority=max|high|default|low|min]
 peon relay --daemon
 peon trainer on / off / log / status / goal
+peon create [--name <name>] [--flavor sfx|voice] [--vibe "<text>"]
+peon eval <name-or-path>
 ```
 
 ## Debugging
@@ -168,9 +178,15 @@ View logs with `peon logs` (last 50 lines of today), `peon logs --last N` (last 
 
 ## Claude Code Skills
 
-Four skills are installed alongside peon-ping for use inside Claude Code sessions:
+Seven skills are installed alongside peon-ping for use inside Claude Code sessions:
 
+**User-facing skills:**
 - `/peon-ping-toggle` — Mute/unmute sounds for the current session
 - `/peon-ping-config` — Modify any setting (volume, packs, categories, etc.)
 - `/peon-ping-use <pack>` — Assign a specific pack to the current agent session (session_override mode)
 - `/peon-ping-log <n> <exercise>` — Log exercise reps to the Peon Trainer (e.g. `/peon-ping-log 25 pushups`)
+- `/peon-ping-rename <name>` — Give the current Claude Code session a custom name shown in notification titles and terminal tab title
+
+**Internal skills (eval gate flow):**
+- `peon-ping-create-pack` — Invoked by `peon create` to draft a brand-new pack and open the eval gate; not meant to be run directly
+- `peon-ping-remix` — Invoked by `peon eval` reroll to rewrite a sound with a caption-driven tweak; not meant to be run directly

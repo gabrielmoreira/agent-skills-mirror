@@ -3,16 +3,6 @@ name: godot-monte-carlo-balancer
 description: "Use when auditing or recalibrating game balance: build a source-driven Monte Carlo balance lab (Rust + rayon) that extracts live game data, simulates human playstyles (AFK→pro), emits win-rate/economy verdicts with confidence intervals, and bruteforce-tunes parameters. Trigger on unfair levels, unreachable shops, farm exploits, interest-curve cliffs, post-content recalibration, or CI balance JSON diffs. Keywords: balance lab, Monte Carlo, win rate, difficulty curve, economy career, playstyle simulation, Resource extraction, GDScript parser, bruteforce tuning."
 ---
 
-## Godot 4.7 Baseline
-
-- Patterns assume **Godot 4.7+** projects; prefer `.tres` / Resources as the extract truth layer (Godot 4.x Resource pipelines).
-
-# Monte Carlo Game Balancer
-
-Build a **bespoke, source-driven Monte Carlo balance lab** for one game — not a prebuilt tool. Reference architecture: Rust CLI + rayon that extracts `GameData`, simulates imperfect humans, verdicts with CIs, tunes by simulation, and calibrates against headless Godot.
-
-**Always Phase 0 first.** Lane-defense field names are **not** the default model.
-
 ## Skill Chain
 
 ```text

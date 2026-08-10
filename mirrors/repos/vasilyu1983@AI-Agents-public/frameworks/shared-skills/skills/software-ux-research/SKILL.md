@@ -1,486 +1,251 @@
 ---
 name: software-ux-research
-description: Covers user research methods and research ops. Use when running interviews, usability tests, surveys, or A/B tests to de-risk product decisions.
+description: "Guides user research methods and research ops. Use when running interviews, usability tests, surveys, or A/B tests to de-risk product decisions."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# Software UX Research Skill — Quick Reference
+# Software UX Research
 
-Use this skill to identify problems/opportunities and de-risk decisions. Use `software-ui-ux-design` to implement UI patterns, component changes, and design system updates.
+Use this skill to reduce product and design risk with evidence. It owns research method choice, study design, findings synthesis, and research operations. It does not own UI implementation.
 
----
+## Quick Reference
 
-## Mar 2026 Baselines (Core)
-
-- **Human-centred design**: Iterative design + evaluation grounded in evidence (ISO 9241-210:2019) https://www.iso.org/standard/77520.html
-- **Usability definition**: Effectiveness, efficiency, satisfaction in context (ISO 9241-11:2018) https://www.iso.org/standard/63500.html
-- **Accessibility baseline**: WCAG 2.2 is a W3C Recommendation (12 Dec 2024) https://www.w3.org/TR/WCAG22/
-- **WCAG 3.0 preview**: Working Draft published Sep 2025; introduces Bronze/Silver/Gold conformance tiers and enhanced cognitive accessibility; not expected before 2028-2030 https://www.w3.org/WAI/standards-guidelines/wcag/wcag3-intro/
-- **EU shipping note**: European Accessibility Act applies to covered products/services after 28 Jun 2025 (Directive (EU) 2019/882) https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32019L0882
+| Need | Default | Output |
+|------|---------|--------|
+| discovery and JTBD | semi-structured interviews with 5-8 participants | opportunity brief |
+| usability evaluation | moderated usability test with 5-7 participants | findings report with severity |
+| quantification after qual insight | survey or analytics review | segment or pattern readout |
+| causal change validation | controlled experiment or staged rollout | experiment brief |
+| research ops and repository design | lightweight intake, taxonomy, and consent model | research-ops recommendation |
+| accessibility or low-digital-literacy research | moderated sessions with adapted materials | risk and inclusion report |
 
 ## When to Use This Skill
 
-- Discovery: user needs, JTBD, opportunity sizing, mental models.
-- Validation: concepts, prototypes, onboarding/first-run success.
-- Evaluative: usability tests, heuristic evaluation, cognitive walkthroughs.
-- Quant/behavioral: funnels, cohorts, instrumentation gaps, guardrails.
-- Research Ops: intake, prioritization, repository/taxonomy, consent/PII handling.
-- **Demographic research**: Age-diverse, cultural, accessibility participant recruitment.
-- **A/B testing**: Experiment design, sample size, analysis, pitfalls.
-- **Non-technical user research**: Digital literacy assessment, simplified-flow validation, low-tech-confidence usability testing.
+Use this skill when the main question is:
 
-## When NOT to Use This Skill
+- what user problem matters and for whom
+- whether a concept, flow, or prototype is understandable and usable
+- which research method is appropriate
+- how to design a study and synthesize findings
+- how to run research ops, repository, and consent workflows
 
-- **UI implementation** → Use [software-ui-ux-design](../software-ui-ux-design/SKILL.md) for components, patterns, code
-- **Analytics instrumentation** → Use [marketing-product-analytics](../marketing-product-analytics/SKILL.md) for tracking plans and [qa-observability](../qa-observability/SKILL.md) for implementation patterns
-- **Accessibility compliance audit** → Use accessibility-specific checklists (WCAG conformance)
-- **Marketing research** → Use [marketing-social-media](../marketing-social-media/SKILL.md) or related marketing skills
-- **A/B test platform setup** → Use experimentation platforms (Statsig, GrowthBook, LaunchDarkly)
+Route elsewhere when the main task is:
 
----
+| Need | Use Instead |
+|------|-------------|
+| UI design and interaction patterns | [../software-ui-ux-design/SKILL.md](../software-ui-ux-design/SKILL.md) |
+| code-level accessibility remediation | [../software-accessibility/SKILL.md](../software-accessibility/SKILL.md) |
+| accessibility testing automation and CI gates | [../qa-testing-accessibility/SKILL.md](../qa-testing-accessibility/SKILL.md) |
+| analytics instrumentation implementation | `marketing-product-analytics` and [../qa-observability/SKILL.md](../qa-observability/SKILL.md) |
 
-## Operating Mode (Core)
+## Defaults
 
-If inputs are missing, ask for:
+- start from the decision to unblock
+- choose the smallest method mix that can answer the question
+- use qual for motives and friction, quant for scale and segmentation
+- treat synthetic participants as hypothesis generation only
+- require confidence level and evidence trail in every output
+- current standards and regulatory claims must be verified before final advice
 
-- Decision to unblock (what will change based on this research).
-- Target roles/segments and top tasks.
-- Platforms and contexts (web/mobile/desktop; remote/on-site; assisted tech).
-- Existing evidence (analytics, tickets, reviews, recordings, prior studies).
-- Constraints (timeline, recruitment access, compliance, budget).
+## Quality Lens
 
-Default outputs (pick what the user asked for):
+Consumer-grade research looks past task completion to whether the experience is efficient, considerate, and worth coming back to. Evaluate every research question and finding through four layers — methods that only cover the top layer will miss why people churn or never habit-form. See [references/consumer-experience-quality.md](references/consumer-experience-quality.md) for methods, instruments, and recipes.
 
-- Research plan + output contract (prefer [../software-clean-code-standard/assets/checklists/ux-research-plan-template.md](../software-clean-code-standard/assets/checklists/ux-research-plan-template.md); use [assets/research-plan-template.md](assets/research-plan-template.md) for skill-specific detail)
-- Study protocol (tasks/script + success metrics + recruitment plan)
-- Findings report (issues + severity + evidence + recommendations + confidence)
-- Decision brief (options + tradeoffs + recommendation + measurement plan)
+| Layer | Question | Primary Methods |
+|-------|----------|-----------------|
+| Task | can users complete the job? | usability testing, task success, SEQ |
+| Friction | what slows, frustrates, or shames them? | friction logging, diary studies, session replay paired with interview |
+| Emotion | how does it feel — proud, calm, tense, ignored? | PrEmo, AttrakDiff, Microsoft Desirability Toolkit, micro-interviews |
+| Meaning | does it earn a place in their life? does it cause harm? | JTBD Switch interviews, Continuous Discovery (OST), longitudinal/diary, retention cohorts |
 
-### Required Output Sections
+A finding that names task pass-rate but not friction or emotion is incomplete. Discovery work without Meaning-layer questions tends to ship features people use once.
 
-Every research output — plans, protocols, evaluations, reports — must include these sections. They represent the skill's core value beyond standard UX knowledge: governance, confidence calibration, and ethical research practice.
+## Workflow
 
-1. **Method Justification**: Name the chosen method AND explain why alternatives were rejected. Do not just describe the method; explain why it was selected over at least 2 alternatives given the specific context (stage, timeline, sample, question type).
+1. Define the decision and deadline.
+2. Inventory existing evidence.
+3. Choose the method and explain why weaker alternatives were rejected.
+4. Produce one decision-ready output.
+5. Tag confidence and data-handling constraints.
 
-2. **Confidence & Triangulation Assessment**: Tag every recommendation or finding with a confidence level:
-
-   | Confidence | Evidence requirement | Use for |
-   |------------|----------------------|---------|
-   | High | Multiple methods or sources agree | High-impact decisions |
-   | Medium | Strong signal from one method + supporting indicators | Prioritization |
-   | Low | Single source / small sample | Exploratory hypotheses only |
-
-3. **Consent & Data Handling**: Include a PII/consent section in every plan or protocol. Research that involves participants requires explicit attention to:
-   - Minimum PII collection
-   - Identity stored separately from study data
-   - Name/email redaction before broad sharing
-   - Recording access restricted to need-to-know
-   - Consent, purpose, retention, and opt-out documented
-
-4. **Decision Framework**: For evaluations and analysis outputs, provide a structured decision table with options, confidence levels, timelines, and risks — not just a single recommendation.
-
-5. **Pre-Decision Checklist**: For experiment evaluations (A/B tests, etc.), include a verification checklist of confounds and data quality checks to complete before any ship/kill decision.
-
----
-
-## Method Chooser (Core)
-
-### Decision Tree (Fast)
+## ASCII Flow
 
 ```text
-What do you need?
-  ├─ WHY / needs / context → interviews, contextual inquiry, diary
-  ├─ HOW / usability → moderated usability test, cognitive walkthrough, heuristic eval
-  ├─ WHAT / scale → analytics/logs + targeted qual follow-ups
-  └─ WHICH / causal → experiments (if feasible) or preference tests
+UX research task
+  -> Define decision, audience, deadline, and risk
+  -> Inventory existing evidence and data constraints
+  -> Choose smallest method mix that answers the decision
+  -> Run or design study with consent and evidence trail
+  -> Synthesize findings with confidence level
+  -> Deliver options, tradeoffs, and next decision
 ```
 
-When selecting a method, always justify the choice by explaining why 2+ alternatives were rejected given the user's specific context. This is a key differentiator — generic "we'll do interviews" without justification is insufficient.
+## Output Types
 
----
+Default outputs:
 
-## Research by Product Stage
+- research plan
+- study protocol
+- findings report
+- decision brief
 
-### Stage Framework (What to Do When)
+Every substantial output should include:
 
-| Stage | Decisions | Primary Methods | Secondary Methods | Output |
-|-------|-----------|-----------------|-------------------|--------|
-| Discovery | What to build and for whom | Interviews, field/diary, journey mapping | Competitive analysis, feedback mining | Opportunity brief + JTBD + Forces of Progress |
-| Concept/MVP | Does the concept work? | Concept test, prototype usability | First-click/tree test | MVP scope + onboarding plan |
-| Launch | Is it usable + accessible? | Usability testing, accessibility review | Heuristic eval, session replay | Launch blockers + fixes |
-| Growth | What drives adoption/value? | Segmented analytics + qual follow-ups | Churn interviews, surveys | Retention drivers + friction |
-| Maturity | What to optimize/deprecate? | Experiments, longitudinal tracking | Unmoderated tests | Incremental roadmap |
+- method justification
+- confidence level
+- evidence trail
+- consent and data-handling note
+- recommendation framed as options and tradeoffs
 
-### Discovery Outputs: Beyond Basic JTBD
+## Method Chooser
 
-Discovery research should produce more than job statements. Include:
-- **Forces of Progress diagram**: Map the four forces acting on switching behavior — Push (current pain), Pull (new solution appeal), Anxiety (fear of change), Habit (inertia). These forces explain why users do or don't adopt, which directly informs positioning and onboarding.
-- **Pain Point Severity Matrix**: Score each pain point by Frequency × Impact × Breadth to prioritize objectively. A pain that affects 3 roles weekly outranks one that affects 1 role monthly, even if the single-role pain feels more dramatic in interviews.
+| Need | Primary Methods |
+|------|-----------------|
+| motives, needs, switching triggers | interviews, contextual inquiry, diary studies |
+| usability and learnability | moderated usability testing, cognitive walkthroughs, heuristic review |
+| scale, segments, or behavioral patterns | analytics review, surveys, feedback mining |
+| causal effect | controlled experiment, staged rollout, preference test |
 
----
+Use moderated testing by default when failure paths, assistive technology, or complex workflows matter.
 
-## Research for Complex Systems (Workflows, Admin, Regulated)
+## Stage Guidance
 
-### Complexity Indicators
+| Stage | Typical Research Focus |
+|-------|------------------------|
+| discovery | problem selection, JTBD, forces of progress |
+| concept or MVP | concept comprehension, prototype usability, onboarding risk |
+| launch | blocker identification, accessibility, and readiness |
+| growth | retention, friction, and segment behavior |
+| maturity | optimization, simplification, or feature retirement |
 
-| Indicator | Example | Research Implication |
-|-----------|---------|----------------------|
-| Multi-step workflows | Draft → approve → publish | Task analysis + state mapping |
-| Multi-role permissions | Admin vs editor vs viewer | Test each role + transitions |
-| Data dependencies | Requires integrations/sync | Error-path + recovery testing |
-| High stakes | Finance, healthcare | Safety checks + confirmations |
-| Expert users | Dev tools, analytics | Recruit real experts (not proxies) |
+## Verification Checklist
 
-### Evaluation Methods (Core)
+Before delivering any research output:
 
-- Contextual inquiry: observe real work and constraints.
-- Task analysis: map goals → steps → failure points.
-- Cognitive walkthrough: evaluate learnability and signifiers.
-- Error-path testing: timeouts, offline, partial data, permission loss, retries.
-- Multi-role walkthrough: simulate handoffs (creator → reviewer → admin).
+- [ ] Decision the study was designed to unblock is named explicitly
+- [ ] Method justified: weaker alternatives were considered and rejected with reasons
+- [ ] Participants match the target segment — not convenience, panel-only, or CS rolodex
+- [ ] Sample size appropriate to method: ≥5 for usability, ≥8 for discovery interviews, power-calculated for experiments
+- [ ] Confidence level and evidence trail stated in the output
+- [ ] Synthetic participants labeled as hypothesis generation only — not cited as evidence
+- [ ] AI-assisted analysis audited (≥10-15% of AI tags verified against human coding)
+- [ ] Consent obtained; recordings, transcripts, and participant identity stored separately
+- [ ] EU/UK participant data: DPA in place before sending to AI-processing vendor; EU AI Act high-risk (Annex III) deployer obligations postponed from 2026-08-02 to 2027-12-02 under the Digital Omnibus — the European Parliament (16 June 2026) and Council (29 June 2026) have both given final approval; the act enters into force shortly after Official Journal publication (verify the exact effective date before citing it as settled law)
+- [ ] Disconfirming evidence documented, not only confirming clips
 
-### Multi-Role Coverage Checklist
+## Research Ops Rules
 
-- [ ] Role-permission matrix documented.
-- [ ] “No access” UX defined (request path, least-privilege defaults).
-- [ ] Cross-role handoffs tested (notifications, state changes, audit history).
-- [ ] Error recovery tested for each role (retry, undo, escalation).
+- capture the decision, audience, segment, and evidence links in intake
+- use one taxonomy across studies and atomic insights
+- separate participant identity from notes and recordings
+- redact broad-share artifacts
+- let non-researchers run only templated studies with review guardrails
 
----
+## AI and Accessibility Notes
 
-## Research Ops & Governance (Core)
+For AI-powered product research (the *thing being studied* is AI-driven):
 
-### Intake (Make Requests Comparable)
+- test trust calibration, failure recovery, explainability, tool-use disclosure, and approval gating
+- separate wrong output from unclear output and non-recoverable failure
+- run multi-turn sessions for agentic products — single-turn studies miss most of the failure surface
+- see [references/ai-in-research.md](references/ai-in-research.md) for the full dimension list and method mapping
 
-Minimum required fields:
+For AI *in the research workflow* (synthesis tools, AI moderators, synthetic users):
 
-- Decision to unblock and deadline.
-- Research questions (primary + secondary).
-- Target users/segments and recruitment constraints.
-- Existing evidence and links.
-- Deliverable format + audience.
+- treat synthetic users as hypothesis generation only (NN/g position), never as evidence
+- start analysis from human-coded seed sample, then let AI extend; audit at least 10–15% of AI tags
+- AI moderators are appropriate only when the protocol is structured enough for a junior human to follow
+- inventory every AI tool that processes participant data for EU AI Act enforcement (high-risk deployer obligations postponed to 2 December 2027 under the Digital Omnibus, now approved by Parliament and Council as of June 2026 — verify current in-force date)
 
-### Prioritization (Simple Scoring)
+For accessibility-sensitive research:
 
-Use a lightweight score to avoid backlog paralysis:
+- recruit assistive-technology users when accessibility is in scope
+- distinguish accessibility usability findings from formal conformance findings
 
-- Decision impact
-- Knowledge gap
-- Timing urgency
-- Feasibility (recruitment + time)
+## Known Traps
 
-### Repository & Taxonomy
+- Starting with a preferred method before naming the actual decision the study needs to unblock.
+- Recruiting convenience participants whose context, literacy, or workflow is too far from the target segment.
+- Treating generated summaries, AI note clustering, or synthetic participants as evidence instead of support material.
+- Mixing discovery, usability, and causal-validation questions into one study and getting ambiguous output from all three.
+- Reporting severity or confidence without tying it to sample quality, task coverage, and evidence strength.
+- Storing recordings, transcripts, and participant identity with weaker controls than the sensitivity of the study requires.
+- Sending EU/UK participant recordings to a non-EU AI vendor (Dovetail, Marvin, Looppanel, or any foundation-model-backed service) without a current DPA and explicit AI processing disclosure in consent — Chapter V GDPR transfer rules apply now, and EU AI Act high-risk deployer obligations follow (postponed from 2 August 2026 to 2 December 2027 under the Digital Omnibus, approved by Parliament and Council in June 2026 — verify the current in-force date before relying on it).
+- Recruiting only from professional research panels (Prolific, UserTesting panel) for behavior studies, then generalising to product users — panel respondents are experienced participants whose behavior systematically diverges from first-time real users.
 
-- Store each study with: method, date, product area, roles, tasks, key findings, raw evidence links.
-- Tag for reuse: problem type (navigation/forms/performance), component/pattern, funnel step.
-- Prefer “atomic” findings (one insight per card) to enable recombination [Inference].
+## Common Anti-Patterns
 
-### Consent, PII, and Access Control
-
-Follow applicable privacy laws; GDPR is a primary reference for EU processing https://eur-lex.europa.eu/eli/reg/2016/679/oj
-
-PII handling checklist:
-
-- [ ] Collect minimum PII needed for scheduling and incentives.
-- [ ] Store identity/contact separately from study data.
-- [ ] Redact names/emails from transcripts before broad sharing.
-- [ ] Restrict raw recordings to need-to-know access.
-- [ ] Document consent, purpose, retention, and opt-out path.
-
-### Research Democratization (2026 Trend)
-
-Research democratization is a recurring 2026 trend: non-researchers increasingly conduct research. Enable carefully with guardrails.
-
-| Approach | Guardrails | Risk Level |
-|----------|------------|------------|
-| Templated usability tests | Script + task templates provided | Low |
-| Customer interviews by PMs | Training + review required | Medium |
-| Survey design by anyone | Central review + standard questions | Medium |
-| Unsupervised research | Not recommended | High |
-
-**Guardrails for non-researchers:**
-
-- [ ] Pre-approved research templates only
-- [ ] Central review of findings before action
-- [ ] No direct participant recruitment without ops approval
-- [ ] Mandatory bias awareness training
-- [ ] Clear escalation path for unexpected findings
-
----
-
-## Researching Non-Technical User Segments (2026)
-
-Quick checklist for research involving users with low digital literacy or low tech confidence. Full guidance in [references/non-technical-user-research.md](references/non-technical-user-research.md).
-
-- [ ] Assess digital literacy tier (excluded → dependent → hesitant → capable → confident)
-- [ ] Recruit via offline-first channels (community centers, libraries, phone outreach)
-- [ ] Use plain-language screening questions (no jargon, no self-rating scales)
-- [ ] Adapt methods: moderated-only testing, shorter sessions (30-40 min), read tasks aloud
-- [ ] Measure: unassisted task completion (>=80%), time-to-first-value (<2 min), error recovery rate
-- [ ] Frame findings as "inclusion improvements," not "dumbing down"
-- [ ] Cross-reference with [simplification audit template](../software-ui-ux-design/assets/audits/simplification-audit-template.md)
-
----
-
-## Measurement & Decision Quality (Core)
-
-### Research ROI Quick Reference
-
-| Research Activity | Proxy Metric | Calculation |
-|-------------------|--------------|-------------|
-| Usability testing finding | Prevented dev rework | Hours saved × $150/hr |
-| Discovery interview | Prevented build-wrong-thing | Sprint cost × risk reduction % |
-| A/B test conclusive result | Improved conversion | (ΔConversion × Traffic × LTV) - Test cost |
-| Heuristic evaluation | Early defect detection | Defects found × Cost-to-fix-later |
-
-**Rules of thumb**:
-- 1 usability finding that prevents 40 hours of rework = **$6,000 value**
-- 1 discovery insight that prevents 1 wasted sprint = **$50,000-100,000 value**
-- Research that improves conversion 0.5% on 100k visitors × $50 LTV = **$25,000/month**
-
-### When NOT to Run A/B Tests
-
-| Situation | Why it fails | Better method |
-|----------|--------------|---------------|
-| Low power/traffic | Inconclusive results | Usability tests + trends |
-| Many variables change | Attribution impossible | Prototype tests → staged rollout |
-| Need “why” | Experiments don’t explain | Interviews + observation |
-| Ethical constraints | Harmful denial | Phased rollout + holdouts |
-| Long-term effects | Short tests miss delayed impact | Longitudinal + retention analysis |
-
-### Common Confounds (Call Out Early)
-
-Always check for these in experiment evaluations. List each relevant confound with its risk level and how to verify — do not just name them:
-
-- Selection bias (only power users respond) — check segment composition.
-- Survivorship bias (you miss churned users) — compare with cohort-level data.
-- Novelty effect (short-term lift) — plot daily metrics to check for trend decay.
-- Instrumentation changes mid-test (metrics drift) — confirm no concurrent deployments.
-- Sample ratio mismatch (SRM) — run chi-square on assignment counts.
-- Peeking / multiple looks — confirm test was not checked before pre-set end date.
-- Feature interaction — check if other experiments ran concurrently on same surface.
-
----
-
-## Optional: AI/Automation Research Considerations
-
-> Use only when researching automation/AI-powered features. Skip for traditional software UX.
->
-> **2026 benchmark**: Trend reports consistently highlight AI-assisted analysis. Use AI for speed while keeping humans responsible for strategy and interpretation. Example reference: https://www.lyssna.com/blog/ux-research-trends/
-
-### Key Questions
-
-| Dimension | Question | Methods |
-|----------|----------|---------|
-| Mental model | What do users think the system can/can’t do? | Interviews, concept tests |
-| Trust calibration | When do users over/under-rely? | Scenario tests, log review |
-| Explanation usefulness | Does “why” help decisions? | A/B explanation variants, interviews |
-| Failure recovery | Do users recover and finish tasks? | Failure-path usability tests |
-
-### Error Taxonomy (User-Visible)
-
-| Failure type | Typical impact | What to measure |
-|-------------|----------------|----------------|
-| Wrong output | Rework, lost trust | Verification + override rate |
-| Missing output | Manual fallback | Fallback completion rate |
-| Unclear output | Confusion | Clarification requests |
-| Non-recoverable failure | Blocked flow | Time-to-recovery, support contact |
-
-### Optional: AI-Assisted Research Ops (Guardrailed)
-
-- Use automation for transcription/tagging only after PII redaction.
-- Maintain an audit trail: every theme links back to raw quotes/clips.
-
-### Synthetic Users: When Appropriate (2026)
-
-Trend reports frequently mention synthetic/AI participants. Use with clear boundaries. Example reference: https://www.lyssna.com/blog/ux-research-trends/
-
-| Use Case | Appropriate? | Why |
-|----------|--------------|-----|
-| Early concept brainstorming | WARNING: Supplement only | Generate edge cases, not validation |
-| Scenario/edge case expansion | PASS Yes | Broaden coverage before real testing |
-| Moderator training/practice | PASS Yes | Practice without participant burden |
-| Hypothesis generation | PASS Yes | Explore directions to test with real users |
-| Validation/go-no-go decisions | FAIL Never | Cannot substitute lived experience |
-| Usability findings as evidence | FAIL Never | Real behavior required |
-| Quotes in reports | FAIL Never | Fabricated quotes damage credibility |
-
-**Critical rule**: Synthetic outputs are **hypotheses**, not evidence. Always validate with real users before shipping.
-
----
+- Running surveys to answer `why` questions that need observed behavior or interviews.
+- Treating five usability sessions as statistically representative rather than as directional evidence about failure patterns.
+- Converting every insight into a roadmap request instead of separating evidence, interpretation, and action options.
+- Using heuristic review as a replacement for user research when task comprehension or domain literacy is the core risk.
+- Repeating studies without a repository, taxonomy, or decision log, so the team relearns the same lesson every quarter.
+- Democratising research as cover for cutting researcher headcount: non-researchers run uncontrolled studies, cherry-pick confirming insights, and quality silently degrades. Templated studies with reviewer guardrails are the supported pattern; "anyone can run any study" is not.
+- Letting an AI moderator handle generative or first-time discovery work — leading prompts produce leading follow-ups at scale.
+- Confirmation bias in moderation: the moderator unconsciously seeks confirming clips and discounts disconfirming ones. Mitigation: code clips before discussing, require double-coder agreement on findings above severity 2, and explicitly document disconfirming evidence in every report.
+- Decision-by-quote / champion-user-as-segment: shipping a feature because one passionate user wanted it. Single-N evidence is hypothesis, not finding.
+- Post-hoc segmentation hunting: slicing experiment results by 20 segments until one is significant. Pre-register segmentation analysis before the experiment reads out, or apply a correction (Bonferroni, FDR) when segments are exploratory.
+- Satisfaction theater: surveys conducted to put a number on a slide rather than to inform a decision. If the survey result would not change anything, do not run it.
+- Power-gaming experimentation: extending experiments until significance appears, hiding losing variants, or changing the primary metric mid-experiment to ship a desired outcome. Each of these invalidates the result.
+- Recruiting the customer-success rolodex as a research panel: those users are atypically engaged, vocal, and cooperative. Generalizing from them is a top-of-funnel research failure — find disengaged, lapsed, and never-converted users too.
 
 ## Navigation
 
-### Resources
+**References**
 
-**Core Research Methods:**
+- [references/usability-testing-guide.md](references/usability-testing-guide.md)
+- [references/survey-design-guide.md](references/survey-design-guide.md)
+- [references/ux-audit-framework.md](references/ux-audit-framework.md)
+- [references/priority-based-ux-audit.md](references/priority-based-ux-audit.md) — priority-ordered audit dimensions (accessibility → data display), evidence-tied severity model, queryable guideline grounding
+- [references/ux-metrics-framework.md](references/ux-metrics-framework.md)
+- [references/research-repository-management.md](references/research-repository-management.md)
+- [references/ab-testing-implementation.md](references/ab-testing-implementation.md)
+- [references/non-technical-user-research.md](references/non-technical-user-research.md)
+- [references/ai-in-research.md](references/ai-in-research.md)
+- [references/consumer-experience-quality.md](references/consumer-experience-quality.md) — Continuous Discovery, JTBD Switch, friction logging, emotion measurement, diary studies, competitive UX benchmarking, opportunity sizing, JTBD outcome statements, watch parties, embedding models
+- [references/ia-testing-guide.md](references/ia-testing-guide.md) — card sort (open/closed/hybrid), tree testing, first-click testing, 5-second testing
+- [references/evaluative-methods-guide.md](references/evaluative-methods-guide.md) — Wizard of Oz, concierge, painted-door, fake-door/smoke, conjoint, MaxDiff, Kano, beta panels
+- [references/consumer-recruiting-guide.md](references/consumer-recruiting-guide.md) — sources, screeners, incentive ethics, kids/teens (COPPA, ICO Children's Code, GDPR Art. 8), Hawthorne, accessibility recruiting, churned-user recruiting
+- [references/research-frameworks.md](references/research-frameworks.md) — choosing a research method (discovery vs evaluative, method-selection matrix)
+- [references/customer-journey-mapping.md](references/customer-journey-mapping.md) — journey maps, service blueprints, experience mapping
+- [references/competitive-ux-analysis.md](references/competitive-ux-analysis.md) — competitive UX teardowns and benchmarking
+- [references/review-mining-playbook.md](references/review-mining-playbook.md) — mining app-store/forum reviews for pain points and switching triggers
+- [references/pain-point-extraction.md](references/pain-point-extraction.md) — extracting and prioritizing pain points from qualitative data
+- [references/feedback-tools-guide.md](references/feedback-tools-guide.md) — in-product feedback, survey, and voice-of-customer tooling
+- [references/demographic-research-methods.md](references/demographic-research-methods.md) — research methods adapted by age group and demographic
+- [references/remote-research-patterns.md](references/remote-research-patterns.md) — remote and unmoderated research methods and operations
+- [references/evaluative-research-loop.md](references/evaluative-research-loop.md) — evaluative loop for prototype-parity polishing
+- [references/bigtech-feedback-patterns.md](references/bigtech-feedback-patterns.md) — feedback and research patterns from BigTech and unicorns
+- [data/sources.json](data/sources.json)
 
-- [references/research-frameworks.md](references/research-frameworks.md) — JTBD, Kano, Double Diamond, Service Blueprint, opportunity mapping
-- [references/ux-audit-framework.md](references/ux-audit-framework.md) — Heuristic evaluation, cognitive walkthrough, severity rating
-- [references/usability-testing-guide.md](references/usability-testing-guide.md) — Task design, facilitation, analysis
-- [references/ux-metrics-framework.md](references/ux-metrics-framework.md) — Task metrics, SUS/HEART, measurement guidance
-- [references/customer-journey-mapping.md](references/customer-journey-mapping.md) — Journey mapping and service blueprints
-- [references/pain-point-extraction.md](references/pain-point-extraction.md) — Feedback-to-themes method
-- [references/review-mining-playbook.md](references/review-mining-playbook.md) — B2B/B2C review mining
+**Assets**
 
-**Demographic & Quantitative Research:**
+- [assets/research-plan-template.md](assets/research-plan-template.md)
+- [assets/testing/usability-test-plan.md](assets/testing/usability-test-plan.md)
+- [assets/testing/usability-testing-checklist.md](assets/testing/usability-testing-checklist.md)
+- [assets/audits/heuristic-evaluation-template.md](assets/audits/heuristic-evaluation-template.md)
+- [assets/audits/ux-audit-report-template.md](assets/audits/ux-audit-report-template.md)
+- [assets/metrics/ux-metrics-dashboard.md](assets/metrics/ux-metrics-dashboard.md)
 
-- [references/demographic-research-methods.md](references/demographic-research-methods.md) — Inclusive research for seniors, children, cultures, disabilities
-- [references/non-technical-user-research.md](references/non-technical-user-research.md) — Research methods for non-technical and low-digital-literacy users
-- [references/ab-testing-implementation.md](references/ab-testing-implementation.md) — A/B testing deep-dive (sample size, analysis, pitfalls)
+## Related Skills
 
-**Competitive UX Analysis & Flow Patterns:**
-
-- [references/competitive-ux-analysis.md](references/competitive-ux-analysis.md) — **Step-by-step flow patterns** from industry leaders (Wise, Revolut, Shopify, Notion, Linear, Stripe) + benchmarking methodology
-
-**Research Operations & Methods:**
-
-- [references/research-repository-management.md](references/research-repository-management.md) — Repository architecture, taxonomy, atomic research, PII handling, adoption metrics
-- [references/survey-design-guide.md](references/survey-design-guide.md) — Question types, bias prevention, sampling, sample size, distribution, platform comparison
-- [references/remote-research-patterns.md](references/remote-research-patterns.md) — Moderated remote, unmoderated testing, async methods, recruitment, tool comparison
-
-**Feedback Collection & Analysis:**
-
-- [references/bigtech-feedback-patterns.md](references/bigtech-feedback-patterns.md) — How top companies collect and act on user feedback
-- [references/feedback-tools-guide.md](references/feedback-tools-guide.md) — Feedback collection tool setup guides and selection matrix
-
-**Evaluative Iteration:**
-
-- [references/evaluative-research-loop.md](references/evaluative-research-loop.md) — Prototype-parity polishing loop (two-surface audit, drift classification, fast iteration)
-
-**Data & Sources:**
-
-- [data/sources.json](data/sources.json) — Curated external references
-
----
-
-## Domain-Specific UX Benchmarking
-
-**IMPORTANT**: When designing UX flows for a specific domain, you MUST use WebSearch to find and suggest best-practice patterns from industry leaders.
-
-### Trigger Conditions
-
-- "We're designing [flow type] for [domain]"
-- "What's the best UX for [feature] in [industry]?"
-- "How do [Company A, Company B] handle [flow]?"
-- "Benchmark our [feature] against competitors"
-- Any UX design task with identifiable domain context
-
-### Domain → Leader Lookup Table
-
-| Domain | Industry Leaders to Check | Key Flows |
-|--------|---------------------------|-----------|
-| **Fintech/Banking** | Wise, Revolut, Monzo, N26, Chime, Mercury | Onboarding/KYC, money transfer, card management, spend analytics |
-| **E-commerce** | Shopify, Amazon, Stripe Checkout | Checkout, cart, product pages, returns |
-| **SaaS/B2B** | Linear, Notion, Figma, Slack, Airtable | Onboarding, settings, collaboration, permissions |
-| **Developer Tools** | Stripe, Vercel, GitHub, Supabase | Docs, API explorer, dashboard, CLI |
-| **Consumer Apps** | Spotify, Airbnb, Uber, Instagram | Discovery, booking, feed, social |
-| **Healthcare** | Oscar, One Medical, Calm, Headspace | Appointment booking, records, compliance flows |
-| **EdTech** | Duolingo, Coursera, Khan Academy | Onboarding, progress, gamification |
-
-### Required Searches
-
-When user specifies a domain, execute:
-
-1. Search: `"[domain] UX best practices 2026"`
-2. Search: `"[leader company] [flow type] UX"`
-3. Search: `"[leader company] app review UX" site:mobbin.com OR site:pageflows.com`
-4. Search: `"[domain] onboarding flow examples"`
-
-### What to Report
-
-After searching, provide:
-
-- **Pattern examples**: Screenshots/flows from 2-3 industry leaders
-- **Key patterns identified**: What they do well (with specifics)
-- **Applicable to your flow**: How to adapt patterns
-- **Differentiation opportunity**: Where you could improve on leaders
-
-### Example Output Format
-
-```text
-DOMAIN: Fintech (Money Transfer)
-BENCHMARKED: Wise, Revolut
-
-WISE PATTERNS:
-- Upfront fee transparency (shows exact fee before recipient input)
-- Mid-transfer rate lock (shows countdown timer)
-- Delivery time estimate per payment method
-- Recipient validation (bank account check before send)
-
-REVOLUT PATTERNS:
-- Instant send to Revolut users (P2P first)
-- Currency conversion preview with rate comparison
-- Scheduled/recurring transfers prominent
-
-APPLY TO YOUR FLOW:
-1. Add fee transparency at step 1 (not step 3)
-2. Show delivery estimate per payment rail
-3. Consider rate lock feature for FX transfers
-
-DIFFERENTIATION OPPORTUNITY:
-- Neither shows historical rate chart—add "is now a good time?" context
-```
-
----
-
-## Trend Awareness Protocol
-
-**IMPORTANT**: When users ask recommendation questions about UX research, you MUST use WebSearch to check current trends before answering.
-
-### Tool/Trend Triggers
-
-- "What's the best UX research tool for [use case]?"
-- "What should I use for [usability testing/surveys/analytics]?"
-- "What's the latest in UX research?"
-- "Current best practices for [user interviews/A/B testing/accessibility]?"
-- "Is [research method] still relevant in 2026?"
-- "What research tools should I use?"
-- "Best approach for [remote research/unmoderated testing]?"
-
-### Tool/Trend Searches
-
-1. Search: `"UX research trends 2026"`
-2. Search: `"UX research tools best practices 2026"`
-3. Search: `"[Maze/Hotjar/UserTesting] comparison 2026"`
-4. Search: `"AI in UX research 2026"`
-
-### Tool/Trend Report Format
-
-After searching, provide:
-
-- **Current landscape**: What research methods/tools are popular NOW
-- **Emerging trends**: New techniques or tools gaining traction
-- **Deprecated/declining**: Methods that are losing effectiveness
-- **Recommendation**: Based on fresh data and current practices
-
-### Example Topics (verify with fresh search)
-
-- AI-powered research tools (Maze AI, Looppanel)
-- Unmoderated testing platforms evolution
-- Voice of Customer (VoC) platforms
-- Analytics and behavioral tools (Hotjar, FullStory)
-- Accessibility testing tools and standards
-- Research repository and insight management
-
----
-
-### Templates
-
-- Shared plan template: [../software-clean-code-standard/assets/checklists/ux-research-plan-template.md](../software-clean-code-standard/assets/checklists/ux-research-plan-template.md) — Product-agnostic research plan template (core + optional AI)
-- [assets/research-plan-template.md](assets/research-plan-template.md) — UX research plan template
-- [assets/testing/usability-test-plan.md](assets/testing/usability-test-plan.md) — Usability test plan
-- [assets/testing/usability-testing-checklist.md](assets/testing/usability-testing-checklist.md) — Usability testing checklist
-- [assets/audits/heuristic-evaluation-template.md](assets/audits/heuristic-evaluation-template.md) — Heuristic evaluation
-- [assets/audits/ux-audit-report-template.md](assets/audits/ux-audit-report-template.md) — Audit report
-
----
-
-## Evaluative Research Loop
-
-For prototype-parity polishing (fast iteration when product is "almost ideal"), see [references/evaluative-research-loop.md](references/evaluative-research-loop.md). Covers: two-surface audit, drift classification (layout/density/control/content/state), friction-based prioritization, banner/loading guardrails, localization-readiness checks, and fast iteration cadence.
+- [../software-ui-ux-design/SKILL.md](../software-ui-ux-design/SKILL.md)
+- [../software-accessibility/SKILL.md](../software-accessibility/SKILL.md)
+- [../qa-testing-accessibility/SKILL.md](../qa-testing-accessibility/SKILL.md)
+- `marketing-product-analytics`
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify current standards, legal deadlines, and external research-method claims before final advice.
+- Prefer ISO, W3C, regulator, and primary-method sources over summaries.
+- If live verification is unavailable, mark external claims as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

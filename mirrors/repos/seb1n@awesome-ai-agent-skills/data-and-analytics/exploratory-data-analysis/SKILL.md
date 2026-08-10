@@ -1,6 +1,6 @@
 ---
 name: exploratory-data-analysis
-description: Perform systematic exploratory data analysis to understand dataset structure, distributions, relationships, and anomalies before modeling.
+description: Perform systematic exploratory data analysis to understand dataset structure, distributions, relationships, and anomalies before modeling. Use when a dataset is new, its quality is unknown, or the user requests open-ended profiling; use data-analysis instead for a defined hypothesis or decision question.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

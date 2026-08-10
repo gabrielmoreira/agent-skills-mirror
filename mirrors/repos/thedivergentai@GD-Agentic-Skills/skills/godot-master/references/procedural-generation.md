@@ -28,7 +28,7 @@ Every generator starts here — seed isolation, async data, main-thread commit:
 
 1. **Seed & RNG** — **MANDATORY** [proc_gen_seed_history.gd](../scripts/procedural_generation_proc_gen_seed_history.gd): one `RandomNumberGenerator` per level/chunk; persist `seed` + `state` for shareable runs.
 2. **Async chunks** — **MANDATORY** [multi_threaded_chunk_gen.gd](../scripts/procedural_generation_multi_threaded_chunk_gen.gd): `WorkerThreadPool.add_task` → compute data off-thread → `call_deferred("_finalize_chunk")` for SceneTree/node work.
-3. **Validate → bake nav** — after tiles/meshes land on the main thread, rebake `NavigationRegion` (see [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md)).
+3. **Validate → bake nav** — after tiles/meshes land on the main thread, rebake `NavigationRegion` (see [godot-navigation-pathfinding](navigation-pathfinding.md)).
 
 ```gdscript
 var rng := RandomNumberGenerator.new()
@@ -71,7 +71,7 @@ func _finalize_from_worker(data: Dictionary) -> void:
 | Plants / branching structures | L-System | **MANDATORY** [l_system_tree_gen.gd](../scripts/procedural_generation_l_system_tree_gen.gd) |
 | Contour / metaball maps (2D) | Marching Squares | **MANDATORY** [marching_squares_metaballs.gd](../scripts/procedural_generation_marching_squares_metaballs.gd) |
 
-**Routing hints:** Simple path → drunkard; rectangular rooms → BSP; constraint tiles → WFC lite; open-world chunks → noise + `multi_threaded_chunk_gen.gd`. For roguelike run orchestration, hand off to [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md).
+**Routing hints:** Simple path → drunkard; rectangular rooms → BSP; constraint tiles → WFC lite; open-world chunks → noise + `multi_threaded_chunk_gen.gd`. For roguelike run orchestration, hand off to [godot-genre-roguelike](genre-roguelike.md).
 
 ## Available Scripts
 
@@ -94,10 +94,6 @@ func _finalize_from_worker(data: Dictionary) -> void:
 - [proc_gen_marching_cubes_base.gd](../scripts/procedural_generation_proc_gen_marching_cubes_base.gd) — 3D mesh from voxel data
 - [marching_squares_metaballs.gd](../scripts/procedural_generation_marching_squares_metaballs.gd) — 2D contour extraction
 - [l_system_tree_gen.gd](../scripts/procedural_generation_l_system_tree_gen.gd) — procedural plant/tree grammar
-
-## Godot 4.7: Procedural 3D
-
-- **Path3D snap-to-colliders** for spline-based road/river generation on terrain colliders.
 
 ## Expert Procedural Patterns
 
@@ -138,23 +134,23 @@ Drunkard walk, noise biomes, BSP, loot tables, WFC loops — [references/algorit
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scenes, resources, and import basics before generators emit TileMaps, GridMaps, or ArrayMeshes.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed arrays, `call_deferred`, and WorkerThreadPool task patterns used across every generator script.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource-backed tile libraries, adjacency rules, and seed configs instead of hard-coded magic tables.
+- [godot-project-foundations](project-foundations.md) — scenes, resources, and import basics before generators emit TileMaps, GridMaps, or ArrayMeshes.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed arrays, `call_deferred`, and WorkerThreadPool task patterns used across every generator script.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Resource-backed tile libraries, adjacency rules, and seed configs instead of hard-coded magic tables.
 
 #### Complements
-- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — `set_pattern` / terrain connect batching so large CA/WFC grids do not call `set_cell` per tile.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap/MeshLibrary/CSG placement backends that consume room graphs and heightmaps.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — runtime navmesh bake after rooms, caves, or terrain chunks finish.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — budgets for mesh commits, collision trimeshes, and MultiMesh prop scattering after generation.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — persist seed + player deltas instead of serializing every generated chunk.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded load/unload of chunk scenes that wrap generated data.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — sample spawn density, loot tables, and room difficulty against seed distributions before shipping.
+- [godot-tilemap-mastery](tilemap-mastery.md) — `set_pattern` / terrain connect batching so large CA/WFC grids do not call `set_cell` per tile.
+- [godot-3d-world-building](3d-world-building.md) — GridMap/MeshLibrary/CSG placement backends that consume room graphs and heightmaps.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — runtime navmesh bake after rooms, caves, or terrain chunks finish.
+- [godot-performance-optimization](performance-optimization.md) — budgets for mesh commits, collision trimeshes, and MultiMesh prop scattering after generation.
+- [godot-save-load-systems](save-load-systems.md) — persist seed + player deltas instead of serializing every generated chunk.
+- [godot-scene-management](scene-management.md) — threaded load/unload of chunk scenes that wrap generated data.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — sample spawn density, loot tables, and room difficulty against seed distributions before shipping.
 
 #### Downstream / consumers
-- [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md) — run-based dungeon crawlers that consume BSP/WFC/drunkard generators and seeded RNG.
-- [godot-genre-sandbox](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md) — voxel/chunk worlds and cellular-automata sandboxes built on infinite terrain and CA scripts.
-- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — chunk streaming and floating-origin layers that wrap multi-threaded chunk gen.
+- [godot-genre-roguelike](genre-roguelike.md) — run-based dungeon crawlers that consume BSP/WFC/drunkard generators and seeded RNG.
+- [godot-genre-sandbox](genre-sandbox.md) — voxel/chunk worlds and cellular-automata sandboxes built on infinite terrain and CA scripts.
+- [godot-genre-open-world](genre-open-world.md) — chunk streaming and floating-origin layers that wrap multi-threaded chunk gen.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

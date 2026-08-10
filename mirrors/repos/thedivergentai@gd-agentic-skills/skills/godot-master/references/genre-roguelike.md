@@ -3,16 +3,6 @@ name: godot-genre-roguelike
 description: "Expert blueprint for roguelikes including procedural generation (Walker method, BSP rooms), permadeath with meta-progression (unlock persistence), run state vs meta state separation, seeded RNG (shareable runs), loot/relic systems (hook-based modifiers), and difficulty scaling (floor-based progression). Use for dungeon crawlers, action roguelikes, or roguelites. Trigger keywords: roguelike, procedural_generation, permadeath, meta_progression, seeded_RNG, relic_system, run_state."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Roguelike
-
-Expert blueprint for roguelikes balancing challenge, progression, and replayability.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Generation & RNG
@@ -159,23 +149,23 @@ Roguelikes require a strict separation between **Run State** (temporary) and **M
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project layout, Autoloads, and Resource basics before run/meta split.
-- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — TileMapLayer authorship and runtime cell edits that procedural generators write into.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource duplication, typed data, and save-friendly schemas for relics/meta stats.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — singleton boundaries so Run state resets cleanly without touching Meta state.
+- [godot-project-foundations](project-foundations.md) — project layout, Autoloads, and Resource basics before run/meta split.
+- [godot-tilemap-mastery](tilemap-mastery.md) — TileMapLayer authorship and runtime cell edits that procedural generators write into.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Resource duplication, typed data, and save-friendly schemas for relics/meta stats.
+- [godot-autoload-architecture](autoload-architecture.md) — singleton boundaries so Run state resets cleanly without touching Meta state.
 
 #### Complements
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — deeper Walker/BSP/WFC generators that feed this genre's dungeon loop.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationRegion rebake and agent pathing when not using pure AStarGrid2D.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — hit/hurt pipelines and turn-paced encounters inside generated floors.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — run bags, relic slots, and item Resources consumed by loot tables.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — JSON/binary persistence, floor-transition saves, and permadeath delete-on-load.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — decoupled turn/floor/run signals without SceneTree as grid source of truth.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — thread pools, fog GPU masks, and frame-sliced director heuristics at scale.
+- [godot-procedural-generation](procedural-generation.md) — deeper Walker/BSP/WFC generators that feed this genre's dungeon loop.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationRegion rebake and agent pathing when not using pure AStarGrid2D.
+- [godot-combat-system](combat-system.md) — hit/hurt pipelines and turn-paced encounters inside generated floors.
+- [godot-inventory-system](inventory-system.md) — run bags, relic slots, and item Resources consumed by loot tables.
+- [godot-save-load-systems](save-load-systems.md) — JSON/binary persistence, floor-transition saves, and permadeath delete-on-load.
+- [godot-signal-architecture](signal-architecture.md) — decoupled turn/floor/run signals without SceneTree as grid source of truth.
+- [godot-performance-optimization](performance-optimization.md) — thread pools, fog GPU masks, and frame-sliced director heuristics at scale.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate win% vs meta level, pity timers, and dead-item detection across seeded runs.
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — action-RPG combat/progression layers that often consume roguelike run/meta patterns.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate win% vs meta level, pity timers, and dead-item detection across seeded runs.
+- [godot-genre-action-rpg](genre-action-rpg.md) — action-RPG combat/progression layers that often consume roguelike run/meta patterns.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

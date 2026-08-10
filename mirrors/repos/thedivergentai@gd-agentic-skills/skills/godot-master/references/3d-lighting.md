@@ -25,12 +25,6 @@ Expert guidance for realistic 3D lighting with shadows and global illumination.
 
 ---
 
-## Godot 4.7: AreaLight3D
-
-- **AreaLight3D** provides rectangular area lights with soft shadows — prefer over emissive-material + GI workarounds for screens, glowing panels, and billboards.
-- **HDR output** is supported on all major platforms; enable in Project Settings → Rendering → Viewport for true HDR display chain.
-- **NEVER** use emissive-only fake panels when AreaLight3D gives correct falloff and shadow softness in Forward+.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
@@ -123,7 +117,6 @@ func _ready() -> void:
 ### Day/Night Cycle
 
 **MANDATORY** [`day_night_cycle.gd`](../scripts/3d_lighting_day_night_cycle.gd) — do not re-inline sun energy/color recipes here.
-
 
 ---
 
@@ -245,8 +238,6 @@ func _ready() -> void:
 
 # Also: Ensure walls have proper thickness (not paper-thin)
 ```
-
-
 
 ---
 
@@ -386,24 +377,24 @@ func apply_low_quality_profile(env_rid: RID) -> void:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Renderer choice (Forward+/Mobile/Compatibility), shadow atlas, and GI project settings gate which lighting features exist.
-- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — Albedo/roughness/metallic/emission and `gi_mode` decide how surfaces receive bounced and baked light.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed node scripts, Tweens, and Resource ownership patterns used by managers and environment blends.
+- [godot-project-foundations](project-foundations.md) — Renderer choice (Forward+/Mobile/Compatibility), shadow atlas, and GI project settings gate which lighting features exist.
+- [godot-3d-materials](3d-materials.md) — Albedo/roughness/metallic/emission and `gi_mode` decide how surfaces receive bounced and baked light.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed node scripts, Tweens, and Resource ownership patterns used by managers and environment blends.
 
 #### Complements
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Custom spatial/fog/sky shaders and interior-mapping tricks that extend Environment lighting without more real lights.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera `environment` overrides and exposure pairing for cave/interior light-volume transitions.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Scene scale, sealed interiors, and GridMap/static layout that make VoxelGI/LightmapGI bake cleanly.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Dust/smoke/embers read correctly only when fog density and light energy are co-authored.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Smooth Environment, fog, and light-energy transitions instead of hard cuts at Area3D boundaries.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — Area3D body enter/exit triggers that drive light-volume and fog-zone blends.
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Strip SDFGI/heavy shadows and swap to fake bounce GI when targeting Mobile/Compatibility.
+- [godot-shaders-basics](shaders-basics.md) — Custom spatial/fog/sky shaders and interior-mapping tricks that extend Environment lighting without more real lights.
+- [godot-camera-systems](camera-systems.md) — Camera `environment` overrides and exposure pairing for cave/interior light-volume transitions.
+- [godot-3d-world-building](3d-world-building.md) — Scene scale, sealed interiors, and GridMap/static layout that make VoxelGI/LightmapGI bake cleanly.
+- [godot-particles](particles.md) — Dust/smoke/embers read correctly only when fog density and light energy are co-authored.
+- [godot-tweening](tweening.md) — Smooth Environment, fog, and light-energy transitions instead of hard cuts at Area3D boundaries.
+- [godot-physics-3d](physics-3d.md) — Area3D body enter/exit triggers that drive light-volume and fog-zone blends.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — Strip SDFGI/heavy shadows and swap to fake bounce GI when targeting Mobile/Compatibility.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate here when cascade splits, probe counts, or volumetric fog still dominate the profiler.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate visibility/readability under day-night or darkness budgets when lighting changes combat, stealth, or horror difficulty.
-- [godot-genre-horror](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md) — Consumes sparse lights, fog, and ReflectionProbe interiors for tension-first atmospheres.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Use debugger/monitor views to prove shadow atlas and GI cost before cutting features blindly.
+- [godot-performance-optimization](performance-optimization.md) — Escalate here when cascade splits, probe counts, or volumetric fog still dominate the profiler.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate visibility/readability under day-night or darkness budgets when lighting changes combat, stealth, or horror difficulty.
+- [godot-genre-horror](genre-horror.md) — Consumes sparse lights, fog, and ReflectionProbe interiors for tension-first atmospheres.
+- [godot-debugging-profiling](debugging-profiling.md) — Use debugger/monitor views to prove shadow atlas and GI cost before cutting features blindly.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting lighting concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting lighting concern.

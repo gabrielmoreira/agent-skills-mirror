@@ -10,9 +10,9 @@ Standard Operating Procedure for debugging and fixing browser automation failure
 
 ## When to Use This Skill
 
-- `browser_scroll` succeeds but page doesn't move
-- `browser_click` succeeds but no action triggered
-- `browser_type` text disappears or doesn't work
+- `browser_interact(action="scroll")` succeeds but page doesn't move
+- `browser_interact(action="left_click")` succeeds but no action triggered
+- `browser_interact(action="type")` text disappears or doesn't work
 - `browser_snapshot` hangs or returns stale content
 - `browser_navigate` loads wrong content
 
@@ -30,12 +30,12 @@ Standard Operating Procedure for debugging and fixing browser automation failure
 ```python
 # Test 1: Does the tool work at all?
 await browser_navigate(tab_id, "https://example.com")
-result = await browser_scroll(tab_id, "down", 100)
+result = await browser_interact(action="scroll", tab_id=tab_id, scroll_direction="down", scroll_amount=100)
 # Should work on simple sites
 
 # Test 2: Does it fail on the problematic site?
 await browser_navigate(tab_id, "https://linkedin.com/feed")
-result = await browser_scroll(tab_id, "down", 100)
+result = await browser_interact(action="scroll", tab_id=tab_id, scroll_direction="down", scroll_amount=100)
 # If this fails but example.com works → site-specific edge case
 ```
 
@@ -64,7 +64,7 @@ snapshot = await browser_snapshot(tab_id)
 |---------|--------------|-------|
 | Scroll doesn't move | Nested scroll container | Look for `overflow: scroll` divs |
 | Click no effect | Element covered | Check `getBoundingClientRect` vs viewport |
-| Type clears | Autocomplete/React | Check for event listeners on input; try `browser_type_focused` |
+| Type clears | Autocomplete/React | Check for event listeners on input; try a `type` action with no selector |
 | Snapshot hangs | Huge DOM | Check node count in snapshot |
 | Snapshot stale | SPA hydration | Wait after navigation |
 
@@ -195,7 +195,7 @@ document.querySelector('[data-reactid]')
 **Fix:** Wait for specific selector after navigation:
 ```python
 await browser_navigate(tab_id, url, wait_until="load")
-await browser_wait(tab_id, selector='[data-testid="content"]', timeout_ms=5000)
+await browser_interact(action="wait", tab_id=tab_id, wait_for_selector='[data-testid="content"]', timeout_ms=5000)
 ```
 
 ### P6: Shadow DOM
@@ -229,7 +229,7 @@ function queryShadow(selector) {
 |-------|-------------|----------|
 | Scroll not working | Find scrollable container | Mouse wheel at container center |
 | Click no effect | JavaScript click() | CDP mouse events |
-| Type clears | Add delay_ms | Use `browser_type_focused` (Input.insertText) |
+| Type clears | `use_insert_text=False` (per-keystroke) | Use a `type` action (Input.insertText) |
 | Snapshot hangs | Add timeout_s | DOM snapshot fallback |
 | Stale content | Wait for selector | Increase wait_until timeout |
 | Shadow DOM | Pierce selector | JavaScript traversal |

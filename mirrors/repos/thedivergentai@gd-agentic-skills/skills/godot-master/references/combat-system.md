@@ -3,16 +3,6 @@ name: godot-combat-system
 description: "Expert patterns for combat systems including hitbox/hurtbox architecture, damage calculation (DamageData class), health components, combat state machines, combo systems, ability cooldowns, and damage popups. Use for action games, RPGs, or fighting games. Trigger keywords: Hitbox, Hurtbox, DamageData, HealthComponent, combat_state, combo_system, ability_cooldown, invincibility_frames, damage_popup."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Combat System
-
-Component combat pipeline — DamageData → Hitbox/Hurtbox → HealthComponent — not inline Hitbox/Combo/Ability novels.
-
 ## NEVER Do
 
 - **NEVER use direct damage references (`target.health -= 10`)** — Bypass armor, resistances, and i-frames. Always `DamageData` + `HealthComponent.take_damage`.
@@ -40,7 +30,7 @@ Component combat pipeline — DamageData → Hitbox/Hurtbox → HealthComponent 
 3. **[hitbox_hurtbox.gd](../scripts/combat_system_hitbox_hurtbox.gd)** / **[hitbox_component.gd](../scripts/combat_system_hitbox_component.gd)** — Area hit delivery into hurtboxes.
 4. **[combat_system_patterns.gd](../scripts/combat_system_combat_system_patterns.gd)** — duck-typing, hit-stop, nodeless AoE, frame sync.
 
-**Do NOT** re-inline Hitbox/Health/Combo/Ability tutorials in scenes. Route abilities to [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md); compose components per [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md); FSMs via [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md).
+**Do NOT** re-inline Hitbox/Health/Combo/Ability tutorials in scenes. Route abilities to [godot-ability-system](ability-system.md); compose components per [godot-composition](composition.md); FSMs via [godot-state-machine-advanced](state-machine-advanced.md).
 
 ## Decision Tree
 
@@ -109,23 +99,23 @@ Hitboxes must pass `DamageData` (or equivalent AttackData built from the same fl
 ### Related Skills
 
 #### Prerequisites
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Area layers/masks, `CollisionShape2D` deferred disable, and space queries are the physics substrate under hitbox/hurtbox filtering.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Damage, health, and death signals need clear ownership so combat components stay decoupled from UI and AI listeners.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Prefer `HealthComponent` / `HitboxComponent` children over baking combat into a monolithic Character script.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — `DamageData`, elemental flags, and combat stats belong in Resource/`RefCounted` data with safe `duplicate()` on spawn.
+- [godot-2d-physics](2d-physics.md) — Area layers/masks, `CollisionShape2D` deferred disable, and space queries are the physics substrate under hitbox/hurtbox filtering.
+- [godot-signal-architecture](signal-architecture.md) — Damage, health, and death signals need clear ownership so combat components stay decoupled from UI and AI listeners.
+- [godot-composition](composition.md) — Prefer `HealthComponent` / `HitboxComponent` children over baking combat into a monolithic Character script.
+- [godot-resource-data-patterns](resource-data-patterns.md) — `DamageData`, elemental flags, and combat stats belong in Resource/`RefCounted` data with safe `duplicate()` on spawn.
 
 #### Complements
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Abilities resolve into this skill’s damage/targeting pipeline; keep ability metadata separate from `DamageData`.
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Armor, resistances, crit chance, and modifier stacks feed `take_damage` before health is written.
-- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — Attack animations own hitbox enable windows, cancel frames, and recovery locks for combos.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — IDLE/ATTACKING/BLOCKING/STUNNED combat states belong in a character FSM that gates `can_act`, not ad-hoc bool soup.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Combo buffers and attack actions should call into combat/combo systems from the action map rather than embedding hit logic in input callbacks.
+- [godot-ability-system](ability-system.md) — Abilities resolve into this skill’s damage/targeting pipeline; keep ability metadata separate from `DamageData`.
+- [godot-rpg-stats](rpg-stats.md) — Armor, resistances, crit chance, and modifier stacks feed `take_damage` before health is written.
+- [godot-animation-player](animation-player.md) — Attack animations own hitbox enable windows, cancel frames, and recovery locks for combos.
+- [godot-state-machine-advanced](state-machine-advanced.md) — IDLE/ATTACKING/BLOCKING/STUNNED combat states belong in a character FSM that gates `can_act`, not ad-hoc bool soup.
+- [godot-input-handling](input-handling.md) — Combo buffers and attack actions should call into combat/combo systems from the action map rather than embedding hit logic in input callbacks.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After DamageData, i-frames, cooldowns, and crit curves are tunable, Monte Carlo sims prove DPS/TTK bands before shipping difficulty.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Predicted hits, lag compensation, and authority checks build on the DamageData + server-validate RPC split.
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Action-RPG combat loops assemble hitboxes, abilities, stats, and progression genre glue on top of this skill.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — After DamageData, i-frames, cooldowns, and crit curves are tunable, Monte Carlo sims prove DPS/TTK bands before shipping difficulty.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Predicted hits, lag compensation, and authority checks build on the DamageData + server-validate RPC split.
+- [godot-genre-action-rpg](genre-action-rpg.md) — Action-RPG combat loops assemble hitboxes, abilities, stats, and progression genre glue on top of this skill.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
 

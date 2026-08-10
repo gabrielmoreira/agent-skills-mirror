@@ -3,16 +3,6 @@ name: godot-genre-romance
 description: "Expert blueprint for romance games and dating sims (Tokimeki Memorial, Monster Prom, Persona social links) focusing on affection systems, multi-stat relationships, dated events, and route branching. Use when building relationship-centric games, social simulations, or otome games. Keywords romance, dating sim, affection system, relationship stats, date events, character routes, love interest."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Romance & Dating Sim
-
-Romance games are built on the "Affection Economy"—the management of player time and resources to influence NPC attraction, trust, and intimacy.
-
 ## Core Loop
 1.  **Meet**: Encounter potential love interests and establish baseline rapport.
 2.  **Date**: Engage in structured events to learn preferences and test compatibility.
@@ -146,23 +136,23 @@ Handles complex relationship stats and gift preferences for all characters.
 ### Related Skills
 
 #### Prerequisites
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Character profiles, gift tables, and `DateLocation` data belong in typed Resources before wiring affection math.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Global affection / TimeManager singletons need correct boot order and ownership so route state is not scene-local.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Milestone, mood, and schedule buses must stay Signal-Up so UI and NPCs never poll relationship dictionaries.
-- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Branching conversation trees and choice consequences are the narrative substrate under affection gates.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Character profiles, gift tables, and `DateLocation` data belong in typed Resources before wiring affection math.
+- [godot-autoload-architecture](autoload-architecture.md) — Global affection / TimeManager singletons need correct boot order and ownership so route state is not scene-local.
+- [godot-signal-architecture](signal-architecture.md) — Milestone, mood, and schedule buses must stay Signal-Up so UI and NPCs never poll relationship dictionaries.
+- [godot-dialogue-system](dialogue-system.md) — Branching conversation trees and choice consequences are the narrative substrate under affection gates.
 
 #### Complements
-- [godot-genre-visual-novel](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md) — Pair route locks and CG gallery with VN presentation (portraits, backgrounds, advance UX).
-- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — Custom BBCode / RichTextEffect patterns for blushing, nervous shake, and meta-linked choices.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Typewriter reveals, portrait crossfades, and heart-burst juice without frame-tied timers.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Serialize multi-axis stats, route flags, and gallery unlocks with a real save pipeline.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Gift items and diminishing-return histories plug into affection via inventory ownership.
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Heart meters, blush chrome, and choice panels stay consistent across romance UI scenes.
+- [godot-genre-visual-novel](genre-visual-novel.md) — Pair route locks and CG gallery with VN presentation (portraits, backgrounds, advance UX).
+- [godot-ui-rich-text](ui-rich-text.md) — Custom BBCode / RichTextEffect patterns for blushing, nervous shake, and meta-linked choices.
+- [godot-tweening](tweening.md) — Typewriter reveals, portrait crossfades, and heart-burst juice without frame-tied timers.
+- [godot-save-load-systems](save-load-systems.md) — Serialize multi-axis stats, route flags, and gallery unlocks with a real save pipeline.
+- [godot-inventory-system](inventory-system.md) — Gift items and diminishing-return histories plug into affection via inventory ownership.
+- [godot-ui-theming](ui-theming.md) — Heart meters, blush chrome, and choice panels stay consistent across romance UI scenes.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Tune gift values, date thresholds, and repetition penalties so routes stay reachable without grind or soft-locks.
-- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Expose confession deadlines and missable milestones as timed quest gates on the calendar.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Mood overlays and route beats usually need BGM / stinger buses coordinated with affection events.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Tune gift values, date thresholds, and repetition penalties so routes stay reachable without grind or soft-locks.
+- [godot-quest-system](quest-system.md) — Expose confession deadlines and missable milestones as timed quest gates on the calendar.
+- [godot-audio-systems](audio-systems.md) — Mood overlays and route beats usually need BGM / stinger buses coordinated with affection events.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering romance peers (dialogue, VN, save, UI).
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for discovering romance peers (dialogue, VN, save, UI).

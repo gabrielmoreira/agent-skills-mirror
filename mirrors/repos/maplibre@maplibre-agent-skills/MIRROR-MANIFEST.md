@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
+Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `maplibre/maplibre-agent-skills` — 26 default patterns, 0 followed p
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 6 |
+| Files         | 8 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,12 +59,14 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/maplibre-mapbox-migration/AGENTS.md`](skills/maplibre-mapbox-migration/AGENTS.md) |
-| 2 | ✓ | [`skills/maplibre-mapbox-migration/SKILL.md`](skills/maplibre-mapbox-migration/SKILL.md) |
-| 3 | ✓ | [`skills/maplibre-pmtiles-patterns/AGENTS.md`](skills/maplibre-pmtiles-patterns/AGENTS.md) |
-| 4 | ✓ | [`skills/maplibre-pmtiles-patterns/SKILL.md`](skills/maplibre-pmtiles-patterns/SKILL.md) |
-| 5 | ✓ | [`skills/maplibre-tile-sources/AGENTS.md`](skills/maplibre-tile-sources/AGENTS.md) |
-| 6 | ✓ | [`skills/maplibre-tile-sources/SKILL.md`](skills/maplibre-tile-sources/SKILL.md) |
+| 1 | ✓ | [`skills/maplibre-cartography/SKILL.md`](skills/maplibre-cartography/SKILL.md) |
+| 2 | ✓ | [`skills/maplibre-mapbox-migration/AGENTS.md`](skills/maplibre-mapbox-migration/AGENTS.md) |
+| 3 | ✓ | [`skills/maplibre-mapbox-migration/SKILL.md`](skills/maplibre-mapbox-migration/SKILL.md) |
+| 4 | ✓ | [`skills/maplibre-pmtiles-patterns/AGENTS.md`](skills/maplibre-pmtiles-patterns/AGENTS.md) |
+| 5 | ✓ | [`skills/maplibre-pmtiles-patterns/SKILL.md`](skills/maplibre-pmtiles-patterns/SKILL.md) |
+| 6 | ✓ | [`skills/maplibre-terrain-patterns/SKILL.md`](skills/maplibre-terrain-patterns/SKILL.md) |
+| 7 | ✓ | [`skills/maplibre-tile-sources/AGENTS.md`](skills/maplibre-tile-sources/AGENTS.md) |
+| 8 | ✓ | [`skills/maplibre-tile-sources/SKILL.md`](skills/maplibre-tile-sources/SKILL.md) |
 
 ---
 

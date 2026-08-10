@@ -1,6 +1,6 @@
 ---
 name: hive.terminal-tools-foundations
-description: Required reading whenever any shell_* tool is available. Teaches the foreground/background dichotomy (terminal_exec auto-promotes past 30s, returns a job_id you poll with terminal_job_logs), the standard envelope shape (exit_code, stdout, stdout_truncated_bytes, output_handle, semantic_status, warning, auto_backgrounded, job_id), output handle pagination via terminal_output_get, when to read semantic_status instead of raw exit_code (grep/rg/find/diff/test exit 1 is NOT an error), the destructive-warning surface (rm -rf, git push --force, DROP TABLE), tool preference (use files-tools / gcu-tools / hive_tools before raw shell), and the bash-only-on-macOS policy. Skipping this leads to "tool returned no output" surprises, orphaned jobs, and panic over benign grep exit codes.
+description: Required reading whenever any shell_* tool is available. Teaches the foreground/background dichotomy (terminal_exec auto-promotes past 30s, returns a job_id you poll with terminal_job_logs), the standard envelope shape (exit_code, stdout, stdout_truncated_bytes, output_handle, semantic_status, warning, auto_backgrounded, job_id), output handle pagination via terminal_output_get, when to read semantic_status instead of raw exit_code (grep/rg/find/diff/test exit 1 is NOT an error), the destructive-warning surface (rm -rf, git push --force, DROP TABLE), tool preference (the terminal handles ALL file read/write/edit/search; use gcu-tools / hive_tools where they fit), and the bash-only-on-macOS policy. Skipping this leads to "tool returned no output" surprises, orphaned jobs, and panic over benign grep exit codes.
 metadata:
   author: hive
   type: preset-skill
@@ -13,15 +13,15 @@ These tools give you a real terminal: foreground exec with smart envelopes, back
 
 ## Tool preference (read first)
 
-Before reaching for terminal-tools, check whether a higher-level tool already covers the task. Shell is for system operations the other servers don't reach.
+The terminal is your file system: reading, writing, editing, and searching files all go through terminal-tools. Reach for a higher-level tool only where it clearly fits (browser, web search). Terminal tools default their cwd/path to your **session workdir** when you omit it — relative paths Just Work; pass an absolute path to operate elsewhere.
 
-- **Reading files** → `files-tools.read_file` (handles size, paging, line-numbered output) — NOT `terminal_exec("cat ...")`
-- **Editing files** → `files-tools.edit_file` (atomic patch with diff verification) — NOT `terminal_exec("sed -i ...")`
-- **Writing files** → `files-tools.write_file` — NOT `terminal_exec("echo > ...")`
-- **In-project search** → `files-tools.search_files` (project-scoped, code-aware) — use `terminal_rg` only for raw paths outside the project (`/var/log`, `/etc`)
+- **Reading files** → `terminal_exec("cat PATH")` (page large output with `terminal_output_get`)
+- **Editing files** → `terminal_exec("sed -i ...")` / awk, or rewrite the whole file with a heredoc
+- **Writing files** → heredoc: `terminal_exec("cat > PATH <<'EOF' ... EOF")`
+- **Searching** → `terminal_rg` (content / regex grep) and `terminal_glob` (find files by name)
 - **Browser / web pages** → `gcu-tools.browser_*` for rendered pages — NOT `terminal_exec("curl ...")`
 - **Web search** → `hive_tools.web_search` — NOT scraping
-- **System operations** (process exec, jobs, PTYs, raw fs search) → terminal-tools. This is its territory.
+- **System operations** (process exec, jobs, PTYs) → terminal-tools. This is its territory.
 
 ## The standard envelope
 
@@ -42,7 +42,8 @@ Every spawn-style call (`terminal_exec`, the auto-promoted job state) returns th
   "semantic_message": null,          // e.g. "No matches found" for grep exit 1
   "warning": null,                   // e.g. "may force-remove files" for rm -rf
   "auto_backgrounded": false,
-  "job_id": null                     // set when auto_backgrounded=true
+  "job_id": null,                    // set when auto_backgrounded=true
+  "shell_kind": "bash"               // interpreter that ran it: "bash" | "powershell" | "cmd" | "direct"
 }
 ```
 
@@ -101,9 +102,25 @@ The store has a 64 MB cap with LRU eviction. For huge outputs, prefer `terminal_
 
 ## Bash, not zsh — even on macOS
 
-`terminal_exec` and `terminal_pty_open` always invoke `/bin/bash`. The user's `$SHELL` is ignored. Explicit `shell="/bin/zsh"` is **rejected** with a clear error. This is a deliberate security stance, not aesthetic — zsh has command/builtin classes (`zmodload`, `=cmd` expansion, `zpty`, `ztcp`, `zf_*`) that bypass bash-shaped checks. The `terminal-tools-pty-sessions` skill explains the implications for PTY sessions specifically.
+On POSIX, `terminal_exec` and `terminal_pty_open` always invoke `/bin/bash` (on Windows see the section below). The user's `$SHELL` is ignored. Explicit `shell="/bin/zsh"` is **rejected** with a clear error. This is a deliberate security stance, not aesthetic — zsh has command/builtin classes (`zmodload`, `=cmd` expansion, `zpty`, `ztcp`, `zf_*`) that bypass bash-shaped checks. The `terminal-tools-pty-sessions` skill explains the implications for PTY sessions specifically.
 
 `ZDOTDIR` and `ZSH_*` env vars are stripped before exec to prevent zsh dotfiles leaking in. Bash dotfiles still apply when invoked interactively (e.g. PTY sessions use `bash --norc --noprofile` to keep things predictable).
+
+## Windows — check `shell_kind` before assuming bash
+
+On Windows the shell is resolved in priority order: **Git Bash → PowerShell → cmd**. Which one ran your command is reported in the envelope's `shell_kind` field. Bash is only available if Git for Windows is installed; otherwise you land in PowerShell (or cmd as the floor). **Read `shell_kind` and adapt** — bash idioms silently break in the others:
+
+| You wrote | `bash` | `powershell` | `cmd` |
+|---|---|---|---|
+| `cat` / `ls` | ✓ | ✓ (aliases) | ✗ (`type` / `dir`) |
+| `grep` / `sed` / GNU `find` | ✓ | ✗ | ✗ |
+| `a && b` | ✓ | ✗ in PS 5.1 (use `;`) | ✓ |
+| `2>/dev/null` | ✓ | `2>$null` | `2>nul` |
+| single-quoted `'args'` | ✓ | ✓ | ✗ (use `"..."`) |
+
+Practical rule: if `shell_kind != "bash"`, prefer commands that are portable (a bare program name + args, e.g. `node x.js`, `python -m pip install ...`) or write the PowerShell/cmd-native form. Don't assume coreutils. PTY sessions (`terminal_pty_*`) are POSIX-only and return an "unsupported on Windows" error.
+
+**Paths under `shell_kind: "bash"` on Windows (Git Bash):** backslashes are escape characters, so a Windows path passed verbatim gets mangled (`cat C:\Users\me\x` → bash reads `C:Usersmex`). Use forward slashes (`C:/Users/me/x`, which Git Bash accepts) or the MSYS form (`/c/Users/me/x`). Quoting a backslash path in single quotes also preserves it (`cat 'C:\Users\me\x'`).
 
 ## Pipelines and complex commands
 
@@ -130,8 +147,8 @@ Quoted strings work either way — the detector uses `shlex.split` which handles
 | One-shot command, might be longer | `terminal_exec` (auto-promotes) |
 | Long-running job from the start | `terminal_job_start` |
 | State across calls (cd, env, REPL) | `terminal_pty_open` + `terminal_pty_run` |
-| Search file contents (raw paths) | `terminal_rg` |
-| Find files by predicate | `terminal_find` |
+| Search file contents (any path) | `terminal_rg` |
+| Find files by name/glob (any path) | `terminal_glob` |
 | Retrieve truncated output | `terminal_output_get` |
 | Tree / stat / du | `terminal_exec("ls -la"/"stat foo"/"du -sh path")` |
 | HTTP / DNS / ping / archives | `terminal_exec("curl ..."/"dig ..."/"tar xzf ...")` |

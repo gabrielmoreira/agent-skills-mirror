@@ -1,6 +1,6 @@
 ---
 name: data-visualization
-description: Create clear, effective charts and dashboards from structured data using matplotlib, seaborn, and plotly.
+description: Create clear, effective charts and dashboards from structured data using matplotlib, seaborn, and plotly. Use when the user requests data visualization or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

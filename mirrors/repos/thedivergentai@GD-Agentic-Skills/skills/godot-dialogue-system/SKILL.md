@@ -22,10 +22,6 @@ Data-driven dialogue routing — not beginner typewriter tutorials.
 
 ---
 
-## Godot 4.7: Dialogue UI
-
-- RichTextLabel `add_image`/`update_image` use `width_unit`/`height_unit` (`ImageUnit`) — update portrait and inline image helpers.
-
 ## Decision Tree: Authoring Engine
 
 | Authoring need | Engine | MANDATORY scripts | Do NOT Load |

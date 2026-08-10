@@ -1,448 +1,265 @@
 ---
 name: dev-git-commit-message
-description: Generates conventional commit messages from git diffs. Use when you need well-formatted commit messages following Conventional Commits.
-argument-hint: "[--validate 'msg' | --tier 1|2|3]"
+description: "Generates or validates Conventional Commits messages from staged diffs. Use when drafting commit messages, checking repo rules, or inferring scope from changed files."
+compatibility: Target runtime is repo-local skill frontmatter with `argument-hint` support.
+argument-hint: "[--validate 'msg' | --tier short|detailed]"
+version: "1.2"
+last_validated: 2026-07-11
 ---
 
 # Git Commit Message Generator
 
-**Auto-generates conventional commit messages from git diffs with tiered format enforcement**
+Generate or validate Conventional Commits for the staged surface.
 
-## Purpose
+Default posture: subject line first; body only when risk, rationale, or breaking-change detail is needed; standard types only unless the repo already defines custom ones; never claim behavior not visible in the diff.
 
-Analyze staged git changes and generate concise, meaningful commit messages following a tiered Conventional Commits specification. This skill examines file modifications, additions, and deletions to infer the type and scope of changes, producing commit messages that match the importance of the change - from detailed documentation for critical features to concise messages for minor updates.
+## Quick Reference
 
-**Key Innovation**: Three-tier format system that balances thoroughness for critical commits (feat, fix, security) with efficiency for routine changes (docs, chore, style).
+| Need | Default | Reference |
+|------|---------|-----------|
+| Pick a type | `feat`/`fix`/`perf`/`refactor`/`docs`/`test`/`build`/`ci`/`chore`/`style`/`revert` | Type Selection table below |
+| Format a subject | `type(scope): imperative summary`, ≤72 chars (50 ideal), no trailing period | Pre-Commit Message Checklist below |
+| Mark a breaking change | `!` after type/scope, or a `BREAKING CHANGE:` footer | Breaking Change Format table below |
+| Decide on a body | Only for risk, non-obvious rationale, or breaking-change detail | Body Required? table below |
+| Handle AI-authored commits | No tool attribution ever; `Assisted-by:` trailer only if the repo opts in | AI-Authored Commits below |
+| Pick a release/changelog tool | release-please for reviewed PR releases; semantic-release for full automation; changesets for monorepos | [references/changelog-generation-guide.md](references/changelog-generation-guide.md) |
+| Scope a monorepo commit | package/app/service directory name, one level deep, stable over time | [references/monorepo-commit-conventions.md](references/monorepo-commit-conventions.md) |
+| Validate a message locally | `python scripts/commit_validator.py validate --message "..."` | Scripts section below |
 
-## When This Skill Activates
+## Decision Tables
 
-- When `/commit-msg` command is invoked
-- When invoked from a `commit-msg`/`prepare-commit-msg` hook (if installed)
-- When user requests commit message suggestions
-- When analyzing changes before creating a commit
+### Mode Selection
 
-## Core Capabilities
+| Trigger | Mode | Action |
+|---------|------|--------|
+| User provides staged diff or asks to commit | Generate | Inspect staged surface, produce primary + alternatives |
+| User provides an existing message string | Validate | Check rules, return PASS/WARN/FAIL + exact rewrite |
+| Staged diff mixes unrelated areas | Split | Recommend split commits before generating |
+| No staged changes | Stop | Report "no staged changes" |
 
-**1. Diff Analysis**
-- Parse `git diff --staged` output
-- Identify modified, added, and deleted files
-- Analyze code changes (additions, deletions, modifications)
-- Detect patterns across multiple files
+### Type Selection
 
-**2. Change Classification**
-- Determine commit type from changes:
-  - `feat`: New features or functionality
-  - `fix`: Bug fixes
-  - `security`: Security fixes or hardening
-  - `refactor`: Code restructuring without behavior change
-  - `docs`: Documentation changes
-  - `style`: Formatting, whitespace, code style
-  - `test`: Adding or modifying tests
-  - `chore`: Build process, dependencies, tooling
-  - `perf`: Performance improvements
-  - `ci`: CI/CD configuration changes
-  - `build`: Build system changes
-  - `revert`: Reverting previous commits
+| Change | Type | Notes |
+|--------|------|-------|
+| New user- or API-visible capability | `feat` | Triggers MINOR bump |
+| Incorrect behavior corrected | `fix` | Triggers PATCH bump |
+| Measurable speed or memory improvement | `perf` | Triggers PATCH bump |
+| Structure improved, behavior unchanged | `refactor` | No release by default |
+| Documentation only | `docs` | No release by default |
+| Tests only | `test` | No release by default |
+| Build tooling or packaging | `build` | No release by default |
+| CI/CD workflow | `ci` | No release by default |
+| Repo hygiene, no product change | `chore` | No release by default |
+| Whitespace or formatting only | `style` | No release by default |
+| Reverting a prior commit | `revert` | Triggers PATCH bump |
+| Security fix | `fix(security):` | Prefer standard type + scope over custom `security:` type |
+| Prompt/skill/YAML behavioral change | `feat` or `fix` | Do not classify by file extension alone |
 
-**3. Scope Detection**
-- Infer scope from file paths and patterns:
-  - Directory names (e.g., `api`, `auth`, `ui`)
-  - File name patterns (e.g., `*.test.js` → `tests`)
-  - Framework conventions (e.g., `components/`, `services/`)
+### Scope Selection
 
-**4. Message Generation**
-- Format: `type(scope): description`
-- Enforce tier limits: Tier 1 summary max 50 chars; Tier 2/3 summary max 72 chars (ideal 50)
-- Use imperative mood ("add" not "added")
-- Focus on "what" and "why", not "how"
-- Provide 2-3 alternative suggestions
+| Situation | Action |
+|-----------|--------|
+| Repo has a scope map in [config.yaml](config.yaml) | Use mapped scope |
+| One directory or package clearly dominates | Use that name, lowercase kebab-case |
+| Change spans 2+ stable areas equally | Use broader parent scope or omit |
+| Repository-wide change | Omit scope |
+| Monorepo with independently versioned packages | See [references/monorepo-commit-conventions.md](references/monorepo-commit-conventions.md) |
 
-## Tier System: Smart Format Enforcement
+### Body Required?
 
-This skill uses a **three-tier format system** that matches message detail to commit criticality:
+| Condition | Include body? |
+|-----------|--------------|
+| Subject is self-explanatory | No |
+| Reason is non-obvious from subject | Yes — one sentence why |
+| Security-sensitive or risky change | Yes — risk/rollback note |
+| Breaking change | Yes — `BREAKING CHANGE:` footer required |
+| Caller requests detailed template | Yes — use [assets/template-commit-message.md](assets/template-commit-message.md) |
 
-### Tier 1: Critical Commits (feat, fix, perf, security)
+### Breaking Change Format
 
-**Requirements**: Detailed documentation with impact statement
+| Signal | Format |
+|--------|--------|
+| Inline marker | `feat(api)!: change auth to OAuth2` |
+| Footer | `BREAKING CHANGE: <migration summary>` |
+| Both | Acceptable; footer body gets the detail |
 
-**Format**:
-```
-type(scope): summary line (max 50 chars)
+## Before/After Examples
 
-- Detailed description point 1
-- Detailed description point 2
-- Detailed description point 3
+```text
+BAD:  update
+GOOD: docs(readme): add deployment instructions
 
-This change [impact statement describing user-facing benefit or risk addressed].
+BAD:  fix stuff
+GOOD: fix(cart): prevent negative quantity on rapid add
 
-Affected files/components:
-- path/to/file1
-- path/to/file2
-```
+BAD:  feat: added user dashboard (past tense, missing scope)
+GOOD: feat(dashboard): add analytics overview panel
 
-**Why**: Features, fixes, and performance changes affect users directly and need thorough documentation for future reference and changelog generation.
+BAD:  feat: add search (generated by Copilot)
+GOOD: feat(search): add full-text product search
 
-### Tier 2: Standard Commits (refactor, test, build, ci)
+BAD:  feat(api): add comprehensive user search endpoint with full-text search across all profile fields including bio and location
+GOOD: feat(api): add full-text user search endpoint
 
-**Requirements**: Brief context and file list
-
-**Format**:
-```
-type(scope): summary line (max 72 chars)
-
-Brief explanation of what changed and why (1-2 sentences).
-
-Files: path/to/file1, path/to/file2
-```
-
-**Why**: Internal improvements need context for maintainability but don't require extensive documentation.
-
-### Tier 3: Minor Commits (docs, style, chore)
-
-**Requirements**: Summary line, optional description
-
-**Format**:
-```
-type(scope): summary line (max 72 chars)
-
-[Optional: Additional context if helpful]
+BAD:  feat: add dashboard, fix auth bug, update deps  (mixed concerns)
+GOOD: (3 separate commits)
+      feat(dashboard): add analytics overview panel
+      fix(auth): correct token refresh race condition
+      chore(deps): update react to 18.3.0
 ```
 
-**Why**: Documentation and routine maintenance are self-explanatory from the diff; verbose messages add noise.
+## Pre-Commit Message Checklist
+
+- [ ] Starts with a valid type prefix (`feat`, `fix`, `docs`, `test`, `refactor`, `perf`, `build`, `ci`, `chore`, `style`, `revert`)
+- [ ] Subject is 72 characters or fewer (50 preferred)
+- [ ] Imperative mood: "add" not "added", "fix" not "fixing"
+- [ ] No trailing period on subject line
+- [ ] Scope, if used, matches repo conventions (lowercase kebab-case)
+- [ ] Single logical change; unrelated concerns split into separate commits
+- [ ] No tool/assistant attribution in subject or body
+- [ ] No generic placeholders: "update", "fix stuff", "WIP", "misc"
+- [ ] Breaking changes marked with `!` or `BREAKING CHANGE:` footer
+- [ ] Body present only when needed; answers "why", not "what"
 
 ## Workflow
 
+1. Decide mode from the Mode Selection table above.
+2. For generate mode, inspect staged changes in this order:
+   - `git diff --staged --name-status`
+   - `git diff --staged --stat`
+   - `git diff --staged --unified=1` only when type, scope, or risk is ambiguous
+3. Classify type and scope using the tables above.
+4. Detect scope from [config.yaml](config.yaml) first, then from the nearest stable directory.
+5. Generate: one primary suggestion, up to two alternatives when scope or emphasis is ambiguous, short rationale.
+6. Validate: run all checklist items, return PASS/WARN/FAIL with exact rewrite on failure.
+7. If the diff mixes unrelated work, recommend split commits before offering a combined message.
+
+## Output Contract
+
+### Generate
+
 ```text
-0. Pre-staging typecheck (if project uses TypeScript):
-   - Run `tsc --noEmit` on changed files before staging
-   - Fix type errors before committing (avoids pre-commit hook retry loops)
-1. Get staged changes (staged only, not working tree):
-   - git diff --staged --name-status
-   - git diff --staged --stat
-   - git diff --staged
-2. Load config → frameworks/shared-skills/skills/dev-git-commit-message/config.yaml
-3. Analyze changes:
-   - Count files modified/added/deleted
-   - Identify primary change type using analysis patterns
-   - Detect scope from project structure (config.yaml)
-   - Determine tier (1/2/3) based on commit type
-   - Extract key modifications
-4. Generate commit messages:
-   - Apply tier-appropriate format
-   - Primary suggestion (best match)
-   - Alternative 1 (different scope/angle)
-   - Alternative 2 (broader/narrower focus)
-5. Validate against rules:
-   - Check forbidden patterns
-   - Verify required elements present
-   - Ensure length limits
-6. Present to user with explanation and tier info
-```
-
-## Optional Modes (If Supported By The Caller)
-
-- `--validate "<message>"`: Validate a commit message without generating suggestions (format/type/scope/length/forbidden patterns; then report required Tier 1/2/3 elements if missing).
-- `--tier <1|2|3>`: Force the tier format (overrides auto-detection).
-- `--interactive` or `-i`: Ask for confirmation of type, scope, and summary before final output.
-
-## Output Format
-
-```
-[NOTE] Suggested Commit Messages (based on X files changed)
+[NOTE] Suggested commit messages (3 files changed)
 
 PRIMARY:
-feat(api): add user authentication endpoints
+fix(auth): reject expired refresh tokens
 
 ALTERNATIVES:
-1. feat(auth): implement JWT token validation
-2. feat: add user authentication system
+1. fix(api): reject expired refresh tokens
+2. fix: reject expired refresh tokens during rotation
 
-ANALYSIS:
-- 3 files modified in src/api/
-- New functions: authenticateUser, generateToken
-- Primary change: new feature (authentication)
-- Scope detected: api/auth
+RATIONALE:
+- Type: fix
+- Scope: auth
+- Signals: token validation path, regression test update, no new feature surface
 ```
 
-## Conventional Commits Quick Reference
+### Validate
 
-**Type Guidelines**:
-- `feat`: User-facing features or API additions
-- `fix`: Corrects incorrect behavior
-- `refactor`: Improves code without changing behavior
-- `docs`: README, comments, documentation files
-- `style`: Formatting only (prettier, eslint --fix)
-- `test`: Test files or test utilities
-- `chore`: Build scripts, package updates, config
-- `perf`: Measurable performance improvements
-- `ci`: GitHub Actions, CircleCI, build pipelines
+```text
+VALIDATION: WARN
 
-**Scope Guidelines**:
-- Use lowercase
-- Be specific but not too narrow
-- Match your project's module structure
-- Omit if changes span multiple unrelated areas
+Message:
+feat: update stuff
 
-**Description Guidelines**:
-- Start with lowercase verb
-- No period at the end
-- Be specific and concise
-- Focus on user impact for `feat` and `fix`
+Issues:
+- `update stuff` is too vague
+- summary should name the changed behavior or surface
 
-## Edge Cases
-
-**Multiple unrelated changes**:
-- Suggest splitting into separate commits
-- If forced to combine, use broader scope or omit scope
-
-**Breaking changes**:
-
-- Append exclamation mark after type/scope (example: feat(api)!: change auth flow)
-- Include BREAKING CHANGE in body (handled by user)
-
-**WIP or experimental**:
-- Use `chore(wip): description` or `feat(experimental): description`
-
-**No meaningful changes**:
-- Detect and warn: "No staged changes detected"
-- Suggest `git add` commands
-
-## Integration Points
-
-**Pre-commit hook**: Triggered before commit (if installed/configured)
-**Slash command**: Manual invocation via `/commit-msg`
-**Direct skill call**: From other skills or tools
-
-## Best Practices
-
-1. **Analyze context**: Look at file paths, function names, import statements
-2. **Prioritize clarity**: Prefer obvious descriptions over clever ones
-3. **Respect conventions**: Follow project's existing commit patterns if detected
-4. **Avoid hallucination**: Only describe what's actually in the diff
-5. **Be concise**: 50 chars is ideal, 72 is maximum for first line
-6. **Stage specific files**: Use `git add <file1> <file2>`, not `git add -A` or `git add .`, to avoid pulling in unrelated changes or sensitive files
-7. **Avoid heredoc in sandboxed shells**: Sandboxed environments may block temp file creation for here-documents. Use `git commit -m "$(cat <<'EOF'\nmessage\nEOF\n)"` or pass `-m "message"` directly
-8. **Pre-commit typecheck**: Run `tsc --noEmit` on the staged surface before committing to catch type errors early and avoid retry cascades from pre-commit hooks
-
-## Example Analyses
-
-**Scenario 1**: New React component
-```
-Files: src/components/UserProfile.tsx, src/components/UserProfile.test.tsx
-Changes: +120 lines, component definition, props interface, tests
-Message: feat(components): add UserProfile component
+Suggested fix:
+feat(auth): add refresh token rotation
 ```
 
-**Scenario 2**: Bug fix in API
-```
-Files: src/api/auth.ts
-Changes: -5 +8 lines, fix token expiration check
-Message: fix(auth): correct token expiration validation
-```
+## AI-Authored Commits
 
-**Scenario 3**: Documentation update
-```
-Files: README.md, docs/api.md
-Changes: +45 lines documentation
-Message: docs: update API documentation and README
-```
+The commit message describes the change, not the tool that produced it. Apply the same rules regardless of whether a human or an AI agent drafted the code.
 
-**Scenario 4**: Dependency update
-```
-Files: package.json, package-lock.json
-Changes: version bumps for eslint, typescript
-Message: chore(deps): update eslint and typescript
+Banned in subject and body: `generated by`, `co-authored-by: <ai-tool>`, `via copilot`, `via claude`, `chatgpt`, `ai assistant`, `bot`.
+
+If your team requires an audit trail for AI-assisted code, add an `Assisted-by:` trailer as an opt-in team policy (not a default). Keep it out of the subject line. Example:
+
+```text
+feat(search): add full-text product search
+
+Assisted-by: claude-sonnet-4-6
 ```
 
-## Analysis Patterns: Smart Type Detection
+This is an organizational opt-in pattern, not a general requirement. The default rule remains: no attribution.
 
-The skill uses pattern matching to intelligently detect commit types from diffs:
+`Assisted-by:` is a distinct trailer from `Co-Authored-By:` — several large open-source projects (Linux Kernel, Apache Software Foundation, LLVM, QEMU) have converged on `Assisted-by:` through 2026 specifically because `Co-Authored-By:` implies authorship/copyright standing that an AI tool cannot hold or sign a CLA for. If a repo already uses `Co-Authored-By: <ai-tool>` by convention, do not silently rewrite it to `Assisted-by:` — flag the distinction and let the maintainer choose; changing trailer conventions after history exists breaks blame/provenance tooling that greps for the old trailer.
 
-### feat Detection
-- **New files created** (especially in src/, components/, api/)
-- **New functions/classes exported** (`export function`, `export class`)
-- **New API routes** (`app.get`, `router.post`, etc.)
-- **New assets/skills** (in .claude/, custom-gpt/, etc.)
-- **Threshold**: 20+ lines added typically indicates feature
+## Repo Policy Checks
 
-### fix Detection
-- **Test file changes** (often indicates bug reproduction)
-- **New conditionals** (validation fixes)
-- **Error handling additions** (`try`, `catch`, `throw`)
-- **Input validation** (`validate`, `sanitize`, `check`)
-- **Commit message hints**: Words like "bug", "issue", "error", "crash"
+Block or rewrite messages that:
 
-### refactor Detection
-- **Balanced changes** (similar additions and deletions)
-- **Function renames/moves** (same logic, different location)
-- **No new features or fixes**
-- **Test coverage unchanged**
-- **Keywords**: "extract", "move", "rename", "reorganize"
+- omit the type prefix
+- use vague summaries: `update`, `fix stuff`, `change code`, `WIP`, `misc`
+- include assistant/tool attribution (see above)
+- overstate impact not visible in the diff
+- use past tense or gerund after the type prefix
+- exceed 72 characters on the subject line
+- end the subject line with a period
 
-### docs Detection
-- **File patterns**: `.md`, `.txt`, `README`, `CHANGELOG`, `/docs/`
-- **Pure documentation changes** (no code modifications)
-- **Mixed code+docs**: Prefer code type, note docs in description
+## Scripts
 
-### test Detection
-- **File patterns**: `test.js`, `spec.ts`, `__tests__/`, `/tests/`
-- **Test framework patterns**: `describe`, `it`, `test`, `expect`, `assert`
+| Script | Purpose |
+|--------|---------|
+| [scripts/commit_validator.py](scripts/commit_validator.py) | Validate a single message, lint a history file, or generate a Markdown quality report |
 
-### style Detection
-- **CSS/styling files**: `.css`, `.scss`, `.sass`, `.less`
-- **Formatter configs**: `prettier`, `eslint`
-- **Whitespace-only changes**
-- **Keywords**: "formatting", "indent", "whitespace"
+```bash
+# Validate one message
+python scripts/commit_validator.py validate --message "feat(auth): add refresh token rotation"
 
-### chore Detection
-- **Dependency files**: `package.json`, `requirements.txt`, `Gemfile`
-- **Lock files**: `package-lock.json`, `yarn.lock`
-- **Config files**: `.gitignore`, `.env`
-- **Keywords**: "dependency", "deps", "upgrade", "bump"
+# Lint a batch history file
+python scripts/commit_validator.py lint --input data/sample-commit-history.json
 
-## Configuration
+# Generate a full Markdown report
+python scripts/commit_validator.py report --input data/sample-commit-history.json --output report.md
+```
 
-**Project-specific configuration** loaded from `config.yaml`:
+See [scripts/README.md](scripts/README.md) for the full quick-start, input format, and rule reference.
 
-- **Scope mapping**: Maps directory patterns to scope names (e.g., `frameworks/claude-code-kit/**` → `claude-kit`)
-- **Tier rules**: Defines which commit types require which tier format
-- **Forbidden patterns**: Blocks commits with generic messages or assistant/tool attribution
-- **Analysis patterns**: Customizes type detection logic for your codebase
-- **Validation mode**: `strict` (block), `warning` (warn), or `disabled`
+## Worktree PR Loop
 
-## Forbidden Patterns (Validation)
+Use this skill as the commit step inside the broader worktree-first delivery loop defined by [../dev-git-workflow/SKILL.md](../dev-git-workflow/SKILL.md).
 
-The skill automatically blocks commits with these patterns:
+In that loop: create or enter feature worktree → make code changes → stage intentionally → use this skill → run repo gate → open PR.
 
-### Generic/Vague Messages
+If the staged diff mixes several unrelated surfaces, stop and recommend split commits before the PR step.
 
-- [FAIL] "Update files" → [OK] "docs: update API reference"
-- [FAIL] "Fix stuff" → [OK] "fix(auth): correct token validation"
-- [FAIL] "Change code" → [OK] "refactor(utils): simplify date formatting"
+## Known Traps
 
-### Assistant/Tool Attribution (Per Repository Policy)
+- Inferring scope from filenames alone, producing scopes that do not match the repo's bounded-context map.
+- Compressing unrelated changes into one "clean" conventional commit, destroying revert and release-note usefulness.
+- Treating AI-generated summaries as authoritative when the diff still contains hidden migrations or breaking changes.
+- Optimizing for lint-pass format while losing the operational intent maintainers need for incident archaeology.
+- Using `!` or `BREAKING CHANGE` casually and creating noisy downstream automation.
 
-- [FAIL] "Generated with Claude Code"
-- [FAIL] "Co-Authored-By: Claude <noreply@anthropic.com>"
-- [FAIL] Any assistant/tool attribution in commit messages
+## Navigation
 
-### Work-in-Progress Markers
-
-- [WARNING] "WIP: feature" (warning - should be squashed before merge)
-- [WARNING] "temp: quick fix" (warning - should be squashed)
-
-### Missing Type
-
-- [FAIL] Commits without type prefix (feat, fix, docs, etc.)
-
-## Error Handling
-
-- **No staged changes**: Run `git status` and guide user to `git add` files
-- **Binary files only**: Note that commit message should mention file types
-- **Merge conflicts**: Detect and suggest `chore: resolve merge conflicts`
-- **Git not available**: Graceful failure with helpful error message
-- **Forbidden pattern detected**: Show error with examples and block commit (strict mode)
-- **Missing required elements**: List what's missing based on tier requirements
-- **Length exceeded**: Show character count and suggest shortening
-
-## Integration with Repository
-
-This skill integrates with the AI-Agents repository standards:
-
-- **CLAUDE.md reference**: Mandatory skill usage before commits
-- **config.yaml**: Project-specific scope mappings and rules
-- **Pre-commit hook**: Automatic activation before git commits
-- **CONTRIBUTING.md**: Commit guidelines for contributors
-
----
-
-## Commit Message Template
-
-**[assets/template-commit-message.md](assets/template-commit-message.md)** — Copy-paste template and good/bad examples.
-
-Use it to standardize `type(scope): summary` messages and keep history automation-friendly.
-
----
-
-## Security-Sensitive Commits
-
-**[assets/template-security-commits.md](assets/template-security-commits.md)** — Guide for handling security-sensitive changes.
-
-### Key Sections
-
-- **Pre-Commit Security Checklist** — Secrets detection, prohibited patterns
-- **Security-Related Commit Types** — Security fix, enhancement, configuration
-- **Accidental Secret Commits** — Immediate response, rotation, history cleanup
-- **Sensitive File Patterns** — .gitignore templates, files that should never be committed
-- **Audit Trail Requirements** — CVE, CVSS, CWE metadata for security commits
-
-### Do / Avoid
-
-#### GOOD: Do
-
-- Run secrets scan before every commit
-- Rotate secrets immediately if exposed
-- Use environment variables for credentials
-- Document security fixes with CVE/CVSS
-- Require security team review for auth changes
-- Keep .gitignore updated for secret patterns
-
-#### BAD: Avoid
-
-- Committing secrets "temporarily"
-- Using hardcoded credentials in tests
-- Storing real credentials in example files
-- Assuming deleted secrets are safe
-- Committing before secrets scan completes
-- Using generic commit messages for security fixes
-
-### Anti-Patterns
-
-| Anti-Pattern | Problem | Fix |
-|--------------|---------|-----|
-| **"Add secrets later"** | Secrets committed accidentally | Use env vars from start |
-| **Secrets in tests** | Real credentials in repo | Use mocks/test credentials |
-| **Force push to hide** | History still recoverable | Rotate + document |
-| **Vague security commits** | No audit trail | Include CVE/CVSS |
-| **No pre-commit scan** | Secrets reach remote | Install gitleaks hook |
-
----
-
-## Optional: AI/Automation
-
-> **Note**: AI suggestions should preserve human intent.
-
-- **Commit message suggestions** — Draft from diff analysis
-- **Type detection** — Pattern-based commit type inference
-- **Scope detection** — Auto-detect from changed paths
-
-### Bounded Claims
-
-- AI-generated messages need human review and modification
-- Automated type detection may miss context
-- Security commits always need human judgment
-
----
-
-## Resources
-
-| Resource | Purpose |
-|----------|---------|
-| [references/conventional-commits-guide.md](references/conventional-commits-guide.md) | Conventional Commits spec and tooling |
-| [references/commit-message-antipatterns.md](references/commit-message-antipatterns.md) | Common bad patterns, detection, linting |
-| [references/monorepo-commit-conventions.md](references/monorepo-commit-conventions.md) | Scope strategies for multi-package repos |
-| [references/changelog-generation-guide.md](references/changelog-generation-guide.md) | Changelog tooling setup, CI integration |
-| [data/sources.json](data/sources.json) | Curated external sources |
-
----
-
-**Version**: 2.1.1
-**Last Updated**: 2026-01-26
-**Repository**: AI-Agents (documentation repository)
-**Conventional Commits Spec**: <https://www.conventionalcommits.org/>
+- [config.yaml](config.yaml) — repo-specific scope mapping and validation defaults
+- [assets/template-commit-message.md](assets/template-commit-message.md) — optional detailed body template for complex commits
+- [assets/template-security-commits.md](assets/template-security-commits.md) — wording guidance for security-sensitive commits
+- [references/conventional-commits-guide.md](references/conventional-commits-guide.md) — full spec v1.0.0 (current stable), type definitions, breaking changes, tooling setup
+- [references/commit-message-antipatterns.md](references/commit-message-antipatterns.md) — anti-pattern catalog, regex detection patterns, commitlint config, CI examples
+- [references/monorepo-commit-conventions.md](references/monorepo-commit-conventions.md) — scope strategy, per-package changelog generation, affected-package CI routing
+- [references/changelog-generation-guide.md](references/changelog-generation-guide.md) — release tooling comparison (standard-version deprecated since 2022; prefer release-please or changesets)
+- [data/sources.json](data/sources.json) — curated primary sources for tool verification
+- [data/sample-commit-history.json](data/sample-commit-history.json) — 20-commit sample dataset for lint and report subcommands
+- Related: [../dev-git-workflow/SKILL.md](../dev-git-workflow/SKILL.md) — branching, hooks, PR workflow, release automation; use dev-git-workflow for branching/PR strategy, this skill for commit-message standards
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Conventional Commits spec is v1.0.0 (stable as of July 2026; no v2 released).
+- commitlint is at v21.x (21.2.1 as of July 2026); requires Node 22+; config uses ESM (`export default { extends: [...] }`).
+- `standard-version` is deprecated, not archived — the repo carries a deprecation notice pointing to `release-please` (GitHub-native) or the community fork `commit-and-tag-version`. Do not recommend it for new projects either way.
+- `release-please-action` is at v5 (Node 24 runtime, April 2026 breaking change); the underlying `release-please` package is at v17.x. Re-check the major tag before pinning a workflow — this skill will drift again.
+- `semantic-release` is at v25.x as of mid-2026 and actively maintained (recent work adds npm trusted publishing).
+- For current tooling, hook behavior, or release-automation recommendations, verify against primary sources in [data/sources.json](data/sources.json) and use web search when available — pinned major-version numbers in this skill are a snapshot, not a guarantee.
+- If browsing is unavailable, mark volatile tool guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.

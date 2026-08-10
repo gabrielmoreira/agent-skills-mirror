@@ -1,6 +1,6 @@
 ---
-name: Meeting Scheduler
-description: "Schedules meetings with internal and external stakeholders by parsing natural language requests, resolving time zones, checking calendar availability, proposing optimal slots, and managing invitations and RSVPs."
+name: meeting-scheduler
+description: "Schedules meetings with internal and external stakeholders by parsing natural language requests, resolving time zones, checking calendar availability, proposing optimal slots, and managing invitations and RSVPs. Use when the user requests meeting scheduler or provides relevant inputs for this workflow."
 license: "MIT"
 metadata:
   author: "awesome-ai-agent-skills contributors"

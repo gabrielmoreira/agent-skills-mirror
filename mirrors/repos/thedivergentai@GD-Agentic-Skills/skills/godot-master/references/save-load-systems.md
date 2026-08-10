@@ -3,16 +3,6 @@ name: godot-save-load-systems
 description: "Expert blueprint for save/load systems using JSON/binary serialization, PERSIST group pattern, versioning, and migration. Covers player progress, settings, game state persistence, and error recovery. Use when implementing save systems OR data persistence. Keywords save, load, JSON, FileAccess, user://, serialization, version migration, PERSIST group."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Save/Load Systems
-
-JSON serialization, version migration, and PERSIST group patterns define robust data persistence.
-
 ## NEVER Do
 
 - **NEVER save without a version field** — When you update your game's data structure, old saves will break. Always include a `"version": "1.0.0"` field and implement migration logic.
@@ -122,23 +112,23 @@ Settings may use `ConfigFile` separately from run-progress JSON/binary.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — ProjectSettings, Autoload registration, and `user://` project identity must exist before a SaveManager can own paths.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Dictionaries, Resources, and error-handling patterns for versioned serialize/deserialize code.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — SaveManager is almost always an Autoload; use this for singleton ownership, boot order, and scene-change survival.
+- [godot-project-foundations](project-foundations.md) — ProjectSettings, Autoload registration, and `user://` project identity must exist before a SaveManager can own paths.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Dictionaries, Resources, and error-handling patterns for versioned serialize/deserialize code.
+- [godot-autoload-architecture](autoload-architecture.md) — SaveManager is almost always an Autoload; use this for singleton ownership, boot order, and scene-change survival.
 
 #### Complements
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Custom Resource schemas and `.tres` workflows that pair with ResourceSaver instead of flattening everything to JSON.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Threaded scene swaps and wipe/rebuild Persist nodes after load without leaking old world state.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `game_saved` / `game_loaded` event buses so UI and systems react without hard-wiring SaveManager.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Settings menus that write ConfigFile/volume keys this skill persists separately from run progress.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Item stacks and equipment dictionaries are the heaviest Persist payloads; share ID schemes with save migration.
-- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Quest flags/stage IDs must round-trip through versioned saves without breaking journal UI.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Currency wallets and shop unlocks need the same version field and validation as player progress.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Custom Resource schemas and `.tres` workflows that pair with ResourceSaver instead of flattening everything to JSON.
+- [godot-scene-management](scene-management.md) — Threaded scene swaps and wipe/rebuild Persist nodes after load without leaking old world state.
+- [godot-signal-architecture](signal-architecture.md) — `game_saved` / `game_loaded` event buses so UI and systems react without hard-wiring SaveManager.
+- [godot-ui-containers](ui-containers.md) — Settings menus that write ConfigFile/volume keys this skill persists separately from run progress.
+- [godot-inventory-system](inventory-system.md) — Item stacks and equipment dictionaries are the heaviest Persist payloads; share ID schemes with save migration.
+- [godot-quest-system](quest-system.md) — Quest flags/stage IDs must round-trip through versioned saves without breaking journal UI.
+- [godot-economy-system](economy-system.md) — Currency wallets and shop unlocks need the same version field and validation as player progress.
 
 #### Downstream / consumers
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Local save patterns become host-authoritative state sync; never trust client-edited JSON in multiplayer.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Use when progression/economy curves stored in saves need simulated balance passes against migration defaults.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Server-side validation and snapshot formats that replace plaintext `user://` saves for competitive modes.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — Local save patterns become host-authoritative state sync; never trust client-edited JSON in multiplayer.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Use when progression/economy curves stored in saves need simulated balance passes against migration defaults.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Server-side validation and snapshot formats that replace plaintext `user://` saves for competitive modes.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns persistence vs content systems.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns persistence vs content systems.

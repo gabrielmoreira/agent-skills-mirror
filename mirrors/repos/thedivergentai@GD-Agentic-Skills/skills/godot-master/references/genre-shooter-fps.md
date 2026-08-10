@@ -3,16 +3,6 @@ name: godot-genre-shooter-fps
 description: "Expert blueprint for First-Person Shooters: fps_camera_look, fps_movement_logic, hitscan_weapon_query, weapon_bobbing_system, procedural recoil, and FPS NEVER rules. Shared TPS/cover theory links to godot-genre-shooter. Keywords: FPS, movement physics, weapon bobbing, camera sway, hitscan, viewmodel, air control."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Shooter (FPS)
-
-First-person movement, look, viewmodel, and hitscan feel. Shared TPS/cover/soft-lock ownership lives in [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md).
-
 ## MANDATORY script reads (start here)
 
 1. [fps_camera_look.gd](../scripts/genre_shooter_fps_fps_camera_look.gd) — raw `_input` mouse look (yaw/pitch)  
@@ -61,7 +51,7 @@ Roll camera Z + local X offset from `Input.get_axis("lean_left","lean_right")` w
 
 ## Shared weapon theory
 
-Hitscan vs projectile, spray patterns, and net prediction details that are not FPS-rig specific → [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) + combat/multiplayer complements. Implement FPS fire path via [hitscan_weapon_query.gd](../scripts/genre_shooter_fps_hitscan_weapon_query.gd) + [procedural_recoil_handler.gd](../scripts/genre_shooter_fps_procedural_recoil_handler.gd) + [recoil_system.gd](../scripts/genre_shooter_fps_recoil_system.gd).
+Hitscan vs projectile, spray patterns, and net prediction details that are not FPS-rig specific → [godot-genre-shooter](genre-shooter.md) + combat/multiplayer complements. Implement FPS fire path via [hitscan_weapon_query.gd](../scripts/genre_shooter_fps_hitscan_weapon_query.gd) + [procedural_recoil_handler.gd](../scripts/genre_shooter_fps_procedural_recoil_handler.gd) + [recoil_system.gd](../scripts/genre_shooter_fps_recoil_system.gd).
 
 > **MANDATORY** for hitscan/projectile tradeoffs, three-layer recoil, aim assist, weapon balance matrices, and client prediction: [fps-weapon-theory.md](genre-shooter-fps-fps-weapon-theory.md). **Do NOT Load** after MANDATORY script reads unless extending beyond bob/step/lean.
 
@@ -86,24 +76,24 @@ Hitscan vs projectile, spray patterns, and net prediction details that are not F
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, InputMap actions, and Resource import basics before FPS controllers and WeaponData wiring.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — mouse capture, action buffering, and look vs move split that frame-perfect fire and camera look depend on.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — physics-synced ray/shape queries and exclude RIDs that hitscan registration builds on.
+- [godot-project-foundations](project-foundations.md) — scene tree, InputMap actions, and Resource import basics before FPS controllers and WeaponData wiring.
+- [godot-input-handling](input-handling.md) — mouse capture, action buffering, and look vs move split that frame-perfect fire and camera look depend on.
+- [godot-raycasting-queries](raycasting-queries.md) — physics-synced ray/shape queries and exclude RIDs that hitscan registration builds on.
 
 #### Complements
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — FOV punch, lean pivots, and shake stacks that compose with procedural recoil and weapon bob.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — duck-typed damage application and hit-zone multipliers shared with hitscan/projectile confirm paths.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — bus routing and pooled one-shots for layered gunfire without a single shared AudioStreamPlayer.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — authoritative fire RPCs and unreliable movement transfer modes for competitive hit validation.
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — client prediction / server reconciliation shells before lag-compensated shot validation.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — StringName fire/reload/idle machines without stringly-typed weapon states.
-- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — AnimationTree parameters and blend spaces driven by local velocity bridges.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — pooling, Decal budgets, and RenderingServer RID density for bullet visuals and impacts.
-- [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) — broader TPS/hybrid shooter architecture when the project is not FPS-first.
+- [godot-camera-systems](camera-systems.md) — FOV punch, lean pivots, and shake stacks that compose with procedural recoil and weapon bob.
+- [godot-combat-system](combat-system.md) — duck-typed damage application and hit-zone multipliers shared with hitscan/projectile confirm paths.
+- [godot-audio-systems](audio-systems.md) — bus routing and pooled one-shots for layered gunfire without a single shared AudioStreamPlayer.
+- [godot-multiplayer-networking](multiplayer-networking.md) — authoritative fire RPCs and unreliable movement transfer modes for competitive hit validation.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — client prediction / server reconciliation shells before lag-compensated shot validation.
+- [godot-state-machine-advanced](state-machine-advanced.md) — StringName fire/reload/idle machines without stringly-typed weapon states.
+- [godot-animation-tree-mastery](animation-tree-mastery.md) — AnimationTree parameters and blend spaces driven by local velocity bridges.
+- [godot-performance-optimization](performance-optimization.md) — pooling, Decal budgets, and RenderingServer RID density for bullet visuals and impacts.
+- [godot-genre-shooter](genre-shooter.md) — broader TPS/hybrid shooter architecture when the project is not FPS-first.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate weapon asymmetry matrices, TTK bands, and bloom/recoil knobs before shipping balance tables.
-- [godot-genre-battle-royale](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md) — large-scale relevancy and lag-compensated combat that reuses FPS hitscan/recoil feel inside BR matches.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate weapon asymmetry matrices, TTK bands, and bloom/recoil knobs before shipping balance tables.
+- [godot-genre-battle-royale](genre-battle-royale.md) — large-scale relevancy and lag-compensated combat that reuses FPS hitscan/recoil feel inside BR matches.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting FPS concern.
+- [godot-master](../SKILL.md) — library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting FPS concern.

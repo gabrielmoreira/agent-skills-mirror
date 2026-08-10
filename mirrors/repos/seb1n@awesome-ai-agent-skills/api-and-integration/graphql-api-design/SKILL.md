@@ -1,6 +1,6 @@
 ---
 name: graphql-api-design
-description: Design GraphQL APIs with well-structured schemas, efficient resolvers, pagination, and performance patterns like DataLoader and federation.
+description: Design GraphQL APIs with well-structured schemas, efficient resolvers, pagination, and performance patterns like DataLoader and federation. Use when the user requests graphql api design or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

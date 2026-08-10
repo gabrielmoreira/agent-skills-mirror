@@ -30,6 +30,7 @@ AI coding agents don't notify you when they finish or need permission. You tab a
 - [Remote development](#remote-development-ssh--devcontainers--codespaces)
 - [Mobile notifications](#mobile-notifications)
 - [Sound packs](#sound-packs)
+- [Creating packs](#creating-packs)
 - [Debugging](#debugging)
 - [Uninstall](#uninstall)
 - [Requirements](#requirements)
@@ -294,6 +295,8 @@ peon packs ide-bindings   # List all IDE-based bindings
 peon packs exclude add <path> # Silence sounds & notifications for a glob or directory
 peon packs exclude remove <path> # Stop silencing the given path
 peon packs exclude list   # List silenced paths
+peon create               # Draft a new sound pack via your own Claude Code (interactive, or --name/--flavor/--vibe)
+peon eval <name-or-path>  # Open the eval gate to audition/reroll/approve a draft (or re-draft an installed pack)
 peon sounds list [pack]   # List sounds in a pack, marking disabled ones
 peon sounds disable <category> <file> [--pack=<name>]  # Mute a single sound within a pack
 peon sounds enable <category> <file> [--pack=<name>]   # Re-enable a previously disabled sound
@@ -1474,6 +1477,41 @@ peon packs install --all          # install every pack in the registry
 ```
 
 Want to add your own pack? See the [full guide at openpeon.com/create](https://openpeon.com/create) or [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Creating packs
+
+Don't want to hand-write a manifest? `peon create` drafts a brand-new pack for you:
+
+```bash
+peon create                                       # interactive: prompts for name, flavor, vibe
+peon create --name calm-focus --flavor sfx --vibe "soft ambient chimes, low and warm"
+```
+
+`peon create` spawns your own Claude Code (running the `peon-ping-create-pack` skill) to write all 7 CESP categories into a draft at `~/.peon-ping/drafts/<name>/`, renders every sound through your ElevenLabs key, then opens the eval gate automatically.
+
+**A pack doesn't exist until you approve it in the eval gate.** `peon eval <name>` starts a localhost UI where you play every sound by category, then either reroll a single sound or the whole pack with a one-line why ("too harsh, want something softer") or hit **Approve pack**. Each reroll spawns your own Claude Code again (the `peon-ping-remix` skill) to rewrite that sound's prompt honoring your caption and re-render it — `peon packs use` refuses any pack still stamped as a draft.
+
+```bash
+peon eval <name-or-path>   # open the eval gate for a draft, by name or path
+```
+
+Approve moves the pack to `~/.peon-ping/packs/<name>` (optionally installing and switching to it on the spot). Want another round of rerolls on a pack you already approved? `peon eval <installed-pack-name>` re-drafts a copy for a fresh remix round without touching the installed original.
+
+### ElevenLabs key
+
+`peon create` and rerolls both render audio through your own ElevenLabs account. Set a key once, either as an env var:
+
+```bash
+export ELEVENLABS_API_KEY=<your key>
+```
+
+or in `~/.config/peon-ping/credentials`:
+
+```
+ELEVENLABS_API_KEY=<your key>
+```
+
+Get a key at [elevenlabs.io](https://elevenlabs.io).
 
 ## Debugging
 

@@ -34,7 +34,7 @@ func update() -> void:
 	jump_pressed = Input.is_action_just_pressed("jump")
 ```
 
-Prefer [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) for action maps.
+Prefer [godot-input-handling](input-handling.md) for action maps.
 
 ## Movement component (legs)
 
@@ -64,7 +64,7 @@ Production movement: [velocity_component.gd](../scripts/composition_velocity_com
 
 ## State-component FSM
 
-[state_component_vsm.gd](../scripts/composition_state_component_vsm.gd) — child nodes as states. Deeper FSMs: [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md).
+[state_component_vsm.gd](../scripts/composition_state_component_vsm.gd) — child nodes as states. Deeper FSMs: [godot-state-machine-advanced](state-machine-advanced.md).
 
 ## Component registry
 

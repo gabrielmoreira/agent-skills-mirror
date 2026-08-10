@@ -1,6 +1,6 @@
 ---
 name: competitive-battlecard-creation
-description: Build sales battlecards with feature comparisons, objection handling scripts, positioning statements, and win themes for competitive deal scenarios.
+description: Build sales battlecards with feature comparisons, objection handling scripts, positioning statements, and win themes for competitive deal scenarios. Use when the user requests competitive battlecard creation or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community

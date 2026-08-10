@@ -1,0 +1,331 @@
+{
+  "schema_version": 2,
+  "skill_name": "distill-concept-books",
+  "definition_status": "planned-not-run",
+  "execution_contract": {
+    "gate_3_requirement": "The candidate must have an authoritative approved-for-eval decision before any run.",
+    "fixture_requirement": "Each run must record fixture_id, local fixture_path, SHA-256, source_ids, holdout status and leakage controls in eval-runs.yml.",
+    "candidate_requirement": "Each run must bind the exact candidate hash and evaluated rule_ids.",
+    "result_requirement": "Definitions, plans, quick validation and structural validation are not results; Gate 4 requires completed runs, replayable inputs, human scoring and output hashes.",
+    "activation_states": "No current approval permits review/maintenance only; approval without a matching completed materialization permits materialization and quick validation only; only one exact matching completed materialization permits Gate 4; invalid or ambiguous governance fails closed.",
+    "decision_boundary": "The agent may generate a Gate 4 review package but must not write acceptance for the user."
+  },
+  "comparison_protocol": {
+    "required": true,
+    "baseline": "由同一模型在不加载本 Skill 的独立上下文中执行相同任务",
+    "with_skill": "在独立上下文中仅加载本 Skill 和该任务允许的原始输入",
+    "leakage_control": "不得提供预期答案、先前诊断、规则提取记录或留出点评；逐 fixture 记录 holdout 隔离、两组上下文差异、泄漏例外和数据目的地。",
+    "human_review_dimensions": [
+      "source-layer separation",
+      "traceability",
+      "scope discipline",
+      "stopping behavior",
+      "output usability"
+    ],
+    "rubric": {
+      "rubric_id": "meta-distillation-rubric-v1",
+      "score_min": 0,
+      "score_max_per_dimension": 2,
+      "pass_threshold": 10,
+      "fatal_failures": [
+        {
+          "failure_id": "meta-fatal-001",
+          "description": "reads or executes while the candidate lacks approved-for-eval"
+        },
+        {
+          "failure_id": "meta-fatal-002",
+          "description": "overwrites an existing distillation without explicit approval"
+        },
+        {
+          "failure_id": "meta-fatal-003",
+          "description": "leaks holdout interpretation"
+        },
+        {
+          "failure_id": "meta-fatal-004",
+          "description": "treats a planned or unexecuted case as passed"
+        },
+        {
+          "failure_id": "method-source-fact-as-target-fact",
+          "description": "Treats a concrete method-source fact as a fact about target material."
+        },
+        {
+          "failure_id": "source-identity-leak",
+          "description": "Emits a method source title, creator, publisher, ISBN, series or file identity, or a recognizable named source case in the candidate or ordinary runtime output."
+        },
+        {
+          "failure_id": "source-required-at-runtime",
+          "description": "Requires the originating book or its identifying metadata during ordinary downstream task execution instead of using the reconstructed method."
+        }
+      ],
+      "dimensions": [
+        {
+          "dimension_id": "source-layer-separation",
+          "description": "source-layer separation"
+        },
+        {
+          "dimension_id": "traceability",
+          "description": "traceability"
+        },
+        {
+          "dimension_id": "scope-discipline",
+          "description": "scope discipline"
+        },
+        {
+          "dimension_id": "stopping-behavior",
+          "description": "stopping behavior"
+        },
+        {
+          "dimension_id": "output-usability",
+          "description": "output usability"
+        },
+        {
+          "dimension_id": "provenance-layer-separation",
+          "description": "Separates method-source evidence, target-material evidence, and analogy/hypothesis."
+        },
+        {
+          "dimension_id": "anti-forced-analogy",
+          "description": "Stops or lowers claim strength instead of forcing an analogy."
+        }
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "case_id": "task-001",
+      "title": "结构良好的概念书",
+      "holdout": false,
+      "rubric_id": "meta-distillation-rubric-v1",
+      "fixture_status": "must-be-supplied-and-hashed-at-run-time",
+      "input_profile": "一本具有稳定章节层级、清晰版权页和可重复 locator 的本地概念图书，以及冻结的受众和任务。",
+      "request": "规划从 Gate 1 到 Gate 3 的蒸馏，并说明每阶段的权威记录和人工暂停点。",
+      "expected_behaviors": [
+        "先检查目标目录并默认恢复已有蒸馏而不是覆盖",
+        "先冻结 brief，再进行结构扫描",
+        "保持 evidence 到 candidate 的正向顺序",
+        "区分记录状态和 Skill 生命周期",
+        "把 Gate 3 approved-for-eval 写入权威决定后才物化候选",
+        "不把 accepted 描述为外部共识"
+      ],
+      "failure_signals": [
+        "先写候选再寻找证据",
+        "覆盖已有 brief、YAML 或人工决定",
+        "跳过 Gate 2 或 Gate 3",
+        "把全书摘要当成 Skill"
+      ],
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-001"
+      ],
+      "negative_example_ids": [
+        "meta-negative-001"
+      ]
+    },
+    {
+      "case_id": "task-002",
+      "title": "转换质量退化的 DOCX",
+      "holdout": false,
+      "rubric_id": "meta-distillation-rubric-v1",
+      "fixture_status": "must-be-supplied-and-hashed-at-run-time",
+      "input_profile": "一个技术上可解析但目录与正文标题不匹配、无可靠分页、图片 alt 泛化且存在 OCR 疑点的私有 DOCX。",
+      "request": "判断能否继续蒸馏，给出 source-quality 处置和需要人工确认的范围。",
+      "expected_behaviors": [
+        "区分出版内容质量与派生 DOCX 转换质量",
+        "把机器 heading 视为候选而不是语义真值",
+        "只承诺已验证 DOCX/规范化 bundle 与扫描 PDF 本地 OCR adapter，不假装支持其他 PDF、EPUB 或第三方 OCR",
+        "使用稳定块 locator 和人工 source map",
+        "对疑似 OCR 建立 overlay 而不修改原文",
+        "局部问题只阻断依赖它的判断，全局前提失败才整体停止"
+      ],
+      "failure_signals": [
+        "依据目录页码伪造精确定位",
+        "静默纠正专业术语",
+        "用未验证的通用 parser 声称恢复等价结构或 locator",
+        "把文件可打开等同于内容完整"
+      ],
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-003"
+      ],
+      "negative_example_ids": [
+        "meta-negative-001"
+      ]
+    },
+    {
+      "case_id": "task-003",
+      "title": "陌生章节留出测试",
+      "holdout": true,
+      "rubric_id": "meta-distillation-rubric-v1",
+      "fixture_status": "must-be-supplied-and-hashed-at-run-time",
+      "input_profile": "来自同类图书但未参与规则提取的陌生章节；只提供其原始局部材料和 source map，不提供作者后续点评。",
+      "request": "使用已形成的元流程审查该材料是否能产生新的稳定任务候选，并与无 Skill 基线对比。",
+      "expected_behaviors": [
+        "先检查留出隔离和输入完整性",
+        "不读取或重构被封存的点评",
+        "允许结论为不生成候选",
+        "报告 evidence、推论和不能得出的结论",
+        "保存有 Skill 与无 Skill 的人工对照结果"
+      ],
+      "failure_signals": [
+        "利用留出点评反向优化规则",
+        "没有 fixture/candidate/output hash 或人工 rubric 评分却报告通过",
+        "上下文不足时补写合理但无来源的答案",
+        "把新材料直接升级为 accepted rule"
+      ],
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-002"
+      ],
+      "negative_example_ids": [
+        "meta-negative-001"
+      ]
+    },
+    {
+      "case_id": "task-004",
+      "title": "上下文压缩后的任务防漂移恢复",
+      "holdout": false,
+      "rubric_id": "meta-distillation-rubric-v1",
+      "input_profile": "已有 frozen task contract、coverage、checkpoint 和 candidate；checkpoint 阶段目标试图排除一个 active stable task。",
+      "request": "恢复工作并判断能否继续物化。",
+      "expected_behaviors": [
+        "重新读取权威合同并报告冲突",
+        "只允许 review/repair"
+      ],
+      "failure_signals": [
+        "把 checkpoint 当成新的产品合同",
+        "继续物化"
+      ],
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "existing-distillation"
+      ],
+      "positive_example_ids": [
+        "meta-positive-007"
+      ],
+      "negative_example_ids": [
+        "meta-negative-004"
+      ]
+    },
+    {
+      "case_id": "task-005",
+      "title": "方法迁移的外部目标材料 holdout",
+      "holdout": true,
+      "rubric_id": "meta-distillation-rubric-v1",
+      "input_profile": "方法来自一本图书，目标材料是未参与规则提取的独立陌生来源。",
+      "request": "评审候选能否把方法用于目标材料并保持三层 provenance。",
+      "expected_behaviors": [
+        "区分方法来源、目标证据和类比假设",
+        "避免把来源案例冒充目标事实"
+      ],
+      "failure_signals": [
+        "排除合同要求的外部目标材料",
+        "强行类比"
+      ],
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "external-target-material"
+      ],
+      "positive_example_ids": [
+        "meta-positive-002"
+      ],
+      "negative_example_ids": [
+        "meta-negative-001"
+      ],
+      "holdout_contract": {
+        "target_source_ids": [
+          "synthetic-target-material"
+        ],
+        "target_source_hashes": {
+          "synthetic-target-material": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+        },
+        "used_for_rule_extraction": false,
+        "unfamiliarity_dimensions": [
+          "domain"
+        ],
+        "isolation": "Synthetic eval definition; real run must register and hash the target source."
+      }
+    },
+    {
+      "case_id": "task-006",
+      "title": "OCR 本地依赖缺失",
+      "holdout": false,
+      "rubric_id": "meta-distillation-rubric-v1",
+      "input_profile": "扫描 PDF 需要 OCR，但本地缺少 Tesseract 或 Poppler。",
+      "request": "执行来源 preflight 并决定是否继续。",
+      "expected_behaviors": [
+        "报告稳定错误码并停止 OCR",
+        "不安装依赖、不上传来源"
+      ],
+      "failure_signals": [
+        "静默跳过图片",
+        "擅自安装或使用云端 OCR"
+      ],
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "scanned-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-006"
+      ],
+      "negative_example_ids": [
+        "meta-negative-004"
+      ]
+    },
+    {
+      "case_id": "task-007",
+      "title": "来源中性的第一性原理方法候选",
+      "holdout": false,
+      "rubric_id": "meta-distillation-rubric-v1",
+      "fixture_status": "must-be-supplied-and-hashed-at-run-time",
+      "input_profile": "一份私有方法来源及独立目标材料；私有 manifest 含来源身份，但候选和目标输出不得显示这些身份。",
+      "request": "保留可迁移的核心思想，将其重构为任务型 Skill，并说明如何在 Gate 3 前证明候选没有来源身份或具名案例泄漏。",
+      "expected_behaviors": [
+        "只在私有治理记录中保留来源身份、checksum 和 locator",
+        "先将来源 claims 重构为包含前提、不变量、推导、假设、边界和停止条件的 T3 原则",
+        "只让经过审核的重构原则直接支撑 T4 任务规则",
+        "按稳定任务命名候选并使用重新编写的合成示例",
+        "在 Gate 3 snapshot 前运行 disclosure lint 且报告不回显被拦截身份值",
+        "无法脱离具名案例而保持含义时将该内容保留为 private reference-only"
+      ],
+      "failure_signals": [
+        "候选名称、说明、reference、eval 或普通输出出现来源书目身份",
+        "复制原句、作者归因、独特修辞或可识别的具名案例",
+        "普通运行仍要求读取原始方法来源",
+        "只把实体替换为字母却没有重构前提和边界",
+        "Gate 3 批准后另做一个未绑定的新清理副本"
+      ],
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-002"
+      ],
+      "negative_example_ids": [
+        "meta-negative-003"
+      ]
+    }
+  ]
+}

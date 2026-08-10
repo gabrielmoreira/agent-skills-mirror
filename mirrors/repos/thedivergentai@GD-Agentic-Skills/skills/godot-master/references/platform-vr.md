@@ -26,10 +26,6 @@ description: "Expert blueprint for VR platforms (Meta Quest, PSVR, SteamVR, Pico
 
 ---
 
-## Godot 4.7: OpenXR
-
-- `OpenXRExtensionWrapper._on_register_metadata` adds `interaction_profile_metadata` parameter — update all extension wrappers.
-
 ## Comfort Decision Tree (start here)
 
 1. **Can the player opt out of continuous locomotion?** → If no, stop and add teleport + seated mode before any smooth locomotion code.
@@ -124,23 +120,23 @@ These are hard comfort gates, not soft preferences:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project settings, scene tree, and viewport basics required before enabling OpenXR and use_xr.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — action/event mental model that the OpenXR Action Map extends for motion controllers.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed XR scripts, await timers for snap-turn comfort, and signal wiring for focus/haptics.
+- [godot-project-foundations](project-foundations.md) — project settings, scene tree, and viewport basics required before enabling OpenXR and use_xr.
+- [godot-input-handling](input-handling.md) — action/event mental model that the OpenXR Action Map extends for motion controllers.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed XR scripts, await timers for snap-turn comfort, and signal wiring for focus/haptics.
 
 #### Complements
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — XRCamera3D is still a Camera3D; comfort UI distance and head-relative framing reuse camera placement rules.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — draw-call and GPU budgets that decide whether 90/120 Hz holds under foveation and VRS.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — CharacterBody3D/RigidBody3D grab-and-throw hands that must not clip through static world geometry.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — mute/duck buses when headset focus is lost so system menus never leave game audio blasting.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — comfort vignettes and spatial overlays during locomotion without fighting the XR compositor.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — layout inside SubViewports projected through composition layers at 1–3 m.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Android/desktop export presets and OpenXR loader packaging for Quest and PCVR.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — standalone headset Android constraints (thermal, resolution scale, touchless UX) that overlap Quest shipping.
+- [godot-camera-systems](camera-systems.md) — XRCamera3D is still a Camera3D; comfort UI distance and head-relative framing reuse camera placement rules.
+- [godot-performance-optimization](performance-optimization.md) — draw-call and GPU budgets that decide whether 90/120 Hz holds under foveation and VRS.
+- [godot-physics-3d](physics-3d.md) — CharacterBody3D/RigidBody3D grab-and-throw hands that must not clip through static world geometry.
+- [godot-audio-systems](audio-systems.md) — mute/duck buses when headset focus is lost so system menus never leave game audio blasting.
+- [godot-shaders-basics](shaders-basics.md) — comfort vignettes and spatial overlays during locomotion without fighting the XR compositor.
+- [godot-ui-containers](ui-containers.md) — layout inside SubViewports projected through composition layers at 1–3 m.
+- [godot-export-builds](export-builds.md) — Android/desktop export presets and OpenXR loader packaging for Quest and PCVR.
+- [godot-platform-mobile](platform-mobile.md) — standalone headset Android constraints (thermal, resolution scale, touchless UX) that overlap Quest shipping.
 
 #### Downstream / consumers
-- [godot-platform-web](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md) — WebXR session_started/ended flows that reuse the same XRServer interface patterns for browser VR.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — pause trees and scene swaps when focus_lost or session_ended fires mid-experience.
+- [godot-platform-web](platform-web.md) — WebXR session_started/ended flows that reuse the same XRServer interface patterns for browser VR.
+- [godot-scene-management](scene-management.md) — pause trees and scene swaps when focus_lost or session_ended fires mid-experience.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

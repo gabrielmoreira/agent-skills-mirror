@@ -1,6 +1,6 @@
 ---
 name: report-generation
-description: Generate professional reports — sprint retrospectives, financial summaries, analytics dashboards, and incident postmortems — from structured data with templates, charts, and multi-format output.
+description: Generate professional reports — sprint retrospectives, financial summaries, analytics dashboards, and incident postmortems — from structured data with templates, charts, and multi-format output. Use when the user requests report generation or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

@@ -1,426 +1,221 @@
 ---
 name: software-payments
-description: Production-grade payment integration for Stripe, Paddle, Adyen, and more. Use when implementing checkout, subscriptions, webhooks, or billing.
+description: "Designs production payment and billing systems. Use when implementing Stripe, Paddle, Adyen, subscriptions, tax, marketplaces, or mobile purchase flows."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
 # Payments & Billing Engineering
 
-Use this skill to design, implement, and debug production payment integrations: checkout flows, subscription management, webhook handling, regional pricing, feature gating, one-time purchases, billing portals, and payment testing.
+Use this skill to design, implement, and debug production payment integrations: checkout flows, subscription lifecycle handling, billing portals, entitlement gating, webhooks, regional pricing, and payment-testing strategy.
 
-Defaults bias toward: Stripe as primary processor (most common), webhooks as source of truth, idempotent handlers, lazy-initialized clients, dynamic payment methods, Zod validation at boundaries, structured logging, and fire-and-forget for non-critical tracking. For complex billing, consider a billing orchestrator (Chargebee, Recurly, Lago) on top of Stripe/Adyen.
-
----
+Keep the skill focused on system choice and durable integration defaults. Push provider-specific code detail, migration edge cases, and deep implementation examples into the references.
 
 ## Quick Reference
 
-| Task | Default Picks | Notes |
-|------|---------------|-------|
-| Subscription billing | Stripe Checkout (hosted) | Omit `payment_method_types` for dynamic methods |
-| MoR / tax compliance | Stripe Managed Payments / Paddle / LemonSqueezy | MoR handles VAT/sales tax for you |
-| Mobile subscriptions | RevenueCat | Wraps App Store + Google Play |
-| Enterprise / high-volume | Adyen | 250+ payment methods, interchange++ pricing |
-| Complex billing logic | Chargebee / Recurly on top of Stripe | Per-seat + usage, contract billing, revenue recognition |
-| Usage-based billing | Stripe Billing Meters or Lago (open-source) | API calls, AI tokens, compute metering |
-| UK Direct Debit | GoCardless | Bacs/SEPA/ACH DD, lowest involuntary churn |
-| EU multi-method | Mollie | iDEAL, Bancontact, SEPA DD, Klarna — 25+ methods |
-| Online + POS | Square | Unified commerce: online payments + in-person readers |
-| Bank-to-bank (A2A) | Open Banking (TrueLayer / Yapily) | Zero card fees, instant settlement, no chargebacks |
-| Webhook handling | Verify signature + idempotent handlers | Stripe retries for 3 days |
-| Feature gating | Tier hierarchy + feature matrix | Check at API boundary |
-| One-time purchases | Stripe Checkout `mode: 'payment'` | Alongside subscriptions |
-| Billing portal | Stripe Customer Portal | Self-service management |
-| Regional pricing | PPP-adjusted prices per country | Use `x-vercel-ip-country` or GeoIP |
-| PayPal button | Stripe PayPal method or PayPal Commerce Platform | Avoid Braintree — deprecated 2026, EOL Jan 2027 |
-| BNPL (e-commerce) | Klarna (via Stripe/Mollie/direct) | Split payments; UK regulation expected 2026-27 |
-| Testing | Stripe CLI + test cards | `4242 4242 4242 4242` |
+| Need | Default | Reference |
+|------|---------|-----------|
+| SaaS subscriptions | Stripe Checkout or Payment Links | [references/stripe-patterns.md](references/stripe-patterns.md) |
+| Custom branded checkout | Stripe Payment Element plus Express Checkout Element | [references/stripe-patterns.md](references/stripe-patterns.md) |
+| Merchant of record | Paddle, LemonSqueezy, or Stripe Managed Payments when eligible | [references/platform-comparison.md](references/platform-comparison.md) |
+| Enterprise multi-method processing | Adyen | [references/platform-comparison.md](references/platform-comparison.md) |
+| UK or EU bank debit and local methods | GoCardless, Mollie, or open-banking providers | [references/uk-eu-payments-guide.md](references/uk-eu-payments-guide.md) |
+| Usage or complex billing | Stripe Billing Meters, Chargebee, Recurly, or Lago | [references/platform-comparison.md](references/platform-comparison.md), [references/subscription-lifecycle.md](references/subscription-lifecycle.md) |
+| Webhook reliability | verified signatures plus idempotent processing | [references/webhook-reliability-patterns.md](references/webhook-reliability-patterns.md) |
+| Entitlement and feature gating | registry plus API enforcement plus UI paywall | [references/feature-gating-patterns.md](references/feature-gating-patterns.md) |
+| Native iOS in-app purchase | StoreKit 2 with backend JWS verification; add RevenueCat only when multi-platform entitlement sync materially justifies it | [references/storekit2-native-patterns.md](references/storekit2-native-patterns.md) |
+| Checkout and webhook testing | Stripe CLI plus E2E automation | [references/testing-patterns.md](references/testing-patterns.md) |
 
-## Scope
+## When to Use This Skill
 
-Use this skill to:
+Use this skill when the primary work is:
 
-- Implement checkout flows (hosted, embedded, custom)
-- Build subscription lifecycle management (create, upgrade, downgrade, cancel)
-- Handle webhooks reliably (signature verification, idempotency, error handling)
-- Set up regional/multi-currency pricing (PPP, emerging markets)
-- Build feature gating and entitlement systems
-- Implement one-time purchases alongside subscriptions
-- Create billing portal integrations
-- Test payment flows end-to-end
-- Debug common payment integration issues
+- choosing a payment processor, merchant-of-record layer, or billing stack
+- implementing hosted or custom checkout
+- designing subscription lifecycle and webhook handling
+- building feature gating and billing-portal flows
+- handling regional pricing, tax-sensitive platform choice, or local methods
+- testing and operating checkout or billing workflows
 
-## When NOT to Use This Skill
+Route elsewhere when the main task is:
 
-Use a different skill when:
+| Need | Use Instead |
+|------|-------------|
+| general backend implementation outside payments | [../software-backend/SKILL.md](../software-backend/SKILL.md) |
+| API contract design without billing concerns | [../dev-api-design/SKILL.md](../dev-api-design/SKILL.md) |
+| pricing strategy and package design | `startup-business-models` |
+| checkout conversion optimization | `marketing-cro` |
+| application security review | [../software-security-appsec/SKILL.md](../software-security-appsec/SKILL.md) |
 
-- **General backend patterns** -> See [software-backend](../software-backend/SKILL.md)
-- **API design only (no payments)** -> See [dev-api-design](../dev-api-design/SKILL.md)
-- **Conversion optimization** -> See [marketing-cro](../marketing-cro/SKILL.md)
-- **Business model / pricing strategy** -> See [startup-business-models](../startup-business-models/SKILL.md)
-- **Security audits** -> See [software-security-appsec](../software-security-appsec/SKILL.md)
+## Defaults
 
----
+- Stripe is the default processor for most SaaS and product teams.
+- Hosted checkout is the default starting point unless branded custom UI is a hard requirement.
+- Webhooks are the source of truth for subscription and entitlement state.
+- Initialize provider clients lazily; do not fail builds on missing secrets at import time.
+- Omit `payment_method_types` unless you intentionally restrict available methods.
+- Make every webhook handler signature-verified and idempotent.
+- Keep feature gating enforced in three places: registry, API boundary, and UI paywall.
+- Treat platform availability, API versions, preview features, and tax behavior as volatile and verify before final advice.
 
-## Decision Tree: Payment Platform Selection
+## Workflow
 
-Three platform layers (can be combined):
+1. Classify the business model:
+   - one-time purchase
+   - subscription
+   - usage-based billing
+   - marketplace or multi-party flow
+   - mobile IAP or hybrid web-plus-app billing
+2. Choose the stack:
+   - processor
+   - merchant-of-record layer if needed
+   - billing orchestrator if lifecycle complexity justifies it
+3. Choose the checkout surface:
+   - Checkout or Payment Links for speed
+   - Payment Element for custom UX
+4. Implement the operational core:
+   - webhook verification
+   - idempotent processing
+   - billing portal or self-serve management
+   - entitlement sync and feature gating
+5. Add testing, observability, and incident handling before calling the integration production-ready.
 
-| Layer | Role | Examples |
-|-------|------|----------|
-| **Payment Processor** | Moves money, payment methods, fraud | Stripe, Adyen, Mollie, Square |
-| **Merchant of Record (MoR)** | Handles tax, legal, disputes for you | Paddle, LemonSqueezy, Stripe Managed Payments |
-| **Billing Orchestrator** | Subscription logic, dunning, revenue recognition | Chargebee, Recurly, Lago (open-source) |
-| **Direct Debit** | Bank-account recurring pulls | GoCardless (Bacs, SEPA, ACH) |
-| **Open Banking (A2A)** | Bank-to-bank instant payments | TrueLayer, Yapily |
+## ASCII Flow
 
 ```text
-Payment integration needs: [Business Model]
-
-  STEP 1: Choose your processor
-    - Default / most common -> Stripe
-    - Enterprise, >$1M/yr, 250+ payment methods -> Adyen
-    - EU-focused, need iDEAL/Bancontact/SEPA -> Mollie
-    - Need PayPal button -> Stripe (PayPal method) or PayPal Commerce Platform
-    - WARNING: Do NOT start new projects on Braintree (deprecated 2026, EOL Jan 2027)
-
-  STEP 2: Do you need a MoR?
-    - Handle own tax + compliance -> Skip MoR, use processor directly
-    - Want tax/VAT/disputes handled -> Stripe Managed Payments, Paddle, LemonSqueezy
-    - Indie / small SaaS -> LemonSqueezy (simplest MoR)
-    - EU-heavy customer base -> Paddle (strongest EU VAT handling)
-
-  STEP 3: Is billing logic complex?
-    - Simple tiers (free/pro/enterprise) -> Stripe Billing is sufficient
-    - Per-seat + usage, contract billing, rev-rec -> Chargebee or Recurly on top of Stripe
-    - Usage-based (API calls, AI tokens) -> Stripe Billing Meters or Lago (open-source)
-    - B2C subscriptions, churn focus -> Recurly (strong revenue recovery)
-
-  STEP 4: Platform-specific needs
-    - Mobile app (iOS/Android) -> RevenueCat (wraps both stores)
-    - Hybrid (web + app) -> RevenueCat + Stripe (share customer IDs)
-    - Marketplace / multi-party -> Stripe Connect
-    - UK Direct Debit recurring -> GoCardless (Bacs DD, lowest involuntary churn)
-    - Multi-method EU checkout -> Mollie (25+ methods, single integration)
-    - Online + in-person POS -> Square (unified commerce)
-    - High-value A2A / zero card fees -> Open Banking (TrueLayer)
-    - BNPL for e-commerce -> Klarna (via Stripe, Mollie, or direct)
-    - One-time digital goods -> Stripe Checkout (payment mode)
-    - Physical goods -> Stripe + shipping integration
-    - Emerging markets / PPP -> Multiple Stripe Price objects per region
-    - Multi-currency -> Stripe multi-currency or Paddle (auto-converts)
-    - B2B invoicing -> Stripe Invoicing
+Payments task
+  -> Define money movement, provider, customer, and ledger boundary
+  -> Classify charge, subscription, payout, refund, dispute, or wallet flow
+  -> Design idempotency, webhooks, reconciliation, and audit trail
+  -> Implement failure handling, retries, and customer-safe messaging
+  -> Verify provider rules, network behavior, and compliance constraints
+  -> Test success, decline, duplicate, timeout, refund, and retry paths
 ```
 
-For detailed platform comparison tables, see [references/platform-comparison.md](references/platform-comparison.md).
-For UK/EU-specific platforms (GoCardless, Mollie, Square, Klarna, Open Banking), see [references/uk-eu-payments-guide.md](references/uk-eu-payments-guide.md).
+## Platform Selection Defaults
 
----
+| Situation | Default |
+|-----------|---------|
+| standard SaaS subscription | Stripe |
+| managed tax and seller-of-record model | Paddle or LemonSqueezy; Stripe Managed Payments only where eligible |
+| high-volume or enterprise payment ops | Adyen |
+| mobile subscription-heavy product | StoreKit 2 or Play Billing as the store-of-record; add RevenueCat only when cross-platform entitlement sync, experiments, or web-plus-store coordination materially justify it |
+| UK or EU local rails and direct debit | GoCardless, Mollie, or open-banking providers |
+| complex contract, seat, or revenue-recognition logic | Chargebee or Recurly on top of the processor |
+| usage-based metering or token billing | Stripe Billing Meters or Lago |
 
-## Stripe Integration Patterns (Feb 2026)
+Use [references/platform-comparison.md](references/platform-comparison.md) and [references/uk-eu-payments-guide.md](references/uk-eu-payments-guide.md) for the detailed trade-offs.
 
-### 1. Client Initialization
+## Known Traps
 
-**CRITICAL: Lazy-initialize the Stripe client.** Import-time initialization fails during build/SSR when env vars aren't available.
+- Hybrid mobile billing without one entitlement registry. If App Store, Play Billing, and web subscriptions can all grant access, define one canonical entitlement state and one conflict-resolution rule before launch.
+- Treating checkout success redirects as purchase truth. Redirects are UX only; provisioning must wait for the verified webhook or store-server notification path.
+- Mixing mobile digital-goods policy boundaries with web-SaaS billing assumptions. Apple and Google policy treatment for in-app digital goods is volatile and must be re-verified before final implementation advice.
+- Assuming RevenueCat is automatically the default for every mobile subscription stack. It is a coordination layer, not a requirement, and adds its own operational surface.
+- Reusing one webhook consumer for unrelated billing side effects without idempotent boundaries. Entitlements, invoicing, CRM sync, and analytics fan-out need separate retry and replay behavior.
+- Deferring tax, merchant-of-record, and invoice-issuer decisions until after checkout buildout. Those choices affect product catalog, legal entity exposure, refunds, and support flows.
 
-```typescript
-// CORRECT: Lazy initialization with proxy for backwards compatibility
-import Stripe from 'stripe';
+## Common Anti-Patterns
 
-let _stripe: Stripe | null = null;
+- Selling iOS in-app digital goods through Stripe inside the native app flow.
+- Creating separate product or price catalogs in web, mobile, and billing systems with no synchronization contract.
+- Using provider object IDs as the only entitlement key instead of a stable internal subscription or account identity.
+- Shipping a billing portal without a tested downgrade, cancellation, refund, and grace-period policy.
+- Letting the pricing page, checkout copy, entitlement rules, and CRM lifecycle drift independently.
+- Treating revenue analytics events as operational truth for access control.
 
-export function getStripeServer(): Stripe {
-  if (!_stripe) {
-    const secretKey = process.env.STRIPE_SECRET_KEY;
-    if (!secretKey) {
-      throw new Error('STRIPE_SECRET_KEY is not configured');
-    }
-    _stripe = new Stripe(secretKey, {
-      apiVersion: '2026-01-28.clover', // Pin to specific version
-      typescript: true,
-    });
-  }
-  return _stripe;
-}
+## Stripe Integration Defaults
 
-// Proxy for convenience (backwards-compatible named export)
-export const stripe = {
-  get customers() { return getStripeServer().customers; },
-  get subscriptions() { return getStripeServer().subscriptions; },
-  get checkout() { return getStripeServer().checkout; },
-  get billingPortal() { return getStripeServer().billingPortal; },
-  get webhooks() { return getStripeServer().webhooks; },
-};
-```
+If Stripe is the chosen processor, keep these defaults:
 
-```typescript
-// WRONG: Crashes during build when STRIPE_SECRET_KEY is undefined
-import Stripe from 'stripe';
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!); // Build failure
-```
+- initialize the server client lazily
+- prefer Checkout or Payment Links first
+- let Stripe choose dynamic payment methods unless business rules require restriction
+- use webhooks, not the client redirect, as the source of truth
+- store internal user and tier metadata carefully and validate it before DB use
+- use subscription schedules for preplanned billing changes
+- keep billing portal enabled for self-serve changes
+- use entitlements when packaging changes often, but still enforce authorization in your own API
 
-### 2. Checkout Session Creation
+Use [references/stripe-patterns.md](references/stripe-patterns.md) for API-version notes, webhook mappings, and migration detail.
 
-**CRITICAL: Do NOT set `payment_method_types`.** Omitting it enables Stripe's dynamic payment method selection (Apple Pay, Google Pay, Link, bank transfers, local methods) based on customer region and device.
+## Production Readiness Checklist
 
-```typescript
-const session = await stripe.checkout.sessions.create({
-  customer: customerId,
-  mode: 'subscription',
-  // DO NOT set payment_method_types — let Stripe auto-select
-  line_items: [{ price: priceId, quantity: 1 }],
-  subscription_data: {
-    trial_period_days: 7,
-    metadata: {
-      user_id: userId,
-      billing_interval: interval,
-    },
-  },
-  success_url: `${appUrl}/dashboard?checkout=success&tier=${tier}`,
-  cancel_url: `${appUrl}/dashboard?checkout=canceled`,
-  allow_promotion_codes: true,
-  billing_address_collection: 'auto',
-  metadata: {
-    user_id: userId,
-    tier,
-    billing_interval: interval,
-  },
-});
-```
+- [ ] Webhook signatures verified on every handler before processing
+- [ ] All webhook handlers are idempotent (safe to replay the same event)
+- [ ] Checkout creation and webhook failures are explicitly logged
+- [ ] Dead-letter or retry strategy defined for out-of-order or failing events
+- [ ] Stripe CLI (or equivalent) wired into local and CI test flows
+- [ ] Tests cover success, decline, and 3DS / step-up challenge flows
+- [ ] Incident playbook written for checkout 500s, auth failures, and policy denials
+- [ ] Tax and merchant-of-record decisions finalized before checkout buildout
+- [ ] Feature gating enforced in three places: registry, API boundary, UI paywall
 
-```typescript
-// WRONG: Limits to cards only, blocks Apple Pay, Google Pay, Link, etc.
-const session = await stripe.checkout.sessions.create({
-  payment_method_types: ['card'], // REMOVE THIS
-  // ...
-});
-```
+Common mistakes:
 
-### 3. Webhook Handler Architecture
+| Mistake | Consequence |
+|---------|-------------|
+| Trusting client redirect as proof of purchase | Provisioning before the verified webhook, creating access without payment |
+| Hardcoding prices or plan logic in code | Catalog drift and deploy-gated pricing changes |
+| Setting `payment_method_types` unnecessarily | Unintentionally restricts available methods |
+| Silently failing webhooks instead of retrying | Invisible entitlement loss or dangling subscriptions |
+| Treating Apple/Google policy as stable across releases | Store rejection or forced redesign |
 
-**Webhooks are the source of truth for subscription state.** Never trust client-side callbacks alone.
-
-Pattern: read raw body as text → verify `stripe.webhooks.constructEvent(body, signature, secret)` → `switch(event.type)` → return `{ received: true }` on success or 500 on handler error (so Stripe retries). Full route implementation in [references/stripe-patterns.md](references/stripe-patterns.md).
-
-#### Essential Webhook Events
-
-| Event | When | Handler Pattern |
-|-------|------|-----------------|
-| `checkout.session.completed` | Checkout finishes | Link Stripe customer to user, create subscription record |
-| `checkout.session.expired` | Abandoned checkout | Fire-and-forget analytics (never fail the response) |
-| `customer.subscription.created` | New subscription | Upsert subscription record with tier, status, period |
-| `customer.subscription.updated` | Plan change, renewal, cancel-at-period-end | Update tier, status, cancel flags |
-| `customer.subscription.deleted` | Subscription ends | Reset to free tier |
-| `invoice.payment_succeeded` | Successful charge | Update period dates, process referral rewards |
-| `invoice.payment_failed` | Failed charge | Set status to `past_due` |
-| `customer.subscription.trial_will_end` | 3 days before trial ends | Trigger retention email |
-
-#### Fire-and-Forget Pattern for Non-Critical Tracking
-
-For `checkout.session.expired` (and similar analytics events): call tracking without `await`, never `throw`. Non-critical tracking must not cause a webhook 500.
-
-### 4. Subscription Tier Model
-
-```typescript
-// Type definitions
-export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'enterprise';
-export type SubscriptionStatus = 'active' | 'trialing' | 'canceled' | 'past_due' | 'incomplete';
-export type BillingInterval = 'month' | 'year';
-
-// Tier hierarchy for comparison
-export const TIER_HIERARCHY: Record<SubscriptionTier, number> = {
-  free: 0,
-  starter: 1,
-  pro: 2,
-  enterprise: 3,
-};
-
-// Feature access matrix
-export type Feature = 'basic_dashboard' | 'advanced_reports' | 'api_access' | 'priority_support';
-
-const TIER_FEATURES: Record<SubscriptionTier, Feature[]> = {
-  free: ['basic_dashboard'],
-  starter: ['basic_dashboard', 'advanced_reports'],
-  pro: ['basic_dashboard', 'advanced_reports', 'api_access'],
-  enterprise: ['basic_dashboard', 'advanced_reports', 'api_access', 'priority_support'],
-};
-
-export function hasFeatureAccess(tier: SubscriptionTier, feature: Feature): boolean {
-  return TIER_FEATURES[tier].includes(feature);
-}
-
-export function isTierUpgrade(current: SubscriptionTier, target: SubscriptionTier): boolean {
-  return (TIER_HIERARCHY[target] ?? 0) > (TIER_HIERARCHY[current] ?? 0);
-}
-```
-
-### 5. Upgrade/Downgrade Flow
-
-Use `stripe.subscriptions.update()` with `proration_behavior: 'create_prorations'` and the new `price` on the existing item. Update local DB immediately; webhook will confirm. See full lifecycle in [references/subscription-lifecycle.md](references/subscription-lifecycle.md).
-
-### 6. Regional / PPP Pricing
-
-Create separate Stripe Price objects per region (standard vs emerging). Use `x-vercel-ip-country` or GeoIP for detection. Full implementation and market list in [references/regional-pricing-guide.md](references/regional-pricing-guide.md).
-
-### 7. One-Time Purchases Alongside Subscriptions
-
-```typescript
-// Some products are one-time (e.g., PDF reports, credits)
-// but subscribers get unlimited access
-export function hasUnlimitedProductAccess(
-  tier: SubscriptionTier,
-  status: SubscriptionStatus,
-  product: OneTimeProduct
-): boolean {
-  const isActive = status === 'active' || status === 'trialing';
-  if (!isActive) return false;
-  const productConfig = ONE_TIME_PRODUCTS[product];
-  if (!productConfig.unlimitedFeature) return false;
-  return hasFeatureAccess(tier, productConfig.unlimitedFeature);
-}
-```
-
-### 8. Billing Portal
-
-Use `stripe.billingPortal.sessions.create()` to redirect customers to Stripe's self-service portal for plan changes, payment method updates, and cancellation. See [references/stripe-patterns.md](references/stripe-patterns.md) for portal configuration checklist.
-
-### 9. Referral/Coupon Integration
-
-Key constraint: `allow_promotion_codes` and `discounts` are mutually exclusive in Stripe Checkout. If a referral coupon applies, set `discounts: [{ coupon: REFERRAL_COUPON_ID }]` and omit `allow_promotion_codes`. On `invoice.payment_succeeded` with `billing_reason === 'subscription_create'`, reward the referrer via `stripe.customers.createBalanceTransaction()`.
-
----
-
-## Feature Gating Patterns
-
-Every paid feature requires enforcement at 3 layers: **Feature Registry** (maps features to tiers), **API Enforcement** (returns 403), **UI Paywall** (shows upgrade CTA). Missing any layer creates a security hole or broken UX.
-
-Key anti-patterns:
-- **Gate on Wrong Key**: If the feature key is in the free tier, the gate is a permanent no-op.
-- **Polymorphic Field Shapes**: `transits: Transit[] | { __gated: true }` crashes `(data.transits || []).sort()`. Use consistent shapes with an explicit `transitsGated: boolean` flag.
-- **Checkout Mutual Exclusivity**: `allow_promotion_codes` + `discounts` together = Stripe rejects.
-
-**Always verify Stripe SDK TypeScript types** (`node_modules/stripe/types/`), not documentation examples.
-
-For detailed gating architecture (consumables, fraud prevention, discriminated unions), see [references/feature-gating-patterns.md](references/feature-gating-patterns.md).
-
----
-
-## Stripe API Version Notes
-
-Current version: `2026-01-28.clover`. Key breaking change: `invoice.subscription` replaced by `invoice.parent.subscription_details` since `2025-11-17.clover`. Full version table and migration code in [references/stripe-patterns.md](references/stripe-patterns.md).
-
----
-
-## Common Mistakes and Anti-Patterns
-
-| FAIL Avoid | PASS Instead | Why |
-|------------|--------------|-----|
-| `payment_method_types: ['card']` | Omit the field entirely | Blocks Apple Pay, Google Pay, Link, local methods |
-| Trusting client-side checkout callback | Use webhooks as source of truth | Client can close browser before callback |
-| `new Stripe(key)` at module top level | Lazy-initialize in a function | Build fails when env var is undefined |
-| Catching webhook errors silently | Log + return 500 so Stripe retries | Lost events = lost revenue |
-| Storing subscription state only client-side | Sync from webhook to DB | Single source of truth |
-| Hardcoding prices in code | Use Stripe Price objects via env vars | Prices change, regional variants |
-| Skipping webhook signature verification | Always verify with `constructEvent()` | Prevents replay/spoofing attacks |
-| Using `invoice.subscription` (2025+) | Use `invoice.parent.subscription_details` | Breaking change since 2025-11-17.clover |
-| `await` on fire-and-forget analytics | Don't await, don't throw | Non-critical tracking must not fail webhooks |
-| Missing UUID validation on `user_id` from metadata | Validate with regex before DB operations | Prevents injection and corrupt data |
-| Creating checkout without checking existing subscription | Check and use upgrade flow if active | Prevents duplicate subscriptions |
-| Using `--no-verify` for Stripe webhook testing | Use Stripe CLI: `stripe listen --forward-to` | Real signature verification in dev |
-
----
-
-## E2E Testing Patterns
-
-Quick reference — full patterns in [references/testing-patterns.md](references/testing-patterns.md).
-
-```bash
-# Stripe CLI: forward events to local webhook endpoint
-stripe listen --forward-to localhost:3001/api/stripe/webhook
-
-# Trigger specific events
-stripe trigger checkout.session.completed
-stripe trigger invoice.payment_failed
-```
-
-| Card | Scenario |
-|------|----------|
-| `4242 4242 4242 4242` | Successful payment |
-| `4000 0000 0000 0002` | Declined |
-| `4000 0000 0000 3220` | 3D Secure required |
-| `4000 0000 0000 9995` | Insufficient funds |
-
----
-
-## Checkout Contract Propagation
-
-When checkout API response contracts change, treat it as a cross-surface migration. Enumerate all entrypoints, update every caller, route blocked flows to one shared recovery UX. Full checklist in [references/in-app-browser-checkout-contract.md](references/in-app-browser-checkout-contract.md) and [assets/template-checkout-entrypoint-propagation-checklist.md](assets/template-checkout-entrypoint-propagation-checklist.md).
-
-## Security Checklist
-
-10-point checklist covering webhook signature verification, secrets management, UUID validation, HTTPS, idempotency, and rate limiting. Full checklist in [references/stripe-patterns.md](references/stripe-patterns.md).
-
----
+See: [references/testing-patterns.md](references/testing-patterns.md), [references/webhook-reliability-patterns.md](references/webhook-reliability-patterns.md), [references/feature-gating-patterns.md](references/feature-gating-patterns.md), [references/ops-runbook-checkout-errors.md](references/ops-runbook-checkout-errors.md)
 
 ## Navigation
 
-**References**
-- [references/stripe-patterns.md](references/stripe-patterns.md) - Stripe patterns: webhook handlers, idempotency, status mapping, error handling, dunning, usage-based billing, security checklist, API version notes
-- [references/platform-comparison.md](references/platform-comparison.md) - Platform comparison: Stripe, Adyen, Paddle, LemonSqueezy, Chargebee, Recurly, Lago, Braintree (deprecated)
-- [references/uk-eu-payments-guide.md](references/uk-eu-payments-guide.md) - UK/EU platforms: GoCardless, Mollie, Square, PayPal Commerce, Klarna, Open Banking (TrueLayer, Yapily)
-- [references/testing-patterns.md](references/testing-patterns.md) - E2E testing: Stripe CLI, Playwright checkout, test cards, state sync
-- [references/subscription-lifecycle.md](references/subscription-lifecycle.md) - Full subscription state machine, trials, upgrades/downgrades, cancellation, dunning, pause/resume, database schema
-- [references/regional-pricing-guide.md](references/regional-pricing-guide.md) - PPP implementation, multi-currency Stripe prices, tax by region, fraud prevention, A/B testing pricing
-- [references/webhook-reliability-patterns.md](references/webhook-reliability-patterns.md) - Idempotency, retry handling, dead letter queues, monitoring, event ordering, queue-based processing
-- [references/feature-gating-patterns.md](references/feature-gating-patterns.md) - Feature gating: consumable vs binary unlocks, spread-then-override filtering, fraud prevention, discriminated union typed responses
-- [references/in-app-browser-checkout-contract.md](references/in-app-browser-checkout-contract.md) - Checkout response contract propagation for in-app browser recovery and cross-surface consistency
-- [references/ops-runbook-checkout-errors.md](references/ops-runbook-checkout-errors.md) - Checkout 500 debugging: RLS denials, auth policy, incident loop
-- [data/sources.json](data/sources.json) - External documentation links (69 sources)
+**Core**
 
-**Templates**
-- [assets/template-checkout-entrypoint-propagation-checklist.md](assets/template-checkout-entrypoint-propagation-checklist.md) - Migration checklist for contract changes across all checkout callers
+- [references/stripe-patterns.md](references/stripe-patterns.md)
+- [references/platform-comparison.md](references/platform-comparison.md)
+- [references/subscription-lifecycle.md](references/subscription-lifecycle.md)
+- [references/feature-gating-patterns.md](references/feature-gating-patterns.md)
 
-**Related Skills**
-- [../software-backend/SKILL.md](../software-backend/SKILL.md) - Backend API patterns, database, auth
-- [../dev-api-design/SKILL.md](../dev-api-design/SKILL.md) - API design patterns
-- [../marketing-cro/SKILL.md](../marketing-cro/SKILL.md) - Conversion optimization for checkout
-- [../startup-business-models/SKILL.md](../startup-business-models/SKILL.md) - Pricing strategy
-- [../software-security-appsec/SKILL.md](../software-security-appsec/SKILL.md) - Payment security
-- [../qa-testing-playwright/SKILL.md](../qa-testing-playwright/SKILL.md) - E2E testing patterns
+**Regional and operational**
 
----
+- [references/uk-eu-payments-guide.md](references/uk-eu-payments-guide.md)
+- [references/regional-pricing-guide.md](references/regional-pricing-guide.md)
+- [references/webhook-reliability-patterns.md](references/webhook-reliability-patterns.md)
+- [references/ops-runbook-checkout-errors.md](references/ops-runbook-checkout-errors.md)
 
-## Freshness Protocol
+**Mobile and in-app purchase**
 
-When users ask version-sensitive questions about payment platforms, do a freshness check.
+- [references/storekit2-native-patterns.md](references/storekit2-native-patterns.md)
 
-### Trigger Conditions
+**Testing and migrations**
 
-- "What's the best payment platform for [use case]?"
-- "Stripe vs Paddle vs LemonSqueezy?"
-- "How do I handle [tax/VAT/sales tax]?"
-- "What's new in Stripe [API/Billing/Checkout]?"
-- "Is Stripe Managed Payments available?"
-- "Best mobile subscription SDK?"
+- [references/testing-patterns.md](references/testing-patterns.md)
+- [references/in-app-browser-checkout-contract.md](references/in-app-browser-checkout-contract.md)
+- [assets/template-checkout-entrypoint-propagation-checklist.md](assets/template-checkout-entrypoint-propagation-checklist.md)
+- [data/sources.json](data/sources.json)
 
-### How to Freshness-Check
+## July 2026 Regulatory and Scheme Traps
 
-1. Start from `data/sources.json` (official docs, changelogs, API versions).
-2. Run a targeted web search for the specific platform and feature.
-3. Prefer official documentation and changelogs over blog posts.
-
-### What to Report
-
-- **Current landscape**: what is stable and widely used now
-- **Emerging trends**: Managed Payments, usage-based billing, entitlements API, Open Banking
-- **Deprecated/declining**: hardcoded payment_method_types, top-level invoice.subscription, Braintree
-- **Recommendation**: default choice + alternatives with trade-offs
-
-## Ops Runbook
-
-For checkout 500 errors with RLS/authorization denials: 5-step incident loop, required logging fields, and guardrails. See [references/ops-runbook-checkout-errors.md](references/ops-runbook-checkout-errors.md).
-
+- **SCA 3DS2 test card matrix (Stripe)**: use `4000000000003220` to force a 3DS2 challenge flow; use `4000000000003063` for a frictionless 3DS2 authentication; use `4000002500003155` for a card requiring authentication; use `4000008400001629` for a card where 3DS2 is not supported (fallback to 3DS1 or no-auth). Verify current test card list in Stripe docs before CI test runs — card numbers and behaviour occasionally change between API versions.
+- **SCA exemptions apply to low-value and MIT transactions**: merchant-initiated transactions (subscriptions, saved-payment charges) are exempt from SCA when correctly flagged with `off_session: true` and a valid mandate; failing to set this flag causes unexpected declines on renewal charges. EMV 3DS 2.3.1 (August 2022) remains the deployed spec; 2.3.1 is not a hard requirement for exemption handling, but issuer/network support for it varies — a v2.4 pilot with AI-based risk scoring and EU Digital Identity Wallet support is in early 2026 rollout and is not yet something to build against.
+- **PSD3 / PSR — agreed, not yet in force**: the European Parliament and Council reached political agreement on PSD3 and the Payment Services Regulation (PSR) in November 2025; final texts were published in April 2026 and cleared committee/plenary votes in the following weeks. Official Journal publication was expected around mid-2026 but may slip later in the year — verify current status before citing an in-force date. The PSR is a Regulation (direct effect, no national transposition); PSD3 is a Directive requiring member-state transposition, typically 18–24 months after entry into force. Do not build to final PSD3/PSR requirements yet, but flag the expected changes below as architecture risks now.
+- **PSD3 / PSR changes to design around**: mandatory open banking performance/API standards, revised SCA exemption thresholds, stronger consumer liability protections for APP fraud (aligning with the direction already set by UK PSR 2024 mandatory reimbursement), and expanded scope to one-leg-out (one side of the transaction outside the EEA) transactions.
+- **EU Instant Payments Regulation (IPR) milestones**: eurozone PSPs have had to receive instant SEPA credit transfers since 9 January 2025 and send them since 9 October 2025, with Verification of Payee (VOP) required in the eurozone since October 2025. Non-euro EU member states have longer runways: VOP is not required until 9 July 2027, and the obligation to send instant credit transfers in euro from local-currency accounts can extend to 9 June 2028 under specified conditions. Re-verify exact dates against the regulation text before committing an implementation date to a customer.
+- **Visa Acquirer Monitoring Program (VAMP)**: Visa lowered the merchant "excessive" fraud-plus-dispute ratio threshold from 2.20% to 1.50% effective 1 April 2026 for the US, Canada, EU, and APAC (CEMEA remains at 2.20% as of this writing). The ratio merges fraud reports (TC40) and disputes (TC15) — a single disputed-and-flagged transaction can count twice. Acquirer-level thresholds (0.5% "above standard", 0.7% "excessive") also apply. Treat these exact percentages as volatile and verify against current Visa program documentation before advising a merchant near the line.
+- **Mastercard Excessive Chargeback Program (ECP)**: two tiers apply over a trailing two-month window — Excessive Chargeback Merchant (ECM) at roughly 100–299 chargebacks and a 1.5%–2.99% ratio, and High Excessive Chargeback Merchant (HECM) at 300+ chargebacks and a 3%+ ratio. Fines escalate from roughly $1,000 to $200,000+ at HECM, with possible MATCH listing. Verify current thresholds and fee schedules in the Mastercard rulebook before quoting numbers to a merchant.
+- **PCI DSS v4.0.1**: this is the sole active version of the standard (v4.0 was retired; v4.0.1 is a clarification-only release, no new requirements). All 51 future-dated requirements from v4.0 became mandatory on 31 March 2025 and are now baseline, not aspirational — assessors expect them in scope (e.g., authenticated internal vulnerability scans, phishing-resistant MFA for CDE access, targeted risk analyses). Route full compliance scoping to a security/compliance specialist; this skill covers scope-reduction choices (SAQ A vs A-EP vs D) at the checkout-surface level.
+- **Stripe Managed Payments (merchant of record)**: Stripe announced general availability of Managed Payments in 2026 after a 2025 private beta, but rollout remains gradual and is gated by seller eligibility (initially concentrated on US-based sellers in good standing, digital-goods sellers, no Connect dependency). Verify current eligibility and supported surfaces directly with Stripe before committing to an MoR architecture built on it.
+- **UK BNPL regulation**: the FCA's new regime for deferred payment credit (BNPL) enters into force 15 July 2026, requiring creditworthiness assessments before every agreement (including sub-£50 agreements, subject to a proportionate/outcomes-based approach), upfront disclosure, financial-difficulty support pathways, and FOS access. Firms could register for temporary permission from 15 May 2026 through 1 July 2026. This date is imminent relative to last-validated — re-verify it has actually taken effect before advising a BNPL integration as unregulated.
+- **UK PSD2 / FCA rules post-Brexit**: UK SCA rules under FCA PSRs 2017 (as amended) remain in force and broadly mirror EU SCA with some divergences; the UK's mandatory APP-fraud reimbursement regime under PSR 2024 is already live and distinct from the EU's PSD3/PSR APP-fraud provisions still working through the legislative process — do not assume UK and EU consumer-liability rules are identical.
+- **Surcharging rules**: surcharging on card payments remains prohibited for consumer cards in the EU and UK; verify local rules before any dynamic pricing or fee pass-through feature that touches card instruments.
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify provider availability, preview status, API-version behavior, and tax or compliance claims before final advice.
+- Prefer official processor, merchant-of-record, and platform docs over secondary summaries.
+- If live verification is unavailable, mark provider-specific claims as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

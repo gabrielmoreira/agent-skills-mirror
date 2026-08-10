@@ -1,6 +1,6 @@
 ---
 name: technical-writing
-description: Write clear, concise, and accurate technical documentation including API references, user guides, tutorials, changelogs, and architecture docs, tailored to the target audience.
+description: Write clear, concise, and accurate technical documentation including API references, user guides, tutorials, changelogs, and architecture docs, tailored to the target audience. Use when the user requests technical writing or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

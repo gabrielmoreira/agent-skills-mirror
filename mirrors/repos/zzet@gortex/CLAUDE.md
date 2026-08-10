@@ -1,6 +1,6 @@
 # Gortex
 
-Code intelligence engine written in Go. Indexes repositories into an in-memory knowledge graph and exposes it via CLI and MCP Server.
+Code intelligence engine written in Go. Indexes repositories into a knowledge graph held in a local SQLite store and exposes it via CLI and MCP Server.
 
 ## Build & Test
 

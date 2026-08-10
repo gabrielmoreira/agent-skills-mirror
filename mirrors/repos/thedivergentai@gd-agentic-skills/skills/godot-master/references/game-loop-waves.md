@@ -3,17 +3,6 @@ name: godot-game-loop-waves
 description: Expert patterns for managing combat waves, difficulty scaling, and automated enemy spawning in Godot 4. Use when building wave-based shooters, tower defense, or arena games.
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Wave Loop: Combat Pacing
-
-> [!NOTE]
-> **Resource Context**: This module provides expert patterns for **Wave Loops**. Accessed via Godot Master.
-
 ## Architectural Thinking: The "Wave-State" Pattern
 
 A Master implementation treats waves as **Data-Driven Transitions**. Instead of hardcoding spawn counts, use a `WaveResource` to define "Encounters" that the `WaveManager` processes sequentially.
@@ -136,22 +125,22 @@ Decouple your wave data from the UI using a `CanvasLayer` and signals.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, exports, and groups before wiring a WaveManager into an arena.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed `await`, signals, and `call_deferred` patterns the async wave trigger depends on.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — `Resource`/`@export` composition and `duplicate_deep` so spawned mobs do not share stats.
+- [godot-project-foundations](project-foundations.md) — scene tree, exports, and groups before wiring a WaveManager into an arena.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed `await`, signals, and `call_deferred` patterns the async wave trigger depends on.
+- [godot-resource-data-patterns](resource-data-patterns.md) — `Resource`/`@export` composition and `duplicate_deep` so spawned mobs do not share stats.
 
 #### Complements
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — ownership of wave/UI/combat signals so countdown and clear events stay leak-free.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — hitboxes, death, and damage that decrement active-enemy counters when a wave unit dies.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationServer queries, avoidance masks, and maps for pathing hundreds of wave agents.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — pools, threaded loads, and safe add/remove when waves churn PackedScenes.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — MultiMesh, occlusion, and server-side bodies for swarm density budgets.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — style-matrix sampling of spawn counts, rates, and difficulty curves before shipping endless modes.
+- [godot-signal-architecture](signal-architecture.md) — ownership of wave/UI/combat signals so countdown and clear events stay leak-free.
+- [godot-combat-system](combat-system.md) — hitboxes, death, and damage that decrement active-enemy counters when a wave unit dies.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationServer queries, avoidance masks, and maps for pathing hundreds of wave agents.
+- [godot-scene-management](scene-management.md) — pools, threaded loads, and safe add/remove when waves churn PackedScenes.
+- [godot-performance-optimization](performance-optimization.md) — MultiMesh, occlusion, and server-side bodies for swarm density budgets.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — style-matrix sampling of spawn counts, rates, and difficulty curves before shipping endless modes.
 
 #### Downstream / consumers
-- [godot-genre-tower-defense](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md) — lane/portal waves driven by WaveResource sequences and clear-win conditions.
-- [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) — arena/horde spawn pacing and enemy variety for wave shooters.
-- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — endless multiplier waves and pressure ramps built on the same manager loop.
+- [godot-genre-tower-defense](genre-tower-defense.md) — lane/portal waves driven by WaveResource sequences and clear-win conditions.
+- [godot-genre-shooter](genre-shooter.md) — arena/horde spawn pacing and enemy variety for wave shooters.
+- [godot-genre-survival](genre-survival.md) — endless multiplier waves and pressure ramps built on the same manager loop.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

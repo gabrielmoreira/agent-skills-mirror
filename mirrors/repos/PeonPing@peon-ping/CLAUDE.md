@@ -138,11 +138,14 @@ See [RELEASING.md](RELEASING.md) for full details.
 
 ## Skills
 
-Four Claude Code skills live in `skills/`:
+Seven Claude Code skills live in `skills/`:
 - `/peon-ping-toggle` — Mute/unmute sounds
 - `/peon-ping-config` — Modify any peon-ping setting (volume, packs, categories, etc.)
 - `/peon-ping-use <pack>` — Assign a specific pack to the current agent session (agentskill mode)
 - `/peon-ping-log <n> <exercise>` — Log exercise reps to the Peon Trainer (e.g. `/peon-ping-log 25 pushups`)
+- `/peon-ping-rename [name]` — Rename the current session for notifications and terminal tab title; no arg resets to auto-detect
+- `peon-ping-create-pack` — Internal, invoked headlessly by `peon create` to author and render a brand-new draft pack; not meant to be run directly
+- `peon-ping-remix` — Internal, invoked headlessly by the `peon eval` server to execute reroll jobs; not meant to be run directly
 
 ## Change Enforcement Rules
 

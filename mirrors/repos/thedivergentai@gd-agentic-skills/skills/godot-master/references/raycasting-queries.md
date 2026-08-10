@@ -3,16 +3,6 @@ name: godot-raycasting-queries
 description: "Expert blueprint for physics queries using RayCast, ShapeCast, and DirectSpaceState. Covers hit detection, volume overlap, mouse picking, and high-performance server-side intersection queries. Use when implementing projectiles, LOS, terrain grounding, or AI sensors. Keywords raycast, shapecast, direct_space_state, intersect_ray, intersect_shape, PhysicsRayQueryParameters, collision mask, mouse picking."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Raycasting and Physics Queries
-
-Physics queries allow for instantaneous detection of objects using lines (rays), volumes (shapes), or points.
-
 ## Available Scripts
 
 > **MANDATORY** for common paths — read before implementing (do not improvise query APIs from memory):
@@ -135,23 +125,23 @@ NavMesh LOS validator, surface metadata, picking baseline, tunneling notes — [
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Named physics layers and tick settings must exist before query masks and water/ground layer bits stay coherent.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed query parameters, RID arrays, and `_physics_process`-only space access are language-level contracts this skill depends on.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — 2D body/area layer matrices and when to prefer `RayCast2D` nodes vs direct space state for sensors.
+- [godot-project-foundations](project-foundations.md) — Named physics layers and tick settings must exist before query masks and water/ground layer bits stay coherent.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed query parameters, RID arrays, and `_physics_process`-only space access are language-level contracts this skill depends on.
+- [godot-2d-physics](2d-physics.md) — 2D body/area layer matrices and when to prefer `RayCast2D` nodes vs direct space state for sensors.
 
 #### Complements
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — 3D body types, CCD, and collision setup that determine what your rays and shape casts can actually hit.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Grounding, ledges, and coyote-time feel often consume ShapeCast/ray footing results from this domain.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Physics-step click/aim sampling couples with mouse-pick rays and hitscan timing.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Physics LOS vs NavMesh path-straightness checks; keep obstacle carve and collision worlds consistent.
-- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) — FOV fans and vision sensors feed AI perception stacks that still need correct query masks/exclusions.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Budgeting hundreds of rays, reusing query params, and knowing when node casts become SceneTree overhead.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Visualizing cast lines/shapes and diagnosing missed hits from mask, exclude, or update-timing mistakes.
+- [godot-physics-3d](physics-3d.md) — 3D body types, CCD, and collision setup that determine what your rays and shape casts can actually hit.
+- [godot-characterbody-2d](characterbody-2d.md) — Grounding, ledges, and coyote-time feel often consume ShapeCast/ray footing results from this domain.
+- [godot-input-handling](input-handling.md) — Physics-step click/aim sampling couples with mouse-pick rays and hitscan timing.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — Physics LOS vs NavMesh path-straightness checks; keep obstacle carve and collision worlds consistent.
+- [godot-ai-navigation](ai-navigation.md) — FOV fans and vision sensors feed AI perception stacks that still need correct query masks/exclusions.
+- [godot-performance-optimization](performance-optimization.md) — Budgeting hundreds of rays, reusing query params, and knowing when node casts become SceneTree overhead.
+- [godot-debugging-profiling](debugging-profiling.md) — Visualizing cast lines/shapes and diagnosing missed hits from mask, exclude, or update-timing mistakes.
 
 #### Downstream / consumers
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hitscan, piercing rays, and melee volumes resolve damage from query results produced here.
-- [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) — Hitscan weapons, bullet pierce, and aim assist consume exclusion/mask recipes and multi-hit pierce loops.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — View distance, FOV ray counts, pierce max-hits, and query tick rate change fairness and difficulty; simulate those knobs instead of guessing.
+- [godot-combat-system](combat-system.md) — Hitscan, piercing rays, and melee volumes resolve damage from query results produced here.
+- [godot-genre-shooter](genre-shooter.md) — Hitscan weapons, bullet pierce, and aim assist consume exclusion/mask recipes and multi-hit pierce loops.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — View distance, FOV ray counts, pierce max-hits, and query tick rate change fairness and difficulty; simulate those knobs instead of guessing.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored entry point for discovering raycasting/query patterns alongside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored entry point for discovering raycasting/query patterns alongside sibling domains.

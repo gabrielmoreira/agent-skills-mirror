@@ -3,16 +3,6 @@ name: godot-genre-shooter-fps
 description: "Expert blueprint for First-Person Shooters: fps_camera_look, fps_movement_logic, hitscan_weapon_query, weapon_bobbing_system, procedural recoil, and FPS NEVER rules. Shared TPS/cover theory links to godot-genre-shooter. Keywords: FPS, movement physics, weapon bobbing, camera sway, hitscan, viewmodel, air control."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Shooter (FPS)
-
-First-person movement, look, viewmodel, and hitscan feel. Shared TPS/cover/soft-lock ownership lives in [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md).
-
 ## MANDATORY script reads (start here)
 
 1. [fps_camera_look.gd](scripts/fps_camera_look.gd) — raw `_input` mouse look (yaw/pitch)  

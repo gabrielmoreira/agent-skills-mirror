@@ -201,10 +201,20 @@ The primary integration, split across the two commands.
 - `.claude/skills/generated/<DirName>/SKILL.md` — one per detected
   community, regenerated each run so the content tracks the graph
 
-Hooks installed today: **PreToolUse**, **PreCompact**, **Stop**,
-**SessionStart** — SessionStart fires on new or resumed sessions to
-prime the first turn with graph orientation; PreCompact fires on
-summary boundaries.
+Hooks installed today: **PreToolUse**, **PostToolUse**, **PreCompact**,
+**Stop**, **SessionStart**, **UserPromptSubmit**, **SubagentStart**,
+**SubagentStop**.
+
+SessionStart carries the orientation block. It is registered with no
+matcher, so it fires for every source — `startup`, `resume`, `clear`,
+`fork`, and `compact` — and the `compact` source additionally receives
+the post-compaction snapshot. That placement is deliberate: Claude Code
+rebuilds a compacted window from the summary, the most recent exchanges,
+and up to five recently-read files that it re-reads and re-injects as
+`system-reminder` blocks, and SessionStart is the only compaction-adjacent
+event that can inject context to say so. PreCompact cannot — its output
+contract is `decision: "block"` only — so gortex's PreCompact handler
+records telemetry and deliberately emits nothing.
 
 > **Daemon outage = per-call enforcement stands down.** Every per-call
 > surface (PreToolUse denies and graph advisories, PostToolUse follow-ups,

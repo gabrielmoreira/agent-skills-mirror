@@ -3,14 +3,6 @@ name: godot-mechanic-secrets
 description: "Implement cheat codes, hidden interactions, and unlockable meta-content via time-windowed input sequence buffers, spam thresholds, look-at (dot-product) detectors, progress-% unlocks, and meta persistence in user://secrets.cfg. Use when adding Konami-style codes, curiosity spam eggs, glimmer cues, lockout anti-brute-force, or gallery flags that must survive slot deletes. Keywords: Konami, sequence buffer, meta secrets.cfg, visibility detector, lockout, glimmer, spam threshold, progress unlock."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Secrets & Easter Eggs (Mechanics)
-
 ## Decision Tree — Which Secret Trigger?
 
 | Player action / design goal | Choose | MANDATORY script |
@@ -22,7 +14,7 @@ description: "Implement cheat codes, hidden interactions, and unlockable meta-co
 | Rare vendor / ghost encounter | Weighted **random encounter** | [secret_random_encounter_spawner.gd](../scripts/mechanic_secrets_secret_random_encounter_spawner.gd) |
 | Persist unlock across save slots | **Meta secrets.cfg** | [secret_meta_persistence.gd](../scripts/mechanic_secrets_secret_meta_persistence.gd) |
 | Stop macro brute-force | **Lockout guard** | [secret_lockout_cheat_guard.gd](../scripts/mechanic_secrets_secret_lockout_cheat_guard.gd) |
-| Secret grants stats/items in P2P | **Server/peer validation** | [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — validate unlock before applying combat/economy advantages |
+| Secret grants stats/items in P2P | **Server/peer validation** | [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — validate unlock before applying combat/economy advantages |
 
 Do **NOT** invent a fourth custom detector until the table above fails.
 
@@ -129,24 +121,24 @@ func _on_cheat_unlocked(combo_name: String) -> void:
 ### Related Skills
 
 #### Prerequisites
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Action buffers, echo filtering, and InputMap remaps that cheat-sequence watchers must share with gameplay input.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `sequence_matched` / `secret_spam_triggered` buses so UI, audio, and achievements react without hard-wiring detectors.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — SecretPersistence and meta-unlock Autoloads need boot order and scene-change survival rules.
+- [godot-input-handling](input-handling.md) — Action buffers, echo filtering, and InputMap remaps that cheat-sequence watchers must share with gameplay input.
+- [godot-signal-architecture](signal-architecture.md) — `sequence_matched` / `secret_spam_triggered` buses so UI, audio, and achievements react without hard-wiring detectors.
+- [godot-autoload-architecture](autoload-architecture.md) — SecretPersistence and meta-unlock Autoloads need boot order and scene-change survival rules.
 
 #### Complements
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Keep gallery/meta flags in `user://meta_secrets.cfg` while run progress stays in versioned save slots.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Typed `SecretData` / lore Resources with `emit_changed` for achievement and journal bridges.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Bus effects and stingers for sealed-room occlusion and the discovery “Aha!” cue.
-- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — BBCode lore journals that append discovered secret descriptions.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Glimmer energy pulses and ghosted-secret fade tweens without AnimationPlayer overhead.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Optional sparkle/dust layers that hint at interactables without spoiling the secret.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Subtle wall-glimmer / dissolve materials for look-at reveal transitions.
+- [godot-save-load-systems](save-load-systems.md) — Keep gallery/meta flags in `user://meta_secrets.cfg` while run progress stays in versioned save slots.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Typed `SecretData` / lore Resources with `emit_changed` for achievement and journal bridges.
+- [godot-audio-systems](audio-systems.md) — Bus effects and stingers for sealed-room occlusion and the discovery “Aha!” cue.
+- [godot-ui-rich-text](ui-rich-text.md) — BBCode lore journals that append discovered secret descriptions.
+- [godot-tweening](tweening.md) — Glimmer energy pulses and ghosted-secret fade tweens without AnimationPlayer overhead.
+- [godot-particles](particles.md) — Optional sparkle/dust layers that hint at interactables without spoiling the secret.
+- [godot-shaders-basics](shaders-basics.md) — Subtle wall-glimmer / dissolve materials for look-at reveal transitions.
 
 #### Downstream / consumers
-- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Route discovery flags into quest stages, journals, and true-ending gates.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate rare-encounter weights, spam thresholds, and completion-% unlock odds before shipping.
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Server/peer validation when a secret grants combat or economy advantages.
-- [godot-theme-easter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-theme-easter/SKILL.md) — Seasonal/themed Easter content that consumes the same unlock and cue pipeline.
+- [godot-quest-system](quest-system.md) — Route discovery flags into quest stages, journals, and true-ending gates.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate rare-encounter weights, spam thresholds, and completion-% unlock odds before shipping.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — Server/peer validation when a secret grants combat or economy advantages.
+- [godot-theme-easter](theme-easter.md) — Seasonal/themed Easter content that consumes the same unlock and cue pipeline.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns secrets vs input, save, or audio.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns secrets vs input, save, or audio.

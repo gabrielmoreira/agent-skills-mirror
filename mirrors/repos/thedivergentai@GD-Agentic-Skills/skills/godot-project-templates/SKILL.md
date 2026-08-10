@@ -58,9 +58,6 @@ Folder-by-feature skeleton (all genres): `entities/<name>/`, `levels/` or `maps/
 
 ## Architecture Deltas (keep in this skill)
 
-### Godot 4.7 project defaults
-- Stretch **mode**: `canvas_items` (was `disabled`); **aspect**: `expand` (was `keep`). Document overrides if legacy behavior is required.
-
 ### Subsystem Locator vs God Autoload
 Prefer [subsystem_locator.gd](scripts/subsystem_locator.gd) for modular registration; keep a thin bootstrap Autoload only.
 

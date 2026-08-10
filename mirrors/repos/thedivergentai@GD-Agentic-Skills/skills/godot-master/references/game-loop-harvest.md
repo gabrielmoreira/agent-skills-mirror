@@ -3,16 +3,6 @@ name: godot-game-loop-harvest
 description: "Data-driven resource harvesting (mining, logging, foraging) for Godot 4: apply_hit tool/tier validation via HarvestToolData enums, HarvestResourceData yields, harvestable_node shake/deplete, respawn_manager world persistence, UNIX offline progress, autosave, and noise vein proc-gen. Trigger keywords: apply_hit, HarvestResourceData, HarvestToolData, offline UNIX, respawn_manager, tool tier, harvestable_node, FastNoiseLite veins."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Godot Game Loop: Harvest
-
-Decoupled, data-driven gathering: tool/tier gates, health depletion, yields, respawn, and offline UNIX progress.
-
 ## Script Catalog (MANDATORY by path)
 
 | Path | MANDATORY reads |
@@ -85,24 +75,24 @@ Keep durability on `HarvestToolData` (Resource), not the player node. Emit durab
 ### Related Skills
 
 #### Prerequisites
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Harvest yields, tool stats, and drop scenes are Resource-first; establish composition/duplicate rules before baking economy numbers into nodes.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `harvested` / `inventory_updated` ownership and safe connects keep gather nodes decoupled from HUD and inventory hubs.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — `StaticBody3D` layers/masks and shape setup for interactable world props are prerequisites to reliable hit validation.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, `await` on `create_timer`, and Mutex/`WorkerThreadPool` patterns assume solid GDScript fundamentals.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Harvest yields, tool stats, and drop scenes are Resource-first; establish composition/duplicate rules before baking economy numbers into nodes.
+- [godot-signal-architecture](signal-architecture.md) — `harvested` / `inventory_updated` ownership and safe connects keep gather nodes decoupled from HUD and inventory hubs.
+- [godot-physics-3d](physics-3d.md) — `StaticBody3D` layers/masks and shape setup for interactable world props are prerequisites to reliable hit validation.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Resources, `await` on `create_timer`, and Mutex/`WorkerThreadPool` patterns assume solid GDScript fundamentals.
 
 #### Complements
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Connect `harvested` into a real inventory/stacking pipeline instead of leaving counts in a harvest-only dictionary.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Round-trip warehouse totals, tool durability, and depleted-node timers through the project save schema beyond interval JSON dumps.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Respawn and inventory managers belong in a disciplined Autoload graph with clear init order and signal-bus boundaries.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Player gather input typically raycasts or shapecasts to the harvestable collider before calling `apply_hit(tool_data)`.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Expand hit shakes into polish tweens (squash, flash, camera punch) without cutting VFX short via early `queue_free()`.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Wire harvest yields into sinks, crafting costs, and vendor loops so gathering feeds a coherent economy.
+- [godot-inventory-system](inventory-system.md) — Connect `harvested` into a real inventory/stacking pipeline instead of leaving counts in a harvest-only dictionary.
+- [godot-save-load-systems](save-load-systems.md) — Round-trip warehouse totals, tool durability, and depleted-node timers through the project save schema beyond interval JSON dumps.
+- [godot-autoload-architecture](autoload-architecture.md) — Respawn and inventory managers belong in a disciplined Autoload graph with clear init order and signal-bus boundaries.
+- [godot-raycasting-queries](raycasting-queries.md) — Player gather input typically raycasts or shapecasts to the harvestable collider before calling `apply_hit(tool_data)`.
+- [godot-tweening](tweening.md) — Expand hit shakes into polish tweens (squash, flash, camera punch) without cutting VFX short via early `queue_free()`.
+- [godot-economy-system](economy-system.md) — Wire harvest yields into sinks, crafting costs, and vendor loops so gathering feeds a coherent economy.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After yields, respawn times, and tool tiers are tunable Resources, Monte Carlo sims validate gather pacing and sink pressure before shipping curves.
-- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — Survival loops compose harvesting with hunger, crafting, and world threat systems on top of this gather core.
-- [godot-game-loop-collection](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-collection/SKILL.md) — Collection/scavenger objectives often consume the same harvest/inventory signals for “gather N of X” quests.
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Noise-driven resource veins and world placement build on harvest node data once the interaction loop is solid.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — After yields, respawn times, and tool tiers are tunable Resources, Monte Carlo sims validate gather pacing and sink pressure before shipping curves.
+- [godot-genre-survival](genre-survival.md) — Survival loops compose harvesting with hunger, crafting, and world threat systems on top of this gather core.
+- [godot-game-loop-collection](game-loop-collection.md) — Collection/scavenger objectives often consume the same harvest/inventory signals for “gather N of X” quests.
+- [godot-procedural-generation](procedural-generation.md) — Noise-driven resource veins and world placement build on harvest node data once the interaction loop is solid.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

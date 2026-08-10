@@ -25,7 +25,23 @@
 
 3. **`image.prompt` / `image.promptLocal` / `image.sheet` 里绝对不许出现角色名、别名、作者名、作品名。** 图像模型对这些偏见极重，会画成它记忆里的角色而不是你的角色。描述这个人，不要叫他的名字。
 
-4. `image.prompt` 是**单张表现性插画**（不是技术图，可以放开打光）：四分之三视角半身、纯中性背景、柔和方向主光 + 冷调补光、浅景深、面部最实。
+4. **族裔、年代、地域必须从原文推断出来，明确写进 `image.prompt` 和 `image.sheet`。**
+
+   这是上一条的另一半：名字不能写，那这个人长什么样、是哪儿的人，就只能靠描述交代。**不写死，图像模型默认画当代西方白人**——民国的老船夫会出成一个穿工装的美国老头。
+
+   三样都要落到提示词里：
+
+   | 要素 | 写到这个程度 | 不要这样 |
+   | --- | --- | --- |
+   | 族裔与面部特征 | `East Asian, Han Chinese features, monolid eyes` | `an old man` |
+   | 年代 | `early 20th century, Republican-era China` | `historical` |
+   | 服饰与地域 | `coarse indigo cotton tunic, southern Chinese river town` | `traditional clothing` |
+
+   **依据来自原文，不来自报告语言。** 报告出成日文不代表人物是日本人——`lang` 管的是谁来读，不是故事发生在哪。原文没明说就按文本推断：人名用字、地名、称谓、器物、节令、货币、饮食都是线索。
+
+   推断出来的内容按第 1 条标注在 `persona.appearance` / `persona.identity` 里；**提示词里不标注**——那是给机器读的，`(inferred)` 混进去会被画进画面。实在推不出来就定一个中性但具体的设定，不要留空、不要写成泛泛的「亚洲人」。
+
+5. `image.prompt` 是**单张表现性插画**（不是技术图，可以放开打光）：四分之三视角半身、纯中性背景、柔和方向主光 + 冷调补光、浅景深、面部最实。
 
    **画风走半写实厚涂，不要写「扁平矢量卡通」。** 实测「扁平矢量卡通」这句会让模型跟自己拧巴——同一批角色出来有的偏动画、有的偏写实。用这一档：
    `Semi-realistic character illustration, painterly rendering with soft blended edges and visible brush texture, anatomically grounded`
@@ -36,7 +52,7 @@
 
    `negativePrompt` **不要写 `photorealistic` / `3d render`**——一边要真实感一边禁真实感是自相矛盾的。该禁的是「假」：塑料蜡质皮肤、过度磨皮、无毛孔娃娃脸、完全对称的脸、没有高光的死眼、头盔状无碎发的头发、无织纹的平板布料、僵硬的人台姿势。
 
-5. **`image.sheet` 是角色设定图——一张 16:9 横构图，内部分三个区。** 这是给出图模型的完整版面指令，比例要写死，不能让它自由发挥：
+6. **`image.sheet` 是角色设定图——一张 16:9 横构图，内部分三个区。** 这是给出图模型的完整版面指令，比例要写死，不能让它自由发挥：
 
    ```
    ┌──────────┬────────────────────────────┐
@@ -71,9 +87,9 @@
 
    提示词里必须逐条写明：`ONE 16:9 landscape canvas`、`LEFT ZONE ... about 34% of the canvas width`、`RIGHT-TOP ZONE`、`RIGHT-BOTTOM ZONE`、`thin hairline rules`、`PROPORTIONS ARE CRITICAL`、`the detail studies give way, not the figures`。
 
-6. `voice.prompt` 是给 TTS 音色设计引擎的：描述**乐器本身**，不是某一句台词的演绎。性别、听感年龄、音色、音高区间、共鸣、气声、语速、节奏、口音、能量、默认情绪。
+7. `voice.prompt` 是给 TTS 音色设计引擎的：描述**乐器本身**，不是某一句台词的演绎。性别、听感年龄、音色、音高区间、共鸣、气声、语速、节奏、口音、能量、默认情绪。
 
-7. **同一批角色之间要能区分开。** 会给你同批其他角色的名字，别把他们的长相和声线做成一个样。
+8. **同一批角色之间要能区分开。** 会给你同批其他角色的名字，别把他们的长相和声线做成一个样。
 
 ## 输入格式
 

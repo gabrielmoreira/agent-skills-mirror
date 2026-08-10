@@ -1,6 +1,6 @@
 ---
-name: Project Management
-description: "Manages software projects end-to-end — decomposing work into tasks, tracking progress across sprints, generating status reports, and integrating with tools like Jira, Linear, GitHub Issues, and Trello."
+name: project-management
+description: "Manages software projects end-to-end — decomposing work into tasks, tracking progress across sprints, generating status reports, and integrating with tools like Jira, Linear, GitHub Issues, and Trello. Use when the user requests project management or provides relevant inputs for this workflow."
 license: "MIT"
 metadata:
   author: "awesome-ai-agent-skills contributors"

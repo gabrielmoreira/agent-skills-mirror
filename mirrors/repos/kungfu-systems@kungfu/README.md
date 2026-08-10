@@ -11,9 +11,9 @@ same Work across Codex, Claude, OpenCode, Amp, or your own execution surface.
 
 ## Start where you already work
 
-Once the `kungfu` command is on your
-[`PATH`](docs/guides/installing-cli.md#make-kungfu-available-in-path), choose the
-entry that matches how you already work.
+First, [install Kungfu and make the `kungfu` command available on your
+`PATH`](docs/guides/installing-cli.md), then choose the entry that matches how
+you already work.
 
 **Stay in your current Agent.** Paste this sentence into Codex, Claude, OpenCode,
 Amp, or another Agent that can run local commands:
@@ -145,9 +145,12 @@ claim boundaries live in their own maintained routes:
 - **Evaluate the wider ecosystem thesis:** the
   [Agent Supply Chain architecture](docs/architecture/agent-supply-chain.md).
 
-Kungfu v4 is **Coming soon**. The current repository contains source-built
-capabilities and retained qualification evidence; public release artifacts are
-not available yet. Exact status and non-claims live in
+Kungfu v4.0.0-alpha.1 is the first public v4 Alpha. Download the
+[release artifacts](https://github.com/kungfu-systems/kungfu/releases/tag/v4.0.0-alpha.1)
+or follow the [installation guide](docs/guides/installing-cli.md). This is a
+prerelease, not a stable or generally available release; exact support,
+qualification, and non-claims remain in
+[Alpha Status](docs/guides/alpha-status.md) and
 [Known Limits](docs/qualification/known-limits.md).
 
 <!-- buildchain:badges:start -->

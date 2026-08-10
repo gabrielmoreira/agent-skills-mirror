@@ -3,16 +3,6 @@ name: godot-genre-sandbox
 description: "Expert blueprint for sandbox games (Minecraft, Terraria, Garry's Mod) with physics-based interactions, cellular automata, emergent gameplay, and creative tools. Use when building open-world creation games with voxels, element systems, player-created structures, or procedural worlds. Keywords voxel, sandbox, cellular automata, MultiMesh, chunk management, emergent behavior, creative mode."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Sandbox
-
-Physical simulation, emergent play, and player creativity define this genre.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Performance & Scalability
@@ -240,7 +230,6 @@ func create_hinge(body_a: RigidBody2D, body_b: RigidBody2D, anchor: Vector2) -> 
 - **`GridMap` vs `MultiMesh`**: GridMap uses MeshLibrary (great for variety), MultiMesh uses single mesh (great for speed). Combine: GridMap for structures, MultiMesh for terrain.
 - **Continuous CD**: `continuous_cd` requires convex collision shapes. Use `CapsuleShape2D` for projectiles, NOT `RectangleShape2D`.
 
-
 ---
 
 ## 🚀 Elite Technical Implementations (Batch 09)
@@ -249,7 +238,7 @@ func create_hinge(body_a: RigidBody2D, body_b: RigidBody2D, anchor: Vector2) -> 
 Do not paste placeholder meshers. **MANDATORY** read [voxel_chunk_mesher.gd](../scripts/genre_sandbox_voxel_chunk_mesher.gd) for threaded visible-face generation. Extend that pattern for full greedy quad merging; for MultiMesh vs ArrayMesh choice see §4 above. Extreme draw paths may push committed arrays via `RenderingServer` (see Official Documentation → Using servers) after the mesher owns the surface data.
 
 ### 2. VoxelGI (demoted — use docs + lighting skill)
-Sandbox chunk lighting is **not** owned by an incomplete `RenderingServer.voxel_gi_allocate_data` stub here. For dynamic GI on procedural volumes, follow [Using VoxelGI](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_voxel_gi.html) and route implementation detail to [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md). Prefer baked/probe strategies from that skill unless you truly need runtime VoxelGI.
+Sandbox chunk lighting is **not** owned by an incomplete `RenderingServer.voxel_gi_allocate_data` stub here. For dynamic GI on procedural volumes, follow [Using VoxelGI](https://docs.godotengine.org/en/stable/tutorials/3d/global_illumination/using_voxel_gi.html) and route implementation detail to [godot-3d-lighting](3d-lighting.md). Prefer baked/probe strategies from that skill unless you truly need runtime VoxelGI.
 
 ### 3. Blueprint-Sharing (Base64/JSON Serialization)
 Allow players to share creations via simple strings. Use `JSON` for readable serialization and `DisplayServer` for clipboard integration.
@@ -269,8 +258,6 @@ static func import_blueprint_from_clipboard() -> Dictionary:
     return parsed_data if parsed_data is Dictionary else {}
 ```
 
-
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -278,7 +265,6 @@ static func import_blueprint_from_clipboard() -> Dictionary:
 | Elite meshing & blueprint sharing | [elite-technical-patterns.md](genre-sandbox-elite-technical-patterns.md) + [voxel_chunk_mesher.gd](../scripts/genre_sandbox_voxel_chunk_mesher.gd) |
 | Element / CA grids | Architecture Patterns §1–3 in SKILL.md + [cellular_automata_liquid.gd](../scripts/genre_sandbox_cellular_automata_liquid.gd) |
 | Chunk RLE persistence | Save System § in SKILL.md + [sandbox_world_serializer.gd](../scripts/genre_sandbox_sandbox_world_serializer.gd) |
-
 
 ## Reference
 
@@ -301,25 +287,25 @@ static func import_blueprint_from_clipboard() -> Dictionary:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Resources, and import basics before chunk scenes and binary `.res` world data.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — StaticBody colliders for terrain, RigidBody props, and shape queries used in placement validation.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed Dictionaries/Packed arrays, WorkerThreadPool tasks, and deferred SceneTree edits in meshers.
+- [godot-project-foundations](project-foundations.md) — scene tree, Resources, and import basics before chunk scenes and binary `.res` world data.
+- [godot-physics-3d](physics-3d.md) — StaticBody colliders for terrain, RigidBody props, and shape queries used in placement validation.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed Dictionaries/Packed arrays, WorkerThreadPool tasks, and deferred SceneTree edits in meshers.
 
 #### Complements
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap/MeshLibrary and bake flows that sandbox building tools often reuse.
-- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — VoxelGI / probes / bake strategy for procedural volumes (do not invent RenderingServer GI stubs in this skill).
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — noise/dungeon generators that seed voxel chunks before player edits.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — MultiMesh budgets, dirty-chunk simulation, and draw-call caps at sandbox scale.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — RLE/binary chunk persistence and migrateable save schemas beyond ad-hoc JSON.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — PhysicsDirectSpaceState picking and shape intersects for block tools.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — PinJoint2D/RigidBody2D patterns for 2D sandbox contraptions and falling-sand props.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded load queues and chunk node lifecycle without orphaned branches.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — tune crafting costs, element rarity, and economy loops that emerge from sandbox systems.
+- [godot-3d-world-building](3d-world-building.md) — GridMap/MeshLibrary and bake flows that sandbox building tools often reuse.
+- [godot-3d-lighting](3d-lighting.md) — VoxelGI / probes / bake strategy for procedural volumes (do not invent RenderingServer GI stubs in this skill).
+- [godot-procedural-generation](procedural-generation.md) — noise/dungeon generators that seed voxel chunks before player edits.
+- [godot-performance-optimization](performance-optimization.md) — MultiMesh budgets, dirty-chunk simulation, and draw-call caps at sandbox scale.
+- [godot-save-load-systems](save-load-systems.md) — RLE/binary chunk persistence and migrateable save schemas beyond ad-hoc JSON.
+- [godot-raycasting-queries](raycasting-queries.md) — PhysicsDirectSpaceState picking and shape intersects for block tools.
+- [godot-2d-physics](2d-physics.md) — PinJoint2D/RigidBody2D patterns for 2D sandbox contraptions and falling-sand props.
+- [godot-scene-management](scene-management.md) — threaded load queues and chunk node lifecycle without orphaned branches.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — tune crafting costs, element rarity, and economy loops that emerge from sandbox systems.
 
 #### Downstream / consumers
-- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — streaming, floating origin, and HLOD layered on editable sandbox chunks.
-- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — harvesting, needs, and crafting loops that consume destructible voxel/element worlds.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — authoritative server placement validation for shared creative worlds.
+- [godot-genre-open-world](genre-open-world.md) — streaming, floating origin, and HLOD layered on editable sandbox chunks.
+- [godot-genre-survival](genre-survival.md) — harvesting, needs, and crafting loops that consume destructible voxel/element worlds.
+- [godot-multiplayer-networking](multiplayer-networking.md) — authoritative server placement validation for shared creative worlds.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

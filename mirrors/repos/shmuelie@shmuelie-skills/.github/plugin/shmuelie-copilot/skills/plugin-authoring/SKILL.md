@@ -137,6 +137,30 @@ that points to its owning plugin.
 - Update the owning plugin README and repository changelog for every release.
 - Use semantic versioning and immutable release tags.
 
+## Hooks (lifecycle plugins)
+
+Plugins can ship lifecycle **hooks** that run a command on agent events
+(session start/end, prompt submitted, pre/post tool use, error). These are
+distinct from skills and have non-obvious loading rules:
+
+- The Copilot CLI **plugin loader drops any `hooks` field in `plugin.json`**. A
+  plain `copilot plugin install` (including a `_direct/` install) does **not**
+  load hooks.
+- File-based hooks live in `copilot-hooks.json` at the plugin root (Copilot CLI,
+  camelCase events like `sessionStart`, `errorOccurred`). They load only when the
+  CLI is started with `--plugin-dir` pointing at the plugin — i.e. via an
+  **Agency-managed install**, or an in-repo workspace `<gitRoot>/.github/hooks/`.
+- `${PLUGIN_ROOT}` (Copilot) / `${CLAUDE_PLUGIN_ROOT}` (Claude/VS Code) resolve to
+  the installed plugin directory inside hook commands.
+- Copilot CLI exposes no "your turn / done" hook event — `errorOccurred` is the
+  only attention signal on that engine. Do not assume a completion hook exists.
+- Keep hook launchers **fire-and-forget** so they never block the session; a
+  hook must never surface a failure to the agent. `preToolUse` is awaited (it can
+  carry a permission decision), so return immediately if you do not set one.
+
+A hook plugin that "does nothing" is almost always a **loading** problem (installed
+directly instead of via Agency / workspace hooks), not a bug in the hook script.
+
 ## Validation checklist
 
 1. Parse every JSON manifest.

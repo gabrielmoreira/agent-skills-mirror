@@ -3,16 +3,6 @@ name: godot-adapt-3d-to-2d
 description: "Expert patterns for simplifying 3D games to 2D including dimension reduction strategies, 2.5D fake-depth, isometric ports, camera flattening, physics conversion, 3D-to-sprite art pipeline, and control simplification. Use when porting 3D to 2D, building 2.5D / isometric / fake-depth gameplay, creating 2D versions for mobile, or prototyping. Trigger keywords: CharacterBody3D to CharacterBody2D, Camera3D to Camera2D, Vector3 to Vector2, flatten Z-axis, 2.5D, isometric, fake depth, Y-sort, simulated Z, orthogonal projection, 3D to sprite conversion, performance optimization."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Adapt: 3D to 2D
-
-Expert guidance for simplifying 3D games into 2D (or 2.5D).
-
 ## NEVER Do
 
 - **NEVER remove Z-axis without gameplay compensation** — Blindly flattening 3D to 2D removes spatial strategy. Add other depth mechanics (layers, jump height variations).

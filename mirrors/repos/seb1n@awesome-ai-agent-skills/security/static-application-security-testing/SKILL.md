@@ -1,6 +1,6 @@
 ---
 name: static-application-security-testing
-description: Analyze source code for security vulnerabilities using static analysis tools, custom rules, and CI-integrated scanning pipelines.
+description: Analyze source code for security vulnerabilities using static analysis tools, custom rules, and CI-integrated scanning pipelines. Use when the user requests static application security testing or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills
@@ -153,6 +153,13 @@ Fix: Replace ObjectInputStream with a safe alternative like JSON deserialization
 - **Layer multiple tools** — no single SAST tool catches everything. Combine pattern-based tools (Semgrep) with semantic analysis tools (CodeQL) for broader coverage. Each tool has different strengths.
 - **Create custom rules for your codebase** — write project-specific Semgrep or CodeQL rules to enforce internal security patterns, such as ensuring all database queries go through a sanitizing wrapper function.
 - **Use SARIF for unified reporting** — the Static Analysis Results Interchange Format is supported by GitHub, GitLab, Azure DevOps, and SonarQube, enabling a single dashboard for all SAST findings regardless of the tool that produced them.
+
+## Safety Boundaries
+
+- Work only on systems the user owns or is explicitly authorized to assess, and record the approved scope before testing.
+- Start with passive or read-only inspection. Obtain explicit approval before active scanning, exploitation, load generation, or disruptive remediation.
+- Never expose secrets, extract unrelated data, weaken production controls, or expand beyond the approved targets.
+- Preserve evidence, minimize impact, stop on instability, and provide rollback or containment steps for every material change.
 
 ## Edge Cases
 

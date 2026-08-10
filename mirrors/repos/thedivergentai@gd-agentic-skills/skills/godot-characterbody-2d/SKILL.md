@@ -23,10 +23,6 @@ Expert CharacterBody2D feel systems — not beginner `move_and_slide` tutorials.
 
 ---
 
-## Godot 4.7: CharacterBody2D
-
-- Jolt 3D changes do not apply to 2D, but one-way **direction** on `CollisionShape2D` affects platformer feel — align with movement normals.
-
 ## When to Use CharacterBody2D
 
 | Need | Body |

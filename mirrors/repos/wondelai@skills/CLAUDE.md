@@ -16,7 +16,7 @@ skills/
 │   ├── SKILL.md           # Main skill file with YAML frontmatter + markdown instructions
 │   └── references/        # Supporting reference files (optional)
 │       └── *.md
-├── scripts/               # sync-ide-skills.sh, generate-codex-plugins.sh, sync-marketplace-versions.sh
+├── scripts/               # sync-ide-skills.sh, generate-plugins.sh, sync-marketplace-versions.sh
 ├── .github/workflows/     # CI: syncs marketplace versions to the GitHub release
 ├── CLAUDE.md              # This file
 ├── README.md              # Skill catalog with descriptions and installation instructions
@@ -26,10 +26,11 @@ skills/
 ├── .agents/
 │   ├── skills/            # flat skill symlinks for Codex / .agents-convention agents
 │   └── plugins/marketplace.json   # Codex plugin marketplace (mirrors .claude-plugin/)
-└── plugins/{collection}/  # Codex plugins: .codex-plugin/plugin.json + skills/ symlinks
+├── plugins/{collection}/  # dual-format: .codex-plugin/plugin.json (Codex) + plugin.json (Agent Plugins) + skills/ copies
+└── plugins/wondelai-skills/   # all-in-one Agent Plugin bundle (every skill; no Codex manifest)
 ```
 
-The Codex plugin standard (`plugins/` + `.agents/plugins/marketplace.json`) is **generated from `.claude-plugin/marketplace.json`** by `scripts/generate-codex-plugins.sh` — same 10 collections, same skill membership, versions tracked automatically. Never hand-edit the generated trees.
+The Codex plugin standard (`plugins/` + `.agents/plugins/marketplace.json`) and the [Agent Plugins](https://agent-plugins.org/) standard (root `plugin.json` in each `plugins/*` dir, plus the `plugins/wondelai-skills` all-in-one bundle) are **generated from `.claude-plugin/marketplace.json`** by `scripts/generate-plugins.sh` — same 10 collections, same skill membership, versions tracked automatically. The plugin trees contain **copies** of the skills, not symlinks (the Agent Plugins spec requires all paths to resolve inside the plugin root), so after editing any skill's `SKILL.md` or `references/`, re-run `scripts/sync-ide-skills.sh` to refresh them. Never hand-edit the generated trees.
 
 ## Current Skills (62)
 
@@ -123,7 +124,7 @@ The 12 metaskills (create/improve/grow × business/website/app, improve-code-qua
    - Add "Skill Details" section (description, About the author, Use when, Example prompts)
    - Add to "Copyright & Disclaimer" section
 5. Add the skill's path to `.claude-plugin/marketplace.json` under the appropriate plugin collection (add the `./skill-name` entry only — do **not** hand-pick a version; see Versioning Policy)
-6. Run `scripts/sync-ide-skills.sh` — regenerates the IDE mirrors (`.claude/.cursor/.windsurf/.pi/.agents`) **and** the Codex plugin marketplace (`plugins/` + `.agents/plugins/`). These are generated; never hand-edit them.
+6. Run `scripts/sync-ide-skills.sh` — regenerates the IDE mirrors (`.claude/.cursor/.windsurf/.pi/.agents`) **and** the plugin trees (`plugins/` + `.agents/plugins/` — Codex and Agent Plugins formats, including the `wondelai-skills` bundle). These are generated; never hand-edit them.
 
 ## Installation
 
@@ -160,6 +161,8 @@ Skills use semantic versioning (`MAJOR.MINOR.PATCH`):
 - Content addition/enhancement → bump MINOR (e.g., `1.0.0` → `1.1.0`)
 - Small fix/typo → bump PATCH (e.g., `1.1.0` → `1.1.1`)
 
+Then re-run `scripts/sync-ide-skills.sh` — the `plugins/` trees embed copies of every skill and go stale otherwise.
+
 Example:
 ```yaml
 metadata:
@@ -169,7 +172,7 @@ metadata:
 
 ### Marketplace versions (automated)
 
-The versions in `.claude-plugin/marketplace.json` (top-level `metadata.version` and every `plugins[].version`) are **not** hand-edited. They are auto-synced to the latest GitHub release by `.github/workflows/sync-marketplace-version.yml`, which runs `scripts/sync-marketplace-versions.sh` on each published release and commits the result to `main`. To ship: bump the affected skills' `SKILL.md` versions, merge, then publish a `vX.Y.Z` GitHub release — the workflow sets all marketplace versions to `X.Y.Z`. To sync without a release, run `scripts/sync-marketplace-versions.sh X.Y.Z` locally.
+The versions in `.claude-plugin/marketplace.json` (top-level `metadata.version` and every `plugins[].version`) are **not** hand-edited. They are auto-synced to the latest GitHub release by `.github/workflows/sync-marketplace-version.yml`, which runs `scripts/sync-marketplace-versions.sh` on each published release (which in turn regenerates the `plugins/` and `.agents/plugins/` trees via `scripts/generate-plugins.sh`) and commits the result to `main`. To ship: bump the affected skills' `SKILL.md` versions, merge, then publish a `vX.Y.Z` GitHub release — the workflow sets all marketplace versions to `X.Y.Z`. To sync without a release, run `scripts/sync-marketplace-versions.sh X.Y.Z` locally.
 
 ## Commit Policy
 

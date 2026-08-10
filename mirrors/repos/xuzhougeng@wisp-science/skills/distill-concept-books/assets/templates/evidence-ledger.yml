@@ -1,0 +1,59 @@
+schema_version: 1
+distillation_id: sample-concept-book-v1
+# Private governance record. Preserve source identity and locators here; never copy this
+# payload directly into a downstream candidate or public output.
+evidence:
+  - evidence_id: ev-sample-001
+    source_id: src-001
+    locator:
+      source_id: src-001
+      locator_type: ooxml-block
+      heading_path:
+        - Private section 001
+      ooxml_block_index: 1
+      content_hash: "0123456789ab"
+    evidence_type: text
+    raw_text: Sample source text.
+    normalized_text: Sample source text.
+    capture_mode: excerpt
+    extraction_confidence: high
+    limitations: []
+    quality_flags: []
+    status: candidate
+claims:
+  - claim_id: cl-sample-001
+    statement: The sample source explicitly states a bounded method.
+    claim_type: method
+    source_position: book-assertion
+    evidence_ids:
+      - ev-sample-001
+    correction_ids: []
+    transformation: T1
+    scope:
+      - sample task only
+    limitations: []
+    importance: important
+    status: candidate
+    human_decision: null
+  - claim_id: cl-neutral-principle-001
+    statement: A bounded task method acts only when its required target context is present and stops when its premises cannot be established.
+    claim_type: principle
+    source_position: distiller-synthesis
+    evidence_ids:
+      - ev-sample-001
+    correction_ids: []
+    transformation: T3
+    scope:
+      - source-neutral downstream task behavior
+      - public output grounded in target material
+    limitations:
+      - This reconstruction does not transfer source-specific identities, wording, attribution, or named cases.
+      - Problem, premises, invariant, derivation, assumptions, boundaries, falsifiers, and stops require explicit Gate review.
+    importance: important
+    status: candidate
+    human_decision:
+      decision: pending
+      reviewer_type: null
+      reviewer: null
+      decided_at: null
+      rationale: ""

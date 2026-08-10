@@ -3,16 +3,6 @@ name: godot-genre-puzzle
 description: "Expert blueprint for puzzle games including undo systems (Command pattern for state reversal), grid-based logic (Sokoban-style mechanics), non-verbal tutorials (teach through level design), win condition checking, state management, and visual feedback (instant confirmation of valid moves). Use for logic puzzles, physics puzzles, or match-3 games. Trigger keywords: puzzle_game, undo_system, command_pattern, grid_logic, non_verbal_tutorial, state_management."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Puzzle
-
-Expert blueprint for puzzle games emphasizing clarity, experimentation, and "Aha!" moments.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Design & Player Experience
@@ -120,7 +110,6 @@ Essential for puzzle games. Never punish testing.
 *   **Custom Resources**: Store level data (layout, starting positions) in `.tres` files for easy editing in the Inspector.
 *   **Signals**: Use signals like `state_changed` to update UI/Visuals decoupled from the logic.
 
-
 ---
 
 ## Reference
@@ -145,24 +134,24 @@ Essential for puzzle games. Never punish testing.
 ### Related Skills
 
 #### Prerequisites
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Buffered InputEvent/action maps so grid clicks and directional moves stay device-agnostic and forgiving.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Safe `state_changed` / `level_complete` wiring so UI and VFX stay decoupled from grid truth.
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Autoload/project layout baselines before stacking undo managers, savers, and level packs.
+- [godot-input-handling](input-handling.md) — Buffered InputEvent/action maps so grid clicks and directional moves stay device-agnostic and forgiving.
+- [godot-signal-architecture](signal-architecture.md) — Safe `state_changed` / `level_complete` wiring so UI and VFX stay decoupled from grid truth.
+- [godot-project-foundations](project-foundations.md) — Autoload/project layout baselines before stacking undo managers, savers, and level packs.
 
 #### Complements
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Deeper Tween composition when cell moves, match clears, and resets need interruptible juice without logic races.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Progress ownership, versioning, and threaded loads beyond per-level JSON snapshots.
-- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — TileMapLayer painting, custom data, and terrain patterns that visualize walls while scripts own solvability.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Broader Navigation/A* stacks when puzzle hints outgrow a single `AStarGrid2D` region.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — RigidBody sleep, layers, and queries for physics puzzles that still need deterministic settle/win checks.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Phase FSMs (observe → move → resolve → win) when puzzles mix animation locks with input gates.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera2D/3D framing and unproject helpers for perspective/world-space puzzle overlays.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Minimal undo/reset HUD layouts that stay non-intrusive during non-verbal tutorials.
+- [godot-tweening](tweening.md) — Deeper Tween composition when cell moves, match clears, and resets need interruptible juice without logic races.
+- [godot-save-load-systems](save-load-systems.md) — Progress ownership, versioning, and threaded loads beyond per-level JSON snapshots.
+- [godot-tilemap-mastery](tilemap-mastery.md) — TileMapLayer painting, custom data, and terrain patterns that visualize walls while scripts own solvability.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — Broader Navigation/A* stacks when puzzle hints outgrow a single `AStarGrid2D` region.
+- [godot-2d-physics](2d-physics.md) — RigidBody sleep, layers, and queries for physics puzzles that still need deterministic settle/win checks.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Phase FSMs (observe → move → resolve → win) when puzzles mix animation locks with input gates.
+- [godot-camera-systems](camera-systems.md) — Camera2D/3D framing and unproject helpers for perspective/world-space puzzle overlays.
+- [godot-ui-containers](ui-containers.md) — Minimal undo/reset HUD layouts that stay non-intrusive during non-verbal tutorials.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Sample solvability, move-count distributions, and soft-lock rates so level packs stay fair as mechanics combine.
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Generate candidate boards that still pass this skill's validators, undo constraints, and win-condition contracts.
-- [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md) — Consumes grid/undo patterns when dungeon runs embed discrete puzzle rooms or locked-door logic.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Sample solvability, move-count distributions, and soft-lock rates so level packs stay fair as mechanics combine.
+- [godot-procedural-generation](procedural-generation.md) — Generate candidate boards that still pass this skill's validators, undo constraints, and win-condition contracts.
+- [godot-genre-roguelike](genre-roguelike.md) — Consumes grid/undo patterns when dungeon runs embed discrete puzzle rooms or locked-door logic.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this genre skill beside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for discovering this genre skill beside sibling domains.

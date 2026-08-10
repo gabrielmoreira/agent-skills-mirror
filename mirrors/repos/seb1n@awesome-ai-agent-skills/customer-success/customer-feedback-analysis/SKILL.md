@@ -1,6 +1,6 @@
 ---
 name: customer-feedback-analysis
-description: Analyze NPS, CSAT, and qualitative customer feedback to extract themes, identify trends, and generate actionable insight reports.
+description: Analyze NPS, CSAT, and qualitative customer feedback to extract themes, identify trends, and generate actionable insight reports. Use when the user requests customer feedback analysis or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community

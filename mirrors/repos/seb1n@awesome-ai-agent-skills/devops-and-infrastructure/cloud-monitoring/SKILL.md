@@ -1,6 +1,6 @@
 ---
 name: cloud-monitoring
-description: Monitor cloud infrastructure and applications using metrics, logs, and traces to provide real-time observability into performance, health, and reliability.
+description: Monitor cloud infrastructure and applications using metrics, logs, and traces to provide real-time observability into performance, health, and reliability. Use when the user requests cloud monitoring or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

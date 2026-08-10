@@ -3,16 +3,6 @@ name: godot-tilemap-mastery
 description: "Expert blueprint for TileMapLayer and TileSet systems for efficient 2D level design. Covers terrain autotiling, physics layers, custom data, navigation integration, and runtime manipulation. Use when building grid-based levels OR implementing destructible tiles. Keywords TileMapLayer, TileSet, terrain, autotiling, atlas, physics layer, custom data."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# TileMap Mastery
-
-TileMapLayer routing + trade-offs — not TileSet editor Steps 1–3 tutorials (see Official Docs).
-
 ## NEVER Do in TileMaps
 
 - **NEVER call `set_cell()` in huge loops without batching** — Prefer terrain connect, patterns, or chunk batchers.
@@ -63,7 +53,6 @@ Editor atlas/physics paint setup: Official Documentation in Reference — **Do N
 - **Procgen:** stamp patterns or batch terrain; avoid per-cell `set_cell` storms — [tile_pattern_stamper.gd](../scripts/tilemap_mastery_tile_pattern_stamper.gd) / [procedural_chunk_batcher.gd](../scripts/tilemap_mastery_procedural_chunk_batcher.gd).
 - **Diff / save deltas:** compare `get_used_cells()` source_id/atlas between layers; persist deltas via [tilemap_data_manager.gd](../scripts/tilemap_mastery_tilemap_data_manager.gd) rather than full maps when possible.
 
-
 ## Deep recipes (on demand)
 
 > LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
@@ -94,24 +83,24 @@ Editor atlas/physics paint setup: Official Documentation in Reference — **Do N
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, resources, and import layout before authoring TileSet atlases and multi-layer level scenes.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed Vector2i APIs, caching patterns, and signal-up/call-down structure used in runtime tile managers.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — collision layers/masks and StaticBody2D-equivalent behavior that TileMapLayer physics layers participate in.
+- [godot-project-foundations](project-foundations.md) — scene tree, resources, and import layout before authoring TileSet atlases and multi-layer level scenes.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed Vector2i APIs, caching patterns, and signal-up/call-down structure used in runtime tile managers.
+- [godot-2d-physics](2d-physics.md) — collision layers/masks and StaticBody2D-equivalent behavior that TileMapLayer physics layers participate in.
 
 #### Complements
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — `move_and_slide` against tile colliders, one-way platforms, and floor/wall queries over TileMapLayer geometry.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationAgent2D / region updates when destructible or procedural tiles change walkable polygons.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera2D limits and follow radii that drive chunk load/unload around the player.
-- [godot-adapt-3d-to-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md) — isometric / Y-sort depth tricks that pair with `TILE_SHAPE_ISOMETRIC` and multi-floor TileMapLayers.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — packing and swapping chunk scenes so large tile worlds stream without orphaned layers.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — batching, cache budgets, and profiler checks when `set_cell` / custom-data queries dominate frame time.
+- [godot-characterbody-2d](characterbody-2d.md) — `move_and_slide` against tile colliders, one-way platforms, and floor/wall queries over TileMapLayer geometry.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationAgent2D / region updates when destructible or procedural tiles change walkable polygons.
+- [godot-camera-systems](camera-systems.md) — Camera2D limits and follow radii that drive chunk load/unload around the player.
+- [godot-adapt-3d-to-2d](adapt-3d-to-2d.md) — isometric / Y-sort depth tricks that pair with `TILE_SHAPE_ISOMETRIC` and multi-floor TileMapLayers.
+- [godot-scene-management](scene-management.md) — packing and swapping chunk scenes so large tile worlds stream without orphaned layers.
+- [godot-performance-optimization](performance-optimization.md) — batching, cache budgets, and profiler checks when `set_cell` / custom-data queries dominate frame time.
 
 #### Downstream / consumers
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — noise/BSP/WFC generators that write cells via terrain connect, patterns, or chunk batchers.
-- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — precision platformer levels built from TileSet physics, one-ways, and hazard custom data.
-- [godot-genre-metroidvania](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md) — interconnected room grids, ability gates, and map revelation layered on TileMapLayer chunks.
-- [godot-genre-sandbox](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md) — diggable/buildable 2D worlds that treat TileMapLayer as the editable terrain backend.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate hazard density, destructible HP, and traversal cost encoded in tile custom data before shipping maps.
+- [godot-procedural-generation](procedural-generation.md) — noise/BSP/WFC generators that write cells via terrain connect, patterns, or chunk batchers.
+- [godot-genre-platformer](genre-platformer.md) — precision platformer levels built from TileSet physics, one-ways, and hazard custom data.
+- [godot-genre-metroidvania](genre-metroidvania.md) — interconnected room grids, ability gates, and map revelation layered on TileMapLayer chunks.
+- [godot-genre-sandbox](genre-sandbox.md) — diggable/buildable 2D worlds that treat TileMapLayer as the editable terrain backend.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate hazard density, destructible HP, and traversal cost encoded in tile custom data before shipping maps.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

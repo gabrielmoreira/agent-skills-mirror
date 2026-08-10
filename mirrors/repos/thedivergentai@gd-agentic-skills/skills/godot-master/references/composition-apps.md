@@ -10,7 +10,7 @@ description: "Expert architectural standards for scalable Godot Apps, Tools, Edi
 | Root node / task | Route |
 |------------------|-------|
 | Control, EditorPlugin, tool window, settings dock, form UI | **Stay here** — Orchestrator + components |
-| Player, Enemy, Weapon, Hitbox, gameplay CharacterBody | **[godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md)** — not this skill |
+| Player, Enemy, Weapon, Hitbox, gameplay CharacterBody | **[godot-composition](composition.md)** — not this skill |
 
 **App-only gate:** If the node is a gameplay actor (Player/Enemy/Weapon/Hitbox), use godot-composition. This skill owns **Control / EditorPlugin / tool** composition.
 
@@ -110,11 +110,6 @@ Root script (`LoginScreen.gd`, `UserProfile.gd`, EditorPlugin dock root) is an *
 - **NEVER skip signal cleanup** — Disconnect on exit / use CONNECT_ONE_SHOT where appropriate.
 - **NEVER let Logic know about Visuals** — Emit; VLS / Orchestrator plays animations and applies Theme.
 
-## Godot 4.7: App UI
-
-- **Control offset transform** for non-destructive visual tweaks in tool UIs.
-- Editor-style **searchable dropdowns** pattern applicable to in-app pickers.
-
 ## Fragile App Workflow: Saveable + Theme Ownership
 
 Do **not** put save I/O or Theme mutation inside form Controls. Route through components:
@@ -179,23 +174,23 @@ Orchestrator Dictionary registry for dashboard modules — still no sideways cal
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, Autoload registration, and scene ownership that Orchestrators and components plug into.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed exports, signals, and `class_name` fluency required before dependency injection and rock-testable components.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Core Has-A component model (game-focused sibling); this skill specializes the same rules for Apps/Tools/UI.
+- [godot-project-foundations](project-foundations.md) — Project layout, Autoload registration, and scene ownership that Orchestrators and components plug into.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed exports, signals, and `class_name` fluency required before dependency injection and rock-testable components.
+- [godot-composition](composition.md) — Core Has-A component model (game-focused sibling); this skill specializes the same rules for Apps/Tools/UI.
 
 #### Complements
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Connect flags, ghost cleanup, and EventBus patterns Orchestrators use for upward wiring.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Boot order and ownership when composition needs a thin global service instead of scene-local state.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Custom Resources and hot-swap `.tres` configs that feed data-driven components.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Control trees that should signal intent upward while Orchestrators call down into layout.
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Theme/visual syncers stay separate from auth/form logic under the VLS pattern.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Scene swaps must re-inject exports and reconnect Orchestrator wiring without sideways sibling links.
-- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — Rock-test and signal spies that prove components stay context-agnostic.
+- [godot-signal-architecture](signal-architecture.md) — Connect flags, ghost cleanup, and EventBus patterns Orchestrators use for upward wiring.
+- [godot-autoload-architecture](autoload-architecture.md) — Boot order and ownership when composition needs a thin global service instead of scene-local state.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Custom Resources and hot-swap `.tres` configs that feed data-driven components.
+- [godot-ui-containers](ui-containers.md) — Control trees that should signal intent upward while Orchestrators call down into layout.
+- [godot-ui-theming](ui-theming.md) — Theme/visual syncers stay separate from auth/form logic under the VLS pattern.
+- [godot-scene-management](scene-management.md) — Scene swaps must re-inject exports and reconnect Orchestrator wiring without sideways sibling links.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — Rock-test and signal spies that prove components stay context-agnostic.
 
 #### Downstream / consumers
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Consumes Saveable-group persistence components for modular app state.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Ability nodes as child components sequenced by an Orchestrator without inheritance trees.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — State nodes compose beside logic/visual syncers; FSM owns transitions, not sibling chatter.
+- [godot-save-load-systems](save-load-systems.md) — Consumes Saveable-group persistence components for modular app state.
+- [godot-ability-system](ability-system.md) — Ability nodes as child components sequenced by an Orchestrator without inheritance trees.
+- [godot-state-machine-advanced](state-machine-advanced.md) — State nodes compose beside logic/visual syncers; FSM owns transitions, not sibling chatter.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.

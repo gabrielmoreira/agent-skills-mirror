@@ -3,16 +3,6 @@ name: godot-game-loop-collection
 description: "Expert collection-loop systems for collectible IDs, scavenger hunts, completion archives, nearest-item compass UI, hidden spawners, and persistent find-all-X progress. Use when implementing collectibles, scavenger hunts, completion% archives, or compass-guided item hunts. Keywords: collectible_id, scavenger_hunt, collection_manager, collection_compass, completion_archive, hidden_item_spawner, find_all, collectible_item."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Collection Game Loops
-
-Stable collectible IDs → manager → compass → save. Not generic game-loop boilerplate.
-
 ## NEVER Do (collection landmines)
 
 - **NEVER reuse or omit stable collectible IDs** — Duplicate IDs double-count or overwrite; missing IDs break completion % and saves.
@@ -34,7 +24,7 @@ Stable collectible IDs → manager → compass → save. Not generic game-loop b
 1. [collectible_item.gd](../scripts/game_loop_collection_collectible_item.gd) — `item_id` (unique) + `collection_id` (hunt), one-shot Area pickup
 2. [collection_manager.gd](../scripts/game_loop_collection_collection_manager.gd) — authoritative collected-ID set via `register_item()` + `get_remaining_ids()`
 3. [collection_compass.gd](../scripts/game_loop_collection_collection_compass.gd) — nearest node whose `item_id` is still in manager remainders
-4. Persist collected IDs via [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md)
+4. Persist collected IDs via [godot-save-load-systems](save-load-systems.md)
 
 Optional: [hidden_item_spawner.gd](../scripts/game_loop_collection_hidden_item_spawner.gd) for randomized hunts; [collection_loop_patterns.gd](../scripts/game_loop_collection_collection_loop_patterns.gd) for advanced loop/MainLoop helpers.
 
@@ -77,23 +67,23 @@ Grid of icons: uncollected `modulate` silhouette; reveal when manager signals th
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, `@onready`, and resource basics before wiring managers, markers, and collectible scenes.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed signals, `match`, `await`, and deferred calls used throughout collection managers and loop patterns.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — Area3D/CollisionShape3D layers and non-uniform scale pitfalls that break pickup detection.
+- [godot-project-foundations](project-foundations.md) — scene tree, `@onready`, and resource basics before wiring managers, markers, and collectible scenes.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed signals, `match`, `await`, and deferred calls used throughout collection managers and loop patterns.
+- [godot-physics-3d](physics-3d.md) — Area3D/CollisionShape3D layers and non-uniform scale pitfalls that break pickup detection.
 
 #### Complements
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — safe dynamic connections and event-bus patterns when many collectibles notify one manager.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded scene swaps and ownership rules for end-of-hunt level transitions.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — durable save schemas for which items remain collected across sessions.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — silhouette archive grids and progress HUD layouts driven by `collection_updated`.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — spawn juice VFX before `queue_free` so pickups feel responsive.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — one-shot pickup SFX and bus routing tied to collect events.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — tune spawn_chance, target counts, and hunt length against completion-time distributions.
+- [godot-signal-architecture](signal-architecture.md) — safe dynamic connections and event-bus patterns when many collectibles notify one manager.
+- [godot-scene-management](scene-management.md) — threaded scene swaps and ownership rules for end-of-hunt level transitions.
+- [godot-save-load-systems](save-load-systems.md) — durable save schemas for which items remain collected across sessions.
+- [godot-ui-containers](ui-containers.md) — silhouette archive grids and progress HUD layouts driven by `collection_updated`.
+- [godot-particles](particles.md) — spawn juice VFX before `queue_free` so pickups feel responsive.
+- [godot-audio-systems](audio-systems.md) — one-shot pickup SFX and bus routing tied to collect events.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — tune spawn_chance, target counts, and hunt length against completion-time distributions.
 
 #### Downstream / consumers
-- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — wraps collection progress as quest objectives with rewards and branching.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — turns collected pickups into inventory grants when items are kept rather than consumed.
-- [godot-theme-easter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-theme-easter/SKILL.md) — seasonal egg-hunt presentation layered on the same collection loop.
+- [godot-quest-system](quest-system.md) — wraps collection progress as quest objectives with rewards and branching.
+- [godot-inventory-system](inventory-system.md) — turns collected pickups into inventory grants when items are kept rather than consumed.
+- [godot-theme-easter](theme-easter.md) — seasonal egg-hunt presentation layered on the same collection loop.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

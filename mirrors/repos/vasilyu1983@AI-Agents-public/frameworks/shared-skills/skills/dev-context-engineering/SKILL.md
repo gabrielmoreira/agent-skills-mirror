@@ -37,7 +37,7 @@ Use this skill to design repo-native agent context that is portable, high-signal
 - Repo-portfolio discovery and hub generation: use [dev-context-multi-repo](../dev-context-multi-repo/SKILL.md).
 - Symbol-level code graphs and blast radius: use [dev-context-code-graph](../dev-context-code-graph/SKILL.md).
 - Task decomposition and verification plans: use [dev-workflow-planning](../dev-workflow-planning/SKILL.md).
-- Hooks, MCP, or subagent implementation details: use [agents-hooks](../agents-hooks/SKILL.md), [agents-mcp](../agents-mcp/SKILL.md), or [agents-subagents](../agents-subagents/SKILL.md).
+- Hooks, MCP, or subagent implementation details: use [agents-hooks](../agents-hooks/SKILL.md), [agents-mcp](../agents-mcp/SKILL.md), or `agents-subagents`.
 
 ## Defaults
 
@@ -282,7 +282,7 @@ Default to one of these:
 - Context graph and multi-repo strategy: [references/context-graph-guide.md](references/context-graph-guide.md), [references/multi-repo-strategy.md](references/multi-repo-strategy.md)
 - Regulated and governed rollout: [references/regulated-environment-patterns.md](references/regulated-environment-patterns.md), [assets/ai-agent-governance.md](assets/ai-agent-governance.md), [assets/data-handling-gdpr-pci.md](assets/data-handling-gdpr-pci.md), [assets/compliance-fca-emi.md](assets/compliance-fca-emi.md), [assets/pr-template-ai-disclosure.md](assets/pr-template-ai-disclosure.md), [assets/fca-compliance-gate.yml](assets/fca-compliance-gate.yml)
 - Scripts and schema: `scripts/scan_context_artifacts.py`, `scripts/validate_context_graph.py`, `scripts/query_context_graph.py`, [schemas/context-graph.schema.json](schemas/context-graph.schema.json)
-- Related skills: the `agents-memory` skill, [docs-ai-prd](../docs-ai-prd/SKILL.md), [dev-workflow-planning](../dev-workflow-planning/SKILL.md), [agents-hooks](../agents-hooks/SKILL.md), [agents-mcp](../agents-mcp/SKILL.md), [agents-subagents](../agents-subagents/SKILL.md), [agents-swarm-orchestration](../agents-swarm-orchestration/SKILL.md), [dev-context-multi-repo](../dev-context-multi-repo/SKILL.md), [dev-context-code-graph](../dev-context-code-graph/SKILL.md)
+- Related skills: the `agents-memory` skill, [docs-ai-prd](../docs-ai-prd/SKILL.md), [dev-workflow-planning](../dev-workflow-planning/SKILL.md), [agents-hooks](../agents-hooks/SKILL.md), [agents-mcp](../agents-mcp/SKILL.md), `agents-subagents`, [agents-swarm-orchestration](../agents-swarm-orchestration/SKILL.md), [dev-context-multi-repo](../dev-context-multi-repo/SKILL.md), [dev-context-code-graph](../dev-context-code-graph/SKILL.md)
 
 ## Fact-Checking
 

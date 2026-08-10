@@ -3,16 +3,6 @@ name: godot-adapt-single-to-multiplayer
 description: "Expert patterns for adding multiplayer to single-player games including client-server architecture, authoritative server design, MultiplayerSynchronizer, lag compensation (client prediction, server reconciliation), input buffering, and anti-cheat measures. Use when retrofitting multiplayer, porting to online play, or designing networked gameplay. Trigger keywords: MultiplayerPeer, ENetMultiplayerPeer, SceneMultiplayer, MultiplayerSynchronizer, rpc, rpc_id, multiplayer_authority, client_prediction, server_reconciliation, lag_compensation, rollback."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Adapt: Single to Multiplayer
-
-Expert guidance for retrofitting multiplayer into single-player games.
-
 ## NEVER Do (Expert Multiplayer Rules)
 
 ### Security & Authority
@@ -117,7 +107,6 @@ UPNP port mapping for listen-server / P2P hosts.
 | Lag tolerance | Medium (prediction helps) | Low (desyncs) |
 | Development complexity | High | Medium |
 
-
 ## Advanced Networking Topics
 
 ### Peer-to-Peer NAT Traversal (Hole Punching)
@@ -161,24 +150,24 @@ Visualizing the packet timeline is critical for debugging jitter. Propose an ove
 ### Related Skills
 
 #### Prerequisites
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Split InputMap reads from simulation so clients send intents and the authority owns outcomes.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Local signal graphs that `rpc_bridge.gd` can wrap without coupling gameplay to transport.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Session/lobby Autoloads that outlive scene changes during host/join flow.
+- [godot-input-handling](input-handling.md) — Split InputMap reads from simulation so clients send intents and the authority owns outcomes.
+- [godot-signal-architecture](signal-architecture.md) — Local signal graphs that `rpc_bridge.gd` can wrap without coupling gameplay to transport.
+- [godot-autoload-architecture](autoload-architecture.md) — Session/lobby Autoloads that outlive scene changes during host/join flow.
 
 #### Complements
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Broader RPC, lobby, and ENet tuning once the single-player→online migration shape is fixed.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Deterministic move_and_slide steps reused by client prediction and reconciliation buffers.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — Body/shape setup that lag-compensation rewind and hit validation query against.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Server-side ray/shape queries for authoritative shots after state rewind.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — RTT/jitter overlays and remote debug habits that catch sync bugs localhost never shows.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Headless/dedicated-server export presets and CLI flags for real multi-instance tests.
-- [godot-server-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md) — PhysicsServer/RID patterns and headless host scaffolding used by rewind and dedicated peers.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Broader RPC, lobby, and ENet tuning once the single-player→online migration shape is fixed.
+- [godot-characterbody-2d](characterbody-2d.md) — Deterministic move_and_slide steps reused by client prediction and reconciliation buffers.
+- [godot-physics-3d](physics-3d.md) — Body/shape setup that lag-compensation rewind and hit validation query against.
+- [godot-raycasting-queries](raycasting-queries.md) — Server-side ray/shape queries for authoritative shots after state rewind.
+- [godot-debugging-profiling](debugging-profiling.md) — RTT/jitter overlays and remote debug habits that catch sync bugs localhost never shows.
+- [godot-export-builds](export-builds.md) — Headless/dedicated-server export presets and CLI flags for real multi-instance tests.
+- [godot-server-architecture](server-architecture.md) — PhysicsServer/RID patterns and headless host scaffolding used by rewind and dedicated peers.
 
 #### Downstream / consumers
-- [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — Hitscan/projectile feel that depends on prediction + lag compensation from this skill.
-- [godot-genre-battle-royale](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md) — Large-peer interest management and late-join snapshots at BR scale.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Retune economy/TTK after netcode changes alter effective weapon timings.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Cap replication rate and cull interest when bandwidth/CPU budgets break under peer load.
+- [godot-genre-shooter-fps](genre-shooter-fps.md) — Hitscan/projectile feel that depends on prediction + lag compensation from this skill.
+- [godot-genre-battle-royale](genre-battle-royale.md) — Large-peer interest management and late-join snapshots at BR scale.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Retune economy/TTK after netcode changes alter effective weapon timings.
+- [godot-performance-optimization](performance-optimization.md) — Cap replication rate and cull interest when bandwidth/CPU budgets break under peer load.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for this Domain Skill.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for this Domain Skill.

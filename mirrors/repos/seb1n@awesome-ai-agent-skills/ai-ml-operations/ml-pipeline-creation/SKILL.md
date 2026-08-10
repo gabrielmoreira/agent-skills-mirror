@@ -1,113 +1,102 @@
 ---
 name: ml-pipeline-creation
-description: A skill to create, manage, and automate machine learning pipelines.
+description: Design, implement, and validate reproducible machine-learning pipelines spanning data preparation, training, evaluation, registry, and deployment gates. Use when the user requests an ML pipeline, needs to turn model scripts into an orchestrated workflow, or provides pipeline components that must be connected safely.
 license: MIT
+metadata:
+  author: awesome-ai-agent-skills contributors
+  version: "1.0.0"
 ---
+
+# ML Pipeline Creation
+
+Build reproducible ML workflows whose inputs, outputs, lineage, and promotion criteria are explicit. Prefer the project's existing orchestrator and conventions; do not introduce a platform merely to demonstrate one.
+
+## Required Inputs
+
+- Business objective and measurable model acceptance criteria
+- Data sources, ownership, sensitivity, and expected refresh cadence
+- Existing preprocessing, training, evaluation, and serving code
+- Target environments and available orchestration or CI system
+- Compute, cost, latency, reproducibility, and compliance constraints
+
+If critical details are missing, state assumptions and design a platform-neutral pipeline before selecting an implementation.
+
+## Output Contract
+
+Produce:
+
+1. A dependency graph of pipeline stages and artifacts
+2. A versioned pipeline definition or implementation
+3. Explicit schemas for every stage input and output
+4. Data, model, and environment versioning rules
+5. Evaluation and promotion gates with failure behavior
+6. Observability, retry, backfill, and rollback procedures
+7. A verification record showing how the pipeline was tested
 
 ## Workflow
 
-This skill enables the creation and management of machine learning (ML) pipelines, automating the process of training, evaluating, and deploying ML models. The workflow is designed to be flexible and adaptable to various ML tasks and frameworks.
+1. **Inspect the environment.** Identify the repository language, dependency manager, existing orchestration system, model framework, artifact store, and deployment path. Reuse established tools where possible.
+2. **Define the contract.** Record the objective, data snapshot rules, target metric, baseline, acceptance threshold, resource budget, and deployment constraints. Separate offline evaluation from production health metrics.
+3. **Model the DAG.** Represent ingestion, validation, splitting, transformation, training, evaluation, registration, and deployment as idempotent stages. Declare every artifact rather than relying on undeclared files or mutable global state.
+4. **Implement reproducibility.** Pin dependencies, seed stochastic operations where appropriate, version code and data, capture parameters, and store immutable artifacts with provenance. Prevent train/validation leakage by fitting transformations only on training data.
+5. **Add quality gates.** Validate schemas before training, compare metrics with a baseline, fail closed on missing or invalid artifacts, and require explicit approval before production promotion when consequences are material.
+6. **Design operations.** Define retries only for transient failures, make reruns idempotent, specify backfill boundaries, emit structured logs and metrics, and document rollback to the last known-good model.
+7. **Test incrementally.** Run unit tests for components, a small deterministic end-to-end fixture, and a staging or dry-run execution. Confirm that a failed stage cannot silently publish a model.
 
-1.  **Define Pipeline Structure**: The user specifies the stages of the ML pipeline, including data preprocessing, model training, model evaluation, and deployment. This is typically done in a configuration file (e.g., YAML or JSON).
-2.  **Component Implementation**: Each stage of the pipeline is implemented as a separate component. These components are reusable and can be chained together to form a complete pipeline.
-3.  **Pipeline Execution**: The skill executes the pipeline, running each component in the specified order. It handles data flow between components and manages dependencies.
-4.  **Monitoring and Logging**: The skill provides tools for monitoring the pipeline's execution, logging results, and tracking experiments.
-5.  **Deployment**: Once a model is trained and evaluated, the skill can automate its deployment to a serving environment.
+## Example
 
-## Usage
-
-To use this skill, you need to provide a pipeline definition file and the implementation of the pipeline components.
-
-### Example: Simple Scikit-learn Pipeline
-
-Here's an example of how to define and run a simple ML pipeline using this skill.
-
-**`pipeline.yaml`**
+For a batch classifier, define the artifact flow explicitly:
 
 ```yaml
-name: simple-sklearn-pipeline
-components:
-  - name: data-preprocessing
-    script: preprocess.py
-    inputs:
-      - raw_data: /path/to/raw_data.csv
-    outputs:
-      - processed_data: /path/to/processed_data.csv
+pipeline: customer-churn-training
+inputs:
+  raw_snapshot: data/raw/churn-2026-08-01.parquet
+stages:
+  - name: prepare-data
+    inputs: [raw_snapshot]
+    outputs: [train_set, validation_set, test_set, feature_schema]
   - name: train-model
-    script: train.py
-    inputs:
-      - processed_data: /path/to/processed_data.csv
-    outputs:
-      - model: /path/to/model.pkl
+    inputs: [train_set, feature_schema, training_config]
+    outputs: [model, training_metrics]
   - name: evaluate-model
-    script: evaluate.py
-    inputs:
-      - model: /path/to/model.pkl
-      - test_data: /path/to/test_data.csv
-    outputs:
-      - metrics: /path/to/metrics.json
+    inputs: [model, validation_set, test_set, baseline_metrics]
+    outputs: [evaluation_report, promotion_decision]
+  - name: register-model
+    condition: promotion_decision == "pass"
+    inputs: [model, evaluation_report]
+    outputs: [registered_model_version]
 ```
 
-**`preprocess.py`**
+Require `prepare-data` to emit every declared split. Reject the run if `test_set` is absent rather than letting evaluation consume an undeclared path.
 
-```python
-import pandas as pd
-from sklearn.model_selection import train_test_split
+## Safety Boundaries
 
-# Load data
-df = pd.read_csv('/path/to/raw_data.csv')
+- Treat datasets, credentials, model artifacts, and logs as potentially sensitive.
+- Never copy production data into development without authorization and required de-identification.
+- Do not deploy, replace a registered model, or alter production infrastructure without explicit approval.
+- Present destructive migration or cleanup plans before execution and preserve a rollback path.
+- Flag fairness, privacy, security, or regulatory review requirements instead of claiming compliance from pipeline execution alone.
 
-# Simple preprocessing
-X = df.drop('target', axis=1)
-y = df['target']
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+## Verification
 
-# Save processed data
-pd.concat([X_train, y_train], axis=1).to_csv('/path/to/processed_data.csv', index=False)
-pd.concat([X_test, y_test], axis=1).to_csv('/path/to/test_data.csv', index=False)
-```
+- Re-run the fixture twice and confirm identical stage contracts and expected deterministic outputs.
+- Force one stage to fail and verify downstream stages do not execute.
+- Verify artifact hashes, code revision, parameters, data version, and evaluation results are traceable from the registered model.
+- Test retry and backfill behavior without duplicating records or overwriting immutable artifacts.
+- Confirm the deployment gate rejects a model below threshold and accepts a known-good fixture.
 
-**`train.py`**
+## Best Practices
 
-```python
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-import joblib
+- Keep components small, idempotent, and independently testable.
+- Separate pipeline orchestration from model business logic.
+- Store configuration as versioned data; do not bury thresholds in code.
+- Prefer immutable artifacts and explicit lineage over mutable “latest” paths.
+- Monitor data quality and model behavior after deployment, not only during training.
 
-# Load processed data
-df = pd.read_csv('/path/to/processed_data.csv')
-X_train = df.drop('target', axis=1)
-y_train = df['target']
+## Edge Cases
 
-# Train model
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
-
-# Save model
-joblib.dump(model, '/path/to/model.pkl')
-```
-
-**`evaluate.py`**
-
-```python
-import pandas as pd
-import joblib
-import json
-from sklearn.metrics import accuracy_score
-
-# Load model and test data
-model = joblib.load('/path/to/model.pkl')
-df = pd.read_csv('/path/to/test_data.csv')
-X_test = df.drop('target', axis=1)
-y_test = df['target']
-
-# Evaluate model
-y_pred = model.predict(X_test)
-accuracy = accuracy_score(y_test, y_pred)
-
-# Save metrics
-with open('/path/to/metrics.json', 'w') as f:
-    json.dump({'accuracy': accuracy}, f)
-
-print(f'Model accuracy: {accuracy}')
-```
+- **Streaming data:** Use event-time semantics, checkpointing, and replay-safe sinks.
+- **Non-deterministic training:** Record seeds and environment details, then validate within an agreed tolerance.
+- **Large backfills:** Bound the date range, estimate cost, and test one partition before scaling.
+- **Schema drift:** Quarantine incompatible data and require a reviewed schema migration.
+- **Partial promotion:** Keep registry, serving configuration, and monitoring changes transactional or explicitly reversible.

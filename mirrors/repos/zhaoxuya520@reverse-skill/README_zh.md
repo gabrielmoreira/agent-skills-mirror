@@ -222,33 +222,32 @@ GitHub Actions 会在 Windows 与 Ubuntu 上执行同一套核心检查。
 
 ## 赞助
 
-赞助将用于维护路由基准、跨平台 CI、文档和公开安全工作流。
-
-### 当前赞助方
-
-<table align="center">
+<table>
   <tr>
-    <td align="center" width="440">
+    <td align="center" width="220">
       <a href="https://www.atlascloud.ai/?ref=W3Q77C">
-        <img src="https://www.atlascloud.ai/oss-program/powered-by-atlas-cloud.svg" alt="Atlas Cloud 赞助" height="44" />
+        <img src="docs/assets/sponsors/atlas-cloud.svg" alt="Atlas Cloud" width="190" />
       </a>
       <br />
-      <strong>Atlas Cloud</strong>
-      <br />
-      <sub>大模型服务提供商</sub>
+      <a href="https://www.atlascloud.ai/oss-program">
+        <img src="https://www.atlascloud.ai/oss-program/powered-by-atlas-cloud.svg" alt="Powered by Atlas Cloud" height="24" />
+      </a>
+    </td>
+    <td>
+      <strong><a href="https://www.atlascloud.ai/?ref=W3Q77C">Atlas Cloud</a></strong> 是全模态 AI 推理平台，通过统一 API 提供 400+ 精选图像、视频、音频、3D 与语言模型。Atlas Cloud 为 reverse-skill 的跨平台路由验证、文档建设和公开安全工作流提供模型服务支持。
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="220">
+      <a href="https://gokite.ai/">
+        <img src="https://gokite.ai/images/Kite_Logo.svg" alt="Kite AI" width="150" />
+      </a>
+    </td>
+    <td>
+      <strong><a href="https://gokite.ai/">Kite AI</a></strong> 面向智能体经济构建身份与支付基础设施，并支持 reverse-skill 的开源维护、路由基准和平台无关安全工作流建设。
     </td>
   </tr>
 </table>
-
-### 赞助本项目
-
-<p align="center">
-  <a href="mailto:ww7517437@gmail.com?subject=%5BSponsorship%5D%20reverse-skill">
-    <img src="https://img.shields.io/badge/%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6-ww7517437%40gmail.com-0A66C2?style=for-the-badge&logo=gmail&logoColor=white" alt="发送邮件 — ww7517437@gmail.com" />
-  </a>
-</p>
-
-<p align="center"><sub>确认后的赞助方可在这里展示名称、Logo 与项目链接。</sub></p>
 
 <p align="right">(<a href="#赞助">返回顶部</a>)</p>
 

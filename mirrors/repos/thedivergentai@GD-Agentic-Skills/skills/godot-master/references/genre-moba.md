@@ -3,16 +3,6 @@ name: godot-genre-moba
 description: "Expert blueprint for MOBA games including lane logic (minion wave spawning every 30s), tower aggro priority (hero attacking ally over minion over hero), click-to-move controls (RTS-style raycasting), hero ability systems (QWER cooldowns, mana cost), fog of war (SubViewport projections), and authoritative networking (server validates damage). Use for competitive 5v5 or arena games. Trigger keywords: MOBA, lane_manager, minion_waves, tower_aggro, click_to_move, ability_cooldowns, fog_of_war, comeback_mechanics."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: MOBA (Multiplayer Online Battle Arena)
-
-Expert blueprint for MOBAs emphasizing competitive balance and strategic depth.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Networking & Authority
@@ -155,7 +145,6 @@ class_name Ability extends Resource
 2.  **Pathfinding Lag**: 100 minions pathing every frame. **Fix**: Distribute pathfinding updates over multiple frames (Time Slicing).
 3.  **Hacking**: Client says "I dealt 1000 damage". **Fix**: Client says "I cast Spell Q at Direction V". Server calculates damage.
 
-
 ## Advanced MOBA Meta-Systems
 
 Professional implementation of match playback, network smoothing, and advanced jungle AI.
@@ -253,24 +242,24 @@ func _physics_process(_delta: float) -> void:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Physics ticks, layer names, and input map setup before lanes, towers, and fog queries stay consistent.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Authority, RPC hygiene, and sync budgets that MOBA minion/hero networking builds on.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationAgent avoidance, baking, and performance contracts for waves and jungle camps.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Action maps and physics-step input sampling for click-to-move and QWER cast telegraphs.
+- [godot-project-foundations](project-foundations.md) — Physics ticks, layer names, and input map setup before lanes, towers, and fog queries stay consistent.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Authority, RPC hygiene, and sync budgets that MOBA minion/hero networking builds on.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationAgent avoidance, baking, and performance contracts for waves and jungle camps.
+- [godot-input-handling](input-handling.md) — Action maps and physics-step input sampling for click-to-move and QWER cast telegraphs.
 
 #### Complements
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Data-driven QWER cooldowns, costs, and effect scenes wired into authoritative cast validation.
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Hero growth, armor/MR-style modifiers, and Resource-backed stats towers and abilities read.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hit/hurt contracts for skill-shots, AA, and tower shots without hard class coupling.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Deeper space-state recipes for fog LOS, dive checks, and click picking under load.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Decoupled ability UI binders and cast buses so cooldowns never live inside hero combat scripts.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Lane corridors, jungle geometry, and collision that match the navmesh bake surface.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and batching when minion sync arrays or fog grids threaten frame time.
-- [godot-genre-rts](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md) — Shared click-to-move, selection, and fog-mask patterns when borrowing RTS control UX for MOBA heroes.
+- [godot-ability-system](ability-system.md) — Data-driven QWER cooldowns, costs, and effect scenes wired into authoritative cast validation.
+- [godot-rpg-stats](rpg-stats.md) — Hero growth, armor/MR-style modifiers, and Resource-backed stats towers and abilities read.
+- [godot-combat-system](combat-system.md) — Hit/hurt contracts for skill-shots, AA, and tower shots without hard class coupling.
+- [godot-raycasting-queries](raycasting-queries.md) — Deeper space-state recipes for fog LOS, dive checks, and click picking under load.
+- [godot-signal-architecture](signal-architecture.md) — Decoupled ability UI binders and cast buses so cooldowns never live inside hero combat scripts.
+- [godot-3d-world-building](3d-world-building.md) — Lane corridors, jungle geometry, and collision that match the navmesh bake surface.
+- [godot-performance-optimization](performance-optimization.md) — Profiling and batching when minion sync arrays or fog grids threaten frame time.
+- [godot-genre-rts](genre-rts.md) — Shared click-to-move, selection, and fog-mask patterns when borrowing RTS control UX for MOBA heroes.
 
 #### Downstream / consumers
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Lifts a solo lane prototype into lobby/authority/prediction flows this genre assumes.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Hero asymmetry, kill-bounty, and catch-up XP matrices — simulate matchup win% instead of AFK→pro PvE bands alone.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — Lifts a solo lane prototype into lobby/authority/prediction flows this genre assumes.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Hero asymmetry, kill-bounty, and catch-up XP matrices — simulate matchup win% instead of AFK→pro PvE bands alone.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored entry for discovering MOBA patterns beside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored entry for discovering MOBA patterns beside sibling domains.

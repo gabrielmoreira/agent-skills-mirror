@@ -1,81 +1,112 @@
 ---
 name: ai-prompt-engineering
-description: "Prompt engineering for production LLMs — structured outputs, RAG, tool workflows, and safety. Use when designing or debugging prompts for LLM APIs."
+description: "Prompt engineering for production LLMs — structured outputs, evals, RAG, tool workflows, multimodal prompting, and safety. Use when designing, debugging, or shipping prompts."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
 # Prompt Engineering — Operational Skill
 
-**Modern Best Practices (January 2026)**: versioned prompts, explicit output contracts, regression tests, and safety threat modeling for tool/RAG prompts (OWASP LLM Top 10: https://owasp.org/www-project-top-10-for-large-language-model-applications/).
+Use this skill for production prompt design: schema-first outputs, tool and RAG prompts, prompt hardening, evals, and release workflows. Keep it operational. If the main problem is architecture, retrieval quality, deployment, or inference cost, route to the deeper adjacent skill.
 
-This skill provides **operational guidance** for building production-ready prompts across standard tasks, RAG workflows, agent orchestration, structured outputs, hidden reasoning, and multi-step planning.
+## ASCII Flow
 
-All content is **operational**, not theoretical. Focus on patterns, checklists, and copy-paste templates.
+```text
+prompt job
+  |
+  v
+pattern choice
+  structured output | extraction | RAG | tool use | rewrite | classify | release
+  |
+  v
+prompt contract
+  inputs + role/task + context rules + output schema + refusal/failure behavior
+  |
+  v
+validation
+  schema checks + citation/tool checks + eval cases + regression gate
+  |
+  v
+released prompt
+  versioned artifact + rollout notes + rollback path
+```
 
-## Quick Start (60 seconds)
+## When to Use This Skill
 
-1. Pick a pattern from the decision tree (structured output, extractor, RAG, tools/agent, rewrite, classification).
-2. Start from a template in `assets/` and fill in `TASK`, `INPUT`, `RULES`, and `OUTPUT FORMAT`.
-3. Add guardrails: instruction/data separation, “no invented details”, missing → `null`/explicit missing.
-4. Add validation: JSON parse check, schema check, citations check, post-tool checks.
-5. Add evals: 10–20 cases while iterating, 50–200 before release, plus adversarial injection cases.
+- designing or refactoring prompts for production LLM systems
+- structured outputs, extraction schemas, or response contracts
+- prompt debugging, prompt hardening, or prompt review
+- prompt evals, regression suites, and rollout criteria
+- tool-use or RAG prompt patterns
+- multimodal prompts for image, document, audio, or video inputs
 
-## Model Notes (2026)
+## Route Elsewhere
 
-This skill includes Claude Code + Codex CLI optimizations:
+- agent architecture and orchestration -> [ai-agents](../ai-agents/SKILL.md)
+- retrieval quality and chunking -> [ai-rag](../ai-rag/SKILL.md)
+- broader LLM lifecycle and model strategy -> [ai-llm](../ai-llm/SKILL.md)
+- inference latency and cost optimization -> [ai-llm-inference](../ai-llm-inference/SKILL.md)
+- deployment, monitoring, and platform controls -> [ai-mlops](../ai-mlops/SKILL.md)
 
-- **Action directives**: Frame for implementation, not suggestions
-- **Parallel tool execution**: Independent tool calls can run simultaneously
-- **Long-horizon task management**: State tracking, incremental progress, context compaction resilience
-- **Positive framing**: Describe desired behavior rather than prohibitions
-- **Style matching**: Prompt formatting influences output style
-- **Domain-specific patterns**: Specialized guidance for frontend, research, and agentic coding
-- **Style-adversarial resilience**: Stress-test refusals with poetic/role-play rewrites; normalize or decline stylized harmful asks before tool use
+---
 
-Prefer “brief justification” over requesting chain-of-thought. When using private reasoning patterns, instruct: think internally; output only the final answer.
+## Quick Start
+
+1. Classify the prompt job: structured output, extraction, RAG, tool use, rewrite, classification, or release workflow.
+2. Start from a template or provider-native prompt feature rather than writing from scratch.
+3. Add explicit output and refusal rules.
+4. Add validation: schema checks, citation checks, post-tool checks, and failure handling.
+5. Add evals before calling the prompt production-ready.
 
 ## Quick Reference
 
-| Task | Pattern to Use | Key Components | When to Use |
-|------|----------------|----------------|-------------|
-| **Machine-parseable output** | Structured Output | JSON schema, "JSON-only" directive, no prose | API integrations, data extraction |
-| **Field extraction** | Deterministic Extractor | Exact schema, missing->null, no transformations | Form data, invoice parsing |
-| **Use retrieved context** | RAG Workflow | Context relevance check, chunk citations, explicit missing info | Knowledge bases, documentation search |
-| **Internal reasoning** | Hidden Chain-of-Thought | Internal reasoning, final answer only | Classification, complex decisions |
-| **Tool-using agent** | Tool/Agent Planner | Plan-then-act, one tool per turn | Multi-step workflows, API calls |
-| **Text transformation** | Rewrite + Constrain | Style rules, meaning preservation, format spec | Content adaptation, summarization |
-| **Classification** | Decision Tree | Ordered branches, mutually exclusive, JSON result | Routing, categorization, triage |
+- Pattern selection -> `## Pattern Chooser`
+- Reusable prompt shapes -> `## Minimal Prompt Skeletons`
+- Release hardening -> `## Production Checklist`
+- Deeper references and templates -> `## Navigation`
+
+## Cross-Model Notes
+
+- Prefer provider-native structured outputs, registries, evals, and prompt tooling where available.
+- Ask for final answers, checks, or brief justification, not visible chain-of-thought.
+- Treat retrieved context, tool outputs, and user documents as untrusted data.
+- Run only truly independent tool calls in parallel; keep writes and validation serialized.
+- Keep state compact and resilient to context compression.
 
 ---
 
-## Decision Tree: Choosing the Right Pattern
+## Pattern Chooser
 
-```text
-User needs: [Prompt Type]
-  |-- Output must be machine-readable?
-  |     |-- Extract specific fields only? -> **Deterministic Extractor Pattern**
-  |     `-- Generate structured data? -> **Structured Output Pattern (JSON)**
-  |
-  |-- Use external knowledge?
-  |     `-- Retrieved context must be cited? -> **RAG Workflow Pattern**
-  |
-  |-- Requires reasoning but hide process?
-  |     `-- Classification or decision task? -> **Hidden Chain-of-Thought Pattern**
-  |
-  |-- Needs to call external tools/APIs?
-  |     `-- Multi-step workflow? -> **Tool/Agent Planner Pattern**
-  |
-  |-- Transform existing text?
-  |     `-- Style/format constraints? -> **Rewrite + Constrain Pattern**
-  |
-  `-- Classify or route to categories?
-        `-- Mutually exclusive rules? -> **Decision Tree Pattern**
-```
+| Need | Pattern | Core Controls |
+|------|---------|---------------|
+| Machine-parseable output | Structured output | schema, JSON-only response, validation |
+| Deterministic field extraction | Extractor | missing -> `null`, no transformation, exact schema |
+| Retrieved factual answering | RAG workflow | relevance check, citation requirement, explicit missing-info behavior |
+| Hidden reasoning | Private reasoning / native thinking | final answer only, no exposed chain-of-thought |
+| Tool use | Tool or agent planner | plan, tool gating, validation after each call |
+| Text transformation | Rewrite and constrain | meaning preservation, style and format rules |
+| Classification or routing | Decision tree | mutually exclusive branches, stable output format |
+| Prompt release | Prompt ops | versioning, eval gates, rollback path |
+| Choosing prompt vs RAG vs fine-tune vs distill | Escalation decision | Prompt → RAG (knowledge gap) → Fine-tune (volume + stable task) → Distill (cost at scale). See [references/prompt-vs-finetune.md](references/prompt-vs-finetune.md). |
+
+## Workflow
+
+1. Pick the closest pattern.
+2. Load the smallest useful template or reference.
+3. Write the prompt contract:
+   - task
+   - allowed inputs and tools
+   - output schema or format
+   - refusal or missing-data behavior
+4. Add validators and adversarial tests.
+5. Verify current provider behavior before making claims about "best" settings or features.
 
 ---
 
-## Copy/Paste: Minimal Prompt Skeletons
+## Minimal Prompt Skeletons
 
-### 1) Generic "output contract" skeleton
+### Output contract
 
 ```text
 TASK:
@@ -85,9 +116,9 @@ INPUT:
 {{input_data}}
 
 RULES:
-- Follow TASK exactly.
-- Use only INPUT (and tool outputs if tools are allowed).
-- No invented details. Missing required info -> say what is missing.
+- Use only INPUT and approved tool outputs.
+- Do not invent facts.
+- Missing required information -> say what is missing.
 - Keep reasoning hidden.
 - Follow OUTPUT FORMAT exactly.
 
@@ -95,20 +126,20 @@ OUTPUT FORMAT:
 {{schema_or_format_spec}}
 ```
 
-### 2) Tool/agent skeleton (deterministic)
+### Tool or agent prompt
 
 ```text
 AVAILABLE TOOLS:
-{{tool_signatures_or_names}}
+{{tool_names_or_signatures}}
 
 WORKFLOW:
 - Make a short plan.
-- Call tools only when required to complete the task.
-- Validate tool outputs before using them.
-- If the environment supports parallel tool calls, run independent calls in parallel.
+- Call tools only when needed.
+- Validate each tool result before using it.
+- Run independent reads in parallel only if the environment supports it.
 ```
 
-### 3) RAG skeleton (grounded)
+### Grounded RAG prompt
 
 ```text
 RETRIEVED CONTEXT:
@@ -122,211 +153,131 @@ RULES:
 
 ---
 
-## Operational Checklists
+## Production Checklist
 
-Use these references when validating or debugging prompts:
+- [references/quality-checklists.md](references/quality-checklists.md) for pre-release validation
+- [references/production-guidelines.md](references/production-guidelines.md) for rollout, guardrails, and regression policy
+- [references/provider-native-prompt-ops.md](references/provider-native-prompt-ops.md) for current provider tooling
+- [references/prompt-security-defense.md](references/prompt-security-defense.md) for injection, tool abuse, and approval gates
 
-- `frameworks/shared-skills/skills/ai-prompt-engineering/references/quality-checklists.md`
-- `frameworks/shared-skills/skills/ai-prompt-engineering/references/production-guidelines.md`
+## Context Engineering
 
-## Context Engineering (2026)
+Prompt quality depends on the whole input pipeline, not just instruction wording.
 
-True expertise in prompting extends beyond writing instructions to shaping the entire context in which the model operates. Context engineering encompasses:
+- prioritize the highest-signal context first
+- compress history and tool output aggressively
+- separate instructions, user data, and retrieved context with clear delimiters
+- adapt context size to task complexity instead of dumping everything into the window
 
-- **Conversation history**: What prior turns inform the current response
-- **Retrieved context (RAG)**: External knowledge injected into the prompt
-- **Structured inputs**: JSON schemas, system/user message separation
-- **Tool outputs**: Results from previous tool calls that shape next steps
-
-### Context Engineering vs Prompt Engineering
-
-| Aspect | Prompt Engineering | Context Engineering |
-|--------|-------------------|---------------------|
-| Focus | Instruction text | Full input pipeline |
-| Scope | Single prompt | RAG + history + tools |
-| Optimization | Word choice, structure | Information architecture |
-| Goal | Clear instructions | Optimal context window |
-
-### Key Context Engineering Patterns
-
-**1. Context Prioritization**: Place most relevant information first; models attend more strongly to early context.
-
-**2. Context Compression**: Summarize history, truncate tool outputs, select most relevant RAG chunks.
-
-**3. Context Separation**: Use clear delimiters (`<system>`, `<user>`, `<context>`) to separate instruction types.
-
-**4. Dynamic Context**: Adjust context based on task complexity - simple tasks need less context, complex tasks need more.
+Route deep retrieval or memory design work to [ai-rag](../ai-rag/SKILL.md) or `ai-context-layer`.
 
 ---
 
-## Core Concepts vs Implementation Practices
+## Core Principles
 
-### Core Concepts (Vendor-Agnostic)
-
-- **Prompt contract**: inputs, allowed tools, output schema, max tokens, and refusal rules.
-- **Context engineering**: conversation history, RAG context, tool outputs, and structured inputs shape model behavior.
-- **Determinism controls**: temperature/top_p, constrained decoding/structured outputs, and strict formatting.
-- **Cost & latency budgets**: prompt length and max output drive tokens and tail latency; enforce hard limits and measure p95/p99.
-- **Evaluation**: golden sets + regression gates + A/B + post-deploy monitoring.
-- **Security**: prompt injection, data exfiltration, and tool misuse are primary threats (OWASP LLM Top 10: https://owasp.org/www-project-top-10-for-large-language-model-applications/).
-
-### Implementation Practices (Model/Platform-Specific)
-
-- Use model-specific structured output features when available; keep a schema validator as the source of truth.
-- Align tracing/metrics with OpenTelemetry GenAI semantic conventions (https://opentelemetry.io/docs/specs/semconv/gen-ai/).
+- Define the contract before optimizing style.
+- Make determinism explicit with schemas, constrained decoding, and post-generation validation.
+- Treat prompt length and output caps as latency and cost controls.
+- Use evals plus regression gates instead of intuition.
+- Security means instruction-data separation, output validation, and tool-risk controls.
 
 ## Do / Avoid
 
 **Do**
-- Do keep prompts small and modular; centralize shared fragments (policies, schemas, style).
-- Do add a prompt eval harness and block merges on regressions.
-- Do prefer "brief justification" over requesting chain-of-thought; treat hidden reasoning as model-internal.
+
+- keep prompts modular and versioned
+- centralize shared policies and schemas
+- block releases on prompt regressions
+- use provider-native prompt ops where they simplify maintenance
 
 **Avoid**
-- Avoid prompt sprawl (many near-duplicates with no owner or tests).
-- Avoid brittle multi-step chains without intermediate validation.
-- Avoid mixing policy and product copy in the same prompt (harder to audit and update).
 
-## Navigation: Core Patterns
+- prompt sprawl with many near-duplicates
+- brittle multi-step chains without validation
+- mixing product copy, policy, and control logic in one long prompt
+- asking for visible chain-of-thought
 
-- **[Core Patterns](references/core-patterns.md)** - 7 production-grade prompt patterns
-  - Structured Output (JSON), Deterministic Extractor, RAG Workflow
-  - Hidden Chain-of-Thought, Tool/Agent Planner, Rewrite + Constrain, Decision Tree
-  - Each pattern includes structure template and validation checklist
+## Known Traps
 
-## Navigation: Best Practices
+- Designing a prompt contract around one specific frontier model as if its availability is guaranteed. Provider-side safety incidents, export-control actions, or capacity constraints can suspend or fall back a model family with no notice; a production prompt contract must already specify what happens when the primary model is unavailable, not just what happens when it refuses.
+- Attributing a refusal-rate or format-compliance regression to "the prompt got worse" without first checking whether the provider shipped a safety-classifier or model update in the same window.
+- Treating the prompt text itself as the whole system while validators, retrieval shaping, and tool-output checks remain undefined.
+- Mixing instructions, retrieved context, and user data without strong delimiters, then misdiagnosing injection or policy failures as "model quality" issues.
+- Shipping prompt changes without a regression set for the exact schema, citations, refusal behavior, and edge cases that matter.
+- Creating many slightly different prompts for the same job instead of maintaining one reusable pattern with explicit variants.
+- Asking for verbose exposed reasoning when the real requirement is a correct answer plus a narrow audit trail.
 
-- **[Best Practices (Core)](references/best-practices-core.md)** - Foundation rules for production-grade prompts
-  - System instruction design, output contract specification, action directives
-  - Context handling, error recovery, positive framing, style matching, style-adversarial red teaming
-  - Anti-patterns, Claude 4+ specific optimizations
+## Common Anti-Patterns
 
-- **[Production Guidelines](references/production-guidelines.md)** - Deployment and operational guidance
-  - Evaluation & testing (Prompt CI/CD), model parameters, few-shot selection
-  - Safety & guardrails, conversation memory, context compaction resilience
-  - Answer engineering, decomposition, multilingual/multimodal, benchmarking
-  - **CI/CD Tools** (2026): Promptfoo, DeepEval integration patterns
-  - **Security** (2026): PromptGuard 4-layer defense, Microsoft Prompt Shields, taint tracking
-
-- **[Quality Checklists](references/quality-checklists.md)** - Validation checklists before deployment
-  - Prompt QA, JSON validation, agent workflow checks
-  - RAG workflow, safety & security, performance optimization
-  - Testing coverage, anti-patterns, quality score rubric
-
-- **[Domain-Specific Patterns](references/domain-specific-patterns.md)** - Claude 4+ optimized patterns for specialized domains
-  - Frontend/visual code: Creativity encouragement, design variations, micro-interactions
-  - Research tasks: Success criteria, verification, hypothesis tracking
-  - Agentic coding: No speculation rule, principled implementation, investigation patterns
-  - Cross-domain best practices and quality modifiers
-
-## Navigation: Specialized Patterns
-
-- **[RAG Patterns](references/rag-patterns.md)** - Retrieval-augmented generation workflows
-  - Context grounding, chunk citation, missing information handling
-
-- **[Agent and Tool Patterns](references/agent-patterns.md)** - Tool use and agent orchestration
-  - Plan-then-act workflows, tool calling, multi-step reasoning, generate-verify-revise chains
-  - **Multi-Agent Orchestration** (2026): centralized, handoff, federated patterns; plan-and-execute (90% cost reduction)
-
-- **[Extraction Patterns](references/extraction-patterns.md)** - Deterministic field extraction
-  - Schema-based extraction, null handling, no hallucinations
-
-- **[Reasoning Patterns (Hidden CoT)](references/reasoning-patterns.md)** - Internal reasoning without visible output
-  - Hidden reasoning, final answer only, classification workflows
-  - **Extended Thinking API** (Claude 4+): budget management, think tool, multishot patterns
-
-- **[Additional Patterns](references/additional-patterns.md)** - Extended prompt engineering techniques
-  - Advanced patterns, edge cases, optimization strategies
-
-- **[Prompt Testing & CI/CD](references/prompt-testing-ci-cd.md)** - Automated prompt evaluation pipelines
-  - Promptfoo, DeepEval integration, regression detection, A/B testing, quality gates
-
-- **[Multimodal Prompt Patterns](references/multimodal-prompt-patterns.md)** - Vision, audio, and document input patterns
-  - Image description, OCR+LLM, bounding box prompts, Whisper conditioning, video frame analysis
-
-- **[Prompt Security & Defense](references/prompt-security-defense.md)** - Securing LLM applications against adversarial attacks
-  - Injection detection (PromptGuard, Prompt Shields), defense-in-depth, taint tracking, red team testing
+- Using prompt length as a proxy for quality instead of tightening the output contract and validation path.
+- Hardening prompts against every failure mode in prose while leaving post-generation validation weak or absent.
+- Letting tool instructions, style guidance, product copy, and policy constraints accumulate in one giant prompt instead of modularizing them.
+- Treating provider-specific behavior as universal without rechecking current official docs and runtime constraints.
 
 ---
 
-## Navigation: Templates
+## Navigation
 
-Templates are copy-paste ready and organized by complexity:
+### Core references
 
-### Quick Templates
+- [references/core-patterns.md](references/core-patterns.md)
+- [references/best-practices-core.md](references/best-practices-core.md)
+- [references/production-guidelines.md](references/production-guidelines.md)
+- [references/quality-checklists.md](references/quality-checklists.md)
+- [references/provider-native-prompt-ops.md](references/provider-native-prompt-ops.md)
+- [references/prompt-security-defense.md](references/prompt-security-defense.md)
+- [references/domain-specific-patterns.md](references/domain-specific-patterns.md)
 
-- **[Quick Template](assets/quick/template-quick.md)** - Fast, minimal prompt structure
+### Specialized references
 
-### Standard Templates
+- [references/extended-thinking-and-reasoning-models.md](references/extended-thinking-and-reasoning-models.md) — Claude Opus 4.7 adaptive thinking (budget_tokens removed), effort levels, task_budget, sampling-param removal, tokenizer note; GPT-5 / o-series reasoning_effort patterns
+- [references/prompt-vs-finetune.md](references/prompt-vs-finetune.md) — Prompt → RAG → Fine-tune → Distill escalation decision ladder
+- [references/rag-patterns.md](references/rag-patterns.md)
+- [references/agent-patterns.md](references/agent-patterns.md)
+- [references/extraction-patterns.md](references/extraction-patterns.md)
+- [references/reasoning-patterns.md](references/reasoning-patterns.md)
+- [references/multimodal-prompt-patterns.md](references/multimodal-prompt-patterns.md)
+- [references/generative-media-prompt-patterns.md](references/generative-media-prompt-patterns.md) — Prompting generative image/video models (text-to-image persona, character-consistency edits, image-to-video, lip-sync): the shot-spec anatomy, model-pluggable dialects, copy-paste templates G1–G7
+- [references/prompt-testing-ci-cd.md](references/prompt-testing-ci-cd.md)
+- [references/additional-patterns.md](references/additional-patterns.md)
+- [references/information-theory-applied.md](references/information-theory-applied.md) — Information-theory applied recipes for prompts: redundancy diet, MI few-shot selection, KL drift gate.
 
-- **[Standard Template](assets/standard/template-standard.md)** - Production-grade operational prompt
-- **[Agent Template](assets/standard/template-agent.md)** - Tool-using agent with planning
-- **[RAG Template](assets/standard/template-rag.md)** - Retrieval-augmented generation
-- **[Chain-of-Thought Template](assets/standard/template-cot.md)** - Hidden reasoning pattern
-- **[JSON Extractor Template](assets/standard/template-json-extractor.md)** - Deterministic field extraction
-- **[Prompt Evaluation Template](assets/eval/prompt-eval-template.md)** - Regression tests, A/B testing, rollout gates
+### Scripts
 
----
+| Script | Purpose |
+|--------|---------|
+| `scripts/prompt_regression_runner.py` | Run a JSONL prompt regression suite (variant_id, prompt, golden_substrings, schema). Groups results by variant. Validates pre-collected outputs only. |
 
-## External Resources
+### Templates and data
 
-External references are listed in [data/sources.json](data/sources.json):
-
-- Official documentation (OpenAI, Anthropic, Google)
-- LLM frameworks (LangChain, LlamaIndex)
-- Vector databases (Pinecone, Weaviate, FAISS)
-- Evaluation tools (OpenAI Evals, HELM)
-- Safety guides and standards
-- RAG and retrieval resources
-
----
-
-## Freshness Rule (2026)
-
-When asked for “latest” prompting recommendations, prefer provider docs and standards from `data/sources.json`. If web search is unavailable, state the constraint and avoid overconfident “current best” claims.
-
----
+- [assets/quick/template-quick.md](assets/quick/template-quick.md)
+- [assets/standard/template-standard.md](assets/standard/template-standard.md)
+- [assets/standard/template-agent.md](assets/standard/template-agent.md)
+- [assets/standard/template-rag.md](assets/standard/template-rag.md)
+- [assets/standard/template-cot.md](assets/standard/template-cot.md)
+- [assets/standard/template-json-extractor.md](assets/standard/template-json-extractor.md)
+- [assets/eval/prompt-eval-template.md](assets/eval/prompt-eval-template.md)
+- [data/sources.json](data/sources.json)
 
 ## Related Skills
 
-This skill provides foundational prompt engineering patterns. For specialized implementations:
-
-**AI/LLM Skills**:
-
-- [AI Agents Development](../ai-agents/SKILL.md) - Production agent patterns, MCP integration, orchestration
-- [AI LLM Engineering](../ai-llm/SKILL.md) - LLM application architecture and deployment
-- [AI LLM RAG Engineering](../ai-rag/SKILL.md) - Advanced RAG pipelines and chunking strategies
-- [AI LLM Search & Retrieval](../ai-rag/SKILL.md) - Search optimization, hybrid retrieval, reranking
-- [AI LLM Development](../ai-llm/SKILL.md) - Fine-tuning, evaluation, dataset creation
-
-**Software Development Skills**:
-
-- [Software Architecture Design](../software-architecture-design/SKILL.md) - System design patterns
-- [Software Backend](../software-backend/SKILL.md) - Backend implementation
-- [Foundation API Design](../dev-api-design/SKILL.md) - API design and contracts
-
----
-
-## Usage Notes
-
-**For Claude Code**:
-
-- Reference this skill when building prompts for agents, commands, or integrations
-- Use Quick Reference table for fast pattern lookup
-- Follow Decision Tree to select appropriate pattern
-- Validate outputs with Quality Checklists before deployment
-- Use templates as starting points, customize for specific use cases
-
-**For Codex CLI**:
-
-- Use the same patterns and templates; adapt tool-use wording to the local tool interface
-- For long-horizon tasks, track progress explicitly (a step list/plan) and update it as work completes
-- Run independent reads/searches in parallel when the environment supports it; keep writes/edits serialized
-- **AGENTS.md Integration**: Place project-specific prompt guidance in AGENTS.md files at global (~/.codex/AGENTS.md), project-level (./AGENTS.md), or subdirectory scope for layered instructions
-- **Reasoning Effort**: Use `medium` for interactive coding (default), `high`/`xhigh` for complex autonomous multi-hour tasks
+- [ai-agents](../ai-agents/SKILL.md)
+- [ai-rag](../ai-rag/SKILL.md)
+- [ai-llm](../ai-llm/SKILL.md)
+- [ai-mlops](../ai-mlops/SKILL.md)
+- [dev-api-design](../dev-api-design/SKILL.md)
+- [software-backend](../software-backend/SKILL.md)
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify current provider capabilities, prompt-tooling behavior, and official guidance before final answers.
+- Prefer primary docs and current standards when the answer depends on the latest model or platform behavior.
+- If web access is unavailable, avoid presenting prompt recommendations as definitively current.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

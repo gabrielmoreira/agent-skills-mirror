@@ -53,7 +53,7 @@ Default snap is too small for high-velocity stair climbing — use [slope_stair_
 
 ## State machine vs monolith
 
-Dash/air states → [dash_state_controller.gd](../scripts/characterbody_2d_dash_state_controller.gd) + [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md). Avoid giant `_physics_process` match blocks.
+Dash/air states → [dash_state_controller.gd](../scripts/characterbody_2d_dash_state_controller.gd) + [godot-state-machine-advanced](state-machine-advanced.md). Avoid giant `_physics_process` match blocks.
 
 ## Game-feel debug
 

@@ -38,7 +38,7 @@ Prefer `position_smoothing_enabled` when built-in smoothing suffices.
 
 ### Look-ahead
 
-Offset camera by `target.velocity.normalized() * look_ahead_distance` — requires velocity from [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md).
+Offset camera by `target.velocity.normalized() * look_ahead_distance` — requires velocity from [godot-characterbody-2d](characterbody-2d.md).
 
 ### Deadzone / drag
 

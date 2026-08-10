@@ -236,6 +236,40 @@ class TestYFinanceFallback:
         assert len(result["historical"]) == 1
 
 
+class TestNoKeyMode:
+    """The standalone skill can run directly through yfinance without FMP."""
+
+    def test_historical_bypasses_fmp_without_key(self, monkeypatch):
+        monkeypatch.delenv("FMP_API_KEY", raising=False)
+        client = FMPClient()
+        yf_result = {
+            "symbol": "SPY",
+            "historical": [{"date": "2026-04-29", "close": 1.0}],
+        }
+
+        with (
+            patch.object(client, "_request_with_fallback") as fmp_request,
+            patch.object(client, "_get_from_yfinance", return_value=yf_result) as yf_request,
+        ):
+            result = client.get_historical_prices("SPY", days=5)
+
+        assert result == yf_result
+        fmp_request.assert_not_called()
+        yf_request.assert_called_once_with("SPY", 5)
+        assert client.api_calls_made == 0
+        assert client.get_data_mode() == "yfinance_only"
+
+    def test_treasury_bypasses_fmp_without_key(self, monkeypatch):
+        monkeypatch.delenv("FMP_API_KEY", raising=False)
+        client = FMPClient()
+
+        with patch.object(client, "_rate_limited_get") as fmp_request:
+            assert client.get_treasury_rates(days=600) is None
+
+        fmp_request.assert_not_called()
+        assert client.api_calls_made == 0
+
+
 class TestHasUsableHistory:
     """Unit tests for the _has_usable_history helper."""
 

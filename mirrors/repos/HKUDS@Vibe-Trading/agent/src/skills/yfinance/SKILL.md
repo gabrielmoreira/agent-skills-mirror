@@ -1,13 +1,13 @@
 ---
 name: yfinance
-description: yfinance global market data interface — retrieve OHLCV, financials, insider transactions, and institutional holdings for US stocks, HK stocks, ETFs, and indices via Yahoo Finance. Free, no API key required.
+description: yfinance global market data interface — retrieve OHLCV and research data for US, HK, and Canadian stocks, ETFs, and indices via Yahoo Finance. Free, no API key required.
 category: data-source
 ---
 # yfinance
 
 ## Overview
 
-yfinance is an open-source Python wrapper for Yahoo Finance, providing global market data (US stocks, HK stocks, ETFs, indices) including historical and real-time quotes. **Completely free, no registration or API key required.**
+yfinance is an open-source Python wrapper for Yahoo Finance, providing global market data (US, HK, and Canadian stocks, ETFs, indices) including historical and real-time quotes. **Completely free, no registration or API key required.**
 
 The project has a built-in yfinance DataLoader (`backtest/loaders/yfinance_loader.py`). When backtesting, set `source: "yfinance"` or `source: "auto"` to invoke it automatically.
 
@@ -38,8 +38,9 @@ one you need rather than loading them all:
 > form for any new reference docs.
 
 The Yahoo client uses the project ticker convention (`AAPL.US` → `AAPL`,
-`00700.HK` → `0700.HK`); see the [Ticker Format Conversion](#ticker-format-conversion)
-table below — the same rules apply across all of the interfaces above.
+`00700.HK` → `0700.HK`, `TD.TO` and `PNG.V` pass through); see the
+[Ticker Format Conversion](#ticker-format-conversion) table below — the same
+rules apply across all of the interfaces above.
 
 ## Quick Start
 
@@ -47,7 +48,7 @@ Preferred OHLCV tool call:
 
 ```json
 {
-  "codes": ["AAPL.US", "700.HK"],
+  "codes": ["AAPL.US", "700.HK", "TD.TO", "PNG.V"],
   "start_date": "2025-01-01",
   "end_date": "2026-01-01",
   "source": "yfinance",
@@ -61,7 +62,12 @@ If you must write a Python script for OHLCV, use the DataLoader instead of raw `
 from backtest.loaders.registry import get_loader_cls_with_fallback
 
 loader = get_loader_cls_with_fallback("yfinance")()
-data = loader.fetch(["AAPL.US", "700.HK"], "2025-01-01", "2026-01-01", interval="1D")
+data = loader.fetch(
+    ["AAPL.US", "700.HK", "TD.TO", "PNG.V"],
+    "2025-01-01",
+    "2026-01-01",
+    interval="1D",
+)
 
 for symbol, df in data.items():
     print(symbol, df.tail())
@@ -77,11 +83,14 @@ The project uses a unified ticker format. The DataLoader automatically converts 
 | `MSFT.US` | `MSFT` | US stock |
 | `700.HK` | `0700.HK` | HK stock |
 | `9988.HK` | `9988.HK` | HK stock |
+| `TD.TO` | `TD.TO` | Toronto Stock Exchange stock |
+| `PNG.V` | `PNG.V` | TSX Venture stock |
 | `SPY.US` | `SPY` | US ETF |
 
 **Rules:**
 - US stocks: strip the `.US` suffix → use the raw ticker
 - HK stocks: keep `.HK`, pad the number to 4 digits (`700` → `0700`)
+- Canadian stocks: keep `.TO` (TSX) or `.V` (TSXV) unchanged
 
 ## Supported Data Types
 
@@ -241,7 +250,7 @@ eurusd = yf.download("EURUSD=X", start="2025-01-01", end="2026-01-01", progress=
 }
 ```
 
-`source: "auto"` routes automatically by ticker format: A-shares → tushare, HK/US stocks → yfinance, crypto → OKX.
+`source: "auto"` routes automatically by ticker format: A-shares → the China fallback chain, HK stocks → the HK chain, Canadian `.TO`/`.V` stocks → Yahoo/yfinance, and crypto → OKX.
 
 ## Notes
 

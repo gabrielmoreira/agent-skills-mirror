@@ -12,7 +12,7 @@
 
 ## Do NOT Load
 
-- Full Android/iOS platform APIs — route to [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) after control/UI/perf gates pass
+- Full Android/iOS platform APIs — route to [godot-platform-mobile](platform-mobile.md) after control/UI/perf gates pass
 - Desktop mouse/hover recipes — invalid on mobile (see NEVER in SKILL.md)
 
 ## Touch controls (script-first)
@@ -97,4 +97,4 @@ Memory overlay: `OS.get_memory_info()` — avoid heavy allocations while polling
 
 ## IAP note
 
-Platform billing singletons differ (Android vs iOS). Abstract behind one manager in [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — do not paste store SDKs into gameplay scenes.
+Platform billing singletons differ (Android vs iOS). Abstract behind one manager in [godot-platform-mobile](platform-mobile.md) — do not paste store SDKs into gameplay scenes.

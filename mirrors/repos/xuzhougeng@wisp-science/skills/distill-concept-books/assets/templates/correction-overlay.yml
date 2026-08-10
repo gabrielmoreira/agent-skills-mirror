@@ -1,0 +1,33 @@
+schema_version: 1
+distillation_id: sample-concept-book-v1
+overlay_id: correction-overlay-sample-001
+source_id: src-001
+policy:
+  source_remains_read_only: true
+  normalized_text_must_remain_semantically_unchanged: true
+corrections:
+  - correction_id: correction-sample-001
+    evidence_id: ev-sample-001
+    locator:
+      source_id: src-001
+      locator_type: ooxml-block
+      heading_path:
+        - Private section 001
+      ooxml_block_index: 1
+      content_hash: "0123456789ab"
+    issue_type: ocr-risk
+    raw_value: Sample source text.
+    proposed_value: null
+    resulting_value: null
+    basis: Awaiting comparison with a more reliable local carrier.
+    applies_to_claim_ids:
+      - cl-sample-001
+    resolved_quality_flags:
+      - ocr-risk
+    status: needs-verification
+    human_decision:
+      decision: pending
+      reviewer_type: null
+      reviewer: null
+      decided_at: null
+      rationale: ""

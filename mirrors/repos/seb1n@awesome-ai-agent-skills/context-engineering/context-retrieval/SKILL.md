@@ -1,6 +1,6 @@
 ---
 name: context-retrieval
-description: "Retrieves and synthesizes relevant information from a knowledge base using RAG techniques to provide grounded context for a given query."
+description: "Retrieve relevant information from a knowledge base using semantic, keyword, or hybrid search to ground a query. Use when the task starts with a corpus or index that must be searched; use context-ranking when candidate chunks already exist and only need ordering."
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

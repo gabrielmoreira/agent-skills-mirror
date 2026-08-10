@@ -3,16 +3,6 @@ name: godot-genre-battle-royale
 description: "Expert blueprint for Battle Royale games including shrinking zone/storm mechanics (phase-based, damage scaling), large-scale networking (relevancy, tick rate optimization), deployment systems (plane, freefall, parachute), loot spawning (weighted tables, rarity), and performance optimization (LOD, occlusion culling, object pooling). Use for multiplayer survival games or last-one-standing formats. Trigger keywords: battle_royale, zone_shrink, storm_damage, deployment_system, loot_spawn, networking_optimization, relevancy_system, snapshot_interpolation."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Battle Royale
-
-Expert blueprint for Battle Royale games with zone mechanics, large-scale networking, and survival gameplay.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Networking & Scale
@@ -161,7 +151,6 @@ Unshaded, `cull_disabled` spatial shader on inverted sphere scaled by [storm_sys
 - [expert-battle-royale-patterns.md](references/expert-battle-royale-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
 - [lag_compensator.gd](scripts/lag_compensator.gd)
 - [monster_synchronizer.gd](scripts/monster_synchronizer.gd)
-
 
 ## Reference
 

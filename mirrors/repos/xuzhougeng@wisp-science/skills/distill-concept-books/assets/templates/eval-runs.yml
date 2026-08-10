@@ -1,0 +1,47 @@
+schema_version: 1
+distillation_id: sample-concept-book-v1
+# planned/blocked runs may keep artifact fields null. A completed run must use a
+# case_id from the materialized candidate JSON definitions and point to three
+# root-confined regular files whose full SHA-256 values are recomputed.
+eval_runs:
+  - eval_run_id: eval-run-sample-001
+    candidate_id: candidate-sample-001
+    materialization_id: null
+    case_type: task
+    case_id: task-sample-001
+    case_definition_hash: null
+    status: planned
+    outcome: null
+    fixture_id: fixture-sample-001
+    fixture_path: null
+    fixture_hash: null
+    source_ids:
+      - src-003
+    target_source_ids:
+      - src-003
+    target_source_hashes: {}
+    input_type_ids:
+      - external-target-material
+    used_for_rule_extraction: false
+    unfamiliarity_dimensions: []
+    holdout: true
+    rule_ids:
+      - rule-sample-001
+    candidate_hash: null
+    execution_environment: null
+    baseline_output_path: null
+    baseline_output_hash: null
+    with_skill_output_path: null
+    with_skill_output_hash: null
+    rubric_id: rubric-sample-001
+    score: null
+    max_score: 10
+    pass_threshold: 8
+    dimension_scores: null
+    fatal_failures_observed: []
+    leakage_controls: null
+    reviewer_type: null
+    reviewer: null
+    completed_at: null
+    limitations:
+      - This is a plan only. It cannot support Gate 4 acceptance until completed and reviewed.

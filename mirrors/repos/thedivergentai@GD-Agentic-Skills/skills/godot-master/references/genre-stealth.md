@@ -3,16 +3,6 @@ name: godot-genre-stealth
 description: "Expert blueprint for stealth games (Splinter Cell, Hitman, Dishonored, Thief) covering AI detection systems, vision cones, sound propagation, alert states, light/shadow mechanics, and systemic design. Use when building stealth-action, tactical infiltration, or immersive sim games requiring enemy awareness systems. Keywords vision cone, detection, alert state, sound propagation, light level, systemic AI, gradual detection."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Stealth
-
-Player choice, systemic AI, and clear communication define stealth games.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Detection & Awareness
@@ -103,7 +93,6 @@ Do **not** paste long vision/alert/ability tutorials into the skill body — kee
 | `distance_to` hearing | Navigation path length |
 | Off-screen CPU | `VisibleOnScreenNotifier` suspend |
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -114,7 +103,6 @@ Do **not** paste long vision/alert/ability tutorials into the skill body — kee
 | Player tools (lean, gadgets) | [player-abilities.md](genre-stealth-player-abilities.md) |
 | Cover & encounter layout | [level-design.md](genre-stealth-level-design.md) |
 | UI communication | [ui-communication.md](genre-stealth-ui-communication.md) |
-
 
 ## Reference
 
@@ -137,24 +125,24 @@ Do **not** paste long vision/alert/ability tutorials into the skill body — kee
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, groups, and import/project setup before wiring guards, lights, and player sample points.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — CharacterBody3D, layers/masks, and collision shapes that vision rays and hearing volumes must hit honestly.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — PhysicsServer query parameters, RID excludes, and multi-sample LoS recipes this genre depends on every frame.
+- [godot-project-foundations](project-foundations.md) — scene tree, groups, and import/project setup before wiring guards, lights, and player sample points.
+- [godot-physics-3d](physics-3d.md) — CharacterBody3D, layers/masks, and collision shapes that vision rays and hearing volumes must hit honestly.
+- [godot-raycasting-queries](raycasting-queries.md) — PhysicsServer query parameters, RID excludes, and multi-sample LoS recipes this genre depends on every frame.
 
 #### Complements
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationAgent patrols, investigate targets, and path-length hearing that respects walls.
-- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) — FOV sensors and perception stacks that feed suspicion/alert state machines.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — 3D streams and bus layouts for AI-audible noise without coupling to player SFX buses.
-- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — light energy, shadows, and probe setups that make light-level detection fair and readable.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — StringName IDLE/SUSPICIOUS/ALERTED/COMBAT machines instead of ad-hoc string compares.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — alert_state_changed and detection-meter signals that keep UI, barks, and AI decoupled.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — screen-space cone tint and outline feedback so players always see why they were spotted.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — lean/peek and frustum-driven VisibleOnScreenNotifier suspend for off-screen guard budgets.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate detection rates, FOV ranges, hearing falloff, and forgiveness windows before shipping difficulty.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationAgent patrols, investigate targets, and path-length hearing that respects walls.
+- [godot-ai-navigation](ai-navigation.md) — FOV sensors and perception stacks that feed suspicion/alert state machines.
+- [godot-audio-systems](audio-systems.md) — 3D streams and bus layouts for AI-audible noise without coupling to player SFX buses.
+- [godot-3d-lighting](3d-lighting.md) — light energy, shadows, and probe setups that make light-level detection fair and readable.
+- [godot-state-machine-advanced](state-machine-advanced.md) — StringName IDLE/SUSPICIOUS/ALERTED/COMBAT machines instead of ad-hoc string compares.
+- [godot-signal-architecture](signal-architecture.md) — alert_state_changed and detection-meter signals that keep UI, barks, and AI decoupled.
+- [godot-shaders-basics](shaders-basics.md) — screen-space cone tint and outline feedback so players always see why they were spotted.
+- [godot-camera-systems](camera-systems.md) — lean/peek and frustum-driven VisibleOnScreenNotifier suspend for off-screen guard budgets.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate detection rates, FOV ranges, hearing falloff, and forgiveness windows before shipping difficulty.
 
 #### Downstream / consumers
-- [godot-genre-horror](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-horror/SKILL.md) — stalker cones, hiding spots, and suspicion meters that reuse sensory AI patterns.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — lethal escalation and takedown windows once ALERTED/COMBAT breaks the stealth loop.
+- [godot-genre-horror](genre-horror.md) — stalker cones, hiding spots, and suspicion meters that reuse sensory AI patterns.
+- [godot-combat-system](combat-system.md) — lethal escalation and takedown windows once ALERTED/COMBAT breaks the stealth loop.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

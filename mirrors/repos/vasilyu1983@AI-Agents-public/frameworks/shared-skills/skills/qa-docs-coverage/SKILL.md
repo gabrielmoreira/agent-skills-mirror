@@ -1,490 +1,260 @@
 ---
 name: qa-docs-coverage
-description: "Audit and enforce doc quality. Use when checking coverage, freshness, runbook validity, or cleaning stale/duplicate markdown after LLM edits."
+description: "Audits and enforces documentation quality. Use when checking coverage, freshness, runbook validity, AI-instruction coverage, or cleaning stale/duplicate markdown after LLM edits."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# QA Docs Coverage (Jan 2026) - Discovery, Freshness, and Runbook Quality
+# QA Docs Coverage
 
-## Modern Best Practices (January 2026)
-
-- **Docs as QA**: Treat docs as production artifacts with owners, review cadence, and CI quality gates (links/style/contracts/freshness)
-- **Contract-first**: Validate OpenAPI/AsyncAPI/JSON Schema in CI; use coverage tools (Swagger Coverage / OpenAPI Coverage) to detect gaps
-- **Runbook testability**: Every runbook must be executable in staging; validate with synthetic tests and incident exercises
-- **Automation + observability**: Track coverage %, freshness, and drift via CI dashboards; prevent regressions via PR checklists
-
-This skill provides operational workflows for auditing existing codebases, identifying documentation gaps, and systematically generating missing documentation. It complements [docs-codebase](../docs-codebase/SKILL.md) by providing the **discovery and analysis** layer.
-
-**Key Principle**: Templates exist in docs-codebase. This skill tells you **what** to document and **how to find** undocumented components.
-
-Core references: [Diataxis](https://diataxis.fr/) (doc structure), [OpenAPI](https://spec.openapis.org/oas/latest.html) (REST), [AsyncAPI](https://www.asyncapi.com/) (events).
-
-## When to use
-
-- Auditing an existing repo for missing/outdated documentation
-- Adding documentation quality gates (lint/link checks/contracts/freshness) to CI/CD
-- Validating runbooks for incident readiness (MTTR reduction)
-
-## When to avoid
-
-- Writing new documentation from scratch without a component inventory (use discovery first)
-- Publishing AI-generated docs without human review and command/link verification
-
-## Quick start
-
-Use progressive disclosure: load only the reference file you need.
-
-1. Discover components: [references/discovery-patterns.md](references/discovery-patterns.md)
-2. Measure coverage + gaps: [references/audit-workflows.md](references/audit-workflows.md) (Phase 1-2) and [assets/coverage-report-template.md](assets/coverage-report-template.md)
-3. Prioritize work: [references/priority-framework.md](references/priority-framework.md)
-4. Create an actionable backlog: [assets/documentation-backlog-template.md](assets/documentation-backlog-template.md) and templates in [docs-codebase](../docs-codebase/SKILL.md)
-5. Prevent regression: [references/cicd-integration.md](references/cicd-integration.md) and [references/freshness-tracking.md](references/freshness-tracking.md)
-
-Optional (recommended scripts; run from the repo being audited):
-
-- Local link check: `python3 frameworks/shared-skills/skills/qa-docs-coverage/scripts/check_local_links.py docs/`
-- Freshness report: `python3 frameworks/shared-skills/skills/qa-docs-coverage/scripts/docs_freshness_report.py --docs-root docs/`
-
-### Docs Folder / LLM Iteration Audit (Critical Option)
-
-Use this when any repository has a `docs/` folder with many LLM-generated research and implementation artifacts across phases/iterations.
-
-1. Inventory docs and classify by type (`Tutorial`, `How-to`, `Reference`, `Explanation`).
-2. Detect duplicate topics and define one canonical file per topic/feature.
-3. Audit claim quality:
-   - external claims must include source link + verification date
-   - implementation claims must map to current code or decision log
-4. Enforce lifecycle metadata for non-canonical docs (`status`, `integrates_into`, `owner`, `last_verified`, `delete_by`).
-5. Trim aggressively at each phase boundary: integrated drafts must be deleted on schedule; track rare retention exceptions in backlog.
-
-Minimum QA gate for docs folders:
-- block merge if a canonical doc is missing for a changed feature
-- block merge if `delete_by` is passed for `integrated` docs
-- block merge on broken links or stale critical docs without owner
-- block merge if `AGENTS.md` or `README.md` is missing, stale, or not linked to current canonical docs
-
----
-
-## Large Codebase Audit (100K-1M LOC)
-
-For large codebases, the key principle is: **LLMs don't need the entire codebase - they need the right context for the current task**.
-
-### Phase 0: Context Extraction
-
-Before starting an audit, extract codebase context using tools:
-
-| Tool | Command/URL | Use Case |
-|------|-------------|----------|
-| **gitingest** | Replace "github.com" with "gitingest.com" | Quick full-repo dump |
-| **repo2txt** | https://github.com/kirill-markin/repo2txt | Selective file extraction |
-| **tree** | `tree -L 3 --dirsfirst -I 'node_modules|.git|dist'` | Structure overview |
-
-### Hierarchical Audit Strategy
-
-For monorepos and large projects, audit hierarchically:
-
-```text
-1. Root Level (Week 1)
-   ├── AGENTS.md / CLAUDE.md exists?
-   ├── README.md quality
-   ├── ARCHITECTURE.md exists?
-   └── docs/ directory structure
-
-2. Module Level (Week 2-3)
-   ├── Each major directory has AGENTS.md?
-   ├── API documentation complete?
-   └── Service boundaries documented?
-
-3. Component Level (Week 4+)
-   ├── Individual component READMEs
-   ├── Code comments quality
-   └── Test documentation
-```
-
-### Cross-Platform Documentation Audit
-
-Check for multi-tool compatibility:
-
-```text
-[ ] AGENTS.md exists (cross-platform standard)
-[ ] CLAUDE.md exists or symlinked to AGENTS.md
-[ ] GEMINI.md symlinked (if using Gemini)
-[ ] File size under 300 lines (use @references for depth)
-[ ] Subdirectory docs for each major module
-```
-
-### Large Codebase Coverage Checklist
-
-```text
-LARGE CODEBASE AUDIT CHECKLIST
-
-Context Extraction:
-[ ] Generated codebase dump (gitingest/repo2txt)
-[ ] Created directory structure overview
-[ ] Identified major modules/services
-
-Root Documentation:
-[ ] AGENTS.md / CLAUDE.md present and <300 lines
-[ ] README.md with quick start
-[ ] ARCHITECTURE.md with system overview
-[ ] Symlinks configured for cross-platform
-
-Module Documentation:
-[ ] Each major directory has AGENTS.md
-[ ] API endpoints documented
-[ ] Database schemas documented
-[ ] Event/message contracts documented
-
-Maintenance:
-[ ] Documentation ownership assigned
-[ ] Freshness tracking enabled
-[ ] CI/CD checks configured
-```
-
-**Sources**: [Anthropic Claude Code Best Practices](https://www.anthropic.com/engineering/claude-code-best-practices), [OpenAI AGENTS.md Guide](https://developers.openai.com/codex/guides/agents-md)
-
----
-
-## Core QA (Default)
-
-### What "Docs as QA" Means
-
-- Treat docs as production quality artifacts: they reduce MTTR, enable safe changes, and define expected behavior.
-- REQUIRED doc types for reliability and debugging ergonomics:
-  - "How to run locally/CI" and "how to test"
-  - Operational runbooks (alerts, common failures, rollback)
-  - Service contracts (OpenAPI/AsyncAPI) and schema examples
-  - Known issues and limitations (with workarounds)
-
-### Coverage Model (Risk-Based)
-
-- Prioritize docs by impact:
-  - P1: externally consumed contracts and failure behavior (OpenAPI/AsyncAPI, auth, error codes, SLOs).
-  - P2: internal integration and operational workflows (events, jobs, DB schema, runbooks).
-  - P3: developer reference (configs, utilities).
-
-### Freshness Checks (Prevent Stale Docs)
-
-- Define owners, review cadence, and a "last verified" field for critical docs.
-- CI economics:
-  - Block PRs only for missing/invalid P1 docs.
-  - Warn for P2/P3 gaps; track via backlog.
-- Run link checks and linting as fast pre-merge steps.
-
-### Runbook Testability
-
-- A runbook is "testable" if a new engineer can follow it and reach a measurable end state.
-- Include: prerequisites, exact commands, expected outputs, rollback criteria, and escalation paths.
-
-### Do / Avoid
-
-**Do**:
-
-- Keep docs close to code (same repo) and version them with changes.
-- Use contracts and examples as the source of truth for integrations.
-
-**Avoid**:
-
-- Large ungoverned `docs/` folders with no owners and no CI gates.
-- Writing runbooks that cannot be executed in a sandbox/staging environment.
-
----
+Use this skill to audit documentation as a quality system: discover what should exist, map what exists, rank the gaps, and add checks so critical documentation does not regress. It complements [docs-codebase](../docs-codebase/SKILL.md), which is better for writing or restructuring the docs you decide to fix.
 
 ## Quick Reference
 
-| Audit Task | Tool/Pattern | Output | Reference |
-| ---------- | ------------ | ------ | --------- |
-| **Discover APIs** | `**/*Controller.cs`, `**/routes/**/*.ts` | Component inventory | [discovery-patterns.md](references/discovery-patterns.md) |
-| **Calculate Coverage** | Swagger Coverage, manual diff | Coverage report | [coverage-report-template.md](assets/coverage-report-template.md) |
-| **Prioritize Gaps** | External → P1, Internal → P2, Config → P3 | Documentation backlog | [priority-framework.md](references/priority-framework.md) |
-| **Generate Docs** | AI-assisted + docs-codebase templates | Documentation files | [audit-workflows.md](references/audit-workflows.md) Phase 3 |
-| **Validate Contracts** | Spectral, AsyncAPI CLI, OpenAPI diff | Lint report | [cicd-integration.md](references/cicd-integration.md) |
-| **Track Freshness** | Git blame, last-modified metadata | Staleness report | [freshness-tracking.md](references/freshness-tracking.md) |
-| **Automate Checks** | GitHub Actions, GitLab CI, PR templates | Continuous coverage | [cicd-integration.md](references/cicd-integration.md) |
+| Task | Use |
+|------|-----|
+| Discovery and audit flow | [references/discovery-patterns.md](references/discovery-patterns.md), [references/audit-workflows.md](references/audit-workflows.md) |
+| Prioritization and metrics | [references/priority-framework.md](references/priority-framework.md), [references/documentation-quality-metrics.md](references/documentation-quality-metrics.md) |
+| AI-instruction, llms.txt, and freshness checks | [references/ai-instruction-coverage.md](references/ai-instruction-coverage.md), [references/freshness-tracking.md](references/freshness-tracking.md) |
+| Runbook and contract validation | [references/runbook-testing.md](references/runbook-testing.md), [references/api-docs-validation.md](references/api-docs-validation.md) |
+| Scripts and templates | `scripts/check_local_links.py`, `scripts/check_external_links.py`, `scripts/docs_freshness_report.py`, [assets/coverage-report-template.md](assets/coverage-report-template.md), [assets/documentation-backlog-template.md](assets/documentation-backlog-template.md) |
 
----
+## When to Use
 
-## Decision Tree: Documentation Audit Workflow
+- Audit a repo for missing, stale, duplicated, or unowned documentation.
+- Validate runbooks, instruction files, and API docs as part of release or repo hygiene.
+- Add CI gates for link health, doc freshness, or contract drift.
+- Clean up large doc sets after AI-assisted editing.
+
+## Route Elsewhere
+
+- Writing or restructuring the docs themselves: use [docs-codebase](../docs-codebase/SKILL.md).
+- PRDs, implementation specs, or project memory layers: use [docs-ai-prd](../docs-ai-prd/SKILL.md).
+- Pure code-risk review with docs as a secondary concern: use [software-code-review](../software-code-review/SKILL.md).
+
+## Defaults
+
+- Discover components before judging missing docs.
+- Rank by risk and operating impact, not document count.
+- Block on critical external contracts and runbooks; backlog the rest.
+- Treat AI-generated docs as drafts until links, commands, and claims are checked.
+- For externally consumed APIs, audit for a current `/llms.txt`; its absence is a coverage gap for agent-facing APIs.
+- Test runbooks must declare the canonical start, targeted-run, cleanup/reset, and deploy-gate commands.
+- Keep one canonical document per topic and one owner per critical area.
+
+## Workflow
+
+1. Discover services, contracts, runbooks, instruction files, and critical workflows.
+2. Map current docs to the audit model and identify real gaps, duplicates, and stale areas.
+3. Rank the gaps by severity and fix order.
+4. Validate links, runbooks, contracts, and freshness signals with scripts or CI tools.
+5. Produce actionable outputs with owners, status, and next gates.
+
+## Core Decisions
+
+### Audit Model
+
+Use three priority levels:
+
+- P1: external contracts and failure behavior
+- P2: internal integration and operational docs
+- P3: developer reference and convenience docs
+
+Default policy:
+
+- block on missing or invalid P1 docs
+- warn on P2 and P3 gaps
+- track non-blocking debt in a backlog instead of failing every change
+
+### Coverage vs. Usefulness
+
+A coverage percentage is a proxy, not the goal. Do not let it substitute for judgment:
+
+- 100% docstring or endpoint coverage can still be near-0% useful if every entry is a restated
+  function signature (`"""Gets the user."""` on `get_user()`) with no failure modes, units,
+  side effects, or caller-relevant detail. Tools like `interrogate` or `docstr-coverage` catch
+  *absence*, not *quality* — the same trap flagged for AI-generated test coverage vs. mutation
+  score in this skill. Spot-check a sample of "covered" items for actual content before trusting
+  the percentage in a report.
+- Treat a coverage number as a screening signal, not a verdict: use it to find candidate gaps,
+  then read the highest-traffic or highest-risk items to judge whether they would actually help
+  someone.
+- When a coverage tool and a usefulness read disagree, report both numbers rather than
+  collapsing to one score. A coverage report that only shows the percentage hides the gap.
+
+### Prioritizing What to Document
+
+Component type (P1/P2/P3) sets a floor, not the whole ranking. Within a priority tier, use
+real usage signal to sequence the work:
+
+- Support-ticket and Slack-question frequency for a topic outranks component type when
+  the two disagree — a P3 config option that generates two tickets a week belongs above an
+  undocumented P2 internal service nobody has asked about yet.
+- Onboarding friction is a leading indicator: if new hires consistently ask the same question
+  in their first two weeks, that is a documentation gap even if no ticket was ever filed.
+- Incident postmortems that cite "unclear docs" or "wrong runbook step" as a contributing
+  factor should immediately re-prioritize the cited doc to P1, regardless of its original tier.
+- Absence of signal is not evidence of low priority — it can mean nobody has discovered they
+  need the component yet (new integration, upcoming launch). Cross-check against the roadmap,
+  not just historical tickets.
+
+### When Not to Document
+
+Documentation has a maintenance cost; do not recommend it reflexively.
+
+- Skip inline documentation for code that is self-evident from its name, type signature, and
+  immediate context (a well-named pure function with typed arguments rarely needs a docstring
+  restating its signature). Flag this in a report as "appropriately undocumented," not a gap.
+- Skip a dedicated doc page for a component with a single internal caller and no independent
+  failure mode — the calling code is the documentation.
+- Prefer fixing the interface over documenting around it: if a gap exists because an API is
+  confusing (inconsistent naming, hidden side effects, surprising defaults), the durable fix is
+  often to simplify the code, not to write more prose explaining the confusion.
+- Do not recommend documenting deprecated or soon-to-be-removed components; recommend removal
+  or an explicit deprecation notice instead.
+
+### Freshness and Ownership
+
+Critical docs should have enough metadata to re-verify them:
+
+- owner
+- last verified date
+- review cadence
+- related code paths or systems
+
+For multi-repo hubs, freshness should follow repo sync events, not only a calendar schedule.
+
+### Doc-Rot Signals Beyond Age
+
+A doc can be young by `last_verified` and still be wrong. Age-based freshness thresholds
+(see [references/freshness-tracking.md](references/freshness-tracking.md)) catch neglect;
+they do not catch rot from a fast-moving change that landed after the last verification.
+Treat these as rot signals independent of age:
+
+- the doc references a function, flag, endpoint, or config key that no longer exists in the
+  code paths listed in its frontmatter
+- a recent PR touched a `code_paths` glob the doc declares, but the doc's `last_verified` did
+  not move
+- the doc's example output, error message, or screenshot no longer matches what the current
+  code produces
+- a support ticket or incident explicitly contradicts a documented behavior
+- the doc still describes a deprecated flow alongside the current one without marking which is
+  authoritative
+
+### Ownership Models That Keep Docs Alive
+
+An owner listed in frontmatter is necessary but not sufficient. Judge whether the ownership
+model itself creates a feedback loop:
+
+- **Author-owns-until-handoff**: the engineer who wrote the code owns its docs until an
+  explicit handoff; works well for young, single-team components, fails once the original
+  author moves teams and no handoff happens.
+- **Docs-on-call rotation**: folded into an existing on-call or support rotation so freshness
+  reviews happen on a cadence backed by a real calendar reminder, not "whoever remembers."
+  Tends to outlast individual ownership changes.
+- **CODEOWNERS-enforced**: a `CODEOWNERS` entry over the docs path requires the owning team's
+  review on every PR that touches it; catches drift at commit time instead of at the next
+  audit.
+- **Team-charter-embedded**: documentation upkeep is a named responsibility in the team's
+  charter or onboarding checklist, not a side favor; survives individual turnover better than
+  an owner name in frontmatter.
+- A named owner with no enforcement mechanism (no CODEOWNERS, no rotation, no charter line) is
+  the weakest model — flag it as a gap in the ownership map, not just an owner-present checkbox.
+
+### Runbooks and AI Instructions
+
+Runbooks are only acceptable if someone new can execute them and reach a clear end state.
+
+### Test Runbooks (P1 When Stale)
+
+For QA and automation runbooks, verify:
+
+- the canonical dev-server or environment bootstrap command
+- the canonical targeted spec or batch command
+- the canonical cleanup or reset command
+- the canonical deploy-gate replay command
+- artifact locations for traces, logs, or failure context
+
+Treat stale “run the whole suite first” guidance as P1 when it materially wastes time, causes environment collisions, or bypasses the intended deploy-gate flow.
+
+Instruction-file audits should verify:
+
+- the active agent/runtime files actually match the tools in use
+- duplicated instruction layers are intentional
+- external claims have sources and verification dates
+- AI-generated edits still match the current code and workflow reality
+- AI-generated tests detect behavior, not just execute it: a high coverage number from
+  AI/agent-authored tests is reach, not correctness. The quality signal is mutation score
+  (does a reverted behavior fail a test?), not line coverage. Flag suites where coverage is
+  high but mutation score is unknown or low as a P1 quality-gap, distinct from a docs gap.
+
+### Automation and Output
+
+Default scripts:
+
+- `scripts/check_local_links.py`
+- `scripts/check_external_links.py`
+- `scripts/docs_freshness_report.py`
+
+Default outputs:
+
+- coverage report
+- prioritized backlog
+- targeted doc fixes in repo-native locations
+
+## Output Modes
+
+Default to one of these:
+
+- Coverage audit:
+  current-state map, critical gaps, and fix order.
+- Runbook validation report:
+  execution issues, missing prerequisites, and rollback gaps.
+- AI-docs cleanup pass:
+  duplicate topics, stale claims, and canonicalization actions.
+
+## Anti-Patterns
+
+- Documenting everything at once instead of ranking by impact.
+- Merging AI-generated docs without execution or link checks.
+- Keeping unowned docs that never get re-verified.
+- Assuming a large docs folder is healthy because it is large.
+- Reading a high coverage percentage as a quality verdict — for AI-generated tests it routinely is not (high line coverage, near-zero defect detection); demand a mutation-score signal before trusting it.
+- Reporting docstring or endpoint coverage percentage without spot-checking a sample for actual content — a high `interrogate`/`docstr-coverage` score can mean every function has a one-line restatement of its own name.
+- Recommending documentation for self-evident code, or documentation as a substitute for fixing a confusing interface.
+- Leaving stale test commands or batch names in a canonical runbook after the runner topology changed.
+- Treating one tool’s instruction-file pattern as universal.
+- Ranking gaps by component type alone when support-ticket volume, onboarding friction, or an incident postmortem already show which gap is actually hurting people.
+
+## ASCII Flow
 
 ```text
-User needs: [Audit Type]
-    ├─ Repo has a docs folder with LLM-generated research/feature docs?
-    │   └─ Run Docs Folder / LLM Iteration Audit first, then apply P1/P2/P3 prioritization
-    │
-    ├─ Starting fresh audit?
-    │   ├─ Public-facing APIs? → Priority 1: External-Facing (OpenAPI, webhooks, error codes)
-    │   ├─ Internal services/events? → Priority 2: Internal Integration (endpoints, schemas, jobs)
-    │   └─ Configuration/utilities? → Priority 3: Developer Reference (options, helpers, constants)
-    │
-    ├─ Found undocumented component?
-    │   ├─ API/Controller? → Scan endpoints → Use api-docs-template → Priority 1
-    │   ├─ Service/Handler? → List responsibilities → Document contracts → Priority 2
-    │   ├─ Database/Entity? → Generate ER diagram → Document entities → Priority 2
-    │   ├─ Event/Message? → Map producer/consumer → Schema + examples → Priority 2
-    │   └─ Config/Utility? → Extract options → Defaults + descriptions → Priority 3
-    │
-    ├─ Large codebase with many gaps?
-    │   └─ Use phase-based approach:
-    │       1. Discovery Scan → Coverage Analysis
-    │       2. Prioritize by impact (P1 → P2 → P3)
-    │       3. Generate docs incrementally (critical first)
-    │       4. Set up maintenance (PR templates, quarterly audits)
-    │
-    └─ Maintaining existing docs?
-        └─ Check for:
-            ├─ Outdated docs (code changed, docs didn't) → Update or remove
-            ├─ Orphaned docs (references non-existent code) → Remove
-            └─ Missing coverage → Add to backlog → Prioritize
+Docs quality request
+  -> Discover required docs from product, code, runbooks, APIs, and agents
+  -> Inventory existing docs while excluding archives
+  -> Map coverage, freshness, ownership, links, and executable commands
+  -> Rank gaps by operational, release, user, or AI-agent impact
+  -> Fix or canonicalize the smallest valuable doc set
+  -> Add checks: links, freshness, command validation, and ownership review
 ```
 
----
-
-## Navigation: Discovery & Analysis
-
-### Component Discovery
-
-**Resource**: [references/discovery-patterns.md](references/discovery-patterns.md)
-
-Language-specific patterns for discovering documentable components:
-
-- .NET/C# codebase (Controllers, Services, DbContexts, Kafka handlers)
-- Node.js/TypeScript codebase (Routes, Services, Models, Middleware)
-- Python codebase (Views, Models, Tasks, Config)
-- Go, Java/Spring, React/Frontend patterns
-- Discovery commands (ripgrep, grep, find)
-- Cross-reference discovery (Kafka topics, external APIs, webhooks)
-
-### Priority Framework
-
-**Resource**: [references/priority-framework.md](references/priority-framework.md)
-
-Framework for prioritizing documentation efforts:
-
-- Priority 1: External-Facing (public APIs, webhooks, auth) - Must document
-- Priority 2: Internal Integration (services, events, database) - Should document
-- Priority 3: Developer Reference (config, utilities) - Nice to have
-- Prioritization decision tree
-- Documentation debt scoring (formula + interpretation)
-- Compliance considerations (ISO 27001, GDPR, HIPAA)
-
-### Audit Workflows
-
-**Resource**: [references/audit-workflows.md](references/audit-workflows.md)
-
-Systematic workflows for conducting audits:
-
-- Phase 1: Discovery Scan (identify all components)
-- Phase 2: Coverage Analysis (compare against existing docs)
-- Phase 3: Generate Documentation (use templates)
-- Phase 4: Maintain Coverage (PR templates, CI/CD checks)
-- Audit types (full, incremental, targeted)
-- Audit checklist (pre-audit, during, post-audit)
-- Tools and automation
-
-### CI/CD Integration
-
-**Resource**: [references/cicd-integration.md](references/cicd-integration.md)
-
-Automated documentation checks and enforcement:
-
-- PR template documentation checklists
-- CI/CD coverage gates (GitHub Actions, GitLab CI, Jenkins)
-- Pre-commit hooks (Git, Husky)
-- Documentation linters (markdownlint, Vale, link checkers)
-- API contract validation (Spectral, AsyncAPI CLI)
-- Coverage tools (Swagger Coverage, OpenAPI Coverage)
-- Automated coverage reports
-- Best practices and anti-patterns
-
-### Freshness Tracking
-
-**Resource**: [references/freshness-tracking.md](references/freshness-tracking.md)
-
-Track documentation staleness and drift from code:
-
-- Freshness metadata standards (last_verified, owner, review_cadence)
-- Git-based freshness analysis scripts
-- Staleness thresholds by priority (P1: 30 days, P2: 60 days, P3: 90 days)
-- CI/CD freshness gates (GitHub Actions, GitLab CI)
-- Observability dashboards and metrics
-- Automated doc reminder bots
-
-### API Documentation Validation
-
-**Resource**: [references/api-docs-validation.md](references/api-docs-validation.md)
-
-Validate API documentation accuracy against live behavior:
-
-- Schema-to-docs drift detection
-- Example request/response validation
-- Endpoint coverage auditing
-- Contract-first documentation workflows
-
-### Runbook Testing
-
-**Resource**: [references/runbook-testing.md](references/runbook-testing.md)
-
-Validate operational runbooks are executable and current:
-
-- Runbook testability criteria and scoring
-- Synthetic test execution in staging
-- Incident exercise integration
-- Staleness detection and refresh cadence
-
-### Documentation Quality Metrics
-
-**Resource**: [references/documentation-quality-metrics.md](references/documentation-quality-metrics.md)
-
-KPIs and dashboards for documentation health:
-
-- Coverage, freshness, and accuracy metrics
-- Documentation debt scoring formulas
-- CI dashboard integration patterns
-- Trend tracking and alerting thresholds
-
----
-
-## Navigation: Templates
-
-### Coverage Report Template
-
-**Template**: [assets/coverage-report-template.md](assets/coverage-report-template.md)
-
-Structured coverage report with:
-
-- Executive summary (coverage %, key findings, recommendations)
-- Coverage by category (API, Service, Data, Events, Infrastructure)
-- Gap analysis (P1, P2, P3 with impact/effort)
-- Outdated documentation tracking
-- Documentation debt score
-- Action plan (sprints + ongoing)
-
-### Documentation Backlog Template
-
-**Template**: [assets/documentation-backlog-template.md](assets/documentation-backlog-template.md)
-
-Backlog tracking with:
-
-- Status summary (In Progress, To Do P1/P2/P3, Blocked, Completed)
-- Task organization by priority
-- Templates reference (quick links)
-- Effort estimates (Low < 2h, Medium 2-8h, High > 8h)
-- Review cadence (weekly, bi-weekly, monthly, quarterly)
-
----
-
-## Output Artifacts
-
-After running an audit, produce these artifacts:
-
-1. **Coverage Report** - `.codex/docs/audit/coverage-report.md`
-   - Overall coverage percentage
-   - Detailed findings by category
-   - Gap analysis with priorities
-   - Recommendations and next audit date
-
-2. **Documentation Backlog** - `.codex/docs/audit/documentation-backlog.md`
-   - In Progress items with owners
-   - To Do items by priority (P1, P2, P3)
-   - Blocked items with resolution path
-   - Completed items with dates
-
-3. **Generated Documentation** - `.codex/docs/` (organized by category)
-   - API reference (public/private)
-   - Event catalog (Kafka/messaging)
-   - Database schema (ER diagrams)
-   - Background jobs (runbooks)
-
----
-
-## Integration with Foundation Skills
-
-This skill works closely with:
-
-**[docs-codebase](../docs-codebase/SKILL.md)** - Provides templates for:
-
-- [api-docs-template.md](../docs-codebase/assets/api-reference/api-docs-template.md) - REST API documentation
-- [adr-template.md](../docs-codebase/assets/architecture/adr-template.md) - Architecture decisions
-- [readme-template.md](../docs-codebase/assets/project-management/readme-template.md) - Project overviews
-- [changelog-template.md](../docs-codebase/assets/project-management/changelog-template.md) - Release history
-
-**Workflow**:
-
-1. Use **qa-docs-coverage** to discover gaps
-2. Use **docs-codebase** templates to fill gaps
-3. Use **qa-docs-coverage** CI/CD integration to maintain coverage
-
----
-
-## Anti-Patterns to Avoid
-
-- **Documenting everything at once** - Prioritize by impact, document incrementally
-- **Merging doc drafts without review** - Drafts must be validated by owners and runnable in practice
-- **Ignoring outdated docs** - Outdated docs are worse than no docs
-- **Documentation without ownership** - Assign owners for each doc area
-- **Skipping the audit** - Don't assume you know what's documented
-- **Blocking all PRs** - Only block for P1 gaps, warn for P2/P3
-
----
-
-## Optional: AI / Automation
-
-**Do**:
-
-- Use AI to draft docs from code and tickets, then require human review and link/command verification.
-- Use AI to propose "freshness diffs" and missing doc sections; validate by running the runbook steps.
-
-**Avoid**:
-
-- Publishing unverified drafts that include incorrect commands, unsafe advice, or hallucinated endpoints.
-
----
-
-## Success Criteria
-
-**Immediate (After Audit)**:
-
-- Coverage report clearly shows gaps with priorities
-- Documentation backlog is actionable and assigned
-- Critical gaps (P1) identified with owners
-
-**Short-term (1-2 Sprints)**:
-
-- All P1 gaps documented
-- Documentation coverage > 80% for external-facing components
-- Documentation backlog actively managed
-
-**Long-term (Ongoing)**:
-
-- Quarterly audits show improving coverage (upward trend)
-- PR documentation checklist compliance > 90%
-- "How do I" questions in Slack decrease
-- Onboarding time for new engineers decreases
-
----
-
-## Related Skills
-
-- **[docs-codebase](../docs-codebase/SKILL.md)** - Templates for writing documentation (README, ADR, API docs, changelog)
-- **[docs-ai-prd](../docs-ai-prd/SKILL.md)** - PRD and tech spec templates for new features
-- **[software-code-review](../software-code-review/SKILL.md)** - Code review including documentation standards
-
----
-
-## Usage Notes
-
-**For Claude**: When auditing a codebase:
-
-1. **Start with discovery** - Use [references/discovery-patterns.md](references/discovery-patterns.md) to find components
-2. **Calculate coverage** - Compare discovered components vs existing docs
-3. **Prioritize gaps** - Use [references/priority-framework.md](references/priority-framework.md) to assign P1/P2/P3
-4. **Follow workflows** - Use [references/audit-workflows.md](references/audit-workflows.md) for systematic approach
-5. **Use templates** - Reference docs-codebase for documentation structure
-6. **Set up automation** - Use [references/cicd-integration.md](references/cicd-integration.md) for ongoing maintenance
-
-**Remember**: The goal is not 100% coverage, but **useful coverage** for the target audience. Document what developers, operators, and integrators actually need.
+## Navigation
+
+- Discovery and prioritization: [references/discovery-patterns.md](references/discovery-patterns.md), [references/audit-workflows.md](references/audit-workflows.md), [references/priority-framework.md](references/priority-framework.md)
+- Validation and maintenance: [references/ai-instruction-coverage.md](references/ai-instruction-coverage.md), [references/freshness-tracking.md](references/freshness-tracking.md), [references/api-docs-validation.md](references/api-docs-validation.md), [references/runbook-testing.md](references/runbook-testing.md), [references/cicd-integration.md](references/cicd-integration.md), [references/documentation-quality-metrics.md](references/documentation-quality-metrics.md)
+- Templates and source map: [assets/coverage-report-template.md](assets/coverage-report-template.md), [assets/documentation-backlog-template.md](assets/documentation-backlog-template.md), [data/sources.json](data/sources.json)
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify volatile tool behavior, documentation-lint tooling, and external standards before presenting them as current fact.
+- Prefer primary specifications and official tool documentation over summaries.
+- If live verification is unavailable, mark current-tooling claims as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

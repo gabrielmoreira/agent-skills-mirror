@@ -2,18 +2,6 @@
 name: godot-shaders-basics
 description: "Expert Godot shader patterns for batch-safe hitflash, alpha-scissor foliage/dissolve, screenspace postFX, depth reconstruction, triplanar, and instance uniforms — not first-shader tutorials. Trigger on draw-call batching breaks, discard vs depth-prepass, foliage shadows, post-process quads, or world-position FX. Keywords: instance uniform, ALPHA_SCISSOR, hint_screen_texture, hint_depth_texture, global uniform, sampler2DArray, canvas_item, spatial, post-processing."
 ---
-## Godot 4.7 Baseline
-
-- Expert patterns target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading from 4.6.
-- `LinearToSRGB` visual-shader node no longer clamps to `[0,1]` on Mobile/Forward+.
-- Drawable Texture API for custom render targets; `get_format()` lives on **Texture2D** base for `ImageTexture` / `PortableCompressedTexture2D`.
-- **NEVER** assume 4.6 defaults without checking 4.7 migration notes.
-
-# Shader Expert Patterns
-
-Batching-safe materials, scissor/dissolve, screenspace FX, and depth reconstruction — Official Docs cover first shaders and built-in glossaries.
-
 ## NEVER Do in Shaders
 
 - **NEVER use `discard` unconditionally for optimization** — It prevents the depth prepass from working effectively. A discarded pixel still costs vertex processing; sometimes not rendering the object is better [1].
@@ -28,7 +16,6 @@ Batching-safe materials, scissor/dissolve, screenspace FX, and depth reconstruct
 - **NEVER use `#define` macros for dynamic runtime toggles** — These create new shader permutations, causing massive compilation stutters when first encountered in-game. Use uniforms instead.
 - **NEVER forget to normalize vectors** — Using `reflect(dir, normal)` on unnormalized vectors causes severe rendering artifacts and incorrect lighting math.
 - **NEVER modify UV without bounds checking or `fract()`** — Shifting UVs beyond 0.0-1.0 without `repeat` wrapping or clamping will sample edge pixels or return black, breaking texture consistency.
-
 
 ## Scenario → Script Triggers
 
@@ -97,7 +84,6 @@ Pre-warm shader pipelines during loading screens to avoid first-frame stutter.
 - Move invariant math to `vertex()`; pass via `varying`.
 - Color uniforms need `hint_source_color`.
 - Prefer Official Docs for shading-language builtins; this skill owns batching, scissor, screenspace, and depth routing.
-
 
 ## Deep recipes (on demand)
 

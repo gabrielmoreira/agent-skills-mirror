@@ -1,6 +1,6 @@
 ---
-name: Frontend Design
-description: Design and build production-ready frontend interfaces with design systems, responsive layouts, accessible components, and dark mode support.
+name: frontend-design
+description: Design and build production-ready frontend interfaces with design systems, responsive layouts, accessible components, and dark mode support. Use when the user requests frontend design or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills Community

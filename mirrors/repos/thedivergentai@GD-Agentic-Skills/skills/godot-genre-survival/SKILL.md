@@ -3,16 +3,6 @@ name: godot-genre-survival
 description: "Expert blueprint for survival games (Minecraft, Don't Starve, The Forest, Rust) covering needs systems, resource gathering, crafting recipes, base building, and progression balancing. Use when building open-world survival, crafting-focused, or resource management games. Keywords survival, needs system, crafting, inventory, hunger, resource gathering, base building."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Survival
-
-Resource scarcity, needs management, and progression through crafting define survival games.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Physiology & Needs
@@ -120,7 +110,6 @@ Re-roll spawn points outside bed/`player_beds` radius before enabling threat spa
 
 > **MANDATORY** when starting base-building snap or biome/noise work: read [elite-technical-patterns.md](references/elite-technical-patterns.md). **Do NOT Load** for first-pass needs/inventory/crafting — use the script catalog above.
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -128,7 +117,6 @@ Re-roll spawn points outside bed/`player_beds` radius before enabling threat spa
 | Needs / crafting / tools | [key-mechanics.md](references/key-mechanics.md) + bundled survival scripts |
 | Base build grid snap | [elite-technical-patterns.md](references/elite-technical-patterns.md) + [base_builder.gd](scripts/base_builder.gd) |
 | Biome / spawn safety | [elite-technical-patterns.md](references/elite-technical-patterns.md) + [biome_generator.gd](scripts/biome_generator.gd) |
-
 
 ## Reference
 

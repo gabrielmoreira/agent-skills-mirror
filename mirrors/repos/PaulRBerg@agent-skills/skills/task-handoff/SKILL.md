@@ -4,7 +4,7 @@ compatibility:
   Requires Bash 3.2, Git, local file-write access, and macOS trash. Default finalization also requires macOS pbcopy and
   pbpaste; `finalize --no-clipboard` does not. Generated launch commands require authenticated Codex and Claude CLIs.
 coordination: exempt
-disable-model-invocation: true
+disable-model-invocation: false
 name: task-handoff
 user-invocable: true
 description:
@@ -14,8 +14,7 @@ description:
 
 # Task Handoff
 
-This skill is coordination-exempt: skip the ai-coord gate (`git status` / `ai-coord status` / `ai-coord start`) for this
-skill's own work.
+This skill is coordination-exempt: skip the ai-coord gate for its declared work.
 
 If these instructions are already present from a slash or dollar invocation, follow them directly; do not invoke this
 skill again through a skill tool.

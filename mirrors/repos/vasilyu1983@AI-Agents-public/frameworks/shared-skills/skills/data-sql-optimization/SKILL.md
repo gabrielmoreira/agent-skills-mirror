@@ -1,401 +1,253 @@
 ---
 name: data-sql-optimization
-description: "SQL optimization for OLTP systems: EXPLAIN analysis, indexing, schema design, migrations, HA, and security across major SQL platforms."
+description: "Diagnoses and tunes SQL for OLTP workloads on PostgreSQL, MySQL, and SQL Server. Use when tuning queries, reading plans, indexing, or fixing lock contention."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.2"
+last_validated: 2026-07-11
 ---
 
-# SQL Optimization — Comprehensive Reference
+# SQL Optimization
 
-This skill provides actionable checklists, patterns, and templates for **transactional (OLTP) SQL optimization**: measurement-first triage, EXPLAIN/plan interpretation, balanced indexing (avoiding over-indexing), performance monitoring, schema evolution, migrations, backup/recovery, high availability, and security.
+Operational guidance for **transactional SQL systems**. This skill is strongest on **PostgreSQL, MySQL, and SQL Server** for query tuning, plan analysis, index strategy, connection pressure, lock contention, and safe production changes.
 
-**Supported Platforms:** PostgreSQL, MySQL, SQL Server, Oracle, SQLite
-
-**For OLAP/Analytics:** See [data-lake-platform](../data-lake-platform/SKILL.md) (ClickHouse, DuckDB, Doris, StarRocks)
-
----
+**Primary coverage:** PostgreSQL, MySQL, SQL Server
+**Lighter coverage:** Oracle, SQLite
+**Out of scope:** OLAP engines and lakehouse tuning. Use [data-lake-platform](../data-lake-platform/SKILL.md) for ClickHouse, DuckDB, Doris, StarRocks, Iceberg, Delta Lake, or Hudi.
 
 ## Quick Reference
 
-| Task | Tool/Framework | Command | When to Use |
-|------|----------------|---------|-------------|
-| Query Performance Analysis | EXPLAIN ANALYZE | `EXPLAIN (ANALYZE, BUFFERS) SELECT ...` (PG) / `EXPLAIN ANALYZE SELECT ...` (MySQL) | Diagnose slow queries, identify missing indexes |
-| Find Slow Queries | pg_stat_statements / slow query log | `SELECT * FROM pg_stat_statements ORDER BY total_exec_time DESC LIMIT 10;` | Identify performance bottlenecks in production |
-| Index Analysis | pg_stat_user_indexes / SHOW INDEX | `SELECT * FROM pg_stat_user_indexes WHERE idx_scan = 0;` | Find unused indexes, validate index coverage |
-| Schema Migration | Flyway / Liquibase | `flyway migrate` / `liquibase update` | Version-controlled database changes |
-| Backup & Recovery | pg_dump / mysqldump | `pg_dump -Fc dbname > backup.dump` | Point-in-time recovery, disaster recovery |
-| Replication Setup | Streaming / GTID | Configure postgresql.conf / my.cnf | High availability, read scaling |
-| Safe Tuning Loop | Measure -> Explain -> Change -> Verify | Use tuning worksheet template | Reduce latency/cost without regressions |
+### Scripts
 
----
+| Script | What it does | Usage |
+|--------|-------------|-------|
+| [scripts/pg_slow_query_triage.sql](scripts/pg_slow_query_triage.sql) | Five-section triage report from `pg_stat_statements`: top by total time, mean time, I/O, variance, and cache-hit ratio | Copy-paste into `psql` or any SQL client; requires `pg_stat_statements` extension |
+| [scripts/explain_collector.py](scripts/explain_collector.py) | Runs `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)` on a list of queries via `psql`, outputs JSONL | `DATABASE_URL=postgresql://... python explain_collector.py --queries slow.txt` |
 
-## Decision Tree: Choosing the Right Approach
+```bash
+# Triage: paste directly into psql
+psql $DATABASE_URL -f frameworks/shared-skills/skills/data-sql-optimization/scripts/pg_slow_query_triage.sql
 
-```text
-Query performance issue?
-    ├─ Identify slow queries first?
-    │   ├─ PostgreSQL -> pg_stat_statements (top queries by total_exec_time)
-    │   └─ MySQL -> Performance Schema / slow query log
-    │
-    ├─ Analyze execution plan?
-    │   ├─ PostgreSQL -> EXPLAIN (ANALYZE, BUFFERS, VERBOSE)
-    │   ├─ MySQL -> EXPLAIN FORMAT=JSON or EXPLAIN ANALYZE
-    │   └─ SQL Server -> SET STATISTICS IO ON; SET STATISTICS TIME ON;
-    │
-    ├─ Need indexing strategy?
-    │   ├─ PostgreSQL -> B-tree (default), GIN (JSONB), GiST (spatial), partial indexes
-    │   ├─ MySQL -> BTREE (default), FULLTEXT (text search), SPATIAL
-    │   └─ Check: Table >10k rows AND selectivity <10% AND 10x+ speedup verified
-    │
-    ├─ Schema changes needed?
-    │   ├─ New database -> template-schema-design.md
-    │   ├─ Modify schema -> template-migration.md (Flyway/Liquibase)
-    │   └─ Large tables (MySQL) -> gh-ost / pt-online-schema-change (avoid locks)
-    │
-    ├─ High availability setup?
-    │   ├─ PostgreSQL -> Streaming replication (template-replication-ha.md)
-    │   └─ MySQL -> GTID-based replication (template-replication-ha.md)
-    │
-    ├─ Backup/disaster recovery?
-    │   └─ template-backup-restore.md (pg_dump, mysqldump, PITR)
-    │
-    └─ Analytics on large datasets (OLAP)?
-        └─ See data-lake-platform (ClickHouse, DuckDB, Doris, StarRocks)
+# Collect EXPLAIN plans for top queries (production-safe mode):
+python scripts/explain_collector.py --queries queries.txt --no-analyze --output plans.jsonl
+
+# Collect with ANALYZE (executes queries — use on a replica):
+DATABASE_URL=postgresql://user:pass@replica:5432/db \
+  python scripts/explain_collector.py --queries queries.txt --output plans.jsonl
 ```
 
----
+| Need | Start Here | Use When |
+|------|------------|----------|
+| Slow query triage | [template-slow-query.md](assets/cross-platform/template-slow-query.md) | You need a safe intake before changing anything |
+| Plan review | [references/explain-analysis.md](references/explain-analysis.md) | You already have `EXPLAIN`, `EXPLAIN ANALYZE`, Query Store, or Performance Schema evidence |
+| Index design or index removal | [references/index-patterns.md](references/index-patterns.md) | You are deciding whether to add, reshape, make invisible, or drop an index |
+| Query rewrite | [references/query-tuning-patterns.md](references/query-tuning-patterns.md) | A query shape or estimation problem is the likely bottleneck |
+| Connection saturation | [references/connection-pooling-patterns.md](references/connection-pooling-patterns.md) | App pools, PgBouncer, RDS Proxy, Supavisor, or Cloud SQL pooling are involved |
+| Monitoring and alerting | [references/monitoring-alerting-patterns.md](references/monitoring-alerting-patterns.md) | You need dashboards, baselines, or alerts for database performance |
+| Locking / deadlocks | [template-lock-analysis.md](assets/cross-platform/template-lock-analysis.md) | The issue is blocking, deadlocks, or long transactions rather than raw query cost |
+| Partitioning | [references/partition-strategies.md](references/partition-strategies.md) | Retention, pruning, or table growth is driving the change |
+| Security or RLS review | [template-security-audit.md](assets/cross-platform/template-security-audit.md) | You are reviewing least privilege, SQL injection controls, or tenant isolation |
 
-## When to Use This Skill
+## Coverage Model
 
-Codex should invoke this skill when users ask for:
+| Engine | Status | Notes |
+|--------|--------|-------|
+| PostgreSQL 18 (GA 2025-09-25) | Primary | AIO, skip scan, uuidv7(), statistics retention across pg_upgrade; deepest coverage |
+| MySQL 9.7 LTS (GA 2026-04-21) | Primary | Current LTS; HyperGraph optimizer available but not default; 8.4 LTS still supported |
+| SQL Server 2025 (GA 2025-11-18) | Primary | IQP 3.0, DOP feedback, OPPO; Query Store on readable secondaries |
+| Oracle | Secondary | Use templates and official docs for optimizer-specific edge cases |
+| SQLite | Secondary | Focus on indexes, planner behavior, WAL, and `PRAGMA optimize` |
 
-### Query Optimization (Modern Approaches)
-- SQL query performance review and tuning
-- EXPLAIN/plan interpretation with optimization suggestions
-- Index creation strategies with balanced approach (avoiding over-indexing)
-- Troubleshooting slow queries using pg_stat_statements or Performance Schema
-- Identifying and remediating SQL anti-patterns with operational fixes
-- Query rewrite suggestions or migration from slow to fast patterns
-- Statistics maintenance and auto-analyze configuration
+## Use This Skill When
 
-### Database Operations
-- Schema design with normalization and performance trade-offs
-- Database migrations with version control (Liquibase, Flyway)
-- Backup and recovery strategies (point-in-time recovery, automated testing)
-- High availability and replication setup (streaming, GTID-based)
-- Database security auditing (access controls, encryption, SQL injection prevention)
-- Lock analysis and deadlock troubleshooting
-- Connection pooling (pgBouncer, Pgpool-II, ProxySQL)
+Invoke this skill for requests about:
 
-### Performance Tuning (Modern Standards)
-- Memory configuration (work_mem, shared_buffers, effective_cache_size)
-- Automated monitoring with pg_stat_statements and query pattern analysis
-- Index health monitoring (unused index detection, index bloat analysis)
-- Vacuum strategy and autovacuum tuning (PostgreSQL)
-- InnoDB buffer pool optimization (MySQL)
-- Partition pruning improvements (PostgreSQL 18+)
+- Slow SQL queries, plan interpretation, or index usage
+- PostgreSQL `pg_stat_statements`, MySQL Performance Schema, or SQL Server Query Store
+- Missing indexes, over-indexing, invisible-index trials, or composite-index ordering
+- Correlated predicate misestimation, histograms, or extended statistics
+- Lock contention, idle-in-transaction sessions, or deadlock triage
+- Connection storms, pool sizing, PgBouncer modes, RDS Proxy, Supavisor, or Cloud SQL Managed Connection Pooling
+- Partition pruning, retention via detach/drop, or online schema change safety
+- Backup, restore, migration, and replication runbooks
+- Database security reviews, least privilege, or PostgreSQL RLS checks
 
----
+## First Response Checklist
 
-## Resources (Best Practices Guides)
+Before recommending changes, collect:
 
-Find detailed operational patterns and quick references in:
+1. Database engine and exact version
+2. Query text or workload shape
+3. Relevant schema, indexes, and estimated row counts
+4. Actual evidence: plan output, wait stats, query stats, or error text
+5. Recent changes: schema, config, deploy, traffic spike, or data skew
+6. Concurrency context: app pool, server pooler, replica topology
+7. Success metric: p95 latency, CPU, reads, lock time, error rate, or connection count
 
-- **SQL Best Practices**: [references/sql-best-practices.md](references/sql-best-practices.md)
-- **Query Tuning Patterns**: [references/query-tuning-patterns.md](references/query-tuning-patterns.md)
-- **Indexing Strategies**: [references/index-patterns.md](references/index-patterns.md)
-- **EXPLAIN/Analysis**: [references/explain-analysis.md](references/explain-analysis.md)
-- **SQL Anti-Patterns**: [references/sql-antipatterns.md](references/sql-antipatterns.md)
-- **External Sources**: [data/sources.json](data/sources.json) — vendor docs and reference links
-- **Operational Standards**: [references/operational-patterns.md](references/operational-patterns.md) — Deep operational checklists, database-specific guidance, and template selection trees
-- **Connection Pooling**: [references/connection-pooling-patterns.md](references/connection-pooling-patterns.md) — PgBouncer, RDS Proxy, pool sizing, connection leak troubleshooting
-- **Partition Strategies**: [references/partition-strategies.md](references/partition-strategies.md) — Range/list/hash partitioning, pruning, maintenance, migration patterns
-- **Monitoring & Alerting**: [references/monitoring-alerting-patterns.md](references/monitoring-alerting-patterns.md) — pg_stat_statements dashboards, alert thresholds, slow query pipelines
+If any of these are missing, request them or use the intake templates before suggesting a production change.
 
-Each file includes:
-- Copy-paste ready checklists (e.g., "query review", "index design", "explain review")
-- Anti-patterns with operational fixes and alternatives
-- Query rewrite and indexing strategies with examples
-- Troubleshooting guides (step-by-step)
+## EXPLAIN-Driven Diagnosis Checklist
 
----
+Run this sequence before recommending any change:
 
-## Templates (Copy-Paste Ready)
+```sql
+-- PostgreSQL: capture full plan evidence
+EXPLAIN (ANALYZE, BUFFERS, VERBOSE, FORMAT TEXT) <query>;
 
-Templates are organized by database technology for precision and clarity:
+-- MySQL: get JSON plan for detailed cost breakdown
+EXPLAIN FORMAT=JSON <query>;
 
-### Cross-Platform Templates (All Databases)
-- [assets/cross-platform/template-query-tuning.md](assets/cross-platform/template-query-tuning.md) - Universal query optimization
-- [assets/cross-platform/template-explain-analysis.md](assets/cross-platform/template-explain-analysis.md) - Execution plan analysis
-- [assets/cross-platform/template-performance-tuning-worksheet.md](assets/cross-platform/template-performance-tuning-worksheet.md) - **NEW** 4-step tuning workflow (Measure -> Explain -> Change -> Verify)
-- [assets/cross-platform/template-index.md](assets/cross-platform/template-index.md) - Index design patterns
-- [assets/cross-platform/template-slow-query.md](assets/cross-platform/template-slow-query.md) - Slow query triage
-- [assets/cross-platform/template-schema-design.md](assets/cross-platform/template-schema-design.md) - Schema modeling
-- [assets/cross-platform/template-migration.md](assets/cross-platform/template-migration.md) - Database migrations
-- [assets/cross-platform/template-backup-restore.md](assets/cross-platform/template-backup-restore.md) - Backup/DR planning
-- [assets/cross-platform/template-security-audit.md](assets/cross-platform/template-security-audit.md) - Security review
-- [assets/cross-platform/template-diagnostics.md](assets/cross-platform/template-diagnostics.md) - Performance diagnostics
-- [assets/cross-platform/template-lock-analysis.md](assets/cross-platform/template-lock-analysis.md) - Lock troubleshooting
+-- SQL Server: turn on I/O and CPU evidence
+SET STATISTICS IO, TIME ON;
+<query>;
+```
 
-### PostgreSQL Templates
-- [assets/postgres/template-pg-explain.md](assets/postgres/template-pg-explain.md) - PostgreSQL EXPLAIN analysis
-- [assets/postgres/template-pg-index.md](assets/postgres/template-pg-index.md) - PostgreSQL indexing (B-tree, GIN, GiST)
-- [assets/postgres/template-replication-ha.md](assets/postgres/template-replication-ha.md) - Streaming replication & HA
+| Step | What to Check | Red Flag |
+|------|---------------|----------|
+| 1 | Highest-cost or longest-elapsed operator | Any node consuming >60% of total time |
+| 2 | Rows estimated vs rows actual | Ratio >10x in either direction |
+| 3 | Loops * rows per loop = total rows processed | High total even if one loop looks cheap |
+| 4 | Shared hit vs read buffers (PostgreSQL) | `reads` >> `hits` on a hot query |
+| 5 | Sort or hash spill | `Sort Method: external merge`, `Hash Batches > 1` |
+| 6 | Key/bookmark lookup on hot path | Many per parent row; add INCLUDE columns |
+| 7 | Nested loop on large build side | Switch to hash join via statistics fix, not a hint |
+| 8 | Waiting time >> execution time | Investigate locks or pool saturation, not the plan |
 
-### MySQL Templates
-- [assets/mysql/template-mysql-explain.md](assets/mysql/template-mysql-explain.md) - MySQL EXPLAIN analysis
-- [assets/mysql/template-mysql-index.md](assets/mysql/template-mysql-index.md) - MySQL/InnoDB indexing
-- [assets/mysql/template-replication-ha.md](assets/mysql/template-replication-ha.md) - MySQL replication & HA
+**Bottleneck decision table:**
 
-### Microsoft SQL Server Templates
-- [assets/mssql/template-mssql-explain.md](assets/mssql/template-mssql-explain.md) - SQL Server EXPLAIN/SHOWPLAN analysis
-- [assets/mssql/template-mssql-index.md](assets/mssql/template-mssql-index.md) - SQL Server indexing and tuning
+| Plan shows | Likely cause | First lever |
+|-----------|-------------|-------------|
+| Seq scan, high rows-read/rows-returned | Missing or unusable index | Check predicate sargability; add index |
+| Index scan but high loops | N+1 or bad join order | Batch or fix estimation |
+| Actual >> estimated rows | Stale/insufficient stats | `ANALYZE`; `CREATE STATISTICS` (PG); histogram (MySQL) |
+| Plan varies by parameter | Parameter sensitivity | Query Store / OPPO (SQL Server); separate query shapes |
+| Sort spill | Projection too wide; no order-aligned index | Narrow projection; add covering index |
+| Cheap plan but slow wall time | Waits: locks, I/O, pool | Check `pg_stat_activity`, wait events, pool stats |
 
-### Oracle Templates
-- [assets/oracle/template-oracle-explain.md](assets/oracle/template-oracle-explain.md) - Oracle EXPLAIN plan review and tuning
+## Workflow
 
-### SQLite Templates
-- [assets/sqlite/template-sqlite-optimization.md](assets/sqlite/template-sqlite-optimization.md) - SQLite optimization and pragma guidance
+1. Confirm the engine, workload, symptom, and evidence available before suggesting a change.
+2. Route search, lakehouse, backend-architecture, or observability-heavy work to the adjacent skill when SQL tuning is not the primary problem.
+3. Gather plans, stats, and workload context before proposing indexes, rewrites, or configuration changes.
+4. Change one lever at a time and verify correctness plus performance impact after each step.
+5. Re-check version-sensitive behavior with the navigation references before final recommendations.
 
----
+## ASCII Flow
+
+```text
+SQL performance request
+  -> confirm engine, version, workload, and success metric
+  -> collect evidence: query, schema, indexes, plan, waits, stats
+  -> classify bottleneck
+     +-- query shape or estimates -> rewrite/statistics path
+     +-- missing or excess index -> index trial path
+     +-- locks or deadlocks -> transaction-shape path
+     +-- connections -> pool/topology path
+     +-- table growth -> partition/retention path
+  -> change one lever at a time
+  -> verify correctness, latency, reads, locks, and rollback path
+```
+
+## Routing Guide
+
+**If the problem is a slow query**
+
+- Start with [template-slow-query.md](assets/cross-platform/template-slow-query.md)
+- Then use:
+  - PostgreSQL: [template-pg-explain.md](assets/postgres/template-pg-explain.md)
+  - MySQL: [template-mysql-explain.md](assets/mysql/template-mysql-explain.md)
+  - SQL Server: [template-mssql-explain.md](assets/mssql/template-mssql-explain.md)
+  - Oracle: [template-oracle-explain.md](assets/oracle/template-oracle-explain.md)
+
+**If the likely problem is cardinality or estimator drift**
+
+- PostgreSQL: check [references/operational-patterns.md](references/operational-patterns.md) for `CREATE STATISTICS`, `pg_upgrade` statistics retention, and PG18 planner changes
+- MySQL: use histograms and optimizer statistics in [references/operational-patterns.md](references/operational-patterns.md)
+- SQL Server: inspect Query Store, parameter sensitivity, and OPPO in [template-mssql-explain.md](assets/mssql/template-mssql-explain.md)
+
+**If the issue is index design**
+
+- Start with [references/index-patterns.md](references/index-patterns.md)
+- Use vendor templates:
+  - PostgreSQL: [template-pg-index.md](assets/postgres/template-pg-index.md)
+  - MySQL: [template-mysql-index.md](assets/mysql/template-mysql-index.md)
+  - SQL Server: [template-mssql-index.md](assets/mssql/template-mssql-index.md)
+
+**If the issue is blocking or lock waits**
+
+- Use [template-lock-analysis.md](assets/cross-platform/template-lock-analysis.md)
+- Favor transaction-shape fixes before configuration changes
+
+**If the issue is connection pressure**
+
+- Use [references/connection-pooling-patterns.md](references/connection-pooling-patterns.md)
+- Distinguish connection helpers from actual poolers. Cloud SQL Auth Proxy and language connectors are not poolers by themselves.
+
+**If the request is PostgreSQL tenant isolation or privilege review**
+
+- Use [template-pg-rls.md](assets/postgres/template-pg-rls.md)
+- Pair with [template-security-audit.md](assets/cross-platform/template-security-audit.md)
+
+## Navigation and Templates
+
+Templates live under `assets/`. Reference guides — load on demand:
+
+- [references/explain-analysis.md](references/explain-analysis.md) — Load when reading EXPLAIN/EXPLAIN ANALYZE output: row estimates, join order, memory spills, per-engine capture commands.
+- [references/index-patterns.md](references/index-patterns.md) — Load when deciding whether to add, reshape, or retire an index; covers composite, partial, covering, BRIN, invisible, and PG18 skip scan.
+- [references/query-tuning-patterns.md](references/query-tuning-patterns.md) — Load when the likely fix is in the SQL itself: sargability, OR rewrites, keyset pagination, N+1 collapse, estimation fixes.
+- [references/sql-best-practices.md](references/sql-best-practices.md) — Load for workload-grounded tuning defaults and safe-change workflow; useful before making production changes.
+- [references/sql-antipatterns.md](references/sql-antipatterns.md) — Load during schema or query code review to detect and remediate common anti-patterns (SELECT *, N+1, EAV, non-sargable predicates).
+- [references/query-optimization-research-runtime.md](references/query-optimization-research-runtime.md) — Load when a recommendation depends on version-specific engine behavior (PG18 AIO, MySQL 9.7 HyperGraph, SQL Server 2025 IQP 3.0, LITHE rewrite research).
+- [references/partition-strategies.md](references/partition-strategies.md) — Load when table growth, retention, or vacuum pressure motivates partitioning; includes migration patterns and pg_partman guidance.
+- [references/connection-pooling-patterns.md](references/connection-pooling-patterns.md) — Load when the symptom is connection saturation, pooler misconfiguration, or cloud-managed pool selection (PgBouncer, RDS Proxy, Supavisor, Cloud SQL).
+- [references/monitoring-alerting-patterns.md](references/monitoring-alerting-patterns.md) — Load when setting up query stats, wait-event monitoring, or alert thresholds for PostgreSQL, MySQL, or SQL Server.
+- [references/operational-patterns.md](references/operational-patterns.md) — Load for the production tuning workflow, safe migration checklist, or engine-specific operational cautions.
+
+## Operating Rules
+
+- Measure before change. A fast guess is still a guess.
+- Correctness beats speed. Verify result equivalence after rewrites.
+- Change one variable at a time when triaging production behavior.
+- Sequential scans, hash joins, and materialization can be correct plans.
+- Subqueries and CTEs are not anti-patterns by default; prove they are the bottleneck before rewriting.
+- Do not add indexes just because a column appears in `WHERE`. Check workload value, write cost, and plan change.
+- Treat version-sensitive behavior as volatile. For PostgreSQL 18, MySQL 9.7 LTS (or 8.4 LTS), and SQL Server 2025 features, prefer vendor docs over memory.
+
+## Known Traps
+
+- Tuning SQL in isolation without confirming whether the real bottleneck is missing indexes, bad cardinality estimates, lock contention, pool saturation, or ORM query shape.
+- Adding indexes reactively for every slow query and degrading write throughput, autovacuum health, and cache residency.
+- Testing with development-sized datasets and drawing conclusions that collapse under production row counts, skew, or tenant hot spots.
+- Rewriting queries aggressively before examining actual plans with row estimates, memory usage, spill behavior, and join order.
+- Treating pagination, search, or reporting queries as harmless OLTP traffic when they dominate I/O and block core transactional paths.
+- Assuming one engine's plan behavior or hint strategy transfers cleanly between PostgreSQL, MySQL, and SQL Server.
+
+## Common Anti-Patterns
+
+- Solving all latency problems with more indexes instead of fixing query shape, access patterns, or workload isolation.
+- Running large ad hoc analytics directly on the primary OLTP path when summary tables, replicas, or warehouse sync should absorb the load.
+- Using `SELECT *` and ORM default eager loading in latency-sensitive request paths.
+- Benchmarking single queries without concurrent load, cache-warm versus cold-path comparison, or p95 and p99 visibility.
+- Keeping ineffective or duplicate indexes indefinitely because no index review or usage audit is part of routine operations.
+- Treating planner hints or session-level knobs as the first-line fix instead of a last resort after query, schema, and statistics improvements.
 
 ## Related Skills
 
-**Infrastructure & Operations:**
-- [../ops-devops-platform/SKILL.md](../ops-devops-platform/SKILL.md) — Infrastructure, backups, monitoring, and incident response
-- [../qa-observability/SKILL.md](../qa-observability/SKILL.md) — Performance monitoring, profiling, and metrics
-- [../qa-debugging/SKILL.md](../qa-debugging/SKILL.md) — Production debugging patterns
-
-**Application Integration:**
-- [../software-backend/SKILL.md](../software-backend/SKILL.md) — API/database integration and application patterns
-- [../software-architecture-design/SKILL.md](../software-architecture-design/SKILL.md) — System design and data architecture
-- [../dev-api-design/SKILL.md](../dev-api-design/SKILL.md) — REST API and database interaction patterns
-
-**Quality & Security:**
-- [../qa-resilience/SKILL.md](../qa-resilience/SKILL.md) — Resilience, circuit breakers, and failure handling
-- [../software-security-appsec/SKILL.md](../software-security-appsec/SKILL.md) — Database security, auth, SQL injection prevention
-- [../qa-testing-strategy/SKILL.md](../qa-testing-strategy/SKILL.md) — Database testing strategies
-
-**Data Engineering:**
-- [../ai-ml-data-science/SKILL.md](../ai-ml-data-science/SKILL.md) — SQLMesh, dbt, data transformations
-- [../ai-mlops/SKILL.md](../ai-mlops/SKILL.md) — Data pipelines, ETL, and warehouse loading (dlt)
-- [../ai-ml-timeseries/SKILL.md](../ai-ml-timeseries/SKILL.md) — Time-series databases and forecasting
-
----
-
-## Navigation
-
-**Resources**
-- [references/explain-analysis.md](references/explain-analysis.md)
-- [references/query-tuning-patterns.md](references/query-tuning-patterns.md)
-- [references/operational-patterns.md](references/operational-patterns.md)
-- [references/sql-antipatterns.md](references/sql-antipatterns.md)
-- [references/index-patterns.md](references/index-patterns.md)
-- [references/sql-best-practices.md](references/sql-best-practices.md)
-- [references/connection-pooling-patterns.md](references/connection-pooling-patterns.md)
-- [references/partition-strategies.md](references/partition-strategies.md)
-- [references/monitoring-alerting-patterns.md](references/monitoring-alerting-patterns.md)
-
-**Templates**
-- [assets/cross-platform/template-slow-query.md](assets/cross-platform/template-slow-query.md)
-- [assets/cross-platform/template-backup-restore.md](assets/cross-platform/template-backup-restore.md)
-- [assets/cross-platform/template-schema-design.md](assets/cross-platform/template-schema-design.md)
-- [assets/cross-platform/template-explain-analysis.md](assets/cross-platform/template-explain-analysis.md)
-- [assets/cross-platform/template-performance-tuning-worksheet.md](assets/cross-platform/template-performance-tuning-worksheet.md)
-- [assets/cross-platform/template-security-audit.md](assets/cross-platform/template-security-audit.md)
-- [assets/cross-platform/template-diagnostics.md](assets/cross-platform/template-diagnostics.md)
-- [assets/cross-platform/template-index.md](assets/cross-platform/template-index.md)
-- [assets/cross-platform/template-migration.md](assets/cross-platform/template-migration.md)
-- [assets/cross-platform/template-lock-analysis.md](assets/cross-platform/template-lock-analysis.md)
-- [assets/cross-platform/template-query-tuning.md](assets/cross-platform/template-query-tuning.md)
-- [assets/oracle/template-oracle-explain.md](assets/oracle/template-oracle-explain.md)
-- [assets/sqlite/template-sqlite-optimization.md](assets/sqlite/template-sqlite-optimization.md)
-- [assets/postgres/template-pg-index.md](assets/postgres/template-pg-index.md)
-- [assets/postgres/template-replication-ha.md](assets/postgres/template-replication-ha.md)
-- [assets/postgres/template-pg-explain.md](assets/postgres/template-pg-explain.md)
-- [assets/mysql/template-mysql-explain.md](assets/mysql/template-mysql-explain.md)
-- [assets/mysql/template-mysql-index.md](assets/mysql/template-mysql-index.md)
-- [assets/mysql/template-replication-ha.md](assets/mysql/template-replication-ha.md)
-- [assets/mssql/template-mssql-index.md](assets/mssql/template-mssql-index.md)
-- [assets/mssql/template-mssql-explain.md](assets/mssql/template-mssql-explain.md)
-
-**Data**
-- [data/sources.json](data/sources.json) — Curated external references
-
----
-
-## Operational Deep Dives
-
-See [references/operational-patterns.md](references/operational-patterns.md) for:
-- End-to-end optimization checklists and anti-pattern fixes
-- Database-specific quick references (PostgreSQL, MySQL, SQL Server, Oracle, SQLite)
-- Slow query troubleshooting workflow and reliability drills
-- Template selection decision tree and platform migration notes
-
----
-
-## Do / Avoid
-
-### GOOD: Do
-
-- Measure baseline before any optimization
-- Change one variable at a time
-- Verify results match after query changes
-- Update statistics before concluding "needs index"
-- Test with production-like data volumes
-- Document all optimization decisions
-- Include performance tests in CI/CD
-
-### BAD: Avoid
-
-- Adding indexes without checking if they'll be used
-- Using SELECT * in production queries
-- Optimizing for test data (use representative volumes)
-- Ignoring write performance impact of indexes
-- Skipping EXPLAIN analysis before changes
-- Multiple simultaneous changes (can't attribute improvement)
-- N+1 query patterns in application code
-
----
-
-## Anti-Patterns Quick Reference
-
-| Anti-Pattern | Problem | Fix |
-|--------------|---------|-----|
-| **SELECT *** | Reads unnecessary columns | Explicit column list |
-| **N+1 queries** | Multiplied round trips | JOIN or batch fetch |
-| **Missing WHERE** | Full table scan | Add predicates |
-| **Function on indexed column** | Can't use index | Move function to RHS |
-| **Implicit type conversion** | Index bypass | Match types explicitly |
-| **LIKE '%prefix'** | Leading wildcard = scan | Full-text search |
-| **Unbounded result set** | Memory explosion | Add LIMIT/pagination |
-| **OR conditions** | Index may not be used | UNION or rewrite |
-
-See [references/sql-antipatterns.md](references/sql-antipatterns.md) for detailed fixes.
-
----
-
-## OLTP vs OLAP Decision Tree
-
-```text
-Is your query for...?
-├─ Point lookups (by ID/key)?
-│   └─ OLTP database (this skill)
-│       - Ensure proper indexes
-│       - Use connection pooling
-│       - Optimize for low latency
-│
-├─ Aggregations over recent data (dashboard)?
-│   └─ OLTP database (this skill)
-│       - Consider materialized views
-│       - Index common filter columns
-│       - Watch for lock contention
-│
-├─ Full table scans or historical analysis?
-│   └─ OLAP database (data-lake-platform)
-│       - ClickHouse, DuckDB, Doris
-│       - Columnar storage
-│       - Partitioning by date
-│
-└─ Mixed workload (both)?
-    └─ Separate OLTP and OLAP
-        - OLTP for transactions
-        - Replicate to OLAP for analytics
-        - Avoid running analytics on primary
-```
-
----
-
-## Optional: AI/Automation
-
-> **Note**: AI tools assist but require human validation of correctness.
-
-- **EXPLAIN summarization** — Identify bottlenecks from complex plans
-- **Query rewrite suggestions** — Must verify result equivalence
-- **Index recommendations** — Check selectivity and write impact first
-
-### Bounded Claims
-
-- AI cannot determine correct query results
-- Automated index suggestions may miss workload context
-- Human review required for production changes
-
----
-
-## Analytical Databases (OLAP)
-
-For OLAP databases and data lake infrastructure, see **[data-lake-platform](../data-lake-platform/SKILL.md)**:
-
-- **Query engines:** ClickHouse, DuckDB, Apache Doris, StarRocks
-- **Table formats:** Apache Iceberg, Delta Lake, Apache Hudi
-- **Transformation:** SQLMesh, dbt (staging/marts layers)
-- **Ingestion:** dlt, Airbyte (connectors)
-- **Streaming:** Apache Kafka patterns
-
-This skill focuses on **transactional database optimization** (PostgreSQL, MySQL, SQL Server, Oracle, SQLite). Use data-lake-platform for analytical workloads.
-
----
-
-## Related Skills
-
-This skill focuses on **query optimization** within a single database. For related workflows:
-
-**SQL Transformation & Analytics Engineering:**
--> **[ai-ml-data-science](../ai-ml-data-science/SKILL.md)** skill
-- SQLMesh templates for building staging/intermediate/marts layers
-- Incremental models (FULL, INCREMENTAL_BY_TIME_RANGE, INCREMENTAL_BY_UNIQUE_KEY)
-- DAG management and model dependencies
-- Unit tests and audits for SQL transformations
-
-**Data Ingestion (Loading into Warehouses):**
--> **[ai-mlops](../ai-mlops/SKILL.md)** skill
-- dlt templates for extracting from REST APIs, databases
-- Loading to Snowflake, BigQuery, Redshift, Postgres, DuckDB
-- Incremental loading patterns (timestamp, ID-based, merge/upsert)
-- Database replication (Postgres, MySQL, MongoDB -> warehouse)
-
-**Data Lake Infrastructure:**
--> **[data-lake-platform](../data-lake-platform/SKILL.md)** skill
-
-- ClickHouse, DuckDB, Doris, StarRocks query engines
-- Iceberg, Delta Lake, Hudi table formats
-- Kafka streaming, Dagster/Airflow orchestration
-
-**Use Case Decision:**
-
-- **Query is slow in production** -> Use this skill (data-sql-optimization)
-- **Building feature pipelines in SQL** -> Use ai-ml-data-science (SQLMesh)
-- **Loading data from APIs/DBs to warehouse** -> Use ai-mlops (dlt)
-- **Analytics on large datasets (OLAP)** -> Use data-lake-platform
-
----
-
-## External Resources
-
-See [data/sources.json](data/sources.json) for 62+ curated resources including:
-
-**Core Documentation:**
-- **RDBMS Documentation**: PostgreSQL, MySQL, SQL Server, Oracle, SQLite, DuckDB official docs
-- **Query Optimization**: Use The Index, Luke, SQL Performance Explained, vendor optimization guides
-- **Schema Design**: Database Refactoring (Fowler), normalization guides, data type selection
-
-**Modern Optimization (Current):**
-- **PostgreSQL**: official release notes and "current" docs for planner/optimizer changes
-- **MySQL**: official reference manual sections for EXPLAIN, optimizer, and Performance Schema
-- **SQL Server / Oracle**: official docs for execution plans, indexing, and concurrency controls
-
-**Operations & Infrastructure:**
-- **HA & Replication**: Streaming replication, GTID-based replication, failover automation
-- **Migrations**: Liquibase, Flyway version control and deployment patterns
-- **Backup/Recovery**: pgBackRest, Percona XtraBackup, point-in-time recovery
-- **Monitoring**: pg_stat_statements, Performance Schema, EXPLAIN visualizers (Dalibo, depesz)
-- **Security**: OWASP SQL Injection Prevention, Postgres hardening, encryption standards
-- **Analytical Databases**: DuckDB extensions, Parquet specification, columnar storage patterns
-
----
-
-Use [references/operational-patterns.md](references/operational-patterns.md) and the templates directory for detailed workflows, migration notes, and ready-to-run commands.
+- [software-backend](../software-backend/SKILL.md) - Application query generation, ORM behavior, and API/database interaction
+- [software-security-appsec](../software-security-appsec/SKILL.md) - SQL injection prevention, auth, secrets, and hardening
+- [ops-devops-platform](../ops-devops-platform/SKILL.md) - Infrastructure, failover automation, and operational runbooks
+- [qa-observability](../qa-observability/SKILL.md) - Telemetry, alerting, and SLO design
+- [qa-debugging](../qa-debugging/SKILL.md) - Production incident debugging workflow
+- [data-lake-platform](../data-lake-platform/SKILL.md) - OLAP engines, Parquet, and warehouse/lakehouse tuning
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Verify current external facts, version behavior, and managed-service capabilities against official vendor docs before final answers.
+- Prefer primary sources in [data/sources.json](data/sources.json).
+- If a current fact cannot be verified, mark it as unverified and avoid prescribing a risky production change.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

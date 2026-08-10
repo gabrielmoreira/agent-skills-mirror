@@ -3,16 +3,6 @@ name: godot-rpg-stats
 description: "Expert blueprint for RPG stat systems (attributes, leveling, modifiers, damage formulas) using Resource-based stats, stackable modifiers, and derived stat calculations. Use when implementing character progression OR equipment/buff systems. Keywords stats, attributes, leveling, modifiers, CharacterStats, derived stats, damage calculation, XP."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# RPG Stats
-
-Resource-based stats, modifier stacks, and derived calculations define flexible character progression.
-
 ## Available Scripts
 
 > **MANDATORY** by scenario — read before implementing:
@@ -148,24 +138,24 @@ Equipment hooks, damage formula, skill gates, elite cap/derived/tooltip patterns
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Resources, and project layout before building CharacterStats assets.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed getters, setters, and signal wiring used by reactive stat components.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — inheritance, `.tres` templates, and composition patterns for attribute data.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — ownership and fan-out rules so `hp_changed` / `level_up` do not create UI cycles.
+- [godot-project-foundations](project-foundations.md) — scene tree, Resources, and project layout before building CharacterStats assets.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed getters, setters, and signal wiring used by reactive stat components.
+- [godot-resource-data-patterns](resource-data-patterns.md) — inheritance, `.tres` templates, and composition patterns for attribute data.
+- [godot-signal-architecture](signal-architecture.md) — ownership and fan-out rules so `hp_changed` / `level_up` do not create UI cycles.
 
 #### Complements
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — abilities that gate on level/attributes and apply temporary modifiers.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — equipment bonuses that register and remove modifier IDs on equip/unequip.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — hit resolution that consumes attack/defense/crit from this stack.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — full save pipelines around ResourceSaver of progression data.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — character sheets and tooltips that listen to recalculated stats.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — gold/XP sinks that couple with level curves and gear stat budgets.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — matrix-test power curves, modifier stacks, and damage variance before shipping numbers.
+- [godot-ability-system](ability-system.md) — abilities that gate on level/attributes and apply temporary modifiers.
+- [godot-inventory-system](inventory-system.md) — equipment bonuses that register and remove modifier IDs on equip/unequip.
+- [godot-combat-system](combat-system.md) — hit resolution that consumes attack/defense/crit from this stack.
+- [godot-save-load-systems](save-load-systems.md) — full save pipelines around ResourceSaver of progression data.
+- [godot-ui-containers](ui-containers.md) — character sheets and tooltips that listen to recalculated stats.
+- [godot-economy-system](economy-system.md) — gold/XP sinks that couple with level curves and gear stat budgets.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — matrix-test power curves, modifier stacks, and damage variance before shipping numbers.
 
 #### Downstream / consumers
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — ARPG builds that rely on attributes, gear mods, and derived combat stats.
-- [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md) — run-scoped modifiers and scaling that reset between runs.
-- [godot-turn-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md) — turn-based combat that resolves damage formulas from shared stats.
+- [godot-genre-action-rpg](genre-action-rpg.md) — ARPG builds that rely on attributes, gear mods, and derived combat stats.
+- [godot-genre-roguelike](genre-roguelike.md) — run-scoped modifiers and scaling that reset between runs.
+- [godot-turn-system](turn-system.md) — turn-based combat that resolves damage formulas from shared stats.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

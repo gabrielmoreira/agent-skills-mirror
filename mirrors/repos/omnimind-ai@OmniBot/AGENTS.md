@@ -153,6 +153,12 @@ OMNI_RELEASE_KEY_PWD=***
 - Do not use the in-app Browser, Chrome automation, Playwright, or any other browser-based visual/interaction acceptance for WebUI changes unless the user explicitly requests browser verification.
 - Validate WebUI changes with focused source inspection plus `cd webchat && pnpm run typecheck && pnpm run build`.
 
+### Predictive Back Gesture
+- `android:enableOnBackInvokedCallback="true"` is set on `<application>` in `app/src/main/AndroidManifest.xml`; the flag is static, so the runtime toggle works by consuming back when OFF.
+- Toggle key: `flutter.predictive_back_enabled` (boolean, default true) in `FlutterSharedPreferences`, exposed on the Flutter misc/experience settings page.
+- Native gates `cn.com.omnimind.bot.util.PredictiveBackGate` and `com.rk.terminal.util.PredictiveBackGate` (ReTerminal) register a consuming back callback when the toggle is OFF to preserve legacy no-animation behavior; MainActivity needs no gate because Dart always handles back.
+- Flutter side (`ui/lib`): GoRouter `CustomTransitionPage` routes are wrapped by `ui/lib/widgets/predictive_back_gesture_wrapper.dart` — when ON it forwards back-gesture events to the route (public `PredictiveBackRoute` API) so the stock `CupertinoPageTransition` follows the finger, adding a 32dp corner clip on the top page (Miuix-style slide, no card shrink); when OFF or non-Android it falls back to the app's original transitions. Theme gating in `app_bootstrap.dart` covers the few `MaterialPageRoute` pages (ON: `PredictiveBackPageTransitionsBuilder`; OFF: `FadeForwardsPageTransitionsBuilder`).
+
 ### GitHub Codex Bot Rules
 - The self-hosted GitHub Actions Codex bot is configured in `.github/workflows/codex-bot.yml`.
 - Supported maintainer command format is `@codex <natural-language task>` in issue, PR, or review comments.

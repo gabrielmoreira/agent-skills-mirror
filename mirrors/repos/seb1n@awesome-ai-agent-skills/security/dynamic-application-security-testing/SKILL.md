@@ -1,6 +1,6 @@
 ---
 name: dynamic-application-security-testing
-description: Perform dynamic security testing against running web applications and APIs to discover vulnerabilities through active probing and fuzzing.
+description: Perform dynamic security testing against running web applications and APIs to discover vulnerabilities through active probing and fuzzing. Use when the user requests dynamic application security testing or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills
@@ -152,6 +152,13 @@ nuclei -u https://staging.example.com -t exposed-debug-endpoints.yaml -t cves/ -
 - **Set scan scope boundaries** — explicitly define which domains and paths are in scope. Without boundaries, the scanner may follow links to third-party sites, CDNs, or payment providers, causing unintended consequences.
 - **Compare scan baselines over time** — store scan results and compare each new run against the previous baseline. This reveals newly introduced vulnerabilities and confirms that previously reported issues have been fixed.
 - **Pair DAST with SAST** — DAST finds runtime issues that SAST misses (misconfigurations, deployment errors) while SAST catches code-level flaws that DAST cannot reach. Use both for comprehensive coverage.
+
+## Safety Boundaries
+
+- Work only on systems the user owns or is explicitly authorized to assess, and record the approved scope before testing.
+- Start with passive or read-only inspection. Obtain explicit approval before active scanning, exploitation, load generation, or disruptive remediation.
+- Never expose secrets, extract unrelated data, weaken production controls, or expand beyond the approved targets.
+- Preserve evidence, minimize impact, stop on instability, and provide rollback or containment steps for every material change.
 
 ## Edge Cases
 

@@ -4,11 +4,11 @@
 
 ## Combo buffers
 
-[combo_system.gd](../scripts/combat_system_combo_system.gd) — windowed `StringName` buffer; finishers stay normal attacks gated by `combo_executed`. Wire input via [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md), not `_input` hit logic.
+[combo_system.gd](../scripts/combat_system_combo_system.gd) — windowed `StringName` buffer; finishers stay normal attacks gated by `combo_executed`. Wire input via [godot-input-handling](input-handling.md), not `_input` hit logic.
 
 ## Combat state gating
 
-[combat_state.gd](../scripts/combat_system_combat_state.gd) — `can_act` blocks attack/dodge overlap. Prefer [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) when states multiply.
+[combat_state.gd](../scripts/combat_system_combat_state.gd) — `can_act` blocks attack/dodge overlap. Prefer [godot-state-machine-advanced](state-machine-advanced.md) when states multiply.
 
 ## Damage popups
 
@@ -38,7 +38,7 @@
 | Health + i-frames | [health_component.gd](../scripts/combat_system_health_component.gd) |
 | Area hit delivery | [hitbox_hurtbox.gd](../scripts/combat_system_hitbox_hurtbox.gd) |
 | AoE / hit-stop | [combat_system_patterns.gd](../scripts/combat_system_combat_system_patterns.gd) |
-| Abilities / cooldowns | [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) |
+| Abilities / cooldowns | [godot-ability-system](ability-system.md) |
 
 ## Critical hits
 

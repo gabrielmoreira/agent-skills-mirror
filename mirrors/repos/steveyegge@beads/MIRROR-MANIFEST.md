@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `steveyegge/beads` — 26 default patterns, 25 followed patterns, 69 file(s) materialized.
+Mirror of `steveyegge/beads` — 26 default patterns, 25 followed patterns, 70 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `steveyegge/beads` — 26 default patterns, 25 followed patterns, 69 f
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 25 |
-| Files         | 69 |
+| Files         | 70 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -115,43 +115,44 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | ✓ | [`integrations/beads-mcp/README.md`](integrations/beads-mcp/README.md) |
 | 31 | ✓ | [`integrations/claude-code/README.md`](integrations/claude-code/README.md) |
 | 32 | ✓ | [`integrations/junie/README.md`](integrations/junie/README.md) |
-| 33 | ✓ | [`internal/templates/skills/beads/SKILL.md`](internal/templates/skills/beads/SKILL.md) |
-| 34 | ✓ | [`npm-package/README.md`](npm-package/README.md) |
-| 35 | ✓ | [`npm-package/TESTING.md`](npm-package/TESTING.md) |
-| 36 | ✓ | [`plugins/beads/README.md`](plugins/beads/README.md) |
-| 37 | ✓ | [`plugins/beads/skills/beads/CLAUDE.md`](plugins/beads/skills/beads/CLAUDE.md) |
-| 38 | ✓ | [`plugins/beads/skills/beads/README.md`](plugins/beads/skills/beads/README.md) |
-| 39 | ✓ | [`plugins/beads/skills/beads/resources/AGENTS.md`](plugins/beads/skills/beads/resources/AGENTS.md) |
-| 40 | ✓ | [`plugins/beads/skills/beads/SKILL.md`](plugins/beads/skills/beads/SKILL.md) |
-| 41 | ✓ | [`scripts/README.md`](scripts/README.md) |
-| 42 | ✓ | [`tests/integration/README.md`](tests/integration/README.md) |
-| 43 | ✓ | [`tests/oracle-a/README.md`](tests/oracle-a/README.md) |
-| 44 | ✓ | [`winget/README.md`](winget/README.md) |
-| 45 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
-| 46 | → | [`ARTICLES.md`](ARTICLES.md) |
-| 47 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 48 | → | [`docs/architecture/dolt.md`](docs/architecture/dolt.md) |
-| 49 | → | [`docs/community-tools.md`](docs/community-tools.md) |
-| 50 | → | [`docs/core-concepts/sync-concepts.md`](docs/core-concepts/sync-concepts.md) |
-| 51 | → | [`docs/getting-started/ide-setup.md`](docs/getting-started/ide-setup.md) |
-| 52 | → | [`docs/getting-started/installation.md`](docs/getting-started/installation.md) |
-| 53 | → | [`docs/integrations/copilot-cli.md`](docs/integrations/copilot-cli.md) |
-| 54 | → | [`docs/integrations/github-copilot.md`](docs/integrations/github-copilot.md) |
-| 55 | → | [`docs/reference/advanced.md`](docs/reference/advanced.md) |
-| 56 | → | [`docs/reference/antivirus.md`](docs/reference/antivirus.md) |
-| 57 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
-| 58 | → | [`docs/reference/protected-branches.md`](docs/reference/protected-branches.md) |
-| 59 | → | [`docs/reference/troubleshooting.md`](docs/reference/troubleshooting.md) |
-| 60 | → | [`docs/related-projects.md`](docs/related-projects.md) |
-| 61 | → | [`engdocs/AGENT_SIGNING.md`](engdocs/AGENT_SIGNING.md) |
-| 62 | → | [`engdocs/ICU-POLICY.md`](engdocs/ICU-POLICY.md) |
-| 63 | → | [`engdocs/LINTING.md`](engdocs/LINTING.md) |
-| 64 | → | [`engdocs/PROJECT_CHARTER.md`](engdocs/PROJECT_CHARTER.md) |
-| 65 | → | [`engdocs/RELEASE-STABILITY-GATE.md`](engdocs/RELEASE-STABILITY-GATE.md) |
-| 66 | → | [`engdocs/TESTING.md`](engdocs/TESTING.md) |
-| 67 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
-| 68 | → | [`README.md`](README.md) |
-| 69 | → | [`RELEASING.md`](RELEASING.md) |
+| 33 | ✓ | [`internal/storage/schema/migrations/README.md`](internal/storage/schema/migrations/README.md) |
+| 34 | ✓ | [`internal/templates/skills/beads/SKILL.md`](internal/templates/skills/beads/SKILL.md) |
+| 35 | ✓ | [`npm-package/README.md`](npm-package/README.md) |
+| 36 | ✓ | [`npm-package/TESTING.md`](npm-package/TESTING.md) |
+| 37 | ✓ | [`plugins/beads/README.md`](plugins/beads/README.md) |
+| 38 | ✓ | [`plugins/beads/skills/beads/CLAUDE.md`](plugins/beads/skills/beads/CLAUDE.md) |
+| 39 | ✓ | [`plugins/beads/skills/beads/README.md`](plugins/beads/skills/beads/README.md) |
+| 40 | ✓ | [`plugins/beads/skills/beads/resources/AGENTS.md`](plugins/beads/skills/beads/resources/AGENTS.md) |
+| 41 | ✓ | [`plugins/beads/skills/beads/SKILL.md`](plugins/beads/skills/beads/SKILL.md) |
+| 42 | ✓ | [`scripts/README.md`](scripts/README.md) |
+| 43 | ✓ | [`tests/integration/README.md`](tests/integration/README.md) |
+| 44 | ✓ | [`tests/oracle-a/README.md`](tests/oracle-a/README.md) |
+| 45 | ✓ | [`winget/README.md`](winget/README.md) |
+| 46 | → | [`AGENT_INSTRUCTIONS.md`](AGENT_INSTRUCTIONS.md) |
+| 47 | → | [`ARTICLES.md`](ARTICLES.md) |
+| 48 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 49 | → | [`docs/architecture/dolt.md`](docs/architecture/dolt.md) |
+| 50 | → | [`docs/community-tools.md`](docs/community-tools.md) |
+| 51 | → | [`docs/core-concepts/sync-concepts.md`](docs/core-concepts/sync-concepts.md) |
+| 52 | → | [`docs/getting-started/ide-setup.md`](docs/getting-started/ide-setup.md) |
+| 53 | → | [`docs/getting-started/installation.md`](docs/getting-started/installation.md) |
+| 54 | → | [`docs/integrations/copilot-cli.md`](docs/integrations/copilot-cli.md) |
+| 55 | → | [`docs/integrations/github-copilot.md`](docs/integrations/github-copilot.md) |
+| 56 | → | [`docs/reference/advanced.md`](docs/reference/advanced.md) |
+| 57 | → | [`docs/reference/antivirus.md`](docs/reference/antivirus.md) |
+| 58 | → | [`docs/reference/faq.md`](docs/reference/faq.md) |
+| 59 | → | [`docs/reference/protected-branches.md`](docs/reference/protected-branches.md) |
+| 60 | → | [`docs/reference/troubleshooting.md`](docs/reference/troubleshooting.md) |
+| 61 | → | [`docs/related-projects.md`](docs/related-projects.md) |
+| 62 | → | [`engdocs/AGENT_SIGNING.md`](engdocs/AGENT_SIGNING.md) |
+| 63 | → | [`engdocs/ICU-POLICY.md`](engdocs/ICU-POLICY.md) |
+| 64 | → | [`engdocs/LINTING.md`](engdocs/LINTING.md) |
+| 65 | → | [`engdocs/PROJECT_CHARTER.md`](engdocs/PROJECT_CHARTER.md) |
+| 66 | → | [`engdocs/RELEASE-STABILITY-GATE.md`](engdocs/RELEASE-STABILITY-GATE.md) |
+| 67 | → | [`engdocs/TESTING.md`](engdocs/TESTING.md) |
+| 68 | → | [`PR_MAINTAINER_GUIDELINES.md`](PR_MAINTAINER_GUIDELINES.md) |
+| 69 | → | [`README.md`](README.md) |
+| 70 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

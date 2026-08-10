@@ -179,7 +179,7 @@ Related Skills sections can be auto-generated from `skill-dependencies.json`.
 
 ```markdown
 **Related Skills**
-- [../related-skill/SKILL.md](../related-skill/SKILL.md) — Description
+- `related-skill` — Description
 ```
 
 - Use relative paths: `../skill-name/SKILL.md`

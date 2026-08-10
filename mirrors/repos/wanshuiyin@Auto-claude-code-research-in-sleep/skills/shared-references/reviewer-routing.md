@@ -1,8 +1,35 @@
 # Reviewer Routing
 
-## Default (NEVER changes without explicit user request)
+## Default Routing
 
-All review calls use **Codex MCP** (`mcp__codex__codex`), model **`gpt-5.6-sol`** (GPT-5.6-Sol), with a **two-tier reasoning-effort policy** (since 2026-07-10; `ultra`/`max` need codex-cli ≥ 0.144.1):
+The default reviewer backend depends on the skill AND the execution environment:
+
+| Skill | Default backend | Opt-in override |
+|-------|----------------|-----------------|
+| `/auto-review-loop` | **`copilot-native`** when the marker protocol binds the current Copilot CLI root session; otherwise **`codex`** | `--reviewer: codex` / `oracle-pro` / `agy` / `manual`; `--reviewer: copilot` retains the legacy custom-agent drive mode |
+| All other reviewer skills | **Codex MCP** (`mcp__codex__codex`), model **`gpt-5.6-sol`** | `--reviewer: oracle-pro` / `agy` / `manual` |
+
+When no reviewer is specified, `/auto-review-loop` first attempts the
+[native marker protocol](#copilot-cli-native-rubber-duck-default-for-auto-review-loop).
+It does not depend on the proposed `COPILOT_CLI` environment variable. Two
+separate root Bash calls bind a fresh run token to Copilot's persisted session
+events and expose the host-reported executor model. Outside Copilot CLI the
+challenge cannot bind, so the pre-existing Codex default remains unchanged.
+
+Inside a bound Copilot session, the default is the built-in `rubber-duck`
+subagent. Copilot chooses its complementary model dynamically; ARIS never pins
+GPT-5.4 or any other fixed reviewer model. A native verdict may stop the loop
+only when `copilot_native_evidence.py` revalidates one successful nonce-bound
+subagent lifecycle and the host-reported executor/reviewer models are known,
+different families. Missing, unknown, same-family, malformed, or stale evidence
+fails closed. Explicit reviewer directives continue to select their requested
+external backend.
+
+See the [native Copilot section](#copilot-cli-native-rubber-duck-default-for-auto-review-loop), the [legacy custom-agent section](#copilot-cli-custom-agent-profiles-reviewer-copilot-compatibility-drive-mode), and the [Codex section](#codex-capability-fallback-new-reviewer-sessions-only).
+
+### Codex MCP Tiered Reasoning-Effort Policy
+
+When Codex MCP is the active backend (default for all non-auto-review-loop skills, or explicit `--reviewer: codex`), model **`gpt-5.6-sol`** (GPT-5.6-Sol) is used with a **two-tier reasoning-effort policy** (since 2026-07-10; `ultra`/`max` need codex-cli ≥ 0.144.1):
 
 | Tier | `model_reasoning_effort` | Which calls |
 |------|--------------------------|-------------|
@@ -175,13 +202,15 @@ If `— reviewer: manual`:
     → Check if mcp__manual_review__review tool is available
     → If available:
         Use mcp__manual_review__review with:
-          prompt: [same prompt you would send to Codex]
-          config: {"model_reasoning_effort": "xhigh"}
+          prompt: [same review prompt you would send to Codex; the manual
+                   transport wrapper also requires the response's first line
+                   to be `Reviewer-Model: <exact-model-id>`]
+          config: {"model_reasoning_effort": "xhigh", "executor_model": "<actual executor model>", "require_reviewer_model": true}
         For round 2+ in multi-round skills:
           Use mcp__manual_review__review_reply with:
             threadId: [saved from prior call]
             prompt: [follow-up prompt]
-            config: {"model_reasoning_effort": "xhigh"}
+            config: {"model_reasoning_effort": "xhigh", "executor_model": "<actual executor model>", "require_reviewer_model": true}
     → If NOT available:
         Print: "⚠️ Manual Review MCP not installed. Install with: claude mcp add manual-review -s user -- python3 /path/to/mcp-servers/manual-review/server.py"
         STOP. Do NOT fall back to Codex (the target user likely has no Codex subscription).
@@ -190,8 +219,8 @@ If `— reviewer: manual`:
 ### Invariants
 
 - `— reviewer: manual` ONLY takes effect when explicitly passed
-- **Cross-model family is mandatory, not optional.** "any model" above means any *non-executor-family* model. When the executor is Claude (the normal case), the user MUST paste the prompt into a non-Claude model (ChatGPT / DeepSeek / Kimi / Gemini / a local model) — never any Claude product. Pasting into Claude makes Claude judge Claude, which silently voids the cross-model invariant and the verdict is worthless. The manual-review UI surfaces this as a banner; the routing contract requires it. A Type-B acceptance gate (`acceptance-gate.md`) is satisfied by `manual` only when the routed model is verifiably non-Claude.
-- Prompt fidelity: the user sees the EXACT same prompt text that Codex would receive
+- **Cross-model family is mandatory, not optional.** "any model" above means any *non-executor-family* model, determined dynamically from the actual executor model — not merely "non-Claude." Every verdict-bearing response must start with `Reviewer-Model: <exact-model-id>`; derive its family and compare it with the model-derived executor family. Missing, unknown, ambiguous, or same-family identity is `REVIEW_UNAVAILABLE` for an acceptance gate. The UI warning is advisory; the traced model identities and derivation are the gate.
+- Prompt fidelity: the review task text is exactly what Codex would receive; the manual transport wrapper may add only the model-identity response-format line used by the provenance gate
 - `config.model_reasoning_effort` is shown as a recommendation badge, not embedded in the prompt
 - Thread continuity: `review_reply` shows previous exchanges so the user can maintain context in their chosen model
 - Reviewer independence protocol still applies
@@ -249,7 +278,456 @@ If Codex MCP is broken in your setup, prefer in order:
 2. Codex-CLI-as-executor: use the native mirror pack [`skills/skills-codex/`](../skills-codex/) — designed to run inside Codex CLI without Claude-side MCP.
 3. One-shot `codex exec` only for skills whose review is a single call with no follow-up reply.
 
-### Future work
+## Copilot CLI Native Rubber Duck (default for auto-review-loop)
 
-- `mcp__manual_review__generate_image`: manual alternative to `codex-image2` for paper illustrations
-- Image review loop integration
+This is the automatic Copilot path requested by #258. It uses Copilot CLI's
+built-in `rubber-duck` **subagent**, not a second `copilot` process, a slash
+prompt, or a top-level `--agent rubber-duck` session. Copilot's complementary
+model strategy selects an available opposite-family model at dispatch time.
+ARIS does not request a fixed model and accepts the review only after reading
+the actual executor and reviewer model IDs from the native session lifecycle.
+
+### Activation and explicit overrides
+
+Parse `--reviewer:` before probing the host:
+
+- An explicit `codex`, `oracle-pro`, `agy`, or `manual` directive uses that
+  external backend directly. Do not run the native probe first.
+- Explicit `copilot` retains the compatibility custom-agent drive described
+  later in this file.
+- With no directive, resolve `copilot_native_evidence.py` through the canonical
+  four-layer helper chain. Run `marker` and `challenge` as **two separate root
+  Bash tool calls**. Exit 3 from `challenge` means no current Copilot root
+  session was bound; continue with the existing Codex default.
+- A bound challenge selects `reviewer_backend: copilot-native` and records the
+  host-reported executor identity. No `COPILOT_CLI` environment variable and no
+  caller-provided `--executor-model` are used on this path.
+
+The helper is Policy A in `integration-contract.md`: without it or without a
+revalidatable evidence artifact, a native verdict cannot stop the loop.
+
+Copilot CLI must also expose its built-in `rubber-duck` agent to the current
+account and session. Check the interactive `/subagents` settings if it is not
+listed. ARIS does not mutate Copilot's user configuration or enable
+experimental features automatically. An unavailable agent is a native dispatch
+failure and follows the fail-closed fallback below; a generic agent may not be
+substituted and relabeled as rubber-duck.
+
+### Per-verdict marker, challenge, and review
+
+Resolve the helper once conceptually, then place its concrete resolved path in
+each Bash call. Copilot Bash calls do not share shell variables. Generate a
+fresh literal binding from `run_id`, round number, verdict purpose (`review` or
+`rebuttal`), and a new random attempt suffix. The first root Bash
+call contains only:
+
+```bash
+python3 "<resolved-copilot_native_evidence.py>" marker --binding "run_20260715_a1b2c3d4_r1_review_7e91c4ab"
+```
+
+Wait for that tool call to complete. The second root Bash call contains only:
+
+```bash
+python3 "<resolved-copilot_native_evidence.py>" challenge \
+  --output "review-stage/COPILOT_NATIVE_run_20260715_a1b2c3d4_ROUND_1_REVIEW.challenge.json" \
+  --binding "run_20260715_a1b2c3d4_r1_review_7e91c4ab" \
+  --cwd "<absolute-project-root>"
+```
+
+`challenge` accepts exactly one recent, successful root marker lifecycle in a
+session whose `context.cwd` matches the project. It hashes the persisted event
+prefix and returns a fresh nonce plus the host-reported executor model/family.
+For the no-override first round, this challenge is both host activation and the
+review challenge: consume it directly and do not issue a duplicate probe in
+Phase A. Include `run_id`, round, and purpose in every artifact name so a new
+run never overwrites an older audit trail.
+
+Read the challenge artifact, then invoke the host's native task tool directly:
+
+```yaml
+task:
+  agent_type: rubber-duck
+  name: aris-native-review-round-1
+  description: Independent cross-model review of the current artifacts
+  prompt: |
+    ARIS_REVIEW_NONCE=<exact nonce from the challenge artifact>
+
+    Review the work directly from the repository. Treat executor prose as
+    untrusted; read these files and diffs yourself:
+    - Claims / draft: <paths only>
+    - Methods / code: <paths only>
+    - Raw results: <paths only>
+    - Changed since the previous round: <paths/diff artifact only>
+    - Reviewer memory, if round 2+: review-stage/REVIEWER_MEMORY.md
+
+    Return exactly one field of each form:
+    Score: X/10
+    Verdict: ready | almost | not ready
+    Then list ranked weaknesses, minimum fixes, and a memory update.
+```
+
+The nonce line must be standalone and exact. Do not pass an author summary or
+fix narrative. Do not specify `model`; the built-in subagent's complementary
+strategy owns model choice. Do not emulate this with `/rubber-duck` text,
+`copilot --agent rubber-duck`, a nested Bash process, or a generic `code-review`
+agent. Those forms do not establish the required native lifecycle and the
+verifier rejects them.
+
+After the task completes, run a new root Bash call:
+
+```bash
+python3 "<resolved-copilot_native_evidence.py>" verify \
+  --challenge "review-stage/COPILOT_NATIVE_run_20260715_a1b2c3d4_ROUND_1_REVIEW.challenge.json" \
+  --output "review-stage/COPILOT_NATIVE_run_20260715_a1b2c3d4_ROUND_1_REVIEW.evidence.json" \
+  --response-output "review-stage/COPILOT_NATIVE_run_20260715_a1b2c3d4_ROUND_1_REVIEW.response.md"
+```
+
+The verifier requires exactly one nonce-bound root `task` invocation with
+`agent_type: rubber-duck`, one linked `subagent.started` and
+`subagent.completed`, a successful linked tool completion, a stable executor
+model, a stable reviewer model, and known different provider families. It
+extracts the response from the host tool result; executor-written response text
+is never accepted as a substitute. The evidence ID binds the event prefix,
+lifecycle IDs, models, and response hash. Later append-only session events are
+allowed; changes to the bound prefix are not.
+
+The Copilot session log is host-session-event provenance, not a cryptographic
+signature against a malicious local user. Trace it as
+`identity_assurance: host_event_verified`, with both model sources set to
+`host-session-event`.
+
+### Fail-closed fallback
+
+Failure to dispatch `rubber-duck` (including when it is absent from Copilot's
+current `/subagents` list), `complementary_model_unavailable`, an
+incomplete lifecycle, unknown/same-family models, a response without exactly
+one anchored Score and Verdict, or failed evidence validation can never produce
+acceptance.
+
+- If the challenge never bound a Copilot session, use the ordinary Codex
+  default. This preserves behavior in Claude Code and other hosts.
+- If the challenge bound and reports an Anthropic/Google executor, but native
+  complementary review is unavailable, use Codex only when that backend is
+  positively available.
+- If the bound executor is OpenAI-family, Codex is not an independent fallback;
+  use manual review only when it is available and reports a known non-OpenAI
+  model identity.
+- If no known opposite-family backend is available, emit `REVIEW_UNAVAILABLE`.
+
+Before selecting a fallback, run `copilot_native_evidence.py
+validate-challenge --challenge <round-challenge>` and derive the executor
+family only from its revalidated host-event model. A fallback is not a native
+verdict: trace the failed native attempt, clear native evidence, and label the
+actual Codex/manual call as the current round backend. Set the existing
+external-acquittal obligation so `review_gate.py` re-derives the fallback
+reviewer's family and refuses a same/unknown pair. "Available" means that the
+backend returned a usable review (and, for manual, its required exact model
+identity), not merely that a command or tool name was present.
+
+Fallback is allowed only before a native verdict is accepted. Trace the failed
+native attempt and the backend that actually ran. Never relabel an external
+fallback as `copilot-native`.
+
+### Stop and continuity rules
+
+Every verdict-bearing native call uses exactly one fresh marker/challenge/nonce
+and a fresh rubber-duck subagent. Round-to-round continuity remains the
+append-only `review-stage/REVIEWER_MEMORY.md` artifact, which the next reviewer
+reads directly. A verdict-bearing rebuttal ruling likewise needs its own
+challenge and evidence with purpose `REBUTTAL`; it must not overwrite or reuse
+the round's `REVIEW` artifacts.
+
+Pass the verified artifact to `review_gate.py --native-evidence <path>`. The
+gate revalidates it and parses the Score/Verdict from the bound raw response.
+For `copilot-native`, a qualifying positive verdict stops directly—no Codex or
+manual finalizer. A negative verdict continues on `copilot-native`. Any missing
+or mismatched evidence produces `review_unavailable`.
+
+Trace native calls with `save_trace.sh --backend copilot-native
+--native-evidence <path>`. The trace helper revalidates the artifact and derives
+the actual model pair, response, evidence ID, sources, family relation, and
+`independence_verified: true`; caller-supplied model/family claims cannot
+override it.
+
+## Copilot CLI Custom Agent Profiles (`--reviewer: copilot` compatibility drive mode)
+
+**Scope: explicit compatibility path for `/auto-review-loop` only.** It does NOT claim to support all reviewer skills. Other skills (research-review, experiment-audit, proof-checker, rebuttal, idea-creator) are not wired and continue to use Codex MCP regardless of the `--reviewer: copilot` flag.
+
+Copilot CLI with custom agent profiles is an **explicit opt-in** reviewer backend for `/auto-review-loop`. Pass `--reviewer: copilot` to use the documented `copilot --agent` subprocess with custom agent profiles for review instead of an external MCP server. The `COPILOT_CLI` environment variable is not used for auto-detection (it is an open proposal, github/copilot-cli#2107, not a shipped feature).
+
+**This is not the no-flag default.** In a bound Copilot session the default is
+`copilot-native`; outside Copilot it is `codex`. Pass `--reviewer: copilot` only
+to request this older subprocess drive mode explicitly.
+
+### Prerequisites — Custom Agent Profiles
+
+Copilot CLI uses custom agent profiles (declared in `.github/agents/` or equivalent) to pin reviewer models. Two profiles are required:
+
+| Profile name | Pinned model | Model family | File |
+|-------------|-------------|-------------|------|
+| `aris-reviewer-openai` | `gpt-5.4` | `openai` | `.github/agents/aris-reviewer-openai.agent.md` |
+| `aris-reviewer-claude` | `claude-sonnet-4.5` | `anthropic` | `.github/agents/aris-reviewer-claude.agent.md` |
+
+Both profiles must exist and be loadable by the Copilot CLI (`copilot --agent`). If a profile file is missing, emit `REVIEW_UNAVAILABLE` with the missing profile path — the user must create it before the copilot reviewer can function.
+
+### Opposite-Family Routing (MANDATORY — identity assurance is limited)
+
+The selected reviewer model family MUST differ from the family derived from the declared executor model. Same-family routing is forbidden. However, the current Copilot CLI integration cannot independently attest the parent executor's actual model, so this is a fail-closed routing rule—not proof of runtime independence.
+
+Unlike the previous broken model-inheritance approach, the router reads the selected profile's `model:` field and passes that same value through the subprocess-level `--model` flag. This outer pin is mandatory because Copilot CLI may ignore a custom agent's model when the session model is Auto.
+
+**Family detection requires `--executor-model`:**
+
+The skill MUST receive `--executor-model` as a parameter. From it, derive `executor_family`:
+- Model names containing `gpt`, `o1`, `o3`, `o4`, `chatgpt` → `openai`
+- Model names containing `claude`, `sonnet`, `opus`, `haiku` → `anthropic`
+- Model names containing `gemini` → `google`
+- Anything else → `unknown`
+
+**Router rule — pick the OPPOSITE family profile:**
+
+```
+executor_family = openai  → reviewer_profile = "aris-reviewer-claude"  (anthropic)
+executor_family = anthropic → reviewer_profile = "aris-reviewer-openai" (openai)
+executor_family = google  → reviewer_profile = "aris-reviewer-openai"  (openai, default cross-family)
+executor_family = unknown → REVIEW_UNAVAILABLE. Stop. "Cannot determine executor model family.
+                            Supply --executor-model <model> to identify the executor model."
+```
+
+This selects an opposite-family reviewer relative to the declared executor identity. If that declaration is missing or its family cannot be determined, fail closed. Do not describe the result as independently verified.
+
+### Identity Declaration and Evidence Limits — `--executor-model`
+
+The auto-review-loop SKILL.md MUST accept `--executor-model <model>` as a parameter. This is NOT optional when `--reviewer: copilot` is used. It is the available routing input, but it is caller-declared—not an independently attested runtime identity.
+
+**In the state JSON (`REVIEW_STATE.json`) and every trace, record:**
+
+```json
+{
+  "executor_model": "claude-sonnet-4-5",
+  "executor_model_source": "caller-declared",
+  "executor_family": "anthropic",
+  "reviewer_profile": "aris-reviewer-openai",
+  "requested_reviewer_model": "gpt-5.4",
+  "reported_reviewer_model": "<model the copilot CLI actually reports using, if available>",
+  "reviewer_model_source": "requested",
+  "reviewer_family": "openai",
+  "family_relation": "different",
+  "independence_verified": "unverified"
+}
+```
+
+- `executor_model` comes from `--executor-model`; record `executor_model_source: "caller-declared"`.
+- `executor_family` is derived from `executor_model` via the rules above.
+- `reviewer_profile` is the profile name selected by the router.
+- `requested_reviewer_model` is read from the selected profile file and passed explicitly with `--model`.
+- `reported_reviewer_model` is what the Copilot CLI reports (for example through a captured `gen_ai.response.model` OpenTelemetry attribute), if available; otherwise it is `"unavailable"`.
+- `reviewer_family` is derived from `reported_reviewer_model` (if available) or `requested_reviewer_model`; caller-supplied family labels are never trusted.
+- `family_relation` is `different`, `same`, or `unknown`, derived from the two model strings.
+- `independence_verified` is `false` for a known same-family pair and `"unverified"` when the pair differs but the executor identity is caller-declared. Different strings alone never produce `true`.
+
+**Fail closed when:**
+- `--executor-model` is missing AND `--reviewer: copilot` is used → `REVIEW_UNAVAILABLE`.
+- `executor_family` is `unknown` → `REVIEW_UNAVAILABLE`.
+- The selected profile file does not exist → `REVIEW_UNAVAILABLE`.
+- The profile has no non-empty `model:` field, or the derived reviewer family is unknown/same-family → `REVIEW_UNAVAILABLE`.
+- `copilot --help` does not advertise `--model`, `--effort`, and `--allow-tool` → `REVIEW_UNAVAILABLE`; do not silently run an older unpinned CLI.
+- `family_relation` is `same` or `unknown` → `REVIEW_UNAVAILABLE` for Copilot routing. `family_relation: different` is usable for drive routing but remains `independence_verified: "unverified"`.
+
+### Routing Logic
+
+```
+Parse $ARGUMENTS for `--reviewer:` and `--executor-model` directives.
+
+If `--reviewer: copilot` (explicit opt-in):
+    → Require `--executor-model`. If missing:
+        Print: "⚠️ --reviewer: copilot requires --executor-model <model> for
+                opposite-family routing (identity remains caller-declared)."
+        Emit REVIEW_UNAVAILABLE. Stop.
+    → Derive executor_family from --executor-model.
+    → If executor_family is unknown:
+        Print: "⚠️ Cannot determine model family for executor model '<model>'.
+                Known families: openai (gpt, o1, o3, o4, chatgpt),
+                anthropic (claude, sonnet, opus, haiku), google (gemini)."
+        Emit REVIEW_UNAVAILABLE. Stop.
+    → Select reviewer_profile = opposite family profile (see table above).
+    → Verify the profile file exists (e.g., .github/agents/<profile>.agent.md).
+      If missing:
+        Print: "⚠️ Custom agent profile '<profile>.agent.md' not found.
+                Create it at .github/agents/<profile>.agent.md with model: <model>."
+        Emit REVIEW_UNAVAILABLE. Stop.
+    → Read the first frontmatter `model:` value as requested_reviewer_model.
+      Derive reviewer_family from that model string and confirm it differs from
+      executor_family. Never trust a free-form model_family field.
+    → Verify `copilot` CLI is available (`command -v copilot`). If not:
+        Print: "⚠️ --reviewer: copilot requires Copilot CLI (`copilot` command)."
+        Emit REVIEW_UNAVAILABLE. Do NOT silently change the requested drive
+        transport to Codex/manual. This does not remove the separately
+        documented requirement for a Codex/manual finalizer after a positive
+        Copilot verdict.
+    → Verify the CLI supports `--model`, `--effort`, and `--allow-tool`.
+    → Use `copilot --agent` with the selected profile, the parsed model,
+      `--effort xhigh`, and read-only tool permission for each review round.
+
+If no `--reviewer:` specified:
+    → Use the native marker/challenge protocol documented above.
+    → Bound Copilot session: use `copilot-native` rubber-duck.
+    → No bound Copilot session: use Codex MCP (`codex` backend), preserving
+      the pre-Copilot behavior in other hosts.
+    → Do not infer the host from the unshipped `COPILOT_CLI` proposal.
+```
+
+### Copilot Subprocess Review Call
+
+For the copilot reviewer, use the documented `copilot --agent` subprocess form with custom agent profiles:
+
+```bash
+# PROFILE_FILE is the router-selected .agent.md file.
+REVIEWER_MODEL="$(python3 - "$PROFILE_FILE" <<'PY'
+import pathlib, sys
+lines = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
+models = []
+if lines and lines[0].strip() == "---":
+    for line in lines[1:]:
+        if line.strip() == "---":
+            break
+        if line.startswith("model:"):
+            models.append(line.split(":", 1)[1].strip().strip("\"'"))
+if len(models) == 1:
+    print(models[0])
+PY
+)"
+[[ -n "$REVIEWER_MODEL" ]] || { echo "REVIEW_UNAVAILABLE: profile has no model" >&2; exit 1; }
+COPILOT_HELP="$(copilot --help 2>&1)" || { echo "REVIEW_UNAVAILABLE: copilot unavailable" >&2; exit 1; }
+for required_flag in --model --effort --allow-tool; do
+  grep -q -- "$required_flag" <<<"$COPILOT_HELP" || {
+    echo "REVIEW_UNAVAILABLE: copilot lacks $required_flag" >&2
+    exit 1
+  }
+done
+
+# Build the complete round prompt as a data file using the host's file-writing
+# API. Never render untrusted paths/content into shell source.
+REVIEW_TASK_FILE="review-stage/ROUND_${ROUND}_COPILOT_PROMPT.md"
+[[ -f "$REVIEW_TASK_FILE" ]] || { echo "REVIEW_UNAVAILABLE: missing prompt artifact" >&2; exit 1; }
+PROMPTFILE="$(mktemp)" || { echo "REVIEW_UNAVAILABLE: mktemp failed" >&2; exit 1; }
+trap 'rm -f "$PROMPTFILE"' EXIT
+cat -- "$REVIEW_TASK_FILE" > "$PROMPTFILE"
+copilot --agent "$REVIEWER_PROFILE" --model "$REVIEWER_MODEL" \
+  --effort xhigh --allow-tool=read --prompt "$(cat "$PROMPTFILE")"
+```
+
+The profile name is the router-selected opposite-family profile (`aris-reviewer-openai` or `aris-reviewer-claude`).
+
+**VERIFIED:** `copilot --agent NAME --prompt "..."` is the documented subprocess invocation form per GitHub Copilot CLI docs. Custom agent profiles (`.agent.md` files in `.github/agents/`) are discovered automatically.
+
+**VERIFIED:** `copilot --agent` runs synchronously (like `codex exec`), returning the response to stdout. Multi-round state is maintained via a reviewer-owned memory artifact, not a persistent subagent handle.
+
+### Multi-Round Continuity
+
+`copilot --agent` does **not** expose a persistent thread/agent handle (no equivalent to `threadId` or `agentId`). For multi-round review (`/auto-review-loop`):
+
+1. **Each round is a fresh `copilot --agent` call** with the same profile.
+2. **Reviewer memory is carried via one canonical written artifact** (`review-stage/REVIEWER_MEMORY.md`), passed as context in each round's prompt. The reviewer writes to this artifact at the end of each round.
+3. The executor appends the reviewer's raw response to `review-stage/REVIEWER_MEMORY.md`, then includes that same artifact in the next round's prompt. There is no project-root fallback.
+
+**Pattern for round 2+:**
+
+First use the host's **Write tool**—never Bash, `echo`, a heredoc, or generated
+shell assignments—to overwrite
+`review-stage/CURRENT_REVIEW_INPUTS.md`. Store the exact changed paths, diff
+artifact/range, and updated result paths under static labels. Those values may
+contain arbitrary repository-controlled bytes and must remain file data.
+
+```bash
+# ARIS_ROUND2_COPILOT_BEGIN
+# Dynamic values were written with the Write tool; shell only reads them as data.
+MEMORY_FILE="review-stage/REVIEWER_MEMORY.md"
+ROUND_INPUT_FILE="review-stage/CURRENT_REVIEW_INPUTS.md"
+[[ -f "$MEMORY_FILE" && -f "$ROUND_INPUT_FILE" ]] || {
+  echo "REVIEW_UNAVAILABLE: missing reviewer memory or round inputs" >&2
+  exit 1
+}
+PROMPTFILE="$(mktemp)" || { echo "REVIEW_UNAVAILABLE: mktemp failed" >&2; exit 1; }
+trap 'rm -f "$PROMPTFILE"' EXIT
+{
+cat <<'ARIS_MEMORY_HEADER'
+[Round N/MAX_ROUNDS]
+
+## Your Memory From Previous Rounds
+ARIS_MEMORY_HEADER
+cat -- "$MEMORY_FILE"
+cat <<'ARIS_MEMORY_FOOTER'
+
+## Current State
+Since your last review these files changed — read them yourself:
+ARIS_MEMORY_FOOTER
+cat -- "$ROUND_INPUT_FILE"
+cat <<'ARIS_MEMORY_INSTRUCTIONS'
+
+Please re-score and re-assess. Are the remaining concerns addressed?
+Same format: Score, Verdict, Remaining Weaknesses, Minimum Fixes.
+
+At the end of your review, write (or append to) the Memory Update section
+in your response — this will be passed back to you next round.
+ARIS_MEMORY_INSTRUCTIONS
+} > "$PROMPTFILE"
+copilot --agent "$REVIEWER_PROFILE" --model "$REVIEWER_MODEL" \
+  --effort xhigh --allow-tool=read --prompt "$(cat "$PROMPTFILE")"
+# ARIS_ROUND2_COPILOT_END
+```
+
+**IMPORTANT:** This is architecturally different from `SendMessage` (which would require a persistent subagent handle that `copilot --agent` does not provide). The memory-artifact pattern is the documented alternative for stateful multi-round workflows in Copilot CLI.
+
+### Known Limitations & Upstream Dependencies
+
+| Capability | Codex MCP | Copilot `--agent` + profiles | Status |
+|-----------|-----------|--------------------------|--------|
+| Task spawning | `mcp__codex__codex` | `copilot --agent` subprocess (documented Copilot CLI form) | **Verified** — in Copilot CLI docs |
+| Model pinning | `gpt-5.6-sol` param | Profile model repeated as subprocess `--model` | **Verified** — prevents Auto-session inheritance |
+| Cross-model family | Configurable (agy, manual, llm-chat) | Router picks opposite-family profile from declared executor model | **Route verified; executor identity unverified** |
+| Thread continuity | `codex-reply` (threadId) | New `copilot --agent` call + `review-stage/REVIEWER_MEMORY.md` artifact | **Verified** — memory-artifact pattern |
+| Reasoning effort control | `xhigh` / `ultra` tiers | Subprocess `--effort xhigh` | **Verified** — capability-gated before review |
+| File reading | Reads listed files | Can read files via restricted custom-agent tools | **Verified** — profile + `--allow-tool=read` |
+| Review tracing | `.aris/traces/` schema | Same schema + model sources/family relation | **Verified with explicit identity limit** |
+
+**What is verified vs assumed:**
+
+| Assertion | Status | Source |
+|----------|--------|--------|
+| `copilot --agent NAME --prompt "..."` invocation form | **Verified** | Live Copilot CLI testing; documented subprocess form |
+| Custom agent profiles (`.agent.md` files) discovered automatically | **Verified** | `.github/agents/` convention documented, `.agent.md` extension confirmed |
+| Profile pins model in frontmatter | **Verified** | Agent profile format from Copilot CLI docs |
+| `copilot --agent` runs synchronously | **Verified** | Returns response to stdout; confirmed by live testing |
+| Memory-artifact multi-round pattern | **Verified** | `review-stage/REVIEWER_MEMORY.md` carries state between fresh subprocesses |
+| Reasoning effort for Copilot | **Verified** | Explicit subprocess `--effort xhigh`; unsupported CLIs fail closed |
+| Compatibility-drive parent executor model | **Unverified** | `--executor-model` is caller-declared on this legacy path; native mode instead uses host session events |
+| Native end-to-end acceptance without MCP/manual | **Provided for `copilot-native`** | Verified host event evidence + cross-family rubber-duck verdict enters the executable stop gate directly |
+
+### Invariants
+
+- With no reviewer directive, a bound Copilot root session defaults to
+  `copilot-native`; an unbound/non-Copilot host defaults to Codex. Explicit
+  reviewer directives always win.
+- `--reviewer: copilot` is an **explicit compatibility drive mode**. It is not
+  the native default and its positive verdict still requires a finalizer.
+- `--executor-model` is **MANDATORY** when `--reviewer: copilot` is used. Fail closed if missing.
+- **Opposite-family route is mandatory** relative to the caller-declared executor model. Same/unknown family → `REVIEW_UNAVAILABLE`; a different relation is recorded as `independence_verified: "unverified"`, not as attestation.
+- **Compatibility review floor:** custom-agent subprocess calls pin `xhigh` and
+  remain drive-only. This restriction does not apply to verified native
+  rubber-duck calls, whose actual model pair comes from host events.
+- Custom agent profile models are repeated with subprocess `--model`; do not rely on profile-only pinning under an Auto session.
+- Explicit reviewer directives (`codex`, `oracle-pro`, `agy`, `manual`) are separate from copilot.
+- Reviewer independence protocol still applies (pass file paths, not summaries).
+- `effort` and `difficulty` are orthogonal — they don't change the reviewer backend.
+- If `copilot` CLI is unavailable → `REVIEW_UNAVAILABLE` for an explicitly
+  requested compatibility drive round. The no-flag route uses the native
+  activation/fallback rules above.
+- If executor family is unknown → `REVIEW_UNAVAILABLE` (fail closed).
+- NEVER fabricate a review verdict without an actual reviewer call.
+
+### Using Codex Instead of Copilot
+
+Pass `--reviewer: codex` to force Codex MCP instead of attempting the native
+Copilot default. Outside a bound Copilot CLI session, Codex remains the no-flag
+default.

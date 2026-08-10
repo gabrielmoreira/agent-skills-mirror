@@ -127,13 +127,9 @@ class FMPClient:
 
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.getenv("FMP_API_KEY")
-        if not self.api_key:
-            raise ValueError(
-                "FMP API key required. Set FMP_API_KEY environment variable "
-                "or pass api_key parameter."
-            )
         self.session = requests.Session()
-        self.session.headers.update({"apikey": self.api_key})
+        if self.api_key:
+            self.session.headers.update({"apikey": self.api_key})
         self.cache = {}
         self.last_call_time = 0
         self.rate_limit_reached = False
@@ -257,16 +253,17 @@ class FMPClient:
     def get_historical_prices(self, symbol: str, days: int = 600) -> Optional[dict]:
         """Fetch historical daily OHLCV data.
 
-        Falls back to yfinance when the FMP historical-price endpoint returns
-        nothing (e.g. an ETF unavailable on the caller's FMP plan). The yfinance
-        path requires no extra API key; an FMP API key is still required to
-        construct this client.
+        Uses FMP first when an API key is configured, then falls back to
+        yfinance when FMP returns no usable history. Without an FMP key the
+        request bypasses FMP entirely and uses yfinance directly.
         """
         cache_key = f"prices_{symbol}_{days}"
         if cache_key in self.cache:
             return self.cache[cache_key]
 
-        data = self._request_with_fallback("historical", symbol, {"timeseries": days})
+        data = None
+        if self.api_key:
+            data = self._request_with_fallback("historical", symbol, {"timeseries": days})
         # _request_with_fallback can return a truthy dict with an EMPTY
         # historical list (v3 `{"symbol":...,"historical":[]}` or an empty
         # historicalStockList entry) for ETFs unavailable on the caller's FMP
@@ -352,6 +349,9 @@ class FMPClient:
         Returns list of dicts with keys like 'date', 'year2', 'year10', etc.
         Most recent first.
         """
+        if not self.api_key:
+            return None
+
         cache_key = f"treasury_{days}"
         if cache_key in self.cache:
             return self.cache[cache_key]
@@ -370,3 +370,7 @@ class FMPClient:
             "api_calls_made": self.api_calls_made,
             "rate_limit_reached": self.rate_limit_reached,
         }
+
+    def get_data_mode(self) -> str:
+        """Describe the configured market-data routing mode."""
+        return "fmp_with_yfinance_fallback" if self.api_key else "yfinance_only"

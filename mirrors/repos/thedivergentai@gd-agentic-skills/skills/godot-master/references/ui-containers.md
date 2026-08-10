@@ -3,16 +3,6 @@ name: godot-ui-containers
 description: "Expert blueprint for responsive UI layouts using Container nodes (HBoxContainer, VBoxContainer, GridContainer, MarginContainer, ScrollContainer, HFlowContainer, SubViewportContainer). Covers size flags, anchors, split containers, virtual_list pooling, stretch_shrink previews, and dynamic layouts. Use when building adaptive interfaces OR implementing responsive menus. Keywords: Container, HBoxContainer, VBoxContainer, GridContainer, HFlowContainer, SubViewportContainer, virtual_list, stretch_shrink, size_flags, EXPAND_FILL, anchors, responsive."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# UI Containers
-
-Container auto-layout, size flags, anchors, and split ratios define responsive UI systems.
-
 ## Decision Tree: Container type → script
 
 | Need | Prefer | MANDATORY script |
@@ -25,7 +15,6 @@ Container auto-layout, size flags, anchors, and split ratios define responsive U
 | 3D character/item preview in UI | `SubViewportContainer` | [viewport_3d_preview.gd](../scripts/ui_containers_viewport_3d_preview.gd) |
 | Deep nesting causing layout spikes | Anchors/offsets instead | [performance_anchor_layout.gd](../scripts/ui_containers_performance_anchor_layout.gd) |
 | Radial/wheel menus | Custom `Container` | [custom_radial_container.gd](../scripts/ui_containers_custom_radial_container.gd) |
-
 
 ## Do-NOT-Load (by scenario)
 
@@ -98,12 +87,6 @@ Advanced sizing logic using `SIZE_EXPAND_FILL` and `stretch_ratio` for weighted 
 
 ---
 
-## Godot 4.7: Control
-
-- **Offset transform** on Control nodes — visual offset without breaking layout constraints.
-- **TextureRect** can tile **AtlasTexture** regions as repeating textures.
-- Line drawing: antialiasing feather removed — lines render thinner; increase width if needed.
-
 ## Expert Layout Patterns
 
 ### 1. Split-Screen-Container (Dynamic)
@@ -144,7 +127,6 @@ func add_card(texture: Texture2D):
 
 > Size-flag recipes: **MANDATORY** [container_size_flags_pro.gd](../scripts/ui_containers_container_size_flags_pro.gd) — do not paste beginner `SIZE_EXPAND_FILL` tutorials inline.
 
-
 ## Deep recipes (on demand)
 
 > LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
@@ -174,23 +156,23 @@ func add_card(texture: Texture2D):
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Scene tree ownership, Control roots, and project layout conventions every responsive menu assumes before wiring containers.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Control APIs, `@onready`, and safe child rebuild loops used when building grids/tabs at runtime.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Resize, tab-changed, and inventory-refresh signals should flow signal-up / call-down so layout scripts never own game state.
+- [godot-project-foundations](project-foundations.md) — Scene tree ownership, Control roots, and project layout conventions every responsive menu assumes before wiring containers.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Control APIs, `@onready`, and safe child rebuild loops used when building grids/tabs at runtime.
+- [godot-signal-architecture](signal-architecture.md) — Resize, tab-changed, and inventory-refresh signals should flow signal-up / call-down so layout scripts never own game state.
 
 #### Complements
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Theme constants (`separation`, margins) and type variations style container chrome without hardcoding colors in layout code.
-- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — RichTextLabel minimum sizes and BBCode content drive ScrollContainer height; pair after the layout shell exists.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Animate `custom_minimum_size` / reorder feedback instead of tweening `position` inside Containers.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Focus, mouse_filter, and action maps for interactive lists/tabs built from Containers.
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Breakpoint-driven column counts and safe-area margins compose with responsive Grid/HFlow builders.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Inventory grids consume responsive column logic; containers present slots, inventory owns item truth.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Virtual list pooling and shallow anchor layouts when ScrollContainer would otherwise spawn thousands of Controls.
+- [godot-ui-theming](ui-theming.md) — Theme constants (`separation`, margins) and type variations style container chrome without hardcoding colors in layout code.
+- [godot-ui-rich-text](ui-rich-text.md) — RichTextLabel minimum sizes and BBCode content drive ScrollContainer height; pair after the layout shell exists.
+- [godot-tweening](tweening.md) — Animate `custom_minimum_size` / reorder feedback instead of tweening `position` inside Containers.
+- [godot-input-handling](input-handling.md) — Focus, mouse_filter, and action maps for interactive lists/tabs built from Containers.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — Breakpoint-driven column counts and safe-area margins compose with responsive Grid/HFlow builders.
+- [godot-inventory-system](inventory-system.md) — Inventory grids consume responsive column logic; containers present slots, inventory owns item truth.
+- [godot-performance-optimization](performance-optimization.md) — Virtual list pooling and shallow anchor layouts when ScrollContainer would otherwise spawn thousands of Controls.
 
 #### Downstream / consumers
-- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Dialogue choice lists and history panels are Scroll/VBox layouts that reuse autoscroll and separation patterns.
-- [godot-genre-card-game](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-card-game/SKILL.md) — Hand arcs, drag layers, and deck UIs assemble AspectRatio/HFlow containers around card Resources.
-- [godot-composition-apps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md) — Tooling/app UIs reuse the same Container size-flag and split patterns outside gameplay HUDs.
+- [godot-dialogue-system](dialogue-system.md) — Dialogue choice lists and history panels are Scroll/VBox layouts that reuse autoscroll and separation patterns.
+- [godot-genre-card-game](genre-card-game.md) — Hand arcs, drag layers, and deck UIs assemble AspectRatio/HFlow containers around card Resources.
+- [godot-composition-apps](composition-apps.md) — Tooling/app UIs reuse the same Container size-flag and split patterns outside gameplay HUDs.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Router and mirrored module entry for UI Containers when agents start from the library index.
+- [godot-master](../SKILL.md) — Router and mirrored module entry for UI Containers when agents start from the library index.

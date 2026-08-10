@@ -175,7 +175,7 @@ Then re-run: ooo setup
 **IMPORTANT**: Never install `[mcp,claude]`, `[mcp,claude-sdk]`, or `[all,mcp]`
 together and never write a direct
 `ouroboros` or `python -m ouroboros` MCP fallback. MCP 2 launchers must use an
-isolated `uvx --from 'ouroboros-ai[mcp]' ...` or
+isolated `uvx --python '>=3.12' --from 'ouroboros-ai[mcp]' ...` or
 `pipx run --spec 'ouroboros-ai[mcp]' ...` process. Only `[mcp,claude-cli]` is
 supported because the CLI worker is out of process. Do not write
 an Ouroboros entry to `~/.claude/mcp.json`; the plugin owns that registration.
@@ -262,7 +262,7 @@ A backup will be created: CLAUDE.md.bak
 **If "Preview first", show:**
 ````markdown
 <!-- ooo:START -->
-<!-- ooo:VERSION:0.50.8 -->
+<!-- ooo:VERSION:0.51.1 -->
 # Ouroboros — Specification-First AI Development
 
 > Before telling AI what to build, define what should be built.

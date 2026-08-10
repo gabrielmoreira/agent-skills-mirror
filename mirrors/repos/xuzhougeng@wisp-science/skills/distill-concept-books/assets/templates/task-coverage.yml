@@ -1,0 +1,21 @@
+schema_version: 1
+distillation_id: sample-concept-book-v1
+status: draft
+task_contract:
+  path: task-contract.yml
+  sha256: sha256:0000000000000000000000000000000000000000000000000000000000000000
+  task_contract_id: task-contract-sample-001
+  contract_version: 1
+coverage:
+  - stable_task_id: stable-task-sample-001
+    coverage_status: covered
+    candidate_ids: [candidate-sample-001]
+    capability_rule_ids: [rule-sample-001]
+    trigger_case_ids: [trigger-sample-001]
+    nontrigger_case_ids: [nontrigger-sample-001]
+    task_eval_case_ids: [task-sample-001]
+    holdout_case_ids: [task-sample-holdout-001]
+    rubric_dimension_ids: [traceability]
+    gate1_decision_id: gate-decision-sample-g1-001
+    rationale: Complete downstream coverage prepared for Gate 3 review.
+

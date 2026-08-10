@@ -3,18 +3,6 @@ name: godot-server-architecture
 description: "Expert blueprint for dedicated / headless multiplayer hosts: ENet/DTLS, authority validation, safe packet decode, matchmaker handoff, and health telemetry. Use when building authoritative servers, --headless hosts, or hardening host networking. Keywords: dedicated server, headless, ENet, DTLS, authority, safe_packet_decoder, multiplayer host, WebSocketMultiplayerPeer."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Server Architecture (Dedicated Host)
-
-Authoritative **multiplayer host** patterns — headless boot, ENet/DTLS, packet safety, kicks, and telemetry.
-
-> RID SceneTree-bypass rendering/physics swarms belong in [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) (and `physics_server_direct.gd` / `rid_performance_server.gd` only when the host sim truly needs server RIDs). Lobby/RPC gameplay APIs: [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md).
-
 ## Skill boundary (Do NOT Load)
 
 | Use **this skill** for | Use **godot-multiplayer-networking** for |
@@ -102,7 +90,6 @@ func _visibility_filter(for_peer: int, node: Node) -> bool:
 
 ### Health metrics
 Watch host FPS, static memory (RID leaks), and orphan counts via [server_health_exporter.gd](scripts/server_health_exporter.gd).
-
 
 ## Deep recipes (on demand)
 

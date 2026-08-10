@@ -3,16 +3,6 @@ name: godot-state-machine-advanced
 description: "Expert blueprint for hierarchical finite state machines (HSM) and pushdown automata for complex AI/character behaviors. Covers state stacks, sub-states, transition validation, and state context passing. Use when basic FSMs are insufficient OR implementing layered AI. Keywords state machine, HSM, hierarchical, pushdown automata, state stack, FSM, AI behavior."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Advanced State Machines
-
-Hierarchical states, state stacks, and context passing define complex behavior management.
-
 ## Available Scripts
 
 ### [hsm_hierarchical_base.gd](scripts/hsm_hierarchical_base.gd)
@@ -146,7 +136,6 @@ func _physics_process(_d: float) -> void:
     if best_state != current_state:
         transition_to(best_state.name)
 ```
-
 
 ## Deep recipes (on demand)
 

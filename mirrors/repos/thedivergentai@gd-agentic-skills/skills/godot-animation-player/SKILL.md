@@ -21,11 +21,6 @@ Timeline-based keyframe animation: track choice, RESET, root motion, libraries â
 
 ---
 
-## Godot 4.7: Animation
-
-- Animation editor tracks can be **collapsed** for dense timelines.
-- `Animation.length` metadata is **double** precision (was float).
-
 ## Available Scripts (MANDATORY triggers)
 
 > Open the matching script **before** implementing that pattern. Deep recipes: [track-authoring.md](references/track-authoring.md), [root-motion-and-sequences.md](references/root-motion-and-sequences.md), [edge-cases.md](references/edge-cases.md).

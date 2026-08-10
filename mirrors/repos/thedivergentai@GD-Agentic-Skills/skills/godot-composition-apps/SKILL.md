@@ -110,11 +110,6 @@ Root script (`LoginScreen.gd`, `UserProfile.gd`, EditorPlugin dock root) is an *
 - **NEVER skip signal cleanup** — Disconnect on exit / use CONNECT_ONE_SHOT where appropriate.
 - **NEVER let Logic know about Visuals** — Emit; VLS / Orchestrator plays animations and applies Theme.
 
-## Godot 4.7: App UI
-
-- **Control offset transform** for non-destructive visual tweaks in tool UIs.
-- Editor-style **searchable dropdowns** pattern applicable to in-app pickers.
-
 ## Fragile App Workflow: Saveable + Theme Ownership
 
 Do **not** put save I/O or Theme mutation inside form Controls. Route through components:

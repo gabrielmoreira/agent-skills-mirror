@@ -1,6 +1,6 @@
 ---
 name: financial-modeling
-description: Build financial projections, P&L statements, DCF models, and valuation analyses from assumptions and historical data
+description: Build financial projections, P&L statements, DCF models, and valuation analyses from assumptions and historical data. Use when the user requests financial modeling or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community
@@ -48,15 +48,15 @@ Provide your business assumptions, historical financials (if available), and the
 
 | Metric              | Year 1      | Year 2      | Year 3      |
 |----------------------|-------------|-------------|-------------|
-| Annual Revenue       | $1,012,680  | $2,048,352  | $3,195,744  |
-| COGS (22%)           | $222,790    | $450,637    | $703,064    |
-| Gross Profit         | $789,890    | $1,597,715  | $2,492,680  |
-| Operating Expenses   | $959,328    | $1,530,878  | $2,443,002  |
-| EBITDA               | ($169,438)  | $66,837     | $49,678     |
-| EBITDA Margin        | -16.7%      | 3.3%        | 1.6%        |
-| Cumulative Cash Burn | ($169,438)  | ($102,601)  | ($52,923)   |
+| Annual Revenue       | $853,971    | $1,753,589  | $2,754,401  |
+| COGS (22%)           | $187,874    | $385,790    | $605,968    |
+| Gross Profit         | $666,097    | $1,367,799  | $2,148,433  |
+| Operating Expenses   | $901,548    | $1,443,408  | $2,310,943  |
+| EBITDA               | ($235,451)  | ($75,609)   | ($162,510)  |
+| EBITDA Margin        | -27.6%      | -4.3%       | -5.9%       |
+| Cumulative EBITDA Deficit | ($235,451) | ($311,060) | ($473,570) |
 
-The company reaches monthly EBITDA breakeven in month 18. Cumulative cash burn peaks at $169K, suggesting a modest seed round is sufficient. Opex growth outpacing revenue deceleration in year 3 compresses margins — consider flattening hiring in year 3.
+This convention treats month 1 as the stated $45K MRR, applies 8% growth to months 2–12, 5% to months 13–24, and 3% to months 25–36. Monthly EBITDA remains negative because gross-profit dollars never overtake opex; the cumulative EBITDA deficit reaches about $474K. Actual cash position cannot be calculated without starting cash, working-capital, capex, tax, and financing assumptions. The plan therefore needs an explicit cash buffer and slower opex growth, and it does not support a conclusion about financing sufficiency on its own.
 
 ### Example 2: DCF Model for Small Business Acquisition
 
@@ -67,19 +67,18 @@ The company reaches monthly EBITDA breakeven in month 18. Cumulative cash burn p
 | Year | UFCF      | Discount Factor | PV of UFCF  |
 |------|-----------|-----------------|-------------|
 | 1    | $530,000  | 0.893           | $473,214    |
-| 2    | $561,800  | 0.797           | $447,771    |
-| 3    | $595,508  | 0.712           | $423,801    |
-| 4    | $631,238  | 0.636           | $401,227    |
-| 5    | $669,113  | 0.567           | $379,482    |
+| 2    | $561,800  | 0.797           | $447,864    |
+| 3    | $595,508  | 0.712           | $423,871    |
+| 4    | $631,238  | 0.636           | $401,163    |
+| 5    | $669,113  | 0.567           | $379,673    |
 
-- **PV of Forecast Period:** $2,125,495
-- **Terminal Value:** $669,113 × 1.025 / (0.12 − 0.025) = $7,215,744
-- **PV of Terminal Value:** $7,215,744 × 0.567 = $4,091,327
-- **Enterprise Value:** $6,216,822
-- **NPV at $2.1M Purchase Price:** $4,116,822
-- **IRR:** 31.2%
+- **PV of Forecast Period:** $2,125,785
+- **Terminal Value:** $669,113 × 1.025 / (0.12 − 0.025) = $7,219,377
+- **PV of Terminal Value:** $7,219,377 / 1.12⁵ = $4,096,468
+- **Enterprise Value:** $6,222,253
+- **Enterprise value less stated purchase price:** $4,122,253 before debt, cash, transaction costs, taxes, and diligence adjustments
 
-The acquisition is strongly accretive at the asking price. Sensitivity: if WACC rises to 15%, enterprise value drops to $4.8M — still a clear buy.
+The modeled enterprise value exceeds the stated purchase price under these assumptions, but that is not enough to call the transaction accretive or a clear buy. Calculate equity value, financing cash flows, transaction costs, taxes, and an explicit exit or holding-period cash-flow schedule before reporting NPV or IRR. Stress-test WACC, terminal growth, operating performance, and downside cases.
 
 ## Best Practices
 
@@ -89,6 +88,13 @@ The acquisition is strongly accretive at the asking price. Sensitivity: if WACC 
 - Include a sensitivity analysis on at least two key variables (e.g., growth rate and discount rate).
 - Label all units clearly — distinguish between monthly and annual figures, and between thousands and actuals.
 - Cross-check the model: net income plus D&A should reconcile to operating cash flow before working capital changes.
+
+## Safety Boundaries
+
+- Treat the output as analytical support, not individualized financial, tax, investment, or accounting advice.
+- Preserve source data and expose assumptions, formulas, units, and reconciliation checks so a reviewer can reproduce the result.
+- Do not initiate payments, transactions, journal entries, filings, or account changes without explicit user authorization.
+- Require a qualified professional to review material decisions, regulated filings, or conclusions based on incomplete data.
 
 ## Edge Cases
 

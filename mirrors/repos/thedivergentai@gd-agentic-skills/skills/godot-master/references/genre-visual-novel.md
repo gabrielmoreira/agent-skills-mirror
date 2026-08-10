@@ -37,10 +37,6 @@ Branching narratives, meaningful choices, and quality-of-life features define vi
 
 ---
 
-## Godot 4.7: Visual Novel UI
-
-- Migrate RichTextLabel images to `ImageUnit` API — `width_in_percent` removed in 4.7.
-
 ## 🛠 Expert Components (scripts/)
 
 > **MANDATORY** before implementing undo / branching / presentation:
@@ -62,7 +58,7 @@ Branching narratives, meaningful choices, and quality-of-life features define vi
 | Approach | When to choose | Notes |
 |----------|----------------|-------|
 | **JSON / CSV scripts** | Writers edit outside Godot; rapid iteration | Load via FileAccess or threaded ResourceLoader; validate schema in StoryManager |
-| **Custom `Resource` dialogue trees** | Designer Inspector editing, typed fields | Peer [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md); **MANDATORY** [story_manager.gd](../scripts/genre_visual_novel_story_manager.gd) |
+| **Custom `Resource` dialogue trees** | Designer Inspector editing, typed fields | Peer [godot-resource-data-patterns](resource-data-patterns.md); **MANDATORY** [story_manager.gd](../scripts/genre_visual_novel_story_manager.gd) |
 | **Dialogic (plugin)** | Full VN suite (timelines, characters, themes) with editor tooling | Prefer when shipping a large route graph fast; still keep rollback + flag discipline. Skip building a second StoryManager if Dialogic already owns timelines |
 | **Build lightweight custom** | Tiny kinetic novel / learning project | Use scripts in this skill; do not re-stub StoryManager inline |
 
@@ -100,7 +96,6 @@ func make_choice(choice_id: StringName) -> void:
 3. **Missing QoL** — Auto / Skip / Backlog / Save are mandatory genre features.
 4. **Broken rollback** — Mutating flags before snapshot makes undo lie.
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -108,7 +103,6 @@ func make_choice(choice_id: StringName) -> void:
 | Story driver & typewriter UI | [architecture-overview.md](genre-visual-novel-architecture-overview.md) |
 | Branching / rollback / focus | [key-mechanics.md](genre-visual-novel-key-mechanics.md) |
 | RichText / async loads | [godot-tips.md](genre-visual-novel-godot-tips.md) |
-
 
 ## Reference
 
@@ -131,23 +125,23 @@ func make_choice(choice_id: StringName) -> void:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, autoloads, and import basics before wiring a StoryManager driver.
-- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — RichTextLabel BBCode, visible_ratio, and append_text performance for dialogue boxes.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — responsive choice panels and dialogue chrome without absolute pixel placement.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — typed signals so UI presentation stays decoupled from branching logic.
+- [godot-project-foundations](project-foundations.md) — scene tree, autoloads, and import basics before wiring a StoryManager driver.
+- [godot-ui-rich-text](ui-rich-text.md) — RichTextLabel BBCode, visible_ratio, and append_text performance for dialogue boxes.
+- [godot-ui-containers](ui-containers.md) — responsive choice panels and dialogue chrome without absolute pixel placement.
+- [godot-signal-architecture](signal-architecture.md) — typed signals so UI presentation stays decoupled from branching logic.
 
 #### Complements
-- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — reusable dialogue runners and line data shapes that genre VNs specialize.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — typewriter tweens, sprite fades, and background crossfades without AnimationPlayer spam.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource-based dialogue trees and duplicate(true) for mutable flag state.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — skip, auto-advance, and backlog input actions without fighting Control focus.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — BGM buses and voice ducking synced to line/choice beats.
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — theme type variations for nameplates, choice buttons, and backlog chrome.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate affinity thresholds and ending distribution before shipping branch weights.
+- [godot-dialogue-system](dialogue-system.md) — reusable dialogue runners and line data shapes that genre VNs specialize.
+- [godot-tweening](tweening.md) — typewriter tweens, sprite fades, and background crossfades without AnimationPlayer spam.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Resource-based dialogue trees and duplicate(true) for mutable flag state.
+- [godot-input-handling](input-handling.md) — skip, auto-advance, and backlog input actions without fighting Control focus.
+- [godot-audio-systems](audio-systems.md) — BGM buses and voice ducking synced to line/choice beats.
+- [godot-ui-theming](ui-theming.md) — theme type variations for nameplates, choice buttons, and backlog chrome.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate affinity thresholds and ending distribution before shipping branch weights.
 
 #### Downstream / consumers
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — multi-slot, threaded saves for flags/history beyond ConfigFile demos.
-- [godot-genre-romance](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-romance/SKILL.md) — dating-sim affinity loops that reuse VN flags, rollback, and choice filtering.
+- [godot-save-load-systems](save-load-systems.md) — multi-slot, threaded saves for flags/history beyond ConfigFile demos.
+- [godot-genre-romance](genre-romance.md) — dating-sim affinity loops that reuse VN flags, rollback, and choice filtering.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

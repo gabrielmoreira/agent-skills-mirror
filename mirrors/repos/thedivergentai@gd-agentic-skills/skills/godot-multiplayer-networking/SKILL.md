@@ -2,16 +2,6 @@
 name: godot-multiplayer-networking
 description: "Expert multiplayer for desync, rollback, dedicated --headless servers, interest culling, and bandwidth spikes: ENet/WebRTC choice, authority, secure RPCs, client prediction/reconcile, and adaptive sync. Trigger on rubber-banding, cheat-able clients, peer floods, late join, or profiler Network spikes — not only greenfield online games. Keywords: multiplayer, RPC, ENetMultiplayerPeer, MultiplayerSynchronizer, authority, client prediction, rollback, interest management, headless, desync."
 ---
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Multiplayer Networking
-
-Server authority, prediction/reconcile, secure RPCs, and interest culling — not a high-level multiplayer tutorial.
-
 ## NEVER Do (Expert Networking Rules)
 
 ### Core Architecture

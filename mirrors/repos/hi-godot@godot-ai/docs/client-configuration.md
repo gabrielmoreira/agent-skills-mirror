@@ -105,7 +105,11 @@ call `resolved_config_path()`, so they operate on the same effective file.
 Launch resolution intentionally fails **closed**: Configure returns ERROR and
 leaves the config untouched if no valid launch tier exists on any platform, or
 if `_finalize_attach_launch()` cannot resolve a consoleless interpreter on
-Windows. Non-Windows platforms succeed as soon as a valid launch tier is
+Windows. The Windows result also carries the unwrapped console shape
+(`console_command`/`console_args`); `launch_for_client()` swaps it in for
+descriptors that set `needs_consoleless_launcher = false` — clients whose
+spawner cannot drive a GUI-subsystem pythonw (Antigravity, #863) and which
+hide child consoles themselves. Non-Windows platforms succeed as soon as a valid launch tier is
 available; a missing entry is better than one known to be broken. Backend spawn
 intentionally fails **open**: `backend_python_executable()` prefers a sibling
 `pythonw.exe` on Windows but falls back to the current executable when it is

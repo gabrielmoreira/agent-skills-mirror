@@ -21,12 +21,6 @@ High-performance 3D simulation: body choice, CCD, stairs, vehicles, ragdolls, So
 
 ---
 
-## Godot 4.7: Jolt Physics Behavior
-
-- **WorldBoundaryShape3D** (Jolt): `plane.d` sign convention flipped vs 4.6 — flip sign to match prior behavior.
-- **SoftBody3D** (Jolt): mass defaults to 1 kg total (not per-point); retune `linear_stiffness` and `damping_coefficient`.
-- **Area3D** now reports overlaps with **SoftBody3D** — adjust layers/masks to avoid unwanted overlap signals.
-
 ## Body / Symptom Decision Tree
 
 > **MANDATORY** — load the script for the chosen row before writing movement or sim code.
@@ -50,8 +44,6 @@ High-performance 3D simulation: body choice, CCD, stairs, vehicles, ragdolls, So
 ## 3D Layer Pitfalls (not a 2D primer)
 
 - **Layer** = what the object *is*; **mask** = what it *hits*. Name bits in [physics_layers_3d_config.gd](scripts/physics_layers_3d_config.gd).
-- SoftBody overlaps Area3D in 4.7 — retune masks or you get surprise signals.
-- WorldBoundaryShape3D `plane.d` sign flipped under Jolt vs 4.6 — flip when migrating.
 - Do not dump a same-as-2D layers tutorial here; Official Docs cover the shared mental model.
 
 ## Available Scripts
@@ -69,7 +61,7 @@ Animation → PhysicalBone simulation transition, impulses, cleanup.
 VehicleBody3D / VehicleWheel3D arcade vs sim knobs.
 
 ### [soft_body_3d_interaction.gd](scripts/soft_body_3d_interaction.gd)
-SoftBody3D flags and attachments after 4.7 mass defaults.
+SoftBody3D flags, pinning, and Jolt mass/stiffness tuning.
 
 ### [physics_ccd_3d_projectile.gd](scripts/physics_ccd_3d_projectile.gd)
 CCD / sub-step anti-tunneling for small fast bodies.
@@ -92,11 +84,11 @@ Low-level LOS / AI vision queries.
 ### [raycast_visualizer.gd](scripts/raycast_visualizer.gd)
 In-game ray hit/normal debug draw.
 
-## Expert Pointers (Jolt 4.7)
+## Expert Pointers (Jolt)
 
 - Prefer `Generic6DOFJoint3D` over stacking specialized joints unless you need a specific node UX.
-- SoftBody total mass default is 1 kg under Jolt — retune stiffness/damping after upgrade.
 - Ragdoll/vehicle/soft samples live in scripts above — do not expand Create Physical Skeleton editor tutorials in this body.
+- Version-specific Jolt/soft-body upgrade steps: [migration-notes.md](references/migration-notes.md).
 
 ## Deep dives (on demand)
 

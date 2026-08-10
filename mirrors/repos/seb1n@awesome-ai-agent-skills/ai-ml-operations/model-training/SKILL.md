@@ -1,6 +1,6 @@
 ---
 name: model-training
-description: Train machine learning models end-to-end, covering data loading, preprocessing, architecture selection, training loops, validation, and checkpointing.
+description: Train machine learning models end-to-end, covering data loading, preprocessing, architecture selection, training loops, validation, and checkpointing. Use when the user requests model training or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills

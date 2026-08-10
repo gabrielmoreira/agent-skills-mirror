@@ -3,16 +3,6 @@ name: godot-genre-sandbox
 description: "Expert blueprint for sandbox games (Minecraft, Terraria, Garry's Mod) with physics-based interactions, cellular automata, emergent gameplay, and creative tools. Use when building open-world creation games with voxels, element systems, player-created structures, or procedural worlds. Keywords voxel, sandbox, cellular automata, MultiMesh, chunk management, emergent behavior, creative mode."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Sandbox
-
-Physical simulation, emergent play, and player creativity define this genre.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Performance & Scalability
@@ -240,7 +230,6 @@ func create_hinge(body_a: RigidBody2D, body_b: RigidBody2D, anchor: Vector2) -> 
 - **`GridMap` vs `MultiMesh`**: GridMap uses MeshLibrary (great for variety), MultiMesh uses single mesh (great for speed). Combine: GridMap for structures, MultiMesh for terrain.
 - **Continuous CD**: `continuous_cd` requires convex collision shapes. Use `CapsuleShape2D` for projectiles, NOT `RectangleShape2D`.
 
-
 ---
 
 ## 🚀 Elite Technical Implementations (Batch 09)
@@ -269,8 +258,6 @@ static func import_blueprint_from_clipboard() -> Dictionary:
     return parsed_data if parsed_data is Dictionary else {}
 ```
 
-
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -278,7 +265,6 @@ static func import_blueprint_from_clipboard() -> Dictionary:
 | Elite meshing & blueprint sharing | [elite-technical-patterns.md](references/elite-technical-patterns.md) + [voxel_chunk_mesher.gd](scripts/voxel_chunk_mesher.gd) |
 | Element / CA grids | Architecture Patterns §1–3 in SKILL.md + [cellular_automata_liquid.gd](scripts/cellular_automata_liquid.gd) |
 | Chunk RLE persistence | Save System § in SKILL.md + [sandbox_world_serializer.gd](scripts/sandbox_world_serializer.gd) |
-
 
 ## Reference
 

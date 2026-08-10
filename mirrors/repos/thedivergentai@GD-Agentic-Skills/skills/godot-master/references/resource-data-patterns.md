@@ -3,16 +3,6 @@ name: godot-resource-data-patterns
 description: "Expert blueprint for data-oriented design using Resource/RefCounted classes (item databases, character stats, reusable data structures). Covers typed arrays, serialization, nested resources, and resource caching. Use when implementing data systems OR inventory/stats/dialogue databases. Keywords Resource, RefCounted, ItemData, CharacterStats, database, serialization, @export, typed arrays."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Resource & Data Patterns
-
-Resource-based design, typed arrays, and serialization — decision tree + scripts, not Inspector tutorials.
-
 ## NEVER Do in Resource Design
 
 - **NEVER modify resource instances directly** — Without `.duplicate()`, changing a value (like HP) modifies the shared `.tres` for everyone.
@@ -87,21 +77,21 @@ Pattern 1–7 walkthroughs (ItemData, databases, RefCounted calcs, directory sca
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, import, and `res://` hygiene before authoring shared `.tres` databases.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — `class_name`, typed arrays, setters, and `@tool` discipline every custom Resource script depends on.
+- [godot-project-foundations](project-foundations.md) — Project layout, import, and `res://` hygiene before authoring shared `.tres` databases.
+- [godot-gdscript-mastery](gdscript-mastery.md) — `class_name`, typed arrays, setters, and `@tool` discipline every custom Resource script depends on.
 
 #### Complements
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Ownership and fan-out for Resource `changed` / custom signals that drive reactive UI and stats.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Slot versioning, migration, and secure paths that wrap ResourceSaver/ResourceLoader save flows.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Packed scenes and threaded loads that consume preloaded Resource caches without hitch spikes.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Ability/buff definitions are Resource data; this skill owns the container and serialization patterns.
-- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Dialogue graphs and line tables are nested Resources that reuse typed-array and save patterns here.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Flyweight sharing, pooling RefCounted payloads, and when `.res` beats text `.tres` at scale.
+- [godot-signal-architecture](signal-architecture.md) — Ownership and fan-out for Resource `changed` / custom signals that drive reactive UI and stats.
+- [godot-save-load-systems](save-load-systems.md) — Slot versioning, migration, and secure paths that wrap ResourceSaver/ResourceLoader save flows.
+- [godot-scene-management](scene-management.md) — Packed scenes and threaded loads that consume preloaded Resource caches without hitch spikes.
+- [godot-ability-system](ability-system.md) — Ability/buff definitions are Resource data; this skill owns the container and serialization patterns.
+- [godot-dialogue-system](dialogue-system.md) — Dialogue graphs and line tables are nested Resources that reuse typed-array and save patterns here.
+- [godot-performance-optimization](performance-optimization.md) — Flyweight sharing, pooling RefCounted payloads, and when `.res` beats text `.tres` at scale.
 
 #### Downstream / consumers
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Item stacks, equipment, and bags consume `ItemData` / inventory Resource arrays defined here.
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Generators that instantiate loot, quests, and configs via `Resource.new()` at runtime.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — `.tres` stats and economy tables are the preferred extract source — build the data layer before regex farms.
+- [godot-inventory-system](inventory-system.md) — Item stacks, equipment, and bags consume `ItemData` / inventory Resource arrays defined here.
+- [godot-procedural-generation](procedural-generation.md) — Generators that instantiate loot, quests, and configs via `Resource.new()` at runtime.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — `.tres` stats and economy tables are the preferred extract source — build the data layer before regex farms.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

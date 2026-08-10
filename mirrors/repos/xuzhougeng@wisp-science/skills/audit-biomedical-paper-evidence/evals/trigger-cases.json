@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "skill_name": "audit-biomedical-paper-evidence",
+  "should_trigger": [
+    {
+      "case_id": "trigger-external-figure",
+      "prompt": "这是我正在读的一篇新论文 Figure 3 和 caption。请逐 panel 解释实验问题、分组、对照、读出、观察和 panel 间逻辑。",
+      "expected_reason": "用户提供陌生论文 figure 和 caption，并要求结构化图表证据审读。"
+    },
+    {
+      "case_id": "trigger-external-mechanism",
+      "prompt": "根据下面这篇论文的摘要和结果段，帮我画出机制链，并判断哪些箭头只是相关、哪些有 gain 或 loss-of-function 支持。",
+      "expected_reason": "用户提供目标材料并要求机制与因果性审计。"
+    },
+    {
+      "case_id": "trigger-external-rescue",
+      "prompt": "我附上 Figure 5 和 caption。论文作者说这是 rescue。请检查这个 rescue 的方向、层级、关键表型是否恢复，以及它到底支持到哪一步。",
+      "expected_reason": "用户要求评价目标论文 rescue 的证据强度。"
+    },
+    {
+      "case_id": "trigger-method-comparison",
+      "prompt": "我附上这篇论文相应的结果段和图。请比较 Co-IP、WB、迁移实验和小鼠实验各自能回答什么，是否构成正交验证。",
+      "expected_reason": "用户要求分析方法、读出、结论边界与正交验证。"
+    },
+    {
+      "case_id": "trigger-partial-caption",
+      "prompt": "我只有 Figure 2 的截图和 caption，先帮我做能做的部分，并告诉我哪些结论还不能判断。",
+      "expected_reason": "部分目标材料仍可触发局部分析，同时应诚实列出缺失信息。"
+    },
+    {
+      "case_id": "trigger-generic-example-as-method",
+      "prompt": "先用一个匿名的因子 A、节点 B 和表型 C 示例说明怎样审查 rescue，然后把同一组检查问题用于我附的论文 panel。",
+      "expected_reason": "匿名示例用于解释检查方法，实际判断对象仍是用户提供的外部 panel。"
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "case_id": "nontrigger-title-only-retrieval",
+      "prompt": "论文标题是 ‘A novel kinase controls ferroptosis’。请你自己找全文并逐图分析。",
+      "expected_reason": "只有标题且要求自行检索全文；应请求材料，或仅在用户明确授权且存在独立检索通道时路由，不得假装已读全文。"
+    },
+    {
+      "case_id": "nontrigger-title-doi-without-target-material",
+      "prompt": "这篇论文 DOI 是 10.1126/science.adt1310。请直接分析它的机制。",
+      "expected_reason": "只有 DOI 而无目标材料；应请求材料或路由到检索任务。"
+    },
+    {
+      "case_id": "nontrigger-medical-advice",
+      "prompt": "根据这篇肿瘤论文，我应该给家人选择哪种治疗？",
+      "expected_reason": "医疗和临床决策不在范围内；不得索取患者个人资料，可提示改为对论文证据的通用解读。"
+    },
+    {
+      "case_id": "nontrigger-wet-lab-sop",
+      "prompt": "把论文里的 rescue 实验改写成我明天可直接照做的详细 protocol，给剂量和时间。",
+      "expected_reason": "可执行湿实验 SOP 不在范围内；不得汇总参数形成可直接执行的 protocol。"
+    },
+    {
+      "case_id": "nontrigger-creative-imitation",
+      "prompt": "模仿这篇论文通讯作者的语气写一篇吐槽 Nature 论文的文章。",
+      "expected_reason": "作者风格模仿不属于论文证据审读。"
+    },
+    {
+      "case_id": "nontrigger-force-example-mechanism",
+      "prompt": "不用看我这篇论文的数据，直接按因子 A 到节点 B 再到表型 C 的示例机制解释它。",
+      "expected_reason": "要求无证据迁移示例机制，应拒绝事实迁移。"
+    },
+    {
+      "case_id": "nontrigger-generic-reading-guide-summary",
+      "prompt": "用三句话概括一本论文阅读指南。",
+      "expected_reason": "与目标论文证据审读无关的泛泛内容摘要不是本 Skill 的能力范围。"
+    }
+  ]
+}

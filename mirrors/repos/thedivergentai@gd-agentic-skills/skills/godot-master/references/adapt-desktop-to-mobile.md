@@ -17,16 +17,6 @@ Expert guidance for porting desktop games to mobile platforms.
 
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-## Godot 4.7: Desktop→Mobile
-
-- Use built-in **virtual joystick** instead of third-party touch plugins where possible.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern. Do not paste joystick/gesture/UI tutorials inline.
@@ -148,24 +138,24 @@ Full port recipes → [mobile-port-deep.md](adapt-desktop-to-mobile-mobile-port-
 ### Related Skills
 
 #### Prerequisites
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Shared InputEvent buffering, deadzones, and multi-touch gesture foundations before building virtual joysticks or swipe combos.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchors, containers, and minimum sizes so 44–48px touch targets and safe-area margins stay layout-correct.
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Feature tags (`mobile`/`android`/`ios`), display stretch, and renderer defaults that every port branch depends on.
+- [godot-input-handling](input-handling.md) — Shared InputEvent buffering, deadzones, and multi-touch gesture foundations before building virtual joysticks or swipe combos.
+- [godot-ui-containers](ui-containers.md) — Anchors, containers, and minimum sizes so 44–48px touch targets and safe-area margins stay layout-correct.
+- [godot-project-foundations](project-foundations.md) — Feature tags (`mobile`/`android`/`ios`), display stretch, and renderer defaults that every port branch depends on.
 
 #### Complements
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Deeper Android/iOS platform APIs (permissions, IAP, thermal) once the desktop→touch control remap is in place.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and CPU/GPU cuts when adaptive `scaling_3d_scale` and material fallbacks are not enough.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Durable save ownership that hooks pause/resume instead of desktop-only quit notifications.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera2D/3D follow and zoom contracts used by one-finger pan + two-finger pinch controllers.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Cheaper CanvasItem/Spatial shader paths when stripping desktop-only visual features for mobile GPUs.
-- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — StandardMaterial3D feature flags (SSS, clearcoat) that `mobile_shader_fallback` disables on weak renderers.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Smooth UI lifts when the OS virtual keyboard covers LineEdits/TextEdits.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton homes for haptic feedback, battery saver, and offline save sync managers.
+- [godot-platform-mobile](platform-mobile.md) — Deeper Android/iOS platform APIs (permissions, IAP, thermal) once the desktop→touch control remap is in place.
+- [godot-performance-optimization](performance-optimization.md) — Profiling and CPU/GPU cuts when adaptive `scaling_3d_scale` and material fallbacks are not enough.
+- [godot-save-load-systems](save-load-systems.md) — Durable save ownership that hooks pause/resume instead of desktop-only quit notifications.
+- [godot-camera-systems](camera-systems.md) — Camera2D/3D follow and zoom contracts used by one-finger pan + two-finger pinch controllers.
+- [godot-shaders-basics](shaders-basics.md) — Cheaper CanvasItem/Spatial shader paths when stripping desktop-only visual features for mobile GPUs.
+- [godot-3d-materials](3d-materials.md) — StandardMaterial3D feature flags (SSS, clearcoat) that `mobile_shader_fallback` disables on weak renderers.
+- [godot-tweening](tweening.md) — Smooth UI lifts when the OS virtual keyboard covers LineEdits/TextEdits.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton homes for haptic feedback, battery saver, and offline save sync managers.
 
 #### Downstream / consumers
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Packaging, signing, and CI export presets after touch/UI/perf gates pass on devices.
-- [godot-platform-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md) — Keep desktop mouse/keyboard paths working when the same project remains dual-input after the mobile adapt.
-- [godot-genre-puzzle](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md) — Tap/swipe/pinch control schemes that consume the gesture and UI scaling patterns from this skill.
+- [godot-export-builds](export-builds.md) — Packaging, signing, and CI export presets after touch/UI/perf gates pass on devices.
+- [godot-platform-desktop](platform-desktop.md) — Keep desktop mouse/keyboard paths working when the same project remains dual-input after the mobile adapt.
+- [godot-genre-puzzle](genre-puzzle.md) — Tap/swipe/pinch control schemes that consume the gesture and UI scaling patterns from this skill.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this adapt skill beside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for discovering this adapt skill beside sibling domains.

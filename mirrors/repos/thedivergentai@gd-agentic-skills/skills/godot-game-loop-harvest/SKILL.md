@@ -3,16 +3,6 @@ name: godot-game-loop-harvest
 description: "Data-driven resource harvesting (mining, logging, foraging) for Godot 4: apply_hit tool/tier validation via HarvestToolData enums, HarvestResourceData yields, harvestable_node shake/deplete, respawn_manager world persistence, UNIX offline progress, autosave, and noise vein proc-gen. Trigger keywords: apply_hit, HarvestResourceData, HarvestToolData, offline UNIX, respawn_manager, tool tier, harvestable_node, FastNoiseLite veins."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Godot Game Loop: Harvest
-
-Decoupled, data-driven gathering: tool/tier gates, health depletion, yields, respawn, and offline UNIX progress.
-
 ## Script Catalog (MANDATORY by path)
 
 | Path | MANDATORY reads |

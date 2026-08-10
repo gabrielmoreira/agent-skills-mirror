@@ -21,12 +21,6 @@ High-performance 3D simulation: body choice, CCD, stairs, vehicles, ragdolls, So
 
 ---
 
-## Godot 4.7: Jolt Physics Behavior
-
-- **WorldBoundaryShape3D** (Jolt): `plane.d` sign convention flipped vs 4.6 — flip sign to match prior behavior.
-- **SoftBody3D** (Jolt): mass defaults to 1 kg total (not per-point); retune `linear_stiffness` and `damping_coefficient`.
-- **Area3D** now reports overlaps with **SoftBody3D** — adjust layers/masks to avoid unwanted overlap signals.
-
 ## Body / Symptom Decision Tree
 
 > **MANDATORY** — load the script for the chosen row before writing movement or sim code.
@@ -50,8 +44,6 @@ High-performance 3D simulation: body choice, CCD, stairs, vehicles, ragdolls, So
 ## 3D Layer Pitfalls (not a 2D primer)
 
 - **Layer** = what the object *is*; **mask** = what it *hits*. Name bits in [physics_layers_3d_config.gd](../scripts/physics_3d_physics_layers_3d_config.gd).
-- SoftBody overlaps Area3D in 4.7 — retune masks or you get surprise signals.
-- WorldBoundaryShape3D `plane.d` sign flipped under Jolt vs 4.6 — flip when migrating.
 - Do not dump a same-as-2D layers tutorial here; Official Docs cover the shared mental model.
 
 ## Available Scripts
@@ -69,7 +61,7 @@ Animation → PhysicalBone simulation transition, impulses, cleanup.
 VehicleBody3D / VehicleWheel3D arcade vs sim knobs.
 
 ### [soft_body_3d_interaction.gd](../scripts/physics_3d_soft_body_3d_interaction.gd)
-SoftBody3D flags and attachments after 4.7 mass defaults.
+SoftBody3D flags, pinning, and Jolt mass/stiffness tuning.
 
 ### [physics_ccd_3d_projectile.gd](../scripts/physics_3d_physics_ccd_3d_projectile.gd)
 CCD / sub-step anti-tunneling for small fast bodies.
@@ -92,11 +84,11 @@ Low-level LOS / AI vision queries.
 ### [raycast_visualizer.gd](../scripts/physics_3d_raycast_visualizer.gd)
 In-game ray hit/normal debug draw.
 
-## Expert Pointers (Jolt 4.7)
+## Expert Pointers (Jolt)
 
 - Prefer `Generic6DOFJoint3D` over stacking specialized joints unless you need a specific node UX.
-- SoftBody total mass default is 1 kg under Jolt — retune stiffness/damping after upgrade.
 - Ragdoll/vehicle/soft samples live in scripts above — do not expand Create Physical Skeleton editor tutorials in this body.
+- Version-specific Jolt/soft-body upgrade steps: [migration-notes.md](physics-3d-migration-notes.md).
 
 ## Deep dives (on demand)
 
@@ -125,24 +117,24 @@ In-game ray hit/normal debug draw.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — 3D physics engine choice, tick rate, gravity, and named layer bits must be set before matrices and Jolt tuning stay sane.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed RIDs, bitmask enums, and `_physics_process` discipline underpin server-side and CharacterBody3D patterns here.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `body_entered` / contact-monitor wiring needs clean ownership so Area3D gravity wells and CCD hits do not spam.
+- [godot-project-foundations](project-foundations.md) — 3D physics engine choice, tick rate, gravity, and named layer bits must be set before matrices and Jolt tuning stay sane.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed RIDs, bitmask enums, and `_physics_process` discipline underpin server-side and CharacterBody3D patterns here.
+- [godot-signal-architecture](signal-architecture.md) — `body_entered` / contact-monitor wiring needs clean ownership so Area3D gravity wells and CCD hits do not spam.
 
 #### Complements
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Parallel layer/mask and body-type contracts when sharing policy across dimensions or porting mechanics.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Deeper query-parameter recipes (masks, exclusions, shape casts) when vision/hitscan systems outgrow the basics.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Static collision from GridMap/CSG/meshes must match the same 3D layer matrix used by characters and projectiles.
-- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — AnimationTree poses and state machines feed ragdoll start/stop and influence blending on `PhysicalBoneSimulator3D`.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and pooling guidance when `PhysicsServer3D` swarms, soft bodies, or CCD counts become bottlenecks.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Visible collision shapes, contact normals, and profiler traps when diagnosing jitter, tunneling, or missed stairs.
+- [godot-2d-physics](2d-physics.md) — Parallel layer/mask and body-type contracts when sharing policy across dimensions or porting mechanics.
+- [godot-raycasting-queries](raycasting-queries.md) — Deeper query-parameter recipes (masks, exclusions, shape casts) when vision/hitscan systems outgrow the basics.
+- [godot-3d-world-building](3d-world-building.md) — Static collision from GridMap/CSG/meshes must match the same 3D layer matrix used by characters and projectiles.
+- [godot-animation-tree-mastery](animation-tree-mastery.md) — AnimationTree poses and state machines feed ragdoll start/stop and influence blending on `PhysicalBoneSimulator3D`.
+- [godot-performance-optimization](performance-optimization.md) — Profiling and pooling guidance when `PhysicsServer3D` swarms, soft bodies, or CCD counts become bottlenecks.
+- [godot-debugging-profiling](debugging-profiling.md) — Visible collision shapes, contact normals, and profiler traps when diagnosing jitter, tunneling, or missed stairs.
 
 #### Downstream / consumers
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — 3D hitboxes/hurtboxes and projectile CCD inherit layer/mask and space-query choices from this domain.
-- [godot-genre-racing](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md) — `VehicleBody3D` suspension/friction tuning and drift feel consume the vehicle and Jolt guidance here.
-- [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — Hitscan rays, CharacterBody3D movement, and high-speed projectile CCD are direct consumers of these contracts.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Agents still need physics layers for blockers and LOS; keep nav meshes and the collision world consistent.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Gravity, CCD, joint break thresholds, and hitbox size change win-rates; simulate those physics knobs instead of guessing.
+- [godot-combat-system](combat-system.md) — 3D hitboxes/hurtboxes and projectile CCD inherit layer/mask and space-query choices from this domain.
+- [godot-genre-racing](genre-racing.md) — `VehicleBody3D` suspension/friction tuning and drift feel consume the vehicle and Jolt guidance here.
+- [godot-genre-shooter-fps](genre-shooter-fps.md) — Hitscan rays, CharacterBody3D movement, and high-speed projectile CCD are direct consumers of these contracts.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — Agents still need physics layers for blockers and LOS; keep nav meshes and the collision world consistent.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Gravity, CCD, joint break thresholds, and hitbox size change win-rates; simulate those physics knobs instead of guessing.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored entry point for discovering 3D physics alongside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored entry point for discovering 3D physics alongside sibling domains.

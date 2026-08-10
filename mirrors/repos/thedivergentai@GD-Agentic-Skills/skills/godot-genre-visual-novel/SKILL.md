@@ -37,10 +37,6 @@ Branching narratives, meaningful choices, and quality-of-life features define vi
 
 ---
 
-## Godot 4.7: Visual Novel UI
-
-- Migrate RichTextLabel images to `ImageUnit` API — `width_in_percent` removed in 4.7.
-
 ## 🛠 Expert Components (scripts/)
 
 > **MANDATORY** before implementing undo / branching / presentation:
@@ -100,7 +96,6 @@ func make_choice(choice_id: StringName) -> void:
 3. **Missing QoL** — Auto / Skip / Backlog / Save are mandatory genre features.
 4. **Broken rollback** — Mutating flags before snapshot makes undo lie.
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -108,7 +103,6 @@ func make_choice(choice_id: StringName) -> void:
 | Story driver & typewriter UI | [architecture-overview.md](references/architecture-overview.md) |
 | Branching / rollback / focus | [key-mechanics.md](references/key-mechanics.md) |
 | RichText / async loads | [godot-tips.md](references/godot-tips.md) |
-
 
 ## Reference
 

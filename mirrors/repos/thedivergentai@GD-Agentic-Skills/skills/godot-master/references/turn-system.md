@@ -3,16 +3,6 @@ name: godot-turn-system
 description: "Expert blueprint for turn-based combat with turn order, action points, phase management, and timeline systems for strategy/RPG games. Covers speed-based initiative, interrupts, and simultaneous turns. Use when implementing turn-based combat OR tactical systems. Keywords turn-based, initiative, action points, phase, round, turn order, combat."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Turn System
-
-Turn order calculation, action points, phase management, and timeline systems define turn-based combat.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Order & Determinism
@@ -80,7 +70,7 @@ Referenced from NEVER: server owns the clock; clients never decide "pass."
 1. On `turn_started`, server starts a one-shot `Timer` / `SceneTreeTimer` (authoritative).
 2. On timeout: server calls `request_pass(current)` (or auto-end-turn), then emits `turn_timed_out`.
 3. Clients only render the countdown; never mutate the turn queue locally.
-4. Pair with [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) for host-auth RPC.
+4. Pair with [godot-multiplayer-networking](multiplayer-networking.md) for host-auth RPC.
 
 ## Action Points (Contract)
 
@@ -95,9 +85,7 @@ func perform_action(cost: int) -> bool:
     return true
 ```
 
-Phases: prefer `enum Phase { DRAW, MAIN, END }` + `match`, or route to [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md). Full ATB / timeline math lives in the MANDATORY scripts — do not duplicate Elite snippets here.
-
-
+Phases: prefer `enum Phase { DRAW, MAIN, END }` + `match`, or route to [godot-state-machine-advanced](state-machine-advanced.md). Full ATB / timeline math lives in the MANDATORY scripts — do not duplicate Elite snippets here.
 
 ## Deep recipes (on demand)
 
@@ -129,24 +117,24 @@ Phases: prefer `enum Phase { DRAW, MAIN, END }` + `match`, or route to [godot-st
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Scene and Autoload placement for TurnManager.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Turn bus contracts (signals up, commands down).
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Speed/initiative Resources shared with combat/UI.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Lifecycle of a global turn orchestrator.
+- [godot-project-foundations](project-foundations.md) — Scene and Autoload placement for TurnManager.
+- [godot-signal-architecture](signal-architecture.md) — Turn bus contracts (signals up, commands down).
+- [godot-resource-data-patterns](resource-data-patterns.md) — Speed/initiative Resources shared with combat/UI.
+- [godot-autoload-architecture](autoload-architecture.md) — Lifecycle of a global turn orchestrator.
 
 #### Complements
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Per-unit states nested under turn phases.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Actions resolved inside a granted turn.
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Speed/AGI feeding ATB gauges.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Cooldowns measured in turns, not wall-clock only.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Gauge fill and handoff presentation.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Host-auth turn order and lockstep.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Per-unit states nested under turn phases.
+- [godot-combat-system](combat-system.md) — Actions resolved inside a granted turn.
+- [godot-rpg-stats](rpg-stats.md) — Speed/AGI feeding ATB gauges.
+- [godot-ability-system](ability-system.md) — Cooldowns measured in turns, not wall-clock only.
+- [godot-tweening](tweening.md) — Gauge fill and handoff presentation.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Host-auth turn order and lockstep.
 
 #### Downstream / consumers
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — ATB/turn hybrids in ARPG/JRPG-adjacent combat.
-- [godot-genre-card-game](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-card-game/SKILL.md) — Card turns and priority windows.
-- [godot-genre-rts](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md) — Discrete orders in strategy loops.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate turn matrices for speed/action fairness.
+- [godot-genre-action-rpg](genre-action-rpg.md) — ATB/turn hybrids in ARPG/JRPG-adjacent combat.
+- [godot-genre-card-game](genre-card-game.md) — Card turns and priority windows.
+- [godot-genre-rts](genre-rts.md) — Discrete orders in strategy loops.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate turn matrices for speed/action fairness.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for turn systems.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for turn systems.

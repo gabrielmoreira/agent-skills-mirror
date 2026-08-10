@@ -7,13 +7,11 @@ description: "Consolidated expert library for professional Godot 4.7+ game and a
 
 Every section earns its tokens by focusing on **Knowledge Delta** — the gap between what the base model already knows and what a senior Godot engineer knows from shipping real products.
 
-## Godot 4.7 Director's Cut
+## Library target — Godot 4.7+
 
-All Domain Skill references target **Godot 4.7+** (stable, 2026-06-18). Key orchestration deltas:
-- **AreaLight3D** for rectangular soft lights; route horror/UI glow through [3D Lighting](references/3d-lighting.md).
-- **HDR output** on major platforms — coordinate [Platform Desktop](references/platform-desktop.md) + rendering settings.
-- **Asset Store** replaces Asset Library for third-party content.
-- **RichTextLabel ImageUnit**, input device ID constants, and Jolt physics behavior — see migration digest before auditing 4.6 projects.
+All Domain Skill mirrors target **Godot 4.7+** (stable). For **incremental upgrades** from older 4.x minors, use **[godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md)** (one hop at a time) — do not treat this hub as a migration changelog.
+
+Cross-cutting 4.7 reminders while routing: **AreaLight3D** / HDR → [3D Lighting](references/3d-lighting.md); Asset Store vs Asset Library → export/platform modules; RichTextLabel ImageUnit, input device ID constants, Jolt behavior → migration hub module notes.
 
 ---
 
@@ -424,6 +422,8 @@ Expert implementations of common architectural and gameplay systems.
 
 ### Architecture & Foundation
 [Foundations](references/project-foundations.md) | [Composition](references/composition.md) | [App Composition](references/composition-apps.md) | [Signals](references/signal-architecture.md) | [Autoloads](references/autoload-architecture.md) | [States](references/state-machine-advanced.md) | [Resources](references/resource-data-patterns.md) | [Templates](references/project-templates.md) | [Analyst](references/analyst.md) | [Auditor](references/auditor.md) | [Builder](references/builder.md)
+
+**Version upgrades (external hub):** [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — incremental 4.0→4.7 hops; not mirrored here.
 
 ### GDScript & Testing
 [GDScript Mastery](references/gdscript-mastery.md) | [Testing Patterns](references/testing-patterns-expert-testing-patterns.md) | [Debugging/Profiling](references/debugging-profiling.md) | [Performance Optimization](references/performance-optimization.md)

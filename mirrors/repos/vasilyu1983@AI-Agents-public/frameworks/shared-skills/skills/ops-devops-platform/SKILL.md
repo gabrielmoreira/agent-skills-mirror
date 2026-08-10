@@ -1,324 +1,187 @@
 ---
 name: ops-devops-platform
-description: "DevOps and platform engineering patterns: Kubernetes, Terraform, GitOps, CI/CD, observability, incident response, and cloud-native ops."
+description: "Designs DevOps and platform engineering systems. Use when planning Kubernetes, Terraform, GitOps, CI/CD, observability, incident response, or cloud-native operations."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# DevOps Engineering — Quick Reference
+# DevOps and Platform Engineering
 
-This skill equips teams with actionable templates, checklists, and patterns for building self-service platforms, automating infrastructure with GitOps, deploying securely with DevSecOps, scaling with Kubernetes, ensuring reliability through SRE practices, and operating production systems with strong observability.
-
-**Modern baseline (2026)**: IaC (Terraform/OpenTofu/Pulumi), GitOps (Argo CD/Flux), Kubernetes (follow upstream supported releases), OpenTelemetry + Prometheus/Grafana, supply-chain security (SBOM + signing + provenance), policy-as-code (OPA/Gatekeeper or Kyverno), and eBPF-powered networking/security/observability (e.g., Cilium + Tetragon).
-
----
+Use this skill for platform, infrastructure, CI/CD, GitOps, observability, and incident-operating-model design. Keep the output operational: target architecture, rollout path, guardrails, ownership, and artifacts.
 
 ## Quick Reference
 
-| Task | Tool/Framework | Command | When to Use |
-|------|----------------|---------|-------------|
-| Infrastructure as Code | Terraform / OpenTofu | `terraform plan && terraform apply` | Provision cloud resources declaratively |
-| GitOps Deployment | Argo CD / Flux | `argocd app sync myapp` | Continuous reconciliation, declarative deployments |
-| Container Build | Docker Engine | `docker build -t app:v1 .` | Package applications with dependencies |
-| Kubernetes Deployment | kubectl / Helm (Kubernetes) | `kubectl apply -f deploy.yaml` / `helm upgrade app ./chart` | Deploy to K8s cluster, manage releases |
-| CI/CD Pipeline | GitHub Actions | Define workflow in `.github/workflows/ci.yml` | Automated testing, building, deploying |
-| Security Scanning | Trivy / Falco / Tetragon | `trivy image myapp:latest` | Vulnerability scanning, runtime security, eBPF enforcement |
-| Monitoring & Alerts | Prometheus + Grafana | Configure ServiceMonitor and AlertManager | Observability, SLO tracking, incident alerts |
-| Load Testing | k6 / Locust | `k6 run load-test.js` | Performance validation, capacity planning |
-| Incident Response | PagerDuty / Opsgenie | Configure escalation policies | On-call management, automated escalation |
-| Platform Engineering | Backstage / Port | Deploy internal developer portal | Self-service infrastructure, golden paths |
+| Need | Starting Direction |
+|------|--------------------|
+| infrastructure provisioning | Terraform, OpenTofu, Pulumi, or cloud-native IaC |
+| cluster or app deployment | GitOps first for steady-state, direct tooling for local iteration |
+| CI/CD | protected pipelines plus workload identity and supply-chain controls — see [supply-chain-security](references/supply-chain-security.md) |
+| observability | OpenTelemetry plus metrics, logs, traces, and SLO-based alerting |
+| platform engineering | golden paths, policy-as-code, and self-service interfaces |
+| incident operations | runbooks, severity model, escalation, and postmortems |
+
+## Workflow
+
+1. classify the dominant problem:
+   - provisioning
+   - deployment
+   - CI/CD
+   - observability
+   - platform engineering
+   - security hardening
+   - incident operations
+2. choose the smallest viable toolchain that matches the runtime and team skill
+3. load the relevant reference and template set
+4. verify version-sensitive or vendor-sensitive claims before final guidance
+5. finish with concrete operational outputs: plan, controls, owners, and artifacts
+
+## Decision Rules
+
+| Situation | Rule |
+|-----------|------|
+| any infrastructure change | IaC first; no clickops |
+| steady-state production reconciliation | GitOps (Argo CD / Flux) over push-based deploys |
+| CI credentials | workload identity (OIDC) over long-lived secrets |
+| alerting | SLO burn-rate alerts; suppress raw host-metric noise |
+| new environments | platform template + policy guard; no snowflakes |
+| supply-chain integrity | SLSA build track + cosign keyless signing |
+| drift | detect via reconciler or `terraform plan` in CI; never discover by accident |
+
+## Related Routing
+
+- service-level retries, deadlines, and chaos engineering -> [qa-resilience](../qa-resilience/SKILL.md)
+- telemetry implementation details -> [qa-observability](../qa-observability/SKILL.md)
+- backend service design -> [software-backend](../software-backend/SKILL.md)
+- system architecture -> [software-architecture-design](../software-architecture-design/SKILL.md)
+- appsec-specific design -> [software-security-appsec](../software-security-appsec/SKILL.md)
+- Git branch and PR workflow policy -> [dev-git-workflow](../dev-git-workflow/SKILL.md)
 
 ---
 
-## Decision Tree: Choosing DevOps Approach
+## Guardrails
 
-```text
-What do you need to accomplish?
-    ├─ Infrastructure provisioning?
-    │   ├─ Cloud-agnostic → Terraform or OpenTofu (OSS fork)
-    │   ├─ Programming-first → Pulumi (TypeScript/Python/Go)
-    │   ├─ AWS-specific → CloudFormation or Terraform/OpenTofu
-    │   ├─ GCP-specific → Deployment Manager or Terraform/OpenTofu
-    │   └─ Azure-specific → ARM/Bicep or Terraform/OpenTofu
-    │
-    ├─ Application deployment?
-    │   ├─ Kubernetes cluster?
-    │   │   ├─ Simple deploy → kubectl apply -f manifests/
-    │   │   ├─ Complex app → Helm charts
-    │   │   └─ GitOps workflow → ArgoCD or FluxCD
-    │   └─ Serverless?
-    │       ├─ AWS → Lambda + SAM/Serverless Framework
-    │       ├─ GCP → Cloud Functions
-    │       └─ Azure → Azure Functions
-    │
-    ├─ CI/CD pipeline setup?
-    │   ├─ GitHub-based → GitHub Actions (template-github-actions.md)
-    │   ├─ GitLab-based → GitLab CI
-    │   ├─ Enterprise → Jenkins or Tekton
-    │   └─ Security-first → Add SAST/DAST/SCA scans (template-ci-cd.md)
-    │
-    ├─ Observability & monitoring?
-    │   ├─ Metrics → Prometheus + Grafana
-    │   ├─ Distributed tracing → Jaeger or OpenTelemetry
-    │   ├─ Logs → Loki or ELK stack
-    │   ├─ eBPF-based → Cilium + Hubble (sidecarless)
-    │   └─ Unified platform → Datadog or New Relic
-    │
-    ├─ Incident management?
-    │   ├─ On-call rotation → PagerDuty or Opsgenie
-    │   ├─ Postmortem → template-postmortem.md
-    │   └─ Communication → template-incident-comm.md
-    │
-    ├─ Platform engineering?
-    │   ├─ Self-service → Backstage or Port (internal developer portal)
-    │   ├─ Policy enforcement → OPA/Gatekeeper
-    │   └─ Golden paths → Template repositories + automation
-    │
-    └─ Security hardening?
-        ├─ Container scanning → Trivy or Grype
-        ├─ Runtime security → Falco or Sysdig
-        ├─ Secrets management → HashiCorp Vault or cloud-native KMS
-        └─ Compliance → CIS Benchmarks, template-security-hardening.md
-```
+| Domain | Do | Anti-pattern to avoid |
+|--------|----|-----------------------|
+| Provisioning | all material changes in IaC; explicit promotion gates | clickops drift; untagged infrastructure |
+| Delivery | protected pipelines; artifact provenance; rollback + smoke checks | pipelines without identity boundaries |
+| Platform | golden paths before self-service; policy-as-code that reduces variation | tools shipped without adoption path or ownership |
+| Observability | define SLOs first; join logs/traces/metrics on shared trace ID | alert fatigue from raw host-metric thresholds |
+| Incidents | postmortems feed runbooks and platform changes | postmortems that stop at narrative |
+| Cost | tagging + budget alerts at resource creation; monthly right-sizing | unmanaged snowflake environments; unreviewed reservations |
 
 ---
 
-## When to Use This Skill
+## Navigation
 
-Claude should invoke this skill when users request:
+### Reference routing
 
-- Platform engineering patterns (self-service developer platforms, internal tools)
-- GitOps workflows (ArgoCD, FluxCD, declarative infrastructure management)
-- Infrastructure as Code patterns (Terraform, K8s manifests, policy as code)
-- CI/CD pipelines with DevSecOps (GitHub Actions, security scanning, SAST/DAST/SCA)
-- SRE incident management, escalation, and postmortem templates
-- eBPF-based observability (Cilium, Hubble, kernel-level insights, OpenTelemetry)
-- Kubernetes operational patterns (day-2 operations, resource management, workload placement)
-- Cloud-native monitoring (Prometheus, Grafana, unified observability platforms)
-- Team workflow, communication, handover guides, and runbooks
+| Load when… | Reference |
+|------------|-----------|
+| supply-chain, SBOM, signing, SLSA | [references/supply-chain-security.md](references/supply-chain-security.md) |
+| DORA's five metrics and team archetypes (Elite/High/Medium/Low tiers are retired), AI-adoption instability tax, general DevOps best practices | [references/devops-best-practices.md](references/devops-best-practices.md) |
+| GitLab CI — parent/child pipelines, MR variable traps, env-export pattern | [references/gitlab-ci-patterns.md](references/gitlab-ci-patterns.md) |
+| choosing a tool (IaC, GitOps, CI, policy, observability) | [references/tool-landscape.md](references/tool-landscape.md) |
+| golden paths, internal developer portal, platform maturity, when NOT to build an IDP, platform-vs-product boundary, CI/IaC/GitOps adoption sequencing | [references/platform-engineering-patterns.md](references/platform-engineering-patterns.md) |
+| GitOps multi-env promotion, Argo CD / Flux patterns | [references/gitops-workflows.md](references/gitops-workflows.md) |
+| on-call, severity model, escalation, postmortems | [references/sre-incident-management.md](references/sre-incident-management.md) |
+| day-2 operational runbooks, environment hygiene | [references/operational-patterns.md](references/operational-patterns.md) |
+| AIOps alert correlation, automated triage | [references/aiops-patterns.md](references/aiops-patterns.md) |
+| Kalman canary, cost autoscaler, CI capacity stabiliser | [references/control-theory-applied.md](references/control-theory-applied.md) |
+| capacity planning, saturation SLO, pipeline bottleneck hunt | [references/queueing-theory-applied.md](references/queueing-theory-applied.md) |
+| CI/CD throughput recovery, constraint surfacing, spend reallocation | [references/theory-of-constraints-applied.md](references/theory-of-constraints-applied.md) |
+| platform-team charter, algedonic escalation, PRR audit | [references/cybernetics-vsm-applied.md](references/cybernetics-vsm-applied.md) |
+| MTBF/MTTR, availability budgets, FMEA | [references/reliability-theory-applied.md](references/reliability-theory-applied.md) |
+| CAP/PACELC, consensus, idempotency, quorums | [references/distributed-systems-applied.md](references/distributed-systems-applied.md) |
+| source URLs and release trackers | [data/sources.json](data/sources.json) |
 
----
+### Templates
 
-## Resources (Best Practices Guides)
+**AWS / GCP / Azure**
+- [assets/aws/template-aws-ops.md](assets/aws/template-aws-ops.md) — AWS day-2 ops checklist
+- [assets/aws/template-aws-terraform.md](assets/aws/template-aws-terraform.md) — AWS Terraform module skeleton
+- [assets/aws/template-cost-optimization.md](assets/aws/template-cost-optimization.md) — AWS cost right-sizing and reservation review
+- [assets/gcp/template-gcp-ops.md](assets/gcp/template-gcp-ops.md) — GCP day-2 ops checklist
+- [assets/gcp/template-gcp-terraform.md](assets/gcp/template-gcp-terraform.md) — GCP Terraform module skeleton
+- [assets/azure/template-azure-ops.md](assets/azure/template-azure-ops.md) — Azure day-2 ops checklist
 
-Operational best practices by domain:
+**Kubernetes**
+- [assets/kubernetes/template-kubernetes-ops.md](assets/kubernetes/template-kubernetes-ops.md) — cluster day-2 ops
+- [assets/kubernetes/template-ha-dr.md](assets/kubernetes/template-ha-dr.md) — HA and disaster-recovery topology
+- [assets/kubernetes/template-platform-api.md](assets/kubernetes/template-platform-api.md) — platform API contract for self-service
+- [assets/kubernetes/template-k8s-deploy.yaml](assets/kubernetes/template-k8s-deploy.yaml) — base Deployment manifest
 
-- **DevOps/SRE Operations**: [references/devops-best-practices.md](references/devops-best-practices.md) - Core patterns for safe infrastructure changes, deployments, and incident response
-- **Platform Engineering**: [references/platform-engineering-patterns.md](references/platform-engineering-patterns.md) - Self-service platforms, golden paths, internal developer portals, policy as code
-- **GitOps Workflows**: [references/gitops-workflows.md](references/gitops-workflows.md) - Continuous reconciliation, multi-environment promotion, ArgoCD/FluxCD patterns, progressive delivery
-- **SRE Incident Management**: [references/sre-incident-management.md](references/sre-incident-management.md) - Severity classification, escalation procedures, blameless postmortems, alert correlation, and runbooks
-- **Operational Standards**: [references/operational-patterns.md](references/operational-patterns.md) - Platform engineering blueprints, CI/CD safety, SLOs, and reliability drills
-- **AIOps**: [references/aiops-patterns.md](references/aiops-patterns.md) - Self-healing systems, automated operations, AI-assisted analysis
+**Docker / Kafka**
+- [assets/docker/template-docker-ops.md](assets/docker/template-docker-ops.md) — image build and runtime hardening
+- [assets/kafka/template-kafka-ops.md](assets/kafka/template-kafka-ops.md) — Kafka cluster operations
 
----
+**Terraform / IaC**
+- [assets/terraform-iac/template-iac-terraform.md](assets/terraform-iac/template-iac-terraform.md) — root module structure
+- [assets/terraform-iac/template-module.md](assets/terraform-iac/template-module.md) — reusable child module
+- [assets/terraform-iac/template-env-promotion.md](assets/terraform-iac/template-env-promotion.md) — environment promotion workflow
 
-## Templates (Copy-Paste Ready)
+**CI/CD and GitOps**
+- [assets/cicd-pipelines/template-ci-cd.md](assets/cicd-pipelines/template-ci-cd.md) — generic CI/CD pipeline design
+- [assets/cicd-pipelines/template-github-actions.md](assets/cicd-pipelines/template-github-actions.md) — GitHub Actions workflow with OIDC
+- [assets/cicd-pipelines/template-gitops.md](assets/cicd-pipelines/template-gitops.md) — GitOps promotion pipeline
+- [assets/cicd-pipelines/template-release-safety.md](assets/cicd-pipelines/template-release-safety.md) — release gates and rollback
 
-Production templates organized by tech stack:
+**Monitoring / Observability**
+- [assets/monitoring-observability/template-slo.md](assets/monitoring-observability/template-slo.md) — SLO definition sheet
+- [assets/monitoring-observability/template-alert-rules.md](assets/monitoring-observability/template-alert-rules.md) — burn-rate alert rules
+- [assets/monitoring-observability/template-observability-slo.md](assets/monitoring-observability/template-observability-slo.md) — full observability + SLO stack
+- [assets/monitoring-observability/template-loadtest-perf.md](assets/monitoring-observability/template-loadtest-perf.md) — load-test and performance baseline
 
-### AWS Cloud
-- [assets/aws/template-aws-ops.md](assets/aws/template-aws-ops.md) - AWS service operations and best practices
-- [assets/aws/template-aws-terraform.md](assets/aws/template-aws-terraform.md) - Terraform modules for AWS infrastructure
-- [assets/aws/template-cost-optimization.md](assets/aws/template-cost-optimization.md) - AWS cost optimization strategies
+**Incident response**
+- [assets/incident-response/template-postmortem.md](assets/incident-response/template-postmortem.md) — blameless postmortem
+- [assets/incident-response/template-runbook-starter.md](assets/incident-response/template-runbook-starter.md) — runbook starter
+- [assets/incident-response/template-incident-comm.md](assets/incident-response/template-incident-comm.md) — stakeholder communications
+- [assets/incident-response/template-incident-response.md](assets/incident-response/template-incident-response.md) — full IR playbook
 
-### GCP Cloud
-- [assets/gcp/template-gcp-ops.md](assets/gcp/template-gcp-ops.md) - GCP service operations
-- [assets/gcp/template-gcp-terraform.md](assets/gcp/template-gcp-terraform.md) - Terraform modules for GCP
+**Security / Cost**
+- [assets/security/template-security-hardening.md](assets/security/template-security-hardening.md) — hardening checklist
+- [assets/cost-governance/template-cost-governance.md](assets/cost-governance/template-cost-governance.md) — FinOps tagging and budget controls
 
-### Azure Cloud
-- [assets/azure/template-azure-ops.md](assets/azure/template-azure-ops.md) - Azure service operations
+### Shared utilities
 
-### Kubernetes
-- [assets/kubernetes/template-kubernetes-ops.md](assets/kubernetes/template-kubernetes-ops.md) - Day-to-day K8s operations
-- [assets/kubernetes/template-ha-dr.md](assets/kubernetes/template-ha-dr.md) - High availability and disaster recovery
-- [assets/kubernetes/template-platform-api.md](assets/kubernetes/template-platform-api.md) - Platform API patterns
-- [assets/kubernetes/template-k8s-deploy.yaml](assets/kubernetes/template-k8s-deploy.yaml) - Deployment manifests
-
-### Docker
-- [assets/docker/template-docker-ops.md](assets/docker/template-docker-ops.md) - Container build, security, and operations
-
-### Kafka
-- [assets/kafka/template-kafka-ops.md](assets/kafka/template-kafka-ops.md) - Kafka cluster operations and streaming
-
-### Terraform & IaC
-- [assets/terraform-iac/template-iac-terraform.md](assets/terraform-iac/template-iac-terraform.md) - Infrastructure as Code patterns
-- [assets/terraform-iac/template-module.md](assets/terraform-iac/template-module.md) - Reusable Terraform modules
-- [assets/terraform-iac/template-env-promotion.md](assets/terraform-iac/template-env-promotion.md) - Environment promotion strategies
-
-### CI/CD Pipelines
-- [assets/cicd-pipelines/template-ci-cd.md](assets/cicd-pipelines/template-ci-cd.md) - General CI/CD patterns
-- [assets/cicd-pipelines/template-github-actions.md](assets/cicd-pipelines/template-github-actions.md) - GitHub Actions workflows
-- [assets/cicd-pipelines/template-gitops.md](assets/cicd-pipelines/template-gitops.md) - GitOps deployment patterns
-- [assets/cicd-pipelines/template-release-safety.md](assets/cicd-pipelines/template-release-safety.md) - Safe release practices
-
-### Monitoring & Observability
-- [assets/monitoring-observability/template-slo.md](assets/monitoring-observability/template-slo.md) - Service level objectives
-- [assets/monitoring-observability/template-alert-rules.md](assets/monitoring-observability/template-alert-rules.md) - Alert configuration
-- [assets/monitoring-observability/template-observability-slo.md](assets/monitoring-observability/template-observability-slo.md) - Observability patterns
-- [assets/monitoring-observability/template-loadtest-perf.md](assets/monitoring-observability/template-loadtest-perf.md) - Load testing and performance
-
-### Incident Response
-- [assets/incident-response/template-postmortem.md](assets/incident-response/template-postmortem.md) - Incident postmortems
-- [assets/incident-response/template-runbook-starter.md](assets/incident-response/template-runbook-starter.md) - Runbook starter template
-- [assets/incident-response/template-incident-comm.md](assets/incident-response/template-incident-comm.md) - Incident communication
-- [assets/incident-response/template-incident-response.md](assets/incident-response/template-incident-response.md) - Incident response procedures
-
-### Security
-- [assets/security/template-security-hardening.md](assets/security/template-security-hardening.md) - Security hardening checklists
-
----
-
-## Shared Utilities
-
-Centralized patterns from [software-clean-code-standard](../software-clean-code-standard/) — extract, don't duplicate:
-
-- [config-validation.md](../software-clean-code-standard/utilities/config-validation.md) — Zod 3.24+, secrets management (Vault, 1Password, Doppler)
-- [resilience-utilities.md](../software-clean-code-standard/utilities/resilience-utilities.md) — p-retry v6, circuit breaker, OTel spans
-- [logging-utilities.md](../software-clean-code-standard/utilities/logging-utilities.md) — pino v9 + OpenTelemetry integration
-- [observability-utilities.md](../software-clean-code-standard/utilities/observability-utilities.md) — OpenTelemetry SDK, tracing, metrics
-
----
+- [../software-clean-code-standard/references/config-validation.md](../software-clean-code-standard/references/config-validation.md)
+- [../software-clean-code-standard/references/resilience-utilities.md](../software-clean-code-standard/references/resilience-utilities.md)
+- [../software-clean-code-standard/references/logging-utilities.md](../software-clean-code-standard/references/logging-utilities.md)
+- [../software-clean-code-standard/references/observability-utilities.md](../software-clean-code-standard/references/observability-utilities.md)
 
 ## Related Skills
 
-**Operations & Infrastructure:**
-- [../qa-resilience/SKILL.md](../qa-resilience/SKILL.md) — Resilience, chaos engineering, and failure handling patterns
-- [../data-sql-optimization/SKILL.md](../data-sql-optimization/SKILL.md) — Database tuning, high availability, and migrations
-- [../qa-observability/SKILL.md](../qa-observability/SKILL.md) — Monitoring, tracing, profiling, and performance optimization
-- [../qa-debugging/SKILL.md](../qa-debugging/SKILL.md) — Production debugging, log analysis, and root cause investigation
-
-**Security & Compliance:**
-- [../software-security-appsec/SKILL.md](../software-security-appsec/SKILL.md) — Application-layer security patterns and OWASP best practices
-
-**Software Development:**
-- [../software-backend/SKILL.md](../software-backend/SKILL.md) — Service-level design and integration patterns
-- [../software-architecture-design/SKILL.md](../software-architecture-design/SKILL.md) — System design, scalability, and architectural patterns
-- [../dev-api-design/SKILL.md](../dev-api-design/SKILL.md) — RESTful API design and versioning
-- [../dev-git-workflow/SKILL.md](../dev-git-workflow/SKILL.md) — Git branching strategies and CI/CD integration
-
-**Optional: AI/Automation (Related Skills):**
-- [../ai-mlops/SKILL.md](../ai-mlops/SKILL.md) — ML model deployment, monitoring, and lifecycle management
-
----
-
-## Cost Governance & Capacity Planning
-
-**[assets/cost-governance/template-cost-governance.md](assets/cost-governance/template-cost-governance.md)** — Production cost control for cloud infrastructure.
-
-### Key Sections
-
-- **Cost Governance Framework** — Tagging strategy, budget alerts, anomaly detection
-- **Cloud Cost Optimization** — Right-sizing, reserved capacity, storage tiering
-- **Kubernetes Cost Control** — Resource requests/limits, quotas, autoscaler config
-- **Capacity Planning** — Utilization baseline, growth projections, scaling triggers
-- **FinOps Practices** — Monthly review agenda, optimization workflow
-
----
-
-## Do / Avoid
-
-### Do
-
-- Tag all resources at creation time
-- Set budget alerts before hitting limits
-- Review right-sizing recommendations monthly
-- Use spot/preemptible for fault-tolerant workloads
-- Set Kubernetes resource requests on all pods
-- Enable cluster autoscaler with scale-down
-- Document capacity planning assumptions
-- Run blameless postmortems after every SEV1/2
-
-### Avoid
-
-| Anti-Pattern | Problem | Fix |
-|--------------|---------|-----|
-| No cost tags | Can't attribute spend | Enforce tags in CI/CD |
-| Dev runs 24/7 | ~70% waste | Scheduled shutdown |
-| Over-provisioned | Paying for idle capacity | Monthly right-sizing review |
-| No reservations | On-demand premium | 60-70% reserved coverage target |
-| Alert fatigue | Real issues missed | SLO-based alerting, tuned thresholds |
-| Snowflake infra | Unreproducible, undocumented | Everything in Terraform/IaC |
-| Clickops drift | Config outside IaC | Enforce GitOps reconciliation |
-| No postmortems | Same incidents repeat | Blameless postmortem for SEV1/2 |
-
----
-
-## Optional: AI/Automation (AIOps)
-
-> AI can assist with analysis and triage, but infrastructure/cost/incident decisions require human approval and an audit trail.
-
-See [references/aiops-patterns.md](references/aiops-patterns.md) for self-healing systems, automated operations, AI-assisted analysis, and bounded claims.
-
----
-
-## Operational Deep Dives
-
-See [references/operational-patterns.md](references/operational-patterns.md) for:
-- Platform engineering blueprints and GitOps reconciliation checklists
-- DevSecOps CI/CD gates, SLO/SLI playbooks, and rollout verification steps
-- Observability patterns (eBPF), incident noise reduction, and reliability drills
-
----
-
-## External Resources
-
-See [data/sources.json](data/sources.json) for curated sources organized by tech stack:
-- **Cloud Platforms**: AWS, GCP, Azure documentation and best practices
-- **Container Orchestration**: Kubernetes, Helm, Kustomize, Docker
-- **Infrastructure as Code**: Terraform, OpenTofu, Pulumi, CloudFormation, ARM templates
-- **CI/CD & GitOps**: GitHub Actions, GitLab CI, Jenkins, ArgoCD, FluxCD
-- **Streaming**: Apache Kafka, Confluent, Strimzi
-- **Monitoring**: Prometheus, Grafana, Datadog, OpenTelemetry, Jaeger, Cilium/Hubble, Tetragon
-- **SRE**: Google SRE books, incident response patterns
-- **Security**: OWASP DevSecOps, CIS Benchmarks, Trivy, Falco
-- **Tools**: kubectl, k9s, stern, Cosign, Syft, Terragrunt
-
----
-
-*Use this skill as a hub for safe, modern, and production-grade DevOps patterns. All templates and patterns are operational—no theory or book summaries.*
-
----
+- [../qa-resilience/SKILL.md](../qa-resilience/SKILL.md)
+- [../data-sql-optimization/SKILL.md](../data-sql-optimization/SKILL.md)
+- [../qa-observability/SKILL.md](../qa-observability/SKILL.md)
+- [../qa-debugging/SKILL.md](../qa-debugging/SKILL.md)
+- [../software-security-appsec/SKILL.md](../software-security-appsec/SKILL.md)
+- [../software-backend/SKILL.md](../software-backend/SKILL.md)
+- [../software-architecture-design/SKILL.md](../software-architecture-design/SKILL.md)
+- [../dev-api-design/SKILL.md](../dev-api-design/SKILL.md)
+- [../dev-git-workflow/SKILL.md](../dev-git-workflow/SKILL.md)
+- [../ai-mlops/SKILL.md](../ai-mlops/SKILL.md)
 
 ## Trend Awareness Protocol
 
-When users ask recommendation questions about DevOps, platform engineering, or cloud infrastructure, validate time-sensitive details (versions, deprecations, licensing, major releases) against primary sources.
+When users ask for current tool recommendations, verify:
 
-### Trigger Conditions
+- current supported Kubernetes and ecosystem versions
+- active IaC and GitOps tool state
+- current observability and policy-engine capabilities
+- current CI/CD and platform-tool support windows
 
-- "What's the best tool for [Kubernetes/IaC/CI-CD/monitoring]?"
-- "What should I use for [container orchestration/GitOps/observability]?"
-- "What's the latest in DevOps/platform engineering?"
-- "Current best practices for [Terraform/ArgoCD/Prometheus]?"
-- "Is [tool/approach] still relevant in 2026?"
-- "[Kubernetes] vs [alternative]?" or "[ArgoCD] vs [FluxCD]?"
-- "Best cloud provider for [use case]?"
-- "What orchestration/monitoring tool should I use?"
-
-### Minimum Verification (Preferred Order)
-
-1. Check the official docs + release notes linked in [data/sources.json](data/sources.json) for the specific tools you recommend.
-2. If internet access is available, confirm recent releases, breaking changes, and deprecations from those release pages.
-3. If internet access is not available, state that versions may have changed and focus on stable selection criteria (operational fit, ecosystem, maturity, team skills, compliance).
-
-### What to Report
-
-After searching, provide:
-
-- **Current landscape**: What tools/approaches are popular NOW (not 6 months ago)
-- **Emerging trends**: New tools, patterns, or practices gaining traction
-- **Deprecated/declining**: Tools/approaches losing relevance or support
-- **Recommendation**: Based on fresh data, not just static knowledge
-
-### Example Topics (verify with fresh search)
-
-- Kubernetes versions and ecosystem tools (1.33+, Cilium, Gateway API)
-- Infrastructure as Code (Terraform, OpenTofu, Pulumi, CDK)
-- GitOps platforms (ArgoCD, FluxCD, Codefresh)
-- Observability stacks (OpenTelemetry, Grafana stack, Datadog)
-- Platform engineering tools (Backstage, Port, Kratix)
-- CI/CD platforms (GitHub Actions, GitLab CI, Dagger)
-- Cloud-native security (Falco, Trivy, policy engines)
+Prefer official docs and release notes over blogs or rankings.
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Verify current versions, deprecations, support windows, pricing, and cloud limits before final answers.
+- Prefer official docs and release notes for named tools and platforms.
+- If web access is unavailable, mark version-sensitive guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

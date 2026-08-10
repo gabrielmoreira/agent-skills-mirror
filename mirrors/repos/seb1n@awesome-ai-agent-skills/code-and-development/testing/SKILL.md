@@ -1,6 +1,6 @@
 ---
-name: Testing
-description: Generate, execute, and analyze tests for codebases, covering unit, integration, and end-to-end testing with coverage reporting.
+name: testing
+description: Generate, execute, and analyze tests for codebases, covering unit, integration, and end-to-end testing with coverage reporting. Use when the user requests testing or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills contributors

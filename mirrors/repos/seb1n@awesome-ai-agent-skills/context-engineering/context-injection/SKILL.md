@@ -1,6 +1,6 @@
 ---
 name: context-injection
-description: "Injects contextual information into prompts using structured templates to improve AI model accuracy, grounding, and task performance."
+description: "Place trusted contextual information into prompts or agent state using explicit boundaries, provenance, and templates. Use when relevant context has already been selected and must be inserted safely; use context-retrieval to find it or context-optimization to choose and order it."
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

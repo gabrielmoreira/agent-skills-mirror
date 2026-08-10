@@ -84,6 +84,7 @@ Self-check after writing `signal_engine.py`:
 - 6-digit China A-share codes → automatically append suffix: codes starting with `600/601/603` → `.SH`, all others → `.SZ`
 - US stocks: uppercase letters + `.US`, such as `AAPL.US` (`yfinance` converts automatically)
 - Hong Kong stocks: digits + `.HK`, such as `700.HK` (`yfinance` converts automatically)
+- Canadian stocks: Yahoo ticker + `.TO` for TSX or `.V` for TSXV, such as `TD.TO` or `PNG.V`
 - Cryptocurrencies: `BTC-USDT` format (OKX spot pairs, **must use the hyphen `-`, not slash `/`**)
   - The user may write `BTC/USDT`, but `config.json` must use `"BTC-USDT"`
 
@@ -102,9 +103,10 @@ Self-check after writing `signal_engine.py`:
 | `^\d{6}\.(SZ\|SH\|BJ)$` | China A-shares | tushare | `extra_fields`: pe, pb, pe_ttm, ps_ttm, dv_ttm, total_mv, circ_mv, roe; `fundamental_fields`: income/balancesheet/cashflow/fina_indicator |
 | `^[A-Z]+\.US$` | US stocks | yfinance | - |
 | `^\d{3,5}\.HK$` | Hong Kong stocks | yfinance | - |
+| `^[A-Z0-9&.-]+\.(TO\|V)$` | Canadian stocks (TSX / TSXV) | yahoo / yfinance | - |
 | `^[A-Z]+-USDT$` | Cryptocurrency | okx | - |
 
-**`extra_fields` selection logic**: only China A-shares (`tushare`) support daily valuation fields. If the strategy needs `PE/PB/ROE` and similar daily_basic fields, specify them in `config.json.extra_fields` and `DataLoader` will retrieve them automatically. Hong Kong stocks, US stocks, and crypto do not support `extra_fields`.
+**`extra_fields` selection logic**: only China A-shares (`tushare`) support daily valuation fields. If the strategy needs `PE/PB/ROE` and similar daily_basic fields, specify them in `config.json.extra_fields` and `DataLoader` will retrieve them automatically. Hong Kong, US, Canadian stocks, and crypto do not support `extra_fields`.
 
 **`fundamental_fields` selection logic**: use this for China A-share financial statement pre-filters. The runner queries `income`, `balancesheet`, `cashflow`, and/or `fina_indicator` through the Tushare fundamental provider, then merges rows into daily bars only after their announcement/disclosure date. Output columns are prefixed by table name, for example `income_total_revenue`, `income_n_income`, `balancesheet_total_hldr_eqy_exc_min_int`, and `fina_indicator_roe`.
 

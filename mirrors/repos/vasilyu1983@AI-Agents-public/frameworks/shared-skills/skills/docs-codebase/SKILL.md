@@ -1,253 +1,237 @@
 ---
 name: docs-codebase
-description: Technical writing for READMEs, ADRs, API docs, and changelogs. Use when revising or consolidating a repo documentation folder.
+description: Writes and reorganizes docs-as-code for software repos. Use when updating READMEs, runbooks, onboarding docs, API references, or agent instruction files.
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
 # Technical Documentation
 
-Execution-ready patterns for clear, maintainable technical documentation.
+Use this skill to write, restructure, and verify software-repo documentation: READMEs, runbooks, API references, changelogs, onboarding docs, instruction files, and canonical docs libraries for humans and coding agents.
 
-**Modern best practices (January 2026)**: docs-as-code, ownership + review cadence, documentation QA gates (links/style/spelling), AI-assisted drafting + review, OpenAPI 3.2.0 where streaming schemas matter, and GEO (Generative Engine Optimization) for AI search.
+The goal is durable docs, not document sprawl. Keep one canonical doc per subject, wire in ownership and review cadence, and verify filesystem-backed claims before publishing summary docs.
 
 ## Quick Reference
 
-| Documentation Type | Template | When to Use |
-|-------------------|----------|-------------|
-| **Project README** | [readme-template.md](assets/project-management/readme-template.md) | New project, onboarding |
-| **Architecture Decision** | [adr-template.md](assets/architecture/adr-template.md) | Technical decisions |
-| **API Reference** | [api-docs-template.md](assets/api-reference/api-docs-template.md) | REST/GraphQL APIs |
-| **Changelog** | [changelog-template.md](assets/project-management/changelog-template.md) | Version history |
-| **Contributing Guide** | [contributing-template.md](assets/project-management/contributing-template.md) | Open source, teams |
+| Documentation Type | Template | Notes |
+|-------------------|----------|-------|
+| project README | [assets/project-management/readme-template.md](assets/project-management/readme-template.md) | onboarding and project navigation |
+| ADR or architecture note | [assets/architecture/adr-template.md](assets/architecture/adr-template.md) | decision record |
+| gap analysis or migration assessment | [assets/architecture/gap-analysis-template.md](assets/architecture/gap-analysis-template.md) | architecture and readiness work |
+| API reference | [assets/api-reference/api-docs-template.md](assets/api-reference/api-docs-template.md) | REST, GraphQL, gRPC, AsyncAPI |
+| changelog | [assets/project-management/changelog-template.md](assets/project-management/changelog-template.md) | release history |
+| contributing guide | [assets/project-management/contributing-template.md](assets/project-management/contributing-template.md) | team and OSS contribution |
+| docs IA or consolidation plan | [assets/docs-as-code/docs-structure-template.md](assets/docs-as-code/docs-structure-template.md) | large doc sets |
+| ownership and review model | [assets/docs-as-code/ownership-model.md](assets/docs-as-code/ownership-model.md) | runbooks and critical docs |
+| doc sync checklist | [assets/project-management/template-doc-sync-checklist.md](assets/project-management/template-doc-sync-checklist.md) | status and path integrity |
+| operational runbook | [assets/operational/runbook-template.md](assets/operational/runbook-template.md) | SLO, alerts → response, rollback, escalation, postmortems; use `{{PLACEHOLDER}}` format |
+| CI markdownlint config | [assets/ci/.markdownlint.yaml](assets/ci/.markdownlint.yaml) | drop into repo root; MD013 off, MD024 siblings_only, sensible defaults |
+| CI Vale prose config | [assets/ci/.vale.ini](assets/ci/.vale.ini) | Microsoft style base; passive voice as suggestion; per-rule overrides documented |
+| CI docs quality workflow | [assets/ci/docs-quality.yml](assets/ci/docs-quality.yml) | GitHub Actions: markdownlint + markdown-link-check + vale on docs/ PRs |
+
+## When to Use This Skill
+
+Use this skill when the main task is:
+
+- writing or refactoring canonical technical docs
+- consolidating messy `docs/` folders
+- adding or fixing README, onboarding, runbook, changelog, or API docs
+- keeping instruction files and canonical docs aligned
+- publishing AI-readable documentation with stable navigation
+
+Route elsewhere when the main task is:
+
+- auditing docs freshness or coverage rather than rewriting docs
+- deciding product requirements, specs, or PRD structure
+
+## Defaults
+
+- one subject, one canonical doc
+- update an existing canonical doc before creating a new Markdown file
+- owners and review cadence on critical docs
+- doc updates in the same delivery cycle as the feature or change
+- summary docs may not claim complete inventory unless counts and paths were re-verified from the repo
+- temporary reports are lifecycle-managed, not permanent sources of truth
+- thin platform entry files are better than duplicated giant instruction files
+
+## Markdown Creation Gate
+
+Before creating any new `*.md` file, prove all of these:
+
+- no existing canonical doc owns the subject
+- the target path has a clear doc type: README/navigation, runbook, reference, explanation, ADR/spec, report, or generated context
+- the file has an owner, review cadence, and lifecycle state if it can go stale
+- the file is linked from the right index, README, nav, or context hub
+- generated outputs are under a generated artifact root such as `docs/context/` and have a rebuild path
+
+If any item fails, update an existing doc, add a small section to a canonical page, or keep the answer in chat. Do not create per-session notes, one-off summaries, or root-level Markdown reports unless the user explicitly asks for that artifact.
+
+## Docs vs Agent Operations
+
+- `AGENTS.md` / `CLAUDE.md`: hot execution policy, exact commands, constraints, and pointers. Not a codebase catalog, report archive, or general docs folder.
+- `README.md`: human and agent navigation. Not a deep handbook.
+- `docs/`: durable product, technical, operational, API, ADR, and onboarding docs.
+- `docs/operations/` or `docs/runbooks/`: operational procedures with owners and verification steps.
+- `docs/reports/`: temporary evidence or analysis with `pending-integration`, `integrated`, or `superseded` status.
+- `docs/context/` or `context/`: generated or compiled LLM context artifacts. Prefer rebuild scripts and structured inputs; do not hand-edit generated pages as canonical truth.
+- `.archive/`: historical material excluded from normal search and context unless explicitly requested.
 
 ## Workflow
 
-1. Identify the documentation type and audience.
-2. Find existing patterns in the repo; follow local conventions.
-3. Start from the closest template in `assets/` and adapt.
-4. Add ownership + review cadence for critical docs (runbooks, onboarding, API reference).
-5. Run documentation QA (links, formatting, spelling, examples) before merging.
+1. Identify the document type and audience.
+2. Inspect the repo’s current conventions and existing canonical docs.
+3. Run the Markdown Creation Gate before adding a new file.
+4. Start from the closest template in `assets/` only when a new or replacement doc is justified.
+5. Consolidate duplicates into one canonical page per topic.
+6. Add ownership, review cadence, and publishing expectations where the doc matters operationally.
+7. Run documentation QA and integrity checks before handoff.
 
-### Docs Folder / LLM-Generated Revamp Mode (Any Repo)
-
-Use this mode when a repo's `docs/` folder contains substantial research notes for LLMs and implementation docs generated by LLMs.
-
-1. Build an inventory and classify each file by doc type (`Tutorial`, `How-to`, `Reference`, `Explanation`).
-2. Mark lifecycle metadata for non-canonical files:
-
-```yaml
-status: draft | canonical | integrated | superseded
-owner: @username
-last_verified: 2026-02-24
-integrates_into: docs/path/to/canonical-doc.md
-delete_by: 2026-03-31
-```
-
-3. For each topic/feature, keep exactly one canonical spec/reference and merge all duplicates into it.
-4. Keep only durable facts/decisions in canonical docs; move exploration detail to short linked evidence notes.
-5. Keep a compact LLM doc library with root anchors: `AGENTS.md`, `README.md`, and minimal canonical docs under `docs/` (`instructions`, `specs`, `reference-data`).
-6. Delete integrated drafts on schedule; avoid `.archive/` mirrors in `docs/` unless retention is mandatory.
-
-## Decision Tree
+## ASCII Flow
 
 ```text
-User needs: [Documentation Task]
-    ├─ Repo has a docs folder with many LLM-generated docs? → **Revamp Mode** (inventory → canonicalize → trim)
-    ├─ New project? → **README.md**
-    ├─ Technical decision? → **ADR**
-    ├─ Building API? → **OpenAPI spec** + api-docs-template
-    ├─ New version? → **CHANGELOG.md**
-    ├─ Team collaboration? → **CONTRIBUTING.md**
-    ├─ Documenting code? → **Docstrings** (JSDoc, Python)
-    └─ Building docs site? → **MkDocs** (Python) or **Docusaurus** (JS)
+Docs request
+  |
+  v
+Classify document type + audience
+  |-- README / onboarding ------> project-management templates
+  |-- runbook / operations -----> operational templates
+  |-- API reference ------------> api-reference templates
+  |-- ADR / architecture -------> architecture templates
+  |-- docs IA / cleanup --------> docs-as-code templates
+  |
+  v
+Inspect existing canonical docs
+  |
+  v
+Markdown Creation Gate
+  |-- existing owner found -----> update canonical doc
+  |-- no owner, justified ------> create linked doc with owner + cadence
+  |-- temporary evidence -------> docs/reports with lifecycle state
+  |
+  v
+Verify paths, links, counts, commands, and status claims
+  |
+  v
+Publish through README / index / context hub
 ```
 
-## Cross-Platform AI Documentation
+## Revamp Mode for Large or Messy Docs Folders
 
-### AGENTS.md Standard
+Use this mode when a repo has too many overlapping or LLM-generated docs:
 
-Prefer `AGENTS.md` as the cross-tool source of truth. If a specific tool requires a different filename (example: Claude Code uses `CLAUDE.md`), keep it aligned via a symlink only when you want identical content across tools.
+1. inventory every file and classify it by doc type
+2. pick the canonical doc for each subject
+3. move durable facts into the canonical doc
+4. mark temporary reports as `pending-integration`, `integrated`, or `superseded`
+5. remove integrated drafts instead of preserving duplicate mirrors
+6. re-check links, counts, moved paths, and canonical references before publishing a summary
 
-```bash
-# If `CLAUDE.md` does not exist and you want identical content:
-ln -s AGENTS.md CLAUDE.md
-```
+## AI-Readable Documentation Rules
 
-## Do / Avoid
+- keep `README.md` as the navigation anchor
+- keep `AGENTS.md` and `CLAUDE.md` thin when possible, with shared guidance factored into canonical docs
+- keep LLM operational files as routers to canonical docs, not mirrors of those docs
+- publish stable URLs, stable headings, and `last_verified` markers for volatile pages
+- prefer concise task-oriented docs over prose-heavy essays
+- treat stale docs as execution bugs for humans and agents alike
+- keep generated context hubs rebuildable from source artifacts rather than manually patched markdown
 
-### Do
+## Judgment Calls: Docs Rot, Agent Consumers, and Ownership That Sticks
 
-- Assign owners and review cadences to critical docs
-- Add CI checks for links, style, and staleness
-- Prefer small, task-oriented docs over big wiki pages
-- Use Keep a Changelog format with semantic versioning
+Rot detection beyond "old timestamp":
 
-### Avoid
+- A doc edited yesterday can still be wrong. Correlate the doc's git history against the git history of the code path it describes; a code file that moved on without a matching doc commit is a stronger rot signal than age alone.
+- Treat "the doc still reads fine" as a false negative test. Verify referenced commands, flags, paths, and dependency versions actually run or exist — prose can read smoothly while describing a system that no longer exists.
+- A doc that names people ("ask Sarah"), specific tickets, or an org chart is a rot magnet. Move time-bound references into buddy notes or dated reports, not canonical docs.
+- Treat a deprecated-but-undeleted doc as more dangerous than a missing one: readers and agents trust what they find, and a wrong doc actively misleads where a gap only leaves a question.
 
-- Docs without owners (guaranteed to rot)
-- Stale runbooks (dangerous during incidents)
-- Copy/paste docs that drift from code
+Agents and humans read the same doc differently; serve both:
 
-## LLM-First Documentation Patterns
+- Agents execute instructions literally and immediately — a stale command in `AGENTS.md` or `CLAUDE.md` gets run, not questioned, the way a human skimming a wiki might self-correct. Hold instruction files to a higher freshness bar than narrative docs.
+- Agents need stable anchors (headings, IDs, paths) they can cite and re-fetch; humans tolerate prose that moves around. Do not casually reshuffle a canonical doc's headings once tooling or agent memory links into it.
+- An agent cannot tell an example from a prescription unless the doc says so. Label illustrative code, counts, and inventories explicitly, or an unlabeled example becomes ground truth for the next agent that reads it.
+- Humans need the "why" (rationale, trade-offs, links to ADRs); agents mostly need the "what" and the exact command. Keep both, but do not let one crowd out the other in the same file — narrative belongs in `docs/`, execution policy belongs in the thin instruction file.
 
-When documentation is consumed primarily by AI agents (AGENTS.md, CLAUDE.md, canonical docs for coding assistants), stale docs become a distinct category of bug.
+Ownership models fail in predictable ways:
 
-### Stale Docs = Agent Bugs
+- A named team with no allocated review time is ownership theater; the doc drifts regardless of who is listed as DRI.
+- Ownership tied only to a calendar cadence misses the trigger that actually causes rot: the underlying system changed. Pair calendar review with an event trigger (schema change, deploy, incident) for anything used under pressure, such as runbooks or on-call docs.
+- When a team is renamed, merged, or a person leaves, transfer ownership explicitly and date the transfer. An orphaned doc with a listed-but-gone owner is worse than an admittedly unowned doc — it signals false confidence.
 
-An agent reading stale docs will:
-- Attempt to fix problems that are already solved (e.g., "9 open gating gaps" that were all sealed)
-- Use wrong model names (e.g., "Claude Haiku" when code uses `gpt-4o`)
-- Apply wrong limits (e.g., "fully gated" when free tier actually gets 3/week)
-- Re-implement features that already exist
+## Integrity and Anti-Fluff Gates
 
-**Rule:** Treat doc updates as part of the feature PR, not as a follow-up task.
+Before merging:
 
-### Report Integration Lifecycle
+- verify file paths, moved-path references, and template paths exist
+- verify counts and `complete list` claims against the filesystem
+- mark examples as examples instead of presenting them as exhaustive truth
+- remove duplicate narrative, vague future-idea prose, and unsupported claims
+- keep status in one canonical source and link to it from secondary docs
+- reject new Markdown files that lack a placement, owner, lifecycle, and index link
 
-Temporary investigation docs (QA reports, research exports, audit findings) must not become permanent false sources of truth.
+## Navigation
 
-Every dated report file must carry lifecycle metadata:
+**Core references**
 
-```yaml
----
-Status: pending-integration | integrated | superseded
-Integrates-into: docs/product/pricing-feature-matrix.md
-Owner: @username
-Delete-by: 2026-03-15
----
-```
+- [references/readme-best-practices.md](references/readme-best-practices.md)
+- [references/adr-writing-guide.md](references/adr-writing-guide.md)
+- [references/api-documentation-standards.md](references/api-documentation-standards.md)
+- [references/runbook-writing-guide.md](references/runbook-writing-guide.md)
+- [references/docs-as-code-setup.md](references/docs-as-code-setup.md)
+- [references/documentation-testing.md](references/documentation-testing.md)
 
-Workflow:
-1. Create report with `Status: pending-integration`
-2. Extract durable findings into canonical docs
-3. Mark report `Status: integrated` with date
-4. Delete after `Delete-by` date (git history preserves everything)
+**Craft and style**
 
-### Living Docs: Audit Tables with Status Columns
+- [references/writing-best-practices.md](references/writing-best-practices.md) — load when drafting new docs; covers audience-first framing, Diátaxis doc types, and prose style
+- [references/markdown-style-guide.md](references/markdown-style-guide.md) — load when enforcing Markdown conventions; ATX headings, tables, code blocks, common linter pitfalls
+- [references/code-commenting-guide.md](references/code-commenting-guide.md) — load when improving inline comments or docstrings; covers JSDoc, TSDoc, Google-style Python, Go godoc, and anti-patterns
+- [references/changelog-best-practices.md](references/changelog-best-practices.md) — load when writing or restructuring changelogs; Keep-a-Changelog format and semantic versioning categories
+- [references/contributing-guide-standards.md](references/contributing-guide-standards.md) — load when creating or updating CONTRIBUTING.md; structure, dev-setup, workflow, and OSS contribution norms
+- [references/onboarding-documentation.md](references/onboarding-documentation.md) — load when writing developer onboarding docs; Day 1→Week 4 structure, quickstart templates, anti-patterns, and effectiveness measures
 
-Instead of deleting audit findings, add a Status column:
+**Advanced and AI-aware**
 
-| Gap | Status | Sealed In |
-|-----|--------|-----------|
-| Chart aspects visible to free | Sealed | PR #26 |
-| Dreams unlimited for free | Sealed | PR #26 |
-| Ask Cosmos no rate limit | Open | — |
+- [references/ai-documentation-tools.md](references/ai-documentation-tools.md)
+- [references/backlog-status-sync-pattern.md](references/backlog-status-sync-pattern.md)
+- [references/code-graph-documentation-patterns.md](references/code-graph-documentation-patterns.md)
+- [references/documentation-metrics.md](references/documentation-metrics.md)
+- [references/production-gotchas-guide.md](references/production-gotchas-guide.md)
+- [data/sources.json](data/sources.json)
 
-This preserves the audit trail while showing current state. Agents can quickly scan for `Open` items.
+## Boundary: docs-codebase vs docs-ai-prd
 
-### Two-Pass Consolidation
+- `docs-codebase` owns technical documentation quality, structure, and canonicalization
+- `docs-ai-prd` owns requirements, specs, acceptance criteria, and what context an implementation agent needs
 
-When consolidating planning docs into canonical docs:
-
-1. **First pass:** Follow the plan — extract content, delete source files, fix cross-references
-2. **Second pass:** Audit deleted content against canonical destinations
-   - `git show` deleted files to recover any unique data missed in planning
-   - Compare code to docs for drift (e.g., feature marked "Planned" but code shows it's implemented)
-
-Even thorough consolidation plans miss unique data that only lived in one source doc.
-
-### Canonical Set Rule (No Doc Sprawl)
-
-- One subject/feature should have one canonical doc.
-- Derived docs must link to canonical docs instead of restating them.
-- If a derived doc is fully integrated, mark it `integrated` and remove it by `delete_by` (default: delete, not archive).
-- If two canonical docs overlap, merge and leave a redirect note in the removed file path.
-
-### Canonical LLM Library Rule
-
-- Root files are mandatory anchors: `AGENTS.md` for agent behavior/instructions and `README.md` for project navigation.
-- The `docs/` folder should expose only a small canonical set for LLM consumption: current instruction sets, current specs, and durable reference data.
-- Research logs, exploratory prompts, and intermediate drafts are temporary working files, not library entries.
-- Keep discovery breadcrumbs as links from canonical docs; do not duplicate full research dumps.
-
-### Anti-Fluff Rewrite Gate
-
-Before merging LLM-generated docs, require:
-- explicit audience and decision/use-case for each section
-- measurable statements instead of vague claims
-- source links + dates for external facts
-- removal of duplicated paragraphs and "future ideas" not tied to a tracked decision
-
-### Staleness Disclaimers Over Wrong Numbers
-
-For externally-sourced data (competitor pricing, API rate limits, third-party capabilities):
-
-```markdown
-> Prices as of Feb 2026 — verify current pricing at [source].
-```
-
-A staleness disclaimer is safer than a potentially wrong number. Wrong numbers in agent-consumed docs cause incorrect implementation decisions.
-
-### Decision Log Collision Prevention
-
-When adding entries to a decision log (e.g., `### D039 — Feature Name`):
-
-```bash
-# Always check the latest entry number before adding
-grep -o '### D[0-9]*' docs/decision-log.md | tail -1
-```
-
-Numbering collisions happen when two decisions are logged in rapid succession without checking.
-
-## Backlog Status Sync Pattern (Mandatory)
-
-When implementation status changes (for example backlog milestones completed), sync canonical docs in the same delivery cycle to prevent stale guidance for humans and agents.
-
-### Sync Rules
-
-1. Update one canonical status source first (feature matrix / roadmap / decision log).
-2. Propagate only by reference links in secondary docs; avoid duplicate status prose.
-3. Add concrete completion dates and owner for status changes.
-4. If temporary reports are integrated, mark lifecycle state (`integrated` or `superseded`) and `delete_by`.
-
-### Release Gate
-
-A feature is not doc-complete until:
-- canonical status doc updated,
-- dependent docs checked for conflicting claims,
-- docs sync checklist completed.
-
-## Resources
-
-| Resource | Purpose |
-|----------|---------|
-| [references/readme-best-practices.md](references/readme-best-practices.md) | README structure, badges |
-| [references/adr-writing-guide.md](references/adr-writing-guide.md) | ADR lifecycle, examples |
-| [references/changelog-best-practices.md](references/changelog-best-practices.md) | Keep a Changelog format |
-| [references/api-documentation-standards.md](references/api-documentation-standards.md) | REST, GraphQL, gRPC docs |
-| [references/code-commenting-guide.md](references/code-commenting-guide.md) | Docstrings, inline comments |
-| [references/contributing-guide-standards.md](references/contributing-guide-standards.md) | CONTRIBUTING.md structure |
-| [references/docs-as-code-setup.md](references/docs-as-code-setup.md) | MkDocs, Docusaurus, CI/CD |
-| [references/writing-best-practices.md](references/writing-best-practices.md) | Clear communication |
-| [references/markdown-style-guide.md](references/markdown-style-guide.md) | Markdown formatting |
-| [references/documentation-testing.md](references/documentation-testing.md) | Vale, markdownlint, cspell |
-| [references/ai-documentation-tools.md](references/ai-documentation-tools.md) | Mintlify, DocuWriter, GEO |
-| [references/production-gotchas-guide.md](references/production-gotchas-guide.md) | Documenting platform issues |
-| [references/documentation-metrics.md](references/documentation-metrics.md) | Doc quality, freshness, coverage scoring |
-| [references/onboarding-documentation.md](references/onboarding-documentation.md) | Developer ramp-up guides, Day 1-Week 4 |
-| [references/runbook-writing-guide.md](references/runbook-writing-guide.md) | Operational runbooks, incident response |
-| [references/backlog-status-sync-pattern.md](references/backlog-status-sync-pattern.md) | Canonical backlog status sync workflow for multi-doc repos |
-
-## Templates
-
-| Category | Templates |
-|----------|-----------|
-| Architecture | [adr-template.md](assets/architecture/adr-template.md) |
-| API Reference | [api-docs-template.md](assets/api-reference/api-docs-template.md) |
-| Project Management | [readme-template.md](assets/project-management/readme-template.md), [changelog-template.md](assets/project-management/changelog-template.md), [contributing-template.md](assets/project-management/contributing-template.md) |
-| Documentation Lifecycle | [template-doc-sync-checklist.md](assets/project-management/template-doc-sync-checklist.md) |
-| Docs-as-Code | [docs-structure-template.md](assets/docs-as-code/docs-structure-template.md), [ownership-model.md](assets/docs-as-code/ownership-model.md) |
+If you are writing or cleaning docs, stay here. If you are deciding feature requirements or context strategy, use `docs-ai-prd`.
 
 ## Related Skills
 
-| Skill | Purpose |
-|-------|---------|
-| [qa-docs-coverage](../qa-docs-coverage/SKILL.md) | Documentation gap audit |
-| [dev-api-design](../dev-api-design/SKILL.md) | REST API patterns |
-| [dev-git-workflow](../dev-git-workflow/SKILL.md) | Conventional Commits |
-| [docs-ai-prd](../docs-ai-prd/SKILL.md) | PRD templates |
+- [../qa-docs-coverage/SKILL.md](../qa-docs-coverage/SKILL.md)
+- [../dev-api-design/SKILL.md](../dev-api-design/SKILL.md)
+- [../dev-context-engineering/SKILL.md](../dev-context-engineering/SKILL.md)
+- [../dev-git-workflow/SKILL.md](../dev-git-workflow/SKILL.md)
+- [../docs-ai-prd/SKILL.md](../docs-ai-prd/SKILL.md)
+
+## Verification Gate
+
+Before delivering output, verify:
+
+- every local file path and template path exists
+- any counts or inventory claims were re-checked against the filesystem
+- commands and code blocks either match repo reality or are marked as examples
+- the output matches the intended doc type and calls out any follow-up review or publishing step
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Verify volatile external facts, platform behavior, and version-sensitive guidance before final advice.
+- Prefer primary docs over summaries.
+- If live verification is unavailable, mark external claims as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

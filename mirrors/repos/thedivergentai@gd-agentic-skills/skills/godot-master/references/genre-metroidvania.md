@@ -3,16 +3,6 @@ name: godot-genre-metroidvania
 description: "Expert blueprint for Metroidvanias including ability-gated exploration (locks/keys), interconnected world design (backtracking with shortcuts), persistent state tracking (collectibles, boss defeats), room transitions (seamless loading), map systems (grid-based revelation), and ability versatility (combat + traversal). Use for exploration platformers or action-adventure games. Trigger keywords: metroidvania, ability_gating, interconnected_world, backtracking, map_system, persistent_state, room_transition, soft_locks."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Metroidvania
-
-Expert blueprint for Metroidvanias balancing exploration, progression, and backtracking rewards.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### World Design & Exploration
@@ -160,7 +150,6 @@ func _swap_room(packed: PackedScene, spawn_id: StringName) -> void:
 - [progression_manager.gd](../scripts/genre_metroidvania_progression_manager.gd)
 - [fast_travel_system.gd](../scripts/genre_metroidvania_fast_travel_system.gd)
 
-
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
@@ -182,24 +171,24 @@ func _swap_room(packed: PackedScene, spawn_id: StringName) -> void:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — autoloads, scene layout, and project settings before stacking room streaming and global progression.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — tight platformer locomotion is the substrate under ability-gated traversal (dash, wall slide, double jump).
-- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — layered TileMap/TileMapLayer authorship for gameplay collision, landmarks, and minimap fog grids.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — singleton ownership patterns for ability flags and world persistence that rooms must not duplicate.
+- [godot-project-foundations](project-foundations.md) — autoloads, scene layout, and project settings before stacking room streaming and global progression.
+- [godot-characterbody-2d](characterbody-2d.md) — tight platformer locomotion is the substrate under ability-gated traversal (dash, wall slide, double jump).
+- [godot-tilemap-mastery](tilemap-mastery.md) — layered TileMap/TileMapLayer authorship for gameplay collision, landmarks, and minimap fog grids.
+- [godot-autoload-architecture](autoload-architecture.md) — singleton ownership patterns for ability flags and world persistence that rooms must not duplicate.
 
 #### Complements
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — threaded load queues and deferred room switches that keep interconnected maps hitch-free.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — durable schemas for collectibles, boss flags, and visited cells across long exploration sessions.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — room limits, RemoteTransform follow, and transition polish beyond basic Camera2D bounds.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — unlockable traversal/combat abilities that gates and state machines query as the “keys.”
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — hierarchical player states for dash/wall-slide/double-jump without nested `if/elif` sprawl.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — layers, Area2D doors/hazards, and direct space queries for wall detection and soft-lock-safe valves.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — collectible/key item tracking that feeds map rewards and ability acquisition UI.
+- [godot-scene-management](scene-management.md) — threaded load queues and deferred room switches that keep interconnected maps hitch-free.
+- [godot-save-load-systems](save-load-systems.md) — durable schemas for collectibles, boss flags, and visited cells across long exploration sessions.
+- [godot-camera-systems](camera-systems.md) — room limits, RemoteTransform follow, and transition polish beyond basic Camera2D bounds.
+- [godot-ability-system](ability-system.md) — unlockable traversal/combat abilities that gates and state machines query as the “keys.”
+- [godot-state-machine-advanced](state-machine-advanced.md) — hierarchical player states for dash/wall-slide/double-jump without nested `if/elif` sprawl.
+- [godot-2d-physics](2d-physics.md) — layers, Area2D doors/hazards, and direct space queries for wall detection and soft-lock-safe valves.
+- [godot-inventory-system](inventory-system.md) — collectible/key item tracking that feeds map rewards and ability acquisition UI.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate ability unlock order, backtrack length, and soft-lock risk once gates and reward density are tunable.
-- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — pure movement-feel patterns that Metroidvania traversal builds on when stripping ability gating.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — ability_unlocked / gate_opened / map_revealed buses so HUD and rooms observe progression without owning it.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate ability unlock order, backtrack length, and soft-lock risk once gates and reward density are tunable.
+- [godot-genre-platformer](genre-platformer.md) — pure movement-feel patterns that Metroidvania traversal builds on when stripping ability gating.
+- [godot-signal-architecture](signal-architecture.md) — ability_unlocked / gate_opened / map_revealed buses so HUD and rooms observe progression without owning it.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

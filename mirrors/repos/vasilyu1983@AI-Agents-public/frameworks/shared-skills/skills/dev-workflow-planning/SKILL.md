@@ -1,433 +1,281 @@
 ---
 name: dev-workflow-planning
-description: Structured dev workflows via /brainstorm, /write-plan, /execute-plan. Use when breaking down complex projects into systematic steps.
+description: "Plans complex development workflows for Claude Code, Codex, and assistants. Use when breaking features, refactors, migrations, or parallel work into verified steps."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# Workflow Planning Skill - Quick Reference
+# Dev Workflow Planning
 
-This skill enables structured, systematic development workflows. The assistant should apply these patterns when users need to break down complex projects, create implementation plans, or execute multi-step development tasks with clear checkpoints.
-
-**Inspired by**: Obra Superpowers patterns for structured agent workflows.
-
----
+Use this skill to turn vague or risky engineering work into a bounded execution plan with scope, sequencing, checkpoints, verification, and handoff. It owns planning depth, execution shape, and multi-agent guardrails, not system design, PRD authoring, or branch-policy decisions.
 
 ## Quick Reference
 
-| Command | Purpose | When to Use |
-|---------|---------|-------------|
-| `/brainstorm` | Generate ideas and approaches | Starting new features, exploring solutions |
-| `/write-plan` | Create detailed implementation plan | Before coding, after requirements clarification |
-| `/execute-plan` | Implement plan step-by-step | When plan is approved, ready to code |
-| `/checkpoint` | Review progress, adjust plan | Mid-implementation, after major milestones |
-| `/summarize` | Capture learnings, document decisions | End of session, before context reset |
+| Task | Use |
+|------|-----|
+| Plan structures and artifacts | [references/planning-templates.md](references/planning-templates.md), [assets/template-work-item-ticket.md](assets/template-work-item-ticket.md), [assets/template-milestone-checkpoint.md](assets/template-milestone-checkpoint.md), [assets/template-dor-dod.md](assets/template-dor-dod.md) |
+| Platform-specific workflow mapping | [references/platform-workflows.md](references/platform-workflows.md), [../ai-agents/references/agent-delivery-methods.md](../ai-agents/references/agent-delivery-methods.md) |
+| Guardrails for parallelism, sessions, and recovery | [references/operational-checklists.md](references/operational-checklists.md), [references/session-patterns.md](references/session-patterns.md), [references/session-scope-budgeting.md](references/session-scope-budgeting.md), [../ai-agents/references/context-rotation-and-state.md](../ai-agents/references/context-rotation-and-state.md) |
+| Spec-driven tooling landscape (GitHub Spec Kit, Kiro, BMAD) | [references/spec-driven-dev-landscape.md](references/spec-driven-dev-landscape.md) |
+| Test-context planning | [../qa-agent-testing/references/coding-agent-regression-testing.md](../qa-agent-testing/references/coding-agent-regression-testing.md) |
+| Source map | [data/sources.json](data/sources.json) |
 
-## When to Use This Skill
+## When to Use
 
-The assistant should invoke this skill when a user requests:
+- Break a feature, migration, refactor, or risky bug fix into verified steps.
+- Decide whether work should run sequentially or in bounded parallel waves.
+- Turn a requirement or RFC into a plan contract with success criteria and rollback thinking.
+- Keep long-running agent work inside durable artifacts and scope limits.
 
-- Break down a complex feature into steps
-- Create an implementation plan
-- Brainstorm approaches to a problem
-- Execute a multi-step development task
-- Track progress on a project
-- Review and adjust mid-implementation
+## Route Elsewhere
 
----
+- System design, service boundaries, or ADRs: use [software-architecture-design](../software-architecture-design/SKILL.md).
+- PRD or RFC authoring before planning: use [docs-ai-prd](../docs-ai-prd/SKILL.md).
+- Repo maturity, context layers, or instruction rollout: use [dev-context-engineering](../dev-context-engineering/SKILL.md).
+- Branching and PR workflow policy: use [dev-git-workflow](../dev-git-workflow/SKILL.md).
+- Test-strategy ownership or debugging an active failure: use [qa-testing-strategy](../qa-testing-strategy/SKILL.md) or [qa-debugging](../qa-debugging/SKILL.md).
 
-## The Three-Phase Workflow
+## Defaults
 
-### Phase 1: Brainstorm
+- Clarify the outcome and success criteria before decomposing work.
+- Use the smallest durable planning artifact that fits the task.
+- Match planning depth to actual risk and scope.
+- Prefer sequential execution when interfaces are moving or files overlap.
+- Use fresh-context workers and explicit file ownership when running parallel waves.
+- Include targeted test context for affected code instead of generic "write tests first" instructions.
 
-**Purpose**: Explore the problem space and generate potential solutions.
+## Workflow
 
-```text
-/brainstorm [topic or problem]
+1. Confirm the goal, in-scope boundary, success criteria, and missing inputs.
+2. Choose the planning depth: trivial, lightweight, full plan contract, or spec-driven.
+3. Lock the plan contract: goal, scope, dependencies, execution order, verification, and rollback.
+4. Choose execution shape: sequential or dependency-based waves.
+5. Run bounded batches with verification between waves and checkpoint state in durable artifacts.
+6. End with a handoff that states what is done, what is not, what was checked, and the next bounded action.
 
-OUTPUT:
-1. Problem Understanding
-   - What are we solving?
-   - Who is affected?
-   - What are the constraints?
-
-2. Potential Approaches (3-5)
-   - Approach A: [description, pros, cons]
-   - Approach B: [description, pros, cons]
-   - Approach C: [description, pros, cons]
-
-3. Questions to Resolve
-   - [List of unknowns needing clarification]
-
-4. Recommended Approach
-   - [Selected approach with justification]
-```
-
-### Phase 2: Write Plan
-
-**Purpose**: Create a detailed, actionable implementation plan.
+## ASCII Flow
 
 ```text
-/write-plan [feature or task]
-
-OUTPUT:
-## Implementation Plan: [Feature Name]
-
-### Goal
-[Single sentence describing the outcome]
-
-### Success Criteria
-- [ ] Criterion 1
-- [ ] Criterion 2
-- [ ] Criterion 3
-
-### Steps (with estimates)
-
-#### Step 1: [Name] (~Xh)
-- What: [specific actions]
-- Files: [files to modify/create]
-- Dependencies: [what must exist first]
-- Verification: [how to confirm done]
-
-### Risks & Mitigations
-| Risk | Likelihood | Impact | Mitigation |
-|------|-----------|--------|------------|
-| Risk 1 | Medium | High | Plan B if... |
-
-### Open Questions
-- [Questions to resolve before starting]
+development planning request
+  -> confirm goal, scope, success criteria, and missing inputs
+  -> choose planning depth: trivial, lightweight, full contract, or spec-driven
+  -> define dependencies, ownership, sequence, verification, and rollback
+  -> choose execution shape
+     +-- sequential -> overlapping files or moving interfaces
+     +-- waves -> independent file ownership and stable interfaces
+  -> run batches with validation between waves
+  -> checkpoint decisions in durable artifacts
+  -> hand off done, not done, checked, and next action
 ```
 
-#### Dependency Graph for Parallel Execution
+## Core Decisions
 
-When a plan will be executed with multiple subagents, each task **must** declare its dependencies explicitly. This enables the orchestrator to determine which tasks can run in parallel.
+### Planning Depth
 
-```text
-### Task Dependency Graph
+| Complexity | Depth | Artifact | Trigger |
+|---|---|---|---|
+| Single-file, obvious outcome | trivial | none or one-liner | direct execution |
+| Multi-step, clear scope | low | goal + steps + verification | 2-5 files, no shared interfaces |
+| Multi-file, overlapping interfaces | medium | full plan contract with file ownership | 3+ files, schema or API changes |
+| Multi-agent, long-horizon, or spec-required | high | spec → design → tasks → implementation | production-touching, unknown dependencies |
 
-| Task ID | Name | depends_on | Files | Agent Scope |
-|---------|------|------------|-------|-------------|
-| T1 | Setup database schema | [] | db/schema.sql | db-engineer |
-| T2 | Create API routes | [T1] | src/routes/*.ts | backend-dev |
-| T3 | Build auth middleware | [T1] | src/middleware/auth.ts | backend-dev |
-| T4 | Frontend components | [] | src/components/*.tsx | frontend-dev |
-| T5 | Integration tests | [T2, T3, T4] | tests/integration/*.test.ts | qa-agent |
-```
+### When to Spec vs Prototype
 
-**Rules for dependency graphs:**
-- Every task declares `depends_on: []` with explicit task IDs (empty array = no blockers).
-- Tasks with no dependencies can start immediately (in parallel).
-- No circular dependencies — the graph must be a DAG (directed acyclic graph).
-- Each task should specify its file ownership to prevent parallel conflicts.
+| Choose spec-driven | Choose prototype-first |
+|---|---|
+| Spec required before agent execution (Kiro, Spec Kit workflow) | Throwaway scaffold, demo, or unknown-unknowns spike |
+| Multi-agent handoffs with acceptance criteria | Single-session, one dev, no handoffs |
+| Requirements must survive context resets | Goal will change within the same session |
+| AI agent downstream will re-parse the contract | Human drives all decisions interactively |
 
-#### Parallel Execution Strategies
+Over-planning burns time; under-planning creates rework.
 
-**Swarm Waves (Accuracy-First)** — Launch one subagent per unblocked task, in dependency-respecting waves. Wait for each wave to complete before launching the next. Best for production code and complex interdependencies.
+**Judgment call:** the deciding question is not "how big is this task" but "is the missing information discoverable by more upfront analysis, or only by executing and observing?" If a spike, prototype, or a single read-only exploration pass would resolve the open question faster than writing a fuller plan contract, do that first and treat the plan as provisional until it returns. Choosing planning depth from task size alone, while ignoring where the actual uncertainty lives, produces plans that are either padded with guesses on the unknowable parts or confidently wrong on the one thing that mattered.
 
-**Super Swarms (Speed-First)** — Launch as many subagents as possible at once, regardless of dependencies. Best for prototypes and greenfield scaffolding. Expect merge conflicts.
+### Estimation in the AI-Coding Era
 
-See [references/planning-templates.md](references/planning-templates.md) for the full swarm-ready plan template.
+AI coding agents shift the bottleneck from typing speed to decision quality, review bandwidth, and verification cost. Estimating in story points or hours calibrated to human typing speed will misprice the work:
 
-### Phase 3: Execute Plan
+- Re-anchor the estimate to review and verification burden, not generation time. A 200-line AI-generated diff across three files with a stable interface can take minutes to produce and hours to review safely — the review time is the real constrained resource, not the generation time.
+- Spec-writing and clarification time now dominates for ambiguous work. An underspecified prompt costs more in rework cycles than the original round of AI-assisted execution saved; budget explicit time for the interview/clarification phase (see [Pre-loop setup phase](#pre-loop-setup-phase-both-variants)) instead of folding it into "implementation."
+- Do not let apparent AI generation speed compress the estimate for irreversible or high-blast-radius work (schema migrations, auth, billing, public APIs). Generation is fast; the safe-rollout and verification path is not, and estimating on generation speed alone under-scopes the plan.
+- A plausible-looking AI-generated diff is not evidence of correctness. Budget the same verification rigor for AI-generated code as for human-written code of the same risk class — a clean diff creates false confidence, not a discount on review time.
+- Treat pre-AI-agent historical velocity or throughput baselines as unreliable comparators for estimation. Recalibrate against the team's own current throughput on AI-assisted work rather than carrying forward last year's per-story averages.
 
-**Purpose**: Implement the plan systematically with checkpoints.
+### Plan Mode (Claude Code)
 
-```text
-/execute-plan [plan reference]
+- Enter with `/plan` (added Jan 2026), `Shift+Tab` twice, or `--permission-mode plan` at startup.
+- Plan mode is read-only: Claude reads and reasons but cannot write files or run side-effecting commands.
+- `/ultraplan` hands the plan off to a cloud session that runs multiple agents in parallel and returns a structured plan for review — it is a research-preview feature gated to paid plans, not a "slower but deeper" mode. Verify current requirements (subscription tier, CLI version) before recommending it, since research-preview gating changes fast.
+- For changes touching 3+ files, schema, or security-sensitive code: always enter plan mode first.
+- Plan mode's real saving is avoiding trial-and-error rework tokens (wrong-direction edits, failed builds, redundant re-reads). Expect a meaningful reduction on complex, ambiguous tasks — but do not quote a specific percentage as fact unless you have checked it against a current first-party source; blog-post figures in this space vary widely and are not authoritative.
 
-EXECUTION PATTERN:
-1. Load the plan
-2. For each step:
-   a. Announce: "Starting Step X: [name]"
-   b. Execute actions
-   c. Verify completion
-   d. Report: "Step X complete. [brief summary]"
-3. After completion:
-   a. Run all verification criteria
-   b. Report final status
-```
+### Execution Model
 
----
+- sequential by default when risk or overlap is high
+- wave-based parallelism only when tasks are truly independent
+- explicit `depends_on`, shared-interface definitions, and one validation pass between waves
+- stop parallelism once interface churn or file overlap appears
 
-## Worktree-First Delivery
+### Context and Session Discipline
 
-For production coding sessions, wrap `/execute-plan` with a delivery guardrail:
+- each worker should get fresh context, not the full conversation history
+- persist plan, progress, and decisions in files or stable task artifacts
+- keep one bounded outcome per session where possible
+- if repeated retries or re-reads appear, rescope instead of brute-forcing
 
-1. Create one isolated worktree per feature.
-2. Execute only the approved plan scope in that worktree.
-3. Run repo-defined quality gate(s) before PR (example: `npm run test:analytics-gate`).
-4. Open one focused PR per feature branch.
+### Scope-Creep Detection
 
-```bash
-./scripts/git/feature-workflow.sh start <feature-slug>
-cd .worktrees/<feature-slug>
-# implement plan steps
-../../scripts/git/feature-workflow.sh gate
-../../scripts/git/feature-workflow.sh pr --title "feat: <summary>"
-```
+Scope creep is easier to catch early than to unwind late. Check for these signals at every checkpoint:
 
----
+- The task now touches files or systems not named in the original plan contract, and no one decided that on purpose.
+- New acceptance criteria appear mid-implementation that were not in the original success criteria ("while we're in here, let's also...").
+- A "quick fix" step balloons into a refactor because the agent (or a human) noticed adjacent bad code.
+- The verification plan keeps growing to cover things the original scope never promised.
+- Estimated remaining work keeps resetting to "almost done" across multiple checkpoints without net progress.
 
-## Agent Session Management
+Response: do not silently absorb the addition into the current session. Name it explicitly, then either (a) re-scope the plan contract and tell the human what changed and why, or (b) split it into a follow-up milestone and keep the current session's original success criteria intact. Absorbing scope without renegotiating the contract is how a bounded task becomes an unbounded one.
 
-**Key rules from production experience (Feb 2026):**
+### Output Format for Plan Documents
 
-- **One feature per session.** Context exhaustion causes rework. A sprawling session (38 messages, 3+ continuations) produced multiple errors; a focused session (5 messages) shipped clean.
-- **Write a plan before touching 3+ files.** Sessions with pre-written numbered plans had near-zero rework.
-- **Verify SDK types before executing plan steps.** Documentation may describe APIs that no longer match actual TypeScript definitions.
+Plans default to markdown, but multi-step plans intended for human review often outgrow markdown's usefulness. Choose deliberately:
 
-See [references/session-patterns.md](references/session-patterns.md) for the full production evidence table and checkpoint protocol for long sessions.
+- **Markdown** — default for plans an agent will re-ingest, for short plans (≤100 lines), and for plans living in version control where clean diffs matter.
+- **HTML** — preferred when the plan is >100 lines, needs visual structure (data flow diagrams, mockups, side-by-side option comparisons, annotated code snippets), or will be shared via link to non-technical stakeholders. Author reports humans rarely read past ~100 lines of markdown; HTML invites reading.
 
----
+Cost: HTML plan generation is **2–4× slower** than markdown and produces noisy version-control diffs. The tradeoff is worth it for read-once human-facing plans; not worth it for agent-consumed context.
 
-## Command Preflight Protocol
+For exploration plans (multi-option, mockup-heavy), HTML's grid layout with per-option tradeoff labels outperforms a linear markdown bullet list. For multi-step implementation plans handed off to an agent, keep the *acceptance criteria* in a parseable table or code block even inside an HTML artifact — the implementation agent needs binary, extractable success conditions.
 
-Before broad edits, tests, or reviews — run a 60-second preflight:
-1. `pwd` / `git branch --show-current` / `ls -la`
-2. `test -e <path>` to verify target paths before heavy commands
-3. `npx <tool> --help` to validate flags before first use
-4. Quote paths containing `[]`, `*`, `?`, or spaces
+For interactive plan artifacts (drag-drop prioritization, form-based config), always end with a *"copy as markdown / JSON / prompt"* export button so the human's UI manipulation closes back into pasteable text. See [`../docs-ai-prd/SKILL.md#output-format-html-vs-markdown-for-spec-artifacts`](../docs-ai-prd/SKILL.md) for the full format-selection table.
 
-See [references/operational-checklists.md](references/operational-checklists.md) for the full git/branch safety preflight, E2E/server preflight, shell safety gate, and SDK type verification.
+Source: [Thariq, *Using Claude Code: The Unreasonable Effectiveness of HTML*](https://x.com/trq212/status/2052809885763747935) (Claude Code team, 2026-05-08).
 
----
+### Test Context and Verification
 
-## Structured Patterns
+- include `source -> tests` context for the affected area
+- use the best available approximation if a full dependency graph is unavailable
+- require exact verification commands or review evidence in the handoff
+- if spec or contract validation is unavailable, say so instead of claiming it passed
 
-### Hypothesis-Driven Development
+## Long-Horizon Agent Journaling
 
-```text
-PATTERN: Test assumptions before committing
+For agent runs spanning hours or days (goal-mode loops, scheduled Routines, multi-session refactors), in-memory compaction is not sufficient — the agent loses coherence on the timescale of long-running work. Force state to the filesystem using role-separated markdown files. Two patterns exist, optimized for different domains. Pick by domain, do not blend them.
 
-Before implementing:
-1. State hypothesis: "If we [action], then [expected outcome]"
-2. Define experiment: "To test this, we will [minimal test]"
-3. Execute experiment
-4. Evaluate: "Hypothesis confirmed/rejected because [evidence]"
-5. Proceed or pivot based on result
-```
+### Variant selector
 
-### Incremental Implementation
+| Your work is… | Use this variant | Why |
+|---|---|---|
+| **Exploratory** — running experiments, searching architectures, trying many options, learning from dead ends | [Hayduk 3-file](#variant-1-hayduk-3-file-exploratory) | Curated `EXPERIMENTS.md` separates re-readable history from append-only scratchpad; agent reasons about past attempts |
+| **Bounded product building** — known target, ambiguity must be resolved upfront, then execute coherently | [Watts 4-file](#variant-2-watts-4-file-bounded-product) | `STANDARDS.md` and `PROGRESS.md` keep multi-agent execution aligned across context resets |
 
-Build in verifiable increments: smallest testable unit → implement and verify → expand scope → verify at each expansion → integrate and verify whole.
+The patterns are **not contradictory** — they target different shapes of long-horizon work. If a run is exploratory in early stages and execution-heavy later, you can transition from the Hayduk variant to the Watts variant; do not run both simultaneously.
 
-See [references/planning-templates.md](references/planning-templates.md) for an authentication feature example with 5 increments.
+### Variant 1 — Hayduk 3-file (exploratory)
 
-### Progress Tracking
+| File | Role | Lifecycle |
+|------|------|-----------|
+| `PLAN.md` | High-level plan + intended direction. Seedable with human-provided initial ideas. | Read often; rewritten when direction shifts |
+| `EXPERIMENTS.md` | Curated table of attempts: title, what was tried, what happened, why it did or didn't work. The *re-readable* history. | Append-only with periodic curation; entries earn their place |
+| `EXPERIMENT_NOTES.md` | Chronological scratchpad: raw thoughts as the agent runs. The *audit trail*. | Append-only, never curated |
 
-```text
-PATTERN: Maintain visible progress
+Key invariant: `EXPERIMENTS.md` is for re-reading (by both agent and human), `EXPERIMENT_NOTES.md` is for write-only logging. Conflating them is the failure mode.
 
-[X] Step 1: Create database schema
-[X] Step 2: Implement API endpoints
-[IN PROGRESS] Step 3: Add frontend form
-[ ] Step 4: Write tests
+Source: Chris Hayduk (OpenAI), [*Using Codex Goals Effectively*](https://x.com/ChrisHayduk/status/2053807198870880743) (2026-05-11), reporting on multi-day Codex `/goal` runs for ML architecture search.
 
-Current: Step 3 of 4 (75% complete)
-Blockers: None
-Next: Complete form validation
-```
+### Variant 2 — Watts 4-file (bounded product)
 
-### Work in Progress (WIP) Limits
+| File | Role | Lifecycle |
+|------|------|-----------|
+| `GOAL.md` | Top-level objective written after a heavy interview/clarification phase. The thing being built, not the path to it. | Stable; rewritten only when scope genuinely shifts |
+| `STANDARDS.md` | Non-negotiable code-quality standards, conventions, and acceptance criteria the agent and its subagents must respect | Mostly stable; updated when standards evolve |
+| `IMPLEMENT.md` | Workflow instructions: how to delegate (implementer + reviewer subagents), how to verify work, when to spawn parallel teams, what passes a review | Stable; updated when the orchestration recipe changes |
+| `PROGRESS.md` | Continuously updated log of decisions made, work completed, milestones passed | Append-only; new agents read this first to inherit context |
 
-Limit concurrent work: individual (2-3 tasks), team stories (team size + 1), in-progress column (3-5 items), code review (2-3 PRs). If limits are never reached, lower them. If constantly blocked, investigate the bottleneck.
+New agents (or new context windows after compaction) read all four files before acting, inheriting both the *what* (GOAL + STANDARDS) and the *how* (IMPLEMENT + PROGRESS). The split prevents orchestrator-vs-subagent drift across long runs.
 
-See [references/planning-templates.md](references/planning-templates.md) for the full WIP limits reference and setting guidelines.
+Source: Jarrod Watts, [*You Need More Than a Ralph Loop*](https://x.com/jarrodwatts/status/2052372045829382430) (2026-05-07), packaged as the [long-running-agent-skill](https://github.com/jarrodwatts/long-running-agent-skill) on GitHub (includes git-worktrees parallelization for subagent teams).
 
----
+### Pre-loop setup phase (both variants)
 
-## Milestone Checkpointing and Scope Budgeting
+Watts's critical addition: invest heavily **before** the loop in an interview phase that surfaces 20–50 clarifying questions. Ambiguity in the prompt compounds across iterations — each loop's output becomes the next loop's input, so one underspecified decision direction-shifts everything downstream.
 
-For multi-step execution, constrain scope and checkpoint progress at milestone boundaries.
+The interview phase is brainstorming/clarification work, not journaling. Use the `superpowers:brainstorming` skill (invoke via the Skill tool; it is a plugin skill, not a file in this repo) or an equivalent `/interview`-style command to drive question-led discovery before any long-horizon run. The questions force *the human* to make decisions instead of leaving them implicit; the resulting `GOAL.md` or `PLAN.md` is dramatically tighter than what a single-prompt seed produces.
 
-- Define explicit session scope at start: `1-2` deliverables only.
-- If a new request expands beyond scope, create a follow-up milestone.
+#### Interview mechanic: one question at a time with an attached guess
 
-### Milestone Checkpoint Contract
+**Scope note:** this mechanic targets underspecified *ad hoc requests from a human* — the setup phase above, or any planning intake where the goal is still fuzzy. It does not apply to agent-to-agent work inside an already-scoped skill or task packet (fresh-context workers, wave-based delegation, orchestrator-to-subagent handoff) — those contexts already carry a bounded contract and should not re-run an interview loop against another agent. For batched clarification across a multi-member team, see [`../agents-subagents/references/clarification-questions-protocol.md`](../agents-subagents/references/clarification-questions-protocol.md) instead — that protocol collects up to ~3 questions per member and dedupes them into one relay to the human; it is a different mechanic (batched, multi-agent) from the one below (sequential, single-agent-to-human).
 
-At each milestone, record:
-- completed outputs (files/features/tests)
-- verification results (commands + pass/fail)
-- unresolved blockers
-- next bounded action
+When the request is underspecified, do not open with an open-ended clarifying-question list. Instead:
 
-### Stop Conditions
+1. State a one-sentence hypothesis about what the human wants, with an honest numeric confidence score (e.g. "My guess: you want X because Y — confidence 40%").
+2. Ask exactly **one** question at a time, and attach your own guessed answer to it. The human corrects a guess faster than they compose an answer from scratch.
+3. Wait for the human's reaction before asking the next question. Do not queue multiple questions in one turn.
+4. Watch for "want vs. should-want" answers — buzzword-driven responses like "scalable" or "modern" describe an aspiration, not a constraint. Probe past them: ask what breaks today without it, or what "scalable" needs to hold up to, concretely.
+5. Stop only when the stop condition is checkable, not a vibe: **can you predict the human's reaction to the next three questions you would ask?** If yes, stop asking and restate. If no, keep asking one at a time.
+6. Close with a restate — Outcome / User / Why now / Success / Constraint / Out of scope — and require an explicit **"yes"** before proceeding. "Sounds good," a thumbs-up, or silence is not consent. "Whatever you think is best" is explicitly **not** consent either — treat it as a deflected question and ask a narrower, more concrete version of the same question instead of proceeding on it.
 
-Stop and rescope when any occur:
-- repeated nonzero failures without new evidence
-- context churn (re-reading same files repeatedly)
-- more than 3 independent domains active in one session
+This is a sharper alternative to batching every clarifying question into one message: an attached guess gives the human something to react to instead of a blank field to fill in, and the falsifiable stop test (predicting the next three reactions) replaces "I think I've asked enough" with a checkable condition.
 
-See [references/session-scope-budgeting.md](references/session-scope-budgeting.md) for full scope budgeting model and enforcement rules.
+Source: Addy Osmani, [`interview-me` skill](https://github.com/addyosmani/agent-skills/blob/7676817c12a1317454ae3898a0c5c1eacf5dd3d5/skills/interview-me/SKILL.md), commit `7676817`, MIT license. Extracted 2026-08-09.
 
----
+### When to apply (either variant)
 
-## Session Management
+- Goal-mode or autonomous loops with no human in the inner cycle
+- Any agent run expected to exceed one compaction window
+- Multi-agent runs where context resets across orchestrator-vs-subagent boundaries
 
-### Starting a Session
+### When to skip
 
-```text
-Session initialized.
-- Project: [name]
-- Goal: [today's objective]
-- Context loaded: [files, previous decisions]
-- Plan status: [steps remaining]
+- Short, single-session tasks — the planning artifacts in `assets/` already cover these
+- Tasks with a single deterministic verification step — no history to preserve
+- Bare prototype scripts where ambiguity costs little
 
-Ready to continue from: [last checkpoint]
-```
+### Related
 
-### Ending a Session
+- Goal-mode loop semantics that drove these patterns: [`../ai-coding-agents-tasks/SKILL.md#goal-mode-loops-codex-goal-and-analogues-2026-05`](../ai-coding-agents-tasks/SKILL.md)
+- Orchestrator + implementer + reviewer triad for multi-agent execution: [`../agents-swarm-orchestration/SKILL.md`](../agents-swarm-orchestration/SKILL.md)
+- Pre-loop interview-driven clarification: `superpowers:brainstorming` skill
+- Batched multi-agent clarifying questions (different mechanic — sequential single-agent-to-human vs. batched multi-member): [`../agents-subagents/references/clarification-questions-protocol.md`](../agents-subagents/references/clarification-questions-protocol.md)
 
-```text
-/summarize
+## Known Traps
 
-OUTPUT:
-## Session Summary
+- Writing a plan that decomposes work but never states the decision boundary, success criteria, or explicit stop condition.
+- Running parallel workers on overlapping files or unstable interfaces because the task list looked independent on paper.
+- Treating "needs tests" as a sufficient verification plan when the task actually needs concrete commands, datasets, or manual review checkpoints.
+- Persisting too little state, which forces later sessions to reconstruct intent and status from chat instead of durable artifacts.
+- Keeping the original scope after repeated retries and confusion instead of shrinking the outcome to something still verifiable.
 
-### Completed
-- [List of completed items]
+## Common Anti-Patterns
 
-### In Progress
-- [Current state of incomplete work]
-
-### Decisions Made
-- [Key decisions with rationale]
-
-### Next Session
-- [ ] [First task for next time]
-
-### Context to Preserve
-[Critical information for continuity]
-```
-
----
-
-## Decision Framework
-
-```text
-When faced with choices:
-
-1. State the decision clearly
-2. List options (2-4)
-3. For each option: Pros / Cons / Effort / Risk
-4. Recommendation with justification
-5. Reversibility assessment
-
-Example:
-| Option | Pros | Cons | Effort | Risk |
-|--------|------|------|--------|------|
-| JWT | Stateless, scalable | Token management | 2 days | Low |
-| Sessions | Simple, secure | Server state | 1 day | Low |
-| OAuth only | No passwords | External dependency | 3 days | Medium |
-
-Recommendation: Sessions for MVP, plan JWT migration for scale.
-```
-
----
-
-## Integration with Other Skills
-
-### With Testing Skill
-
-```text
-/write-plan with TDD:
-
-Step 1: Write failing test
-Step 2: Implement minimal code
-Step 3: Verify test passes
-Step 4: Refactor
-Step 5: Add edge case tests
-```
-
-### With Architecture Skill
-
-```text
-/brainstorm system design:
-
-1. Requirements clarification
-2. Component identification
-3. Interface definition
-4. Data flow mapping
-5. Implementation plan
-```
-
----
-
-## Definition of Ready / Done (DoR/DoD)
-
-**[assets/template-dor-dod.md](assets/template-dor-dod.md)** - Checklists for work readiness and completion.
-
-**[assets/template-work-item-ticket.md](assets/template-work-item-ticket.md)** - Ticket template with DoR/DoD and testable acceptance criteria.
-
-Key sections: Definition of Ready / Done checklists, Acceptance Criteria templates (Gherkin), Estimation Guidelines (story point scale 1-21+), Planning Levels (Roadmap → Sprint → Task), Cross-Functional RACI.
-
----
-
-## Do / Avoid
-
-### GOOD: Do
-
-- Check DoR before pulling work into sprint
-- Verify DoD before marking complete
-- Size stories using reference scale
-- Slice large stories (>8 points)
-- Document acceptance criteria upfront
-- Include risk buffer in estimates
-
-### BAD: Avoid
-
-- Starting work without clear acceptance criteria
-- Declaring "done" without testing
-- Working on stories too big to finish in sprint
-- Skipping code review "to save time"
-- Deploying without staging verification
-
----
-
-## Anti-Patterns
-
-| Anti-Pattern | Problem | Fix |
-|--------------|---------|-----|
-| **No DoR** | Unclear requirements discovered mid-sprint | Gate sprint entry with DoR |
-| **Soft DoD** | "Done" means different things | Written DoD checklist |
-| **Mega-stories** | Never finish, hard to track | Slice to <8 points |
-| **Missing AC** | Built wrong thing | Gherkin format AC |
-| **No ownership** | Work falls through cracks | RACI for every epic |
-| **Hope-based estimates** | Always late | Use reference scale + buffer |
-
----
-
-## AI/Automation
-
-> **Note**: AI can assist but should not replace human judgment on priorities and acceptance.
-
-- **Generate acceptance criteria** - Draft from story description (needs review)
-- **Suggest story slicing** - Based on complexity analysis
-- **Dependency mapping** - Identify blocking relationships
-- **AI-augmented planning** - Use LLMs to draft plans, but validate assumptions
-
-AI-generated criteria and estimates require human calibration before committing to them.
-
----
+- Producing full-spec planning overhead for low-risk work that should have been executed directly.
+- Splitting work into many tiny tasks without ownership, dependency, or rollback logic.
+- Handing workers the whole conversation history instead of a bounded task packet and explicit acceptance criteria.
+- Claiming a wave is complete before the planned validation gate actually runs.
+- Treating the final handoff as narrative summary instead of a precise statement of what changed, what was checked, and what remains.
 
 ## Navigation
 
-### Resources
+> **Gate before invoking any foundation below:** Each foundation has a `When to Apply` / `When to Skip` section. If your task matches a skip-condition, route to the foundation it names instead — don't pull in primitives the task doesn't need.
 
-- [references/planning-templates.md](references/planning-templates.md) - Plan templates, incremental implementation, WIP limits
-- [references/session-patterns.md](references/session-patterns.md) - Multi-session management, production lessons (Feb 2026)
-- [references/session-scope-budgeting.md](references/session-scope-budgeting.md) - Scope budgeting rules and stop/rescope criteria
-- [references/operational-checklists.md](references/operational-checklists.md) - Preflight protocols, verification, failure ledger, subagent limits
-- [references/flow-metrics.md](references/flow-metrics.md) - DORA metrics, WIP limits, flow optimization
-- [references/agile-ceremony-patterns.md](references/agile-ceremony-patterns.md) - Sprint ceremonies, retrospectives, facilitation patterns
-- [references/technical-debt-management.md](references/technical-debt-management.md) - Debt classification, prioritization, remediation workflows
-- [references/remote-async-workflows.md](references/remote-async-workflows.md) - Async-first patterns, distributed team coordination
-- [assets/template-dor-dod.md](assets/template-dor-dod.md) - DoR/DoD checklists, estimation, cross-functional coordination
-- [assets/template-work-item-ticket.md](assets/template-work-item-ticket.md) - Work item ticket template
-- [assets/template-milestone-checkpoint.md](assets/template-milestone-checkpoint.md) - Milestone checkpoint record
-- [data/sources.json](data/sources.json) - Workflow methodology references
+- Planning and platform references: [references/planning-templates.md](references/planning-templates.md), [references/platform-workflows.md](references/platform-workflows.md), [../ai-agents/references/agent-delivery-methods.md](../ai-agents/references/agent-delivery-methods.md)
+- Parallelism and recovery: [references/operational-checklists.md](references/operational-checklists.md), [references/session-patterns.md](references/session-patterns.md), [references/session-scope-budgeting.md](references/session-scope-budgeting.md), [references/flow-metrics.md](references/flow-metrics.md), [../ai-agents/references/context-rotation-and-state.md](../ai-agents/references/context-rotation-and-state.md)
+- Supporting workflow references: [references/agile-ceremony-patterns.md](references/agile-ceremony-patterns.md), [references/remote-async-workflows.md](references/remote-async-workflows.md), [references/technical-debt-management.md](references/technical-debt-management.md), [../qa-agent-testing/references/coding-agent-regression-testing.md](../qa-agent-testing/references/coding-agent-regression-testing.md), [data/sources.json](data/sources.json)
+- Spec-driven tooling and workflow: [references/spec-driven-dev-landscape.md](references/spec-driven-dev-landscape.md)
+- Foundations: [../foundations-theory-of-constraints/SKILL.md](../foundations-theory-of-constraints/SKILL.md) — bottleneck identification, WIP limits, and T/CU throughput accounting underlying flow-metrics.md and technical-debt-management.md
+- Templates: [assets/template-dor-dod.md](assets/template-dor-dod.md), [assets/template-work-item-ticket.md](assets/template-work-item-ticket.md), [assets/template-milestone-checkpoint.md](assets/template-milestone-checkpoint.md)
 
-### Related Skills
+## Fact-Checking
 
-- [../software-architecture-design/SKILL.md](../software-architecture-design/SKILL.md) - System design planning
-- [../docs-ai-prd/SKILL.md](../docs-ai-prd/SKILL.md) - Requirements to plan conversion
-- [../qa-testing-strategy/SKILL.md](../qa-testing-strategy/SKILL.md) - TDD workflow integration
-- [../qa-debugging/SKILL.md](../qa-debugging/SKILL.md) - Systematic debugging plans
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify platform-specific workflow claims, current planning surfaces, and product limits before presenting them as current behavior.
+- Prefer primary documentation for Claude Code, Codex, GitHub, and related workflow tooling.
+- If live verification is unavailable, mark platform-specific guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

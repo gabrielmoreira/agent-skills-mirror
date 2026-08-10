@@ -1,0 +1,21 @@
+schema_version: 1
+distillation_id: sample-concept-book-v1
+relations:
+  - relation_id: rel-sample-001
+    subject: Bounded task method
+    predicate: requires
+    object: Required target context
+    qualifiers:
+      - Within the reviewed source-neutral scope
+    claim_ids:
+      - cl-neutral-principle-001
+    evidence_ids:
+      - ev-sample-001
+    relation_status: inferred
+    status: candidate
+    human_decision:
+      decision: pending
+      reviewer_type: null
+      reviewer: null
+      decided_at: null
+      rationale: ""

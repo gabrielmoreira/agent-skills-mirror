@@ -1,6 +1,6 @@
 ---
 name: knowledge-base-article-writing
-description: Write clear, searchable help center articles and FAQ entries based on support data, product documentation, and common customer questions.
+description: Write clear, searchable help center articles and FAQ entries based on support data, product documentation, and common customer questions. Use when the user requests knowledge base article writing or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community

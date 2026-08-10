@@ -3,16 +3,6 @@ name: godot-tweening
 description: "Expert blueprint for programmatic animation using Tween for smooth property transitions, UI effects, camera movements, and juice. Covers easing functions, parallel tweens, chaining, and lifecycle management. Use when implementing UI animations OR procedural movement. Keywords Tween, easing, interpolation, EASE_IN_OUT, TRANS_CUBIC, tween_property, tween_callback."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Tweening
-
-Tween property animation, easing curves, chaining, and lifecycle management define smooth programmatic motion.
-
 ## Decision Tree — Tween vs AnimationPlayer
 
 | Situation | Choose |
@@ -131,7 +121,6 @@ Parallel block → `chain()` → interval/callback → exit. Prefer [nested_subt
 ### Bezier-Path-Tween
 Tween `PathFollow2D.progress_ratio` instead of hand-rolled Bezier math.
 
-
 ## Deep recipes (on demand)
 
 > LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
@@ -161,23 +150,23 @@ Tween `PathFollow2D.progress_ratio` instead of hand-rolled Bezier math.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Node ownership, and resource basics before create_tween/bind_node lifecycle patterns.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed callables, lambdas, and await/signal idioms used in tween_method and finished handlers.
+- [godot-project-foundations](project-foundations.md) — scene tree, Node ownership, and resource basics before create_tween/bind_node lifecycle patterns.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed callables, lambdas, and await/signal idioms used in tween_method and finished handlers.
 
 #### Complements
-- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — sprite/skeleton motion that often coexists with Tween juice and needs shared kill/lifecycle discipline.
-- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — authored clips for complex timelines; Tweens stay for runtime/procedural UI and one-off juice.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Control size/pivot/layout context for popup scale-fade and staggered inventory entry tweens.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — finished/callback wiring without dangling connections when Tweens are killed and recreated.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — camera follow, shake offsets, and look targets driven by procedural Tweens.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — JuiceConfig-style Resources that store duration/trans/ease outside gameplay scripts.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — burst timing and one-shot VFX that should start from tween_callback steps, not parallel ad-hoc timers.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — shader params animated via tween_method / set when property paths are not enough.
+- [godot-2d-animation](2d-animation.md) — sprite/skeleton motion that often coexists with Tween juice and needs shared kill/lifecycle discipline.
+- [godot-animation-player](animation-player.md) — authored clips for complex timelines; Tweens stay for runtime/procedural UI and one-off juice.
+- [godot-ui-containers](ui-containers.md) — Control size/pivot/layout context for popup scale-fade and staggered inventory entry tweens.
+- [godot-signal-architecture](signal-architecture.md) — finished/callback wiring without dangling connections when Tweens are killed and recreated.
+- [godot-camera-systems](camera-systems.md) — camera follow, shake offsets, and look targets driven by procedural Tweens.
+- [godot-resource-data-patterns](resource-data-patterns.md) — JuiceConfig-style Resources that store duration/trans/ease outside gameplay scripts.
+- [godot-particles](particles.md) — burst timing and one-shot VFX that should start from tween_callback steps, not parallel ad-hoc timers.
+- [godot-shaders-basics](shaders-basics.md) — shader params animated via tween_method / set when property paths are not enough.
 
 #### Downstream / consumers
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — slot/item entry, drag feedback, and equip juice built on staggered and interruptible Tweens.
-- [godot-genre-card-game](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-card-game/SKILL.md) — hand arcs, draw/discard flights, and resolve polish that depend on Tween chaining.
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — theme-driven hover/focus motion that still needs safe Tween interruption under the same Control.
+- [godot-inventory-system](inventory-system.md) — slot/item entry, drag feedback, and equip juice built on staggered and interruptible Tweens.
+- [godot-genre-card-game](genre-card-game.md) — hand arcs, draw/discard flights, and resolve polish that depend on Tween chaining.
+- [godot-ui-theming](ui-theming.md) — theme-driven hover/focus motion that still needs safe Tween interruption under the same Control.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

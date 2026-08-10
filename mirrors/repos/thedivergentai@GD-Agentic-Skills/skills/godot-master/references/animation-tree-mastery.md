@@ -22,11 +22,6 @@ Expert guidance for Godot's advanced animation blending and state machines.
 
 ---
 
-## Godot 4.7: AnimationTree
-
-- `LookAtModifier3D.relative` default is now **false** (was true).
-- Blend space `add_blend_point` accepts optional **name** parameter for labeled points.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
@@ -136,28 +131,28 @@ Do not paste full StateMachine/BlendSpace editor walkthroughs — author graphs 
 - [AnimationNodeBlendTree](https://docs.godotengine.org/en/stable/classes/class_animationnodeblendtree.html) — Layered Add2/Blend2/OneShot graphs for upper-body aim, combat overlays, and filter masks.
 - [AnimationNodeOneShot](https://docs.godotengine.org/en/stable/classes/class_animationnodeoneshot.html) — FIRE/ABORT request enum for recoil, hitreact, and other high-priority non-looping overlays.
 - [AnimationNodeTimeScale](https://docs.godotengine.org/en/stable/classes/class_animationnodetimescale.html) — Per-subtree playback speed for haste, stun, and bullet-time without mutating Engine.time_scale.
-- [LookAtModifier3D](https://docs.godotengine.org/en/stable/classes/class_lookatmodifier3d.html) — Skeleton look-at driven beside the tree; note Godot 4.7 `relative` default change called out above.
+- [LookAtModifier3D](https://docs.godotengine.org/en/stable/classes/class_lookatmodifier3d.html) — Skeleton look-at driven beside the tree; see [migration-notes.md](animation-tree-mastery-migration-notes.md) for `relative` default change.
 
 ### Related Skills
 
 #### Prerequisites
-- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — AnimationTree owns playback of clips authored on AnimationPlayer; track layout and ownership must be correct before blending.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Stick/keyboard vectors and actions that feed `blend_position`, advance conditions, and travel targets each physics frame.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Safe wiring for method-track dispatchers and animation-finished style signals without lifecycle leaks.
+- [godot-animation-player](animation-player.md) — AnimationTree owns playback of clips authored on AnimationPlayer; track layout and ownership must be correct before blending.
+- [godot-input-handling](input-handling.md) — Stick/keyboard vectors and actions that feed `blend_position`, advance conditions, and travel targets each physics frame.
+- [godot-signal-architecture](signal-architecture.md) — Safe wiring for method-track dispatchers and animation-finished style signals without lifecycle leaks.
 
 #### Complements
-- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — Sheet/cutout and 2D locomotion presentation that still uses AnimationTree BlendSpaces or simple travel graphs.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Gameplay FSMs that should own intent while AnimationTree owns presentation travel and blends.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — CharacterBody3D / move_and_slide integration for AnimationTree root-motion extraction.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Fixed-timestep 2D locomotion inputs that drive StateMachine travel and BlendSpace positions.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Tweening TimeScale or blend amounts when bullet-time and combat mix ramps should be interruptible.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hitreact/combo layers that consume OneShot requests, upper-body Add2 masks, and nested combat sub-machines.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Profiling and logging discipline when validating travel paths, blend values, and off-screen `active` culling.
+- [godot-2d-animation](2d-animation.md) — Sheet/cutout and 2D locomotion presentation that still uses AnimationTree BlendSpaces or simple travel graphs.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Gameplay FSMs that should own intent while AnimationTree owns presentation travel and blends.
+- [godot-physics-3d](physics-3d.md) — CharacterBody3D / move_and_slide integration for AnimationTree root-motion extraction.
+- [godot-characterbody-2d](characterbody-2d.md) — Fixed-timestep 2D locomotion inputs that drive StateMachine travel and BlendSpace positions.
+- [godot-tweening](tweening.md) — Tweening TimeScale or blend amounts when bullet-time and combat mix ramps should be interruptible.
+- [godot-combat-system](combat-system.md) — Hitreact/combo layers that consume OneShot requests, upper-body Add2 masks, and nested combat sub-machines.
+- [godot-debugging-profiling](debugging-profiling.md) — Profiling and logging discipline when validating travel paths, blend values, and off-screen `active` culling.
 
 #### Downstream / consumers
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Locomotion + combat stance trees and ability cast OneShots built on these graph patterns.
-- [godot-genre-fighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md) — Frame-sensitive combo auto-advance and masked upper-body attacks depend on transition and BlendTree discipline here.
-- [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — Aim/reload overlays, recoil OneShots, and look-at modifiers layered over locomotion BlendSpaces.
+- [godot-genre-action-rpg](genre-action-rpg.md) — Locomotion + combat stance trees and ability cast OneShots built on these graph patterns.
+- [godot-genre-fighting](genre-fighting.md) — Frame-sensitive combo auto-advance and masked upper-body attacks depend on transition and BlendTree discipline here.
+- [godot-genre-shooter-fps](genre-shooter-fps.md) — Aim/reload overlays, recoil OneShots, and look-at modifiers layered over locomotion BlendSpaces.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

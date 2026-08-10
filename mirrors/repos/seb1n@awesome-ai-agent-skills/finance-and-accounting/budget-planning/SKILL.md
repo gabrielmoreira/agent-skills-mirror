@@ -1,6 +1,6 @@
 ---
 name: budget-planning
-description: Create and manage budgets with variance analysis and departmental allocation
+description: Create and manage budgets with variance analysis and departmental allocation. Use when the user requests budget planning or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community
@@ -100,6 +100,13 @@ Provide historical spending data, department structure, and any top-level target
 - Distinguish between controllable variances (spending decisions) and uncontrollable ones (vendor price increases, FX changes) in reporting.
 - Lock budget baselines at the start of each period. Track changes through formal revision requests rather than silently editing the original budget.
 - Tie budget targets to measurable outcomes — Marketing's $75K ad budget should be linked to a pipeline generation target, not just a spending ceiling.
+
+## Safety Boundaries
+
+- Treat the output as analytical support, not individualized financial, tax, investment, or accounting advice.
+- Preserve source data and expose assumptions, formulas, units, and reconciliation checks so a reviewer can reproduce the result.
+- Do not initiate payments, transactions, journal entries, filings, or account changes without explicit user authorization.
+- Require a qualified professional to review material decisions, regulated filings, or conclusions based on incomplete data.
 
 ## Edge Cases
 

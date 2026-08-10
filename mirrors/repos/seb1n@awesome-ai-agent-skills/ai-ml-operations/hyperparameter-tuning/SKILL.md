@@ -1,6 +1,6 @@
 ---
 name: hyperparameter-tuning
-description: Optimize machine learning model hyperparameters using grid search, random search, Bayesian optimization, and Hyperband to maximize model performance within a compute budget.
+description: Optimize machine learning model hyperparameters using grid search, random search, Bayesian optimization, and Hyperband to maximize model performance within a compute budget. Use when the user requests hyperparameter tuning or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills

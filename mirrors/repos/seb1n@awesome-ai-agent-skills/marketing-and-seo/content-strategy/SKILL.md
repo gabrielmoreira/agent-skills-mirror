@@ -1,6 +1,6 @@
 ---
 name: content-strategy
-description: Develop and execute a content strategy that maps content to audience needs, funnel stages, and business goals through editorial planning and performance analysis.
+description: Develop and execute a content strategy that maps content to audience needs, funnel stages, and business goals through editorial planning and performance analysis. Use when the user requests content strategy or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

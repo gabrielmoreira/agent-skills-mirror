@@ -1,6 +1,6 @@
 ---
 name: license-analysis
-description: Analyze open-source license compatibility, obligations, and compliance risks across project dependencies.
+description: Analyze open-source license compatibility, obligations, and compliance risks across project dependencies. Use when the user requests license analysis or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community
@@ -112,6 +112,13 @@ Analyze the licenses in my Node.js project. Here's my package.json dependencies.
 - Automate license scanning in CI/CD using tools like FOSSA, Snyk, WhiteSource, or license-checker to catch new issues as dependencies are added.
 - Keep a pre-approved license allowlist (e.g., MIT, BSD, Apache-2.0, ISC) and require manual review for anything outside the list.
 - Document all license obligations in a THIRD-PARTY-NOTICES file shipped with your distribution.
+
+## Safety Boundaries
+
+- Treat the output as informational drafting or issue spotting, not legal advice.
+- Identify the governing jurisdiction and relevant effective date; verify changing requirements against current primary sources.
+- Do not claim that language is compliant, enforceable, or complete. Flag uncertainty and recommend qualified counsel for material decisions.
+- Do not file, publish, accept, sign, or send legal terms without the user reviewing and explicitly authorizing that action.
 
 ## Edge Cases
 

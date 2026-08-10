@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rohitg00/ai-engineering-from-scratch` — 26 default patterns, 0 foll
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 16 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,17 +60,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/check-understanding/SKILL.md`](.claude/skills/check-understanding/SKILL.md) |
-| 2 | ✓ | [`.claude/skills/course-guide/SKILL.md`](.claude/skills/course-guide/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/find-your-level/SKILL.md`](.claude/skills/find-your-level/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/learn/SKILL.md`](.claude/skills/learn/SKILL.md) |
-| 5 | ✓ | [`.claude/skills/start-learning/SKILL.md`](.claude/skills/start-learning/SKILL.md) |
-| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 7 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
-| 8 | ✓ | [`skills/check-understanding/SKILL.md`](skills/check-understanding/SKILL.md) |
-| 9 | ✓ | [`skills/course-guide/SKILL.md`](skills/course-guide/SKILL.md) |
-| 10 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
-| 11 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
-| 12 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
+| 2 | ✓ | [`.claude/skills/claude-certification/SKILL.md`](.claude/skills/claude-certification/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/course-guide/SKILL.md`](.claude/skills/course-guide/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/find-your-level/SKILL.md`](.claude/skills/find-your-level/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/learn/SKILL.md`](.claude/skills/learn/SKILL.md) |
+| 6 | ✓ | [`.claude/skills/start-learning/SKILL.md`](.claude/skills/start-learning/SKILL.md) |
+| 7 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 8 | ✓ | [`certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md`](certifications/claude/lessons/19-claude-code-memory-rules-skills-and-ci/outputs/migration-review-skill/SKILL.md) |
+| 9 | ✓ | [`phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md`](phases/14-agent-engineering/42-agent-workbench-capstone/outputs/agent-workbench-pack/AGENTS.md) |
+| 10 | ✓ | [`skills/check-understanding/SKILL.md`](skills/check-understanding/SKILL.md) |
+| 11 | ✓ | [`skills/claude-certification/agents/openai.yaml`](skills/claude-certification/agents/openai.yaml) |
+| 12 | ✓ | [`skills/claude-certification/SKILL.md`](skills/claude-certification/SKILL.md) |
+| 13 | ✓ | [`skills/course-guide/SKILL.md`](skills/course-guide/SKILL.md) |
+| 14 | ✓ | [`skills/find-your-level/SKILL.md`](skills/find-your-level/SKILL.md) |
+| 15 | ✓ | [`skills/learn/SKILL.md`](skills/learn/SKILL.md) |
+| 16 | ✓ | [`skills/start-learning/SKILL.md`](skills/start-learning/SKILL.md) |
 
 ---
 

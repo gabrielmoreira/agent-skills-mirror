@@ -1,6 +1,6 @@
 ---
 name: query-optimization
-description: Analyze, diagnose, and optimize slow SQL queries using EXPLAIN plans, indexing strategies, query rewriting, and ORM tuning.
+description: Diagnose and optimize existing slow SQL queries using execution plans, indexing strategies, query rewriting, and ORM tuning. Use when the user provides a query, performance symptom, or EXPLAIN plan; use sql-query-generation when creating a new query from requirements.
 license: MIT
 metadata:
   author: AI Agent Skills Community

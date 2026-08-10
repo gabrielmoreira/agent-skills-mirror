@@ -1,6 +1,6 @@
 # Advanced shooter meta-systems
 
-Load for lag compensation, explosion queries, and server rewind — pairs with [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md).
+Load for lag compensation, explosion queries, and server rewind — pairs with [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md).
 
 ## Client prediction + server authority
 
@@ -39,4 +39,4 @@ Use collider/shape names or bones for head/chest multipliers — avoid `==` on f
 
 ## Monte Carlo balance
 
-Weapon matrices / TTK simulation → [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md).
+Weapon matrices / TTK simulation → [godot-monte-carlo-balancer](monte-carlo-balancer.md).

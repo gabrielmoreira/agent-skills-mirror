@@ -1,6 +1,6 @@
 ---
 name: proposal-generation
-description: Create tailored sales proposals and RFP responses that address prospect needs, articulate solution value, and include pricing, timelines, and social proof.
+description: Create tailored sales proposals and RFP responses that address prospect needs, articulate solution value, and include pricing, timelines, and social proof. Use when the user requests proposal generation or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community

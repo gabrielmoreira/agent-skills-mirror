@@ -1,0 +1,95 @@
+schema_version: 2
+# Private provenance template. IDs and paths are opaque examples; keep resolved identity in the
+# owning private manifest and never copy it into candidate/public outputs.
+sources:
+  - id: src-001
+    type: book-docx
+    source_role: primary-book
+    provenance_role: method-source
+    source_url: null
+    local_path: sources/raw/src-001.docx
+    completeness: needs-preflight
+    acquired_at: null
+    language: und
+    license: unknown/private-local-use
+    privacy: private
+    checksum: null
+    locator_strategy:
+      primary: ooxml-block
+      components:
+        - source_id
+        - heading_path
+        - ooxml_block_index
+        - content_hash
+      optional_components:
+        - figure_id
+        - table_id
+      printed_page_role: auxiliary-only
+    processing_rights:
+      local_private_processing: pending-human-confirmation
+      cloud_upload: false
+      public_quotation: false
+      derivative_publication: false
+    allow_fulltext_git: false
+    allow_public_quotes: false
+    notes: Resolve the full private identity, rights, and actual checksum in the owning manifest before Gate 2; never project that identity into candidate/public outputs.
+    ocr_policy:
+      required: true
+      coverage: all-images
+      execution_mode: local-only
+      engine: tesseract
+      languages: [chi_sim, eng]
+
+  - id: src-002
+    type: book-pdf-scan
+    source_role: primary-book
+    provenance_role: method-source
+    source_url: null
+    local_path: sources/raw/src-002.pdf
+    language: und
+    license: unknown/private-local-use
+    privacy: private
+    checksum: null
+    locator_strategy:
+      primary: ocr-region
+      components:
+        - source_id
+        - page_number
+        - image_sha256
+        - ocr_record_id
+        - region_id
+        - bbox_px
+        - content_hash
+    processing_rights:
+      local_private_processing: pending-human-confirmation
+      cloud_upload: false
+      public_quotation: false
+      derivative_publication: false
+    allow_fulltext_git: false
+    allow_public_quotes: false
+    ocr_policy:
+      required: true
+      coverage: all-pages
+      execution_mode: local-only
+      engine: tesseract
+      renderer: poppler-pdftoppm
+      dpi: 300
+      languages: [chi_sim, eng]
+
+  - id: src-003
+    type: external-target-material
+    source_role: eval-target
+    provenance_role: target-material
+    source_url: null
+    local_path: sources/holdout/src-003.json
+    language: und
+    license: unknown/private-local-use
+    privacy: private
+    checksum: null
+    processing_rights:
+      local_private_processing: pending-human-confirmation
+      cloud_upload: false
+      public_quotation: false
+      derivative_publication: false
+    allow_fulltext_git: false
+    allow_public_quotes: false

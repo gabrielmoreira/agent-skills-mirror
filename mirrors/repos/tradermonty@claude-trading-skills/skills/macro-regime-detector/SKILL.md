@@ -23,13 +23,17 @@ Detect structural macro regime transitions using monthly-frequency cross-asset r
 
 2. Execute the main analysis script:
    ```bash
+   python3 -m pip install -r skills/macro-regime-detector/requirements.txt
    uv run python3 skills/macro-regime-detector/scripts/macro_regime_detector.py --output-dir reports/
    ```
-   This fetches 600 days of data for 9 ETFs + Treasury rates (~10 API calls total).
-   An **FMP API key is required** to run this skill (the client raises if it is
-   missing). For individual ETFs whose FMP historical-price endpoint returns
-   nothing, the client automatically falls back to yfinance — this fallback
-   needs no additional API key, but it does not remove the FMP key requirement.
+   This fetches 600 days of data for 9 ETFs. With an FMP key, the client tries
+   FMP first and fetches Treasury rates (~10 API calls total), then falls back
+   to yfinance for unavailable ETF history. Without an FMP key, it runs in
+   yfinance-only mode and uses SHY/TLT as the yield-curve fallback.
+
+   The detector fails closed and writes no report when none of its six
+   components has usable data. Do not treat a missing report or non-zero exit
+   as a valid low-transition regime.
 
 3. Read the generated Markdown report and present findings to user.
 
@@ -37,8 +41,9 @@ Detect structural macro regime transitions using monthly-frequency cross-asset r
 
 ## Prerequisites
 
-- **FMP API Key** (required): Set `FMP_API_KEY` environment variable or pass `--api-key`
-- Free tier (250 calls/day) is sufficient (script uses ~10 calls)
+- **Python dependencies** (required): install `requirements.txt`, including yfinance and requests
+- **FMP API Key** (optional): set `FMP_API_KEY` or pass `--api-key` to use FMP and Treasury data before the yfinance/SHY-TLT fallbacks
+- The FMP free tier may not serve every ETF; unavailable symbols automatically use yfinance
 
 ## 6 Components
 

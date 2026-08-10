@@ -3,14 +3,6 @@ name: godot-composition
 description: "Expert architectural standards for building scalable Godot GAMES (RPGs, Platformers, Shooters) using the Composition pattern (Entity-Component). Use when designing player controllers, NPCs, enemies, weapons, or complex gameplay systems. Enforces \"Has-A\" relationships for game entities. Trigger keywords: Entity-Component, ECS, Gameplay, Actors, NPCs, Enemies, Weapons, Hitboxes, Game Loop, Level Design."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Godot Composition Architecture
-
 ## Core Philosophy
 This skill enforces **Composition over Inheritance** ("Has-a" vs "Is-a").
 In Godot, Nodes **are** components. A complex entity (Player) is simply an Orchestrator managing specialized Worker Nodes (Components).
@@ -136,7 +128,6 @@ func do_logic(delta: float) -> void:
 Typed `@export` wiring stays under **Implementation Standards** above.
 
 ## Expert Composition Patterns
-
 
 ### 1. State-Component Pattern (FSM)
 Encapsulate complex behaviors into child nodes that act as states. The parent StateComponent delegates lifecycle calls to the active child [4, 6].

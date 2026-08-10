@@ -39,7 +39,7 @@ C# exception: PascalCase class/file match.
 4. `as Timer` for safe casts.
 5. **Project Settings → Debug → GDScript → Untyped Declaration** = `Warn` or `Error`.
 
-Full guide: [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md).
+Full guide: [godot-gdscript-mastery](gdscript-mastery.md).
 
 ## Expert: threaded scene manager
 

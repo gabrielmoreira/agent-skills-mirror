@@ -3,14 +3,6 @@ name: godot-mechanic-revival
 description: "Expert blueprint for player mortality loops: progress-index checkpoints, soul graves, ghost/spirit layers, I-frame restitution, world-progress persistence, and death analytics. Use when implementing respawn, shrine checkpoints, corpse-run retrieval, or second-chance mechanics. Keywords revival, respawn, checkpoint, soul grave, ghost mode, I-frames, death analytics, progress index."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Revival & Resurrection Mechanics
-
 ## Overview
 Mortality beyond Game Over: **progress-index checkpoints**, **soul graves**, **ghost/spirit collision layers**, **I-frame restitution**, **world-progress bitmasks**, and **death analytics** (Sekiro / Hades / Souls-like).
 

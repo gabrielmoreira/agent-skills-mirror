@@ -26,11 +26,6 @@ Touch-first input, safe area handling, and battery optimization define mobile de
 
 ---
 
-## Godot 4.7: Mobile
-
-- **Built-in virtual joystick** — native touch joystick without plugins for mobile builds.
-- **HDR output** on iOS and supported Android devices — test tonemapping on HDR panels.
-
 ## Available Scripts
 
 > **MANDATORY**: Pick the golden-path branch, then load only the matching scripts.

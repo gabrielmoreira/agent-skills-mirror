@@ -22,11 +22,6 @@ Expert guidance for Godot's advanced animation blending and state machines.
 
 ---
 
-## Godot 4.7: AnimationTree
-
-- `LookAtModifier3D.relative` default is now **false** (was true).
-- Blend space `add_blend_point` accepts optional **name** parameter for labeled points.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
@@ -136,7 +131,7 @@ Do not paste full StateMachine/BlendSpace editor walkthroughs — author graphs 
 - [AnimationNodeBlendTree](https://docs.godotengine.org/en/stable/classes/class_animationnodeblendtree.html) — Layered Add2/Blend2/OneShot graphs for upper-body aim, combat overlays, and filter masks.
 - [AnimationNodeOneShot](https://docs.godotengine.org/en/stable/classes/class_animationnodeoneshot.html) — FIRE/ABORT request enum for recoil, hitreact, and other high-priority non-looping overlays.
 - [AnimationNodeTimeScale](https://docs.godotengine.org/en/stable/classes/class_animationnodetimescale.html) — Per-subtree playback speed for haste, stun, and bullet-time without mutating Engine.time_scale.
-- [LookAtModifier3D](https://docs.godotengine.org/en/stable/classes/class_lookatmodifier3d.html) — Skeleton look-at driven beside the tree; note Godot 4.7 `relative` default change called out above.
+- [LookAtModifier3D](https://docs.godotengine.org/en/stable/classes/class_lookatmodifier3d.html) — Skeleton look-at driven beside the tree; see [migration-notes.md](references/migration-notes.md) for `relative` default change.
 
 ### Related Skills
 

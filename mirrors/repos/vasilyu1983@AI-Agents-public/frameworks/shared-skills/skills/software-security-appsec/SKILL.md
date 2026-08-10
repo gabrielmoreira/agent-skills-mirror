@@ -1,370 +1,237 @@
 ---
 name: software-security-appsec
-description: AppSec patterns aligned with OWASP Top 10:2025 and NIST SSDF. Use when implementing auth, input validation, crypto, or reviewing security posture.
+description: "Provides application security guidance for design and implementation. Use when reviewing auth, data handling, supply-chain controls, or AppSec architecture."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# Software Security & AppSec — Quick Reference
+# Software Security And AppSec
 
-Production-grade security patterns for building secure applications in Jan 2026. Covers OWASP Top 10:2025 (stable) https://owasp.org/Top10/2025/ plus OWASP API Security Top 10 (2023) https://owasp.org/API-Security/ and secure SDLC baselines (NIST SSDF) https://csrc.nist.gov/publications/detail/sp/800-218/final.
+Use this skill for application-layer security: authentication, authorization, input and output handling, cryptography, supply-chain controls, API security, threat modeling, and security reviews. It is the AppSec decision layer, not general backend or infrastructure hardening.
 
----
+## Quick Reference
 
-## When to Use This Skill
+| Task | Use |
+|------|-----|
+| Auth and authorization choices | [references/authentication-authorization.md](references/authentication-authorization.md), [assets/web-application/template-authentication.md](assets/web-application/template-authentication.md), [assets/web-application/template-authorization.md](assets/web-application/template-authorization.md) |
+| Input handling, uploads, rendering, and common bugs | [references/input-validation.md](references/input-validation.md), [references/common-vulnerabilities.md](references/common-vulnerabilities.md) |
+| Secure design and threat modeling | [references/secure-design-principles.md](references/secure-design-principles.md), [references/threat-modeling-guide.md](references/threat-modeling-guide.md) |
+| API and supply-chain security | [references/api-security-patterns.md](references/api-security-patterns.md), [references/supply-chain-security.md](references/supply-chain-security.md), [assets/api/template-secure-api.md](assets/api/template-secure-api.md) |
+| Crypto and transport choices | [references/cryptography-standards.md](references/cryptography-standards.md) |
+| Secret-storage selection | See "Secret-Storage Selection" below — choosing encrypted vs plaintext at the provider, and how to verify after storing |
+| Incident response and security program framing | [references/incident-response-playbook.md](references/incident-response-playbook.md), [references/security-business-value.md](references/security-business-value.md), [references/operational-playbook.md](references/operational-playbook.md) |
 
-Activate this skill when:
+## Secret-Storage Selection
 
-- Implementing authentication or authorization systems
-- Handling user input that could lead to injection attacks (SQL, XSS, command injection)
-- Designing secure APIs or web applications
-- Working with cryptographic operations or sensitive data storage
-- Conducting security reviews, threat modeling, or vulnerability assessments
-- Responding to security incidents or compliance audit requirements
-- Building systems that must comply with OWASP, NIST, PCI DSS, GDPR, HIPAA, or SOC 2
-- Integrating third-party dependencies (supply chain security review)
-- Implementing zero trust architecture or modern cloud-native security patterns
-- Establishing or improving secure SDLC gates (threat modeling, SAST/DAST, dependency scanning)
+Every major cloud provider has two surface-similar storage classes: one encrypted-at-rest with no readback, one plaintext-visible in the dashboard. Picking the wrong one is silent — the app still works — and the audit log for *who-read-what* exists only on the encrypted form. Plaintext reads are invisible.
 
-### When NOT to Use This Skill
+| Provider | Yes Encrypted, never-readable | No Plaintext, dashboard-visible |
+|---|---|---|
+| Cloudflare Workers | `wrangler secret put` (API type: `secret_text`) | `[vars]` in `wrangler.toml`, Workers > Variables tab |
+| Vercel | Environment Variables marked "Sensitive" | Standard Environment Variables |
+| GitHub Actions | Repository / Organization Secrets | `env:` in workflow YAML, repository Variables |
+| AWS | Secrets Manager, SSM Parameter Store `SecureString` | SSM `String`, plain Lambda env vars |
+| Kubernetes | `Secret` + KMS envelope (SOPS, Sealed Secrets) | `ConfigMap`, plain env vars |
 
-- **General backend development** without security focus → use [software-backend](../software-backend/SKILL.md)
-- **Infrastructure/cloud security** (IAM, network security, container hardening) → use [ops-devops-platform](../ops-devops-platform/SKILL.md)
-- **Smart contract auditing** as primary focus → use [software-crypto-web3](../software-crypto-web3/SKILL.md)
-- **ML model security** (adversarial attacks, data poisoning) → use [ai-mlops](../ai-mlops/SKILL.md)
-- **Compliance-only questions** without implementation → consult compliance team directly
+**Rules:**
 
----
+- If the provider distinguishes "Secret" from "Variable" (or "Sensitive" from "Standard"), **always** use the encrypted form for: API keys, OAuth client secrets, JWT signing keys, database passwords, webhook secrets, push certificates.
+- Identifiers that already appear in client builds (bundle IDs, Team IDs, KV namespace IDs, project IDs) are **not** secrets and belong in the plaintext config — putting them in the secret store both clutters and signals false risk.
+- **Verify after storing.** `wrangler secret list` returns `type: secret_text` when encrypted. If you see `plain_text` or the value appears under `[vars]`, the credential is plaintext — treat as compromised and rotate.
+- **PEM and other multi-line secrets must use CLI redirect, never dashboard paste.** Dashboards silently mangle newlines: `wrangler secret put APNS_AUTH_KEY --name worker < AuthKey_XXX.p8`.
 
-## Quick Reference Table
+**If you suspect a secret was stored as plaintext:** treat it as compromised. Revoke at the issuer, generate a new credential, store correctly, then verify. Deleting the visible plaintext copy does not invalidate any cached or scraped value. Rotation is a no-regret action; the cost is one credential refresh, the alternative is undetectable use.
 
-| Security Task | Tool/Pattern | Implementation | When to Use |
-|---------------|--------------|----------------|-------------|
-| **Primary Auth** | Passkeys/WebAuthn | `navigator.credentials.create()` | New apps (2026+), phishing-resistant, broad platform support |
-| Password Storage | bcrypt/Argon2 | `bcrypt.hash(password, 12)` | Legacy auth fallback (never store plaintext) |
-| Input Validation | Allowlist regex | `/^[a-zA-Z0-9_]{3,20}$/` | All user input (SQL, XSS, command injection prevention) |
-| SQL Queries | Parameterized queries | `db.execute(query, [userId])` | All database operations (prevent SQL injection) |
-| API Authentication | OAuth 2.1 + PKCE | `oauth.authorize({ code_challenge })` | Third-party auth, API access (deprecates implicit flow) |
-| Token Auth | JWT (short-lived) | `jwt.sign(payload, secret, { expiresIn: '15m' })` | Stateless APIs (always validate, 15-30 min expiry) |
-| Data Encryption | AES-256-GCM | `crypto.createCipheriv('aes-256-gcm')` | Sensitive data at rest (PII, financial, health) |
-| HTTPS/TLS | TLS 1.3 | Force HTTPS redirects | All production traffic (data in transit) |
-| Access Control | RBAC/ABAC | `requireRole('admin', 'moderator')` | Resource authorization (APIs, admin panels) |
-| Rate Limiting | express-rate-limit | `limiter({ windowMs: 15min, max: 100 })` | Public APIs, auth endpoints (DoS prevention) |
-| Security Requirements | OWASP ASVS | Choose L1/L2/L3 | Security requirements baseline + test scope |
+## When to Use
 
-## Authentication Decision Matrix (Jan 2026)
+- Review or design auth, session, token, or authorization flows.
+- Validate input handling, uploads, rendering, and untrusted-data boundaries.
+- Secure APIs, webhooks, browser apps, and admin surfaces.
+- Threat-model a feature or AppSec architecture choice.
+- Harden dependency, build, artifact, and release paths.
+- Review agentic or MCP-connected applications from an AppSec angle.
 
-| Method | Use Case | Token Lifetime | Security Level | Notes |
-|--------|----------|----------------|----------------|-------|
-| **Passkeys/WebAuthn** | Primary auth (2026+) | N/A (cryptographic) | Highest | Phishing-resistant, broad platform support |
-| OAuth 2.1 + PKCE | Third-party auth | 5-15 min access | High | Replaces implicit flow, mandatory PKCE |
-| Session cookies | Traditional web apps | 30 min - 4 hrs | Medium-High | HttpOnly, Secure, SameSite=Strict |
-| JWT stateless | APIs, microservices | 15-30 min | Medium | Always validate signature, short expiry |
-| API keys | Machine-to-machine | Long-lived | Low-Medium | Rotate regularly, scope permissions |
+## Route Elsewhere
 
-**Jurisdiction notes (verify):** Authentication assurance requirements vary by country, industry, and buyer. Prefer passkeys/FIDO2; treat SMS OTP as recovery-only/low assurance unless you can justify it.
+- General backend engineering without a security focus: use [software-backend](../software-backend/SKILL.md).
+- Infrastructure hardening, IAM, cluster policy, or cloud posture: use [ops-devops-platform](../ops-devops-platform/SKILL.md).
+- Smart-contract-specific audits: use [software-crypto-web3](../software-crypto-web3/SKILL.md).
+- ML pipeline or model-ops governance: use [ai-mlops](../ai-mlops/SKILL.md).
+- Compliance-only interpretation with no implementation choice: route to legal or compliance stakeholders.
 
-## OWASP Top 10:2025 Quick Checklist
+## Defaults
 
-| # | Risk | Key Controls | Test |
-|---|------|--------------|------|
-| A01 | Broken Access Control | RBAC/ABAC, deny by default, CORS allowlist | BOLA, BFLA, privilege escalation |
-| A02 | Security Misconfiguration | Harden defaults, disable unused features, error handling | Default creds, stack traces, headers |
-| A03 | **Supply Chain Failures** (NEW) | SBOM, dependency scanning, SLSA, code signing | Outdated deps, typosquatting, compromised packages |
-| A04 | Cryptographic Failures | TLS 1.3, AES-256-GCM, key rotation, no MD5/SHA1 | Weak ciphers, exposed secrets, cert validation |
-| A05 | Injection | Parameterized queries, input validation, output encoding | SQLi, XSS, command injection, LDAP injection |
-| A06 | Insecure Design | Threat modeling, secure design patterns, abuse cases | Design flaws, missing controls, trust boundaries |
-| A07 | Authentication Failures | MFA/passkeys, rate limiting, secure password storage | Credential stuffing, brute force, session fixation |
-| A08 | Integrity Failures | Code signing, CI/CD pipeline security, SRI | Unsigned updates, pipeline poisoning, CDN tampering |
-| A09 | Logging Failures | Structured JSON, SIEM integration, correlation IDs | Missing logs, PII in logs, no alerting |
-| A10 | **Exceptional Conditions** (NEW) | Fail-safe defaults, complete error recovery, input validation | Error handling gaps, fail-open, resource exhaustion |
+- Use OWASP Top 10:2025 for risk framing (released January 2026, replaces 2021 edition), ASVS for requirements depth, and SSDF for SDLC baselines.
+- Treat standards, browser behavior, and current exploit trends as volatile until rechecked.
+- Prefer passkeys where feasible and sessions for browser-first apps.
+- Model trust boundaries before choosing controls.
+- Treat tool calls, retrieved content, and long-term memory as untrusted input in agentic systems.
 
-## Decision Tree: Security Implementation
+## Workflow
+
+1. Identify the asset, trust boundary, attacker capability, and failure consequence.
+2. Classify the problem: auth, authZ, untrusted input, API, supply chain, agentic flow, or secure-design issue.
+3. Choose the control family from the relevant reference.
+4. Apply the concrete safeguards and define verification depth.
+5. Recheck volatile standards and provider behavior before final recommendations.
+
+## ASCII Flow
 
 ```text
-Security requirement: [Feature Type]
-    ├─ User Authentication?
-    │   ├─ Session-based? → Cookie sessions + CSRF tokens
-    │   ├─ Token-based? → JWT with refresh tokens (references/authentication-authorization.md)
-    │   └─ Third-party? → OAuth2/OIDC integration
-    │
-    ├─ User Input?
-    │   ├─ Database query? → Parameterized queries (NEVER string concatenation)
-    │   ├─ HTML output? → DOMPurify sanitization + CSP headers
-    │   ├─ File upload? → Content validation, size limits, virus scanning
-    │   └─ API parameters? → Allowlist validation (references/input-validation.md)
-    │
-    ├─ Sensitive Data?
-    │   ├─ Passwords? → bcrypt/Argon2 (cost factor 12+)
-    │   ├─ PII/financial? → AES-256-GCM encryption + key rotation
-    │   ├─ API keys/tokens? → Environment variables + secrets manager
-    │   └─ In transit? → TLS 1.3 only
-    │
-    ├─ Access Control?
-    │   ├─ Simple roles? → RBAC (assets/web-application/template-authorization.md)
-    │   ├─ Complex rules? → ABAC with policy engine
-    │   └─ Relationship-based? → ReBAC (owner, collaborator, viewer)
-    │
-    └─ API Security?
-        ├─ Public API? → Rate limiting + API keys
-        ├─ CORS needed? → Strict origin allowlist (never *)
-        └─ Headers? → Helmet.js (CSP, HSTS, X-Frame-Options)
+AppSec task
+  -> Identify asset, trust boundary, attacker, and consequence
+  -> Classify auth, authZ, input, API, supply chain, agentic, or design risk
+  -> Choose control family and verification depth
+  -> Implement concrete safeguards at the boundary
+  -> Test exploit paths, regression cases, and logging
+  -> Recheck volatile standards and document residual risk
 ```
 
----
+## Auth Model Selection
 
-## Security ROI & Business Value (Jan 2026)
+| Situation | Choose | Avoid |
+|-----------|--------|-------|
+| Product with browser users, session state acceptable | Server sessions (cookie + server-side store) | JWTs for sessions — revocation is hard |
+| Mobile/desktop app with device-native biometrics | Passkeys (WebAuthn) | SMS OTP — SIM-swap risk |
+| Third-party sign-in or delegated access | OIDC / OAuth 2.1 + PKCE | Implicit flow (deprecated in OAuth 2.1) |
+| API-to-API, no user context | mTLS or short-lived signed tokens | Long-lived API keys |
+| Intra-service auth in a trusted cluster | Service accounts + mTLS | Shared secrets or user tokens |
 
-Security investment justification and compliance-driven revenue. Full framework: [references/security-business-value.md](references/security-business-value.md)
+## Input Control Selection
 
-### Quick Breach Cost Reference
+| Sink / operation | Required control |
+|-----------------|-----------------|
+| SQL query construction | Parameterized query or ORM binding; never string concatenation |
+| Shell / process execution | Allowlist args; avoid shell=True / exec with user input |
+| HTML rendering | Context-aware output encoding; CSP header |
+| File upload destination path | Canonicalize; reject path traversal sequences; store outside webroot |
+| Redirect target | Allowlist known origins; reject open redirect patterns |
+| LDAP / XPath / XML | Library-level escaping or schema validation before query construction |
+| LLM / agent tool call input | Treat as untrusted; validate schema before execution; log intent + scope |
 
-Indicative figures (source: IBM Cost of a Data Breach 2024; refresh for current year): https://www.ibm.com/reports/data-breach
+## Core Decisions
 
-| Metric | Global Avg | US Avg | Impact |
-|--------|------------|--------|--------|
-| Avg breach cost | $4.88M | $9.36M | Budget justification baseline |
-| Cost per record | $165 | $194 | Data classification priority |
-| Detection time | 204 days | 191 days | SIEM/monitoring ROI |
-| DevSecOps adoption | -$1.68M | -34% | Shift-left justification |
-| IR team | -$2.26M | -46% | Highest ROI control |
+### Authentication and Sessions
 
-### Compliance → Enterprise Sales
+Default choices:
+- passkeys when product and recovery flows support them
+- server sessions for browser apps
+- OIDC or OAuth 2.1 plus PKCE for delegated or third-party sign-in
+- short-lived tokens only when true statelessness is required
 
-| Certification | Deals Unlocked | Sales Impact |
-|---------------|----------------|--------------|
-| SOC 2 Type II | $100K+ enterprise | Typically reduces security questionnaire friction |
-| ISO 27001 | $250K+ EU enterprise | Preferred vendor status |
-| HIPAA | Healthcare vertical | Market access |
-| FedRAMP | $1M+ government | US gov market entry |
+Choose the simplest safe model that matches the app shape.
 
-### ROI Formula (Quick Reference)
+### Authorization and Input Boundaries
 
-```text
-Security ROI = (Risk Reduction - Investment) / Investment × 100
+Minimum rules:
+- deny by default
+- check authorization on the server
+- validate at boundaries
+- parameterize dangerous sinks
+- treat rich content and file uploads as active content until proven otherwise
 
-Risk Reduction = Breach Probability × Avg Cost × Control Effectiveness
-Example: 15% × $4.88M × 46% = $337K/year risk reduction
-```
+### Secure Design and Threat Modeling
 
----
+Threat-model before implementing:
+- storage of sensitive data
+- privileged actions
+- external callbacks
+- file uploads
+- rich rendering
+- agent or tool flows
 
-## Incident Response Patterns (Jan 2026)
+Retroactive hardening is slower and weaker than secure-by-default design.
 
-### Security Incident Playbook
+### Agentic and MCP Security
 
-| Phase | Actions |
-|-------|---------|
-| **Detect** | Alert fires, user report, automated scan |
-| **Contain** | Isolate affected systems, revoke compromised credentials |
-| **Investigate** | Collect logs, determine scope, identify root cause |
-| **Remediate** | Patch vulnerability, rotate secrets, update defenses |
-| **Recover** | Restore services, verify fixes, update monitoring |
-| **Learn** | Post-mortem, update playbooks, share lessons |
+Model explicitly:
+- prompt injection
+- tool misuse
+- memory poisoning
+- cross-tenant leakage
+- over-broad server capabilities
+- unsafe approval flows
 
-### Security Logging Requirements
+Keep read-only and mutating capabilities separate and log intent, scope, and result.
 
-| What to Log | Format | Retention |
-|-------------|--------|-----------|
-| Authentication events | JSON with correlation ID | 90 days minimum |
-| Authorization failures | JSON with user context | 90 days minimum |
-| Data access (sensitive) | JSON with resource ID | 1 year minimum |
-| Security scan results | SARIF format | 1 year minimum |
+**Metered or costly actions** (medium confidence, single-source pattern — see [Fact-Checking](#fact-checking)): for any agent action that consumes a bounded quota, spends money, or is otherwise costly/irreversible, re-check current authorization and quota state immediately before that specific call, not from an earlier cached check. The original task assignment ("do X") is not standing consent to spend a metered resource — treat each metered call as needing its own fresh confirmation. On failure mid-run, resume from saved state rather than restarting, since restarting re-incurs the metered cost.
 
-**Do:**
+### Supply-Chain and Release Integrity
 
-- Include correlation IDs across services
-- Log to SIEM (Splunk, Datadog, ELK)
-- Mask PII in logs
+Use:
+- lockfiles
+- trusted publishing or provenance
+- artifact integrity checks
+- SBOM where relevant
+- explicit review of transitive risk
 
-**Avoid:**
+## Verification Checklist
 
-- Logging passwords, tokens, or keys
-- Unstructured log formats
-- Missing timestamps or context
+Before finalizing any AppSec design or review output:
 
-### Common Security Mistakes
+- [ ] Trust boundary drawn explicitly — every input crossing it is validated or rejected
+- [ ] Authentication model chosen from Defaults (passkeys → server session → OIDC/PKCE → short-lived token)
+- [ ] Authorization checked server-side; deny-by-default enforced at every privileged endpoint
+- [ ] All sinks parameterized: SQL, shell, LDAP, XPath, XML, HTML rendering, redirect targets
+- [ ] File uploads and rich content treated as active content: type validation, size limit, storage isolation
+- [ ] Secrets stored in encrypted provider form (see Secret-Storage Selection table); verify with provider CLI
+- [ ] Supply-chain controls in place: lockfile, dependency scanning, artifact integrity, SBOM if required
+- [ ] Agentic flows threat-modeled for prompt injection, tool misuse, cross-tenant leakage, and over-broad scopes
+- [ ] Residual risks documented with mitigating controls and owner
+- [ ] Standards and browser-behavior claims verified against current sources before final output
 
-| FAIL Bad Practice | PASS Correct Approach | Risk |
-| --------------- | ------------------- | ---- |
-| `query = "SELECT * FROM users WHERE id=" + userId` | `db.execute("SELECT * FROM users WHERE id=?", [userId])` | SQL injection |
-| Storing passwords in plaintext or MD5 | `bcrypt.hash(password, 12)` or Argon2 | Credential theft |
-| `res.send(userInput)` without encoding | `res.send(DOMPurify.sanitize(userInput))` | XSS |
-| Hardcoded API keys in source code | Environment variables + secrets manager | Secret exposure |
-| `Access-Control-Allow-Origin: *` | Explicit origin allowlist | CORS bypass |
-| JWT with no expiration | `expiresIn: '15m'` + refresh tokens | Token hijacking |
-| Generic error messages to logs | Structured JSON with correlation IDs | Debugging blind spots |
-| SMS OTP as primary factor | Passkeys/WebAuthn or TOTP (keep SMS for recovery-only) | Credential phishing |
+## Output Modes
 
----
+Default to one of these:
 
-### Optional: AI/Automation Extensions
+- Security design brief:
+  threats, control choices, and verification scope.
+- Security review:
+  findings, risks, and implementation priorities.
+- Auth or API hardening plan:
+  recommended model, pitfalls, and validation steps.
+- Agentic AppSec review:
+  threat model, capability boundaries, and approval controls.
 
-> **Note**: Security considerations for AI systems. Skip if not building AI features.
+## Known Traps
 
-#### LLM Security Patterns
+- Starting security review after architecture and product flows are already fixed, which turns foundational design issues into expensive compensating controls.
+- Conflating authentication with authorization and assuming a valid identity token answers the permission question.
+- Treating file uploads, rich text, markdown, or retrieved tool content as passive data instead of active attacker-controlled input.
+- Reusing one permission surface for both read-only and mutating tool or MCP actions.
+- Assuming infrastructure posture or a managed platform compensates for weak application-level control design.
 
-| Threat | Mitigation |
-|--------|------------|
-| Prompt injection | Input validation, output filtering, sandboxed execution |
-| Data exfiltration | Output scanning, PII detection |
-| Model theft | API rate limiting, watermarking |
-| Jailbreaking | Constitutional AI, guardrails |
+## Anti-Patterns
 
-#### AI-Assisted Security Tools
-
-| Tool | Use Case |
-|------|----------|
-| Semgrep | Static analysis with AI rules |
-| Snyk Code | AI-powered vulnerability detection |
-| GitHub CodeQL | Semantic code analysis |
-
----
-
-## .NET/EF Core Crypto Integration Security
-
-For C#/.NET crypto/fintech services using Entity Framework Core, see:
-
-- [references/dotnet-efcore-crypto-security.md](references/dotnet-efcore-crypto-security.md) — Security rules and C# patterns
-
-**Key rules summary:**
-
-- No secrets in code — use configuration/environment variables
-- No sensitive data in logs (tokens, keys, PII)
-- Use `decimal` for financial values, never `double`/`float`
-- EF Core or parameterized queries only — no dynamic SQL
-- Generic error messages to users, detailed logging server-side
+- Treating standards status as evergreen without checking.
+- Using auth mechanisms that are more complex than the app needs.
+- Trusting unvalidated input deep in the system.
+- Leaving tool or MCP permissions broad by default.
+- Bolting security onto a feature after implementation choices are locked.
+- Conflating infrastructure posture with application security design.
 
 ## Navigation
 
-### Core Resources (Updated 2024-2026)
-
-#### Security Business Value & ROI
-
-- [references/security-business-value.md](references/security-business-value.md) — Breach cost modeling, security ROI formulas, compliance → enterprise sales, investment justification templates
-
-#### 2025 Updates & Modern Architecture
-
-- [references/supply-chain-security.md](references/supply-chain-security.md) — Dependency, build, and artifact integrity (SLSA, provenance, signing)
-- [references/zero-trust-architecture.md](references/zero-trust-architecture.md) — NIST SP 800-207, service identity, policy-based access
-- [references/owasp-top-10.md](references/owasp-top-10.md) — OWASP Top 10:2025 (final) guide + 2021→2025 diffs
-- [references/advanced-xss-techniques.md](references/advanced-xss-techniques.md) — 2024-2025 XSS: mutation XSS, polyglots, SVG attacks, context-aware encoding
-
-#### API Security, Incident Response & Threat Modeling
-
-- [references/api-security-patterns.md](references/api-security-patterns.md) — OWASP API Security Top 10, BOLA/BFLA, rate limiting, API keys, GraphQL/gRPC security
-- [references/incident-response-playbook.md](references/incident-response-playbook.md) — IR team roles, severity triage, containment by incident type, evidence handling, communication templates, postmortem
-- [references/threat-modeling-guide.md](references/threat-modeling-guide.md) — STRIDE, PASTA, data flow diagrams, attack trees, risk scoring (CVSS/DREAD), lightweight agile threat modeling
-
-#### Foundation Security Patterns
-
-- [references/secure-design-principles.md](references/secure-design-principles.md) — Defense in depth, least privilege, secure defaults
-- [references/authentication-authorization.md](references/authentication-authorization.md) — AuthN/AuthZ flows, OAuth 2.1, JWT best practices, RBAC/ABAC
-- [references/input-validation.md](references/input-validation.md) — Allowlist validation, SQL injection, XSS, CSRF prevention, file upload security
-- [references/cryptography-standards.md](references/cryptography-standards.md) — AES-256-GCM, Argon2, TLS 1.3, key management
-- [references/common-vulnerabilities.md](references/common-vulnerabilities.md) — Path traversal, command injection, deserialization, SSRF
-
-#### External References
-
-- [data/sources.json](data/sources.json) — 70+ curated security resources (OWASP 2025, supply chain, zero trust, API security, compliance)
-- Shared checklists: [../software-clean-code-standard/assets/checklists/secure-code-review-checklist.md](../software-clean-code-standard/assets/checklists/secure-code-review-checklist.md), [../software-clean-code-standard/assets/checklists/backend-api-review-checklist.md](../software-clean-code-standard/assets/checklists/backend-api-review-checklist.md)
-
-### Templates by Domain
-
-#### Web Application Security
-
-- [assets/web-application/template-authentication.md](assets/web-application/template-authentication.md) — Secure authentication flows (JWT, OAuth2, sessions, MFA)
-- [assets/web-application/template-authorization.md](assets/web-application/template-authorization.md) — RBAC/ABAC/ReBAC policy patterns
-
-#### API Security
-
-- [assets/api/template-secure-api.md](assets/api/template-secure-api.md) — Secure API gateway, rate limiting, CORS, security headers
-
-#### Cloud-Native Security
-
-- [assets/cloud-native/crypto-security.md](assets/cloud-native/crypto-security.md) — Cryptography usage, key management, HSM integration
-
-#### Blockchain & Web3 Security
-
-- [references/smart-contract-security-auditing.md](references/smart-contract-security-auditing.md) — **NEW**: Smart contract auditing, vulnerability patterns, formal verification, Solidity security
-
-### Related Skills
-
-#### Security Ecosystem
-
-- [../software-backend/SKILL.md](../software-backend/SKILL.md) — API implementation patterns and error handling
-- [../software-architecture-design/SKILL.md](../software-architecture-design/SKILL.md) — Secure system decomposition and dependency design
-- [../ops-devops-platform/SKILL.md](../ops-devops-platform/SKILL.md) — DevSecOps pipelines, secrets management, infrastructure hardening
-- [../software-crypto-web3/SKILL.md](../software-crypto-web3/SKILL.md) — Smart contract security, blockchain vulnerabilities, DeFi patterns
-- [../qa-testing-strategy/SKILL.md](../qa-testing-strategy/SKILL.md) — Security testing, SAST/DAST integration, penetration testing
-
-#### AI/LLM Security
-
-- [../ai-llm/SKILL.md](../ai-llm/SKILL.md) — LLM security patterns including prompt injection prevention
-- [../ai-mlops/SKILL.md](../ai-mlops/SKILL.md) — ML model security, adversarial attacks, privacy-preserving ML
-
-#### Quality & Resilience
-
-- [../qa-resilience/SKILL.md](../qa-resilience/SKILL.md) — Resilience, safeguards, failure handling, chaos engineering
-- [../qa-refactoring/SKILL.md](../qa-refactoring/SKILL.md) — Security-focused refactoring patterns
-
----
-
-## Trend Awareness Protocol
-
-**IMPORTANT**: When users ask recommendation questions about application security, you MUST use WebSearch to check current trends before answering. If WebSearch is unavailable, use `data/sources.json` + web browsing and state what you verified vs assumed.
-
-### Trigger Conditions
-
-- "What's the best approach for [authentication/authorization]?"
-- "What should I use for [secrets/encryption/API security]?"
-- "What's the latest in application security?"
-- "Current best practices for [OWASP/zero trust/supply chain]?"
-- "Is [security approach] still recommended in 2026?"
-- "What are the latest security vulnerabilities?"
-- "Best auth solution for [use case]?"
-
-### Required Searches
-
-1. Search: `"application security best practices 2026"`
-2. Search: `"OWASP Top 10 2025 2026"`
-3. Search: `"[authentication/authorization] trends 2026"`
-4. Search: `"supply chain security 2026"`
-
-### What to Report
-
-After searching, provide:
-
-- **Current landscape**: What security approaches are standard NOW
-- **Emerging threats**: New vulnerabilities or attack vectors
-- **Deprecated/declining**: Approaches that are no longer secure
-- **Recommendation**: Based on fresh data and current advisories
-
-### Example Topics (verify with fresh search)
-
-- OWASP Top 10 updates
-- Passkeys and passwordless authentication
-- AI security concerns (prompt injection, model poisoning)
-- Supply chain security (SBOMs, dependency scanning)
-- Zero trust architecture implementation
-- API security (BOLA, broken auth)
-
----
-
-## Pre-Implementation Security Gate
-
-Before building any feature that involves storage, uploads, or user-generated content:
-
-1. **Threat model first**: Identify what an attacker could do with this feature (file upload → malware, storage → data exfiltration, user content → XSS).
-2. **Check OWASP mapping**: Map the feature to relevant OWASP Top 10 categories above.
-3. **Define constraints before coding**: Set file type allowlist, size limits, storage isolation, and access controls before writing the first line.
-4. **Review existing security patterns**: Check if the project already has upload/storage security utilities to reuse.
-
-Building storage/upload features without upfront security constraints leads to retroactive hardening that is more expensive and error-prone.
-
-## Operational Playbooks
-- [references/operational-playbook.md](references/operational-playbook.md) — Core security principles, OWASP summaries, authentication patterns, and detailed code examples
+- Core references: [references/owasp-top-10.md](references/owasp-top-10.md), [references/authentication-authorization.md](references/authentication-authorization.md), [references/input-validation.md](references/input-validation.md), [references/cryptography-standards.md](references/cryptography-standards.md), [references/common-vulnerabilities.md](references/common-vulnerabilities.md)
+- SDLC and architecture: [references/secure-design-principles.md](references/secure-design-principles.md), [references/threat-modeling-guide.md](references/threat-modeling-guide.md), [references/supply-chain-security.md](references/supply-chain-security.md), [references/zero-trust-architecture.md](references/zero-trust-architecture.md), [references/api-security-patterns.md](references/api-security-patterns.md)
+- Operational references: [references/incident-response-playbook.md](references/incident-response-playbook.md), [references/security-business-value.md](references/security-business-value.md), [references/operational-playbook.md](references/operational-playbook.md)
+- Templates and adjacent assets: [assets/web-application/template-authentication.md](assets/web-application/template-authentication.md), [assets/web-application/template-authorization.md](assets/web-application/template-authorization.md), [assets/api/template-secure-api.md](assets/api/template-secure-api.md), [data/sources.json](data/sources.json)
+- Game theory (defender design — investment allocation, honeypots, patch decisions): [references/game-theory-applied.md](references/game-theory-applied.md)
+- [references/reliability-theory-applied.md](references/reliability-theory-applied.md) — Reliability primitives (MTBF/MTTR, availability, FMEA, error budgets) applied to application security and resilience.
+- Specialized deep-dives: [references/advanced-xss-techniques.md](references/advanced-xss-techniques.md) — advanced XSS vectors and comprehensive defense; [references/dotnet-efcore-crypto-security.md](references/dotnet-efcore-crypto-security.md) — .NET/EF Core crypto integration security; [references/smart-contract-security-auditing.md](references/smart-contract-security-auditing.md) — smart-contract (web3) security auditing methodology
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Use [data/sources.json](data/sources.json) as the primary source map.
+- Standards revisions, vendor defaults, and active agentic or MCP security guidance are time-sensitive and should be verified before being presented as current fact.
+- Mark anything inferred or not rechecked as provisional.
+- **Attribution**: the metered/costly-action re-consent pattern under [Agentic and MCP Security](#agentic-and-mcp-security) is adapted from `regulatory-threat-model` by Ansvar Systems AB, in [davila7/claude-code-templates](https://github.com/davila7/claude-code-templates) at commit `22d8efa9e9afcf31b98b7e3952ec557694e72c13`, licensed CC-BY-4.0. Extracted 2026-08-09. This is a single-source pattern (medium confidence) extracted from one vendor-specific, proprietary-tool-bound skill — treat it as a named pattern to consider, not a widely-corroborated convention.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

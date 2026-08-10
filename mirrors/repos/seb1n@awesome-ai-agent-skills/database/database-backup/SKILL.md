@@ -1,6 +1,6 @@
 ---
 name: database-backup
-description: Create, schedule, and verify database backups with support for full, incremental, and point-in-time recovery strategies.
+description: Create, schedule, and verify database backups with support for full, incremental, and point-in-time recovery strategies. Use when the user requests database backup or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills Community
@@ -92,7 +92,7 @@ echo "[$(date)] Expired backups removed (older than ${RETENTION_DAYS} days)."
 # mongo_backup.sh — MongoDB replica set backup
 set -euo pipefail
 
-MONGO_URI="mongodb://backup_user:secret@rs1.example.com:27017,rs2.example.com:27017/admin?replicaSet=rs0"
+: "${MONGO_URI:?Set MONGO_URI through the secret manager or environment}"
 BACKUP_DIR="/var/backups/mongodb"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 DUMP_DIR="${BACKUP_DIR}/dump_${TIMESTAMP}"
@@ -104,7 +104,13 @@ mongodump --uri="$MONGO_URI" --oplog --out="$DUMP_DIR"
 
 # Compress the dump directory
 tar -czf "${DUMP_DIR}.tar.gz" -C "$BACKUP_DIR" "dump_${TIMESTAMP}"
-rm -rf "$DUMP_DIR"
+tar -tzf "${DUMP_DIR}.tar.gz" >/dev/null
+
+# Refuse cleanup unless the resolved path is the expected timestamped child.
+case "$DUMP_DIR" in
+  "$BACKUP_DIR"/dump_[0-9]*) rm -rf -- "$DUMP_DIR" ;;
+  *) echo "Refusing unsafe cleanup path: $DUMP_DIR" >&2; exit 1 ;;
+esac
 
 echo "[$(date)] Backup complete: ${DUMP_DIR}.tar.gz"
 
@@ -119,7 +125,10 @@ ls -t ${BACKUP_DIR}/dump_*.tar.gz | tail -n +15 | xargs -r rm --
 tar -xzf /var/backups/mongodb/dump_20250115_020000.tar.gz -C /tmp/
 
 # 2. Restore to the target MongoDB instance
-mongorestore --uri="mongodb://admin:secret@localhost:27017" \
+: "${RESTORE_MONGO_URI:?Set RESTORE_MONGO_URI through the secret manager or environment}"
+: "${RESTORE_TARGET_CONFIRMED:?Set RESTORE_TARGET_CONFIRMED=yes only after verifying the target is the authorized restore environment}"
+[ "$RESTORE_TARGET_CONFIRMED" = "yes" ] || { echo "Restore target is not confirmed" >&2; exit 1; }
+mongorestore --uri="$RESTORE_MONGO_URI" \
   --oplogReplay --drop /tmp/dump_20250115_020000/
 
 # 3. Verify collections and document counts
@@ -134,6 +143,13 @@ mongosh --eval "db.adminCommand({listDatabases: 1})"
 - **Store backups in a separate failure domain** — a different server, availability zone, or cloud region — so a single infrastructure failure does not destroy both the database and its backups.
 - **Monitor backup jobs with alerts** — silence is not success. Alert on missing backups, zero-byte files, or checksums that do not match.
 - **Document the full restore procedure** with exact commands, expected timings, and who is responsible, so recovery can happen under pressure without guesswork.
+
+## Safety and Permissions
+
+- Start with configuration inspection and a restore plan. Do not install schedules, delete expired backups, upload data, or start a restore without explicit authorization for the named environment.
+- Treat restore commands such as `--drop` as destructive. Resolve and independently verify the destination, confirm it is the intended isolated restore target, capture a pre-restore recovery point where applicable, and stop if identity is ambiguous.
+- Keep credentials out of scripts, command output, logs, and generated examples. Prefer secret-manager injection or protected client configuration with least-privilege backup and restore identities.
+- Preserve the source backup and its checksum throughout a restore drill. Never report recoverability from archive listing or checksum verification alone; validate a representative restore and application-level invariants.
 
 ## Edge Cases
 

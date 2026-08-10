@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `JuneYaooo/nihaisha-nishi-tcm` — 26 default patterns, 0 followed patterns, 2 file(s) materialized.
+Mirror of `JuneYaooo/nihaisha-nishi-tcm` — 26 default patterns, 1 followed patterns, 4 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `JuneYaooo/nihaisha-nishi-tcm` — 26 default patterns, 0 followed pat
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 2 |
+| Followed pats | 1 |
+| Files         | 4 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `JuneYaooo/nihaisha-nishi-tcm` — 26 default patterns, 0 followed pat
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/RAG_GRAPH_MODE.md`
 
 ## File Index
 
@@ -60,7 +60,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`agents/openai.yaml`](agents/openai.yaml) |
-| 2 | ✓ | [`SKILL.md`](SKILL.md) |
+| 2 | ✓ | [`docs/USE_AND_RISK_NOTICE.md`](docs/USE_AND_RISK_NOTICE.md) |
+| 3 | ✓ | [`SKILL.md`](SKILL.md) |
+| 4 | → | [`docs/RAG_GRAPH_MODE.md`](docs/RAG_GRAPH_MODE.md) |
 
 ---
 

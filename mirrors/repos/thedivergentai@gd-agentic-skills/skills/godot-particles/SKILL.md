@@ -2,16 +2,6 @@
 name: godot-particles
 description: "Expert blueprint for GPU particle systems (explosions, magic effects, weather, trails) using GPUParticles2D/3D, ParticleProcessMaterial, gradients, sub-emitters, and custom shaders. Use when creating VFX, environmental effects, or visual feedback. Keywords GPUParticles2D, ParticleProcessMaterial, emission_shape, color_ramp, sub_emitter, one_shot."
 ---
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Particle Systems
-
-GPU-accelerated VFX with material-driven emission, recyclers, and MultiMesh swarms — not beginner effect recipes.
-
 ## NEVER Do in Particle Systems
 
 - **NEVER use `amount_ratio` to optimize performance dynamically** — It does not save GPU memory or improve processing; the full `amount` is still allocated. Change the `amount` property directly instead.
@@ -27,7 +17,6 @@ GPU-accelerated VFX with material-driven emission, recyclers, and MultiMesh swar
 - **NEVER forget alpha in color gradients** — Particles that disappear instantly at the end of their lifetime look harsh; always add a gradient point at 1.0 with 0.0 alpha for a smooth exit.
 - **NEVER use `EMISSION_SHAPE_POINT` for volumentric explosions** — Spawning all particles at a single point looks flat. Use a Sphere or Box shape for natural 3D spread.
 - **NEVER forget to set `emitting = false` initially for one-shot VFX** — This prevents unwanted emission at the scene origin before you've had a chance to position the node via script.
-
 
 ## Choose Table (load only the matching script)
 

@@ -3,14 +3,6 @@ name: godot-composition
 description: "Expert architectural standards for building scalable Godot GAMES (RPGs, Platformers, Shooters) using the Composition pattern (Entity-Component). Use when designing player controllers, NPCs, enemies, weapons, or complex gameplay systems. Enforces \"Has-A\" relationships for game entities. Trigger keywords: Entity-Component, ECS, Gameplay, Actors, NPCs, Enemies, Weapons, Hitboxes, Game Loop, Level Design."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Godot Composition Architecture
-
 ## Core Philosophy
 This skill enforces **Composition over Inheritance** ("Has-a" vs "Is-a").
 In Godot, Nodes **are** components. A complex entity (Player) is simply an Orchestrator managing specialized Worker Nodes (Components).
@@ -137,11 +129,10 @@ Typed `@export` wiring stays under **Implementation Standards** above.
 
 ## Expert Composition Patterns
 
-
 ### 1. State-Component Pattern (FSM)
 Encapsulate complex behaviors into child nodes that act as states. The parent StateComponent delegates lifecycle calls to the active child [4, 6].
 
-> **MANDATORY**: Read [state_component_vsm.gd](../scripts/composition_state_component_vsm.gd) — do not paste an inline StateMachine. For deeper VSM / hierarchical FSMs, open [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md).
+> **MANDATORY**: Read [state_component_vsm.gd](../scripts/composition_state_component_vsm.gd) — do not paste an inline StateMachine. For deeper VSM / hierarchical FSMs, open [godot-state-machine-advanced](state-machine-advanced.md).
 
 ### 2. Component-Registry (O(1) Lookup)
 Avoid slow tree traversal for sibling communication. Catalog children in a Dictionary at ready (by name or group).
@@ -197,24 +188,24 @@ Nodes are lightweight. Do not fear adding 10-20 nodes per entity. The organizati
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Scene ownership, project layout, and Inspector wiring conventions every composition root assumes.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — `class_name`, typed `@export`, Callables, and assert patterns required for typed component APIs.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Signal-up / call-down connect hygiene so selfish components never grab parent scripts.
+- [godot-project-foundations](project-foundations.md) — Scene ownership, project layout, and Inspector wiring conventions every composition root assumes.
+- [godot-gdscript-mastery](gdscript-mastery.md) — `class_name`, typed `@export`, Callables, and assert patterns required for typed component APIs.
+- [godot-signal-architecture](signal-architecture.md) — Signal-up / call-down connect hygiene so selfish components never grab parent scripts.
 
 #### Complements
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Stats and effect definitions as Resources; composition nodes own runtime mutation and emit change events.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Child-node FSM / VSM patterns that plug in as a StateComponent without bloating the orchestrator.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Sense-layer InputComponents that only sample actions; parents pass directions into movement components.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Physics-body movement APIs VelocityComponents and composition roots call via `move_and_slide`.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Area2D layers/masks and overlap rules HitBox/HurtBox/Interaction components depend on.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Spawn/despawn entities as composed scenes and re-wire exports when instances are swapped.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Stats and effect definitions as Resources; composition nodes own runtime mutation and emit change events.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Child-node FSM / VSM patterns that plug in as a StateComponent without bloating the orchestrator.
+- [godot-input-handling](input-handling.md) — Sense-layer InputComponents that only sample actions; parents pass directions into movement components.
+- [godot-characterbody-2d](characterbody-2d.md) — Physics-body movement APIs VelocityComponents and composition roots call via `move_and_slide`.
+- [godot-2d-physics](2d-physics.md) — Area2D layers/masks and overlap rules HitBox/HurtBox/Interaction components depend on.
+- [godot-scene-management](scene-management.md) — Spawn/despawn entities as composed scenes and re-wire exports when instances are swapped.
 
 #### Downstream / consumers
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage pipelines assemble Health/HitBox/HurtBox components under combat orchestrators.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Abilities attach as composed workers (cooldowns, targeting) rather than subclassing every caster.
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Stat sheets feed Health/StatusEffect components as Resources plus change signals.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate tunable component exports (HP, damage, speeds) before locking entity kits.
-- [godot-composition-apps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md) — Same Has-A node composition applied to tools/apps rather than gameplay entities.
+- [godot-combat-system](combat-system.md) — Damage pipelines assemble Health/HitBox/HurtBox components under combat orchestrators.
+- [godot-ability-system](ability-system.md) — Abilities attach as composed workers (cooldowns, targeting) rather than subclassing every caster.
+- [godot-rpg-stats](rpg-stats.md) — Stat sheets feed Health/StatusEffect components as Resources plus change signals.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate tunable component exports (HP, damage, speeds) before locking entity kits.
+- [godot-composition-apps](composition-apps.md) — Same Has-A node composition applied to tools/apps rather than gameplay entities.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.

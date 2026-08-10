@@ -13,6 +13,7 @@ The script supports:
 - LLM prompt generation
 - LLM JSON review merge with weighted final score
 - Cross-project review via `--project-root`
+- Non-scoring display of `skills-index.yaml` production verification declarations
 
 ## When to Use
 
@@ -94,6 +95,11 @@ uv run "$REVIEWER" \
 - `reports/skill_review_<skill>_<timestamp>.json`
 - `reports/skill_review_<skill>_<timestamp>.md`
 - `reports/skill_review_prompt_<skill>_<timestamp>.md` (when `--emit-llm-prompt` is enabled)
+
+When the target project has a `skills-index.yaml` entry with a complete `verification` block, JSON
+and Markdown reports also show its declared axes, `not_verified` gaps, non-applicable axes, and
+`all_applicable_axes_passed`. This section is informational only. It is excluded from auto/LLM/final
+scores and does not replace a live high-severity issue check.
 
 ## Installation (Global)
 

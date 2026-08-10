@@ -20,12 +20,6 @@ Expert guidance for level design with GridMaps, CSG bake, and occlusion — not 
 
 ---
 
-## Godot 4.7: 3D Editor Workflow
-
-- **Path3D** supports snap-to-colliders for path point placement on geometry.
-- **3D vertex snapping** with vertex/origin base setting (editor B key workflow).
-- `EditorSceneFormatImporter` uses **ImportFlags** enum for import constants.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.

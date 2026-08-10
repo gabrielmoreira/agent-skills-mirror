@@ -26,10 +26,6 @@ description: "Expert blueprint for VR platforms (Meta Quest, PSVR, SteamVR, Pico
 
 ---
 
-## Godot 4.7: OpenXR
-
-- `OpenXRExtensionWrapper._on_register_metadata` adds `interaction_profile_metadata` parameter — update all extension wrappers.
-
 ## Comfort Decision Tree (start here)
 
 1. **Can the player opt out of continuous locomotion?** → If no, stop and add teleport + seated mode before any smooth locomotion code.

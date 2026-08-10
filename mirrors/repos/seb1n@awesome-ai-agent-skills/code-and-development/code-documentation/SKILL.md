@@ -1,6 +1,6 @@
 ---
 name: code-documentation
-description: "Automatically generate clear, comprehensive documentation for codebases — including API references, inline docstrings, README files, and usage guides."
+description: "Automatically generate clear, comprehensive documentation for codebases — including API references, inline docstrings, README files, and usage guides. Use when the user requests code documentation or provides relevant inputs for this workflow."
 license: "MIT"
 metadata:
   author: "awesome-ai-agent-skills contributors"

@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `JCodesMore/ai-website-cloner-template` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `JCodesMore/ai-website-cloner-template` — 26 default patterns, 0 followed patterns, 13 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `JCodesMore/ai-website-cloner-template` — 26 default patterns, 0 fol
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 12 |
+| Files         | 13 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,10 +67,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`.cursor/rules/project.mdc`](.cursor/rules/project.mdc) |
 | 7 | ✓ | [`.github/copilot-instructions.md`](.github/copilot-instructions.md) |
 | 8 | ✓ | [`.github/skills/clone-website/SKILL.md`](.github/skills/clone-website/SKILL.md) |
-| 9 | ✓ | [`.windsurfrules`](.windsurfrules) |
-| 10 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 11 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 12 | ✓ | [`GEMINI.md`](GEMINI.md) |
+| 9 | ✓ | [`.kiro/skills/clone-website/SKILL.md`](.kiro/skills/clone-website/SKILL.md) |
+| 10 | ✓ | [`.windsurfrules`](.windsurfrules) |
+| 11 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`GEMINI.md`](GEMINI.md) |
 
 ---
 

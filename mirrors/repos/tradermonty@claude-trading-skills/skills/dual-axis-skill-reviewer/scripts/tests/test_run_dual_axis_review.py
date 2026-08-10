@@ -4,6 +4,7 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -152,6 +153,144 @@ def test_combine_reviews_handles_zero_weights(reviewer_module):
     assert merged["weights"]["llm_weight"] == 0.5
 
 
+def test_load_verification_summary_complete_and_non_scoring(reviewer_module, tmp_path: Path):
+    skill_dir = tmp_path / "skills" / "sample-skill"
+    skill_md = skill_dir / "SKILL.md"
+    write_text(
+        skill_md,
+        "---\nname: sample-skill\ndescription: sample\n---\n"
+        "## When to Use\nx\n## Prerequisites\nx\n## Workflow\nx\n"
+        "## Output\nx\n## Resources\nx\n",
+    )
+    before = reviewer_module.score_skill(tmp_path, skill_md, skip_tests=True)
+    write_text(
+        tmp_path / "skills-index.yaml",
+        "skills:\n"
+        "- id: sample-skill\n"
+        "  verification:\n"
+        "    instruction_contract: passed\n"
+        "    unit_tests: not_verified\n"
+        "    workflow_contract: not_applicable\n"
+        "    end_to_end_replay: not_applicable\n"
+        "    data_provenance: not_verified\n"
+        "    financial_logic_review: not_applicable\n"
+        "    empirical_validation: not_applicable\n"
+        "    security_review: not_verified\n",
+    )
+
+    summary = reviewer_module.load_verification_summary(tmp_path, "sample-skill")
+    after = reviewer_module.score_skill(tmp_path, skill_md, skip_tests=True)
+
+    assert summary["declaration_status"] == "complete"
+    assert summary["declaration_complete"] is True
+    assert summary["not_verified_axes"] == [
+        "data_provenance",
+        "security_review",
+        "unit_tests",
+    ]
+    assert summary["not_applicable_axes"] == [
+        "empirical_validation",
+        "end_to_end_replay",
+        "financial_logic_review",
+        "workflow_contract",
+    ]
+    assert summary["all_applicable_axes_passed"] is False
+    assert before == after
+
+
+def test_verification_metadata_does_not_change_any_review_axis(reviewer_module, tmp_path: Path):
+    skill_dir = tmp_path / "skills" / "sample-skill"
+    skill_md = skill_dir / "SKILL.md"
+    write_text(
+        skill_md,
+        "---\nname: sample-skill\ndescription: sample\n---\n"
+        "## When to Use\nx\n## Prerequisites\nx\n## Workflow\nx\n"
+        "## Output\nx\n## Resources\nx\n",
+    )
+    llm_path = tmp_path / "llm.json"
+    write_text(
+        llm_path,
+        json.dumps(
+            {
+                "score": 77,
+                "summary": "independent review",
+                "findings": [
+                    {
+                        "severity": "low",
+                        "path": "skills/sample-skill/SKILL.md",
+                        "line": 1,
+                        "message": "same finding",
+                        "improvement": "same fix",
+                    }
+                ],
+            }
+        ),
+    )
+    args = SimpleNamespace(
+        skip_tests=True,
+        llm_review_json="llm.json",
+        auto_weight=0.4,
+        llm_weight=0.6,
+        output_dir="before",
+        emit_llm_prompt=False,
+        skill="sample-skill",
+        seed=None,
+    )
+    before = reviewer_module.review_single_skill(args, tmp_path, skill_md)
+
+    write_text(
+        tmp_path / "skills-index.yaml",
+        "skills:\n- id: sample-skill\n  verification:\n"
+        + "".join(f"    {axis}: not_verified\n" for axis in reviewer_module.VERIFICATION_AXES),
+    )
+    args.output_dir = "after"
+    after = reviewer_module.review_single_skill(args, tmp_path, skill_md)
+
+    assert before["auto_review"] == after["auto_review"]
+    assert before["llm_review"] == after["llm_review"]
+    assert before["final_review"] == after["final_review"]
+    assert before["declared_verification"]["declaration_status"] == "missing_index"
+    assert after["declared_verification"]["declaration_status"] == "complete"
+
+
+@pytest.mark.parametrize(
+    ("index_text", "status"),
+    [
+        (None, "missing_index"),
+        ("skills: []\n", "missing_entry"),
+        ("skills:\n- id: sample-skill\n", "missing_block"),
+        ("skills:\n- id: sample-skill\n  verification: []\n", "malformed"),
+        (
+            "skills:\n- id: sample-skill\n  verification:\n"
+            "    instruction_contract: [passed]\n"
+            "    unit_tests: not_verified\n"
+            "    workflow_contract: not_applicable\n"
+            "    end_to_end_replay: not_applicable\n"
+            "    data_provenance: not_verified\n"
+            "    financial_logic_review: not_applicable\n"
+            "    empirical_validation: not_applicable\n"
+            "    security_review: not_verified\n",
+            "malformed",
+        ),
+        (
+            "skills:\n- id: sample-skill\n  verification:\n    instruction_contract: passed\n",
+            "partial",
+        ),
+    ],
+)
+def test_load_verification_summary_unavailable_states(
+    reviewer_module, tmp_path: Path, index_text: str | None, status: str
+):
+    if index_text is not None:
+        write_text(tmp_path / "skills-index.yaml", index_text)
+
+    summary = reviewer_module.load_verification_summary(tmp_path, "sample-skill")
+
+    assert summary["declaration_status"] == status
+    assert summary["declaration_complete"] is False
+    assert summary["all_applicable_axes_passed"] is False
+
+
 def test_score_skill_counts_tests_in_root_tests_dir(reviewer_module, tmp_path: Path):
     project_root = tmp_path
     skill_dir = project_root / "skills" / "sample-skill"
@@ -273,6 +412,7 @@ def test_to_markdown_contains_combined_sections(reviewer_module):
     assert "Final score: **75 / 100**" in md
     assert "## Findings (Combined)" in md
     assert "## Improvement Items (Final Score < 90)" in md
+    assert "## Declared Verification (Non-Scoring)" in md
 
 
 def test_execution_safety_max_25(reviewer_module, tmp_path: Path):
@@ -535,6 +675,70 @@ def test_main_e2e_generates_report_files(tmp_path: Path):
     assert proc.returncode == 0
     report_files = list((project_root / "reports").glob("skill_review_e2e-skill_*.json"))
     assert report_files
+    report = json.loads(report_files[0].read_text(encoding="utf-8"))
+    assert report["declared_verification"]["declaration_status"] == "missing_index"
+
+
+def test_all_summary_surfaces_verification_without_changing_score_gate(tmp_path: Path):
+    project_root = tmp_path
+    skill_dir = project_root / "skills" / "all-skill"
+    write_text(
+        skill_dir / "SKILL.md",
+        "---\nname: all-skill\ndescription: test\n---\n"
+        "## When to Use\nx\n## Prerequisites\nx\n## Workflow\nx\n"
+        "## Output\nx\n## Resources\nx\n",
+    )
+    write_text(
+        project_root / "skills-index.yaml",
+        "skills:\n- id: all-skill\n  verification:\n"
+        + "".join(
+            f"    {axis}: not_verified\n"
+            for axis in (
+                "instruction_contract",
+                "unit_tests",
+                "workflow_contract",
+                "end_to_end_replay",
+                "data_provenance",
+                "financial_logic_review",
+                "empirical_validation",
+                "security_review",
+            )
+        ),
+    )
+    script_path = Path(__file__).resolve().parents[1] / "run_dual_axis_review.py"
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(script_path),
+            "--project-root",
+            str(project_root),
+            "--all",
+            "--skip-tests",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    summary_path = next((project_root / "reports").glob("skill_review_all_*.json"))
+    row = json.loads(summary_path.read_text(encoding="utf-8"))["results"][0]
+    assert row["verification_status"] == "complete"
+    assert row["declaration_complete"] is True
+    assert row["verification_gaps"] == 8
+    assert row["not_verified_axes"] == [
+        "data_provenance",
+        "empirical_validation",
+        "end_to_end_replay",
+        "financial_logic_review",
+        "instruction_contract",
+        "security_review",
+        "unit_tests",
+        "workflow_contract",
+    ]
+    assert row["not_applicable_axes"] == []
+    assert row["all_applicable_axes_passed"] is False
+    assert row["pass"] == (row["score"] >= 90)
+    assert "Verify" in proc.stdout
 
 
 def test_api_key_detected_from_scripts(reviewer_module, tmp_path: Path):

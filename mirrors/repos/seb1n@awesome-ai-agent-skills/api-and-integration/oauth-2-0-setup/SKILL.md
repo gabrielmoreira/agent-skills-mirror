@@ -1,6 +1,6 @@
 ---
 name: oauth-2-0-setup
-description: Implement OAuth 2.0 authentication flows including authorization code with PKCE, client credentials, and device code for secure API integration.
+description: Implement OAuth 2.0 authentication flows including authorization code with PKCE, client credentials, and device code for secure API integration. Use when the user requests oauth 2 0 setup or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

@@ -1,6 +1,6 @@
 ---
-name: Code Review
-description: Perform thorough code reviews on files or pull requests, checking for bugs, security vulnerabilities, performance issues, and style violations.
+name: code-review
+description: Perform thorough code reviews on files or pull requests, checking for bugs, security vulnerabilities, performance issues, and style violations. Use when the user requests code review or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills contributors

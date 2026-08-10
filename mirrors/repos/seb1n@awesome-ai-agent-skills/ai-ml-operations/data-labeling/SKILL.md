@@ -1,6 +1,6 @@
 ---
 name: data-labeling
-description: Set up and manage data labeling workflows using manual annotation tools, semi-automated pipelines, active learning, and programmatic weak supervision.
+description: Set up and manage data labeling workflows using manual annotation tools, semi-automated pipelines, active learning, and programmatic weak supervision. Use when the user requests data labeling or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills

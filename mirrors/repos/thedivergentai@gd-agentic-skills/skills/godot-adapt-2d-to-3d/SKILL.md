@@ -3,16 +3,6 @@ name: godot-adapt-2d-to-3d
 description: "Expert patterns for migrating 2D games to 3D including node type conversions, camera systems (third-person, first-person, orbit), physics layer migration, sprite-to-model art pipeline, and control scheme adaptations. Use when porting 2D projects to 3D or adding 3D elements. Trigger keywords: CharacterBody2D to CharacterBody3D, Area2D to Area3D, Camera2D to Camera3D, Vector2 to Vector3, collision_layer migration, sprite to MeshInstance3D, 2D to 3D conversion."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Adapt: 2D to 3D
-
-Expert guidance for migrating 2D games into the third dimension.
-
 ## NEVER Do
 
 - **NEVER directly replace Vector2 with Vector3(x, y, 0)** — This creates a "flat 3D" game with no depth gameplay. Add Z-axis movement or camera rotation to justify 3D.
@@ -233,8 +223,6 @@ floor.add_child(floor_collision)
 | **Performance target** | Mobile, web, low-end | Desktop, console, high-end mobile |
 | **Development time** | Limited | Have time for 3D learning curve |
 | **Team skills** | 2D artists only | 3D artists or asset library |
-
-
 
 ---
 

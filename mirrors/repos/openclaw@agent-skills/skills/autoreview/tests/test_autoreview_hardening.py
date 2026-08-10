@@ -17,7 +17,7 @@ import threading
 import time
 import unittest
 from unittest import mock
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "autoreview"
@@ -91,6 +91,21 @@ def add_fake_trufflehog(
         "#!/usr/bin/env python3\nraise SystemExit(0)\n",
     )
     env["PATH"] = f"{root}{os.pathsep}{env.get('PATH', '')}"
+
+
+def path_excluding_command(name: str) -> str:
+    """Build a PATH value with every directory that resolves ``name``
+    removed, so a subprocess launched with it cannot find that command
+    even when it is genuinely installed on the host running the tests.
+    """
+    kept = []
+    for part in os.environ.get("PATH", "").split(os.pathsep):
+        if not part:
+            continue
+        if (Path(part) / name).is_file():
+            continue
+        kept.append(part)
+    return os.pathsep.join(kept)
 
 
 class AutoreviewHardeningTests(unittest.TestCase):
@@ -5178,6 +5193,8 @@ class AutoreviewHardeningTests(unittest.TestCase):
 
     def test_parallel_tests_use_sanitized_environment_for_every_shell(self) -> None:
         observed: list[dict[str, object]] = []
+        registered: list[object] = []
+        unregistered: list[object] = []
         sanitized_env = {
             "PATH": "/usr/bin",
             "HOME": "/safe/home",
@@ -5189,6 +5206,7 @@ class AutoreviewHardeningTests(unittest.TestCase):
             proc = mock.Mock()
             proc.returncode = 0
             proc.stderr = io.StringIO("")
+            proc.poll.return_value = 0
             return proc
 
         with tempfile.TemporaryDirectory() as tempdir:
@@ -5206,6 +5224,9 @@ class AutoreviewHardeningTests(unittest.TestCase):
                         if actual_repo == repo
                         else self.fail("parallel tests resolved a shell for the wrong repository")
                     ),
+                    "register_owned_process": registered.append,
+                    "unregister_owned_process": unregistered.append,
+                    "terminate_process_group": lambda proc: None,
                 },
             ), mock.patch("subprocess.Popen", side_effect=fake_popen):
                 for shell_kind in ("default", "cmd", "powershell", "pwsh"):
@@ -5223,10 +5244,16 @@ class AutoreviewHardeningTests(unittest.TestCase):
             self.assertEqual(invocation["env"], sanitized_env)
             self.assertEqual(invocation["stderr"], subprocess.PIPE)
             self.assertTrue(invocation["text"])
+            if os.name == "nt":
+                self.assertEqual(invocation["creationflags"], subprocess.CREATE_NEW_PROCESS_GROUP)
+            else:
+                self.assertTrue(invocation["start_new_session"])
         self.assertTrue(observed[0]["shell"])
         self.assertTrue(observed[1]["shell"])
         self.assertNotIn("shell", observed[2])
         self.assertNotIn("shell", observed[3])
+        self.assertEqual(registered, unregistered)
+        self.assertEqual(len(registered), 4)
 
     def test_parallel_test_finish_does_not_wait_for_inherited_stderr_pipe(
         self,
@@ -5241,12 +5268,20 @@ class AutoreviewHardeningTests(unittest.TestCase):
                 proc = mock.Mock()
                 proc.returncode = 0
                 proc.wait.return_value = 0
+                proc.poll.return_value = 0
                 setattr(proc, "_autoreview_test_home", test_home)
                 setattr(proc, "_autoreview_stderr_thread", stderr_thread)
 
                 started = time.time()
                 before = time.monotonic()
-                result = self.helper["finish_parallel_tests"](proc, started)
+                with mock.patch.dict(
+                    self.helper["finish_parallel_tests"].__globals__,
+                    {
+                        "terminate_process_group": lambda proc: None,
+                        "unregister_owned_process": lambda proc: None,
+                    },
+                ):
+                    result = self.helper["finish_parallel_tests"](proc, started)
                 elapsed = time.monotonic() - before
 
                 self.assertEqual(result, 0)
@@ -5255,6 +5290,274 @@ class AutoreviewHardeningTests(unittest.TestCase):
         finally:
             release.set()
             stderr_thread.join(timeout=1)
+
+    def test_terminate_process_group_uses_windows_process_api(self) -> None:
+        proc = mock.Mock(pid=1234)
+        fake_taskkill = r"C:\Windows\System32\taskkill.exe"
+        with mock.patch.object(os, "name", "nt"), mock.patch.dict(
+            self.helper["terminate_process_group"].__globals__,
+            {"_resolve_windows_taskkill": lambda: fake_taskkill},
+        ), mock.patch(
+            "subprocess.run",
+            return_value=subprocess.CompletedProcess([], 0),
+        ) as run:
+            self.helper["terminate_process_group"](proc, grace_seconds=0.01)
+        argv = run.call_args.args[0]
+        self.assertEqual(argv, [fake_taskkill, "/PID", "1234", "/T", "/F"])
+        # A repo-local taskkill.exe on PATH/CWD must never be reachable here:
+        # the resolved argv[0] has to be an absolute path, never the bare name.
+        self.assertTrue(PureWindowsPath(argv[0]).is_absolute())
+        self.assertNotEqual(argv[0], "taskkill")
+        proc.kill.assert_not_called()
+
+    def test_terminate_process_group_skips_taskkill_when_unresolved(self) -> None:
+        proc = mock.Mock(pid=1234)
+        proc.poll.return_value = None
+        with mock.patch.object(os, "name", "nt"), mock.patch.dict(
+            self.helper["terminate_process_group"].__globals__,
+            {"_resolve_windows_taskkill": lambda: None},
+        ), mock.patch("subprocess.run") as run:
+            self.helper["terminate_process_group"](proc, grace_seconds=0.01)
+        run.assert_not_called()
+        proc.kill.assert_called_once()
+
+    def test_terminate_process_group_attempts_taskkill_when_leader_already_exited(
+        self,
+    ) -> None:
+        # Regression for detached descendants leaking: taskkill /T is still
+        # worth attempting even once the leader PID has exited (it can still
+        # fell the tree while the PID is valid), but the direct-kill fallback
+        # only ever makes sense for a leader that is still alive.
+        proc = mock.Mock(pid=1234)
+        proc.poll.return_value = 0
+        fake_taskkill = r"C:\Windows\System32\taskkill.exe"
+        with mock.patch.object(os, "name", "nt"), mock.patch.dict(
+            self.helper["terminate_process_group"].__globals__,
+            {"_resolve_windows_taskkill": lambda: fake_taskkill},
+        ), mock.patch(
+            "subprocess.run",
+            return_value=subprocess.CompletedProcess([], 1),
+        ) as run:
+            self.helper["terminate_process_group"](proc, grace_seconds=0.01)
+        self.assertEqual(run.call_args.args[0][0], fake_taskkill)
+        proc.kill.assert_not_called()
+
+    @unittest.skipIf(os.name == "nt", "process groups are POSIX-only")
+    def test_terminate_process_group_kills_orphans_after_leader_exit(self) -> None:
+        proc = mock.Mock(pid=1234)
+        proc.poll.return_value = 0
+        with mock.patch("os.killpg") as killpg, mock.patch("time.sleep") as sleep:
+            self.helper["terminate_process_group"](proc, grace_seconds=0.01)
+        self.assertEqual(
+            killpg.call_args_list,
+            [mock.call(1234, self.helper["signal"].SIGTERM), mock.call(1234, self.helper["signal"].SIGKILL)],
+        )
+        sleep.assert_called_once()
+        self.assertAlmostEqual(sleep.call_args.args[0], 0.01, places=3)
+
+    @unittest.skipIf(os.name == "nt", "process groups are POSIX-only")
+    def test_owned_process_handlers_include_sighup(self) -> None:
+        signal_module = self.helper["signal"]
+        installed: list[int] = []
+        with mock.patch.object(
+            signal_module, "getsignal", return_value=signal_module.SIG_DFL
+        ), mock.patch.object(
+            signal_module,
+            "signal",
+            side_effect=lambda signum, _handler: installed.append(signum),
+        ):
+            with self.helper["OwnedProcessSignalHandlers"]():
+                pass
+        self.assertIn(signal_module.SIGHUP, installed)
+
+    def test_owned_process_registry_terminates_all_tracked_groups(self) -> None:
+        terminated: list[object] = []
+        proc_a = mock.Mock(pid=111)
+        proc_b = mock.Mock(pid=222)
+        with mock.patch.dict(
+            self.helper["register_owned_process"].__globals__,
+            {
+                "_signal_owned_process_group": lambda proc: (terminated.append(proc), True)[1],
+                "_await_owned_process_groups": lambda procs, grace: None,
+                "_enforce_owned_process_group": lambda proc, grace: None,
+            },
+        ):
+            self.helper["register_owned_process"](proc_a)
+            self.helper["register_owned_process"](proc_b)
+            try:
+                self.helper["terminate_owned_processes"]()
+            finally:
+                self.helper["unregister_owned_process"](proc_a)
+                self.helper["unregister_owned_process"](proc_b)
+        self.assertEqual(set(terminated), {proc_a, proc_b})
+
+    def test_terminate_owned_processes_signals_all_groups_before_grace_wait(
+        self,
+    ) -> None:
+        # Regression: interrupt handling used to run each group's full
+        # terminate-wait-kill sequence serially, so N owned engines cost
+        # grace_seconds * N. Phase 1 (signal) must complete for every
+        # group before phase 2 (the shared grace wait) starts for any of
+        # them.
+        order: list[str] = []
+        proc_a = mock.Mock(pid=111)
+        proc_b = mock.Mock(pid=222)
+        proc_gone = mock.Mock(pid=333)
+
+        def fake_signal(proc: object) -> bool:
+            order.append(f"signal:{proc.pid}")  # type: ignore[attr-defined]
+            return proc is not proc_gone
+
+        def fake_await(procs: list[object], grace_seconds: float) -> None:
+            order.append("await:" + ",".join(str(p.pid) for p in procs))  # type: ignore[attr-defined]
+
+        def fake_enforce(proc: object, grace_seconds: float) -> None:
+            order.append(f"enforce:{proc.pid}")  # type: ignore[attr-defined]
+
+        with mock.patch.dict(
+            self.helper["register_owned_process"].__globals__,
+            {
+                "_signal_owned_process_group": fake_signal,
+                "_await_owned_process_groups": fake_await,
+                "_enforce_owned_process_group": fake_enforce,
+            },
+        ):
+            self.helper["register_owned_process"](proc_a)
+            self.helper["register_owned_process"](proc_gone)
+            self.helper["register_owned_process"](proc_b)
+            try:
+                self.helper["terminate_owned_processes"]()
+            finally:
+                self.helper["unregister_owned_process"](proc_a)
+                self.helper["unregister_owned_process"](proc_gone)
+                self.helper["unregister_owned_process"](proc_b)
+
+        self.assertEqual(
+            order,
+            [
+                "signal:111",
+                "signal:333",
+                "signal:222",
+                "await:111,222",
+                "enforce:111",
+                "enforce:222",
+            ],
+        )
+
+    def test_owned_process_grace_deadline_is_shared_across_groups(self) -> None:
+        proc_a = mock.Mock()
+        proc_b = mock.Mock()
+        proc_a.poll.return_value = None
+        proc_b.poll.return_value = None
+        proc_a.wait.side_effect = subprocess.TimeoutExpired("a", 1.5)
+        proc_b.wait.side_effect = subprocess.TimeoutExpired("b", 0.5)
+
+        with mock.patch(
+            "time.monotonic",
+            side_effect=[10.0, 10.5, 11.5],
+        ):
+            self.helper["_await_owned_process_groups"](
+                [proc_a, proc_b],
+                grace_seconds=2.0,
+            )
+
+        proc_a.wait.assert_called_once_with(timeout=1.5)
+        proc_b.wait.assert_called_once_with(timeout=0.5)
+
+    @unittest.skipIf(os.name == "nt", "signal.signal swapping is POSIX-tested here")
+    def test_deferred_owned_process_signals_terminates_proc_registered_during_window(
+        self,
+    ) -> None:
+        # Regression: a signal delivered between Popen() and
+        # register_owned_process() used to orphan the just-spawned group,
+        # because the real handler couldn't terminate a process it didn't
+        # know about yet. Simulate that race by invoking the collector
+        # (the handler installed for the critical section) manually while
+        # still inside the `with` block.
+        signal_module = self.helper["signal"]
+        proc = mock.Mock(pid=4321)
+        signaled: list[object] = []
+        with mock.patch.dict(
+            self.helper["register_owned_process"].__globals__,
+            {
+                "_signal_owned_process_group": lambda p: (signaled.append(p), False)[1],
+                "_await_owned_process_groups": lambda procs, grace: None,
+                "_enforce_owned_process_group": lambda p, grace: None,
+            },
+        ):
+            try:
+                with self.assertRaises(self.helper["EngineInterrupted"]) as ctx:
+                    with self.helper["deferred_owned_process_signals"]():
+                        self.helper["register_owned_process"](proc)
+                        handler = signal_module.getsignal(signal_module.SIGTERM)
+                        handler(signal_module.SIGTERM, None)
+                        # Deferred: still inside the critical section, so the
+                        # real handler (and thus termination) must not have
+                        # run yet.
+                        self.assertEqual(signaled, [])
+            finally:
+                self.helper["unregister_owned_process"](proc)
+        self.assertEqual(signaled, [proc])
+        self.assertEqual(ctx.exception.code, 128 + signal_module.SIGTERM)
+
+    @unittest.skipIf(os.name == "nt", "signal.signal swapping is POSIX-tested here")
+    def test_deferred_owned_process_signals_restores_handlers_without_signal(
+        self,
+    ) -> None:
+        signal_module = self.helper["signal"]
+        before = signal_module.getsignal(signal_module.SIGTERM)
+        with self.helper["deferred_owned_process_signals"]():
+            during = signal_module.getsignal(signal_module.SIGTERM)
+            self.assertIsNot(during, before)
+        after = signal_module.getsignal(signal_module.SIGTERM)
+        self.assertIs(after, before)
+
+    def test_deferred_owned_process_signals_supports_panel_worker_threads(self) -> None:
+        entered = threading.Event()
+        release = threading.Event()
+        errors: list[BaseException] = []
+
+        def worker() -> None:
+            try:
+                with self.helper["deferred_owned_process_signals"]():
+                    entered.set()
+                    release.wait(timeout=2)
+            except BaseException as exc:
+                errors.append(exc)
+
+        thread = threading.Thread(target=worker)
+        thread.start()
+        self.assertTrue(entered.wait(timeout=2))
+        registry_lock = self.helper["_OWNED_PROCESS_LOCK"]
+        acquired = registry_lock.acquire(blocking=False)
+        if acquired:
+            registry_lock.release()
+        release.set()
+        thread.join(timeout=2)
+
+        self.assertFalse(thread.is_alive())
+        self.assertFalse(acquired, "worker did not guard the spawn/register window")
+        self.assertEqual(errors, [])
+
+    def test_engine_interrupted_is_not_swallowed_by_except_system_exit(self) -> None:
+        # Regression: EngineInterrupted used to subclass SystemExit, so
+        # internal `except SystemExit` guards like read_text_with_status's
+        # converted an in-flight interrupt into an unreadable-file result
+        # and kept going instead of unwinding.
+        with mock.patch.dict(
+            self.helper["read_text_with_status"].__globals__,
+            {"read_prefix": mock.Mock(side_effect=self.helper["EngineInterrupted"](130))},
+        ):
+            with self.assertRaises(self.helper["EngineInterrupted"]) as ctx:
+                self.helper["read_text_with_status"](Path("irrelevant"))
+        self.assertEqual(ctx.exception.code, 130)
+
+    def test_main_converts_engine_interrupted_to_exit_code(self) -> None:
+        with mock.patch.dict(
+            self.helper["main"].__globals__,
+            {"main_impl": mock.Mock(side_effect=self.helper["EngineInterrupted"](130))},
+        ):
+            self.assertEqual(self.helper["main"](), 130)
 
     def test_source_tree_snapshot_detects_parallel_test_mutations(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -7864,6 +8167,1128 @@ class AutoreviewHardeningTests(unittest.TestCase):
             "admin",
             {content[start:end] for start, end in spans},
         )
+
+    def test_resolve_engine_binary_reports_hardcoded_unavailable_engines(self) -> None:
+        resolve_engine_binary = self.helper["resolve_engine_binary"]
+        for engine in ("droid", "copilot", "opencode", "cursor"):
+            reviewer = argparse.Namespace(engine=engine)
+            available, reason = resolve_engine_binary(reviewer, Path("."))
+            self.assertFalse(available)
+            self.assertIn(engine, reason)
+
+    def test_resolve_engine_binary_rejects_codex_no_tools(self) -> None:
+        # run_codex() unconditionally refuses --no-tools (see line ~10318);
+        # the preflight must report that same rejection instead of reporting
+        # codex available just because its binary resolves.
+        resolve_engine_binary = self.helper["resolve_engine_binary"]
+        reviewer = argparse.Namespace(engine="codex", tools=False, codex_bin="codex")
+        available, reason = resolve_engine_binary(reviewer, Path("."))
+        self.assertFalse(available)
+        self.assertIn("--no-tools", reason)
+        self.assertIn("not supported by the Codex engine", reason)
+
+    def test_resolve_engine_binary_checks_path_resolution(self) -> None:
+        resolve_engine_binary = self.helper["resolve_engine_binary"]
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            fake_bin_dir = root / "bin"
+            fake_bin_dir.mkdir()
+            self.helper["write_executable"](
+                fake_bin_dir / "codex",
+                "#!/usr/bin/env python3\nraise SystemExit(0)\n",
+            )
+            found = argparse.Namespace(engine="codex", codex_bin="codex")
+            with mock.patch.dict(
+                os.environ,
+                {"PATH": f"{fake_bin_dir}{os.pathsep}{os.environ.get('PATH', '')}"},
+            ):
+                available, reason = resolve_engine_binary(found, repo)
+            self.assertTrue(available, reason)
+            self.assertIsNone(reason)
+
+            missing = argparse.Namespace(
+                engine="claude",
+                claude_bin="definitely-not-a-real-claude-binary",
+            )
+            available, reason = resolve_engine_binary(missing, repo)
+            self.assertFalse(available)
+            self.assertIn("executable not found", reason)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_zero_when_bundle_and_engine_resolve(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            # The dry-run OK path now also requires trufflehog to resolve
+            # (see run_trufflehog_preflight), so stage a fake one instead
+            # of relying on the host actually having it installed.
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "codex",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn("bundle: constructible", result.stdout)
+            self.assertIn("inputs: OK", result.stdout)
+            self.assertIn("prompt: OK", result.stdout)
+            self.assertIn("trufflehog: OK", result.stdout)
+            self.assertIn("temporary root: OK", result.stdout)
+            self.assertIn("OK", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_rejects_temporary_root_inside_repo(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            repo_temp = repo / "tmp"
+            repo_temp.mkdir()
+            env.update(
+                {
+                    "TMPDIR": str(repo_temp),
+                    "TEMP": str(repo_temp),
+                    "TMP": str(repo_temp),
+                }
+            )
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "codex",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("temporary root: FAILED", result.stdout)
+            self.assertIn("must be outside the reviewed repository", result.stdout)
+            self.assertRegex(result.stdout, r"engine check: codex[^\n]* OK\b")
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_when_trufflehog_missing(self) -> None:
+        # Every real run invokes run_trufflehog_preflight before contacting
+        # any reviewer and exits if trufflehog is absent; --dry-run must
+        # fail the same way instead of reporting success because the
+        # reviewer CLI alone resolved.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            env = os.environ.copy()
+            env["PATH"] = path_excluding_command("trufflehog")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "codex",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("trufflehog: UNAVAILABLE", result.stdout)
+            self.assertIn(self.helper["TRUFFLEHOG_INSTALL_URL"], result.stdout)
+            # The engine itself still resolves; only trufflehog should fail.
+            self.assertRegex(result.stdout, r"engine check: codex[^\n]* OK\b")
+
+    def test_dry_run_flag_exits_nonzero_when_codex_no_tools(self) -> None:
+        # run_codex() unconditionally refuses --no-tools; --dry-run must
+        # not report codex available just because its binary resolves.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "codex",
+                    "--no-tools",
+                    "--dry-run",
+                ],
+                cwd=repo,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("UNAVAILABLE", result.stdout)
+            self.assertIn("--no-tools", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_for_unsafe_codex_config_in_reviewer_list(self) -> None:
+        # codex_config_overrides() refuses capability-bearing --codex-config
+        # keys before run_codex() ever builds its command (see
+        # codex_command); resolve_engine_binary() must replay that same
+        # check for every reviewer in a --reviewers/--panel list, not just
+        # a single --engine codex run, so a dry run cannot report codex OK
+        # for a config override the real run would reject.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            claude_bin = self.helper["write_executable"](
+                root / "claude",
+                self.helper["fake_claude_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--reviewers",
+                    "codex,claude",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--claude-bin",
+                    str(claude_bin),
+                    "--codex-config",
+                    'mcp_servers.review.command="touch /tmp/owned"',
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: codex[^\n]* UNAVAILABLE")
+            self.assertIn("unsafe Codex config override refused", result.stdout)
+            self.assertIn("mcp_servers.review.command", result.stdout)
+            # The rest of the panel is unaffected: claude must still report OK.
+            self.assertRegex(result.stdout, r"engine check: claude[^\n]* OK\b")
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_for_invalid_codex_speed_in_reviewer_list(self) -> None:
+        # codex_speed_override() refuses an unrecognized AUTOREVIEW_CODEX_SPEED
+        # value before run_codex() ever builds its command; --codex-speed
+        # itself is argparse-choice-constrained, so the env var is the only
+        # way an invalid value reaches this check. resolve_engine_binary()
+        # must replay that same rejection for every reviewer in a
+        # --reviewers/--panel list.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            claude_bin = self.helper["write_executable"](
+                root / "claude",
+                self.helper["fake_claude_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            env["AUTOREVIEW_CODEX_SPEED"] = "warp"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--reviewers",
+                    "codex,claude",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--claude-bin",
+                    str(claude_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: codex[^\n]* UNAVAILABLE")
+            self.assertIn("invalid Codex speed: warp", result.stdout)
+            self.assertRegex(result.stdout, r"engine check: claude[^\n]* OK\b")
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_zero_for_valid_codex_config_in_reviewer_list(self) -> None:
+        # A safe --codex-config override must not be rejected by the same
+        # replayed check; the panel/reviewer-list dry-run path must keep
+        # reporting OK for configurations a real run would accept.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            claude_bin = self.helper["write_executable"](
+                root / "claude",
+                self.helper["fake_claude_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--reviewers",
+                    "codex,claude",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--claude-bin",
+                    str(claude_bin),
+                    "--codex-config",
+                    'service_tier="fast"',
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: codex[^\n]* OK\b")
+            self.assertRegex(result.stdout, r"engine check: claude[^\n]* OK\b")
+
+    def test_dry_run_flag_exits_nonzero_when_engine_binary_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "claude",
+                    "--claude-bin",
+                    "definitely-not-a-real-claude-binary",
+                    "--dry-run",
+                ],
+                cwd=repo,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("UNAVAILABLE", result.stdout)
+
+    def test_dry_run_flag_exits_nonzero_for_always_unavailable_engine(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), "--mode", "local", "--engine", "droid", "--dry-run"],
+                cwd=repo,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("droid", result.stdout)
+            self.assertIn("UNAVAILABLE", result.stdout)
+
+    def test_dry_run_flag_exits_nonzero_when_bundle_construction_fails(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "commit",
+                    "--commit",
+                    "no-such-ref-xyz",
+                    "--dry-run",
+                ],
+                cwd=repo,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("bundle: FAILED", result.stdout)
+
+    def test_dry_run_commit_mode_passes_commit_ref_to_prompt_construction(self) -> None:
+        # choose_target() always returns target_ref=None for commit mode
+        # (see choose_target()); main() derives the real ref by assigning
+        # target_ref = args.commit right after commit_bundle() (see main(),
+        # just below its commit_bundle() call) before build_review_prompts()
+        # runs. dry_run_preflight() must mirror that same assignment so the
+        # prompt it validates matches the one a real run would build,
+        # instead of validating a prompt with the ref omitted (and
+        # potentially under the real byte budget only because of that
+        # omission).
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            (repo / "source.txt").write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            git(repo, "commit", "-q", "-m", "seed")
+            commit = git(repo, "rev-parse", "HEAD").strip()
+
+            preflight = self.helper["dry_run_preflight"]
+            original = preflight.__globals__["build_review_prompts"]
+            captured: dict[str, object] = {}
+
+            def capturing(repo_arg, target, target_ref, *rest, **kwargs):
+                captured["target_ref"] = target_ref
+                return original(repo_arg, target, target_ref, *rest, **kwargs)
+
+            args = argparse.Namespace(
+                commit=commit,
+                prompt=[],
+                prompt_file=[],
+                dataset=[],
+                max_priority="P0",
+            )
+            stdout = io.StringIO()
+            with mock.patch.dict(preflight.__globals__, {"build_review_prompts": capturing}):
+                with contextlib.redirect_stdout(stdout):
+                    preflight(args, [], repo, "commit", None)
+
+            self.assertEqual(captured.get("target_ref"), commit)
+            self.assertIn("prompt: OK", stdout.getvalue())
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_zero_for_plain_commit_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            git(repo, "commit", "-q", "-m", "seed")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "commit",
+                    "--commit",
+                    "HEAD",
+                    "--engine",
+                    "codex",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("bundle: constructible", result.stdout)
+            self.assertIn("prompt: OK", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_when_pi_version_unsupported(self) -> None:
+        # run_pi() calls ensure_pi_isolation_supported(), which requires
+        # Pi >= 0.79.0 for --no-approve trust isolation before the CLI is
+        # ever invoked for a review; --dry-run must reuse that same local
+        # --version probe rather than reporting pi available just because
+        # the binary resolves on PATH.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            pi_bin = self.helper["write_executable"](
+                root / "pi",
+                self.helper["fake_pi_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            env["AUTOREVIEW_FAKE_PI_VERSION"] = "0.50.0"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "pi",
+                    "--pi-bin",
+                    str(pi_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: pi[^\n]* UNAVAILABLE")
+            self.assertIn("0.79.0", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_zero_when_pi_version_supported(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            pi_bin = self.helper["write_executable"](
+                root / "pi",
+                self.helper["fake_pi_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "pi",
+                    "--pi-bin",
+                    str(pi_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: pi[^\n]* OK\b")
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_when_kimi_version_unsupported(self) -> None:
+        # run_kimi() calls ensure_kimi_isolation_supported(), which requires
+        # Kimi Code CLI >= 0.30.0 before the CLI is ever invoked for a
+        # review; --dry-run must reuse that same local --version probe
+        # rather than reporting kimi available just because the binary
+        # resolves on PATH.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            kimi_bin = self.helper["write_executable"](
+                root / "kimi",
+                self.helper["fake_kimi_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            env["AUTOREVIEW_FAKE_KIMI_VERSION"] = "0.10.0"
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "kimi",
+                    "--kimi-bin",
+                    str(kimi_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: kimi[^\n]* UNAVAILABLE")
+            self.assertIn("0.30.0", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_zero_when_kimi_version_supported(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            kimi_bin = self.helper["write_executable"](
+                root / "kimi",
+                self.helper["fake_kimi_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            # Isolate KIMI_CODE_HOME to an empty, hermetic directory instead
+            # of leaking the host's real ~/.kimi-code (which may or may not
+            # exist) into this test; an empty source share has no
+            # device_id/credentials to validate and must still report OK.
+            env["KIMI_CODE_HOME"] = str(root / "kimi-empty-home")
+            (root / "kimi-empty-home").mkdir()
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "kimi",
+                    "--kimi-bin",
+                    str(kimi_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: kimi[^\n]* OK\b")
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_when_kimi_config_repo_controlled(self) -> None:
+        # run_kimi() calls load_kimi_review_config() before the CLI is ever
+        # invoked for a review, and that rejects a KIMI_CODE_HOME pointed
+        # inside the reviewed repository (see kimi_source_share); --dry-run
+        # must reuse that same local config load rather than reporting kimi
+        # available just because the CLI binary and version resolved.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            kimi_bin = self.helper["write_executable"](
+                root / "kimi",
+                self.helper["fake_kimi_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            env["KIMI_CODE_HOME"] = str(repo / ".kimi-code")
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "kimi",
+                    "--kimi-bin",
+                    str(kimi_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: kimi[^\n]* UNAVAILABLE")
+            self.assertIn(
+                "Kimi configuration must be outside the reviewed repository",
+                result.stdout,
+            )
+            # The bundle, inputs, and prompt assembly still resolve; only the
+            # Kimi-specific config load fails.
+            self.assertIn("prompt: OK", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_when_kimi_device_id_invalid(self) -> None:
+        # run_kimi() calls prepare_kimi_runtime_auth() after
+        # load_kimi_review_config() and before the CLI is ever invoked for
+        # a review; that raises on a device_id that fails the safe-to-stage
+        # format check (see validate_kimi_runtime_auth_sources). --dry-run
+        # must reuse that same non-mutating check rather than reporting
+        # kimi available just because the CLI binary, version, and config
+        # load resolved.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            kimi_bin = self.helper["write_executable"](
+                root / "kimi",
+                self.helper["fake_kimi_script"](),
+            )
+            source_share = root / "kimi-home"
+            source_share.mkdir()
+            (source_share / "device_id").write_text("not-a-valid-id!!", encoding="utf-8")
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            env["KIMI_CODE_HOME"] = str(source_share)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "kimi",
+                    "--kimi-bin",
+                    str(kimi_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: kimi[^\n]* UNAVAILABLE")
+            self.assertIn(
+                "Kimi device identity is not safe to stage for review",
+                result.stdout,
+            )
+            # The bundle, inputs, and prompt assembly still resolve; only the
+            # Kimi-specific auth source check fails.
+            self.assertIn("prompt: OK", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_when_kimi_credentials_not_a_directory(self) -> None:
+        # Same raising check as above (see
+        # validate_kimi_runtime_auth_sources), triggered instead by a
+        # credentials path that resolves to a file rather than a directory
+        # -- the same shape of error a real run's prepare_kimi_runtime_auth()
+        # would raise on before ever invoking the CLI.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            kimi_bin = self.helper["write_executable"](
+                root / "kimi",
+                self.helper["fake_kimi_script"](),
+            )
+            source_share = root / "kimi-home"
+            source_share.mkdir()
+            (source_share / "credentials").write_text("not-a-directory", encoding="utf-8")
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            env["KIMI_CODE_HOME"] = str(source_share)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "kimi",
+                    "--kimi-bin",
+                    str(kimi_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: kimi[^\n]* UNAVAILABLE")
+            self.assertIn(
+                "Kimi OAuth credentials must be an external directory outside the reviewed repository",
+                result.stdout,
+            )
+            self.assertIn("prompt: OK", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_zero_when_kimi_auth_sources_valid(self) -> None:
+        # A validly staged device_id and OAuth credentials directory (the
+        # shape prepare_kimi_runtime_auth() accepts and stages for a real
+        # run) must still report kimi OK under --dry-run.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            kimi_bin = self.helper["write_executable"](
+                root / "kimi",
+                self.helper["fake_kimi_script"](),
+            )
+            source_share = root / "kimi-home"
+            source_share.mkdir()
+            (source_share / "device_id").write_text(
+                "0123456789abcdef0123456789abcdef", encoding="utf-8"
+            )
+            (source_share / "credentials").mkdir()
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            env["KIMI_CODE_HOME"] = str(source_share)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "kimi",
+                    "--kimi-bin",
+                    str(kimi_bin),
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: kimi[^\n]* OK\b")
+
+    def test_dry_run_flag_exits_nonzero_when_claude_tool_not_read_only(self) -> None:
+        # run_claude() computes its --tools inventory via
+        # claude_allowed_tools()/claude_tool_inventory() before the CLI is
+        # ever invoked for a review, and that raises when a configured
+        # --claude-allowed-tools rule is not one of the read-only tools
+        # (see claude_tool_inventory); --dry-run must reuse that same
+        # pure, non-mutating computation rather than reporting claude
+        # available just because the CLI binary, version, and isolation
+        # flags resolved.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            claude_bin = self.helper["write_executable"](
+                root / "claude",
+                self.helper["fake_claude_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "claude",
+                    "--claude-bin",
+                    str(claude_bin),
+                    "--claude-allowed-tools",
+                    "Bash",
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertRegex(result.stdout, r"engine check: claude[^\n]* UNAVAILABLE")
+            self.assertIn("Claude review tool is not read-only: Bash", result.stdout)
+            self.assertIn("prompt: OK", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_when_prompt_unpartitionable(self) -> None:
+        # The real run does not stop at load_extra_prompt()'s per-file
+        # checks: main() also builds the final prompt(s) via
+        # build_review_prompts() and rejects context that cannot fit the
+        # aggregate prompt budget even after partitioning (see
+        # build_review_prompts's "leave too little room for change chunks"
+        # branch). Use the Kimi engine's smaller aggregate budget
+        # (KIMI_MAX_PROMPT_BYTES) so a single --prompt-file well under the
+        # per-file 180000-byte scan cap (MAX_BUNDLE_TEXT_BYTES) still blows
+        # the aggregate limit; --dry-run must reuse that same check instead
+        # of reporting readiness for a prompt the real run would refuse.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            kimi_bin = self.helper["write_executable"](
+                root / "kimi",
+                self.helper["fake_kimi_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+            prompt_file = repo / "big-prompt.md"
+            prompt_file.write_text(
+                "context line filler text here\n" * 5_000,
+                encoding="utf-8",
+            )
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "kimi",
+                    "--kimi-bin",
+                    str(kimi_bin),
+                    "--prompt-file",
+                    "big-prompt.md",
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("prompt: FAILED", result.stdout)
+            self.assertIn("too little room", result.stdout)
+            # The bundle, inputs, and engine still resolve; only the
+            # assembled-prompt aggregate check fails.
+            self.assertIn("bundle: constructible", result.stdout)
+            self.assertIn("inputs: OK", result.stdout)
+            self.assertRegex(result.stdout, r"engine check: kimi[^\n]* OK\b")
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_when_prompt_file_missing(self) -> None:
+        # The real run loads --prompt-file via load_extra_prompt() before
+        # ever contacting an engine (see main_impl just after
+        # dry_run_preflight returns); --dry-run must reuse that same
+        # validation instead of reporting readiness for an input that
+        # would fail before an engine starts.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "codex",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--prompt-file",
+                    "missing.md",
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("inputs: FAILED", result.stdout)
+            self.assertIn("missing.md", result.stdout)
+            # The bundle and engine still resolve; only the input fails.
+            self.assertIn("bundle: constructible", result.stdout)
+            self.assertRegex(result.stdout, r"engine check: codex[^\n]* OK\b")
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_zero_when_prompt_file_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            prompt_file = repo / "prompt.md"
+            prompt_file.write_text("Focus on error handling.\n", encoding="utf-8")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "codex",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--prompt-file",
+                    "prompt.md",
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn("inputs: OK", result.stdout)
+
+    @unittest.skipIf(os.name == "nt", "the fake executable is POSIX-only")
+    def test_dry_run_flag_exits_nonzero_when_dataset_missing(self) -> None:
+        # load_datasets() shares validate_evidence_file() with
+        # load_extra_prompt(); confirm --dataset gets the same pre-engine
+        # existence check as --prompt-file.
+        with tempfile.TemporaryDirectory() as tempdir:
+            root = Path(tempdir)
+            repo = init_repo(root)
+            source = repo / "source.txt"
+            source.write_text("staged\n", encoding="utf-8")
+            git(repo, "add", "source.txt")
+            codex_bin = self.helper["write_executable"](
+                root / "codex",
+                self.helper["fake_codex_script"](),
+            )
+            env = os.environ.copy()
+            add_fake_trufflehog(self.helper, root, env)
+
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--mode",
+                    "local",
+                    "--engine",
+                    "codex",
+                    "--codex-bin",
+                    str(codex_bin),
+                    "--dataset",
+                    "missing-dataset.json",
+                    "--dry-run",
+                ],
+                cwd=repo,
+                env=env,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+
+            self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+            self.assertIn("inputs: FAILED", result.stdout)
+            self.assertIn("missing-dataset.json", result.stdout)
 
     def test_self_test_shortcut_runs_deterministic_checks(self) -> None:
         command = [str(SCRIPT), "--self-test"]

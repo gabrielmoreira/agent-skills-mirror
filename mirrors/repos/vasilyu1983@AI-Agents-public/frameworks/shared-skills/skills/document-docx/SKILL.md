@@ -1,219 +1,255 @@
 ---
 name: document-docx
-description: "Create/edit .docx files with styles, tables, and templates. Use when asked to generate Word reports, contracts, proposals, or extract text."
+description: "Create/edit .docx files with styles, templates, comments, and extraction workflows. Use when asked to generate Word reports, contracts, proposals, or convert Word content."
 allowed-tools: Bash, Read, Write, Glob, Grep
+compatibility: Claude Code + Codex. Uses runtime-specific allowed-tools / argument-hint fields.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
 # Document DOCX Skill - Quick Reference
 
-This skill enables creation, editing, and analysis of `.docx` files for reports, contracts, proposals, documentation, and template-driven outputs.
+This skill covers creation, editing, review, extraction, and release workflows for `.docx` documents.
 
-Modern best practices (2026):
-- Prefer templates + styles over manual formatting.
-- Treat `.docx` as the editable source; treat PDF as a release artifact.
-- If distributing externally, include basic accessibility hygiene (headings, table headers, alt text).
+Modern best practices (Jul 2026):
+- Treat `.docx` as the editable source and PDF as a release artifact.
+- Prefer templates and built-in styles over manual formatting.
+- Use comments for review notes; use Word Compare for true redlines.
+- For LLM/RAG extraction, optimize for structure, trust level, and sanitization rather than visual fidelity.
+- Treat macro-enabled Office files (`.docm`, `.dotm`) as untrusted by default.
+- Before promising a feature (comments, alt text, tracked changes), check the installed library version — several of these APIs are recent additions and silently absent on older pins. See "Version-Gate Before Promising A Feature" below.
+
+## Core Decision Rules (2026)
+
+- If non-developers need to own layout/design, prefer `docxtpl` with a Word-authored template.
+- If the stack is Python and edits are structural, prefer `python-docx`.
+- If the stack is TypeScript/Node and the output is generated server-side, prefer `docx`.
+- If you need semantic HTML from a trusted document, prefer `mammoth`, then sanitize before rendering or storing the output.
+- If you need Markdown/JSON for search, indexing, or RAG, prefer `MarkItDown` or `Docling`.
+- If the user asks for tracked changes, do not promise high-level library support. Generate a revised `.docx` and use Word Compare, or switch to OOXML-specialized tooling.
+- If the user asks for PDF output, prefer Word automation for highest fidelity and LibreOffice headless for cross-platform batch workflows.
+- If the input is `.doc`, convert to `.docx` first. If it is `.docm` or `.dotm`, do not trust embedded macros.
 
 ## Quick Reference
 
 | Task | Tool/Library | Language | When to Use |
 |------|--------------|----------|-------------|
-| Create DOCX | python-docx | Python | Reports, contracts, proposals |
-| Create DOCX | docx | Node.js | Server-side document generation |
-| Convert to HTML | mammoth.js | Node.js | Web display, content extraction |
-| Parse DOCX | python-docx | Python | Extract text, tables, metadata |
-| Template fill | docxtpl | Python | Mail merge, template-based generation |
-| Review workflow | Word compare, comments/highlights | Any | Human review without OOXML surgery |
-| Tracked changes | OOXML inspection, docx4j/OpenXML SDK/Aspose | Any | True redlines or parsing tracked changes |
+| Create/edit DOCX | `python-docx` | Python | Structural edits, reports, contracts, section/table/image work |
+| Create/edit DOCX | `docx` | Node.js | Server-side generation in TypeScript-heavy stacks |
+| Template fill | `docxtpl` | Python | Word-authored templates, mail merge, batch documents |
+| Add/access comments | `python-docx` + Word review workflow | Python / Word | Review notes without tracked revisions |
+| Convert DOCX to HTML | `mammoth` | Node.js | Semantic HTML from trusted documents |
+| Convert DOCX to Markdown | `MarkItDown` | Python | LLM/RAG ingestion where Markdown is preferred |
+| Convert DOCX to Markdown/HTML/JSON | `Docling` | Python / CLI | Multi-format ingestion, structured extraction, batch conversion |
+| Parse text/tables/metadata | `python-docx` + OOXML inspection | Python | Extraction, audits, migration tooling |
+| Parse tracked changes/comments | OOXML, Open XML SDK, docx4j, Aspose.Words | Python / .NET / Java | Revision-heavy workflows and interoperability edge cases |
+| Convert DOCX to PDF | Word automation / LibreOffice headless | OS tooling | Release artifacts and cross-platform smoke checks |
 
-## Tool Selection
+## Selection Guide
 
-- Prefer `docxtpl` when non-developers must edit layout/design in Word.
-- Prefer `python-docx` for structural edits (paragraphs/tables/headers/footers) when formatting complexity is moderate.
-- Prefer `docx` (Node.js) for server-side generation in TypeScript-heavy stacks.
-- Prefer `mammoth` for text-first extraction or DOCX-to-HTML (best effort; may drop some layout fidelity).
+- Prefer `docxtpl` when a legal, ops, or business user needs to maintain the template in Word.
+- Prefer `python-docx` for moderate formatting complexity where you control the document structure in code.
+- Prefer `docx` when the surrounding service and tests already live in Node.js.
+- Prefer `mammoth` for trusted, text-first conversion to HTML; it is not a fidelity-preserving renderer.
+- Prefer `MarkItDown` for simple DOCX-to-Markdown pipelines.
+- Prefer `Docling` when DOCX is only one input among many formats or you need HTML/JSON/Markdown/text output from a unified pipeline.
 
-## Known Limits (Plan Around These)
+## ASCII Flow
 
-- `.doc` (legacy) is not supported by these libraries; convert to `.docx` first (e.g., LibreOffice).
-- `python-docx` cannot reliably create true tracked changes; use Word compare or specialized OOXML tooling.
-- Tables of Contents and many fields are placeholders until opened/updated in Word.
+```text
+DOCX request
+  |
+  v
+Classify file + trust level
+  |-- .docx / .dotx -----> normal OOXML workflow
+  |-- .doc -------------> convert to .docx first
+  |-- .docm / .dotm ----> treat macros as untrusted
+  |
+  v
+Choose lane
+  |-- Word-owned template ------> docxtpl
+  |-- Python structural edit ---> python-docx
+  |-- Node service generation --> docx
+  |-- trusted HTML conversion --> mammoth + sanitizer
+  |-- Markdown / JSON ingest ---> MarkItDown or Docling
+  |-- tracked-change review ----> revised DOCX + Word Compare
+  |
+  v
+Generate, edit, or extract
+  |
+  v
+Quality gate
+  |-- parseability + unresolved tags ---> scripts/docx_quality_gate.py
+  |-- comments / revisions / OOXML ----> scripts/docx_inspect_ooxml.py
+  |
+  v
+Viewer, accessibility, and release checks
+```
+
+## Format And Safety Caveats
+
+- `.docx` and `.dotx` are Office Open XML packages; `.doc` is legacy binary and needs conversion first.
+- `.docm` and `.dotm` are macro-enabled; do not treat them as safe content inputs.
+- `python-docx` can add and read comments in the main document body, but not threaded replies/resolved states, and not comment anchors in headers/footers.
+- `python-docx` does not provide reliable tracked-change authoring.
+- `mammoth` performs no sanitization of generated HTML or links from untrusted source documents.
+- Tables of contents and many Word fields are placeholders until updated in Word.
+
+## Version-Gate Before Promising A Feature
+
+Do not assume the environment has a current library. This is the single most common way this skill causes a confident-but-wrong answer:
+
+- `Document.add_comment()` only exists from `python-docx` 1.2.0 onward. On an older pinned version it raises `AttributeError`, not a graceful fallback. Check first: `python -c "import docx; print(docx.__version__)"`.
+- python-docx still has no public high-level property for image alt text (no `.alt_text` on `InlineShape`) as of the current 1.x line — `InlineShape` only documents `height`, `width`, and `type`. The OOXML workaround in `references/accessibility-compliance.md` reaches into the private `_inline` attribute; treat that as an implementation detail that can move between releases, re-verify after any python-docx upgrade, and prefer `python-docx`'s own comment/style APIs wherever a public one exists instead of private attributes.
+- If a user asks for a feature this skill flags as unsupported (tracked-change authoring, threaded comment replies, resolved-state comments), say so plainly rather than approximating it with formatting hacks — a document that merely *looks* right (e.g., colored/struck-through text standing in for `<w:ins>`/`<w:del>`) will fail any real redline/legal review because it carries no revision metadata.
+
+## Default Workflow
+
+1. Identify the file type and trust level: `.docx`/`.dotx` vs `.docm`/`.dotm` vs legacy `.doc`.
+2. Pick the lane:
+   - Template generation -> `docxtpl`
+   - Programmatic structure edits -> `python-docx` or `docx`
+   - Review/comments -> comments or Word Compare
+   - LLM extraction -> `MarkItDown`, `Docling`, or `mammoth`
+3. Generate or modify the document.
+4. Run `scripts/docx_quality_gate.py` and, when needed, `scripts/docx_inspect_ooxml.py`.
+5. If shipping externally, validate rendering in Word plus at least one secondary viewer and apply accessibility hygiene.
 
 ## Core Operations
 
-### Create Document (Python - python-docx)
+### Create A Document (Python - `python-docx`)
 
 ```python
 from docx import Document
-from docx.shared import Inches, Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.shared import Inches
 
 doc = Document()
 
-# Title
-title = doc.add_heading('Document Title', 0)
+title = doc.add_heading("Quarterly Review", 0)
 title.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-# Paragraph with formatting
-para = doc.add_paragraph()
-run = para.add_run('Bold and ')
-run.bold = True
-run = para.add_run('italic text.')
-run.italic = True
+doc.add_paragraph("Executive summary goes here.")
 
-# Table
-table = doc.add_table(rows=3, cols=3)
-table.style = 'Table Grid'
-for i, row in enumerate(table.rows):
-    for j, cell in enumerate(row.cells):
-        cell.text = f'Row {i+1}, Col {j+1}'
+table = doc.add_table(rows=2, cols=2)
+table.style = "Table Grid"
+table.rows[0].cells[0].text = "Metric"
+table.rows[0].cells[1].text = "Value"
+table.rows[1].cells[0].text = "Revenue"
+table.rows[1].cells[1].text = "$1.2M"
 
-# Image
-doc.add_picture('image.png', width=Inches(4))
-
-# Save
-doc.save('output.docx')
+doc.add_picture("chart.png", width=Inches(4.5))
+doc.save("quarterly-review.docx")
 ```
 
-### Create Document (Node.js - docx)
+### Add A Review Comment (Python - `python-docx`)
 
-```typescript
-import { Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell } from 'docx';
-import * as fs from 'fs';
+```python
+from docx import Document
 
-const doc = new Document({
-  sections: [{
-    properties: {},
-    children: [
-      new Paragraph({
-        children: [
-          new TextRun({ text: 'Bold text', bold: true }),
-          new TextRun({ text: ' and normal text.' }),
-        ],
-      }),
-      new Table({
-        rows: [
-          new TableRow({
-            children: [
-              new TableCell({ children: [new Paragraph('Cell 1')] }),
-              new TableCell({ children: [new Paragraph('Cell 2')] }),
-            ],
-          }),
-        ],
-      }),
-    ],
-  }],
-});
+doc = Document()
+paragraph = doc.add_paragraph("This clause needs legal review.")
 
-Packer.toBuffer(doc).then((buffer) => {
-  fs.writeFileSync('output.docx', buffer);
-});
+comment = doc.add_comment(
+    runs=paragraph.runs,
+    text="Clarify whether this applies to renewals as well.",
+    author="Legal",
+    initials="LG",
+)
+
+comment.paragraphs[0].add_run(" Add the renewal edge case explicitly.").bold = True
+doc.save("reviewable.docx")
 ```
 
-### Template-Based Generation (Python - docxtpl)
+### Fill A Template (Python - `docxtpl`)
 
 ```python
 from docxtpl import DocxTemplate
 
-doc = DocxTemplate('template.docx')
+doc = DocxTemplate("template.docx")
 context = {
-    'company_name': 'Acme Corp',
-    'date': '2025-01-15',
-    'items': [
-        {'name': 'Widget A', 'price': 100},
-        {'name': 'Widget B', 'price': 200},
-    ]
+    "company_name": "Acme Corp",
+    "contract_date": "2026-03-13",
+    "items": [
+        {"name": "Widget A", "price": 100},
+        {"name": "Widget B", "price": 200},
+    ],
 }
 doc.render(context)
-doc.save('filled_template.docx')
+doc.save("filled-template.docx")
 ```
 
-### Extract Content (Python - python-docx)
+### Convert Trusted DOCX To HTML (Script)
 
-```python
-from docx import Document
-
-doc = Document('input.docx')
-
-# Extract all text
-full_text = []
-for para in doc.paragraphs:
-    full_text.append(para.text)
-
-# Extract tables
-for table in doc.tables:
-    for row in table.rows:
-        row_data = [cell.text for cell in row.cells]
-        print(row_data)
+```bash
+node scripts/docx_to_html.mjs input.docx output.html --style-map custom-style-map.txt --extract-images-dir output-assets/
 ```
 
-## Styling Reference
+### Extract Structure For Automation (Script)
 
-| Element | Python Method | Node.js Class |
-|---------|---------------|---------------|
-| Heading 1 | `add_heading(text, 1)` | `HeadingLevel.HEADING_1` |
-| Bold | `run.bold = True` | `TextRun({ bold: true })` |
-| Italic | `run.italic = True` | `TextRun({ italics: true })` |
-| Font size | `run.font.size = Pt(12)` | `TextRun({ size: 24 })` (half-points) |
-| Alignment | `WD_ALIGN_PARAGRAPH.CENTER` | `AlignmentType.CENTER` |
-| Page break | `doc.add_page_break()` | `new PageBreak()` |
-
-## Do / Avoid (Dec 2025)
-
-### Do
-
-- Use consistent heading levels and a table of contents for long docs.
-- Capture decisions and action items with owners and due dates.
-- Store docs in a versioned, searchable system.
-
-### Avoid
-
-- Manual formatting instead of styles (breaks consistency).
-- Docs with no owner or review cadence (stale quickly).
-- Copy/pasting without updating definitions and links.
+```bash
+python3 scripts/docx_extract.py input.docx --include headers footers hyperlinks comments images --out extracted.json
+```
 
 ## Output Quality Checklist
 
-- Structure: consistent heading hierarchy, styles, and (when needed) an auto-generated table of contents.
-- Decisions: decisions/actions captured with owner + due date (not buried in prose).
-- Versioning: doc ID + version + change summary; review cadence defined.
-- Accessibility hygiene: headings/reading order are correct; table headers are marked; alt text for non-decorative images.
-- Reuse: use `assets/doc-template-pack.md` for decision logs and recurring doc types.
+- Structure: heading hierarchy, list styles, and tables are intentional and consistent.
+- Reviewability: comments or Word Compare are used for feedback-heavy workflows instead of ad hoc formatting hacks.
+- Safety: macro-enabled files are treated as untrusted; HTML generated from DOCX is sanitized before use.
+- Portability: fonts, numbering, tables, and images are checked in at least one non-Word viewer when documents are distributed.
+- Accessibility hygiene: headings, descriptive links, table headers, document language, and alt text are present where needed.
+- Release quality: run `scripts/docx_quality_gate.py` before shipping or batch-publishing.
 
 ## Optional: AI / Automation
 
 Use only when explicitly requested and policy-compliant.
 
-- Summarize meeting notes into decisions/actions; humans verify accuracy.
-- Draft first-pass docs from outlines; do not invent facts or quotes.
+- Convert trusted DOCX content into Markdown/HTML/JSON for search or RAG.
+- Summarize meeting notes into a Word template, but keep humans accountable for factual accuracy.
+- Generate first-pass reports/contracts from structured data, then route through human review.
 
 ## Navigation
 
 **Resources**
-- [references/docx-patterns.md](references/docx-patterns.md) - Advanced formatting, styles, headers/footers
-- [references/template-workflows.md](references/template-workflows.md) - Mail merge, batch generation
-- [references/tracked-changes.md](references/tracked-changes.md) - Tracked changes: what is feasible, and what is not
-- [references/accessibility-compliance.md](references/accessibility-compliance.md) - WCAG 2.2 AA, reading order, alt text, EU EAA
-- [references/cross-platform-compatibility.md](references/cross-platform-compatibility.md) - Rendering across Word, Google Docs, LibreOffice
-- [references/document-automation-pipelines.md](references/document-automation-pipelines.md) - CI/CD batch generation, quality gates
-- [data/sources.json](data/sources.json) - Library documentation links
+- [references/docx-patterns.md](references/docx-patterns.md) - Styles, headers/footers, tables, sections, TOC
+- [references/template-workflows.md](references/template-workflows.md) - Template authoring, mail merge, batch rendering
+- [references/review-comments-workflows.md](references/review-comments-workflows.md) - Comments, review notes, Word Compare, comment limits
+- [references/tracked-changes.md](references/tracked-changes.md) - What is and is not feasible for tracked revisions
+- [references/llm-extraction-workflows.md](references/llm-extraction-workflows.md) - Mammoth, MarkItDown, Docling, HTML/Markdown/JSON extraction
+- [references/accessibility-compliance.md](references/accessibility-compliance.md) - Word accessibility, EN 301 549 context, manual checks
+- [references/cross-platform-compatibility.md](references/cross-platform-compatibility.md) - Word, Google Docs, LibreOffice, PDF conversion
+- [references/document-automation-pipelines.md](references/document-automation-pipelines.md) - CI/CD, batch generation, quality gates
+- [data/sources.json](data/sources.json) - Current external documentation links
 
 **Scripts**
-- `scripts/docx_inspect_ooxml.py` - Dependency-free OOXML inspection (including tracked changes signals)
-- `scripts/docx_extract.py` - Extract text/tables to JSON (requires `python-docx`)
-- `scripts/docx_render_template.py` - Render a `docxtpl` template (requires `docxtpl`)
-- `scripts/docx_to_html.mjs` - Convert `.docx` to HTML (requires `mammoth`)
+- `scripts/docx_inspect_ooxml.py` - Dependency-free OOXML inspection for tracked changes and comments
+- `scripts/docx_extract.py` - Extract text, tables, metadata, and optional headers/footers/hyperlinks/comments/images to JSON
+- `scripts/docx_render_template.py` - Render a `docxtpl` template from JSON
+- `scripts/docx_to_html.mjs` - Convert trusted `.docx` to HTML with style maps and optional image extraction
+- `scripts/docx_quality_gate.py` - Validate parseability, unresolved template tags, tracked-change/comment signals, and optional LibreOffice conversion
 
 **Templates**
 - [assets/report-template.md](assets/report-template.md) - Standard report structure
 - [assets/contract-template.md](assets/contract-template.md) - Legal document structure
 - [assets/doc-template-pack.md](assets/doc-template-pack.md) - Decision log, meeting notes, changelog templates
+- [assets/docx-template-authoring-checklist.md](assets/docx-template-authoring-checklist.md) - Template authoring and handoff checklist
 
 **Related Skills**
-- [../document-pdf/SKILL.md](../document-pdf/SKILL.md) - PDF generation and conversion
+- [../document-pdf/SKILL.md](../document-pdf/SKILL.md) - PDF generation and release workflows
+- [../document-xlsx/SKILL.md](../document-xlsx/SKILL.md) - Spreadsheet generation and exports
+- [../document-pptx/SKILL.md](../document-pptx/SKILL.md) - Presentation generation
 - [../docs-codebase/SKILL.md](../docs-codebase/SKILL.md) - Technical writing patterns
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Use `data/sources.json` as the starting set of primary sources.
+- Use web search/web fetch to verify current external facts, versions, release behavior, regulations, and platform quirks before final answers.
+- Prefer primary documentation, package pages, release pages, and official standards pages.
+- If web access is unavailable, state the limitation and mark volatile guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

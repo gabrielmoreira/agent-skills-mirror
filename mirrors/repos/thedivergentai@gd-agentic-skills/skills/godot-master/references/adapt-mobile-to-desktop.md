@@ -3,16 +3,6 @@ name: godot-adapt-mobile-to-desktop
 description: "Expert patterns for scaling mobile games to desktop including mouse/keyboard controls, increased resolution and graphical fidelity, expanded UI layouts, settings menus, window management, and platform-specific features. Use when creating desktop ports or cross-platform releases. Trigger keywords: mouse_controls, keyboard_shortcuts, resolution_scaling, graphics_settings, fullscreen_toggle, window_modes, Steam_integration, desktop_optimization."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Adapt: Mobile to Desktop
-
-Expert guidance for scaling mobile games to desktop platforms.
-
 ## NEVER Do
 
 - **NEVER keep touch-only controls** — Add mouse/keyboard alternatives. Touch controls on desktop feel awkward and limit precision.
@@ -129,23 +119,23 @@ When `desktop_input_adapter` emits `mouse_look_bridge_requested`, attach or enab
 ### Related Skills
 
 #### Prerequisites
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Shared InputEvent buffering, action maps, and device detection before injecting WASD/mouse equivalents for mobile actions.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchors, containers, and minimum sizes so desktop UI shrink/expand passes keep layout correct across resolutions.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Inventory the mobile lifecycle, touch, and safe-area assumptions you are replacing before desktop window/input paths take over.
+- [godot-input-handling](input-handling.md) — Shared InputEvent buffering, action maps, and device detection before injecting WASD/mouse equivalents for mobile actions.
+- [godot-ui-containers](ui-containers.md) — Anchors, containers, and minimum sizes so desktop UI shrink/expand passes keep layout correct across resolutions.
+- [godot-platform-mobile](platform-mobile.md) — Inventory the mobile lifecycle, touch, and safe-area assumptions you are replacing before desktop window/input paths take over.
 
 #### Complements
-- [godot-platform-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md) — Deeper Windows/macOS/Linux DisplayServer and OS integration once the mobile→desktop control and settings remap is in place.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Mouse-look, orbit, and scroll-wheel zoom rigs that replace swipe/pinch camera controls.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and quality ladders when unlocking FPS, MSAA, shadows, and draw distance for desktop GPUs.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Durable save ownership hooked to window-close confirmation and settings `ConfigFile` persistence.
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Theme type variations and hover styles that mobile never showed but desktop players expect on buttons/menus.
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Display stretch, renderer, and feature-tag project defaults that every desktop port branch depends on.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton homes for window managers, input adapters, and graphics settings that must outlive scene changes.
+- [godot-platform-desktop](platform-desktop.md) — Deeper Windows/macOS/Linux DisplayServer and OS integration once the mobile→desktop control and settings remap is in place.
+- [godot-camera-systems](camera-systems.md) — Mouse-look, orbit, and scroll-wheel zoom rigs that replace swipe/pinch camera controls.
+- [godot-performance-optimization](performance-optimization.md) — Profiling and quality ladders when unlocking FPS, MSAA, shadows, and draw distance for desktop GPUs.
+- [godot-save-load-systems](save-load-systems.md) — Durable save ownership hooked to window-close confirmation and settings `ConfigFile` persistence.
+- [godot-ui-theming](ui-theming.md) — Theme type variations and hover styles that mobile never showed but desktop players expect on buttons/menus.
+- [godot-project-foundations](project-foundations.md) — Display stretch, renderer, and feature-tag project defaults that every desktop port branch depends on.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton homes for window managers, input adapters, and graphics settings that must outlive scene changes.
 
 #### Downstream / consumers
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Packaging and CI export presets for Windows/macOS/Linux after input/UI/window gates pass on desktop.
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Inverse lattice when the same codebase must keep or regain touch-first paths after a desktop-first pass.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Re-tune difficulty when mouse precision and higher FPS invalidate mobile touch timing and aim curves.
+- [godot-export-builds](export-builds.md) — Packaging and CI export presets for Windows/macOS/Linux after input/UI/window gates pass on desktop.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — Inverse lattice when the same codebase must keep or regain touch-first paths after a desktop-first pass.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Re-tune difficulty when mouse precision and higher FPS invalidate mobile touch timing and aim curves.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this adapt skill beside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for discovering this adapt skill beside sibling domains.

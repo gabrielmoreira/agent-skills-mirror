@@ -1,6 +1,6 @@
 ---
 name: sql-query-generation
-description: Generate optimized SQL queries from natural language requests, supporting SELECT, JOIN, GROUP BY, window functions, CTEs, and subqueries.
+description: Generate SQL queries from natural-language requirements using SELECT, JOIN, GROUP BY, window functions, CTEs, and subqueries. Use when the user needs a new query from a business question or schema; use query-optimization when an existing query or execution plan is slow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

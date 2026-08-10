@@ -3,16 +3,6 @@ name: godot-game-loop-collection
 description: "Expert collection-loop systems for collectible IDs, scavenger hunts, completion archives, nearest-item compass UI, hidden spawners, and persistent find-all-X progress. Use when implementing collectibles, scavenger hunts, completion% archives, or compass-guided item hunts. Keywords: collectible_id, scavenger_hunt, collection_manager, collection_compass, completion_archive, hidden_item_spawner, find_all, collectible_item."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Collection Game Loops
-
-Stable collectible IDs → manager → compass → save. Not generic game-loop boilerplate.
-
 ## NEVER Do (collection landmines)
 
 - **NEVER reuse or omit stable collectible IDs** — Duplicate IDs double-count or overwrite; missing IDs break completion % and saves.

@@ -1,6 +1,6 @@
 ---
 name: dependency-scanning
-description: Scan project dependencies for known vulnerabilities, generate software bills of materials, and enforce license compliance across the software supply chain.
+description: Scan project dependencies for known vulnerabilities, generate software bills of materials, and enforce license compliance across the software supply chain. Use when the user requests dependency scanning or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills
@@ -116,6 +116,13 @@ gunicorn==21.2.0
 - **Automate update PRs** — use Dependabot, Renovate, or Snyk to automatically open pull requests when fix versions become available, reducing the window of exposure.
 - **Maintain a license allow-list** — define an approved license list (e.g., MIT, Apache-2.0, BSD) and block builds that introduce dependencies with disallowed licenses.
 - **Generate SBOMs for every release** — store CycloneDX or SPDX SBOMs alongside release artifacts to support supply chain transparency and incident response.
+
+## Safety Boundaries
+
+- Work only on systems the user owns or is explicitly authorized to assess, and record the approved scope before testing.
+- Start with passive or read-only inspection. Obtain explicit approval before active scanning, exploitation, load generation, or disruptive remediation.
+- Never expose secrets, extract unrelated data, weaken production controls, or expand beyond the approved targets.
+- Preserve evidence, minimize impact, stop on instability, and provide rollback or containment steps for every material change.
 
 ## Edge Cases
 

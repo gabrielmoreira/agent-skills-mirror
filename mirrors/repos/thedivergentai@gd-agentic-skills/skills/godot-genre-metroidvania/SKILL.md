@@ -3,16 +3,6 @@ name: godot-genre-metroidvania
 description: "Expert blueprint for Metroidvanias including ability-gated exploration (locks/keys), interconnected world design (backtracking with shortcuts), persistent state tracking (collectibles, boss defeats), room transitions (seamless loading), map systems (grid-based revelation), and ability versatility (combat + traversal). Use for exploration platformers or action-adventure games. Trigger keywords: metroidvania, ability_gating, interconnected_world, backtracking, map_system, persistent_state, room_transition, soft_locks."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Metroidvania
-
-Expert blueprint for Metroidvanias balancing exploration, progression, and backtracking rewards.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### World Design & Exploration
@@ -159,7 +149,6 @@ func _swap_room(packed: PackedScene, spawn_id: StringName) -> void:
 - [room_metadata.gd](scripts/room_metadata.gd)
 - [progression_manager.gd](scripts/progression_manager.gd)
 - [fast_travel_system.gd](scripts/fast_travel_system.gd)
-
 
 ## Reference
 

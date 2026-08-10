@@ -26,12 +26,6 @@ Headless / CI / platform release plumbing — not Editor → Export click-path t
 
 ---
 
-## Godot 4.7: Import & Export
-
-- `EditorSceneFormatImporter` constants moved to **ImportFlags** enum — update importer scripts.
-- **Asset Store** replaces Asset Library in editor — document addon acquisition via new store UI.
-- **HDR export**: verify viewport HDR settings per platform in export presets.
-
 ## Platform Decision Tree
 
 | Target | MANDATORY scripts / actions | Do NOT Load |
@@ -112,24 +106,24 @@ Iterate presets from `export_presets.cfg` via [export_universal_manager.gd](../s
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, `project.godot` version/icon settings, and import defaults must be sane before export presets and filters.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — `EditorScript` / plugin typing and `OS.execute` patterns used by version sync, universal export, and post-process hooks.
+- [godot-project-foundations](project-foundations.md) — Project layout, `project.godot` version/icon settings, and import defaults must be sane before export presets and filters.
+- [godot-gdscript-mastery](gdscript-mastery.md) — `EditorScript` / plugin typing and `OS.execute` patterns used by version sync, universal export, and post-process hooks.
 
 #### Complements
-- [godot-platform-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md) — Windows/Linux/macOS runtime quirks (icons, windowing, Steam) that export presets must match.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Android/iOS permission, orientation, and input assumptions that belong in mobile export options.
-- [godot-platform-web](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md) — Web host constraints (CORS, threads, memory) that decide Web export type and smoke-test matrix.
-- [godot-platform-console](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-console/SKILL.md) — Console certification packaging flows that extend beyond desktop/mobile export templates.
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Touch/UI/safe-area adaptations that must ship in mobile feature-tagged builds, not desktop-only assets.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Profile export vs editor differences (shader compile, memory) before blaming preset filters.
-- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — Automated smoke tests against headless/CI artifacts so “runs in editor” never ships alone.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist under `user://`; export filters must not strip save schemas players need after install.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource packing and `.gdignore` hygiene that directly shrinks export footprint.
+- [godot-platform-desktop](platform-desktop.md) — Windows/Linux/macOS runtime quirks (icons, windowing, Steam) that export presets must match.
+- [godot-platform-mobile](platform-mobile.md) — Android/iOS permission, orientation, and input assumptions that belong in mobile export options.
+- [godot-platform-web](platform-web.md) — Web host constraints (CORS, threads, memory) that decide Web export type and smoke-test matrix.
+- [godot-platform-console](platform-console.md) — Console certification packaging flows that extend beyond desktop/mobile export templates.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — Touch/UI/safe-area adaptations that must ship in mobile feature-tagged builds, not desktop-only assets.
+- [godot-debugging-profiling](debugging-profiling.md) — Profile export vs editor differences (shader compile, memory) before blaming preset filters.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — Automated smoke tests against headless/CI artifacts so “runs in editor” never ships alone.
+- [godot-save-load-systems](save-load-systems.md) — Persist under `user://`; export filters must not strip save schemas players need after install.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Resource packing and `.gdignore` hygiene that directly shrinks export footprint.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when release builds still fail budgets after filters, VRAM compression, and template choice.
-- [godot-server-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md) — Consumes dedicated-server export presets and headless pipelines for authoritative hosts.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Client/server binary pairs and feature tags for dedicated vs listen-server packaging.
+- [godot-performance-optimization](performance-optimization.md) — Escalate when release builds still fail budgets after filters, VRAM compression, and template choice.
+- [godot-server-architecture](server-architecture.md) — Consumes dedicated-server export presets and headless pipelines for authoritative hosts.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Client/server binary pairs and feature tags for dedicated vs listen-server packaging.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting export or platform concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting export or platform concern.

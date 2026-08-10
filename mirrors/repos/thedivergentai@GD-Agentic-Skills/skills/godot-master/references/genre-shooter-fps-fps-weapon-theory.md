@@ -35,7 +35,7 @@ Muzzle forward: `-transform.basis.z` — not `Transform3D.looking_at()`.
 | Sniper | Low | High | Hitscan + tracer visual |
 | Rocket | Low | AoE | Projectile + gravity |
 
-Sim asymmetry matrices in [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md).
+Sim asymmetry matrices in [godot-monte-carlo-balancer](monte-carlo-balancer.md).
 
 ## Multiplayer client prediction
 
@@ -62,4 +62,4 @@ Server wins on mismatch — show "no reg" feedback. Do not sync every bullet; se
 | No skill ceiling | Learnable patterns, not pure RNG spread |
 | Controller frustration | Aim assist friction + magnetism |
 
-TPS/cover/soft-lock not FPS-rig-specific → [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md).
+TPS/cover/soft-lock not FPS-rig-specific → [godot-genre-shooter](genre-shooter.md).

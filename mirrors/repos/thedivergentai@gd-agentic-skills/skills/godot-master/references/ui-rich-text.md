@@ -64,13 +64,6 @@ $RichTextLabel.bbcode_enabled = true
 $RichTextLabel.text = "[b]Bold[/b] and [i]italic[/i] text"
 ```
 
-## Godot 4.7: RichTextLabel ImageUnit
-
-- `width_in_percent` / `height_in_percent` **removed** — use `width_unit` / `height_unit` with `RichTextLabel.ImageUnit` enum.
-- `ImageUpdateMask.UPDATE_WIDTH_IN_PERCENT` renamed to `UPDATE_WIDTH_UNIT`.
-- `add_image` / `update_image` width and height are now **float**, not int.
-- **NEVER** pass `true`/`false` for percent flags — use `RichTextLabel.ImageUnit` values (default changed from `false` to `0`).
-
 ## Reveal API Decision
 
 | Need | API | **MANDATORY** |
@@ -85,7 +78,7 @@ $RichTextLabel.text = "[b]Bold[/b] and [i]italic[/i] text"
 Skip cataloging `[b]` / `[i]` / `[u]` / `[color]` — see docs. Prefer these when non-obvious:
 
 - `[url=payload]…[/url]` + `meta_clicked` — prefer [rich_text_meta_dispatch.gd](../scripts/ui_rich_text_rich_text_meta_dispatch.gd)
-- `[img]` sizing — **Godot 4.7**: use `width_unit` / `height_unit` + `RichTextLabel.ImageUnit` (see section above); scale with [rich_text_image_scaler.gd](../scripts/ui_rich_text_rich_text_image_scaler.gd)
+- `[img]` sizing — use `width_unit` / `height_unit` + `RichTextLabel.ImageUnit` (see [migration-notes.md](ui-rich-text-migration-notes.md)); scale with [rich_text_image_scaler.gd](../scripts/ui_rich_text_rich_text_image_scaler.gd)
 - Custom effects — register via `custom_effects` / `install_effect()`; examples: [rich_text_rainbow_effect.gd](../scripts/ui_rich_text_rich_text_rainbow_effect.gd), [rich_text_glitch_effect.gd](../scripts/ui_rich_text_rich_text_glitch_effect.gd)
 
 ## User-Generated Rich Text
@@ -106,7 +99,6 @@ func _on_meta_clicked(meta: Variant) -> void:
 ```
 
 ## Expert Text Patterns
-
 
 ### 1. Rich-Text-MSDF-Outline (SDF)
 Enable crisp, high-resolution outlines and scaling by enabling MSDF on font resources and using theme overrides.
@@ -149,7 +141,6 @@ func _process_custom_fx(char_fx: CharFXTransform):
     return true
 ```
 
-
 ## Deep recipes (on demand)
 
 > LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
@@ -179,22 +170,22 @@ func _process_custom_fx(char_fx: CharFXTransform):
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, Control basics, and resource imports before wiring RichTextLabel dialogue chrome.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — responsive VBox/HBox/Scroll shells so rich text stays body copy, not a layout engine.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — typed meta/hover command signals so click handlers stay thin on the main thread.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — RegEx, `@tool`, and RefCounted helpers used by sanitizers, highlighters, and effect scripts.
+- [godot-project-foundations](project-foundations.md) — scene tree, Control basics, and resource imports before wiring RichTextLabel dialogue chrome.
+- [godot-ui-containers](ui-containers.md) — responsive VBox/HBox/Scroll shells so rich text stays body copy, not a layout engine.
+- [godot-signal-architecture](signal-architecture.md) — typed meta/hover command signals so click handlers stay thin on the main thread.
+- [godot-gdscript-mastery](gdscript-mastery.md) — RegEx, `@tool`, and RefCounted helpers used by sanitizers, highlighters, and effect scripts.
 
 #### Complements
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — theme type variations and font/outline overrides that BBCode should reference, not hardcode.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — lifecycle-safe tweens for typewriter `visible_ratio` and auto-scroll polish.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — skip/advance and cursor changes that pair with meta hover without fighting Control focus.
-- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — line runners and event tags that feed RichTextLabel typewriter controllers.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — when CharFX alone is not enough and you need canvas-item shaders around text panels.
+- [godot-ui-theming](ui-theming.md) — theme type variations and font/outline overrides that BBCode should reference, not hardcode.
+- [godot-tweening](tweening.md) — lifecycle-safe tweens for typewriter `visible_ratio` and auto-scroll polish.
+- [godot-input-handling](input-handling.md) — skip/advance and cursor changes that pair with meta hover without fighting Control focus.
+- [godot-dialogue-system](dialogue-system.md) — line runners and event tags that feed RichTextLabel typewriter controllers.
+- [godot-shaders-basics](shaders-basics.md) — when CharFX alone is not enough and you need canvas-item shaders around text panels.
 
 #### Downstream / consumers
-- [godot-genre-visual-novel](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md) — VN dialogue boxes that depend on BBCode, `visible_characters`, and meta choice links.
-- [godot-genre-educational](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-educational/SKILL.md) — lesson/copy UIs and interactive rich text that reuse sanitizers and highlighters.
-- [godot-genre-romance](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-romance/SKILL.md) — affinity dialogue presentation that reuses typewriter and meta dispatch patterns.
+- [godot-genre-visual-novel](genre-visual-novel.md) — VN dialogue boxes that depend on BBCode, `visible_characters`, and meta choice links.
+- [godot-genre-educational](genre-educational.md) — lesson/copy UIs and interactive rich text that reuse sanitizers and highlighters.
+- [godot-genre-romance](genre-romance.md) — affinity dialogue presentation that reuses typewriter and meta dispatch patterns.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

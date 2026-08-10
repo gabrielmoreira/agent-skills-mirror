@@ -1,296 +1,226 @@
 ---
 name: qa-resilience
-description: "Design and test distributed-system resilience. Use when adding retries, circuit breakers, chaos experiments, or SLO-based reliability gates."
+description: "Designs and tests distributed-system resilience. Use when adding retries, deadlines, hedging, circuit breakers, overload protection, chaos experiments, or SLO reliability gates."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# QA Resilience (Jan 2026) - Failure Mode Testing & Production Hardening
+# QA Resilience
 
-This skill provides execution-ready patterns for building resilient, fault-tolerant systems that handle failures gracefully, and for validating those behaviors with tests.
-
-Core sources are curated in `data/sources.json`.
-
-## Common Requests
-
-Use this skill when a user requests:
-
-- Circuit breaker implementation
-- Retry strategies and exponential backoff
-- Bulkhead pattern for resource isolation
-- Backpressure, load shedding, and overload protection
-- Timeout policies for external dependencies
-- Graceful degradation and fallback mechanisms
-- Health check design (liveness vs readiness)
-- Error handling best practices
-- Chaos engineering setup
-- Game days / DR / failover testing (with guardrails)
-- Production hardening strategies
-- Fault injection testing
-
-**When NOT to use this skill:**
-
-- Simple CRUD apps with no external dependencies — use basic error handling
-- Single database, no network calls — standard connection pooling sufficient
-- Pure batch jobs with manual retry — scheduled job frameworks handle this
-- Frontend-only validation — see [software-frontend](../software-frontend/SKILL.md) instead
-
-## Quick Start (Default Workflow)
-
-If key context is missing, ask for: critical user journeys, dependency inventory (including third parties), SLO/SLI targets, current timeout/retry/circuit-breaker settings, idempotency/dedup strategy, and where fault injection is allowed (local/staging/prod).
-
-1. Define scope: critical user journeys, top N dependencies, and SLOs/SLIs (latency, errors, saturation).
-2. Build a dependency contract per dependency: timeout budget, retry policy (bounded + jitter), idempotency/dedup expectations, circuit breaker thresholds, and fallback/degraded behavior.
-3. Choose a test harness: deterministic fault injection first (mocks/fakes, fault proxy, service mesh faults), then staged chaos experiments, then game day/DR drills if applicable.
-4. Define pass/fail signals: error budget burn, p95/p99 budgets, fallback rates, queue backlog, circuit breaker state changes, and recovery time.
-5. Produce artifacts (use templates): [Resilience Test Plan Template](assets/testing/template-resilience-test-plan.md), [Fault Injection Playbook](assets/testing/fault-injection-playbook.md), [Resilience Runbook Template](assets/runbooks/resilience-runbook-template.md).
-
-## Core QA (Default)
-
-### Failure Mode Testing (What to Validate)
-
-- Timeouts: every network call and DB query has a bounded timeout; validate timeout budgets across chained calls and deadline/cancellation propagation.
-- Retries: bounded retries with backoff + jitter; validate idempotency/dedup and retry storm safeguards (caps, budgets, and per-try timeouts).
-- Dependency failure: partial outage, slow downstream, rate limiting, DNS failures, auth failures, and corrupted/invalid responses.
-- Overload/saturation: connection pool exhaustion, queue backlog, thread pool starvation, and rate limiting; validate backpressure and load shedding.
-- Degraded-mode UX: what the user sees/gets when dependencies fail (cached/stale/partial responses) and what consistency guarantees apply.
-- Health checks: validate liveness/readiness/startup probe behavior (Kubernetes probes: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/).
-
-### Right-Sized Chaos Engineering (Safe by Construction)
-
-- Define steady state and hypothesis (Principles of Chaos Engineering: https://principlesofchaos.org/).
-- Start in non-prod; in prod, use minimal blast radius, timeboxed runs, and explicit abort criteria.
-- REQUIRED: rollback plan, owners, and observability signals before running experiments.
-- REQUIRED (prod): change window + on-call aware, error budget healthy, and an explicit stop condition based on customer impact signals.
-
-### Load/Perf + Production Guardrails
-
-- Load tests validate capacity and tail latency; resilience tests validate behavior under failure.
-- Guardrails:
-  - Run heavy resilience/perf suites on schedule (nightly) and on canary deploys, not on every PR.
-  - Gate releases on regression budgets (p99 latency, error rate, saturation) rather than on raw CPU/memory.
-
-### Flake Control for Resilience Tests
-
-- Chaos/fault injection can look "flaky" if the experiment is not deterministic.
-- Stabilize the experiment first: fixed blast radius, controlled fault parameters, deterministic duration, strong observability.
-
-### Debugging Ergonomics
-
-- Every resilience test run should capture: experiment parameters, target scope, timestamps, and trace/log links for failures.
-- Prefer tracing/metrics to confirm the failure is the expected one (not collateral damage).
-
-### Do / Avoid
-
-Do:
-- Test degraded mode explicitly; document expected UX and API responses.
-- Validate retries/timeouts in integration tests with fault injection.
-
-Avoid:
-- Unbounded retries and missing timeouts (amplifies incidents).
-- "Happy-path only" testing that ignores downstream failure classes.
+Use this skill when reliability work is about failure behavior, overload protection, degraded mode, or resilience testing. The goal is not "add retries everywhere." The goal is predictable failure handling, clear ownership, and testable recovery behavior.
 
 ## Quick Reference
 
-| Pattern | Mechanism / Tooling | When to Use | Configuration (Starting Point) |
-|---------|--------------|-------------|---------------|
-| Circuit Breaker | App-level breaker or service mesh; emit breaker state changes | Sustained downstream failures or timeouts | Open on sustained error/timeout rates; use half-open probes; tune windows to traffic + error budget |
-| Retry with Backoff | Client retry libs; respect Retry-After for 429/503 | Transient failures and rate limiting | 2-3 retries max for user-facing paths; backoff + jitter; per-try timeouts; never exceed remaining deadline |
-| Timeout Budgets | Deadlines/cancellation + DB statement timeouts | Any remote call or query | Budget per hop; fail fast; propagate deadlines; set DB query timeout and pool wait timeout |
-| Bulkheads + Backpressure | Concurrency limiters, separate pools/queues, admission control | Overload/saturation risk | Separate pools per dependency; bound queues; reject early (429/503) over uncontrolled latency growth |
-| Graceful Degradation | Feature flags, cached/stale fallback, partial responses | Non-critical features and partial outages | Define data freshness + UX; instrument fallback rate; avoid silent degradation |
-| Health Checks | K8s liveness/readiness/startup probes | Orchestration and load balancing | Liveness shallow; readiness checks critical deps (bounded); startup for slow init; add graceful shutdown |
-| Chaos / Fault Injection | Fault proxies, service-mesh faults, managed chaos tools | Validate behavior under real failure modes | Start in non-prod; control blast radius; timebox; predefine stop conditions; record experiment parameters |
+| Symptom | Start With |
+|--------|------------|
+| slow or hanging dependency | deadline and timeout budget |
+| transient dependency failure | bounded retry with jitter and retry budget |
+| sustained dependency failure | circuit breaker and fallback |
+| rate-limited dependency | honor `Retry-After`, expose degraded behavior, and test quota paths intentionally |
+| one bad host in a healthy pool | outlier detection or endpoint ejection |
+| queue or pool saturation | bulkheads, concurrency limits, load shedding |
+| non-critical feature outage | graceful degradation or feature flag fallback |
+| resilience validation | deterministic fault injection before chaos |
 
-## Decision Tree: Resilience Pattern Selection
+## When to Use This Skill
 
-```text
-Failure scenario: [System Dependency Type]
-    ├─ External API/Service?
-    │   ├─ Transient errors? → Retry with exponential backoff + jitter
-    │   ├─ Cascading failures? → Circuit breaker + fallback
-    │   ├─ Rate limiting? → Retry with Retry-After header respect
-    │   └─ Slow response? → Timeout + circuit breaker
-    │
-    ├─ Database Dependency?
-    │   ├─ Connection pool exhaustion? → Bulkhead isolation + timeout
-    │   ├─ Query timeout? → Statement timeout (5-10s)
-    │   ├─ Replica lag? → Read from primary fallback
-    │   └─ Connection failures? → Retry + circuit breaker
-    │
-    ├─ Overload/Saturation?
-    │   ├─ Queue/pool growing? → Backpressure + bound queues + admission control
-    │   ├─ Thundering herd? → Jitter + request coalescing + caching
-    │   └─ Expensive paths? → Load shedding + feature flag degradation
-    │
-    ├─ Non-Critical Feature?
-    │   ├─ ML recommendations? → Feature flag + default values fallback
-    │   ├─ Search service? → Cached results or basic SQL fallback
-    │   ├─ Email/notifications? → Log error, don't block main flow
-    │   └─ Analytics? → Fire-and-forget, circuit breaker for protection
-    │
-    ├─ Kubernetes/Orchestration?
-    │   ├─ Service discovery? → Liveness + readiness + startup probes
-    │   ├─ Slow startup? → Startup probe (failureThreshold: 30)
-    │   ├─ Load balancing? → Readiness probe (check dependencies)
-    │   └─ Auto-restart? → Liveness probe (simple check)
-    │
-    └─ Testing Resilience?
-        ├─ Pre-production? → Chaos Toolkit experiments
-        ├─ Production (low risk)? → Feature flags + canary deployments
-        ├─ Scheduled testing? → Game days (quarterly)
-        └─ Continuous chaos? → Low-blast-radius fault injection with strong guardrails
+- retries, deadlines, hedging, breakers, bulkheads, and overload protection
+- degraded-mode UX or API behavior
+- service-mesh or gateway resilience policy
+- chaos engineering, game days, DR drills, and fault injection
+- release gates based on failure behavior, not only happy-path load tests
+
+## Route Elsewhere
+
+- simple CRUD or single-process utilities -> ordinary error handling may be enough
+- frontend-only failure behavior -> [software-frontend](../software-frontend/SKILL.md)
+- service implementation details -> [software-backend](../software-backend/SKILL.md)
+- telemetry instrumentation -> [qa-observability](../qa-observability/SKILL.md)
+- broader platform and incident operating model -> [ops-devops-platform](../ops-devops-platform/SKILL.md)
+
+---
+
+## Workflow
+
+1. Identify the critical user journeys and the dependencies that can break them.
+2. Define the contract per dependency:
+   - timeout or deadline budget
+   - retry ownership
+   - breaker or outlier policy
+   - concurrency and queue limits
+   - degraded behavior if the dependency is unavailable
+3. Decide where the policy lives:
+   - app code
+   - client library
+   - mesh or gateway
+4. Test in stages:
+   - deterministic fault injection
+   - staged chaos in non-production
+   - narrow prod canary or game day only with guardrails
+5. Define pass or fail signals:
+   - burn rate
+   - p95 or p99
+   - fallback rate
+   - breaker transitions
+   - shed volume
+   - recovery time
+
+---
+
+## Pattern Rules
+
+- retries happen at one layer only
+- deadlines come before retries
+- hedging is only for idempotent or cancellation-safe reads
+- overload handling must shed early instead of collapsing late
+- readiness and liveness must stay bounded and shallow
+- resilience behaviors belong in targeted checks; do not let rate-limit or degraded-mode coverage leak into unrelated happy-path suites
+- prod experiments require blast-radius limits, abort criteria, dashboards, and owners
+
+## Failure Modes to Validate
+
+- timeouts and deadline propagation
+- retry storms and duplicate side effects
+- partial dependency outages
+- slow downstreams and long-tail latency
+- queue buildup and connection-pool exhaustion
+- one-bad-host behavior inside a pool
+- degraded-mode responses and stale-data fallbacks
+- rate-limit handling, `Retry-After`, and client backoff expectations
+- visible state convergence after recovery or backend resets
+- failover and failback behavior
+- metastable failure: a self-sustaining feedback loop (retry amplification, cache-miss stampede, queue backlog, connection-pool churn) that does not self-resolve after the original trigger clears — see [references/cascading-failure-prevention.md](references/cascading-failure-prevention.md#metastable-failures--the-class-cascading-failure-fixes-do-not-cure)
+
+---
+
+## Testing Ladder
+
+### Deterministic first
+
+- inject latency, errors, timeouts, malformed payloads, and unavailable endpoints in controlled tests
+- verify the intended control activates and the wrong controls do not
+
+### Chaos second
+
+- start in non-production
+- use a small blast radius and a fixed time window
+- stop immediately on error-budget or customer-impact breach
+
+### DR and game days last
+
+- validate RTO and RPO claims explicitly
+- rehearse recovery ownership, not only technical failover
+
+---
+
+## Operational Guardrails
+
+- every experiment needs a stated hypothesis and steady-state metric
+- every run should capture timestamps, targets, blast radius, and dashboard links
+- telemetry fields for retries, breaker transitions, hedging, shedding, and fallback are part of the resilience contract
+- releases should be gated on reliability behavior, not only resource usage
+
+## Anti-Patterns
+
+- no timeouts
+- retries at every hop
+- fixed-interval or unbounded retries
+- fixed per-call retry count with no system-wide retry budget (does not tighten as error rate rises)
+- retries without idempotency
+- hedging unsafe writes
+- no bulkheads or queue bounds
+- deep readiness or liveness checks
+- silent degraded mode
+- untested failover plans
+- happy-path-only load testing
+
+---
+
+## Scripts
+
+| Script | Purpose |
+|--------|---------|
+| [scripts/resilience_checker.py](scripts/resilience_checker.py) | Scores resilience pattern coverage and reports gaps |
+
+Typical usage:
+
+```bash
+python scripts/resilience_checker.py assess --input data/sample-service-profile.json
+python scripts/resilience_checker.py gaps --input data/sample-service-profile.json
+python scripts/resilience_checker.py report --input data/sample-service-profile.json --output resilience-report.md
 ```
 
-## Navigation: Core Resilience Patterns
+See [scripts/README.md](scripts/README.md) for the input format and scoring logic.
 
-- **[Circuit Breaker Patterns](references/circuit-breaker-patterns.md)** - Prevent cascading failures
-  - Classic circuit breaker implementation (Node.js, Python)
-  - Tuning, alerting, and fallback strategies
+## ASCII Flow
 
-- **[Retry Patterns](references/retry-patterns.md)** - Handle transient failures
-  - Exponential backoff with jitter
-  - Retry decision table (which errors to retry)
-  - Idempotency patterns and Retry-After headers
+```text
+Resilience request
+  -> Identify failure mode: slow, transient, sustained, overloaded, or degraded
+  -> Set deadlines, retry budgets, isolation, and fallback ownership
+  -> Add telemetry for saturation, errors, latency, and degraded behavior
+  -> Validate with deterministic fault injection before chaos experiments
+  -> Gate release on recovery evidence, SLO impact, and rollback path
+  -> Document runbook actions and residual risk
+```
 
-- **[Bulkhead Isolation](references/bulkhead-isolation.md)** - Resource compartmentalization
-  - Semaphore pattern for thread/connection pools
-  - Database connection pooling strategies
-  - Queue-based bulkheads with load shedding
+## Navigation
 
-- **[Timeout Policies](references/timeout-policies.md)** - Prevent resource exhaustion
-  - Connection, request, and idle timeouts
-  - Database query timeouts (PostgreSQL, MySQL)
-  - Nested timeout budgets for chained operations
+### Foundation applied recipes
 
-- **[Graceful Degradation](references/graceful-degradation.md)** - Maintain partial functionality
-  - Cached fallback strategies
-  - Default values and feature toggles
-  - Partial responses with Promise.allSettled
+- [references/reliability-theory-applied.md](references/reliability-theory-applied.md)
+- [references/distributed-systems-applied.md](references/distributed-systems-applied.md)
 
-- **[Health Check Patterns](references/health-check-patterns.md)** - Service availability monitoring
-  - Liveness, readiness, and startup probes
-  - Kubernetes probe configuration
-  - Shallow vs deep health checks
+### Core references
 
-- **[Load Shedding & Backpressure](references/load-shedding-backpressure.md)** - Overload protection patterns
-  - Admission control and queue-based shedding
-  - Backpressure propagation across services
-  - Priority-based request handling
+- [references/circuit-breaker-patterns.md](references/circuit-breaker-patterns.md)
+- [references/retry-patterns.md](references/retry-patterns.md)
+- [references/timeout-policies.md](references/timeout-policies.md)
+- [references/deadlines-hedging.md](references/deadlines-hedging.md)
+- [references/bulkhead-isolation.md](references/bulkhead-isolation.md)
+- [references/load-shedding-backpressure.md](references/load-shedding-backpressure.md)
+- [references/gateway-mesh-resilience.md](references/gateway-mesh-resilience.md)
+- [references/graceful-degradation.md](references/graceful-degradation.md)
+- [references/health-check-patterns.md](references/health-check-patterns.md)
+- [references/cascading-failure-prevention.md](references/cascading-failure-prevention.md)
+- [references/disaster-recovery-testing.md](references/disaster-recovery-testing.md)
 
-- **[Cascading Failure Prevention](references/cascading-failure-prevention.md)** - Multi-layer containment
-  - Failure propagation analysis
-  - Dependency isolation strategies
-  - Blast radius limitation techniques
+### Operational resources
 
-- **[Disaster Recovery Testing](references/disaster-recovery-testing.md)** - DR drill execution
-  - RTO/RPO verification
-  - Failover and failback procedures
-  - Game day planning and execution
-
-## Navigation: Operational Resources
-
-- **[Resilience Checklists](references/resilience-checklists.md)** - Production hardening checklists
-  - Dependency resilience
-  - Health and readiness probes
-  - Observability for resilience
-  - Failure testing
-
-- **[Chaos Engineering Guide](references/chaos-engineering-guide.md)** - Safe reliability experiments
-  - Planning chaos experiments
-  - Common failure injection scenarios
-  - Execution steps and debrief checklist
-
-## Navigation: Templates
-
-- **[Resilience Runbook Template](assets/runbooks/resilience-runbook-template.md)** - Service hardening profile
-  - Dependencies and SLOs
-  - Fallback strategies
-  - Rollback procedures
-
-- **[Fault Injection Playbook](assets/testing/fault-injection-playbook.md)** - Chaos testing script
-  - Success signals
-  - Rollback criteria
-  - Post-experiment debrief
-
-- **[Resilience Test Plan Template](assets/testing/template-resilience-test-plan.md)** - Failure mode test plan (timeouts/retries/degraded mode)
-  - Scope and dependencies
-  - Fault matrix and expected behavior
-  - Observability signals and pass/fail criteria
-
-## Quick Decision Matrix
-
-| Scenario | Recommendation |
-|----------|----------------|
-| External API calls | Circuit breaker + retry with exponential backoff |
-| Database queries | Timeout + connection pooling + circuit breaker |
-| Slow dependency | Bulkhead isolation + timeout |
-| Overload/saturation | Bulkheads + backpressure + load shedding |
-| Non-critical feature | Feature flag + graceful degradation |
-| Kubernetes deployment | Liveness + readiness + startup probes |
-| Testing resilience | Chaos engineering experiments |
-| Transient failures | Retry with exponential backoff + jitter |
-| Cascading failures | Circuit breaker + bulkhead |
-
-## Anti-Patterns to Avoid
-
-- **No timeouts** - Infinite waits exhaust resources
-- **Infinite retries** - Amplifies problems (thundering herd)
-- **Retries without idempotency** - Duplicate side effects and data corruption
-- **No circuit breakers** - Cascading failures
-- **Tight coupling** - One failure breaks everything
-- **Silent failures** - No observability into degraded state
-- **No bulkheads** - Shared thread pools exhaust all resources
-- **Failover never tested** - DR plan fails during a real incident
-- **Testing only happy path** - Production reveals failures
-
-## Optional: AI / Automation
-
-Do:
-- Use AI to propose failure-mode scenarios from an explicit risk register; keep only scenarios that map to known dependencies and business journeys.
-- Use AI to summarize experiment results (metrics deltas, error clusters) and draft postmortem timelines; verify with telemetry.
-
-Avoid:
-- "Scenario generation" without a risk map (creates noise and wasted load).
-- Letting AI relax timeouts/retries or remove guardrails.
+- [references/resilience-checklists.md](references/resilience-checklists.md)
+- [references/chaos-engineering-guide.md](references/chaos-engineering-guide.md)
+- [references/chaos-tooling-recipes.md](references/chaos-tooling-recipes.md)
+- [references/idempotency-key-design.md](references/idempotency-key-design.md)
+- [references/resilience-telemetry.md](references/resilience-telemetry.md)
+- [references/slo-as-code.md](references/slo-as-code.md)
+- [references/ai-llm-resilience-failure-modes.md](references/ai-llm-resilience-failure-modes.md)
+- [assets/runbooks/resilience-runbook-template.md](assets/runbooks/resilience-runbook-template.md)
+- [assets/testing/fault-injection-playbook.md](assets/testing/fault-injection-playbook.md)
+- [assets/testing/template-resilience-test-plan.md](assets/testing/template-resilience-test-plan.md)
+- [data/sample-service-profile.json](data/sample-service-profile.json)
 
 ## Related Skills
 
-- [../ops-devops-platform/SKILL.md](../ops-devops-platform/SKILL.md) — Incident response, SLOs, and platform runbooks
-- [../software-backend/SKILL.md](../software-backend/SKILL.md) — API error handling, retries, and database reliability patterns
-- [../software-architecture-design/SKILL.md](../software-architecture-design/SKILL.md) — System decomposition and dependency design for reliability
-- [../qa-testing-strategy/SKILL.md](../qa-testing-strategy/SKILL.md) — Regression, load, and fault-injection testing strategies
-- [../software-security-appsec/SKILL.md](../software-security-appsec/SKILL.md) — Security failure modes and guardrails
-- [../qa-observability/SKILL.md](../qa-observability/SKILL.md) — Metrics, tracing, logging, and performance monitoring
-- [../qa-debugging/SKILL.md](../qa-debugging/SKILL.md) — Production debugging and incident investigation
-- [../data-sql-optimization/SKILL.md](../data-sql-optimization/SKILL.md) — Database resilience, connection pooling, and query timeouts
-- [../dev-api-design/SKILL.md](../dev-api-design/SKILL.md) — API design patterns including error handling and retry semantics
-
-## Usage Notes
-
-**Pattern Selection:**
-
-- Start with circuit breakers for external dependencies
-- Add retries for transient failures (network, rate limits)
-- Use bulkheads to prevent resource exhaustion
-- Combine patterns for defense-in-depth
-
-**Observability:**
-
-- Track circuit breaker state changes
-- Monitor retry attempts and success rates
-- Alert on degraded mode duration
-- Measure recovery time after failures
-
-**Testing:**
-
-- Start chaos experiments in non-production
-- Define hypothesis before failure injection
-- Set blast radius limits and auto-revert
-- Document learnings and action items
-
-Success criteria: systems gracefully handle failures, recover automatically, maintain partial functionality during outages, and fail fast to prevent cascading failures. Resilience is tested proactively through fault injection and game days (with guardrails).
+- [ops-devops-platform](../ops-devops-platform/SKILL.md)
+- [software-backend](../software-backend/SKILL.md)
+- [software-architecture-design](../software-architecture-design/SKILL.md)
+- [qa-observability](../qa-observability/SKILL.md)
+- [qa-debugging](../qa-debugging/SKILL.md)
+- [software-security-appsec](../software-security-appsec/SKILL.md)
+- [data-sql-optimization](../data-sql-optimization/SKILL.md)
+- [dev-api-design](../dev-api-design/SKILL.md)
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify current platform features, mesh capabilities, and vendor-specific behavior before final answers when the recommendation depends on a live product.
+- Prefer primary docs for runtime or tooling specifics.
+- If web access is unavailable, keep external product guidance marked as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

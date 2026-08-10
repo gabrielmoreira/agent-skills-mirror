@@ -3,16 +3,6 @@ name: godot-genre-battle-royale
 description: "Expert blueprint for Battle Royale games including shrinking zone/storm mechanics (phase-based, damage scaling), large-scale networking (relevancy, tick rate optimization), deployment systems (plane, freefall, parachute), loot spawning (weighted tables, rarity), and performance optimization (LOD, occlusion culling, object pooling). Use for multiplayer survival games or last-one-standing formats. Trigger keywords: battle_royale, zone_shrink, storm_damage, deployment_system, loot_spawn, networking_optimization, relevancy_system, snapshot_interpolation."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Battle Royale
-
-Expert blueprint for Battle Royale games with zone mechanics, large-scale networking, and survival gameplay.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Networking & Scale
@@ -96,12 +86,12 @@ Deploy → Loot → Move with storm → Engage → Last standing.
 
 | Phase | Skills | Purpose |
 |-------|--------|---------|
-| 1. Net | [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) | Authoritative server, relevancy, RPCs |
-| 2. Map | [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md), [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) | Terrain scale, streaming, HLOD |
-| 3. Items | [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) | Backpack / attachments / armor |
-| 4. Combat | [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md), [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) | Hitscan/projectile + damage validation |
+| 1. Net | [godot-multiplayer-networking](multiplayer-networking.md) | Authoritative server, relevancy, RPCs |
+| 2. Map | [godot-3d-world-building](3d-world-building.md), [godot-genre-open-world](genre-open-world.md) | Terrain scale, streaming, HLOD |
+| 3. Items | [godot-inventory-system](inventory-system.md) | Backpack / attachments / armor |
+| 4. Combat | [godot-genre-shooter](genre-shooter.md), [godot-combat-system](combat-system.md) | Hitscan/projectile + damage validation |
 | 5. Zone | **MANDATORY** [storm_system.gd](../scripts/genre_battle_royale_storm_system.gd) | Storm phases / DPS / contained centers |
-| 6. Balance | [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) | Zone DPS, loot rarity, TTK bands |
+| 6. Balance | [godot-monte-carlo-balancer](monte-carlo-balancer.md) | Zone DPS, loot rarity, TTK bands |
 
 ---
 
@@ -162,7 +152,6 @@ Unshaded, `cull_disabled` spatial shader on inverted sphere scaled by [storm_sys
 - [lag_compensator.gd](../scripts/genre_battle_royale_lag_compensator.gd)
 - [monster_synchronizer.gd](../scripts/genre_battle_royale_monster_synchronizer.gd)
 
-
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
@@ -184,22 +173,22 @@ Unshaded, `cull_disabled` spatial shader on inverted sphere scaled by [storm_sys
 ### Related Skills
 
 #### Prerequisites
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Authoritative server RPCs, transfer modes, and lobby/peer lifecycle that BR relevancy and lag compensation build on.
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Autoloads, export feature flags, and project layout for headless dedicated vs client builds.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Large terrain chunking, collision generation, and world streaming prerequisites for storm-scale maps.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Authoritative server RPCs, transfer modes, and lobby/peer lifecycle that BR relevancy and lag compensation build on.
+- [godot-project-foundations](project-foundations.md) — Autoloads, export feature flags, and project layout for headless dedicated vs client builds.
+- [godot-3d-world-building](3d-world-building.md) — Large terrain chunking, collision generation, and world streaming prerequisites for storm-scale maps.
 
 #### Complements
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Authority split, prediction shells, and snapshot interpolation before applying BR-scale interest management.
-- [godot-server-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md) — Headless host scaffolding and PhysicsServer/RID patterns used by authoritative match simulation.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Dedicated-server presets, INTERNET permissions, and CLI packaging for multi-instance match tests.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Backpacks, attachments, and armor state that authoritative looting must validate server-side.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — LOD, pooling, and CPU budgets when loot density and peer count stress the match server/clients.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Kill-feed and match-event buses that stay local while RPCs carry cross-peer eliminations.
-- [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) — Hitscan/projectile combat patterns and lag-compensated validation used inside the BR engagement loop.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — Authority split, prediction shells, and snapshot interpolation before applying BR-scale interest management.
+- [godot-server-architecture](server-architecture.md) — Headless host scaffolding and PhysicsServer/RID patterns used by authoritative match simulation.
+- [godot-export-builds](export-builds.md) — Dedicated-server presets, INTERNET permissions, and CLI packaging for multi-instance match tests.
+- [godot-inventory-system](inventory-system.md) — Backpacks, attachments, and armor state that authoritative looting must validate server-side.
+- [godot-performance-optimization](performance-optimization.md) — LOD, pooling, and CPU budgets when loot density and peer count stress the match server/clients.
+- [godot-signal-architecture](signal-architecture.md) — Kill-feed and match-event buses that stay local while RPCs carry cross-peer eliminations.
+- [godot-genre-shooter](genre-shooter.md) — Hitscan/projectile combat patterns and lag-compensated validation used inside the BR engagement loop.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate zone DPS phases, loot rarity tables, and TTK bands so storm/loot pacing stays fair across 100-player matches.
-- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) — Bot pathfinding and interest-culled AI when filling lobbies with threaded server-side bots.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate zone DPS phases, loot rarity tables, and TTK bands so storm/loot pacing stays fair across 100-player matches.
+- [godot-ai-navigation](ai-navigation.md) — Bot pathfinding and interest-culled AI when filling lobbies with threaded server-side bots.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting BR concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting BR concern.

@@ -3,18 +3,6 @@ name: godot-platform-web
 description: "Expert blueprint for HTML5/web export on Compatibility (WebGL 2.0): JavaScriptBridge, localStorage wrapper, custom loading shells, COOP/COEP hosts, relative paths, beforeunload, visibility pause, and size optimization. WebGPU is out of scope. Keywords: web, HTML5, WebGL, Compatibility, JavaScriptBridge, localStorage, COOP, COEP, canvas, browser API."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Platform: Web
-
-HTML5 export on **Compatibility / WebGL 2.0**. Browser storage, JS bridges, and host headers — not Forward+/WebGPU fantasy.
-
-> **Out of scope / future:** WebGPU is **not** a supported Godot 4.x web renderer. Do not design production paths around it; ship **Compatibility (WebGL 2.0)** + VRAM compression.
-
 ## NEVER Do (Expert Web Rules)
 
 ### Persistence & Storage
@@ -167,22 +155,22 @@ func _on_pwa_update() -> void:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Feature tags (`web`), Compatibility renderer defaults, and display stretch settings every HTML5 export branch depends on.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — InputEvent ownership before suppressing browser defaults (context menu, spacebar scroll) or remapping canvas focus.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Versioned save ownership and cloud-fallback hooks that `localStorage` wrappers must not invent ad hoc.
+- [godot-project-foundations](project-foundations.md) — Feature tags (`web`), Compatibility renderer defaults, and display stretch settings every HTML5 export branch depends on.
+- [godot-input-handling](input-handling.md) — InputEvent ownership before suppressing browser defaults (context menu, spacebar scroll) or remapping canvas focus.
+- [godot-save-load-systems](save-load-systems.md) — Versioned save ownership and cloud-fallback hooks that `localStorage` wrappers must not invent ad hoc.
 
 #### Complements
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Touch/lifecycle patterns that overlap when the same build is played in mobile browsers.
-- [godot-platform-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md) — Keep native desktop paths healthy when one project dual-targets desktop + web.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Bus/voice control used when tab visibility must pause playback to avoid background audio.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and CPU/GPU cuts when WebGL budgets still miss 60 FPS after Compatibility + compression.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Control layout that stays readable as the browser canvas resizes across desktop and phone web.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton homes for JavaScriptBridge managers, storage wrappers, and always-on visibility guards.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — WebSocket/WebRTC peers that replace LAN assumptions once the game is browser-hosted.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — PCK/resource packing contracts consumed by remote lazy-load fetch flows on web.
+- [godot-platform-mobile](platform-mobile.md) — Touch/lifecycle patterns that overlap when the same build is played in mobile browsers.
+- [godot-platform-desktop](platform-desktop.md) — Keep native desktop paths healthy when one project dual-targets desktop + web.
+- [godot-audio-systems](audio-systems.md) — Bus/voice control used when tab visibility must pause playback to avoid background audio.
+- [godot-performance-optimization](performance-optimization.md) — Profiling and CPU/GPU cuts when WebGL budgets still miss 60 FPS after Compatibility + compression.
+- [godot-ui-containers](ui-containers.md) — Control layout that stays readable as the browser canvas resizes across desktop and phone web.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton homes for JavaScriptBridge managers, storage wrappers, and always-on visibility guards.
+- [godot-multiplayer-networking](multiplayer-networking.md) — WebSocket/WebRTC peers that replace LAN assumptions once the game is browser-hosted.
+- [godot-resource-data-patterns](resource-data-patterns.md) — PCK/resource packing contracts consumed by remote lazy-load fetch flows on web.
 
 #### Downstream / consumers
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — CI presets, artifact hosting, and size gates after browser APIs and Compatibility settings are locked in.
+- [godot-export-builds](export-builds.md) — CI presets, artifact hosting, and size gates after browser APIs and Compatibility settings are locked in.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this platform skill beside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for discovering this platform skill beside sibling domains.

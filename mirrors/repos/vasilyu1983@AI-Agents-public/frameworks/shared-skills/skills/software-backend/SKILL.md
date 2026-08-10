@@ -1,344 +1,254 @@
 ---
 name: software-backend
-description: Production-grade backend APIs for Node.js, Python, Go, Rust, and C# with PostgreSQL. Use when building REST/GraphQL/tRPC services or auth.
+description: "Builds backend services and APIs with durable defaults. Use when implementing REST, GraphQL, tRPC, or gRPC services with auth, queues, data, or observability."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
 # Software Backend Engineering
 
-Use this skill to design, implement, and review production-grade backend services: API boundaries, data layer, auth, caching, observability, error handling, testing, and deployment.
+Use this skill for backend service implementation and review: API boundaries, auth, data access, jobs, caching, observability, and production hardening. If the main question is platform selection, system topology, or API-contract design without implementation, hand off early.
 
-Defaults to bias toward: type-safe boundaries (validation at the edge), OpenTelemetry for observability, zero-trust assumptions, idempotency for retries, RFC 9457 errors, Postgres + pooling, structured logs, timeouts, and rate limiting.
+## Defaults
 
-**Scaffolding rule**: When scaffolding a new project, show full working implementations for all domain logic — fraud rules, audit logging, webhook handlers, validation pipelines, background jobs. Don't just reference file names or stub functions; show the actual code so the user can run it immediately.
+When this skill is active, prefer these defaults unless the repo or user says otherwise:
 
----
+- validate at the boundary and keep types explicit
+- use PostgreSQL plus pooling for relational workloads
+- use structured logs, OpenTelemetry, explicit timeouts, and rate limits
+- make mutations idempotent and background work retry-safe
+- use RFC 9457 Problem Details for machine-readable errors
 
 ## Quick Reference
 
-| Task | Default Picks | Notes |
-|------|---------------|-------|
-| REST API | Fastify / Express / NestJS | Prefer typed boundaries + explicit timeouts |
-| Edge API | Hono / platform-native handlers | Keep work stateless, CPU-light |
-| Type-Safe API | tRPC | Prefer for TS monorepos and internal APIs |
-| GraphQL API | Apollo Server / Pothos | Prefer for complex client-driven queries |
-| Database | PostgreSQL | Use pooling + migrations + query budgets |
-| ORM / Query Layer | Prisma / Drizzle / SQLAlchemy / GORM / SeaORM / EF Core | Prefer explicit transactions |
-| Authentication | OIDC/OAuth + sessions/JWT | Prefer httpOnly cookies for browsers |
-| Validation | Zod / Pydantic / validator libs | Validate at the boundary, not deep inside |
-| Caching | Redis (or managed) | Use TTLs + invalidation strategy |
-| Background Jobs | BullMQ / platform queues | Make jobs idempotent + retry-safe |
-| Testing | Unit + integration + contract/E2E | Keep most tests below the UI layer |
-| Observability | Structured logs + OpenTelemetry | Correlation IDs end-to-end |
+| Need | Default Direction |
+|------|-------------------|
+| Public HTTP API | REST with explicit contracts and timeouts |
+| Internal TS monorepo API | tRPC when end-to-end type safety matters |
+| High-throughput internal RPC | Connect or gRPC |
+| Complex client-shaped reads | GraphQL |
+| Relational data | PostgreSQL with migrations and pooling |
+| Background work | Queue plus idempotent handlers and DLQ policy |
+| Browser auth | OIDC or OAuth plus httpOnly cookies |
+| Service auth | short-lived tokens, workload identity, or signed service credentials |
+| Caching | explicit TTLs and invalidation rules |
+| Observability | correlation IDs, traces, structured logs, saturation metrics |
 
-## Scope
+## When to Use This Skill
 
-Use this skill to:
+- building or reviewing REST, GraphQL, tRPC, Connect, or gRPC services
+- implementing auth, validation, rate limits, caching, queues, or webhook handling
+- modelling schemas and running safe migrations
+- hardening service behavior for retries, timeouts, and observability
+- scaffolding or refactoring a backend with production defaults
 
-- Design and implement REST/GraphQL/tRPC APIs
-- Model data schemas and run safe migrations
-- Implement authentication/authorization (OIDC/OAuth, sessions/JWT)
-- Add validation, error handling, rate limiting, caching, and background jobs
-- Ship production readiness (timeouts, observability, deploy/runbooks)
+## Route Elsewhere
 
-## When NOT to Use This Skill
+- frontend-only work -> [software-frontend](../software-frontend/SKILL.md)
+- infrastructure provisioning and cluster design -> [ops-devops-platform](../ops-devops-platform/SKILL.md)
+- API contract design without implementation -> [dev-api-design](../dev-api-design/SKILL.md)
+- BaaS platform selection (data/auth layer) -> [software-baas-platforms](../software-baas-platforms/SKILL.md)
+- PaaS hosting selection (compute layer: Vercel, Fly.io, Railway, Render, Cloudflare Workers, Deno Deploy) -> [software-paas-hosting](../software-paas-hosting/SKILL.md)
+- SQL tuning and indexing deep dives -> [data-sql-optimization](../data-sql-optimization/SKILL.md)
+- security reviews and threat modelling -> [software-security-appsec](../software-security-appsec/SKILL.md)
+- broader system architecture -> [software-architecture-design](../software-architecture-design/SKILL.md)
 
-Use a different skill when:
+---
 
-- **Frontend-only concerns** -> See [software-frontend](../software-frontend/SKILL.md)
-- **Infrastructure provisioning (Terraform, K8s manifests)** -> See [ops-devops-platform](../ops-devops-platform/SKILL.md)
-- **API design patterns only (no implementation)** -> See [dev-api-design](../dev-api-design/SKILL.md)
-- **SQL query optimization and indexing** -> See [data-sql-optimization](../data-sql-optimization/SKILL.md)
-- **Security audits and threat modeling** -> See [software-security-appsec](../software-security-appsec/SKILL.md)
-- **System architecture (beyond single service)** -> See [software-architecture-design](../software-architecture-design/SKILL.md)
+## Workflow
+
+1. Confirm the real constraint: latency, team skill, runtime, compliance, data model, or delivery speed.
+2. Choose the transport and framework based on that constraint, not on trend-chasing.
+3. Define the boundary:
+   - request and response contracts
+   - auth and authorization rules
+   - error model
+   - idempotency and rate limiting
+4. Define the data path:
+   - schema and migrations
+   - transaction boundaries
+   - pooling and query budgets
+   - cache and invalidation rules
+5. Define the async path:
+   - queue semantics
+   - retry ownership
+   - deduplication and DLQ
+6. Add operability before calling it complete:
+   - timeouts and cancellation
+   - health checks
+   - structured logs and traces
+   - deploy and rollback expectations
+
+---
+
+## ASCII Flow
+
+```text
+Backend task
+  -> Define endpoint, job, service, or data boundary
+  -> Confirm runtime, framework, persistence, and integration contracts
+  -> Design request validation, auth, errors, and idempotency
+  -> Implement bounded slice with tests and observability
+  -> Check performance, security, and rollout risk
+  -> Verify behavior and document follow-up handoffs
+```
 
 ## Technology Selection
 
-Pick based on the strongest constraint, not feature lists:
+Pick based on the strongest operational constraint:
 
-| Constraint | Default Pick | Why |
-|-----------|-------------|-----|
-| Team knows TypeScript only | Fastify/Hono + Prisma/Drizzle | Ecosystem depth, hiring ease |
-| Need <50ms P95, CPU-bound work | Go (net/http + sqlc/pgx) | Goroutines isolate CPU work; no event-loop risk |
-| Data-heavy / ML integration | Python (FastAPI + SQLAlchemy) | Best ecosystem for numpy/pandas/ML pipelines |
-| Memory-safety critical | Rust (Axum + SeaORM/SQLx) | Zero-cost abstractions, no GC |
-| Enterprise/.NET team | C# (ASP.NET Core + EF Core) | Azure integration, mature tooling |
-| Edge/serverless | Hono / platform-native handlers | Stateless, CPU-light, fast cold starts |
-| Fintech/audit-sensitive | Go + sqlc (or raw SQL) | ORM magic is a liability; you need auditable SQL |
+- TypeScript-heavy team -> Fastify, Hono, or NestJS plus Prisma or Drizzle
+- audited SQL and predictable concurrency -> Go with `sqlc/pgx`
+- Python ecosystem or ML adjacency -> FastAPI plus SQLAlchemy
+- enterprise .NET stack -> ASP.NET Core plus EF Core or explicit SQL access
+- memory safety and explicitness -> Rust with Axum plus SQLx
+- edge or serverless first -> lightweight stateless handlers with hard CPU and timeout budgets
 
-For detailed framework/ORM/auth/caching selection trees, see [references/edge-deployment-guide.md](references/edge-deployment-guide.md) and language-specific references.
-See [assets/](assets/) for starter templates per language.
+Use [software-baas-platforms](../software-baas-platforms/SKILL.md) first when the real requirement is "ship auth, storage, and realtime quickly with less custom service code."
 
 ---
 
-## API Design Patterns (Dec 2025)
+## Backend Non-Negotiables
 
-### Idempotency Patterns
-
-All mutating operations MUST support idempotency for retry safety.
-
-**Implementation:**
-
-```typescript
-// Idempotency key header
-const idempotencyKey = request.headers['idempotency-key'];
-const cached = await redis.get(`idem:${idempotencyKey}`);
-if (cached) return JSON.parse(cached);
-
-const result = await processOperation();
-await redis.set(`idem:${idempotencyKey}`, JSON.stringify(result), 'EX', 86400);
-return result;
-```
-
-| Do | Avoid |
-|----|-------|
-| Store idempotency keys with TTL (24h typical) | Processing duplicate requests |
-| Return cached response for duplicate keys | Different responses for same key |
-| Use client-generated UUIDs | Server-generated keys |
-
-### Pagination Patterns
-
-| Pattern | Use When | Example |
-|---------|----------|---------|
-| Cursor-based | Large datasets, real-time data | `?cursor=abc123&limit=20` |
-| Offset-based | Small datasets, random access | `?page=3&per_page=20` |
-| Keyset | Sorted data, high performance | `?after_id=1000&limit=20` |
-
-**Prefer cursor-based pagination** for APIs with frequent inserts.
-
-### Error Response Standard (Problem Details)
-
-Use a consistent machine-readable error format (RFC 9457 Problem Details): https://www.rfc-editor.org/rfc/rfc9457
-
-```json
-{
-  "type": "https://example.com/problems/invalid-request",
-  "title": "Invalid request",
-  "status": 400,
-  "detail": "email is required",
-  "instance": "/v1/users"
-}
-```
-
-### Health Check Patterns
-
-```typescript
-// Liveness: Is the process running?
-app.get('/health/live', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
-
-// Readiness: Can the service handle traffic?
-app.get('/health/ready', async (req, res) => {
-  const dbOk = await checkDatabase();
-  const cacheOk = await checkRedis();
-  if (dbOk && cacheOk) {
-    res.status(200).json({ status: 'ready', db: 'ok', cache: 'ok' });
-  } else {
-    res.status(503).json({ status: 'not ready', db: dbOk, cache: cacheOk });
-  }
-});
-```
-
-### Common Mistakes (Non-Obvious)
-
-| Avoid | Instead | Why |
-|-------|---------|-----|
-| N+1 queries | `include`/`select` or DataLoader | 10-100x perf hit; easy to miss in ORM code |
-| No request timeouts | Timeouts on HTTP clients, DB, handlers | Hung deps cascade; see Production Hardening below |
-| Missing connection pooling | Prisma pool / PgBouncer / pgx pool | Exhaustion under load on shared DB tiers |
-| Catching errors silently | Log + rethrow or handle explicitly | Hidden failures, impossible to debug |
+| Category | Rule |
+|----------|------|
+| **API** | Mutating endpoints require idempotency keys where retries are plausible |
+| **API** | List endpoints require explicit pagination (`limit`/`cursor`) and at least one filter |
+| **API** | Errors are structured and machine-readable (RFC 9457 Problem Details) |
+| **API** | Health endpoints separate liveness (`/healthz`) from readiness (`/readyz`) |
+| **Data** | No `SELECT *` on wide or high-volume paths |
+| **Data** | Transactions kept explicit; no implicit ambient transactions |
+| **Data** | New or changed query plans verified with `EXPLAIN ANALYZE` before production |
+| **Data** | ORM convenience layers bypassed on hot paths where auditability matters |
+| **Dependencies** | Every outbound call has an explicit timeout; no framework-default infinite wait |
+| **Dependencies** | Retries owned at exactly one layer (no double-retry across client + service) |
+| **Dependencies** | Cache invalidation rule documented before caching is added |
+| **Dependencies** | Background jobs safe to retry and observable (structured log on start/finish/failure) |
+| **Operations** | Every request carries a correlation ID propagated to all downstream calls |
+| **Operations** | Trace, log, and metric identifiers agree (no split identity) |
+| **Operations** | Slow paths have explicit latency budgets (p99 target, not "fast enough") |
+| **Operations** | Deploy procedure includes rollback step and smoke-check list |
 
 ---
 
-## Production Hardening: Patterns Models Skip
+## Performance and Reliability Triage
 
-These are the patterns that separate "works in dev" from "survives production." Models tend to skip them unless explicitly prompted — add them to every service.
+When a service is slow or unstable, debug in this order:
 
-### Request & Query Timeouts
+| Step | Check | Signal |
+|------|-------|--------|
+| 1 | Query behavior and N+1s | EXPLAIN output, ORM query log showing repeated identical queries |
+| 2 | Indexes and execution plans | Seq scans on large tables, missing index on FK or filter columns |
+| 3 | Connection pooling and queue depth | Pool wait time > 10ms; idle connections exhausted |
+| 4 | Timeout and cancellation gaps | Requests hanging past deadline; no context propagation through outbound calls |
+| 5 | Caching or read-shaping opportunities | Same query with same result executing > 10x/s; hot read path with no invalidation |
+| 6 | Runtime or tier limits | CPU throttling, memory pressure, rate limit headers from upstream |
 
-Every outbound call needs a timeout. Without one, a hung dependency leaks connections and cascades failures.
-
-```typescript
-// HTTP client timeout
-const response = await fetch(url, { signal: AbortSignal.timeout(5000) });
-
-// Database query timeout (Prisma)
-await prisma.$queryRaw`SET statement_timeout = '3000'`;
-
-// Express/Fastify request timeout
-server.register(import('@fastify/timeout'), { timeout: 30000 });
-```
-
-| Layer | Default Timeout | Rationale |
-|-------|----------------|-----------|
-| HTTP client calls | 5s | External APIs shouldn't block you |
-| Database queries | 3s | Slow queries = missing index or bad plan |
-| Request handler | 30s | Safety net for the whole request lifecycle |
-| Background jobs | 5min | Jobs that run longer need chunking |
-
-### Field-Level Selection (Don't `SELECT *`)
-
-ORMs default to fetching all columns. On wide tables this wastes bandwidth and hides performance problems.
-
-```typescript
-// BAD: fetches all 30 columns
-const users = await prisma.user.findMany({ include: { posts: true } });
-
-// GOOD: fetch only what the endpoint needs
-const users = await prisma.user.findMany({
-  select: { id: true, name: true, email: true },
-  include: { posts: { select: { id: true, title: true } } }
-});
-```
-
-For Go (sqlc): write explicit column lists in SQL queries — sqlc enforces this naturally.
-For Python (SQLAlchemy): use `load_only()` or explicit column selection.
-
-### Structured Error Responses (RFC 9457)
-
-Return machine-readable errors from day one. Clients shouldn't have to regex-parse error messages.
-
-```json
-{
-  "type": "https://api.example.com/problems/validation-error",
-  "title": "Validation failed",
-  "status": 422,
-  "detail": "email must be a valid email address",
-  "instance": "/v1/users",
-  "errors": [{ "field": "email", "message": "invalid format" }]
-}
-```
-
-Set `Content-Type: application/problem+json`. This format is a standard (RFC 9457) and parseable by any HTTP client.
-
-### Query Plan Verification
-
-Before shipping any new query to production, verify its execution plan:
-
-```sql
-EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT)
-SELECT ... FROM ... WHERE ...;
-```
-
-Red flags in the output: `Seq Scan` on large tables, `Nested Loop` with high row estimates, `Sort` without index. Add indexes or rewrite the query before deploying.
-
----
-
-## Performance Debugging Workflow
-
-When a service is slow, work through these layers in order. Fix the cheapest layer first — don't add caching before fixing N+1 queries.
-
-| Step | What to Check | Fix |
-|------|--------------|-----|
-| 1. Query analysis | Enable query logging, find N+1s and slow queries | Rewrite with `include`/joins, add `select` for field-level optimization |
-| 2. Indexing | Run `EXPLAIN ANALYZE` on slow queries | Add composite indexes matching WHERE + ORDER BY patterns |
-| 3. Connection pooling | Check connection count vs. pool size | Configure pool limits (Prisma `connection_limit`, PgBouncer, pgx pool) |
-| 4. Caching | Identify read-heavy, rarely-changing data | Add Redis/in-memory cache with TTL + invalidation strategy |
-| 5. Timeouts | Check for missing timeouts on DB, HTTP, handlers | Add timeouts at every layer (see Production Hardening above) |
-| 6. Platform tuning | Shared DB limits, cold starts, memory | Upgrade tier, add read replicas, tune runtime settings |
-
-**Key principle**: always measure before and after. Use structured logging with request IDs to trace specific slow requests end-to-end.
-
----
-
-## Infrastructure Economics
-
-Backend architecture decisions directly impact cost and revenue. See [references/infrastructure-economics.md](references/infrastructure-economics.md) for detailed cost modeling, SLA-to-revenue mapping, unit economics checklists, and FinOps practices.
-
----
-
-## Navigation
-
-**Resources**
-- [references/backend-best-practices.md](references/backend-best-practices.md) - Template authoring guide, quality checklist, and shared utilities pointers
-- [references/edge-deployment-guide.md](references/edge-deployment-guide.md) - Edge computing patterns, Cloudflare Workers vs Vercel Edge, tRPC, Hono, Bun
-- [references/infrastructure-economics.md](references/infrastructure-economics.md) - Cost modeling, performance SLAs -> revenue, FinOps practices, cloud optimization
-- [references/go-best-practices.md](references/go-best-practices.md) - Go idioms, concurrency, error handling, GORM usage, testing, profiling
-- [references/rust-best-practices.md](references/rust-best-practices.md) - Ownership, async, Axum, SeaORM, error handling, testing
-- [references/python-best-practices.md](references/python-best-practices.md) - FastAPI, SQLAlchemy, async patterns, validation, testing, performance
-- [references/nodejs-best-practices.md](references/nodejs-best-practices.md) - Event loop, async patterns, Express/Fastify/NestJS/Hono, error handling, memory management, security, profiling
-- [references/csharp-best-practices.md](references/csharp-best-practices.md) - C# 14 / .NET 10 LTS, extension members, field keyword, ASP.NET Core 10 (validation, SSE, OpenAPI 3.1), EF Core 10 (LeftJoin, named filters), HybridCache, Polly v8 resilience
-- [references/database-patterns.md](references/database-patterns.md) - PostgreSQL patterns (JSONB, CTEs, partitioning), connection pooling, migration strategies, ORM comparison, index design
-- [references/message-queues-background-jobs.md](references/message-queues-background-jobs.md) - BullMQ patterns, broker comparison (Redis/SQS/Kafka/RabbitMQ), idempotent jobs, DLQ, scheduling, delivery guarantees
-- [data/sources.json](data/sources.json) - External references per language/runtime
-- Shared checklists: [../software-clean-code-standard/assets/checklists/backend-api-review-checklist.md](../software-clean-code-standard/assets/checklists/backend-api-review-checklist.md), [../software-clean-code-standard/assets/checklists/secure-code-review-checklist.md](../software-clean-code-standard/assets/checklists/secure-code-review-checklist.md)
-
-**Shared Utilities** (Centralized patterns - extract, don't duplicate)
-- [../software-clean-code-standard/utilities/auth-utilities.md](../software-clean-code-standard/utilities/auth-utilities.md) - Argon2id, jose JWT, OAuth 2.1/PKCE
-- [../software-clean-code-standard/utilities/error-handling.md](../software-clean-code-standard/utilities/error-handling.md) - Effect Result types, correlation IDs
-- [../software-clean-code-standard/utilities/config-validation.md](../software-clean-code-standard/utilities/config-validation.md) - Zod 3.24+, Valibot, secrets management
-- [../software-clean-code-standard/utilities/resilience-utilities.md](../software-clean-code-standard/utilities/resilience-utilities.md) - p-retry v6, opossum v8, OTel spans
-- [../software-clean-code-standard/utilities/logging-utilities.md](../software-clean-code-standard/utilities/logging-utilities.md) - pino v9 + OpenTelemetry integration
-- [../software-clean-code-standard/utilities/testing-utilities.md](../software-clean-code-standard/utilities/testing-utilities.md) - Vitest, MSW v2, factories, fixtures
-- [../software-clean-code-standard/utilities/observability-utilities.md](../software-clean-code-standard/utilities/observability-utilities.md) - OpenTelemetry SDK, tracing, metrics
-- [../software-clean-code-standard/references/clean-code-standard.md](../software-clean-code-standard/references/clean-code-standard.md) - Canonical clean code rules (`CC-*`) for citation
-
-**Templates**
-- [assets/nodejs/template-nodejs-prisma-postgres.md](assets/nodejs/template-nodejs-prisma-postgres.md) - Node.js + Prisma + PostgreSQL
-- [assets/go/template-go-fiber-gorm.md](assets/go/template-go-fiber-gorm.md) - Go + Fiber + GORM + PostgreSQL
-- [assets/rust/template-rust-axum-seaorm.md](assets/rust/template-rust-axum-seaorm.md) - Rust + Axum + SeaORM + PostgreSQL
-- [assets/python/template-python-fastapi-sqlalchemy.md](assets/python/template-python-fastapi-sqlalchemy.md) - Python + FastAPI + SQLAlchemy + PostgreSQL
-- [assets/csharp/template-csharp-aspnet-efcore.md](assets/csharp/template-csharp-aspnet-efcore.md) - C# + ASP.NET Core + Entity Framework Core + PostgreSQL
-
-**Related Skills**
-- [../software-architecture-design/SKILL.md](../software-architecture-design/SKILL.md) - System decomposition, SLAs, and data flows
-- [../software-security-appsec/SKILL.md](../software-security-appsec/SKILL.md) - Authentication/authorization and secure API design
-- [../ops-devops-platform/SKILL.md](../ops-devops-platform/SKILL.md) - CI/CD, infrastructure, and deployment safety
-- [../qa-resilience/SKILL.md](../qa-resilience/SKILL.md) - Resilience, retries, and failure playbooks
-- [../software-code-review/SKILL.md](../software-code-review/SKILL.md) - Review checklists and standards for backend changes
-- [../qa-testing-strategy/SKILL.md](../qa-testing-strategy/SKILL.md) - Testing strategies, test pyramids, and coverage goals
-- [../dev-api-design/SKILL.md](../dev-api-design/SKILL.md) - RESTful design, GraphQL, and API versioning patterns
-- [../data-sql-optimization/SKILL.md](../data-sql-optimization/SKILL.md) - SQL optimization, indexing, and query tuning patterns
-
----
-
-## Freshness Protocol
-
-When users ask version-sensitive recommendation questions, do a quick freshness check before asserting "best" choices or quoting versions.
-
-### Trigger Conditions
-
-- "What's the best backend framework for [use case]?"
-- "What should I use for [API design/auth/database]?"
-- "What's the latest in Node.js/Go/Rust?"
-- "Current best practices for [REST/GraphQL/tRPC]?"
-- "Is [framework/runtime] still relevant in 2026?"
-- "[Express] vs [Fastify] vs [Hono]?"
-- "Best ORM for [database/use case]?"
-
-### How to Freshness-Check
-
-1. Start from `data/sources.json` (official docs, release notes, support policies).
-2. Run a targeted web search for the specific component and open release notes/support policy pages.
-3. Prefer official sources over blogs for versions and support windows.
-
-### What to Report
-
-- **Current landscape**: what is stable and widely used now
-- **Emerging trends**: what is gaining traction (and why)
-- **Deprecated/declining**: what is falling out of favor (and why)
-- **Recommendation**: default choice + 1-2 alternatives, with trade-offs
-
-### Example Topics (verify with fresh search)
-
-- Node.js LTS support window and major changes
-- Bun vs Deno vs Node.js
-- Hono, Elysia, and edge-first frameworks
-- Drizzle vs Prisma for TypeScript
-- tRPC and end-to-end type safety
-- Edge computing and serverless patterns
-- .NET 10 LTS (Nov 2025) and C# 14 adoption
-- ASP.NET Core 10 built-in validation vs FluentValidation
-- EF Core 10 vs Dapper for C# data access
-- HybridCache vs manual IMemoryCache + IDistributedCache
+Do not add caching before you understand the real bottleneck.
 
 ---
 
 ## Operational Playbooks
-- [references/operational-playbook.md](references/operational-playbook.md) - Full backend architecture patterns, checklists, TypeScript notes, and decision tables
+
+- use [references/operational-playbook.md](references/operational-playbook.md) for full service design and review checklists
+- use [qa-resilience](../qa-resilience/SKILL.md) when retries, deadlines, breakers, or degraded-mode behavior are the main question
+- use [dev-api-design](../dev-api-design/SKILL.md) when the contract itself is the main artifact
+
+## Production Readiness Checklist
+
+Before marking a service production-ready:
+
+- [ ] All mutating endpoints have idempotency keys or safe-retry semantics
+- [ ] Every outbound call has an explicit timeout (no framework-default infinite waits)
+- [ ] Health endpoint distinguishes liveness from readiness
+- [ ] Correlation IDs propagated from inbound request to all downstream calls and logs
+- [ ] DLQ policy defined for every queue consumer (what happens to poison messages)
+- [ ] New query plans verified (`EXPLAIN ANALYZE`) before merge to main
+- [ ] Rollback procedure documented and smoke-test list exists
+
+## Known Traps
+
+- Introducing asynchronous jobs to hide a broken synchronous path instead of fixing the contract, timeout budget, or workload shape.
+- Shipping retries without deadlines, jitter, and idempotency keys, then multiplying load during incidents.
+- Changing API or webhook behavior without a compatibility window, replay plan, or structured error-versioning posture.
+- Adding caches before proving whether the real bottleneck is query shape, pooling, lock contention, or outbound dependency latency.
+- Treating background consumers as “fire and forget” even though poison-message handling, replay semantics, and observability are undefined.
+
+## Common Anti-Patterns
+
+- Letting framework defaults define the service contract, error model, and cancellation semantics.
+- Using one generic repository abstraction for every query, including hot paths that need explicit SQL, batching, or shape control.
+- Mixing request handling, domain logic, external side effects, and persistence concerns in one controller or handler.
+- Relying on eventual retries to clean up non-idempotent side effects.
+- Calling a backend “production ready” before timeouts, readiness checks, trace correlation, and rollback smoke tests exist.
+
+## Navigation
+
+### Core references
+
+- [references/backend-best-practices.md](references/backend-best-practices.md)
+- [references/edge-deployment-guide.md](references/edge-deployment-guide.md)
+- [references/infrastructure-economics.md](references/infrastructure-economics.md)
+- [references/database-patterns.md](references/database-patterns.md)
+- [references/message-queues-background-jobs.md](references/message-queues-background-jobs.md)
+- [references/rpc-and-transport-patterns.md](references/rpc-and-transport-patterns.md)
+- [references/go-best-practices.md](references/go-best-practices.md)
+- [references/rust-best-practices.md](references/rust-best-practices.md)
+- [references/python-best-practices.md](references/python-best-practices.md)
+- [references/nodejs-best-practices.md](references/nodejs-best-practices.md)
+- [references/csharp-best-practices.md](references/csharp-best-practices.md)
+- [data/sources.json](data/sources.json)
+
+### Shared review utilities
+
+- [../software-clean-code-standard/assets/checklists/backend-api-review-checklist.md](../software-clean-code-standard/assets/checklists/backend-api-review-checklist.md)
+- [../software-clean-code-standard/assets/checklists/secure-code-review-checklist.md](../software-clean-code-standard/assets/checklists/secure-code-review-checklist.md)
+- [../software-clean-code-standard/references/auth-utilities.md](../software-clean-code-standard/references/auth-utilities.md)
+- [../software-clean-code-standard/references/error-handling.md](../software-clean-code-standard/references/error-handling.md)
+- [../software-clean-code-standard/references/config-validation.md](../software-clean-code-standard/references/config-validation.md)
+- [../software-clean-code-standard/references/resilience-utilities.md](../software-clean-code-standard/references/resilience-utilities.md)
+- [../software-clean-code-standard/references/logging-utilities.md](../software-clean-code-standard/references/logging-utilities.md)
+- [../software-clean-code-standard/references/testing-utilities.md](../software-clean-code-standard/references/testing-utilities.md)
+- [../software-clean-code-standard/references/observability-utilities.md](../software-clean-code-standard/references/observability-utilities.md)
+
+### Templates
+
+- [assets/nodejs/template-nodejs-prisma-postgres.md](assets/nodejs/template-nodejs-prisma-postgres.md)
+- [assets/nodejs/template-nodejs-fastify-drizzle-postgres.md](assets/nodejs/template-nodejs-fastify-drizzle-postgres.md)
+- [assets/go/template-go-fiber-gorm.md](assets/go/template-go-fiber-gorm.md)
+- [assets/go/template-go-chi-sqlc-pgx.md](assets/go/template-go-chi-sqlc-pgx.md)
+- [assets/rust/template-rust-axum-seaorm.md](assets/rust/template-rust-axum-seaorm.md)
+- [assets/rust/template-rust-axum-sqlx.md](assets/rust/template-rust-axum-sqlx.md)
+- [assets/python/template-python-fastapi-sqlalchemy.md](assets/python/template-python-fastapi-sqlalchemy.md)
+- [assets/csharp/template-csharp-aspnet-efcore.md](assets/csharp/template-csharp-aspnet-efcore.md)
+
+## Related Skills
+
+> **Gate before invoking any foundation below:** Each foundation has a `When to Apply` / `When to Skip` section. If your task matches a skip-condition, route to the foundation it names instead — don't pull in primitives the task doesn't need.
+
+- [software-architecture-design](../software-architecture-design/SKILL.md)
+- [software-security-appsec](../software-security-appsec/SKILL.md)
+- [ops-devops-platform](../ops-devops-platform/SKILL.md)
+- [qa-resilience](../qa-resilience/SKILL.md)
+- [qa-testing-strategy](../qa-testing-strategy/SKILL.md)
+- [foundations-queueing-theory](../foundations-queueing-theory/SKILL.md) — Little's Law, M/M/c, and Kingman's formula for queue sizing in message-queue and rate-limiter design
+- [foundations-distributed-systems](../foundations-distributed-systems/SKILL.md) — CAP, consistency models, quorum sizing, and idempotency contracts for service mesh and RPC patterns
+- [foundations-reliability-theory](../foundations-reliability-theory/SKILL.md) — MTBF/MTTR, availability composition, and error-budget math for SLO-driven backend design
+- [software-code-review](../software-code-review/SKILL.md)
+- [dev-api-design](../dev-api-design/SKILL.md)
+- [data-sql-optimization](../data-sql-optimization/SKILL.md)
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify current runtime versions, support windows, framework capabilities, and cloud-platform constraints before final answers.
+- Prefer official docs and release or support policy pages for version-sensitive recommendations.
+- If web access is unavailable, mark version or support guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

@@ -1,6 +1,6 @@
 ---
 name: version-control
-description: "Manage Git repositories and collaborative workflows — branching strategies, commit hygiene, conflict resolution, pull requests, hooks, and .gitignore management."
+description: "Manage Git repositories and collaborative workflows — branching strategies, commit hygiene, conflict resolution, pull requests, hooks, and .gitignore management. Use when the user requests version control or provides relevant inputs for this workflow."
 license: "MIT"
 metadata:
   author: "awesome-ai-agent-skills contributors"

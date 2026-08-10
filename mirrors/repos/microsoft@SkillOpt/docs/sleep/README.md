@@ -228,6 +228,23 @@ documents the separate HTTPS-only boundary for Azure managed-identity credential
 Deterministic proof (no API key):
 `python -m skillopt_sleep.experiments.run_experiment --persona researcher --assert-improves`.
 
+### Opt-in: per-skill group reporting
+
+Set `"multi_skill_report": true` in `~/.skillopt-sleep/config.json` to add an
+independent gate result and report row for every explicit skill hint mined that
+night:
+
+```json
+{"multi_skill_report": true}
+```
+
+This runs one additional consolidation per group (including a catch-all group when
+hinted and unhinted evidence are mixed), so it increases backend calls and token use.
+It is reporting-only for now: every group starts from the same managed skill
+document, and Sleep does not yet resolve and update several live `SKILL.md` files
+automatically. Nights containing only the managed catch-all group keep the existing
+single-consolidation behavior.
+
 ### Opt-in: experience replay & dream rollouts
 
 Two consolidation mechanisms, both default **off** (behavior is unchanged unless you

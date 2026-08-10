@@ -2,16 +2,6 @@
 name: godot-multiplayer-networking
 description: "Expert multiplayer for desync, rollback, dedicated --headless servers, interest culling, and bandwidth spikes: ENet/WebRTC choice, authority, secure RPCs, client prediction/reconcile, and adaptive sync. Trigger on rubber-banding, cheat-able clients, peer floods, late join, or profiler Network spikes — not only greenfield online games. Keywords: multiplayer, RPC, ENetMultiplayerPeer, MultiplayerSynchronizer, authority, client prediction, rollback, interest management, headless, desync."
 ---
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Multiplayer Networking
-
-Server authority, prediction/reconcile, secure RPCs, and interest culling — not a high-level multiplayer tutorial.
-
 ## NEVER Do (Expert Networking Rules)
 
 ### Core Architecture
@@ -111,24 +101,24 @@ Server authority, prediction/reconcile, secure RPCs, and interest culling — no
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, Autoloads, and export/feature flags that host/join and dedicated-server builds depend on.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed `@rpc` annotations, Callables, and PackedByteArray patterns used by secure RPCs and bit-packers.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Split InputMap reads from simulation so clients send intents and the authority owns outcomes.
+- [godot-project-foundations](project-foundations.md) — Project layout, Autoloads, and export/feature flags that host/join and dedicated-server builds depend on.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed `@rpc` annotations, Callables, and PackedByteArray patterns used by secure RPCs and bit-packers.
+- [godot-input-handling](input-handling.md) — Split InputMap reads from simulation so clients send intents and the authority owns outcomes.
 
 #### Complements
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Migration shape (authority split, prediction shells) before applying this skill’s lobby/RPC/ENet toolkit.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Session/lobby Autoloads that outlive scene changes during host/join and reconnect flows.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Local peer-connected / lobby events that stay decoupled from transport RPCs.
-- [godot-server-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md) — Headless host scaffolding and PhysicsServer/RID patterns used by authoritative simulation.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Dedicated-server export presets and CLI packaging for real multi-instance tests.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — RTT/jitter overlays and remote debug habits that catch sync bugs localhost never shows.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist UserIDs, lobby prefs, and reconnect tokens without treating PeerIDs as durable identity.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — Migration shape (authority split, prediction shells) before applying this skill’s lobby/RPC/ENet toolkit.
+- [godot-autoload-architecture](autoload-architecture.md) — Session/lobby Autoloads that outlive scene changes during host/join and reconnect flows.
+- [godot-signal-architecture](signal-architecture.md) — Local peer-connected / lobby events that stay decoupled from transport RPCs.
+- [godot-server-architecture](server-architecture.md) — Headless host scaffolding and PhysicsServer/RID patterns used by authoritative simulation.
+- [godot-export-builds](export-builds.md) — Dedicated-server export presets and CLI packaging for real multi-instance tests.
+- [godot-debugging-profiling](debugging-profiling.md) — RTT/jitter overlays and remote debug habits that catch sync bugs localhost never shows.
+- [godot-save-load-systems](save-load-systems.md) — Persist UserIDs, lobby prefs, and reconnect tokens without treating PeerIDs as durable identity.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Cap replication Hz and interest culling when bandwidth/CPU budgets break under peer load.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Retune economy/TTK after netcode changes alter effective weapon timings or ability windows.
-- [godot-genre-battle-royale](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md) — Large-peer interest management and late-join snapshots at BR scale.
-- [godot-genre-moba](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-moba/SKILL.md) — Fixed-tick authority, ability RPCs, and spectator-safe state sync for multiplayer arenas.
+- [godot-performance-optimization](performance-optimization.md) — Cap replication Hz and interest culling when bandwidth/CPU budgets break under peer load.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Retune economy/TTK after netcode changes alter effective weapon timings or ability windows.
+- [godot-genre-battle-royale](genre-battle-royale.md) — Large-peer interest management and late-join snapshots at BR scale.
+- [godot-genre-moba](genre-moba.md) — Fixed-tick authority, ability RPCs, and spectator-safe state sync for multiplayer arenas.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting networking concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting networking concern.

@@ -1,13 +1,18 @@
 ---
 name: software-clean-code-standard
-description: Cross-language clean code standard with stable CC-* rule IDs. Use when writing/reviewing code, defining team standards, or citing lint findings.
+description: "Defines cross-language clean code standards with stable CC-* rule IDs. Use when writing/reviewing code, defining team standards, or citing lint findings."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# Clean Code Standard — Quick Reference
+# Clean Code Standard
 
 This skill is the authoritative clean code standard for this repository's shared skills. It defines stable rule IDs (`CC-*`), how to apply them in reviews, and how to extend them safely via language overlays and explicit exceptions.
 
-**Modern Best Practices (January 2026)**: Prefer small, reviewable changes and durable change context. Use RFC 2119 normative language consistently. Treat security-by-design and secure defaults as baseline (OWASP Top 10, NIST SSDF). Build observable systems (OpenTelemetry). For durable links and current tool choices, consult `data/sources.json`.
+**Modern Best Practices**: Prefer small, reviewable changes and durable change context. Use BCP 14 normative language consistently (RFC 2119 + RFC 8174). Treat security-by-design and secure defaults as baseline (OWASP Top Ten 2025, NIST SSDF). Prefer GitHub rulesets over branch-protection-only governance. Build observable systems with OpenTelemetry. For current tool choices, consult `data/sources.json` and prefer official docs first.
+
+**Judgment over dogma**: This standard's `CC-*` rules are durable (coupling/cohesion, naming, small interfaces, explicit errors). Numeric folklore — hard function-length caps, "comments are a smell," DRY applied absolutely — is not. Robert C. Martin's *Clean Code* (2nd ed., 2025) and John Ousterhout's *A Philosophy of Software Design* disagree in a published, public debate on function size and commenting (see [references/code-quality-operational-playbook.md § 14](references/code-quality-operational-playbook.md#14-judgment-over-dogma)); apply the rule ID's intent, not a book's specific numeric prescription, and know when *not* to refactor (§ 14.3 of the same reference).
 
 ---
 
@@ -31,10 +36,40 @@ This skill is the authoritative clean code standard for this repository's shared
 
 ## When NOT to Use This Skill
 
-- **Deep security audits**: Use [software-security-appsec](../software-security-appsec/SKILL.md) for OWASP/SAST deep dives beyond `CC-SEC-*` baseline.
-- **Review workflow mechanics**: Use [software-code-review](../software-code-review/SKILL.md) for PR workflow, reviewer assignment, and feedback patterns.
-- **Refactoring execution**: Use [qa-refactoring](../qa-refactoring/SKILL.md) for step-by-step refactoring patterns and quality gates.
-- **Architecture decisions**: Use [software-architecture-design](../software-architecture-design/SKILL.md) for system-level tradeoffs beyond code-level rules.
+- **Deep security audits** → [software-security-appsec](../software-security-appsec/SKILL.md) for OWASP/SAST deep dives beyond `CC-SEC-*` baseline.
+- **Review workflow mechanics** → [software-code-review](../software-code-review/SKILL.md) for PR workflow, reviewer assignment, and feedback patterns.
+- **Refactoring execution** → [qa-refactoring](../qa-refactoring/SKILL.md) for step-by-step refactoring patterns and quality gates.
+- **Architecture decisions** → [software-architecture-design](../software-architecture-design/SKILL.md) for system-level tradeoffs beyond code-level rules.
+
+## Workflow
+
+1. Decide whether the request is about a base rule, an overlay, or an exception.
+2. Route security, review-process, or refactoring mechanics to the adjacent skill if that is the real problem.
+3. Anchor the guidance in existing `CC-*` rules before proposing new wording or automation.
+4. Apply the relevant standard, overlay, or waiver pattern with explicit scope and rationale.
+5. Cross-check against the navigation references before adding or revising durable standards.
+
+## Rule Application Checklist
+
+When citing or enforcing `CC-*` rules in a review:
+
+- [ ] Rule ID cited explicitly (not paraphrased) — e.g. `CC-SEC-001`, `CC-ERR-003`
+- [ ] Scope stated: file, module, service, or whole repo
+- [ ] Language overlay applied if the repo is language-specific and the base rule is ambiguous
+- [ ] Blocking vs advisory: correctness/security findings block merge; style findings are advisory
+- [ ] Waiver path documented if the rule genuinely cannot be satisfied without architectural change
+
+## ASCII Flow
+
+```text
+Clean-code request
+  -> Identify behavior that must stay unchanged
+  -> Find duplication, unclear boundaries, or unsafe complexity
+  -> Refactor in the smallest coherent slice
+  -> Preserve public contracts and naming consistency
+  -> Add or adjust tests for changed control flow
+  -> Run focused verification and report residual risk
+```
 
 ## Decision Tree: Base Rule vs Overlay vs Exception
 
@@ -48,6 +83,29 @@ Feedback needed: [What kind of guidance is this?]
         ├─ Timeboxed? → Add waiver with expiry + tracking issue
         └─ Permanent? → Propose a new rule or revise scope/exception criteria
 ```
+
+---
+
+## Optional: AI/Automation
+
+- Map automation findings to `CC-*` IDs (linters, SAST, dependency scanning) so humans can review impact, not tooling noise.
+- Keep AI-assisted suggestions advisory; human reviewers approve/deny with rule citations (https://conventionalcomments.org/).
+- Prefer GitHub rulesets, SARIF-capable scanners, and repository-native code scanning for durable enforcement/reporting.
+
+### Reviewing AI-Generated Code
+
+AI-generated code requires the same CC-* standards plus additional vigilance for these patterns:
+
+| Pattern | CC-* Mapping | Detection |
+|---------|-------------|-----------|
+| Hallucinated imports | CC-DEP-* | `npm info` / `pip index` / type-check fails |
+| Stale or deprecated APIs | CC-DEP-* | Compiler warnings, changelog checks |
+| Missing error paths | CC-ERR-* | No catch/finally, no null guards, no timeout |
+| Premature abstraction | CC-COMPLEXITY-* | Wrappers with single call site, unused generics |
+| Confident wrong comments | CC-NAMING-* | Docstrings that don't match implementation |
+| Security anti-patterns | CC-SEC-* | String concatenation in queries, hardcoded tokens |
+
+For detailed hallucination detection steps, see [references/code-quality-operational-playbook.md § 11.3](references/code-quality-operational-playbook.md#113-hallucination-detection-checklist).
 
 ---
 
@@ -66,8 +124,8 @@ Feedback needed: [What kind of guidance is this?]
 - [references/refactoring-operational-checklist.md](references/refactoring-operational-checklist.md)
 - [references/design-patterns-operational-checklist.md](references/design-patterns-operational-checklist.md)
 - [references/functional-programming-patterns.md](references/functional-programming-patterns.md) — Result/Either types, pipe/compose, immutability, pure functions, railway-oriented programming, CC-* rule mapping
-- [references/code-complexity-metrics.md](references/code-complexity-metrics.md) — Cyclomatic/cognitive complexity, Halstead metrics, nesting depth, tooling (ESLint, SonarQube, CodeClimate), refactoring triggers
-- [data/sources.json](data/sources.json) — Durable external references for review, security-by-design, and observability
+- [references/code-complexity-metrics.md](references/code-complexity-metrics.md) — Cyclomatic/cognitive complexity, Halstead metrics, nesting depth, tooling (ESLint, Biome, Oxlint, SonarQube, Ruff), refactoring triggers
+- [data/sources.json](data/sources.json) — Current external references for review, security-by-design, observability, and modern tooling (official docs first)
 - [CONVENTIONS.md](CONVENTIONS.md) — Skill structure and validation conventions
 - [SKILL-TEMPLATE.md](SKILL-TEMPLATE.md) — Copy-paste starter for new skills
 - [sources-schema.json](sources-schema.json) — JSON schema for `data/sources.json`
@@ -83,6 +141,7 @@ Feedback needed: [What kind of guidance is this?]
 
 **Utility Patterns**
 
+- [references/utility-patterns.md](references/utility-patterns.md) — When and how to extract a utility instead of duplicating code (the decision guide above the concrete utilities below)
 - [references/auth-utilities.md](references/auth-utilities.md)
 - [references/error-handling.md](references/error-handling.md)
 - [references/config-validation.md](references/config-validation.md)
@@ -100,16 +159,9 @@ Feedback needed: [What kind of guidance is this?]
 
 ---
 
-## Optional: AI/Automation
+## Freshness Protocol
 
-- Map automation findings to `CC-*` IDs (linters, SAST, dependency scanning) so humans can review impact, not tooling noise.
-- Keep AI-assisted suggestions advisory; human reviewers approve/deny with rule citations (https://conventionalcomments.org/).
-
----
-
-## Trend Awareness Protocol
-
-**IMPORTANT**: When users ask recommendation questions about clean code standards, linters, or code quality tools, you MUST use a web search capability (if available) to check current trends before answering. If web search is unavailable, say so and answer using `data/sources.json`, clearly flagging that the recommendation may be stale.
+**IMPORTANT**: When users ask recommendation questions about clean code standards, linters, formatters, static analysis, or code quality tools, you MUST verify current guidance with web search and official docs before answering. If web search is unavailable, say so and answer using `data/sources.json`, clearly flagging that the recommendation may be stale.
 
 ### Trigger Conditions
 
@@ -117,38 +169,66 @@ Feedback needed: [What kind of guidance is this?]
 - "What should I use for [code quality/static analysis]?"
 - "What's the latest in clean code practices?"
 - "Current best practices for [code standards/formatting]?"
-- "Is [ESLint/Prettier/Biome] still relevant in 2026?"
+- "Is [ESLint/Prettier/Biome] still relevant?"
 - "[Biome] vs [ESLint] vs [other]?"
 - "Best static analysis tool for [language]?"
+- "Should we switch from [legacy tool] to [new tool]?"
+- "What should we use in CI for code scanning or code quality gates?"
 
-### Required Searches
+### Required Verification Workflow
 
-1. Search: `"clean code best practices 2026"`
-2. Search: `"[specific linter] vs alternatives 2026"`
-3. Search: `"code quality tools trends 2026"`
-4. Search: `"[language] linter comparison 2026"`
+1. Check official docs first for the named tool(s): current docs, release notes/changelog, migration guidance, and supported workflows.
+2. Check the official standard/spec when relevant: RFCs, OWASP, NIST, OpenTelemetry, GitHub Docs.
+3. Use web search for cross-tool comparisons or current adoption trends only after confirming the primary-source facts.
+4. Prefer at most one neutral secondary comparison source when the user explicitly wants market positioning or tradeoff analysis.
 
 ### What to Report
 
-After searching, provide:
+After verifying, provide:
 
-- **Current landscape**: What linters/formatters are popular NOW
-- **Emerging trends**: New tools, standards, or patterns gaining traction
-- **Deprecated/declining**: Tools/approaches losing relevance or support
-- **Recommendation**: Based on fresh data, not just static knowledge
+- **Current default choice**: What you would adopt now for the user’s stack and why
+- **Current landscape**: Which tools are current, maintained, and commonly paired together
+- **Migration risk**: Flat config changes, rule-coverage gaps, formatter/linter consolidation, CI/reporting implications
+- **Deprecated/declining**: Tools or approaches losing relevance for this use case
+- **Recommendation**: Based on fresh official data, not static memory
 
 ### Example Topics (verify with fresh search)
 
 - JavaScript/TypeScript linters (ESLint, Biome, oxlint)
 - Formatters (Prettier, dprint, Biome)
-- Python quality (Ruff, mypy, pylint)
+- Python quality (Ruff, `ty`, mypy, pylint)
 - Go linting (golangci-lint, staticcheck)
 - Rust analysis (clippy, cargo-deny)
 - Code quality metrics and reporting tools
-- AI-assisted code review tools
+- Code scanning and security automation (CodeQL, Semgrep, SARIF workflows)
+- GitHub enforcement controls (rulesets, CODEOWNERS, protected branches)
+
+## Known Traps
+
+- Treating “clean code” as style preference only and ignoring correctness, observability, security, and change safety.
+- Enforcing blanket abstraction rules that increase indirection and reduce runtime clarity in the name of cleanliness.
+- Mixing language-specific formatter and linter opinions into universal guidance without preserving the stable CC rule intent.
+- Letting tool defaults silently redefine the team standard when the explicit repository rule IDs say otherwise.
+- Auditing code solely from static style output and missing failure-mode, data-boundary, and operability risks.
+
+## Common Anti-Patterns
+
+- Replacing concrete, understandable code with layered abstractions just to satisfy a cleanliness aesthetic.
+- Treating short functions, DRY, or naming rules as absolute even when they harm cohesion, locality, or domain clarity.
+- Using “clean code” to block pragmatic duplication that preserves boundaries or avoids premature frameworks.
+- Turning rule IDs into checklist theater with no explanation of why the rule matters for maintainability or safety.
+- Applying one language ecosystem’s conventions wholesale to another without adaptation for tooling, runtime, and team workflow.
 
 ## Fact-Checking
 
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
 - Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
+- Prefer primary sources; report source links and dates for volatile information, and distinguish facts from inference.
 - If web access is unavailable, state the limitation and mark guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

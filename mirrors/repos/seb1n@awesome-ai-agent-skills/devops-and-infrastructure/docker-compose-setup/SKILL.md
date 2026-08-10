@@ -1,6 +1,6 @@
 ---
 name: docker-compose-setup
-description: Set up and orchestrate multi-container Docker applications using docker-compose, including service configuration, networking, volumes, and environment management.
+description: Set up and orchestrate multi-container Docker applications using docker-compose, including service configuration, networking, volumes, and environment management. Use when the user requests docker compose setup or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

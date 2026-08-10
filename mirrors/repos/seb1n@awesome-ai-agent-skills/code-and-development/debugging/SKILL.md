@@ -1,6 +1,6 @@
 ---
-name: Debugging
-description: Systematically diagnose and fix software bugs by analyzing error messages, stack traces, logs, and runtime behavior across multiple languages.
+name: debugging
+description: Systematically diagnose and fix software bugs by analyzing error messages, stack traces, logs, and runtime behavior across multiple languages. Use when the user requests debugging or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills contributors

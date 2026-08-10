@@ -1,6 +1,6 @@
 ---
 name: data-analysis
-description: Analyze datasets to extract insights through statistical methods, trend identification, hypothesis testing, and correlation analysis.
+description: Analyze datasets to answer defined questions through statistical methods, trend identification, hypothesis testing, and correlation analysis. Use when the user needs evidence-backed findings or decisions from data; use exploratory-data-analysis instead for open-ended first-pass profiling before questions are defined.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

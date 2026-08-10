@@ -3,17 +3,6 @@ name: godot-genre-shooter
 description: "Expert blueprint for TPS/hybrid shooters: soft-lock aim assist, cover validation rays, SpringArm TPS camera, and genre routing to FPS sibling for viewmodel/hitscan feel. Use for third-person/cover shooters and hybrids. Keywords: TPS, soft_lock, cover, SpringArm3D, hybrid shooter, aim assist — not FPS-only movement."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Shooter (TPS / Hybrid)
-
-**Ownership:** third-person, hybrid, and shared genre routing (cover, soft-lock, spring-arm camera).  
-**Not owned here:** FPS movement, viewmodel bob, FPS camera look, FPS-only hitscan/recoil dumps — use [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md).
-
 ## Core Loop
 
 `Engage → Aim (soft-lock/cover) → Fire → Confirm → Acquire Next`

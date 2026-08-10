@@ -1,6 +1,6 @@
 ---
 name: database-seeding
-description: Populate databases with realistic, reproducible test data for development, testing, and staging environments.
+description: Populate databases with realistic, reproducible test data for development, testing, and staging environments. Use when the user requests database seeding or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills Community

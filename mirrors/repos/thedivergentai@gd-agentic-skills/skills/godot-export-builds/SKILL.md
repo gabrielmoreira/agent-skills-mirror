@@ -26,12 +26,6 @@ Headless / CI / platform release plumbing — not Editor → Export click-path t
 
 ---
 
-## Godot 4.7: Import & Export
-
-- `EditorSceneFormatImporter` constants moved to **ImportFlags** enum — update importer scripts.
-- **Asset Store** replaces Asset Library in editor — document addon acquisition via new store UI.
-- **HDR export**: verify viewport HDR settings per platform in export presets.
-
 ## Platform Decision Tree
 
 | Target | MANDATORY scripts / actions | Do NOT Load |

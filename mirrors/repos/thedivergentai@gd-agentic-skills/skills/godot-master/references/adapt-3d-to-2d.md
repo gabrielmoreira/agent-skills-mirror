@@ -3,16 +3,6 @@ name: godot-adapt-3d-to-2d
 description: "Expert patterns for simplifying 3D games to 2D including dimension reduction strategies, 2.5D fake-depth, isometric ports, camera flattening, physics conversion, 3D-to-sprite art pipeline, and control simplification. Use when porting 3D to 2D, building 2.5D / isometric / fake-depth gameplay, creating 2D versions for mobile, or prototyping. Trigger keywords: CharacterBody3D to CharacterBody2D, Camera3D to Camera2D, Vector3 to Vector2, flatten Z-axis, 2.5D, isometric, fake depth, Y-sort, simulated Z, orthogonal projection, 3D to sprite conversion, performance optimization."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Adapt: 3D to 2D
-
-Expert guidance for simplifying 3D games into 2D (or 2.5D).
-
 ## NEVER Do
 
 - **NEVER remove Z-axis without gameplay compensation** — Blindly flattening 3D to 2D removes spatial strategy. Add other depth mechanics (layers, jump height variations).
@@ -299,23 +289,23 @@ func _run() -> void:
 ### Related Skills
 
 #### Prerequisites
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Destination movement API for top-down/platformer ports once Z is simulated or removed.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — `CapsuleShape2D`/`Area2D` collision simplification and layer masks after dropping 3D shapes.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — `Camera2D` follow/limits/zoom so ports do not keep a fake ortho `Camera3D`.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed `Vector2`/`Transform2D` math and tooling scripts used throughout dimension-reduction helpers.
+- [godot-characterbody-2d](characterbody-2d.md) — Destination movement API for top-down/platformer ports once Z is simulated or removed.
+- [godot-2d-physics](2d-physics.md) — `CapsuleShape2D`/`Area2D` collision simplification and layer masks after dropping 3D shapes.
+- [godot-camera-systems](camera-systems.md) — `Camera2D` follow/limits/zoom so ports do not keep a fake ortho `Camera3D`.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed `Vector2`/`Transform2D` math and tooling scripts used throughout dimension-reduction helpers.
 
 #### Complements
-- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — Sprite-sheet / `AnimatedSprite2D` pipeline after baking 3D models to directional frames.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — CanvasItem shaders for Mode-7 / perspective pitch and other screen-space depth fakes.
-- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — `TileMapLayer` batching that often replaces individual 3D mesh instances in the 2D port.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Deeper 2D navmesh/`AStarGrid2D` patterns when flattening aerial/vertical routes.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — `AudioStreamPlayer3D` → `AudioStreamPlayer2D` panning/attenuation after spatial audio is lost.
-- [godot-adapt-2d-to-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-2d-to-3d/SKILL.md) — Inverse adaptation lattice when deciding which axis of the port to keep or reverse.
+- [godot-2d-animation](2d-animation.md) — Sprite-sheet / `AnimatedSprite2D` pipeline after baking 3D models to directional frames.
+- [godot-shaders-basics](shaders-basics.md) — CanvasItem shaders for Mode-7 / perspective pitch and other screen-space depth fakes.
+- [godot-tilemap-mastery](tilemap-mastery.md) — `TileMapLayer` batching that often replaces individual 3D mesh instances in the 2D port.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — Deeper 2D navmesh/`AStarGrid2D` patterns when flattening aerial/vertical routes.
+- [godot-audio-systems](audio-systems.md) — `AudioStreamPlayer3D` → `AudioStreamPlayer2D` panning/attenuation after spatial audio is lost.
+- [godot-adapt-2d-to-3d](adapt-2d-to-3d.md) — Inverse adaptation lattice when deciding which axis of the port to keep or reverse.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when the 2D port still misses frame budgets despite dimensional reduction.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Common shipping target that motivates 3D→2D simplification for battery and GPU limits.
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Broader desktop→mobile adaptation that often includes this skill’s flatten-to-2D step.
+- [godot-performance-optimization](performance-optimization.md) — Escalate when the 2D port still misses frame budgets despite dimensional reduction.
+- [godot-platform-mobile](platform-mobile.md) — Common shipping target that motivates 3D→2D simplification for battery and GPU limits.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — Broader desktop→mobile adaptation that often includes this skill’s flatten-to-2D step.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting 2D/3D concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting 2D/3D concern.

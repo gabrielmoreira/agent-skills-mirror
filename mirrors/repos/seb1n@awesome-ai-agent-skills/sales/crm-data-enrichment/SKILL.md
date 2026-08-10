@@ -1,6 +1,6 @@
 ---
 name: crm-data-enrichment
-description: Enrich CRM records with firmographic and contact data, filling gaps in company and person profiles to improve segmentation, routing, and outreach quality.
+description: Enrich CRM records with firmographic and contact data, filling gaps in company and person profiles to improve segmentation, routing, and outreach quality. Use when the user requests crm data enrichment or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community

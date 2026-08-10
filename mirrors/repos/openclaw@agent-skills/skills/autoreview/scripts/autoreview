@@ -7,6 +7,7 @@ import base64
 import binascii
 import bisect
 import concurrent.futures
+import contextlib
 import copy
 import functools
 import hashlib
@@ -17,6 +18,7 @@ import os
 import queue
 import re
 import shutil
+import signal
 import stat
 import subprocess
 import sys
@@ -1470,6 +1472,250 @@ def safe_test_env(repo: Path, isolated_home: Path) -> dict[str, str]:
     return env
 
 
+class EngineInterrupted(BaseException):
+    """Raised after in-flight engine process groups have been terminated.
+
+    Subclasses BaseException directly (not SystemExit): internal
+    ``except SystemExit`` guards scattered through this script (parser
+    self-tests, secret-redaction fallbacks, file-read status helpers)
+    would otherwise catch and swallow the interrupt, letting the run
+    continue instead of unwinding.
+    """
+
+    def __init__(self, code: int) -> None:
+        super().__init__(code)
+        self.code = code
+
+
+_OWNED_PROCESS_LOCK = threading.RLock()
+_OWNED_PROCESSES: dict[int, subprocess.Popen[str]] = {}
+_OWNED_PROCESS_GRACE_SECONDS = 2.0
+
+
+def process_group_popen_kwargs() -> dict[str, Any]:
+    """Popen kwargs that give an engine child (and its descendants) its own process group.
+
+    This lets us terminate the whole group instead of just the immediate
+    child, so wrapper scripts and any processes they spawn do not outlive
+    the parent autoreview invocation.
+    """
+    if os.name == "nt":
+        return {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
+    return {"start_new_session": True}
+
+
+def register_owned_process(proc: subprocess.Popen[str]) -> None:
+    with _OWNED_PROCESS_LOCK:
+        _OWNED_PROCESSES[proc.pid] = proc
+
+
+def unregister_owned_process(proc: subprocess.Popen[str]) -> None:
+    with _OWNED_PROCESS_LOCK:
+        _OWNED_PROCESSES.pop(proc.pid, None)
+
+
+def terminate_owned_processes() -> None:
+    with _OWNED_PROCESS_LOCK:
+        processes = list(_OWNED_PROCESSES.values())
+    # Phase 1: signal every owned group up front. Phase 2/3 then pay one
+    # shared grace window for the whole batch instead of one grace window
+    # per registered engine process, which used to make interrupt handling
+    # take grace_seconds * len(processes).
+    survivors = [proc for proc in processes if _signal_owned_process_group(proc)]
+    if not survivors:
+        return
+    _await_owned_process_groups(survivors, _OWNED_PROCESS_GRACE_SECONDS)
+    for proc in survivors:
+        _enforce_owned_process_group(proc, _OWNED_PROCESS_GRACE_SECONDS)
+
+
+def _resolve_windows_taskkill() -> str | None:
+    """Resolve taskkill.exe via an absolute path under %SystemRoot%\\System32.
+
+    Windows' executable search order checks the current working directory
+    before System32, and that CWD can be the untrusted reviewed checkout --
+    a repo-local taskkill.exe there would otherwise run during cleanup.
+    find_command's PATH-based resolution needs a repo handle to exclude the
+    checkout, which signal-handler cleanup paths do not have, so resolve
+    the trusted system binary directly instead.
+    """
+    system_root = os.environ.get("SystemRoot") or r"C:\Windows"
+    taskkill = Path(system_root) / "System32" / "taskkill.exe"
+    return str(taskkill) if taskkill.is_file() else None
+
+
+def _signal_owned_process_group(proc: subprocess.Popen) -> bool:
+    """Phase 1: send the initial termination attempt to one owned group.
+
+    Returns True if phase 2/3 enforcement may still be needed. The
+    taskkill attempt is made even if the leader has already exited:
+    it can still fell descendants while the PID is valid, and skipping
+    it would leave live descendants of an already-reaped leader running.
+    """
+    if os.name == "nt":
+        taskkill = _resolve_windows_taskkill()
+        if taskkill is None:
+            return True
+        try:
+            result = subprocess.run(
+                [taskkill, "/PID", str(proc.pid), "/T", "/F"],
+                capture_output=True,
+                text=True,
+                timeout=_OWNED_PROCESS_GRACE_SECONDS,
+                check=False,
+            )
+            return bool(result.returncode)
+        except (OSError, subprocess.TimeoutExpired):
+            return True
+    try:
+        os.killpg(proc.pid, signal.SIGTERM)
+        return True
+    except ProcessLookupError:
+        return False
+
+
+def _await_owned_process_groups(procs: list[subprocess.Popen], grace_seconds: float) -> None:
+    """Phase 2: the shared grace window for a batch of already-signaled groups.
+
+    Runs after phase 1 has signaled every group in the batch, so waiting
+    on one group's exit never delays signaling another.
+    """
+    deadline = time.monotonic() + grace_seconds
+    reaped_posix_leader = False
+    for proc in procs:
+        if proc.poll() is None:
+            remaining = max(0.0, deadline - time.monotonic())
+            if remaining == 0:
+                continue
+            try:
+                proc.wait(timeout=remaining)
+            except subprocess.TimeoutExpired:
+                pass
+        elif os.name != "nt":
+            # POSIX: the leader may already be reaped while orphaned
+            # descendants remain in its process group. Preserve one shared
+            # grace deadline for those descendants before phase 3 enforces
+            # SIGKILL, rather than sleeping once per reaped leader.
+            reaped_posix_leader = True
+    if reaped_posix_leader:
+        remaining = max(0.0, deadline - time.monotonic())
+        if remaining:
+            time.sleep(remaining)
+
+
+def _enforce_owned_process_group(proc: subprocess.Popen, grace_seconds: float) -> None:
+    """Phase 3: force-kill survivors of the phase-1 termination attempt."""
+    if os.name == "nt":
+        # No durable process-group boundary on Windows: taskkill /T can
+        # only walk the tree from a still-resolvable PID, so descendants
+        # that outlive the leader are not guaranteed to be owned (a
+        # durable Job-Object boundary is future work). The direct kill
+        # here only ever targets a still-live leader.
+        if proc.poll() is None:
+            proc.kill()
+            try:
+                proc.wait(timeout=grace_seconds)
+            except subprocess.TimeoutExpired:
+                pass
+        return
+    try:
+        os.killpg(proc.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        return
+    if proc.poll() is None:
+        try:
+            proc.wait(timeout=grace_seconds)
+        except subprocess.TimeoutExpired:
+            pass
+
+
+def terminate_process_group(
+    proc: subprocess.Popen, grace_seconds: float = _OWNED_PROCESS_GRACE_SECONDS
+) -> None:
+    """Terminate the process group owned by proc, then enforce bounded cleanup.
+
+    Composes the same phase-1/2/3 helpers used by the multi-process
+    ``terminate_owned_processes`` sweep. On POSIX, SIGKILL is sent to the
+    group even if the leader has already exited: engines can fork
+    children that outlive the leader but stay in its process group, and
+    those would otherwise be orphaned. On Windows there is no equivalent
+    process-group boundary -- descendants that outlive the leader are
+    not guaranteed to be owned (see ``_enforce_owned_process_group``).
+    """
+    if not _signal_owned_process_group(proc):
+        return
+    _await_owned_process_groups([proc], grace_seconds)
+    _enforce_owned_process_group(proc, grace_seconds)
+
+
+def engine_signal_handler(signum: int, _frame: Any) -> None:
+    terminate_owned_processes()
+    raise EngineInterrupted(128 + signum)
+
+
+def _handled_signal_numbers() -> list[int]:
+    handled_signals = [signal.SIGINT, signal.SIGTERM]
+    if hasattr(signal, "SIGHUP"):
+        handled_signals.append(signal.SIGHUP)
+    return handled_signals
+
+
+class OwnedProcessSignalHandlers:
+    """Install process-wide handlers so interrupts clean up owned engine groups."""
+
+    def __enter__(self) -> "OwnedProcessSignalHandlers":
+        self.previous = {signum: signal.getsignal(signum) for signum in _handled_signal_numbers()}
+        for signum in self.previous:
+            signal.signal(signum, engine_signal_handler)
+        return self
+
+    def __exit__(self, _exc_type: Any, _exc: Any, _traceback: Any) -> None:
+        for signum, handler in self.previous.items():
+            signal.signal(signum, handler)
+
+
+@contextlib.contextmanager
+def deferred_owned_process_signals():
+    """Defer handled-signal delivery across a spawn+register critical section.
+
+    A signal arriving between Popen() and register_owned_process() would
+    orphan the just-spawned group: the signal handler cannot terminate a
+    process it does not know about yet. For the duration of the wrapped
+    critical section, swap the handled signals (the same set
+    OwnedProcessSignalHandlers installs) to a collector that just records
+    the signal number. On exit, restore the previous handlers and, if a
+    signal was collected, run the real handler logic -- by then the
+    child is registered, so cleanup includes it.
+
+    Panel reviewers spawn engines from worker threads, where signal.signal
+    is forbidden. Those threads instead hold the registry lock across the
+    spawn+register window: the main-thread signal handler blocks on that
+    lock until the new child is registered, then includes it in cleanup.
+    Main-thread spawns keep the explicit signal deferral below so a handler
+    cannot interrupt the same thread before registration.
+    """
+    if threading.current_thread() is not threading.main_thread():
+        with _OWNED_PROCESS_LOCK:
+            yield
+        return
+
+    collected: list[int] = []
+
+    def _collect(signum: int, _frame: Any) -> None:
+        collected.append(signum)
+
+    previous = {signum: signal.getsignal(signum) for signum in _handled_signal_numbers()}
+    for signum in previous:
+        signal.signal(signum, _collect)
+    try:
+        yield
+    finally:
+        for signum, handler in previous.items():
+            signal.signal(signum, handler)
+        if collected:
+            engine_signal_handler(collected[0], None)
+
+
 def parse_ps_time(value: str) -> float:
     try:
         day_text, clock = value.strip().split("-", 1) if "-" in value else ("0", value.strip())
@@ -1657,29 +1903,36 @@ def run_with_heartbeat(
             resolve_root=resolve_root,
         )
     started = time.monotonic()
-    proc = subprocess.Popen(
-        args,
-        cwd=cwd,
-        stdin=subprocess.PIPE if input_text is not None else None,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        encoding=SUBPROCESS_TEXT_ENCODING,
-        errors=SUBPROCESS_TEXT_ERRORS,
-        env=env,
-    )
-    first_communicate = True
-    metrics = sample_process_metrics(resolve_root, proc.pid)
-    while True:
-        try:
-            stdout, stderr = proc.communicate(
-                input=input_text if first_communicate else None,
-                timeout=heartbeat_seconds,
-            )
-            return subprocess.CompletedProcess(args, int(proc.returncode or 0), stdout, stderr)
-        except subprocess.TimeoutExpired:
-            first_communicate = False
-            metrics = emit_heartbeat(label, resolve_root, started, proc, metrics)
+    with deferred_owned_process_signals():
+        proc = subprocess.Popen(
+            args,
+            cwd=cwd,
+            stdin=subprocess.PIPE if input_text is not None else None,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding=SUBPROCESS_TEXT_ENCODING,
+            errors=SUBPROCESS_TEXT_ERRORS,
+            env=env,
+            **process_group_popen_kwargs(),
+        )
+        register_owned_process(proc)
+    try:
+        first_communicate = True
+        metrics = sample_process_metrics(resolve_root, proc.pid)
+        while True:
+            try:
+                stdout, stderr = proc.communicate(
+                    input=input_text if first_communicate else None,
+                    timeout=heartbeat_seconds,
+                )
+                return subprocess.CompletedProcess(args, int(proc.returncode or 0), stdout, stderr)
+            except subprocess.TimeoutExpired:
+                first_communicate = False
+                metrics = emit_heartbeat(label, resolve_root, started, proc, metrics)
+    finally:
+        terminate_process_group(proc)
+        unregister_owned_process(proc)
 
 
 def run_with_stream(
@@ -1693,19 +1946,47 @@ def run_with_stream(
     env: dict[str, str] | None = None,
     resolve_root: Path,
 ) -> subprocess.CompletedProcess[str]:
+    with deferred_owned_process_signals():
+        proc = subprocess.Popen(
+            args,
+            cwd=cwd,
+            stdin=subprocess.PIPE if input_text is not None else None,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            encoding=SUBPROCESS_TEXT_ENCODING,
+            errors=SUBPROCESS_TEXT_ERRORS,
+            bufsize=1,
+            env=env,
+            **process_group_popen_kwargs(),
+        )
+        register_owned_process(proc)
+    try:
+        return collect_streamed_process(
+            proc,
+            args,
+            input_text=input_text,
+            label=label,
+            heartbeat_seconds=heartbeat_seconds,
+            stream_display=stream_display,
+            resolve_root=resolve_root,
+        )
+    finally:
+        terminate_process_group(proc)
+        unregister_owned_process(proc)
+
+
+def collect_streamed_process(
+    proc: subprocess.Popen[str],
+    args: list[str],
+    *,
+    input_text: str | None,
+    label: str,
+    heartbeat_seconds: int,
+    stream_display: Callable[[str, str], str | None] | None,
+    resolve_root: Path,
+) -> subprocess.CompletedProcess[str]:
     started = time.monotonic()
-    proc = subprocess.Popen(
-        args,
-        cwd=cwd,
-        stdin=subprocess.PIPE if input_text is not None else None,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True,
-        encoding=SUBPROCESS_TEXT_ENCODING,
-        errors=SUBPROCESS_TEXT_ERRORS,
-        bufsize=1,
-        env=env,
-    )
     events: queue.Queue[tuple[str, str | None]] = queue.Queue()
     stdout_parts: list[str] = []
     stderr_parts: list[str] = []
@@ -10120,13 +10401,23 @@ def load_kimi_review_config(repo: Path) -> tuple[dict[str, Any], Path | None]:
     return data, source_share
 
 
-def prepare_kimi_runtime_auth(
+def validate_kimi_runtime_auth_sources(
     repo: Path,
     source_share: Path | None,
-    runtime_share: Path,
-) -> None:
+) -> tuple[str, Path | None]:
+    """Non-mutating equivalent of the raising checks in
+    prepare_kimi_runtime_auth(): resolves and validates the Kimi device_id
+    and OAuth credentials sources a real run would stage, without writing
+    or symlinking anything. prepare_kimi_runtime_auth() calls this first so
+    the raising conditions live in exactly one place; a dry run can call it
+    directly to reject the same invalid/missing device_id or credentials
+    path a real run would exit on, without touching disk.
+
+    Returns (device_id, resolved_credentials_dir_or_None) for
+    prepare_kimi_runtime_auth() to reuse when staging.
+    """
     if source_share is None:
-        return
+        return "", None
     source_device_id = source_share / "device_id"
     try:
         resolved_device_id = source_device_id.resolve(strict=True)
@@ -10139,19 +10430,33 @@ def prepare_kimi_runtime_auth(
             or not re.fullmatch(r"[A-Za-z0-9-]{16,128}", device_id)
         ):
             raise SystemExit("Kimi device identity is not safe to stage for review")
-        (runtime_share / "device_id").write_text(device_id, encoding="utf-8")
     source_credentials = source_share / "credentials"
     try:
-        resolved = source_credentials.resolve(strict=True)
+        resolved_credentials = source_credentials.resolve(strict=True)
     except OSError:
-        return
-    if not resolved.is_dir() or is_within(resolved, repo.resolve()):
+        return device_id, None
+    if not resolved_credentials.is_dir() or is_within(resolved_credentials, repo.resolve()):
         raise SystemExit(
             "Kimi OAuth credentials must be an external directory outside the reviewed repository"
         )
+    return device_id, resolved_credentials
+
+
+def prepare_kimi_runtime_auth(
+    repo: Path,
+    source_share: Path | None,
+    runtime_share: Path,
+) -> None:
+    device_id, resolved_credentials = validate_kimi_runtime_auth_sources(repo, source_share)
+    if source_share is None:
+        return
+    if device_id:
+        (runtime_share / "device_id").write_text(device_id, encoding="utf-8")
+    if resolved_credentials is None:
+        return
     target = runtime_share / "credentials"
     try:
-        target.symlink_to(resolved, target_is_directory=True)
+        target.symlink_to(resolved_credentials, target_is_directory=True)
     except OSError as exc:
         raise SystemExit(
             "unable to isolate Kimi OAuth credentials; use KIMI_API_KEY or enable "
@@ -11420,6 +11725,33 @@ print(json.dumps(report))
 	'''
 
 
+def fake_kimi_script() -> str:
+    return r'''#!/usr/bin/env python3
+import json
+import os
+from pathlib import Path
+import sys
+
+args = sys.argv[1:]
+if "--version" in args or "-v" in args:
+    print(os.environ.get("AUTOREVIEW_FAKE_KIMI_VERSION", "0.30.0"))
+    raise SystemExit(0)
+if "--help" in args or "-h" in args:
+    print(os.environ.get("AUTOREVIEW_FAKE_KIMI_HELP", "--agent-file\n--skills-dir\n--prompt\n--output-format\n--model"))
+    raise SystemExit(0)
+record = os.environ.get("AUTOREVIEW_FAKE_RECORD")
+if record:
+    Path(record).write_text(json.dumps({"argv": args, "cwd": os.getcwd(), "stdin": sys.stdin.read()}))
+report = {
+    "findings": [],
+    "overall_correctness": "patch is correct",
+    "overall_explanation": "fake kimi clean",
+    "overall_confidence": 0.99,
+}
+print(json.dumps(report))
+'''
+
+
 def fake_opencode_script() -> str:
     return r'''#!/usr/bin/env python3
 import json
@@ -12277,29 +12609,34 @@ def start_parallel_tests(
             "text": True,
             "encoding": SUBPROCESS_TEXT_ENCODING,
             "errors": SUBPROCESS_TEXT_ERRORS,
+            **process_group_popen_kwargs(),
         }
-        if shell_kind == "default" or shell_kind == "cmd":
-            proc = subprocess.Popen(command, shell=True, **popen_kwargs)
-        elif shell_kind == "powershell":
-            powershell = resolve_command("powershell", repo)
-            proc = subprocess.Popen(
-                [powershell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", command],
-                **popen_kwargs,
-            )
-        elif shell_kind == "pwsh":
-            pwsh = resolve_command("pwsh", repo)
-            proc = subprocess.Popen(
-                [pwsh, "-NoProfile", "-Command", command],
-                **popen_kwargs,
-            )
-        else:
-            raise SystemExit(
-                f"invalid --parallel-tests-shell/AUTOREVIEW_PARALLEL_TESTS_SHELL: {shell_kind}"
-            )
+        with deferred_owned_process_signals():
+            if shell_kind == "default" or shell_kind == "cmd":
+                proc = subprocess.Popen(command, shell=True, **popen_kwargs)
+            elif shell_kind == "powershell":
+                powershell = resolve_command("powershell", repo)
+                proc = subprocess.Popen(
+                    [powershell, "-NoProfile", "-ExecutionPolicy", "Bypass", "-Command", command],
+                    **popen_kwargs,
+                )
+            elif shell_kind == "pwsh":
+                pwsh = resolve_command("pwsh", repo)
+                proc = subprocess.Popen(
+                    [pwsh, "-NoProfile", "-Command", command],
+                    **popen_kwargs,
+                )
+            else:
+                raise SystemExit(
+                    f"invalid --parallel-tests-shell/AUTOREVIEW_PARALLEL_TESTS_SHELL: {shell_kind}"
+                )
+            register_owned_process(proc)
     except BaseException:
         shutil.rmtree(test_home, ignore_errors=True)
         raise
     if proc.stderr is None:
+        terminate_process_group(proc)
+        unregister_owned_process(proc)
         shutil.rmtree(test_home, ignore_errors=True)
         raise SystemExit("parallel test stderr pipe was not created")
     stderr_thread = threading.Thread(
@@ -12334,6 +12671,8 @@ def finish_parallel_tests(proc: subprocess.Popen, started: float) -> int:
         print(f"tests exit: {proc.returncode} after {int(time.time() - started)}s")
         return int(proc.returncode or 0)
     finally:
+        terminate_process_group(proc)
+        unregister_owned_process(proc)
         test_home = getattr(proc, "_autoreview_test_home", None)
         if isinstance(test_home, Path):
             shutil.rmtree(test_home, ignore_errors=True)
@@ -12639,6 +12978,291 @@ def reviewer_label(args: argparse.Namespace) -> str:
     if args.thinking:
         parts.append(f"thinking={args.thinking}")
     return " ".join(parts)
+
+
+# Engines whose run_* implementation refuses unconditionally today; see
+# run_droid/run_copilot/run_opencode/run_cursor for the exact reason each
+# one fails closed.
+ALWAYS_UNAVAILABLE_ENGINES = frozenset({"droid", "copilot", "opencode", "cursor"})
+
+
+ENGINE_ISOLATION_PROBES: dict[str, Callable[[argparse.Namespace, Path], object]] = {
+    "claude": ensure_claude_isolation_supported,
+    "pi": ensure_pi_isolation_supported,
+    "kimi": ensure_kimi_isolation_supported,
+}
+
+
+def resolve_engine_binary(reviewer: argparse.Namespace, repo: Path) -> tuple[bool, str | None]:
+    """Best-effort check of whether a reviewer's engine can plausibly run.
+
+    Mirrors run_engine()'s dispatch without shelling out to the CLI or
+    contacting any provider: engines that fail closed unconditionally are
+    reported unavailable directly, configurations that a real run rejects
+    before invoking the CLI (e.g. Codex with --no-tools, see run_codex)
+    are reported unavailable with that same reason, and the rest are
+    checked for a resolvable CLI binary on PATH.
+
+    Once a binary resolves, claude/pi/kimi are also put through the same
+    local version and required-flag probes their real runners perform
+    before contacting the engine (ensure_claude_isolation_supported,
+    ensure_pi_isolation_supported, ensure_kimi_isolation_supported), so a
+    dry run cannot report OK for a configuration a real run would reject
+    immediately (unsupported CLI version, missing required flag). Those
+    probes only invoke the resolved binary locally with --version/--help;
+    they never contact a provider. Codex has its own unconditional
+    --no-tools rejection above and no local version gate.
+
+    Codex additionally validates --codex-config/--codex-speed (and their
+    AUTOREVIEW_CODEX_CONFIG/AUTOREVIEW_CODEX_SPEED env equivalents) via
+    codex_config_keys()/codex_speed_override() before run_codex() ever
+    builds its command (see codex_command, which calls
+    codex_config_overrides()/codex_speed_override() while assembling the
+    `-c` flags); those are pure, non-mutating parses over the reviewer
+    namespace with no I/O, so replaying them here means a dry run cannot
+    report codex OK for an unsafe config override or an invalid speed
+    value a real run would reject. This applies to every reviewer in a
+    --panel/--reviewers list, not just a single --engine codex run: the
+    single-engine summary printed by main() calls the same two functions
+    for display purposes, but that display code only runs when exactly
+    one reviewer is selected via --engine, so multi-reviewer dry runs
+    depended solely on this function to catch the same rejection.
+
+    Kimi additionally loads its review config via load_kimi_review_config()
+    before run_kimi() ever invokes the CLI (see run_kimi); that load is a
+    local, read-only file resolve + TOML parse with no engine contact, so
+    it is replayed here too and can reject a repository-controlled or
+    malformed Kimi setup the same way the real run would. run_kimi() then
+    calls prepare_kimi_runtime_auth(), which raises on an unsafe/invalid
+    device_id or a credentials path that is missing, not a directory, or
+    inside the reviewed repo; validate_kimi_runtime_auth_sources() is the
+    non-mutating equivalent of exactly those raising checks (it never
+    stages files) and is replayed here too, so a dry run cannot report
+    kimi OK for an auth source a real run would reject.
+
+    Claude additionally computes its tool inventory via
+    claude_allowed_tools()/claude_tool_inventory() before run_claude() ever
+    invokes the CLI (see run_claude, gated on args.tools); that is a pure,
+    non-mutating computation over --claude-allowed-tools/--no-web-search
+    with no I/O, so it is replayed here too and can reject a non-read-only
+    or malformed tool rule the same way the real run would. pi and other
+    engines have no equivalent raising callable between their isolation
+    probe and engine spawn (see run_pi): pi only builds an argv list, and
+    write_kimi_review_files (kimi's file-write staging step) only fails on
+    tmp-state errors (e.g. disk full), never on user setup, so it is not
+    mirrored here.
+    """
+    engine = reviewer.engine
+    if engine in ALWAYS_UNAVAILABLE_ENGINES:
+        return False, f"{engine} engine is currently unavailable; run without --dry-run for the exact reason"
+    if engine == "codex" and not getattr(reviewer, "tools", True):
+        return (
+            False,
+            "--no-tools is not supported by the Codex engine; use --engine claude --no-tools for a no-tools run",
+        )
+    bin_by_engine = {
+        "codex": getattr(reviewer, "codex_bin", None),
+        "claude": getattr(reviewer, "claude_bin", None),
+        "pi": getattr(reviewer, "pi_bin", None),
+        "kimi": getattr(reviewer, "kimi_bin", None),
+    }
+    bin_name = bin_by_engine.get(engine)
+    if bin_name is None:
+        return False, f"unsupported engine: {engine}"
+    if find_command(bin_name, repo) is None:
+        return False, f"executable not found: {bin_name}"
+    probe = ENGINE_ISOLATION_PROBES.get(engine)
+    if probe is not None:
+        try:
+            probe(reviewer, repo)
+        except SystemExit as exc:
+            return False, str(exc.code)
+    if engine == "kimi":
+        try:
+            _, source_share = load_kimi_review_config(repo)
+            validate_kimi_runtime_auth_sources(repo, source_share)
+        except SystemExit as exc:
+            return False, str(exc.code)
+    if engine == "codex":
+        try:
+            codex_config_keys(reviewer)
+            codex_speed_override(reviewer)
+        except SystemExit as exc:
+            return False, str(exc.code)
+    if engine == "claude" and getattr(reviewer, "tools", True):
+        try:
+            claude_tool_inventory(reviewer)
+        except SystemExit as exc:
+            return False, str(exc.code)
+    return True, None
+
+
+def max_prompt_bytes_for_reviewers(reviewers: list[argparse.Namespace]) -> int:
+    """Aggregate review-prompt byte budget for a reviewer set: the shared
+    limit, tightened to Kimi's smaller `kimi -p` argv budget when any
+    reviewer uses Kimi. Shared by main() (building the real prompts) and
+    dry_run_preflight() (validating the same budget without contacting an
+    engine) so the two never diverge.
+    """
+    max_prompt_bytes = MAX_REVIEW_PROMPT_BYTES
+    if any(reviewer.engine == "kimi" for reviewer in reviewers):
+        max_prompt_bytes = min(max_prompt_bytes, KIMI_MAX_PROMPT_BYTES)
+    return max_prompt_bytes
+
+
+def apply_finding_threshold_prompt(args: argparse.Namespace, extra_prompt: str) -> str:
+    """Prepend the priority-threshold instructions main() always adds to
+    the extra prompt before building the final review prompt(s). Shared by
+    main() and dry_run_preflight() so the aggregate-size/partition check in
+    the latter sees the same prompt bytes the real run would build.
+    """
+    included_priorities = ", ".join(
+        priority
+        for priority in ("P0", "P1", "P2", "P3")
+        if int(priority[1]) <= int(args.max_priority[1])
+    )
+    threshold_prompt = (
+        f"Finding threshold: report only {included_priorities}. "
+        "Omit all lower-priority observations, polish, speculative risks, and "
+        "follow-up ideas outside that threshold. Do not mark the patch incorrect "
+        "solely for an omitted lower-priority issue."
+    )
+    return threshold_prompt + ("\n\n" + extra_prompt if extra_prompt.strip() else "")
+
+
+def dry_run_preflight(
+    args: argparse.Namespace,
+    reviewers: list[argparse.Namespace],
+    repo: Path,
+    target: str,
+    target_ref: str | None,
+) -> int:
+    """Validate what upstream can check before a real run without
+    contacting any review engine: that the review bundle can be built for
+    the chosen target, that --prompt-file and --dataset inputs resolve
+    and pass the same repo-relative/existence checks the real run applies
+    via load_extra_prompt/load_datasets, that the assembled prompt(s) pass
+    the same aggregate-size/partition and truncation-refusal checks the
+    real run applies via build_review_prompts/ensure_reviewer_input_complete
+    and the same known-secret-fragment check applied to the final prompt
+    (see main() just after dry_run_preflight returns), that the trufflehog
+    binary a real run always requires (see run_trufflehog_preflight)
+    resolves, that the temporary root used by the scanner stays outside the
+    reviewed repository, and that each configured reviewer's CLI binary resolves and
+    its configuration (including, for Kimi, load_kimi_review_config and
+    validate_kimi_runtime_auth_sources, and for Claude, the tool
+    inventory) is one a real run would actually accept. Returns the
+    process exit status: 0 when every check passes, 1 otherwise.
+    """
+    ok = True
+    known_secret_fragments: set[str] = set()
+    bundle = ""
+    bundle_truncated = False
+    bundle_ok = True
+    try:
+        if target == "local":
+            bundle, bundle_truncated = local_bundle(repo, known_secret_fragments)
+        elif target == "branch":
+            assert target_ref
+            bundle, bundle_truncated = branch_bundle(repo, target_ref, known_secret_fragments)
+        else:
+            bundle, bundle_truncated = commit_bundle(repo, args.commit, known_secret_fragments)
+            # Mirror main()'s post-commit_bundle() assignment (see main() just
+            # after the commit_bundle() call above) so the prompt built below
+            # includes the commit reference the real run would include.
+            target_ref = args.commit
+        print("bundle: constructible")
+    except SystemExit as exc:
+        ok = False
+        bundle_ok = False
+        print(f"bundle: FAILED ({exc.code})")
+    except Exception as exc:
+        ok = False
+        bundle_ok = False
+        print(f"bundle: FAILED ({exc})")
+
+    extra_prompt = ""
+    datasets = ""
+    prompt_truncated = False
+    datasets_truncated = False
+    inputs_ok = True
+    try:
+        extra_prompt, prompt_truncated = load_extra_prompt(args, repo)
+        datasets, datasets_truncated = load_datasets(args, repo)
+        print("inputs: OK")
+    except SystemExit as exc:
+        ok = False
+        inputs_ok = False
+        print(f"inputs: FAILED ({exc.code})")
+    except Exception as exc:
+        ok = False
+        inputs_ok = False
+        print(f"inputs: FAILED ({exc})")
+
+    # The normal path (see main() below) does not stop at per-file
+    # validation: it also assembles the final prompt(s) and enforces the
+    # aggregate-size/partition limits and truncated-input refusal that
+    # build_review_prompts()/ensure_reviewer_input_complete() apply before
+    # any engine call. A dry run that skipped those would report OK for
+    # inputs a real run rejects once combined.
+    if bundle_ok and inputs_ok:
+        try:
+            input_truncated = bundle_truncated or prompt_truncated or datasets_truncated
+            if reviewers:
+                ensure_reviewer_input_complete(reviewers[0], input_truncated)
+            threshold_extra_prompt = apply_finding_threshold_prompt(args, extra_prompt)
+            prompts = build_review_prompts(
+                repo,
+                target,
+                target_ref,
+                bundle,
+                threshold_extra_prompt,
+                datasets,
+                max_prompt_bytes_for_reviewers(reviewers),
+            )
+            for prompt in prompts:
+                require_no_known_secret_fragments(
+                    "final review prompt", prompt, known_secret_fragments
+                )
+            print("prompt: OK")
+        except SystemExit as exc:
+            ok = False
+            print(f"prompt: FAILED ({exc.code})")
+        except Exception as exc:
+            ok = False
+            print(f"prompt: FAILED ({exc})")
+    else:
+        print("prompt: SKIPPED (bundle or inputs failed above)")
+
+    if find_command("trufflehog", repo) is None:
+        ok = False
+        print(
+            "trufflehog: UNAVAILABLE (TruffleHog is required but was not found. Install it using "
+            f"the official instructions, then rerun autoreview: {TRUFFLEHOG_INSTALL_URL})"
+        )
+    else:
+        print("trufflehog: OK")
+
+    try:
+        safe_temp_root(repo)
+        print("temporary root: OK")
+    except SystemExit as exc:
+        ok = False
+        print(f"temporary root: FAILED ({exc.code})")
+    except Exception as exc:
+        ok = False
+        print(f"temporary root: FAILED ({exc})")
+
+    for reviewer in reviewers:
+        available, reason = resolve_engine_binary(reviewer, repo)
+        label = reviewer_label(reviewer)
+        if available:
+            print(f"engine check: {label} OK")
+        else:
+            ok = False
+            print(f"engine check: {label} UNAVAILABLE ({reason})")
+
+    return 0 if ok else 1
 
 
 def run_reviewer(
@@ -13069,6 +13693,17 @@ def atomic_write_text(path: Path, content: str) -> None:
 
 
 def main() -> int:
+    with OwnedProcessSignalHandlers():
+        try:
+            return main_impl()
+        except EngineInterrupted as exc:
+            # No longer a SystemExit subclass (see EngineInterrupted), so it
+            # is not caught by internal `except SystemExit` guards on the
+            # way up -- convert it to a plain exit code here instead.
+            return exc.code
+
+
+def main_impl() -> int:
     args = parse_args()
     if args.self_test:
         return self_test()
@@ -13129,7 +13764,7 @@ def main() -> int:
     if display_ref:
         print(f"ref: {display_ref}")
     if args.dry_run:
-        return 0
+        return dry_run_preflight(args, reviewers, repo, target, target_ref)
 
     review_source_snapshot = source_tree_snapshot(repo)
     run_trufflehog_preflight(repo, target, target_ref, args.commit)
@@ -13154,25 +13789,10 @@ def main() -> int:
         )
         target_ref = args.commit
     extra_prompt, prompt_truncated = load_extra_prompt(args, repo)
-    included_priorities = ", ".join(
-        priority
-        for priority in ("P0", "P1", "P2", "P3")
-        if int(priority[1]) <= int(args.max_priority[1])
-    )
-    threshold_prompt = (
-        f"Finding threshold: report only {included_priorities}. "
-        "Omit all lower-priority observations, polish, speculative risks, and "
-        "follow-up ideas outside that threshold. Do not mark the patch incorrect "
-        "solely for an omitted lower-priority issue."
-    )
-    extra_prompt = (
-        threshold_prompt + ("\n\n" + extra_prompt if extra_prompt.strip() else "")
-    )
+    extra_prompt = apply_finding_threshold_prompt(args, extra_prompt)
     datasets, datasets_truncated = load_datasets(args, repo)
     input_truncated = bundle_truncated or prompt_truncated or datasets_truncated
-    max_prompt_bytes = MAX_REVIEW_PROMPT_BYTES
-    if any(reviewer.engine == "kimi" for reviewer in reviewers):
-        max_prompt_bytes = min(max_prompt_bytes, KIMI_MAX_PROMPT_BYTES)
+    max_prompt_bytes = max_prompt_bytes_for_reviewers(reviewers)
     prompts = build_review_prompts(
         repo,
         target,

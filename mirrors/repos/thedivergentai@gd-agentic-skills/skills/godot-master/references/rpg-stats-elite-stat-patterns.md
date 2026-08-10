@@ -68,4 +68,4 @@ Uncapped `pow()` on `experience_to_next_level` soft-locks or overflows — cap g
 
 ## Balance testing
 
-Matrix-test modifier stacks with [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md).
+Matrix-test modifier stacks with [godot-monte-carlo-balancer](monte-carlo-balancer.md).

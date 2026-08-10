@@ -1,367 +1,298 @@
 ---
 name: product-help-center
-description: Design or audit AI-first help centers and knowledge bases. Use for taxonomy, article templates, RAG setup, or support chatbot planning.
+description: Designs AI-first help centers and self-service support systems. Use when shaping taxonomy, article templates, support AI, or docs platform choices.
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.2"
+last_validated: 2026-07-11
 ---
 
 # Help Center Design
 
-Design AI-first help centers, knowledge bases, FAQs, and learning materials.
+Design public help centers, in-app self-service, and AI-consumable documentation systems.
 
-This skill reflects the shift from static help portals to AI-powered, embedded, personalized self-service systems.
+Use this skill when the user needs one of these outcomes:
+- pick or compare a help center, docs, or support-AI platform
+- design or audit taxonomy, navigation, article standards, and governance
+- plan retrieval-first support AI with citations, tool permissions, and escalation
+- make docs easier for humans, search, and AI agents to consume
 
-## Workflow (Use As Default Order)
+## Workflow
 
-1. Define scope and constraints
-   - Audience/personas, product area(s), product versioning, channels (web/in-app), compliance requirements, localization needs.
-2. Inventory current knowledge
-   - Top tickets, top searches, top articles, top escalation reasons, and known content owners.
-3. Build information architecture
-   - Category structure, tagging, navigation, URL strategy, and internal linking.
-4. Standardize content
-   - Article types, templates, AI-friendly writing rules, and visual standards.
-5. Instrument and measure
-   - KPIs, event tracking, dashboards, and search query logging.
-6. Add AI support safely
-   - Retrieval-first answers, citations, confidence thresholds, escalation rules, and transactional guardrails.
+1. Classify the surface
+   - Support help center, developer docs portal, internal knowledge base, in-app guidance, or hybrid.
+2. Define audience and risk
+   - End users, admins, developers, agents, regulated customers, multilingual audiences.
+3. Choose the operating model
+   - Human-authored docs only, retrieval-first support AI, or agentic support with approved tools.
+4. Design information architecture
+   - Category structure, navigation, search strategy, metadata, URL rules, and versioning.
+5. Standardize content
+   - Article types, writing rules, visual rules, and reusable templates.
+6. Instrument quality
+   - Search analytics, self-service outcomes, citation quality, handoff quality, and freshness signals.
 7. Run knowledge operations
-   - Governance, freshness detection, release-driven updates, and continuous optimization.
+   - Owners, review cadences, release-driven updates, and stale-content remediation.
 
-Expected outputs (adapt to request):
-- Help center taxonomy map + tag schema
-- Top 20 article backlog (by impact) + templates
-- Analytics spec (events + dashboard KPIs)
-- AI support spec (RAG sources, escalation thresholds, safety rules)
-- Operating cadence (owners + review schedule)
+Expected outputs:
+- help center or docs platform recommendation with rationale
+- taxonomy map, metadata schema, and article backlog
+- support AI design with sources, escalation policy, and guardrails
+- operating model for ownership, QA, and measurement
+
+## ASCII Flow
+
+```text
+Help center or support-docs request
+  -> Classify surface: help center, developer docs, KB, in-app, or hybrid
+  -> Define audience, risk, locale, and support context
+  -> Choose operating model
+     +-- human-authored docs
+     +-- retrieval-first support AI
+     +-- agentic support with approved tools
+  -> Design IA, taxonomy, metadata, URLs, search, and versioning
+  -> Standardize article types and templates
+  -> Add measurement: search, self-service, citations, handoff, freshness
+  -> Assign owners, review cadence, migration plan, and stale-content loop
+```
 
 ## Quick Reference
+
+### Surface Selection
+
+| Need | Primary Surface | Good Fits |
+|------|-----------------|-----------|
+| Customer troubleshooting, billing, account help | Support help center | Zendesk, Intercom, Freshdesk |
+| API guides, SDK docs, AI-consumable docs | Developer docs portal | ReadMe, Mintlify, GitBook |
+| In-app onboarding and contextual help | In-app guidance layer | Intercom, Pendo, Appcues, custom |
+| Internal-only runbooks and agent knowledge | Internal knowledge base | Guru, Confluence, Notion |
+| High-volume support automation | Retrieval-first support AI | Zendesk AI, Intercom Fin, custom |
 
 ### Content Type Decision Matrix
 
 | User Need | Content Type | Format | AI Role |
 |-----------|--------------|--------|---------|
-| "How do I..." | How-To | Step-by-step | Suggest next steps |
-| "Why isn't..." | Troubleshooting | Problem -> Cause -> Fix | Diagnose & resolve |
-| "What is..." | Conceptual | Explanation | Summarize context |
-| "Quick answer" | FAQ | Q&A pairs | Instant response |
-| "Full specs" | Reference | Tables, lists | Search & retrieve |
-| "Learn feature" | Tutorial | Video + interactive | Personalized path |
+| "How do I..." | How-to | Step-by-step | Link, summarize, adapt steps |
+| "Why is this failing?" | Troubleshooting | Symptoms -> causes -> fixes | Diagnose and route |
+| "What does this mean?" | Conceptual | Plain-language explanation | Summarize context |
+| "Where do I find..." | Navigation | Short answer + links | Point to exact surface |
+| "What are the limits or rules?" | Reference | Tables, lists, exact wording | Retrieve verbatim facts |
+| "Can you do this for me?" | Task policy | Action rules + approvals | Decide whether AI may act |
 
-### Platform Selection (Verify Pricing And Plan Limits)
+### Platform Selection Rules
 
-| Company Stage | Platform | Monthly Cost | Best For |
-|---------------|----------|--------------|----------|
-| Enterprise | Zendesk | $55+/agent | Complex workflows, compliance |
-| Growth/SaaS | Intercom | $29/seat + $0.99/resolution | Conversational, PLG |
-| SMB/Startup | Freshdesk | $29-69/agent | Budget-friendly, native AI |
-| Developer-focused | GitBook/Notion | $0-20/user | Docs-as-code |
+- Recommend support suites when ticketing, SLAs, handoff, and compliance are first-class requirements.
+- Recommend docs portals when the main problem is structured product or API documentation.
+- Treat Notion as acceptable for lightweight internal knowledge and early-stage public docs, not as a durable default for serious public help centers.
+- Verify pricing, packaging, plan limits, and current AI features before making final vendor recommendations.
+- Zendesk consolidated AI agent tiers in mid-2026: the Essential/Advanced distinction is being removed, with advanced AI features (agentic reasoning, multi-step procedures, external API integrations) included across Suite and Support plans. Legacy Essential functionality reaches end-of-life December 2026. Verify current plan structure before advising on AI agent capabilities.
+- Intercom Fin (2026) supports multi-channel deployment (web, iOS, Android, Email, WhatsApp, SMS, Facebook, Instagram), persona customization, and plan/locale-aware content targeting. Pricing is resolution-based; verify current rates.
 
-See [references/platform-guides.md](references/platform-guides.md) for setup/migration notes and [data/sources.json](data/sources.json) for curated comparison sources.
+See [platform-guides.md](references/platform-guides.md) for current platform-fit rules and [sources.json](data/sources.json) for preferred sources.
 
-## 2025-2026 Best Practices
+## 2026 Default Guidance
 
-### Key Shifts
+### Durable Shifts
 
-| Aspect | Traditional (Pre-2024) | Modern (2025-2026) |
-|--------|------------------------|---------------------|
-| Support model | Separate help portal | Embedded in-app help |
-| AI role | Search assistant | Higher automation with safe escalation |
-| Search | Keyword matching | Semantic + RAG |
-| Content | Text-heavy articles | Visual-first (video, GIF, screenshots) |
-| Personalization | Same for all users | By role, version, behavior |
-| Maintenance | Manual curation | AI-driven freshness detection |
-| Navigation | Category browsing | Conversational + contextual |
-
-Avoid quoting hard statistics without verification; refresh trends and benchmarks via [data/sources.json](data/sources.json) when needed.
+| Area | Legacy Pattern | 2026 Default |
+|------|----------------|--------------|
+| Help delivery | Separate help portal | Contextual support across web, app, and AI |
+| Search | Keyword-only | Hybrid retrieval: semantic + lexical + metadata |
+| AI behavior | Bot answers only | Retrieval-first assistant with explicit escalation policy |
+| Content | Text-heavy article library | Structured, visual, version-aware, agent-consumable content |
+| Maintenance | Manual cleanup | Release-driven and signal-driven knowledge ops |
+| Personalization | Same experience for all | Role, plan, locale, and environment-aware support |
 
 ### AI-First Principles
 
-1. **Agentic Resolution** — AI executes tasks (refunds, bookings, updates), not just answers
-2. **Semantic Understanding** — Intent-based search, not keyword matching
-3. **Proactive Assistance** — Surface help before users ask
-4. **Content Freshness** — Auto-detect stale content, suggest updates
-5. **Multi-Source Synthesis** — Pull from docs, tickets, Slack, release notes
-6. **Memory-Rich AI** — Retain context across sessions for personalized support
+1. Retrieval before generation.
+2. Citations before confidence claims.
+3. Clarify or escalate before guessing.
+4. Tool access by explicit permission, not by default.
+5. Knowledge freshness matters as much as model quality.
+6. Support AI needs QA, monitoring, and rollback paths.
 
-### Emerging Trends (2026)
+### AI-Consumable Docs Principles
 
-| Trend | Description | Impact |
-|-------|-------------|--------|
-| **Voice Search** | Users speak instead of type to find information | Requires natural language KB content |
-| **Proactive AI** | AI detects/resolves issues before users report | Reduces inbound support volume |
-| **Embedded Help** | Help surfaces in-context, not separate portal | Higher engagement, lower friction |
-| **AI Operations Lead** | New role supervising AI agent behavior | Shift from execution to oversight |
-| **Hallucination Mitigation** | RAG grounding to reduce AI fabrication | Requires citation/source linking |
+- Publish stable canonical URLs and clear page titles.
+- Keep one main task or concept per page.
+- Use headings, tables, lists, and exact error strings.
+- Expose machine-friendly surfaces when relevant: markdown export, API references, MCP servers, `llms.txt`, `llms-full.txt`, and agent-facing indexes.
+- Treat `llms.txt` as additive and emerging, not a replacement for good IA, search, or structured docs.
+
+See [ai-consumable-docs.md](references/ai-consumable-docs.md) for the AI-docs layer.
+
+### Answer Engine Optimization (AEO)
+
+Help center content is a primary source for AI answer engines (ChatGPT, Perplexity, Gemini, Claude). Two complementary layers improve citation and retrieval:
+
+- **Page-level markup**: use `FAQPage`, `HowTo`, and `Article` schema.org types on help articles. FAQs and step-by-step lists are the formats AI models favour most; explicit schema reinforces what the content is.
+- **Site-level signaling**: publish `llms.txt` and `llms-full.txt` at a well-known URL to indicate canonical structure and priority pages to AI crawlers. As of mid-2026, adoption is growing but support is uneven — treat it as a fast-growing signal rather than a guaranteed channel.
+- **Content shape**: short declarative answers at the top of each article (before procedural detail) improve extraction by AI answer engines. Use exact product names, error strings, and version numbers — AI engines retrieve verbatim matches better than paraphrases.
+- **Canonical hygiene**: one canonical URL per fact; avoid duplicate content across help center and marketing site, which splits AI citation confidence.
+
+These optimizations compound with good IA and structured markup; neither replaces the other.
 
 ## Help Center Architecture
 
 ### Category Structure Rules
 
 ```
-HIERARCHY LIMITS
-- Maximum depth: 2-3 levels
-- Top-level categories: 5-9 (cognitive load principle)
-- Articles per category: 10-20 (scannable)
-- Avoid: Deep nesting, internal org structure
+HIERARCHY RULES
+- Prefer 2 levels; use 3 only when the product genuinely needs it
+- Top-level categories: usually 5-8
+- Organize by user goal, not internal org chart
+- Separate end-user help from developer docs when the audiences differ
+- Keep billing, security, troubleshooting, and release notes easy to find
 ```
 
 ### Recommended Top-Level Categories
 
 ```
-STANDARD CATEGORIES (adapt to product)
-1. Getting Started        — First-run, setup, quick wins
-2. [Core Feature 1]       — Primary use case
-3. [Core Feature 2]       — Secondary use case
-4. Account & Billing      — Settings, payments, security
-5. Integrations           — Third-party connections
-6. Troubleshooting        — Common issues, error codes
-7. API & Developers       — Technical documentation
-8. What's New             — Changelog, releases
+DEFAULT STRUCTURE
+1. Getting Started
+2. Core Workflows
+3. Integrations
+4. Account, Billing, and Security
+5. Troubleshooting
+6. Developers or API
+7. Release Notes / What's New
+8. Contact / Escalation
 ```
 
 ### Navigation Patterns
 
-- **Breadcrumbs** — Always show location in hierarchy
-- **Related Articles** — 3-5 contextually relevant links
-- **Next Steps** — Guide to logical next action
-- **Search Prominence** — Above fold, always visible
-- **Popular Articles** — Surface high-traffic content
+- Search is always above the fold.
+- Breadcrumbs and related articles are standard.
+- Every troubleshooting article includes an escalation path.
+- Every how-to article includes prerequisites, result state, and next steps.
+- Versioned products need explicit version selectors or version labels.
 
-## Article Types (Keep The Set Small)
+## Article Standards
 
-- How-To: task completion, 3-10 steps
-- Troubleshooting: symptoms -> causes -> solutions
-- FAQ: fast answers with links to deeper docs
-- Conceptual: explain terms and mental models
-- Reference: precise specs (tables, limits, error codes)
+- Keep the core set small: how-to, troubleshooting, conceptual, FAQ, reference, release note.
+- Include exact UI labels, feature names, and error strings.
+- Remove marketing language from support content.
+- Use screenshots only when they materially reduce ambiguity; keep them current.
+- Make every article independently understandable to users and retrieval systems.
 
-Use the copy-paste templates in [references/article-templates.md](references/article-templates.md).
+Use [article-templates.md](references/article-templates.md) for templates and [taxonomy-patterns.md](references/taxonomy-patterns.md) for IA patterns.
 
-## AI Integration Patterns
+## Support AI Design
 
-### Chatbot Architecture
-
-```
-MODERN AI SUPPORT FLOW (2025)
-
-User query
-  -> Intent detection (semantic understanding)
-  -> RAG retrieval (KB + tickets + docs)
-  -> Response and action (answer and/or execute task)
-  -> Escalation check (confidence below threshold?)
-  -> Human agent (if needed)
-```
-
-### Agentic AI Capabilities (2025-2026)
-
-| Capability | Example | Platform |
-|------------|---------|----------|
-| Task execution | Process refund | Ada, Zendesk AI |
-| Appointment booking | Schedule call | Chatbase, Calendly |
-| Account updates | Change plan | Fin AI, custom |
-| Ticket creation | Escalate to human | All platforms |
-| Multi-system lookup | Check order + shipping | MCP integrations |
-
-### Content for AI Consumption
-
-```markdown
-AI-FRIENDLY WRITING RULES
-
-DO:
-- Clear headings with keywords
-- Structured data (tables, lists)
-- Explicit step numbering
-- Error messages verbatim
-- Unique article titles
-
-DON'T:
-- Ambiguous pronouns
-- Implicit assumptions
-- Marketing fluff in support content
-- Duplicate content across articles
-```
-
-See [references/ai-integration.md](references/ai-integration.md) for RAG setup, evaluation, and escalation patterns.
-
-## Metrics & KPIs
-
-### Core Metrics
-
-| Metric | Definition | Benchmark |
-|--------|------------|-----------|
-| **Self-Service Rate** | % issues resolved without agent | 60-80% |
-| **Deflection Rate** | Tickets avoided via KB | 30-50% |
-| **Search Success** | % searches -> helpful result | >70% |
-| **CSAT (KB)** | Article helpfulness rating | >80% positive |
-| **Time to Resolution** | Self-service completion time | <3 min |
-| **Zero-Result Rate** | Searches with no results | <5% |
-
-### Content Health Metrics
+### Retrieval-First Support Flow
 
 ```
-FRESHNESS INDICATORS
-- Last updated > 6 months -> Review required
-- Last updated > 12 months -> Likely stale
-- No views in 90 days -> Consider archive
-- High bounce rate -> Content mismatch
-
-QUALITY INDICATORS
-- Thumbs down > 20% -> Rewrite needed
-- Escalation after viewing -> Content gap
-- Search -> immediate exit -> Title mismatch
+USER QUESTION
+  -> classify intent and risk
+  -> retrieve from approved sources
+  -> answer with citations
+  -> clarify if evidence is weak or ambiguous
+  -> hand off or execute only if policy allows
+  -> log outcome and quality signals
 ```
 
-### ROI Calculation
+### Resolution Modes
 
-```
-SELF-SERVICE ROI FORMULA
+| Mode | What AI May Do | Requirements |
+|------|----------------|-------------|
+| Informational | Answer from approved content | Citations, freshness, fallback |
+| Navigational | Send user to the right page or workflow | Precise links, plan/role awareness |
+| Diagnostic | Narrow likely cause | Observability context, safe troubleshooting |
+| Transactional | Execute approved task | Explicit tool permissions, audit trail, rollback |
+| Escalation | Hand to human | Trigger rules, summary, captured context |
 
-Monthly Savings = (Deflected Tickets x $13) - Platform Cost
+### Guardrails
 
-Example:
-- 1,000 deflected tickets/month
-- $13 average agent cost
-- $500 platform cost
-- ROI = ($13,000 - $500) = $12,500/month
-```
+- Approved sources list.
+- Tool permission matrix by task.
+- Escalation triggers for low evidence, high risk, or repeated failure.
+- Citation requirement for factual claims.
+- Simulation and QA before live traffic increases.
 
-See [references/metrics-optimization.md](references/metrics-optimization.md) for instrumentation, dashboards, and optimization playbooks.
+See [ai-integration.md](references/ai-integration.md) for implementation patterns.
 
-## Learning & Onboarding
+## Metrics & Quality
 
-### In-App Help Patterns
+### Core Measures
 
-| Pattern | Use Case | Tools |
-|---------|----------|-------|
-| Tooltips | Field-level guidance | Native, Appcues |
-| Hotspots | Feature discovery | UserPilot, Pendo |
-| Checklists | Onboarding progress | Whatfix, Chameleon |
-| Tours | New feature intro | Intercom, Appcues |
-| Contextual Help | Error recovery | Custom, Zendesk |
+| Metric | What It Answers |
+|--------|-----------------|
+| Search success | Did users find something relevant? |
+| Self-service completion | Did the issue resolve without assisted support? |
+| Citation quality | Were answers grounded in the right sources? |
+| Escalation quality | Did AI hand off at the right time with enough context? |
+| Freshness coverage | Are high-impact pages current? |
+| Content gap rate | Which intents have no good answer yet? |
 
-### Tutorial Best Practices (2025)
+### AI-Specific Measures
 
-```
-VIDEO TUTORIALS
-- Length: 2-4 minutes (40% higher completion)
-- Format: Screen recording + voiceover
-- Chapters: Clickable sections
-- Captions: Always include (accessibility)
+- unresolved-intent rate
+- citation rate
+- tool-call success rate
+- reopen-after-AI rate
+- stale-source hit rate
+- handoff acceptance rate
 
-INTERACTIVE GUIDES
-- Click-through walkthroughs
-- Sandbox environments
-- Progress saving
-- Skip option for experienced users
-```
+Do not use fixed ROI or benchmark numbers unless the user asks for them and you verify current data. Use the measurement framework in [metrics-optimization.md](references/metrics-optimization.md).
 
-See [references/learning-paths.md](references/learning-paths.md) for onboarding sequence design, accessibility, and measurement.
+### Judgment Beyond the Checklist
 
-## Knowledge Operations (2026)
+A checklist audit catches missing articles and broken links. It does not catch these failure modes, which matter more and require judgment:
+
+- **Deflection-vs-resolution gap**: a falling contact rate can mean users are self-serving successfully, or it can mean the contact path got harder to find, an AI assistant is stalling instead of escalating, or frustrated users are churning silently instead of reopening. Never trust a deflection or containment number without a paired resolution-quality signal. See [Where Deflection Targets Backfire](references/metrics-optimization.md#where-deflection-targets-backfire).
+- **Content debt vs. content gaps**: high ticket volume on a topic with an existing, accurate, recently-reviewed article is usually not a missing-content problem — it is a mismatch between the article and how users describe the issue, or a sign of competing information architectures from past redesigns. Diagnose debt before assigning more writing. See [Content Debt Diagnosis](references/knowledge-ops.md#content-debt-diagnosis).
+- **Shallow AI grounding**: a citation on an AI answer does not mean the answer is correct — chunking can separate a rule from its exception, retrieval can return the right fact for the wrong plan or version, and synthesis across two accurate sources can produce an inaccurate combined claim. Citation rate alone will not catch any of this; it requires human review of cited claims against source text. See [Grounding Quality Judgment](references/ai-integration.md#grounding-quality-judgment).
+
+## Knowledge Operations
 
 Operate the help center like a product:
-- Assign owners per category and per top article; define review cadence and SLAs for updates.
-- Use release notes, incident reports, and ticket trends as automatic triggers for content updates.
-- Use freshness signals (search exits, escalation after article view, downvotes) to prioritize rewrites.
+- assign an owner per category and per high-impact article set
+- tie content updates to releases, incidents, and high-volume search gaps
+- review zero-result searches, escalation-after-view, and low-rated articles on a set cadence
+- maintain one canonical source per fact domain where possible
 
-See [references/knowledge-ops.md](references/knowledge-ops.md) for governance, workflows, and checklists.
+See [knowledge-ops.md](references/knowledge-ops.md), [content-migration-guide.md](references/content-migration-guide.md), [multilingual-support.md](references/multilingual-support.md), and [accessibility-standards.md](references/accessibility-standards.md).
 
-## Implementation Checklist
-
-### Phase 1: Foundation (Week 1-2)
-
-REQUIRED:
-- Choose platform (Zendesk/Intercom/Freshdesk)
-- Define category structure (5-9 top-level)
-- Create article templates for each type
-- Set up analytics tracking
-- Configure search settings
-
-### Phase 2: Content (Week 3-4)
-
-REQUIRED:
-- Audit existing documentation
-- Migrate/rewrite top 20 articles
-- Add visual content (screenshots, GIFs)
-- Implement internal linking
-- Set up redirects from old URLs
-
-### Phase 3: AI Integration (Week 5-6)
-
-REQUIRED:
-- Enable AI chatbot
-- Configure RAG/semantic search
-- Set escalation thresholds
-- Test common queries
-- Monitor resolution rates
-
-### Phase 4: Optimization (Ongoing)
-
-REQUIRED:
-- Review zero-result searches weekly
-- Update stale content monthly
-- A/B test article titles
-- Analyze escalation patterns
-- Expand based on ticket trends
-
-## Resources
+## Navigation
 
 | Resource | Content |
 |----------|---------|
-| [article-templates.md](references/article-templates.md) | Complete templates for all 5 article types |
-| [taxonomy-patterns.md](references/taxonomy-patterns.md) | Category structures, tagging, search optimization |
-| [ai-integration.md](references/ai-integration.md) | RAG setup, chatbot config, platform integrations |
-| [platform-guides.md](references/platform-guides.md) | Zendesk, Intercom, Freshdesk, GitBook setup |
-| [learning-paths.md](references/learning-paths.md) | Onboarding sequences, tutorial design, courses |
-| [metrics-optimization.md](references/metrics-optimization.md) | KPI tracking, analytics, A/B testing |
-| [knowledge-ops.md](references/knowledge-ops.md) | Governance, workflows, and operating cadence |
-| [content-migration-guide.md](references/content-migration-guide.md) | Platform migration, URL redirects, content triage |
-| [multilingual-support.md](references/multilingual-support.md) | Translation workflows, glossary, RTL support |
-| [accessibility-standards.md](references/accessibility-standards.md) | WCAG 2.2 AA for help content, audit checklist |
-| [sources.json](data/sources.json) | Curated sources with `add_as_web_search` flags |
+| [article-templates.md](references/article-templates.md) | Templates for common help-center article types |
+| [taxonomy-patterns.md](references/taxonomy-patterns.md) | Information architecture and metadata patterns |
+| [ai-integration.md](references/ai-integration.md) | Retrieval-first support AI, tool policy, and escalation |
+| [ai-consumable-docs.md](references/ai-consumable-docs.md) | `llms.txt`, MCP, markdown export, and agent-facing docs |
+| [platform-guides.md](references/platform-guides.md) | Platform-fit guidance for support suites and docs portals |
+| [metrics-optimization.md](references/metrics-optimization.md) | Measurement framework and instrumentation patterns |
+| [knowledge-ops.md](references/knowledge-ops.md) | Governance and review cadences |
+| [content-migration-guide.md](references/content-migration-guide.md) | Migration, redirects, and validation |
+| [multilingual-support.md](references/multilingual-support.md) | Translation workflows and locale operations |
+| [accessibility-standards.md](references/accessibility-standards.md) | WCAG 2.2 AA guidance for help content |
+| [learning-paths.md](references/learning-paths.md) | Onboarding sequences, tutorial design, in-app guidance, and product education course structure |
+| [sources.json](data/sources.json) | Curated external sources with authority and volatility metadata |
 
 ## Trend Awareness Protocol
 
-REQUIRED: When users ask recommendation questions about help centers, knowledge bases, or support platforms, run a quick web search to confirm current trends before answering. Prefer sources flagged `add_as_web_search: true` in [data/sources.json](data/sources.json), plus official docs for any platform you recommend.
+When the user asks for recommendations involving vendors, AI features, pricing, or platform relevance:
+- run a fresh web search
+- prefer official docs and product pages first
+- use independent comparisons only as support, not as the decision anchor
+- report source links and note dates for volatile claims
 
-### Trigger Conditions
-
-- "What's the best help center platform?"
-- "What should I use for [knowledge base/FAQ/support]?"
-- "What's the latest in customer self-service?"
-- "Current best practices for [AI support/chatbots]?"
-- "Is [Zendesk/Intercom/Freshdesk] still relevant in 2026?"
-- "[Zendesk] vs [Intercom] vs [other]?"
-- "Best AI chatbot for customer support?"
-
-### Required Searches
-
-1. Search: `"help center best practices 2026"`
-2. Search: `"[specific platform] vs alternatives 2026"`
-3. Search: `"AI customer support trends January 2026"`
-4. Search: `"knowledge base platforms 2026"`
-
-### What to Report
-
-After searching, provide:
-
-- **Current landscape**: What support platforms/tools are popular NOW
-- **Emerging trends**: New AI capabilities, patterns, or platforms gaining traction
-- **Deprecated/declining**: Approaches or tools losing relevance
-- **Recommendation**: Based on fresh data, not just static knowledge
-
-If web search is unavailable, state that constraint and proceed with best-effort static guidance.
-
-### Example Topics (verify with fresh search)
-
-- Help center platforms (Zendesk, Intercom, Freshdesk)
-- AI support agents (Fin AI, Ada, Forethought)
-- Knowledge base tools (Document360, GitBook, Notion)
-- In-app guidance (UserPilot, Pendo, Chameleon)
-- Self-service AI capabilities and resolution rates
-- Semantic search and RAG for support
+Priority source order:
+1. Official docs and product pages
+2. Official protocol/spec pages
+3. High-quality independent comparisons
+4. Vendor blogs and SEO content as secondary evidence only
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Verify current pricing, plan limits, AI capabilities, and product naming before final answers.
+- Prefer primary sources for platform behavior and protocol details.
+- If web access is unavailable, say so and mark volatile guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

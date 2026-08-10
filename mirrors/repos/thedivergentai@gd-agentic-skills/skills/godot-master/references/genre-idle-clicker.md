@@ -3,16 +3,6 @@ name: godot-genre-idle-clicker
 description: "Expert blueprint for idle/clicker games including big number handling (mantissa + exponent system), exponential growth curves (cost_growth_factor 1.15x), generator systems (auto-producers), offline progress calculation, prestige systems (reset for permanent multipliers), number formatting (K/M/B suffixes, scientific notation). Use for incremental games, idle games, or cookie clicker derivatives. Trigger keywords: idle_game, big_number, exponential_growth, generator_system, offline_progress, prestige_system, number_formatting."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Idle / Clicker
-
-Expert blueprint for idle/clicker games with exponential progression and prestige mechanics.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Economics & Math
@@ -111,7 +101,6 @@ Do **not** re-inline BigNumber/Offline tutorials in the skill body — load the 
 - [offline_progression_manager.gd](../scripts/genre_idle_clicker_offline_progression_manager.gd)
 - [click_juice_manager.gd](../scripts/genre_idle_clicker_click_juice_manager.gd)
 
-
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
@@ -133,22 +122,22 @@ Do **not** re-inline BigNumber/Offline tutorials in the skill body — load the 
 ### Related Skills
 
 #### Prerequisites
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Mantissa/exponent classes, `pow` growth, and precision-safe compares (`is_equal_approx`) are core GDScript patterns before building idle economies.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Generator and upgrade definitions should be Resource-first so balance curves stay data-driven `.tres` assets.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Decoupled currency buses must signal up to UI and never let Labels mutate the simulation wallet.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Offline progress and prestige state need versioned save handlers that store UNIX timestamps and big-number strings safely.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Mantissa/exponent classes, `pow` growth, and precision-safe compares (`is_equal_approx`) are core GDScript patterns before building idle economies.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Generator and upgrade definitions should be Resource-first so balance curves stay data-driven `.tres` assets.
+- [godot-signal-architecture](signal-architecture.md) — Decoupled currency buses must signal up to UI and never let Labels mutate the simulation wallet.
+- [godot-save-load-systems](save-load-systems.md) — Offline progress and prestige state need versioned save handlers that store UNIX timestamps and big-number strings safely.
 
 #### Complements
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Soft-currency wallets, sinks, and transaction APIs compose with idle generators when the game grows shops or prestige shops.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Generator lists and upgrade grids are `GridContainer`/`VBoxContainer` layouts bound to throttle-friendly labels.
-- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — Scientific notation, suffix strings, and append-only logs belong in Label/RichTextLabel patterns rather than rebuilding huge `text` blobs.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Low-processor mode, UI throttling, and pooled click-juice keep idle loops battery-friendly on mobile.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Simulation managers and economy buses that survive scene reloads should follow Autoload ownership rules.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Click-feedback bursts should use batched `GPUParticles2D.emit_particle` rather than spawning Label nodes per tap.
+- [godot-economy-system](economy-system.md) — Soft-currency wallets, sinks, and transaction APIs compose with idle generators when the game grows shops or prestige shops.
+- [godot-ui-containers](ui-containers.md) — Generator lists and upgrade grids are `GridContainer`/`VBoxContainer` layouts bound to throttle-friendly labels.
+- [godot-ui-rich-text](ui-rich-text.md) — Scientific notation, suffix strings, and append-only logs belong in Label/RichTextLabel patterns rather than rebuilding huge `text` blobs.
+- [godot-performance-optimization](performance-optimization.md) — Low-processor mode, UI throttling, and pooled click-juice keep idle loops battery-friendly on mobile.
+- [godot-autoload-architecture](autoload-architecture.md) — Simulation managers and economy buses that survive scene reloads should follow Autoload ownership rules.
+- [godot-particles](particles.md) — Click-feedback bursts should use batched `GPUParticles2D.emit_particle` rather than spawning Label nodes per tap.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After cost curves and prestige multipliers are Resource-driven, Monte Carlo career sims prove minutes-to-milestone bands (not win%) before shipping growth factors.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Shipping idle on phones consumes low-processor mode, background resume, and offline catch-up patterns from this genre skill.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — After cost curves and prestige multipliers are Resource-driven, Monte Carlo career sims prove minutes-to-milestone bands (not win%) before shipping growth factors.
+- [godot-platform-mobile](platform-mobile.md) — Shipping idle on phones consumes low-processor mode, background resume, and offline catch-up patterns from this genre skill.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

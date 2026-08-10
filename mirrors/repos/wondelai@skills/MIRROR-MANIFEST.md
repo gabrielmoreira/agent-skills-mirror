@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `wondelai/skills` — 26 default patterns, 1 followed patterns, 67 file(s) materialized.
+Mirror of `wondelai/skills` — 26 default patterns, 1 followed patterns, 192 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `wondelai/skills` — 26 default patterns, 1 followed patterns, 67 fil
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 67 |
+| Files         | 192 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -108,24 +108,149 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 47 | ✓ | [`negotiation/SKILL.md`](negotiation/SKILL.md) |
 | 48 | ✓ | [`obviously-awesome/SKILL.md`](obviously-awesome/SKILL.md) |
 | 49 | ✓ | [`one-page-marketing/SKILL.md`](one-page-marketing/SKILL.md) |
-| 50 | ✓ | [`pragmatic-programmer/SKILL.md`](pragmatic-programmer/SKILL.md) |
-| 51 | ✓ | [`predictable-revenue/SKILL.md`](predictable-revenue/SKILL.md) |
-| 52 | ✓ | [`refactoring-patterns/SKILL.md`](refactoring-patterns/SKILL.md) |
-| 53 | ✓ | [`refactoring-ui/SKILL.md`](refactoring-ui/SKILL.md) |
-| 54 | ✓ | [`release-it/SKILL.md`](release-it/SKILL.md) |
-| 55 | ✓ | [`remove-technical-debt/SKILL.md`](remove-technical-debt/SKILL.md) |
-| 56 | ✓ | [`scorecard-marketing/SKILL.md`](scorecard-marketing/SKILL.md) |
-| 57 | ✓ | [`software-design-philosophy/SKILL.md`](software-design-philosophy/SKILL.md) |
-| 58 | ✓ | [`steve-jobs-design-review/SKILL.md`](steve-jobs-design-review/SKILL.md) |
-| 59 | ✓ | [`storybrand-messaging/SKILL.md`](storybrand-messaging/SKILL.md) |
-| 60 | ✓ | [`system-design/SKILL.md`](system-design/SKILL.md) |
-| 61 | ✓ | [`team-topologies/SKILL.md`](team-topologies/SKILL.md) |
-| 62 | ✓ | [`top-design/SKILL.md`](top-design/SKILL.md) |
-| 63 | ✓ | [`traction-eos/SKILL.md`](traction-eos/SKILL.md) |
-| 64 | ✓ | [`ux-heuristics/SKILL.md`](ux-heuristics/SKILL.md) |
-| 65 | ✓ | [`web-typography/SKILL.md`](web-typography/SKILL.md) |
-| 66 | ✓ | [`working-with-legacy-code/SKILL.md`](working-with-legacy-code/SKILL.md) |
-| 67 | → | [`docs/ARTIFACT-REGISTRY.md`](docs/ARTIFACT-REGISTRY.md) |
+| 50 | ✓ | [`plugins/code-craftsmanship/skills/clean-code/SKILL.md`](plugins/code-craftsmanship/skills/clean-code/SKILL.md) |
+| 51 | ✓ | [`plugins/code-craftsmanship/skills/domain-driven-design/SKILL.md`](plugins/code-craftsmanship/skills/domain-driven-design/SKILL.md) |
+| 52 | ✓ | [`plugins/code-craftsmanship/skills/pragmatic-programmer/SKILL.md`](plugins/code-craftsmanship/skills/pragmatic-programmer/SKILL.md) |
+| 53 | ✓ | [`plugins/code-craftsmanship/skills/refactoring-patterns/SKILL.md`](plugins/code-craftsmanship/skills/refactoring-patterns/SKILL.md) |
+| 54 | ✓ | [`plugins/code-craftsmanship/skills/software-design-philosophy/SKILL.md`](plugins/code-craftsmanship/skills/software-design-philosophy/SKILL.md) |
+| 55 | ✓ | [`plugins/code-craftsmanship/skills/working-with-legacy-code/SKILL.md`](plugins/code-craftsmanship/skills/working-with-legacy-code/SKILL.md) |
+| 56 | ✓ | [`plugins/marketing-cro/skills/contagious/SKILL.md`](plugins/marketing-cro/skills/contagious/SKILL.md) |
+| 57 | ✓ | [`plugins/marketing-cro/skills/cro-methodology/SKILL.md`](plugins/marketing-cro/skills/cro-methodology/SKILL.md) |
+| 58 | ✓ | [`plugins/marketing-cro/skills/one-page-marketing/SKILL.md`](plugins/marketing-cro/skills/one-page-marketing/SKILL.md) |
+| 59 | ✓ | [`plugins/marketing-cro/skills/scorecard-marketing/SKILL.md`](plugins/marketing-cro/skills/scorecard-marketing/SKILL.md) |
+| 60 | ✓ | [`plugins/marketing-cro/skills/storybrand-messaging/SKILL.md`](plugins/marketing-cro/skills/storybrand-messaging/SKILL.md) |
+| 61 | ✓ | [`plugins/metaskills/skills/create-app/SKILL.md`](plugins/metaskills/skills/create-app/SKILL.md) |
+| 62 | ✓ | [`plugins/metaskills/skills/create-business/SKILL.md`](plugins/metaskills/skills/create-business/SKILL.md) |
+| 63 | ✓ | [`plugins/metaskills/skills/create-website/SKILL.md`](plugins/metaskills/skills/create-website/SKILL.md) |
+| 64 | ✓ | [`plugins/metaskills/skills/design-code-architecture/SKILL.md`](plugins/metaskills/skills/design-code-architecture/SKILL.md) |
+| 65 | ✓ | [`plugins/metaskills/skills/grow-app/SKILL.md`](plugins/metaskills/skills/grow-app/SKILL.md) |
+| 66 | ✓ | [`plugins/metaskills/skills/grow-business/SKILL.md`](plugins/metaskills/skills/grow-business/SKILL.md) |
+| 67 | ✓ | [`plugins/metaskills/skills/grow-website/SKILL.md`](plugins/metaskills/skills/grow-website/SKILL.md) |
+| 68 | ✓ | [`plugins/metaskills/skills/improve-app/SKILL.md`](plugins/metaskills/skills/improve-app/SKILL.md) |
+| 69 | ✓ | [`plugins/metaskills/skills/improve-business/SKILL.md`](plugins/metaskills/skills/improve-business/SKILL.md) |
+| 70 | ✓ | [`plugins/metaskills/skills/improve-code-quality/SKILL.md`](plugins/metaskills/skills/improve-code-quality/SKILL.md) |
+| 71 | ✓ | [`plugins/metaskills/skills/improve-website/SKILL.md`](plugins/metaskills/skills/improve-website/SKILL.md) |
+| 72 | ✓ | [`plugins/metaskills/skills/remove-technical-debt/SKILL.md`](plugins/metaskills/skills/remove-technical-debt/SKILL.md) |
+| 73 | ✓ | [`plugins/product-innovation/skills/37signals-way/SKILL.md`](plugins/product-innovation/skills/37signals-way/SKILL.md) |
+| 74 | ✓ | [`plugins/product-innovation/skills/continuous-discovery/SKILL.md`](plugins/product-innovation/skills/continuous-discovery/SKILL.md) |
+| 75 | ✓ | [`plugins/product-innovation/skills/design-everyday-things/SKILL.md`](plugins/product-innovation/skills/design-everyday-things/SKILL.md) |
+| 76 | ✓ | [`plugins/product-innovation/skills/design-sprint/SKILL.md`](plugins/product-innovation/skills/design-sprint/SKILL.md) |
+| 77 | ✓ | [`plugins/product-innovation/skills/inspired-product/SKILL.md`](plugins/product-innovation/skills/inspired-product/SKILL.md) |
+| 78 | ✓ | [`plugins/product-innovation/skills/lean-startup/SKILL.md`](plugins/product-innovation/skills/lean-startup/SKILL.md) |
+| 79 | ✓ | [`plugins/product-strategy/skills/jobs-to-be-done/SKILL.md`](plugins/product-strategy/skills/jobs-to-be-done/SKILL.md) |
+| 80 | ✓ | [`plugins/product-strategy/skills/lean-analytics/SKILL.md`](plugins/product-strategy/skills/lean-analytics/SKILL.md) |
+| 81 | ✓ | [`plugins/product-strategy/skills/mom-test/SKILL.md`](plugins/product-strategy/skills/mom-test/SKILL.md) |
+| 82 | ✓ | [`plugins/product-strategy/skills/monetizing-innovation/SKILL.md`](plugins/product-strategy/skills/monetizing-innovation/SKILL.md) |
+| 83 | ✓ | [`plugins/product-strategy/skills/negotiation/SKILL.md`](plugins/product-strategy/skills/negotiation/SKILL.md) |
+| 84 | ✓ | [`plugins/sales-influence/skills/hundred-million-offers/SKILL.md`](plugins/sales-influence/skills/hundred-million-offers/SKILL.md) |
+| 85 | ✓ | [`plugins/sales-influence/skills/influence-psychology/SKILL.md`](plugins/sales-influence/skills/influence-psychology/SKILL.md) |
+| 86 | ✓ | [`plugins/sales-influence/skills/made-to-stick/SKILL.md`](plugins/sales-influence/skills/made-to-stick/SKILL.md) |
+| 87 | ✓ | [`plugins/sales-influence/skills/predictable-revenue/SKILL.md`](plugins/sales-influence/skills/predictable-revenue/SKILL.md) |
+| 88 | ✓ | [`plugins/strategy-growth/skills/blue-ocean-strategy/SKILL.md`](plugins/strategy-growth/skills/blue-ocean-strategy/SKILL.md) |
+| 89 | ✓ | [`plugins/strategy-growth/skills/cold-start-problem/SKILL.md`](plugins/strategy-growth/skills/cold-start-problem/SKILL.md) |
+| 90 | ✓ | [`plugins/strategy-growth/skills/crossing-the-chasm/SKILL.md`](plugins/strategy-growth/skills/crossing-the-chasm/SKILL.md) |
+| 91 | ✓ | [`plugins/strategy-growth/skills/good-strategy-bad-strategy/SKILL.md`](plugins/strategy-growth/skills/good-strategy-bad-strategy/SKILL.md) |
+| 92 | ✓ | [`plugins/strategy-growth/skills/obviously-awesome/SKILL.md`](plugins/strategy-growth/skills/obviously-awesome/SKILL.md) |
+| 93 | ✓ | [`plugins/strategy-growth/skills/traction-eos/SKILL.md`](plugins/strategy-growth/skills/traction-eos/SKILL.md) |
+| 94 | ✓ | [`plugins/systems-architecture/skills/clean-architecture/SKILL.md`](plugins/systems-architecture/skills/clean-architecture/SKILL.md) |
+| 95 | ✓ | [`plugins/systems-architecture/skills/ddia-systems/SKILL.md`](plugins/systems-architecture/skills/ddia-systems/SKILL.md) |
+| 96 | ✓ | [`plugins/systems-architecture/skills/high-perf-browser/SKILL.md`](plugins/systems-architecture/skills/high-perf-browser/SKILL.md) |
+| 97 | ✓ | [`plugins/systems-architecture/skills/release-it/SKILL.md`](plugins/systems-architecture/skills/release-it/SKILL.md) |
+| 98 | ✓ | [`plugins/systems-architecture/skills/system-design/SKILL.md`](plugins/systems-architecture/skills/system-design/SKILL.md) |
+| 99 | ✓ | [`plugins/systems-architecture/skills/team-topologies/SKILL.md`](plugins/systems-architecture/skills/team-topologies/SKILL.md) |
+| 100 | ✓ | [`plugins/team-motivation/skills/drive-motivation/SKILL.md`](plugins/team-motivation/skills/drive-motivation/SKILL.md) |
+| 101 | ✓ | [`plugins/team-motivation/skills/high-output-management/SKILL.md`](plugins/team-motivation/skills/high-output-management/SKILL.md) |
+| 102 | ✓ | [`plugins/ux-design/skills/design-everyday-things/SKILL.md`](plugins/ux-design/skills/design-everyday-things/SKILL.md) |
+| 103 | ✓ | [`plugins/ux-design/skills/hooked-ux/SKILL.md`](plugins/ux-design/skills/hooked-ux/SKILL.md) |
+| 104 | ✓ | [`plugins/ux-design/skills/improve-retention/SKILL.md`](plugins/ux-design/skills/improve-retention/SKILL.md) |
+| 105 | ✓ | [`plugins/ux-design/skills/ios-hig-design/SKILL.md`](plugins/ux-design/skills/ios-hig-design/SKILL.md) |
+| 106 | ✓ | [`plugins/ux-design/skills/lean-ux/SKILL.md`](plugins/ux-design/skills/lean-ux/SKILL.md) |
+| 107 | ✓ | [`plugins/ux-design/skills/microinteractions/SKILL.md`](plugins/ux-design/skills/microinteractions/SKILL.md) |
+| 108 | ✓ | [`plugins/ux-design/skills/refactoring-ui/SKILL.md`](plugins/ux-design/skills/refactoring-ui/SKILL.md) |
+| 109 | ✓ | [`plugins/ux-design/skills/steve-jobs-design-review/SKILL.md`](plugins/ux-design/skills/steve-jobs-design-review/SKILL.md) |
+| 110 | ✓ | [`plugins/ux-design/skills/top-design/SKILL.md`](plugins/ux-design/skills/top-design/SKILL.md) |
+| 111 | ✓ | [`plugins/ux-design/skills/ux-heuristics/SKILL.md`](plugins/ux-design/skills/ux-heuristics/SKILL.md) |
+| 112 | ✓ | [`plugins/ux-design/skills/web-typography/SKILL.md`](plugins/ux-design/skills/web-typography/SKILL.md) |
+| 113 | ✓ | [`plugins/wondelai-skills/skills/37signals-way/SKILL.md`](plugins/wondelai-skills/skills/37signals-way/SKILL.md) |
+| 114 | ✓ | [`plugins/wondelai-skills/skills/blue-ocean-strategy/SKILL.md`](plugins/wondelai-skills/skills/blue-ocean-strategy/SKILL.md) |
+| 115 | ✓ | [`plugins/wondelai-skills/skills/clean-architecture/SKILL.md`](plugins/wondelai-skills/skills/clean-architecture/SKILL.md) |
+| 116 | ✓ | [`plugins/wondelai-skills/skills/clean-code/SKILL.md`](plugins/wondelai-skills/skills/clean-code/SKILL.md) |
+| 117 | ✓ | [`plugins/wondelai-skills/skills/cold-start-problem/SKILL.md`](plugins/wondelai-skills/skills/cold-start-problem/SKILL.md) |
+| 118 | ✓ | [`plugins/wondelai-skills/skills/contagious/SKILL.md`](plugins/wondelai-skills/skills/contagious/SKILL.md) |
+| 119 | ✓ | [`plugins/wondelai-skills/skills/continuous-discovery/SKILL.md`](plugins/wondelai-skills/skills/continuous-discovery/SKILL.md) |
+| 120 | ✓ | [`plugins/wondelai-skills/skills/create-app/SKILL.md`](plugins/wondelai-skills/skills/create-app/SKILL.md) |
+| 121 | ✓ | [`plugins/wondelai-skills/skills/create-business/SKILL.md`](plugins/wondelai-skills/skills/create-business/SKILL.md) |
+| 122 | ✓ | [`plugins/wondelai-skills/skills/create-website/SKILL.md`](plugins/wondelai-skills/skills/create-website/SKILL.md) |
+| 123 | ✓ | [`plugins/wondelai-skills/skills/cro-methodology/SKILL.md`](plugins/wondelai-skills/skills/cro-methodology/SKILL.md) |
+| 124 | ✓ | [`plugins/wondelai-skills/skills/crossing-the-chasm/SKILL.md`](plugins/wondelai-skills/skills/crossing-the-chasm/SKILL.md) |
+| 125 | ✓ | [`plugins/wondelai-skills/skills/ddia-systems/SKILL.md`](plugins/wondelai-skills/skills/ddia-systems/SKILL.md) |
+| 126 | ✓ | [`plugins/wondelai-skills/skills/design-code-architecture/SKILL.md`](plugins/wondelai-skills/skills/design-code-architecture/SKILL.md) |
+| 127 | ✓ | [`plugins/wondelai-skills/skills/design-everyday-things/SKILL.md`](plugins/wondelai-skills/skills/design-everyday-things/SKILL.md) |
+| 128 | ✓ | [`plugins/wondelai-skills/skills/design-sprint/SKILL.md`](plugins/wondelai-skills/skills/design-sprint/SKILL.md) |
+| 129 | ✓ | [`plugins/wondelai-skills/skills/domain-driven-design/SKILL.md`](plugins/wondelai-skills/skills/domain-driven-design/SKILL.md) |
+| 130 | ✓ | [`plugins/wondelai-skills/skills/drive-motivation/SKILL.md`](plugins/wondelai-skills/skills/drive-motivation/SKILL.md) |
+| 131 | ✓ | [`plugins/wondelai-skills/skills/good-strategy-bad-strategy/SKILL.md`](plugins/wondelai-skills/skills/good-strategy-bad-strategy/SKILL.md) |
+| 132 | ✓ | [`plugins/wondelai-skills/skills/grow-app/SKILL.md`](plugins/wondelai-skills/skills/grow-app/SKILL.md) |
+| 133 | ✓ | [`plugins/wondelai-skills/skills/grow-business/SKILL.md`](plugins/wondelai-skills/skills/grow-business/SKILL.md) |
+| 134 | ✓ | [`plugins/wondelai-skills/skills/grow-website/SKILL.md`](plugins/wondelai-skills/skills/grow-website/SKILL.md) |
+| 135 | ✓ | [`plugins/wondelai-skills/skills/high-output-management/SKILL.md`](plugins/wondelai-skills/skills/high-output-management/SKILL.md) |
+| 136 | ✓ | [`plugins/wondelai-skills/skills/high-perf-browser/SKILL.md`](plugins/wondelai-skills/skills/high-perf-browser/SKILL.md) |
+| 137 | ✓ | [`plugins/wondelai-skills/skills/hooked-ux/SKILL.md`](plugins/wondelai-skills/skills/hooked-ux/SKILL.md) |
+| 138 | ✓ | [`plugins/wondelai-skills/skills/hundred-million-offers/SKILL.md`](plugins/wondelai-skills/skills/hundred-million-offers/SKILL.md) |
+| 139 | ✓ | [`plugins/wondelai-skills/skills/improve-app/SKILL.md`](plugins/wondelai-skills/skills/improve-app/SKILL.md) |
+| 140 | ✓ | [`plugins/wondelai-skills/skills/improve-business/SKILL.md`](plugins/wondelai-skills/skills/improve-business/SKILL.md) |
+| 141 | ✓ | [`plugins/wondelai-skills/skills/improve-code-quality/SKILL.md`](plugins/wondelai-skills/skills/improve-code-quality/SKILL.md) |
+| 142 | ✓ | [`plugins/wondelai-skills/skills/improve-retention/SKILL.md`](plugins/wondelai-skills/skills/improve-retention/SKILL.md) |
+| 143 | ✓ | [`plugins/wondelai-skills/skills/improve-website/SKILL.md`](plugins/wondelai-skills/skills/improve-website/SKILL.md) |
+| 144 | ✓ | [`plugins/wondelai-skills/skills/influence-psychology/SKILL.md`](plugins/wondelai-skills/skills/influence-psychology/SKILL.md) |
+| 145 | ✓ | [`plugins/wondelai-skills/skills/inspired-product/SKILL.md`](plugins/wondelai-skills/skills/inspired-product/SKILL.md) |
+| 146 | ✓ | [`plugins/wondelai-skills/skills/ios-hig-design/SKILL.md`](plugins/wondelai-skills/skills/ios-hig-design/SKILL.md) |
+| 147 | ✓ | [`plugins/wondelai-skills/skills/jobs-to-be-done/SKILL.md`](plugins/wondelai-skills/skills/jobs-to-be-done/SKILL.md) |
+| 148 | ✓ | [`plugins/wondelai-skills/skills/lean-analytics/SKILL.md`](plugins/wondelai-skills/skills/lean-analytics/SKILL.md) |
+| 149 | ✓ | [`plugins/wondelai-skills/skills/lean-startup/SKILL.md`](plugins/wondelai-skills/skills/lean-startup/SKILL.md) |
+| 150 | ✓ | [`plugins/wondelai-skills/skills/lean-ux/SKILL.md`](plugins/wondelai-skills/skills/lean-ux/SKILL.md) |
+| 151 | ✓ | [`plugins/wondelai-skills/skills/made-to-stick/SKILL.md`](plugins/wondelai-skills/skills/made-to-stick/SKILL.md) |
+| 152 | ✓ | [`plugins/wondelai-skills/skills/microinteractions/SKILL.md`](plugins/wondelai-skills/skills/microinteractions/SKILL.md) |
+| 153 | ✓ | [`plugins/wondelai-skills/skills/mom-test/SKILL.md`](plugins/wondelai-skills/skills/mom-test/SKILL.md) |
+| 154 | ✓ | [`plugins/wondelai-skills/skills/monetizing-innovation/SKILL.md`](plugins/wondelai-skills/skills/monetizing-innovation/SKILL.md) |
+| 155 | ✓ | [`plugins/wondelai-skills/skills/negotiation/SKILL.md`](plugins/wondelai-skills/skills/negotiation/SKILL.md) |
+| 156 | ✓ | [`plugins/wondelai-skills/skills/obviously-awesome/SKILL.md`](plugins/wondelai-skills/skills/obviously-awesome/SKILL.md) |
+| 157 | ✓ | [`plugins/wondelai-skills/skills/one-page-marketing/SKILL.md`](plugins/wondelai-skills/skills/one-page-marketing/SKILL.md) |
+| 158 | ✓ | [`plugins/wondelai-skills/skills/pragmatic-programmer/SKILL.md`](plugins/wondelai-skills/skills/pragmatic-programmer/SKILL.md) |
+| 159 | ✓ | [`plugins/wondelai-skills/skills/predictable-revenue/SKILL.md`](plugins/wondelai-skills/skills/predictable-revenue/SKILL.md) |
+| 160 | ✓ | [`plugins/wondelai-skills/skills/refactoring-patterns/SKILL.md`](plugins/wondelai-skills/skills/refactoring-patterns/SKILL.md) |
+| 161 | ✓ | [`plugins/wondelai-skills/skills/refactoring-ui/SKILL.md`](plugins/wondelai-skills/skills/refactoring-ui/SKILL.md) |
+| 162 | ✓ | [`plugins/wondelai-skills/skills/release-it/SKILL.md`](plugins/wondelai-skills/skills/release-it/SKILL.md) |
+| 163 | ✓ | [`plugins/wondelai-skills/skills/remove-technical-debt/SKILL.md`](plugins/wondelai-skills/skills/remove-technical-debt/SKILL.md) |
+| 164 | ✓ | [`plugins/wondelai-skills/skills/scorecard-marketing/SKILL.md`](plugins/wondelai-skills/skills/scorecard-marketing/SKILL.md) |
+| 165 | ✓ | [`plugins/wondelai-skills/skills/software-design-philosophy/SKILL.md`](plugins/wondelai-skills/skills/software-design-philosophy/SKILL.md) |
+| 166 | ✓ | [`plugins/wondelai-skills/skills/steve-jobs-design-review/SKILL.md`](plugins/wondelai-skills/skills/steve-jobs-design-review/SKILL.md) |
+| 167 | ✓ | [`plugins/wondelai-skills/skills/storybrand-messaging/SKILL.md`](plugins/wondelai-skills/skills/storybrand-messaging/SKILL.md) |
+| 168 | ✓ | [`plugins/wondelai-skills/skills/system-design/SKILL.md`](plugins/wondelai-skills/skills/system-design/SKILL.md) |
+| 169 | ✓ | [`plugins/wondelai-skills/skills/team-topologies/SKILL.md`](plugins/wondelai-skills/skills/team-topologies/SKILL.md) |
+| 170 | ✓ | [`plugins/wondelai-skills/skills/top-design/SKILL.md`](plugins/wondelai-skills/skills/top-design/SKILL.md) |
+| 171 | ✓ | [`plugins/wondelai-skills/skills/traction-eos/SKILL.md`](plugins/wondelai-skills/skills/traction-eos/SKILL.md) |
+| 172 | ✓ | [`plugins/wondelai-skills/skills/ux-heuristics/SKILL.md`](plugins/wondelai-skills/skills/ux-heuristics/SKILL.md) |
+| 173 | ✓ | [`plugins/wondelai-skills/skills/web-typography/SKILL.md`](plugins/wondelai-skills/skills/web-typography/SKILL.md) |
+| 174 | ✓ | [`plugins/wondelai-skills/skills/working-with-legacy-code/SKILL.md`](plugins/wondelai-skills/skills/working-with-legacy-code/SKILL.md) |
+| 175 | ✓ | [`pragmatic-programmer/SKILL.md`](pragmatic-programmer/SKILL.md) |
+| 176 | ✓ | [`predictable-revenue/SKILL.md`](predictable-revenue/SKILL.md) |
+| 177 | ✓ | [`refactoring-patterns/SKILL.md`](refactoring-patterns/SKILL.md) |
+| 178 | ✓ | [`refactoring-ui/SKILL.md`](refactoring-ui/SKILL.md) |
+| 179 | ✓ | [`release-it/SKILL.md`](release-it/SKILL.md) |
+| 180 | ✓ | [`remove-technical-debt/SKILL.md`](remove-technical-debt/SKILL.md) |
+| 181 | ✓ | [`scorecard-marketing/SKILL.md`](scorecard-marketing/SKILL.md) |
+| 182 | ✓ | [`software-design-philosophy/SKILL.md`](software-design-philosophy/SKILL.md) |
+| 183 | ✓ | [`steve-jobs-design-review/SKILL.md`](steve-jobs-design-review/SKILL.md) |
+| 184 | ✓ | [`storybrand-messaging/SKILL.md`](storybrand-messaging/SKILL.md) |
+| 185 | ✓ | [`system-design/SKILL.md`](system-design/SKILL.md) |
+| 186 | ✓ | [`team-topologies/SKILL.md`](team-topologies/SKILL.md) |
+| 187 | ✓ | [`top-design/SKILL.md`](top-design/SKILL.md) |
+| 188 | ✓ | [`traction-eos/SKILL.md`](traction-eos/SKILL.md) |
+| 189 | ✓ | [`ux-heuristics/SKILL.md`](ux-heuristics/SKILL.md) |
+| 190 | ✓ | [`web-typography/SKILL.md`](web-typography/SKILL.md) |
+| 191 | ✓ | [`working-with-legacy-code/SKILL.md`](working-with-legacy-code/SKILL.md) |
+| 192 | → | [`docs/ARTIFACT-REGISTRY.md`](docs/ARTIFACT-REGISTRY.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: refactoring
-description: "Improve code quality and maintainability through systematic identification of code smells and application of proven refactoring patterns."
+description: "Improve code quality and maintainability through systematic identification of code smells and application of proven refactoring patterns. Use when the user requests refactoring or provides relevant inputs for this workflow."
 license: "MIT"
 metadata:
   author: "awesome-ai-agent-skills contributors"

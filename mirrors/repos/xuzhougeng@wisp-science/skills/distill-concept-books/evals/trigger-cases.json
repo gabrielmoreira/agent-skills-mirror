@@ -1,0 +1,235 @@
+{
+  "schema_version": 2,
+  "skill_name": "distill-concept-books",
+  "definition_status": "planned-not-run",
+  "execution_note": "These prompts define boundaries only. Actual results, candidate hash, execution environment, reviewer and pass/fail must be recorded in eval-runs.yml.",
+  "should_trigger": [
+    {
+      "case_id": "trigger-001",
+      "prompt": "我有一本本地的概念生物学图书，想把其中稳定的分析框架蒸馏成可审计的 Skill 候选，并保留每条规则到原文的追溯。",
+      "expected_reason": "用户要求从概念图书建立 evidence 到 Skill candidate 的完整链。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-001"
+      ],
+      "negative_example_ids": []
+    },
+    {
+      "case_id": "trigger-002",
+      "prompt": "请先检查这本教人如何阅读信号通路论文的书是否适合蒸馏，再设计人工门禁、概念关系和任务规则。",
+      "expected_reason": "任务包含概念/分析方法图书分类、source-quality preflight 和规则化蒸馏。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-002"
+      ],
+      "negative_example_ids": []
+    },
+    {
+      "case_id": "trigger-003",
+      "prompt": "这份私人 DOCX 是一本科研思维方法书。不要联网，请建立 source map、claims、relations 和候选拆分方案。",
+      "expected_reason": "本地私有图书需要结构扫描、四层记录和候选识别。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-003"
+      ],
+      "negative_example_ids": []
+    },
+    {
+      "case_id": "trigger-004",
+      "prompt": "请恢复这个尚未完成的概念图书蒸馏目录，先检查当前 Gate、materialization 和 hash，再告诉我能从哪一步继续。",
+      "expected_reason": "恢复已有蒸馏及确定可执行状态属于本 Skill 的前置路由职责。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-004"
+      ],
+      "negative_example_ids": []
+    },
+    {
+      "case_id": "trigger-005",
+      "prompt": "先不要蒸馏正文，只检查这本 EPUB 是否具有可重复 locator，若当前 adapter 不支持就明确阻断范围。",
+      "expected_reason": "概念图书载体适配性和有限只读 preflight 属于 Gate 2 前的边界判断。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-005"
+      ],
+      "negative_example_ids": []
+    },
+    {
+      "case_id": "trigger-006",
+      "prompt": "这本扫描 PDF 和 DOCX 内嵌图像都含文字。请只用本地 OCR 全页/全图扫描，并保留图像、region 与文字 hash。",
+      "expected_reason": "本地全图像 OCR、稳定 locator 与私有证据蒸馏属于 Gate 2 来源处理。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "scanned-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-006"
+      ],
+      "negative_example_ids": []
+    },
+    {
+      "case_id": "trigger-007",
+      "prompt": "上下文刚被压缩。请恢复蒸馏，但先重新锚定 Gate 1 task contract、coverage 和 Gate 3 状态。",
+      "expected_reason": "上下文恢复后的产品合同重新锚定属于本 Skill 的强制恢复协议。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "existing-distillation"
+      ],
+      "positive_example_ids": [
+        "meta-positive-007"
+      ],
+      "negative_example_ids": []
+    },
+    {
+      "case_id": "trigger-008",
+      "prompt": "我只想把一份本地方法类图书中的核心判断框架做成来源中性的任务 Skill；最终候选不要出现书名、作者、出版社、ISBN、原句或具名案例，请先用第一性原理重构。",
+      "expected_reason": "用户要求保留核心方法、隔离私有 provenance，并在候选投影前完成第一性原理重构和身份清理。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "concept-book-source"
+      ],
+      "positive_example_ids": [
+        "meta-positive-002"
+      ],
+      "negative_example_ids": []
+    }
+  ],
+  "should_not_trigger": [
+    {
+      "case_id": "nontrigger-001",
+      "prompt": "请把这一章概括成 300 字摘要。",
+      "expected_reason": "这是单纯摘要，不要求构建可执行、可追溯的能力。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "adjacent-request"
+      ],
+      "positive_example_ids": [],
+      "negative_example_ids": [
+        "meta-negative-001"
+      ]
+    },
+    {
+      "case_id": "nontrigger-002",
+      "prompt": "把这本实验手册里的 Western blot 步骤直接改成可以控制仪器的 SOP。",
+      "expected_reason": "现实实验程序和设备控制需要安全与操作型 Skill，不属于概念图书默认边界。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "adjacent-request"
+      ],
+      "positive_example_ids": [],
+      "negative_example_ids": [
+        "meta-negative-002"
+      ]
+    },
+    {
+      "case_id": "nontrigger-003",
+      "prompt": "模仿这本小说主角的性格和内心独白替我做决定。",
+      "expected_reason": "人物人格或思维模仿被明确排除。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "adjacent-request"
+      ],
+      "positive_example_ids": [],
+      "negative_example_ids": [
+        "meta-negative-003"
+      ]
+    },
+    {
+      "case_id": "nontrigger-004",
+      "prompt": "请直接帮我把一个与图书蒸馏无关的现有 Skill 初始化 Git、公开并部署到 Wisp。",
+      "expected_reason": "这是通用工程与部署任务；MRULE-006 只处理本流程产出且经 Gate 4 接受的同一候选。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "adjacent-request"
+      ],
+      "positive_example_ids": [],
+      "negative_example_ids": [
+        "meta-negative-004"
+      ]
+    },
+    {
+      "case_id": "nontrigger-005",
+      "prompt": "请根据这本教材直接为患者制定诊断和用药方案。",
+      "expected_reason": "临床决策是高风险专业任务，不属于概念图书蒸馏能力。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "adjacent-request"
+      ],
+      "positive_example_ids": [],
+      "negative_example_ids": [
+        "meta-negative-005"
+      ]
+    },
+    {
+      "case_id": "nontrigger-006",
+      "prompt": "请用 distill-concept-books 直接替另一个已经存在的 Skill 做通用物化和 Gate 4 验收。",
+      "expected_reason": "本元 Skill 只物化本流程产生的候选，且其 MRULE-005 只路由本元 Skill 自身的 Gate 4；其他候选必须使用各自 owning distillation 和评测契约。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "adjacent-request"
+      ],
+      "positive_example_ids": [],
+      "negative_example_ids": [
+        "meta-negative-006"
+      ]
+    },
+    {
+      "case_id": "nontrigger-007",
+      "prompt": "请直接用原书书名和作者命名 Skill，再复制几个原案例并模仿原作者口吻。",
+      "expected_reason": "这是来源身份、案例和表达风格的复刻，不是将核心方法重构为来源中性的任务能力。",
+      "stable_task_ids": [
+        "meta-stable-task-distill-concept-books"
+      ],
+      "input_type_ids": [
+        "adjacent-request"
+      ],
+      "positive_example_ids": [],
+      "negative_example_ids": [
+        "meta-negative-003"
+      ]
+    }
+  ]
+}

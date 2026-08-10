@@ -3,16 +3,6 @@ name: godot-genre-racing
 description: "Expert blueprint for racing games including vehicle physics (VehicleBody3D, suspension, friction), checkpoint systems (prevent shortcuts), rubber-banding AI (keep races competitive), drifting mechanics (reduce friction, boost on exit), camera feel (FOV increase with speed, motion blur), and UI (speedometer, lap timer, minimap). Use for arcade racers, kart racing, or realistic sims. Trigger keywords: racing_game, vehicle_physics, checkpoint_system, rubber_banding, drifting_mechanics, camera_feel."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Racing
-
-Expert blueprint for racing games balancing physics, competition, and sense of speed.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Physics & Handling
@@ -75,9 +65,9 @@ Expert blueprint for racing games balancing physics, competition, and sense of s
 
 Use the **Reference → Related Skills** lattice — do not invent skill ids:
 
-1. **Prerequisites** — [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md), [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md), [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md)
-2. **Complements** — [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md), [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md), [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md), [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md), [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md)
-3. **Downstream** — [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md), [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md)
+1. **Prerequisites** — [godot-project-foundations](project-foundations.md), [godot-physics-3d](physics-3d.md), [godot-input-handling](input-handling.md)
+2. **Complements** — [godot-camera-systems](camera-systems.md), [godot-ai-navigation](ai-navigation.md), [godot-particles](particles.md), [godot-ui-containers](ui-containers.md), [godot-raycasting-queries](raycasting-queries.md)
+3. **Downstream** — [godot-save-load-systems](save-load-systems.md), [godot-economy-system](economy-system.md)
 
 ## Decision Tree — Vehicle Model
 
@@ -105,7 +95,7 @@ Also wire as needed: [slipstream_handler.gd](../scripts/genre_racing_slipstream_
 | Tips / rolls easily | Lower COM (`center_of_mass_mode` + offset) | VehicleBody3D / RigidBody3D |
 | Ice-skating lateral slip | Raise `wheel_friction_slip` / `normal_friction_slip`; lower drift slip only while drifting | [arcade_vehicle_physics.gd](../scripts/genre_racing_arcade_vehicle_physics.gd) |
 | Raycast kart too bouncy | Tune `spring_stiffness` / `spring_damping` / `tire_grip` | [raycast_vehicle_controller.gd](../scripts/genre_racing_raycast_vehicle_controller.gd), [raycast_suspension.gd](../scripts/genre_racing_raycast_suspension.gd) |
-| Bad / rigid camera | `Marker3D` + lerp follow; never hard-parent to chassis | [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) |
+| Bad / rigid camera | `Marker3D` + lerp follow; never hard-parent to chassis | [godot-camera-systems](camera-systems.md) |
 | Tunnel vision / no speed read | Scale FOV with speed; optional shake, wind lines, motion blur | Camera3D + Environment; FOV tween on boost |
 
 ## Advanced Racing Meta-Systems
@@ -113,8 +103,8 @@ Also wire as needed: [slipstream_handler.gd](../scripts/genre_racing_slipstream_
 Do **not** paste inline DriftBoost/Ghost samples — extend the scripts:
 
 1. **Drift-Boost / Mini-Turbo** — **MANDATORY**: use drift hooks in [arcade_vehicle_physics.gd](../scripts/genre_racing_arcade_vehicle_physics.gd) (`is_drifting`, `drift_friction_slip`); charge + `apply_central_impulse` on release; brief Camera FOV tween for boost feel.
-2. **Tire-Smoke / skids** — **MANDATORY**: [skid_mark_emitter.gd](../scripts/genre_racing_skid_mark_emitter.gd) gated by `get_skidinfo()`; pair with [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — never spawn particles every physics frame.
-3. **Replay-Ghost binary** — **MANDATORY**: [ghost_recorder.gd](../scripts/genre_racing_ghost_recorder.gd) for transform serialization; persist via [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md).
+2. **Tire-Smoke / skids** — **MANDATORY**: [skid_mark_emitter.gd](../scripts/genre_racing_skid_mark_emitter.gd) gated by `get_skidinfo()`; pair with [godot-particles](particles.md) — never spawn particles every physics frame.
+3. **Replay-Ghost binary** — **MANDATORY**: [ghost_recorder.gd](../scripts/genre_racing_ghost_recorder.gd) for transform serialization; persist via [godot-save-load-systems](save-load-systems.md).
 
 > **MANDATORY** for depth beyond decision trees and script catalog: [racing-systems-deep.md](genre-racing-racing-systems-deep.md). **Do NOT Load** on first-pass wiring — use bundled `scripts/` first.
 
@@ -159,23 +149,23 @@ Handling the physics of movement.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, InputMap actions, and Project Settings physics layers before wiring VehicleBody3D tracks.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — RigidBody3D/VehicleBody3D integration, collision layers, and gravity scale patterns racing handling depends on.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — analog axes, just-pressed gear/drift taps, and gamepad deadzone curves for steering authority.
+- [godot-project-foundations](project-foundations.md) — scene tree, InputMap actions, and Project Settings physics layers before wiring VehicleBody3D tracks.
+- [godot-physics-3d](physics-3d.md) — RigidBody3D/VehicleBody3D integration, collision layers, and gravity scale patterns racing handling depends on.
+- [godot-input-handling](input-handling.md) — analog axes, just-pressed gear/drift taps, and gamepad deadzone curves for steering authority.
 
 #### Complements
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — smooth follow, FOV ramps, and shake that sell speed without rigid camera mounts.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — bus layout, Doppler, and layered engine/tire loops beyond a single pitch_scale mapping.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — suspension rays, surface probes, and look-ahead casts shared with custom kart controllers.
-- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) — when spline rubber-banding is not enough and opponents need NavigationAgent3D detours around blockers.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — tire smoke, sparks, and trail meshes gated by skidinfo instead of per-frame GPUParticles spam.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — lap_completed, checkpoint, and race-state signals without cross-scene ownership loops.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — speedometer, lap timer, and minimap HUD layout that stays readable at race pace.
+- [godot-camera-systems](camera-systems.md) — smooth follow, FOV ramps, and shake that sell speed without rigid camera mounts.
+- [godot-audio-systems](audio-systems.md) — bus layout, Doppler, and layered engine/tire loops beyond a single pitch_scale mapping.
+- [godot-raycasting-queries](raycasting-queries.md) — suspension rays, surface probes, and look-ahead casts shared with custom kart controllers.
+- [godot-ai-navigation](ai-navigation.md) — when spline rubber-banding is not enough and opponents need NavigationAgent3D detours around blockers.
+- [godot-particles](particles.md) — tire smoke, sparks, and trail meshes gated by skidinfo instead of per-frame GPUParticles spam.
+- [godot-signal-architecture](signal-architecture.md) — lap_completed, checkpoint, and race-state signals without cross-scene ownership loops.
+- [godot-ui-containers](ui-containers.md) — speedometer, lap timer, and minimap HUD layout that stays readable at race pace.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — sample rubber-band curves, drift-boost windows, and AI look-ahead knobs for competitive fairness.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — post-race currency and part upgrades that consume lap/placement outcomes from this genre loop.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — persist ghost binaries, best laps, and unlock state built on race recordings.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — sample rubber-band curves, drift-boost windows, and AI look-ahead knobs for competitive fairness.
+- [godot-economy-system](economy-system.md) — post-race currency and part upgrades that consume lap/placement outcomes from this genre loop.
+- [godot-save-load-systems](save-load-systems.md) — persist ghost binaries, best laps, and unlock state built on race recordings.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

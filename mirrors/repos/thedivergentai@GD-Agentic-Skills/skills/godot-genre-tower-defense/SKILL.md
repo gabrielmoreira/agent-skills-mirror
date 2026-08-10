@@ -3,16 +3,6 @@ name: godot-genre-tower-defense
 description: "Expert blueprint for tower defense games (Bloons TD, Kingdom Rush, Fieldrunners) covering wave management, tower targeting logic, path algorithms, economy balance, and mazing mechanics. Use when building TD, lane defense, or tower placement strategy games. Keywords tower defense, wave spawner, pathfinding, targeting priority, mazing, NavigationServer baking."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Tower Defense
-
-Strategic placement, resource management, and escalating difficulty define tower defense.
-
 ## Core Loop
 1.  **Prepare**: Build/upgrade towers with available currency
 2.  **Wave**: Enemies spawn and traverse path toward goal
@@ -56,7 +46,6 @@ Strategic placement, resource management, and escalating difficulty define tower
 ### Modular Components
 - [tower_defense_patterns.gd](scripts/tower_defense_patterns.gd) - Collection of patterns for furthest-target logic and PhysicsServer projectile optimization.
 
-
 ## Decision Trees (MANDATORY script reads)
 
 ### Path style
@@ -94,8 +83,6 @@ When count > ~500:
 
 **MANDATORY**: [tower.gd](scripts/tower.gd) for idle → acquire → windup → fire. Targeting stays in [tower_targeting_system.gd](scripts/tower_targeting_system.gd).
 
-
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -103,7 +90,6 @@ When count > ~500:
 | Waves / towers / paths | [architecture-overview.md](references/architecture-overview.md) |
 | Projectile lead & targeting | [key-mechanics.md](references/key-mechanics.md) |
 | Maze validation & burst search | [elite-technical-patterns.md](references/elite-technical-patterns.md) + [grid_path_validator.gd](scripts/grid_path_validator.gd) |
-
 
 ## Reference
 

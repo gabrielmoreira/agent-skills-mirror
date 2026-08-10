@@ -54,7 +54,7 @@ func roll_rarity(rng: RandomNumberGenerator) -> String:
     return "legendary"
 ```
 
-Pair with [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) for `ItemData` resources.
+Pair with [godot-resource-data-patterns](resource-data-patterns.md) for `ItemData` resources.
 
 ## WFC lite loop
 

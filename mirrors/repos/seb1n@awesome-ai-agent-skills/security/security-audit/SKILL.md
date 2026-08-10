@@ -1,6 +1,6 @@
 ---
 name: security-audit
-description: Perform a comprehensive security audit of applications and infrastructure to identify vulnerabilities, assess risk, and recommend mitigations aligned with industry standards.
+description: Perform a broad, authorized security audit across application, infrastructure, identity, dependencies, and operations. Use when the user needs a scoped security posture review; use the SAST, DAST, dependency-scanning, or threat-modeling skill when the request is limited to one specialist activity.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills
@@ -124,6 +124,13 @@ prowler aws --compliance soc2 pci_dss --output-formats json html --output-direct
 - **Verify remediation with retesting** — after fixes are deployed, re-run the relevant audit checks to confirm the vulnerability is resolved and no regressions were introduced.
 - **Maintain an audit trail** — store all audit reports, evidence, and remediation records in a centralized repository to support compliance reviews and incident investigations.
 - **Scope audits to include third-party integrations** — payment gateways, OAuth providers, and SaaS APIs introduce risk that is easy to overlook when auditing only first-party code.
+
+## Safety Boundaries
+
+- Work only on systems the user owns or is explicitly authorized to assess, and record the approved scope before testing.
+- Start with passive or read-only inspection. Obtain explicit approval before active scanning, exploitation, load generation, or disruptive remediation.
+- Never expose secrets, extract unrelated data, weaken production controls, or expand beyond the approved targets.
+- Preserve evidence, minimize impact, stop on instability, and provide rollback or containment steps for every material change.
 
 ## Edge Cases
 

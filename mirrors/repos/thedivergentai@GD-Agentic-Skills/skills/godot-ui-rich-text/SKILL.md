@@ -64,13 +64,6 @@ $RichTextLabel.bbcode_enabled = true
 $RichTextLabel.text = "[b]Bold[/b] and [i]italic[/i] text"
 ```
 
-## Godot 4.7: RichTextLabel ImageUnit
-
-- `width_in_percent` / `height_in_percent` **removed** — use `width_unit` / `height_unit` with `RichTextLabel.ImageUnit` enum.
-- `ImageUpdateMask.UPDATE_WIDTH_IN_PERCENT` renamed to `UPDATE_WIDTH_UNIT`.
-- `add_image` / `update_image` width and height are now **float**, not int.
-- **NEVER** pass `true`/`false` for percent flags — use `RichTextLabel.ImageUnit` values (default changed from `false` to `0`).
-
 ## Reveal API Decision
 
 | Need | API | **MANDATORY** |
@@ -85,7 +78,7 @@ $RichTextLabel.text = "[b]Bold[/b] and [i]italic[/i] text"
 Skip cataloging `[b]` / `[i]` / `[u]` / `[color]` — see docs. Prefer these when non-obvious:
 
 - `[url=payload]…[/url]` + `meta_clicked` — prefer [rich_text_meta_dispatch.gd](scripts/rich_text_meta_dispatch.gd)
-- `[img]` sizing — **Godot 4.7**: use `width_unit` / `height_unit` + `RichTextLabel.ImageUnit` (see section above); scale with [rich_text_image_scaler.gd](scripts/rich_text_image_scaler.gd)
+- `[img]` sizing — use `width_unit` / `height_unit` + `RichTextLabel.ImageUnit` (see [migration-notes.md](references/migration-notes.md)); scale with [rich_text_image_scaler.gd](scripts/rich_text_image_scaler.gd)
 - Custom effects — register via `custom_effects` / `install_effect()`; examples: [rich_text_rainbow_effect.gd](scripts/rich_text_rainbow_effect.gd), [rich_text_glitch_effect.gd](scripts/rich_text_glitch_effect.gd)
 
 ## User-Generated Rich Text
@@ -106,7 +99,6 @@ func _on_meta_clicked(meta: Variant) -> void:
 ```
 
 ## Expert Text Patterns
-
 
 ### 1. Rich-Text-MSDF-Outline (SDF)
 Enable crisp, high-resolution outlines and scaling by enabling MSDF on font resources and using theme overrides.
@@ -148,7 +140,6 @@ func _process_custom_fx(char_fx: CharFXTransform):
     char_fx.color = color
     return true
 ```
-
 
 ## Deep recipes (on demand)
 

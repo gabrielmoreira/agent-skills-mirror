@@ -1,6 +1,6 @@
 ---
 name: model-deployment
-description: Deploy trained machine learning models as production-ready services using REST APIs, containers, serverless functions, and orchestration platforms.
+description: Deploy trained machine learning models as production-ready services using REST APIs, containers, serverless functions, and orchestration platforms. Use when the user requests model deployment or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills

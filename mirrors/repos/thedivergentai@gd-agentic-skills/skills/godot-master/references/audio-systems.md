@@ -25,11 +25,6 @@ Expert mixing, spatial, pooling, and interactive-music patterns for Godot's audi
 
 ---
 
-## Godot 4.7: Audio Breaking Changes
-
-- `AudioEffectSpectrumAnalyzer.tap_back_pos` **removed** — migrate analyzers to alternative tap APIs.
-- `AudioStreamPlayer` default `area_mask` is now **0** (disabled), not layer 1. If using `Area2D`/`Area3D` `audio_bus_override`, explicitly set `area_mask` to layer 1 or your bus layer.
-
 ## Decision Matrix: Which AudioStreamPlayer?
 
 | Feature | AudioStreamPlayer | AudioStreamPlayer2D | AudioStreamPlayer3D |
@@ -156,24 +151,24 @@ Ray source→listener; blocked → Tween `attenuation_filter_cutoff_hz` down —
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Bus names, import defaults, and project audio latency settings must exist before runtime mix code.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Music/SFX pools and bus managers are almost always Autoloads; use this for singleton ownership and boot order.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, signals, and await/Tween patterns underpin pooling, ducking, and interactive music graphs.
+- [godot-project-foundations](project-foundations.md) — Bus names, import defaults, and project audio latency settings must exist before runtime mix code.
+- [godot-autoload-architecture](autoload-architecture.md) — Music/SFX pools and bus managers are almost always Autoloads; use this for singleton ownership and boot order.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Resources, signals, and await/Tween patterns underpin pooling, ducking, and interactive music graphs.
 
 #### Complements
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Crossfades, sidechain duck ramps, and occlusion cutoff sweeps should be Tween-driven, not per-frame lerps.
-- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — Audio Playback + Call Method tracks keep dialogue VO and subtitles frame-locked across locales.
-- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Routes spoken lines to a Voice/Dialog bus and should trigger Music ducking from this skill’s bus helpers.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Occlusion muffling needs correct `PhysicsRayQueryParameters3D` masks from source to listener.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Spectrum analyzer magnitudes commonly drive shader uniforms or light energy for audio-reactive VFX.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Volume menus need linear→dB mapping (`linear_to_db`) wired to bus indices, not raw slider values.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist per-bus volume/mute so mixer choices survive relaunch without rewriting bus layout.
+- [godot-tweening](tweening.md) — Crossfades, sidechain duck ramps, and occlusion cutoff sweeps should be Tween-driven, not per-frame lerps.
+- [godot-animation-player](animation-player.md) — Audio Playback + Call Method tracks keep dialogue VO and subtitles frame-locked across locales.
+- [godot-dialogue-system](dialogue-system.md) — Routes spoken lines to a Voice/Dialog bus and should trigger Music ducking from this skill’s bus helpers.
+- [godot-raycasting-queries](raycasting-queries.md) — Occlusion muffling needs correct `PhysicsRayQueryParameters3D` masks from source to listener.
+- [godot-shaders-basics](shaders-basics.md) — Spectrum analyzer magnitudes commonly drive shader uniforms or light energy for audio-reactive VFX.
+- [godot-ui-containers](ui-containers.md) — Volume menus need linear→dB mapping (`linear_to_db`) wired to bus indices, not raw slider values.
+- [godot-save-load-systems](save-load-systems.md) — Persist per-bus volume/mute so mixer choices survive relaunch without rewriting bus layout.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate here when voice pools, polyphony, or mix-callback cost still show up in profilers after pooling.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Use when SFX concurrency caps, “loudness budget,” or spam-vs-clarity tradeoffs need simulated balance passes (pairs with voice limiters).
-- [godot-genre-rhythm](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rhythm/SKILL.md) — Consumes sync-with-audio timing helpers for note windows and BPM-aligned transitions.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hit/explosion layers must share SFX bus routing plus voice stealing so combat never clips the mix.
+- [godot-performance-optimization](performance-optimization.md) — Escalate here when voice pools, polyphony, or mix-callback cost still show up in profilers after pooling.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Use when SFX concurrency caps, “loudness budget,” or spam-vs-clarity tradeoffs need simulated balance passes (pairs with voice limiters).
+- [godot-genre-rhythm](genre-rhythm.md) — Consumes sync-with-audio timing helpers for note windows and BPM-aligned transitions.
+- [godot-combat-system](combat-system.md) — Hit/explosion layers must share SFX bus routing plus voice stealing so combat never clips the mix.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting audio concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting audio concern.

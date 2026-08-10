@@ -201,6 +201,14 @@ const STRINGS = {
       prompt: '音色提示词 EN', promptLocal: '音色提示词',
     },
     importance: { protagonist: '主角', major: '主要角色', supporting: '配角', minor: '龙套' },
+    graphTitle: '关系图谱',
+    graphHint: '悬停看关系，点击进角色',
+    graphCounts: (n, e) => `${n} 位角色 · ${e} 组关系`,
+    exportJson: '导出 JSON',
+    graphLabels: '关系文字',
+    graphEmpty: '这批角色之间没有互相指认的关系',
+    graphDangling: (n) => `另有 ${n} 条关系指向没做画像的角色，图里不画`,
+    relationsAll: '全部关系',
     copy: '复制', copied: '已复制', copyFailed: '复制失败', copyJson: '复制整份角色 JSON',
     sheetCaption: '左：半身像　右：全身三视图',
     noImage: '尚未出图',
@@ -246,6 +254,14 @@ const STRINGS = {
       prompt: 'Voice prompt', promptLocal: 'Voice prompt (local)',
     },
     importance: { protagonist: 'Lead', major: 'Major', supporting: 'Supporting', minor: 'Minor' },
+    graphTitle: 'Relationship map',
+    graphHint: 'Hover to trace, click to open',
+    graphCounts: (n, e) => `${n} character${n === 1 ? '' : 's'} · ${e} link${e === 1 ? '' : 's'}`,
+    exportJson: 'Export JSON',
+    graphLabels: 'Link labels',
+    graphEmpty: 'No one in this cast names anyone else',
+    graphDangling: (n) => `${n} more link${n === 1 ? '' : 's'} point to characters without a profile and are not drawn`,
+    relationsAll: 'All links',
     copy: 'Copy', copied: 'Copied', copyFailed: 'Failed', copyJson: 'Copy full JSON',
     sheetCaption: 'Left: bust　Right: full-body turnaround',
     noImage: 'Not generated yet',
@@ -290,6 +306,14 @@ const STRINGS = {
       prompt: '音声プロンプト EN', promptLocal: '音声プロンプト',
     },
     importance: { protagonist: '主役', major: '主要人物', supporting: '脇役', minor: '端役' },
+    graphTitle: '相関図',
+    graphHint: 'ホバーで関係、クリックで詳細',
+    graphCounts: (n, e) => `${n}人 · ${e}組の関係`,
+    exportJson: 'JSON を書き出す',
+    graphLabels: '関係ラベル',
+    graphEmpty: 'この登場人物どうしを結ぶ関係はありません',
+    graphDangling: (n) => `他に${n}件、設定を作っていない人物への関係があります（図には出ません）`,
+    relationsAll: '関係一覧',
     copy: 'コピー', copied: 'コピー済み', copyFailed: '失敗', copyJson: 'JSON をコピー',
     sheetCaption: '左：バストアップ　右：三面図',
     noImage: '未生成',
@@ -725,7 +749,174 @@ function renderCharacter(c, index, t) {
 </article>`;
 }
 
-export function renderHtml(characters, source, summary = '', lang = DEFAULT_LANG, ui = null) {
+/* ------------------------------------------------------------------ */
+/* render — 关系图谱                                                    */
+/* ------------------------------------------------------------------ */
+/*
+ * 圆环布局 + 向心贝塞尔。位置在 Node 里算好直接写进内联 SVG，
+ * 浏览器端只管高亮和跳转——报告要能离线双击打开，不许引任何库。
+ */
+
+/** 节点大小按戏份分档，一眼能看出谁是主角。 */
+const NODE_R = { protagonist: 11, major: 9, supporting: 7, minor: 5.5 };
+const r1 = (n) => Math.round(n * 10) / 10;
+
+/**
+ * 把 persona.relationships 解析成无向边。
+ *
+ * 按**名字 + 别名**建索引：老周的关系里写「老伯」也要连到同一个节点，
+ * 只按 name 匹配会把一半的边漏掉。同一对人的两条单向记述合并成一条边，
+ * 两个方向的说法都留着。指向没做画像的人算 dangling——不画，但要报数。
+ */
+export function buildGraph(characters) {
+  const key = (s) => String(s).trim().toLowerCase();
+  const index = new Map();
+  for (const c of characters) {
+    index.set(key(c.name), c.name);
+    for (const a of c.aliases ?? []) index.set(key(a), c.name);
+  }
+
+  const edges = new Map();
+  let dangling = 0;
+  for (const c of characters) {
+    for (const r of c.persona?.relationships ?? []) {
+      if (!r || typeof r.name !== 'string') continue;
+      const target = index.get(key(r.name));
+      if (!target || target === c.name) {
+        dangling++;
+        continue;
+      }
+      const [a, b] = [c.name, target].sort();
+      const k = `${a} ${b}`;
+      if (!edges.has(k)) edges.set(k, { a, b, notes: [] });
+      edges.get(k).notes.push({ from: c.name, text: String(r.relation ?? '') });
+    }
+  }
+  return { edges: [...edges.values()], dangling };
+}
+
+function renderGraph(ordered, t) {
+  const { edges, dangling } = buildGraph(ordered);
+  const n = ordered.length;
+  // 半径跟人数走，四个人不必撑满一整张画布；两侧留 110 给名字
+  const R = Math.max(130, Math.min(260, 40 + n * 14));
+  const side = Math.round((R + 110) * 2);
+  const c0 = side / 2;
+
+  const pos = new Map();
+  ordered.forEach((c, i) => {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / Math.max(n, 1);
+    pos.set(c.name, { x: c0 + R * Math.cos(a), y: c0 + R * Math.sin(a), cos: Math.cos(a), sin: Math.sin(a) });
+  });
+
+  // 控制点往圆心拉，弦是弯的——直线在人多时会糊成一团网
+  const arcs = edges.map((e, i) => {
+    const p = pos.get(e.a);
+    const q = pos.get(e.b);
+    const cxq = c0 + ((p.x + q.x) / 2 - c0) * 0.35;
+    const cyq = c0 + ((p.y + q.y) / 2 - c0) * 0.35;
+    // 标签沿弦错位排：正对面的两条弦中点都在圆心，全放 t=0.5 会叠成一坨
+    const t = 0.5 + ((i % 3) - 1) * 0.14;
+    const u = 1 - t;
+    return {
+      e,
+      d: `M${r1(p.x)} ${r1(p.y)} Q${r1(cxq)} ${r1(cyq)} ${r1(q.x)} ${r1(q.y)}`,
+      lx: u * u * p.x + 2 * u * t * cxq + t * t * q.x,
+      ly: u * u * p.y + 2 * u * t * cyq + t * t * q.y,
+    };
+  });
+
+  const paths = arcs
+    .map((a) => `<path class="gedge" data-a="${esc(a.e.a)}" data-b="${esc(a.e.b)}" d="${a.d}"></path>`)
+    .join('');
+
+  // 弦上的关系文字：取最短的一条说法截断，全文进 <title> 当原生 tooltip
+  const labels = arcs
+    .map((a) => {
+      const notes = a.e.notes.filter((x) => x.text.trim());
+      if (!notes.length) return '';
+      const pick = notes.reduce((s, x) => ([...x.text].length < [...s.text].length ? x : s), notes[0]);
+      // 六个字。再长就压到隔壁那条弦上去了——全文在 title 和右侧关系表里
+      const chars = [...pick.text.trim()];
+      const text = chars.length > 6 ? `${chars.slice(0, 6).join('')}…` : chars.join('');
+      const full = notes.map((x) => `${x.from} · ${x.text}`).join('\n');
+      return `<text class="glabel" data-a="${esc(a.e.a)}" data-b="${esc(a.e.b)}" x="${r1(a.lx)}" y="${r1(a.ly)}" text-anchor="middle" dominant-baseline="middle">${esc(text)}<title>${esc(full)}</title></text>`;
+    })
+    .join('');
+
+  const dots = ordered
+    .map((c) => {
+      const p = pos.get(c.name);
+      // 圆顶和圆底的名字居中放，两侧的往外甩，免得压在节点上
+      const flat = Math.abs(p.cos) < 0.25;
+      const anchor = flat ? 'middle' : p.cos < 0 ? 'end' : 'start';
+      const lx = c0 + (R + 15) * p.cos;
+      const ly = c0 + (R + 15) * p.sin + (flat ? (p.sin < 0 ? -6 : 14) : 4.5);
+      return `<g class="gnode${c.importance === 'protagonist' ? ' lead' : ''}" data-node="${esc(c.name)}" data-target="p-${slug(c.name)}" tabindex="0" role="button" aria-label="${esc(c.name)}">
+  <circle class="ghit" cx="${r1(p.x)}" cy="${r1(p.y)}" r="24"></circle>
+  <circle class="gdot" cx="${r1(p.x)}" cy="${r1(p.y)}" r="${NODE_R[c.importance] ?? 7}"></circle>
+  <text x="${r1(lx)}" y="${r1(ly)}" text-anchor="${anchor}">${esc(c.name)}</text>
+</g>`;
+    })
+    .join('');
+
+  const rows = edges
+    .map(
+      (e) => `<button class="grow" data-a="${esc(e.a)}" data-b="${esc(e.b)}" data-target="p-${slug(e.a)}">
+  <b>${esc(e.a)}</b><i>—</i><b>${esc(e.b)}</b>
+  ${e.notes.map((x) => `<span><em>${esc(x.from)}</em> ${marked(x.text)}</span>`).join('')}
+</button>`,
+    )
+    .join('');
+
+  // 边少就直接把关系文字标上；边一多就糊成一团，默认收起来，开关留给用户
+  const labelsOn = edges.length <= 14;
+
+  return `<section class="graph${labelsOn ? ' labels' : ''}" id="graph">
+  <header class="graph-h">
+    <h2>${esc(t.graphTitle)}</h2>
+    <span class="badge">${esc(t.graphCounts(n, edges.length))}</span>
+    <button class="glabtoggle${labelsOn ? ' on' : ''}" aria-pressed="${labelsOn}">${esc(t.graphLabels)}</button>
+    <span class="hint">${esc(t.graphHint)}</span>
+  </header>
+  <div class="graph-body">
+    <div class="graph-canvas">
+      <svg viewBox="0 0 ${side} ${side}" role="img" aria-label="${esc(t.graphTitle)}">
+        <g class="gedges">${paths}</g>
+        <g class="gnodes">${dots}</g>
+        <g class="glabels">${labels}</g>
+      </svg>
+      ${edges.length ? '' : `<p class="graph-empty">${esc(t.graphEmpty)}</p>`}
+    </div>
+    <aside class="grel">
+      <h4>${esc(t.relationsAll)}</h4>
+      <div class="grel-list">${rows}</div>
+      ${dangling ? `<p class="grel-foot">${esc(t.graphDangling(dangling))}</p>` : ''}
+    </aside>
+  </div>
+</section>`;
+}
+
+/*
+ * 报告里内嵌的那份数据，形状**就是 cast.json**——编辑完能直接喂回
+ * `render` 重新出报告，不另立一套导出格式。
+ *
+ * `<` 转成 <：JSON 里 `<` 只可能出现在字符串值中，整体替换是安全的，
+ * 而不转的话正文里一个 `</script` 就能把这个数据块提前截断。
+ */
+function embedCast(characters, source, summary, lang, ui, style) {
+  const data = { source, lang, style, summary, ...(ui ? { ui } : {}), characters };
+  return JSON.stringify(data).replace(/</g, '\\u003c');
+}
+
+export function renderHtml(
+  characters,
+  source,
+  summary = '',
+  lang = DEFAULT_LANG,
+  ui = null,
+  style = DEFAULT_STYLE,
+) {
   const t = strings(lang, ui);
   const shots = characters.filter((c) => c.sheetImage).length;
   const ordered = [...characters].sort(
@@ -765,8 +956,14 @@ button{font-family:inherit}
   border-radius:3px;background:var(--paper);color:var(--ink);font:14px/1 var(--sans);outline:none}
 .search input:focus{border-color:var(--seal)}
 .search svg{position:absolute;left:10px;top:9px;width:14px;height:14px;stroke:var(--ink-3);fill:none}
-.topmeta{margin-left:auto;font-size:12px;color:var(--ink-3);display:flex;gap:10px;flex:none}
+.topmeta{margin-left:auto;font-size:12px;color:var(--ink-3);display:flex;align-items:center;
+  gap:10px;flex:none}
 .topmeta i{font-style:normal;color:var(--rule-2)}
+/* 导出：下载的就是内嵌的那份 cast.json，编辑完能直接喂回 render */
+.expo{margin-left:4px;font:500 11px/1 var(--sans);color:var(--ink-2);background:var(--paper);
+  border:1px solid var(--rule-2);border-radius:2px;padding:6px 10px;cursor:pointer;transition:.15s}
+.expo:hover{border-color:var(--seal);color:var(--seal)}
+.expo:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 
 /* ---------- 骨架 ---------- */
 .shell{display:grid;grid-template-columns:var(--side-w) minmax(0,1fr);align-items:start}
@@ -779,6 +976,16 @@ button{font-family:inherit}
 .synopsis{padding:18px 20px;border-bottom:1px solid var(--rule)}
 .lbl{font:500 10px/1 var(--sans);letter-spacing:.24em;text-transform:uppercase;color:var(--ink-3)}
 .synopsis p{margin:10px 0 0;font:400 14px/1.95 var(--serif)}
+/* 摘要默认三行，底部渐隐——左栏第一屏要留给角色列表。点一下展开，之后不再收起 */
+.syn-clamp{cursor:pointer}
+.syn-clamp p{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
+  -webkit-mask-image:linear-gradient(180deg,#000 58%,transparent);
+  mask-image:linear-gradient(180deg,#000 58%,transparent)}
+.syn-more{display:none;margin-top:7px;padding:0;background:none;border:0;cursor:pointer;
+  font:500 11px/1 var(--sans);letter-spacing:.06em;color:var(--seal)}
+.syn-clamp .syn-more{display:block}
+.syn-more:hover{text-decoration:underline}
+.syn-more:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
 .roster-h{padding:14px 20px 8px}
 .roster{display:block}
 .rost{display:grid;grid-template-columns:76px minmax(0,1fr);gap:12px;width:100%;text-align:left;
@@ -817,7 +1024,7 @@ button{font-family:inherit}
 .char-one{margin-left:auto;font:400 14px/1.7 var(--serif);color:var(--ink-2);text-align:right;max-width:44ch}
 @media(max-width:900px){.char-one{margin-left:0;text-align:left}}
 
-.upper{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:26px;align-items:start;margin-top:20px}
+.upper{display:grid;grid-template-columns:minmax(0,1fr) 500px;gap:26px;align-items:start;margin-top:20px}
 @media(max-width:1240px){.upper{grid-template-columns:1fr}}
 
 /* 设定图是白底印张 */
@@ -900,6 +1107,70 @@ button{font-family:inherit}
 .copy[data-done]{border-color:var(--seal);color:var(--seal)}
 .copy.wide{width:100%;padding:9px}
 
+/* ---------- 关系图谱 ---------- */
+/* 布局在 Node 里算好写进 SVG，这里只管高亮。红色仍然只给选中态 */
+.gtoggle{display:flex;align-items:center;gap:9px;width:100%;padding:13px 20px;text-align:left;
+  background:none;border:0;border-bottom:1px solid var(--rule);border-left:2px solid transparent;
+  cursor:pointer;color:var(--ink-2);font:500 12px/1 var(--sans);letter-spacing:.1em}
+.gtoggle:hover{background:#00000006}
+.gtoggle.on{background:var(--panel);border-left-color:var(--seal);color:var(--seal)}
+.gtoggle:focus-visible{outline:2px solid var(--seal);outline-offset:-2px}
+.gtoggle svg{width:15px;height:15px;flex:none;stroke:currentColor;fill:none;stroke-width:1.3}
+.graph{display:none}
+.graph.on{display:block}
+.main.gmode .char{display:none}
+.graph-h{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding-bottom:14px;border-bottom:1px solid var(--rule-2)}
+.graph-h h2{font:400 clamp(22px,2.2vw,28px)/1.1 var(--serif);letter-spacing:.05em}
+.graph-h .hint{margin-left:auto;font-size:12px;color:var(--ink-3)}
+.graph-body{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:26px;
+  align-items:start;margin-top:20px}
+@media(max-width:1100px){.graph-body{grid-template-columns:1fr}}
+.graph-canvas{background:var(--panel);border:1px solid var(--rule);border-radius:2px;padding:10px}
+.graph-canvas svg{display:block;width:100%;height:auto}
+.graph-empty{margin:0 0 8px;text-align:center;font-size:12.5px;color:var(--ink-3)}
+.gedge{fill:none;stroke:var(--rule-2);stroke-width:1.1;transition:.15s}
+.gedge.hot{stroke:var(--seal);stroke-width:2}
+.gedge.dim{opacity:.15}
+.gnode{cursor:pointer;transition:.15s}
+.gnode .gdot{fill:var(--paper);stroke:var(--ink-2);stroke-width:1.5}
+/* 看不见的命中区：节点本身才十来个像素，光标很难压准。
+   单独一个类，免得被下面 .lead / .hot 的规则一起染色 */
+.gnode .ghit{fill:none;stroke:none;pointer-events:all}
+.gnode text{font:400 13px var(--serif);fill:var(--ink)}
+.gnode.lead .gdot{fill:var(--seal);stroke:var(--seal)}
+.gnode.hot .gdot{stroke:var(--seal);stroke-width:2.5}
+.gnode.hot text{fill:var(--seal)}
+.gnode.dim{opacity:.22}
+.gnode:focus-visible{outline:2px solid var(--seal)}
+/* 弦上的关系文字。默认按边数决定开不开，悬停的那条永远显示。
+   paint-order + 同色描边 = 给字加一圈底衬，压在弦上也读得清 */
+.glabel{display:none;font:400 9px var(--sans);fill:var(--ink-3);pointer-events:none;
+  paint-order:stroke;stroke:var(--panel);stroke-width:3px;stroke-linejoin:round}
+.graph.labels .glabel{display:block}
+.glabel.dim{opacity:.15}
+.glabel.hot{display:block;fill:var(--seal);font-weight:500}
+.glabtoggle{font:500 11px/1 var(--sans);color:var(--ink-2);background:var(--paper);
+  border:1px solid var(--rule-2);border-radius:2px;padding:4px 10px;cursor:pointer;transition:.15s}
+.glabtoggle:hover{border-color:var(--seal);color:var(--seal)}
+.glabtoggle.on{border-color:var(--seal);color:var(--seal);background:var(--seal-soft)}
+.glabtoggle:focus-visible{outline:2px solid var(--seal);outline-offset:2px}
+.grel{border:1px solid var(--rule);border-radius:2px;background:var(--panel)}
+.grel h4{font:500 11px/1 var(--sans);letter-spacing:.2em;color:var(--ink-3);padding:14px 16px 11px}
+.grel-list{max-height:56vh;overflow-y:auto;border-top:1px solid var(--rule)}
+.grow{display:block;width:100%;text-align:left;padding:11px 16px;background:none;border:0;
+  border-bottom:1px solid var(--rule);cursor:pointer;color:inherit;transition:.15s}
+.grow:last-child{border-bottom:0}
+.grow:hover,.grow.hot{background:var(--seal-soft)}
+.grow.dim{opacity:.3}
+.grow:focus-visible{outline:2px solid var(--seal);outline-offset:-2px}
+.grow b{font:400 14px/1.4 var(--serif);letter-spacing:.03em}
+.grow i{font-style:normal;color:var(--ink-3);padding:0 6px}
+.grow span{display:block;margin-top:4px;font-size:12.5px;line-height:1.65;color:var(--ink-2)}
+.grow em{font-style:normal;color:var(--ink-3)}
+.grel-foot{margin:0;padding:11px 16px;border-top:1px solid var(--rule);
+  font-size:11px;line-height:1.6;color:var(--ink-3)}
+
 /* 签名：推断标记 */
 .inf{color:var(--ink-3);font-size:.88em;background:var(--seal-soft);padding:0 3px;border-radius:2px}
 
@@ -913,6 +1184,7 @@ button{font-family:inherit}
   .top,.side,.copy{display:none!important}
   .shell{display:block}
   .main{padding:0}
+  .graph{display:block!important;page-break-after:always}
   .char{display:block!important;page-break-after:always}
   .pr p{display:block!important}
   .pr summary::before{content:""}
@@ -929,12 +1201,17 @@ button{font-family:inherit}
   <div class="topmeta">
     <span>${esc(t.kicker)}</span><i>·</i>
     <span>${esc(t.counts(characters.length, shots))}</span>
+    <button class="expo" data-name="${esc(slug(source))}-cast.json">${esc(t.exportJson)}</button>
   </div>
 </header>
 
 <div class="shell">
   <aside class="side">
-    ${summary ? `<section class="synopsis"><div class="lbl">${esc(t.synopsis)}</div><p>${marked(summary)}</p></section>` : ''}
+    ${summary ? `<section class="synopsis syn-clamp"><div class="lbl">${esc(t.synopsis)}</div><p>${marked(summary)}</p><button class="syn-more">${esc(t.expandAll)}</button></section>` : ''}
+    <button class="gtoggle" aria-controls="graph">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.2" cy="4" r="1.9"/><circle cx="12.8" cy="6.2" r="1.9"/><circle cx="7.2" cy="13" r="1.9"/><path d="M5 4.6l6 1.2M4 5.9l2.5 5.4M11.7 7.9l-3.3 3.7"/></svg>
+      <span>${esc(t.graphTitle)}</span>
+    </button>
     <div class="roster-h lbl">${esc(t.rosterTitle)}</div>
     <nav class="roster" aria-label="${esc(t.indexLabel)}">
       ${ordered.map((c, i) => renderRosterItem(c, i, t)).join('\n')}
@@ -944,6 +1221,7 @@ button{font-family:inherit}
   </aside>
 
   <main class="main">
+    ${renderGraph(ordered, t)}
     ${ordered.map((c, i) => renderCharacter(c, i, t)).join('\n')}
   </main>
 </div>
@@ -953,8 +1231,22 @@ button{font-family:inherit}
   <img alt="">
 </div>
 
+<script type="application/json" id="cast-data">${embedCast(characters, source, summary, lang, ui, style)}</script>
+
 <script>
 const L = ${JSON.stringify({ copied: t.copied, failed: t.copyFailed })};
+
+// 导出：报告自己就带着完整的 cast.json，下载的是它原样
+document.querySelector('.expo').addEventListener('click', (e) => {
+  const btn = e.currentTarget;
+  const url = URL.createObjectURL(
+    new Blob([document.getElementById('cast-data').textContent], { type: 'application/json' }),
+  );
+  const a = Object.assign(document.createElement('a'), { href: url, download: btn.dataset.name });
+  a.click();
+  // 别在 click 之后立刻回收——Safari 上会抢在下载读完之前把 blob 撤掉，存出来是空文件
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+});
 
 // 左栏切换：一次只显示一个角色
 document.querySelector('.roster').addEventListener('click', (e) => {
@@ -962,8 +1254,109 @@ document.querySelector('.roster').addEventListener('click', (e) => {
   if (!btn) return;
   document.querySelectorAll('.rost').forEach((b) => b.classList.toggle('on', b === btn));
   document.querySelectorAll('.char').forEach((a) => a.classList.toggle('on', a.id === btn.dataset.target));
+  showGraph(false);
   document.querySelector('.main').scrollIntoView({ block: 'start', behavior: 'smooth' });
 });
+
+// 关系图谱：一张全景视图，跟角色详情互斥
+const gv = document.querySelector('.graph');
+const gbtn = document.querySelector('.gtoggle');
+function showGraph(on) {
+  gv.classList.toggle('on', on);
+  gbtn.classList.toggle('on', on);
+  document.querySelector('.main').classList.toggle('gmode', on);
+}
+gbtn.addEventListener('click', () => {
+  showGraph(true);
+  document.querySelector('.main').scrollIntoView({ block: 'start', behavior: 'smooth' });
+});
+{
+  // 弦和弦上的文字共用 data-a/data-b，高亮逻辑完全一样，放一个数组里
+  const edges = [...gv.querySelectorAll('.gedge, .glabel')];
+  const nodes = [...gv.querySelectorAll('.gnode')];
+  const rows = [...gv.querySelectorAll('.grow')];
+  const clear = () => [...edges, ...nodes, ...rows].forEach((el) => el.classList.remove('hot', 'dim'));
+
+  // 悬停一个人：他的关系线亮起来，没关系的压到背景里
+  const byNode = (name) => {
+    const near = new Set([name]);
+    for (const e of edges) {
+      if (e.dataset.a === name) near.add(e.dataset.b);
+      if (e.dataset.b === name) near.add(e.dataset.a);
+    }
+    for (const e of edges) {
+      const hot = e.dataset.a === name || e.dataset.b === name;
+      e.classList.toggle('hot', hot);
+      e.classList.toggle('dim', !hot);
+    }
+    for (const nd of nodes) {
+      nd.classList.toggle('hot', nd.dataset.node === name);
+      nd.classList.toggle('dim', !near.has(nd.dataset.node));
+    }
+    for (const r of rows) {
+      const hot = r.dataset.a === name || r.dataset.b === name;
+      r.classList.toggle('hot', hot);
+      r.classList.toggle('dim', !hot);
+    }
+  };
+
+  // 悬停关系表的一行：只亮那一条弦
+  const byEdge = (a, b) => {
+    for (const e of edges) {
+      const hot = e.dataset.a === a && e.dataset.b === b;
+      e.classList.toggle('hot', hot);
+      e.classList.toggle('dim', !hot);
+    }
+    for (const nd of nodes) {
+      const hot = nd.dataset.node === a || nd.dataset.node === b;
+      nd.classList.toggle('hot', hot);
+      nd.classList.toggle('dim', !hot);
+    }
+    for (const r of rows) {
+      const hot = r.dataset.a === a && r.dataset.b === b;
+      r.classList.toggle('hot', hot);
+      r.classList.toggle('dim', !hot);
+    }
+  };
+
+  const jump = (el) => {
+    const item = document.querySelector('.rost[data-target="' + el.dataset.target + '"]');
+    if (item) item.click();
+  };
+
+  // 关系文字的总开关：人多的时候标签会盖住图，一键收起
+  const glab = gv.querySelector('.glabtoggle');
+  glab.addEventListener('click', () => {
+    const on = !gv.classList.contains('labels');
+    gv.classList.toggle('labels', on);
+    glab.classList.toggle('on', on);
+    glab.setAttribute('aria-pressed', String(on));
+  });
+
+  gv.addEventListener('mouseover', (e) => {
+    const nd = e.target.closest('.gnode');
+    const row = e.target.closest('.grow');
+    if (nd) byNode(nd.dataset.node);
+    else if (row) byEdge(row.dataset.a, row.dataset.b);
+    else clear();
+  });
+  gv.addEventListener('mouseleave', clear);
+  gv.addEventListener('focusin', (e) => {
+    const nd = e.target.closest('.gnode');
+    if (nd) byNode(nd.dataset.node);
+  });
+  gv.addEventListener('click', (e) => {
+    const hit = e.target.closest('.gnode, .grow');
+    if (hit) jump(hit);
+  });
+  // SVG 的 <g> 不是原生按钮，回车/空格要自己接
+  gv.addEventListener('keydown', (e) => {
+    const nd = e.target.closest('.gnode');
+    if (!nd || (e.key !== 'Enter' && e.key !== ' ')) return;
+    e.preventDefault();
+    jump(nd);
+  });
+}
 
 // 搜索：过滤左栏；结果只剩一个就直接切过去
 document.getElementById('q').addEventListener('input', (e) => {
@@ -977,6 +1370,14 @@ document.getElementById('q').addEventListener('input', (e) => {
   document.querySelector('.nomatch').classList.toggle('on', hits.length === 0);
   if (q && hits.length === 1) hits[0].click();
 });
+
+// 摘要默认三行，点一下展开全部；短到不需要折叠的就直接去掉折叠态
+const syn = document.querySelector('.synopsis');
+if (syn) {
+  const body = syn.querySelector('p');
+  if (body.scrollHeight <= body.clientHeight + 1) syn.classList.remove('syn-clamp');
+  syn.addEventListener('click', () => syn.classList.remove('syn-clamp'));
+}
 
 // 图片弹层
 const lb = document.querySelector('.lightbox');
@@ -1164,7 +1565,7 @@ function main(argv) {
     const imagesDir = flag(rest, '--images', 'images');
     const sourceFlag = flag(rest, '--source');
 
-    const { characters, source, summary, lang: castLang, ui } = loadCast(castPath);
+    const { characters, source, summary, lang: castLang, ui, style } = loadCast(castPath);
     const lang = flag(rest, '--lang', castLang);
     const title = sourceFlag ?? source ?? basename(castPath).replace(/\.[^.]+$/, '');
 
@@ -1177,7 +1578,7 @@ function main(argv) {
 
     process.stdout.write(
       (html
-        ? renderHtml(characters, title, summary, lang, ui)
+        ? renderHtml(characters, title, summary, lang, ui, style)
         : renderMarkdown(characters, title, summary, lang, ui)) + '\n',
     );
     return;

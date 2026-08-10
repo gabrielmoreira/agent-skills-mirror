@@ -38,6 +38,56 @@ REGIME_SCORES = {
 }
 
 
+def _regime_input_is_usable(data: Optional[dict]) -> bool:
+    """Return whether a regime input is safe to use for exposure decisions.
+
+    Legacy flat inputs do not carry quality metadata and remain supported. For
+    canonical macro-regime-detector reports, explicit very-low confidence,
+    zero usable components, or malformed availability metadata fail closed.
+    """
+    if not isinstance(data, dict):
+        return False
+
+    regime = data.get("regime")
+    nested_regime = isinstance(regime, dict)
+    if nested_regime:
+        if "confidence" not in regime:
+            return False
+        confidence = regime["confidence"]
+        if not isinstance(confidence, str):
+            return False
+        normalized = confidence.lower().strip()
+        if normalized not in {"high", "moderate", "low", "very_low"}:
+            return False
+        if normalized == "very_low":
+            return False
+
+    composite = data.get("composite")
+    if nested_regime and not isinstance(composite, dict):
+        return False
+
+    if nested_regime or (isinstance(composite, dict) and "data_quality" in composite):
+        if "data_quality" not in composite:
+            return False
+        data_quality = composite["data_quality"]
+        if (
+            not isinstance(data_quality, dict)
+            or "available_count" not in data_quality
+            or "total_components" not in data_quality
+        ):
+            return False
+        available_count = data_quality["available_count"]
+        total_components = data_quality["total_components"]
+        if isinstance(available_count, bool) or not isinstance(available_count, int):
+            return False
+        if isinstance(total_components, bool) or not isinstance(total_components, int):
+            return False
+        if total_components <= 0 or not 0 < available_count <= total_components:
+            return False
+
+    return True
+
+
 def load_json_file(path: Optional[Path]) -> Optional[dict]:
     """Load a JSON file if it exists and is valid."""
     if path is None or not path.exists():
@@ -120,7 +170,7 @@ def extract_regime_score(data: Optional[dict]) -> Optional[int]:
     (``{"regime": {"current_regime": ...}}``) as emitted by
     macro-regime-detector.
     """
-    if data is None:
+    if not _regime_input_is_usable(data):
         return None
     if "regime_score" in data:
         return int(data["regime_score"])
@@ -144,7 +194,7 @@ def extract_regime_name(data: Optional[dict]) -> str:
     nested form ``regime_label`` is preferred, falling back to
     ``current_regime``.
     """
-    if data is None:
+    if not _regime_input_is_usable(data):
         return "Unknown"
     regime = data.get("regime")
     if isinstance(regime, dict):

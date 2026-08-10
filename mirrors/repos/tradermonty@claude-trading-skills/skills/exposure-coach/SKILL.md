@@ -60,6 +60,13 @@ python3 skills/exposure-coach/scripts/calculate_exposure.py \
 
 The script accepts partial inputs; missing files reduce confidence but do not block execution.
 
+Canonical macro-regime reports must include nested `regime.confidence` and
+`composite.data_quality` with valid integer component counts. Missing or malformed
+availability metadata, `very_low` confidence, and zero usable components are
+treated as missing critical input. They do not contribute a regime score or bias,
+and the normal missing-input haircut and confidence cap apply. Never override this
+degradation by manually copying the report's regime label into the exposure decision.
+
 **Verification pitfall:** After each run, inspect the generated JSON fields `inputs_provided` and `inputs_missing`. If a file you passed on the CLI still appears in `inputs_missing` (for example a theme-detector JSON that the exposure engine did not recognize), report the affected dimension as degraded and keep confidence capped; do not assume the supplied input was incorporated just because the CLI argument was present.
 
 **Theme-detector ingestion caveat:** The theme detector commonly emits `theme_detector_YYYY-MM-DD_HHMMSS.json` with a `themes` object. If that file is not recognized by `calculate_exposure.py` and `theme` remains in `inputs_missing`, do not fold theme strength into the exposure ceiling manually. Instead, keep the Exposure Coach confidence capped, state that the theme dimension was not incorporated, and summarize theme/sector findings separately in the broader trading brief.

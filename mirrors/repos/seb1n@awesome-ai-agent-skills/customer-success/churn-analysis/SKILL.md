@@ -1,6 +1,6 @@
 ---
 name: churn-analysis
-description: Identify at-risk customer accounts by analyzing usage patterns, engagement signals, and support history to generate churn risk scores and intervention recommendations.
+description: Identify at-risk customer accounts by analyzing usage patterns, engagement signals, and support history to generate churn risk scores and intervention recommendations. Use when the user requests churn analysis or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community

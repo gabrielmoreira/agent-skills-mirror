@@ -3,16 +3,6 @@ name: godot-adapt-2d-to-3d
 description: "Expert patterns for migrating 2D games to 3D including node type conversions, camera systems (third-person, first-person, orbit), physics layer migration, sprite-to-model art pipeline, and control scheme adaptations. Use when porting 2D projects to 3D or adding 3D elements. Trigger keywords: CharacterBody2D to CharacterBody3D, Area2D to Area3D, Camera2D to Camera3D, Vector2 to Vector3, collision_layer migration, sprite to MeshInstance3D, 2D to 3D conversion."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Adapt: 2D to 3D
-
-Expert guidance for migrating 2D games into the third dimension.
-
 ## NEVER Do
 
 - **NEVER directly replace Vector2 with Vector3(x, y, 0)** — This creates a "flat 3D" game with no depth gameplay. Add Z-axis movement or camera rotation to justify 3D.
@@ -57,7 +47,7 @@ Projects NavigationServer3D paths to 2D screen/gameplay plane for 2.5D sprite ac
 ### [massive_crowd_manager.gd](../scripts/adapt_2d_to_3d_massive_crowd_manager.gd)
 MultiMesh + billboard shader crowd (GPU orientation; not per-node Sprite3D).
 
-> **Do NOT Load** lighting deep-dives here — route to [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md). Add a DirectionalLight3D + ambient only; GI/cascades live there.
+> **Do NOT Load** lighting deep-dives here — route to [godot-3d-lighting](3d-lighting.md). Add a DirectionalLight3D + ambient only; GI/cascades live there.
 
 ---
 
@@ -130,7 +120,7 @@ anim_player.play("idle")
 
 ## Lighting Considerations
 
-Minimum: one `DirectionalLight3D` + `WorldEnvironment` ambient so the scene is not black. **Do NOT Load** cascade/GI/bake tutorials in this skill — [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md).
+Minimum: one `DirectionalLight3D` + `WorldEnvironment` ambient so the scene is not black. **Do NOT Load** cascade/GI/bake tutorials in this skill — [godot-3d-lighting](3d-lighting.md).
 
 ---
 
@@ -234,8 +224,6 @@ floor.add_child(floor_collision)
 | **Development time** | Limited | Have time for 3D learning curve |
 | **Team skills** | 2D artists only | 3D artists or asset library |
 
-
-
 ---
 
 ## Expert Techniques & Optimizations
@@ -325,24 +313,24 @@ PointLight2D→OmniLight3D conversion is one-shot editor work — keep a project
 ### Related Skills
 
 #### Prerequisites
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Vector2/Vector3 and Transform3D fluency before applying Y→Z mapping helpers.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Source platformer/top-down movement semantics you are lifting into CharacterBody3D.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Existing 2D layer/mask design that must be recreated under the separate 3D physics layer table.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — `Input.get_vector` plus mouse-capture look so 2D left/right maps become camera-relative XZ.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Vector2/Vector3 and Transform3D fluency before applying Y→Z mapping helpers.
+- [godot-characterbody-2d](characterbody-2d.md) — Source platformer/top-down movement semantics you are lifting into CharacterBody3D.
+- [godot-2d-physics](2d-physics.md) — Existing 2D layer/mask design that must be recreated under the separate 3D physics layer table.
+- [godot-input-handling](input-handling.md) — `Input.get_vector` plus mouse-capture look so 2D left/right maps become camera-relative XZ.
 
 #### Complements
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — SpringArm3D / orbit / first-person rigs that replace Camera2D follow after the port.
-- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — DirectionalLight3D, shadows, and ambient environments required once sprites become lit meshes.
-- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — PBR/billboard/alpha materials for QuadMesh and Sprite3D art migration.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap, collision generation, and LOD after TileMapLayer worlds move to 3D.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Mouse→world `PhysicsRayQueryParameters3D` picks used by point-and-click 3D ports.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — CanvasLayer HUD that stays 2D while world content becomes Node3D.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationServer3D paths for 2.5D bridges that still project to screen or gameplay planes.
-- [godot-adapt-3d-to-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md) — Inverse adaptation lattice when deciding to flatten back or keep hybrid 2.5D.
+- [godot-camera-systems](camera-systems.md) — SpringArm3D / orbit / first-person rigs that replace Camera2D follow after the port.
+- [godot-3d-lighting](3d-lighting.md) — DirectionalLight3D, shadows, and ambient environments required once sprites become lit meshes.
+- [godot-3d-materials](3d-materials.md) — PBR/billboard/alpha materials for QuadMesh and Sprite3D art migration.
+- [godot-3d-world-building](3d-world-building.md) — GridMap, collision generation, and LOD after TileMapLayer worlds move to 3D.
+- [godot-raycasting-queries](raycasting-queries.md) — Mouse→world `PhysicsRayQueryParameters3D` picks used by point-and-click 3D ports.
+- [godot-ui-containers](ui-containers.md) — CanvasLayer HUD that stays 2D while world content becomes Node3D.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationServer3D paths for 2.5D bridges that still project to screen or gameplay planes.
+- [godot-adapt-3d-to-2d](adapt-3d-to-2d.md) — Inverse adaptation lattice when deciding to flatten back or keep hybrid 2.5D.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when the 3D port blows the old 2D draw-call/vertex budget.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Shipping target that forces LOD, shadow distance, and resolution tradeoffs after going 3D.
+- [godot-performance-optimization](performance-optimization.md) — Escalate when the 3D port blows the old 2D draw-call/vertex budget.
+- [godot-platform-mobile](platform-mobile.md) — Shipping target that forces LOD, shadow distance, and resolution tradeoffs after going 3D.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting 2D/3D concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting 2D/3D concern.

@@ -3,21 +3,6 @@ name: godot-genre-horror
 description: "Expert blueprint for horror games: sawtooth tension pacing, Director macro-AI, sensory predator AI, sanity/stress FX, and scarcity loops. Use when building psychological/survival horror, dual-brain stalker AI (cheating Director + honest LoS/sound), flashlight/fog atmosphere, or safe-room saves. Keywords: horror_game, tension_pacing, director_system, sensory_perception, sanity_system, volumetric_fog, AI_reaction_time."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Horror
-
-Expert blueprint for horror games balancing tension, atmosphere, and player agency.
-
-**Use when:**
-- You need a **Director** that drives buildup → peak → relief (not constant jump-scares).
-- A predator must feel unfair at the *macro* level but honest at the *sense* level (dual brain).
-- Sanity, scarcity, volumetric fog, or threaded scare loads are core to the fantasy.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Atmosphere & Tension
@@ -49,10 +34,6 @@ Expert blueprint for horror games balancing tension, atmosphere, and player agen
 - NEVER check for hiding spot types by casting; strictly use **`Object` metadata (`set_meta`)** for performant, decoupled AI queries.
 
 ---
-
-## Godot 4.7: Horror Lighting
-
-- **AreaLight3D** for flickering panels, TV glow, and rectangular soft shadows without GI hacks.
 
 ## 🛠 Expert Components (scripts/)
 
@@ -91,7 +72,6 @@ Expert blueprint for horror games balancing tension, atmosphere, and player agen
 | 3. Player | `godot-camera-systems`, `godot-genre-stealth`, `godot-physics-3d` | Lean/shake, hiding, CharacterBody3D movement |
 | 4. Scarcity | `godot-inventory-system` | Limited battery, ammo, health |
 | 5. Logic / saves | this skill's Director scripts + `godot-save-load-systems` | Sawtooth pacing + threaded safe-room saves |
-
 
 ## Do-NOT-Load (by fantasy)
 
@@ -135,13 +115,13 @@ Horror needs peaks and valleys.
 *   **Alien (Senses only)**: Honest AI. Must actually see/hear the player to attack.
 
 ### 3. Hiding-Spot Metadata System
-Use `set_meta` / groups — **MANDATORY**: [predator_stalking_ai.gd](../scripts/genre_horror_predator_stalking_ai.gd) + peer [godot-genre-stealth](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md). Do not paste hiding-spot tutorials inline.
+Use `set_meta` / groups — **MANDATORY**: [predator_stalking_ai.gd](../scripts/genre_horror_predator_stalking_ai.gd) + peer [godot-genre-stealth](genre-stealth.md). Do not paste hiding-spot tutorials inline.
 
 ### 4. Adaptive Audio (Stress Muffling)
-Bus LPF / volume from fear — **MANDATORY**: [sanity_manager.gd](../scripts/genre_horror_sanity_manager.gd) + peer [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md).
+Bus LPF / volume from fear — **MANDATORY**: [sanity_manager.gd](../scripts/genre_horror_sanity_manager.gd) + peer [godot-audio-systems](audio-systems.md).
 
 ### 5. Safe-Room Multithreaded Save
-Threaded checkpoint I/O — **MANDATORY**: peer [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) (Thread/Mutex / WorkerThreadPool). Never sync `FileAccess` on the main thread in a safe room.
+Threaded checkpoint I/O — **MANDATORY**: peer [godot-save-load-systems](save-load-systems.md) (Thread/Mutex / WorkerThreadPool). Never sync `FileAccess` on the main thread in a safe room.
 
 ## Expert knowledge (on demand)
 
@@ -170,24 +150,24 @@ Threaded checkpoint I/O — **MANDATORY**: peer [godot-save-load-systems](https:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, autoloads, and import basics before Director/WorldEnvironment wiring.
-- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — volumetric fog, SpotLight3D flashlights, and shadow budgets that define horror atmosphere.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — buses, spatial emitters, and effect stacks the sanity/stress systems modulate.
+- [godot-project-foundations](project-foundations.md) — scene tree, autoloads, and import basics before Director/WorldEnvironment wiring.
+- [godot-3d-lighting](3d-lighting.md) — volumetric fog, SpotLight3D flashlights, and shadow budgets that define horror atmosphere.
+- [godot-audio-systems](audio-systems.md) — buses, spatial emitters, and effect stacks the sanity/stress systems modulate.
 
 #### Complements
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationAgent chase/search paths and avoidance so predators do not stack in corridors.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — StringName-driven patrol/chase/search machines for predator micro-AI.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — physics-synced LoS and shape queries for sensory perception without Area cheating.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — instance uniforms and screen-reading distortion for sanity FX.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — typed Resource inventory and scarcity (battery/ammo) separate from visual UI trees.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — shake, lean, and frustum-driven offscreen AI suspend via VisibleOnScreenNotifier3D.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — procedural flashlight flicker and fog density ramps without AnimationPlayer spam.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate Director sawtooth peaks/relief and scarcity budgets before shipping.
-- [godot-genre-stealth](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md) — suspicion meters, hiding spots, and view-cone stalker patterns that share sensory AI.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationAgent chase/search paths and avoidance so predators do not stack in corridors.
+- [godot-state-machine-advanced](state-machine-advanced.md) — StringName-driven patrol/chase/search machines for predator micro-AI.
+- [godot-raycasting-queries](raycasting-queries.md) — physics-synced LoS and shape queries for sensory perception without Area cheating.
+- [godot-shaders-basics](shaders-basics.md) — instance uniforms and screen-reading distortion for sanity FX.
+- [godot-inventory-system](inventory-system.md) — typed Resource inventory and scarcity (battery/ammo) separate from visual UI trees.
+- [godot-camera-systems](camera-systems.md) — shake, lean, and frustum-driven offscreen AI suspend via VisibleOnScreenNotifier3D.
+- [godot-tweening](tweening.md) — procedural flashlight flicker and fog density ramps without AnimationPlayer spam.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate Director sawtooth peaks/relief and scarcity budgets before shipping.
+- [godot-genre-stealth](genre-stealth.md) — suspicion meters, hiding spots, and view-cone stalker patterns that share sensory AI.
 
 #### Downstream / consumers
-- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — scarcity loops and safe-room checkpoints that reuse horror resource pressure.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — threaded/async save pipelines for safe rooms without main-thread freezes.
+- [godot-genre-survival](genre-survival.md) — scarcity loops and safe-room checkpoints that reuse horror resource pressure.
+- [godot-save-load-systems](save-load-systems.md) — threaded/async save pipelines for safe rooms without main-thread freezes.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

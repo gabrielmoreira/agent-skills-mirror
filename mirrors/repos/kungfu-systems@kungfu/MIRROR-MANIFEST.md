@@ -7,7 +7,7 @@ ref: dev/v4/v4.0
 
 # Mirror Manifest
 
-Mirror of `kungfu-systems/kungfu` — 26 default patterns, 40 followed patterns, 150 file(s) materialized.
+Mirror of `kungfu-systems/kungfu` — 26 default patterns, 41 followed patterns, 151 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `kungfu-systems/kungfu` — 26 default patterns, 40 followed patterns,
 | Ref Type      | `branch` |
 | Ref           | `dev/v4/v4.0` |
 | Default pats  | 26 |
-| Followed pats | 40 |
-| Files         | 150 |
+| Followed pats | 41 |
+| Files         | 151 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -80,6 +80,7 @@ Mirror of `kungfu-systems/kungfu` — 26 default patterns, 40 followed patterns,
 - `LICENSE-POLICY.md`
 - `docs/concepts/why-kungfu.md`
 - `docs/qualification/trademark-public-use.md`
+- `docs/guides/installing-cli.md`
 - `docs/qualification/auditable-demo-artifact-pipeline.md`
 - `docs/concepts/system-overview.md`
 - `docs/concepts/runtime-surface-provenance.md`
@@ -232,22 +233,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 132 | → | [`docs/evolution/timeline.md`](docs/evolution/timeline.md) |
 | 133 | → | [`docs/guides/alpha-status.md`](docs/guides/alpha-status.md) |
 | 134 | → | [`docs/guides/exit-and-version-compatibility.md`](docs/guides/exit-and-version-compatibility.md) |
-| 135 | → | [`docs/guides/known-issues.md`](docs/guides/known-issues.md) |
-| 136 | → | [`docs/guides/upgrading.md`](docs/guides/upgrading.md) |
-| 137 | → | [`docs/guides/xinfa-agent-context.md`](docs/guides/xinfa-agent-context.md) |
-| 138 | → | [`docs/MAP.md`](docs/MAP.md) |
-| 139 | → | [`docs/qualification/auditable-demo-artifact-pipeline.md`](docs/qualification/auditable-demo-artifact-pipeline.md) |
-| 140 | → | [`docs/qualification/contracts.md`](docs/qualification/contracts.md) |
-| 141 | → | [`docs/qualification/kfd-support-matrix.md`](docs/qualification/kfd-support-matrix.md) |
-| 142 | → | [`docs/qualification/known-limits.md`](docs/qualification/known-limits.md) |
-| 143 | → | [`docs/qualification/trademark-public-use.md`](docs/qualification/trademark-public-use.md) |
-| 144 | → | [`docs/README.md`](docs/README.md) |
-| 145 | → | [`LICENSE-POLICY.md`](LICENSE-POLICY.md) |
-| 146 | → | [`PROVIDER_COMPLIANCE.md`](PROVIDER_COMPLIANCE.md) |
-| 147 | → | [`README.md`](README.md) |
-| 148 | → | [`SECURITY.md`](SECURITY.md) |
-| 149 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
-| 150 | → | [`TRADEMARK.md`](TRADEMARK.md) |
+| 135 | → | [`docs/guides/installing-cli.md`](docs/guides/installing-cli.md) |
+| 136 | → | [`docs/guides/known-issues.md`](docs/guides/known-issues.md) |
+| 137 | → | [`docs/guides/upgrading.md`](docs/guides/upgrading.md) |
+| 138 | → | [`docs/guides/xinfa-agent-context.md`](docs/guides/xinfa-agent-context.md) |
+| 139 | → | [`docs/MAP.md`](docs/MAP.md) |
+| 140 | → | [`docs/qualification/auditable-demo-artifact-pipeline.md`](docs/qualification/auditable-demo-artifact-pipeline.md) |
+| 141 | → | [`docs/qualification/contracts.md`](docs/qualification/contracts.md) |
+| 142 | → | [`docs/qualification/kfd-support-matrix.md`](docs/qualification/kfd-support-matrix.md) |
+| 143 | → | [`docs/qualification/known-limits.md`](docs/qualification/known-limits.md) |
+| 144 | → | [`docs/qualification/trademark-public-use.md`](docs/qualification/trademark-public-use.md) |
+| 145 | → | [`docs/README.md`](docs/README.md) |
+| 146 | → | [`LICENSE-POLICY.md`](LICENSE-POLICY.md) |
+| 147 | → | [`PROVIDER_COMPLIANCE.md`](PROVIDER_COMPLIANCE.md) |
+| 148 | → | [`README.md`](README.md) |
+| 149 | → | [`SECURITY.md`](SECURITY.md) |
+| 150 | → | [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) |
+| 151 | → | [`TRADEMARK.md`](TRADEMARK.md) |
 
 ---
 

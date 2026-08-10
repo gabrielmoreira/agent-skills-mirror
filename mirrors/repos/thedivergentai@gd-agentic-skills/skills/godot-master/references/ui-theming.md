@@ -63,12 +63,6 @@ Controller/keyboard prompt icon bank swap + focus highlight panel. **MANDATORY**
 - **NEVER skip `corner_radius_all` on StyleBoxFlat** — shorthand for uniform rounding; prefer it over four separate radius fields when all corners match.
 - **NEVER confuse Theme items with Control overrides** — `add_theme_*_override` beats Theme resource items on that node only; a child Control with its own `theme` still blocks parent cascade. Clear with `remove_theme_*_override` when swapping roots — do not leave stale overrides fighting the new Theme.
 
-## Godot 4.7: UI Theming
-
-- **Control offset transform** for inspector-driven visual tweaks without relayout.
-- `ResourceImporterDynamicFont.hinting` default changed to **3** — verify font crispness on target DPI.
-- **GradientTexture2D** supports **conic** gradients.
-
 ## Decision Tree — Theme Ownership
 
 | Goal | Choose | Notes / script |
@@ -81,7 +75,6 @@ Controller/keyboard prompt icon bank swap + focus highlight panel. **MANDATORY**
 Fonts & StyleBoxes: edit via **Theme editor** / Project Theme. Runtime helpers: [global_theme_manager.gd](../scripts/ui_theming_global_theme_manager.gd), [theme_swapper.gd](../scripts/ui_theming_theme_swapper.gd), [procedural_theme_safe.gd](../scripts/ui_theming_procedural_theme_safe.gd).
 
 ## Expert Theming Patterns
-
 
 ### 1. Shared-Color-Palette (The Static Pattern)
 Maintain a single source of truth for UI colors accessible to both the Theme Editor and GDScript.
@@ -134,7 +127,6 @@ Ensuring UI textures are optimized for rendering performance.
     - **UI Backgrounds**: Use **Lossy** or **Basis Universal** for large illustrations to save disk space without decreasing VRAM usage [15].
 - **Audit**: Use `ResourceLoader.get_dependencies(scene_path)` to ensure no uncompressed raw assets (e.g. `.png`) are leaking into the final export [19].
 
-
 ## Deep recipes (on demand)
 
 > LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
@@ -165,24 +157,24 @@ Ensuring UI textures are optimized for rendering performance.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout and default Control/Theme placement before skin systems.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Theme/StyleBox/icon banks as Resources instead of path-string sprawl.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Containers must be correct before theme polish hides layout bugs.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Theme swap and accessibility mode changes should signal up, not poll.
+- [godot-project-foundations](project-foundations.md) — Project layout and default Control/Theme placement before skin systems.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Theme/StyleBox/icon banks as Resources instead of path-string sprawl.
+- [godot-ui-containers](ui-containers.md) — Containers must be correct before theme polish hides layout bugs.
+- [godot-signal-architecture](signal-architecture.md) — Theme swap and accessibility mode changes should signal up, not poll.
 
 #### Complements
-- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — BBCode/fonts that must stay coherent with Theme typefaces.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Focus highlight panels and seasonal theme transitions.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Controller-aware prompt icons and focus navigation.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Theme managers as Autoloads with clear ownership.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Atlas/compression policies that affect shipped UI VRAM.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Draw-call and atlas packing for dense HUD skins.
+- [godot-ui-rich-text](ui-rich-text.md) — BBCode/fonts that must stay coherent with Theme typefaces.
+- [godot-tweening](tweening.md) — Focus highlight panels and seasonal theme transitions.
+- [godot-input-handling](input-handling.md) — Controller-aware prompt icons and focus navigation.
+- [godot-autoload-architecture](autoload-architecture.md) — Theme managers as Autoloads with clear ownership.
+- [godot-export-builds](export-builds.md) — Atlas/compression policies that affect shipped UI VRAM.
+- [godot-performance-optimization](performance-optimization.md) — Draw-call and atlas packing for dense HUD skins.
 
 #### Downstream / consumers
-- [godot-theme-easter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-theme-easter/SKILL.md) — Seasonal overlays that swap Theme/icon banks on top of this skill.
-- [godot-composition-apps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md) — App UIs that live or die on Theme consistency.
-- [godot-genre-visual-novel](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md) — Dialogue chrome heavily Theme-driven.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Touch-scale and high-contrast theme variants.
+- [godot-theme-easter](theme-easter.md) — Seasonal overlays that swap Theme/icon banks on top of this skill.
+- [godot-composition-apps](composition-apps.md) — App UIs that live or die on Theme consistency.
+- [godot-genre-visual-novel](genre-visual-novel.md) — Dialogue chrome heavily Theme-driven.
+- [godot-platform-mobile](platform-mobile.md) — Touch-scale and high-contrast theme variants.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for UI theming.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for UI theming.

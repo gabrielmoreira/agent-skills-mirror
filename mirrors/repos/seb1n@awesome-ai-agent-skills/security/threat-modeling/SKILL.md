@@ -1,6 +1,6 @@
 ---
 name: threat-modeling
-description: Conduct structured threat modeling for software systems using established methodologies to identify, prioritize, and mitigate security threats before they are exploited.
+description: Conduct structured threat modeling for software systems using established methodologies to identify, prioritize, and mitigate security threats before they are exploited. Use when the user requests threat modeling or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills
@@ -109,6 +109,13 @@ Gain Unauthorized Access to User Account
 - **Focus on trust boundaries** — the most exploitable vulnerabilities occur where data crosses trust boundaries: between the user and the application, between services, between the application and the database. Prioritize threats at these junctions.
 - **Use threat modeling to drive backlog items** — every mitigation identified should become a trackable work item with an owner and a deadline. Threat models that do not produce actionable backlog items have failed.
 - **Validate threats with testing** — after identifying a threat, write a corresponding security test (penetration test, integration test, or DAST rule) that verifies the mitigation is effective.
+
+## Safety Boundaries
+
+- Work only on systems the user owns or is explicitly authorized to assess, and record the approved scope before testing.
+- Start with passive or read-only inspection. Obtain explicit approval before active scanning, exploitation, load generation, or disruptive remediation.
+- Never expose secrets, extract unrelated data, weaken production controls, or expand beyond the approved targets.
+- Preserve evidence, minimize impact, stop on instability, and provide rollback or containment steps for every material change.
 
 ## Edge Cases
 

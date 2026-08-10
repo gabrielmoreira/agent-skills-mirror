@@ -1,6 +1,6 @@
 ---
 name: lead-scoring
-description: Score and prioritize leads based on firmographic fit and behavioral engagement signals, producing ranked tiers for sales team focus.
+description: Score and prioritize leads based on firmographic fit and behavioral engagement signals, producing ranked tiers for sales team focus. Use when the user requests lead scoring or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community

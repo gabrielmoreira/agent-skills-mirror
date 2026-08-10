@@ -1,288 +1,255 @@
 ---
 name: software-code-review
-description: Systematic code review patterns and checklists. Use when reviewing PRs or diffs for correctness, security, readability, and maintainability.
+description: "Applies systematic code review patterns and checklists. Use when reviewing PRs or diffs for correctness, security, readability, maintainability, and AI-generated changes."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# Code Reviewing Skill — Quick Reference
+# Code Review
 
-This skill provides operational checklists and prompts for structured code review across languages and stacks. Use it when the primary task is reviewing existing code rather than designing new systems.
+This skill is for reviewing existing changes. It routes the agent to the right checklist, review mode, and platform workflow without turning `SKILL.md` into a tool catalog.
 
 ## Quick Reference
 
-| Review Type | Focus Areas | Key Checklist | When to Use |
-|-------------|-------------|---------------|-------------|
-| Security Review | Auth, input validation, secrets, OWASP Top 10 | [software-security-appsec](../software-security-appsec/SKILL.md) | Security-critical code, API endpoints |
-| Supply Chain Review | Dependencies, lockfiles, licenses, SBOM, CI policies | [dev-dependency-management](../dev-dependency-management/SKILL.md) | Dependency bumps, build/CI changes |
-| Performance Review | N+1 queries, algorithms, caching, hot paths | DB queries, loops, memory allocation | High-traffic features, bottlenecks |
-| Correctness Review | Logic, edge cases, error handling, tests | Boundary conditions, null checks, retries | Business logic, data transformations |
-| Maintainability Review | Naming, complexity, duplication, readability | Function length, naming clarity, DRY | Complex modules, shared code |
-| Test Review | Coverage, edge cases, flakiness, assertions | Test quality, missing scenarios | New features, refactors |
-| Frontend Review | Accessibility, responsive design, performance | [frontend-review.md](assets/web-frontend/frontend-review.md) | UI/UX changes |
-| Backend Review | API design, error handling, database patterns | [api-review.md](assets/backend-api/api-review.md) | API endpoints, services |
-| Blockchain Review | Reentrancy, access control, gas optimization | [crypto-review.md](assets/blockchain/crypto-review.md) | Smart contracts, DeFi protocols |
-
----
-
-## Specialized: .NET/EF Core Crypto Integration
-
-Skip unless reviewing C#/.NET crypto/fintech services using Entity Framework Core.
-
-For C#/.NET crypto/fintech services using Entity Framework Core, see:
-
-- [references/dotnet-efcore-crypto-rules.md](references/dotnet-efcore-crypto-rules.md) — Complete review rules (correctness, security, async, EF Core, tests, MRs)
-
-**Key rules summary:**
-
-- Review only new/modified code in the MR
-- Use `decimal` for financial values, UTC for dates
-- Follow `CC-SEC-03` (no secrets in code) and `CC-OBS-02` (no sensitive data in logs)
-- Async for I/O, pass `CancellationToken`, avoid `.Result`/`.Wait()` (see `CC-ERR-04`, `CC-FLOW-03`)
-- EF Core: `AsNoTracking` for reads, avoid N+1, no dynamic SQL
-- `Result<T>` pattern for explicit success/fail
-
----
+| Task | Use | Primary Reference |
+|------|-----|-------------------|
+| General PR or diff review | Baseline review flow and severity rubric | [references/operational-playbook.md](references/operational-playbook.md) |
+| AI-generated or agent-created changes | Human-in-the-loop review rules and platform controls | [references/automation-tools.md](references/automation-tools.md) |
+| Building or tuning an AI review tool/integration | Pre-review deterministic gate, size-gated planning pass, self-refutation filter pass | [references/deterministic-vs-llm-routing.md](references/deterministic-vs-llm-routing.md) |
+| Backend/API review | Error handling, contracts, persistence, operability | [assets/backend-api/api-review.md](assets/backend-api/api-review.md) |
+| Frontend review | Accessibility, responsive behavior, Core Web Vitals | [assets/web-frontend/frontend-review.md](assets/web-frontend/frontend-review.md) |
+| Mobile review | Platform patterns, lifecycle, permissions, UX | [assets/mobile/mobile-review.md](assets/mobile/mobile-review.md) |
+| Infrastructure review | CI/CD, IaC, secrets, deploy safety | [assets/infrastructure/infrastructure-review.md](assets/infrastructure/infrastructure-review.md) |
+| Smart contract review | Access control, reentrancy, unsafe assumptions | [assets/blockchain/crypto-review.md](assets/blockchain/crypto-review.md) |
+| Data / ML review | Pipelines, experiments, models, deployment | [assets/data-ml/data-pipeline-review.md](assets/data-ml/data-pipeline-review.md) |
 
 ## When to Use This Skill
 
-Invoke this skill when the user asks to:
+Use this skill when the primary task is to:
 
-- Review a pull request or diff for issues
-- Audit code for security vulnerabilities or injection risks
-- Improve readability, structure, and maintainability
-- Suggest targeted refactors without changing behavior
-- Validate tests and edge-case coverage
+- review a PR, merge request, or diff
+- find correctness, security, reliability, or maintainability issues
+- assess test gaps and regression risk
+- critique AI-generated or agent-created changes before merge
+- recommend small, behavior-preserving refactors
 
 ## When NOT to Use This Skill
 
-- **System design or architecture**: Use [software-architecture-design](../software-architecture-design/SKILL.md) for greenfield architecture decisions
-- **Writing new code from scratch**: This skill reviews existing code, not authoring new features
-- **Deep security audits**: For penetration testing or comprehensive security assessments, use [software-security-appsec](../software-security-appsec/SKILL.md)
-- **Deep performance investigations**: For profiling/observability, use [qa-observability](../qa-observability/SKILL.md) and for SQL/query tuning use [data-sql-optimization](../data-sql-optimization/SKILL.md)
+- **Greenfield architecture** → [software-architecture-design](../software-architecture-design/SKILL.md)
+- **Deep AppSec design or formal threat modeling** → [software-security-appsec](../software-security-appsec/SKILL.md)
+- **Writing a new feature from scratch** → use the stack-specific implementation skill
 
-## Decision Tree: Selecting Review Mode
+## Workflow
 
-```text
-Code review task: [What to Focus On?]
-    ├─ Security-critical changes?
-    │   ├─ Auth/access control → Security Review (OWASP, auth patterns)
-    │   ├─ User input handling → Input validation, XSS, SQL injection
-    │   └─ Smart contracts → Blockchain Review (reentrancy, access control)
-    │
-    ├─ Performance concerns?
-    │   ├─ Database queries → Check for N+1, missing indexes
-    │   ├─ Loops/algorithms → Complexity analysis, caching
-    │   └─ API response times → Profiling, lazy loading
-    │
-    ├─ Correctness issues?
-    │   ├─ Business logic → Edge cases, error handling, tests
-    │   ├─ Data transformations → Boundary conditions, null checks
-    │   └─ Integration points → Retry logic, timeouts, fallbacks
-    │
-    ├─ Maintainability problems?
-    │   ├─ Complex code → Naming, function length, duplication
-    │   ├─ Hard to understand → Comments, abstractions, clarity
-    │   └─ Technical debt → Refactoring suggestions
-    │
-    ├─ Test coverage gaps?
-    │   ├─ New features → Happy path + error cases
-    │   ├─ Refactors → Regression tests
-    │   └─ Bug fixes → Reproduction tests
-    │
-    └─ Stack-specific review?
-        ├─ Frontend → [frontend-review.md](assets/web-frontend/frontend-review.md)
-        ├─ Backend → [api-review.md](assets/backend-api/api-review.md)
-        ├─ Mobile → [mobile-review.md](assets/mobile/mobile-review.md)
-        ├─ Infrastructure → [infrastructure-review.md](assets/infrastructure/infrastructure-review.md)
-        └─ Blockchain → [crypto-review.md](assets/blockchain/crypto-review.md)
-```
+1. Confirm the review surface: diff, PR, merge request, generated code, or a focused file set.
+2. Route architecture-only or formal security-design questions to the adjacent skill when review is not the primary task.
+3. Apply review modes in order: correctness, security, reliability, performance, and maintainability.
+4. Pull in the stack overlay only when the code actually needs that domain-specific lens.
+5. Return concrete findings with evidence, then verify any platform-specific claims via the navigation sources.
 
-**Multi-Mode Reviews:**
-
-For complex PRs, apply multiple review modes sequentially:
-
-1. **Security first** (P0/P1 issues)
-2. **Correctness** (logic, edge cases)
-3. **Performance** (if applicable)
-4. **Maintainability** (P2/P3 suggestions)
-
----
-
-## Async Review Workflows (2026)
-
-### Timezone-Friendly Reviews
-
-| Practice | Implementation |
-|----------|----------------|
-| Review windows | Define 4-hour overlap windows |
-| Review rotation | Assign reviewers across timezones |
-| Async communication | Use PR comments, not DMs |
-| Review SLAs | 24-hour initial response, 48-hour completion |
-
-### Non-Blocking Reviews
+## ASCII Flow
 
 ```text
-PR Submitted -> Auto-checks (CI) -> Async Review -> Merge
-       |              |               |
-  Author continues   If green,    Reviewer comments
-  on other work      queue for    when available
-                     review
+Code review request
+  -> Identify diff, scope, and expected behavior
+  -> Trace changed control flow and data contracts
+  -> Look for regressions, security, performance, and test gaps
+  -> Rank findings by severity and confidence
+  -> Cite exact files and lines
+  -> Summarize residual risk and verification gaps
 ```
 
-**Anti-patterns:**
+## Review Routing
 
-- Synchronous review meetings for routine PRs
-- Blocking on reviewer availability for non-critical changes
-- Single reviewer bottleneck
+Apply review modes in this order unless the user asks for a narrower scope:
 
-### Review Prioritization Matrix
+1. Correctness and edge cases
+2. Security and data handling
+3. Reliability and operability
+4. Performance and cost
+5. Maintainability and test coverage
 
-| Priority | Criteria | SLA |
-|----------|----------|-----|
-| P0 | Security fix, production incident | 4 hours |
-| P1 | Bug fix, blocking dependency | 24 hours |
-| P2 | Feature work, tech debt | 48 hours |
-| P3 | Documentation, refactoring | 72 hours |
+Stack overlays:
 
----
+- Frontend: [assets/web-frontend/frontend-review.md](assets/web-frontend/frontend-review.md)
+- Backend/API: [assets/backend-api/api-review.md](assets/backend-api/api-review.md)
+- Mobile: [assets/mobile/mobile-review.md](assets/mobile/mobile-review.md)
+- Infrastructure: [assets/infrastructure/infrastructure-review.md](assets/infrastructure/infrastructure-review.md)
+- Blockchain: [assets/blockchain/crypto-review.md](assets/blockchain/crypto-review.md)
+- Data/ML: [assets/data-ml/data-pipeline-review.md](assets/data-ml/data-pipeline-review.md), [assets/data-ml/ml-model-review.md](assets/data-ml/ml-model-review.md), [assets/data-ml/ml-deployment-review.md](assets/data-ml/ml-deployment-review.md)
 
-### Optional: AI/Automation Extensions
+Platform overlays:
 
-> **Note**: AI-assisted review tools. Human review remains authoritative.
+- GitHub: Copilot review, repository instructions, excluded files, Code Quality, merge queue
+- GitLab: Duo review instructions, merge request approvals, approval rules
+- Bitbucket: Code Insights, branch restrictions, required checks
 
-#### AI Review Assistants
+If the user asks a platform-specific automation question, open the official entries in [data/sources.json](data/sources.json) first and use [references/automation-tools.md](references/automation-tools.md).
 
-| Tool | Use Case | Limitation |
-|------|----------|------------|
-| GitHub Copilot PR | Summary, suggestions | May miss context |
-| CodeRabbit | Automated PR review comments | Requires human validation |
-| Qodo | Test generation + review, 15+ workflows | Enterprise pricing |
-| OpenAI Codex | System-level codebase context | API integration required |
-| AWS Security Agent | OWASP Top 10, policy violations | Preview only (2026) |
-| Endor Labs AI SAST | AI-assisted SAST | Security-focused |
-| Graphite | PR stacking, stack-aware merge queue | Process, not content |
+## AI-Assisted Review Rules
 
-**AI assistant rules:**
+- Human review is authoritative. AI findings are advisory until confirmed.
+- Treat AI-generated code and agent-created PRs as higher-context review tasks, not lower-effort review tasks: the bottleneck moves from writing to verifying, so budget reviewer time accordingly rather than assuming automation shrinks the review workload.
+- Judge AI-generated code against this codebase's actual conventions, not an abstract style guide — consistency with surrounding code is the more useful bar than "is this idiomatic in general."
+- Prefer native platform controls before third-party bots:
+  - repository or path-specific review instructions
+  - excluded files / generated file filters
+  - required checks, approval rules, and merge queues
+- Do not accept benchmark, pricing, or feature-comparison claims from memory. Verify current tool status first — this space (GitHub Copilot code review, CodeRabbit, Qodo/PR-Agent, and adjacent tools) changes ownership, pricing, and capability frequently; see `references/automation-tools.md` and `data/sources.json` and re-verify before quoting specifics.
+- Never pin or cite a specific AI model version/ID as a reviewer-facing fact; capability and behavior shift too fast for that to stay true.
 
-- AI suggestions are advisory only
-- Human reviewer approves/rejects
-- AI cannot bypass security review
-- AI findings require manual verification
+### AI-Generated Code Review Checklist
 
-#### AI Review Checklist
+Apply these checks when reviewing AI-generated code or agent-created PRs:
 
-- [ ] AI suggestions validated against codebase patterns
-- [ ] AI-flagged issues manually confirmed
-- [ ] False positives documented for tool improvement
-- [ ] Human reviewer explicitly approved
+| Check | What to look for |
+|-------|-----------------|
+| **Hallucinated imports** | Packages or methods that don't exist; verify with `npm info` / `pip index` |
+| **Stale APIs** | Deprecated methods, old signatures, removed features |
+| **Security gaps** | Missing input validation, hardcoded secrets, SQL concatenation, unescaped output |
+| **Missing error handling** | Happy-path only; no try/catch, no null checks, no timeout handling |
+| **Redundant abstractions** | Unnecessary wrappers, premature generalization, over-engineered patterns |
+| **Copy-paste drift** | Similar blocks with subtle inconsistencies across files |
+| **Test theater** | Tests that assert implementation details, mock everything, or test the framework |
+| **Accessibility omissions** | Missing alt text, broken ARIA, no keyboard handling, div soup |
+| **Design system violations** | Components that ignore existing tokens, spacing, or component patterns |
+| **Confident but wrong comments** | Docstrings that describe what the code should do, not what it actually does |
 
----
+Sources: [Hallucination Detection](../software-clean-code-standard/references/code-quality-operational-playbook.md#113-hallucination-detection-checklist), [AI Design Antipatterns](../software-ui-ux-design/references/ai-automation-ux.md#ai-generated-design-antipatterns)
 
-## Simplicity and Complexity Control
+## Severity Rubric
 
-- Prefer existing, battle-tested libraries over bespoke implementations when behavior is identical.
-- Flag avoidable complexity early: remove dead/commented-out code, collapse duplication, and extract single-responsibility helpers.
-- Call out premature optimization; favor clarity and measured, evidence-based tuning.
-- Encourage incremental refactors alongside reviews to keep modules small, predictable, and aligned to standards.
+| Priority | Label | Criteria | Review action |
+|----------|-------|----------|---------------|
+| P0 | BLOCKER | Data loss, security hole, correctness bug, crashes in prod path | Must fix before merge |
+| P1 | REQUIRED | Missing error handling, broken rollback, undefined behavior, SLA violation | Must fix before merge |
+| P2 | SUGGESTED | Test gap for non-critical path, minor inefficiency, readability issue | Fix in this PR or tracked issue |
+| P3 | OPTIONAL | Style preference, naming taste, future improvement | Author decides; no block |
 
----
+Mark each finding with its priority and label. Do not lump P0 and P3 findings in the same comment thread.
 
-## Operational Playbooks
+## When Not to Block a Merge
 
-**Shared Foundation**
+Blocking is a cost: it delays value delivery, encourages batching future changes to avoid another round, and burns reviewer credibility if used on low-stakes disagreements. Do not block on:
 
-- [../software-clean-code-standard/references/clean-code-standard.md](../software-clean-code-standard/references/clean-code-standard.md) - Canonical clean code rules (`CC-*`) for citation in reviews
-- Legacy playbook: [../software-clean-code-standard/references/code-quality-operational-playbook.md](../software-clean-code-standard/references/code-quality-operational-playbook.md) - `RULE-01`–`RULE-13`, refactoring decision trees, and design patterns
+- P3-only findings (style, naming taste, a "nicer" abstraction) — leave as non-blocking suggestions and let the author decide.
+- A correct approach you would have written differently, with no identified defect or maintainability cost.
+- Missing test coverage for genuinely low-risk, low-change-frequency code, when the author explicitly acknowledges the gap and it is tracked.
+- Pre-existing issues outside the diff's blast radius — file a follow-up instead of expanding this review's scope.
+- Disagreements that are actually about product/requirements, not the code — escalate to the right owner rather than relitigating in review comments.
 
-**Code Review Specific**
+Do block on P0/P1 findings, missing tests for genuinely risky new behavior, and anything that would be expensive or unsafe to fix after merge (data migrations, public API shape, security boundaries). When in doubt, separate the blocking finding from the optional ones instead of letting one bleed into the other's priority.
 
-- [references/operational-playbook.md](references/operational-playbook.md) — Review scope rules, severity ratings (P0-P3), checklists, modes, and PR workflow patterns
+## Rubber-Stamp Detection
 
-## Default Review Output (Agent-Facing)
+Fast, low-comment reviews are not automatically a problem — well-written, small, low-risk changes should review quickly. Treat these as a warning signal warranting a second look, not proof of bad review:
 
-When producing a review, default to:
+- Approval on a diff far larger than roughly 200-400 LOC with review duration implausibly short for that size (see `references/large-pr-review-strategies.md` and `references/code-review-metrics.md` for the size/pace data this heuristic is based on).
+- "LGTM" with zero substantive comments on a change touching auth, money movement, migrations, or public APIs.
+- A team or individual with a defect-escape rate trending up while review turnaround trends down — the speed gain is likely coming from skipped scrutiny.
+- Approvals that only restate the PR description back rather than referencing specific lines or behavior.
 
-- Short summary of intent + risk
-- Findings grouped by `P0`/`P1`/`P2`/`P3` (mark REQUIRED vs OPTIONAL)
-- Concrete suggestions (minimal diffs or test cases)
-- Follow-up questions when requirements or constraints are unclear
+Use these as coaching signals (spot-check, pair on a review, ask what was actually read), not as a public leaderboard — see `references/code-review-metrics.md` for how to track this without creating gaming incentives.
 
-Use [assets/core/review-comment-guidelines.md](assets/core/review-comment-guidelines.md) for comment style and labeling.
+## Review the Tests, Not Just the Code
+
+A diff with green tests and no test-quality review is only half-reviewed. Apply the same scrutiny to test code as to production code:
+
+- Confirm new/changed behavior actually has a test that would fail without the fix, not just a test that happens to pass alongside it.
+- Watch for tests that assert implementation details (mocking everything, checking internal call counts) instead of observable behavior — these pass trivially and catch nothing on refactor.
+- Check that error paths and boundaries are tested, not just the happy path.
+- Treat a bug fix with no regression test as incomplete, not as a style nit.
+
+## Known Traps
+
+- Reviewing from the PR description first and the diff second. Treat descriptions as claims, not evidence.
+- Spending most effort on style and almost none on behavioral risk, migration risk, or rollback safety.
+- Treating generated files, snapshots, or lockfile churn as noise without checking whether they hide contract or dependency drift.
+- Reviewing only changed lines when the bug is in the surrounding invariant, caller expectations, or teardown path.
+- Calling out `needs tests` generically without naming the missing scenario, boundary, or regression.
+- Accepting benchmark, security, or framework claims in the diff comments without live verification when the claim is version-sensitive.
+
+## Common Anti-Patterns
+
+- Treating review as approval theater: light comments on naming while correctness and rollout risk remain unexamined.
+- Rewriting the author's architecture in review when the real issue is a smaller bug, missing guardrail, or weak contract.
+- Conflating preference with defect. Mark taste as optional and reserve blocking comments for correctness, safety, or maintainability risk.
+- Collapsing multiple independent issues into one large comment thread instead of separating discrete findings with evidence.
+- Using AI review output as authoritative instead of validating each finding against the actual diff and local context.
+
+## Default Review Output
+
+Default to:
+
+- a short summary of intent and risk
+- findings grouped by `P0` / `P1` / `P2` / `P3`
+- `REQUIRED` vs `OPTIONAL` labeling
+- concrete remediation: minimal diff, test case, or configuration fix
+- follow-up questions only when requirements are genuinely unclear
+
+Use [assets/core/review-comment-guidelines.md](assets/core/review-comment-guidelines.md) for phrasing and [assets/core/review-checklist-judgment.md](assets/core/review-checklist-judgment.md) for final pass judgment. Label comment intent using the [Conventional Comments](https://conventionalcomments.org/) convention (`suggestion:`, `issue:`, `question:`, `nitpick:`, `praise:`) so blocking vs. non-blocking intent is unambiguous without relying on tone.
 
 ## Navigation
 
-**Resources**
-- [references/operational-playbook.md](references/operational-playbook.md)
-- [references/review-checklist-comprehensive.md](references/review-checklist-comprehensive.md)
-- [references/implementing-effective-code-reviews-checklist.md](references/implementing-effective-code-reviews-checklist.md)
-- [references/looks-good-to-me-checklist.md](references/looks-good-to-me-checklist.md)
-- [references/automation-tools.md](references/automation-tools.md)
-- [references/dotnet-efcore-crypto-rules.md](references/dotnet-efcore-crypto-rules.md)
-- [references/psychological-safety-guide.md](references/psychological-safety-guide.md)
-- [references/large-pr-review-strategies.md](references/large-pr-review-strategies.md)
-- [references/security-focused-review-guide.md](references/security-focused-review-guide.md)
-- [references/code-review-metrics.md](references/code-review-metrics.md)
+Core references:
 
-**Templates**
+- [references/operational-playbook.md](references/operational-playbook.md)
+- [references/automation-tools.md](references/automation-tools.md)
+- [references/review-checklist-comprehensive.md](references/review-checklist-comprehensive.md)
+- [references/looks-good-to-me-checklist.md](references/looks-good-to-me-checklist.md) — constructive, high-signal review practices ("Looks Good To Me")
+- [references/implementing-effective-code-reviews-checklist.md](references/implementing-effective-code-reviews-checklist.md) — operational practices from "Implementing Effective Code Reviews"
+- [references/security-focused-review-guide.md](references/security-focused-review-guide.md)
+- [references/large-pr-review-strategies.md](references/large-pr-review-strategies.md)
+- [references/code-review-metrics.md](references/code-review-metrics.md)
+- [references/psychological-safety-guide.md](references/psychological-safety-guide.md)
+- [references/dotnet-efcore-crypto-rules.md](references/dotnet-efcore-crypto-rules.md)
+- [references/adversarial-review-protocol.md](references/adversarial-review-protocol.md) — stripped-context handoff and fixed-precedence finding reconciliation for pre-commit decision review
+- [references/complexity-only-review-pass.md](references/complexity-only-review-pass.md) — narrow, tagged, over-engineering-only review pass as a fast complement to the full checklist
+- [references/deterministic-vs-llm-routing.md](references/deterministic-vs-llm-routing.md) — pre-review deterministic file gate, size-gated planning-pass threshold, and self-refutation filter pass for AI review tooling
+
+Templates:
+
 - [assets/core/pull-request-description-template.md](assets/core/pull-request-description-template.md)
-- [assets/core/review-checklist-judgment.md](assets/core/review-checklist-judgment.md)
 - [assets/core/review-comment-guidelines.md](assets/core/review-comment-guidelines.md)
 - [assets/backend-api/api-review.md](assets/backend-api/api-review.md)
 - [assets/web-frontend/frontend-review.md](assets/web-frontend/frontend-review.md)
 - [assets/mobile/mobile-review.md](assets/mobile/mobile-review.md)
 - [assets/infrastructure/infrastructure-review.md](assets/infrastructure/infrastructure-review.md)
 - [assets/blockchain/crypto-review.md](assets/blockchain/crypto-review.md)
-- [assets/data-ml/data-pipeline-review.md](assets/data-ml/data-pipeline-review.md)
-- [assets/data-ml/experiment-tracking-review.md](assets/data-ml/experiment-tracking-review.md)
-- [assets/data-ml/ml-model-review.md](assets/data-ml/ml-model-review.md)
-- [assets/data-ml/ml-deployment-review.md](assets/data-ml/ml-deployment-review.md)
 
-**Data**
-- [data/sources.json](data/sources.json) — Curated external references
-- Shared checklists: [../software-clean-code-standard/assets/checklists/secure-code-review-checklist.md](../software-clean-code-standard/assets/checklists/secure-code-review-checklist.md), [../software-clean-code-standard/assets/checklists/backend-api-review-checklist.md](../software-clean-code-standard/assets/checklists/backend-api-review-checklist.md)
+Sources:
 
----
+- [data/sources.json](data/sources.json) - verified source set with platform status and replacements for retired links
 
-## Trend Awareness Protocol
+## Freshness Protocol
 
-**IMPORTANT**: When users ask recommendation questions about code review tools, practices, or automation, you MUST use WebSearch to check current trends before answering.
+When the user asks for:
 
-### Trigger Conditions
+- the best or latest code review tool
+- current PR automation practices
+- GitHub Copilot vs CodeRabbit vs Qodo vs platform-native options
+- whether a tool is still relevant
 
-- "What's the best code review tool?"
-- "What should I use for [automated code review/PR automation]?"
-- "What's the latest in code review practices?"
-- "Current best practices for [code review/PR workflow]?"
-- "Is [GitHub Copilot PR/CodeRabbit] still relevant in 2026?"
-- "[CodeRabbit] vs [Graphite] vs [other]?"
-- "Best AI code review assistant?"
+you must:
 
-### Required Searches
+1. Use web search.
+2. Prefer official docs and release/status pages over vendor comparison blogs.
+3. Use [data/sources.json](data/sources.json) as the starting source set.
+4. Treat vendor metrics and case-study performance numbers as directional unless independently verified.
 
-1. Search: `"code review best practices 2026"`
-2. Search: `"[specific tool] vs alternatives 2026"`
-3. Search: `"AI code review tools January 2026"`
-4. Search: `"PR automation trends 2026"`
-
-### What to Report
-
-After searching, provide:
-
-- **Current landscape**: What code review tools/practices are popular NOW
-- **Emerging trends**: New AI assistants, PR tools, or review patterns gaining traction
-- **Deprecated/declining**: Tools/approaches losing relevance or support
-- **Recommendation**: Based on fresh data, not just static knowledge
-
-### Example Topics (verify with fresh search)
-
-- AI code review (GitHub Copilot PR, CodeRabbit, Cursor)
-- PR automation (Graphite, Stacked PRs, merge queues)
-- Code review platforms (GitHub, GitLab, Bitbucket)
-- Review bots and automation
-- Async review practices for distributed teams
-- Review metrics and analytics tools
+If web access is unavailable, say so and answer from `data/sources.json`, clearly marking time-sensitive advice as unverified.
 
 ## Fact-Checking
 
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
 - Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
 - Prefer primary sources; report source links and dates for volatile information.
 - If web access is unavailable, state the limitation and mark guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

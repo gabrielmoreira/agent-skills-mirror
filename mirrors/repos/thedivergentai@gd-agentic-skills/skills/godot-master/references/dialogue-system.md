@@ -22,10 +22,6 @@ Data-driven dialogue routing — not beginner typewriter tutorials.
 
 ---
 
-## Godot 4.7: Dialogue UI
-
-- RichTextLabel `add_image`/`update_image` use `width_unit`/`height_unit` (`ImageUnit`) — update portrait and inline image helpers.
-
 ## Decision Tree: Authoring Engine
 
 | Authoring need | Engine | MANDATORY scripts | Do NOT Load |
@@ -96,24 +92,24 @@ Use [typebox_effect.gd](../scripts/dialogue_system_typebox_effect.gd): set full 
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Autoload registration, input for advance/skip, and project layout dialogue UI scenes plug into.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, signals, `await`, and Callables required before branching engines and UI bridges.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Canonical patterns for `DialogueLine` / graph Resources, exports, and avoiding duplicated mutable state.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton ownership and boot order for a global `DialogueManager` that must outlive scene swaps.
+- [godot-project-foundations](project-foundations.md) — Autoload registration, input for advance/skip, and project layout dialogue UI scenes plug into.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Resources, signals, `await`, and Callables required before branching engines and UI bridges.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Canonical patterns for `DialogueLine` / graph Resources, exports, and avoiding duplicated mutable state.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton ownership and boot order for a global `DialogueManager` that must outlive scene swaps.
 
 #### Complements
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Signal-up / call-down contracts for `line_displayed`, choice selection, and narrative event bridges.
-- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — RichTextLabel BBCode, custom effects, and image embedding beyond the basics used in typewriter UIs.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Layout choice buttons and dialogue panels without fighting Control sizing and focus.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Skip-safe Tweens for character reveal, portrait entry, and panel transitions.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Voice-line players, bus ducking during dialogue, and subtitle sync with spoken audio.
-- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Quest flags and objectives that gate conditional choices and fire from dialogue event bridges.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist dialogue flags / seen-node state outside UI nodes so progress survives reloads.
+- [godot-signal-architecture](signal-architecture.md) — Signal-up / call-down contracts for `line_displayed`, choice selection, and narrative event bridges.
+- [godot-ui-rich-text](ui-rich-text.md) — RichTextLabel BBCode, custom effects, and image embedding beyond the basics used in typewriter UIs.
+- [godot-ui-containers](ui-containers.md) — Layout choice buttons and dialogue panels without fighting Control sizing and focus.
+- [godot-tweening](tweening.md) — Skip-safe Tweens for character reveal, portrait entry, and panel transitions.
+- [godot-audio-systems](audio-systems.md) — Voice-line players, bus ducking during dialogue, and subtitle sync with spoken audio.
+- [godot-quest-system](quest-system.md) — Quest flags and objectives that gate conditional choices and fire from dialogue event bridges.
+- [godot-save-load-systems](save-load-systems.md) — Persist dialogue flags / seen-node state outside UI nodes so progress survives reloads.
 
 #### Downstream / consumers
-- [godot-genre-visual-novel](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-visual-novel/SKILL.md) — Full VN presentation loops consume this skill’s graph traversal, portraits, and choice UI patterns.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Dialogue effects often grant/require items; keep grant logic in inventory, not inside line Resources.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate skill-check / branching choice trees when narrative gates or reward paths need balance passes.
+- [godot-genre-visual-novel](genre-visual-novel.md) — Full VN presentation loops consume this skill’s graph traversal, portraits, and choice UI patterns.
+- [godot-inventory-system](inventory-system.md) — Dialogue effects often grant/require items; keep grant logic in inventory, not inside line Resources.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate skill-check / branching choice trees when narrative gates or reward paths need balance passes.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns narrative, UI, or quest concerns.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns narrative, UI, or quest concerns.

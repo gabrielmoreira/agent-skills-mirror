@@ -1,0 +1,59 @@
+schema_version: 1
+distillation_id: sample-concept-book-v1
+task_contract_id: task-contract-sample-001
+contract_version: 1
+status: draft
+product_goal: Convert privately source-supported knowledge into a source-neutral, auditable task capability without silent product drift.
+audience:
+  - Practitioner applying a reviewed method to bounded target material
+input_types:
+  - input_type_id: private-method-material
+    description: Registered private material used only for provenance and first-principles reconstruction.
+    provenance_role: method-source
+  - input_type_id: external-target-material
+    description: New target material to which the reconstructed source-neutral method may be applied.
+    provenance_role: target-material
+execution_capability:
+  input_handling:
+    - input_type_id: external-target-material
+      carrier: pdf-text | pdf-scan | plain-text | figure-image | panel-crop | caption | mixed
+      modality_strategy: unimodal-text | multimodal-text-image
+      degradation_rule: >-
+        When the figure image is missing, low-resolution, or panel boundaries are unclear,
+        base figure analysis on legend/body text and state the inference; never invent
+        results the target material does not show.
+  notes: >-
+    Required for method-transfer candidates. Declare how each target input type is
+    processed under the current execution environment and how it degrades when the
+    image is not directly readable.
+stable_tasks:
+  - stable_task_id: stable-task-sample-001
+    statement: Apply the reviewed first-principles method to a bounded target input without exposing private provenance.
+    task_mode: method-transfer
+    required_input_types: [external-target-material]
+    required_outputs: [source-neutral-target-result]
+    non_negotiable_constraints:
+      - Preserve evidence, claim, rule, and candidate traceability in private governance records.
+      - Ground public results in target material and separate observation from inference.
+      - Do not emit bibliographic identity, attribution phrases, quotations, file names, or recognizable named source cases.
+    positive_examples:
+      - example_id: positive-sample-001
+        input_type_id: external-target-material
+        statement: Apply the reviewed invariant to this new target while stating assumptions, boundaries, and stop reasons.
+    negative_examples:
+      - example_id: negative-sample-001
+        input_type_id: external-target-material
+        statement: Reproduce private source wording, identity, or a recognizable source case in the task output.
+    acceptance_question_ids: [acceptance-sample-001]
+    provenance_requirements:
+      required_output_layers: [method-source-evidence, target-material-evidence, analogy-hypothesis]
+      target_source_role: target-material
+      missing_target_evidence: stop
+      forbidden_transfers: [method-source-fact-as-target-fact]
+    status: active
+exclusions:
+  - exclusion_id: exclusion-sample-001
+    statement: Automatic publication or deployment.
+acceptance_questions:
+  - acceptance_question_id: acceptance-sample-001
+    question: Can every rule remain privately traceable while the candidate and public result stay source-neutral and target-grounded?

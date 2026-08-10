@@ -1,369 +1,222 @@
 ---
 name: product-management
 description: "Founder-PM toolkit for discovery, roadmaps, prioritization, and PMF measurement. Use when planning product strategy, metrics, or roadmaps."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.2"
+last_validated: 2026-07-11
 ---
 
-# Product Management (Jan 2026)
+# Product Management
 
-This skill turns the assistant into an operator, not a lecturer.
-
-Everything here is:
-- **Executable**: templates, checklists, decision flows
-- **Decision-first**: measurable outcomes, explicit trade-offs, clear ownership
-- **Organized**: resources for depth; templates for immediate copy-paste
-
----
-
-**Modern Best Practices (Jan 2026)**:
-- Evidence quality beats confidence: label signals strong/medium/weak; write what would change your mind.
-- Outcomes > output: roadmaps are bets with measurable impact and guardrails, not feature inventories.
-- Metrics must be defined (formula + timeframe + data source) to be actionable.
-- Privacy, security, and accessibility are requirements, not afterthoughts.
-- Hybrid decision loops: AI surfaces anomalies, patterns, and forecasts; humans apply context, ethics, and long-term strategy.
-- Accountability: product is often held responsible for business outcomes; confirm the operating model in your org and validate benchmarks with current sources.
-- Portfolio diversification: a common heuristic is 70% core, 20% adjacent, 10% transformational; adapt to strategy and constraints.
-
-## When to Use This Skill
-
-Use this skill when the user asks to do real product work, such as:
-
-- “Create / refine a PRD / spec / business case / 1-pager”
-- “Turn this idea into a roadmap” / “Outcome roadmap for X”
-- “Design a discovery plan / interview script / experiment plan”
-- “Define success metrics / OKRs / metric tree”
-- “Position this product against competitors”
-- “Run a difficult conversation / feedback / 1:1 / negotiation”
-- “Plan a product strategy / vision / opportunity assessment”
-
-Do not use this skill for:
-- Book summaries, philosophy, or general education
-- Long case studies or storytelling
-
----
+Use this skill for product decisions that need evidence, trade-offs, and a concrete artifact. It owns discovery framing, PMF measurement, outcome roadmaps, prioritization, and stakeholder decision support. It is not a general PM theory skill.
 
 ## Quick Reference
 
-| Task | Template | Domain | Output |
-|------|----------|---------|---------|
-| Discovery interview | `customer-interview-template.md` | Discovery | Interview script with Mom Test patterns |
-| Opportunity mapping | `opportunity-solution-tree.md` | Discovery | OST with outcomes, problems, solutions |
-| PMF survey | `pmf-survey-template.md` | Discovery | Sean Ellis + NPS + usage survey |
-| Outcome roadmap | `outcome-roadmap.md` | Roadmap | Now/Next/Later with outcomes and themes |
-| OKR definition | `okr-template.md` | Metrics | 1-3 objectives with 2-4 key results each |
-| Product positioning | `positioning-template.md` | Strategy | Competitive alternatives -> value -> segment |
-| Product vision | `product-vision-template.md` | Strategy | From→To narrative with 3-5 year horizon |
-| Quarterly review | `quarterly-product-review.md` | Strategy | Keep / cut / double-down product audit |
-| Prioritization | `prioritization-scorecard.md` | Prioritization | RICE/ICE scoring with kill criteria |
-| Kill criteria | `kill-criteria-template.md` | Prioritization | Pre-defined stop conditions per initiative |
-| 1:1 meeting | `1-1-template.md` | Leadership | Check-in, progress, blockers, growth |
-| Post-incident debrief | `a3-debrief.md` | Leadership | Intent vs actual, root cause, action items |
+| Task | Use |
+|------|-----|
+| Discovery and interviews | [assets/discovery/customer-interview-template.md](assets/discovery/customer-interview-template.md), [assets/discovery/assumption-test-template.md](assets/discovery/assumption-test-template.md), [assets/discovery/opportunity-solution-tree.md](assets/discovery/opportunity-solution-tree.md) |
+| PMF and retention | [assets/discovery/pmf-survey-template.md](assets/discovery/pmf-survey-template.md), [references/pmf-measurement.md](references/pmf-measurement.md) |
+| PMF scorecard (B2B / SaaS) | [assets/pmf-scorecard-b2b.yaml](assets/pmf-scorecard-b2b.yaml) — 10 dimensions, 100 weight, 2026 board benchmarks |
+| PMF scorecard (B2C / Consumer) | [assets/pmf-scorecard-b2c.yaml](assets/pmf-scorecard-b2c.yaml) — viral coefficient + short-payback weighting |
+| PMF bet memo (engine digest → single experiment) | [assets/pmf-bet-memo-template.md](assets/pmf-bet-memo-template.md) |
+| Diamond Discovery (four-lens find of hidden product gems + disconfirmation gate + priced bet; works with zero analytics) | [references/diamond-discovery.md](references/diamond-discovery.md) |
+| Prioritization and kill criteria | [assets/prioritization/prioritization-scorecard.md](assets/prioritization/prioritization-scorecard.md), [assets/prioritization/kill-criteria-template.md](assets/prioritization/kill-criteria-template.md), `python3 scripts/product_scorer.py rice --help` |
+| Roadmaps and strategy | [assets/roadmap/outcome-roadmap.md](assets/roadmap/outcome-roadmap.md), [assets/strategy/product-vision-template.md](assets/strategy/product-vision-template.md), [assets/strategy/positioning-template.md](assets/strategy/positioning-template.md), [assets/strategy/quarterly-product-review.md](assets/strategy/quarterly-product-review.md) |
+| Metrics and OKRs | [assets/metrics/metric-tree.md](assets/metrics/metric-tree.md), [assets/metrics/okr-template.md](assets/metrics/okr-template.md) |
+| Stakeholder and leadership artifacts | [assets/ops/1-1-template.md](assets/ops/1-1-template.md), [assets/ops/feedback-template.md](assets/ops/feedback-template.md), [assets/ops/a3-debrief.md](assets/ops/a3-debrief.md), [assets/ops/negotiation-one-sheet.md](assets/ops/negotiation-one-sheet.md) |
+| PMF or backlog scoring script | `python3 scripts/product_scorer.py --help` |
 
----
+## When to Use This Skill
 
-## Decision Tree: Choosing the Right Workflow
+- Turn founder notes, customer inputs, or market signals into a roadmap, PMF plan, or decision brief.
+- Define activation, retention, guardrails, and business metrics for a product area.
+- Prioritize a backlog, set kill criteria, or cut low-value work.
+- Build a quarterly product review, opportunity assessment, or strategy narrative.
+- Write a product-facing artifact that needs clear trade-offs and measurable outcomes.
 
-```text
-User needs: [Product Work Type]
-    ├─ Discovery / Validation?
-    │   ├─ Customer insights? → Customer interview template
-    │   ├─ Hypothesis testing? → Assumption test template
-    │   └─ Opportunity mapping? → Opportunity Solution Tree
-    │
-    ├─ Strategy / Vision?
-    │   ├─ Long-term direction? → Product vision template
-    │   ├─ Market positioning? → Positioning template (Dunford)
-    │   ├─ Big opportunity? → Opportunity assessment
-    │   └─ Amazon-style spec? → PR/FAQ template
-    │
-    ├─ Planning / Roadmap?
-    │   ├─ Outcome-driven? → Outcome roadmap (Now/Next/Later)
-    │   ├─ Theme-based? → Theme roadmap
-    │   └─ Metrics / OKRs? → Metric tree + OKR template
-    │
-    ├─ Prioritization / Focus?
-    │   ├─ What to build next? → Prioritization scorecard (RICE/ICE)
-    │   ├─ What to stop? → Kill criteria template + quarterly review
-    │   ├─ Scope too large? → Scope negotiation patterns
-    │   └─ PMF check? → PMF survey + retention curve analysis
-    │
-    └─ Leadership / Team Ops?
-        ├─ 1:1 meeting? → 1-1 template
-        ├─ Giving feedback? → Feedback template (SBI model)
-        ├─ Post-incident? → A3 debrief
-        ├─ Stakeholder pushback? → Stakeholder management patterns
-        └─ Negotiation? → Negotiation one-sheet (Voss)
-```
+## Route Elsewhere
 
----
+- PRDs and implementation-ready specs: use [docs-ai-prd](../docs-ai-prd/SKILL.md).
+- GTM motion, ICP choice, or channel strategy: use `startup-gtm-strategy`.
+- Growth experiments and acquisition loops: use `startup-growth-execution`.
+- Product analytics instrumentation and event design: use `marketing-product-analytics`.
+- Architecture or technical target-state design: use [software-architecture-design](../software-architecture-design/SKILL.md).
 
-## Do / Avoid (Jan 2026)
+## Defaults
 
-### Do
+- Start from the decision, not the document.
+- Define metrics with formula, timeframe, and data source.
+- Use evidence labels such as strong, medium, and weak when confidence matters.
+- Prefer outcome roadmaps over feature lists.
+- Require kill criteria or rollback conditions for material bets.
+- Measure PMF by segment, not as one blended company-wide score.
 
-- Start from the decision: what are we deciding, by when, and with what evidence.
-- Define metrics precisely (formula + timeframe + data source) and add guardrails.
-- Use discovery to de-risk value before building; prioritize by evidence, not opinions.
-- Write “match vs ignore” competitive decisions, not feature grids.
+## Workflow
 
-### Avoid
+1. Clarify the decision, horizon, owner, and what would change the recommendation.
+2. Choose the artifact type: discovery plan, roadmap, PMF assessment, prioritization, strategy note, or stakeholder brief.
+3. Gather only the evidence needed to support that decision.
+4. Define success metrics, guardrails, and explicit non-goals.
+5. Rank options with one consistent method and document the trade-offs.
+6. Produce the artifact plus the next review trigger, not just a static document.
 
-- Roadmap theater (shipping lists) without outcomes and learning loops.
-- Vanity KPIs (raw signups, impressions) without activation/retention definitions.
-- "Build-first validation" (shipping MVPs without falsifiable hypotheses).
-- Collecting customer data without purpose limitation, retention, and access controls.
-- Building for engineering elegance instead of user value (technical founder trap).
-- Feature creep without kill criteria (every feature should have a pre-defined stop condition).
-- Saying "yes" to stakeholder requests without trade-off analysis.
-- Measuring PMF once instead of continuously across segments.
-
-## Prioritization & Saying No
-
-The most common founder-PM failure: building everything, killing nothing, and running out of time before impact.
-
-### Prioritization Frameworks
-
-| Framework | Formula / Method | Best For | Watch For |
-|-----------|-----------------|----------|-----------|
-| **RICE** | (Reach x Impact x Confidence) / Effort | Comparing features with data | Gaming confidence scores |
-| **ICE** | Impact x Confidence x Ease | Quick gut-check prioritization | Over-simplification |
-| **Opportunity Scoring** | Importance x (Importance - Satisfaction) | Discovery-driven, JTBD-aligned | Requires user research data |
-| **Cost of Delay** | Value per unit time / Duration | Time-sensitive decisions | Harder to estimate accurately |
-| **Weighted Shortest Job First (WSJF)** | Cost of Delay / Job Size | SAFe/Lean, flow optimization | Requires calibrated estimates |
-
-Pick one. Use it consistently. The framework matters less than the discipline of scoring everything the same way.
-
-### Kill Criteria
-
-Every initiative should have pre-defined conditions for stopping:
-
-- **Usage threshold**: If <X% of target users adopt within Y weeks, stop.
-- **Cost ceiling**: If development exceeds X hours/dollars, pause and re-evaluate.
-- **Time limit**: If not shipped within X weeks, kill or radically descope.
-- **Metric guardrail**: If [guardrail metric] degrades by >X%, roll back.
-
-Use `assets/prioritization/kill-criteria-template.md` to define these before starting.
-
-### Feature Bridge Migration
-
-When replacing an existing feature with a new one, don't hard-kill the old feature. Use a **bridge migration** pattern to prevent user loss.
-
-**Bridge mode**: Run both old and new features simultaneously. Route users to the new experience by default but keep the old path accessible (via link, fallback, or settings toggle).
-
-**Substitution-based kill rule**:
-1. Define the absorption metric: % of old-feature users who now use the new feature for the same job.
-2. Set the kill threshold: new feature absorbs ≥80% of old-feature users.
-3. Set the duration: threshold must hold for 14 consecutive days with no retention regression.
-4. Only kill the old feature when all three conditions are met.
+## ASCII Flow
 
 ```text
-BRIDGE MIGRATION SEQUENCE:
-
-1. Ship new feature alongside old feature
-2. Default new users to new experience
-3. Migrate existing users gradually (progressive rollout)
-4. Monitor: absorption rate, retention by cohort, support tickets
-5. Old feature absorbs ≥80% for 14 days + no retention drop?
-   ├─ Yes → Kill old feature, remove code
-   └─ No → Investigate gaps, iterate new feature, extend bridge
+Product decision or planning request
+  -> Clarify decision, horizon, owner, and review trigger
+  -> Select artifact type
+     +-- discovery plan -> assumptions, interviews, opportunity map
+     +-- PMF assessment -> segment signals, retention, activation, scorecard
+     +-- roadmap -> outcomes, bets, guardrails, non-goals
+     +-- prioritization -> scoring method, rank, kill criteria
+     +-- strategy brief -> recommendation, evidence, trade-offs
+  -> Gather only decision-relevant evidence
+  -> Define success metrics, data source, timeframe, and guardrails
+  -> Rank options and document what will not be done
+  -> Return artifact plus next decision or experiment checkpoint
 ```
 
-**When NOT to bridge**: Security vulnerabilities, compliance requirements, or features with near-zero usage (<1% MAU). These can be killed directly with notice.
+## Core Decisions
 
-### Scope Negotiation
+### Discovery and Evidence
 
-When stakeholders push for more scope:
-- Reframe as trade-offs: "We can add X if we cut Y — which matters more?"
-- Anchor on outcomes: "The goal is [metric]. Does this addition move it?"
-- Offer phased delivery: "V1 without this; measure; add in V2 if data supports it."
-- Document non-goals explicitly in every spec.
+Use discovery to de-risk value before building:
+- customer interviews for pain, switching behavior, and decision criteria
+- assumption tests for risky beliefs
+- opportunity mapping when multiple problems compete for attention
 
-### "What to Stop Doing" Quarterly Review
+If the evidence is thin, say so and define what would increase confidence.
 
-Every quarter, review the product with `assets/strategy/quarterly-product-review.md`:
-- Which features have <5% usage? → Candidate for removal
-- Which initiatives produced no measurable outcome? → Stop or pivot
-- Which ongoing costs (maintenance, support) exceed their value? → Sunset
-- What are you doing "because we always have" but nobody asked for? → Question
+Running the discovery cadence is not the same as learning. Check for [discovery theatre](references/discovery-best-practices.md#17-discovery-theatre--warning-signs) — interviews that only confirm, an opportunity tree that hasn't changed shape in a quarter, experiments with no real fail condition — before trusting the artifact.
 
-For detailed prioritization patterns and worked examples: see `references/prioritization-frameworks.md`.
+### Prioritization and Saying No
 
----
+Use one framework consistently:
+- RICE or ICE for ranked backlogs
+- opportunity scoring for discovery-heavy work
+- cost-of-delay or WSJF for time-sensitive flow problems
 
-## Product-Market Fit Measurement
+Minimum control set:
+- a scorecard
+- kill criteria
+- one sentence explaining why lower-ranked work is not being done now
 
-PMF is not a binary event. It's a signal you measure across multiple dimensions.
+Do not allow stakeholder pressure to replace trade-off documentation.
 
-### Sean Ellis Test
+A scored ranking is not a substitute for judgment. RICE and similar formulas produce false precision from point-estimate guesses — see [RICE Precision Theatre](references/prioritization-frameworks.md#rice-precision-theatre-what-a-sharp-cpo-catches) for the tells (rankings that never change, ties broken by seniority instead of evidence, zero-to-one bets scored against tactical work on the same stack). Use the framework to force an explicit trade-off conversation, not to end one.
 
-Survey users: "How would you feel if you could no longer use [product]?"
-- **Very disappointed**: Target >40% for PMF signal
-- **Somewhat disappointed**: Useful but not dependent
-- **Not disappointed**: Not finding value
+### PMF and Retention
 
-Use `assets/discovery/pmf-survey-template.md` for the full survey (combines Sean Ellis + NPS + usage questions).
+PMF is not one survey result. Check:
+- Sean Ellis style disappointment or must-have signal
+- retention curve shape
+- activation that predicts durable retention
+- segment-specific PMF rather than blended averages
 
-### Retention Curve Analysis
+If the product is liked but not indispensable, tighten the must-have path before adding breadth.
 
-- Plot cohort retention over time (weekly or monthly depending on product cadence)
-- **Flattening curve** = PMF signal (users who stay, stay)
-- **Declining curve** = No PMF (even retained users eventually leave)
-- Segment by ICP: you may have PMF in one segment but not another
+For data-rich products, run the PMF Insight Engine in `marketing-product-analytics` (`assets/pmf-insight-engine.md` + 10 blind-spot detectors) to surface signals the team cannot see by intuition. Then score against the appropriate path:
 
-### Engagement Scoring
+- **Path A (B2B / SaaS)** — [assets/pmf-scorecard-b2b.yaml](assets/pmf-scorecard-b2b.yaml). Heavier weights on retention curve, NRR, CAC payback (top-quartile is <=6 months; 2025 median is ~16 months; <12 months is a strong/goal benchmark but not top-quartile — do not report it as such at board level), ICP concentration, and value-metric alignment. For usage-based or AI-native products, seat-based PMF assumptions misdiagnose consumption products — use the UBP signals in [references/pmf-measurement.md](references/pmf-measurement.md#usage-based--ai-native-pmf-signals) alongside this scorecard.
+- **Path B (B2C / Consumer)** — [assets/pmf-scorecard-b2c.yaml](assets/pmf-scorecard-b2c.yaml). Heavier weights on Week-4 retention, switching trigger evidence, viral coefficient, 6-month payback, and category entry point.
 
-Define activation precisely (formula + timeframe + data source):
-- What actions constitute "activated"? (not just signed up)
-- What's the activation window? (first 7 days, first 14 days?)
-- What engagement depth separates power users from casual?
+The scorecard outputs a 0-100 readiness score plus the weakest dimension. The weakest dimension that also has a detector hit becomes the candidate for a [bet memo](assets/pmf-bet-memo-template.md). The bet memo is the contract that converts evidence into one experiment with a kill criterion.
 
-### Feature Audit
+### Roadmaps and Strategy
 
-Periodically audit feature usage to identify what to keep, improve, or remove:
-- Top 20% features by usage → invest, polish
-- Middle 60% → maintain, don't expand
-- Bottom 20% → candidate for removal or redesign
-- Features with high support cost relative to usage → redesign or sunset
+Prefer:
+- outcome roadmap
+- theme roadmap when uncertainty is higher
+- strategy artifact only when it changes sequencing, focus, or the target customer
 
-### Segmented PMF
+Every roadmap should state:
+- target outcome
+- key bets
+- metric and guardrail
+- what is intentionally out of scope
 
-PMF varies by segment. Measure separately for:
-- ICP vs non-ICP customers
-- Free vs paid users
-- Self-serve vs sales-assisted
-- By company size, industry, or geography
+**Commitment trade-off**: every date on a roadmap is a promise that trades away discovery flexibility. A "Now" horizon with hard dates is appropriate once a bet has passed discovery — committing dates on unvalidated "Later" bets converts hypotheses into obligations the team will ship regardless of what evidence says. When a stakeholder asks for a date on a "Later" item, the honest answer is a range plus the validation gate that must clear first, not a date under pressure. High-integrity commitments (Cagan, *Empowered*) are the exception granted only after value, usability, feasibility, and viability risk have been addressed — not the default operating mode for a roadmap.
 
-For detailed PMF measurement methodology: see `references/pmf-measurement.md`.
+### Stakeholder Management
 
----
+Good stakeholder work means:
+- decisions are documented
+- trade-offs are visible
+- asks are explicit
+- commitments are separated from exploration
 
-## Stakeholder Management
+Lead with what was learned and what decision follows, not a list of shipped items.
 
-Founders manage board members, investors, early customers, co-founders, and (eventually) team leads — often without formal PM training.
+### AI and Automation
 
-Key patterns:
-- **Board / investors**: Update monthly with metrics + decisions + asks. Use narrative format, not slide decks. Lead with "what we learned" not "what we shipped."
-- **Early customers**: They are partners, not just users. Share roadmap intent (not commitments). Ask for input on priorities, not feature requests.
-- **Co-founder alignment**: Weekly sync on priorities. Disagree and commit. Document decisions.
-- **Saying no to stakeholders**: "We're not doing X because [reason tied to strategy]. Here's what we're doing instead and why."
+In 2026, AI product work is a primary PM domain — not an add-on. Use [references/ai-product-patterns.md](references/ai-product-patterns.md) for the full operational guide covering AI product lifecycle, agentic patterns, RAG, risk governance, experiment types, and the decision tree for when to use AI vs. rules. Key operating principles:
 
-For detailed stakeholder management patterns: see `references/stakeholder-management.md`.
+- Use AI support only when explicitly needed and keep it bounded: scoring candidate opportunities, structuring interview notes, comparing options, spotting anomalies in feedback or usage.
+- For AI features, require: problem validation, data readiness score, evaluation metrics, safety guardrails, human-in-the-loop path, and drift monitoring before launch.
+- For agentic products, define agent role, tool access, constraints, success criteria, failure modes, and escalation path explicitly.
 
----
+Human judgment still owns prioritization, ethics, and irreversible product bets.
 
-## What Good Looks Like
+## Output Modes
 
-- Evidence: 5–10 real user touchpoints or equivalent primary data for material bets.
-- Scope: clear non-goals and acceptance criteria that can be tested.
-- Learning: post-launch review with metric deltas, guardrail impact, and next decision.
+Default to one of these:
 
-## PRDs and Specs
+- Product decision brief:
+  recommendation, evidence, trade-offs, metrics, and next review point.
+- Outcome roadmap:
+  now, next, later with outcomes, bets, and guardrails.
+- PMF assessment:
+  segment-level signal review, retention view, activation definition, and recovery loop.
+- PMF scorecard + bet memo:
+  scored readiness against the B2B or B2C scorecard, with a single bet memo per active experiment. Tied to detector evidence from the PMF Insight Engine.
+- Prioritization package:
+  ranked backlog, kill criteria, and explicit non-goals.
 
-For PRDs/specs and writing-quality requirements, use the templates in `../docs-ai-prd/`:
+## Anti-Patterns
 
-- PRD templates: [../docs-ai-prd/assets/prd/prd-template.md](../docs-ai-prd/assets/prd/prd-template.md) and [../docs-ai-prd/assets/prd/ai-prd-template.md](../docs-ai-prd/assets/prd/ai-prd-template.md)
+- Roadmap theater with no measurable outcomes.
+- Vanity metrics without activation or retention definitions.
+- Building first and searching for evidence later.
+- Expanding scope without adjusting trade-offs.
+- Treating PMF as one binary milestone.
+- Saying yes to everything because a stakeholder asked.
+- Scoring a zero-to-one bet on the same RICE/WSJF stack as tactical backlog work — the denominators structurally punish anything new and unproven (see [Strategic Bets vs Tactical Backlog](references/prioritization-frameworks.md#strategic-bets-vs-tactical-backlog)).
+- Committing a hard date on a "Later" bet that has not cleared discovery, just to end a scoping argument.
 
-## Optional: AI / Automation
-
-Use only when explicitly requested and policy-compliant.
-
-- AI system lifecycle: [assets/ai/ai-lifecycle-template.md](assets/ai/ai-lifecycle-template.md)
-- Agentic workflow docs: [assets/ai/agentic-ai-orchestration.md](assets/ai/agentic-ai-orchestration.md)
-- AI product patterns: [references/ai-product-patterns.md](references/ai-product-patterns.md)
+**What a checklist misses and an experienced operator catches**: whether the artifact answers the actual decision in front of the business, or just satisfies the template. A RICE stack, an OST, and an OKR sheet can all be filled in correctly and still miss the point if the underlying decision — build vs. buy, expand vs. focus, fund this team vs. that one — was never named. Before producing any artifact, state the decision it is meant to inform in one sentence; if that sentence cannot be written, the artifact is busywork.
 
 ## Navigation
 
-**Resources**
-- [references/discovery-best-practices.md](references/discovery-best-practices.md)
-- [references/roadmap-patterns.md](references/roadmap-patterns.md)
-- [references/delivery-best-practices.md](references/delivery-best-practices.md)
-- [references/strategy-patterns.md](references/strategy-patterns.md)
-- [references/positioning-patterns.md](references/positioning-patterns.md)
-- [references/data-product-best-practices.md](references/data-product-best-practices.md)
-- [references/interviewing-patterns.md](references/interviewing-patterns.md)
-- [references/metrics-best-practices.md](references/metrics-best-practices.md)
-- [references/leadership-decision-frameworks.md](references/leadership-decision-frameworks.md)
-- [references/operational-guide.md](references/operational-guide.md)
-- [references/prioritization-frameworks.md](references/prioritization-frameworks.md)
-- [references/pmf-measurement.md](references/pmf-measurement.md)
-- [references/stakeholder-management.md](references/stakeholder-management.md)
-- [data/sources.json](data/sources.json)
+> **Gate before invoking any foundation below:** Each foundation has a `When to Apply` / `When to Skip` section. If your task matches a skip-condition, route to the foundation it names instead — don't pull in primitives the task doesn't need.
 
-**Templates**
-- Discovery: [assets/discovery/customer-interview-template.md](assets/discovery/customer-interview-template.md), [assets/discovery/assumption-test-template.md](assets/discovery/assumption-test-template.md), [assets/discovery/opportunity-solution-tree.md](assets/discovery/opportunity-solution-tree.md), [assets/discovery/pmf-survey-template.md](assets/discovery/pmf-survey-template.md)
-- Prioritization: [assets/prioritization/prioritization-scorecard.md](assets/prioritization/prioritization-scorecard.md), [assets/prioritization/kill-criteria-template.md](assets/prioritization/kill-criteria-template.md)
-- Strategy/Vision: [assets/strategy/product-vision-template.md](assets/strategy/product-vision-template.md), [assets/strategy/opportunity-assessment.md](assets/strategy/opportunity-assessment.md), [assets/strategy/positioning-template.md](assets/strategy/positioning-template.md), [assets/strategy/PRFAQ-template.md](assets/strategy/PRFAQ-template.md), [assets/strategy/quarterly-product-review.md](assets/strategy/quarterly-product-review.md)
-- Data: [assets/data/data-product-canvas.md](assets/data/data-product-canvas.md)
-- Roadmaps: [assets/roadmap/outcome-roadmap.md](assets/roadmap/outcome-roadmap.md), [assets/roadmap/theme-roadmap.md](assets/roadmap/theme-roadmap.md)
-- Metrics: [assets/metrics/metric-tree.md](assets/metrics/metric-tree.md), [assets/metrics/okr-template.md](assets/metrics/okr-template.md)
-- Ops/Leadership: [assets/ops/1-1-template.md](assets/ops/1-1-template.md), [assets/ops/feedback-template.md](assets/ops/feedback-template.md), [assets/ops/a3-debrief.md](assets/ops/a3-debrief.md), [assets/ops/negotiation-one-sheet.md](assets/ops/negotiation-one-sheet.md)
-
-**Related Skills**
-- [../docs-ai-prd/SKILL.md](../docs-ai-prd/SKILL.md) — PRD, stories, and prompt/playbook templates
-- [../software-architecture-design/SKILL.md](../software-architecture-design/SKILL.md) — System design guidance for specs and PRDs
-- [../software-frontend/SKILL.md](../software-frontend/SKILL.md) — UI implementation considerations for product specs
-- [../software-backend/SKILL.md](../software-backend/SKILL.md) — Backend/API implications of product decisions
-- [../startup-growth-playbooks/SKILL.md](../startup-growth-playbooks/SKILL.md) — PLG case studies for activation design
-
----
-
-## Operational Guide
-
-See [references/operational-guide.md](references/operational-guide.md) for detailed patterns, template walkthroughs, example flows, and execution checklists. Keep SKILL.md as the navigation hub; use assets/ when producing artifacts.
-
----
-
-## External Resources
-
-See [data/sources.json](data/sources.json) for official frameworks (Lean Startup, OST, PR/FAQ, OKRs) and AI/LLM safety references.
-
----
-
-Use the quick reference and decision tree above to choose a template, then follow the operational guide for depth.
-
----
-
-## Trend Awareness Protocol
-
-**IMPORTANT**: When users ask recommendation questions about product management tools, frameworks, or practices, use a web search tool to check current trends before answering. If web search is unavailable, use `data/sources.json` and state clearly what you verified vs assumed.
-
-### Trigger Conditions
-
-- "What's the best tool for [roadmapping/product analytics/discovery]?"
-- "What should I use for [OKRs/metrics/customer feedback]?"
-- "What's the latest in product management?"
-- "Current best practices for [discovery/roadmaps/prioritization]?"
-- "Is [framework/tool] still relevant in 2026?"
-- "[Linear] vs [Jira] vs [other]?" or "[Amplitude] vs [Mixpanel]?"
-- "Best approach for [AI product management/agentic products]?"
-
-### Required Searches
-
-1. Search: `"product management best practices 2026"`
-2. Search: `"[specific tool] vs alternatives 2026"`
-3. Search: `"product management trends January 2026"`
-4. Search: `"[discovery/roadmap/OKR] frameworks 2026"`
-
-### What to Report
-
-After searching, provide:
-
-- **Current landscape**: What PM tools/frameworks are popular NOW
-- **Emerging trends**: New tools, methods, or patterns gaining traction
-- **Deprecated/declining**: Frameworks/tools losing relevance
-- **Recommendation**: Based on fresh data, not just static knowledge
-
-### Example Topics (verify with fresh search)
-
-- Product management tools (Linear, Productboard, Notion, Coda)
-- Analytics platforms (Amplitude, Mixpanel, PostHog)
-- Discovery and research tools (Maze, UserTesting, Dovetail)
-- Roadmapping approaches (outcome-based, theme-based, now/next/later)
-- AI product management patterns
-- Prioritization frameworks (RICE, ICE, opportunity scoring)
-- OKR and metrics tools
+- Discovery: [references/discovery-best-practices.md](references/discovery-best-practices.md), [references/interviewing-patterns.md](references/interviewing-patterns.md), [assets/discovery/customer-interview-template.md](assets/discovery/customer-interview-template.md), [assets/discovery/assumption-test-template.md](assets/discovery/assumption-test-template.md), [assets/discovery/opportunity-solution-tree.md](assets/discovery/opportunity-solution-tree.md), [assets/discovery/pmf-survey-template.md](assets/discovery/pmf-survey-template.md)
+- PMF scoring and bets: [assets/pmf-scorecard-b2b.yaml](assets/pmf-scorecard-b2b.yaml), [assets/pmf-scorecard-b2c.yaml](assets/pmf-scorecard-b2c.yaml), [assets/pmf-bet-memo-template.md](assets/pmf-bet-memo-template.md), [references/pmf-measurement.md](references/pmf-measurement.md)
+- Diamond Discovery: [references/diamond-discovery.md](references/diamond-discovery.md) — four-lens method (anomaly / jobs / friction / value-capture) to surface non-obvious product gems, a disconfirmation gate that filters fool's gold, diamond scoring (leverage × value_signal × differentiation), and a Diamond Brief that feeds the bet memo. Trigger: "what am I missing?", "find the hidden gem", "what could 10x this?". Pairs with `marketing-product-analytics` detectors 11–14 when data exists; works from screenshots/tickets/interviews when it doesn't.
+- Strategy and positioning: [references/strategy-patterns.md](references/strategy-patterns.md), [references/positioning-patterns.md](references/positioning-patterns.md), [assets/strategy/product-vision-template.md](assets/strategy/product-vision-template.md), [assets/strategy/positioning-template.md](assets/strategy/positioning-template.md), [assets/strategy/opportunity-assessment.md](assets/strategy/opportunity-assessment.md), [assets/strategy/PRFAQ-template.md](assets/strategy/PRFAQ-template.md), [assets/strategy/quarterly-product-review.md](assets/strategy/quarterly-product-review.md)
+- Roadmaps, metrics, and prioritization: [references/roadmap-patterns.md](references/roadmap-patterns.md), [references/metrics-best-practices.md](references/metrics-best-practices.md), [references/prioritization-frameworks.md](references/prioritization-frameworks.md), [references/pmf-measurement.md](references/pmf-measurement.md), [assets/roadmap/outcome-roadmap.md](assets/roadmap/outcome-roadmap.md), [assets/roadmap/theme-roadmap.md](assets/roadmap/theme-roadmap.md), [assets/metrics/metric-tree.md](assets/metrics/metric-tree.md), [assets/metrics/okr-template.md](assets/metrics/okr-template.md), [assets/prioritization/prioritization-scorecard.md](assets/prioritization/prioritization-scorecard.md), [assets/prioritization/kill-criteria-template.md](assets/prioritization/kill-criteria-template.md)
+- Leadership and operations: [references/stakeholder-management.md](references/stakeholder-management.md), [references/leadership-decision-frameworks.md](references/leadership-decision-frameworks.md), [references/operational-guide.md](references/operational-guide.md), [assets/ops/1-1-template.md](assets/ops/1-1-template.md), [assets/ops/feedback-template.md](assets/ops/feedback-template.md), [assets/ops/a3-debrief.md](assets/ops/a3-debrief.md), [assets/ops/negotiation-one-sheet.md](assets/ops/negotiation-one-sheet.md)
+- Scripts and sample data: `scripts/product_scorer.py`, `scripts/README.md`, [data/sample-features.json](data/sample-features.json), [data/sample-pmf-data.json](data/sample-pmf-data.json)
+- Causal toolkit: [references/causal-inference-applied.md](references/causal-inference-applied.md) — Causal-inference applied recipes for PM: feature impact under non-random adoption, mediation, regional rollout retention.
+- Decision-theory toolkit: [references/decision-theory-applied.md](references/decision-theory-applied.md) — Decision-theory applied recipes for PM: VoI gating, MAB resource reallocation, real-options launches.
+- Behavioral-economics toolkit: [references/behavioral-economics-applied.md](references/behavioral-economics-applied.md) — Behavioral-econ applied recipes for PM: activation defaults with reversibility, retention nudges with ethical gates.
+- Theory-of-constraints toolkit: [references/theory-of-constraints-applied.md](references/theory-of-constraints-applied.md) — TOC applied recipes for PM: roadmap re-rank by bottleneck, funnel debug via CRT, T/CU scoring.
+- Cybernetics-VSM toolkit: [references/cybernetics-vsm-applied.md](references/cybernetics-vsm-applied.md) — VSM, Ashby's law, feedback loops, algedonic channels applied to product management and operating model design.
+- AI and agentic product patterns: [references/ai-product-patterns.md](references/ai-product-patterns.md) — Operational guide for AI, GenAI, and agentic product development: lifecycle phases, agentic orchestration patterns (planner/executor, multi-agent, guardrail critic), RAG templates, risk and governance checklists, experiment types, and decision trees for when to use AI.
+- Data product patterns: [references/data-product-best-practices.md](references/data-product-best-practices.md) — Data product canvas, lifecycle phases, data contracts, governance checklists, ML pipeline templates, and definition of done for data products.
+- Cognitive-load toolkit: [references/cognitive-load-product-design.md](references/cognitive-load-product-design.md) — Cognitive load theory applied to product design and AI-assisted workflows: intrinsic/extraneous/germane load, human-AI load distribution, amplification vs. delegation, and the verification-tax test.
+- Delivery and handoff: [references/delivery-best-practices.md](references/delivery-best-practices.md) — Checklist for PM-to-engineering handoff: acceptance criteria, backlog quality, engineering handoff artifacts, execution cadence, quality gates, and post-launch review.
+- Consumer-neuroscience foundation: [../foundations-consumer-neuroscience/SKILL.md](../foundations-consumer-neuroscience/SKILL.md) — attention/salience, reward-anticipation, narrative transportation, and DMCC ethical audit primitives for activation, engagement, and habit-design decisions.
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Primary sources live in [data/sources.json](data/sources.json).
+- Framework relevance, benchmark claims, tooling recommendations, and market-specific best practices should be refreshed against current primary sources before making definitive recommendations.
+- If current external data cannot be checked, mark the recommendation as based on durable patterns rather than current market verification.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

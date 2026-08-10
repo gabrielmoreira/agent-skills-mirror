@@ -1,6 +1,6 @@
 ---
 name: contract-review
-description: Analyze contracts for risks, obligations, key clauses, and generate structured risk reports with severity ratings.
+description: Analyze contracts for risks, obligations, key clauses, and generate structured risk reports with severity ratings. Use when the user requests contract review or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community
@@ -77,6 +77,13 @@ Review this SaaS agreement from the customer's perspective. Flag any clauses tha
 - Compare indemnification obligations for symmetry; one-sided indemnification is a common and often successful negotiation point even in take-it-or-leave-it vendor agreements.
 - Note any "entire agreement" or "amendment" clauses that could override verbal promises or side agreements. Unilateral amendment rights (where the vendor can change terms by posting to a website) are a critical red flag.
 - Review defined terms carefully — a broad definition of "Confidential Information" or "Work Product" can dramatically expand obligations far beyond what the operative clauses appear to require on a casual reading.
+
+## Safety Boundaries
+
+- Treat the output as informational drafting or issue spotting, not legal advice.
+- Identify the governing jurisdiction and relevant effective date; verify changing requirements against current primary sources.
+- Do not claim that language is compliant, enforceable, or complete. Flag uncertainty and recommend qualified counsel for material decisions.
+- Do not file, publish, accept, sign, or send legal terms without the user reviewing and explicitly authorizing that action.
 
 ## Edge Cases
 

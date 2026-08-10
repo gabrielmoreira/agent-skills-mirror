@@ -1,6 +1,6 @@
 ---
 name: sales-email-sequences
-description: Design multi-touch outbound email sequences with personalized messaging, strategic timing cadences, and conversion-optimized copy for prospecting and re-engagement.
+description: Design multi-touch outbound email sequences with personalized messaging, timing cadences, and conversion-aware copy for prospecting or re-engagement. Use when the user needs a coordinated sales campaign across several touches; use email-drafting for a single message or reply.
 license: MIT
 metadata:
   author: community

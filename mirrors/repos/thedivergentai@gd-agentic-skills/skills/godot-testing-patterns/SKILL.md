@@ -3,16 +3,6 @@ name: godot-testing-patterns
 description: "Expert testing decision trees for GdUnit4: unit vs scene vs CI gates, headless runners, snapshots, and mock networks. Use when choosing test layers, wiring CI, or validating signals/physics without beginner assert catalogs. Keywords: GdUnit4, GdUnitTestSuite, headless CI, snapshot test, mock network, scene integration test, TDD."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Testing Patterns (GdUnit4)
-
-**Framework: GdUnit4 only** (`extends GdUnitTestSuite`). Do not mix GUT `GutTest` / `watch_signals` APIs in new tests.
-
 ## Decision Tree → Scripts
 
 | Need | Choice | Script (MANDATORY when chosen) |
@@ -95,7 +85,6 @@ Schema-compliant fixture builders.
 - **CI**: `--headless` + `OS.exit_code` non-zero on failure ([headless_test_runner.gd](scripts/headless_test_runner.gd)).
 - **Network**: mock peer before real ENet (`mock_network_provider.gd`).
 - **Perf**: `Performance` monitors / draw-call caps in benchmark runner.
-
 
 ## Deep recipes (on demand)
 

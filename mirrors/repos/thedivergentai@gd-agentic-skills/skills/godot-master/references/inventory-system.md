@@ -3,16 +3,6 @@ name: godot-inventory-system
 description: "Expert blueprint for inventory systems (Diablo, Resident Evil, Minecraft) covering slot-based containers, stacking logic, weight limits, equipment systems, and drag-drop UI. Use when building RPG inventories, survival item management, or loot systems. Keywords inventory, slot, stack, equipment, crafting, item, Resource, drag-drop."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Inventory System
-
-Resource-first slots, stacking, weight, equipment, and loot — **scripts are source of truth** (no duplicated Inventory/Equipment/Crafting dumps in this body).
-
 ## Scenario triggers (which script?)
 
 | Scenario | Open |
@@ -59,7 +49,6 @@ Resource-first slots, stacking, weight, equipment, and loot — **scripts are so
 ### Save
 - Serialize `item_id` / `resource_path` + `amount` only — [inventory_persistence.gd](../scripts/inventory_system_inventory_persistence.gd)
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -69,7 +58,6 @@ Resource-first slots, stacking, weight, equipment, and loot — **scripts are so
 | Tetris grid footprint | [elite-technical-patterns.md](inventory-system-elite-technical-patterns.md) + [grid_inventory_logic.gd](../scripts/inventory_system_grid_inventory_logic.gd) |
 | Equipment & crafting | [equipment-system.md](inventory-system-equipment-system.md) / [crafting-integration.md](inventory-system-crafting-integration.md) |
 | Reactive UI & save ids | [ui-integration.md](inventory-system-ui-integration.md) + [inventory_persistence.gd](../scripts/inventory_system_inventory_persistence.gd) |
-
 
 ## Reference
 
@@ -92,24 +80,24 @@ Resource-first slots, stacking, weight, equipment, and loot — **scripts are so
 ### Related Skills
 
 #### Prerequisites
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Inventory is Resource-first (items, slots, loot tables); learn composition/serialization patterns before inventing Node-based item trees.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Batch-safe `inventory_updated` / slot signals keep reactive UI in sync without per-item spam or ghost connections.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, Array/Dictionary slot maps, and int stack math assume solid GDScript patterns.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Slot grids, equipment panels, and responsive inventory windows build on container layout before drag-drop polish.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Inventory is Resource-first (items, slots, loot tables); learn composition/serialization patterns before inventing Node-based item trees.
+- [godot-signal-architecture](signal-architecture.md) — Batch-safe `inventory_updated` / slot signals keep reactive UI in sync without per-item spam or ghost connections.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Resources, Array/Dictionary slot maps, and int stack math assume solid GDScript patterns.
+- [godot-ui-containers](ui-containers.md) — Slot grids, equipment panels, and responsive inventory windows build on container layout before drag-drop polish.
 
 #### Complements
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Inventory persistence must round-trip through the project save schema (ids + counts, migration-safe).
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Equipment bonuses, encumbrance, and consumable effects need a consistent stats/modifier layer.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Shops, buy/sell, and rarity-weighted loot tables consume the same item Resources and stack rules.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Consumable scrolls, skill books, and gear that grants abilities bridge inventory grants into AbilityManager registration.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Weapons/armor equipped from inventory feed damage and hit pipelines; keep DamageData separate from item metadata.
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Rarity colors, slot styles, and drag previews should live in Theme resources, not hardcoded slot scripts.
+- [godot-save-load-systems](save-load-systems.md) — Inventory persistence must round-trip through the project save schema (ids + counts, migration-safe).
+- [godot-rpg-stats](rpg-stats.md) — Equipment bonuses, encumbrance, and consumable effects need a consistent stats/modifier layer.
+- [godot-economy-system](economy-system.md) — Shops, buy/sell, and rarity-weighted loot tables consume the same item Resources and stack rules.
+- [godot-ability-system](ability-system.md) — Consumable scrolls, skill books, and gear that grants abilities bridge inventory grants into AbilityManager registration.
+- [godot-combat-system](combat-system.md) — Weapons/armor equipped from inventory feed damage and hit pipelines; keep DamageData separate from item metadata.
+- [godot-ui-theming](ui-theming.md) — Rarity colors, slot styles, and drag previews should live in Theme resources, not hardcoded slot scripts.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After stack sizes, weights, drop rates, and shop prices are data-driven, Monte Carlo sims prove economy/loot bands before shipping curves.
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Action-RPG bags, equipment screens, and loot loops assemble this skill with combat, stats, and quests.
-- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — Weight limits, consumables, and scarce loot are core survival inventory constraints.
-- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Fetch/collect quests query `has_item` and grant rewards through the same inventory add/remove APIs.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — After stack sizes, weights, drop rates, and shop prices are data-driven, Monte Carlo sims prove economy/loot bands before shipping curves.
+- [godot-genre-action-rpg](genre-action-rpg.md) — Action-RPG bags, equipment screens, and loot loops assemble this skill with combat, stats, and quests.
+- [godot-genre-survival](genre-survival.md) — Weight limits, consumables, and scarce loot are core survival inventory constraints.
+- [godot-quest-system](quest-system.md) — Fetch/collect quests query `has_item` and grant rewards through the same inventory add/remove APIs.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

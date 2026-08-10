@@ -1,279 +1,289 @@
 ---
 name: ai-ml-timeseries
-description: "Time series forecasting — LightGBM, Transformers, temporal validation, feature engineering, and production deployment. Use when building TS models."
+description: "Time-series forecasting with temporal validation, panel models, probabilistic forecasts, and TS foundation models. Use when modeling ordered observations."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# Time Series Forecasting — Modern Patterns & Production Best Practices
+# Time Series Forecasting - Production Patterns
 
-**Modern Best Practices (January 2026)**:
+**Scope note:** This skill covers forecasting system construction and evaluation. It is not part of the LLM-build or LLM-training stack — route LLM lifecycle, prompting, or provider questions to [ai-llm](../ai-llm/SKILL.md).
 
-- Treat **time** as a first-class axis: temporal splits, rolling backtests, and point-in-time correctness.
-- Default to **strong baselines** (naive/seasonal naive) before complex models.
-- Prevent leakage: feature windows and aggregations must use only information available at prediction time.
-- Evaluate by **horizon** and **segment**; a single aggregate metric hides failures.
-- Prefer **probabilistic** forecasts when decisions are risk-sensitive (quantiles/intervals); evaluate calibration (coverage) and use pinball/CRPS.
-- For many related series, consider **global + hierarchical** approaches (shared models + reconciliation); validate across levels and key segments.
-- Treat **time zones/DST** as first-class; validate timestamp alignment before feature generation.
-- Define retraining cadence and degraded modes (fallback model, last-known-good forecast).
+**July 2026 posture:** define a cutoff timestamp before modelling, start with strong baselines, prefer horizon-aware validation over IID thinking, treat known-future covariates explicitly, and verify fast-moving tooling against current official docs before recommending it.
 
-This skill provides **operational, copy-paste-ready workflows** for forecasting with recent advances: TS-specific EDA, temporal validation, lag/rolling features, model selection, multi-step forecasting, backtesting, generative AI (Chronos, TimesFM), and production deployment with drift monitoring.
+This skill is the implementation guide for **forecasting systems**:
 
-It focuses on **hands-on forecasting execution**, not theory.
+- timestamp integrity, frequency checks, and point-in-time feature design
+- local, global/panel, and hierarchical forecasting workflows
+- leakage-safe backtesting, horizon-wise evaluation, and business-loss alignment
+- probabilistic forecasting, calibration, and interval quality
+- time-series foundation models (TSFMs) and zero-shot benchmark patterns
+- forecasting-specific handoff, fallback, and lineage requirements
 
----
+Use this skill for **forecasting depth**. Use sibling skills for general data science, generic LLM strategy, or full production operations.
 
-## When to Use This Skill
+## When To Use This Skill
 
-Claude should invoke this skill when the user asks for **hands-on time series forecasting**, e.g.:
+Activate this skill when the user asks for:
 
-- "Build a time series model for X."
-- "Create lag features / rolling windows."
-- "Help design a forecasting backtest."
-- "Pick the right forecasting model for my data."
-- "Fix leakage in forecasting."
-- "Evaluate multi-horizon forecasts."
-- "Use LLMs or generative models for TS."
-- "Set up monitoring for a forecast system."
-- "Implement LightGBM for time series."
-- "Use transformer models (TimesFM, Chronos) for forecasting."
-- "Apply temporal classification/survival modelling for event prediction."
+- building or reviewing a forecast model
+- choosing between local, global/panel, hierarchical, or foundation-model approaches
+- creating lag, rolling, calendar, or known-future covariate features
+- designing a rolling-origin backtest or fixing temporal leakage
+- selecting forecasting metrics by horizon, segment, or business cost
+- adding prediction intervals, quantiles, or conformal calibration
+- comparing Chronos-2, Chronos-Bolt, Toto, TimesFM, AutoGluon TimeSeries, MLForecast, skforecast, or classical baselines
+- defining forecast-specific fallback, lineage, and handoff requirements
 
-If the user is asking about **general ML modelling, deployment, or infrastructure**, prefer:
+## Scope Boundaries
 
-- [ai-ml-data-science](../ai-ml-data-science/SKILL.md) - General data science workflows, EDA, feature engineering, evaluation
-- [ai-mlops](../ai-mlops/SKILL.md) - Model deployment, monitoring, drift detection, retraining automation
+- **General EDA, tabular modelling, experiment design, or reusable DS workflow** -> [ai-ml-data-science](../ai-ml-data-science/SKILL.md)
+- **Deployment architecture, monitoring stack, release gates, incident playbooks** -> [ai-mlops](../ai-mlops/SKILL.md)
+- **Generic LLM lifecycle, prompting, or provider selection** -> [ai-llm](../ai-llm/SKILL.md)
+- **RAG and search systems** -> [ai-rag](../ai-rag/SKILL.md)
 
-If the user is asking about **LLM/RAG/search**, prefer:
+Keep this skill focused on **forecast creation, validation, and forecasting-specific operational patterns**.
 
-- [ai-llm](../ai-llm/SKILL.md) - LLM fine-tuning, prompting, evaluation
-- [ai-rag](../ai-rag/SKILL.md) - RAG pipeline design and optimization
+## ASCII Flow
 
----
+```text
+forecast need
+  |
+  v
+forecast contract
+  target + horizon + cutoff + granularity + business loss + update cadence
+  |
+  v
+time-series validation
+  timestamp integrity + leakage checks + rolling-origin backtest
+  |
+  v
+model pattern
+  naive baseline -> local/classical -> feature ML -> global/panel -> TS foundation
+  |
+  v
+forecast handoff
+  point/interval forecasts + lineage + fallback + monitoring trigger
+```
 
 ## Quick Reference
 
-| Task | Tool/Framework | Command | When to Use |
-|------|----------------|---------|-------------|
-| TS EDA & Decomposition | Pandas, statsmodels | `seasonal_decompose()`, `df.plot()` | Identifying trend, seasonality, outliers |
-| Lag/Rolling Features | Pandas, NumPy | `df.shift()`, `df.rolling()` | Creating temporal features for ML models |
-| Model Training (Tree-based) | LightGBM, XGBoost | `lgb.train()`, `xgb.train()` | Tabular TS with seasonality, covariates |
-| Deep Learning (Sequence models) | Transformers, RNNs | `model.forecast()` | Long-term dependencies, complex patterns |
-| Event forecasting | Binary/time-to-event models | Temporal labeling + rolling validation | Sparse events and alerts |
-| Backtesting | Custom rolling windows | `for window in windows: train(), test()` | Temporal validation without leakage |
-| Metrics Evaluation | scikit-learn, custom | `mean_absolute_error()`, MAPE, MASE | Multi-horizon forecast accuracy |
-| Production Deployment | MLflow, Airflow | Scheduled pipelines | Automated retraining, drift monitoring |
+| Task | Default Tooling / Pattern | When To Use |
+|------|---------------------------|-------------|
+| Timestamp integrity | pandas, Polars, statsmodels | Frequency checks, missing timestamps, DST/timezone cleanup |
+| Feature-based forecasting | LightGBM/XGBoost + MLForecast or skforecast | Covariate-rich, interpretable, scalable forecasts |
+| Classical local baseline | naive, seasonal naive, ETS/SARIMAX | Small data, interpretable baseline, low-covariate settings |
+| Global/panel forecasting | MLForecast, AutoGluon TimeSeries, NeuralForecast | Many related series, shared signal, unified training |
+| Hierarchical coherence | HierarchicalForecast | Need forecasts that add up across levels |
+| Probabilistic forecasts | quantile regression, conformal, distributional models | Risk-sensitive decisions, service-level planning |
+| TS foundation models | Chronos-2 / Chronos-Bolt (Amazon), Toto (Datadog), TimesFM, AutoGluon TSFM support | Zero-shot baselines, long horizons, sparse feature engineering; verify current releases |
+| Backtesting | rolling-origin / expanding windows | Forecast validation without leakage |
+| Forecast handoff | cutoff timestamp + lineage + fallback | Production-ready forecast packages |
 
----
+## Workflow
 
-## Decision Tree: Choosing Time Series Approach
+1. Define the forecast target, horizon, cutoff timestamp, granularity, and business-loss shape first.
+2. Route generic DS workflow or full production-ops work to the adjacent skill when forecasting depth is not the main need.
+3. Choose the baseline, feature pattern, and model family from the decision tree.
+4. Run leakage-safe backtests, compare horizon-aware metrics, and add interval or calibration checks when decisions need uncertainty.
+5. Verify fast-moving tooling and TSFM claims with the navigation and fact-checking sources before final recommendations.
+
+## Current-Facts Protocol For Current-Best-Tooling Recommendations
+
+Use this protocol whenever the user asks for the **best**, **latest**, **current**, or **still relevant** forecasting tooling — TSFM releases, benchmark leaderboards, and package APIs move on a roughly quarterly cadence, so treat any specific version number or benchmark figure below as provisional pending a live check:
+
+1. Start from [data/sources.json](data/sources.json).
+2. Verify fast-moving facts with official docs or official repositories.
+3. Separate **stable guidance** from **volatile facts** such as current model capabilities, package APIs, or hosted deployment options.
+4. Recommend a default plus 1-2 alternatives, with tradeoffs by horizon, covariates, scale, and operational cost.
+
+Use this protocol for questions such as:
+
+- "Should I use MLForecast, skforecast, or AutoGluon TimeSeries?"
+- "Should I use Chronos-2, Chronos-Bolt, or Toto as my zero-shot baseline?"
+- "What is the current MAPIE API for time-series conformal intervals?"
+- "Should I still be using Prophet or TBATS here?"
+
+## Decision Tree: Choose The Forecasting Pattern
 
 ```text
-User needs time series forecasting for: [Data Type]
-    ├─ Strong Seasonality?
-    │   ├─ Simple patterns? → LightGBM with seasonal features
-    │   ├─ Complex patterns? → LightGBM + Prophet comparison
-    │   └─ Multiple seasonalities? → Prophet or TBATS
+Need to build or review a forecast:
+    ├─ One series or a small local portfolio?
+    │   ├─ Few covariates, interpretability first -> naive/seasonal naive + ETS/SARIMAX baseline
+    │   └─ Nonlinear effects or richer covariates -> feature-based boosting
     │
-    ├─ Long-term Dependencies (>50 steps)?
-    │   ├─ Transformers (TimesFM, Chronos) → Best for complex patterns
-    │   └─ RNNs/LSTMs → Good for sequential dependencies
+    ├─ Many related series?
+    │   ├─ Need one shared model with covariates -> global/panel forecasting
+    │   └─ Need rollups to add up across levels -> hierarchical forecasting + reconciliation
     │
-    ├─ Event Forecasting (binary outcomes)?
-    │   └─ Temporal classification / survival modelling → validate with time-based splits
+    ├─ Intermittent or zero-heavy demand?
+    │   ├─ Very sparse and operationally simple -> Croston/SBA/ADIDA baseline
+    │   └─ Need richer covariates or scale -> global boosting with zero-aware features
     │
-    ├─ Intermittent/Sparse Data (many zeros)?
-    │   ├─ Croston/SBA → Classical intermittent methods
-    │   └─ LightGBM with zero-inflation features → Modern approach
+    ├─ Need uncertainty, service levels, or inventory decisions?
+    │   └─ Add quantiles, conformal intervals, or distributional forecasts
     │
-    ├─ Multiple Covariates?
-    │   ├─ LightGBM → Best with many features
-    │   └─ TFT/DeepAR → If deep learning needed
+    ├─ Long horizon or low-feature setup?
+    │   ├─ Need strong zero-shot baseline -> TS foundation models
+    │   └─ Need supervised optimization on many series -> global/deep forecasting
     │
-    └─ Explainability Required (healthcare, finance)?
-        ├─ LightGBM → SHAP values, feature importance
-        └─ Linear models → Most interpretable
+    └─ Need production handoff?
+        └─ Record cutoff timestamp, feature contract, fallback, lineage, and retraining trigger
 ```
 
----
+## Core Principles
 
-## Core Concepts (Vendor-Agnostic)
+### 1. Cutoff Timestamp Before Features
 
-- **Time axis**: splits, features, and labels must respect time ordering and availability.
-- **Non-stationarity**: seasonality, trend, and regime shifts are normal; monitor and retrain intentionally.
-- **Evaluation**: rolling/expanding backtests; report horizon-wise and segment-wise performance.
-- **Operationalization**: define retraining cadence, fallback models, and data freshness contracts.
-- **Data governance**: treat time series as potentially sensitive; enforce access control, retention, and PII scrubbing in logs.
+- Define the exact prediction timestamp before building labels or features.
+- Every lag, rolling aggregate, calendar flag, and external signal must be justified relative to what is known at that cutoff.
+- Known-future covariates and future-unknown covariates must be treated differently.
 
-## Implementation Practices (Tooling Examples)
+### 2. Baselines First
 
-- Build features with explicit time windows; store cutoff timestamps with each training run.
-- Backtest with a standardized harness (rolling/expanding windows, horizon-wise metrics).
-- Log production forecasts with metadata (model version, horizon, data cut) to enable debugging.
-- Implement fallbacks (baseline model, last-known-good, “insufficient data” handling) for outages and anomalies.
+- Always compare against naive and seasonal-naive baselines.
+- Add ETS/SARIMAX or other local classical baselines when interpretability matters.
+- Candidate models do not earn deployment if they barely beat a simple baseline.
 
-## Do / Avoid
+### 3. Horizon And Slice Evaluation
 
-**Do**
-- Do start with naive/seasonal naive baselines and compare against learned models (Forecasting: Principles and Practice: https://otexts.com/fpp3/).
-- Do backtest with rolling windows and preserve point-in-time correctness.
-- Do monitor for data pipeline changes (missing timestamps, level shifts, calendar changes).
-- Do align metrics/loss to the decision: asymmetric costs, service levels, and probabilistic targets (quantiles/intervals) when needed.
+- Report accuracy by horizon, not only a single global score.
+- Slice by segment, geography, SKU family, volume band, or any business-relevant cohort.
+- Prefer MASE/WAPE/MAE over MAPE when zeros or near-zeros exist.
 
-**Avoid**
-- Avoid random splits for forecasting problems.
-- Avoid features that use future information (future aggregates, leakage via target encoding).
-- Avoid optimizing only aggregate metrics; always inspect horizon-wise errors and worst segments.
-- Avoid MAPE when the target can be 0 or near-0; prefer MASE/WAPE/sMAPE and horizon-wise reporting.
+### 4. Global/Panel Before Per-Series Complexity
 
-## Navigation: Core Patterns
+- When many related series exist, default to a shared global/panel approach before building separate bespoke models.
+- Use hierarchical reconciliation when forecasts must remain coherent across levels.
+- Promote complexity only when it earns accuracy, calibration, or operational simplicity.
 
-### Time Series EDA & Data Preparation
+### 5. Probabilistic When The Decision Is Risk-Sensitive
 
-- **[TS EDA Best Practices](references/ts-eda-best-practices.md)**
-  - Frequency detection, missing timestamps, decomposition
-  - Outlier detection, level shifts, seasonality analysis
-  - Granularity selection and stability checks
+- Use quantiles, conformal intervals, or full predictive distributions when downstream actions depend on uncertainty.
+- Evaluate both coverage and sharpness; wide intervals with nominal coverage are not automatically useful.
+- Reassess calibration after every retrain or major model change.
 
-### Feature Engineering
+### 6. Forecasting-Specific Handoff
 
-- **[Lag & Rolling Patterns](references/lag-rolling-patterns.md)**
-  - Lag features (lag_1, lag_7, lag_28 for daily data)
-  - Rolling windows (mean, std, min, max, EWM)
-  - Avoiding leakage, seasonal lags, datetime features
+- A forecast package is incomplete without cutoff timestamps, horizon definition, feature contract, metric definitions, fallback rules, and lineage metadata.
+- Keep forecasting-specific handoff guidance here; route full deployment architecture to [ai-mlops](../ai-mlops/SKILL.md).
 
-### Model Selection
+## Known Traps
 
-- **[Model Selection Guide](references/model-selection-guide.md)**
-  - Decision rules: Strong seasonality → LightGBM, Long-term → Transformers
-  - Benchmark comparison: LightGBM vs Prophet vs Transformers vs RNNs
-  - Explainability considerations for mission-critical domains
+- Mixing future-known covariates and future-unknown covariates in the same feature path without documenting which values are actually available at forecast time.
+- Using one global backtest score to justify deployment when horizon-specific error behavior differs materially.
+- Using MAPE on zero-heavy, intermittent, or near-zero series and then comparing models on unstable percentages.
+- Building bespoke per-series models before testing a strong global or panel baseline on related series.
+- Ignoring hierarchy and coherence when downstream consumers expect rollups to add up.
 
-- **[LightGBM TS Patterns](references/lightgbm-ts-patterns.md)** *(feature-based forecasting best practices)*
-  - Why LightGBM excels: performance + efficiency + explainability
-  - Feature engineering for tree-based models
-  - Hyperparameter tuning for time series
+## Common Anti-Patterns
 
-### Forecasting Strategies
+- Reusing IID validation habits from generic tabular ML instead of rolling-origin or expanding-window evaluation.
+- Treating decomposition visuals as evidence of production signal without backtesting the actual decision horizon.
+- Using feature-rich models whose future covariates are unavailable or operationally too expensive to maintain.
+- Comparing TS foundation models to weak baselines and calling the result strategic proof.
 
-- **[Multi-Step Forecasting Patterns](references/multistep-forecasting-patterns.md)**
-  - Direct strategy (separate models per horizon)
-  - Recursive strategy (feed predictions back)
-  - Seq2Seq strategy (Transformers, RNNs for long horizons)
+## Navigation: Core References
 
-- **[Intermittent Demand Patterns](references/intermittent-demand-patterns.md)**
-  - Croston, SBA, ADIDA for sparse data
-  - LightGBM with zero-inflation features (modern approach)
-  - Two-stage hurdle models, hierarchical Bayesian
+### Data Integrity And Features
 
-### Validation & Evaluation
+- **[TS EDA Best Practices](references/ts-eda-best-practices.md)** - Timestamp integrity, missingness, decomposition, and stability checks
+- **[Lag & Rolling Patterns](references/lag-rolling-patterns.md)** - Leakage-safe lags, rolling windows, and calendar patterns
+- **[Global & Panel Forecasting Patterns](references/global-panel-forecasting-patterns.md)** - Shared models, panel schemas, known-future covariates, grouped evaluation
 
-- **[Backtesting Patterns](references/backtesting-patterns.md)**
-  - Rolling window backtest, expanding window
-  - Temporal train/validation split (no IID splits!)
-  - Horizon-wise metrics, segment-level evaluation
+### Model And Strategy Selection
 
-### Generative & Advanced Models
+- **[Model Selection Guide](references/model-selection-guide.md)** - May 2026 model-family decision matrix
+- **[LightGBM TS Patterns](references/lightgbm-ts-patterns.md)** - Feature-based/global boosting patterns, MLForecast/skforecast workflows
+- **[Multi-Step Forecasting Patterns](references/multistep-forecasting-patterns.md)** - Direct, recursive, and seq2seq tradeoffs
+- **[Intermittent Demand Patterns](references/intermittent-demand-patterns.md)** - Sparse-demand baselines and zero-aware modelling
 
-- **[TS-LLM Patterns](references/ts-llm-patterns.md)**
-  - Chronos, TimesFM, Lag-Llama (Transformer models)
-  - Event forecasting patterns (temporal classification, survival modelling)
-  - Tokenization, discretization, trajectory sampling
+### Validation, Uncertainty, And Advanced Forecasting
 
-### Production Deployment
+- **[Backtesting Patterns](references/backtesting-patterns.md)** - Rolling-origin evaluation, panel-aware backtests, and metric design
+- **[Probabilistic Forecasting](references/probabilistic-forecasting.md)** - Quantiles, conformal methods, calibration, and scoring rules
+- **[Hierarchical Forecasting](references/hierarchical-forecasting.md)** - Coherent forecasts and reconciliation methods
+- **[Time-Series Foundation Model Patterns](references/ts-llm-patterns.md)** - Chronos, TimesFM, zero-shot baselines, and TSFM usage
+- **[Anomaly Detection Patterns](references/anomaly-detection-patterns.md)** - Residual and interval-based anomaly workflows
 
-- **[Production Deployment Patterns](references/production-deployment-patterns.md)**
-  - Feature pipelines (same code for train/serve)
-  - Retraining strategies (time-based, drift-triggered)
-  - Monitoring (error drift, feature drift, volume drift)
-  - Fallback strategies, streaming ingestion, data governance
+### Handoff And Forecast Operations
 
-### Advanced Forecasting
+- **[Forecast Governance Patterns](references/forecast-governance-patterns.md)** - Cutoff timestamps, lineage, fallback rules, and forecast contracts
+- **[Production Deployment Patterns](references/production-deployment-patterns.md)** - Broader production controls; use when forecasting-specific guidance must connect to deployment
 
-- **[Anomaly Detection Patterns](references/anomaly-detection-patterns.md)**
-  - Statistical, ML, and deep learning anomaly detectors for time series
-  - Threshold tuning, alert fatigue reduction, seasonal adjustment
-
-- **[Hierarchical Forecasting](references/hierarchical-forecasting.md)**
-  - Bottom-up, top-down, and reconciliation methods
-  - Cross-level coherence, grouped series, MinT/WLS approaches
-
-- **[Probabilistic Forecasting](references/probabilistic-forecasting.md)**
-  - Quantile regression, conformal prediction, prediction intervals
-  - Calibration metrics (CRPS, pinball loss, coverage), decision-making under uncertainty
-
----
-
-## Navigation: Templates (Copy-Paste Ready)
+## Templates
 
 ### Data Preparation
 
-- **[TS EDA Template](assets/timeseries/template-ts-eda.md)** - Reproducible structure for time series analysis
-- **[Resample & Fill Template](assets/timeseries/template-resample-fill.md)** - Handle missing timestamps and resampling
+- **[TS EDA Template](assets/timeseries/template-ts-eda.md)** - Reproducible structure for timestamp and seasonality review
+- **[Resample & Fill Template](assets/timeseries/template-resample-fill.md)** - Resampling, gap rules, and fill policies
 
-### Feature Templates
+### Feature And Model Design
 
-- **[Lag & Rolling Features](assets/timeseries/template-lag-rolling.md)** - Create temporal features for ML models
-- **[Calendar Features](assets/timeseries/template-calendar-features.md)** - Business calendars, holidays, events
+- **[Lag & Rolling Features](assets/timeseries/template-lag-rolling.md)** - Leakage-safe feature specification
+- **[Calendar Features](assets/timeseries/template-calendar-features.md)** - Known-future business calendar and event feature spec
+- **[Forecast Model Template](assets/timeseries/template-forecast-model.md)** - Forecast package contract for local, global, or hierarchical models
+- **[Multi-Step Strategy](assets/timeseries/template-multistep-strategy.md)** - Direct, recursive, and seq2seq strategy contract
 
-### Model Templates
+### Evaluation And Uncertainty
 
-- **[Forecast Model Template](assets/timeseries/template-forecast-model.md)** - End-to-end forecasting pipeline (LightGBM, transformers, RNNs)
-- **[Multi-Step Strategy](assets/timeseries/template-multistep-strategy.md)** - Direct, recursive, and seq2seq approaches
+- **[Backtest Template](assets/timeseries/template-backtest.md)** - Rolling-origin or expanding-window evaluation spec
+- **[TS Metrics Template](assets/timeseries/template-ts-metrics.md)** - Horizon, slice, business-loss, and probabilistic metric contract
 
-### Evaluation Templates
+### Foundation Models
 
-- **[Backtest Template](assets/timeseries/template-backtest.md)** - Rolling window validation setup
-- **[TS Metrics Template](assets/timeseries/template-ts-metrics.md)** - MAPE, MAE, RMSE, MASE, pinball loss
+- **[TS Foundation Model Template](assets/timeseries/template-ts-llm.md)** - Zero-shot TSFM benchmark and evaluation scaffold
 
-### Advanced Templates
+## Scripts
 
-- **[TS-LLM Template](assets/timeseries/template-ts-llm.md)** - Time series foundation model patterns and experimental approaches
+| Script | Purpose |
+|--------|---------|
+| [scripts/ts_evaluator.py](scripts/ts_evaluator.py) | Stdlib-only CLI: horizon-wise backtest metrics, probabilistic calibration check, and full Markdown evaluation report |
 
----
+```bash
+# Horizon-wise accuracy: MAE, RMSE, MAPE, skill score vs naive baseline
+python scripts/ts_evaluator.py backtest --input data/sample-forecast-results.json
+
+# Probabilistic calibration check for 50%, 80%, 90% prediction intervals
+python scripts/ts_evaluator.py calibration --input data/sample-forecast-results.json
+
+# Full Markdown evaluation report written to file
+python scripts/ts_evaluator.py report --input data/sample-forecast-results.json --output /tmp/ts-eval-report.md
+```
+
+## Data Files
+
+| File | Description |
+|------|-------------|
+| [data/sources.json](data/sources.json) | Curated primary sources for classical forecasting, MLForecast, skforecast, AutoGluon, Chronos-2/Chronos-Bolt, TimesFM, Toto, fev-bench, and MAPIE |
+| [data/sample-forecast-results.json](data/sample-forecast-results.json) | Realistic rolling-origin backtest results for a daily revenue forecast model across horizons 1, 7, 14, 30 days (48 rows, 12 backtest origins) |
+
+## External Sources
+
+See **[data/sources.json](data/sources.json)** for current primary sources across:
+
+- classical forecasting references
+- official docs for MLForecast, HierarchicalForecast, skforecast, AutoGluon TimeSeries, LightGBM, and MAPIE
+- official Chronos-2/Chronos-Bolt, TimesFM, and Toto repositories
+- fev-bench benchmark and governance references used for high-impact deployments
 
 ## Related Skills
 
-For adjacent topics, reference these skills:
-
-- **[ai-ml-data-science](../ai-ml-data-science/SKILL.md)** - EDA workflows, feature engineering patterns, model evaluation, SQLMesh transformations
-- **[ai-mlops](../ai-mlops/SKILL.md)** - Production deployment, monitoring, retraining pipelines
-- **[ai-llm](../ai-llm/SKILL.md)** - Fine-tuning approaches applicable to time series LLMs (Chronos, TimesFM)
-- **[ai-prompt-engineering](../ai-prompt-engineering/SKILL.md)** - Prompt design patterns for time series LLMs
-- **[data-sql-optimization](../data-sql-optimization/SKILL.md)** - SQL optimization for time series data storage and retrieval
-
----
-
-## External Resources
-
-See [data/sources.json](data/sources.json) for curated web resources including:
-
-- Classical methods (statsmodels, Prophet, ARIMA)
-- Deep learning frameworks (PyTorch Forecasting, GluonTS, Darts, NeuralProphet)
-- Transformer models (TimesFM, Chronos, Lag-Llama, Informer, Autoformer)
-- Anomaly detection tools (PyOD, STUMPY, Isolation Forest)
-- Feature engineering libraries (tsfresh, TSFuse, Featuretools)
-- Production deployment (Kats, MLflow, sktime)
-- Benchmarks and datasets (M5 Competition, Monash Time Series, UCI)
-
----
-
-## Usage Notes
-
-**For Claude:**
-
-- Activate this skill for hands-on forecasting tasks, feature engineering, backtesting, or production setup
-- Start with [Quick Reference](#quick-reference) and [Decision Tree](#decision-tree-choosing-time-series-approach) for fast guidance
-- Drill into references/ for detailed implementation patterns
-- Use assets/ for copy-paste ready code
-- Always check for temporal leakage (future data in training)
-- Start with strong baselines; choose model family based on horizon, covariates, and latency/cost constraints
-- Emphasize explainability for healthcare/finance domains
-- Monitor for data distribution shifts in production
-
-**Key Principle:** Time series forecasting is about temporal structure, not IID assumptions. Use temporal validation, avoid future leakage, and choose models based on horizon length and data characteristics.
+- **[ai-ml-data-science](../ai-ml-data-science/SKILL.md)** - General DS workflows, experiment design, and broader modelling patterns
+- **[ai-mlops](../ai-mlops/SKILL.md)** - Deployment architecture, monitoring, and release operations
+- **[ai-llm](../ai-llm/SKILL.md)** - Provider/model lifecycle questions outside time-series forecasting
+- **[data-sql-optimization](../data-sql-optimization/SKILL.md)** - Storage and query design for time-series marts
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify volatile external facts, package APIs, hosted options, and model capabilities before final answers.
+- Prefer official docs, official repositories, standards, or release notes.
+- If web access is unavailable, state that clearly and mark time-sensitive guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.

@@ -18,7 +18,6 @@ Handle keyboard, mouse, gamepad, and touch input with proper buffering and acces
 | UI nav vs gameplay confirm | [input_echo_filter.gd](scripts/input_echo_filter.gd) — echoes move menus, not Confirm/Back |
 | Gameplay vs menu clicks | [unhandled_input_priority.gd](scripts/unhandled_input_priority.gd) |
 
-
 ## Do-NOT-Load (by scenario)
 
 | Scenario | Load | Do NOT load |
@@ -65,7 +64,6 @@ Tracking the lifecycle of an action ('Just Pressed', 'Held', 'Released') for com
 ### [unhandled_input_priority.gd](scripts/unhandled_input_priority.gd)
 Demonstrating the correct use of `_unhandled_input` to prevent gameplay logic from leaking into UI.
 
-
 ### [virtual_input_injector.gd](scripts/virtual_input_injector.gd)
 `Input.parse_input_event` injection for CI tutorials / AI assistance — not physical hardware.
 
@@ -89,11 +87,6 @@ Frame-tagged capture + deterministic replay via `parse_input_event`.
 - **NEVER capture the mouse without a 'Release' shortcut** — If your game crashes or blocks `ui_cancel`, the user is trapped. Always provide a fallback escape for mouse capture.
 
 ---
-
-## Godot 4.7: Input Device IDs
-
-- Mouse and keyboard are no longer device ID `0` — use `InputEvent.DEVICE_ID_MOUSE` and `InputEvent.DEVICE_ID_KEYBOARD`.
-- **NEVER** compare `event.device == 0` for mouse/keyboard; joypads may legitimately use ID 0.
 
 ## Input Propagation & Isolation
 Godot propagates input events in a specific order. Understanding this is key to isolating UI from gameplay.
@@ -130,7 +123,6 @@ Modern games must handle simultaneous Controller and Keyboard/Mouse input smooth
 - **Combo sequences** — **MANDATORY**: [combo_validator.gd](scripts/combo_validator.gd); fighting fiction stays in `godot-genre-fighting`.
 - **Deterministic replay** — **MANDATORY**: [input_replay_buffer.gd](scripts/input_replay_buffer.gd).
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -138,7 +130,6 @@ Modern games must handle simultaneous Controller and Keyboard/Mouse input smooth
 | Buffering / coyote / MP sync | [input-event-processing.md](references/input-event-processing.md) |
 | Virtual injection / combos / replay | [expert-input-extensions.md](references/expert-input-extensions.md) |
 | InputMap & device IDs | [inputmap-best-practices.md](references/inputmap-best-practices.md) |
-
 
 ## Reference
 

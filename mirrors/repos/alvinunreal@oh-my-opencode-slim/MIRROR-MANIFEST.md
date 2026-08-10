@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 28 followed patterns, 47 file(s) materialized.
+Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 29 followed patterns, 48 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 28 followed
 | Ref Type      | `branch` |
 | Ref           | `master` |
 | Default pats  | 26 |
-| Followed pats | 28 |
-| Files         | 47 |
+| Followed pats | 29 |
+| Files         | 48 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -78,6 +78,7 @@ Mirror of `alvinunreal/oh-my-opencode-slim` — 26 default patterns, 28 followed
 - `src/tools/ast-grep/codemap.md`
 - `src/tools/smartfetch/codemap.md`
 - `src/utils/codemap.md`
+- `src/v2/codemap.md`
 - `scripts/codemap.md`
 
 ## File Index
@@ -133,6 +134,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | → | [`src/tools/codemap.md`](src/tools/codemap.md) |
 | 46 | → | [`src/tools/smartfetch/codemap.md`](src/tools/smartfetch/codemap.md) |
 | 47 | → | [`src/utils/codemap.md`](src/utils/codemap.md) |
+| 48 | → | [`src/v2/codemap.md`](src/v2/codemap.md) |
 
 ---
 

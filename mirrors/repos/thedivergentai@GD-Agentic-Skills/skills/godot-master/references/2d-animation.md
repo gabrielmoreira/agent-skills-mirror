@@ -3,16 +3,6 @@ name: godot-2d-animation
 description: "Expert patterns for 2D animation in Godot using AnimatedSprite2D and skeletal cutout rigs. Use when implementing sprite frame animations, procedural animation (squash/stretch), cutout bone hierarchies, or frame-perfect timing systems. Trigger keywords: AnimatedSprite2D, SpriteFrames, animation_finished, animation_looped, frame_changed, frame_progress, set_frame_and_progress, cutout animation, skeletal 2D, Bone2D, procedural animation, animation state machine, advance(0)."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# 2D Animation
-
-Expert-level guidance for frame-based and skeletal 2D animation in Godot.
-
 ## NEVER Do
 
 - **NEVER use AnimatedTexture** — This class is deprecated, highly inefficient in modern renderers, and may be removed in future Godot versions. Use AnimatedSprite2D or AnimationPlayer instead.
@@ -141,23 +131,23 @@ Related: `animation_looped` (loops) vs `animation_finished` (one-shots); use `se
 ### Related Skills
 
 #### Prerequisites
-- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — AnimationPlayer ownership, callback modes, and track authoring that this skill’s hybrid/cutout patterns assume.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Physics-tick movement so animated CharacterBody2D motion stays on the fixed timestep.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Safe wiring for `animation_finished` / `animation_looped` / `frame_changed` without lifecycle leaks.
+- [godot-animation-player](animation-player.md) — AnimationPlayer ownership, callback modes, and track authoring that this skill’s hybrid/cutout patterns assume.
+- [godot-characterbody-2d](characterbody-2d.md) — Physics-tick movement so animated CharacterBody2D motion stays on the fixed timestep.
+- [godot-signal-architecture](signal-architecture.md) — Safe wiring for `animation_finished` / `animation_looped` / `frame_changed` without lifecycle leaks.
 
 #### Complements
-- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — Deepen blend trees, OneShot layers, and `travel()` pathfinding beyond the 2D locomotion basics here.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Broader Tween composition when squash/stretch or UI pops outgrow inline `create_tween()` snippets.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — CanvasItem shader uniforms driven by AnimationPlayer tracks or MultiMesh swarm materials.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Impact velocity, raycasts for IK targets, and interpolation rules that feed procedural deformation.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Gameplay FSMs that should own intent while AnimationTree/AnimatedSprite2D own presentation.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Dust, hit sparks, and trails spawned from method tracks or frame events.
-- [godot-adapt-3d-to-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-3d-to-2d/SKILL.md) — Directional sheets, billboards, and fake-depth sorting that still use 2D animation nodes.
+- [godot-animation-tree-mastery](animation-tree-mastery.md) — Deepen blend trees, OneShot layers, and `travel()` pathfinding beyond the 2D locomotion basics here.
+- [godot-tweening](tweening.md) — Broader Tween composition when squash/stretch or UI pops outgrow inline `create_tween()` snippets.
+- [godot-shaders-basics](shaders-basics.md) — CanvasItem shader uniforms driven by AnimationPlayer tracks or MultiMesh swarm materials.
+- [godot-2d-physics](2d-physics.md) — Impact velocity, raycasts for IK targets, and interpolation rules that feed procedural deformation.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Gameplay FSMs that should own intent while AnimationTree/AnimatedSprite2D own presentation.
+- [godot-particles](particles.md) — Dust, hit sparks, and trails spawned from method tracks or frame events.
+- [godot-adapt-3d-to-2d](adapt-3d-to-2d.md) — Directional sheets, billboards, and fake-depth sorting that still use 2D animation nodes.
 
 #### Downstream / consumers
-- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Jump/land/run presentation stacks consume sync, squash/stretch, and state-machine travel patterns.
-- [godot-genre-fighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md) — Frame-perfect hitboxes and method tracks depend on AnimationPlayer + AnimatedSprite2D discipline here.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Shared `.tres` SpriteFrames and skin packs for memory-safe multi-instance characters.
+- [godot-genre-platformer](genre-platformer.md) — Jump/land/run presentation stacks consume sync, squash/stretch, and state-machine travel patterns.
+- [godot-genre-fighting](genre-fighting.md) — Frame-perfect hitboxes and method tracks depend on AnimationPlayer + AnimatedSprite2D discipline here.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Shared `.tres` SpriteFrames and skin packs for memory-safe multi-instance characters.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

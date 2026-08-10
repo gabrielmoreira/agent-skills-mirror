@@ -3,16 +3,6 @@ name: godot-quest-system
 description: "Expert blueprint for quest  tracking systems (objectives, progress, rewards, branching chains) using Resource-based quests, signal-driven updates, and AutoLoad managers. Use when implementing RPG quests or mission systems. Keywords quest, objectives, Quest Resource, QuestObjective, signal-driven, branching, rewards, AutoLoad."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Quest System
-
-Resource-based quests + Autoload manager. **Single source of truth:** [quest_resource.gd](../scripts/quest_system_quest_resource.gd) + [quest_manager_singleton.gd](../scripts/quest_system_quest_manager_singleton.gd) — no inline Quest/Objective/Manager/UI dumps.
-
 ## MANDATORY loads
 
 1. [quest_resource.gd](../scripts/quest_system_quest_resource.gd) — `StringName` ids, status, objectives/rewards  
@@ -88,23 +78,23 @@ Quest/Objective/Manager/UI walkthroughs and elite patterns — [references/quest
 ### Related Skills
 
 #### Prerequisites
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Custom Resources, duplication, and Inspector authoring patterns that quest definitions and objective graphs depend on.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Typed emit/connect, disconnect hygiene, and EventBus routing for kill/collect triggers without ghost listeners.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Boot order and ownership rules for a singleton QuestManager that outlives scene swaps.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Custom Resources, duplication, and Inspector authoring patterns that quest definitions and objective graphs depend on.
+- [godot-signal-architecture](signal-architecture.md) — Typed emit/connect, disconnect hygiene, and EventBus routing for kill/collect triggers without ghost listeners.
+- [godot-autoload-architecture](autoload-architecture.md) — Boot order and ownership rules for a singleton QuestManager that outlives scene swaps.
 
 #### Complements
-- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Quest-giver offer/reminder/thanks branches should query quest status and emit accept/complete through dialogue choices.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Collect objectives and reward grants should delegate item mutations to inventory, not embed stacks in quest scripts.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Slot/versioned save pipelines that serialize active/completed quest dictionaries beside player state.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Layout and rebuild patterns for objective trackers and journal panels driven only by manager signals.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Currency/XP reward sinks after quest completion; keep grant logic out of the Quest Resource itself.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate reward curves, timed-fail rates, and objective difficulty before locking quest economy numbers.
+- [godot-dialogue-system](dialogue-system.md) — Quest-giver offer/reminder/thanks branches should query quest status and emit accept/complete through dialogue choices.
+- [godot-inventory-system](inventory-system.md) — Collect objectives and reward grants should delegate item mutations to inventory, not embed stacks in quest scripts.
+- [godot-save-load-systems](save-load-systems.md) — Slot/versioned save pipelines that serialize active/completed quest dictionaries beside player state.
+- [godot-ui-containers](ui-containers.md) — Layout and rebuild patterns for objective trackers and journal panels driven only by manager signals.
+- [godot-economy-system](economy-system.md) — Currency/XP reward sinks after quest completion; keep grant logic out of the Quest Resource itself.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate reward curves, timed-fail rates, and objective difficulty before locking quest economy numbers.
 
 #### Downstream / consumers
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Level gates, XP rewards, and stat prerequisites that unlock or complete quest acceptance checks.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Death/defeat events feed kill objectives through a bus instead of enemy scripts calling QuestManager directly.
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Genre composition that consumes quest tracking, dialogue hooks, and reward distribution as one RPG loop.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Objective waypoints and compass helpers update `NavigationAgent` targets when objectives change.
+- [godot-rpg-stats](rpg-stats.md) — Level gates, XP rewards, and stat prerequisites that unlock or complete quest acceptance checks.
+- [godot-combat-system](combat-system.md) — Death/defeat events feed kill objectives through a bus instead of enemy scripts calling QuestManager directly.
+- [godot-genre-action-rpg](genre-action-rpg.md) — Genre composition that consumes quest tracking, dialogue hooks, and reward distribution as one RPG loop.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — Objective waypoints and compass helpers update `NavigationAgent` targets when objectives change.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns quests vs dialogue, inventory, or save.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns quests vs dialogue, inventory, or save.

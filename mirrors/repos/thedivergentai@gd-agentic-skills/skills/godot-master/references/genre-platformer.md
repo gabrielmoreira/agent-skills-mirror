@@ -3,16 +3,6 @@ name: godot-genre-platformer
 description: "Expert blueprint for platformer games including precision movement (coyote time, jump buffering, variable jump height), game feel polish (squash/stretch, particle trails, camera shake), level design principles (difficulty curves, checkpoint placement), collectible systems (progression rewards), and accessibility options (assist mode, remappable controls). Based on Celeste/Hollow Knight design research. Trigger keywords: platformer, coyote_time, jump_buffer, game_feel, level_design, precision_movement."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Platformer
-
-Expert blueprint for platformers emphasizing movement feel, level design, and player satisfaction.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Physics & Movement Feel
@@ -41,10 +31,6 @@ Expert blueprint for platformers emphasizing movement feel, level design, and pl
 - NEVER load heavy level chunks synchronously; strictly use `ResourceLoader.load_threaded_request()` to prevent frame stutters.
 
 ---
-
-## Godot 4.7: Platformer
-
-- One-way collision **direction** is shape-relative — tune `CollisionShape2D` direction for angled platforms.
 
 ## Available Scripts
 
@@ -187,23 +173,23 @@ Use [platformer_camera.gd](../scripts/genre_platformer_platformer_camera.gd) / p
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project settings, input map actions, and scene structure before wiring coyote/buffer timers.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — move_and_slide grounding, slopes, and wall normals that every precision jump builds on.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — remappable jump/move actions and unhandled-input buffering for assist-mode accessibility.
+- [godot-project-foundations](project-foundations.md) — project settings, input map actions, and scene structure before wiring coyote/buffer timers.
+- [godot-characterbody-2d](characterbody-2d.md) — move_and_slide grounding, slopes, and wall normals that every precision jump builds on.
+- [godot-input-handling](input-handling.md) — remappable jump/move actions and unhandled-input buffering for assist-mode accessibility.
 
 #### Complements
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — layers, CCD, Area2D hazards, and AnimatableBody platforms beyond the controller core.
-- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — TileMapLayer/TileSet one-ways and collision painting for teachable level geometry.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — look-ahead, room cameras, and smoothing that reveal landings without blind jumps.
-- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — AnimationTree conditions synced from is_on_floor / velocity for juice-safe state graphs.
-- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — squash/stretch and land/run cycles that sell weight after physics resolves.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — dust trails and land puffs called from jump/land events.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — jump/land/wall-slide SFX timing that reinforces responsive feel.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — sample coyote/buffer/gravity/jump knobs and level difficulty curves before shipping assist defaults.
+- [godot-2d-physics](2d-physics.md) — layers, CCD, Area2D hazards, and AnimatableBody platforms beyond the controller core.
+- [godot-tilemap-mastery](tilemap-mastery.md) — TileMapLayer/TileSet one-ways and collision painting for teachable level geometry.
+- [godot-camera-systems](camera-systems.md) — look-ahead, room cameras, and smoothing that reveal landings without blind jumps.
+- [godot-animation-tree-mastery](animation-tree-mastery.md) — AnimationTree conditions synced from is_on_floor / velocity for juice-safe state graphs.
+- [godot-2d-animation](2d-animation.md) — squash/stretch and land/run cycles that sell weight after physics resolves.
+- [godot-particles](particles.md) — dust trails and land puffs called from jump/land events.
+- [godot-audio-systems](audio-systems.md) — jump/land/wall-slide SFX timing that reinforces responsive feel.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — sample coyote/buffer/gravity/jump knobs and level difficulty curves before shipping assist defaults.
 
 #### Downstream / consumers
-- [godot-genre-metroidvania](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-metroidvania/SKILL.md) — ability-gated exploration that reuses precision movement and TileMap rooms.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — checkpoint position persistence across deaths and scene reloads.
+- [godot-genre-metroidvania](genre-metroidvania.md) — ability-gated exploration that reuses precision movement and TileMap rooms.
+- [godot-save-load-systems](save-load-systems.md) — checkpoint position persistence across deaths and scene reloads.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

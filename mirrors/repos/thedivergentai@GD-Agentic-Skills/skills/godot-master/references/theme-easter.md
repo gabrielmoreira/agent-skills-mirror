@@ -3,20 +3,12 @@ name: godot-theme-easter
 description: "Apply a Classic Easter seasonal overlay: pastel Theme/StyleBox injection, confetti/shimmer VFX, elastic juice, mesh surface_override painting, cursor/audio swaps, and a date-window activation gate with player opt-out. Use when shipping holiday skins, April events, or egg-hunt juice without mutating shared .mesh/.tres assets. Keywords: pastel, seasonal Theme, StyleBox, confetti, Easter egg, surface_override, TRANS_ELASTIC, Disable Seasonal Themes, activation gate."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Easter Theme (Aesthetics & Juice)
-
 ## Overview
 Seasonal "Easter-fy" toolkit: bright pastels, bouncy juice, egg/bunny iconography — gated by calendar + settings.
 
 **MANDATORY first read:** [easter_seasonal_activation_gate.gd](../scripts/theme_easter_easter_seasonal_activation_gate.gd) — date window, `Disable Seasonal Themes` opt-out (`user://settings.cfg`), and Dev Override. Call `refresh_activation()` when settings change; never poll the calendar in `_process`.
 
-**Prerequisite:** Do **NOT Load** [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) until a base `Theme` resource exists — seasonal overlays inject StyleBox overrides; they do not replace foundational Theme authoring.
+**Prerequisite:** Do **NOT Load** [godot-ui-theming](ui-theming.md) until a base `Theme` resource exists — seasonal overlays inject StyleBox overrides; they do not replace foundational Theme authoring.
 
 ## Seasonal Bootstrap (ordered)
 
@@ -115,7 +107,6 @@ func _apply_spring_env(env: Environment) -> void:
     tween.tween_property(env, "fog_light_color", EasterPastelColorPalette.BLUE, 2.0)
 ```
 
-
 ## Deep recipes (on demand)
 
 > LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
@@ -146,24 +137,24 @@ func _apply_spring_env(env: Environment) -> void:
 ### Related Skills
 
 #### Prerequisites
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Base Theme architecture before seasonal overlays.
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Asset folders and activation gates for seasonal packs.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Sound override maps and palette Resources.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Collection trackers and seasonal activation events.
+- [godot-ui-theming](ui-theming.md) — Base Theme architecture before seasonal overlays.
+- [godot-project-foundations](project-foundations.md) — Asset folders and activation gates for seasonal packs.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Sound override maps and palette Resources.
+- [godot-signal-architecture](signal-architecture.md) — Collection trackers and seasonal activation events.
 
 #### Complements
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Elastic TRANS pops and camera juice.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Confetti/shimmer emitters without reinventing GPUParticles.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Seasonal SFX banks and bus routing.
-- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — Squash/stretch juice on collectibles.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera pop punches on egg collect.
-- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — Environment spring glow when the game is 3D.
+- [godot-tweening](tweening.md) — Elastic TRANS pops and camera juice.
+- [godot-particles](particles.md) — Confetti/shimmer emitters without reinventing GPUParticles.
+- [godot-audio-systems](audio-systems.md) — Seasonal SFX banks and bus routing.
+- [godot-2d-animation](2d-animation.md) — Squash/stretch juice on collectibles.
+- [godot-camera-systems](camera-systems.md) — Camera pop punches on egg collect.
+- [godot-3d-lighting](3d-lighting.md) — Environment spring glow when the game is 3D.
 
 #### Downstream / consumers
-- [godot-genre-party](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-party/SKILL.md) — Seasonal party modes often reuse this juice stack.
-- [godot-genre-puzzle](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md) — Collectible egg hunts as light puzzle content.
-- [godot-game-loop-collection](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-collection/SKILL.md) — Collection loops that consume seasonal trackers.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — If egg rewards gate progression, validate drop economies.
+- [godot-genre-party](genre-party.md) — Seasonal party modes often reuse this juice stack.
+- [godot-genre-puzzle](genre-puzzle.md) — Collectible egg hunts as light puzzle content.
+- [godot-game-loop-collection](game-loop-collection.md) — Collection loops that consume seasonal trackers.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — If egg rewards gate progression, validate drop economies.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for seasonal themes.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for seasonal themes.

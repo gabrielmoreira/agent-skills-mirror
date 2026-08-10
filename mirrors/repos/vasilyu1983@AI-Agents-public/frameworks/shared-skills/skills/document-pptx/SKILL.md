@@ -2,313 +2,158 @@
 name: document-pptx
 description: "Create/edit .pptx presentations with charts, templates, and speaker notes. Use when asked for pitch decks, QBR decks, or slide automation."
 allowed-tools: Bash, Read, Write, Glob, Grep
+compatibility: Claude Code + Codex. Uses runtime-specific allowed-tools / argument-hint fields.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# Document PPTX Skill - Quick Reference
+# Document PPTX
 
-This skill enables creation and editing of PowerPoint presentations programmatically. Claude should apply these patterns when users need to generate pitch decks, reports, training materials, or automate presentation workflows.
+Use this skill to create, edit, inspect, troubleshoot, or automate PowerPoint presentations programmatically.
 
-**Modern Best Practices (Jan 2026)**:
-- One slide = one takeaway; design the deck around a decision or audience goal.
-- Cite numbers (definition + timeframe + source) and keep a single source of truth for charts.
-- Accessibility: slide titles, reading order, contrast, and meaningful alt text; follow your org's standard (often WCAG 2.2 AA / EN 301 549).
-- Version decks and enforce review loops (avoid "final_final_v7.pptx").
-
----
+Keep the skill focused on tool choice, template safety, notes and chart workflows, and repairability. Use the helper scripts and references instead of carrying long inline library manuals in `SKILL.md`.
 
 ## Quick Reference
 
-| Task | Tool/Library | Language | When to Use |
-|------|--------------|----------|-------------|
-| Create PPTX | python-pptx | Python | Presentations, slide decks |
-| Create PPTX | PptxGenJS | Node.js | Server-side generation |
-| Template-driven | PPTX-Automizer | Node.js | Corporate branding, template injection |
-| Templates | python-pptx | Python | Master slides, themes |
-| Charts | python-pptx | Python | Data visualizations |
-| Extract content | python-pptx | Python | Parse existing decks |
+| Need | Default Tool | When to Use |
+|------|--------------|-------------|
+| fresh editable deck in Python workflow | `python-pptx` | generation, extraction, notes, standard charts |
+| fresh editable deck in JS/TS or browser flow | `PptxGenJS` | Node/browser export, HTML-heavy workflows |
+| designer-owned branded template | `PPTX-Automizer` or template-safe library flow | replace named template elements |
+| inspect masters, layouts, placeholders, and notes | `scripts/pptx_inventory.py` | before editing branded templates |
+| extract or back up notes | `scripts/pptx_extract_notes.py` | speaker-note export |
+| inspect damaged deck or OOXML parts | `scripts/pptx_ooxml_inspect.py` | repair dialogs, broken rels, missing targets |
 
-**Selection guide**
-- Prefer PPTX-Automizer when you have a branded .pptx template and need to "inject data into slides".
-- Prefer python-pptx in Python-heavy pipelines (reporting, notebooks, ETL).
-- Prefer PptxGenJS in Node.js pipelines (server-side generation, web apps).
+## Decision Rules
 
----
+- start from the audience and the decision the deck must support
+- use one takeaway per slide
+- prefer a branded template when brand fidelity matters
+- resolve template layouts by name, not guessed index
+- keep chart data traceable to one source of truth
+- accessibility is part of authoring, not a final afterthought
+- if animations, broken content, or unreadable-content repair are in scope, treat that as specialist troubleshooting work
 
-## Core Operations
+## Template-First vs From-Scratch Judgment
 
-### Create Presentation (Python)
+Deciding whether to open a branded `.pptx` template or build from a blank `Presentation()` is the single highest-leverage call in this skill — get it wrong and every downstream slide inherits the mistake.
 
-```python
-from pptx import Presentation
+- **Use the branded template when:** the deck goes to an external audience, brand/legal review is in the approval path, the org already has a maintained `.pptx`/`.potx`, or the request mentions "our deck," "our template," or a company name.
+- **Build from scratch when:** it's an internal working draft, no template exists yet, the ask is exploratory ("mock up a few options"), or the content is data/report-shaped and speed matters more than pixel-perfect branding.
+- **Red flag:** never guess at brand colors, fonts, or layout names when a template is available — inventory it first (`scripts/pptx_inventory.py`). A plausible-looking hex code that isn't the actual brand color is worse than asking.
+- **Escalate to PPTX-Automizer** only when a designer already owns the `.pptx`/`.potx` and the job is narrow, named-element replacement (chart data, a metric, a photo) — not general content authoring. Automizer is not a general slide-generation library; it merges into an existing structure.
+- If the user has no template and no strong brand requirement, do not manufacture one — a clean, legible, unbranded deck beats an invented "corporate" look with unverified colors.
 
-prs = Presentation()
+## Workflow
 
-# Title slide
-title_layout = prs.slide_layouts[0]  # Title Slide layout
-slide = prs.slides.add_slide(title_layout)
-title = slide.shapes.title
-subtitle = slide.placeholders[1]
-title.text = "Q4 2025 Business Review"
-subtitle.text = "Presented by Product Team"
+1. Classify the job:
+   - fresh deck
+   - template-fill workflow
+   - notes extraction
+   - troubleshooting or repair
+2. Choose the tool stack.
+3. Build the slide narrative before writing slide code.
+4. Inspect templates before automation changes.
+5. Generate or edit the deck.
+6. Validate notes, data, accessibility, and repairability.
 
-# Content slide with bullets
-bullet_layout = prs.slide_layouts[1]  # Title and Content
-slide = prs.slides.add_slide(bullet_layout)
-slide.shapes.title.text = "Key Highlights"
-body = slide.placeholders[1]
-tf = body.text_frame
-tf.text = "Revenue grew 25% YoY"
-
-p = tf.add_paragraph()
-p.text = "Customer base expanded to 10,000+"
-p.level = 0
-
-p = tf.add_paragraph()
-p.text = "New enterprise tier launched"
-p.level = 1  # Indented bullet
-
-# Add speaker notes
-notes_slide = slide.notes_slide
-notes_slide.notes_text_frame.text = "Emphasize the enterprise growth story here."
-
-prs.save('presentation.pptx')
-```
-
-### Create Presentation (Node.js)
-
-```typescript
-import pptxgen from 'pptxgenjs';
-
-async function main() {
-  const pptx = new pptxgen();
-  pptx.author = 'Product Team';
-  pptx.title = 'Q4 Business Review';
-
-  // Title slide
-  let slide = pptx.addSlide();
-  slide.addText('Q4 2025 Business Review', {
-    x: 1, y: 2, w: '80%',
-    fontSize: 36, bold: true, color: '363636',
-    align: 'center',
-  });
-  slide.addText('Presented by Product Team', {
-    x: 1, y: 3.5, w: '80%',
-    fontSize: 18, color: '666666',
-    align: 'center',
-  });
-
-  // Content slide with bullets
-  slide = pptx.addSlide();
-  slide.addText('Key Highlights', {
-    x: 0.5, y: 0.5, w: '90%',
-    fontSize: 28, bold: true,
-  });
-  slide.addText([
-    { text: 'Revenue grew 25% YoY', options: { bullet: true } },
-    { text: 'Customer base expanded to 10,000+', options: { bullet: true } },
-    { text: 'New enterprise tier launched', options: { bullet: true, indentLevel: 1 } },
-  ], { x: 0.5, y: 1.5, w: '90%', fontSize: 18 });
-
-  // Add chart
-  slide = pptx.addSlide();
-  slide.addChart(pptx.ChartType.bar, [
-    { name: 'Sales', labels: ['Q1', 'Q2', 'Q3', 'Q4'], values: [100, 150, 180, 225] },
-  ], { x: 1, y: 1.5, w: 8, h: 4 });
-
-  await pptx.writeFile({ fileName: 'presentation.pptx' });
-}
-
-main();
-```
-
-### Add Charts (Python)
-
-```python
-from pptx import Presentation
-from pptx.util import Inches
-from pptx.chart.data import CategoryChartData
-from pptx.enum.chart import XL_CHART_TYPE
-
-prs = Presentation()
-slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank
-
-# Chart data
-chart_data = CategoryChartData()
-chart_data.categories = ['Q1', 'Q2', 'Q3', 'Q4']
-chart_data.add_series('Revenue', (100, 150, 180, 225))
-chart_data.add_series('Expenses', (80, 90, 100, 110))
-
-# Add chart
-x, y, cx, cy = Inches(1), Inches(1.5), Inches(8), Inches(5)
-chart = slide.shapes.add_chart(
-    XL_CHART_TYPE.COLUMN_CLUSTERED,
-    x, y, cx, cy,
-    chart_data
-).chart
-
-chart.has_legend = True
-chart.legend.include_in_layout = False
-
-prs.save('charts.pptx')
-```
-
-### Add Images and Tables
-
-```python
-from pptx import Presentation
-from pptx.util import Inches
-
-prs = Presentation()
-slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank
-
-# Add image
-slide.shapes.add_picture('logo.png', Inches(0.5), Inches(0.5), width=Inches(2))
-
-# Add table
-rows, cols = 4, 3
-table = slide.shapes.add_table(rows, cols, Inches(1), Inches(2), Inches(8), Inches(3)).table
-
-# Set column headers
-table.cell(0, 0).text = 'Product'
-table.cell(0, 1).text = 'Sales'
-table.cell(0, 2).text = 'Growth'
-
-# Fill data
-data = [
-    ('Widget A', '$1.2M', '+25%'),
-    ('Widget B', '$800K', '+15%'),
-    ('Widget C', '$500K', '+40%'),
-]
-for row_idx, (product, sales, growth) in enumerate(data, 1):
-    table.cell(row_idx, 0).text = product
-    table.cell(row_idx, 1).text = sales
-    table.cell(row_idx, 2).text = growth
-
-prs.save('images_and_tables.pptx')
-```
-
-### Extract Content
-
-```python
-from pptx import Presentation
-
-prs = Presentation('existing.pptx')
-
-for slide_num, slide in enumerate(prs.slides, 1):
-    print(f"\n--- Slide {slide_num} ---")
-    for shape in slide.shapes:
-        if shape.has_text_frame:
-            for paragraph in shape.text_frame.paragraphs:
-                print(paragraph.text)
-        if shape.has_table:
-            table = shape.table
-            for row in table.rows:
-                row_text = [cell.text for cell in row.cells]
-                print(row_text)
-```
-
----
-
-## Slide Layout Reference
-
-| Layout Index | Name | Use Case |
-|--------------|------|----------|
-| 0 | Title Slide | Opening, section dividers |
-| 1 | Title and Content | Standard bullet slides |
-| 2 | Section Header | Section transitions |
-| 3 | Two Content | Side-by-side comparison |
-| 4 | Comparison | Pros/cons, before/after |
-| 5 | Title Only | Custom content placement |
-| 6 | Blank | Full creative control |
-| 7 | Content with Caption | Image + description |
-
----
-
-## Presentation Structure Patterns
-
-### Pitch Deck (10 slides)
+## ASCII Flow
 
 ```text
-PITCH DECK STRUCTURE
-1. Title (company, tagline)
-2. Problem (pain point)
-3. Solution (your product)
-4. Market Size (TAM/SAM/SOM)
-5. Business Model (how you make money)
-6. Traction (metrics, growth)
-7. Team (founders, advisors)
-8. Competition (landscape)
-9. Financials (projections)
-10. Ask (funding, next steps)
+PPTX request
+  |
+  v
+Classify job
+  |-- fresh editable deck ------> build narrative + choose library
+  |-- branded template fill ----> inspect masters/layouts/placeholders first
+  |-- notes extraction ---------> scripts/pptx_extract_notes.py
+  |-- troubleshoot / repair ----> scripts/pptx_ooxml_inspect.py
+  |
+  v
+Choose stack
+  |-- Python reporting ---------> python-pptx
+  |-- JS/TS export -------------> PptxGenJS
+  |-- named template elements --> PPTX-Automizer
+  |
+  v
+Generate or edit slides
+  |
+  v
+Validate
+  |-- one takeaway per slide
+  |-- chart data source + units + timeframe
+  |-- speaker notes
+  |-- accessibility and PowerPoint repair check
 ```
 
-### Quarterly Review (8 slides)
+## Tool Selection
 
-```text
-QUARTERLY REVIEW STRUCTURE
-1. Title + Agenda
-2. Executive Summary (KPIs dashboard)
-3. Revenue & Growth
-4. Product Updates
-5. Customer Highlights
-6. Challenges & Learnings
-7. Next Quarter Goals
-8. Q&A
-```
+| Situation | Default |
+|-----------|---------|
+| Python-heavy reporting or extraction | `python-pptx` |
+| JS/TS pipeline, browser export, or HTML-heavy content | `PptxGenJS` |
+| designer-maintained branded template with named replacements | `PPTX-Automizer` |
+| advanced animation editing | avoid promising full preservation; inspect and test carefully |
 
----
+## Known Limits
 
-## Do / Avoid (Dec 2025)
-
-### Do
-
-- Use a slide narrative plan (title + 1-sentence takeaway + supporting visual).
-- Put the executive summary up front for decision decks.
-- Keep speaker notes aligned with slide takeaways.
-
-### Avoid
-
-- Dense slides with multiple messages.
-- Uncited numbers or charts without definitions.
-- Pixelated screenshots and unreadable tables.
+- `python-pptx` has no animation API (no build/entrance effects) and no slide-transition API; both require direct OOXML `<p:timing>`/`<p:transition>` manipulation — see `references/pptx-animations-transitions.md` before promising motion.
+- `python-pptx` cannot create a true combo chart (e.g., column + line) from scratch — it has no multi-plot chart constructor. Style a single-type chart, or use `PptxGenJS`/manual PowerPoint editing when a real combo is required.
+- `python-pptx` has no native gradient-fill API and no supported way to edit theme colors (`theme1.xml`) through its object model — both require direct XML manipulation with a pre-edit backup.
+- The color class is `RGBColor` (from `pptx.dml.color`), not `RgbColor` — a one-letter-case mistake here silently raises `ImportError` at runtime.
+- template layout indices are not portable across branded decks — resolve layouts by name every time, including on templates you have used before (designers reorder or rename layouts between versions).
+- template edits can break timing, media, or repairability if done blindly
+- generated decks still need an actual PowerPoint review when fidelity or accessibility matters — Keynote/Google Slides opening cleanly does not confirm PowerPoint compatibility, and the reverse is also true.
 
 ## What Good Looks Like
 
-- Narrative: each slide has a 1-sentence takeaway and supports a single decision or insight.
-- Structure: opening executive summary + clear arc (problem -> insight -> recommendation -> next steps).
-- Data hygiene: charts show units, timeframes, sources, and consistent axes.
-- Design: consistent typography, spacing, and contrast; no "wall of text" slides.
-- Accessibility: reading order set and meaningful alt text where needed.
-
-## Optional: AI / Automation
-
-Use only when explicitly requested and policy-compliant.
-
-- Draft slide headlines and speaker notes; humans verify accuracy and tone.
-- Generate chart code from data; humans verify labels, units, and sources.
+- each slide supports one real decision or message
+- branded decks respect masters, layouts, fonts, and colors
+- charts carry units, timeframe, and source
+- speaker notes capture exact figures and transitions
+- titles, reading order, contrast, and alt text are present
+- if the deck breaks, the structure is inspectable with the included scripts
 
 ## Navigation
 
-**Resources**
-- [references/pptx-layouts.md](references/pptx-layouts.md) - Master slides, themes, templates
-- [references/pptx-charts.md](references/pptx-charts.md) - Chart types, data visualization
-- [references/pptx-animations-transitions.md](references/pptx-animations-transitions.md) - Slide transitions, build animations, timing
-- [references/pptx-speaker-notes-delivery.md](references/pptx-speaker-notes-delivery.md) - Speaker notes, presenter mode, delivery prep
-- [references/pptx-template-branding.md](references/pptx-template-branding.md) - Corporate templates, multi-brand support
-- [data/sources.json](data/sources.json) - Library documentation links
+**References**
+
+- [references/pptx-layouts.md](references/pptx-layouts.md)
+- [references/pptx-charts.md](references/pptx-charts.md)
+- [references/pptx-template-branding.md](references/pptx-template-branding.md)
+- [references/pptx-speaker-notes-delivery.md](references/pptx-speaker-notes-delivery.md)
+- [references/pptx-accessibility-compliance.md](references/pptx-accessibility-compliance.md)
+- [references/pptx-troubleshooting-repair.md](references/pptx-troubleshooting-repair.md)
+- [references/pptx-animations-transitions.md](references/pptx-animations-transitions.md)
+- [data/sources.json](data/sources.json)
+
+**Scripts**
+
+- [scripts/pptx_inventory.py](scripts/pptx_inventory.py)
+- [scripts/pptx_extract_notes.py](scripts/pptx_extract_notes.py)
+- [scripts/pptx_ooxml_inspect.py](scripts/pptx_ooxml_inspect.py)
 
 **Templates**
-- [assets/pitch-deck.md](assets/pitch-deck.md) - Startup pitch structure
-- [assets/quarterly-review.md](assets/quarterly-review.md) - Business review template
-- [assets/slide-narrative-template.md](assets/slide-narrative-template.md) - 1-sentence takeaway per slide
 
-**Related Skills**
-- [../document-pdf/SKILL.md](../document-pdf/SKILL.md) - Export presentations to PDF
-- [../document-xlsx/SKILL.md](../document-xlsx/SKILL.md) - Data source for charts
-- [../product-management/SKILL.md](../product-management/SKILL.md) - Product strategy decks
+- [assets/pitch-deck.md](assets/pitch-deck.md)
+- [assets/quarterly-review.md](assets/quarterly-review.md)
+- [assets/slide-narrative-template.md](assets/slide-narrative-template.md)
+
+## Related Skills
+
+- [../document-pdf/SKILL.md](../document-pdf/SKILL.md)
+- [../document-xlsx/SKILL.md](../document-xlsx/SKILL.md)
+- [../product-management/SKILL.md](../product-management/SKILL.md)
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Verify current library behavior, packaged versions, and standards-sensitive claims before final advice.
+- Prefer primary library docs and packaged release notes over summaries.
+- If live verification is unavailable, mark version-sensitive guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

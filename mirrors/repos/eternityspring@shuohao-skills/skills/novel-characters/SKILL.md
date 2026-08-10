@@ -1,9 +1,9 @@
 ---
 name: novel-characters
-version: 1.4.0
+version: 1.6.0
 description: |
   从小说或短故事里拆出角色表、人物画像、形象提示词、音色提示词，
-  并给主要角色出角色设定图（左半身像 + 右全身三视图 + 细节条），产出 JSON + Markdown + 可交互的 report.html。
+  并给每个角色出角色设定图（左半身像 + 右全身三视图 + 细节条），产出 JSON + Markdown + 可交互的 report.html。
   报告语言可指定（--lang），默认中文，任意语言都支持；
   出图风格可指定（--style），默认半写实，也可以出吉卜力动画风。
   零依赖、零 API key，用当前会话额度；出图走 codex 内置 $imagegen（可选）。
@@ -118,7 +118,7 @@ node {baseDir}/scripts/novel-characters.mjs merge <workdir>
 
 ### Step 5 — 选角
 
-取前 N 位。默认 10，用户说了就听用户的。剩下的角色在最后汇报里提一句「还识别出 X 位没做画像」。
+取前 N 位。默认 30，用户说了就听用户的。剩下的角色在最后汇报里提一句「还识别出 X 位没做画像」。
 
 ### Step 6 — 第二趟出卡
 
@@ -150,7 +150,7 @@ node {baseDir}/scripts/novel-characters.mjs validate <cast.json> <book.txt>
 
 **有违规就按报错逐条修，改完重跑，直到通过。** 这四类错模型真的会犯——这套检查就是被真实输出打出来的。
 
-### Step 8 — 出图（可选，只给 protagonist 和 major）
+### Step 8 — 出图（可选，每个角色都出）
 
 **每个角色一张**，用 `image.sheet`，落到 `./images/<slug>-sheet.png`。一张横构图内部左右分栏：
 
@@ -172,7 +172,7 @@ node {baseDir}/scripts/novel-characters.mjs validate <cast.json> <book.txt>
 - **一个角色一次调用，绝不批量**
 - 单个失败就跳过，不阻断；最后汇总说明
 
-`supporting` / `minor` 只给提示词不出图。用户明确要求全出就全出。
+**不按 `importance` 筛，选中的角色全都出。** 一个角色一次调用，30 个就是 30 次——这是整条管线里最慢的一步，开始前跟用户说一声要出多少张。用户想省就让他给个数，或者明说只要 `protagonist` / `major`。
 
 ### Step 9 — 输出
 
@@ -219,7 +219,7 @@ report.html 的样式约定见 `{baseDir}/references/report-style.md`——要�
 node {baseDir}/scripts/selftest.mjs
 ```
 
-220 项断言，不调模型、不花额度，覆盖分块 / 归并 / 多语言 / 校验 / 渲染的全部确定性逻辑。改完脚本先跑这个。
+274 项断言，不调模型、不花额度，覆盖分块 / 归并 / 多语言 / 校验 / 渲染的全部确定性逻辑。改完脚本先跑这个。
 
 ## 自带样例
 

@@ -3,16 +3,6 @@ name: godot-genre-simulation
 description: "Expert blueprint for simulation and tycoon games (SimCity, RollerCoaster Tycoon, Factorio, Two Point Hospital) covering economy management, time progression, interconnected systems, NPC simulation, and feedback loops. Use when building management sims, tycoon games, city builders, or resource optimization games. Keywords tycoon, economy system, resource management, time scale, feedback loop, progression unlock, simulation tick."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Simulation / Tycoon
-
-Optimization, systems mastery, and satisfying feedback loops define management games.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Simulation & Economy
@@ -95,7 +85,6 @@ Do **not** re-inline TycoonEconomy / SimulationTime / Worker tutorials — load 
 | `_process` sim step | Physics accumulator tick manager |
 | UI every frame | Signal on resource_changed only |
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -107,7 +96,6 @@ Do **not** re-inline TycoonEconomy / SimulationTime / Worker tutorials — load 
 | Feedback & dashboards | [feedback-systems.md](references/feedback-systems.md) |
 | Unlock progression | [progression-unlocks.md](references/progression-unlocks.md) |
 | Production graphs / CSV bake | [elite-technical-patterns.md](references/elite-technical-patterns.md) + [simulation_patterns.gd](scripts/simulation_patterns.gd) |
-
 
 ## Reference
 

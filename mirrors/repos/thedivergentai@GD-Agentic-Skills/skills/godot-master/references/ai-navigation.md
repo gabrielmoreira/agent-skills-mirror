@@ -3,25 +3,13 @@ name: godot-ai-navigation
 description: "AI movement decision router for chase, patrol, crowd, and bake choices on top of NavigationAgent/Server. Use when deciding node agent vs RID server, bake vs obstacle, layer masks, or retarget policy — not for engine navmesh recipes. Keywords: AI navigation, chase retarget, patrol, crowd RVO, bake vs obstacle, NavigationAgent decision tree."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# AI Navigation (Decision Router)
-
-This skill owns **AI movement decisions**. Authoritative NavigationServer scripts live in **godot-navigation-pathfinding** — this package intentionally has **no** `scripts/` (no dead local links).
-
-> **MANDATORY**: Before implementing path/bake/avoidance code, open [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) and **read the linked script(s)** below. **Do NOT Load** beginner chase/patrol tutorials from memory — follow these trees, then only the pathfinding scripts you selected.
-
 ## Decision Trees (MANDATORY script triggers)
 
 ### 1. Node agent vs NavigationServer RID
 | Signal | Choice | Pathfinding script (MANDATORY read) |
 | :--- | :--- | :--- |
 | 2D top-down / side-scroller, < ~50 agents, editor-tweakable | `NavigationAgent2D` on CharacterBody2D | [smart_navigation_agent.gd](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/scripts/smart_navigation_agent.gd) |
-| 3D floor/slope nav, < ~50 agents, designer-placed regions | `NavigationAgent3D` on CharacterBody3D | Same script (3D branch); pair with [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) for body collision |
+| 3D floor/slope nav, < ~50 agents, designer-placed regions | `NavigationAgent3D` on CharacterBody3D | Same script (3D branch); pair with [godot-physics-3d](physics-3d.md) for body collision |
 | Hundreds–thousands of simple movers (2D or 3D) | RID agents on NavigationServer | [server_navigation_setup.gd](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/scripts/server_navigation_setup.gd) + [low_level_avoidance.gd](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/scripts/low_level_avoidance.gd) |
 | Agents stuck / jittering | Stuck recovery before retarget spam | [agent_stuck_detection.gd](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/scripts/agent_stuck_detection.gd) |
 
@@ -46,7 +34,7 @@ This skill owns **AI movement decisions**. Authoritative NavigationServer script
 ### 4. Chase / patrol retarget policy (AI layer)
 - **Chase**: Retarget on timer (~0.2s) or distance threshold — **never** assign `target_position` every physics frame.
 - **Patrol**: Advance waypoint only when `is_navigation_finished()` **and** `is_target_reachable()`; on unreachable, pick next or repath.
-- **State ownership**: Patrol/chase/search transitions belong in [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md); this skill only decides *how* to retarget once a state asks for a destination.
+- **State ownership**: Patrol/chase/search transitions belong in [godot-state-machine-advanced](state-machine-advanced.md); this skill only decides *how* to retarget once a state asks for a destination.
 
 **Patrol state handoff (call site):** in the patrol state's `_physics_process`, when the agent finishes a waypoint, call `retarget_if_needed(next_waypoint)` — do not set `target_position` directly from the state machine root.
 
@@ -88,7 +76,7 @@ If the sibling skill is unavailable, use this minimal stuck-recovery checklist �
 2. Retarget on timer (~0.2s) or distance threshold — never every frame.
 3. On stall: if `!nav_agent.is_target_reachable()` or velocity ≈ 0 for N frames, skip waypoint or call `get_next_path_position()` recovery.
 4. Avoidance: set `radius > 0` when `avoidance_enabled`.
-5. Re-install [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) before shipping async bake or RID crowds.
+5. Re-install [godot-navigation-pathfinding](navigation-pathfinding.md) before shipping async bake or RID crowds.
 
 ## Expert insights (WHY — keep in body)
 
@@ -130,25 +118,25 @@ If the sibling skill is unavailable, use this minimal stuck-recovery checklist �
 ### Related Skills
 
 #### Prerequisites
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — **MANDATORY** authoritative NavigationServer scripts (async bake, RID setup, query reuse, stuck detection); this skill has no local `scripts/`.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Path corners become CharacterBody velocity via move_and_slide; agent scripts assume a body parent.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Collision layers/shapes still block bodies; navmesh is not a physics substitute for walls and triggers.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — 3D agents share the same split: NavigationServer paths vs RigidBody/CharacterBody collision and slopes.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — **MANDATORY** authoritative NavigationServer scripts (async bake, RID setup, query reuse, stuck detection); this skill has no local `scripts/`.
+- [godot-characterbody-2d](characterbody-2d.md) — Path corners become CharacterBody velocity via move_and_slide; agent scripts assume a body parent.
+- [godot-2d-physics](2d-physics.md) — Collision layers/shapes still block bodies; navmesh is not a physics substitute for walls and triggers.
+- [godot-physics-3d](physics-3d.md) — 3D agents share the same split: NavigationServer paths vs RigidBody/CharacterBody collision and slopes.
 
 #### Complements
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Line-of-sight, aim cones, and hit prediction sit beside pathfinding for chase/stealth AI.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Patrol/chase/search states own when to retarget NavigationAgent and when to stop.
-- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — TileMap/TileSet geometry often feeds NavigationPolygon baking in 2D levels.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Static meshes and GridMaps are the usual NavigationMesh source geometry for baked regions.
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Runtime layouts require parse + bake_from_source_geometry_data_async after generation.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — velocity_computed / navigation_finished wiring stays clean when AI systems emit typed signals instead of polling.
+- [godot-raycasting-queries](raycasting-queries.md) — Line-of-sight, aim cones, and hit prediction sit beside pathfinding for chase/stealth AI.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Patrol/chase/search states own when to retarget NavigationAgent and when to stop.
+- [godot-tilemap-mastery](tilemap-mastery.md) — TileMap/TileSet geometry often feeds NavigationPolygon baking in 2D levels.
+- [godot-3d-world-building](3d-world-building.md) — Static meshes and GridMaps are the usual NavigationMesh source geometry for baked regions.
+- [godot-procedural-generation](procedural-generation.md) — Runtime layouts require parse + bake_from_source_geometry_data_async after generation.
+- [godot-signal-architecture](signal-architecture.md) — velocity_computed / navigation_finished wiring stays clean when AI systems emit typed signals instead of polling.
 
 #### Downstream / consumers
-- [godot-genre-rts](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md) — Unit move commands and RVO crowds consume NavigationAgent/Server patterns directly.
-- [godot-genre-tower-defense](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md) — Lane/path enemies and dynamic blockers depend on regions, costs, and obstacle updates.
-- [godot-genre-stealth](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-stealth/SKILL.md) — Guard patrols and investigate points are NavigationAgent routes gated by detection state.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Engage/kite/flank movement issues new targets and stuck recovery on top of paths.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate chase reachability, travel-time bands, and crowd pressure when tuning AI difficulty.
+- [godot-genre-rts](genre-rts.md) — Unit move commands and RVO crowds consume NavigationAgent/Server patterns directly.
+- [godot-genre-tower-defense](genre-tower-defense.md) — Lane/path enemies and dynamic blockers depend on regions, costs, and obstacle updates.
+- [godot-genre-stealth](genre-stealth.md) — Guard patrols and investigate points are NavigationAgent routes gated by detection state.
+- [godot-combat-system](combat-system.md) — Engage/kite/flank movement issues new targets and stuck recovery on top of paths.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate chase reachability, travel-time bands, and crowd pressure when tuning AI difficulty.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for this Domain Skill.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for this Domain Skill.

@@ -86,6 +86,36 @@ class ReviewStateTest(unittest.TestCase):
         )
         self.assertNotEqual(before["content_fingerprint"], after["content_fingerprint"])
 
+    def test_unfiltered_workspace_accounts_for_changes_outside_manifest(self) -> None:
+        (self.repo / "src" / "runtime.py").write_text("VALUE = 2\n")
+        (self.repo / "tests" / "test_runtime.py").write_text("assert 2 == 2\n")
+
+        state = review_state(self.repo, self.base, ("src",))
+
+        self.assertEqual([entry["path"] for entry in state["workspace"]], ["src/runtime.py"])
+        self.assertEqual(
+            [entry["path"] for entry in state["unfiltered"]["workspace"]],
+            ["src/runtime.py", "tests/test_runtime.py"],
+        )
+        self.assertRegex(state["unfiltered"]["status_sha256"], r"^[0-9a-f]{64}$")
+
+    def test_repository_fingerprint_includes_outside_manifest_state_and_content(self) -> None:
+        (self.repo / "src" / "runtime.py").write_text("VALUE = 2\n")
+        before = review_state(self.repo, self.base, ("src",))
+
+        outside = self.repo / "outside.txt"
+        outside.write_text("first\n")
+        after_add = review_state(self.repo, self.base, ("src",))
+        outside.write_text("second\n")
+        after_content = review_state(self.repo, self.base, ("src",))
+
+        self.assertEqual(before["content_fingerprint"], after_add["content_fingerprint"])
+        self.assertEqual(after_add["content_fingerprint"], after_content["content_fingerprint"])
+        self.assertNotEqual(before["repository_fingerprint"], after_add["repository_fingerprint"])
+        self.assertNotEqual(
+            after_add["repository_fingerprint"], after_content["repository_fingerprint"]
+        )
+
     def test_pathspec_file_preserves_literal_values_and_deduplicates(self) -> None:
         manifest = self.repo / "paths.txt"
         manifest.write_text("src\n\n#literal\n lead.py\nsrc\n")

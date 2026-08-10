@@ -29,7 +29,7 @@ Keep durability on [harvest_tool_data.gd](../scripts/game_loop_harvest_harvest_t
 
 ## Popup pool (WHY)
 
-> **CAUTION:** Instantiating Labels per hit fragments memory. Pool damage/harvest popups; see [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md).
+> **CAUTION:** Instantiating Labels per hit fragments memory. Pool damage/harvest popups; see [godot-performance-optimization](performance-optimization.md).
 
 ## Idle / UI-heavy harvest games
 

@@ -11,7 +11,7 @@ Curated list of known browser automation edge cases with symptoms, causes, and f
 | Attribute | Value |
 |-----------|-------|
 | **Site** | LinkedIn (linkedin.com/feed) |
-| **Symptom** | `browser_scroll()` returns `{ok: true}` but page doesn't move |
+| **Symptom** | `browser_interact(action="scroll")` returns `{ok: true}` but page doesn't move |
 | **Root Cause** | Content is in a nested scrollable div (`overflow: scroll`), not the main window |
 | **Detection** | `document.querySelectorAll('*')` with `overflow: scroll/auto` has large candidates |
 | **Fix** | JavaScript finds largest scrollable container, uses `container.scrollBy()` |
@@ -91,24 +91,11 @@ Curated list of known browser automation edge cases with symptoms, causes, and f
 | Attribute | Value |
 |-----------|-------|
 | **Site** | Rich text editors (Notion, Slack web, etc.) |
-| **Symptom** | `browser_type()` doesn't insert text |
+| **Symptom** | `browser_interact(action="type")` doesn't insert text |
 | **Root Cause** | Element is `contenteditable`, not an `<input>` or `<textarea>` |
 | **Detection** | `element.contentEditable === 'true'` |
 | **Fix** | Focus via JavaScript, use `execCommand('insertText')` or `Input.dispatchKeyEvent` |
 | **Code** | `bridge.py:616-694` - contentEditable handling |
-| **Verified** | 2026-04-03 ✓ |
-
-### #8: Autocomplete Field Clearing
-
-| Attribute | Value |
-|-----------|-------|
-| **Site** | Search fields with autocomplete, address forms |
-| **Symptom** | Typed text gets cleared immediately |
-| **Root Cause** | Field expects realistic keystroke timing for autocomplete |
-| **Detection** | Field has autocomplete listeners or dropdown appears |
-| **Fix** | Add `delay_ms=50` between keystrokes |
-| **Code** | `bridge.py:type()` - delay_ms parameter |
-| **Verified** | 2026-04-03 ✓ |
 
 ### #9: Custom Date Pickers
 
@@ -187,8 +174,6 @@ Curated list of known browser automation edge cases with symptoms, causes, and f
 | **Root Cause** | Cross-origin security prevents CDP tracking |
 | **Detection** | URL changes to different domain |
 | **Fix** | Use `wait_for_url` with pattern matching instead of exact URL |
-| **Code** | - |
-| **Verified** | - |
 
 ---
 
@@ -217,6 +202,20 @@ Curated list of known browser automation edge cases with symptoms, causes, and f
 | **Fix** | Call `browser_stop()` to clear stale context from `_contexts`, then `browser_open(url)` to lazy-create a fresh one |
 | **Code** | `tools/lifecycle.py:144-160` - `already_running` check uses cached dict without validating against Chrome |
 | **Verified** | 2026-04-03 ✓ |
+
+### #17: X Chat Send Silently No-ops in Long-lived Session
+
+| Attribute | Value |
+|-----------|-------|
+| **Site** | x.com/i/chat (X Chat DMs) |
+| **Symptom** | `send_dm.py` returns `send_unverified` on every send: enabled `dm-composer-send-button` is found and clicked, but the composer never clears, no `message-text-*` bubble renders, and nothing is delivered server-side. Started after the browser session sat idle ~2h (rate-limit pause) |
+| **Root Cause** | The X Chat SPA's send path goes stale in a long-lived browser session — the click lands but the send silently no-ops (nothing queued; verified by bubble counts after recovery). Not a selector problem: the same selectors work in a fresh session |
+| **Detection** | Repeated `send_unverified` with `composerEmpty: false, msgCount: 0` across DIFFERENT recipients in the same session |
+| **Fix** | `browser_stop()` + `browser_open()` (full browser restart), then retry — sends verify as `sent` immediately. Failed clicks do NOT deliver later, so retrying after restart does not double-send |
+| **Code** | `core/framework/skills/_default_skills/x-com-automation/scripts/send_dm.py` verify step (faithful `send_unverified` reporting made this diagnosable) |
+| **Verified** | 2026-07-17 ✓ (queen session 20260716_130042; reproduced + confirmed via browser_remote) |
+
+Note: an aria-label `"Cancel voice note"` button in the composer alongside disabled attachment/GIF buttons is X's normal has-draft-text state (mislabeled clear button), NOT an active voice recording — red herring. `dm-composer-voice-button` no longer exists in the current composer; `dm-composer-send-button` mounts once React registers text.
 
 ---
 
@@ -251,11 +250,11 @@ Curated list of known browser automation edge cases with symptoms, causes, and f
 | Category | Count |
 |----------|-------|
 | Scroll Issues | 3 |
-| Click Issues | 3 |
+| Click Issues | 4 |
 | Input Issues | 3 |
 | Snapshot Issues | 3 |
 | Navigation Issues | 2 |
 | Screenshot Issues | 2 |
-| **Total** | **16** |
+| **Total** | **17** |
 
-Last updated: 2026-04-03
+Last updated: 2026-07-17

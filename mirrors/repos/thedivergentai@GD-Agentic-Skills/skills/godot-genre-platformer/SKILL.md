@@ -3,16 +3,6 @@ name: godot-genre-platformer
 description: "Expert blueprint for platformer games including precision movement (coyote time, jump buffering, variable jump height), game feel polish (squash/stretch, particle trails, camera shake), level design principles (difficulty curves, checkpoint placement), collectible systems (progression rewards), and accessibility options (assist mode, remappable controls). Based on Celeste/Hollow Knight design research. Trigger keywords: platformer, coyote_time, jump_buffer, game_feel, level_design, precision_movement."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Platformer
-
-Expert blueprint for platformers emphasizing movement feel, level design, and player satisfaction.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Physics & Movement Feel
@@ -41,10 +31,6 @@ Expert blueprint for platformers emphasizing movement feel, level design, and pl
 - NEVER load heavy level chunks synchronously; strictly use `ResourceLoader.load_threaded_request()` to prevent frame stutters.
 
 ---
-
-## Godot 4.7: Platformer
-
-- One-way collision **direction** is shape-relative — tune `CollisionShape2D` direction for angled platforms.
 
 ## Available Scripts
 

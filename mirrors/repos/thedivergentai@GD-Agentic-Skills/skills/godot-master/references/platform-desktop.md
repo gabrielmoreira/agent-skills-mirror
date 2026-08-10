@@ -26,10 +26,6 @@ Settings flexibility, window management, and kb/mouse precision define desktop g
 
 ---
 
-## Godot 4.7: Desktop
-
-- **HDR output** on Windows, macOS, and Linux (Wayland) — enable in Rendering → Viewport settings.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern. Do not paste inline settings/rebind/Steam tutorials — the scripts are the golden path.
@@ -83,7 +79,7 @@ Expert native shell command execution and output capture.
 | Exclusive fullscreen (lowest latency) | `WINDOW_MODE_EXCLUSIVE_FULLSCREEN` | Same — persist choice in ConfigFile |
 | Windowed / multi-monitor drag | `WINDOW_MODE_WINDOWED` + usable rect / DPI scale | Same + [desktop_settings_persistent.gd](../scripts/platform_desktop_desktop_settings_persistent.gd) |
 
-**CI smoke:** headless `--path . --quit-after 1` with settings round-trip write/read under `user://` before merge (pairs with [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md)).
+**CI smoke:** headless `--path . --quit-after 1` with settings round-trip write/read under `user://` before merge (pairs with [godot-export-builds](export-builds.md)).
 
 ## Expert Callouts (keep short — not full tutorials)
 
@@ -119,23 +115,23 @@ Lightweight launcher projects may `OS.create_process` the main pack after writin
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Display stretch, feature tags (`windows`/`linux`/`macos`), and project defaults every desktop settings menu depends on.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — InputEvent buffering and action design before wiring `physical_keycode` rebind UIs.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Settings screens, dropdowns, and remapper rows that stay layout-correct across resolutions.
+- [godot-project-foundations](project-foundations.md) — Display stretch, feature tags (`windows`/`linux`/`macos`), and project defaults every desktop settings menu depends on.
+- [godot-input-handling](input-handling.md) — InputEvent buffering and action design before wiring `physical_keycode` rebind UIs.
+- [godot-ui-containers](ui-containers.md) — Settings screens, dropdowns, and remapper rows that stay layout-correct across resolutions.
 
 #### Complements
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Game-save ownership that pairs with ConfigFile settings and graceful close-request flushes.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton homes for window managers, SDK wrappers, and shutdown handlers.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Bus volume persistence that desktop graphics/audio options menus usually expose together.
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Touch/safe-area remaps when the same project keeps desktop kb/mouse paths after a mobile port.
-- [godot-adapt-mobile-to-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-mobile-to-desktop/SKILL.md) — Bringing touch-first titles up to window modes, keybinds, and multi-monitor expectations.
-- [godot-composition-apps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition-apps/SKILL.md) — Tooling/launcher composition patterns that lean on eco mode, native dialogs, and secondary windows.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and quality presets after OS-level hardware detection suggests Ultra vs Balanced.
+- [godot-save-load-systems](save-load-systems.md) — Game-save ownership that pairs with ConfigFile settings and graceful close-request flushes.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton homes for window managers, SDK wrappers, and shutdown handlers.
+- [godot-audio-systems](audio-systems.md) — Bus volume persistence that desktop graphics/audio options menus usually expose together.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — Touch/safe-area remaps when the same project keeps desktop kb/mouse paths after a mobile port.
+- [godot-adapt-mobile-to-desktop](adapt-mobile-to-desktop.md) — Bringing touch-first titles up to window modes, keybinds, and multi-monitor expectations.
+- [godot-composition-apps](composition-apps.md) — Tooling/launcher composition patterns that lean on eco mode, native dialogs, and secondary windows.
+- [godot-performance-optimization](performance-optimization.md) — Profiling and quality presets after OS-level hardware detection suggests Ultra vs Balanced.
 
 #### Downstream / consumers
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Windows/Linux/macOS export presets, icons, and store packaging once desktop settings and SDK wrappers are stable.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Sibling platform skill for dual-target projects that must not assume desktop quit/window APIs on phones.
-- [godot-platform-web](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md) — Browser constraints (no multi-window / limited shell) when shipping the same settings stack to HTML5.
+- [godot-export-builds](export-builds.md) — Windows/Linux/macOS export presets, icons, and store packaging once desktop settings and SDK wrappers are stable.
+- [godot-platform-mobile](platform-mobile.md) — Sibling platform skill for dual-target projects that must not assume desktop quit/window APIs on phones.
+- [godot-platform-web](platform-web.md) — Browser constraints (no multi-window / limited shell) when shipping the same settings stack to HTML5.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this platform skill beside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for discovering this platform skill beside sibling domains.

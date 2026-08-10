@@ -1,6 +1,6 @@
 ---
 name: kubernetes-deployment
-description: Deploy, manage, and scale applications on Kubernetes clusters using manifests, Helm charts, and autoscaling configurations.
+description: Deploy, manage, and scale applications on Kubernetes clusters using manifests, Helm charts, and autoscaling configurations. Use when the user requests kubernetes deployment or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

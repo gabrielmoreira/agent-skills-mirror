@@ -28,11 +28,6 @@ Expert guidance for writing performant, maintainable GDScript — Godot-landmine
 
 ---
 
-## Godot 4.7: GDScript
-
-- Typed override methods **inherit return type** — overrides require explicit `return` (add `return null` if needed).
-- Setting packed array elements no longer invokes the whole-array property setter.
-
 ## Core Directives (decision trees + MANDATORY scripts)
 
 ### 1. Strong Typing & Performance

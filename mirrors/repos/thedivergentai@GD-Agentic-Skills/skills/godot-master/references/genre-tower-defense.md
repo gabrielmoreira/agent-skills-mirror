@@ -3,16 +3,6 @@ name: godot-genre-tower-defense
 description: "Expert blueprint for tower defense games (Bloons TD, Kingdom Rush, Fieldrunners) covering wave management, tower targeting logic, path algorithms, economy balance, and mazing mechanics. Use when building TD, lane defense, or tower placement strategy games. Keywords tower defense, wave spawner, pathfinding, targeting priority, mazing, NavigationServer baking."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Tower Defense
-
-Strategic placement, resource management, and escalating difficulty define tower defense.
-
 ## Core Loop
 1.  **Prepare**: Build/upgrade towers with available currency
 2.  **Wave**: Enemies spawn and traverse path toward goal
@@ -56,7 +46,6 @@ Strategic placement, resource management, and escalating difficulty define tower
 ### Modular Components
 - [tower_defense_patterns.gd](../scripts/genre_tower_defense_tower_defense_patterns.gd) - Collection of patterns for furthest-target logic and PhysicsServer projectile optimization.
 
-
 ## Decision Trees (MANDATORY script reads)
 
 ### Path style
@@ -94,8 +83,6 @@ When count > ~500:
 
 **MANDATORY**: [tower.gd](../scripts/genre_tower_defense_tower.gd) for idle → acquire → windup → fire. Targeting stays in [tower_targeting_system.gd](../scripts/genre_tower_defense_tower_targeting_system.gd).
 
-
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -103,7 +90,6 @@ When count > ~500:
 | Waves / towers / paths | [architecture-overview.md](genre-tower-defense-architecture-overview.md) |
 | Projectile lead & targeting | [key-mechanics.md](genre-tower-defense-key-mechanics.md) |
 | Maze validation & burst search | [elite-technical-patterns.md](genre-tower-defense-elite-technical-patterns.md) + [grid_path_validator.gd](../scripts/genre_tower_defense_grid_path_validator.gd) |
-
 
 ## Reference
 
@@ -126,24 +112,24 @@ When count > ~500:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project settings, layers, and scene structure before wave/tower wiring.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationServer bake, agents, and path queries that mazing TD depends on.
-- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — TileMapLayer/TileSet grids for buildable cells and lane painting.
+- [godot-project-foundations](project-foundations.md) — project settings, layers, and scene structure before wave/tower wiring.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationServer bake, agents, and path queries that mazing TD depends on.
+- [godot-tilemap-mastery](tilemap-mastery.md) — TileMapLayer/TileSet grids for buildable cells and lane painting.
 
 #### Complements
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Area2D range, layers, and PhysicsServer2D projectile patterns for dense waves.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — StringName tower FSM states (Idle/Acquire/Attack/Cooldown).
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — kill rewards, interest, and early-call income without death spirals.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — damage types, armor pierce, splash, and projectile hit resolution.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — typed Wave/Tower Resources and `duplicate(true)` for balance edits.
-- [godot-game-loop-waves](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-waves/SKILL.md) — prepare/defend/reward phase orchestration around the spawner.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — wave_started / enemy_died / currency_changed buses without frame polling.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — pooling, server bodies, and throttled acquire searches under heavy projectile counts.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — sample wave DPS, leak rates, and economy bands before shipping difficulty curves.
+- [godot-2d-physics](2d-physics.md) — Area2D range, layers, and PhysicsServer2D projectile patterns for dense waves.
+- [godot-state-machine-advanced](state-machine-advanced.md) — StringName tower FSM states (Idle/Acquire/Attack/Cooldown).
+- [godot-economy-system](economy-system.md) — kill rewards, interest, and early-call income without death spirals.
+- [godot-combat-system](combat-system.md) — damage types, armor pierce, splash, and projectile hit resolution.
+- [godot-resource-data-patterns](resource-data-patterns.md) — typed Wave/Tower Resources and `duplicate(true)` for balance edits.
+- [godot-game-loop-waves](game-loop-waves.md) — prepare/defend/reward phase orchestration around the spawner.
+- [godot-signal-architecture](signal-architecture.md) — wave_started / enemy_died / currency_changed buses without frame polling.
+- [godot-performance-optimization](performance-optimization.md) — pooling, server bodies, and throttled acquire searches under heavy projectile counts.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — sample wave DPS, leak rates, and economy bands before shipping difficulty curves.
 
 #### Downstream / consumers
-- [godot-genre-rts](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md) — base defense and unit-placement loops that reuse path validation and economy pressure.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — authoritative purchase validation and unreliable minion sync for co-op TD.
+- [godot-genre-rts](genre-rts.md) — base defense and unit-placement loops that reuse path validation and economy pressure.
+- [godot-multiplayer-networking](multiplayer-networking.md) — authoritative purchase validation and unreliable minion sync for co-op TD.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

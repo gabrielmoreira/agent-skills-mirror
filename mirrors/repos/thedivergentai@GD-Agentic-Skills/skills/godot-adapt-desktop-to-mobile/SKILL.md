@@ -17,16 +17,6 @@ Expert guidance for porting desktop games to mobile platforms.
 
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-## Godot 4.7: Desktop→Mobile
-
-- Use built-in **virtual joystick** instead of third-party touch plugins where possible.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern. Do not paste joystick/gesture/UI tutorials inline.

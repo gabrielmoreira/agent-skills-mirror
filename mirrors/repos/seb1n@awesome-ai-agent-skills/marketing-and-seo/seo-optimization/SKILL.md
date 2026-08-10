@@ -1,6 +1,6 @@
 ---
 name: seo-optimization
-description: Optimize a webpage for search engines by analyzing on-page elements, improving technical performance, and implementing structured data for maximum visibility.
+description: Optimize a webpage for search engines by analyzing on-page elements, improving technical performance, and implementing structured data for maximum visibility. Use when the user requests seo optimization or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

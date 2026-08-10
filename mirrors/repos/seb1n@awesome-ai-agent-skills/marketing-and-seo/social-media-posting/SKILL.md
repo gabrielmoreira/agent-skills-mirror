@@ -1,6 +1,6 @@
 ---
 name: social-media-posting
-description: Create, adapt, and schedule social media content across platforms with platform-specific formatting, engagement hooks, and strategic posting cadence.
+description: Create, adapt, and schedule social media content across platforms with platform-specific formatting, engagement hooks, and strategic posting cadence. Use when the user requests social media posting or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

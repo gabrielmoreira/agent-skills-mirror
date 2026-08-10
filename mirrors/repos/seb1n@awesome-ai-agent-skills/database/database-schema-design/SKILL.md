@@ -1,6 +1,6 @@
 ---
 name: database-schema-design
-description: Design normalized database schemas with tables, relationships, indexes, and constraints for any application domain.
+description: Design normalized database schemas with tables, relationships, indexes, and constraints for any application domain. Use when the user requests database schema design or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills Community

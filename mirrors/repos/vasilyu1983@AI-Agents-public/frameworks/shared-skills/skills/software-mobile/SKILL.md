@@ -1,430 +1,268 @@
 ---
 name: software-mobile
-description: Production-grade iOS, Android, and cross-platform mobile dev. Use when building apps, handling auth/push, or preparing App Store releases.
+description: "Guides mobile platform selection and delivery across native and cross-platform stacks. Use when planning auth, push, deep links, releases, or app architecture for iOS/Android."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# Mobile Development Skill — Quick Reference
+# Mobile Development
 
-This skill equips mobile developers with execution-ready patterns for building native and cross-platform mobile applications. Apply these patterns when you need iOS/Android app architecture, UI components, navigation flows, API integration, offline storage, authentication, or mobile-specific features.
+Use this skill for platform choice, cross-platform tradeoffs, Android implementation guidance, and shared mobile concerns such as authentication, notifications, deep linking, release readiness, and policy checks. For deep native iOS implementation or rewrite work, route to [software-ios-native](../software-ios-native/SKILL.md). For native iOS build, install, packaging, or stale-app debugging, route to [software-ios-runtime-debugging](../software-ios-runtime-debugging/SKILL.md).
 
----
+## Quick Reference
+
+| Task | iOS | Android | Cross-Platform | Default |
+|------|-----|---------|----------------|---------|
+| UI | SwiftUI + UIKit interop | Jetpack Compose + Views interop | React Native, Flutter, KMP + native UI | Native first for platform-heavy work |
+| State | `@State`, `@Observable`, `@Environment` | ViewModel + StateFlow | Zustand/RTK, Riverpod, shared domain state | Platform-native state models |
+| Navigation | `NavigationStack` | Navigation Compose / Navigation Component | Expo Router or React Navigation | Expo Router for greenfield Expo apps |
+| Networking | `URLSession` + async/await | Retrofit/OkHttp/Ktor + coroutines | Fetch/Axios, generated clients | Typed clients over ad hoc fetches |
+| Storage | SwiftData/Core Data, Keychain | Room/DataStore, Keystore | MMKV/SQLite/WatermelonDB, secure storage | Keep secrets in platform secure storage |
+| Testing | Swift Testing + XCTest UI | JUnit + Compose Test + Macrobenchmark | Detox/Maestro, framework-native tests | Measure performance, do not assume it |
+| Release | Privacy manifests, App Review checks | Play target SDK, Data safety, Integrity | Expo/EAS or native pipelines | Re-check store policy before each cut |
+| iOS CI | Xcode Cloud `ci_scripts/ci_post_clone.sh` for generated files | Gradle Play Publisher or managed pipelines; Play Integrity for signing | EAS Build / Codemagic for RN/Expo | Platform-managed CI for submission |
+| Push proof | Xcode real-device → APNs `sandbox` | FCM debug / prod separation by config | Production send path must prove delivery per environment | Never treat local push success as TestFlight proof |
 
 ## When to Use This Skill
 
 Use this skill when you need:
 
-- iOS app development (Swift, SwiftUI, UIKit)
-- Android app development (Kotlin, Jetpack Compose)
-- Cross-platform development (React Native, WebView)
-- Mobile app architecture and patterns
-- Navigation and routing
-- State management (Redux, MobX, MVVM)
-- Network requests and API integration
-- Local data storage (Core Data, Room, SQLite)
-- Authentication and session management
-- Push notifications (APNs, FCM)
-- Camera and media access
-- Location services
-- App Store / Play Store deployment
-- Mobile performance optimization
-- Offline-first architecture
-- Deep linking and universal links
+- Platform selection between native iOS, native Android, React Native, Flutter, Kotlin Multiplatform, and wrapper shells
+- Android app development with Kotlin, Jetpack Compose, ViewModel, StateFlow, and WorkManager
+- Cross-platform decisions across React Native, Expo, Flutter, Kotlin Multiplatform, and WebView shells
+- Mobile auth, passkeys, push notifications, offline-first sync, deep links, and app-store release preparation
+- Backend translation pipeline design for localized prose delivery to mobile clients
 
----
+## When NOT to Use This Skill
 
-## Quick Reference Table
+| Need | Use Instead |
+|------|-------------|
+| Web-only frontend | [software-frontend](../software-frontend/SKILL.md) |
+| Backend API implementation | [software-backend](../software-backend/SKILL.md) |
+| Managed app-backend (Supabase, Firebase, Appwrite) | [software-baas-platforms](../software-baas-platforms/SKILL.md) |
+| Native iOS app skeleton with iCloud/CloudKit/App Intents/Foundation Models | [software-ios-native](../software-ios-native/SKILL.md) + [software-ios-ai-engine](../software-ios-ai-engine/SKILL.md) |
+| Native iOS rewrite, SwiftUI, or Xcode workflows | [software-ios-native](../software-ios-native/SKILL.md) |
+| Native iOS build/install/launch failures, stale-app, simulator drift | [software-ios-runtime-debugging](../software-ios-runtime-debugging/SKILL.md) |
+| Native iOS visual audits | [software-ios-design](../software-ios-design/SKILL.md) |
+| iOS-specific testing deep dives | [qa-testing-ios](../qa-testing-ios/SKILL.md) |
+| Native Android rewrite, Kotlin, Gradle, Android Studio | [software-android-native](../software-android-native/SKILL.md) |
+| Native Android build/install/launch failures, emulator drift | [software-android-runtime-debugging](../software-android-runtime-debugging/SKILL.md) |
+| Native Android visual audits | [software-android-design](../software-android-design/SKILL.md) |
 
-| Task | iOS | Android | Cross-Platform | When to Use |
-|------|-----|---------|----------------|-------------|
-| Native UI | SwiftUI + UIKit | Jetpack Compose + Views | React Native | Native: Best performance; Cross-platform: Code sharing |
-| Navigation | NavigationStack | Navigation Component | React Navigation | Platform-specific for native feel |
-| State Management | @State/@Observable | ViewModel + StateFlow | Redux/MobX | iOS: @Observable; Android: ViewModel; RN: Redux |
-| Networking | URLSession + async/await | Retrofit + Coroutines | Axios/Fetch | Native: Type-safe; RN: JavaScript ecosystem |
-| Local Storage | Core Data + SwiftData | Room Database | AsyncStorage/SQLite | Native: Full control; RN: Simpler |
-| Push Notifications | APNs | FCM | React Native Firebase | Native: Platform-specific; RN: Unified API |
-| Background Tasks | BGTaskScheduler | WorkManager | Headless JS | For scheduled/background work |
-| Deep Linking | Universal Links | App Links | React Navigation linking | For URL-based app entry |
-| Authentication | AuthenticationServices | Credential Manager | Expo AuthSession | For social/biometric auth |
-| Analytics | Firebase/Amplitude | Firebase/Amplitude | Expo Analytics | Track user behavior |
-
----
-
-## Decision Tree: Platform Selection
+## Platform Selection
 
 ```text
-Need to build mobile app for: [Target Audience]
+Need to ship mobile product?
     │
-    ├─ iOS only?
-    │   ├─ New app? → SwiftUI (modern, declarative)
-    │   ├─ Existing UIKit codebase? → UIKit + incremental SwiftUI adoption
-    │   └─ Complex animations? → UIKit for fine-grained control
-    │
-    ├─ Android only?
-    │   ├─ New app? → Jetpack Compose (modern, declarative)
-    │   ├─ Existing Views codebase? → Views + incremental Compose adoption
-    │   └─ Complex custom views? → Custom View for fine-grained control
+    ├─ Single platform only?
+    │   ├─ iOS → SwiftUI for new code, UIKit interop where needed
+    │   └─ Android → Jetpack Compose for new code, Views interop where needed
     │
     ├─ Both iOS and Android?
-    │   ├─ Need maximum performance / platform fidelity?
-    │   │   └─ Build separate native apps (Swift + Kotlin)
-    │   │
-    │   ├─ Need faster development + code sharing?
-    │   │   ├─ JavaScript/TypeScript team? → React Native (Expo-managed or bare)
-    │   │   ├─ Dart team? → Flutter
-    │   │   └─ Kotlin team? → Kotlin Multiplatform (KMP)
-    │   │
-    │   ├─ Kotlin Multiplatform (KMP)?
-    │   │   ├─ Share business logic only? → KMP shared module + native UI
-    │   │   ├─ Share some UI? → Compose Multiplatform (validate iOS maturity for your needs)
-    │   │   └─ Shared modules need platform UI? → Keep native UI, share domain/data/networking
-    │   │
-    │   └─ Wrapping existing web app?
-    │       ├─ Simple wrapper? → WebView (iOS WKWebView / Android WebView)
-    │       └─ Native features needed? → Capacitor or React Native WebView
+    │   ├─ Native integrations / performance / platform fidelity dominate? → Separate native apps
+    │   ├─ JS/TS team and fastest shared delivery? → React Native + Expo-managed for greenfield
+    │   ├─ Fully shared rendering and custom UI control? → Flutter
+    │   └─ Kotlin team, shared logic, native UI? → Kotlin Multiplatform
     │
-    └─ Prototype/MVP only?
-        └─ React Native or Flutter for fastest iteration
+    └─ Existing web app wrapper?
+        ├─ Low-complexity shell → WebView / Capacitor
+        └─ Meaningful native features → React Native or native modules
 ```
 
-## Decision Tree: Architecture Pattern
+### Cross-Platform Defaults (July 2026)
+
+| Framework | Default | Status |
+|-----------|---------|--------|
+| React Native | New Architecture is now the only architecture — Legacy Architecture has been removed from current RN/Expo releases, not merely opt-out. The decision point has shifted from "should we adopt it" to "is every native module/library we depend on migrated" | Mandatory, not opt-in |
+| Expo + Expo Router | Fastest greenfield path unless bare/native-heavy control needed early; current Router major version ships file-based routing plus brownfield-embedding support | Active default |
+| Flutter | Strong when shared rendering and animation control matter more than native feel | Active |
+| Kotlin Multiplatform | Best fit for shared business logic with native UI; Compose Multiplatform for iOS reached stable in 2025 and has continued shipping performance-focused releases since (concurrent rendering, native text input) | Validate library maturity per release, not from a single stability announcement |
+
+## Workflow
+
+1. Confirm product scope, platform targets, native requirements, and release constraints.
+2. Route web-only, backend, or iOS-native deep dives to adjacent skills.
+3. Choose the stack from the selection guidance above.
+4. Apply guidance for auth, push, offline behavior, release gates, and testing.
+   - For iOS push: prove the local `sandbox` path and the `production` path separately.
+   - Treat push signoff as two gates: transport proof (notification accepted and shown) and open-path proof (tapping from cold start and warm start does not freeze or crash).
+5. Re-check current platform-policy and framework facts before final recommendations.
 
 ```text
-Choosing architecture pattern?
-    │
-    ├─ iOS (Swift)?
-    │   ├─ SwiftUI app? → MVVM with @Observable/ObservableObject (based on OS baseline)
-    │   ├─ Complex SwiftUI? → TCA (Composable Architecture) for testability
-    │   ├─ UIKit app? → MVVM-C (Coordinator pattern)
-    │   ├─ Large team? → Clean Architecture + MVVM
-    │   └─ Simple app? → MVC (Apple default)
-    │
-    ├─ Android (Kotlin)?
-    │   ├─ Compose app? → MVVM with ViewModel + StateFlow
-    │   ├─ Views app? → MVVM with LiveData
-    │   ├─ Large team? → Clean Architecture + MVVM
-    │   └─ Simple app? → Activity/Fragment-based
-    │
-    └─ React Native?
-        ├─ Small app? → Context API + useState
-        ├─ Medium app? → Redux Toolkit or Zustand
-        └─ Large app? → Redux + RTK Query + feature-based structure
+Mobile task
+  -> Identify platform mix, app type, and user-facing surface
+  -> Route deep native work to iOS or Android specialist skills
+  -> Define architecture, state, navigation, storage, and release gates
+  -> Implement bounded slice with accessibility and localization checks
+  -> Build, install, launch, test, and capture proof
+  -> Report platform-specific blockers and handoffs
 ```
 
-## Decision Tree: Data Persistence
+## Platform Defaults
 
-```text
-Need to store data locally?
-    │
-    ├─ Simple key-value pairs?
-    │   ├─ iOS → UserDefaults
-    │   ├─ Android → SharedPreferences / DataStore
-    │   └─ RN → AsyncStorage
-    │
-    ├─ Structured data with relationships?
-    │   ├─ iOS → Core Data or SwiftData
-    │   ├─ Android → Room Database
-    │   └─ RN → WatermelonDB or Realm
-    │
-    ├─ Secure credentials?
-    │   ├─ iOS → Keychain
-    │   ├─ Android → EncryptedSharedPreferences / Keystore
-    │   └─ RN → react-native-keychain
-    │
-    └─ Large files/media?
-        ├─ iOS → FileManager (Documents/Cache)
-        ├─ Android → Internal/External Storage
-        └─ RN → react-native-fs
-```
+### iOS
 
-## Decision Tree: Networking
+- SwiftUI for new screens; UIKit interop for mature or heavily customized flows.
+- `@Observable` on iOS 17+; keep `ObservableObject` only when supporting older baselines.
+- Swift Concurrency throughout; keep UI-facing state on `@MainActor`.
+- Swift Testing for unit tests; XCTest for UI/legacy coverage.
+- Privacy manifests, required-reason APIs, and App Review requirements are hard release gates.
+- Backend routing authoritative per device row (`push_environment`); verify the newest row after every install type change.
+- iOS push QA: validate the notification-open path explicitly after transport succeeds — tap from cold start, tap from warm resume, force-close and relaunch normally.
+- Before TestFlight upload, inspect archived app entitlements: confirm `aps-environment = production`.
 
-```text
-Need to make API calls?
-    │
-    ├─ iOS?
-    │   ├─ Simple REST? → URLSession + async/await
-    │   ├─ Complex API? → URLSession + Codable
-    │   └─ GraphQL? → Apollo iOS
-    │
-    ├─ Android?
-    │   ├─ Simple REST? → Retrofit + Coroutines
-    │   ├─ Complex API? → Retrofit + OkHttp interceptors
-    │   └─ GraphQL? → Apollo Android
-    │
-    └─ React Native?
-        ├─ Simple REST? → fetch() or Axios
-        ├─ Complex API? → RTK Query or React Query
-        └─ GraphQL? → Apollo Client
-```
+### iOS Release Operations
 
----
+| Gate | Rule |
+|------|------|
+| TestFlight channels | internal → external (Beta App Review) → public link |
+| Upload path | App Store Connect Organizer → `App Store Connect`. `Release Testing` is not the submission route. |
+| Backend/content vs binary | Backend fixes that don't change the binary, native UI, capabilities, or App Review-visible behavior do not require a new iOS release. |
+| Smoke proof | Real-iPhone TestFlight smoke: production APNs delivery + product loading + purchase + restore + relaunch. |
+| Minimum SDK for upload | Apple periodically raises the minimum Xcode/SDK version accepted at App Store Connect (e.g., the iOS/iPadOS 26 SDK plus Xcode 26+ became mandatory for new uploads in April 2026) — check [developer.apple.com/news/upcoming-requirements](https://developer.apple.com/news/upcoming-requirements/) before any archive/upload, since a passing local build can still be rejected at ingestion. |
 
-## Core Capabilities
+### Android
 
-### iOS Development
+- Jetpack Compose for new UI; Views only for interop or legacy.
+- ViewModel + StateFlow; LiveData is maintenance-mode for older View-based code only.
+- WorkManager for guaranteed background work; Credential Manager for passkeys/password/federated sign-in.
+- Baseline Profiles and Macrobenchmark for startup and scroll performance.
+- Play target SDK policy, Data safety, and Play Integrity are hard release gates.
+- New apps and updates must target API 36 / Android 16 by August 31, 2026 (extension requests can push individual apps to November 1, 2026); existing published apps must target at least API 35 / Android 15 to remain visible on Android 16+/17 devices. This deadline moves every year — re-check [developer.android.com/google/play/requirements/target-sdk](https://developer.android.com/google/play/requirements/target-sdk) before every release, don't reuse a cached deadline.
 
-- **UI Frameworks**: SwiftUI (declarative), UIKit (imperative)
-- **Architecture**: MVVM, Clean Architecture, Coordinator, TCA (Composable Architecture)
-- **Concurrency**: Swift Concurrency (async/await, actors, TaskGroup); keep UI state on `@MainActor`; enable strict concurrency checks as appropriate
-- **Storage**: Core Data, SwiftData, Keychain
-- **Networking**: URLSession, async/await patterns
-- **Platform compliance**: Privacy manifests + required-reason APIs, background execution limits, and accessibility settings (Dynamic Type, VoiceOver)
-- **Defensive Decoding**: Handle missing fields, array/dict formats, snake_case/camelCase
+## Known Platform Traps
 
-### Android Development
+### iOS
 
-- **UI Frameworks**: Jetpack Compose (declarative), Views (XML)
-- **Architecture**: MVVM, Clean Architecture, MVI
-- **Concurrency**: Coroutines, Flow, LiveData
-- **Storage**: Room, DataStore, Keystore
-- **Networking**: Retrofit, OkHttp, Ktor
+- `_performBlockAfterCATransactionCommitSynchronizes:` / "Call must be made on main thread" is a **private SwiftUI symbol**, not user-code. Web-search the signature before any code review.
+- Once APNs accepts a push payload and the banner appears, any freeze or crash after tapping belongs to the **app-side open path** (delegate isolation, pending-route races, off-main UI mutations) — not to transport.
+- `dataCorrupted` + `<!DOCTYPE html>` is an API routing / auth bug, not a concurrency bug.
+- Xcode 26 default TLS Client Hello changed: apps talking to servers with strict TLS-fingerprint allowlists may see login or API failures on fresh builds — verify against staging.
 
-### Cross-Platform Development
+### Android / Kotlin
 
-- **Kotlin Multiplatform (KMP)**: Share domain/data/networking; keep native UI; consider Compose Multiplatform when shared UI is worth the constraints
-- **React Native**: JavaScript/TypeScript; evaluate New Architecture readiness and native-module surface area; Expo-managed path is often fastest for greenfield apps
-- **Flutter**: Dart; high code sharing; validate platform-specific gaps and plugin maturity for your requirements
-- **WebView**: WKWebView (iOS), WebView (Android), JavaScript bridge
+- `android.view.ViewRootImpl$CalledFromWrongThreadException` and `ConcurrentModificationException` inside `SnapshotStateObserver` are the Android parallels to iOS main-thread crashes. They surface when a `MutableStateFlow` backing UI state is mutated from `Dispatchers.IO` while Compose is reading it on the main thread.
+- Safe pattern: do blocking work inside `withContext(Dispatchers.IO) { ... }`, return a plain value, then assign to `_uiState.value` on the main thread. Collect in composables via `collectAsStateWithLifecycle()`.
+- Kotlin 2.x + Strong Skipping Mode: emitting a fresh `data class` instance per field on every ViewModel event defeats Compose's identity-based skip check. Split UI state into `@Immutable` sub-objects; hoist derived lists with `stateIn`; wrap per-row callbacks in `remember(id) { { ... } }`.
+- When `adb logcat` shows the crash includes `SnapshotStateObserver`, `MonotonicFrameClock`, or `Recomposer`, route to [software-android-native](../software-android-native/SKILL.md) and [software-android-runtime-debugging](../software-android-runtime-debugging/SKILL.md).
 
----
+## Expert Judgment Calls
 
-## Platform Baselines (Verify Current Requirements)
+Non-experts see a working build and call it done. An expert checks the cases where "it built and ran once" is not the same as "it will pass review, survive an audit, or work for the next user."
 
-### iOS/iPadOS (Core)
+- **Cross-platform regret is asymmetric.** Moving from native to shared code is a full rewrite; moving from shared code to native is usually a partial, surgical one (pull out the hot path, keep the rest). When timeline pressure forces a shared-framework choice, explicitly list which native integrations (camera pipelines, ARKit/ARCore, background audio, CarPlay/Android Auto, widgets, App Intents/App Actions) are foreseeable within 12 months — those are the ones that force a native escape hatch later, and the earlier you know, the cheaper the hedge (e.g., isolate the module behind a platform-abstraction boundary from day one).
+- **One native escape hatch usually means you need native hiring anyway.** Teams under-price this: a single deep native module (e.g., a custom camera pipeline or a hardware SDK) requires the same iOS/Android specialist skill as a fully native app, just applied to a smaller surface. Budget the hire, not just the sprint.
+- **App Review rejection risk hides in account and auth flows, not UI polish.** The most common late-stage iOS rejections a non-expert misses: (1) Guideline 5.1.1(v) — in-app account deletion that actually deletes the record and revokes tokens, not just deactivates; (2) Sign in with Apple parity — if the app offers any third-party or social login, Sign in with Apple must be offered too, at equal prominence; (3) subscription flows that don't expose "Cancel Subscription" reachably inside the app or account settings. Verify all three before submission, every release — Apple periodically increases enforcement on these without a version bump to announce it.
+- **Push permission priming is a judgment call, not a technical one.** Requesting notification permission on first launch reliably produces "Don't Allow" from most users, who then never see the system prompt again. An expert defers the OS prompt until the user has taken an action that makes the value of push obvious (e.g., after placing an order), and separately audits whether the soft-ask copy itself needs its own re-prompt path if declined.
+- **Offline-first correctness is a conflict-resolution decision, not a caching decision.** Before implementing local-first storage, force an explicit answer to "what happens when two devices edit the same record while offline" — last-write-wins, field-level merge, or user-facing conflict UI. Silence on this question means the team will discover the answer in production, from a support ticket.
+- **A shared entitlement registry is cheaper before launch than after.** Apps that sell both in-store (StoreKit/Play Billing) and web/Stripe entitlements without one canonical source of truth accumulate silent state drift (a user paid on web, app still shows locked) that is expensive to retrofit once both paths have real users.
+- **Framework benchmark claims decay faster than they're written.** A blog post claiming "Flutter is now as fast as native" or "RN startup time improved 40%" is a snapshot of one app, one release, one device. Treat every unsourced performance claim as a hypothesis to verify with Instruments/Macrobenchmark on the actual product, not a fact to design around.
 
-- Privacy manifest files (app + embedded SDKs) are maintained and reviewed https://developer.apple.com/documentation/bundlereferences/privacy_manifest_files
-- Required-reason APIs are declared with valid reasons https://developer.apple.com/documentation/bundlereferences/privacy_manifest_files
-- Background work uses supported primitives (avoid fragile timers) https://developer.apple.com/documentation/backgroundtasks
-- App Transport Security is configured; exceptions are justified and documented https://developer.apple.com/documentation/bundlereferences/information_property_list/nsapptransportsecurity
-- Concurrency is implemented with Swift Concurrency (async/await, actors, TaskGroup) and checked with current Swift language mode settings https://docs.swift.org/swift-book/LanguageGuide/Concurrency.html
-- Swift 6 migration / strict concurrency guidance is followed when upgrading toolchains https://developer.apple.com/documentation/swift/adoptingswift6
-- UI/UX follows current Human Interface Guidelines (including accessibility) https://developer.apple.com/design/human-interface-guidelines/ios
-
-### Android (Core)
-
-- Background work uses WorkManager for deferrable, guaranteed work https://developer.android.com/topic/libraries/architecture/workmanager
-- Network calls and auth state survive process death (no hidden singleton assumptions) [Inference]
-- Target SDK meets current Google Play requirements (verify policy + deadlines) https://support.google.com/googleplay/android-developer/answer/11926878
-- Prefer Play Integrity API over deprecated SafetyNet Attestation https://developer.android.com/google/play/integrity
-- Prefer Credential Manager for passkeys and modern sign-in flows https://developer.android.com/identity/sign-in/credential-manager
-
-### Cross-Platform (Core)
-
-- Feature parity is explicit (document what is native-only vs shared) [Inference]
-- Bridges are treated as public APIs (versioned, tested, and observable) [Inference]
-- React Native upgrades follow the official upgrade guide; validate New Architecture readiness against your native-module surface area https://reactnative.dev/docs/upgrading
-- Expo SDK upgrades follow Expo release notes and upgrade guides https://expo.dev/changelog
-
-### Optional: AI/Automation Extensions
-
-> **Note**: Skip unless the app ships AI/automation features.
-
-- iOS: Core ML / on-device inference primitives https://developer.apple.com/documentation/coreml
-- Android: Google ML Kit https://developers.google.com/ml-kit
-- Verify: model size/battery impact, offline/online behavior, user controls (cancel/undo), and privacy boundaries [Inference]
-
----
-
-## Common Patterns
-
-### App Startup Checklist
-
-1. **Initialize dependencies**
-   - Configure DI container (Hilt/Koin/Swinject)
-   - Set up logging and crash reporting
-   - Initialize analytics
-
-2. **Check authentication state**
-   - Validate stored tokens
-   - Refresh if needed
-   - Route to login or main screen
-
-3. **Configure app state**
-   - Load user preferences
-   - Set up push notification handlers
-   - Initialize deep link handling
-
-### Offline-First Architecture
-
-```text
-1. Local-first data access
-   - Always read from local database
-   - Display cached data immediately
-   - Show loading indicator for sync
-
-2. Background sync
-   - Queue write operations
-   - Sync when connectivity available
-   - Handle conflict resolution
-
-3. Optimistic updates
-   - Update UI immediately
-   - Sync in background
-   - Rollback on failure
-```
-
-### Push Notification Setup
-
-```text
-iOS (APNs):
-1. Enable Push Notifications capability
-2. Request user permission
-3. Register for remote notifications
-4. Handle device token
-5. Implement notification delegate
-
-Android (FCM):
-1. Add Firebase to project
-2. Implement FirebaseMessagingService
-3. Handle notification/data messages
-4. Manage notification channels (Android 8+)
-5. Handle background/foreground states
-```
-
----
-
-## Performance Optimization
-
-| Area | iOS | Android | Metric |
-|------|-----|---------|--------|
-| Launch time | Pre-warm, lazy loading | Cold start optimization | < 2s cold start |
-| List scrolling | LazyVStack, prefetch | LazyColumn, paging | 60 FPS |
-| Image loading | AsyncImage, cache | Coil/Glide, disk cache | < 100ms visible |
-| Memory | Instruments profiling | LeakCanary, Profiler | No memory leaks |
-| Battery | Background App Refresh limits | Doze mode compliance | Minimal drain |
-
----
-
-## App Store Deployment Checklist
+## Release Readiness Checklist
 
 ### iOS App Store
 
-- [ ] App icons (all required sizes)
-- [ ] Launch screen configured
-- [ ] Privacy manifest per target and embedded frameworks (iOS 18+)
-- [ ] Required-reason APIs declared with justifications
-- [ ] Third-party SDK privacy manifests attached; SDK signature attestation (iOS 19+)
-- [ ] Info.plist permissions explanations
-- [ ] App Store screenshots (all device sizes)
-- [ ] App Store description and keywords
-- [ ] Privacy policy URL
-- [ ] TestFlight beta testing
+- [ ] Icons, launch assets, and permission copy are complete
+- [ ] Privacy manifest and required-reason APIs are correct for app targets and listed SDKs
+- [ ] Third-party SDK compliance matches Apple's current requirements
+- [ ] Accessibility, deep links, and push flows tested on current devices
+- [ ] App Store metadata, privacy policy, and TestFlight coverage ready
+- [ ] Full App Store Connect preparation — see [references/app-store-connect-checklist.md](references/app-store-connect-checklist.md)
 
-### Google Play Store
+### Google Play
 
-- [ ] App icons and feature graphic
-- [ ] Store listing screenshots
-- [ ] Privacy policy URL
-- [ ] Content rating questionnaire
-- [ ] Target API level compliance
-- [ ] Data safety form
-- [ ] Internal/closed/open testing tracks
+- [ ] Target SDK matches the latest Play policy (API 36 / Android 16 required for new apps and updates by August 31, 2026 — re-verify the current deadline, it moves annually)
+- [ ] Privacy policy, content rating, and Data safety complete
+- [ ] Integrity, auth, and background behavior tested under modern Android constraints
+- [ ] Internal/closed/open tracks configured appropriately
 
----
+## Common Anti-Patterns
+
+| Anti-Pattern | Problem | Better Default |
+|--------------|---------|----------------|
+| Unsourced framework benchmarks | Misleads architecture decisions | Measure with Instruments, Macrobenchmark, and real-device runs |
+| Treating old policy dates as timeless | Store submission failures | Re-check Apple/Google policy pages before release |
+| Defaulting to LiveData in new Android apps | Older reactive model | ViewModel + StateFlow for new work |
+| Treating Expo as "just React Native tooling" | Missed routing/OTA ergonomics | Use Expo Router and EAS deliberately |
+| Fingerprinting-based deferred deep links | Reliability and privacy issues | Verified Universal/App Links plus approved attribution flows |
+| SafetyNet Attestation on Android | Deprecated | Play Integrity API |
+| Mixed web + store entitlements without one canonical registry | Conflicting access state | One entitlement registry with documented conflict-resolution rule before launch |
+| Treating mobile billing policy as static | Store rejection | Re-verify Apple and Google billing policy before release and major monetization changes |
+
+## Known Traps
+
+- Assuming one mobile framework decision solves release, entitlement, deep-link, and push behavior without platform-specific proof
+- Validating auth, push, or deep links only in local debug builds and treating that as production readiness
+- Mixing sandbox, staging, and production mobile backends until install-specific behavior becomes impossible to reproduce
+- Using emulator or simulator success as proof for background execution, notification delivery, or device-specific lifecycle
+- Choosing a cross-platform stack before listing native integrations, extension points, and store-policy constraints that can force native escape hatches
 
 ## Navigation
 
-### Resources
+### References
 
-- [references/ios-best-practices.md](references/ios-best-practices.md) — iOS architecture, concurrency, testing, performance, defensive decoding, and accessibility
-- [references/android-best-practices.md](references/android-best-practices.md) — Android/Kotlin architecture, coroutines, Compose, testing, performance
-- [references/operational-playbook.md](references/operational-playbook.md) — Mobile architecture patterns, platform-specific guides, security notes, and decision tables
-- [references/cross-platform-comparison.md](references/cross-platform-comparison.md) — React Native vs Flutter vs KMP vs native: performance, ecosystem, CI/CD, migration paths
-- [references/mobile-testing-patterns.md](references/mobile-testing-patterns.md) — Testing pyramid, XCTest, Espresso, Detox, Maestro, device farms, performance testing
-- [references/offline-first-architecture.md](references/offline-first-architecture.md) — Local databases, sync strategies, conflict resolution, background sync, optimistic updates
-- [references/push-notifications-guide.md](references/push-notifications-guide.md) — APNs, FCM, permission patterns, notification channels, rich notifications, analytics
-- [references/deep-linking-guide.md](references/deep-linking-guide.md) — Universal Links, App Links, deferred deep links, React Native integration, routing architecture
-- [data/sources.json](data/sources.json) — Curated external references by platform
+- [references/ios-best-practices.md](references/ios-best-practices.md) — iOS architecture, concurrency, testing, accessibility, release
+- [references/android-best-practices.md](references/android-best-practices.md) — Android architecture, Compose, coroutines, testing, performance
+- [references/cross-platform-comparison.md](references/cross-platform-comparison.md) — React Native / Flutter / KMP / native tradeoffs
+- [references/deep-linking-guide.md](references/deep-linking-guide.md) — Universal Links, App Links, Expo Router, post-Dynamic-Links
+- [references/mobile-testing-patterns.md](references/mobile-testing-patterns.md) — test pyramid, device strategy, snapshot/UI/E2E
+- [references/offline-first-architecture.md](references/offline-first-architecture.md) — local-first storage, sync, conflict resolution
+- [references/push-notifications-guide.md](references/push-notifications-guide.md) — APNs, FCM, permissions, channels, analytics
+- [references/operational-playbook.md](references/operational-playbook.md) — release operations, decision tables, centralized patterns
+- [references/app-store-connect-checklist.md](references/app-store-connect-checklist.md) — App Store Connect field-by-field checklist
+- [references/backend-translation-pipeline.md](references/backend-translation-pipeline.md) — i18n patterns for backend-generated prose delivered to mobile clients
+- [data/sources.json](data/sources.json) — current official and curated external sources
 
-### Shared Checklists
+### Shared Checklists And Utilities
 
-- [../software-clean-code-standard/assets/checklists/mobile-release-checklist.md](../software-clean-code-standard/assets/checklists/mobile-release-checklist.md) — Product-agnostic mobile release readiness checklist (core + optional AI)
-
-### Shared Utilities (Centralized patterns — extract, don't duplicate)
-
-- [../software-clean-code-standard/utilities/auth-utilities.md](../software-clean-code-standard/utilities/auth-utilities.md) — Argon2id, jose JWT, OAuth 2.1/PKCE (backend auth for mobile clients)
-- [../software-clean-code-standard/utilities/error-handling.md](../software-clean-code-standard/utilities/error-handling.md) — Error patterns, Result types
-- [../software-clean-code-standard/utilities/resilience-utilities.md](../software-clean-code-standard/utilities/resilience-utilities.md) — Retry, circuit breaker for network calls
-- [../software-clean-code-standard/utilities/logging-utilities.md](../software-clean-code-standard/utilities/logging-utilities.md) — Structured logging patterns
-- [../software-clean-code-standard/utilities/testing-utilities.md](../software-clean-code-standard/utilities/testing-utilities.md) — Test factories, fixtures, mocks
-- [../software-clean-code-standard/references/clean-code-standard.md](../software-clean-code-standard/references/clean-code-standard.md) — Canonical clean code rules (`CC-*`) for citation
+- [../software-clean-code-standard/assets/checklists/mobile-release-checklist.md](../software-clean-code-standard/assets/checklists/mobile-release-checklist.md)
+- [../software-clean-code-standard/references/auth-utilities.md](../software-clean-code-standard/references/auth-utilities.md)
+- [../software-clean-code-standard/references/error-handling.md](../software-clean-code-standard/references/error-handling.md)
+- [../software-clean-code-standard/references/resilience-utilities.md](../software-clean-code-standard/references/resilience-utilities.md)
+- [../software-clean-code-standard/references/testing-utilities.md](../software-clean-code-standard/references/testing-utilities.md)
+- [../software-clean-code-standard/references/clean-code-standard.md](../software-clean-code-standard/references/clean-code-standard.md)
 
 ### Templates
 
 - **Swift**: [assets/swift/template-swift.md](assets/swift/template-swift.md), [assets/swift/template-swift-concurrency.md](assets/swift/template-swift-concurrency.md), [assets/swift/template-swift-combine.md](assets/swift/template-swift-combine.md), [assets/swift/template-swift-performance.md](assets/swift/template-swift-performance.md), [assets/swift/template-swift-testing.md](assets/swift/template-swift-testing.md)
 - **SwiftUI**: [assets/swiftui/template-swiftui-advanced.md](assets/swiftui/template-swiftui-advanced.md)
-- **Kotlin/Android**: [assets/kotlin/template-kotlin.md](assets/kotlin/template-kotlin.md), [assets/kotlin/template-kotlin-coroutines.md](assets/kotlin/template-kotlin-coroutines.md), [assets/kotlin/template-kotlin-compose-advanced.md](assets/kotlin/template-kotlin-compose-advanced.md), [assets/kotlin/template-kotlin-testing.md](assets/kotlin/template-kotlin-testing.md)
+- **Kotlin / Android**: [assets/kotlin/template-kotlin.md](assets/kotlin/template-kotlin.md), [assets/kotlin/template-kotlin-coroutines.md](assets/kotlin/template-kotlin-coroutines.md), [assets/kotlin/template-kotlin-compose-advanced.md](assets/kotlin/template-kotlin-compose-advanced.md), [assets/kotlin/template-kotlin-testing.md](assets/kotlin/template-kotlin-testing.md)
 - **Cross-platform**: [assets/cross-platform/template-platform-patterns.md](assets/cross-platform/template-platform-patterns.md), [assets/cross-platform/template-webview.md](assets/cross-platform/template-webview.md)
 
----
+### Related Skills
 
-## Anti-Patterns to Avoid
-
-| Anti-Pattern | Problem | Solution |
-|--------------|---------|----------|
-| Blocking main thread | UI freezes, ANRs | Use async/coroutines for all I/O |
-| Massive view controllers | Hard to test/maintain | Extract to MVVM/services |
-| Hardcoded strings | No localization | Use NSLocalizedString/strings.xml |
-| Ignoring lifecycle | Memory leaks, crashes | Respect activity/view lifecycle |
-| No offline handling | Poor UX without network | Cache data, queue operations |
-| Storing secrets in code | Security vulnerability | Use Keychain/Keystore |
-| Using `decode()` without fallback | Crashes on missing/malformed API data | Use `decodeIfPresent()` with defaults |
-| Missing @Bindable for @Observable | NavigationStack bindings don't work | Add `@Bindable var vm = vm` in body |
-
----
-
-## Trend Awareness Protocol
-
-**IMPORTANT**: When users ask recommendation questions about mobile development, you MUST use a web search capability (if available) to check current trends before answering. If web search is unavailable, say so and answer using `data/sources.json`, clearly flagging that the recommendation may be stale.
-
-### Trigger Conditions
-
-- "What's the best mobile framework for [use case]?"
-- "What should I use for [cross-platform/native/hybrid]?"
-- "What's the latest in iOS/Android development?"
-- "Current best practices for [Swift/Kotlin/React Native]?"
-- "Is [React Native/Flutter/Expo] still relevant in 2026?"
-- "[React Native] vs [Flutter] vs [native]?"
-- "Best approach for [offline/push/deep linking]?"
-
-### Required Searches
-
-1. Search: `"mobile development best practices 2026"`
-2. Search: `"[iOS/Android/React Native/Flutter] updates 2026"`
-3. Search: `"mobile framework comparison 2026"`
-4. Search: `"[Expo/Swift/Kotlin] new features 2026"`
-
-### What to Report
-
-After searching, provide:
-
-- **Current landscape**: What frameworks/approaches are popular NOW
-- **Emerging trends**: New patterns or tools gaining traction
-- **Deprecated/declining**: Approaches that are losing relevance
-- **Recommendation**: Based on fresh data and recent releases
-
-### Example Topics (verify with fresh search)
-
-- Current iOS + Swift Concurrency migration guidance
-- Current Play target SDK policy and identity/auth guidance
-- React Native New Architecture maturity and upgrade pain points
-- Expo-managed vs bare React Native tradeoffs
-- Flutter vs React Native vs KMP ecosystem in 2026
-- Compose Multiplatform readiness for iOS in 2026
-
----
-
-## Related Skills
-
-- [../software-frontend/SKILL.md](../software-frontend/SKILL.md) — Web-facing UI patterns and Next.js integration
-- [../software-backend/SKILL.md](../software-backend/SKILL.md) — API design, auth, and backend contracts for mobile clients
-- [../qa-testing-strategy/SKILL.md](../qa-testing-strategy/SKILL.md) — Mobile CI, test strategy, and reliability gates
-- [../qa-resilience/SKILL.md](../qa-resilience/SKILL.md) — Resilience patterns for networked mobile apps
-- [../qa-testing-ios/SKILL.md](../qa-testing-ios/SKILL.md) — iOS-focused test planning, XCTest/Swift Testing patterns, device matrix, and app health checks
-- [../software-ui-ux-design/SKILL.md](../software-ui-ux-design/SKILL.md) — Mobile UI/UX design patterns and accessibility
+- [software-ios-native](../software-ios-native/SKILL.md) — Native iOS 17+ implementation, rewrites, and agent workflows
+- [software-ios-ai-engine](../software-ios-ai-engine/SKILL.md) — Apple Foundation Models, local AI engines, on-device retrieval
+- [software-ios-runtime-debugging](../software-ios-runtime-debugging/SKILL.md) — Build/install/launch proof, simulator drift, packaging triage
+- [software-ios-design](../software-ios-design/SKILL.md) — Native iOS visual hierarchy, HIG, screenshot review
+- [software-android-native](../software-android-native/SKILL.md) — Native Android, Kotlin, Jetpack Compose, agent workflows
+- [software-android-design](../software-android-design/SKILL.md) — Material Design 3, screenshot review
+- [software-android-runtime-debugging](../software-android-runtime-debugging/SKILL.md) — Android build/install/launch proof, emulator drift
+- [software-frontend](../software-frontend/SKILL.md) — Web UI and shared product surfaces
+- [software-backend](../software-backend/SKILL.md) — API design, auth, backend contracts
+- [software-baas-platforms](../software-baas-platforms/SKILL.md) — Supabase, Firebase, Appwrite, PocketBase
+- [qa-testing-strategy](../qa-testing-strategy/SKILL.md) — CI gates, reliability, release confidence
+- [qa-resilience](../qa-resilience/SKILL.md) — Network resilience and failure-mode design
+- [qa-testing-ios](../qa-testing-ios/SKILL.md) — iOS-specific testing
+- [software-ui-ux-design](../software-ui-ux-design/SKILL.md) — Mobile UX and accessibility
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+Store policy deadlines, minimum SDK/Xcode requirements, and framework architecture defaults (React Native, Expo, Kotlin/Compose Multiplatform) change on their own release cadence and are wrong within months if hardcoded. Before quoting any date, version, or percentage in this skill or its references, verify it against a current primary source — Apple Developer News/Release Notes, Google Play Console Help, the framework's official changelog — rather than this file's memory of it. If a source can't be reached and the fact is load-bearing (a submission gate, a deadline, a required minimum version), say so explicitly and flag the guidance as unverified rather than stating it as current fact.
+
+Always re-verify before release or final recommendation:
+- Apple release notes, minimum Xcode/SDK version for App Store Connect uploads, third-party SDK requirements, App Review Guidelines
+- Google Play target API policy and deadline, Android release behavior, Credential Manager, Play Integrity
+- React Native and Expo changelogs (architecture status, routing, OTA)
+- Kotlin Multiplatform and Compose Multiplatform release notes
+
+## Freshness Protocol
+
+When users ask recommendation or "what's current" questions, use web search first. If unavailable, answer from `data/sources.json` and mark guidance as potentially stale.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.

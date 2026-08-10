@@ -38,9 +38,10 @@ execution; Shifu owns how the task is executed after source checkout.
   content, and submission roots. Kungfu's compatibility submission is
   [`../../shifu.documentation.json`](../../shifu.documentation.json).
 - [`production-graph-contract.json`](production-graph-contract.json) defines the
-  project-independent Production Graph v0 description and verification
-  boundary. Its content-addressed graph, plan, execution-event, receipt,
-  failure, recovery, and verification-receipt schemas retain exact source,
+  project-independent Production Graph v0 description, verification, and
+  bounded local execution boundary. Its content-addressed graph, plan,
+  execution-event, receipt, failure, recovery, executor-policy, local-execution,
+  and verification-receipt schemas retain exact source,
   project-authority, and Xinfa selection roots without executing nodes or
   acquiring Assignment or Work Control authority. Kungfu's compiler seam in
   [`framework/production-graph/compiler/index.mjs`](../../framework/production-graph/compiler/index.mjs)
@@ -51,11 +52,34 @@ execution; Shifu owns how the task is executed after source checkout.
   Run
   `./shifu check:production-graph` to emit the exact protected-CI verification
   receipt over the deterministic conformance fixtures.
+  Before any node starts, `./shifu production-graph:admit --request REQUEST`
+  verifies one exact native `kungfu.work-ref/v1`, Work Control query and run-gate
+  roots, external authorization evidence, actor, attempt, executor policy,
+  intended node set, source, graph, plan, project-authority, Xinfa selection,
+  lease, and expiry. Missing, stale, drifted, expired, mismatched, replayed, or
+  denied evidence produces a content-addressed rejection with
+  `nodesStarted=false` and `authorityMutations=[]`. An admitted decision is
+  only permission for its exact node set until `expiresAt`; admission itself
+  never starts a node. Shifu does not mint or modify Assignment, Work Control,
+  Warrant, approval, merge, or close authority.
+  `./shifu production-graph:execute --graph GRAPH --plan PLAN
+  --verification-receipt RECEIPT --execution-admission-request REQUEST
+  --execution-admission-decision DECISION --executor-policy POLICY --execute`
+  is the v0 local executor. It accepts only a clean exact source, the same
+  rooted graph, plan, policy, and non-expired admitted node set, plus exact
+  `production-graph:fixture:*` tasks allowlisted by the policy. Concurrency is
+  fixed to one. It emits deterministic started, terminal, timeout, and
+  dependency-skip events and one rooted receipt. Replaying the same inputs
+  returns the existing exact receipt without starting a process. It is not a
+  scheduler, and it cannot mutate Work or Assignment authority.
   The additive `./shifu core:affected:graph-shadow` route is the first bounded
-  external consumer. It requires an exact graph, compiled plan, and
-  `./shifu production-graph:verify` receipt; admits only one dependency-free
-  `core:affected` node with the Core native qualification authority; and then
-  delegates planning and execution to the unchanged `core:affected` command.
+  external consumer. It requires an exact graph, compiled plan,
+  `./shifu production-graph:verify` receipt, execution-admission request, and
+  matching admitted decision. Immediately before spawn it re-verifies the full
+  request, exact decision, source, roots, node set, and live expiry; only then
+  does it admit one dependency-free `core:affected` node with the Core native
+  qualification authority and delegate to the unchanged `core:affected`
+  command.
   Shadow events and receipts bind the current plan, toolchain, raw current
   receipt, exit status, and parity result under the operating system temporary
   root. Nonzero exits and cancellation remain non-qualifying. Removing or

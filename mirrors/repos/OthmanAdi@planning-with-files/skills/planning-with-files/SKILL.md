@@ -28,7 +28,7 @@ hooks:
         - type: command
           command: "SH=\"${CLAUDE_SKILL_DIR}/scripts/inject-plan.sh\"; [ -f \"$SH\" ] || SH=$(ls \"$HOME/.claude/skills/planning-with-files/scripts/inject-plan.sh\" \"$HOME/.claude/plugins/marketplaces/planning-with-files/scripts/inject-plan.sh\" 2>/dev/null | head -1); [ -n \"$SH\" ] && [ -f \"$SH\" ] && sh \"$SH\" --context=precompact; exit 0"
 metadata:
-  version: "3.9.0"
+  version: "3.10.0"
 ---
 
 # Planning with Files
@@ -379,6 +379,14 @@ Gated mode adds the completion gate on top of autonomous behavior. The gate is t
 ### Structure-aware injection (v3.8.0, opt-in)
 
 The default injection is `head -50` (turn start) and `head -30` (per tool call), which is position-blind: late in a long plan the in_progress phase, the Decisions journal, and the Errors table all sit past the injected window, so every injection pays the token cost while the window no longer carries the active phase. Opt in with `PWF_INJECT=smart` in the environment, or an `inject-smart` token in the plan's `.mode` file, and the injection instead emits: the plan title, the Goal / Next Step / Current Phase sections, a phase count, the full first in_progress phase section, and the last 3 rows of Decisions Made. Plans without `### Phase` headings fall back to the plain head. `inject-smart` alone does not activate any other v3 behavior; it composes with autonomous and gated modes (`init-session` mode tokens are space-separated in `.mode`). With neither the env var nor the token present, output is byte-identical to the legacy shape.
+
+### Parallel-write guard (v3.10.0, on by default)
+
+Two sessions sharing one plan directory can both write `task_plan.md` from the same read. The later write silently discards the earlier one's work, and nothing notices: injection, `plan-doctor` and the Stop gate all read the clobbered file as an ordinary edit. Attestation does not cover this. It compares against a baseline a human approved once, it reports a collaborator's edit with the same `[PLAN TAMPERED]` wording as a hostile rewrite, and it is a read-side gate that cannot stop the stale write from landing.
+
+The guard compares progress between turn-start fires rather than hashes. Checked items and completed phases only go up during normal work, so a DECREASE means work that was on disk is gone. Forward motion stays silent, which is what keeps the signal worth reading, and both markers are language-neutral because every translated template keeps the literal English `**Status:** complete` token. On a decrease it prints one advisory line naming how much was lost and pointing at `git diff`, then injects normally. It never blocks: this hook always exits 0 and no host offers a PreToolUse deny path. Archiving completed phases also trips it. Turn it off with `PWF_PLAN_GUARD=0` or a `plan-guard-off` token in `.mode`.
+
+Known ceiling: the marker is keyed on the plan path, not the session, so the warning reaches whichever session fires next rather than specifically the one holding the stale copy. Per-session keying needs `PWF_SESSION_ID`, which most hosts never set.
 
 ### Gate decision table
 

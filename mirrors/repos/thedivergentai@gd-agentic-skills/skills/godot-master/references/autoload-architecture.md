@@ -3,18 +3,6 @@ name: godot-autoload-architecture
 description: "Expert patterns for Godot AutoLoad (singleton) architecture including global state management, scene transitions, signal-based communication, dependency injection, autoload initialization order, and anti-patterns to avoid. Use for game managers, save systems, audio controllers, or cross-scene resources. Trigger keywords: AutoLoad, singleton, GameManager, SceneTransitioner, SaveManager, global_state, autoload_order, signal_bus, dependency_injection."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# AutoLoad Architecture
-
-Robust singleton ownership, boot order, and cross-scene services — not a Project Settings click-tutorial.
-
-> Basic registration (Project Settings → Autoload, `project.godot` `*` prefix): see [references/autoload-patterns.md](autoload-architecture-autoload-patterns.md). **Do NOT Load** that file for expert work.
-
 ## Available Scripts
 
 ### [autoload_init_order_diag.gd](../scripts/autoload_architecture_autoload_init_order_diag.gd)
@@ -147,24 +135,24 @@ Use for lightweight `RefCounted` services; unregister in `_exit_tree` to avoid d
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — AutoLoad entries live in Project Settings / `project.godot`; get registration and naming right before wiring managers.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed signals, `static var` / `class_name`, and deferred calls are the language tools this skill’s patterns assume.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Event-bus and Signal-Up contracts for Autoload mediators without circular emit chains.
+- [godot-project-foundations](project-foundations.md) — AutoLoad entries live in Project Settings / `project.godot`; get registration and naming right before wiring managers.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed signals, `static var` / `class_name`, and deferred calls are the language tools this skill’s patterns assume.
+- [godot-signal-architecture](signal-architecture.md) — Event-bus and Signal-Up contracts for Autoload mediators without circular emit chains.
 
 #### Complements
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Pair with safe scene switchers so transitions own loading/unload while AutoLoads keep cross-scene state.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Serialize what persistent Autoload holders store; do not invent a second save path inside GameManager.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Prefer Resources for shared config; reserve AutoLoads for lifecycle + signals, not duplicated data blobs.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Component ownership alternative when a “manager Autoload” is really scene-scoped behavior in disguise.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Music/SFX pools are classic Autoload homes; use this skill for ownership and boot order around those managers.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Global MENU/PLAYING/PAUSED FSMs belong here when the Autoload is only the owner, not the whole game logic dump.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Init-order diagnostics and singleton health checks escalate into debugger/profiler workflows when boot hangs.
+- [godot-scene-management](scene-management.md) — Pair with safe scene switchers so transitions own loading/unload while AutoLoads keep cross-scene state.
+- [godot-save-load-systems](save-load-systems.md) — Serialize what persistent Autoload holders store; do not invent a second save path inside GameManager.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Prefer Resources for shared config; reserve AutoLoads for lifecycle + signals, not duplicated data blobs.
+- [godot-composition](composition.md) — Component ownership alternative when a “manager Autoload” is really scene-scoped behavior in disguise.
+- [godot-audio-systems](audio-systems.md) — Music/SFX pools are classic Autoload homes; use this skill for ownership and boot order around those managers.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Global MENU/PLAYING/PAUSED FSMs belong here when the Autoload is only the owner, not the whole game logic dump.
+- [godot-debugging-profiling](debugging-profiling.md) — Init-order diagnostics and singleton health checks escalate into debugger/profiler workflows when boot hangs.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when too many Node Autoloads, eager preloads, or per-frame manager work show up in profilers.
-- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — GUT/CI health checks for registered singletons and reset of global state between tests.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Global state Autoloads become authority/replication hazards; consume this skill’s DI patterns carefully online.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Typical consumer of persistent Autoload holders for inventory that must survive `change_scene_to_file()`.
+- [godot-performance-optimization](performance-optimization.md) — Escalate when too many Node Autoloads, eager preloads, or per-frame manager work show up in profilers.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — GUT/CI health checks for registered singletons and reset of global state between tests.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Global state Autoloads become authority/replication hazards; consume this skill’s DI patterns carefully online.
+- [godot-inventory-system](inventory-system.md) — Typical consumer of persistent Autoload holders for inventory that must survive `change_scene_to_file()`.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting singleton concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting singleton concern.

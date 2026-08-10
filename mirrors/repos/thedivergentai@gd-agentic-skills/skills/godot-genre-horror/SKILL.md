@@ -3,21 +3,6 @@ name: godot-genre-horror
 description: "Expert blueprint for horror games: sawtooth tension pacing, Director macro-AI, sensory predator AI, sanity/stress FX, and scarcity loops. Use when building psychological/survival horror, dual-brain stalker AI (cheating Director + honest LoS/sound), flashlight/fog atmosphere, or safe-room saves. Keywords: horror_game, tension_pacing, director_system, sensory_perception, sanity_system, volumetric_fog, AI_reaction_time."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Horror
-
-Expert blueprint for horror games balancing tension, atmosphere, and player agency.
-
-**Use when:**
-- You need a **Director** that drives buildup → peak → relief (not constant jump-scares).
-- A predator must feel unfair at the *macro* level but honest at the *sense* level (dual brain).
-- Sanity, scarcity, volumetric fog, or threaded scare loads are core to the fantasy.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Atmosphere & Tension
@@ -49,10 +34,6 @@ Expert blueprint for horror games balancing tension, atmosphere, and player agen
 - NEVER check for hiding spot types by casting; strictly use **`Object` metadata (`set_meta`)** for performant, decoupled AI queries.
 
 ---
-
-## Godot 4.7: Horror Lighting
-
-- **AreaLight3D** for flickering panels, TV glow, and rectangular soft shadows without GI hacks.
 
 ## 🛠 Expert Components (scripts/)
 
@@ -91,7 +72,6 @@ Expert blueprint for horror games balancing tension, atmosphere, and player agen
 | 3. Player | `godot-camera-systems`, `godot-genre-stealth`, `godot-physics-3d` | Lean/shake, hiding, CharacterBody3D movement |
 | 4. Scarcity | `godot-inventory-system` | Limited battery, ammo, health |
 | 5. Logic / saves | this skill's Director scripts + `godot-save-load-systems` | Sawtooth pacing + threaded safe-room saves |
-
 
 ## Do-NOT-Load (by fantasy)
 

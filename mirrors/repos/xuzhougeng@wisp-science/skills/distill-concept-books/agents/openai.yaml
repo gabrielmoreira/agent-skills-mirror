@@ -1,0 +1,4 @@
+interface:
+  display_name: "Distill Concept Books"
+  short_description: "Source-neutral method distillation with local OCR"
+  default_prompt: "Use $distill-concept-books to build or resume an evidence-traceable, task-contract-anchored concept-book distillation, reconstruct the transferable method from first principles, and keep bibliographic identity and named source cases out of downstream Skills and ordinary outputs."

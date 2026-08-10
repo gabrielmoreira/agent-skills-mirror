@@ -1,6 +1,6 @@
 ---
 name: email-drafting
-description: Draft professional, audience-aware emails for any purpose — cold outreach, follow-ups, customer support, internal updates, and meeting requests — with calibrated tone and clear calls to action.
+description: Draft a professional, audience-aware email or reply with calibrated tone and a clear call to action. Use when the user needs one message, response, follow-up, support note, or meeting request; use sales-email-sequences for a coordinated multi-touch outbound campaign.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

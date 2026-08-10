@@ -3,16 +3,6 @@ name: godot-genre-educational
 description: "Expert blueprint for educational games including gamification loops (learn/apply/feedback/adapt), progress tracking (student profiles, mastery %), adaptive difficulty (target 70% success rate), spaced repetition, curriculum trees (prerequisite system), and visual feedback (confetti, XP bars). Use for learning apps, training simulations, or edutainment. Trigger keywords: educational_game, gamification, adaptive_difficulty, spaced_repetition, student_profile, curriculum_tree, mastery_tracking."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Educational / Gamification
-
-Expert blueprint for educational games that make learning engaging through game mechanics.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Pedagogy & Flow
@@ -109,7 +99,6 @@ Learning is hard — reward effort: satisfying SFX, particles on correct, Tweene
 - [expert-educational-patterns.md](genre-educational-expert-educational-patterns.md) — restored baseline pedagogy (architecture, WHY, implementation depth)
 - [student_profile.gd](../scripts/genre_educational_student_profile.gd)
 
-
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API; load Related Skills when routing to a peer domain — do not preload the whole lattice.
@@ -131,24 +120,24 @@ Learning is hard — reward effort: satisfying SFX, particles on correct, Tweene
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project locale, display, and input map defaults must exist before classroom UI and TTS toggles.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, signals, and await patterns underpin student profiles and quiz flow.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchors/containers are the non-negotiable layout base for multi-device lesson screens.
+- [godot-project-foundations](project-foundations.md) — Project locale, display, and input map defaults must exist before classroom UI and TTS toggles.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Resources, signals, and await patterns underpin student profiles and quiz flow.
+- [godot-ui-containers](ui-containers.md) — Anchors/containers are the non-negotiable layout base for multi-device lesson screens.
 
 #### Complements
-- [godot-ui-rich-text](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-rich-text/SKILL.md) — BBCode, meta clicks, and custom effects for glossaries and formula-heavy prompts.
-- [godot-ui-theming](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-theming/SKILL.md) — Readable theme scales and contrast for mixed tablet/laptop classrooms.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Durable StudentProfile / mastery persistence beyond ad-hoc ConfigFile snippets.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — XP bars, confetti timing, and overlay fades that sell the “Duolingo effect.”
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Mastery-up, hint-revealed, and difficulty-changed events without UI↔logic hardwiring.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Focus actions, drag-and-drop answers, and IME-safe text entry for assessments.
+- [godot-ui-rich-text](ui-rich-text.md) — BBCode, meta clicks, and custom effects for glossaries and formula-heavy prompts.
+- [godot-ui-theming](ui-theming.md) — Readable theme scales and contrast for mixed tablet/laptop classrooms.
+- [godot-save-load-systems](save-load-systems.md) — Durable StudentProfile / mastery persistence beyond ad-hoc ConfigFile snippets.
+- [godot-tweening](tweening.md) — XP bars, confetti timing, and overlay fades that sell the “Duolingo effect.”
+- [godot-signal-architecture](signal-architecture.md) — Mastery-up, hint-revealed, and difficulty-changed events without UI↔logic hardwiring.
+- [godot-input-handling](input-handling.md) — Focus actions, drag-and-drop answers, and IME-safe text entry for assessments.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate override bands so adaptive difficulty actually lands near ~70% flow/mastery success.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Question → Answer → Result → Adapt quiz FSMs once the curtain grows beyond one script.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Lesson map ↔ quiz ↔ results transitions without leaking paused tree state.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when scoring threads, TTS, or rich-text effects still show profiler cost on school hardware.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Confetti/reward bursts wired to correct-answer juice without blocking pedagogy.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate override bands so adaptive difficulty actually lands near ~70% flow/mastery success.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Question → Answer → Result → Adapt quiz FSMs once the curtain grows beyond one script.
+- [godot-scene-management](scene-management.md) — Lesson map ↔ quiz ↔ results transitions without leaking paused tree state.
+- [godot-performance-optimization](performance-optimization.md) — Escalate when scoring threads, TTS, or rich-text effects still show profiler cost on school hardware.
+- [godot-particles](particles.md) — Confetti/reward bursts wired to correct-answer juice without blocking pedagogy.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting educational concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting educational concern.

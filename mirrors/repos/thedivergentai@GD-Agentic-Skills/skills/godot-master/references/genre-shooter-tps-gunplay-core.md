@@ -1,6 +1,6 @@
 # TPS / hybrid gunplay core
 
-Shared combat theory for this skill (TPS, cover, soft-lock). FPS viewmodel/recoil polish → [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md).
+Shared combat theory for this skill (TPS, cover, soft-lock). FPS viewmodel/recoil polish → [godot-genre-shooter-fps](genre-shooter-fps.md).
 
 ## WeaponData (never hardcode in nodes)
 
@@ -64,7 +64,7 @@ Hitscan for bullets; physical sim for explosives.
 
 ## Feel polish
 
-- Layered gunfire audio (mechanical + shot + tail) on separate `AudioStreamPlayer3D` — [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md)
+- Layered gunfire audio (mechanical + shot + tail) on separate `AudioStreamPlayer3D` — [godot-audio-systems](audio-systems.md)
 - Impact **Decal** nodes, not flat `Sprite3D` billboards
 - Crosshair: anchor center, not pixel offsets
 

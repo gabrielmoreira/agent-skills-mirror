@@ -3,18 +3,6 @@ name: godot-server-architecture
 description: "Expert blueprint for dedicated / headless multiplayer hosts: ENet/DTLS, authority validation, safe packet decode, matchmaker handoff, and health telemetry. Use when building authoritative servers, --headless hosts, or hardening host networking. Keywords: dedicated server, headless, ENet, DTLS, authority, safe_packet_decoder, multiplayer host, WebSocketMultiplayerPeer."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Server Architecture (Dedicated Host)
-
-Authoritative **multiplayer host** patterns — headless boot, ENet/DTLS, packet safety, kicks, and telemetry.
-
-> RID SceneTree-bypass rendering/physics swarms belong in [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) (and `physics_server_direct.gd` / `rid_performance_server.gd` only when the host sim truly needs server RIDs). Lobby/RPC gameplay APIs: [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md).
-
 ## Skill boundary (Do NOT Load)
 
 | Use **this skill** for | Use **godot-multiplayer-networking** for |
@@ -73,7 +61,7 @@ Load-balancer / matchmaker handoff to game hosts.
 Headless telemetry for monitoring stacks.
 
 ### [physics_server_direct.gd](../scripts/server_architecture_physics_server_direct.gd) / [rid_performance_server.gd](../scripts/server_architecture_rid_performance_server.gd)
-Optional host-side RID sim — **only when** node physics cannot hold tick budget: > ~200 active bodies per tick, or headless host CPU > 70% on physics step with nodes. Criteria: profile first; if SceneTree bodies dominate, prefer [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md). **Do NOT Load** RID scripts for ≤64 entity lobbies.
+Optional host-side RID sim — **only when** node physics cannot hold tick budget: > ~200 active bodies per tick, or headless host CPU > 70% on physics step with nodes. Criteria: profile first; if SceneTree bodies dominate, prefer [godot-performance-optimization](performance-optimization.md). **Do NOT Load** RID scripts for ≤64 entity lobbies.
 
 ## NEVER Do in Server Architecture (Host)
 
@@ -102,7 +90,6 @@ func _visibility_filter(for_peer: int, node: Node) -> bool:
 
 ### Health metrics
 Watch host FPS, static memory (RID leaks), and orphan counts via [server_health_exporter.gd](../scripts/server_architecture_server_health_exporter.gd).
-
 
 ## Deep recipes (on demand)
 
@@ -133,24 +120,24 @@ Watch host FPS, static memory (RID leaks), and orphan counts via [server_health_
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project layout, Autoloads, and feature tags that dedicated-server and headless launches depend on.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed RID arrays, `@rpc` annotations, and safe Variant decoding patterns used across server scripts.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — node-level PhysicsBody3D/space concepts before bypassing them with PhysicsServer3D RIDs.
+- [godot-project-foundations](project-foundations.md) — project layout, Autoloads, and feature tags that dedicated-server and headless launches depend on.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed RID arrays, `@rpc` annotations, and safe Variant decoding patterns used across server scripts.
+- [godot-physics-3d](physics-3d.md) — node-level PhysicsBody3D/space concepts before bypassing them with PhysicsServer3D RIDs.
 
 #### Complements
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — lobby/RPC/synchronizer toolkit that sits on the headless ENet/WebSocket hosts this skill scaffolds.
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — authority split and prediction shells before wiring dedicated-server validation and interest filters.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — dedicated-server export presets and CLI packaging for real multi-instance host tests.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — PhysicsServer2D body/shape patterns for 2D authoritative swarms without SceneTree bodies.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationServer RIDs and bake updates when AI agents share the same low-level server path.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — budgets and profiling that decide when RID servers beat nodes under peer/object load.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Performance monitors and remote debug habits for headless FPS/memory/orphan telemetry.
-- [godot-platform-web](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-web/SKILL.md) — HTML5 client constraints that force WebSocketMultiplayerPeer instead of ENet.
+- [godot-multiplayer-networking](multiplayer-networking.md) — lobby/RPC/synchronizer toolkit that sits on the headless ENet/WebSocket hosts this skill scaffolds.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — authority split and prediction shells before wiring dedicated-server validation and interest filters.
+- [godot-export-builds](export-builds.md) — dedicated-server export presets and CLI packaging for real multi-instance host tests.
+- [godot-2d-physics](2d-physics.md) — PhysicsServer2D body/shape patterns for 2D authoritative swarms without SceneTree bodies.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationServer RIDs and bake updates when AI agents share the same low-level server path.
+- [godot-performance-optimization](performance-optimization.md) — budgets and profiling that decide when RID servers beat nodes under peer/object load.
+- [godot-debugging-profiling](debugging-profiling.md) — Performance monitors and remote debug habits for headless FPS/memory/orphan telemetry.
+- [godot-platform-web](platform-web.md) — HTML5 client constraints that force WebSocketMultiplayerPeer instead of ENet.
 
 #### Downstream / consumers
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — mass object/voxel spawners that consume RenderingServer/PhysicsServer RID pools.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — retune economy/TTK after authoritative server tick rates or validation change effective combat windows.
-- [godot-genre-battle-royale](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md) — large-peer dedicated hosts that need interest grids, kick/health exporters, and RID-scale sim.
+- [godot-procedural-generation](procedural-generation.md) — mass object/voxel spawners that consume RenderingServer/PhysicsServer RID pools.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — retune economy/TTK after authoritative server tick rates or validation change effective combat windows.
+- [godot-genre-battle-royale](genre-battle-royale.md) — large-peer dedicated hosts that need interest grids, kick/health exporters, and RID-scale sim.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting server concern.
+- [godot-master](../SKILL.md) — library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting server concern.

@@ -43,7 +43,7 @@ my_rpg/
 └── resources/items|quests|dialogues/
 ```
 
-Inventory stub → [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md); template bases only provide folder shape.
+Inventory stub → [godot-inventory-system](inventory-system.md); template bases only provide folder shape.
 
 ## 3D FPS directory
 
@@ -55,7 +55,7 @@ my_fps/
 └── ui/hud.tscn
 ```
 
-**FPS movement** belongs in [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — set `Input.MOUSE_MODE_CAPTURED` in player `_ready()`.
+**FPS movement** belongs in [godot-genre-shooter-fps](genre-shooter-fps.md) — set `Input.MOUSE_MODE_CAPTURED` in player `_ready()`.
 
 ## Input map template
 
@@ -87,7 +87,7 @@ Keep scripts, scenes, textures, and local `.tres` for one entity under `res://en
 - run: godot --headless --export-release "Windows Desktop" build/game.exe
 ```
 
-See [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md).
+See [godot-export-builds](export-builds.md).
 
 ## Expert: PCK / DLC mount
 

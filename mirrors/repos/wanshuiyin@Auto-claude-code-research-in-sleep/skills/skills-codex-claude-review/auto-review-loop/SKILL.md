@@ -37,7 +37,7 @@ Autonomously iterate: review → implement fixes → re-review, until the extern
 
 ## Claude-Aligned Reviewer Memory and Debate
 
-For `difficulty: hard` and `difficulty: nightmare`, maintain `review-stage/REVIEWER_MEMORY.md`.
+Maintain `review-stage/REVIEWER_MEMORY.md` regardless of `REVIEWER_DIFFICULTY` (Phase B.5 runs for all modes, including `medium`). For `hard` and `nightmare`, additionally prepend memory to each reviewer call and require a `Memory update` section.
 
 - Before each reviewer call, prepend the full `REVIEWER_MEMORY.md` contents under `## Your Reviewer Memory (persistent across rounds)`.
 - Tell the reviewer to check whether prior suspicions were genuinely addressed or merely sidestepped.
@@ -153,13 +153,9 @@ Then extract structured fields:
 - **Verdict** ("ready" / "almost" / "not ready")
 - **Action items** (ranked list of fixes)
 
-**STOP CONDITION**: If score >= 6 AND verdict ∈ {"ready", "almost"} (exact match — "not ready" does NOT qualify) → stop loop, document final state.
+#### Phase B.5: Reviewer Memory Update
 
-#### Phase B.5: Reviewer Memory Update (hard + nightmare only)
-
-Skip entirely if `REVIEWER_DIFFICULTY = medium`.
-
-After parsing the assessment, update `review-stage/REVIEWER_MEMORY.md`:
+After parsing the assessment, update `review-stage/REVIEWER_MEMORY.md`. Copilot backend depends on this file for round-to-round continuity (every round is a fresh process), so the update runs regardless of `REVIEWER_DIFFICULTY`:
 
 ## Your Reviewer Memory (persistent across rounds)
 
@@ -187,6 +183,12 @@ Rules:
   find the exact criterion that flipped (see `shared-references/review-tracing.md`
   § *Debugging With Traces*). The memory file is a summary; the trace is evidence.
 - This file is passed back to the reviewer in the next round's Phase A.
+
+#### Phase B.5.1: Stop-Evaluation Gate
+
+**STOP CONDITION**: If score >= 6 AND verdict ∈ {"ready", "almost"} (exact match — "not ready" does NOT qualify) → stop loop, document final state. This evaluation runs AFTER Phase B.5 so the terminal-round memory is always appended to REVIEWER_MEMORY.md before exit, including for medium-mode terminal rounds.
+
+> **Ordering regression guard**: Any future edit that moves the stop gate before the memory update (Phase B.5) MUST keep it here or later. A positive terminal round in any difficulty mode (including medium) must first persist its reviewer memory so the loop's final state is complete. The mainline SKILL.md (`skills/auto-review-loop/SKILL.md`) places the gate at Phase B.5.1; this mirror must stay in sync.
 
 #### Phase B.6: Debate Protocol (hard + nightmare only)
 

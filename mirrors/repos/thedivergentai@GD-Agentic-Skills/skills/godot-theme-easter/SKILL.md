@@ -3,14 +3,6 @@ name: godot-theme-easter
 description: "Apply a Classic Easter seasonal overlay: pastel Theme/StyleBox injection, confetti/shimmer VFX, elastic juice, mesh surface_override painting, cursor/audio swaps, and a date-window activation gate with player opt-out. Use when shipping holiday skins, April events, or egg-hunt juice without mutating shared .mesh/.tres assets. Keywords: pastel, seasonal Theme, StyleBox, confetti, Easter egg, surface_override, TRANS_ELASTIC, Disable Seasonal Themes, activation gate."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Easter Theme (Aesthetics & Juice)
-
 ## Overview
 Seasonal "Easter-fy" toolkit: bright pastels, bouncy juice, egg/bunny iconography — gated by calendar + settings.
 
@@ -114,7 +106,6 @@ func _apply_spring_env(env: Environment) -> void:
     tween.tween_property(env, "tonemap_exposure", 1.2, 2.0)
     tween.tween_property(env, "fog_light_color", EasterPastelColorPalette.BLUE, 2.0)
 ```
-
 
 ## Deep recipes (on demand)
 

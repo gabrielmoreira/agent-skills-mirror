@@ -167,6 +167,14 @@ When generating or modifying code in this repository, use a TDD-first workflow:
 
 If no test exists for the changed behavior, add one whenever practical.
 
+### Production Verification Metadata
+
+`status: production` is a lifecycle/catalog label, not proof of trading correctness. Production
+skills must also carry the eight-axis `verification` block in `skills-index.yaml`. Use
+[`docs/dev/production-verification.md`](docs/dev/production-verification.md) for the pass/NA
+criteria, audit baseline, live high-severity issue gate, and the rule for resetting stale evidence
+to `not_verified`.
+
 ### Pre-commit Hooks
 
 > **Maintainer operations:** for the full regenerate / drift-gate / scheduled-job runbook (what to run after editing the SSoT, how to clear a failing gate, what the `launchd` agents do), see [`docs/dev/maintenance-runbook.md`](docs/dev/maintenance-runbook.md).
@@ -251,7 +259,7 @@ The table below is **auto-generated** from `skills-index.yaml` by `scripts/gener
 | **Kanchi Dividend Review Monitor** | 🟡 Optional (Recommended) | ❌ Not used | ❌ Not used | Dividend / price monitoring via FMP |
 | **Kanchi Dividend SOP** | 🟡 Optional (Recommended) | ❌ Not used | ❌ Not used | US dividend stock data via FMP |
 | **Kanchi Dividend US Tax Accounting** | ❌ Not used | ❌ Not used | ❌ Not used | US tax workflow guidance; pure calculation |
-| **Macro Regime Detector** | ❌ Not used | ❌ Not used | ❌ Not used | Cross-asset ratio data via yfinance or local CSV |
+| **Macro Regime Detector** | 🟡 Optional | ❌ Not used | ❌ Not used | Optional FMP market and Treasury data; unavailable ETF history falls back to yfinance |
 | **Market Breadth Analyzer** | ❌ Not used | ❌ Not used | ❌ Not used | TraderMonty public CSV; no API key required |
 | **Market Environment Analysis** | ❌ Not used | ❌ Not used | ❌ Not used | Global market data via WebSearch / WebFetch; Optional chart image inputs for technical interpretation |
 | **Market News Analyst** | ❌ Not used | ❌ Not used | ❌ Not used | Web search / fetch |

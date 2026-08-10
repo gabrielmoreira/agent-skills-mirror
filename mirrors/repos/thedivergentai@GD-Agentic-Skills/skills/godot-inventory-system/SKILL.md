@@ -3,16 +3,6 @@ name: godot-inventory-system
 description: "Expert blueprint for inventory systems (Diablo, Resident Evil, Minecraft) covering slot-based containers, stacking logic, weight limits, equipment systems, and drag-drop UI. Use when building RPG inventories, survival item management, or loot systems. Keywords inventory, slot, stack, equipment, crafting, item, Resource, drag-drop."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Inventory System
-
-Resource-first slots, stacking, weight, equipment, and loot — **scripts are source of truth** (no duplicated Inventory/Equipment/Crafting dumps in this body).
-
 ## Scenario triggers (which script?)
 
 | Scenario | Open |
@@ -59,7 +49,6 @@ Resource-first slots, stacking, weight, equipment, and loot — **scripts are so
 ### Save
 - Serialize `item_id` / `resource_path` + `amount` only — [inventory_persistence.gd](scripts/inventory_persistence.gd)
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -69,7 +58,6 @@ Resource-first slots, stacking, weight, equipment, and loot — **scripts are so
 | Tetris grid footprint | [elite-technical-patterns.md](references/elite-technical-patterns.md) + [grid_inventory_logic.gd](scripts/grid_inventory_logic.gd) |
 | Equipment & crafting | [equipment-system.md](references/equipment-system.md) / [crafting-integration.md](references/crafting-integration.md) |
 | Reactive UI & save ids | [ui-integration.md](references/ui-integration.md) + [inventory_persistence.gd](scripts/inventory_persistence.gd) |
-
 
 ## Reference
 

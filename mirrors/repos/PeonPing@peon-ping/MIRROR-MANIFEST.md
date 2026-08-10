@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `PeonPing/peon-ping` — 26 default patterns, 6 followed patterns, 20 file(s) materialized.
+Mirror of `PeonPing/peon-ping` — 26 default patterns, 6 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `PeonPing/peon-ping` — 26 default patterns, 6 followed patterns, 20 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 6 |
-| Files         | 20 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -73,17 +73,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 7 | ✓ | [`mcp/peon-mcp.js`](mcp/peon-mcp.js) |
 | 8 | ✓ | [`mcp/README.md`](mcp/README.md) |
 | 9 | ✓ | [`skills/peon-ping-config/SKILL.md`](skills/peon-ping-config/SKILL.md) |
-| 10 | ✓ | [`skills/peon-ping-log/SKILL.md`](skills/peon-ping-log/SKILL.md) |
-| 11 | ✓ | [`skills/peon-ping-rename/SKILL.md`](skills/peon-ping-rename/SKILL.md) |
-| 12 | ✓ | [`skills/peon-ping-toggle/SKILL.md`](skills/peon-ping-toggle/SKILL.md) |
-| 13 | ✓ | [`skills/peon-ping-use/SKILL.md`](skills/peon-ping-use/SKILL.md) |
-| 14 | ✓ | [`tests/fixtures/hook-logging/README.md`](tests/fixtures/hook-logging/README.md) |
-| 15 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 16 | → | [`README_ja.md`](README_ja.md) |
-| 17 | → | [`README_ko.md`](README_ko.md) |
-| 18 | → | [`README_zh.md`](README_zh.md) |
-| 19 | → | [`README.md`](README.md) |
-| 20 | → | [`RELEASING.md`](RELEASING.md) |
+| 10 | ✓ | [`skills/peon-ping-create-pack/SKILL.md`](skills/peon-ping-create-pack/SKILL.md) |
+| 11 | ✓ | [`skills/peon-ping-log/SKILL.md`](skills/peon-ping-log/SKILL.md) |
+| 12 | ✓ | [`skills/peon-ping-remix/SKILL.md`](skills/peon-ping-remix/SKILL.md) |
+| 13 | ✓ | [`skills/peon-ping-rename/SKILL.md`](skills/peon-ping-rename/SKILL.md) |
+| 14 | ✓ | [`skills/peon-ping-toggle/SKILL.md`](skills/peon-ping-toggle/SKILL.md) |
+| 15 | ✓ | [`skills/peon-ping-use/SKILL.md`](skills/peon-ping-use/SKILL.md) |
+| 16 | ✓ | [`tests/fixtures/hook-logging/README.md`](tests/fixtures/hook-logging/README.md) |
+| 17 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 18 | → | [`README_ja.md`](README_ja.md) |
+| 19 | → | [`README_ko.md`](README_ko.md) |
+| 20 | → | [`README_zh.md`](README_zh.md) |
+| 21 | → | [`README.md`](README.md) |
+| 22 | → | [`RELEASING.md`](RELEASING.md) |
 
 ---
 

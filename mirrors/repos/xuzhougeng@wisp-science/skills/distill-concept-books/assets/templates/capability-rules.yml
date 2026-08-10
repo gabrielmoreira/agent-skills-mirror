@@ -1,0 +1,104 @@
+schema_version: 1
+distillation_id: sample-concept-book-v1
+capability_rules:
+  - rule_id: rule-sample-001
+    stable_task_ids:
+      - stable-task-sample-001
+    trigger:
+      task: Apply a reviewed source-neutral method to a bounded target task.
+      signals:
+        - The user supplies target material and the required task context.
+    required_context:
+      - Target material and explicit task constraints
+    checks:
+      - Confirm target evidence, assumptions, and requested output remain inside the reviewed scope.
+    action:
+      - Apply the reviewed invariant without importing private identities, quotations, or named source cases.
+    output:
+      - Target-grounded result separating observation, inference, uncertainty, limitations, and stop reasons
+    stop_conditions:
+      - Required target evidence is missing or the result would depend on disclosing private provenance.
+    semantic_support:
+      checks:
+        - item_index: 0
+          claim_ids:
+            - cl-neutral-principle-001
+          relation_ids: []
+      action:
+        - item_index: 0
+          claim_ids:
+            - cl-neutral-principle-001
+          relation_ids:
+            - rel-sample-001
+      output:
+        - item_index: 0
+          claim_ids:
+            - cl-neutral-principle-001
+          relation_ids: []
+      stop_conditions:
+        - item_index: 0
+          claim_ids:
+            - cl-neutral-principle-001
+          relation_ids: []
+    claim_ids:
+      - cl-neutral-principle-001
+    relation_ids:
+      - rel-sample-001
+    transformation: T4
+    status: candidate
+    human_decision:
+      decision: pending
+      reviewer_type: null
+      reviewer: null
+      decided_at: null
+      rationale: ""
+      gate_decision_id: null
+skill_candidates:
+  - candidate_id: candidate-sample-001
+    name: neutral-sample-task
+    stable_task: Apply the reviewed first-principles method to a bounded target input without exposing private provenance.
+    stable_task_ids:
+      - stable-task-sample-001
+    trigger_case_ids:
+      - trigger-sample-001
+    nontrigger_case_ids:
+      - nontrigger-sample-001
+    task_case_ids:
+      - task-sample-001
+      - task-sample-holdout-001
+    should_trigger:
+      - Apply the reviewed method to this supplied target material.
+      - Build a target-grounded result using the reviewed invariant.
+      - Use the method within its stated assumptions and boundaries.
+    should_not_trigger:
+      - Reproduce private source prose or a recognizable named case.
+      - Reveal private provenance or add attribution phrases to the task result.
+      - Deploy the candidate without review.
+    inputs:
+      - Target material and task constraints
+    outputs:
+      - Source-neutral, target-grounded result
+    rule_ids:
+      - rule-sample-001
+    stop_conditions:
+      - Target evidence is missing or a source-neutral result cannot be produced.
+    risks:
+      - Overgeneralization beyond reviewed assumptions or leakage of private provenance
+    provenance_contract:
+      output_layers:
+        - method-source-evidence
+        - target-material-evidence
+        - analogy-hypothesis
+      missing_target_evidence: stop
+    lifecycle: review
+    lifecycle_history:
+      - from: null
+        to: draft
+        decided_by: project-agent
+        decided_at: "2026-08-04"
+        rationale: Initialized as a non-runnable candidate specification.
+      - from: draft
+        to: review
+        decided_by: project-agent
+        decided_at: "2026-08-04"
+        rationale: Prepared as a sample candidate for human review.

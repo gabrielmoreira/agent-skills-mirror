@@ -1,6 +1,6 @@
 ---
-name: Wireframing
-description: Create text-based wireframes at low, mid, and high fidelity with component inventories, interaction annotations, and responsive breakpoint specifications.
+name: wireframing
+description: Create text-based wireframes at low, mid, and high fidelity with component inventories, interaction annotations, and responsive breakpoint specifications. Use when the user requests wireframing or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills Community

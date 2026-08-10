@@ -3,14 +3,6 @@ name: godot-mechanic-secrets
 description: "Implement cheat codes, hidden interactions, and unlockable meta-content via time-windowed input sequence buffers, spam thresholds, look-at (dot-product) detectors, progress-% unlocks, and meta persistence in user://secrets.cfg. Use when adding Konami-style codes, curiosity spam eggs, glimmer cues, lockout anti-brute-force, or gallery flags that must survive slot deletes. Keywords: Konami, sequence buffer, meta secrets.cfg, visibility detector, lockout, glimmer, spam threshold, progress unlock."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Secrets & Easter Eggs (Mechanics)
-
 ## Decision Tree — Which Secret Trigger?
 
 | Player action / design goal | Choose | MANDATORY script |

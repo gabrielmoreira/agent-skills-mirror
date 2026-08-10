@@ -1,6 +1,6 @@
 ---
 name: context-optimization
-description: "Optimizes the context provided to an AI model by deduplicating, filtering, reordering, and scoring information to maximize relevance and token efficiency."
+description: "Optimize a complete candidate context package by deduplicating, filtering, ordering, and allocating its token budget. Use when retrieved or assembled material is noisy or exceeds the useful context budget; use context-ranking for scoring chunks and context-compression for shrinking selected content."
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

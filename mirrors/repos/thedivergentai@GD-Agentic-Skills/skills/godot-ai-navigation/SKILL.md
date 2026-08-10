@@ -3,18 +3,6 @@ name: godot-ai-navigation
 description: "AI movement decision router for chase, patrol, crowd, and bake choices on top of NavigationAgent/Server. Use when deciding node agent vs RID server, bake vs obstacle, layer masks, or retarget policy — not for engine navmesh recipes. Keywords: AI navigation, chase retarget, patrol, crowd RVO, bake vs obstacle, NavigationAgent decision tree."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# AI Navigation (Decision Router)
-
-This skill owns **AI movement decisions**. Authoritative NavigationServer scripts live in **godot-navigation-pathfinding** — this package intentionally has **no** `scripts/` (no dead local links).
-
-> **MANDATORY**: Before implementing path/bake/avoidance code, open [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) and **read the linked script(s)** below. **Do NOT Load** beginner chase/patrol tutorials from memory — follow these trees, then only the pathfinding scripts you selected.
-
 ## Decision Trees (MANDATORY script triggers)
 
 ### 1. Node agent vs NavigationServer RID

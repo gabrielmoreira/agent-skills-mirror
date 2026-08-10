@@ -31,18 +31,20 @@ The design-side path applies when the discrepancy reflects code that was correct
 
 At each Agent invocation below, build the prompt as a mechanical extraction: copy the named source values into the exact fields, apply only the declared serialization, then invoke immediately.
 
-Design Doc (uses most recent if omitted): $ARGUMENTS
+Design Doc: $ARGUMENTS
 
 ## Execution Flow
 
 ### Step 1: Prerequisite Check
-Identify the review inputs: the most recently updated Design Doc under `docs/design/`, and the files changed on the current branch relative to its base.
+Derive `implementationFiles` from paths changed between the current branch's merge base with the repository's default branch and the current repository state, including committed changes, working-tree changes, and untracked files. `implementationFiles` contains each changed path whose contents implement or verify the reviewed behavior or control its schema, build, deployment, or runtime behavior, including source files, tests, migrations, executable scripts, and behavior-affecting configuration. Governing documents and Work Plans retain their dedicated roles in document selection and governing-document inputs; task files and documentation-only paths remain outside this recipe's code and security review inputs.
+
+Use the Design Doc explicitly supplied in `$ARGUMENTS`. When omitted, first use a Work Plan whose declared target files or responsibilities intersect `implementationFiles` and take its recorded Design Doc path. When that does not produce one candidate, use the sole Design Doc under `docs/design/`. Present candidates only when multiple governing Design Docs remain; report a missing prerequisite when none exists.
 
 ### Step 2: Execute code-reviewer
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "dev-workflows-fullstack:code-reviewer"
 - `description`: "Code compliance review"
-- `prompt`: "Design Doc: [path]. Implementation files: [git diff file list]. Review mode: full. Validate Design Doc compliance and return structured JSON report."
+- `prompt`: "Design Doc: [path]. Implementation files: [implementationFiles]. Review mode: full. Validate Design Doc compliance and return structured JSON report."
 
 **Store output as**: `$STEP_2_OUTPUT`
 
@@ -50,7 +52,7 @@ Invoke code-reviewer using Agent tool:
 Invoke security-reviewer using Agent tool:
 - `subagent_type`: "dev-workflows-fullstack:security-reviewer"
 - `description`: "Security review"
-- `prompt`: "governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [git diff file list]. Review security compliance."
+- `prompt`: "governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [implementationFiles]. Review security compliance."
 
 **Store output as**: `$STEP_3_OUTPUT`
 
@@ -147,17 +149,21 @@ Route the quality-fixer-frontend result:
 
 ### Step 8: Re-validate code-reviewer
 
+Immediately before this invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved corrections.
+
 Invoke code-reviewer using Agent tool:
 - `subagent_type`: "dev-workflows-fullstack:code-reviewer"
 - `description`: "Re-validate compliance"
-- `prompt`: "Re-validate Design Doc compliance after fixes. Design Doc: [path]. Implementation files: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's re-review scope."
+- `prompt`: "Re-validate Design Doc compliance after fixes. Design Doc: [path]. Implementation files: [implementationFiles]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's re-review scope."
 
 ### Step 9: Re-validate security-reviewer
+
+Immediately before this invocation, re-derive `implementationFiles` using the Step 1 inclusion rule so it includes implementation artifacts added or changed by the approved security corrections.
 
 Invoke security-reviewer using Agent tool (only if security fixes were applied):
 - `subagent_type`: "dev-workflows-fullstack:security-reviewer"
 - `description`: "Re-validate security"
-- `prompt`: "Re-validate security after fixes. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [file list]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's re-review scope."
+- `prompt`: "Re-validate security after fixes. governingDocuments: [{\"type\":\"design-doc\",\"path\":\"[path]\"}]. implementationFiles: [implementationFiles]. prior_feedback: [{id, disposition, reason?, evidence}]. Reconcile every prior item under the reviewer's re-review scope."
 
 Apply the Review Resolution Gate to every Step 8 and Step 9 result before Step 10. Follow its `maintained` transitions and repeat the affected verification after a rerouted correction; stop at its escalation conditions; proceed at its convergence condition.
 

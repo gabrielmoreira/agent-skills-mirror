@@ -535,8 +535,13 @@
       "id": "macro-regime-detector",
       "integrations": [
         {
-          "id": "yfinance_or_csv",
-          "requirement": "recommended",
+          "id": "yfinance",
+          "requirement": "required",
+          "type": "market_data"
+        },
+        {
+          "id": "fmp",
+          "requirement": "optional",
           "type": "market_data"
         }
       ],

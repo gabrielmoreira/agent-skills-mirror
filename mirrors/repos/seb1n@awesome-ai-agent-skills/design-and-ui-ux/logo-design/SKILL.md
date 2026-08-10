@@ -1,6 +1,6 @@
 ---
-name: Logo Design
-description: Design professional, scalable logos with complete brand identity deliverables including color palettes, typography, format variations, and usage guidelines.
+name: logo-design
+description: Design professional, scalable logos with complete brand identity deliverables including color palettes, typography, format variations, and usage guidelines. Use when the user requests logo design or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills Community

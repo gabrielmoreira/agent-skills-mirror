@@ -95,10 +95,6 @@ func _finalize_from_worker(data: Dictionary) -> void:
 - [marching_squares_metaballs.gd](scripts/marching_squares_metaballs.gd) — 2D contour extraction
 - [l_system_tree_gen.gd](scripts/l_system_tree_gen.gd) — procedural plant/tree grammar
 
-## Godot 4.7: Procedural 3D
-
-- **Path3D snap-to-colliders** for spline-based road/river generation on terrain colliders.
-
 ## Expert Procedural Patterns
 
 ### 1. 3D Terrain via ArrayMesh (Marching Cubes)

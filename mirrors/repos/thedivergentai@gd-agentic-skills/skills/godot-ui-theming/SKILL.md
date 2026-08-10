@@ -63,12 +63,6 @@ Controller/keyboard prompt icon bank swap + focus highlight panel. **MANDATORY**
 - **NEVER skip `corner_radius_all` on StyleBoxFlat** — shorthand for uniform rounding; prefer it over four separate radius fields when all corners match.
 - **NEVER confuse Theme items with Control overrides** — `add_theme_*_override` beats Theme resource items on that node only; a child Control with its own `theme` still blocks parent cascade. Clear with `remove_theme_*_override` when swapping roots — do not leave stale overrides fighting the new Theme.
 
-## Godot 4.7: UI Theming
-
-- **Control offset transform** for inspector-driven visual tweaks without relayout.
-- `ResourceImporterDynamicFont.hinting` default changed to **3** — verify font crispness on target DPI.
-- **GradientTexture2D** supports **conic** gradients.
-
 ## Decision Tree — Theme Ownership
 
 | Goal | Choose | Notes / script |
@@ -81,7 +75,6 @@ Controller/keyboard prompt icon bank swap + focus highlight panel. **MANDATORY**
 Fonts & StyleBoxes: edit via **Theme editor** / Project Theme. Runtime helpers: [global_theme_manager.gd](scripts/global_theme_manager.gd), [theme_swapper.gd](scripts/theme_swapper.gd), [procedural_theme_safe.gd](scripts/procedural_theme_safe.gd).
 
 ## Expert Theming Patterns
-
 
 ### 1. Shared-Color-Palette (The Static Pattern)
 Maintain a single source of truth for UI colors accessible to both the Theme Editor and GDScript.
@@ -133,7 +126,6 @@ Ensuring UI textures are optimized for rendering performance.
     - **2D/Pixel Art**: Use **Lossless** compression to avoid blurry artifacts [15].
     - **UI Backgrounds**: Use **Lossy** or **Basis Universal** for large illustrations to save disk space without decreasing VRAM usage [15].
 - **Audit**: Use `ResourceLoader.get_dependencies(scene_path)` to ensure no uncompressed raw assets (e.g. `.png`) are leaking into the final export [19].
-
 
 ## Deep recipes (on demand)
 

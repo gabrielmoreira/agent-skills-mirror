@@ -1,489 +1,387 @@
 ---
 name: dev-git-workflow
-description: Team Git patterns for branching, PRs, commits, and code review. Use when choosing a branching model or hardening repo collaboration.
+description: "Designs team Git workflows for branching, PRs, and releases. Use when choosing branching models, stacked PRs, merge queues, worktree isolation for agents, or collaboration rules."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.2"
+last_validated: 2026-07-11
 ---
 
-# Git Workflow (Modern Team Collaboration)
+# Git Workflow
 
-Use modern Git collaboration patterns: GitHub Flow for continuous deploy, trunk-based for scale, Conventional Commits for automation, stacked diffs for large features.
+Use this skill to choose a team Git model, define PR discipline, standardize commit and release rules, and set safe defaults for human and AI-assisted collaboration.
 
-Use this skill to choose a branching model, standardize PR discipline, enforce commit conventions, and harden repository settings for safe collaboration.
-
-## Quick Start
-
-1. Identify constraints (team size, release cadence, CI maturity, compliance).
-2. Choose a branching strategy using the decision tree.
-3. Apply the baseline repo settings (branch protection, approvals, checks, merge strategy).
-4. Use the relevant reference doc for implementation details.
-5. If asked "best practice in 2026", verify via web search using `data/sources.json` as a starting source list.
+Bias toward modern delivery: GitHub Flow or trunk-based development for most teams, merge queues for busy repositories, worktrees for agent isolation, and release branches only when version support actually requires them. Git 2.55 (June 2026) is the current stable release; verify latest at git-scm.com. GitHub native stacked PRs (`gh stack`) remain private-preview and waitlist-gated as of this writing (entered preview April 2026, no GA date announced) — verify current status before recommending it as a default over Graphite, ghstack, or manual stacking.
 
 ## Quick Reference
 
-| Task | Tool/Command | When to Use | Reference |
-|------|-------------|-------------|-----------|
-| Create feature branch | `git switch -c feat/name main` | Start new work | [Branching Strategies](references/branching-strategies.md) |
-| Create feature worktree | `git worktree add .worktrees/feature -b feature/name` | Isolate one feature per agent/branch | [AI Agent Worktrees](references/ai-agent-worktrees.md) |
-| Squash WIP commits | `git rebase -i HEAD~3` | Clean up before PR | [Interactive Rebase](references/interactive-rebase-guide.md) |
-| Conventional commit | `git commit -m "feat: add feature"` | All commits | [Commit Conventions](references/commit-conventions.md) |
-| Force push safely | `git push --force-with-lease` | After rebase | [Common Mistakes](references/common-mistakes.md) |
-| Resolve conflicts | `git mergetool` | Merge conflicts | [Conflict Resolution](references/conflict-resolution.md) |
-| Create stacked PRs | `gt create stack-name` (Graphite) | Large features | [Stacked Diffs](references/stacked-diffs-guide.md) |
-| Auto-generate changelog | `npx standard-version` | Before release | [Release Management](references/release-management.md) |
-| Run quality gates | GitHub Actions / GitLab CI | Every PR | [Automated Quality Gates](references/automated-quality-gates.md) |
+| Need | Default | Reference |
+|------|---------|-----------|
+| Pick a branching model | GitHub Flow for most teams; trunk-based for high-concurrency teams | [references/branching-strategies.md](references/branching-strategies.md) |
+| Run parallel agent or feature work safely | one worktree per branch or agent | [references/ai-agent-worktrees.md](references/ai-agent-worktrees.md) |
+| Implement repo-local agent delivery | standardize `start` / `gate` / `pr` / `finish` plus worktree-safe scripts | this skill, [references/ai-agent-worktrees.md](references/ai-agent-worktrees.md) |
+| Keep PRs reviewable | small focused PRs or stacked diffs | [references/pr-best-practices.md](references/pr-best-practices.md), [references/stacked-diffs-guide.md](references/stacked-diffs-guide.md) |
+| Standardize commits and releases | Conventional Commits plus automated release tooling | [references/commit-conventions.md](references/commit-conventions.md), [references/release-management.md](references/release-management.md) |
+| Keep merge safety high | required checks, approvals, rulesets, merge queue | [references/automated-quality-gates.md](references/automated-quality-gates.md) |
+| Debug bad merges or regressions | conflict discipline, rebase hygiene, bisect | [references/conflict-resolution.md](references/conflict-resolution.md), [references/git-bisect-debugging.md](references/git-bisect-debugging.md) |
 
+## When to Use This Skill
 
-## AI Agent Feature Loop
+Use this skill when the main question is about:
 
-**[AI Agent Worktrees Reference](references/ai-agent-worktrees.md)** — Full guide to worktree isolation for Claude Code, Codex, Aider, and other AI coding agents.
+- branching strategy selection
+- PR sizing, review rules, and merge policy
+- merge queue, ruleset, or branch protection design
+- stacked diffs and history cleanup
+- worktree-based collaboration for multiple agents or parallel streams
+- standardizing repos on a `start` / `gate` / `pr` / `finish` delivery loop
+- release workflow and commit conventions
 
-```mermaid
-flowchart LR
-    A[Plan] --> B[Create worktree<br>per agent/feature]
-    B --> C[Verify .gitignore<br>+ install deps]
-    C --> D[Agent works<br>scoped commits]
-    D --> E[Quality gates]
-    E -->|pass| F[PR + merge]
-    E -->|fail| D
-    F --> G[Cleanup worktree<br>+ delete branch]
+Route elsewhere when the main task is:
 
-    style D fill:#fff3cd,stroke:#d4a017
-    style F fill:#d4edda,stroke:#28a745
-```
+- code review of a specific change set
+- CI/CD or platform design beyond Git workflow
+- debugging a product issue rather than the collaboration process
 
-For AI-assisted engineering, prefer this default loop:
+## Defaults
 
-1. Create one worktree per feature branch (`git worktree add .worktrees/<feature> -b feature/<name>`).
-2. Verify the worktree directory is in `.gitignore` (`git check-ignore -q .worktrees`).
-3. Install dependencies and verify clean test baseline before starting work.
-4. Implement scoped changes only for that feature.
-5. Run repository quality gate(s) before PR.
-6. Open one focused PR to the integration branch.
-7. After merge, clean up: `git worktree remove` + `git branch -d`.
+- GitHub Flow is the default for most small and medium teams shipping one production line.
+- Trunk-based development is the default when concurrency is high and CI runs in under 10 minutes with a failure rate low enough that main stays green (target: < 5% build failures on the default branch).
+- Use release branches or GitFlow-style stabilization only when multiple supported versions or heavy scheduled releases justify the overhead.
+- Use one worktree per agent or parallel feature branch.
+- Prefer explicit staging in dirty worktrees.
+- Prefer `--force-with-lease` over `--force`.
+- Treat current hosting-platform features and workflow advice as volatile and verify when users ask for the latest best practice.
 
-**Parallel agents:** One worktree per agent, disjoint file ownership, orchestrator merges from main. See [AI Agent Worktrees](references/ai-agent-worktrees.md) for setup, safety patterns, and cleanup.
+## Workflow
 
-If repository scripts exist (for example `scripts/git/feature-workflow.sh`), use them to enforce this loop.
+1. Identify constraints:
+   - team size and merge concurrency
+   - release cadence and version-support burden
+   - CI strength and branch protection maturity
+   - compliance or audit expectations
+2. Choose the simplest branching model that fits those constraints.
+3. Set the repository baseline: approvals, required checks, merge strategy, CODEOWNERS, release rules.
+4. Define the local loop for contributors and agents.
+5. Use references and templates to implement the chosen pattern rather than improvising repo policy from scratch.
 
-## Local Safety Preflight (Before Checkout/Merge/Commit)
-
-Use this quick sequence to avoid common local Git blockers during agent-driven work.
-
-1. Working tree cleanliness:
-- `git status --porcelain`
-- If non-empty, decide explicitly: commit, stash, or abort branch switch.
-
-2. Lock/process check:
-- If Git commands fail with `index.lock`, check running Git processes first:
-  - `test -f .git/index.lock && ps aux | rg "[g]it"`
-- Remove stale lock only after confirming no active Git process.
-
-3. Branch switch guard:
-- Do not `checkout`/`switch` when local changes would be overwritten.
-- Commit/stash intentionally; avoid accidental context loss.
-
-4. Merge conflict protocol:
-- On conflict, stop new edits, resolve conflict file-by-file, rerun relevant tests, then complete merge commit.
-
-5. Automation note:
-- For recurring branch operations, prefer project scripts/worktrees over ad-hoc local branch juggling.
-
-
-## Decision Tree: Choosing Branching Strategy
+## ASCII Flow
 
 ```text
-Use this decision tree to select the optimal branching strategy for your team based on team size, release cadence, and CI/CD maturity.
-
-Team characteristics -> What's your situation?
-    ├─ Small team (1-5 devs) + Continuous deployment + High CI/CD maturity?
-    │   └─ GitHub Flow (main + feature branches)
-    │
-    ├─ Medium team (5-15 devs) + Continuous deployment + High CI/CD maturity?
-    │   └─ Trunk-Based Development (main + short-lived branches)
-    │
-    ├─ Large team (15+ devs) + Continuous deployment + Very high CI/CD maturity?
-    │   └─ Trunk-Based + Feature Flags (progressive rollout)
-    │
-    ├─ Scheduled releases + Medium CI/CD maturity?
-    │   └─ GitFlow (main + develop + release branches)
-    │
-    └─ Multiple versions + Low-Medium CI/CD maturity?
-        └─ GitFlow (long-lived release branches)
+Git workflow request
+  -> identify team, concurrency, release, CI, and audit constraints
+  -> choose branching model: GitHub Flow, trunk-based, release branches, or GitFlow
+  -> set repo baseline: checks, approvals, CODEOWNERS, merge queue, release rules
+  -> define local loop
+     +-- human work -> branch, commit, PR, review, merge
+     +-- agent work -> worktree, scoped files, gate, PR, cleanup
+  -> apply safety preflight before checkout, merge, rebase, amend, reset, or push
+  -> document exact repo-local commands and verification gates
 ```
 
-## Navigation: Core Workflows
+## Branching Choice
 
-### Branching Strategies
+| Situation | Default |
+|-----------|---------|
+| small or medium team, single production line, frequent deploys | GitHub Flow |
+| larger team, high merge concurrency, strong CI, default branch must stay green | trunk-based plus merge queue |
+| incomplete work must merge early | trunk-based plus feature flags |
+| one supported version with scheduled releases | GitHub Flow or trunk-based with release tags |
+| multiple supported versions or long stabilization cycles | release branches or GitFlow-style structure |
 
-**[Branching Strategies Comparison](references/branching-strategies.md)** - Comprehensive guide to choosing and implementing branching strategies
+### Judgment Beyond Team Size
 
-- GitHub Flow (recommended for modern teams): Simple, continuous deployment
-- Trunk-Based Development (enterprise scale): Short-lived branches, daily merges
-- GitFlow (structured releases): Scheduled releases, multiple versions
-- Decision matrix: Team size, release cadence, CI/CD maturity
-- Migration paths between strategies
+Headcount is a proxy for merge concurrency, not the real variable. Look past it in these cases:
 
-### Pull Request Best Practices
+- **Agent-heavy teams.** A team of 5 humans running 10 parallel coding-agent worktrees has the merge concurrency of a much larger team, even though headcount looks small. Size the branching model and merge-queue decision to the number of concurrently open branches, not the number of people. Bias toward trunk-based plus feature flags once agent-driven concurrency pushes past what GitHub Flow's simple protected-main model can absorb.
+- **Open-source or many-outside-contributor repos.** Trunk-based development assumes push access to a shared repo; it does not fit fork-and-PR contribution models regardless of core-team size. Default to GitHub Flow with fork-based PRs, and treat "team size" as core maintainers only.
+- **Regulated or audited environments.** Compliance burden (signed commits, mandatory approvals, immutable audit trail) is often the load-bearing constraint, not team size or release cadence. A 4-person team in a regulated environment may need GitFlow-grade rigor (or trunk-based with stricter rulesets) that a 4-person SaaS team would never require.
+- **Distributed, async-heavy teams.** When reviewers span time zones with little overlap, a model that assumes same-day review turnaround (short-lived trunk-based branches) creates idle-branch friction. Favor draft PRs, generous auto-merge on required checks, and stacked diffs over strict branch-age limits.
 
-**[PR Best Practices Guide](references/pr-best-practices.md)** - Effective code reviews and fast PR cycles
+## Local Safety Preflight
 
-- PR size guidelines: keep PRs reviewable (often 200-400 LOC works well; split larger changes)
-- Review categories: BLOCKER, WARNING, NITPICK
-- Review etiquette: Collaborative feedback, code examples
-- PR description templates: What, Why, How, Testing
-- Data-driven insights on review efficiency
+Before checkout, merge, or rebase:
 
-### Commit Conventions
+1. check for a dirty worktree with `git status --porcelain`
+2. decide explicitly whether to commit, stash, or stop
+3. if `.git/index.lock` exists, confirm no active Git process before removing stale locks
+4. on conflicts, stop new edits, resolve file-by-file, rerun the relevant tests, then continue
+5. in agent-driven workflows, stage only the intended files
 
-**[Conventional Commits Standard](references/commit-conventions.md)** - Commit message formats and semantic versioning integration
+For multi-repo or long-lived shell sessions:
 
-- Conventional commit format: `type(scope): description`
-- Commit types: feat, fix, BREAKING CHANGE, refactor, docs
-- SemVer automation: Auto-bump versions from commits
-- Changelog generation: Automated from commit history
-- Tools: commitlint, semantic-release, standard-version
+1. do not rely on persisted shell `cwd` for Git mutation commands
+2. prefer `git -C <explicit-repo-or-worktree-path> ...` for `commit`, `commit --amend`, `reset`, `rebase`, `merge`, `cherry-pick`, `checkout`, `branch`, `push`, `stash`, `tag`, and `worktree` mutations
+3. before `commit --amend`, `reset`, `rebase`, `merge`, or `push`, verify the target with `git -C <path> rev-parse --show-toplevel` and `git -C <path> branch --show-current`
+4. if a mutation hits the wrong repo or branch, stop and inspect before recovery; do not improvise a destructive fix until the exact state is verified
 
----
+### History-Rewrite Risk Judgment
 
-## Navigation: Advanced Techniques
+Rebase and force-push are not inherently dangerous — the risk is a function of who else depends on the ref, not which command runs:
 
-### Stacked Diffs
+- **Safe by default:** rebasing a branch only you or one agent has ever pushed, before a PR exists, or inside a worktree no one else reads.
+- **Needs a check first:** rebasing a branch with an open PR that already carries review comments or approvals. Force-push (even `--force-with-lease`) dismisses approvals on most platform configurations, and re-review often costs more than the history cleanup was worth. Check the PR's review state (for example `gh pr view --json reviews,reviewDecision`) before rewriting; if approvals exist, prefer a merge commit or a new commit over a rewrite.
+- **Never without an explicit, communicated exception:** rewriting `main`, `develop`, a release branch, or any branch other people or other agents are actively building on.
+- **Secrets in history:** rotate the exposed credential first — that closes the actual exposure immediately. Only then decide whether a history rewrite is worth the disruption; for large or shared repos, rotation alone is often sufficient and a rewrite is unnecessary collateral damage. If a rewrite is still needed, use `git filter-repo`, not `git filter-branch` — the Git project's own docs deprecate `filter-branch` for correctness and performance reasons and point to `filter-repo` as the replacement.
+- **Agent-specific failure mode:** an agent "cleaning up" its own commit history can silently destroy a human's edit pushed to the same branch between the agent's last fetch and its push. Require `--force-with-lease` (never bare `--force`) for any agent-initiated force-push, and treat a lease rejection as a stop condition — fetch, inspect what changed, and involve a human rather than retrying with `--force`.
 
-**[Stacked Diffs Implementation](references/stacked-diffs-guide.md)** - Platform-specific workflows and team adoption
+## Agent-Authored Commit Hygiene
 
-- What are stacked diffs: Break large features into reviewable chunks
-- When to use: Features > 500 lines, complex refactoring
-- GitLab native support: MR chains
-- GitHub with Graphite: CLI-based stacking
-- Benefits: 60% faster review cycles, better quality
+Judgment for commits an agent creates on a human's behalf, distinct from generic commit-message style:
 
-### Interactive Rebase
+- Attribute agent-authored commits distinctly from the human operator's own commits — a `Co-authored-by:` trailer or a dedicated bot author identity keeps `git log --author` and blame meaningful. Do not let an agent commit under a human identity without that person's knowledge.
+- Treat an agent's own commit as a draft until a human has reviewed the actual diff. An agent's summary of its own change is not a substitute for review, and an agent's internal "tests pass" claim is not verified until the repo's real gate has run.
+- Never let an agent approve or merge its own PR, and never treat two agent-controlled accounts as independent reviewers for branch-protection purposes — see the Repo-Local Delivery Contract for the documented fallback when a repo runs in solo-account mode.
+- Apply the same one-agent-one-worktree-one-branch isolation to agent commits as to human work (see Worktree-First Loop below); a shared working tree between two agents produces commits that silently overwrite each other's intent, not just files.
+- Sign agent-authored commits the same way as human commits when the repo requires signed commits or tags — an agent identity is not an exemption from provenance requirements.
 
-**[Interactive Rebase & History Cleanup](references/interactive-rebase-guide.md)** - Maintain clean commit history
+## Worktree-First Loop for Agents
 
-- Auto-squash workflow: `fixup!` and `squash!` commits
-- Interactive rebase commands: pick, reword, edit, squash, fixup, drop
-- Splitting commits: Break large commits into focused changes
-- Reordering commits: Logical commit history
-- Best practices: Never rebase public branches
+Default loop for AI-assisted delivery:
 
-### Conflict Resolution
+1. create one worktree per feature or agent
+2. confirm the worktree path is ignored
+3. verify dependencies and baseline tests in that worktree
+4. keep ownership scoped to the assigned files
+5. run the repository quality gates before PR
+6. merge through the repo’s defined policy
+7. remove the worktree and delete the branch after merge
 
-**[Conflict Resolution Techniques](references/conflict-resolution.md)** - Merge strategies and conflict handling
+Use [references/ai-agent-worktrees.md](references/ai-agent-worktrees.md) for the full setup and cleanup patterns.
 
-- Resolution strategies: `--ours`, `--theirs`, manual merge
-- Rebase vs merge: When to use each
-- Merge tool setup: VS Code, Meld, custom tools
-- Conflict markers: Understanding `<<<<<<<`, `=======`, `>>>>>>>`
-- Prevention strategies: Frequent rebasing, small PRs
+## Repo-Local Delivery Contract
 
----
+When the user wants this workflow implemented in a real repo, do not create a separate delivery skill. Use this skill as the source of truth and standardize the repo around one worktree-first loop.
 
-## Navigation: Automation & Quality
+Default contract for real repos:
 
-### Automated Quality Gates
+- never develop new feature work directly on `dev` or `main`
+- create repo-local worktrees under `.worktrees/<feature-slug>`
+- use `feature/<feature-slug>` as the branch name
+- if several repos participate in one feature, keep the same slug in every repo
+- open one PR per repo
+- run the repo gate from the worktree before opening the PR
+- if the target branch requires approving reviews, require that approval from a different GitHub user than the PR author
+- do not treat two agents on the same GitHub account as independent reviewers for branch-protection purposes
+- if the repo runs in solo mode with one GitHub account, document the allowed merge path explicitly: second reviewer account, disabled required approvals with manual review, or intentional admin/bypass policy
+- merge the contract-owning repo first, then rebase dependents
 
-**[Automated Quality Gates](references/automated-quality-gates.md)** - CI/CD pipelines and quality enforcement
+Implementation defaults:
 
-- Essential gates: Tests, coverage, linting, security scans
-- Advanced gates: Performance benchmarks, bundle size, a11y checks
-- GitHub Actions workflows: Complete PR checks pipeline
-- GitLab CI pipelines: MR quality gates
-- Pre-commit hooks: Husky + lint-staged setup
-- Quality metrics thresholds: Coverage 80%, complexity < 10
+- add or normalize a repo-local workflow script, usually `scripts/git/feature-workflow.sh`
+- expose `start <slug>`, `gate`, `pr --title "..."`, and `finish <slug>`
+- update `AGENTS.md` with the exact local commands instead of generic Git advice
+- update `AGENTS.md` with the repo's review and merge policy, including reviewer-identity constraints when branch protection requires approvals
+- update `AGENTS.md` with a multi-repo Git safety rule: explicit-path Git mutations and mandatory target verification before amend/reset/rebase/push
+- define `gate` in terms of the repo's real pre-merge checks
+- patch local scripts that assume fixed sibling paths so they accept env overrides first and fall back to the old path second
 
-### Validation Checklists
+Use this env-override pattern for cross-repo local scripts:
 
-**[Validation Checklists](references/validation-checklists.md)** - Pre-PR, pre-merge, pre-release checklists
+```bash
+DEFAULT_OTHER_REPO_DIR="$(cd "$ROOT_DIR/.." && pwd)/other-repo"
+OTHER_REPO_DIR="${OTHER_REPO_DIR_ENV:-$DEFAULT_OTHER_REPO_DIR}"
+```
 
-- Before creating PR: Code quality, commit hygiene, testing
-- Before merging PR: Review process, CI/CD checks, final verification
-- Before releasing: Pre-release testing, version management, documentation
-- Post-deployment: Immediate verification, monitoring, tasks
-- Hotfix checklist: Critical bug fast-track process
+For multi-repo features, document the worktree verification loop explicitly:
 
-### Release Management
+1. pick one shared feature slug
+2. create one worktree per touched repo
+3. export worktree paths per repo when local integration scripts need sibling repos
+4. start backend or shared services from the matching worktree, not from `dev`
+5. run each repo gate from its own worktree
+6. keep PRs in draft until every touched repo passes
 
-**[Release Management](references/release-management.md)** - Versioning and deployment workflows
+Minimum validation after implementation:
 
-- Semantic versioning: MAJOR.MINOR.PATCH
-- Manual release workflow: GitFlow release branches
-- Automated releases: semantic-release automation
-- Hotfix workflow: Emergency patches
-- Changelog generation: Keep a Changelog format
-- Release checklists: Pre-release, release day, post-release
+- run `bash -n` on every changed shell script
+- ensure new workflow scripts are executable
+- confirm `AGENTS.md` commands are valid from the worktree path they document
+- inspect `git status --short` in every touched repo
 
----
+## Portfolio Session Command
 
-## Navigation: AI Agent Workflows
+When a repo set needs the same multi-repo flow repeatedly, keep the repo-local `feature-workflow.sh` scripts as the primitives and add one thin portfolio orchestrator above them.
 
-### AI Agent Worktrees
+Default contract:
 
-**[AI Agent Worktrees](references/ai-agent-worktrees.md)** - Worktree isolation patterns for AI coding agents
+- add a portfolio-level command such as `scripts/git/feature-session.sh`
+- keep it stateful per feature slug, for example `.feature-sessions/<slug>.env`
+- make it call the repo-local workflow scripts instead of reimplementing branch and PR logic differently
+- prefer these subcommands:
+  - `start <slug> --repos <repo1,repo2,...>`
+  - `dev <slug>`
+  - `test <slug> --level repo-gate|integration|full`
+  - `pr <slug> --title "..."`
+  - `finish <slug>`
+- wire sibling repos through env overrides instead of hardcoded relative assumptions
+- make the skill tell the agent to invoke the portfolio command when it exists, rather than manually replaying the same steps repo by repo
 
-- When to use worktrees with agents (decision table)
-- Directory conventions (`.worktrees/`, global paths, `.gitignore`)
-- Agent-specific patterns: Claude Code, Codex, Aider, Copilot Workspace
-- Parallel agent execution: one worktree per agent, disjoint file ownership
-- Safety: lock contention, conflict detection, cross-agent file guards
-- Cleanup lifecycle: removal, pruning, batch cleanup scripts
+The portfolio command should automate mechanics, not judgment:
 
----
+- yes: create worktrees, save session state, run gates, start local services, open draft PRs
+- no: merge automatically, delete dirty worktrees, or hide failing checks
 
-## Navigation: Learning & Troubleshooting
+### Example: Backend + iOS Feature
 
-### Monorepo Workflows
+> **Note:** Replace placeholder paths with your repo locations.
 
-**[Monorepo Workflows](references/monorepo-workflows.md)** - Git patterns for monorepo repositories
+Use a concrete same-slug flow when an iOS client depends on backend changes.
 
-- Trunk-based branching for monorepos
-- Sparse checkout and partial clone
-- Affected-only CI (Nx, Turborepo, Bazel)
-- CODEOWNERS per package/directory
-- Monorepo vs polyrepo decision table
+Given:
 
-### Git Hooks Automation
+- repo A: `<backend-repo>`
+- repo B: `<ios-repo>`
+- slug: `onboarding-paywall`
 
-**[Git Hooks Automation](references/git-hooks-automation.md)** - Pre-commit, commit-msg, pre-push hooks
+If the repo set already provides a portfolio session command, prefer it:
 
-- Husky v9+ and lefthook setup
-- lint-staged and commitlint integration
-- Custom hooks (gitleaks, file size limits, branch naming)
-- Team distribution strategies
+```bash
+bash ./scripts/git/feature-session.sh start onboarding-paywall --repos <backend-repo>,<ios-repo>
+bash ./scripts/git/feature-session.sh dev onboarding-paywall
+bash ./scripts/git/feature-session.sh test onboarding-paywall --level full
+bash ./scripts/git/feature-session.sh pr onboarding-paywall --title "feat: onboarding paywall"
+bash ./scripts/git/feature-session.sh finish onboarding-paywall
+```
 
-### Git Bisect Debugging
+Under the hood that command should still delegate to each repo's local `feature-workflow.sh`.
 
-**[Git Bisect Debugging](references/git-bisect-debugging.md)** - Regression hunting with git bisect
+Create matching worktrees:
 
-- Manual and automated bisect workflows
-- Writing bisect test scripts
-- Handling merge commits, log and replay
+```bash
+cd ~/Projects/<your-product>/<backend-repo>
+./scripts/git/feature-workflow.sh start onboarding-paywall
 
-### Common Mistakes
+cd ~/Projects/<your-product>/<ios-repo>
+./scripts/git/feature-workflow.sh start onboarding-paywall
+```
 
-**[Common Mistakes & Fixes](references/common-mistakes.md)** - Learn from common pitfalls
+Export paths once so every local command targets the correct worktree:
 
-- Large unfocused PRs -> Split into stacked diffs
-- Vague commit messages -> Use conventional commits
-- Rewriting public history -> Never rebase main
-- Ignoring review comments -> Address all feedback
-- Committing secrets -> Use environment variables
-- Force push dangers -> Use `--force-with-lease`
+```bash
+export SLUG=onboarding-paywall
+export BACKEND_WT=~/Projects/<your-product>/<backend-repo>/.worktrees/$SLUG
+export IOS_WT=~/Projects/<your-product>/<ios-repo>/.worktrees/$SLUG
+```
 
-## Decision Tables
+Run backend and iOS integration from those worktrees, not from `dev`:
 
-### When to Use Each Branching Strategy
+```bash
+cd "$BACKEND_WT/app"
+./tests/dev-server.sh
 
-| Requirement | GitHub Flow | Trunk-Based | GitFlow |
-|-------------|-------------|-------------|---------|
-| Continuous deployment | [OK] Best | [OK] Best | [FAIL] Poor |
-| Scheduled releases | [WARNING] OK | [WARNING] OK | [OK] Best |
-| Multiple versions | [FAIL] Poor | [FAIL] Poor | [OK] Best |
-| Small team (< 5) | [OK] Best | [WARNING] OK | [FAIL] Overkill |
-| Large team (> 15) | [WARNING] OK | [OK] Best | [WARNING] OK |
-| Fast iteration | [OK] Best | [OK] Best | [FAIL] Poor |
+cd "$IOS_WT"
+BACKEND_APP_DIR="$BACKEND_WT/app" bash ./scripts/run-local-ios-dev.sh
+```
 
-### PR Size vs Review Time
+Run gates and higher-confidence iOS checks from the worktrees:
 
-| LOC | Review Time | Bug Detection | Recommendation |
-|-----|-------------|---------------|----------------|
-| < 50 | < 10 min | High | [OK] Ideal for hotfixes |
-| 50-200 | 10-30 min | High | [OK] Ideal for features |
-| 200-400 | 30-60 min | Medium-High | [OK] Acceptable |
-| 400-1000 | 1-2 hours | Medium | [WARNING] Consider splitting |
-| > 1000 | > 2 hours | Low | [FAIL] Always split |
+```bash
+cd "$BACKEND_WT"
+../../scripts/git/feature-workflow.sh gate
 
-## Do / Avoid
+cd "$IOS_WT"
+../../scripts/git/feature-workflow.sh gate
+bash ./scripts/test-ios.sh ui
+```
 
-### GOOD: Do
+Then commit and open one PR per repo:
 
-- Keep PRs under 400 lines (200-400 optimal)
-- Use conventional commit messages
-- Rebase before opening PR (clean history)
-- Require at least one approval before merge
-- Run CI checks on every PR
-- Use stacked diffs for large features (>500 LOC)
-- Squash WIP commits before merge
-- Use `--force-with-lease` (not `--force`)
+```bash
+cd "$BACKEND_WT"
+git add -A
+git commit -m "feat(paywall): add onboarding paywall backend flow"
+../../scripts/git/feature-workflow.sh pr --title "feat: onboarding paywall"
 
-### BAD: Avoid
+cd "$IOS_WT"
+git add -A
+git commit -m "feat(paywall): add onboarding paywall screen"
+../../scripts/git/feature-workflow.sh pr --title "feat: onboarding paywall"
+```
 
-- Long-lived feature branches (>3 days)
-- Merging without review
-- Rebasing public/shared branches
-- Force pushing to main/master
-- Committing secrets (even "temporarily")
-- Large monolithic PRs (>1000 lines)
-- Vague commit messages ("fix", "update")
-- Skipping CI to merge faster
+Merge the backend contract repo first, then rebase and merge the iOS repo if it depends on that contract.
 
-## Anti-Patterns
+## Repository Baseline
 
-| Anti-Pattern | Problem | Fix |
-|--------------|---------|-----|
-| **Long-lived branches** | Merge conflicts, stale code | Trunk-based, short branches |
-| **Unreviewed merges** | Bugs reach production | Branch protection rules |
-| **Rebasing main** | History corruption | Never rebase public branches |
-| **1000+ LOC PRs** | Poor review quality | Stacked diffs, split PRs |
-| **"fix" commits** | Unclear history | Conventional commits |
-| **No CI gates** | Broken main | Required status checks |
-| **Secrets in history** | Security breach | Pre-commit hooks, gitleaks |
+Set these defaults before scaling collaboration:
 
-## Repository Baseline (Security + Reliability)
+- rulesets for branch and tag safety on GitHub — GitHub is migrating governance from classic protected branches to rulesets (multiple rulesets can apply to the same branch, with org-wide reuse); prefer rulesets for new repos and plan a migration for repos still on classic protected branches only
+- required approvals and CODEOWNERS for sensitive paths
+- a single documented merge strategy
+- signed commits and tags where the team requires stronger provenance
+- secret scanning and push protection
+- merge queue or merge trains when concurrency is high
+- CI cost controls for heavy jobs and untrusted forks
 
-Set these repo defaults before scaling a team:
+Useful assets:
 
-- **Branch protection**: require PRs to `main` (no direct pushes), require status checks, require up-to-date branch on merge.
-- **Review gates**: require approvals; enforce CODEOWNERS for sensitive paths (auth, payments, infra, prod configs).
-- **History policy**: pick merge strategy (squash vs merge commits) and make it consistent; document exceptions.
-- **Signed changes**: require signed commits and signed tags for releases (team-specific key management).
-- **Secret prevention**: local pre-commit + server-side secret scanning/push protection; rotate on incident.
-- **Merge safety**: use merge queue (or equivalent) for busy repos to keep `main` green under high concurrency.
-- **Cost control**: cache dependencies/builds; run heavy jobs conditionally; cap CI minutes for untrusted forks.
+- [assets/pull-requests/pr-template.md](assets/pull-requests/pr-template.md)
+- [assets/template-git-workflow-guide.md](assets/template-git-workflow-guide.md)
+- [assets/ci-cd/github-pr-checks.yml](assets/ci-cd/github-pr-checks.yml)
+- [assets/ci-cd/gitlab-mr-checks.yml](assets/ci-cd/gitlab-mr-checks.yml)
 
-Template: [assets/pull-requests/pr-template.md](assets/pull-requests/pr-template.md)
-Guide: [assets/template-git-workflow-guide.md](assets/template-git-workflow-guide.md)
+## Known Traps
 
-## Security-Sensitive Changes
+- Choosing a branching model from ideology instead of release support burden, merge concurrency, and CI capability.
+- Introducing worktrees and stacked branches without repo-local scripts or conventions, which leaves cleanup and verification inconsistent.
+- Treating merge queue adoption as enough on its own while required checks, PR sizing, and branch hygiene remain weak.
+- Rebasing or force-pushing during active review without an agreed team policy, causing reviewers to lose context or approval state.
+- Letting repo-local automation assume fixed sibling paths, which breaks multi-repo worktree setups as soon as someone changes local layout.
 
-For security-related git operations, see [dev-git-commit-message/assets/template-security-commits.md](../dev-git-commit-message/assets/template-security-commits.md):
+## Common Anti-Patterns
 
-- Secrets detection with pre-commit hooks
-- Handling accidental secret commits
-- Security commit metadata (CVE, CVSS)
-- Branch protection for security-sensitive code
+- long-lived branches without a release reason
+- monolithic PRs that mix unrelated concerns
+- rebasing or force-pushing shared public branches
+- skipping CI or review to merge faster
+- vague commit messages that break release automation
+- blanket staging in dirty worktrees
+- using stacked diffs when the dependency order is unclear
 
-## Optional: AI/Automation
+## Navigation
 
-> **Note**: AI tools assist but cannot replace human judgment for merge decisions.
+**Core**
 
-- **PR summarization** - Generate description from commits
-- **Change risk labeling** - Flag high-risk files (auth, payments)
-- **Review suggestions** - Identify potential reviewers
+- [references/branching-strategies.md](references/branching-strategies.md) — strategy comparison matrix, GitHub Flow / trunk-based / GitFlow guides, migration paths, team-size recommendations
+- [references/pr-best-practices.md](references/pr-best-practices.md) — PR sizing heuristics, description templates, review etiquette, merge strategy decision matrix, metrics targets
+- [references/commit-conventions.md](references/commit-conventions.md) — Conventional Commits format, SemVer mapping, commitlint setup, release automation tools
+- [references/release-management.md](references/release-management.md) — SemVer, manual/controlled/automated release workflows, hotfix process, changelog standards
 
-### Bounded Claims
+**Advanced**
 
-- AI summaries need human verification
-- Risk labels are suggestions, not guarantees
-- Merge decisions always require human approval
+- [references/ai-agent-worktrees.md](references/ai-agent-worktrees.md) — worktree setup/cleanup for Claude Code, Codex, and parallel agents; conflict detection; safety rules; quick command reference
+- [references/stacked-diffs-guide.md](references/stacked-diffs-guide.md) — stacked-diff workflow, platform support (GitHub native gh-stack preview, GitLab CLI), Graphite/ghstack/Sapling comparison, best practices
+- [references/interactive-rebase-guide.md](references/interactive-rebase-guide.md) — auto-squash workflow, rebase commands, splitting/reordering commits, safe force-push
+- [references/conflict-resolution.md](references/conflict-resolution.md) — conflict markers, ours/theirs strategies, rebase vs merge decision, rerere, recovery from mistakes
+- [references/git-bisect-debugging.md](references/git-bisect-debugging.md) — manual and automated bisect, test script exit codes, first-parent for merge-heavy repos, integration with debugging workflow
 
----
+**Automation and repo operations**
+
+- [references/automated-quality-gates.md](references/automated-quality-gates.md) — GitHub Actions merge queue config, GitLab merge trains, quality thresholds, PR status checks
+- [references/validation-checklists.md](references/validation-checklists.md) — pre-PR, pre-merge, release, hotfix, and rebase checklists
+- [references/git-hooks-automation.md](references/git-hooks-automation.md) — Husky v9, lefthook, lint-staged, commitlint, secrets scanning, branch naming enforcement
+- [references/monorepo-workflows.md](references/monorepo-workflows.md) — trunk-based monorepos, sparse checkout, CODEOWNERS per package, affected-only CI with Nx/Turborepo/Bazel
+- [references/common-mistakes.md](references/common-mistakes.md) — top-10 anti-patterns with fixes: large PRs, vague commits, public history rewrite, secrets, force push
+- [data/sources.json](data/sources.json)
 
 ## Related Skills
 
-- [Software Code Review](../software-code-review/SKILL.md) - Code review standards and techniques
-- [Quality Debugging](../qa-debugging/SKILL.md) - Git bisect, debugging workflows
-- [DevOps Platform Engineering](../ops-devops-platform/SKILL.md) - CI/CD pipelines, automation
-- [Software Testing & Automation](../qa-testing-strategy/SKILL.md) - Test-driven development, coverage gates
-- [Documentation Standards](../docs-codebase/SKILL.md) - Changelog formats, documentation workflows
-- [Git Commit Message](../dev-git-commit-message/SKILL.md) - Commit message conventions, security commits
-
-## Usage Notes
-
-**For Claude Code**:
-
-- Recommend GitHub Flow for most modern teams (simple, effective)
-- Suggest stacked diffs for features > 500 lines
-- Always validate commit messages against conventional commit format
-- Check PR size - warn if > 400 lines, block if > 1000 lines
-- Reference assets/ for copy-paste ready configurations
-- Use references/ for deep-dive implementation guidance
-
-**Progressive Disclosure**:
-
-1. Start with Quick Reference for fast lookups
-2. Use Decision Tree for choosing strategies
-3. Navigate to specific resources for detailed implementation
-4. Reference templates for production-ready configurations
-5. Check validation checklists before PR/merge/release
-
----
-
-## Quick Command Reference
-
-**Common Operations**:
-
-```bash
-# Rebase feature branch
-git fetch origin && git rebase origin/main
-
-# Interactive rebase last 3 commits
-git rebase -i HEAD~3
-
-# Squash all commits in branch
-git rebase -i $(git merge-base HEAD main)
-
-# Force push safely
-git push --force-with-lease origin feature-branch
-
-# Undo last commit (keep changes)
-git reset --soft HEAD~1
-
-# Cherry-pick specific commit
-git cherry-pick abc123
-
-# Stash changes
-git stash push -m "WIP: implementing feature X"
-git stash pop
-```
-
-**Conflict Resolution**:
-
-```bash
-# Pull latest with rebase
-git pull --rebase origin main
-
-# Use visual merge tool
-git mergetool
-
-# Accept their changes
-git checkout --theirs <file>
-
-# Accept your changes
-git checkout --ours <file>
-```
-
-## Trend Awareness Protocol
-
-IMPORTANT: When users ask recommendation questions about Git workflows, branching strategies, or collaboration tools, verify current trends via web search (and/or the links in `data/sources.json`) before answering.
-
-### Trigger Conditions
-
-- "What's the best Git workflow for [team size/use case]?"
-- "What should I use for [branching/PR management]?"
-- "What's the latest in Git collaboration?"
-- "Current best practices for [branching/code review]?"
-- "Is [GitFlow/Trunk-Based] still relevant in 2026?"
-- "[GitHub Flow] vs [Trunk-Based] vs [GitFlow]?"
-- "Best PR stacking tool?"
-
-### Required Searches
-
-1. Search: `"Git workflow best practices 2026"`
-2. Search: `"[specific strategy] vs alternatives 2026"`
-3. Search: `"Git collaboration trends January 2026"`
-4. Search: `"[branching/PR tools] comparison 2026"`
-
-### What to Report
-
-After searching, provide:
-
-- **Current landscape**: What Git workflows/tools are popular NOW
-- **Emerging trends**: New collaboration patterns, tools, or practices gaining traction
-- **Deprecated/declining**: Strategies/tools losing relevance or support
-- **Recommendation**: Based on fresh data, not just static knowledge
-
-### Example Topics (verify with fresh search)
-
-- Branching strategies (Trunk-Based, GitHub Flow, GitFlow)
-- PR stacking tools (Graphite, git-stack, Stacked PRs)
-- Merge queue implementations (GitHub, GitLab)
-- Code review platforms and automation
-- Conventional commits and changelog tools
-- Git hosting platform features (GitHub, GitLab, Bitbucket)
-- AI-assisted Git workflows
+- [../software-code-review/SKILL.md](../software-code-review/SKILL.md)
+- [../qa-debugging/SKILL.md](../qa-debugging/SKILL.md)
+- [../ops-devops-platform/SKILL.md](../ops-devops-platform/SKILL.md)
+- [../qa-testing-strategy/SKILL.md](../qa-testing-strategy/SKILL.md)
+- [../docs-codebase/SKILL.md](../docs-codebase/SKILL.md)
+- [../dev-git-commit-message/SKILL.md](../dev-git-commit-message/SKILL.md)
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify current GitHub, GitLab, and git-scm guidance when users ask for the latest workflow recommendation.
+- Prefer official platform docs and the upstream Git project over blogs and hot takes.
+- If live verification is unavailable, mark trend-sensitive guidance as unverified.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

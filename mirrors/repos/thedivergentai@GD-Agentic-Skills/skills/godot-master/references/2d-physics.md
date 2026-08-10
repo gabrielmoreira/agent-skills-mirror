@@ -27,11 +27,6 @@ Expert guidance for collision detection, triggers, and raycasting in Godot 2D.
 
 ---
 
-## Godot 4.7: 2D Physics
-
-- `body_set_shape_as_one_way_collision` adds **direction** parameter — set relative to shape orientation for one-way platforms.
-- `CollisionShape2D` supports one-way collision **direction relative to the shape** (not just global up).
-
 ## Available Scripts
 
 > **MANDATORY**: Read the script matching your workflow branch before coding. Query/Area cookbook samples live in scripts — not in this body.
@@ -132,24 +127,24 @@ Expert guidance for collision detection, triggers, and raycasting in Godot 2D.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project Settings layer names, physics ticks, and default gravity must be set before layer/mask matrices stay sane.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Bitmask enums, typed dictionaries for overlap sets, and `_physics_process` discipline underpin every pattern here.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `body_entered` / `body_exited` wiring and debounce patterns need clean signal ownership to avoid spam.
+- [godot-project-foundations](project-foundations.md) — Project Settings layer names, physics ticks, and default gravity must be set before layer/mask matrices stay sane.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Bitmask enums, typed dictionaries for overlap sets, and `_physics_process` discipline underpin every pattern here.
+- [godot-signal-architecture](signal-architecture.md) — `body_entered` / `body_exited` wiring and debounce patterns need clean signal ownership to avoid spam.
 
 #### Complements
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Coyote time, jump buffers, and one-way platforms sit on top of the collision contracts this skill defines.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Deeper query parameter recipes (exclusions, masks, shape casts) when vision/hitscan systems grow beyond basics.
-- [godot-tilemap-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tilemap-mastery/SKILL.md) — Tile physics layers and one-way tile collisions must match the same layer matrix used by bodies and areas.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Physics-step input sampling and vsync/latency choices couple tightly with `move_and_slide` feel.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — Parallel 3D body/query concepts when porting or sharing layer policy across dimensions.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and batching guidance when `PhysicsServer2D` swarms or query caches become bottlenecks.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Visible collision shapes, contact normals, and frame-time traps when diagnosing jitter or missed hits.
+- [godot-characterbody-2d](characterbody-2d.md) — Coyote time, jump buffers, and one-way platforms sit on top of the collision contracts this skill defines.
+- [godot-raycasting-queries](raycasting-queries.md) — Deeper query parameter recipes (exclusions, masks, shape casts) when vision/hitscan systems grow beyond basics.
+- [godot-tilemap-mastery](tilemap-mastery.md) — Tile physics layers and one-way tile collisions must match the same layer matrix used by bodies and areas.
+- [godot-input-handling](input-handling.md) — Physics-step input sampling and vsync/latency choices couple tightly with `move_and_slide` feel.
+- [godot-physics-3d](physics-3d.md) — Parallel 3D body/query concepts when porting or sharing layer policy across dimensions.
+- [godot-performance-optimization](performance-optimization.md) — Profiling and batching guidance when `PhysicsServer2D` swarms or query caches become bottlenecks.
+- [godot-debugging-profiling](debugging-profiling.md) — Visible collision shapes, contact normals, and frame-time traps when diagnosing jitter or missed hits.
 
 #### Downstream / consumers
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hitboxes/hurtboxes are `Area2D` + layer/mask products; damage timing inherits overlap and CCD choices.
-- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Platformer feel (floors, ledges, one-ways) consumes CharacterBody2D + collision setup from this domain.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Agents still need physics layers for blockers and LOS; keep nav meshes and collision worlds consistent.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Jump windows, projectile speed/CCD, gravity, and hitbox size directly change win-rate and difficulty curves; simulate those physics knobs instead of guessing.
+- [godot-combat-system](combat-system.md) — Hitboxes/hurtboxes are `Area2D` + layer/mask products; damage timing inherits overlap and CCD choices.
+- [godot-genre-platformer](genre-platformer.md) — Platformer feel (floors, ledges, one-ways) consumes CharacterBody2D + collision setup from this domain.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — Agents still need physics layers for blockers and LOS; keep nav meshes and collision worlds consistent.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Jump windows, projectile speed/CCD, gravity, and hitbox size directly change win-rate and difficulty curves; simulate those physics knobs instead of guessing.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored entry point for discovering 2D physics alongside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored entry point for discovering 2D physics alongside sibling domains.

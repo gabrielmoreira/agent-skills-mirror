@@ -3,17 +3,6 @@ name: godot-genre-shooter
 description: "Expert blueprint for TPS/hybrid shooters: soft-lock aim assist, cover validation rays, SpringArm TPS camera, and genre routing to FPS sibling for viewmodel/hitscan feel. Use for third-person/cover shooters and hybrids. Keywords: TPS, soft_lock, cover, SpringArm3D, hybrid shooter, aim assist — not FPS-only movement."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Shooter (TPS / Hybrid)
-
-**Ownership:** third-person, hybrid, and shared genre routing (cover, soft-lock, spring-arm camera).  
-**Not owned here:** FPS movement, viewmodel bob, FPS camera look, FPS-only hitscan/recoil dumps — use [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md).
-
 ## Core Loop
 
 `Engage → Aim (soft-lock/cover) → Fire → Confirm → Acquire Next`
@@ -46,7 +35,7 @@ Also available: [advanced_weapon_controller.gd](../scripts/genre_shooter_advance
 | Over-shoulder TPS | [tps_camera_spring_arm.gd](../scripts/genre_shooter_tps_camera_spring_arm.gd) |
 | Cover check before peek-fire | [cover_validator_rays.gd](../scripts/genre_shooter_cover_validator_rays.gd) |
 | Soft-lock / assist | [soft_lock_aim_assist.gd](../scripts/genre_shooter_soft_lock_aim_assist.gd) |
-| True FPS digsite | → [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) |
+| True FPS digsite | → [godot-genre-shooter-fps](genre-shooter-fps.md) |
 
 ### Fire mode
 | Need | Action |
@@ -105,23 +94,23 @@ Client predicts VFX/tracers; server validates hits (`rpc` + rewind). Never trust
 ### Related Skills
 
 #### Prerequisites
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — CharacterBody3D/RigidBody3D, collision layers, and direct space queries that hitscan and projectiles depend on.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — look/fire/reload action maps and gamepad stick curves before aim assist and recoil kick.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — FPS/TPS camera rigs, FOV, and SpringArm patterns that weapon kick and soft-lock rotate.
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Resource-based WeaponData, scene structure, and import defaults before balancing archetypes.
+- [godot-physics-3d](physics-3d.md) — CharacterBody3D/RigidBody3D, collision layers, and direct space queries that hitscan and projectiles depend on.
+- [godot-input-handling](input-handling.md) — look/fire/reload action maps and gamepad stick curves before aim assist and recoil kick.
+- [godot-camera-systems](camera-systems.md) — FPS/TPS camera rigs, FOV, and SpringArm patterns that weapon kick and soft-lock rotate.
+- [godot-project-foundations](project-foundations.md) — Resource-based WeaponData, scene structure, and import defaults before balancing archetypes.
 
 #### Complements
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — damage events, hit zones, and health pipelines that consume shooter `take_damage` results.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — reusable ray/shape query helpers for cover checks, LOS, and hitscan without duplicating query setup.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — bus routing and 3D attenuation for mechanical + shot + reverb-tail gunfire layers.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — ENet peers, RPC modes, and authority so fire is predicted client-side and damage is server-validated.
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — prediction, reconciliation, and lag-compensation shells around hitscan validation.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — muzzle flash, tracers, and impact bursts that sell gunplay without blocking the fire path.
+- [godot-combat-system](combat-system.md) — damage events, hit zones, and health pipelines that consume shooter `take_damage` results.
+- [godot-raycasting-queries](raycasting-queries.md) — reusable ray/shape query helpers for cover checks, LOS, and hitscan without duplicating query setup.
+- [godot-audio-systems](audio-systems.md) — bus routing and 3D attenuation for mechanical + shot + reverb-tail gunfire layers.
+- [godot-multiplayer-networking](multiplayer-networking.md) — ENet peers, RPC modes, and authority so fire is predicted client-side and damage is server-validated.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — prediction, reconciliation, and lag-compensation shells around hitscan validation.
+- [godot-particles](particles.md) — muzzle flash, tracers, and impact bursts that sell gunplay without blocking the fire path.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate TTK, spray patterns, and weapon asymmetry matrices so archetype damage/recoil stay competitive.
-- [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — FPS-specialized movement and viewmodel polish that builds on this genre gunplay lattice.
-- [godot-genre-battle-royale](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-battle-royale/SKILL.md) — large-scale matches that reuse hitscan/projectile combat inside drop/zone loops.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate TTK, spray patterns, and weapon asymmetry matrices so archetype damage/recoil stay competitive.
+- [godot-genre-shooter-fps](genre-shooter-fps.md) — FPS-specialized movement and viewmodel polish that builds on this genre gunplay lattice.
+- [godot-genre-battle-royale](genre-battle-royale.md) — large-scale matches that reuse hitscan/projectile combat inside drop/zone loops.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

@@ -1,6 +1,6 @@
 ---
 name: invoice-processing
-description: Extract, validate, and categorize invoice data against purchase orders and GL codes
+description: Extract, validate, and categorize invoice data against purchase orders and GL codes. Use when the user requests invoice processing or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community
@@ -128,6 +128,13 @@ Total: $4,231.50
 - Require PO matching for all invoices above a configurable dollar threshold to prevent unauthorized spending.
 - Retain the raw invoice data alongside extracted fields for audit trail purposes.
 - Process invoices in batch during off-peak hours and route exceptions to AP staff immediately.
+
+## Safety Boundaries
+
+- Treat the output as analytical support, not individualized financial, tax, investment, or accounting advice.
+- Preserve source data and expose assumptions, formulas, units, and reconciliation checks so a reviewer can reproduce the result.
+- Do not initiate payments, transactions, journal entries, filings, or account changes without explicit user authorization.
+- Require a qualified professional to review material decisions, regulated filings, or conclusions based on incomplete data.
 
 ## Edge Cases
 

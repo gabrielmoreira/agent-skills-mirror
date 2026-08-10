@@ -1,0 +1,24 @@
+schema_version: 1
+distillation_id: sample-concept-book-v1
+# Copy only when gate-decisions.yml is absent. This template never pre-approves
+# a gate or impersonates a user; append later gates only after actual decisions.
+gate_decisions:
+  - decision_id: gate-decision-sample-g1-001
+    sequence: 1
+    supersedes: null
+    is_current: true
+    gate: gate-1
+    candidate_id: null
+    decision: pending
+    scope:
+      - sample-concept-book-v1 requirements
+    reviewer_type: null
+    reviewer: null
+    decided_at: null
+    rationale: Awaiting the user's explicit requirements and processing-boundary decision.
+    conditions: []
+    eval_run_ids: []
+    rule_decisions: []
+    stable_task_decisions: []
+    task_contract_snapshot: null
+materializations: []

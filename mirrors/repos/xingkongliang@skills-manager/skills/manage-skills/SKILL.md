@@ -1,12 +1,12 @@
 ---
 name: manage-skills
-description: Manage the user's agent-skill library via the local skills-manager-cli — install, update, remove, enable/disable, sync, search, adopt, and tag skills in a central library that's shared across every installed agent (Claude Code, Cursor, Codex, Gemini CLI, Windsurf, etc.). Use this whenever the user wants to install or find or update or remove or list a skill, see what skills they have, sync skills across agents, adopt skills already installed elsewhere, or generally manage their skill library. Prefer this over find-skills when `skills-manager-cli` is on PATH, because routing installs through the central library is the only way subsequent `update` and `sync` work — direct `npx skills add` installs cannot be updated or shared across agents. Triggers include "install/add a skill", "find a skill for X", "is there a skill that does Y", "update my skills", "remove/uninstall this skill", "list/show my skills", "what skills do I have", "sync skills", "manage skills", "skill library".
+description: Manage the user's shared agent-skill library via skills-manager-cli — install, update, remove, deploy or undeploy skills per agent, manage presets, organize tags, search, and adopt existing skills. Use this whenever the user wants Claude Code, Codex, Cursor, or another agent to gain or lose a skill, wants to organize the central library, or asks what is installed or deployed. Prefer this over direct agent-folder installs because Skills Manager preserves source metadata, preset membership, updates, and cross-agent deployment state.
 ---
 
 ## Before doing anything
 
 1. Confirm the CLI is available: `command -v skills-manager-cli`. If it's not on PATH, this skill doesn't apply — fall back to find-skills (or tell the user to install skills-manager).
-2. **Always pass `--json` when you parse output yourself.** Pretty-printed output is for the user; JSON is for you. Errors come back as `{"ok": false, "error": "..."}` on stderr with a non-zero exit code.
+2. **Always pass `--json` when you parse output yourself.** Pretty-printed output is for the user; JSON is for you. Errors include `ok=false`, a stable `code`, and `message` on stderr with a non-zero exit code.
 
 ```bash
 skills-manager-cli --json skills list
@@ -14,9 +14,12 @@ skills-manager-cli --json skills list
 
 ## Mental model
 
-There's **one central library** at `~/.skills-manager/skills/` that all agents share. Each skill in the library has metadata in a SQLite DB (source URL, preset membership, tags, enabled flag). A **preset** is a named group of skills. The active preset gets **synced** out to every enabled agent's skill directory (`~/.claude/skills/`, `~/.cursor/skills/`, etc.) by symlink or copy.
+There's **one central library** at `~/.skills-manager/skills/` that all agents share. Each skill has source metadata, preset membership, tags, and zero or more real deployments in agent directories. A **preset** is a reusable group; several presets may be deployed at the same time.
 
-So the lifecycle is: **install → (in library) → add to preset → sync → (visible to agent)**. `install --sync` is the shortcut that does all three.
+Keep these three states separate:
+- **Library**: install/remove controls whether Skills Manager owns the skill.
+- **Preset membership**: `presets add-skill/remove-skill` organizes the library only.
+- **Deployment**: `skills deploy/undeploy` and `presets deploy/undeploy` control what an agent can actually see.
 
 Internally, presets are still stored as scenarios for backward-compatible Git Backup. The CLI and UI call them presets.
 
@@ -38,10 +41,13 @@ skills-manager-cli skills install foo/bar --skillssh
 skills-manager-cli skills install ./looks-like/owner-repo --local
 ```
 
-**Default is library-only** — the skill enters the DB but doesn't appear in any agent yet. To make it visible:
-- `--sync` → add to the current active preset + sync to every enabled agent (most common, do this unless the user signals otherwise)
-- `--sync-preset <name>` → add to a specific preset + sync
-- Or later: `presets add-skill <preset> <skill>` followed by `skills sync`
+**Default is library-only** — the skill enters the DB but doesn't appear in any agent yet. Prefer an explicit follow-up deployment so scope is unambiguous:
+
+```bash
+skills-manager-cli skills deploy <skill> --agent claude_code --agent codex
+```
+
+`--sync` and `--sync-preset` remain legacy shortcuts for the exclusive active-preset workflow.
 
 **Ref resolution** is deterministic, no path-existence guessing:
 1. Starts with `./`, `../`, `/`, or `~/` → local path
@@ -86,16 +92,21 @@ skills-manager-cli skills remove <skill> --yes
 
 Remove deletes the central-library copy, all synced targets across agents, and the DB row. It's not reversible without re-installing.
 
-## Enable / Disable
+## Deploy / Undeploy
 
 ```bash
-skills-manager-cli skills disable <skill>   # skipped by future syncs
-skills-manager-cli skills enable <skill>
+skills-manager-cli skills deploy <skill> --agent claude_code
+skills-manager-cli skills undeploy <skill> --agent codex
+skills-manager-cli skills deploy <skill-a> <skill-b> --agent codex --dry-run
+skills-manager-cli skills deploy <skill> --agent claude_code --agent codex
+skills-manager-cli --json skills status <skill>
 ```
 
-Disable is a "soft remove" — it stops the skill from being written into agent directories on future syncs, but **does not** purge already-synced copies. If the user wants the skill gone from agents *now*, follow up with `skills remove` or re-sync (the disabled skill will be cleaned up on the next sync of its preset).
+These commands change real managed deployments without deleting the central-library copy or changing preset membership. `skills enable/disable` are deprecated compatibility commands and do not change deployment; never use them.
 
-## Sync
+`skills deploy` and `skills undeploy` always require at least one explicit `--agent`, whether the command names one skill or several. `skills status` also reports target rows left by a custom agent that is no longer registered, so stale deployments stay visible and can be cleaned with an explicit undeploy while the row exists.
+
+## Legacy exclusive sync
 
 ```bash
 # Sync current active preset to all enabled agents
@@ -104,7 +115,7 @@ skills-manager-cli skills sync
 # Preview the target list — safe, no writes
 skills-manager-cli skills sync --dry-run
 
-# Switch active preset, then sync
+# Switch the one legacy active preset, then sync
 skills-manager-cli skills sync --preset "Web Dev"
 
 # Only sync to a single agent (useful when one agent's directory got out of sync)
@@ -143,8 +154,22 @@ skills-manager-cli skills adopt ~/.claude/skills/my-skill \
 ```bash
 skills-manager-cli skills tag add <skill> web frontend
 skills-manager-cli skills tag remove <skill> frontend
+skills-manager-cli skills tag set <skill> web frontend
+skills-manager-cli skills tag rename frontend web
+skills-manager-cli skills tag delete obsolete --dry-run
+skills-manager-cli skills tag delete obsolete --yes
 skills-manager-cli skills tag list <skill>   # tags on one skill
 skills-manager-cli skills tag list           # all distinct tags
+```
+
+Useful organization queries:
+
+```bash
+skills-manager-cli --json skills list --untagged
+skills-manager-cli --json skills list --no-preset
+skills-manager-cli --json skills list --tag frontend
+skills-manager-cli --json skills list --preset "Web Dev"
+skills-manager-cli --json skills list --deployed-to codex
 ```
 
 ## Presets
@@ -152,14 +177,27 @@ skills-manager-cli skills tag list           # all distinct tags
 ```bash
 skills-manager-cli presets list
 skills-manager-cli presets current
+skills-manager-cli presets show "Web Dev"
+skills-manager-cli presets create "Web Dev" --description "Frontend work"
+skills-manager-cli presets update "Web Dev" --name "Frontend"
+skills-manager-cli presets delete "Old" --dry-run
+skills-manager-cli presets delete "Old" --yes
 
 skills-manager-cli presets add-skill <preset> <skill>...
 skills-manager-cli presets remove-skill <preset> <skill>...
 
-skills-manager-cli presets apply <preset>   # makes it active + syncs
+skills-manager-cli presets deploy <preset>                  # all enabled coding agents
+skills-manager-cli presets deploy <preset> --agent codex
+skills-manager-cli presets undeploy <preset> --agent claude_code
+skills-manager-cli presets undeploy <preset>                # every agent with target rows for this preset
+skills-manager-cli --json presets status <preset>
 ```
 
-Use `presets add-skill` when you want to put an already-installed skill into a *different* preset without re-installing it, or to share a skill across multiple presets.
+`deploy/undeploy` are additive and match the app's Preset pills. Explicit `presets apply/deactivate` commands remain for the legacy exclusive active-preset model; do not use them for normal "turn this preset on/off" requests.
+
+The no-`--agent` defaults intentionally differ: deploy targets all installed, enabled coding agents; undeploy discovers the preset's actual target rows and removes them even when an agent is now disabled, uninstalled, or no longer registered. Use the no-agent undeploy for "turn this preset off everywhere."
+
+Preset create/update/delete and add-skill/remove-skill are organization-only CLI operations. They never deploy or undeploy agent files implicitly.
 
 ## Health check
 
@@ -167,19 +205,24 @@ When sync misbehaves or a command errors in a confusing way:
 
 ```bash
 skills-manager-cli --json repo status   # base dir, skill / preset counts, active preset
-skills-manager-cli --json tools list    # detected agents and their target paths
+skills-manager-cli --json agents list  # detected agents and their target paths
+skills-manager-cli agents enable codex
+skills-manager-cli agents disable claude_code
 ```
 
-These two are read-only and great for diagnosing "why isn't this skill showing up in Cursor" type questions.
+`repo status` and `agents list` are read-only and are the first checks for "why isn't this skill showing up in Cursor" questions. `agents disable` is a real mutation: it removes every managed deployment for that agent. `agents enable` makes the agent globally available again and re-syncs the legacy active preset, if one exists; use explicit skill or preset deployment afterward when the requested state is additive.
+
+Use `agents disable <agent>` when the user wants the whole Agent integration turned off or wants every managed skill removed from it. If they only want one skill or preset removed while keeping the Agent available for future deployments, use `skills undeploy` or `presets undeploy` instead.
 
 ## Typical workflows
 
 ### "Find me a skill for X" / "Install a skill that does X"
 
 1. `skills search "X" --limit 5` — show the top 1–3 hits with install counts and source.
-2. If a clear winner: `skills install <install_ref> --sync`.
+2. If a clear winner: `skills install <install_ref>`.
 3. If ambiguous: ask the user to pick.
-4. `skills list` (or `skills show <name>`) to confirm it landed in the active preset and synced.
+4. Deploy it to the agent(s) the user requested with `skills deploy`.
+5. `skills status <name>` to confirm the library and deployment state.
 
 ### "What skills do I have?"
 
@@ -187,7 +230,7 @@ These two are read-only and great for diagnosing "why isn't this skill showing u
 skills-manager-cli --json skills list
 ```
 
-The `enabled`, `presets`, and `source_type` fields are usually the most informative to summarize back.
+The `preset_ids`, `presets`, `deployed_to`, `tags`, and `source_type` fields are usually the most informative. The legacy `enabled` field is not deployment state.
 
 ### "Pull in the skills already installed in my agent directories"
 
@@ -206,7 +249,8 @@ Report which skills actually refreshed (`refreshed: true` in the JSON) vs which 
 
 ## Pitfalls
 
-- **No active preset** → `skills sync` (without `--preset`) fails. Show the user `presets list` and pick one with them, or use `sync --preset <name>`.
-- **Install succeeded but skill doesn't appear in the agent** → install defaults to library-only. Re-run with `--sync`, or add it to the active preset and sync.
+- **Install succeeded but skill doesn't appear in the agent** → install defaults to library-only. Use `skills deploy <skill> --agent <key>`.
+- **Preset membership changed but agent files did not** → membership is organization only. Follow with `presets deploy` or `skills deploy` when the user also asked to make it visible.
+- **No active preset** only affects legacy `skills sync` / `presets apply`; additive deploy commands do not require one.
 - **Adopted skills can't be `update`d from git** → `npx skills add` and manual `git clone` don't leave source metadata, so adopt has to treat them as `local`. Fix per-skill with `adopt ... --git-url ... --git-subpath ...`, or just `skills remove` + `skills install <git-ref>` to start clean with a real source.
-- **`--dry-run` only exists on `remove`, `sync`, `adopt`.** For `install` / `update` / `check`, the preview is a different command (`search` before install, `check` before update).
+- Use `--dry-run` before bulk remove, tag delete, preset delete, deploy, or undeploy operations. Use `check` before `update`.

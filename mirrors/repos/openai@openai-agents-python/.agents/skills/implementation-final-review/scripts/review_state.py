@@ -114,6 +114,31 @@ def _content_fingerprint(base: str, workspace: list[dict[str, object]]) -> str:
     return _digest(canonical.encode())
 
 
+def _repository_fingerprint(
+    *,
+    content_fingerprint: str,
+    head: str,
+    status_sha256: str,
+    tracked_diff_sha256: str,
+    unfiltered_status_sha256: str,
+    unfiltered_content_fingerprint: str,
+) -> str:
+    canonical = json.dumps(
+        {
+            "content_fingerprint": content_fingerprint,
+            "head": head,
+            "status_sha256": status_sha256,
+            "tracked_diff_sha256": tracked_diff_sha256,
+            "unfiltered_status_sha256": unfiltered_status_sha256,
+            "unfiltered_content_fingerprint": unfiltered_content_fingerprint,
+        },
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return _digest(canonical.encode())
+
+
 def review_state(
     repo: Path,
     base: str,
@@ -155,6 +180,14 @@ def review_state(
         *pathspecs,
     )
     workspace = _workspace_entries(repo, resolved_base, pathspecs)
+    unfiltered_status = _git(
+        repo,
+        "status",
+        "--porcelain=v1",
+        "-z",
+        "--untracked-files=all",
+    )
+    unfiltered_workspace = _workspace_entries(repo, resolved_base, ())
 
     content_fingerprint = _content_fingerprint(resolved_base, workspace)
     component_states: dict[str, dict[str, object]] = {}
@@ -192,10 +225,11 @@ def review_state(
         "status_sha256": _digest(status),
         "tracked_diff_sha256": _digest(tracked_diff),
     }
-    repository_canonical = json.dumps(
-        repository_state, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+    repository_fingerprint = _repository_fingerprint(
+        **repository_state,
+        unfiltered_status_sha256=_digest(unfiltered_status),
+        unfiltered_content_fingerprint=_content_fingerprint(resolved_base, unfiltered_workspace),
     )
-    repository_fingerprint = _digest(repository_canonical.encode())
     return {
         "fingerprint": content_fingerprint,
         "content_fingerprint": content_fingerprint,
@@ -204,6 +238,10 @@ def review_state(
         "pathspecs": list(pathspecs),
         "workspace": workspace,
         "components": component_states,
+        "unfiltered": {
+            "status_sha256": _digest(unfiltered_status),
+            "workspace": unfiltered_workspace,
+        },
         **repository_state,
     }
 

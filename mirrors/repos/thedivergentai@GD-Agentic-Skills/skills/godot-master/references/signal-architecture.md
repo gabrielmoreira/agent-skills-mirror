@@ -3,16 +3,6 @@ name: godot-signal-architecture
 description: "Expert blueprint for signal-driven architecture using \"Signal Up, Call Down\" pattern for loose coupling. Covers typed signals, signal chains, one-shot connections, and AutoLoad event buses. Use when implementing event systems OR decoupling nodes. Keywords signal, emit, connect, CONNECT_ONE_SHOT, CONNECT_REFERENCE_COUNTED, event bus, AutoLoad, decoupling."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Signal Architecture
-
-Signal Up/Call Down, typed signals, and scoped buses — not connect/emit tutorials.
-
 ## NEVER Do in Signal Architecture
 
 - **NEVER use the legacy string-based `Object.connect()`** — Typos result in silent failures. Always use `signal.connect(_callback)` for compile-time validation.
@@ -88,7 +78,6 @@ Prefer named methods or [disconnect_ghost_signals.gd](../scripts/signal_architec
 - Capturing lambdas: always manual `disconnect` (see above).
 - One-shot auto-remove after fire: `CONNECT_ONE_SHOT`.
 
-
 ## Deep recipes (on demand)
 
 > LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
@@ -118,23 +107,23 @@ Prefer named methods or [disconnect_ghost_signals.gd](../scripts/signal_architec
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, Autoload registration, and scene ownership conventions signals plug into.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Callables, `await`, and signal syntax required before advanced connect flags and sequencers.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton boot order and ownership rules for global EventBus routers (not for local scene events).
+- [godot-project-foundations](project-foundations.md) — Project layout, Autoload registration, and scene ownership conventions signals plug into.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Callables, `await`, and signal syntax required before advanced connect flags and sequencers.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton boot order and ownership rules for global EventBus routers (not for local scene events).
 
 #### Complements
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Component nodes emit past-tense events; parents compose by connecting those signals and calling down.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Scene swaps and loaders must reconnect or re-emit through buses without ghost listeners.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — State enter/exit often drives signal fan-out; keeps FSM transitions from becoming circular signal graphs.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Prefer Resources for shared config; signals carry change events, not duplicated mutable state blobs.
-- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — `watch_signals` / spies pair with this skill’s emit contracts for unit and integration tests.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Buttons and menus should signal intent upward; controllers call down to update Control trees.
+- [godot-composition](composition.md) — Component nodes emit past-tense events; parents compose by connecting those signals and calling down.
+- [godot-scene-management](scene-management.md) — Scene swaps and loaders must reconnect or re-emit through buses without ghost listeners.
+- [godot-state-machine-advanced](state-machine-advanced.md) — State enter/exit often drives signal fan-out; keeps FSM transitions from becoming circular signal graphs.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Prefer Resources for shared config; signals carry change events, not duplicated mutable state blobs.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — `watch_signals` / spies pair with this skill’s emit contracts for unit and integration tests.
+- [godot-ui-containers](ui-containers.md) — Buttons and menus should signal intent upward; controllers call down to update Control trees.
 
 #### Downstream / consumers
-- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Line/choice completion events should follow signal-up orchestration into UI and quest listeners.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Cooldown, cast, and hit payloads need typed signals so HUD/VFX stay decoupled from ability nodes.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage/death/score chains are the classic signal-up fan-out into UI, audio, and progression.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when high-frequency emit storms show up; replace per-tick signals with buffers or direct reads.
+- [godot-dialogue-system](dialogue-system.md) — Line/choice completion events should follow signal-up orchestration into UI and quest listeners.
+- [godot-ability-system](ability-system.md) — Cooldown, cast, and hit payloads need typed signals so HUD/VFX stay decoupled from ability nodes.
+- [godot-combat-system](combat-system.md) — Damage/death/score chains are the classic signal-up fan-out into UI, audio, and progression.
+- [godot-performance-optimization](performance-optimization.md) — Escalate when high-frequency emit storms show up; replace per-tick signals with buffers or direct reads.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.

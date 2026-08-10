@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aden-hive/hive` — 26 default patterns, 0 followed patterns, 21 file(s) materialized.
+Mirror of `aden-hive/hive` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `aden-hive/hive` — 26 default patterns, 0 followed patterns, 21 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 21 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,25 +61,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`.claude/skills/browser-edge-cases/registry.md`](.claude/skills/browser-edge-cases/registry.md) |
 | 2 | ✓ | [`.claude/skills/browser-edge-cases/SKILL.md`](.claude/skills/browser-edge-cases/SKILL.md) |
-| 3 | ✓ | [`.claude/skills/test-reporting/SKILL.md`](.claude/skills/test-reporting/SKILL.md) |
-| 4 | ✓ | [`.claude/skills/triage-issue/SKILL.md`](.claude/skills/triage-issue/SKILL.md) |
-| 5 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 6 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 7 | ✓ | [`core/framework/skills/_default_skills/colony-progress-tracker/SKILL.md`](core/framework/skills/_default_skills/colony-progress-tracker/SKILL.md) |
-| 8 | ✓ | [`core/framework/skills/_default_skills/context-preservation/SKILL.md`](core/framework/skills/_default_skills/context-preservation/SKILL.md) |
-| 9 | ✓ | [`core/framework/skills/_default_skills/error-recovery/SKILL.md`](core/framework/skills/_default_skills/error-recovery/SKILL.md) |
-| 10 | ✓ | [`core/framework/skills/_default_skills/note-taking/SKILL.md`](core/framework/skills/_default_skills/note-taking/SKILL.md) |
-| 11 | ✓ | [`core/framework/skills/_default_skills/quality-monitor/SKILL.md`](core/framework/skills/_default_skills/quality-monitor/SKILL.md) |
-| 12 | ✓ | [`core/framework/skills/_default_skills/writing-hive-skills/SKILL.md`](core/framework/skills/_default_skills/writing-hive-skills/SKILL.md) |
-| 13 | ✓ | [`core/framework/skills/_preset_skills/browser-automation/SKILL.md`](core/framework/skills/_preset_skills/browser-automation/SKILL.md) |
-| 14 | ✓ | [`core/framework/skills/_preset_skills/chart-creation-foundations/SKILL.md`](core/framework/skills/_preset_skills/chart-creation-foundations/SKILL.md) |
-| 15 | ✓ | [`core/framework/skills/_preset_skills/linkedin-automation/SKILL.md`](core/framework/skills/_preset_skills/linkedin-automation/SKILL.md) |
-| 16 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-foundations/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-foundations/SKILL.md) |
-| 17 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-fs-search/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-fs-search/SKILL.md) |
-| 18 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-job-control/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-job-control/SKILL.md) |
-| 19 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-pty-sessions/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-pty-sessions/SKILL.md) |
-| 20 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-troubleshooting/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-troubleshooting/SKILL.md) |
-| 21 | ✓ | [`core/framework/skills/_preset_skills/x-automation/SKILL.md`](core/framework/skills/_preset_skills/x-automation/SKILL.md) |
+| 3 | ✓ | [`.claude/skills/queen-colony-debug/SKILL.md`](.claude/skills/queen-colony-debug/SKILL.md) |
+| 4 | ✓ | [`.claude/skills/test-reporting/SKILL.md`](.claude/skills/test-reporting/SKILL.md) |
+| 5 | ✓ | [`.claude/skills/triage-issue/SKILL.md`](.claude/skills/triage-issue/SKILL.md) |
+| 6 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 7 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 8 | ✓ | [`core/framework/skills/_default_skills/browser-automation/SKILL.md`](core/framework/skills/_default_skills/browser-automation/SKILL.md) |
+| 9 | ✓ | [`core/framework/skills/_default_skills/colony-progress-tracker/SKILL.md`](core/framework/skills/_default_skills/colony-progress-tracker/SKILL.md) |
+| 10 | ✓ | [`core/framework/skills/_default_skills/context-preservation/SKILL.md`](core/framework/skills/_default_skills/context-preservation/SKILL.md) |
+| 11 | ✓ | [`core/framework/skills/_default_skills/error-recovery/SKILL.md`](core/framework/skills/_default_skills/error-recovery/SKILL.md) |
+| 12 | ✓ | [`core/framework/skills/_default_skills/image-generation/SKILL.md`](core/framework/skills/_default_skills/image-generation/SKILL.md) |
+| 13 | ✓ | [`core/framework/skills/_default_skills/note-taking/SKILL.md`](core/framework/skills/_default_skills/note-taking/SKILL.md) |
+| 14 | ✓ | [`core/framework/skills/_default_skills/pdf/SKILL.md`](core/framework/skills/_default_skills/pdf/SKILL.md) |
+| 15 | ✓ | [`core/framework/skills/_default_skills/quality-monitor/SKILL.md`](core/framework/skills/_default_skills/quality-monitor/SKILL.md) |
+| 16 | ✓ | [`core/framework/skills/_default_skills/slack-notifications-setup/SKILL.md`](core/framework/skills/_default_skills/slack-notifications-setup/SKILL.md) |
+| 17 | ✓ | [`core/framework/skills/_default_skills/telegram-notifications-setup/SKILL.md`](core/framework/skills/_default_skills/telegram-notifications-setup/SKILL.md) |
+| 18 | ✓ | [`core/framework/skills/_default_skills/worker-delegation/SKILL.md`](core/framework/skills/_default_skills/worker-delegation/SKILL.md) |
+| 19 | ✓ | [`core/framework/skills/_default_skills/writing-hive-skills/SKILL.md`](core/framework/skills/_default_skills/writing-hive-skills/SKILL.md) |
+| 20 | ✓ | [`core/framework/skills/_preset_skills/chart-creation-foundations/SKILL.md`](core/framework/skills/_preset_skills/chart-creation-foundations/SKILL.md) |
+| 21 | ✓ | [`core/framework/skills/_preset_skills/linkedin-automation/SKILL.md`](core/framework/skills/_preset_skills/linkedin-automation/SKILL.md) |
+| 22 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-foundations/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-foundations/SKILL.md) |
+| 23 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-fs-search/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-fs-search/SKILL.md) |
+| 24 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-job-control/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-job-control/SKILL.md) |
+| 25 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-pty-sessions/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-pty-sessions/SKILL.md) |
+| 26 | ✓ | [`core/framework/skills/_preset_skills/terminal-tools-troubleshooting/SKILL.md`](core/framework/skills/_preset_skills/terminal-tools-troubleshooting/SKILL.md) |
+| 27 | ✓ | [`core/framework/skills/_preset_skills/x-automation/SKILL.md`](core/framework/skills/_preset_skills/x-automation/SKILL.md) |
 
 ---
 

@@ -25,11 +25,6 @@ Expert mixing, spatial, pooling, and interactive-music patterns for Godot's audi
 
 ---
 
-## Godot 4.7: Audio Breaking Changes
-
-- `AudioEffectSpectrumAnalyzer.tap_back_pos` **removed** — migrate analyzers to alternative tap APIs.
-- `AudioStreamPlayer` default `area_mask` is now **0** (disabled), not layer 1. If using `Area2D`/`Area3D` `audio_bus_override`, explicitly set `area_mask` to layer 1 or your bus layer.
-
 ## Decision Matrix: Which AudioStreamPlayer?
 
 | Feature | AudioStreamPlayer | AudioStreamPlayer2D | AudioStreamPlayer3D |

@@ -1,6 +1,6 @@
 ---
 name: api-design
-description: Design RESTful APIs with proper resource modeling, HTTP method semantics, status codes, pagination, versioning, and documentation.
+description: Design RESTful APIs with proper resource modeling, HTTP method semantics, status codes, pagination, versioning, and documentation. Use when the user requests api design or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

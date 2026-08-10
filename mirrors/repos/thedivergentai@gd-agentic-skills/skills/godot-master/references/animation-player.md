@@ -21,11 +21,6 @@ Timeline-based keyframe animation: track choice, RESET, root motion, libraries �
 
 ---
 
-## Godot 4.7: Animation
-
-- Animation editor tracks can be **collapsed** for dense timelines.
-- `Animation.length` metadata is **double** precision (was float).
-
 ## Available Scripts (MANDATORY triggers)
 
 > Open the matching script **before** implementing that pattern. Deep recipes: [track-authoring.md](animation-player-track-authoring.md), [root-motion-and-sequences.md](animation-player-root-motion-and-sequences.md), [edge-cases.md](animation-player-edge-cases.md).
@@ -83,7 +78,7 @@ Full recipes → [root-motion-and-sequences.md](animation-player-root-motion-and
 | Need | Prefer |
 |---|---|
 | Timeline / many properties / reusable | **AnimationPlayer** |
-| One-shot runtime / interruptible | **Tween** ([godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md)) |
+| One-shot runtime / interruptible | **Tween** ([godot-tweening](tweening.md)) |
 
 ## Expert architecture (scripts)
 
@@ -114,22 +109,22 @@ Full recipes → [root-motion-and-sequences.md](animation-player-root-motion-and
 ### Related Skills
 
 #### Prerequisites
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Safe `animation_finished` / `animation_looped` / custom method-track signaling without lifecycle leaks.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Shared `.tres` AnimationLibrary ownership so runtime swaps do not duplicate or mutate playing resources unsafely.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed programmatic track generation, path strings, and Dictionary method-track payloads.
+- [godot-signal-architecture](signal-architecture.md) — Safe `animation_finished` / `animation_looped` / custom method-track signaling without lifecycle leaks.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Shared `.tres` AnimationLibrary ownership so runtime swaps do not duplicate or mutate playing resources unsafely.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed programmatic track generation, path strings, and Dictionary method-track payloads.
 
 #### Complements
-- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — Blend trees, OneShot layers, and `travel()` when locomotion outgrows AnimationPlayer `queue`/`set_next`.
-- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — AnimatedSprite2D / Skeleton2D presentation that still relies on AnimationPlayer method and property tracks.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Interruptible runtime tweens when baking a full Animation resource would be overkill.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — ShaderMaterial uniforms driven by value tracks (`shader_parameter/*`) without embedding materials.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Bus/voice pooling around TYPE_AUDIO tracks and footstep/SFX timing on the timeline.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — CharacterBody3D integration for root-motion position/rotation extraction on the physics tick.
+- [godot-animation-tree-mastery](animation-tree-mastery.md) — Blend trees, OneShot layers, and `travel()` when locomotion outgrows AnimationPlayer `queue`/`set_next`.
+- [godot-2d-animation](2d-animation.md) — AnimatedSprite2D / Skeleton2D presentation that still relies on AnimationPlayer method and property tracks.
+- [godot-tweening](tweening.md) — Interruptible runtime tweens when baking a full Animation resource would be overkill.
+- [godot-shaders-basics](shaders-basics.md) — ShaderMaterial uniforms driven by value tracks (`shader_parameter/*`) without embedding materials.
+- [godot-audio-systems](audio-systems.md) — Bus/voice pooling around TYPE_AUDIO tracks and footstep/SFX timing on the timeline.
+- [godot-physics-3d](physics-3d.md) — CharacterBody3D integration for root-motion position/rotation extraction on the physics tick.
 
 #### Downstream / consumers
-- [godot-genre-fighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md) — Frame-perfect hitbox windows and discrete method tracks for cancel windows.
-- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Jump/land/run clips, RESET hygiene, and blend times on 2D/3D movers.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Attack timelines that emit damage/VFX events from AnimationPlayer method tracks.
+- [godot-genre-fighting](genre-fighting.md) — Frame-perfect hitbox windows and discrete method tracks for cancel windows.
+- [godot-genre-platformer](genre-platformer.md) — Jump/land/run clips, RESET hygiene, and blend times on 2D/3D movers.
+- [godot-combat-system](combat-system.md) — Attack timelines that emit damage/VFX events from AnimationPlayer method tracks.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

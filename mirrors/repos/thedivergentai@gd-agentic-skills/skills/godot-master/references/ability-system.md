@@ -3,16 +3,6 @@ name: godot-ability-system
 description: "Expert patterns for RPG/action ability systems including cooldown strategies, combo systems, ability chaining, skill trees with prerequisites, upgrade paths, and resource management. Use when implementing unlockable abilities, character progression, or complex skill systems. Trigger keywords: PlayerAbility, AbilityManager, cooldown, SkillTree, SkillNode, prerequisites, can_use, execute, ComboSystem, ability_chain, global_cooldown, charge_system, upgrade_path."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Ability System
-
-Resource abilities + scene-scoped managers — not AbilityManager / skill-tree novels.
-
 ## Architecture Decision: Where Does the Manager Live?
 
 | Scope | Policy | Script |
@@ -32,7 +22,7 @@ Resource abilities + scene-scoped managers — not AbilityManager / skill-tree n
 - **NEVER save remaining cooldown floats without time normalization** — Persist absolute end timestamps (`Time.get_unix_time_from_system() + remaining`).
 - **NEVER put live combat cast state in a global Autoload** — Scene-scoped manager (see decision table). Progression Autoloads are fine.
 - **NEVER blindly ban or blindly require object pools** — GDScript refcounting makes pool-optional for light VFX; **do** pool when spawn/despawn of projectiles/AoE is high-frequency or allocation shows up in the profiler. Prefer instantiate/`queue_free` until measured otherwise.
-- **NEVER grow deep ability inheritance trees** — Compose Resources + containers ([godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md)).
+- **NEVER grow deep ability inheritance trees** — Compose Resources + containers ([godot-composition](composition.md)).
 
 ---
 
@@ -41,7 +31,7 @@ Resource abilities + scene-scoped managers — not AbilityManager / skill-tree n
 1. [ability_resource.gd](../scripts/ability_system_ability_resource.gd) — data + virtual `execute()`
 2. [ability_manager.gd](../scripts/ability_system_ability_manager.gd) **or** [ability_container.gd](../scripts/ability_system_ability_container.gd) — scene-scoped cast/cooldown
 3. [buff_stat.gd](../scripts/ability_system_buff_stat.gd) — when buffs/modifiers exist
-4. Damage resolution → [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md)
+4. Damage resolution → [godot-combat-system](combat-system.md)
 
 **Do NOT** paste inline AbilityManager / ComboSystem / SkillTreeManager novels into scenes. Skill trees are progression UI + prerequisite graphs that grant Resources to the caster’s container.
 
@@ -68,7 +58,7 @@ Resource abilities + scene-scoped managers — not AbilityManager / skill-tree n
 - **Dependency injection:** parents inject caster context; abilities do not `get_node("/root/Player")`.
 - **Duck-typed hits:** `has_method(&"take_damage")` / combat DamageData — see combat skill.
 - **AoE:** `call_group` or space queries; do not scan the whole tree each cast.
-- **Networking:** predict locally, authority validates `can_use` + costs ([godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md)).
+- **Networking:** predict locally, authority validates `can_use` + costs ([godot-multiplayer-networking](multiplayer-networking.md)).
 - **Skill-tree visualizer:** `@tool` GraphEdit for design-time graphs; runtime still grants Resources to scene managers.
 
 ## Status Effects & Combos (critical WHY)
@@ -103,24 +93,24 @@ Resource abilities + scene-scoped managers — not AbilityManager / skill-tree n
 ### Related Skills
 
 #### Prerequisites
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Abilities, buffs, and skill-tree nodes are Resource-first; load this before inventing custom serialization or inheritance trees for ability data.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Cast/ready/cooldown signals and UI hooks depend on disciplined signal ownership so AbilityManager stays decoupled from characters and HUD.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Prefer AbilityContainer / component nodes over deep `BaseAbility → MagicAbility → FireAbility` inheritance for runtime behavior.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Virtual `execute()` / `can_cast()`, typed Resources, and await-on-timer cast flows assume solid GDScript patterns.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Abilities, buffs, and skill-tree nodes are Resource-first; load this before inventing custom serialization or inheritance trees for ability data.
+- [godot-signal-architecture](signal-architecture.md) — Cast/ready/cooldown signals and UI hooks depend on disciplined signal ownership so AbilityManager stays decoupled from characters and HUD.
+- [godot-composition](composition.md) — Prefer AbilityContainer / component nodes over deep `BaseAbility → MagicAbility → FireAbility` inheritance for runtime behavior.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Virtual `execute()` / `can_cast()`, typed Resources, and await-on-timer cast flows assume solid GDScript patterns.
 
 #### Complements
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage, hit reactions, and targeting pipelines consume ability `execute()` results; keep DamageData separate from ability metadata.
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Mana/stamina costs, stat bonuses from skill ranks, and buff multipliers need a consistent stats/modifier layer.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Hotbar / action-map input should call `can_use` / `use_ability` rather than embedding cooldown logic in input callbacks.
-- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — Animation lock and cast telegraphs gate ability spam; wire AnimationPlayer start/finish into `is_casting`.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Cast, channel, and interrupt states belong in a character state machine that asks the ability manager, not the other way around.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Skill ranks, unlock flags, and absolute cooldown end times must round-trip through the project save schema.
+- [godot-combat-system](combat-system.md) — Damage, hit reactions, and targeting pipelines consume ability `execute()` results; keep DamageData separate from ability metadata.
+- [godot-rpg-stats](rpg-stats.md) — Mana/stamina costs, stat bonuses from skill ranks, and buff multipliers need a consistent stats/modifier layer.
+- [godot-input-handling](input-handling.md) — Hotbar / action-map input should call `can_use` / `use_ability` rather than embedding cooldown logic in input callbacks.
+- [godot-animation-player](animation-player.md) — Animation lock and cast telegraphs gate ability spam; wire AnimationPlayer start/finish into `is_casting`.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Cast, channel, and interrupt states belong in a character state machine that asks the ability manager, not the other way around.
+- [godot-save-load-systems](save-load-systems.md) — Skill ranks, unlock flags, and absolute cooldown end times must round-trip through the project save schema.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After cooldowns, costs, and damage/effect Resources are tunable, Monte Carlo loadout sims prove ability DPS/uptime bands before shipping curves.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Predicted casts, authority checks, and rollback of failed RPCs build on the ability manager’s can_use / execute split.
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Action-RPG skill bars, skill trees, and ability chaining assemble this skill with combat, stats, and progression genre glue.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Consumable scrolls, skill books, and equipment that grants abilities bridge inventory grants into AbilityManager registration.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — After cooldowns, costs, and damage/effect Resources are tunable, Monte Carlo loadout sims prove ability DPS/uptime bands before shipping curves.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Predicted casts, authority checks, and rollback of failed RPCs build on the ability manager’s can_use / execute split.
+- [godot-genre-action-rpg](genre-action-rpg.md) — Action-RPG skill bars, skill trees, and ability chaining assemble this skill with combat, stats, and progression genre glue.
+- [godot-inventory-system](inventory-system.md) — Consumable scrolls, skill books, and equipment that grants abilities bridge inventory grants into AbilityManager registration.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

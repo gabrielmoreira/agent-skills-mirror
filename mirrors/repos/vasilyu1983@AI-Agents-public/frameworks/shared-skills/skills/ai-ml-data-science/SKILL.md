@@ -1,329 +1,159 @@
 ---
 name: ai-ml-data-science
-description: "ML and data science workflows — EDA, feature engineering, modelling, evaluation, and production handoff. Use when exploring data or building models."
+description: "ML and data science workflows - EDA, feature engineering, modelling, evaluation, and production handoff. Use when exploring data or building models."
+compatibility: Portable core. Works on Claude Code and Codex.
+version: "1.1"
+last_validated: 2026-07-11
 ---
 
-# Data Science Engineering Suite - Quick Reference
+# Data Science Engineering Suite
 
-This skill turns **raw data and questions** into **validated, documented models** ready for production:
+Use this skill for reproducible data-science work from problem framing through evaluation and handoff. The center of gravity is not "pick the fanciest model." It is framing the decision, building train-serve-safe features, and producing decision-ready evidence.
 
-- **EDA workflows**: Structured exploration with drift detection
-- **Feature engineering**: Reproducible feature pipelines with leakage prevention and train/serve parity
-- **Model selection**: Baselines first; strong tabular defaults; escalate complexity only when justified
-- **Evaluation & reporting**: Slice analysis, uncertainty, model cards, production metrics
-- **SQL transformation**: SQLMesh for staging/intermediate/marts layers
-- **MLOps**: CI/CD, CT (continuous training), CM (continuous monitoring)
-- **Production patterns**: Data contracts, lineage, feedback loops, streaming features
+## ASCII Flow
 
-**Modern emphasis (2026):** Feature stores, automated retraining, drift monitoring (Evidently), train-serve parity, and agentic ML loops (plan -> execute -> evaluate -> improve). Tools: LightGBM, CatBoost, scikit-learn, PyTorch, Polars (lazy eval for larger-than-RAM datasets), lakeFS for data versioning.
-
----
+```text
+data question
+  |
+  v
+problem framing
+  target + unit of analysis + leakage risks + decision/use case
+  |
+  v
+data work
+  source checks + EDA + feature logic + split strategy + baseline
+  |
+  v
+model/evidence
+  train or analyze + validate + interpret + quantify uncertainty
+  |
+  v
+handoff
+  report, notebook, model candidate, or production path to MLOps
+```
 
 ## Quick Reference
 
-| Task | Tool/Framework | Command | When to Use |
-|------|----------------|---------|-------------|
-| EDA & Profiling | Pandas, Great Expectations | `df.describe()`, `ge.validate()` | Initial data exploration and quality checks |
-| Feature Engineering | Pandas, Polars, Feature Stores | `df.transform()`, Feast materialization | Creating lag, rolling, categorical features |
-| Model Training | Gradient boosting, linear models, scikit-learn | `lgb.train()`, `model.fit()` | Strong baselines for tabular ML |
-| Hyperparameter Tuning | Optuna, Ray Tune | `optuna.create_study()`, `tune.run()` | Optimizing model parameters |
-| SQL Transformation | SQLMesh | `sqlmesh plan`, `sqlmesh run` | Building staging/intermediate/marts layers |
-| Experiment Tracking | MLflow, W&B | `mlflow.log_metric()`, `wandb.log()` | Versioning experiments and models |
-| Model Evaluation | scikit-learn, custom metrics | `metrics.roc_auc_score()`, slice analysis | Validating model performance |
+| Need | Default Direction |
+|------|-------------------|
+| reproducible Python workflow | `uv` plus scripts or git-friendly notebooks (marimo for reactive/diffable notebooks) |
+| fast local analysis | DuckDB plus Polars (v1.x stable API as of 2026; pre-1.0 API-churn concerns no longer apply) |
+| data contracts | Pandera or GX Core at dataset boundaries |
+| tabular baseline | linear or logistic model plus tree-based candidate |
+| feature engineering | explicit train-serve-safe transforms |
+| tuning | Optuna only after the baseline is stable |
+| evaluation | slices, threshold, calibration, uncertainty |
+| handoff | model card, evaluation report, failure modes, monitoring expectations |
+
+## When To Use This Skill
+
+- exploring datasets and checking modelling feasibility
+- designing feature pipelines and leakage controls
+- choosing and comparing model families
+- building reproducible experiment workflows
+- producing evaluation reports, model cards, and handoff artifacts
+- reviewing whether an experiment is genuinely ready for production handoff
+
+## Route Elsewhere
+
+- serving, retraining automation, monitoring, or incident response -> [ai-mlops](../ai-mlops/SKILL.md)
+- forecasting and temporal validation -> [ai-ml-timeseries](../ai-ml-timeseries/SKILL.md)
+- lakehouse, ingestion, or streaming infrastructure -> [data-lake-platform](../data-lake-platform/SKILL.md)
+- prompting, fine-tuning, or LLM-system design -> [ai-llm](../ai-llm/SKILL.md) or [ai-rag](../ai-rag/SKILL.md)
 
 ---
 
-## Data Lake & Lakehouse
+## Workflow
 
-For comprehensive data lake/lakehouse patterns (beyond SQLMesh transformation), see **[data-lake-platform](../data-lake-platform/SKILL.md)**:
-
-- **Table formats:** Apache Iceberg, Delta Lake, Apache Hudi
-- **Query engines:** ClickHouse, DuckDB, Apache Doris, StarRocks
-- **Alternative transformation:** dbt (alternative to SQLMesh)
-- **Ingestion:** dlt, Airbyte (connectors)
-- **Streaming:** Apache Kafka patterns
-- **Orchestration:** Dagster, Airflow
-
-This skill focuses on **ML feature engineering and modeling**. Use data-lake-platform for general-purpose data infrastructure.
+1. Frame the decision, target, baseline, and prediction timestamp before touching models.
+2. Validate the dataset shape, ownership, and leakage risks.
+3. Build the simplest viable baseline first.
+4. Design point-in-time-correct features and compare stronger candidates only after the baseline is trustworthy.
+5. Evaluate with the same split strategy, same metric definitions, and same compute budget.
+6. Produce handoff artifacts with thresholds, calibration state, failure modes, and reproducibility notes.
 
 ---
 
-## Related Skills
+## Core Rules
 
-For adjacent topics, reference:
+- write down the prediction timestamp explicitly
+- do not trust random splits where time or entity leakage is plausible
+- compare at least one simple baseline against one stronger candidate
+- treat thresholding, calibration, and uncertainty as part of the decision
+- keep data version, feature version, seed, and split logic reproducible
+- hand off deployment-heavy questions early instead of rebuilding MLOps inside a notebook
 
-- **[ai-mlops](../ai-mlops/SKILL.md)** - APIs, batch jobs, monitoring, drift, data ingestion (dlt)
-- **[ai-llm](../ai-llm/SKILL.md)** - LLM prompting, fine-tuning, evaluation
-- **[ai-rag](../ai-rag/SKILL.md)** - RAG pipelines, chunking, retrieval
-- **[ai-llm-inference](../ai-llm-inference/SKILL.md)** - LLM inference optimization, quantization
-- **[ai-ml-timeseries](../ai-ml-timeseries/SKILL.md)** - Time series forecasting, backtesting
-- **[qa-testing-strategy](../qa-testing-strategy/SKILL.md)** - Test-driven development, coverage
-- **[data-sql-optimization](../data-sql-optimization/SKILL.md)** - SQL optimization, index patterns (complements SQLMesh)
-- **[data-lake-platform](../data-lake-platform/SKILL.md)** - Data lake/lakehouse infrastructure (ClickHouse, Iceberg, Kafka)
+## Known Traps
 
----
+- Using random train/test splits when time, entity, household, account, or session leakage is plausible.
+- Building features with information that is only available after the prediction point, then calling the result "production ready."
+- Tuning models before the baseline and metric definitions are stable.
+- Reporting only AUC or one aggregate score while ignoring threshold choice, calibration, slice behavior, and operational tradeoffs.
+- Letting notebook state become the real pipeline logic. Hidden ordering and cached state break reproducibility fast.
+- A single feature with near-perfect standalone separation, or a metric a domain expert would find implausibly good — treat as a leakage bug report first, a discovery second (see `references/eda-best-practices.md` Expert Instincts).
+- A correct time-based split with no group/entity split alongside it, when the same user/account/household recurs across time periods — time discipline alone does not stop entity leakage.
+- Citing a library version, benchmark number, or API pattern from memory or an older tutorial without checking it against the currently installed version — tabular-ML tooling (Optuna, SHAP, scikit-learn, boosted-tree libraries) crosses breaking major versions inside a single year.
 
-## Decision Tree: Choosing Data Science Approach
+## Common Anti-Patterns
 
-```text
-User needs ML for: [Problem Type]
-  - Tabular data?
-    - Small-medium (<1M rows)? -> LightGBM (fast, efficient)
-    - Large and complex (>1M rows)? -> LightGBM first, then NN if needed
-    - High-dim sparse (text, counts)? -> Linear models, then shallow NN
+- Treating a more complex model as progress when the baseline is not yet well understood.
+- Optimizing benchmark metrics without checking train-serve parity for feature computation.
+- Using global preprocessing shortcuts that leak label or split information across folds.
+- Handing off a model without a model card, failure modes, threshold rationale, and monitoring expectations.
 
-  - Time series?
-    - Seasonality? -> LightGBM, then see ai-ml-timeseries
-    - Long-term dependencies? -> Transformers (see ai-ml-timeseries)
+## Pattern Chooser
 
-  - Text or mixed modalities?
-    - LLMs/Transformers -> See ai-llm
-
-  - SQL transformations?
-    - SQLMesh (staging/intermediate/marts layers)
-```
-
-**Rule of thumb:** For tabular data, tree-based gradient boosting is a strong baseline, but must be validated against alternatives and constraints.
-
----
-
-## Core Concepts (Vendor-Agnostic)
-
-- **Problem framing**: define success metrics, baselines, and decision thresholds before modeling.
-- **Leakage prevention**: ensure all features are available at prediction time; split by time/group when appropriate.
-- **Uncertainty**: report confidence intervals and stability (fold variance, bootstrap) rather than single-point metrics.
-- **Reproducibility**: version code/data/features, fix seeds, and record the environment.
-- **Operational handoff**: define monitoring, retraining triggers, and rollback criteria with MLOps.
-
-## Implementation Practices (Tooling Examples)
-
-- Track experiments and artifacts (run id, commit hash, data version).
-- Add data validation gates in pipelines (schema + distribution + freshness).
-- Prefer reproducible, testable feature code (shared transforms, point-in-time correctness).
-- Use datasheets/model cards and eval reports as deployment prerequisites (Datasheets for Datasets: https://arxiv.org/abs/1803.09010; Model Cards: https://arxiv.org/abs/1810.03993).
-
-## Do / Avoid
-
-**Do**
-- Do start with baselines and a simple model to expose leakage and data issues early.
-- Do run slice analysis and document failure modes before recommending deployment.
-- Do keep an immutable eval set; refresh training data without contaminating evaluation.
-
-**Avoid**
-- Avoid random splits for temporal or user-correlated data.
-- Avoid "metric gaming" (optimizing the number without validating business impact).
-- Avoid training on labels created after the prediction timestamp (silent future leakage).
-
-# Core Patterns (Overview)
-
-## Pattern 1: End-to-End DS Project Lifecycle
-
-**Use when:** Starting or restructuring any DS/ML project.
-
-**Stages:**
-
-1. **Problem framing** - Business objective, success metrics, baseline
-2. **Data & feasibility** - Sources, coverage, granularity, label quality
-3. **EDA & data quality** - Schema, missingness, outliers, leakage checks
-4. **Feature engineering** - Per data type with feature store integration
-5. **Modelling** - Baselines first, then LightGBM, then complexity as needed
-6. **Evaluation** - Offline metrics, slice analysis, error analysis
-7. **Reporting** - Model evaluation report + model card
-8. **MLOps** - CI/CD, CT (continuous training), CM (continuous monitoring)
-
-**Detailed guide:** [EDA Best Practices](references/eda-best-practices.md)
+| Problem Shape | Direction |
+|---------------|-----------|
+| tabular or relational | baseline plus tree-based comparison |
+| time-ordered forecasting | route to [ai-ml-timeseries](../ai-ml-timeseries/SKILL.md) |
+| classical text or embeddings plus classifier | stay here |
+| LLM workflow, prompting, or RAG | route to [ai-llm](../ai-llm/SKILL.md) or [ai-rag](../ai-rag/SKILL.md) |
+| deployment, monitoring, retraining | route to [ai-mlops](../ai-mlops/SKILL.md) |
+| ingestion or lakehouse architecture | route to [data-lake-platform](../data-lake-platform/SKILL.md) |
 
 ---
 
-## Pattern 2: Feature Engineering
+## Core Patterns
 
-**Use when:** Designing features before modelling or during model improvement.
+### End-to-end DS lifecycle
 
-**By data type:**
+- problem framing and baseline
+- dataset scan and contracts
+- EDA and leakage review
+- feature plan
+- baseline versus candidate comparison
+- evaluation with slices and thresholds
+- production handoff package
 
-- **Numeric:** Standardize, handle outliers, transform skew, scale
-- **Categorical:** One-hot/ordinal (low cardinality), target/frequency/hashing (high cardinality)
-  - **Feature Store Integration:** Store encoders, mappings, statistics centrally
-- **Text:** Cleaning, TF-IDF, embeddings, simple stats
-- **Time:** Calendar features, recency, rolling/lag features
+### Reproducible workspace
 
-**Key Modern Practice:** Use feature stores (Feast, Tecton, Databricks) for versioning, sharing, and train-serve parity.
+- `uv` and explicit dependencies
+- script-first or git-friendly notebook entrypoints — for reactive, git-diffable notebooks consider [marimo](https://docs.marimo.io/) as an alternative to Jupyter; marimo is reactive (dependent cells auto-rerun), stores notebooks as plain Python scripts, and eliminates hidden-state ordering issues
+- fixed seeds and explicit split logic
+- logged dataset and feature assumptions
 
-**Detailed guide:** [Feature Engineering Patterns](references/feature-engineering-patterns.md)
+### Feature engineering and contracts
 
----
+- numeric, categorical, text, and time-based transforms
+- point-in-time availability checks
+- reusable encoders and documented freshness assumptions
 
-## Pattern 3: Data Contracts & Lineage
+### Evaluation and decision readiness
 
-**Use when:** Building production ML systems with data quality requirements.
+- primary metric plus guardrails
+- threshold strategy
+- calibration and uncertainty handling
+- slice analysis and qualitative error review
 
-**Components:**
+### Autonomous experimentation
 
-- **Contracts:** Schema + ranges/nullability + freshness SLAs
-- **Lineage:** Track source -> feature store -> train -> serve
-- **Feature store hygiene:** Materialization cadence, backfill/replay, encoder versioning
-- **Schema evolution:** Backward/forward-compatible migrations with shadow runs
-
-**Detailed guide:** [Data Contracts & Lineage](references/data-contracts-lineage.md)
-
----
-
-## Pattern 4: Model Selection & Training
-
-**Use when:** Picking model families and starting experiments.
-
-**Decision guide (modern benchmarks):**
-
-- **Tabular:** Start with a **strong baseline** (linear/logistic, then gradient boosting) and iterate based on error analysis
-- **Baselines:** Always implement simple baselines first (majority class, mean, naive forecast)
-- **Train/val/test splits:** Time-based (forecasting), group-based (user/item leakage), or random (IID)
-- **Hyperparameter tuning:** Start manual, then Bayesian optimization (Optuna, Ray Tune)
-- **Overfitting control:** Regularization, early stopping, cross-validation
-
-**Detailed guide:** [Modelling Patterns](references/modelling-patterns.md)
-
----
-
-## Pattern 5: Evaluation & Reporting
-
-**Use when:** Finalizing a model candidate or handing over to production.
-
-**Key components:**
-
-- **Metric selection:** Primary (ROC-AUC, PR-AUC, RMSE) + guardrails (calibration, fairness)
-- **Threshold selection:** ROC/PR curves, cost-sensitive, F1 maximization
-- **Slice analysis:** Performance by geography, user segments, product categories
-- **Error analysis:** Collect high-error examples, cluster by error type, identify systematic failures
-- **Uncertainty:** Confidence intervals (bootstrap where appropriate), variance across folds, and stability checks
-- **Evaluation report:** 8-section report (objective, data, features, models, metrics, slices, risks, recommendation)
-- **Model card:** Documentation for stakeholders (intended use, data, performance, ethics, operations)
-
-**Detailed guide:** [Evaluation Patterns](references/evaluation-patterns.md)
-
----
-
-## Pattern 6: Reproducibility & MLOps
-
-**Use when:** Ensuring experiments are reproducible and production-ready.
-
-**Modern MLOps (CI/CD/CT/CM):**
-
-- **CI (Continuous Integration):** Automated testing, data validation, code quality
-- **CD (Continuous Delivery):** Environment-specific promotion (dev -> staging -> prod), canary deployment
-- **CT (Continuous Training):** Drift-triggered and scheduled retraining
-- **CM (Continuous Monitoring):** Real-time data drift, performance, system health
-
-**Versioning:**
-- Code (git commit), data (DVC, LakeFS), features (feature store), models (MLflow Registry)
-- Seeds (reproducibility), hyperparameters (experiment tracker)
-
-**Detailed guide:** [Reproducibility Checklist](references/reproducibility-checklist.md)
-
----
-
-## Pattern 7: Feature Freshness & Streaming
-
-**Use when:** Managing real-time features and streaming pipelines.
-
-**Components:**
-
-- **Freshness contracts:** Define freshness SLAs per feature, monitor lag, alert on breaches
-- **Batch + stream parity:** Same feature logic across batch/stream, idempotent upserts
-- **Schema evolution:** Version schemas, add forward/backward-compatible parsers, backfill with rollback
-- **Data quality gates:** PII/format checks, range checks, distribution drift (KL, KS, PSI)
-
-**Detailed guide:** [Feature Freshness & Streaming](references/feature-freshness-streaming.md)
-
----
-
-## Pattern 8: Production Feedback Loops
-
-**Use when:** Capturing production signals and implementing continuous improvement.
-
-**Components:**
-
-- **Signal capture:** Log predictions + user edits/acceptance/abandonment (scrub PII)
-- **Labeling:** Route failures/edge cases to human review, create balanced sets
-- **Dataset refresh:** Periodic refresh (weekly/monthly) with lineage, protect eval set
-- **Online eval:** Shadow/canary new models, track solve rate, calibration, cost, latency
-
-**Detailed guide:** [Production Feedback Loops](references/production-feedback-loops.md)
-
----
-
-## Resources (Detailed Guides)
-
-For comprehensive operational patterns and checklists, see:
-
-- [EDA Best Practices](references/eda-best-practices.md) - Structured workflow for exploratory data analysis
-- [Feature Engineering Patterns](references/feature-engineering-patterns.md) - Operational patterns by data type
-- [Data Contracts & Lineage](references/data-contracts-lineage.md) - Data quality, versioning, feature store ops
-- [Modelling Patterns](references/modelling-patterns.md) - Model selection, hyperparameter tuning, train/test splits
-- [Evaluation Patterns](references/evaluation-patterns.md) - Metrics, slice analysis, evaluation reports, model cards
-- [Reproducibility Checklist](references/reproducibility-checklist.md) - Experiment tracking, MLOps (CI/CD/CT/CM)
-- [Feature Freshness & Streaming](references/feature-freshness-streaming.md) - Real-time features, schema evolution
-- [Production Feedback Loops](references/production-feedback-loops.md) - Online learning, labeling, canary deployment
-- [Class Imbalance Patterns](references/class-imbalance-patterns.md) - Resampling, cost-sensitive learning, threshold tuning, evaluation for skewed datasets
-- [Hyperparameter Optimization](references/hyperparameter-optimization.md) - Bayesian optimization, early stopping, search strategies, budget allocation
-- [Interpretability & Explainability](references/interpretability-explainability.md) - SHAP, LIME, feature importance, model cards for regulated domains
+Use agent-driven experiment loops only when the metric is explicit, the search space is bounded, and each run is cheap enough to keep or revert automatically.
 
 ---
 
 ## Templates
 
-Use these as copy-paste starting points:
-
-### Project & Workflow Templates
-
-- **Standard DS project template:** `assets/project/template-standard.md`
-- **Quick DS experiment template:** `assets/project/template-quick.md`
-
-### Feature Engineering & EDA
-
-- **Feature engineering template:** `assets/features/template-feature-engineering.md`
-- **EDA checklist & notebook template:** `assets/eda/template-eda.md`
-
-### Evaluation & Reporting
-
-- **Model evaluation report:** `assets/evaluation/template-evaluation-report.md`
-- **Model card:** `assets/evaluation/template-model-card.md`
-- **ML experiment review:** `assets/review/experiment-review-template.md`
-
-### SQL Transformation (SQLMesh)
-
-For SQL-based data transformation and feature engineering:
-
-- **SQLMesh project setup:** `../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-project.md`
-- **SQLMesh model types:** `../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-model.md` (FULL, INCREMENTAL, VIEW)
-- **Incremental models:** `../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-incremental.md`
-- **DAG and dependencies:** `../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-dag.md`
-- **Testing and data quality:** `../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-testing.md`
-
-**Use SQLMesh when:**
-- Building SQL-based feature pipelines
-- Managing incremental data transformations
-- Creating staging/intermediate/marts layers
-- Testing SQL logic with unit tests and audits
-
-**For data ingestion (loading raw data), use:**
-- [ai-mlops](../ai-mlops/SKILL.md) skill (dlt templates for REST APIs, databases, warehouses)
-
-## Navigation
-
-**Resources**
-- [references/reproducibility-checklist.md](references/reproducibility-checklist.md)
-- [references/evaluation-patterns.md](references/evaluation-patterns.md)
-- [references/feature-engineering-patterns.md](references/feature-engineering-patterns.md)
-- [references/modelling-patterns.md](references/modelling-patterns.md)
-- [references/feature-freshness-streaming.md](references/feature-freshness-streaming.md)
-- [references/eda-best-practices.md](references/eda-best-practices.md)
-- [references/data-contracts-lineage.md](references/data-contracts-lineage.md)
-- [references/production-feedback-loops.md](references/production-feedback-loops.md)
-- [references/class-imbalance-patterns.md](references/class-imbalance-patterns.md)
-- [references/hyperparameter-optimization.md](references/hyperparameter-optimization.md)
-- [references/interpretability-explainability.md](references/interpretability-explainability.md)
-
-**Templates**
 - [assets/project/template-standard.md](assets/project/template-standard.md)
 - [assets/project/template-quick.md](assets/project/template-quick.md)
 - [assets/features/template-feature-engineering.md](assets/features/template-feature-engineering.md)
@@ -331,37 +161,65 @@ For SQL-based data transformation and feature engineering:
 - [assets/evaluation/template-evaluation-report.md](assets/evaluation/template-evaluation-report.md)
 - [assets/evaluation/template-model-card.md](assets/evaluation/template-model-card.md)
 - [assets/review/experiment-review-template.md](assets/review/experiment-review-template.md)
-- [template-sqlmesh-project.md](../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-project.md)
-- [template-sqlmesh-model.md](../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-model.md)
-- [template-sqlmesh-incremental.md](../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-incremental.md)
-- [template-sqlmesh-dag.md](../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-dag.md)
-- [template-sqlmesh-testing.md](../data-lake-platform/assets/transformation/sqlmesh/template-sqlmesh-testing.md)
 
-**Data**
-- [data/sources.json](data/sources.json) - Curated external references
+## Scripts
 
----
+| Script | Purpose |
+|--------|---------|
+| [scripts/ml_toolkit.py](scripts/ml_toolkit.py) | Generates model cards, leakage checks, and model-quality reports from a model-spec JSON |
+| [scripts/leakage_scan.py](scripts/leakage_scan.py) | Static leakage scanner for ML feature/target column specs (JSON/JSONL). Flags time-leakage, target-leakage, and ID-leakage anti-patterns from column metadata. Exit code 1 if issues found. |
 
-## External Resources
+Typical usage:
 
-See [data/sources.json](data/sources.json) for curated foundational and implementation references:
+```bash
+python scripts/ml_toolkit.py card --input data/sample-model-spec.json
+python scripts/ml_toolkit.py leakage --input data/sample-model-spec.json
+python scripts/ml_toolkit.py report --input data/sample-model-spec.json --output report.md
+```
 
-- **Core ML/DL**: scikit-learn, XGBoost, LightGBM, PyTorch, TensorFlow, JAX
-- **Data processing**: pandas, NumPy, Polars, DuckDB, Spark, Dask
-- **SQL transformation**: SQLMesh, dbt (staging/marts/incremental patterns)
-- **Feature stores**: Feast, Tecton, Databricks Feature Store (centralized feature management)
-- **Data validation**: Pydantic, Great Expectations, Pandera, Evidently (quality + drift)
-- **Visualization**: Matplotlib, Seaborn, Plotly, Streamlit, Dash
-- **MLOps**: MLflow, W&B, DVC, Neptune (experiment tracking + model registry)
-- **Hyperparameter tuning**: Optuna, Ray Tune, Hyperopt
-- **Model serving**: BentoML, FastAPI, TorchServe, Seldon, Ray Serve
-- **Orchestration**: Kubeflow, Metaflow, Prefect, Airflow, ZenML
-- **Cloud platforms**: AWS SageMaker, Google Vertex AI, Azure ML, Databricks, Snowflake
+See [scripts/README.md](scripts/README.md) for the input format and leakage-check logic.
 
-Use this skill to **execute data science projects end-to-end**: concrete checklists, patterns, and templates, not theory.
+## Navigation
+
+### Core references
+
+- [references/eda-best-practices.md](references/eda-best-practices.md)
+- [references/feature-engineering-patterns.md](references/feature-engineering-patterns.md)
+- [references/data-contracts-lineage.md](references/data-contracts-lineage.md)
+- [references/modelling-patterns.md](references/modelling-patterns.md)
+- [references/evaluation-patterns.md](references/evaluation-patterns.md)
+- [references/class-imbalance-patterns.md](references/class-imbalance-patterns.md)
+- [references/hyperparameter-optimization.md](references/hyperparameter-optimization.md)
+- [references/interpretability-explainability.md](references/interpretability-explainability.md)
+- [references/reproducibility-checklist.md](references/reproducibility-checklist.md)
+- [references/llm-data-pipeline.md](references/llm-data-pipeline.md) — LLM-from-scratch data pipelines (dedup, quality filtering, synthetic mixing, decontamination); route here first for corpus curation work
+- [references/ml-diagrams.md](references/ml-diagrams.md) — Mermaid diagram catalog for classical ML (k-means, logistic regression, decision trees, collaborative filtering) and neural net architectures (MLP, RNN, CNN, Transformer); for embedding in docs, READMEs, PR descriptions
+
+### Data and external references
+
+- [data/sources.json](data/sources.json)
+- [data/sample-model-spec.json](data/sample-model-spec.json)
+
+## Related Skills
+
+- [ai-architecture-advisor](../ai-architecture-advisor/SKILL.md) — when to use trees vs deep learning vs LLM (decide before building)
+- [ai-mlops](../ai-mlops/SKILL.md)
+- [ai-ml-timeseries](../ai-ml-timeseries/SKILL.md)
+- [data-lake-platform](../data-lake-platform/SKILL.md)
+- [ai-llm](../ai-llm/SKILL.md)
+- [ai-rag](../ai-rag/SKILL.md)
+- huggingface-datasets — now in the external `huggingface-skills:` plugin
 
 ## Fact-Checking
 
-- Use web search/web fetch to verify current external facts, versions, pricing, deadlines, regulations, or platform behavior before final answers.
-- Prefer primary sources; report source links and dates for volatile information.
-- If web access is unavailable, state the limitation and mark guidance as unverified.
+- Known bugs, regressions, framework/compiler/runtime footguns, and version-specific crash or workaround guidance must be verified against current primary web sources before being treated as current fact.
+- Verify current library capabilities, version-sensitive tooling advice, and benchmark claims before final answers.
+- Prefer official docs for fast-moving tools and model libraries.
+- If web access is unavailable, keep tool recommendations marked as unverified where freshness matters.
+
+## Learnings Loop
+
+Before applying this skill on a non-trivial task, read `learnings.consolidated.md` in this directory (and `learnings.md` if present).
+
+After applying it, if you encountered a pattern worth remembering, a mistake worth preventing, or a domain fact that surprised you, append one dated bullet to `learnings.md` via `agents-skills-feedback-loop/scripts/append_learning.py`. Do not modify `SKILL.md` itself.
+

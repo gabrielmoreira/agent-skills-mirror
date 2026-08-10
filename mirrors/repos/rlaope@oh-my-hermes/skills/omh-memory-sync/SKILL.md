@@ -61,6 +61,7 @@ Bad example:
 - **Provenance (출처)** - Ask for the source class and distinguish Hermes-native, provider, and vector material as `not_omh_reviewed`.
 - **Target (대상)** - Review existing native-memory claims only. Route a new project/product fact to `memory-new`.
 - **Review (검토)** - Prioritize stale, conflicting, duplicate, and overgeneralized claims. Offer keep, revise, or archive choices; do not describe an archive as removal.
+- **Attention (주의)** - For a reviewed OMH-local record, keep/archive is an attention tier: `active` leads the working context, `reference` stays recallable behind active peers, `archive` leaves default recall. Preview with `omh memory attention <record-id> --tier <tier>`, say which records stay in the working context and which leave it, then apply with `--apply` only after the user agrees. The preview writes nothing.
 - **Diff (차이)** - Prepare one concise native write diff with before/after claims and counts. Keep the caps: MEMORY.md about 2,200 characters and USER.md about 1,375 characters.
 - **Native-write boundary (쓰기)** - This skill can prepare guidance and a native write diff only. It never invokes, applies, or observes a `MEMORY.md`/`USER.md` write.
 
@@ -69,6 +70,8 @@ Bad example:
 The prepared artifact is `memory_curation_review/v1`, not native-memory mutation evidence. Hermes-native and external provider/vector context is `not_omh_reviewed`: it can nominate an OMH candidate but never inherits OMH approval. A configured Hermes runtime may transmit rendered OMH prefetch content in its model request.
 
 Use lifecycle words literally: expire removes influence only; retire archives recoverably; restore creates a new pending revision while preserving the archive; prune hard-deletes only the manifest-declared OMH-local target set. Report restore and prune first. No lifecycle result proves anything outside that named local target set.
+
+An attention tier is not a lifecycle state, and the two uses of "archive" are different: the `archive` tier only stops a record from occupying the default working context, leaving it in the store, readable, and answerable by `omh memory recall --include-archived`, while `retire` moves an expired revision into the local archive directory. Neither is deletion; never describe either as one.
 
 Legacy v1 material is migration/review-required. Present `memory inventory` counts and the report-first per-artifact `memory reactivate ... --apply` path; inventory and reactivation never silently grant replay eligibility. Dreaming remains reminder-only: it prepares reminders for `stale_review_required` and `expired_volatile_records`, never consolidation, retirement, restore, or prune.
 

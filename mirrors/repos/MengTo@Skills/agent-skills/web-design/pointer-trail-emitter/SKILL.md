@@ -9,7 +9,7 @@ Build the emitter yourself when the trail's density has to respond to how fast t
 
 Reach for `add-shader-cursor-trail` or `shaders-cursor-ripples` when you want the packaged WebGPU looks from the Shaders library. Reach for `reveal-hover-effect` when the cursor exposes a second image through a mask. Reach for `ambient-section-particles` when motes fill a section and the pointer only disturbs them. Reach for this when the pointer *lays* them.
 
-Extracted from a dark WebGL night scene where the trail had to stay readable over type and never pull attention from the set behind it.
+The bundled demo keeps the stage intentionally neutral. A plain dark field makes spacing, scatter, and coast easy to judge without a background image competing with the trail. The wisps are dependency-free Vanilla JavaScript rendered through the Canvas 2D API; CSS styles the interface only. There are no shaders, WebGL, or Three.js. Keep the live canvas separate from the interface so the emitter stays testable rather than baked into a composition.
 
 ## Emit by distance, not by time
 
@@ -140,6 +140,8 @@ Measure before reporting a regression. A frame-time comparison on this trail onc
 
 ## Verify
 
+- [ ] The trail is legible on a neutral field before the pointer moves
+- [ ] The demo does not rely on background imagery to make the effect look complete
 - [ ] Spacing along the path is constant; a flick and a crawl draw the same ribbon
 - [ ] Measured, not assumed: mote count over a fixed path barely moves with speed
 - [ ] A flick lays motes along the whole segment, not clumped at one end

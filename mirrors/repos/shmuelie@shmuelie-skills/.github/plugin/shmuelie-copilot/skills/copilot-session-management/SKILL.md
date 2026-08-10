@@ -91,6 +91,44 @@ Keep MCP server configuration declarative and source-controlled when possible.
 - Avoid automatically enabling expensive or environment-specific servers in
   every repository.
 
+## Windows desktop notifications
+
+Copilot CLI raises native Windows toasts ("Agent finished" / "Needs your
+attention") from a bundled native addon (`prebuilds/win32-x64/cli-native.node`)
+using the WinRT toast API. Understanding the mechanism is the key to diagnosing
+missing notifications.
+
+- The toast is sent under a fixed **AppUserModelID (AUMID)** `GitHub.Copilot.CLI`.
+  The addon self-registers app identity under
+  `HKCU\Software\Classes\AppUserModelId\GitHub.Copilot.CLI` (DisplayName, IconUri).
+- It fires on session idle/attention **only while the terminal is unfocused**
+  (the CLI tracks focus via DECSET 1004 focus reporting). A terminal that never
+  reports blur can suppress it.
+- `COPILOT_DISABLE_DESKTOP_NOTIFICATIONS=1` disables it. Failures are swallowed
+  silently, so nothing surfaces when a toast is dropped.
+
+Diagnosis checklist when Windows toasts do not appear:
+
+1. **AUMID registration** — the top cause. WinRT
+   `ToastNotificationManager.CreateToastNotifier("GitHub.Copilot.CLI").Show()`
+   **does not throw** when the AUMID is unregistered; Windows just silently drops
+   the banner. Confirm `HKCU:\Software\Classes\AppUserModelId\GitHub.Copilot.CLI`
+   exists. If missing, notifications are dropped.
+2. **Global/app toggles** — `HKCU:\...\PushNotifications\ToastEnabled = 1`; no
+   Focus Assist / Do Not Disturb; per-app entry under
+   `...\Notifications\Settings\GitHub.Copilot.CLI` not disabled.
+3. **Env kill switch** — `COPILOT_DISABLE_DESKTOP_NOTIFICATIONS` unset.
+4. **Addon loaded** — `logLevel: all` logs show the native addon loading.
+5. **Test the OS pipeline** — send a toast from **Windows PowerShell 5.1** (the
+   `[Windows.UI.Notifications...,ContentType=WindowsRuntime]` projection does not
+   load in PowerShell 7). A toast under the built-in PowerShell AUMID
+   (`{1AC14E77-02E7-4E5D-B744-2EB1AE5198B7}\WindowsPowerShell\v1.0\powershell.exe`)
+   verifies the OS can display toasts and isolates the fault to AUMID registration.
+
+To inspect a compiled native addon's mechanism, extract its printable strings
+(the Rust addon exposes `Windows.UI.Notifications.ToastNotification`,
+`SOFTWARE\Classes\AppUserModelId\`, and the AUMID literal).
+
 ## Session maintenance rules
 
 - Back up before merge, compaction, or repair.

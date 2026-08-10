@@ -1,6 +1,6 @@
 ---
 name: terms-of-service-generation
-description: Draft Terms of Service documents for web applications, SaaS platforms, and digital marketplaces.
+description: Draft Terms of Service documents for web applications, SaaS platforms, and digital marketplaces. Use when the user requests terms of service generation or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community
@@ -86,6 +86,13 @@ Sellers set their own prices. ArtVault collects payment from buyers and remits t
 - Version your ToS with a date and maintain an archive of previous versions for transparency.
 - Distinguish between terms for different user types (free vs. paid, consumers vs. business) where obligations differ materially.
 - Specify a reasonable notice period (at least 30 days) for material changes and describe how notice will be delivered.
+
+## Safety Boundaries
+
+- Treat the output as informational drafting or issue spotting, not legal advice.
+- Identify the governing jurisdiction and relevant effective date; verify changing requirements against current primary sources.
+- Do not claim that language is compliant, enforceable, or complete. Flag uncertainty and recommend qualified counsel for material decisions.
+- Do not file, publish, accept, sign, or send legal terms without the user reviewing and explicitly authorizing that action.
 
 ## Edge Cases
 

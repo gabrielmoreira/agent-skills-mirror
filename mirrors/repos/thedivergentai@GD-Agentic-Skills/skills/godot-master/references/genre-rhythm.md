@@ -3,16 +3,6 @@ name: godot-genre-rhythm
 description: "Expert blueprint for rhythm games including audio synchronization (BPM conductor, latency compensation with AudioServer.get_time_since_last_mix), note highways (scroll speed, timing windows), judgment systems (Perfect/Great/Good/Bad/Miss), scoring with combo multipliers, input processing (lane-based, hold note detection), and chart/beatmap loading. Based on DDR/osu!/Beat Saber research. Trigger keywords: rhythm_game, audio_sync, timing_judgment, note_highway, combo_system, BPM_conductor, latency_compensation."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Rhythm
-
-Expert blueprint for rhythm games emphasizing audio-visual synchronization and flow state.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Audio Sync & Logic
@@ -143,23 +133,23 @@ Calculate precise offsets by compensating for OS/Hardware latency.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Audio latency project settings, bus layout names, and input map lane actions must exist before the conductor runs.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Buses, stream players, spectrum instances, and sync-with-audio helpers this genre skill consumes for BPM clocks.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Action maps, `_input` vs `_unhandled_input`, and event timestamps for lane press/release and anti-spam.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources for NoteData/charts, signals for beat/judgment events, and deterministic timing loops.
+- [godot-project-foundations](project-foundations.md) — Audio latency project settings, bus layout names, and input map lane actions must exist before the conductor runs.
+- [godot-audio-systems](audio-systems.md) — Buses, stream players, spectrum instances, and sync-with-audio helpers this genre skill consumes for BPM clocks.
+- [godot-input-handling](input-handling.md) — Action maps, `_input` vs `_unhandled_input`, and event timestamps for lane press/release and anti-spam.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Resources for NoteData/charts, signals for beat/judgment events, and deterministic timing loops.
 
 #### Complements
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Judgment labels, receptor flashes, and beat pulses should be Tween-driven, not per-frame scale hacks.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Shader highways and spectrum-driven uniforms keep dense charts off the CPU.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Hit sparks and combo flourishes via GPUParticles2D without instantiating VFX every Perfect.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Score/combo HUD, calibration sliders, and lane receptor layout as Control trees.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist A/V offset, scroll speed, and difficulty windows across sessions.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Conductor / scoring / pool owners are typically Autoloads with a clear boot order.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Beat, judgment, combo-break, and chart-finished signals need owner boundaries so UI never owns the clock.
+- [godot-tweening](tweening.md) — Judgment labels, receptor flashes, and beat pulses should be Tween-driven, not per-frame scale hacks.
+- [godot-shaders-basics](shaders-basics.md) — Shader highways and spectrum-driven uniforms keep dense charts off the CPU.
+- [godot-particles](particles.md) — Hit sparks and combo flourishes via GPUParticles2D without instantiating VFX every Perfect.
+- [godot-ui-containers](ui-containers.md) — Score/combo HUD, calibration sliders, and lane receptor layout as Control trees.
+- [godot-save-load-systems](save-load-systems.md) — Persist A/V offset, scroll speed, and difficulty windows across sessions.
+- [godot-autoload-architecture](autoload-architecture.md) — Conductor / scoring / pool owners are typically Autoloads with a clear boot order.
+- [godot-signal-architecture](signal-architecture.md) — Beat, judgment, combo-break, and chart-finished signals need owner boundaries so UI never owns the clock.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when note pools, highway draw calls, or mix callbacks still hitch after pooling and shader scroll.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate timing-window width, scroll speed, and miss penalties against clear rates before shipping difficulty tiers.
+- [godot-performance-optimization](performance-optimization.md) — Escalate when note pools, highway draw calls, or mix callbacks still hitch after pooling and shader scroll.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate timing-window width, scroll speed, and miss penalties against clear rates before shipping difficulty tiers.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting rhythm concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting rhythm concern.

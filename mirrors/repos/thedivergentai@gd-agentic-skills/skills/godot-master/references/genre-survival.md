@@ -3,16 +3,6 @@ name: godot-genre-survival
 description: "Expert blueprint for survival games (Minecraft, Don't Starve, The Forest, Rust) covering needs systems, resource gathering, crafting recipes, base building, and progression balancing. Use when building open-world survival, crafting-focused, or resource management games. Keywords survival, needs system, crafting, inventory, hunger, resource gathering, base building."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Survival
-
-Resource scarcity, needs management, and progression through crafting define survival games.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Physiology & Needs
@@ -80,7 +70,7 @@ Ingredient check → consume → grant result (discovery-friendly).
 | Base build snap | [survival_patterns.gd](../scripts/genre_survival_survival_patterns.gd) `place_if_empty` / GridMap |
 | Forest foliage | MultiMesh via `populate_nature` — never 10k MeshInstance3D |
 | Chunk stream | `load_world_chunk` threaded path in survival_patterns |
-| Procedural noise / biomes at scale | `generate_noise_chunk_async` in survival_patterns — or **MANDATORY** [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) when terrain exceeds chunk helpers |
+| Procedural noise / biomes at scale | `generate_noise_chunk_async` in survival_patterns — or **MANDATORY** [godot-procedural-generation](procedural-generation.md) when terrain exceeds chunk helpers |
 
 | Phase | Peer skills | Purpose |
 |-------|-------------|---------|
@@ -120,7 +110,6 @@ Re-roll spawn points outside bed/`player_beds` radius before enabling threat spa
 
 > **MANDATORY** when starting base-building snap or biome/noise work: read [elite-technical-patterns.md](genre-survival-elite-technical-patterns.md). **Do NOT Load** for first-pass needs/inventory/crafting — use the script catalog above.
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -128,7 +117,6 @@ Re-roll spawn points outside bed/`player_beds` radius before enabling threat spa
 | Needs / crafting / tools | [key-mechanics.md](genre-survival-key-mechanics.md) + bundled survival scripts |
 | Base build grid snap | [elite-technical-patterns.md](genre-survival-elite-technical-patterns.md) + [base_builder.gd](../scripts/genre_survival_base_builder.gd) |
 | Biome / spawn safety | [elite-technical-patterns.md](genre-survival-elite-technical-patterns.md) + [biome_generator.gd](../scripts/genre_survival_biome_generator.gd) |
-
 
 ## Reference
 
@@ -151,24 +139,24 @@ Re-roll spawn points outside bed/`player_beds` radius before enabling threat spa
 ### Related Skills
 
 #### Prerequisites
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — `is_equal_approx`, Resource `duplicate(true)`, and delta-scaled timers are foundational before vital and inventory logic.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Items, recipes, and slot payloads must be Resource-first so durability and stack metadata serialize cleanly.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Inventory/crafting buses should signal UI and interaction systems without tight Node coupling.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Day cycles and global needs managers that survive scene swaps follow Autoload ownership rules.
+- [godot-gdscript-mastery](gdscript-mastery.md) — `is_equal_approx`, Resource `duplicate(true)`, and delta-scaled timers are foundational before vital and inventory logic.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Items, recipes, and slot payloads must be Resource-first so durability and stack metadata serialize cleanly.
+- [godot-signal-architecture](signal-architecture.md) — Inventory/crafting buses should signal UI and interaction systems without tight Node coupling.
+- [godot-autoload-architecture](autoload-architecture.md) — Day cycles and global needs managers that survive scene swaps follow Autoload ownership rules.
 
 #### Complements
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Grid stacking, weight capacity, and drag/drop UIs deepen the survival bag beyond genre sketches.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Versioned world saves cover inventory Resources, base cells, and unlocked recipe lists.
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Noise biomes and resource scatter compose with FastNoiseLite patterns in this skill.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap tooling, collision, and LOD practices support large player-built bases.
-- [godot-ai-navigation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ai-navigation/SKILL.md) — Threat AI that respects built walls needs NavigationAgent / AStar updates when structures change.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Crafting menus and inventory grids are Control layout problems, not gameplay scripts.
-- [godot-game-loop-harvest](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-harvest/SKILL.md) — Tiered tool yield and gather loops share harvest-loop patterns with survival gathering.
+- [godot-inventory-system](inventory-system.md) — Grid stacking, weight capacity, and drag/drop UIs deepen the survival bag beyond genre sketches.
+- [godot-save-load-systems](save-load-systems.md) — Versioned world saves cover inventory Resources, base cells, and unlocked recipe lists.
+- [godot-procedural-generation](procedural-generation.md) — Noise biomes and resource scatter compose with FastNoiseLite patterns in this skill.
+- [godot-3d-world-building](3d-world-building.md) — GridMap tooling, collision, and LOD practices support large player-built bases.
+- [godot-ai-navigation](ai-navigation.md) — Threat AI that respects built walls needs NavigationAgent / AStar updates when structures change.
+- [godot-ui-containers](ui-containers.md) — Crafting menus and inventory grids are Control layout problems, not gameplay scripts.
+- [godot-game-loop-harvest](game-loop-harvest.md) — Tiered tool yield and gather loops share harvest-loop patterns with survival gathering.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After recipe costs, tool tiers, and need decay rates are data-driven, Monte Carlo careers prove hours-to-tech and starvation risk bands before shipping balance sheets.
-- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — Open-world survival consumes chunk streaming, safe-zone spawn, and scarcity loops defined here.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Trading posts and crafted-good sinks extend survival crafting into soft-currency economies.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — After recipe costs, tool tiers, and need decay rates are data-driven, Monte Carlo careers prove hours-to-tech and starvation risk bands before shipping balance sheets.
+- [godot-genre-open-world](genre-open-world.md) — Open-world survival consumes chunk streaming, safe-zone spawn, and scarcity loops defined here.
+- [godot-economy-system](economy-system.md) — Trading posts and crafted-good sinks extend survival crafting into soft-currency economies.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

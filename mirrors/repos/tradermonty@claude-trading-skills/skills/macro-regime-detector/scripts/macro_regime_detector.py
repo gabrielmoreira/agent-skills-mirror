@@ -85,13 +85,16 @@ def main():
     print("=" * 70)
     print()
 
-    # Initialize FMP client
-    try:
-        client = FMPClient(api_key=args.api_key)
-        print("FMP API client initialized")
-    except ValueError as e:
-        print(f"ERROR: {e}", file=sys.stderr)
-        sys.exit(1)
+    # Initialize market-data client. FMP is optional; without a key, ETF
+    # history is fetched directly through yfinance.
+    client = FMPClient(api_key=args.api_key)
+    data_mode = client.get_data_mode()
+    if data_mode == "yfinance_only":
+        print("Market data client initialized (yfinance-only mode)")
+        data_source = "yfinance"
+    else:
+        print("Market data client initialized (FMP with yfinance fallback)")
+        data_source = "FMP API with yfinance fallback"
 
     # ================================================================
     # Step 1: Fetch Market Data (9 ETFs + Treasury rates = 10 API calls)
@@ -218,6 +221,15 @@ def main():
         "sector_rotation": comp6,
     }
 
+    available_count = composite["data_quality"]["available_count"]
+    if available_count == 0:
+        print(
+            "ERROR: No macro-regime components have usable data; "
+            "refusing to classify or write reports.",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+
     regime = classify_regime(component_results)
     regime["consistency"] = check_regime_consistency(regime["current_regime"], component_results)
 
@@ -237,7 +249,8 @@ def main():
     analysis = {
         "metadata": {
             "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "data_source": "FMP API",
+            "data_source": data_source,
+            "data_mode": data_mode,
             "history_days": args.days,
             "api_calls": client.get_api_stats(),
             "etfs_analyzed": REQUIRED_ETFS,

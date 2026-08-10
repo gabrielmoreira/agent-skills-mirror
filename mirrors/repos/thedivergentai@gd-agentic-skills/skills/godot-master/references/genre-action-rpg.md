@@ -3,16 +3,6 @@ name: godot-genre-action-rpg
 description: "Comprehensive blueprint for Action RPGs including real-time combat (hitbox/hurtbox, stat-based damage), character progression (RPG stats, leveling, skill trees), loot systems (procedural item generation, affixes, rarity tiers), equipment systems (gear slots, stat modifiers), and ability systems (cooldowns, mana cost, AOE). Based on expert ARPG design from Diablo, Path of Exile, Souls-like developers. Trigger keywords: action_rpg, loot_generator, rpg_stats, skill_tree, hitbox_combat, item_affixes, equipment_slots, ability_cooldown, stat_scaling."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Action RPG
-
-Expert blueprint for action RPGs emphasizing real-time combat, character builds, loot, and progression.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Combat & Progression
@@ -146,24 +136,24 @@ Buffer Dictionary snapshots; flush periodically to `user://` (never `res://`).
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Autoloads, folder layout, and input/project settings must be solid before stacking combat, inventory, and save systems for an ARPG.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Player/enemy locomotion and `move_and_slide` are the movement substrate under hit recovery, chase, and attack wind-ups.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Stats, affixes, and leveling curves are Resource-first; load this before inventing Node-heavy character sheets.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Combat buses, health_changed, and loot pickup events need clear signal ownership so UI/logs never own combat truth.
+- [godot-project-foundations](project-foundations.md) — Autoloads, folder layout, and input/project settings must be solid before stacking combat, inventory, and save systems for an ARPG.
+- [godot-characterbody-2d](characterbody-2d.md) — Player/enemy locomotion and `move_and_slide` are the movement substrate under hit recovery, chase, and attack wind-ups.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Stats, affixes, and leveling curves are Resource-first; load this before inventing Node-heavy character sheets.
+- [godot-signal-architecture](signal-architecture.md) — Combat buses, health_changed, and loot pickup events need clear signal ownership so UI/logs never own combat truth.
 
 #### Complements
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage pipelines, hit reactions, and targeting consume hitbox/hurtbox events this genre skill wires into builds and loot.
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Exponential damage curves, diminishing armor, and modifier stacks need a dedicated stats/modifier layer.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Equipment slots, rarity tiers, and affix rolls live in inventory data separate from the SceneTree HUD.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Cooldowns, mana costs, and skill-tree grants compose with combat hit resolve for hotbar ARPGs.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Prefer HealthComponent / HitboxComponent children over deep `BaseEnemy` inheritance for modular RPG units.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Boss telegraphs, stagger, and cast/channel states belong in hierarchical FSMs, not nested `if/elif` AI.
+- [godot-combat-system](combat-system.md) — Damage pipelines, hit reactions, and targeting consume hitbox/hurtbox events this genre skill wires into builds and loot.
+- [godot-rpg-stats](rpg-stats.md) — Exponential damage curves, diminishing armor, and modifier stacks need a dedicated stats/modifier layer.
+- [godot-inventory-system](inventory-system.md) — Equipment slots, rarity tiers, and affix rolls live in inventory data separate from the SceneTree HUD.
+- [godot-ability-system](ability-system.md) — Cooldowns, mana costs, and skill-tree grants compose with combat hit resolve for hotbar ARPGs.
+- [godot-composition](composition.md) — Prefer HealthComponent / HitboxComponent children over deep `BaseEnemy` inheritance for modular RPG units.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Boss telegraphs, stagger, and cast/channel states belong in hierarchical FSMs, not nested `if/elif` AI.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After damage curves, loot rarities, and ability costs are tunable, Monte Carlo loadout sims prove DPS/TTK bands before shipping.
-- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Kill/collect/boss-phase objectives consume the same combat and inventory events this genre loop emits.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Vendor pricing and sink/source loops sit on top of loot rarity and crafting once drops are stable.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Character builds, gear, and skill ranks must round-trip through a durable save schema for long ARPG sessions.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — After damage curves, loot rarities, and ability costs are tunable, Monte Carlo loadout sims prove DPS/TTK bands before shipping.
+- [godot-quest-system](quest-system.md) — Kill/collect/boss-phase objectives consume the same combat and inventory events this genre loop emits.
+- [godot-economy-system](economy-system.md) — Vendor pricing and sink/source loops sit on top of loot rarity and crafting once drops are stable.
+- [godot-save-load-systems](save-load-systems.md) — Character builds, gear, and skill ranks must round-trip through a durable save schema for long ARPG sessions.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

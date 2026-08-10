@@ -3,14 +3,6 @@ name: godot-genre-sports
 description: "Expert blueprint for sports games (FIFA, NBA 2K, Rocket League, Tony Hawk) covering physics-based ball interaction, team AI formations, contextual input, and match umpire/score authority. Broadcast framing routes to godot-camera-systems. Use when building soccer, basketball, hockey, racing sports, or arcade sports games. Keywords ball physics, magnus effect, formation AI, team tactics, contextual controls, steering behaviors."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Sports
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Physics & Ball Interaction
@@ -184,7 +176,6 @@ func seek(target_pos: Vector3) -> Vector3:
 2.  **Magnetic Ball**: Ball sticks to player too perfectly. **Fix**: Use a "Dribble" mechanic where the player kicks the ball slightly ahead physics-wise, rather than parenting it.
 3.  **Unfair Goalies**: Goalie reacts instantly. **Fix**: Add a "Reaction Time" delay and "Error Rate" based on shot speed/stats.
 
-
 ## Advanced Sports Meta-Systems
 
 Professional implementation of animation synchronization, spatial intelligence, and collision filtering.
@@ -241,13 +232,11 @@ func _on_ball_entered(ball: RigidBody3D) -> void:
 
 **Expert Tip**: For the "Root Motion" system, ensure the `AnimationTree` property `deterministic` is set to true to ensure consistent displacement across different hardware.
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
 |-------|-------------------|
 | Skill chain & phase routing | [skill-chain.md](references/skill-chain.md) |
-
 
 ## Reference
 

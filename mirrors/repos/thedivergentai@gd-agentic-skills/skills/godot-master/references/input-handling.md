@@ -18,7 +18,6 @@ Handle keyboard, mouse, gamepad, and touch input with proper buffering and acces
 | UI nav vs gameplay confirm | [input_echo_filter.gd](../scripts/input_handling_input_echo_filter.gd) — echoes move menus, not Confirm/Back |
 | Gameplay vs menu clicks | [unhandled_input_priority.gd](../scripts/input_handling_unhandled_input_priority.gd) |
 
-
 ## Do-NOT-Load (by scenario)
 
 | Scenario | Load | Do NOT load |
@@ -65,7 +64,6 @@ Tracking the lifecycle of an action ('Just Pressed', 'Held', 'Released') for com
 ### [unhandled_input_priority.gd](../scripts/input_handling_unhandled_input_priority.gd)
 Demonstrating the correct use of `_unhandled_input` to prevent gameplay logic from leaking into UI.
 
-
 ### [virtual_input_injector.gd](../scripts/input_handling_virtual_input_injector.gd)
 `Input.parse_input_event` injection for CI tutorials / AI assistance — not physical hardware.
 
@@ -89,11 +87,6 @@ Frame-tagged capture + deterministic replay via `parse_input_event`.
 - **NEVER capture the mouse without a 'Release' shortcut** — If your game crashes or blocks `ui_cancel`, the user is trapped. Always provide a fallback escape for mouse capture.
 
 ---
-
-## Godot 4.7: Input Device IDs
-
-- Mouse and keyboard are no longer device ID `0` — use `InputEvent.DEVICE_ID_MOUSE` and `InputEvent.DEVICE_ID_KEYBOARD`.
-- **NEVER** compare `event.device == 0` for mouse/keyboard; joypads may legitimately use ID 0.
 
 ## Input Propagation & Isolation
 Godot propagates input events in a specific order. Understanding this is key to isolating UI from gameplay.
@@ -124,12 +117,11 @@ Modern games must handle simultaneous Controller and Keyboard/Mouse input smooth
 ## Expert Input Extensions (script sole-source)
 
 - **Input buffering** — **MANDATORY**: [input_buffer.gd](../scripts/input_handling_input_buffer.gd) + [advanced_input_buffer.gd](../scripts/input_handling_advanced_input_buffer.gd). Do not paste jump-timer tutorials inline.
-- **Coyote time** — Owned by movement skills: [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) (`frame_perfect_coyote_time.gd`) and [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md). Pair with buffers from this skill; do not re-implement coyote here.
-- **Multiplayer input sync** — **Do not RPC `sync_input` here.** Route to [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) for authoritative action snapshots / `get_remote_sender_id` validation.
+- **Coyote time** — Owned by movement skills: [godot-characterbody-2d](characterbody-2d.md) (`frame_perfect_coyote_time.gd`) and [godot-genre-platformer](genre-platformer.md). Pair with buffers from this skill; do not re-implement coyote here.
+- **Multiplayer input sync** — **Do not RPC `sync_input` here.** Route to [godot-multiplayer-networking](multiplayer-networking.md) for authoritative action snapshots / `get_remote_sender_id` validation.
 - **Virtual injection** — **MANDATORY**: [virtual_input_injector.gd](../scripts/input_handling_virtual_input_injector.gd) (`Input.parse_input_event`).
 - **Combo sequences** — **MANDATORY**: [combo_validator.gd](../scripts/input_handling_combo_validator.gd); fighting fiction stays in `godot-genre-fighting`.
 - **Deterministic replay** — **MANDATORY**: [input_replay_buffer.gd](../scripts/input_handling_input_replay_buffer.gd).
-
 
 ## Deep recipes (on demand)
 
@@ -138,7 +130,6 @@ Modern games must handle simultaneous Controller and Keyboard/Mouse input smooth
 | Buffering / coyote / MP sync | [input-event-processing.md](input-handling-input-event-processing.md) |
 | Virtual injection / combos / replay | [expert-input-extensions.md](input-handling-expert-input-extensions.md) |
 | InputMap & device IDs | [inputmap-best-practices.md](input-handling-inputmap-best-practices.md) |
-
 
 ## Reference
 
@@ -161,24 +152,24 @@ Modern games must handle simultaneous Controller and Keyboard/Mouse input smooth
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project Settings Input Map, scene boot, and Autoload registration that host remappers and glyph managers.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed `InputEvent` branches, `StringName` actions, and safe signal/`await` patterns used in buffers and device routers.
+- [godot-project-foundations](project-foundations.md) — Project Settings Input Map, scene boot, and Autoload registration that host remappers and glyph managers.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed `InputEvent` branches, `StringName` actions, and safe signal/`await` patterns used in buffers and device routers.
 
 #### Complements
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Control focus and `_gui_input` ownership so menus consume clicks before gameplay `_unhandled_input`.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `device_changed` and rebind events should signal up to HUD/prompt listeners without hard UI refs.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton ownership for InputBuffer / GlyphPrompt / Remapper services that survive scene changes.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Consumes buffered jump/dash and `get_vector` movement inside physics steps.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Mouse-look sensitivity and capture modes pair with FPS camera rigs.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Action just-pressed / held / released phases drive FSM transitions without polling spam.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Persist `InputMap` rebinds and hold/toggle accessibility prefs to `user://` config.
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Virtual joysticks and touch cameras extend this skill’s multi-touch gesture patterns.
+- [godot-ui-containers](ui-containers.md) — Control focus and `_gui_input` ownership so menus consume clicks before gameplay `_unhandled_input`.
+- [godot-signal-architecture](signal-architecture.md) — `device_changed` and rebind events should signal up to HUD/prompt listeners without hard UI refs.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton ownership for InputBuffer / GlyphPrompt / Remapper services that survive scene changes.
+- [godot-characterbody-2d](characterbody-2d.md) — Consumes buffered jump/dash and `get_vector` movement inside physics steps.
+- [godot-camera-systems](camera-systems.md) — Mouse-look sensitivity and capture modes pair with FPS camera rigs.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Action just-pressed / held / released phases drive FSM transitions without polling spam.
+- [godot-save-load-systems](save-load-systems.md) — Persist `InputMap` rebinds and hold/toggle accessibility prefs to `user://` config.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — Virtual joysticks and touch cameras extend this skill’s multi-touch gesture patterns.
 
 #### Downstream / consumers
-- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Coyote time and jump buffers are the primary consumer of input buffering.
-- [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — Captured mouse aim, fire just-pressed, and gamepad look rely on this skill’s capture/deadzone stack.
-- [godot-genre-fighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md) — Combo sequence validators and frame-perfect buffers feed special-move detection.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Authoritative peers need sanitized action snapshots / RPC’d input, not raw local keycodes.
+- [godot-genre-platformer](genre-platformer.md) — Coyote time and jump buffers are the primary consumer of input buffering.
+- [godot-genre-shooter-fps](genre-shooter-fps.md) — Captured mouse aim, fire just-pressed, and gamepad look rely on this skill’s capture/deadzone stack.
+- [godot-genre-fighting](genre-fighting.md) — Combo sequence validators and frame-perfect buffers feed special-move detection.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Authoritative peers need sanitized action snapshots / RPC’d input, not raw local keycodes.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting input concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting input concern.

@@ -2,16 +2,6 @@
 name: godot-debugging-profiling
 description: "Expert debugging and profiling for leaks, GPU/Visual Profiler, headless CI QA, orphan nodes, thread-safe logs, and custom Debugger monitors — not print/breakpoint tutorials. Trigger on OBJECT_ORPHAN_NODE_COUNT, ObjectDB growth, Visual Profiler GPU spikes, flaky headless exits, or remote device consoles. Keywords: orphan nodes, Performance.get_monitor, Visual Profiler, Time.get_ticks_usec, EditorDebuggerPlugin, headless QA, push_error, backtrace."
 ---
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Debugging & Profiling
-
-Symptom → monitor/API → script routing for leaks, GPU, and CI — Official Docs cover print/breakpoint basics.
-
 ## NEVER Do
 
 - **NEVER use `print()` without descriptive context** — `print(value)` is useless. Use `print("Player health:", health)` with labels.
@@ -109,23 +99,23 @@ Symptom → monitor/API → script routing for leaks, GPU, and CI — Official D
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Debug/release feature tags, project settings, and Autoload layout must exist before debugger plugins or global monitors.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Callables, `assert`/`push_error`, and `Time` APIs underpin benchmarks, breakpoints, and stack helpers.
+- [godot-project-foundations](project-foundations.md) — Debug/release feature tags, project settings, and Autoload layout must exist before debugger plugins or global monitors.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Callables, `assert`/`push_error`, and `Time` APIs underpin benchmarks, breakpoints, and stack helpers.
 
 #### Complements
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — After the profiler names a hotspot, apply pooling, culling, and MultiMesh fixes from that skill.
-- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — GUT/assert/CI patterns pair with headless QA suites and deterministic `quit` exit codes.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Profile and remote-debug against real export templates; debug symbols and strip settings matter for external profilers.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Scene swap lifetime bugs show up as orphan-node growth; use tree dumps when loaders fail to free.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Ghost listeners and deferred connects often explain “why is this still running?” stack traces.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Global loggers, monitors, and error interceptors belong in Autoloads with clear boot order.
-- [godot-server-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-server-architecture/SKILL.md) — When debug draw or metrics push into Rendering/Physics servers, keep server ownership separate from nodes.
+- [godot-performance-optimization](performance-optimization.md) — After the profiler names a hotspot, apply pooling, culling, and MultiMesh fixes from that skill.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — GUT/assert/CI patterns pair with headless QA suites and deterministic `quit` exit codes.
+- [godot-export-builds](export-builds.md) — Profile and remote-debug against real export templates; debug symbols and strip settings matter for external profilers.
+- [godot-scene-management](scene-management.md) — Scene swap lifetime bugs show up as orphan-node growth; use tree dumps when loaders fail to free.
+- [godot-signal-architecture](signal-architecture.md) — Ghost listeners and deferred connects often explain “why is this still running?” stack traces.
+- [godot-autoload-architecture](autoload-architecture.md) — Global loggers, monitors, and error interceptors belong in Autoloads with clear boot order.
+- [godot-server-architecture](server-architecture.md) — When debug draw or metrics push into Rendering/Physics servers, keep server ownership separate from nodes.
 
 #### Downstream / consumers
-- [godot-auditor](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md) — Consumes debugger/profiler evidence when enforcing never-lists and architectural integrity reviews.
-- [godot-platform-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-mobile/SKILL.md) — Device remote debug and on-screen consoles are required when desktop Output is unavailable.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Headless microbenchmarks and CI QA feed balance sims that need stable timing and exit codes.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Networked games need remote inspectors and structured logs across peers without flooding the Output panel.
+- [godot-auditor](auditor.md) — Consumes debugger/profiler evidence when enforcing never-lists and architectural integrity reviews.
+- [godot-platform-mobile](platform-mobile.md) — Device remote debug and on-screen consoles are required when desktop Output is unavailable.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Headless microbenchmarks and CI QA feed balance sims that need stable timing and exit codes.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Networked games need remote inspectors and structured logs across peers without flooding the Output panel.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting debug or perf concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting debug or perf concern.

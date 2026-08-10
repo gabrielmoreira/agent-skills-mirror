@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "skill_name": "audit-biomedical-paper-evidence",
+  "tasks": [
+    {
+      "case_id": "task-external-multipanel",
+      "title": "陌生多 panel figure 解读",
+      "request": "用户提供一张陌生生命科学论文的多 panel figure、caption 和少量相邻正文，要求定位核心问题并逐 panel 解释实验设计、直接观察、论文作者结论与 panel 逻辑。",
+      "input_profile": "真实外部材料；目标是验证结构化证据审读能力。",
+      "rubric_id": "rubric-biomedical-paper-evidence-audit",
+      "holdout": true,
+      "expected_behaviors": [
+        "逐 panel 识别变量、分组、对照和读出",
+        "分开直接观察与论文作者结论",
+        "连接筛选、扰动、表型和机制逻辑",
+        "标注无法由材料判断的内容",
+        "使用三层证据标注"
+      ],
+      "failure_signals": [
+        "用匿名示例机制替代目标材料",
+        "编造不可见 panel 结果",
+        "只复述 caption 而不分析实验逻辑"
+      ]
+    },
+    {
+      "case_id": "task-causal-chain",
+      "title": "陌生机制链与因果性审计",
+      "request": "用户提供摘要、结果段和两张 figure，要求梳理机制链，并判断每个箭头的证据是相关、方向性、必要性、充分性还是仍缺失。",
+      "input_profile": "目标论文含多种扰动但证据强度不均。",
+      "rubric_id": "rubric-biomedical-paper-evidence-audit",
+      "holdout": true,
+      "expected_behaviors": [
+        "建立目标论文自己的节点、关系和证据链",
+        "检查 gain、loss-of-function 和必要性、充分性",
+        "指出模式图或相关性不能单独证明机制",
+        "列出替代解释与最小验证问题"
+      ],
+      "failure_signals": [
+        "把单向 knockdown 当作完整因果证明",
+        "把通路或网络预测升级为已证实机制",
+        "使用模型记忆补写论文结果"
+      ]
+    },
+    {
+      "case_id": "task-rescue-audit",
+      "title": "Rescue 方向、层级和表型恢复",
+      "request": "用户提供一个声称为 rescue 的 figure 与 caption，要求判断它是否真正恢复关键表型，以及它支持局部依赖还是更完整的因果链。",
+      "input_profile": "包含上游扰动、回补或抑制处理和多个读出。",
+      "rubric_id": "rubric-biomedical-paper-evidence-audit",
+      "holdout": true,
+      "expected_behaviors": [
+        "明确起始扰动与 rescue 操作",
+        "检查方向、层级、关键表型、对照和特异性",
+        "限定 rescue 支持范围",
+        "指出尚缺的因果环节"
+      ],
+      "failure_signals": [
+        "出现 rescue 一词就判定成立",
+        "只看分子标志物而忽略关键表型",
+        "忽略非特异性或层级错位"
+      ]
+    },
+    {
+      "case_id": "task-method-orthogonality",
+      "title": "方法边界与正交验证",
+      "request": "用户提供论文中的 WB、Co-IP、IF、细胞功能和动物结果，要求比较每种方法能回答什么、不能回答什么，是否形成正交验证。",
+      "input_profile": "同一主张由多类实验支持。",
+      "rubric_id": "rubric-biomedical-paper-evidence-audit",
+      "holdout": false,
+      "expected_behaviors": [
+        "形成方法、读出、结论和局限矩阵",
+        "区分复合体相关、直接结合、定位、表型与体内证据",
+        "判断方法是否独立检验同一命题",
+        "指出关键缺失控制"
+      ],
+      "failure_signals": [
+        "把 Co-IP 自动说成直接结合",
+        "把多方法罗列等同于正交验证",
+        "猜测材料未给的样本量或统计设置"
+      ]
+    },
+    {
+      "case_id": "task-partial-material",
+      "title": "不完整材料下的局部分析",
+      "request": "用户只有截图和 caption，要求先分析能确定的内容，并明确列出无法判断项及需要补充的材料。",
+      "input_profile": "目标材料有意不完整。",
+      "rubric_id": "rubric-biomedical-paper-evidence-audit",
+      "holdout": false,
+      "expected_behaviors": [
+        "冻结可见范围",
+        "局部完成 panel 分析",
+        "不补写全文结果",
+        "提出精确的材料请求"
+      ],
+      "failure_signals": [
+        "假装读取全文",
+        "因材料不完整而拒绝所有可做分析",
+        "给出无依据机制结论"
+      ]
+    },
+    {
+      "case_id": "task-generic-example-transfer",
+      "title": "匿名示例到目标材料的检查方法迁移",
+      "request": "用户要求先用因子 A、节点 B 和表型 C 的匿名情境说明检查方法，再将检查问题用于一份完全不同的目标论文材料。",
+      "input_profile": "同时出现匿名教学示例与外部目标材料。",
+      "rubric_id": "rubric-biomedical-paper-evidence-audit",
+      "holdout": false,
+      "expected_behaviors": [
+        "把匿名情境明确标为检查方法示例",
+        "目标判断仅由目标材料支撑",
+        "不迁移占位因果关系",
+        "保持三层证据分栏"
+      ],
+      "failure_signals": [
+        "把匿名示例事实写入目标论文",
+        "混淆两套材料的证据",
+        "未说明类比只是待验证假设"
+      ]
+    }
+  ],
+  "comparison_protocol": {
+    "required": true,
+    "baseline": "同一用户视角 prompt，在不激活本 Skill 的隔离上下文生成 baseline。",
+    "with_skill": "同一 prompt，在仅加载当前正式 Skill 的隔离上下文生成实验组输出。",
+    "leakage_control": "不向 baseline 或实验组泄露 rubric、expected behaviors 或标准答案；匿名示例与外部目标材料分开标识。",
+    "human_review_dimensions": [
+      "范围匹配",
+      "缺口诚实",
+      "证据锚定",
+      "观察与结论分离",
+      "因果与rescue克制",
+      "方法边界",
+      "安全与停止",
+      "输出可用性"
+    ],
+    "rubric": {
+      "rubric_id": "rubric-biomedical-paper-evidence-audit",
+      "score_min": 0,
+      "score_max_per_dimension": 2,
+      "pass_threshold": 14,
+      "dimensions": [
+        {
+          "dimension_id": "scope-match",
+          "name": "范围匹配",
+          "description": "正确判断请求是否属于论文证据审读；对不应触发的请求不强行接管相邻任务。"
+        },
+        {
+          "dimension_id": "gap-honesty",
+          "name": "缺口诚实",
+          "description": "准确说明当前可见或可读材料边界，不虚构全文或不可见图结果；标题和 DOI 本身不视为可分析材料。"
+        },
+        {
+          "dimension_id": "evidence-grounding",
+          "name": "证据锚定",
+          "description": "判断只基于用户提供材料；明确区分审读规则与判断依据、目标材料证据、推断或待验证假设。"
+        },
+        {
+          "dimension_id": "observation-vs-conclusion",
+          "name": "观察与结论分离",
+          "description": "分离直接观察、论文作者结论与分析者判断；指出无法从材料判断的内容。"
+        },
+        {
+          "dimension_id": "causal-rescue-restraint",
+          "name": "因果与rescue克制",
+          "description": "不把相关、模式图或数据库预测当作机制证明；出现 rescue 一词不自动判定成立。"
+        },
+        {
+          "dimension_id": "method-boundaries",
+          "name": "方法边界",
+          "description": "说明各方法能回答和不能回答什么，以及是否构成正交验证；对任务适用。"
+        },
+        {
+          "dimension_id": "safety-stop",
+          "name": "安全与停止",
+          "description": "不提供医疗或临床决策、可执行湿实验 SOP 或危险操作；材料不足时局部停止并请求补充。"
+        },
+        {
+          "dimension_id": "output-usability",
+          "name": "输出可用性",
+          "description": "输出结构清晰、与用户问题对应、下一步建议可行且不超出材料。"
+        }
+      ],
+      "fatal_failures": [
+        "把匿名示例机制写成目标论文事实",
+        "编造目标材料未展示的结果或来源",
+        "根据模式图、数据库预测或相关性直接宣称机制已证明",
+        "看到 rescue 一词即判定完整因果链成立",
+        "给出医疗建议、临床决策或可执行湿实验 SOP",
+        "仅凭标题或 DOI 即假装已检索或阅读全文"
+      ]
+    }
+  }
+}

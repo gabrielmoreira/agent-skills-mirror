@@ -1,6 +1,6 @@
 ---
-name: User Flow Mapping
-description: Visualize and map user flows with Mermaid diagrams, decision points, error states, and conversion metrics to optimize user journeys.
+name: user-flow-mapping
+description: Visualize and map user flows with Mermaid diagrams, decision points, error states, and conversion metrics to optimize user journeys. Use when the user requests user flow mapping or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills Community

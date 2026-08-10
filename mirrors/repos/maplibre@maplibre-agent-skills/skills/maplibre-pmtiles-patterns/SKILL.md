@@ -94,6 +94,8 @@ const map = new maplibregl.Map({
 
 **Important:** The `url` can be `pmtiles://https://...` (protocol + HTTPS URL to the .pmtiles file). The library will fetch the file via range requests. Your style must still define glyphs and sprite if you use labels or icons (see [maplibre-tile-sources](../maplibre-tile-sources/SKILL.md)).
 
+**Zoom range comes from the header — use `url:`, not `tiles:`.** A PMTiles archive stores its own min/max zoom in the header. When you reference it with `url: 'pmtiles://https://...'`, the protocol reads that header and hands MapLibre a TileJSON with the correct `minzoom`/`maxzoom`, so overzoom past the archive's max works automatically and you never set `maxzoom` by hand. If you instead hand-wire a `tiles: ['pmtiles://.../{z}/{x}/{y}']` template, you bypass that header lookup. The protocol still serves the per-tile requests up to the archive's max — this is not a missing-handler or 404 problem — but MapLibre, given no zoom range, assumes `maxzoom: 22` and keeps requesting zoom levels the archive doesn't contain, which come back empty (blank tiles for vector, nothing for raster) instead of overzooming. Always use `url:`.
+
 **Raster and raster-dem:** The same protocol works for raster PMTiles. Use a `type: 'raster'` source for imagery. For terrain/elevation, use a `type: 'raster-dem'` source with `"encoding": "terrarium"` (or `"mapbox"`) so MapLibre can apply hillshade or 3D terrain; then reference it in the style’s `terrain` property. Example source:
 
 ```json

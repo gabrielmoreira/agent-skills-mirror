@@ -1,6 +1,6 @@
 ---
 name: context-compression
-description: "Compresses context to fit within model token limits while preserving the most critical information for the task at hand."
+description: "Compress selected context to a target token budget while preserving decisions, evidence, constraints, and unresolved questions. Use when relevant material is already selected but too long; use context-optimization when selection, deduplication, and ordering are also required."
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

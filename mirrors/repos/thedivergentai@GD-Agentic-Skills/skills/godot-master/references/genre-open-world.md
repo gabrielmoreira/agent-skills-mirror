@@ -3,16 +3,6 @@ name: godot-genre-open-world
 description: "Expert blueprint for open world games including chunk-based streaming (load/unload regions dynamically), floating origin (prevent precision jitter beyond 5000 units), HLOD (hierarchical LOD for distant meshes), persistent state (track entity changes across unloaded chunks), POI discovery systems (compass, markers), and threaded loading (prevent stutters). Use for RPGs, sandboxes, or exploration games. Trigger keywords: open_world, chunk_streaming, floating_origin, HLOD, persistent_state, POI_discovery, threaded_loading."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Open World
-
-Expert blueprint for open worlds balancing scale, performance, and player engagement.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### World & Persistence
@@ -132,24 +122,24 @@ Traverse → Discover POIs → Quest/travel → Persist deltas → Weather/day c
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, resources, and project settings before streaming PackedScenes and groups.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — GridMap/CSG/occlusion/LOD primitives that open-world chunks and HLOD build on.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — collision layers, space queries, and origin-shift-safe physics for large maps.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed Resources, signals, and deferred/thread handoffs used by streamers and saves.
+- [godot-project-foundations](project-foundations.md) — scene tree, resources, and project settings before streaming PackedScenes and groups.
+- [godot-3d-world-building](3d-world-building.md) — GridMap/CSG/occlusion/LOD primitives that open-world chunks and HLOD build on.
+- [godot-physics-3d](physics-3d.md) — collision layers, space queries, and origin-shift-safe physics for large maps.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed Resources, signals, and deferred/thread handoffs used by streamers and saves.
 
 #### Complements
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — scene packing and load queues that pair with chunk streamers.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — draw-call budgets, MultiMesh partitions, and process throttling at world scale.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationRegion3D baking and path queries limited to active chunks.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — camera distance drives load radii, visibility ranges, and floating-origin thresholds.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — durable delta saves for POI/quest flags when chunks are unloaded.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — origin-shift and weather broadcasts without find_child tree walks.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — POI density, encounter/loot pacing, and travel-time balance across the streamed map.
+- [godot-scene-management](scene-management.md) — scene packing and load queues that pair with chunk streamers.
+- [godot-performance-optimization](performance-optimization.md) — draw-call budgets, MultiMesh partitions, and process throttling at world scale.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationRegion3D baking and path queries limited to active chunks.
+- [godot-camera-systems](camera-systems.md) — camera distance drives load radii, visibility ranges, and floating-origin thresholds.
+- [godot-save-load-systems](save-load-systems.md) — durable delta saves for POI/quest flags when chunks are unloaded.
+- [godot-signal-architecture](signal-architecture.md) — origin-shift and weather broadcasts without find_child tree walks.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — POI density, encounter/loot pacing, and travel-time balance across the streamed map.
 
 #### Downstream / consumers
-- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — quests that reference chunk-scoped entities and discovery markers.
-- [godot-genre-sandbox](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-sandbox/SKILL.md) — player-built worlds that reuse streaming, MultiMesh, and persistence patterns.
-- [godot-genre-survival](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-survival/SKILL.md) — exploration/survival loops that inherit open-world streaming and delta state.
+- [godot-quest-system](quest-system.md) — quests that reference chunk-scoped entities and discovery markers.
+- [godot-genre-sandbox](genre-sandbox.md) — player-built worlds that reuse streaming, MultiMesh, and persistence patterns.
+- [godot-genre-survival](genre-survival.md) — exploration/survival loops that inherit open-world streaming and delta state.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

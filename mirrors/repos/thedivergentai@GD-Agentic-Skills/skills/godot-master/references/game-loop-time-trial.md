@@ -3,17 +3,6 @@ name: godot-game-loop-time-trial
 description: Expert patterns for racing mechanics, checkpoint tracking, and ghost recording/playback in Godot 4. Use when building racing games, speed-run platformers, or arcade trials.
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Time Trial Loop: Arcade Precision
-
-> [!NOTE]
-> **Resource Context**: This module provides expert patterns for **Time Trial Loops**. Accessed via Godot Master.
-
 ## Architectural Thinking: The "Validation-Chain" Pattern
 
 A Master implementation treats Time Trials as a **State-Validated Sequence**. Recording a time is easy; ensuring the player didn't cheat via shortcuts requires a strictly ordered `CheckpointManager`.
@@ -128,23 +117,23 @@ Store records as `int` usec/msec. Format with `%02d:%02d.%03d` for stable UI (e.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scene tree, autoloads, and resource layout before wiring a `TimeTrialManager` and checkpoint Areas into a track scene.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — Area3D/CollisionShape3D layers, RigidBody/CharacterBody vehicles, and physics-frame overlap rules that make checkpoint sequencing trustworthy.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — typed lap/split/finish signals between gates, manager, HUD, and ghost systems without brittle node-path coupling.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed arrays, Packed* buffers, `await physics_frame`, and RPC annotations used in timing and authority patterns.
+- [godot-project-foundations](project-foundations.md) — scene tree, autoloads, and resource layout before wiring a `TimeTrialManager` and checkpoint Areas into a track scene.
+- [godot-physics-3d](physics-3d.md) — Area3D/CollisionShape3D layers, RigidBody/CharacterBody vehicles, and physics-frame overlap rules that make checkpoint sequencing trustworthy.
+- [godot-signal-architecture](signal-architecture.md) — typed lap/split/finish signals between gates, manager, HUD, and ghost systems without brittle node-path coupling.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed arrays, Packed* buffers, `await physics_frame`, and RPC annotations used in timing and authority patterns.
 
 #### Complements
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — action maps and buffered boost/steer input that time-trial NEVER rules require to flush before physics.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — compressed binary ghost files and best-time persistence beyond in-memory sample arrays.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — ENet peers, authority, and unreliable transform sync for live races and streamed ghost frames.
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — lag compensation, snapshots, and interest patterns when elevating a solo time trial into online racing.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationServer3D agent max-speed for rubber-band AI that paces against the player without cheating collision.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — simulate rubber-band factors, checkpoint difficulty, and target clear times before shipping trial parameters.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — chase/replay cameras that must track live cars and non-colliding ghost visuals during playback.
+- [godot-input-handling](input-handling.md) — action maps and buffered boost/steer input that time-trial NEVER rules require to flush before physics.
+- [godot-save-load-systems](save-load-systems.md) — compressed binary ghost files and best-time persistence beyond in-memory sample arrays.
+- [godot-multiplayer-networking](multiplayer-networking.md) — ENet peers, authority, and unreliable transform sync for live races and streamed ghost frames.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — lag compensation, snapshots, and interest patterns when elevating a solo time trial into online racing.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationServer3D agent max-speed for rubber-band AI that paces against the player without cheating collision.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — simulate rubber-band factors, checkpoint difficulty, and target clear times before shipping trial parameters.
+- [godot-camera-systems](camera-systems.md) — chase/replay cameras that must track live cars and non-colliding ghost visuals during playback.
 
 #### Downstream / consumers
-- [godot-genre-racing](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-racing/SKILL.md) — full racing genre stack that consumes checkpoint clocks, ghosts, and leaderboard formatting as core loop primitives.
-- [godot-game-loop-collection](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-collection/SKILL.md) — meta inventory/collection loops that can gate unlocks on validated best times from this skill.
+- [godot-genre-racing](genre-racing.md) — full racing genre stack that consumes checkpoint clocks, ghosts, and leaderboard formatting as core loop primitives.
+- [godot-game-loop-collection](game-loop-collection.md) — meta inventory/collection loops that can gate unlocks on validated best times from this skill.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

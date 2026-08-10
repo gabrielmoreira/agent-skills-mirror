@@ -1,12 +1,12 @@
 ---
 name: openbiliclaw_adapter
-description: Use OpenBiliClaw's adapter CLI to sync account signals, read profile summaries, fetch recommendations, submit feedback, and inspect runtime status.
+description: Use OpenBiliClaw's versioned Agent Bridge CLI to read multi-source recommendations, profile state, dialogue, probes, saved lists, and submit explicit feedback.
 user-invocable: true
 ---
 
-# OpenBiliClaw Adapter Skill
+# OpenBiliClaw Agent Bridge Skill
 
-Use this skill when you are inside the OpenBiliClaw workspace and need current OpenBiliClaw state or want to push feedback back into the learning loop.
+Use this skill when you are inside the OpenBiliClaw workspace and need current state or want to push feedback back into the learning loop. The bridge is host-neutral: OpenClaw, Hermes and WorkBuddy use the same JSON contract.
 
 ## Deployment Choice
 
@@ -26,7 +26,7 @@ docker compose up -d --build
 docker exec -it openbiliclaw-backend openbiliclaw init
 ```
 
-Keep the repository checkout available so OpenClaw can discover this workspace skill.
+Keep the repository checkout available so the host can discover this workspace skill.
 
 ### Local fallback
 
@@ -51,7 +51,7 @@ If `config.toml` is still missing API Key or B 站 Cookie and the terminal is in
 uv run python -m openbiliclaw.integrations.openclaw.cli doctor
 ```
 
-For a longer setup guide, read `docs/openclaw-quickstart.md`.
+For a longer setup guide, read `docs/openclaw-quickstart.md` and `docs/agent-integration.md`.
 
 ## Command Bridge
 
@@ -63,18 +63,26 @@ uv run python -m openbiliclaw.integrations.openclaw.cli <command> [flags]
 
 Supported commands:
 
+- `capabilities` — negotiate `agent-bridge/v2` and the complete capability list before caching tools
 - `sync-account`
 - `get-profile`
-- `get-delight` — check for a proactive surprise recommendation
+- `recommend --limit 5 [--source-platform <platform>] [--exclude-item-id <id>]`
+- `reshuffle` / `append` — replace or append precomputed recommendation pages
+- `get-delight` / `respond-delight` — view, like, dislike, dismiss or chat about a surprise
+- `activity-feed` / `platform-availability`
 - `next-probe` — get the next speculative-interest hypothesis to ask the user about
-- `next-avoidance-probe` — get the next speculative avoidance hypothesis to ask about
-- `respond-avoidance-probe --domain "..." --response confirm|reject|chat [--message "..."]`
-- `chat --message "..." [--session openclaw]` — send one Socratic dialogue turn, returns agent reply
+- `respond-interest-probe --domain "..." --response confirm|reject|defer|chat [--message "..."]`
+- `next-avoidance-probe` / `respond-avoidance-probe --domain "..." --response confirm|reject|defer|chat`
+- `chat --message "..." [--session openclaw]` — durable Socratic dialogue turn
+- `chat-history [--session openclaw]`
+- `profile-edit-state` / `edit-profile` — read or update deterministic profile overlays
+- `save-local`, `list-saved`, `remove-saved` — local-first saved lists
+- `sync-saved --allow-state-changing` — explicitly authorized native-save synchronization
 - `runtime-status`
-- `recommend --limit 5`
-- `recommend --limit 5 --refresh-if-needed`
 - `submit-feedback --recommendation-id 7 --feedback-type like --request-id feedback-7-like-1 --note "很对胃口"`
 - `listen` — long-running WebSocket stream for real-time push events (see below)
+
+The complete source of truth is `openbiliclaw_get_capabilities` / `emit-skill-descriptors`; do not hard-code an older subset.
 
 ## Proactive Push (WebSocket)
 
@@ -87,21 +95,21 @@ uv run python -m openbiliclaw.integrations.openclaw.cli listen
 This connects to the runtime stream and outputs one JSON line per event:
 
 ```json
-{"ok": true, "data": {"status": "connected", "ws_url": "ws://127.0.0.1:8420/api/runtime-stream", "event_types": ["avoidance.probe", "delight.candidate", "interest.probe"]}}
+{"ok": true, "data": {"status": "connected", "ws_url": "ws://127.0.0.1:8420/api/runtime-stream", "event_types": ["avoidance.chat", "avoidance.confirmed", "avoidance.deferred", "avoidance.probe", "avoidance.rejected", "delight.candidate", "delight.chat", "delight.disliked", "delight.liked", "delight.refreshed", "interest.chat", "interest.confirmed", "interest.deferred", "interest.probe", "interest.rejected"]}}
 {"ok": true, "data": {"type": "delight.candidate", "bvid": "BV1xxx", "title": "...", "delight_reason": "...", "delight_score": 0.92, "delight_hook": "深层共鸣"}}
 {"ok": true, "data": {"type": "interest.probe", "domain": "建筑美学", "reason": "...", "question": "我从你最近的轨迹里嗅到你可能对【建筑美学】感兴趣——... 这个方向你自己认不认？"}}
 {"ok": true, "data": {"type": "avoidance.probe", "domain": "浅层热点复读", "reason": "...", "question": "我猜【浅层热点复读】可能是你想避开的方向——... 这个判断准吗？"}}
 ```
 
-Default event types: `delight.candidate` (surprise recommendation), `interest.probe` (interest hypothesis to confirm), and `avoidance.probe` (avoidance hypothesis to confirm). The command auto-reconnects on disconnection. Press Ctrl-C to stop.
+Default event types include `delight.candidate`, `interest.probe`, `avoidance.probe` and their confirmed/rejected/deferred result events. The command auto-reconnects on disconnection. Press Ctrl-C to stop.
 
 Options:
 - `--ws-url <url>` — override the WebSocket endpoint
-- `--events <types>` — comma-separated event types to forward (default: `avoidance.probe,delight.candidate,interest.probe`)
+- `--events <types>` — comma-separated event types to forward; omit it to use the current default manifest
 
 ## Socratic Dialogue & Interest Probing
 
-OpenClaw can proactively ask the user to clarify or confirm their interests, then send the answer back into the learning loop.
+The host can proactively ask the user to clarify or confirm interests and avoidances, then send the answer back into the learning loop.
 
 ### Get the next interest hypothesis
 
@@ -117,7 +125,7 @@ Returns a ready-to-ask `question` plus raw hypothesis data (`domain`, `reason`, 
 uv run python -m openbiliclaw.integrations.openclaw.cli next-avoidance-probe
 ```
 
-If the user confirms the hypothesis:
+If the user confirms, rejects or defers the hypothesis:
 
 ```bash
 uv run python -m openbiliclaw.integrations.openclaw.cli respond-avoidance-probe \
@@ -125,6 +133,8 @@ uv run python -m openbiliclaw.integrations.openclaw.cli respond-avoidance-probe 
   --response confirm \
   --message "对，这类我不想看"
 ```
+
+Use `--response defer` to snooze it without treating it as a permanent rejection.
 
 ### Relay the user's answer via Socratic dialogue
 
@@ -139,14 +149,14 @@ The agent replies in Socratic style (probing deeper, proposing hypotheses) and t
 
 Use this order for routine work:
 
-1. `get-profile`
-2. `next-probe` — if a hypothesis is pending, ask the user and relay via `chat`
-3. `next-avoidance-probe` — if a hypothesis is pending, ask and relay via `respond-avoidance-probe`
-4. `recommend --limit <n>`
-5. `submit-feedback`
-6. `runtime-status`
-7. `get-delight` or `listen` for proactive surprise recommendations and probes
-8. `sync-account` when long-term signals need refreshing
+1. `capabilities`
+2. `get-profile` / `runtime-status`
+3. `next-probe` and `next-avoidance-probe`; ask and respond with the matching four-state command
+4. `recommend --limit <n>` or `reshuffle`
+5. `submit-feedback` / `respond-delight`
+6. `get-delight` or `listen` for proactive surprise recommendations and probes
+7. `sync-account` when long-term signals need refreshing
+8. Use saved-list commands only when the user asked to save or remove an item
 
 ## Working Rules
 
@@ -156,6 +166,9 @@ Use this order for routine work:
 4. Use `--refresh-if-needed` only when the user explicitly wants a heavier freshness check before recommendation fetch.
 5. For every feedback action, create one stable non-empty `--request-id` (maximum 400 characters) and reuse it for every retry of that same action. Never reuse it for a different recommendation/type/note.
 6. For `comment` feedback, always include `--note`.
+7. For `like`, `dislike`, `dismiss` delight actions, create and reuse a stable `--request-id`.
+8. `save-local` is local-only; never run `sync-saved` without explicit user authorization and `--allow-state-changing`.
+9. After an upgrade, rerun `capabilities`; if a host caches descriptors, refresh the cache when `protocol_version` or skill names change.
 
 ## Examples
 

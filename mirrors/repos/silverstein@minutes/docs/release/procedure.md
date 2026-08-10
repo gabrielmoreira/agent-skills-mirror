@@ -240,6 +240,28 @@ Verify `https://useminutes.pages.dev`, `https://www.useminutes.app`, and
 `https://useminutes.app` after deployment. `/llms.txt` must remain
 `text/plain; charset=utf-8` with `Cache-Control: public, max-age=3600`.
 
+**Assert the canonical host serves directly — do not eyeball this in a browser.**
+A browser follows redirects silently, so a misrouted apex still renders the site
+and passes a visual check while telling Google the canonical URL is a redirect.
+Every canonical tag and every `sitemap.xml` entry uses the apex, so the apex must
+return `200`, not `3xx`:
+
+```bash
+for path in / /llms.txt /resources/hipaa-compliant-ai-note-taker; do
+  code=$(curl -s -o /dev/null -w '%{http_code}' "https://useminutes.app$path")
+  [ "$code" = 200 ] || echo "FAIL apex $path -> $code (canonical host must serve 200)"
+done
+# www must 301 to the apex, not the reverse
+curl -s -o /dev/null -w 'www -> %{http_code} %{redirect_url}\n' -I https://www.useminutes.app/
+# the declared canonical must match the host that served the page
+curl -s https://useminutes.app/ | grep -o '<link rel="canonical"[^>]*>'
+```
+
+This check exists because in 2026-08 the apex spent a month resolving to a stale
+Vercel project that `307`-redirected to www. The site looked fine, and the entire
+40-route content build stayed effectively unindexed: 496 referring domains, one
+ranking keyword.
+
 ### 16. Update Homebrew tap formula if CLI changed
 The formula lives at `silverstein/homebrew-tap` → `Formula/minutes.rb`. Update the `tag:` to the new version:
 ```bash

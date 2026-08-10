@@ -3,16 +3,6 @@ name: godot-scene-management
 description: "Expert blueprint for scene loading, transitions, async (background) loading, instance management, and caching. Covers fade transitions, loading screens, dynamic spawning, and scene persistence. Use when implementing level changes OR dynamic content loading. Keywords scene, loading, transition, async, ResourceLoader, change_scene, preload, PackedScene, fade."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Scene Management
-
-Async loading, transitions, instance pooling, and caching define smooth scene workflows.
-
 ## Available Scripts
 
 > **MANDATORY triggers below** — read the matching script; do not paste incomplete Autoload loaders.
@@ -94,23 +84,23 @@ Fade Autoloads, loading screens, spawn tracking, persistence holders, PCK patch 
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, scene tree basics, and import paths loaders and Autoload registries assume.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed signals, `await`, and process-frame polling required by threaded load loops and transition staging.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton boot order and ownership so Game/state holders survive `change_scene` without becoming God Objects.
+- [godot-project-foundations](project-foundations.md) — Project layout, scene tree basics, and import paths loaders and Autoload registries assume.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed signals, `await`, and process-frame polling required by threaded load loops and transition staging.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton boot order and ownership so Game/state holders survive `change_scene` without becoming God Objects.
 
 #### Complements
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Reconnect or bus-emit after swaps so loaders do not leave ghost listeners on freed scenes.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Level registries and payload Resources that map IDs to `.tscn` paths instead of hardcoded strings.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Serialize persist-group / Autoload state; scene swaps must not invent a second save path.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Fade and wipe Tweens that wrap scene changes without blocking the load thread.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Loading screens and additive menu layers parented under persistent UI roots.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Pool budgets, orphan-node monitors, and when SceneTree should yield to servers for dense spawns.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Component scenes and ownership edges that keep instanced gameplay pieces swappable without path coupling.
+- [godot-signal-architecture](signal-architecture.md) — Reconnect or bus-emit after swaps so loaders do not leave ghost listeners on freed scenes.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Level registries and payload Resources that map IDs to `.tscn` paths instead of hardcoded strings.
+- [godot-save-load-systems](save-load-systems.md) — Serialize persist-group / Autoload state; scene swaps must not invent a second save path.
+- [godot-tweening](tweening.md) — Fade and wipe Tweens that wrap scene changes without blocking the load thread.
+- [godot-ui-containers](ui-containers.md) — Loading screens and additive menu layers parented under persistent UI roots.
+- [godot-performance-optimization](performance-optimization.md) — Pool budgets, orphan-node monitors, and when SceneTree should yield to servers for dense spawns.
+- [godot-composition](composition.md) — Component scenes and ownership edges that keep instanced gameplay pieces swappable without path coupling.
 
 #### Downstream / consumers
-- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — Chunk streaming and background preloads built on threaded `ResourceLoader` queues from this skill.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — PCK/patch packaging that supplies the runtime packs scene patchers mount.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Authority-aware scene spawns and late-join sync that reuse pooling and safe change patterns.
+- [godot-genre-open-world](genre-open-world.md) — Chunk streaming and background preloads built on threaded `ResourceLoader` queues from this skill.
+- [godot-export-builds](export-builds.md) — PCK/patch packaging that supplies the runtime packs scene patchers mount.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Authority-aware scene spawns and late-join sync that reuse pooling and safe change patterns.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns loading vs persistence vs UI.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns loading vs persistence vs UI.

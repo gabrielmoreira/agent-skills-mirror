@@ -47,7 +47,7 @@ pos = get_playback_position()
     - AudioServer.get_output_latency()
 ```
 
-Implemented in [subtitle_sync_system.gd](../scripts/audio_systems_subtitle_sync_system.gd). Method/Audio tracks in [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) for frame-locked VO.
+Implemented in [subtitle_sync_system.gd](../scripts/audio_systems_subtitle_sync_system.gd). Method/Audio tracks in [godot-animation-player](animation-player.md) for frame-locked VO.
 
 ## Variation
 

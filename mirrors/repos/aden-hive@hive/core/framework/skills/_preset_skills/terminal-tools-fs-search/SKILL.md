@@ -1,6 +1,6 @@
 ---
 name: hive.terminal-tools-fs-search
-description: Use terminal_rg / terminal_find when you need raw filesystem search outside the project tree — system configs, /var/log, /etc, archive contents — or when files-tools.search_files is too project-scoped. Teaches the rg vs find vs terminal_exec("ls/du/tree") split, common rg flag combos for code/logs/configs, find predicates for mtime/size/type queries, and the rule that for tree views or single-file stat info you should just use terminal_exec instead of inventing a tool. Read before reaching for raw shell to grep or find anything.
+description: Use terminal_rg / terminal_glob for all filesystem search — your project tree as well as system configs, /var/log, /etc, archive contents. Teaches the rg vs glob vs terminal_exec("find/ls/du/tree") split, common rg flag combos for code/logs/configs, glob patterns for finding files by name, the rule that mtime/size/type predicate queries drop to terminal_exec("find ..."), and that for tree views or single-file stat info you should just use terminal_exec instead of inventing a tool. Read before reaching for raw shell to grep or find anything.
 metadata:
   author: hive
   type: preset-skill
@@ -9,15 +9,15 @@ metadata:
 
 # Filesystem search
 
-terminal-tools provides two structured search tools: `terminal_rg` (ripgrep for content) and `terminal_find` (find for predicates). Everything else (tree, stat, du) is just `terminal_exec`.
+terminal-tools provides two structured search tools: `terminal_rg` (ripgrep for content) and `terminal_glob` (find files by name/glob). Predicate queries (mtime/size/type) and everything else (tree, stat, du) are just `terminal_exec`.
 
 ## When to use what
 
 | Task | Tool |
 |---|---|
-| Find code/text matching a pattern in your **project** | `files-tools.search_files` (project-aware, ranks by relevance) |
-| Find code/text matching a pattern in `/var/log`, `/etc`, archives, system dirs | `terminal_rg` |
-| Find files matching name/glob/predicate | `terminal_find` |
+| Find code/text matching a pattern (project tree or any path) | `terminal_rg` (gitignore-aware; defaults to your session workdir) |
+| Find files by name/glob (any path) | `terminal_glob` |
+| Find files by mtime/size/type predicate | `terminal_exec("find ...")` (see references/find_predicates.md) |
 | List a directory | `terminal_exec("ls -la /path")` |
 | Tree view | `terminal_exec("tree -L 2 /path")` |
 | Single-path stat | `terminal_exec("stat /path")` |
@@ -64,33 +64,34 @@ terminal_rg(pattern="version", path=".", glob="*.toml")
 
 See `references/ripgrep_cheatsheet.md` for the long form.
 
-## `terminal_find` — predicate search
+## `terminal_glob` — find files by name
 
-`find` excels at "files matching N criteria". The wrapper surfaces the most common predicates; combine via the structured arguments.
+Lists files matching a glob, gitignore-aware (backed by `rg --files`). The pattern is widened for you so a bare stem Just Works — the actual glob run is returned as `expanded_pattern`:
+
+- `lk_scan_post_reactors` → matched as `**/*lk_scan_post_reactors*` (recursive substring)
+- `*.py` → matched as `**/*.py` (recursive by default)
+- `src/**/*.py` → used verbatim
 
 ```
-# All .log files modified in the last 7 days, larger than 1MB
-terminal_find(path="/var/log", iname="*.log", mtime_days=7, size_kb_min=1024)
+# Find a file by stem anywhere under a tree
+terminal_glob(pattern="lk_scan_post_reactors", path="core/framework/skills")
 
-# All directories named ".git" (find Git repos under a tree)
-terminal_find(path="~/projects", name=".git", type_filter="d")
+# All YAML configs under /etc
+terminal_glob(pattern="*.yaml", path="/etc")
 
-# Only the top three levels
-terminal_find(path="/etc", max_depth=3, type_filter="f")
-
-# Symlinks
-terminal_find(path=".", type_filter="l")
+# Include .gitignored / hidden / build-cache files
+terminal_glob(pattern="*.log", path=".", include_ignored=True)
 ```
 
-See `references/find_predicates.md` for combinations not directly exposed.
+For **predicate** queries (modified in last N days, larger than N MB, only dirs/symlinks), `terminal_glob` is the wrong tool — drop to `terminal_exec("find ...")`. See `references/find_predicates.md`.
 
 ## Output truncation
 
-Both tools return `truncated: true` when their output exceeded the inline cap. For `terminal_rg`, this means matches were dropped (refine the pattern or narrow the path); for `terminal_find`, results past `max_results` (default 1000) are dropped. Tighten predicates rather than raising the cap.
+Both tools return `truncated: true` when output exceeded the inline cap. For `terminal_rg`, matches were dropped (refine the pattern or narrow the path); for `terminal_glob`, results past `max_results` (default 1000) were dropped — the search stops early at the cap, so narrow the pattern rather than raising it. `terminal_glob` also returns `timed_out: true` (with the partial results it gathered) when the walk exceeded its deadline.
 
 ## Anti-patterns
 
-- **Don't `terminal_rg` your project tree** — `files-tools.search_files` is project-aware and ranks results.
-- **Don't reach for `terminal_find` to list one directory** — `terminal_exec("ls -la /path")` is shorter.
+- **`terminal_rg` is the project search tool** — gitignore-aware and returns structured matches; use it for in-project search as well as raw paths.
+- **Don't reach for `terminal_glob` to list one directory** — `terminal_exec("ls -la /path")` is shorter.
 - **Don't use `terminal_exec("grep ...")`** when `terminal_rg` exists — rg is faster, gitignore-aware, and returns structured matches.
-- **Don't use `terminal_exec("find ...")`** to invent your own predicate combinations — use `terminal_find` and report missing capabilities.
+- **Don't hand-roll `terminal_exec("find ... -name ...")`** for a plain name search — use `terminal_glob`. Reserve `terminal_exec("find ...")` for mtime/size/type predicates.

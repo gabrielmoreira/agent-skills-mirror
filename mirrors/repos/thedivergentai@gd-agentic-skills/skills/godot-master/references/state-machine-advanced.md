@@ -3,16 +3,6 @@ name: godot-state-machine-advanced
 description: "Expert blueprint for hierarchical finite state machines (HSM) and pushdown automata for complex AI/character behaviors. Covers state stacks, sub-states, transition validation, and state context passing. Use when basic FSMs are insufficient OR implementing layered AI. Keywords state machine, HSM, hierarchical, pushdown automata, state stack, FSM, AI behavior."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Advanced State Machines
-
-Hierarchical states, state stacks, and context passing define complex behavior management.
-
 ## Available Scripts
 
 ### [hsm_hierarchical_base.gd](../scripts/state_machine_advanced_hsm_hierarchical_base.gd)
@@ -147,7 +137,6 @@ func _physics_process(_d: float) -> void:
         transition_to(best_state.name)
 ```
 
-
 ## Deep recipes (on demand)
 
 > LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
@@ -177,23 +166,23 @@ func _physics_process(_d: float) -> void:
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Scene ownership and project layout conventions every HSM root and child state scene assumes.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — class_name, typed Dictionaries/payloads, and Callables needed for guards, deferred transitions, and context objects.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Signal-up transition events without circular graphs where states emit and also listen to themselves.
+- [godot-project-foundations](project-foundations.md) — Scene ownership and project layout conventions every HSM root and child state scene assumes.
+- [godot-gdscript-mastery](gdscript-mastery.md) — class_name, typed Dictionaries/payloads, and Callables needed for guards, deferred transitions, and context objects.
+- [godot-signal-architecture](signal-architecture.md) — Signal-up transition events without circular graphs where states emit and also listen to themselves.
 
 #### Complements
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Drop HSM / VSM as a StateComponent under a composition root instead of bloating the actor script.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Sense-layer sampling; states receive directions/actions via handle_input rather than polling globals.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Locomotion states call move_and_slide / velocity APIs on the actor passed through context.
-- [godot-animation-tree-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-tree-mastery/SKILL.md) — Blend trees and AnimationNodeStateMachine graphs that HSM syncers travel into by state name.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Tunable state Resources (speeds, stun durations, AI weights) separate from runtime Node lifecycle.
-- [godot-2d-animation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-animation/SKILL.md) — Sprite / AnimationPlayer presentation when a lighter sync path than a full AnimationTree is enough.
+- [godot-composition](composition.md) — Drop HSM / VSM as a StateComponent under a composition root instead of bloating the actor script.
+- [godot-input-handling](input-handling.md) — Sense-layer sampling; states receive directions/actions via handle_input rather than polling globals.
+- [godot-characterbody-2d](characterbody-2d.md) — Locomotion states call move_and_slide / velocity APIs on the actor passed through context.
+- [godot-animation-tree-mastery](animation-tree-mastery.md) — Blend trees and AnimationNodeStateMachine graphs that HSM syncers travel into by state name.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Tunable state Resources (speeds, stun durations, AI weights) separate from runtime Node lifecycle.
+- [godot-2d-animation](2d-animation.md) — Sprite / AnimationPlayer presentation when a lighter sync path than a full AnimationTree is enough.
 
 #### Downstream / consumers
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hit-stun, attack windup, and death stacks are classic pushdown / HSM consumers on fighters.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Cast, channel, and cooldown phases map cleanly to guarded transitions and timed states.
-- [godot-turn-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md) — Turn phases and interrupt stacks reuse pushdown / concurrent machine orchestration patterns.
-- [godot-dialogue-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-dialogue-system/SKILL.md) — Cutscene and dialogue overlays push over gameplay states and must pop without losing context.
+- [godot-combat-system](combat-system.md) — Hit-stun, attack windup, and death stacks are classic pushdown / HSM consumers on fighters.
+- [godot-ability-system](ability-system.md) — Cast, channel, and cooldown phases map cleanly to guarded transitions and timed states.
+- [godot-turn-system](turn-system.md) — Turn phases and interrupt stacks reuse pushdown / concurrent machine orchestration patterns.
+- [godot-dialogue-system](dialogue-system.md) — Cutscene and dialogue overlays push over gameplay states and must pop without losing context.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting architecture concern.

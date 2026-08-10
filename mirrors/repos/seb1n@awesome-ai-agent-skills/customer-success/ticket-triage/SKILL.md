@@ -1,6 +1,6 @@
 ---
 name: ticket-triage
-description: Classify, prioritize, and route incoming support tickets by extracting intent and entities, assigning severity, and generating initial responses.
+description: Classify, prioritize, and route incoming support tickets by extracting intent and entities, assigning severity, and generating initial responses. Use when the user requests ticket triage or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community

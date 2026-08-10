@@ -756,6 +756,16 @@ or extend authorization. If an agent hits missing Lark authorization during a
 conversation, the managed `lark-shared` guidance points the user back to the
 same settings entry with `?settings=integrations`.
 
+Once configured, **Change Lark app** lets a user point their DeerFlow account at
+a different Lark/Feishu app without a reinstall — either by pasting an existing
+app's App ID / App Secret or by re-registering an app in the browser. Switching
+is per-user (it never touches another user's credentials), validates the new
+credentials through the official CLI's live tenant-token probe before replacing
+the active app, and revokes/removes the previous app's OAuth tokens. A rejected
+credential change does not supersede an in-progress setup or authorization flow.
+DeerFlow then immediately opens browser authorization for the newly bound app so
+the switch ends in a usable connection.
+
 Installing the Lark skill pack resolves the latest official `larksuite/cli`
 release from GitHub and downloads that version's skills at install time, so the
 Gateway needs outbound internet access for that step (it falls back to a
@@ -781,8 +791,10 @@ set `DEER_FLOW_LARK_CLI_SANDBOX_RUNTIME_DIR` to that directory.
 > **Sandbox trust boundary:** the browser never receives the Lark app secret, but
 > agent conversations run `lark-cli` inside the sandbox, so the per-user
 > credential directories are mounted into it: `config` (holding the long-lived
-> `appSecret`) is mounted **read-only** and `data` (refreshable OAuth tokens)
-> writable. Both remain *readable* by any process the agent runs there, so code
+> `appSecret`) is mounted **read-only**, its otherwise empty `config/locks`
+> subdirectory is over-mounted writable for `lark-cli` coordination files, and
+> `data` (refreshable OAuth tokens) is writable. The credential-bearing config
+> and data mounts remain *readable* by any process the agent runs there, so code
 > reached via prompt injection in a tool result could read them. Treat the
 > sandbox as inside the Lark credential trust boundary until the sidecar
 > credential-broker follow-up removes these mounts from sandbox execution.

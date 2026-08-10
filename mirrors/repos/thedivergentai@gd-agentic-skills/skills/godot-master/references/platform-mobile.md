@@ -26,11 +26,6 @@ Touch-first input, safe area handling, and battery optimization define mobile de
 
 ---
 
-## Godot 4.7: Mobile
-
-- **Built-in virtual joystick** — native touch joystick without plugins for mobile builds.
-- **HDR output** on iOS and supported Android devices — test tonemapping on HDR panels.
-
 ## Available Scripts
 
 > **MANDATORY**: Pick the golden-path branch, then load only the matching scripts.
@@ -142,24 +137,24 @@ window/handheld/orientation="landscape"
 ### Related Skills
 
 #### Prerequisites
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Shared InputEvent buffering, multi-touch indices, and deadzones before shipping gesture recognizers or virtual sticks.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchors, Margin/Box containers, and minimum sizes so safe-area insets and 44–48px touch targets stay layout-correct.
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Feature tags, display stretch, and renderer defaults every Android/iOS export branch depends on.
+- [godot-input-handling](input-handling.md) — Shared InputEvent buffering, multi-touch indices, and deadzones before shipping gesture recognizers or virtual sticks.
+- [godot-ui-containers](ui-containers.md) — Anchors, Margin/Box containers, and minimum sizes so safe-area insets and 44–48px touch targets stay layout-correct.
+- [godot-project-foundations](project-foundations.md) — Feature tags, display stretch, and renderer defaults every Android/iOS export branch depends on.
 
 #### Complements
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Desktop→touch control remap, joystick spawners, and UI scaling that pair with this skill's deeper OS/permission APIs.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Profiling and CPU/GPU cuts when thermal FPS caps and ETC2/ASTC alone still miss mid-range budgets.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Durable save ownership hooked to pause/resume instead of desktop-only quit notifications.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton homes for permissions, haptics, thermal monitors, and always-on pause handlers.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Bus mute/duck on `APPLICATION_PAUSED` so background audio does not keep the device warm.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Cheaper CanvasItem/Spatial shader paths and precompile strategies that avoid mobile hitch spikes.
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Smooth UI lifts when the OS virtual keyboard covers LineEdits during mobile text entry.
-- [godot-platform-desktop](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-platform-desktop/SKILL.md) — Keep mouse/keyboard paths correct when the same project remains dual-input beside mobile feature tags.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — Desktop→touch control remap, joystick spawners, and UI scaling that pair with this skill's deeper OS/permission APIs.
+- [godot-performance-optimization](performance-optimization.md) — Profiling and CPU/GPU cuts when thermal FPS caps and ETC2/ASTC alone still miss mid-range budgets.
+- [godot-save-load-systems](save-load-systems.md) — Durable save ownership hooked to pause/resume instead of desktop-only quit notifications.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton homes for permissions, haptics, thermal monitors, and always-on pause handlers.
+- [godot-audio-systems](audio-systems.md) — Bus mute/duck on `APPLICATION_PAUSED` so background audio does not keep the device warm.
+- [godot-shaders-basics](shaders-basics.md) — Cheaper CanvasItem/Spatial shader paths and precompile strategies that avoid mobile hitch spikes.
+- [godot-tweening](tweening.md) — Smooth UI lifts when the OS virtual keyboard covers LineEdits during mobile text entry.
+- [godot-platform-desktop](platform-desktop.md) — Keep mouse/keyboard paths correct when the same project remains dual-input beside mobile feature tags.
 
 #### Downstream / consumers
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Signing, CI presets, and store packaging after touch/safe-area/permission gates pass on devices.
-- [godot-genre-puzzle](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-puzzle/SKILL.md) — Tap/swipe/pinch control schemes that consume mobile gesture and safe-area HUD patterns.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Soft/hard currency and receipt-validated IAP products once Play Billing / App Store plugins are wired.
+- [godot-export-builds](export-builds.md) — Signing, CI presets, and store packaging after touch/safe-area/permission gates pass on devices.
+- [godot-genre-puzzle](genre-puzzle.md) — Tap/swipe/pinch control schemes that consume mobile gesture and safe-area HUD patterns.
+- [godot-economy-system](economy-system.md) — Soft/hard currency and receipt-validated IAP products once Play Billing / App Store plugins are wired.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering this platform skill beside sibling domains.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for discovering this platform skill beside sibling domains.

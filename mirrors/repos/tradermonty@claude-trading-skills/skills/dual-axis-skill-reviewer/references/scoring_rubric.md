@@ -30,6 +30,12 @@ Why: runtime confidence is critical; passing tests strongly increases trust in a
 
 When final score is `< 90`, improvement items are mandatory in report output.
 
+## Declared Verification Is Not Scored
+
+If the target project declares verification axes in `skills-index.yaml`, the reviewer surfaces them
+separately. They do not change component weights, findings, improvement items, or the final score.
+The declarations are metadata supplied by the target project, not an independent reviewer finding.
+
 ## Knowledge-Only Skill Handling
 
 For skills with no executable scripts (`scripts/*.py` absent) but with reference docs:

@@ -31,6 +31,9 @@ Resolve the session source in this order: injected live session, resumable sandb
 ## Filesystem Trust Boundary
 
 - Manifest entry destinations are workspace-relative and must not escape the workspace. The workspace root itself must be absolute where the backend requires an absolute runtime root.
+- Treat every path visible inside a sandbox as a POSIX path, regardless of the host operating system. Do not use `str(Path(...))` or `str(PurePath(...))` to produce, validate, compare, or serialize a sandbox path because those calls emit backslashes on Windows. Convert typed path objects with `PurePath.as_posix()` or the canonical helpers in `workspace_paths.py`.
+- Preserve the trust distinction between typed path objects and raw string input. A native Windows `Path` or `PurePath` may be converted to its POSIX sandbox representation, while a raw string containing backslashes may still need to be rejected when the public contract requires explicit POSIX syntax. Do not make an input-validation failure disappear by silently canonicalizing every string.
+- Keep host filesystem conversion at an explicit host/backend boundary. Code that resolves manifests, mount targets, archive exclusions, snapshots, grants, or provider paths must not let the host implementation of `Path` change the identity of a sandbox path.
 - `LocalFile` and `LocalDir` sources are host-side inputs. Resolve them against a trusted base directory, require explicit application-controlled `extra_path_grants` outside that base, and reject untrusted manifests that try to authorize their own host access.
 - Validate local sources at use time, not only when parsing the manifest. Defend against symlinked sources, parent-directory swaps, platform path aliases, and archive members that change meaning between validation and extraction.
 - Archive extraction must reject traversal, unsafe links, and unsupported member types before writing, and enforce entry, byte, and expansion limits without materializing an unbounded member list.
@@ -59,6 +62,7 @@ Provider adapters may deliberately support a narrower lifecycle. Document that b
 3. Verify handoffs, duplicate agent names, interruption resume, and cleanup failure preserve the intended session mapping.
 4. Test host-path, symlink, traversal, archive-limit, and credential-redaction boundaries on applicable platforms.
 5. Exercise the public `Runner` path so agent preparation, capability binding, persistence, and cleanup run together.
+6. For every new sandbox-path validation, normalization, comparison, or serialization path, test a `PureWindowsPath` input on every host and confirm that raw backslash strings retain their intended validation behavior.
 
 ## Sources
 

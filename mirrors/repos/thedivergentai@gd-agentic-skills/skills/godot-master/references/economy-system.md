@@ -3,16 +3,6 @@ name: godot-economy-system
 description: "Expert patterns for game economies including currency management (multi-currency, wallet system), shop systems (buy/sell prices, stock limits), dynamic pricing (supply/demand), loot tables (weighted drops, rarity tiers), and economic balance (inflation control, currency sinks). Use for RPGs, trading games, or resource management systems. Trigger keywords: EconomyManager, currency, shop_item, loot_table, dynamic_pricing, buy_sell_spread, currency_sink, inflation, item_rarity."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Economy System
-
-Wallet + transaction authority — not beginner "gold int" tutorials.
-
 ## Decision Tree: Currency Representation
 
 | Economy type | Store as | Why |
@@ -107,24 +97,24 @@ Wallet + transaction authority — not beginner "gold int" tutorials.
 ### Related Skills
 
 #### Prerequisites
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Currency, ShopItem, LootTable, and TradeContract definitions are Resource-first; load this before inventing parallel data formats for prices and drops.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — WalletManager as Autoload needs disciplined ownership, init order, and namespacing so economy state does not become a god-object dump.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Balance and transaction signals must stay “signal up / call down” so UI never mutates the wallet directly.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Resources, Dictionary wallets, and atomic purchase helpers assume solid GDScript patterns (guards before subtract, no float money).
+- [godot-resource-data-patterns](resource-data-patterns.md) — Currency, ShopItem, LootTable, and TradeContract definitions are Resource-first; load this before inventing parallel data formats for prices and drops.
+- [godot-autoload-architecture](autoload-architecture.md) — WalletManager as Autoload needs disciplined ownership, init order, and namespacing so economy state does not become a god-object dump.
+- [godot-signal-architecture](signal-architecture.md) — Balance and transaction signals must stay “signal up / call down” so UI never mutates the wallet directly.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Resources, Dictionary wallets, and atomic purchase helpers assume solid GDScript patterns (guards before subtract, no float money).
 
 #### Complements
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Buy/sell and barter are atomic wallet↔inventory exchanges; stock and capacity checks belong with inventory, not only with price math.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Economy persistence handlers should plug into the project save schema (versioning, migrate, encrypt premium balances if needed).
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Charisma/reputation discounts and sink costs (repairs) need a consistent modifier layer rather than hardcoding multipliers in the shop UI.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Shop screens and currency HUD layouts should bind to wallet signals; containers own presentation, WalletManager owns truth.
-- [godot-quest-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-quest-system/SKILL.md) — Quest gold rewards and turn-in sinks are major currency sources/sinks; wire rewards through the transaction API, not ad-hoc `gold +=`.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Loot-drop bridges listen to combat/loot events and grant funds without embedding economy rules inside damage pipelines.
+- [godot-inventory-system](inventory-system.md) — Buy/sell and barter are atomic wallet↔inventory exchanges; stock and capacity checks belong with inventory, not only with price math.
+- [godot-save-load-systems](save-load-systems.md) — Economy persistence handlers should plug into the project save schema (versioning, migrate, encrypt premium balances if needed).
+- [godot-rpg-stats](rpg-stats.md) — Charisma/reputation discounts and sink costs (repairs) need a consistent modifier layer rather than hardcoding multipliers in the shop UI.
+- [godot-ui-containers](ui-containers.md) — Shop screens and currency HUD layouts should bind to wallet signals; containers own presentation, WalletManager owns truth.
+- [godot-quest-system](quest-system.md) — Quest gold rewards and turn-in sinks are major currency sources/sinks; wire rewards through the transaction API, not ad-hoc `gold +=`.
+- [godot-combat-system](combat-system.md) — Loot-drop bridges listen to combat/loot events and grant funds without embedding economy rules inside damage pipelines.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After sinks, loot weights, and shop spreads are Resource-driven, Monte Carlo farm/career sims prove inflation and time-to-afford bands before shipping curves.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Predicted UI spends and authoritative grant/spend RPCs build on the wallet’s request/validate/apply split.
-- [godot-genre-idle-clicker](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md) — Idle/prestige currencies and sink loops assemble this skill with long-horizon balance and offline accrual genre glue.
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Action-RPG shops, crafting sinks, and drop economies compose wallet + inventory + loot tables for progression pacing.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — After sinks, loot weights, and shop spreads are Resource-driven, Monte Carlo farm/career sims prove inflation and time-to-afford bands before shipping curves.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Predicted UI spends and authoritative grant/spend RPCs build on the wallet’s request/validate/apply split.
+- [godot-genre-idle-clicker](genre-idle-clicker.md) — Idle/prestige currencies and sink loops assemble this skill with long-horizon balance and offline accrual genre glue.
+- [godot-genre-action-rpg](genre-action-rpg.md) — Action-RPG shops, crafting sinks, and drop economies compose wallet + inventory + loot tables for progression pacing.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

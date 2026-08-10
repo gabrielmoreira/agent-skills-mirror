@@ -23,11 +23,6 @@ Expert guidance for PBR materials and StandardMaterial3D in Godot.
 
 ---
 
-## Godot 4.7: Materials
-
-- **AreaLight3D** pairs with emissive materials for physically correct rectangular emitters.
-- `Texture2D.get_format()` unified on base class for portable compressed textures.
-
 ## Available Scripts
 
 > **MANDATORY**: Read the appropriate script before implementing the corresponding pattern.
@@ -364,22 +359,22 @@ Mesh LOD is automatic; material shading is not. **MANDATORY** [`material_batcher
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Nodes, Resources, and import basics required before authoring reusable `.tres` materials and texture sets.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Material/texture Resources, duplication vs sharing, and data-driven presets that keep draw-call batching intact.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — Shading language and ShaderMaterial fundamentals before converting StandardMaterial3D or writing triplanar/instance-uniform shaders.
+- [godot-project-foundations](project-foundations.md) — Nodes, Resources, and import basics required before authoring reusable `.tres` materials and texture sets.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Material/texture Resources, duplication vs sharing, and data-driven presets that keep draw-call batching intact.
+- [godot-shaders-basics](shaders-basics.md) — Shading language and ShaderMaterial fundamentals before converting StandardMaterial3D or writing triplanar/instance-uniform shaders.
 
 #### Complements
-- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — Emission energy, HDR, GI, and AreaLight3D interactions that determine how PBR and emissive materials actually read in-scene.
-- [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — Applying shared environment materials, decals, and triplanar projection across large level geometry.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Camera3D near/far and framing choices that fix Z-fighting / depth precision issues materials alone cannot solve.
-- [godot-particles](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-particles/SKILL.md) — Particle draw modes and alpha pipelines that must stay consistent with material transparency choices (scissor/hash vs blend).
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Draw-call batching, MultiMesh, and GPU budgets when scaling unique vs shared materials.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — GPU/overdraw profilers to verify transparency and material-state regressions after material changes.
+- [godot-3d-lighting](3d-lighting.md) — Emission energy, HDR, GI, and AreaLight3D interactions that determine how PBR and emissive materials actually read in-scene.
+- [godot-3d-world-building](3d-world-building.md) — Applying shared environment materials, decals, and triplanar projection across large level geometry.
+- [godot-camera-systems](camera-systems.md) — Camera3D near/far and framing choices that fix Z-fighting / depth precision issues materials alone cannot solve.
+- [godot-particles](particles.md) — Particle draw modes and alpha pipelines that must stay consistent with material transparency choices (scissor/hash vs blend).
+- [godot-performance-optimization](performance-optimization.md) — Draw-call batching, MultiMesh, and GPU budgets when scaling unique vs shared materials.
+- [godot-debugging-profiling](debugging-profiling.md) — GPU/overdraw profilers to verify transparency and material-state regressions after material changes.
 
 #### Downstream / consumers
-- [godot-genre-open-world](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-open-world/SKILL.md) — Large worlds consume HLOD visibility ranges, dithered distance fade, and shared-material batching patterns from this skill.
-- [godot-procedural-generation](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-procedural-generation/SKILL.md) — Procedural meshes and terrains typically need triplanar / world-projection materials when UVs are absent or unstable.
-- [godot-adapt-2d-to-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-2d-to-3d/SKILL.md) — Moving flat art into 3D requires PBR map setup, normal import, and transparency mode choices covered here.
+- [godot-genre-open-world](genre-open-world.md) — Large worlds consume HLOD visibility ranges, dithered distance fade, and shared-material batching patterns from this skill.
+- [godot-procedural-generation](procedural-generation.md) — Procedural meshes and terrains typically need triplanar / world-projection materials when UVs are absent or unstable.
+- [godot-adapt-2d-to-3d](adapt-2d-to-3d.md) — Moving flat art into 3D requires PBR map setup, normal import, and transparency mode choices covered here.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for cross-skill discovery.

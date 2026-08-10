@@ -1,6 +1,6 @@
 ---
-name: File Organization
-description: "Automatically organizes files in a directory into a clean structure based on configurable rules — by file type, date, project, or priority — with support for duplicate detection, naming conventions, and archival strategies."
+name: file-organization
+description: "Automatically organizes files in a directory into a clean structure based on configurable rules — by file type, date, project, or priority — with support for duplicate detection, naming conventions, and archival strategies. Use when the user requests file organization or provides relevant inputs for this workflow."
 license: "MIT"
 metadata:
   author: "awesome-ai-agent-skills contributors"

@@ -2,16 +2,6 @@
 name: godot-debugging-profiling
 description: "Expert debugging and profiling for leaks, GPU/Visual Profiler, headless CI QA, orphan nodes, thread-safe logs, and custom Debugger monitors — not print/breakpoint tutorials. Trigger on OBJECT_ORPHAN_NODE_COUNT, ObjectDB growth, Visual Profiler GPU spikes, flaky headless exits, or remote device consoles. Keywords: orphan nodes, Performance.get_monitor, Visual Profiler, Time.get_ticks_usec, EditorDebuggerPlugin, headless QA, push_error, backtrace."
 ---
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Debugging & Profiling
-
-Symptom → monitor/API → script routing for leaks, GPU, and CI — Official Docs cover print/breakpoint basics.
-
 ## NEVER Do
 
 - **NEVER use `print()` without descriptive context** — `print(value)` is useless. Use `print("Player health:", health)` with labels.

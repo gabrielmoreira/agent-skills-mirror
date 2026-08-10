@@ -1,6 +1,6 @@
 ---
 name: database-migration
-description: Create, execute, and roll back versioned database schema migrations using tools like Alembic, Prisma Migrate, Flyway, and Knex.
+description: Create, execute, and roll back versioned database schema migrations using tools like Alembic, Prisma Migrate, Flyway, and Knex. Use when the user requests database migration or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: AI Agent Skills Community

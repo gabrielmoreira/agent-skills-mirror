@@ -3,16 +3,6 @@ name: godot-genre-simulation
 description: "Expert blueprint for simulation and tycoon games (SimCity, RollerCoaster Tycoon, Factorio, Two Point Hospital) covering economy management, time progression, interconnected systems, NPC simulation, and feedback loops. Use when building management sims, tycoon games, city builders, or resource optimization games. Keywords tycoon, economy system, resource management, time scale, feedback loop, progression unlock, simulation tick."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Simulation / Tycoon
-
-Optimization, systems mastery, and satisfying feedback loops define management games.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Simulation & Economy
@@ -95,7 +85,6 @@ Do **not** re-inline TycoonEconomy / SimulationTime / Worker tutorials — load 
 | `_process` sim step | Physics accumulator tick manager |
 | UI every frame | Signal on resource_changed only |
 
-
 ## Deep recipes (on demand)
 
 | Topic | Reference / script |
@@ -107,7 +96,6 @@ Do **not** re-inline TycoonEconomy / SimulationTime / Worker tutorials — load 
 | Feedback & dashboards | [feedback-systems.md](genre-simulation-feedback-systems.md) |
 | Unlock progression | [progression-unlocks.md](genre-simulation-progression-unlocks.md) |
 | Production graphs / CSV bake | [elite-technical-patterns.md](genre-simulation-elite-technical-patterns.md) + [simulation_patterns.gd](../scripts/genre_simulation_simulation_patterns.gd) |
-
 
 ## Reference
 
@@ -130,23 +118,23 @@ Do **not** re-inline TycoonEconomy / SimulationTime / Worker tutorials — load 
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Autoloads, Resources, and scene structure before building tick managers and economy graphs.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed Dictionaries, signals, `is_equal_approx`, and fixed-point-safe math for currency and needs.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Production recipes and unlock tables should be Resource-first `.tres` assets, not hard-coded Node trees.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Tick and `resource_changed` buses must drive UI without Labels mutating the simulation wallet.
+- [godot-project-foundations](project-foundations.md) — Autoloads, Resources, and scene structure before building tick managers and economy graphs.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed Dictionaries, signals, `is_equal_approx`, and fixed-point-safe math for currency and needs.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Production recipes and unlock tables should be Resource-first `.tres` assets, not hard-coded Node trees.
+- [godot-signal-architecture](signal-architecture.md) — Tick and `resource_changed` buses must drive UI without Labels mutating the simulation wallet.
 
 #### Complements
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Soft-currency wallets, sinks, and transaction ledgers that compose with tycoon multi-resource stocks.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — Versioned serialization for large world states, binary `store_var`, and threaded save/load.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationServer / grid pathing for worker jobs and schedule agents after the tick clock exists.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Entity batching, low-processor mode, and thread offload budgets for 1000+ sim entities.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — TimeManager / Economy autoloads that survive scene reloads need clear ownership rules.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Income/expense dashboards and facility lists are `Tree`/`VBoxContainer` layouts bound to throttled signals.
+- [godot-economy-system](economy-system.md) — Soft-currency wallets, sinks, and transaction ledgers that compose with tycoon multi-resource stocks.
+- [godot-save-load-systems](save-load-systems.md) — Versioned serialization for large world states, binary `store_var`, and threaded save/load.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationServer / grid pathing for worker jobs and schedule agents after the tick clock exists.
+- [godot-performance-optimization](performance-optimization.md) — Entity batching, low-processor mode, and thread offload budgets for 1000+ sim entities.
+- [godot-autoload-architecture](autoload-architecture.md) — TimeManager / Economy autoloads that survive scene reloads need clear ownership rules.
+- [godot-ui-containers](ui-containers.md) — Income/expense dashboards and facility lists are `Tree`/`VBoxContainer` layouts bound to throttled signals.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — After cost curves, production yields, and CSV→`.tres` balance sheets exist, Monte Carlo career sims prove minutes-to-milestone and bankruptcy bands before shipping growth factors.
-- [godot-genre-idle-clicker](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md) — Offline catch-up and prestige loops reuse tick + integer-currency patterns from management sims.
-- [godot-genre-rts](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-rts/SKILL.md) — Build-order economies and worker logistics consume the same tick/graph and pathfinding primitives at combat scale.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — After cost curves, production yields, and CSV→`.tres` balance sheets exist, Monte Carlo career sims prove minutes-to-milestone and bankruptcy bands before shipping growth factors.
+- [godot-genre-idle-clicker](genre-idle-clicker.md) — Offline catch-up and prestige loops reuse tick + integer-currency patterns from management sims.
+- [godot-genre-rts](genre-rts.md) — Build-order economies and worker logistics consume the same tick/graph and pathfinding primitives at combat scale.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; use when discovering peer skills or syncing shared script mirrors after Domain Skill edits.

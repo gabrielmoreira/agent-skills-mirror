@@ -3,16 +3,6 @@ name: godot-genre-party
 description: "Expert blueprint for party games including minigame resource system (define via .tres files), local multiplayer input (4-player controller management), asymmetric gameplay (1v3 balance), scene management (clean minigame loading/unloading), persistent scoring (track wins across rounds), and split-screen rendering (SubViewport per player). Use for Mario Party-style games or WarioWare collections. Trigger keywords: party_game, minigame_collection, local_multiplayer, asymmetric_gameplay, split_screen, dynamic_input_mapping."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Party / Minigame Collection
-
-Expert blueprint for party games balancing accessibility, variety, and social fun.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Multiplayer & Input
@@ -149,21 +139,21 @@ Using Resources to define what a minigame is.
 ### Related Skills
 
 #### Prerequisites
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Device IDs, `InputMap` remaps, deadzones, and `_unhandled_input` ownership before party routing.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Clean load/unload and deferred scene swaps between hub, instructions, and minigames.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Typed `Resource` / `.tres` catalogs that define each minigame's scene and metadata.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Singleton placement for tournament state that must outlive every minigame scene.
+- [godot-input-handling](input-handling.md) — Device IDs, `InputMap` remaps, deadzones, and `_unhandled_input` ownership before party routing.
+- [godot-scene-management](scene-management.md) — Clean load/unload and deferred scene swaps between hub, instructions, and minigames.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Typed `Resource` / `.tres` catalogs that define each minigame's scene and metadata.
+- [godot-autoload-architecture](autoload-architecture.md) — Singleton placement for tournament state that must outlive every minigame scene.
 
 #### Complements
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Scoreboards, instruction overlays, and `GridContainer` split-screen / character-select layouts with focus.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — Shared-room framing and per-viewport cameras that zoom/pan to keep all players on screen.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `player_joined`, `game_ended`, and reconnect prompts without hard refs across lobby and minigames.
-- [godot-turn-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-turn-system/SKILL.md) — Board / meta round phases between short competitive minigames.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — Short stingers, countdown cues, and per-player SFX buses that survive rapid scene cycling.
+- [godot-ui-containers](ui-containers.md) — Scoreboards, instruction overlays, and `GridContainer` split-screen / character-select layouts with focus.
+- [godot-camera-systems](camera-systems.md) — Shared-room framing and per-viewport cameras that zoom/pan to keep all players on screen.
+- [godot-signal-architecture](signal-architecture.md) — `player_joined`, `game_ended`, and reconnect prompts without hard refs across lobby and minigames.
+- [godot-turn-system](turn-system.md) — Board / meta round phases between short competitive minigames.
+- [godot-audio-systems](audio-systems.md) — Short stingers, countdown cues, and per-player SFX buses that survive rapid scene cycling.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate asymmetric 1v3 / handicap power offsets so party roles stay socially fair across rounds.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Typical consumer of per-device move vectors inside shared-screen 2D party arenas.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate asymmetric 1v3 / handicap power offsets so party roles stay socially fair across rounds.
+- [godot-characterbody-2d](characterbody-2d.md) — Typical consumer of per-device move vectors inside shared-screen 2D party arenas.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns input, scenes, or UI pieces of a party stack.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns input, scenes, or UI pieces of a party stack.

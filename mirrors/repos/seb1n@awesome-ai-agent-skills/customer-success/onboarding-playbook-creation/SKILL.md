@@ -1,6 +1,6 @@
 ---
 name: onboarding-playbook-creation
-description: Design structured customer onboarding workflows with phased checklists, email templates, success milestones, and ownership assignments.
+description: Design structured customer onboarding workflows with phased checklists, email templates, success milestones, and ownership assignments. Use when the user requests onboarding playbook creation or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community

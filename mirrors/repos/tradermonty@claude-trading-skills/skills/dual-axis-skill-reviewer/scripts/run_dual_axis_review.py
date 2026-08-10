@@ -25,6 +25,22 @@ from pathlib import Path
 
 import yaml
 
+VERIFICATION_AXES = (
+    "instruction_contract",
+    "unit_tests",
+    "workflow_contract",
+    "end_to_end_replay",
+    "data_provenance",
+    "financial_logic_review",
+    "empirical_validation",
+    "security_review",
+)
+VALID_VERIFICATION_VALUES = frozenset({"passed", "not_verified", "not_applicable"})
+
+
+def _is_valid_verification_value(value: object) -> bool:
+    return isinstance(value, str) and value in VALID_VERIFICATION_VALUES
+
 
 @dataclass
 class Finding:
@@ -165,6 +181,79 @@ def parse_frontmatter(lines: list[str]) -> dict[str, str]:
             continue
         result[str(key)] = str(value)
     return result
+
+
+def _verification_unavailable(status: str) -> dict:
+    return {
+        "source": "skills-index.yaml",
+        "declaration_status": status,
+        "declaration_complete": False,
+        "axes": {},
+        "not_verified_axes": [],
+        "not_applicable_axes": [],
+        "all_applicable_axes_passed": False,
+        "note": (
+            "Declared metadata only; excluded from auto, LLM, and final scores. "
+            "A live high-severity issue check is still required for a production decision."
+        ),
+    }
+
+
+def load_verification_summary(project_root: Path, skill_name: str) -> dict:
+    """Load non-scoring verification declarations from the target project's index."""
+    index_path = project_root / "skills-index.yaml"
+    if not index_path.is_file():
+        return _verification_unavailable("missing_index")
+    try:
+        index = yaml.safe_load(index_path.read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError):
+        return _verification_unavailable("malformed_index")
+    if not isinstance(index, dict) or not isinstance(index.get("skills"), list):
+        return _verification_unavailable("malformed_index")
+
+    entry = next(
+        (
+            item
+            for item in index["skills"]
+            if isinstance(item, dict) and item.get("id") == skill_name
+        ),
+        None,
+    )
+    if entry is None:
+        return _verification_unavailable("missing_entry")
+    if "verification" not in entry:
+        return _verification_unavailable("missing_block")
+
+    verification = entry["verification"]
+    if not isinstance(verification, dict):
+        return _verification_unavailable("malformed")
+    if set(verification) != set(VERIFICATION_AXES):
+        summary = _verification_unavailable("partial")
+        summary["axes"] = {
+            axis: verification[axis]
+            for axis in VERIFICATION_AXES
+            if axis in verification and _is_valid_verification_value(verification[axis])
+        }
+        return summary
+    if any(not _is_valid_verification_value(value) for value in verification.values()):
+        return _verification_unavailable("malformed")
+
+    axes = {axis: verification[axis] for axis in VERIFICATION_AXES}
+    not_verified = sorted(axis for axis, value in axes.items() if value == "not_verified")
+    not_applicable = sorted(axis for axis, value in axes.items() if value == "not_applicable")
+    return {
+        "source": "skills-index.yaml",
+        "declaration_status": "complete",
+        "declaration_complete": True,
+        "axes": axes,
+        "not_verified_axes": not_verified,
+        "not_applicable_axes": not_applicable,
+        "all_applicable_axes_passed": not not_verified,
+        "note": (
+            "Declared metadata only; excluded from auto, LLM, and final scores. "
+            "A live high-severity issue check is still required for a production decision."
+        ),
+    }
 
 
 def extract_bash_blocks(text: str) -> list[str]:
@@ -864,6 +953,25 @@ def to_markdown(report: dict) -> str:
         ]
     )
 
+    verification = report.get("declared_verification") or _verification_unavailable("unavailable")
+    lines.extend(
+        [
+            "",
+            "## Declared Verification (Non-Scoring)",
+            f"- Declaration status: `{verification['declaration_status']}`",
+            f"- Declaration complete: `{str(verification['declaration_complete']).lower()}`",
+            "- All applicable axes passed: "
+            f"`{str(verification['all_applicable_axes_passed']).lower()}`",
+            f"- Not verified: `{', '.join(verification['not_verified_axes']) or 'none'}`",
+            f"- Not applicable: `{', '.join(verification['not_applicable_axes']) or 'none'}`",
+            f"- Note: {verification['note']}",
+        ]
+    )
+    if verification["axes"]:
+        lines.append("")
+        for axis, value in verification["axes"].items():
+            lines.append(f"- `{axis}`: `{value}`")
+
     lines.extend(["", "## Findings (Combined)"])
     if final_review["findings"]:
         for idx, finding in enumerate(final_review["findings"], start=1):
@@ -958,6 +1066,7 @@ def review_single_skill(
         "auto_review": auto_review,
         "llm_review": llm_review,
         "final_review": final_review,
+        "declared_verification": load_verification_summary(project_root, auto_review["skill_name"]),
         "llm_prompt_file": llm_prompt_file,
     }
 
@@ -997,6 +1106,10 @@ def main() -> int:
     if llm_review["provided"]:
         print(f"LLM score: {llm_review['score']}/100")
     print(f"Final score: {final_review['score']}/100")
+    print(
+        "Declared verification: "
+        f"{report['declared_verification']['declaration_status']} (non-scoring)"
+    )
     if report.get("llm_prompt_file"):
         print(f"LLM prompt: {report['llm_prompt_file']}")
     if auto_review["test_status"] == "passed":
@@ -1023,12 +1136,19 @@ def _run_all(
         auto_review = report["auto_review"]
         final_review = report["final_review"]
         high_count = sum(1 for f in final_review.get("findings", []) if f.get("severity") == "high")
+        verification = report["declared_verification"]
         rows.append(
             {
                 "skill": auto_review["skill_name"],
                 "score": final_review["score"],
                 "pass": final_review["score"] >= 90,
                 "high_findings": high_count,
+                "verification_status": verification["declaration_status"],
+                "declaration_complete": verification["declaration_complete"],
+                "verification_gaps": len(verification["not_verified_axes"]),
+                "not_verified_axes": verification["not_verified_axes"],
+                "not_applicable_axes": verification["not_applicable_axes"],
+                "all_applicable_axes_passed": verification["all_applicable_axes_passed"],
             }
         )
 
@@ -1037,12 +1157,16 @@ def _run_all(
         return 1
 
     # Print summary table
-    header = f"{'Skill':<40} {'Score':>5} {'Pass':>4} {'High':>4}"
+    header = f"{'Skill':<40} {'Score':>5} {'Pass':>4} {'High':>4} {'Verify':>10} {'Gaps':>4}"
     print(header)
     print("-" * len(header))
     for row in rows:
         status = "YES" if row["pass"] else "NO"
-        print(f"{row['skill']:<40} {row['score']:>5} {status:>4} {row['high_findings']:>4}")
+        print(
+            f"{row['skill']:<40} {row['score']:>5} {status:>4} "
+            f"{row['high_findings']:>4} {row['verification_status']:>10} "
+            f"{row['verification_gaps']:>4}"
+        )
 
     passed = sum(1 for r in rows if r["pass"])
     print(f"\nTotal: {len(rows)} skills, {passed} passed, {len(rows) - passed} failed")

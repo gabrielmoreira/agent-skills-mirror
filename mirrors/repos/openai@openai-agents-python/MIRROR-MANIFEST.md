@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openai/openai-agents-python` — 26 default patterns, 0 followed patterns, 73 file(s) materialized.
+Mirror of `openai/openai-agents-python` — 26 default patterns, 0 followed patterns, 75 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openai/openai-agents-python` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 73 |
+| Files         | 75 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -92,46 +92,48 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 31 | ✓ | [`.agents/skills/final-release-review/SKILL.md`](.agents/skills/final-release-review/SKILL.md) |
 | 32 | ✓ | [`.agents/skills/implementation-final-review/agents/openai.yaml`](.agents/skills/implementation-final-review/agents/openai.yaml) |
 | 33 | ✓ | [`.agents/skills/implementation-final-review/references/reviewer-brief.md`](.agents/skills/implementation-final-review/references/reviewer-brief.md) |
-| 34 | ✓ | [`.agents/skills/implementation-final-review/scripts/review_state.py`](.agents/skills/implementation-final-review/scripts/review_state.py) |
-| 35 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_review_state.py`](.agents/skills/implementation-final-review/scripts/test_review_state.py) |
-| 36 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_skill_contract.py`](.agents/skills/implementation-final-review/scripts/test_skill_contract.py) |
-| 37 | ✓ | [`.agents/skills/implementation-final-review/SKILL.md`](.agents/skills/implementation-final-review/SKILL.md) |
-| 38 | ✓ | [`.agents/skills/implementation-kickoff/agents/openai.yaml`](.agents/skills/implementation-kickoff/agents/openai.yaml) |
-| 39 | ✓ | [`.agents/skills/implementation-kickoff/scripts/validate_handoff.py`](.agents/skills/implementation-kickoff/scripts/validate_handoff.py) |
-| 40 | ✓ | [`.agents/skills/implementation-kickoff/SKILL.md`](.agents/skills/implementation-kickoff/SKILL.md) |
-| 41 | ✓ | [`.agents/skills/implementation-strategy/agents/openai.yaml`](.agents/skills/implementation-strategy/agents/openai.yaml) |
-| 42 | ✓ | [`.agents/skills/implementation-strategy/SKILL.md`](.agents/skills/implementation-strategy/SKILL.md) |
-| 43 | ✓ | [`.agents/skills/integration-tests/agents/openai.yaml`](.agents/skills/integration-tests/agents/openai.yaml) |
-| 44 | ✓ | [`.agents/skills/integration-tests/SKILL.md`](.agents/skills/integration-tests/SKILL.md) |
-| 45 | ✓ | [`.agents/skills/maintainer-review/agents/openai.yaml`](.agents/skills/maintainer-review/agents/openai.yaml) |
-| 46 | ✓ | [`.agents/skills/maintainer-review/references/evaluation-framework.md`](.agents/skills/maintainer-review/references/evaluation-framework.md) |
-| 47 | ✓ | [`.agents/skills/maintainer-review/SKILL.md`](.agents/skills/maintainer-review/SKILL.md) |
-| 48 | ✓ | [`.agents/skills/openai-knowledge/agents/openai.yaml`](.agents/skills/openai-knowledge/agents/openai.yaml) |
-| 49 | ✓ | [`.agents/skills/openai-knowledge/SKILL.md`](.agents/skills/openai-knowledge/SKILL.md) |
-| 50 | ✓ | [`.agents/skills/pr-draft-summary/agents/openai.yaml`](.agents/skills/pr-draft-summary/agents/openai.yaml) |
-| 51 | ✓ | [`.agents/skills/pr-draft-summary/SKILL.md`](.agents/skills/pr-draft-summary/SKILL.md) |
-| 52 | ✓ | [`.agents/skills/runtime-behavior-probe/agents/openai.yaml`](.agents/skills/runtime-behavior-probe/agents/openai.yaml) |
-| 53 | ✓ | [`.agents/skills/runtime-behavior-probe/references/error-cases.md`](.agents/skills/runtime-behavior-probe/references/error-cases.md) |
-| 54 | ✓ | [`.agents/skills/runtime-behavior-probe/references/openai-runtime-patterns.md`](.agents/skills/runtime-behavior-probe/references/openai-runtime-patterns.md) |
-| 55 | ✓ | [`.agents/skills/runtime-behavior-probe/references/reporting-format.md`](.agents/skills/runtime-behavior-probe/references/reporting-format.md) |
-| 56 | ✓ | [`.agents/skills/runtime-behavior-probe/references/validation-matrix.md`](.agents/skills/runtime-behavior-probe/references/validation-matrix.md) |
-| 57 | ✓ | [`.agents/skills/runtime-behavior-probe/SKILL.md`](.agents/skills/runtime-behavior-probe/SKILL.md) |
-| 58 | ✓ | [`.agents/skills/runtime-behavior-probe/templates/python_probe.py`](.agents/skills/runtime-behavior-probe/templates/python_probe.py) |
-| 59 | ✓ | [`.agents/skills/sensitive-logging-audit/agents/openai.yaml`](.agents/skills/sensitive-logging-audit/agents/openai.yaml) |
-| 60 | ✓ | [`.agents/skills/sensitive-logging-audit/references/redaction-validation.md`](.agents/skills/sensitive-logging-audit/references/redaction-validation.md) |
-| 61 | ✓ | [`.agents/skills/sensitive-logging-audit/scripts/inventory_logging.py`](.agents/skills/sensitive-logging-audit/scripts/inventory_logging.py) |
-| 62 | ✓ | [`.agents/skills/sensitive-logging-audit/scripts/test_inventory.py`](.agents/skills/sensitive-logging-audit/scripts/test_inventory.py) |
-| 63 | ✓ | [`.agents/skills/sensitive-logging-audit/SKILL.md`](.agents/skills/sensitive-logging-audit/SKILL.md) |
-| 64 | ✓ | [`.agents/skills/test-coverage-improver/agents/openai.yaml`](.agents/skills/test-coverage-improver/agents/openai.yaml) |
-| 65 | ✓ | [`.agents/skills/test-coverage-improver/SKILL.md`](.agents/skills/test-coverage-improver/SKILL.md) |
-| 66 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 67 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
-| 68 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
-| 69 | ✓ | [`docs/ref/sandbox/capabilities/skills.md`](docs/ref/sandbox/capabilities/skills.md) |
-| 70 | ✓ | [`examples/sandbox/docs/skills/credit-note-fixer/SKILL.md`](examples/sandbox/docs/skills/credit-note-fixer/SKILL.md) |
-| 71 | ✓ | [`examples/sandbox/healthcare_support/skills/prior-auth-packet-builder/SKILL.md`](examples/sandbox/healthcare_support/skills/prior-auth-packet-builder/SKILL.md) |
-| 72 | ✓ | [`examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md`](examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md) |
-| 73 | ✓ | [`examples/tools/skills/csv-workbench/SKILL.md`](examples/tools/skills/csv-workbench/SKILL.md) |
+| 34 | ✓ | [`.agents/skills/implementation-final-review/scripts/review_protocol.py`](.agents/skills/implementation-final-review/scripts/review_protocol.py) |
+| 35 | ✓ | [`.agents/skills/implementation-final-review/scripts/review_state.py`](.agents/skills/implementation-final-review/scripts/review_state.py) |
+| 36 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_review_protocol.py`](.agents/skills/implementation-final-review/scripts/test_review_protocol.py) |
+| 37 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_review_state.py`](.agents/skills/implementation-final-review/scripts/test_review_state.py) |
+| 38 | ✓ | [`.agents/skills/implementation-final-review/scripts/test_skill_contract.py`](.agents/skills/implementation-final-review/scripts/test_skill_contract.py) |
+| 39 | ✓ | [`.agents/skills/implementation-final-review/SKILL.md`](.agents/skills/implementation-final-review/SKILL.md) |
+| 40 | ✓ | [`.agents/skills/implementation-kickoff/agents/openai.yaml`](.agents/skills/implementation-kickoff/agents/openai.yaml) |
+| 41 | ✓ | [`.agents/skills/implementation-kickoff/scripts/validate_handoff.py`](.agents/skills/implementation-kickoff/scripts/validate_handoff.py) |
+| 42 | ✓ | [`.agents/skills/implementation-kickoff/SKILL.md`](.agents/skills/implementation-kickoff/SKILL.md) |
+| 43 | ✓ | [`.agents/skills/implementation-strategy/agents/openai.yaml`](.agents/skills/implementation-strategy/agents/openai.yaml) |
+| 44 | ✓ | [`.agents/skills/implementation-strategy/SKILL.md`](.agents/skills/implementation-strategy/SKILL.md) |
+| 45 | ✓ | [`.agents/skills/integration-tests/agents/openai.yaml`](.agents/skills/integration-tests/agents/openai.yaml) |
+| 46 | ✓ | [`.agents/skills/integration-tests/SKILL.md`](.agents/skills/integration-tests/SKILL.md) |
+| 47 | ✓ | [`.agents/skills/maintainer-review/agents/openai.yaml`](.agents/skills/maintainer-review/agents/openai.yaml) |
+| 48 | ✓ | [`.agents/skills/maintainer-review/references/evaluation-framework.md`](.agents/skills/maintainer-review/references/evaluation-framework.md) |
+| 49 | ✓ | [`.agents/skills/maintainer-review/SKILL.md`](.agents/skills/maintainer-review/SKILL.md) |
+| 50 | ✓ | [`.agents/skills/openai-knowledge/agents/openai.yaml`](.agents/skills/openai-knowledge/agents/openai.yaml) |
+| 51 | ✓ | [`.agents/skills/openai-knowledge/SKILL.md`](.agents/skills/openai-knowledge/SKILL.md) |
+| 52 | ✓ | [`.agents/skills/pr-draft-summary/agents/openai.yaml`](.agents/skills/pr-draft-summary/agents/openai.yaml) |
+| 53 | ✓ | [`.agents/skills/pr-draft-summary/SKILL.md`](.agents/skills/pr-draft-summary/SKILL.md) |
+| 54 | ✓ | [`.agents/skills/runtime-behavior-probe/agents/openai.yaml`](.agents/skills/runtime-behavior-probe/agents/openai.yaml) |
+| 55 | ✓ | [`.agents/skills/runtime-behavior-probe/references/error-cases.md`](.agents/skills/runtime-behavior-probe/references/error-cases.md) |
+| 56 | ✓ | [`.agents/skills/runtime-behavior-probe/references/openai-runtime-patterns.md`](.agents/skills/runtime-behavior-probe/references/openai-runtime-patterns.md) |
+| 57 | ✓ | [`.agents/skills/runtime-behavior-probe/references/reporting-format.md`](.agents/skills/runtime-behavior-probe/references/reporting-format.md) |
+| 58 | ✓ | [`.agents/skills/runtime-behavior-probe/references/validation-matrix.md`](.agents/skills/runtime-behavior-probe/references/validation-matrix.md) |
+| 59 | ✓ | [`.agents/skills/runtime-behavior-probe/SKILL.md`](.agents/skills/runtime-behavior-probe/SKILL.md) |
+| 60 | ✓ | [`.agents/skills/runtime-behavior-probe/templates/python_probe.py`](.agents/skills/runtime-behavior-probe/templates/python_probe.py) |
+| 61 | ✓ | [`.agents/skills/sensitive-logging-audit/agents/openai.yaml`](.agents/skills/sensitive-logging-audit/agents/openai.yaml) |
+| 62 | ✓ | [`.agents/skills/sensitive-logging-audit/references/redaction-validation.md`](.agents/skills/sensitive-logging-audit/references/redaction-validation.md) |
+| 63 | ✓ | [`.agents/skills/sensitive-logging-audit/scripts/inventory_logging.py`](.agents/skills/sensitive-logging-audit/scripts/inventory_logging.py) |
+| 64 | ✓ | [`.agents/skills/sensitive-logging-audit/scripts/test_inventory.py`](.agents/skills/sensitive-logging-audit/scripts/test_inventory.py) |
+| 65 | ✓ | [`.agents/skills/sensitive-logging-audit/SKILL.md`](.agents/skills/sensitive-logging-audit/SKILL.md) |
+| 66 | ✓ | [`.agents/skills/test-coverage-improver/agents/openai.yaml`](.agents/skills/test-coverage-improver/agents/openai.yaml) |
+| 67 | ✓ | [`.agents/skills/test-coverage-improver/SKILL.md`](.agents/skills/test-coverage-improver/SKILL.md) |
+| 68 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 69 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 70 | ✓ | [`docs/llms.txt`](docs/llms.txt) |
+| 71 | ✓ | [`docs/ref/sandbox/capabilities/skills.md`](docs/ref/sandbox/capabilities/skills.md) |
+| 72 | ✓ | [`examples/sandbox/docs/skills/credit-note-fixer/SKILL.md`](examples/sandbox/docs/skills/credit-note-fixer/SKILL.md) |
+| 73 | ✓ | [`examples/sandbox/healthcare_support/skills/prior-auth-packet-builder/SKILL.md`](examples/sandbox/healthcare_support/skills/prior-auth-packet-builder/SKILL.md) |
+| 74 | ✓ | [`examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md`](examples/sandbox/tutorials/vision_website_clone/skills/playwright/SKILL.md) |
+| 75 | ✓ | [`examples/tools/skills/csv-workbench/SKILL.md`](examples/tools/skills/csv-workbench/SKILL.md) |
 
 ---
 

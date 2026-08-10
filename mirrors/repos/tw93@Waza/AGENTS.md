@@ -166,5 +166,5 @@ Update: `npx skills update -g -y` · [Claude Desktop](https://github.com/tw93/Wa
 ```
 
 - Each item: `**Label**: one sentence`. Bold label is the skill or module name; the description leads with what changed.
-- Style: engineer-facing, no marketing language. English and Chinese items must map one-to-one by number, 5 to 8 items total, one sentence each.
+- Style: engineer-facing, no marketing language. English and Chinese items map one-to-one, one sentence each; use the smallest complete set of distinct user outcomes instead of targeting a fixed count.
 - Footer: update command + star + repo link, separated by `·`.

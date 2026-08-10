@@ -61,7 +61,7 @@ Project needs: [Decision Point]
 - [assets/](assets/) — Optional starter templates
 
 **Related Skills**
-- [../related-skill/SKILL.md](../related-skill/SKILL.md) — Why it is related
+- `related-skill` — Why it is related
 
 ---
 

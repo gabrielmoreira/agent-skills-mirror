@@ -50,7 +50,7 @@ Prefer metadata over `is Enemy` / group name checks for footstep VFX, bullet dec
 
 ## Compute shader raycasts — out of scope
 
-Godot physics BVH is CPU-bound. GPU compute ray pipelines require owning triangle buffers and sync stalls — **not** a drop-in for `intersect_ray`. Escalate to [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) before building custom RD pipelines.
+Godot physics BVH is CPU-bound. GPU compute ray pipelines require owning triangle buffers and sync stalls — **not** a drop-in for `intersect_ray`. Escalate to [godot-performance-optimization](performance-optimization.md) before building custom RD pipelines.
 
 ## Piercing / multi-hit
 

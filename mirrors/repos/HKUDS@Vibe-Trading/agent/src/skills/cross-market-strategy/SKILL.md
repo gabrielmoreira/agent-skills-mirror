@@ -6,7 +6,7 @@ category: strategy
 
 ## When to Use
 
-When the user requests a backtest with codes from **different markets** — e.g. `["000001.SZ", "BTC-USDT"]` or `["AAPL.US", "EUR/USD", "600519.SH"]`.
+When the user requests a backtest with codes from **different markets** — e.g. `["000001.SZ", "BTC-USDT"]`, `["TD.TO", "PNG.V"]`, or `["AAPL.US", "EUR/USD", "600519.SH"]`.
 
 The `CompositeEngine` handles calendar alignment, shared capital, and market rules automatically. The strategy only needs to output per-symbol signals.
 
@@ -103,6 +103,7 @@ def _vol_adjust(self, signals, data_map):
 | `000001.SZ`, `600519.SH` | A-share |
 | `AAPL.US` | US equity |
 | `700.HK` | HK equity |
+| `TD.TO`, `PNG.V` | Canada equity (TSX / TSXV) |
 | `BTC-USDT` | Crypto |
 | `IF2406.CFFEX` | China futures |
 | `ESZ4` | Global futures |

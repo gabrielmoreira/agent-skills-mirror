@@ -3,16 +3,6 @@ name: godot-monte-carlo-balancer
 description: "Use when auditing or recalibrating game balance: build a source-driven Monte Carlo balance lab (Rust + rayon) that extracts live game data, simulates human playstyles (AFK→pro), emits win-rate/economy verdicts with confidence intervals, and bruteforce-tunes parameters. Trigger on unfair levels, unreachable shops, farm exploits, interest-curve cliffs, post-content recalibration, or CI balance JSON diffs. Keywords: balance lab, Monte Carlo, win rate, difficulty curve, economy career, playstyle simulation, Resource extraction, GDScript parser, bruteforce tuning."
 ---
 
-## Godot 4.7 Baseline
-
-- Patterns assume **Godot 4.7+** projects; prefer `.tres` / Resources as the extract truth layer (Godot 4.x Resource pipelines).
-
-# Monte Carlo Game Balancer
-
-Build a **bespoke, source-driven Monte Carlo balance lab** for one game — not a prebuilt tool. Reference architecture: Rust CLI + rayon that extracts `GameData`, simulates imperfect humans, verdicts with CIs, tunes by simulation, and calibrates against headless Godot.
-
-**Always Phase 0 first.** Lane-defense field names are **not** the default model.
-
 ## Skill Chain
 
 ```text
@@ -209,24 +199,24 @@ Fighting / educational / idle often replace win% — set primary metric in Phase
 ### Related Skills
 
 #### Prerequisites
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource-first GameData before extract regex.
-- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — Headless runners and golden cells for Phase 7.
-- [godot-builder](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-builder/SKILL.md) — CLI/headless project scaffolding for calibration.
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Repo layout so extract paths stay stable.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Resource-first GameData before extract regex.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — Headless runners and golden cells for Phase 7.
+- [godot-builder](builder.md) — CLI/headless project scaffolding for calibration.
+- [godot-project-foundations](project-foundations.md) — Repo layout so extract paths stay stable.
 
 #### Complements
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Careers, sinks, and shop reachability inputs.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage/health Resources the matrix simulates.
-- [godot-rpg-stats](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-rpg-stats/SKILL.md) — Curves and modifiers to extract and tune.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Cooldown/cost loadouts for style matrices.
-- [godot-game-loop-waves](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-game-loop-waves/SKILL.md) — Wave difficulty bands as sim cells.
-- [godot-inventory-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-inventory-system/SKILL.md) — Loot/economy coupling for career sims.
+- [godot-economy-system](economy-system.md) — Careers, sinks, and shop reachability inputs.
+- [godot-combat-system](combat-system.md) — Damage/health Resources the matrix simulates.
+- [godot-rpg-stats](rpg-stats.md) — Curves and modifiers to extract and tune.
+- [godot-ability-system](ability-system.md) — Cooldown/cost loadouts for style matrices.
+- [godot-game-loop-waves](game-loop-waves.md) — Wave difficulty bands as sim cells.
+- [godot-inventory-system](inventory-system.md) — Loot/economy coupling for career sims.
 
 #### Downstream / consumers
-- [godot-genre-roguelike](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-roguelike/SKILL.md) — Meta progression win-rate bands.
-- [godot-genre-tower-defense](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-tower-defense/SKILL.md) — Lane-defense style matrices (see example ref).
-- [godot-genre-idle-clicker](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-idle-clicker/SKILL.md) — Career/minutes-to-milestone bands.
-- [godot-genre-fighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-fighting/SKILL.md) — Matchup matrices beyond AFK→pro PvE.
+- [godot-genre-roguelike](genre-roguelike.md) — Meta progression win-rate bands.
+- [godot-genre-tower-defense](genre-tower-defense.md) — Lane-defense style matrices (see example ref).
+- [godot-genre-idle-clicker](genre-idle-clicker.md) — Career/minutes-to-milestone bands.
+- [godot-genre-fighting](genre-fighting.md) — Matchup matrices beyond AFK→pro PvE.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for the balance lab.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for the balance lab.

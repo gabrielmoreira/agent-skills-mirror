@@ -3,16 +3,6 @@ name: godot-genre-rts
 description: "Expert blueprint for real-time strategy games including unit selection (drag box, shift-add), command systems (move, attack, gather), pathfinding (NavigationAgent2D with RVO avoidance), fog of war (SubViewport mask shader), resource economy (gather/build loop), and AI opponents (behavior trees, utility AI). Use for base-building RTS or tactical combat games. Trigger keywords: RTS, unit_selection, command_system, fog_of_war, pathfinding_RVO, resource_economy, command_queue."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Real-Time Strategy (RTS)
-
-Expert blueprint for RTS games balancing strategy, micromanagement, and performance.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Unit Logic & Pathfinding
@@ -187,23 +177,23 @@ Prefer [fog_of_war_tile_mask.gd](../scripts/genre_rts_fog_of_war_tile_mask.gd). 
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Physics ticks, navigation/avoidance project settings, and input map actions before selection and pathing stay deterministic.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Mouse buttons, shift-modifiers, and physics-step sampling that drive marquee select and command queuing.
-- [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — NavigationAgent RVO, maps, layers, and query-object pools this genre's army movement builds on.
+- [godot-project-foundations](project-foundations.md) — Physics ticks, navigation/avoidance project settings, and input map actions before selection and pathing stay deterministic.
+- [godot-input-handling](input-handling.md) — Mouse buttons, shift-modifiers, and physics-step sampling that drive marquee select and command queuing.
+- [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationAgent RVO, maps, layers, and query-object pools this genre's army movement builds on.
 
 #### Complements
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — RTS pan/zoom/edge-scroll framing so selection and orders stay readable at strategic scale.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — PhysicsServer ray/shape recipes for 3D picks under heavy unit counts.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Idle/Move/Attack/Hold command states and queue transitions per unit without spaghetti flags.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — CanvasItem/spatial mask shaders that sample SubViewport fog textures.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Global economy and army managers as Autoloads with clear boot order.
-- [godot-economy-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-economy-system/SKILL.md) — Gather/spend ledgers and cost dictionaries the RTS bank Autoload should reuse.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Group broadcast and command buses so commanders never hard-iterate every unit node.
+- [godot-camera-systems](camera-systems.md) — RTS pan/zoom/edge-scroll framing so selection and orders stay readable at strategic scale.
+- [godot-raycasting-queries](raycasting-queries.md) — PhysicsServer ray/shape recipes for 3D picks under heavy unit counts.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Idle/Move/Attack/Hold command states and queue transitions per unit without spaghetti flags.
+- [godot-shaders-basics](shaders-basics.md) — CanvasItem/spatial mask shaders that sample SubViewport fog textures.
+- [godot-autoload-architecture](autoload-architecture.md) — Global economy and army managers as Autoloads with clear boot order.
+- [godot-economy-system](economy-system.md) — Gather/spend ledgers and cost dictionaries the RTS bank Autoload should reuse.
+- [godot-signal-architecture](signal-architecture.md) — Group broadcast and command buses so commanders never hard-iterate every unit node.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Build-order policies, unit cost curves, and AI opponent strength — simulate win% instead of gut-tuning gather rates.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate here when MultiMesh buffers, avoidance, or WorkerThreadPool still dominate the profiler.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Hit/hurt and targeting contracts once move/attack commands need damage resolution.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Build-order policies, unit cost curves, and AI opponent strength — simulate win% instead of gut-tuning gather rates.
+- [godot-performance-optimization](performance-optimization.md) — Escalate here when MultiMesh buffers, avoidance, or WorkerThreadPool still dominate the profiler.
+- [godot-combat-system](combat-system.md) — Hit/hurt and targeting contracts once move/attack commands need damage resolution.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting RTS concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting RTS concern.

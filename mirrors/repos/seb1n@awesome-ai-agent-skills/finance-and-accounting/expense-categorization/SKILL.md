@@ -1,6 +1,6 @@
 ---
 name: expense-categorization
-description: Classify expenses by category, department, and tax deductibility from transaction data
+description: Classify expenses by category, department, and tax deductibility from transaction data. Use when the user requests expense categorization or provides relevant inputs for this workflow.
 license: MIT
 metadata:
   author: community
@@ -107,6 +107,13 @@ date,amount,description,cardholder
 - Always separate personal and business expenses before categorization. Flag transactions from personal merchants (grocery stores, streaming services) for review.
 - Apply consistent rules for edge cases like meals during travel (Travel vs. Meals) and document the policy.
 - Keep tax deductibility rules current with the applicable tax year — IRS rules change frequently for categories like meals, entertainment, and vehicle expenses.
+
+## Safety Boundaries
+
+- Treat the output as analytical support, not individualized financial, tax, investment, or accounting advice.
+- Preserve source data and expose assumptions, formulas, units, and reconciliation checks so a reviewer can reproduce the result.
+- Do not initiate payments, transactions, journal entries, filings, or account changes without explicit user authorization.
+- Require a qualified professional to review material decisions, regulated filings, or conclusions based on incomplete data.
 
 ## Edge Cases
 

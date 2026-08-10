@@ -3,16 +3,6 @@ name: godot-genre-fighting
 description: "Expert blueprint for fighting games including frame data (startup/active/recovery frames, advantage on hit/block), hitbox/hurtbox systems, input buffering (5-10 frames), motion input detection (QCF, DP), combo systems (damage scaling, cancel hierarchy), character states (idle/attacking/hitstun/blockstun), and rollback netcode. Based on FGC competitive design. Trigger keywords: fighting_game, frame_data, hitbox_hurtbox, input_buffer, motion_inputs, combo_system, rollback_netcode, cancel_system, advantage_frames."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Genre: Fighting Game
-
-Expert blueprint for 2D/3D fighters emphasizing frame-perfect combat and competitive balance.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Frame-Data & Logic
@@ -103,13 +93,13 @@ Expert blueprint for 2D/3D fighters emphasizing frame-perfect combat and competi
 | Need | Action |
 |------|--------|
 | Damage scaling ~10%/hit | Track in combo state; store cancel hierarchy on Attack Resources |
-| States | IDLE/ATTACKING/HITSTUN/BLOCKSTUN… with integer `state_frame` — peer [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) |
+| States | IDLE/ATTACKING/HITSTUN/BLOCKSTUN… with integer `state_frame` — peer [godot-state-machine-advanced](state-machine-advanced.md) |
 
 ### Netcode
 | Need | Action |
 |------|--------|
 | Snapshots | **MANDATORY** [rollback_state_serializer.gd](../scripts/genre_fighting_rollback_state_serializer.gd) |
-| Transport | UDP/ENet via [raw_byte_network_sync.gd](../scripts/genre_fighting_raw_byte_network_sync.gd); peer [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) |
+| Transport | UDP/ENet via [raw_byte_network_sync.gd](../scripts/genre_fighting_raw_byte_network_sync.gd); peer [godot-multiplayer-networking](multiplayer-networking.md) |
 
 ---
 
@@ -124,7 +114,7 @@ Expert blueprint for 2D/3D fighters emphasizing frame-perfect combat and competi
 | Throw range | Short but reliable |
 | Meter gain | Full bar in ~2 combos received |
 
-For roster / matchup simulation, use [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md).
+For roster / matchup simulation, use [godot-monte-carlo-balancer](monte-carlo-balancer.md).
 
 ## Common Pitfalls
 
@@ -148,7 +138,6 @@ For roster / matchup simulation, use [godot-monte-carlo-balancer](https://github
 - [frame_advancer.gd](../scripts/genre_fighting_frame_advancer.gd)
 - [fighter_balance_profile.gd](../scripts/genre_fighting_fighter_balance_profile.gd)
 
-
 ## Reference
 
 > Progressive disclosure: open Official Documentation links only when researching a specific API;
@@ -171,22 +160,22 @@ For roster / matchup simulation, use [godot-monte-carlo-balancer](https://github
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Physics tick rate, input map, and project defaults must be locked before frame-data systems stay deterministic.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Action sampling, device mapping, and buffer-friendly input plumbing under motion commands and cancels.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — Layers/masks and direct space queries are the substrate for hitbox/hurtbox resolution without Area signal lag.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Grounded movement, facing, and teleport/`reset_physics_interpolation` contracts fighters still need outside pure hit detection.
+- [godot-project-foundations](project-foundations.md) — Physics tick rate, input map, and project defaults must be locked before frame-data systems stay deterministic.
+- [godot-input-handling](input-handling.md) — Action sampling, device mapping, and buffer-friendly input plumbing under motion commands and cancels.
+- [godot-2d-physics](2d-physics.md) — Layers/masks and direct space queries are the substrate for hitbox/hurtbox resolution without Area signal lag.
+- [godot-characterbody-2d](characterbody-2d.md) — Grounded movement, facing, and teleport/`reset_physics_interpolation` contracts fighters still need outside pure hit detection.
 
 #### Complements
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Shared DamageData / hit confirm patterns that fighting frame data specializes into startup-active-recovery windows.
-- [godot-animation-player](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-animation-player/SKILL.md) — Hitbox enable tracks, cancel frames, and recovery locks driven from animation rather than free-running timers.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — IDLE/ATTACKING/HITSTUN/BLOCKSTUN FSMs with integer `state_frame` counters instead of `await`-based recovery.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Move lists, cancel tables, and FighterBalanceProfile resources with safe duplication per fighter instance.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Hit confirm, round end, and HUD events without coupling the sim loop to presentation nodes.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — Peer sync, RPC discipline, and authoritative validation around rollback or delayed-input netcode.
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Prediction, reconciliation, and lobby/late-join patterns when a local fighter becomes netplay-ready.
+- [godot-combat-system](combat-system.md) — Shared DamageData / hit confirm patterns that fighting frame data specializes into startup-active-recovery windows.
+- [godot-animation-player](animation-player.md) — Hitbox enable tracks, cancel frames, and recovery locks driven from animation rather than free-running timers.
+- [godot-state-machine-advanced](state-machine-advanced.md) — IDLE/ATTACKING/HITSTUN/BLOCKSTUN FSMs with integer `state_frame` counters instead of `await`-based recovery.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Move lists, cancel tables, and FighterBalanceProfile resources with safe duplication per fighter instance.
+- [godot-signal-architecture](signal-architecture.md) — Hit confirm, round end, and HUD events without coupling the sim loop to presentation nodes.
+- [godot-multiplayer-networking](multiplayer-networking.md) — Peer sync, RPC discipline, and authoritative validation around rollback or delayed-input netcode.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — Prediction, reconciliation, and lobby/late-join patterns when a local fighter becomes netplay-ready.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate matchup matrices, damage scaling, and punish windows across the roster instead of guessing from AFK→pro PvE bands.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate matchup matrices, damage scaling, and punish windows across the roster instead of guessing from AFK→pro PvE bands.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for discovering fighting peers and syncing shared script mirrors.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for discovering fighting peers and syncing shared script mirrors.

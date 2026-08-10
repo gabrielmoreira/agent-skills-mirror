@@ -3,16 +3,6 @@ name: godot-turn-system
 description: "Expert blueprint for turn-based combat with turn order, action points, phase management, and timeline systems for strategy/RPG games. Covers speed-based initiative, interrupts, and simultaneous turns. Use when implementing turn-based combat OR tactical systems. Keywords turn-based, initiative, action points, phase, round, turn order, combat."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Turn System
-
-Turn order calculation, action points, phase management, and timeline systems define turn-based combat.
-
 ## NEVER Do (Expert Anti-Patterns)
 
 ### Order & Determinism
@@ -96,8 +86,6 @@ func perform_action(cost: int) -> bool:
 ```
 
 Phases: prefer `enum Phase { DRAW, MAIN, END }` + `match`, or route to [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md). Full ATB / timeline math lives in the MANDATORY scripts — do not duplicate Elite snippets here.
-
-
 
 ## Deep recipes (on demand)
 

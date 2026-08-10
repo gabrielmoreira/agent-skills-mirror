@@ -3,16 +3,6 @@ name: godot-camera-systems
 description: "Expert patterns for 2D/3D camera control including smooth following (lerp, position_smoothing), camera shake (trauma system), screen shake with frequency parameters, deadzone/drag for platformers, look-ahead prediction, and camera transitions. Use for player cameras, cinematic sequences, or multi-camera systems. Trigger keywords: Camera2D, Camera3D, SpringArm3D, position_smoothing, camera_shake, trauma_system, look_ahead, drag_margin, camera_limits, camera_transition."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Camera Systems
-
-Smooth, stable 2D/3D cameras — scripts first; no Basics/Best-Practices tutorial dump.
-
 ## NEVER Do
 
 - **NEVER use `global_position = target.global_position` every frame** — Instant position matching causes jittery movement. Use `lerp()` or `position_smoothing_enabled = true`.
@@ -92,23 +82,23 @@ Plot trauma decay (debug draw) while tuning [camera_shake_trauma_pro.gd](../scri
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Stretch mode, default viewport, and input map setup decide how Camera2D limits and SubViewport sizes behave before any follow script runs.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed nodes, `_physics_process` vs `_process`, and Tween/await patterns used by state machines and spring follow.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Captured mouse, look axes, and mouse-wheel events feed FPS look, zoom damping, and camera orbit controls.
+- [godot-project-foundations](project-foundations.md) — Stretch mode, default viewport, and input map setup decide how Camera2D limits and SubViewport sizes behave before any follow script runs.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed nodes, `_physics_process` vs `_process`, and Tween/await patterns used by state machines and spring follow.
+- [godot-input-handling](input-handling.md) — Captured mouse, look axes, and mouse-wheel events feed FPS look, zoom damping, and camera orbit controls.
 
 #### Complements
-- [godot-tweening](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-tweening/SKILL.md) — Camera transitions between Follow/Static/Cinematic should use Tweens (ease/trans), not hard snaps or linear zoom.
-- [godot-characterbody-2d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-characterbody-2d/SKILL.md) — Look-ahead and deadzone cameras need real velocity / floor state from the platformer body they frame.
-- [godot-physics-3d](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-physics-3d/SKILL.md) — SpringArm collision layers and CharacterBody3D motion are the 3D counterparts to stable third-person and FPS sway parents.
-- [godot-raycasting-queries](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-raycasting-queries/SKILL.md) — Custom occlusion-aware cameras that do not use SpringArm still need correct `intersect_ray` masks and excludes.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Formalize Follow/Static/Cinematic (and cutscene ownership) when camera_state_machine outgrows a simple enum.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Trauma add, cutscene handoff, and multi-target framing should be signal-driven so gameplay never reaches into camera internals.
+- [godot-tweening](tweening.md) — Camera transitions between Follow/Static/Cinematic should use Tweens (ease/trans), not hard snaps or linear zoom.
+- [godot-characterbody-2d](characterbody-2d.md) — Look-ahead and deadzone cameras need real velocity / floor state from the platformer body they frame.
+- [godot-physics-3d](physics-3d.md) — SpringArm collision layers and CharacterBody3D motion are the 3D counterparts to stable third-person and FPS sway parents.
+- [godot-raycasting-queries](raycasting-queries.md) — Custom occlusion-aware cameras that do not use SpringArm still need correct `intersect_ray` masks and excludes.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Formalize Follow/Static/Cinematic (and cutscene ownership) when camera_state_machine outgrows a simple enum.
+- [godot-signal-architecture](signal-architecture.md) — Trauma add, cutscene handoff, and multi-target framing should be signal-driven so gameplay never reaches into camera internals.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when SubViewport minimaps, split-screen, or always-on secondary cameras still dominate frame time after update-mode tuning.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — Simulate shake intensity, zoom fairness, and multi-target framing so camera juice never hides hitboxes or competitive information.
-- [godot-adapt-single-to-multiplayer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-single-to-multiplayer/SKILL.md) — Consumes split-screen SubViewport patterns when local coop needs per-player cameras and listener ownership.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Use monitors and visualizers to prove camera jitter sources (physics tick, RemoteTransform, trauma) before rewriting follow math.
+- [godot-performance-optimization](performance-optimization.md) — Escalate when SubViewport minimaps, split-screen, or always-on secondary cameras still dominate frame time after update-mode tuning.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — Simulate shake intensity, zoom fairness, and multi-target framing so camera juice never hides hitboxes or competitive information.
+- [godot-adapt-single-to-multiplayer](adapt-single-to-multiplayer.md) — Consumes split-screen SubViewport patterns when local coop needs per-player cameras and listener ownership.
+- [godot-debugging-profiling](debugging-profiling.md) — Use monitors and visualizers to prove camera jitter sources (physics tick, RemoteTransform, trauma) before rewriting follow math.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting camera concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting camera concern.

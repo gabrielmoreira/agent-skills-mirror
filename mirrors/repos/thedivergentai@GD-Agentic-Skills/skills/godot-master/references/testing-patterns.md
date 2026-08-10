@@ -3,16 +3,6 @@ name: godot-testing-patterns
 description: "Expert testing decision trees for GdUnit4: unit vs scene vs CI gates, headless runners, snapshots, and mock networks. Use when choosing test layers, wiring CI, or validating signals/physics without beginner assert catalogs. Keywords: GdUnit4, GdUnitTestSuite, headless CI, snapshot test, mock network, scene integration test, TDD."
 ---
 
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Testing Patterns (GdUnit4)
-
-**Framework: GdUnit4 only** (`extends GdUnitTestSuite`). Do not mix GUT `GutTest` / `watch_signals` APIs in new tests.
-
 ## Decision Tree → Scripts
 
 | Need | Choice | Script (MANDATORY when chosen) |
@@ -96,7 +86,6 @@ Schema-compliant fixture builders.
 - **Network**: mock peer before real ENet (`mock_network_provider.gd`).
 - **Perf**: `Performance` monitors / draw-call caps in benchmark runner.
 
-
 ## Deep recipes (on demand)
 
 > LLM-ignorance rule: if a general agent would not know it before reading, it lives here or in `scripts/` — never delete, only move.
@@ -127,23 +116,23 @@ Schema-compliant fixture builders.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — project layout, scenes, and resources before standing up a `res://test/` suite.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed GDScript, `await`, and assert idioms used in every unit/integration test.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — emit/connect contracts that `watch_signals` / signal monitors assert against.
+- [godot-project-foundations](project-foundations.md) — project layout, scenes, and resources before standing up a `res://test/` suite.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed GDScript, `await`, and assert idioms used in every unit/integration test.
+- [godot-signal-architecture](signal-architecture.md) — emit/connect contracts that `watch_signals` / signal monitors assert against.
 
 #### Complements
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — profiler and ObjectDB tools when a red test needs runtime evidence, not another assert.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — scene packing/load patterns mirrored in scene integration fixtures.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — action maps and event parsing exercised by fuzz and UI press tests.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — layer matrices and body APIs that physics collision tests must keep green.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource schemas that test data factories and snapshot dictionaries serialize.
-- [godot-save-load-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-save-load-systems/SKILL.md) — persistence pipelines covered by save/load integration and golden-state tests.
+- [godot-debugging-profiling](debugging-profiling.md) — profiler and ObjectDB tools when a red test needs runtime evidence, not another assert.
+- [godot-scene-management](scene-management.md) — scene packing/load patterns mirrored in scene integration fixtures.
+- [godot-input-handling](input-handling.md) — action maps and event parsing exercised by fuzz and UI press tests.
+- [godot-2d-physics](2d-physics.md) — layer matrices and body APIs that physics collision tests must keep green.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Resource schemas that test data factories and snapshot dictionaries serialize.
+- [godot-save-load-systems](save-load-systems.md) — persistence pipelines covered by save/load integration and golden-state tests.
 
 #### Downstream / consumers
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — seeded headless gameplay sims that reuse these harnesses for Phase 7 golden cells.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — budgets that CI performance gates (`Performance` monitors, draw-call caps) enforce.
-- [godot-multiplayer-networking](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-multiplayer-networking/SKILL.md) — RPC/replication logic validated through mock peers and lag injection.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — headless export/CI pipelines that invoke the same `--headless` test entrypoints.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — seeded headless gameplay sims that reuse these harnesses for Phase 7 golden cells.
+- [godot-performance-optimization](performance-optimization.md) — budgets that CI performance gates (`Performance` monitors, draw-call caps) enforce.
+- [godot-multiplayer-networking](multiplayer-networking.md) — RPC/replication logic validated through mock peers and lag injection.
+- [godot-export-builds](export-builds.md) — headless export/CI pipelines that invoke the same `--headless` test entrypoints.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

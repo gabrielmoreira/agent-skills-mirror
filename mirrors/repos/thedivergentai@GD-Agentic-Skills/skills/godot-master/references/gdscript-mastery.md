@@ -28,11 +28,6 @@ Expert guidance for writing performant, maintainable GDScript — Godot-landmine
 
 ---
 
-## Godot 4.7: GDScript
-
-- Typed override methods **inherit return type** — overrides require explicit `return` (add `return null` if needed).
-- Setting packed array elements no longer invokes the whole-array property setter.
-
 ## Core Directives (decision trees + MANDATORY scripts)
 
 ### 1. Strong Typing & Performance
@@ -132,23 +127,23 @@ Expert guidance for writing performant, maintainable GDScript — Godot-landmine
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Project layout, Autoload registration, and scene ownership conventions that typed GDScript scripts plug into.
-- [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Component boundaries clarify which scripts own signals vs call-down APIs before style enforcement.
+- [godot-project-foundations](project-foundations.md) — Project layout, Autoload registration, and scene ownership conventions that typed GDScript scripts plug into.
+- [godot-composition](composition.md) — Component boundaries clarify which scripts own signals vs call-down APIs before style enforcement.
 
 #### Complements
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Deepens connect flags, buses, and sequencers after this skill’s typed signal/Callable basics.
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Contrasts heavy Autoloads with the `static var` singleton alternatives shown here.
-- [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Prefer Resources for shared config; keep GDScript modules thin and typed around Resource payloads.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — `@onready`, unique names, and await sequences must stay valid across scene swaps and loaders.
-- [godot-testing-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-testing-patterns/SKILL.md) — Typed signals and Callables make `watch_signals` / spies reliable in unit tests.
-- [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Pair style/perf smells from this skill with profiler and custom monitors when hot paths remain slow.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — FSM enter/exit handlers should follow the same typed-signal and await sequencing conventions.
+- [godot-signal-architecture](signal-architecture.md) — Deepens connect flags, buses, and sequencers after this skill’s typed signal/Callable basics.
+- [godot-autoload-architecture](autoload-architecture.md) — Contrasts heavy Autoloads with the `static var` singleton alternatives shown here.
+- [godot-resource-data-patterns](resource-data-patterns.md) — Prefer Resources for shared config; keep GDScript modules thin and typed around Resource payloads.
+- [godot-scene-management](scene-management.md) — `@onready`, unique names, and await sequences must stay valid across scene swaps and loaders.
+- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — Typed signals and Callables make `watch_signals` / spies reliable in unit tests.
+- [godot-debugging-profiling](debugging-profiling.md) — Pair style/perf smells from this skill with profiler and custom monitors when hot paths remain slow.
+- [godot-state-machine-advanced](state-machine-advanced.md) — FSM enter/exit handlers should follow the same typed-signal and await sequencing conventions.
 
 #### Downstream / consumers
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — Escalate when typed GDScript alone is not enough; servers, pooling, and broader CPU/GPU tactics live there.
-- [godot-auditor](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md) — Project-wide audits consume the typing, signal-up, and hot-path rules codified in this skill.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — Abilities need typed signal payloads and await-safe cooldowns grounded in these language patterns.
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — Damage/death fan-out depends on typed emits and safe casts taught here.
+- [godot-performance-optimization](performance-optimization.md) — Escalate when typed GDScript alone is not enough; servers, pooling, and broader CPU/GPU tactics live there.
+- [godot-auditor](auditor.md) — Project-wide audits consume the typing, signal-up, and hot-path rules codified in this skill.
+- [godot-ability-system](ability-system.md) — Abilities need typed signal payloads and await-safe cooldowns grounded in these language patterns.
+- [godot-combat-system](combat-system.md) — Damage/death fan-out depends on typed emits and safe casts taught here.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting scripting concern.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry; open when discovering which Domain Skill owns a cross-cutting scripting concern.

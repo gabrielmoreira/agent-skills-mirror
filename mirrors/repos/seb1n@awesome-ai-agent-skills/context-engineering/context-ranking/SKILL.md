@@ -1,6 +1,6 @@
 ---
 name: context-ranking
-description: "Ranks retrieved context chunks by relevance, diversity, and utility using scoring algorithms and multi-stage pipelines to surface the best information for a given query."
+description: "Rank an existing set of context chunks by relevance, diversity, freshness, and utility. Use when retrieval has already produced candidates that must be scored or reranked; use context-retrieval when the source corpus still needs to be searched."
 license: MIT
 metadata:
   author: awesome-ai-agent-skills

@@ -28,7 +28,7 @@ Damage/HP scaling: `base * pow(1.15, level)` — linear curves flatten the power
 
 ## Ability / skill-tree glue
 
-Hotbar abilities → [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md). Skill-tree unlocks grant `AbilityResource` to the **caster's** scene manager — not a global combat Autoload.
+Hotbar abilities → [godot-ability-system](ability-system.md). Skill-tree unlocks grant `AbilityResource` to the **caster's** scene manager — not a global combat Autoload.
 
 ## Enemy scaling
 

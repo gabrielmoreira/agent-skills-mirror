@@ -73,11 +73,6 @@ Group by feature (`/entities/player`, `/ui/main_menu`), not by file type. Keep `
 ### 3. Version Control
 Godot-aware `.gitignore` (ignore `.godot/`) + `.gdignore` on raw design sources.
 
-## Godot 4.7: Foundations
-
-- **Asset Store** replaces Asset Library for third-party content discovery.
-- New projects use `canvas_items` + `expand` stretch defaults — account for in UI layout tests.
-
 ## Workflow: Scaffolding a New Project
 
 1. Ensure `project.godot` exists → run `project_bootstrapper.gd` / create `entities/`, `ui/`, `levels/`, `common/`.

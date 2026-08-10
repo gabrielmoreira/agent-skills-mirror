@@ -2,16 +2,6 @@
 name: godot-particles
 description: "Expert blueprint for GPU particle systems (explosions, magic effects, weather, trails) using GPUParticles2D/3D, ParticleProcessMaterial, gradients, sub-emitters, and custom shaders. Use when creating VFX, environmental effects, or visual feedback. Keywords GPUParticles2D, ParticleProcessMaterial, emission_shape, color_ramp, sub_emitter, one_shot."
 ---
-## Godot 4.7 Baseline
-
-- Expert patterns in this skill target **Godot 4.7+** (stable, 2026-06-18).
-- Consult the [Godot 4.7 migration guide](https://docs.godotengine.org/en/4.7/tutorials/migrating/upgrading_to_godot_4.7.html) when upgrading projects from 4.6.
-- **NEVER** assume 4.6 defaults (stretch mode, audio area_mask, RichTextLabel percent flags) without checking 4.7 migration notes.
-
-# Particle Systems
-
-GPU-accelerated VFX with material-driven emission, recyclers, and MultiMesh swarms — not beginner effect recipes.
-
 ## NEVER Do in Particle Systems
 
 - **NEVER use `amount_ratio` to optimize performance dynamically** — It does not save GPU memory or improve processing; the full `amount` is still allocated. Change the `amount` property directly instead.
@@ -27,7 +17,6 @@ GPU-accelerated VFX with material-driven emission, recyclers, and MultiMesh swar
 - **NEVER forget alpha in color gradients** — Particles that disappear instantly at the end of their lifetime look harsh; always add a gradient point at 1.0 with 0.0 alpha for a smooth exit.
 - **NEVER use `EMISSION_SHAPE_POINT` for volumentric explosions** — Spawning all particles at a single point looks flat. Use a Sphere or Box shape for natural 3D spread.
 - **NEVER forget to set `emitting = false` initially for one-shot VFX** — This prevents unwanted emission at the scene origin before you've had a chance to position the node via script.
-
 
 ## Choose Table (load only the matching script)
 
@@ -122,24 +111,24 @@ Custom shader integration helpers for particle materials.
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — scenes, resources, and import basics before packing VFX Prefabs and GradientTexture1D materials.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — typed GPUParticles APIs, `finished` handlers, and safe `restart()`/await patterns used by pools and burst spawners.
-- [godot-shaders-basics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-shaders-basics/SKILL.md) — ShaderMaterial workflow and shading-language fundamentals required before `shader_type particles` process logic.
+- [godot-project-foundations](project-foundations.md) — scenes, resources, and import basics before packing VFX Prefabs and GradientTexture1D materials.
+- [godot-gdscript-mastery](gdscript-mastery.md) — typed GPUParticles APIs, `finished` handlers, and safe `restart()`/await patterns used by pools and burst spawners.
+- [godot-shaders-basics](shaders-basics.md) — ShaderMaterial workflow and shading-language fundamentals required before `shader_type particles` process logic.
 
 #### Complements
-- [godot-3d-materials](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-materials/SKILL.md) — draw materials, transparency sorting, and next_pass stacks that render quads/meshes spawned by GPUParticles3D.
-- [godot-3d-lighting](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-lighting/SKILL.md) — emissive fire/sparks vs environment exposure; pair particle albedo with real lights when VFX must light the scene.
-- [godot-audio-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-audio-systems/SKILL.md) — impact/loop SFX while GPU emitters are active when per-particle collision audio is unavailable.
-- [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — amount budgets, visibility AABB, attractor masks, and MultiMesh cutovers when VFX dominate GPU time.
-- [godot-camera-systems](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-camera-systems/SKILL.md) — camera-follow heightfields, visibility-range thresholds, and frustum-aware weather emitters.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — `finished` and one-shot connection hygiene for pooled recyclers that must not leak ghost callbacks.
-- [godot-2d-physics](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-2d-physics/SKILL.md) — physics-parented 2D trails where CPUParticles2D + interpolation replaces stuttering GPUParticles2D.
+- [godot-3d-materials](3d-materials.md) — draw materials, transparency sorting, and next_pass stacks that render quads/meshes spawned by GPUParticles3D.
+- [godot-3d-lighting](3d-lighting.md) — emissive fire/sparks vs environment exposure; pair particle albedo with real lights when VFX must light the scene.
+- [godot-audio-systems](audio-systems.md) — impact/loop SFX while GPU emitters are active when per-particle collision audio is unavailable.
+- [godot-performance-optimization](performance-optimization.md) — amount budgets, visibility AABB, attractor masks, and MultiMesh cutovers when VFX dominate GPU time.
+- [godot-camera-systems](camera-systems.md) — camera-follow heightfields, visibility-range thresholds, and frustum-aware weather emitters.
+- [godot-signal-architecture](signal-architecture.md) — `finished` and one-shot connection hygiene for pooled recyclers that must not leak ghost callbacks.
+- [godot-2d-physics](2d-physics.md) — physics-parented 2D trails where CPUParticles2D + interpolation replaces stuttering GPUParticles2D.
 
 #### Downstream / consumers
-- [godot-combat-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-combat-system/SKILL.md) — hit sparks, blood/debris bursts, and muzzle FX spawned from damage resolution.
-- [godot-ability-system](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ability-system/SKILL.md) — cast/channel/impact VFX attached to ability lifecycle and targeting feedback.
-- [godot-genre-shooter](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter/SKILL.md) — muzzle flash, tracers, explosions, and environmental smoke stacks built on these particle patterns.
-- [godot-monte-carlo-balancer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-monte-carlo-balancer/SKILL.md) — when VFX density/readability changes perceived difficulty or telegraph clarity, simulate juice budgets with combat outcomes.
+- [godot-combat-system](combat-system.md) — hit sparks, blood/debris bursts, and muzzle FX spawned from damage resolution.
+- [godot-ability-system](ability-system.md) — cast/channel/impact VFX attached to ability lifecycle and targeting feedback.
+- [godot-genre-shooter](genre-shooter.md) — muzzle flash, tracers, explosions, and environmental smoke stacks built on these particle patterns.
+- [godot-monte-carlo-balancer](monte-carlo-balancer.md) — when VFX density/readability changes perceived difficulty or telegraph clarity, simulate juice budgets with combat outcomes.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — library router and mirrored module entry for cross-skill discovery.

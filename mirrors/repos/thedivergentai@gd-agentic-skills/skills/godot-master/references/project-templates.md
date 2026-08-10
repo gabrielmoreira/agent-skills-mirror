@@ -36,7 +36,7 @@ Scaffold architecture, then **adapt** — never dump genre tutorials into the pr
 2. Rename project, register locator/bootstrap, configure Input Map.
 3. Open the consumer `godot-genre-*` skill for gameplay systems.
 
-**Platformer end-to-end:** row 1 scripts → [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) (`advanced_platformer_controller.gd` for movement; template `base_level` + state machine for scene flow). **Do NOT** paste FPS/inventory recipes from this skill.
+**Platformer end-to-end:** row 1 scripts → [godot-genre-platformer](genre-platformer.md) (`advanced_platformer_controller.gd` for movement; template `base_level` + state machine for scene flow). **Do NOT** paste FPS/inventory recipes from this skill.
 
 ## Genre Router → Scripts
 
@@ -44,12 +44,12 @@ Scaffold architecture, then **adapt** — never dump genre tutorials into the pr
 
 | Genre intent | Load these template scripts (MANDATORY) | Fill gameplay via |
 | :--- | :--- | :--- |
-| 2D platformer | [base_game_manager.gd](../scripts/project_templates_base_game_manager.gd), [base_level.gd](../scripts/project_templates_base_level.gd), [base_actor.gd](../scripts/project_templates_base_actor.gd), [scene_state_machine.gd](../scripts/project_templates_scene_state_machine.gd), [state_machine_node.gd](../scripts/project_templates_state_machine_node.gd) | [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) |
-| Top-down / action RPG | Same bases + [subsystem_locator.gd](../scripts/project_templates_subsystem_locator.gd), [base_menu.gd](../scripts/project_templates_base_menu.gd) | [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) |
-| 3D FPS / shooter | Bases + [multi_platform_input.gd](../scripts/project_templates_multi_platform_input.gd), [platform_feature_config.gd](../scripts/project_templates_platform_feature_config.gd) | [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) |
-| Any genre + DLC packs | [modular_dlc_loader.gd](../scripts/project_templates_modular_dlc_loader.gd) | Genre skill + [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) |
-| Cross-platform input/features | [multi_platform_input.gd](../scripts/project_templates_multi_platform_input.gd), [platform_feature_config.gd](../scripts/project_templates_platform_feature_config.gd) | [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) |
-| Threaded level streaming | [level_steamer_manager.gd](../scripts/project_templates_level_steamer_manager.gd) | [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) |
+| 2D platformer | [base_game_manager.gd](../scripts/project_templates_base_game_manager.gd), [base_level.gd](../scripts/project_templates_base_level.gd), [base_actor.gd](../scripts/project_templates_base_actor.gd), [scene_state_machine.gd](../scripts/project_templates_scene_state_machine.gd), [state_machine_node.gd](../scripts/project_templates_state_machine_node.gd) | [godot-genre-platformer](genre-platformer.md) |
+| Top-down / action RPG | Same bases + [subsystem_locator.gd](../scripts/project_templates_subsystem_locator.gd), [base_menu.gd](../scripts/project_templates_base_menu.gd) | [godot-genre-action-rpg](genre-action-rpg.md) |
+| 3D FPS / shooter | Bases + [multi_platform_input.gd](../scripts/project_templates_multi_platform_input.gd), [platform_feature_config.gd](../scripts/project_templates_platform_feature_config.gd) | [godot-genre-shooter-fps](genre-shooter-fps.md) |
+| Any genre + DLC packs | [modular_dlc_loader.gd](../scripts/project_templates_modular_dlc_loader.gd) | Genre skill + [godot-export-builds](export-builds.md) |
+| Cross-platform input/features | [multi_platform_input.gd](../scripts/project_templates_multi_platform_input.gd), [platform_feature_config.gd](../scripts/project_templates_platform_feature_config.gd) | [godot-input-handling](input-handling.md) |
+| Threaded level streaming | [level_steamer_manager.gd](../scripts/project_templates_level_steamer_manager.gd) | [godot-scene-management](scene-management.md) |
 | Accessibility TTS | [accessibility_tts_manager.gd](../scripts/project_templates_accessibility_tts_manager.gd) | Project foundations / UI skills |
 
 Folder-by-feature skeleton (all genres): `entities/<name>/`, `levels/` or `maps/`, `ui/`, `autoloads/` or locator-registered systems, `resources/`. Details belong in the genre consumer skill — not duplicated here.
@@ -57,9 +57,6 @@ Folder-by-feature skeleton (all genres): `entities/<name>/`, `levels/` or `maps/
 ---
 
 ## Architecture Deltas (keep in this skill)
-
-### Godot 4.7 project defaults
-- Stretch **mode**: `canvas_items` (was `disabled`); **aspect**: `expand` (was `keep`). Document overrides if legacy behavior is required.
 
 ### Subsystem Locator vs God Autoload
 Prefer [subsystem_locator.gd](../scripts/project_templates_subsystem_locator.gd) for modular registration; keep a thin bootstrap Autoload only.
@@ -84,12 +81,12 @@ Map each template piece to a consumer skill before writing gameplay code:
 
 | Template piece | Adapt into |
 | :--- | :--- |
-| `base_actor` / state machine nodes | Genre movement/combat skill (`godot-genre-*`) + [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) |
-| `base_game_manager` signals | [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) / [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) |
-| Level streamer | [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) |
-| Input / feature config | [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) + platform skills |
-| Menus / HUD shells | [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) |
-| Export / CI / PCK | [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) |
+| `base_actor` / state machine nodes | Genre movement/combat skill (`godot-genre-*`) + [godot-state-machine-advanced](state-machine-advanced.md) |
+| `base_game_manager` signals | [godot-autoload-architecture](autoload-architecture.md) / [godot-signal-architecture](signal-architecture.md) |
+| Level streamer | [godot-scene-management](scene-management.md) |
+| Input / feature config | [godot-input-handling](input-handling.md) + platform skills |
+| Menus / HUD shells | [godot-ui-containers](ui-containers.md) |
+| Export / CI / PCK | [godot-export-builds](export-builds.md) |
 
 **Usage:** pick genre row → load scripts → rename project → register locator/bootstrap → configure Input Map → open genre skill for systems — do not paste stock FPS/inventory recipes from this skill.
 
@@ -118,23 +115,23 @@ Platformer/RPG/FPS directory trees, input map template, CI export YAML, PCK moun
 ### Related Skills
 
 #### Prerequisites
-- [godot-project-foundations](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-project-foundations/SKILL.md) — Folder hygiene, naming, and import basics before copying a genre skeleton into a real repo.
-- [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed base classes, virtual hooks, and signal style used by every template script here.
+- [godot-project-foundations](project-foundations.md) — Folder hygiene, naming, and import basics before copying a genre skeleton into a real repo.
+- [godot-gdscript-mastery](gdscript-mastery.md) — Typed base classes, virtual hooks, and signal style used by every template script here.
 
 #### Complements
-- [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Boot order and ownership rules once BootstrapConfig / GameManager Autoloads leave the template stage.
-- [godot-scene-management](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-scene-management/SKILL.md) — Production scene swaps and load queues that deepen the level streamer boilerplate.
-- [godot-input-handling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-input-handling/SKILL.md) — Full action maps, device routing, and remapping beyond MultiPlatformInput scaffolding.
-- [godot-state-machine-advanced](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-state-machine-advanced/SKILL.md) — Hierarchical / visual FSM patterns that extend SceneStateMachine and StateMachineNode.
-- [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Export presets, VRAM compression, and CI headless flags assumed by Standard-Export-Presets templates.
-- [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Typed EventBus patterns when templates grow past direct GameManager signals.
-- [godot-ui-containers](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-ui-containers/SKILL.md) — Anchor/container layouts for BaseMenu and HUD scenes instead of floating-point pixel drift.
-- [godot-adapt-desktop-to-mobile](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-adapt-desktop-to-mobile/SKILL.md) — Touch, safe-area, and mobile feature-tag profiles that PlatformFeatureConfig only stubs.
+- [godot-autoload-architecture](autoload-architecture.md) — Boot order and ownership rules once BootstrapConfig / GameManager Autoloads leave the template stage.
+- [godot-scene-management](scene-management.md) — Production scene swaps and load queues that deepen the level streamer boilerplate.
+- [godot-input-handling](input-handling.md) — Full action maps, device routing, and remapping beyond MultiPlatformInput scaffolding.
+- [godot-state-machine-advanced](state-machine-advanced.md) — Hierarchical / visual FSM patterns that extend SceneStateMachine and StateMachineNode.
+- [godot-export-builds](export-builds.md) — Export presets, VRAM compression, and CI headless flags assumed by Standard-Export-Presets templates.
+- [godot-signal-architecture](signal-architecture.md) — Typed EventBus patterns when templates grow past direct GameManager signals.
+- [godot-ui-containers](ui-containers.md) — Anchor/container layouts for BaseMenu and HUD scenes instead of floating-point pixel drift.
+- [godot-adapt-desktop-to-mobile](adapt-desktop-to-mobile.md) — Touch, safe-area, and mobile feature-tag profiles that PlatformFeatureConfig only stubs.
 
 #### Downstream / consumers
-- [godot-genre-platformer](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-platformer/SKILL.md) — Fills the 2D platformer directory skeleton with movement, coyote time, and level flow.
-- [godot-genre-action-rpg](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-action-rpg/SKILL.md) — Combat, inventory, and quest systems that plug into the top-down RPG template folders.
-- [godot-genre-shooter-fps](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-genre-shooter-fps/SKILL.md) — Weapons, hit detection, and camera feel layered on the 3D FPS player scaffold.
+- [godot-genre-platformer](genre-platformer.md) — Fills the 2D platformer directory skeleton with movement, coyote time, and level flow.
+- [godot-genre-action-rpg](genre-action-rpg.md) — Combat, inventory, and quest systems that plug into the top-down RPG template folders.
+- [godot-genre-shooter-fps](genre-shooter-fps.md) — Weapons, hit detection, and camera feel layered on the 3D FPS player scaffold.
 
 #### Master
-- [godot-master](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-master/SKILL.md) — Library router and mirrored module entry for cross-skill discovery.
+- [godot-master](../SKILL.md) — Library router and mirrored module entry for cross-skill discovery.
