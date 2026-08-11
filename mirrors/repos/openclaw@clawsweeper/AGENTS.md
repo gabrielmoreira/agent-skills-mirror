@@ -3,6 +3,12 @@
 ClawSweeper is the conservative maintenance bot for OpenClaw repositories.
 Keep changes narrow, evidence-backed, and automation-safe.
 
+`AGENTS.md` is the canonical repository-wide coding-agent policy. Task-specific
+workflows under `.agents/skills/` are opt-in procedures and do not override this
+file. This repository does not currently maintain `AGENT.md`, `CLAUDE.md`, or
+Cursor aliases; agents that do not discover `AGENTS.md` automatically must be
+directed here rather than given a duplicated policy copy.
+
 ## Structure
 
 - Main code: `src/clawsweeper.ts`.
@@ -138,6 +144,13 @@ gh api repos/openclaw/clawsweeper/readme --jq '.content' | base64 --decode
 gh api graphql -f query='query { repository(owner:"openclaw", name:"openclaw") { issues(states: OPEN) { totalCount } pullRequests(states: OPEN) { totalCount } } }'
 ```
 
-For throughput/default tuning, inspect and update both `src/clawsweeper.ts` and
-`.github/workflows/sweep.yml`; continuation paths can otherwise keep stale
-defaults.
+For throughput/default tuning, start with `config/automation-limits.json` and
+[`docs/limits.md`](docs/limits.md). `scripts/check-limits.ts` identifies the
+derived docs, Worker values, and the `workflow_dispatch` literals that must stay
+aligned. Effective exact-review admission, publication, and batching overrides
+live in `dashboard/wrangler.toml`; owning fallback behavior lives in
+`dashboard/exact-review-queue.ts`. Update `.github/workflows/sweep.yml` or
+`src/clawsweeper.ts` only when the changed contract is actually owned there.
+
+Use [`docs/README.md`](docs/README.md) for the documentation map, lifecycle
+states, role ownership, and cross-surface update triggers.

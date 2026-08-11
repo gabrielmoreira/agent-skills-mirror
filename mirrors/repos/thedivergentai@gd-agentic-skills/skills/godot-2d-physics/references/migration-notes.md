@@ -2,7 +2,16 @@
 
 Incremental upgrade for topics this skill covers. Apply **one hop**, stabilize/test, then next. Never skip hops.
 
-If the project is still on Godot 3.x, use the official [Upgrading from Godot 3 to Godot 4](https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.html) guide first, then continue from 4.0.
+If the project is **< 4.0**, follow [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) era bridges (legacy → 3→4) until 4.0, then these hops. Official 3→4: [Upgrading from Godot 3 to Godot 4](https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.html).
+
+## 3.x → 4.0
+
+Official: [Upgrading from Godot 3 to Godot 4](https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.html)
+
+- `KinematicBody2D` → `CharacterBody2D`; `move`/`move_and_slide` APIs changed — rewrite character controllers.
+- `RigidBody2D` / `Area2D` signal and layer naming unchanged in spirit but audit `body_entered` vs legacy enter signals from 2.x leftovers.
+- `RectangleShape2D.extents` → `size` (full size, not half-extents).
+- Bullet was never 2D-default; still re-test after 3→4 converter renames.
 
 ## 4.0 → 4.1
 

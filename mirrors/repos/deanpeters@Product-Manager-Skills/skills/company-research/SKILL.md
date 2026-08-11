@@ -5,6 +5,15 @@ description: Create a company research brief with executive quotes, product stra
 intent: >-
   Create a comprehensive company profile that extracts executive insights, product strategy, transformation initiatives, and organizational dynamics from publicly available sources. Use this to understand competitive landscape, evaluate partnership opportunities, benchmark best practices, prepare for interviews, or inform market entry decisions by understanding how successful companies think about product management and strategy.
 type: component
+theme: market-intelligence
+best_for:
+  - "Preparing for a PM interview with real company context"
+  - "Building a competitor or partner brief before a first meeting"
+  - "Understanding a company's product strategy from public signals"
+scenarios:
+  - "I have a PM interview next week and need real context on their product strategy"
+  - "We're meeting a potential partner and I need a brief on how they actually make money"
+estimated_time: "20-40 min"
 ---
 
 

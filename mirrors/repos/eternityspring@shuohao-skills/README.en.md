@@ -1,17 +1,16 @@
 [中文](README.md) · **English**
 
-> I run a **paid community for AI short-form drama** — workflows, tooling, and hands-on practice.
-> If that's your thing, add me on **WeChat `hao_dev`** and mention **`github`** in the request.
->
-> <img src="assets/wechat.png" alt="WeChat QR" width="180">
+> These skills are free and open source, built and battle-tested on real AI short-drama production.
+> If they save you an afternoon, consider [**buying me a coffee on Ko-fi**](https://ko-fi.com/eternityspring) ☕ — it keeps the updates coming.
 
 # shuohao-skills
 
-A collection of skills for AI coding agents. **Runs in both Claude Code and codex.**
+**Agent skills for AI short-drama production** — from a novel to shoot-ready material: character bibles, model sheets, adaptation outlines. Built for AI coding agents, **runs in both Claude Code and codex**.
 
 | Skill | What it does |
 | --- | --- |
 | [**novel-characters**](skills/novel-characters/README.en.md) | Turns a novel into a character bible: profiles, design prompts, voice prompts, model sheets. Report language and image style are both configurable |
+| [**novel-outline**](skills/novel-outline/README.en.md) | Adapts a novel into a five-piece short-drama outline: adaptation notes, cast, beats, per-episode synopses, asset list. All 13 quality gates are script-checked; includes a checkup mode for existing outlines |
 
 Point it at a novel and you get this:
 

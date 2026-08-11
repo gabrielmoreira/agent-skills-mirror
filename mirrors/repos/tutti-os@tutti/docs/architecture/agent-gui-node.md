@@ -98,8 +98,14 @@ Realtime events reduce latency but are not automatically complete truth:
   tool output arrive as optimistic `message_delta` payloads on the
   `/v1/events/ws` business-event WebSocket
 - canonical tool `output`/`error` bodies bound each `text`, `stdout`, and
-  `stderr` field to 1 MiB total, including nested tool steps, by retaining a
-  valid UTF-8 prefix and the fixed `[Output truncated]` marker
+  `stderr` field to 1 MiB, then fit formal output streams into a 768 KiB
+  aggregate durable payload budget, including nested tool steps, by retaining
+  a valid UTF-8 prefix and the fixed `[Output truncated]` marker
+- terminal command snapshots may omit `text` only when it exactly equals the
+  trimmed `stdout` or `stderr`; Reporter resolves the alias before independent
+  field truncation and clears an earlier running `text`, while the raw stream
+  remains canonical and explicit non-command tools retain provider-neutral
+  `text`
 - continuous, version-complete `message_update` events may merge inline
 - terminal `message_update` is the durable confirmation; message version gaps,
   invalid/unanchored deltas, nonterminal deltas after known terminal message
@@ -871,8 +877,20 @@ canonical Session first appears. Session existence or an `available` runtime
 must not create an idle frame before the exact Turn claims the submission. A
 viable new-Session activation with `initialTurnExpected` remains the same busy
 bridge while no canonical latest Turn exists. Goal-only activation deliberately
-does not expect a Turn. When a provider exposes an exact session-level
-`running`/`idle` observation before Turn identity, the daemon projects that
+does not set `initialTurnExpected`, because Goal Control does not synchronously
+create a Turn. A viable initial Goal `set` whose projected Goal is still active
+remains a busy bridge only while the Goal is optimistic or the host supplies an
+exact pending/applying/unknown `goalSyncState` with a pending operation
+identity. A synced Goal proves only that the Goal mutation converged; it does
+not prove that a future Turn will exist. The first canonical Turn, a synced or
+non-active Goal,
+`failed`/`diverged` synchronization, `pending`/`applying`/`unknown` without an operation identity,
+or a canceled/failed activation releases the bridge; initial Goal `clear` never
+creates it. A host that omits `goalSyncState` cannot prove post-create execution
+and therefore fails closed to the canonical availability projection instead of
+keeping the composer busy indefinitely. When a provider exposes an exact
+session-level `running`/`idle` observation before Turn identity, the daemon
+projects that
 typed, non-persistent runtime activity through `agent.activity.updated` after
 the associated state report wins canonical ordering. Desktop and Mobile Live
 consume the same event variant. The workspace Engine uses its occurrence time
@@ -1220,6 +1238,20 @@ their renderer and interaction layout; they must not import Desktop or Web
 components, infer project membership from `cwd`, or create a second Session
 lifecycle store.
 
+AgentGUI's existing-Session project projection uses the immutable
+`railSectionKey` as its only join key: it matches that value exactly against a
+registered user project's `sectionKey`. The `conversations` key, a missing key,
+or an unknown key fails closed to no project label even when the Session `cwd`
+equals or sits below a registered project path. Conversely, a recognized
+project key keeps its project identity when the runtime `cwd` is an isolated
+worktree or another detached execution directory. Path matching is reserved
+for resolving the user's explicit project selection before a new activation;
+it is not an existing-Session compatibility fallback.
+Native Mobile applies the same rule to Activity labels and Rail placement.
+Section `sessionIds` remain query ordering and hydration data; if their section
+disagrees with a Session's canonical `railSectionKey`, Mobile rehomes the row by
+the Session key instead of accepting the stale membership.
+
 Cross-platform hosts may also reuse the DOM-free canonical transcript
 projection from `@tutti-os/agent-gui/conversation-projection`. It accepts the
 canonical activity snapshot, selected Session id, and known Turns. The
@@ -1308,9 +1340,14 @@ boundary for the Conversation Rail Activity View. Desktop opts in explicitly;
 external hosts that omit or disable it retain the ordinary Rail unchanged.
 
 The view is a presentation-only activation over the current workspace Engine:
-it reads visible root Session summaries, root-aggregated descendant
-working/waiting state, attention/read state, and already-cached Session
-messages. Opening it must not call list pagination or transcript hydration.
+it reads visible root Session summaries, each root Session's own lifecycle
+status, root-conversation attention/read state, and already-cached Session
+messages. Descendant lifecycle activity remains available in the conversation
+detail and interaction surfaces, but it does not change the root row's Rail
+status. A pending descendant Interaction still contributes canonical
+root-conversation attention so an approval or question cannot disappear with
+the filtered child row; submission retains the exact child identity. Opening
+Activity View must not call list pagination or transcript hydration.
 Its membership input is the canonical mounted Engine summary collection, never
 the ordinary Rail's transient `runtimeRailConversations` overlay; stale page
 projections therefore cannot leak into Activity View.
@@ -2435,6 +2472,17 @@ callers that omit the structured field. AgentGUI represents the pending control
 and its durable audit with the same client-submit presentation identity, so
 canonical replacement does not remove and recreate the visible `goal-control`
 row.
+Hosts that can observe the durable Goal saga may additionally project the
+optional Session `goalSyncState` (`revision`, `syncStatus`, and
+`pendingOperationId`, plus optional `executionPending`). It is read evidence
+owned by the Host, not Session-owned Goal lifecycle state. AgentGUI uses an
+identified `pending`, `applying`, or `unknown` operation while the exact initial
+Goal mutation remains pending. After mutation convergence, `synced` retains the
+bridge only when the Host explicitly reports `executionPending=true`. The Host
+clears that proof on the first canonical Turn with exact Goal provenance or on
+terminal, diverged, failed, or non-active Goal evidence. Omission fails closed,
+including across mixed-version hosts; AgentGUI never infers future execution
+from `synced` alone or uses a UI timeout.
 The pending activation carries the same resolved project section key as the
 create command. Exact rail projection therefore shows the conversation as soon
 as the intent is accepted; it does not wait for provider startup or invent a

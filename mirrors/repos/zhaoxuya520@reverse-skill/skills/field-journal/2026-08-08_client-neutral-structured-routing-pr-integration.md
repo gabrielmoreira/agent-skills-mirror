@@ -96,5 +96,4 @@ bash skills/scripts/master-route.sh --hint "case review evidence graph"
 本条目不包含真实目标、凭据、内部地址或个人身份信息。
 
 ---
-<!-- [进化统计] 本包累计完成项目: 18 | 本次新增模式: 2 | 本次修复工具链问题: 3 -->
 <!-- [社区贡献] 已按仓库所有者指示准备推送主线。 -->

@@ -285,6 +285,36 @@ no session, so it ends in the same error for a different reason. See also the tw
 neighbouring entries on this proxy (loading-shell in an isolated context; no seeded
 agent-browser session).
 
+### The composer's slash menu needs real key events — `keyboard type` never opens it
+
+**Situation:** driving the chat composer's `/` slash menu (or anything else gated on
+a Lexical `KEY_DOWN_COMMAND`) through agent-browser.
+
+**Doesn't work:** `agent-browser keyboard type "/"`. It inserts through CDP
+`Input.insertText`, which produces no `keydown` at all — verified by installing a
+capturing `document.addEventListener("keydown", …)` and watching it stay empty while
+the character lands in the composer. The editor's SlashPlugin keeps `suppressOpen`
+true until a keydown with `key.length === 1` resets it, so the text appears and the
+menu never does. Reads exactly like "the slash menu is broken", which is worse than
+a visible failure because the composer clearly received the input.
+
+**Works:** use `agent-browser press '/'` for the trigger (and `press Backspace` to
+clear). `press` goes through `Input.dispatchKeyEvent`, so the keydown reaches
+Lexical. `keyboard type` remains fine for bulk text that no plugin is gated on —
+type the prose with it, but fire any menu trigger with `press`.
+
+```bash
+agent-browser --session "$RS" click '[data-probe=composer]'
+agent-browser --session "$RS" press '/'   # menu opens
+agent-browser --session "$RS" press Enter # selects the highlighted item
+```
+
+Confirm the mechanism rather than assuming a menu is missing:
+
+```bash
+agent-browser --session "$RS" eval '(() => { window.__KD=[]; document.addEventListener("keydown", e => window.__KD.push(e.key), true); return "installed"; })()'
+```
+
 ### Reading a transitioned CSS property immediately after focus/hover
 
 **Situation:** asserting that a `:focus-within` / `:hover` rule reveals a
@@ -1148,6 +1178,24 @@ worth knowing: a stray click on a tagged text node can dismiss the popover (re-o
 and re-tag rather than assuming the control vanished), and a `Tooltip`-wrapped cell
 needs a real pointer move (`Input.dispatchMouseEvent` over several coordinates, or a
 dispatched `pointerover`+`mouseover` pair) before its content mounts.
+
+### A pool instance seeded from the login snapshot can boot signed out — `safeStorage` cannot decrypt the copied token
+
+**Situation:** `electron-dev.sh start <id>` in a worktree; the helper reports the
+renderer ready and the seeded login is present on disk.
+
+**Doesn't work:** trusting `login-status`'s "refresh token PRESENT" as proof the
+instance will come up authenticated. The pool's copied userData can fail to decrypt
+its access token — `/tmp/lobe-electron-pool/instance-<id>.log` repeats
+`Failed to decrypt access token: Error while decrypting the ciphertext provided to
+safeStorage.decryptString` — and the app boots signed out (`app-probe.sh auth` →
+`isSignedIn: false`) with a near-blank shell that reads like a broken route tree.
+Cause not established; re-seeding and restarting the same pool id does not help.
+
+**Works:** fall back to the legacy single instance (`electron-dev.sh start`, no id),
+which runs on the golden profile in place and decrypts normally. It boots on the
+loading shell once, so reload once before probing (see L-S8). Gate on
+`app-probe.sh auth` AND `server-auth`, never on the helper's "Ready" line.
 
 ## Detailed references
 

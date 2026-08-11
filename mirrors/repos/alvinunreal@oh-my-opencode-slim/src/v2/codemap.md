@@ -19,6 +19,7 @@ v2 registrations. v1 behavior is unchanged.
 | `types.ts` | v2 plugin context surface (`V2Context` + draft/event types), mirrored locally (v2 plugin package is not a build-time dependency). |
 | `client-shim.ts` | `buildPluginInput`: constructs a v1-shaped `PluginInput` (shimmed `client`, `process.cwd()` directory) for the v1 factory. |
 | `adapters.ts` | Shape adapters: `parseModelRef`, `adaptPermissions` (v1 map → v2 Rule[] + v2 permissive base + `task`→`subagent`/`bash`→`execute` mapping), `rewritePromptForV2` (`task(`→`subagent(`), `adaptTool`, `applyAgentToDraft`. |
+| `interview-bridge.ts` | v2-only `/interview` marker command, trailing-message context bridge, v2 interview runtime, and per-session transcript projections. |
 
 ## Data Flow
 
@@ -35,10 +36,15 @@ v2 registrations. v1 behavior is unchanged.
      Message.content ↔ v1 `{info,parts}` conversion + `rewritePromptForV2`)
    - `tool.execute.before/after` → `ctx.tool.hook`
    - `event` → `ctx.event.subscribe()` loop
+    - interview marker/context/events → `interview-bridge.ts`
 5. Returns a cleanup that disposes every v2 registration + the v1 `dispose`.
 
 Each bridge in step 4 is independently try/catch-guarded so one failure cannot
 disable the rest.
+
+The interview bridge is intentionally separate from `client-shim.ts`: it uses
+v2 session methods and in-memory context/text event projections rather than
+expanding the global v2 client surface.
 
 ## Key Decisions
 
@@ -50,6 +56,13 @@ disable the rest.
 - **Permission base.** v1 permission maps list only explicit entries (unlisted
   → implicit default-allow); v2 has no implicit default, so `adaptPermissions`
   prepends v2's standard permissive base before overlaying v1 entries.
+- **Interview configuration.** `setup` resolves the current plugin config and
+  passes the complete `interview` object to the v2 interview bridge. The bridge
+  uses its `maxQuestions`, `outputFolder`, `autoOpenBrowser`, `port`, and
+  `dashboard` values rather than rebuilding defaults at the boundary.
+- **Interview cache boundary.** The interview context hook only rewrites the
+  current trailing command message; prior messages remain unchanged for
+  provider prompt-cache prefix reuse.
 
 ## Integration Points
 

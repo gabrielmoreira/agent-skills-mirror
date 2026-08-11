@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openstatusHQ/openstatus` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `openstatusHQ/openstatus` — 26 default patterns, 0 followed patterns, 14 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `openstatusHQ/openstatus` — 26 default patterns, 0 followed patterns
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 14 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,11 +59,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`apps/status-page/src/app/(status-page)/[domain]/[locale]/(public)/llms.txt/route.ts`](apps/status-page/src/app/(status-page)/[domain]/[locale]/(public)/llms.txt/route.ts) |
-| 2 | ✓ | [`apps/web/public/.well-known/agent-skills/openstatus-api/SKILL.md`](apps/web/public/.well-known/agent-skills/openstatus-api/SKILL.md) |
-| 3 | ✓ | [`apps/web/public/.well-known/agent-skills/openstatus-mcp/SKILL.md`](apps/web/public/.well-known/agent-skills/openstatus-mcp/SKILL.md) |
-| 4 | ✓ | [`apps/web/src/app/(ai)/llms.txt/route.ts`](apps/web/src/app/(ai)/llms.txt/route.ts) |
-| 5 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 2 | ✓ | [`apps/checker/AGENTS.md`](apps/checker/AGENTS.md) |
+| 3 | ✓ | [`apps/dashboard/AGENTS.md`](apps/dashboard/AGENTS.md) |
+| 4 | ✓ | [`apps/server/AGENTS.md`](apps/server/AGENTS.md) |
+| 5 | ✓ | [`apps/status-page/AGENTS.md`](apps/status-page/AGENTS.md) |
+| 6 | ✓ | [`apps/status-page/src/app/(status-page)/[domain]/[locale]/(public)/llms.txt/route.ts`](apps/status-page/src/app/(status-page)/[domain]/[locale]/(public)/llms.txt/route.ts) |
+| 7 | ✓ | [`apps/web/AGENTS.md`](apps/web/AGENTS.md) |
+| 8 | ✓ | [`apps/web/public/.well-known/agent-skills/openstatus-api/SKILL.md`](apps/web/public/.well-known/agent-skills/openstatus-api/SKILL.md) |
+| 9 | ✓ | [`apps/web/public/.well-known/agent-skills/openstatus-mcp/SKILL.md`](apps/web/public/.well-known/agent-skills/openstatus-mcp/SKILL.md) |
+| 10 | ✓ | [`apps/web/src/app/(ai)/llms.txt/route.ts`](apps/web/src/app/(ai)/llms.txt/route.ts) |
+| 11 | ✓ | [`apps/workflows/AGENTS.md`](apps/workflows/AGENTS.md) |
+| 12 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 13 | ✓ | [`packages/services/AGENTS.md`](packages/services/AGENTS.md) |
+| 14 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
 
 ---
 

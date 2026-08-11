@@ -89,6 +89,15 @@ The Chrome extension (`extension/`) captures user behavior on bilibili.com pages
 - Key sections: `[llm]` (provider + API keys), `[bilibili]` (auth), `[scheduler]` (discovery cron), `[storage]` (db path)
 - Config logic: `src/openbiliclaw/config.py` with Pydantic validation and env var overrides
 
+## Worktree Development Rule
+
+For every new feature or bug fix, create a dedicated branch and worktree with
+`git worktree add` before editing code. Implement, test, and commit the change
+inside that worktree; do not implement these changes directly in the current
+main/shared checkout. Check and preserve any pre-existing uncommitted changes
+before creating the worktree, and never overwrite, discard, or mix them into the
+task branch.
+
 ## LLM Prompt-Cache Convention (v0.3.28+)
 
 OpenBiliClaw runs many LLM calls per discovery cycle. Provider-side

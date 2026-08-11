@@ -1,0 +1,92 @@
+# Target Repositories
+
+- Status: active configuration and onboarding reference
+- Owner: ClawSweeper maintainers
+- Source of truth: `config/target-repositories.json`, repository profiles,
+  target inventory, dashboard/apply configuration, and profile tests
+- Last verified: `openclaw/clawsweeper@9c32c14c65b0551b43a10c2086c0031338ae41e7`
+- Update when: profile policy, supported owners, inventory, dashboard targets,
+  apply membership, or onboarding requirements change
+
+Read when enabling ClawSweeper for another OpenClaw repository, changing
+`config/target-repositories.json`, or debugging `Unsupported target repo`
+failures.
+
+ClawSweeper has two target-repository paths:
+
+- configured runtime profiles in `config/target-repositories.json`
+- conservative generic fallbacks for exact event/manual reviews of configured
+  owner inventories such as `openclaw/*` and `steipete/*`
+
+`openclaw/openclaw` remains a built-in profile because it has broader
+auto-close policy. Every other configured profile declares its own issue and PR
+close rules in `apply_close_rules`; do not infer those rules from whether the
+repository appears in the dashboard or receives scheduled work. The current
+configured profiles allow `implemented_on_main` for issues and PRs, and some
+profiles additionally allow age-gated `mostly_implemented_on_main` for PRs.
+
+Dashboard targets are configured separately with `TARGET_REPOS` in
+`dashboard/wrangler.toml`. Scheduled target selection comes from
+`target_inventory`, and apply-enabled targets use the dashboard's
+`APPLY_TARGET_REPOS` and `APPLY_OPTIONAL_TARGET_REPOS`. A runtime profile alone
+does not enable any of those surfaces.
+
+## Generic Fallbacks
+
+The fallback lets a newly installed repository dispatch to ClawSweeper
+without a TypeScript change. It is intentionally narrow:
+
+- owner must be listed in `generic_fallbacks`
+- repo name must match `allow_repo_name_pattern`
+- denied repositories are rejected
+- scheduled fanout is public-only unless a private state publication path exists
+- auto-close policy comes from that owner fallback
+- generic `openclaw/*` issues can auto-close only for
+  `implemented_on_main`; PRs can auto-close for `implemented_on_main` or
+  age-gated `mostly_implemented_on_main`
+- `steipete/*` starts review/comment-only for issues and PRs
+- scheduled dashboard/backfill rows are added only through target fanout
+
+This is enough for event-driven review after the target repo has the dispatcher
+workflow and GitHub App installation.
+
+## Add One Repository
+
+1. Install the ClawSweeper GitHub App on the target repository.
+2. Add or merge the target dispatcher from
+   [`docs/target-dispatcher.md`](target-dispatcher.md).
+3. Ensure the target repo can read the org or repo
+   `CLAWSWEEPER_APP_PRIVATE_KEY` secret.
+4. Open, edit, or comment on a target issue/PR and confirm a dispatcher run
+   appears in the target repo.
+5. Confirm the receiver run appears in
+   `https://github.com/openclaw/clawsweeper/actions`.
+6. Confirm the target item gets one durable ClawSweeper review comment.
+
+Add a `config/target-repositories.json` entry when a repository needs explicit
+review guidance, toolchain configuration, or close rules. Dashboard and
+scheduled-queue membership are separate changes; update their owning
+configuration only when that rollout is intended. Keep close rules narrow
+unless the repository has a documented reason for broader policy.
+
+## Add Many Repositories
+
+Batch rollout should use target fanout:
+
+- install the app and dispatcher on a small group first
+- leave auto-close disabled unless the owner/repo profile explicitly enables it
+- verify event review/comment sync on one issue or PR per repo
+- use `pnpm run target-fanout -- plan --mode hot-intake --limit 10 --dry-run`
+  to inspect the current owner inventory and selected dispatch commands
+- let the scheduled fanout cursor dispatch small batches across
+  `target_inventory.owners`; the cursor is stored in the authenticated
+  ExactReviewQueue Durable Object rather than `clawsweeper-state`
+- fanout passes each repository's default branch as `target_branch`, so repos
+  that use `master` or another branch do not fall back to `main`
+- add config entries only for repos that need repo-specific guidance or broader
+  close policy
+
+If a target dispatch reaches ClawSweeper but receiver token creation fails, the
+App is usually not installed on that target repo. If the target workflow skips
+before dispatch, the target repo usually cannot access
+`CLAWSWEEPER_APP_PRIVATE_KEY`.

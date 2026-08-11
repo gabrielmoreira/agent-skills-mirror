@@ -1,0 +1,479 @@
+# Target Repository Dispatcher
+
+- Status: active integration reference
+- Owner: ClawSweeper maintainers and target-repository maintainers
+- Source of truth: the embedded dispatcher workflow, receiver workflow,
+  repository profiles, and dispatcher tests
+- Last verified: `openclaw/clawsweeper@9c32c14c65b0551b43a10c2086c0031338ae41e7`
+- Update when: forwarded events, authentication, payloads, permissions, close
+  authority, or installation steps change
+
+`openclaw/clawsweeper` cannot receive native `issues` or `pull_request` events
+from sibling repositories directly. Target repositories should forward those
+events with `repository_dispatch` so ClawSweeper can run a single-job exact
+one-item review, sync the durable review comment, and immediately apply a safe
+close proposal for that same item.
+
+This document covers issue and PR item dispatch via
+`.github/workflows/clawsweeper-dispatch.yml`; `openclaw/openclaw` uses this
+form. The separate commit-review dispatch lane was retired in July 2026.
+
+General GitHub activity can also be forwarded to the OpenClaw-backed activity
+ingest lane with `repository_dispatch` type `github_activity`. That lane does
+not run ClawSweeper review/apply; it feeds compact activity to the agent, which
+posts to `#clawsweeper` only when the event is surprising or actionable. See
+[openclaw-event-hooks.md](openclaw-event-hooks.md#github-activity-stream).
+
+For issue and PR dispatch, copy this workflow into each target repository as
+`.github/workflows/clawsweeper-dispatch.yml`, or merge these triggers and the
+`Dispatch exact ClawSweeper review` step into an existing combined dispatcher:
+
+Target repositories no longer need a TypeScript profile before exact event
+review can run. Any installed `openclaw/*` repository that is not denied in
+`config/target-repositories.json` uses the conservative generic profile:
+issues can auto-close only when already implemented on the default branch, and
+PRs can also use the age-gated `mostly_implemented_on_main` rule. Add a config
+entry only when the repo needs explicit review guidance, toolchain settings, or
+different close rules. Dashboard and scheduled-fanout membership are configured
+separately.
+
+Exact event reviews enable related issue GitHub Search by default so newly
+opened issues get stronger duplicate and adjacent-report context. Set repository
+variable `CLAWSWEEPER_RELATED_GITHUB_SEARCH=0` on `openclaw/clawsweeper` to turn
+that enrichment off without editing the target dispatcher.
+
+Before enabling the workflow:
+
+1. Install the `clawsweeper` GitHub App on the target repository.
+2. Add the App private key as the target repository Actions secret
+   `CLAWSWEEPER_APP_PRIVATE_KEY`.
+3. Install exactly one target dispatcher. Do not add separate comment, spam, and
+   generic-activity dispatch workflows that forward the same event twice.
+4. Keep the target write token limited to the comment acknowledgement path.
+   Issue/PR review dispatch only needs the ClawSweeper installation token.
+
+```yaml
+name: ClawSweeper Dispatch
+
+on:
+  issues:
+    types: [opened, reopened, edited, labeled, unlabeled]
+  issue_comment:
+    types: [created, edited]
+  pull_request_target: # zizmor: ignore[dangerous-triggers] maintainer-owned external dispatch; no checkout or untrusted PR code execution
+    types: [opened, reopened, synchronize, ready_for_review, edited, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clawsweeper-dispatch-${{ github.repository }}-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event.action == 'edited' || github.event.action == 'synchronize' || github.event.action == 'ready_for_review' }}
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    if: ${{ !(endsWith(github.actor, '[bot]') && (github.event.action == 'labeled' || github.event.action == 'unlabeled')) }}
+    env:
+      HAS_CLAWSWEEPER_APP_PRIVATE_KEY: ${{ secrets.CLAWSWEEPER_APP_PRIVATE_KEY != '' }}
+      CLAWSWEEPER_APP_CLIENT_ID: Iv23liOECG0slfuhz093
+      SUPERSEDES_IN_PROGRESS: ${{ (github.event.action == 'edited' || github.event.action == 'synchronize' || github.event.action == 'ready_for_review') && 'true' || 'false' }}
+    steps:
+      - name: Debounce bursty metadata events
+        if: ${{ github.event.action == 'labeled' || github.event.action == 'unlabeled' }}
+        run: sleep 20
+
+      - name: Create ClawSweeper dispatch token
+        id: token
+        if: ${{ env.HAS_CLAWSWEEPER_APP_PRIVATE_KEY == 'true' }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ env.CLAWSWEEPER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CLAWSWEEPER_APP_PRIVATE_KEY }}
+          owner: openclaw
+          repositories: clawsweeper
+          permission-contents: write
+
+      - name: Pre-filter ClawSweeper comment
+        id: comment_filter
+        if: ${{ github.event_name == 'issue_comment' }}
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          set -euo pipefail
+          if grep -Eiq '(^|[[:space:]])@(clawsweeper|openclaw-clawsweeper)\b(\[bot\])?|(^|[[:space:]])/(clawsweeper|review|autoclose|auto([[:space:]]+|-)?merge)\b' <<< "$COMMENT_BODY"; then
+            echo "is_command=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_command=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create target comment token
+        id: target_token
+        if: >-
+          ${{
+            github.event_name == 'issue_comment' &&
+            steps.comment_filter.outputs.is_command == 'true' &&
+            env.HAS_CLAWSWEEPER_APP_PRIVATE_KEY == 'true'
+          }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ env.CLAWSWEEPER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CLAWSWEEPER_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-issues: write
+          permission-pull-requests: read
+
+      - name: Create target PR acknowledgement token
+        id: pr_ack_token
+        if: >-
+          ${{
+            github.event_name == 'pull_request_target' &&
+            (
+              github.event.action == 'ready_for_review' ||
+              (github.event.action == 'opened' && github.event.pull_request.draft == false)
+            ) &&
+            env.HAS_CLAWSWEEPER_APP_PRIVATE_KEY == 'true'
+          }}
+        continue-on-error: true
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ env.CLAWSWEEPER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CLAWSWEEPER_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+          permission-issues: write
+
+      - name: Acknowledge received pull request
+        if: >-
+          ${{
+            github.event_name == 'pull_request_target' &&
+            (
+              github.event.action == 'ready_for_review' ||
+              (github.event.action == 'opened' && github.event.pull_request.draft == false)
+            ) &&
+            env.HAS_CLAWSWEEPER_APP_PRIVATE_KEY == 'true'
+          }}
+        continue-on-error: true
+        env:
+          ACK_TOKEN: ${{ steps.pr_ack_token.outputs.token }}
+          TARGET_REPO: ${{ github.repository }}
+          ITEM_NUMBER: ${{ github.event.pull_request.number }}
+          SOURCE_ACTION: ${{ github.event.action }}
+        run: |
+          set -euo pipefail
+          if [ -z "$ACK_TOKEN" ]; then
+            echo "::notice::Skipping ClawSweeper pull request acknowledgement because no target credential is configured."
+            exit 0
+          fi
+          has_ack_marker() {
+            jq -e \
+              --arg marker_prefix "clawsweeper-pr-ack:" \
+              --arg marker_suffix " item=$ITEM_NUMBER -->" \
+              'any(.[]; (.body // "") as $body | ($body | contains($marker_prefix)) and ($body | contains($marker_suffix)))' \
+              <<< "$1" >/dev/null
+          }
+          comments="$(GH_TOKEN="$ACK_TOKEN" gh api \
+            "repos/$TARGET_REPO/issues/$ITEM_NUMBER/comments?per_page=100")"
+          if has_ack_marker "$comments"; then
+            echo "ClawSweeper pull request acknowledgement already exists."
+            exit 0
+          fi
+          # opened and ready_for_review can fire seconds apart for the same
+          # pull request, and both runs can list comments before either
+          # acknowledgement is visible. Wait, then recheck right before
+          # posting; a superseding run cancels this one while it sleeps.
+          sleep 15
+          comments="$(GH_TOKEN="$ACK_TOKEN" gh api \
+            "repos/$TARGET_REPO/issues/$ITEM_NUMBER/comments?per_page=100")"
+          if has_ack_marker "$comments"; then
+            echo "ClawSweeper pull request acknowledgement already exists."
+            exit 0
+          fi
+          ack_body="$(printf '%s\n' \
+            "<!-- clawsweeper-pr-ack:$SOURCE_ACTION item=$ITEM_NUMBER -->" \
+            "🦞👀" \
+            "ClawSweeper picked this up." \
+            "" \
+            "Pull request received. I will update this pull request when review starts.")"
+          ack_payload="$(jq -nc --arg body "$ack_body" '{body:$body}')"
+          GH_TOKEN="$ACK_TOKEN" gh api \
+            "repos/$TARGET_REPO/issues/$ITEM_NUMBER/comments" \
+            --method POST \
+            --input - <<< "$ack_payload"
+
+      - name: Dispatch exact ClawSweeper review
+        if: ${{ github.event_name != 'issue_comment' }}
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          TARGET_REPO: ${{ github.repository }}
+          TARGET_BRANCH: ${{ github.event.repository.default_branch }}
+          ITEM_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          ITEM_KIND: ${{ github.event_name == 'pull_request_target' && 'pull_request' || 'issue' }}
+          SOURCE_EVENT: ${{ github.event_name }}
+          SOURCE_ACTION: ${{ github.event.action }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::notice::Skipping ClawSweeper dispatch because no dispatch credential is configured."
+            exit 0
+          fi
+          ingress_fingerprint="$(node <<'NODE'
+          const crypto = require("node:crypto");
+          const fs = require("node:fs");
+          const event = JSON.parse(fs.readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"));
+          const pullRequest = event.pull_request && typeof event.pull_request === "object"
+            ? event.pull_request
+            : {};
+          const headSha = String(pullRequest.head?.sha || "").trim().toLowerCase();
+          const updatedAt = String(pullRequest.updated_at || "").trim();
+          if (
+            process.env.ITEM_KIND !== "pull_request" ||
+            !/^[0-9a-f]{40}$/.test(headSha) ||
+            !updatedAt
+          ) {
+            process.stdout.write("");
+          } else {
+            process.stdout.write(
+              crypto
+                .createHash("sha256")
+                .update(
+                  JSON.stringify({
+                    version: 1,
+                    target_repo: String(process.env.TARGET_REPO || "").toLowerCase(),
+                    item_number: Number(process.env.ITEM_NUMBER),
+                    action: String(process.env.SOURCE_ACTION || ""),
+                    head_sha: headSha,
+                    updated_at: updatedAt,
+                    body: typeof pullRequest.body === "string" ? pullRequest.body : "",
+                    label: String(event.label?.name || ""),
+                  }),
+                )
+                .digest("hex"),
+            );
+          }
+          NODE
+          )"
+          payload="$(jq -nc \
+            --arg target_repo "$TARGET_REPO" \
+            --arg target_branch "$TARGET_BRANCH" \
+            --argjson item_number "$ITEM_NUMBER" \
+            --arg item_kind "$ITEM_KIND" \
+            --arg source_event "$SOURCE_EVENT" \
+            --arg source_action "$SOURCE_ACTION" \
+            --arg ingress_fingerprint "$ingress_fingerprint" \
+            --argjson supersedes_in_progress "$SUPERSEDES_IN_PROGRESS" \
+            '{event_type:"clawsweeper_item",client_payload:({target_repo:$target_repo,target_branch:$target_branch,item_number:$item_number,item_kind:$item_kind,source_event:$source_event,source_action:$source_action,supersedes_in_progress:$supersedes_in_progress} + (if $ingress_fingerprint != "" then {ingress_route:"target_dispatcher",ingress_fingerprint:$ingress_fingerprint} else {} end))}')"
+          gh api repos/openclaw/clawsweeper/dispatches \
+            --method POST \
+            --input - <<< "$payload"
+
+      - name: Acknowledge and dispatch ClawSweeper comment
+        if: >-
+          ${{
+            github.event_name == 'issue_comment' &&
+            steps.comment_filter.outputs.is_command == 'true'
+          }}
+        env:
+          DISPATCH_TOKEN: ${{ steps.token.outputs.token }}
+          TARGET_TOKEN: ${{ steps.target_token.outputs.token }}
+          TARGET_REPO: ${{ github.repository }}
+          ITEM_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          COMMENT_BODY: ${{ github.event.comment.body }}
+          AUTHOR_ASSOCIATION: ${{ github.event.comment.author_association }}
+          SOURCE_ACTION: ${{ github.event.action }}
+        run: |
+          if [ -z "$DISPATCH_TOKEN" ]; then
+            echo "::notice::Skipping ClawSweeper dispatch because no dispatch credential is configured."
+            exit 0
+          fi
+          body_file="$RUNNER_TEMP/clawsweeper-comment-body.txt"
+          printf '%s\n' "$COMMENT_BODY" > "$body_file"
+          if grep -Eiq '<!--[[:space:]]*clawsweeper-proof-nudge([[:space:]]|-->)' "$body_file"; then
+            echo "Ignoring ClawSweeper proof-nudge comment."
+            exit 0
+          fi
+          if [ -n "$TARGET_TOKEN" ]; then
+            GH_TOKEN="$TARGET_TOKEN" gh api -X POST \
+              -H "Accept: application/vnd.github+json" \
+              "repos/$TARGET_REPO/issues/comments/$COMMENT_ID/reactions" \
+              -f content="eyes" >/dev/null || true
+          fi
+          status_comment_id=""
+          if [ -n "$TARGET_TOKEN" ]; then
+            case "$AUTHOR_ASSOCIATION" in
+              OWNER|MEMBER|COLLABORATOR)
+                status_body="$(printf '%s\n' \
+                  "<!-- clawsweeper-command-ack:$COMMENT_ID -->" \
+                  "🦞👀" \
+                  "ClawSweeper picked this up." \
+                  "" \
+                  "Command router queued. I will update this comment with the next step.")"
+                status_payload="$(jq -nc --arg body "$status_body" '{body:$body}')"
+                status_err="$(mktemp)"
+                if status_response="$(GH_TOKEN="$TARGET_TOKEN" gh api \
+                  "repos/$TARGET_REPO/issues/$ITEM_NUMBER/comments" \
+                  --method POST \
+                  --input - <<< "$status_payload" 2>"$status_err")"; then
+                  status_comment_id="$(jq -r '.id // empty' <<< "$status_response")"
+                else
+                  cat "$status_err" >&2
+                  echo "::warning::Could not create ClawSweeper queued status comment; dispatching command router without one."
+                fi
+                rm -f "$status_err"
+                ;;
+            esac
+          fi
+          payload="$(jq -nc \
+            --arg target_repo "$TARGET_REPO" \
+            --argjson item_number "$ITEM_NUMBER" \
+            --argjson comment_id "$COMMENT_ID" \
+            --arg status_comment_id "$status_comment_id" \
+            --arg source_event "issue_comment" \
+            --arg source_action "$SOURCE_ACTION" \
+            '{event_type:"clawsweeper_comment",client_payload:({target_repo:$target_repo,item_number:$item_number,comment_id:$comment_id,source_event:$source_event,source_action:$source_action,max_comments:"1"} + (if $status_comment_id != "" then {status_comment_id:($status_comment_id|tonumber)} else {} end))}')"
+          GH_TOKEN="$DISPATCH_TOKEN" gh api repos/openclaw/clawsweeper/dispatches \
+            --method POST \
+            --input - <<< "$payload"
+```
+
+`target_branch` is branch authority from the signed event repository payload,
+not a guess. Carrying it lets legacy intake enqueue without an extra GitHub API
+read. During a rolling upgrade, a branchless legacy payload is held in the
+durable control plane until the target App resolves and validates the repository
+default branch; it is never silently rewritten to `main`.
+
+Non-draft pull request receipts get one best-effort `clawsweeper-pr-ack`
+comment. `opened` and `ready_for_review` can fire seconds apart when a draft is
+marked ready immediately after creation, and both runs can list comments before
+either acknowledgement is visible. The acknowledgement step therefore matches
+any existing `clawsweeper-pr-ack` marker for the item, then waits and rechecks
+right before posting; when a superseding event arrives during that wait, the
+shared concurrency group cancels the sleeping run before it posts.
+
+Comments are a lightweight trigger only when the body contains a ClawSweeper
+command, and generated proof-nudge comments are explicitly ignored before command
+matching. The target workflow reacts with `eyes` and creates one visible queued
+status comment for maintainer-authored commands when target write permission is
+available, but both acknowledgement writes are best-effort. It must still dispatch
+`clawsweeper_comment` to the comment router when acknowledgement or queued-comment
+creation gets a target-repository 403. The dispatch carries the exact source
+comment id and, when available, the queued status comment id. The router edits
+that queued comment in place instead of posting a second reply.
+Exact comment dispatches scan only that comment and use a per-comment receiver
+concurrency group, so one maintainer command does not wait behind an unrelated
+command on the same repository. The scheduled sweep remains a five-minute
+fallback. Bot-authored label churn is also ignored. Human
+Label changes never directly trigger an exact review. Content-changing events
+such as issue edits and PR synchronizes update the desired review revision. The
+receiver coalesces by repository and item number, then dispatches only a leased
+executor for the newest revision.
+
+For sub-5s acknowledgement, use the GitHub App webhook receiver instead of
+waiting for GitHub Actions to start the target dispatcher. The hosted Worker
+endpoint is `/github/webhook`; the local equivalent is
+`pnpm run build:repair && pnpm run repair:comment-webhook`. It verifies
+`CLAWSWEEPER_WEBHOOK_SECRET`, accepts eligible public `openclaw/*` and
+`steipete/*` `issue_comment`, `issues`, and `pull_request` events, mints a
+target installation token for acknowledgement/comment reactions, mints the
+`openclaw/clawsweeper` installation token for repository dispatch, and queues
+exact `clawsweeper_comment` or `clawsweeper_item` work. The durable Worker
+queue dispatches at most 128 leased exact-review executors, with up to 120 active
+reviews per target repository. Keep the Actions
+dispatcher installed as a compatibility fallback; its legacy dispatch is
+bridged into the same queue before Codex starts.
+
+The receiver keeps the review lane proposal-only, then runs exact apply for the
+selected item with only immediate-safe close reasons enabled:
+`implemented_on_main` and `duplicate_or_superseded`. Normal scheduled apply
+still handles the broader backlog, with `stale_insufficient_info` and
+`mostly_implemented_on_main` blocked until the item is at least 60 days old;
+stale-insufficient-info issues also require 60 days without a non-bot comment.
+
+## Cross-route exact-review identity
+
+The direct GitHub App webhook and this compatibility dispatcher are independent
+reliability routes. Do not disable either one. For pull requests, the template
+above emits an opaque SHA-256 fingerprint of the immutable event snapshot
+(repository, number, action, head SHA, update timestamp, body, and label). The
+ClawSweeper durable queue coalesces only the matching fingerprint and resolved
+target branch when it has seen it from the other route. A target default-branch
+change therefore does not cross-route-coalesce. It also cannot let an unverified
+fallback replace an already verified direct source decision; that fallback is
+recorded as stale source. If the fallback arrives first, the later verified
+direct decision promotes that same queue item instead of creating another one.
+A route with no valid fingerprint remains admissible when no verified direct
+decision exists, so a legacy-only delivery stays a safe fallback. The durable
+receipt remains after a completed review, so a delayed matching counterpart is
+also suppressed rather than recreating the completed review. A fallback that
+the queue rejects as stale is not an admission receipt, so it cannot suppress
+the later verified direct event.
+
+Before enabling this protocol for a target repository, roll out the dispatcher
+and verify direct-only, legacy-only, cross-route duplicate, later body/revision,
+and maintainer-command cases. The hash is an opaque queue receipt, not a
+head-SHA dedupe key; body and metadata updates therefore produce a new event
+identity.
+
+`openclaw/clawhub` dispatches are intentionally skipped while the receiver
+variable `CLAWSWEEPER_ENABLE_CLAWHUB` is not `1`. Enable it only after the
+ClawSweeper GitHub App is installed on `openclaw/clawhub`; otherwise the
+receiver cannot mint the target read/write tokens.
+
+The event job creates only a target read token before Codex runs. The target
+write token and the repository push token are introduced after Codex exits, and
+the same `apply-decisions` guard path still re-fetches the item before any
+comment or close mutation.
+
+## Rate-limit-safe CI setup
+
+Install one dispatcher workflow per target repository. Keep the event fanout
+inside that workflow; do not add separate comment, spam, or generic-activity
+dispatch workflows in the target repository.
+
+The full dispatcher example above is the copy-pasteable job definition. Its
+important rate-limit properties are:
+
+```yaml
+name: ClawSweeper Dispatch
+
+on:
+  issues:
+    types: [opened, reopened, edited, labeled, unlabeled]
+  issue_comment:
+    types: [created, edited]
+  pull_request_target:
+    types: [opened, reopened, synchronize, ready_for_review, edited, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clawsweeper-dispatch-${{ github.repository }}-${{ github.event.issue.number || github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event.action == 'edited' || github.event.action == 'synchronize' || github.event.action == 'ready_for_review' }}
+```
+
+The job mints one short-lived `clawsweeper` App token scoped to
+`openclaw/clawsweeper`, then sends one `clawsweeper_item` or
+`clawsweeper_comment` `repository_dispatch`. For comments, the
+`Pre-filter ClawSweeper comment` step runs before the target write token is
+minted, so ordinary comments consume neither a target installation token nor a
+dispatch. The prefilter is only an ingress guard: `/clawsweeper` may carry any
+supported subcommand, while `/review`, `/autoclose`, and `/auto-merge` (with
+spaces or tabs allowed between `auto` and `merge`) are the standalone aliases.
+The router remains authoritative. Do not use a PAT or dispatch the same comment
+through both the exact router and a second spam/generic workflow.
+
+To verify a target installation, open a pull request or issue and confirm one
+`ClawSweeper Dispatch` run. Add a maintainer comment containing `@clawsweeper`
+or a supported slash command and confirm one `clawsweeper_comment` dispatch.
+An ordinary comment should produce no ClawSweeper comment dispatch and no
+target-token step. If the target app secret is absent, the workflow should
+finish with a notice rather than fall back to a maintainer PAT.
+
+The ClawSweeper `github-activity` workflow performs spam-candidate
+classification in-process and only dispatches the scanner for an accepted
+candidate. This keeps ordinary comments to one activity run instead of an
+activity run plus a second intake workflow. Preserve the source delivery or
+comment id in every payload so receiver-side deduplication can collapse
+redeliveries.

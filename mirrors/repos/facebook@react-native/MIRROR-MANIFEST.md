@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `facebook/react-native` — 26 default patterns, 0 followed patterns, 1 file(s) materialized.
+Mirror of `facebook/react-native` — 26 default patterns, 3 followed patterns, 5 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `facebook/react-native` — 26 default patterns, 0 followed patterns, 
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 1 |
+| Followed pats | 3 |
+| Files         | 5 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,9 @@ Mirror of `facebook/react-native` — 26 default patterns, 0 followed patterns, 
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `CONTRIBUTING.md`
+- `CODE_OF_CONDUCT.md`
+- `ECOSYSTEM.md`
 
 ## File Index
 
@@ -59,7 +61,11 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`packages/react-native-compatibility-check/AGENTS.md`](packages/react-native-compatibility-check/AGENTS.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`packages/react-native-compatibility-check/AGENTS.md`](packages/react-native-compatibility-check/AGENTS.md) |
+| 3 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 4 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 5 | → | [`ECOSYSTEM.md`](ECOSYSTEM.md) |
 
 ---
 

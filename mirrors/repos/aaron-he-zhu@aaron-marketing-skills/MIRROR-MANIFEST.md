@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 51 followed patterns, 187 file(s) materialized.
+Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 52 followed patterns, 188 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 51 foll
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 51 |
-| Files         | 187 |
+| Followed pats | 52 |
+| Files         | 188 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `aaron-he-zhu/aaron-marketing-skills` — 26 default patterns, 51 foll
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `docs/agent-compatibility.md`
+- `docs/agent-plugins-v1.md`
 - `docs/system-architecture.md`
 - `README.md`
 - `references/core-eeat-benchmark.md`
@@ -250,52 +251,53 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 139 | → | [`CONNECTORS.md`](CONNECTORS.md) |
 | 140 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
 | 141 | → | [`docs/agent-compatibility.md`](docs/agent-compatibility.md) |
-| 142 | → | [`docs/connector-playbook.md`](docs/connector-playbook.md) |
-| 143 | → | [`docs/context-engineering.md`](docs/context-engineering.md) |
-| 144 | → | [`docs/distribution.md`](docs/distribution.md) |
-| 145 | → | [`docs/README.de.md`](docs/README.de.md) |
-| 146 | → | [`docs/README.es.md`](docs/README.es.md) |
-| 147 | → | [`docs/README.fr.md`](docs/README.fr.md) |
-| 148 | → | [`docs/README.it.md`](docs/README.it.md) |
-| 149 | → | [`docs/README.ja.md`](docs/README.ja.md) |
-| 150 | → | [`docs/README.ko.md`](docs/README.ko.md) |
-| 151 | → | [`docs/README.pt.md`](docs/README.pt.md) |
-| 152 | → | [`docs/README.zh-Hant.md`](docs/README.zh-Hant.md) |
-| 153 | → | [`docs/README.zh.md`](docs/README.zh.md) |
-| 154 | → | [`docs/repo-family.md`](docs/repo-family.md) |
-| 155 | → | [`docs/system-architecture.md`](docs/system-architecture.md) |
-| 156 | → | [`email/README.md`](email/README.md) |
-| 157 | → | [`influencer/README.md`](influencer/README.md) |
-| 158 | → | [`launch/README.md`](launch/README.md) |
-| 159 | → | [`narrative/README.md`](narrative/README.md) |
-| 160 | → | [`PRIVACY.md`](PRIVACY.md) |
-| 161 | → | [`README.md`](README.md) |
-| 162 | → | [`references/audit-loop-protocol.md`](references/audit-loop-protocol.md) |
-| 163 | → | [`references/auditor-runbook.md`](references/auditor-runbook.md) |
-| 164 | → | [`references/auto-routing-scenarios.md`](references/auto-routing-scenarios.md) |
-| 165 | → | [`references/capability-profiles.md`](references/capability-profiles.md) |
-| 166 | → | [`references/cite-domain-rating.md`](references/cite-domain-rating.md) |
-| 167 | → | [`references/context-resolution.md`](references/context-resolution.md) |
-| 168 | → | [`references/core-eeat-benchmark.md`](references/core-eeat-benchmark.md) |
-| 169 | → | [`references/echo-benchmark.md`](references/echo-benchmark.md) |
-| 170 | → | [`references/humanizer-slop.md`](references/humanizer-slop.md) |
-| 171 | → | [`references/measurement-protocol.md`](references/measurement-protocol.md) |
-| 172 | → | [`references/policy-kernel.md`](references/policy-kernel.md) |
-| 173 | → | [`references/ramp-benchmark.md`](references/ramp-benchmark.md) |
-| 174 | → | [`references/roas-benchmark.md`](references/roas-benchmark.md) |
-| 175 | → | [`references/runtime-protocol.md`](references/runtime-protocol.md) |
-| 176 | → | [`references/scheduling.md`](references/scheduling.md) |
-| 177 | → | [`references/scoring-semantics.md`](references/scoring-semantics.md) |
-| 178 | → | [`references/send-benchmark.md`](references/send-benchmark.md) |
-| 179 | → | [`references/skill-contract.md`](references/skill-contract.md) |
-| 180 | → | [`references/star-benchmark.md`](references/star-benchmark.md) |
-| 181 | → | [`references/state-model.md`](references/state-model.md) |
-| 182 | → | [`references/tale-benchmark.md`](references/tale-benchmark.md) |
-| 183 | → | [`scripts/connectors/README.md`](scripts/connectors/README.md) |
-| 184 | → | [`SECURITY.md`](SECURITY.md) |
-| 185 | → | [`seo-geo/README.md`](seo-geo/README.md) |
-| 186 | → | [`social/README.md`](social/README.md) |
-| 187 | → | [`VERSIONS.md`](VERSIONS.md) |
+| 142 | → | [`docs/agent-plugins-v1.md`](docs/agent-plugins-v1.md) |
+| 143 | → | [`docs/connector-playbook.md`](docs/connector-playbook.md) |
+| 144 | → | [`docs/context-engineering.md`](docs/context-engineering.md) |
+| 145 | → | [`docs/distribution.md`](docs/distribution.md) |
+| 146 | → | [`docs/README.de.md`](docs/README.de.md) |
+| 147 | → | [`docs/README.es.md`](docs/README.es.md) |
+| 148 | → | [`docs/README.fr.md`](docs/README.fr.md) |
+| 149 | → | [`docs/README.it.md`](docs/README.it.md) |
+| 150 | → | [`docs/README.ja.md`](docs/README.ja.md) |
+| 151 | → | [`docs/README.ko.md`](docs/README.ko.md) |
+| 152 | → | [`docs/README.pt.md`](docs/README.pt.md) |
+| 153 | → | [`docs/README.zh-Hant.md`](docs/README.zh-Hant.md) |
+| 154 | → | [`docs/README.zh.md`](docs/README.zh.md) |
+| 155 | → | [`docs/repo-family.md`](docs/repo-family.md) |
+| 156 | → | [`docs/system-architecture.md`](docs/system-architecture.md) |
+| 157 | → | [`email/README.md`](email/README.md) |
+| 158 | → | [`influencer/README.md`](influencer/README.md) |
+| 159 | → | [`launch/README.md`](launch/README.md) |
+| 160 | → | [`narrative/README.md`](narrative/README.md) |
+| 161 | → | [`PRIVACY.md`](PRIVACY.md) |
+| 162 | → | [`README.md`](README.md) |
+| 163 | → | [`references/audit-loop-protocol.md`](references/audit-loop-protocol.md) |
+| 164 | → | [`references/auditor-runbook.md`](references/auditor-runbook.md) |
+| 165 | → | [`references/auto-routing-scenarios.md`](references/auto-routing-scenarios.md) |
+| 166 | → | [`references/capability-profiles.md`](references/capability-profiles.md) |
+| 167 | → | [`references/cite-domain-rating.md`](references/cite-domain-rating.md) |
+| 168 | → | [`references/context-resolution.md`](references/context-resolution.md) |
+| 169 | → | [`references/core-eeat-benchmark.md`](references/core-eeat-benchmark.md) |
+| 170 | → | [`references/echo-benchmark.md`](references/echo-benchmark.md) |
+| 171 | → | [`references/humanizer-slop.md`](references/humanizer-slop.md) |
+| 172 | → | [`references/measurement-protocol.md`](references/measurement-protocol.md) |
+| 173 | → | [`references/policy-kernel.md`](references/policy-kernel.md) |
+| 174 | → | [`references/ramp-benchmark.md`](references/ramp-benchmark.md) |
+| 175 | → | [`references/roas-benchmark.md`](references/roas-benchmark.md) |
+| 176 | → | [`references/runtime-protocol.md`](references/runtime-protocol.md) |
+| 177 | → | [`references/scheduling.md`](references/scheduling.md) |
+| 178 | → | [`references/scoring-semantics.md`](references/scoring-semantics.md) |
+| 179 | → | [`references/send-benchmark.md`](references/send-benchmark.md) |
+| 180 | → | [`references/skill-contract.md`](references/skill-contract.md) |
+| 181 | → | [`references/star-benchmark.md`](references/star-benchmark.md) |
+| 182 | → | [`references/state-model.md`](references/state-model.md) |
+| 183 | → | [`references/tale-benchmark.md`](references/tale-benchmark.md) |
+| 184 | → | [`scripts/connectors/README.md`](scripts/connectors/README.md) |
+| 185 | → | [`SECURITY.md`](SECURITY.md) |
+| 186 | → | [`seo-geo/README.md`](seo-geo/README.md) |
+| 187 | → | [`social/README.md`](social/README.md) |
+| 188 | → | [`VERSIONS.md`](VERSIONS.md) |
 
 ---
 

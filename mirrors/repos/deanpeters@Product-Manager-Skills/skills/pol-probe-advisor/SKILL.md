@@ -13,6 +13,8 @@ scenarios:
   - "Which Proof of Life probe should I use to test demand for this idea?"
   - "Help me pick the right validation method for an onboarding hypothesis"
   - "I have a risky AI concept. What PoL probe should I run first?"
+theme: validation-experiments
+estimated_time: "15-20 min"
 ---
 
 ## Purpose

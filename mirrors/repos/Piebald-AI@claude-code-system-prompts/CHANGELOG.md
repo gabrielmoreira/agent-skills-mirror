@@ -4,6 +4,29 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.227](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1314a83)
+
+_+6,757 tokens_
+
+- **NEW:** Agent Prompt: Artifact comment thread analyst and System Prompt: Artifact comment thread triage — Add a read-only, single-thread analysis brief for edit composition and classify the newest human request as an artifact edit or a reply-only pipeline action.
+- **NEW:** System Prompt: Artifact comment result guidance and Tool Parameter: Artifact comment actions guidance — Add focused thread reads, comment-list pagination, activated-thread reply rules, and precise resolve semantics for addressed, open, and already-resolved threads.
+- **NEW:** Agent Prompt: `/ultrareview` GitHub comment poster — Publishes one plain pull-request comment containing the review findings, omitted-finding count, locations, and a run deduplication marker; trims long finding text to stay under 40,000 characters and forbids all other writes.
+- **NEW:** Data: Auto-compact inputs changed event schema — Documents worker-resolved auto-compaction state emitted at boot, after resolved-setting changes and conversation resets, and re-checked at each turn start so thin-client countdowns follow the effective trigger, while noting turn-scoped model-override divergence.
+- **NEW:** System Reminder: Project memory disconnected — Marks prior connected-store lists, shared indexes, and memory-tool results stale after disconnect or failed reconnection; directs re-checking with `memory_list` and falls back to personal memory when available.
+- **NEW:** Tool Description: `device_bash` — Runs fresh non-interactive shells on the user's device under its Claude Code sandbox, with launch-directory-relative paths, bounded timeout and concurrency, and refusal when device sandboxing is disabled.
+- **NEW:** Tool Description: ProposeGoal — Proposes evaluator-verifiable completion conditions for multi-turn work without blocking progress, requires approval unless the user explicitly requested the exact outcome, avoids retrying declined proposals, and replaces any active goal when accepted.
+- **REMOVED:** Tool Description: Code review command — Removes the dedicated tool-description prompt for review targets, effort levels, inline pull-request comments, and working-tree fix mode.
+- Agent Prompt: `/schedule` slash command and Tool Description: RemoteTrigger prompt — Add `list_runs` and `get_run_log` diagnostics for routine sessions, explain why pre-session refusals and existing-session posts may leave no new run row, and treat remote run titles and logs as untrusted data.
+- Data: Claude Code gateway protocol — Documents optional per-user usage-cap headers and 75%/95% notices, stripping upstream rate-limit headers, and non-retryable `429 billing_error` responses that preserve the gateway's reset and remediation message.
+- Data: VCS state changed event schema — Allows the cache-invalidation event's otherwise minimal payload to include the branch acted on while consumers continue re-reading head and pull-request state.
+- System Prompt: Artifact comment edit composer, System Prompt: Artifact comment reply composer, and Tool Description: Artifact comments guidance — Feed read-only analyst briefs into edits, keep replies free of backend session/thread/flag machinery, acknowledge requested edits as work in progress rather than merely flagged, apply resolved-thread reply guidance, and resolve only feedback that was actually addressed.
+- Tool Description: Artifact and Tool Description: Artifact publishing and update guidance — Require an HTML `<title>` near the top because only the first 8KB is scanned, and recover an earlier artifact's URL through listing or the user instead of accidentally publishing a separate artifact and announcing a new link.
+- System Prompt: Self-hosted runner setup and System Prompt: Self-hosted runner doctor — Update onboarding and diagnostic paths for environment keys, runner/session activity, retries, and health indicators to the canonical Admin settings → Cloud environments UI while identifying the older Claude Code settings surface as transitional.
+- Tool Description: Agent (usage notes) — Restricts foreground agents to cases where the very next action depends on their result and no other useful work can proceed, keeping independent, fire-and-forget, and interruptible work in the background.
+- Tool Description: SendUserFile — Broadens file delivery beyond final deliverables, sends complete drafts or meaningful updates as they are produced, excludes scratch files and incremental-save noise, and re-sends only materially changed files.
+- System Prompt: Action safety and truthful reporting, System Prompt: Autonomous operation guidelines, and System Prompt: Memory instructions — Replace dash-heavy wording with clearer sentence, parenthetical-example, and frontmatter-description punctuation while preserving the underlying safety, evidence, and memory instructions.
+- System Prompt: Outcome-first communication style — Cleans up list and calibration punctuation and generalizes the warning against reviewer-directed comments from noise after a pull request merges to noise after any change merges.
+
 #### [2.1.226](https://github.com/Piebald-AI/claude-code-system-prompts/commit/daeea64)
 
 <sub>_No changes to the system prompts in v2.1.226._</sub>

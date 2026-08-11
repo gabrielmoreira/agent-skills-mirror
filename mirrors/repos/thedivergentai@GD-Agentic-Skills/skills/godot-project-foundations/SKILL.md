@@ -123,6 +123,7 @@ Full naming table, typed-GDScript migration, EventBus/SceneManager/metadata samp
 - [godot-gdscript-mastery](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-gdscript-mastery/SKILL.md) — Typed GDScript, style, and warning-system fluency before enforcing naming and scaffold conventions.
 
 #### Complements
+- [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — When opening or scaffolding a project on an older engine version, hop to the library target before enforcing current foundations.
 - [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Boot order and ownership rules for Managed Autoload / EventBus singletons registered from a clean project root.
 - [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Feature folders become composable scene modules; parents wire children instead of growing monolithic managers.
 - [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Extends `BaseDataResource`-style reactive Resources into full data-driven catalogs without shared mutation.

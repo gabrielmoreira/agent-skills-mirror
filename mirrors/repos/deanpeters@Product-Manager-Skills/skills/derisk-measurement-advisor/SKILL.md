@@ -21,6 +21,7 @@ scenarios:
   - "We're about to put this on the roadmap. What could go wrong internally and externally?"
   - "Is this idea worth the squeeze? What should we test first?"
 estimated_time: "15-20 min"
+theme: validation-experiments
 ---
 
 ## Purpose

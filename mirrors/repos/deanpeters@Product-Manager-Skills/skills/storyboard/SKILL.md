@@ -5,6 +5,15 @@ description: Create a six-frame storyboard that shows a user's journey from prob
 intent: >-
   Create a 6-frame visual narrative that tells the story of a user's journey from problem to solution, using the classic storytelling arc to build empathy, illustrate value, and make abstract product concepts concrete. Use this to align stakeholders, pitch features, communicate vision, or test if your solution resonates emotionally before building it.
 type: component
+theme: pm-artifacts
+best_for:
+  - "Showing a user's journey from problem to solution in six frames"
+  - "Getting fast alignment without building anything"
+  - "Turning an abstract concept into something people can react to"
+scenarios:
+  - "I need to pitch a concept next week and slides aren't landing"
+  - "The team can't agree on the experience — show me the journey frame by frame"
+estimated_time: "20-30 min"
 ---
 
 

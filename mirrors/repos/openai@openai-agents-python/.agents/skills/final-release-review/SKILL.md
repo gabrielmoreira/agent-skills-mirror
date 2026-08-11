@@ -12,11 +12,11 @@ Audit `BASE_TAG...TARGET` in one of two modes:
 - **Pre-release planning:** use when the user asks to plan the next release or when the target, normally `origin/main`, does not yet declare a release candidate. The user may still supply a tentative `patch` or `minor` intent. Recommend the compatible type; do not treat unchanged package metadata as a blocker.
 - **Final candidate:** use when the user asks for a final candidate decision, the target is a release branch, or target package metadata has already been bumped beyond BASE for the next release. Compare the candidate intent with the minimum release type required by the diff.
 
-In both modes, find concrete regressions and release risks, independently determine version compatibility, review the latest open documentation PRs before claiming coverage is missing, and produce an actionable release handoff. Keep documentation readiness separate from the release gate.
+In both modes, find concrete regressions and release risks, independently determine version compatibility, review the latest open documentation PRs before claiming coverage is missing, and produce an actionable release handoff. Keep documentation readiness separate from the release gate. The release call is a controlling checker result: callers must stop on **BLOCKED** and may continue only on **GREEN LIGHT TO SHIP**. Producing the report text is not itself a passing result.
 
 ## Quick start
 
-1. Ensure the repository root is `openai-agents-python`.
+1. Ensure the repository root is `openai-agents-python`. When a caller supplies a dedicated candidate worktree, run every local inspection from that worktree rather than another checkout of the repository.
 2. Sync remote tags and choose the previous release:
    ```bash
    BASE_TAG="$(.agents/skills/final-release-review/scripts/find_latest_release_tag.sh origin 'v*')"
@@ -45,6 +45,8 @@ In both modes, find concrete regressions and release risks, independently determ
 7. Audit the diff with `references/review-checklist.md`, determine the minimum release type, and prove or dismiss each candidate against the released contract.
 8. Discover and review relevant open documentation PRs using current read-only GitHub state. Do not infer coverage from local branches, titles, or historical context.
 9. Report the release intent, ship/block gate, risk assessment, documentation coverage, and conditional minor-release Key Changes draft.
+
+For a final candidate reviewed as `TARGET=HEAD`, also require `HEAD` to be the exact target in the candidate checkout, inspect the checked-out branch and release-owned files directly, and keep working-tree changes outside the commit from being mistaken for reviewed candidate content.
 
 ## Release intent and versioning policy
 
@@ -85,6 +87,8 @@ In both modes, find concrete regressions and release risks, independently determ
   - Unchanged package version metadata in pre-release planning mode.
 - A documentation review may reveal an underlying runtime or compatibility defect. Block only for that defect, not for the documentation state.
 - A green gate must still explain important user-visible release surfaces.
+- A caller must treat any target, base, candidate-content, version-metadata, lockfile, or contract change after review as invalidating the gate. The changed candidate requires a complete new review and a new release call.
+- Never issue a green release call merely because the report template is complete. The target diff and applicable checked-out candidate contents must have been inspected first.
 
 ## Workflow
 
@@ -94,6 +98,18 @@ In both modes, find concrete regressions and release risks, independently determ
 - Prefer a user-specified base tag, but still refresh remote tags.
 - Assume the target passed repository CI unless told otherwise. Do not rerun routine unit, lint, formatting, type, or coverage checks by default.
 - Use diff stats, directory distribution, commit order, and name status to identify high-risk areas. Read changed tests as behavioral evidence, not as proof by themselves.
+
+### Inspect a materialized candidate checkout
+
+In final-candidate mode, when the caller provides a dedicated checkout or worktree:
+
+- Resolve and record the checkout root, current branch, `HEAD`, and clean status before auditing. Do not switch to a different checkout that happens to share the same Git object database.
+- Require `TARGET=HEAD` to resolve to the checked-out commit. Treat detached HEAD, a mismatched release branch, uncommitted release-owned files, or unrelated changed paths as candidate inconsistency.
+- Read `pyproject.toml`, `uv.lock`, and `tests/fixtures/released_api_contract.json` from that checkout. Verify the intended version, editable `openai-agents` lock entry, contract baseline, and contract `baseline_commit` against the release branch and commit parent.
+- Inspect the exact commit diff and confirm that the materialized release commit owns only its expected release manifest when the invoking workflow defines one.
+- Keep the checkout path as local evidence for the caller, but do not put local paths into copy-ready release text.
+
+These checks make the final-candidate review a release gate. The report remains the human-readable evidence and PR-description source for a green result; it does not replace the checks.
 
 ### Audit contracts and prove findings
 

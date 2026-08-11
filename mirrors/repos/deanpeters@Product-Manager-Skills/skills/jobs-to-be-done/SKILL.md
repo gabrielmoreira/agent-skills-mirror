@@ -5,6 +5,15 @@ description: Uncover customer jobs, pains, and gains in a structured JTBD format
 intent: >-
   Systematically explore what customers are trying to accomplish (functional, social, emotional jobs), the pains they experience, and the gains they seek. Use this framework to uncover unmet needs, validate product ideas, and ensure your solution addresses real motivations—not just surface-level feature requests.
 type: component
+theme: discovery-research
+best_for:
+  - "Clarifying what customers actually hire your product to do"
+  - "Repositioning a product around unmet needs rather than features"
+  - "Turning fuzzy user feedback into structured jobs, pains, and gains"
+scenarios:
+  - "Customers keep asking for features that don't fit our roadmap — what job are they hiring us for?"
+  - "We're repositioning and need to understand the unmet needs behind the switching behavior"
+estimated_time: "20-30 min"
 ---
 
 

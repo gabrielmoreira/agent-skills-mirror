@@ -2,7 +2,16 @@
 
 Incremental upgrade for topics this skill covers. Apply **one hop**, stabilize/test, then next. Never skip hops.
 
-If the project is still on Godot 3.x, use the official [Upgrading from Godot 3 to Godot 4](https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.html) guide first, then continue from 4.0.
+If the project is **< 4.0**, follow [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) era bridges (legacy → 3→4) until 4.0, then these hops. Official 3→4: [Upgrading from Godot 3 to Godot 4](https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.html).
+
+## 3.x → 4.0
+
+Official: [Upgrading from Godot 3 to Godot 4](https://docs.godotengine.org/en/stable/tutorials/migrating/upgrading_to_godot_4.html)
+
+- `SceneTree.change_scene` → `change_scene_to_file`.
+- `Node.filename` → `scene_file_path`.
+- `Viewport` → `SubViewport`; `ViewportContainer` → `SubViewportContainer`.
+- `Position2D`/`Position3D` → `Marker2D`/`Marker3D`.
 
 ## 4.0 → 4.1
 

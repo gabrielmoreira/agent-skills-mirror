@@ -13,7 +13,7 @@ description: "Environment diagnostics — check providers, auth, config, hooks, 
 
 ## Overview
 
-Run environment diagnostics across 11 check categories. Identifies misconfigured providers, stale state, broken hooks, and other issues that prevent Claude Octopus from working correctly.
+Run environment diagnostics across 14 check categories. Identifies misconfigured providers, stale plugin installations, stale state, broken hooks, and other issues that prevent Claude Octopus from working correctly.
 
 **Core principle:** Detect problems before they surface in workflows.
 
@@ -74,7 +74,7 @@ export OCTO_PLUGIN_ROOT
 bash "$OCTO_PLUGIN_ROOT/scripts/orchestrate.sh" doctor
 ```
 
-This runs all 11 check categories and displays a formatted report.
+This runs all 14 check categories and displays a formatted report.
 
 ### Step 2: Filter by Category (Optional)
 
@@ -82,8 +82,10 @@ If the user asks about a specific area, filter:
 
 ```bash
 bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor providers
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor companions
 bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor auth
 bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor config
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor updates
 bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor state
 bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor smoke
 bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor hooks
@@ -92,6 +94,7 @@ bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor skills
 bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor conflicts
 bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor agents
 bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor recurrence
+bash "${HOME}/.claude-octopus/plugin/scripts/orchestrate.sh" doctor cache
 ```
 
 ### Step 3: Check & Install Dependencies
@@ -108,7 +111,7 @@ If the check reports missing deps, offer to install them:
 bash "${HOME}/.claude-octopus/plugin/scripts/install-deps.sh" install
 ```
 
-This auto-installs: Codex CLI, Gemini CLI, jq, and the statusline resolver. Antigravity CLI (`agy`) setup is detected and reported with install guidance. For plugins (claude-mem, document-skills), it prints `/plugin install` commands the user must run manually.
+This auto-installs Codex CLI, jq, and the statusline resolver. Antigravity CLI (`agy`) setup is detected and reported with install guidance. For plugins (claude-mem, document-skills), it prints `/plugin install` commands the user must run manually.
 
 ### Step 4: Verbose or JSON Output
 
@@ -172,7 +175,6 @@ AskUserQuestion({
     multiSelect: true,
     options: [
       {label: "Codex CLI", description: "npm install -g @openai/codex"},
-      {label: "Gemini CLI", description: "brew install gemini-cli (macOS)"},
       {label: "Antigravity CLI", description: "Install agy, then verify with agy --version && agy models"},
       {label: "Skip all", description: "Continue with available providers"}
     ]
@@ -190,9 +192,11 @@ Offer to run the login command for the expired provider.
 
 | Category | What it checks |
 |----------|---------------|
-| `providers` | Claude Code version, Codex CLI installed, Gemini CLI installed, Antigravity CLI installed, Perplexity API key, Ollama local LLM (server + models), circuit breaker status, provider fallback history |
+| `providers` | Claude Code version, Codex CLI installed, Antigravity CLI installed, Perplexity API key, Ollama local LLM (server + models), circuit breaker status, provider fallback history |
+| `companions` | Optional companion tools and integrations |
 | `auth` | Authentication status for each provider |
 | `config` | Plugin version, install scope, feature flags |
+| `updates` | Loaded, installed, catalog, and cache versions; Claude marketplace auto-update; reload requirement |
 | `state` | Project state.json, stale results, workspace writable |
 | `smoke` | Smoke test cache, model configuration |
 | `hooks` | hooks.json validity, hook scripts |
@@ -201,7 +205,11 @@ Offer to run the login command for the expired provider.
 | `conflicts` | Conflicting plugins detection |
 | `agents` | Agent definitions, worktree isolation, CLI registration, version compatibility |
 | `recurrence` | Failure pattern detection — flags repeated quality gate failures, source hotspots, 48h trends |
-| `deps` | Software dependencies — Node.js, jq, Codex, Gemini, Antigravity CLIs, RTK token compression (gain stats + hook status), statusline resolver, recommended plugins |
+| `cache` | Cache size, freshness, and hygiene |
+
+Software dependency installation is checked separately by
+`scripts/install-deps.sh check` in Step 3, including Node.js, jq, provider CLIs,
+RTK token compression, the statusline resolver, and recommended plugins.
 
 
 ## Interpreting Results
@@ -215,10 +223,9 @@ All checks pass — no action needed.
 | Issue | Fix |
 |-------|-----|
 | Codex CLI not found | `npm install -g @openai/codex` or install via `codex login` |
-| Gemini CLI not found | Install Gemini CLI from Google |
 | Antigravity CLI not found | Install `agy`, then verify with `agy --version` and `agy models` |
 | Perplexity not configured | `export PERPLEXITY_API_KEY="pplx-..."` (optional) |
-| Auth expired | Re-run `codex login` or `gemini login` |
+| Auth expired | Re-run `codex login` or `agy login` |
 | Circuit breaker OPEN | Provider had 3+ consecutive transient failures — wait for cooldown or check provider status |
 | Stale state | Delete `.octo/state.json` and re-initialize |
 | Invalid hooks.json | Check `hooks.json` syntax — must be valid JSON |
@@ -322,7 +329,7 @@ Invoke this skill by asking Claude naturally, or run the orchestrator directly:
 
 | What to say / run | Action |
 |-------------------|--------|
-| "run Octopus doctor diagnostics" | Run all 11 categories |
+| "run Octopus doctor diagnostics" | Run all 14 categories |
 | "check Octopus providers" | Check provider installation only |
 | `bash "$OCTO_PLUGIN_ROOT/scripts/orchestrate.sh" doctor auth --verbose` | Detailed auth status |
 | `bash "$OCTO_PLUGIN_ROOT/scripts/orchestrate.sh" doctor --json` | Machine-readable output |

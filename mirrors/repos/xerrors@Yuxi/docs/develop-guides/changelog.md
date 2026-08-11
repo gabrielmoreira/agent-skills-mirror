@@ -6,6 +6,11 @@
 
 ## v0.7.2 (current)
 
+::: warning 升级提醒
+升级到 v0.7.2 后，管理员此前创建的 stdio MCP 会被禁用，也无法重新启用。请在详情页迁移为 SSE 或 Streamable HTTP，或直接删除；代码内置的系统 stdio MCP 不受影响。
+:::
+
+- 修复 MCP 管理接口可通过 stdio 启动任意本地进程的问题：用户配置仅允许 SSE/Streamable HTTP，运行时拒绝加载历史用户 stdio 记录，系统内置 stdio 的连接参数改为仅由代码维护；前端移除用户 stdio 配置入口，文档补充内置 stdio 的代码添加与验证方式。
 - 收窄知识库状态边界：读取模型统一收口至 `read_models.py`；创建、列表、详情与更新由 Manager 统一返回 `KnowledgeBaseSummary/Detail`，Router 只转换 HTTP 响应；Manager 协调查询配置、主记录与聚合统计，Repository 在行锁内合并统计投影；executor 接收 frozen `KnowledgeBaseConfig`，负责类型资源、文档操作与类型专属一致性检测，不再写知识库主记录。
 - 修复 Agent worker 知识库运行配置不一致：`get_kb_config` 从 Redis 读取最小 Config 快照，未命中时在 KB 级分布式锁内回源 PostgreSQL，Redis 连接故障时只读请求直接回源且不回填；更新与删除先可靠失效缓存再提交数据库，避免旧请求回填过期配置。查询参数在数据库行锁内合并，并发保存不再互相覆盖。
 - 精简知识库文档内容接口响应：`GET /api/knowledge/databases/{kb_id}/documents/{doc_id}/content` 不再返回分块内部的实体 ID 与抽取结果，避免向文档预览请求传输仅供知识图谱构建使用的数据。

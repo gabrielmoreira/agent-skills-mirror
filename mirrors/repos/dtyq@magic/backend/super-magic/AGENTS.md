@@ -46,6 +46,18 @@ return ToolResult.error("转换失败", extra_info={"path": "/tmp/file"})    # �
 - 同一个工具的一次输出中，时间格式、精度和时区口径必须一致
 - 如果原始时间字段可能是秒级或毫秒级时间戳，必须先规范化再展示，避免出现年份错误
 
+### 3.2 ToolResult 在 Code Mode 中的默认读取规则
+
+- `ToolResult.content` 是工具提供给模型的语义接口。无论成功或失败，都必须清楚说明执行状态、实际结果和必要的下一步信息，使模型只读 `content` 也能理解发生了什么并继续推理
+- `ToolResult.ok` 表示该工具所定义的业务操作是否成功，供代码做程序化分支判断，不是 `content` 的替代。不能只因请求完成、进程正常退出或代码未抛异常就返回 `ok=True`
+- `ok` 的成功标准由工具的业务契约决定。合法的空结果可以是成功；部分完成是否成功取决于该工具是否将其定义为有效结果。遇到空结果或部分完成时，`content` 必须清楚说明实际状态、完成范围和未完成原因
+- `ok` 与 `content` 的语义必须一致。发现现有工具将技术执行成功误报为业务成功，或结构化状态与模型可读说明矛盾时，应修正工具实现
+- `ToolResult.data` 是结构化编排接口，主要用于跨工具传递精确 ID、句柄、路径等字段，处理大数据量，连接同一管线的中间节点，或执行必须依赖结构化字段的程序分支
+- Skill 和 Code Mode 示例默认应打印并阅读 `result.content`。只有确实需要程序化编排时才读取 `result.data`，不要在 `content` 已足够时从 `data` 重新拼装一份语义摘要
+- 大型 `data` 不得完整打印进模型上下文。应在代码中完成筛选、聚合或校验，只输出结论、相关证据和后续所需的少量精确字段
+- 工具实现不能因为已经返回 `data` 就降低 `content` 质量；两者服务不同用途，`content` 必须始终能独立支持模型理解和继续决策
+- `ok=False` 不表示代码必须立即终止。调用方应先保留或输出 `content`，再根据步骤间的依赖关系决定重试、改用其它路径、继续独立步骤或向用户说明；只有该结果是后续步骤的必要前置时才终止管线
+
 ## 4. 给你（当前这个助手）的规则
 
 - 给用户看的所有内容——对话回复、方案说明、计划文档、`docs/plans/` 下的 Markdown——使用用户当前使用的语言
@@ -103,6 +115,8 @@ return ToolResult.error("转换失败", extra_info={"path": "/tmp/file"})    # �
 - 但只要某个工具仍可能被直接挂载给模型，它自身的提示词就必须足以支持独立使用；不要因为“这个能力已经写进 Skill”就把本应留在工具上的关键信息转移走
 - 只有在明确取消直接挂载工具入口并完成统一迁移后，才可以同步收缩该工具面向模型的高层提示内容
 - 判断标准：如果模型完全不读 Skill、只看工具定义，是否仍能正确理解并使用这个工具？如果不能，说明你把本应属于工具的信息错误地转移到了 Skill
+- `@tool(code_mode_only=True)` 是上述规则的明确例外：它只作为 Code Mode 的执行底座，不提供直接挂载入口。完整的模型使用说明、参数组合、返回值和示例必须维护在对应 Skill；工具代码只保留最小 schema 语义和运行时错误信息
+- CodeModeOnly 工具类附近必须用普通代码注释标明对应 Skill 的仓库路径。修改这类工具的模型提示词前，先检查并优先更新对应 Skill，避免把完整说明重新写回 Python
 
 ### 5.4 双语注释的适用范围与语言要求
 
@@ -182,7 +196,7 @@ return ToolResult.error("转换失败", extra_info={"path": "/tmp/file"})    # �
 
 ### 5.8 数据工具 Skill 编写原则
 
-- 数据 Skill 默认引导 Agent 阅读 `result.content`；`result.data`, `data_view` 只用于跨工具传递精确 ID 和结构化脚本
+- 数据工具同样遵循 3.2 的默认读取规则；`result.data`、`data_view` 只用于结构化编排，不替代 `result.content` 的模型语义
 - 主 Skill 不堆 data schema 字段清单；字段契约写进 reference/data-schema.md 或 reference/xxx-data-schema.md 中
 - schema 必须说明字段可能缺失、为空或类型随上游变化
 - schema 应提供结构查看方法：字段取不到时先打印 `data_view` 的 keys、类型和少量截断样例，不要将大量完整数据打印到 Agent 上下文中
@@ -210,6 +224,9 @@ return ToolResult.error("转换失败", extra_info={"path": "/tmp/file"})    # �
 - 稳定闭集字段优先使用 `Enum` / `StrEnum`
 - 明确结构优先使用 dataclass 或模型，不要滥用 `Dict`
 - 尽量减少不必要的 `Optional` / nullable
+- 内部稳定契约对象要直接访问字段，不要用 `getattr(obj, "field", default)` 掩盖契约缺失。缺字段应尽早暴露，说明上游对象、测试桩或类型定义需要修正
+- `getattr` 只用于边界层和弱契约对象，例如第三方 SDK 返回、历史 JSON、外部 payload、可选能力探测、日志/调试里的最佳努力展示。进入核心业务路径前应转成明确类型
+- 单元测试里的 mock / `SimpleNamespace` 必须补齐真实对象契约字段；不要为了迁就测试桩而放宽生产代码字段访问
 - 不要为了"类型完美"引入复杂状态机、过多子类或额外生命周期体系
 - 函数返回多个相关值时，用 dataclass 而不是裸元组——字段名比位置索引更能表达语义，也避免调用方写出 `a, b, c = foo()` 后不清楚各位含义。判断标准：如果调用方必须靠注释或文档才能理解元组各位是什么，就应该换成 dataclass
 
@@ -274,23 +291,48 @@ return ToolResult.error("转换失败", extra_info={"path": "/tmp/file"})    # �
 - 检查所有 `except Exception` / `except BaseException` / 裸 `except:` 块，确认不会吞掉 `CancelledError`。如果 fallback 逻辑需要在中断时跳过，在进入 fallback 前先检查 `agent_context.is_interruption_requested()`。
 - 新建的 `asyncio.create_task()` 子任务若需随父级一并取消（如调用子 Agent），在父级的 `_run_cleanup_registry` 中注册清理逻辑，不要依赖 Python 自动传播（父 Task 被 cancel 不会自动取消独立创建的子 Task）。
 
-## 12. 业务逻辑必须保持主线程单事件循环语义
+## 12. 长时间阻塞的工具必须续期活跃时间
+
+沙盒环境会检测进程闲置时间，超过阈值后自动杀掉沙盒。工具执行期间若长时间无输出（如等待后台任务、轮询 API 结果），沙盒会误判为闲置。
+
+统一入口 `app/tools/core/tool_keepalive.py`：
+
+```python
+from app.tools.core.tool_keepalive import start_tool_keep_alive, stop_tool_keep_alive
+
+keep_alive_task = start_tool_keep_alive(tool_context)
+try:
+    await some_long_blocking_operation()
+finally:
+    stop_tool_keep_alive(keep_alive_task)
+```
+
+规则：
+
+- 预期等待超过 60 秒的阻塞操作，必须启动续期
+- 续期默认每 30 秒调用一次 `agent_context.update_activity_time()`
+- `start_tool_keep_alive` 返回 `None` 时为 no-op（agent_context 不可用），`stop_tool_keep_alive` 接受 `None` 无副作用
+- 必须在 `finally` 中取消续期任务，避免泄漏
+- 对于自带轮询循环的工具（如 audio_understanding 的进度轮询），可以在每次轮询迭代中直接调用 `agent_context.update_activity_time()` 代替独立续期任务，效果等价
+- 不要与 `KeepaliveRegistry`（全局 72h 连接保活）混淆，两者职责不同：`tool_keepalive` 是工具执行期的短期续期，`KeepaliveRegistry` 是沙盒生命周期的长期保活
+
+## 13. 业务逻辑必须保持主线程单事件循环语义
 
 - 项目的业务逻辑一律运行在主线程的主事件循环中；`AgentDispatcher`、`AgentContext`、subagent 运行时、工具调度、运行时注册表等设施默认都建立在这个前提上
 - 子线程只允许用于文件 I/O、同步库封装、阻塞式 SDK 回调桥接等辅助工作，不允许在子线程中直接执行业务逻辑，也不允许直接读写上述运行时设施
 - 来自子线程的回调或事件，必须先通过 `asyncio.run_coroutine_threadsafe(...)` 或 `loop.call_soon_threadsafe(...)` 切回主事件循环，再进入业务逻辑
 - 默认不要为业务运行时设施增加多线程锁；如果未来某个设施必须被多线程直接访问，必须先明确这是架构变更，并单独设计线程安全边界，而不是局部补锁
 
-## 13. 工具新增后需在 `__init__.py` 显式导入
+## 14. 工具新增后需在 `__init__.py` 显式导入
 
 在 `app/tools/` 增加新工具，需同步在 `app/tools/__init__.py` 中 `import` 该类并加入 `__all__`。未在 `__init__.py` 显式导入将导致工具模块未被加载，运行期报错 `No module named 'app.tools.<tool_name>'`。
 
-## 14. 不要手动修改工具定义缓存
+## 15. 不要手动修改工具定义缓存
 
 - `config/tool_definitions.json` 是缓存文件，不要手动编辑
 - 修改工具的真实来源应为 `app/tools/` 下的工具代码；缓存如有需要应走项目既有生成流程刷新
 
-## 15. 工具失败时必须提供人类友好的错误展示
+## 16. 工具失败时必须提供人类友好的错误展示
 
 工具执行失败时，用户看到的 `remark` 和 `ToolDetail` 必须有信息量，不能只显示"工具调用失败"这类空洞文案。
 
@@ -303,7 +345,11 @@ return ToolResult.error("转换失败", extra_info={"path": "/tmp/file"})    # �
 
 存量工具的 `get_tool_detail()` 大多在失败时返回 `None`，等后续统一治理。新增工具必须遵守此规范。
 
-## 16. 工作区文件转 URL 必须走统一入口
+## 17. MagicFS 工作区不是临时目录
+
+`.workspace/` 是 MagicFS 接管的云端持久工作区，写入可能产生对象同步、checkpoint 和文件版本；即使随后删除本地文件，也不能视为已释放云端存储。临时脚本、中间文件、缓存、下载暂存和其它可重建数据不得写入 `.workspace/`，包括 `.workspace/.tmp` 等隐藏目录；应在 `tempfile.gettempdir()` 选择的操作系统临时根目录下创建语义明确的 `super-magic/<capability>/` 子目录，通过 `async_mkstemp` 等异步入口创建文件，并在 `finally` 中清理。不要把文件散落在系统临时根目录，也不要自行写死 `/tmp`。只有用户需要长期保留、下载、展示或继续编辑的最终文件才写入 `.workspace/`。不要因为路径以点开头、应用层不展示或会执行删除，就假设 MagicFS 不会记录或计费。
+
+## 18. 工作区文件转 URL 必须走统一入口
 
 `.workspace/` 下的本地文件转可访问 URL，统一调用：
 
@@ -342,7 +388,7 @@ xattr 缺失说明文件尚未与对象存储同步完成，应直接抛错让�
 - `app/api/routes/file.py::get_file_download_url`
   对外 HTTP API，路径由外部调用方传入，不属于"本机本地文件 → URL"的范畴。
 
-## 17. 深度参考文档索引
+## 19. 深度参考文档索引
 
 以下文档不需要常驻上下文，按需查阅：
 
@@ -354,10 +400,26 @@ xattr 缺失说明文件尚未与对象存储同步完成，应直接抛错让�
 | Skill 概念与加载链路 | `agents/guides/SKILLS_OVERVIEW.md` | 快速了解 Skill 是什么、加载方式、来源与模型使用规则时 |
 | Skill 开发指南 | `agents/guides/SKILLS_DEVELOPMENT_GUIDE.md` | 新建或修改 Skill、需要了解 SKILL.md 规范和最佳实践时 |
 
-## 18. 每次改动前自检
+## 20. 每次改动前自检
 
 - 这是在解决真实问题，还是在满足抽象冲动？
 - 这层包装有没有新增语义？
 - 这套命名是否贴合现有项目风格？
 - 这段内容到底是给模型、前端、用户还是程序员看的？
 - 这段文字最终会被 LLM 读到吗？如果是代码生成的系统文案，是否已使用英文？
+
+## 21. 大模型可用性是项目运行前提
+
+- super-magic 的正常运行环境始终至少有一个可调用的大模型；`auto` 模型必须可用，否则属于项目或基础设施故障，不是正常业务状态
+- 新增 AI Ability 时，不要把「没有任何模型可用」设计成可配置的正常模式，也不要提供以本地规则长期替代模型能力的关闭开关
+- 专属模型配置缺失时，应使用明确的默认模型，并按能力需要允许 fallback 到 `auto`
+- 确定性本地降级只用于模型配置异常、能力不匹配、调用失败或结构化输出非法等故障场景，不能把降级路径当作无模型运行方案
+
+## 22. Agent 上下文 fork 必须由统一入口管理
+
+- 完整上下文 fork 只能通过 `AgentContextSnapshotService` 编排；调用方不得直接复制 ChatHistory、session 或 Horizon 文件
+- 当前可 fork 的可重启上下文固定包括 ChatHistory messages、完整 session 文档和 Horizon 持久化状态
+- `AgentModelContext`、中断与清理状态、活动 run、活动 tool call、subagent runtime handle、token usage manager、streams 和事件 sink 都属于运行时状态，不得进入 fork
+- 后台压缩、`call_subagent(fork=True)` 和需要延续会话的 Python cron 必须复用同一套 snapshot 语义，不得增加调用方专属的局部 fork 分支
+- 新增需要随 Agent 重启延续且需要被 fork 的状态时，必须同时更新统一 snapshot 类型、`AgentContextSnapshotService` 的组件清单、状态 owner 的编解码入口和本节内容
+- 禁止重新增加 `ChatHistory.fork_from()`、`fork_source_chat_history`，或任何只复制部分上下文 JSON 文件的旁路

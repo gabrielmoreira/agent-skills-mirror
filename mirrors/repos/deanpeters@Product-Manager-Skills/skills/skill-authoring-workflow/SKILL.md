@@ -13,6 +13,8 @@ scenarios:
   - "Help me turn these workshop notes into a new PM skill"
   - "I need to update an existing skill without breaking the repo standards"
   - "What workflow should I use to author a new skill in this repo?"
+theme: meta-authoring
+estimated_time: "45-90 min"
 ---
 
 ## Purpose

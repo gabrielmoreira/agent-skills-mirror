@@ -5,6 +5,15 @@ description: Evaluate an AI product idea across outcomes, hypotheses, risks, and
 intent: >-
   Evaluate and propose AI product solutions using a structured canvas that assesses business outcomes, customer outcomes, problem framing, solution hypotheses, positioning, risks, and value justification. Use this to build a comprehensive, defensible recommendation for stakeholders and decision-makers—especially when proposing AI-powered features or products that carry higher uncertainty and risk.
 type: component
+theme: validation-experiments
+best_for:
+  - "Deciding whether an AI product idea deserves real investment"
+  - "Surfacing the risks and hypotheses behind an AI feature request"
+  - "Comparing AI solution options on outcomes rather than novelty"
+scenarios:
+  - "Leadership wants an AI feature and I need to evaluate whether it's worth building"
+  - "I have three AI solution options and need to compare them on outcomes and risk"
+estimated_time: "30-45 min"
 ---
 
 

@@ -1,10 +1,8 @@
 ---
 argument-hint: "[--all] [--staged] [--natural] [--push] [--close <issue_numbers>] [--finding <finding_ids>]"
 compatibility: Requires Git and ai-commit with automatic ai-coord stale-dirt baseline discovery on PATH.
-disable-model-invocation: false
 effort: medium
 name: commit
-user-invocable: true
 description:
   "Commit staged or intended changes: compose a Conventional Prefix or Natural Language message, then use ai-commit —
   with --all, --staged, --close, --finding, or --push."
@@ -23,9 +21,14 @@ automation that explicitly parses its stable TSV records; the normal skill flow 
 
 Arguments: `$ARGUMENTS`
 
+- By default, `ai-commit` reads `<git-root>/.agents/commit.toml`: `[message] format = "natural"` selects Natural
+  Language Format and `format = "conventional"` selects Conventional Prefix Format. A missing local file defaults to
+  Conventional Prefix Format. Use `--natural` or `--conventional` only as one-off overrides; do not add either flag
+  merely to reproduce repository policy.
 - `--all`: capture all worktree and index changes. This intentionally risks including another agent's work.
 - `--staged`: capture exactly the current index; do not add session paths. It conflicts with `--all`.
-- `--natural`: force Natural Language Format.
+- `--natural`: force Natural Language Format for this commit.
+- `--conventional`: force Conventional Prefix Format for this commit.
 - `--push`: request a push after commit. Otherwise push only when standing instructions authorize it.
 - `--close <issue_numbers>`: append one `Closes #N` trailer per positive decimal issue number; accept comma- or
   space-separated input.
@@ -44,7 +47,7 @@ If the requested operation is only to push a clean branch that is already ahead,
 Run one preparation command:
 
 ```bash
-ai-commit prepare [--all | --staged] [--natural] --diff full \
+ai-commit prepare [--all | --staged] [--natural | --conventional] --diff full \
   [--exclude-baseline '<path>=<oid>']... [-- <session-modified-paths>...]
 ```
 
@@ -83,12 +86,22 @@ Analyze the single prepared full diff. Do not prepare again to get different evi
 Compose one subject paragraph, an optional body paragraph, and one final trailer paragraph containing all issue and
 Agent-Session lines.
 
+`ai-commit` receives every `-m` value verbatim. Do not write `\\n` inside a quoted message: it is not a line break and
+the CLI rejects it. For a multi-line body, keep the shell quote open across real line breaks.
+
 ## 4. Commit the Transaction
 
 Run:
 
 ```bash
 ai-commit commit <transaction-id> -m '<subject>' [-m '<body>'] [-m '<trailers>'] [--push]
+```
+
+For example, a two-item body is one `-m` argument containing a physical newline:
+
+```bash
+ai-commit commit <transaction-id> -m '<subject>' -m '- first material change
+- second material change' [-m '<trailers>'] [--push]
 ```
 
 Append `--push` when explicitly requested or authorized by standing instructions. The same command handles default,

@@ -19,6 +19,9 @@ pytest --cov=openbiliclaw
 ## 开发顺序与配置约定
 v0.1 开发建议以 `docs/v0.1-todolist.md` 为准，按“连接 -> 理解 -> 发现 -> 推荐 -> 学习 -> 插件 -> 稳定交付”的里程碑顺序推进，避免跳过底层依赖直接做上层体验。配置样例使用 `config.example.toml`；本地调试时基于它生成 `config.toml`，并仅在本机保存 API Key、Cookie 等敏感信息。
 
+## Worktree 开发约定
+新增功能或修复 bug 必须先使用 `git worktree add` 创建独立 worktree 和对应分支，再在该 worktree 中编码、测试和提交；不得直接在当前主工作区实现这两类变更。开始前先确认当前工作区的未提交改动，不能覆盖、丢弃或混入已有改动。任务完成后保留清晰的分支边界，并在 worktree 中完成必要验证。
+
 ## 编码风格与命名约定
 Python 统一使用 4 空格缩进、类型注解和清晰的模块边界；公开 API 与核心数据结构应补充简洁 docstring。格式化与 lint 由 Ruff 管理，静态类型检查使用 MyPy 严格模式。模块文件名使用小写下划线风格，如 `openai_provider.py`；测试函数采用 `test_<behavior>` 命名。
 

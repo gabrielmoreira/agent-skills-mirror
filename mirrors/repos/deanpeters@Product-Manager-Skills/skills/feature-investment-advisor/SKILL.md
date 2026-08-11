@@ -13,6 +13,8 @@ scenarios:
   - "Should we build SSO for mid-market customers this quarter?"
   - "Evaluate whether an AI assistant feature is worth the investment"
   - "Help me decide if this roadmap request has enough ROI to build"
+theme: finance-metrics
+estimated_time: "15-25 min"
 ---
 
 

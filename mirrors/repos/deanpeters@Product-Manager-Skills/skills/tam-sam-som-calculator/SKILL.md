@@ -5,6 +5,15 @@ description: Calculate TAM, SAM, and SOM with explicit assumptions, methods, and
 intent: >-
   Guide product managers through calculating Total Addressable Market (TAM), Serviceable Available Market (SAM), and Serviceable Obtainable Market (SOM) for a product idea by asking adaptive, contextually relevant questions. Use this to build defensible market size estimates backed by real-world citations, economic projections, and population data—essential for pitching to investors, securing budget, or validating product-market fit.
 type: interactive
+theme: market-intelligence
+best_for:
+  - "Sizing a market for a business case an executive will question"
+  - "Making your market assumptions explicit and attackable"
+  - "Replacing a top-down guess with a defensible bottom-up estimate"
+scenarios:
+  - "I need market sizing for a business case our CFO will pick apart"
+  - "Our TAM number came from a slide nobody can source — rebuild it properly"
+estimated_time: "20-40 min"
 ---
 
 

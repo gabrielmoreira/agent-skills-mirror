@@ -40,8 +40,10 @@ crates/
 ├── op-host-services/     Headless serve-web / MCP daemon lib (shared by desktop + web-server)
 ├── op-host-web-server/   Thin GL-free web-server binary
 ├── op-cli/               `op` command-line tool
+├── op-util/              Dependency-free leaf: hex-colour parsing + JSON / XML escaping
 └── op-mcp / op-ai / op-ai-skills / op-codegen / op-orchestrator / op-figma /
-   op-git / op-opmerge / op-pen-loader / op-design-lint / op-i18n / op-smoke / …
+   op-git / op-opmerge / op-pen-loader / op-design-lint / op-i18n / op-html /
+   op-auth-bridge / op-smoke / …
 
 packages/
 ├── op-web-sdk/           Read-only `.op` web viewer SDK (wraps the op-host-web wasm bundle)
@@ -53,7 +55,7 @@ Data flow, canvas engine, Document/EditorCommand model, MCP layered-design workf
 
 ## Code Style
 
-- Single files must not exceed **800 lines** — split into smaller modules when they grow beyond this.
+- Single files must not exceed **800 lines** — split into smaller modules when they grow beyond this. The workspace currently has **zero violations**; the convention is a spine (public surface + `mod` declarations) plus sibling files, with re-exports keeping import paths stable.
 - One component/widget per file, single responsibility.
 - `.rs` filenames use snake_case; `.ts`/`.tsx` (SDK) use kebab-case.
 - Source comments (`.rs`/`.ts`/`.toml`) in **English** (spec/plan markdown + test CJK fixtures may keep Chinese).

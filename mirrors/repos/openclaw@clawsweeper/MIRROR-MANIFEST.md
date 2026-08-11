@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `openclaw/clawsweeper` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
+Mirror of `openclaw/clawsweeper` — 26 default patterns, 2 followed patterns, 40 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 0 followed patterns, 1
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 12 |
+| Followed pats | 2 |
+| Files         | 40 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,8 @@ Mirror of `openclaw/clawsweeper` — 26 default patterns, 0 followed patterns, 1
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `docs/limits.md`
+- `docs/README.md`
 
 ## File Index
 
@@ -63,14 +64,42 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 2 | ✓ | [`.agents/skills/local-clawsweeper-review/agents/openai.yaml`](.agents/skills/local-clawsweeper-review/agents/openai.yaml) |
 | 3 | ✓ | [`.agents/skills/local-clawsweeper-review/SKILL.md`](.agents/skills/local-clawsweeper-review/SKILL.md) |
 | 4 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 5 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
-| 6 | ✓ | [`prompts/repair/autonomous.md`](prompts/repair/autonomous.md) |
-| 7 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
-| 8 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
-| 9 | ✓ | [`prompts/repair/review-result.md`](prompts/repair/review-result.md) |
-| 10 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
-| 11 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
-| 12 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
+| 5 | ✓ | [`docs/action-ledger.md`](docs/action-ledger.md) |
+| 6 | ✓ | [`docs/author-pr-budget-close-policy.md`](docs/author-pr-budget-close-policy.md) |
+| 7 | ✓ | [`docs/commit-sweeper.md`](docs/commit-sweeper.md) |
+| 8 | ✓ | [`docs/live-dashboard.md`](docs/live-dashboard.md) |
+| 9 | ✓ | [`docs/local-clawsweeper-skill.md`](docs/local-clawsweeper-skill.md) |
+| 10 | ✓ | [`docs/obsolescence-close-policies.md`](docs/obsolescence-close-policies.md) |
+| 11 | ✓ | [`docs/openclaw-bay-demo.md`](docs/openclaw-bay-demo.md) |
+| 12 | ✓ | [`docs/openclaw-event-hooks.md`](docs/openclaw-event-hooks.md) |
+| 13 | ✓ | [`docs/operator-configuration.md`](docs/operator-configuration.md) |
+| 14 | ✓ | [`docs/orchestration.md`](docs/orchestration.md) |
+| 15 | ✓ | [`docs/pr-proof-triage-dashboard.md`](docs/pr-proof-triage-dashboard.md) |
+| 16 | ✓ | [`docs/pr-review-comments.md`](docs/pr-review-comments.md) |
+| 17 | ✓ | [`docs/product-direction-close-policy.md`](docs/product-direction-close-policy.md) |
+| 18 | ✓ | [`docs/public-api.md`](docs/public-api.md) |
+| 19 | ✓ | [`docs/queue-service-split-runbook.md`](docs/queue-service-split-runbook.md) |
+| 20 | ✓ | [`docs/related-issue-discovery.md`](docs/related-issue-discovery.md) |
+| 21 | ✓ | [`docs/review-cache.md`](docs/review-cache.md) |
+| 22 | ✓ | [`docs/scheduler.md`](docs/scheduler.md) |
+| 23 | ✓ | [`docs/spam-scanner.md`](docs/spam-scanner.md) |
+| 24 | ✓ | [`docs/stalled-pr-close-policies.md`](docs/stalled-pr-close-policies.md) |
+| 25 | ✓ | [`docs/state-storage.md`](docs/state-storage.md) |
+| 26 | ✓ | [`docs/steerable-repair-automation.md`](docs/steerable-repair-automation.md) |
+| 27 | ✓ | [`docs/target-dispatcher.md`](docs/target-dispatcher.md) |
+| 28 | ✓ | [`docs/target-repositories.md`](docs/target-repositories.md) |
+| 29 | ✓ | [`docs/triage-dashboard.md`](docs/triage-dashboard.md) |
+| 30 | ✓ | [`docs/unsponsored-feature-close-policy.md`](docs/unsponsored-feature-close-policy.md) |
+| 31 | ✓ | [`docs/work-lane.md`](docs/work-lane.md) |
+| 32 | ✓ | [`prompts/pr-close-coverage-proof.md`](prompts/pr-close-coverage-proof.md) |
+| 33 | ✓ | [`prompts/repair/autonomous.md`](prompts/repair/autonomous.md) |
+| 34 | ✓ | [`prompts/repair/execute.md`](prompts/repair/execute.md) |
+| 35 | ✓ | [`prompts/repair/plan-only.md`](prompts/repair/plan-only.md) |
+| 36 | ✓ | [`prompts/repair/worker-system.md`](prompts/repair/worker-system.md) |
+| 37 | ✓ | [`prompts/review-commit.md`](prompts/review-commit.md) |
+| 38 | ✓ | [`prompts/review-item.md`](prompts/review-item.md) |
+| 39 | → | [`docs/limits.md`](docs/limits.md) |
+| 40 | → | [`docs/README.md`](docs/README.md) |
 
 ---
 

@@ -24,6 +24,8 @@ scenarios:
   - "Help me prepare a 1:1 with someone who could block this initiative"
 sources:
   - "MITRE Innovation Toolkit — Quickstart Stakeholder Engagement Canvas: https://itk.mitre.org/toolkit-tools/quickstart-stakeholder-engagement-canvas/"
+theme: stakeholder-comms
+estimated_time: "15-25 min"
 ---
 
 # Stakeholder Engagement Advisor

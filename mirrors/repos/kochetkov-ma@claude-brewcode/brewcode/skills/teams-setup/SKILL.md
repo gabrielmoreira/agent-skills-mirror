@@ -1,9 +1,9 @@
 ---
-name: brewcode:teams-setup
+name: teams-setup
 description: "Creates and manages dynamic teams of domain agents. Triggers: create team, agent team, team status, cleanup team."
 user-invocable: true
 disable-model-invocation: true
-argument-hint: "[status [name]|install [name] [prompt]|upgrade [name]|enable [name]|disable [name]|uninstall [name]|purge [name]]"
+argument-hint: "[prompt] [status|install|upgrade|enable|disable|uninstall|purge] [name]"
 allowed-tools: [Read, Write, Edit, Glob, Grep, Bash, Agent, AskUserQuestion, Skill]
 model: opus
 ---
@@ -15,6 +15,51 @@ model: opus
 Manage dynamic teams of domain-specific agents with tracking framework.
 
 **Arguments:** `$ARGUMENTS`
+
+---
+
+## Prompt contract
+
+Position 1 of `$ARGUMENTS` is a **free-form prompt** (RU/EN) — the mode and the `[name]` positional are
+optional and may follow in any order. Nobody types keys: resolve mode + team name FROM the prompt.
+
+| Mode | EN keywords | RU keywords | Mutates? |
+|------|-------------|-------------|----------|
+| `status` | *(empty)*, `status`, `show`, `list`, `check` | `статус`, `покажи`, `что`, `проверь` | no |
+| `install` | `install`, `create`, `setup`, `new team`, `build` | `установи`, `создай`, `настрой`, `новая команда` | yes |
+| `upgrade` | `upgrade`, `update`, `tune`, `improve`, `retune` | `обнови`, `улучши`, `настрой лучше` | yes |
+| `enable` | `enable`, `on`, `turn on`, `activate`, `restore` | `включи`, `активируй`, `верни`, `восстанови` | yes |
+| `disable` | `disable`, `off`, `turn off`, `pause`, `park` | `выключи`, `отключи`, `пауза`, `приостанови` | yes |
+| `uninstall` | `uninstall`, `remove`, `delete`, `clean up`, `tear down` | `удали`, `убери`, `сними`, `очисти` | yes, destructive |
+| `purge` | `purge`, `wipe`, `nuke`, `delete everything`, `remove all` | `снеси`, `удали всё`, `вычисти`, `полностью удали` | yes, destructive |
+
+1. Strip flags (`--skip-review`, `--review`). An explicit mode token anywhere wins outright, no scoring.
+2. Else score modes by distinct whole-word keyword hits (table above). Highest unique score wins.
+   Tie with a destructive mode -> `AskUserQuestion`; tie with `status` -> `status`; tie of two mutating
+   modes -> the keyword appearing first; all zero -> **the documented default: `status` if the named
+   team already exists, else `install`** (`detect-mode.sh` already applies this default when the input
+   is empty or the first word is not a canonical mode).
+3. Empty arguments -> the same default. `status` asks nothing; `install` and the other mutating
+   defaults ask ONE scoping question only when the answer changes what gets written.
+4. Outcome-changing ambiguity -> ONE `AskUserQuestion` (max 4 questions) BEFORE any work.
+5. A prompt that is not a bare `mode [name]` pair is still input, never an error: extract the team
+   NAME (and, for `install`, the team description) from the prose. **Never treat the first word of a
+   sentence as the positional `[name]`** — `"disable the payments team"` names team `payments`, not
+   `disable`; `detect-mode.sh`'s literal first-word parse is only correct for a bare `mode [name]`
+   shape, see Error Handling below for the prose case.
+
+Then print this block ONCE, before the first action (`## Universal Prelude` Step 0.4):
+
+```
+PLAN — brewcode:teams-setup
+INPUT:  <arguments verbatim, or "(empty)">
+MODE:   <resolved> — <explicit | matched keyword: X | default>
+SCOPE:  <team name, agent count/roster, paths under .claude/teams/{name}/ and .claude/agents/>
+DO:     <2-5 imperative bullets>
+RESULT: <what the user ends up holding>
+```
+
+Labels are literal; values follow the conversation language. `status` still prints it — asks nothing.
 
 ---
 
@@ -72,11 +117,12 @@ verb always comes first and the optional `[name]` positional after it.
    bash "${CLAUDE_SKILL_DIR}/scripts/verify-team.sh" "TEAM_NAME_HERE" && echo "PASS" || echo "FAIL"
    ```
 
-4. Formulate action plan for current mode.
+4. Print the **PLAN** block (`## Prompt contract` above) — once, before step 5's confirmation and
+   before any mutation. `status` prints it too, then skips straight to its report — no AskUserQuestion.
 
-5. **ASK** using AskUserQuestion: "Here's my plan: {plan}. Continue?"
+5. Mutating modes only — **ASK** using AskUserQuestion: "PLAN above. Continue?"
    Options: "Yes, continue" | "No, I want changes" | "Cancel"
-   - "changes" -> AskUserQuestion for details, revise plan
+   - "changes" -> AskUserQuestion for details, revise the PLAN and reprint it
    - "Cancel" -> **STOP**
 
 ---
@@ -188,7 +234,7 @@ If "Mixed" -- ask model per agent in C3. Store as `DEFAULT_MODEL` (default: opus
 ### C3: Agent Creation (agent-creator x N)
 
 1. Read `${CLAUDE_SKILL_DIR}/references/agent-template.md`
-2. For each agent, spawn `Task(subagent_type="brewcode:agent-creator")` — ONE agent file per spawn, never "create the whole team" in one task. Prompt carries GOAL (this roster is being built for {TEAM_NAME}; siblings own the other domains), ROLE (owns `.claude/agents/{name}.md` only), SCOPE (that file; out of bounds: other agents, team.md, project source), CONTEXT (mission + domain + project analysis from C1 are settled; model={DEFAULT_MODEL or per-agent} chosen in C2; the 3-4 sibling agent-creators in this batch own {COLLEAGUE_NAMES} — stay off their domains and do not duplicate their triggers), CONSUMER (C4 writes `.claude/teams/{TEAM_NAME}/team.md` from your path + description line, C5 quorum-reviews the file, and colleagues re-delegate to it by domain via the Task Acceptance Protocol), DONE (file written, `description` <= 100 chars (optimal ~80), single line, role + 2-3 triggers, no `<example>` blocks; report path + description line).
+2. For each agent, spawn `Task(subagent_type="brewcode:agent-creator")` — ONE agent file per spawn, never "create the whole team" in one task. Prompt carries GOAL (this roster is being built for {TEAM_NAME}; siblings own the other domains), ROLE (owns `.claude/agents/{name}.md` only), SCOPE (that file; out of bounds: other agents, team.md, project source), CONTEXT (mission + domain + project analysis from C1 are settled; model={DEFAULT_MODEL or per-agent} chosen in C2; the 3-4 sibling agent-creators in this batch own {COLLEAGUE_NAMES} — stay off their domains and do not duplicate their triggers), CONSUMER (C4 writes `.claude/teams/{TEAM_NAME}/team.md` from your path + description line, C5 quorum-reviews the file, and colleagues re-delegate to it by domain via the Task Acceptance Protocol), DONE (file written, `description` <= 100 chars (optimal ~80), single line, role + 2-3 triggers, no `<example>` blocks; the body carries the template's `## Return Contract` section — first clause and threshold sentence VERBATIM, only the middle paragraph adapted to the domain, `{AGENT_NAME}` substituted — and carries NO second output/reporting rule anywhere; report path + description line).
 
    Every spawn prompt MUST also carry the template path and the four metadata lines, resolved — the
    subagent cannot see Phase 1's output, so **replace `{PLUGIN_VERSION}` and `{LAST_UPDATED}` below with
@@ -383,7 +429,7 @@ project's reviewer agent from `.claude/agents/`, else `general-purpose`.
 
 | # | Focus |
 |---|-------|
-| 1 | Instruction quality: clarity, imperative form, completeness, word budget |
+| 1 | Instruction quality: clarity, imperative form, completeness, word budget, and **exactly one** `## Return Contract` — first clause `Verdict first, <=30 lines, \`path:line\`. !=bodies/output/log/preamble.` intact, threshold sentence intact, no competing output/reporting rule elsewhere in the file |
 | 2 | Domain accuracy: correct scope, tool selection, model fit, description triggers |
 | 3 | Architecture: consistency across agents, no domain overlaps, proper Task Acceptance Protocol |
 
@@ -579,6 +625,10 @@ treat their absence as an error.
 Each agent file you regenerate or tune gets its `version` / `last_updated` frontmatter keys refreshed
 to the same values; `generated_by` stays `brewcode:teams-setup`. `intent-guard.md` is byte-untouchable.
 
+Every agent file you touch here also ends up with the template's `## Return Contract` section and no
+second output/reporting rule — add it if `verify-team.sh` warned it is missing, replacing whatever
+older output guidance the agent carried. Untouched agents keep their bodies; the warning is the record.
+
 Set cursor:
 ```bash
 bash "${CLAUDE_SKILL_DIR}/scripts/trace-ops.sh" cursor ".claude/teams/{TEAM_NAME}" set "$(date -u +%Y-%m-%dT%H:%M:%SZ)" && echo "✅" || echo "❌ FAILED"
@@ -744,6 +794,8 @@ Exception: after PURGE there is no team left — output the purge summary instea
 | Condition | Action |
 |-----------|--------|
 | `detect-mode.sh` prints `ERROR:` | Report the line verbatim. **STOP** — never fall back to INSTALL |
+| Prose argument, first word not a canonical mode (e.g. `"create a new team for billing"`, `"убери команду платежей"`) | `detect-mode.sh` takes the literal first word as `TEAM_NAME` — do not trust that here. Apply `## Prompt contract` step 5: score the mode table against the full prompt, extract the team name from the noun phrase (not the first word), then re-invoke `detect-mode.sh` with a normalized `"<mode> <name> [rest]"` (or set `MODE`/`TEAM_NAME` directly) before continuing Phase 1 |
+| PLAN block missing, or printed after Step 0.3 (`verify-team.sh`) / after any mutation started | Defect — **STOP**. A PLAN printed late does not count; return to Step 0.4, print it, then resume |
 | Team not found (STATUS/UPGRADE/ENABLE/DISABLE/UNINSTALL/PURGE) | "Team '{TEAM_NAME}' not found. Run `/brewcode:teams-setup install {TEAM_NAME}`." **STOP** |
 | ENABLE on a live team / DISABLE on a parked team | `toggle-team.sh` prints `NOOP:` for every row. Report "already {enabled\|disabled}" and **STOP** — do not rename, do not ask |
 | `toggle-team.sh` prints `MISSING:` | A roster member has neither `.md` nor `.md.disabled`. **STOP** with the name — the team is broken, not disabled; run `upgrade` or re-create that agent |

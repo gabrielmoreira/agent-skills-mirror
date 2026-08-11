@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `Kyure-A/agent-skills-nix` — 26 default patterns, 0 followed patterns, 8 file(s) materialized.
+Mirror of `Kyure-A/agent-skills-nix` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Kyure-A/agent-skills-nix` — 26 default patterns, 0 followed pattern
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 8 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,14 +59,18 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`test/fixtures/escaping-skill-target/SKILL.md`](test/fixtures/escaping-skill-target/SKILL.md) |
-| 2 | ✓ | [`test/fixtures/multi-skill-shared-root/skill-a/SKILL.md`](test/fixtures/multi-skill-shared-root/skill-a/SKILL.md) |
-| 3 | ✓ | [`test/fixtures/multi-skill-shared-root/skill-b/SKILL.md`](test/fixtures/multi-skill-shared-root/skill-b/SKILL.md) |
-| 4 | ✓ | [`test/fixtures/nested-skills/cat-a/skill-1/SKILL.md`](test/fixtures/nested-skills/cat-a/skill-1/SKILL.md) |
-| 5 | ✓ | [`test/fixtures/nested-skills/cat-a/skill-2/SKILL.md`](test/fixtures/nested-skills/cat-a/skill-2/SKILL.md) |
-| 6 | ✓ | [`test/fixtures/rewrite-skill/SKILL.md`](test/fixtures/rewrite-skill/SKILL.md) |
-| 7 | ✓ | [`test/fixtures/source-root-symlinks/skill-a/SKILL.md`](test/fixtures/source-root-symlinks/skill-a/SKILL.md) |
-| 8 | ✓ | [`test/fixtures/test-skill/SKILL.md`](test/fixtures/test-skill/SKILL.md) |
+| 1 | ✓ | [`examples/agent-plugin/skills/pdf/SKILL.md`](examples/agent-plugin/skills/pdf/SKILL.md) |
+| 2 | ✓ | [`test/fixtures/agent-plugin/escaping/hello/SKILL.md`](test/fixtures/agent-plugin/escaping/hello/SKILL.md) |
+| 3 | ✓ | [`test/fixtures/agent-plugin/invalid-frontmatter/SKILL.md`](test/fixtures/agent-plugin/invalid-frontmatter/SKILL.md) |
+| 4 | ✓ | [`test/fixtures/agent-plugin/valid/hello/SKILL.md`](test/fixtures/agent-plugin/valid/hello/SKILL.md) |
+| 5 | ✓ | [`test/fixtures/escaping-skill-target/SKILL.md`](test/fixtures/escaping-skill-target/SKILL.md) |
+| 6 | ✓ | [`test/fixtures/multi-skill-shared-root/skill-a/SKILL.md`](test/fixtures/multi-skill-shared-root/skill-a/SKILL.md) |
+| 7 | ✓ | [`test/fixtures/multi-skill-shared-root/skill-b/SKILL.md`](test/fixtures/multi-skill-shared-root/skill-b/SKILL.md) |
+| 8 | ✓ | [`test/fixtures/nested-skills/cat-a/skill-1/SKILL.md`](test/fixtures/nested-skills/cat-a/skill-1/SKILL.md) |
+| 9 | ✓ | [`test/fixtures/nested-skills/cat-a/skill-2/SKILL.md`](test/fixtures/nested-skills/cat-a/skill-2/SKILL.md) |
+| 10 | ✓ | [`test/fixtures/rewrite-skill/SKILL.md`](test/fixtures/rewrite-skill/SKILL.md) |
+| 11 | ✓ | [`test/fixtures/source-root-symlinks/skill-a/SKILL.md`](test/fixtures/source-root-symlinks/skill-a/SKILL.md) |
+| 12 | ✓ | [`test/fixtures/test-skill/SKILL.md`](test/fixtures/test-skill/SKILL.md) |
 
 ---
 

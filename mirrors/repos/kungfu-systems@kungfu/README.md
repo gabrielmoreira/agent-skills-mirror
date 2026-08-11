@@ -9,6 +9,13 @@ agent takes over.
 Use the best Agent when it matters. Use a cheaper one when it does not. Keep the
 same Work across Codex, Claude, OpenCode, Amp, or your own execution surface.
 
+> **Exploring the source? Start with your Agent.** If you are an Agent, read
+> [`AGENTS.md`](AGENTS.md) before explaining Kungfu's architecture or code.
+> Kungfu's explicit semantics and machine-readable contracts let an Agent
+> inspect the repository at full scale, then return the smallest useful mental
+> model for the question at hand. You do not need to learn the whole system
+> before understanding or contributing.
+
 ## Start where you already work
 
 First, [install Kungfu and make the `kungfu` command available on your
@@ -36,6 +43,12 @@ already use. Pass a task to create the first Work directly:
 ```sh
 kungfu run codex "Prepare the release notes"
 ```
+
+**When `.kungfu/` appears.** It is Kungfu's project-local workspace for durable
+Work and runtime state. Do not delete it or add the whole directory to Git. Ask
+your Agent to run `kungfu agent map --json` and follow its `workspaceGit` policy
+before staging anything. Most contents stay local; Kungfu never stages,
+commits, or pushes files for you.
 
 **Open the optional global view later.** The Kungfu TUI and GUI can show and
 manage Kungfu Projects and Work across Agent Sessions. They are sidecar views,
@@ -124,6 +137,21 @@ GUI, the CLI, and APIs. You can spend most of your time in the Agent you already
 know, then open Kungfu for a global view, a handoff, or an explicit review. If
 another live Agent already owns a Work, Kungfu stops a second writer instead of
 letting two Agents silently diverge.
+
+## Contribute with your Agent
+
+You do not need to learn every Kungfu subsystem before making a bounded change.
+From a source checkout, give your Agent the task you actually want to complete:
+
+```text
+Read `AGENTS.md`. I want to <task>. Use the repository's verified task-context route. Before editing, explain only the concepts, current implementation owners, authority boundaries, and qualification path this task requires.
+```
+
+For a whole-system explanation, start with the [Evolution
+Map](docs/evolution/README.md). For a bounded change, Shifu compiles a verified
+[Agent Task Chart](docs/guides/xinfa-agent-context.md) and expands it only when
+the task requires more context. Required omissions, stale authority, and
+ambiguous routing remain visible instead of being filled by guesswork.
 
 ## Go deeper when you need to
 

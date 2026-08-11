@@ -24,6 +24,8 @@ scenarios:
 sources:
   - "MITRE Innovation Toolkit — Stakeholder Map & Matrix: https://itk.mitre.org/toolkit-tools/stakeholder-map-and-matrix/"
   - "MITRE Innovation Toolkit — Stakeholder Power Categories: https://itk.mitre.org/toolkit-tools/stakeholder-power-categories/"
+theme: stakeholder-comms
+estimated_time: "25-40 min"
 ---
 
 # Stakeholder Mapping

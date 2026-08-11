@@ -29,6 +29,8 @@ Run it when you change:
 
 You can skip `$code-change-verification` for docs-only or repo-meta changes (for example, `docs/`, `.agents/`, `README.md`, `AGENTS.md`, `.github/`), unless a user explicitly asks to run the full verification stack.
 
+Treat `$code-change-verification` as the post-review final gate, not as an iterative review check. When `$implementation-final-review` applies, satisfy its clean-review condition before starting the repository-wide format, lint, typecheck, and test stack. Immediately before starting that stack, use available read-only task or process evidence to check for another broad test, typecheck, build, examples, or integration command already running on the same host. When concrete contention is visible, keep making progress on review, remediation, evidence preparation, or focused checks and defer the broad stack until capacity is available. Do not add a repository lock, host-wide mutex, sentinel file, or user-triggered `finalize` step. Lack of host telemetry alone is not a blocker.
+
 #### `$openai-knowledge`
 
 When working on OpenAI API or OpenAI platform integrations in this repo (Responses API, tools, streaming, Realtime API, auth, models, rate limits, MCP, Agents SDK or ChatGPT Apps SDK), use `$openai-knowledge` to pull authoritative docs via the OpenAI Developer Docs MCP server (and guide setup if it is not configured).
@@ -43,15 +45,27 @@ Independent reviewers dispatched by `$implementation-final-review` inherit the i
 
 #### `$implementation-final-review`
 
-After implementing runtime code, tests, examples, build/test behavior, or behavior-impacting docs and completing focused tests, run `$implementation-final-review` before final `$code-change-verification` and `$pr-draft-summary` work and before declaring the task complete. This repository instruction authorizes automatic invocation without a separate user mention. Do not invoke it for planning, investigation, review, or report-only tasks, repo-meta changes, or docs without behavior impact. The skill's clean-review gate does not replace any other mandatory repository skill or verification gate.
+After implementing runtime code, tests, examples, build/test behavior, or behavior-impacting docs and completing focused tests, run `$implementation-final-review` before final `$code-change-verification` and `$pr-draft-summary` work and before declaring the task complete. Do not start repository-wide lint, typecheck, tests, builds, examples, or integration suites while the independent review is incomplete or finding-bearing. This repository instruction authorizes automatic invocation without a separate user mention. Do not invoke it for planning, investigation, review, or report-only tasks, repo-meta changes, or docs without behavior impact. The skill's clean-review gate does not replace any other mandatory repository skill or verification gate.
 
 #### `$pr-draft-summary`
 
 Before every final response for a task that changed runtime code, tests, examples, build/test configuration, or docs with behavior impact, invoke `$pr-draft-summary` to generate the required PR summary block, branch suggestion, title, and draft description. Determine whether to invoke it from the changed files, not from a subjective assessment of change size.
 
-Skip `$pr-draft-summary` only for trivial or conversation-only tasks, repo-meta/doc-only tasks without behavior impact, or when the user explicitly says not to include the PR draft block.
+Skip `$pr-draft-summary` only for trivial or conversation-only tasks, repo-meta/doc-only tasks without behavior impact, an explicitly invoked `$release-candidate-prep` handoff that uses the complete `$final-release-review` report as its release-specific PR description, or when the user explicitly says not to include the PR draft block. The release exception applies to preparing the candidate itself, not to implementing or changing the release-preparation skill.
 
 Producing the PR draft block is part of the local final handoff. It is required for eligible local-only or uncommitted changes and does not authorize creating a branch, committing, pushing, or opening a pull request.
+
+#### `$release-candidate-prep`
+
+Use `$release-candidate-prep` only when the user explicitly invokes it with a release version. It keeps the user's clean `main` checkout unchanged, creates a dedicated detached worktree at refreshed `origin/main`, runs the readiness gates there, creates `release/v<version>` in that worktree, updates `pyproject.toml` and `uv.lock`, freezes and checks `tests/fixtures/released_api_contract.json`, and creates one local release commit. It invokes `$final-release-review` as the controlling checker against both the pre-release source and the materialized candidate; a blocked release call stops the workflow, while a green final-candidate report becomes the release-specific PR description.
+
+The skill replaces the former GitHub Actions release-PR creator. It must never push, open or edit a pull request, create a release, or mutate any other GitHub state. It leaves the dedicated worktree in place for green handoff, blocked review, or recoverable failure. Release tag creation and PyPI publication remain owned by their post-merge workflows. The release commit may contain only `pyproject.toml`, `uv.lock`, and `tests/fixtures/released_api_contract.json`; all runtime and documentation changes must land on `main` before preparation.
+
+### Work Status Reporting
+
+- Use `RUNNING` only in commentary while autonomous work remains and no user action is required. Do not end a turn with a final response that says the task is still running or asks the user to send a generic continuation prompt.
+- Use `COMPLETE` in the final response only when the requested work and every applicable review, verification, and local handoff step are complete.
+- Use `NEEDS_DECISION` in the final response only when progress requires a concrete user choice, expanded authority, or an unresolved external condition. State the exact decision or condition instead of asking the user to say "continue".
 
 ### Git Worktree and Branch Safety
 

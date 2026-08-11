@@ -5,6 +5,15 @@ description: Create a proto-persona from current research, market signals, and t
 intent: >-
   Create an initial, assumption-based persona profile that synthesizes available user research, market data, and stakeholder knowledge into a working hypothesis about your target user. Use this to align teams early in product development, guide initial design decisions, and identify gaps in understanding that require validation through research.
 type: component
+theme: discovery-research
+best_for:
+  - "Getting a working customer profile before you can afford real research"
+  - "Making team assumptions about users explicit and challengeable"
+  - "Setting up a persona you intend to validate, not defend"
+scenarios:
+  - "We have no research budget yet but need a working customer profile to start"
+  - "Everyone on the team pictures a different user and it's causing arguments"
+estimated_time: "15-25 min"
 ---
 
 

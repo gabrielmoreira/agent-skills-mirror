@@ -61,8 +61,10 @@ Use the owner documents linked below for detailed behavior. This file exists to 
 | `TUTTI_AGENT_LLM_APP_ID`              | [Tutti Agent Readiness Bootstrap](../architecture/tutti-agent-readiness-bootstrap.md)              | Overrides the Tutti LLM application id used when issuing provider auth tokens.                                              |
 | `TUTTI_AUTH_LOGIN_URL`                | [Agent Account And Commerce](../architecture/agent-account-and-commerce.md)                        | Overrides the desktop account login URL used by the auth bridge.                                                            |
 | `TUTTI_COMMERCE_BASE_URL`             | [Agent Account And Commerce](../architecture/agent-account-and-commerce.md)                        | Overrides the Tutti commerce gateway base URL for session-cookie membership and credits fetches.                            |
+| `TUTTI_CONNECTOR_MCP_BASE_URL`        | [Remote Connector MCP](../architecture/connector-remote-mcp.md)                                    | Overrides the tsh-server desktop gateway base URL used for remote Connector MCP requests.                                   |
 | `TUTTI_MOBILE_CONTROL_PLANE_BASE_URL` | [Mobile AgentGUI And DeviceLink Design](../specs/2026-07-23-mobile-agentgui-device-link-design.md) | Overrides the tsh-server desktop control-plane base URL used by Personal device pairing.                                    |
 | `TUTTI_MOBILE_REALTIME_URL`           | [Mobile AgentGUI And DeviceLink Design](../specs/2026-07-23-mobile-agentgui-device-link-design.md) | Overrides the device-level V2 WebSocket used to wake Personal paired-device attempt reads; unset uses `wss://ws.tutti.sh/`. |
+| `TUTTI_PPE_LANE`                      | [Remote Connector MCP](../architecture/connector-remote-mcp.md)                                    | Sends the external `x-zk-ppe-lane` header on Account and Connector control-plane requests for local PPE testing.            |
 | `TUTTI_WEB_BASE_URL`                  | [Agent Account And Commerce](../architecture/agent-account-and-commerce.md)                        | Overrides the Tutti web origin used by tuttid when returning account profile links to desktop UI.                           |
 
 ## Desktop Update Admission Development
@@ -213,6 +215,12 @@ be passed through OpenCode config; Tutti injects `OPENCODE_CONFIG_CONTENT` with
 custom-provider environment allowlist for OpenCode includes `OPENCODE_CONFIG`,
 `OPENCODE_CONFIG_DIR`, `OPENCODE_CONFIG_CONTENT`, and `OPENCODE_PERMISSION`
 so operator-supplied OpenCode config stays explicit and provider-owned.
+AgentGUI Sessions add a final session-scoped `OPENCODE_CONFIG_DIR` overlay that
+contains Tutti's managed `AGENTS.md` and native `skills/` tree. The overlay is
+created for every OpenCode Session and is removed with that Session's runtime;
+it does not write managed Skills into the Workspace or the user's global
+OpenCode config directory. A model access plan, when present, writes its
+`OPENCODE_CONFIG` file into that same isolated directory.
 OpenCode composer model options and model-specific reasoning variants come from
 `opencode models --verbose`. Run that command from the composer workspace cwd
 because OpenCode resolves project configuration relative to the current

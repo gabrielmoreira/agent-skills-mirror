@@ -5,6 +5,15 @@ description: Write a user-centered problem statement with who is blocked, what t
 intent: >-
   Articulate a problem from the user's perspective using an empathy-driven framework that captures who they are, what they're trying to do, what's blocking them, why, and how it makes them feel. Use this to align stakeholders on the problem before jumping to solutions, and to frame product work around user outcomes rather than feature requests.
 type: component
+theme: discovery-research
+best_for:
+  - "Framing a problem before anyone proposes a solution"
+  - "Getting a team to agree on who is blocked and why it matters"
+  - "Turning a vague complaint into something a team can act on"
+scenarios:
+  - "The team keeps jumping to solutions and we've never written down the actual problem"
+  - "I need a crisp problem statement for a PRD that a skeptical exec will read"
+estimated_time: "10-20 min"
 ---
 
 

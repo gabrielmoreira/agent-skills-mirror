@@ -1,6 +1,6 @@
 # Auth cookie lifecycle — design notes and field findings
 
-**Last Updated:** 2026-08-05
+**Last Updated:** 2026-08-10
 
 > **Status:** current design notes for the auth refresh stack in `main`.
 > The numbered recovery ladder below is the canonical taxonomy, shared with
@@ -46,6 +46,23 @@ mechanism is a direct `POST` to `https://accounts.google.com/RotateCookies` —
 Google's dedicated unsigned rotation endpoint, the **L1** primitive at the bottom
 of a tiered recovery design that escalates as failure modes get harder.
 
+The built-in MCP and REST servers enable a 600-second L2 keepalive for their
+process-lifetime client. On a mid-session rejection, any file-backed client also
+performs a network-free reload of a different valid `storage_state.json` before
+escalating. That retry lets a long-lived process consume a session a CLI or
+sibling server has already refreshed. The selected sample's cookies and in-band
+account route advance together, so a sibling login that changes accounts also
+reroutes the immediate retry and subsequent RPCs; an account-only rewrite is not
+mistaken for an unchanged profile. A cleared/default route is recorded in-band,
+so legacy `context.json` fallback cannot cross the primary-file commit-to-scrub
+window. The reload is skipped for inline auth,
+invalid storage, and a profile identical to the live session. It adopts the
+exact disk sample as the next persistence baseline only if the profile has not
+advanced again, and it never overwrites a live jar that changed while the file
+read was in flight. The file-backed bridge is bounded: it can try one changed
+live jar, force-sample disk while preserving one newer authentication-bearing
+live candidate, then use one final disk sample if that candidate is rejected.
+
 The recovery ladder runs cheapest-to-heaviest — **L1** per-call `RotateCookies`
 POST, **L2** background keepalive, **L3** headless re-auth / loopback CDP, **L4**
 master-token re-mint, **L5** `NOTEBOOKLM_REFRESH_CMD` (which, when configured,
@@ -78,9 +95,10 @@ L1–L4** — those proactively keep the session fresh or re-mint it in-process,
 script" lever. See [§6.2](#62-notebooklm_refresh_cmdcommand-line-l5).
 
 L1 works today on every account type tested. Long-running Python workers should
-add L2; unattended/headless/server/CI deployments should adopt L4; idle profiles
-between processes can add L7. If Google extends DBSC enforcement to non-Chrome
-cookie paths, L3's CDP arm becomes the primary browser-backed recovery path.
+add L2; MCP and REST servers already enable it. Unattended/headless/server/CI
+deployments should adopt L4; idle profiles between processes can add L7. If
+Google extends DBSC enforcement to non-Chrome cookie paths, L3's CDP arm becomes
+the primary browser-backed recovery path.
 
 ---
 
@@ -434,12 +452,39 @@ hazards existed (a stale-in-memory-clobbers-fresh-disk race, `(name, domain)`
 path-collapse, sibling-domain allow-list asymmetry, round-trip attribute erosion).
 **All of them are resolved in-tree** — the persistence path is now snapshot/delta,
 CAS-guarded, cross-process flocked, fully `(name, domain, path)`-aware, and funneled
-through the single canonical writers in `_auth/storage.py`
+through the path-owned cookie transactions in `_auth/profile_store.py`. The same
+store now owns browser/remint, login/import, and minted-session replacement, while the pure raw
+capture/domain filter and its value-free diagnostics live in `_auth/cookie_filter.py`; v0.x
+signatures, results, and browser patch timing remain adapted by `_auth/storage.py`. Legacy account
+policy and lifecycle now live in `_auth/profile_migration.py`: two-read resolution, typed
+promotion, embed-before-scrub cleanup, canonical daemon one-shot scheduling, and
+post-login/account-write reconciliation
 ([ADR-0029](adr/0029-canonical-storage-writer.md)). If users
 report cookies "expiring fast", walk the
 [diagnostic checklist](#a2--diagnosing-cookies-expire-fast) in the Appendix (which
 also records the historical hazards and their fixes) before assuming Google changed
 anything.
+
+Cold stored-auth construction now preserves persistence provenance end to end. One raw sample in
+`_auth/cookies.py` builds both the live jar and a typed baseline whose SameSite value comes from the
+same successfully converted row. `_auth/refresh.py` selects the exact initial, refresh-command,
+headless, or master-token replacement baseline; `_auth/recovery.py` carries paired replacement
+results. Before returning file auth, `StoredAuthLoader` performs the initial `ProfileStore` merge:
+accepted identities advance from authoritative final rows, rejected conflicts retain their old
+baseline, and a hard merge failure retains the acquisition baseline for a later retry. The closed
+file result carries its store and exact baseline. Phase 10 registers that exact pair with runtime
+`CookiePersistence` without a second read. Direct file clients prepare one disk baseline before
+transport; missing, malformed, or invalid input produces sticky failed typed state, while fileless
+clients keep a one-shot live compatibility projection and no typed state.
+
+`CookiePersistence` owns `Uninitialized`, `ReadyBaseline`, and `FailedBaseline` per canonical path
+plus a concrete per-key legacy snapshot adapter. An untouched first-party default saver uses the
+private ordered `ProfileStore` merge. A custom or patched default stays on the public v0.x saver;
+non-default overrides lazily initialize their own retryable adapter snapshot and do not write from
+invalid input. Successful legacy saves invalidate typed ready state for a fresh later read, but do
+not clear sticky failure. `ClientLifecycle` selects the route before default-failure gates and alone
+mirrors the loaded projection into the client-owned `AuthTokens.cookie_snapshot` after open and
+accepted saves; first-party persistence retains no `AuthTokens`.
 
 ### 3.3 Empirical cookie requirements
 
@@ -556,16 +601,29 @@ existing cross-loop pattern, not a change to the mid-session
 loop-affinity still governs the client itself: coalescing the *recovery attempt*
 across loops does not make a `NotebookLMClient` shareable across loops).
 
+Cold-token fallback composition now has one operation-scoped owner:
+`_auth/recovery.py::ColdRecoveryCoordinator` explicitly runs L2.5, then the coalesced L3 → L4
+flow. `_auth/refresh.py` remains its sole production composer and retains the exact environment-auth
+skip, rung-start/failure logs, call-time collaborator lookup, and raw caller / canonical L2.5 / raw
+caller route timing. `ColdRecoveryState` owns synchronized weak-loop path locks and success
+generations; `SingleFlight` owns shared flights. The compatibility `_run_cold_recovery` and
+`coalesced_cold_recovery` functions delegate to the class-owned bodies rather than retaining a
+second ladder. A coordinator is one-shot, claims before its first await, and scrubs every injected
+callback after success, failure, or cancellation. Cancellation before synchronous caller-jar
+replacement leaves that jar untouched; cancellation later does not roll back a completed
+replacement. A cancelled follower waits for shared settlement without cancelling siblings.
+
 ### 4.1 L1 — per-call `RotateCookies` POST
 
 Fires inside the token-fetch path on every CLI invocation and client open. A best-
 effort `POST https://accounts.google.com/RotateCookies` that mints a fresh
 `*PSIDTS`. Default ON; disable with `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE=1`. Wrapped
-in three concentric guards (disk-mtime fast-path → in-process `asyncio.Lock` +
-per-profile monotonic timestamp → cross-process non-blocking flock) so an L1 caller,
+in three concentric guards (disk-mtime fast-path → `RotationState`'s per-loop
+`asyncio.Lock` + per-canonical-path monotonic timestamp → cross-process non-blocking flock) so an L1 caller,
 an L2 loop, and a fan-out of parallel CLI invocations keyed to the same
 `storage_state.json` don't stampede the endpoint into a 429. Mechanics in
-[§5](#5--the-rotatecookies-primitive).
+[§5](#5--the-rotatecookies-primitive). The atomic attempt claim is stamped before
+the POST; HTTP failure and cancellation therefore consume the same 60-second slot as success.
 
 ### 4.2 L2 — background keepalive task
 
@@ -573,7 +631,26 @@ an L2 loop, and a fan-out of parallel CLI invocations keyed to the same
 `RotateCookies` every N seconds (floor 60 s) while the client is open. Self-paced,
 so it bypasses the L1 fast-path guards but still performs the atomic per-profile
 claim, so a sibling L1 poke sees the in-flight rotation and skips. Covers agents,
-MCP servers, and long-running workers.
+MCP servers, and long-running workers. The built-in MCP and REST adapters pass
+`keepalive=600` by default; general SDK clients retain the explicit opt-in.
+
+After a confirmed mid-session rejection, a file-backed client also re-reads its
+persisted cookie jar before invoking L2.5/L3/L4. This local retry performs no
+network I/O or write and only replaces an unchanged live jar when the selected
+profile generation differs. Cookies and the in-band `authuser`/account email are
+sampled once and installed coherently under the auth snapshot lock; the homepage
+URL is rebuilt from that route for each retry, including account-only rewrites
+and resets to the default account. Its exact disk sample becomes the persistence
+baseline for the retry's response cookies only while disk still matches; a newer sibling
+generation remains CAS-protected. Ambient redirect-cookie churn cannot starve
+the disk sample, while a newer in-memory SID/PSIDTS or secondary-binding
+candidate is tried before a lagging disk snapshot; one final disk attempt keeps
+the sequence bounded. Cold-start clients already load that same file, so the
+bridge is mid-session-only and does not add another numbered credential tier. A
+REST process that could not bind its client because startup auth was stale
+retries that bind on its next client-dependent request. After that immediate
+retry, repeated failures are negative-cached for five seconds so
+steady request traffic cannot launch an unbounded sequence of full bootstraps.
 
 ### 4.3 L3 — headless re-auth / CDP attach
 
@@ -614,7 +691,8 @@ headless-browser ladder can't provide off-device.
   after L1 (homepage), L2 (`RotateCookies`), and L3 (headless browser) are
   exhausted. Both cold token loading and mid-session `refresh_auth_session`
   delegate to this adapter. It mints a new session, persists it through the
-  canonical writers in `_auth/storage.py` (§A2, [ADR-0029](adr/0029-canonical-storage-writer.md)),
+  compatibility writers in `_auth/storage.py`, which route transaction/commit mechanics through
+  `_auth/profile_store.py` and `_auth/credential_io.py` (§A2, [ADR-0029](adr/0029-canonical-storage-writer.md)),
   reloads the jar, and retries the homepage GET once. Cold-start callers on
   **any** event loop — not just the same one — now coalesce onto one recovery
   attempt via the `single_flight` core; `recovery.py` layers its own per-loop
@@ -737,18 +815,20 @@ When a profile has the persistent `__Secure-1PSID` but no transient
 (`_auth/psidts_recovery.py`) makes a preflight `RotateCookies` POST during client
 startup to mint the missing cookie before the first RPC.
 
-**This recovery now runs off the event loop for async callers ([ADR-0030](adr/0030-one-recovery-ladder.md)).**
-The loaders split into a pure inner loader (file I/O + validation, never network)
-and a public wrapper (`build_httpx_cookies_from_storage`, `load_auth_from_storage`)
-that composes the pure load with this recovery. The pure loader raises
+**This recovery runs off the event loop for async callers ([ADR-0030](adr/0030-one-recovery-ladder.md)).**
+`cookies.py` owns the pure cookie loaders (file I/O + validation, never network), while
+`psidts_recovery.load_with_recovery` receives the selected pure loader explicitly and owns the
+single strict-load → heal → name-only-retry sequence. Public wrappers
+(`build_httpx_cookies_from_storage`, `load_auth_from_storage`) preserve their signatures and late
+lookup seams. The pure loader raises
 `RequiredCookieValidationError` tagged with a closed-enum `reason`
 (`missing_cookie` | `psidts_unroutable`) instead of invoking recovery itself; the
 wrapper decides whether to call `_recover_psidts_inline` based on that reason.
 Sync (CLI) callers keep the inline recovery behavior verbatim; async callers
 offload the whole wrapper onto `asyncio.to_thread`, so the ~15 s `RotateCookies`
-POST below can no longer stall an async caller's event loop the way a same-thread
-inline call could. The decision rules that follow are unchanged byte-for-byte —
-only *where* they execute changed.
+POST below cannot stall an async caller's event loop. The wrapper catches only the required-cookie
+validation that triggers a heal; Unicode failures, cancellation, and unlisted exceptions retain
+their original identity instead of being collapsed into a recovery decline.
 
 It fires only when `SID`
 is present, a **rotatable** secondary binding is intact (`OSID`, or `APISID` +
@@ -814,8 +894,8 @@ intentional, and each one has a failure mode behind it:
 | empty `value` | skipped | skipped |
 
 The duplicate rule is the sharp edge. Applying it to the heal check turns a
-working session into a permanent failure loop: `save_cookies_to_storage`
-CAS-matches the *first* stored row for an identity, so a stale same-identity
+working session into a permanent failure loop: the typed cookie merge
+CAS-matches the observed value for an identity, so a stale same-identity
 twin survives the save, and the heal would report failure on every load while
 the preflight keeps passing. That twin is issue #1523's data shape — #1523 fixed
 the producer, and nothing on the load/save path removed an existing one.
@@ -832,7 +912,8 @@ questions, asked by different processes:
   the caller retries, and the routed preflight rejects the state anyway.
 
 The routed variant is safe only because the save collapses the twin instead of
-leaving it: when `save_cookies_to_storage` receives a `recovery_observation`, an
+leaving it: when `ProfileStore.merge_cookie_observation` receives a typed
+`RecoveryObservation`, an
 observed recovery-target identity is replaced in place and its exact duplicates
 are removed, across leading-dot domain variants. A row the observation saw as
 unusable — empty, non-string, or malformed `expires` — is replaceable; a
@@ -841,9 +922,13 @@ and is left alone. Without that collapse the routed check would reproduce the
 permanent failure loop described above, which is why the two changes have to
 travel together.
 
-Note also that `_psidts_is_live` models `extract_cookies_from_storage`
-specifically; the sibling loader `_build_httpx_cookies_from_storage_strict`
-converts every row and can still reject a state it accepts.
+Note also that `_psidts_is_live` models the domain-blind persisted answer, while routed preflight
+models what the RotateCookies request can send; neither substitutes for a pure loader. Recovery
+reads raw rows through `ProfileStore.read_document()`/`ProfileDocument`, captures a value-only
+observation before the POST, converts live jars through `CookieJar`, and commits through
+`ProfileStore` without rejoining `cookies.py` or the `storage.py` compatibility facade. A save
+result alone is never success: a post-save disk reread is authoritative and may accept a sibling
+winner.
 
 Recovery honors
 `NOTEBOOKLM_DISABLE_KEEPALIVE_POKE=1`, and uses a cross-process flock
@@ -938,6 +1023,27 @@ export NOTEBOOKLM_REFRESH_CMD='/opt/scripts/pull-cookies-from-cloud.sh'
 
 The library does not validate the command's output; the operator must ensure it
 produces a valid `storage_state.json`.
+
+For the active `fetch_tokens_with_domains` path, cookie acquisition and persistence now share one
+typed provenance chain. One raw load produces both the live jar and its SameSite-preserving
+baseline. The initial route uses the caller-spelled raw path, the L2.5 retry uses its canonical
+refresh path, and L3/L4 validation plus final fetch return to the caller-spelled raw path under the
+Phase 12C `ColdRecoveryCoordinator`. Whichever successful arm wins supplies the selected baseline.
+After token success, file auth snapshots the final live jar into an immutable observation and
+offloads exactly one concrete `ProfileStore` merge. `HARD_FAILURE`, the sole non-advancing result,
+keeps the exact selected baseline; an advancing result selects the exact returned next baseline.
+Ordinary `asyncio.to_thread`
+cancellation reaches the caller immediately, while an already-dispatched merge may still finish
+and commit. Inline env auth performs no store work. Only the private
+`refresh.save_cookies_to_storage` alias was retired; the public saver, storage/auth facades,
+permanent no-baseline overlay, and client/runtime saver-injection seams remain compatible.
+
+The v0.x `AuthTokens` value and signatures also remain compatible, but two storage-owning entry
+points now have an explicit v1 runway. Awaiting `AuthTokens.from_storage(...)` and constructing
+`AuthTokens(..., storage_path=..., cookie_jar=None)` emit `DeprecationWarning` from the user's call
+site. The recommended owner is `async with NotebookLMClient.from_storage(...) as client:` with
+`client.auth` used only inside that managed lifecycle. Suppress temporarily with
+`NOTEBOOKLM_QUIET_DEPRECATIONS=1`; both compatibility paths are scheduled for removal in v1.0.
 
 ### 6.3 `NOTEBOOKLM_HEADLESS_REAUTH=1` and `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` (L3)
 
@@ -1065,16 +1171,37 @@ reports still make sense:
   their own write path: cookie saves used the project's own `flock` primitive,
   `_auth/account.py` and `_auth/master_token.py` used `filelock.FileLock` with a
   10 s timeout, and `write_master_token` had no lock at all. Resolved by
-  [ADR-0029](adr/0029-canonical-storage-writer.md): `_auth/storage.py` is
-  now the only module permitted to perform the atomic write to
-  `storage_state.json` — enforced by an AST guardrail
-  (`tests/_guardrails/test_storage_writer_boundary.py`) — on one unified,
-  platform-neutral bounded lock (90 s deadline, up from 10 s). Full-replace
-  writers (account metadata, master-token persist) now **fail closed**, raising
+  [ADR-0029](adr/0029-canonical-storage-writer.md), then sealed by ADR-0034:
+  `_auth/credential_io.py` alone holds the unchecked atomic capability,
+  `_auth/profile_store.py` owns cookie transactions, typed in-band account
+  read/update/clear, and browser/remint, login/import, and minted-session replacement.
+  Login filters and validates required names before any destination access, applies
+  directive-specific namespace rules, optionally backs up under the same lock, then commits once.
+  `_auth/cookie_filter.py` owns that raw filter and its value-free diagnostics.
+  `_auth/profile_migration.py` owns legacy two-read account resolution, typed sanitization,
+  only-if-absent embed-before-scrub promotion, sibling `context.json.lock` cleanup, the canonical
+  once-per-path daemon scheduler, and post-login/account-write reconciliation. Per-RPC reads do not
+  wait for promotion; the exit hook drains for two seconds per snapshot worker.
+  `_auth/storage.py` retains the remint and raw-signature compatibility seams, the minted
+  snapshot/error adapter, and token policies. Minted input is frozen before path/lock work: the live jar is copied with the raw
+  master-token serializer fields (including `same_site="None"`, not the filtering/SameSite-lossy
+  `CookieJar.from_httpx()` path), and the permissive email is deep-copied with the same memo.
+  The store then performs the latest-owner gate, default filter, destination rebind, and one commit
+  under one lock. The adapter translates a private refusal outside its handler to context-free
+  canonical `MasterTokenError`. This jar-and-email snapshot timing is the deliberate isolation
+  correction. `LoginProfileWriter` allows only an applied login result to reach legacy
+  promote-or-scrub, after lock release; `AccountMetadataWriter` retains update/clear-specific
+  post-operation ordering.
+  Empty account placeholders no longer block legacy promotion;
+  non-empty unknown-only records still win. Function-granular AST guardrails
+  (`tests/_guardrails/test_storage_writer_boundary.py`) seal the capability and caller sets.
+  The full-replace paths share one platform-neutral bounded lock (90 s deadline, up from 10 s).
+  Those writers (account metadata, master-token persist) now **fail closed**, raising
   `LockUnavailableError` rather than silently skipping the write, while the CAS
   cookie merge keeps its status-quo **fail-open** behavior (availability is safe
-  there; the CAS guard itself prevents a lost update). A save-ordering guard
-  (`CookiePersistence.save()`) additionally makes a stale queued save drop itself
+  there; the CAS guard itself prevents a lost update). A shared dispatch-order guard
+  across public legacy and private canonical saves additionally makes a stale queued save drop
+  itself
   instead of overwriting a save that already landed.
 
 Across the OSS ecosystem this is the most defensive cookie-persistence implementation
@@ -1150,6 +1277,104 @@ gate their writes correctly.
 ---
 
 ## Changelog
+
+- **2026-08-09 (recovery state owners and cycle removal)** — `SingleFlight`,
+  `ColdRecoveryState`, and `RotationState` now own their registries/locks/epochs rather than
+  module-global algorithms. `ColdRecoveryCoordinator` is the one-shot explicit L2.5/L3/L4 owner;
+  cancellation cannot cancel sibling flight work, and quiescent resets reject live work. PSIDTS
+  recovery now composes injected pure loaders, typed raw-document observation/CAS, and
+  `ProfileStore` persistence without upward cookie/storage edges. `MasterTokenError`, `Account`,
+  and the Playwright repair result moved to dependency-bottom value leaves while retaining their
+  historical module/pickle and facade identities; one-shot account repair scrubs its six
+  collaborators on every exit. The auth graph is 40 modules / 15,237 lines / 128 edges (117
+  module + 11 function-local), and both module-only and all-scope SCC sets are empty. Final touched
+  owner LOC: account 252, account-repair 132, account-types 50, cookie-types 396, cookies 961,
+  keepalive 438, master-token 455, master-token-types 68, PSIDTS recovery 1,222, recovery 530,
+  refresh 1,184, single-flight 268, storage 1,127.
+
+- **2026-08-09 (typed refresh persistence)** — `fetch_tokens_with_domains` now consumes one paired
+  live/SameSite-preserving baseline sample, retains the baseline selected by the initial/L2.5/L3/L4
+  ladder, captures an immutable final observation, and dispatches one concrete `ProfileStore`
+  merge. Hard results retain the exact input baseline; advancing results return the exact next
+  baseline. Cancellation remains ordinary immediate `to_thread` propagation even though the
+  worker may finish. Only the private refresh saver alias retired; public compatibility remains.
+  At that Phase 12B checkpoint the auth graph was 38 modules / 15,074 lines / 122 edges (110 module + 12 local), with sole new
+  edge `refresh -> profile_store`; measured owners are 389 lines in `recovery.py` and 1,189 in
+  `refresh.py`.
+
+- **2026-08-09 (cold recovery coordinator)** — The internal, one-shot
+  `ColdRecoveryCoordinator` in `_auth/recovery.py` now owns the L2.5 decision/attempt and combined
+  cold delegation. `refresh._cold_fallbacks` supplies the late-bound production closures and keeps
+  exact skip/start/failure logging, route timing, retained-error precedence, cancellation timing,
+  and same-sample snapshot/baseline results. Existing `_run_cold_recovery` remains the L3/L4 and
+  per-loop lock/generation owner; its coalesced wrapper retained shared flights at that stage.
+  Measured owners are 389 lines in `recovery.py` and 1,194 in `refresh.py`.
+
+- **2026-08-09 (runtime profile-store cookie persistence)** — `FileLoadedAuth` now registers its
+  exact store/baseline pair with first-party `CookiePersistence`; direct construction prepares one
+  baseline before transport, with sticky typed failure and fileless compatibility-only capture.
+  Untouched defaults use the private typed merge, custom/patched defaults retain the exact public
+  legacy saver, and non-default overrides lazily initialize retryable per-key adapter snapshots.
+  `ClientLifecycle` owns the v0.x `AuthTokens.cookie_snapshot` mirror after open and accepted saves;
+  `_from_store` retains no `AuthTokens`. Measured owners are 457 lines in `_cookie_persistence.py`,
+  618 in `_runtime/init.py`, 628 in `_runtime/lifecycle.py`, and 992 in `client.py`.
+
+- **2026-08-09 (typed stored-auth loader and paired baseline)** — `_auth/tokens.py` now owns the
+  captured-inline/file source split, paired seed/acquisition, per-attempt account route,
+  `StoredAuthLoader`, and closed `LoadedAuth` result around the sole `TokenAcquirer` seam. One raw
+  cookie sample supplies both the live jar and SameSite-preserving typed baseline; refresh and
+  recovery replacements return their exact paired baselines. The initial store merge advances
+  accepted-final/rejected-old state and retains the acquisition baseline on hard failure. The
+  client consumes the closed result; Phase 10 registers its exact file store/baseline pair with
+  runtime persistence. Measured loader owners were 816 lines in `tokens.py`, 1,195 in `refresh.py`,
+  and 996 in `client.py` at that phase.
+
+- **2026-08-09 (legacy account migration ownership and lifecycle)** —
+  `_auth/profile_migration.py` now owns `LegacyAccountContext`, `LegacyAccountMigrator`,
+  `LegacyPromotionScheduler`, `LoginProfileWriter`, and `AccountMetadataWriter`. Resolution retains
+  the in-band/legacy/in-band anti-race sequence and a lossless raw compatibility projection;
+  promotion remains only-if-absent and embed-before-scrub. The context owner retains its separate
+  10-second `FileLock` and public atomic JSON write. Reads schedule canonical once-per-path daemon
+  workers without waiting, and the process exit hook drains for two seconds per snapshot worker.
+  Login reconciles only after `APPLIED` and outside the profile lock; account write and clear keep
+  their distinct scrub ordering. `_auth/storage.py` remains the v0.x signature/result facade. The
+  measured boundary is 1,150 storage + 311 migration + 794 store + 96 filter = 2,351 lines. Loader,
+  account-network, runtime, recovery, master-token, and shim ownership is unchanged by this stage.
+
+- **2026-08-09 (profile-store minted-session replacement)** —
+  `ProfileStore.replace_minted_session` now owns the authoritative same-lock latest-owner gate,
+  default raw filter, lossless destination preservation/rebind, and one profile commit.
+  `storage.persist_minted_jar` remains the exact v0.x adapter: it snapshots raw cookie fields plus
+  email before lock work and projects private refusal to canonical context-free `MasterTokenError`;
+  `master_token.persist_minted_jar` remains the public late-lookup wrapper. Corruption/unknown/force,
+  custom paths, exception messages, locks, permissions, on-disk schema, and callers are otherwise
+  unchanged. At that stage, legacy migration/composition and token value/file/network/bootstrap
+  ownership had not moved.
+
+- **2026-08-09 (profile-store login/import replacement)** —
+  `ProfileStore.replace_from_login` now owns raw source filtering, required-name rejection before
+  destination reads, KEEP/SET/CLEAR namespace construction, optional inside-lock backup, and the
+  single profile commit. `storage.replace_from_login` remains the exact v0.x facade/patch identity
+  and, at that stage, directly performed post-APPLIED legacy promote-or-scrub outside the profile
+  lock. KEEP carries the whole raw source namespace; SET/CLEAR rebuild it. No schema, path,
+  permission, warning,
+  backup, result, or caller behavior changed.
+
+- **2026-08-08 (profile-store browser/remint replacement)** — The pure raw
+  capture/domain filter and value-free malformed-row diagnostics now live in
+  `_auth/cookie_filter.py`. `ProfileStore.replace_from_remint` owns the bounded
+  transaction, latest raw namespace carry, filtering, and commit;
+  `_auth/storage.py::replace_from_remint` remains the exact v0.x adapter and
+  browser patch seam. At that stage, login/minted replacement, legacy reconciliation and
+  scheduling, and token policy still lived in `_auth/storage.py`. No schema, path,
+  lock, permission, backup, warning, or public-result behavior changed.
+
+- **2026-08-08 (profile-store account intents)** — `ProfileStore` now owns typed
+  in-band account read/update/clear and their distinct corruption/lock policies.
+  At that stage, `_auth/storage.py` kept raw compatibility, legacy promotion scheduling, and
+  sibling scrub; all full replacements and token-file policy remained there. The
+  empty-placeholder promotion correction changes no schema, path, permission,
+  backup, log, or public API.
 
 - **2026-08-05 (storage-writer / recovery-ladder refactor sync)** — Reflects the
   auth-audit refactor in [#2091](https://github.com/teng-lin/notebooklm-py/pull/2091)

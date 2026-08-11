@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `thedivergentai/gd-agentic-skills` — 26 default patterns, 0 followed patterns, 3620 file(s) materialized.
+Mirror of `thedivergentai/gd-agentic-skills` — 26 default patterns, 0 followed patterns, 3624 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `thedivergentai/gd-agentic-skills` — 26 default patterns, 0 followed
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 3620 |
+| Files         | 3624 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -3600,85 +3600,89 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 3539 | ✓ | [`skills/godot-version-migration/references/animation-tree-mastery.md`](skills/godot-version-migration/references/animation-tree-mastery.md) |
 | 3540 | ✓ | [`skills/godot-version-migration/references/audio-systems.md`](skills/godot-version-migration/references/audio-systems.md) |
 | 3541 | ✓ | [`skills/godot-version-migration/references/autoload-architecture.md`](skills/godot-version-migration/references/autoload-architecture.md) |
-| 3542 | ✓ | [`skills/godot-version-migration/references/camera-systems.md`](skills/godot-version-migration/references/camera-systems.md) |
-| 3543 | ✓ | [`skills/godot-version-migration/references/characterbody-2d.md`](skills/godot-version-migration/references/characterbody-2d.md) |
-| 3544 | ✓ | [`skills/godot-version-migration/references/combat-system.md`](skills/godot-version-migration/references/combat-system.md) |
-| 3545 | ✓ | [`skills/godot-version-migration/references/composition-apps.md`](skills/godot-version-migration/references/composition-apps.md) |
-| 3546 | ✓ | [`skills/godot-version-migration/references/composition.md`](skills/godot-version-migration/references/composition.md) |
-| 3547 | ✓ | [`skills/godot-version-migration/references/debugging-profiling.md`](skills/godot-version-migration/references/debugging-profiling.md) |
-| 3548 | ✓ | [`skills/godot-version-migration/references/dialogue-system.md`](skills/godot-version-migration/references/dialogue-system.md) |
-| 3549 | ✓ | [`skills/godot-version-migration/references/economy-system.md`](skills/godot-version-migration/references/economy-system.md) |
-| 3550 | ✓ | [`skills/godot-version-migration/references/export-builds.md`](skills/godot-version-migration/references/export-builds.md) |
-| 3551 | ✓ | [`skills/godot-version-migration/references/game-loop-collection.md`](skills/godot-version-migration/references/game-loop-collection.md) |
-| 3552 | ✓ | [`skills/godot-version-migration/references/game-loop-harvest.md`](skills/godot-version-migration/references/game-loop-harvest.md) |
-| 3553 | ✓ | [`skills/godot-version-migration/references/game-loop-time-trial.md`](skills/godot-version-migration/references/game-loop-time-trial.md) |
-| 3554 | ✓ | [`skills/godot-version-migration/references/game-loop-waves.md`](skills/godot-version-migration/references/game-loop-waves.md) |
-| 3555 | ✓ | [`skills/godot-version-migration/references/gdscript-mastery.md`](skills/godot-version-migration/references/gdscript-mastery.md) |
-| 3556 | ✓ | [`skills/godot-version-migration/references/genre-action-rpg.md`](skills/godot-version-migration/references/genre-action-rpg.md) |
-| 3557 | ✓ | [`skills/godot-version-migration/references/genre-battle-royale.md`](skills/godot-version-migration/references/genre-battle-royale.md) |
-| 3558 | ✓ | [`skills/godot-version-migration/references/genre-card-game.md`](skills/godot-version-migration/references/genre-card-game.md) |
-| 3559 | ✓ | [`skills/godot-version-migration/references/genre-educational.md`](skills/godot-version-migration/references/genre-educational.md) |
-| 3560 | ✓ | [`skills/godot-version-migration/references/genre-fighting.md`](skills/godot-version-migration/references/genre-fighting.md) |
-| 3561 | ✓ | [`skills/godot-version-migration/references/genre-horror.md`](skills/godot-version-migration/references/genre-horror.md) |
-| 3562 | ✓ | [`skills/godot-version-migration/references/genre-idle-clicker.md`](skills/godot-version-migration/references/genre-idle-clicker.md) |
-| 3563 | ✓ | [`skills/godot-version-migration/references/genre-metroidvania.md`](skills/godot-version-migration/references/genre-metroidvania.md) |
-| 3564 | ✓ | [`skills/godot-version-migration/references/genre-moba.md`](skills/godot-version-migration/references/genre-moba.md) |
-| 3565 | ✓ | [`skills/godot-version-migration/references/genre-open-world.md`](skills/godot-version-migration/references/genre-open-world.md) |
-| 3566 | ✓ | [`skills/godot-version-migration/references/genre-party.md`](skills/godot-version-migration/references/genre-party.md) |
-| 3567 | ✓ | [`skills/godot-version-migration/references/genre-platformer.md`](skills/godot-version-migration/references/genre-platformer.md) |
-| 3568 | ✓ | [`skills/godot-version-migration/references/genre-puzzle.md`](skills/godot-version-migration/references/genre-puzzle.md) |
-| 3569 | ✓ | [`skills/godot-version-migration/references/genre-racing.md`](skills/godot-version-migration/references/genre-racing.md) |
-| 3570 | ✓ | [`skills/godot-version-migration/references/genre-rhythm.md`](skills/godot-version-migration/references/genre-rhythm.md) |
-| 3571 | ✓ | [`skills/godot-version-migration/references/genre-roguelike.md`](skills/godot-version-migration/references/genre-roguelike.md) |
-| 3572 | ✓ | [`skills/godot-version-migration/references/genre-romance.md`](skills/godot-version-migration/references/genre-romance.md) |
-| 3573 | ✓ | [`skills/godot-version-migration/references/genre-rts.md`](skills/godot-version-migration/references/genre-rts.md) |
-| 3574 | ✓ | [`skills/godot-version-migration/references/genre-sandbox.md`](skills/godot-version-migration/references/genre-sandbox.md) |
-| 3575 | ✓ | [`skills/godot-version-migration/references/genre-shooter-fps.md`](skills/godot-version-migration/references/genre-shooter-fps.md) |
-| 3576 | ✓ | [`skills/godot-version-migration/references/genre-shooter.md`](skills/godot-version-migration/references/genre-shooter.md) |
-| 3577 | ✓ | [`skills/godot-version-migration/references/genre-simulation.md`](skills/godot-version-migration/references/genre-simulation.md) |
-| 3578 | ✓ | [`skills/godot-version-migration/references/genre-sports.md`](skills/godot-version-migration/references/genre-sports.md) |
-| 3579 | ✓ | [`skills/godot-version-migration/references/genre-stealth.md`](skills/godot-version-migration/references/genre-stealth.md) |
-| 3580 | ✓ | [`skills/godot-version-migration/references/genre-survival.md`](skills/godot-version-migration/references/genre-survival.md) |
-| 3581 | ✓ | [`skills/godot-version-migration/references/genre-tower-defense.md`](skills/godot-version-migration/references/genre-tower-defense.md) |
-| 3582 | ✓ | [`skills/godot-version-migration/references/genre-visual-novel.md`](skills/godot-version-migration/references/genre-visual-novel.md) |
-| 3583 | ✓ | [`skills/godot-version-migration/references/hop-index.md`](skills/godot-version-migration/references/hop-index.md) |
-| 3584 | ✓ | [`skills/godot-version-migration/references/input-handling.md`](skills/godot-version-migration/references/input-handling.md) |
-| 3585 | ✓ | [`skills/godot-version-migration/references/inventory-system.md`](skills/godot-version-migration/references/inventory-system.md) |
-| 3586 | ✓ | [`skills/godot-version-migration/references/mechanic-revival.md`](skills/godot-version-migration/references/mechanic-revival.md) |
-| 3587 | ✓ | [`skills/godot-version-migration/references/mechanic-secrets.md`](skills/godot-version-migration/references/mechanic-secrets.md) |
-| 3588 | ✓ | [`skills/godot-version-migration/references/monte-carlo-balancer.md`](skills/godot-version-migration/references/monte-carlo-balancer.md) |
-| 3589 | ✓ | [`skills/godot-version-migration/references/multiplayer-networking.md`](skills/godot-version-migration/references/multiplayer-networking.md) |
-| 3590 | ✓ | [`skills/godot-version-migration/references/navigation-pathfinding.md`](skills/godot-version-migration/references/navigation-pathfinding.md) |
-| 3591 | ✓ | [`skills/godot-version-migration/references/particles.md`](skills/godot-version-migration/references/particles.md) |
-| 3592 | ✓ | [`skills/godot-version-migration/references/performance-optimization.md`](skills/godot-version-migration/references/performance-optimization.md) |
-| 3593 | ✓ | [`skills/godot-version-migration/references/physics-3d.md`](skills/godot-version-migration/references/physics-3d.md) |
-| 3594 | ✓ | [`skills/godot-version-migration/references/platform-console.md`](skills/godot-version-migration/references/platform-console.md) |
-| 3595 | ✓ | [`skills/godot-version-migration/references/platform-desktop.md`](skills/godot-version-migration/references/platform-desktop.md) |
-| 3596 | ✓ | [`skills/godot-version-migration/references/platform-mobile.md`](skills/godot-version-migration/references/platform-mobile.md) |
-| 3597 | ✓ | [`skills/godot-version-migration/references/platform-vr.md`](skills/godot-version-migration/references/platform-vr.md) |
-| 3598 | ✓ | [`skills/godot-version-migration/references/platform-web.md`](skills/godot-version-migration/references/platform-web.md) |
-| 3599 | ✓ | [`skills/godot-version-migration/references/procedural-generation.md`](skills/godot-version-migration/references/procedural-generation.md) |
-| 3600 | ✓ | [`skills/godot-version-migration/references/project-foundations.md`](skills/godot-version-migration/references/project-foundations.md) |
-| 3601 | ✓ | [`skills/godot-version-migration/references/project-templates.md`](skills/godot-version-migration/references/project-templates.md) |
-| 3602 | ✓ | [`skills/godot-version-migration/references/quest-system.md`](skills/godot-version-migration/references/quest-system.md) |
-| 3603 | ✓ | [`skills/godot-version-migration/references/raycasting-queries.md`](skills/godot-version-migration/references/raycasting-queries.md) |
-| 3604 | ✓ | [`skills/godot-version-migration/references/resource-data-patterns.md`](skills/godot-version-migration/references/resource-data-patterns.md) |
-| 3605 | ✓ | [`skills/godot-version-migration/references/rpg-stats.md`](skills/godot-version-migration/references/rpg-stats.md) |
-| 3606 | ✓ | [`skills/godot-version-migration/references/save-load-systems.md`](skills/godot-version-migration/references/save-load-systems.md) |
-| 3607 | ✓ | [`skills/godot-version-migration/references/scene-management.md`](skills/godot-version-migration/references/scene-management.md) |
-| 3608 | ✓ | [`skills/godot-version-migration/references/server-architecture.md`](skills/godot-version-migration/references/server-architecture.md) |
-| 3609 | ✓ | [`skills/godot-version-migration/references/shaders-basics.md`](skills/godot-version-migration/references/shaders-basics.md) |
-| 3610 | ✓ | [`skills/godot-version-migration/references/signal-architecture.md`](skills/godot-version-migration/references/signal-architecture.md) |
-| 3611 | ✓ | [`skills/godot-version-migration/references/state-machine-advanced.md`](skills/godot-version-migration/references/state-machine-advanced.md) |
-| 3612 | ✓ | [`skills/godot-version-migration/references/testing-patterns.md`](skills/godot-version-migration/references/testing-patterns.md) |
-| 3613 | ✓ | [`skills/godot-version-migration/references/theme-easter.md`](skills/godot-version-migration/references/theme-easter.md) |
-| 3614 | ✓ | [`skills/godot-version-migration/references/tilemap-mastery.md`](skills/godot-version-migration/references/tilemap-mastery.md) |
-| 3615 | ✓ | [`skills/godot-version-migration/references/turn-system.md`](skills/godot-version-migration/references/turn-system.md) |
-| 3616 | ✓ | [`skills/godot-version-migration/references/tweening.md`](skills/godot-version-migration/references/tweening.md) |
-| 3617 | ✓ | [`skills/godot-version-migration/references/ui-containers.md`](skills/godot-version-migration/references/ui-containers.md) |
-| 3618 | ✓ | [`skills/godot-version-migration/references/ui-rich-text.md`](skills/godot-version-migration/references/ui-rich-text.md) |
-| 3619 | ✓ | [`skills/godot-version-migration/references/ui-theming.md`](skills/godot-version-migration/references/ui-theming.md) |
-| 3620 | ✓ | [`skills/godot-version-migration/SKILL.md`](skills/godot-version-migration/SKILL.md) |
+| 3542 | ✓ | [`skills/godot-version-migration/references/bridges/3-to-4.md`](skills/godot-version-migration/references/bridges/3-to-4.md) |
+| 3543 | ✓ | [`skills/godot-version-migration/references/camera-systems.md`](skills/godot-version-migration/references/camera-systems.md) |
+| 3544 | ✓ | [`skills/godot-version-migration/references/characterbody-2d.md`](skills/godot-version-migration/references/characterbody-2d.md) |
+| 3545 | ✓ | [`skills/godot-version-migration/references/combat-system.md`](skills/godot-version-migration/references/combat-system.md) |
+| 3546 | ✓ | [`skills/godot-version-migration/references/composition-apps.md`](skills/godot-version-migration/references/composition-apps.md) |
+| 3547 | ✓ | [`skills/godot-version-migration/references/composition.md`](skills/godot-version-migration/references/composition.md) |
+| 3548 | ✓ | [`skills/godot-version-migration/references/debugging-profiling.md`](skills/godot-version-migration/references/debugging-profiling.md) |
+| 3549 | ✓ | [`skills/godot-version-migration/references/dialogue-system.md`](skills/godot-version-migration/references/dialogue-system.md) |
+| 3550 | ✓ | [`skills/godot-version-migration/references/economy-system.md`](skills/godot-version-migration/references/economy-system.md) |
+| 3551 | ✓ | [`skills/godot-version-migration/references/era-index.md`](skills/godot-version-migration/references/era-index.md) |
+| 3552 | ✓ | [`skills/godot-version-migration/references/export-builds.md`](skills/godot-version-migration/references/export-builds.md) |
+| 3553 | ✓ | [`skills/godot-version-migration/references/game-loop-collection.md`](skills/godot-version-migration/references/game-loop-collection.md) |
+| 3554 | ✓ | [`skills/godot-version-migration/references/game-loop-harvest.md`](skills/godot-version-migration/references/game-loop-harvest.md) |
+| 3555 | ✓ | [`skills/godot-version-migration/references/game-loop-time-trial.md`](skills/godot-version-migration/references/game-loop-time-trial.md) |
+| 3556 | ✓ | [`skills/godot-version-migration/references/game-loop-waves.md`](skills/godot-version-migration/references/game-loop-waves.md) |
+| 3557 | ✓ | [`skills/godot-version-migration/references/gdscript-mastery.md`](skills/godot-version-migration/references/gdscript-mastery.md) |
+| 3558 | ✓ | [`skills/godot-version-migration/references/genre-action-rpg.md`](skills/godot-version-migration/references/genre-action-rpg.md) |
+| 3559 | ✓ | [`skills/godot-version-migration/references/genre-battle-royale.md`](skills/godot-version-migration/references/genre-battle-royale.md) |
+| 3560 | ✓ | [`skills/godot-version-migration/references/genre-card-game.md`](skills/godot-version-migration/references/genre-card-game.md) |
+| 3561 | ✓ | [`skills/godot-version-migration/references/genre-educational.md`](skills/godot-version-migration/references/genre-educational.md) |
+| 3562 | ✓ | [`skills/godot-version-migration/references/genre-fighting.md`](skills/godot-version-migration/references/genre-fighting.md) |
+| 3563 | ✓ | [`skills/godot-version-migration/references/genre-horror.md`](skills/godot-version-migration/references/genre-horror.md) |
+| 3564 | ✓ | [`skills/godot-version-migration/references/genre-idle-clicker.md`](skills/godot-version-migration/references/genre-idle-clicker.md) |
+| 3565 | ✓ | [`skills/godot-version-migration/references/genre-metroidvania.md`](skills/godot-version-migration/references/genre-metroidvania.md) |
+| 3566 | ✓ | [`skills/godot-version-migration/references/genre-moba.md`](skills/godot-version-migration/references/genre-moba.md) |
+| 3567 | ✓ | [`skills/godot-version-migration/references/genre-open-world.md`](skills/godot-version-migration/references/genre-open-world.md) |
+| 3568 | ✓ | [`skills/godot-version-migration/references/genre-party.md`](skills/godot-version-migration/references/genre-party.md) |
+| 3569 | ✓ | [`skills/godot-version-migration/references/genre-platformer.md`](skills/godot-version-migration/references/genre-platformer.md) |
+| 3570 | ✓ | [`skills/godot-version-migration/references/genre-puzzle.md`](skills/godot-version-migration/references/genre-puzzle.md) |
+| 3571 | ✓ | [`skills/godot-version-migration/references/genre-racing.md`](skills/godot-version-migration/references/genre-racing.md) |
+| 3572 | ✓ | [`skills/godot-version-migration/references/genre-rhythm.md`](skills/godot-version-migration/references/genre-rhythm.md) |
+| 3573 | ✓ | [`skills/godot-version-migration/references/genre-roguelike.md`](skills/godot-version-migration/references/genre-roguelike.md) |
+| 3574 | ✓ | [`skills/godot-version-migration/references/genre-romance.md`](skills/godot-version-migration/references/genre-romance.md) |
+| 3575 | ✓ | [`skills/godot-version-migration/references/genre-rts.md`](skills/godot-version-migration/references/genre-rts.md) |
+| 3576 | ✓ | [`skills/godot-version-migration/references/genre-sandbox.md`](skills/godot-version-migration/references/genre-sandbox.md) |
+| 3577 | ✓ | [`skills/godot-version-migration/references/genre-shooter-fps.md`](skills/godot-version-migration/references/genre-shooter-fps.md) |
+| 3578 | ✓ | [`skills/godot-version-migration/references/genre-shooter.md`](skills/godot-version-migration/references/genre-shooter.md) |
+| 3579 | ✓ | [`skills/godot-version-migration/references/genre-simulation.md`](skills/godot-version-migration/references/genre-simulation.md) |
+| 3580 | ✓ | [`skills/godot-version-migration/references/genre-sports.md`](skills/godot-version-migration/references/genre-sports.md) |
+| 3581 | ✓ | [`skills/godot-version-migration/references/genre-stealth.md`](skills/godot-version-migration/references/genre-stealth.md) |
+| 3582 | ✓ | [`skills/godot-version-migration/references/genre-survival.md`](skills/godot-version-migration/references/genre-survival.md) |
+| 3583 | ✓ | [`skills/godot-version-migration/references/genre-tower-defense.md`](skills/godot-version-migration/references/genre-tower-defense.md) |
+| 3584 | ✓ | [`skills/godot-version-migration/references/genre-visual-novel.md`](skills/godot-version-migration/references/genre-visual-novel.md) |
+| 3585 | ✓ | [`skills/godot-version-migration/references/hop-index.md`](skills/godot-version-migration/references/hop-index.md) |
+| 3586 | ✓ | [`skills/godot-version-migration/references/input-handling.md`](skills/godot-version-migration/references/input-handling.md) |
+| 3587 | ✓ | [`skills/godot-version-migration/references/inventory-system.md`](skills/godot-version-migration/references/inventory-system.md) |
+| 3588 | ✓ | [`skills/godot-version-migration/references/legacy/2-to-3.md`](skills/godot-version-migration/references/legacy/2-to-3.md) |
+| 3589 | ✓ | [`skills/godot-version-migration/references/legacy/pre-2-context.md`](skills/godot-version-migration/references/legacy/pre-2-context.md) |
+| 3590 | ✓ | [`skills/godot-version-migration/references/mechanic-revival.md`](skills/godot-version-migration/references/mechanic-revival.md) |
+| 3591 | ✓ | [`skills/godot-version-migration/references/mechanic-secrets.md`](skills/godot-version-migration/references/mechanic-secrets.md) |
+| 3592 | ✓ | [`skills/godot-version-migration/references/monte-carlo-balancer.md`](skills/godot-version-migration/references/monte-carlo-balancer.md) |
+| 3593 | ✓ | [`skills/godot-version-migration/references/multiplayer-networking.md`](skills/godot-version-migration/references/multiplayer-networking.md) |
+| 3594 | ✓ | [`skills/godot-version-migration/references/navigation-pathfinding.md`](skills/godot-version-migration/references/navigation-pathfinding.md) |
+| 3595 | ✓ | [`skills/godot-version-migration/references/particles.md`](skills/godot-version-migration/references/particles.md) |
+| 3596 | ✓ | [`skills/godot-version-migration/references/performance-optimization.md`](skills/godot-version-migration/references/performance-optimization.md) |
+| 3597 | ✓ | [`skills/godot-version-migration/references/physics-3d.md`](skills/godot-version-migration/references/physics-3d.md) |
+| 3598 | ✓ | [`skills/godot-version-migration/references/platform-console.md`](skills/godot-version-migration/references/platform-console.md) |
+| 3599 | ✓ | [`skills/godot-version-migration/references/platform-desktop.md`](skills/godot-version-migration/references/platform-desktop.md) |
+| 3600 | ✓ | [`skills/godot-version-migration/references/platform-mobile.md`](skills/godot-version-migration/references/platform-mobile.md) |
+| 3601 | ✓ | [`skills/godot-version-migration/references/platform-vr.md`](skills/godot-version-migration/references/platform-vr.md) |
+| 3602 | ✓ | [`skills/godot-version-migration/references/platform-web.md`](skills/godot-version-migration/references/platform-web.md) |
+| 3603 | ✓ | [`skills/godot-version-migration/references/procedural-generation.md`](skills/godot-version-migration/references/procedural-generation.md) |
+| 3604 | ✓ | [`skills/godot-version-migration/references/project-foundations.md`](skills/godot-version-migration/references/project-foundations.md) |
+| 3605 | ✓ | [`skills/godot-version-migration/references/project-templates.md`](skills/godot-version-migration/references/project-templates.md) |
+| 3606 | ✓ | [`skills/godot-version-migration/references/quest-system.md`](skills/godot-version-migration/references/quest-system.md) |
+| 3607 | ✓ | [`skills/godot-version-migration/references/raycasting-queries.md`](skills/godot-version-migration/references/raycasting-queries.md) |
+| 3608 | ✓ | [`skills/godot-version-migration/references/resource-data-patterns.md`](skills/godot-version-migration/references/resource-data-patterns.md) |
+| 3609 | ✓ | [`skills/godot-version-migration/references/rpg-stats.md`](skills/godot-version-migration/references/rpg-stats.md) |
+| 3610 | ✓ | [`skills/godot-version-migration/references/save-load-systems.md`](skills/godot-version-migration/references/save-load-systems.md) |
+| 3611 | ✓ | [`skills/godot-version-migration/references/scene-management.md`](skills/godot-version-migration/references/scene-management.md) |
+| 3612 | ✓ | [`skills/godot-version-migration/references/server-architecture.md`](skills/godot-version-migration/references/server-architecture.md) |
+| 3613 | ✓ | [`skills/godot-version-migration/references/shaders-basics.md`](skills/godot-version-migration/references/shaders-basics.md) |
+| 3614 | ✓ | [`skills/godot-version-migration/references/signal-architecture.md`](skills/godot-version-migration/references/signal-architecture.md) |
+| 3615 | ✓ | [`skills/godot-version-migration/references/state-machine-advanced.md`](skills/godot-version-migration/references/state-machine-advanced.md) |
+| 3616 | ✓ | [`skills/godot-version-migration/references/testing-patterns.md`](skills/godot-version-migration/references/testing-patterns.md) |
+| 3617 | ✓ | [`skills/godot-version-migration/references/theme-easter.md`](skills/godot-version-migration/references/theme-easter.md) |
+| 3618 | ✓ | [`skills/godot-version-migration/references/tilemap-mastery.md`](skills/godot-version-migration/references/tilemap-mastery.md) |
+| 3619 | ✓ | [`skills/godot-version-migration/references/turn-system.md`](skills/godot-version-migration/references/turn-system.md) |
+| 3620 | ✓ | [`skills/godot-version-migration/references/tweening.md`](skills/godot-version-migration/references/tweening.md) |
+| 3621 | ✓ | [`skills/godot-version-migration/references/ui-containers.md`](skills/godot-version-migration/references/ui-containers.md) |
+| 3622 | ✓ | [`skills/godot-version-migration/references/ui-rich-text.md`](skills/godot-version-migration/references/ui-rich-text.md) |
+| 3623 | ✓ | [`skills/godot-version-migration/references/ui-theming.md`](skills/godot-version-migration/references/ui-theming.md) |
+| 3624 | ✓ | [`skills/godot-version-migration/SKILL.md`](skills/godot-version-migration/SKILL.md) |
 
 ---
 

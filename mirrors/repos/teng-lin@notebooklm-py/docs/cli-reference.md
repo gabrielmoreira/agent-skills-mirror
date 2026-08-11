@@ -413,7 +413,7 @@ These CLI capabilities are not available in NotebookLM's web interface:
 
 Authenticate with Google NotebookLM via browser.
 
-> **Python equivalent:** load saved credentials with [`AuthTokens.from_storage()` / `NotebookLMClient.from_storage(...)`](python-api.md#authentication). The CLI's interactive browser-login flow has no Python counterpart — run `notebooklm login` once to seed `storage_state.json`, then drive the API from Python.
+> **Python equivalent:** load saved credentials with [`NotebookLMClient.from_storage(...)`](python-api.md#authentication) and use it as an async context manager. The CLI's interactive browser-login flow has no Python counterpart — run `notebooklm login` once to seed `storage_state.json`, then drive the API from Python.
 
 ```bash
 notebooklm login [OPTIONS]

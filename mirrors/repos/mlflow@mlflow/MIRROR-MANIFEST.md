@@ -7,7 +7,7 @@ ref: master
 
 # Mirror Manifest
 
-Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 16 file(s) materialized.
+Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 18 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `mlflow/mlflow` — 26 default patterns, 1 followed patterns, 16 file(
 | Ref           | `master` |
 | Default pats  | 26 |
 | Followed pats | 1 |
-| Files         | 16 |
+| Files         | 18 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -74,7 +74,9 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 13 | ✓ | [`mlflow/server/AGENTS.md`](mlflow/server/AGENTS.md) |
 | 14 | ✓ | [`mlflow/server/js/CLAUDE.md`](mlflow/server/js/CLAUDE.md) |
 | 15 | ✓ | [`mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md`](mlflow/server/js/src/experiment-tracking/pages/experiment-scorers/CLAUDE.md) |
-| 16 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
+| 16 | ✓ | [`mlflow/server/js/src/shared/web-shared/traces-table/CLAUDE.md`](mlflow/server/js/src/shared/web-shared/traces-table/CLAUDE.md) |
+| 17 | ✓ | [`mlflow/server/js/src/shared/web-shared/traces-table/data/CLAUDE.md`](mlflow/server/js/src/shared/web-shared/traces-table/data/CLAUDE.md) |
+| 18 | → | [`.github/pull_request_template.md`](.github/pull_request_template.md) |
 
 ---
 

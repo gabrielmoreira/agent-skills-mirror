@@ -6,6 +6,7 @@ Use the release-mode, versioning, gate, documentation, and output policies in `.
 
 - Sync remote tags and resolve the latest matching release tag with `../scripts/find_latest_release_tag.sh origin 'v*'`.
 - Refresh the requested target, defaulting to `origin/main`, and record its exact commit.
+- When the caller provides a dedicated checkout or worktree, run every local inspection there and record its root, current branch, `HEAD`, and clean status as gate evidence. Do not substitute another checkout that shares the same Git objects.
 - Resolve review mode first, then release intent. Record the evidence for each decision separately.
 - Generate `git diff --stat BASE...TARGET`, `git diff --dirstat=files,0 BASE...TARGET`, `git log --oneline --reverse BASE..TARGET`, and `git diff --name-status BASE...TARGET`.
 - Inspect suspicious paths with `git diff --word-diff BASE...TARGET -- <path>`.
@@ -26,6 +27,8 @@ Capture:
 - intended release type/version and its evidence, or `unspecified`;
 - minimum required release type and the contracts that establish it;
 - planning recommendation or final-candidate compatibility verdict.
+
+For a materialized final candidate, read the checked-out package metadata, lockfile, and released API contract before deciding compatibility. Require the candidate branch, `HEAD`, intended version, contract baseline, and contract base commit to agree. Treat uncommitted release-owned files or unrelated changed paths as an inconsistent candidate rather than reviewing only the commit object.
 
 ## Audit runtime and package contracts
 
@@ -130,3 +133,4 @@ When `../SKILL.md` requires the minor-release draft:
 - Documentation-obligation inventory, current docs PR source and head SHA or search limitation, aggregate coverage, and exact post-release suggestions.
 - Conditional copy-ready Key Changes draft for minor releases.
 - Explicit ship/block call and an unblock checklist only when blocked.
+- For a dedicated final-candidate checkout, confirmation that the exact checked-out `HEAD` and release-owned file contents were inspected and were clean. Keep the local checkout path out of copy-ready report text.

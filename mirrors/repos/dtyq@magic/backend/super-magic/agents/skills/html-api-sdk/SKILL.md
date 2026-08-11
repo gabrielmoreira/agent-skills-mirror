@@ -17,18 +17,19 @@ description: "Complete API reference for window.Magic.* in SuperMagic HTML micro
 1. All `window.Magic.*` APIs are **pre-injected** — no imports needed. External CDN allowed.
 2. File paths are relative to **app root** (`index.html` dir) by default. `../` is forbidden. Use leading-slash paths such as `"/shared/data.json"` to access project-root files. Writing, deleting, moving, or renaming files outside the app root triggers host confirmation.
 3. `window.Magic.llm` tokens hosted; no `api_key` in HTML.
-4. **No inline event handlers** — use `addEventListener`.
+4. **No inline event handlers** — use `addEventListener`. For buttons rendered by `innerHTML`, bind one delegated listener on a stable container and use `data-action`/`data-id`.
 5. **LLM calls must include model selector UI** unless user specifies model. Default `"auto"`.
 6. **Complex file-based AI** → use `createTopicAndSend` + `@file` + companion skill. Simple → `readFile` + `llm.chat/stream`.
 7. **High-risk APIs are permission-gated** — new HTML micro-apps must declare requested scopes in `app.json.permissions.scopes`. The host asks the user to approve high-risk runtime calls for a limited duration.
 8. **User info is privacy-gated** — `window.Magic.user.getInfo()` returns only `name` and `avatar` by default. Sensitive fields require a matching permission declaration, a runtime `getInfo({ scopes, reason })` request, and user confirmation.
-9. **Use `app.json` as the micro-app manifest** — every new HTML micro-app folder should include `app.json` next to `index.html`. Put `type`, `name`, `entry`, file aliases, watch hints, and permissions there. Do not generate `magic.project.js` for new HTML micro-apps.
+9. **Use `app.json` as the micro-app manifest** — every new HTML micro-app folder should include `app.json` next to `index.html`. Put `type`, `name`, `entry`, `anonymous`, file aliases, watch hints, and permissions there. Also generate a minimal `magic.project.js` display bridge that mirrors only `version/type/name/entry/icon`; do not put `anonymous`, permissions, files, watch, or business state in `magic.project.js`.
    ```json
    {
      "version": "1.0.0",
      "type": "micro-app",
      "name": "App Name",
      "entry": "index.html",
+     "anonymous": false,
      "files": {},
      "watch": [],
      "permissions": {
@@ -38,7 +39,20 @@ description: "Complete API reference for window.Magic.* in SuperMagic HTML micro
    }
    ```
 
+10. **Administrator page access is runtime-controlled** — when an app has administrator-only pages, put `window.MagicAppConfig.admin_pages` in the shared `app.js` and call `window.Magic.db.getProjectAdminAccess()` before loading each listed page. The result is based on the real logged-in user; a share token is only an access proof and is never a user identity.
+
 ---
+
+## HTML Interaction Safety
+
+Generated micro-app controls must be wired through real JavaScript listeners, not HTML event attributes.
+
+- Do not generate `onclick`, `onchange`, `oninput`, `onsubmit`, or other inline event attributes.
+- For lists, cards, table rows, and menus rendered with `innerHTML`, use event delegation: `container.addEventListener("click", handler)` and buttons such as `<button data-action="edit" data-id="...">`.
+- Do not attach action functions to `window` just to make inline event handlers work.
+- If using `new FormData(form)`, every value read with `formData.get("field")` must have a matching `name="field"` on the input/select/textarea. Having only `id="field"` is not enough.
+- Before calling `.trim()`, normalize possibly missing form values, for example `String(formData.get("title") || "").trim()`.
+- If a form is read by DOM IDs instead, use `.value` consistently and do not mix it with `FormData.get()` for unnamed controls.
 
 ## 1. File System (`window.Magic.fs`)
 
@@ -229,7 +243,7 @@ Update safety:
 
 ```javascript
 const basePath = await window.Magic.getAppBasePath();
-// "个人财务记账/" or "" (workspace root)
+// "personal-finance/" or "" (workspace root)
 ```
 
 - `fs.*` paths → relative to app root by default: `"data/file.json"`; project-root paths use a leading slash such as `"/shared/file.json"`.
@@ -247,8 +261,7 @@ const models = await window.Magic.llm.getModels();
 // [{id, object?, owned_by?, icon?, label?, info?}]
 ```
 
-> ⚠️ `model` field **required** — default `"auto"`. Empty string forbidden.
-> Model selector UI must have "Auto Select" as first/default item.
+> ⚠️ `model` field **required** — default `"auto"`. Empty string forbidden. Model selector UI must have "Auto Select" as first/default item.
 
 ### `chat(messages, options?)` → `Promise<string>`
 
@@ -359,7 +372,7 @@ const { topicId: t2 } = await window.Magic.project.createTopicAndSend(
       {
         type: "paragraph",
         content: [
-          { type: "text", text: "请阅读技能文件并执行：" },
+          { type: "text", text: "Read the skill file and execute it: " },
           {
             type: "mention",
             attrs: {
@@ -372,7 +385,7 @@ const { topicId: t2 } = await window.Magic.project.createTopicAndSend(
               },
             },
           },
-          { type: "text", text: "\n\n任务：生成报告" },
+          { type: "text", text: "\n\nTask: generate a report" },
         ],
       },
     ],
@@ -457,7 +470,7 @@ Notes:
 - Sensitive scopes must be present in both `app.json.permissions.scopes` and the runtime `getInfo({ scopes })` call.
 - `magic.project.js` is legacy for older HTML micro-apps and still used by other project types such as slides/design/media. It is not the HTML micro-app manifest.
 - `reason` should explain why the app needs these fields; runtime `reason` overrides the `app.json` reason in the confirmation dialog.
-- Approved sensitive scopes are cached only for the current iframe session.
+- Approved sensitive scopes use the same host authorization store as other high-risk APIs. They remain valid only in the current browser tab for the duration selected by the user, and the user can revoke them from the HTML app authorization manager.
 - Never assume identity or organization fields are available from a bare `getInfo()` call.
 
 Timeout: 15s.

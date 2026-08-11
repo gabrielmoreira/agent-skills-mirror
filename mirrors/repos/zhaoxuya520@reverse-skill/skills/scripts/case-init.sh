@@ -94,7 +94,8 @@ if [[ -z "$CASE_NAME" || "$case_name_length" -gt 80 ||
   exit 2
 fi
 if [[ -n "$NETWORK_PROFILE" ]]; then
-  case "${NETWORK_PROFILE,,}" in
+  network_profile_normalized="$(printf '%s' "$NETWORK_PROFILE" | tr '[:upper:]' '[:lower:]')"
+  case "$network_profile_normalized" in
     offline|lab_only|authorized_target_only|unrestricted_lab|lab|authorized|auth|offline_only) ;;
     *)
       echo "Invalid --network-profile '$NETWORK_PROFILE'. Allowed: offline, lab_only, authorized_target_only, unrestricted_lab (aliases: lab, authorized, auth, offline_only)." >&2
@@ -146,11 +147,12 @@ elif [[ "$auth_status_resolved" == "granted" && ${#ASSETS[@]} -gt 0 && -z "$SAMP
 else
   network_mode="offline"
 fi
-case "${network_mode,,}" in
+network_mode="$(printf '%s' "$network_mode" | tr '[:upper:]' '[:lower:]')"
+case "$network_mode" in
   lab) network_mode="lab_only" ;;
   authorized|auth) network_mode="authorized_target_only" ;;
   offline_only) network_mode="offline" ;;
-  offline|lab_only|authorized_target_only|unrestricted_lab) network_mode="${network_mode,,}" ;;
+  offline|lab_only|authorized_target_only|unrestricted_lab) ;;
   *)
     echo "Invalid --network-profile '$network_mode'. Allowed: offline, lab_only, authorized_target_only, unrestricted_lab (aliases: lab, authorized, auth, offline_only)." >&2
     exit 2

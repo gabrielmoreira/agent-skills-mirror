@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `getpaseo/paseo` — 26 default patterns, 35 followed patterns, 50 file(s) materialized.
+Mirror of `getpaseo/paseo` — 26 default patterns, 36 followed patterns, 50 file(s) materialized.
 
 ## Metadata
 
@@ -17,7 +17,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 35 followed patterns, 50 fil
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 35 |
+| Followed pats | 36 |
 | Files         | 50 |
 
 ## Default Sparse Patterns  *(included from config)*
@@ -74,6 +74,7 @@ Mirror of `getpaseo/paseo` — 26 default patterns, 35 followed patterns, 50 fil
 - `docs/protocol-compatibility.md`
 - `docs/protocol-validation.md`
 - `docs/terminal-performance.md`
+- `docs/file-observation.md`
 - `docs/testing.md`
 - `docs/qa.md`
 - `docs/mobile-testing.md`
@@ -106,21 +107,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 11 | ✓ | [`skills/paseo-advisor/SKILL.md`](skills/paseo-advisor/SKILL.md) |
 | 12 | ✓ | [`skills/paseo-committee/SKILL.md`](skills/paseo-committee/SKILL.md) |
 | 13 | ✓ | [`skills/paseo-handoff/SKILL.md`](skills/paseo-handoff/SKILL.md) |
-| 14 | ✓ | [`skills/paseo-loop/SKILL.md`](skills/paseo-loop/SKILL.md) |
-| 15 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
-| 16 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
-| 17 | → | [`docs/agent-lifecycle.md`](docs/agent-lifecycle.md) |
-| 18 | → | [`docs/android.md`](docs/android.md) |
-| 19 | → | [`docs/architecture.md`](docs/architecture.md) |
-| 20 | → | [`docs/browser-capture-harness.md`](docs/browser-capture-harness.md) |
-| 21 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
-| 22 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
-| 23 | → | [`docs/data-model.md`](docs/data-model.md) |
-| 24 | → | [`docs/design.md`](docs/design.md) |
-| 25 | → | [`docs/development.md`](docs/development.md) |
-| 26 | → | [`docs/docker.md`](docs/docker.md) |
-| 27 | → | [`docs/expo-router.md`](docs/expo-router.md) |
-| 28 | → | [`docs/file-icons.md`](docs/file-icons.md) |
+| 14 | ✓ | [`skills/paseo/SKILL.md`](skills/paseo/SKILL.md) |
+| 15 | → | [`docs/ad-hoc-daemon-testing.md`](docs/ad-hoc-daemon-testing.md) |
+| 16 | → | [`docs/agent-lifecycle.md`](docs/agent-lifecycle.md) |
+| 17 | → | [`docs/android.md`](docs/android.md) |
+| 18 | → | [`docs/architecture.md`](docs/architecture.md) |
+| 19 | → | [`docs/browser-capture-harness.md`](docs/browser-capture-harness.md) |
+| 20 | → | [`docs/coding-standards.md`](docs/coding-standards.md) |
+| 21 | → | [`docs/custom-providers.md`](docs/custom-providers.md) |
+| 22 | → | [`docs/data-model.md`](docs/data-model.md) |
+| 23 | → | [`docs/design.md`](docs/design.md) |
+| 24 | → | [`docs/development.md`](docs/development.md) |
+| 25 | → | [`docs/docker.md`](docs/docker.md) |
+| 26 | → | [`docs/expo-router.md`](docs/expo-router.md) |
+| 27 | → | [`docs/file-icons.md`](docs/file-icons.md) |
+| 28 | → | [`docs/file-observation.md`](docs/file-observation.md) |
 | 29 | → | [`docs/floating-panels.md`](docs/floating-panels.md) |
 | 30 | → | [`docs/forge-providers.md`](docs/forge-providers.md) |
 | 31 | → | [`docs/forms.md`](docs/forms.md) |

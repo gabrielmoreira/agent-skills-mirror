@@ -87,6 +87,14 @@ after that durable barrier succeeds does it publish canonical
 proceed. Checkpoint and terminal events use the same bound provider Turn ID and
 never fall back to the outbound correlation UUID.
 
+Exact cancellation returns a structured `pre_accept`, `provider_active`,
+`absent`, or `mismatch` disposition. An undispatched Turn or deferred Goal
+command can be removed locally. A dispatched Turn is fenced immediately, but
+its terminal event is emitted only after the SDK interrupt and Query shutdown
+acknowledge. `provider_active` includes the resolved provider Turn ID so the
+daemon can wait for that exact Turn's durable acceptance result before it
+confirms cancellation; failures and unknown dispositions remain fail-closed.
+
 Interactive responses use `(turnId, requestId)` identity. The sidecar keeps a
 bounded terminal disposition registry so `submit_interactive` is idempotent:
 an identical replay reports `answered` without resolving the SDK permission

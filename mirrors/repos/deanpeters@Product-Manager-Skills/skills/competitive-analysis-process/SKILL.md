@@ -209,4 +209,4 @@ steps merged, one run out of order, cadence slowed — with each call's reasonin
   quality theory; Moore, *Crossing the Chasm* (Whole Product); Ulwick, Outcome-Driven Innovation;
   Osterwalder & Pigneur, *Business Model Generation*; Ries & Trout, *Positioning*; Hamel & Prahalad,
   *Competing for the Future* (HBR, 1994); Nagji & Tuff, *Managing Your Innovation Portfolio* (HBR, 2012)
-- Adapted from Dean Peters' Competitive Analysis Playbook (Productside).
+- Adapted from practitioner experience running structured competitive analyses.

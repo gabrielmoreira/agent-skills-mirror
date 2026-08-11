@@ -9,7 +9,7 @@ Expert guidance for writing performant, maintainable GDScript — Godot-landmine
 
 ## Do NOT Load
 
-- Do **not** load this skill for general prose style or Godot 3→4 migration checklists — those live in Official Documentation.
+- Do **not** load this skill for general prose style or Godot engine version upgrades (3→4 / 4.x hops) — those live in [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) (plus official upgrading guides via that hub).
 - Do **not** preload every script below; open only the MANDATORY pointer for the Core Directive you are implementing.
 - Do **not** treat EditorScript utilities (`type_checker`, `performance_analyzer`, `signal_architecture_validator`) as runtime gameplay code.
 
@@ -131,6 +131,7 @@ Expert guidance for writing performant, maintainable GDScript — Godot-landmine
 - [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Component boundaries clarify which scripts own signals vs call-down APIs before style enforcement.
 
 #### Complements
+- [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — Engine version upgrades (3→4 language breaks, 4.x hops); this skill stays on current GDScript 2.0 idioms.
 - [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Deepens connect flags, buses, and sequencers after this skill’s typed signal/Callable basics.
 - [godot-autoload-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-autoload-architecture/SKILL.md) — Contrasts heavy Autoloads with the `static var` singleton alternatives shown here.
 - [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Prefer Resources for shared config; keep GDScript modules thin and typed around Resource payloads.

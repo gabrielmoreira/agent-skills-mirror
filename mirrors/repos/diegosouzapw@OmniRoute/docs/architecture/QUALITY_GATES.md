@@ -29,10 +29,27 @@ changes:
 | `Build (advisory)`                               | Non-draft code PRs and Mergify queue branches; Node 24, `npm-ci-retry`, `check:node-runtime`, `npm run build` with `OMNIROUTE_USE_TURBOPACK=1`; no artifact upload because no downstream quality job consumes it | **Advisory** (`continue-on-error: true`; remove after one week of stable release-PR runs) |
 | `Docs Gates (fast-path)`                         | Docs/code PRs; API docs refs and docs-all                                                                                                                                                                        | Yes                                                                                       |
 | `Fast Quality Gates`                             | Code PRs; static checks, typecheck, dashboard typecheck, impacted unit tests                                                                                                                                     | Yes                                                                                       |
+| `Forgotten sibling tests`                        | Code PRs; changed modules traced to static consumers and candidate sibling tests; barrel and dynamic-import paths are reported as advisory diagnostics, with referenced allowlist exceptions                     | **Advisory**                                                                              |
 | `Vitest (fast-path)`                             | Code PRs; fast vitest suite                                                                                                                                                                                      | Yes                                                                                       |
 | `Unit Tests fast-path`                           | Code PRs; 4-shard unit suite                                                                                                                                                                                     | Yes                                                                                       |
 | `No new ESLint warnings`                         | Code PRs; suppressions-aware lint guard                                                                                                                                                                          | Yes for own-origin, advisory for forks                                                    |
 | `Merge integrity (changelog + generated skills)` | Non-draft PRs; changelog and generated skill sync                                                                                                                                                                | Yes for own-origin, advisory for forks                                                    |
+
+#### Forgotten sibling tests report
+
+`npm run check:forgotten-sibling-tests` reuses the import resolver behind the test-impact map.
+For every changed production module, it reports deterministic
+`changed module/symbol -> static consumer -> candidate sibling test` chains when the candidate
+test is absent from the pull-request diff. The Markdown summary and JSON result are retained as
+the `forgotten-sibling-tests` workflow artifact for calibration before any blocking rollout.
+
+Barrel re-exports and dynamic imports are resolution diagnostics only; they never create a
+blocking finding. Reviewed exceptions live in
+`config/quality/forgotten-sibling-allowlist.json`. Each entry must name the consumer and candidate
+test, give a specific rationale, and link a GitHub issue or pull request. Malformed entries fail
+closed. Exceptions cannot suppress a deleted candidate test or a diff that adds `.skip`/`.todo`;
+assertion weakening and other masking remain owned by the independently blocking
+`check:test-masking` gate.
 
 ### Job: `lint`
 

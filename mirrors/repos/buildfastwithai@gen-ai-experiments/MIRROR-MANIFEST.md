@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 116 file(s) materialized.
+Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 followed patterns, 134 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `buildfastwithai/gen-ai-experiments` — 26 default patterns, 0 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 116 |
+| Files         | 134 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -141,40 +141,58 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 80 | ✓ | [`skills/react-screenshot-recreator/SKILL.md`](skills/react-screenshot-recreator/SKILL.md) |
 | 81 | ✓ | [`skills/README.md`](skills/README.md) |
 | 82 | ✓ | [`skills/ship-it/shipit.skill`](skills/ship-it/shipit.skill) |
-| 83 | ✓ | [`skills/talking-avatar/agents/openai.yaml`](skills/talking-avatar/agents/openai.yaml) |
-| 84 | ✓ | [`skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl`](skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl) |
-| 85 | ✓ | [`skills/talking-avatar/assets/starter/app/globals.css.tmpl`](skills/talking-avatar/assets/starter/app/globals.css.tmpl) |
-| 86 | ✓ | [`skills/talking-avatar/assets/starter/app/layout.tsx.tmpl`](skills/talking-avatar/assets/starter/app/layout.tsx.tmpl) |
-| 87 | ✓ | [`skills/talking-avatar/assets/starter/app/page.tsx.tmpl`](skills/talking-avatar/assets/starter/app/page.tsx.tmpl) |
-| 88 | ✓ | [`skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl`](skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl) |
-| 89 | ✓ | [`skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl`](skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl) |
-| 90 | ✓ | [`skills/talking-avatar/references/app-contract.md`](skills/talking-avatar/references/app-contract.md) |
-| 91 | ✓ | [`skills/talking-avatar/references/image-pipeline.md`](skills/talking-avatar/references/image-pipeline.md) |
-| 92 | ✓ | [`skills/talking-avatar/references/realtime-lipsync.md`](skills/talking-avatar/references/realtime-lipsync.md) |
-| 93 | ✓ | [`skills/talking-avatar/scripts/scaffold_app.py`](skills/talking-avatar/scripts/scaffold_app.py) |
-| 94 | ✓ | [`skills/talking-avatar/scripts/validate_avatar_assets.py`](skills/talking-avatar/scripts/validate_avatar_assets.py) |
-| 95 | ✓ | [`skills/talking-avatar/SKILL.md`](skills/talking-avatar/SKILL.md) |
-| 96 | ✓ | [`skills/test-strength-codex-test-strength/agents/openai.yaml`](skills/test-strength-codex-test-strength/agents/openai.yaml) |
-| 97 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/auth.py`](skills/test-strength-codex-test-strength/fixtures/strong/auth.py) |
-| 98 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/billing.py`](skills/test-strength-codex-test-strength/fixtures/strong/billing.py) |
-| 99 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/calc.py`](skills/test-strength-codex-test-strength/fixtures/strong/calc.py) |
-| 100 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/logger.py`](skills/test-strength-codex-test-strength/fixtures/strong/logger.py) |
-| 101 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/test_strong.py`](skills/test-strength-codex-test-strength/fixtures/strong/test_strong.py) |
-| 102 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/utils.py`](skills/test-strength-codex-test-strength/fixtures/strong/utils.py) |
-| 103 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/auth.py`](skills/test-strength-codex-test-strength/fixtures/weak/auth.py) |
-| 104 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/billing.py`](skills/test-strength-codex-test-strength/fixtures/weak/billing.py) |
-| 105 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/calc.py`](skills/test-strength-codex-test-strength/fixtures/weak/calc.py) |
-| 106 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/logger.py`](skills/test-strength-codex-test-strength/fixtures/weak/logger.py) |
-| 107 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/test_weak.py`](skills/test-strength-codex-test-strength/fixtures/weak/test_weak.py) |
-| 108 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/utils.py`](skills/test-strength-codex-test-strength/fixtures/weak/utils.py) |
-| 109 | ✓ | [`skills/test-strength-codex-test-strength/README.md`](skills/test-strength-codex-test-strength/README.md) |
-| 110 | ✓ | [`skills/test-strength-codex-test-strength/scripts/strength.py`](skills/test-strength-codex-test-strength/scripts/strength.py) |
-| 111 | ✓ | [`skills/test-strength-codex-test-strength/SKILL.md`](skills/test-strength-codex-test-strength/SKILL.md) |
-| 112 | ✓ | [`skills/tooling-workflow-skills/agent-output-critic.md`](skills/tooling-workflow-skills/agent-output-critic.md) |
-| 113 | ✓ | [`skills/tooling-workflow-skills/git-conventional-commits.md`](skills/tooling-workflow-skills/git-conventional-commits.md) |
-| 114 | ✓ | [`skills/tooling-workflow-skills/linux-kernel-troubleshooter.md`](skills/tooling-workflow-skills/linux-kernel-troubleshooter.md) |
-| 115 | ✓ | [`skills/tooling-workflow-skills/prompt-optimizer-cot.md`](skills/tooling-workflow-skills/prompt-optimizer-cot.md) |
-| 116 | ✓ | [`skills/tooling-workflow-skills/tool-use-validator.md`](skills/tooling-workflow-skills/tool-use-validator.md) |
+| 83 | ✓ | [`skills/startup-blueprint-skill/.gitignore`](skills/startup-blueprint-skill/.gitignore) |
+| 84 | ✓ | [`skills/startup-blueprint-skill/examples/startupblueprint-90-day-roadmap.csv`](skills/startup-blueprint-skill/examples/startupblueprint-90-day-roadmap.csv) |
+| 85 | ✓ | [`skills/startup-blueprint-skill/examples/startupblueprint-analysis.json`](skills/startup-blueprint-skill/examples/startupblueprint-analysis.json) |
+| 86 | ✓ | [`skills/startup-blueprint-skill/examples/startupblueprint-financial-model.xlsx`](skills/startup-blueprint-skill/examples/startupblueprint-financial-model.xlsx) |
+| 87 | ✓ | [`skills/startup-blueprint-skill/examples/startupblueprint-prepared.json`](skills/startup-blueprint-skill/examples/startupblueprint-prepared.json) |
+| 88 | ✓ | [`skills/startup-blueprint-skill/examples/startupblueprint-report.html`](skills/startup-blueprint-skill/examples/startupblueprint-report.html) |
+| 89 | ✓ | [`skills/startup-blueprint-skill/package.json`](skills/startup-blueprint-skill/package.json) |
+| 90 | ✓ | [`skills/startup-blueprint-skill/README.md`](skills/startup-blueprint-skill/README.md) |
+| 91 | ✓ | [`skills/startup-blueprint-skill/scripts/install.js`](skills/startup-blueprint-skill/scripts/install.js) |
+| 92 | ✓ | [`skills/startup-blueprint-skill/startupblueprint/agents/openai.yaml`](skills/startup-blueprint-skill/startupblueprint/agents/openai.yaml) |
+| 93 | ✓ | [`skills/startup-blueprint-skill/startupblueprint/references/analysis-schema.md`](skills/startup-blueprint-skill/startupblueprint/references/analysis-schema.md) |
+| 94 | ✓ | [`skills/startup-blueprint-skill/startupblueprint/references/financial-model.md`](skills/startup-blueprint-skill/startupblueprint/references/financial-model.md) |
+| 95 | ✓ | [`skills/startup-blueprint-skill/startupblueprint/references/research-playbook.md`](skills/startup-blueprint-skill/startupblueprint/references/research-playbook.md) |
+| 96 | ✓ | [`skills/startup-blueprint-skill/startupblueprint/scripts/generate_financial_model.mjs`](skills/startup-blueprint-skill/startupblueprint/scripts/generate_financial_model.mjs) |
+| 97 | ✓ | [`skills/startup-blueprint-skill/startupblueprint/scripts/generate_startupblueprint_report.py`](skills/startup-blueprint-skill/startupblueprint/scripts/generate_startupblueprint_report.py) |
+| 98 | ✓ | [`skills/startup-blueprint-skill/startupblueprint/scripts/prepare_plan.py`](skills/startup-blueprint-skill/startupblueprint/scripts/prepare_plan.py) |
+| 99 | ✓ | [`skills/startup-blueprint-skill/startupblueprint/SKILL.md`](skills/startup-blueprint-skill/startupblueprint/SKILL.md) |
+| 100 | ✓ | [`skills/startup-blueprint-skill/tests/test_startupblueprint.py`](skills/startup-blueprint-skill/tests/test_startupblueprint.py) |
+| 101 | ✓ | [`skills/talking-avatar/agents/openai.yaml`](skills/talking-avatar/agents/openai.yaml) |
+| 102 | ✓ | [`skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl`](skills/talking-avatar/assets/starter/app/api/realtime/session/route.ts.tmpl) |
+| 103 | ✓ | [`skills/talking-avatar/assets/starter/app/globals.css.tmpl`](skills/talking-avatar/assets/starter/app/globals.css.tmpl) |
+| 104 | ✓ | [`skills/talking-avatar/assets/starter/app/layout.tsx.tmpl`](skills/talking-avatar/assets/starter/app/layout.tsx.tmpl) |
+| 105 | ✓ | [`skills/talking-avatar/assets/starter/app/page.tsx.tmpl`](skills/talking-avatar/assets/starter/app/page.tsx.tmpl) |
+| 106 | ✓ | [`skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl`](skills/talking-avatar/assets/starter/app/TalkingAvatarApp.tsx.tmpl) |
+| 107 | ✓ | [`skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl`](skills/talking-avatar/assets/starter/tests/talking-avatar.test.mjs.tmpl) |
+| 108 | ✓ | [`skills/talking-avatar/references/app-contract.md`](skills/talking-avatar/references/app-contract.md) |
+| 109 | ✓ | [`skills/talking-avatar/references/image-pipeline.md`](skills/talking-avatar/references/image-pipeline.md) |
+| 110 | ✓ | [`skills/talking-avatar/references/realtime-lipsync.md`](skills/talking-avatar/references/realtime-lipsync.md) |
+| 111 | ✓ | [`skills/talking-avatar/scripts/scaffold_app.py`](skills/talking-avatar/scripts/scaffold_app.py) |
+| 112 | ✓ | [`skills/talking-avatar/scripts/validate_avatar_assets.py`](skills/talking-avatar/scripts/validate_avatar_assets.py) |
+| 113 | ✓ | [`skills/talking-avatar/SKILL.md`](skills/talking-avatar/SKILL.md) |
+| 114 | ✓ | [`skills/test-strength-codex-test-strength/agents/openai.yaml`](skills/test-strength-codex-test-strength/agents/openai.yaml) |
+| 115 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/auth.py`](skills/test-strength-codex-test-strength/fixtures/strong/auth.py) |
+| 116 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/billing.py`](skills/test-strength-codex-test-strength/fixtures/strong/billing.py) |
+| 117 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/calc.py`](skills/test-strength-codex-test-strength/fixtures/strong/calc.py) |
+| 118 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/logger.py`](skills/test-strength-codex-test-strength/fixtures/strong/logger.py) |
+| 119 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/test_strong.py`](skills/test-strength-codex-test-strength/fixtures/strong/test_strong.py) |
+| 120 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/strong/utils.py`](skills/test-strength-codex-test-strength/fixtures/strong/utils.py) |
+| 121 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/auth.py`](skills/test-strength-codex-test-strength/fixtures/weak/auth.py) |
+| 122 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/billing.py`](skills/test-strength-codex-test-strength/fixtures/weak/billing.py) |
+| 123 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/calc.py`](skills/test-strength-codex-test-strength/fixtures/weak/calc.py) |
+| 124 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/logger.py`](skills/test-strength-codex-test-strength/fixtures/weak/logger.py) |
+| 125 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/test_weak.py`](skills/test-strength-codex-test-strength/fixtures/weak/test_weak.py) |
+| 126 | ✓ | [`skills/test-strength-codex-test-strength/fixtures/weak/utils.py`](skills/test-strength-codex-test-strength/fixtures/weak/utils.py) |
+| 127 | ✓ | [`skills/test-strength-codex-test-strength/README.md`](skills/test-strength-codex-test-strength/README.md) |
+| 128 | ✓ | [`skills/test-strength-codex-test-strength/scripts/strength.py`](skills/test-strength-codex-test-strength/scripts/strength.py) |
+| 129 | ✓ | [`skills/test-strength-codex-test-strength/SKILL.md`](skills/test-strength-codex-test-strength/SKILL.md) |
+| 130 | ✓ | [`skills/tooling-workflow-skills/agent-output-critic.md`](skills/tooling-workflow-skills/agent-output-critic.md) |
+| 131 | ✓ | [`skills/tooling-workflow-skills/git-conventional-commits.md`](skills/tooling-workflow-skills/git-conventional-commits.md) |
+| 132 | ✓ | [`skills/tooling-workflow-skills/linux-kernel-troubleshooter.md`](skills/tooling-workflow-skills/linux-kernel-troubleshooter.md) |
+| 133 | ✓ | [`skills/tooling-workflow-skills/prompt-optimizer-cot.md`](skills/tooling-workflow-skills/prompt-optimizer-cot.md) |
+| 134 | ✓ | [`skills/tooling-workflow-skills/tool-use-validator.md`](skills/tooling-workflow-skills/tool-use-validator.md) |
 
 ---
 

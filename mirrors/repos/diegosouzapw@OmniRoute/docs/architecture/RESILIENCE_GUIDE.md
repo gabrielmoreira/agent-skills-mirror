@@ -260,6 +260,31 @@ it is unit-testable without a real Bottleneck limiter.
 
 ---
 
+## 6. Slow-stream throughput watchdog (#9709)
+
+The optional `resilienceSettings.streamRecovery.throughputWatchdog` guard detects
+an upstream that is still sending chunks but producing assistant output below the
+configured useful-output rate. It is deliberately distinct from the idle timeout:
+heartbeats and metadata reset neither timer and do not count as progress. It is also
+distinct from the hard attempt deadline (#9153), which remains an absolute safety
+ceiling regardless of output quality.
+
+The watchdog requires a warm-up period followed by a complete rolling window before
+it can abort. It counts text deltas from Chat Completions and Responses API output
+events (a conservative UTF-8 byte proxy), ignores usage-only and empty events, and
+suspends judgement while tool-call or reasoning events are in flight. It is disabled
+by default and can be enabled with `STREAM_THROUGHPUT_WATCHDOG_ENABLED=true`; the
+window, warm-up, minimum rate, and minimum measurable output are bounded by the
+normal resilience-settings normalization layer.
+
+When enabled, a watchdog abort is applied only to the active upstream attempt. Before
+any client-visible bytes, the existing same-account early-recovery path may reopen
+the attempt. After commit, the stream is never blindly replayed; only the existing
+safe mid-stream continuation contract can stitch a suffix. Finalization remains
+single-shot, so usage accounting and semaphore release are not duplicated.
+
+---
+
 ## Other Resilience Features
 
 - **19 routing strategies** (priority, weighted, round-robin, context-relay, fill-first, p2c, random, least-used, cost-optimized, reset-aware, reset-window, headroom, strict-random, auto, lkgp, context-optimized, cache-optimized, fusion, pipeline) — see [AUTO-COMBO.md](../routing/AUTO-COMBO.md).

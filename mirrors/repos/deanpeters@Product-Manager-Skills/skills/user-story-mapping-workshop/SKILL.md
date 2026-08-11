@@ -5,6 +5,15 @@ description: Run a user story mapping workshop with adaptive questions and a str
 intent: >-
   Guide product managers through creating a user story map by asking adaptive questions about the system, users, workflow, and priorities—then generating a two-dimensional map with backbone (activities), user tasks, and release slices. Use this to move from flat backlogs to visual story maps that communicate the big picture, identify missing functionality, and enable meaningful release planning—avoiding "context-free mulch" where stories lose connection to the overall system narrative.
 type: interactive
+theme: workshops-facilitation
+best_for:
+  - "Running a facilitated story mapping session with a real team"
+  - "Building a backbone, tasks, and release slices collaboratively"
+  - "Getting a shared view of the workflow before slicing an MVP"
+scenarios:
+  - "I'm facilitating a mapping session tomorrow and need the structure and questions"
+  - "The team needs a shared map of the workflow before we can scope an MVP"
+estimated_time: "60-120 min"
 ---
 
 

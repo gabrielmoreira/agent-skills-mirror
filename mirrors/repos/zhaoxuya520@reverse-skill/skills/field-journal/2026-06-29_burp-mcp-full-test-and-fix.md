@@ -138,5 +138,4 @@ activeAudit.addRequest(seedReq);
 2. 更新「累计统计」的计数与"最近更新"日期
 
 ---
-<!-- [进化统计] 本包累计完成项目: 7 | 本次新增模式: 2(buildRequestWithService + bridge counter) | 本次修复工具链问题: 4 -->
 <!-- [社区贡献] 完成后询问用户是否 PR 到主仓库。流程见 CONTRIBUTE-BACK.md -->

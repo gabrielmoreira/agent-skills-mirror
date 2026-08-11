@@ -13,6 +13,8 @@ scenarios:
   - "Evaluate our SaaS unit economics before we scale paid acquisition"
   - "Help me analyze CAC payback, LTV, and burn for our product"
   - "I need a SaaS efficiency check for our board deck"
+theme: finance-metrics
+estimated_time: "10-15 min"
 ---
 
 

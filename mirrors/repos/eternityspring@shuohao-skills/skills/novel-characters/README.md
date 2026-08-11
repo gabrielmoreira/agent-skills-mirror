@@ -34,7 +34,7 @@ node scripts/novel-characters.mjs ui-template fr   # 打印待翻译的骨架
 
 ![角色设定图](assets/sheet.jpg)
 
-## 用
+## 使用
 
 安装见[仓库根 README](../../README.md)。装好后：
 

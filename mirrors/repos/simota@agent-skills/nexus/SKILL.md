@@ -52,6 +52,7 @@ Coordinate specialist agents, design the minimum viable chain, and execute safel
 - Apply guardrails (L1-L4) and validate output schema/required fields at each step boundary.
 - Aggregate branch outputs via hub-spoke ownership — never permit shared mutable state between concurrent branches.
 - Verify acceptance criteria before delivery; pair quantitative metrics with human evaluation for high-stakes tasks.
+- **Finish what the contract covers** (every recipe): the bar never moves to meet the output, `BLOCKED` is earned by a named failed alternative, hard core precedes easy polish, no artifact ships with `TODO`/stub residue, every deferral carries a class, DELIVER reports a scanned sweep. Done is deliverable-type relative; finishing raises effort, never scope or permission — two identical failures ⇒ diagnose, not retry. `reference/autonomy-quality-protocol.md` §0 + §7 (Q16–Q22).
 - Adapt routing from execution evidence with safety constraints; track OE (orchestration efficiency) per chain type.
 - Leverage standardized inter-agent protocols where available: MCP, A2A, ACP.
 - Apply Plan-and-Execute pattern: capable models plan, cheaper models execute (Claude Code = plan opus/fable-5, execute Sonnet 5; Codex CLI = `gpt-5.6` variants by role; **agy = always Gemini 3.6 Flash (High)**). Full per-engine map → `reference/hub-authoring.md` § Model Selection, `_common/CLI_COMPATIBILITY.md §4`.
@@ -106,6 +107,7 @@ Agent disambiguation → `reference/agent-disambiguation.md`
 - Skip `VERIFY` when modifying routing matrix behavior.
 - Override Lore-validated patterns without human approval.
 - Propagate silent failures — require domain-specific semantic validation at each step (valid schema + wrong meaning amplifies downstream).
+- Close a run by moving in-scope work into an untyped "recommended follow-up", or report `SUCCESS` over an artifact holding `TODO`/stub residue — deferral needs a Q17 class + `RES-n`; unclassed caps status at `PARTIAL` ("for brevity" / "can be added later" are not classes). Equally forbidden: lowering the bar to meet the output (reworded criterion, relaxed threshold, weakened test) without a `DEC-n`, or returning `BLOCKED` without naming an attempted alternative (Q20–Q21).
 - Skip the compass→architect ladder before falling back to an ad-hoc chain on a true no-match to a **task-shaped request** (one that asks for work product — code, a document, an analysis, a chain of steps) — the ladder is mandatory, not optional, per `routing-matrix.md` § LADDER; the fallback taken (`compass-invoked` | `architect-invoked` | `neither`) is a required field in `NEXUS_COMPLETE`, never omitted. **Narrow carve-out**: a direct-answer request — a one-line **factual/lookup** question with a single correct answer, or a meta-question about the harness itself (e.g. "what does `classify` do?") — is answered directly, no ladder walk; a one-line judgment/decision question ("REST or GraphQL?") stays task-shaped (DECISION/Magi) and is NOT eligible. The carve-out is bounded to non-task-shaped requests only and must never be stretched to cover an actual no-match task (the generic catch-all this rule exists to prevent).
 
 ## Modes
@@ -141,7 +143,7 @@ The full table below is flat; these families group it by the axis that separates
 |--------|---------|-----------------|
 | **Fix** | `bug` · `security` | defect vs vulnerability |
 | **Improve** (existing code) | `refactor` · `optimize` · `kaizen` · `anneal` · `restyle` | known restructure / perf number / polish one feature vs target / discover design weaknesses → brush-up / UI-visual design. `improve`/`polish`/`enhance` overloaded → REDIRECT (UI→`restyle`; feature→`kaizen`; code design→`anneal`). Prove (`assay`) vs fix (`anneal`) |
-| **Loop** (autonomous / iterative) | `goal` · `converge` | `/goal` setup only / in-session rubric loop (unattended→`orbit`; discovery→ship→`apex`). Every loop passes `_common/LOOP_PRECONDITIONS.md` first |
+| **Loop** (autonomous / iterative) | `goal` · `converge` · `quell` | **what the completion oracle is**: `/goal` setup only / in-session rubric score (`converge`) / an external reviewer's finding count reaching zero (`quell`). Unattended→`orbit`; discovery→ship→`apex`. Every loop passes `_common/LOOP_PRECONDITIONS.md` first |
 | **Build** (new) | `feature` · `apex` | single guided build / discovery→ship one-shot (8-25 agents) |
 | **Discover → build pairs** | `spec`→`feature`/`apex` · `charter`→`enact` · `layer`→`sigil` | feature spec / repo team+work plan / repo operating layer — all stop at a design; the pair runs it |
 | **Reason** (no code) | `gedanken` · `delve` | abstract thought-experiment on a claim / grounded deep-dive of a shipped feature → evolution directions. `evolve a feature` overloaded → REDIRECT |
@@ -164,6 +166,7 @@ gedanken            delve               cartograph          chronicle           
 acceptance          summit              podium              newsroom            wish                eureka              runway              hallmark
 rebrand             crucible            silhouette          lattice             chorus              assay               migrate             transmute
 clone               fuse                graft               package             pack
+quell
 ```
 
 `*` = default when no subcommand is given. Named preset aliases (`venture` / `marquee` / `growth-acceptance`) → **Subcommand Dispatch** below.
@@ -221,7 +224,7 @@ Before each spawn, tailor the prompt to the current **project + session** contex
 
 ### Agent Spawn Template
 
-Every spawn prompt MUST front-load acceptance criteria (P1), an output length envelope (P2), and a scope bound (P8) — Opus 5's default output runs long in both channels and can widen a task on its own. **Never include self-verification wording** ("verify your work", "double-check", "re-verify before responding") — independent verification is a separate chain agent, never the producer's own prompt; on a Fable 5 hub, directives are lighter still and must never request reasoning reproduction (`reasoning_extraction` refusal). Canonical prompt structure, `_STEP_COMPLETE` schema, and per-engine variants → `reference/hub-authoring.md` § Agent Spawn Template.
+Every spawn prompt MUST front-load acceptance criteria (P1), an output length envelope (P2), a scope bound (P8), and a **completion bound** (Q16–Q17: finish every in-scope item, or return `PARTIAL` + a typed residual — never `SUCCESS` over a stub) — Opus 5's default output runs long in both channels and can widen a task on its own. **Never include self-verification wording** ("verify your work", "double-check", "re-verify before responding") — independent verification is a separate chain agent, never the producer's own prompt; on a Fable 5 hub, directives are lighter still and must never request reasoning reproduction (`reasoning_extraction` refusal). Canonical prompt structure, `_STEP_COMPLETE` schema, and per-engine variants → `reference/hub-authoring.md` § Agent Spawn Template.
 
 ## Safety Contract
 
@@ -258,7 +261,7 @@ Every deliverable must include:
 - **Decision Ledger** — `DEC-n` judgment calls made without the user, interpretation entries first; omit only when empty (Q4-Q6)
 - `## Prompt Tuning` trace when any spawn's directives were adapted (`field, old→new, trigger, reward_basis`) — delta-only; omit the subsection entirely when no spawn was tuned (`reference/adaptive-prompt-policy.md` §9)
 - Summary with overall status
-- Recommended follow-up actions if applicable
+- **Residual Ledger** — each leftover as `RES-n` (class, blocker/owner, marker location, route), bound bidirectionally to any `#TODO(agent):` left behind, plus the completion-sweep line (`scanned, 0 hits` when clean; the line is never omitted)
 
 **Required contracts:**
 - `DELIVER` returns `NEXUS_COMPLETE` semantics. Canonical formats: `reference/output-formats.md`.
@@ -300,6 +303,7 @@ Files already indexed by the Workflow table's Read-When column (routing-matrix, 
 | `reference/recipes-index.md` | Subcommand matched at Dispatch and you need its chain template + `Read` reference, or scanning the full registry — **the complete Recipes table** |
 | `reference/recipes-detail.md` | Recipe Families axis prose + extended descriptions (phase contracts live in each `<recipe>-recipe.md`) |
 | `reference/<recipe>-recipe.md`, `reference/apex-walkthrough.md` | Per-Recipe phase contracts, chain templates, cost profiles (+ apex Mermaid walkthroughs); filename = `Read` column of `recipes-index.md` |
+| `reference/quell-recipe.md` | `/nexus quell` — review-to-zero fix loop: Finding Ledger, disposition integrity, oscillation detection, termination bounds, `profile=general\|refactor` |
 | `reference/inline-recipes.md` | Full phase contracts for `kaizen` / `essential` / `killer` / `trim` |
 | `reference/recipe-contract.md` | Authoring/normalizing a recipe — 8 required elements + canonical phrasing |
 | `reference/verdict-gate.md` | Shared contract for verdict recipes (`essential`/`killer`/`trim` + graft flag clause) |

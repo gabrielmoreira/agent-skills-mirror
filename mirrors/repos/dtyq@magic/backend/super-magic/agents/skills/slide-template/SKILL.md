@@ -35,7 +35,7 @@ Do not write or rely on legacy fields such as `name`, `template_dir`, `package_t
 - User only describes scenario/topic/audience without enough visual specs and no platform template list is available: ask for a platform template code or confirm no template/default style.
 - User provides a PPTX/PPT/presentation template file or URL and asks to convert it into a platform template: read `references/pptx-template-workflow.md` and follow the PPTX Template Workflow first.
 - User provides an existing Super Magic slide project directory that contains `magic.project.js` with `type: "slide"` and asks to convert or extract it into a reusable template: read `references/project-template-workflow.md` and follow the Project Template Workflow. Do not modify the source project, and do not create the final ZIP until the user confirms.
-- User describes concrete visual style (colors, materials, layout, decorative elements, visual keywords; 配色/材质/版式/装饰/视觉关键词): generate a custom template first, then use it.
+- User describes a concrete visual style (colors, materials, layout, decorative elements, and visual keywords): generate a custom template first, then use it.
 - Editing/fixing/refactoring existing slides does not trigger template selection unless the user asks for a new PPT/project.
 
 ## Platform Template Retrieval

@@ -13,6 +13,8 @@ scenarios:
   - "Run a Problem Framing Canvas for our mobile retention issue"
   - "Help me reframe this stakeholder request before we build anything"
   - "We need a clearer problem statement for onboarding drop-off"
+theme: discovery-research
+estimated_time: "30-45 min"
 ---
 
 

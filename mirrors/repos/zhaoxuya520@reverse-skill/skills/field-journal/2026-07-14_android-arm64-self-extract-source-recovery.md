@@ -105,5 +105,4 @@ curl.exe -sS -I '<official-release-url>/radareorg/radare2/releases/latest'
 已在 `_index.md` 的“二进制 / 固件 / CTF”分类中增加本条记录并更新统计。
 
 ---
-<!-- [进化统计] 本包累计完成项目: 8 | 本次新增模式: 2 | 本次修复工具链问题: 1 -->
 <!-- [社区贡献] 完成后询问用户是否 PR 到主仓库。流程见 CONTRIBUTE-BACK.md -->

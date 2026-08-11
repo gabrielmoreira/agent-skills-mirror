@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## 2026-08-10
+
+### Changed
+
+- `SKILL.md` — CategoryChoiceTreeType documentation now embedded directly in configuration page section instead of referencing external steering file; skill is now more self-contained for core features.
+
 ## 2026-05-28
 
 ### Added

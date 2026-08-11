@@ -134,11 +134,17 @@ auth = AuthTokens(
 )
 client = NotebookLMClient(auth)
 
-# AuthTokens also supports profiles (AuthTokens.from_storage is async)
-auth = await AuthTokens.from_storage(profile="work")
-# Or permit one cold-start L3 browser recovery as an alternative:
-# auth = await AuthTokens.from_storage(profile="work", allow_headless=True)
 ```
+
+`AuthTokens.from_storage(...)` remains available as a v0.x compatibility loader,
+but it is deprecated in v0.9.0 and emits `DeprecationWarning` when awaited. Use
+the managed `NotebookLMClient.from_storage(...)` examples above and access
+`client.auth` while the client is open. It is scheduled for removal in v1.0.
+
+Constructing `AuthTokens(..., storage_path=..., cookie_jar=None)` also remains
+compatible through v0.x, but its implicit synchronous storage/recovery I/O is
+deprecated on the same schedule. Prefer the managed client; low-level callers
+that already own a live jar should pass `cookie_jar=` explicitly.
 
 **Building a storage state from existing browser cookies (`[cookies]` extra):**
 
@@ -292,7 +298,17 @@ decode faults rather than swallowing them. (The one documented carve-out is
 `artifacts`, which inherits `client.artifacts.list(...)`'s deliberate
 partial-availability behavior: a transport failure of the mind-map sub-fetch is
 logged and the studio artifacts that loaded are still returned — see ADR-0019
-Rule 3.) The workflows that
+Rule 3.)
+
+For `notebooks` specifically, gRPC status `5` reaches `None` under **both** its
+meanings: the notebook is genuinely absent, or it exists under a different
+signed-in Google account (the account-routing case behind issues #114 / #294).
+The backend sends the same status either way, so `get_or_none()` cannot
+distinguish them and the routing guidance is unobservable there. Use
+`client.notebooks.get(...)` when that matters — it raises
+`NotebookNotFoundError` carrying the guidance in its message, the originating
+`rpc_code`, and the original rejection as `__cause__`. `PERMISSION_DENIED`
+(status `7`) is never folded into `None` and always propagates. The workflows that
 *already* raise `SourceNotFoundError` are `client.sources.get_fulltext(...)` and
 `client.sources.wait_until_ready(...)`. Artifact-download workflows raise
 `ArtifactNotFoundError` when a requested artifact ID is not in the listing.

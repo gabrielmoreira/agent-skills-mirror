@@ -9,7 +9,7 @@ Every section earns its tokens by focusing on **Knowledge Delta** — the gap be
 
 ## Library target — Godot 4.7+
 
-All Domain Skill mirrors target **Godot 4.7+** (stable). For **incremental upgrades** from older 4.x minors, use **[godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md)** (one hop at a time) — do not treat this hub as a migration changelog.
+All Domain Skill mirrors target **Godot 4.7+** (stable). For **any engine version upgrade** (1.x/2.x legacy → 3→4 → hop-by-hop 4.x), use **[godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md)** — do not treat this hub as a migration changelog.
 
 Cross-cutting 4.7 reminders while routing: **AreaLight3D** / HDR → [3D Lighting](references/3d-lighting.md); Asset Store vs Asset Library → export/platform modules; RichTextLabel ImageUnit, input device ID constants, Jolt behavior → migration hub module notes.
 
@@ -423,7 +423,7 @@ Expert implementations of common architectural and gameplay systems.
 ### Architecture & Foundation
 [Foundations](references/project-foundations.md) | [Composition](references/composition.md) | [App Composition](references/composition-apps.md) | [Signals](references/signal-architecture.md) | [Autoloads](references/autoload-architecture.md) | [States](references/state-machine-advanced.md) | [Resources](references/resource-data-patterns.md) | [Templates](references/project-templates.md) | [Analyst](references/analyst.md) | [Auditor](references/auditor.md) | [Builder](references/builder.md)
 
-**Version upgrades (external hub):** [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — incremental 4.0→4.7 hops; not mirrored here.
+**Version upgrades (external hub):** [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — full-history router (legacy eras, 3→4 bridge, 4.0→4.7 hops); not mirrored here.
 
 ### GDScript & Testing
 [GDScript Mastery](references/gdscript-mastery.md) | [Testing Patterns](references/testing-patterns-expert-testing-patterns.md) | [Debugging/Profiling](references/debugging-profiling.md) | [Performance Optimization](references/performance-optimization.md)

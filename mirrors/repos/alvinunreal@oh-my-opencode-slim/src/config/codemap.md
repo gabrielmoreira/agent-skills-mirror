@@ -159,6 +159,7 @@ This allows consumers to import directly from `src/config` rather than individua
 - `disabled_skills`: List of skills to disable
 - `multiplexer`: Unified pane management config (type, layout, sizes)
 - `tmux`: Legacy tmux configuration (migrated to multiplexer)
+- `interview`: Interview feature configuration
 - `backgroundJobs`: Background job configuration
 - `fallback`: Failover/retry configuration
 - `council`: Council configuration with presets and execution modes

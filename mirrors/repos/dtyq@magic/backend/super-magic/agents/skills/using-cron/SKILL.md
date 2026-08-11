@@ -2,8 +2,6 @@
 name: using-cron
 description: Manage scheduled tasks — create, query, update, and delete. CRITICAL - When user message contains any future time intent (e.g. "in 2 days", "tomorrow at 8am", "every morning"), you MUST load this skill first. Use the Code Mode tools described by this skill.
 
-name-cn: 定时任务管理
-description-cn: 管理定时任务，支持创建、查询、更新、删除。关键规则 - 当用户消息包含未来时间意图时（例如"2天后"、"明天早上8点"、"每天早上"），必须首先加载此技能。通过本技能中的 Code Mode 工具完成定时任务管理。
 ---
 
 # Scheduled Task Management
@@ -83,8 +81,8 @@ run_sdk_snippet(python_code="""
 from sdk.tool import tool
 
 result = tool.call("scheduled_task_create", {
-    "task_name": "每日早报",
-    "message_content": "请生成今日早报",
+    "task_name": "Daily Briefing",
+    "message_content": "Generate today's briefing",
     "schedule_type": "daily_repeat",
     "time": "09:00"
 })
@@ -98,14 +96,14 @@ For long content, pass a Python triple-quoted string. Do not write a temp script
 run_sdk_snippet(python_code="""
 from sdk.tool import tool
 
-message = \"\"\"请读取当前文章目录下 ops/source.json，访问已绑定的 publishedUrl，只更新运营文件：
+message = \"\"\"Read ops/source.json in the current article directory, visit the bound publishedUrl, and update only these operations files:
 - ops/metrics.json
 - ops/comments.json
 - ops/review.html
-不要生成 AI Card。\"\"\"
+Do not generate an AI Card.\"\"\"
 
 result = tool.call("scheduled_task_create", {
-    "task_name": "[文章数据同步] 示例文章",
+    "task_name": "[Article Sync] Example Article",
     "message_content": message,
     "schedule_type": "daily_repeat",
     "time": "09:00",
@@ -122,8 +120,8 @@ run_sdk_snippet(python_code="""
 from sdk.tool import tool
 
 result = tool.call("scheduled_task_create", {
-    "task_name": "自定义员工任务",
-    "message_content": "请按自定义员工能力处理",
+    "task_name": "Custom Employee Task",
+    "message_content": "Process this task with the custom employee",
     "schedule_type": "daily_repeat",
     "time": "09:00",
     "agent_mode": "SMA-custom-agent"
@@ -150,7 +148,7 @@ from sdk.tool import tool
 result = tool.call("scheduled_task_list", {
     "page": 1,
     "page_size": 50,
-    "task_name": "早报",
+    "task_name": "briefing",
     "enabled": 1,
     "completed": 0
 })
@@ -195,7 +193,7 @@ from sdk.tool import tool
 
 result = tool.call("scheduled_task_update", {
     "id": "<scheduled_task_id>",
-    "message_content": "新的任务详情内容",
+    "message_content": "Updated task details",
     "schedule_type": "daily_repeat",
     "time": "10:00"
 })

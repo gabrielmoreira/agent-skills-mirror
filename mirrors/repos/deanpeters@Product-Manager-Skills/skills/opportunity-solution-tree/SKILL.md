@@ -5,6 +5,15 @@ description: Build an Opportunity Solution Tree from outcomes to opportunities, 
 intent: >-
   Guide product managers through creating an Opportunity Solution Tree (OST) by extracting target outcomes from stakeholder requests, generating opportunity options (problems to solve), mapping potential solutions, and selecting the best proof-of-concept (POC) based on feasibility, impact, and market fit. Use this to move from vague product requests to structured discovery, ensuring teams solve the right problems before jumping to solutions—avoiding "feature factory" syndrome and premature convergence on ideas.
 type: interactive
+theme: discovery-research
+best_for:
+  - "Turning a stakeholder feature request back into a problem worth solving"
+  - "Connecting a desired outcome to opportunities, solutions, and tests"
+  - "Showing why one solution was chosen over the alternatives"
+scenarios:
+  - "A stakeholder asked for a specific feature and I want to reframe it as a problem first"
+  - "I need to show leadership why we picked this solution over the three alternatives"
+estimated_time: "30-45 min"
 ---
 
 

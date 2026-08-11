@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 29 file(s) materialized.
+Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed patterns, 30 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `rullerzhou-afk/clawd-on-desk` — 26 default patterns, 0 followed pat
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 29 |
+| Files         | 30 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,11 +83,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`agents/qoder.js`](agents/qoder.js) |
 | 23 | ✓ | [`agents/qoderwork.js`](agents/qoderwork.js) |
 | 24 | ✓ | [`agents/qwen-code.js`](agents/qwen-code.js) |
-| 25 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
-| 26 | ✓ | [`agents/registry.js`](agents/registry.js) |
-| 27 | ✓ | [`agents/workbuddy.js`](agents/workbuddy.js) |
-| 28 | ✓ | [`agents/zcode.js`](agents/zcode.js) |
-| 29 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 25 | ✓ | [`agents/qwenwork.js`](agents/qwenwork.js) |
+| 26 | ✓ | [`agents/reasonix.js`](agents/reasonix.js) |
+| 27 | ✓ | [`agents/registry.js`](agents/registry.js) |
+| 28 | ✓ | [`agents/workbuddy.js`](agents/workbuddy.js) |
+| 29 | ✓ | [`agents/zcode.js`](agents/zcode.js) |
+| 30 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

@@ -136,6 +136,7 @@ Convenience CLI only — not expert pipeline prose. Load when you need that exac
 - [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — `PackedScene`, UID paths, and deep-duplicate rules that prevent procedural state-bleed across builder runs.
 
 #### Complements
+- [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — CI / headless target engine bumps: hop-by-hop via the migration hub before baking against new APIs.
 - [godot-export-builds](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-export-builds/SKILL.md) — Platform templates, codesign/keystore, and filter rules that sit on top of `ci_exporter.py` orchestration.
 - [godot-3d-world-building](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-3d-world-building/SKILL.md) — CSG/GridMap/MeshLibrary authoring that this skill bakes and exports headlessly.
 - [godot-navigation-pathfinding](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-navigation-pathfinding/SKILL.md) — Runtime agents and layer costs that consume NavMeshes produced by `navmesh_baker.py`.

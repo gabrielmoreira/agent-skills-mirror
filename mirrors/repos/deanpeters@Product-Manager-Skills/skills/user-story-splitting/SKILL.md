@@ -5,6 +5,15 @@ description: Break a large story or epic into smaller deliverable stories using 
 intent: >-
   Break down large user stories, epics, or features into smaller, independently deliverable stories using systematic splitting patterns. Use this to make work more manageable, reduce risk, enable faster feedback cycles, and maintain flow in agile development. This skill applies to user stories, epics, and any work that's too large to complete in a single sprint.
 type: component
+theme: pm-artifacts
+best_for:
+  - "Breaking a story that's too big to estimate or finish in a sprint"
+  - "Applying proven split patterns instead of splitting by component"
+  - "Keeping each slice independently valuable and releasable"
+scenarios:
+  - "This story is too big for a sprint and splitting by frontend/backend isn't working"
+  - "Our backlog items keep carrying over — I need real split patterns"
+estimated_time: "15-25 min"
 ---
 
 

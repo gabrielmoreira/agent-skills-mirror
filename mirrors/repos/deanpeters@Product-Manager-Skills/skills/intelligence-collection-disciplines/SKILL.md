@@ -396,5 +396,5 @@ customs, registries, permits — and an absence enters the fusion table as a Fac
   `competitive-research-snapshot`, `competitive-intel-watch`, `battle-card-builder`
 - SCIP Code of Ethics — the competitive-intelligence profession's reference standard
 - Regional Source Overlays (EU/MENA companion; planned as a future component skill)
-- Adapted from Dean Peters' "Competitive Research on Steroids" compendium and the Competitive Analysis
-  Playbook (Productside).
+- Adapted from practitioner experience in competitive and market intelligence, drawing on
+  open-source intelligence practice.

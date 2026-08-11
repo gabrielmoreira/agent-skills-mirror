@@ -78,6 +78,14 @@ one surface must use the package-owned surface-event predicate so both the
 parent ID and its `:tab:*` child IDs are accepted without admitting events from
 other Browser surfaces.
 
+The final tab is a surface-close action, not a child-guest close. Standalone
+hosts may handle it through the ordinary Browser `onCloseRequest`; the shared
+Workbench adapter binds its dedicated final-tab request to
+`windowActions.close()`. It must not send the parent surface ID to
+`BrowserNodeHostApi.close()`, because that API closes registered child guests
+and does not remove a Workbench node. Once the Workbench node unmounts, the
+tab-surface leases close every remaining child guest.
+
 Ordinary guest `target="_blank"` links and `window.open` calls emit an
 `open-url` event with the exact source child ID. The full workspace Browser host
 uses that identity to create and select a new tab in the same Browser surface.

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `zhaoxuya520/reverse-skill` — 26 default patterns, 8 followed patterns, 356 file(s) materialized.
+Mirror of `zhaoxuya520/reverse-skill` — 26 default patterns, 8 followed patterns, 358 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `zhaoxuya520/reverse-skill` — 26 default patterns, 8 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 8 |
-| Files         | 356 |
+| Files         | 358 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -394,34 +394,36 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 326 | ✓ | [`skills/scripts/master-route.sh`](skills/scripts/master-route.sh) |
 | 327 | ✓ | [`skills/scripts/refresh-tool-index.ps1`](skills/scripts/refresh-tool-index.ps1) |
 | 328 | ✓ | [`skills/scripts/refresh-tool-index.sh`](skills/scripts/refresh-tool-index.sh) |
-| 329 | ✓ | [`skills/scripts/smoke.ps1`](skills/scripts/smoke.ps1) |
-| 330 | ✓ | [`skills/scripts/test-p0-friction.ps1`](skills/scripts/test-p0-friction.ps1) |
-| 331 | ✓ | [`skills/scripts/test-routing.ps1`](skills/scripts/test-routing.ps1) |
-| 332 | ✓ | [`skills/scripts/test-workflow-title-safety.ps1`](skills/scripts/test-workflow-title-safety.ps1) |
-| 333 | ✓ | [`skills/scripts/update-star-history.ps1`](skills/scripts/update-star-history.ps1) |
-| 334 | ✓ | [`skills/scripts/verify-routing-coherence.ps1`](skills/scripts/verify-routing-coherence.ps1) |
-| 335 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
-| 336 | ✓ | [`skills/supply-chain-security/references/cicd-pipeline-security.md`](skills/supply-chain-security/references/cicd-pipeline-security.md) |
-| 337 | ✓ | [`skills/supply-chain-security/references/sbom-sca-methodology.md`](skills/supply-chain-security/references/sbom-sca-methodology.md) |
-| 338 | ✓ | [`skills/supply-chain-security/SKILL.md`](skills/supply-chain-security/SKILL.md) |
-| 339 | ✓ | [`skills/tests/routing-benchmark.json`](skills/tests/routing-benchmark.json) |
-| 340 | ✓ | [`skills/thick-client/references/thick-client-checklist.md`](skills/thick-client/references/thick-client-checklist.md) |
-| 341 | ✓ | [`skills/thick-client/SKILL.md`](skills/thick-client/SKILL.md) |
-| 342 | ✓ | [`skills/threat-hunting/references/hunting-loop.md`](skills/threat-hunting/references/hunting-loop.md) |
-| 343 | ✓ | [`skills/threat-hunting/SKILL.md`](skills/threat-hunting/SKILL.md) |
-| 344 | ✓ | [`skills/tool-index.md.template`](skills/tool-index.md.template) |
-| 345 | ✓ | [`skills/wifi-wireless/references/wireless-lab-rules.md`](skills/wifi-wireless/references/wireless-lab-rules.md) |
-| 346 | ✓ | [`skills/wifi-wireless/SKILL.md`](skills/wifi-wireless/SKILL.md) |
-| 347 | ✓ | [`skills/windows-ad/references/ad-attack-paths.md`](skills/windows-ad/references/ad-attack-paths.md) |
-| 348 | ✓ | [`skills/windows-ad/SKILL.md`](skills/windows-ad/SKILL.md) |
-| 349 | → | [`docs/PLATFORMS.md`](docs/PLATFORMS.md) |
-| 350 | → | [`docs/platforms/linux.md`](docs/platforms/linux.md) |
-| 351 | → | [`docs/platforms/macos.md`](docs/platforms/macos.md) |
-| 352 | → | [`kali/README-kali.md`](kali/README-kali.md) |
-| 353 | → | [`README_AI.md`](README_AI.md) |
-| 354 | → | [`README_zh.md`](README_zh.md) |
-| 355 | → | [`README.md`](README.md) |
-| 356 | → | [`RULES.md`](RULES.md) |
+| 329 | ✓ | [`skills/scripts/scan-leaks.ps1`](skills/scripts/scan-leaks.ps1) |
+| 330 | ✓ | [`skills/scripts/smoke.ps1`](skills/scripts/smoke.ps1) |
+| 331 | ✓ | [`skills/scripts/test-p0-friction.ps1`](skills/scripts/test-p0-friction.ps1) |
+| 332 | ✓ | [`skills/scripts/test-routing.ps1`](skills/scripts/test-routing.ps1) |
+| 333 | ✓ | [`skills/scripts/test-workflow-title-safety.ps1`](skills/scripts/test-workflow-title-safety.ps1) |
+| 334 | ✓ | [`skills/scripts/update-star-history.ps1`](skills/scripts/update-star-history.ps1) |
+| 335 | ✓ | [`skills/scripts/verify-doc-facts.ps1`](skills/scripts/verify-doc-facts.ps1) |
+| 336 | ✓ | [`skills/scripts/verify-routing-coherence.ps1`](skills/scripts/verify-routing-coherence.ps1) |
+| 337 | ✓ | [`skills/SKILL.md`](skills/SKILL.md) |
+| 338 | ✓ | [`skills/supply-chain-security/references/cicd-pipeline-security.md`](skills/supply-chain-security/references/cicd-pipeline-security.md) |
+| 339 | ✓ | [`skills/supply-chain-security/references/sbom-sca-methodology.md`](skills/supply-chain-security/references/sbom-sca-methodology.md) |
+| 340 | ✓ | [`skills/supply-chain-security/SKILL.md`](skills/supply-chain-security/SKILL.md) |
+| 341 | ✓ | [`skills/tests/routing-benchmark.json`](skills/tests/routing-benchmark.json) |
+| 342 | ✓ | [`skills/thick-client/references/thick-client-checklist.md`](skills/thick-client/references/thick-client-checklist.md) |
+| 343 | ✓ | [`skills/thick-client/SKILL.md`](skills/thick-client/SKILL.md) |
+| 344 | ✓ | [`skills/threat-hunting/references/hunting-loop.md`](skills/threat-hunting/references/hunting-loop.md) |
+| 345 | ✓ | [`skills/threat-hunting/SKILL.md`](skills/threat-hunting/SKILL.md) |
+| 346 | ✓ | [`skills/tool-index.md.template`](skills/tool-index.md.template) |
+| 347 | ✓ | [`skills/wifi-wireless/references/wireless-lab-rules.md`](skills/wifi-wireless/references/wireless-lab-rules.md) |
+| 348 | ✓ | [`skills/wifi-wireless/SKILL.md`](skills/wifi-wireless/SKILL.md) |
+| 349 | ✓ | [`skills/windows-ad/references/ad-attack-paths.md`](skills/windows-ad/references/ad-attack-paths.md) |
+| 350 | ✓ | [`skills/windows-ad/SKILL.md`](skills/windows-ad/SKILL.md) |
+| 351 | → | [`docs/PLATFORMS.md`](docs/PLATFORMS.md) |
+| 352 | → | [`docs/platforms/linux.md`](docs/platforms/linux.md) |
+| 353 | → | [`docs/platforms/macos.md`](docs/platforms/macos.md) |
+| 354 | → | [`kali/README-kali.md`](kali/README-kali.md) |
+| 355 | → | [`README_AI.md`](README_AI.md) |
+| 356 | → | [`README_zh.md`](README_zh.md) |
+| 357 | → | [`README.md`](README.md) |
+| 358 | → | [`RULES.md`](RULES.md) |
 
 ---
 

@@ -50,6 +50,8 @@ Bad example:
 - If no diff, file set, PR, or artifact is available, inspect the requested target or ask one target question before reviewing.
 - If tests fail or are missing, cite the exact command gap and do not approve the change as verified.
 - If independent review evidence is unavailable, say so directly instead of implying a second reviewer passed it.
+- To dispatch a reviewer rather than write the findings yourself, load `omh-code-review/references/review-dispatch.md`; it carries the base-SHA rule and the implementer status contract.
+- When findings arrive for work you own, load `omh-code-review/references/review-response.md` before changing anything.
 
 ## Workflow Lane
 

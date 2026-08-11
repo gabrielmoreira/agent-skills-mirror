@@ -171,6 +171,7 @@ When you invoke **Anara**, I will:
 - [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Observer-pattern ownership rules that raise Scalability when UI and systems stop hard-wiring parents.
 
 #### Complements
+- [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — When Modernity / Godot-3-era patterns or engine version lag drag scores, upgrade hop-by-hop via the migration hub before remediating on current APIs.
 - [godot-auditor](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-auditor/SKILL.md) — Compliance / Never-List audits pair with Anara’s weighted Visionary scoring; use Auditor for rule citations, Analyst for architecture tiers.
 - [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — Profiler, custom monitors, and orphan tracing that back Rendering & Execution and Observability rubrics with runtime evidence.
 - [godot-resource-data-patterns](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-resource-data-patterns/SKILL.md) — Resource-first data and dependency hygiene for Asset Dependency Analysis and Data Systems rubrics.

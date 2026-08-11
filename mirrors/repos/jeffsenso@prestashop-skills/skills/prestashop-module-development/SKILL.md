@@ -1,4 +1,4 @@
----
+gi---
 name: prestashop-module-development
 description: "Complete PrestaShop module development workflow using modern architecture and best practices. Use when: creating new PrestaShop modules, updating legacy modules to modern code, implementing hooks and actions, setting up module configuration pages, adding front office features, handling database operations, implementing security measures, managing translations, creating cart rules and vouchers, building Symfony console commands, or modernizing existing PrestaShop modules from legacy patterns to current standards."
 ---
@@ -63,6 +63,12 @@ Key rules:
 - **Do NOT use `HelperForm`** — use Symfony form components + `FrameworkBundleAdminController`
 - Four classes: `DataConfiguration`, `FormDataProvider`, `FormType`, `Controller`
 - Wire everything in `config/components/` sub-folders (imported by `config/admin/services.yml`) and `config/routes.yml`
+- **CategoryChoiceTreeType**: PrestaShop's form type for hierarchical category selection trees. Requires specific setup:
+  - **Valid form options**: `'multiple' => true` for multi-selection; `'required' => false` for optional. **DO NOT use** `'expanded'` option — it does not exist for this type
+  - **Template requirements**: Add `{% form_theme configurationForm '@PrestaShop/Admin/TwigTemplateForm/prestashop_ui_kit.html.twig' %}` **before** `{% extends %}` directive; include JS bundle in `{% block javascripts %}`
+  - **JavaScript initialization**: Create `views/js/mymodule.form.bundle.js` with `window.prestashop.component.initComponents(['ChoiceTree'])` and `new window.prestashop.component.ChoiceTree('#form_categories').enableAutoCheckChildren()` — selector must match the HTML `id` attribute (typically `form_<field_name>`)
+  - **Form data handling**: Returns array of category IDs; store as comma-separated string via `implode(',', $data['categories'])`; retrieve and convert back with `array_filter(array_map('intval', explode(',', $storedValue)))`
+  - **Common issues**: Tree renders as plain checkboxes → missing form theme; expand/collapse doesn't work → missing JS initialization; "ChoiceTree is not defined" → use `window.prestashop.component.ChoiceTree` not plain `ChoiceTree`
 
 ### 3) Database operations & entities
 

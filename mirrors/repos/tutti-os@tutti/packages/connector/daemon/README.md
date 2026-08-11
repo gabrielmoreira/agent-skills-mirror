@@ -32,3 +32,11 @@ publication, fail-close all processes, and force a later bootstrap even when
 the same account logs in again. The account-boundary fence never admits or
 starts a runtime with retired authority; per-Connector deactivation remains a
 normal uninstall/reconcile concern.
+
+The active account scope also bounds authorization receipt polling. Snapshot
+sync atomically converges the account Projection and surfaces matching private
+receipts, but does not terminalize them. The daemon holds the lifecycle fence,
+awaits Runtime Reconcile, and only then resolves those receipts.
+WebSocket events are only refresh hints; a five-minute level-triggered pass
+reconciles every installed remote authorized Connector so a lost event or an
+interrupted earlier pass cannot leave route state stale.

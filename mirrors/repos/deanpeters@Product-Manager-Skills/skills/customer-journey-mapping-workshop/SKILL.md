@@ -13,6 +13,8 @@ scenarios:
   - "Help me run a journey mapping workshop for new customer onboarding"
   - "Map the experience of a buyer from trial signup to first value"
   - "Facilitate a workshop on the support journey for churn-risk customers"
+theme: workshops-facilitation
+estimated_time: "45-90 min"
 ---
 
 

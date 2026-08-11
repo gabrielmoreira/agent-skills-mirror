@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 18 followed patterns, 27 file(s) materialized.
+Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 18 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `open-multi-agent/open-multi-agent` — 26 default patterns, 18 follow
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 18 |
-| Files         | 27 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -79,30 +79,31 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
 | 2 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 | 3 | ✓ | [`docs/durable-approvals.md`](docs/durable-approvals.md) |
-| 4 | ✓ | [`docs/observability-migration.md`](docs/observability-migration.md) |
-| 5 | ✓ | [`docs/observability-performance.md`](docs/observability-performance.md) |
-| 6 | ✓ | [`docs/observability-release-readiness.md`](docs/observability-release-readiness.md) |
-| 7 | ✓ | [`docs/structured-input.md`](docs/structured-input.md) |
-| 8 | ✓ | [`packages/create-oma-app/AGENTS.md`](packages/create-oma-app/AGENTS.md) |
-| 9 | ✓ | [`packages/create-oma-app/CLAUDE.md`](packages/create-oma-app/CLAUDE.md) |
-| 10 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
-| 11 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
-| 12 | → | [`docs/adaptive-recovery.md`](docs/adaptive-recovery.md) |
-| 13 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
-| 14 | → | [`docs/cli.md`](docs/cli.md) |
-| 15 | → | [`docs/consensus.md`](docs/consensus.md) |
-| 16 | → | [`docs/context-management.md`](docs/context-management.md) |
-| 17 | → | [`docs/evaluation.md`](docs/evaluation.md) |
-| 18 | → | [`docs/execution-routing.md`](docs/execution-routing.md) |
-| 19 | → | [`docs/external-agents.md`](docs/external-agents.md) |
-| 20 | → | [`docs/model-routing.md`](docs/model-routing.md) |
-| 21 | → | [`docs/observability.md`](docs/observability.md) |
-| 22 | → | [`docs/plan-replay.md`](docs/plan-replay.md) |
-| 23 | → | [`docs/providers.md`](docs/providers.md) |
-| 24 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
-| 25 | → | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
-| 26 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
-| 27 | → | [`packages/core/README.md`](packages/core/README.md) |
+| 4 | ✓ | [`docs/egress-policy.md`](docs/egress-policy.md) |
+| 5 | ✓ | [`docs/observability-migration.md`](docs/observability-migration.md) |
+| 6 | ✓ | [`docs/observability-performance.md`](docs/observability-performance.md) |
+| 7 | ✓ | [`docs/observability-release-readiness.md`](docs/observability-release-readiness.md) |
+| 8 | ✓ | [`docs/structured-input.md`](docs/structured-input.md) |
+| 9 | ✓ | [`packages/create-oma-app/AGENTS.md`](packages/create-oma-app/AGENTS.md) |
+| 10 | ✓ | [`packages/create-oma-app/CLAUDE.md`](packages/create-oma-app/CLAUDE.md) |
+| 11 | → | [`.github/CONTRIBUTING.md`](.github/CONTRIBUTING.md) |
+| 12 | → | [`.github/RELEASING.md`](.github/RELEASING.md) |
+| 13 | → | [`docs/adaptive-recovery.md`](docs/adaptive-recovery.md) |
+| 14 | → | [`docs/checkpoint.md`](docs/checkpoint.md) |
+| 15 | → | [`docs/cli.md`](docs/cli.md) |
+| 16 | → | [`docs/consensus.md`](docs/consensus.md) |
+| 17 | → | [`docs/context-management.md`](docs/context-management.md) |
+| 18 | → | [`docs/evaluation.md`](docs/evaluation.md) |
+| 19 | → | [`docs/execution-routing.md`](docs/execution-routing.md) |
+| 20 | → | [`docs/external-agents.md`](docs/external-agents.md) |
+| 21 | → | [`docs/model-routing.md`](docs/model-routing.md) |
+| 22 | → | [`docs/observability.md`](docs/observability.md) |
+| 23 | → | [`docs/plan-replay.md`](docs/plan-replay.md) |
+| 24 | → | [`docs/providers.md`](docs/providers.md) |
+| 25 | → | [`docs/shared-memory.md`](docs/shared-memory.md) |
+| 26 | → | [`docs/task-scheduling.md`](docs/task-scheduling.md) |
+| 27 | → | [`docs/tool-configuration.md`](docs/tool-configuration.md) |
+| 28 | → | [`packages/core/README.md`](packages/core/README.md) |
 
 ---
 

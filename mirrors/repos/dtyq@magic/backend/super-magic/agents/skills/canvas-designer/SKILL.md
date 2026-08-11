@@ -630,7 +630,7 @@ The `search_image_prompts` tool provides access to 1300+ curated AI image genera
 
 **When to use — trigger condition:**
 
-Only when the user explicitly asks for inspiration or says they have no idea — e.g. "帮我找些灵感", "我没有提示词思路", "给我一些参考", "I need some ideas". Do not trigger proactively when the user provides a subject but no style details. In this situation:
+Only when the user explicitly asks for inspiration or says they have no idea — e.g. "help me find some inspiration", "I have no prompt ideas", "give me some references", "I need some ideas". Do not trigger proactively when the user provides a subject but no style details. In this situation:
 
 1. Call `search_image_prompts` with a query that reflects the user's intent and scene type
 2. Read the results and derive 3–5 distinct prompt options, each adapted to the user's subject

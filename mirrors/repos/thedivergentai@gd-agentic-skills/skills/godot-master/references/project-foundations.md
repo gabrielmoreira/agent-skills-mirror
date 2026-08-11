@@ -123,6 +123,7 @@ Full naming table, typed-GDScript migration, EventBus/SceneManager/metadata samp
 - [godot-gdscript-mastery](gdscript-mastery.md) — Typed GDScript, style, and warning-system fluency before enforcing naming and scaffold conventions.
 
 #### Complements
+- [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — When opening or scaffolding a project on an older engine version, hop to the library target before enforcing current foundations.
 - [godot-autoload-architecture](autoload-architecture.md) — Boot order and ownership rules for Managed Autoload / EventBus singletons registered from a clean project root.
 - [godot-composition](composition.md) — Feature folders become composable scene modules; parents wire children instead of growing monolithic managers.
 - [godot-resource-data-patterns](resource-data-patterns.md) — Extends `BaseDataResource`-style reactive Resources into full data-driven catalogs without shared mutation.
@@ -132,7 +133,7 @@ Full naming table, typed-GDScript migration, EventBus/SceneManager/metadata samp
 
 #### Downstream / consumers
 - [godot-export-builds](export-builds.md) — Export presets and feature tags assume a clean folder layout, `.gitignore`, and build metadata hooks.
-- [godot-testing-patterns](testing-patterns-expert-testing-patterns.md) — Feature-based scenes and deterministic Autoloads make unit/integration harnesses easier to mount.
+- [godot-testing-patterns](testing-patterns.md) — Feature-based scenes and deterministic Autoloads make unit/integration harnesses easier to mount.
 - [godot-debugging-profiling](debugging-profiling.md) — Custom Logger telemetry and dependency audits feed editor-time diagnostics once structure is stable.
 - [godot-performance-optimization](performance-optimization.md) — Node pools, WorkerThreadPool, and runtime profiles escalate here when foundations hit CPU/memory ceilings.
 

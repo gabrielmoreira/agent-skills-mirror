@@ -87,21 +87,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 26 | ✓ | [`skills/flux-3-prompt-doctor/templates/brief.md`](skills/flux-3-prompt-doctor/templates/brief.md) |
 | 27 | ✓ | [`skills/flux-3-video/metadata.json`](skills/flux-3-video/metadata.json) |
 | 28 | ✓ | [`skills/flux-3-video/SKILL.md`](skills/flux-3-video/SKILL.md) |
-| 29 | ✓ | [`skills/flux-best-practices/AGENTS.md`](skills/flux-best-practices/AGENTS.md) |
-| 30 | ✓ | [`skills/flux-best-practices/metadata.json`](skills/flux-best-practices/metadata.json) |
-| 31 | ✓ | [`skills/flux-best-practices/rules/_sections.md`](skills/flux-best-practices/rules/_sections.md) |
-| 32 | ✓ | [`skills/flux-best-practices/rules/core-principles.md`](skills/flux-best-practices/rules/core-principles.md) |
-| 33 | ✓ | [`skills/flux-best-practices/rules/flux1-models.md`](skills/flux-best-practices/rules/flux1-models.md) |
-| 34 | ✓ | [`skills/flux-best-practices/rules/flux2-models.md`](skills/flux-best-practices/rules/flux2-models.md) |
-| 35 | ✓ | [`skills/flux-best-practices/rules/hex-color-prompting.md`](skills/flux-best-practices/rules/hex-color-prompting.md) |
-| 36 | ✓ | [`skills/flux-best-practices/rules/i2i-prompting.md`](skills/flux-best-practices/rules/i2i-prompting.md) |
-| 37 | ✓ | [`skills/flux-best-practices/rules/json-structured-prompting.md`](skills/flux-best-practices/rules/json-structured-prompting.md) |
-| 38 | ✓ | [`skills/flux-best-practices/rules/model-selection-guide.md`](skills/flux-best-practices/rules/model-selection-guide.md) |
-| 39 | ✓ | [`skills/flux-best-practices/rules/multi-reference-editing.md`](skills/flux-best-practices/rules/multi-reference-editing.md) |
-| 40 | ✓ | [`skills/flux-best-practices/rules/negative-prompt-alternatives.md`](skills/flux-best-practices/rules/negative-prompt-alternatives.md) |
-| 41 | ✓ | [`skills/flux-best-practices/rules/t2i-prompting.md`](skills/flux-best-practices/rules/t2i-prompting.md) |
-| 42 | ✓ | [`skills/flux-best-practices/rules/typography-text.md`](skills/flux-best-practices/rules/typography-text.md) |
-| 43 | ✓ | [`skills/flux-best-practices/SKILL.md`](skills/flux-best-practices/SKILL.md) |
+| 29 | ✓ | [`skills/flux-image-best-practices/AGENTS.md`](skills/flux-image-best-practices/AGENTS.md) |
+| 30 | ✓ | [`skills/flux-image-best-practices/metadata.json`](skills/flux-image-best-practices/metadata.json) |
+| 31 | ✓ | [`skills/flux-image-best-practices/rules/_sections.md`](skills/flux-image-best-practices/rules/_sections.md) |
+| 32 | ✓ | [`skills/flux-image-best-practices/rules/core-principles.md`](skills/flux-image-best-practices/rules/core-principles.md) |
+| 33 | ✓ | [`skills/flux-image-best-practices/rules/flux1-models.md`](skills/flux-image-best-practices/rules/flux1-models.md) |
+| 34 | ✓ | [`skills/flux-image-best-practices/rules/flux2-models.md`](skills/flux-image-best-practices/rules/flux2-models.md) |
+| 35 | ✓ | [`skills/flux-image-best-practices/rules/hex-color-prompting.md`](skills/flux-image-best-practices/rules/hex-color-prompting.md) |
+| 36 | ✓ | [`skills/flux-image-best-practices/rules/i2i-prompting.md`](skills/flux-image-best-practices/rules/i2i-prompting.md) |
+| 37 | ✓ | [`skills/flux-image-best-practices/rules/json-structured-prompting.md`](skills/flux-image-best-practices/rules/json-structured-prompting.md) |
+| 38 | ✓ | [`skills/flux-image-best-practices/rules/model-selection-guide.md`](skills/flux-image-best-practices/rules/model-selection-guide.md) |
+| 39 | ✓ | [`skills/flux-image-best-practices/rules/multi-reference-editing.md`](skills/flux-image-best-practices/rules/multi-reference-editing.md) |
+| 40 | ✓ | [`skills/flux-image-best-practices/rules/negative-prompt-alternatives.md`](skills/flux-image-best-practices/rules/negative-prompt-alternatives.md) |
+| 41 | ✓ | [`skills/flux-image-best-practices/rules/t2i-prompting.md`](skills/flux-image-best-practices/rules/t2i-prompting.md) |
+| 42 | ✓ | [`skills/flux-image-best-practices/rules/typography-text.md`](skills/flux-image-best-practices/rules/typography-text.md) |
+| 43 | ✓ | [`skills/flux-image-best-practices/SKILL.md`](skills/flux-image-best-practices/SKILL.md) |
 
 ---
 

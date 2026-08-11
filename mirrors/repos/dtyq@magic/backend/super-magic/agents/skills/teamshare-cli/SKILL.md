@@ -1,9 +1,6 @@
 ---
 name: teamshare-cli
-description: "Use when the user wants to interact with Teamshare/天书 capabilities, especially Teamshare Base multi-dimensional tables: files, directories, sheets, fields, records, views, forms, dashboards, or dashboard widgets. Load this skill first to route to the right Teamshare sub-skill."
-
-name-cn: 天书能力入口
-description-cn: 当用户需要操作天书 Teamshare 能力，尤其是天书多维表格文件、目录、数据表、字段、记录、视图、表单、仪表盘或仪表盘图表组件时，先加载本 skill，再按场景加载对应子 skill。
+description: "Use when the user wants to interact with Teamshare capabilities, especially Teamshare Base multi-dimensional tables: files, directories, sheets, fields, records, views, forms, dashboards, or dashboard widgets. Load this skill first to route to the right Teamshare sub-skill. Also trigger for localized requests in the user's language that refer to Teamshare or Teamshare Base."
 ---
 
 # Teamshare CLI Skill Index

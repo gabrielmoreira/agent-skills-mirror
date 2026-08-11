@@ -1,7 +1,7 @@
 ---
 name: incoming-request-advisor
 argument-hint: "[paste or describe the incoming message + who sent it]"
-description: "Decode an incoming message into a structured breakdown that separates the literal ask from the job-to-be-done. Use before replying to a loaded Slack ping, email, mandate, or escalation."
+description: "Decode an incoming message into a structured breakdown separating the literal ask from the job-to-be-done. Use when a loaded Slack ping, email, mandate, or escalation needs a reply."
 intent: >-
   Act as a chief-of-staff-grade analyst that decodes an incoming message into a structured breakdown, separating the literal ask from the job-to-be-done underneath it, reading sender power and stake from a product leader's chair, and opening the conversation toward a reply or next artifact. Trains the PM habit of finding the outcome before responding.
 type: interactive

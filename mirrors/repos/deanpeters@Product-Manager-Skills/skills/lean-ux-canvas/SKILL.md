@@ -13,6 +13,8 @@ scenarios:
   - "Help me run a Lean UX Canvas workshop for onboarding drop-off"
   - "Use Lean UX Canvas to frame a new AI product idea"
   - "We have a business problem but too many assumptions. Run a Lean UX Canvas session."
+theme: validation-experiments
+estimated_time: "30-45 min"
 ---
 
 ## Purpose

@@ -13,6 +13,8 @@ scenarios:
   - "Help me run a positioning workshop for our B2B analytics product"
   - "Our messaging feels generic. Facilitate a positioning session."
   - "We need to define who we serve and why we're different"
+theme: workshops-facilitation
+estimated_time: "60-90 min"
 ---
 
 

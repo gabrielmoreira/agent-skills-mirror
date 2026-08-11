@@ -1,9 +1,9 @@
 ---
-name: brewdoc:memory-sync-setup
+name: memory-sync-setup
 description: "Generates a project-tailored memory-sync skill: memory surface batches, checkable-fact catalogue, non-growth sync, independent verify, self-sync, agent re-audit. Triggers: memory sync init, generate memory sync, sync memory skill, установи memory-sync, синхронизируй память"
 user-invocable: true
 disable-model-invocation: true
-argument-hint: "[status|install|upgrade|enable|disable|uninstall|purge] [fine-tune-prompt]"
+argument-hint: "[prompt] [status|install|upgrade|enable|disable|uninstall|purge] [fine-tune-prompt]"
 allowed-tools: [Read, Edit, Glob, Grep, Bash, Agent, AskUserQuestion]
 model: opus
 ---
@@ -22,6 +22,34 @@ merely deleted from a doc.
 **OUTPUT:** `<target>/.claude/skills/memory-sync/` -- `SKILL.md` + `references/memory-guide.md` +
 `references/agent-audit.md` + `references/hard-sync.md`. Nothing else is written; no agent is created, no rule is
 installed, no hook is registered.
+
+## Prompt contract
+
+Position 1 of `$ARGUMENTS` is a **free-form prompt** (RU/EN) -- modes and the fine-tune text are optional and may
+follow in any order. Nobody types keys: resolve mode + scope FROM the prompt.
+
+1. Strip flags. An explicit mode token anywhere wins outright, no scoring.
+2. Else score modes by distinct whole-word keyword hits (table in `## Modes` below). Highest unique score wins.
+   Tie with a destructive mode -> `AskUserQuestion`; tie with `status` -> `status`; tie of two mutating modes ->
+   the keyword appearing first; all zero -> `status` if installed, else `install`.
+3. Empty arguments -> `status` if installed, else `install`; ask ONE scoping `AskUserQuestion` only when the
+   answer changes what gets written. A read-only run asks nothing.
+4. Outcome-changing ambiguity -> ONE `AskUserQuestion` (max 4 questions) BEFORE any work.
+5. Prose that is not a mode/id/path is still input: extract the id, path or target from it -- never treat the
+   first word of a sentence as a positional id. The remainder becomes the fine-tune prompt / `{FOCUS_EMPHASIS}`.
+
+Then print this block ONCE, before the first action (this replaces the old bare ANNOUNCE line below):
+
+```
+PLAN — brewdoc:memory-sync-setup
+INPUT:  <arguments verbatim, or "(empty)">
+MODE:   <resolved> — <explicit | matched keyword: X | default>
+SCOPE:  target=<absolute repo root>; emphasis=<fine-tune prompt interpretation | "none">
+DO:     <2-5 imperative bullets>
+RESULT: <what the user ends up holding>
+```
+
+Labels are literal; values follow the conversation language.
 
 ## What the emitted skill does
 
@@ -58,13 +86,27 @@ free-form fine-tune prompt. The prompt is woven into the emitted skill's focus o
 
 Canonical verbs, in order: `status | install | upgrade | enable | disable | uninstall | purge`.
 
-The FIRST token of `$ARGUMENTS`, lowercased, is the mode when it matches exactly. Anything else is fine-tune text,
-and with no mode token the default is `status` when `<target>/.claude/skills/memory-sync/` exists and `install`
-when it does not.
+An explicit mode token anywhere in `$ARGUMENTS`, lowercased, wins outright -- no scoring. Otherwise score every
+mode by distinct whole-word keyword hits below; highest unique score wins. Everything that is not a matched
+keyword is fine-tune text (`{FOCUS_EMPHASIS}`). No mode token and no keyword match -> `status` when
+`<target>/.claude/skills/memory-sync/` exists, `install` when it does not.
+
+| Mode | EN keywords | RU keywords | Mutates? |
+|------|-------------|-------------|----------|
+| `status` | *(empty when installed)*, status, check, show | статус, проверь, покажи | no |
+| `install` | install, setup, generate | установи, настрой, сгенерируй | yes |
+| `upgrade` | upgrade, refresh, update | обнови, апгрейд | yes |
+| `enable` | enable, turn on | включи, верни | yes |
+| `disable` | disable, pause, turn off | выключи, отключи, пауза | yes |
+| `uninstall` | uninstall, remove | удали, убери | yes |
+| `purge` | purge, wipe | вычисти, снеси | yes, destructive |
+
+Tie-break: a tie involving `purge`/`uninstall` -> `AskUserQuestion` (never guess destructive); a tie with
+`status` -> `status`; a tie of two mutating modes -> the keyword appearing first in the prompt.
 
 Removed aliases -- `init`, `on`, `off`, `setup`, `remove`, `reset`, `create`, `update`, `cleanup` are no longer
-accepted. Map them onto the canonical set (`init`/`setup`/`create` -> `install`, `on` -> `enable`, `off` ->
-`disable`, `remove`/`reset`/`cleanup` -> `uninstall` or `purge` -- ASK which) and say so in the ANNOUNCE line.
+accepted. Map them onto the canonical set (`init`/`create` -> `install`, `on` -> `enable`, `off` ->
+`disable`, `remove`/`reset`/`cleanup` -> `uninstall` or `purge` -- ASK which) and say so in the PLAN block.
 Never print a removed alias as a command.
 
 | Mode | Reads | Writes | Does |
@@ -83,13 +125,7 @@ Never print a removed alias as a command.
 > entirely" verb and takes the directory. The generator registers no hooks, writes no settings and no config, so
 > these two paths ARE its whole footprint -- there is nothing else for `purge` to sweep.
 
-ANNOUNCE before any work:
-
-```
-[memory-sync-setup] MODE: {status|install|upgrade|enable|disable|uninstall|purge} - {matched token | "no mode token -> installed? status : install"}
-Target:   {absolute repo root}
-Emphasis: {fine-tune prompt interpretation | "none"}
-```
+Print the PLAN block (see Prompt contract above) before any work.
 
 > `upgrade` NEVER runs `emit` over a live installation. `emit` refuses to overwrite (`MEMORY_SYNC_FORCE=1` is the
 > conscious override, and it DESTROYS hand-edits). Upgrade works through targeted `Edit` calls, section by section,
@@ -306,7 +342,13 @@ bash "${CLAUDE_SKILL_DIR}/scripts/generate.sh" emit && echo "✅ emit" || echo "
 
 This writes the FOUR-file tree: `<target>/.claude/skills/memory-sync/SKILL.md` with scalars substituted, plus
 `references/memory-guide.md`, `references/agent-audit.md` and `references/hard-sync.md` copied into the emitted
-`references/`. It stamps provenance into the emitted SKILL.md's YAML FRONTMATTER, appended after the
+`references/`.
+
+> `disable-model-invocation` MUST NOT be set on the emitted skill: plain-prose invocation ("память устарела",
+> "sync memory") is a first-class path, alongside `/memory-sync [scope]`. Legacy installs that still carry the key
+> are stripped by `generate.sh restamp`; `validate` fails on a survivor.
+
+It stamps provenance into the emitted SKILL.md's YAML FRONTMATTER, appended after the
 skill's own keys:
 
 ```yaml
@@ -450,7 +492,7 @@ the single list -- do not restate it here.
 | Emit material | `${CLAUDE_SKILL_DIR}/references/` | `SKILL.md.template`, `memory-guide.md`, `agent-audit.md`, `hard-sync.md` -- four files emitted |
 | Emitted default depth | `NORMAL` | `HARD` is per-run, from the emitted skill's own arguments; nothing is regenerated to switch |
 | Generation script | `${CLAUDE_SKILL_DIR}/scripts/generate.sh` | `scan` \| `emit` \| `validate` \| `restamp` \| `status` \| `enable` \| `disable` \| `uninstall` \| `purge` |
-| Provenance refresh | `generate.sh restamp` | Metadata-only, idempotent, mandatory tail of `upgrade`. Rewrites `version` / `last_updated` / `surface_files`, adds `doc_type` / `generated_by` when absent, deletes a pre-5.0 tail stamp, re-copies a reference ONLY when its sole difference from the plugin source is the release stamp. Aborts rather than write if anything outside the metadata block would move |
+| Provenance refresh | `generate.sh restamp` | Metadata-only, idempotent, mandatory tail of `upgrade`. Rewrites `version` / `last_updated` / `surface_files`, adds `doc_type` / `generated_by` when absent, deletes a pre-5.0 tail stamp and a legacy `disable-model-invocation`, re-copies a reference ONLY when its sole difference from the plugin source is the release stamp. Aborts rather than write if anything outside the metadata block would move |
 | Mode | `status` when installed, else `install` | `status` (read-only) \| `install` \| `upgrade` \| `enable` \| `disable` \| `uninstall` \| `purge` |
 | Disabled marker | `<target>/.claude/skills/memory-sync/SKILL.md.disabled` | What `disable` renames `SKILL.md` to. Its presence IS the disabled state -- there is no config file to keep in sync |
 | Overwrite | refused | `emit` never overwrites a live installation; `MEMORY_SYNC_FORCE=1` overrides and DESTROYS hand-edits |
@@ -466,6 +508,8 @@ the single list -- do not restate it here.
 
 | Condition | Action |
 |-----------|--------|
+| `$ARGUMENTS` is prose with no mode token/keyword | Extract the fine-tune focus from the sentence; never treat its first word as a positional mode |
+| PLAN block missing, or printed after work started | Defect -- print it once, before the first action |
 | Emit material missing under `${CLAUDE_SKILL_DIR}/references/` | ERROR "missing emit material: `<path>` -- reinstall brewdoc". STOP. Never improvise a template |
 | `install` but `<target>/.claude/skills/memory-sync/` already exists | STOP. "memory-sync already installed. Use `upgrade` to refresh it, or `status` to see its drift." Never overwrite |
 | `upgrade` but nothing installed | STOP. "Nothing to upgrade -- run `/brewdoc:memory-sync-setup install` to generate it first" |

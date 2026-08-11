@@ -1,8 +1,43 @@
 # Hop index (generated)
 
-Cross-reference of mirrored Domain Skill migration notes. Apply **one hop**, stabilize, then continue. Never skip hops.
+Cross-reference of mirrored Domain Skill migration notes. Apply **one hop**, stabilize, then continue. Never skip majors or 4.x minors.
+
+Full-history ladder: [era-index.md](era-index.md) · [legacy/pre-2-context.md](legacy/pre-2-context.md) · [legacy/2-to-3.md](legacy/2-to-3.md) · [bridges/3-to-4.md](bridges/3-to-4.md)
 
 Official guides: [Migrating to a new version](https://docs.godotengine.org/en/stable/tutorials/migrating/index.html)
+
+## Pre-4.0
+
+- [3.x → 4.0 bridge](bridges/3-to-4.md)
+- Module notes with a `## 3.x → 4.0` section:
+  - [2d-physics](2d-physics.md)
+  - [3d-lighting](3d-lighting.md)
+  - [3d-materials](3d-materials.md)
+  - [animation-tree-mastery](animation-tree-mastery.md)
+  - [audio-systems](audio-systems.md)
+  - [autoload-architecture](autoload-architecture.md)
+  - [camera-systems](camera-systems.md)
+  - [composition](composition.md)
+  - [debugging-profiling](debugging-profiling.md)
+  - [export-builds](export-builds.md)
+  - [gdscript-mastery](gdscript-mastery.md)
+  - [input-handling](input-handling.md)
+  - [multiplayer-networking](multiplayer-networking.md)
+  - [navigation-pathfinding](navigation-pathfinding.md)
+  - [particles](particles.md)
+  - [performance-optimization](performance-optimization.md)
+  - [physics-3d](physics-3d.md)
+  - [platform-vr](platform-vr.md)
+  - [project-foundations](project-foundations.md)
+  - [resource-data-patterns](resource-data-patterns.md)
+  - [save-load-systems](save-load-systems.md)
+  - [scene-management](scene-management.md)
+  - [shaders-basics](shaders-basics.md)
+  - [signal-architecture](signal-architecture.md)
+  - [tilemap-mastery](tilemap-mastery.md)
+  - [ui-containers](ui-containers.md)
+  - [ui-rich-text](ui-rich-text.md)
+  - [ui-theming](ui-theming.md)
 
 ## 4.0 → 4.1
 

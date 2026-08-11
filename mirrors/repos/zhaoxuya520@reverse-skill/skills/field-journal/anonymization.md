@@ -197,7 +197,11 @@ grep -nE '[\w\.\-]+@[\w\.\-]+\.\w+' file.md
 grep -nE '\b1[3-9][0-9]{9}\b' file.md
 ```
 
-把这段封装成一个 `field-journal/scripts/scan-leaks.ps1`，每次提交前跑。
+已封装为 `skills/scripts/scan-leaks.ps1`（PowerShell，PS 5.1 / pwsh 兼容），每次提交前跑：
+```powershell
+powershell -File skills/scripts/scan-leaks.ps1 -Path skills/field-journal
+```
+CI（ci.yml `leak-scan` job）已接入该脚本，发现未脱敏信息会直接失败。
 
 ## 反向：阅读他人脱敏文档
 

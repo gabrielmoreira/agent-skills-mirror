@@ -90,6 +90,7 @@ Required inputs:
 Expected outputs:
 
 - design_orchestration/v1
+- design_direction_set/v1 when the direction is still open
 - design intent and opaque context-reference boundary
 - prepared direction vocabulary
 - downstream composition: design-quality-gate, frontend, accessibility-audit, visual-qa
@@ -99,6 +100,8 @@ Expected outputs:
 Artifact expectations:
 
 - design_orchestration/v1 with prepared_not_observed status
+- design_direction_set/v1 offers two to four directions with chosen_option empty until the user picks
+- a static self-contained preview file when one is written; no server, port, or browser launch
 - no raw project source, prompt, asset, path, or URL retention
 - no executor target, dispatch, implementation, render, QA PASS, review, CI, deployment, or merge claim
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patterns, 26 file(s) materialized.
+Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patterns, 28 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `elementalsouls/Claude-OSINT` — 26 default patterns, 0 followed patt
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 26 |
+| Files         | 28 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -81,10 +81,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 20 | ✓ | [`skills/osint-autopilot/scripts/findings_gen.py`](skills/osint-autopilot/scripts/findings_gen.py) |
 | 21 | ✓ | [`skills/osint-autopilot/scripts/host_enum.workflow.js`](skills/osint-autopilot/scripts/host_enum.workflow.js) |
 | 22 | ✓ | [`skills/osint-autopilot/scripts/recon_pipeline.sh`](skills/osint-autopilot/scripts/recon_pipeline.sh) |
-| 23 | ✓ | [`skills/osint-autopilot/scripts/wordlist.txt`](skills/osint-autopilot/scripts/wordlist.txt) |
-| 24 | ✓ | [`skills/osint-autopilot/SKILL.md`](skills/osint-autopilot/SKILL.md) |
-| 25 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
-| 26 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
+| 23 | ✓ | [`skills/osint-autopilot/scripts/requirements.txt`](skills/osint-autopilot/scripts/requirements.txt) |
+| 24 | ✓ | [`skills/osint-autopilot/scripts/test_domain_guard.sh`](skills/osint-autopilot/scripts/test_domain_guard.sh) |
+| 25 | ✓ | [`skills/osint-autopilot/scripts/wordlist.txt`](skills/osint-autopilot/scripts/wordlist.txt) |
+| 26 | ✓ | [`skills/osint-autopilot/SKILL.md`](skills/osint-autopilot/SKILL.md) |
+| 27 | ✓ | [`skills/osint-methodology/README.md`](skills/osint-methodology/README.md) |
+| 28 | ✓ | [`skills/osint-methodology/SKILL.md`](skills/osint-methodology/SKILL.md) |
 
 ---
 

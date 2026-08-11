@@ -143,7 +143,7 @@ description: Routes reverse engineering, exploitation, penetration testing, malw
 powershell -NoProfile -ExecutionPolicy Bypass -File "<skill-root>\scripts\bootstrap-reverse.ps1" -Capability @('工具名') -StartServices
 ```
 
-支持的能力（以 `scripts/bootstrap-manifest.json` 为准）：jadx、apktool、frida、frida-ps、idalib-mcp、jshookmcp、reqable-mcp、anything-analyzer、idapro、r2、rabin2、adb、agent-browser、ghidra-mcp、nmap、seclists、proxycat、burpsuite-mcp、pentestswarm、binwalk、pwntools、yara
+支持的能力（以 `scripts/bootstrap-manifest.json` 为准）：jadx、apktool、jeb-pro、frida、frida-ps、idalib-mcp、reqable-mcp、jshookmcp、anything-analyzer、idapro、r2、rabin2、adb、agent-browser、ghidra-mcp、seclists、proxycat、burpsuite-mcp、nmap、pentestswarm、binwalk、yara、pwntools、bkcrack
 
 > JEB Pro 已登记为**手动许可安装**能力：bootstrap 只输出指引，绝不下载或规避商业许可。Reqable MCP 仅登记固定版本的官方运行时，仍需要用户自行安装 Reqable 桌面客户端。
 >

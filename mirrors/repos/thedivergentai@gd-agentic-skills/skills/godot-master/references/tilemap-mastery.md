@@ -88,6 +88,7 @@ Editor atlas/physics paint setup: Official Documentation in Reference — **Do N
 - [godot-2d-physics](2d-physics.md) — collision layers/masks and StaticBody2D-equivalent behavior that TileMapLayer physics layers participate in.
 
 #### Complements
+- [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — `tilemap_layer_v43_upgrade` and TileMap→TileMapLayer sit on the 4.x hop path; run engine upgrades via the migration hub before applying layer scripts.
 - [godot-characterbody-2d](characterbody-2d.md) — `move_and_slide` against tile colliders, one-way platforms, and floor/wall queries over TileMapLayer geometry.
 - [godot-navigation-pathfinding](navigation-pathfinding.md) — NavigationAgent2D / region updates when destructible or procedural tiles change walkable polygons.
 - [godot-camera-systems](camera-systems.md) — Camera2D limits and follow radii that drive chunk load/unload around the player.

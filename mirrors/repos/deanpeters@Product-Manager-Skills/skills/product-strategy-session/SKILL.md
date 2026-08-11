@@ -5,6 +5,15 @@ description: Run an end-to-end product strategy session across positioning, disc
 intent: >-
   Guide product managers through a comprehensive product strategy session by orchestrating positioning, problem framing, customer discovery, and roadmap planning skills into a cohesive end-to-end process. Use this to move from vague strategic direction to concrete, validated product strategy with clear positioning, target customers, problem statements, and prioritized roadmap—ensuring alignment across stakeholders before committing to execution.
 type: workflow
+theme: strategy-positioning
+best_for:
+  - "Running a full strategy arc from positioning through roadmap"
+  - "Giving a team validated direction instead of a feature list"
+  - "Aligning leadership on where the product is going and why"
+scenarios:
+  - "Our team has a backlog but no direction and leadership wants a strategy"
+  - "We need to go from positioning through discovery to a roadmap people believe"
+estimated_time: "2-4 weeks"
 ---
 
 

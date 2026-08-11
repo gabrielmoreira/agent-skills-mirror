@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 0 followed patterns, 66 file(s) materialized.
+Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default patterns, 1 followed patterns, 67 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default p
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 0 |
-| Files         | 66 |
+| Followed pats | 1 |
+| Files         | 67 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -51,7 +51,7 @@ Mirror of `muratcankoylan/Agent-Skills-for-Context-Engineering` — 26 default p
 
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
-_None._
+- `researcher/generated/corpus-summary.md`
 
 ## File Index
 
@@ -125,6 +125,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 64 | ✓ | [`skills/tool-design/scripts/description_generator.py`](skills/tool-design/scripts/description_generator.py) |
 | 65 | ✓ | [`skills/tool-design/SKILL.md`](skills/tool-design/SKILL.md) |
 | 66 | ✓ | [`template/SKILL.md`](template/SKILL.md) |
+| 67 | → | [`researcher/generated/corpus-summary.md`](researcher/generated/corpus-summary.md) |
 
 ---
 

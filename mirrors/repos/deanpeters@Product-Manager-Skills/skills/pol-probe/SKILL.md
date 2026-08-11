@@ -13,6 +13,8 @@ scenarios:
   - "Define a Proof of Life probe for a new workflow automation idea"
   - "Help me write a PoL probe for this pricing hypothesis"
   - "Create a low-cost validation probe before we build this feature"
+theme: validation-experiments
+estimated_time: "15-25 min"
 ---
 
 ## Purpose

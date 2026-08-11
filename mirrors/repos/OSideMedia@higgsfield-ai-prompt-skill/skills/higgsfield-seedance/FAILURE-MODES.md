@@ -3,14 +3,15 @@ name: higgsfield-seedance
 description: >
   Failure-mode reference for Seedance 2.0 / Seedance Pro. Catalog of
   named output failures (FPS drift, NSFW false-positive, keyframe-
-  invention, physics-state drift, action-reversal fill, multi-motion
-  overload, spatial-awareness failures) with symptom + mechanism + counter
-  for each. Consulted when a Seedance generation lands in a recognizable
-  failure pattern.
+  invention, physics-state drift, action-reversal fill, filler-babble on
+  short dialogue lines, truncated action, mimed manipulation, orphan
+  limbs in a group shot, multi-motion overload, spatial-awareness failures)
+  with symptom + mechanism + counter for each. Consulted when a Seedance
+  generation lands in a recognizable failure pattern.
 user-invocable: false
 metadata:
   tags: [higgsfield, seedance, seedance-2.0, seedance-pro, failure-modes, recovery, prompt]
-  version: 1.1.1
+  version: 1.3.0
   updated: 2026-08-09
   parent: higgsfield
 ---
@@ -210,6 +211,163 @@ Motion-prompt laws.
 
 ---
 
+## Filler-babble on a short dialogue line
+
+**Symptom.** A short scripted line in a solo shot comes back wrapped in
+invented mumble — garbled pseudo-speech before or after the words, or
+the scripted line delivered twice. Graded from transcripts, so this is
+an AUDIO symptom; whether the mouth also keeps moving was not graded by
+the rig below and is not claimed here.
+
+**Mechanism.** The audio branch fills dead air, the same way § Action-
+reversal fill spends leftover motion time. A line that ends well before
+the clip does leaves a silent window, and the cheapest continuation
+consistent with the shot is more speech-shaped sound in the same voice.
+`[MEASURED — sync-budget ladder, 2026-08-09, EN × 4s × 480p × Seedance
+2.0]`: every take at ≤6 words carried it; 8- and 12-word lines came back
+4/4 clean. The risk direction is the **short** line, not the long one —
+no truncation was observed up to 12 words (≈3 words per second).
+
+**Counter.** Give the dead air a job instead of leaving the choice to
+the model, and state the mouth state of every face that is visible:
+
+1. **Fill the window.** Extend the line to roughly 8+ words in a
+   4-second shot, or cut the shot down to the line.
+2. **Script the silence.** If the line has to stay short, write what
+   occupies the rest of the window — a named pause beat, an ambient or
+   SFX event, action prose covering the gap before and after the line.
+3. **One speaker, one line, once.** The speaking character says the
+   line and nothing else; `HELL-GRIND.md` § Dialogue construction
+   carries the full audio-block phrasing. A beat that carries a thought
+   rather than a line is typed `INNER (unspoken)` there, which keeps it
+   out of the mouth entirely.
+4. **Every other visible face gets a positive at-rest mouth fact.** An
+   unmarked mouth in frame is a mouth the model may decide is talking.
+   State the rest state as something that *is* true — "lips at rest",
+   "jaw closed, breath lifting the chest", "eyes on the speaker, mouth
+   still" — never as a negation (`SKILL.md` § Prompt-Craft Laws → No
+   negative prompts in the prompt body). Note that "listens without
+   speaking" reads positive but carries *without*, so it trips the same
+   law; prefer the forms above.
+
+**Worked example.** A 4-second two-shot carrying one scripted line:
+
+❌ `AUDIO — MIRA (dry, clipped): "It's gone."` Most of the window is
+left unwritten, and the second face in frame has no mouth state at all.
+
+✅ `AUDIO — Diegetic only: rain on the skylight, one door latch at 3.4s.
+MIRA (dry, clipped) says her line once and nothing else: "It's gone, and
+it took the ledger with it." DEV keeps his eyes on her — lips at rest,
+jaw closed, his breath lifting his chest.`
+
+The line rewrite is the measured half: it fills the window. The at-rest
+mouth fact on the second character is the **unmeasured** half — it is
+the prompt-side handling for when a second face cannot be kept out of
+the shot, and it is not yet live-fired here. A one-shot 480p A/B (two
+characters, one short line, mouth fact present vs. absent) would settle
+it.
+
+---
+
+## Truncated action — the cut lands before the result
+
+**Symptom.** The shot list reads as full coverage and the film shows
+nothing landing. The lid is still closing when the cut comes, the hand
+is still reaching, the door is half shut. Every action in the sequence
+is an attempt; none of them is a result. Fast-cut sequences carry this
+most, and it survives review because each individual shot looks correct.
+
+**Mechanism.** Shots get priced by what they *contain*, not by what has
+to *finish* inside them, so the model spends the runtime on the approach
+and the completion falls past the boundary. Nothing in the prompt says
+which state must be visible before the shot may end, so any frame is as
+good a stopping point as any other. `[HOUSE — technique re-derived from
+the nutllwhy/seedance-tvc-director evaluation, MIT, 2026-08-09.
+UNPROVEN HERE: not A/B'd on our material.]`
+
+**Counter.** Name the completion state as a visible fact and let it
+settle before anything else happens — *the lid seats flush and stays
+there*, *the glass comes to rest on the wood*, *her hand closes fully
+around the handle*. Where the pace genuinely needs the cut sooner, open
+the **next** shot on the result already true (the laptop shut, the room
+already dark) so the sequence inherits what the cut skipped. The source
+holds the completion for roughly 0.15–0.35s before cutting; treat that
+as the direction to lean, not as a measured figure.
+
+The audio twin of this law is already in this repo — a spoken line pinned
+early so the cut inherits a tail (§ Filler-babble, and OSIDE's
+`dialogue-no-handle`). This is the same law for picture.
+
+---
+
+## Mimed manipulation — hands move, the object does not
+
+**Symptom.** A character opens, tears, pours, presses or spreads
+something and the object never changes: fingers work convincingly over a
+pack that stays sealed, a cap that never breaks its seal, a surface that
+never creases. Reads as an actor rehearsing without a prop.
+
+**Mechanism.** The manipulation was written as its verb — *tears it open
+cleanly*, *twists the cap off* — which gives the model a gesture and no
+mechanism. With no structure, no anchor and no material response stated,
+the gesture is the only part it can render. `[HOUSE — re-derived from the
+same evaluation. UNPROVEN HERE.]`
+
+**Counter.** Write the causal chain, in order:
+
+1. **Initial structure** — what the object is before contact (sealed
+   along the top edge, capped, full).
+2. **Anchor** — what holds it steady and how (the other hand gripping
+   the body of the pack, the base flat on the counter).
+3. **Force** — where the force is applied and which way it travels
+   (thumb and forefinger at the notch, pulling across).
+4. **Material feedback** — what the material visibly does (the film
+   parts from the notch, the pack creases where it is held).
+5. **Finished state** — what is true when it is done (a continuous
+   opening with the contents visible, the torn strip clear of the pack).
+
+Two routing rules travel with it. If the manipulation only *gets us to*
+the next state rather than being the point of the shot, use two states
+and a sound instead — sealed pack, a tear heard off screen, hands
+already inside it; it is cheaper and it cannot fail this way. And never
+invent a structure the reference cannot show: if the notch, the seal or
+the catch is not visible in the material you hold, open it off screen,
+cut around it, or shoot it for real.
+
+Do not stack a legible brand face, a two-handed manipulation and a
+strong effect in one shot — the manipulation shot proves the mechanism,
+a separate shot proves the label.
+
+---
+
+## Orphan limbs in a group shot
+
+**Symptom.** Three or more characters, and a hand enters the action with
+no body behind it: a sleeve crossing another character's chest, a
+forearm from off screen with no shoulder, an extra hand nobody owns.
+Adjacent to it: the headcount changes across a cut, or two neighbours
+trade places between the wide and the close-up.
+
+**Mechanism.** With no order lock, the model re-derives the group on
+every cut rather than carrying one forward. Reaching is the moment it
+shows, because a hand is the smallest thing in frame that has to belong
+to somebody. `[HOUSE — re-derived from the same evaluation. UNPROVEN
+HERE.]`
+
+**Counter.** Lock the group before the action: the exact headcount, the
+left-to-right screen order, who sits next to whom — held in every
+framing. Then give each hand entering the action an owner: whose hand,
+which hand, what sleeve, which side of frame it enters from, where it
+returns to. Cap hand action at two characters per shot; the rest watch.
+
+When the shot wants a detail, two faces and a group recap at once, that
+is three shots — a fixed insert on the object with at most two
+attributable hands, a two-shot on the neighbours who react, then a
+static group frame with hands already clear of the object. One
+continuous push-out cannot deliver all three.
+
+---
+
 ## Multi-motion camera overload
 
 **Symptom.** A camera move with multiple stacked motions
@@ -284,6 +442,10 @@ burned generation.
 - **Motion spends the whole clip in one direction**? Short actions
   chained into 2–3 same-direction beats; camera move has a named
   endpoint? Cross-ref: § Action-reversal fill.
+- **Dialogue window fully written**? A short line extended (~8+ words in
+  a 4-second shot) or its silence scripted, and every visible face
+  carrying a mouth state? Cross-ref: § Filler-babble on a short dialogue
+  line.
 - **One dominant camera motion per shot**? Compound moves split into
   sequenced phases or separate cuts? Cross-ref: § Multi-motion
   camera overload.
@@ -314,6 +476,9 @@ majority of preventable failures before credit burn.
   the spatial layout block uses
 - `SKILL.md` § Single-vs-multi-shot decision — multi-shot split
   mechanics referenced from § Multi-motion camera overload
+- `HELL-GRIND.md` § Dialogue construction — the audio-block phrasing
+  and the `INNER (unspoken)` marker that § Filler-babble on a short
+  dialogue line depends on
 - `../higgsfield-troubleshoot/SKILL.md` § Sequence & Continuation
   Failure Atlas — symptom → single-repair-variable table for
   chained/continuation defects (this catalog covers single-clip

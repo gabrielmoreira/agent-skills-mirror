@@ -2,26 +2,26 @@
 
 **Source:** [NeoLabHQ/context-engineering-kit](https://github.com/NeoLabHQ/context-engineering-kit)
 **Store trust:** 35/100
-**Signals:** maintenance 15 · adoption 10 · license 10 (GPL-3.0) · 1295 stars · 7 contributors
-**Scanned ref:** `555b95263ecf`
+**Signals:** maintenance 15 · adoption 10 · license 10 (GPL-3.0) · 1308 stars · 8 contributors
+**Scanned ref:** `8539779375f4`
 
 ## Plugins (13)
 
 | Trust | Plugin | Shape | Version | Description |
 | ---: | --- | --- | --- | --- |
-| 45 | [`customaize-agent`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/customaize-agent) | skill | - | Framework for creating, testing, and optimizing Claude Code extensions including commands, skills, … |
-| 45 | [`ddd`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/ddd) | unknown | - | Code quality framework that embeds Clean Architecture, SOLID principles, and Domain-Driven Design p… |
-| 45 | [`docs`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/docs) | skill | - | Technical documentation management plugin that maintains living documentation throughout the develo… |
-| 45 | [`fpf`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/fpf) | mixed | - | Structured reasoning plugin that makes AI decision-making transparent and auditable through hypothe… |
-| 45 | [`git`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/git) | skill | - | Commands for streamlined Git operations including commits and pull request creation with convention… |
-| 45 | [`kaizen`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/kaizen) | skill | - | Continuous improvement framework inspired by the Toyota Production System that brings Lean manufact… |
-| 45 | [`mcp`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/mcp) | skill | - | Commands for integrating Model Context Protocol (MCP) servers with your AI-powered development work… |
-| 45 | [`reflexion`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/reflexion) | mixed | - | Self-refinement framework that introduces feedback and refinement loops to improve output quality t… |
-| 45 | [`review`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/review) | mixed | - | Comprehensive multi-agent code review system that examines code from multiple specialized perspecti… |
-| 45 | [`sadd`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/sadd) | mixed | - | Execution framework that dispatches fresh subagents for each task with quality gates between iterat… |
-| 45 | [`sdd`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/sdd) | mixed | - | Comprehensive specification-driven development workflow plugin that transforms prompts into product… |
-| 45 | [`tdd`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/tdd) | skill | - | A disciplined approach to software development that ensures every line of production code is valida… |
-| 45 | [`tech-stack`](https://github.com/NeoLabHQ/context-engineering-kit/tree/555b95263ecf13d2ad9be14df676a1263d5a62b2/plugins/tech-stack) | unknown | - | Language and framework-specific best practices plugin that provides rules automatically loaded into… |
+| 45 | [`customaize-agent`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/customaize-agent) | skill | - | Framework for creating, testing, and optimizing Claude Code extensions including commands, skills, … |
+| 45 | [`ddd`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/ddd) | unknown | - | Code quality framework that embeds Clean Architecture, SOLID principles, and Domain-Driven Design p… |
+| 45 | [`docs`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/docs) | skill | - | Technical documentation management plugin that maintains living documentation throughout the develo… |
+| 45 | [`fpf`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/fpf) | mixed | - | Structured reasoning plugin that makes AI decision-making transparent and auditable through hypothe… |
+| 45 | [`git`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/git) | skill | - | Commands for streamlined Git operations including commits and pull request creation with convention… |
+| 45 | [`kaizen`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/kaizen) | skill | - | Continuous improvement framework inspired by the Toyota Production System that brings Lean manufact… |
+| 45 | [`mcp`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/mcp) | skill | - | Commands for integrating Model Context Protocol (MCP) servers with your AI-powered development work… |
+| 45 | [`reflexion`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/reflexion) | mixed | - | Self-refinement framework that introduces feedback and refinement loops to improve output quality t… |
+| 45 | [`review`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/review) | mixed | - | Comprehensive multi-agent code review system that examines code from multiple specialized perspecti… |
+| 45 | [`sadd`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/sadd) | mixed | - | Execution framework that dispatches fresh subagents for each task with quality gates between iterat… |
+| 45 | [`sdd`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/sdd) | mixed | - | Comprehensive specification-driven development workflow plugin that transforms prompts into product… |
+| 45 | [`tdd`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/tdd) | skill | - | A disciplined approach to software development that ensures every line of production code is valida… |
+| 45 | [`tech-stack`](https://github.com/NeoLabHQ/context-engineering-kit/tree/8539779375f4e24b80f61476cfeaef330fa2d318/plugins/tech-stack) | unknown | - | Language and framework-specific best practices plugin that provides rules automatically loaded into… |
 
 ---
-*Generated by `scripts/render-catalog.cjs` at 2026-08-06T18:30:07.682Z*
+*Generated by `scripts/render-catalog.cjs` at 2026-08-10T11:24:27.744Z*

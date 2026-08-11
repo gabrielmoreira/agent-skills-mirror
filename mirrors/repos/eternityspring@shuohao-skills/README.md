@@ -7,17 +7,18 @@
 
 # shuohao-skills
 
-给 AI 编码 agent 用的 skill 集合。**Claude Code 和 codex 都能跑。**
+**AI 短剧制作的 skill 集合**：从一本小说到能开拍的制作素材——拆角色、出设定图、排大纲。给 AI 编码 agent 用，**Claude Code 和 codex 都能跑**。
 
 | Skill | 做什么 |
 | --- | --- |
 | [**novel-characters**](skills/novel-characters) | 把一篇小说拆成角色设定集：人物画像、形象提示词、音色提示词、角色设定图。报告语言与出图风格可选 |
+| [**novel-outline**](skills/novel-outline) | 把一本小说改编成短剧大纲五件套：改编说明、人物表、爽点表、分集梗概、资产清单。13 道质量门全部脚本检查，支持已有大纲的体检模式 |
 
 丢一本小说进去，出这个：
 
 ![角色设定集报告](skills/novel-characters/assets/report.png)
 
-## 装
+## 安装
 
 ```bash
 git clone https://github.com/eternityspring/shuohao-skills.git

@@ -2,6 +2,15 @@
 
 All notable changes to the PrestaShop Module Development skill.
 
+## [2026-08-10] - CategoryChoiceTreeType Self-Contained Documentation
+
+### Changed
+- **SKILL.md** - Embedded complete CategoryChoiceTreeType documentation directly in section 2
+  - Removed external steering file reference for core feature documentation
+  - Added comprehensive inline guidance: valid form options, template requirements, JavaScript initialization, form data handling, and common issues
+  - Makes skill more self-contained and reduces dependency on external steering files
+  - Documentation now includes all critical details: form theme declaration, JS bundle setup with `window.prestashop.component.ChoiceTree`, selector patterns, and troubleshooting table
+
 ## [2026-06-03] - Documentation Updates, Security Clarification
 
 ### Changed

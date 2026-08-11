@@ -13,6 +13,8 @@ scenarios:
   - "Should we raise prices 15% for new customers next quarter?"
   - "Evaluate a new premium tier for our SaaS product"
   - "Help me assess whether an annual discount will improve revenue"
+theme: finance-metrics
+estimated_time: "20-30 min"
 ---
 
 

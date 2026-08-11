@@ -1,9 +1,9 @@
 ---
-name: brewcode:semble-setup
+name: semble-setup
 description: "Installs, audits, repairs, updates, enables, reindexes or removes the semble_code semantic code-search MCP for a project. Triggers: semble, semantic code search, semble status, настрой semble, статус semble, переиндексируй, удали semble."
 user-invocable: true
 disable-model-invocation: true
-argument-hint: "[status|install|upgrade|enable|disable|uninstall|purge|reindex|optimize|resume] | free-text intent (RU/EN)"
+argument-hint: "[prompt] [status|install|upgrade|enable|disable|uninstall|purge|reindex|optimize|resume]"
 allowed-tools: [Read, Bash, AskUserQuestion]
 model: opus
 ---
@@ -64,6 +64,28 @@ References — read the one you need, not all of them:
 | `references/mcp-and-cache.md` | MCP detection states, exact registration commands, cache layout |
 | `references/language-coverage.md` | which suffixes land in which bucket, and what is uncovered |
 | `references/project-agent-migration.md` | how project agent frontmatter is patched |
+
+---
+
+## Prompt contract
+
+Position 1 of `$ARGUMENTS` is a **free-form prompt** (RU/EN) — modes are optional and may follow in
+any order. Nobody types keys: resolve mode + scope FROM the prompt.
+
+Routing table, keyword scoring and the 5-step resolution algorithm are **not duplicated here** — read
+`references/intent-routing.md` (already listed **always** above) and apply it literally in Step 2.
+
+The **PLAN** block is the required output of that resolution: print it once, before the first mutation
+and before the `status` report on a read-only run. `status` still asks nothing.
+
+```
+PLAN — brewcode:semble-setup
+INPUT:  <$ARGUMENTS verbatim, or "(empty)">
+MODE:   <resolved mode> — <matched keyword: X | default | checkpoint resume | no keyword matched>
+SCOPE:  <project root, cache dir, MCP scope, pinned semble version>
+DO:     <2-5 imperative bullets — the steps this mode actually runs>
+RESULT: <what the user ends up holding: MCP registration, rule + hooks, warm index, report>
+```
 
 ---
 
@@ -129,7 +151,8 @@ Read `references/intent-routing.md` and apply its 5-step algorithm to `$ARGUMENT
 4. Ties: destructive involved -> ask; `status` involved -> `status`; two mutating modes -> first keyword in the prompt; all zero -> run `status` and offer two plausible modes in **Next Step**.
 5. `AskUserQuestion` at most **once** per invocation, only for a destructive tie, the removal flavour, a scope conflict, the reindex deletion confirmation, or the `install` prerequisite gate (Step 3.1 — a machine-level `brew install`). The `uv` gate (3.1b) and the `coreutils` offer (3.1d) are **mutually exclusive**: 3.1b's question already covers both installs, so 3.1d only runs when 3.1b did not.
 
-State the resolved mode **and its reason** to the user before acting. Anything else -> decide, do not ask.
+Print the **PLAN** block now (`## Prompt contract` above / `references/intent-routing.md`) — once,
+before Step 1's `status` report and before any mutation. Anything else -> decide, do not ask.
 
 ### Early exit
 
@@ -337,6 +360,16 @@ bash "$SD/scripts/semble-guidance.sh" install --part rule --force --json
 > The rule is copied verbatim and is never stamped at install time. `doc_type`, `version` and `generated_by` are baked into the plugin's own template by `.claude/scripts/bump-version.sh` at release; there is no `last_updated`, and nothing is substituted here. That is what lets `setup-status` `cmp` the installed rule against the plugin asset and read them as identical (`brewcode/skills/setup-status/references/artifact-metadata.md`, mechanism `a`).
 >
 > The managed/user_modified verdict still ignores the four metadata keys on both sides, so a rule installed by an older version of this skill — which did stamp `last_updated` — is not mistaken for a user edit. Such a rule is **re-synced to the plugin bytes without `--force` and without a backup** and reported as `rule: re-synced <path> (metadata only)` — record it in **Actions** as a re-sync, not an overwrite.
+
+> **Size budget — HARD, enforced by test J9.** The rule carries `paths: ["**/*"]`, so it is auto-loaded into
+> every request of every session in the installed repo forever: a word here is not a word, it is a per-prompt
+> tax. Cap: **≤ 45 lines and ≤ 2000 bytes** including frontmatter (it stood at 111 lines / 4634 bytes until
+> 5.5.1, ~3x over). Facts only, and each fact in its shortest correct form — a table row, not a paragraph;
+> no worked examples beyond the single `search` JSON; no rationale, no measurement narrative, no
+> justification of the doctrine. Prose that explains *why* the split is what it is belongs in
+> `references/engine-landscape.md`, not in the rule. Adding a fact means **displacing** one, not appending:
+> if the budget is exceeded the answer is to cut, never to raise the cap. The same budget governs any
+> hand-compression of an already-installed rule.
 
 ### 3.4 Reload checkpoint — `install` STOPS here
 

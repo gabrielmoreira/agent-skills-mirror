@@ -502,6 +502,15 @@ error:
 - **RPC ID mismatch** issues (exit code 1): labeled `bug, rpc-breakage, automated`.
 - **Auth failure** issues (exit code 2): labeled `bug, automated` (no `rpc-breakage`
   label — auth is an operational concern, not a protocol break).
+- **Frontend bundle drift** is a separate live monitor. Its exit code 1 is
+  reserved for confirmed ABSENT RPC IDs or CHANGED/STALE studio enums. If its
+  authenticated homepage request instead lands on login, CookieMismatch, or the
+  region/anti-abuse gate—or the app/CDN cannot be read—it exits 2, says that no
+  drift conclusion was possible, and joins the authentication/infrastructure
+  issue lane. The script also writes a classified outcome file; the workflow
+  opens `Studio enum / RPC drift detected` only for the explicit `drift`
+  outcome. A Python, dependency, or runner failure that exits 1 before writing
+  that outcome is therefore treated as infrastructure, never as protocol drift.
 - **Non-transient ERROR detected** issues (exit code 3): labeled `rpc-error, bug,
   automated`. Opened when `check_rpc_health.py` surfaces failures that survive
   the rate-limit / `RESOURCE_EXHAUSTED` filter (timeouts, parse failures,

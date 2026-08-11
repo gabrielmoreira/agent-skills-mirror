@@ -23,6 +23,8 @@ scenarios:
 sources:
   - "MITRE Innovation Toolkit — Stakeholder Identification Canvas: https://itk.mitre.org/toolkit-tools/stakeholder-identification-canvas/"
   - "MITRE Innovation Toolkit — Community Map: https://itk.mitre.org/toolkit-tools/community-map/"
+theme: stakeholder-comms
+estimated_time: "20-30 min"
 ---
 
 # Stakeholder Identification

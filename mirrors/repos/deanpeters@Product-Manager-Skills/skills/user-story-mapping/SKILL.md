@@ -5,6 +5,15 @@ description: Create a user story map that lays out activities, steps, tasks, and
 intent: >-
   Visualize the user journey by creating a hierarchical map that breaks down high-level activities into steps and tasks, organized left-to-right as a narrative flow. Use this to build shared understanding across product, design, and engineering, prioritize features based on user workflows, and identify gaps or opportunities in the user experience.
 type: component
+theme: pm-artifacts
+best_for:
+  - "Laying out activities, steps, and tasks across a user's workflow"
+  - "Slicing a backlog into releases that each deliver something usable"
+  - "Finding the gaps in a journey before they become production surprises"
+scenarios:
+  - "We have a flat backlog and no sense of the user's actual workflow"
+  - "I need to slice this into releases that each deliver something usable"
+estimated_time: "30-60 min"
 ---
 
 

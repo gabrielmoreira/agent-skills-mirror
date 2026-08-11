@@ -200,7 +200,8 @@ Current packages:
 - `packages/connector/daemon`: reusable daemon lifecycle and workers
 - `packages/connector/store-sqlite`: canonical local persistence and outbox
 - `packages/connector/runtime`: latest-only artifact caching, no-network archive
-  import, same-machine composition, and managed-runtime installation primitives
+  import, same-machine composition, managed-runtime installation primitives,
+  Connector route/MCP registries, and the session-bound loopback MCP server
 
 Remote endpoint authentication, credentials, state-root selection, generated
 daemon clients, product command publication, and OS process integration remain

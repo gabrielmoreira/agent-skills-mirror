@@ -55,6 +55,7 @@ This skill provides comprehensive guidance for developing PrestaShop modules wit
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
 Latest features:
+- Self-contained CategoryChoiceTreeType documentation (August 2026)
 - Cart rules & vouchers reference (June 2026)
 - Symfony console commands guide
 - Order entity LoggableInterface implementation

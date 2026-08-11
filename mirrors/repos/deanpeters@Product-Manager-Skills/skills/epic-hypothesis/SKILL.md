@@ -5,6 +5,15 @@ description: Frame an epic as a testable hypothesis with target user, expected o
 intent: >-
   Frame epics as testable hypotheses using an if/then structure that articulates the action or solution, the target beneficiary, the expected outcome, and how you'll validate success. Use this to manage uncertainty in product development by making assumptions explicit, defining lightweight experiments ("tiny acts of discovery"), and establishing measurable success criteria before committing to full build-out.
 type: component
+theme: pm-artifacts
+best_for:
+  - "Framing a major initiative as something that can be proven wrong"
+  - "Forcing an outcome and a validation method before build starts"
+  - "Giving a team a shared bet to test instead of a scope to deliver"
+scenarios:
+  - "Leadership approved a big initiative and nobody can say what would prove it wrong"
+  - "I need to frame this epic as a bet with a real validation method, not a delivery plan"
+estimated_time: "15-20 min"
 ---
 
 

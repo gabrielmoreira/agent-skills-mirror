@@ -226,7 +226,7 @@ if not result.ok:
 # download_dashboard_maps (when needed)
 result = tool.call('download_dashboard_maps', {
     "project_path": "Sales Data Dashboard",
-    "area_names": ["中国", "广东省", "深圳市"]
+    "area_names": ["China", "Guangdong", "Shenzhen"]
 })
 ```
 
@@ -236,7 +236,7 @@ result = tool.call('download_dashboard_maps', {
 
 File and directory naming intelligently determined based on file content, business domain, and user preferred language, e.g.:
 
-- User preferred language is Chinese: "销售数据分析看板", "销售数据.csv"
+- User preferred language is Chinese: "Sales Data Dashboard" (in Chinese), "sales_data.csv" (in Chinese)
 - User preferred language is English: "Sales Data Dashboard", "Sales Data.csv"
 
 ---
@@ -493,7 +493,7 @@ Card Layout:
 
 ECharts v6.0.0 key settings:
 
-- Map: series.map uses Chinese names, examples: "中国", "广东省", "深圳市"; series.nameProperty is "fullname"
+- Map: series.map uses Chinese region names from GeoJSON, e.g. "China", "Guangdong", "Shenzhen" (pass the exact names from downloaded GeoJSON); series.nameProperty is "fullname"
 - grid:
   - Mandatory config: `{ left: 0, right: 0, top: 0, bottom: 0, containLabel: false }`, in v6.0.0 this config already allows axis and axis labels to display fully edge-aligned, so no need to reserve any space for XY axis labels or axis titles
   - outerBounds:

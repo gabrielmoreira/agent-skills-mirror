@@ -121,7 +121,7 @@ a narrow Protocol surface so it can be unit-tested against a stub:
 | `_streaming_post.py` | `stream_post_with_size_cap` | Low-level POST streaming and response-size guard. |
 | `_conversation_cache.py` | `ConversationCache` | Per-instance true-LRU conversation cache for `ChatAPI` continuity. Caps the conversation count (`MAX_CONVERSATION_CACHE_SIZE`) and the turns retained per conversation (`MAX_TURNS_PER_CONVERSATION`). |
 | `_polling_registry.py` | `PollRegistry` | Pending-poll registry shared by long-running artifact generations. |
-| `_cookie_persistence.py` | `CookiePersistence` | Cookie-jar → storage-state serialization, `__Secure-1PSIDTS` rotation. |
+| `_cookie_persistence.py` | `CookiePersistence` | Per-path typed baselines, ordered `ProfileStore` cookie merges, `__Secure-1PSIDTS` rotation, and the concrete v0.x snapshot adapter. |
 
 The feature-facing surface is the set of **capability Protocols** in
 `notebooklm._runtime.contracts` — `Kernel`, `RpcCaller`, and
@@ -244,8 +244,8 @@ from those catalogues rather than introducing parallel patterns.
 Multiple `notebooklm` processes (parallel CLI runs, an in-process keepalive
 beside a cron-driven `notebooklm auth refresh`, container start-up races,
 `xargs -P` fan-outs) can target the same `NOTEBOOKLM_HOME` simultaneously.
-The library coordinates with **cross-process file locks** — a project-internal
-`flock`/`LockFileEx` primitive (`_auth/storage.py::_file_lock`) for
+The library coordinates with **cross-process file locks** — the project-internal
+`StorageLockManager` (`_auth/storage_lock.py`, using `flock`/`msvcrt`) for
 `storage_state.json` and its sibling credential file, and the
 [`filelock`](https://pypi.org/project/filelock/) package for `migration.py` and
 `context.json` — so reads and writes against shared on-disk state never tear or
@@ -257,13 +257,13 @@ left on disk after release — both lock implementations reuse them).
 
 | Lock file | Owner | Scope | Acquisition |
 |---|---|---|---|
-| `<profile>/.storage_state.json.lock` | `_auth/storage.py` (the sole canonical writer; `storage.save_cookies_to_storage` is the monkeypatchable delegate seam onto it) | Every mutation of `storage_state.json`: the cookie CAS delta merge, in-band account-metadata read-modify-write, and the L3/L4 re-mint full-replace | CAS merge: blocking exclusive, fail-open. Full-replace intents (account metadata, re-mint): platform-neutral bounded acquire — non-blocking probe + deadline/jitter retry, 90s deadline, fail-closed (raises `LockUnavailableError`) |
-| `<profile>/.master_token.json.lock` | `_auth/storage.py::write_master_token` | Writes to `master_token.json` (the durable L4 credential) | Same bounded acquire as above (90s deadline), fail-closed. Previously lockless. |
-| `<profile>/.storage_state.json.rotate.lock` | `_auth/keepalive.py::_poke_session` | Cross-process dedup of the `accounts.google.com/RotateCookies` keepalive POST | Non-blocking exclusive (`LOCK_NB`); skip on contention |
-| `<profile>/.storage_state.json.refresh.lock` | `_auth/refresh.py` (via `_auth/single_flight.py`) | Cross-process dedup of the `NOTEBOOKLM_REFRESH_CMD` subprocess (cold-start, and mid-session when `NOTEBOOKLM_REFRESH_CMD_MIDSESSION=1`) | Non-blocking exclusive (`LOCK_NB`); skip on contention, waiter polls with jittered backoff |
-| `<profile>/.storage_state.json.lock.bootstrap` | `_auth/master_token.py::bootstrap_storage_from_master_token` | Cross-process exclusion for the FIRST-TIME mint of a profile that has only a `master_token.json` — held across the mint, whose persist takes `.storage_state.json.lock` *inside* this section (so the two must never share a path) | Non-blocking exclusive (`filelock`), retried on a 50ms sleep so the event loop keeps running |
+| `<profile>/.storage_state.json.lock` | `_auth/profile_store.py` transaction owner via `_auth/storage_lock.py`; `_auth/storage.py` retains compatibility adapters | Every mutation of `storage_state.json`: cookie CAS, typed in-band account update/clear, and remint/login/minted full replacement | Cookie methods: blocking exclusive, fail-open. Account update and minted replacement: bounded 90s, fail-closed; clear: bounded best-effort; browser/remint and login: bounded typed status. |
+| `<profile>/.master_token.json.lock` | `_auth/master_token_file.py` via the `ProfileStore` derived-token methods; `_auth/storage.py` retains the arbitrary-path v0.x adapter | Writes to `master_token.json` (the durable L4 credential) | Same bounded manager acquire as above (90s deadline), fail-closed. |
+| `<profile>/.storage_state.json.rotate.lock` | `_auth/keepalive.py::_poke_session` via `_auth/storage_lock.py` | Cross-process dedup of the `accounts.google.com/RotateCookies` keepalive POST | Non-blocking exclusive; skip on contention |
+| `<profile>/.storage_state.json.refresh.lock` | `_auth/refresh.py` via `_auth/keepalive.py` and `_auth/storage_lock.py` | Cross-process dedup of the `NOTEBOOKLM_REFRESH_CMD` subprocess | Non-blocking exclusive; skip on contention, waiter polls asynchronously with jittered backoff |
+| `<profile>/.storage_state.json.lock.bootstrap` | `_auth/master_token_bootstrap.py::MasterTokenBootstrapper.bootstrap_storage`; `_auth/master_token.py` retains the v0.x adapter | Cross-process exclusion for the FIRST-TIME mint of a profile that has only a `master_token.json` — held across the mint, whose persist takes `.storage_state.json.lock` *inside* this section (so the two must never share a path) | Non-blocking exclusive (`filelock`), retried on a 50ms async sleep up to a 90s deadline |
 | `<home>/.migration.lock` | `migration.py::migrate_to_profiles` | One-shot legacy→profile layout migration on startup | Blocking exclusive, 30s timeout (raises `MigrationLockTimeoutError`) |
-| `<profile>/context.json.lock` | `_atomic_io.py::atomic_update_json` through CLI context helpers; also `_auth/storage.py::_drop_legacy_account_key` for the legacy `account` key cleanup | Read-modify-write of the active-notebook/account-routing context for a profile | Blocking exclusive, 10s timeout (`filelock`) |
+| `<profile>/context.json.lock` | `_atomic_io.py::atomic_update_json` through CLI context helpers; also `_auth/profile_migration.py::LegacyAccountContext.scrub` for legacy `account` cleanup | Read-modify-write of the active-notebook/account-routing context for a profile | Blocking exclusive, 10s timeout (`filelock`); migration cleanup keeps best-effort error handling and the public atomic JSON writer |
 
 Design notes:
 
@@ -275,7 +275,7 @@ Design notes:
   fourth sibling, `.lock.bootstrap`, is separate for a harder reason than
   throughput: the mint it guards acquires `.storage_state.json.lock` *inside*
   its critical section — and the two sides use different mechanisms
-  (`filelock.FileLock` outside, `storage._file_lock` inside), so the in-process
+  (`filelock.FileLock` outside, `StorageLockManager` inside), so the in-process
   lock registry never sees the outer hold. What makes sharing one path fatal is
   the OS lock: both take an exclusive `flock` on the sentinel, and `flock`
   conflicts between two open file descriptions even inside one process, so the
@@ -296,9 +296,9 @@ Design notes:
     `_client_assembly` canonicalizes the keepalive storage path once at client
     assembly; the PSIDTS rotation-recovery route passes its load path through
     unchanged.
-  - `.storage_state.json.lock` never canonicalizes: `_auth/storage.py`'s
-    writers (`merge_cookie_delta` and the full-replace intents) derive
-    `_storage_state_lock_path` from the caller's raw path, so two processes
+  - `.storage_state.json.lock` never canonicalizes for I/O: `ProfileStore` and
+    the compatibility transaction alias derive `_storage_state_lock_path` from
+    the caller's raw path, so two processes
     reaching the same file through different path spellings (e.g. a symlink vs.
     its resolved target) can take different main-write locks and race. Callers
     are expected to reach a profile's storage file through one consistent path
@@ -313,11 +313,131 @@ Design notes:
   infrastructure failure (read-only home dir, NFS without `flock`, permission
   denied) rather than wedging forever — availability wins, and the CAS guard
   (or the reactive nature of a poke) keeps correctness. Full-file
-  read-modify-write intents (account metadata, master-token persist/re-mint)
+  read-modify-write intents (account update, master-token persist/re-mint)
   fail **closed**, raising `LockUnavailableError`, because failing open there
   could silently overwrite a concurrent CAS delta.
-- **In-process lock before OS lock.** `storage._file_lock` takes an in-process
-  `threading.Lock` keyed per canonical lock-path *before* the OS-level flock, so
+
+`ProfileStore` also owns typed account reads, best-effort clear, and the complete
+browser/remint, login/import, and minted-session replacement transactions. Remint carries the latest whole raw
+`notebooklm` namespace only when requested, filters through the pure
+`_auth/cookie_filter.py` leaf, and commits once; `storage.replace_from_remint`
+remains the compatibility and browser patch seam. Login filtering, required-name
+validation, KEEP/SET/CLEAR construction, optional backup, and commit now run under one bounded
+store lock. `_auth/profile_migration.py` owns the legacy-account boundary:
+`LegacyAccountMigrator` performs lossless in-band/legacy/in-band two-read resolution, typed legacy
+sanitization, only-if-absent promotion, and embed-before-scrub ordering;
+`LegacyAccountContext` owns the sibling file and lock. `LegacyPromotionScheduler` owns the
+canonical process one-shot registry and daemon workers. Reads only schedule and return; the
+process-default exit hook drains for two seconds per snapshot worker.
+
+`storage.replace_from_login` keeps its v0.x identity but delegates post-`APPLIED`, outside-lock
+promotion/scrub to `LoginProfileWriter`; failed store results do no sibling work. Raw source account
+key presence still chooses scrub versus promotion. `AccountMetadataWriter` similarly preserves the
+distinct update-then-scrub and best-effort-clear-then-scrub order, while naturally escaping store
+exceptions abort before scrub. For minted persistence,
+`storage.persist_minted_jar` eagerly snapshots the live jar with the raw master-token serializer
+fields (including `same_site="None"`) and deep-copies the runtime-permissive email in the same
+repr-hidden request before path/lock work. It does not use the filtering and SameSite-lossy
+`CookieJar.from_httpx()` constructor. `ProfileStore.replace_minted_session` then owns the
+same-lock latest-owner decision, default filter, destination preservation/rebind, and one commit;
+the adapter translates its private refusal outside the handler to context-free canonical
+`MasterTokenError`. This immutable jar-and-email snapshot is the intentional isolation correction.
+An empty in-band account mapping does not
+block promotion but is still preserved when remint carries the whole namespace;
+a non-empty unknown-only mapping remains present and wins.
+
+`_auth/master_token_bootstrap.py` owns the concrete bootstrap, re-mint, and
+missing-storage transaction over one `ProfileStore`. Keep new behavior tests on
+`MasterTokenBootstrapper`, `MintService`, `ProfileStore`, and the call-time
+strict-loader seam; do not restore patches of the v0.x coarse functions in
+`_auth/master_token.py`. The adapter composes one store/service/bootstrap lock
+and retains late-bound bridges for legacy owner lookup, Android-ID generation,
+strict reload, and default verification. Session persistence finishes before
+token persistence; a missing-storage leader remains shielded to settlement
+before its bootstrap lock is released. At the extraction freeze the coordinator
+is 373 lines and the compatibility adapter is 463 lines.
+
+The final measured persistence boundary is 1,115 lines in `_auth/storage.py`, 311 in
+`_auth/profile_migration.py`, 814 in `_auth/profile_store.py`, 96 in
+`_auth/cookie_filter.py`, and 89 in `_auth/master_token_file.py` (2,425 total). `storage.py`
+remains the v0.x signature/result facade; the extracted owners do not create a second facade.
+
+`_auth/tokens.py` now owns the Phase 9 stored-auth composition: captured-inline/file sources,
+`LoadPolicy`, paired `SessionSeed`/`TokenAcquisition`, final-attempt `AccountRouteResolver`, the
+closed `LoadedAuth` result, and `StoredAuthLoader`. Its only structural test seam is
+`TokenAcquirer`; inject that seam for ladder-result tests, and patch the call-time
+`tokens._load_stored_auth` provider for `AuthTokens.from_storage`/client composition tests. Raw
+loads and PSIDTS heal, file-account resolution, and the initial `ProfileStore` merge remain worker
+offloads. `_auth/cookies.py` owns one-sample live/SameSite-preserving seed provenance.
+`_auth/recovery.py` now owns the complete cold operation. A fresh, one-shot
+`ColdRecoveryCoordinator` spells L2.5 → L3 → L4 directly; its class-owned `_drive_cold` and
+`_coalesce_cold` methods are the sole ladder and flight bodies. `ColdRecoveryState` owns the
+synchronized weak-loop path-lock/generation maps, and `SingleFlight` owns cross-loop flights and
+canonical-path success epochs. The exact-signature module functions are compatibility adapters to
+the process-default owners, not second implementations. The coordinator claims under a threading
+lock before its first await and deletes all eleven collaborator references on every exit.
+
+The sole production composition remains in `refresh.py`; its late-bound closures retain DEBUG skip
+and WARNING start/failure logs, raw caller / canonical L2.5 / raw caller route timing, original
+exception precedence, and exact traceback projection. Waiter cancellation propagates only after
+the shared flight settles and never cancels sibling work; a leader cancellation is mirrored as the
+original `CancelledError`. Cancellation before jar replacement leaves the caller jar untouched,
+while later cancellation does not roll back a completed replacement. Test isolated owners through
+constructor injection. Use process-default module adapters only when testing v0.x lookup seams;
+their reset helpers reject live/locked work and clear only quiescent state.
+
+`RotationState` similarly owns keepalive's weak-loop locks and per-canonical-path monotonic stamps.
+The claim is atomic and occurs before the POST, so HTTP failure and cancellation consume the
+60-second slot; the historical `_POKE_*` dictionaries/lock are identity views into that owner, not
+independent state. `AccountRepairService` is also one-shot: cookie loading alone is offloaded,
+write/clear remain synchronous, only the frozen handled exception set becomes a result, and all six
+collaborators are scrubbed on every exit. Patch these services through constructor injection rather
+than adding module monkeypatch sites.
+
+PSIDTS load composition now receives the pure cookie loader as an explicit callable. Keep
+conversion in `CookieJar`, raw-row fidelity in `ProfileDocument`, and persistence in `ProfileStore`;
+do not restore `psidts_recovery -> cookies` or `psidts_recovery -> storage`. Preserve the sentinel,
+contended-reread, acquired-full-reread, pre-POST observation, typed CAS, and post-save disk-live
+winner order. Its catches are intentionally narrow: cancellation, Unicode failures, and unlisted
+errors must not be normalized into a silent decline. The master-token exception follows the same
+compatibility rule: define it only in `master_token_types.py`, but preserve
+`__module__ == "notebooklm._auth.master_token"`, facade/storage identity, cause chains, and old
+pickle payloads.
+
+`fetch_tokens_with_domains` now loads one paired live jar and SameSite-preserving baseline, then
+passes that baseline through the unchanged exact-baseline ladder. After the final fetch it captures
+an immutable `CookieJar` observation on the caller thread and makes exactly one direct positional
+`asyncio.to_thread` handoff to the private synchronous helper and one concrete `ProfileStore`.
+`HARD_FAILURE` retains the exact selected initial/L2.5/L3/L4 baseline object; every advancing
+result selects the exact returned next-baseline object. Cancellation is ordinary `to_thread`
+cancellation: the caller is cancelled immediately, while an already-dispatched worker may finish
+and commit. File auth alone constructs the store; inline env auth logs the existing skip and does
+not persist. Patch the private typed helper/store method for these tests, not the retired private
+`refresh.save_cookies_to_storage` alias. The public saver/facade and client/runtime saver-injection
+seams remain exact. Phase 12C measures **40 modules / 15,237 lines / 128 unique edges (117 module +
+11 function-local)**. Module-only and all-scope SCC sets are both empty. The final touched production
+LOC is: account 252, account-repair 132, account-types 50, cookie-types 396, cookies 961, keepalive
+438, master-token 455, master-token-types 68, PSIDTS recovery 1,222, recovery 530, refresh 1,184,
+single-flight 268, and storage 1,127. These are ratchet evidence, not a budget to spend.
+
+Phase 10 completes runtime ownership. `NotebookLMClient.from_storage` registers a
+`FileLoadedAuth` result's exact `ProfileStore`/baseline pair with `CookiePersistence`, without a
+second disk read. A direct file client prepares its baseline once before transport construction;
+missing, malformed, or invalid input becomes a sticky typed failure for canonical saves. A
+fileless client records only a one-shot live compatibility projection and creates no typed state.
+
+First-party `_from_store` persistence retains no `AuthTokens`. An untouched default saver routes
+through the private canonical merge; a custom or patched default routes through the exact public
+legacy `save(cookie_jar, storage_path, *, to_thread)` signature. Non-default legacy paths lazily
+initialize their own retryable adapter snapshot and suppress the writer when the source is invalid.
+`ClientLifecycle` alone owns the client `AuthTokens` mirror and refreshes `cookie_snapshot` after
+open and accepted canonical or legacy saves. Tests should patch the public saver only when they
+intend to exercise legacy compatibility; canonical tests should target the private typed seam.
+Measured owners are 457 lines in `_cookie_persistence.py`, 618 in `_runtime/init.py`, 628 in
+`_runtime/lifecycle.py`, and 992 in `client.py`.
+
+- **In-process lock before OS lock.** `StorageLockManager` takes an in-process
+  `threading.Lock` keyed by the exact raw lock-path spelling *before* the OS lock, so
   threads within one process serialize before ever touching the OS primitive —
   layered under the per-loop `asyncio.Lock` dedup described below.
 - **Locks are sibling files, never the resource itself.** Both lock

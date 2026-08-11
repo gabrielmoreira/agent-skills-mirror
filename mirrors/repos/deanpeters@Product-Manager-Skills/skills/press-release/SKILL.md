@@ -5,6 +5,15 @@ description: Write an Amazon-style press release that defines customer value bef
 intent: >-
   Create a visionary press release following Amazon's "Working Backwards" methodology to define and communicate a product or feature before building it. Use this to align stakeholders on the customer value proposition, clarify the problem being solved, and test if the product story resonates—treating the press release as a forcing function for clarity and customer-centricity.
 type: component
+theme: pm-artifacts
+best_for:
+  - "Defining customer value before a line of spec gets written"
+  - "Aligning stakeholders on what a launch actually promises"
+  - "Killing a weak idea early by trying to write its announcement"
+scenarios:
+  - "We're about to build something big and I want to test whether the value is real"
+  - "Stakeholders disagree about what this launch promises customers — write it as news"
+estimated_time: "30-45 min"
 ---
 
 

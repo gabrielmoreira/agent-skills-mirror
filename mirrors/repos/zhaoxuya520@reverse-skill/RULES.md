@@ -312,7 +312,7 @@ Windows (PowerShell):
 powershell -NoProfile -ExecutionPolicy Bypass -File "<SKILL_ROOT>/skills/scripts/bootstrap-reverse.ps1" -Capability @('tool_name') -StartServices
 
 Supported capability names (must match `skills/scripts/bootstrap-manifest.json`):  
-jadx, apktool, frida, frida-ps, idalib-mcp, jshookmcp, anything-analyzer, idapro, r2, rabin2, adb, agent-browser, ghidra-mcp, nmap, seclists, proxycat, burpsuite-mcp, pentestswarm, binwalk, pwntools, yara
+jadx, apktool, jeb-pro, frida, frida-ps, idalib-mcp, reqable-mcp, jshookmcp, anything-analyzer, idapro, r2, rabin2, adb, agent-browser, ghidra-mcp, seclists, proxycat, burpsuite-mcp, nmap, pentestswarm, binwalk, yara, pwntools, bkcrack
 
 Do NOT invent capabilities. Tools not listed require manual install steps in the skill docs.
 ```

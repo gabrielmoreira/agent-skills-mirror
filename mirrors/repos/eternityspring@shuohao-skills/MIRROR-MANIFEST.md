@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed patterns, 15 file(s) materialized.
+Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `eternityspring/shuohao-skills` — 26 default patterns, 2 followed pa
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 2 |
-| Files         | 15 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -60,21 +60,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/novel-characters/assets/report.png`](skills/novel-characters/assets/report.png) |
-| 2 | ✓ | [`skills/novel-characters/assets/sheet.jpg`](skills/novel-characters/assets/sheet.jpg) |
-| 3 | ✓ | [`skills/novel-characters/README.en.md`](skills/novel-characters/README.en.md) |
-| 4 | ✓ | [`skills/novel-characters/README.md`](skills/novel-characters/README.md) |
-| 5 | ✓ | [`skills/novel-characters/references/profile-pass.md`](skills/novel-characters/references/profile-pass.md) |
-| 6 | ✓ | [`skills/novel-characters/references/report-style.md`](skills/novel-characters/references/report-style.md) |
-| 7 | ✓ | [`skills/novel-characters/references/roster-pass.md`](skills/novel-characters/references/roster-pass.md) |
-| 8 | ✓ | [`skills/novel-characters/references/schema.md`](skills/novel-characters/references/schema.md) |
-| 9 | ✓ | [`skills/novel-characters/references/sheet.md`](skills/novel-characters/references/sheet.md) |
-| 10 | ✓ | [`skills/novel-characters/references/style-presets.md`](skills/novel-characters/references/style-presets.md) |
-| 11 | ✓ | [`skills/novel-characters/scripts/novel-characters.mjs`](skills/novel-characters/scripts/novel-characters.mjs) |
-| 12 | ✓ | [`skills/novel-characters/scripts/selftest.mjs`](skills/novel-characters/scripts/selftest.mjs) |
-| 13 | ✓ | [`skills/novel-characters/SKILL.md`](skills/novel-characters/SKILL.md) |
-| 14 | → | [`README.en.md`](README.en.md) |
-| 15 | → | [`README.md`](README.md) |
+| 1 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 2 | ✓ | [`skills/novel-characters/assets/report.png`](skills/novel-characters/assets/report.png) |
+| 3 | ✓ | [`skills/novel-characters/assets/sheet.jpg`](skills/novel-characters/assets/sheet.jpg) |
+| 4 | ✓ | [`skills/novel-characters/README.en.md`](skills/novel-characters/README.en.md) |
+| 5 | ✓ | [`skills/novel-characters/README.md`](skills/novel-characters/README.md) |
+| 6 | ✓ | [`skills/novel-characters/references/profile-pass.md`](skills/novel-characters/references/profile-pass.md) |
+| 7 | ✓ | [`skills/novel-characters/references/report-style.md`](skills/novel-characters/references/report-style.md) |
+| 8 | ✓ | [`skills/novel-characters/references/roster-pass.md`](skills/novel-characters/references/roster-pass.md) |
+| 9 | ✓ | [`skills/novel-characters/references/schema.md`](skills/novel-characters/references/schema.md) |
+| 10 | ✓ | [`skills/novel-characters/references/sheet.md`](skills/novel-characters/references/sheet.md) |
+| 11 | ✓ | [`skills/novel-characters/references/style-presets.md`](skills/novel-characters/references/style-presets.md) |
+| 12 | ✓ | [`skills/novel-characters/scripts/novel-characters.mjs`](skills/novel-characters/scripts/novel-characters.mjs) |
+| 13 | ✓ | [`skills/novel-characters/scripts/selftest.mjs`](skills/novel-characters/scripts/selftest.mjs) |
+| 14 | ✓ | [`skills/novel-characters/SKILL.md`](skills/novel-characters/SKILL.md) |
+| 15 | ✓ | [`skills/novel-outline/assets/report.png`](skills/novel-outline/assets/report.png) |
+| 16 | ✓ | [`skills/novel-outline/README.en.md`](skills/novel-outline/README.en.md) |
+| 17 | ✓ | [`skills/novel-outline/README.md`](skills/novel-outline/README.md) |
+| 18 | ✓ | [`skills/novel-outline/references/episode-pass.md`](skills/novel-outline/references/episode-pass.md) |
+| 19 | ✓ | [`skills/novel-outline/references/outline-pass.md`](skills/novel-outline/references/outline-pass.md) |
+| 20 | ✓ | [`skills/novel-outline/references/report-style.md`](skills/novel-outline/references/report-style.md) |
+| 21 | ✓ | [`skills/novel-outline/references/schema.md`](skills/novel-outline/references/schema.md) |
+| 22 | ✓ | [`skills/novel-outline/references/volume-pass.md`](skills/novel-outline/references/volume-pass.md) |
+| 23 | ✓ | [`skills/novel-outline/scripts/novel-outline.mjs`](skills/novel-outline/scripts/novel-outline.mjs) |
+| 24 | ✓ | [`skills/novel-outline/scripts/selftest.mjs`](skills/novel-outline/scripts/selftest.mjs) |
+| 25 | ✓ | [`skills/novel-outline/SKILL.md`](skills/novel-outline/SKILL.md) |
+| 26 | → | [`README.en.md`](README.en.md) |
+| 27 | → | [`README.md`](README.md) |
 
 ---
 

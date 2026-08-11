@@ -23,6 +23,8 @@ scenarios:
   - "Compare [Company A], [Company B], and [Company C]"
   - "Run company-intel on [company] competitors"
   - "Refresh my intel on [company] — what's changed since last quarter?"
+theme: market-intelligence
+estimated_time: "30-60 min"
 ---
 
 ## Purpose

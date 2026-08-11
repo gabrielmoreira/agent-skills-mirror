@@ -13,6 +13,8 @@ scenarios:
   - "Should we keep investing in paid LinkedIn ads for enterprise leads?"
   - "Compare content marketing, outbound email, and partner referrals as acquisition channels"
   - "Help me decide whether to scale or kill our webinar acquisition channel"
+theme: finance-metrics
+estimated_time: "15-25 min"
 ---
 
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 19 followed patterns, 20 file(s) materialized.
+Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 20 followed patterns, 21 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 19 f
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 19 |
-| Files         | 20 |
+| Followed pats | 20 |
+| Files         | 21 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `DenisSergeevitch/agents-best-practices` — 26 default patterns, 19 f
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `references/mvp-agent-blueprint.md`
+- `references/environment-adaptive-tools.md`
 - `references/self-refining-recursive-harnesses.md`
 - `references/coding-agents.md`
 - `references/architecture.md`
@@ -85,18 +86,19 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | → | [`references/coding-agents.md`](references/coding-agents.md) |
 | 7 | → | [`references/context-memory-compaction.md`](references/context-memory-compaction.md) |
 | 8 | → | [`references/coverage-audit.md`](references/coverage-audit.md) |
-| 9 | → | [`references/evals.md`](references/evals.md) |
-| 10 | → | [`references/mvp-agent-blueprint.md`](references/mvp-agent-blueprint.md) |
-| 11 | → | [`references/planning-and-goals.md`](references/planning-and-goals.md) |
-| 12 | → | [`references/prompt-caching-and-cost.md`](references/prompt-caching-and-cost.md) |
-| 13 | → | [`references/provider-api-patterns.md`](references/provider-api-patterns.md) |
-| 14 | → | [`references/security-observability.md`](references/security-observability.md) |
-| 15 | → | [`references/self-refining-recursive-harnesses.md`](references/self-refining-recursive-harnesses.md) |
-| 16 | → | [`references/skills-and-connectors.md`](references/skills-and-connectors.md) |
-| 17 | → | [`references/source-links.md`](references/source-links.md) |
-| 18 | → | [`references/system-prompts-instructions.md`](references/system-prompts-instructions.md) |
-| 19 | → | [`references/tools-and-permissions.md`](references/tools-and-permissions.md) |
-| 20 | → | [`references/workflow-orchestration.md`](references/workflow-orchestration.md) |
+| 9 | → | [`references/environment-adaptive-tools.md`](references/environment-adaptive-tools.md) |
+| 10 | → | [`references/evals.md`](references/evals.md) |
+| 11 | → | [`references/mvp-agent-blueprint.md`](references/mvp-agent-blueprint.md) |
+| 12 | → | [`references/planning-and-goals.md`](references/planning-and-goals.md) |
+| 13 | → | [`references/prompt-caching-and-cost.md`](references/prompt-caching-and-cost.md) |
+| 14 | → | [`references/provider-api-patterns.md`](references/provider-api-patterns.md) |
+| 15 | → | [`references/security-observability.md`](references/security-observability.md) |
+| 16 | → | [`references/self-refining-recursive-harnesses.md`](references/self-refining-recursive-harnesses.md) |
+| 17 | → | [`references/skills-and-connectors.md`](references/skills-and-connectors.md) |
+| 18 | → | [`references/source-links.md`](references/source-links.md) |
+| 19 | → | [`references/system-prompts-instructions.md`](references/system-prompts-instructions.md) |
+| 20 | → | [`references/tools-and-permissions.md`](references/tools-and-permissions.md) |
+| 21 | → | [`references/workflow-orchestration.md`](references/workflow-orchestration.md) |
 
 ---
 

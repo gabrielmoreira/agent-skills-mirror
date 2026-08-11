@@ -663,9 +663,12 @@ Preset description: {description}
 
 ### Behavior When Received
 
-<<<<<<< Updated upstream | `Preset ID` value | Action | | -------------------------------------------------------------- | ----------------------------------------------------------------------------------- | | `neo-brutalism` / `code-dispatch` / `dark-tech` / `ins-modern` | Skip Step 4.1. Read preset from `presets/<platform>/<preset>/` and copy to project. | | `custom:{user_description}` | Skip Step 4.1. Load `generate-preset` sub-skill with the description. | | `none` | Skip Step 4.1. Design freely per platform defaults. | | _(absent — no visual template section)_ | Run Step 4.1 normally (ask the user). | ======= | `Preset ID` value | Action | | --- | --- | | Any built-in preset ID listed in Built-in Presets | Skip Step 4.1. Read preset from `presets/<platform>/<preset>/` and copy to project. | | `custom:{user_description}` | Skip Step 4.1. Load `generate-preset` sub-skill with the description. | | `none` | Skip Step 4.1. Design freely per platform defaults. | | _(absent — no visual template section)_ | Run Step 4.1 normally (ask the user). |
-
-> > > > > > > Stashed changes
+| `Preset ID` value | Action |
+| --- | --- |
+| Any built-in preset ID listed in Built-in Presets | Skip Step 4.1. Read preset from `presets/<platform>/<preset>/` and copy to project. |
+| `custom:{user_description}` | Skip Step 4.1. Load `generate-preset` sub-skill with the description. |
+| `none` | Skip Step 4.1. Design freely per platform defaults. |
+| _(absent — no visual template section)_ | Run Step 4.1 normally (ask the user). |
 
 For backward compatibility, accept localized legacy field labels that carry the same meaning, but normalize them internally to the English field names above.
 

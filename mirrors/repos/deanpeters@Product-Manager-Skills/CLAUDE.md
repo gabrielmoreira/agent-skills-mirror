@@ -4,16 +4,33 @@
 
 ---
 
-## Project Status (Last updated: Fri Jul 17 2026)
+## Project Status (Last updated: Mon Aug 10 2026)
 
-### Current State: v0.83 (70 skills)
+### Current State: v0.84 (77 skills)
 
-**70 Skills**
-- 24 Component Skills (templates/artifacts + finance metrics + career frameworks + stakeholder tools + intelligence disciplines)
-- 27 Interactive Skills (guided discovery + finance advisors + career advisors + growth + stakeholder engagement + intel triage)
-- 19 Workflow Skills (end-to-end processes + meta skill-authoring + executive onboarding + company intel + market-intelligence investigations)
+**77 Skills**
+- 28 Component Skills (templates/artifacts + finance metrics + career frameworks + stakeholder tools + intelligence disciplines + EOL artifacts + lifecycle plays)
+- 29 Interactive Skills (guided discovery + finance advisors + career advisors + growth + stakeholder engagement + intel triage + EOL readiness + lifecycle play triage)
+- 20 Workflow Skills (end-to-end processes + meta skill-authoring + executive onboarding + company intel + market-intelligence investigations + EOL process)
 - License: CC BY-NC-SA 4.0
 - All skills restructured to Anthropic-compliant format (`skills/skill-name/SKILL.md`)
+- **Metadata complete (Aug 10, 2026):** all 77 skills carry `theme`, `best_for`, `scenarios`, `estimated_time`. 13 themes; `validation-experiments` added for pol-probe / pol-probe-advisor / derisk-measurement-advisor / lean-ux-canvas / recommendation-canvas. Trigger audit passes library-wide with zero warnings
+- **Fully adorned (Adornment Plan 4 COMPLETE, Aug 10, 2026):** every Component and Workflow skill ships `template.md` + two-domain worked examples. Three documented carve-outs: `finance-metrics-quickref` (definitionally SaaS, template only), `skill-authoring-workflow` (meta-skill, one example), `product-sense-interview-answer` (second example varies question type, not industry). Plan: `docs/maintenance/2026-08-10-adornment-plan-4.md`
+- **Three example universes, each with a defined job:** **Fieldlight** (B2B SaaS, field service) · **Northfield Automation** (industrial retrofit controls — hardware, channel, long cycles) · **Brightwater Biologics** (life sciences, clinical trial operations, platform Trialpath — *evidence before revenue*). Brightwater is **scoped, not a general fallback**: use it only where regulated / evidence-driven / long-cycle work IS the lesson. Core artifacts keep an instantly legible second domain
+
+**Lifecycle & End-of-Life Suite (COMPLETE — released as v0.84, Aug 10 2026)** ✅
+- Release note: `docs/announcements/2026-08-10-v0-84-lifecycle-and-eol-suite.md`
+- Suite summary: `docs/Lifecycle and EOL Suite Summary.md` · Handoff brief: `10AUG26.md`
+- **`product-lifecycle` theme (2 skills, the upstream play decision):**
+  [`lifecycle-play-advisor`](skills/lifecycle-play-advisor/SKILL.md) (Interactive) — 4 questions: product + trigger → seven **transition questions** (scored) → pressure source (demand / supply-cost / capability) → extension test. Recommends extend, replace, retire, harvest, or **"nothing yet"**. [`product-lifecycle-plays`](skills/product-lifecycle-plays/SKILL.md) (Component) — PLC strategy grid, three plays, **seven replacement hazards**, risk register with a contingency column ("what is Plan B?"), portfolio worksheet
+- **`eol-transition` theme (6 skills, executing the retirement):**
+  [`eol-readiness-advisor`](skills/eol-readiness-advisor/SKILL.md) (Interactive, go/no-go + 5 verdicts incl. Hold/Harvest/Extend) → [`eol-stakeholder-sequence`](skills/eol-stakeholder-sequence/SKILL.md) (Legal→Finance→Sales→Marketing→CS→difficult customers→Eng→Support) → [`eol-checklist`](skills/eol-checklist/SKILL.md) (phase-gated, 15 areas, owner per item) → [`eol-internal-enablement`](skills/eol-internal-enablement/SKILL.md) (FAQ, sales points, Acknowledge-Reframe-Offer objections, escalation ladder) → [`eol-message`](skills/eol-message/SKILL.md) (**upgraded**: Brief/Standard/Full, three transition paths) → [`eol-process`](skills/eol-process/SKILL.md) (Workflow, six phases incl. **Close**)
+- **Two conventions that govern the suite — do not regress these:**
+  1. **Right-sizing is a dial the user sets.** Every skill offers Level 1/2/3 (Light/Standard/Heavy), recommends one, honors an override in either direction, and names what a lighter level leaves uncovered. Level 2 is the default; **never default to Level 3**. Process theater on a small sunset teaches teams to ignore process on the big one
+  2. **No tight coupling.** Every skill runs standalone; levels and gates are defined inline (duplicated text, not shared dependencies); `eol-process` is a **route, not a pipeline** with an "Entering Mid-Stream" diagnostic and explicit permission to go backwards. Do not introduce a handoff schema — carrying context means saying "Level 2" and pasting what you have
+- **Lifecycle gates:** GA (a *state*, not a work phase) · NSC · EOS · EOE · EOR (*contract-driven, insert only when renewals run past EOS*) · EOM · EOL · EOSRV. Working checklists span NSC→EOSRV. `Not scheduled` + a recorded precondition beats an invented EOL date
+- **Fully adorned, two interlocking universes:** Fieldlight Classic Dispatch (SaaS, Level 2, all six phases, closes at 94% retention vs. a 90% target) and Northfield Automation NFA-200 (industrial, Level 3, where Phase 2 sends the process back to Phase 1 and the outcome becomes End of Sale with **no EOL date**). The industrial thread is deliberately a *failure worked forward* — the play was right, the risk rating was wrong
+- **Sources:** practitioner field material on lifecycle and end-of-life practice, plus the 5 EOL prompts in `product-manager-prompts`. Anonymization held — no client names and no details carried over from client artifacts; public-record failure cases (Kodak, Zune, Vista, Nest Revolv, AT&T POTS, Amgen) are business history from Dean's own deck
 
 **Market Intelligence Suite (Phase 9, COMPLETE — released as v0.83, Jul 17 2026)** ✅
 - Release note: `docs/announcements/2026-07-17-v0-83-market-intelligence-suite.md`
@@ -21,11 +38,11 @@
   - [`autonomous-investigation`](skills/autonomous-investigation/SKILL.md) (Workflow) — protocol skill for research that proceeds without the user: question budget, search-plan gate, **Fact/Inference/Assumption** labels (canonical vocabulary), do-not-invent lists, Just Enough Mode, diffable schemas, confidence stacking, SCIP guardrails. The `workshop-facilitation` counterpart for investigation skills
   - [`intelligence-collection-disciplines`](skills/intelligence-collection-disciplines/SKILL.md) (Component) — eight intel disciplines (OSINT→MASINT + All-Source Fusion) with free/paid source tables, signal→inference chains, TAM/SAM/SOM recipe, fusion cadence, artifact mapping
   - The chain: [`market-landscape-scan`](skills/market-landscape-scan/SKILL.md) → [`competitive-research-snapshot`](skills/competitive-research-snapshot/SKILL.md) → [`competitive-intel-watch`](skills/competitive-intel-watch/SKILL.md) → [`battle-card-builder`](skills/battle-card-builder/SKILL.md) (all Workflow) — each consumes the prior's stable schema
-- ✅ **Wave 2 complete (Jul 16, 2026):** [`competitive-analysis-process`](skills/competitive-analysis-process/SKILL.md) (Workflow) — six-step umbrella (landscape → product comparison → customer-need fulfillment → business baseline → perception/positioning → strategic direction) orchestrating the suite, from the Competitive Analysis Playbook. Plus two upgrades: `tam-sam-som-calculator` gained three entry modes (own numbers / guided interview / autonomous research with the GEOINT/DEMOINT bottom-up recipe); `company-intel` gained the Executive Signal Refresh rerun pattern (Then/Now diffs, **Dropped Language** — what leaders stop saying), the source priority ladder + do-not-sanitize rule, product-org heuristics (CPO tenure, PM job postings as culture documents), and an optional distress read (presenting vs. underlying problem) — techniques generalized (and anonymized) from internal research tooling. Library at 63
+- ✅ **Wave 2 complete (Jul 16, 2026):** [`competitive-analysis-process`](skills/competitive-analysis-process/SKILL.md) (Workflow) — six-step umbrella (landscape → product comparison → customer-need fulfillment → business baseline → perception/positioning → strategic direction) orchestrating the suite. Plus two upgrades: `tam-sam-som-calculator` gained three entry modes (own numbers / guided interview / autonomous research with the GEOINT/DEMOINT bottom-up recipe); `company-intel` gained the Executive Signal Refresh rerun pattern (Then/Now diffs, **Dropped Language** — what leaders stop saying), the source priority ladder + do-not-sanitize rule, product-org heuristics (CPO tenure, PM job postings as culture documents), and an optional distress read (presenting vs. underlying problem) — techniques generalized (and anonymized) from internal research tooling. Library at 63
 - ✅ **Wave 3 complete (Jul 16, 2026):** 6 new Workflow skills — [`voice-of-customer-miner`](skills/voice-of-customer-miner/SKILL.md) (public-voice mining, need-themes, source-bias notes), [`pricing-packaging-tracker`](skills/pricing-packaging-tracker/SKILL.md) (diffable pricing time series; packaging moves before price), [`pestel-delta-monitor`](skills/pestel-delta-monitor/SKILL.md) (macro re-scan; broken assumptions are the output; pairs with `pestel-analysis`), [`swot-analysis`](skills/swot-analysis/SKILL.md) (evidence-cited quadrants + S-O/W-T crossings), [`porters-five-forces`](skills/porters-five-forces/SKILL.md) (rated forces with signals; AI substitution named; profit-pool close), [`ansoff-matrix`](skills/ansoff-matrix/SKILL.md) (evidence per quadrant; risk gradient; cross-referenced as the investigation sibling of `organic-growth-advisor`). Library at 69. Followed (Jul 17) by [`intel-discipline-advisor`](skills/intel-discipline-advisor/SKILL.md) (Interactive) — triage from decision to discipline mix + cadence + executing skill; the Component+Interactive pairing for the disciplines compendium. **Suite complete at 14 skills + 2 upgrades; library at 70**
 - 🎁 **Adornment pass (Jul 17, post-release):** all 14 suite skills + `company-intel` now ship `template.md` (extracted output schemas with quality checks) + **dual-domain worked examples** — a SaaS universe (Fieldlight/Wrenchline/DispatchCrow/Vantiga, FSM software; chain examples feed each other) and an industrial universe (Northfield Automation investigating Helix/Corvid/Meridian, retrofit automation; interlocks with `company-intel`'s Foresight refresh example). New standard baked into this file's Quality Checklist ("Fully adorned"), CONTRIBUTING.md, AGENTS.md, Building PM Skills, both authoring meta-skills, and `build-a-skill.sh`. README/docs now surface the suite (nav block, v0.83 What's New, `docs/Market Intelligence Suite Summary.md`, `06-market-intel-pack`). Plan + status: `docs/maintenance/2026-07-17-adornment-and-docs-plan.md`; remaining: Plan 4 back-catalog backfill
 - 🧹 **Also Jul 16:** `company-intel` examples fictionalized (real company names replaced with surrogates: Helix Motion Systems, Northfield Automation, Corvid Industrial, Brightwater Biologics) per the customer-anonymization protocol
-- **Sources:** `~/Code/product-manager-prompts/market-intelligence/` (12 prompts), Competitive Analysis Playbook, Competitive Research on Steroids compendium, M365 agent definitions (all Dean's; see session memory for anonymization protocol — no customer names or recognizable engagement scenarios, ever)
+- **Sources:** `~/Code/product-manager-prompts/market-intelligence/` (12 prompts) plus practitioner field material on competitive and market intelligence (all Dean's; see session memory for anonymization protocol — no customer names or recognizable engagement scenarios, ever)
 - Free/paid two-column source tables are the sanctioned style for tool mentions
 
 **Streamlit (beta) Playground (Feb 27, 2026)**
@@ -79,7 +96,7 @@
 - ✅ **organic-growth-advisor Added (May 17, 2026):** Interactive skill for McKinsey Growth Pyramid L2-L5 triage
   - 3-question flow diagnoses growth constraint via Growth Path Matrix (customer/market context × degree of product change)
   - Path-specific diagnostics, first experiments, and watch-outs for L2 (New Segments), L3 (New Geographies), L4 (New Distribution), L5 (New Products)
-  - Source: Productside webinar "Driving Organic Growth through Innovation" (May 20, 2026)
+  - Source: McKinsey Growth Pyramid, applied through practitioner field material
 - ✅ **v0.79 Released (May 15, 2026):** Community contributions — security hardening, new meta-skill, bug fix
   - Added `skills/pm-skill-creator/` — interactive skill for guided skill design (KNE-AI)
   - Added `.claude-plugin/plugin.json` — fixes silent skill discovery failure for Claude Code plugin users (changyan01, harley-chenhailin)
@@ -196,6 +213,11 @@
 - **`scripts/find-a-skill.sh`** — Ranked skill discovery helper
   - Search by name, type, and keyword
   - Ranking priority: exact name > frontmatter > section text
+- **`scripts/check-dist-freshness.py`** — Guards the committed `catalog/` and `dist/` shelf
+  - Verifies catalog count+membership, one `dist/` ZIP per skill (no orphans), every declared pack, and `dist/CATALOG.md` coverage
+  - **Content-level, never byte-level** — rebuilt ZIPs differ every run from embedded timestamps
+  - Runs as its **own CI step**, NOT inside `validate-skills.sh`: `build-dist.sh` → `build-release.sh` → `validate-skills.sh`, so a check there would abort the command that fixes the staleness. Also step 7 of `test-library.sh`
+  - Fix drift with: `python3 scripts/generate-catalog.py` then `bash scripts/build-dist.sh`
 - **`scripts/test-a-skill.sh`** — Skill quality gate
   - Runs strict conformance checks (`check-skill-metadata.py`)
   - Verifies linked `skills/*/SKILL.md` references resolve
@@ -561,6 +583,22 @@ If Dean provides client work:
 - Anonymize company names, products, and identifying details
 - Keep the structure and lesson
 - Ask Dean if anything needs redacting
+
+### Provenance and Attribution (hard rule)
+**Cite public, linkable work by name. For unpublished internal or client-delivered material, cite
+the framework or the practice — not the artifact.**
+
+- **Fine:** published repos, blogs, Substack, podcast episodes, public talks/webinars (with the
+  link), and third-party frameworks with their authors
+- **Never:** private training decks, client workshops, internal playbooks, unpublished compendia,
+  client names *or their pseudonyms*, and local file paths
+
+Two traps, both of which have bitten this repo:
+1. **A named deliverable + a date + an author is findable** even with the client scrubbed
+2. **A denylist is a disclosure** — never commit "do not write examples about <topic>"; keep
+   exclusions in session memory and state the constraint positively (which domain to stay *inside*)
+
+Write `Distilled from practitioner experience running <the practice>` instead.
 
 ---
 

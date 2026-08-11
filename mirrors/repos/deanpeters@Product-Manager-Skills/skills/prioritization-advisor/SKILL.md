@@ -13,6 +13,8 @@ scenarios:
   - "Which prioritization framework should my startup use right now?"
   - "Help me choose between RICE and value/effort for roadmap planning"
   - "We keep arguing about prioritization. Recommend a framework."
+theme: strategy-positioning
+estimated_time: "15-25 min"
 ---
 
 

@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `beclab/Olares` — 26 default patterns, 0 followed patterns, 11 file(s) materialized.
+Mirror of `beclab/Olares` — 26 default patterns, 0 followed patterns, 12 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `beclab/Olares` — 26 default patterns, 0 followed patterns, 11 file(
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 11 |
+| Files         | 12 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -67,9 +67,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 6 | ✓ | [`cli/skills/olares-knowledge/SKILL.md`](cli/skills/olares-knowledge/SKILL.md) |
 | 7 | ✓ | [`cli/skills/olares-market/SKILL.md`](cli/skills/olares-market/SKILL.md) |
 | 8 | ✓ | [`cli/skills/olares-publish/SKILL.md`](cli/skills/olares-publish/SKILL.md) |
-| 9 | ✓ | [`cli/skills/olares-search/SKILL.md`](cli/skills/olares-search/SKILL.md) |
-| 10 | ✓ | [`cli/skills/olares-settings/SKILL.md`](cli/skills/olares-settings/SKILL.md) |
-| 11 | ✓ | [`cli/skills/olares-shared/SKILL.md`](cli/skills/olares-shared/SKILL.md) |
+| 9 | ✓ | [`cli/skills/olares-router/SKILL.md`](cli/skills/olares-router/SKILL.md) |
+| 10 | ✓ | [`cli/skills/olares-search/SKILL.md`](cli/skills/olares-search/SKILL.md) |
+| 11 | ✓ | [`cli/skills/olares-settings/SKILL.md`](cli/skills/olares-settings/SKILL.md) |
+| 12 | ✓ | [`cli/skills/olares-shared/SKILL.md`](cli/skills/olares-shared/SKILL.md) |
 
 ---
 

@@ -181,4 +181,4 @@ routing shift for a physical-world signal — permits and customs data instead o
 - [`autonomous-investigation`](../autonomous-investigation/SKILL.md) (Workflow) — confidence stacking and evidence labels the recommendations lean on
 - Executing skills: [`competitive-intel-watch`](../competitive-intel-watch/SKILL.md), [`battle-card-builder`](../battle-card-builder/SKILL.md), [`tam-sam-som-calculator`](../tam-sam-som-calculator/SKILL.md), [`porters-five-forces`](../porters-five-forces/SKILL.md), [`swot-analysis`](../swot-analysis/SKILL.md), [`voice-of-customer-miner`](../voice-of-customer-miner/SKILL.md), [`pricing-packaging-tracker`](../pricing-packaging-tracker/SKILL.md), [`pestel-delta-monitor`](../pestel-delta-monitor/SKILL.md), [`competitive-analysis-process`](../competitive-analysis-process/SKILL.md)
 - [`discovery-interview-prep`](../discovery-interview-prep/SKILL.md) (Interactive) — the off-ramp when the question belongs to discovery
-- Companion to Dean Peters' "Competitive Research on Steroids" compendium (Productside).
+- The Interactive companion to [`intelligence-collection-disciplines`](../intelligence-collection-disciplines/SKILL.md).

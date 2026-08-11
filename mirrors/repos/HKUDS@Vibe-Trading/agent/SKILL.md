@@ -3,7 +3,7 @@ name: vibe-trading
 version: 0.1.13
 description: Professional finance research toolkit — backtesting (9 engines + benchmark comparison panel), factor analysis, Alpha Zoo (462 pre-built alphas across qlib158/alpha101/gtja191/academic/fundamental), options pricing, 89 finance skills, 30 multi-agent swarm teams, Trade Journal analyzer, and Shadow Account (extract → backtest → render) across 24 market-data sources (tushare, yfinance, okx, binance, akshare, baostock, tencent, mootdx, ccxt, futu, mt5, local, eastmoney, sina, stooq, yahoo, pykrx, india_broker, qveris, longbridge, plus optional-key finnhub/alphavantage/tiingo/fmp).
 dependencies:
-  python: ">=3.11"
+  python: ">=3.11,<3.14"
   pip:
     - vibe-trading-ai
 env:
@@ -118,7 +118,7 @@ One-line cross-sectional IC / IR / alive-reversed-dead categorisation across fiv
 
 Each alpha ships with `__alpha_meta__` (formula LaTeX + theme + universe + warmup + columns required), guarded by an AST purity gate + 300-row lookahead sentinel test. Use the `vibe-trading alpha {list,show,bench,compare,export-manifest}` CLI, the `/alpha/*` REST routes (browser at `/alpha-zoo`), or compose multi-factor signals via `ZooSignalEngine.from_zoo(...)`.
 
-### Finance Skills (88)
+### Finance Skills (89)
 Comprehensive knowledge base covering:
 - Technical analysis (candlestick, Elliott wave, Ichimoku, SMC, harmonic, chanlun)
 - Quantitative methods (factor research, ML strategy, pair trading, multi-factor)
@@ -131,7 +131,7 @@ Comprehensive knowledge base covering:
 
 Use `load_skill(name)` to access full methodology docs with code templates.
 
-## Available MCP Tools (60)
+## Available MCP Tools (70)
 
 | Tool | Description | API Key |
 |------|-------------|---------|
@@ -195,6 +195,16 @@ Use `load_skill(name)` to access full methodology docs with code templates.
 | `trading_orders` | Read open orders from selected connector | Connector app/OAuth |
 | `trading_quote` | Read a quote snapshot from selected connector | Connector app/OAuth |
 | `trading_history` | Read historical bars from selected connector | Connector app/OAuth |
+| `get_institutional_holdings` | SEC 13F-HR holdings by manager/ticker + quarter-over-quarter position diffs | None |
+| `etf_holdings` | ETF look-through — SEC N-PORT (US) and full-book A-share fund reports | None |
+| `prediction_market` | Event-contract search/market/history as labelled implied probability | None |
+| `research_papers` | arXiv + OpenAlex search/read with source-anchored claim extraction | None |
+| `quantlib_call` | Pure-compute finance math — 265 functions across 19 quantlib modules | None |
+| `cashflow_performance` | XIRR / MOIC / DPI / TVPI / TWR / Modified Dietz over dated cash flows | None |
+| `orderbook_depth` | Crypto L2 ladder — spread bps, depth imbalance, impact cost | None |
+| `sentiment` | Local lexicon text scoring + crypto Fear & Greed Index | None |
+| `technical_indicators` | RSI / MACD / Bollinger / SMA / EMA through the existing loaders | None* |
+| `get_fundamentals` | PIT-safe SEC fundamentals panels (filed-date anchored) | None |
 
 <sub>*A-share symbols require `TUSHARE_TOKEN`. HK/US/Canada/crypto are free. Trading connector rows use the selected connector profile, e.g. IBKR local TWS/Gateway or Robinhood MCP OAuth.</sub>
 

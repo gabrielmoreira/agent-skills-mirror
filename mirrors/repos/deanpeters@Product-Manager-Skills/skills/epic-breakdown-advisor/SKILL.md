@@ -13,6 +13,8 @@ scenarios:
   - "Break this onboarding epic into smaller user stories"
   - "Help me split a large reporting feature before sprint planning"
   - "Which story-splitting pattern should I use for this admin workflow epic?"
+theme: pm-artifacts
+estimated_time: "20-30 min"
 ---
 
 

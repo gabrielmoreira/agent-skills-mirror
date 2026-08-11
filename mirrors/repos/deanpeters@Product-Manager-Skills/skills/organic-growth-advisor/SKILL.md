@@ -14,6 +14,8 @@ scenarios:
   - "Help me figure out which McKinsey growth level we should focus on"
   - "We have strong product-market fit but growth is stalling. Where should we look?"
   - "Which organic growth path fits our current situation?"
+theme: strategy-positioning
+estimated_time: "15-25 min"
 ---
 
 
@@ -380,5 +382,5 @@ First experiment: Interview eight current customers who have requested forecasti
 - Levels 2 through 5 only. L1 is retention. L6 and L7 are out of scope for product team execution.
 
 ### Provenance
-- Developed for Productside webinar: "Driving Organic Growth through Innovation" (May 20, 2026)
+- Applied through practitioner field material on organic growth
 - Growth Path Matrix axes: Customer/Market Context (Known to Less Known) and Degree of Product Change (Low to High)

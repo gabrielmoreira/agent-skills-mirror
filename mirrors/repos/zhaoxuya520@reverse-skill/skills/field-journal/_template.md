@@ -26,9 +26,23 @@
 
 ## Evidence 链摘要（脱敏）
 <!-- 最多 3 条：E-id + 命令模式 + 结论类型；完整证据在用户项目 -->
-| E-id | source_type | 可复用命令模式 | 关联 Finding |
-|------|-------------|----------------|--------------|
-| E-001 | | | F-001 |
+<!-- 字段对齐 skills/case-review/scripts/review_case.py 契约（见下方说明） -->
+| E-id | severity | status | source_type | 可复用命令模式 | 关联 Finding |
+|------|----------|--------|-------------|----------------|--------------|
+| E-001 | info | observed | command | `checksec --file=./pwn1` | F-001 |
+| E-002 | high | validated | command | `python3 exploit.py REMOTE` | F-001 |
+
+> **契约对齐（review_case.py）**：若本次 case 产出了独立证据目录（`evidence/E-xxx.md`），
+> 每条证据须满足 `skills/case-review/scripts/review_case.py` 的字段契约，否则 `--strict` 校验会 FAIL：
+>
+> - 标题：`### E-xxx`（须与文件名一致，如 `E-001.md` → `### E-001`）
+> - `- severity:` ∈ critical / high / medium / low / info / n/a
+> - `- status:` ∈ observed / candidate / validated / false_positive / accepted_risk
+> - `- repro_command:` 必填（离线场景在 notes 中注明 offline/离线 可豁免）
+> - `- content_hash:` sha256 或 n/a；填 sha256 时配套 `- artifact_path:`（case 内相对路径）
+> - `- linked_workitem:` 可选，WI-xxx 必须真实存在
+>
+> 自检：`python skills/case-review/scripts/review_case.py <case_root> --verify-hashes --strict`
 
 ## Finding / Path 摘要
 - top_finding:

@@ -150,6 +150,7 @@ When you invoke **Aurelius**, I will:
 - [godot-signal-architecture](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-signal-architecture/SKILL.md) — Typed Signal.connect, disconnect lifecycle, and bus topology the signal-decay arsenal assumes.
 
 #### Complements
+- [godot-version-migration](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-version-migration/SKILL.md) — Godot 3 `connect` strings, legacy TileMap, `SCREEN_TEXTURE`, and other era leftovers: route engine renames through the migration hub instead of inventing ad-hoc lists.
 - [godot-debugging-profiling](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-debugging-profiling/SKILL.md) — ObjectDB / script profiler workflows that turn Aurelius findings into measured proof.
 - [godot-performance-optimization](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-performance-optimization/SKILL.md) — WorkerThreadPool, RID batching, and draw-call remediation after main-thread or material audits.
 - [godot-composition](https://github.com/thedivergentai/gd-agentic-skills/blob/main/skills/godot-composition/SKILL.md) — Component decomposition targets when cyclomatic complexity / god-function checks fire.

@@ -1,8 +1,7 @@
 ---
 argument-hint: "[--root PATH ...] [--format text|json] [--fix-safe] [--dependencies-only]"
-disable-model-invocation: false
+compatibility: Requires ai-skillet 0.1.0+.
 name: skill-doctor
-user-invocable: true
 description:
   "Use to audit Agent Skills catalogs or installed skill roots for metadata and doc-link issues; optionally apply
   conservative --fix-safe repairs."
@@ -10,7 +9,8 @@ description:
 
 # Skill Doctor
 
-Audit local Agent Skills catalogs and installed skill roots, then apply only narrow metadata repairs when requested.
+Use ai-skillet's canonical validator for the supported extended skill dialect to audit local catalogs and installed
+skill roots, then apply only narrow metadata repairs when requested.
 
 ## Arguments
 
@@ -22,22 +22,22 @@ Audit local Agent Skills catalogs and installed skill roots, then apply only nar
 
 ## Workflow
 
-1. Resolve the skill directory, then run the helper from that directory:
+1. Require `ai-skillet` 0.1.0 or newer on `PATH`, then run:
 
    ```sh
-   uv run scripts/skill-doctor.py "$ARGUMENTS"
+   ai-skillet doctor "$ARGUMENTS"
    ```
 
 2. Use JSON when another command or agent will consume the result:
 
    ```sh
-   uv run scripts/skill-doctor.py --root . --format json
+   ai-skillet doctor --root . --format json
    ```
 
 3. Run safe fixes only after reading the findings:
 
    ```sh
-   uv run scripts/skill-doctor.py --root . --fix-safe
+   ai-skillet doctor --root . --fix-safe
    ```
 
 4. Re-run without `--fix-safe` after any manual edits.
@@ -45,19 +45,29 @@ Audit local Agent Skills catalogs and installed skill roots, then apply only nar
 For a dependency-only catalog gate, run:
 
 ```sh
-uv run scripts/skill-doctor.py --root . --dependencies-only
+ai-skillet doctor --root . --dependencies-only
 ```
 
 ## Findings
 
 - Treat `error` findings as catalog defects that should block publishing or syncing.
 - Treat `warning` findings as review-required catalog hygiene issues.
+- JSON output uses schema version 1 with structured roots, counts, findings, and safe-fix records. Each finding carries
+  its code, severity, path, line when known, fixability, and message.
+- Frontmatter validation accepts the portable Agent Skills fields, Claude Code extensions, and repository extensions as
+  one supported union. It reports unknown top-level fields; invalid field, item, and metadata-value types; invalid
+  enumerated values; and `agent` or `background` used without `context: fork`.
+- Explicit `disable-model-invocation: false` and `user-invocable: true` produce redundant-default warnings. Omit those
+  fields to preserve the same effective defaults.
 - Prompt-hygiene warnings are advisory and never auto-fix: stale model pins, oversized unconditional Markdown
   references, conflicting requirement/prohibition language, and missing completion evidence.
 - Coordination-exemption errors are report-only: `coordination: exempt` must be paired with the catalog's canonical
-  `coordination-exempt` body sentence, and neither side is repaired by `--fix-safe`.
+  `coordination-exempt` sentence in ordinary Markdown prose. Inline code, fenced or indented code, blockquotes, and
+  headed `Example` or `Examples` sections do not count as declarations. Neither side is repaired by `--fix-safe`.
 - Dependency errors reject non-array, empty, non-string, duplicate, malformed, incorrectly ordered, self-referential, or
   unresolved local declarations. External `ORG/REPO#SKILL` identifiers are shape-checked without network access.
+- Metadata, OpenAI policy, coordination, resource, README, prompt-hygiene, and CLI-version checks remain available
+  outside `--dependencies-only`.
 - Use `path` and `line` from JSON output for precise follow-up edits.
 
 ## Safe Fix Policy
@@ -67,13 +77,17 @@ uv run scripts/skill-doctor.py --root . --dependencies-only
 - Create a missing `agents/openai.yaml` with `policy.allow_implicit_invocation` derived from `SKILL.md`.
 - Update an existing `allow_implicit_invocation` boolean when it disagrees with `disable-model-invocation`.
 
-Do not use the helper to rewrite frontmatter order, descriptions, README rows, `references/version.txt`, or relative
-links. Make those edits manually and verify with a fresh audit.
+Each permitted repair is staged and atomically renamed into place, preserving the target's permissions for updates. A
+failed safe fix exits 3 without partially rewriting its target.
+
+`--fix-safe` does not rewrite frontmatter, descriptions, README rows, `references/version.txt`, or relative links.
+Unknown fields, invalid types or values, cross-field errors, redundant defaults, and coordination declarations are
+report-only. Make those edits manually and verify with a fresh audit.
 
 ## Related Skills
 
 - `skill-doctor` only audits the roots you pass; it does not search for them. To locate skill installs, duplicates, and
-  cross-references across the machine, use the `skill-map` skill when it is installed.
+  cross-references across the machine, use `ai-skillet map`.
 
 ## Exit Codes
 

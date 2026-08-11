@@ -4,10 +4,9 @@ compatibility: Requires Git and local command and edit access.
 disable-model-invocation: true
 name: fresh-eyes-sweep
 skill-dependencies:
-  - PaulRBerg/dot-agents#codebase-design
+  - codebase-design
   - code-polish
   - commit
-user-invocable: true
 description:
   Audit an entire repository with fresh eyes for correctness errors, bugs, omissions, duplication, inconsistencies, and
   other evidenced mistakes; fix every safe issue and verify the result.

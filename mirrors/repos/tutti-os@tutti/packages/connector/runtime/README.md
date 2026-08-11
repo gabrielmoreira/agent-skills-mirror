@@ -4,14 +4,34 @@
 foundation. Tutti runs it on the desktop host; VM-backed products run it inside
 the managed guest. It owns the latest-only `current + candidate` raw artifact
 cache, a no-network importer for synchronized archives, secure artifact preparation, managed runtime
-identity, runtime ABI verification, typed Node package installation, the MCP
-stdio client, the host-neutral ImplementationHost/CommandRegistry, Connector
-Broker discovery/invocation, and verified Connector Skill reading.
+identity, runtime ABI verification, typed Node package installation, MCP
+clients, the host-neutral ImplementationHost, RouteRegistry and MCPRegistry,
+Connector discovery, stable CLI shims, verified Connector Skill discovery, and
+the session-bound loopback MCP server used by native Agent MCP clients.
+
+`ImplementationHost` validates the optional Skill tree before publishing a
+route and commits its metadata into `RouteRegistry` as an immutable projection.
+Agent discovery and routing hints read that projection directly; they never
+rescan a mutable installation directory. MCP calls use `MCPRegistry`, while CLI
+calls use the stable per-Connector shim. There is no generic Connector broker
+or generic `connector.invoke` transport in the public runtime.
 
 Hosts supply the managed runtime resolver, implementation host, process
-transport, HTTP client/proxy policy, state roots, and product-facing command
+transport, `RemoteMCPClientFactory`, state roots, and product-facing command
 transport. Runtime code must not import `services/tuttid` or expose host
-filesystem paths as a cross-machine protocol.
+filesystem paths as a cross-machine protocol. `ImplementationHost` owns remote
+MCP bootstrap and route lifecycle, while the product factory owns the physical
+connection path and request authorization. A desktop host may connect directly
+to its Gateway; a VM-backed host may return a client for a typed desktop relay
+without hiding target rewrites inside a generic HTTP transport.
+
+`mcpserver.Start` projects one `implementationhost.MCPRegistry` through the
+stateless Connector Streamable HTTP protocol on an ephemeral loopback port.
+Hosts issue one bearer binding per Workspace/Agent Session and must revoke that
+binding when the Session ends. Bindings carry transport authority only: they
+never contain Connector credentials and must not be rendered into prompts or
+logs. The server remains running when the registry is empty and relays
+`tools/list_changed` notifications as routes are reconciled.
 
 `DownloadCache` is intended for the machine that holds Market authority. It
 keeps only the last installed archive and one replaceable candidate per

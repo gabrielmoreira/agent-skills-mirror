@@ -191,7 +191,7 @@ const STRINGS = {
       arc: '人物弧光', relationships: '关系', evidence: '原文依据',
     },
     image: {
-      style: '画风', copyTags: '复制标签',
+      style: '画风',
       prompt: '出图提示词 EN', promptLocal: '出图提示词',
       negative: '反向提示词', sheet: '角色设定图提示词 EN',
     },
@@ -244,7 +244,7 @@ const STRINGS = {
       arc: 'Arc', relationships: 'Relationships', evidence: 'From the text',
     },
     image: {
-      style: 'Style', copyTags: 'Copy tags',
+      style: 'Style',
       prompt: 'Image prompt', promptLocal: 'Image prompt (local)',
       negative: 'Negative prompt', sheet: 'Model sheet prompt',
     },
@@ -296,7 +296,7 @@ const STRINGS = {
       arc: '人物の変化', relationships: '関係', evidence: '原文の根拠',
     },
     image: {
-      style: '画風', copyTags: 'タグをコピー',
+      style: '画風',
       prompt: '画像プロンプト EN', promptLocal: '画像プロンプト',
       negative: 'ネガティブプロンプト', sheet: 'キャラ設定画プロンプト EN',
     },
@@ -1638,6 +1638,11 @@ function isMainModule() {
 }
 
 if (isMainModule()) {
+  // `render ... | head` 这类管道提前关闭时安静退出，别甩 EPIPE 堆栈
+  process.stdout.on('error', (e) => {
+    if (e.code === 'EPIPE') process.exit(0);
+    throw e;
+  });
   try {
     main(process.argv.slice(2));
   } catch (error) {

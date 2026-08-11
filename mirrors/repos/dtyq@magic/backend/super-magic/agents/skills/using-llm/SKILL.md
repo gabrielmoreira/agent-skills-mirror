@@ -1,6 +1,7 @@
 ---
 name: using-llm
 description: List available large language models and send chat completion requests programmatically. Use this skill when you need to call an LLM within a snippet, including model comparison, visual understanding, batch inference, and model performance testing.
+
 ---
 
 # LLM Calling Skill
@@ -32,6 +33,7 @@ To use the current Agent text model, read the `SUPER_MAGIC_CURRENT_MODEL_ID` env
 ```python
 # Option 1: run_python_snippet
 run_python_snippet(
+    purpose="Run model code",
     python_code="""
 import os
 from sdk.llm import create_openai_sync_client
@@ -40,7 +42,6 @@ client = create_openai_sync_client()
 model_id = os.environ.get("SUPER_MAGIC_CURRENT_MODEL_ID") or "<model-id>"
 ...
 """,
-    script_path="temp_llm_xxx.py",
     timeout=300,
 )
 
@@ -59,6 +60,7 @@ Use the no-argument form when you want the current Super Magic provider:
 
 ```python
 run_python_snippet(
+    purpose="Send test prompt",
     python_code="""
 import os
 from sdk.llm import create_openai_sync_client
@@ -73,7 +75,6 @@ response = client.chat.completions.create(
 )
 print(response.choices[0].message.content)
 """,
-    script_path="temp_default_provider.py",
     timeout=120,
 )
 ```
@@ -84,6 +85,7 @@ Use explicit client arguments when the user provides their own OpenAI-compatible
 
 ```python
 run_python_snippet(
+    purpose="Use custom model",
     python_code="""
 import os
 from sdk.llm import create_openai_sync_client
@@ -101,7 +103,6 @@ response = client.chat.completions.create(
 )
 print(response.choices[0].message.content)
 """,
-    script_path="temp_custom_provider.py",
     timeout=180,
 )
 ```
@@ -125,6 +126,7 @@ When unsure of the model ID, query available models first:
 
 ```python
 run_python_snippet(
+    purpose="List models",
     python_code="""
 import json
 from sdk.llm import create_openai_sync_client
@@ -133,7 +135,6 @@ client = create_openai_sync_client()
 models = client.models.list()
 print(json.dumps([{"id": m.id} for m in models.data], ensure_ascii=False, indent=2))
 """,
-    script_path="temp_list_models.py",
 )
 ```
 
@@ -153,6 +154,7 @@ Use a real model ID to send a chat request. When executed through `run_python_sn
 
 ```python
 run_python_snippet(
+    purpose="Send chat",
     python_code="""
 import os
 from sdk.llm import create_openai_sync_client
@@ -171,7 +173,6 @@ response = client.chat.completions.create(
 
 print(response.choices[0].message.content)
 """,
-    script_path="temp_chat.py",
     timeout=120,
 )
 ```
@@ -191,6 +192,7 @@ Important: `image_to_base64` already returns a complete data URL string, such as
 
 ```python
 run_python_snippet(
+    purpose="Analyze image",
     python_code="""
 import os
 from sdk.llm import create_openai_sync_client, file_to_url, image_to_base64
@@ -219,7 +221,6 @@ response = client.chat.completions.create(
 
 print(response.choices[0].message.content)
 """,
-    script_path="temp_vision.py",
     timeout=120,
 )
 ```

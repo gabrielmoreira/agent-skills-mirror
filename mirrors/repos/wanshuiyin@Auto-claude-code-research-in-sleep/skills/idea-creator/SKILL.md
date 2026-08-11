@@ -19,7 +19,7 @@ Given a broad research direction from the user, systematically generate, validat
 - **PILOT_TIMEOUT_HOURS = 3** — Hard timeout: kill pilots exceeding 3 hours. Collect partial results if available.
 - **MAX_PILOT_IDEAS = 3** — Pilot at most 3 ideas in parallel. Additional ideas are validated on paper only.
 - **MAX_TOTAL_GPU_HOURS = 8** — Total GPU budget for all pilots combined.
-- **REVIEWER_MODEL = `gpt-5.6-sol`** — Default model for the Codex backend. Must be an OpenAI model (e.g., `gpt-5.6-sol`, `o3`, `gpt-4o`). Manual backend uses whatever model the user chooses, **but it must be a non-Claude model** — the executor is Claude, so pasting into any Claude product makes Claude judge Claude and voids the cross-model invariant (see `shared-references/reviewer-routing.md`).
+- **REVIEWER_MODEL = `gpt-5.6-sol`** — Default model for the Codex backend. Must be an OpenAI model (e.g., `gpt-5.6-sol`, `o3`, `gpt-4o`). Manual backend uses a model the user chooses, **but it must be a non-Claude model ARIS can classify** (OpenAI, Google, DeepSeek, Moonshot/Kimi, Qwen) — the executor is Claude, so pasting into any Claude product makes Claude judge Claude and voids the cross-model invariant (see `shared-references/reviewer-routing.md`).
 - **REVIEWER_BACKEND = `codex`** — Default: Codex MCP (xhigh). Override with `— reviewer: oracle-pro` for Oracle MCP, or `— reviewer: manual` for Manual Review MCP. If manual-review MCP is unavailable, stop and print the install command; do not fall back to Codex. See `shared-references/reviewer-routing.md`.
 - **OUTPUT_DIR = `idea-stage/`** — All idea-stage outputs go here. Create the directory if it doesn't exist.
 
@@ -36,12 +36,12 @@ When calling the reviewer for idea evaluation, branch on REVIEWER_BACKEND:
 **If REVIEWER_BACKEND = `manual`:**
   Use `mcp__manual_review__review` for new review threads with:
     prompt: [exact same prompt that would go to Codex]
-    config: {"model_reasoning_effort": "xhigh"}
+    config: {"model_reasoning_effort": "xhigh", "executor_model": "<actual executor model>", "require_reviewer_model": true}
   Save the returned `threadId`.
   Use `mcp__manual_review__review_reply` for follow-up rounds with:
     threadId: [saved manual-review threadId]
     prompt: [follow-up prompt]
-    config: {"model_reasoning_effort": "xhigh"}
+    config: {"model_reasoning_effort": "xhigh", "executor_model": "<actual executor model>", "require_reviewer_model": true}
 
 Content fidelity: the manual reviewer should see the same substantive bundle
 content Codex would read. If the manual UI supports file upload / attachment,
@@ -52,6 +52,13 @@ equally to both backends.
 ## Workflow
 
 ### Phase 0: Load Research Wiki (if active)
+  A verdict-bearing manual response MUST begin with
+  `Reviewer-Model: <exact-model-id>` — pass the model THIS session is actually
+  running as in `executor_model`. Missing, unknown, or same-family identity
+  cannot acquit; emit `REVIEW_UNAVAILABLE` rather than guessing. If the executor
+  model cannot be named, manual review's cross-family claim is unprovable — say
+  so in the report instead of asserting it.
+
 
 **Skip this phase entirely if `research-wiki/` does not exist.**
 

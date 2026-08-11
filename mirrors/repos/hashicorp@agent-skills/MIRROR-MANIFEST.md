@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `hashicorp/agent-skills` — 26 default patterns, 0 followed patterns, 18 file(s) materialized.
+Mirror of `hashicorp/agent-skills` — 26 default patterns, 0 followed patterns, 22 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `hashicorp/agent-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 18 |
+| Files         | 22 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,24 +59,28 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 2 | ✓ | [`packer/builders/skills/aws-ami-builder/SKILL.md`](packer/builders/skills/aws-ami-builder/SKILL.md) |
-| 3 | ✓ | [`packer/builders/skills/azure-image-builder/SKILL.md`](packer/builders/skills/azure-image-builder/SKILL.md) |
-| 4 | ✓ | [`packer/builders/skills/windows-builder/SKILL.md`](packer/builders/skills/windows-builder/SKILL.md) |
-| 5 | ✓ | [`packer/hcp/skills/push-to-registry/SKILL.md`](packer/hcp/skills/push-to-registry/SKILL.md) |
-| 6 | ✓ | [`terraform/code-generation/skills/azure-verified-modules/SKILL.md`](terraform/code-generation/skills/azure-verified-modules/SKILL.md) |
-| 7 | ✓ | [`terraform/code-generation/skills/terraform-search-import/SKILL.md`](terraform/code-generation/skills/terraform-search-import/SKILL.md) |
-| 8 | ✓ | [`terraform/code-generation/skills/terraform-style-guide/SKILL.md`](terraform/code-generation/skills/terraform-style-guide/SKILL.md) |
-| 9 | ✓ | [`terraform/code-generation/skills/terraform-test/SKILL.md`](terraform/code-generation/skills/terraform-test/SKILL.md) |
-| 10 | ✓ | [`terraform/module-generation/skills/refactor-module/SKILL.md`](terraform/module-generation/skills/refactor-module/SKILL.md) |
-| 11 | ✓ | [`terraform/module-generation/skills/terraform-stacks/SKILL.md`](terraform/module-generation/skills/terraform-stacks/SKILL.md) |
-| 12 | ✓ | [`terraform/policy/skills/terraform-policy/SKILL.md`](terraform/policy/skills/terraform-policy/SKILL.md) |
-| 13 | ✓ | [`terraform/provider-development/skills/new-terraform-provider/SKILL.md`](terraform/provider-development/skills/new-terraform-provider/SKILL.md) |
-| 14 | ✓ | [`terraform/provider-development/skills/provider-actions/SKILL.md`](terraform/provider-development/skills/provider-actions/SKILL.md) |
-| 15 | ✓ | [`terraform/provider-development/skills/provider-docs/SKILL.md`](terraform/provider-development/skills/provider-docs/SKILL.md) |
-| 16 | ✓ | [`terraform/provider-development/skills/provider-resources/SKILL.md`](terraform/provider-development/skills/provider-resources/SKILL.md) |
-| 17 | ✓ | [`terraform/provider-development/skills/provider-test-patterns/SKILL.md`](terraform/provider-development/skills/provider-test-patterns/SKILL.md) |
-| 18 | ✓ | [`terraform/provider-development/skills/run-acceptance-tests/SKILL.md`](terraform/provider-development/skills/run-acceptance-tests/SKILL.md) |
+| 1 | ✓ | [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) |
+| 2 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 3 | ✓ | [`plugins/packer/skills/aws-ami-builder/SKILL.md`](plugins/packer/skills/aws-ami-builder/SKILL.md) |
+| 4 | ✓ | [`plugins/packer/skills/azure-image-builder/SKILL.md`](plugins/packer/skills/azure-image-builder/SKILL.md) |
+| 5 | ✓ | [`plugins/packer/skills/push-to-registry/SKILL.md`](plugins/packer/skills/push-to-registry/SKILL.md) |
+| 6 | ✓ | [`plugins/packer/skills/windows-builder/SKILL.md`](plugins/packer/skills/windows-builder/SKILL.md) |
+| 7 | ✓ | [`plugins/terraform/skills/azure-verified-modules/SKILL.md`](plugins/terraform/skills/azure-verified-modules/SKILL.md) |
+| 8 | ✓ | [`plugins/terraform/skills/new-terraform-provider/SKILL.md`](plugins/terraform/skills/new-terraform-provider/SKILL.md) |
+| 9 | ✓ | [`plugins/terraform/skills/provider-actions/SKILL.md`](plugins/terraform/skills/provider-actions/SKILL.md) |
+| 10 | ✓ | [`plugins/terraform/skills/provider-configuration/SKILL.md`](plugins/terraform/skills/provider-configuration/SKILL.md) |
+| 11 | ✓ | [`plugins/terraform/skills/provider-docs/SKILL.md`](plugins/terraform/skills/provider-docs/SKILL.md) |
+| 12 | ✓ | [`plugins/terraform/skills/provider-ephemeral-resources/SKILL.md`](plugins/terraform/skills/provider-ephemeral-resources/SKILL.md) |
+| 13 | ✓ | [`plugins/terraform/skills/provider-framework-migration/SKILL.md`](plugins/terraform/skills/provider-framework-migration/SKILL.md) |
+| 14 | ✓ | [`plugins/terraform/skills/provider-resources/SKILL.md`](plugins/terraform/skills/provider-resources/SKILL.md) |
+| 15 | ✓ | [`plugins/terraform/skills/provider-test-patterns/SKILL.md`](plugins/terraform/skills/provider-test-patterns/SKILL.md) |
+| 16 | ✓ | [`plugins/terraform/skills/refactor-module/SKILL.md`](plugins/terraform/skills/refactor-module/SKILL.md) |
+| 17 | ✓ | [`plugins/terraform/skills/run-acceptance-tests/SKILL.md`](plugins/terraform/skills/run-acceptance-tests/SKILL.md) |
+| 18 | ✓ | [`plugins/terraform/skills/terraform-policy/SKILL.md`](plugins/terraform/skills/terraform-policy/SKILL.md) |
+| 19 | ✓ | [`plugins/terraform/skills/terraform-search-import/SKILL.md`](plugins/terraform/skills/terraform-search-import/SKILL.md) |
+| 20 | ✓ | [`plugins/terraform/skills/terraform-stacks/SKILL.md`](plugins/terraform/skills/terraform-stacks/SKILL.md) |
+| 21 | ✓ | [`plugins/terraform/skills/terraform-style-guide/SKILL.md`](plugins/terraform/skills/terraform-style-guide/SKILL.md) |
+| 22 | ✓ | [`plugins/terraform/skills/terraform-test/SKILL.md`](plugins/terraform/skills/terraform-test/SKILL.md) |
 
 ---
 

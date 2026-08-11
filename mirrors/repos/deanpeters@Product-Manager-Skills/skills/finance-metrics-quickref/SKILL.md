@@ -13,6 +13,8 @@ scenarios:
   - "What is the formula for NRR and what is a good benchmark?"
   - "Give me a quick reference for CAC payback and Rule of 40"
   - "I need a fast SaaS metrics cheat sheet for a business review"
+theme: finance-metrics
+estimated_time: "5-10 min"
 ---
 
 
