@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `Bria-AI/bria-skill` — 26 default patterns, 0 followed patterns, 16 file(s) materialized.
+Mirror of `Bria-AI/bria-skill` — 26 default patterns, 0 followed patterns, 27 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `Bria-AI/bria-skill` — 26 default patterns, 0 followed patterns, 16 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 16 |
+| Files         | 27 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -59,22 +59,33 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 
 | # | S | File |
 |---|---|------|
-| 1 | ✓ | [`skills/bria-ai/LICENSE.txt`](skills/bria-ai/LICENSE.txt) |
-| 2 | ✓ | [`skills/bria-ai/references/api-endpoints.md`](skills/bria-ai/references/api-endpoints.md) |
-| 3 | ✓ | [`skills/bria-ai/references/code-examples/bria_client.sh`](skills/bria-ai/references/code-examples/bria_client.sh) |
-| 4 | ✓ | [`skills/bria-ai/SKILL.md`](skills/bria-ai/SKILL.md) |
-| 5 | ✓ | [`skills/image-utils/references/code-examples/image_utils.py`](skills/image-utils/references/code-examples/image_utils.py) |
-| 6 | ✓ | [`skills/image-utils/SKILL.md`](skills/image-utils/SKILL.md) |
-| 7 | ✓ | [`skills/remove-background/LICENSE.txt`](skills/remove-background/LICENSE.txt) |
-| 8 | ✓ | [`skills/remove-background/references/api-endpoints.md`](skills/remove-background/references/api-endpoints.md) |
-| 9 | ✓ | [`skills/remove-background/references/code-examples/bria_client.sh`](skills/remove-background/references/code-examples/bria_client.sh) |
-| 10 | ✓ | [`skills/remove-background/SKILL.md`](skills/remove-background/SKILL.md) |
-| 11 | ✓ | [`skills/vgl/references/schema-reference.md`](skills/vgl/references/schema-reference.md) |
-| 12 | ✓ | [`skills/vgl/SKILL.md`](skills/vgl/SKILL.md) |
-| 13 | ✓ | [`skills/video-remove-background/LICENSE.txt`](skills/video-remove-background/LICENSE.txt) |
-| 14 | ✓ | [`skills/video-remove-background/references/api-endpoints.md`](skills/video-remove-background/references/api-endpoints.md) |
-| 15 | ✓ | [`skills/video-remove-background/references/code-examples/bria_video_client.sh`](skills/video-remove-background/references/code-examples/bria_video_client.sh) |
-| 16 | ✓ | [`skills/video-remove-background/SKILL.md`](skills/video-remove-background/SKILL.md) |
+| 1 | ✓ | [`bria-ai-openclaw/skills/automotive/SKILL.md`](bria-ai-openclaw/skills/automotive/SKILL.md) |
+| 2 | ✓ | [`bria-ai-openclaw/skills/bria-ai/SKILL.md`](bria-ai-openclaw/skills/bria-ai/SKILL.md) |
+| 3 | ✓ | [`bria-ai-openclaw/skills/image-utils/SKILL.md`](bria-ai-openclaw/skills/image-utils/SKILL.md) |
+| 4 | ✓ | [`bria-ai-openclaw/skills/remove-background/SKILL.md`](bria-ai-openclaw/skills/remove-background/SKILL.md) |
+| 5 | ✓ | [`bria-ai-openclaw/skills/vgl/SKILL.md`](bria-ai-openclaw/skills/vgl/SKILL.md) |
+| 6 | ✓ | [`bria-ai-openclaw/skills/video-remove-background/SKILL.md`](bria-ai-openclaw/skills/video-remove-background/SKILL.md) |
+| 7 | ✓ | [`skills/bria-ai/LICENSE.txt`](skills/bria-ai/LICENSE.txt) |
+| 8 | ✓ | [`skills/bria-ai/references/api-endpoints.md`](skills/bria-ai/references/api-endpoints.md) |
+| 9 | ✓ | [`skills/bria-ai/references/code-examples/bria_client.sh`](skills/bria-ai/references/code-examples/bria_client.sh) |
+| 10 | ✓ | [`skills/bria-ai/references/code-examples/build_catalog.py`](skills/bria-ai/references/code-examples/build_catalog.py) |
+| 11 | ✓ | [`skills/bria-ai/references/code-examples/export_variants.py`](skills/bria-ai/references/code-examples/export_variants.py) |
+| 12 | ✓ | [`skills/bria-ai/references/marketplace-presets.md`](skills/bria-ai/references/marketplace-presets.md) |
+| 13 | ✓ | [`skills/bria-ai/SKILL.md`](skills/bria-ai/SKILL.md) |
+| 14 | ✓ | [`skills/ecommerce/LICENSE.txt`](skills/ecommerce/LICENSE.txt) |
+| 15 | ✓ | [`skills/ecommerce/SKILL.md`](skills/ecommerce/SKILL.md) |
+| 16 | ✓ | [`skills/image-utils/references/code-examples/image_utils.py`](skills/image-utils/references/code-examples/image_utils.py) |
+| 17 | ✓ | [`skills/image-utils/SKILL.md`](skills/image-utils/SKILL.md) |
+| 18 | ✓ | [`skills/remove-background/LICENSE.txt`](skills/remove-background/LICENSE.txt) |
+| 19 | ✓ | [`skills/remove-background/references/api-endpoints.md`](skills/remove-background/references/api-endpoints.md) |
+| 20 | ✓ | [`skills/remove-background/references/code-examples/bria_client.sh`](skills/remove-background/references/code-examples/bria_client.sh) |
+| 21 | ✓ | [`skills/remove-background/SKILL.md`](skills/remove-background/SKILL.md) |
+| 22 | ✓ | [`skills/vgl/references/schema-reference.md`](skills/vgl/references/schema-reference.md) |
+| 23 | ✓ | [`skills/vgl/SKILL.md`](skills/vgl/SKILL.md) |
+| 24 | ✓ | [`skills/video-remove-background/LICENSE.txt`](skills/video-remove-background/LICENSE.txt) |
+| 25 | ✓ | [`skills/video-remove-background/references/api-endpoints.md`](skills/video-remove-background/references/api-endpoints.md) |
+| 26 | ✓ | [`skills/video-remove-background/references/code-examples/bria_video_client.sh`](skills/video-remove-background/references/code-examples/bria_video_client.sh) |
+| 27 | ✓ | [`skills/video-remove-background/SKILL.md`](skills/video-remove-background/SKILL.md) |
 
 ---
 

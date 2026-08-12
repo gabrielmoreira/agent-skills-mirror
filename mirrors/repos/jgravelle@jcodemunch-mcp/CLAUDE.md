@@ -613,7 +613,22 @@ thing they do.
    thread. **Cannot execute it is not cannot check it** — the guard that closes
    this reads step text, which is weaker than running the Action and is still
    exactly what was missing.
-7. **A test must never read or write the developer's real global config.**
+7. **`confidence` is certainty language; ship a stop rule beside it.** A score
+   says how sure we are, which invites the caller to go get surer.
+   `tools/_stop_rule.py` answers the other question: can anything make it surer?
+   ⚠ **`terminal` means FINAL, not SAFE** — a blocking verdict is terminal too.
+   ⚠⚠ **A false `terminal: true` on a destructive action is the worst error this
+   contract can make**, so every uncertainty resolves to False, including an
+   unrecognised verdict. Motivated by arXiv 2608.01347, which measures
+   verification loops as a distinct TOOL-borne waste carrier: the highest
+   redundant-verification runs cost 18x the clean-run median and 2.5x the tool
+   calls at no success gain. ⚠ `already_consulted` lives in the tool
+   DESCRIPTION, not the response, because it is static per call and the
+   description is cached — the same fixed-prefix versus per-turn split that
+   paper measures. That makes it prose nobody diffs, so `test_stop_rule.py`
+   binds it to real import sites and fails if a tool stops calling what we
+   claim it consulted.
+8. **A test must never read or write the developer's real global config.**
    `load_config()` with no `storage_path` resolves to `CODE_INDEX_PATH` or
    `~/.code-index/config.jsonc`, reads it, and with the default
    `create_missing=True` WRITES it when absent. ⚠⚠ **conftest's

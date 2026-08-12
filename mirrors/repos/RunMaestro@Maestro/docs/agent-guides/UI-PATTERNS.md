@@ -868,9 +868,10 @@ Presets:
 
 - **`chat`** - richest surface (AI Terminal, Group Chat, History, Feedback,
   Director's Notes, Document Graph). Shiki code fences with copy button + language
-  picker, file links via `remarkFileLinks`, right-click link/file/SVG context
-  menus (inline `<svg>` diagrams get a Copy Image / Save Image menu via
-  `SvgContextMenu` + `utils/svgExport.ts`), IPC-loaded local images, chat line
+  picker, file links via `remarkFileLinks`, right-click link/file/image context
+  menus (raster `<img>` and inline `<svg>` diagrams both get a Copy Image / Save
+  Image menu via `ImageContextMenu` + `hooks/ui/useImageContextMenu.ts` +
+  `utils/imageExport.ts`), IPC-loaded local images, chat line
   breaks + KaTeX math, Bionify, raw-HTML + DOMPurify. `MarkdownRenderer` is a thin
   wrapper around `<Markdown preset="chat">`.
 - **`document`** - file/doc preview. Prism highlighting, search highlight, anchor
@@ -917,6 +918,18 @@ Portal-rendered toast notification stack. Rendered in `App.tsx`:
 ```tsx
 <ToastContainer theme={theme} onSessionClick={handleSessionClick} />
 ```
+
+---
+
+## Right-Click Image Menu (`ImageContextMenu` + `useImageContextMenu`)
+
+Every image rendered in chat gets the same two actions on right-click: **Copy Image** (clipboard) and **Save Image...** (native save dialog). Do NOT add a per-surface copy/save button pair or a second menu - wire the shared pieces:
+
+- `useImageContextMenu()` (`hooks/ui/useImageContextMenu.ts`) owns the menu state. Use `openImageMenu(target, x, y)` when React owns the element (a markdown `<img>`, an inline `<svg>`), and `openImageMenuFromEvent(e)` when the image is injected imperatively or when one handler covers a strip of thumbnails - it resolves the `<svg>`/`<img>` the click actually landed on.
+- `<ImageContextMenu menu={imageMenu} theme={theme} onDismiss={dismissImageMenu} />` renders the menu, portaled to `document.body` and positioned at the pointer via `useContextMenuPosition`.
+- `utils/imageExport.ts` does the work: `copyImageElementToClipboard()` and `saveImageElementToDisk()`. Both accept either element type. SVG targets save as `.svg` markup, or rasterize when the user picks `.png`; raster targets keep their encoding. Binary writes go through `fs.writeImageFile` (`fs.writeFile` is UTF-8 and would corrupt the bytes).
+
+Wired surfaces: chat markdown (`Markdown` chat preset, covering `<img>` and inline `<svg>`), `MermaidRenderer` (the diagram `<svg>` is appended imperatively, so the handler lives on the container), transcript attachment thumbnails (`TerminalOutput`), and `LightboxModal`.
 
 ---
 

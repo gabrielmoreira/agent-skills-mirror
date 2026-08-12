@@ -180,7 +180,7 @@ ouroboros --version                   # verify CLI
 
 **One-liner alternative** (auto-detects your runtime and installs matching extras):
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Q00/ouroboros/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Q00/ouroboros/main/scripts/install.sh | OUROBOROS_INSTALL_REF=docs-getting-started bash
 ```
 
 ### Option 3: From Source (Contributors)
@@ -318,7 +318,7 @@ The Socratic Interviewer asks clarifying questions:
 - "Mobile app or web-based?" (Desktop-only with web export)
 - "Data storage preference?" (SQLite, local file)
 
-Answer until the ambiguity score drops below 0.2. The interview then auto-generates a seed spec:
+Answer until the ambiguity score drops below 0.2, and the interview auto-generates a seed spec. If you would rather stop before that, the CLI offers to force generation at whatever score you are on:
 
 ```yaml
 # Auto-generated seed (example)

@@ -12,7 +12,7 @@ Feed it a novel plus target parameters, and get a five-piece short-drama adaptat
 
 Outputs `outline.json`, a Markdown report, and a self-contained `outline-report.html`:
 
-![outline-report.html](assets/report.png)
+![outline-report.html](assets/report.webp)
 
 ## The quality gates are code
 

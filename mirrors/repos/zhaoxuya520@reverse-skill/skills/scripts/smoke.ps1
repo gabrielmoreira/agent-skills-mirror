@@ -121,6 +121,48 @@ if (-not (Test-Path -LiteralPath $mr)) {
 }
 $routeSummary -join [Environment]::NewLine | Set-Content (Join-Path $LogDir '03-route-summary.txt') -Encoding UTF8
 
+# --- 4) Evidence ID immutability ---
+$appendEvidence = Join-Path $scriptDir 'append-evidence.ps1'
+$evidenceCase = Join-Path $LogDir 'evidence-immutability'
+if (-not (Test-Path -LiteralPath $appendEvidence)) {
+    Bad 'append-evidence.ps1 missing for immutability check'
+} else {
+    New-Item -ItemType Directory -Path $evidenceCase -Force | Out-Null
+    & powershell -NoProfile -ExecutionPolicy Bypass -File $appendEvidence `
+        -CaseRoot $evidenceCase `
+        -Id 'E-IMMUTABLE' `
+        -Title 'first write' `
+        -ReproCommand 'echo first' 2>&1 | Out-Null
+    $firstEvidenceExit = $LASTEXITCODE
+    if ($firstEvidenceExit -ne 0) {
+        Bad ("initial Evidence append exit {0}" -f $firstEvidenceExit)
+    } else {
+        $evidencePath = Join-Path $evidenceCase 'evidence\E-IMMUTABLE.md'
+        $indexPath = Join-Path $evidenceCase 'evidence\INDEX.md'
+        $beforeEvidence = (Get-FileHash -LiteralPath $evidencePath -Algorithm SHA256).Hash
+        $beforeIndex = (Get-FileHash -LiteralPath $indexPath -Algorithm SHA256).Hash
+
+        & powershell -NoProfile -ExecutionPolicy Bypass -File $appendEvidence `
+            -CaseRoot $evidenceCase `
+            -Id 'E-IMMUTABLE' `
+            -Title 'second write' `
+            -ReproCommand 'echo second' 2>&1 | Out-Null
+        $duplicateEvidenceExit = $LASTEXITCODE
+
+        $afterEvidence = (Get-FileHash -LiteralPath $evidencePath -Algorithm SHA256).Hash
+        $afterIndex = (Get-FileHash -LiteralPath $indexPath -Algorithm SHA256).Hash
+        if ($duplicateEvidenceExit -eq 0) {
+            Bad 'duplicate Evidence ID was accepted'
+        } elseif ($beforeEvidence -ne $afterEvidence) {
+            Bad 'existing Evidence changed after duplicate append'
+        } elseif ($beforeIndex -ne $afterIndex) {
+            Bad 'Evidence index changed after duplicate append'
+        } else {
+            Ok 'duplicate Evidence ID rejected without mutation'
+        }
+    }
+}
+
 # --- summary ---
 $summary = @(
     "VERIFY_EXIT=$verifyExit",

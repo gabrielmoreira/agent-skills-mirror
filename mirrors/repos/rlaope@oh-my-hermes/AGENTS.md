@@ -145,6 +145,32 @@ PR without the chat history.
 - Keep public claims conservative and test-backed.
 - Avoid adding dependencies unless the user explicitly approves the dependency
   and its packaging story.
+- Keep routing changes inside the existing normalization helpers
+  (`normalized_phrase`, `routing_tokens`, and `contains_cue_phrase`) rather
+  than adding raw substring checks.
+- Ship routing and policy changes with both positive-intervention and
+  negative-control cases. The source corpora are
+  `ROUTING_INTERVENTION_CASES` and `ROUTING_PRECISION_CASES`.
+- Treat exact-count fixtures as contracts. Update affected assertions in the
+  same change, but do not copy mutable counts or source line numbers into
+  prose.
+
+## Generated Artifact Discipline
+
+Keep source files and generated projections together in the same change:
+
+- `src/skills/catalog.py` and `src/skills/render.py` produce
+  `skills/*/SKILL.md`, `skills/*/references/*.md`, and `docs/WORKFLOWS.md`.
+- `roles_reference_markdown()` in `src/catalogs/roles.py` produces
+  `docs/ROLES.md`.
+- The demo case engine produces
+  `examples/use-cases/g1-g10-demo-cards.json`.
+- `capability_family_projection()` in `src/capabilities/families.py` produces
+  `src/plugin_bundle/omh/tools/capability_families.json`.
+
+Never hand-edit those generated files. Change the source, regenerate every
+affected projection, and commit source plus generated output together. The
+repository checks are byte-exact; a one-character drift is a failure.
 
 ## CodeGraph
 
@@ -185,9 +211,15 @@ PYTHONPATH=tests uv run python -m unittest tests/test_router_content.py -v
 PYTHONPATH=tests uv run python -m unittest discover -s tests -v
 uv run python -m compileall -q src tests
 uv run python -m omh.cli docs workflows --check
+uv run python -m omh.cli docs roles --check
+uv run python -m omh.cli docs capability-families --check
 uv run --group lint ruff check src tests
 git diff --check
 ```
+
+Always set `PYTHONPATH=tests` for unittest because shared test helpers live at
+the tests root. Run the smallest test that proves the claim first, then broaden
+for shared surfaces and run the full suite before claiming completion.
 
 For direction, docs, generated skill, wrapper contract, lifecycle, or runtime
 artifact changes, add or update tests that lock the public contract.

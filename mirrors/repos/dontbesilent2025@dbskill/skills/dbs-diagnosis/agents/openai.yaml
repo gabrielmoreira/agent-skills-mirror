@@ -1,0 +1,4 @@
+interface:
+  display_name: "dbs-diagnosis"
+  short_description: "通过问诊或体检拆解商业模式，定位需求、产品、流量、转化与交付问题"
+  default_prompt: "使用 $dbs-diagnosis，通过问诊或体检诊断当前商业模式。"

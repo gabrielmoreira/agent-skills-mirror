@@ -155,7 +155,31 @@ $notesBlock
 "@
 
 $utf8 = New-Object System.Text.UTF8Encoding $false
-[System.IO.File]::WriteAllText($path, $body, $utf8)
+$stream = $null
+$writer = $null
+try {
+    try {
+        $stream = [System.IO.File]::Open(
+            $path,
+            [System.IO.FileMode]::CreateNew,
+            [System.IO.FileAccess]::Write,
+            [System.IO.FileShare]::None
+        )
+    } catch [System.IO.IOException] {
+        if (Test-Path -LiteralPath $path) {
+            throw ("Evidence record already exists and is immutable: {0}. Use a new -Id." -f $fileName)
+        }
+        throw
+    }
+    $writer = [System.IO.StreamWriter]::new($stream, $utf8)
+    $writer.Write($body)
+} finally {
+    if ($null -ne $writer) {
+        $writer.Dispose()
+    } elseif ($null -ne $stream) {
+        $stream.Dispose()
+    }
+}
 
 $index = Join-Path $evDir 'INDEX.md'
 $line = "- $idSafe | $sev | $st | $titleLine | $fileName"

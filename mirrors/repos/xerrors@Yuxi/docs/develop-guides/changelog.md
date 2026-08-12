@@ -11,6 +11,7 @@
 :::
 
 - 修复 MCP 管理接口可通过 stdio 启动任意本地进程的问题：用户配置仅允许 SSE/Streamable HTTP，运行时拒绝加载历史用户 stdio 记录，系统内置 stdio 的连接参数改为仅由代码维护；前端移除用户 stdio 配置入口，文档补充内置 stdio 的代码添加与验证方式。
+- 工作区新增只读历史对话文件入口 `agents/chats/{thread_id}`，网页以 `YYYY-MM-DD-title` 显示并按日期标题倒序浏览各 thread 的非空 uploads 与 outputs；空目录、无文件对话及 `large_tool_results`、`conversation_history` 等内部中间产物不展示。该目录由 API 虚拟映射，不创建符号链接或复制文件，也不进入当前会话 viewer 与 sandbox 挂载，避免 Agent 读取其他会话历史。面包屑中该目录固定显示为"历史对话"与目录列表一致，多选过滤改用只读路径集合避免逐项查找。
 - 收窄知识库状态边界：读取模型统一收口至 `read_models.py`；创建、列表、详情与更新由 Manager 统一返回 `KnowledgeBaseSummary/Detail`，Router 只转换 HTTP 响应；Manager 协调查询配置、主记录与聚合统计，Repository 在行锁内合并统计投影；executor 接收 frozen `KnowledgeBaseConfig`，负责类型资源、文档操作与类型专属一致性检测，不再写知识库主记录。
 - 修复 Agent worker 知识库运行配置不一致：`get_kb_config` 从 Redis 读取最小 Config 快照，未命中时在 KB 级分布式锁内回源 PostgreSQL，Redis 连接故障时只读请求直接回源且不回填；更新与删除先可靠失效缓存再提交数据库，避免旧请求回填过期配置。查询参数在数据库行锁内合并，并发保存不再互相覆盖。
 - 精简知识库文档内容接口响应：`GET /api/knowledge/databases/{kb_id}/documents/{doc_id}/content` 不再返回分块内部的实体 ID 与抽取结果，避免向文档预览请求传输仅供知识图谱构建使用的数据。

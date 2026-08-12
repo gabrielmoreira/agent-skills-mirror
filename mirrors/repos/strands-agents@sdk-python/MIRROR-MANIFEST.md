@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `strands-agents/sdk-python` — 26 default patterns, 9 followed patterns, 37 file(s) materialized.
+Mirror of `strands-agents/sdk-python` — 26 default patterns, 10 followed patterns, 38 file(s) materialized.
 
 ## Metadata
 
@@ -17,8 +17,8 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 9 followed patter
 | Ref Type      | `branch` |
 | Ref           | `main` |
 | Default pats  | 26 |
-| Followed pats | 9 |
-| Files         | 37 |
+| Followed pats | 10 |
+| Files         | 38 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -52,6 +52,7 @@ Mirror of `strands-agents/sdk-python` — 26 default patterns, 9 followed patter
 ## Followed Sparse Patterns  *(discovered via markdown refs)*
 
 - `CONTRIBUTING.md`
+- `team/COMPLEXITY.md`
 - `team/PR.md`
 - `team/TENETS.md`
 - `team/DECISIONS.md`
@@ -99,11 +100,12 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 30 | → | [`site/CONTRIBUTING.md`](site/CONTRIBUTING.md) |
 | 31 | → | [`strands-py/docs/STYLE_GUIDE.md`](strands-py/docs/STYLE_GUIDE.md) |
 | 32 | → | [`team/API_BAR_RAISING.md`](team/API_BAR_RAISING.md) |
-| 33 | → | [`team/DECISIONS.md`](team/DECISIONS.md) |
-| 34 | → | [`team/designs/README.md`](team/designs/README.md) |
-| 35 | → | [`team/FEATURE_LIFECYCLE.md`](team/FEATURE_LIFECYCLE.md) |
-| 36 | → | [`team/PR.md`](team/PR.md) |
-| 37 | → | [`team/TENETS.md`](team/TENETS.md) |
+| 33 | → | [`team/COMPLEXITY.md`](team/COMPLEXITY.md) |
+| 34 | → | [`team/DECISIONS.md`](team/DECISIONS.md) |
+| 35 | → | [`team/designs/README.md`](team/designs/README.md) |
+| 36 | → | [`team/FEATURE_LIFECYCLE.md`](team/FEATURE_LIFECYCLE.md) |
+| 37 | → | [`team/PR.md`](team/PR.md) |
+| 38 | → | [`team/TENETS.md`](team/TENETS.md) |
 
 ---
 

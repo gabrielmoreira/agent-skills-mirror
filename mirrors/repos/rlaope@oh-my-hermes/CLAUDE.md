@@ -75,12 +75,20 @@ Rules:
   raw substring checks. Phrase triggers for multi-word intents; token triggers
   only when a single token is unambiguous.
 - Guard patterns: routing and policy changes ship with negative cases
-  (overroute guards) alongside positive cases. Adding a trigger without a
-  negative case is incomplete.
-- Tests are contracts. Many fixtures assert exact counts
-  (`case_count == 51`, `intervention_case_count == 105`, etc.). When you add a
+  alongside positive cases. Adding a trigger without a negative case is
+  incomplete. Both corpora live in `src/quality/routing_precision.py` and each
+  has a name worth searching for: `ROUTING_PRECISION_CASES` is the
+  negative-control corpus and its failure metric is `overroute_count`;
+  `ROUTING_INTERVENTION_CASES` is the positive-intervention corpus and its
+  failure metric is `missed_intervention_count`. Grepping for "underroute"
+  finds nothing — the guard exists under the intervention name.
+- Tests are contracts. Many fixtures assert exact counts. When you add a
   routing case, skill, or demo card, update the exact-count assertions in the
-  same commit — they are the point, not noise.
+  same commit — they are the point, not noise. To find them, grep the current
+  value read off `tests/test_routing_precision.py` (or the drift registry in
+  `src/maintenance/drift.py`), not a number quoted here; per the rule above,
+  counts written into prose drift and then send you looking for a string that
+  no longer exists.
 - English for code, docs, commits, and PR text — and for all user-facing CLI
   output by default. Localized output (ko/ja/zh) is explicit opt-in via
   `--language` or `OMH_LANG` only; never auto-detect the OS locale. Korean-only

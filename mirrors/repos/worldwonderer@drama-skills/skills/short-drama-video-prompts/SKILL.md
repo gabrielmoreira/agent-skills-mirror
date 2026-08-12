@@ -8,6 +8,11 @@ license: MIT
 
 把分镜已经决定的一个镜头，写成按时间执行的动作、表演、摄影和声音。运动说明只实现起止边界，不能改写边界。
 
+预览、末端报告与补拍说明是创作者读的，跟随 `short-drama.json#/language`；
+送给视频生成器的**提示词正文**跟随 `#/format/prompt_language`（默认 `en`）。
+两个值都由 core `project_tool.py` 的 `status` 报出，不要各自猜默认值。改了描述语言
+不等于改了画面里说什么或写什么——那来自已接受的资产记录与文字政策。
+
 ## 先定位套件
 
 从本技能目录读取 `suite-ref.json`，按其中相对 `core_manifest` 定位唯一同级主技能与

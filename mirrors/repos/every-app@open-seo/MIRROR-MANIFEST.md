@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 37 file(s) materialized.
+Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 39 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `every-app/open-seo` — 26 default patterns, 0 followed patterns, 37 
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 37 |
+| Files         | 39 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -83,19 +83,21 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 22 | ✓ | [`.agents/skills/seo-audit/template.html`](.agents/skills/seo-audit/template.html) |
 | 23 | ✓ | [`.agents/skills/seo-coach/SKILL.md`](.agents/skills/seo-coach/SKILL.md) |
 | 24 | ✓ | [`.agents/skills/seo-project-setup/SKILL.md`](.agents/skills/seo-project-setup/SKILL.md) |
-| 25 | ✓ | [`.agents/skills/webapp-testing/examples/console_logging.py`](.agents/skills/webapp-testing/examples/console_logging.py) |
-| 26 | ✓ | [`.agents/skills/webapp-testing/examples/element_discovery.py`](.agents/skills/webapp-testing/examples/element_discovery.py) |
-| 27 | ✓ | [`.agents/skills/webapp-testing/examples/static_html_automation.py`](.agents/skills/webapp-testing/examples/static_html_automation.py) |
-| 28 | ✓ | [`.agents/skills/webapp-testing/LICENSE.txt`](.agents/skills/webapp-testing/LICENSE.txt) |
-| 29 | ✓ | [`.agents/skills/webapp-testing/scripts/with_server.py`](.agents/skills/webapp-testing/scripts/with_server.py) |
-| 30 | ✓ | [`.agents/skills/webapp-testing/SKILL.md`](.agents/skills/webapp-testing/SKILL.md) |
-| 31 | ✓ | [`.claude/skills/deslop/SKILL.md`](.claude/skills/deslop/SKILL.md) |
-| 32 | ✓ | [`.claude/skills/merge-ready/SKILL.md`](.claude/skills/merge-ready/SKILL.md) |
-| 33 | ✓ | [`.claude/skills/openseo-release-notes/SKILL.md`](.claude/skills/openseo-release-notes/SKILL.md) |
-| 34 | ✓ | [`.claude/skills/openseo-review-web-content/SKILL.md`](.claude/skills/openseo-review-web-content/SKILL.md) |
-| 35 | ✓ | [`.claude/skills/papercuts/SKILL.md`](.claude/skills/papercuts/SKILL.md) |
-| 36 | ✓ | [`AGENTS.md`](AGENTS.md) |
-| 37 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 25 | ✓ | [`.agents/skills/simple-issue-description/agents/openai.yaml`](.agents/skills/simple-issue-description/agents/openai.yaml) |
+| 26 | ✓ | [`.agents/skills/simple-issue-description/SKILL.md`](.agents/skills/simple-issue-description/SKILL.md) |
+| 27 | ✓ | [`.agents/skills/webapp-testing/examples/console_logging.py`](.agents/skills/webapp-testing/examples/console_logging.py) |
+| 28 | ✓ | [`.agents/skills/webapp-testing/examples/element_discovery.py`](.agents/skills/webapp-testing/examples/element_discovery.py) |
+| 29 | ✓ | [`.agents/skills/webapp-testing/examples/static_html_automation.py`](.agents/skills/webapp-testing/examples/static_html_automation.py) |
+| 30 | ✓ | [`.agents/skills/webapp-testing/LICENSE.txt`](.agents/skills/webapp-testing/LICENSE.txt) |
+| 31 | ✓ | [`.agents/skills/webapp-testing/scripts/with_server.py`](.agents/skills/webapp-testing/scripts/with_server.py) |
+| 32 | ✓ | [`.agents/skills/webapp-testing/SKILL.md`](.agents/skills/webapp-testing/SKILL.md) |
+| 33 | ✓ | [`.claude/skills/deslop/SKILL.md`](.claude/skills/deslop/SKILL.md) |
+| 34 | ✓ | [`.claude/skills/merge-ready/SKILL.md`](.claude/skills/merge-ready/SKILL.md) |
+| 35 | ✓ | [`.claude/skills/openseo-release-notes/SKILL.md`](.claude/skills/openseo-release-notes/SKILL.md) |
+| 36 | ✓ | [`.claude/skills/openseo-review-web-content/SKILL.md`](.claude/skills/openseo-review-web-content/SKILL.md) |
+| 37 | ✓ | [`.claude/skills/papercuts/SKILL.md`](.claude/skills/papercuts/SKILL.md) |
+| 38 | ✓ | [`AGENTS.md`](AGENTS.md) |
+| 39 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

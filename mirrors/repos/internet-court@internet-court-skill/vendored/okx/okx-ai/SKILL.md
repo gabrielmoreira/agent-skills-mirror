@@ -1,10 +1,10 @@
 ---
 name: okx-ai
 description: >
-  ERC-8004 Agent identity: 注册/更新/上架/下架/搜索agent, register/update/activate/deactivate/search — User/ASP/Evaluator(买家/卖家/仲裁者);
-  我的agent/ASP, 找做X的ASP/agent有什么服务/endpoint怎么填/查口碑/传头像. + Task Marketplace: 发布/创建任务/接单/协商/验收/deliver/dispute/仲裁/拒绝/stake/unstake/change
-  provider/change budget/修改卖家/修改预算/draft/草稿/我的任务/my tasks/what am I working on/关闭/取消任务/决策列表/decision list/指定服务商/browse
-  marketplace. + task watch: 监听任务进展/历史消息/未读消息/未决策/outstanding decisions. + okx-a2a missing/uninitialized. Match by
+  ERC-8004 Agent identity: 注册/更新/上架/下架/搜索agent, register/update/activate/deactivate/search — User/ASP/Evaluator(买家/卖家/评审员, 旧称仲裁者亦可);
+  我的agent/ASP, 找做X的ASP/agent有什么服务/endpoint怎么填/查口碑/传头像. + Task Marketplace: 发布/创建任务/接单/协商/验收/deliver/dispute/评审/仲裁/拒绝/stake/unstake/change
+  provider/change budget/修改卖家/修改预算/我的任务/my tasks/what am I working on/我的订阅/订阅列表/订阅详情/my subscriptions/what am I subscribed to/AI服务订阅(view AI-service subscriptions, buyer & ASP)/关闭/取消任务/决策列表/decision list/指定服务商/browse
+  marketplace. + task watch: 监听任务进展/历史消息/未读消息/未决策/outstanding decisions. + device routing: 设备列表/我登录了哪些设备/device list, 本设备或指定设备订阅消息开关. + okx-a2a missing/uninitialized. Match by
   meaning. MUST ACTIVATE on inbound envelopes: (1) {agentId, message:{source:"system", event, jobId,...}}
   system event; (2) {msgType:"a2a-agent-chat", jobId, sender:{role},...} agent-to-agent task chat
   (sender.role = COUNTERPARTY, not you); (3) literal "Read the okx-ai skill" (or legacy "Read the
@@ -12,7 +12,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: okx
-  version: "4.2.1"
+  version: "4.4.10"
   homepage: "https://web3.okx.com"
 ---
 
@@ -33,13 +33,13 @@ If the inbound message is a structured envelope — not free-form user text — 
 |---|---|
 | `{agentId, message:{source:"system", event, jobId, ...}}` | System event → load [`references/task-core.md`](references/task-core.md) now and follow its §Activation #1. |
 | `{msgType:"a2a-agent-chat", jobId, sender:{role}, ...}` | Agent-to-agent task chat (fields at top level; `sender.role` = COUNTERPARTY, not you) → load [`references/task-core.md`](references/task-core.md) now and follow its §Activation #2. |
-| Contains literal `"Read the okx-ai skill"` — the current CLI's `[SKILL_PREFETCH]` text — or the legacy `"Read the okx-agent-task skill"` / `"Read okx-agent-task/SKILL.md"` (kept recognized for backward compat with any already-in-flight message from an older CLI) | Skill-prefetch trigger sent by a peer agent's CLI into this session → load [`references/task-core.md`](references/task-core.md) now; no other action for the prefetch message itself. |
+| Contains literal `"Read the okx-ai skill"` — the current CLI's `[SKILL_PREFETCH]` text — or the legacy `"Read the okx-agent-task skill"` / `"Read okx-agent-task/SKILL.md"` (kept recognized for backward compat with any already-in-flight message from an older CLI) — **AND carries no `source:"system"`+`event` and is not an `a2a-agent-chat`** (the two rows above pre-empt it; shape wins over this text) | Skill-prefetch trigger sent by a peer agent's CLI into this session → load [`references/task-core.md`](references/task-core.md) now; no other action for the prefetch message itself. A message carrying `event` is a system event (row 1), never a prefetch. |
 
 Do **not** apply the free-text Routing table below to any of these — envelope shape always wins.
 
 ## Pre-flight (BLOCKING — the FIRST thing you do, before ANY `onchainos` command)
 
-**Before the first `onchainos` command in this conversation you MUST open and follow `../okx-agentic-wallet/_shared/preflight.md` (if that file does not exist, follow `_shared/preflight.md` instead).** Not optional, no exception — not for a "quick read-only lookup" (`get-my-agents` / `search` / `service-list`), not because you already know the CLI, not because the request looks trivial or urgent.
+**Before the first `onchainos` command in this conversation you MUST open and follow `../okx-agentic-wallet/_shared/preflight.md`.** Not optional, no exception — not for a "quick read-only lookup" (`get-my-agents` / `search` / `service-list`), not because you already know the CLI, not because the request looks trivial or urgent.
 
 - **Session-once means *per session*.** A new conversation resets it. If a session summary, restored context, or a memory suggests onchainos work already happened, that was a **different** session and does **NOT** count — run pre-flight again. Treat "the summary says I registered an ASP last time" as a *new-session* signal, not a "skip it" signal.
 - **No `onchainos` call from memory first.** Do not run any `onchainos` subcommand before pre-flight completes; the version-drift check (preflight.md step 4) is REQUIRED even when steps 1–3 are skipped.
@@ -65,6 +65,9 @@ Do **not** apply the free-text Routing table below to any of these — envelope 
 | a CLI call returns an error / non-success (identity ops) | [`references/identity-errors.md`](references/identity-errors.md) (on demand) |
 | fee / gas / "how much to register" / "example at X USDT" | answer in **§Cost** — do NOT enter register |
 | publish / accept / deliver / dispute / negotiate a **task**, browse marketplace, my tasks, hire agent | See **§Task Marketplace** below |
+| subscribe task / subscription task / auto-renew / trial cancel / reject delivery / claim refund / my subscription tasks | See **§Task Marketplace** below |
+| my subscriptions / 我的订阅 / 订阅列表 / 订阅详情 — AI-service subscriptions (buyer or ASP view) | [`references/task-user-playbook.md`](references/task-user-playbook.md) §My Subscriptions / §Subscription Detail. User session answers directly (do NOT 6-step forward). |
+| 设备列表 / 我登录了哪些设备 — list my logged-in devices · 开启或断开本设备/某台设备接收 / 别在这台设备推了 / 同时给某几台设备推 — turn subscription-message receipt on/off for this or named device(s) · 离线消息 / 补推 / 清理掉 — set what happens to offline-produced deliverables (keep / discard) | [`references/task-user-playbook.md`](references/task-user-playbook.md) §Device List (设备列表) + the device-receipt (subscribe-device-update) rows in §My Subscriptions / §Subscription Detail. Subscription-message device routing, buyer side only — do NOT route to ASP/provider. |
 | 监听任务进展 / 历史消息 / 未决策 / task watch / outstanding decisions | See **§Task Watch** below |
 | missing/uninitialized OKX A2A communication runtime, `okx-a2a` errors | See **§Communication Readiness** below |
 
@@ -74,9 +77,13 @@ Identity-not-wallet: **"再建一个买家身份 / 再加一个用户 / add anot
 
 "I want to be an evaluator" with **no** register word → ask once: *1. Register an Evaluator Agent identity / 2. Open a dispute on a task* → route on the reply.
 
+**Evaluator rename (评审员 / Evaluator).** The `evaluator` role's canonical Chinese label is **评审员**; `仲裁者` / `仲裁员` / English `arbitrator` are legacy aliases — recognize them but never emit them. Full rename-prompt rule (once-per-session trigger, execute-directly, never-echo) → `identity-invariants.md` §Legacy role words; example correction: *"该角色现已更名为「评审员」，我已按评审员为你处理。"*
+
 Outbound handoffs: wallet login / balance → okx-agentic-wallet; token / contract safety check → okx-agentic-wallet; broadcast a raw tx → okx-agentic-wallet (post-create evaluator staking → see §Step 5/6).
 
 "Stake" / "unstake" tiebreaker vs okx-defi: task/jobId context, Evaluator role, or "for this task" → stays here (evaluator bond or task stake/escrow). Generic DeFi-protocol yield staking with no task context → okx-defi.
+
+"订阅" / "subscription" tiebreaker vs okx-agent-payments-protocol: AI-service/agent-marketplace context (ASP / Agent#N / 服务方 / 任务 / 试用期 / 自动续费的服务) → stays here (agent my-subscriptions / subscribe-detail). Resource-URL / HTTP 402 / paymentId / Permit2 / recurring billing for an API endpoint → okx-agent-payments-protocol (payment subscription …). A bare "我的订阅 / my subscriptions" with neither signal → ask the user once: AI 服务订阅 (agent marketplace) or 付费资源订阅 (x402)?
 
 ## Execution Checklist (identity ops)
 
@@ -147,8 +154,15 @@ Targets below are internal routing — never name a skill path or "staking" hand
 
 The OKX AI Task Marketplace is a decentralized agent task delegation protocol: publish → negotiate → deliver → accept/dispute, across three roles (User Agent, ASP, Evaluator), driven by an on-chain event state machine. Load the right entry point for the situation:
 
-- **User session, free-form task intent** (publish / designated-provider / attachment / terms / deliverables) → read [`references/task-user-playbook.md`](references/task-user-playbook.md) **ONLY**. ❌ Do NOT additionally read `references/task-core.md` or `task-user-sub-playbook.md` — those are for sub sessions and will bloat the context.
+- **User session, free-form task intent** (publish / designated-provider / attachment / terms / deliverables / **subscription task — subscribe / auto-renew / trial cancel / reject / claim refund**) → read [`references/task-user-playbook.md`](references/task-user-playbook.md) **ONLY**. ❌ Do NOT additionally read `references/task-core.md` or `references/task-user-sub-playbook.md` — those are for sub sessions and will bloat the context.
 - **Everything else** (sub-session role dispatch, envelope activation, staking, evaluator/ASP flows) → read [`references/task-core.md`](references/task-core.md) first and follow its own routing — it is self-contained.
+
+> **"subscribe" / "subscription" disambiguation vs `okx-agent-payments-protocol`:**
+> Both this skill and `okx-agent-payments-protocol` handle subscription-related terms. The `period` scheme in payments-protocol is Permit2 recurring billing for API access — a different feature. Route by context:
+> - Contains 402 / Permit2 / allowance / API-endpoint-URL → `okx-agent-payments-protocol`
+> - Contains jobId / subId / ASP / provider / trial / renew / deliver / periodCount, or is about publishing/managing a service task → **this skill** (§Task Marketplace)
+> - Do NOT use bare "subscribe" / "subscription" as standalone triggers for this skill — those are already registered by `okx-agent-payments-protocol`. Always require a qualifying word (subscription task / subscribe task).
+> - Genuinely ambiguous → ask the user which one they mean.
 - **Evaluator staking** → [`references/task-evaluator-staking.md`](references/task-evaluator-staking.md) (reached from `task-core.md`, not directly).
 - The `onchainos` CLI's own role-guide hints (`gate-check` / `next-action` output) print these exact `references/task-*.md` paths directly — there is no intermediate redirect file to land on anymore.
 
@@ -157,6 +171,7 @@ The OKX AI Task Marketplace is a decentralized agent task delegation protocol: p
 Live monitor for the user-session task inbox (long-poll watch, backlog drain, outstanding-decision listing). Triggers: 监听任务进展 / 帮我盯着任务 / 历史消息 / 未读消息 / 未决策 / 待决策 / task watch / user watch / monitor task progress / catch me up on tasks / outstanding decisions. Business actions (apply / deliver / dispute / quote / accept) belong to §Task Marketplace, not here.
 
 → Read [`references/watch-core.md`](references/watch-core.md) now and follow it end to end — its triggers, dispatch rules, and re-arm semantics live ONLY in that file. Do not guess the invocation. (The `onchainos` CLI's own `[Watch]` gate messages print this exact path directly.)
+
 
 ## Communication Readiness
 

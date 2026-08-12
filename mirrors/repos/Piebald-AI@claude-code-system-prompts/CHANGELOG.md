@@ -4,6 +4,19 @@ Note: Only use **NEW:** for entirely new prompt files, NOT for new additions/sec
 
 ### Claude Code System Prompts Changelog
 
+# [2.1.228](https://github.com/Piebald-AI/claude-code-system-prompts/commit/b718060)
+
+_+7,141 tokens_
+
+- **NEW:** Data: Claude Code gateway customer-routed inference protocol — Defines offline validation of short-lived, audience-bound CRI JWTs; operator-credential upstream forwarding without credential relay; response-header and error-body hygiene; stable capability-rejection recovery tokens; policy-block responses; discovery metadata; and fixed Messages API endpoint behavior.
+- **NEW:** Skill: Artifact document — Adds creation guidance for live, editable word-processor-style document artifacts with status and ownership metadata, block-level edits, inline comments, stable updates, and preservation of the template's editor machinery.
+- **NEW:** Skill: Artifact spreadsheet — Adds creation guidance for live, editable spreadsheet artifacts with persistable rows, cell editing, formulas, sorting, comments, status metadata, and preservation of the template's editor machinery.
+- **REMOVED:** Agent Prompt: Bash command prefix detection — Removes the standalone policy prompt that extracted allowlistable command prefixes and flagged suspected command injection.
+- Data: Self-hosted runner command help — Documents a non-disableable grace hold that keeps a just-finished background task in flight until the follow-up turn reading its result starts, bounded by `SELF_HOSTED_RUNNER_BG_RESULT_GRACE_MS` and falling back to the default when zero or unusable.
+- Skill: Artifact design, Skill: Prototype, Skill: Whiteboard, and Tool Description: Artifact — Tighten artifact naming around short, distinctive, product-style titles, keep explainers in descriptions rather than dash- or colon-appended title suffixes, and rename topical boards as `<topic> whiteboard` instead of `Whiteboard — <topic>`.
+- System Prompt: Artifact comment list framing and System Prompt: Artifact comment thread framing — Add optional anchor-path guidance to comment lists and keep thread instructions synchronized with the runtime anchor-path marker while continuing to treat viewer-influenced paths and element snippets as untrusted data.
+- Tool Description: ListAgents — Clarifies that Remote Control-connected account listings cover both sessions on other machines and cloud sessions, with each row labeled by kind.
+
 # [2.1.227](https://github.com/Piebald-AI/claude-code-system-prompts/commit/1314a83)
 
 _+6,757 tokens_

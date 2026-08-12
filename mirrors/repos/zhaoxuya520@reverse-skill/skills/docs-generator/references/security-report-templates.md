@@ -29,6 +29,23 @@
 
 ---
 
+---
+
+## 0.6 Vendor structure overlay（专业厂商报告结构）
+
+> 全文规则：`references/vendor-report-rules.md`（Issue #65）  
+> **MUST** 在生成安全类正式报告时读取并选型；**只抽结构，禁止抄录厂商原文/IOC 实例**。
+
+| Flavor | 场景 | 骨架一句话 |
+|--------|------|------------|
+| `malware` | 明确恶意样本/普通木马/白加黑 | 火绒式：概述→流程→样本分析→应急处置→IOC |
+| `apt` | APT/战役/多阶段链 | 卡巴式：摘要→感染链→调查→Interesting findings→技术分析→检测缓解→IOC |
+| `flavor = null` | 普通逆向/渗透/CTF/JS 签名 | 本节任务模板 + 适用的 Base 通用元素 |
+
+**通用元素（G1–G7）摘要**：G1 执行摘要 MUST · G2 Scope MUST · G3 E/F/P MUST · G4 IOC 仅 `malware`/`apt` MUST · G5 建议仅 `malware`/`apt` MUST · G6 附录 SHOULD · G7 ATT&CK 在 `apt` MUST
+
+选型与章节顺序以 `vendor-report-rules.md` 为准；与 §0.1–0.5 冲突时 **Evidence 契约优先**。
+
 ## 1. 逆向工程报告模板
 
 ```markdown
@@ -57,6 +74,9 @@
 
 ### 3.1 基本信息
 <!-- 架构、编译器、保护机制、字符串特征 -->
+
+### 3.1.1 导入表 / 依赖（二进制 MUST）
+<!-- 写入 E-imports / E-triage-imports 摘要；失败也要记 Evidence，禁止跳过 -->
 
 ### 3.2 关键函数/类
 <!-- 列出定位到的关键逻辑，附代码片段 -->
@@ -98,6 +118,17 @@
 ```
 
 ---
+
+---
+
+## 1b. 恶意软件 / APT 报告（厂商 flavor）
+
+当任务为恶意软件分析、病毒报告、APT/战役分析时，**不要**仅用上面「逆向工程」骨架交差；普通逆向任务保持原模板，不自动选择 vendor flavor：
+
+1. 读 `vendor-report-rules.md` 选 `malware` 或 `apt`
+2. 按对应章节顺序输出
+3. 仍 **MUST** 含 §0 Evidence 链；`malware` / `apt` flavor 另 **MUST** 含 IOC 表
+4. 二进制样本的静态分析 **MUST** 含导入表 Evidence（与 radare2/ida/malware 硬门一致）
 
 ## 2. 渗透测试报告模板
 

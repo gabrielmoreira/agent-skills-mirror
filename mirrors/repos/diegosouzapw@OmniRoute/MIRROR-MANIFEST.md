@@ -7,7 +7,7 @@ ref: release/v3.8.50
 
 # Mirror Manifest
 
-Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns, 333 file(s) materialized.
+Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns, 334 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `diegosouzapw/OmniRoute` — 26 default patterns, 12 followed patterns
 | Ref           | `release/v3.8.50` |
 | Default pats  | 26 |
 | Followed pats | 12 |
-| Files         | 333 |
+| Files         | 334 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -387,22 +387,23 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 315 | ✓ | [`skills/omni-usage-logs/SKILL.md`](skills/omni-usage-logs/SKILL.md) |
 | 316 | ✓ | [`skills/omni-version-manager/SKILL.md`](skills/omni-version-manager/SKILL.md) |
 | 317 | ✓ | [`skills/omni-webhooks/SKILL.md`](skills/omni-webhooks/SKILL.md) |
-| 318 | ✓ | [`skills/README.md`](skills/README.md) |
-| 319 | ✓ | [`src/lib/db/AGENTS.md`](src/lib/db/AGENTS.md) |
-| 320 | ✓ | [`tests/fixtures/devin-bridge/e2e-workspace/.claude/skills/bridge-proof/SKILL.md`](tests/fixtures/devin-bridge/e2e-workspace/.claude/skills/bridge-proof/SKILL.md) |
-| 321 | ✓ | [`tests/fixtures/devin-bridge/e2e-workspace/CLAUDE.md`](tests/fixtures/devin-bridge/e2e-workspace/CLAUDE.md) |
-| 322 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
-| 323 | → | [`docs/architecture/AUTHZ_GUIDE.md`](docs/architecture/AUTHZ_GUIDE.md) |
-| 324 | → | [`docs/architecture/CODEBASE_DOCUMENTATION.md`](docs/architecture/CODEBASE_DOCUMENTATION.md) |
-| 325 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
-| 326 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
-| 327 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
-| 328 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
-| 329 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
-| 330 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
-| 331 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
-| 332 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
-| 333 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
+| 318 | ✓ | [`skills/ponytail/SKILL.md`](skills/ponytail/SKILL.md) |
+| 319 | ✓ | [`skills/README.md`](skills/README.md) |
+| 320 | ✓ | [`src/lib/db/AGENTS.md`](src/lib/db/AGENTS.md) |
+| 321 | ✓ | [`tests/fixtures/devin-bridge/e2e-workspace/.claude/skills/bridge-proof/SKILL.md`](tests/fixtures/devin-bridge/e2e-workspace/.claude/skills/bridge-proof/SKILL.md) |
+| 322 | ✓ | [`tests/fixtures/devin-bridge/e2e-workspace/CLAUDE.md`](tests/fixtures/devin-bridge/e2e-workspace/CLAUDE.md) |
+| 323 | → | [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) |
+| 324 | → | [`docs/architecture/AUTHZ_GUIDE.md`](docs/architecture/AUTHZ_GUIDE.md) |
+| 325 | → | [`docs/architecture/CODEBASE_DOCUMENTATION.md`](docs/architecture/CODEBASE_DOCUMENTATION.md) |
+| 326 | → | [`docs/architecture/QUALITY_GATES.md`](docs/architecture/QUALITY_GATES.md) |
+| 327 | → | [`docs/frameworks/A2A-SERVER.md`](docs/frameworks/A2A-SERVER.md) |
+| 328 | → | [`docs/frameworks/AGENT_PROTOCOLS_GUIDE.md`](docs/frameworks/AGENT_PROTOCOLS_GUIDE.md) |
+| 329 | → | [`docs/frameworks/MCP-SERVER.md`](docs/frameworks/MCP-SERVER.md) |
+| 330 | → | [`docs/frameworks/SKILLS.md`](docs/frameworks/SKILLS.md) |
+| 331 | → | [`docs/guides/ELECTRON_GUIDE.md`](docs/guides/ELECTRON_GUIDE.md) |
+| 332 | → | [`docs/ops/TUNNELS_GUIDE.md`](docs/ops/TUNNELS_GUIDE.md) |
+| 333 | → | [`docs/routing/AUTO-COMBO.md`](docs/routing/AUTO-COMBO.md) |
+| 334 | → | [`docs/security/GUARDRAILS.md`](docs/security/GUARDRAILS.md) |
 
 ---
 

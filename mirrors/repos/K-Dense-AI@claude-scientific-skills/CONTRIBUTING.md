@@ -14,9 +14,13 @@ Participation in this project is governed by our [Code of Conduct](CODE_OF_CONDU
 
 ## Skill Location
 
-All repository skills live under `skills/`:
+All repository skills live under `skills/`. The repository root is also an
+[Agent Plugins](https://agent-plugins.org/) package: keep root `plugin.json` schema-valid, do not
+add non-portable top-level fields, and keep its `version` in sync with `pyproject.toml` whenever
+you bump the collection version.
 
 ```text
+plugin.json
 skills/
 └── skill-name/
     ├── SKILL.md
@@ -345,6 +349,7 @@ Before submitting a pull request, confirm:
 - If the skill needs credentials, they are named in `compatibility` and declared in `metadata.openclaw.envVars`.
 - `metadata.version` exists and is quoted.
 - Existing skills have a version bump when changed.
+- If the collection version changes, `plugin.json` `version` matches `pyproject.toml`.
 - The `description` clearly says what the skill does and when to use it.
 - `uv run --with pytest python -m pytest tests/_meta -q` passes. This is what CI blocks on, and it catches a missing suite, a missing `skill-requirements.toml` entry, a broken local link, a leaked local path, and a `SKILL.md` over 500 lines.
 - If the skill ships `scripts/`: a suite exists at `tests/<skill-name>/`, a `[skills.<skill-name>]` entry exists in `tests/skill-requirements.toml`, and `python tests/run_all.py --isolated <skill-name>` passes.

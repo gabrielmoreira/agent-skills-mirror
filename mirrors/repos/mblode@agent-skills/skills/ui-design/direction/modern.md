@@ -1,6 +1,6 @@
 # Modern Conversion Techniques
 
-Personalisation and mobile-first conversion. Load alongside `cro.md` when building or auditing marketing pages. Page speed, accessible copy, and microcopy are covered here only as pointers to their owning skills (`optimise-seo`, `copywriting`, `ui-audit`/`typography-audit`).
+Personalisation and mobile-first conversion. Load alongside `cro.md` when building or auditing marketing pages. Page speed, accessible copy, and microcopy are covered here only as pointers to their owning skills (`optimise-seo`, `copywriting`, `ui-design`/`typography-audit`).
 
 ## Table of contents
 
@@ -51,7 +51,7 @@ Non-personalised B2B landing pages convert at 1-3%. Personalised pages lift conv
 ### Layout rules
 
 - **Single-column layout.** No side-by-side comparisons forcing horizontal scroll.
-- **44-48px tap targets.** Apple minimum 44px, Google recommends 48px. Smaller frustrates thumb navigation.
+- **Tap targets.** Apple's floor is 44px and Google recommends 48px; this skill ships 48, per [guidelines/buttons.md](../guidelines/buttons.md). Smaller frustrates thumb navigation.
 - **Thumb-zone CTA placement.** Primary actions in the bottom-centre, reachable without stretching.
 - **Sticky CTA.** Keep the primary CTA visible as the user scrolls. A fixed bottom bar or floating button keeps the action one tap away.
 
@@ -78,5 +78,5 @@ Non-personalised B2B landing pages convert at 1-3%. Personalised pages lift conv
 Three conversion levers belong to sibling skills; name the lever, then route the work.
 
 - **Page speed.** Pages under 1 second convert roughly 3x better than 5+ seconds, so mobile speed is a conversion decision. Core Web Vitals (LCP/INP/CLS), `font-display`, WebP/AVIF, and third-party script budgets: route to `optimise-seo`.
-- **Accessible copy.** Descriptive link and CTA text and plain-language reading level: route to `copywriting`. The a11y checks (WCAG link purpose, heading hierarchy, contrast): route to `ui-audit` or `typography-audit`.
+- **Accessible copy.** Descriptive link and CTA text and plain-language reading level: route to `copywriting`. The a11y checks (WCAG link purpose, heading hierarchy, contrast): route to `ui-design` or `typography-audit`.
 - **Microcopy.** Button labels, form help text, privacy reassurance, error messages: route to `copywriting`.

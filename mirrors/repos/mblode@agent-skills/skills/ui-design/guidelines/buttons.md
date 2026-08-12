@@ -10,6 +10,7 @@ Covers: primary/secondary buttons, CTAs, icon buttons, destructive actions, form
 - Only one primary button per page: scan the whole page and ensure only one uses a filled/solid primary style; every other must use secondary, soft/muted (solid with opacity), outline, or ghost (text-only); treat dialogs/modals as their own page
 - Never make a secondary button higher contrast than the primary: the primary must always be the most visually prominent
 - Any button that is not the page's primary submit/save action is an inline form action (change avatar, change photo, upload file, generate password, verify email, add item, resend code, etc.): always use the smaller of the two button sizes and a secondary style; never the same height as the form's primary/submit button
+- Choice buttons, presets, segmented controls, and toggle buttons need a persistent selected state. Hover is not selection: the selected state stays unmistakable once the pointer leaves. Use `aria-pressed` on a toggle button, `role="radio"` with `aria-checked` inside a `radiogroup` for a single-choice preset set, and `aria-selected` only on the roles that accept it (`option`, `tab`, `row`, `gridcell`, `treeitem`). `aria-selected` on a plain `<button>` is invalid.
 
 ### Sizing
 
@@ -24,4 +25,4 @@ Covers: primary/secondary buttons, CTAs, icon buttons, destructive actions, form
 
 ## Coding Rules
 
-- Small/icon buttons must meet the 48×48px minimum touch target: make the button `relative` and add `<span class="absolute top-1/2 left-1/2 size-[max(100%,3rem)] -translate-1/2 pointer-fine:hidden" aria-hidden="true" />` as a direct child
+- Small/icon buttons ship at a 48x48px touch target: make the button `relative` and add `<span class="absolute top-1/2 left-1/2 size-[max(100%,3rem)] -translate-1/2 pointer-fine:hidden" aria-hidden="true" />` as a direct child. This file owns the 48px build default. It sits deliberately above the 44x44 WCAG 2.5.5 floor that `rules/interaction-target-size.md` audits to, so a later padding change cannot drop the control under conformance

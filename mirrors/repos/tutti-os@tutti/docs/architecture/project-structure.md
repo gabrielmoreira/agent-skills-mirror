@@ -224,6 +224,15 @@ Client packages provide domain-specific access helpers for consumers.
 
 They should remain focused, named by responsibility, and free of hidden business rules.
 
+`packages/clients/connector-controlplane` is the shared Go protocol client for
+account-scoped Connector authorization. It owns authorization session,
+snapshot, and realtime-event decoding plus bounded HTTPS transport. A product
+host supplies the API prefix, HTTP client, and per-account request authorizer;
+the package never stores account cookies, chooses an environment, or sends
+credentials to a runtime VM. `packages/connector/host` selects this client only
+for `remote_streamable_http` releases, while `managed_stdio` authorization
+stays with the injected local implementation host.
+
 `packages/clients/device-authority-go` is the shared Go client boundary for the
 Device Authority owner lifecycle across Tutti and TSH. The initial package is a
 staged cross-repository extraction from TSH: publish the stable module first,

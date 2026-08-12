@@ -1,6 +1,6 @@
 ---
 name: radar
-description: Adding edge-case tests, repairing flaky tests, and improving coverage. Use when test gaps need filling, reliability needs raising, or regression tests need adding. Multi-language support (JS/TS, Python, Go, Rust, Java).
+description: "Adding edge-case tests, repairing flaky tests, and improving coverage. Use when test gaps need filling or regressions need guarding. Supports JS/TS, Python, Go, Rust, and Java."
 ---
 
 <!--
@@ -135,7 +135,7 @@ The last row is the load-bearing one: before starting any autonomous fix loop, v
 
 ## Recipes
 
-Single source of truth for Recipe definitions. Behavior depth lives in the Behavior column; load only the "Read First" column files at the initial step.
+Load only the "Read First" files at the initial step. Full behavior detail -> `reference/testing-patterns.md`.
 
 | Recipe | Subcommand | Default? | When to Use | Behavior | Read First |
 |--------|-----------|---------|-------------|----------|------------|
@@ -144,9 +144,9 @@ Single source of truth for Recipe definitions. Behavior depth lives in the Behav
 | Coverage Fill | `coverage` | | Coverage gap filling and priority gap identification | Target 80%+ diff coverage and select priority gaps by risk assessment. | `reference/coverage-strategy.md` |
 | Regression Suite | `regression` | | Add regression tests from Scout handoffs | Only after a Scout or Builder handoff. Add bug-reproducing tests fail-first, then confirm green after the fix. | `reference/testing-patterns.md`, `reference/advanced-techniques.md` |
 | CI Optimize | `ci` | | Test selection and CI speed improvements | Reduce suite runtime with TIA or skip conditions. Delegate CI infrastructure changes to Gear. | `reference/test-selection-strategy.md` |
-| Unit Test Design | `unit` | | Design unit test architecture from scratch (AAA, test doubles, boundary isolation) across Jest/Vitest, pytest, Go testing, cargo-test | Design unit test architecture from scratch or restructure an existing suite. Enforce AAA (Arrange-Act-Assert), pick the right test double (fake > stub > mock > spy in that preference order), isolate at the unit boundary, and keep tests deterministic (no clock, network, or filesystem without injection). Multi-language: Vitest 4.x / Jest 30 for TS/JS, pytest 8.x for Python, Go `testing`, `cargo test` / cargo-nextest for Rust, JUnit 5.12+ / JUnit 6 for Java. Use `coverage` instead when the goal is filling gaps in an existing suite, not redesigning it. | `reference/unit-testing.md` |
-| Integration Test Design | `integration` | | Design backend-integration test architecture with Testcontainers, WireMock/MSW, DB fixture strategy | Design backend-service integration tests (component-to-component: service ↔ DB / cache / queue / downstream HTTP). Prefer Testcontainers for ephemeral Postgres/MySQL/Redis/Kafka, WireMock or MSW for HTTP stubbing at the boundary, and pick a DB fixture strategy (transaction rollback fastest, truncate if triggers matter, per-test DB only when schema migrations are under test). Playwright API mode is acceptable for backend HTTP assertions. Route to `Voyager` for browser-level E2E and full user journeys — this recipe does NOT cover user-to-system flows. Use `edge` instead when extending an existing integration suite with edge cases. | `reference/integration-testing.md` |
-| Mutation Testing | `mutation` | | Run Stryker/PIT/mutmut/cargo-mutants, analyze survivors, triage equivalent mutants, enforce CI mutation-score threshold | Run a mutation testing tool against an existing suite to measure test-suite effectiveness. StrykerJS 7.0+ for JS/TS (supports Vitest, Jest, Node Tap; `npx stryker run`), PIT for Java/Kotlin, mutmut (or cosmic-ray) for Python, cargo-mutants for Rust. Analyze survived mutants as weak assertions, triage equivalent mutants (functionally identical — accept the survivor), and wire a mutation-score threshold into CI (critical modules ≥85%, project-wide ≥60% per Siege baselines). Scope: author-side code-quality mutation (strengthening unit-test assertions day-to-day). Route to `Siege` for program-level mutation strategy, tiered CI (PR/nightly/release) design, operator selection at scale, and mutation as a non-functional resilience verification — Siege owns the broader mutation testing program and Radar `mutation` complements it at the individual-developer layer. | `reference/mutation-testing.md` |
+| Unit Test Design | `unit` | | Design unit-test architecture from scratch across the major runners | Enforce AAA, pick the right test double (**fake > stub > mock > spy** in that order), isolate at the unit boundary, keep tests deterministic (no clock, network, or filesystem without injection). Use `coverage` instead when filling gaps in an existing suite rather than redesigning it. | `reference/unit-testing.md` |
+| Integration Test Design | `integration` | | Backend-integration architecture — service to DB, cache, queue, downstream HTTP | Prefer ephemeral containers for datastores and HTTP stubbing at the boundary; pick a DB fixture strategy (transaction rollback fastest, truncate when triggers matter, per-test DB only when migrations are under test). Browser-level E2E routes to Voyager. | `reference/integration-testing.md` |
+| Mutation Testing | `mutation` | | Measure suite effectiveness, analyze survivors, enforce a CI score threshold | Treat survived mutants as weak assertions, triage equivalent mutants (accept the survivor), and wire a score threshold into CI (critical modules `>=85%`, project-wide `>=60%`). Author-side scope; the program-level mutation strategy belongs to Siege. | `reference/mutation-testing.md` |
 
 ## Subcommand Dispatch
 
@@ -252,39 +252,9 @@ Mode-specific additions:
 
 ## Collaboration
 
-Radar receives bug reports, implementation changes, review findings, coverage gaps, and refactoring safety requests. Radar returns test infrastructure needs, quality metrics, E2E escalations, coverage reports, CI optimization handoffs, and story alignment updates.
+**Receives:** Scout (bug repro needing a regression net), Builder (new feature or API), Judge (weak tests or missing assertions), Guardian (coverage gaps), Zen (pre/post refactor safety), Flow (timing-sensitive UI), Vitrine (component coverage gaps), Oracle (AI-assisted generation strategy), Sentinel (security-critical paths).
+**Sends:** Voyager (browser-level flows), Gear (CI selection, caching, sharding, runner config), Builder (test infrastructure or fixtures), Judge (adversarial review or quality scoring), Zen (test-code readability once behavior is secured). Handoff tokens follow `<FROM>_TO_<TO>_HANDOFF`; full table -> `reference/testing-patterns.md`.
 
-| Direction | Handoff | Purpose |
-|-----------|---------|---------|
-| Scout → Radar | `SCOUT_TO_RADAR_HANDOFF` | Bug report with repro needs regression safety net |
-| Builder → Radar | `BUILDER_TO_RADAR_HANDOFF` | New feature or API needs test coverage |
-| Judge → Radar | `JUDGE_TO_RADAR_HANDOFF` | Review findings identify weak tests or missing assertions |
-| Guardian → Radar | `GUARDIAN_TO_RADAR_HANDOFF` | Coverage gaps require targeted tests |
-| Zen → Radar | `ZEN_TO_RADAR_HANDOFF` | Refactored code needs pre/post safety coverage |
-| Flow → Radar | `FLOW_TO_RADAR_HANDOFF` | Timing-sensitive UI changes need stability coverage |
-| Vitrine → Radar | `SHOWCASE_TO_RADAR_HANDOFF` | Component coverage gaps need test follow-up |
-| Oracle → Radar | `ORACLE_TO_RADAR_HANDOFF` | AI-assisted test generation strategy and evaluation patterns |
-| Sentinel → Radar | `SENTINEL_TO_RADAR_HANDOFF` | Security-critical code paths requiring thorough coverage |
-| Radar → Voyager | `RADAR_TO_VOYAGER_HANDOFF` | Browser-level flow should be validated end to end |
-| Radar → Gear | `RADAR_TO_GEAR_HANDOFF` | CI selection, caching, sharding, or runner config is the bottleneck |
-| Radar → Builder | `RADAR_TO_BUILDER_HANDOFF` | Test infrastructure or fixture needs implementation support |
-| Radar → Judge | `RADAR_TO_JUDGE_HANDOFF` | Tests need adversarial review or quality scoring |
-| Radar → Zen | `RADAR_TO_ZEN_HANDOFF` | Test code needs readability refactoring after behavior is secured |
-| Radar → Vitrine | `RADAR_TO_SHOWCASE_HANDOFF` | Component behavior is covered and stories should be aligned |
-| Radar → Guardian | `RADAR_TO_GUARDIAN_HANDOFF` | Coverage reports for governance tracking |
-| Radar → Oracle | `RADAR_TO_ORACLE_HANDOFF` | AI/LLM-specific testing and evaluation strategy delegation |
-
-### Overlap Boundaries
-
-| Pair | Radar Owns | Partner Owns | Escalation |
-|------|-----------|--------------|------------|
-| Radar / Voyager | Unit and integration tests, component-level assertions | Browser-level E2E, full user journey flows | Radar hands off when test requires browser context or multi-page navigation |
-| Radar / Judge | Test implementation and coverage improvement | Code review findings, quality scoring, bug detection | Judge identifies weak tests → Radar implements fixes |
-| Radar / Builder | Test code, fixtures, mocks | Production code, business logic, API endpoints | Radar requests test infrastructure support from Builder when needed |
-| Radar / Guardian | Test execution and coverage measurement | Git/PR governance, commit strategy, coverage policy | Guardian sets coverage thresholds → Radar meets them |
-| Radar / Gear | Test selection strategy, skip conditions | CI runner config, caching, sharding, Docker builds | Radar proposes selection → Gear implements CI pipeline changes |
-| Radar / Oracle | Traditional software test coverage and mutation testing | AI/LLM evaluation, prompt testing, model quality assessment | Radar tests deterministic code; Oracle handles probabilistic AI evaluation |
-| Radar / Sentinel | Test coverage for security-critical paths | SAST scanning, vulnerability detection, security policy | Sentinel identifies critical paths → Radar ensures 100% coverage |
 
 ## Reference Map
 
@@ -303,16 +273,16 @@ Radar receives bug reports, implementation changes, review findings, coverage ga
 | `reference/async-testing-patterns.md` | Testing async flows, streams, races, and timeout-heavy code |
 | `reference/framework-deep-patterns.md` | Using advanced framework-specific features |
 | `reference/testing-anti-patterns.md` | Auditing test quality and common test smells |
-| `reference/testing-research-rationale.md` | You need the full rationale, benchmark data, and sources behind Core Contract, Critical Constraints, or Test Mix bullets. |
-| `reference/boundaries-rationale.md` | You need the full rationale and sources behind the `Never` list. |
-| `reference/recipe-verify-gates.md` | You need the full per-recipe VERIFY gate detail beyond the Recipes table's Behavior column. |
+| `reference/testing-research-rationale.md` | The full rationale, benchmark data, and sources behind Core Contract, Critical Constraints, or Test Mix bullets. |
+| `reference/boundaries-rationale.md` | The full rationale and sources behind the `Never` list. |
+| `reference/recipe-verify-gates.md` | The full per-recipe VERIFY gate detail beyond the Recipes table's Behavior column. |
 | `reference/ai-assisted-testing.md` | Using AI to accelerate testing without lowering quality |
 | `reference/shift-left-right-testing.md` | Connecting Radar to observability, QAOps, or production feedback loops |
 | `reference/modern-testing-dx.md` | Optimizing test DX, feedback loops, and team maturity |
-| `_common/OPUS_5_AUTHORING.md` | You are sizing the test/coverage report, deciding adaptive thinking depth at LOCK, or front-loading scope at SCAN. Critical for Radar: P2, P5. |
+| `_common/OPUS_5_AUTHORING.md` | Sizing the test/coverage report, deciding adaptive thinking depth at LOCK, or front-loading scope at SCAN. Critical for Radar: P2, P5. |
 | `_common/PROOF_CARRYING.md` | You generate oracles (property + regression + edge-case) in `nexus acceptance` Phase 2. Generated oracles must be deterministic (seed = spec-graph hash) and pass 3× shadow-run on `main` before becoming Gate-blocking. Empty findings without exploration log are rejected as semantically empty. |
-| `reference/autorun-schema.md` | You are emitting the AUTORUN `_STEP_COMPLETE` block — Radar-specific Output/Next schema. |
-| `_common/CODE_QUALITY.md` | You are about to write or modify code — the 7-axis quality bar (SLD/SEC/RDB/MNT/TST/PRF/SCL), its sourced anti-patterns, and the `CODE_QUALITY_GATE` emitted before done. |
+| `reference/autorun-schema.md` | Emitting the AUTORUN `_STEP_COMPLETE` block — Radar-specific Output/Next schema. |
+| `_common/CODE_QUALITY.md` | About to write or modify code — the 7-axis quality bar (SLD/SEC/RDB/MNT/TST/PRF/SCL), its sourced anti-patterns, and the `CODE_QUALITY_GATE` emitted before done. |
 
 ## Operational
 

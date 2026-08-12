@@ -1,0 +1,4 @@
+interface:
+  display_name: "dbs"
+  short_description: "根据用户当前问题，在 29 个正式业务 Skill 中选择并进入最合适的单步处理入口"
+  default_prompt: "使用 $dbs，根据当前问题选择并进入最合适的单步处理入口。"

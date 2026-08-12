@@ -25,7 +25,14 @@ The general-purpose skills that do exist are narrow output-format helpers (`docx
 
 ## Layout
 
+The repository root is an [Agent Plugins](https://agent-plugins.org/) 1.0.0 package: `plugin.json`
+plus the portable `skills/` tree. Keep `plugin.json` valid against the Agent Plugins manifest
+schema, and keep its `version` identical to `pyproject.toml` `[project].version`. Do not add
+non-portable top-level fields to `plugin.json` (no inline MCP, hooks, or client-only keys — use
+`mcp.json` or a reverse-domain `extensions` namespace if those are ever needed).
+
 ```text
+plugin.json                 # Agent Plugins manifest (repo root)
 skills/<skill-name>/
 ├── SKILL.md        # required
 ├── references/     # optional: long documentation, loaded only when needed
@@ -33,8 +40,8 @@ skills/<skill-name>/
 └── assets/         # optional: templates and static resources
 ```
 
-Only `SKILL.md` is required. Reference other files with relative paths from the skill root, kept
-one level deep.
+Only `SKILL.md` is required inside each skill. Reference other files with relative paths from the
+skill root, kept one level deep.
 
 **Tests never live under `skills/`.** A skill directory ships only what an agent loads. Checks for a
 skill's scripts and structure go in the repository-level suite instead:
@@ -367,9 +374,10 @@ hand-tuning one skill's prompt, so the set stays visually consistent.
 - `metadata.version` exists, is quoted, and is bumped if you changed an existing skill.
 - `metadata` is a block mapping; `openclaw` / `hermes` blocks are nested mappings.
 - `uv run skills-ref validate skills/<name>` passes.
+- If the collection version changes, `plugin.json` `version` matches `pyproject.toml`.
 - `uv run --with pytest python -m pytest tests/_meta -q` passes — this is what CI blocks on, and it
-  catches a missing suite, a missing `skill-requirements.toml` entry, a broken local link, and a
-  leaked local path.
+  catches a missing suite, a missing `skill-requirements.toml` entry, a broken local link, a
+  leaked local path, and a drifted Agent Plugins manifest.
 - If the skill ships `scripts/`: a suite exists at `tests/<name>/`, a `[skills.<name>]` entry exists
   in `tests/skill-requirements.toml`, and `python tests/run_all.py --isolated <name>` passes.
 - `docs/images/<name>.png` exists, and was regenerated if the change altered what the skill does.

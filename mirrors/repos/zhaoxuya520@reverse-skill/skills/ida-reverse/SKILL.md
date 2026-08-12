@@ -235,7 +235,7 @@ powershell -File "scripts/open.ps1" -Path "C:\目标.exe" -TimeoutSeconds 600
 输出 `OK:文件名:session_id` 表示成功（后带 `(temp copy)` 表示自动降级到临时副本）。
 若分析时间较长，会周期性输出 `INFO:opening:...`；若达到超时则输出 `ERR:open_timeout_xxs`。
 
-### Step 3: 全局概览
+### Step 3: 全局概览（含导入表硬门）
 ```
 idapro_survey_binary(detail_level="minimal")
 ```
@@ -243,8 +243,10 @@ idapro_survey_binary(detail_level="minimal")
 - 架构（x86/x64/ARM）
 - 入口点（main/WinMain/DllMain）
 - 有趣的字符串（URL、路径、错误消息）
-- 导入分类（加密函数？网络 API？文件操作？）
+- **导入分类（MUST）**：加密函数 / 网络 API / 文件操作 / 进程注入 / 注册表 — 必须落成 Evidence（建议 id：`E-imports`），可用 `idapro_entity_query(kind="imports")` 或 survey 输出中的 imports 段
 - 热门函数（高 xref 计数的函数通常是关键逻辑）
+
+**硬门禁**：未将 imports 视图/分类摘要写入 Evidence 前，MUST NOT 进入 Step 4 深挖结论，MUST NOT 声称 survey 完成。导入表为空或查询失败时仍 MUST 记录失败现象。用户要求重做导入表检查时 MUST 重做本步骤，禁止改换其他步骤。
 
 ### Step 4: 深入关键函数
 ```
@@ -347,6 +349,7 @@ ida-pro-mcp --config
 ## 任务完成自检（声称完成前 MUST 通过）
 
 - [ ] 我是否执行了工作流中的每一步（而不是只阅读）？
+- [ ] survey/imports 是否已写入 Evidence（E-imports）？用户若要求重做导入表，是否重做了同一步？
 - [ ] 我是否基于 `tool-index` 使用了真实工具路径？
 - [ ] 我是否产出了可复现证据（命令/脚本/截图/报告）？
 - [ ] 我是否完成并回写了 RULES 要求的 Checklist 项？

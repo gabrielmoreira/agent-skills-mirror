@@ -317,7 +317,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 252 | ✓ | [`vendor/go.opentelemetry.io/otel/sdk/trace/tracetest/README.md`](vendor/go.opentelemetry.io/otel/sdk/trace/tracetest/README.md) |
 | 253 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.17.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.17.0/README.md) |
 | 254 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.37.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.37.0/README.md) |
-| 255 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.41.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.41.0/README.md) |
+| 255 | ✓ | [`vendor/go.opentelemetry.io/otel/semconv/v1.43.0/README.md`](vendor/go.opentelemetry.io/otel/semconv/v1.43.0/README.md) |
 | 256 | ✓ | [`vendor/go.opentelemetry.io/otel/trace/embedded/README.md`](vendor/go.opentelemetry.io/otel/trace/embedded/README.md) |
 | 257 | ✓ | [`vendor/go.opentelemetry.io/otel/trace/noop/README.md`](vendor/go.opentelemetry.io/otel/trace/noop/README.md) |
 | 258 | ✓ | [`vendor/go.opentelemetry.io/otel/trace/README.md`](vendor/go.opentelemetry.io/otel/trace/README.md) |

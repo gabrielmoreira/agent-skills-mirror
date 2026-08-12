@@ -65,7 +65,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 4 | ✓ | [`.factory/skills/brand-writer/SKILL.md`](.factory/skills/brand-writer/SKILL.md) |
 | 5 | ✓ | [`.factory/skills/humanizer/SKILL.md`](.factory/skills/humanizer/SKILL.md) |
 | 6 | ✓ | [`crates/agent_skills/builtin/create-skill/SKILL.md`](crates/agent_skills/builtin/create-skill/SKILL.md) |
-| 7 | ✓ | [`docs/.conventions/brand-voice/SKILL.md`](docs/.conventions/brand-voice/SKILL.md) |
+| 7 | ✓ | [`docs/.conventions/brand-writer/SKILL.md`](docs/.conventions/brand-writer/SKILL.md) |
 | 8 | ✓ | [`docs/AGENTS.md`](docs/AGENTS.md) |
 | 9 | ✓ | [`docs/src/ai/agent-panel.md`](docs/src/ai/agent-panel.md) |
 | 10 | ✓ | [`docs/src/ai/skills.md`](docs/src/ai/skills.md) |

@@ -43,14 +43,35 @@ discover_active_book() {
     # 不在库里 export（避免给调用方留全局副作用，与文件头「不覆盖调用方 shell 选项」一致）。
     active=$(LC_ALL=C sed -n '1p' "$root/.active-book" | LC_ALL=C sed 's/^[[:space:]]*//;s/[[:space:]]*$//' || true)
     if [ -n "$active" ]; then
-      resolve_project_path "$active"
-      return
+      local active_path active_real
+      active_path=$(resolve_project_path "$active")
+      # 逃逸判定「确证才拒」：只有确实解析出 realpath、且按字节确认它落在项目根之外时才丢弃声明，
+      # 其余一律沿用原有的纯字符串行为。cd+pwd -P 要让 OS 解析整条中文路径，Windows 非 UTF-8
+      # 区域（cp936/GBK）下会失败或把中文段重新编码；此前把「解析成功」当成返回的前提，合法的
+      # 中文 .active-book 就被静默丢掉，而 find -name "追踪" 有同样的多字节弱点，回落也落空。
+      # 容纳判断放进 LC_ALL=C 子 shell 按字节比：pattern 与串都含中文 UTF-8，GBK 下按多字节
+      # 解码会判为非法序列而不匹配。子 shell 内赋值不外泄，符合文件头「不覆盖调用方 shell 选项」。
+      active_real=$(cd "$active_path" 2>/dev/null && pwd -P || true)
+      if [ -n "$active_real" ] && ! (
+        export LC_ALL=C
+        case "$active_real" in
+          "$root"|"$root"/*) exit 0 ;;
+        esac
+        exit 1
+      ); then
+        : # 确证逃出项目根 → 丢弃声明，落到下面的自动发现
+      else
+        printf '%s\n' "$active_path"
+        return
+      fi
     fi
   fi
 
   # 长篇优先（追踪/ 目录存在）
   local first
-  first=$(find "$root" -maxdepth 4 -type d -name "追踪" -print -quit 2>/dev/null || true)
+  first=$(find "$root" -maxdepth 4 \
+    \( -type d ! -path "$root" \( -name '.*' -o -name node_modules \) -prune \) -o \
+    \( -type d -name "追踪" -print -quit \) 2>/dev/null || true)
   if [ -n "$first" ]; then
     dirname "$first"
     return
@@ -58,7 +79,9 @@ discover_active_book() {
 
   # 短篇 fallback：查找 正文/ 目录或 正文.md（maxdepth 4 覆盖 推荐/短篇/书名/正文 结构）
   local story_path
-  story_path=$(find "$root" -maxdepth 4 \( -type d -name "正文" -o -type f -name "正文.md" \) -print -quit 2>/dev/null || true)
+  story_path=$(find "$root" -maxdepth 4 \
+    \( -type d ! -path "$root" \( -name '.*' -o -name node_modules \) -prune \) -o \
+    \( \( -type d -name "正文" -o -type f -name "正文.md" \) -print -quit \) 2>/dev/null || true)
   if [ -n "$story_path" ]; then
     dirname "$story_path"
   fi
@@ -113,8 +136,12 @@ discover_all_books() {
   # 用 awk 去重保持插入顺序（bash 3.2 兼容，不用关联数组）
   {
     # 长篇：追踪/ 父目录
-    find "$root" -maxdepth 4 -type d -name "追踪" -print 2>/dev/null | while IFS= read -r d; do dirname "$d"; done
+    find "$root" -maxdepth 4 \
+      \( -type d ! -path "$root" \( -name '.*' -o -name node_modules \) -prune \) -o \
+      \( -type d -name "追踪" -print \) 2>/dev/null | while IFS= read -r d; do dirname "$d"; done
     # 短篇：正文/ 父目录 或 正文.md 父目录
-    find "$root" -maxdepth 4 \( -type d -name "正文" -o -type f -name "正文.md" \) -print 2>/dev/null | while IFS= read -r d; do dirname "$d"; done
+    find "$root" -maxdepth 4 \
+      \( -type d ! -path "$root" \( -name '.*' -o -name node_modules \) -prune \) -o \
+      \( \( -type d -name "正文" -o -type f -name "正文.md" \) -print \) 2>/dev/null | while IFS= read -r d; do dirname "$d"; done
   } | awk 'NF && !seen[$0]++'
 }

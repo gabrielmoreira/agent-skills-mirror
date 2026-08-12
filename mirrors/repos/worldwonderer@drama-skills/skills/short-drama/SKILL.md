@@ -7,7 +7,11 @@ license: MIT
 # 短剧创作路由
 
 这是轻量项目路由，不在本技能内代写故事、资产提示词、镜头、视频提示词或终审结论。
-默认使用创作者的语言；中文项目使用简洁中文呈现状态、差异、选择和下一步。
+
+创作者可读的内容跟随项目 `short-drama.json#/language`（状态、差异、选择、下一步都算）；
+送给图片/视频生成器的提示词正文跟随 `#/format/prompt_language`（默认 `en`）。
+两者是分开的字段，不要用其中一个推断另一个——`status` 会同时报出这两个值，
+完整规则见 [contract-and-ownership.md](references/contract-and-ownership.md) 的输出语言契约。
 
 ## 每次请求的起点
 
@@ -37,7 +41,8 @@ license: MIT
 | 创作者意图 | 路由 |
 |---|---|
 | 开发点子、故事承诺、系列、分集地图 | `$short-drama-develop` |
-| 导入小说/长材料并做可追溯分集与资产候选预览 | `$short-drama-develop` → 接受改编/分集 → `$short-drama-write` → 接受剧本 → `$short-drama-assets` |
+| 导入小说/长材料并做可追溯分集与资产候选预览 | `$short-drama-novel-analyze` → `$short-drama-develop` → 接受改编/分集 → `$short-drama-write` → 接受剧本 → `$short-drama-assets` |
+| 判断一本长篇值不值得改、先看抽样快评 | `$short-drama-novel-analyze` |
 | 写/改单集契约、因果节拍、剧本 | `$short-drama-write` |
 | 拆人物/造型、地点/视图、道具/状态 | `$short-drama-assets` |
 | 写人物/地点/道具/局部修改的图片提示词 | `$short-drama-image-prompts` |
@@ -68,7 +73,9 @@ reviewer 对新 hash 做 re-review；任何无法取得独立上下文的环节�
 
 没有项目且用户要初始化时：
 
-1. 仅确认或合理推断可逆格式默认值：标题、语言、画幅、路径；集数/时长未知就留空。
+1. 仅确认或合理推断可逆格式默认值：标题、语言、提示词语言、画幅、路径；
+   集数/时长未知就留空。语言默认取创作者当前使用的语言，提示词语言默认 `en`；
+   创作者明确要求提示词也用项目语言时按创作者的，不代为判断质量后果。
 2. 复制项目模板，不覆盖已有创作者文件。
 3. 建立空阶段目录和非公开输入边界。
 4. 在 `short-drama.json#/creator_authority` 建立空的创作者限制、视觉方向和制作配置；

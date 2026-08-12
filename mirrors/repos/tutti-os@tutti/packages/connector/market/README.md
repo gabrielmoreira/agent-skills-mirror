@@ -72,6 +72,12 @@ from the immutable connector release manifest. A browsed page is cached by the
 daemon so a newly observed connector is immediately installable, while the
 scheduled authoritative refresh still traverses every primary category for
 runtime reconciliation.
+Initial section reads settle independently. Successful sections remain usable
+when another section fails, and the failed section exposes its own retry without
+moving the whole catalog into the global error state. A global error is reserved
+for category discovery failure or an initial load where every non-empty section
+fails. Background failures retain the last known good connectors and cursor for
+the affected section.
 Activation creates a child service container and executes the complete startup
 flow before the host renders the module:
 

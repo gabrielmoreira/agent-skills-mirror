@@ -35,6 +35,14 @@ uninstall behavior on real machines.
 
 ## Architecture Rules
 
+Windows compatibility is a continuous repository requirement, not a feature
+that is considered only when a task explicitly mentions Windows. Every behavior
+change must assess its Windows impact. Changes involving paths, filesystems,
+temporary storage, executables, commands, shells, environments, processes,
+permissions, symlinks, sockets, packaging, or native dependencies are
+platform-sensitive by default and require Windows and POSIX reasoning and
+focused coverage.
+
 Platform-neutral services depend on capabilities, not operating-system
 implementations:
 
@@ -69,9 +77,42 @@ system:
 6. Derive paths from injected roots and standard platform APIs. Do not hardcode
    drive letters, user directories, installation locations, or executable
    search results.
+7. Treat every path crossing a process, RPC, JSON, environment, or provider
+   boundary as a host path unless the contract explicitly declares a virtual
+   namespace. Construct host paths with the platform path API, preserve the
+   required absolute-path base such as `cwd`, and never send a POSIX-rooted
+   literal such as `/tmp` or `/sandbox-tmp` to a Windows parser.
+8. Resolve executables through the owning adapter. Account for `.exe`, `.cmd`,
+   and `.ps1`, PATHEXT and PATH behavior, spaces and non-ASCII characters in
+   paths, and Windows command-line quoting. Do not assemble shell command
+   strings when an argv-based process API is available.
+9. Tests for a platform-sensitive contract must exercise the receiving parser,
+   process, or filesystem boundary on Windows where practical. A mock that only
+   verifies emitted strings or serialized maps is insufficient evidence of
+   Windows compatibility.
 
 This is dependency inversion at the native boundary, not a requirement to
 create parallel copies of each service.
+
+### Workspace project identity and imported rail placement
+
+Project paths have one display form and one comparison form; callers must not
+compare raw strings when the path crosses a desktop/daemon boundary. The shared
+user-project core normalizes slash direction and trailing separators, then
+folds case only for Windows-shaped drive or UNC paths. POSIX paths remain
+case-sensitive. The Go rail store keeps the existing canonical filesystem path
+for display and derives a Windows-stable section key for persistence. Project
+registration and deletion resolve an incoming path variant to the existing
+stored row before applying the table's ordinary unique-path write guard, so no
+second identity column is needed.
+
+External session import can persist a session before its selected project is
+registered. The import path therefore registers projects and repairs only
+sessions carrying the durable `imported` marker in the same workspace SQLite
+transaction. Startup migration `workspace_agent_activity_rail_v2` replays the
+same repair for historical rows; ordinary conversations are not moved. This
+uses existing APIs and tables—no new wire fields or database columns are
+required.
 
 ## Workspace App Data Flow
 
@@ -168,6 +209,13 @@ expected managed runtime root. Successful install actions surface user-PATH
 write failures, while status-time adoption repairs PATH on a best-effort basis.
 Registry changes affect new processes only, so an already-open terminal must be
 restarted before it can resolve a newly published command.
+
+Extension session-home preparation keeps its source declaration portable. An
+explicit source environment variable wins; otherwise the Windows adapter maps a
+leading-dot top-level directory to the native user cache root
+(`%LOCALAPPDATA%`) before the shared resolver considers a migrated literal
+user-home-relative directory. Provider IDs and Windows path literals must not
+leak into extension or Agent lifecycle policy.
 
 System proxy resolution follows the same shared precedence on macOS and
 Windows: session/process environment, then the operating-system static proxy,

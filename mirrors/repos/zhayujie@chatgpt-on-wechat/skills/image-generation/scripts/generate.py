@@ -1023,6 +1023,8 @@ _PROVIDER_ID_TO_LABEL = {
     "linkai": "LinkAI",
 }
 
+_CUSTOM_PROVIDER_ENV = "SKILL_IMAGE_GENERATION_CUSTOM_PROVIDER"
+
 
 def _preferred_provider(model: str) -> str | None:
     m = (model or "").lower()
@@ -1030,6 +1032,38 @@ def _preferred_provider(model: str) -> str | None:
         if m.startswith(prefixes):
             return label
     return None
+
+
+def _build_custom_provider(
+    provider_id: str,
+    model: str,
+) -> tuple[str, ImageProvider] | None:
+    """Build the selected OpenAI-compatible custom image provider."""
+    try:
+        config = json.loads(os.environ.get(_CUSTOM_PROVIDER_ENV, ""))
+    except (TypeError, json.JSONDecodeError):
+        return None
+    if not isinstance(config, dict):
+        return None
+
+    custom_id = provider_id[len("custom:"):]
+    if config.get("id") != custom_id:
+        return None
+    api_key = (config.get("api_key") or "").strip()
+    api_base = (config.get("api_base") or "").strip()
+    selected_model = model or (config.get("model") or "").strip()
+    if not api_key or not api_base or not selected_model:
+        return None
+
+    label = (config.get("name") or provider_id).strip()
+    return (
+        label,
+        OpenAIProvider(
+            api_key=api_key,
+            api_base=api_base,
+            model=selected_model,
+        ),
+    )
 
 
 def _build_providers(model: str, provider_id: str = "") -> list[tuple[str, ImageProvider]]:
@@ -1046,6 +1080,10 @@ def _build_providers(model: str, provider_id: str = "") -> list[tuple[str, Image
          model and fall back to automatic routing — every provider then uses
          its own DEFAULT_MODEL.
     """
+    if provider_id.startswith("custom:"):
+        provider = _build_custom_provider(provider_id, model)
+        return [provider] if provider else []
+
     keys = {
         "OpenAI": os.environ.get("OPENAI_API_KEY", ""),
         "Gemini": os.environ.get("GEMINI_API_KEY", ""),
@@ -1143,6 +1181,15 @@ def main():
 
     providers = _build_providers(model, provider_id=provider_id)
     if not providers:
+        if provider_id.startswith("custom:"):
+            print(json.dumps({
+                "error": (
+                    "The selected custom image provider is missing or "
+                    "has no API key, API base, or model configured. "
+                    "Update it in the Models settings before retrying."
+                )
+            }, ensure_ascii=False))
+            sys.exit(1)
         target = f"model '{model}'" if model else "image generation"
         print(json.dumps({
             "error": (

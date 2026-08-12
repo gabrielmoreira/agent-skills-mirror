@@ -216,6 +216,8 @@ After task completion (vulnerability verified / reverse complete / flag captured
 | "Task is basically done, don't need checklist" | **Task completion = ALL Checklist items checked.** Unchecked checklist = task NOT complete. |
 | "I'll reply to user first, continue after confirmation" | **Don't wait for confirmation on deterministic steps.** Execute while informing user. Only pause at genuine decision points. |
 | "I understand the rules, please tell me your task" | **This is the WORST failure mode.** Correct behavior: proactively match user intent to routing table, output analysis, start executing. |
+| "User asked to redo import-table / step X, but I did something else more useful" | **Redo = redo the named step.** When user asks to redo X (e.g. import table check), MUST re-execute X and refresh its Evidence. FORBIDDEN to substitute another step or silently skip X. |
+
 
 ---
 

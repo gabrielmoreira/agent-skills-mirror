@@ -44,6 +44,11 @@ Required behavior:
   whether to split the same agent into multiple bounded lanes;
 - after each planned phase, validate and update the deepwork file, then ask
   `@oracle` to review the phase result before continuing;
+- do not continue review or refinement merely because further improvement is
+  possible; treat `impact × confidence ÷ cost`, discounted after each pass,
+  only as a qualitative reminder that additional cycles must earn their delay
+  and change risk. Once validation passes and no material blocker remains,
+  advance.
 - before an Oracle review, add relevant confirmed research findings and file
   references to the deepwork file so Oracle can assess the decision or risk from
   accepted context instead of redoing discovery;

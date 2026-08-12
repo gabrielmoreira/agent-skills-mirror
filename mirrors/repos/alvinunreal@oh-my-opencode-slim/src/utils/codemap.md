@@ -15,7 +15,9 @@ Centralized utilities and shared abstractions used across the oh-my-opencode-sli
 
 ### Core Abstractions
 
-- **BackgroundJobBoard** (`background-job-board.ts`): Singleton registry and lifecycle manager for background tasks spawned by sub-agents. Implements a reusable session pool pattern with automatic cleanup and reconciliation hooks. Tracks task state (running, completed, error, cancelled), maintains context files, and provides prompt-ready summaries for agent coordination.
+- **BackgroundJobBoard** (`background-job-board.ts`): Singleton registry and lifecycle manager for background tasks spawned by sub-agents. Implements a reusable session pool pattern with automatic cleanup and reconciliation hooks. Tracks task state (running, stopped, completed, error, cancelled), maintains context files, and provides prompt-ready summaries for agent coordination. `stopped` records an ended runtime session without fabricated task success and is never reusable.
+
+- **Runtime Session Status** (`session-runtime-status.ts`): Reads and validates the in-process OpenCode session-status map once per observation. It distinguishes a valid absent session (`idle`) from malformed data or lookup failure (`unknown`) so lifecycle policy never treats schema drift as completion.
 
 - **Logger** (`logger.ts`): File-based logging with 7-day retention, automatic directory creation, and write queuing. Logs are written to `~/.local/share/opencode/log/oh-my-opencode-slim.<sessionId>.log` and cleaned up on initialization.
 

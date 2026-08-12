@@ -14,7 +14,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 > Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude/OpenCode 兼容面保留 `subagent_type`。
 >
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 24` 不一致时（标记缺失、字段缺失/非整数、小于或大于 24）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 24）` 并提示重新运行 `/story-setup` 后新开会话；大于 24 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 25` 不一致时（标记缺失、字段缺失/非整数、小于或大于 25）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 25）` 并提示重新运行 `/story-setup` 后新开会话；大于 25 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
 ## 执行规则
 
@@ -38,7 +38,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 - **从验证过的模式出发**：有对标书就先拆解，没有就从 `genre-styles/{题材}.md`（核心 10 题材）或 `genre-writing-formulas.md`（冷门题材）找对应的短篇剧情模式
 - **定方向就换风格**：题材方向一旦确定（如追妻火葬场），立刻加载 `references/genre-styles/{题材}.md`——正文的腔调、开篇、钩子、情绪烈度、对话金句、招式、收尾全部切到该题材。核心 10 题材（追妻火葬场 / 世情打脸 / 复仇打脸 / 总裁豪门 / 宅斗宫斗 / 民俗怪谈 / 悬疑 / 甜宠 / 双男主 / 沙雕脑洞）有专属风格包，其中追妻含 现代/古代/民国 时代变体与 小三文学/死人文学 流派分支；冷门题材用 `genre-writing-formulas.md` 的结构骨架兜底，腔调仍按 `short-craft.md` 通用底座
-- **定平台基调 + 打磨导语 + 卡付费点**：投稿前先按平台（知乎/小程序/番茄）定基调，正文视角、矛盾烈度、章末落点随之切换；导语单独当门面打磨（导语不行，正文再好也被编辑一眼刷掉）；付费点卡在章末卡脖子断点上。见 `references/submission-craft.md`
 - **只加载必需信息**：写每节前明确目标情绪和要用的技法，答不出就先回读参考
 
 ---
@@ -100,7 +99,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 如果工作目录下存在 `对标/` 或项目根存在 `拆文库/`，或用户提到参考小说：
 
-1. 先按上方第 1 条的同一口径识别本篇，排除同名或来源指向当前 `正文.md` 的 `对标/{当前书}/` 与 `拆文库/{当前书}/`——导入项目里那是本书续写基线，不是对标。排除后没有外部对标时按题材包写，不进入下面几步。
+1. 先按上方「对标发现」第 1 条的同一口径识别本篇，另排除历史误建的 `对标/{当前书}/`；排除后没有外部对标时按题材包写，不进入下面几步。
 2. 按上述顺序查找 `拆文报告.md`、`情节节点.md`、`写作手法.md`、`_meta.json`
 3. **读 `_meta.json.genre_detected`，按下表加载对应题材风格包**（analyze 识别的题材 → write 的 genre-styles 包），正文腔调/招式随之切换：
 
@@ -187,8 +186,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 **项目文件结构**：文件结构见 Phase 2；设定.md/小节大纲.md 为 Phase 2 产出，正文.md 为 Phase 3 产出。
 
 **导入项目续写基线**：`设定.md` 存在「本书续写基线」时先读取，作为已写内容的内部连续性与既有写法约束；它不是对标摘要，不参与主/副对标排序，也不复制到 `对标/`。
-
-**拆文结果自动使用规则**：执行写作前必须按「对标上下文加载」（Phase 2）顺序扫描。找到拆文报告时，把“结构/情绪/反转/写作手法”作为技法参考；找到结构化子目录时，按当前小节目标检索最相关模块。
 
 > 术语说明：Phase 3 按「段」划分叙事结构（开头段/铺垫段/升级段/反转段/结尾段），每段包含若干「小节」（数字编号的 beat）。「场景」指写作时的具体画面。
 
@@ -338,7 +335,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 **中文文本统计注意事项**：
 - `wc -c` 统计的是字节数，禁止用于字数统计，也禁止模型估算字数
-- 字数统计按上方硬约束的 Python 探测命令执行；`wc -m` 仅作为 macOS/Linux 备选
 - 行数统计使用 `wc -l` 是安全的
 
 **不通过 → 回退补足，不得进入精修。**

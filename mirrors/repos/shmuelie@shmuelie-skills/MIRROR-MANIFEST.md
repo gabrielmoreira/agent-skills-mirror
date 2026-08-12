@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `shmuelie/shmuelie-skills` — 26 default patterns, 0 followed patterns, 23 file(s) materialized.
+Mirror of `shmuelie/shmuelie-skills` — 26 default patterns, 0 followed patterns, 24 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `shmuelie/shmuelie-skills` — 26 default patterns, 0 followed pattern
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 23 |
+| Files         | 24 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -69,19 +69,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 8 | ✓ | [`.github/plugin/shmuelie-copilot/skills/plugin-authoring/SKILL.md`](.github/plugin/shmuelie-copilot/skills/plugin-authoring/SKILL.md) |
 | 9 | ✓ | [`.github/plugin/shmuelie-devenv/skills/deploy-scripts/SKILL.md`](.github/plugin/shmuelie-devenv/skills/deploy-scripts/SKILL.md) |
 | 10 | ✓ | [`.github/plugin/shmuelie-devenv/skills/local-mcp-server-development/SKILL.md`](.github/plugin/shmuelie-devenv/skills/local-mcp-server-development/SKILL.md) |
-| 11 | ✓ | [`.github/plugin/shmuelie-devenv/skills/powershell-profile/SKILL.md`](.github/plugin/shmuelie-devenv/skills/powershell-profile/SKILL.md) |
-| 12 | ✓ | [`.github/plugin/shmuelie-devenv/skills/powershell-scripting/SKILL.md`](.github/plugin/shmuelie-devenv/skills/powershell-scripting/SKILL.md) |
-| 13 | ✓ | [`.github/plugin/shmuelie-devenv/skills/shell-wsl/SKILL.md`](.github/plugin/shmuelie-devenv/skills/shell-wsl/SKILL.md) |
-| 14 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/csharp-interop/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/csharp-interop/SKILL.md) |
-| 15 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/dotnet-project-init/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/dotnet-project-init/SKILL.md) |
-| 16 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/icon-assets/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/icon-assets/SKILL.md) |
-| 17 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/msix-store-submission/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/msix-store-submission/SKILL.md) |
-| 18 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/roslyn-sourcegen/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/roslyn-sourcegen/SKILL.md) |
-| 19 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/winui3-msix/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/winui3-msix/SKILL.md) |
-| 20 | ✓ | [`.github/plugin/shmuelie-systems/skills/embedded-cpp/SKILL.md`](.github/plugin/shmuelie-systems/skills/embedded-cpp/SKILL.md) |
-| 21 | ✓ | [`.github/plugin/shmuelie-systems/skills/homelab-infra/SKILL.md`](.github/plugin/shmuelie-systems/skills/homelab-infra/SKILL.md) |
-| 22 | ✓ | [`.github/plugin/shmuelie-systems/skills/qualcomm-aic/SKILL.md`](.github/plugin/shmuelie-systems/skills/qualcomm-aic/SKILL.md) |
-| 23 | ✓ | [`.github/plugin/shmuelie-typescript/skills/typescript-cli/SKILL.md`](.github/plugin/shmuelie-typescript/skills/typescript-cli/SKILL.md) |
+| 11 | ✓ | [`.github/plugin/shmuelie-devenv/skills/powershell-gallery-publishing/SKILL.md`](.github/plugin/shmuelie-devenv/skills/powershell-gallery-publishing/SKILL.md) |
+| 12 | ✓ | [`.github/plugin/shmuelie-devenv/skills/powershell-profile/SKILL.md`](.github/plugin/shmuelie-devenv/skills/powershell-profile/SKILL.md) |
+| 13 | ✓ | [`.github/plugin/shmuelie-devenv/skills/powershell-scripting/SKILL.md`](.github/plugin/shmuelie-devenv/skills/powershell-scripting/SKILL.md) |
+| 14 | ✓ | [`.github/plugin/shmuelie-devenv/skills/shell-wsl/SKILL.md`](.github/plugin/shmuelie-devenv/skills/shell-wsl/SKILL.md) |
+| 15 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/csharp-interop/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/csharp-interop/SKILL.md) |
+| 16 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/dotnet-project-init/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/dotnet-project-init/SKILL.md) |
+| 17 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/icon-assets/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/icon-assets/SKILL.md) |
+| 18 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/msix-store-submission/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/msix-store-submission/SKILL.md) |
+| 19 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/roslyn-sourcegen/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/roslyn-sourcegen/SKILL.md) |
+| 20 | ✓ | [`.github/plugin/shmuelie-dotnet/skills/winui3-msix/SKILL.md`](.github/plugin/shmuelie-dotnet/skills/winui3-msix/SKILL.md) |
+| 21 | ✓ | [`.github/plugin/shmuelie-systems/skills/embedded-cpp/SKILL.md`](.github/plugin/shmuelie-systems/skills/embedded-cpp/SKILL.md) |
+| 22 | ✓ | [`.github/plugin/shmuelie-systems/skills/homelab-infra/SKILL.md`](.github/plugin/shmuelie-systems/skills/homelab-infra/SKILL.md) |
+| 23 | ✓ | [`.github/plugin/shmuelie-systems/skills/qualcomm-aic/SKILL.md`](.github/plugin/shmuelie-systems/skills/qualcomm-aic/SKILL.md) |
+| 24 | ✓ | [`.github/plugin/shmuelie-typescript/skills/typescript-cli/SKILL.md`](.github/plugin/shmuelie-typescript/skills/typescript-cli/SKILL.md) |
 
 ---
 

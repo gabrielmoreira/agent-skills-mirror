@@ -7,7 +7,7 @@ ref: next
 
 # Mirror Manifest
 
-Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 53 file(s) materialized.
+Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 57 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `ComposioHQ/composio` — 26 default patterns, 0 followed patterns, 53
 | Ref           | `next` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 53 |
+| Files         | 57 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -106,12 +106,16 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 45 | ✓ | [`docs/content/toolkits/faq/gemini.md`](docs/content/toolkits/faq/gemini.md) |
 | 46 | ✓ | [`python/AGENTS.md`](python/AGENTS.md) |
 | 47 | ✓ | [`python/providers/AGENTS.md`](python/providers/AGENTS.md) |
-| 48 | ✓ | [`ts/AGENTS.md`](ts/AGENTS.md) |
-| 49 | ✓ | [`ts/e2e-tests/AGENTS.md`](ts/e2e-tests/AGENTS.md) |
-| 50 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
-| 51 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
-| 52 | ✓ | [`ts/packages/core/AGENTS.md`](ts/packages/core/AGENTS.md) |
-| 53 | ✓ | [`ts/packages/providers/AGENTS.md`](ts/packages/providers/AGENTS.md) |
+| 48 | ✓ | [`skills/composio/references/errors.md`](skills/composio/references/errors.md) |
+| 49 | ✓ | [`skills/composio/references/for-you.md`](skills/composio/references/for-you.md) |
+| 50 | ✓ | [`skills/composio/references/platform.md`](skills/composio/references/platform.md) |
+| 51 | ✓ | [`skills/composio/SKILL.md`](skills/composio/SKILL.md) |
+| 52 | ✓ | [`ts/AGENTS.md`](ts/AGENTS.md) |
+| 53 | ✓ | [`ts/e2e-tests/AGENTS.md`](ts/e2e-tests/AGENTS.md) |
+| 54 | ✓ | [`ts/packages/cli/AGENTS.md`](ts/packages/cli/AGENTS.md) |
+| 55 | ✓ | [`ts/packages/cli/CLAUDE.md`](ts/packages/cli/CLAUDE.md) |
+| 56 | ✓ | [`ts/packages/core/AGENTS.md`](ts/packages/core/AGENTS.md) |
+| 57 | ✓ | [`ts/packages/providers/AGENTS.md`](ts/packages/providers/AGENTS.md) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: darwin
-description: Orchestrating ecosystem self-evolution by detecting project lifecycle phases, evaluating agent relevance, synthesizing cross-agent knowledge, and proposing evolution actions (health checks, fitness scoring, structural proposals). Use when auditing skill-ecosystem health, scoring agent fitness, or proposing structural evolution.
+description: "Orchestrating ecosystem self-evolution: lifecycle-phase detection, agent relevance, cross-agent knowledge synthesis, evolution proposals. Use when auditing skill-ecosystem health or fitness."
 ---
 
 <!--

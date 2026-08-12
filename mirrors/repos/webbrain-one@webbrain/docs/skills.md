@@ -1,0 +1,142 @@
+# Skills
+
+A skill is trusted instruction text — optionally with its own tool manifest —
+that WebBrain loads into a run **only when it is relevant**. Manage them under
+Settings → Skills, where you can import skill text or a URL, or remove any
+bundled skill.
+
+## How loading works
+
+Mid and Full runs receive a small catalog of eligible skills: ID, name, summary,
+and optional canonical semantic intents. Full instructions are appended to the
+system prompt only after the skill is activated for the current run, via
+`load_skill`. **Compact tier disables skills entirely** — no loader, no skill
+prompt, no skill tools.
+
+Imported skills are copied into browser local storage.
+
+## Metadata
+
+An optional fenced `webbrain-skill` JSON block can declare:
+
+| Field | Meaning |
+|---|---|
+| `summary` | Maximum 200 characters |
+| `modes` | `ask`, `act`, and/or `dev` |
+| `intents` | Up to six canonical intents such as `verification_code` or `public_media_download` |
+
+Intents are cross-language *meaning* hints for the LLM, not literal keyword
+matching. Skills without metadata infer the first prose paragraph as their
+summary, have no inferred intents, and default to Act/Dev.
+
+WebBrain also recognizes the required `name` and `description` YAML frontmatter
+from an imported [Agent Skills `SKILL.md`](https://agentskills.io/specification).
+The name and description populate the routing catalog, and the frontmatter is
+removed before the Markdown body is loaded. A name entered in Settings and a
+`webbrain-skill` block still take precedence.
+
+This is instruction-only compatibility. WebBrain imports one text document; it
+does not fetch bundled `scripts/`, `references/`, or `assets/`, execute skill
+code, or treat the Agent Skills `allowed-tools` field as a WebBrain permission
+or tool manifest. Use `webbrain-tools` for WebBrain HTTP tools. WebBrain
+recognizes `webbrain-skill` and `webbrain-tools` fences only in the Markdown
+body after valid frontmatter; fence-like text inside frontmatter cannot grant
+routing eligibility or register tools.
+
+## Skill tools
+
+A skill can expose read-only HTTP tools, or short-lived download-job tools, with
+a fenced `webbrain-tools` JSON manifest.
+
+**Importing a skill is the trust boundary for its declared HTTPS endpoint.**
+Download-job skill tools still run in Act mode and use the normal Downloads
+permission gate before saving files. Tool results derived from third-party
+content should be marked `resultPolicy: "untrusted"` so they are wrapped as
+data, not instructions.
+
+Skill HTTP tools reject redirects (including opaque browser redirects), so
+manifests must use a final HTTPS host that does not 3xx.
+
+Skill tools are not part of the static [tool matrix](agent-tools.md#tool-matrix):
+before a skill is loaded, or after it is removed, its tools are absent.
+
+## Bundled skills
+
+Packaged skill markdown lives under `skills/` and is registered in
+`PACKAGED_SKILL_SOURCES` (`agent/skills.js`). Settings → Skills lists every
+packaged skill; only the defaults below are seeded enabled.
+
+### Enabled by default
+
+All three can be removed from Settings → Skills. A removed default is not
+silently restored, including by preactivation.
+
+#### FreeSkillz.xyz
+
+Can expose `read_youtube_transcript`, `fetch_nytimes_article`,
+`resolve_public_media`, and `download_public_media` through its skill manifest.
+On NYTimes / The Athletic tabs it is preactivated for the current run so a
+structured blocking `pageGate` can route directly to the credentialless article
+fallback.
+
+#### OTP / verification-code helper
+
+Loads only for relevant requests and declares no network tool. On the active run
+tab it prefers selected text or a bounded accessibility-tree subtree, matches
+the newest relevant service code, excludes SMS/native-app access, and honors
+Strict secret handling.
+
+When used, the scoped page content and the code are included in the normal
+request to your configured LLM provider. If **Record traces** is enabled, raw
+tool results and model responses are also stored locally until those traces are
+deleted.
+
+#### Humanizer
+
+Rewrites prose WebBrain composes for you, such as an email reply or a post, so
+it reads as human writing. It declares no network tool and adds no tools.
+
+On webmail tabs (Gmail, Outlook, Yahoo, Proton, Fastmail, Zoho, Yandex) it is
+preactivated for the current run, so a reply is humanized without spending a
+`load_skill` hop. Preactivation rides on the site-adapter match, so it does
+nothing when **Site adapters** is turned off in Settings; the skill then loads
+through the catalog like anywhere else. Elsewhere it loads through the normal
+catalog when the request is about drafting or rewriting text. It returns only
+the final text; it does not report what it changed unless you ask.
+
+Select text anywhere and you get a **Humanize** entry, both in the popup and in
+the right-click menu. That explicit entry preactivates the skill on any site;
+later turns in the same selected-text conversation keep it. The canned readers
+— Summarize, Explain, Quiz me, Proofread, Translate — and free-form questions
+typed into the selection box do not, since they do not establish a structured
+writing request. This routing exists because a selected-text run carries no
+tools at all: the catalog is out of reach, so a skill that is not loaded when
+the run starts cannot be loaded later.
+
+It rewrites only prose being composed for a human reader. Quoted material,
+addresses, codes, prices, form-field values, and wording you supplied verbatim
+are left alone.
+
+### Opt-in packaged skills
+
+These ship in the extension and appear under Settings → Skills as available to
+enable. They are not seeded on by default.
+
+| Skill | Modes | Network tools |
+|---|---|---|
+| Disposable email (Mail.tm) | Act, Dev | Mail.tm HTTPS API |
+| Temporary file share (Litterbox) | Act, Dev | Uses browser upload tools; short-lived public link |
+| Open-Meteo weather | Ask, Act, Dev | Geocoding + forecast HTTPS |
+| Open Library | Ask, Act, Dev | Open Library search HTTPS |
+| Wikipedia | Ask, Act, Dev | Wikipedia REST search + Action API summary HTTPS |
+| Turkish deasciifier | Ask, Act, Dev | Instruction-only; uses ordinary verbatim form-entry tools |
+
+Enable a skill only when you want its tools and instructions available for
+`load_skill` on eligible runs.
+
+## See also
+
+- [Agent tools](agent-tools.md) — tiers, modes, and the full tool matrix
+- [Privacy and data flow](privacy-and-data-flow.md#bundled-skills)
+- [Architecture](architecture.md) — skills and dynamic tool exposure in the turn
+  flow

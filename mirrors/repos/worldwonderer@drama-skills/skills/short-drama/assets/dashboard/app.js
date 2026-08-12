@@ -41,15 +41,28 @@ const HIDDEN_FILES = new Set([
 const SECTION_ORDER = ["story", "project", "sources", "cast", "visual", "storyboard", "prompts", "other"];
 
 const CONTENT_META = {
-  sources: { label: "原始资料", description: "故事原稿与参考内容", icon: "稿" },
-  project: { label: "项目设定", description: "故事方向与导演表达", icon: "案" },
-  cast: { label: "人物场景", description: "角色、造型、场景与道具", icon: "角" },
-  story: { label: "故事与剧本", description: "分集构思、节拍与台词", icon: "剧" },
-  prompts: { label: "生成文案", description: "用于生成图片、关键帧与视频的文案", icon: "词" },
-  visual: { label: "画面设计", description: "图片方案与视觉参考", icon: "画" },
-  storyboard: { label: "分镜画面", description: "镜头、关键帧与运动", icon: "镜" },
-  other: { label: "其他内容", description: "放在标准目录之外的创作文件", icon: "他" },
+  sources: { label: "原始资料", description: "故事原稿与参考内容" },
+  project: { label: "项目设定", description: "故事方向与导演表达" },
+  cast: { label: "人物场景", description: "角色、造型、场景与道具" },
+  story: { label: "故事与剧本", description: "分集构思、节拍与台词" },
+  prompts: { label: "生成文案", description: "用于生成图片、关键帧与视频的文案" },
+  visual: { label: "画面设计", description: "图片方案与视觉参考" },
+  storyboard: { label: "分镜画面", description: "镜头、关键帧与运动" },
+  other: { label: "其他内容", description: "放在标准目录之外的创作文件" },
 };
+
+// Icons are drawn once in index.html's <template> and cloned here. Letting the
+// HTML parser own them keeps the SVG namespace out of this file, so the shipped
+// tree stays free of anything shaped like a URL.
+function iconElement(name, className = "icon") {
+  const drawings = [...($("iconTemplates")?.content.children || [])];
+  const source = drawings.find((node) => node.dataset.icon === name) ||
+    drawings.find((node) => node.dataset.icon === "other");
+  if (!source) return element("span", className);
+  const icon = source.cloneNode(true);
+  icon.setAttribute("class", className);
+  return icon;
+}
 
 const INTERNAL_KEY_PARTS = [
   "hash", "sha", "path", "ref", "owner", "schema", "artifact", "authority",
@@ -373,7 +386,7 @@ function navigationItem(file) {
   const item = button("", "content-link", () => openFile(file, true));
   item.classList.toggle("active", state.selected?.path === file.path);
   if (state.selected?.path === file.path) item.setAttribute("aria-current", "true");
-  const icon = element("span", "content-link-icon", file.type === "media" ? "▶" : meta.icon);
+  const icon = iconElement(file.type === "media" ? "media" : section, "icon content-link-icon");
   const copy = element("span", "content-link-copy");
   copy.append(element("strong", "", fileLabel(file.path)), element("small", "", file.type === "media" ? "画面预览" : meta.label));
   item.append(icon, copy);
@@ -405,7 +418,7 @@ function navigationGroup(title, files, groupKey, forceExpanded = false) {
   heading.dataset.groupKey = groupKey;
   heading.setAttribute("aria-expanded", String(expanded));
   heading.append(
-    element("span", "content-nav-group-chevron", "›"),
+    iconElement("chevron", "icon content-nav-group-chevron"),
     element("strong", "", title),
     element("span", "content-nav-group-count", `${files.length} 项`),
   );
@@ -446,7 +459,7 @@ function renderTaskSummary() {
   if (host.hidden) return;
   const title = label === "待你确认" ? "有新版内容待确认" : label === "需要更新" ? "内容需要更新" : "当前内容需要修改";
   const description = label === "待你确认" ? "请确认是否采用当前版本。" : label === "需要更新" ? "请重新整理受影响的内容。" : "请处理当前版本中的问题。";
-  host.append(element("span", "kicker", "待办"), element("h2", "", title), element("p", "", description));
+  host.append(element("h2", "", title), element("p", "", description));
 }
 
 function renderExportSummary() {
@@ -457,7 +470,6 @@ function renderExportSummary() {
   host.hidden = label !== "可以导出";
   if (host.hidden) return;
   host.append(
-    element("span", "kicker", "导出"),
     element("h2", "", `${scope} 可以导出`),
     button("复制导出指令", "primary", () => copyExportRequest("完整制作资料", scope)),
   );
@@ -668,6 +680,26 @@ function renderPreview() {
   }
 }
 
+// The document pane is the whole screen. Holding its shape while the file
+// loads keeps the page from collapsing to an empty column and back.
+function showLoadingSkeleton() {
+  const preview = $("preview");
+  preview.classList.remove("empty-document");
+  preview.classList.add("document-loading");
+  const shell = element("div", "skeleton");
+  shell.append(element("div", "skeleton-line skeleton-heading"));
+  for (const width of ["92%", "78%", "88%", "64%", "84%", "72%"]) {
+    const line = element("div", "skeleton-line");
+    line.style.width = width;
+    shell.append(line);
+  }
+  preview.replaceChildren(shell);
+}
+
+function clearLoadingSkeleton() {
+  $("preview").classList.remove("document-loading");
+}
+
 function cleanupMedia() {
   const video = $("media").querySelector("video");
   if (video) { video.pause(); video.removeAttribute("src"); video.load(); }
@@ -734,6 +766,7 @@ async function openFile(file, scrollToContent = false) {
   setDirty(false);
   setMessage("正在载入…");
   setView("preview");
+  showLoadingSkeleton();
   renderContentList();
   renderExportSummary();
   updateAssistRow();
@@ -742,7 +775,10 @@ async function openFile(file, scrollToContent = false) {
     if (file.type === "media") {
       setView("preview");
       const info = await api(`/api/media?project=${encodeURIComponent(state.project)}&path=${encodeURIComponent(file.path)}`);
-      if (sequence === state.loadSequence && state.selected?.path === file.path) renderMedia(info);
+      if (sequence === state.loadSequence && state.selected?.path === file.path) {
+        clearLoadingSkeleton();
+        renderMedia(info);
+      }
       return;
     }
     const data = await api(`/api/file?project=${encodeURIComponent(state.project)}&path=${encodeURIComponent(file.path)}`);
@@ -752,6 +788,7 @@ async function openFile(file, scrollToContent = false) {
     const editable = Boolean(data.writable && creatorEditable(file));
     $("editor").disabled = !editable;
     $("editMode").disabled = !editable;
+    clearLoadingSkeleton();
     $("preview").classList.remove("empty-document");
     setView("preview");
     setMessage("内容已载入");
@@ -764,6 +801,7 @@ async function openFile(file, scrollToContent = false) {
     $("editMode").disabled = true;
     $("editMode").setAttribute("aria-pressed", "false");
     $("editMode").textContent = "修改正文";
+    clearLoadingSkeleton();
     $("preview").classList.add("empty-document");
     $("preview").replaceChildren(element("p", "preview-warning", "内容无法打开"));
     setMessage(friendlyFailure(error.message), "danger");
@@ -827,6 +865,7 @@ async function selectProject(id, preferredPath = "") {
       $("filename").textContent = "暂无创作内容";
       $("editor").disabled = true;
       $("editMode").disabled = true;
+      clearLoadingSkeleton();
       $("preview").replaceChildren();
     }
   } catch (error) {

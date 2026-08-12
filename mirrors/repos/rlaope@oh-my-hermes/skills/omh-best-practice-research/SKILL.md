@@ -72,6 +72,7 @@ Quality bar:
 - Use official or upstream sources first and name the version/environment assumptions.
 - Map applicability to the user's local context before recommending action.
 - Preserve residual uncertainty instead of overstating best practice.
+- Upstream guidance is the strongest source class and still not completion evidence: that the docs prescribe something is never that it was done, verified, or is passing here.
 
 Handoff policy:
 

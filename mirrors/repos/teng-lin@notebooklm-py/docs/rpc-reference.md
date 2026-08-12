@@ -2165,11 +2165,19 @@ await rpc_call(
 # Fast research web source:
 # [url, title, desc, type, ...]
 #
-# Deep research report source (current shape):
-# [None, [title, report_markdown], None, type, ...]
+# Deep research report source (captured shape):
+# [None, title, None, type, None, None,
+#  [report_markdown, 3, None, None, None, structured_document]]
 #
-# Deep research report source (legacy shape):
-# [None, title, None, type, None, None, [chunk1, chunk2, ...]]
+# Deep research web source content blocks use kind 1 or 2 and carry their
+# snippet at position 2; they are not report rows. In the observed deep payload,
+# kind-1 web-source rows carry an integer ordinal at source position 8, a 1-based
+# bijection over the task's discovered sources. Whether that ordinal equals the
+# report's own citation numbering is NOT established: research_deep_poll_long.yaml
+# carries 24 such ordinals against a report containing no [cite: N] markers at all.
+#
+# Compatibility shape accepted by the parser (not seen in captures):
+# [None, [title, report_markdown], None, type, ...]
 #
 # Notes:
 # - The RPC returns all research tasks for the notebook, not just the latest one.
@@ -2222,9 +2230,14 @@ Import selected research sources into the notebook.
 ```python
 # Build source array from selected sources
 # Deep research imports prepend a special report entry before regular web sources.
+#
+# NOTE: this is the REQUEST the client sends. It is a different shape from the
+# POLL_RESEARCH *response* row documented above — the report body rides at index 1
+# here, whereas a response row carries it in the src[6] kind-3 content block. Built
+# by `_research.py::_build_report_import_entry` / `_build_web_import_entry`.
 source_array = []
 
-# Deep research report entry:
+# Deep research report entry (outgoing import request):
 source_array.append([
     None,                 # 0
     [title, markdown],    # 1: Report title and full markdown body

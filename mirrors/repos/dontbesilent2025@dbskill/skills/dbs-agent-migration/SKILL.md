@@ -228,13 +228,16 @@ Grok Build（Grok TUI）对 bridge 有明确要求：
 - `description`
 - bridge 规范名
 
-命名顺序：
+命名规则：
 
-1. 优先沿用用户已经长期使用的历史名字
-2. 再决定多端统一名
-3. 最后回写真源 frontmatter
+1. 每个 Skill 只保留 1 个可调用名。
+2. 可调用名使用小写英文 kebab-case；dbskill 正式 Skill 使用 `dbs-` 前缀，例如 `dbs-good-question`。
+3. 目录名、frontmatter 的 `name`、bridge 目录名和文档中的斜杠调用必须完全一致。
+4. 中文名称只可作为说明标题和自然语言意图，不能作为 `/` 调用别名。
+5. Codex 的 `agents/openai.yaml` 中，`interface.display_name` 必须与英文标准名完全一致，不能添加 `DBS｜`、中文功能名或其他展示前缀。
+6. `interface.short_description` 必须写清该 Skill 独有的处理对象、动作与主要结果；禁止批量套用通用模板，且不同 Skill 之间不能重复。
 
-不要让脚本根据标题临时乱取名。
+不要让脚本根据标题临时取名，也不要保留中文或混合语言的斜杠别名。
 
 ### Phase 5：生成多端 bridge（Claude / Codex / Grok / 通用 Agents）
 
@@ -379,12 +382,4 @@ bridge_mode: passthrough
 
 ---
 
-## 不知道下一步用哪个 Skill？
-
-输入 `/dbs`。
-
-这是商业工具箱的导航入口。它会读取刚才的具体结论和你的最新目标，选择当前最值得处理的一个方向，并直接路由到对应 Skill。
-
-你也可以直接说你想做什么。`/dbs` 会尊重你的明确选择。
-
-不熟悉所有 Skill 没关系，下一步不确定时就回 `/dbs`。
+完成当前任务后直接结束。只有用户明确询问下一步，且当前环境已经安装 `/dbs` 时，简短提示：「下一步不确定时，可以输入 `/dbs`。」

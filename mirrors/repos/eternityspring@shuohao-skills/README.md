@@ -1,5 +1,9 @@
 **中文** · [English](README.en.md)
 
+> 👋 **找工作 / 合作** — 作者目前在空窗期，这个仓库就是业余的一点小探索。
+> 有缘的朋友欢迎联系。**远程工作**之外，也接受**半合作**——每月几千块生活费 + 利润分成。如有必要，FED的话，也是可以考虑到场出差。希望在AI浪潮下，能找到同频朋友一起做点事情。
+> 个人简历：**[resume.79px.com](https://resume.79px.com)**
+> 
 > 我建了一个 **AI 短剧交流群**（付费），聊 AI 短剧的工作流、工具和实操。
 > 有兴趣的加我：**微信 `hao_dev`**，添加时**备注 `github`**。
 >
@@ -7,16 +11,27 @@
 
 # shuohao-skills
 
-**AI 短剧制作的 skill 集合**：从一本小说到能开拍的制作素材——拆角色、出设定图、排大纲。给 AI 编码 agent 用，**Claude Code 和 codex 都能跑**。
+**AI 短剧制作的 skill 集合**：从一本小说到能开拍的制作素材——拆角色、排大纲、出场景与道具设定。给 AI 编码 agent 用，**Claude Code 和 codex 都能跑**。
 
 | Skill | 做什么 |
 | --- | --- |
 | [**novel-characters**](skills/novel-characters) | 把一篇小说拆成角色设定集：人物画像、形象提示词、音色提示词、角色设定图。报告语言与出图风格可选 |
 | [**novel-outline**](skills/novel-outline) | 把一本小说改编成短剧大纲五件套：改编说明、人物表、爽点表、分集梗概、资产清单。13 道质量门全部脚本检查，支持已有大纲的体检模式 |
+| [**novel-art**](skills/novel-art) | 给 AI 短剧出美术设定集（场景 + 叙事道具）：一致性锚点、光照与状态变体、尺度参照、无人无手白底提示词。吃 outline.json 预填清单，11 道质量门全部脚本检查 |
 
-丢一本小说进去，出这个：
+丢一本小说进去，出这三套：
 
-![角色设定集报告](skills/novel-characters/assets/report.png)
+**novel-characters · 角色设定集**
+
+![角色设定集报告](skills/novel-characters/assets/report.webp)
+
+**novel-outline · 短剧改编大纲**
+
+![短剧改编大纲报告](skills/novel-outline/assets/report.webp)
+
+**novel-art · 美术设定集（场景 + 道具，设定图为 skill 实际生成）**
+
+![美术设定集报告](skills/novel-art/assets/report.webp)
 
 ## 安装
 

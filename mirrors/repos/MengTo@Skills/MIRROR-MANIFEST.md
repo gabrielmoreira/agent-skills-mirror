@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 155 file(s) materialized.
+Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 158 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `MengTo/Skills` — 26 default patterns, 0 followed patterns, 155 file
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 155 |
+| Files         | 158 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -203,17 +203,20 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 142 | ✓ | [`agent-skills/web-design/technical-wireframe-info-layout/SKILL.md`](agent-skills/web-design/technical-wireframe-info-layout/SKILL.md) |
 | 143 | ✓ | [`agent-skills/web-design/thinking-orbs/REFERENCES.md`](agent-skills/web-design/thinking-orbs/REFERENCES.md) |
 | 144 | ✓ | [`agent-skills/web-design/thinking-orbs/SKILL.md`](agent-skills/web-design/thinking-orbs/SKILL.md) |
-| 145 | ✓ | [`agent-skills/web-design/threejs/REFERENCES.md`](agent-skills/web-design/threejs/REFERENCES.md) |
-| 146 | ✓ | [`agent-skills/web-design/threejs/SKILL.md`](agent-skills/web-design/threejs/SKILL.md) |
-| 147 | ✓ | [`agent-skills/web-design/unicorn-studio/REFERENCES.md`](agent-skills/web-design/unicorn-studio/REFERENCES.md) |
-| 148 | ✓ | [`agent-skills/web-design/unicorn-studio/SKILL.md`](agent-skills/web-design/unicorn-studio/SKILL.md) |
-| 149 | ✓ | [`agent-skills/web-design/vantajs/REFERENCES.md`](agent-skills/web-design/vantajs/REFERENCES.md) |
-| 150 | ✓ | [`agent-skills/web-design/vantajs/SKILL.md`](agent-skills/web-design/vantajs/SKILL.md) |
-| 151 | ✓ | [`agent-skills/web-design/webgl-3d-object/SKILL.md`](agent-skills/web-design/webgl-3d-object/SKILL.md) |
-| 152 | ✓ | [`agent-skills/web-design/webgl-landing-steering/REFERENCES.md`](agent-skills/web-design/webgl-landing-steering/REFERENCES.md) |
-| 153 | ✓ | [`agent-skills/web-design/webgl-landing-steering/SKILL.md`](agent-skills/web-design/webgl-landing-steering/SKILL.md) |
-| 154 | ✓ | [`agent-skills/web-design/webgl-laser/SKILL.md`](agent-skills/web-design/webgl-laser/SKILL.md) |
-| 155 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
+| 145 | ✓ | [`agent-skills/web-design/threejs-landscape/SKILL.md`](agent-skills/web-design/threejs-landscape/SKILL.md) |
+| 146 | ✓ | [`agent-skills/web-design/threejs-towers/SKILL.md`](agent-skills/web-design/threejs-towers/SKILL.md) |
+| 147 | ✓ | [`agent-skills/web-design/threejs-weather/SKILL.md`](agent-skills/web-design/threejs-weather/SKILL.md) |
+| 148 | ✓ | [`agent-skills/web-design/threejs/REFERENCES.md`](agent-skills/web-design/threejs/REFERENCES.md) |
+| 149 | ✓ | [`agent-skills/web-design/threejs/SKILL.md`](agent-skills/web-design/threejs/SKILL.md) |
+| 150 | ✓ | [`agent-skills/web-design/unicorn-studio/REFERENCES.md`](agent-skills/web-design/unicorn-studio/REFERENCES.md) |
+| 151 | ✓ | [`agent-skills/web-design/unicorn-studio/SKILL.md`](agent-skills/web-design/unicorn-studio/SKILL.md) |
+| 152 | ✓ | [`agent-skills/web-design/vantajs/REFERENCES.md`](agent-skills/web-design/vantajs/REFERENCES.md) |
+| 153 | ✓ | [`agent-skills/web-design/vantajs/SKILL.md`](agent-skills/web-design/vantajs/SKILL.md) |
+| 154 | ✓ | [`agent-skills/web-design/webgl-3d-object/SKILL.md`](agent-skills/web-design/webgl-3d-object/SKILL.md) |
+| 155 | ✓ | [`agent-skills/web-design/webgl-landing-steering/REFERENCES.md`](agent-skills/web-design/webgl-landing-steering/REFERENCES.md) |
+| 156 | ✓ | [`agent-skills/web-design/webgl-landing-steering/SKILL.md`](agent-skills/web-design/webgl-landing-steering/SKILL.md) |
+| 157 | ✓ | [`agent-skills/web-design/webgl-laser/SKILL.md`](agent-skills/web-design/webgl-laser/SKILL.md) |
+| 158 | ✓ | [`CLAUDE.md`](CLAUDE.md) |
 
 ---
 

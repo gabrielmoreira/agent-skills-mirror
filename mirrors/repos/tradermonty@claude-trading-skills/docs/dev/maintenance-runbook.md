@@ -11,9 +11,12 @@ blocks it); use `<repo>` / `$PROJECT_DIR` / `$HOME` placeholders.
 
 Related references (this runbook links rather than duplicates):
 
+- [`skill-automation.md`](skill-automation.md) ([日本語](skill-automation.ja.md))
+  → maintainer quickstart, manual commands, scheduling, and the mode-by-mode
+  side-effect boundary for the self-improvement and generation pipelines.
 - `CLAUDE.md` → *Pre-commit Hooks*, *Creating a New Skill*, *Creating
-  Documentation Site Pages*, *Skill Self-Improvement Loop*, *Skill
-  Auto-Generation Pipeline*.
+  Documentation Site Pages*, *Skill Self-Improvement Loop*, and *Skill
+  Auto-Generation Pipeline* implementation details and test commands.
 - `docs/README.md` → *Skill Doc Ownership* (the `generated:` marker), page
   templates.
 - `docs/dev/metadata-and-workflow-schema.md` → the `skills-index.yaml` /
@@ -154,8 +157,10 @@ rather than assuming.
 | `com.trade-analysis.skill-generation-daily.plist` | `com.trade-analysis.skill-generation-daily` | daily 07:00 | `scripts/run_skill_generation.sh` (daily) → `run_skill_generation_pipeline.py` |
 | `com.trade-analysis.skill-generation-weekly.plist` | `com.trade-analysis.skill-generation-weekly` | Saturday 06:00 | `scripts/run_skill_generation.sh` (weekly: mine + score) |
 
-What they do, lock files, git-safety preconditions (clean tree / on `main` /
-`pull --ff-only`), quality-gate rollback, and PR creation are documented in
+For a concise explanation of what each mode reads and writes, including why
+`--dry-run` is not filesystem-read-only, see the
+[Skill Automation Quickstart](skill-automation.md) ([日本語](skill-automation.ja.md)).
+Implementation architecture, quality-gate rollback, and tests remain in
 `CLAUDE.md` → *Skill Self-Improvement Loop* and *Skill Auto-Generation
 Pipeline*. State / logs:
 

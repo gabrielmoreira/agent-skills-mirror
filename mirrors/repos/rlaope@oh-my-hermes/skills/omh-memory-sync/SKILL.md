@@ -57,9 +57,11 @@ Bad example:
 
 ## English-Canonical Interview Protocol
 
-- **Claim extraction (추출)** - Break supplied `USER.md` and `MEMORY.md` material into claims. Quote only observed claims; never invent provenance.
+- **Inventory (목록)** - Nobody hands you the material: call `omh_memory` with `action="status"` to get the entry inventory - per-file entry counts, per-entry index and size, headroom, and which entries have no OMH record. It returns counts and hashes, never entry text, because the text is already yours.
+- **Claim extraction (추출)** - Break the `USER.md` and `MEMORY.md` material into claims. Quote only observed claims; never invent provenance.
 - **Provenance (출처)** - Ask for the source class and distinguish Hermes-native, provider, and vector material as `not_omh_reviewed`.
 - **Target (대상)** - Review existing native-memory claims only. Route a new project/product fact to `memory-new`.
+- **Per-entry confirmation (확인)** - Walk the inventory in order. For each entry, quote it back from your own memory file and state what you take it to mean, then ask the user to keep, revise, or archive it before moving on. Do not summarize the whole file and ask one question about all of it; a review the user cannot correct entry by entry is not a review.
 - **Review (검토)** - Prioritize stale, conflicting, duplicate, and overgeneralized claims. Offer keep, revise, or archive choices; do not describe an archive as removal.
 - **Attention (주의)** - For a reviewed OMH-local record, keep/archive is an attention tier: `active` leads the working context, `reference` stays recallable behind active peers, `archive` leaves default recall. Preview with `omh memory attention <record-id> --tier <tier>`, say which records stay in the working context and which leave it, then apply with `--apply` only after the user agrees. The preview writes nothing.
 - **Diff (차이)** - Prepare one concise native write diff with before/after claims and counts. Keep the caps: MEMORY.md about 2,200 characters and USER.md about 1,375 characters.

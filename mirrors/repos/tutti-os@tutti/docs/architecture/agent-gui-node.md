@@ -38,6 +38,17 @@ show an optimistic projection, while `tuttid` remains the durable order owner.
 Hosts that omit the capability must hide the entire entry rather than expose a
 partial or disabled library.
 
+Desktop AgentGUI reports quick-prompt engagement through the typed panel
+engagement sink. Opening the picker from the Composer emits
+`agent.quick_prompt_engagement` with `action=panel_opened` and
+`source=composer_input`; successfully inserting a saved prompt or a saved
+recommended template into the Composer emits the same event with
+`action=prompt_used` and the corresponding `prompt_type`. Engagement is
+buffered until the containing panel satisfies its exposure gate. The
+action-discriminated contract forbids `prompt_type` on panel-open events.
+Events carry only stable AgentGUI context and never prompt titles or prompt
+bodies, while the action keeps picker exposure distinct from successful use.
+
 The native Mobile composer consumes the same device-global list through its
 authenticated Desktop connection rather than creating Mobile-owned prompt
 state. Its authenticated-device service reads the stored
@@ -360,6 +371,29 @@ Tutti Agent use their validated local credential files as the primary auth
 signal; malformed files may fall back to one CLI check. Cursor's single
 `about --format json` result supplies both auth and version when available.
 
+Authentication status is evidence-based and provider-neutral. A local status
+command, marker, token, or API key proves only `configured`. A provider-backed
+account probe or successful agent request proves `authenticated`. An explicit
+remote authentication failure proves `required` and outranks stale local
+credentials until credentials change or a later provider request succeeds.
+`packages/agent/daemon/providerstatus` owns evidence reduction; `tuttid` owns
+the live outcome store, cache invalidation, and public status projection. Tutti
+Desktop management surfaces and AgentGUI consume that same status. They may
+keep a `configured` provider launchable when availability is `ready`, but must
+not relabel it as connected or authenticated.
+
+For subscription OAuth, provider descriptors select the remote-auth strategy.
+Claude Code uses `GET https://api.anthropic.com/api/oauth/usage`; Codex uses the
+provider runtime's `account/rateLimits/read`. These checks are attempted on
+ordinary status detection and become stale after 15 minutes. Visible, focused
+Desktop windows reconcile stale providers on focus/visibility activation and
+on the 15-minute poll. API-key configuration skips subscription OAuth checks.
+Explicit authentication rejection is authoritative; rate limits, server
+errors, and network failures leave the weaker `configured` state intact.
+These checks validate current access but do not rotate refresh tokens; refresh
+ownership requires a separate serialized credential lifecycle that can gate on
+live provider processes.
+
 ### 2.6 Developer cassette replay
 
 The developer-only `agent.sessionRecording` desktop preference defaults off.
@@ -594,9 +628,10 @@ action. Tuttid independently enforces the same flag on new Fork writes;
 disabling it leaves existing lineage, operation reads, and operation
 acknowledgements available.
 
-Execution still rejects a worktree-isolated source because a provider-native
-Fork retains the provider cwd and Tutti must not silently transfer worktree
-ownership. Non-isolated runtime facts are frozen into the target snapshot.
+Execution accepts a worktree-isolated source. A provider-native Fork retains
+the provider cwd, and Tutti freezes the same cwd and isolation coordinates into
+the target snapshot without creating or transferring worktree ownership.
+Other runtime facts are frozen into the target snapshot as well.
 Only attachments referenced by that snapshot are staged into the target
 namespace; the source attachment directory is never copied wholesale.
 
@@ -763,6 +798,11 @@ A durable message has two independent ordering values:
 - `version`: per-session mutable change cursor used for incremental updates and gap detection
 
 Lifecycle timestamps describe occurrence time; they do not replace durable sequence. A live message with unknown Turn ownership must be completed or rejected at the boundary, never assigned an owner in GUI.
+Optimistic prompt and Goal-control echoes occupy a separate overlay ordering
+domain. They remain after all currently durable messages until canonical
+confirmation replaces them; their earlier submission timestamps must not move
+them back through durable transcript history during message projection or
+timeline merging.
 
 Neither value is a history-coverage signal. A newest-to-oldest message read
 projects an explicit Session message window into the frontend engine:
@@ -1133,7 +1173,19 @@ A `waiting` Turn does not imply user action. Only a pending Interaction produces
 The busy-session prompt queue is ephemeral durable-intent coordination in the workspace engine. It is neither a daemon queue nor component state.
 
 - a normal prompt waits for canonical availability
-- a provider with native guidance capability may guide the active Turn
+- a queued-prompt `Send next` action uses native guidance when the provider
+  supports it, even when the provider also supports interruption; guidance
+  preempts the provider's current response but stays on the same canonical Turn
+- Claude SDK guidance acknowledges delivery only after its SDK interrupt has
+  succeeded and the guidance prompt has been enqueued; a failed interrupt is a
+  failed guidance request and must not allow the old response to keep running.
+  The confirmed interruption settles the old response's streaming projections
+  while the canonical Turn remains active for the guidance response
+- Codex/Tutti Agent guidance first installs a provisional provider-turn fence,
+  sends an exact `turn/interrupt`, and waits for the interrupted response to
+  terminate before starting the guided response with `turn/start` on the same
+  canonical Turn. Queued native guidance does not use `turn/steer`, because
+  that RPC can queue input without stopping the response already being sampled
 - guidance captures the canonical `activeTurnId` at the interaction boundary
   and carries it through the queue, activity adapter, daemon API, Agent Host,
   and runtime Controller; `turnId` is required for every cross-process
@@ -1567,6 +1619,15 @@ text, but they are not an additional transcript text block when the canonical
 structured content already renders the same image. Explicit display prompts
 remain transcript content and continue to replace expanded rich prompt text.
 
+Structured user-prompt transcript images keep resource acquisition and browser
+image decoding as separate presentation states. A URL or hydrated data source
+is not proof that pixels are ready: AgentGUI reserves the final thumbnail
+geometry and shows its loading treatment until the exact image element reports
+`load`. `error` replaces that slot with the retryable failure treatment. A retry
+of the same URL or a replacement effective source starts a new decode attempt
+instead of reusing stale loaded or failed state. These loading and retry states
+are UI-local and never enter canonical Message or workspace-engine state.
+
 Standalone hosts may opt a transcript into participant avatars through the
 `agent-conversation` entrypoint's explicit presentation contract. Omitted or
 disabled presentation preserves the existing transcript DOM. Enabled
@@ -1583,6 +1644,26 @@ turn, and a collapsed completed canonical Turn keeps the Agent header on visible
 reply content.
 This presentation input is view data only and must not enter canonical Session,
 Turn, Message, activity-runtime, or workspace-engine state.
+
+Standalone hosts rendering `AgentConversationFlow` may also pass the current
+Agent target presentation catalog through the `agent-conversation` entrypoint.
+The flow scopes that catalog to all historical rich-text rows, so `agent-target`
+and `agent-session` mentions use the same provider icon and identity
+presentation as the full AgentGUI node without copying the catalog into
+canonical activity data. Omitting the catalog preserves an inherited AgentGUI
+presentation context. The standalone flow also owns its visibility-aware
+conversation clock, so a hidden host does not keep elapsed-time presentation
+timers active.
+
+Hosts whose action directories omit valid identities supply the complete
+presentation-only catalog through `mentionAgentDirectory`. It retains exact
+target IDs and unavailable Agents without making them launchable. Hosts that
+omit this capability keep the existing union of provider-rail and handoff
+targets. Interactive composer mentions, readonly rich text, and Markdown links
+must resolve presentation through the shared target-presentation resolver.
+They must not infer icons from target-id formats such as `local:*`; serialized
+mention presentation is only the fallback when the current catalog no longer
+contains a historical target.
 
 ## 5. Agent identity and provider architecture
 
@@ -1704,6 +1785,13 @@ Desktop Workspace Agent projections first inherit the resolved icon of their
 Harness target by exact target ID, then use the provider/icon catalog fallback.
 Host projections preserve these roles independently and do not create
 provider-specific renderer catalogs.
+
+AgentGUI accepts separate directory projections for separate responsibilities:
+`agentDirectory` owns the current runtime rail, `handoffAgentDirectory` owns
+launch choices, and optional `mentionAgentDirectory` owns exact rendered
+identity. The mention directory may include offline or otherwise unavailable
+Agents and must not participate in selection, admission, setup, or handoff.
+This keeps availability as action state instead of deleting identity metadata.
 
 Agent presentation images decoded for a canvas-backed texture must use
 anonymous CORS loading before assigning `src`. Any host-owned custom protocol
@@ -2151,6 +2239,13 @@ otherwise recover interactively.
 | `hostActions`      | host mutations, Workbench/window actions  |
 | `renderSlots`      | narrow product-neutral presentation slots |
 
+`AgentToolBrowserPanel` owns its BrowserNode feature, surface identity, and
+tab state. It also owns the single browser chrome instance for that surface.
+Hosts compose window controls into the tab strip through `defaultActions`,
+pass draggable-header semantics through `dragHandleProps`, and use
+`navigationActions` for address-row actions. A host must not wrap the panel in
+a second visible title bar or recreate the browser header outside the panel.
+
 Host-issued `runtimeRequests.composerAppend` values are one-shot requests.
 AgentGUI waits until the exact requested Session is the active conversation,
 applies the append once, and then calls
@@ -2267,6 +2362,34 @@ semantic Engine methods or typed intents; AgentGUI does not require duplicate
 the removed lifecycle callbacks as no-op or forwarding adapters. Metadata
 actions that AgentGUI still reads directly remain on this surface until their
 Engine migration preserves all host observability and product integration.
+
+AgentGUI performance correlation is package-owned through
+`createAgentGUIPerformanceMonitor`. A host supplies the workspace Engine, the
+existing Session-event subscription, a clock, and a product-neutral event
+sink. The monitor joins AgentGUI's preserved `submittedAtUnixMs` and queue
+diagnostics to exact Session and Turn identities, then emits activation
+settlement, Prompt admission, first-token receipt, Turn settlement, and
+Composer-options load facts. `trackComposerOptionsLoad` emits a start fact
+before calling either the runtime `getComposerOptions` or exposed Engine
+`loadComposerOptions` path, then emits a correlated completed or failed fact
+with exact duration. An unmatched start therefore remains observable when a
+Provider options request never settles. The facts distinguish runtime from
+session-Engine entry, force refresh, directory presence, bounded error
+category, and model count without carrying paths, settings, model names, or
+error messages.
+Hosts map those facts to their own analytics catalogs; they must not copy the
+Turn-binding, early-event buffering, duration-bucket, or token-classification
+logic.
+
+First-token time ends when the renderer receives the first non-empty Agent
+content `message_delta`; its bounded kind is text, reasoning, plan, or other.
+It deliberately does not use the producer timestamp, infer a latest Turn,
+count tool output, or inspect Prompt or response content. Early deltas are
+retained only until the Engine supplies the exact Turn binding, duplicate
+deltas emit once, and bounded caches prevent an abandoned Prompt from growing
+runtime memory without limit. Exact `durationMs` accompanies the stable
+buckets `lt_1s`, `1s_to_3s`, `3s_to_10s`, `10s_to_30s`, `30s_to_60s`, and
+`gte_60s`.
 
 `AgentHostApi` supplies host capabilities only: files, clipboard, project/account lookup, Agent Target setup/probes, diagnostics, and OS/Workbench helpers. It must not become a Session, Turn, timeline, or write source again.
 
@@ -2808,6 +2931,7 @@ unable to resurrect a deleted Session.
 | `services/tuttid/api/openapi/tuttid.v1.yaml`              | daemon HTTP contract                                |
 | `packages/agent/activity-core/src/engine/**`              | frontend workspace engine                           |
 | `packages/agent/gui/agentActivityRuntime.tsx`             | AgentGUI runtime interface                          |
+| `packages/agent/gui/agentGUIPerformanceMonitor.ts`        | product-neutral AgentGUI latency correlation        |
 | `packages/agent/gui/agent-gui/agentGuiNode/controller/**` | focused controller modules                          |
 | `packages/agent/gui/agent-gui/agentGuiNode/model/**`      | pure node projection/policy                         |
 | `packages/agent/gui/shared/agentConversation/**`          | reusable transcript projections/components          |

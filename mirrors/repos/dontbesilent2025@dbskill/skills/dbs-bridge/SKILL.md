@@ -72,7 +72,7 @@ skills/dbs-bridge/scripts/bridge-skill.sh link <skill-name-or-path>
 
 ```bash
 skills/dbs-bridge/scripts/bridge-skill.sh link dbs-hook
-skills/dbs-bridge/scripts/bridge-skill.sh link skills/dbs-beta-framework-builder
+skills/dbs-bridge/scripts/bridge-skill.sh link skills/my-custom-skill
 skills/dbs-bridge/scripts/bridge-skill.sh link skills
 skills/dbs-bridge/scripts/bridge-skill.sh link "/absolute/path/to/skill"
 skills/dbs-bridge/scripts/bridge-skill.sh link "/Users/me/external-skills/my-skill"
@@ -149,12 +149,4 @@ skills/dbs-bridge/scripts/bridge-skill.sh unlink <skill-name-or-path>
 
 ---
 
-## 不知道下一步用哪个 Skill？
-
-输入 `/dbs`。
-
-这是商业工具箱的导航入口。它会读取刚才的具体结论和你的最新目标，选择当前最值得处理的一个方向，并直接路由到对应 Skill。
-
-你也可以直接说你想做什么。`/dbs` 会尊重你的明确选择。
-
-不熟悉所有 Skill 没关系，下一步不确定时就回 `/dbs`。
+完成当前任务后直接结束。只有用户明确询问下一步，且当前环境已经安装 `/dbs` 时，简短提示：「下一步不确定时，可以输入 `/dbs`。」

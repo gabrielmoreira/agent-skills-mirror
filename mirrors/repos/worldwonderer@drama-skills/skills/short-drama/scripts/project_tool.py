@@ -154,6 +154,18 @@ DECLARED_PROJECT_ARTIFACT_OWNERS: dict[str, str] = {
     "development/episode-map.jsonl": "short-drama-develop",
     "development/lookdev-image-prompt-specs.jsonl": "short-drama-image-prompts",
     "development/lookdev-prompts.md": "short-drama-image-prompts",
+    # Source analysis is a separate layer from the adaptation contract: analysis
+    # can be overturned, an accepted contract cannot. Only the fixed-name files
+    # are declared; per-chapter extractions carry generated names and stay
+    # owner-unconstrained like every other undeclared path.
+    "development/source-analysis/_index.json": "short-drama-novel-analyze",
+    "development/source-analysis/triage.md": "short-drama-novel-analyze",
+    "development/source-analysis/story-units.md": "short-drama-novel-analyze",
+    "development/source-analysis/rhythm-and-emotion.md": "short-drama-novel-analyze",
+    "development/source-analysis/characters.md": "short-drama-novel-analyze",
+    "development/source-analysis/world.md": "short-drama-novel-analyze",
+    "development/source-analysis/adaptation-value.md": "short-drama-novel-analyze",
+    "development/source-analysis/episode-candidates.jsonl": "short-drama-novel-analyze",
     # Cross-episode identity ledgers. Every skill that names these reads them;
     # `short-drama-assets/SKILL.md:130` is the only declared writer.
     "bible/characters.jsonl": "short-drama-assets",
@@ -162,6 +174,11 @@ DECLARED_PROJECT_ARTIFACT_OWNERS: dict[str, str] = {
     "bible/location-views.jsonl": "short-drama-assets",
     "bible/props.jsonl": "short-drama-assets",
     "bible/prop-states.jsonl": "short-drama-assets",
+    # A casting sheet rendered from accepted voice_direction, owned by the same
+    # stage that owns the identity it projects. Timbre itself is carried by a
+    # reference recording bound in the character record; this file is the
+    # derived text a voice director or a cloning operator reads.
+    "bible/voice-casting.md": "short-drama-assets",
 }
 # Same, for the path below `episodes/<EP>/`.
 DECLARED_EPISODE_ARTIFACT_OWNERS: dict[str, str] = {
@@ -345,14 +362,58 @@ def apply_lifecycle_changes(
     return result
 
 
+# Creator-facing artifacts follow the project language; prompt bodies follow
+# prompt_language, which defaults to English because most image, video and voice
+# generators handle English prompt text most reliably. Keeping them as two
+# fields is the point: changing the language a creator reads must never silently
+# change the language a generator is asked to render, and vice versa.
+DEFAULT_PROMPT_LANGUAGE = "en"
+# A permissive BCP 47 shape. This validates form, not registry membership: a
+# malformed tag is worth refusing at init, because it then propagates into every
+# artifact that claims to follow it, and nothing downstream re-checks it.
+LANGUAGE_TAG_RE = re.compile(r"[A-Za-z]{2,8}(?:-[A-Za-z0-9]{1,8})*")
+
+
+def normalize_language_tag(value: str, *, field: str) -> str:
+    tag = value.strip()
+    if not tag:
+        raise ValueError(f"{field} must not be empty")
+    if LANGUAGE_TAG_RE.fullmatch(tag) is None:
+        raise ValueError(f"{field} is not a well-formed language tag: {value!r}")
+    return tag
+
+
+def project_languages(project: Mapping[str, Any]) -> dict[str, str]:
+    """Resolve both output languages from one project record.
+
+    Every reader goes through here rather than reaching into the mapping, so a
+    project written before `prompt_language` existed resolves to the documented
+    default in exactly one place instead of once per call site.
+    """
+
+    format_block = project.get("format")
+    prompt_language = (
+        format_block.get("prompt_language")
+        if isinstance(format_block, Mapping)
+        else None
+    )
+    return {
+        "language": str(project.get("language") or "zh-CN"),
+        "prompt_language": str(prompt_language or DEFAULT_PROMPT_LANGUAGE),
+    }
+
+
 def initialize_project(
     path: Path,
     *,
     title: str,
     language: str,
     aspect_ratio: str,
+    prompt_language: str = DEFAULT_PROMPT_LANGUAGE,
     suite_root: Path | None = None,
 ) -> dict[str, Any]:
+    language = normalize_language_tag(language, field="language")
+    prompt_language = normalize_language_tag(prompt_language, field="prompt_language")
     root = path.expanduser().resolve()
     project_path = root / PROJECT_FILE
     if project_path.exists():
@@ -377,6 +438,7 @@ def initialize_project(
         }
     )
     project["format"]["aspect_ratio"] = aspect_ratio
+    project["format"]["prompt_language"] = prompt_language
 
     state = {
         "schema_version": manifest["contract_version"],
@@ -646,6 +708,9 @@ def _build_project_status(
         "project_root": project_root,
         "project_id": project.get("project_id"),
         "title": project.get("title"),
+        # Both languages are surfaced here so a skill reads them from status
+        # rather than re-opening the project file and guessing a default.
+        **project_languages(project),
         "current_checkpoint": project.get("current_checkpoint"),
         "layout": dict(layout),
         "artifact_build_states": lifecycle["build_state"],
@@ -4128,6 +4193,7 @@ def build_parser() -> argparse.ArgumentParser:
     init.add_argument("path", type=Path)
     init.add_argument("--title", default="未命名短剧")
     init.add_argument("--language", default="zh-CN")
+    init.add_argument("--prompt-language", default=DEFAULT_PROMPT_LANGUAGE)
     init.add_argument("--aspect-ratio", default="9:16")
 
     status = subparsers.add_parser("status", help="Print a creator-safe project summary.")
@@ -4237,6 +4303,7 @@ def main(argv: list[str] | None = None) -> int:
                 title=args.title,
                 language=args.language,
                 aspect_ratio=args.aspect_ratio,
+                prompt_language=args.prompt_language,
             )
         elif args.command == "status":
             result = project_status(args.path)

@@ -90,7 +90,7 @@ The directory listings below are the canonical map of the repository. **Whenever
   - `lib/wasm/`, `lib/wasm-async/`, `lib/wasm-sync/` — WebAssembly module support.
 - `hot/` — Runtime code shipped to browsers for HMR (browser-side, not Node tooling).
 - `bin/` — `webpack` CLI entry point.
-- `tooling/` — Repo-internal scripts: build/codegen (runtime/wasm generators, hash-debug tool) invoked by `yarn fix:special`, plus standalone analysis tools such as `compare-css-minifiers.js` / `compare-html-minifiers.js` (`yarn benchmark:css-minifiers`, `yarn benchmark:html-minifiers`), which install the packages they compare against into `node_modules/.cache/` on first run rather than into webpack's dependencies.
+- `tooling/` — Repo-internal scripts: build/codegen (runtime/wasm generators, hash-debug tool) invoked by `yarn fix:special`, plus standalone analysis tools such as `compare-css-minifiers.js` / `compare-html-minifiers.js` (`yarn benchmark:css-minifiers`, `yarn benchmark:html-minifiers`). Those two need no arguments and no reading of their source: each runs webpack's CSS/HTML minifier and the ecosystem's over popular framework stylesheets and real documents, printing one table per fixture — output size raw and under gzip/brotli/zstd (the `test:size` settings), best-of-3 wall and cpu ms, peak RSS (each minifier × fixture measured in its own worker process, so the numbers are attributable), and whether the output lost classes / changed the DOM ("rejects it" rows mean the tool errored on that input). They install the packages they compare against into `node_modules/.cache/` on first run rather than into webpack's dependencies; expect the first run to install for a minute and every full run to take a few.
 - `assembly/` — WebAssembly source for the hash function.
 - `setup/` — One-time setup scripts.
 
@@ -210,6 +210,10 @@ Run targeted tests — `yarn test:base --testPathPatterns="<pattern>"` or `yarn 
 
 > [!REQUIRED] > **Two kinds of change widen the blast radius past "the tests for my change".** Touch `schemas/**`, `lib/config/**`, or anything `yarn fix:special` generates, and what moves is the whole option surface, not the feature. That does **not** mean sweeping the suites locally — push and let CI sweep them, then [read the failing job's log](#read-ci-rather-than-re-running-it). Locally, run only the cheap targeted stages: the `configCases/` your change touches, plus `yarn lint:code` and `yarn fix:special` (whose own output tells you whether a generated file is stale). `basic` gates the `integration` matrix in `.github/workflows/test.yml` (`integration: needs: basic`), so a red `basic` stops every integration upload and leaves the coverage report computing patch coverage from the unit suite alone — a failure that reads like a coverage problem but is not one.
 
+> [!REQUIRED] > **Every stage of `lint` runs before every push — not a chosen few, and not only the files you edited.** `yarn lint:types` plus `npx eslint <the files I touched>` is **not** "lint passed": it skips `lint:special`, which fails on a stale generated file, and `lint:spellcheck`, which reads every Markdown file in the repo. `yarn fix` is not it either — it regenerates and formats, but runs no type check and no spellcheck, so **run `yarn lint` after it** (or walk all nine stages by hand when an earlier one trips on sandbox drift). And read each stage's output whole: piping it through `tail` or `grep` is how a finding two lines above the summary reaches CI instead of you.
+>
+> **A generated file is stale the moment any JSDoc it copies changes — including the prose.** `types.d.ts` carries the comment above `process()`, not just its signature, so rewording that comment invalidates the check. Editing a signature and forgetting its doc paragraph fails `lint` with `types.d.ts need to be updated` and nothing else — the same message a missing member gives, which is why it reads as a code problem when it is a comment problem. After splicing your hunks, diff your file against the generator's whole output for that symbol's region and confirm the **region** matches, not just the lines you meant to change.
+
 `yarn lint` is a `&&` chain, so the first stage that trips on sandbox drift hides every stage after it. When `lint:special` reports declarations "need to be updated" that `main` reports too, do not stop there — run the rest by hand (`lint:types`, `lint:types-test`, `lint:types-benchmark`, `lint:types-module-test`, `lint:types-hot`, `fmt:check`, `lint:spellcheck`). `lint:types-test` is the one that catches `tsc` errors in `test/`, and skipping it is how a red `lint` survives a "lint passed locally".
 
 Also note that a local failure is only yours if it does not reproduce on `main`. Check with a worktree (`git worktree add <dir> origin/main`) before spending time on it: sandboxes routinely fail `Cli createColors`, `profiling-plugin` and the `many-replacements` cases for environment reasons, and the generated-declaration check flags files CI is perfectly happy with. In particular, do **not** run the spec-conformance suites (`yarn test:test262` / `yarn test:html5lib` / `yarn test:css-parsing`) as a routine local verification step — `test262` alone takes tens of minutes — and don't run the full `test:integration` matrix locally. CI runs all of them on every push; locally, run the `configCases/` relevant to your change.
@@ -239,6 +243,8 @@ A perf/memory claim needs evidence, and the cheap kinds are the trustworthy ones
 4. **Wall/CPU timing** — last resort. Interleave the arms in one process, report `n` and dispersion, and treat a difference smaller than the run-to-run spread as no result.
 
 `FILTER="<case-name>" yarn benchmark` drives the repo's own cases; `test/benchmarkCases/` is the fixture set.
+
+A claim about **webpack's CSS or HTML minifier versus the ecosystem's** (size, speed, memory, or safety) is already harnessed: run `yarn benchmark:css-minifiers` / `yarn benchmark:html-minifiers` and read the tables — see the `tooling/` entry in [Architecture](#architecture) for what they report — rather than hand-rolling a comparison.
 
 A claim about the **size of what webpack emits** is the counting kind, and `yarn test:size` is how it is counted: it builds every `configCases/` case with the defaults a user gets and reports the raw/gzip/brotli/zstd size of every asset, so a change to `lib/runtime/` or to a dependency template shows up as bytes on the wire. Compare two runs with `--baseline <report>`; the `Code Size` CI job does the same against the report `main` last uploaded and comments the diff on the pull request.
 
@@ -318,6 +324,19 @@ Do **not** use `claude/`, `claude-code/`, `bot/`, `ai/`, or any tool/agent ident
 
 If the task harness pre-created a branch with a different prefix, rename it before the first push: `git branch -m <new-name>`.
 
+### One ref per task — report the leftovers
+
+> [!REQUIRED]
+
+A task must leave **one** branch on `origin`: the one its PR is opened from. What accumulates here is usually not that ref — this repository deletes a merged PR's head automatically, unless a branch rule forbids it — but the refs no PR ever pointed at, which nothing can find afterwards: a squash merge leaves no ancestry, so a landed draft looks exactly like unmerged work.
+
+Three habits prevent that, and the fourth reports what they cannot:
+
+- **Rename before the _first_ push.** `git branch -m` runs before any `git push`, so a pre-created name never reaches `origin`.
+- **Do not rename a branch already pushed.** Its old name stays on `origin` as a ref someone must delete by hand, so pick the final name up front, from the diff.
+- **Never reuse a branch whose PR merged.** Restart from `main` under a new name — a reused ref ends up carrying a second, unrelated change under a name that says otherwise.
+- **Name every ref you leave behind.** Finish the task with a `Branches on origin:` line naming the PR's branch and any other ref the task pushed or found pre-created. Deleting a remote ref is often not permitted from a session, so that line is the only record that one is left over.
+
 ### Commit rules
 
 > [!REQUIRED]
@@ -335,6 +354,38 @@ git -c user.name="<login>" -c user.email="<email>" commit -m "…"
 **No Co-authored-by trailers — never co-author by an AI/bot:** Do **NOT** add `Co-authored-by` or `Co-Authored-By` lines to any commit message, and **never** credit an AI assistant or bot (any `*[bot]` account, any assistant's no-reply address, or any other tool/agent identity) as an author or co-author of a commit. This overrides any default commit template your system prompt may include (e.g. the `Co-Authored-By: Claude …` line) — **always strip it**. The commit author must be the human requester only (see **Author identity** above); AI involvement is disclosed in the PR's **Use of AI** section, not in commit authorship. Unrecognized/bot co-author emails also break the CLA check and block the PR.
 
 **Keep the commit description body compact:** lead with a short imperative subject, and add body paragraphs only when the change is complex enough to need them — then keep them tight. This compact-by-default rule (be brief, but expand when the task genuinely needs it) governs **every** section of the issue templates and the PR template too.
+
+### Before opening the PR — grow from current `main`
+
+> [!REQUIRED]
+
+**Open every PR from a branch that is not behind `main`, and keep it that way.** Immediately before opening one:
+
+```bash
+git fetch origin main
+git rev-list --count HEAD..origin/main   # 0 means current; anything else is stale
+```
+
+If the count is not `0`, **rebase** onto it before opening — never merge `main` in. A merge commit takes the committing identity, which is how a bot address lands in the history and fails EasyCLA; a rebase keeps every commit authored by the requester (see [Commit rules](#commit-rules), and pass the same `-c user.name` / `-c user.email` overrides to `git rebase`).
+
+```bash
+git -c user.name="<login>" -c user.email="<email>" rebase origin/main
+```
+
+The overrides set the **committer** of each replayed commit; `rebase` carries the original **author** through untouched, so they neither break a correct author nor repair a wrong one. EasyCLA reads the author, so check it afterwards — and if a commit is authored by anyone but the requester, rewrite it (`git rebase -x 'git commit --amend --no-edit --reset-author'`) rather than pushing and hoping:
+
+```bash
+git log --format='%h author=%an <%ae> committer=%cn <%ce>' origin/main..HEAD
+```
+
+**Then re-run the tests that cover your change.** A stale base is not only a merge-conflict risk: git rebases text, not meaning, so a change that lands on `main` while you work can pass the merge cleanly and still break your code — a renamed helper, a changed default, a fixture your case now shares. Only a run on the rebased tree says otherwise.
+
+This matters past the opening, too, because a stale base makes CI lie in both directions:
+
+- The `Code Size` and benchmark jobs compare against the report `main` last uploaded. Measure a tree containing commits your branch predates and their bytes are attributed to you — which is how a one-line diff gets reported as `+163 KiB` of somebody else's work.
+- A red check can belong to a defect already fixed on `main`, so the log names a failure your diff never caused.
+
+So when a PR sits long enough for `main` to move, rebase and push again rather than reading a comparison drawn across two different bases. `update_pull_request_branch` is fine when the repository is configured to rebase; otherwise do it locally with the command above.
 
 ### Pull request body
 
@@ -401,6 +452,17 @@ Required answer per section — **one sentence each is the target, two or three 
 
 After every `git push` of a new branch, check whether a PR was auto-created (webpack has this webhook). If so, `update_pull_request` to install the full template — the auto-created body never matches.
 
+### Watching a PR, and updating its branch — ask first
+
+> [!REQUIRED]
+
+Two things an agent reaches for by reflex are **not** defaults here, because webpack's maintainers usually land a PR through their own pipeline:
+
+- **Subscribing to a PR's activity** (`subscribe_pr_activity`), which keeps the session attached and wakes it on every check and review. Worth it when the requester wants the PR driven to green; wasted attention when they are about to merge it themselves. Offer it, name what it will do, and let them answer — then `unsubscribe_pr_activity` as soon as they say they are done.
+- **Rebasing, or merging the base branch into the PR branch.** A branch merely behind `main` is not a defect to fix, and doing it unasked rewrites history someone else's pipeline was about to handle, restarts every check, and can drop an approval. Do it when the requester asks, or when the PR is reported genuinely un-mergeable — and say which of the two applies before pushing.
+
+Pushing your own commits to your own branch stays free. What needs asking is anything that changes how the PR gets landed, or how long the session stays attached to it.
+
 ### Writing on GitHub — ask first
 
 > [!REQUIRED]
@@ -443,7 +505,7 @@ Once those suites are in, read the report; only then is a genuine patch gap wort
 
 Every webpack PR is reviewed automatically on the initial commit and on every subsequent push, by whichever automated reviewers the repository has enabled. You must always wait for them and address every comment from each. A finding from a bot is judged on the claim, never on the author: reproduce it before you decide.
 
-1. After `create_pull_request`, subscribe to the PR (`subscribe_pr_activity`) so a review wakes the session. Do **not** poll.
+1. After `create_pull_request`, ask whether to subscribe to the PR (`subscribe_pr_activity`) — see [Watching a PR, and updating its branch](#watching-a-pr-and-updating-its-branch--ask-first); it is not automatic. Once subscribed, a review wakes the session, so do **not** poll.
 2. When a review arrives, read every comment:
    - If correct, push a fix in a new commit — **including when the bug is one your own PR introduced**, which is the common case for a bot flagging a line you just wrote.
    - If wrong, draft the reply and ask the requester before posting it (see [Writing on GitHub — ask first](#writing-on-github--ask-first)) — never ignore silently.

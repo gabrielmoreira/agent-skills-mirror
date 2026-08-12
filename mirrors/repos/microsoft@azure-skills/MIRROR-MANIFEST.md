@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `microsoft/azure-skills` — 26 default patterns, 0 followed patterns, 1343 file(s) materialized.
+Mirror of `microsoft/azure-skills` — 26 default patterns, 0 followed patterns, 1342 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `microsoft/azure-skills` — 26 default patterns, 0 followed patterns,
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 1343 |
+| Files         | 1342 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -1370,38 +1370,37 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 1309 | ✓ | [`skills/microsoft-foundry/rbac/rbac.md`](skills/microsoft-foundry/rbac/rbac.md) |
 | 1310 | ✓ | [`skills/microsoft-foundry/references/agent-metadata-contract.md`](skills/microsoft-foundry/references/agent-metadata-contract.md) |
 | 1311 | ✓ | [`skills/microsoft-foundry/references/auth-best-practices.md`](skills/microsoft-foundry/references/auth-best-practices.md) |
-| 1312 | ✓ | [`skills/microsoft-foundry/references/sdk/foundry-sdk-py.md`](skills/microsoft-foundry/references/sdk/foundry-sdk-py.md) |
-| 1313 | ✓ | [`skills/microsoft-foundry/references/standard-agent-setup.md`](skills/microsoft-foundry/references/standard-agent-setup.md) |
-| 1314 | ✓ | [`skills/microsoft-foundry/resource/create/create-foundry-resource.md`](skills/microsoft-foundry/resource/create/create-foundry-resource.md) |
-| 1315 | ✓ | [`skills/microsoft-foundry/resource/create/references/patterns.md`](skills/microsoft-foundry/resource/create/references/patterns.md) |
-| 1316 | ✓ | [`skills/microsoft-foundry/resource/create/references/troubleshooting.md`](skills/microsoft-foundry/resource/create/references/troubleshooting.md) |
-| 1317 | ✓ | [`skills/microsoft-foundry/resource/create/references/workflows.md`](skills/microsoft-foundry/resource/create/references/workflows.md) |
-| 1318 | ✓ | [`skills/microsoft-foundry/resource/private-network/private-network.md`](skills/microsoft-foundry/resource/private-network/private-network.md) |
-| 1319 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/custom-template-adaptation.md`](skills/microsoft-foundry/resource/private-network/references/custom-template-adaptation.md) |
-| 1320 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/deploy.md`](skills/microsoft-foundry/resource/private-network/references/deploy.md) |
-| 1321 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/end-to-end-test.md`](skills/microsoft-foundry/resource/private-network/references/end-to-end-test.md) |
-| 1322 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/intake.md`](skills/microsoft-foundry/resource/private-network/references/intake.md) |
-| 1323 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/post-deployment-validation.md`](skills/microsoft-foundry/resource/private-network/references/post-deployment-validation.md) |
-| 1324 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/scaffold.md`](skills/microsoft-foundry/resource/private-network/references/scaffold.md) |
-| 1325 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/template-index.md`](skills/microsoft-foundry/resource/private-network/references/template-index.md) |
-| 1326 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep) |
-| 1327 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md) |
-| 1328 | ✓ | [`skills/microsoft-foundry/scripts/check-and-setup-dependencies.ps1`](skills/microsoft-foundry/scripts/check-and-setup-dependencies.ps1) |
-| 1329 | ✓ | [`skills/microsoft-foundry/scripts/check-and-setup-dependencies.sh`](skills/microsoft-foundry/scripts/check-and-setup-dependencies.sh) |
-| 1330 | ✓ | [`skills/microsoft-foundry/SKILL.md`](skills/microsoft-foundry/SKILL.md) |
-| 1331 | ✓ | [`skills/python-appservice-deploy/references/create-app.md`](skills/python-appservice-deploy/references/create-app.md) |
-| 1332 | ✓ | [`skills/python-appservice-deploy/references/deploy-azcli.md`](skills/python-appservice-deploy/references/deploy-azcli.md) |
-| 1333 | ✓ | [`skills/python-appservice-deploy/references/deploy-azd.md`](skills/python-appservice-deploy/references/deploy-azd.md) |
-| 1334 | ✓ | [`skills/python-appservice-deploy/references/detect.md`](skills/python-appservice-deploy/references/detect.md) |
-| 1335 | ✓ | [`skills/python-appservice-deploy/references/errors.md`](skills/python-appservice-deploy/references/errors.md) |
-| 1336 | ✓ | [`skills/python-appservice-deploy/references/post-deploy-message.md`](skills/python-appservice-deploy/references/post-deploy-message.md) |
-| 1337 | ✓ | [`skills/python-appservice-deploy/references/startup-commands.md`](skills/python-appservice-deploy/references/startup-commands.md) |
-| 1338 | ✓ | [`skills/python-appservice-deploy/references/transient-retry.md`](skills/python-appservice-deploy/references/transient-retry.md) |
-| 1339 | ✓ | [`skills/python-appservice-deploy/scripts/generate-app-name.ps1`](skills/python-appservice-deploy/scripts/generate-app-name.ps1) |
-| 1340 | ✓ | [`skills/python-appservice-deploy/scripts/generate-app-name.sh`](skills/python-appservice-deploy/scripts/generate-app-name.sh) |
-| 1341 | ✓ | [`skills/python-appservice-deploy/scripts/retry-az-create.ps1`](skills/python-appservice-deploy/scripts/retry-az-create.ps1) |
-| 1342 | ✓ | [`skills/python-appservice-deploy/scripts/retry-az-create.sh`](skills/python-appservice-deploy/scripts/retry-az-create.sh) |
-| 1343 | ✓ | [`skills/python-appservice-deploy/SKILL.md`](skills/python-appservice-deploy/SKILL.md) |
+| 1312 | ✓ | [`skills/microsoft-foundry/references/standard-agent-setup.md`](skills/microsoft-foundry/references/standard-agent-setup.md) |
+| 1313 | ✓ | [`skills/microsoft-foundry/resource/create/create-foundry-resource.md`](skills/microsoft-foundry/resource/create/create-foundry-resource.md) |
+| 1314 | ✓ | [`skills/microsoft-foundry/resource/create/references/patterns.md`](skills/microsoft-foundry/resource/create/references/patterns.md) |
+| 1315 | ✓ | [`skills/microsoft-foundry/resource/create/references/troubleshooting.md`](skills/microsoft-foundry/resource/create/references/troubleshooting.md) |
+| 1316 | ✓ | [`skills/microsoft-foundry/resource/create/references/workflows.md`](skills/microsoft-foundry/resource/create/references/workflows.md) |
+| 1317 | ✓ | [`skills/microsoft-foundry/resource/private-network/private-network.md`](skills/microsoft-foundry/resource/private-network/private-network.md) |
+| 1318 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/custom-template-adaptation.md`](skills/microsoft-foundry/resource/private-network/references/custom-template-adaptation.md) |
+| 1319 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/deploy.md`](skills/microsoft-foundry/resource/private-network/references/deploy.md) |
+| 1320 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/end-to-end-test.md`](skills/microsoft-foundry/resource/private-network/references/end-to-end-test.md) |
+| 1321 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/intake.md`](skills/microsoft-foundry/resource/private-network/references/intake.md) |
+| 1322 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/post-deployment-validation.md`](skills/microsoft-foundry/resource/private-network/references/post-deployment-validation.md) |
+| 1323 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/scaffold.md`](skills/microsoft-foundry/resource/private-network/references/scaffold.md) |
+| 1324 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/template-index.md`](skills/microsoft-foundry/resource/private-network/references/template-index.md) |
+| 1325 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.bicep) |
+| 1326 | ✓ | [`skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md`](skills/microsoft-foundry/resource/private-network/references/vpn-dns-setup.md) |
+| 1327 | ✓ | [`skills/microsoft-foundry/scripts/check-and-setup-dependencies.ps1`](skills/microsoft-foundry/scripts/check-and-setup-dependencies.ps1) |
+| 1328 | ✓ | [`skills/microsoft-foundry/scripts/check-and-setup-dependencies.sh`](skills/microsoft-foundry/scripts/check-and-setup-dependencies.sh) |
+| 1329 | ✓ | [`skills/microsoft-foundry/SKILL.md`](skills/microsoft-foundry/SKILL.md) |
+| 1330 | ✓ | [`skills/python-appservice-deploy/references/create-app.md`](skills/python-appservice-deploy/references/create-app.md) |
+| 1331 | ✓ | [`skills/python-appservice-deploy/references/deploy-azcli.md`](skills/python-appservice-deploy/references/deploy-azcli.md) |
+| 1332 | ✓ | [`skills/python-appservice-deploy/references/deploy-azd.md`](skills/python-appservice-deploy/references/deploy-azd.md) |
+| 1333 | ✓ | [`skills/python-appservice-deploy/references/detect.md`](skills/python-appservice-deploy/references/detect.md) |
+| 1334 | ✓ | [`skills/python-appservice-deploy/references/errors.md`](skills/python-appservice-deploy/references/errors.md) |
+| 1335 | ✓ | [`skills/python-appservice-deploy/references/post-deploy-message.md`](skills/python-appservice-deploy/references/post-deploy-message.md) |
+| 1336 | ✓ | [`skills/python-appservice-deploy/references/startup-commands.md`](skills/python-appservice-deploy/references/startup-commands.md) |
+| 1337 | ✓ | [`skills/python-appservice-deploy/references/transient-retry.md`](skills/python-appservice-deploy/references/transient-retry.md) |
+| 1338 | ✓ | [`skills/python-appservice-deploy/scripts/generate-app-name.ps1`](skills/python-appservice-deploy/scripts/generate-app-name.ps1) |
+| 1339 | ✓ | [`skills/python-appservice-deploy/scripts/generate-app-name.sh`](skills/python-appservice-deploy/scripts/generate-app-name.sh) |
+| 1340 | ✓ | [`skills/python-appservice-deploy/scripts/retry-az-create.ps1`](skills/python-appservice-deploy/scripts/retry-az-create.ps1) |
+| 1341 | ✓ | [`skills/python-appservice-deploy/scripts/retry-az-create.sh`](skills/python-appservice-deploy/scripts/retry-az-create.sh) |
+| 1342 | ✓ | [`skills/python-appservice-deploy/SKILL.md`](skills/python-appservice-deploy/SKILL.md) |
 
 ---
 

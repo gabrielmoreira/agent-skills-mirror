@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `tutti-os/tutti` — 26 default patterns, 13 followed patterns, 143 file(s) materialized.
+Mirror of `tutti-os/tutti` — 26 default patterns, 13 followed patterns, 145 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `tutti-os/tutti` — 26 default patterns, 13 followed patterns, 143 fi
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 13 |
-| Files         | 143 |
+| Files         | 145 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -137,83 +137,85 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | 64 | ✓ | [`packages/agent/activity-replication/README.md`](packages/agent/activity-replication/README.md) |
 | 65 | ✓ | [`packages/agent/activity-tuttid-adapter/README.md`](packages/agent/activity-tuttid-adapter/README.md) |
 | 66 | ✓ | [`packages/agent/claude-sdk-sidecar/README.md`](packages/agent/claude-sdk-sidecar/README.md) |
-| 67 | ✓ | [`packages/agent/daemon/modelcatalog/README.md`](packages/agent/daemon/modelcatalog/README.md) |
-| 68 | ✓ | [`packages/agent/daemon/README.md`](packages/agent/daemon/README.md) |
-| 69 | ✓ | [`packages/agent/gui/AGENTS.md`](packages/agent/gui/AGENTS.md) |
-| 70 | ✓ | [`packages/agent/gui/README.md`](packages/agent/gui/README.md) |
-| 71 | ✓ | [`packages/agent/gui/REVIEW.md`](packages/agent/gui/REVIEW.md) |
-| 72 | ✓ | [`packages/agent/host/README.md`](packages/agent/host/README.md) |
-| 73 | ✓ | [`packages/agent/runtimeprep/README.md`](packages/agent/runtimeprep/README.md) |
-| 74 | ✓ | [`packages/agent/session-replay-runner/README.md`](packages/agent/session-replay-runner/README.md) |
-| 75 | ✓ | [`packages/agent/session-replay-ui/README.md`](packages/agent/session-replay-ui/README.md) |
-| 76 | ✓ | [`packages/agent/session-replay/AGENTS.md`](packages/agent/session-replay/AGENTS.md) |
-| 77 | ✓ | [`packages/agent/session-replay/README.md`](packages/agent/session-replay/README.md) |
-| 78 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
-| 79 | ✓ | [`packages/analytics/core/README.md`](packages/analytics/core/README.md) |
-| 80 | ✓ | [`packages/analytics/debug/README.md`](packages/analytics/debug/README.md) |
-| 81 | ✓ | [`packages/analytics/reporter-go/README.md`](packages/analytics/reporter-go/README.md) |
-| 82 | ✓ | [`packages/appcli/core/README.md`](packages/appcli/core/README.md) |
-| 83 | ✓ | [`packages/auth/bridge/README.md`](packages/auth/bridge/README.md) |
-| 84 | ✓ | [`packages/browser/workbench-node/README.md`](packages/browser/workbench-node/README.md) |
-| 85 | ✓ | [`packages/clients/device-authority-go/README.md`](packages/clients/device-authority-go/README.md) |
-| 86 | ✓ | [`packages/commerce/README.md`](packages/commerce/README.md) |
-| 87 | ✓ | [`packages/commerce/web/README.md`](packages/commerce/web/README.md) |
-| 88 | ✓ | [`packages/connector/daemon/README.md`](packages/connector/daemon/README.md) |
-| 89 | ✓ | [`packages/connector/host/README.md`](packages/connector/host/README.md) |
-| 90 | ✓ | [`packages/connector/market/README.md`](packages/connector/market/README.md) |
-| 91 | ✓ | [`packages/connector/runtime/README.md`](packages/connector/runtime/README.md) |
-| 92 | ✓ | [`packages/connector/store-sqlite/README.md`](packages/connector/store-sqlite/README.md) |
-| 93 | ✓ | [`packages/desktop/update-admission/README.md`](packages/desktop/update-admission/README.md) |
-| 94 | ✓ | [`packages/device-link/README.md`](packages/device-link/README.md) |
-| 95 | ✓ | [`packages/events/stream-core/README.md`](packages/events/stream-core/README.md) |
-| 96 | ✓ | [`packages/events/stream-go/README.md`](packages/events/stream-go/README.md) |
-| 97 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
-| 98 | ✓ | [`packages/ui/i18n-runtime/README.md`](packages/ui/i18n-runtime/README.md) |
-| 99 | ✓ | [`packages/ui/notifications/README.md`](packages/ui/notifications/README.md) |
-| 100 | ✓ | [`packages/ui/react-hooks/README.md`](packages/ui/react-hooks/README.md) |
-| 101 | ✓ | [`packages/ui/rich-text/README.md`](packages/ui/rich-text/README.md) |
-| 102 | ✓ | [`packages/ui/rich-text/src/internal/ported-source/README.md`](packages/ui/rich-text/src/internal/ported-source/README.md) |
-| 103 | ✓ | [`packages/ui/system/agent/tutti-ui-system/SKILL.md`](packages/ui/system/agent/tutti-ui-system/SKILL.md) |
-| 104 | ✓ | [`packages/ui/system/AGENTS.md`](packages/ui/system/AGENTS.md) |
-| 105 | ✓ | [`packages/ui/system/README.md`](packages/ui/system/README.md) |
-| 106 | ✓ | [`packages/ui/system/src/components/avatar/AGENTS.md`](packages/ui/system/src/components/avatar/AGENTS.md) |
-| 107 | ✓ | [`packages/workbench/electron/README.md`](packages/workbench/electron/README.md) |
-| 108 | ✓ | [`packages/workbench/host/README.md`](packages/workbench/host/README.md) |
-| 109 | ✓ | [`packages/workbench/launchpad/README.md`](packages/workbench/launchpad/README.md) |
-| 110 | ✓ | [`packages/workbench/service/README.md`](packages/workbench/service/README.md) |
-| 111 | ✓ | [`packages/workbench/snapshot/README.md`](packages/workbench/snapshot/README.md) |
-| 112 | ✓ | [`packages/workbench/surface/README.md`](packages/workbench/surface/README.md) |
-| 113 | ✓ | [`packages/workspace/app-center/README.md`](packages/workspace/app-center/README.md) |
-| 114 | ✓ | [`packages/workspace/app-release-tools/README.md`](packages/workspace/app-release-tools/README.md) |
-| 115 | ✓ | [`packages/workspace/external-core/README.md`](packages/workspace/external-core/README.md) |
-| 116 | ✓ | [`packages/workspace/file-manager/README.md`](packages/workspace/file-manager/README.md) |
-| 117 | ✓ | [`packages/workspace/file-preview/README.md`](packages/workspace/file-preview/README.md) |
-| 118 | ✓ | [`packages/workspace/file-reference/README.md`](packages/workspace/file-reference/README.md) |
-| 119 | ✓ | [`packages/workspace/issue-manager/README.md`](packages/workspace/issue-manager/README.md) |
-| 120 | ✓ | [`packages/workspace/terminal/README.md`](packages/workspace/terminal/README.md) |
-| 121 | ✓ | [`packages/workspace/user-project/README.md`](packages/workspace/user-project/README.md) |
-| 122 | ✓ | [`services/tuttid/AGENTS.md`](services/tuttid/AGENTS.md) |
-| 123 | ✓ | [`services/tuttid/builtin-apps/tutti-onboarding/AGENTS.md`](services/tuttid/builtin-apps/tutti-onboarding/AGENTS.md) |
-| 124 | ✓ | [`services/tuttid/builtin-apps/tutti-onboarding/README.md`](services/tuttid/builtin-apps/tutti-onboarding/README.md) |
-| 125 | ✓ | [`services/tuttid/builtin-apps/tutti-onboarding/tutti-package/AGENTS.md`](services/tuttid/builtin-apps/tutti-onboarding/tutti-package/AGENTS.md) |
-| 126 | ✓ | [`services/tuttid/service/agent/AGENTS.md`](services/tuttid/service/agent/AGENTS.md) |
-| 127 | ✓ | [`services/tuttid/service/workspace/agent_workspace_app_reference/SKILL.md`](services/tuttid/service/workspace/agent_workspace_app_reference/SKILL.md) |
-| 128 | ✓ | [`services/tuttid/service/workspace/app_factory_reference/references/demos/simple-node-static-app/AGENTS.md`](services/tuttid/service/workspace/app_factory_reference/references/demos/simple-node-static-app/AGENTS.md) |
-| 129 | ✓ | [`services/tuttid/service/workspace/app_factory_reference/SKILL.md`](services/tuttid/service/workspace/app_factory_reference/SKILL.md) |
-| 130 | ✓ | [`tools/scripts/README.md`](tools/scripts/README.md) |
-| 131 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
-| 132 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
-| 133 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
-| 134 | → | [`CONTRIBUTING.zh-TW.md`](CONTRIBUTING.zh-TW.md) |
-| 135 | → | [`docs/architecture/project-structure.md`](docs/architecture/project-structure.md) |
-| 136 | → | [`docs/architecture/README.md`](docs/architecture/README.md) |
-| 137 | → | [`docs/conventions/README.md`](docs/conventions/README.md) |
-| 138 | → | [`docs/conventions/static-analysis.md`](docs/conventions/static-analysis.md) |
-| 139 | → | [`docs/README.md`](docs/README.md) |
-| 140 | → | [`README.md`](README.md) |
-| 141 | → | [`README.zh-CN.md`](README.zh-CN.md) |
-| 142 | → | [`README.zh-TW.md`](README.zh-TW.md) |
-| 143 | → | [`SECURITY.md`](SECURITY.md) |
+| 67 | ✓ | [`packages/agent/daemon/AGENTS.md`](packages/agent/daemon/AGENTS.md) |
+| 68 | ✓ | [`packages/agent/daemon/modelcatalog/README.md`](packages/agent/daemon/modelcatalog/README.md) |
+| 69 | ✓ | [`packages/agent/daemon/README.md`](packages/agent/daemon/README.md) |
+| 70 | ✓ | [`packages/agent/gui/AGENTS.md`](packages/agent/gui/AGENTS.md) |
+| 71 | ✓ | [`packages/agent/gui/README.md`](packages/agent/gui/README.md) |
+| 72 | ✓ | [`packages/agent/gui/REVIEW.md`](packages/agent/gui/REVIEW.md) |
+| 73 | ✓ | [`packages/agent/host/README.md`](packages/agent/host/README.md) |
+| 74 | ✓ | [`packages/agent/runtimeprep/README.md`](packages/agent/runtimeprep/README.md) |
+| 75 | ✓ | [`packages/agent/session-replay-runner/README.md`](packages/agent/session-replay-runner/README.md) |
+| 76 | ✓ | [`packages/agent/session-replay-ui/README.md`](packages/agent/session-replay-ui/README.md) |
+| 77 | ✓ | [`packages/agent/session-replay/AGENTS.md`](packages/agent/session-replay/AGENTS.md) |
+| 78 | ✓ | [`packages/agent/session-replay/README.md`](packages/agent/session-replay/README.md) |
+| 79 | ✓ | [`packages/AGENTS.md`](packages/AGENTS.md) |
+| 80 | ✓ | [`packages/analytics/core/README.md`](packages/analytics/core/README.md) |
+| 81 | ✓ | [`packages/analytics/debug/README.md`](packages/analytics/debug/README.md) |
+| 82 | ✓ | [`packages/analytics/reporter-go/README.md`](packages/analytics/reporter-go/README.md) |
+| 83 | ✓ | [`packages/appcli/core/README.md`](packages/appcli/core/README.md) |
+| 84 | ✓ | [`packages/auth/bridge/README.md`](packages/auth/bridge/README.md) |
+| 85 | ✓ | [`packages/browser/workbench-node/README.md`](packages/browser/workbench-node/README.md) |
+| 86 | ✓ | [`packages/clients/connector-controlplane/README.md`](packages/clients/connector-controlplane/README.md) |
+| 87 | ✓ | [`packages/clients/device-authority-go/README.md`](packages/clients/device-authority-go/README.md) |
+| 88 | ✓ | [`packages/commerce/README.md`](packages/commerce/README.md) |
+| 89 | ✓ | [`packages/commerce/web/README.md`](packages/commerce/web/README.md) |
+| 90 | ✓ | [`packages/connector/daemon/README.md`](packages/connector/daemon/README.md) |
+| 91 | ✓ | [`packages/connector/host/README.md`](packages/connector/host/README.md) |
+| 92 | ✓ | [`packages/connector/market/README.md`](packages/connector/market/README.md) |
+| 93 | ✓ | [`packages/connector/runtime/README.md`](packages/connector/runtime/README.md) |
+| 94 | ✓ | [`packages/connector/store-sqlite/README.md`](packages/connector/store-sqlite/README.md) |
+| 95 | ✓ | [`packages/desktop/update-admission/README.md`](packages/desktop/update-admission/README.md) |
+| 96 | ✓ | [`packages/device-link/README.md`](packages/device-link/README.md) |
+| 97 | ✓ | [`packages/events/stream-core/README.md`](packages/events/stream-core/README.md) |
+| 98 | ✓ | [`packages/events/stream-go/README.md`](packages/events/stream-go/README.md) |
+| 99 | ✓ | [`packages/ui/AGENTS.md`](packages/ui/AGENTS.md) |
+| 100 | ✓ | [`packages/ui/i18n-runtime/README.md`](packages/ui/i18n-runtime/README.md) |
+| 101 | ✓ | [`packages/ui/notifications/README.md`](packages/ui/notifications/README.md) |
+| 102 | ✓ | [`packages/ui/react-hooks/README.md`](packages/ui/react-hooks/README.md) |
+| 103 | ✓ | [`packages/ui/rich-text/README.md`](packages/ui/rich-text/README.md) |
+| 104 | ✓ | [`packages/ui/rich-text/src/internal/ported-source/README.md`](packages/ui/rich-text/src/internal/ported-source/README.md) |
+| 105 | ✓ | [`packages/ui/system/agent/tutti-ui-system/SKILL.md`](packages/ui/system/agent/tutti-ui-system/SKILL.md) |
+| 106 | ✓ | [`packages/ui/system/AGENTS.md`](packages/ui/system/AGENTS.md) |
+| 107 | ✓ | [`packages/ui/system/README.md`](packages/ui/system/README.md) |
+| 108 | ✓ | [`packages/ui/system/src/components/avatar/AGENTS.md`](packages/ui/system/src/components/avatar/AGENTS.md) |
+| 109 | ✓ | [`packages/workbench/electron/README.md`](packages/workbench/electron/README.md) |
+| 110 | ✓ | [`packages/workbench/host/README.md`](packages/workbench/host/README.md) |
+| 111 | ✓ | [`packages/workbench/launchpad/README.md`](packages/workbench/launchpad/README.md) |
+| 112 | ✓ | [`packages/workbench/service/README.md`](packages/workbench/service/README.md) |
+| 113 | ✓ | [`packages/workbench/snapshot/README.md`](packages/workbench/snapshot/README.md) |
+| 114 | ✓ | [`packages/workbench/surface/README.md`](packages/workbench/surface/README.md) |
+| 115 | ✓ | [`packages/workspace/app-center/README.md`](packages/workspace/app-center/README.md) |
+| 116 | ✓ | [`packages/workspace/app-release-tools/README.md`](packages/workspace/app-release-tools/README.md) |
+| 117 | ✓ | [`packages/workspace/external-core/README.md`](packages/workspace/external-core/README.md) |
+| 118 | ✓ | [`packages/workspace/file-manager/README.md`](packages/workspace/file-manager/README.md) |
+| 119 | ✓ | [`packages/workspace/file-preview/README.md`](packages/workspace/file-preview/README.md) |
+| 120 | ✓ | [`packages/workspace/file-reference/README.md`](packages/workspace/file-reference/README.md) |
+| 121 | ✓ | [`packages/workspace/issue-manager/README.md`](packages/workspace/issue-manager/README.md) |
+| 122 | ✓ | [`packages/workspace/terminal/README.md`](packages/workspace/terminal/README.md) |
+| 123 | ✓ | [`packages/workspace/user-project/README.md`](packages/workspace/user-project/README.md) |
+| 124 | ✓ | [`services/tuttid/AGENTS.md`](services/tuttid/AGENTS.md) |
+| 125 | ✓ | [`services/tuttid/builtin-apps/tutti-onboarding/AGENTS.md`](services/tuttid/builtin-apps/tutti-onboarding/AGENTS.md) |
+| 126 | ✓ | [`services/tuttid/builtin-apps/tutti-onboarding/README.md`](services/tuttid/builtin-apps/tutti-onboarding/README.md) |
+| 127 | ✓ | [`services/tuttid/builtin-apps/tutti-onboarding/tutti-package/AGENTS.md`](services/tuttid/builtin-apps/tutti-onboarding/tutti-package/AGENTS.md) |
+| 128 | ✓ | [`services/tuttid/service/agent/AGENTS.md`](services/tuttid/service/agent/AGENTS.md) |
+| 129 | ✓ | [`services/tuttid/service/workspace/agent_workspace_app_reference/SKILL.md`](services/tuttid/service/workspace/agent_workspace_app_reference/SKILL.md) |
+| 130 | ✓ | [`services/tuttid/service/workspace/app_factory_reference/references/demos/simple-node-static-app/AGENTS.md`](services/tuttid/service/workspace/app_factory_reference/references/demos/simple-node-static-app/AGENTS.md) |
+| 131 | ✓ | [`services/tuttid/service/workspace/app_factory_reference/SKILL.md`](services/tuttid/service/workspace/app_factory_reference/SKILL.md) |
+| 132 | ✓ | [`tools/scripts/README.md`](tools/scripts/README.md) |
+| 133 | → | [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) |
+| 134 | → | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| 135 | → | [`CONTRIBUTING.zh-CN.md`](CONTRIBUTING.zh-CN.md) |
+| 136 | → | [`CONTRIBUTING.zh-TW.md`](CONTRIBUTING.zh-TW.md) |
+| 137 | → | [`docs/architecture/project-structure.md`](docs/architecture/project-structure.md) |
+| 138 | → | [`docs/architecture/README.md`](docs/architecture/README.md) |
+| 139 | → | [`docs/conventions/README.md`](docs/conventions/README.md) |
+| 140 | → | [`docs/conventions/static-analysis.md`](docs/conventions/static-analysis.md) |
+| 141 | → | [`docs/README.md`](docs/README.md) |
+| 142 | → | [`README.md`](README.md) |
+| 143 | → | [`README.zh-CN.md`](README.zh-CN.md) |
+| 144 | → | [`README.zh-TW.md`](README.zh-TW.md) |
+| 145 | → | [`SECURITY.md`](SECURITY.md) |
 
 ---
 

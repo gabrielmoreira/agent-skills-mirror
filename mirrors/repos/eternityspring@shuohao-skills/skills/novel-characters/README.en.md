@@ -22,7 +22,7 @@ Outputs `cast.json`, a Markdown report, and a self-contained `report.html` you c
 
 Chinese, English and Japanese UI strings ship built in. **Other languages work too** — the skill translates the UI labels on the fly into the target language and stores them in `cast.json` under `ui`, so French, Korean or Spanish reports come out fully localized rather than half-English.
 
-![report.html](assets/report.png)
+![report.html](assets/report.webp)
 
 A character model sheet (Shen Zhiwei, from the bundled sample story):
 

@@ -318,21 +318,25 @@ Design notes:
   could silently overwrite a concurrent CAS delta.
 
 `ProfileStore` also owns typed account reads, best-effort clear, and the complete
-browser/remint, login/import, and minted-session replacement transactions. Remint carries the latest whole raw
-`notebooklm` namespace only when requested, filters through the pure
-`_auth/cookie_filter.py` leaf, and commits once; `storage.replace_from_remint`
-remains the compatibility and browser patch seam. Login filtering, required-name
-validation, KEEP/SET/CLEAR construction, optional backup, and commit now run under one bounded
-store lock. `_auth/profile_migration.py` owns the legacy-account boundary:
+browser/remint, login/import, and minted-session replacement transactions. Remint carries the
+latest whole raw `notebooklm` namespace only when requested, filters through the pure
+`_auth/cookie_filter.py` leaf, and commits once. Browser capture constructs a
+`RemintWriteRequest` and consumes the native `ReplaceResult` directly;
+`storage.replace_from_remint` remains only the v0.x direct-call adapter. Login filtering,
+required-name validation, KEEP/SET/CLEAR construction, optional backup, and commit run under one
+bounded store lock. `_auth/profile_migration.py` owns the path-shaped
+`replace_profile_from_login` operation and the legacy-account boundary:
 `LegacyAccountMigrator` performs lossless in-band/legacy/in-band two-read resolution, typed legacy
 sanitization, only-if-absent promotion, and embed-before-scrub ordering;
 `LegacyAccountContext` owns the sibling file and lock. `LegacyPromotionScheduler` owns the
 canonical process one-shot registry and daemon workers. Reads only schedule and return; the
 process-default exit hook drains for two seconds per snapshot worker.
 
-`storage.replace_from_login` keeps its v0.x identity but delegates post-`APPLIED`, outside-lock
-promotion/scrub to `LoginProfileWriter`; failed store results do no sibling work. Raw source account
-key presence still chooses scrub versus promotion. `AccountMetadataWriter` similarly preserves the
+First-party app and CLI flows pass primitive account modes to `replace_profile_from_login` and
+consume `ReplaceResult`; `storage.replace_from_login` keeps its v0.x signature and projects that
+native result to `LoginWriteOutcome`. Post-`APPLIED`, outside-lock promotion/scrub remains owned by
+`LoginProfileWriter`; failed store results do no sibling work. Raw source account key presence
+still chooses scrub versus promotion. `AccountMetadataWriter` similarly preserves the
 distinct update-then-scrub and best-effort-clear-then-scrub order, while naturally escaping store
 exceptions abort before scrub. For minted persistence,
 `storage.persist_minted_jar` eagerly snapshots the live jar with the raw master-token serializer
@@ -357,9 +361,9 @@ token persistence; a missing-storage leader remains shielded to settlement
 before its bootstrap lock is released. At the extraction freeze the coordinator
 is 373 lines and the compatibility adapter is 463 lines.
 
-The final measured persistence boundary is 1,115 lines in `_auth/storage.py`, 311 in
-`_auth/profile_migration.py`, 814 in `_auth/profile_store.py`, 96 in
-`_auth/cookie_filter.py`, and 89 in `_auth/master_token_file.py` (2,425 total). `storage.py`
+The current measured persistence boundary is 1,090 lines in `_auth/storage.py`, 419 in
+`_auth/profile_migration.py`, 876 in `_auth/profile_store.py`, 96 in
+`_auth/cookie_filter.py`, and 89 in `_auth/master_token_file.py` (2,570 total). `storage.py`
 remains the v0.x signature/result facade; the extracted owners do not create a second facade.
 
 `_auth/tokens.py` now owns the Phase 9 stored-auth composition: captured-inline/file sources,
@@ -426,13 +430,13 @@ second disk read. A direct file client prepares its baseline once before transpo
 missing, malformed, or invalid input becomes a sticky typed failure for canonical saves. A
 fileless client records only a one-shot live compatibility projection and creates no typed state.
 
-First-party `_from_store` persistence retains no `AuthTokens`. An untouched default saver routes
-through the private canonical merge; a custom or patched default routes through the exact public
-legacy `save(cookie_jar, storage_path, *, to_thread)` signature. Non-default legacy paths lazily
-initialize their own retryable adapter snapshot and suppress the writer when the source is invalid.
+First-party `_from_store` persistence retains no `AuthTokens`. A missing saver routes
+unconditionally through the private canonical merge. Only an explicit `cookie_saver=` routes
+through `_save_v0_callback`; it lazily initializes its own retryable adapter snapshot and suppresses
+the writer when the source is invalid.
 `ClientLifecycle` alone owns the client `AuthTokens` mirror and refreshes `cookie_snapshot` after
-open and accepted canonical or legacy saves. Tests should patch the public saver only when they
-intend to exercise legacy compatibility; canonical tests should target the private typed seam.
+open and accepted canonical or compatibility saves. Tests inject a saver on the client when they
+intend to exercise the callback contract; canonical tests target the private typed seam.
 Measured owners are 457 lines in `_cookie_persistence.py`, 618 in `_runtime/init.py`, 628 in
 `_runtime/lifecycle.py`, and 992 in `client.py`.
 
@@ -578,6 +582,58 @@ skips. The required lane is deliberately serial and rejects xdist, because the
 controller must own complete collection and phase accounting. This distinction
 is deliberate: a skipped reality probe must never look like evidence that the
 external assumption was tested.
+
+### Live authentication matrix
+
+`scripts/live_auth_matrix.py` is the maintainer/release runner for live cookie,
+master-token, recovery, RPC, REST, MCP, concurrency, and crash-safety checks. It
+reads the selected source/browser profiles but performs every write inside a
+disposable `NOTEBOOKLM_HOME`, scrubs credential values from its report, and
+removes the temporary credential copies in a `finally` block. Its default cells
+are unattended:
+
+```bash
+uv run --extra browser --extra cookies --extra headless --extra mcp --extra server \
+  python scripts/live_auth_matrix.py \
+  --profile <source-profile> \
+  --browser 'chromium::Profile 3' \
+  --account <account-email> \
+  --output live-matrix.json
+```
+
+The three generic human-interaction cells are available but deliberately off by
+default. Start an operator-owned Chrome/Chromium with a loopback-only CDP root,
+then opt in. On X11, set `DISPLAY` and `XAUTHORITY` for both commands so every
+headed window appears on the maintainer's desktop:
+
+```bash
+DISPLAY=:10 XAUTHORITY="$HOME/.Xauthority" google-chrome \
+  --remote-debugging-address=127.0.0.1 \
+  --remote-debugging-port=9222 \
+  --user-data-dir=/tmp/notebooklm-live-cdp
+
+DISPLAY=:10 XAUTHORITY="$HOME/.Xauthority" \
+uv run --extra browser --extra cookies --extra headless --extra mcp --extra server \
+  python scripts/live_auth_matrix.py \
+  --profile <source-profile> \
+  --browser 'chromium::Profile 3' \
+  --account <account-email> \
+  --include-interactive \
+  --interactive-timeout 600 \
+  --cdp-url http://127.0.0.1:9222 \
+  --output live-matrix.json
+```
+
+The opt-in lane runs ordinary headed Playwright login, initial headed
+master-token bootstrap, and CDP-attached master-token bootstrap in separate
+disposable profiles. Each cell verifies the expected credential files and a
+passive live request. The CDP cell probes the endpoint before and after login,
+so it also proves the matrix did not close the operator-owned browser. Remote,
+credential-bearing, query-bearing, and non-root CDP URLs are rejected before
+any cell runs. `--interactive-timeout` is forwarded into each CLI browser wait;
+the matrix gives the child process 30 additional seconds to report failure and
+tear down. Workspace/SSO, regional-account, and long-duration-expiry cases remain
+account-specific manual validation.
 
 ### Selecting a profile for E2E tests
 

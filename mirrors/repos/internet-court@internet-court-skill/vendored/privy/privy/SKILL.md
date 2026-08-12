@@ -1,207 +1,231 @@
 ---
 name: Privy
-description: Use when building wallet infrastructure, authenticating users, managing embedded wallets, configuring access controls and policies, or integrating blockchain transactions into applications. Reach for this skill when working with user onboarding, wallet creation, transaction signing, policy enforcement, or API integration across Ethereum, Solana, and other blockchains.
+description: Use when building wallet infrastructure, authentication systems, or financial applications. Reach for Privy when you need to create embedded wallets, manage user authentication, control wallet permissions with policies, execute transactions across blockchains, or build treasury/agent wallets with programmable controls.
 metadata:
     mintlify-proj: privy
     version: "1.0"
 ---
 
-# Privy Skill
+# Privy Skill Reference
 
 ## Product summary
 
-Privy is a wallet infrastructure and authentication platform that enables developers to embed wallets and user authentication into applications. It provides client-side SDKs (React, React Native, Swift, Android, Flutter, Unity) for user-facing features and server-side SDKs (Node.js, Go, Java, Rust, Ruby) for backend wallet management. Key entry points: **REST API** at `https://api.privy.io/v1/`, **PrivyProvider** component for React apps, **PrivyClient** for backend operations. Configuration happens in the Privy Dashboard at `https://dashboard.privy.io/`. The primary documentation is at https://docs.privy.io.
+Privy is a programmable wallet infrastructure platform for building financial applications. It provides embedded wallets, authentication, transaction execution, and policy controls across 50+ blockchains including Ethereum, Solana, Bitcoin, and Tempo. Agents use Privy to authenticate users, create and manage wallets, execute transactions, enforce spending policies, and build complete financial products without building wallet infrastructure from scratch.
+
+**Key files and commands:**
+- Dashboard: https://dashboard.privy.io (configure apps, login methods, policies)
+- App ID and App Secret: Found in Dashboard > App Settings > Basics
+- Client ID: Required for mobile/non-web platforms (Dashboard > App Settings > Clients)
+- REST API: `https://api.privy.io/v1/` (requires Basic Auth with app ID:secret)
+- SDKs: React (`@privy-io/react-auth`), Node.js (`@privy-io/node`), Swift, Android, Flutter, Java, Go, Rust, Ruby
+- Primary docs: https://docs.privy.io
 
 ## When to use
 
-Use Privy when:
-- Building user authentication flows with email, SMS, social logins, passkeys, or wallet-based auth
-- Creating embedded wallets for users (self-custodial, non-custodial, or custodial models)
-- Sending transactions on Ethereum, Solana, Tempo, Bitcoin, Tron, Sui, or other blockchains
-- Implementing wallet access controls with owners, signers, and policies
-- Managing multi-party approval workflows or quorum-based signing
-- Tracking wallet balances, transactions, and asset movements
-- Setting up gas sponsorship, onramps/offramps, or yield earning
-- Building trading apps, treasury management, agent wallets, or fintech applications
-- Integrating with external wallets (MetaMask, Phantom, Rainbow, etc.)
+Reach for Privy when:
+- Building consumer apps that need user authentication + embedded wallets
+- Creating organization or treasury wallets with multi-sig controls
+- Building AI agents that need to hold assets and transact autonomously
+- Implementing spending policies, transaction limits, or approval workflows
+- Executing transactions across multiple blockchains from a single interface
+- Migrating users from another wallet provider
+- Setting up funding flows (fiat onramps, crypto deposits, card spend)
+- Implementing yield integrations or token swaps
+- Requiring role-based access control or delegation patterns
+
+Do not use Privy for: pure authentication without wallets (use Auth0, Firebase instead), or if you need complete control over key management without any abstraction.
 
 ## Quick reference
 
-### Core concepts
+### SDK Installation
 
-| Concept | Purpose | Example |
-|---------|---------|---------|
-| **User** | Unified identity across auth methods and wallets | Email + MetaMask linked to same user |
-| **Embedded wallet** | Privy-managed wallet secured by key splitting | User wallet created on login |
-| **Owner** | Entity with full control over a wallet | User, authorization key, or key quorum |
-| **Signer** | Party with scoped permissions to sign transactions | Server automation, delegated access |
-| **Policy** | Rules constraining wallet actions (amounts, recipients, contracts) | Max $1000 per transfer, approved recipients only |
-| **Intent** | Proposed action awaiting approval (manual or quorum) | Transfer request pending team approval |
+| Platform | Package | Command |
+|----------|---------|---------|
+| React | `@privy-io/react-auth` | `npm install @privy-io/react-auth` |
+| Node.js | `@privy-io/node` | `npm install @privy-io/node` |
+| React Native | `@privy-io/react-native-auth` | `npm install @privy-io/react-native-auth` |
+| Swift | Privy Swift SDK | Via Swift Package Manager |
+| Android | Privy Android SDK | Via Gradle |
 
-### SDK setup
+### Core Concepts
 
-**React/Next.js:**
-```tsx
-import {PrivyProvider} from '@privy-io/react-auth';
+| Concept | Definition | Use case |
+|---------|-----------|----------|
+| **User** | Individual authenticated in your app | Consumer wallets, personal accounts |
+| **Wallet** | Blockchain account (embedded or external) | Holding assets, signing transactions |
+| **Owner** | Entity with full control (user, auth key, or quorum) | Determines who can modify wallet |
+| **Signer** | Additional party with scoped permissions | Server automation, delegated access |
+| **Policy** | Rules constraining wallet actions | Spending limits, recipient whitelists |
+| **Authorization Key** | P256 cryptographic key for server control | Backend wallet management |
+| **Key Quorum** | M-of-K multi-sig approval | Shared control, treasury operations |
 
-<PrivyProvider appId="your-app-id" clientId="your-client-id" config={{...}}>
-  {children}
-</PrivyProvider>
+### Authentication Methods
+
+Configure in Dashboard > Configuration > Authentication:
+- Email / SMS / WhatsApp
+- Social (Google, Discord, Twitter, Farcaster, etc.)
+- Passkeys (WebAuthn)
+- External wallets (MetaMask, Phantom)
+- Custom JWT (bring your own auth provider)
+- Guest accounts (instant sign-in)
+
+### Wallet Control Models
+
+| Model | Owner | Signers | Use case |
+|-------|-------|---------|----------|
+| User-owned | User | None | Self-custodial consumer wallets |
+| User + server | User | Server (scoped) | Automated trading, limit orders |
+| App-owned | Auth key | None | Treasury, bots, agents |
+| Custodial | Licensed custodian | None | Institutional FBO accounts |
+
+### REST API Headers (Required)
+
+```
+Authorization: Basic <base64(app_id:app_secret)>
+privy-app-id: <app_id>
+Content-Type: application/json
 ```
 
-**Node.js:**
-```ts
-import {PrivyClient} from '@privy-io/node';
-const privy = new PrivyClient({appId: 'your-app-id', appSecret: 'your-app-secret'});
-```
+### Common Wallet Actions
 
-**REST API:**
-```bash
-curl -X POST https://api.privy.io/v1/wallets \
-  -H "Authorization: Basic <base64(appId:appSecret)>" \
-  -H "privy-app-id: your-app-id"
-```
-
-### Key files and configuration
-
-| Item | Location | Purpose |
-|------|----------|---------|
-| App ID & Secret | Privy Dashboard > Apps | API authentication credentials |
-| Webhook signing secret | Dashboard > Configuration > Webhooks | Verify webhook payloads |
-| App clients | Dashboard > Apps > App Clients | Environment-specific configuration |
-| Login methods | Dashboard > Configuration > Login Methods | Enable email, SMS, OAuth, wallets, etc. |
-| Policies | Dashboard or API | Define wallet action constraints |
-
-### Common API endpoints
-
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/v1/wallets` | POST | Create wallet |
-| `/v1/wallets/{id}` | GET | Fetch wallet details |
-| `/v1/wallets/{id}/ethereum/eth_sendTransaction` | POST | Send EVM transaction |
-| `/v1/wallets/{id}/solana/signAndSendTransaction` | POST | Send Solana transaction |
-| `/v1/users` | POST | Create user |
-| `/v1/users/{id}` | GET | Fetch user |
-| `/v1/policies` | POST | Create policy |
-| `/v1/intents` | GET/POST | Fetch or create intents |
+| Action | Endpoint | Purpose |
+|--------|----------|---------|
+| Create wallet | `POST /v1/wallets` | Provision new wallet |
+| Get wallet | `GET /v1/wallets/{id}` | Fetch wallet details |
+| Send transaction | `POST /v1/wallets/{id}/rpc` | Execute blockchain action |
+| Get balance | `GET /v1/wallets/{id}/balance` | Check asset holdings |
+| Create policy | `POST /v1/policies` | Define spending rules |
+| Create user | `POST /v1/users` | Onboard new user |
 
 ## Decision guidance
 
-### When to use embedded vs. external wallets
+### When to use embedded vs external wallets
 
 | Scenario | Embedded | External |
 |----------|----------|----------|
-| New users without wallets | ✓ | ✗ |
-| Users bringing existing wallets | ✗ | ✓ |
-| Full control over UX | ✓ | ✗ |
-| User controls keys directly | ✗ | ✓ |
-| Seamless onboarding | ✓ | ✗ |
-| Leverage existing balances | ✗ | ✓ |
+| New users, no existing wallet | ✓ | ✗ |
+| Users have MetaMask/Phantom | ✗ | ✓ |
+| Need full control over UX | ✓ | ✗ |
+| Users want to bring existing assets | ✗ | ✓ |
+| Mobile app | ✓ | Limited |
+| Require key export | ✓ | ✗ |
 
-### When to use Privy auth vs. JWT-based auth
+### When to use client-side vs server-side SDKs
 
-| Scenario | Privy Auth | JWT-based |
+| Scenario | Client SDK | Server SDK |
 |----------|-----------|-----------|
-| No existing auth system | ✓ | ✗ |
-| Multiple login methods needed | ✓ | ✓ |
-| Existing auth provider (Auth0, Firebase) | ✗ | ✓ |
-| Want Privy to manage sessions | ✓ | ✗ |
-| Custom auth system | ✗ | ✓ |
+| User authentication | ✓ | ✗ |
+| Wallet creation for users | ✓ | ✓ |
+| Server-controlled wallets | ✗ | ✓ |
+| Transaction signing | ✓ | ✓ |
+| Policy management | ✗ | ✓ |
+| User management | ✗ | ✓ |
 
-### When to use client-side vs. server-side wallets
+### When to use policies vs key quorums
 
-| Scenario | Client-side | Server-side |
-|----------|------------|------------|
-| User-controlled wallets | ✓ | ✗ |
-| Application-owned wallets | ✗ | ✓ |
-| Automated trading/agents | ✗ | ✓ |
-| Consumer app | ✓ | ✗ |
-| Treasury/business wallets | ✗ | ✓ |
-| User signs transactions | ✓ | ✗ |
+| Need | Policies | Key Quorums |
+|------|----------|-------------|
+| Spending limits | ✓ | ✗ |
+| Recipient whitelists | ✓ | ✗ |
+| Multi-sig approval | ✗ | ✓ |
+| Time-based rules | ✓ | ✗ |
+| Contract interaction control | ✓ | ✗ |
+| Shared ownership | ✗ | ✓ |
 
 ## Workflow
 
 ### 1. Set up your Privy app
-- Create account at https://dashboard.privy.io/
-- Create a new app in the Dashboard
-- Copy your App ID and App Secret
-- Configure login methods (email, SMS, OAuth, wallets, etc.)
-- Set up app clients for different environments if needed
 
-### 2. Initialize Privy in your application
-- **For React:** Wrap your app with `PrivyProvider` at the root
-- **For backend:** Instantiate `PrivyClient` with appId and appSecret
-- **For REST:** Store credentials securely (environment variables)
-- Wait for `ready` state before consuming Privy hooks/state
+1. Go to https://dashboard.privy.io and create an app
+2. Copy your App ID and App Secret from App Settings > Basics
+3. For mobile/non-web: Create an app client in App Settings > Clients
+4. Configure login methods in Configuration > Authentication
+5. (Optional) Configure appearance in Configuration > Appearance
 
-### 3. Authenticate users
-- Use `useLoginWithEmail()`, `useLoginWithWallet()`, or other login hooks (React)
-- Or call `/v1/users` to create users server-side
-- Link multiple auth methods to same user if needed
-- Retrieve user object with linked accounts and wallets
+### 2. Integrate authentication (client-side)
 
-### 4. Create or fetch wallets
-- **Client-side:** Configure `embeddedWallets.createOnLogin` in PrivyProvider config
-- **Server-side:** Call `privy.wallets().create({chain_type: 'ethereum'})` or POST to `/v1/wallets`
-- Specify owner (user ID, authorization key, or key quorum)
-- Optionally set initial policies
+1. Install the appropriate SDK (`@privy-io/react-auth` for React, etc.)
+2. Wrap your app with `PrivyProvider`, passing `appId` and `clientId`
+3. Use `usePrivy()` hook to access `login()`, `logout()`, and `user` state
+4. Wait for `ready === true` before consuming Privy state
+5. Call `login()` to trigger authentication modal
 
-### 5. Configure controls and policies
-- Define owners and signers for the wallet
-- Create policies with rules and conditions to constrain actions
-- Use Dashboard or API to set up policies
-- Test policy evaluation before production
+### 3. Create or connect wallets
 
-### 6. Execute transactions
-- **Client-side:** Use `useSendTransaction()` hook or sign methods
-- **Server-side:** Call `privy.wallets().ethereum().sendTransaction()` or equivalent
-- Provide transaction details (to, value, chain_id, etc.)
-- Handle policy evaluation and approval flows
+1. For automatic wallet creation: Set `embeddedWallets.ethereum.createOnLogin` in PrivyProvider config
+2. For manual creation: Use `useCreateWallet()` hook (client) or `wallets().create()` (server)
+3. Specify wallet owner: user ID (user-owned) or authorization key (app-owned)
+4. Optionally attach policies or signers at creation time
+5. Retrieve wallet address from response
 
-### 7. Monitor and react to events
-- Set up webhooks in Dashboard > Configuration > Webhooks
-- Verify webhook signatures using SDK or manual verification
-- Subscribe to user, wallet, transaction, and intent events
-- Update your backend state based on webhook payloads
+### 4. Execute transactions
+
+1. Get wallet reference from `useWallets()` hook or API
+2. Prepare transaction parameters (to, value, data, etc.)
+3. Call appropriate signing method: `eth_sendTransaction`, `signTransaction`, etc.
+4. For server-side: Use `intents()` API to propose and authorize transactions
+5. Handle response: check status, monitor for confirmation via webhooks
+
+### 5. Enforce policies
+
+1. Create policy via Dashboard or `POST /v1/policies` API
+2. Define rules with conditions (amount limits, recipient addresses, etc.)
+3. Attach policy to wallet at creation or via `PATCH /v1/wallets/{id}`
+4. Policy engine evaluates every request; DENY takes precedence
+5. If no rule matches, request is denied by default
+
+### 6. Monitor with webhooks
+
+1. Configure webhook endpoint in Dashboard > Configuration > Webhooks
+2. Subscribe to relevant events (user.created, wallet.funds_deposited, transaction.confirmed, etc.)
+3. Verify webhook signature using your app secret
+4. Implement retry logic with exponential backoff
+5. Return 200 status to acknowledge receipt
 
 ## Common gotchas
 
-- **Policy defaults to DENY:** If a wallet has a policy, you must explicitly allow every RPC method or wallet action it will use. Missing rules are denied by default.
-- **Wallet ID vs. address:** Use wallet `id` (UUID) for API calls, not the wallet address. Address is for on-chain identification only.
-- **Chain ID format:** Use CAIP-2 format for chain IDs (e.g., `eip155:1` for Ethereum mainnet, `solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp` for Solana).
-- **Numeric values in wei/lamports:** Policy conditions and transaction values are evaluated exactly as passed—no automatic conversion. ETH is in wei, SOL in lamports, USDC in microdollars.
-- **Webhook verification required:** Always verify webhook signatures before trusting the payload. Use `privy.webhooks().verify()` or manual verification.
-- **Rate limits (HTTP 429):** Implement exponential backoff retry logic. Privy rate limits REST endpoints for fair usage.
-- **Ready state not checked:** Don't use Privy hooks before `ready === true` in React. State may be stale or undefined.
-- **Missing app client ID:** If deploying across multiple domains, configure app clients in the Dashboard and pass `clientId` to PrivyProvider.
-- **Policy evaluation in TEE:** Policies are evaluated in secure enclaves—you cannot inspect or modify policy logic at runtime.
-- **Idempotency keys:** Use idempotency keys for critical operations (wallet creation, transactions) to prevent duplicate processing on retries.
+- **HTTPS required**: Embedded wallets only work in secure contexts (https://). Localhost is treated as secure by browsers.
+- **Ready state**: Always check `ready === true` before using Privy hooks; state may be stale during initialization.
+- **Policy defaults to DENY**: If a wallet has a policy but no rule matches the request, the request is denied. Include an "allow all" rule if needed.
+- **Rate limits**: REST API has rate limits; implement exponential backoff for retries (HTTP 429 responses).
+- **Idempotency keys**: Use idempotency keys for wallet creation and transaction requests to prevent duplicates.
+- **Authorization headers**: REST API requires both Basic Auth and `privy-app-id` header; requests missing either are rejected.
+- **Chain-specific policies**: Policies are chain-specific; create separate policies for Ethereum vs Solana wallets.
+- **Key export security**: Users can export private keys; warn them about custody implications.
+- **Webhook verification**: Always verify webhook signatures; don't trust webhook data without verification.
+- **Multiple wallets**: Users can have multiple wallets per chain (HD wallets); use `createAdditional: true` to enable.
+- **External wallet linking**: External wallets are read-only for signing; use embedded wallets for full control.
+- **MFA not automatic**: Multi-factor authentication must be explicitly configured; email/SMS alone are not phishing-resistant.
 
 ## Verification checklist
 
 Before submitting work with Privy:
 
 - [ ] App ID and App Secret are stored securely (environment variables, not hardcoded)
-- [ ] PrivyProvider wraps the entire app (React) or PrivyClient is instantiated once (backend)
-- [ ] `ready` state is checked before consuming Privy hooks (React)
-- [ ] All required login methods are enabled in Dashboard
-- [ ] Wallets are created with correct owner (user ID, key, or quorum)
-- [ ] Policies are defined and tested if wallet has restrictions
-- [ ] Transaction payloads use correct chain ID format (CAIP-2)
-- [ ] Numeric values (amounts, gas) are in correct units (wei, lamports, etc.)
-- [ ] Webhook endpoint is registered and signature verification is implemented
-- [ ] Error handling catches `APIError` and `PrivyAPIError` (backend)
-- [ ] Idempotency keys are used for critical operations
-- [ ] Rate limit retry logic is implemented
-- [ ] All sensitive data (secrets, keys) is never logged or exposed to client
+- [ ] PrivyProvider wraps the entire app and `ready` state is checked before consuming Privy
+- [ ] Authentication flow is tested (login, logout, session persistence)
+- [ ] Wallet creation is tested (automatic or manual, correct owner specified)
+- [ ] Transactions are tested on testnet before production
+- [ ] Policies are attached to wallets and tested with boundary conditions
+- [ ] Webhook endpoint is configured and signature verification is implemented
+- [ ] Error handling covers NotFoundError, rate limits, and network failures
+- [ ] HTTPS is enforced for production (embedded wallets require secure context)
+- [ ] Idempotency keys are used for wallet creation and transaction requests
+- [ ] Rate limit retry logic uses exponential backoff
+- [ ] User data is not logged or exposed in error messages
+- [ ] External wallets are tested if supported (MetaMask, Phantom, etc.)
 
 ## Resources
 
-- **Comprehensive page index:** https://docs.privy.io/llms.txt
-- **Key concepts guide:** https://docs.privy.io/basics/key-concepts
-- **REST API reference:** https://docs.privy.io/api-reference/introduction
-- **Policies and controls:** https://docs.privy.io/controls/policies/overview
-- **Webhooks setup:** https://docs.privy.io/api-reference/webhooks/overview
+**Comprehensive navigation:** https://docs.privy.io/llms.txt
+
+**Critical documentation pages:**
+1. [Key Concepts](https://docs.privy.io/basics/key-concepts) — Understand authentication, wallets, and controls
+2. [React Setup & Quickstart](https://docs.privy.io/basics/react/setup) — Get started with client-side integration
+3. [REST API Introduction](https://docs.privy.io/api-reference/introduction) — Server-side wallet and user management
+4. [Policies Overview](https://docs.privy.io/controls/policies/overview) — Define spending rules and constraints
+5. [Wallet Creation](https://docs.privy.io/wallets/wallets/create/create-a-wallet) — Provision wallets across SDKs
+6. [Webhooks](https://docs.privy.io/api-reference/webhooks/overview) — Monitor wallet and transaction events
 
 ---
 

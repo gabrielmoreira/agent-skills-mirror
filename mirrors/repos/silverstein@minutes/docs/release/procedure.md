@@ -262,12 +262,63 @@ Vercel project that `307`-redirected to www. The site looked fine, and the entir
 40-route content build stayed effectively unindexed: 496 referring domains, one
 ranking keyword.
 
-### 16. Update Homebrew tap formula if CLI changed
-The formula lives at `silverstein/homebrew-tap` → `Formula/minutes.rb`. Update the `tag:` to the new version:
+### 16. Homebrew tap: automated, but confirm it ran
+
+`Update Homebrew Tap` (`.github/workflows/homebrew-tap.yml`) fires on
+`release: published` and points both tap files at the new version. Publishing
+rather than tagging is the trigger because that is the first moment the DMG the
+cask hashes is guaranteed to exist.
+
+**Confirm it, do not assume it.** The run appears under Actions; it prints the
+before and after versions and then re-reads the tap over HTTPS the way `brew`
+does, failing if either file disagrees with the release.
+
+After writing, it re-runs its own bump in dry-run mode against the published
+tap, so the postcondition covers the cask's `sha256` and not just the version
+string: a cask carrying a correct version with a wrong hash fails every
+install, and a version comparison would call it fine.
+
+If `HOMEBREW_TAP_TOKEN` is missing the workflow warns and exits 0 rather than
+turning a good release red, so a green release does not by itself prove the tap
+moved. Check the run, or:
+
 ```bash
-# Fetch current SHA, update via GitHub API
+brew update && brew info silverstein/tap/minutes && brew info --cask silverstein/tap/minutes
+```
+
+The daily triage sweep also compares the latest release against both tap files,
+so drift surfaces within a day even if nobody looks.
+
+#### Doing it by hand (if the workflow is unavailable)
+Two files in `silverstein/homebrew-tap`, and they drift independently. The
+formula (`Formula/minutes.rb`, CLI) was faithfully bumped while the cask
+(`Casks/minutes.rb`, desktop app) sat at 0.18.2 through six releases until a
+user reported it (#736). The step that "only applies if the CLI changed" was
+the one that kept happening; the unconditional one was the one forgotten.
+Treat both as unconditional.
+
+**Formula** — update the `tag:` to the new version:
+```bash
 SHA=$(gh api repos/silverstein/homebrew-tap/contents/Formula/minutes.rb --jq '.sha')
 # Edit Formula/minutes.rb: change tag: "vX.Y.Z" → new version
 # Push via API or clone+commit+push
 ```
-Verify: `brew update && brew info silverstein/tap/minutes` should show the new version.
+
+**Cask** — update `version` and `sha256`. Compute the hash from the released
+DMG itself, not from SHA256SUMS.txt, which does not list the DMG:
+```bash
+gh release download vX.Y.Z --pattern 'Minutes_X.Y.Z_aarch64.dmg'
+sha256sum Minutes_X.Y.Z_aarch64.dmg
+SHA=$(gh api repos/silverstein/homebrew-tap/contents/Casks/minutes.rb --jq '.sha')
+# Edit Casks/minutes.rb: bump version + sha256, push via API
+```
+
+Verify both: `brew update && brew info silverstein/tap/minutes && brew info --cask silverstein/tap/minutes`.
+
+Or run the same logic the workflow runs, which is safer than hand-editing
+because it refuses rather than guesses when a tap file has been restructured:
+
+```bash
+HOMEBREW_TAP_TOKEN=... python3 scripts/bump_homebrew_tap.py --version X.Y.Z --dry-run
+HOMEBREW_TAP_TOKEN=... python3 scripts/bump_homebrew_tap.py --version X.Y.Z
+```

@@ -12,7 +12,7 @@
 
 产出 `outline.json` + Markdown + 一个双击就能开的 `outline-report.html`：
 
-![outline-report.html](assets/report.png)
+![outline-report.html](assets/report.webp)
 
 ## 质量门：13 道，全是代码
 
@@ -108,7 +108,7 @@ references/
 examples/
   渡口-outline.json       《渡口》6 集微型大纲，全部质量门通过，也是自测夹具
 assets/
-  report.png             报告截图
+  report.webp            报告截图
 ```
 
 ## 自测

@@ -478,10 +478,10 @@ transport; missing, malformed, or invalid input produces sticky failed typed sta
 clients keep a one-shot live compatibility projection and no typed state.
 
 `CookiePersistence` owns `Uninitialized`, `ReadyBaseline`, and `FailedBaseline` per canonical path
-plus a concrete per-key legacy snapshot adapter. An untouched first-party default saver uses the
-private ordered `ProfileStore` merge. A custom or patched default stays on the public v0.x saver;
-non-default overrides lazily initialize their own retryable adapter snapshot and do not write from
-invalid input. Successful legacy saves invalidate typed ready state for a fresh later read, but do
+plus a concrete per-key legacy snapshot adapter. A missing saver always uses the private ordered
+`ProfileStore` merge. Only an explicit `cookie_saver=` uses the public v0.x callback contract;
+those overrides lazily initialize their own retryable adapter snapshot and do not write from invalid
+input. Successful compatibility saves invalidate typed ready state for a fresh later read, but do
 not clear sticky failure. `ClientLifecycle` selects the route before default-failure gates and alone
 mirrors the loaded projection into the client-owned `AuthTokens.cookie_snapshot` after open and
 accepted saves; first-party persistence retains no `AuthTokens`.
@@ -1045,6 +1045,23 @@ site. The recommended owner is `async with NotebookLMClient.from_storage(...) as
 `client.auth` used only inside that managed lifecycle. Suppress temporarily with
 `NOTEBOOKLM_QUIET_DEPRECATIONS=1`; both compatibility paths are scheduled for removal in v1.0.
 
+Cookie compatibility views have a parallel v0.9 runway. Direct
+`AuthTokens.flat_cookies` access emits exactly one caller-attributed warning;
+the warning-free `AuthTokens.jar` projection is the migration shape for the v1
+`initial_cookies: CookieJar` bootstrap field. `cookies` and `cookie_jar` are
+docs-only deprecated because synthesized dataclass operations read fields.
+`cookie_header` and `cookie_header_for(url)` are also scheduled for v1 deletion
+in favor of managed-client request APIs, but remain warning-free through v0.x.
+The private flat projection used by `cookie_header` prevents an indirect
+`flat_cookies` warning with a library-internal attribution.
+
+This runway changes no routing semantics: `CookieJar` is an immutable, ordered
+sequence, never a Mapping and never the live jar. It preserves full-fidelity
+rows when constructed from authoritative row data; `CookieJar.from_httpx()` is
+SameSite-lossy and is only a transient live observation. The kernel-owned
+`httpx.Cookies` remains the sole mutable request/persistence authority after
+bootstrap.
+
 ### 6.3 `NOTEBOOKLM_HEADLESS_REAUTH=1` and `NOTEBOOKLM_HEADLESS_REAUTH_CDP_URL` (L3)
 
 Opt into automatic L3 headless re-auth during mid-RPC refresh (explicit
@@ -1313,8 +1330,9 @@ gate their writes correctly.
 - **2026-08-09 (runtime profile-store cookie persistence)** — `FileLoadedAuth` now registers its
   exact store/baseline pair with first-party `CookiePersistence`; direct construction prepares one
   baseline before transport, with sticky typed failure and fileless compatibility-only capture.
-  Untouched defaults use the private typed merge, custom/patched defaults retain the exact public
-  legacy saver, and non-default overrides lazily initialize retryable per-key adapter snapshots.
+  At that checkpoint untouched defaults used the private typed merge while custom/patched defaults
+  retained the public legacy saver. B2 retired that identity fallback: only explicit overrides now
+  initialize retryable per-key adapter snapshots.
   `ClientLifecycle` owns the v0.x `AuthTokens.cookie_snapshot` mirror after open and accepted saves;
   `_from_store` retains no `AuthTokens`. Measured owners are 457 lines in `_cookie_persistence.py`,
   618 in `_runtime/init.py`, 628 in `_runtime/lifecycle.py`, and 992 in `client.py`.
@@ -1340,6 +1358,16 @@ gate their writes correctly.
   their distinct scrub ordering. `_auth/storage.py` remains the v0.x signature/result facade. The
   measured boundary is 1,150 storage + 311 migration + 794 store + 96 filter = 2,351 lines. Loader,
   account-network, runtime, recovery, master-token, and shim ownership is unchanged by this stage.
+
+- **2026-08-11 (native profile-replacement results)** — Browser capture now builds a
+  `RemintWriteRequest` and consumes `ProfileStore.replace_from_remint` directly. Login/import app
+  and CLI flows call the path-shaped `replace_profile_from_login` operation through the internal
+  `notebooklm.auth` ledger, pass primitive keep/clear/set account modes, and consume the same
+  value-free `ReplaceResult`. The v0.x `storage.replace_from_remint` and
+  `storage.replace_from_login` signatures and return objects remain unchanged; exhaustive maps in
+  that compatibility owner perform the only native-to-legacy status projection. PSIDTS recovery
+  and ordinary lifecycle saves continue to consume `CookieMergeResult` directly. The auth graph is
+  41 modules / 15,898 lines / 142 edges (130 module + 12 local), with no SCC.
 
 - **2026-08-09 (profile-store minted-session replacement)** —
   `ProfileStore.replace_minted_session` now owns the authoritative same-lock latest-owner gate,

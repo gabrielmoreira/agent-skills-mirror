@@ -18,22 +18,26 @@
 □ file / DIE / 熵 / 壳特征
 □ strings / rabin2 -z 捡漏
 □ 架构/链接/是否 .NET/Go/Rust/加壳
-□ 产出：E-triage + 假设清单（勿过早下结论）
+□ MUST 导入/导出表：rabin2 -i / -E（或 IDA imports / 等价物）
+□ 产出：E-triage（MUST 含 imports 分类摘要：网络/文件/加密/注入/注册表）+ 假设清单（勿过早下结论）
 ```
+
+**阶段门闩（Triage → Static/Dynamic）**：E-triage 中未记录 imports 摘要前，MUST NOT 进入 Dynamic，也 MUST NOT 声称「基础分诊完成」。导入表解析失败时仍 MUST 把失败输出写入 Evidence，不得跳过。用户要求「重做导入表检查」时 MUST 重做 imports 步骤本身，禁止改换其他分析步骤。
 
 ## 2. Static
 
 | 工具 | 何时 |
 |------|------|
-| radare2 / rabin2 | 快速函数/导入/字符串 |
-| IDA / Ghidra（MCP 或 headless） | 深挖、交叉引用、类型 |
+| radare2 / rabin2 | 快速函数/导入/字符串（imports 已在 Triage MUST 完成） |
+| IDA / Ghidra（MCP 或 headless） | 深挖、交叉引用、类型；survey 阶段复核 imports 分类 |
 | jadx / dnSpy | Android / .NET |
 | OLLVM 文档 | 控制流平坦化怀疑 |
 
 ```text
+□ 确认 E-imports / E-triage 已含导入表 Evidence（缺失则先补，禁止后置）
 □ 定位关键函数（加密/校验/网络/授权）
 □ 记录地址/符号 → Evidence
-□ 一条路不通 → 换工具（IDA↔r2↔Ghidra）
+□ 一条路不通 → 换工具（IDA?r2?Ghidra）
 ```
 
 **无 MCP 时**：可用导出反编译文本再分析（对照 P4nda0s reverse-skills / IDA-NO-MCP 思路），仍写 Evidence 路径。

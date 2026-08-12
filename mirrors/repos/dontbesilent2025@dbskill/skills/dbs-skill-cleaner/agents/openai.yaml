@@ -1,0 +1,4 @@
+interface:
+  display_name: "dbs-skill-cleaner"
+  short_description: "扫描本地 Skill 的广告导流、任务劫持、外部调用与敏感数据读取风险"
+  default_prompt: "使用 $dbs-skill-cleaner，扫描目标 Skill 并报告可疑行为与风险等级。"

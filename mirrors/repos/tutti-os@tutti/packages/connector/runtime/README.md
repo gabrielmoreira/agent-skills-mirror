@@ -16,6 +16,12 @@ rescan a mutable installation directory. MCP calls use `MCPRegistry`, while CLI
 calls use the stable per-Connector shim. There is no generic Connector broker
 or generic `connector.invoke` transport in the public runtime.
 
+Every successful enabled `Reconcile` returns the bounded discovery summary for
+the exact committed connection, release digest, and host generation. This
+receipt projection is independent of the Agent publication switch. Cross-
+machine hosts should serialize it directly into their observed-runtime
+protocol instead of querying `RouteRegistry` by Connector key after reconcile.
+
 Hosts supply the managed runtime resolver, implementation host, process
 transport, `RemoteMCPClientFactory`, state roots, and product-facing command
 transport. Runtime code must not import `services/tuttid` or expose host
@@ -40,15 +46,25 @@ path delivered by the host data plane, revalidates size, SHA, manifest, and
 inventory, and never downloads. `ReleaseInstaller` composes same-machine import
 and typed CLI installation behind the Host's single install port.
 
-Managed MCP and CLI releases may provide a bounded `installationProbe` argv.
-The runtime launches it through the interface's verified entrypoint and runtime
-without a shell; only exit codes 0 (present) and 1 (absent) are observations.
-Timeouts, transport failures, and other exit codes remain indeterminate so they
-cannot erase durable installation truth.
+Physical installation inspection revalidates artifact and CLI receipts and
+never executes Connector-owned commands. A managed CLI may separately provide
+a bounded `readinessProbe`; it runs only after the release has been resolved
+and affects runtime interface readiness, not installation truth.
+
+Explicit Connector uninstall is connector-scoped rather than release-scoped.
+The host fences all matching routes across connection IDs, cancels pending
+credential-broker sessions, closes their execution snapshots, removes the
+stable CLI shim, and deletes every prepared release and Connector-private Node
+package tree. Shared package-manager stores, account authorization, and
+user/workspace state are retained. On startup, `ImplementationHost` removes
+orphan staging and ready execution snapshots left by an unclean shutdown.
 
 Authorized `managed_stdio` Connectors declare a connector-owned
 credential broker entrypoint. The broker translates its provider-specific
-flow into the `tutti.connector.credentials.v1` event protocol. Tutti validates
+flow into the `tutti.connector.credentials.v1` event protocol. The final v1
+contract includes typed `inspect` alongside `begin` and `disconnect`, so a runtime owner can
+calibrate connected, disconnected, expired, and failed state after restart.
+Tutti validates
 every authorization URL against the manifest's exact HTTPS host allowlist and
 keeps one broker session alive while the provider emits multiple steps. CLI
 credentials remain user-global in the real user home, while the CLI itself is

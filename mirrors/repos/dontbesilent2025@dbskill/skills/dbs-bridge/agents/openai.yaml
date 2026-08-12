@@ -1,0 +1,4 @@
+interface:
+  display_name: "dbs-bridge"
+  short_description: "把 Skill 真源以统一英文名桥接到 Claude、Codex、WorkBuddy 与 Grok"
+  default_prompt: "使用 $dbs-bridge，把目标 Skill 以统一英文名桥接到所需宿主。"

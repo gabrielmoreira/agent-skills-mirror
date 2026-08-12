@@ -1,0 +1,4 @@
+interface:
+  display_name: "dbs-slowisfast"
+  short_description: "识别关键环节中的贪快与必要摩擦，找到能够长期积累资产的行动方案"
+  default_prompt: "使用 $dbs-slowisfast，识别当前问题中的贪快与必要摩擦。"

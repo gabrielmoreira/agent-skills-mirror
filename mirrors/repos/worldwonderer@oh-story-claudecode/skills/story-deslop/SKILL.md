@@ -14,7 +14,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 > Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude/OpenCode 兼容面保留 `subagent_type`。
 >
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 24` 不一致时（标记缺失、字段缺失/非整数、小于或大于 24）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 24）` 并提示重新运行 `/story-setup` 后新开会话；大于 24 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 25` 不一致时（标记缺失、字段缺失/非整数、小于或大于 25）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 25）` 并提示重新运行 `/story-setup` 后新开会话；大于 25 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
 ## 核心哲学
 
@@ -45,14 +45,6 @@ AI味不按语法错误处理，也不需要"修正"。它属于风格问题：�
 ### 边界：去AI味只处理读感与叙事功能
 
 去AI味治读感，不承诺任何分数结果。若用户贴出工具报告，只把能对应到正文的问题转成具体修改点；不写“0% AI / 100% 真人”，不注水、故意错字或打乱标点。去AI味仍以原文剧情边界为准，不把表达修复变成新增情节或新增事件链。
-
-**去 AI 味补充判断**：
-- 优先处理：作者解释总结、意义尾巴、把情节翻译成“他意识到 / 这意味着 / 真正重要的是 / 这次成长”。优先删掉，或改成场内动作、对话、物件状态、任务状态和角色当场要处理的后果。
-- 场内载体优先：原文已有手机、屏幕、公告、门牌、表单、账单、物证、规则行时，保留为角色看见/读错/处理的文本或物件；不要改写成叙述者解释规则。
-- 白话但不注水：少用连续精致戏剧反应短语（头皮发紧、眼皮一跳、心口一沉、胃里翻涌）；能写普通动作/普通感觉就写普通动作/普通感觉，并保留自然的“的/了/就/但是/已经/之后/没有”等连接。
-- 番茄优先校准：默认优先参考番茄高分正文的手机端短段、自然虚词和场内动作/对话推进；不要把 50-60 字行宽、50%-60% 对话占比、`地/得` 全改 `的`、全禁顿号/“很”/“像”当成硬规则。
-- 题材文风优先：文风对标要来自目标题材/本书文风指纹；不要把盘龙腔、旧网文腔、第一人称声口等当跨题材万能修法。
-- 不要当通用修法：单纯加标题、补物件、补动作尾巴、拉长/压短句子、增加排队/门禁/记录体，不能替代具体的情节、视角和语言问题处理。
 
 ---
 
@@ -174,7 +166,7 @@ node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 「诊断与分级」完成后，按以下顺序选择执行路径：
 
 1. **已在 narrative-writer 子代理内**：直接 inline 执行 Gate A-G，不再 spawn（嵌套 spawn 会被静默降级）。
-2. **未在子代理内且 agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`，再检查 `.codex/agents/`）下的 `narrative-writer.md` 或 `.codex/agents/narrative-writer.toml` 存在**：spawn `Agent(subagent_type: "narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味\n检查范围：{待处理的正文文件}\nAI味等级：{诊断与分级结果}\n处理策略：{轻度/中度/重度对应的 Gate 范围}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/人物记忆/情绪承接/因果锚点/必要信息/必要转折的直接删，会丢才进 Gate 润色；看似解释/评价但承担小连贯的句子，压成白话承接、动作或物件锚点，不机械删除；已有任务/手续/物件/证据缺口可以压成角色当下要处理的具体卡点，但不新增原文没有的事件链；删除服从比例上限与字数下限，跌破下限改降AI重写。\n模式处理：按 references/anti-ai-writing.md 的问题模式目录执行；模式 8（解释腔/上帝视角/安排感）归入 Gate G，其余新增模式归入 Gate A-F 的对应处理。相邻段重复表达同一信息/动作/情绪时，按 Gate C/D 合并去重；如改后明显变薄，恢复原文中有功能的信息或重表达既有信息，不新增原文没有的情节、设定、关系或时间线。")`。
+2. **未在子代理内且 agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`，再检查 `.codex/agents/`）下的 `narrative-writer.md` 或 `.codex/agents/narrative-writer.toml` 存在**：spawn `Agent(subagent_type: "narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味\n检查范围：{待处理的正文文件}\nAI味等级：{诊断与分级结果}\n处理策略：{轻度/中度/重度对应的 Gate 范围}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/人物记忆/情绪承接/因果锚点/必要信息/必要转折的直接删，会丢才进 Gate 润色；看似解释/评价但承担小连贯的句子，压成白话承接、动作或物件锚点，不机械删除；已有任务/手续/物件/证据缺口可以压成角色当下要处理的具体卡点，但不新增原文没有的事件链；删除服从比例上限与字数下限，跌破下限改降AI重写。\n模式处理：按 references/anti-ai-writing.md 的问题模式目录执行；模式 8（解释腔/上帝视角/安排感）归入 Gate G，其余新增模式归入 Gate A-F 的对应处理。相邻段重复表达同一信息/动作/情绪时，按 Gate C/D 合并去重；")`。
 3. **agent 不存在或 spawn 失败**：主线程 inline 执行。
 
 #### 删除优先判断（先于各 Gate）
@@ -359,13 +351,11 @@ node scripts/normalize-punctuation.js <正文文件...>
 ```
 
 作用边界：
-- `check-ai-patterns.js` 只报告不改写：severity=blocking 的类别（`not-is-comparison` / `em-dash` / `voice-contrast` / `negation-parade` / `reverse-not-is` / `trailer-ending` / `trailer-summary`）优先改正文并复扫；advisory 先通读判断，确属提纲感、解释腔或模板腔再改，功能性写法标 `[需复核]`。
+- `check-ai-patterns.js` 只报告不改写：severity=blocking 的类别优先改正文并复扫；advisory 先通读判断，确属提纲感、解释腔或模板腔再改，功能性写法标 `[需复核]`。
 - 它只是读感提示；完整类别、例外和修法见 `references/anti-ai-writing.md`。
 - `check-degeneration.js` 报告模型退化（逐字复读/打转、末尾截断、占位符、工程词泄漏 `细纲`/`情节点` 等），每条带 `severity: blocking|advisory`。blocking 是退化信号，去AI味改不掉，应回去重新生成那一段再 deslop；advisory（tier2 章节/歧义词）只提示。
 - `normalize-punctuation.js` 机械兜底：清除残留的 `……`、漏网破折号 `——`/`—`、双连字符 `--` 和独立行 `---`；默认不改变引号风格，也不把有功能的 `？` / 少量 `！` 改成句号。
 - 知乎盐言短篇可保留 `「」`；只有用户或项目明确要求时，才给标点脚本加 `--quote-mode ascii` 或 `--quote-mode yan`。
-- 对话中表示被打断或拖长的 `——` 不再作为例外保留；脚本会改成句号、逗号、动作可承接的断句或中文连接词。无功能标点堆砌由人工 Gate D/E 判断处理。
-- 这些脚本都是 `story-deslop` 的本地副本，不引用其他 skill 的文件。
 
 ---
 

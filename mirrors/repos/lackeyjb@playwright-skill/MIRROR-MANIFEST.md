@@ -7,7 +7,7 @@ ref: main
 
 # Mirror Manifest
 
-Mirror of `lackeyjb/playwright-skill` — 26 default patterns, 0 followed patterns, 5 file(s) materialized.
+Mirror of `lackeyjb/playwright-skill` — 26 default patterns, 0 followed patterns, 6 file(s) materialized.
 
 ## Metadata
 
@@ -18,7 +18,7 @@ Mirror of `lackeyjb/playwright-skill` — 26 default patterns, 0 followed patter
 | Ref           | `main` |
 | Default pats  | 26 |
 | Followed pats | 0 |
-| Files         | 5 |
+| Files         | 6 |
 
 ## Default Sparse Patterns  *(included from config)*
 
@@ -61,9 +61,10 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 |---|---|------|
 | 1 | ✓ | [`skills/playwright-skill/API_REFERENCE.md`](skills/playwright-skill/API_REFERENCE.md) |
 | 2 | ✓ | [`skills/playwright-skill/lib/helpers.js`](skills/playwright-skill/lib/helpers.js) |
-| 3 | ✓ | [`skills/playwright-skill/package.json`](skills/playwright-skill/package.json) |
-| 4 | ✓ | [`skills/playwright-skill/run.js`](skills/playwright-skill/run.js) |
-| 5 | ✓ | [`skills/playwright-skill/SKILL.md`](skills/playwright-skill/SKILL.md) |
+| 3 | ✓ | [`skills/playwright-skill/package-lock.json`](skills/playwright-skill/package-lock.json) |
+| 4 | ✓ | [`skills/playwright-skill/package.json`](skills/playwright-skill/package.json) |
+| 5 | ✓ | [`skills/playwright-skill/run.js`](skills/playwright-skill/run.js) |
+| 6 | ✓ | [`skills/playwright-skill/SKILL.md`](skills/playwright-skill/SKILL.md) |
 
 ---
 

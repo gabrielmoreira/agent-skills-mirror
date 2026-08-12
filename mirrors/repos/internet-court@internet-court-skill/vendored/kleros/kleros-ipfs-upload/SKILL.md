@@ -1,6 +1,6 @@
 ---
 name: kleros-ipfs-upload
-description: "Upload files to IPFS through the Kleros x402 payment gateway in exchange for $0.01 USDC on Base mainnet. Use this skill **specifically** when the user is uploading content destined for the Kleros ecosystem — dispute evidence, meta-evidence JSON, court / dispute / arbitrator policies, Curate item metadata, juror justifications, or any artifact a Kleros smart contract or subgraph will reference by IPFS CID. Trigger when the request mentions Kleros, a court / arbitrator / dispute / juror / curate / proof-of-humanity context, or any of the conventional Kleros operation tags (evidence, meta-evidence, justification). Do NOT trigger for generic 'upload to IPFS' / 'get me a CID' requests with no Kleros context — point those users at Pinata, web3.storage, or any general-purpose pinning service instead. Exception: if the user explicitly names this gateway (kleros-ipfs-gateway.fly.dev / kleros-api.netlify.app/.netlify/functions/upload-to-ipfs), explicitly requests this skill, or asks the agent to test / validate / sanity-check this gateway or skill, trigger regardless of topical context — a deliberate end-to-end test is a valid trigger."
+description: "Upload one Kleros-ecosystem file per paid request to IPFS through the Kleros x402 gateway for $0.01 USDC on Base mainnet. Use for dispute evidence, MetaEvidence JSON, court/dispute/arbitrator policies, Curate item metadata, juror justifications, or any artifact a Kleros contract or subgraph will reference by CID. Trigger when the request mentions Kleros, court, arbitrator, dispute, juror, Curate, Proof of Humanity, evidence, meta-evidence, justification, explicitly names this gateway or skill, or asks to test or validate it. Do NOT use for generic IPFS/CID requests without Kleros context; recommend a general-purpose pinning service. Each request accepts exactly one file: different bytes require separate paid uploads, while identical bytes should reuse one CID."
 ---
 
 # Kleros IPFS Upload (x402)
@@ -45,9 +45,36 @@ EVM_PRIVATE_KEY=0xYourPayerKey npx tsx pay-and-upload.ts /path/to/file.json
 
 `npm install` creates a `package-lock.json` and a `node_modules/` in the scripts dir — both are fine to leave in place or delete after use; not committed to the skill on purpose so dep versions stay fresh.
 
-On success the script prints each CID on its own line (so you can capture them with `$(npx tsx pay-and-upload.ts ...)`). On failure it exits non-zero and logs the gateway's error body to stderr.
+On success the script prints every CID reported by the gateway, one per line (so you can capture the normal
+single CID with `$(npx tsx pay-and-upload.ts ...)`). The array-shaped response is legacy API structure, not
+batch-upload support. On failure the script exits non-zero and logs the gateway's error body to stderr.
 
 Defaults: `OPERATION=evidence`, `GATEWAY_URL=https://kleros-ipfs-gateway.fly.dev`. Override `OPERATION` with an env var; see the "Request shape" section for valid values.
+
+## One file per paid upload; reuse identical files
+
+Each paid request must contain exactly one multipart part named `file`. Never append multiple `file` parts or
+batch different files into one request. If two files have different content, make two separate paid uploads —
+one request and one payment per file. This applies even when the files belong to the same Curate or dispute
+workflow.
+
+IPFS CIDs are content-addressed. If the same byte-for-byte file is needed in multiple places, upload it once
+and reuse the returned CID everywhere. Do not make a second paid upload for the same policy PDF, logo image,
+evidence display interface, or other identical file just because multiple Kleros artifacts reference it.
+
+For multi-artifact jobs, keep a small artifact map before submitting transactions:
+
+- `policy.pdf` -> `/ipfs/<CID>`
+- `logo.png` -> `/ipfs/<CID>`
+- `registrationMetaEvidence.json` -> `/ipfs/<CID>`
+- `clearingMetaEvidence.json` -> `/ipfs/<CID>`
+- `evidenceDisplayInterface` -> `/ipfs/<CID>/index.html`
+
+When a shared policy, logo, or evidence display interface is referenced by both registration and clearing
+MetaEvidence JSON, put the same CID in both JSON files. Reuse CIDs only for exact same files. If a file
+changes by even one byte, make a separate paid upload for each distinct file and label each CID clearly.
+Registration and clearing MetaEvidence JSON are therefore separate uploads whenever their JSON bytes differ,
+even when both reference the same reusable policy, logo, or evidence display interface CIDs.
 
 If you're writing your own client inside an existing Node project, the core is small enough to inline:
 
@@ -66,9 +93,11 @@ const url = `https://kleros-ipfs-gateway.fly.dev/upload-to-ipfs` +
   `?operation=${encodeURIComponent(operation)}`;
 const res = await fetchWithPay(url, { method: "POST", body: form });
 const { cids } = await res.json();
+if (!Array.isArray(cids) || cids.length === 0) throw new Error("Gateway returned no CID");
+const cid = cids[0];
 ```
 
-`x402-fetch` handles the `402 Payment Required` challenge, signs an EIP-3009 `transferWithAuthorization` over USDC, and retries the request with the `X-PAYMENT` header. The caller sees a normal 200 response containing the CIDs.
+`x402-fetch` handles the `402 Payment Required` challenge, signs an EIP-3009 `transferWithAuthorization` over USDC, and retries the request with the `X-PAYMENT` header. The caller sees a normal 200 response containing the result for that one uploaded file.
 
 ## Pre-flight (free, no key needed)
 
@@ -125,7 +154,7 @@ CDP_ACCOUNT_NAME=blaise-main \
   npx tsx pay-and-upload-cdp.ts /path/to/file.json
 ```
 
-Output is the same as `pay-and-upload.ts` (CIDs on stdout, diagnostics on stderr). The script also prints the payer address and Base mainnet USDC balance to stderr before posting, so you'll spot an underfunded wallet immediately.
+Output is the same as `pay-and-upload.ts` (the CID on stdout, diagnostics on stderr). The script also prints the payer address and Base mainnet USDC balance to stderr before posting, so you'll spot an underfunded wallet immediately.
 
 If you'd rather not pass four env vars on the command line, point `CDP_CREDS_PATH` at a `.env`-style file containing `CDP_API_KEY_ID`, `CDP_API_KEY_SECRET`, `CDP_WALLET_SECRET`, and `CDP_ACCOUNT_NAME` (or their un-prefixed `API_KEY_ID` / `API_KEY_SECRET` / `WALLET_SECRET` / `ACCOUNT_NAME` variants — the script accepts either).
 
@@ -157,9 +186,10 @@ The endpoint is `POST /upload-to-ipfs` with:
     | `justification` | Juror / arbitrator justification payloads. |
     | _any other string_ | Accepted as-is. Use sparingly — the conventions above keep ecosystem tooling consistent. |
 
-- **Body**: `multipart/form-data` with one or more parts named `file`. To upload multiple files in one paid request, append multiple `file` parts to the same `FormData`.
+- **Body**: `multipart/form-data` with exactly one part named `file`. Never append a second `file` part. Upload
+  every distinct file in its own paid request; reuse the first CID instead of reuploading identical bytes.
 - **Headers**: `X-PAYMENT` is added automatically by the x402-fetch wrapper. Do not hand-craft it.
-- **Size limit**: the gateway caps the total request body at **4 MiB** (4,194,304 bytes) and replies `413 Payload Too Large` for anything bigger. The check runs **before** the x402 paywall, so an oversize attempt does not spend USDC. Multipart framing adds a small overhead on top of raw file bytes — if a single file is near the limit, expect a 413; consider chunking or splitting the artifact. Sanity-check sizes locally before posting:
+- **Size limit**: the gateway caps the total request body at **4 MiB** (4,194,304 bytes) and replies `413 Payload Too Large` for anything bigger. The check runs **before** the x402 paywall, so an oversize attempt does not spend USDC. Multipart framing adds a small overhead on top of raw file bytes — if a single file is near the limit, expect a 413; shrink or compress it, or split it into distinct files and upload each through a separate paid request. Sanity-check sizes locally before posting:
 
   ```bash
   test "$(stat -f%z /path/to/file)" -le 4194304 || echo "too big for the Kleros gateway"
@@ -178,19 +208,22 @@ On success the gateway returns `200` with JSON:
 }
 ```
 
-- **Prefer `urls[i]`** — the gateway pre-builds a ready-to-use HTTP URL using the canonical Kleros IPFS gateway (`https://cdn.kleros.link`). Just give that to the user.
-- `cids[i]` is the protocol form, prefixed with `/ipfs/` (e.g. `/ipfs/QmXXX...`). Keep it if you need to embed the CID in a smart-contract call or an `ipfs://` URI; ignore it if you only need a clickable URL.
+- **Prefer `urls[0]`** — the gateway pre-builds a ready-to-use HTTP URL using the canonical Kleros IPFS gateway (`https://cdn.kleros.link`). Just give that to the user.
+- `cids[0]` is the protocol form, prefixed with `/ipfs/` (e.g. `/ipfs/QmXXX...`). Keep it if you need to embed the CID in a smart-contract call or an `ipfs://` URI; ignore it if you only need a clickable URL.
 - If you ever need to build a URL yourself (older response without `urls`, or pointing at a different gateway):
 
   | You want | How to build it (where `cid = cids[0]`, e.g. `/ipfs/QmXXX...`) |
   |---|---|
-  | Kleros HTTP gateway URL | `"https://cdn.kleros.link" + cid` (or just use `urls[i]`) |
+  | Kleros HTTP gateway URL | `"https://cdn.kleros.link" + cid` (or just use `urls[0]`) |
   | `ipfs://` URI | `"ipfs://" + cid.replace(/^\/ipfs\//, "")` → `ipfs://QmXXX...` |
   | Bare hash only | `cid.replace(/^\/ipfs\//, "")` → `QmXXX...` |
 
-  Do **not** write `https://cdn.kleros.link/ipfs/${cid}` — that produces a double-slash path because `cid` already starts with `/ipfs/`. Use `urls[i]` instead and avoid the trap entirely.
+  Do **not** write `https://cdn.kleros.link/ipfs/${cid}` — that produces a double-slash path because `cid` already starts with `/ipfs/`. Use `urls[0]` instead and avoid the trap entirely.
 
-- `cids` and `urls` are **always arrays of the same length**, even for single-file uploads. Index `[0]` is the standard case.
+- The response schema uses arrays for legacy compatibility, but that shape is not permission to batch files.
+  A normal one-file request returns one `cids[0]` and, in current responses, one `urls[0]`. Require at least
+  one CID. If the gateway returns extra entries, surface them as unexpected; if an older response omits
+  `urls`, build the HTTP URL from `cids[0]` as shown above.
 
 - `inconsistentCids` is `[]` in the happy path. If non-empty, Filebase and the Graph index produced different hashes for the same file — surface this to the user as a warning; the `cids[]` value still resolves but the data integrity guarantee is weaker.
 
@@ -198,10 +231,10 @@ On success the gateway returns `200` with JSON:
 
 | Status | Meaning | What to do |
 |---|---|---|
-| `200` | Success. Parse `cids[]`. | — |
+| `200` | Success. Require `cids[0]`; use `urls[0]` when present or derive the URL from the CID. | Surface extra entries as unexpected; they do not imply batch support. |
 | `400` | Missing `operation` query param. | Add `?operation=evidence` (or another tag). |
 | `402` | Payment challenge. | Should never reach user code — `x402-fetch` handles it transparently. If it bubbles up, the wrapper wasn't applied. |
-| `413` | Request body exceeds 4 MiB. **No USDC spent** — the check runs before the paywall. | Shrink, split, or compress the artifact. See "Size limit" under "Request shape". |
+| `413` | Request body exceeds 4 MiB. **No USDC spent** — the check runs before the paywall. | Shrink or compress it, or split it and upload each resulting file separately. |
 | `5xx` | Transient upstream issue (Filebase, Graph Node, or the gateway itself). | Retry once after a short delay. Don't hammer. |
 | Facilitator error during 402 → 200 retry | CDP rate-limit, signing failure, insufficient USDC. | Inspect the wrapper's thrown error; check wallet balance and key correctness. |
 
@@ -277,7 +310,7 @@ Steps:
 
 Both scripts are **optional**. They exist so agents without x402 tooling can pay and upload without rediscovering `x402-fetch` from scratch. If your agent already speaks x402, ignore them and call the gateway directly.
 
-- `scripts/pay-and-upload.ts` — reference Node implementation. Adapt to your project context, or run standalone.
+- `scripts/pay-and-upload.ts` — reference single-file Node implementation. Adapt to your project context, or run standalone.
 - `scripts/package.json` — declares the two deps (`x402-fetch`, `tsx`). No lockfile and no tsconfig (tsx runs TS natively).
 
 If you're integrating into an existing Node project, you can ignore the bundled `package.json` and just `npm i x402-fetch` in your own project.

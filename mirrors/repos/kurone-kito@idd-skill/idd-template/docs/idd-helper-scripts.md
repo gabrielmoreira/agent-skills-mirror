@@ -232,7 +232,15 @@ future inventory reviews do not need to re-infer their role from code.
   `--cleanup-backlog-window-days 1` to keep it fast, mirroring CI.
 - `scripts/helper-runtime-manifest.mjs` (`idd-helper-bundle-manifest`) —
   import helper and manifest inspector; emits machine-readable helper wiring
-  for `package-manager`, `vendored-node`, and `ephemeral-npx` profiles.
+  for all four profiles (`package-manager`, `vendored-node`,
+  `ephemeral-npx`, and `instructions-only`). Its output always carries a
+  `runningBuild: { version, commandListScope: "running-build" }` field
+  disclosing that `commandCatalog` describes only the currently running
+  helper build, independent of any `--package-spec` target -- a per-profile
+  `profiles.<profile>.commands` entry still embeds the supplied
+  `--package-spec` in its composed install/invocation strings, but
+  `commandCatalog` itself never changes (referenced in
+  [kurone-kito/idd-skill#1923](https://github.com/kurone-kito/idd-skill/issues/1923)).
 - `scripts/phase-id-resolver.mjs` (`idd-phase-id-resolver`) — phase ID
   normalization utility; resolves canonical phase IDs from aliases and
   validates token format.
@@ -1391,15 +1399,19 @@ to post it is the consuming track's job.
 ### Rerun-plan diagnosis (stuck advisory-convergence)
 
 - Source repo / vendored-node command:
-  `node scripts/rerun-advisory-convergence.mjs --pr <pr-number> [--apply]`
+
+  ```sh
+  node scripts/rerun-advisory-convergence.mjs --pr <pr-number> [--check-name <name>] [--apply]
+  ```
+
 - Package-manager / ephemeral-npx command: use the
   profile-selected `idd:rerun-advisory-convergence` command from the
-  helper runtime manifest wiring above, with `[--apply]` appended the
-  same way; the literal invocation is:
+  helper runtime manifest wiring above, with `[--check-name <name>]`
+  and `[--apply]` appended the same way; the literal invocation is:
 
   ```sh
   npx --yes --package <helper-package-spec> \
-    idd-rerun-advisory-convergence --pr <pr-number> [--apply]
+    idd-rerun-advisory-convergence --pr <pr-number> [--check-name <name>] [--apply]
   ```
 
 - Rerun-plan diagnosis (#1431) for a stuck `idd-advisory-convergence`
@@ -1448,6 +1460,17 @@ to post it is the consuming track's job.
   the next, and stops early once the recomputed plan is fully resolved --
   a `bot-gated-skip`, `awaiting-fresh-review`, or rerun-budget-held
   instance is never rerun
+- `--check-name <name>` (#1935) overrides the check-run name searched for
+  and reported, defaulting to `idd-advisory-convergence` when omitted
+  (byte-identical output to before this flag existed). Use it when the
+  job that produces the check has a `name:` display-name key on top of
+  an unchanged job id -- GitHub Actions then names the check-run after
+  that display name instead of the job id, so the default search
+  silently finds nothing; see the job-definition comment in
+  `.github/workflows/idd-advisory-convergence.yml` for the full warning.
+  The not-found message names whichever check-run name was actually
+  searched, so a mismatch names its own cause instead of only its
+  symptom
 
 ### Merge-gate evidence
 
@@ -1891,6 +1914,27 @@ blocking convergence with a dedicated top-level reason, and keeping the
 same-HEAD reroll recovery path available for it, since `suppressedCount`
 is read from the same static per-submission review snapshot `itemCount`
 is.
+
+**`suppressedCount` reroll reliability caveat (kurone-kito/idd-skill#1934).**
+The mechanism-sharing argument above is a statement about how the two
+counts are read (same static per-submission snapshot), not a claim
+about convergence rate: `#1511`'s empirical basis -- 200 recent merged
+PRs, 678 Copilot reviews, 16 same-commit re-review groups -- covers
+`itemCount` transitions only, and no equivalent sample exists for
+`suppressedCount`. Field evidence contradicts treating the extension as
+equally reliable: two independent `kurone-kito/lints-config` PRs,
+observed 2026-08-10/11 (`#243`, `#245`), each ran the same-HEAD reroll
+to its `cap: 2` limit with no `suppressedCount: 0` outcome and no
+content change between reviews; both converged only after an actual
+content change plus a fresh, non-reroll review. Too small a sample to
+establish a rate, but
+sufficient to mark the `suppressedCount` reroll path **unvalidated for
+convergence** -- treat cap exhaustion on a suppressed-only block as an
+anticipated outcome routed to the deadline/waiver backstop **or hold**
+(same split as the `exhausted` field above and the AW6 procedure's own
+step 5, including for adopters who keep the distributed
+`ciGate.externalCheckWaivers.mode: disabled` default), not a diagnosis
+failure.
 
 **AW6 procedure** (`idd-advisory-wait.instructions.md`), invoked only
 from F2 on a non-zero `--assert` exit:

@@ -8,7 +8,7 @@ import json
 import re
 import subprocess
 import sys
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 class GitCommandError(RuntimeError):
@@ -51,8 +51,37 @@ def parse_args() -> argparse.Namespace:
         default=[],
         help="Email that must appear in a Co-authored-by trailer. Repeat as needed.",
     )
+    parser.add_argument(
+        "--shipped-path-manifest",
+        type=Path,
+        help=(
+            "File containing the exact repository-relative paths expected in the handoff commit, "
+            "one per line."
+        ),
+    )
     parser.add_argument("--json", action="store_true", help="Emit the result as JSON.")
     return parser.parse_args()
+
+
+def load_shipped_paths(path: Path) -> set[str]:
+    lines = path.read_text().splitlines()
+    if not lines:
+        raise ValueError(f"Shipped-path manifest is empty: {path}")
+
+    shipped_paths: set[str] = set()
+    for line_number, raw_path in enumerate(lines, start=1):
+        if not raw_path:
+            raise ValueError(f"Shipped-path manifest contains a blank line at {line_number}.")
+        path_value = PurePosixPath(raw_path)
+        if path_value.is_absolute() or ".." in path_value.parts or str(path_value) != raw_path:
+            raise ValueError(
+                "Shipped-path manifest entries must be normalized repository-relative paths: "
+                f"{raw_path!r}."
+            )
+        if raw_path in shipped_paths:
+            raise ValueError(f"Duplicate shipped-path manifest entry: {raw_path}")
+        shipped_paths.add(raw_path)
+    return shipped_paths
 
 
 def validate(args: argparse.Namespace) -> tuple[dict[str, object], list[str]]:
@@ -91,6 +120,33 @@ def validate(args: argparse.Namespace) -> tuple[dict[str, object], list[str]]:
     if ahead != 1:
         failures.append(f"HEAD must be exactly one commit ahead of base, found {ahead} commits.")
 
+    shipped_manifest: str | None = None
+    shipped_paths: list[str] | None = None
+    if args.shipped_path_manifest is not None:
+        manifest_path = args.shipped_path_manifest.expanduser().resolve()
+        expected_paths = load_shipped_paths(manifest_path)
+        actual_paths = {
+            path
+            for path in run_git(
+                repo,
+                "diff",
+                "--name-only",
+                "--no-renames",
+                "-z",
+                f"{base}..{head}",
+            ).stdout.split("\0")
+            if path
+        }
+        missing_paths = sorted(expected_paths - actual_paths)
+        unexpected_paths = sorted(actual_paths - expected_paths)
+        if missing_paths or unexpected_paths:
+            failures.append(
+                "Committed paths do not match the shipped-path manifest: "
+                f"missing={missing_paths}, unexpected={unexpected_paths}."
+            )
+        shipped_manifest = str(manifest_path)
+        shipped_paths = sorted(expected_paths)
+
     subject = run_git(repo, "show", "-s", "--format=%s", "HEAD").stdout.strip()
     if not subject:
         failures.append("HEAD commit subject is empty.")
@@ -115,6 +171,8 @@ def validate(args: argparse.Namespace) -> tuple[dict[str, object], list[str]]:
         "ahead": ahead,
         "clean": not status,
         "coauthor_trailer_emails": sorted(trailer_emails),
+        "shipped_path_manifest": shipped_manifest,
+        "shipped_paths": shipped_paths,
         "valid": not failures,
     }
     return report, failures
@@ -124,7 +182,7 @@ def main() -> int:
     args = parse_args()
     try:
         report, failures = validate(args)
-    except (GitCommandError, ValueError) as exc:
+    except (GitCommandError, OSError, UnicodeError, ValueError) as exc:
         report = {"repo": str(args.repo.expanduser().resolve()), "valid": False}
         failures = [str(exc)]
 
@@ -133,7 +191,17 @@ def main() -> int:
     else:
         status = "valid" if not failures else "invalid"
         print(f"Implementation handoff: {status}")
-        for key in ("repo", "base", "head", "branch", "subject", "ahead", "clean"):
+        for key in (
+            "repo",
+            "base",
+            "head",
+            "branch",
+            "subject",
+            "ahead",
+            "clean",
+            "shipped_path_manifest",
+            "shipped_paths",
+        ):
             if key in report:
                 print(f"{key}: {report[key]}")
         for failure in failures:

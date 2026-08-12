@@ -1,6 +1,6 @@
 # Chat Engine 对话引擎架构
 
-> 返回 [文档索引](../../README.md) | 更新时间：2026-08-07
+> 返回 [文档索引](../../README.md) | 更新时间：2026-08-10
 
 **关联源码**
 
@@ -158,7 +158,8 @@ pub trait EventSink: Send + Sync + 'static {
 | | `agent_id` | `String` | Agent ID |
 | | `turn_id` | `Option<String>` | 面向用户的桌面/HTTP 回合持久化 turn id；非交互入口（Cron/subagent/注入/IM）恒 `None`（见下文） |
 | | `message` | `String` | 发给模型的用户消息 |
-| | `display_text` | `Option<String>` | 友好呈现文案（如 slash 技能的 `Using skill X…`）；IM 镜像的用户引用前缀用它，让附着的 IM 看到桌面用户看到的、而非原始 `[SYSTEM:…]` |
+| | `incoming_turn` | `Option<IncomingTurnWire>` | typed mention/slash sidecar；绑定 canonical text digest、UTF-8 source anchors 与 prompt/mention contract version |
+| | `display_text` | `Option<String>` | 友好呈现文案（例如显示原始 slash 命令）；不参与 typed binding 真实性或模型 authority |
 | | `attachments` | `Vec<Attachment>` | 多模态附件 |
 | | `session_db` | `Arc<SessionDB>` | 会话数据库 |
 | 模型链 | `model_chain` | `Vec<ActiveModel>` | 预解析的模型降级链 |
@@ -166,7 +167,7 @@ pub trait EventSink: Send + Sync + 'static {
 | | `codex_token` | `Option<(String, String)>` | Codex OAuth `(access_token, account_id)`；可传 `None`，引擎在链真命中 Codex 时从磁盘 hydrate + refresh，三入口行为一致 |
 | Agent 配置 | `resolved_temperature` | `Option<f64>` | 三层覆盖后的温度值 |
 | | `compact_config` | `CompactConfig` | 上下文压缩配置 |
-| | `extra_system_context` | `Option<String>` | 额外系统提示词 |
+| | `run_context` | `Option<RunInstructionContext>` | 封闭来源的受信 Run instruction + 独立 untrusted run-data；不能承载 Skill/Note/File/任意外部正文 |
 | | `reasoning_effort` | `Option<String>` | 推理强度 |
 | 工具与权限 | `skill_allowed_tools` | `Vec<String>` | Skill 工具白名单（激活带 `allowed-tools` 的技能时设置） |
 | | `denied_tools` | `Vec<String>` | 调用方执行策略级工具黑名单（与 schema 级过滤双重防御） |
@@ -185,6 +186,26 @@ pub trait EventSink: Send + Sync + 'static {
 | | `origin_source` | `Option<KbAccessSource>` | 整条调用链的 KB access 来源；子 agent 承接父 turn 的 origin，防 IM 起源链经中性 `Subagent` 重获 KB access |
 | | `channel_kb_context` | `Option<ChannelKbContext>` | IM 起源身份，用于 KB access opt-in 门；仅 IM 起源 turn 为 `Some` |
 | 输出 | `event_sink` | `Arc<dyn EventSink>` | 事件输出通道 |
+
+#### Typed 资源冻结、准入与耐久发布
+
+typed `@file` 的授权根统一取 `effective_working_dir_for_meta`：会话级 override 优先，否则使用项目继承目录。前端 picker 与发送阶段复用同一 effective root；项目草稿首发和已有项目会话即使 `sessions.working_dir=NULL` 也能生成匹配附件，而跨会话发送不得借用当前项目目录。
+
+引擎在任何 Provider/profile 尝试之前完成一次 turn resolution：验证 sidecar；以 canonical containment + 单次只读文件句柄冻结 typed `@file` 字节。打开过程是 descriptor/handle-rooted 而非 pathname 复检：Unix 从 `/` fd 开始对 canonical root 与相对目标逐组件 `openat(O_NOFOLLOW)`，目录组件叠 `O_DIRECTORY`，final 叠 `O_NONBLOCK` 后用 handle metadata 拒绝 FIFO/device；Windows 从 drive/UNC share root 起逐组件打开 direct-directory handle，拒 reparse point、核对每个 handle 的 final path，并在打开最终文件前一直以禁 `FILE_SHARE_DELETE` 的方式持有整条目录链，因而目录 rename/replacement 只能失败，证明后直接返回同一 file handle。Plans 页产生的 typed `@plan` 由后端独立重解析 registry path、与客户端附件做 canonical 精确匹配，并和 `@file` 作为一个原子批次冻结；解析 `@note`/`@skill`/capability/`@agent`；固定 Skill ceiling；构造 user-role Turn Envelope。Tauri/HTTP 的 direct 与 queue 入口都在任何附件/队列持久化前先做 message-bound/version 校验，并要求 unique File/Plan target set 与 `mention`/`plan_mention` attachment 数量逐类精确对应；同一 target 的重复 mention 共用一个 attachment，额外、缺失或无 sidecar 的 typed source 一律拒绝，ChatEngine 与 queue persistence 再各留一层 defense-in-depth。冻结前的 typed attachment 必须 `data=None`、不得混入 upload/quote metadata，name/MIME/client path 都有 byte 与控制字符上限；服务端冻结后再次验证 name/MIME。文件/Plan 批次的 256 MiB hard ceiling 同时计入 compact raw `Arc<[u8]>`、Attachment 上保留的 Base64、单文件 acquisition/decode peak、每资源 fail-visible reference envelope，以及 direct image 在 canonical conversation、Provider-normalized round、request value、诊断序列化与 HTTP body 间可能并存的 bulk payload copies；reference reserve 从“两次最大合法 filename 的 XML escape 上界 + 固定信封”推导，不依赖裸魔数。batch admission 另留一个不计作已消费的 256 KiB continuation floor，首轮 extraction 不得占用，保证即使只能 reference 也至少可请求一个小的 exact Base64 页。`get_base64_data` 对内联数据只借用，避免进入 Provider payload 前再 clone 一份。超限在分配/发布前显式失败；handle stat 与实际读取长度必须精确相等，stat 后增长或缩短都 fail closed，Vec 的 spare capacity 也在进入 retained turn state 前丢弃。这个上限约束 typed-resource bulk allocations，不代表 source-content 能力或注入字符上限。只读 acquisition 先留在内存，persistent stream run 建立后才把固定长度 snapshot basename（run UUID + resource ref，不含用户文件名）绑定到服务端生成的 run UUID；ownership ledger 在文件原子发布前先独立提交，因此文件不会在尚无 durable owner 时落盘。真正的 filesystem publish 在 `TransactionBehavior::Immediate` writer transaction 中先验证 live run/session、完整 ownership set 与所有 `cleanup_pending=0`，再保持写锁同步发布并 commit；run/session delete trigger 与 drain writer 只能在 gate 提交后推进。若 delete+`NotFound` drain 在 gate 前已完成，row pending/缺失会让晚到发布在写文件前失败；publish/commit 失败则显式把 ownership 标为 pending，由同一可恢复 GC 收敛，不使用时间 lease。普通会话的资源证据还包含 installation-keyed object identity 与 content fingerprint，不把绝对路径、文件正文或 raw hash 写入 receipt/Debug/日志；Incognito 只保留内存 bytes。`initial_context_committed` 事件把 receipt、source anchors、Agent refs、Skill ceiling 与 Run source 写入现有 append-only stream journal，并在 Provider I/O 前 flush。兼容字段 `fileSnapshots` 由 `resourceSnapshotVersion=2` 标识，v2 可同时承载 File/Plan resource snapshot；不另存第二份真相。每个 failover attempt 只引用同一 revision 0 快照，不重新读磁盘、Plan、Note、Skill 或 Hook。
+
+#### Typed 资源恢复与 ownership GC
+
+发布到首次 `initial_context_committed` flush 之间的崩溃窗口由同一 run UUID 收敛：正常失败/取消由 Drop guard 删除未提交批次；live abandoned recovery 与启动恢复先校验该 run **所有 attempt** 的 checksum 和连续 sequence，再扫描会话附件目录的精确 run 前缀。启动恢复还枚举仍由文件表示的 terminal run owner，覆盖 terminal DB commit 与 Drop 之间进程退出的窄窗口。只要任一已验证的 v2 Initial Context 引用某 basename 就保留，否则删除；journal 损坏、identity 不匹配或 basename 非单组件时 fail closed，文件留存而不猜测删除。terminal journal 的 24 小时 GC、消息 edit/retry 或 session cascade 删除 run 时，由 `BEFORE DELETE` trigger 在同一 DB 事务把独立 ownership ledger 标为 cleanup pending；ledger 不对 run/session 设 cascade FK，因而不会在 best-effort `remove_dir_all` 失败时丢掉唯一重试证据。后台先按精确 session/run/basename rooted unlink，Unix 逐组件 `openat` 后 `unlinkat`，Windows 在禁 delete-share 的目录 handle 链存活时删除 final entry；两端都不跟随 symlink/reparse ancestor，final link 只删除目录项本身。`NotFound` 视作崩溃重试成功，再删除 ledger row。清理按 high-watermark 分批跑完，单条失败留到下轮但不阻塞后项；session 整目录删除成功时由同一 `NotFound` ack 收敛。没有 ledger 的 missing/unknown owner 永不猜删。恢复绝不消费 client/journal 提供的任意路径。手输/粘贴的 `@plan:` 同形文本没有 typed sidecar 时只作为普通文本，不触发读取。
+
+#### Typed 资源首轮 materialization
+
+文件类资源首轮 materialization 使用模型上下文窗口的 20% 字符估算预算（总量钳在 8K–200K 字符），多资源等分，避免第一个大文件吃掉整个份额。份额内标记 `materialization="full"`；超限时确定性保留头部 75% 与尾部 25%，标记 `preview`、包含/提取字符数和继续读取工具。文本类型判定只有 `file_extract::is_text_like` 一份，首轮与续读不得各维护扩展名白名单。
+
+#### Typed 资源续读、Office 抽取与 turn 内存账本
+
+typed `@file/@plan` 的后续读取只接受 Turn Envelope 中的 opaque `resourceRef`，始终消费同一冻结 bytes；普通受管附件仍使用既有 `read` 路径。UTF-8 原文用 iterator 做行分页，单页正文最多 64 KiB，超长行通过同一行的 UTF-8 `byte_offset` 继续，不构造全文件 `lines Vec`。DOCX/PPTX/XLSX 首轮和续读共用 manual bounded Office extractor：ZIP 索引、entry 数、单 entry/aggregate declared size 在分配前检查，local/central declaration 必须一致，解压写入固定长度 Vec 后以栈上 1-byte probe 证明 EOF，并校验 CRC；内存 slice XML 走 borrowed event 读取，单属性 raw value/单元素属性数、text event/reference/element-name、最大深度、quick-xml opened-name Vec 的最坏 capacity、XLSX 单 cell 和各解析阶段 live set 都有分配前硬界。XML 的 encoding、attributes、decode/unescape、entity 和 EOF element state 任一异常都让整次抽取失败，且错误离开 bounded parser 前转成固定短分类，不回显恶意 tag/attribute；绝不返回 partial/full。XLSX 按 workbook relationship 保留用户 sheet 名和顺序，并支持 shared/inline string、布尔、错误和常见数值文本。Office 抽取达到 200K 字符上限时显式返回 `extractionTruncated=true`，最终文本页也不能冒充文档 EOF；剩余原始证据只可继续 Base64。
+
+`read_context_resource` 是串行工具。首轮 materialization 在抽取前验证全 turn refs 非空、共享同一 owner 且 baseline/ref-set 一致，并持有 turn ledger 锁直到实际消费提交；无法记账时只把 typed 部分降为预留过的 reference envelope、清掉 typed media，普通附件不受影响。ledger 记录首轮**实际总消费**（text/Office preview 与 PPT embedded media），Provider/profile rebuild 以 `max` 幂等替换、不会重复累加；续读成功结果才累计 retained charge，失败不扣。工具按 `ctx` 的全 turn refs 重建同一 raw/Base64/direct-image/reference baseline，减去 ledger 的 initial + cumulative continuation 后，再为解压、图片 decode 或结果 String/Base64 做 allocation-before-use reservation。ledger Arc 随 refs clone 穿过 Provider/profile rebuild，新 turn 创建新 owner、turn 释放即回收，不依赖进程全局表；因此不能把 256 MiB 当成每次调用的新额度。小且可完整 decode 的图片在同一预算内用 image marker 返回视觉上下文；损坏、像素工作集过大或总预算不足时明确引导 bounded Base64。PDF、legacy XLS 和未知 binary 不走进程内 eager parser，auto/text fail-visible，并保留每页最多 64 KiB 的 exact Base64 访问；请求页超过剩余额度时须缩小 `limit`。preview 是显式投递状态，不冒充模型已完整处理资源。
 
 ### ChatEngineResult
 
@@ -323,15 +344,16 @@ flowchart LR
     end
 ```
 
-### run / attempt / journal 三张台账
+### run / attempt / journal 主台账与 typed snapshot ledger
 
-每个跑 `AssistantAgent::chat` + tool loop 的会话 turn 都有独立 `persistence_run_id`。落库分三张表（定义在 [`session/stream_persistence.rs`](../../../crates/ha-core/src/session/stream_persistence.rs)）：
+每个跑 `AssistantAgent::chat` + tool loop 的会话 turn 都有独立 `persistence_run_id`。流恢复事实落在三张主表；typed 资源另用一张不可随 run/session cascade 丢失的 ownership ledger（均定义在 [`session/stream_persistence.rs`](../../../crates/ha-core/src/session/stream_persistence.rs)）：
 
 | 表 | 主键 | 记什么 |
 |---|---|---|
 | `chat_stream_runs` | `run_id` | 一次 turn 的 run 头：`accepted / durable / checkpoint / committed` 四条水位、`status`、可选 `turn_id`、`base_context_json` |
 | `chat_stream_attempts` | `(run_id, attempt_no)` | 每次 profile/model 尝试的状态与水位；失败尝试标 `superseded`，journal 保留 |
 | `chat_stream_journal` | `(run_id, attempt_no, block_no)` | 追加式 compact payload、`seq_start/seq_end` 范围与 BLAKE3 `checksum` |
+| `chat_stream_typed_snapshots` | `(run_id, snapshot_name)` | File/Plan snapshot 的独立 ownership ledger：filesystem publish 前先登记；publish gate 在 `IMMEDIATE` 事务内校验 live owner、精确 basename 集合与 `cleanup_pending=0`；run/session 删除先由 trigger 标 pending，rooted GC 删除文件或确认 `NotFound` 后才 ack 删除行 |
 
 另有 `chat_stream_context_checkpoints` 保存 provider-native context 的中途快照（`through_seq`），供 round checkpoint 与恢复重建。
 
@@ -461,7 +483,13 @@ stateDiagram-v2
 | Agent loop 协作收尾 | ≤ 6s | 已产生可见 runtime 事件的 loop 协作退出；超时 drop future 进统一中断提交（`CHAT_CANCEL_COOPERATIVE_GRACE`） |
 | watchdog 兜底 | 8s | 只作最后的 journal 收敛兜底，不与正常 finalizer 抢终态（`CHAT_STOP_WATCHDOG_GRACE`） |
 
-Stop 编排自身也有独立预算：先同步翻转所有已知 cancel flag、广播 `cancelling` 并启动 watchdog，再并行执行 DB 标记（2s）、审批/问答撤销（2s）与 runtime 清理（5s）。编排开始时须建立 session 的短暂 Stop gate（全局 Stop 用 process-wide gate），阻止替代 turn 在旧资源快照完成前 acquire；runtime 先快照精确 job/subagent/process id 再逐项取消，超时后不得重新按 session 枚举。审批/问答直接 timeout 原 future（禁止 detach 会话级 sweep），因此迟到清理不会消费续聊新建的交互。
+Stop 编排自身也有独立预算：先同步翻转所有已知 foreground cancel flag、广播 `cancelling` 并启动 watchdog，再以 `Immediate` 事务写 `session_autonomy_pauses` 耐久暂停回执（WAL 下禁 deferred read→write，否则并发 admission 会触发 `SQLITE_BUSY_SNAPSHOT`），随后取消 `turn_id=None` 的专用 parent-injection token，并行执行 DB 标记（2s）、审批/问答撤销（2s）与 runtime 清理（5s）。parent injection 必须在回执落库后才翻 token，确保其普通 requeue 路径先撞上 pause generation，不能立刻再发一轮 API。跨进程 global Stop 以单一 `Immediate` 事务推进 session-free `runtime_control_epochs.global_stop` 并从共享 `chat_stream_runs` 快照正在运行的 Desktop / HTTP / IM / ACP session，不能只看发起进程的 active-turn registry；`subagent_result_deliveries` 的 `pending` / `injecting` / `injecting_no_replay` 均属 active surface，尤其 no-replay owner 仍须由 lineage receipt 驱动取消。incognito stream 仍完全不落盘，只在 owner 进程内持 admission 时捕获的 global epoch。Global receipt 记录发布它的 `global_stop_epoch`；foreground admission 同时捕获 lineage count、global epoch 与同代 receipt count，因此 admission 后迟落的同代 receipt 不会误杀新 turn，而 targeted 或下一代 Stop 仍会胜出。每个 full/minimal runtime 安装 250ms Stop-fence watcher：本进程没有 foreground / injection / subagent / workflow 或 wakeup runtime 时纯内存 no-op；否则 foreground 比较这组三元 admission snapshot，injection / workflow 比较 lineage epoch，immutable foreground stream 与 subagent attempt 再按 run id 精确 signal，避免迟到 DB 结果误杀替代 turn。所有 owner-local wakeup（含 durable、incognito 与 persistence-degraded）都保存 admission global epoch；因此即使另一进程的 WakeupDB 枚举失败，watcher 仍会发现 epoch 推进，先为其 session 补同代 durable receipt再暂停 timer。另一进程消费该 receipt 后，owner 按真正 fence 它的 epoch 重挂 timer，更新一代 Stop 仍可再次拦截，既不泄露 volatile timer identity，也不把“可停止”做成“不可继续”。因 pause row 永不删除，即使用户快速 Continue 清掉 active flag，旧 runtime 仍会被它的 owner 取消；Secondary 找不到本地 cancel token 时禁止把别进程 `runner_owner` 的 run 直接盖成 terminal。暂停回执先于 Goal / Workflow 状态迁移和 runtime 快照落库，是进程重启后的统一执行围栏；子 Agent 会话按 `sessions.parent_session_id` 继承祖先回执，快照与 wakeup 暂停/重放递归覆盖整棵会话树，避免嵌套 child 用不同 session id 穿过根会话 Stop。回执记录 Stop 当刻的 Goal、Workflow run 与 subagent attempt，故 Continue 只恢复本次捕获的工作，不会复活用户此前单独暂停的控制器。Workflow 在途 QuickJS worker 另有 run-scoped cancel flag 接入 interrupt handler，防纯脚本循环在 DB 已 Paused 后继续占用线程；子 Agent 则由真实 runner owner 收敛为可续跑的 `Interrupted(session_paused)`。编排开始时须建立 session 的短暂 Stop gate（全局 Stop 用 process-wide gate），阻止替代 turn 在旧资源快照完成前 acquire；runtime 先快照精确 job/subagent/process id 再逐项取消，超时后不得重新按 session 枚举。审批/问答直接 timeout 原 future（禁止 detach 会话级 sweep），因此迟到清理不会消费续聊新建的交互。
+
+Wakeup Continue 的重放权按持久性分开：volatile timer 没有共享身份，只能由原 owner 从本地 descriptor 恢复；durable row 则严格由 Primary 重放，Secondary 消费 Continue 后只丢弃本地 parked shadow，并保持旧 in-flight delivery fenced 到结算。所有 durable wakeup（不只 IM mirror）在 parent engine 前都须以 `fired=1` 抢共享 CAS，确保 Primary 新 timer 与 Secondary 旧 injection 即使短暂重叠也只有一个能进入模型/工具执行；CAS winner 的 owner-local dispatch descriptor 必须持有到 engine settlement，不能在 claim 时提前释放，否则 `fired=1` 已从 pending 枚举消失、跨进程 Global Stop 又看不到执行中 owner。terminal-ambiguous / post-claim preparation failure 只保留 durable no-replay tombstone，必须幂等释放本地 descriptor，避免已停止的来源继续占配额或制造假活跃。
+
+Durable wakeup claim 的 `CAS=false` 是确定性 owner loss，不是可重试存储错误：loser 必须立即释放本地 descriptor，不能走普通 Abandoned park；只有真实 DB 错误才保留来源等待恢复。
+
+Global Stop generation task 是枚举结果的唯一 owner：它在同一个 detached task 内完成 epoch publish、durable session 枚举及这些 session 的 receipt/controller pause；2 秒 transport budget 只能停止等待，不能丢 JoinHandle 后让枚举结果无人消费。Continue 的最终 exact-`pause_id` CAS 同样必须用 `Immediate` 事务先取得 writer，再读取 captured subagent deliveries 并提交 suppression/replay request，避免 WAL deferred snapshot 升级失败。
 
 一些容易踩坑的、不读代码看不出来的约束：
 
@@ -470,10 +498,16 @@ Stop 编排自身也有独立预算：先同步翻转所有已知 cancel flag、
 - **请求生命周期资源也要能立即 abort**：GUI 的 plan mention 展开、文件系统配置读取、附件 staging 都属 request 生命周期；本地 Stop 必须立即 abort 等待。上传若不可物理取消，迟到返回的 upload lease 必须自动 discard，不得形成孤儿附件，也不得把用户停止显示为上传失败。
 - **项目首轮 bootstrap 已完成时**：回滚必须先把 bootstrap 置为终态并经 Git-aware 路径 discard 托管 worktree，再删空会话；禁止先靠 session FK cascade 丢掉 worktree 注册行。
 - **懒创建会话的定位**：`session_created` 前用不透明 `clientRequestId` 定位 active turn，此时点停止不得退化成"停止所有会话"；已知 session 但 `turn_started` 尚未到达的窗口也用同一 request id latch。
+- **精确 Stop 的 `NotFound` 要核对 durable turn**：Stop gate 已先阻止替代 turn；registry 没找到 expected turn 时，只有该 turn 仍属本 session 且为非终态，才按“live entry 先消失”继续收敛 Goal / Workflow / subagent。durable turn 已终态或不存在则拒绝，避免一条很晚的旧 Stop 暂停后来 generation 的工作；`TurnMismatch` 同样拒绝。
+- **Stop 前已排队的回注不能穿过快速 Continue**：每张暂停回执同时推进单调 generation。parent injector 在 idle wait 前后核对 generation；即使 active pause 已被 Continue 清掉，Stop 前 admitted 的旧 injector 也必须退回 durable source，由 Continue 重新认领，不能直接发起 provider round。
 
 ### 统一停止入口
 
 Desktop、HTTP 与 IM `/stop` 在解析出 session 后必须统一进入 [`chat_engine::stop::stop_session`](../../../crates/ha-core/src/chat_engine/stop.rs)：设置精确 active-turn cancel、写 `cancelling`、拒绝待审批、撤销 live `ask_user` 并取消 session-owned runtime；共享服务也翻转该 session 的全部 Channel preflight registrations，所以 GUI/HTTP 停止 attached session 时不会漏掉 IM 的 active-turn 注册前窗口。同 session 的并发入站逐个注册、一次 Stop 全部翻转；交互入口与 stream transport 可以不同，停止的业务语义不得分叉。
+
+显式 Continue 统一进入 `continue_session`：只恢复暂停回执捕获的 Goal / Workflow，最后以同一 CAS 消费回执并写入 durable Primary replay request，再重放该 session 的 wakeup 与 durable parent delivery。若请求由 `hope-agent server` / ACP 等 Secondary 处理，它只提交这张 request，不在本进程 arm 共享 wakeup 或启动 workflow；Primary 的独立 2 秒 sweep 负责恢复其进程内 controller，启动时也先补扫未完成 handoff。成功 dispatch 后才写 `resume_replayed_at`，瞬时 DB 错误留 `resume_replay_error` 并由下一 tick 重试；更新一代 Stop 会在落新 fence 的事务内废弃旧 handoff，避免过期 Continue 迟到复活。前台用户在暂停期间仍可正常发消息；每轮动态 `<session-paused>` system reminder 把围栏与精确捕获目标暴露给模型。用户明确表达“继续 / resume / keep going”时，模型先调用始终 eager、只绑定当前 session 的 `session_continue` harness 工具；执行层同时要求 Desktop / HTTP / IM / ACP foreground provenance，并比较该 stream 原子 admission 时捕获的 Stop epoch，早于最新 Stop 的旧前台 turn 即使看到精确 `pause_id` 也无权解锁。若只是问状态、原因、检查结果或调整恢复方案，模型不得调用，围栏继续生效。GUI “继续”按钮也只向当前会话发送一条正常的前台续跑意图，不绕过模型直接解锁；Tauri `continue_chat` / HTTP `POST /api/chat/continue` 是 owner 平面的显式适配器，必须携带当前精确 `pauseId`，迟到请求不得消费更新一代 Stop。
+
+Workflow 新 runtime 必须等 Stop 前的 QuickJS guard Drop 后再由同一 registry handoff 发射，不能让两个 generation 并行跑同一脚本。Continue turn 从 durable Goal / Workflow 状态、`<runtime-recovery>` 与工具返回的精确目标读取恢复上下文。子 Agent attempt 是不可变审计记录，因此 Continue 不把旧 run 改回 Running，而是在当前权限 / owner / sandbox 下创建 continuation；本次回执捕获的 child terminal delivery（含崩溃后才收敛的 `process_interrupted`）统一由 Continue turn 消费并抑制独立回注，避免按钮或模型入口并发启动两轮父 Agent。
 
 无 target 的全局紧急停止统一进入 `stop_all_sessions`，Desktop / HTTP shell 只负责先翻转各自 transport-local handle；全局路径不复制一套 DB、审批或 runtime 清理逻辑。
 
@@ -598,6 +632,10 @@ stateDiagram-v2
 - `inserting`：工具边界已原子 claim；编辑、删除、取消均 CAS 失败。
 - `dispatching`：正在创建下一独立回合；同样不可变。
 - `held_after_stop`：用户从 Desktop / HTTP / IM 任一入口显式 Stop 后冻结的 Channel 行；启动恢复与后端泵都不消费，下一条普通 IM 模型消息才按原 FIFO 恢复，并排在该批旧消息之后。
+
+**完整 turn sidecar 边界**：工具边界插入只携带一条原始 `user` message，不能消费 typed mention、Skill ceiling 或 Knowledge inline injection。因此，非空 `incomingTurn.mentions`、非空 `skillAllowedTools`，以及正文中会被保留兼容路径消费的 legacy `[[wikilink]]` 都必须转 `fallback_after_reply`，由下一完整 turn 解析；future/malformed sidecar 同样 fail closed。版本合法且 mentions 为空的普通 wire 可插入，普通 Markdown `[label](url)` 不触发此守卫。owner 编辑排队正文时会在同一 SQLite 事务移除旧 `incomingTurn`/Skill ceiling 与 `mention|plan_mention` attachments，只保留普通 upload/quote；否则旧 typed attachment 会变成无 sidecar 的不可派发行。legacy detector 与 `ha-knowledge` injector 共用 `knowledge::legacy_wikilink_targets`；当前兼容 injector 是 raw-text scanner，故代码 span/fence 内的 `[[Roadmap]]` 也会解析，队列必须镜像为完整 turn，不能为了减少误挡而先行改变语义。未来若 injector 改为跳代码，两处须通过该共享 detector 同步切换。
+
+**Composer → durable queue 竞态契约**：忙时从可见 composer 入队时，前端先快照原文、typed mention spans/bindings、文件与引用，并在第一次异步 digest、附件持久化或 Transport 调用之前同步清空 composer 的文本、typed provenance、附件和引用状态。用户可以在 queue write 尚未完成时继续输入，新草稿不会再被迟到的成功回调清空。若持久化失败，前端先丢弃本次已取得的 upload leases、移除 `saving` 投影，再把失败消息放在等待期间新草稿之前；`mergeTypedMentionDrafts` 保留两侧各自的 typed binding，把新草稿 spans 按实际插入前缀精确平移，并只留下 `text[start..end] == raw` 的 provenance，绝不从同形文本重新推断 binding。若用户已切换会话，恢复结果合并进原会话的 draft cache，而不是污染当前 composer；文件和两类 quote 也按同一“失败旧稿在前、期间新稿保留”规则恢复。
 
 **桌面投影契约**：输入框上方只把这些持久状态投影成轻量的“待发送”消息条，不另建前端队列状态机。默认只展示前 2 条，更多消息可展开；`queued | fallback_after_reply` 显示“回复后发送”：当前回合仍运行且后端声明 `canForceInsert` 时提供“插入”，当前回合已 idle 时则只给 FIFO 队首“立即发送”（`autoSendPending=false` 或崩溃恢复后仍必须有人工出口）；`waiting_tool_boundary` 显示“等待插入”，菜单可“改为回复后发送”；`inserting | dispatching | saving` 显示进行中状态并锁定编辑、删除和重复动作；`held_after_stop` 的非 Channel 兼容投影只允许删除，真实 `managedBy=channel` 行全程只读。按钮与 Tooltip 必须使用用户术语“插入”，并明确它会等待**本批正在执行的工具全部完成**，不会中断批次中的工具；没有后续安全边界时仍按“回复后发送”收敛。队列编辑保存遵守统一的 `saving → saved/failed` 两秒反馈契约，失败或 Promise rejection 保留草稿并可重试。
 

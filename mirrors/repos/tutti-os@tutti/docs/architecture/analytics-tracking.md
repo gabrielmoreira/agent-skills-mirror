@@ -60,12 +60,23 @@ Common params are split by ownership. tuttid injects its params on every event
 before forwarding to Tea. The renderer supplies only the params it uniquely
 knows.
 
+Runtime and application metadata that DataFinder defines as preset properties
+is sent in the SDK header as well as retained in the legacy custom common
+params where one already exists. This keeps existing dashboards compatible
+while allowing DataFinder's built-in dimensions to receive `os_name`,
+`os_version`, `app_version`, and `cpu_abi`. Event UUIDs follow the same
+transition: `event_id` remains in event params and is also assigned to the SDK
+event's preset ID field.
+
 | Param               | Owner    | Notes                                               |
 | ------------------- | -------- | --------------------------------------------------- |
 | `device_id`         | tuttid   | Persisted UUID in state dir; stable across restarts |
 | `session_id`        | tuttid   | UUID generated once at daemon startup               |
 | `app_version`       | tuttid   | Resolved from generated defaults or env override    |
 | `os`                | tuttid   | Resolved at startup                                 |
+| `os_name`           | tuttid   | Preset SDK header; currently the Go runtime OS key  |
+| `os_version`        | tuttid   | Preset SDK header; best-effort product OS version   |
+| `cpu_abi`           | tuttid   | Preset SDK header; Go runtime architecture key      |
 | `event_id`          | tuttid   | Generated UUID when the event does not supply one   |
 | `authority`         | tuttid   | `"client"` for Tutti Desktop events                 |
 | `business_app_id`   | tuttid   | Tutti account/commerce application ID               |

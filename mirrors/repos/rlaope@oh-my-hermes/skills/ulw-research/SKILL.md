@@ -133,6 +133,7 @@ Safety rules:
 - Assert contested claims only after cross-source verification; keep unresolved and refuted claims in an explicit annex - abstention is a correct outcome.
 - Separate quoted evidence from inference.
 - Separate measured, assumed, and derived figures in any estimate.
+- Name the source class behind each claim - upstream official, practitioner heuristic, or unattributed - as an axis separate from measured/assumed/derived: a practitioner heuristic may inform approach but never enters as an established finding, and no source class settles completion.
 - Parallel lanes widen coverage, not authority: each lane's findings stay claims until merged and verified, and lane count or wave count never substitutes for the declared depth budget.
 - State retrieval limits, dates, and missing-source gaps for unstable facts.
 - product_evidence_loop/v1 is prepared-only opaque references, not observed evidence or execution.

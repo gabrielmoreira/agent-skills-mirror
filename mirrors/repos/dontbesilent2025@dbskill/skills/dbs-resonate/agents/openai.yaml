@@ -1,0 +1,4 @@
+interface:
+  display_name: "dbs-resonate"
+  short_description: "用传播心理学诊断文稿的共鸣强度、受众信念和可能流失的位置"
+  default_prompt: "使用 $dbs-resonate，诊断当前文稿的共鸣强度与受众流失风险。"

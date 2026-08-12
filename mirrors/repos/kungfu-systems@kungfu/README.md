@@ -9,12 +9,22 @@ agent takes over.
 Use the best Agent when it matters. Use a cheaper one when it does not. Keep the
 same Work across Codex, Claude, OpenCode, Amp, or your own execution surface.
 
-> **Exploring the source? Start with your Agent.** If you are an Agent, read
-> [`AGENTS.md`](AGENTS.md) before explaining Kungfu's architecture or code.
-> Kungfu's explicit semantics and machine-readable contracts let an Agent
-> inspect the repository at full scale, then return the smallest useful mental
-> model for the question at hand. You do not need to learn the whole system
-> before understanding or contributing.
+> **Kungfu UNGFU™** · Never Guess. Facts Unfold. [Why this signature
+> exists](docs/concepts/why-kungfu.md).
+
+> **Exploring the source? Start with your Agent.** Agents should read
+> [`AGENTS.md`](AGENTS.md) before explaining or evaluating Kungfu. Ask for the
+> smallest mental model your question needs; Kungfu's internal vocabulary is
+> machine-readable implementation structure, not a syllabus you need to learn.
+
+Paste this into your Agent:
+
+```text
+Inspect https://github.com/kungfu-systems/kungfu.
+Read AGENTS.md first. Explain what Kungfu does and evaluate its architecture.
+Give me only the smallest mental model I need; do not make me learn the
+repository's full ontology.
+```
 
 ## Start where you already work
 
@@ -51,11 +61,8 @@ before staging anything. Most contents stay local; Kungfu never stages,
 commits, or pushes files for you.
 
 **Open the optional global view later.** The Kungfu TUI and GUI can show and
-manage Kungfu Projects and Work across Agent Sessions. They are sidecar views,
-not a requirement for every Agent conversation.
-
-> **Kungfu UNGFU™** · Never Guess. Facts Unfold. [Why this signature
-> exists](docs/concepts/why-kungfu.md).
+manage Projects and Work across Agent Sessions. They are sidecar views, not a
+requirement for every Agent conversation.
 
 ## What Kungfu preserves
 
@@ -75,6 +82,16 @@ The first visible value should arrive within minutes. The deeper value appears
 over the following days, when the same Work survives context loss, changed
 understanding, failed attempts, handoff, and restart.
 
+## One Work, three concepts
+
+A **Project** remembers where related Work belongs. A **Work** keeps one durable
+objective and its current truth. An **Attempt** records what one Agent tried,
+including failure, without replacing or erasing the Work.
+
+The same Work state is available from native Agent consoles, the Kungfu TUI and
+GUI, the CLI, and APIs. If another live Agent already owns a Work, Kungfu stops
+a second writer instead of letting two Agents silently diverge.
+
 ## Three proofs that Work is durable
 
 Durable Work must answer three questions in order: can it survive a new Agent,
@@ -86,7 +103,7 @@ Yes. The first proof isolates continuity: one Work continues across two fresh
 Agent Sessions without copied chat.
 
 <!-- kungfu:auditable-demo:agent-work-lab-autoplay:start -->
-[![Can Work survive a new Agent?](docs/qualification/evidence/auditable-demo/74f7cf0b18f261001755c43dfd2954262bdb32c865a34f8316e3ec38331fb35b/agent-work-lab-autoplay/demo.gif)](docs/qualification/evidence/auditable-demo/74f7cf0b18f261001755c43dfd2954262bdb32c865a34f8316e3ec38331fb35b/agent-work-lab-autoplay/public-evidence.json)
+[![Can Work survive a new Agent?](docs/qualification/evidence/auditable-demo/e2952e8c5f44783203bb3a523221412a19424e6374c4b2bf1f16bd8b209f0eee/agent-work-lab-autoplay/demo.gif)](docs/qualification/evidence/auditable-demo/e2952e8c5f44783203bb3a523221412a19424e6374c4b2bf1f16bd8b209f0eee/agent-work-lab-autoplay/public-evidence.json)
 <!-- kungfu:auditable-demo:agent-work-lab-autoplay:end -->
 
 ### 2. Can Work survive failure?
@@ -96,7 +113,7 @@ a disposable Project, the connection drops, a new process resumes, that process
 crashes, and both Attempts remain under the same Work.
 
 <!-- kungfu:auditable-demo:project-tour-episode-1:start -->
-[![Can Work survive failure?](docs/qualification/evidence/auditable-demo/6751bfdf7a27dd2c4b0c3f0916a512fb7abd172543c94dee220b41a0d679632e/project-tour-episode-1/demo.gif)](docs/qualification/evidence/auditable-demo/6751bfdf7a27dd2c4b0c3f0916a512fb7abd172543c94dee220b41a0d679632e/project-tour-episode-1/public-evidence.json)
+[![Can Work survive failure?](docs/qualification/evidence/auditable-demo/042f9a63bce7db29e7f6df7367351e712c6f3cd5feb1cc2cd2baeb50b2fd18f2/project-tour-episode-1/demo.gif)](docs/qualification/evidence/auditable-demo/042f9a63bce7db29e7f6df7367351e712c6f3cd5feb1cc2cd2baeb50b2fd18f2/project-tour-episode-1/public-evidence.json)
 <!-- kungfu:auditable-demo:project-tour-episode-1:end -->
 
 Work survival is only the first step. If an Agent can declare its own result
@@ -109,7 +126,7 @@ The third proof separates Agent exit, independent review, and Kungfu settlement.
 An Agent can produce the candidate and evidence; it cannot approve its own Work.
 
 <!-- kungfu:auditable-demo:project-tour-episode-2:start -->
-[![Who is allowed to complete Work?](docs/qualification/evidence/auditable-demo/2ceca18c5d030d98f693e433bad4981c7931a2ca1f4b2efcbdc7d63538e642db/project-tour-episode-2/demo.gif)](docs/qualification/evidence/auditable-demo/2ceca18c5d030d98f693e433bad4981c7931a2ca1f4b2efcbdc7d63538e642db/project-tour-episode-2/public-evidence.json)
+[![Who is allowed to complete Work?](docs/qualification/evidence/auditable-demo/df1966c3530ea294f6eb8f7a38c6a79cdc2ad6537810faed8ce93364f2e943ca/project-tour-episode-2/demo.gif)](docs/qualification/evidence/auditable-demo/df1966c3530ea294f6eb8f7a38c6a79cdc2ad6537810faed8ce93364f2e943ca/project-tour-episode-2/public-evidence.json)
 <!-- kungfu:auditable-demo:project-tour-episode-2:end -->
 
 These are bounded exact-artifact demonstrations—not provider rankings,
@@ -122,21 +139,8 @@ Open the optional terminal view whenever you want the larger Work picture:
 kungfu
 ```
 
-Getting Started leads to the same Agent-first prompt. Keep your familiar Agent
-interface as the primary workspace and open Kungfu when you need a global view,
-a handoff, or an explicit review.
-
-## One Work, several ways in
-
-A **Project** remembers where related Work belongs. A **Work** keeps one durable
-objective and its current truth. An **Attempt** records what one Agent tried,
-including failure, without replacing or erasing the Work.
-
-The same Work state is available from native Agent consoles, the Kungfu TUI and
-GUI, the CLI, and APIs. You can spend most of your time in the Agent you already
-know, then open Kungfu for a global view, a handoff, or an explicit review. If
-another live Agent already owns a Work, Kungfu stops a second writer instead of
-letting two Agents silently diverge.
+Getting Started leads to the same Agent-first prompt, so this remains a sidecar
+rather than a replacement for your familiar Agent interface.
 
 ## Contribute with your Agent
 
@@ -173,11 +177,11 @@ claim boundaries live in their own maintained routes:
 - **Evaluate the wider ecosystem thesis:** the
   [Agent Supply Chain architecture](docs/architecture/agent-supply-chain.md).
 
-Kungfu v4.0.0-alpha.1 is the first public v4 Alpha. Download the
-[release artifacts](https://github.com/kungfu-systems/kungfu/releases/tag/v4.0.0-alpha.1)
-or follow the [installation guide](docs/guides/installing-cli.md). This is a
-prerelease, not a stable or generally available release; exact support,
-qualification, and non-claims remain in
+Kungfu v4 is publicly available in Alpha. Download the
+[current release artifacts](https://github.com/kungfu-systems/kungfu/releases/latest)
+or follow the [installation guide](docs/guides/installing-cli.md). Alpha remains
+a prerelease channel, not a stable or generally available release; exact
+support, qualification, and non-claims remain in
 [Alpha Status](docs/guides/alpha-status.md) and
 [Known Limits](docs/qualification/known-limits.md).
 

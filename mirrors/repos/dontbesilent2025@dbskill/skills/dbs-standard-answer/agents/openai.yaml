@@ -1,0 +1,4 @@
+interface:
+  display_name: "dbs-standard-answer"
+  short_description: "从商业史、管理史与技术史寻找同构案例，提炼带适用条件的重复机制"
+  default_prompt: "使用 $dbs-standard-answer，为当前困境寻找历史同构并提炼可复用机制。"

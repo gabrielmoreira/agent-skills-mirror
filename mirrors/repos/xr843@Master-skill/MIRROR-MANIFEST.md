@@ -60,7 +60,7 @@ Legend: **✓** = default pattern · **→** = followed via markdown
 | # | S | File |
 |---|---|------|
 | 1 | ✓ | [`GEMINI.md`](GEMINI.md) |
-| 2 | ✓ | [`prebuilt/compare/SKILL.md`](prebuilt/compare/SKILL.md) |
+| 2 | ✓ | [`prebuilt/compare-masters/SKILL.md`](prebuilt/compare-masters/SKILL.md) |
 | 3 | ✓ | [`prebuilt/master-ajahn-chah/SKILL.md`](prebuilt/master-ajahn-chah/SKILL.md) |
 | 4 | ✓ | [`prebuilt/master-atisha/SKILL.md`](prebuilt/master-atisha/SKILL.md) |
 | 5 | ✓ | [`prebuilt/master-buddhaghosa/SKILL.md`](prebuilt/master-buddhaghosa/SKILL.md) |
